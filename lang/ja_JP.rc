@@ -506,7 +506,7 @@ FONT 9, "MS UI Gothic"
 }
 
 14 DIALOG 0, 0, 75, 255
-CAPTION "入力パレット"
+CAPTION "入力パレット (Ctrl+U)"
 STYLE DS_CENTER | DS_MODALFRAME | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
 EXSTYLE WS_EX_TOOLWINDOW
 FONT 9, "MS UI Gothic"
@@ -678,7 +678,7 @@ STRINGTABLE
     67, "GulimChe"
     68, "Tahoma"
     69, "辞書データに更新があります。\n\n現在の場所には保存できませんので、次の操作で保存先をお選び下さい。保存しない場合は「キャンセル」をクリックして下さい。"
-    70, "ヒント"
+    70, "ヒント (Ctrl+L)"
     71, "辞書ファイル (*.dic;*.txt)|*.dic;*.txt||"
     72, "辞書ファイルの保存先"
     73, "辞書ファイルが保存できませんでした。"
