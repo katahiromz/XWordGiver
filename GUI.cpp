@@ -225,26 +225,6 @@ static bool         s_bImageCopyByHeight = false;
 static int          s_nMarksHeight = 40;
 
 //////////////////////////////////////////////////////////////////////////////
-
-#ifndef MZC_NO_SHAREWARE
-    // シェアウェアのパスワードハッシュ。
-    static const std::array<BYTE,32> s_abPasswordHash =
-    {
-        {
-            0x7c, 0x08, 0x36, 0x60, 0x4f, 0x73, 0x80, 0x48,
-            0x07, 0x37, 0x33, 0xb7, 0x8e, 0x36, 0x0a, 0x3d,
-            0xc2, 0x7c, 0x77, 0x76, 0x2b, 0xfa, 0x4b, 0xf4,
-            0x62, 0x15, 0x11, 0x13, 0x2d, 0x24, 0x15, 0xcb,
-        }
-    };
-
-    // シェアウェア管理オブジェクト。
-    SW_Shareware g_shareware(
-        L"Katayama Hirofumi MZ", s_pszAppName, s_abPasswordHash.data(), 10,
-        "", "3.8");
-#endif  // ndef MZC_NO_SHAREWARE
-
-//////////////////////////////////////////////////////////////////////////////
 // スクロール関連。
 
 // 水平スクロールの位置を取得する。
