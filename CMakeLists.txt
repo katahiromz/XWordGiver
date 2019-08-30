@@ -84,7 +84,6 @@ add_executable(xword${BITS} WIN32
     Input.cpp
     Marks.cpp
     PointSizeRect.cpp
-    SHA-256.cpp
     ScrollView.cpp
     UndoBuffer.cpp
     Utils.cpp
