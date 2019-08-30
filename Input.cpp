@@ -620,9 +620,8 @@ void __fastcall MainWnd_OnKey(HWND hwnd, UINT vk, bool fDown, int /*cRepeat*/, U
     case VK_APPS:   // アプリ キー。
         // アプリメニューを表示する。
         {
-            // 編集メニューを取得する。
-            HMENU hMenu = ::GetMenu(hwnd);
-            HMENU hEditMenu = ::GetSubMenu(hMenu, 1);
+            HMENU hMenu = LoadMenuW(xg_hInstance, MAKEINTRESOURCEW(2));
+            HMENU hSubMenu = GetSubMenu(hMenu, 0);
 
             // 現在のキャレット位置。
             POINT pt;
@@ -643,9 +642,12 @@ void __fastcall MainWnd_OnKey(HWND hwnd, UINT vk, bool fDown, int /*cRepeat*/, U
 
             // 右クリックメニューを表示する。
             ::SetForegroundWindow(hwnd);
-            ::TrackPopupMenu(hEditMenu, TPM_LEFTALIGN,
-                             pt.x, pt.y, 0, hwnd, NULL);
+            ::TrackPopupMenu(
+                hSubMenu, TPM_RIGHTBUTTON | TPM_LEFTALIGN,
+                pt.x, pt.y, 0, hwnd, NULL);
             ::PostMessageW(hwnd, WM_NULL, 0, 0);
+
+            ::DestroyMenu(hMenu);
         }
         xg_prev_vk = 0;
         break;
