@@ -4974,6 +4974,7 @@ void __fastcall MainWnd_OnLButtonUp(HWND hwnd, int x, int y, UINT /*keyFlags*/)
                 xg_caret_pos.m_i = i;
                 xg_caret_pos.m_j = j;
                 XgEnsureCaretVisible(hwnd);
+                XgUpdateStatusBar(hwnd);
 
                 // イメージを更新する。
                 x = XgGetHScrollPos();
@@ -5023,6 +5024,7 @@ void __fastcall MainWnd_OnLButtonDown(HWND hwnd, bool fDoubleClick, int x, int y
                 xg_caret_pos.m_i = i;
                 xg_caret_pos.m_j = j;
                 XgEnsureCaretVisible(hwnd);
+                XgUpdateStatusBar(hwnd);
 
                 // マークされていないか？
                 if (XgGetMarked(i, j) == -1) {
@@ -5064,7 +5066,30 @@ void __fastcall XgUpdateStatusBar(HWND hwnd)
 
     SendMessageW(xg_hStatusBar, SB_SETPARTS, 3, (LPARAM)anWidth);
 
-    wsprintfW(szText, L"(%u, %u)", xg_caret_pos.m_j, xg_caret_pos.m_i);
+    std::wstring str;
+    if (xg_bTateInput) {
+        str = XgLoadStringDx1(1184);
+    } else {
+        str = XgLoadStringDx1(1183);
+    }
+    str += L" - ";
+
+    switch (xg_imode) {
+    case xg_im_ABC: str += XgLoadStringDx1(1172); break;
+    case xg_im_KANA: str += XgLoadStringDx1(1180); break;
+    case xg_im_KANJI: str += XgLoadStringDx1(1181); break;
+    default:
+        break;
+    }
+
+    if (xg_bCharFeed) {
+        str += L" - ";
+        str += XgLoadStringDx1(1182);
+    }
+
+    SendMessageW(xg_hStatusBar, SB_SETTEXT, 0, (LPARAM)str.c_str());
+
+    wsprintfW(szText, L"(%u, %u)", xg_caret_pos.m_j + 1, xg_caret_pos.m_i + 1);
     SendMessageW(xg_hStatusBar, SB_SETTEXT, 1, (LPARAM)szText);
 
     wsprintfW(szText, L"%u x %u", xg_nCols, xg_nRows);
@@ -6135,6 +6160,7 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
         // Ctrl+←。
         if (xg_caret_pos.m_j > 0) {
             xg_caret_pos.m_j = 0;
+            XgUpdateStatusBar(hwnd);
             XgEnsureCaretVisible(hwnd);
             x = XgGetHScrollPos();
             y = XgGetVScrollPos();
@@ -6151,6 +6177,7 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
         // Ctrl+→。
         if (xg_caret_pos.m_j + 1 < xg_nCols) {
             xg_caret_pos.m_j = xg_nCols - 1;
+            XgUpdateStatusBar(hwnd);
             XgEnsureCaretVisible(hwnd);
             x = XgGetHScrollPos();
             y = XgGetVScrollPos();
@@ -6172,6 +6199,7 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
         // Ctrl+↑。
         if (xg_caret_pos.m_i > 0) {
             xg_caret_pos.m_i = 0;
+            XgUpdateStatusBar(hwnd);
             XgEnsureCaretVisible(hwnd);
             x = XgGetHScrollPos();
             y = XgGetVScrollPos();
@@ -6188,6 +6216,7 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
         // Ctrl+↓。
         if (xg_caret_pos.m_i + 1 < xg_nRows) {
             xg_caret_pos.m_i = xg_nRows - 1;
+            XgUpdateStatusBar(hwnd);
             XgEnsureCaretVisible(hwnd);
             x = XgGetHScrollPos();
             y = XgGetVScrollPos();

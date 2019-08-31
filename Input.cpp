@@ -39,6 +39,7 @@ void __fastcall XgInputDirection(HWND hwnd, INT nDirection)
         }
     }
 
+    XgUpdateStatusBar(hwnd);
     xg_prev_vk = 0;
 }
 
@@ -85,6 +86,7 @@ void __fastcall XgReturn(HWND hwnd)
         xg_caret_pos.m_j = 0;
     }
 
+    XgUpdateStatusBar(hwnd);
     XgEnsureCaretVisible(hwnd);
     INT x = XgGetHScrollPos();
     INT y = XgGetVScrollPos();
@@ -182,6 +184,7 @@ void __fastcall XgCharFeed(HWND hwnd)
         }
     }
 
+    XgUpdateStatusBar(hwnd);
     xg_prev_vk = 0;
 }
 
@@ -223,6 +226,7 @@ void __fastcall XgCharBack(HWND hwnd)
     MainWnd_OnChar(hwnd, L'_', 1);
     xg_bCharFeed = true;
 
+    XgUpdateStatusBar(hwnd);
     xg_prev_vk = 0;
 }
 
@@ -1028,6 +1032,8 @@ void __fastcall XgSetInputMode(HWND hwnd, XG_InputMode mode)
     if (flag && xg_hwndInputPalette) {
         XgCreateInputPalette(hwnd);
     }
+
+    XgUpdateStatusBar(hwnd);
     XgUpdateImage(hwnd, 0, 0);
 }
 

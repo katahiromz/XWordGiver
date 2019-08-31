@@ -40,7 +40,6 @@ enum XG_EpvCode
     xg_epv_NOTFOUNDWORD    // 単語にマッチしなかったマスがある。
 };
 
-
 // セルの色。
 extern COLORREF xg_rgbWhiteCellColor;
 extern COLORREF xg_rgbBlackCellColor;
@@ -453,6 +452,9 @@ bool __fastcall XgGetMailBody(HWND hwnd, std::wstring& strBody);
 
 // 黒マスパターンを生成する。
 void __fastcall XgStartGenerateBlacks(bool sym);
+
+// ステータスバーを更新する。
+void __fastcall XgUpdateStatusBar(HWND hwnd);
 
 //////////////////////////////////////////////////////////////////////////////
 
