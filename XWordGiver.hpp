@@ -61,9 +61,9 @@
 
 ////////////////////////////////////////////////////////////////////////////
 
-#include "PointSizeRect.hpp"
-#include "ScrollView.hpp"
+#include "MPointSizeRect.hpp"
 #include "MRegKey.hpp"
+#include "ScrollView.hpp"
 
 #include "WordData.hpp"
 #include "xword.hpp"
