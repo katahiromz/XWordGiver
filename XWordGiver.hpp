@@ -442,6 +442,10 @@ extern bool xg_bShowAnswer;
 // 入力パレットを表示するか？
 extern bool xg_bShowInputPalette;
 
+// 入力パレットの位置。
+extern INT xg_nInputPaletteWndX;
+extern INT xg_nInputPaletteWndY;
+
 // 黒マス追加なしか？
 extern bool xg_bNoAddBlack;
 

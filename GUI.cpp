@@ -113,6 +113,9 @@ static int s_nHintsWndCX = CW_USEDEFAULT, s_nHintsWndCY = CW_USEDEFAULT;
 static int s_nCandsWndX = CW_USEDEFAULT, s_nCandsWndY = CW_USEDEFAULT;
 static int s_nCandsWndCX = CW_USEDEFAULT, s_nCandsWndCY = CW_USEDEFAULT;
 
+INT xg_nInputPaletteWndX = CW_USEDEFAULT;
+INT xg_nInputPaletteWndY = CW_USEDEFAULT;
+
 // ウィンドウ設定の名前。
 static const LPCWSTR s_pszMainWndX = L"WindowX";
 static const LPCWSTR s_pszMainWndY = L"WindowY";
@@ -126,6 +129,8 @@ static const LPCWSTR s_pszCandsWndX = L"CandsX";
 static const LPCWSTR s_pszCandsWndY = L"CandsY";
 static const LPCWSTR s_pszCandsWndCX = L"CandsCX";
 static const LPCWSTR s_pszCandsWndCY = L"CandsCY";
+static const LPCWSTR s_pszInputPaletteWndX = L"IPaletteX";
+static const LPCWSTR s_pszInputPaletteWndY = L"IPaletteY";
 
 // 会社名。
 static const LPCWSTR
@@ -452,6 +457,9 @@ bool __fastcall XgLoadSettings(void)
     s_nCandsWndCX = 420;
     s_nCandsWndCY = 250;
 
+    xg_nInputPaletteWndX = CW_USEDEFAULT;
+    xg_nInputPaletteWndY = CW_USEDEFAULT;
+
     xg_bTateInput = false;
     xg_dict_files.clear();
     s_dirs_save_to.clear();
@@ -527,6 +535,13 @@ bool __fastcall XgLoadSettings(void)
             }
             if (!app_key.QueryDword(s_pszCandsWndCY, dwValue)) {
                 s_nCandsWndCY = dwValue;
+            }
+
+            if (!app_key.QueryDword(s_pszInputPaletteWndX, dwValue)) {
+                xg_nInputPaletteWndX = dwValue;
+            }
+            if (!app_key.QueryDword(s_pszInputPaletteWndY, dwValue)) {
+                xg_nInputPaletteWndY = dwValue;
             }
 
             if (!app_key.QueryDword(s_pszOldNotice, dwValue)) {
@@ -795,6 +810,9 @@ bool __fastcall XgSaveSettings(void)
             app_key.SetDword(s_pszCandsWndY, s_nCandsWndY);
             app_key.SetDword(s_pszCandsWndCX, s_nCandsWndCX);
             app_key.SetDword(s_pszCandsWndCY, s_nCandsWndCY);
+
+            app_key.SetDword(s_pszInputPaletteWndX, xg_nInputPaletteWndX);
+            app_key.SetDword(s_pszInputPaletteWndY, xg_nInputPaletteWndY);
 
             app_key.SetDword(s_pszMainWndX, s_nMainWndX);
             app_key.SetDword(s_pszMainWndY, s_nMainWndY);

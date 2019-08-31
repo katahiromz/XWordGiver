@@ -920,6 +920,12 @@ void InputPal_OnKey(HWND hwnd, UINT vk, BOOL fDown, int cRepeat, UINT flags)
     }
 }
 
+void InputPal_OnMove(HWND hwnd, int x, int y)
+{
+    xg_nInputPaletteWndX = x;
+    xg_nInputPaletteWndY = y;
+}
+
 // 入力パレットのダイアログプロシジャー。
 INT_PTR CALLBACK
 XgInputPaletteDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
@@ -930,6 +936,7 @@ XgInputPaletteDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
         HANDLE_MSG(hwnd, WM_COMMAND, InputPal_OnCommand);
         HANDLE_MSG(hwnd, WM_DESTROY, InputPal_OnDestroy);
         HANDLE_MSG(hwnd, WM_KEYDOWN, InputPal_OnKey);
+        HANDLE_MSG(hwnd, WM_MOVE, InputPal_OnMove);
     }
     return 0;
 }
@@ -967,6 +974,15 @@ BOOL XgCreateInputPalette(HWND hwndOwner)
         break;
     default:
         return FALSE;
+    }
+
+    MRect rc;
+    GetWindowRect(xg_hwndInputPalette, &rc);
+    if (xg_nInputPaletteWndX != CW_USEDEFAULT) {
+        MoveWindow(xg_hwndInputPalette,
+            xg_nInputPaletteWndX, xg_nInputPaletteWndY,
+            rc.Width(), rc.Height(), TRUE);
+        SendMessageW(xg_hwndInputPalette, DM_REPOSITION, 0, 0);
     }
 
     ShowWindow(xg_hwndInputPalette, SW_SHOWNOACTIVATE);
