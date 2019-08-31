@@ -2993,6 +2993,13 @@ void __fastcall XgDrawMarkWord(HDC hdc, LPSIZE psiz)
 // クロスワードを描画する。
 void __fastcall XgDrawXWord(XG_Board& xw, HDC hdc, LPSIZE psiz, bool bCaret)
 {
+    INT nCellSize;
+    if (xg_nForDisplay > 0) {
+        nCellSize = xg_nCellSize * xg_nZoomRate / 100;
+    } else {
+        nCellSize = xg_nCellSize;
+    }
+
     // 全体を白で塗りつぶす。
     RECT rc;
     ::SetRect(&rc, 0, 0, psiz->cx, psiz->cy);
@@ -3010,7 +3017,7 @@ void __fastcall XgDrawXWord(XG_Board& xw, HDC hdc, LPSIZE psiz, bool bCaret)
     }
     if (xg_szCellFont[0])
         ::lstrcpyW(lf.lfFaceName, xg_szCellFont.data());
-    lf.lfHeight = xg_nCellSize * 2 / 3;
+    lf.lfHeight = nCellSize * 2 / 3;
     lf.lfWidth = 0;
     lf.lfWeight = FW_NORMAL;
     lf.lfQuality = ANTIALIASED_QUALITY;
@@ -3020,7 +3027,7 @@ void __fastcall XgDrawXWord(XG_Board& xw, HDC hdc, LPSIZE psiz, bool bCaret)
     ::GetObjectW(::GetStockObject(DEFAULT_GUI_FONT), sizeof(LOGFONTW), &lf);
     if (xg_szSmallFont[0])
         ::lstrcpyW(lf.lfFaceName, xg_szSmallFont.data());
-    lf.lfHeight = xg_nCellSize / 4;
+    lf.lfHeight = nCellSize / 4;
     lf.lfWidth = 0;
     lf.lfWeight = FW_NORMAL;
     lf.lfQuality = ANTIALIASED_QUALITY;
@@ -3059,10 +3066,10 @@ void __fastcall XgDrawXWord(XG_Board& xw, HDC hdc, LPSIZE psiz, bool bCaret)
         for (int j = 0; j < xg_nCols; j++) {
             // セルの座標をセットする。
             ::SetRect(&rc,
-                static_cast<int>(xg_nMargin + j * xg_nCellSize), 
-                static_cast<int>(xg_nMargin + i * xg_nCellSize),
-                static_cast<int>(xg_nMargin + (j + 1) * xg_nCellSize), 
-                static_cast<int>(xg_nMargin + (i + 1) * xg_nCellSize));
+                static_cast<int>(xg_nMargin + j * nCellSize), 
+                static_cast<int>(xg_nMargin + i * nCellSize),
+                static_cast<int>(xg_nMargin + (j + 1) * nCellSize), 
+                static_cast<int>(xg_nMargin + (i + 1) * nCellSize));
 
             // 二重マスか？
             int nMarked = XgGetMarked(i, j);
@@ -3099,10 +3106,10 @@ void __fastcall XgDrawXWord(XG_Board& xw, HDC hdc, LPSIZE psiz, bool bCaret)
         for (int j = 0; j < xg_nCols; j++) {
             // セルの座標をセットする。
             ::SetRect(&rc,
-                static_cast<int>(xg_nMargin + j * xg_nCellSize), 
-                static_cast<int>(xg_nMargin + i * xg_nCellSize),
-                static_cast<int>(xg_nMargin + (j + 1) * xg_nCellSize), 
-                static_cast<int>(xg_nMargin + (i + 1) * xg_nCellSize));
+                static_cast<int>(xg_nMargin + j * nCellSize), 
+                static_cast<int>(xg_nMargin + i * nCellSize),
+                static_cast<int>(xg_nMargin + (j + 1) * nCellSize), 
+                static_cast<int>(xg_nMargin + (i + 1) * nCellSize));
 
             // 二重マスか？
             int nMarked = XgGetMarked(i, j);
@@ -3128,10 +3135,10 @@ void __fastcall XgDrawXWord(XG_Board& xw, HDC hdc, LPSIZE psiz, bool bCaret)
             ::wsprintfW(sz.data(), L"%c", ZEN_LARGE_A + nMarked);
             ::GetTextExtentPoint32W(hdc, sz.data(), static_cast<int>(wcslen(sz.data())), &siz);
             ::SetRect(&rc,
-                static_cast<int>(xg_nMargin + (j + 1) * xg_nCellSize - 1 - siz.cx), 
-                static_cast<int>(xg_nMargin + (i + 1) * xg_nCellSize - 1 - siz.cy),
-                static_cast<int>(xg_nMargin + (j + 1) * xg_nCellSize - 1), 
-                static_cast<int>(xg_nMargin + (i + 1) * xg_nCellSize - 1));
+                static_cast<int>(xg_nMargin + (j + 1) * nCellSize - 1 - siz.cx), 
+                static_cast<int>(xg_nMargin + (i + 1) * nCellSize - 1 - siz.cy),
+                static_cast<int>(xg_nMargin + (j + 1) * nCellSize - 1), 
+                static_cast<int>(xg_nMargin + (i + 1) * nCellSize - 1));
             ::DrawTextW(hdc, sz.data(), -1, &rc, DT_RIGHT | DT_SINGLELINE | DT_BOTTOM);
         }
     }
@@ -3155,10 +3162,10 @@ void __fastcall XgDrawXWord(XG_Board& xw, HDC hdc, LPSIZE psiz, bool bCaret)
 
             // 数字を描く。
             ::SetRect(&rc,
-                static_cast<int>(xg_nMargin + j * xg_nCellSize), 
-                static_cast<int>(xg_nMargin + i * xg_nCellSize),
-                static_cast<int>(xg_nMargin + (j + 1) * xg_nCellSize), 
-                static_cast<int>(xg_nMargin + (i + 1) * xg_nCellSize));
+                static_cast<int>(xg_nMargin + j * nCellSize), 
+                static_cast<int>(xg_nMargin + i * nCellSize),
+                static_cast<int>(xg_nMargin + (j + 1) * nCellSize), 
+                static_cast<int>(xg_nMargin + (i + 1) * nCellSize));
             ::OffsetRect(&rc, 2, 2);
             ::DrawTextW(hdc, sz.data(), -1, &rc, DT_LEFT | DT_SINGLELINE | DT_TOP);
         }
@@ -3181,10 +3188,10 @@ void __fastcall XgDrawXWord(XG_Board& xw, HDC hdc, LPSIZE psiz, bool bCaret)
 
             // 数字を描く。
             ::SetRect(&rc,
-                static_cast<int>(xg_nMargin + j * xg_nCellSize), 
-                static_cast<int>(xg_nMargin + i * xg_nCellSize),
-                static_cast<int>(xg_nMargin + (j + 1) * xg_nCellSize), 
-                static_cast<int>(xg_nMargin + (i + 1) * xg_nCellSize));
+                static_cast<int>(xg_nMargin + j * nCellSize), 
+                static_cast<int>(xg_nMargin + i * nCellSize),
+                static_cast<int>(xg_nMargin + (j + 1) * nCellSize), 
+                static_cast<int>(xg_nMargin + (i + 1) * nCellSize));
             ::OffsetRect(&rc, 2, 2);
             ::DrawTextW(hdc, sz.data(), -1, &rc, DT_LEFT | DT_SINGLELINE | DT_TOP);
         }
@@ -3198,10 +3205,10 @@ void __fastcall XgDrawXWord(XG_Board& xw, HDC hdc, LPSIZE psiz, bool bCaret)
         const int i = xg_caret_pos.m_i;
         const int j = xg_caret_pos.m_j;
         ::SetRect(&rc,
-            static_cast<int>(xg_nMargin + j * xg_nCellSize), 
-            static_cast<int>(xg_nMargin + i * xg_nCellSize),
-            static_cast<int>(xg_nMargin + (j + 1) * xg_nCellSize), 
-            static_cast<int>(xg_nMargin + (i + 1) * xg_nCellSize));
+            static_cast<int>(xg_nMargin + j * nCellSize), 
+            static_cast<int>(xg_nMargin + i * nCellSize),
+            static_cast<int>(xg_nMargin + (j + 1) * nCellSize), 
+            static_cast<int>(xg_nMargin + (i + 1) * nCellSize));
 
         const int cMargin = 4;
 
@@ -3233,12 +3240,12 @@ void __fastcall XgDrawXWord(XG_Board& xw, HDC hdc, LPSIZE psiz, bool bCaret)
     // 線を引く。
     hPenOld = ::SelectObject(hdc, hThinPen);
     for (int i = 0; i <= xg_nRows; i++) {
-        ::MoveToEx(hdc, xg_nMargin, static_cast<int>(xg_nMargin + i * xg_nCellSize), nullptr);
-        ::LineTo(hdc, psiz->cx - xg_nMargin, static_cast<int>(xg_nMargin + i * xg_nCellSize));
+        ::MoveToEx(hdc, xg_nMargin, static_cast<int>(xg_nMargin + i * nCellSize), nullptr);
+        ::LineTo(hdc, psiz->cx - xg_nMargin, static_cast<int>(xg_nMargin + i * nCellSize));
     }
     for (int j = 0; j <= xg_nCols; j++) {
-        ::MoveToEx(hdc, static_cast<int>(xg_nMargin + j * xg_nCellSize), xg_nMargin, nullptr);
-        ::LineTo(hdc, static_cast<int>(xg_nMargin + j * xg_nCellSize), psiz->cy - xg_nMargin);
+        ::MoveToEx(hdc, static_cast<int>(xg_nMargin + j * nCellSize), xg_nMargin, nullptr);
+        ::LineTo(hdc, static_cast<int>(xg_nMargin + j * nCellSize), psiz->cy - xg_nMargin);
     }
     ::SelectObject(hdc, hPenOld);
 
@@ -3303,6 +3310,8 @@ HBITMAP __fastcall XgCreateXWordImage(XG_Board& xw, LPSIZE psiz, bool bCaret)
 // 描画イメージを更新する。
 void __fastcall XgUpdateImage(HWND hwnd, int x, int y)
 {
+    ForDisplay for_display;
+
     // イメージがあれば破棄する。
     if (xg_hbmImage)
         ::DeleteObject(xg_hbmImage);

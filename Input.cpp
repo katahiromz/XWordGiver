@@ -633,13 +633,14 @@ void __fastcall MainWnd_OnKey(HWND hwnd, UINT vk, bool fDown, int /*cRepeat*/, U
         {
             HMENU hMenu = LoadMenuW(xg_hInstance, MAKEINTRESOURCEW(2));
             HMENU hSubMenu = GetSubMenu(hMenu, 0);
+            INT nCellSize = xg_nCellSize * xg_nZoomRate / 100;
 
             // 現在のキャレット位置。
             POINT pt;
-            pt.x = xg_nMargin + xg_caret_pos.m_j * xg_nCellSize;
-            pt.y = xg_nMargin + xg_caret_pos.m_i * xg_nCellSize;
-            pt.x += xg_nCellSize / 2;
-            pt.y += xg_nCellSize / 2;
+            pt.x = xg_nMargin + xg_caret_pos.m_j * nCellSize;
+            pt.y = xg_nMargin + xg_caret_pos.m_i * nCellSize;
+            pt.x += nCellSize / 2;
+            pt.y += nCellSize / 2;
 
             // ツールバーが可視ならば、位置を補正する。
             RECT rc;

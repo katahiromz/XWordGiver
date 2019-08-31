@@ -92,6 +92,12 @@ WCHAR xg_prev_vk = 0;
 // 「入力パレット」縦置き？
 bool xg_bTateOki = true;
 
+// 表示用に描画するか？（XgGetXWordExtentとXgDrawXWordとXgCreateXWordImageで使う）。
+INT xg_nForDisplay = 0;
+
+// ズーム比率(%)。
+INT xg_nZoomRate = 100;
+
 //////////////////////////////////////////////////////////////////////////////
 // static variables
 
@@ -322,6 +328,7 @@ void __fastcall XgUpdateScrollInfo(HWND hwnd, int x, int y)
     SCROLLINFO si;
 
     // クロスワードの大きさを取得する。
+    ForDisplay for_display;
     XgGetXWordExtent(&siz);
 
     // クライアント療育を取得する。
@@ -371,12 +378,14 @@ void __fastcall XgEnsureCaretVisible(HWND hwnd)
         rcClient.bottom -= rc.Height();
     }
 
+    INT nCellSize = xg_nCellSize * xg_nZoomRate / 100;
+
     // キャレットの矩形を設定する。
     ::SetRect(&rc,
-        static_cast<int>(xg_nMargin + xg_caret_pos.m_j * xg_nCellSize), 
-        static_cast<int>(xg_nMargin + xg_caret_pos.m_i * xg_nCellSize), 
-        static_cast<int>(xg_nMargin + (xg_caret_pos.m_j + 1) * xg_nCellSize), 
-        static_cast<int>(xg_nMargin + (xg_caret_pos.m_i + 1) * xg_nCellSize));
+        static_cast<int>(xg_nMargin + xg_caret_pos.m_j * nCellSize), 
+        static_cast<int>(xg_nMargin + xg_caret_pos.m_i * nCellSize), 
+        static_cast<int>(xg_nMargin + (xg_caret_pos.m_j + 1) * nCellSize), 
+        static_cast<int>(xg_nMargin + (xg_caret_pos.m_i + 1) * nCellSize));
 
     // 横スクロール情報を修正する。
     si.cbSize = sizeof(si);
@@ -4620,6 +4629,7 @@ void __fastcall MainWnd_OnPaint(HWND hwnd)
 
     // クロスワードの描画サイズを取得する。
     SIZE siz;
+    ForDisplay for_display;
     XgGetXWordExtent(&siz);
 
     // 描画を開始する。
@@ -4936,6 +4946,7 @@ void __fastcall MainWnd_OnLButtonUp(HWND hwnd, int x, int y, UINT /*keyFlags*/)
     int i, j;
     RECT rc;
     POINT pt;
+    INT nCellSize = xg_nCellSize * xg_nZoomRate / 100;
 
     // 左ボタンが離された位置を求める。
     pt.x = x + XgGetHScrollPos();
@@ -4952,10 +4963,10 @@ void __fastcall MainWnd_OnLButtonUp(HWND hwnd, int x, int y, UINT /*keyFlags*/)
         for (j = 0; j < xg_nCols; j++) {
             // マスの矩形を求める。
             ::SetRect(&rc,
-                static_cast<int>(xg_nMargin + j * xg_nCellSize),
-                static_cast<int>(xg_nMargin + i * xg_nCellSize),
-                static_cast<int>(xg_nMargin + (j + 1) * xg_nCellSize),
-                static_cast<int>(xg_nMargin + (i + 1) * xg_nCellSize));
+                static_cast<int>(xg_nMargin + j * nCellSize),
+                static_cast<int>(xg_nMargin + i * nCellSize),
+                static_cast<int>(xg_nMargin + (j + 1) * nCellSize),
+                static_cast<int>(xg_nMargin + (i + 1) * nCellSize));
 
             // マスの中か？
             if (::PtInRect(&rc, pt)) {
@@ -4980,6 +4991,7 @@ void __fastcall MainWnd_OnLButtonDown(HWND hwnd, bool fDoubleClick, int x, int y
     int i, j;
     RECT rc;
     POINT pt;
+    INT nCellSize = xg_nCellSize * xg_nZoomRate / 100;
 
     // ダブルクリックは無視。
     if (!fDoubleClick)
@@ -5000,10 +5012,10 @@ void __fastcall MainWnd_OnLButtonDown(HWND hwnd, bool fDoubleClick, int x, int y
         for (j = 0; j < xg_nCols; j++) {
             // マスの矩形を求める。
             ::SetRect(&rc,
-                static_cast<int>(xg_nMargin + j * xg_nCellSize),
-                static_cast<int>(xg_nMargin + i * xg_nCellSize),
-                static_cast<int>(xg_nMargin + (j + 1) * xg_nCellSize),
-                static_cast<int>(xg_nMargin + (i + 1) * xg_nCellSize));
+                static_cast<int>(xg_nMargin + j * nCellSize),
+                static_cast<int>(xg_nMargin + i * nCellSize),
+                static_cast<int>(xg_nMargin + (j + 1) * nCellSize),
+                static_cast<int>(xg_nMargin + (i + 1) * nCellSize));
 
             // マスの中か？
             if (::PtInRect(&rc, pt)) {
@@ -6072,6 +6084,7 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
         } else {
             // 一番右のキャレットなら、右端へ移動。
             SIZE siz;
+            ForDisplay for_display;
             XgGetXWordExtent(&siz);
             MRect rcClient;
             XgGetRealClientRect(hwnd, &rcClient);
@@ -6108,6 +6121,7 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
         } else {
             // 一番下のキャレットなら、下端へ移動。
             SIZE siz;
+            ForDisplay for_display;
             XgGetXWordExtent(&siz);
             MRect rcClient;
             XgGetRealClientRect(hwnd, &rcClient);
@@ -6144,6 +6158,7 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
         } else {
             // 一番右のキャレットなら、右端へ移動。
             SIZE siz;
+            ForDisplay for_display;
             XgGetXWordExtent(&siz);
             MRect rcClient;
             XgGetRealClientRect(hwnd, &rcClient);
@@ -6180,6 +6195,7 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
         } else {
             // 一番下のキャレットなら、下端へ移動。
             SIZE siz;
+            ForDisplay for_display;
             XgGetXWordExtent(&siz);
             MRect rcClient;
             XgGetRealClientRect(hwnd, &rcClient);
@@ -7040,6 +7056,55 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
             xg_bCharFeed = bOldFeed;
         }
         break;
+    case ID_ZOOMIN:
+        if (xg_nZoomRate < 30) {
+            xg_nZoomRate = 30;
+        } else if (xg_nZoomRate < 50) {
+            xg_nZoomRate = 50;
+        } else if (xg_nZoomRate < 75) {
+            xg_nZoomRate = 75;
+        } else if (xg_nZoomRate < 100) {
+            xg_nZoomRate = 100;
+        } else if (xg_nZoomRate < 125) {
+            xg_nZoomRate = 125;
+        } else if (xg_nZoomRate < 150) {
+            xg_nZoomRate = 150;
+        } else {
+            xg_nZoomRate = 175;
+        }
+        x = XgGetHScrollPos();
+        y = XgGetVScrollPos();
+        XgUpdateScrollInfo(hwnd, x, y);
+        XgUpdateImage(hwnd, x, y);
+        break;
+    case ID_ZOOMOUT:
+        if (xg_nZoomRate > 175) {
+            xg_nZoomRate = 175;
+        } else if (xg_nZoomRate > 150) {
+            xg_nZoomRate = 150;
+        } else if (xg_nZoomRate > 125) {
+            xg_nZoomRate = 125;
+        } else if (xg_nZoomRate > 100) {
+            xg_nZoomRate = 100;
+        } else if (xg_nZoomRate > 75) {
+            xg_nZoomRate = 75;
+        } else if (xg_nZoomRate > 50) {
+            xg_nZoomRate = 50;
+        } else {
+            xg_nZoomRate = 30;
+        }
+        x = XgGetHScrollPos();
+        y = XgGetVScrollPos();
+        XgUpdateScrollInfo(hwnd, x, y);
+        XgUpdateImage(hwnd, x, y);
+        break;
+    case ID_ZOOM100:
+        xg_nZoomRate = 100;
+        x = XgGetHScrollPos();
+        y = XgGetVScrollPos();
+        XgUpdateScrollInfo(hwnd, x, y);
+        XgUpdateImage(hwnd, x, y);
+        break;
     default:
         if (!MainWnd_OnCommand2(hwnd, id)) {
             ::MessageBeep(0xFFFFFFFF);
@@ -7411,7 +7476,12 @@ MainWnd_OnMouseWheel(HWND hwnd, int xPos, int yPos, int zDelta, UINT fwKeys)
         FORWARD_WM_MOUSEWHEEL(xg_hHintsWnd, rc.left, rc.top,
             zDelta, fwKeys, ::SendMessageW);
     } else {
-        if (::GetAsyncKeyState(VK_SHIFT) < 0) {
+        if (::GetAsyncKeyState(VK_CONTROL) < 0) {
+            if (zDelta < 0)
+                ::PostMessageW(hwnd, WM_COMMAND, ID_ZOOMOUT, 0);
+            else if (zDelta > 0)
+                ::PostMessageW(hwnd, WM_COMMAND, ID_ZOOMIN, 0);
+        } else if (::GetAsyncKeyState(VK_SHIFT) < 0) {
             if (zDelta < 0)
                 ::PostMessageW(hwnd, WM_HSCROLL, MAKEWPARAM(SB_LINEDOWN, 0), 0);
             else if (zDelta > 0)

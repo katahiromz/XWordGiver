@@ -8,6 +8,19 @@
 #define JPN_LOCALE \
     MAKELCID(MAKELANGID(LANG_JAPANESE, SUBLANG_DEFAULT), SORT_DEFAULT)
 
+// 表示用に描画するか？（XgGetXWordExtentとXgDrawXWordとXgCreateXWordImageで使う）。
+extern INT xg_nForDisplay;
+struct ForDisplay {
+    ForDisplay() {
+        ++xg_nForDisplay;
+    }
+    ~ForDisplay() {
+        --xg_nForDisplay;
+    }
+};
+
+// ズーム比率(%)。
+extern INT xg_nZoomRate;
 // セルの大きさ。
 #define xg_nCellSize        48
 // 上下左右のマージン。
@@ -390,15 +403,25 @@ inline bool operator!=(const XG_Board& xw1, const XG_Board& xw2) {
 // クロスワードの描画サイズを計算する。
 inline void __fastcall XgGetXWordExtent(LPSIZE psiz)
 {
-    psiz->cx = static_cast<int>(xg_nMargin * 2 + xg_nCols * xg_nCellSize);
-    psiz->cy = static_cast<int>(xg_nMargin * 2 + xg_nRows * xg_nCellSize);
+    INT nCellSize;
+    if (xg_nForDisplay > 0)
+        nCellSize = xg_nCellSize * xg_nZoomRate / 100;
+    else
+        nCellSize = xg_nCellSize;
+    psiz->cx = static_cast<int>(xg_nMargin * 2 + xg_nCols * nCellSize);
+    psiz->cy = static_cast<int>(xg_nMargin * 2 + xg_nRows * nCellSize);
 }
 
 // クロスワードの描画サイズを計算する。
 inline void __fastcall XgGetMarkWordExtent(int count, LPSIZE psiz)
 {
-    psiz->cx = static_cast<int>(xg_nNarrowMargin * 2 + count * xg_nCellSize);
-    psiz->cy = static_cast<int>(xg_nNarrowMargin * 2 + 1 * xg_nCellSize);
+    INT nCellSize;
+    if (xg_nForDisplay > 0)
+        nCellSize = xg_nCellSize * xg_nZoomRate / 100;
+    else
+        nCellSize = xg_nCellSize;
+    psiz->cx = static_cast<int>(xg_nNarrowMargin * 2 + count * nCellSize);
+    psiz->cy = static_cast<int>(xg_nNarrowMargin * 2 + 1 * nCellSize);
 }
 
 // クロスワードのイメージを作成する。
