@@ -90,13 +90,13 @@ bool XgReadUnicodeFile(LPWSTR pszData, DWORD /*cchData*/)
 bool __fastcall XgReadAnsiFile(LPCSTR pszData, DWORD /*cchData*/)
 {
     // Unicode‚É•ÏŠ·‚Å‚«‚È‚¢‚Æ‚«‚Í¸”sB
-    int cchWide = MultiByteToWideChar(932, 0, pszData, -1, nullptr, 0);
+    int cchWide = MultiByteToWideChar(SJIS_CODEPAGE, 0, pszData, -1, nullptr, 0);
     if (cchWide == 0)
         return false;
 
     // Unicode‚É•ÏŠ·‚µ‚Äˆ—‚·‚éB
     LPWSTR pszWide = new WCHAR[cchWide];
-    MultiByteToWideChar(932, 0, pszData, -1, pszWide, cchWide);
+    MultiByteToWideChar(SJIS_CODEPAGE, 0, pszData, -1, pszWide, cchWide);
     if (XgReadUnicodeFile(pszWide, cchWide - 1)) {
         // ¬Œ÷B
         delete[] pszWide;

@@ -432,12 +432,12 @@ std::string XgUnicodeToUtf8(const std::wstring& wide)
 std::wstring XgAnsiToUnicode(const std::string& ansi)
 {
     std::wstring uni;
-    int len = ::MultiByteToWideChar(932, 0, ansi.data(), -1, NULL, 0);
+    int len = ::MultiByteToWideChar(SJIS_CODEPAGE, 0, ansi.data(), -1, NULL, 0);
     if (len == 0)
         return uni;
 
     WCHAR *pszWide = new WCHAR[len + 1];
-    int ret = ::MultiByteToWideChar(932, 0, ansi.data(), -1, pszWide, len);
+    int ret = ::MultiByteToWideChar(SJIS_CODEPAGE, 0, ansi.data(), -1, pszWide, len);
     pszWide[ret] = 0;
 
     if (ret != 0) {
@@ -451,12 +451,12 @@ std::wstring XgAnsiToUnicode(const std::string& ansi)
 std::string XgUnicodeToAnsi(const std::wstring& wide)
 {
     std::string ansi;
-    int len = ::WideCharToMultiByte(932, 0, wide.data(), -1, NULL, 0, NULL, NULL);
+    int len = ::WideCharToMultiByte(SJIS_CODEPAGE, 0, wide.data(), -1, NULL, 0, NULL, NULL);
     if (len == 0)
         return ansi;
 
     char *pszAnsi = new char[len + 1];
-    int ret = ::WideCharToMultiByte(932, 0, wide.data(), -1, pszAnsi, len, NULL, NULL);
+    int ret = ::WideCharToMultiByte(SJIS_CODEPAGE, 0, wide.data(), -1, pszAnsi, len, NULL, NULL);
     pszAnsi[ret] = 0;
 
     if (ret != 0) {
