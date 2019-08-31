@@ -856,7 +856,11 @@ void InputPal_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT codeNotify)
             }
             break;
         default:
-            MainWnd_OnImeChar(xg_hMainWnd, sz[0], 0);
+            if (L'A' <= sz[0] && sz[0] <= L'Z') {
+                MainWnd_OnChar(xg_hMainWnd, sz[0], 1);
+            } else {
+                MainWnd_OnImeChar(xg_hMainWnd, sz[0], 0);
+            }
             break;
         }
     } else {
