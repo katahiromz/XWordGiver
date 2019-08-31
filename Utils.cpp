@@ -408,67 +408,6 @@ bool __fastcall XgCanWriteFile(const WCHAR *pszFile)
     return _waccess(pszFile, 02) == 0;
 }
 
-// レジストリキーを削除する。
-LONG __fastcall XgRegDeleteTree(HKEY hKey, LPCTSTR pszSubKey)
-{
-    LONG ret;
-    DWORD cchSubKeyMax, cchValueMax;
-    DWORD cchMax, cch;
-    std::array<WCHAR,MAX_PATH> szNameBuf;
-    WCHAR *pszName = szNameBuf.data();
-    HKEY hSubKey = hKey;
-
-    if (pszSubKey != NULL) {
-        ret = ::RegOpenKeyEx(hKey, pszSubKey, 0, KEY_READ, &hSubKey);
-        if (ret) return ret;
-    }
-
-    ret = ::RegQueryInfoKey(hSubKey, NULL, NULL, NULL, NULL,
-            &cchSubKeyMax, NULL, NULL, &cchValueMax, NULL, NULL, NULL);
-    if (ret) goto cleanup;
-
-    cchSubKeyMax++;
-    cchValueMax++;
-    cchMax = std::max(cchSubKeyMax, cchValueMax);
-    if (cchMax > szNameBuf.size()) {
-        pszName = (LPTSTR)::HeapAlloc(::GetProcessHeap(), 0, cchMax * 
-                                      sizeof(TCHAR));
-        if (pszName == NULL) {
-            ret = ERROR_NOT_ENOUGH_MEMORY;
-            goto cleanup;
-        }
-    }
-
-    while (true) {
-        cch = cchMax;
-        if (::RegEnumKeyEx(hSubKey, 0, pszName, &cch, NULL,
-                         NULL, NULL, NULL)) break;
-
-        ret = XgRegDeleteTree(hSubKey, pszName);
-        if (ret) goto cleanup;
-    }
-
-    if (pszSubKey != NULL) {
-        ret = RegDeleteKey(hKey, pszSubKey);
-    } else {
-        while (TRUE) {
-            cch = cchMax;
-            if (::RegEnumValue(hKey, 0, pszName, &cch,
-                             NULL, NULL, NULL, NULL)) break;
-
-            ret = RegDeleteValue(hKey, pszName);
-            if (ret) goto cleanup;
-        }
-    }
-
-cleanup:
-    if (pszName != szNameBuf.data())
-        ::HeapFree(::GetProcessHeap(), 0, pszName);
-    if (pszSubKey != NULL)
-        ::RegCloseKey(hSubKey);
-    return ret;
-}
-
 // Unicode -> UTF8
 std::string XgUnicodeToUtf8(const std::wstring& wide)
 {

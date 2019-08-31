@@ -369,9 +369,6 @@ void __fastcall XgOpenPatterns(HWND hwnd);
 // ファイルが書き込み可能か？
 bool __fastcall XgCanWriteFile(const WCHAR *pszFile);
 
-// レジストリキーを削除する。
-LONG __fastcall XgRegDeleteTree(HKEY hKey, LPCTSTR pszSubKey);
-
 // Unicode -> UTF8
 std::string XgUnicodeToUtf8(const std::wstring& wide);
 
