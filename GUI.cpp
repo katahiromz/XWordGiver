@@ -7813,6 +7813,10 @@ void HintsWnd_OnSize(HWND hwnd, UINT /*state*/, int /*cx*/, int /*cy*/)
                              static_cast<int>(szText.size()));
             MRect rcCtrl(MPoint(size2.cx, y),
                          MSize(rcClient.Width() - size2.cx - 8, 0));
+            if (szText[0] == 0) {
+                szText[0] = L' ';
+                szText[1] = 0;
+            }
             ::DrawTextW(hdc, szText.data(), -1, &rcCtrl,
                 DT_LEFT | DT_EDITCONTROL | DT_CALCRECT | DT_WORDBREAK);
             rcCtrl.right = rcClient.right;
@@ -7837,6 +7841,10 @@ void HintsWnd_OnSize(HWND hwnd, UINT /*state*/, int /*cx*/, int /*cy*/)
                              static_cast<int>(szText.size()));
             MRect rcCtrl(MPoint(size2.cx, y),
                          MSize(rcClient.Width() - size2.cx - 8, 0));
+            if (szText[0] == 0) {
+                szText[0] = L' ';
+                szText[1] = 0;
+            }
             ::DrawTextW(hdc, szText.data(), -1, &rcCtrl,
                 DT_LEFT | DT_EDITCONTROL | DT_CALCRECT | DT_WORDBREAK);
             rcCtrl.right = rcClient.right;
