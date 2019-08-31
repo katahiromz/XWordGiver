@@ -3678,7 +3678,7 @@ bool __fastcall XgDoSaveJson(HWND /*hwnd*/, LPCWSTR pszFile)
     // ファイルに書き込む文字列を求める。
     str += L"{\r\n";
     str += L"\t\"creator_info\": \"";
-    str += XgJsonEncodeString(XgLoadStringDx1(15));
+    str += XgJsonEncodeString(XgLoadStringDx1(1176));
     str += L"\",\r\n";
 
     // クロスワードのサイズ。
@@ -3848,7 +3848,7 @@ bool __fastcall XgDoSaveStandard(HWND hwnd, LPCWSTR pszFile, const XG_Board& boa
         str += xg_strHeader;        // ヘッダー文字列。
         str += xg_pszNewLine;       // 改行。
         str += XgLoadStringDx1(81); // ヘッダー分離線。
-        str += XgLoadStringDx1(15); // アプリ情報。
+        str += XgLoadStringDx1(1176); // アプリ情報。
         str += xg_pszNewLine;       // 改行。
         str += strMarks;            // マーク。
         str += strTable;            // 本体。
@@ -3860,7 +3860,7 @@ bool __fastcall XgDoSaveStandard(HWND hwnd, LPCWSTR pszFile, const XG_Board& boa
         str += xg_strHeader;        // ヘッダー文字列。
         str += xg_pszNewLine;       // 改行。
         str += XgLoadStringDx1(81); // ヘッダー分離線。
-        str += XgLoadStringDx1(15); // アプリ情報。
+        str += XgLoadStringDx1(1176); // アプリ情報。
         str += xg_pszNewLine;       // 改行。
         str += strMarks;            // マーク。
         str += strTable;            // 本体。
