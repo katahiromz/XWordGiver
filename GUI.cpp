@@ -720,210 +720,77 @@ bool __fastcall XgSaveSettings(void)
     std::array<WCHAR,32> szFormat;
 
     // 会社名キーを開く。キーがなければ作成する。
-    result = ::RegCreateKeyExW(HKEY_CURRENT_USER, s_pszSoftwareCompanyName, 0, nullptr, 0,
-        KEY_WRITE, nullptr, &hKey, &dwDisposition);
-    if (result == ERROR_SUCCESS) {
+    MRegKey company_key(HKEY_CURRENT_USER, s_pszSoftwareCompanyName, TRUE);
+    if (company_key) {
         // アプリ名キーを開く。キーがなければ作成する。
-        result = ::RegCreateKeyExW(hKey, s_pszAppName, 0, nullptr, 0,
-            KEY_WRITE, nullptr, &hSubKey, &dwDisposition);
-        if (result == ERROR_SUCCESS) {
-            // 値を設定する。
-            dwValue = static_cast<DWORD>(s_bOldNotice);
-            ::RegSetValueExW(hSubKey, s_pszOldNotice, 0, REG_DWORD,
-                           reinterpret_cast<LPBYTE>(&dwValue), sizeof(DWORD));
+        MRegKey app_key(company_key, s_pszAppName, TRUE);
+        if (app_key) {
+            app_key.SetDword(s_pszOldNotice, s_bOldNotice);
+            app_key.SetDword(s_pszAutoRetry, s_bAutoRetry);
+            app_key.SetDword(s_pszRows, s_nRows);
+            app_key.SetDword(s_pszCols, s_nCols);
+            app_key.SetDword(s_pszInfinite, s_bInfinite);
+            app_key.SetDword(s_pszDictSaveMode, s_nDictSaveMode);
 
-            // 値を設定する。
-            dwValue = static_cast<DWORD>(s_bAutoRetry);
-            ::RegSetValueExW(hSubKey, s_pszAutoRetry, 0, REG_DWORD,
-                           reinterpret_cast<LPBYTE>(&dwValue), sizeof(DWORD));
+            app_key.SetSz(s_pszCellFont, xg_szCellFont.data(), xg_szCellFont.size());
+            app_key.SetSz(s_pszSmallFont, xg_szSmallFont.data(), xg_szSmallFont.size());
+            app_key.SetSz(s_pszUIFont, xg_szUIFont.data(), xg_szUIFont.size());
 
-            // 値を設定する。
-            dwValue = static_cast<DWORD>(s_nRows);
-            ::RegSetValueExW(hSubKey, s_pszRows, 0, REG_DWORD,
-                           reinterpret_cast<LPBYTE>(&dwValue), sizeof(DWORD));
+            app_key.SetDword(s_pszShowToolBar, s_bShowToolBar);
+            app_key.SetDword(s_pszShowStatusBar, s_bShowStatusBar);
+            app_key.SetDword(s_pszSaveAsJsonFile, xg_bSaveAsJsonFile);
+            app_key.SetDword(s_pszNumberToGenerate, s_nNumberToGenerate);
+            app_key.SetDword(s_pszImageCopyWidth, s_nImageCopyWidth);
+            app_key.SetDword(s_pszImageCopyHeight, s_nImageCopyHeight);
+            app_key.SetDword(s_pszImageCopyByHeight, s_bImageCopyByHeight);
+            app_key.SetDword(s_pszMarksHeight, s_nMarksHeight);
+            app_key.SetDword(s_pszAddThickFrame, xg_bAddThickFrame);
+            app_key.SetDword(s_pszCharFeed, xg_bCharFeed);
+            app_key.SetDword(s_pszTateOki, xg_bTateOki);
 
-            // 値を設定する。
-            dwValue = static_cast<DWORD>(s_nCols);
-            ::RegSetValueExW(hSubKey, s_pszCols, 0, REG_DWORD,
-                           reinterpret_cast<LPBYTE>(&dwValue), sizeof(DWORD));
+            app_key.SetDword(s_pszWhiteCellColor, xg_rgbWhiteCellColor);
+            app_key.SetDword(s_pszBlackCellColor, xg_rgbBlackCellColor);
+            app_key.SetDword(s_pszMarkedCellColor, xg_rgbMarkedCellColor);
 
-            // 値を設定する。
-            dwValue = static_cast<DWORD>(s_bInfinite);
-            ::RegSetValueExW(hSubKey, s_pszInfinite, 0, REG_DWORD,
-                           reinterpret_cast<LPBYTE>(&dwValue), sizeof(DWORD));
-
-            // 値を設定する。
-            dwValue = static_cast<DWORD>(s_nDictSaveMode);
-            ::RegSetValueExW(hSubKey, s_pszDictSaveMode, 0, REG_DWORD,
-                           reinterpret_cast<LPBYTE>(&dwValue), sizeof(DWORD));
-
-            // 値を設定する。
-            cb = static_cast<DWORD>((wcslen(xg_szCellFont.data()) + 1) * sizeof(WCHAR));
-            ::RegSetValueExW(hSubKey, s_pszCellFont, 0, REG_SZ,
-                           reinterpret_cast<const BYTE *>(xg_szCellFont.data()), cb);
-            // 値を設定する。
-            cb = static_cast<DWORD>((wcslen(xg_szSmallFont.data()) + 1) * sizeof(WCHAR));
-            ::RegSetValueExW(hSubKey, s_pszSmallFont, 0, REG_SZ,
-                           reinterpret_cast<const BYTE *>(xg_szSmallFont.data()), cb);
-            // 値を設定する。
-            cb = static_cast<DWORD>((wcslen(xg_szUIFont.data()) + 1) * sizeof(WCHAR));
-            ::RegSetValueExW(hSubKey, s_pszUIFont, 0, REG_SZ,
-                           reinterpret_cast<const BYTE *>(xg_szUIFont.data()), cb);
-
-            // 値を設定する。
-            dwValue = static_cast<DWORD>(s_bShowToolBar);
-            ::RegSetValueExW(hSubKey, s_pszShowToolBar, 0, REG_DWORD,
-                           reinterpret_cast<LPBYTE>(&dwValue), sizeof(DWORD));
-
-            // 値を設定する。
-            dwValue = static_cast<DWORD>(s_bShowStatusBar);
-            ::RegSetValueExW(hSubKey, s_pszShowStatusBar, 0, REG_DWORD,
-                           reinterpret_cast<LPBYTE>(&dwValue), sizeof(DWORD));
-
-            // 値を設定する。
-            dwValue = static_cast<DWORD>(xg_bSaveAsJsonFile);
-            ::RegSetValueExW(hSubKey, s_pszSaveAsJsonFile, 0, REG_DWORD,
-                           reinterpret_cast<LPBYTE>(&dwValue), sizeof(DWORD));
-
-            // 値を設定する。
-            dwValue = static_cast<DWORD>(s_nNumberToGenerate);
-            ::RegSetValueExW(hSubKey, s_pszNumberToGenerate, 0, REG_DWORD,
-                           reinterpret_cast<LPBYTE>(&dwValue), sizeof(DWORD));
-
-            // 値を設定する。
-            dwValue = static_cast<DWORD>(s_nImageCopyWidth);
-            ::RegSetValueExW(hSubKey, s_pszImageCopyWidth, 0, REG_DWORD,
-                           reinterpret_cast<LPBYTE>(&dwValue), sizeof(DWORD));
-
-            // 値を設定する。
-            dwValue = static_cast<DWORD>(s_nImageCopyHeight);
-            ::RegSetValueExW(hSubKey, s_pszImageCopyHeight, 0, REG_DWORD,
-                           reinterpret_cast<LPBYTE>(&dwValue), sizeof(DWORD));
-
-            // 値を設定する。
-            dwValue = static_cast<DWORD>(s_bImageCopyByHeight);
-            ::RegSetValueExW(hSubKey, s_pszImageCopyByHeight, 0, REG_DWORD,
-                           reinterpret_cast<LPBYTE>(&dwValue), sizeof(DWORD));
-
-            // 値を設定する。
-            dwValue = static_cast<DWORD>(s_nMarksHeight);
-            ::RegSetValueExW(hSubKey, s_pszMarksHeight, 0, REG_DWORD,
-                           reinterpret_cast<LPBYTE>(&dwValue), sizeof(DWORD));
-
-            // 値を設定する。
-            dwValue = static_cast<DWORD>(xg_bAddThickFrame);
-            ::RegSetValueExW(hSubKey, s_pszAddThickFrame, 0, REG_DWORD,
-                           reinterpret_cast<LPBYTE>(&dwValue), sizeof(DWORD));
-
-            // 値を設定する。
-            dwValue = static_cast<DWORD>(xg_bCharFeed);
-            ::RegSetValueExW(hSubKey, s_pszCharFeed, 0, REG_DWORD,
-                           reinterpret_cast<LPBYTE>(&dwValue), sizeof(DWORD));
-
-            // 値を設定する。
-            dwValue = static_cast<DWORD>(xg_bTateOki);
-            ::RegSetValueExW(hSubKey, s_pszTateOki, 0, REG_DWORD,
-                           reinterpret_cast<LPBYTE>(&dwValue), sizeof(DWORD));
-
-            // 値を設定する。
-            dwValue = static_cast<DWORD>(xg_rgbWhiteCellColor);
-            ::RegSetValueExW(hSubKey, s_pszWhiteCellColor, 0, REG_DWORD,
-                           reinterpret_cast<LPBYTE>(&dwValue), sizeof(DWORD));
-
-            // 値を設定する。
-            dwValue = static_cast<DWORD>(xg_rgbBlackCellColor);
-            ::RegSetValueExW(hSubKey, s_pszBlackCellColor, 0, REG_DWORD,
-                           reinterpret_cast<LPBYTE>(&dwValue), sizeof(DWORD));
-
-            // 値を設定する。
-            dwValue = static_cast<DWORD>(xg_rgbMarkedCellColor);
-            ::RegSetValueExW(hSubKey, s_pszMarkedCellColor, 0, REG_DWORD,
-                           reinterpret_cast<LPBYTE>(&dwValue), sizeof(DWORD));
-
-            // 値を設定する。
-            dwValue = static_cast<DWORD>(xg_bDrawFrameForMarkedCell);
-            ::RegSetValueExW(hSubKey, s_pszDrawFrameForMarkedCell, 0, REG_DWORD,
-                           reinterpret_cast<LPBYTE>(&dwValue), sizeof(DWORD));
-
-            // 値を設定する。
-            dwValue = static_cast<DWORD>(xg_bSmartResolution);
-            ::RegSetValueExW(hSubKey, s_pszSmartResolution, 0, REG_DWORD,
-                           reinterpret_cast<LPBYTE>(&dwValue), sizeof(DWORD));
+            app_key.SetDword(s_pszDrawFrameForMarkedCell, xg_bDrawFrameForMarkedCell);
+            app_key.SetDword(s_pszSmartResolution, xg_bSmartResolution);
 
             // 辞書ファイルのリストを設定する。
             nCount = static_cast<int>(xg_dict_files.size());
-            dwValue = static_cast<DWORD>(nCount);
-            ::RegSetValueExW(hSubKey, s_pszRecentCount, 0, REG_DWORD,
-                           reinterpret_cast<LPBYTE>(&dwValue), sizeof(DWORD));
+            app_key.SetDword(s_pszRecentCount, nCount);
             for (i = 0; i < nCount; i++) {
                 ::wsprintfW(szFormat.data(), s_pszRecent, i + 1);
-                cb = static_cast<DWORD>((xg_dict_files[i].size() + 1) * sizeof(WCHAR));
-                ::RegSetValueExW(hSubKey, szFormat.data(), 0, REG_SZ,
-                               reinterpret_cast<const BYTE *>(xg_dict_files[i].data()), cb);
+                app_key.SetSz(szFormat.data(), xg_dict_files[i].c_str());
             }
 
             // 保存先のリストを設定する。
             nCount = static_cast<int>(s_dirs_save_to.size());
-            dwValue = static_cast<DWORD>(nCount);
-            ::RegSetValueExW(hSubKey, s_pszSaveToCount, 0, REG_DWORD,
-                           reinterpret_cast<LPBYTE>(&dwValue), sizeof(DWORD));
+            app_key.SetDword(s_pszSaveToCount, nCount);
             for (i = 0; i < nCount; i++)
             {
                 ::wsprintfW(szFormat.data(), s_pszSaveTo, i + 1);
-                cb = static_cast<DWORD>((s_dirs_save_to[i].size() + 1) * sizeof(WCHAR));
-                ::RegSetValueExW(hSubKey, szFormat.data(), 0, REG_SZ,
-                               reinterpret_cast<const BYTE *>(s_dirs_save_to[i].data()), cb);
+                app_key.SetSz(szFormat.data(), s_dirs_save_to[i].c_str());
             }
 
-            // 値を設定する。
-            dwValue = static_cast<DWORD>(s_nHintsWndX);
-            ::RegSetValueExW(hSubKey, s_pszHintsWndX, 0, REG_DWORD,
-                           reinterpret_cast<LPBYTE>(&dwValue), sizeof(DWORD));
-            dwValue = static_cast<DWORD>(s_nHintsWndY);
-            ::RegSetValueExW(hSubKey, s_pszHintsWndY, 0, REG_DWORD,
-                           reinterpret_cast<LPBYTE>(&dwValue), sizeof(DWORD));
-            dwValue = static_cast<DWORD>(s_nHintsWndCX);
-            ::RegSetValueExW(hSubKey, s_pszHintsWndCX, 0, REG_DWORD,
-                           reinterpret_cast<LPBYTE>(&dwValue), sizeof(DWORD));
-            dwValue = static_cast<DWORD>(s_nHintsWndCY);
-            ::RegSetValueExW(hSubKey, s_pszHintsWndCY, 0, REG_DWORD,
-                           reinterpret_cast<LPBYTE>(&dwValue), sizeof(DWORD));
+            app_key.SetDword(s_pszHintsWndX, s_nHintsWndX);
+            app_key.SetDword(s_pszHintsWndY, s_nHintsWndY);
+            app_key.SetDword(s_pszHintsWndCX, s_nHintsWndCX);
+            app_key.SetDword(s_pszHintsWndCY, s_nHintsWndCY);
 
-            dwValue = static_cast<DWORD>(s_nCandsWndX);
-            ::RegSetValueExW(hSubKey, s_pszCandsWndX, 0, REG_DWORD,
-                           reinterpret_cast<LPBYTE>(&dwValue), sizeof(DWORD));
-            dwValue = static_cast<DWORD>(s_nCandsWndY);
-            ::RegSetValueExW(hSubKey, s_pszCandsWndY, 0, REG_DWORD,
-                           reinterpret_cast<LPBYTE>(&dwValue), sizeof(DWORD));
-            dwValue = static_cast<DWORD>(s_nCandsWndCX);
-            ::RegSetValueExW(hSubKey, s_pszCandsWndCX, 0, REG_DWORD,
-                           reinterpret_cast<LPBYTE>(&dwValue), sizeof(DWORD));
-            dwValue = static_cast<DWORD>(s_nCandsWndCY);
-            ::RegSetValueExW(hSubKey, s_pszCandsWndCY, 0, REG_DWORD,
-                           reinterpret_cast<LPBYTE>(&dwValue), sizeof(DWORD));
+            app_key.SetDword(s_pszCandsWndX, s_nCandsWndX);
+            app_key.SetDword(s_pszCandsWndY, s_nCandsWndY);
+            app_key.SetDword(s_pszCandsWndCX, s_nCandsWndCX);
+            app_key.SetDword(s_pszCandsWndCY, s_nCandsWndCY);
 
-            dwValue = static_cast<DWORD>(s_nMainWndX);
-            ::RegSetValueExW(hSubKey, s_pszMainWndX, 0, REG_DWORD,
-                           reinterpret_cast<LPBYTE>(&dwValue), sizeof(DWORD));
-            dwValue = static_cast<DWORD>(s_nMainWndY);
-            ::RegSetValueExW(hSubKey, s_pszMainWndY, 0, REG_DWORD,
-                           reinterpret_cast<LPBYTE>(&dwValue), sizeof(DWORD));
-            dwValue = static_cast<DWORD>(s_nMainWndCX);
-            ::RegSetValueExW(hSubKey, s_pszMainWndCX, 0, REG_DWORD,
-                           reinterpret_cast<LPBYTE>(&dwValue), sizeof(DWORD));
-            dwValue = static_cast<DWORD>(s_nMainWndCY);
-            ::RegSetValueExW(hSubKey, s_pszMainWndCY, 0, REG_DWORD,
-                           reinterpret_cast<LPBYTE>(&dwValue), sizeof(DWORD));
-            dwValue = static_cast<DWORD>(xg_bTateInput);
-            ::RegSetValueExW(hSubKey, s_pszTateInput, 0, REG_DWORD,
-                           reinterpret_cast<LPBYTE>(&dwValue), sizeof(DWORD));
+            app_key.SetDword(s_pszMainWndX, s_nMainWndX);
+            app_key.SetDword(s_pszMainWndY, s_nMainWndY);
+            app_key.SetDword(s_pszMainWndCX, s_nMainWndCX);
+            app_key.SetDword(s_pszMainWndCY, s_nMainWndCY);
 
-            // アプリ名キーを閉じる。
-            RegCloseKey(hSubKey);
+            app_key.SetDword(s_pszTateInput, xg_bTateInput);
         }
-        // 会社名キーを閉じる。
-        RegCloseKey(hKey);
     }
+
     return true;
 }
 
