@@ -40,7 +40,7 @@ Source: "Šî–{«‘ƒf[ƒ^i‰p˜aA©—Rj.dic"; DestDir: "{app}"; Flags: ignoreversi
 Source: "Šî–{«‘ƒf[ƒ^iŠ¿šA©—Rj.dic"; DestDir: "{app}"; Flags: ignoreversion
 Source: "“_‘ÎÌƒpƒ^[ƒ“.txt"; DestDir: "{app}"; Flags: ignoreversion
 Source: "“Ø«‘‚É‚Â‚¢‚Ä.txt"; DestDir: "{app}"; Flags: ignoreversion
-Source: "“Ø«‘i‘æ‚P‚Q”Åj.dic"; DestDir: "{app}"; Flags: ignoreversion
+Source: "“Ø«‘i‘æ‚P‚S”Åj.dic"; DestDir: "{app}"; Flags: ignoreversion
 Source: "LICENSE.txt"; DestDir: "{app}"; Flags: ignoreversion
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
@@ -58,7 +58,7 @@ Name: "{group}\Šî–{«‘ƒf[ƒ^i‰p˜aA‹ŞTj.dic"; Filename: "{app}\Šî–{«‘ƒf[ƒ
 Name: "{group}\Šî–{«‘ƒf[ƒ^i‰p˜aA©—Rj.dic"; Filename: "{app}\Šî–{«‘ƒf[ƒ^i‰p˜aA©—Rj.dic"
 Name: "{group}\Šî–{«‘ƒf[ƒ^iŠ¿šA©—Rj.dic"; Filename: "{app}\Šî–{«‘ƒf[ƒ^iŠ¿šA©—RA•sŠ®‘Sj.dic"
 Name: "{group}\“Ø«‘‚É‚Â‚¢‚Ä.txt"; Filename: "{app}\“Ø«‘‚É‚Â‚¢‚Ä.txt"
-Name: "{group}\“Ø«‘i‘æ‚P‚Q”Åj.dic"; Filename: "{app}\“Ø«‘i‘æ‚P‚Q”Åj.dic"
+Name: "{group}\“Ø«‘i‘æ‚P‚S”Åj.dic"; Filename: "{app}\“Ø«‘i‘æ‚P‚S”Åj.dic"
 Name: "{group}\LICENSE.txt"; Filename: "{app}\LICENSE.txt"
 Name: "{commondesktop}\ƒNƒƒXƒ[ƒh ƒMƒo[ (32ƒrƒbƒg”Å)"; Filename: "{app}\xword32.exe"; Tasks: desktopicon
 
