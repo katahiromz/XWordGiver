@@ -63,16 +63,11 @@
 
 #include "PointSizeRect.hpp"
 #include "ScrollView.hpp"
+#include "MRegKey.hpp"
 
 #include "WordData.hpp"
 #include "xword.hpp"
 #include "Marks.hpp"
-
-////////////////////////////////////////////////////////////////////////////
-
-#ifndef MZC_NO_SHAREWARE
-    #include "Shareware.hpp"
-#endif
 
 ////////////////////////////////////////////////////////////////////////////
 

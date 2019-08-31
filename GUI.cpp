@@ -474,321 +474,142 @@ bool __fastcall XgLoadSettings(void)
     xg_bSmartResolution = TRUE;
 
     // 会社名キーを開く。
-    result = ::RegOpenKeyExW(HKEY_CURRENT_USER, s_pszSoftwareCompanyName, 0, KEY_READ, &hKey);
-    if (result == ERROR_SUCCESS) {
+    MRegKey company_key(HKEY_CURRENT_USER, s_pszSoftwareCompanyName, FALSE);
+    if (company_key) {
         // アプリ名キーを開く。
-        result = ::RegOpenKeyExW(hKey, s_pszAppName, 0, KEY_READ, &hSubKey);
-        if (result == ERROR_SUCCESS) {
-            // 設定値を取得する。
-            cb = sizeof(DWORD);
-            dwValue = CW_USEDEFAULT;
-            result = ::RegQueryValueExW(hSubKey, s_pszMainWndX, nullptr, nullptr,
-                                      reinterpret_cast<LPBYTE>(&dwValue), &cb);
-            if (result == ERROR_SUCCESS) {
-                s_nMainWndX = static_cast<int>(dwValue);
+        MRegKey app_key(company_key, s_pszAppName, FALSE);
+        if (app_key) {
+            if (!app_key.QueryDword(s_pszMainWndX, dwValue)) {
+                s_nMainWndX = dwValue;
             }
-            // 設定値を取得する。
-            cb = sizeof(DWORD);
-            dwValue = CW_USEDEFAULT;
-            result = ::RegQueryValueExW(hSubKey, s_pszMainWndY, nullptr, nullptr,
-                                      reinterpret_cast<LPBYTE>(&dwValue), &cb);
-            if (result == ERROR_SUCCESS) {
-                s_nMainWndY = static_cast<int>(dwValue);
+            if (!app_key.QueryDword(s_pszMainWndY, dwValue)) {
+                s_nMainWndY = dwValue;
+            }
+            if (!app_key.QueryDword(s_pszMainWndCX, dwValue)) {
+                s_nMainWndCX = dwValue;
+            }
+            if (!app_key.QueryDword(s_pszMainWndCY, dwValue)) {
+                s_nMainWndCY = dwValue;
             }
 
-            // 設定値を取得する。
-            cb = sizeof(DWORD);
-            dwValue = CW_USEDEFAULT;
-            result = ::RegQueryValueExW(hSubKey, s_pszMainWndCX, nullptr, nullptr,
-                                      reinterpret_cast<LPBYTE>(&dwValue), &cb);
-            if (result == ERROR_SUCCESS) {
-                s_nMainWndCX = static_cast<int>(dwValue);
-            }
-            // 設定値を取得する。
-            cb = sizeof(DWORD);
-            dwValue = CW_USEDEFAULT;
-            result = ::RegQueryValueExW(hSubKey, s_pszMainWndCY, nullptr, nullptr,
-                                      reinterpret_cast<LPBYTE>(&dwValue), &cb);
-            if (result == ERROR_SUCCESS) {
-                s_nMainWndCY = static_cast<int>(dwValue);
-            }
-
-            // 設定値を取得する。
-            cb = sizeof(DWORD);
-            result = ::RegQueryValueExW(hSubKey, s_pszTateInput, nullptr, nullptr,
-                                      reinterpret_cast<LPBYTE>(&dwValue), &cb);
-            if (result == ERROR_SUCCESS)
+            if (!app_key.QueryDword(s_pszTateInput, dwValue)) {
                 xg_bTateInput = !!dwValue;
-
-            // 設定値を取得する。
-            cb = sizeof(DWORD);
-            dwValue = CW_USEDEFAULT;
-            result = ::RegQueryValueExW(hSubKey, s_pszHintsWndX, nullptr, nullptr,
-                                      reinterpret_cast<LPBYTE>(&dwValue), &cb);
-            if (result == ERROR_SUCCESS) {
-                s_nHintsWndX = static_cast<int>(dwValue);
-            }
-            // 設定値を取得する。
-            cb = sizeof(DWORD);
-            dwValue = CW_USEDEFAULT;
-            result = ::RegQueryValueExW(hSubKey, s_pszHintsWndY, nullptr, nullptr,
-                                      reinterpret_cast<LPBYTE>(&dwValue), &cb);
-            if (result == ERROR_SUCCESS) {
-                s_nHintsWndY = static_cast<int>(dwValue);
-            }
-            // 設定値を取得する。
-            cb = sizeof(DWORD);
-            dwValue = CW_USEDEFAULT;
-            result = ::RegQueryValueExW(hSubKey, s_pszHintsWndCX, nullptr, nullptr,
-                                      reinterpret_cast<LPBYTE>(&dwValue), &cb);
-            if (result == ERROR_SUCCESS) {
-                s_nHintsWndCX = static_cast<int>(dwValue);
-            }
-            // 設定値を取得する。
-            cb = sizeof(DWORD);
-            dwValue = CW_USEDEFAULT;
-            result = ::RegQueryValueExW(hSubKey, s_pszHintsWndCY, nullptr, nullptr,
-                                      reinterpret_cast<LPBYTE>(&dwValue), &cb);
-            if (result == ERROR_SUCCESS) {
-                s_nHintsWndCY = static_cast<int>(dwValue);
             }
 
-            // 設定値を取得する。
-            cb = sizeof(DWORD);
-            dwValue = CW_USEDEFAULT;
-            result = ::RegQueryValueExW(hSubKey, s_pszCandsWndX, nullptr, nullptr,
-                                      reinterpret_cast<LPBYTE>(&dwValue), &cb);
-            if (result == ERROR_SUCCESS) {
-                s_nCandsWndX = static_cast<int>(dwValue);
+            if (!app_key.QueryDword(s_pszHintsWndX, dwValue)) {
+                s_nHintsWndX = dwValue;
             }
-            // 設定値を取得する。
-            cb = sizeof(DWORD);
-            dwValue = CW_USEDEFAULT;
-            result = ::RegQueryValueExW(hSubKey, s_pszCandsWndY, nullptr, nullptr,
-                                      reinterpret_cast<LPBYTE>(&dwValue), &cb);
-            if (result == ERROR_SUCCESS) {
-                s_nCandsWndY = static_cast<int>(dwValue);
+            if (!app_key.QueryDword(s_pszHintsWndY, dwValue)) {
+                s_nHintsWndY = dwValue;
             }
-            // 設定値を取得する。
-            cb = sizeof(DWORD);
-            dwValue = CW_USEDEFAULT;
-            result = ::RegQueryValueExW(hSubKey, s_pszCandsWndCX, nullptr, nullptr,
-                                      reinterpret_cast<LPBYTE>(&dwValue), &cb);
-            if (result == ERROR_SUCCESS) {
-                s_nCandsWndCX = static_cast<int>(dwValue);
+            if (!app_key.QueryDword(s_pszHintsWndCX, dwValue)) {
+                s_nHintsWndCX = dwValue;
             }
-            // 設定値を取得する。
-            cb = sizeof(DWORD);
-            dwValue = CW_USEDEFAULT;
-            result = ::RegQueryValueExW(hSubKey, s_pszCandsWndCY, nullptr, nullptr,
-                                      reinterpret_cast<LPBYTE>(&dwValue), &cb);
-            if (result == ERROR_SUCCESS) {
-                s_nCandsWndCY = static_cast<int>(dwValue);
+            if (!app_key.QueryDword(s_pszHintsWndCY, dwValue)) {
+                s_nHintsWndCY = dwValue;
             }
 
-            // 設定値を取得する。
-            cb = sizeof(DWORD);
-            result = ::RegQueryValueExW(hSubKey, s_pszOldNotice, nullptr, nullptr,
-                                      reinterpret_cast<LPBYTE>(&dwValue), &cb);
-            if (result == ERROR_SUCCESS)
+            if (!app_key.QueryDword(s_pszCandsWndX, dwValue)) {
+                s_nCandsWndX = dwValue;
+            }
+            if (!app_key.QueryDword(s_pszCandsWndY, dwValue)) {
+                s_nCandsWndY = dwValue;
+            }
+            if (!app_key.QueryDword(s_pszCandsWndCX, dwValue)) {
+                s_nCandsWndCX = dwValue;
+            }
+            if (!app_key.QueryDword(s_pszCandsWndCY, dwValue)) {
+                s_nCandsWndCY = dwValue;
+            }
+
+            if (!app_key.QueryDword(s_pszOldNotice, dwValue)) {
                 s_bOldNotice = !!dwValue;
-
-            // 設定値を取得する。
-            cb = sizeof(DWORD);
-            result = ::RegQueryValueExW(hSubKey, s_pszAutoRetry, nullptr, nullptr,
-                                      reinterpret_cast<LPBYTE>(&dwValue), &cb);
-            if (result == ERROR_SUCCESS)
+            }
+            if (!app_key.QueryDword(s_pszAutoRetry, dwValue)) {
                 s_bAutoRetry = !!dwValue;
+            }
+            if (!app_key.QueryDword(s_pszRows, dwValue)) {
+                s_nRows = dwValue;
+            }
+            if (!app_key.QueryDword(s_pszCols, dwValue)) {
+                s_nCols = dwValue;
+            }
 
-            // 設定値を取得する。
-            cb = sizeof(DWORD);
-            result = ::RegQueryValueExW(hSubKey, s_pszRows, nullptr, nullptr,
-                                      reinterpret_cast<LPBYTE>(&dwValue), &cb);
-            if (result == ERROR_SUCCESS)
-                s_nRows = static_cast<int>(dwValue);
-
-            // 設定値を取得する。
-            cb = sizeof(DWORD);
-            result = ::RegQueryValueExW(hSubKey, s_pszCols, nullptr, nullptr,
-                                      reinterpret_cast<LPBYTE>(&dwValue), &cb);
-            if (result == ERROR_SUCCESS)
-                s_nCols = static_cast<int>(dwValue);
-
-            // 設定値を取得する。
-            cb = sizeof(DWORD);
-            result = ::RegQueryValueExW(hSubKey, s_pszInfinite, nullptr, nullptr,
-                                      reinterpret_cast<LPBYTE>(&dwValue), &cb);
-            if (result == ERROR_SUCCESS)
+            if (!app_key.QueryDword(s_pszInfinite, dwValue)) {
                 s_bInfinite = !!dwValue;
-
-            // 設定値を取得する。
-            cb = sizeof(DWORD);
-            result = ::RegQueryValueExW(hSubKey, s_pszDictSaveMode, nullptr, nullptr,
-                                      reinterpret_cast<LPBYTE>(&dwValue), &cb);
-            if (result == ERROR_SUCCESS)
-                s_nDictSaveMode = static_cast<int>(dwValue);
-
-            // 設定値を取得する。
-            cb = MAX_PATH * sizeof(WCHAR);
-            result = ::RegQueryValueExW(hSubKey, s_pszCellFont, nullptr, nullptr,
-                                      reinterpret_cast<LPBYTE>(sz.data()), &cb);
-            if (result == ERROR_SUCCESS)
-            {
-                ::lstrcpynW(xg_szCellFont.data(), sz.data(), 
-                            static_cast<int>(xg_szCellFont.size()));
             }
 
-            // 設定値を取得する。
-            cb = MAX_PATH * sizeof(WCHAR);
-            result = ::RegQueryValueExW(hSubKey, s_pszSmallFont, nullptr, nullptr,
-                                      reinterpret_cast<LPBYTE>(sz.data()), &cb);
-            if (result == ERROR_SUCCESS)
-            {
-                ::lstrcpynW(xg_szSmallFont.data(), sz.data(), 
-                            static_cast<int>(xg_szSmallFont.size()));
+            if (!app_key.QueryDword(s_pszDictSaveMode, dwValue)) {
+                s_nDictSaveMode = dwValue;
             }
 
-            // 設定値を取得する。
-            cb = MAX_PATH * sizeof(WCHAR);
-            result = ::RegQueryValueExW(hSubKey, s_pszUIFont, nullptr, nullptr,
-                                      reinterpret_cast<LPBYTE>(sz.data()), &cb);
-            if (result == ERROR_SUCCESS)
-            {
-                ::lstrcpynW(xg_szUIFont.data(), sz.data(), 
-                            static_cast<int>(xg_szUIFont.size()));
+            if (!app_key.QuerySz(s_pszCellFont, sz.data(), sz.size())) {
+                ::lstrcpynW(xg_szCellFont.data(), sz.data(), int(xg_szCellFont.size()));
+            }
+            if (!app_key.QuerySz(s_pszSmallFont, sz.data(), sz.size())) {
+                ::lstrcpynW(xg_szSmallFont.data(), sz.data(), int(xg_szSmallFont.size()));
+            }
+            if (!app_key.QuerySz(s_pszUIFont, sz.data(), sz.size())) {
+                ::lstrcpynW(xg_szUIFont.data(), sz.data(), int(xg_szUIFont.size()));
             }
 
-            // 設定値を取得する。
-            cb = sizeof(DWORD);
-            result = ::RegQueryValueExW(hSubKey, s_pszShowToolBar, nullptr, nullptr,
-                                      reinterpret_cast<LPBYTE>(&dwValue), &cb);
-            if (result == ERROR_SUCCESS)
-                s_bShowToolBar = !!static_cast<int>(dwValue);
-
-            // 設定値を取得する。
-            cb = sizeof(DWORD);
-            result = ::RegQueryValueExW(hSubKey, s_pszShowStatusBar, nullptr, nullptr,
-                                      reinterpret_cast<LPBYTE>(&dwValue), &cb);
-            if (result == ERROR_SUCCESS)
-                s_bShowStatusBar = !!static_cast<int>(dwValue);
-
-            // 設定値を取得する。
-            cb = sizeof(DWORD);
-            result = ::RegQueryValueExW(hSubKey, s_pszSaveAsJsonFile, nullptr, nullptr,
-                                      reinterpret_cast<LPBYTE>(&dwValue), &cb);
-            if (result == ERROR_SUCCESS)
-                xg_bSaveAsJsonFile = !!static_cast<int>(dwValue);
-
-            // 設定値を取得する。
-            cb = sizeof(DWORD);
-            result = ::RegQueryValueExW(hSubKey, s_pszNumberToGenerate, nullptr, nullptr,
-                                      reinterpret_cast<LPBYTE>(&dwValue), &cb);
-            if (result == ERROR_SUCCESS)
-                s_nNumberToGenerate = static_cast<int>(dwValue);
-
-            // 設定値を取得する。
-            cb = sizeof(DWORD);
-            result = ::RegQueryValueExW(hSubKey, s_pszImageCopyWidth, nullptr, nullptr,
-                                      reinterpret_cast<LPBYTE>(&dwValue), &cb);
-            if (result == ERROR_SUCCESS)
-                s_nImageCopyWidth = static_cast<int>(dwValue);
-
-            // 設定値を取得する。
-            cb = sizeof(DWORD);
-            result = ::RegQueryValueExW(hSubKey, s_pszImageCopyHeight, nullptr, nullptr,
-                                      reinterpret_cast<LPBYTE>(&dwValue), &cb);
-            if (result == ERROR_SUCCESS)
-                s_nImageCopyHeight = static_cast<int>(dwValue);
-
-            // 設定値を取得する。
-            cb = sizeof(DWORD);
-            result = ::RegQueryValueExW(hSubKey, s_pszImageCopyByHeight, nullptr, nullptr,
-                                      reinterpret_cast<LPBYTE>(&dwValue), &cb);
-            if (result == ERROR_SUCCESS)
-                s_bImageCopyByHeight = !!dwValue;
-
-            // 設定値を取得する。
-            cb = sizeof(DWORD);
-            result = ::RegQueryValueExW(hSubKey, s_pszMarksHeight, nullptr, nullptr,
-                                      reinterpret_cast<LPBYTE>(&dwValue), &cb);
-            if (result == ERROR_SUCCESS)
+            if (!app_key.QueryDword(s_pszShowToolBar, dwValue)) {
+                s_bShowToolBar = !!dwValue;
+            }
+            if (!app_key.QueryDword(s_pszShowStatusBar, dwValue)) {
+                s_bShowStatusBar = !!dwValue;
+            }
+            if (!app_key.QueryDword(s_pszSaveAsJsonFile, dwValue)) {
+                xg_bSaveAsJsonFile = !!dwValue;
+            }
+            if (!app_key.QueryDword(s_pszNumberToGenerate, dwValue)) {
+                s_nNumberToGenerate = dwValue;
+            }
+            if (!app_key.QueryDword(s_pszImageCopyWidth, dwValue)) {
+                s_nImageCopyWidth = dwValue;
+            }
+            if (!app_key.QueryDword(s_pszImageCopyHeight, dwValue)) {
+                s_nImageCopyHeight = dwValue;
+            }
+            if (!app_key.QueryDword(s_pszImageCopyByHeight, dwValue)) {
+                s_bImageCopyByHeight = dwValue;
+            }
+            if (!app_key.QueryDword(s_pszMarksHeight, dwValue)) {
                 s_nMarksHeight = dwValue;
-
-            // 設定値を取得する。
-            cb = sizeof(DWORD);
-            result = ::RegQueryValueExW(hSubKey, s_pszAddThickFrame, nullptr, nullptr,
-                                      reinterpret_cast<LPBYTE>(&dwValue), &cb);
-            if (result == ERROR_SUCCESS)
+            }
+            if (!app_key.QueryDword(s_pszAddThickFrame, dwValue)) {
                 xg_bAddThickFrame = !!dwValue;
+            }
 
-            // 設定値を取得する。
-            cb = sizeof(DWORD);
-            result = ::RegQueryValueExW(hSubKey, s_pszCharFeed, nullptr, nullptr,
-                                      reinterpret_cast<LPBYTE>(&dwValue), &cb);
-            if (result == ERROR_SUCCESS)
+            if (!app_key.QueryDword(s_pszCharFeed, dwValue)) {
                 xg_bCharFeed = !!dwValue;
+            }
 
-            // 設定値を取得する。
-            cb = sizeof(DWORD);
-            result = ::RegQueryValueExW(hSubKey, s_pszTateOki, nullptr, nullptr,
-                                      reinterpret_cast<LPBYTE>(&dwValue), &cb);
-            if (result == ERROR_SUCCESS)
+            if (!app_key.QueryDword(s_pszTateOki, dwValue)) {
                 xg_bTateOki = !!dwValue;
-
-            // 設定値を取得する。
-            cb = sizeof(DWORD);
-            result = ::RegQueryValueExW(hSubKey, s_pszWhiteCellColor, nullptr, nullptr,
-                                      reinterpret_cast<LPBYTE>(&dwValue), &cb);
-            if (result == ERROR_SUCCESS)
+            }
+            if (!app_key.QueryDword(s_pszWhiteCellColor, dwValue)) {
                 xg_rgbWhiteCellColor = dwValue;
-
-            // 設定値を取得する。
-            cb = sizeof(DWORD);
-            result = ::RegQueryValueExW(hSubKey, s_pszBlackCellColor, nullptr, nullptr,
-                                      reinterpret_cast<LPBYTE>(&dwValue), &cb);
-            if (result == ERROR_SUCCESS)
+            }
+            if (!app_key.QueryDword(s_pszBlackCellColor, dwValue)) {
                 xg_rgbBlackCellColor = dwValue;
-
-            // 設定値を取得する。
-            cb = sizeof(DWORD);
-            result = ::RegQueryValueExW(hSubKey, s_pszBlackCellColor, nullptr, nullptr,
-                                        reinterpret_cast<LPBYTE>(&dwValue), &cb);
-            if (result == ERROR_SUCCESS)
-                xg_rgbBlackCellColor = dwValue;
-
-            // 設定値を取得する。
-            cb = sizeof(DWORD);
-            result = ::RegQueryValueExW(hSubKey, s_pszMarkedCellColor, nullptr, nullptr,
-                                      reinterpret_cast<LPBYTE>(&dwValue), &cb);
-            if (result == ERROR_SUCCESS)
+            }
+            if (!app_key.QueryDword(s_pszMarkedCellColor, dwValue)) {
                 xg_rgbMarkedCellColor = dwValue;
-
-            // 設定値を取得する。
-            cb = sizeof(DWORD);
-            result = ::RegQueryValueExW(hSubKey, s_pszDrawFrameForMarkedCell, nullptr, nullptr,
-                                      reinterpret_cast<LPBYTE>(&dwValue), &cb);
-            if (result == ERROR_SUCCESS)
-                xg_bDrawFrameForMarkedCell = !!dwValue;
-
-            // 設定値を取得する。
-            cb = sizeof(DWORD);
-            result = ::RegQueryValueExW(hSubKey, s_pszSmartResolution, nullptr, nullptr,
-                                        reinterpret_cast<LPBYTE>(&dwValue), &cb);
-            if (result == ERROR_SUCCESS)
-                xg_bSmartResolution = !!dwValue;
+            }
+            if (!app_key.QueryDword(s_pszDrawFrameForMarkedCell, dwValue)) {
+                xg_bDrawFrameForMarkedCell = dwValue;
+            }
+            if (!app_key.QueryDword(s_pszSmartResolution, dwValue)) {
+                xg_bSmartResolution = dwValue;
+            }
 
             // 辞書ファイルのリストを取得する。
-            cb = sizeof(DWORD);
-            result = ::RegQueryValueExW(hSubKey, s_pszRecentCount, nullptr, nullptr,
-                                      reinterpret_cast<LPBYTE>(&dwValue), &cb);
-            if (result == ERROR_SUCCESS) {
-                nFileCount = static_cast<int>(dwValue);
+            if (!app_key.QueryDword(s_pszRecentCount, dwValue)) {
+                nFileCount = dwValue;
                 for (i = 0; i < nFileCount; i++) {
                     ::wsprintfW(szFormat.data(), s_pszRecent, i + 1);
-                    cb = MAX_PATH * sizeof(WCHAR);
-                    result = ::RegQueryValueExW(hSubKey, szFormat.data(), nullptr, nullptr,
-                                                reinterpret_cast<LPBYTE>(sz.data()), &cb);
-                    if (result == ERROR_SUCCESS) {
+                    if (!app_key.QuerySz(szFormat.data(), sz.data(), sz.size())) {
                         xg_dict_files.emplace_back(sz.data());
                     } else {
                         nFileCount = i;
@@ -798,17 +619,11 @@ bool __fastcall XgLoadSettings(void)
             }
 
             // 保存先のリストを取得する。
-            cb = sizeof(DWORD);
-            result = RegQueryValueExW(hSubKey, s_pszSaveToCount, nullptr, nullptr,
-                                      reinterpret_cast<LPBYTE>(&dwValue), &cb);
-            if (result == ERROR_SUCCESS) {
-                nDirCount = static_cast<int>(dwValue);
+            if (!app_key.QueryDword(s_pszSaveToCount, dwValue)) {
+                nDirCount = dwValue;
                 for (i = 0; i < nDirCount; i++) {
                     ::wsprintfW(szFormat.data(), s_pszSaveTo, i + 1);
-                    cb = MAX_PATH * sizeof(WCHAR);
-                    result = ::RegQueryValueExW(hSubKey, szFormat.data(), nullptr, nullptr,
-                                              reinterpret_cast<LPBYTE>(sz.data()), &cb);
-                    if (result == ERROR_SUCCESS) {
+                    if (!app_key.QuerySz(szFormat.data(), sz.data(), sz.size())) {
                         s_dirs_save_to.emplace_back(sz.data());
                     } else {
                         nDirCount = i;
@@ -816,11 +631,7 @@ bool __fastcall XgLoadSettings(void)
                     }
                 }
             }
-            // アプリ名キーを閉じる。
-            ::RegCloseKey(hSubKey);
         }
-        // 会社名キーを閉じる。
-        ::RegCloseKey(hKey);
     }
 
     // ファイルが実際に存在するかチェックし、存在しない項目は消す。
