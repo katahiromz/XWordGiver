@@ -1017,7 +1017,7 @@ XgNewDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam*/)
         ::DragFinish(hDrop);
 
         // ショートカットだった場合は、ターゲットのパスを取得する。
-        if (::lstrcmpiW(XgFindDotExtW(szFile.data()), s_szShellLinkDotExt) == 0) {
+        if (::lstrcmpiW(PathFindExtensionW(szFile.data()), s_szShellLinkDotExt) == 0) {
             if (!XgGetPathOfShortcutW(szFile.data(), szTarget.data())) {
                 ::MessageBeep(0xFFFFFFFF);
                 break;
@@ -1189,7 +1189,7 @@ XgGenerateDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam*/)
         ::DragFinish(hDrop);
 
         // ショートカットだった場合は、ターゲットのパスを取得する。
-        if (::lstrcmpiW(XgFindDotExtW(szFile.data()), s_szShellLinkDotExt) == 0) {
+        if (::lstrcmpiW(PathFindExtensionW(szFile.data()), s_szShellLinkDotExt) == 0) {
             if (!XgGetPathOfShortcutW(szFile.data(), szTarget.data())) {
                 ::MessageBeep(0xFFFFFFFF);
                 break;
@@ -1416,7 +1416,7 @@ XgGenerateRepeatedlyDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam
         ::DragFinish(hDrop);
 
         // ショートカットだった場合は、ターゲットのパスを取得する。
-        if (::lstrcmpiW(XgFindDotExtW(szFile.data()), s_szShellLinkDotExt) == 0) {
+        if (::lstrcmpiW(PathFindExtensionW(szFile.data()), s_szShellLinkDotExt) == 0) {
             if (!XgGetPathOfShortcutW(szFile.data(), szTarget.data())) {
                 ::MessageBeep(0xFFFFFFFF);
                 break;
@@ -1686,7 +1686,7 @@ XgSolveRepeatedlyDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam*/)
         ::DragFinish(hDrop);
 
         // ショートカットだった場合は、ターゲットのパスを取得する。
-        if (::lstrcmpiW(XgFindDotExtW(szFile.data()), s_szShellLinkDotExt) == 0) {
+        if (::lstrcmpiW(PathFindExtensionW(szFile.data()), s_szShellLinkDotExt) == 0) {
             if (!XgGetPathOfShortcutW(szFile.data(), szTarget.data())) {
                 ::MessageBeep(0xFFFFFFFF);
                 break;
@@ -2228,7 +2228,7 @@ XgCancelGenerateRepeatedlyDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*
 
                 // パスを生成する。
                 ::lstrcpyW(szDir.data(), s_dirs_save_to[0].data());
-                XgAddBackslashW(szDir.data());
+                PathAddBackslashW(szDir.data());
 
                 // ファイル名を生成する。
                 UINT u;
@@ -2451,7 +2451,7 @@ XgCancelSolveRepeatedlyDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lPa
 
                 // パスを生成する。
                 ::lstrcpyW(szDir.data(), s_dirs_save_to[0].data());
-                XgAddBackslashW(szDir.data());
+                PathAddBackslashW(szDir.data());
 
                 // ファイル名を生成する。
                 UINT u;
@@ -5761,7 +5761,7 @@ XgLoadDictDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
         ::DragFinish(hDrop);
 
         // ショートカットだった場合は、ターゲットのパスを取得する。
-        if (::lstrcmpiW(XgFindDotExtW(szFile.data()), s_szShellLinkDotExt) == 0) {
+        if (::lstrcmpiW(PathFindExtensionW(szFile.data()), s_szShellLinkDotExt) == 0) {
             if (!XgGetPathOfShortcutW(szFile.data(), szTarget.data())) {
                 ::MessageBeep(0xFFFFFFFF);
                 break;
@@ -6491,13 +6491,13 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
             // JSON形式か？
             bool is_json = false;
             bool is_builder = false;
-            if (::lstrcmpiW(XgFindDotExtW(sz.data()), L".xwj") == 0 ||
-                ::lstrcmpiW(XgFindDotExtW(sz.data()), L".json") == 0)
+            if (::lstrcmpiW(PathFindExtensionW(sz.data()), L".xwj") == 0 ||
+                ::lstrcmpiW(PathFindExtensionW(sz.data()), L".json") == 0)
             {
                 is_json = true;
             }
-            if (::lstrcmpiW(XgFindDotExtW(sz.data()), L".crp") == 0 ||
-                ::lstrcmpiW(XgFindDotExtW(sz.data()), L".crx") == 0)
+            if (::lstrcmpiW(PathFindExtensionW(sz.data()), L".crp") == 0 ||
+                ::lstrcmpiW(PathFindExtensionW(sz.data()), L".crx") == 0)
             {
                 is_builder = true;
             }
@@ -6555,7 +6555,7 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
                 ofn.lpstrDefExt = L"xwd";
             }
         } else {
-            LPTSTR pchDotExt = XgFindDotExtW(sz.data());
+            LPTSTR pchDotExt = PathFindExtensionW(sz.data());
             if (::lstrcmpiW(pchDotExt, L".xwj") == 0) {
                 ofn.nFilterIndex = 2;
                 ofn.lpstrDefExt = L"xwj";
@@ -7283,7 +7283,7 @@ void __fastcall MainWnd_OnDropFiles(HWND hwnd, HDROP hDrop)
         ::lstrcpyW(szFile.data(), szTarget.data());
 
     // 拡張子を取得する。
-    LPWSTR pch = XgFindDotExtW(szFile.data());
+    LPWSTR pch = PathFindExtensionW(szFile.data());
 
     if (::lstrcmpiW(pch, L".xwd") == 0) {
         // 拡張子が.xwdだった。ファイルを開く。
@@ -7563,7 +7563,7 @@ bool __fastcall MainWnd_OnCreate(HWND hwnd, LPCREATESTRUCT /*lpCreateStruct*/)
 
         // コマンドライン引数があれば、それを開く。
         bool bSuccess = true;
-        if (::lstrcmpiW(XgFindDotExtW(szFile.data()), s_szShellLinkDotExt) == 0)
+        if (::lstrcmpiW(PathFindExtensionW(szFile.data()), s_szShellLinkDotExt) == 0)
         {
             // ショートカットだった場合は、ターゲットのパスを取得する。
             if (XgGetPathOfShortcutW(szFile.data(), szTarget.data())) {
@@ -7574,14 +7574,14 @@ bool __fastcall MainWnd_OnCreate(HWND hwnd, LPCREATESTRUCT /*lpCreateStruct*/)
             }
         }
         bool is_json = false;
-        if (::lstrcmpiW(XgFindDotExtW(szFile.data()), L".xwj") == 0 ||
-            ::lstrcmpiW(XgFindDotExtW(szFile.data()), L".json") == 0)
+        if (::lstrcmpiW(PathFindExtensionW(szFile.data()), L".xwj") == 0 ||
+            ::lstrcmpiW(PathFindExtensionW(szFile.data()), L".json") == 0)
         {
             is_json = true;
         }
         bool is_builder = false;
-        if (::lstrcmpiW(XgFindDotExtW(szFile.data()), L".crp") == 0 ||
-            ::lstrcmpiW(XgFindDotExtW(szFile.data()), L".crx") == 0)
+        if (::lstrcmpiW(PathFindExtensionW(szFile.data()), L".crp") == 0 ||
+            ::lstrcmpiW(PathFindExtensionW(szFile.data()), L".crx") == 0)
         {
             is_builder = true;
         }

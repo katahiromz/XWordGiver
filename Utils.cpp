@@ -38,38 +38,6 @@ LPWSTR __fastcall XgMakeFilterString(LPWSTR psz)
     return psz;
 }
 
-// ファイルタイトルを取得する。
-LPWSTR __fastcall XgFindFileTitleW(LPWSTR pszPath)
-{
-    LPWSTR pch = wcsrchr(pszPath, L'\\');
-    if (pch != nullptr)
-        return pch + 1;
-    return pszPath;
-}
-
-// 拡張子を取得する。
-LPWSTR __fastcall XgFindDotExtW(LPWSTR pszPath)
-{
-    LPWSTR pch = XgFindFileTitleW(pszPath);
-    if (pch != nullptr) pch = wcsrchr(pch, L'.');
-    if (pch == nullptr) pch = pszPath + wcslen(pszPath);
-    return pch;
-}
-
-// 必要ならばパスにバックスラッシュを追加する。
-void __fastcall XgAddBackslashW(LPWSTR pszPath)
-{
-    int cchPath = lstrlenW(pszPath);
-    if (cchPath == 0)
-        return;
-
-    LPWSTR pchPrev = pszPath + cchPath - 1;
-    if (*pchPrev != L'\\' && *pchPrev != L'/') {
-        pszPath[cchPath++] = L'\\';
-        pszPath[cchPath] = L'\0';
-    }
-}
-
 // ショートカットのターゲットのパスを取得する。
 bool __fastcall XgGetPathOfShortcutW(LPCWSTR pszLnkFile, LPWSTR pszPath)
 {

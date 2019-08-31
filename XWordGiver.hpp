@@ -345,12 +345,6 @@ void __fastcall xg_str_replace_all(
     std::wstring &s, const std::wstring& from, const std::wstring& to);
 // 文字列の前後の空白を取り除く。
 void __fastcall xg_str_trim(std::wstring& str);
-// 必要ならばパスにバックスラッシュを追加する。
-void __fastcall XgAddBackslashW(LPWSTR pszPath);
-// ファイルタイトルを取得する。
-LPWSTR __fastcall XgFindFileTitleW(LPWSTR pszPath);
-// 拡張子を取得する。
-LPWSTR __fastcall XgFindDotExtW(LPWSTR pszPath);
 // ショートカットのターゲットのパスを取得する。
 bool __fastcall XgGetPathOfShortcutW(LPCWSTR pszLnkFile, LPWSTR pszPath);
 // フィルター文字列を作る。
