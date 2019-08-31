@@ -6793,7 +6793,9 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
     case ID_PASTE:  // ì\ÇËïtÇØÅB
         if (::GetForegroundWindow() == xg_hMainWnd) {
             std::wstring str = XgGetClipboardUnicodeText(hwnd);
-            if (str.find(ZEN_ULEFT) != std::wstring::npos) {
+            if (str.find(ZEN_ULEFT) != std::wstring::npos &&
+                str.find(ZEN_LRIGHT) != std::wstring::npos)
+            {
                 auto sa1 = std::make_shared<XG_UndoData_SetAll>();
                 auto sa2 = std::make_shared<XG_UndoData_SetAll>();
                 sa1->Get();
