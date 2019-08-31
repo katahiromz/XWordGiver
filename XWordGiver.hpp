@@ -468,6 +468,9 @@ extern bool xg_bSmartResolution;
 // 太枠をつけるか？
 extern bool xg_bAddThickFrame;
 
+// 「入力パレット」縦置き？
+extern bool xg_bTateOki;
+
 // 直前に開いたクロスワードデータファイルのパスファイル名。
 extern std::wstring xg_strFileName;
 
@@ -572,6 +575,9 @@ BOOL XgCreateInputPalette(HWND hwndOwner);
 
 // 入力パレットを破棄する。
 BOOL XgDestroyInputPalette(void);
+
+// 入力モードを切り替える。
+void __fastcall XgSetInputMode(HWND hwnd, XG_InputMode mode);
 
 // 文字が入力された。
 void __fastcall MainWnd_OnChar(HWND hwnd, TCHAR ch, int cRepeat);

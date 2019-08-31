@@ -89,6 +89,9 @@ XG_UndoBuffer                        xg_ubUndoBuffer;
 // 直前に押したキーを覚えておく。
 WCHAR xg_prev_vk = 0;
 
+// 「入力パレット」縦置き？
+bool xg_bTateOki = true;
+
 //////////////////////////////////////////////////////////////////////////////
 // static variables
 
@@ -152,6 +155,7 @@ static const LPCWSTR s_pszImageCopyHeight = L"ImageCopyHeight";
 static const LPCWSTR s_pszImageCopyByHeight = L"ImageCopyByHeight";
 static const LPCWSTR s_pszMarksHeight = L"MarksHeight";
 static const LPCWSTR s_pszAddThickFrame = L"AddThickFrame";
+static const LPCWSTR s_pszTateOki = L"TateOki";
 static const LPCWSTR s_pszWhiteCellColor = L"WhiteCellColor";
 static const LPCWSTR s_pszBlackCellColor = L"BlackCellColor";
 static const LPCWSTR s_pszMarkedCellColor = L"MarkedCellColor";
@@ -417,133 +421,14 @@ void __fastcall XgUpdateToolBarUI(HWND hwnd)
 
 //////////////////////////////////////////////////////////////////////////////
 
-// ヒントウィンドウ設定を読み込む。
-bool __fastcall XgLoadHintsWndSettings(void)
+// 設定を読み込む。
+bool __fastcall XgLoadSettings(void)
 {
     LONG result;
     HKEY hKey, hSubKey;
-    DWORD cb, dwValue;
-
-    // 初期化する。
-    s_nHintsWndX = CW_USEDEFAULT;
-    s_nHintsWndY = CW_USEDEFAULT;
-    s_nHintsWndCX = 420;
-    s_nHintsWndCY = 250;
-
-    // 会社名キーを開く。
-    result = ::RegOpenKeyExW(HKEY_CURRENT_USER, s_pszSoftwareCompanyName, 0, KEY_READ, &hKey);
-    if (result == ERROR_SUCCESS) {
-        // アプリ名キーを開く。
-        result = ::RegOpenKeyExW(hKey, s_pszAppName, 0, KEY_READ, &hSubKey);
-        if (result == ERROR_SUCCESS) {
-            // 設定値を取得する。
-            cb = sizeof(DWORD);
-            dwValue = CW_USEDEFAULT;
-            result = ::RegQueryValueExW(hSubKey, s_pszHintsWndX, nullptr, nullptr,
-                                      reinterpret_cast<LPBYTE>(&dwValue), &cb);
-            if (result == ERROR_SUCCESS) {
-                s_nHintsWndX = static_cast<int>(dwValue);
-            }
-            // 設定値を取得する。
-            cb = sizeof(DWORD);
-            dwValue = CW_USEDEFAULT;
-            result = ::RegQueryValueExW(hSubKey, s_pszHintsWndY, nullptr, nullptr,
-                                      reinterpret_cast<LPBYTE>(&dwValue), &cb);
-            if (result == ERROR_SUCCESS) {
-                s_nHintsWndY = static_cast<int>(dwValue);
-            }
-            // 設定値を取得する。
-            cb = sizeof(DWORD);
-            dwValue = CW_USEDEFAULT;
-            result = ::RegQueryValueExW(hSubKey, s_pszHintsWndCX, nullptr, nullptr,
-                                      reinterpret_cast<LPBYTE>(&dwValue), &cb);
-            if (result == ERROR_SUCCESS) {
-                s_nHintsWndCX = static_cast<int>(dwValue);
-            }
-            // 設定値を取得する。
-            cb = sizeof(DWORD);
-            dwValue = CW_USEDEFAULT;
-            result = ::RegQueryValueExW(hSubKey, s_pszHintsWndCY, nullptr, nullptr,
-                                      reinterpret_cast<LPBYTE>(&dwValue), &cb);
-            if (result == ERROR_SUCCESS) {
-                s_nHintsWndCY = static_cast<int>(dwValue);
-            }
-            // アプリ名キーを閉じる。
-            ::RegCloseKey(hSubKey);
-        }
-        // 会社名キーを閉じる。
-        ::RegCloseKey(hKey);
-    }
-
-    return true;
-}
-
-// 候補ウィンドウ設定を読み込む。
-bool __fastcall XgLoadCandsWndSettings(void)
-{
-    LONG result;
-    HKEY hKey, hSubKey;
-    DWORD cb, dwValue;
-
-    // 初期化する。
-    s_nCandsWndX = CW_USEDEFAULT;
-    s_nCandsWndY = CW_USEDEFAULT;
-    s_nCandsWndCX = 420;
-    s_nCandsWndCY = 250;
-
-    // 会社名キーを開く。
-    result = ::RegOpenKeyExW(HKEY_CURRENT_USER, s_pszSoftwareCompanyName, 0, KEY_READ, &hKey);
-    if (result == ERROR_SUCCESS) {
-        // アプリ名キーを開く。
-        result = ::RegOpenKeyExW(hKey, s_pszAppName, 0, KEY_READ, &hSubKey);
-        if (result == ERROR_SUCCESS) {
-            // 設定値を取得する。
-            cb = sizeof(DWORD);
-            dwValue = CW_USEDEFAULT;
-            result = ::RegQueryValueExW(hSubKey, s_pszCandsWndX, nullptr, nullptr,
-                                      reinterpret_cast<LPBYTE>(&dwValue), &cb);
-            if (result == ERROR_SUCCESS) {
-                s_nCandsWndX = static_cast<int>(dwValue);
-            }
-            // 設定値を取得する。
-            cb = sizeof(DWORD);
-            dwValue = CW_USEDEFAULT;
-            result = ::RegQueryValueExW(hSubKey, s_pszCandsWndY, nullptr, nullptr,
-                                      reinterpret_cast<LPBYTE>(&dwValue), &cb);
-            if (result == ERROR_SUCCESS) {
-                s_nCandsWndY = static_cast<int>(dwValue);
-            }
-            // 設定値を取得する。
-            cb = sizeof(DWORD);
-            dwValue = CW_USEDEFAULT;
-            result = ::RegQueryValueExW(hSubKey, s_pszCandsWndCX, nullptr, nullptr,
-                                      reinterpret_cast<LPBYTE>(&dwValue), &cb);
-            if (result == ERROR_SUCCESS) {
-                s_nCandsWndCX = static_cast<int>(dwValue);
-            }
-            // 設定値を取得する。
-            cb = sizeof(DWORD);
-            dwValue = CW_USEDEFAULT;
-            result = ::RegQueryValueExW(hSubKey, s_pszCandsWndCY, nullptr, nullptr,
-                                      reinterpret_cast<LPBYTE>(&dwValue), &cb);
-            if (result == ERROR_SUCCESS) {
-                s_nCandsWndCY = static_cast<int>(dwValue);
-            }
-            // アプリ名キーを閉じる。
-            ::RegCloseKey(hSubKey);
-        }
-        // 会社名キーを閉じる。
-        ::RegCloseKey(hKey);
-    }
-
-    return true;
-}
-
-// ウィンドウ設定を読み込む。
-bool __fastcall XgLoadMainWndSettings(void)
-{
-    LONG result;
-    HKEY hKey, hSubKey;
+    int i, nFileCount = 0, nDirCount = 0;
+    std::array<WCHAR,MAX_PATH>  sz;
+    std::array<WCHAR,32>        szFormat;
     DWORD cb, dwValue;
 
     // 初期化する。
@@ -551,8 +436,42 @@ bool __fastcall XgLoadMainWndSettings(void)
     s_nMainWndY = CW_USEDEFAULT;
     s_nMainWndCX = 475;
     s_nMainWndCY = 490;
-    xg_bCharFeed = FALSE;
-    xg_bTateInput = FALSE;
+
+    s_nHintsWndX = CW_USEDEFAULT;
+    s_nHintsWndY = CW_USEDEFAULT;
+    s_nHintsWndCX = 420;
+    s_nHintsWndCY = 250;
+
+    s_nCandsWndX = CW_USEDEFAULT;
+    s_nCandsWndY = CW_USEDEFAULT;
+    s_nCandsWndCX = 420;
+    s_nCandsWndCY = 250;
+
+    xg_bTateInput = false;
+    xg_dict_files.clear();
+    s_dirs_save_to.clear();
+    s_bAutoRetry = true;
+    s_nRows = s_nCols = 5;
+    s_bInfinite = true;
+    xg_szCellFont[0] = 0;
+    xg_szSmallFont[0] = 0;
+    xg_szUIFont[0] = 0;
+    s_nDictSaveMode = 0;
+    s_bShowToolBar = true;
+    s_bShowStatusBar = true;
+    xg_bSaveAsJsonFile = false;
+    s_nImageCopyWidth = 250;
+    s_nImageCopyHeight = 250;
+    s_bImageCopyByHeight = false;
+    s_nMarksHeight = 40;
+    xg_bAddThickFrame = true;
+    xg_bTateOki = true;
+    xg_bCharFeed = false;
+    xg_rgbWhiteCellColor = RGB(255, 255, 255);
+    xg_rgbBlackCellColor = RGB(0x33, 0x33, 0x33);
+    xg_rgbMarkedCellColor = RGB(255, 255, 255);
+    xg_bDrawFrameForMarkedCell = TRUE;
+    xg_bSmartResolution = TRUE;
 
     // 会社名キーを開く。
     result = ::RegOpenKeyExW(HKEY_CURRENT_USER, s_pszSoftwareCompanyName, 0, KEY_READ, &hKey);
@@ -596,191 +515,77 @@ bool __fastcall XgLoadMainWndSettings(void)
 
             // 設定値を取得する。
             cb = sizeof(DWORD);
-            result = ::RegQueryValueExW(hSubKey, s_pszCharFeed, nullptr, nullptr,
-                                      reinterpret_cast<LPBYTE>(&dwValue), &cb);
-            if (result == ERROR_SUCCESS)
-                xg_bCharFeed = !!dwValue;
-
-            // 設定値を取得する。
-            cb = sizeof(DWORD);
             result = ::RegQueryValueExW(hSubKey, s_pszTateInput, nullptr, nullptr,
                                       reinterpret_cast<LPBYTE>(&dwValue), &cb);
             if (result == ERROR_SUCCESS)
                 xg_bTateInput = !!dwValue;
 
-            // アプリ名キーを閉じる。
-            ::RegCloseKey(hSubKey);
-        }
-        // 会社名キーを閉じる。
-        ::RegCloseKey(hKey);
-    }
+            // 設定値を取得する。
+            cb = sizeof(DWORD);
+            dwValue = CW_USEDEFAULT;
+            result = ::RegQueryValueExW(hSubKey, s_pszHintsWndX, nullptr, nullptr,
+                                      reinterpret_cast<LPBYTE>(&dwValue), &cb);
+            if (result == ERROR_SUCCESS) {
+                s_nHintsWndX = static_cast<int>(dwValue);
+            }
+            // 設定値を取得する。
+            cb = sizeof(DWORD);
+            dwValue = CW_USEDEFAULT;
+            result = ::RegQueryValueExW(hSubKey, s_pszHintsWndY, nullptr, nullptr,
+                                      reinterpret_cast<LPBYTE>(&dwValue), &cb);
+            if (result == ERROR_SUCCESS) {
+                s_nHintsWndY = static_cast<int>(dwValue);
+            }
+            // 設定値を取得する。
+            cb = sizeof(DWORD);
+            dwValue = CW_USEDEFAULT;
+            result = ::RegQueryValueExW(hSubKey, s_pszHintsWndCX, nullptr, nullptr,
+                                      reinterpret_cast<LPBYTE>(&dwValue), &cb);
+            if (result == ERROR_SUCCESS) {
+                s_nHintsWndCX = static_cast<int>(dwValue);
+            }
+            // 設定値を取得する。
+            cb = sizeof(DWORD);
+            dwValue = CW_USEDEFAULT;
+            result = ::RegQueryValueExW(hSubKey, s_pszHintsWndCY, nullptr, nullptr,
+                                      reinterpret_cast<LPBYTE>(&dwValue), &cb);
+            if (result == ERROR_SUCCESS) {
+                s_nHintsWndCY = static_cast<int>(dwValue);
+            }
 
-    return true;
-}
+            // 設定値を取得する。
+            cb = sizeof(DWORD);
+            dwValue = CW_USEDEFAULT;
+            result = ::RegQueryValueExW(hSubKey, s_pszCandsWndX, nullptr, nullptr,
+                                      reinterpret_cast<LPBYTE>(&dwValue), &cb);
+            if (result == ERROR_SUCCESS) {
+                s_nCandsWndX = static_cast<int>(dwValue);
+            }
+            // 設定値を取得する。
+            cb = sizeof(DWORD);
+            dwValue = CW_USEDEFAULT;
+            result = ::RegQueryValueExW(hSubKey, s_pszCandsWndY, nullptr, nullptr,
+                                      reinterpret_cast<LPBYTE>(&dwValue), &cb);
+            if (result == ERROR_SUCCESS) {
+                s_nCandsWndY = static_cast<int>(dwValue);
+            }
+            // 設定値を取得する。
+            cb = sizeof(DWORD);
+            dwValue = CW_USEDEFAULT;
+            result = ::RegQueryValueExW(hSubKey, s_pszCandsWndCX, nullptr, nullptr,
+                                      reinterpret_cast<LPBYTE>(&dwValue), &cb);
+            if (result == ERROR_SUCCESS) {
+                s_nCandsWndCX = static_cast<int>(dwValue);
+            }
+            // 設定値を取得する。
+            cb = sizeof(DWORD);
+            dwValue = CW_USEDEFAULT;
+            result = ::RegQueryValueExW(hSubKey, s_pszCandsWndCY, nullptr, nullptr,
+                                      reinterpret_cast<LPBYTE>(&dwValue), &cb);
+            if (result == ERROR_SUCCESS) {
+                s_nCandsWndCY = static_cast<int>(dwValue);
+            }
 
-// ヒントウィンドウ設定を保存する。
-bool __fastcall XgSaveHintsWndSettings(void)
-{
-    LONG result;
-    HKEY hKey, hSubKey;
-    DWORD dwValue, dwDisposition;
-
-    // 会社名キーを開く。なければ作成する。
-    result = ::RegCreateKeyExW(HKEY_CURRENT_USER, s_pszSoftwareCompanyName, 0, nullptr, 0,
-        KEY_ALL_ACCESS, nullptr, &hKey, &dwDisposition);
-    if (result == ERROR_SUCCESS) {
-        // アプリ名キーを開く。なければ作成する。
-        result = ::RegCreateKeyExW(hKey, s_pszAppName, 0, nullptr, 0,
-            KEY_ALL_ACCESS, nullptr, &hSubKey, &dwDisposition);
-        if (result == ERROR_SUCCESS) {
-            // 値を設定する。
-            dwValue = static_cast<DWORD>(s_nHintsWndX);
-            ::RegSetValueExW(hSubKey, s_pszHintsWndX, 0, REG_DWORD,
-                           reinterpret_cast<LPBYTE>(&dwValue), sizeof(DWORD));
-            dwValue = static_cast<DWORD>(s_nHintsWndY);
-            ::RegSetValueExW(hSubKey, s_pszHintsWndY, 0, REG_DWORD,
-                           reinterpret_cast<LPBYTE>(&dwValue), sizeof(DWORD));
-            dwValue = static_cast<DWORD>(s_nHintsWndCX);
-            ::RegSetValueExW(hSubKey, s_pszHintsWndCX, 0, REG_DWORD,
-                           reinterpret_cast<LPBYTE>(&dwValue), sizeof(DWORD));
-            dwValue = static_cast<DWORD>(s_nHintsWndCY);
-            ::RegSetValueExW(hSubKey, s_pszHintsWndCY, 0, REG_DWORD,
-                           reinterpret_cast<LPBYTE>(&dwValue), sizeof(DWORD));
-
-            // アプリ名キーを閉じる。
-            ::RegCloseKey(hSubKey);
-        }
-        // 会社名キーを閉じる。
-        ::RegCloseKey(hKey);
-    }
-    return true;
-}
-
-// 候補ウィンドウ設定を保存する。
-bool __fastcall XgSaveCandsWndSettings(void)
-{
-    LONG result;
-    HKEY hKey, hSubKey;
-    DWORD dwValue, dwDisposition;
-
-    // 会社名キーを開く。なければ作成する。
-    result = ::RegCreateKeyExW(HKEY_CURRENT_USER, s_pszSoftwareCompanyName, 0, nullptr, 0,
-        KEY_ALL_ACCESS, nullptr, &hKey, &dwDisposition);
-    if (result == ERROR_SUCCESS)
-    {
-        // アプリ名キーを開く。なければ作成する。
-        result = ::RegCreateKeyExW(hKey, s_pszAppName, 0, nullptr, 0,
-            KEY_ALL_ACCESS, nullptr, &hSubKey, &dwDisposition);
-        if (result == ERROR_SUCCESS) {
-            // 値を設定する。
-            dwValue = static_cast<DWORD>(s_nCandsWndX);
-            ::RegSetValueExW(hSubKey, s_pszCandsWndX, 0, REG_DWORD,
-                           reinterpret_cast<LPBYTE>(&dwValue), sizeof(DWORD));
-            dwValue = static_cast<DWORD>(s_nCandsWndY);
-            ::RegSetValueExW(hSubKey, s_pszCandsWndY, 0, REG_DWORD,
-                           reinterpret_cast<LPBYTE>(&dwValue), sizeof(DWORD));
-            dwValue = static_cast<DWORD>(s_nCandsWndCX);
-            ::RegSetValueExW(hSubKey, s_pszCandsWndCX, 0, REG_DWORD,
-                           reinterpret_cast<LPBYTE>(&dwValue), sizeof(DWORD));
-            dwValue = static_cast<DWORD>(s_nCandsWndCY);
-            ::RegSetValueExW(hSubKey, s_pszCandsWndCY, 0, REG_DWORD,
-                           reinterpret_cast<LPBYTE>(&dwValue), sizeof(DWORD));
-
-            // アプリ名キーを閉じる。
-            ::RegCloseKey(hSubKey);
-        }
-        // 会社名キーを閉じる。
-        ::RegCloseKey(hKey);
-    }
-    return true;
-}
-
-// ウィンドウ設定を保存する。
-bool __fastcall XgSaveMainWndSettings(void)
-{
-    LONG result;
-    HKEY hKey, hSubKey;
-    DWORD dwValue, dwDisposition;
-
-    // 会社名キーを開く。なければ作成する。
-    result = ::RegCreateKeyExW(HKEY_CURRENT_USER, s_pszSoftwareCompanyName, 0, nullptr, 0,
-        KEY_ALL_ACCESS, nullptr, &hKey, &dwDisposition);
-    if (result == ERROR_SUCCESS) {
-        // アプリ名キーを開く。なければ作成する。
-        result = ::RegCreateKeyExW(hKey, s_pszAppName, 0, nullptr, 0,
-            KEY_ALL_ACCESS, nullptr, &hSubKey, &dwDisposition);
-        if (result == ERROR_SUCCESS) {
-            // 値を設定する。
-            dwValue = static_cast<DWORD>(s_nMainWndX);
-            ::RegSetValueExW(hSubKey, s_pszMainWndX, 0, REG_DWORD,
-                           reinterpret_cast<LPBYTE>(&dwValue), sizeof(DWORD));
-            dwValue = static_cast<DWORD>(s_nMainWndY);
-            ::RegSetValueExW(hSubKey, s_pszMainWndY, 0, REG_DWORD,
-                           reinterpret_cast<LPBYTE>(&dwValue), sizeof(DWORD));
-            dwValue = static_cast<DWORD>(s_nMainWndCX);
-            ::RegSetValueExW(hSubKey, s_pszMainWndCX, 0, REG_DWORD,
-                           reinterpret_cast<LPBYTE>(&dwValue), sizeof(DWORD));
-            dwValue = static_cast<DWORD>(s_nMainWndCY);
-            ::RegSetValueExW(hSubKey, s_pszMainWndCY, 0, REG_DWORD,
-                           reinterpret_cast<LPBYTE>(&dwValue), sizeof(DWORD));
-            dwValue = static_cast<DWORD>(xg_bCharFeed);
-            ::RegSetValueExW(hSubKey, s_pszCharFeed, 0, REG_DWORD,
-                           reinterpret_cast<LPBYTE>(&dwValue), sizeof(DWORD));
-            dwValue = static_cast<DWORD>(xg_bTateInput);
-            ::RegSetValueExW(hSubKey, s_pszTateInput, 0, REG_DWORD,
-                           reinterpret_cast<LPBYTE>(&dwValue), sizeof(DWORD));
-
-            // アプリ名キーを閉じる。
-            ::RegCloseKey(hSubKey);
-        }
-        // 会社名キーを閉じる。
-        ::RegCloseKey(hKey);
-    }
-    return true;
-}
-
-//////////////////////////////////////////////////////////////////////////////
-
-// 設定を読み込む。
-bool __fastcall XgLoadSettings(void)
-{
-    LONG result;
-    HKEY hKey, hSubKey;
-    int i, nFileCount = 0, nDirCount = 0;
-    std::array<WCHAR,MAX_PATH>  sz;
-    std::array<WCHAR,32>        szFormat;
-    DWORD cb, dwValue;
-
-    // 初期化する。
-    xg_dict_files.clear();
-    s_dirs_save_to.clear();
-    s_bAutoRetry = true;
-    s_nRows = s_nCols = 5;
-    s_bInfinite = true;
-    xg_szCellFont[0] = 0;
-    xg_szSmallFont[0] = 0;
-    xg_szUIFont[0] = 0;
-    s_nDictSaveMode = 0;
-    s_bShowToolBar = true;
-    s_bShowStatusBar = true;
-    xg_bSaveAsJsonFile = false;
-    s_nImageCopyWidth = 250;
-    s_nImageCopyHeight = 250;
-    s_bImageCopyByHeight = false;
-    s_nMarksHeight = 40;
-    xg_bAddThickFrame = true;
-    xg_rgbWhiteCellColor = RGB(255, 255, 255);
-    xg_rgbBlackCellColor = RGB(0x33, 0x33, 0x33);
-    xg_rgbMarkedCellColor = RGB(255, 255, 255);
-    xg_bDrawFrameForMarkedCell = TRUE;
-    xg_bSmartResolution = TRUE;
-
-    // 会社名キーを開く。
-    result = ::RegOpenKeyExW(HKEY_CURRENT_USER, s_pszSoftwareCompanyName, 0, KEY_READ, &hKey);
-    if (result == ERROR_SUCCESS) {
-        // アプリ名キーを開く。
-        result = ::RegOpenKeyExW(hKey, s_pszAppName, 0, KEY_READ, &hSubKey);
-        if (result == ERROR_SUCCESS) {
             // 設定値を取得する。
             cb = sizeof(DWORD);
             result = ::RegQueryValueExW(hSubKey, s_pszOldNotice, nullptr, nullptr,
@@ -915,6 +720,20 @@ bool __fastcall XgLoadSettings(void)
                                       reinterpret_cast<LPBYTE>(&dwValue), &cb);
             if (result == ERROR_SUCCESS)
                 xg_bAddThickFrame = !!dwValue;
+
+            // 設定値を取得する。
+            cb = sizeof(DWORD);
+            result = ::RegQueryValueExW(hSubKey, s_pszCharFeed, nullptr, nullptr,
+                                      reinterpret_cast<LPBYTE>(&dwValue), &cb);
+            if (result == ERROR_SUCCESS)
+                xg_bCharFeed = !!dwValue;
+
+            // 設定値を取得する。
+            cb = sizeof(DWORD);
+            result = ::RegQueryValueExW(hSubKey, s_pszTateOki, nullptr, nullptr,
+                                      reinterpret_cast<LPBYTE>(&dwValue), &cb);
+            if (result == ERROR_SUCCESS)
+                xg_bTateOki = !!dwValue;
 
             // 設定値を取得する。
             cb = sizeof(DWORD);
@@ -1186,6 +1005,16 @@ bool __fastcall XgSaveSettings(void)
                            reinterpret_cast<LPBYTE>(&dwValue), sizeof(DWORD));
 
             // 値を設定する。
+            dwValue = static_cast<DWORD>(xg_bCharFeed);
+            ::RegSetValueExW(hSubKey, s_pszCharFeed, 0, REG_DWORD,
+                           reinterpret_cast<LPBYTE>(&dwValue), sizeof(DWORD));
+
+            // 値を設定する。
+            dwValue = static_cast<DWORD>(xg_bTateOki);
+            ::RegSetValueExW(hSubKey, s_pszTateOki, 0, REG_DWORD,
+                           reinterpret_cast<LPBYTE>(&dwValue), sizeof(DWORD));
+
+            // 値を設定する。
             dwValue = static_cast<DWORD>(xg_rgbWhiteCellColor);
             ::RegSetValueExW(hSubKey, s_pszWhiteCellColor, 0, REG_DWORD,
                            reinterpret_cast<LPBYTE>(&dwValue), sizeof(DWORD));
@@ -1234,6 +1063,50 @@ bool __fastcall XgSaveSettings(void)
                 ::RegSetValueExW(hSubKey, szFormat.data(), 0, REG_SZ,
                                reinterpret_cast<const BYTE *>(s_dirs_save_to[i].data()), cb);
             }
+
+            // 値を設定する。
+            dwValue = static_cast<DWORD>(s_nHintsWndX);
+            ::RegSetValueExW(hSubKey, s_pszHintsWndX, 0, REG_DWORD,
+                           reinterpret_cast<LPBYTE>(&dwValue), sizeof(DWORD));
+            dwValue = static_cast<DWORD>(s_nHintsWndY);
+            ::RegSetValueExW(hSubKey, s_pszHintsWndY, 0, REG_DWORD,
+                           reinterpret_cast<LPBYTE>(&dwValue), sizeof(DWORD));
+            dwValue = static_cast<DWORD>(s_nHintsWndCX);
+            ::RegSetValueExW(hSubKey, s_pszHintsWndCX, 0, REG_DWORD,
+                           reinterpret_cast<LPBYTE>(&dwValue), sizeof(DWORD));
+            dwValue = static_cast<DWORD>(s_nHintsWndCY);
+            ::RegSetValueExW(hSubKey, s_pszHintsWndCY, 0, REG_DWORD,
+                           reinterpret_cast<LPBYTE>(&dwValue), sizeof(DWORD));
+
+            dwValue = static_cast<DWORD>(s_nCandsWndX);
+            ::RegSetValueExW(hSubKey, s_pszCandsWndX, 0, REG_DWORD,
+                           reinterpret_cast<LPBYTE>(&dwValue), sizeof(DWORD));
+            dwValue = static_cast<DWORD>(s_nCandsWndY);
+            ::RegSetValueExW(hSubKey, s_pszCandsWndY, 0, REG_DWORD,
+                           reinterpret_cast<LPBYTE>(&dwValue), sizeof(DWORD));
+            dwValue = static_cast<DWORD>(s_nCandsWndCX);
+            ::RegSetValueExW(hSubKey, s_pszCandsWndCX, 0, REG_DWORD,
+                           reinterpret_cast<LPBYTE>(&dwValue), sizeof(DWORD));
+            dwValue = static_cast<DWORD>(s_nCandsWndCY);
+            ::RegSetValueExW(hSubKey, s_pszCandsWndCY, 0, REG_DWORD,
+                           reinterpret_cast<LPBYTE>(&dwValue), sizeof(DWORD));
+
+            dwValue = static_cast<DWORD>(s_nMainWndX);
+            ::RegSetValueExW(hSubKey, s_pszMainWndX, 0, REG_DWORD,
+                           reinterpret_cast<LPBYTE>(&dwValue), sizeof(DWORD));
+            dwValue = static_cast<DWORD>(s_nMainWndY);
+            ::RegSetValueExW(hSubKey, s_pszMainWndY, 0, REG_DWORD,
+                           reinterpret_cast<LPBYTE>(&dwValue), sizeof(DWORD));
+            dwValue = static_cast<DWORD>(s_nMainWndCX);
+            ::RegSetValueExW(hSubKey, s_pszMainWndCX, 0, REG_DWORD,
+                           reinterpret_cast<LPBYTE>(&dwValue), sizeof(DWORD));
+            dwValue = static_cast<DWORD>(s_nMainWndCY);
+            ::RegSetValueExW(hSubKey, s_pszMainWndCY, 0, REG_DWORD,
+                           reinterpret_cast<LPBYTE>(&dwValue), sizeof(DWORD));
+            dwValue = static_cast<DWORD>(xg_bTateInput);
+            ::RegSetValueExW(hSubKey, s_pszTateInput, 0, REG_DWORD,
+                           reinterpret_cast<LPBYTE>(&dwValue), sizeof(DWORD));
+
             // アプリ名キーを閉じる。
             RegCloseKey(hSubKey);
         }
@@ -1443,8 +1316,6 @@ XgNewDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam*/)
     case WM_INITDIALOG:
         // ダイアログを中央へ移動する。
         XgCenterDialog(hwnd);
-        // 設定を読み込む。
-        XgLoadSettings();
         // サイズの欄を設定する。
         ::SetDlgItemInt(hwnd, edt1, s_nRows, FALSE);
         ::SetDlgItemInt(hwnd, edt2, s_nCols, FALSE);
@@ -1557,8 +1428,6 @@ XgNewDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam*/)
                 xg_vMarkedCands.clear();
                 // マークの更新を通知する。
                 XgMarkUpdate();
-                // 設定を保存する。
-                XgSaveSettings();
                 // ダイアログを閉じる。
                 ::EndDialog(hwnd, IDOK);
             } else {
@@ -1614,8 +1483,6 @@ XgGenerateDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam*/)
     case WM_INITDIALOG:
         // ダイアログを中央へ移動する。
         XgCenterDialog(hwnd);
-        // 設定を読み込む。
-        XgLoadSettings();
         // サイズの欄を設定する。
         ::SetDlgItemInt(hwnd, edt1, s_nRows, FALSE);
         ::SetDlgItemInt(hwnd, edt2, s_nCols, FALSE);
@@ -1739,8 +1606,6 @@ XgGenerateDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam*/)
                     xg_vMarks.clear();
                     xg_vMarkedCands.clear();
                 }
-                // 設定を保存する。
-                XgSaveSettings();
                 // ダイアログを閉じる。
                 ::EndDialog(hwnd, IDOK);
             } else {
@@ -1821,8 +1686,6 @@ XgGenerateRepeatedlyDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam
     case WM_INITDIALOG:
         // ダイアログを中央へ移動する。
         XgCenterDialog(hwnd);
-        // 設定を読み込む。
-        XgLoadSettings();
         // サイズの欄を設定する。
         ::SetDlgItemInt(hwnd, edt1, s_nRows, FALSE);
         ::SetDlgItemInt(hwnd, edt2, s_nCols, FALSE);
@@ -2041,8 +1904,6 @@ XgGenerateRepeatedlyDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam
                     xg_vMarks.clear();
                     xg_vMarkedCands.clear();
                 }
-                // 設定を保存する。
-                XgSaveSettings();
                 // ダイアログを閉じる。
                 ::EndDialog(hwnd, IDOK);
             } else {
@@ -2124,8 +1985,6 @@ XgSolveRepeatedlyDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam*/)
     case WM_INITDIALOG:
         // ダイアログを中央へ移動する。
         XgCenterDialog(hwnd);
-        // 設定を読み込む。
-        XgLoadSettings();
         // 保存先を設定する。
         for (const auto& dir : s_dirs_save_to) {
             item.mask = CBEIF_TEXT;
@@ -2259,8 +2118,6 @@ XgSolveRepeatedlyDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam*/)
             xg_vYokoInfo.clear();
             xg_vMarks.clear();
             xg_vMarkedCands.clear();
-            // 設定を保存する。
-            XgSaveSettings();
             // ダイアログを閉じる。
             ::EndDialog(hwnd, IDOK);
             break;
@@ -4462,8 +4319,6 @@ ImageSize_DlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
     case WM_INITDIALOG:
         // ダイアログを中央へ移動する。
         XgCenterDialog(hwnd);
-        // 設定を読み込む。
-        XgLoadSettings();
 
         ::SetDlgItemInt(hwnd, edt1, s_nImageCopyWidth, FALSE);
         ::SetDlgItemInt(hwnd, edt2, s_nImageCopyHeight, FALSE);
@@ -4516,8 +4371,6 @@ ImageSize_DlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
             } else {
                 s_bImageCopyByHeight = false;
             }
-            // 設定を保存する。
-            XgSaveSettings();
             // ダイアログを閉じる。
             ::EndDialog(hwnd, IDOK);
             break;
@@ -4670,8 +4523,6 @@ MarksHeight_DlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
     case WM_INITDIALOG:
         // ダイアログを中央へ移動する。
         XgCenterDialog(hwnd);
-        // 設定を読み込む。
-        XgLoadSettings();
 
         ::SetDlgItemInt(hwnd, edt1, s_nMarksHeight, FALSE);
         return TRUE;
@@ -4687,8 +4538,6 @@ MarksHeight_DlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
                                     MB_ICONERROR);
                 break;
             }
-            // 設定を保存する。
-            XgSaveSettings();
             // ダイアログを閉じる。
             ::EndDialog(hwnd, IDOK);
             break;
@@ -5077,7 +4926,6 @@ XgSaveDictDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
         case IDYES: // はい。
             if (::IsDlgButtonChecked(hwnd, chx1) == BST_CHECKED) {
                 s_nDictSaveMode = 1;
-                XgSaveSettings();
             }
             // ダイアログを閉じる。
             ::EndDialog(hwnd, IDYES);
@@ -5086,7 +4934,6 @@ XgSaveDictDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
         case IDNO:  // いいえ。
             if (::IsDlgButtonChecked(hwnd, chx1) == BST_CHECKED) {
                 s_nDictSaveMode = 2;
-                XgSaveSettings();
             }
             // ダイアログを閉じる。
             ::EndDialog(hwnd, IDNO);
@@ -5290,20 +5137,20 @@ void __fastcall MainWnd_OnInitMenu(HWND /*hwnd*/, HMENU hMenu)
 {
     if (xg_bTateInput)
     {
-        CheckMenuRadioItem(hMenu, ID_INPUTH, ID_INPUTV, ID_INPUTV, MF_BYCOMMAND);
+        ::CheckMenuRadioItem(hMenu, ID_INPUTH, ID_INPUTV, ID_INPUTV, MF_BYCOMMAND);
     }
     else
     {
-        CheckMenuRadioItem(hMenu, ID_INPUTH, ID_INPUTV, ID_INPUTH, MF_BYCOMMAND);
+        ::CheckMenuRadioItem(hMenu, ID_INPUTH, ID_INPUTV, ID_INPUTH, MF_BYCOMMAND);
     }
 
     if (xg_bCharFeed)
     {
-        CheckMenuItem(hMenu, ID_CHARFEED, MF_BYCOMMAND | MF_CHECKED);
+        ::CheckMenuItem(hMenu, ID_CHARFEED, MF_BYCOMMAND | MF_CHECKED);
     }
     else
     {
-        CheckMenuItem(hMenu, ID_CHARFEED, MF_BYCOMMAND | MF_UNCHECKED);
+        ::CheckMenuItem(hMenu, ID_CHARFEED, MF_BYCOMMAND | MF_UNCHECKED);
     }
 
     switch (xg_imode) {
@@ -5696,9 +5543,6 @@ void XgSaveDictFileUpdate1(HWND hwnd, const WCHAR *pszFile)
 
         // 辞書の変更フラグを解除する。
         XgDictSetModified(false);
-
-        // 設定を保存する。
-        XgSaveSettings();
     } else {
         XgCenterMessageBoxW(hwnd, XgLoadStringDx1(73),
             XgLoadStringDx2(2), MB_ICONERROR | MB_OK);
@@ -5821,9 +5665,6 @@ void SettingsDlg_OnOK(HWND hwnd)
 
     // 二重マスに枠をつけるか？
     xg_bDrawFrameForMarkedCell = (::IsDlgButtonChecked(hwnd, chx3) == BST_CHECKED);
-
-    // 設定を保存する。
-    XgSaveSettings();
 
     // レイアウトを調整する。
     ::PostMessageW(xg_hMainWnd, WM_SIZE, 0, 0);
@@ -6229,8 +6070,6 @@ XgLoadDictDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
     case WM_INITDIALOG:
         // ダイアログを中央へ移動する。
         XgCenterDialog(hwnd);
-        // 設定を読み込む。
-        XgLoadSettings();
         // 辞書ファイルのパス名のベクターをコンボボックスに設定する。
         for (const auto& dict_file : xg_dict_files) {
             item.mask = CBEIF_TEXT;
@@ -6299,8 +6138,6 @@ XgLoadDictDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
                     }
                 }
                 xg_dict_files.emplace_front(strFile);
-                // 設定を保存する。
-                XgSaveSettings();
                 // ダイアログを閉じる。
                 ::EndDialog(hwnd, IDOK);
             } else {
@@ -7085,9 +6922,6 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
             // JSON形式で保存するか？
             xg_bSaveAsJsonFile = (ofn.nFilterIndex == 2);
 
-            // 設定を保存する。
-            XgSaveSettings();
-
             // 保存する。
             if (!XgDoSave(hwnd, sz.data(), xg_bSaveAsJsonFile)) {
                 // 保存に失敗。
@@ -7453,27 +7287,19 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
         break;
 
     case ID_KANAINPUT:  // カナ入力モード。
-        xg_imode = xg_im_KANA;
-        // イメージを更新する。
-        XgUpdateImage(hwnd, 0, 0);
+        XgSetInputMode(hwnd, xg_im_KANA);
         break;
 
     case ID_ABCINPUT:   // 英字入力モード。
-        xg_imode = xg_im_ABC;
-        // イメージを更新する。
-        XgUpdateImage(hwnd, 0, 0);
+        XgSetInputMode(hwnd, xg_im_ABC);
         break;
 
     case ID_HANGULINPUT: // ハングル入力モード。
-        xg_imode = xg_im_HANGUL;
-        // イメージを更新する。
-        XgUpdateImage(hwnd, 0, 0);
+        XgSetInputMode(hwnd, xg_im_HANGUL);
         break;
 
     case ID_KANJIINPUT: // 漢字入力モード。
-        xg_imode = xg_im_KANJI;
-        // イメージを更新する。
-        XgUpdateImage(hwnd, 0, 0);
+        XgSetInputMode(hwnd, xg_im_KANJI);
         break;
 
     case ID_SHOWHIDEHINTS:
@@ -7923,8 +7749,6 @@ bool __fastcall MainWnd_OnCreate(HWND hwnd, LPCREATESTRUCT /*lpCreateStruct*/)
 {
     xg_hMainWnd = hwnd;
 
-    // 設定を読み込む。
-    XgLoadSettings();
     xg_nRows = s_nRows;
     xg_nCols = s_nCols;
 
@@ -8685,7 +8509,6 @@ void HintsWnd_OnDestroy(HWND hwnd)
     s_nHintsWndY = rc.top;
     s_nHintsWndCX = rc.Width();
     s_nHintsWndCY = rc.Height();
-    XgSaveHintsWndSettings();
 
     xg_hHintsWnd = NULL;
     xg_hwndTateCaptionStatic = NULL;
@@ -8817,8 +8640,6 @@ XgHintsWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 // ヒントウィンドウを作成する。
 BOOL XgCreateHintsWnd(HWND hwnd)
 {
-    XgLoadHintsWndSettings();
-
     const DWORD style = WS_OVERLAPPED | WS_CAPTION |
         WS_SYSMENU | WS_THICKFRAME | WS_HSCROLL | WS_VSCROLL;
     CreateWindowExW(WS_EX_TOOLWINDOW,
@@ -9129,7 +8950,6 @@ void CandsWnd_OnDestroy(HWND hwnd)
     s_nCandsWndY = rc.top;
     s_nCandsWndCX = rc.Width();
     s_nCandsWndCY = rc.Height();
-    XgSaveCandsWndSettings();
 
     xg_hCandsWnd = NULL;
     xg_ahwndCandButtons.clear();
@@ -9298,8 +9118,6 @@ XgCandsWndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 // 候補ウィンドウを作成する。
 BOOL XgCreateCandsWnd(HWND hwnd)
 {
-    XgLoadCandsWndSettings();
-
     const DWORD style = WS_OVERLAPPED | WS_CAPTION |
         WS_SYSMENU | WS_THICKFRAME | WS_HSCROLL | WS_VSCROLL;
     ::CreateWindowExW(WS_EX_TOOLWINDOW,
@@ -9444,6 +9262,9 @@ int WINAPI WinMain(
     // アプリのインスタンスを保存する。
     xg_hInstance = hInstance;
 
+    // 設定を読み込む。
+    XgLoadSettings();
+
     // 乱数モジュールを初期化する。
     srand(::GetTickCount() ^ ::GetCurrentThreadId());
 
@@ -9532,9 +9353,6 @@ int WINAPI WinMain(
     // クリティカルセクションを初期化する。
     ::InitializeCriticalSection(&xg_cs);
 
-    // ウィンドウ設定を読み込む。
-    XgLoadMainWndSettings();
-
     // メインウィンドウを作成する。
     DWORD style = WS_OVERLAPPEDWINDOW | WS_CLIPSIBLINGS;
     ::CreateWindowW(s_pszMainWndClass, XgLoadStringDx1(1176), style,
@@ -9611,15 +9429,15 @@ int WINAPI WinMain(
     ::UnhookWindowsHookEx(xg_hCtrlAHook);
     xg_hCtrlAHook = NULL;
 
-    // ウィンドウ設定を保存する。
-    XgSaveMainWndSettings();
-
     // クリティカルセクションを破棄する。
     ::DeleteCriticalSection(&xg_cs);
 
     // ミューテックスを解放。
     ::ReleaseMutex(s_hMutex);
     ::CloseHandle(s_hMutex);
+
+    // 設定を保存。
+    XgSaveSettings();
 
     return static_cast<int>(msg.wParam);
 }

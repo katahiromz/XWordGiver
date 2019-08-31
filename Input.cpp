@@ -21,10 +21,18 @@ void __fastcall XgInputDirection(HWND hwnd, INT nDirection)
     }
 
     if (xg_hwndInputPalette) {
-        if (xg_bTateInput) {
-            SetDlgItemTextW(xg_hwndInputPalette, 20052, XgLoadStringDx1(1170));
+        if (xg_bTateOki) {
+            if (xg_bTateInput) {
+                SetDlgItemTextW(xg_hwndInputPalette, 20052, XgLoadStringDx1(1170));
+            } else {
+                SetDlgItemTextW(xg_hwndInputPalette, 20052, XgLoadStringDx1(1169));
+            }
         } else {
-            SetDlgItemTextW(xg_hwndInputPalette, 20052, XgLoadStringDx1(1169));
+            if (xg_bTateInput) {
+                SetDlgItemTextW(xg_hwndInputPalette, 20052, XgLoadStringDx1(1179));
+            } else {
+                SetDlgItemTextW(xg_hwndInputPalette, 20052, XgLoadStringDx1(1178));
+            }
         }
     }
 
@@ -36,10 +44,10 @@ void __fastcall XgSetCharFeed(HWND hwnd, INT nMode)
 {
     switch (nMode) {
     case 1:
-        xg_bCharFeed = TRUE;
+        xg_bCharFeed = true;
         break;
     case 0:
-        xg_bCharFeed = FALSE;
+        xg_bCharFeed = false;
         break;
     case -1:
         xg_bCharFeed = !xg_bCharFeed;
@@ -809,8 +817,8 @@ void InputPal_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT codeNotify)
 
     HWND hButton = GetDlgItem(hwnd, id);
 
-    WCHAR sz[5];
-    GetWindowTextW(hButton, sz, 5);
+    WCHAR sz[10];
+    GetWindowTextW(hButton, sz, 10);
 
     if (sz[0] && sz[1] == 0) {
         switch (sz[0]) {
@@ -865,6 +873,19 @@ void InputPal_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT codeNotify)
             break;
         case 20064: // NL
             XgReturn(xg_hMainWnd);
+            break;
+        case 20070: // 英字/カナ
+            if (xg_imode == xg_im_ABC) {
+                XgSetInputMode(xg_hMainWnd, xg_im_KANA);
+            } else {
+                XgSetInputMode(xg_hMainWnd, xg_im_ABC);
+            }
+            break;
+        case 20071: // 縦置き/横置き
+            if (xg_imode == xg_im_KANA) {
+                xg_bTateOki = !xg_bTateOki;
+                XgCreateInputPalette(xg_hMainWnd);
+            }
             break;
         }
     }
@@ -927,11 +948,39 @@ BOOL XgCreateInputPalette(HWND hwndOwner)
 {
     XgDestroyInputPalette();
 
-    CreateDialogW(xg_hInstance, MAKEINTRESOURCEW(14), hwndOwner,
-                  XgInputPaletteDlgProc);
+    switch (xg_imode) {
+    case xg_im_ABC:
+        CreateDialogW(xg_hInstance, MAKEINTRESOURCEW(16), hwndOwner,
+                      XgInputPaletteDlgProc);
+        break;
+    case xg_im_KANA:
+        if (xg_bTateOki) {
+            CreateDialogW(xg_hInstance, MAKEINTRESOURCEW(14), hwndOwner,
+                          XgInputPaletteDlgProc);
+        } else {
+            CreateDialogW(xg_hInstance, MAKEINTRESOURCEW(15), hwndOwner,
+                          XgInputPaletteDlgProc);
+        }
+        break;
+    default:
+        return FALSE;
+    }
 
     ShowWindow(xg_hwndInputPalette, SW_SHOWNOACTIVATE);
     UpdateWindow(xg_hwndInputPalette);
 
     return xg_hwndInputPalette != NULL;
+}
+
+// 入力モードを切り替える。
+void __fastcall XgSetInputMode(HWND hwnd, XG_InputMode mode)
+{
+    bool flag = (xg_imode != mode);
+
+    xg_imode = mode;
+
+    if (flag && xg_hwndInputPalette) {
+        XgCreateInputPalette(hwnd);
+    }
+    XgUpdateImage(hwnd, 0, 0);
 }

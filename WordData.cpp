@@ -225,26 +225,7 @@ bool __fastcall XgLoadDictFile(LPCWSTR pszFile)
             }
 
             // ìÒï™íTçıÇÃÇΩÇﬂÇ…ÅAï¿Ç—ë÷Ç¶ÇƒÇ®Ç≠ÅB
-            sort(xg_dict_data.begin(), xg_dict_data.end(), xg_word_less());
-
-            if (xg_dict_data.size()) {
-                const auto& word = xg_dict_data[0].m_word;
-                if (word.size()) {
-                    if (XgIsCharHiraganaW(word[0]) ||
-                        XgIsCharKatakanaW(word[0]))
-                    {
-                        xg_imode = xg_im_KANA;
-                    } else if (XgIsCharKanjiW(word[0])) {
-                        xg_imode = xg_im_KANJI;
-                    } else if (XgIsCharHangulW(word[0])) {
-                        xg_imode = xg_im_HANGUL;
-                    } else if (XgIsCharHankakuAlphaW(word[0]) ||
-                               XgIsCharZenkakuAlphaW(word[0]))
-                    {
-                        xg_imode = xg_im_ABC;
-                    }
-                }
-            }
+            std::sort(xg_dict_data.begin(), xg_dict_data.end(), xg_word_less());
 
             // ê¨å˜ÅB
             delete[] pbFile;
