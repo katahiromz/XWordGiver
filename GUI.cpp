@@ -3222,7 +3222,7 @@ bool __fastcall XgOnGenerate(HWND hwnd, bool show_answer)
         xg_strHeader.clear();
         xg_strNotes.clear();
         xg_strFileName.clear();
-        XgSetInputModeFromDict();
+        XgSetInputModeFromDict(hwnd);
 
         // キャンセルダイアログを表示し、実行を開始する。
         ::EnableWindow(xg_hwndInputPalette, FALSE);
@@ -3300,7 +3300,7 @@ bool __fastcall XgOnGenerateRepeatedly(HWND hwnd)
         xg_strNotes.clear();
         s_nNumberGenerated = 0;
         s_bOutOfDiskSpace = false;
-        XgSetInputModeFromDict();
+        XgSetInputModeFromDict(hwnd);
 
         // キャンセルダイアログを表示し、実行を開始する。
         ::EnableWindow(xg_hwndInputPalette, FALSE);
@@ -3414,7 +3414,7 @@ bool __fastcall XgOnSolveAddBlack(HWND hwnd)
     xg_vMarks.clear();
     xg_vMarkedCands.clear();
     xg_strFileName.clear();
-    XgSetInputModeFromDict();
+    XgSetInputModeFromDict(hwnd);
 
     // 候補ウィンドウを破棄する。
     XgDestroyCandsWnd();
@@ -3503,7 +3503,7 @@ bool __fastcall XgOnSolveNoAddBlack(HWND hwnd)
     xg_vMarks.clear();
     xg_vMarkedCands.clear();
     xg_strFileName.clear();
-    XgSetInputModeFromDict();
+    XgSetInputModeFromDict(hwnd);
 
     // 候補ウィンドウを破棄する。
     XgDestroyCandsWnd();
@@ -3622,7 +3622,7 @@ bool __fastcall XgOnSolveRepeatedly(HWND hwnd)
         xg_vecTateHints.clear();
         xg_vecYokoHints.clear();
 
-        XgSetInputModeFromDict();
+        XgSetInputModeFromDict(hwnd);
 
         // キャンセルダイアログを表示し、実行を開始する。
         ::EnableWindow(xg_hwndInputPalette, FALSE);
@@ -3716,7 +3716,7 @@ bool __fastcall XgOnSolveRepeatedlyNoAddBlack(HWND hwnd)
         xg_vYokoInfo.clear();
         xg_vecTateHints.clear();
         xg_vecYokoHints.clear();
-        XgSetInputModeFromDict();
+        XgSetInputModeFromDict(hwnd);
 
         // キャンセルダイアログを表示し、実行を開始する。
         ::EnableWindow(xg_hwndInputPalette, FALSE);

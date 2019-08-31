@@ -1028,18 +1028,18 @@ void __fastcall XgSetInputMode(HWND hwnd, XG_InputMode mode)
     XgUpdateImage(hwnd, 0, 0);
 }
 
-void __fastcall XgSetInputModeFromDict(void)
+void __fastcall XgSetInputModeFromDict(HWND hwnd)
 {
     if (xg_dict_data.size()) {
         WCHAR ch = xg_dict_data[0].m_word[0];
         if (XgIsCharHiraganaW(ch) || XgIsCharKatakanaW(ch)) {
-            xg_imode = xg_im_KANA;
+            XgSetInputMode(hwnd, xg_im_KANA);
         } else if (XgIsCharKanjiW(ch)) {
-            xg_imode = xg_im_KANJI;
+            XgSetInputMode(hwnd, xg_im_KANJI);
         } else if (XgIsCharZenkakuUpperW(ch) || XgIsCharZenkakuLowerW(ch) ||
                    XgIsCharHankakuUpperW(ch) || XgIsCharHankakuLowerW(ch))
         {
-            xg_imode = xg_im_ABC;
+            XgSetInputMode(hwnd, xg_im_ABC);
         }
     }
 }
