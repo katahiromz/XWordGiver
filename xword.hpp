@@ -1,3 +1,8 @@
+//////////////////////////////////////////////////////////////////////////////
+// xword.hpp --- XWord Giver (Japanese Crossword Generator)
+// Copyright (C) 2012-2019 Katayama Hirofumi MZ. All Rights Reserved.
+// (Japanese, Shift_JIS)
+
 #ifndef __XWORD_HPP__
 #define __XWORD_HPP__
 
