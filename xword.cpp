@@ -3363,7 +3363,7 @@ bool __fastcall XgDoLoadBuilderFile(HWND hwnd, LPCWSTR pszFile)
             xg_str_replace_all(str, sz1, sz2);
             str = XgNormalizeString(str);
 
-            if (str.size() != nWidth)
+            if (INT(str.size()) != nWidth)
                 break;
 
             rows.push_back(str);

@@ -154,6 +154,7 @@ static const LPCWSTR s_pszSmallFont = L"SmallFont";
 static const LPCWSTR s_pszUIFont = L"UIFont";
 static const LPCWSTR s_pszShowToolBar = L"ShowToolBar";
 static const LPCWSTR s_pszShowStatusBar = L"ShowStatusBar";
+static const LPCWSTR s_pszShowInputPalette = L"ShowInputPalette";
 static const LPCWSTR s_pszSaveAsJsonFile = L"SaveAsJsonFile";
 static const LPCWSTR s_pszNumberToGenerate = L"NumberToGenerate";
 static const LPCWSTR s_pszImageCopyWidth = L"ImageCopyWidth";
@@ -169,7 +170,7 @@ static const LPCWSTR s_pszDrawFrameForMarkedCell = L"DrawFrameForMarkedCell";
 static const LPCWSTR s_pszCharFeed = L"CharFeed";
 static const LPCWSTR s_pszTateInput = L"TateInput";
 static const LPCWSTR s_pszSmartResolution = L"SmartResolution";
-
+static const LPCWSTR s_pszInputMode = L"InputMode";
 
 // 連続生成の場合、無限に生成するか？
 static bool s_bInfinite = true;
@@ -463,6 +464,7 @@ bool __fastcall XgLoadSettings(void)
     s_nDictSaveMode = 0;
     s_bShowToolBar = true;
     s_bShowStatusBar = true;
+    xg_bShowInputPalette = false;
     xg_bSaveAsJsonFile = false;
     s_nImageCopyWidth = 250;
     s_nImageCopyHeight = 250;
@@ -476,6 +478,7 @@ bool __fastcall XgLoadSettings(void)
     xg_rgbMarkedCellColor = RGB(255, 255, 255);
     xg_bDrawFrameForMarkedCell = TRUE;
     xg_bSmartResolution = TRUE;
+    xg_imode = xg_im_KANA;
 
     // 会社名キーを開く。
     MRegKey company_key(HKEY_CURRENT_USER, s_pszSoftwareCompanyName, FALSE);
@@ -563,6 +566,10 @@ bool __fastcall XgLoadSettings(void)
             if (!app_key.QueryDword(s_pszShowStatusBar, dwValue)) {
                 s_bShowStatusBar = !!dwValue;
             }
+            if (!app_key.QueryDword(s_pszShowInputPalette, dwValue)) {
+                xg_bShowInputPalette = !!dwValue;
+            }
+
             if (!app_key.QueryDword(s_pszSaveAsJsonFile, dwValue)) {
                 xg_bSaveAsJsonFile = !!dwValue;
             }
@@ -606,6 +613,9 @@ bool __fastcall XgLoadSettings(void)
             }
             if (!app_key.QueryDword(s_pszSmartResolution, dwValue)) {
                 xg_bSmartResolution = dwValue;
+            }
+            if (!app_key.QueryDword(s_pszInputMode, dwValue)) {
+                xg_imode = (XG_InputMode)dwValue;
             }
 
             // 辞書ファイルのリストを取得する。
@@ -739,6 +749,8 @@ bool __fastcall XgSaveSettings(void)
 
             app_key.SetDword(s_pszShowToolBar, s_bShowToolBar);
             app_key.SetDword(s_pszShowStatusBar, s_bShowStatusBar);
+            app_key.SetDword(s_pszShowInputPalette, xg_bShowInputPalette);
+
             app_key.SetDword(s_pszSaveAsJsonFile, xg_bSaveAsJsonFile);
             app_key.SetDword(s_pszNumberToGenerate, s_nNumberToGenerate);
             app_key.SetDword(s_pszImageCopyWidth, s_nImageCopyWidth);
@@ -755,6 +767,7 @@ bool __fastcall XgSaveSettings(void)
 
             app_key.SetDword(s_pszDrawFrameForMarkedCell, xg_bDrawFrameForMarkedCell);
             app_key.SetDword(s_pszSmartResolution, xg_bSmartResolution);
+            app_key.SetDword(s_pszInputMode, (DWORD)xg_imode);
 
             // 辞書ファイルのリストを設定する。
             nCount = static_cast<int>(xg_dict_files.size());
@@ -4598,6 +4611,12 @@ void __fastcall MainWnd_OnDestroy(HWND /*hwnd*/)
     xg_hVScrollBar = NULL;
     ::DestroyWindow(xg_hSizeGrip);
     xg_hSizeGrip = NULL;
+    ::DestroyWindow(xg_hCandsWnd);
+    xg_hCandsWnd = NULL;
+    ::DestroyWindow(xg_hHintsWnd);
+    xg_hHintsWnd = NULL;
+    ::DestroyWindow(xg_hwndInputPalette);
+    xg_hwndInputPalette = NULL;
 
     // アプリを終了する。
     ::PostQuitMessage(0);
@@ -7494,6 +7513,9 @@ bool __fastcall MainWnd_OnCreate(HWND hwnd, LPCREATESTRUCT /*lpCreateStruct*/)
         ::ShowWindow(xg_hStatusBar, SW_SHOWNOACTIVATE);
     else
         ::ShowWindow(xg_hStatusBar, SW_HIDE);
+
+    if (xg_bShowInputPalette)
+        XgCreateInputPalette(hwnd);
 
     // パソコンが古い場合、警告を表示する。
     if (s_dwNumberOfProcessors <= 1 && !s_bOldNotice) {

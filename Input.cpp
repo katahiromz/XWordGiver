@@ -5,6 +5,9 @@
 
 #include "XWordGiver.hpp"
 
+// 入力パレットを表示するか？
+bool xg_bShowInputPalette = false;
+
 // 入力方向を切り替える。
 void __fastcall XgInputDirection(HWND hwnd, INT nDirection)
 {
@@ -675,7 +678,6 @@ void __fastcall MainWnd_OnKey(HWND hwnd, UINT vk, bool fDown, int /*cRepeat*/, U
         XgDestroyCandsWnd();
         // 現在のキャレット位置のマスの中身を消去する。
         {
-            bool flag = false;
             auto sa1 = std::make_shared<XG_UndoData_SetAt>();
             auto sa2 = std::make_shared<XG_UndoData_SetAt>();
             sa1->pos = sa2->pos = xg_caret_pos;
@@ -685,7 +687,6 @@ void __fastcall MainWnd_OnKey(HWND hwnd, UINT vk, bool fDown, int /*cRepeat*/, U
                 sa1->ch = ZEN_SPACE;
                 xg_ubUndoBuffer.Commit(UC_SETAT, sa1, sa2);
                 xg_xword.SetAt(xg_caret_pos, ZEN_SPACE);
-                flag = true;
 
                 XgEnsureCaretVisible(hwnd);
                 x = XgGetHScrollPos();
@@ -811,6 +812,7 @@ void InputPal_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT codeNotify)
     case IDOK:
     case IDCANCEL:
     case IDCLOSE:
+        xg_bShowInputPalette = false;
         DestroyWindow(hwnd);
         return;
     }
@@ -935,6 +937,7 @@ XgInputPaletteDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 // 入力パレットを破棄する。
 BOOL XgDestroyInputPalette(void)
 {
+    xg_bShowInputPalette = false;
     if (xg_hwndInputPalette) {
         ::DestroyWindow(xg_hwndInputPalette);
         xg_hwndInputPalette = NULL;
@@ -968,6 +971,7 @@ BOOL XgCreateInputPalette(HWND hwndOwner)
 
     ShowWindow(xg_hwndInputPalette, SW_SHOWNOACTIVATE);
     UpdateWindow(xg_hwndInputPalette);
+    xg_bShowInputPalette = true;
 
     return xg_hwndInputPalette != NULL;
 }

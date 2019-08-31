@@ -439,6 +439,9 @@ extern HWND        xg_hHintsWnd;
 // 答えを表示するか？
 extern bool xg_bShowAnswer;
 
+// 入力パレットを表示するか？
+extern bool xg_bShowInputPalette;
+
 // 黒マス追加なしか？
 extern bool xg_bNoAddBlack;
 
