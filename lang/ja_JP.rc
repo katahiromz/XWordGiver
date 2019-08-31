@@ -47,7 +47,7 @@ LANGUAGE LANG_JAPANESE, SUBLANG_DEFAULT
         MENUITEM "ヨコの候補(&A)...", ID_OPENCANDSWNDHORZ
         MENUITEM SEPARATOR
         MENUITEM "盤のコピー(&C)\tCtrl+C", ID_COPY
-        MENUITEM "盤の貼り付け(&P)\tCtrl+V", ID_PASTE
+        MENUITEM "貼り付け(&P)\tCtrl+V", ID_PASTE
         MENUITEM SEPARATOR
         MENUITEM "画像をコピー(&I)\tShift+Ctrl+C", ID_COPYASIMAGE
         MENUITEM "サイズを指定して画像をコピー(&S)", ID_COPYASIMAGESIZED
@@ -843,7 +843,7 @@ STRINGTABLE
     1103, "問題を保存する"
     1108, "解を求める"
     1135, "盤をコピー"
-    1136, "盤を貼り付け"
+    1136, "貼り付け"
     1151, "問題のみを印刷"
     1152, "問題と解答を印刷"
     1153, "解を求める(黒マス追加なし)"

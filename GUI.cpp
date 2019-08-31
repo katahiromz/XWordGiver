@@ -3222,6 +3222,7 @@ bool __fastcall XgOnGenerate(HWND hwnd, bool show_answer)
         xg_strHeader.clear();
         xg_strNotes.clear();
         xg_strFileName.clear();
+        XgSetInputModeFromDict();
 
         // キャンセルダイアログを表示し、実行を開始する。
         ::EnableWindow(xg_hwndInputPalette, FALSE);
@@ -3299,6 +3300,7 @@ bool __fastcall XgOnGenerateRepeatedly(HWND hwnd)
         xg_strNotes.clear();
         s_nNumberGenerated = 0;
         s_bOutOfDiskSpace = false;
+        XgSetInputModeFromDict();
 
         // キャンセルダイアログを表示し、実行を開始する。
         ::EnableWindow(xg_hwndInputPalette, FALSE);
@@ -3412,6 +3414,7 @@ bool __fastcall XgOnSolveAddBlack(HWND hwnd)
     xg_vMarks.clear();
     xg_vMarkedCands.clear();
     xg_strFileName.clear();
+    XgSetInputModeFromDict();
 
     // 候補ウィンドウを破棄する。
     XgDestroyCandsWnd();
@@ -3500,6 +3503,7 @@ bool __fastcall XgOnSolveNoAddBlack(HWND hwnd)
     xg_vMarks.clear();
     xg_vMarkedCands.clear();
     xg_strFileName.clear();
+    XgSetInputModeFromDict();
 
     // 候補ウィンドウを破棄する。
     XgDestroyCandsWnd();
@@ -3618,6 +3622,8 @@ bool __fastcall XgOnSolveRepeatedly(HWND hwnd)
         xg_vecTateHints.clear();
         xg_vecYokoHints.clear();
 
+        XgSetInputModeFromDict();
+
         // キャンセルダイアログを表示し、実行を開始する。
         ::EnableWindow(xg_hwndInputPalette, FALSE);
         ::DialogBoxW(xg_hInstance, MAKEINTRESOURCEW(3), hwnd,
@@ -3710,6 +3716,7 @@ bool __fastcall XgOnSolveRepeatedlyNoAddBlack(HWND hwnd)
         xg_vYokoInfo.clear();
         xg_vecTateHints.clear();
         xg_vecYokoHints.clear();
+        XgSetInputModeFromDict();
 
         // キャンセルダイアログを表示し、実行を開始する。
         ::EnableWindow(xg_hwndInputPalette, FALSE);
@@ -4307,11 +4314,9 @@ void __fastcall XgCopyMarkWordAsImageSized(HWND hwnd)
     }
 }
 
-// クリップボードから貼り付け。
-void __fastcall XgPasteBoard(HWND hwnd)
+std::wstring XgGetClipboardUnicodeText(HWND hwnd)
 {
     std::wstring str;
-    int x, y;
 
     // クリップボードを開く。
     HGLOBAL hGlobal;
@@ -4326,6 +4331,14 @@ void __fastcall XgPasteBoard(HWND hwnd)
         // クリップボードを閉じる。
         ::CloseClipboard();
     }
+
+    return str;
+}
+
+// クリップボードから貼り付け。
+void __fastcall XgPasteBoard(HWND hwnd, const std::wstring& str)
+{
+    int x, y;
 
     // 文字列が空じゃないか？
     if (!str.empty()) {
@@ -6936,16 +6949,24 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
 
     case ID_PASTE:  // 貼り付け。
         if (::GetForegroundWindow() == xg_hMainWnd) {
-            auto sa1 = std::make_shared<XG_UndoData_SetAll>();
-            auto sa2 = std::make_shared<XG_UndoData_SetAll>();
-            sa1->Get();
-            {
-                // 貼り付け。
-                XgPasteBoard(hwnd);
+            std::wstring str = XgGetClipboardUnicodeText(hwnd);
+            if (str.find(ZEN_ULEFT) != std::wstring::npos) {
+                auto sa1 = std::make_shared<XG_UndoData_SetAll>();
+                auto sa2 = std::make_shared<XG_UndoData_SetAll>();
+                sa1->Get();
+                {
+                    // 盤の貼り付け。
+                    XgPasteBoard(hwnd, str);
+                }
+                sa2->Get();
+                // 元に戻す情報を設定する。
+                xg_ubUndoBuffer.Commit(UC_SETALL, sa1, sa2);
+            } else {
+                // 単語の貼り付け。
+                for (auto& ch : str) {
+                    MainWnd_OnImeChar(hwnd, ch, 0);
+                }
             }
-            sa2->Get();
-            // 元に戻す情報を設定する。
-            xg_ubUndoBuffer.Commit(UC_SETALL, sa1, sa2);
         } else {
             HWND hwnd = ::GetFocus();
             ::SendMessageW(hwnd, WM_PASTE, 0, 0);

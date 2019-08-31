@@ -793,6 +793,29 @@ katakana:;
             y = XgGetVScrollPos();
             XgUpdateImage(hwnd, x, y);
         }
+    } else if (xg_imode == xg_im_ABC) {
+        if (XgIsCharHankakuUpperW(ch) || XgIsCharHankakuLowerW(ch) ||
+            XgIsCharZenkakuUpperW(ch) || XgIsCharZenkakuLowerW(ch))
+        {
+            std::array<WCHAR,2> sz;
+            LCMapStringW(JPN_LOCALE,
+                LCMAP_FULLWIDTH | LCMAP_KATAKANA | LCMAP_UPPERCASE,
+                &ch, 1, sz.data(), static_cast<int>(sz.size()));
+            ch = sz[0];
+
+            // 候補ウィンドウを破棄する。
+            XgDestroyCandsWnd();
+            // 文字を設定する。
+            xg_xword.SetAt(xg_caret_pos, ch);
+            XgEnsureCaretVisible(hwnd);
+
+            if (xg_bCharFeed)
+                XgCharFeed(hwnd);
+
+            x = XgGetHScrollPos();
+            y = XgGetVScrollPos();
+            XgUpdateImage(hwnd, x, y);
+        }
     }
 }
 
@@ -856,11 +879,7 @@ void InputPal_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT codeNotify)
             }
             break;
         default:
-            if (L'A' <= sz[0] && sz[0] <= L'Z') {
-                MainWnd_OnChar(xg_hMainWnd, sz[0], 1);
-            } else {
-                MainWnd_OnImeChar(xg_hMainWnd, sz[0], 0);
-            }
+            MainWnd_OnImeChar(xg_hMainWnd, sz[0], 0);
             break;
         }
     } else {
@@ -1007,4 +1026,20 @@ void __fastcall XgSetInputMode(HWND hwnd, XG_InputMode mode)
         XgCreateInputPalette(hwnd);
     }
     XgUpdateImage(hwnd, 0, 0);
+}
+
+void __fastcall XgSetInputModeFromDict(void)
+{
+    if (xg_dict_data.size()) {
+        WCHAR ch = xg_dict_data[0].m_word[0];
+        if (XgIsCharHiraganaW(ch) || XgIsCharKatakanaW(ch)) {
+            xg_imode = xg_im_KANA;
+        } else if (XgIsCharKanjiW(ch)) {
+            xg_imode = xg_im_KANJI;
+        } else if (XgIsCharZenkakuUpperW(ch) || XgIsCharZenkakuLowerW(ch) ||
+                   XgIsCharHankakuUpperW(ch) || XgIsCharHankakuLowerW(ch))
+        {
+            xg_imode = xg_im_ABC;
+        }
+    }
 }

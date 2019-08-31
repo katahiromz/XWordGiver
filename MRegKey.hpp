@@ -3,7 +3,7 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #ifndef MZC4_MREGKEY_HPP_
-#define MZC4_MREGKEY_HPP_       7   /* Version 7 */
+#define MZC4_MREGKEY_HPP_       8   /* Version 8 */
 
 #ifndef HKCR
     #define HKCR    HKEY_CLASSES_ROOT
@@ -340,7 +340,7 @@ inline /*virtual*/ MRegKey::~MRegKey()
 
 inline HKEY MRegKey::Handle() const
 {
-    return (this ? m_hKey : NULL);
+    return m_hKey;
 }
 
 inline MRegKey::operator HKEY() const
@@ -728,7 +728,7 @@ inline /*static*/ LONG MRegKey::RegReplaceKey(
 
 inline /*static*/ LONG MRegKey::RegDeleteTreeDx(HKEY hKey, LPCTSTR pszSubKey)
 {
-    return RegDeleteTreeDx(hKey, pszSubKey);
+    return ::RegDeleteTreeDx(hKey, pszSubKey);
 }
 
 inline LONG MRegKey::SetSz(LPCTSTR pszValueName, LPCTSTR pszValue)
