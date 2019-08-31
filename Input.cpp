@@ -945,8 +945,10 @@ void InputPal_OnKey(HWND hwnd, UINT vk, BOOL fDown, int cRepeat, UINT flags)
 
 void InputPal_OnMove(HWND hwnd, int x, int y)
 {
-    xg_nInputPaletteWndX = x;
-    xg_nInputPaletteWndY = y;
+    MRect rc;
+    ::GetWindowRect(hwnd, &rc);
+    xg_nInputPaletteWndX = rc.left;
+    xg_nInputPaletteWndY = rc.top;
 }
 
 // 入力パレットのダイアログプロシジャー。
