@@ -131,8 +131,14 @@ static const LPCWSTR s_pszCandsWndCY = L"CandsCY";
 static const LPCWSTR
     s_pszSoftwareCompanyName = L"Software\\Katayama Hirofumi MZ";
 
-// レジストリ項目。
+// アプリ名。
 static const LPCWSTR s_pszAppName = L"XWord";
+
+// 会社名とアプリ名。
+static const LPCWSTR
+    s_pszSoftwareCompanyAndApp = L"Software\\Katayama Hirofumi MZ\\XWord";
+
+// レジストリ項目。
 static const LPCWSTR s_pszAutoRetry = L"AutoRetry";
 static const LPCWSTR s_pszRows = L"Rows";
 static const LPCWSTR s_pszCols = L"Cols";
@@ -424,12 +430,10 @@ void __fastcall XgUpdateToolBarUI(HWND hwnd)
 // 設定を読み込む。
 bool __fastcall XgLoadSettings(void)
 {
-    LONG result;
-    HKEY hKey, hSubKey;
     int i, nFileCount = 0, nDirCount = 0;
     std::array<WCHAR,MAX_PATH>  sz;
     std::array<WCHAR,32>        szFormat;
-    DWORD cb, dwValue;
+    DWORD dwValue;
 
     // 初期化する。
     s_nMainWndX = CW_USEDEFAULT;
@@ -713,9 +717,6 @@ bool __fastcall XgLoadSettings(void)
 // 設定を保存する。
 bool __fastcall XgSaveSettings(void)
 {
-    LONG result;
-    HKEY hKey, hSubKey;
-    DWORD dwValue, dwDisposition, cb;
     int i, nCount;
     std::array<WCHAR,32> szFormat;
 
@@ -797,56 +798,8 @@ bool __fastcall XgSaveSettings(void)
 // 設定を消去する。
 bool __fastcall XgEraseSettings(void)
 {
-    LONG result;
-    HKEY hKey, hSubKey;
-
     // 会社名キーを開く。
-    result = ::RegOpenKeyExW(HKEY_CURRENT_USER, s_pszSoftwareCompanyName,
-        0, KEY_READ | KEY_WRITE, &hKey);
-    if (result == ERROR_SUCCESS) {
-        // アプリ名キーを開く。
-        result = ::RegOpenKeyExW(hKey, s_pszAppName, 0,
-            KEY_READ | KEY_WRITE, &hSubKey);
-        if (result == ERROR_SUCCESS) {
-            // 設定値を削除する。
-            ::RegDeleteValue(hSubKey, s_pszAutoRetry);
-            ::RegDeleteValue(hSubKey, s_pszRows);
-            ::RegDeleteValue(hSubKey, s_pszCols);
-            ::RegDeleteValue(hSubKey, s_pszRecentCount);
-            ::RegDeleteValue(hSubKey, s_pszOldNotice);
-            ::RegDeleteValue(hSubKey, s_pszSaveToCount);
-            ::RegDeleteValue(hSubKey, s_pszInfinite);
-            ::RegDeleteValue(hSubKey, s_pszDictSaveMode);
-            ::RegDeleteValue(hSubKey, s_pszCellFont);
-            ::RegDeleteValue(hSubKey, s_pszSmallFont);
-            ::RegDeleteValue(hSubKey, s_pszUIFont);
-            ::RegDeleteValue(hSubKey, s_pszShowToolBar);
-            ::RegDeleteValue(hSubKey, s_pszShowStatusBar);
-            ::RegDeleteValue(hSubKey, s_pszSaveAsJsonFile);
-            ::RegDeleteValue(hSubKey, s_pszNumberToGenerate);
-            ::RegDeleteValue(hSubKey, s_pszImageCopyWidth);
-            ::RegDeleteValue(hSubKey, s_pszImageCopyHeight);
-            ::RegDeleteValue(hSubKey, s_pszImageCopyByHeight);
-            ::RegDeleteValue(hSubKey, s_pszMarksHeight);
-            ::RegDeleteValue(hSubKey, s_pszAddThickFrame);
-            ::RegDeleteValue(hSubKey, s_pszWhiteCellColor);
-            ::RegDeleteValue(hSubKey, s_pszBlackCellColor);
-            ::RegDeleteValue(hSubKey, s_pszMarkedCellColor);
-            ::RegDeleteValue(hSubKey, s_pszDrawFrameForMarkedCell);
-            ::RegDeleteValue(hSubKey, s_pszHintsWndX);
-            ::RegDeleteValue(hSubKey, s_pszHintsWndY);
-            ::RegDeleteValue(hSubKey, s_pszHintsWndCX);
-            ::RegDeleteValue(hSubKey, s_pszHintsWndCY);
-            ::RegDeleteValue(hSubKey, s_pszCandsWndX);
-            ::RegDeleteValue(hSubKey, s_pszCandsWndY);
-            ::RegDeleteValue(hSubKey, s_pszCandsWndCX);
-            ::RegDeleteValue(hSubKey, s_pszCandsWndCY);
-            // アプリ名キーを閉じる。
-            ::RegCloseKey(hSubKey);
-        }
-        // 会社名キーを閉じる。
-        ::RegCloseKey(hKey);
-    }
+    RegDeleteTreeDx(HKEY_CURRENT_USER, s_pszSoftwareCompanyAndApp);
 
     return true;
 }
