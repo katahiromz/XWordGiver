@@ -153,7 +153,7 @@ static const LPCWSTR s_pszOldNotice = L"OldNotice";
 static const LPCWSTR s_pszSaveToCount = L"SaveToCount";
 static const LPCWSTR s_pszSaveTo = L"SaveTo %d";
 static const LPCWSTR s_pszInfinite = L"Infinite";
-static const LPCWSTR s_pszDictSaveMode = L"DictSaveMode";
+//static const LPCWSTR s_pszDictSaveMode = L"DictSaveMode";
 static const LPCWSTR s_pszCellFont = L"CellFont";
 static const LPCWSTR s_pszSmallFont = L"SmallFont";
 static const LPCWSTR s_pszUIFont = L"UIFont";
@@ -187,7 +187,7 @@ static bool s_bAutoRetry = true;
 static bool s_bOldNotice = false;
 
 // 辞書ファイルの保存モード（0: 確認する、1:自動的に保存する、2:保存しない）。
-static int s_nDictSaveMode = 0;
+static int s_nDictSaveMode = 2;
 
 // ショートカットの拡張子。
 static const LPCWSTR s_szShellLinkDotExt = L".LNK";
@@ -469,7 +469,7 @@ bool __fastcall XgLoadSettings(void)
     xg_szCellFont[0] = 0;
     xg_szSmallFont[0] = 0;
     xg_szUIFont[0] = 0;
-    s_nDictSaveMode = 0;
+    s_nDictSaveMode = 2;
     s_bShowToolBar = true;
     s_bShowStatusBar = true;
     xg_bShowInputPalette = false;
@@ -561,9 +561,9 @@ bool __fastcall XgLoadSettings(void)
                 s_bInfinite = !!dwValue;
             }
 
-            if (!app_key.QueryDword(s_pszDictSaveMode, dwValue)) {
-                s_nDictSaveMode = dwValue;
-            }
+            //if (!app_key.QueryDword(s_pszDictSaveMode, dwValue)) {
+            //    s_nDictSaveMode = !!dwValue;
+            //}
 
             if (!app_key.QuerySz(s_pszCellFont, sz.data(), sz.size())) {
                 ::lstrcpynW(xg_szCellFont.data(), sz.data(), int(xg_szCellFont.size()));
@@ -756,7 +756,7 @@ bool __fastcall XgSaveSettings(void)
             app_key.SetDword(s_pszRows, s_nRows);
             app_key.SetDword(s_pszCols, s_nCols);
             app_key.SetDword(s_pszInfinite, s_bInfinite);
-            app_key.SetDword(s_pszDictSaveMode, s_nDictSaveMode);
+            //app_key.SetDword(s_pszDictSaveMode, s_nDictSaveMode);
 
             app_key.SetSz(s_pszCellFont, xg_szCellFont.data(), xg_szCellFont.size());
             app_key.SetSz(s_pszSmallFont, xg_szSmallFont.data(), xg_szSmallFont.size());
@@ -4580,50 +4580,6 @@ void __fastcall XgCopyHintsStyle1(HWND hwnd, int hint_type)
 
 //////////////////////////////////////////////////////////////////////////////
 
-// 辞書の更新を保存するか確認するダイアログ。
-INT_PTR CALLBACK
-XgSaveDictDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
-{
-    HICON hIcon;
-    switch (uMsg)
-    {
-    case WM_INITDIALOG:
-        // 画面の中央に寄せる。
-        XgCenterDialog(hwnd);
-        // アイコンを設定する。
-        hIcon = ::LoadIconW(xg_hInstance, MAKEINTRESOURCEW(1));
-        ::SendDlgItemMessageW(hwnd, ico1, STM_SETICON,
-            reinterpret_cast<WPARAM>(hIcon), 0);
-        return TRUE;
-
-    case WM_COMMAND:
-        switch (LOWORD(wParam)) {
-        case IDYES: // はい。
-            if (::IsDlgButtonChecked(hwnd, chx1) == BST_CHECKED) {
-                s_nDictSaveMode = 1;
-            }
-            // ダイアログを閉じる。
-            ::EndDialog(hwnd, IDYES);
-            break;
-
-        case IDNO:  // いいえ。
-            if (::IsDlgButtonChecked(hwnd, chx1) == BST_CHECKED) {
-                s_nDictSaveMode = 2;
-            }
-            // ダイアログを閉じる。
-            ::EndDialog(hwnd, IDNO);
-            break;
-        }
-        break;
-
-    default:
-        break;
-    }
-    return FALSE;
-}
-
-//////////////////////////////////////////////////////////////////////////////
-
 // ウィンドウが破棄された。
 void __fastcall MainWnd_OnDestroy(HWND /*hwnd*/)
 {
@@ -5204,67 +5160,6 @@ void __fastcall MainWnd_OnMove(HWND hwnd, int /*x*/, int /*y*/)
     }
 }
 
-// 辞書ファイルを保存する（保存先確認なし）。
-void XgSaveDictFileUpdate1(HWND hwnd, const WCHAR *pszFile)
-{
-    if (XgSaveDictFile(pszFile)) {
-        // 保存したファイル項目を一番上にする。
-        auto end = xg_dict_files.end();
-        for (auto it = xg_dict_files.begin(); it != end; it++) {
-            if (_wcsicmp((*it).data(), pszFile) == 0)
-            {
-                xg_dict_files.erase(it);
-                break;
-            }
-        }
-        xg_dict_files.emplace_front(pszFile);
-
-        // ヒント追加フラグをクリアする。
-        xg_bHintsAdded = false;
-
-        // 辞書の変更フラグを解除する。
-        XgDictSetModified(false);
-    } else {
-        XgCenterMessageBoxW(hwnd, XgLoadStringDx1(73),
-            XgLoadStringDx2(2), MB_ICONERROR | MB_OK);
-    }
-}
-
-// 辞書ファイルを保存する（保存先確認あり）。
-void XgSaveDictFileUpdate2(HWND hwnd)
-{
-    std::array<WCHAR,MAX_PATH> sz;
-    OPENFILENAMEW ofn;
-
-    if (xg_dict_files.size()) {
-        XgSaveDictFileUpdate1(hwnd, xg_dict_files[0].data());
-    } else {
-        // 保存先を選ぶ。
-        ZeroMemory(&ofn, sizeof(ofn));
-        ofn.lStructSize = OPENFILENAME_SIZE_VERSION_400W;
-        ofn.hwndOwner = hwnd;
-        ofn.lpstrFilter = XgMakeFilterString(XgLoadStringDx2(71));
-        if (xg_dict_files.empty()) {
-            sz[0] = 0;
-        } else {
-            LPCWSTR pch = wcsrchr(xg_dict_files[0].data(), L'\\');
-            if (pch)
-                ::lstrcpynW(sz.data(), pch + 1, static_cast<int>(sz.size()));
-            else
-                sz[0] = 0;
-        }
-        ofn.lpstrFile = sz.data();
-        ofn.nMaxFile = static_cast<DWORD>(sz.size());
-        ofn.lpstrTitle = XgLoadStringDx1(72);
-        ofn.Flags = OFN_EXPLORER | OFN_ENABLESIZING | OFN_OVERWRITEPROMPT |
-            OFN_PATHMUSTEXIST | OFN_HIDEREADONLY;
-        ofn.lpstrDefExt = L"dic";
-        if (::GetSaveFileNameW(&ofn)) {
-            XgSaveDictFileUpdate1(hwnd, ofn.lpstrFile);
-        }
-    }
-}
-
 // 一時的に保存する色のデータ。
 COLORREF s_rgbColors[3];
 
@@ -5278,21 +5173,6 @@ BOOL SettingsDlg_OnInitDialog(HWND hwnd)
 
     // 画面の中央に寄せる。
     XgCenterDialog(hwnd);
-
-    // 辞書ファイルの保存モードを格納する。
-    std::array<WCHAR,128> szText;
-    COMBOBOXEXITEMW item;
-    for (int i = 77; i <= 79; ++i) {
-        item.mask = CBEIF_TEXT;
-        item.iItem = -1;
-        ::lstrcpynW(szText.data(), XgLoadStringDx1(i), 
-                  static_cast<int>(szText.size()));
-        item.pszText = szText.data();
-        item.cchTextMax = -1;
-        ::SendDlgItemMessageW(hwnd, cmb1, CBEM_INSERTITEMW, 0,
-                            reinterpret_cast<LPARAM>(&item));
-    }
-    ::SendDlgItemMessageW(hwnd, cmb1, CB_SETCURSEL, s_nDictSaveMode, 0);
 
     // フォント名を格納する。
     ::SetDlgItemTextW(hwnd, edt1, xg_szCellFont.data());
@@ -5317,8 +5197,9 @@ BOOL SettingsDlg_OnInitDialog(HWND hwnd)
 void SettingsDlg_OnOK(HWND hwnd)
 {
     // 辞書ファイルの保存モードを取得する。
-    s_nDictSaveMode = 
-        static_cast<int>(::SendDlgItemMessageW(hwnd, cmb1, CB_GETCURSEL, 0, 0));
+    //s_nDictSaveMode = 
+    //    static_cast<int>(::SendDlgItemMessageW(hwnd, cmb1, CB_GETCURSEL, 0, 0));
+    s_nDictSaveMode = 2;
 
     // フォント名を取得する。
     std::array<WCHAR,LF_FACESIZE> szName;
@@ -6607,60 +6488,6 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
             if (!XgDoSave(hwnd, sz.data(), xg_bSaveAsJsonFile)) {
                 // 保存に失敗。
                 XgCenterMessageBoxW(hwnd, XgLoadStringDx1(7), nullptr, MB_ICONERROR);
-            } else {
-                // 保存成功。
-                if (!dict_updated)
-                    break;
-
-                // 必要ならば、辞書の更新を促す。
-                if (s_nDictSaveMode) {
-                    if (s_nDictSaveMode == 1) {
-                        // 自動保存。
-                        XgSaveDictFileUpdate2(hwnd);
-                    }
-                }
-                else if (xg_dict_files.empty() ||
-                         !XgCanWriteFile(xg_dict_files[0].data()))
-                {
-                    // 書き込みできない。保存するかユーザーに確認。
-                    int id = XgCenterMessageBoxW(hwnd,
-                        XgLoadStringDx1(69), XgLoadStringDx2(2),
-                        MB_ICONINFORMATION | MB_OKCANCEL);
-                    if (id == IDOK) {
-                        // 保存先を選ぶ。
-                        ZeroMemory(&ofn, sizeof(ofn));
-                        ofn.lStructSize = OPENFILENAME_SIZE_VERSION_400W;
-                        ofn.hwndOwner = hwnd;
-                        ofn.lpstrFilter = XgMakeFilterString(XgLoadStringDx2(71));
-                        if (xg_dict_files.empty()) {
-                            sz[0] = 0;
-                        } else {
-                            LPCWSTR pch = wcsrchr(xg_dict_files[0].data(), L'\\');
-                            if (pch)
-                                ::lstrcpynW(sz.data(), pch + 1, MAX_PATH);
-                            else
-                                sz[0] = 0;
-                        }
-                        ofn.lpstrFile = sz.data();
-                        ofn.nMaxFile = static_cast<DWORD>(sz.size());
-                        ofn.lpstrTitle = XgLoadStringDx1(72);
-                        ofn.Flags = OFN_EXPLORER | OFN_ENABLESIZING | OFN_OVERWRITEPROMPT |
-                            OFN_PATHMUSTEXIST | OFN_HIDEREADONLY;
-                        ofn.lpstrDefExt = L"dic";
-                        if (::GetSaveFileNameW(&ofn)) {
-                            // 辞書ファイルを保存する。
-                            XgSaveDictFileUpdate1(hwnd, ofn.lpstrFile);
-                        }
-                    }
-                } else {
-                    // 保存するかユーザーに確認。
-                    int id = static_cast<int>(::DialogBoxW(xg_hInstance,
-                        MAKEINTRESOURCEW(6), hwnd, XgSaveDictDlgProc));
-                    if (id == IDYES) {
-                        // 辞書ファイルを保存する。
-                        XgSaveDictFileUpdate2(hwnd);
-                    }
-                }
             }
         }
         // ツールバーのUIを更新する。
@@ -7069,74 +6896,6 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
         {
             static LPCWSTR s_pszBBS = L"http://katahiromz.bbs.fc2.com/";
             ::ShellExecuteW(hwnd, NULL, s_pszBBS, NULL, NULL, SW_SHOWNORMAL);
-        }
-        break;
-
-    case ID_UPDATEDICTFILE: // 辞書データ ファイルを更新する。
-        if (!XgAreHintsModified() && !XgIsDictUpdated()) {
-            // ヒントと辞書に更新がない。
-            XgCenterMessageBoxW(hwnd, XgLoadStringDx1(80), XgLoadStringDx2(2),
-                MB_ICONINFORMATION | MB_OK);
-            break;
-        }
-
-        if (XgAreHintsModified()) {
-            auto hu1 = std::make_shared<XG_UndoData_HintsUpdated>();
-            auto hu2 = std::make_shared<XG_UndoData_HintsUpdated>();
-            hu1->Get();
-            {
-                // ヒントを更新する。
-                XgUpdateHintsData();
-                // ヒントに従って辞書を更新する。
-                XgUpdateDictData();
-            }
-            hu2->Get();
-            xg_ubUndoBuffer.Commit(UC_HINTS_UPDATED, hu1, hu2);
-        }
-
-        // 辞書ファイルに書き込む。
-        if (xg_dict_files.empty() ||
-            !XgCanWriteFile(xg_dict_files[0].data()))
-        {
-            // 書き込みできない。保存するかユーザーに確認。
-            int id = XgCenterMessageBoxW(hwnd,
-                XgLoadStringDx1(69), XgLoadStringDx2(2),
-                MB_ICONINFORMATION | MB_OKCANCEL);
-            if (id == IDOK) {
-                // 保存先を選ぶ。
-                ZeroMemory(&ofn, sizeof(ofn));
-                ofn.lStructSize = OPENFILENAME_SIZE_VERSION_400W;
-                ofn.hwndOwner = hwnd;
-                ofn.lpstrFilter = XgMakeFilterString(XgLoadStringDx2(71));
-                if (xg_dict_files.empty()) {
-                    sz[0] = 0;
-                } else {
-                    LPCWSTR pch = wcsrchr(xg_dict_files[0].data(), L'\\');
-                    if (pch)
-                        ::lstrcpynW(sz.data(), pch + 1, 
-                                  static_cast<int>(sz.size()));
-                    else
-                        sz[0] = 0;
-                }
-                ofn.lpstrFile = sz.data();
-                ofn.nMaxFile = static_cast<DWORD>(sz.size());
-                ofn.lpstrTitle = XgLoadStringDx1(72);
-                ofn.Flags = OFN_EXPLORER | OFN_ENABLESIZING | OFN_OVERWRITEPROMPT |
-                    OFN_PATHMUSTEXIST | OFN_HIDEREADONLY;
-                ofn.lpstrDefExt = L"dic";
-                if (::GetSaveFileNameW(&ofn)) {
-                    // 辞書ファイルを保存する。
-                    XgSaveDictFileUpdate1(hwnd, ofn.lpstrFile);
-                }
-            }
-        } else {
-            // 保存するかユーザーに確認。
-            int id = static_cast<int>(::DialogBoxW(xg_hInstance,
-                MAKEINTRESOURCEW(6), hwnd, XgSaveDictDlgProc));
-            if (id == IDYES) {
-                // 辞書ファイルを保存する。
-                XgSaveDictFileUpdate2(hwnd);
-            }
         }
         break;
 

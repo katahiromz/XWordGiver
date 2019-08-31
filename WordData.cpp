@@ -350,62 +350,6 @@ bool __fastcall XgUpdateDictData(void)
     return updated;
 }
 
-// 辞書ファイルを保存する。
-bool __fastcall XgSaveDictFile(LPCWSTR pszFile)
-{
-    // 辞書を一意的にする。
-    XgSortAndUniqueDictData();
-
-    // ファイルを開く。
-    HANDLE hFile = CreateFileW(pszFile, GENERIC_WRITE, FILE_SHARE_READ, nullptr,
-        CREATE_ALWAYS, 0, nullptr);
-    if (hFile == INVALID_HANDLE_VALUE)
-        return false;   // failure
-
-    // BOMを書き込む。
-    DWORD dwWritten;
-    if (!::WriteFile(hFile, "\xFF\xFE", 2, &dwWritten, NULL)) {
-        ::CloseHandle(hFile);
-        ::DeleteFile(pszFile);
-        return false;   // failure
-    }
-
-    // ヘッダーを書き込む。
-    if (!::WriteFile(hFile, s_header.data(),
-                     static_cast<DWORD>(sizeof(WCHAR) * s_header.size()),
-                     &dwWritten, NULL))
-    {
-        ::CloseHandle(hFile);
-        ::DeleteFile(pszFile);
-        return false;   // failure
-    }
-
-    // 単語データを書き込む。
-    std::array<WCHAR,512> sz;
-    for (auto& word_data : xg_dict_data) {
-        if (word_data.m_word.size() + word_data.m_hint.size() > 500) {
-            continue;
-        }
-        lstrcpyW(sz.data(), word_data.m_word.data());
-        lstrcatW(sz.data(), L"\t");
-        lstrcatW(sz.data(), word_data.m_hint.data());
-        lstrcatW(sz.data(), xg_pszNewLine);
-        if (!::WriteFile(hFile, sz.data(), 
-                         static_cast<DWORD>(sizeof(WCHAR) * wcslen(sz.data())), 
-                         &dwWritten, NULL))
-        {
-            ::CloseHandle(hFile);
-            ::DeleteFile(pszFile);
-            return false;   // failure
-        }
-    }
-
-    // ファイルを閉じる。
-    ::CloseHandle(hFile);
-
-    return true;    // success
-}
-
 // 辞書データをソートし、一意的にする。
 void __fastcall XgSortAndUniqueDictData(void)
 {

@@ -82,9 +82,6 @@ extern std::vector<XG_WordData> xg_dict_data;
 // 辞書ファイルを読み込む。
 bool __fastcall XgLoadDictFile(LPCWSTR pszFile);
 
-// 辞書ファイルを保存する。
-bool __fastcall XgSaveDictFile(LPCWSTR pszFile);
-
 // 辞書から単語を探し出す。
 XG_WordData *XgFindWordFromDict(const std::wstring& word);
 

@@ -47,7 +47,6 @@
 #define ID_SETTINGS                         158
 #define ID_ERASESETTINGS                    159
 #define ID_OPENBBS                          160
-#define ID_UPDATEDICTFILE                   161
 #define ID_SENDMAIL                         162
 #define ID_OPENLICENSE                      163
 #define ID_CUT                              164
