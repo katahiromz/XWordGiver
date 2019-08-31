@@ -113,11 +113,10 @@ LANGUAGE LANG_JAPANESE, SUBLANG_DEFAULT
         MENUITEM "次のペイン(&N)\tF6", ID_PANENEXT
         MENUITEM "前のペイン(&P)\tShift+F6", ID_PANEPREV
         MENUITEM SEPARATOR
-        MENUITEM "ズームイン(&Z)\tCtrl+ホイール↑", ID_ZOOMIN
-        MENUITEM "ズームアウト(&Z)\tCtrl+ホイール↓", ID_ZOOMOUT
-        MENUITEM "ズーム &100%", ID_ZOOM100
+        MENUITEM "ズームイン(&Z)\tCtrl+ホイール↑\tCtrl+]", ID_ZOOMIN
+        MENUITEM "ズームアウト(&Z)\tCtrl+ホイール↓\tCtrl+[", ID_ZOOMOUT
+        MENUITEM "ズーム &100%\tCtrl+\\", ID_ZOOM100
         MENUITEM SEPARATOR
-        MENUITEM "単語をウェブ検索(&W)", ID_ONLINEDICT
         MENUITEM "単語をウェブ検索(&V) (タテ)\tAlt+↓", ID_ONLINEDICTV
         MENUITEM "単語をウェブ検索(&H) (ヨコ)\tAlt+→", ID_ONLINEDICTH
         MENUITEM SEPARATOR
