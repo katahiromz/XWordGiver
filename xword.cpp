@@ -4586,7 +4586,7 @@ unsigned __stdcall XgGenerateBlacks(void *param)
     xg_solution.ResetAndSetSize(xg_nRows, xg_nCols);
     XG_Board xword;
 
-    if (xg_imode == xg_im_KANJI) {
+    if (xg_imode == xg_im_KANJI || xg_nRows < 5 || xg_nCols < 5) {
         do {
             if (xg_bBlacksGenerated || xg_bCancelled)
                 break;
@@ -4610,7 +4610,7 @@ unsigned __stdcall XgGenerateBlacksSmart(void *param)
 
     XG_Board xword;
     srand(::GetTickCount() ^ ::GetCurrentThreadId());
-    if (xg_imode == xg_im_KANJI) {
+    if (xg_imode == xg_im_KANJI || xg_nRows < 5 || xg_nCols < 5) {
         do {
             if (xg_bCancelled)
                 break;
