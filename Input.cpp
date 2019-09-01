@@ -942,18 +942,20 @@ void InputPal_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT codeNotify)
         case 20064: // NL
             XgReturn(xg_hMainWnd);
             break;
-        case 20070: // 英字/カナ
-            if (xg_imode == xg_im_ABC) {
-                XgSetInputMode(xg_hMainWnd, xg_im_KANA);
-            } else {
-                XgSetInputMode(xg_hMainWnd, xg_im_ABC);
-            }
+        case 20070: // カナに
+            XgSetInputMode(xg_hMainWnd, xg_im_KANA);
             break;
         case 20071: // 縦置き/横置き
             if (xg_imode == xg_im_KANA) {
                 xg_bTateOki = !xg_bTateOki;
                 XgCreateInputPalette(xg_hMainWnd);
             }
+            break;
+        case 20072: // 英字に
+            XgSetInputMode(xg_hMainWnd, xg_im_ABC);
+            break;
+        case 20073: // ロシアに
+            XgSetInputMode(xg_hMainWnd, xg_im_RUSSIA);
             break;
         }
     }
@@ -1039,6 +1041,10 @@ BOOL XgCreateInputPalette(HWND hwndOwner)
             CreateDialogW(xg_hInstance, MAKEINTRESOURCEW(15), hwndOwner,
                           XgInputPaletteDlgProc);
         }
+        break;
+    case xg_im_RUSSIA:
+        CreateDialogW(xg_hInstance, MAKEINTRESOURCEW(17), hwndOwner,
+                      XgInputPaletteDlgProc);
         break;
     default:
         return FALSE;
