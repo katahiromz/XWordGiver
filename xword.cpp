@@ -1817,7 +1817,7 @@ XgSetString(HWND hwnd, const std::wstring& str, bool json)
                                 break;
                             word += ch;
                         }
-                        hint.m_strWord = word;
+                        hint.m_strWord = std::move(word);
                         break;
                     }
                 }
@@ -1835,7 +1835,7 @@ XgSetString(HWND hwnd, const std::wstring& str, bool json)
                                 break;
                             word += ch;
                         }
-                        hint.m_strWord = word;
+                        hint.m_strWord = std::move(word);
                         break;
                     }
                 }

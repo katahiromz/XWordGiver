@@ -266,6 +266,14 @@ struct XG_Hint
         m_strWord = info.m_strWord;
         m_strHint = info.m_strHint;
     }
+
+    inline
+    void operator=(XG_Hint&& info)
+    {
+        m_number = info.m_number;
+        m_strWord = std::move(info.m_strWord);
+        m_strHint = std::move(info.m_strHint);
+    }
 };
 
 namespace std
@@ -291,32 +299,23 @@ class XG_Board
 public:
     // コンストラクタ。
     XG_Board();
-    // コピーコンストラクタ。
     XG_Board(const XG_Board& xw);
+    XG_Board(XG_Board&& xw);
 
     // 代入。
     void __fastcall operator=(const XG_Board& xw);
-
-    // コンストラクタ。
-    XG_Board(XG_Board&& xw);
-    // 代入。
     void __fastcall operator=(XG_Board&& xw);
 
     // マスの内容を取得する。
     WCHAR __fastcall GetAt(int i) const;
-    // マスの内容を取得する。
     WCHAR __fastcall GetAt(int iRow, int jCol) const;
-    // マスの内容を取得する。
     WCHAR __fastcall GetAt(const XG_Pos& pos) const;
     // マスの内容を設定する。
     void __fastcall SetAt(int i, WCHAR ch);
-    // マスの内容を設定する。
     void __fastcall SetAt(int iRow, int jCol, WCHAR ch);
-    // マスの内容を設定する。
     void __fastcall SetAt(const XG_Pos& pos, WCHAR ch);
     // 空ではないマスの個数を返す。
     WCHAR& __fastcall Count();
-    // 空ではないマスの個数を返す。
     WCHAR __fastcall Count() const;
     // クリアする。
     void __fastcall clear();
@@ -335,7 +334,6 @@ public:
 
     // クロスワードの文字列を取得する。
     void __fastcall GetString(std::wstring& str) const;
-    // クロスワードに文字列を設定する。
     bool __fastcall SetString(const std::wstring& strToBeSet);
 
     // ヒント文字列を取得する。
