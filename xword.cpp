@@ -1531,7 +1531,7 @@ bool __fastcall XgParseHints(
             xg_str_replace_all(hint, L"\n", L"");
             xg_str_replace_all(hint, L"\t", L"");
             xg_str_trim(hint);
-            hints.emplace_back(XG_Hint(number, std::move(word), std::move(hint)));
+            hints.emplace_back(number, std::move(word), std::move(hint));
             break;
         } else {
             std::wstring hint = str.substr(i4, i5 - i4);
@@ -1539,7 +1539,7 @@ bool __fastcall XgParseHints(
             xg_str_replace_all(hint, L"\n", L"");
             xg_str_replace_all(hint, L"\t", L"");
             xg_str_trim(hint);
-            hints.emplace_back(XG_Hint(number, std::move(word), std::move(hint)));
+            hints.emplace_back(number, std::move(word), std::move(hint));
             i = i5;
         }
     }
