@@ -65,7 +65,7 @@
 #include "MRegKey.hpp"
 #include "ScrollView.hpp"
 
-#include "WordData.hpp"
+#include "Dictionary.hpp"
 #include "xword.hpp"
 #include "Marks.hpp"
 

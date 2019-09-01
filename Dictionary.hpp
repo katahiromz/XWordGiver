@@ -1,10 +1,10 @@
 //////////////////////////////////////////////////////////////////////////////
-// WordData.hpp --- XWord Giver (Japanese Crossword Generator)
+// Dictionary.hpp --- XWord Giver (Japanese Crossword Generator)
 // Copyright (C) 2012-2019 Katayama Hirofumi MZ. All Rights Reserved.
 // (Japanese, Shift_JIS)
 
-#ifndef __XG_WORDDATA_HPP__
-#define __XG_WORDDATA_HPP__
+#ifndef __XG_DICTIONARY_HPP__
+#define __XG_DICTIONARY_HPP__
 
 //////////////////////////////////////////////////////////////////////////////
 // 単語データ。
@@ -152,4 +152,4 @@ protected:
 
 //////////////////////////////////////////////////////////////////////////////
 
-#endif  // ndef __XG_WORDDATA_HPP__
+#endif  // ndef __XG_DICTIONARY_HPP__

@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-// WordData.cpp --- XWord Giver (Japanese Crossword Generator)
+// Dictionary.cpp --- XWord Giver (Japanese Crossword Generator)
 // Copyright (C) 2012-2019 Katayama Hirofumi MZ. All Rights Reserved.
 // (Japanese, Shift_JIS)
 

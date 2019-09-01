@@ -80,13 +80,13 @@ endif()
 
 # xword.exe
 add_executable(xword${BITS} WIN32
+    Dictionary.cpp
     GUI.cpp
     Input.cpp
     Marks.cpp
     ScrollView.cpp
     UndoBuffer.cpp
     Utils.cpp
-    WordData.cpp
     xword.cpp
     xword_res.rc)
 target_link_libraries(xword${BITS} comctl32 imm32 shell32 ole32 uuid shlwapi)
