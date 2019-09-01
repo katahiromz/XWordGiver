@@ -155,7 +155,6 @@ LANGUAGE LANG_JAPANESE, SUBLANG_DEFAULT
     {
         MENUITEM "黒マス(&B)\t#", ID_BLOCKNOFEED
         MENUITEM "空白(&S)\t_", ID_SPACENOFEED
-        MENUITEM SEPARATOR
         POPUP "カナ"
         {
             POPUP "ア行"
@@ -276,6 +275,8 @@ LANGUAGE LANG_JAPANESE, SUBLANG_DEFAULT
             }
             MENUITEM "長音 (ー)", 10150
         }
+        MENUITEM SEPARATOR
+        MENUITEM "二重マス切り替え(&T)\tCtrl+.", ID_TOGGLEMARK
         MENUITEM SEPARATOR
         MENUITEM "候補を表示(&C) (タテ)\tShift+Ctrl+↓", ID_OPENCANDSWNDVERT
         MENUITEM "候補を表示(&A) (ヨコ)\tShift+Ctrl+→", ID_OPENCANDSWNDHORZ
