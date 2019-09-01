@@ -182,6 +182,7 @@ static const LPCWSTR s_pszCharFeed = L"CharFeed";
 static const LPCWSTR s_pszTateInput = L"TateInput";
 static const LPCWSTR s_pszSmartResolution = L"SmartResolution";
 static const LPCWSTR s_pszInputMode = L"InputMode";
+static const LPCWSTR s_pszZoomRate = L"ZoomRate";
 
 // 連続生成の場合、無限に生成するか？
 static bool s_bInfinite = true;
@@ -496,6 +497,7 @@ bool __fastcall XgLoadSettings(void)
     xg_bDrawFrameForMarkedCell = TRUE;
     xg_bSmartResolution = TRUE;
     xg_imode = xg_im_KANA;
+    xg_nZoomRate = 100;
 
     // 会社名キーを開く。
     MRegKey company_key(HKEY_CURRENT_USER, s_pszSoftwareCompanyName, FALSE);
@@ -640,6 +642,9 @@ bool __fastcall XgLoadSettings(void)
             }
             if (!app_key.QueryDword(s_pszInputMode, dwValue)) {
                 xg_imode = (XG_InputMode)dwValue;
+            }
+            if (!app_key.QueryDword(s_pszZoomRate, dwValue)) {
+                xg_nZoomRate = dwValue;
             }
 
             // 辞書ファイルのリストを取得する。
@@ -792,6 +797,7 @@ bool __fastcall XgSaveSettings(void)
             app_key.SetDword(s_pszDrawFrameForMarkedCell, xg_bDrawFrameForMarkedCell);
             app_key.SetDword(s_pszSmartResolution, xg_bSmartResolution);
             app_key.SetDword(s_pszInputMode, (DWORD)xg_imode);
+            app_key.SetDword(s_pszZoomRate, xg_nZoomRate);
 
             // 辞書ファイルのリストを設定する。
             nCount = static_cast<int>(xg_dict_files.size());
