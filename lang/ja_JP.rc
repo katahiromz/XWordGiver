@@ -327,7 +327,7 @@ FONT 9, "MS UI Gothic"
     CONTROL "", cmb1, "ComboBoxEx32", CBS_AUTOHSCROLL | CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP, 10, 65, 290, 80
     PUSHBUTTON "参照(&B)...", psh1, 250, 85, 50, 14
     AUTOCHECKBOX "スマート解決(&S)", chx2, 5, 90, 102, 14
-    AUTOCHECKBOX "一定時間が過ぎたら再計算し直す(&T)", chx1, 5, 110, 135, 14
+    AUTOCHECKBOX "一定時間が過ぎたらリトライ(&T)", chx1, 5, 110, 135, 14
     DEFPUSHBUTTON "計算開始(&G)", IDOK, 175, 110, 60, 14
     PUSHBUTTON "キャンセル", IDCANCEL, 240, 110, 60, 14
 }
@@ -340,7 +340,7 @@ FONT 9, "MS UI Gothic"
     LTEXT "計算しています...", stc1, 5, 7, 155, 12
     CONTROL "", ctl1, "msctls_progress32", 0, 5, 25, 155, 10
     CONTROL "", 1185, "msctls_progress32", 0, 5, 40, 155, 10
-    PUSHBUTTON "再計算し直す(&R)", psh2, 5, 55, 75, 14
+    PUSHBUTTON "リトライ(&R)", psh2, 5, 55, 75, 14
     PUSHBUTTON "キャンセル", psh1, 85, 55, 75, 14
 }
 
@@ -373,7 +373,7 @@ FONT 9, "MS UI Gothic"
     LTEXT "辞書データ ファイル(&W):", IDC_STATIC, 10, 52, 90, 12
     CONTROL "", cmb1, "ComboBoxEx32", CBS_AUTOHSCROLL | CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP, 10, 65, 290, 80
     PUSHBUTTON "参照(&B)...", psh1, 250, 85, 50, 14
-    AUTOCHECKBOX "一定時間が過ぎたら再計算し直す(&T)", chx1, 10, 85, 135, 14
+    AUTOCHECKBOX "一定時間が過ぎたらリトライ(&T)", chx1, 10, 85, 135, 14
     LTEXT "保存先フォルダ(&S):", IDC_STATIC, 10, 112, 60, 12
     CONTROL "", cmb2, "ComboBoxEx32", CBS_AUTOHSCROLL | CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP, 78, 110, 165, 80
     LTEXT "作成する問題の個数(&N):", IDC_STATIC, 10, 137, 102, 12
@@ -428,7 +428,7 @@ FONT 9, "MS UI Gothic"
     CONTROL "", scr1, "msctls_updown32", UDS_ARROWKEYS | UDS_AUTOBUDDY | UDS_ALIGNRIGHT | UDS_SETBUDDYINT, 101, 24, 12, 20
     AUTOCHECKBOX "無制限に作成する(&I)", chx2, 165, 25, 135, 14
     PUSHBUTTON "参照(&O)...", psh1, 250, 5, 50, 14
-    AUTOCHECKBOX "一定時間が過ぎたら再計算し直す(&T)", chx1, 10, 45, 155, 14
+    AUTOCHECKBOX "一定時間が過ぎたらリトライ(&T)", chx1, 10, 45, 155, 14
     AUTOCHECKBOX "&JSON形式で保存する", chx3, 10, 60, 102, 14
     DEFPUSHBUTTON "計算開始(&S)", IDOK, 175, 60, 60, 14
     PUSHBUTTON "キャンセル", IDCANCEL, 240, 60, 60, 14
