@@ -102,7 +102,7 @@ INT xg_nZoomRate = 100;
 // static variables
 
 // クロスワードのサイズの設定。
-static int s_nRows = 5, s_nCols = 5;
+static int s_nRows = 7, s_nCols = 7;
 
 // 保存先のパスのリスト。
 static std::deque<std::wstring>  s_dirs_save_to;
@@ -474,7 +474,7 @@ bool __fastcall XgLoadSettings(void)
     xg_dict_files.clear();
     s_dirs_save_to.clear();
     s_bAutoRetry = true;
-    s_nRows = s_nCols = 5;
+    s_nRows = s_nCols = 7;
     s_bInfinite = true;
     xg_szCellFont[0] = 0;
     xg_szSmallFont[0] = 0;
