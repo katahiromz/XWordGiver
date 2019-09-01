@@ -5030,6 +5030,10 @@ void __fastcall MainWnd_OnSize(HWND hwnd, UINT /*state*/, int /*cx*/, int /*cy*/
         cyStatus = rcStatus.Height();
 
         XgUpdateStatusBar(hwnd);
+
+        ::ShowWindow(xg_hSizeGrip, SW_HIDE);
+    } else {
+        ::ShowWindow(xg_hSizeGrip, SW_SHOWNOACTIVATE);
     }
 
     MRect rc, rcClient;
@@ -5070,10 +5074,12 @@ void __fastcall MainWnd_OnSize(HWND hwnd, UINT /*state*/, int /*cx*/, int /*cy*/
             cx - cxVScrollBar, y,
             cxVScrollBar, cy - cyHScrollBar,
             SWP_SHOWWINDOW | SWP_NOZORDER | SWP_NOACTIVATE | SWP_NOOWNERZORDER);
-        ::DeferWindowPos(hDwp, xg_hSizeGrip, NULL,
-            x + cx - cxVScrollBar, y + cy - cyHScrollBar,
-            cxVScrollBar, cyHScrollBar,
-            SWP_SHOWWINDOW | SWP_NOZORDER | SWP_NOACTIVATE | SWP_NOOWNERZORDER);
+        if (::IsWindowVisible(xg_hSizeGrip)) {
+            ::DeferWindowPos(hDwp, xg_hSizeGrip, NULL,
+                x + cx - cxVScrollBar, y + cy - cyHScrollBar,
+                cxVScrollBar, cyHScrollBar,
+                SWP_SHOWWINDOW | SWP_NOZORDER | SWP_NOACTIVATE | SWP_NOOWNERZORDER);
+        }
         ::EndDeferWindowPos(hDwp);
     }
 
