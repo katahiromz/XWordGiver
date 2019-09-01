@@ -287,7 +287,7 @@ LANGUAGE LANG_JAPANESE, SUBLANG_DEFAULT
         }
         POPUP "英字"
         {
-            POPUP "A-F"
+            POPUP "A - F"
             {
                 MENUITEM "A", 20000
                 MENUITEM "B", 20001
@@ -296,7 +296,7 @@ LANGUAGE LANG_JAPANESE, SUBLANG_DEFAULT
                 MENUITEM "E", 20004
                 MENUITEM "F", 20005
             }
-            POPUP "G-L"
+            POPUP "G - L"
             {
                 MENUITEM "G", 20006
                 MENUITEM "H", 20007
@@ -305,7 +305,7 @@ LANGUAGE LANG_JAPANESE, SUBLANG_DEFAULT
                 MENUITEM "K", 20010
                 MENUITEM "L", 20011
             }
-            POPUP "M-R"
+            POPUP "M - R"
             {
                 MENUITEM "M", 20012
                 MENUITEM "N", 20013
@@ -314,7 +314,7 @@ LANGUAGE LANG_JAPANESE, SUBLANG_DEFAULT
                 MENUITEM "Q", 20016
                 MENUITEM "R", 20017
             }
-            POPUP "S-X"
+            POPUP "S - X"
             {
                 MENUITEM "S", 20018
                 MENUITEM "T", 20019
@@ -323,7 +323,7 @@ LANGUAGE LANG_JAPANESE, SUBLANG_DEFAULT
                 MENUITEM "W", 20022
                 MENUITEM "X", 20023
             }
-            POPUP "Y-Z"
+            POPUP "Y - Z"
             {
                 MENUITEM "Y", 20024
                 MENUITEM "Z", 20025
@@ -331,7 +331,7 @@ LANGUAGE LANG_JAPANESE, SUBLANG_DEFAULT
         }
         POPUP "ロシア"
         {
-            POPUP "А-Е"
+            POPUP "А - Е"
             {
                 MENUITEM "А", 30000
                 MENUITEM "Б", 30001
@@ -340,7 +340,7 @@ LANGUAGE LANG_JAPANESE, SUBLANG_DEFAULT
                 MENUITEM "Д", 30004
                 MENUITEM "Е", 30005
             }
-            POPUP "Ё-К"
+            POPUP "Ё - К"
             {
                 MENUITEM "Ё", 30006
                 MENUITEM "Ж", 30007
@@ -349,7 +349,7 @@ LANGUAGE LANG_JAPANESE, SUBLANG_DEFAULT
                 MENUITEM "Й", 30010
                 MENUITEM "К", 30011
             }
-            POPUP "Л-Р"
+            POPUP "Л - Р"
             {
                 MENUITEM "Л", 30012
                 MENUITEM "М", 30013
@@ -358,7 +358,7 @@ LANGUAGE LANG_JAPANESE, SUBLANG_DEFAULT
                 MENUITEM "П", 30016
                 MENUITEM "Р", 30017
             }
-            POPUP "С-Ц"
+            POPUP "С - Ц"
             {
                 MENUITEM "С", 30018
                 MENUITEM "Т", 30019
@@ -367,7 +367,7 @@ LANGUAGE LANG_JAPANESE, SUBLANG_DEFAULT
                 MENUITEM "Х", 30022
                 MENUITEM "Ц", 30023
             }
-            POPUP "Ч-Ь"
+            POPUP "Ч - Ь"
             {
                 MENUITEM "Ч", 30024
                 MENUITEM "Ш", 30025
@@ -376,7 +376,7 @@ LANGUAGE LANG_JAPANESE, SUBLANG_DEFAULT
                 MENUITEM "Ы", 30028
                 MENUITEM "Ь", 30029
             }
-            POPUP "Э-Я"
+            POPUP "Э - Я"
             {
                 MENUITEM "Э", 30030
                 MENUITEM "Ю", 30031
