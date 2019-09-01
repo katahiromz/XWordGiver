@@ -3210,30 +3210,32 @@ void __fastcall XgDrawXWord(XG_Board& xw, HDC hdc, LPSIZE psiz, bool bCaret)
             static_cast<int>(xg_nMargin + (j + 1) * nCellSize), 
             static_cast<int>(xg_nMargin + (i + 1) * nCellSize));
 
-        const int cMargin = 4;
+        const int cxyMargin = nCellSize / 10;
+        const int cxyLine = nCellSize / 3;
+        const int cxyCross = nCellSize / 10;
 
         hPenOld = ::SelectObject(hdc, hCaretPen);
-        ::MoveToEx(hdc, rc.left + cMargin, rc.top + cMargin, nullptr);
-        ::LineTo(hdc, rc.left + cMargin, rc.top + 10);
-        ::MoveToEx(hdc, rc.left + cMargin, rc.top + cMargin, nullptr);
-        ::LineTo(hdc, rc.left + 10, rc.top + cMargin);
-        ::MoveToEx(hdc, rc.right - cMargin, rc.top + cMargin, nullptr);
-        ::LineTo(hdc, rc.right - cMargin, rc.top + 10);
-        ::MoveToEx(hdc, rc.right - cMargin, rc.top + cMargin, nullptr);
-        ::LineTo(hdc, rc.right - 10, rc.top + cMargin);
-        ::MoveToEx(hdc, rc.right - cMargin, rc.bottom - cMargin, nullptr);
-        ::LineTo(hdc, rc.right - cMargin, rc.bottom - 10);
-        ::MoveToEx(hdc, rc.right - cMargin, rc.bottom - cMargin, nullptr);
-        ::LineTo(hdc, rc.right - 10, rc.bottom - cMargin);
-        ::MoveToEx(hdc, rc.left + cMargin, rc.bottom - cMargin, nullptr);
-        ::LineTo(hdc, rc.left + cMargin, rc.bottom - 10);
-        ::MoveToEx(hdc, rc.left + cMargin, rc.bottom - cMargin, nullptr);
-        ::LineTo(hdc, rc.left + 10, rc.bottom - cMargin);
+        ::MoveToEx(hdc, rc.left + cxyMargin, rc.top + cxyMargin, nullptr);
+        ::LineTo(hdc, rc.left + cxyMargin, rc.top + cxyLine);
+        ::MoveToEx(hdc, rc.left + cxyMargin, rc.top + cxyMargin, nullptr);
+        ::LineTo(hdc, rc.left + cxyLine, rc.top + cxyMargin);
+        ::MoveToEx(hdc, rc.right - cxyMargin, rc.top + cxyMargin, nullptr);
+        ::LineTo(hdc, rc.right - cxyMargin, rc.top + cxyLine);
+        ::MoveToEx(hdc, rc.right - cxyMargin, rc.top + cxyMargin, nullptr);
+        ::LineTo(hdc, rc.right - cxyLine, rc.top + cxyMargin);
+        ::MoveToEx(hdc, rc.right - cxyMargin, rc.bottom - cxyMargin, nullptr);
+        ::LineTo(hdc, rc.right - cxyMargin, rc.bottom - cxyLine);
+        ::MoveToEx(hdc, rc.right - cxyMargin, rc.bottom - cxyMargin, nullptr);
+        ::LineTo(hdc, rc.right - cxyLine, rc.bottom - cxyMargin);
+        ::MoveToEx(hdc, rc.left + cxyMargin, rc.bottom - cxyMargin, nullptr);
+        ::LineTo(hdc, rc.left + cxyMargin, rc.bottom - cxyLine);
+        ::MoveToEx(hdc, rc.left + cxyMargin, rc.bottom - cxyMargin, nullptr);
+        ::LineTo(hdc, rc.left + cxyLine, rc.bottom - cxyMargin);
 
-        ::MoveToEx(hdc, (rc.left + rc.right) / 2, (rc.top + rc.bottom) / 2 - 10, nullptr);
-        ::LineTo(hdc, (rc.left + rc.right) / 2, (rc.top + rc.bottom) / 2 + 10);
-        ::MoveToEx(hdc, (rc.left + rc.right) / 2 - 10, (rc.top + rc.bottom) / 2, nullptr);
-        ::LineTo(hdc, (rc.left + rc.right) / 2 + 10, (rc.top + rc.bottom) / 2);
+        ::MoveToEx(hdc, (rc.left + rc.right) / 2, (rc.top + rc.bottom) / 2 - cxyCross, nullptr);
+        ::LineTo(hdc, (rc.left + rc.right) / 2, (rc.top + rc.bottom) / 2 + cxyCross);
+        ::MoveToEx(hdc, (rc.left + rc.right) / 2 - cxyCross, (rc.top + rc.bottom) / 2, nullptr);
+        ::LineTo(hdc, (rc.left + rc.right) / 2 + cxyCross, (rc.top + rc.bottom) / 2);
         ::SelectObject(hdc, hPenOld);
     }
 
