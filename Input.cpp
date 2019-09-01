@@ -645,6 +645,8 @@ void __fastcall MainWnd_OnKey(HWND hwnd, UINT vk, bool fDown, int /*cRepeat*/, U
             pt.y = xg_nMargin + xg_caret_pos.m_i * nCellSize;
             pt.x += nCellSize / 2;
             pt.y += nCellSize / 2;
+            pt.x -= XgGetHScrollPos();
+            pt.y -= XgGetVScrollPos();
 
             // ツールバーが可視ならば、位置を補正する。
             RECT rc;
