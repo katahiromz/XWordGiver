@@ -4592,20 +4592,20 @@ bool __fastcall XgGenerateBlacksSym2Recurse(const XG_Board& xword)
 unsigned __stdcall XgGenerateBlacks(void *param)
 {
     srand(::GetTickCount() ^ ::GetCurrentThreadId());
-    xg_solution.ResetAndSetSize(xg_nRows, xg_nCols);
+    xg_solution.clear();
     XG_Board xword;
 
     if (xg_imode == xg_im_KANJI || xg_nRows < 5 || xg_nCols < 5) {
         do {
             if (xg_bBlacksGenerated || xg_bCancelled)
                 break;
-            xword.ResetAndSetSize(xg_nRows, xg_nCols);
+            xword.clear();
         } while (!XgGenerateBlacksRecurse<true>(xword));
     } else {
         do {
             if (xg_bBlacksGenerated || xg_bCancelled)
                 break;
-            xword.ResetAndSetSize(xg_nRows, xg_nCols);
+            xword.clear();
         } while (!XgGenerateBlacksRecurse<false>(xword));
     }
     return 1;
