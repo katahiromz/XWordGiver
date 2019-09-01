@@ -13,8 +13,15 @@
 #define JPN_LOCALE \
     MAKELCID(MAKELANGID(LANG_JAPANESE, SUBLANG_DEFAULT), SORT_DEFAULT)
 
+// ロシア語ロケール。
+#define RUS_LOCALE \
+    MAKELCID(MAKELANGID(LANG_RUSSIAN, SUBLANG_DEFAULT), SORT_DEFAULT)
+
 // Shift_JIS codepage
 #define SJIS_CODEPAGE 932
+
+// Russian codepage
+#define RUS_CODEPAGE 1251
 
 // 表示用に描画するか？（XgGetXWordExtentとXgDrawXWordとXgCreateXWordImageで使う）。
 extern INT xg_nForDisplay;

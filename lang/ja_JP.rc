@@ -68,6 +68,7 @@ LANGUAGE LANG_JAPANESE, SUBLANG_DEFAULT
         MENUITEM "カナ入力(&K)", ID_KANAINPUT
         MENUITEM "英字入力(&A)", ID_ABCINPUT
         MENUITEM "漢字入力(&H)", ID_KANJIINPUT
+        MENUITEM "ロシア入力(&R)", ID_RUSSIAINPUT
         MENUITEM SEPARATOR
         MENUITEM "ヨコ入力(&H)\tCtrl+/", ID_INPUTH
         MENUITEM "タテ入力(&V)\tCtrl+/", ID_INPUTV
@@ -155,6 +156,7 @@ LANGUAGE LANG_JAPANESE, SUBLANG_DEFAULT
     {
         MENUITEM "黒マス(&B)\t#", ID_BLOCKNOFEED
         MENUITEM "空白(&S)\t_", ID_SPACENOFEED
+        MENUITEM SEPARATOR
         POPUP "カナ"
         {
             POPUP "ア行"
@@ -274,6 +276,112 @@ LANGUAGE LANG_JAPANESE, SUBLANG_DEFAULT
                 MENUITEM "ポ", 10144
             }
             MENUITEM "長音 (ー)", 10150
+        }
+        POPUP "英字"
+        {
+            POPUP "A-F"
+            {
+                MENUITEM "A", 20000
+                MENUITEM "B", 20001
+                MENUITEM "C", 20002
+                MENUITEM "D", 20003
+                MENUITEM "E", 20004
+                MENUITEM "F", 20005
+            }
+            POPUP "G-L"
+            {
+                MENUITEM "G", 20006
+                MENUITEM "H", 20007
+                MENUITEM "I", 20008
+                MENUITEM "J", 20009
+                MENUITEM "K", 20010
+                MENUITEM "L", 20011
+            }
+            POPUP "M-R"
+            {
+                MENUITEM "M", 20012
+                MENUITEM "N", 20013
+                MENUITEM "O", 20014
+                MENUITEM "P", 20015
+                MENUITEM "Q", 20016
+                MENUITEM "R", 20017
+            }
+            POPUP "S-X"
+            {
+                MENUITEM "S", 20018
+                MENUITEM "T", 20019
+                MENUITEM "U", 20020
+                MENUITEM "V", 20021
+                MENUITEM "W", 20022
+                MENUITEM "X", 20023
+            }
+            POPUP "Y-Z"
+            {
+                MENUITEM "Y", 20024
+                MENUITEM "Z", 20025
+            }
+        }
+        POPUP "ロシア"
+        {
+            POPUP "А-Е"
+            {
+                MENUITEM "А", 30000
+                MENUITEM "Б", 30001
+                MENUITEM "В", 30002
+                MENUITEM "Г", 30003
+                MENUITEM "Д", 30004
+                MENUITEM "Е", 30005
+            }
+            POPUP "Ё-К"
+            {
+                MENUITEM "Ё", 30006
+                MENUITEM "Ж", 30007
+                MENUITEM "З", 30008
+                MENUITEM "И", 30009
+                MENUITEM "Й", 30010
+                MENUITEM "К", 30011
+            }
+            POPUP "Л-Р"
+            {
+                MENUITEM "Л", 30012
+                MENUITEM "М", 30013
+                MENUITEM "Н", 30014
+                MENUITEM "О", 30015
+                MENUITEM "П", 30016
+                MENUITEM "Р", 30017
+            }
+            POPUP "С-Ц"
+            {
+                MENUITEM "С", 30018
+                MENUITEM "Т", 30019
+                MENUITEM "У", 30020
+                MENUITEM "Ф", 30021
+                MENUITEM "Х", 30022
+                MENUITEM "Ц", 30023
+            }
+            POPUP "Ч-Ь"
+            {
+                MENUITEM "Ч", 30024
+                MENUITEM "Ш", 30025
+                MENUITEM "Щ", 30026
+                MENUITEM "Ъ", 30027
+                MENUITEM "Ы", 30028
+                MENUITEM "Ь", 30029
+            }
+            POPUP "Э-Я"
+            {
+                MENUITEM "Э", 30030
+                MENUITEM "Ю", 30031
+                MENUITEM "Я", 30032
+            }
+        }
+        MENUITEM SEPARATOR
+        POPUP "入力モード(&M)"
+        {
+            MENUITEM "カナ入力(&K)", ID_KANAINPUT
+            MENUITEM "英字入力(&A)", ID_ABCINPUT
+            MENUITEM "漢字入力(&H)", ID_KANJIINPUT
+            MENUITEM "ロシア入力(&R)", ID_RUSSIAINPUT
         }
         MENUITEM SEPARATOR
         MENUITEM "二重マス切り替え(&T)\tCtrl+.", ID_TOGGLEMARK
@@ -845,7 +953,7 @@ STRINGTABLE
     1169, "ﾖｺ入力"
     1170, "ﾀﾃ入力"
     1171, "https://www.google.co.jp/search?hl=jp&gl=jp&q="
-    1172, "英語"
+    1172, "英字"
     1173, "熟語"
     1174, "辞書"
     1175, "http://cross.matrix.jp/search.cgi"
@@ -858,6 +966,7 @@ STRINGTABLE
     1182, "文字送り"
     1183, "ヨコ入力"
     1184, "タテ入力"
+    1185, "ロシア"
 }
 
 //////////////////////////////////////////////////////////////////////////////

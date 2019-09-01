@@ -4353,121 +4353,24 @@ std::wstring XgGetClipboardUnicodeText(HWND hwnd)
 // クリップボードから貼り付け。
 void __fastcall XgPasteBoard(HWND hwnd, const std::wstring& str)
 {
-    int x, y;
-
     // 文字列が空じゃないか？
     if (!str.empty()) {
-        // 最初の文字を調べる。
-        WCHAR ch = str[0];
+        // 文字列がクロスワードを表していると仮定する。
+        // クロスワードに文字列を設定。
+        if (xg_xword.SetString(str)) {
+            // 候補ウィンドウを破棄する。
+            XgDestroyCandsWnd();
+            // ヒントウィンドウを破棄する。
+            XgDestroyHintsWnd();
 
-        // 文字種に応じて処理する。
-        if (XgIsCharKanjiW(ch)) {
-            // 最初の文字が漢字だった。
-            if (xg_imode == xg_im_KANJI && (!xg_bSolved || !xg_bShowAnswer)) {
-                xg_xword.SetAt(xg_caret_pos, ch);
-                XgEnsureCaretVisible(hwnd);
-                int x = XgGetHScrollPos();
-                int y = XgGetVScrollPos();
-                XgUpdateImage(hwnd, x, y);
-            } else
-                ::MessageBeep(0xFFFFFFFF);
-        } else if (XgIsCharHankakuUpperW(ch)) {
-            // 最初の文字が半角英字で大文字だった。
-            if (xg_imode == xg_im_ABC && (!xg_bSolved || !xg_bShowAnswer)) {
-                ch = ZEN_LARGE_A + (ch - L'A');
-                xg_xword.SetAt(xg_caret_pos, ch);
-                XgEnsureCaretVisible(hwnd);
-                x = XgGetHScrollPos();
-                y = XgGetVScrollPos();
-                XgUpdateImage(hwnd, x, y);
-            } else
-                ::MessageBeep(0xFFFFFFFF);
-        } else if (XgIsCharHankakuLowerW(ch)) {
-            // 最初の文字が半角英字で小文字だった。
-            if (xg_imode == xg_im_ABC && (!xg_bSolved || !xg_bShowAnswer)) {
-                ch = ZEN_LARGE_A + (ch - L'a');
-                xg_xword.SetAt(xg_caret_pos, ch);
-                XgEnsureCaretVisible(hwnd);
-                x = XgGetHScrollPos();
-                y = XgGetVScrollPos();
-                XgUpdateImage(hwnd, x, y);
-            } else
-                ::MessageBeep(0xFFFFFFFF);
-        } else if (XgIsCharZenkakuUpperW(ch)) {
-            // 最初の文字が全角大文字英字だった。
-            if (xg_imode == xg_im_ABC && (!xg_bSolved || !xg_bShowAnswer)) {
-                xg_xword.SetAt(xg_caret_pos, ch);
-                XgEnsureCaretVisible(hwnd);
-                x = XgGetHScrollPos();
-                y = XgGetVScrollPos();
-                XgUpdateImage(hwnd, x, y);
-            } else
-                ::MessageBeep(0xFFFFFFFF);
-        } else if (XgIsCharZenkakuLowerW(ch)) {
-            // 最初の文字が全角小文字英字だった。
-            ch = ZEN_LARGE_A + (ch - ZEN_SMALL_A);
-            if (xg_imode == xg_im_ABC && (!xg_bSolved || !xg_bShowAnswer)) {
-                xg_xword.SetAt(xg_caret_pos, ch);
-                XgEnsureCaretVisible(hwnd);
-                x = XgGetHScrollPos();
-                y = XgGetVScrollPos();
-                XgUpdateImage(hwnd, x, y);
-            } else
-                ::MessageBeep(0xFFFFFFFF);
-        } else if (XgIsCharHiraganaW(ch)) {
-            // 最初の文字がひらがなだった。
-            std::array<WCHAR,2> sz;
-            LCMapStringW(JPN_LOCALE,
-                LCMAP_FULLWIDTH | LCMAP_KATAKANA | LCMAP_UPPERCASE,
-                &ch, 1, sz.data(), static_cast<int>(sz.size()));
-            ch = sz[0];
-            goto katakana;
-        } else if (XgIsCharKatakanaW(ch)) {
-            // 最初の文字がカタカナだった。
-katakana:;
-            // 小さな字を大きな字にする。
-            for (size_t i = 0; i < xg_small.size(); i++) {
-                if (ch == xg_small[i][0]) {
-                    ch = xg_large[i][0];
-                    break;
-                }
-            }
-            if (xg_imode == xg_im_KANA && (!xg_bSolved || !xg_bShowAnswer)) {
-                xg_xword.SetAt(xg_caret_pos, ch);
-                XgEnsureCaretVisible(hwnd);
-                x = XgGetHScrollPos();
-                y = XgGetVScrollPos();
-                XgUpdateImage(hwnd, x, y);
-            } else
-                ::MessageBeep(0xFFFFFFFF);
-        } else if (XgIsCharHangulW(ch)) {
-            // 最初の文字がハングルだった。
-            if (xg_imode == xg_im_HANGUL && (!xg_bSolved || !xg_bShowAnswer)) {
-                xg_xword.SetAt(xg_caret_pos, ch);
-                XgEnsureCaretVisible(hwnd);
-                x = XgGetHScrollPos();
-                y = XgGetVScrollPos();
-                XgUpdateImage(hwnd, x, y);
-            } else
-                ::MessageBeep(0xFFFFFFFF);
+            xg_bSolved = false;
+            xg_bShowAnswer = false;
+            xg_caret_pos.clear();
+            xg_vMarks.clear();
+            XgMarkUpdate();
+            XgUpdateImage(hwnd, 0, 0);
         } else {
-            // その他の場合、文字列がクロスワードを表していると仮定する。
-            // クロスワードに文字列を設定。
-            if (xg_xword.SetString(str)) {
-                // 候補ウィンドウを破棄する。
-                XgDestroyCandsWnd();
-                // ヒントウィンドウを破棄する。
-                XgDestroyHintsWnd();
-
-                xg_bSolved = false;
-                xg_bShowAnswer = false;
-                xg_caret_pos.clear();
-                xg_vMarks.clear();
-                XgMarkUpdate();
-                XgUpdateImage(hwnd, 0, 0);
-            } else {
-                ::MessageBeep(0xFFFFFFFF);
-            }
+            ::MessageBeep(0xFFFFFFFF);
         }
     }
 }
@@ -4808,19 +4711,23 @@ void __fastcall MainWnd_OnInitMenu(HWND /*hwnd*/, HMENU hMenu)
 
     switch (xg_imode) {
     case xg_im_KANA:
-        ::CheckMenuRadioItem(hMenu, ID_KANAINPUT, ID_KANJIINPUT, ID_KANAINPUT, MF_BYCOMMAND);
+        ::CheckMenuRadioItem(hMenu, ID_KANAINPUT, ID_RUSSIAINPUT, ID_KANAINPUT, MF_BYCOMMAND);
         break;
 
     case xg_im_ABC:
-        ::CheckMenuRadioItem(hMenu, ID_KANAINPUT, ID_KANJIINPUT, ID_ABCINPUT, MF_BYCOMMAND);
+        ::CheckMenuRadioItem(hMenu, ID_KANAINPUT, ID_RUSSIAINPUT, ID_ABCINPUT, MF_BYCOMMAND);
         break;
 
     case xg_im_HANGUL:
-        ::CheckMenuRadioItem(hMenu, ID_KANAINPUT, ID_KANJIINPUT, ID_HANGULINPUT, MF_BYCOMMAND);
+        ::CheckMenuRadioItem(hMenu, ID_KANAINPUT, ID_RUSSIAINPUT, ID_HANGULINPUT, MF_BYCOMMAND);
         break;
 
     case xg_im_KANJI:
-        ::CheckMenuRadioItem(hMenu, ID_KANAINPUT, ID_KANJIINPUT, ID_KANJIINPUT, MF_BYCOMMAND);
+        ::CheckMenuRadioItem(hMenu, ID_KANAINPUT, ID_RUSSIAINPUT, ID_KANJIINPUT, MF_BYCOMMAND);
+        break;
+
+    case xg_im_RUSSIA:
+        ::CheckMenuRadioItem(hMenu, ID_KANAINPUT, ID_RUSSIAINPUT, ID_RUSSIAINPUT, MF_BYCOMMAND);
         break;
     }
 
@@ -5084,6 +4991,7 @@ void __fastcall XgUpdateStatusBar(HWND hwnd)
     case xg_im_ABC: str += XgLoadStringDx1(1172); break;
     case xg_im_KANA: str += XgLoadStringDx1(1180); break;
     case xg_im_KANJI: str += XgLoadStringDx1(1181); break;
+    case xg_im_RUSSIA: str += XgLoadStringDx1(1185); break;
     default:
         break;
     }
@@ -5925,6 +5833,7 @@ void DoWebSearch(HWND hwnd, LPCWSTR str)
         raw += XgLoadStringDx2(1174);
         break;
     case xg_im_HANGUL:
+    case xg_im_RUSSIA:
         break;
     default:
         break;
@@ -6002,6 +5911,7 @@ bool __fastcall MainWnd_OnCommand2(HWND hwnd, INT id)
     xg_bCharFeed = false;
     switch (id)
     {
+    // kana
     case 10000: MainWnd_OnImeChar(hwnd, ZEN_A, 0); bOK = true; break;
     case 10001: MainWnd_OnImeChar(hwnd, ZEN_I, 0); bOK = true; break;
     case 10002: MainWnd_OnImeChar(hwnd, ZEN_U, 0); bOK = true; break;
@@ -6074,6 +5984,69 @@ bool __fastcall MainWnd_OnCommand2(HWND hwnd, INT id)
     case 10143: MainWnd_OnImeChar(hwnd, ZEN_PE, 0); bOK = true; break;
     case 10144: MainWnd_OnImeChar(hwnd, ZEN_PO, 0); bOK = true; break;
     case 10150: MainWnd_OnImeChar(hwnd, ZEN_PROLONG, 0); bOK = true; break;
+    // ABC
+    case 20000: MainWnd_OnChar(hwnd, L'A', 1); bOK = true; break;
+    case 20001: MainWnd_OnChar(hwnd, L'B', 1); bOK = true; break;
+    case 20002: MainWnd_OnChar(hwnd, L'C', 1); bOK = true; break;
+    case 20003: MainWnd_OnChar(hwnd, L'D', 1); bOK = true; break;
+    case 20004: MainWnd_OnChar(hwnd, L'E', 1); bOK = true; break;
+    case 20005: MainWnd_OnChar(hwnd, L'F', 1); bOK = true; break;
+    case 20006: MainWnd_OnChar(hwnd, L'G', 1); bOK = true; break;
+    case 20007: MainWnd_OnChar(hwnd, L'H', 1); bOK = true; break;
+    case 20008: MainWnd_OnChar(hwnd, L'I', 1); bOK = true; break;
+    case 20009: MainWnd_OnChar(hwnd, L'J', 1); bOK = true; break;
+    case 20010: MainWnd_OnChar(hwnd, L'K', 1); bOK = true; break;
+    case 20011: MainWnd_OnChar(hwnd, L'L', 1); bOK = true; break;
+    case 20012: MainWnd_OnChar(hwnd, L'M', 1); bOK = true; break;
+    case 20013: MainWnd_OnChar(hwnd, L'N', 1); bOK = true; break;
+    case 20014: MainWnd_OnChar(hwnd, L'O', 1); bOK = true; break;
+    case 20015: MainWnd_OnChar(hwnd, L'P', 1); bOK = true; break;
+    case 20016: MainWnd_OnChar(hwnd, L'Q', 1); bOK = true; break;
+    case 20017: MainWnd_OnChar(hwnd, L'R', 1); bOK = true; break;
+    case 20018: MainWnd_OnChar(hwnd, L'S', 1); bOK = true; break;
+    case 20019: MainWnd_OnChar(hwnd, L'T', 1); bOK = true; break;
+    case 20020: MainWnd_OnChar(hwnd, L'U', 1); bOK = true; break;
+    case 20021: MainWnd_OnChar(hwnd, L'V', 1); bOK = true; break;
+    case 20022: MainWnd_OnChar(hwnd, L'W', 1); bOK = true; break;
+    case 20023: MainWnd_OnChar(hwnd, L'X', 1); bOK = true; break;
+    case 20024: MainWnd_OnChar(hwnd, L'Y', 1); bOK = true; break;
+    case 20025: MainWnd_OnChar(hwnd, L'Z', 1); bOK = true; break;
+    // Russian
+    case 30000: MainWnd_OnImeChar(hwnd, 0x0410, 0); bOK = true; break;
+    case 30001: MainWnd_OnImeChar(hwnd, 0x0411, 0); bOK = true; break;
+    case 30002: MainWnd_OnImeChar(hwnd, 0x0412, 0); bOK = true; break;
+    case 30003: MainWnd_OnImeChar(hwnd, 0x0413, 0); bOK = true; break;
+    case 30004: MainWnd_OnImeChar(hwnd, 0x0414, 0); bOK = true; break;
+    case 30005: MainWnd_OnImeChar(hwnd, 0x0415, 0); bOK = true; break;
+    case 30006: MainWnd_OnImeChar(hwnd, 0x0401, 0); bOK = true; break;
+    case 30007: MainWnd_OnImeChar(hwnd, 0x0416, 0); bOK = true; break;
+    case 30008: MainWnd_OnImeChar(hwnd, 0x0417, 0); bOK = true; break;
+    case 30009: MainWnd_OnImeChar(hwnd, 0x0418, 0); bOK = true; break;
+    case 30010: MainWnd_OnImeChar(hwnd, 0x0419, 0); bOK = true; break;
+    case 30011: MainWnd_OnImeChar(hwnd, 0x041A, 0); bOK = true; break;
+    case 30012: MainWnd_OnImeChar(hwnd, 0x041B, 0); bOK = true; break;
+    case 30013: MainWnd_OnImeChar(hwnd, 0x041C, 0); bOK = true; break;
+    case 30014: MainWnd_OnImeChar(hwnd, 0x041D, 0); bOK = true; break;
+    case 30015: MainWnd_OnImeChar(hwnd, 0x041E, 0); bOK = true; break;
+    case 30016: MainWnd_OnImeChar(hwnd, 0x041F, 0); bOK = true; break;
+    case 30017: MainWnd_OnImeChar(hwnd, 0x0420, 0); bOK = true; break;
+    case 30018: MainWnd_OnImeChar(hwnd, 0x0421, 0); bOK = true; break;
+    case 30019: MainWnd_OnImeChar(hwnd, 0x0422, 0); bOK = true; break;
+    case 30020: MainWnd_OnImeChar(hwnd, 0x0423, 0); bOK = true; break;
+    case 30021: MainWnd_OnImeChar(hwnd, 0x0424, 0); bOK = true; break;
+    case 30022: MainWnd_OnImeChar(hwnd, 0x0425, 0); bOK = true; break;
+    case 30023: MainWnd_OnImeChar(hwnd, 0x0426, 0); bOK = true; break;
+    case 30024: MainWnd_OnImeChar(hwnd, 0x0427, 0); bOK = true; break;
+    case 30025: MainWnd_OnImeChar(hwnd, 0x0428, 0); bOK = true; break;
+    case 30026: MainWnd_OnImeChar(hwnd, 0x0429, 0); bOK = true; break;
+    case 30027: MainWnd_OnImeChar(hwnd, 0x042A, 0); bOK = true; break;
+    case 30028: MainWnd_OnImeChar(hwnd, 0x042B, 0); bOK = true; break;
+    case 30029: MainWnd_OnImeChar(hwnd, 0x042C, 0); bOK = true; break;
+    case 30030: MainWnd_OnImeChar(hwnd, 0x042D, 0); bOK = true; break;
+    case 30031: MainWnd_OnImeChar(hwnd, 0x042E, 0); bOK = true; break;
+    case 30032: MainWnd_OnImeChar(hwnd, 0x042F, 0); bOK = true; break;
+    default:
+        break;
     }
     xg_bCharFeed = bOldFeed;
 
@@ -6869,6 +6842,10 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
 
     case ID_KANJIINPUT: // 漢字入力モード。
         XgSetInputMode(hwnd, xg_im_KANJI);
+        break;
+
+    case ID_RUSSIAINPUT: // ロシア入力モード。
+        XgSetInputMode(hwnd, xg_im_RUSSIA);
         break;
 
     case ID_SHOWHIDEHINTS:

@@ -4273,6 +4273,10 @@ bool __fastcall XG_Board::SetString(const std::wstring& strToBeSet)
                 xg_imode = xg_im_HANGUL;
                 goto break2;
             }
+            if (XgIsCharZenkakuCyrillicW(ch)) {
+                xg_imode = xg_im_RUSSIA;
+                goto break2;
+            }
         }
     }
 break2:;
@@ -4369,7 +4373,7 @@ bool XG_Board::IsPointSymmetry() const
 
 bool xg_bBlacksGenerated = false;
 
-template <bool t_kanji>
+template <int t_mode>
 bool __fastcall XgGenerateBlacksRecurse(const XG_Board& xword)
 {
     if (xword.CornerBlack() || xword.DoubleBlack() || xword.TriBlackArround())
@@ -4401,7 +4405,7 @@ bool __fastcall XgGenerateBlacksRecurse(const XG_Board& xword)
                 const int hi = j;
                 j++;
 
-                if (t_kanji) {
+                if (t_mode) {
                     if (lo + 4 <= hi) {
                         char a[] = {0, 1, 2, 3};
                         std::random_shuffle(std::begin(a), std::end(a));
@@ -4409,7 +4413,7 @@ bool __fastcall XgGenerateBlacksRecurse(const XG_Board& xword)
                         for (int k = 0; k < 4; ++k) {
                             XG_Board copy(xword);
                             copy.SetAt(i, lo + a[k], ZEN_BLACK);
-                            if (XgGenerateBlacksRecurse<t_kanji>(copy))
+                            if (XgGenerateBlacksRecurse<t_mode>(copy))
                                 return true;
                         }
                         return false;
@@ -4422,7 +4426,7 @@ bool __fastcall XgGenerateBlacksRecurse(const XG_Board& xword)
                         for (int k = 0; k < 5; ++k) {
                             XG_Board copy(xword);
                             copy.SetAt(i, lo + a[k], ZEN_BLACK);
-                            if (XgGenerateBlacksRecurse<t_kanji>(copy))
+                            if (XgGenerateBlacksRecurse<t_mode>(copy))
                                 return true;
                         }
                         return false;
@@ -4453,7 +4457,7 @@ bool __fastcall XgGenerateBlacksRecurse(const XG_Board& xword)
                 const int hi = i;
                 i++;
 
-                if (t_kanji) {
+                if (t_mode == 0) {
                     if (lo + 4 <= hi) {
                         char a[] = {0, 1, 2, 3};
                         std::random_shuffle(std::begin(a), std::end(a));
@@ -4461,12 +4465,12 @@ bool __fastcall XgGenerateBlacksRecurse(const XG_Board& xword)
                         for (int k = 0; k < 4; ++k) {
                             XG_Board copy(xword);
                             copy.SetAt(lo + a[k], j, ZEN_BLACK);
-                            if (XgGenerateBlacksRecurse<t_kanji>(copy))
+                            if (XgGenerateBlacksRecurse<t_mode>(copy))
                                 return true;
                         }
                         return false;
                     }
-                } else {
+                } else if (t_mode == 1) {
                     if (lo + 5 <= hi) {
                         char a[] = {0, 1, 2, 3, 4};
                         std::random_shuffle(std::begin(a), std::end(a));
@@ -4474,7 +4478,20 @@ bool __fastcall XgGenerateBlacksRecurse(const XG_Board& xword)
                         for (int k = 0; k < 5; ++k) {
                             XG_Board copy(xword);
                             copy.SetAt(lo + a[k], j, ZEN_BLACK);
-                            if (XgGenerateBlacksRecurse<t_kanji>(copy))
+                            if (XgGenerateBlacksRecurse<t_mode>(copy))
+                                return true;
+                        }
+                        return false;
+                    }
+                } else if (t_mode == 2) {
+                    if (lo + 6 <= hi) {
+                        char a[] = {0, 1, 2, 3, 4, 5};
+                        std::random_shuffle(std::begin(a), std::end(a));
+
+                        for (int k = 0; k < 6; ++k) {
+                            XG_Board copy(xword);
+                            copy.SetAt(lo + a[k], j, ZEN_BLACK);
+                            if (XgGenerateBlacksRecurse<t_mode>(copy))
                                 return true;
                         }
                         return false;
@@ -4600,13 +4617,19 @@ unsigned __stdcall XgGenerateBlacks(void *param)
             if (xg_bBlacksGenerated || xg_bCancelled)
                 break;
             xword.clear();
-        } while (!XgGenerateBlacksRecurse<true>(xword));
+        } while (!XgGenerateBlacksRecurse<1>(xword));
+    } else if (xg_imode == xg_im_RUSSIA) {
+        do {
+            if (xg_bBlacksGenerated || xg_bCancelled)
+                break;
+            xword.clear();
+        } while (!XgGenerateBlacksRecurse<2>(xword));
     } else {
         do {
             if (xg_bBlacksGenerated || xg_bCancelled)
                 break;
             xword.clear();
-        } while (!XgGenerateBlacksRecurse<false>(xword));
+        } while (!XgGenerateBlacksRecurse<0>(xword));
     }
     return 1;
 }
@@ -4627,7 +4650,16 @@ unsigned __stdcall XgGenerateBlacksSmart(void *param)
                 break;
             }
             xword.clear();
-        } while (!XgGenerateBlacksRecurse<true>(xword));
+        } while (!XgGenerateBlacksRecurse<1>(xword));
+    } else if (xg_imode == xg_im_RUSSIA) {
+        do {
+            if (xg_bCancelled)
+                break;
+            if (xg_bBlacksGenerated) {
+                break;
+            }
+            xword.clear();
+        } while (!XgGenerateBlacksRecurse<2>(xword));
     } else {
         do {
             if (xg_bCancelled)
@@ -4636,7 +4668,7 @@ unsigned __stdcall XgGenerateBlacksSmart(void *param)
                 break;
             }
             xword.clear();
-        } while (!XgGenerateBlacksRecurse<false>(xword));
+        } while (!XgGenerateBlacksRecurse<0>(xword));
     }
     return 1;
 }

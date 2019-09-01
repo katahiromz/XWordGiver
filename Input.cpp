@@ -617,6 +617,24 @@ katakana:;
             y = XgGetVScrollPos();
             XgUpdateImage(hwnd, x, y);
         }
+    } else if (xg_imode == xg_im_RUSSIA) {
+        // ロシア入力の場合。
+        if (XgIsCharZenkakuCyrillicW(ch)) {
+            // 候補ウィンドウを破棄する。
+            XgDestroyCandsWnd();
+            // ハングル直接入力。
+            sa2->ch = ch;
+            xg_ubUndoBuffer.Commit(UC_SETAT, sa1, sa2);
+            xg_xword.SetAt(xg_caret_pos, ch);
+
+            if (xg_bCharFeed)
+                XgCharFeed(hwnd);
+
+            XgEnsureCaretVisible(hwnd);
+            x = XgGetHScrollPos();
+            y = XgGetVScrollPos();
+            XgUpdateImage(hwnd, x, y);
+        }
     }
 }
 
@@ -735,7 +753,25 @@ void __fastcall MainWnd_OnImeChar(HWND hwnd, WCHAR ch, LPARAM /*lKeyData*/)
         return;
     }
 
-    if (xg_imode == xg_im_KANJI) {
+    if (xg_imode == xg_im_RUSSIA) {
+        // ロシア入力モードの場合。
+        // キリル文字か？
+        if (XgIsCharZenkakuCyrillicW(ch)) {
+            CharUpperBuffW(&ch, 1);
+
+            // 候補ウィンドウを破棄する。
+            XgDestroyCandsWnd();
+            xg_xword.SetAt(xg_caret_pos, ch);
+            XgEnsureCaretVisible(hwnd);
+
+            if (xg_bCharFeed)
+                XgCharFeed(hwnd);
+            
+            x = XgGetHScrollPos();
+            y = XgGetVScrollPos();
+            XgUpdateImage(hwnd, x, y);
+        }
+    } else if (xg_imode == xg_im_KANJI) {
         // 漢字入力モードの場合。
         // 漢字か？
         if (XgIsCharKanjiW(ch)) {
@@ -1047,6 +1083,8 @@ void __fastcall XgSetInputModeFromDict(HWND hwnd)
             XgSetInputMode(hwnd, xg_im_KANA);
         } else if (XgIsCharKanjiW(ch)) {
             XgSetInputMode(hwnd, xg_im_KANJI);
+        } else if (XgIsCharZenkakuCyrillicW(ch)) {
+            XgSetInputMode(hwnd, xg_im_RUSSIA);
         } else if (XgIsCharZenkakuUpperW(ch) || XgIsCharZenkakuLowerW(ch) ||
                    XgIsCharHankakuUpperW(ch) || XgIsCharHankakuLowerW(ch))
         {

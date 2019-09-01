@@ -110,6 +110,7 @@ enum XG_InputMode
     xg_im_ABC,      // 英字入力。
     xg_im_HANGUL,   // ハングル入力。
     xg_im_KANJI,    // 漢字入力。
+    xg_im_RUSSIA,   // ロシア文字。
 };
 extern XG_InputMode xg_imode;
 
@@ -183,6 +184,12 @@ inline bool XgIsCharHangulW(WCHAR ch)
     return ((0x1100 <= ch && ch <= 0x11FF) ||
             (0xAC00 <= ch && ch <= 0xD7A3) ||
             (0x3130 <= ch && ch <= 0x318F));
+}
+
+// キリル文字か？
+inline bool XgIsCharZenkakuCyrillicW(WCHAR ch)
+{
+    return 0x0400 <= ch && ch <= 0x04FF;
 }
 
 //////////////////////////////////////////////////////////////////////////////
