@@ -3250,6 +3250,7 @@ bool __fastcall XgOnGenerate(HWND hwnd, bool show_answer)
 
         // イメージを更新する。
         xg_bShowAnswer = show_answer;
+        xg_caret_pos.clear();
         if (xg_bSmartResolution && xg_bCancelled) {
             xg_xword.clear();
         }
@@ -3334,6 +3335,7 @@ bool __fastcall XgOnGenerateRepeatedly(HWND hwnd)
 
         // イメージを更新する。
         xg_bShowAnswer = false;
+        xg_caret_pos.clear();
         XgMarkUpdate();
         XgUpdateImage(hwnd, 0, 0);
 
@@ -3391,6 +3393,7 @@ void XgOnGenerateBlacks(HWND hwnd, bool sym)
         MAKEINTRESOURCEW(13), hwnd, XgCancelGenBlacksDlgProc,
         sym);
     ::EnableWindow(xg_hwndInputPalette, TRUE);
+    xg_caret_pos.clear();
     XgUpdateImage(hwnd, 0, 0);
 
     std::array<WCHAR,MAX_PATH> sz;
@@ -3446,6 +3449,7 @@ bool __fastcall XgOnSolveAddBlack(HWND hwnd)
         // キャンセルされた。
         // 解なし。表示を更新する。
         xg_bShowAnswer = false;
+        xg_caret_pos.clear();
         XgMarkUpdate();
         XgUpdateImage(hwnd, 0, 0);
 
@@ -3469,6 +3473,7 @@ bool __fastcall XgOnSolveAddBlack(HWND hwnd)
 
         // 解あり。表示を更新する。
         xg_bShowAnswer = true;
+        xg_caret_pos.clear();
         XgMarkUpdate();
         XgUpdateImage(hwnd, 0, 0);
 
@@ -3484,6 +3489,7 @@ bool __fastcall XgOnSolveAddBlack(HWND hwnd)
     } else {
         // 解なし。表示を更新する。
         xg_bShowAnswer = false;
+        xg_caret_pos.clear();
         XgMarkUpdate();
         XgUpdateImage(hwnd, 0, 0);
         // 失敗メッセージを表示する。
@@ -3535,6 +3541,7 @@ bool __fastcall XgOnSolveNoAddBlack(HWND hwnd)
         // キャンセルされた。
         // 解なし。表示を更新する。
         xg_bShowAnswer = false;
+        xg_caret_pos.clear();
         XgMarkUpdate();
         XgUpdateImage(hwnd, 0, 0);
 
@@ -3559,6 +3566,7 @@ bool __fastcall XgOnSolveNoAddBlack(HWND hwnd)
 
         // 解あり。表示を更新する。
         xg_bShowAnswer = true;
+        xg_caret_pos.clear();
         XgMarkUpdate();
         XgUpdateImage(hwnd, 0, 0);
 
@@ -3574,6 +3582,7 @@ bool __fastcall XgOnSolveNoAddBlack(HWND hwnd)
     } else {
         // 解なし。表示を更新する。
         xg_bShowAnswer = false;
+        xg_caret_pos.clear();
         XgMarkUpdate();
         XgUpdateImage(hwnd, 0, 0);
         // 失敗メッセージを表示する。
@@ -3656,6 +3665,7 @@ bool __fastcall XgOnSolveRepeatedly(HWND hwnd)
         // イメージを更新する。
         xg_bSolved = false;
         xg_bShowAnswer = false;
+        xg_caret_pos.clear();
         XgMarkUpdate();
         XgUpdateImage(hwnd, 0, 0);
 
@@ -3750,6 +3760,7 @@ bool __fastcall XgOnSolveRepeatedlyNoAddBlack(HWND hwnd)
         // イメージを更新する。
         xg_bSolved = false;
         xg_bShowAnswer = false;
+        xg_caret_pos.clear();
         XgMarkUpdate();
         XgUpdateImage(hwnd, 0, 0);
 
