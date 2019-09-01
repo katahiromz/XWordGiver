@@ -157,6 +157,14 @@ LANGUAGE LANG_JAPANESE, SUBLANG_DEFAULT
         MENUITEM "黒マス(&B)\t#", ID_BLOCKNOFEED
         MENUITEM "空白(&S)\t_", ID_SPACENOFEED
         MENUITEM SEPARATOR
+        POPUP "入力モード(&M)"
+        {
+            MENUITEM "カナ入力(&K)", ID_KANAINPUT
+            MENUITEM "英字入力(&A)", ID_ABCINPUT
+            MENUITEM "漢字入力(&H)", ID_KANJIINPUT
+            MENUITEM "ロシア入力(&R)", ID_RUSSIAINPUT
+        }
+        MENUITEM SEPARATOR
         POPUP "カナ"
         {
             POPUP "ア行"
@@ -374,14 +382,6 @@ LANGUAGE LANG_JAPANESE, SUBLANG_DEFAULT
                 MENUITEM "Ю", 30031
                 MENUITEM "Я", 30032
             }
-        }
-        MENUITEM SEPARATOR
-        POPUP "入力モード(&M)"
-        {
-            MENUITEM "カナ入力(&K)", ID_KANAINPUT
-            MENUITEM "英字入力(&A)", ID_ABCINPUT
-            MENUITEM "漢字入力(&H)", ID_KANJIINPUT
-            MENUITEM "ロシア入力(&R)", ID_RUSSIAINPUT
         }
         MENUITEM SEPARATOR
         MENUITEM "二重マス切り替え(&T)\tCtrl+.", ID_TOGGLEMARK
