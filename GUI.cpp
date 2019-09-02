@@ -3325,7 +3325,7 @@ bool __fastcall XgOnGenerateRepeatedly(HWND hwnd)
         ::EnableWindow(xg_hwndInputPalette, TRUE);
 
         // クリアする。
-        xg_xword.ResetAndSetSize(xg_nRows, xg_nCols);
+        xg_xword.clear();
         xg_vMarkedCands.clear();
         xg_vMarks.clear();
         xg_vTateInfo.clear();
@@ -3461,7 +3461,7 @@ bool __fastcall XgOnSolveAddBlack(HWND hwnd)
         // 空マスがないか？
         if (xg_xword.IsFulfilled()) {
             // 空マスがない。クリア。
-            xg_xword.ResetAndSetSize(xg_nRows, xg_nCols);
+            xg_xword.clear();
             // 解に合わせて、問題に黒マスを置く。
             for (int i = 0; i < xg_nRows; i++) {
                 for (int j = 0; j < xg_nCols; j++) {
@@ -3554,7 +3554,7 @@ bool __fastcall XgOnSolveNoAddBlack(HWND hwnd)
         // 空マスがないか？
         if (xg_xword.IsFulfilled()) {
             // 空マスがない。クリア。
-            xg_xword.ResetAndSetSize(xg_nRows, xg_nCols);
+            xg_xword.clear();
             // 解に合わせて、問題に黒マスを置く。
             for (int i = 0; i < xg_nRows; i++) {
                 for (int j = 0; j < xg_nCols; j++) {
@@ -5553,8 +5553,8 @@ void MainWnd_OnEraseSettings(HWND hwnd)
     xg_bShowAnswer = false;
     xg_nRows = s_nRows;
     xg_nCols = s_nCols;
-    xg_xword.ResetAndSetSize(xg_nRows, xg_nCols);
-    xg_solution.ResetAndSetSize(xg_nRows, xg_nCols);
+    xg_xword.clear();
+    xg_solution.clear();
     xg_caret_pos.clear();
     xg_strHeader.clear();
     xg_strNotes.clear();
@@ -7415,7 +7415,7 @@ bool __fastcall MainWnd_OnCreate(HWND hwnd, LPCREATESTRUCT /*lpCreateStruct*/)
     }
 
     // クロスワードを初期化する。
-    xg_xword.ResetAndSetSize(xg_nRows, xg_nCols);
+    xg_xword.clear();
 
     // 辞書ファイルを読み込む。
     if (xg_dict_files.size())

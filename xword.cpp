@@ -1887,7 +1887,7 @@ XgSetString(HWND hwnd, const std::wstring& str, bool json)
             xg_bSolved = true;
             xg_bShowAnswer = false;
 
-            xg_xword.ResetAndSetSize(xg_nRows, xg_nCols);
+            xg_xword.clear();
             for (int i = 0; i < xg_nRows; i++) {
                 for (int j = 0; j < xg_nCols; j++) {
                     // 解に合わせて、問題に黒マスを置く。
@@ -4755,12 +4755,12 @@ unsigned __stdcall XgGenerateBlacksSmart(void *param)
 unsigned __stdcall XgGenerateBlacksSym2(void *param)
 {
     srand(::GetTickCount() ^ ::GetCurrentThreadId());
-    xg_solution.ResetAndSetSize(xg_nRows, xg_nCols);
+    xg_solution.clear();
     XG_Board xword;
     do {
         if (xg_bBlacksGenerated || xg_bCancelled)
             break;
-        xword.ResetAndSetSize(xg_nRows, xg_nCols);
+        xword.clear();
     } while (!XgGenerateBlacksSym2Recurse(xword));
     return 1;
 }
