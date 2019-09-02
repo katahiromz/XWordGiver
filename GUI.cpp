@@ -7522,13 +7522,46 @@ MainWnd_OnMouseWheel(HWND hwnd, int xPos, int yPos, int zDelta, UINT fwKeys)
     }
 }
 
+// ポップアップメニューを読み込む。
+HMENU XgLoadPopupMenu(HWND hwnd, INT nPos)
+{
+    HMENU hMenu = LoadMenuW(xg_hInstance, MAKEINTRESOURCEW(2));
+    HMENU hSubMenu = GetSubMenu(hMenu, nPos);
+
+    switch (xg_imode)
+    {
+    case xg_im_ABC:
+        DeleteMenu(hSubMenu, 5, MF_BYPOSITION);
+        DeleteMenu(hSubMenu, 6, MF_BYPOSITION);
+        break;
+    case xg_im_KANA:
+        DeleteMenu(hSubMenu, 6, MF_BYPOSITION);
+        DeleteMenu(hSubMenu, 6, MF_BYPOSITION);
+        break;
+    case xg_im_KANJI:
+        DeleteMenu(hSubMenu, 5, MF_BYPOSITION);
+        DeleteMenu(hSubMenu, 5, MF_BYPOSITION);
+        DeleteMenu(hSubMenu, 5, MF_BYPOSITION);
+        DeleteMenu(hSubMenu, 5, MF_BYPOSITION);
+        break;
+    case xg_im_RUSSIA:
+        DeleteMenu(hSubMenu, 5, MF_BYPOSITION);
+        DeleteMenu(hSubMenu, 5, MF_BYPOSITION);
+        break;
+    default:
+        break;
+    }
+
+    return hMenu;
+}
+
 // 右クリックされた。
 void
 MainWnd_OnRButtonDown(HWND hwnd, BOOL fDoubleClick, int x, int y, UINT keyFlags)
 {
     MainWnd_OnLButtonUp(hwnd, x, y, keyFlags);
 
-    HMENU hMenu = LoadMenuW(xg_hInstance, MAKEINTRESOURCEW(2));
+    HMENU hMenu = XgLoadPopupMenu(hwnd, 0);
     HMENU hSubMenu = GetSubMenu(hMenu, 0);
 
     // スクリーン座標へ変換する。

@@ -653,8 +653,9 @@ void __fastcall MainWnd_OnKey(HWND hwnd, UINT vk, bool fDown, int /*cRepeat*/, U
     case VK_APPS:   // アプリ キー。
         // アプリメニューを表示する。
         {
-            HMENU hMenu = LoadMenuW(xg_hInstance, MAKEINTRESOURCEW(2));
+            HMENU hMenu = XgLoadPopupMenu(hwnd, 0);
             HMENU hSubMenu = GetSubMenu(hMenu, 0);
+
             INT nCellSize = xg_nCellSize * xg_nZoomRate / 100;
 
             // 現在のキャレット位置。

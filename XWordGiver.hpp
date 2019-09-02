@@ -606,6 +606,9 @@ void __fastcall XgToggleMark(HWND hwnd);
 // クロスワードで使う文字に変換する。
 std::wstring __fastcall XgNormalizeString(const std::wstring& text);
 
+// ポップアップメニューを読み込む。
+HMENU XgLoadPopupMenu(HWND hwnd, INT nPos);
+
 //////////////////////////////////////////////////////////////////////////////
 // スクロール。
 
