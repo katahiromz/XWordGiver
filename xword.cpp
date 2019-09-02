@@ -4407,7 +4407,7 @@ bool __fastcall XgGenerateBlacksRecurse(const XG_Board& xword)
                 const int hi = j;
                 j++;
 
-                if (t_mode) {
+                if (t_mode == 1) {
                     if (lo + 4 <= hi) {
                         char a[] = {0, 1, 2, 3};
                         std::random_shuffle(std::begin(a), std::end(a));
@@ -4420,7 +4420,7 @@ bool __fastcall XgGenerateBlacksRecurse(const XG_Board& xword)
                         }
                         return false;
                     }
-                } else {
+                } else if (t_mode == 0) {
                     if (lo + 5 <= hi) {
                         char a[] = {0, 1, 2, 3, 4};
                         std::random_shuffle(std::begin(a), std::end(a));
@@ -4432,6 +4432,34 @@ bool __fastcall XgGenerateBlacksRecurse(const XG_Board& xword)
                                 return true;
                         }
                         return false;
+                    }
+                } else if (t_mode == 2) {
+                    if (std::rand() & 1) {
+                        if (lo + 4 <= hi) {
+                            char a[] = {0, 1, 2, 3};
+                            std::random_shuffle(std::begin(a), std::end(a));
+
+                            for (int k = 0; k < 4; ++k) {
+                                XG_Board copy(xword);
+                                copy.SetAt(i, lo + a[k], ZEN_BLACK);
+                                if (XgGenerateBlacksRecurse<t_mode>(copy))
+                                    return true;
+                            }
+                            return false;
+                        }
+                    } else {
+                        if (lo + 6 <= hi) {
+                            char a[] = {0, 1, 2, 3, 4, 5};
+                            std::random_shuffle(std::begin(a), std::end(a));
+
+                            for (int k = 0; k < 6; ++k) {
+                                XG_Board copy(xword);
+                                copy.SetAt(i, lo + a[k], ZEN_BLACK);
+                                if (XgGenerateBlacksRecurse<t_mode>(copy))
+                                    return true;
+                            }
+                            return false;
+                        }
                     }
                 }
             }
@@ -4459,7 +4487,7 @@ bool __fastcall XgGenerateBlacksRecurse(const XG_Board& xword)
                 const int hi = i;
                 i++;
 
-                if (t_mode == 0) {
+                if (t_mode == 1) {
                     if (lo + 4 <= hi) {
                         char a[] = {0, 1, 2, 3};
                         std::random_shuffle(std::begin(a), std::end(a));
@@ -4472,7 +4500,7 @@ bool __fastcall XgGenerateBlacksRecurse(const XG_Board& xword)
                         }
                         return false;
                     }
-                } else if (t_mode == 1) {
+                } else if (t_mode == 0) {
                     if (lo + 5 <= hi) {
                         char a[] = {0, 1, 2, 3, 4};
                         std::random_shuffle(std::begin(a), std::end(a));
@@ -4486,17 +4514,32 @@ bool __fastcall XgGenerateBlacksRecurse(const XG_Board& xword)
                         return false;
                     }
                 } else if (t_mode == 2) {
-                    if (lo + 6 <= hi) {
-                        char a[] = {0, 1, 2, 3, 4, 5};
-                        std::random_shuffle(std::begin(a), std::end(a));
+                    if (std::rand() & 1) {
+                        if (lo + 4 <= hi) {
+                            char a[] = {0, 1, 2, 3};
+                            std::random_shuffle(std::begin(a), std::end(a));
 
-                        for (int k = 0; k < 6; ++k) {
-                            XG_Board copy(xword);
-                            copy.SetAt(lo + a[k], j, ZEN_BLACK);
-                            if (XgGenerateBlacksRecurse<t_mode>(copy))
-                                return true;
+                            for (int k = 0; k < 4; ++k) {
+                                XG_Board copy(xword);
+                                copy.SetAt(lo + a[k], j, ZEN_BLACK);
+                                if (XgGenerateBlacksRecurse<t_mode>(copy))
+                                    return true;
+                            }
+                            return false;
                         }
-                        return false;
+                    } else {
+                        if (lo + 6 <= hi) {
+                            char a[] = {0, 1, 2, 3, 4, 5};
+                            std::random_shuffle(std::begin(a), std::end(a));
+
+                            for (int k = 0; k < 6; ++k) {
+                                XG_Board copy(xword);
+                                copy.SetAt(lo + a[k], j, ZEN_BLACK);
+                                if (XgGenerateBlacksRecurse<t_mode>(copy))
+                                    return true;
+                            }
+                            return false;
+                        }
                     }
                 }
             }
