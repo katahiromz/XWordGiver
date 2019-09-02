@@ -384,6 +384,11 @@ public:
     // 縦と横を入れ替える。
     void SwapXandY();
 
+    // タテ向きにパターンを読み取る。
+    std::wstring __fastcall GetPatternV(const XG_Pos& pos) const;
+    // ヨコ向きにパターンを読み取る。
+    std::wstring __fastcall GetPatternH(const XG_Pos& pos) const;
+
 public:
     // マス情報。
     std::vector<WCHAR> m_vCells;

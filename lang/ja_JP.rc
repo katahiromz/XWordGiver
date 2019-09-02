@@ -51,6 +51,9 @@ LANGUAGE LANG_JAPANESE, SUBLANG_DEFAULT
         MENUITEM "画像をコピー(&I)\tShift+Ctrl+C", ID_COPYASIMAGE
         MENUITEM "サイズを指定して画像をコピー(&S)", ID_COPYASIMAGESIZED
         MENUITEM SEPARATOR
+        MENUITEM "タテの単語をコピー(&V)", ID_COPYWORDVERT
+        MENUITEM "ヨコの単語をコピー(&H)", ID_COPYWORDHORZ
+        MENUITEM SEPARATOR
         MENUITEM "タテのカギをコピー (スタイル0) (&T)", ID_COPYVHINTSSTYLE0
         MENUITEM "ヨコのカギをコピー (スタイル0) (&Y)", ID_COPYHHINTSSTYLE0
         MENUITEM SEPARATOR

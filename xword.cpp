@@ -4772,3 +4772,57 @@ std::wstring __fastcall XgNormalizeString(const std::wstring& text) {
     }
     return ret;
 }
+
+// タテ向きにパターンを読み取る。
+std::wstring __fastcall XG_Board::GetPatternV(const XG_Pos& pos) const
+{
+    int lo, hi;
+    std::wstring pattern;
+
+    lo = hi = pos.m_i;
+    while (lo > 0) {
+        if (GetAt(lo - 1, xg_caret_pos.m_j) != ZEN_BLACK)
+            --lo;
+        else
+            break;
+    }
+    while (hi + 1 < xg_nRows) {
+        if (GetAt(hi + 1, xg_caret_pos.m_j) != ZEN_BLACK)
+            ++hi;
+        else
+            break;
+    }
+
+    for (int i = lo; i <= hi; ++i) {
+        pattern += GetAt(i, pos.m_j);
+    }
+
+    return pattern;
+}
+
+// ヨコ向きにパターンを読み取る。
+std::wstring __fastcall XG_Board::GetPatternH(const XG_Pos& pos) const
+{
+    int lo, hi;
+    std::wstring pattern;
+
+    lo = hi = pos.m_j;
+    while (lo > 0) {
+        if (GetAt(pos.m_i, lo - 1) != ZEN_BLACK)
+            --lo;
+        else
+            break;
+    }
+    while (hi + 1 < xg_nCols) {
+        if (GetAt(pos.m_i, hi + 1) != ZEN_BLACK)
+            ++hi;
+        else
+            break;
+    }
+
+    for (int j = lo; j <= hi; ++j) {
+        pattern += GetAt(pos.m_i, j);
+    }
+
+    return pattern;
+}

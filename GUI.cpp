@@ -4386,20 +4386,9 @@ void __fastcall XgPasteBoard(HWND hwnd, const std::wstring& str)
     }
 }
 
-// クリップボードにヒントをコピー（スタイルゼロ）。
-void __fastcall XgCopyHintsStyle0(HWND hwnd, int hint_type)
+// クリップボードにテキストをコピーする。
+BOOL XgSetClipboardUnicodeText(HWND hwnd, const std::wstring& str)
 {
-    // 解かれていなければ処理を拒否する。
-    if (!xg_bSolved) {
-        ::MessageBeep(0xFFFFFFFF);
-        return;
-    }
-
-    // クロスワードの文字列を取得する。
-    std::wstring str;
-    xg_solution.GetHintsStr(str, hint_type, false);
-    xg_str_trim(str);
-
     // ヒープからメモリを確保する。
     DWORD cb = static_cast<DWORD>((str.size() + 1) * sizeof(WCHAR));
     HGLOBAL hGlobal = ::GlobalAlloc(GMEM_MOVEABLE | GMEM_DDESHARE, cb);
@@ -4421,12 +4410,32 @@ void __fastcall XgCopyHintsStyle0(HWND hwnd, int hint_type)
                 }
                 // クリップボードを閉じる。
                 ::CloseClipboard();
-                return;
+                return TRUE;
             }
         }
         // 確保したメモリを解放する。
         ::GlobalFree(hGlobal);
     }
+
+    return FALSE;
+}
+
+// クリップボードにヒントをコピー（スタイルゼロ）。
+void __fastcall XgCopyHintsStyle0(HWND hwnd, int hint_type)
+{
+    // 解かれていなければ処理を拒否する。
+    if (!xg_bSolved) {
+        ::MessageBeep(0xFFFFFFFF);
+        return;
+    }
+
+    // クロスワードの文字列を取得する。
+    std::wstring str;
+    xg_solution.GetHintsStr(str, hint_type, false);
+    xg_str_trim(str);
+
+    // クリップボードにテキストをコピーする。
+    XgSetClipboardUnicodeText(hwnd, str);
 }
 
 // クリップボードにヒントをコピー（スタイルワン）。
@@ -5861,6 +5870,36 @@ void DoWebSearch(HWND hwnd, LPCWSTR str)
     ::ShellExecuteW(hwnd, NULL, query.c_str(), NULL, NULL, SW_SHOWNORMAL);
 }
 
+void __fastcall MainWnd_OnCopyPattern(HWND hwnd, BOOL bTate)
+{
+    XG_Board *pxword;
+    if (xg_bSolved && xg_bShowAnswer) {
+        pxword = &xg_solution;
+    } else {
+        pxword = &xg_xword;
+    }
+
+    // パターンを取得する。
+    std::wstring pattern;
+    if (bTate) {
+        pattern = pxword->GetPatternV(xg_caret_pos);
+    } else {
+        pattern = pxword->GetPatternH(xg_caret_pos);
+    }
+
+    XgSetClipboardUnicodeText(hwnd, pattern);
+}
+
+void __fastcall MainWnd_OnCopyPatternHorz(HWND hwnd)
+{
+    MainWnd_OnCopyPattern(hwnd, FALSE);
+}
+
+void __fastcall MainWnd_OnCopyPatternVert(HWND hwnd)
+{
+    MainWnd_OnCopyPattern(hwnd, TRUE);
+}
+
 // オンライン辞書を引く。
 void __fastcall XgOnlineDict(HWND hwnd, BOOL bTate)
 {
@@ -5872,44 +5911,11 @@ void __fastcall XgOnlineDict(HWND hwnd, BOOL bTate)
     }
 
     // パターンを取得する。
-    int lo, hi;
     std::wstring pattern;
     if (bTate) {
-        lo = hi = xg_caret_pos.m_i;
-        while (lo > 0) {
-            if (pxword->GetAt(lo - 1, xg_caret_pos.m_j) != ZEN_BLACK)
-                --lo;
-            else
-                break;
-        }
-        while (hi + 1 < xg_nRows) {
-            if (pxword->GetAt(hi + 1, xg_caret_pos.m_j) != ZEN_BLACK)
-                ++hi;
-            else
-                break;
-        }
-
-        for (int i = lo; i <= hi; ++i) {
-            pattern += pxword->GetAt(i, xg_caret_pos.m_j);
-        }
+        pattern = pxword->GetPatternV(xg_caret_pos);
     } else {
-        lo = hi = xg_caret_pos.m_j;
-        while (lo > 0) {
-            if (pxword->GetAt(xg_caret_pos.m_i, lo - 1) != ZEN_BLACK)
-                --lo;
-            else
-                break;
-        }
-        while (hi + 1 < xg_nCols) {
-            if (pxword->GetAt(xg_caret_pos.m_i, hi + 1) != ZEN_BLACK)
-                ++hi;
-            else
-                break;
-        }
-
-        for (int j = lo; j <= hi; ++j) {
-            pattern += pxword->GetAt(xg_caret_pos.m_i, j);
-        }
+        pattern = pxword->GetPatternH(xg_caret_pos);
     }
 
     // 空白を含んでいたら、無視。
@@ -7119,6 +7125,12 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
         y = XgGetVScrollPos();
         XgUpdateScrollInfo(hwnd, x, y);
         XgUpdateImage(hwnd, x, y);
+        break;
+    case ID_COPYWORDHORZ:
+        MainWnd_OnCopyPatternHorz(hwnd);
+        break;
+    case ID_COPYWORDVERT:
+        MainWnd_OnCopyPatternVert(hwnd);
         break;
     default:
         if (!MainWnd_OnCommand2(hwnd, id)) {
