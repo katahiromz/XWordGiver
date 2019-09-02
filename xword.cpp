@@ -2767,9 +2767,6 @@ unsigned __stdcall XgSolveProcSmart(void *param)
     // スレッド情報を取得する。
     XG_ThreadInfo *info = reinterpret_cast<XG_ThreadInfo *>(param);
 
-    // 黒マスを生成する。
-    XgGenerateBlacksSmart(NULL);
-
     // 空ではないマスの個数をセットする。
     info->m_count = xg_xword.Count();
 
@@ -2782,6 +2779,12 @@ unsigned __stdcall XgSolveProcSmart(void *param)
     #else
         srand(xg_random_seed++);
     #endif
+
+    // 黒マスを生成する。
+    XgGenerateBlacksSmart(NULL);
+
+    // 空ではないマスの個数をセットする。
+    info->m_count = xg_xword.Count();
 
     // 解く（黒マス追加なし）。
     XgSolveXWordNoAddBlack(xg_xword);
