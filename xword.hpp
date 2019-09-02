@@ -327,6 +327,8 @@ public:
     bool __fastcall IsValid() const;
     // 正当などうか？（簡略版）
     bool __fastcall IsOK() const;
+    // 正当などうか？（簡略版、黒マス追加なし）
+    bool __fastcall IsNoAddBlackOK() const;
     // 番号をつける。
     bool __fastcall DoNumbering();
     // 番号をつける（チェックなし）。

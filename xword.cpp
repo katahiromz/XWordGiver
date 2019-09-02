@@ -930,6 +930,36 @@ inline bool __fastcall XG_Board::IsOK() const
     return true;    // 成功。
 }
 
+// 正当などうか？（簡略版、黒マス追加なし）
+bool __fastcall XG_Board::IsNoAddBlackOK() const
+{
+    if (0)
+    {
+        // 四隅には黒マスは置けません。
+        // 連黒禁。
+        // 三方向が黒マスで囲まれたマスを作ってはいけません。
+        if (CornerBlack() || DoubleBlack() || TriBlackArround())
+            return false;
+    }
+
+    // クロスワードに含まれる単語のチェック。
+    XG_Pos pos;
+    std::vector<std::wstring> vNotFoundWords;
+    vNotFoundWords.reserve(xg_nRows * xg_nCols / 4);
+    XG_EpvCode code = EveryPatternValid2(vNotFoundWords, pos, false);
+    if (code != xg_epv_SUCCESS || !vNotFoundWords.empty())
+        return false;
+
+    if (0) {
+        // 空のクロスワードを解いているときは、分断禁をチェックする必要はない。
+        // 分断禁。
+        if (!xg_bSolvingEmpty && DividedByBlack())
+            return false;
+    }
+
+    return true;    // 成功。
+}
+
 // 番号をつける。
 bool __fastcall XG_Board::DoNumbering()
 {
@@ -2297,7 +2327,7 @@ void __fastcall XgSolveXWordNoAddBlackRecurse(const XG_Board& xw)
         return;
 
     // 無効であれば、終了。
-    if (!xw.IsOK())
+    if (!xw.IsNoAddBlackOK())
         return;
 
     const int nRows = xg_nRows, nCols = xg_nCols;
@@ -2616,7 +2646,7 @@ void __fastcall XgSolveXWordNoAddBlack(const XG_Board& xw)
     }
 
     // 無効であれば、終了。
-    if (!xw.IsOK())
+    if (!xw.IsNoAddBlackOK())
         return;
 
     // ランダムな順序の単語ベクターを作成する。
@@ -2765,7 +2795,7 @@ void __fastcall XgStartSolve(void)
     xg_bSolved = xg_bCancelled = xg_bRetrying = false;
 
     if (xg_bSolvingEmpty)
-        xg_xword.ResetAndSetSize(xg_nRows, xg_nCols);
+        xg_xword.clear();
 
     // 横より縦の方が長い場合、計算時間を減らすために、
     // 縦と横を入れ替え、後でもう一度縦と横を入れ替える。
