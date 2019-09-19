@@ -174,7 +174,7 @@ void MScrollView::UpdateCtrlsPos()
         for (int i = 0; i < siz; ++i)
         {
             MRect& rcCtrl = m_vecInfo[i].m_rcCtrl;
-            ::DeferWindowPos(hDWP, m_vecInfo[i].m_hwndCtrl,
+            hDWP = ::DeferWindowPos(hDWP, m_vecInfo[i].m_hwndCtrl,
                 NULL,
                 rcCtrl.left - ScrollPos().x, rcCtrl.top - ScrollPos().y,
                 rcCtrl.Width(), rcCtrl.Height(),
