@@ -100,8 +100,8 @@ LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
 // RT_VERSION
 
 1 VERSIONINFO
-FILEVERSION     4, 1, 0, 0
-PRODUCTVERSION  4, 1, 0, 0
+FILEVERSION     4, 2, 0, 0
+PRODUCTVERSION  4, 2, 0, 0
 FILEOS          0x40004
 FILETYPE        0x1
 {
@@ -111,10 +111,10 @@ FILETYPE        0x1
         {
             VALUE "CompanyName", "片山博文MZ\0"
             VALUE "FileDescription", "クロスワード ギバー\0"
-            VALUE "FileVersion", "4.1\0"
+            VALUE "FileVersion", "4.2\0"
             VALUE "LegalCopyright", "Copyright (C) 2012-2019 片山博文MZ. All rights reserved.\0"
             VALUE "ProductName", "XWordGiver\0"
-            VALUE "ProductVersion", "4.1\0"
+            VALUE "ProductVersion", "4.2\0"
         }
     }
     BLOCK "StringFileInfo"
@@ -123,10 +123,10 @@ FILETYPE        0x1
         {
             VALUE "CompanyName", "Katayama Hirofumi MZ\0"
             VALUE "FileDescription", "XWordGiver\0"
-            VALUE "FileVersion", "4.1\0"
+            VALUE "FileVersion", "4.2\0"
             VALUE "LegalCopyright", "Copyright (C) 2012-2019 Katayama Hirofumi MZ. All rights reserved.\0"
             VALUE "ProductName", "XWordGiver\0"
-            VALUE "ProductVersion", "4.1\0"
+            VALUE "ProductVersion", "4.2\0"
         }
     }
     BLOCK "VarFileInfo"
