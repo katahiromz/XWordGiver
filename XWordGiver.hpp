@@ -641,8 +641,6 @@ extern int  xg_iCandPos;
 extern int  xg_jCandPos;
 extern bool xg_bCandVertical;
 
-typedef std::wstring XG_Candidate;
-
 //////////////////////////////////////////////////////////////////////////////
 
 #include "UndoBuffer.hpp"

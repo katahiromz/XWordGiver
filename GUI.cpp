@@ -8351,7 +8351,7 @@ MScrollView                 xg_svCandsScrollView;
 HFONT                       xg_hCandsUIFont = NULL;
 
 // 候補。
-std::vector<XG_Candidate>   xg_vecCandidates;
+std::vector<std::wstring>   xg_vecCandidates;
 
 // 候補ボタン。
 std::vector<HWND>           xg_ahwndCandButtons;
@@ -8452,7 +8452,7 @@ void CandsWnd_OnSize(HWND hwnd, UINT /*state*/, int /*cx*/, int /*cy*/)
     {
         MPoint pt;
         for (size_t i = 0; i < xg_vecCandidates.size(); ++i) {
-            std::wstring strLabel = xg_vecCandidates[i];
+            const std::wstring& strLabel = xg_vecCandidates[i];
 
             MSize siz;
             ::GetTextExtentPoint32W(hdc, strLabel.data(),
@@ -8503,6 +8503,18 @@ BOOL CandsWnd_OnCreate(HWND hwnd, LPCREATESTRUCT /*lpCreateStruct*/)
     HWND hwndCtrl;
     XG_CandsButtonData *data;
     for (size_t i = 0; i < xg_vecCandidates.size(); ++i) {
+        WCHAR szText[64];
+        if (xg_bHiragana) {
+            LCMapStringW(JPN_LOCALE, LCMAP_FULLWIDTH | LCMAP_HIRAGANA,
+                         xg_vecCandidates[i].data(), -1, szText, ARRAYSIZE(szText));
+            xg_vecCandidates[i] = szText;
+        }
+        if (xg_bLowercase) {
+            LCMapStringW(JPN_LOCALE, LCMAP_FULLWIDTH | LCMAP_LOWERCASE,
+                         xg_vecCandidates[i].data(), -1, szText, ARRAYSIZE(szText));
+            xg_vecCandidates[i] = szText;
+        }
+
         hwndCtrl = ::CreateWindowW(
             TEXT("BUTTON"), xg_vecCandidates[i].data(),
             WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | WS_TABSTOP,
@@ -8616,6 +8628,8 @@ void XgDestroyCandsWnd(void)
 // 候補を適用する。
 void XgApplyCandidate(XG_Board& xword, const std::wstring& strCand)
 {
+    std::wstring cand = XgNormalizeString(strCand);
+
     int lo, hi;
     if (xg_bCandVertical) {
         for (lo = xg_iCandPos; lo > 0; --lo) {
@@ -8629,7 +8643,7 @@ void XgApplyCandidate(XG_Board& xword, const std::wstring& strCand)
 
         int m = 0;
         for (int k = lo; k <= hi; ++k, ++m) {
-            xword.SetAt(k, xg_jCandPos, strCand[m]);
+            xword.SetAt(k, xg_jCandPos, cand[m]);
         }
     }
     else
@@ -8645,7 +8659,7 @@ void XgApplyCandidate(XG_Board& xword, const std::wstring& strCand)
 
         int m = 0;
         for (int k = lo; k <= hi; ++k, ++m) {
-            xword.SetAt(xg_iCandPos, k, strCand[m]);
+            xword.SetAt(xg_iCandPos, k, cand[m]);
         }
     }
 }
