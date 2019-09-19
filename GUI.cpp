@@ -7163,24 +7163,36 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
         x = XgGetHScrollPos();
         y = XgGetVScrollPos();
         XgUpdateImage(hwnd, x, y);
+        if (xg_hwndInputPalette) {
+            XgCreateInputPalette(hwnd);
+        }
         break;
     case ID_LOWERCASE:
         xg_bLowercase = TRUE;
         x = XgGetHScrollPos();
         y = XgGetVScrollPos();
         XgUpdateImage(hwnd, x, y);
+        if (xg_hwndInputPalette) {
+            XgCreateInputPalette(hwnd);
+        }
         break;
     case ID_HIRAGANA:
         xg_bHiragana = TRUE;
         x = XgGetHScrollPos();
         y = XgGetVScrollPos();
         XgUpdateImage(hwnd, x, y);
+        if (xg_hwndInputPalette) {
+            XgCreateInputPalette(hwnd);
+        }
         break;
     case ID_KATAKANA:
         xg_bHiragana = FALSE;
         x = XgGetHScrollPos();
         y = XgGetVScrollPos();
         XgUpdateImage(hwnd, x, y);
+        if (xg_hwndInputPalette) {
+            XgCreateInputPalette(hwnd);
+        }
         break;
     default:
         if (!MainWnd_OnCommand2(hwnd, id)) {

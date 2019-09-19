@@ -1031,21 +1031,41 @@ BOOL XgCreateInputPalette(HWND hwndOwner)
 
     switch (xg_imode) {
     case xg_im_ABC:
-        CreateDialogW(xg_hInstance, MAKEINTRESOURCEW(16), hwndOwner,
-                      XgInputPaletteDlgProc);
-        break;
-    case xg_im_KANA:
-        if (xg_bTateOki) {
-            CreateDialogW(xg_hInstance, MAKEINTRESOURCEW(14), hwndOwner,
+        if (xg_bLowercase) {
+            CreateDialogW(xg_hInstance, MAKEINTRESOURCEW(20), hwndOwner,
                           XgInputPaletteDlgProc);
         } else {
-            CreateDialogW(xg_hInstance, MAKEINTRESOURCEW(15), hwndOwner,
+            CreateDialogW(xg_hInstance, MAKEINTRESOURCEW(16), hwndOwner,
                           XgInputPaletteDlgProc);
         }
         break;
+    case xg_im_KANA:
+        if (xg_bTateOki) {
+            if (xg_bHiragana) {
+                CreateDialogW(xg_hInstance, MAKEINTRESOURCEW(18), hwndOwner,
+                              XgInputPaletteDlgProc);
+            } else {
+                CreateDialogW(xg_hInstance, MAKEINTRESOURCEW(14), hwndOwner,
+                              XgInputPaletteDlgProc);
+            }
+        } else {
+            if (xg_bHiragana) {
+                CreateDialogW(xg_hInstance, MAKEINTRESOURCEW(19), hwndOwner,
+                              XgInputPaletteDlgProc);
+            } else {
+                CreateDialogW(xg_hInstance, MAKEINTRESOURCEW(15), hwndOwner,
+                              XgInputPaletteDlgProc);
+            }
+        }
+        break;
     case xg_im_RUSSIA:
-        CreateDialogW(xg_hInstance, MAKEINTRESOURCEW(17), hwndOwner,
-                      XgInputPaletteDlgProc);
+        if (xg_bLowercase) {
+            CreateDialogW(xg_hInstance, MAKEINTRESOURCEW(21), hwndOwner,
+                          XgInputPaletteDlgProc);
+        } else {
+            CreateDialogW(xg_hInstance, MAKEINTRESOURCEW(17), hwndOwner,
+                          XgInputPaletteDlgProc);
+        }
         break;
     default:
         return FALSE;
