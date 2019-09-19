@@ -113,6 +113,10 @@
 #define ID_RUSSIAINPUT                      226
 #define ID_COPYWORDHORZ                     227
 #define ID_COPYWORDVERT                     228
+#define ID_UPPERCASE                        229
+#define ID_LOWERCASE                        230
+#define ID_HIRAGANA                         231
+#define ID_KATAKANA                         232
 
 #define ctl2                                1185
 
@@ -120,7 +124,7 @@
     #ifndef APSTUDIO_READONLY_SYMBOLS
         #define _APS_NO_MFC                 1
         #define _APS_NEXT_RESOURCE_VALUE    100
-        #define _APS_NEXT_COMMAND_VALUE     229
+        #define _APS_NEXT_COMMAND_VALUE     233
         #define _APS_NEXT_CONTROL_VALUE     1000
         #define _APS_NEXT_SYMED_VALUE       300
     #endif

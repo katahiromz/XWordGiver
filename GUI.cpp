@@ -119,8 +119,14 @@ static int s_nHintsWndCX = CW_USEDEFAULT, s_nHintsWndCY = CW_USEDEFAULT;
 static int s_nCandsWndX = CW_USEDEFAULT, s_nCandsWndY = CW_USEDEFAULT;
 static int s_nCandsWndCX = CW_USEDEFAULT, s_nCandsWndCY = CW_USEDEFAULT;
 
+// 入力パレットの位置。
 INT xg_nInputPaletteWndX = CW_USEDEFAULT;
 INT xg_nInputPaletteWndY = CW_USEDEFAULT;
+
+// ひらがな表示か？
+BOOL xg_bHiragana = FALSE;
+// Lowercase表示か？
+BOOL xg_bLowercase = FALSE;
 
 // ウィンドウ設定の名前。
 static const LPCWSTR s_pszMainWndX = L"WindowX";
@@ -183,6 +189,8 @@ static const LPCWSTR s_pszTateInput = L"TateInput";
 static const LPCWSTR s_pszSmartResolution = L"SmartResolution";
 static const LPCWSTR s_pszInputMode = L"InputMode";
 static const LPCWSTR s_pszZoomRate = L"ZoomRate";
+static const LPCWSTR s_pszHiragana = L"Hiragana";
+static const LPCWSTR s_pszLowercase = L"Lowercase";
 
 // 連続生成の場合、無限に生成するか？
 static bool s_bInfinite = true;
@@ -499,6 +507,9 @@ bool __fastcall XgLoadSettings(void)
     xg_imode = xg_im_KANA;
     xg_nZoomRate = 100;
 
+    xg_bHiragana = FALSE;
+    xg_bLowercase = FALSE;
+
     // 会社名キーを開く。
     MRegKey company_key(HKEY_CURRENT_USER, s_pszSoftwareCompanyName, FALSE);
     if (company_key) {
@@ -645,6 +656,12 @@ bool __fastcall XgLoadSettings(void)
             }
             if (!app_key.QueryDword(s_pszZoomRate, dwValue)) {
                 xg_nZoomRate = dwValue;
+            }
+            if (!app_key.QueryDword(s_pszHiragana, dwValue)) {
+                xg_bHiragana = !!dwValue;
+            }
+            if (!app_key.QueryDword(s_pszLowercase, dwValue)) {
+                xg_bLowercase = !!dwValue;
             }
 
             // 辞書ファイルのリストを取得する。
@@ -798,6 +815,9 @@ bool __fastcall XgSaveSettings(void)
             app_key.SetDword(s_pszSmartResolution, xg_bSmartResolution);
             app_key.SetDword(s_pszInputMode, (DWORD)xg_imode);
             app_key.SetDword(s_pszZoomRate, xg_nZoomRate);
+
+            app_key.SetDword(s_pszHiragana, xg_bHiragana);
+            app_key.SetDword(s_pszLowercase, xg_bLowercase);
 
             // 辞書ファイルのリストを設定する。
             nCount = static_cast<int>(xg_dict_files.size());
@@ -4871,6 +4891,18 @@ void __fastcall MainWnd_OnInitMenu(HWND /*hwnd*/, HMENU hMenu)
     } else {
         ::CheckMenuItem(hMenu, ID_SHOWHIDEHINTS, MF_BYCOMMAND | MF_UNCHECKED);
     }
+
+    if (xg_bHiragana) {
+        CheckMenuRadioItem(hMenu, ID_HIRAGANA, ID_KATAKANA, ID_HIRAGANA, MF_BYCOMMAND);
+    } else {
+        CheckMenuRadioItem(hMenu, ID_HIRAGANA, ID_KATAKANA, ID_KATAKANA, MF_BYCOMMAND);
+    }
+
+    if (xg_bLowercase) {
+        CheckMenuRadioItem(hMenu, ID_UPPERCASE, ID_LOWERCASE, ID_LOWERCASE, MF_BYCOMMAND);
+    } else {
+        CheckMenuRadioItem(hMenu, ID_UPPERCASE, ID_LOWERCASE, ID_UPPERCASE, MF_BYCOMMAND);
+    }
 }
 
 // マウスの左ボタンが離された。
@@ -7131,6 +7163,30 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
         break;
     case ID_COPYWORDVERT:
         MainWnd_OnCopyPatternVert(hwnd);
+        break;
+    case ID_UPPERCASE:
+        xg_bLowercase = FALSE;
+        x = XgGetHScrollPos();
+        y = XgGetVScrollPos();
+        XgUpdateImage(hwnd, x, y);
+        break;
+    case ID_LOWERCASE:
+        xg_bLowercase = TRUE;
+        x = XgGetHScrollPos();
+        y = XgGetVScrollPos();
+        XgUpdateImage(hwnd, x, y);
+        break;
+    case ID_HIRAGANA:
+        xg_bHiragana = TRUE;
+        x = XgGetHScrollPos();
+        y = XgGetVScrollPos();
+        XgUpdateImage(hwnd, x, y);
+        break;
+    case ID_KATAKANA:
+        xg_bHiragana = FALSE;
+        x = XgGetHScrollPos();
+        y = XgGetVScrollPos();
+        XgUpdateImage(hwnd, x, y);
         break;
     default:
         if (!MainWnd_OnCommand2(hwnd, id)) {

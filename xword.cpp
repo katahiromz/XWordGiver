@@ -2982,6 +2982,18 @@ void __fastcall XgDrawMarkWord(HDC hdc, LPSIZE psiz)
             ch = xg_xword.GetAt(pos.m_i, pos.m_j);
         }
 
+        // 文字を変換する。
+        if (xg_bHiragana) {
+            WCHAR new_ch;
+            LCMapStringW(JPN_LOCALE, LCMAP_FULLWIDTH | LCMAP_HIRAGANA, &ch, 1, &new_ch, 1);
+            ch = new_ch;
+        }
+        if (xg_bLowercase) {
+            WCHAR new_ch;
+            LCMapStringW(JPN_LOCALE, LCMAP_FULLWIDTH | LCMAP_LOWERCASE, &ch, 1, &new_ch, 1);
+            ch = new_ch;
+        }
+
         // マスの文字を描画する。
         ::SetTextColor(hdc, xg_rgbBlackCellColor);
         ::SetBkMode(hdc, TRANSPARENT);
@@ -3122,6 +3134,18 @@ void __fastcall XgDrawXWord(XG_Board& xw, HDC hdc, LPSIZE psiz, bool bCaret)
 
             // 文字の背景は透明。塗りつぶさない。
             ::SetBkMode(hdc, TRANSPARENT);
+
+            // 文字を変換する。
+            if (xg_bHiragana) {
+                WCHAR new_ch;
+                LCMapStringW(JPN_LOCALE, LCMAP_FULLWIDTH | LCMAP_HIRAGANA, &ch, 1, &new_ch, 1);
+                ch = new_ch;
+            }
+            if (xg_bLowercase) {
+                WCHAR new_ch;
+                LCMapStringW(JPN_LOCALE, LCMAP_FULLWIDTH | LCMAP_LOWERCASE, &ch, 1, &new_ch, 1);
+                ch = new_ch;
+            }
 
             // 文字を書く。
             hFontOld = ::SelectObject(hdc, hFont);

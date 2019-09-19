@@ -510,6 +510,11 @@ extern WCHAR xg_prev_vk;
 // 入力パレット。
 extern HWND xg_hwndInputPalette;
 
+// ひらがな表示か？
+extern BOOL xg_bHiragana;
+// Lowercase表示か？
+extern BOOL xg_bLowercase;
+
 //////////////////////////////////////////////////////////////////////////////
 
 // 描画イメージを更新する。
