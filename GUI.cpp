@@ -732,11 +732,8 @@ bool __fastcall XgLoadSettings(void)
         }
 
         // 辞書ファイルが未指定の場合は「カナ」を優先する。
-        WCHAR sz[MAX_PATH];
-        wsprintfW(sz, L"'%s'", xg_dict_name.c_str());
         if (xg_dict_name.empty())
         {
-            MessageBoxW(NULL, sz, L"OK", 0);
             LPCWSTR pszKana = XgLoadStringDx1(1180);
             for (auto& file : xg_dict_files)
             {
@@ -746,11 +743,6 @@ bool __fastcall XgLoadSettings(void)
                     break;
                 }
             }
-            MessageBoxW(NULL, xg_dict_name.c_str(), L"OK", 0);
-        }
-        else
-        {
-            MessageBoxW(NULL, sz, L"NG", 0);
         }
     }
 
