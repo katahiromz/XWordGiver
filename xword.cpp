@@ -3739,7 +3739,6 @@ bool __fastcall XgDoSaveJson(HWND /*hwnd*/, LPCWSTR pszFile)
     HANDLE hFile;
     std::wstring str, strTable, strMarks, hints;
     DWORD size;
-    std::array<WCHAR,1024> buf;
 
     // ファイルを作成する。
     hFile = ::CreateFileW(pszFile, GENERIC_WRITE, FILE_SHARE_READ, nullptr,
@@ -3747,146 +3746,130 @@ bool __fastcall XgDoSaveJson(HWND /*hwnd*/, LPCWSTR pszFile)
     if (hFile == INVALID_HANDLE_VALUE)
         return false;
 
-    // ファイルに書き込む文字列を求める。
-    str += L"{\r\n";
-    str += L"\t\"creator_info\": \"";
-    str += XgJsonEncodeString(XgLoadStringDx1(1176));
-    str += L"\",\r\n";
+    try
+    {
+        json j;
+        j["creator_info"] = XgUnicodeToUtf8(XgLoadStringDx1(1176));
+        j["row_count"] = xg_nRows;
+        j["column_count"] = xg_nCols;
 
-    // クロスワードのサイズ。
-    ::wsprintfW(buf.data(), L"\t\"row_count\": %d,\r\n", xg_nRows);
-    str += buf.data();
-    ::wsprintfW(buf.data(), L"\t\"column_count\": %d,\r\n", xg_nCols);
-    str += buf.data();
+        // 盤の切り替え。
+        XG_Board *xw = (xg_bSolved ? &xg_solution : &xg_xword);
+        j["is_solved"] = !!xg_bSolved;
 
-    // 盤の切り替え。
-    XG_Board *xw = (xg_bSolved ? &xg_solution : &xg_xword);
-    if (xg_bSolved) {
-        str += L"\t\"is_solved\": true,\r\n";
-    } else {
-        str += L"\t\"is_solved\": false,\r\n";
-    }
-
-    // マス。
-    str += L"\t\"cell_data\": [\r\n";
-    for (int i = 0; i < xg_nRows; ++i) {
-        std::wstring row;
-        for (int j = 0; j < xg_nCols; ++j) {
-            WCHAR ch = xw->GetAt(i, j);
-            row += ch;
-        }
-        str += L"\t\t\"";
-        str += row;
-        if (i == xg_nRows - 1)
-            str += L"\"\r\n";
-        else
-            str += L"\",\r\n";
-    }
-    str += L"\t],\r\n";
-
-    // 二重マス。
-    if (xg_vMarks.size()) {
-        str += L"\t\"has_mark\": true,\r\n";
-        std::wstring mark_word;
-        for (size_t i = 0; i < xg_vMarks.size(); ++i) {
-            WCHAR ch = xw->GetAt(xg_vMarks[i].m_i, xg_vMarks[i].m_j);
-            mark_word += ch;
-        }
-
-        str += L"\t\"mark_word\": \"";
-        str += XgJsonEncodeString(mark_word);
-        str += L"\",\r\n";
-
-        str += L"\t\"marks\": [\r\n";
-        for (size_t i = 0; i < xg_vMarks.size(); ++i) {
-            if (i == xg_vMarks.size() - 1)
-                ::wsprintfW(buf.data(), L"\t\t[%d, %d, \"%c\"]\r\n",
-                    xg_vMarks[i].m_i + 1, xg_vMarks[i].m_j + 1, mark_word[i]);
-            else
-                ::wsprintfW(buf.data(), L"\t\t[%d, %d, \"%c\"],\r\n",
-                    xg_vMarks[i].m_i + 1, xg_vMarks[i].m_j + 1, mark_word[i]);
-            str += buf.data();
-        }
-        str += L"\t],\r\n";
-    } else {
-        str += L"\t\"has_mark\": false,\r\n";
-    }
-
-    // ヒント。
-    if (xg_vecTateHints.size() && xg_vecYokoHints.size()) {
-        str += L"\t\"has_hints\": true,\r\n";
-        str += L"\t\"hints\": {\r\n";
-        // タテのカギ。
-        str += L"\t\t\"v\": [\r\n";
-        for (size_t i = 0; i < xg_vecTateHints.size(); ++i) {
-            const XG_Hint& hint = xg_vecTateHints[i];
-            ::wsprintfW(buf.data(), L"\t\t\t[%d, \"", hint.m_number);
-            str += buf.data();
-            str += XgJsonEncodeString(hint.m_strWord);
-            str += L"\", \"";
-            str += XgJsonEncodeString(hint.m_strHint);
-            if (i == xg_vecTateHints.size() - 1) {
-                str += L"\"]\r\n";
-            } else {
-                str += L"\"],\r\n";
+        // マス。
+        for (int i = 0; i < xg_nRows; ++i) {
+            std::wstring row;
+            for (int j = 0; j < xg_nCols; ++j) {
+                WCHAR ch = xw->GetAt(i, j);
+                row += ch;
             }
+            j["cell_data"].push_back(XgUnicodeToUtf8(row));
         }
-        str += L"\t\t],\r\n";
-        // ヨコのカギ。
-        str += L"\t\t\"h\": [\r\n";
-        for (size_t i = 0; i < xg_vecYokoHints.size(); ++i) {
-            const XG_Hint& hint = xg_vecYokoHints[i];
-            ::wsprintfW(buf.data(), L"\t\t\t[%d, \"", hint.m_number);
-            str += buf.data();
-            str += XgJsonEncodeString(hint.m_strWord);
-            str += L"\", \"";
-            str += XgJsonEncodeString(hint.m_strHint);
-            if (i == xg_vecYokoHints.size() - 1) {
-                str += L"\"]\r\n";
-            } else {
-                str += L"\"],\r\n";
+
+        // 二重マス。
+        if (xg_vMarks.size()) {
+            j["has_mark"] = true;
+
+            std::wstring mark_word;
+            for (size_t i = 0; i < xg_vMarks.size(); ++i) {
+                WCHAR ch = xw->GetAt(xg_vMarks[i].m_i, xg_vMarks[i].m_j);
+                mark_word += ch;
             }
+
+            j["mark_word"] = XgUnicodeToUtf8(mark_word);
+
+            str += L"\t\"marks\": [\r\n";
+            for (size_t i = 0; i < xg_vMarks.size(); ++i) {
+                json mark;
+                mark.push_back(xg_vMarks[i].m_i + 1);
+                mark.push_back(xg_vMarks[i].m_j + 1);
+                WCHAR sz[2] = { mark_word[i] , 0 };
+                mark.push_back(XgUnicodeToUtf8(sz));
+                j["marks"].push_back(mark);
+            }
+        } else {
+            j["has_mark"] = false;
         }
-        str += L"\t\t]\r\n";
-        str += L"\t},\r\n";
-    } else {
-        str += L"\t\"has_hints\": false,\r\n";
-    }
 
-    // ヘッダー。
-    xg_str_trim(xg_strHeader);
-    str += L"\t\"header\": \"";
-    str += XgJsonEncodeString(xg_strHeader);
-    str += L"\",\r\n";
+        // ヒント。
+        if (xg_vecTateHints.size() && xg_vecYokoHints.size()) {
+            j["has_hints"] = true;
 
-    // 備考欄。
-    xg_str_trim(xg_strNotes);
-    LPCWSTR psz = XgLoadStringDx1(83);
-    if (xg_strNotes.find(psz) == 0) {
-        xg_strNotes = xg_strNotes.substr(std::wstring(psz).size());
-    }
-    str += L"\t\"notes\": \"";
-    str += XgJsonEncodeString(xg_strNotes);
-    str += L"\"\r\n";
+            json hints;
 
-    str += L"}\r\n";
+            // タテのカギ。
+            json v;
+            for (size_t i = 0; i < xg_vecTateHints.size(); ++i) {
+                json hint;
+                auto& tate_hint = xg_vecTateHints[i];
+                hint.push_back(tate_hint.m_number);
+                hint.push_back(XgUnicodeToUtf8(tate_hint.m_strWord));
+                hint.push_back(XgUnicodeToUtf8(tate_hint.m_strHint));
+                v.push_back(hint);
+            }
+            hints["v"] = v;
 
-    // UTF-8へ変換する。
-    std::string utf8 = XgUnicodeToUtf8(str);
+            // ヨコのカギ。
+            json h;
+            for (size_t i = 0; i < xg_vecYokoHints.size(); ++i) {
+                json hint;
+                auto& yoko_hint = xg_vecYokoHints[i];
+                hint.push_back(yoko_hint.m_number);
+                hint.push_back(XgUnicodeToUtf8(yoko_hint.m_strWord));
+                hint.push_back(XgUnicodeToUtf8(yoko_hint.m_strHint));
+                h.push_back(hint);
+            }
+            hints["h"] = h;
 
-    // ファイルに書き込んで、ファイルを閉じる。
-    size = static_cast<DWORD>(utf8.size()) * sizeof(CHAR);
-    if (::WriteFile(hFile, utf8.data(), size, &size, nullptr)) {
+            j["hints"] = hints;
+        } else {
+            j["has_hints"] = false;
+        }
+
+        // ヘッダー。
+        xg_str_trim(xg_strHeader);
+        j["header"] = XgUnicodeToUtf8(xg_strHeader);
+
+        // 備考欄。
+        xg_str_trim(xg_strNotes);
+        LPCWSTR psz = XgLoadStringDx1(83);
+        if (xg_strNotes.find(psz) == 0) {
+            xg_strNotes = xg_strNotes.substr(std::wstring(psz).size());
+        }
+        j["notes"] = XgUnicodeToUtf8(xg_strNotes);
+
+        // UTF-8へ変換する。
+        std::string utf8 = j.dump(1, '\t');
+        utf8 += '\n';
+
+        std::string replaced;
+        for (auto ch : utf8)
+        {
+            if (ch == '\n')
+                replaced += '\r';
+            replaced += ch;
+        }
+        utf8 = std::move(replaced);
+
+        // ファイルに書き込んで、ファイルを閉じる。
+        size = static_cast<DWORD>(utf8.size()) * sizeof(CHAR);
+        if (::WriteFile(hFile, utf8.data(), size, &size, nullptr)) {
+            ::CloseHandle(hFile);
+
+            // ファイルパスをセットする。
+            std::array<WCHAR, MAX_PATH> szFileName;
+            ::GetFullPathNameW(pszFile, MAX_PATH, szFileName.data(), NULL);
+            xg_strFileName = szFileName.data();
+            XgMarkUpdate();
+            return true;
+        }
         ::CloseHandle(hFile);
-
-        // ファイルパスをセットする。
-        std::array<WCHAR, MAX_PATH> szFileName;
-        ::GetFullPathNameW(pszFile, MAX_PATH, szFileName.data(), NULL);
-        xg_strFileName = szFileName.data();
-        XgMarkUpdate();
-        return true;
     }
-    ::CloseHandle(hFile);
+    catch(...)
+    {
+        ;
+    }
 
     // 正しく書き込めなかった。不正なファイルを消す。
     ::DeleteFileW(pszFile);
