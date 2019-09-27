@@ -33,12 +33,12 @@ Source: "xword32.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "ReadMe.txt"; DestDir: "{app}"; Flags: ignoreversion
 Source: "TechNote.txt"; DestDir: "{app}"; Flags: ignoreversion
 Source: "HISTORY.txt"; DestDir: "{app}"; Flags: ignoreversion
-Source: "DICT/基本辞書データ（カナ、謹慎）.dic"; DestDir: "{app}/DICT"; Flags: ignoreversion
-Source: "DICT/基本辞書データ（カナ、自由）.dic"; DestDir: "{app}/DICT"; Flags: ignoreversion
-Source: "DICT/基本辞書データ（英和、謹慎）.dic"; DestDir: "{app}/DICT"; Flags: ignoreversion
-Source: "DICT/基本辞書データ（英和、自由）.dic"; DestDir: "{app}/DICT"; Flags: ignoreversion
-Source: "DICT/基本辞書データ（漢字、自由）.dic"; DestDir: "{app}/DICT"; Flags: ignoreversion
-Source: "DICT/基本辞書データ（ロシア、自由）.dic"; DestDir: "{app}/DICT"; Flags: ignoreversion
+Source: "DICT\基本辞書データ（カナ、謹慎）.dic"; DestDir: "{app}\DICT"; Flags: ignoreversion
+Source: "DICT\基本辞書データ（カナ、自由）.dic"; DestDir: "{app}\DICT"; Flags: ignoreversion
+Source: "DICT\基本辞書データ（英和、謹慎）.dic"; DestDir: "{app}\DICT"; Flags: ignoreversion
+Source: "DICT\基本辞書データ（英和、自由）.dic"; DestDir: "{app}\DICT"; Flags: ignoreversion
+Source: "DICT\基本辞書データ（漢字、自由）.dic"; DestDir: "{app}\DICT"; Flags: ignoreversion
+Source: "DICT\基本辞書データ（ロシア、自由）.dic"; DestDir: "{app}\DICT"; Flags: ignoreversion
 Source: "点対称パターン.txt"; DestDir: "{app}"; Flags: ignoreversion
 Source: "LICENSE.txt"; DestDir: "{app}"; Flags: ignoreversion
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files

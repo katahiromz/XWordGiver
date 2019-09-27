@@ -160,8 +160,6 @@ static const LPCWSTR
 static const LPCWSTR s_pszAutoRetry = L"AutoRetry";
 static const LPCWSTR s_pszRows = L"Rows";
 static const LPCWSTR s_pszCols = L"Cols";
-static const LPCWSTR s_pszRecentCount = L"RecentCount";
-static const LPCWSTR s_pszRecentNumber = L"Recent %d";
 static const LPCWSTR s_pszRecent = L"Recent";
 static const LPCWSTR s_pszOldNotice = L"OldNotice";
 static const LPCWSTR s_pszSaveToCount = L"SaveToCount";
@@ -734,8 +732,11 @@ bool __fastcall XgLoadSettings(void)
         }
 
         // 辞書ファイルが未指定の場合は「カナ」を優先する。
+        WCHAR sz[MAX_PATH];
+        wsprintfW(sz, L"'%s'", xg_dict_name.c_str());
         if (xg_dict_name.empty())
         {
+            MessageBoxW(NULL, sz, L"OK", 0);
             LPCWSTR pszKana = XgLoadStringDx1(1180);
             for (auto& file : xg_dict_files)
             {
@@ -745,6 +746,11 @@ bool __fastcall XgLoadSettings(void)
                     break;
                 }
             }
+            MessageBoxW(NULL, xg_dict_name.c_str(), L"OK", 0);
+        }
+        else
+        {
+            MessageBoxW(NULL, sz, L"NG", 0);
         }
     }
 
@@ -1023,9 +1029,7 @@ XgNewDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam*/)
             item.cchTextMax = -1;
             ::SendMessageW(hCmb1, CBEM_INSERTITEMW, 0, reinterpret_cast<LPARAM>(&item));
         }
-
-        i = ComboBox_FindStringExact(hCmb1, -1, xg_dict_name.c_str());
-        ComboBox_SetCurSel(hCmb1, i);
+        ComboBox_SetText(hCmb1, xg_dict_name.c_str());
 
         // ドラッグ＆ドロップを受け付ける。
         ::DragAcceptFiles(hwnd, TRUE);
@@ -1194,9 +1198,7 @@ XgGenerateDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam*/)
             item.cchTextMax = -1;
             ::SendMessageW(hCmb1, CBEM_INSERTITEMW, 0, reinterpret_cast<LPARAM>(&item));
         }
-
-        i = ComboBox_FindStringExact(hCmb1, -1, xg_dict_name.c_str());
-        ComboBox_SetCurSel(hCmb1, i);
+        ComboBox_SetText(hCmb1, xg_dict_name.c_str());
 
         // 自動で再計算をするか？
         if (s_bAutoRetry)
@@ -1401,9 +1403,7 @@ XgGenerateRepeatedlyDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam
             item.cchTextMax = -1;
             ::SendMessageW(hCmb1, CBEM_INSERTITEMW, 0, reinterpret_cast<LPARAM>(&item));
         }
-
-        i = ComboBox_FindStringExact(hCmb1, -1, xg_dict_name.c_str());
-        ComboBox_SetCurSel(hCmb1, i);
+        ComboBox_SetText(hCmb1, xg_dict_name.c_str());
 
         // 保存先を設定する。
         for (const auto& dir : s_dirs_save_to) {
@@ -5654,9 +5654,7 @@ XgLoadDictDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
             item.cchTextMax = -1;
             ::SendMessageW(hCmb1, CBEM_INSERTITEMW, 0, reinterpret_cast<LPARAM>(&item));
         }
-
-        i = ComboBox_FindStringExact(hCmb1, -1, xg_dict_name.c_str());
-        ComboBox_SetCurSel(hCmb1, i);
+        ComboBox_SetText(hCmb1, xg_dict_name.c_str());
 
         // ドラッグ＆ドロップを受け付ける。
         ::DragAcceptFiles(hwnd, TRUE);
