@@ -6481,7 +6481,7 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
                     XgUpdateImage(hwnd, 0, 0);
                 }
             } else {
-                if (!XgDoLoad(hwnd, sz.data(), is_json)) {
+                if (!XgDoLoadFile(hwnd, sz.data(), is_json)) {
                     // 失敗。
                     XgCenterMessageBoxW(hwnd, XgLoadStringDx1(3), nullptr, MB_ICONERROR);
                 } else {
@@ -7209,7 +7209,7 @@ void __fastcall MainWnd_OnDropFiles(HWND hwnd, HDROP hDrop)
 
     if (::lstrcmpiW(pch, L".xwd") == 0) {
         // 拡張子が.xwdだった。ファイルを開く。
-        if (!XgDoLoad(hwnd, szFile.data(), false)) {
+        if (!XgDoLoadFile(hwnd, szFile.data(), false)) {
             XgCenterMessageBoxW(hwnd, XgLoadStringDx1(3), nullptr, MB_ICONERROR);
         } else {
             xg_caret_pos.clear();
@@ -7219,7 +7219,7 @@ void __fastcall MainWnd_OnDropFiles(HWND hwnd, HDROP hDrop)
         }
     } else if (::lstrcmpiW(pch, L".xwj") == 0 || lstrcmpiW(pch, L".json") == 0) {
         // 拡張子が.xwjか.jsonだった。ファイルを開く。
-        if (!XgDoLoad(hwnd, szFile.data(), true)) {
+        if (!XgDoLoadFile(hwnd, szFile.data(), true)) {
             XgCenterMessageBoxW(hwnd, XgLoadStringDx1(3), nullptr, MB_ICONERROR);
         } else {
             xg_caret_pos.clear();
@@ -7517,7 +7517,7 @@ bool __fastcall MainWnd_OnCreate(HWND hwnd, LPCREATESTRUCT /*lpCreateStruct*/)
                     XgUpdateImage(hwnd, 0, 0);
                 }
             } else {
-                if (!XgDoLoad(hwnd, szFile.data(), is_json)) {
+                if (!XgDoLoadFile(hwnd, szFile.data(), is_json)) {
                     XgCenterMessageBoxW(hwnd, XgLoadStringDx1(3), nullptr, MB_ICONERROR);
                 } else {
                     xg_caret_pos.clear();

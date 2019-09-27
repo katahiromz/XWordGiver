@@ -521,7 +521,7 @@ extern BOOL xg_bLowercase;
 void __fastcall XgUpdateImage(HWND hwnd, int x, int y);
 
 // ファイルを開く。
-bool __fastcall XgDoLoad(HWND hwnd, LPCWSTR pszFile, bool json);
+bool __fastcall XgDoLoadFile(HWND hwnd, LPCWSTR pszFile, bool json);
 // ファイルを開く。
 bool __fastcall XgDoLoadBuilderFile(HWND hwnd, LPCWSTR pszFile);
 

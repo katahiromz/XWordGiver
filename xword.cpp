@@ -3549,7 +3549,7 @@ bool __fastcall XgDoLoadBuilderFile(HWND hwnd, LPCWSTR pszFile)
 }
 
 // ファイルを開く。
-bool __fastcall XgDoLoad(HWND hwnd, LPCWSTR pszFile, bool json)
+bool __fastcall XgDoLoadFile(HWND hwnd, LPCWSTR pszFile, bool json)
 {
     HANDLE hFile;
     DWORD i, cbFile, cbRead;
