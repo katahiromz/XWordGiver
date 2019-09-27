@@ -77,6 +77,9 @@
 #define PICOJSON_USE_INT64
 #include "picojson/picojson.h"
 
+#include "nlohmann/json.hpp"
+using json = nlohmann::json;
+
 //////////////////////////////////////////////////////////////////////////////
 // std::wstringを比較するファンクタ。
 

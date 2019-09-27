@@ -64,7 +64,7 @@ endif()
 
 ##############################################################################
 
-include_directories(.)
+include_directories(. json/include)
 
 add_definitions(-DMZC_NO_SHAREWARE -DUNICODE -D_UNICODE)
 

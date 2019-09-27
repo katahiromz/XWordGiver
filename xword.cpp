@@ -1620,162 +1620,166 @@ bool __fastcall XgParseHintsStr(HWND hwnd, const std::wstring& strHints)
 // JSON文字列を設定する。
 bool __fastcall XgSetJsonString(HWND hwnd, const std::wstring& str)
 {
+    ::DestroyWindow(xg_hHintsWnd);
+    xg_hHintsWnd = NULL;
+
     std::string utf8 = XgUnicodeToUtf8(str);
 
-    using namespace picojson;
-    value root;
+    try {
+        json j = json::parse(utf8);
+        int row_count = j["row_count"];
+        int column_count = j["column_count"];
+        auto cell_data = j["cell_data"];
+        bool is_solved = j["is_solved"];
+        bool has_mark = j["has_mark"];
+        bool has_hints = j["has_hints"];
 
-    std::string err;
-    parse(root, utf8.begin(), utf8.end(), &err);
-    if (err.size() || !root.is<object>()) {
-        return false;
-    }
-
-    object root_obj = root.get<object>();
-    int row_count = static_cast<int>(root_obj["row_count"].get<int64_t>());
-    int column_count = static_cast<int>(root_obj["column_count"].get<int64_t>());
-    picojson::array cell_data = root_obj["cell_data"].get<picojson::array>();
-    bool is_solved = root_obj["is_solved"].get<bool>();
-    bool has_mark = root_obj["has_mark"].get<bool>();
-    bool has_hints = root_obj["has_hints"].get<bool>();
-
-    if (row_count <= 0 || column_count <= 0) {
-        return false;
-    }
-
-    if (row_count != static_cast<int>(cell_data.size())) {
-        return false;
-    }
-
-    XG_Board xw;
-    int nRowsSave = xg_nRows, nColsSave = xg_nCols;
-    xg_nRows = row_count;
-    xg_nCols = column_count;
-    xw.ResetAndSetSize(row_count, column_count);
-
-    bool success = true;
-
-    for (int i = 0; i < row_count; ++i) {
-        std::wstring row = XgUtf8ToUnicode(cell_data[i].get<std::string>());
-        if (static_cast<int>(row.size()) != column_count) {
-            success = false;
-            break;
+        if (row_count <= 0 || column_count <= 0) {
+            return false;
         }
-        for (int j = 0; j < column_count; ++j) {
-            xw.SetAt(i, j, row[j]);
-        }
-    }
 
-    std::vector<XG_Pos> mark_positions;
-    if (has_mark) {
-        picojson::array marks = root_obj["marks"].get<picojson::array>();
-        for (size_t k = 0; k < marks.size(); ++k) {
-            picojson::array mark = marks[k].get<picojson::array>();
-            int i = static_cast<int>(mark[0].get<int64_t>()) - 1;
-            int j = static_cast<int>(mark[1].get<int64_t>()) - 1;
-            if (i < 0 || row_count < i) {
+        if (row_count != int(cell_data.size())) {
+            return false;
+        }
+
+        XG_Board xw;
+        int nRowsSave = xg_nRows, nColsSave = xg_nCols;
+        xg_nRows = row_count;
+        xg_nCols = column_count;
+        xw.ResetAndSetSize(row_count, column_count);
+
+        bool success = true;
+
+        for (int i = 0; i < row_count; ++i) {
+            std::wstring row = XgUtf8ToUnicode(cell_data[i]);
+            if (int(row.size()) != column_count) {
                 success = false;
                 break;
             }
-            if (j < 0 || column_count < j) {
-                success = false;
-                break;
+            for (int j = 0; j < column_count; ++j) {
+                xw.SetAt(i, j, row[j]);
             }
-            mark_positions.emplace_back(i, j);
         }
-    }
 
-    std::vector<XG_Hint> tate, yoko;
-    if (has_hints) {
-        object hints = root_obj["hints"].get<object>();
-        picojson::array v = hints["v"].get<picojson::array>();
-        picojson::array h = hints["h"].get<picojson::array>();
-        for (size_t i = 0; i < v.size(); ++i) {
-            picojson::array data = v[i].get<picojson::array>();
-            int number = static_cast<int>(data[0].get<int64_t>());
-            if (number <= 0) {
-                success = false;
-                break;
-            }
-            std::wstring word = XgUtf8ToUnicode(data[1].get<std::string>());
-            std::wstring hint = XgUtf8ToUnicode(data[2].get<std::string>());
-            tate.emplace_back(number, word, hint);
-        }
-        for (size_t i = 0; i < h.size(); ++i) {
-            picojson::array data = h[i].get<picojson::array>();
-            int number = static_cast<int>(data[0].get<int64_t>());
-            if (number <= 0) {
-                success = false;
-                break;
-            }
-            std::wstring word = XgUtf8ToUnicode(data[1].get<std::string>());
-            std::wstring hint = XgUtf8ToUnicode(data[2].get<std::string>());
-            yoko.emplace_back(number, word, hint);
-        }
-    }
-
-    std::string header = root_obj["header"].get<std::string>();
-    std::string notes = root_obj["notes"].get<std::string>();
-
-    if (success) {
-        // カギをクリアする。
-        xg_vTateInfo.clear();
-        xg_vYokoInfo.clear();
-
-        if (is_solved) {
-            xg_bSolved = true;
-            xg_solution = xw;
-            xg_xword.ResetAndSetSize(row_count, column_count);
-            for (int i = 0; i < xg_nRows; i++) {
-                for (int j = 0; j < xg_nCols; j++) {
-                    // 解に合わせて、問題に黒マスを置く。
-                    if (xg_solution.GetAt(i, j) == ZEN_BLACK)
-                        xg_xword.SetAt(i, j, ZEN_BLACK);
+        std::vector<XG_Pos> mark_positions;
+        if (has_mark) {
+            auto marks = j["marks"];
+            for (size_t k = 0; k < marks.size(); ++k) {
+                auto mark = marks[k];
+                int i = int(mark[0]) - 1;
+                int j = int(mark[1]) - 1;
+                if (i < 0 || row_count < i) {
+                    success = false;
+                    break;
                 }
+                if (j < 0 || column_count < j) {
+                    success = false;
+                    break;
+                }
+                mark_positions.emplace_back(i, j);
             }
-            if (has_hints) {
-                xg_solution.DoNumberingNoCheck();
-            }
-            xg_solution.GetHintsStr(xg_strHints, 2, true);
-        } else {
-            xg_bSolved = false;
-            xg_xword = xw;
         }
-        xg_vMarks = mark_positions;
-        xg_vecTateHints = tate;
-        xg_vecYokoHints = yoko;
-        xg_strHeader = XgUtf8ToUnicode(header);
-        xg_str_trim(xg_strHeader);
-        xg_strNotes = XgUtf8ToUnicode(notes);
-        xg_str_trim(xg_strNotes);
 
-        LPCWSTR psz = XgLoadStringDx1(83);
-        if (xg_strNotes.empty()) {
-            ;
-        } else if (xg_strNotes.find(psz) == 0) {
-            xg_strNotes = xg_strNotes.substr(std::wstring(psz).size());
+        std::vector<XG_Hint> tate, yoko;
+        if (has_hints) {
+            auto hints = j["hints"];
+            auto v = hints["v"];
+            auto h = hints["h"];
+            for (size_t i = 0; i < v.size(); ++i) {
+                auto data = v[i];
+                int number = int(data[0]);
+                if (number <= 0) {
+                    success = false;
+                    break;
+                }
+                auto word = XgUtf8ToUnicode(data[1]);
+                auto hint = XgUtf8ToUnicode(data[2]);
+                tate.emplace_back(number, word, hint);
+            }
+            for (size_t i = 0; i < h.size(); ++i) {
+                auto data = h[i];
+                int number = int(data[0]);
+                if (number <= 0) {
+                    success = false;
+                    break;
+                }
+                auto word = XgUtf8ToUnicode(data[1]);
+                auto hint = XgUtf8ToUnicode(data[2]);
+                yoko.emplace_back(number, word, hint);
+            }
+        }
+
+        auto header = XgUtf8ToUnicode(j["header"]);
+        auto notes = XgUtf8ToUnicode(j["notes"]);
+
+        if (success) {
+            // カギをクリアする。
+            xg_vTateInfo.clear();
+            xg_vYokoInfo.clear();
+
+            if (is_solved) {
+                xg_bSolved = true;
+                xg_solution = xw;
+                xg_xword.ResetAndSetSize(row_count, column_count);
+                for (int i = 0; i < xg_nRows; i++) {
+                    for (int j = 0; j < xg_nCols; j++) {
+                        // 解に合わせて、問題に黒マスを置く。
+                        if (xg_solution.GetAt(i, j) == ZEN_BLACK)
+                            xg_xword.SetAt(i, j, ZEN_BLACK);
+                    }
+                }
+                if (has_hints) {
+                    xg_solution.DoNumberingNoCheck();
+                }
+                xg_solution.GetHintsStr(xg_strHints, 2, true);
+            } else {
+                xg_bSolved = false;
+                xg_xword = xw;
+            }
+            xg_vMarks = mark_positions;
+            xg_vecTateHints = tate;
+            xg_vecYokoHints = yoko;
+            xg_strHeader = header;
+            xg_str_trim(xg_strHeader);
+            xg_strNotes = notes;
             xg_str_trim(xg_strNotes);
+
+            LPCWSTR psz = XgLoadStringDx1(83);
+            if (xg_strNotes.empty()) {
+                ;
+            } else if (xg_strNotes.find(psz) == 0) {
+                xg_strNotes = xg_strNotes.substr(std::wstring(psz).size());
+                xg_str_trim(xg_strNotes);
+            }
+
+            // ヒント追加フラグをクリアする。
+            xg_bHintsAdded = false;
+
+            if (is_solved) {
+                // ヒントを表示する。
+                XgShowHints(hwnd);
+            }
+        } else {
+            xg_nRows = nRowsSave;
+            xg_nCols = nColsSave;
         }
 
-        // ヒント追加フラグをクリアする。
-        xg_bHintsAdded = false;
-
-        if (is_solved) {
-            // ヒントを表示する。
-            XgShowHints(hwnd);
-        }
-    } else {
-        xg_nRows = nRowsSave;
-        xg_nCols = nColsSave;
+        return success;
+    }
+    catch (json::exception& e)
+    {
     }
 
-    return success;
+    return false;
 }
 
 // 文字列を設定する。
 bool __fastcall
 XgSetString(HWND hwnd, const std::wstring& str, bool json)
 {
+    ::DestroyWindow(xg_hHintsWnd);
+    xg_hHintsWnd = NULL;
+
     if (json) {
         // JSON形式。
         return XgSetJsonString(hwnd, str);
