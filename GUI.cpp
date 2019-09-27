@@ -6542,18 +6542,6 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
         }
         // ユーザーにファイルの場所を問い合わせる。
         if (::GetSaveFileNameW(&ofn)) {
-            bool dict_updated = false;
-            if (XgAreHintsModified()) {
-                // ヒントに更新があった。ヒントを更新する。
-                XgUpdateHintsData();
-                // ヒントに従って辞書を更新する。
-                XgUpdateDictData();
-                // フラグを立てる。
-                dict_updated = true;
-            } else if (XgIsDictUpdated()) {
-                dict_updated = true;
-            }
-
             // JSON形式で保存するか？
             xg_bSaveAsJsonFile = (ofn.nFilterIndex == 2);
 
