@@ -33,12 +33,12 @@ Source: "xword32.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "ReadMe.txt"; DestDir: "{app}"; Flags: ignoreversion
 Source: "TechNote.txt"; DestDir: "{app}"; Flags: ignoreversion
 Source: "HISTORY.txt"; DestDir: "{app}"; Flags: ignoreversion
-Source: "基本辞書データ（カナ、謹慎）.dic"; DestDir: "{app}"; Flags: ignoreversion
-Source: "基本辞書データ（カナ、自由）.dic"; DestDir: "{app}"; Flags: ignoreversion
-Source: "基本辞書データ（英和、謹慎）.dic"; DestDir: "{app}"; Flags: ignoreversion
-Source: "基本辞書データ（英和、自由）.dic"; DestDir: "{app}"; Flags: ignoreversion
-Source: "基本辞書データ（漢字、自由）.dic"; DestDir: "{app}"; Flags: ignoreversion
-Source: "基本辞書データ（ロシア、自由）.dic"; DestDir: "{app}"; Flags: ignoreversion
+Source: "DICT/基本辞書データ（カナ、謹慎）.dic"; DestDir: "{app}/DICT"; Flags: ignoreversion
+Source: "DICT/基本辞書データ（カナ、自由）.dic"; DestDir: "{app}/DICT"; Flags: ignoreversion
+Source: "DICT/基本辞書データ（英和、謹慎）.dic"; DestDir: "{app}/DICT"; Flags: ignoreversion
+Source: "DICT/基本辞書データ（英和、自由）.dic"; DestDir: "{app}/DICT"; Flags: ignoreversion
+Source: "DICT/基本辞書データ（漢字、自由）.dic"; DestDir: "{app}/DICT"; Flags: ignoreversion
+Source: "DICT/基本辞書データ（ロシア、自由）.dic"; DestDir: "{app}/DICT"; Flags: ignoreversion
 Source: "点対称パターン.txt"; DestDir: "{app}"; Flags: ignoreversion
 Source: "LICENSE.txt"; DestDir: "{app}"; Flags: ignoreversion
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
@@ -51,12 +51,7 @@ Name: "{group}\HISTORY.txt"; Filename: "{app}\HISTORY.txt"
 Name: "{group}\作者のホームページ"; Filename: "http://katahiromz.web.fc2.com/"
 Name: "{group}\{cm:UninstallProgram,クロスワード ギバー}"; Filename: "{uninstallexe}"
 Name: "{group}\点対称パターン.txt"; Filename: "{app}\点対称パターン.txt"
-Name: "{group}\基本辞書データ（カナ、謹慎）.dic"; Filename: "{app}\基本辞書データ（カナ、謹慎）.dic"
-Name: "{group}\基本辞書データ（カナ、自由）.dic"; Filename: "{app}\基本辞書データ（カナ、自由）.dic"
-Name: "{group}\基本辞書データ（英和、謹慎）.dic"; Filename: "{app}\基本辞書データ（英和、謹慎）.dic"
-Name: "{group}\基本辞書データ（英和、自由）.dic"; Filename: "{app}\基本辞書データ（英和、自由）.dic"
-Name: "{group}\基本辞書データ（漢字、自由）.dic"; Filename: "{app}\基本辞書データ（漢字、自由、不完全）.dic"
-Name: "{group}\基本辞書データ（ロシア、自由）.dic"; Filename: "{app}\基本辞書データ（ロシア、自由）.dic"
+Name: "{group}\DICT"; Filename: "{app}\DICT"
 Name: "{group}\LICENSE.txt"; Filename: "{app}\LICENSE.txt"
 Name: "{commondesktop}\クロスワード ギバー (32ビット版)"; Filename: "{app}\xword32.exe"; Tasks: desktopicon
 

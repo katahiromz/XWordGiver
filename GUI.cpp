@@ -62,7 +62,8 @@ HWND            xg_hStatusBar  = nullptr;
 HIMAGELIST      xg_hImageList     = nullptr;
 HIMAGELIST      xg_hGrayedImageList = nullptr;
 
-// 辞書ファイルの場所（パス）のリスト。
+// 辞書ファイルの場所（パス）。
+std::wstring xg_dict_name;
 std::deque<std::wstring>  xg_dict_files;
 
 // ヒントに追加があったか？
@@ -160,7 +161,8 @@ static const LPCWSTR s_pszAutoRetry = L"AutoRetry";
 static const LPCWSTR s_pszRows = L"Rows";
 static const LPCWSTR s_pszCols = L"Cols";
 static const LPCWSTR s_pszRecentCount = L"RecentCount";
-static const LPCWSTR s_pszRecent = L"Recent %d";
+static const LPCWSTR s_pszRecentNumber = L"Recent %d";
+static const LPCWSTR s_pszRecent = L"Recent";
 static const LPCWSTR s_pszOldNotice = L"OldNotice";
 static const LPCWSTR s_pszSaveToCount = L"SaveToCount";
 static const LPCWSTR s_pszSaveTo = L"SaveTo %d";
@@ -451,10 +453,34 @@ void __fastcall XgUpdateToolBarUI(HWND hwnd)
 
 //////////////////////////////////////////////////////////////////////////////
 
+BOOL XgLoadDicts(LPWSTR pszDir)
+{
+    WCHAR szPath[MAX_PATH];
+
+    lstrcpyW(szPath, pszDir);
+    PathAppend(szPath, L"*.dic");
+
+    WIN32_FIND_DATAW find;
+    HANDLE hFind = FindFirstFileW(szPath, &find);
+    if (hFind == INVALID_HANDLE_VALUE)
+        return FALSE;
+
+    do
+    {
+        lstrcpyW(szPath, pszDir);
+        PathAppend(szPath, find.cFileName);
+        xg_dict_files.emplace_back(szPath);
+    } while (FindNextFile(hFind, &find));
+
+    FindClose(hFind);
+
+    return !xg_dict_files.empty();
+}
+
 // 設定を読み込む。
 bool __fastcall XgLoadSettings(void)
 {
-    int i, nFileCount = 0, nDirCount = 0;
+    int i, nDirCount = 0;
     std::array<WCHAR,MAX_PATH>  sz;
     std::array<WCHAR,32>        szFormat;
     DWORD dwValue;
@@ -480,6 +506,7 @@ bool __fastcall XgLoadSettings(void)
 
     xg_bTateInput = false;
     xg_dict_files.clear();
+    xg_dict_name.clear();
     s_dirs_save_to.clear();
     s_bAutoRetry = true;
     s_nRows = s_nCols = 7;
@@ -664,18 +691,8 @@ bool __fastcall XgLoadSettings(void)
                 xg_bLowercase = !!dwValue;
             }
 
-            // 辞書ファイルのリストを取得する。
-            if (!app_key.QueryDword(s_pszRecentCount, dwValue)) {
-                nFileCount = dwValue;
-                for (i = 0; i < nFileCount; i++) {
-                    ::wsprintfW(szFormat.data(), s_pszRecent, i + 1);
-                    if (!app_key.QuerySz(szFormat.data(), sz.data(), sz.size())) {
-                        xg_dict_files.emplace_back(sz.data());
-                    } else {
-                        nFileCount = i;
-                        break;
-                    }
-                }
+            if (!app_key.QuerySz(s_pszRecent, sz.data(), sz.size())) {
+                xg_dict_name = sz.data();
             }
 
             // 保存先のリストを取得する。
@@ -694,66 +711,49 @@ bool __fastcall XgLoadSettings(void)
         }
     }
 
+    // 辞書ファイルの名前を読み込む。
+    {
+        // 実行ファイルのパスを取得。
+        ::GetModuleFileNameW(nullptr, sz.data(), DWORD(sz.size()));
+
+        // 実行ファイルにある.dicファイルを列挙する。
+        PathRemoveFileSpec(sz.data());
+        PathAppend(sz.data(), L"DICT");
+
+        if (!XgLoadDicts(sz.data()))
+        {
+            PathRemoveFileSpec(sz.data());
+            PathRemoveFileSpec(sz.data());
+            PathAppend(sz.data(), L"DICT");
+            if (!XgLoadDicts(sz.data()))
+            {
+                PathRemoveFileSpec(sz.data());
+                PathAppend(sz.data(), L"DICT");
+                XgLoadDicts(sz.data());
+            }
+        }
+
+        // 辞書ファイルが未指定の場合は「カナ」を優先する。
+        if (xg_dict_name.empty())
+        {
+            LPCWSTR pszKana = XgLoadStringDx1(1180);
+            for (auto& file : xg_dict_files)
+            {
+                if (file.find(pszKana) != std::wstring::npos)
+                {
+                    xg_dict_name = file;
+                    break;
+                }
+            }
+        }
+    }
+
     // ファイルが実際に存在するかチェックし、存在しない項目は消す。
     for (size_t i = 0; i < xg_dict_files.size(); ++i) {
         DWORD attrs = ::GetFileAttributesW(xg_dict_files[i].data());
         if (attrs == 0xFFFFFFFF) {
             xg_dict_files.erase(xg_dict_files.begin() + i);
             --i;
-        }
-    }
-
-    // 辞書ファイルの個数がゼロならば、初期化する。
-    if (nFileCount == 0 || xg_dict_files.empty()) {
-        xg_dict_files.clear();
-
-        // 実行ファイルのパスを取得。
-        ::GetModuleFileNameW(nullptr, sz.data(), 
-                             static_cast<DWORD>(sz.size()));
-
-        // 実行ファイルにある.dicファイルを列挙する。
-        HANDLE hFind;
-        WIN32_FIND_DATAW find;
-        LPWSTR pch;
-        pch = wcsrchr(sz.data(), L'\\');
-        wcscpy(pch, L"\\*.dic");
-        pch++;
-        hFind = ::FindFirstFileW(sz.data(), &find);
-        if (hFind != INVALID_HANDLE_VALUE) {
-            do {
-                ::lstrcpyW(pch, find.cFileName);
-                // ファイルが存在するか確認する。
-                DWORD attrs = ::GetFileAttributesW(sz.data());
-                if (attrs != 0xFFFFFFFF && !(attrs & FILE_ATTRIBUTE_DIRECTORY)) {
-                    // あった。
-                    xg_dict_files.emplace_back(sz.data());
-                }
-            } while (::FindNextFileW(hFind, &find));
-            ::FindClose(hFind);
-        }
-
-        if (xg_dict_files.empty()) {
-            // 空の場合は一つ上のフォルダで試す。
-            pch = wcsrchr(sz.data(), L'\\');
-            *pch = 0;
-            pch = wcsrchr(sz.data(), L'\\');
-            if (pch) {
-                wcscpy(pch, L"\\*.dic");
-                pch++;
-                hFind = ::FindFirstFileW(sz.data(), &find);
-                if (hFind != INVALID_HANDLE_VALUE) {
-                    do {
-                        ::lstrcpyW(pch, find.cFileName);
-                        // ファイルが存在するか確認する。
-                        DWORD attrs = ::GetFileAttributesW(sz.data());
-                        if (attrs != 0xFFFFFFFF && !(attrs & FILE_ATTRIBUTE_DIRECTORY)) {
-                            // あった。
-                            xg_dict_files.emplace_back(sz.data());
-                        }
-                    } while (::FindNextFileW(hFind, &find));
-                    ::FindClose(hFind);
-                }
-            }
         }
     }
 
@@ -819,13 +819,7 @@ bool __fastcall XgSaveSettings(void)
             app_key.SetDword(s_pszHiragana, xg_bHiragana);
             app_key.SetDword(s_pszLowercase, xg_bLowercase);
 
-            // 辞書ファイルのリストを設定する。
-            nCount = static_cast<int>(xg_dict_files.size());
-            app_key.SetDword(s_pszRecentCount, nCount);
-            for (i = 0; i < nCount; i++) {
-                ::wsprintfW(szFormat.data(), s_pszRecent, i + 1);
-                app_key.SetSz(szFormat.data(), xg_dict_files[i].c_str());
-            }
+            app_key.SetSz(s_pszRecent, xg_dict_name.c_str());
 
             // 保存先のリストを設定する。
             nCount = static_cast<int>(s_dirs_save_to.size());
@@ -1005,6 +999,7 @@ XgNewDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam*/)
     int i, nCount, n1, n2;
     std::array<WCHAR,MAX_PATH> szFile, szTarget;
     std::wstring strFile;
+    HWND hCmb1;
     COMBOBOXEXITEMW item;
     OPENFILENAMEW ofn;
     HDROP hDrop;
@@ -1016,7 +1011,9 @@ XgNewDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam*/)
         // サイズの欄を設定する。
         ::SetDlgItemInt(hwnd, edt1, s_nRows, FALSE);
         ::SetDlgItemInt(hwnd, edt2, s_nCols, FALSE);
+
         // 辞書ファイルのパス名のベクターをコンボボックスに設定する。
+        hCmb1 = GetDlgItem(hwnd, cmb1);
         nCount = static_cast<int>(xg_dict_files.size());
         for (i = 0; i < nCount; i++) {
             item.mask = CBEIF_TEXT;
@@ -1024,11 +1021,12 @@ XgNewDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam*/)
             ::lstrcpyW(szFile.data(), xg_dict_files[i].data());
             item.pszText = szFile.data();
             item.cchTextMax = -1;
-            ::SendDlgItemMessageW(hwnd, cmb1, CBEM_INSERTITEMW, 0,
-                                  reinterpret_cast<LPARAM>(&item));
+            ::SendMessageW(hCmb1, CBEM_INSERTITEMW, 0, reinterpret_cast<LPARAM>(&item));
         }
-        // コンボボックスの最初の項目を選択する。
-        ::SendDlgItemMessageW(hwnd, cmb1, CB_SETCURSEL, 0, 0);
+
+        i = ComboBox_FindStringExact(hCmb1, -1, xg_dict_name.c_str());
+        ComboBox_SetCurSel(hCmb1, i);
+
         // ドラッグ＆ドロップを受け付ける。
         ::DragAcceptFiles(hwnd, TRUE);
         // IMEをOFFにする。
@@ -1112,6 +1110,7 @@ XgNewDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam*/)
                     }
                 }
                 xg_dict_files.emplace_front(strFile);
+                xg_dict_name = strFile;
 
                 // 初期化する。
                 xg_bSolved = false;
@@ -1172,6 +1171,7 @@ XgGenerateDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam*/)
     int i, n1, n2;
     std::array<WCHAR,MAX_PATH> szFile, szTarget;
     std::wstring strFile;
+    HWND hCmb1;
     COMBOBOXEXITEMW item;
     OPENFILENAMEW ofn;
     HDROP hDrop;
@@ -1183,18 +1183,21 @@ XgGenerateDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam*/)
         // サイズの欄を設定する。
         ::SetDlgItemInt(hwnd, edt1, s_nRows, FALSE);
         ::SetDlgItemInt(hwnd, edt2, s_nCols, FALSE);
+
         // 辞書ファイルのパス名のベクターをコンボボックスに設定する。
+        hCmb1 = GetDlgItem(hwnd, cmb1);
         for (const auto& dict_file : xg_dict_files) {
             item.mask = CBEIF_TEXT;
             item.iItem = -1;
             ::lstrcpyW(szFile.data(), dict_file.data());
             item.pszText = szFile.data();
             item.cchTextMax = -1;
-            ::SendDlgItemMessageW(hwnd, cmb1, CBEM_INSERTITEMW, 0,
-                                  reinterpret_cast<LPARAM>(&item));
+            ::SendMessageW(hCmb1, CBEM_INSERTITEMW, 0, reinterpret_cast<LPARAM>(&item));
         }
-        // コンボボックスの最初の項目を選択する。
-        ::SendDlgItemMessageW(hwnd, cmb1, CB_SETCURSEL, 0, 0);
+
+        i = ComboBox_FindStringExact(hCmb1, -1, xg_dict_name.c_str());
+        ComboBox_SetCurSel(hCmb1, i);
+
         // 自動で再計算をするか？
         if (s_bAutoRetry)
             ::CheckDlgButton(hwnd, chx1, BST_CHECKED);
@@ -1290,6 +1293,7 @@ XgGenerateDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam*/)
                     }
                 }
                 xg_dict_files.emplace_front(strFile);
+                xg_dict_name = strFile;
 
                 // 初期化する。
                 {
@@ -1371,6 +1375,7 @@ XgGenerateRepeatedlyDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam
     int i, n1, n2;
     std::array<WCHAR,MAX_PATH> szFile, szTarget;
     std::wstring strFile, strDir;
+    HWND hCmb1;
     COMBOBOXEXITEMW item;
     OPENFILENAMEW ofn;
     HDROP hDrop;
@@ -1387,17 +1392,19 @@ XgGenerateRepeatedlyDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam
         ::SetDlgItemInt(hwnd, edt1, s_nRows, FALSE);
         ::SetDlgItemInt(hwnd, edt2, s_nCols, FALSE);
         // 辞書ファイルのパス名のベクターをコンボボックスに設定する。
+        hCmb1 = GetDlgItem(hwnd, cmb1);
         for (const auto& dict_file : xg_dict_files) {
             item.mask = CBEIF_TEXT;
             item.iItem = -1;
             ::lstrcpyW(szFile.data(), dict_file.data());
             item.pszText = szFile.data();
             item.cchTextMax = -1;
-            ::SendDlgItemMessageW(hwnd, cmb1, CBEM_INSERTITEMW, 0,
-                                  reinterpret_cast<LPARAM>(&item));
+            ::SendMessageW(hCmb1, CBEM_INSERTITEMW, 0, reinterpret_cast<LPARAM>(&item));
         }
-        // コンボボックスの最初の項目を選択する。
-        ::SendDlgItemMessageW(hwnd, cmb1, CB_SETCURSEL, 0, 0);
+
+        i = ComboBox_FindStringExact(hCmb1, -1, xg_dict_name.c_str());
+        ComboBox_SetCurSel(hCmb1, i);
+
         // 保存先を設定する。
         for (const auto& dir : s_dirs_save_to) {
             item.mask = CBEIF_TEXT;
@@ -1588,6 +1595,7 @@ XgGenerateRepeatedlyDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam
                     }
                 }
                 xg_dict_files.emplace_front(strFile);
+                xg_dict_name = strFile;
 
                 // 初期化する。
                 {
@@ -5627,6 +5635,7 @@ XgLoadDictDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
     int i;
     std::array<WCHAR,MAX_PATH> szFile, szTarget;
     std::wstring strFile;
+    HWND hCmb1;
     COMBOBOXEXITEMW item;
     OPENFILENAMEW ofn;
     HDROP hDrop;
@@ -5636,17 +5645,19 @@ XgLoadDictDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
         // ダイアログを中央へ移動する。
         XgCenterDialog(hwnd);
         // 辞書ファイルのパス名のベクターをコンボボックスに設定する。
+        hCmb1 = GetDlgItem(hwnd, cmb1);
         for (const auto& dict_file : xg_dict_files) {
             item.mask = CBEIF_TEXT;
             item.iItem = -1;
             ::lstrcpyW(szFile.data(), dict_file.data());
             item.pszText = szFile.data();
             item.cchTextMax = -1;
-            ::SendDlgItemMessageW(hwnd, cmb1, CBEM_INSERTITEMW, 0,
-                                reinterpret_cast<LPARAM>(&item));
+            ::SendMessageW(hCmb1, CBEM_INSERTITEMW, 0, reinterpret_cast<LPARAM>(&item));
         }
-        // コンボボックスの最初の項目を選択する。
-        ::SendDlgItemMessageW(hwnd, cmb1, CB_SETCURSEL, 0, 0);
+
+        i = ComboBox_FindStringExact(hCmb1, -1, xg_dict_name.c_str());
+        ComboBox_SetCurSel(hCmb1, i);
+
         // ドラッグ＆ドロップを受け付ける。
         ::DragAcceptFiles(hwnd, TRUE);
         return TRUE;
@@ -5703,6 +5714,8 @@ XgLoadDictDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
                     }
                 }
                 xg_dict_files.emplace_front(strFile);
+                xg_dict_name = strFile;
+
                 // ダイアログを閉じる。
                 ::EndDialog(hwnd, IDOK);
             } else {
@@ -7468,8 +7481,8 @@ bool __fastcall MainWnd_OnCreate(HWND hwnd, LPCREATESTRUCT /*lpCreateStruct*/)
     xg_xword.clear();
 
     // 辞書ファイルを読み込む。
-    if (xg_dict_files.size())
-        XgLoadDictFile(xg_dict_files[0].data());
+    if (xg_dict_name.size())
+        XgLoadDictFile(xg_dict_name.c_str());
 
     // ファイルドロップを受け付ける。
     ::DragAcceptFiles(hwnd, TRUE);
