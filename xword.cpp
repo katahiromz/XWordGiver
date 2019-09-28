@@ -1924,7 +1924,7 @@ void __fastcall XG_Board::GetHintsStr(
     std::wstring& str, int hint_type, bool bShowAnswer) const
 {
     // 文字列バッファ。
-    std::array<WCHAR,64> sz;
+    WCHAR sz[64];
 
     // 初期化。
     str.clear();
@@ -1948,8 +1948,8 @@ void __fastcall XG_Board::GetHintsStr(
 
         for (const auto& info : xg_vTateInfo) {
             // 番号を格納する。
-            ::wsprintfW(sz.data(), XgLoadStringDx1(24), info.m_number);
-            str += sz.data();
+            StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(24), info.m_number);
+            str += sz;
 
             // 答えを見せるかどうか？
             if (bShowAnswer) {
@@ -1977,8 +1977,8 @@ void __fastcall XG_Board::GetHintsStr(
         str += xg_pszNewLine;
         for (const auto& info : xg_vYokoInfo) {
             // 番号を格納する。
-            ::wsprintfW(sz.data(), XgLoadStringDx1(25), info.m_number);
-            str += sz.data();
+            StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(25), info.m_number);
+            str += sz;
 
             // 答えを見せるかどうか？
             if (bShowAnswer) {
@@ -2009,8 +2009,8 @@ void __fastcall XG_Board::GetHintsStr(
 
         for (const auto& info : xg_vTateInfo) {
             // <li>
-            ::wsprintfW(sz.data(), XgLoadStringDx1(105), info.m_number);
-            str += sz.data();
+            StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(105), info.m_number);
+            str += sz;
 
             // ヒント文章を追加する。
             for (const auto& data : xg_dict_data) {
@@ -2036,8 +2036,8 @@ void __fastcall XG_Board::GetHintsStr(
 
         for (const auto& info : xg_vYokoInfo) {
             // <li>
-            ::wsprintfW(sz.data(), XgLoadStringDx1(105), info.m_number);
-            str += sz.data();
+            StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(105), info.m_number);
+            str += sz;
 
             // ヒント文章を追加する。
             for (const auto& data : xg_dict_data) {
@@ -2906,13 +2906,13 @@ void __fastcall XgDrawMarkWord(HDC hdc, LPSIZE psiz)
     ::GetObjectW(::GetStockObject(DEFAULT_GUI_FONT), sizeof(LOGFONTW), &lf);
     if (xg_imode == xg_im_HANGUL) {
         // ハングル文字。
-        ::lstrcpynW(lf.lfFaceName, XgLoadStringDx1(67), LF_FACESIZE);
+        StringCbCopy(lf.lfFaceName, sizeof(lf.lfFaceName), XgLoadStringDx1(67));
     } else {
         // その他。
-        ::lstrcpynW(lf.lfFaceName, XgLoadStringDx1(35), LF_FACESIZE);
+        StringCbCopy(lf.lfFaceName, sizeof(lf.lfFaceName), XgLoadStringDx1(35));
     }
     if (xg_szCellFont[0])
-        ::lstrcpyW(lf.lfFaceName, xg_szCellFont.data());
+        StringCbCopy(lf.lfFaceName, sizeof(lf.lfFaceName), xg_szCellFont);
     lf.lfHeight = xg_nCellSize * 2 / 3;
     lf.lfWidth = 0;
     lf.lfWeight = FW_NORMAL;
@@ -2922,7 +2922,7 @@ void __fastcall XgDrawMarkWord(HDC hdc, LPSIZE psiz)
     // 小さい文字のフォントを作成する。
     ::GetObjectW(::GetStockObject(DEFAULT_GUI_FONT), sizeof(LOGFONTW), &lf);
     if (xg_szSmallFont[0])
-        ::lstrcpyW(lf.lfFaceName, xg_szSmallFont.data());
+        StringCbCopy(lf.lfFaceName, sizeof(lf.lfFaceName), xg_szSmallFont);
     lf.lfHeight = xg_nCellSize / 4;
     lf.lfWidth = 0;
     lf.lfWeight = FW_NORMAL;
@@ -2935,7 +2935,7 @@ void __fastcall XgDrawMarkWord(HDC hdc, LPSIZE psiz)
     ::FillRect(hdc, &rc, reinterpret_cast<HBRUSH>(::GetStockObject(WHITE_BRUSH)));
 
     // 二重マスを描画する。
-    std::array<WCHAR,32> sz;
+    WCHAR sz[32];
     SIZE siz;
     HGDIOBJ hFontOld = ::SelectObject(hdc, hFontSmall);
     HGDIOBJ hPenOld = ::SelectObject(hdc, hThinPen);
@@ -2957,14 +2957,14 @@ void __fastcall XgDrawMarkWord(HDC hdc, LPSIZE psiz)
         ::SetTextColor(hdc, xg_rgbBlackCellColor);
         ::SetBkMode(hdc, OPAQUE);
         ::SetBkColor(hdc, xg_rgbMarkedCellColor);
-        ::wsprintfW(sz.data(), L"%c", ZEN_LARGE_A + i);
-        ::GetTextExtentPoint32W(hdc, sz.data(), static_cast<int>(wcslen(sz.data())), &siz);
+        StringCbPrintf(sz, sizeof(sz), L"%c", ZEN_LARGE_A + i);
+        ::GetTextExtentPoint32W(hdc, sz, int(wcslen(sz)), &siz);
         ::SetRect(&rc,
             static_cast<int>(xg_nNarrowMargin + i * xg_nCellSize - 1 - siz.cx), 
             static_cast<int>(xg_nNarrowMargin + 0 * xg_nCellSize - 1 - siz.cy),
             static_cast<int>(xg_nNarrowMargin + (i + 1) * xg_nCellSize - 1), 
             static_cast<int>(xg_nNarrowMargin + 1 * xg_nCellSize - 1));
-        ::DrawTextW(hdc, sz.data(), -1, &rc, DT_RIGHT | DT_SINGLELINE | DT_BOTTOM);
+        ::DrawTextW(hdc, sz, -1, &rc, DT_RIGHT | DT_SINGLELINE | DT_BOTTOM);
     }
     ::SelectObject(hdc, hFontOld);
     ::SelectObject(hdc, hPenOld);
@@ -3059,13 +3059,13 @@ void __fastcall XgDrawXWord(XG_Board& xw, HDC hdc, LPSIZE psiz, bool bCaret)
     ::GetObjectW(::GetStockObject(DEFAULT_GUI_FONT), sizeof(LOGFONTW), &lf);
     if (xg_imode == xg_im_HANGUL) {
         // ハングル文字。
-        ::lstrcpynW(lf.lfFaceName, XgLoadStringDx1(67), LF_FACESIZE);
+        StringCbCopy(lf.lfFaceName, sizeof(lf.lfFaceName), XgLoadStringDx1(67));
     } else {
         // その他。
-        ::lstrcpynW(lf.lfFaceName, XgLoadStringDx1(35), LF_FACESIZE);
+        StringCbCopy(lf.lfFaceName, sizeof(lf.lfFaceName), XgLoadStringDx1(35));
     }
     if (xg_szCellFont[0])
-        ::lstrcpyW(lf.lfFaceName, xg_szCellFont.data());
+        StringCbCopy(lf.lfFaceName, sizeof(lf.lfFaceName), xg_szCellFont);
     lf.lfHeight = nCellSize * 2 / 3;
     lf.lfWidth = 0;
     lf.lfWeight = FW_NORMAL;
@@ -3075,7 +3075,7 @@ void __fastcall XgDrawXWord(XG_Board& xw, HDC hdc, LPSIZE psiz, bool bCaret)
     // 小さい文字のフォントを作成する。
     ::GetObjectW(::GetStockObject(DEFAULT_GUI_FONT), sizeof(LOGFONTW), &lf);
     if (xg_szSmallFont[0])
-        ::lstrcpyW(lf.lfFaceName, xg_szSmallFont.data());
+        StringCbCopy(lf.lfFaceName, sizeof(lf.lfFaceName), xg_szSmallFont);
     lf.lfHeight = nCellSize / 4;
     lf.lfWidth = 0;
     lf.lfWeight = FW_NORMAL;
@@ -3106,7 +3106,7 @@ void __fastcall XgDrawXWord(XG_Board& xw, HDC hdc, LPSIZE psiz, bool bCaret)
         PS_GEOMETRIC | PS_SOLID | PS_ENDCAP_SQUARE | PS_JOIN_BEVEL,
         c_nWide, &lbBlack, 0, NULL);
 
-    std::array<WCHAR,32> sz;
+    WCHAR sz[32];
     SIZE siz;
     HGDIOBJ hFontOld, hPenOld;
     
@@ -3193,14 +3193,14 @@ void __fastcall XgDrawXWord(XG_Board& xw, HDC hdc, LPSIZE psiz, bool bCaret)
             ::SetBkColor(hdc, xg_rgbMarkedCellColor);
 
             // 二重マスの右下端の文字を描く。
-            ::wsprintfW(sz.data(), L"%c", ZEN_LARGE_A + nMarked);
-            ::GetTextExtentPoint32W(hdc, sz.data(), static_cast<int>(wcslen(sz.data())), &siz);
+            StringCbPrintf(sz, sizeof(sz), L"%c", ZEN_LARGE_A + nMarked);
+            ::GetTextExtentPoint32W(hdc, sz, int(wcslen(sz)), &siz);
             ::SetRect(&rc,
                 static_cast<int>(xg_nMargin + (j + 1) * nCellSize - 1 - siz.cx), 
                 static_cast<int>(xg_nMargin + (i + 1) * nCellSize - 1 - siz.cy),
                 static_cast<int>(xg_nMargin + (j + 1) * nCellSize - 1), 
                 static_cast<int>(xg_nMargin + (i + 1) * nCellSize - 1));
-            ::DrawTextW(hdc, sz.data(), -1, &rc, DT_RIGHT | DT_SINGLELINE | DT_BOTTOM);
+            ::DrawTextW(hdc, sz, -1, &rc, DT_RIGHT | DT_SINGLELINE | DT_BOTTOM);
         }
     }
 
@@ -3210,7 +3210,7 @@ void __fastcall XgDrawXWord(XG_Board& xw, HDC hdc, LPSIZE psiz, bool bCaret)
         for (int k = 0; k < size; k++) {
             const int i = xg_vTateInfo[k].m_iRow;
             const int j = xg_vTateInfo[k].m_jCol;
-            ::wsprintfW(sz.data(), L"%u", xg_vTateInfo[k].m_number);
+            StringCbPrintf(sz, sizeof(sz), L"%u", xg_vTateInfo[k].m_number);
 
             // 文字の背景を塗りつぶす。
             ::SetBkMode(hdc, OPAQUE);
@@ -3228,7 +3228,7 @@ void __fastcall XgDrawXWord(XG_Board& xw, HDC hdc, LPSIZE psiz, bool bCaret)
                 static_cast<int>(xg_nMargin + (j + 1) * nCellSize), 
                 static_cast<int>(xg_nMargin + (i + 1) * nCellSize));
             ::OffsetRect(&rc, 2, 2);
-            ::DrawTextW(hdc, sz.data(), -1, &rc, DT_LEFT | DT_SINGLELINE | DT_TOP);
+            ::DrawTextW(hdc, sz, -1, &rc, DT_LEFT | DT_SINGLELINE | DT_TOP);
         }
     }
     // ヨコのカギの先頭マス。
@@ -3237,7 +3237,7 @@ void __fastcall XgDrawXWord(XG_Board& xw, HDC hdc, LPSIZE psiz, bool bCaret)
         for (int k = 0; k < size; k++) {
             const int i = xg_vYokoInfo[k].m_iRow;
             const int j = xg_vYokoInfo[k].m_jCol;
-            ::wsprintfW(sz.data(), L"%u", xg_vYokoInfo[k].m_number);
+            StringCbPrintf(sz, sizeof(sz), L"%u", xg_vYokoInfo[k].m_number);
 
             // 文字の背景を塗りつぶす。
             int nMarked = XgGetMarked(i, j);
@@ -3254,7 +3254,7 @@ void __fastcall XgDrawXWord(XG_Board& xw, HDC hdc, LPSIZE psiz, bool bCaret)
                 static_cast<int>(xg_nMargin + (j + 1) * nCellSize), 
                 static_cast<int>(xg_nMargin + (i + 1) * nCellSize));
             ::OffsetRect(&rc, 2, 2);
-            ::DrawTextW(hdc, sz.data(), -1, &rc, DT_LEFT | DT_SINGLELINE | DT_TOP);
+            ::DrawTextW(hdc, sz, -1, &rc, DT_LEFT | DT_SINGLELINE | DT_TOP);
         }
     }
 
@@ -3426,7 +3426,7 @@ bool __fastcall XgDoLoadBuilderFile(HWND hwnd, LPCWSTR pszFile)
 
     if (nWidth > 0 && nHeight > 0) {
         for (i = 0; i < nHeight; ++i) {
-            wsprintfW(szName, L"Line%u", i + 1);
+            StringCbPrintf(szName, sizeof(szName), L"Line%u", i + 1);
             GetPrivateProfileStringW(L"Cross", szName, L"", szText, ARRAYSIZE(szText), pszFile);
 
             std::wstring str = szText;
@@ -3484,7 +3484,7 @@ bool __fastcall XgDoLoadBuilderFile(HWND hwnd, LPCWSTR pszFile)
             xword.DoNumberingNoCheck();
 
             for (i = 0; i < 256; ++i) {
-                wsprintfW(szName, L"Down%u", i + 1);
+                StringCbPrintf(szName, sizeof(szName), L"Down%u", i + 1);
                 GetPrivateProfileStringW(L"Clue", szName, L"", szText, ARRAYSIZE(szText), pszFile);
 
                 std::wstring str = szText;
@@ -3504,7 +3504,7 @@ bool __fastcall XgDoLoadBuilderFile(HWND hwnd, LPCWSTR pszFile)
             }
 
             for (i = 0; i < 256; ++i) {
-                wsprintfW(szName, L"Across%u", i + 1);
+                StringCbPrintf(szName, sizeof(szName), L"Across%u", i + 1);
                 GetPrivateProfileStringW(L"Clue", szName, L"", szText, ARRAYSIZE(szText), pszFile);
 
                 std::wstring str = szText;

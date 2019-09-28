@@ -315,57 +315,45 @@ XgCenterMessageBoxIndirectW(LPMSGBOXPARAMS lpMsgBoxParams)
 void __fastcall XgOpenReadMe(HWND hwnd)
 {
     // 実行ファイルのパスを取得。
-    std::array<WCHAR,MAX_PATH> szPath;
-    ::GetModuleFileNameW(nullptr, szPath.data(), static_cast<DWORD>(szPath.size()));
+    WCHAR szPath[MAX_PATH];
+    ::GetModuleFileNameW(nullptr, szPath, ARRAYSIZE(szPath));
 
-    // 最後の円記号へのアドレスを取得。
-    LPWSTR pch = wcsrchr(szPath.data(), L'\\');
-    if (pch != nullptr) {
-        // ReadMeへのパスを作成。
-        pch++;
-        ::lstrcpyW(pch, XgLoadStringDx1(53));
+    // ReadMeへのパスを作成。
+    PathRemoveFileSpec(szPath);
+    PathAppend(szPath, XgLoadStringDx1(53));
 
-        // ReadMeを開く。
-        ShellExecuteW(hwnd, nullptr, szPath.data(), nullptr, nullptr, SW_SHOWNORMAL);
-    }
+    // ReadMeを開く。
+    ShellExecuteW(hwnd, nullptr, szPath, nullptr, nullptr, SW_SHOWNORMAL);
 }
 
 // Licenseを開く。
 void __fastcall XgOpenLicense(HWND hwnd)
 {
     // 実行ファイルのパスを取得。
-    std::array<WCHAR,MAX_PATH> szPath;
-    ::GetModuleFileNameW(nullptr, szPath.data(), static_cast<DWORD>(szPath.size()));
+    WCHAR szPath[MAX_PATH];
+    ::GetModuleFileNameW(nullptr, szPath, ARRAYSIZE(szPath));
 
-    // 最後の円記号へのアドレスを取得。
-    LPWSTR pch = wcsrchr(szPath.data(), L'\\');
-    if (pch != nullptr) {
-        // Licenseへのパスを作成。
-        pch++;
-        ::lstrcpyW(pch, XgLoadStringDx1(87));
+    // Licenseへのパスを作成。
+    PathRemoveFileSpec(szPath);
+    PathAppend(szPath, XgLoadStringDx1(87));
 
-        // Licenseを開く。
-        ShellExecuteW(hwnd, nullptr, szPath.data(), nullptr, nullptr, SW_SHOWNORMAL);
-    }
+    // Licenseを開く。
+    ShellExecuteW(hwnd, nullptr, szPath, nullptr, nullptr, SW_SHOWNORMAL);
 }
 
 // パターンを開く。
 void __fastcall XgOpenPatterns(HWND hwnd)
 {
     // 実行ファイルのパスを取得。
-    std::array<WCHAR,MAX_PATH> szPath;
-    ::GetModuleFileNameW(nullptr, szPath.data(), static_cast<DWORD>(szPath.size()));
+    WCHAR szPath[MAX_PATH];
+    ::GetModuleFileNameW(nullptr, szPath, ARRAYSIZE(szPath));
 
-    // 最後の円記号へのアドレスを取得。
-    LPWSTR pch = wcsrchr(szPath.data(), L'\\');
-    if (pch != nullptr) {
-        // Licenseへのパスを作成。
-        pch++;
-        ::lstrcpyW(pch, XgLoadStringDx1(89));
+    // パターンファイルへのパスを作成。
+    PathRemoveFileSpec(szPath);
+    PathAppend(szPath, XgLoadStringDx1(89));
 
-        // Licenseを開く。
-        ShellExecuteW(hwnd, nullptr, szPath.data(), nullptr, nullptr, SW_SHOWNORMAL);
-    }
+    // パターンファイルを開く。
+    ShellExecuteW(hwnd, nullptr, szPath, nullptr, nullptr, SW_SHOWNORMAL);
 }
 
 // ファイルが書き込み可能か？
@@ -470,7 +458,7 @@ std::string XgUnicodeToAnsi(const std::wstring& wide)
 std::wstring XgJsonEncodeString(const std::wstring& str)
 {
     std::wstring encoded;
-    std::array<wchar_t,16> buf;
+    wchar_t buf[16];
     size_t i, siz = str.size();
 
     encoded.clear();
@@ -486,8 +474,8 @@ std::wstring XgJsonEncodeString(const std::wstring& str)
         case L'\t': encoded += L"\\t"; break;
         default:
             if (0 <= str[i] && str[i] <= L'\x1F') {
-                swprintf(buf.data(), buf.size(), L"\\u%04X", str[i]);
-                encoded += buf.data();
+                StringCbPrintf(buf, sizeof(buf), L"\\u%04X", str[i]);
+                encoded += buf;
             } else {
                 encoded += str[i];
             }
@@ -656,22 +644,22 @@ std::string XgMakeClipHtmlData(
     size_t i;
     i = str.find("StartHTML:");
     i += 10;
-    sprintf(buf, "%08u", static_cast<UINT>(iHtmlStart));
+    StringCbPrintfA(buf, sizeof(buf), "%08u", static_cast<UINT>(iHtmlStart));
     str.replace(i, 8, buf);
 
     i = str.find("EndHTML:");
     i += 8;
-    sprintf(buf, "%08u", static_cast<UINT>(iHtmlEnd));
+    StringCbPrintfA(buf, sizeof(buf), "%08u", static_cast<UINT>(iHtmlEnd));
     str.replace(i, 8, buf);
 
     i = str.find("StartFragment:");
     i += 14;
-    sprintf(buf, "%08u", static_cast<UINT>(iFragmentStart));
+    StringCbPrintfA(buf, sizeof(buf), "%08u", static_cast<UINT>(iFragmentStart));
     str.replace(i, 8, buf);
 
     i = str.find("EndFragment:");
     i += 12;
-    sprintf(buf, "%08u", static_cast<UINT>(iFragmentEnd));
+    StringCbPrintfA(buf, sizeof(buf), "%08u", static_cast<UINT>(iFragmentEnd));
     str.replace(i, 8, buf);
 
     return str;

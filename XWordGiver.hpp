@@ -57,6 +57,8 @@
 
 #include <process.h>    // for _beginthreadex
 
+#include <strsafe.h>    // for String... functions
+
 #include "resource.h"   // resource-related macros
 
 ////////////////////////////////////////////////////////////////////////////
@@ -496,13 +498,13 @@ extern std::wstring     xg_strHints;
 extern bool             xg_bRetrying;
 
 // スレッドのハンドル。
-extern std::vector<HANDLE>                  xg_ahThreads;
+extern std::vector<HANDLE> xg_ahThreads;
 
 // マスのフォント。
-extern std::array<WCHAR,LF_FACESIZE>        xg_szCellFont;
+extern WCHAR xg_szCellFont[];
 
 // 番号のフォント。
-extern std::array<WCHAR,LF_FACESIZE>        xg_szSmallFont;
+extern WCHAR xg_szSmallFont[];
 
 // 直前に押したキーを覚えておく。
 extern WCHAR xg_prev_vk;

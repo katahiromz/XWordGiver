@@ -76,13 +76,13 @@ bool            xg_bSaveAsJsonFile = false;
 bool            xg_bAddThickFrame = true;
 
 // マスのフォント。
-std::array<WCHAR,LF_FACESIZE>        xg_szCellFont = { { 0 } };
+WCHAR xg_szCellFont[LF_FACESIZE] = L"";
 
 // 小さな文字のフォント。
-std::array<WCHAR,LF_FACESIZE>        xg_szSmallFont = { { 0 } };
+WCHAR xg_szSmallFont[LF_FACESIZE] = L"";
 
 // UIフォント。
-std::array<WCHAR,LF_FACESIZE>        xg_szUIFont = { { 0 } };
+WCHAR xg_szUIFont[LF_FACESIZE] = L"";
 
 // 「元に戻す」ためのバッファ。
 XG_UndoBuffer                        xg_ubUndoBuffer;
@@ -455,7 +455,7 @@ BOOL XgLoadDicts(LPWSTR pszDir)
 {
     WCHAR szPath[MAX_PATH];
 
-    lstrcpyW(szPath, pszDir);
+    StringCbCopy(szPath, sizeof(szPath), pszDir);
     PathAppend(szPath, L"*.dic");
 
     WIN32_FIND_DATAW find;
@@ -465,7 +465,7 @@ BOOL XgLoadDicts(LPWSTR pszDir)
 
     do
     {
-        lstrcpyW(szPath, pszDir);
+        StringCbCopy(szPath, sizeof(szPath), pszDir);
         PathAppend(szPath, find.cFileName);
         xg_dict_files.emplace_back(szPath);
     } while (FindNextFile(hFind, &find));
@@ -479,8 +479,8 @@ BOOL XgLoadDicts(LPWSTR pszDir)
 bool __fastcall XgLoadSettings(void)
 {
     int i, nDirCount = 0;
-    std::array<WCHAR,MAX_PATH>  sz;
-    std::array<WCHAR,32>        szFormat;
+    WCHAR sz[MAX_PATH];
+    WCHAR szFormat[32];
     DWORD dwValue;
 
     // 初期化する。
@@ -612,14 +612,14 @@ bool __fastcall XgLoadSettings(void)
             //    s_nDictSaveMode = !!dwValue;
             //}
 
-            if (!app_key.QuerySz(s_pszCellFont, sz.data(), sz.size())) {
-                ::lstrcpynW(xg_szCellFont.data(), sz.data(), int(xg_szCellFont.size()));
+            if (!app_key.QuerySz(s_pszCellFont, sz, ARRAYSIZE(sz))) {
+                StringCbCopy(xg_szCellFont, sizeof(xg_szCellFont), sz);
             }
-            if (!app_key.QuerySz(s_pszSmallFont, sz.data(), sz.size())) {
-                ::lstrcpynW(xg_szSmallFont.data(), sz.data(), int(xg_szSmallFont.size()));
+            if (!app_key.QuerySz(s_pszSmallFont, sz, ARRAYSIZE(sz))) {
+                StringCbCopy(xg_szSmallFont, sizeof(xg_szSmallFont), sz);
             }
-            if (!app_key.QuerySz(s_pszUIFont, sz.data(), sz.size())) {
-                ::lstrcpynW(xg_szUIFont.data(), sz.data(), int(xg_szUIFont.size()));
+            if (!app_key.QuerySz(s_pszUIFont, sz, ARRAYSIZE(sz))) {
+                StringCbCopy(xg_szUIFont, sizeof(xg_szUIFont), sz);
             }
 
             if (!app_key.QueryDword(s_pszShowToolBar, dwValue)) {
@@ -689,17 +689,17 @@ bool __fastcall XgLoadSettings(void)
                 xg_bLowercase = !!dwValue;
             }
 
-            if (!app_key.QuerySz(s_pszRecent, sz.data(), sz.size())) {
-                xg_dict_name = sz.data();
+            if (!app_key.QuerySz(s_pszRecent, sz, ARRAYSIZE(sz))) {
+                xg_dict_name = sz;
             }
 
             // 保存先のリストを取得する。
             if (!app_key.QueryDword(s_pszSaveToCount, dwValue)) {
                 nDirCount = dwValue;
                 for (i = 0; i < nDirCount; i++) {
-                    ::wsprintfW(szFormat.data(), s_pszSaveTo, i + 1);
-                    if (!app_key.QuerySz(szFormat.data(), sz.data(), sz.size())) {
-                        s_dirs_save_to.emplace_back(sz.data());
+                    StringCbPrintf(szFormat, sizeof(szFormat), s_pszSaveTo, i + 1);
+                    if (!app_key.QuerySz(szFormat, sz, ARRAYSIZE(sz))) {
+                        s_dirs_save_to.emplace_back(sz);
                     } else {
                         nDirCount = i;
                         break;
@@ -712,22 +712,22 @@ bool __fastcall XgLoadSettings(void)
     // 辞書ファイルの名前を読み込む。
     {
         // 実行ファイルのパスを取得。
-        ::GetModuleFileNameW(nullptr, sz.data(), DWORD(sz.size()));
+        ::GetModuleFileNameW(nullptr, sz, sizeof(sz));
 
         // 実行ファイルにある.dicファイルを列挙する。
-        PathRemoveFileSpec(sz.data());
-        PathAppend(sz.data(), L"DICT");
+        PathRemoveFileSpec(sz);
+        PathAppend(sz, L"DICT");
 
-        if (!XgLoadDicts(sz.data()))
+        if (!XgLoadDicts(sz))
         {
-            PathRemoveFileSpec(sz.data());
-            PathRemoveFileSpec(sz.data());
-            PathAppend(sz.data(), L"DICT");
-            if (!XgLoadDicts(sz.data()))
+            PathRemoveFileSpec(sz);
+            PathRemoveFileSpec(sz);
+            PathAppend(sz, L"DICT");
+            if (!XgLoadDicts(sz))
             {
-                PathRemoveFileSpec(sz.data());
-                PathAppend(sz.data(), L"DICT");
-                XgLoadDicts(sz.data());
+                PathRemoveFileSpec(sz);
+                PathAppend(sz, L"DICT");
+                XgLoadDicts(sz);
             }
         }
 
@@ -758,11 +758,11 @@ bool __fastcall XgLoadSettings(void)
     // 保存先リストが空だったら、初期化する。
     if (nDirCount == 0 || s_dirs_save_to.empty()) {
         LPITEMIDLIST pidl;
-        std::array<WCHAR,MAX_PATH> szPath;
+        WCHAR szPath[MAX_PATH];
         ::SHGetSpecialFolderLocation(nullptr, CSIDL_PERSONAL, &pidl);
-        ::SHGetPathFromIDListW(pidl, szPath.data());
+        ::SHGetPathFromIDListW(pidl, szPath);
         ::CoTaskMemFree(pidl);
-        s_dirs_save_to.emplace_back(szPath.data());
+        s_dirs_save_to.emplace_back(szPath);
     }
 
     return true;
@@ -772,7 +772,7 @@ bool __fastcall XgLoadSettings(void)
 bool __fastcall XgSaveSettings(void)
 {
     int i, nCount;
-    std::array<WCHAR,32> szFormat;
+    WCHAR szFormat[32];
 
     // 会社名キーを開く。キーがなければ作成する。
     MRegKey company_key(HKEY_CURRENT_USER, s_pszSoftwareCompanyName, TRUE);
@@ -787,9 +787,9 @@ bool __fastcall XgSaveSettings(void)
             app_key.SetDword(s_pszInfinite, s_bInfinite);
             //app_key.SetDword(s_pszDictSaveMode, s_nDictSaveMode);
 
-            app_key.SetSz(s_pszCellFont, xg_szCellFont.data(), xg_szCellFont.size());
-            app_key.SetSz(s_pszSmallFont, xg_szSmallFont.data(), xg_szSmallFont.size());
-            app_key.SetSz(s_pszUIFont, xg_szUIFont.data(), xg_szUIFont.size());
+            app_key.SetSz(s_pszCellFont, xg_szCellFont, ARRAYSIZE(xg_szCellFont));
+            app_key.SetSz(s_pszSmallFont, xg_szSmallFont, ARRAYSIZE(xg_szSmallFont));
+            app_key.SetSz(s_pszUIFont, xg_szUIFont, ARRAYSIZE(xg_szUIFont));
 
             app_key.SetDword(s_pszShowToolBar, s_bShowToolBar);
             app_key.SetDword(s_pszShowStatusBar, s_bShowStatusBar);
@@ -824,8 +824,8 @@ bool __fastcall XgSaveSettings(void)
             app_key.SetDword(s_pszSaveToCount, nCount);
             for (i = 0; i < nCount; i++)
             {
-                ::wsprintfW(szFormat.data(), s_pszSaveTo, i + 1);
-                app_key.SetSz(szFormat.data(), s_dirs_save_to[i].c_str());
+                StringCbPrintf(szFormat, sizeof(szFormat), s_pszSaveTo, i + 1);
+                app_key.SetSz(szFormat, s_dirs_save_to[i].c_str());
             }
 
             app_key.SetDword(s_pszHintsWndX, s_nHintsWndX);
@@ -869,7 +869,7 @@ extern "C"
 INT_PTR CALLBACK
 XgInputHintDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
-    std::array<WCHAR,512> sz;
+    WCHAR sz[512];
     static std::wstring s_word;
 
     switch (uMsg) {
@@ -879,8 +879,8 @@ XgInputHintDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 
         // ダイアログを初期化する。
         s_word = *reinterpret_cast<std::wstring *>(lParam);
-        ::wsprintfW(sz.data(), XgLoadStringDx1(42), s_word.data(), s_word.data());
-        ::SetDlgItemTextW(hwnd, stc1, sz.data());
+        StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(42), s_word.data(), s_word.data());
+        ::SetDlgItemTextW(hwnd, stc1, sz);
 
         // ヒントが追加された。
         xg_bHintsAdded = true;
@@ -890,11 +890,10 @@ XgInputHintDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
         switch (LOWORD(wParam)) {
         case IDOK:
             // テキストを取得する。
-            ::GetDlgItemTextW(hwnd, edt1, sz.data(), 
-                              static_cast<int>(sz.size()));
+            ::GetDlgItemTextW(hwnd, edt1, sz, ARRAYSIZE(sz));
 
             // 辞書データに追加する。
-            xg_dict_data.emplace_back(s_word, sz.data());
+            xg_dict_data.emplace_back(s_word, sz);
 
             // 二分探索のために、並び替えておく。
             XgSortAndUniqueDictData();
@@ -948,9 +947,9 @@ bool __fastcall XgCheckCrossWord(HWND hwnd, bool check_words = true)
     if (code == xg_epv_PATNOTMATCH) {
         if (check_words) {
             // パターンにマッチしないマスがあった。
-            std::array<WCHAR,128> sz;
-            ::wsprintfW(sz.data(), XgLoadStringDx1(48), pos.m_i + 1, pos.m_j + 1);
-            XgCenterMessageBoxW(hwnd, sz.data(), nullptr, MB_ICONERROR);
+            WCHAR sz[128];
+            StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(48), pos.m_i + 1, pos.m_j + 1);
+            XgCenterMessageBoxW(hwnd, sz, nullptr, MB_ICONERROR);
             return false;
         }
     } else if (code == xg_epv_DOUBLEWORD) {
@@ -960,9 +959,9 @@ bool __fastcall XgCheckCrossWord(HWND hwnd, bool check_words = true)
     } else if (code == xg_epv_LENGTHMISMATCH) {
         if (check_words) {
             // 登録されている単語と長さの一致しないスペースがあった。
-            std::array<WCHAR,128> sz;
-            ::wsprintfW(sz.data(), XgLoadStringDx1(54), pos.m_i + 1, pos.m_j + 1);
-            XgCenterMessageBoxW(hwnd, sz.data(), nullptr, MB_ICONERROR);
+            WCHAR sz[128];
+            StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(54), pos.m_i + 1, pos.m_j + 1);
+            XgCenterMessageBoxW(hwnd, sz, nullptr, MB_ICONERROR);
             return false;
         }
     }
@@ -995,7 +994,7 @@ extern "C" INT_PTR CALLBACK
 XgNewDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam*/)
 {
     int i, nCount, n1, n2;
-    std::array<WCHAR,MAX_PATH> szFile, szTarget;
+    WCHAR szFile[MAX_PATH], szTarget[MAX_PATH];
     std::wstring strFile;
     HWND hCmb1;
     COMBOBOXEXITEMW item;
@@ -1016,8 +1015,8 @@ XgNewDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam*/)
         for (i = 0; i < nCount; i++) {
             item.mask = CBEIF_TEXT;
             item.iItem = -1;
-            ::lstrcpyW(szFile.data(), xg_dict_files[i].data());
-            item.pszText = szFile.data();
+            StringCbCopy(szFile, sizeof(szFile), xg_dict_files[i].data());
+            item.pszText = szFile;
             item.cchTextMax = -1;
             ::SendMessageW(hCmb1, CBEM_INSERTITEMW, 0, reinterpret_cast<LPARAM>(&item));
         }
@@ -1042,28 +1041,28 @@ XgNewDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam*/)
     case WM_DROPFILES:
         // ドロップされたファイルのパス名を取得する。
         hDrop = reinterpret_cast<HDROP>(wParam);
-        ::DragQueryFileW(hDrop, 0, szFile.data(), MAX_PATH);
+        ::DragQueryFileW(hDrop, 0, szFile, MAX_PATH);
         ::DragFinish(hDrop);
 
         // ショートカットだった場合は、ターゲットのパスを取得する。
-        if (::lstrcmpiW(PathFindExtensionW(szFile.data()), s_szShellLinkDotExt) == 0) {
-            if (!XgGetPathOfShortcutW(szFile.data(), szTarget.data())) {
+        if (::lstrcmpiW(PathFindExtensionW(szFile), s_szShellLinkDotExt) == 0) {
+            if (!XgGetPathOfShortcutW(szFile, szTarget)) {
                 ::MessageBeep(0xFFFFFFFF);
                 break;
             }
-            ::lstrcpyW(szFile.data(), szTarget.data());
+            StringCbCopy(szFile, sizeof(szFile), szTarget);
         }
 
         // 同じ項目がすでにあれば、削除する。
-        i = static_cast<int>(::SendDlgItemMessageW(hwnd, cmb1, CB_FINDSTRINGEXACT, 0,
-                                                 reinterpret_cast<LPARAM>(szFile.data())));
+        i = int(::SendDlgItemMessageW(hwnd, cmb1, CB_FINDSTRINGEXACT, 0,
+                                      reinterpret_cast<LPARAM>(szFile)));
         if (i != CB_ERR) {
             ::SendDlgItemMessageW(hwnd, cmb1, CB_DELETESTRING, i, 0);
         }
         // コンボボックスの最初に挿入する。
         item.mask = CBEIF_TEXT;
         item.iItem = 0;
-        item.pszText = szFile.data();
+        item.pszText = szFile;
         item.cchTextMax = -1;
         ::SendDlgItemMessageW(hwnd, cmb1, CBEM_INSERTITEMW, 0,
                             reinterpret_cast<LPARAM>(&item));
@@ -1090,9 +1089,8 @@ XgNewDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam*/)
                 return 0;
             }
             // 辞書ファイルのパス名を取得する。
-            ::GetDlgItemTextW(hwnd, cmb1, szFile.data(), 
-                            static_cast<int>(szFile.size()));
-            strFile = szFile.data();
+            ::GetDlgItemTextW(hwnd, cmb1, szFile, ARRAYSIZE(szFile));
+            strFile = szFile;
             xg_str_trim(strFile);
             // 正しく読み込めるか？
             if (XgLoadDictFile(strFile.data())) {
@@ -1142,7 +1140,7 @@ XgNewDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam*/)
             ofn.hwndOwner = hwnd;
             ofn.lpstrFilter = XgMakeFilterString(XgLoadStringDx2(50));
             szFile[0] = 0;
-            ofn.lpstrFile = szFile.data();
+            ofn.lpstrFile = szFile;
             ofn.nMaxFile = MAX_PATH;
             ofn.lpstrTitle = XgLoadStringDx1(19);
             ofn.Flags = OFN_EXPLORER | OFN_ENABLESIZING | OFN_FILEMUSTEXIST |
@@ -1150,7 +1148,7 @@ XgNewDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam*/)
             ofn.lpstrDefExt = L"dic";
             if (::GetOpenFileNameW(&ofn)) {
                 // コンボボックスにテキストを設定。
-                ::SetDlgItemTextW(hwnd, cmb1, szFile.data());
+                ::SetDlgItemTextW(hwnd, cmb1, szFile);
             }
             break;
         }
@@ -1165,7 +1163,7 @@ extern "C" INT_PTR CALLBACK
 XgGenerateDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam*/)
 {
     int i, n1, n2;
-    std::array<WCHAR,MAX_PATH> szFile, szTarget;
+    WCHAR szFile[MAX_PATH], szTarget[MAX_PATH];
     std::wstring strFile;
     HWND hCmb1;
     COMBOBOXEXITEMW item;
@@ -1185,8 +1183,8 @@ XgGenerateDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam*/)
         for (const auto& dict_file : xg_dict_files) {
             item.mask = CBEIF_TEXT;
             item.iItem = -1;
-            ::lstrcpyW(szFile.data(), dict_file.data());
-            item.pszText = szFile.data();
+            StringCbCopy(szFile, sizeof(szFile), dict_file.data());
+            item.pszText = szFile;
             item.cchTextMax = -1;
             ::SendMessageW(hCmb1, CBEM_INSERTITEMW, 0, reinterpret_cast<LPARAM>(&item));
         }
@@ -1217,29 +1215,29 @@ XgGenerateDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam*/)
     case WM_DROPFILES:
         // ドロップされたファイルのパス名を取得する。
         hDrop = reinterpret_cast<HDROP>(wParam);
-        ::DragQueryFileW(hDrop, 0, szFile.data(), static_cast<UINT>(szFile.size()));
+        ::DragQueryFileW(hDrop, 0, szFile, ARRAYSIZE(szFile));
         ::DragFinish(hDrop);
 
         // ショートカットだった場合は、ターゲットのパスを取得する。
-        if (::lstrcmpiW(PathFindExtensionW(szFile.data()), s_szShellLinkDotExt) == 0) {
-            if (!XgGetPathOfShortcutW(szFile.data(), szTarget.data())) {
+        if (::lstrcmpiW(PathFindExtensionW(szFile), s_szShellLinkDotExt) == 0) {
+            if (!XgGetPathOfShortcutW(szFile, szTarget)) {
                 ::MessageBeep(0xFFFFFFFF);
                 break;
             }
-            ::lstrcpyW(szFile.data(), szTarget.data());
+            StringCbCopy(szFile, sizeof(szFile), szTarget);
         }
 
         // 同じ項目がすでにあれば、削除する。
         i = static_cast<int>(::SendDlgItemMessageW(
             hwnd, cmb1, CB_FINDSTRINGEXACT, 0,
-            reinterpret_cast<LPARAM>(szFile.data())));
+            reinterpret_cast<LPARAM>(szFile)));
         if (i != CB_ERR) {
             ::SendDlgItemMessageW(hwnd, cmb1, CB_DELETESTRING, i, 0);
         }
         // コンボボックスの最初に挿入する。
         item.mask = CBEIF_TEXT;
         item.iItem = 0;
-        item.pszText = szFile.data();
+        item.pszText = szFile;
         item.cchTextMax = -1;
         ::SendDlgItemMessageW(hwnd, cmb1, CBEM_INSERTITEMW, 0,
                               reinterpret_cast<LPARAM>(&item));
@@ -1270,9 +1268,8 @@ XgGenerateDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam*/)
             // スマート解決か？
             xg_bSmartResolution = (::IsDlgButtonChecked(hwnd, chx2) == BST_CHECKED);
             // 辞書ファイルのパス名を取得する。
-            ::GetDlgItemTextW(hwnd, cmb1, szFile.data(), 
-                              static_cast<int>(szFile.size()));
-            strFile = szFile.data();
+            ::GetDlgItemTextW(hwnd, cmb1, szFile, ARRAYSIZE(szFile));
+            strFile = szFile;
             xg_str_trim(strFile);
             // 正しく読み込めるか？
             if (XgLoadDictFile(strFile.data())) {
@@ -1323,15 +1320,15 @@ XgGenerateDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam*/)
             ofn.hwndOwner = hwnd;
             ofn.lpstrFilter = XgMakeFilterString(XgLoadStringDx2(50));
             szFile[0] = 0;
-            ofn.lpstrFile = szFile.data();
-            ofn.nMaxFile = static_cast<DWORD>(szFile.size());
+            ofn.lpstrFile = szFile;
+            ofn.nMaxFile = ARRAYSIZE(szFile);
             ofn.lpstrTitle = XgLoadStringDx1(19);
             ofn.Flags = OFN_EXPLORER | OFN_ENABLESIZING | OFN_FILEMUSTEXIST |
                 OFN_PATHMUSTEXIST | OFN_HIDEREADONLY;
             ofn.lpstrDefExt = L"dic";
             if (::GetOpenFileNameW(&ofn)) {
                 // コンボボックスにテキストを設定。
-                ::SetDlgItemTextW(hwnd, cmb1, szFile.data());
+                ::SetDlgItemTextW(hwnd, cmb1, szFile);
             }
             break;
         }
@@ -1367,7 +1364,7 @@ extern "C" INT_PTR CALLBACK
 XgGenerateRepeatedlyDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam*/)
 {
     int i, n1, n2;
-    std::array<WCHAR,MAX_PATH> szFile, szTarget;
+    WCHAR szFile[MAX_PATH], szTarget[MAX_PATH];
     std::wstring strFile, strDir;
     HWND hCmb1;
     COMBOBOXEXITEMW item;
@@ -1390,8 +1387,8 @@ XgGenerateRepeatedlyDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam
         for (const auto& dict_file : xg_dict_files) {
             item.mask = CBEIF_TEXT;
             item.iItem = -1;
-            ::lstrcpyW(szFile.data(), dict_file.data());
-            item.pszText = szFile.data();
+            StringCbCopy(szFile, sizeof(szFile), dict_file.data());
+            item.pszText = szFile;
             item.cchTextMax = -1;
             ::SendMessageW(hCmb1, CBEM_INSERTITEMW, 0, reinterpret_cast<LPARAM>(&item));
         }
@@ -1401,8 +1398,8 @@ XgGenerateRepeatedlyDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam
         for (const auto& dir : s_dirs_save_to) {
             item.mask = CBEIF_TEXT;
             item.iItem = -1;
-            ::lstrcpyW(szFile.data(), dir.data());
-            item.pszText = szFile.data();
+            StringCbCopy(szFile, sizeof(szFile), dir.data());
+            item.pszText = szFile;
             item.cchTextMax = -1;
             ::SendDlgItemMessageW(hwnd, cmb2, CBEM_INSERTITEMW, 0,
                                   reinterpret_cast<LPARAM>(&item));
@@ -1446,33 +1443,33 @@ XgGenerateRepeatedlyDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam
     case WM_DROPFILES:
         // ドロップされたファイルのパス名を取得する。
         hDrop = reinterpret_cast<HDROP>(wParam);
-        ::DragQueryFileW(hDrop, 0, szFile.data(), static_cast<UINT>(szFile.size()));
+        ::DragQueryFileW(hDrop, 0, szFile, ARRAYSIZE(szFile));
         ::DragFinish(hDrop);
 
         // ショートカットだった場合は、ターゲットのパスを取得する。
-        if (::lstrcmpiW(PathFindExtensionW(szFile.data()), s_szShellLinkDotExt) == 0) {
-            if (!XgGetPathOfShortcutW(szFile.data(), szTarget.data())) {
+        if (::lstrcmpiW(PathFindExtensionW(szFile), s_szShellLinkDotExt) == 0) {
+            if (!XgGetPathOfShortcutW(szFile, szTarget)) {
                 ::MessageBeep(0xFFFFFFFF);
                 break;
             }
-            ::lstrcpyW(szFile.data(), szTarget.data());
+            StringCbCopy(szFile, sizeof(szFile), szTarget);
         }
 
         // ファイルの属性を確認する。
-        attrs = ::GetFileAttributesW(szFile.data());
+        attrs = ::GetFileAttributesW(szFile);
         if (attrs & FILE_ATTRIBUTE_DIRECTORY) {
             // ディレクトリーだった。
             // 同じ項目がすでにあれば、削除する。
             i = static_cast<int>(::SendDlgItemMessageW(
                 hwnd, cmb2, CB_FINDSTRINGEXACT, 0,
-                reinterpret_cast<LPARAM>(szFile.data())));
+                reinterpret_cast<LPARAM>(szFile)));
             if (i != CB_ERR) {
                 ::SendDlgItemMessageW(hwnd, cmb2, CB_DELETESTRING, i, 0);
             }
             // コンボボックスの最初に挿入する。
             item.mask = CBEIF_TEXT;
             item.iItem = 0;
-            item.pszText = szFile.data();
+            item.pszText = szFile;
             item.cchTextMax = -1;
             ::SendDlgItemMessageW(hwnd, cmb2, CBEM_INSERTITEMW, 0,
                                 reinterpret_cast<LPARAM>(&item));
@@ -1483,14 +1480,14 @@ XgGenerateRepeatedlyDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam
             // 同じ項目がすでにあれば、削除する。
             i = static_cast<int>(::SendDlgItemMessageW(
                 hwnd, cmb1, CB_FINDSTRINGEXACT, 0,
-                reinterpret_cast<LPARAM>(szFile.data())));
+                reinterpret_cast<LPARAM>(szFile)));
             if (i != CB_ERR) {
                 ::SendDlgItemMessageW(hwnd, cmb1, CB_DELETESTRING, i, 0);
             }
             // コンボボックスの最初に挿入する。
             item.mask = CBEIF_TEXT;
             item.iItem = 0;
-            item.pszText = szFile.data();
+            item.pszText = szFile;
             item.cchTextMax = -1;
             ::SendDlgItemMessageW(hwnd, cmb1, CBEM_INSERTITEMW, 0,
                                 reinterpret_cast<LPARAM>(&item));
@@ -1521,17 +1518,15 @@ XgGenerateRepeatedlyDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam
             // 自動で再計算をするか？
             s_bAutoRetry = (::IsDlgButtonChecked(hwnd, chx1) == BST_CHECKED);
             // 辞書ファイルのパス名を取得する。
-            ::GetDlgItemTextW(hwnd, cmb1, szFile.data(), 
-                            static_cast<int>(szFile.size()));
-            strFile = szFile.data();
+            ::GetDlgItemTextW(hwnd, cmb1, szFile, ARRAYSIZE(szFile));
+            strFile = szFile;
             xg_str_trim(strFile);
             // 保存先のパス名を取得する。
-            ::GetDlgItemTextW(hwnd, cmb2, szFile.data(), 
-                            static_cast<int>(szFile.size()));
-            attrs = ::GetFileAttributesW(szFile.data());
+            ::GetDlgItemTextW(hwnd, cmb2, szFile, ARRAYSIZE(szFile));
+            attrs = ::GetFileAttributesW(szFile);
             if (attrs == 0xFFFFFFFF || !(attrs & FILE_ATTRIBUTE_DIRECTORY)) {
                 // パスがなければ作成する。
-                if (!XgMakePathW(szFile.data())) {
+                if (!XgMakePathW(szFile)) {
                     // 作成に失敗。
                     ::SendDlgItemMessageW(hwnd, cmb2, CB_SETEDITSEL, 0, -1);
                     XgCenterMessageBoxW(hwnd, XgLoadStringDx1(57), nullptr, MB_ICONERROR);
@@ -1540,7 +1535,7 @@ XgGenerateRepeatedlyDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam
                 }
             }
             // 保存先をセットする。
-            strDir = szFile.data();
+            strDir = szFile;
             xg_str_trim(strDir);
             {
                 auto end = s_dirs_save_to.end();
@@ -1623,15 +1618,15 @@ XgGenerateRepeatedlyDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam
             ofn.hwndOwner = hwnd;
             ofn.lpstrFilter = XgMakeFilterString(XgLoadStringDx2(50));
             szFile[0] = 0;
-            ofn.lpstrFile = szFile.data();
-            ofn.nMaxFile = static_cast<DWORD>(szFile.size());
+            ofn.lpstrFile = szFile;
+            ofn.nMaxFile = ARRAYSIZE(szFile);
             ofn.lpstrTitle = XgLoadStringDx1(19);
             ofn.Flags = OFN_EXPLORER | OFN_ENABLESIZING | OFN_FILEMUSTEXIST |
                 OFN_PATHMUSTEXIST | OFN_HIDEREADONLY;
             ofn.lpstrDefExt = L"dic";
             if (::GetOpenFileNameW(&ofn)) {
                 // コンボボックスにテキストを設定。
-                ::SetDlgItemTextW(hwnd, cmb1, szFile.data());
+                ::SetDlgItemTextW(hwnd, cmb1, szFile);
             }
             break;
 
@@ -1647,8 +1642,8 @@ XgGenerateRepeatedlyDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam
             pidl = ::SHBrowseForFolderW(&bi);
             if (pidl) {
                 // パスをコンボボックスに設定。
-                ::SHGetPathFromIDListW(pidl, szFile.data());
-                ::SetDlgItemTextW(hwnd, cmb2, szFile.data());
+                ::SHGetPathFromIDListW(pidl, szFile);
+                ::SetDlgItemTextW(hwnd, cmb2, szFile);
                 ::CoTaskMemFree(pidl);
             }
             break;
@@ -1670,7 +1665,7 @@ extern "C" INT_PTR CALLBACK
 XgSolveRepeatedlyDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam*/)
 {
     int i;
-    std::array<WCHAR,MAX_PATH> szFile, szTarget;
+    WCHAR szFile[MAX_PATH], szTarget[MAX_PATH];
     std::wstring strFile, strDir;
     COMBOBOXEXITEMW item;
     HDROP hDrop;
@@ -1686,8 +1681,8 @@ XgSolveRepeatedlyDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam*/)
         for (const auto& dir : s_dirs_save_to) {
             item.mask = CBEIF_TEXT;
             item.iItem = -1;
-            ::lstrcpyW(szFile.data(), dir.data());
-            item.pszText = szFile.data();
+            StringCbCopy(szFile, sizeof(szFile), dir.data());
+            item.pszText = szFile;
             item.cchTextMax = -1;
             ::SendDlgItemMessageW(hwnd, cmb1, CBEM_INSERTITEMW, 0,
                                   reinterpret_cast<LPARAM>(&item));
@@ -1717,33 +1712,33 @@ XgSolveRepeatedlyDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam*/)
     case WM_DROPFILES:
         // ドロップされたファイルのパス名を取得する。
         hDrop = reinterpret_cast<HDROP>(wParam);
-        ::DragQueryFileW(hDrop, 0, szFile.data(), static_cast<UINT>(szFile.size()));
+        ::DragQueryFileW(hDrop, 0, szFile, ARRAYSIZE(szFile));
         ::DragFinish(hDrop);
 
         // ショートカットだった場合は、ターゲットのパスを取得する。
-        if (::lstrcmpiW(PathFindExtensionW(szFile.data()), s_szShellLinkDotExt) == 0) {
-            if (!XgGetPathOfShortcutW(szFile.data(), szTarget.data())) {
+        if (::lstrcmpiW(PathFindExtensionW(szFile), s_szShellLinkDotExt) == 0) {
+            if (!XgGetPathOfShortcutW(szFile, szTarget)) {
                 ::MessageBeep(0xFFFFFFFF);
                 break;
             }
-            ::lstrcpyW(szFile.data(), szTarget.data());
+            StringCbCopy(szFile, sizeof(szFile), szTarget);
         }
 
         // ファイルの属性を確認する。
-        attrs = ::GetFileAttributesW(szFile.data());
+        attrs = ::GetFileAttributesW(szFile);
         if (attrs & FILE_ATTRIBUTE_DIRECTORY) {
             // ディレクトリーだった。
             // 同じ項目がすでにあれば、削除する。
             i = static_cast<int>(::SendDlgItemMessageW(
                 hwnd, cmb1, CB_FINDSTRINGEXACT, 0,
-                reinterpret_cast<LPARAM>(szFile.data())));
+                reinterpret_cast<LPARAM>(szFile)));
             if (i != CB_ERR) {
                 ::SendDlgItemMessageW(hwnd, cmb1, CB_DELETESTRING, i, 0);
             }
             // コンボボックスの最初に挿入する。
             item.mask = CBEIF_TEXT;
             item.iItem = 0;
-            item.pszText = szFile.data();
+            item.pszText = szFile;
             item.cchTextMax = -1;
             ::SendDlgItemMessageW(hwnd, cmb1, CBEM_INSERTITEMW, 0,
                                 reinterpret_cast<LPARAM>(&item));
@@ -1759,12 +1754,11 @@ XgSolveRepeatedlyDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam*/)
         switch (LOWORD(wParam)) {
         case IDOK:
             // 保存先のパス名を取得する。
-            ::GetDlgItemTextW(hwnd, cmb1, szFile.data(), 
-                            static_cast<int>(szFile.size()));
-            attrs = ::GetFileAttributesW(szFile.data());
+            ::GetDlgItemTextW(hwnd, cmb1, szFile, ARRAYSIZE(szFile));
+            attrs = ::GetFileAttributesW(szFile);
             if (attrs == 0xFFFFFFFF || !(attrs & FILE_ATTRIBUTE_DIRECTORY)) {
                 // パスがなければ作成する。
-                if (!XgMakePathW(szFile.data())) {
+                if (!XgMakePathW(szFile)) {
                     // 作成に失敗。
                     ::SendDlgItemMessageW(hwnd, cmb1, CB_SETEDITSEL, 0, -1);
                     XgCenterMessageBoxW(hwnd, XgLoadStringDx1(57), nullptr, MB_ICONERROR);
@@ -1773,7 +1767,7 @@ XgSolveRepeatedlyDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam*/)
                 }
             }
             // 保存先をセットする。
-            strDir = szFile.data();
+            strDir = szFile;
             xg_str_trim(strDir);
             {
                 auto end = s_dirs_save_to.end();
@@ -1836,8 +1830,8 @@ XgSolveRepeatedlyDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam*/)
             pidl = ::SHBrowseForFolderW(&bi);
             if (pidl) {
                 // コンボボックスにパスを設定する。
-                ::SHGetPathFromIDListW(pidl, szFile.data());
-                ::SetDlgItemTextW(hwnd, cmb1, szFile.data());
+                ::SHGetPathFromIDListW(pidl, szFile);
+                ::SetDlgItemTextW(hwnd, cmb1, szFile);
                 ::CoTaskMemFree(pidl);
             }
             break;
@@ -1859,8 +1853,8 @@ XgSolveRepeatedlyDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam*/)
 // ヒントの内容をメモ帳で開く。
 bool __fastcall XgOpenHintsByNotepad(HWND /*hwnd*/, bool bShowAnswer)
 {
-    std::array<WCHAR,MAX_PATH>       szPath;
-    std::array<WCHAR,MAX_PATH*2>     szCmdLine;
+    WCHAR szPath[MAX_PATH];
+    WCHAR szCmdLine[MAX_PATH * 2];
     std::wstring str;
     DWORD cb;
     STARTUPINFOW si;
@@ -1873,9 +1867,9 @@ bool __fastcall XgOpenHintsByNotepad(HWND /*hwnd*/, bool bShowAnswer)
     }
 
     // 一時ファイルを作成する。
-    ::GetTempPathW(MAX_PATH, szPath.data());
-    ::lstrcatW(szPath.data(), XgLoadStringDx1(28));
-    HANDLE hFile = ::CreateFileW(szPath.data(), GENERIC_WRITE, FILE_SHARE_READ,
+    ::GetTempPathW(MAX_PATH, szPath);
+    StringCbCat(szPath, sizeof(szPath), XgLoadStringDx1(28));
+    HANDLE hFile = ::CreateFileW(szPath, GENERIC_WRITE, FILE_SHARE_READ,
         nullptr, CREATE_ALWAYS, 0, nullptr);
     if (hFile == INVALID_HANDLE_VALUE)
         return false;
@@ -1891,12 +1885,12 @@ bool __fastcall XgOpenHintsByNotepad(HWND /*hwnd*/, bool bShowAnswer)
         ::CloseHandle(hFile);
 
         // メモ帳でファイルを開く。
-        ::wsprintfW(szCmdLine.data(), XgLoadStringDx1(27), szPath.data());
+        StringCbPrintf(szCmdLine, sizeof(szCmdLine), XgLoadStringDx1(27), szPath);
         ZeroMemory(&si, sizeof(si));
         si.cb = sizeof(si);
         si.dwFlags = STARTF_USESHOWWINDOW;
         si.wShowWindow = SW_SHOWNORMAL;
-        if (::CreateProcessW(nullptr, szCmdLine.data(), nullptr, nullptr, FALSE,
+        if (::CreateProcessW(nullptr, szCmdLine, nullptr, nullptr, FALSE,
                              0, nullptr, nullptr, &si, &pi))
         {
             // メモ帳が待ち状態になるまで待つ。
@@ -1904,7 +1898,7 @@ bool __fastcall XgOpenHintsByNotepad(HWND /*hwnd*/, bool bShowAnswer)
                 // 0.2秒待つ。
                 ::Sleep(200);
                 // ファイルを削除する。
-                ::DeleteFileW(szPath.data());
+                ::DeleteFileW(szPath);
             }
             // ハンドルを閉じる。
             ::CloseHandle(pi.hProcess);
@@ -2092,12 +2086,12 @@ XgCancelSolveDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam*/)
 
         {
             // 経過時間を表示する。
-            std::array<WCHAR,MAX_PATH> sz;
+            WCHAR sz[MAX_PATH];
             DWORD dwTick = ::GetTickCount();
-            ::wsprintfW(sz.data(), XgLoadStringDx1(32),
+            StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(32),
                     (dwTick - s_dwTick0) / 1000,
                     (dwTick - s_dwTick0) / 100 % 10, s_nRetryCount);
-            ::SetDlgItemTextW(hwnd, stc1, sz.data());
+            ::SetDlgItemTextW(hwnd, stc1, sz);
         }
 
         // 終了したスレッドがあるか？
@@ -2237,12 +2231,12 @@ XgCancelGenerateRepeatedlyDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*
         // 連続生成か？
         {
             // 生成した数を表示する。
-            std::array<WCHAR,MAX_PATH> sz;
+            WCHAR sz[MAX_PATH];
             DWORD dwTick = ::GetTickCount();
-            ::wsprintfW(sz.data(), XgLoadStringDx1(59), s_nNumberGenerated,
+            StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(59), s_nNumberGenerated,
                 (dwTick - s_dwTick0) / 1000,
                 (dwTick - s_dwTick0) / 100 % 10);
-            ::SetDlgItemTextW(hwnd, stc1, sz.data());
+            ::SetDlgItemTextW(hwnd, stc1, sz);
         }
 
         // 終了したスレッドがあるか？
@@ -2258,26 +2252,26 @@ XgCancelGenerateRepeatedlyDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*
                 if (!ok)
                     break;
 
-                std::array<WCHAR,MAX_PATH> szPath, szDir;
-                std::array<WCHAR,32> szName;
+                WCHAR szPath[MAX_PATH], szDir[MAX_PATH];
+                WCHAR szName[32];
 
                 // パスを生成する。
-                ::lstrcpyW(szDir.data(), s_dirs_save_to[0].data());
-                PathAddBackslashW(szDir.data());
+                StringCbCopy(szDir, sizeof(szDir), s_dirs_save_to[0].data());
+                PathAddBackslashW(szDir);
 
                 // ファイル名を生成する。
                 UINT u;
                 for (u = 1; u <= 0xFFFF; u++) {
                     if (xg_bSaveAsJsonFile) {
-                        ::wsprintfW(szName.data(), L"%dx%d-%04u.xwj",
+                        StringCbPrintf(szName, sizeof(szName), L"%dx%d-%04u.xwj",
                                   xg_nRows, xg_nCols, u);
                     } else {
-                        ::wsprintfW(szName.data(), L"%dx%d-%04u.xwd",
+                        StringCbPrintf(szName, sizeof(szName), L"%dx%d-%04u.xwd",
                                   xg_nRows, xg_nCols, u);
                     }
-                    ::lstrcpyW(szPath.data(), szDir.data());
-                    ::lstrcatW(szPath.data(), szName.data());
-                    if (::GetFileAttributesW(szPath.data()) == 0xFFFFFFFF)
+                    StringCbCopy(szPath, sizeof(szPath), szDir);
+                    StringCbCat(szPath, sizeof(szPath), szName);
+                    if (::GetFileAttributesW(szPath) == 0xFFFFFFFF)
                         break;
                 }
 
@@ -2292,7 +2286,7 @@ XgCancelGenerateRepeatedlyDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*
                         XgUpdateHints(hwnd);
 
                         // ファイルに保存する。
-                        bool bOK = XgDoSave(hwnd, szPath.data(), xg_bSaveAsJsonFile);
+                        bool bOK = XgDoSave(hwnd, szPath, xg_bSaveAsJsonFile);
                         if (bOK)
                             s_nNumberGenerated++;
                     }
@@ -2302,7 +2296,7 @@ XgCancelGenerateRepeatedlyDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*
 
                 // ディスク容量を確認する。
                 ULARGE_INTEGER ull1, ull2, ull3;
-                if (::GetDiskFreeSpaceExW(szPath.data(), &ull1, &ull2, &ull3)) {
+                if (::GetDiskFreeSpaceExW(szPath, &ull1, &ull2, &ull3)) {
                     if (ull1.QuadPart < 0x1000000)  // 1MB
                     {
                         s_bOutOfDiskSpace = true;
@@ -2460,12 +2454,12 @@ XgCancelSolveRepeatedlyDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lPa
         // 連続生成か？
         {
             // 生成した数を表示する。
-            std::array<WCHAR,MAX_PATH> sz;
+            WCHAR sz[MAX_PATH];
             DWORD dwTick = ::GetTickCount();
-            ::wsprintfW(sz.data(), XgLoadStringDx1(59), s_nNumberGenerated,
+            StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(59), s_nNumberGenerated,
                 (dwTick - s_dwTick0) / 1000,
                 (dwTick - s_dwTick0) / 100 % 10);
-            ::SetDlgItemTextW(hwnd, stc1, sz.data());
+            ::SetDlgItemTextW(hwnd, stc1, sz);
         }
 
         // 終了したスレッドがあるか？
@@ -2481,26 +2475,26 @@ XgCancelSolveRepeatedlyDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lPa
                 if (!ok)
                     break;
 
-                std::array<WCHAR,MAX_PATH> szPath, szDir;
-                std::array<WCHAR,32> szName;
+                WCHAR szPath[MAX_PATH], szDir[MAX_PATH];
+                WCHAR szName[32];
 
                 // パスを生成する。
-                ::lstrcpyW(szDir.data(), s_dirs_save_to[0].data());
-                PathAddBackslashW(szDir.data());
+                StringCbCopy(szDir, sizeof(szDir), s_dirs_save_to[0].data());
+                PathAddBackslashW(szDir);
 
                 // ファイル名を生成する。
                 UINT u;
                 for (u = 1; u <= 0xFFFF; u++) {
                     if (xg_bSaveAsJsonFile) {
-                        ::wsprintfW(szName.data(), L"%dx%d-%04u.xwj",
+                        StringCbPrintf(szName, sizeof(szName), L"%dx%d-%04u.xwj",
                                   xg_nRows, xg_nCols, u);
                     } else {
-                        ::wsprintfW(szName.data(), L"%dx%d-%04u.xwd",
+                        StringCbPrintf(szName, sizeof(szName), L"%dx%d-%04u.xwd",
                                   xg_nRows, xg_nCols, u);
                     }
-                    ::lstrcpyW(szPath.data(), szDir.data());
-                    ::lstrcatW(szPath.data(), szName.data());
-                    if (::GetFileAttributesW(szPath.data()) == 0xFFFFFFFF)
+                    StringCbCopy(szPath, sizeof(szPath), szDir);
+                    StringCbCat(szPath, sizeof(szPath), szName);
+                    if (::GetFileAttributesW(szPath) == 0xFFFFFFFF)
                         break;
                 }
 
@@ -2515,7 +2509,7 @@ XgCancelSolveRepeatedlyDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lPa
                         XgUpdateHints(hwnd);
 
                         // ファイルに保存する。
-                        bool bOK = XgDoSave(hwnd, szPath.data(), xg_bSaveAsJsonFile);
+                        bool bOK = XgDoSave(hwnd, szPath, xg_bSaveAsJsonFile);
                         if (bOK)
                             s_nNumberGenerated++;
                     }
@@ -2524,7 +2518,7 @@ XgCancelSolveRepeatedlyDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lPa
 
                 // ディスク容量を確認する。
                 ULARGE_INTEGER ull1, ull2, ull3;
-                if (::GetDiskFreeSpaceExW(szPath.data(), &ull1, &ull2, &ull3)) {
+                if (::GetDiskFreeSpaceExW(szPath, &ull1, &ull2, &ull3)) {
                     if (ull1.QuadPart < 0x1000000)  // 1MB
                     {
                         s_bOutOfDiskSpace = true;
@@ -2682,12 +2676,12 @@ XgCancelSolveDlgProcNoAddBlack(
         }
         // 経過時間を表示する。
         {
-            std::array<WCHAR,MAX_PATH> sz;
+            WCHAR sz[MAX_PATH];
             DWORD dwTick = ::GetTickCount();
-            ::wsprintfW(sz.data(), XgLoadStringDx1(32),
+            StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(32),
                     (dwTick - s_dwTick0) / 1000,
                     (dwTick - s_dwTick0) / 100 % 10, s_nRetryCount);
-            ::SetDlgItemTextW(hwnd, stc1, sz.data());
+            ::SetDlgItemTextW(hwnd, stc1, sz);
         }
         // 一つ以上のスレッドが終了したか？
         if (XgIsAnyThreadTerminated()) {
@@ -2823,12 +2817,12 @@ XgCancelSolveDlgProcSmart(
         }
         // 経過時間を表示する。
         {
-            std::array<WCHAR,MAX_PATH> sz;
+            WCHAR sz[MAX_PATH];
             DWORD dwTick = ::GetTickCount();
-            ::wsprintfW(sz.data(), XgLoadStringDx1(32),
+            StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(32),
                     (dwTick - s_dwTick0) / 1000,
                     (dwTick - s_dwTick0) / 100 % 10, s_nRetryCount);
-            ::SetDlgItemTextW(hwnd, stc1, sz.data());
+            ::SetDlgItemTextW(hwnd, stc1, sz);
         }
         // 一つ以上のスレッドが終了したか？
         if (XgIsAnyThreadTerminated()) {
@@ -2919,12 +2913,12 @@ XgCancelGenBlacksDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
     case WM_TIMER:
         {
             // 経過時間を表示する。
-            std::array<WCHAR,MAX_PATH> sz;
+            WCHAR sz[MAX_PATH];
             DWORD dwTick = ::GetTickCount();
-            ::wsprintfW(sz.data(), XgLoadStringDx1(107),
+            StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(107),
                     (dwTick - s_dwTick0) / 1000,
                     (dwTick - s_dwTick0) / 100 % 10);
-            ::SetDlgItemTextW(hwnd, stc1, sz.data());
+            ::SetDlgItemTextW(hwnd, stc1, sz);
         }
 
         // 終了したスレッドがあるか？
@@ -2999,11 +2993,11 @@ void __fastcall XgPrintIt(HDC hdc, PRINTDLGW* ppd, bool bPrintAnswer)
 
                 // フォント名を取得する。
                 if (xg_imode == xg_im_HANGUL)
-                    ::lstrcpyW(lf.lfFaceName, XgLoadStringDx1(67)); // ハングルの場合。
+                    StringCbCopy(lf.lfFaceName, sizeof(lf.lfFaceName), XgLoadStringDx1(67)); // ハングルの場合。
                 else
-                    ::lstrcpyW(lf.lfFaceName, XgLoadStringDx1(35)); // その他の場合。
+                    StringCbCopy(lf.lfFaceName, sizeof(lf.lfFaceName), XgLoadStringDx1(35)); // その他の場合。
                 if (xg_szCellFont[0])
-                    ::lstrcpyW(lf.lfFaceName, xg_szCellFont.data());
+                    StringCbCopy(lf.lfFaceName, sizeof(lf.lfFaceName), xg_szCellFont);
 
                 // フォント情報を設定する。
                 lf.lfHeight = cyPaper / 2 / 15;
@@ -3077,11 +3071,11 @@ void __fastcall XgPrintIt(HDC hdc, PRINTDLGW* ppd, bool bPrintAnswer)
 
             // フォント名を取得する。
             if (xg_imode == xg_im_HANGUL)
-                ::lstrcpyW(lf.lfFaceName, XgLoadStringDx1(67)); // ハングルの場合。
+                StringCbCopy(lf.lfFaceName, sizeof(lf.lfFaceName), XgLoadStringDx1(67)); // ハングルの場合。
             else
-                ::lstrcpyW(lf.lfFaceName, XgLoadStringDx1(35)); // その他の場合。
+                StringCbCopy(lf.lfFaceName, sizeof(lf.lfFaceName), XgLoadStringDx1(35)); // その他の場合。
             if (xg_szCellFont[0])
-                ::lstrcpyW(lf.lfFaceName, xg_szCellFont.data());
+                StringCbCopy(lf.lfFaceName, sizeof(lf.lfFaceName), xg_szCellFont);
 
             // フォント情報を設定する。
             lf.lfHeight = cyPaper / 2 / 45;
@@ -3135,9 +3129,9 @@ void __fastcall XgPrintIt(HDC hdc, PRINTDLGW* ppd, bool bPrintAnswer)
                 hFont = reinterpret_cast<HFONT>(::GetStockObject(DEFAULT_GUI_FONT));
                 ::GetObjectW(hFont, sizeof(LOGFONTW), &lf);
                 if (xg_imode == xg_im_HANGUL)
-                    ::lstrcpyW(lf.lfFaceName, XgLoadStringDx1(67)); // ハングルの場合。
+                    StringCbCopy(lf.lfFaceName, sizeof(lf.lfFaceName), XgLoadStringDx1(67)); // ハングルの場合。
                 else
-                    ::lstrcpyW(lf.lfFaceName, XgLoadStringDx1(35)); // その他の場合。
+                    StringCbCopy(lf.lfFaceName, sizeof(lf.lfFaceName), XgLoadStringDx1(35)); // その他の場合。
                 lf.lfHeight = cyPaper / 2 / 45;
                 lf.lfWidth = 0;
                 lf.lfWeight = FW_NORMAL;
@@ -3243,7 +3237,7 @@ bool __fastcall XgOnNew(HWND hwnd)
 // 問題の作成。
 bool __fastcall XgOnGenerate(HWND hwnd, bool show_answer)
 {
-    std::array<WCHAR,MAX_PATH> sz;
+    WCHAR sz[MAX_PATH];
 
     // [問題の作成]ダイアログ。
     int nID;
@@ -3279,26 +3273,26 @@ bool __fastcall XgOnGenerate(HWND hwnd, bool show_answer)
 
         if (xg_bCancelled) {
             // キャンセルされた。
-            ::wsprintfW(sz.data(), XgLoadStringDx1(31),
+            StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(31),
                 (s_dwTick2 - s_dwTick0) / 1000,
                 (s_dwTick2 - s_dwTick0) / 100 % 10);
-            XgCenterMessageBoxW(hwnd, sz.data(), XgLoadStringDx2(9), MB_ICONINFORMATION);
+            XgCenterMessageBoxW(hwnd, sz, XgLoadStringDx2(9), MB_ICONINFORMATION);
         } else if (xg_bSolved) {
             // 成功メッセージを表示する。
-            ::wsprintfW(sz.data(), XgLoadStringDx1(16),
+            StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(16),
                 (s_dwTick2 - s_dwTick0) / 1000,
                 (s_dwTick2 - s_dwTick0) / 100 % 10);
-            XgCenterMessageBoxW(hwnd, sz.data(), XgLoadStringDx2(9), MB_ICONINFORMATION);
+            XgCenterMessageBoxW(hwnd, sz, XgLoadStringDx2(9), MB_ICONINFORMATION);
 
             // ヒントを更新して開く。
             XgUpdateHints(hwnd);
             XgShowHints(hwnd);
         } else {
             // 失敗メッセージを表示する。
-            ::wsprintfW(sz.data(), XgLoadStringDx1(17),
+            StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(17),
                 (s_dwTick2 - s_dwTick0) / 1000,
                 (s_dwTick2 - s_dwTick0) / 100 % 10);
-            XgCenterMessageBoxW(hwnd, sz.data(), XgLoadStringDx2(9), MB_ICONERROR);
+            XgCenterMessageBoxW(hwnd, sz, XgLoadStringDx2(9), MB_ICONERROR);
         }
         return true;
     }
@@ -3319,7 +3313,7 @@ bool __fastcall XgOnGenerateRepeatedly(HWND hwnd)
         }
     #endif  // ndef MZC_NO_SHAREWARE
 
-    std::array<WCHAR,MAX_PATH> sz;
+    WCHAR sz[MAX_PATH];
 
     // [問題の連続作成]ダイアログ。
     int nID;
@@ -3362,18 +3356,18 @@ bool __fastcall XgOnGenerateRepeatedly(HWND hwnd)
         // ディスクに空きがあるか？
         if (s_bOutOfDiskSpace) {
             // なかった。
-            ::wsprintfW(sz.data(), XgLoadStringDx1(61), s_nNumberGenerated,
+            StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(61), s_nNumberGenerated,
                 (s_dwTick2 - s_dwTick0) / 1000,
                 (s_dwTick2 - s_dwTick0) / 100 % 10);
         } else {
             // あった。
-            ::wsprintfW(sz.data(), XgLoadStringDx1(60), s_nNumberGenerated,
+            StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(60), s_nNumberGenerated,
                 (s_dwTick2 - s_dwTick0) / 1000,
                 (s_dwTick2 - s_dwTick0) / 100 % 10);
         }
 
         // 終了メッセージを表示する。
-        XgCenterMessageBoxW(hwnd, sz.data(), XgLoadStringDx2(9), MB_ICONINFORMATION);
+        XgCenterMessageBoxW(hwnd, sz, XgLoadStringDx2(9), MB_ICONINFORMATION);
 
         // 保存先フォルダを開く。
         if (s_nNumberGenerated && !s_dirs_save_to.empty())
@@ -3416,17 +3410,17 @@ void XgOnGenerateBlacks(HWND hwnd, bool sym)
     xg_caret_pos.clear();
     XgUpdateImage(hwnd, 0, 0);
 
-    std::array<WCHAR,MAX_PATH> sz;
+    WCHAR sz[MAX_PATH];
     if (xg_bCancelled) {
-        ::wsprintfW(sz.data(), XgLoadStringDx1(31),
+        StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(31),
             (s_dwTick2 - s_dwTick0) / 1000,
             (s_dwTick2 - s_dwTick0) / 100 % 10);
-        XgCenterMessageBoxW(hwnd, sz.data(), XgLoadStringDx2(9), MB_ICONINFORMATION);
+        XgCenterMessageBoxW(hwnd, sz, XgLoadStringDx2(9), MB_ICONINFORMATION);
     } else {
-        ::wsprintfW(sz.data(), XgLoadStringDx1(108),
+        StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(108),
             (s_dwTick2 - s_dwTick0) / 1000,
             (s_dwTick2 - s_dwTick0) / 100 % 10);
-        XgCenterMessageBoxW(hwnd, sz.data(), XgLoadStringDx2(9), MB_ICONINFORMATION);
+        XgCenterMessageBoxW(hwnd, sz, XgLoadStringDx2(9), MB_ICONINFORMATION);
     }
 }
 
@@ -3464,7 +3458,7 @@ bool __fastcall XgOnSolveAddBlack(HWND hwnd)
     ::DialogBoxW(xg_hInstance, MAKEINTRESOURCEW(3), hwnd, XgCancelSolveDlgProc);
     ::EnableWindow(xg_hwndInputPalette, TRUE);
 
-    std::array<WCHAR,MAX_PATH> sz;
+    WCHAR sz[MAX_PATH];
     if (xg_bCancelled) {
         // キャンセルされた。
         // 解なし。表示を更新する。
@@ -3473,10 +3467,10 @@ bool __fastcall XgOnSolveAddBlack(HWND hwnd)
         XgMarkUpdate();
         XgUpdateImage(hwnd, 0, 0);
 
-        ::wsprintfW(sz.data(), XgLoadStringDx1(31),
+        StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(31),
             (s_dwTick2 - s_dwTick0) / 1000,
             (s_dwTick2 - s_dwTick0) / 100 % 10);
-        XgCenterMessageBoxW(hwnd, sz.data(), XgLoadStringDx2(9), MB_ICONINFORMATION);
+        XgCenterMessageBoxW(hwnd, sz, XgLoadStringDx2(9), MB_ICONINFORMATION);
     } else if (xg_bSolved) {
         // 空マスがないか？
         if (xg_xword.IsFulfilled()) {
@@ -3498,10 +3492,10 @@ bool __fastcall XgOnSolveAddBlack(HWND hwnd)
         XgUpdateImage(hwnd, 0, 0);
 
         // 成功メッセージを表示する。
-        ::wsprintfW(sz.data(), XgLoadStringDx1(8),
+        StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(8),
             (s_dwTick2 - s_dwTick0) / 1000,
             (s_dwTick2 - s_dwTick0) / 100 % 10);
-        XgCenterMessageBoxW(hwnd, sz.data(), XgLoadStringDx2(9), MB_ICONINFORMATION);
+        XgCenterMessageBoxW(hwnd, sz, XgLoadStringDx2(9), MB_ICONINFORMATION);
 
         // ヒントを更新して開く。
         XgUpdateHints(hwnd);
@@ -3513,11 +3507,11 @@ bool __fastcall XgOnSolveAddBlack(HWND hwnd)
         XgMarkUpdate();
         XgUpdateImage(hwnd, 0, 0);
         // 失敗メッセージを表示する。
-        ::wsprintfW(sz.data(), XgLoadStringDx1(11),
+        StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(11),
             (s_dwTick2 - s_dwTick0) / 1000,
             (s_dwTick2 - s_dwTick0) / 100 % 10);
         ::InvalidateRect(hwnd, nullptr, FALSE);
-        XgCenterMessageBoxW(hwnd, sz.data(), XgLoadStringDx2(9), MB_ICONERROR);
+        XgCenterMessageBoxW(hwnd, sz, XgLoadStringDx2(9), MB_ICONERROR);
     }
     return true;
 }
@@ -3556,7 +3550,7 @@ bool __fastcall XgOnSolveNoAddBlack(HWND hwnd)
                  XgCancelSolveDlgProcNoAddBlack);
     ::EnableWindow(xg_hwndInputPalette, TRUE);
 
-    std::array<WCHAR,MAX_PATH> sz;
+    WCHAR sz[MAX_PATH];
     if (xg_bCancelled) {
         // キャンセルされた。
         // 解なし。表示を更新する。
@@ -3566,10 +3560,10 @@ bool __fastcall XgOnSolveNoAddBlack(HWND hwnd)
         XgUpdateImage(hwnd, 0, 0);
 
         // 終了メッセージを表示する。
-        ::wsprintfW(sz.data(), XgLoadStringDx1(31),
+        StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(31),
             (s_dwTick2 - s_dwTick0) / 1000,
             (s_dwTick2 - s_dwTick0) / 100 % 10);
-        XgCenterMessageBoxW(hwnd, sz.data(), XgLoadStringDx2(9), MB_ICONINFORMATION);
+        XgCenterMessageBoxW(hwnd, sz, XgLoadStringDx2(9), MB_ICONINFORMATION);
     } else if (xg_bSolved) {
         // 空マスがないか？
         if (xg_xword.IsFulfilled()) {
@@ -3591,10 +3585,10 @@ bool __fastcall XgOnSolveNoAddBlack(HWND hwnd)
         XgUpdateImage(hwnd, 0, 0);
 
         // 成功メッセージを表示する。
-        ::wsprintfW(sz.data(), XgLoadStringDx1(8),
+        StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(8),
             (s_dwTick2 - s_dwTick0) / 1000,
             (s_dwTick2 - s_dwTick0) / 100 % 10);
-        XgCenterMessageBoxW(hwnd, sz.data(), XgLoadStringDx2(9), MB_ICONINFORMATION);
+        XgCenterMessageBoxW(hwnd, sz, XgLoadStringDx2(9), MB_ICONINFORMATION);
 
         // ヒントを更新して開く。
         XgUpdateHints(hwnd);
@@ -3606,11 +3600,11 @@ bool __fastcall XgOnSolveNoAddBlack(HWND hwnd)
         XgMarkUpdate();
         XgUpdateImage(hwnd, 0, 0);
         // 失敗メッセージを表示する。
-        ::wsprintfW(sz.data(), XgLoadStringDx1(11),
+        StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(11),
             (s_dwTick2 - s_dwTick0) / 1000,
             (s_dwTick2 - s_dwTick0) / 100 % 10);
         ::InvalidateRect(hwnd, nullptr, FALSE);
-        XgCenterMessageBoxW(hwnd, sz.data(), XgLoadStringDx2(9), MB_ICONERROR);
+        XgCenterMessageBoxW(hwnd, sz, XgLoadStringDx2(9), MB_ICONERROR);
     }
 
     return true;
@@ -3690,17 +3684,17 @@ bool __fastcall XgOnSolveRepeatedly(HWND hwnd)
         XgUpdateImage(hwnd, 0, 0);
 
         // 終了メッセージを表示する。
-        std::array<WCHAR,MAX_PATH> sz;
+        WCHAR sz[MAX_PATH];
         if (s_bOutOfDiskSpace) {
-            ::wsprintfW(sz.data(), XgLoadStringDx1(61), s_nNumberGenerated,
+            StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(61), s_nNumberGenerated,
                 (s_dwTick2 - s_dwTick0) / 1000,
                 (s_dwTick2 - s_dwTick0) / 100 % 10);
         } else {
-            ::wsprintfW(sz.data(), XgLoadStringDx1(60), s_nNumberGenerated,
+            StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(60), s_nNumberGenerated,
                 (s_dwTick2 - s_dwTick0) / 1000,
                 (s_dwTick2 - s_dwTick0) / 100 % 10);
         }
-        XgCenterMessageBoxW(hwnd, sz.data(), XgLoadStringDx2(9), MB_ICONINFORMATION);
+        XgCenterMessageBoxW(hwnd, sz, XgLoadStringDx2(9), MB_ICONINFORMATION);
 
         // 保存先フォルダを開く。
         if (s_nNumberGenerated && !s_dirs_save_to.empty()) {
@@ -3785,17 +3779,17 @@ bool __fastcall XgOnSolveRepeatedlyNoAddBlack(HWND hwnd)
         XgUpdateImage(hwnd, 0, 0);
 
         // 終了メッセージを表示する。
-        std::array<WCHAR,MAX_PATH> sz;
+        WCHAR sz[MAX_PATH];
         if (s_bOutOfDiskSpace) {
-            ::wsprintfW(sz.data(), XgLoadStringDx1(61), s_nNumberGenerated,
+            StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(61), s_nNumberGenerated,
                 (s_dwTick2 - s_dwTick0) / 1000,
                 (s_dwTick2 - s_dwTick0) / 100 % 10);
         } else {
-            ::wsprintfW(sz.data(), XgLoadStringDx1(60), s_nNumberGenerated,
+            StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(60), s_nNumberGenerated,
                 (s_dwTick2 - s_dwTick0) / 1000,
                 (s_dwTick2 - s_dwTick0) / 100 % 10);
         }
-        XgCenterMessageBoxW(hwnd, sz.data(), XgLoadStringDx2(9), MB_ICONINFORMATION);
+        XgCenterMessageBoxW(hwnd, sz, XgLoadStringDx2(9), MB_ICONINFORMATION);
 
         // 保存先フォルダを開く。
         if (s_nNumberGenerated && !s_dirs_save_to.empty()) {
@@ -5049,10 +5043,10 @@ void __fastcall XgUpdateStatusBar(HWND hwnd)
 
     SendMessageW(xg_hStatusBar, SB_SETTEXT, 0, (LPARAM)str.c_str());
 
-    wsprintfW(szText, L"(%u, %u)", xg_caret_pos.m_j + 1, xg_caret_pos.m_i + 1);
+    StringCbPrintf(szText, sizeof(szText), L"(%u, %u)", xg_caret_pos.m_j + 1, xg_caret_pos.m_i + 1);
     SendMessageW(xg_hStatusBar, SB_SETTEXT, 1, (LPARAM)szText);
 
-    wsprintfW(szText, L"%u x %u", xg_nCols, xg_nRows);
+    StringCbPrintf(szText, sizeof(szText), L"%u x %u", xg_nCols, xg_nRows);
     SendMessageW(xg_hStatusBar, SB_SETTEXT, 2, (LPARAM)szText);
 }
 
@@ -5178,9 +5172,9 @@ BOOL SettingsDlg_OnInitDialog(HWND hwnd)
     XgCenterDialog(hwnd);
 
     // フォント名を格納する。
-    ::SetDlgItemTextW(hwnd, edt1, xg_szCellFont.data());
-    ::SetDlgItemTextW(hwnd, edt2, xg_szSmallFont.data());
-    ::SetDlgItemTextW(hwnd, edt3, xg_szUIFont.data());
+    ::SetDlgItemTextW(hwnd, edt1, xg_szCellFont);
+    ::SetDlgItemTextW(hwnd, edt2, xg_szSmallFont);
+    ::SetDlgItemTextW(hwnd, edt3, xg_szUIFont);
 
     // ツールバーを表示するか？
     ::CheckDlgButton(hwnd, chx1,
@@ -5207,11 +5201,11 @@ void SettingsDlg_OnOK(HWND hwnd)
     // フォント名を取得する。
     std::array<WCHAR,LF_FACESIZE> szName;
     ::GetDlgItemTextW(hwnd, edt1, szName.data(), LF_FACESIZE);
-    ::lstrcpynW(xg_szCellFont.data(), szName.data(), LF_FACESIZE);
+    ::lstrcpynW(xg_szCellFont, szName.data(), LF_FACESIZE);
     ::GetDlgItemTextW(hwnd, edt2, szName.data(), LF_FACESIZE);
-    ::lstrcpynW(xg_szSmallFont.data(), szName.data(), LF_FACESIZE);
+    ::lstrcpynW(xg_szSmallFont, szName.data(), LF_FACESIZE);
     ::GetDlgItemTextW(hwnd, edt3, szName.data(), LF_FACESIZE);
-    ::lstrcpynW(xg_szUIFont.data(), szName.data(), LF_FACESIZE);
+    ::lstrcpynW(xg_szUIFont, szName.data(), LF_FACESIZE);
 
     // ツールバーを表示するか？
     s_bShowToolBar = (::IsDlgButtonChecked(hwnd, chx1) == BST_CHECKED);
@@ -5252,7 +5246,7 @@ LOGFONTW *XgGetUIFont(void)
     ::GetObjectW(::GetStockObject(DEFAULT_GUI_FONT), sizeof(s_lf), &s_lf);
     if (xg_szUIFont[0]) {
         std::array<WCHAR,LF_FACESIZE> szData;
-        ::lstrcpynW(szData.data(), xg_szUIFont.data(), LF_FACESIZE);
+        ::lstrcpynW(szData.data(), xg_szUIFont, LF_FACESIZE);
         LPWSTR pch = wcsrchr(szData.data(), L',');
         if (pch) {
             *pch++ = 0;
@@ -5289,9 +5283,9 @@ void SettingsDlg_SetUIFont(HWND hwnd, const LOGFONTW *plf)
     int point_size = -MulDiv(plf->lfHeight, 72, ::GetDeviceCaps(hdc, LOGPIXELSY));
     ::DeleteDC(hdc);
 
-    std::array<WCHAR,128> szData;
-    ::wsprintfW(szData.data(), L"%s, %upt", plf->lfFaceName, point_size);
-    ::SetDlgItemTextW(hwnd, edt3, szData.data());
+    WCHAR szData[128];
+    StringCbPrintf(szData, sizeof(szData), L"%s, %upt", plf->lfFaceName, point_size);
+    ::SetDlgItemTextW(hwnd, edt3, szData);
 }
 
 // [設定]ダイアログで[変更...]ボタンを押された。
@@ -5315,7 +5309,7 @@ void SettingsDlg_OnChange(HWND hwnd, int i)
         cf.Flags = CF_NOSCRIPTSEL | CF_NOVERTFONTS | CF_SCALABLEONLY |
                    CF_INITTOLOGFONTSTRUCT | CF_SCREENFONTS |
                    CF_FIXEDPITCHONLY;
-        ::lstrcpynW(lf.lfFaceName, xg_szCellFont.data(), LF_FACESIZE);
+        ::lstrcpynW(lf.lfFaceName, xg_szCellFont, LF_FACESIZE);
         lf.lfPitchAndFamily = FIXED_PITCH | FF_DONTCARE;
         if (::ChooseFontW(&cf)) {
             // 取得したフォントをダイアログへ格納する。
@@ -5326,7 +5320,7 @@ void SettingsDlg_OnChange(HWND hwnd, int i)
     case 1:
         cf.Flags = CF_NOSCRIPTSEL | CF_NOVERTFONTS | CF_SCALABLEONLY |
                    CF_INITTOLOGFONTSTRUCT | CF_SCREENFONTS;
-        ::lstrcpynW(lf.lfFaceName, xg_szSmallFont.data(), LF_FACESIZE);
+        ::lstrcpynW(lf.lfFaceName, xg_szSmallFont, LF_FACESIZE);
         if (::ChooseFontW(&cf)) {
             // 取得したフォントをダイアログへ格納する。
             ::SetDlgItemTextW(hwnd, edt2, lf.lfFaceName);
@@ -5625,7 +5619,7 @@ INT_PTR CALLBACK
 XgLoadDictDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
     int i;
-    std::array<WCHAR,MAX_PATH> szFile, szTarget;
+    WCHAR szFile[MAX_PATH], szTarget[MAX_PATH];
     std::wstring strFile;
     HWND hCmb1;
     COMBOBOXEXITEMW item;
@@ -5641,8 +5635,8 @@ XgLoadDictDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
         for (const auto& dict_file : xg_dict_files) {
             item.mask = CBEIF_TEXT;
             item.iItem = -1;
-            ::lstrcpyW(szFile.data(), dict_file.data());
-            item.pszText = szFile.data();
+            StringCbCopy(szFile, sizeof(szFile), dict_file.data());
+            item.pszText = szFile;
             item.cchTextMax = -1;
             ::SendMessageW(hCmb1, CBEM_INSERTITEMW, 0, reinterpret_cast<LPARAM>(&item));
         }
@@ -5655,28 +5649,28 @@ XgLoadDictDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
     case WM_DROPFILES:
         // ドロップされたファイルのパス名を取得する。
         hDrop = reinterpret_cast<HDROP>(wParam);
-        ::DragQueryFileW(hDrop, 0, szFile.data(), MAX_PATH);
+        ::DragQueryFileW(hDrop, 0, szFile, MAX_PATH);
         ::DragFinish(hDrop);
 
         // ショートカットだった場合は、ターゲットのパスを取得する。
-        if (::lstrcmpiW(PathFindExtensionW(szFile.data()), s_szShellLinkDotExt) == 0) {
-            if (!XgGetPathOfShortcutW(szFile.data(), szTarget.data())) {
+        if (::lstrcmpiW(PathFindExtensionW(szFile), s_szShellLinkDotExt) == 0) {
+            if (!XgGetPathOfShortcutW(szFile, szTarget)) {
                 ::MessageBeep(0xFFFFFFFF);
                 break;
             }
-            ::lstrcpyW(szFile.data(), szTarget.data());
+            StringCbCopy(szFile, sizeof(szFile), szTarget);
         }
 
         // 同じ項目がすでにあれば、削除する。
         i = static_cast<int>(::SendDlgItemMessageW(hwnd, cmb1, CB_FINDSTRINGEXACT, 0,
-                                                 reinterpret_cast<LPARAM>(szFile.data())));
+                                                 reinterpret_cast<LPARAM>(szFile)));
         if (i != CB_ERR) {
             ::SendDlgItemMessageW(hwnd, cmb1, CB_DELETESTRING, i, 0);
         }
         // コンボボックスの最初に挿入する。
         item.mask = CBEIF_TEXT;
         item.iItem = 0;
-        item.pszText = szFile.data();
+        item.pszText = szFile;
         item.cchTextMax = -1;
         ::SendDlgItemMessageW(hwnd, cmb1, CBEM_INSERTITEMW, 0,
                             reinterpret_cast<LPARAM>(&item));
@@ -5688,9 +5682,8 @@ XgLoadDictDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
         switch (LOWORD(wParam)) {
         case IDOK:
             // 辞書ファイルのパス名を取得する。
-            ::GetDlgItemTextW(hwnd, cmb1, szFile.data(), 
-                            static_cast<int>(szFile.size()));
-            strFile = szFile.data();
+            ::GetDlgItemTextW(hwnd, cmb1, szFile, ARRAYSIZE(szFile));
+            strFile = szFile;
             xg_str_trim(strFile);
             // 正しく読み込めるか？
             if (XgLoadDictFile(strFile.data())) {
@@ -5728,7 +5721,7 @@ XgLoadDictDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
             ofn.hwndOwner = hwnd;
             ofn.lpstrFilter = XgMakeFilterString(XgLoadStringDx2(50));
             szFile[0] = 0;
-            ofn.lpstrFile = szFile.data();
+            ofn.lpstrFile = szFile;
             ofn.nMaxFile = MAX_PATH;
             ofn.lpstrTitle = XgLoadStringDx1(19);
             ofn.Flags = OFN_EXPLORER | OFN_ENABLESIZING | OFN_FILEMUSTEXIST |
@@ -5737,7 +5730,7 @@ XgLoadDictDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
             if (::GetOpenFileNameW(&ofn))
             {
                 // コンボボックスにテキストを設定。
-                ::SetDlgItemTextW(hwnd, cmb1, szFile.data());
+                ::SetDlgItemTextW(hwnd, cmb1, szFile);
             }
             break;
         }
@@ -5750,7 +5743,7 @@ extern "C"
 INT_PTR CALLBACK
 XgHeaderNotesDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
-    std::array<WCHAR,512> sz;
+    WCHAR sz[512];
     std::wstring str;
     LPWSTR psz;
 
@@ -5774,14 +5767,14 @@ XgHeaderNotesDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
         switch (LOWORD(wParam)) {
         case IDOK:
             // ヘッダーを取得する。
-            ::GetDlgItemTextW(hwnd, edt1, sz.data(), static_cast<int>(sz.size()));
-            str = sz.data();
+            ::GetDlgItemTextW(hwnd, edt1, sz, static_cast<int>(ARRAYSIZE(sz)));
+            str = sz;
             xg_str_trim(str);
             xg_strHeader = str;
 
             // 備考欄を取得する。
-            ::GetDlgItemTextW(hwnd, edt2, sz.data(), static_cast<int>(sz.size()));
-            str = sz.data();
+            ::GetDlgItemTextW(hwnd, edt2, sz, static_cast<int>(ARRAYSIZE(sz)));
+            str = sz;
             xg_str_trim(str);
             xg_strNotes = str;
 
@@ -6108,7 +6101,7 @@ bool __fastcall MainWnd_OnCommand2(HWND hwnd, INT id)
 // コマンドを実行する。
 void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*codeNotify*/)
 {
-    std::array<WCHAR,MAX_PATH> sz;
+    WCHAR sz[MAX_PATH];
     OPENFILENAMEW ofn;
     int x, y;
 
@@ -6451,8 +6444,8 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
         ofn.hwndOwner = hwnd;
         ofn.lpstrFilter = XgMakeFilterString(XgLoadStringDx2(51));
         sz[0] = 0;
-        ofn.lpstrFile = sz.data();
-        ofn.nMaxFile = static_cast<DWORD>(sz.size());
+        ofn.lpstrFile = sz;
+        ofn.nMaxFile = static_cast<DWORD>(ARRAYSIZE(sz));
         ofn.lpstrTitle = XgLoadStringDx1(20);
         ofn.Flags = OFN_EXPLORER | OFN_ENABLESIZING | OFN_FILEMUSTEXIST |
             OFN_PATHMUSTEXIST | OFN_HIDEREADONLY;
@@ -6461,19 +6454,19 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
             // JSON形式か？
             bool is_json = false;
             bool is_builder = false;
-            if (::lstrcmpiW(PathFindExtensionW(sz.data()), L".xwj") == 0 ||
-                ::lstrcmpiW(PathFindExtensionW(sz.data()), L".json") == 0)
+            if (::lstrcmpiW(PathFindExtensionW(sz), L".xwj") == 0 ||
+                ::lstrcmpiW(PathFindExtensionW(sz), L".json") == 0)
             {
                 is_json = true;
             }
-            if (::lstrcmpiW(PathFindExtensionW(sz.data()), L".crp") == 0 ||
-                ::lstrcmpiW(PathFindExtensionW(sz.data()), L".crx") == 0)
+            if (::lstrcmpiW(PathFindExtensionW(sz), L".crp") == 0 ||
+                ::lstrcmpiW(PathFindExtensionW(sz), L".crx") == 0)
             {
                 is_builder = true;
             }
             // 開く。
             if (is_builder) {
-                if (!XgDoLoadBuilderFile(hwnd, sz.data())) {
+                if (!XgDoLoadBuilderFile(hwnd, sz)) {
                     // 失敗。
                     XgCenterMessageBoxW(hwnd, XgLoadStringDx1(3), nullptr, MB_ICONERROR);
                 } else {
@@ -6484,7 +6477,7 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
                     XgUpdateImage(hwnd, 0, 0);
                 }
             } else {
-                if (!XgDoLoadFile(hwnd, sz.data(), is_json)) {
+                if (!XgDoLoadFile(hwnd, sz, is_json)) {
                     // 失敗。
                     XgCenterMessageBoxW(hwnd, XgLoadStringDx1(3), nullptr, MB_ICONERROR);
                 } else {
@@ -6509,14 +6502,14 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
         ofn.lStructSize = OPENFILENAME_SIZE_VERSION_400W;
         ofn.hwndOwner = hwnd;
         ofn.lpstrFilter = XgMakeFilterString(XgLoadStringDx2(52));
-        ::lstrcpynW(sz.data(), xg_strFileName.data(), static_cast<int>(sz.size()));
-        ofn.lpstrFile = sz.data();
-        ofn.nMaxFile = static_cast<DWORD>(sz.size());
+        ::lstrcpynW(sz, xg_strFileName.data(), static_cast<int>(ARRAYSIZE(sz)));
+        ofn.lpstrFile = sz;
+        ofn.nMaxFile = static_cast<DWORD>(ARRAYSIZE(sz));
         ofn.lpstrTitle = XgLoadStringDx1(21);
         ofn.Flags = OFN_EXPLORER | OFN_ENABLESIZING | OFN_OVERWRITEPROMPT |
             OFN_PATHMUSTEXIST | OFN_HIDEREADONLY;
         // 拡張子に応じて処理を変える。
-        if (::lstrcmpW(sz.data(), L"") == 0) {
+        if (::lstrcmpW(sz, L"") == 0) {
             if (xg_bSaveAsJsonFile) {
                 ofn.nFilterIndex = 2;
                 ofn.lpstrDefExt = L"xwj";
@@ -6525,7 +6518,7 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
                 ofn.lpstrDefExt = L"xwd";
             }
         } else {
-            LPTSTR pchDotExt = PathFindExtensionW(sz.data());
+            LPTSTR pchDotExt = PathFindExtensionW(sz);
             if (::lstrcmpiW(pchDotExt, L".xwj") == 0) {
                 ofn.nFilterIndex = 2;
                 ofn.lpstrDefExt = L"xwj";
@@ -6549,7 +6542,7 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
             xg_bSaveAsJsonFile = (ofn.nFilterIndex == 2);
 
             // 保存する。
-            if (!XgDoSave(hwnd, sz.data(), xg_bSaveAsJsonFile)) {
+            if (!XgDoSave(hwnd, sz, xg_bSaveAsJsonFile)) {
                 // 保存に失敗。
                 XgCenterMessageBoxW(hwnd, XgLoadStringDx1(7), nullptr, MB_ICONERROR);
             }
@@ -7199,20 +7192,20 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
 void __fastcall MainWnd_OnDropFiles(HWND hwnd, HDROP hDrop)
 {
     // 最初のファイルのパス名を取得する。
-    std::array<WCHAR,MAX_PATH> szFile, szTarget;
-    ::DragQueryFileW(hDrop, 0, szFile.data(), static_cast<UINT>(szFile.size()));
+    WCHAR szFile[MAX_PATH], szTarget[MAX_PATH];
+    ::DragQueryFileW(hDrop, 0, szFile, ARRAYSIZE(szFile));
     ::DragFinish(hDrop);
 
     // ショートカットだった場合は、ターゲットのパスを取得する。
-    if (XgGetPathOfShortcutW(szFile.data(), szTarget.data()))
-        ::lstrcpyW(szFile.data(), szTarget.data());
+    if (XgGetPathOfShortcutW(szFile, szTarget))
+        StringCbCopy(szFile, sizeof(szFile), szTarget);
 
     // 拡張子を取得する。
-    LPWSTR pch = PathFindExtensionW(szFile.data());
+    LPWSTR pch = PathFindExtensionW(szFile);
 
     if (::lstrcmpiW(pch, L".xwd") == 0) {
         // 拡張子が.xwdだった。ファイルを開く。
-        if (!XgDoLoadFile(hwnd, szFile.data(), false)) {
+        if (!XgDoLoadFile(hwnd, szFile, false)) {
             XgCenterMessageBoxW(hwnd, XgLoadStringDx1(3), nullptr, MB_ICONERROR);
         } else {
             xg_caret_pos.clear();
@@ -7222,7 +7215,7 @@ void __fastcall MainWnd_OnDropFiles(HWND hwnd, HDROP hDrop)
         }
     } else if (::lstrcmpiW(pch, L".xwj") == 0 || lstrcmpiW(pch, L".json") == 0) {
         // 拡張子が.xwjか.jsonだった。ファイルを開く。
-        if (!XgDoLoadFile(hwnd, szFile.data(), true)) {
+        if (!XgDoLoadFile(hwnd, szFile, true)) {
             XgCenterMessageBoxW(hwnd, XgLoadStringDx1(3), nullptr, MB_ICONERROR);
         } else {
             xg_caret_pos.clear();
@@ -7231,7 +7224,7 @@ void __fastcall MainWnd_OnDropFiles(HWND hwnd, HDROP hDrop)
             XgUpdateImage(hwnd, 0, 0);
         }
     } else if (::lstrcmpiW(pch, L".crp") == 0 || ::lstrcmpiW(pch, L".crx") == 0) {
-        if (!XgDoLoadBuilderFile(hwnd, szFile.data())) {
+        if (!XgDoLoadBuilderFile(hwnd, szFile)) {
             XgCenterMessageBoxW(hwnd, XgLoadStringDx1(3), nullptr, MB_ICONERROR);
         } else {
             xg_caret_pos.clear();
@@ -7483,36 +7476,36 @@ bool __fastcall MainWnd_OnCreate(HWND hwnd, LPCREATESTRUCT /*lpCreateStruct*/)
     int argc;
     LPWSTR *wargv = ::CommandLineToArgvW(::GetCommandLineW(), &argc);
     if (argc >= 2) {
-        std::array<WCHAR,MAX_PATH> szFile, szTarget;
-        ::lstrcpynW(szFile.data(), wargv[1], static_cast<int>(szFile.size()));
+        WCHAR szFile[MAX_PATH], szTarget[MAX_PATH];
+        StringCbCopy(szFile, sizeof(szFile), wargv[1]);
 
         // コマンドライン引数があれば、それを開く。
         bool bSuccess = true;
-        if (::lstrcmpiW(PathFindExtensionW(szFile.data()), s_szShellLinkDotExt) == 0)
+        if (::lstrcmpiW(PathFindExtensionW(szFile), s_szShellLinkDotExt) == 0)
         {
             // ショートカットだった場合は、ターゲットのパスを取得する。
-            if (XgGetPathOfShortcutW(szFile.data(), szTarget.data())) {
-                ::lstrcpynW(szFile.data(), szTarget.data(), MAX_PATH);
+            if (XgGetPathOfShortcutW(szFile, szTarget)) {
+                ::lstrcpynW(szFile, szTarget, MAX_PATH);
             } else {
                 bSuccess = false;
                 MessageBeep(0xFFFFFFFF);
             }
         }
         bool is_json = false;
-        if (::lstrcmpiW(PathFindExtensionW(szFile.data()), L".xwj") == 0 ||
-            ::lstrcmpiW(PathFindExtensionW(szFile.data()), L".json") == 0)
+        if (::lstrcmpiW(PathFindExtensionW(szFile), L".xwj") == 0 ||
+            ::lstrcmpiW(PathFindExtensionW(szFile), L".json") == 0)
         {
             is_json = true;
         }
         bool is_builder = false;
-        if (::lstrcmpiW(PathFindExtensionW(szFile.data()), L".crp") == 0 ||
-            ::lstrcmpiW(PathFindExtensionW(szFile.data()), L".crx") == 0)
+        if (::lstrcmpiW(PathFindExtensionW(szFile), L".crp") == 0 ||
+            ::lstrcmpiW(PathFindExtensionW(szFile), L".crx") == 0)
         {
             is_builder = true;
         }
         if (bSuccess) {
             if (is_builder) {
-                if (!XgDoLoadBuilderFile(hwnd, szFile.data())) {
+                if (!XgDoLoadBuilderFile(hwnd, szFile)) {
                     XgCenterMessageBoxW(hwnd, XgLoadStringDx1(3), nullptr, MB_ICONERROR);
                 } else {
                     xg_caret_pos.clear();
@@ -7520,7 +7513,7 @@ bool __fastcall MainWnd_OnCreate(HWND hwnd, LPCREATESTRUCT /*lpCreateStruct*/)
                     XgUpdateImage(hwnd, 0, 0);
                 }
             } else {
-                if (!XgDoLoadFile(hwnd, szFile.data(), is_json)) {
+                if (!XgDoLoadFile(hwnd, szFile, is_json)) {
                     XgCenterMessageBoxW(hwnd, XgLoadStringDx1(3), nullptr, MB_ICONERROR);
                 } else {
                     xg_caret_pos.clear();
@@ -7725,15 +7718,13 @@ void HintsWnd_OnSize(HWND hwnd, UINT /*state*/, int /*cx*/, int /*cy*/)
     MSize size1, size2;
     {
         HDC hdc = ::CreateCompatibleDC(NULL);
-        std::array<WCHAR,64> label;
-        ::wsprintfW(label.data(), XgLoadStringDx1(24), 100);
-        std::wstring strLabel = label.data();
+        WCHAR label[64];
+        StringCbPrintf(label, sizeof(label), XgLoadStringDx1(24), 100);
+        std::wstring strLabel = label;
         ::SelectObject(hdc, ::GetStockObject(SYSTEM_FIXED_FONT));
-        ::GetTextExtentPoint32W(hdc, strLabel.data(), 
-                                static_cast<int>(strLabel.size()), &size1);
+        ::GetTextExtentPoint32W(hdc, strLabel.data(), int(strLabel.size()), &size1);
         ::SelectObject(hdc, xg_hHintsUIFont);
-        ::GetTextExtentPoint32W(hdc, strLabel.data(), 
-                                static_cast<int>(strLabel.size()), &size2);
+        ::GetTextExtentPoint32W(hdc, strLabel.data(), int(strLabel.size()), &size2);
         ::DeleteDC(hdc);
     }
 
@@ -7979,11 +7970,10 @@ BOOL HintsWnd_OnCreate(HWND hwnd, LPCREATESTRUCT /*lpCreateStruct*/)
         TRUE);
 
     XG_HintEditData *data;
-    std::array<WCHAR,256> sz;
+    WCHAR sz[256];
     for (const auto& hint : xg_vecTateHints) {
-        ::wsprintfW(sz.data(), XgLoadStringDx1(24), hint.m_number);
-        hwndCtrl = ::CreateWindowW(
-            TEXT("STATIC"), sz.data(),
+        StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(24), hint.m_number);
+        hwndCtrl = ::CreateWindowW(TEXT("STATIC"), sz,
             WS_CHILD | WS_VISIBLE | SS_RIGHT | SS_NOPREFIX | SS_NOTIFY | SS_CENTERIMAGE,
             0, 0, 0, 0, hwnd, NULL, xg_hInstance, NULL);
         assert(hwndCtrl);
@@ -8018,9 +8008,8 @@ BOOL HintsWnd_OnCreate(HWND hwnd, LPCREATESTRUCT /*lpCreateStruct*/)
         xg_ahwndTateEdits.emplace_back(hwndCtrl);
     }
     for (const auto& hint : xg_vecYokoHints) {
-        ::wsprintfW(sz.data(), XgLoadStringDx1(25), hint.m_number);
-        hwndCtrl = ::CreateWindowW(
-            TEXT("STATIC"), sz.data(),
+        StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(25), hint.m_number);
+        hwndCtrl = ::CreateWindowW(TEXT("STATIC"), sz,
             WS_CHILD | WS_VISIBLE | SS_RIGHT | SS_NOPREFIX | SS_NOTIFY | SS_CENTERIMAGE,
             0, 0, 0, 0, hwnd, NULL, xg_hInstance, NULL);
         assert(hwndCtrl);
@@ -8113,22 +8102,22 @@ bool __fastcall XgUpdateHintsData(void)
 {
     bool updated = false;
     if (::IsWindow(xg_hHintsWnd)) {
-        std::array<WCHAR,512> sz;
+        WCHAR sz[512];
         for (size_t i = 0; i < xg_vecTateHints.size(); ++i) {
             if (::SendMessageW(xg_ahwndTateEdits[i], EM_GETMODIFY, 0, 0)) {
                 updated = true;
-                ::GetWindowTextW(xg_ahwndTateEdits[i], sz.data(), 
-                                 static_cast<int>(sz.size()));
-                xg_vecTateHints[i].m_strHint = sz.data();
+                ::GetWindowTextW(xg_ahwndTateEdits[i], sz, 
+                                 static_cast<int>(ARRAYSIZE(sz)));
+                xg_vecTateHints[i].m_strHint = sz;
                 ::SendMessageW(xg_ahwndTateEdits[i], EM_SETMODIFY, FALSE, 0);
             }
         }
         for (size_t i = 0; i < xg_vecYokoHints.size(); ++i) {
             if (::SendMessageW(xg_ahwndYokoEdits[i], EM_GETMODIFY, 0, 0)) {
                 updated = true;
-                ::GetWindowTextW(xg_ahwndYokoEdits[i], sz.data(), 
-                                 static_cast<int>(sz.size()));
-                xg_vecYokoHints[i].m_strHint = sz.data();
+                ::GetWindowTextW(xg_ahwndYokoEdits[i], sz, 
+                                 static_cast<int>(ARRAYSIZE(sz)));
+                xg_vecYokoHints[i].m_strHint = sz;
                 ::SendMessageW(xg_ahwndTateEdits[i], EM_SETMODIFY, FALSE, 0);
             }
         }
@@ -8238,9 +8227,9 @@ void HintsWnd_OnActivate(HWND hwnd, UINT state, HWND hwndActDeact, BOOL fMinimiz
 {
     if (state == WA_ACTIVE) {
         HWND hwndFocus = ::GetFocus();
-        std::array<WCHAR,64> sz;
-        ::GetClassNameW(hwndFocus, sz.data(), static_cast<int>(sz.size()));
-        if (hwndFocus == NULL || lstrcmpiW(sz.data(), L"EDIT") != 0) {
+        WCHAR sz[64];
+        ::GetClassNameW(hwndFocus, sz, static_cast<int>(ARRAYSIZE(sz)));
+        if (hwndFocus == NULL || lstrcmpiW(sz, L"EDIT") != 0) {
             if (xg_ahwndTateEdits.size()) {
                 ::SetFocus(xg_ahwndTateEdits[0]);
             }
@@ -8710,9 +8699,9 @@ void CandsWnd_OnActivate(HWND hwnd, UINT state, HWND hwndActDeact, BOOL fMinimiz
 {
     if (state == WA_ACTIVE) {
         HWND hwndFocus = ::GetFocus();
-        std::array<WCHAR,64> sz;
-        ::GetClassNameW(hwndFocus, sz.data(), 64);
-        if (hwndFocus == NULL || lstrcmpiW(sz.data(), L"BUTTON") != 0) {
+        WCHAR sz[64];
+        ::GetClassNameW(hwndFocus, sz, 64);
+        if (hwndFocus == NULL || lstrcmpiW(sz, L"BUTTON") != 0) {
             if (xg_ahwndCandButtons.size()) {
                 ::SetFocus(xg_ahwndCandButtons[0]);
             }

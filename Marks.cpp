@@ -25,20 +25,20 @@ static int  s_iMarkedCands = -1;
 // マーク文字列を取得する。
 void __fastcall XgGetStringOfMarks(std::wstring& str)
 {
-    std::array<WCHAR,64> sz;
+    WCHAR sz[64];
     str.clear();
     str += XgLoadStringDx1(34);
     str += xg_pszNewLine;
     for (const auto& mark : xg_vMarks) {
         if (xg_bSolved)
-            ::wsprintfW(sz.data(), L"(%u, %u)%c\r\n",
+            StringCbPrintf(sz, sizeof(sz), L"(%u, %u)%c\r\n",
                 mark.m_i + 1, mark.m_j + 1,
                 xg_solution.GetAt(mark.m_i, mark.m_j));
         else
-            ::wsprintfW(sz.data(), L"(%u, %u)%c\r\n",
+            StringCbPrintf(sz, sizeof(sz), L"(%u, %u)%c\r\n",
                 mark.m_i + 1, mark.m_j + 1,
                 xg_xword.GetAt(mark.m_i, mark.m_j));
-        str += sz.data();
+        str += sz;
     }
 }
 
@@ -68,7 +68,7 @@ int __fastcall XgGetMarked(int i, int j)
 // 二重マスが更新された。
 void __fastcall XgMarkUpdate(void)
 {
-    std::array<WCHAR,64> sz;
+    WCHAR sz[64];
     std::wstring str;
 
     // すでに解があるかどうかによって切り替え。
@@ -79,20 +79,20 @@ void __fastcall XgMarkUpdate(void)
         // マークされているか？ 答えを表示するか？
         LPWSTR pchFileTitle = PathFindFileNameW(xg_strFileName.c_str());
         if (XgGetMarkWord(xw, str) && xg_bShowAnswer) {
-            ::wsprintfW(sz.data(), XgLoadStringDx1(38), str.data(), pchFileTitle);
-            ::SetWindowTextW(xg_hMainWnd, sz.data());
+            StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(38), str.data(), pchFileTitle);
+            ::SetWindowTextW(xg_hMainWnd, sz);
         } else {
-            ::wsprintfW(sz.data(), XgLoadStringDx1(15), pchFileTitle);
-            ::SetWindowTextW(xg_hMainWnd, sz.data());
+            StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(15), pchFileTitle);
+            ::SetWindowTextW(xg_hMainWnd, sz);
         }
     } else {
         // マークされているか？ 答えを表示するか？
         if (XgGetMarkWord(xw, str) && xg_bShowAnswer) {
-            ::wsprintfW(sz.data(), XgLoadStringDx1(1177), str.data());
-            ::SetWindowTextW(xg_hMainWnd, sz.data());
+            StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(1177), str.data());
+            ::SetWindowTextW(xg_hMainWnd, sz);
         } else {
-            ::wsprintfW(sz.data(), XgLoadStringDx1(1176));
-            ::SetWindowTextW(xg_hMainWnd, sz.data());
+            StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(1176));
+            ::SetWindowTextW(xg_hMainWnd, sz);
         }
     }
 }
