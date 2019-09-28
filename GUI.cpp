@@ -756,6 +756,9 @@ bool __fastcall XgLoadSettings(void)
         {
             xg_hBlackCellEMF = GetEnhMetaFile(xg_strBlackCellImage.c_str());
         }
+
+        if (!xg_hbmBlackCell && !xg_hBlackCellEMF)
+            xg_strBlackCellImage.clear();
     }
 
     return true;
