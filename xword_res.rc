@@ -96,6 +96,8 @@ LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
 
 3 ICON "res/Icon_3.ico"
 
+100 ICON "res/Icon_100.ico"
+
 //////////////////////////////////////////////////////////////////////////////
 // RT_VERSION
 
