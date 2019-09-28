@@ -40,6 +40,11 @@ Source: "DICT\基本辞書データ（英和、謹慎）.dic"; DestDir: "{app}\DICT"; Flags: i
 Source: "DICT\基本辞書データ（英和、自由）.dic"; DestDir: "{app}\DICT"; Flags: ignoreversion
 Source: "DICT\基本辞書データ（漢字、自由）.dic"; DestDir: "{app}\DICT"; Flags: ignoreversion
 Source: "DICT\基本辞書データ（ロシア、自由）.dic"; DestDir: "{app}\DICT"; Flags: ignoreversion
+Source: "BLOCK\ink-save-black.bmp"; DestDir: "{app}\BLOCK"; Flags: ignoreversion
+Source: "BLOCK\mainichi.bmp"; DestDir: "{app}\BLOCK"; Flags: ignoreversion
+Source: "BLOCK\mario-block-1.bmp"; DestDir: "{app}\BLOCK"; Flags: ignoreversion
+Source: "BLOCK\mario-block-2.bmp"; DestDir: "{app}\BLOCK"; Flags: ignoreversion
+Source: "BLOCK\perfect-black.bmp"; DestDir: "{app}\BLOCK"; Flags: ignoreversion
 Source: "点対称パターン.txt"; DestDir: "{app}"; Flags: ignoreversion
 Source: "LICENSE.txt"; DestDir: "{app}"; Flags: ignoreversion
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
@@ -53,6 +58,7 @@ Name: "{group}\作者のホームページ"; Filename: "http://katahiromz.web.fc2.com/"
 Name: "{group}\{cm:UninstallProgram,クロスワード ギバー}"; Filename: "{uninstallexe}"
 Name: "{group}\点対称パターン.txt"; Filename: "{app}\点対称パターン.txt"
 Name: "{group}\DICT"; Filename: "{app}\DICT"
+Name: "{group}\BLOCK"; Filename: "{app}\DICT"
 Name: "{group}\LICENSE.txt"; Filename: "{app}\LICENSE.txt"
 Name: "{commondesktop}\クロスワード ギバー (64ビット版)"; Filename: "{app}\xword64.exe"; Tasks: desktopicon
 
