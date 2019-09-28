@@ -744,7 +744,19 @@ bool __fastcall XgLoadSettings(void)
     }
 
     ::DeleteObject(xg_hbmBlackCell);
-    xg_hbmBlackCell = LoadBitmapFromFile(xg_strBlackCellImage.c_str());
+    xg_hbmBlackCell = NULL;
+
+    DeleteEnhMetaFile(xg_hBlackCellEMF);
+    xg_hBlackCellEMF = NULL;
+
+    if (!xg_strBlackCellImage.empty())
+    {
+        xg_hbmBlackCell = LoadBitmapFromFile(xg_strBlackCellImage.c_str());
+        if (!xg_hbmBlackCell)
+        {
+            xg_hBlackCellEMF = GetEnhMetaFile(xg_strBlackCellImage.c_str());
+        }
+    }
 
     return true;
 }
@@ -5187,8 +5199,25 @@ BOOL SettingsDlg_OnInitDialog(HWND hwnd)
     HWND hCmb1 = GetDlgItem(hwnd, cmb1);
     ComboBox_AddString(hCmb1, XgLoadStringDx1(110));
 
+    // *.bmp
     WIN32_FIND_DATA find;
     HANDLE hFind = FindFirstFile(szPath, &find);
+    if (hFind != INVALID_HANDLE_VALUE)
+    {
+        do
+        {
+            ComboBox_AddString(hCmb1, find.cFileName);
+        } while (FindNextFile(hFind, &find));
+
+        FindClose(hFind);
+    }
+
+    // *.emf
+    GetModuleFileNameW(NULL, szPath, ARRAYSIZE(szPath));
+    PathRemoveFileSpec(szPath);
+    PathAppend(szPath, L"BLOCK");
+    PathAppend(szPath, L"*.emf");
+    hFind = FindFirstFile(szPath, &find);
     if (hFind != INVALID_HANDLE_VALUE)
     {
         do
@@ -5277,6 +5306,9 @@ void SettingsDlg_OnOK(HWND hwnd)
     ::DeleteObject(xg_hbmBlackCell);
     xg_hbmBlackCell = NULL;
 
+    DeleteEnhMetaFile(xg_hBlackCellEMF);
+    xg_hBlackCellEMF = NULL;
+
     if (szName[0])
     {
         WCHAR szPath[MAX_PATH];
@@ -5289,6 +5321,15 @@ void SettingsDlg_OnOK(HWND hwnd)
         {
             xg_strBlackCellImage = szPath;
             xg_hbmBlackCell = LoadBitmapFromFile(xg_strBlackCellImage.c_str());
+            if (!xg_hbmBlackCell)
+            {
+                xg_hBlackCellEMF = GetEnhMetaFile(xg_strBlackCellImage.c_str());
+            }
+        }
+
+        if (!xg_hbmBlackCell && !xg_hBlackCellEMF)
+        {
+            xg_strBlackCellImage.clear();
         }
     }
 

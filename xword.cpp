@@ -111,6 +111,7 @@ INT xg_nSmallCharPercents = DEF_SMALL_CHAR_SIZE;
 
 // çïÉ}ÉXâÊëúÅB
 HBITMAP xg_hbmBlackCell = NULL;
+HENHMETAFILE xg_hBlackCellEMF = NULL;
 std::wstring xg_strBlackCellImage;
 
 //////////////////////////////////////////////////////////////////////////////
@@ -3143,6 +3144,10 @@ void __fastcall XgDrawXWord(XG_Board& xw, HDC hdc, LPSIZE psiz, bool bCaret)
                                hdcMem,
                                0, 0, bm.bmWidth, bm.bmHeight,
                                SRCCOPY);
+                }
+                else if (xg_hBlackCellEMF)
+                {
+                    ::PlayEnhMetaFile(hdc, xg_hBlackCellEMF, &rc);
                 }
                 else
                 {

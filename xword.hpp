@@ -498,6 +498,7 @@ extern std::wstring     xg_strNotes;
 
 // çïÉ}ÉXâÊëúÅB
 extern HBITMAP xg_hbmBlackCell;
+extern HENHMETAFILE xg_hBlackCellEMF;
 extern std::wstring xg_strBlackCellImage;
 
 //////////////////////////////////////////////////////////////////////////////
