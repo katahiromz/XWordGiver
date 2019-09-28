@@ -2946,7 +2946,7 @@ void __fastcall XgDrawMarkWord(HDC hdc, LPSIZE psiz)
         ::SetRect(&rc,
             static_cast<int>(xg_nNarrowMargin + i * xg_nCellSize), 
             static_cast<int>(xg_nNarrowMargin + 0 * xg_nCellSize),
-            static_cast<int>(xg_nNarrowMargin + (i + 1) * xg_nCellSize), 
+            static_cast<int>(xg_nNarrowMargin + (i + 1) * xg_nCellSize - 1), 
             static_cast<int>(xg_nNarrowMargin + 1 * xg_nCellSize));
         ::FillRect(hdc, &rc, hbrMarked);
         ::InflateRect(&rc, -4, -4);
@@ -2962,11 +2962,6 @@ void __fastcall XgDrawMarkWord(HDC hdc, LPSIZE psiz)
         ::SetBkColor(hdc, xg_rgbMarkedCellColor);
         StringCbPrintf(sz, sizeof(sz), L"%c", ZEN_LARGE_A + i);
         ::GetTextExtentPoint32W(hdc, sz, int(wcslen(sz)), &siz);
-        ::SetRect(&rc,
-            static_cast<int>(xg_nNarrowMargin + i * xg_nCellSize - 1 - siz.cx), 
-            static_cast<int>(xg_nNarrowMargin + 0 * xg_nCellSize - 1 - siz.cy),
-            static_cast<int>(xg_nNarrowMargin + (i + 1) * xg_nCellSize - 1), 
-            static_cast<int>(xg_nNarrowMargin + 1 * xg_nCellSize - 1));
         ::DrawTextW(hdc, sz, -1, &rc, DT_RIGHT | DT_SINGLELINE | DT_BOTTOM);
     }
     ::SelectObject(hdc, hFontOld);
@@ -3169,9 +3164,9 @@ void __fastcall XgDrawXWord(XG_Board& xw, HDC hdc, LPSIZE psiz, bool bCaret)
         for (int j = 0; j < xg_nCols; j++) {
             // セルの座標をセットする。
             ::SetRect(&rc,
-                static_cast<int>(xg_nMargin + j * nCellSize), 
+                static_cast<int>(xg_nMargin + j * nCellSize),
                 static_cast<int>(xg_nMargin + i * nCellSize),
-                static_cast<int>(xg_nMargin + (j + 1) * nCellSize), 
+                static_cast<int>(xg_nMargin + (j + 1) * nCellSize) - 1,
                 static_cast<int>(xg_nMargin + (i + 1) * nCellSize));
 
             // 二重マスか？
@@ -3190,18 +3185,21 @@ void __fastcall XgDrawXWord(XG_Board& xw, HDC hdc, LPSIZE psiz, bool bCaret)
                 ::InflateRect(&rc, 4, 4);
             }
 
+            StringCbPrintf(sz, sizeof(sz), L"%c", L'A' + nMarked);
+
             // 二重マスの右下端の文字の背景を塗りつぶす。
-            ::SetBkMode(hdc, OPAQUE);
-            ::SetBkColor(hdc, xg_rgbMarkedCellColor);
+            RECT rcText;
+            GetTextExtentPoint32(hdc, sz, lstrlen(sz), &siz);
+            rcText = rc;
+            rcText.left = rc.right - siz.cx;
+            rcText.top = rc.bottom - siz.cy;
+
+            HBRUSH hbr = CreateSolidBrush(xg_rgbMarkedCellColor);
+            FillRect(hdc, &rcText, hbr);
+            DeleteObject(hbr);
 
             // 二重マスの右下端の文字を描く。
-            StringCbPrintf(sz, sizeof(sz), L"%c", L'A' + nMarked);
-            ::GetTextExtentPoint32W(hdc, sz, int(wcslen(sz)), &siz);
-            ::SetRect(&rc,
-                static_cast<int>(xg_nMargin + (j + 1) * nCellSize - siz.cx), 
-                static_cast<int>(xg_nMargin + (i + 1) * nCellSize - siz.cy),
-                static_cast<int>(xg_nMargin + (j + 1) * nCellSize), 
-                static_cast<int>(xg_nMargin + (i + 1) * nCellSize));
+            ::SetBkMode(hdc, TRANSPARENT);
             ::DrawTextW(hdc, sz, -1, &rc, DT_RIGHT | DT_SINGLELINE | DT_BOTTOM);
         }
     }
