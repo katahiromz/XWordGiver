@@ -5013,14 +5013,17 @@ void __fastcall MainWnd_OnLButtonDown(HWND hwnd, bool fDoubleClick, int x, int y
 // ステータスバーを更新する。
 void __fastcall XgUpdateStatusBar(HWND hwnd)
 {
+    // クライアント領域を取得する。
     RECT rc;
     GetClientRect(hwnd, &rc);
 
+    // パーツのサイズを決定する。
     INT anWidth[] = { rc.right - 200, rc.right - 100, rc.right };
-    WCHAR szText[64];
 
+    // ステータスバーをパーツに分ける。
     SendMessageW(xg_hStatusBar, SB_SETPARTS, 3, (LPARAM)anWidth);
 
+    // 状態文字列を設定。
     std::wstring str;
     if (xg_bTateInput) {
         str = XgLoadStringDx1(1184);
@@ -5043,11 +5046,15 @@ void __fastcall XgUpdateStatusBar(HWND hwnd)
         str += XgLoadStringDx1(1182);
     }
 
+    // 状態を表示。
     SendMessageW(xg_hStatusBar, SB_SETTEXT, 0, (LPARAM)str.c_str());
 
+    // キャレット位置。
+    WCHAR szText[64];
     StringCbPrintf(szText, sizeof(szText), L"(%u, %u)", xg_caret_pos.m_j + 1, xg_caret_pos.m_i + 1);
     SendMessageW(xg_hStatusBar, SB_SETTEXT, 1, (LPARAM)szText);
 
+    // 盤のサイズ。
     StringCbPrintf(szText, sizeof(szText), L"%u x %u", xg_nCols, xg_nRows);
     SendMessageW(xg_hStatusBar, SB_SETTEXT, 2, (LPARAM)szText);
 }
@@ -5188,10 +5195,12 @@ BOOL SettingsDlg_OnInitDialog(HWND hwnd)
     ::CheckDlgButton(hwnd, chx3,
         (xg_bDrawFrameForMarkedCell ? BST_CHECKED : BST_UNCHECKED));
 
+    // 文字の大きさ。
     ::SetDlgItemInt(hwnd, edt4, xg_nCellCharPercents, FALSE);
     ::SetDlgItemInt(hwnd, edt5, xg_nSmallCharPercents, FALSE);
-    SendDlgItemMessage(hwnd, scr1, UDM_SETRANGE, 0, MAKELPARAM(100, 3));
-    SendDlgItemMessage(hwnd, scr2, UDM_SETRANGE, 0, MAKELPARAM(100, 3));
+    // 大きさの範囲を指定。
+    ::SendDlgItemMessage(hwnd, scr1, UDM_SETRANGE, 0, MAKELPARAM(100, 3));
+    ::SendDlgItemMessage(hwnd, scr2, UDM_SETRANGE, 0, MAKELPARAM(100, 3));
 
     WCHAR szPath[MAX_PATH];
     std::vector<std::wstring> items;
@@ -5267,6 +5276,7 @@ void SettingsDlg_OnOK(HWND hwnd)
     INT nValue1, nValue2;
     BOOL bTranslated;
 
+    // セルの文字の大きさ。
     bTranslated = FALSE;
     nValue1 = GetDlgItemInt(hwnd, edt4, &bTranslated, FALSE);
     if (bTranslated && 0 <= nValue1 && nValue1 <= 100)
@@ -5275,6 +5285,7 @@ void SettingsDlg_OnOK(HWND hwnd)
     }
     else
     {
+        // エラー。
         HWND hEdt4 = GetDlgItem(hwnd, edt4);
         Edit_SetSel(hEdt4, 0, -1);
         SetFocus(hEdt4);
@@ -5282,6 +5293,7 @@ void SettingsDlg_OnOK(HWND hwnd)
         return;
     }
 
+    // 小さい文字の大きさ。
     bTranslated = FALSE;
     nValue2 = GetDlgItemInt(hwnd, edt5, &bTranslated, FALSE);
     if (bTranslated && 0 <= nValue2 && nValue2 <= 100)
@@ -5290,6 +5302,7 @@ void SettingsDlg_OnOK(HWND hwnd)
     }
     else
     {
+        // エラー。
         HWND hEdt5 = GetDlgItem(hwnd, edt5);
         Edit_SetSel(hEdt5, 0, -1);
         SetFocus(hEdt5);
@@ -5297,33 +5310,40 @@ void SettingsDlg_OnOK(HWND hwnd)
         return;
     }
 
+    // 文字の大きさの設定。
     xg_nCellCharPercents = nValue1;
     xg_nSmallCharPercents = nValue2;
 
     // フォント名を取得する。
     WCHAR szName[LF_FACESIZE];
 
+    // セルフォント。
     ::GetDlgItemTextW(hwnd, edt1, szName, ARRAYSIZE(szName));
     StringCbCopy(xg_szCellFont, sizeof(xg_szCellFont), szName);
 
+    // 小さい文字のフォント。
     ::GetDlgItemTextW(hwnd, edt2, szName, ARRAYSIZE(szName));
     StringCbCopy(xg_szSmallFont, sizeof(xg_szSmallFont), szName);
 
+    // UIフォント。
     ::GetDlgItemTextW(hwnd, edt3, szName, ARRAYSIZE(szName));
     StringCbCopy(xg_szUIFont, sizeof(xg_szUIFont), szName);
 
+    // 黒マス画像の名前を取得。
     HWND hCmb1 = GetDlgItem(hwnd, cmb1);
     ComboBox_GetText(hCmb1, szName, ARRAYSIZE(szName));
 
+    // 黒マス画像の初期化。
     xg_strBlackCellImage.clear();
     ::DeleteObject(xg_hbmBlackCell);
     xg_hbmBlackCell = NULL;
-
     DeleteEnhMetaFile(xg_hBlackCellEMF);
     xg_hBlackCellEMF = NULL;
 
+    // もし黒マス画像が指定されていれば
     if (szName[0])
     {
+        // パス名をセット。
         WCHAR szPath[MAX_PATH];
         GetModuleFileNameW(NULL, szPath, ARRAYSIZE(szPath));
         PathRemoveFileSpec(szPath);
@@ -5332,6 +5352,7 @@ void SettingsDlg_OnOK(HWND hwnd)
 
         if (PathFileExists(szPath))
         {
+            // ファイルが存在すれば、画像を読み込む。
             xg_strBlackCellImage = szPath;
             xg_hbmBlackCell = LoadBitmapFromFile(xg_strBlackCellImage.c_str());
             if (!xg_hbmBlackCell)
@@ -5342,6 +5363,7 @@ void SettingsDlg_OnOK(HWND hwnd)
 
         if (!xg_hbmBlackCell && !xg_hBlackCellEMF)
         {
+            // 画像が無効なら、パスも無効化。
             xg_strBlackCellImage.clear();
         }
     }
