@@ -462,7 +462,7 @@ BOOL XgLoadDictsAll(void)
                 break;
             }
         }
-        if (xg_dict_name.empty())
+        if (xg_dict_name.empty() && xg_dict_files.size())
         {
             xg_dict_name = xg_dict_files[0];
         }
