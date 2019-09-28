@@ -492,7 +492,7 @@ bool __fastcall XgLoadSettings(void)
     s_nMainWndX = CW_USEDEFAULT;
     s_nMainWndY = CW_USEDEFAULT;
     s_nMainWndCX = 475;
-    s_nMainWndCY = 490;
+    s_nMainWndCY = 515;
 
     s_nHintsWndX = CW_USEDEFAULT;
     s_nHintsWndY = CW_USEDEFAULT;
