@@ -475,6 +475,63 @@ BOOL XgLoadDicts(LPWSTR pszDir)
     return !xg_dict_files.empty();
 }
 
+// 辞書ファイルをすべて読み込む。
+BOOL XgLoadDictsAll(void)
+{
+    WCHAR sz[MAX_PATH];
+
+    xg_dict_files.clear();
+
+    // 実行ファイルのパスを取得。
+    ::GetModuleFileNameW(nullptr, sz, sizeof(sz));
+
+    // 実行ファイルにある.dicファイルを列挙する。
+    PathRemoveFileSpec(sz);
+    PathAppend(sz, L"DICT");
+
+    if (!XgLoadDicts(sz))
+    {
+        PathRemoveFileSpec(sz);
+        PathRemoveFileSpec(sz);
+        PathAppend(sz, L"DICT");
+        if (!XgLoadDicts(sz))
+        {
+            PathRemoveFileSpec(sz);
+            PathAppend(sz, L"DICT");
+            XgLoadDicts(sz);
+        }
+    }
+
+    if (xg_dict_name.empty())
+    {
+        // 辞書ファイルが未指定の場合は「カナ」を優先する。
+        LPCWSTR pszKana = XgLoadStringDx1(1180);
+        for (auto& file : xg_dict_files)
+        {
+            if (file.find(pszKana) != std::wstring::npos)
+            {
+                xg_dict_name = file;
+                break;
+            }
+        }
+        if (xg_dict_name.empty())
+        {
+            xg_dict_name = xg_dict_files[0];
+        }
+    }
+
+    // ファイルが実際に存在するかチェックし、存在しない項目は消す。
+    for (size_t i = 0; i < xg_dict_files.size(); ++i) {
+        DWORD attrs = ::GetFileAttributesW(xg_dict_files[i].data());
+        if (attrs == 0xFFFFFFFF) {
+            xg_dict_files.erase(xg_dict_files.begin() + i);
+            --i;
+        }
+    }
+
+    return !xg_dict_files.empty();
+}
+
 // 設定を読み込む。
 bool __fastcall XgLoadSettings(void)
 {
@@ -503,7 +560,6 @@ bool __fastcall XgLoadSettings(void)
     xg_nInputPaletteWndY = CW_USEDEFAULT;
 
     xg_bTateInput = false;
-    xg_dict_files.clear();
     xg_dict_name.clear();
     s_dirs_save_to.clear();
     s_bAutoRetry = true;
@@ -706,52 +762,6 @@ bool __fastcall XgLoadSettings(void)
                     }
                 }
             }
-        }
-    }
-
-    // 辞書ファイルの名前を読み込む。
-    {
-        // 実行ファイルのパスを取得。
-        ::GetModuleFileNameW(nullptr, sz, sizeof(sz));
-
-        // 実行ファイルにある.dicファイルを列挙する。
-        PathRemoveFileSpec(sz);
-        PathAppend(sz, L"DICT");
-
-        if (!XgLoadDicts(sz))
-        {
-            PathRemoveFileSpec(sz);
-            PathRemoveFileSpec(sz);
-            PathAppend(sz, L"DICT");
-            if (!XgLoadDicts(sz))
-            {
-                PathRemoveFileSpec(sz);
-                PathAppend(sz, L"DICT");
-                XgLoadDicts(sz);
-            }
-        }
-
-        // 辞書ファイルが未指定の場合は「カナ」を優先する。
-        if (xg_dict_name.empty())
-        {
-            LPCWSTR pszKana = XgLoadStringDx1(1180);
-            for (auto& file : xg_dict_files)
-            {
-                if (file.find(pszKana) != std::wstring::npos)
-                {
-                    xg_dict_name = file;
-                    break;
-                }
-            }
-        }
-    }
-
-    // ファイルが実際に存在するかチェックし、存在しない項目は消す。
-    for (size_t i = 0; i < xg_dict_files.size(); ++i) {
-        DWORD attrs = ::GetFileAttributesW(xg_dict_files[i].data());
-        if (attrs == 0xFFFFFFFF) {
-            xg_dict_files.erase(xg_dict_files.begin() + i);
-            --i;
         }
     }
 
@@ -1009,6 +1019,9 @@ XgNewDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam*/)
         ::SetDlgItemInt(hwnd, edt1, s_nRows, FALSE);
         ::SetDlgItemInt(hwnd, edt2, s_nCols, FALSE);
 
+        // 辞書ファイルをすべて読み込む。
+        XgLoadDictsAll();
+
         // 辞書ファイルのパス名のベクターをコンボボックスに設定する。
         hCmb1 = GetDlgItem(hwnd, cmb1);
         nCount = static_cast<int>(xg_dict_files.size());
@@ -1177,7 +1190,8 @@ XgGenerateDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam*/)
         // サイズの欄を設定する。
         ::SetDlgItemInt(hwnd, edt1, s_nRows, FALSE);
         ::SetDlgItemInt(hwnd, edt2, s_nCols, FALSE);
-
+        // 辞書ファイルをすべて読み込む。
+        XgLoadDictsAll();
         // 辞書ファイルのパス名のベクターをコンボボックスに設定する。
         hCmb1 = GetDlgItem(hwnd, cmb1);
         for (const auto& dict_file : xg_dict_files) {
@@ -1381,6 +1395,8 @@ XgGenerateRepeatedlyDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam
         // サイズの欄を設定する。
         ::SetDlgItemInt(hwnd, edt1, s_nRows, FALSE);
         ::SetDlgItemInt(hwnd, edt2, s_nCols, FALSE);
+        // 辞書ファイルをすべて読み込む。
+        XgLoadDictsAll();
         // 辞書ファイルのパス名のベクターをコンボボックスに設定する。
         hCmb1 = GetDlgItem(hwnd, cmb1);
         for (const auto& dict_file : xg_dict_files) {
@@ -5565,6 +5581,9 @@ void MainWnd_OnEraseSettings(HWND hwnd)
 
     // 初期化する。
     XgLoadSettings();
+    // 辞書ファイルの名前を読み込む。
+    XgLoadDictsAll();
+
     xg_bSolved = false;
     xg_bHintsAdded = false;
     xg_bShowAnswer = false;
@@ -5627,6 +5646,8 @@ XgLoadDictDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
     case WM_INITDIALOG:
         // ダイアログを中央へ移動する。
         XgCenterDialog(hwnd);
+        // 辞書ファイルをすべて読み込む。
+        XgLoadDictsAll();
         // 辞書ファイルのパス名のベクターをコンボボックスに設定する。
         hCmb1 = GetDlgItem(hwnd, cmb1);
         for (const auto& dict_file : xg_dict_files) {
@@ -6492,7 +6513,8 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
 
     case ID_SAVEAS: // ファイルを保存する。
         if (xg_dict_files.empty()) {
-            XgLoadSettings();
+            // 辞書ファイルの名前を読み込む。
+            XgLoadDictsAll();
         }
         // ユーザーにファイルの場所を問い合わせる準備。
         ZeroMemory(&ofn, sizeof(ofn));
@@ -8905,6 +8927,9 @@ int WINAPI WinMain(
 
     // 設定を読み込む。
     XgLoadSettings();
+
+    // 辞書ファイルの名前を読み込む。
+    XgLoadDictsAll();
 
     // 乱数モジュールを初期化する。
     srand(::GetTickCount() ^ ::GetCurrentThreadId());
