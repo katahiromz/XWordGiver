@@ -40,6 +40,7 @@ Source: "DICT\基本辞書データ（英和、謹慎）.dic"; DestDir: "{app}\DICT"; Flags: i
 Source: "DICT\基本辞書データ（英和、自由）.dic"; DestDir: "{app}\DICT"; Flags: ignoreversion
 Source: "DICT\基本辞書データ（漢字、自由）.dic"; DestDir: "{app}\DICT"; Flags: ignoreversion
 Source: "DICT\基本辞書データ（ロシア、自由）.dic"; DestDir: "{app}\DICT"; Flags: ignoreversion
+Source: "BLOCK\circle.emf"; DestDir: "{app}\BLOCK"; Flags: ignoreversion
 Source: "BLOCK\diamond.emf"; DestDir: "{app}\BLOCK"; Flags: ignoreversion
 Source: "BLOCK\heart.emf"; DestDir: "{app}\BLOCK"; Flags: ignoreversion
 Source: "BLOCK\ink-save-1.bmp"; DestDir: "{app}\BLOCK"; Flags: ignoreversion
