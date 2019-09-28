@@ -399,7 +399,7 @@ void __fastcall XgUpdateToolBarUI(HWND hwnd)
 
 //////////////////////////////////////////////////////////////////////////////
 
-BOOL XgLoadDicts(LPWSTR pszDir)
+BOOL XgLoadDictsFromDir(LPWSTR pszDir)
 {
     WCHAR szPath[MAX_PATH];
 
@@ -437,16 +437,16 @@ BOOL XgLoadDictsAll(void)
     PathRemoveFileSpec(sz);
     PathAppend(sz, L"DICT");
 
-    if (!XgLoadDicts(sz))
+    if (!XgLoadDictsFromDir(sz))
     {
         PathRemoveFileSpec(sz);
         PathRemoveFileSpec(sz);
         PathAppend(sz, L"DICT");
-        if (!XgLoadDicts(sz))
+        if (!XgLoadDictsFromDir(sz))
         {
             PathRemoveFileSpec(sz);
             PathAppend(sz, L"DICT");
-            XgLoadDicts(sz);
+            XgLoadDictsFromDir(sz);
         }
     }
 
