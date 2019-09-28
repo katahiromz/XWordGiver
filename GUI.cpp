@@ -5187,8 +5187,8 @@ BOOL SettingsDlg_OnInitDialog(HWND hwnd)
 
     ::SetDlgItemInt(hwnd, edt4, xg_nCellCharPercents, FALSE);
     ::SetDlgItemInt(hwnd, edt5, xg_nSmallCharPercents, FALSE);
-    SendDlgItemMessage(hwnd, scr1, UDM_SETRANGE, 0, MAKELPARAM(100, 0));
-    SendDlgItemMessage(hwnd, scr2, UDM_SETRANGE, 0, MAKELPARAM(100, 0));
+    SendDlgItemMessage(hwnd, scr1, UDM_SETRANGE, 0, MAKELPARAM(100, 3));
+    SendDlgItemMessage(hwnd, scr2, UDM_SETRANGE, 0, MAKELPARAM(100, 3));
 
     WCHAR szPath[MAX_PATH];
     GetModuleFileNameW(NULL, szPath, ARRAYSIZE(szPath));
