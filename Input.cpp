@@ -557,17 +557,17 @@ void __fastcall MainWnd_OnChar(HWND hwnd, TCHAR ch, int cRepeat)
             }
         } else if (XgIsCharHiraganaW(ch)) {
             // ひらがな直接入力。
-            std::array<WCHAR,2> sz;
+            WCHAR sz[2];
             ::LCMapStringW(JPN_LOCALE,
                 LCMAP_FULLWIDTH | LCMAP_KATAKANA | LCMAP_UPPERCASE,
-                &ch, 1, sz.data(), static_cast<int>(sz.size()));
+                &ch, 1, sz, ARRAYSIZE(sz));
             newch = sz[0];
             goto katakana;
         } else if (XgIsCharKatakanaW(ch)) {
 katakana:;
             // カタカナ直接入力。
             // 小さな字を大きな字にする。
-            for (size_t i = 0; i < xg_small.size(); i++) {
+            for (size_t i = 0; i < ARRAYSIZE(xg_small); i++) {
                 if (static_cast<WCHAR>(ch) == xg_small[i][0]) {
                     newch = xg_large[i][0];
                     break;
@@ -808,17 +808,17 @@ void __fastcall MainWnd_OnImeChar(HWND hwnd, WCHAR ch, LPARAM /*lKeyData*/)
         // カナ入力モードの場合。
         if (XgIsCharHiraganaW(ch)) {
             // ひらがな入力。
-            std::array<WCHAR,2> sz;
+            WCHAR sz[2];
             LCMapStringW(JPN_LOCALE,
                 LCMAP_FULLWIDTH | LCMAP_KATAKANA | LCMAP_UPPERCASE,
-                &ch, 1, sz.data(), static_cast<int>(sz.size()));
+                &ch, 1, sz, ARRAYSIZE(sz));
             ch = sz[0];
             goto katakana;
         } else if (XgIsCharKatakanaW(ch)) {
 katakana:;
             // カタカナ入力。
             // 小さな字を大きな字にする。
-            for (size_t i = 0; i < xg_small.size(); i++) {
+            for (size_t i = 0; i < ARRAYSIZE(xg_small); i++) {
                 if (ch == xg_small[i][0]) {
                     ch = xg_large[i][0];
                     break;
@@ -841,10 +841,10 @@ katakana:;
         if (XgIsCharHankakuUpperW(ch) || XgIsCharHankakuLowerW(ch) ||
             XgIsCharZenkakuUpperW(ch) || XgIsCharZenkakuLowerW(ch))
         {
-            std::array<WCHAR,2> sz;
+            WCHAR sz[2];
             LCMapStringW(JPN_LOCALE,
                 LCMAP_FULLWIDTH | LCMAP_KATAKANA | LCMAP_UPPERCASE,
-                &ch, 1, sz.data(), static_cast<int>(sz.size()));
+                &ch, 1, sz, ARRAYSIZE(sz));
             ch = sz[0];
 
             // 候補ウィンドウを破棄する。

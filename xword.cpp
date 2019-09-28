@@ -66,19 +66,15 @@ int                 xg_nCols = 0;
 std::vector<XG_PlaceInfo> xg_vTateInfo, xg_vYokoInfo;
 
 // 拗音変換用データ。
-const std::array<LPCWSTR,11>    xg_small = 
+const LPCWSTR xg_small[11] = 
 {
-    {
-        L"\x30A1", L"\x30A3", L"\x30A5", L"\x30A7", L"\x30A9", L"\x30C3",
-        L"\x30E3", L"\x30E5", L"\x30E7", L"\x30F5", L"\x30F6"
-    }
+    L"\x30A1", L"\x30A3", L"\x30A5", L"\x30A7", L"\x30A9", L"\x30C3",
+    L"\x30E3", L"\x30E5", L"\x30E7", L"\x30F5", L"\x30F6"
 };
-const std::array<LPCWSTR,11>    xg_large = 
+const LPCWSTR xg_large[11] = 
 {
-    {
-        L"\x30A2", L"\x30A4", L"\x30A6", L"\x30A8", L"\x30AA", L"\x30C4",
-        L"\x30E4", L"\x30E6", L"\x30E8", L"\x30AB", L"\x30B1",
-    }
+    L"\x30A2", L"\x30A4", L"\x30A6", L"\x30A8", L"\x30AA", L"\x30C4",
+    L"\x30E4", L"\x30E6", L"\x30E8", L"\x30AB", L"\x30B1",
 };
 
 // クロスワードの問題。
@@ -3540,9 +3536,9 @@ bool __fastcall XgDoLoadBuilderFile(HWND hwnd, LPCWSTR pszFile)
         XgMarkUpdate();
 
         // ファイルパスをセットする。
-        std::array<WCHAR,MAX_PATH> szFileName;
-        ::GetFullPathNameW(pszFile, MAX_PATH, szFileName.data(), NULL);
-        xg_strFileName = szFileName.data();
+        WCHAR szFileName[MAX_PATH];
+        ::GetFullPathNameW(pszFile, MAX_PATH, szFileName, NULL);
+        xg_strFileName = szFileName;
     }
 
     return bOK;
@@ -3647,9 +3643,9 @@ bool __fastcall XgDoLoadFile(HWND hwnd, LPCWSTR pszFile, bool json)
                 XgMarkUpdate();
 
                 // ファイルパスをセットする。
-                std::array<WCHAR,MAX_PATH> szFileName;
-                ::GetFullPathNameW(pszFile, MAX_PATH, szFileName.data(), NULL);
-                xg_strFileName = szFileName.data();
+                WCHAR szFileName[MAX_PATH];
+                ::GetFullPathNameW(pszFile, MAX_PATH, szFileName, NULL);
+                xg_strFileName = szFileName;
                 return true;
             }
         }
@@ -3858,9 +3854,9 @@ bool __fastcall XgDoSaveJson(HWND /*hwnd*/, LPCWSTR pszFile)
             ::CloseHandle(hFile);
 
             // ファイルパスをセットする。
-            std::array<WCHAR, MAX_PATH> szFileName;
-            ::GetFullPathNameW(pszFile, MAX_PATH, szFileName.data(), NULL);
-            xg_strFileName = szFileName.data();
+            WCHAR szFileName[MAX_PATH];
+            ::GetFullPathNameW(pszFile, MAX_PATH, szFileName, NULL);
+            xg_strFileName = szFileName;
             XgMarkUpdate();
             return true;
         }
@@ -3963,9 +3959,9 @@ bool __fastcall XgDoSave(HWND hwnd, LPCWSTR pszFile, bool json)
     }
     if (ret) {
         // ファイルパスをセットする。
-        std::array<WCHAR,MAX_PATH> szFileName;
-        ::GetFullPathNameW(pszFile, MAX_PATH, szFileName.data(), NULL);
-        xg_strFileName = szFileName.data();
+        WCHAR szFileName[MAX_PATH];
+        ::GetFullPathNameW(pszFile, MAX_PATH, szFileName, NULL);
+        xg_strFileName = szFileName;
         XgMarkUpdate();
     }
     return ret;
@@ -4085,15 +4081,15 @@ bool __fastcall XgSaveBitmapToFile(LPCWSTR pszFileName, HBITMAP hbm)
 void __fastcall XgSaveProbAsImage(HWND hwnd)
 {
     OPENFILENAMEW ofn;
-    std::array<WCHAR,MAX_PATH> szFileName = { { 0 } };
+    WCHAR szFileName[MAX_PATH] = L"";
 
     // 「問題を画像ファイルとして保存」ダイアログを表示。
     ZeroMemory(&ofn, sizeof(ofn));
     ofn.lStructSize = OPENFILENAME_SIZE_VERSION_400W;
     ofn.hwndOwner = hwnd;
     ofn.lpstrFilter = XgMakeFilterString(XgLoadStringDx2(49));
-    ofn.lpstrFile = szFileName.data();
-    ofn.nMaxFile = static_cast<DWORD>(szFileName.size());
+    ofn.lpstrFile = szFileName;
+    ofn.nMaxFile = ARRAYSIZE(szFileName);
     ofn.lpstrTitle = XgLoadStringDx1(30);
     ofn.Flags = OFN_EXPLORER | OFN_PATHMUSTEXIST | OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT;
     ofn.lpstrDefExt = L"bmp";
@@ -4106,7 +4102,7 @@ void __fastcall XgSaveProbAsImage(HWND hwnd)
             // ビットマップを保存する。
             HBITMAP hbm = XgCreateXWordImage(xg_xword, &siz, false);
             if (hbm != nullptr) {
-                if (!XgSaveBitmapToFile(szFileName.data(), hbm))
+                if (!XgSaveBitmapToFile(szFileName, hbm))
                 {
                     XgCenterMessageBoxW(hwnd, XgLoadStringDx1(7), nullptr, MB_ICONERROR);
                 }
@@ -4117,8 +4113,7 @@ void __fastcall XgSaveProbAsImage(HWND hwnd)
         } else {
             // EMFを保存する。
             HDC hdcRef = ::GetDC(hwnd);
-            HDC hdc = ::CreateEnhMetaFileW(hdcRef, szFileName.data(),
-                                         nullptr, XgLoadStringDx1(2));
+            HDC hdc = ::CreateEnhMetaFileW(hdcRef, szFileName, nullptr, XgLoadStringDx1(2));
             if (hdc) {
                 XgDrawXWord(xg_xword, hdc, &siz, false);
                 ::CloseEnhMetaFile(hdc);
@@ -4134,7 +4129,7 @@ void __fastcall XgSaveProbAsImage(HWND hwnd)
 void __fastcall XgSaveAnsAsImage(HWND hwnd)
 {
     OPENFILENAMEW ofn;
-    std::array<WCHAR,MAX_PATH> szFileName = { {L'\0'} };
+    WCHAR szFileName[MAX_PATH] = L"";
 
     if (!xg_bSolved) {
         ::MessageBeep(0xFFFFFFFF);
@@ -4146,8 +4141,8 @@ void __fastcall XgSaveAnsAsImage(HWND hwnd)
     ofn.lStructSize = OPENFILENAME_SIZE_VERSION_400W;
     ofn.hwndOwner = hwnd;
     ofn.lpstrFilter = XgMakeFilterString(XgLoadStringDx2(49));
-    ofn.lpstrFile = szFileName.data();
-    ofn.nMaxFile = static_cast<DWORD>(szFileName.size());
+    ofn.lpstrFile = szFileName;
+    ofn.nMaxFile = ARRAYSIZE(szFileName);
     ofn.lpstrTitle = XgLoadStringDx1(29);
     ofn.Flags = OFN_EXPLORER | OFN_PATHMUSTEXIST | OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT;
     ofn.lpstrDefExt = L"bmp";
@@ -4160,7 +4155,7 @@ void __fastcall XgSaveAnsAsImage(HWND hwnd)
             // ビットマップを保存する。
             HBITMAP hbm = XgCreateXWordImage(xg_solution, &siz, false);
             if (hbm != nullptr) {
-                if (!XgSaveBitmapToFile(szFileName.data(), hbm)) {
+                if (!XgSaveBitmapToFile(szFileName, hbm)) {
                     XgCenterMessageBoxW(hwnd, XgLoadStringDx1(7), nullptr, MB_ICONERROR);
                 }
                 ::DeleteObject(hbm);
@@ -4170,8 +4165,7 @@ void __fastcall XgSaveAnsAsImage(HWND hwnd)
         } else {
             // EMFを保存する。
             HDC hdcRef = ::GetDC(hwnd);
-            HDC hdc = ::CreateEnhMetaFileW(hdcRef, szFileName.data(), nullptr,
-                                         XgLoadStringDx1(2));
+            HDC hdc = ::CreateEnhMetaFileW(hdcRef, szFileName, nullptr, XgLoadStringDx1(2));
             if (hdc) {
                 XgDrawXWord(xg_solution, hdc, &siz, false);
                 ::CloseEnhMetaFile(hdc);
@@ -4807,7 +4801,7 @@ std::wstring __fastcall XgNormalizeString(const std::wstring& text) {
     std::wstring ret = szText;
     for (auto& ch : ret) {
         // 小さな字を大きな字にする。
-        for (size_t i = 0; i < xg_small.size(); i++) {
+        for (size_t i = 0; i < ARRAYSIZE(xg_small); i++) {
             if (ch == xg_small[i][0]) {
                 ch = xg_large[i][0];
                 break;

@@ -48,7 +48,6 @@
 #include <unordered_set>    // for std::unordered_set, std::unordered_multiset
 #include <unordered_map>    // for std::unordered_map
 #include <utility>          // for std::move
-#include <array>            // for std::array
 
 #include <queue>        // for std::queue
 #include <deque>        // for std::deque
@@ -485,8 +484,8 @@ extern bool xg_bHintsAdded;
 extern bool xg_bSaveAsJsonFile;
 
 // 拗音変換用データ。
-extern const std::array<LPCWSTR,11>    xg_small;
-extern const std::array<LPCWSTR,11>    xg_large;
+extern const LPCWSTR xg_small[11];
+extern const LPCWSTR xg_large[11];
 
 // ビットマップのハンドル。
 extern HBITMAP          xg_hbmImage;

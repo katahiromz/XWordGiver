@@ -10,19 +10,17 @@
 // リソース文字列を読み込む。
 LPWSTR __fastcall XgLoadStringDx1(int id)
 {
-    static std::array<WCHAR,256> sz;
-    LoadStringW(xg_hInstance, id, sz.data(), 
-                static_cast<int>(sz.size()));
-    return sz.data();
+    static WCHAR sz[256];
+    LoadStringW(xg_hInstance, id, sz, ARRAYSIZE(sz));
+    return sz;
 }
 
 // リソース文字列を読み込む。
 LPWSTR __fastcall XgLoadStringDx2(int id)
 {
-    static std::array<WCHAR,256> sz;
-    LoadStringW(xg_hInstance, id, sz.data(), 
-                static_cast<int>(sz.size()));
-    return sz.data();
+    static WCHAR sz[256];
+    LoadStringW(xg_hInstance, id, sz, ARRAYSIZE(sz));
+    return sz;
 }
 
 // フィルター文字列を作る。
@@ -41,13 +39,12 @@ LPWSTR __fastcall XgMakeFilterString(LPWSTR psz)
 // ショートカットのターゲットのパスを取得する。
 bool __fastcall XgGetPathOfShortcutW(LPCWSTR pszLnkFile, LPWSTR pszPath)
 {
-    std::array<WCHAR,MAX_PATH> szPath;
     IShellLinkW*     pShellLink;
     IPersistFile*    pPersistFile;
     WIN32_FIND_DATAW find;
     bool             bRes = false;
 
-    szPath[0] = pszPath[0] = L'\0';
+    pszPath[0] = L'\0';
     HRESULT hRes = CoInitialize(nullptr);
     if (SUCCEEDED(hRes)) {
         if (SUCCEEDED(hRes = CoCreateInstance(CLSID_ShellLink, nullptr, 
@@ -58,14 +55,9 @@ bool __fastcall XgGetPathOfShortcutW(LPCWSTR pszLnkFile, LPWSTR pszPath)
             {
                 hRes = pPersistFile->Load(pszLnkFile, STGM_READ);
                 if (SUCCEEDED(hRes)) {
-                    if (SUCCEEDED(hRes = pShellLink->GetPath(szPath.data(), 
-                        MAX_PATH, &find, SLGP_SHORTPATH)))
+                    if (SUCCEEDED(hRes = pShellLink->GetPath(pszPath, MAX_PATH, &find, 0)))
                     {
-                        if ('\0' != szPath[0]) {
-                            ::GetLongPathNameW(szPath.data(), pszPath, 
-                                               static_cast<DWORD>(szPath.size()));
-                            bRes = (::GetFileAttributesW(pszPath) != 0xFFFFFFFF);
-                        }
+                        bRes = (::GetFileAttributesW(pszPath) != 0xFFFFFFFF);
                     }
                 }
                 pPersistFile->Release();
@@ -241,10 +233,9 @@ XgMsgBoxCbtProc(int nCode, WPARAM wParam, LPARAM /*lParam*/)
         HWND hwnd = reinterpret_cast<HWND>(wParam);
 
         // ウィンドウクラスの確認。
-        std::array<WCHAR,MAX_PATH> szClassName;
-        ::GetClassNameW(hwnd, szClassName.data(), 
-                        static_cast<int>(szClassName.size()));
-        if (::lstrcmpiW(szClassName.data(), L"#32770") == 0) {
+        WCHAR szClassName[MAX_PATH];
+        ::GetClassNameW(hwnd, szClassName, ARRAYSIZE(szClassName));
+        if (::lstrcmpiW(szClassName, L"#32770") == 0) {
             // ダイアログだった。おそらくメッセージボックス。
             // 中央寄せする。
             XgCenterDialog(hwnd);
@@ -360,34 +351,32 @@ void __fastcall XgOpenPatterns(HWND hwnd)
 bool __fastcall XgCanWriteFile(const WCHAR *pszFile)
 {
     // 書き込みをすべきでない特殊フォルダのID。
-    static const std::array<int,7> s_anFolders = {
-        {
-            CSIDL_PROGRAM_FILES,
-            CSIDL_PROGRAM_FILES_COMMON,
-            CSIDL_PROGRAM_FILES_COMMONX86,
-            CSIDL_PROGRAM_FILESX86,
-            CSIDL_SYSTEM,
-            CSIDL_SYSTEMX86,
-            CSIDL_WINDOWS
-        }
+    static const int s_anFolders[] = {
+        CSIDL_PROGRAM_FILES,
+        CSIDL_PROGRAM_FILES_COMMON,
+        CSIDL_PROGRAM_FILES_COMMONX86,
+        CSIDL_PROGRAM_FILESX86,
+        CSIDL_SYSTEM,
+        CSIDL_SYSTEMX86,
+        CSIDL_WINDOWS
     };
 
     // 与えられたパスファイル名。
     std::wstring str(pszFile);
 
-    for (size_t i = 0; i < s_anFolders.size(); ++i) {
+    for (size_t i = 0; i < ARRAYSIZE(s_anFolders); ++i) {
         // 特殊フォルダの位置の取得。
         LPITEMIDLIST pidl = NULL;
         if (SUCCEEDED(::SHGetSpecialFolderLocation(
             xg_hMainWnd, s_anFolders[i], &pidl)))
         {
             // 特殊フォルダのパスを得る。
-            std::array<WCHAR,MAX_PATH> szPath;
-            ::SHGetPathFromIDListW(pidl, szPath.data());
+            WCHAR szPath[MAX_PATH];
+            ::SHGetPathFromIDListW(pidl, szPath);
             ::CoTaskMemFree(pidl);
 
             // パスが一致するか？
-            if (str.find(szPath.data()) == 0)
+            if (str.find(szPath) == 0)
                 return false;   // ここには保存すべきでない。
         }
     }
@@ -574,21 +563,21 @@ std::wstring XgHtmlEncode(std::wstring& str)
 
 BOOL XgMakePathW(LPCWSTR pszPath)
 {
-    std::array<WCHAR,MAX_PATH> szPath;
-    ::lstrcpynW(szPath.data(), pszPath, MAX_PATH);
+    WCHAR szPath[MAX_PATH];
+    StringCbCopy(szPath, sizeof(szPath), pszPath);
 
-    DWORD attrs = ::GetFileAttributesW(szPath.data());
+    DWORD attrs = ::GetFileAttributesW(szPath);
     if (attrs != 0xFFFFFFFF) {
         return (attrs & FILE_ATTRIBUTE_DIRECTORY) != 0;
     }
 
-    LPWSTR pch = wcsrchr(szPath.data(), L'\\');
+    LPWSTR pch = wcsrchr(szPath, L'\\');
     if (pch == NULL) {
         return TRUE;
     }
     *pch = 0;
 
-    if (XgMakePathW(szPath.data())) {
+    if (XgMakePathW(szPath)) {
         return CreateDirectoryW(pszPath, NULL);
     }
     return FALSE;

@@ -1339,7 +1339,7 @@ XgGenerateDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam*/)
 //////////////////////////////////////////////////////////////////////////////
 
 // 保存先。
-std::array<WCHAR,MAX_PATH> xg_szDir = { { 0 } };
+WCHAR xg_szDir[MAX_PATH] = L"";
 
 // 「保存先」参照。
 extern "C"
@@ -1351,8 +1351,7 @@ int CALLBACK XgBrowseCallbackProc(
 {
     if (uMsg == BFFM_INITIALIZED) {
         // 初期化の際に、フォルダーの場所を指定する。
-        ::SendMessageW(hwnd, BFFM_SETSELECTION, TRUE,
-                       reinterpret_cast<LPARAM>(xg_szDir.data()));
+        ::SendMessageW(hwnd, BFFM_SETSELECTION, TRUE, reinterpret_cast<LPARAM>(xg_szDir));
     }
     return 0;
 }
@@ -1637,8 +1636,7 @@ XgGenerateRepeatedlyDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam
             bi.lpszTitle = XgLoadStringDx1(56);
             bi.ulFlags = BIF_RETURNONLYFSDIRS;
             bi.lpfn = XgBrowseCallbackProc;
-            ::GetDlgItemTextW(hwnd, cmb2, xg_szDir.data(), 
-                            static_cast<int>(xg_szDir.size()));
+            ::GetDlgItemTextW(hwnd, cmb2, xg_szDir, ARRAYSIZE(xg_szDir));
             pidl = ::SHBrowseForFolderW(&bi);
             if (pidl) {
                 // パスをコンボボックスに設定。
@@ -1825,8 +1823,7 @@ XgSolveRepeatedlyDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam*/)
             bi.lpszTitle = XgLoadStringDx1(56);
             bi.ulFlags = BIF_RETURNONLYFSDIRS;
             bi.lpfn = XgBrowseCallbackProc;
-            ::GetDlgItemTextW(hwnd, cmb1, xg_szDir.data(), 
-                            static_cast<int>(xg_szDir.size()));
+            ::GetDlgItemTextW(hwnd, cmb1, xg_szDir, ARRAYSIZE(xg_szDir));
             pidl = ::SHBrowseForFolderW(&bi);
             if (pidl) {
                 // コンボボックスにパスを設定する。
@@ -5199,13 +5196,13 @@ void SettingsDlg_OnOK(HWND hwnd)
     s_nDictSaveMode = 2;
 
     // フォント名を取得する。
-    std::array<WCHAR,LF_FACESIZE> szName;
-    ::GetDlgItemTextW(hwnd, edt1, szName.data(), LF_FACESIZE);
-    ::lstrcpynW(xg_szCellFont, szName.data(), LF_FACESIZE);
-    ::GetDlgItemTextW(hwnd, edt2, szName.data(), LF_FACESIZE);
-    ::lstrcpynW(xg_szSmallFont, szName.data(), LF_FACESIZE);
-    ::GetDlgItemTextW(hwnd, edt3, szName.data(), LF_FACESIZE);
-    ::lstrcpynW(xg_szUIFont, szName.data(), LF_FACESIZE);
+    WCHAR szName[LF_FACESIZE];
+    ::GetDlgItemTextW(hwnd, edt1, szName, LF_FACESIZE);
+    StringCbCopy(xg_szCellFont, sizeof(xg_szCellFont), szName);
+    ::GetDlgItemTextW(hwnd, edt2, szName, LF_FACESIZE);
+    StringCbCopy(xg_szSmallFont, sizeof(xg_szSmallFont), szName);
+    ::GetDlgItemTextW(hwnd, edt3, szName, LF_FACESIZE);
+    StringCbCopy(xg_szUIFont, sizeof(xg_szUIFont), szName);
 
     // ツールバーを表示するか？
     s_bShowToolBar = (::IsDlgButtonChecked(hwnd, chx1) == BST_CHECKED);
@@ -5245,27 +5242,27 @@ LOGFONTW *XgGetUIFont(void)
     static LOGFONTW s_lf;
     ::GetObjectW(::GetStockObject(DEFAULT_GUI_FONT), sizeof(s_lf), &s_lf);
     if (xg_szUIFont[0]) {
-        std::array<WCHAR,LF_FACESIZE> szData;
-        ::lstrcpynW(szData.data(), xg_szUIFont, LF_FACESIZE);
-        LPWSTR pch = wcsrchr(szData.data(), L',');
+        WCHAR szData[LF_FACESIZE];
+        StringCbCopy(szData, sizeof(szData), xg_szUIFont);
+        LPWSTR pch = wcsrchr(szData, L',');
         if (pch) {
             *pch++ = 0;
-            std::wstring name(szData.data());
+            std::wstring name(szData);
             std::wstring size(pch);
             xg_str_trim(name);
             xg_str_trim(size);
 
-            lstrcpynW(s_lf.lfFaceName, name.data(), LF_FACESIZE);
+            StringCbCopy(s_lf.lfFaceName, sizeof(s_lf.lfFaceName), name.data());
 
             HDC hdc = ::CreateCompatibleDC(NULL);
             int point_size = _wtoi(size.data());
             s_lf.lfHeight = -MulDiv(point_size, ::GetDeviceCaps(hdc, LOGPIXELSY), 72);
             ::DeleteDC(hdc);
         } else {
-            std::wstring name(szData.data());
+            std::wstring name(szData);
             xg_str_trim(name);
 
-            ::lstrcpynW(s_lf.lfFaceName, name.data(), LF_FACESIZE);
+            StringCbCopy(s_lf.lfFaceName, sizeof(s_lf.lfFaceName), name.data());
         }
     }
     return &s_lf;
@@ -5309,7 +5306,7 @@ void SettingsDlg_OnChange(HWND hwnd, int i)
         cf.Flags = CF_NOSCRIPTSEL | CF_NOVERTFONTS | CF_SCALABLEONLY |
                    CF_INITTOLOGFONTSTRUCT | CF_SCREENFONTS |
                    CF_FIXEDPITCHONLY;
-        ::lstrcpynW(lf.lfFaceName, xg_szCellFont, LF_FACESIZE);
+        StringCbCopy(lf.lfFaceName, sizeof(lf.lfFaceName), xg_szCellFont);
         lf.lfPitchAndFamily = FIXED_PITCH | FF_DONTCARE;
         if (::ChooseFontW(&cf)) {
             // 取得したフォントをダイアログへ格納する。
@@ -5320,7 +5317,7 @@ void SettingsDlg_OnChange(HWND hwnd, int i)
     case 1:
         cf.Flags = CF_NOSCRIPTSEL | CF_NOVERTFONTS | CF_SCALABLEONLY |
                    CF_INITTOLOGFONTSTRUCT | CF_SCREENFONTS;
-        ::lstrcpynW(lf.lfFaceName, xg_szSmallFont, LF_FACESIZE);
+        StringCbCopy(lf.lfFaceName, sizeof(lf.lfFaceName), xg_szSmallFont);
         if (::ChooseFontW(&cf)) {
             // 取得したフォントをダイアログへ格納する。
             ::SetDlgItemTextW(hwnd, edt2, lf.lfFaceName);
@@ -6502,7 +6499,7 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
         ofn.lStructSize = OPENFILENAME_SIZE_VERSION_400W;
         ofn.hwndOwner = hwnd;
         ofn.lpstrFilter = XgMakeFilterString(XgLoadStringDx2(52));
-        ::lstrcpynW(sz, xg_strFileName.data(), static_cast<int>(ARRAYSIZE(sz)));
+        StringCbCopy(sz, sizeof(sz), xg_strFileName.data());
         ofn.lpstrFile = sz;
         ofn.nMaxFile = static_cast<DWORD>(ARRAYSIZE(sz));
         ofn.lpstrTitle = XgLoadStringDx1(21);
@@ -7485,7 +7482,7 @@ bool __fastcall MainWnd_OnCreate(HWND hwnd, LPCREATESTRUCT /*lpCreateStruct*/)
         {
             // ショートカットだった場合は、ターゲットのパスを取得する。
             if (XgGetPathOfShortcutW(szFile, szTarget)) {
-                ::lstrcpynW(szFile, szTarget, MAX_PATH);
+                StringCbCopy(szFile, sizeof(szFile), szTarget);
             } else {
                 bSuccess = false;
                 MessageBeep(0xFFFFFFFF);
@@ -7728,7 +7725,7 @@ void HintsWnd_OnSize(HWND hwnd, UINT /*state*/, int /*cx*/, int /*cy*/)
         ::DeleteDC(hdc);
     }
 
-    std::array<WCHAR,512> szText;
+    WCHAR szText[512];
     HDC hdc = ::CreateCompatibleDC(NULL);
     HGDIOBJ hFontOld = ::SelectObject(hdc, xg_hHintsUIFont);
     int y = 0;
@@ -7742,15 +7739,15 @@ void HintsWnd_OnSize(HWND hwnd, UINT /*state*/, int /*cx*/, int /*cy*/)
     }
     if (rcClient.Width() - size2.cx - 8 > 0) {
         for (size_t i = 0; i < xg_vecTateHints.size(); ++i) {
-            ::GetWindowTextW(xg_ahwndTateEdits[i], szText.data(),
-                             static_cast<int>(szText.size()));
+            ::GetWindowTextW(xg_ahwndTateEdits[i], szText,
+                             ARRAYSIZE(szText));
             MRect rcCtrl(MPoint(size2.cx, y),
                          MSize(rcClient.Width() - size2.cx - 8, 0));
             if (szText[0] == 0) {
                 szText[0] = L' ';
                 szText[1] = 0;
             }
-            ::DrawTextW(hdc, szText.data(), -1, &rcCtrl,
+            ::DrawTextW(hdc, szText, -1, &rcCtrl,
                 DT_LEFT | DT_EDITCONTROL | DT_CALCRECT | DT_WORDBREAK);
             rcCtrl.right = rcClient.right;
             rcCtrl.bottom += 8;
@@ -7770,15 +7767,14 @@ void HintsWnd_OnSize(HWND hwnd, UINT /*state*/, int /*cx*/, int /*cy*/)
     }
     if (rcClient.Width() - size2.cx - 8 > 0) {
         for (size_t i = 0; i < xg_vecYokoHints.size(); ++i) {
-            ::GetWindowTextW(xg_ahwndYokoEdits[i], szText.data(),
-                             static_cast<int>(szText.size()));
+            ::GetWindowTextW(xg_ahwndYokoEdits[i], szText, ARRAYSIZE(szText));
             MRect rcCtrl(MPoint(size2.cx, y),
                          MSize(rcClient.Width() - size2.cx - 8, 0));
             if (szText[0] == 0) {
                 szText[0] = L' ';
                 szText[1] = 0;
             }
-            ::DrawTextW(hdc, szText.data(), -1, &rcCtrl,
+            ::DrawTextW(hdc, szText, -1, &rcCtrl,
                 DT_LEFT | DT_EDITCONTROL | DT_CALCRECT | DT_WORDBREAK);
             rcCtrl.right = rcClient.right;
             rcCtrl.bottom += 8;
@@ -8309,7 +8305,7 @@ LRESULT CALLBACK XgCtrlAMessageProc(INT nCode, WPARAM wParam, LPARAM lParam)
         return ::CallNextHookEx(xg_hCtrlAHook, nCode, wParam, lParam);
 
     MSG *pMsg = reinterpret_cast<MSG *>(lParam);
-    std::array<WCHAR,64> szClassName;
+    WCHAR szClassName[64];
 
     HWND hWnd;
     if (pMsg->message == WM_KEYDOWN) {
@@ -8321,8 +8317,8 @@ LRESULT CALLBACK XgCtrlAMessageProc(INT nCode, WPARAM wParam, LPARAM lParam)
             // Ctrl+A is pressed
             hWnd = ::GetFocus();
             if (hWnd) {
-                ::GetClassNameW(hWnd, szClassName.data(), 64);
-                if (::lstrcmpiW(szClassName.data(), L"EDIT") == 0) {
+                ::GetClassNameW(hWnd, szClassName, 64);
+                if (::lstrcmpiW(szClassName, L"EDIT") == 0) {
                     ::SendMessageW(hWnd, EM_SETSEL, 0, -1);
                     return 1;
                 }

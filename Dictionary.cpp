@@ -20,7 +20,7 @@ bool s_bDictModified = false;
 void XgReadUnicodeLine(LPWSTR pchLine)
 {
     XG_WordData entry;
-    std::array<WCHAR,64> szWord;
+    WCHAR szWord[64];
 
     // コメント行を読み取る。
     if (*pchLine == L'#') {
@@ -46,14 +46,14 @@ void XgReadUnicodeLine(LPWSTR pchLine)
     // 単語文字列を全角・カタカナ・大文字にする。
     LCMapStringW(JPN_LOCALE,
         LCMAP_FULLWIDTH | LCMAP_KATAKANA | LCMAP_UPPERCASE,
-        pchLine, static_cast<int>(wcslen(pchLine) + 1), szWord.data(), 64);
+        pchLine, static_cast<int>(wcslen(pchLine) + 1), szWord, 64);
 
     // 文字列の前後の空白を取り除く。
-    entry.m_word = szWord.data();
+    entry.m_word = szWord;
     xg_str_trim(entry.m_word);
 
     // 小さな字を大きな字にする。
-    for (size_t i = 0; i < xg_large.size(); i++)
+    for (size_t i = 0; i < ARRAYSIZE(xg_large); i++)
         xg_str_replace_all(entry.m_word,
             std::wstring(xg_small[i]), std::wstring(xg_large[i]));
 
