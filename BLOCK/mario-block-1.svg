@@ -35,9 +35,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="2.8"
-     inkscape:cx="125.52642"
-     inkscape:cy="57.36258"
+     inkscape:zoom="31.678384"
+     inkscape:cx="6.3250037"
+     inkscape:cy="56.38902"
      inkscape:document-units="mm"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -59,7 +59,8 @@
      inkscape:window-height="705"
      inkscape:window-x="-8"
      inkscape:window-y="-8"
-     inkscape:window-maximized="1" />
+     inkscape:window-maximized="1"
+     inkscape:snap-global="true" />
   <metadata
      id="metadata5">
     <rdf:RDF>
@@ -99,5 +100,19 @@
        height="8.046114"
        x="4.4436097"
        y="284.51025" />
+    <rect
+       style="fill:#b96e1b;fill-opacity:1;stroke:none;stroke-width:2.70595312;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       id="rect818-9"
+       width="0.55560356"
+       height="0.55560416"
+       x="16.377728"
+       y="296.44437" />
+    <rect
+       style="fill:#b96e1b;fill-opacity:1;stroke:none;stroke-width:2.70595312;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       id="rect818-9-3"
+       width="0.55560356"
+       height="0.55560416"
+       x="-0.0061721019"
+       y="280.06049" />
   </g>
 </svg>

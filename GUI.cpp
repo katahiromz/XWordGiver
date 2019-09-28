@@ -5194,50 +5194,60 @@ BOOL SettingsDlg_OnInitDialog(HWND hwnd)
     SendDlgItemMessage(hwnd, scr2, UDM_SETRANGE, 0, MAKELPARAM(100, 3));
 
     WCHAR szPath[MAX_PATH];
-    GetModuleFileNameW(NULL, szPath, ARRAYSIZE(szPath));
-    PathRemoveFileSpec(szPath);
-    PathAppend(szPath, L"BLOCK");
-    PathAppend(szPath, L"*.bmp");
-
-    HWND hCmb1 = GetDlgItem(hwnd, cmb1);
-    ComboBox_AddString(hCmb1, XgLoadStringDx1(110));
-
-    // *.bmp
+    std::vector<std::wstring> items;
     WIN32_FIND_DATA find;
-    HANDLE hFind = FindFirstFile(szPath, &find);
-    if (hFind != INVALID_HANDLE_VALUE)
-    {
-        do
-        {
-            ComboBox_AddString(hCmb1, find.cFileName);
-        } while (FindNextFile(hFind, &find));
+    HANDLE hFind;
 
-        FindClose(hFind);
-    }
-
-    // *.emf
+    // BLOCK\*.bmp
     GetModuleFileNameW(NULL, szPath, ARRAYSIZE(szPath));
     PathRemoveFileSpec(szPath);
-    PathAppend(szPath, L"BLOCK");
-    PathAppend(szPath, L"*.emf");
+    PathAppend(szPath, L"BLOCK\\*.bmp");
     hFind = FindFirstFile(szPath, &find);
     if (hFind != INVALID_HANDLE_VALUE)
     {
         do
         {
-            ComboBox_AddString(hCmb1, find.cFileName);
+            items.push_back(find.cFileName);
         } while (FindNextFile(hFind, &find));
 
         FindClose(hFind);
     }
 
+    // BLOCK\*.emf
+    GetModuleFileNameW(NULL, szPath, ARRAYSIZE(szPath));
+    PathRemoveFileSpec(szPath);
+    PathAppend(szPath, L"BLOCK\\*.emf");
+    hFind = FindFirstFile(szPath, &find);
+    if (hFind != INVALID_HANDLE_VALUE)
+    {
+        do
+        {
+            items.push_back(find.cFileName);
+        } while (FindNextFile(hFind, &find));
+
+        FindClose(hFind);
+    }
+
+    // ソートする。
+    std::sort(items.begin(), items.end());
+
+    // コンボボックスに項目を追加する。
+    HWND hCmb1 = GetDlgItem(hwnd, cmb1);
+    ComboBox_AddString(hCmb1, XgLoadStringDx1(110));
+    for (auto& item : items)
+    {
+        ComboBox_AddString(hCmb1, item.c_str());
+    }
+
     if (xg_strBlackCellImage.empty())
     {
+        // 黒マス画像なし。
         ComboBox_SetText(hCmb1, XgLoadStringDx1(110));
         ComboBox_SetCurSel(hCmb1, ComboBox_FindStringExact(hCmb1, -1, XgLoadStringDx1(110)));
     }
     else
     {
+        // 黒マス画像あり。
         LPCWSTR psz = PathFindFileName(xg_strBlackCellImage.c_str());
         ComboBox_SetText(hCmb1, psz);
         ComboBox_SetCurSel(hCmb1, ComboBox_FindStringExact(hCmb1, -1, psz));
