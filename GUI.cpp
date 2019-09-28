@@ -542,6 +542,8 @@ bool __fastcall XgLoadSettings(void)
     xg_nCellCharPercents = DEF_CELL_CHAR_SIZE;
     xg_nSmallCharPercents = DEF_SMALL_CHAR_SIZE;
 
+    xg_strBlackCellImage.clear();
+
     // 会社名キーを開く。
     MRegKey company_key(HKEY_CURRENT_USER, s_pszSoftwareCompanyName, FALSE);
     if (company_key) {
@@ -707,6 +709,14 @@ bool __fastcall XgLoadSettings(void)
                 xg_dict_name = sz;
             }
 
+            if (!app_key.QuerySz(L"Recent", sz, ARRAYSIZE(sz))) {
+                xg_dict_name = sz;
+            }
+
+            if (!app_key.QuerySz(L"BlackCellImage", sz, ARRAYSIZE(sz))) {
+                xg_strBlackCellImage = sz;
+            }
+
             // 保存先のリストを取得する。
             if (!app_key.QueryDword(L"SaveToCount", dwValue)) {
                 nDirCount = dwValue;
@@ -732,6 +742,9 @@ bool __fastcall XgLoadSettings(void)
         ::CoTaskMemFree(pidl);
         s_dirs_save_to.emplace_back(szPath);
     }
+
+    ::DeleteObject(xg_hbmBlackCell);
+    xg_hbmBlackCell = LoadBitmapFromFile(xg_strBlackCellImage.c_str());
 
     return true;
 }
@@ -789,6 +802,7 @@ bool __fastcall XgSaveSettings(void)
             app_key.SetDword(L"SmallCharPercents", xg_nSmallCharPercents);
 
             app_key.SetSz(L"Recent", xg_dict_name.c_str());
+            app_key.SetSz(L"BlackCellImage", xg_strBlackCellImage.c_str());
 
             // 保存先のリストを設定する。
             nCount = static_cast<int>(s_dirs_save_to.size());
@@ -5164,6 +5178,39 @@ BOOL SettingsDlg_OnInitDialog(HWND hwnd)
     SendDlgItemMessage(hwnd, scr1, UDM_SETRANGE, 0, MAKELPARAM(100, 0));
     SendDlgItemMessage(hwnd, scr2, UDM_SETRANGE, 0, MAKELPARAM(100, 0));
 
+    WCHAR szPath[MAX_PATH];
+    GetModuleFileNameW(NULL, szPath, ARRAYSIZE(szPath));
+    PathRemoveFileSpec(szPath);
+    PathAppend(szPath, L"BLOCK");
+    PathAppend(szPath, L"*.bmp");
+
+    HWND hCmb1 = GetDlgItem(hwnd, cmb1);
+    ComboBox_AddString(hCmb1, XgLoadStringDx1(110));
+
+    WIN32_FIND_DATA find;
+    HANDLE hFind = FindFirstFile(szPath, &find);
+    if (hFind != INVALID_HANDLE_VALUE)
+    {
+        do
+        {
+            ComboBox_AddString(hCmb1, find.cFileName);
+        } while (FindNextFile(hFind, &find));
+
+        FindClose(hFind);
+    }
+
+    if (xg_strBlackCellImage.empty())
+    {
+        ComboBox_SetText(hCmb1, XgLoadStringDx1(110));
+        ComboBox_SetCurSel(hCmb1, ComboBox_FindStringExact(hCmb1, -1, XgLoadStringDx1(110)));
+    }
+    else
+    {
+        LPCWSTR psz = PathFindFileName(xg_strBlackCellImage.c_str());
+        ComboBox_SetText(hCmb1, psz);
+        ComboBox_SetCurSel(hCmb1, ComboBox_FindStringExact(hCmb1, -1, psz));
+    }
+
     return TRUE;
 }
 
@@ -5214,14 +5261,36 @@ void SettingsDlg_OnOK(HWND hwnd)
     // フォント名を取得する。
     WCHAR szName[LF_FACESIZE];
 
-    ::GetDlgItemTextW(hwnd, edt1, szName, LF_FACESIZE);
+    ::GetDlgItemTextW(hwnd, edt1, szName, ARRAYSIZE(szName));
     StringCbCopy(xg_szCellFont, sizeof(xg_szCellFont), szName);
 
-    ::GetDlgItemTextW(hwnd, edt2, szName, LF_FACESIZE);
+    ::GetDlgItemTextW(hwnd, edt2, szName, ARRAYSIZE(szName));
     StringCbCopy(xg_szSmallFont, sizeof(xg_szSmallFont), szName);
 
-    ::GetDlgItemTextW(hwnd, edt3, szName, LF_FACESIZE);
+    ::GetDlgItemTextW(hwnd, edt3, szName, ARRAYSIZE(szName));
     StringCbCopy(xg_szUIFont, sizeof(xg_szUIFont), szName);
+
+    HWND hCmb1 = GetDlgItem(hwnd, cmb1);
+    ComboBox_GetText(hCmb1, szName, ARRAYSIZE(szName));
+
+    xg_strBlackCellImage.clear();
+    ::DeleteObject(xg_hbmBlackCell);
+    xg_hbmBlackCell = NULL;
+
+    if (szName[0])
+    {
+        WCHAR szPath[MAX_PATH];
+        GetModuleFileNameW(NULL, szPath, ARRAYSIZE(szPath));
+        PathRemoveFileSpec(szPath);
+        PathAppend(szPath, L"BLOCK");
+        PathAppend(szPath, szName);
+
+        if (PathFileExists(szPath))
+        {
+            xg_strBlackCellImage = szPath;
+            xg_hbmBlackCell = LoadBitmapFromFile(xg_strBlackCellImage.c_str());
+        }
+    }
 
     // ツールバーを表示するか？
     s_bShowToolBar = (::IsDlgButtonChecked(hwnd, chx1) == BST_CHECKED);

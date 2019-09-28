@@ -496,6 +496,10 @@ extern std::wstring     xg_strHeader;
 // 備考文字列。
 extern std::wstring     xg_strNotes;
 
+// 黒マス画像。
+extern HBITMAP xg_hbmBlackCell;
+extern std::wstring xg_strBlackCellImage;
+
 //////////////////////////////////////////////////////////////////////////////
 // inline functions
 

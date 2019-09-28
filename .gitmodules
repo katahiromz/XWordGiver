@@ -1,3 +1,6 @@
 [submodule "json"]
 	path = json
 	url = https://github.com/katahiromz/json
+[submodule "SaveBitmapToFile"]
+	path = SaveBitmapToFile
+	url = https://github.com/katahiromz/SaveBitmapToFile

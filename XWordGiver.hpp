@@ -69,6 +69,7 @@
 #include "Dictionary.hpp"
 #include "xword.hpp"
 #include "Marks.hpp"
+#include "SaveBitmapToFile.h"
 
 ////////////////////////////////////////////////////////////////////////////
 

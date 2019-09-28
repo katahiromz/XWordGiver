@@ -6,6 +6,10 @@
 # CMake minimum version
 cmake_minimum_required(VERSION 2.4)
 
+if(COMMAND cmake_policy)
+  cmake_policy(SET CMP0003 NEW)
+endif(COMMAND cmake_policy)
+
 # project name and language
 project(xword CXX)
 
@@ -64,9 +68,11 @@ endif()
 
 ##############################################################################
 
-include_directories(. json/include)
+include_directories(. json/include SaveBitmapToFile)
 
 add_definitions(-DMZC_NO_SHAREWARE -DUNICODE -D_UNICODE)
+
+subdirs(SaveBitmapToFile)
 
 if (CMAKE_SIZEOF_VOID_P EQUAL 8)
     set(BITS 64)
@@ -89,6 +95,7 @@ add_executable(xword${BITS} WIN32
     Utils.cpp
     xword.cpp
     xword_res.rc)
-target_link_libraries(xword${BITS} comctl32 imm32 shell32 ole32 uuid shlwapi)
+target_link_libraries(xword${BITS}
+	comctl32 imm32 shell32 ole32 uuid shlwapi SaveBitmapToFile)
 
 ##############################################################################

@@ -109,6 +109,10 @@ INT xg_nCellCharPercents = DEF_SMALL_CHAR_SIZE;
 // 小さい文字の大きさ（％）。
 INT xg_nSmallCharPercents = DEF_SMALL_CHAR_SIZE;
 
+// 黒マス画像。
+HBITMAP xg_hbmBlackCell = NULL;
+std::wstring xg_strBlackCellImage;
+
 //////////////////////////////////////////////////////////////////////////////
 // static variables
 
@@ -3106,7 +3110,14 @@ void __fastcall XgDrawXWord(XG_Board& xw, HDC hdc, LPSIZE psiz, bool bCaret)
     WCHAR sz[32];
     SIZE siz;
     HGDIOBJ hFontOld, hPenOld;
-    
+
+    BITMAP bm;
+    GetObject(xg_hbmBlackCell, sizeof(bm), &bm);
+
+    HDC hdcMem = ::CreateCompatibleDC(NULL);
+    SelectObject(hdcMem, xg_hbmBlackCell);
+    SetStretchBltMode(hdcMem, STRETCH_HALFTONE);
+
     // セルを描画する。
     for (int i = 0; i < xg_nRows; i++) {
         for (int j = 0; j < xg_nCols; j++) {
@@ -3124,7 +3135,19 @@ void __fastcall XgDrawXWord(XG_Board& xw, HDC hdc, LPSIZE psiz, bool bCaret)
             WCHAR ch = xw.GetAt(i, j);
             if (ch == ZEN_BLACK) {
                 // 黒マス。
-                ::FillRect(hdc, &rc, hbrBlack);
+                if (xg_hbmBlackCell)
+                {
+                    StretchBlt(hdc,
+                               rc.left, rc.top,
+                               rc.right - rc.left, rc.bottom - rc.top,
+                               hdcMem,
+                               0, 0, bm.bmWidth, bm.bmHeight,
+                               SRCCOPY);
+                }
+                else
+                {
+                    ::FillRect(hdc, &rc, hbrBlack);
+                }
             } else if (nMarked != -1) {
                 // 二重マス。
                 ::FillRect(hdc, &rc, hbrMarked);
@@ -3148,13 +3171,18 @@ void __fastcall XgDrawXWord(XG_Board& xw, HDC hdc, LPSIZE psiz, bool bCaret)
                 ch = new_ch;
             }
 
-            // 文字を書く。
-            hFontOld = ::SelectObject(hdc, hFont);
-            ::SetTextColor(hdc, xg_rgbBlackCellColor);
-            ::DrawTextW(hdc, &ch, 1, &rc, DT_CENTER | DT_SINGLELINE | DT_VCENTER);
-            ::SelectObject(hdc, hFontOld);
+            if (ch != ZEN_BLACK)
+            {
+                // 文字を書く。
+                hFontOld = ::SelectObject(hdc, hFont);
+                ::SetTextColor(hdc, xg_rgbBlackCellColor);
+                ::DrawTextW(hdc, &ch, 1, &rc, DT_CENTER | DT_SINGLELINE | DT_VCENTER);
+                ::SelectObject(hdc, hFontOld);
+            }
         }
     }
+
+    ::DeleteDC(hdcMem);
 
     // 小さい文字のフォントを選択する。
     hFontOld = ::SelectObject(hdc, hFontSmall);
