@@ -5,6 +5,19 @@
 
 #define IDC_STATIC                          -1
 
+#define IDD_NEW                             1
+#define IDD_CREATE                          2
+#define IDD_CALCULATING                     3
+#define IDD_INPUTHINT                       4
+#define IDD_SEQCREATE                       5
+#define IDD_CONFIG                          7
+#define IDD_SEQSOLVE                        8
+#define IDD_READDICT                        9
+#define IDD_NOTES                           10
+#define IDD_SIZES                           11
+#define IDD_HEIGHT                          12
+#define IDD_BLACKGEN                        13
+
 #define ID_NEW                              100
 #define ID_GENERATE                         101
 #define ID_OPEN                             102

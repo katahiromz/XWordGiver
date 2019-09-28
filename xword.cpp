@@ -103,6 +103,12 @@ bool xg_bCharFeed = false;
 // タテ入力？
 bool xg_bTateInput = false;
 
+// 文字の大きさ（％）。
+INT xg_nCellCharPercents = DEF_SMALL_CHAR_SIZE;
+
+// 小さい文字の大きさ（％）。
+INT xg_nSmallCharPercents = DEF_SMALL_CHAR_SIZE;
+
 //////////////////////////////////////////////////////////////////////////////
 // static variables
 
@@ -2897,9 +2903,10 @@ void __fastcall XgDrawMarkWord(HDC hdc, LPSIZE psiz)
         PS_GEOMETRIC | PS_SOLID | PS_ENDCAP_SQUARE | PS_JOIN_BEVEL,
         c_nWide, &lbBlack, 0, NULL);
 
-    // 文字マスのフォントを作成する。
     LOGFONTW lf;
-    ::GetObjectW(::GetStockObject(DEFAULT_GUI_FONT), sizeof(LOGFONTW), &lf);
+
+    // 文字マスのフォントを作成する。
+    ZeroMemory(&lf, sizeof(lf));
     if (xg_imode == xg_im_HANGUL) {
         // ハングル文字。
         StringCbCopy(lf.lfFaceName, sizeof(lf.lfFaceName), XgLoadStringDx1(67));
@@ -2909,17 +2916,17 @@ void __fastcall XgDrawMarkWord(HDC hdc, LPSIZE psiz)
     }
     if (xg_szCellFont[0])
         StringCbCopy(lf.lfFaceName, sizeof(lf.lfFaceName), xg_szCellFont);
-    lf.lfHeight = xg_nCellSize * 2 / 3;
+    lf.lfHeight = -xg_nCellSize * xg_nCellCharPercents / 100;
     lf.lfWidth = 0;
     lf.lfWeight = FW_NORMAL;
     lf.lfQuality = ANTIALIASED_QUALITY;
     HFONT hFont = ::CreateFontIndirectW(&lf);
 
     // 小さい文字のフォントを作成する。
-    ::GetObjectW(::GetStockObject(DEFAULT_GUI_FONT), sizeof(LOGFONTW), &lf);
+    ZeroMemory(&lf, sizeof(lf));
     if (xg_szSmallFont[0])
         StringCbCopy(lf.lfFaceName, sizeof(lf.lfFaceName), xg_szSmallFont);
-    lf.lfHeight = xg_nCellSize / 4;
+    lf.lfHeight = -xg_nCellSize * xg_nSmallCharPercents / 100;
     lf.lfWidth = 0;
     lf.lfWeight = FW_NORMAL;
     lf.lfQuality = ANTIALIASED_QUALITY;
@@ -3050,9 +3057,10 @@ void __fastcall XgDrawXWord(XG_Board& xw, HDC hdc, LPSIZE psiz, bool bCaret)
     ::SetRect(&rc, 0, 0, psiz->cx, psiz->cy);
     ::FillRect(hdc, &rc, reinterpret_cast<HBRUSH>(::GetStockObject(WHITE_BRUSH)));
 
-    // 文字マスのフォントを作成する。
     LOGFONTW lf;
-    ::GetObjectW(::GetStockObject(DEFAULT_GUI_FONT), sizeof(LOGFONTW), &lf);
+
+    // 文字マスのフォントを作成する。
+    ZeroMemory(&lf, sizeof(lf));
     if (xg_imode == xg_im_HANGUL) {
         // ハングル文字。
         StringCbCopy(lf.lfFaceName, sizeof(lf.lfFaceName), XgLoadStringDx1(67));
@@ -3062,19 +3070,17 @@ void __fastcall XgDrawXWord(XG_Board& xw, HDC hdc, LPSIZE psiz, bool bCaret)
     }
     if (xg_szCellFont[0])
         StringCbCopy(lf.lfFaceName, sizeof(lf.lfFaceName), xg_szCellFont);
-    lf.lfHeight = nCellSize * 2 / 3;
+    lf.lfHeight = -nCellSize * xg_nCellCharPercents / 100;
     lf.lfWidth = 0;
-    lf.lfWeight = FW_NORMAL;
     lf.lfQuality = ANTIALIASED_QUALITY;
     HFONT hFont = ::CreateFontIndirectW(&lf);
 
     // 小さい文字のフォントを作成する。
-    ::GetObjectW(::GetStockObject(DEFAULT_GUI_FONT), sizeof(LOGFONTW), &lf);
+    ZeroMemory(&lf, sizeof(lf));
     if (xg_szSmallFont[0])
         StringCbCopy(lf.lfFaceName, sizeof(lf.lfFaceName), xg_szSmallFont);
-    lf.lfHeight = nCellSize / 4;
+    lf.lfHeight = -nCellSize * xg_nSmallCharPercents / 100;
     lf.lfWidth = 0;
-    lf.lfWeight = FW_NORMAL;
     lf.lfQuality = ANTIALIASED_QUALITY;
     HFONT hFontSmall = ::CreateFontIndirectW(&lf);
 
@@ -3189,13 +3195,13 @@ void __fastcall XgDrawXWord(XG_Board& xw, HDC hdc, LPSIZE psiz, bool bCaret)
             ::SetBkColor(hdc, xg_rgbMarkedCellColor);
 
             // 二重マスの右下端の文字を描く。
-            StringCbPrintf(sz, sizeof(sz), L"%c", ZEN_LARGE_A + nMarked);
+            StringCbPrintf(sz, sizeof(sz), L"%c", L'A' + nMarked);
             ::GetTextExtentPoint32W(hdc, sz, int(wcslen(sz)), &siz);
             ::SetRect(&rc,
-                static_cast<int>(xg_nMargin + (j + 1) * nCellSize - 1 - siz.cx), 
-                static_cast<int>(xg_nMargin + (i + 1) * nCellSize - 1 - siz.cy),
-                static_cast<int>(xg_nMargin + (j + 1) * nCellSize - 1), 
-                static_cast<int>(xg_nMargin + (i + 1) * nCellSize - 1));
+                static_cast<int>(xg_nMargin + (j + 1) * nCellSize - siz.cx), 
+                static_cast<int>(xg_nMargin + (i + 1) * nCellSize - siz.cy),
+                static_cast<int>(xg_nMargin + (j + 1) * nCellSize), 
+                static_cast<int>(xg_nMargin + (i + 1) * nCellSize));
             ::DrawTextW(hdc, sz, -1, &rc, DT_RIGHT | DT_SINGLELINE | DT_BOTTOM);
         }
     }
@@ -3223,7 +3229,7 @@ void __fastcall XgDrawXWord(XG_Board& xw, HDC hdc, LPSIZE psiz, bool bCaret)
                 static_cast<int>(xg_nMargin + i * nCellSize),
                 static_cast<int>(xg_nMargin + (j + 1) * nCellSize), 
                 static_cast<int>(xg_nMargin + (i + 1) * nCellSize));
-            ::OffsetRect(&rc, 2, 2);
+            ::OffsetRect(&rc, 2, 1);
             ::DrawTextW(hdc, sz, -1, &rc, DT_LEFT | DT_SINGLELINE | DT_TOP);
         }
     }
@@ -3249,7 +3255,7 @@ void __fastcall XgDrawXWord(XG_Board& xw, HDC hdc, LPSIZE psiz, bool bCaret)
                 static_cast<int>(xg_nMargin + i * nCellSize),
                 static_cast<int>(xg_nMargin + (j + 1) * nCellSize), 
                 static_cast<int>(xg_nMargin + (i + 1) * nCellSize));
-            ::OffsetRect(&rc, 2, 2);
+            ::OffsetRect(&rc, 2, 1);
             ::DrawTextW(hdc, sz, -1, &rc, DT_LEFT | DT_SINGLELINE | DT_TOP);
         }
     }

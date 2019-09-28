@@ -129,22 +129,6 @@ BOOL xg_bHiragana = FALSE;
 // Lowercase表示か？
 BOOL xg_bLowercase = FALSE;
 
-// ウィンドウ設定の名前。
-static const LPCWSTR s_pszMainWndX = L"WindowX";
-static const LPCWSTR s_pszMainWndY = L"WindowY";
-static const LPCWSTR s_pszMainWndCX = L"WindowCX";
-static const LPCWSTR s_pszMainWndCY = L"WindowCY";
-static const LPCWSTR s_pszHintsWndX = L"HintsX";
-static const LPCWSTR s_pszHintsWndY = L"HintsY";
-static const LPCWSTR s_pszHintsWndCX = L"HintsCX";
-static const LPCWSTR s_pszHintsWndCY = L"HintsCY";
-static const LPCWSTR s_pszCandsWndX = L"CandsX";
-static const LPCWSTR s_pszCandsWndY = L"CandsY";
-static const LPCWSTR s_pszCandsWndCX = L"CandsCX";
-static const LPCWSTR s_pszCandsWndCY = L"CandsCY";
-static const LPCWSTR s_pszInputPaletteWndX = L"IPaletteX";
-static const LPCWSTR s_pszInputPaletteWndY = L"IPaletteY";
-
 // 会社名。
 static const LPCWSTR
     s_pszSoftwareCompanyName = L"Software\\Katayama Hirofumi MZ";
@@ -155,42 +139,6 @@ static const LPCWSTR s_pszAppName = L"XWord";
 // 会社名とアプリ名。
 static const LPCWSTR
     s_pszSoftwareCompanyAndApp = L"Software\\Katayama Hirofumi MZ\\XWord";
-
-// レジストリ項目。
-static const LPCWSTR s_pszAutoRetry = L"AutoRetry";
-static const LPCWSTR s_pszRows = L"Rows";
-static const LPCWSTR s_pszCols = L"Cols";
-static const LPCWSTR s_pszRecent = L"Recent";
-static const LPCWSTR s_pszOldNotice = L"OldNotice";
-static const LPCWSTR s_pszSaveToCount = L"SaveToCount";
-static const LPCWSTR s_pszSaveTo = L"SaveTo %d";
-static const LPCWSTR s_pszInfinite = L"Infinite";
-//static const LPCWSTR s_pszDictSaveMode = L"DictSaveMode";
-static const LPCWSTR s_pszCellFont = L"CellFont";
-static const LPCWSTR s_pszSmallFont = L"SmallFont";
-static const LPCWSTR s_pszUIFont = L"UIFont";
-static const LPCWSTR s_pszShowToolBar = L"ShowToolBar";
-static const LPCWSTR s_pszShowStatusBar = L"ShowStatusBar";
-static const LPCWSTR s_pszShowInputPalette = L"ShowInputPalette";
-static const LPCWSTR s_pszSaveAsJsonFile = L"SaveAsJsonFile";
-static const LPCWSTR s_pszNumberToGenerate = L"NumberToGenerate";
-static const LPCWSTR s_pszImageCopyWidth = L"ImageCopyWidth";
-static const LPCWSTR s_pszImageCopyHeight = L"ImageCopyHeight";
-static const LPCWSTR s_pszImageCopyByHeight = L"ImageCopyByHeight";
-static const LPCWSTR s_pszMarksHeight = L"MarksHeight";
-static const LPCWSTR s_pszAddThickFrame = L"AddThickFrame";
-static const LPCWSTR s_pszTateOki = L"TateOki";
-static const LPCWSTR s_pszWhiteCellColor = L"WhiteCellColor";
-static const LPCWSTR s_pszBlackCellColor = L"BlackCellColor";
-static const LPCWSTR s_pszMarkedCellColor = L"MarkedCellColor";
-static const LPCWSTR s_pszDrawFrameForMarkedCell = L"DrawFrameForMarkedCell";
-static const LPCWSTR s_pszCharFeed = L"CharFeed";
-static const LPCWSTR s_pszTateInput = L"TateInput";
-static const LPCWSTR s_pszSmartResolution = L"SmartResolution";
-static const LPCWSTR s_pszInputMode = L"InputMode";
-static const LPCWSTR s_pszZoomRate = L"ZoomRate";
-static const LPCWSTR s_pszHiragana = L"Hiragana";
-static const LPCWSTR s_pszLowercase = L"Lowercase";
 
 // 連続生成の場合、無限に生成するか？
 static bool s_bInfinite = true;
@@ -591,76 +539,79 @@ bool __fastcall XgLoadSettings(void)
     xg_bHiragana = FALSE;
     xg_bLowercase = FALSE;
 
+    xg_nCellCharPercents = DEF_CELL_CHAR_SIZE;
+    xg_nSmallCharPercents = DEF_SMALL_CHAR_SIZE;
+
     // 会社名キーを開く。
     MRegKey company_key(HKEY_CURRENT_USER, s_pszSoftwareCompanyName, FALSE);
     if (company_key) {
         // アプリ名キーを開く。
         MRegKey app_key(company_key, s_pszAppName, FALSE);
         if (app_key) {
-            if (!app_key.QueryDword(s_pszMainWndX, dwValue)) {
+            if (!app_key.QueryDword(L"WindowX", dwValue)) {
                 s_nMainWndX = dwValue;
             }
-            if (!app_key.QueryDword(s_pszMainWndY, dwValue)) {
+            if (!app_key.QueryDword(L"WindowY", dwValue)) {
                 s_nMainWndY = dwValue;
             }
-            if (!app_key.QueryDword(s_pszMainWndCX, dwValue)) {
+            if (!app_key.QueryDword(L"WindowCX", dwValue)) {
                 s_nMainWndCX = dwValue;
             }
-            if (!app_key.QueryDword(s_pszMainWndCY, dwValue)) {
+            if (!app_key.QueryDword(L"WindowCY", dwValue)) {
                 s_nMainWndCY = dwValue;
             }
 
-            if (!app_key.QueryDword(s_pszTateInput, dwValue)) {
+            if (!app_key.QueryDword(L"TateInput", dwValue)) {
                 xg_bTateInput = !!dwValue;
             }
 
-            if (!app_key.QueryDword(s_pszHintsWndX, dwValue)) {
+            if (!app_key.QueryDword(L"HintsX", dwValue)) {
                 s_nHintsWndX = dwValue;
             }
-            if (!app_key.QueryDword(s_pszHintsWndY, dwValue)) {
+            if (!app_key.QueryDword(L"HintsY", dwValue)) {
                 s_nHintsWndY = dwValue;
             }
-            if (!app_key.QueryDword(s_pszHintsWndCX, dwValue)) {
+            if (!app_key.QueryDword(L"HintsCX", dwValue)) {
                 s_nHintsWndCX = dwValue;
             }
-            if (!app_key.QueryDword(s_pszHintsWndCY, dwValue)) {
+            if (!app_key.QueryDword(L"HintsCY", dwValue)) {
                 s_nHintsWndCY = dwValue;
             }
 
-            if (!app_key.QueryDword(s_pszCandsWndX, dwValue)) {
+            if (!app_key.QueryDword(L"CandsX", dwValue)) {
                 s_nCandsWndX = dwValue;
             }
-            if (!app_key.QueryDword(s_pszCandsWndY, dwValue)) {
+            if (!app_key.QueryDword(L"CandsY", dwValue)) {
                 s_nCandsWndY = dwValue;
             }
-            if (!app_key.QueryDword(s_pszCandsWndCX, dwValue)) {
+            if (!app_key.QueryDword(L"CandsCX", dwValue)) {
                 s_nCandsWndCX = dwValue;
             }
-            if (!app_key.QueryDword(s_pszCandsWndCY, dwValue)) {
+            if (!app_key.QueryDword(L"CandsCY", dwValue)) {
                 s_nCandsWndCY = dwValue;
             }
 
-            if (!app_key.QueryDword(s_pszInputPaletteWndX, dwValue)) {
+            if (!app_key.QueryDword(L"IPaletteX", dwValue)) {
                 xg_nInputPaletteWndX = dwValue;
             }
-            if (!app_key.QueryDword(s_pszInputPaletteWndY, dwValue)) {
+            if (!app_key.QueryDword(L"IPaletteY", dwValue)) {
                 xg_nInputPaletteWndY = dwValue;
             }
 
-            if (!app_key.QueryDword(s_pszOldNotice, dwValue)) {
+            if (!app_key.QueryDword(L"OldNotice", dwValue)) {
                 s_bOldNotice = !!dwValue;
             }
-            if (!app_key.QueryDword(s_pszAutoRetry, dwValue)) {
+            if (!app_key.QueryDword(L"AutoRetry", dwValue)) {
                 s_bAutoRetry = !!dwValue;
             }
-            if (!app_key.QueryDword(s_pszRows, dwValue)) {
+            if (!app_key.QueryDword(L"Rows", dwValue)) {
                 s_nRows = dwValue;
             }
-            if (!app_key.QueryDword(s_pszCols, dwValue)) {
+            if (!app_key.QueryDword(L"Cols", dwValue)) {
                 s_nCols = dwValue;
             }
 
-            if (!app_key.QueryDword(s_pszInfinite, dwValue)) {
+            if (!app_key.QueryDword(L"Infinite", dwValue)) {
                 s_bInfinite = !!dwValue;
             }
 
@@ -668,92 +619,99 @@ bool __fastcall XgLoadSettings(void)
             //    s_nDictSaveMode = !!dwValue;
             //}
 
-            if (!app_key.QuerySz(s_pszCellFont, sz, ARRAYSIZE(sz))) {
+            if (!app_key.QuerySz(L"CellFont", sz, ARRAYSIZE(sz))) {
                 StringCbCopy(xg_szCellFont, sizeof(xg_szCellFont), sz);
             }
-            if (!app_key.QuerySz(s_pszSmallFont, sz, ARRAYSIZE(sz))) {
+            if (!app_key.QuerySz(L"SmallFont", sz, ARRAYSIZE(sz))) {
                 StringCbCopy(xg_szSmallFont, sizeof(xg_szSmallFont), sz);
             }
-            if (!app_key.QuerySz(s_pszUIFont, sz, ARRAYSIZE(sz))) {
+            if (!app_key.QuerySz(L"UIFont", sz, ARRAYSIZE(sz))) {
                 StringCbCopy(xg_szUIFont, sizeof(xg_szUIFont), sz);
             }
 
-            if (!app_key.QueryDword(s_pszShowToolBar, dwValue)) {
+            if (!app_key.QueryDword(L"ShowToolBar", dwValue)) {
                 s_bShowToolBar = !!dwValue;
             }
-            if (!app_key.QueryDword(s_pszShowStatusBar, dwValue)) {
+            if (!app_key.QueryDword(L"ShowStatusBar", dwValue)) {
                 s_bShowStatusBar = !!dwValue;
             }
-            if (!app_key.QueryDword(s_pszShowInputPalette, dwValue)) {
+            if (!app_key.QueryDword(L"ShowInputPalette", dwValue)) {
                 xg_bShowInputPalette = !!dwValue;
             }
 
-            if (!app_key.QueryDword(s_pszSaveAsJsonFile, dwValue)) {
+            if (!app_key.QueryDword(L"SaveAsJsonFile", dwValue)) {
                 xg_bSaveAsJsonFile = !!dwValue;
             }
-            if (!app_key.QueryDword(s_pszNumberToGenerate, dwValue)) {
+            if (!app_key.QueryDword(L"NumberToGenerate", dwValue)) {
                 s_nNumberToGenerate = dwValue;
             }
-            if (!app_key.QueryDword(s_pszImageCopyWidth, dwValue)) {
+            if (!app_key.QueryDword(L"ImageCopyWidth", dwValue)) {
                 s_nImageCopyWidth = dwValue;
             }
-            if (!app_key.QueryDword(s_pszImageCopyHeight, dwValue)) {
+            if (!app_key.QueryDword(L"ImageCopyHeight", dwValue)) {
                 s_nImageCopyHeight = dwValue;
             }
-            if (!app_key.QueryDword(s_pszImageCopyByHeight, dwValue)) {
+            if (!app_key.QueryDword(L"ImageCopyByHeight", dwValue)) {
                 s_bImageCopyByHeight = dwValue;
             }
-            if (!app_key.QueryDword(s_pszMarksHeight, dwValue)) {
+            if (!app_key.QueryDword(L"MarksHeight", dwValue)) {
                 s_nMarksHeight = dwValue;
             }
-            if (!app_key.QueryDword(s_pszAddThickFrame, dwValue)) {
+            if (!app_key.QueryDword(L"AddThickFrame", dwValue)) {
                 xg_bAddThickFrame = !!dwValue;
             }
 
-            if (!app_key.QueryDword(s_pszCharFeed, dwValue)) {
+            if (!app_key.QueryDword(L"CharFeed", dwValue)) {
                 xg_bCharFeed = !!dwValue;
             }
 
-            if (!app_key.QueryDword(s_pszTateOki, dwValue)) {
+            if (!app_key.QueryDword(L"TateOki", dwValue)) {
                 xg_bTateOki = !!dwValue;
             }
-            if (!app_key.QueryDword(s_pszWhiteCellColor, dwValue)) {
+            if (!app_key.QueryDword(L"WhiteCellColor", dwValue)) {
                 xg_rgbWhiteCellColor = dwValue;
             }
-            if (!app_key.QueryDword(s_pszBlackCellColor, dwValue)) {
+            if (!app_key.QueryDword(L"BlackCellColor", dwValue)) {
                 xg_rgbBlackCellColor = dwValue;
             }
-            if (!app_key.QueryDword(s_pszMarkedCellColor, dwValue)) {
+            if (!app_key.QueryDword(L"MarkedCellColor", dwValue)) {
                 xg_rgbMarkedCellColor = dwValue;
             }
-            if (!app_key.QueryDword(s_pszDrawFrameForMarkedCell, dwValue)) {
+            if (!app_key.QueryDword(L"DrawFrameForMarkedCell", dwValue)) {
                 xg_bDrawFrameForMarkedCell = dwValue;
             }
-            if (!app_key.QueryDword(s_pszSmartResolution, dwValue)) {
+            if (!app_key.QueryDword(L"SmartResolution", dwValue)) {
                 xg_bSmartResolution = dwValue;
             }
-            if (!app_key.QueryDword(s_pszInputMode, dwValue)) {
+            if (!app_key.QueryDword(L"InputMode", dwValue)) {
                 xg_imode = (XG_InputMode)dwValue;
             }
-            if (!app_key.QueryDword(s_pszZoomRate, dwValue)) {
+            if (!app_key.QueryDword(L"ZoomRate", dwValue)) {
                 xg_nZoomRate = dwValue;
             }
-            if (!app_key.QueryDword(s_pszHiragana, dwValue)) {
+            if (!app_key.QueryDword(L"Hiragana", dwValue)) {
                 xg_bHiragana = !!dwValue;
             }
-            if (!app_key.QueryDword(s_pszLowercase, dwValue)) {
+            if (!app_key.QueryDword(L"Lowercase", dwValue)) {
                 xg_bLowercase = !!dwValue;
             }
 
-            if (!app_key.QuerySz(s_pszRecent, sz, ARRAYSIZE(sz))) {
+            if (!app_key.QueryDword(L"CellCharPercents", dwValue)) {
+                xg_nCellCharPercents = dwValue;
+            }
+            if (!app_key.QueryDword(L"SmallCharPercents", dwValue)) {
+                xg_nSmallCharPercents = dwValue;
+            }
+
+            if (!app_key.QuerySz(L"Recent", sz, ARRAYSIZE(sz))) {
                 xg_dict_name = sz;
             }
 
             // 保存先のリストを取得する。
-            if (!app_key.QueryDword(s_pszSaveToCount, dwValue)) {
+            if (!app_key.QueryDword(L"SaveToCount", dwValue)) {
                 nDirCount = dwValue;
                 for (i = 0; i < nDirCount; i++) {
-                    StringCbPrintf(szFormat, sizeof(szFormat), s_pszSaveTo, i + 1);
+                    StringCbPrintf(szFormat, sizeof(szFormat), L"SaveTo %d", i + 1);
                     if (!app_key.QuerySz(szFormat, sz, ARRAYSIZE(sz))) {
                         s_dirs_save_to.emplace_back(sz);
                     } else {
@@ -790,73 +748,76 @@ bool __fastcall XgSaveSettings(void)
         // アプリ名キーを開く。キーがなければ作成する。
         MRegKey app_key(company_key, s_pszAppName, TRUE);
         if (app_key) {
-            app_key.SetDword(s_pszOldNotice, s_bOldNotice);
-            app_key.SetDword(s_pszAutoRetry, s_bAutoRetry);
-            app_key.SetDword(s_pszRows, s_nRows);
-            app_key.SetDword(s_pszCols, s_nCols);
-            app_key.SetDword(s_pszInfinite, s_bInfinite);
+            app_key.SetDword(L"OldNotice", s_bOldNotice);
+            app_key.SetDword(L"AutoRetry", s_bAutoRetry);
+            app_key.SetDword(L"Rows", s_nRows);
+            app_key.SetDword(L"Cols", s_nCols);
+            app_key.SetDword(L"Infinite", s_bInfinite);
             //app_key.SetDword(s_pszDictSaveMode, s_nDictSaveMode);
 
-            app_key.SetSz(s_pszCellFont, xg_szCellFont, ARRAYSIZE(xg_szCellFont));
-            app_key.SetSz(s_pszSmallFont, xg_szSmallFont, ARRAYSIZE(xg_szSmallFont));
-            app_key.SetSz(s_pszUIFont, xg_szUIFont, ARRAYSIZE(xg_szUIFont));
+            app_key.SetSz(L"CellFont", xg_szCellFont, ARRAYSIZE(xg_szCellFont));
+            app_key.SetSz(L"SmallFont", xg_szSmallFont, ARRAYSIZE(xg_szSmallFont));
+            app_key.SetSz(L"UIFont", xg_szUIFont, ARRAYSIZE(xg_szUIFont));
 
-            app_key.SetDword(s_pszShowToolBar, s_bShowToolBar);
-            app_key.SetDword(s_pszShowStatusBar, s_bShowStatusBar);
-            app_key.SetDword(s_pszShowInputPalette, xg_bShowInputPalette);
+            app_key.SetDword(L"ShowToolBar", s_bShowToolBar);
+            app_key.SetDword(L"ShowStatusBar", s_bShowStatusBar);
+            app_key.SetDword(L"ShowInputPalette", xg_bShowInputPalette);
 
-            app_key.SetDword(s_pszSaveAsJsonFile, xg_bSaveAsJsonFile);
-            app_key.SetDword(s_pszNumberToGenerate, s_nNumberToGenerate);
-            app_key.SetDword(s_pszImageCopyWidth, s_nImageCopyWidth);
-            app_key.SetDword(s_pszImageCopyHeight, s_nImageCopyHeight);
-            app_key.SetDword(s_pszImageCopyByHeight, s_bImageCopyByHeight);
-            app_key.SetDword(s_pszMarksHeight, s_nMarksHeight);
-            app_key.SetDword(s_pszAddThickFrame, xg_bAddThickFrame);
-            app_key.SetDword(s_pszCharFeed, xg_bCharFeed);
-            app_key.SetDword(s_pszTateOki, xg_bTateOki);
+            app_key.SetDword(L"SaveAsJsonFile", xg_bSaveAsJsonFile);
+            app_key.SetDword(L"NumberToGenerate", s_nNumberToGenerate);
+            app_key.SetDword(L"ImageCopyWidth", s_nImageCopyWidth);
+            app_key.SetDword(L"ImageCopyHeight", s_nImageCopyHeight);
+            app_key.SetDword(L"ImageCopyByHeight", s_bImageCopyByHeight);
+            app_key.SetDword(L"MarksHeight", s_nMarksHeight);
+            app_key.SetDword(L"AddThickFrame", xg_bAddThickFrame);
+            app_key.SetDword(L"CharFeed", xg_bCharFeed);
+            app_key.SetDword(L"TateOki", xg_bTateOki);
 
-            app_key.SetDword(s_pszWhiteCellColor, xg_rgbWhiteCellColor);
-            app_key.SetDword(s_pszBlackCellColor, xg_rgbBlackCellColor);
-            app_key.SetDword(s_pszMarkedCellColor, xg_rgbMarkedCellColor);
+            app_key.SetDword(L"WhiteCellColor", xg_rgbWhiteCellColor);
+            app_key.SetDword(L"BlackCellColor", xg_rgbBlackCellColor);
+            app_key.SetDword(L"MarkedCellColor", xg_rgbMarkedCellColor);
 
-            app_key.SetDword(s_pszDrawFrameForMarkedCell, xg_bDrawFrameForMarkedCell);
-            app_key.SetDword(s_pszSmartResolution, xg_bSmartResolution);
-            app_key.SetDword(s_pszInputMode, (DWORD)xg_imode);
-            app_key.SetDword(s_pszZoomRate, xg_nZoomRate);
+            app_key.SetDword(L"DrawFrameForMarkedCell", xg_bDrawFrameForMarkedCell);
+            app_key.SetDword(L"SmartResolution", xg_bSmartResolution);
+            app_key.SetDword(L"InputMode", (DWORD)xg_imode);
+            app_key.SetDword(L"ZoomRate", xg_nZoomRate);
 
-            app_key.SetDword(s_pszHiragana, xg_bHiragana);
-            app_key.SetDword(s_pszLowercase, xg_bLowercase);
+            app_key.SetDword(L"Hiragana", xg_bHiragana);
+            app_key.SetDword(L"Lowercase", xg_bLowercase);
 
-            app_key.SetSz(s_pszRecent, xg_dict_name.c_str());
+            app_key.SetDword(L"CellCharPercents", xg_nCellCharPercents);
+            app_key.SetDword(L"SmallCharPercents", xg_nSmallCharPercents);
+
+            app_key.SetSz(L"Recent", xg_dict_name.c_str());
 
             // 保存先のリストを設定する。
             nCount = static_cast<int>(s_dirs_save_to.size());
-            app_key.SetDword(s_pszSaveToCount, nCount);
+            app_key.SetDword(L"SaveToCount", nCount);
             for (i = 0; i < nCount; i++)
             {
-                StringCbPrintf(szFormat, sizeof(szFormat), s_pszSaveTo, i + 1);
+                StringCbPrintf(szFormat, sizeof(szFormat), L"SaveTo %d", i + 1);
                 app_key.SetSz(szFormat, s_dirs_save_to[i].c_str());
             }
 
-            app_key.SetDword(s_pszHintsWndX, s_nHintsWndX);
-            app_key.SetDword(s_pszHintsWndY, s_nHintsWndY);
-            app_key.SetDword(s_pszHintsWndCX, s_nHintsWndCX);
-            app_key.SetDword(s_pszHintsWndCY, s_nHintsWndCY);
+            app_key.SetDword(L"HintsX", s_nHintsWndX);
+            app_key.SetDword(L"HintsY", s_nHintsWndY);
+            app_key.SetDword(L"HintsCX", s_nHintsWndCX);
+            app_key.SetDword(L"HintsCY", s_nHintsWndCY);
 
-            app_key.SetDword(s_pszCandsWndX, s_nCandsWndX);
-            app_key.SetDword(s_pszCandsWndY, s_nCandsWndY);
-            app_key.SetDword(s_pszCandsWndCX, s_nCandsWndCX);
-            app_key.SetDword(s_pszCandsWndCY, s_nCandsWndCY);
+            app_key.SetDword(L"CandsX", s_nCandsWndX);
+            app_key.SetDword(L"CandsY", s_nCandsWndY);
+            app_key.SetDword(L"CandsCX", s_nCandsWndCX);
+            app_key.SetDword(L"CandsCY", s_nCandsWndCY);
 
-            app_key.SetDword(s_pszInputPaletteWndX, xg_nInputPaletteWndX);
-            app_key.SetDword(s_pszInputPaletteWndY, xg_nInputPaletteWndY);
+            app_key.SetDword(L"IPaletteX", xg_nInputPaletteWndX);
+            app_key.SetDword(L"IPaletteY", xg_nInputPaletteWndY);
 
-            app_key.SetDword(s_pszMainWndX, s_nMainWndX);
-            app_key.SetDword(s_pszMainWndY, s_nMainWndY);
-            app_key.SetDword(s_pszMainWndCX, s_nMainWndCX);
-            app_key.SetDword(s_pszMainWndCY, s_nMainWndCY);
+            app_key.SetDword(L"WindowX", s_nMainWndX);
+            app_key.SetDword(L"WindowY", s_nMainWndY);
+            app_key.SetDword(L"WindowCX", s_nMainWndCX);
+            app_key.SetDword(L"WindowCY", s_nMainWndCY);
 
-            app_key.SetDword(s_pszTateInput, xg_bTateInput);
+            app_key.SetDword(L"TateInput", xg_bTateInput);
         }
     }
 
@@ -982,8 +943,8 @@ bool __fastcall XgCheckCrossWord(HWND hwnd, bool check_words = true)
             // 単語が登録されていない。
             for (auto& word : vNotFoundWords) {
                 // ヒントの入力を促す。
-                if (::DialogBoxParamW(xg_hInstance, MAKEINTRESOURCEW(4), hwnd,
-                                      XgInputHintDlgProc,
+                if (::DialogBoxParamW(xg_hInstance, MAKEINTRESOURCE(IDD_INPUTHINT),
+                                      hwnd, XgInputHintDlgProc,
                                       reinterpret_cast<LPARAM>(&word)) != IDOK)
                 {
                     // キャンセルされた。
@@ -3219,16 +3180,15 @@ void __fastcall XgOnAbout(HWND hwnd)
     params.lpszText = XgLoadStringDx1(1);
     params.lpszCaption = XgLoadStringDx2(2);
     params.dwStyle = MB_USERICON;
-    params.lpszIcon = MAKEINTRESOURCEW(1);
+    params.lpszIcon = MAKEINTRESOURCE(1);
     XgCenterMessageBoxIndirectW(&params);
 }
 
 // 新規作成ダイアログ。
 bool __fastcall XgOnNew(HWND hwnd)
 {
-    int nID;
-    nID = static_cast<int>(::DialogBoxW(xg_hInstance, MAKEINTRESOURCEW(1), hwnd,
-                                        XgNewDlgProc));
+    INT nID;
+    nID = INT(::DialogBoxW(xg_hInstance, MAKEINTRESOURCE(IDD_NEW), hwnd, XgNewDlgProc));
     if (nID == IDOK) {
         // 初期化する。
         xg_bSolved = false;
@@ -3253,9 +3213,9 @@ bool __fastcall XgOnGenerate(HWND hwnd, bool show_answer)
     WCHAR sz[MAX_PATH];
 
     // [問題の作成]ダイアログ。
-    int nID;
-    nID = static_cast<int>(::DialogBoxW(xg_hInstance, MAKEINTRESOURCEW(2), hwnd,
-                                      XgGenerateDlgProc));
+    INT nID;
+    nID = INT(::DialogBoxW(xg_hInstance, MAKEINTRESOURCE(IDD_CREATE), hwnd,
+                           XgGenerateDlgProc));
     if (nID == IDOK) {
         xg_bSolvingEmpty = true;
         xg_bNoAddBlack = false;
@@ -3269,9 +3229,9 @@ bool __fastcall XgOnGenerate(HWND hwnd, bool show_answer)
         // キャンセルダイアログを表示し、実行を開始する。
         ::EnableWindow(xg_hwndInputPalette, FALSE);
         if (xg_bSmartResolution && xg_nRows >= 7 && xg_nCols >= 7) {
-            ::DialogBoxW(xg_hInstance, MAKEINTRESOURCEW(3), hwnd, XgCancelSolveDlgProcSmart);
+            ::DialogBoxW(xg_hInstance, MAKEINTRESOURCE(IDD_CALCULATING), hwnd, XgCancelSolveDlgProcSmart);
         } else {
-            ::DialogBoxW(xg_hInstance, MAKEINTRESOURCEW(3), hwnd, XgCancelSolveDlgProc);
+            ::DialogBoxW(xg_hInstance, MAKEINTRESOURCE(IDD_CALCULATING), hwnd, XgCancelSolveDlgProc);
         }
         ::EnableWindow(xg_hwndInputPalette, TRUE);
 
@@ -3329,10 +3289,10 @@ bool __fastcall XgOnGenerateRepeatedly(HWND hwnd)
     WCHAR sz[MAX_PATH];
 
     // [問題の連続作成]ダイアログ。
-    int nID;
+    INT nID;
     ::EnableWindow(xg_hwndInputPalette, FALSE);
-    nID = static_cast<int>(::DialogBoxW(xg_hInstance, MAKEINTRESOURCEW(5), hwnd,
-                                      XgGenerateRepeatedlyDlgProc));
+    nID = INT(::DialogBoxW(xg_hInstance, MAKEINTRESOURCE(IDD_SEQCREATE), hwnd,
+                           XgGenerateRepeatedlyDlgProc));
     ::EnableWindow(xg_hwndInputPalette, TRUE);
     if (nID == IDOK) {
         // 初期化する。
@@ -3347,7 +3307,7 @@ bool __fastcall XgOnGenerateRepeatedly(HWND hwnd)
 
         // キャンセルダイアログを表示し、実行を開始する。
         ::EnableWindow(xg_hwndInputPalette, FALSE);
-        ::DialogBoxW(xg_hInstance, MAKEINTRESOURCEW(3), hwnd,
+        ::DialogBoxW(xg_hInstance, MAKEINTRESOURCE(IDD_CALCULATING), hwnd,
                      XgCancelGenerateRepeatedlyDlgProc);
         ::EnableWindow(xg_hwndInputPalette, TRUE);
 
@@ -3417,8 +3377,8 @@ void XgOnGenerateBlacks(HWND hwnd, bool sym)
     // キャンセルダイアログを表示し、生成を開始する。
     ::EnableWindow(xg_hwndInputPalette, FALSE);
     ::DialogBoxParamW(xg_hInstance,
-        MAKEINTRESOURCEW(13), hwnd, XgCancelGenBlacksDlgProc,
-        sym);
+        MAKEINTRESOURCE(IDD_BLACKGEN),
+        hwnd, XgCancelGenBlacksDlgProc, sym);
     ::EnableWindow(xg_hwndInputPalette, TRUE);
     xg_caret_pos.clear();
     XgUpdateImage(hwnd, 0, 0);
@@ -3468,7 +3428,7 @@ bool __fastcall XgOnSolveAddBlack(HWND hwnd)
 
     // キャンセルダイアログを表示し、実行を開始する。
     ::EnableWindow(xg_hwndInputPalette, FALSE);
-    ::DialogBoxW(xg_hInstance, MAKEINTRESOURCEW(3), hwnd, XgCancelSolveDlgProc);
+    ::DialogBoxW(xg_hInstance, MAKEINTRESOURCE(IDD_CALCULATING), hwnd, XgCancelSolveDlgProc);
     ::EnableWindow(xg_hwndInputPalette, TRUE);
 
     WCHAR sz[MAX_PATH];
@@ -3559,7 +3519,7 @@ bool __fastcall XgOnSolveNoAddBlack(HWND hwnd)
     XgDestroyHintsWnd();
     // キャンセルダイアログを表示し、実行を開始する。
     ::EnableWindow(xg_hwndInputPalette, FALSE);
-    ::DialogBoxW(xg_hInstance, MAKEINTRESOURCEW(3), hwnd,
+    ::DialogBoxW(xg_hInstance, MAKEINTRESOURCE(IDD_CALCULATING), hwnd,
                  XgCancelSolveDlgProcNoAddBlack);
     ::EnableWindow(xg_hwndInputPalette, TRUE);
 
@@ -3653,10 +3613,10 @@ bool __fastcall XgOnSolveRepeatedly(HWND hwnd)
     XG_Board xword_save(xg_xword);
 
     // [解の連続作成]ダイアログ。
-    int nID;
+    INT nID;
     ::EnableWindow(xg_hwndInputPalette, FALSE);
-    nID = static_cast<int>(::DialogBoxW(xg_hInstance, MAKEINTRESOURCEW(8), hwnd,
-                                        XgSolveRepeatedlyDlgProc));
+    nID = INT(::DialogBoxW(xg_hInstance, MAKEINTRESOURCE(IDD_SEQSOLVE), hwnd,
+                           XgSolveRepeatedlyDlgProc));
     ::EnableWindow(xg_hwndInputPalette, TRUE);
     if (nID == IDOK) {
         // 初期化する。
@@ -3677,7 +3637,7 @@ bool __fastcall XgOnSolveRepeatedly(HWND hwnd)
 
         // キャンセルダイアログを表示し、実行を開始する。
         ::EnableWindow(xg_hwndInputPalette, FALSE);
-        ::DialogBoxW(xg_hInstance, MAKEINTRESOURCEW(3), hwnd,
+        ::DialogBoxW(xg_hInstance, MAKEINTRESOURCE(IDD_CALCULATING), hwnd,
                    XgCancelSolveRepeatedlyDlgProc);
         ::EnableWindow(xg_hwndInputPalette, TRUE);
 
@@ -3749,10 +3709,10 @@ bool __fastcall XgOnSolveRepeatedlyNoAddBlack(HWND hwnd)
     XG_Board xword_save(xg_xword);
 
     // [解の連続作成]ダイアログ。
-    int nID;
+    INT nID;
     ::EnableWindow(xg_hwndInputPalette, FALSE);
-    nID = static_cast<int>(::DialogBoxW(xg_hInstance, MAKEINTRESOURCEW(8), hwnd,
-                                      XgSolveRepeatedlyDlgProc));
+    nID = INT(::DialogBoxW(xg_hInstance, MAKEINTRESOURCE(IDD_SEQSOLVE), hwnd,
+                           XgSolveRepeatedlyDlgProc));
     ::EnableWindow(xg_hwndInputPalette, TRUE);
     if (nID == IDOK) {
         // 初期化する。
@@ -3772,7 +3732,7 @@ bool __fastcall XgOnSolveRepeatedlyNoAddBlack(HWND hwnd)
 
         // キャンセルダイアログを表示し、実行を開始する。
         ::EnableWindow(xg_hwndInputPalette, FALSE);
-        ::DialogBoxW(xg_hInstance, MAKEINTRESOURCEW(3), hwnd,
+        ::DialogBoxW(xg_hInstance, MAKEINTRESOURCE(IDD_CALCULATING), hwnd,
                      XgCancelSolveRepeatedlyDlgProc);
         ::EnableWindow(xg_hwndInputPalette, TRUE);
 
@@ -4108,7 +4068,7 @@ ImageSize_DlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 // サイズを指定してクリップボードにクロスワードを画像としてコピー。
 void __fastcall XgCopyBoardAsImageSized(HWND hwnd)
 {
-    if (IDOK != ::DialogBoxW(xg_hInstance, MAKEINTRESOURCEW(11), hwnd,
+    if (IDOK != ::DialogBoxW(xg_hInstance, MAKEINTRESOURCE(IDD_SIZES), hwnd,
                              ImageSize_DlgProc))
     {
         return;
@@ -4281,7 +4241,7 @@ void __fastcall XgCopyMarkWordAsImageSized(HWND hwnd)
         return;
     }
 
-    if (IDOK != ::DialogBoxW(xg_hInstance, MAKEINTRESOURCEW(12), hwnd,
+    if (IDOK != ::DialogBoxW(xg_hInstance, MAKEINTRESOURCE(IDD_HEIGHT), hwnd,
                              MarksHeight_DlgProc))
     {
         return;
@@ -5199,7 +5159,11 @@ BOOL SettingsDlg_OnInitDialog(HWND hwnd)
     ::CheckDlgButton(hwnd, chx3,
         (xg_bDrawFrameForMarkedCell ? BST_CHECKED : BST_UNCHECKED));
 
-    
+    ::SetDlgItemInt(hwnd, edt4, xg_nCellCharPercents, FALSE);
+    ::SetDlgItemInt(hwnd, edt5, xg_nSmallCharPercents, FALSE);
+    SendDlgItemMessage(hwnd, scr1, UDM_SETRANGE, 0, MAKELPARAM(100, 0));
+    SendDlgItemMessage(hwnd, scr2, UDM_SETRANGE, 0, MAKELPARAM(100, 0));
+
     return TRUE;
 }
 
@@ -5211,12 +5175,51 @@ void SettingsDlg_OnOK(HWND hwnd)
     //    static_cast<int>(::SendDlgItemMessageW(hwnd, cmb1, CB_GETCURSEL, 0, 0));
     s_nDictSaveMode = 2;
 
+    INT nValue1, nValue2;
+    BOOL bTranslated;
+
+    bTranslated = FALSE;
+    nValue1 = GetDlgItemInt(hwnd, edt4, &bTranslated, FALSE);
+    if (bTranslated && 0 <= nValue1 && nValue1 <= 100)
+    {
+        ;
+    }
+    else
+    {
+        HWND hEdt4 = GetDlgItem(hwnd, edt4);
+        Edit_SetSel(hEdt4, 0, -1);
+        SetFocus(hEdt4);
+        XgCenterMessageBoxW(hwnd, XgLoadStringDx1(109), NULL, MB_ICONERROR);
+        return;
+    }
+
+    bTranslated = FALSE;
+    nValue2 = GetDlgItemInt(hwnd, edt5, &bTranslated, FALSE);
+    if (bTranslated && 0 <= nValue2 && nValue2 <= 100)
+    {
+        ;
+    }
+    else
+    {
+        HWND hEdt5 = GetDlgItem(hwnd, edt5);
+        Edit_SetSel(hEdt5, 0, -1);
+        SetFocus(hEdt5);
+        XgCenterMessageBoxW(hwnd, XgLoadStringDx1(109), NULL, MB_ICONERROR);
+        return;
+    }
+
+    xg_nCellCharPercents = nValue1;
+    xg_nSmallCharPercents = nValue2;
+
     // フォント名を取得する。
     WCHAR szName[LF_FACESIZE];
+
     ::GetDlgItemTextW(hwnd, edt1, szName, LF_FACESIZE);
     StringCbCopy(xg_szCellFont, sizeof(xg_szCellFont), szName);
+
     ::GetDlgItemTextW(hwnd, edt2, szName, LF_FACESIZE);
     StringCbCopy(xg_szSmallFont, sizeof(xg_szSmallFont), szName);
+
     ::GetDlgItemTextW(hwnd, edt3, szName, LF_FACESIZE);
     StringCbCopy(xg_szUIFont, sizeof(xg_szUIFont), szName);
 
@@ -5548,6 +5551,14 @@ XgSettingsDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
         case psh9:
             SettingsDlg_OnSetColor(hwnd, 2);
             break;
+
+        case psh10:
+            SetDlgItemInt(hwnd, edt4, DEF_CELL_CHAR_SIZE, FALSE);
+            break;
+
+        case psh11:
+            SetDlgItemInt(hwnd, edt5, DEF_SMALL_CHAR_SIZE, FALSE);
+            break;
         }
         break;
     }
@@ -5558,7 +5569,7 @@ XgSettingsDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 void MainWnd_OnSettings(HWND hwnd)
 {
     XgDestroyCandsWnd();
-    ::DialogBoxW(xg_hInstance, MAKEINTRESOURCEW(7), hwnd, XgSettingsDlgProc);
+    ::DialogBoxW(xg_hInstance, MAKEINTRESOURCE(IDD_CONFIG), hwnd, XgSettingsDlgProc);
 }
 
 // 設定を消去する。
@@ -5759,7 +5770,7 @@ XgLoadDictDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 // [ヘッダーと備考欄]ダイアログ。
 extern "C"
 INT_PTR CALLBACK
-XgHeaderNotesDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+XgNotesDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
     WCHAR sz[512];
     std::wstring str;
@@ -6286,7 +6297,7 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
         break;
 
     case ID_HEADERANDNOTES:
-        ::DialogBoxW(xg_hInstance, MAKEINTRESOURCEW(10), hwnd, XgHeaderNotesDlgProc);
+        ::DialogBoxW(xg_hInstance, MAKEINTRESOURCE(IDD_NOTES), hwnd, XgNotesDlgProc);
         break;
 
     case ID_COPYHINTSSTYLE0:
@@ -6314,7 +6325,7 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
         break;
 
     case ID_LOADDICTFILE:
-        ::DialogBoxW(xg_hInstance, MAKEINTRESOURCEW(9), hwnd, XgLoadDictDlgProc);
+        ::DialogBoxW(xg_hInstance, MAKEINTRESOURCE(IDD_READDICT), hwnd, XgLoadDictDlgProc);
         break;
 
 #ifndef MZC_NO_SHAREWARE
@@ -7590,7 +7601,7 @@ MainWnd_OnMouseWheel(HWND hwnd, int xPos, int yPos, int zDelta, UINT fwKeys)
 // ポップアップメニューを読み込む。
 HMENU XgLoadPopupMenu(HWND hwnd, INT nPos)
 {
-    HMENU hMenu = LoadMenuW(xg_hInstance, MAKEINTRESOURCEW(2));
+    HMENU hMenu = LoadMenuW(xg_hInstance, MAKEINTRESOURCE(2));
     HMENU hSubMenu = GetSubMenu(hMenu, nPos);
 
     switch (xg_imode)
@@ -7653,7 +7664,7 @@ void MainWnd_OnNotify(HWND hwnd, int idCtrl, LPNMHDR pnmh)
         LPTOOLTIPTEXT pttt;
         pttt = reinterpret_cast<LPTOOLTIPTEXT>(pnmh);
         pttt->hinst = xg_hInstance;
-        pttt->lpszText = MAKEINTRESOURCEW(pttt->hdr.idFrom + 1000);
+        pttt->lpszText = MAKEINTRESOURCE(pttt->hdr.idFrom + 1000);
     }
 }
 
@@ -8955,7 +8966,7 @@ int WINAPI WinMain(
     ::InitCommonControlsEx(&iccx);
 
     // アクセラレータを読み込む。
-    s_hAccel = ::LoadAcceleratorsW(hInstance, MAKEINTRESOURCEW(1));
+    s_hAccel = ::LoadAcceleratorsW(hInstance, MAKEINTRESOURCE(1));
     if (s_hAccel == nullptr) {
         // ミューテックスを解放。
         ::ReleaseMutex(s_hMutex);
@@ -8973,10 +8984,10 @@ int WINAPI WinMain(
     wcx.cbClsExtra = 0;
     wcx.cbWndExtra = 0;
     wcx.hInstance = hInstance;
-    wcx.hIcon = LoadIconW(hInstance, MAKEINTRESOURCEW(1));
+    wcx.hIcon = LoadIconW(hInstance, MAKEINTRESOURCE(1));
     wcx.hCursor = LoadCursorW(nullptr, IDC_ARROW);
-    wcx.hbrBackground = reinterpret_cast<HBRUSH>(static_cast<INT_PTR>(COLOR_3DFACE + 1));
-    wcx.lpszMenuName = MAKEINTRESOURCEW(1);
+    wcx.hbrBackground = reinterpret_cast<HBRUSH>(INT_PTR(COLOR_3DFACE + 1));
+    wcx.lpszMenuName = MAKEINTRESOURCE(1);
     wcx.lpszClassName = s_pszMainWndClass;
     wcx.hIconSm = nullptr;
     if (!::RegisterClassExW(&wcx)) {

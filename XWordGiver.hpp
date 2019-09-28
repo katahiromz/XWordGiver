@@ -516,6 +516,12 @@ extern BOOL xg_bHiragana;
 // Lowercase表示か？
 extern BOOL xg_bLowercase;
 
+// 文字の大きさ（％）。
+extern INT xg_nCellCharPercents;
+
+// 小さい文字の大きさ（％）。
+extern INT xg_nSmallCharPercents;
+
 //////////////////////////////////////////////////////////////////////////////
 
 // 描画イメージを更新する。

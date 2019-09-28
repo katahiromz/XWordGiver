@@ -23,6 +23,10 @@
 // Russian codepage
 #define RUS_CODEPAGE 1251
 
+// 既定の文字の大きさ(%)。
+#define DEF_CELL_CHAR_SIZE 66
+#define DEF_SMALL_CHAR_SIZE 21
+
 // 表示用に描画するか？（XgGetXWordExtentとXgDrawXWordとXgCreateXWordImageで使う）。
 extern INT xg_nForDisplay;
 struct ForDisplay {
