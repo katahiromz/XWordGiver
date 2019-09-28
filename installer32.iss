@@ -40,7 +40,7 @@ Source: "DICT\基本辞書データ（英和、自由）.dic"; DestDir: "{app}\DICT"; Flags: i
 Source: "DICT\基本辞書データ（漢字、自由）.dic"; DestDir: "{app}\DICT"; Flags: ignoreversion
 Source: "DICT\基本辞書データ（ロシア、自由）.dic"; DestDir: "{app}\DICT"; Flags: ignoreversion
 Source: "BLOCK\ink-save-black.bmp"; DestDir: "{app}\BLOCK"; Flags: ignoreversion
-Source: "BLOCK\mainichi.bmp"; DestDir: "{app}\BLOCK"; Flags: ignoreversion
+Source: "BLOCK\ink-save-block.bmp"; DestDir: "{app}\BLOCK"; Flags: ignoreversion
 Source: "BLOCK\mario-block-1.bmp"; DestDir: "{app}\BLOCK"; Flags: ignoreversion
 Source: "BLOCK\mario-block-2.bmp"; DestDir: "{app}\BLOCK"; Flags: ignoreversion
 Source: "BLOCK\perfect-black.bmp"; DestDir: "{app}\BLOCK"; Flags: ignoreversion
