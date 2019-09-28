@@ -15,8 +15,8 @@
    version="1.1"
    id="svg8"
    inkscape:version="0.92.3 (2405546, 2018-03-11)"
-   sodipodi:docname="mainichi.svg"
-   inkscape:export-filename="C:\Users\katahiromz\Documents\DEV\XWordGiverProject\XWordGiver\BLOCK\mainichi.png"
+   sodipodi:docname="ink-save-block.svg"
+   inkscape:export-filename="C:\Users\katahiromz\Documents\DEV\XWordGiverProject\XWordGiver\BLOCK\ink-save-block.png"
    inkscape:export-xdpi="96"
    inkscape:export-ydpi="96">
   <defs
@@ -28,9 +28,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="2.8"
-     inkscape:cx="-55.290263"
-     inkscape:cy="59.977592"
+     inkscape:zoom="1.979899"
+     inkscape:cx="-136.65163"
+     inkscape:cy="51.092305"
      inkscape:document-units="mm"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -81,7 +81,7 @@
        x="0.51417863"
        y="280.58084" />
     <rect
-       style="fill:#000000;fill-opacity:1;stroke:#000000;stroke-width:0.6541574;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       style="fill:#505050;fill-opacity:1;stroke:none;stroke-width:0.6541574;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        id="rect10"
        width="9.9291763"
        height="9.9291763"
