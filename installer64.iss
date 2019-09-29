@@ -7,7 +7,7 @@
 ; (To generate a new GUID, click Tools | Generate GUID inside the IDE.)
 AppId={{07AF81F8-4484-4672-90B4-6262A94E8E1C}
 AppName=クロスワード ギバー (64ビット版)
-AppVerName=クロスワード ギバー (64ビット版) ver.4.2
+AppVerName=クロスワード ギバー (64ビット版) ver.4.3
 AppPublisher=片山博文MZ
 AppPublisherURL=http://katahiromz.web.fc2.com/
 AppSupportURL=http://katahiromz.web.fc2.com/
@@ -15,7 +15,7 @@ AppUpdatesURL=http://katahiromz.web.fc2.com/
 DefaultDirName={pf64}\XWordGiver64
 DefaultGroupName=クロスワード ギバー (64ビット版)
 OutputDir=.
-OutputBaseFilename=xword64-4.2-setup
+OutputBaseFilename=xword64-4.3-setup
 Compression=lzma
 SolidCompression=yes
 ArchitecturesAllowed=x64
