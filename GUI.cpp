@@ -707,14 +707,18 @@ bool __fastcall XgLoadSettings(void)
 
             if (!app_key.QuerySz(L"Recent", sz, ARRAYSIZE(sz))) {
                 xg_dict_name = sz;
-            }
-
-            if (!app_key.QuerySz(L"Recent", sz, ARRAYSIZE(sz))) {
-                xg_dict_name = sz;
+                if (!PathFileExists(xg_dict_name.c_str()))
+                {
+                    xg_dict_name.clear();
+                }
             }
 
             if (!app_key.QuerySz(L"BlackCellImage", sz, ARRAYSIZE(sz))) {
                 xg_strBlackCellImage = sz;
+                if (!PathFileExists(xg_strBlackCellImage.c_str()))
+                {
+                    xg_strBlackCellImage.clear();
+                }
             }
 
             // ï€ë∂êÊÇÃÉäÉXÉgÇéÊìæÇ∑ÇÈÅB
