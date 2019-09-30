@@ -6,6 +6,9 @@
 # CMake minimum version
 cmake_minimum_required(VERSION 2.4)
 
+# enable testing
+enable_testing()
+
 if(COMMAND cmake_policy)
   cmake_policy(SET CMP0003 NEW)
 endif(COMMAND cmake_policy)
@@ -72,7 +75,7 @@ include_directories(. json/include SaveBitmapToFile)
 
 add_definitions(-DMZC_NO_SHAREWARE -DUNICODE -D_UNICODE)
 
-subdirs(SaveBitmapToFile)
+subdirs(SaveBitmapToFile tests)
 
 if (CMAKE_SIZEOF_VOID_P EQUAL 8)
     set(BITS 64)
