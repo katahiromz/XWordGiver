@@ -4691,7 +4691,7 @@ bool __fastcall XgGenerateBlacksSym2Recurse(const XG_Board& xword)
                         break;
                     lo--;
                 }
-                while (i + 1 < nCols) {
+                while (i + 1 < nRows) {
                     if (xword.GetAt(i + 1, j) != ZEN_SPACE)
                         break;
                     i++;
