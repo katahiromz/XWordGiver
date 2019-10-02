@@ -12,7 +12,7 @@ bool do_recurse(const BOARD& board)
     if (g_solved)
         return true;
 
-    if (!is_valid(board))
+    if (!is_ok(board))
         return false;
 
     for (int i = 0; i < g_rows; ++i)
@@ -49,7 +49,7 @@ bool do_recurse(const BOARD& board)
                             return true;
                         BOARD copy(board);
                         set_at(copy, i, lo + a[k], '#');
-                        if (is_valid(copy) && do_recurse(copy))
+                        if (is_ok(copy) && do_recurse(copy))
                             return true;
                     }
                     return false;
@@ -92,7 +92,7 @@ bool do_recurse(const BOARD& board)
                             return true;
                         BOARD copy(board);
                         set_at(copy, lo + a[k], j, '#');
-                        if (is_valid(copy) && do_recurse(copy))
+                        if (is_ok(copy) && do_recurse(copy))
                             return true;
                     }
                     return false;

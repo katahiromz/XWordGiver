@@ -6,6 +6,11 @@
 #include <vector>
 #include <algorithm>
 #include <queue>
+#include <unordered_set>
+
+#ifndef ARRAYSIZE
+    #define ARRAYSIZE(array) (sizeof(array) / sizeof(array[0]))
+#endif
 
 typedef std::vector<char> BOARD;
 typedef std::pair<int, int> POS;
@@ -23,6 +28,11 @@ inline void
 set_at(BOARD& board, int i, int j, char ch)
 {
     board[i * g_columns + j] = ch;
+}
+
+inline bool in_range(int i, int j)
+{
+    return i < g_rows && j < g_columns;
 }
 
 inline bool corner_black(const BOARD& board)
@@ -123,7 +133,7 @@ inline bool divided_by_black(const BOARD& board)
     return false;
 }
 
-inline bool is_valid(const BOARD& board)
+inline bool is_ok(const BOARD& board)
 {
     if (corner_black(board))
         return false;
@@ -136,6 +146,94 @@ inline bool is_valid(const BOARD& board)
 
     if (divided_by_black(board))
         return false;
+
+    return true;
+}
+
+inline bool check_space(const BOARD& board, int max_count)
+{
+    for (int i = 0; i < g_rows; ++i)
+    {
+        int count = 0;
+        for (int j = 0; j < g_columns; ++j)
+        {
+            if (get_at(board, i, j) == ' ')
+            {
+                ++count;
+            }
+            else
+            {
+                count = 0;
+            }
+            if (count > max_count)
+                return false;
+        }
+    }
+
+    for (int j = 0; j < g_columns; ++j)
+    {
+        int count = 0;
+        for (int i = 0; i < g_rows; ++i)
+        {
+            if (get_at(board, i, j) == ' ')
+            {
+                ++count;
+            }
+            else
+            {
+                count = 0;
+            }
+            if (count > max_count)
+                return false;
+        }
+    }
+
+    return true;
+}
+
+inline bool check_space(const BOARD& board, int max_count, POS& pos)
+{
+    for (int i = 0; i < g_rows; ++i)
+    {
+        int count = 0;
+        for (int j = 0; j < g_columns; ++j)
+        {
+            if (get_at(board, i, j) == ' ')
+            {
+                ++count;
+            }
+            else
+            {
+                count = 0;
+            }
+            if (count > max_count)
+            {
+                pos = { i, j };
+                return false;
+            }
+        }
+    }
+
+    for (int j = 0; j < g_columns; ++j)
+    {
+        int count = 0;
+        for (int i = 0; i < g_rows; ++i)
+        {
+            if (get_at(board, i, j) == ' ')
+            {
+                ++count;
+            }
+            else
+            {
+                count = 0;
+            }
+            if (count > max_count)
+            {
+                pos = { i, j };
+                return false;
+            }
+        }
+    }
 
     return true;
 }
