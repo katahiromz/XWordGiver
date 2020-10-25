@@ -401,6 +401,8 @@ def セルからクロスワードを作成(セル, header='', notes=''):
 		'is_solved': False,
 		'notes': notes
 	}
+	for line in セル:
+		json['cell_data'].append(line)
 	return クロスワード(json_data=json)
 
 # 主処理。
