@@ -55,6 +55,7 @@ Source: "BLOCK\star.bmp"; DestDir: "{app}\BLOCK"; Flags: ignoreversion
 Source: "BLOCK\star.emf"; DestDir: "{app}\BLOCK"; Flags: ignoreversion
 Source: "点対称パターン.txt"; DestDir: "{app}"; Flags: ignoreversion
 Source: "LICENSE.txt"; DestDir: "{app}"; Flags: ignoreversion
+Source: "xword.py"; DestDir: "{app}"; Flags: ignoreversion
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Icons]
@@ -72,4 +73,3 @@ Name: "{commondesktop}\クロスワード ギバー (32ビット版)"; Filename: "{app}\xword
 
 [Run]
 Filename: "{app}\xword32.exe"; Description: "{cm:LaunchProgram,クロスワード ギバー}"; Flags: nowait postinstall skipifsilent
-
