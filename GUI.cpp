@@ -5196,11 +5196,12 @@ void UpdateBlockPreview(HWND hwnd)
     {
         if (lstrcmpiW(PathFindExtensionW(szPath), L".bmp") == 0)
         {
-            HBITMAP hbm = LoadBitmapFromFile(szPath);
-            if (hbm)
+            HBITMAP hbm1 = LoadBitmapFromFile(szPath);
+            if (hbm1)
             {
-                hbm = (HBITMAP)CopyImage(hbm, IMAGE_BITMAP, 32, 32, LR_CREATEDIBSECTION);
-                SendMessageW(hIco1, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)hbm);
+                HBITMAP hbm2 = (HBITMAP)CopyImage(hbm1, IMAGE_BITMAP, 32, 32, LR_CREATEDIBSECTION);
+                DeleteObject(hbm1);
+                SendMessageW(hIco1, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)hbm2);
                 SendMessageW(hIco2, STM_SETIMAGE, IMAGE_ENHMETAFILE, (LPARAM)NULL);
                 DeleteObject(hbmOld);
                 DeleteEnhMetaFile(hOldEMF);
