@@ -396,19 +396,16 @@ def main():
 			xword.画像形式で保存(filename + ".png")
 		if False:
 			xword.JSON形式で保存(filename + ".json")
+		import os, shutil
+		head, tail = os.path.split(filename)
+		new_head = head + "検査済み/"
 		if False:
-			import os, shutil
-			head, tail = os.path.split(filename)
-			new_head = head + "検査済み/"
 			if not os.path.exists(new_head):
 				os.mkdir(new_head)
 			path = new_head + tail
 			shutil.move(filename, path)
 			print("「" + filename + "」を検査して「" + path + "」に移動しました。")
 		if False:
-			import os, shutil
-			head, tail = os.path.split(filename)
-			new_head = head + "検査済み/"
 			if not os.path.exists(new_head):
 				os.mkdir(new_head)
 			path = new_head + tail
