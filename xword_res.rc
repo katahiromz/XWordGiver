@@ -1375,7 +1375,7 @@ STRINGTABLE
     49, "ビットマップ画像 (*.bmp)|*.bmp|EMF画像 (*.emf)|*.emf||"
     50, "辞書データ (*.dic;*.txt)|*.dic;*.txt|すべてのファイル (*.*)|*.*||"
     51, "すべてのクロスワード (*.xwd;*.xwj;*.json;*.crp;*.crx)|*.xwd;*.xwj;*.json;*.crp;*.crx|標準クロスワード (*.xwd)|*.xwd|JSONクロスワード (*.xwj;*.json)|*.xwj;*.json|Crossword Builder ファイル(*.crp;*.crx)|*.crp;*.crx|すべてのファイル (*.*)|*.*||"
-    52, "標準クロスワード (*.xwd)|*.xwd|JSONクロスワード (*.xwj;*.json)|*.xwj;*.json||"
+    52, "JSONクロスワード (*.xwj;*.json)|*.xwj;*.json||"
     53, "ReadMe.txt"
     54, "上から%u番目、左から%u番目に、登録されている単語と長さの一致しないスペースがあります。"
     55, "あなたのパソコンは、クロスワードギバーで使うには古すぎるので、計算が遅くなる可能性があります。"

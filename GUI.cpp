@@ -70,7 +70,7 @@ std::deque<std::wstring>  xg_dict_files;
 bool            xg_bHintsAdded = false;
 
 // JSONファイルとして保存するか？
-bool            xg_bSaveAsJsonFile = false;
+bool            xg_bSaveAsJsonFile = true;
 
 // 太枠をつけるか？
 bool            xg_bAddThickFrame = true;
@@ -520,7 +520,7 @@ bool __fastcall XgLoadSettings(void)
     s_bShowToolBar = true;
     s_bShowStatusBar = true;
     xg_bShowInputPalette = false;
-    xg_bSaveAsJsonFile = false;
+    xg_bSaveAsJsonFile = true;
     s_nImageCopyWidth = 250;
     s_nImageCopyHeight = 250;
     s_bImageCopyByHeight = false;
@@ -641,9 +641,8 @@ bool __fastcall XgLoadSettings(void)
                 xg_bShowInputPalette = !!dwValue;
             }
 
-            if (!app_key.QueryDword(L"SaveAsJsonFile", dwValue)) {
-                xg_bSaveAsJsonFile = !!dwValue;
-            }
+            xg_bSaveAsJsonFile = true;
+
             if (!app_key.QueryDword(L"NumberToGenerate", dwValue)) {
                 s_nNumberToGenerate = dwValue;
             }
@@ -1430,8 +1429,8 @@ XgGenerateRepeatedlyDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam
             ::SetDlgItemInt(hwnd, edt3, s_nNumberToGenerate, FALSE);
         }
         // JSON形式で保存するか？
-        if (xg_bSaveAsJsonFile)
-            ::CheckDlgButton(hwnd, chx3, BST_CHECKED);
+        ::CheckDlgButton(hwnd, chx3, BST_CHECKED);
+        ::EnableWindow(::GetDlgItem(hwnd, chx3), FALSE);
         // ドラッグ＆ドロップを受け付ける。
         ::DragAcceptFiles(hwnd, TRUE);
         // IMEをOFFにする。
@@ -1574,11 +1573,7 @@ XgGenerateRepeatedlyDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam
                 s_bInfinite = false;
             }
             // JSON形式として保存するか？
-            if (::IsDlgButtonChecked(hwnd, chx3) == BST_CHECKED) {
-                xg_bSaveAsJsonFile = true;
-            } else {
-                xg_bSaveAsJsonFile = false;
-            }
+            xg_bSaveAsJsonFile = true;
             // 正しく読み込めるか？
             if (XgLoadDictFile(strFile.data())) {
                 // 読み込めた。
@@ -1711,7 +1706,8 @@ XgSolveRepeatedlyDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam*/)
             ::SetDlgItemInt(hwnd, edt1, s_nNumberToGenerate, FALSE);
         }
         // JSONとして保存するか？
-        ::CheckDlgButton(hwnd, chx3, (xg_bSaveAsJsonFile ? BST_CHECKED : BST_UNCHECKED));
+        ::CheckDlgButton(hwnd, chx3, BST_CHECKED);
+        ::EnableWindow(::GetDlgItem(hwnd, chx3), FALSE);
         // ファイルドロップを有効にする。
         ::DragAcceptFiles(hwnd, TRUE);
         SendDlgItemMessageW(hwnd, scr1, UDM_SETRANGE, 0, MAKELPARAM(2, 100));
@@ -1805,11 +1801,7 @@ XgSolveRepeatedlyDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam*/)
                 s_bInfinite = false;
             }
             // JSON形式で保存するか？
-            if (::IsDlgButtonChecked(hwnd, chx3) == BST_CHECKED) {
-                xg_bSaveAsJsonFile = true;
-            } else {
-                xg_bSaveAsJsonFile = false;
-            }
+            xg_bSaveAsJsonFile = true;
             // 初期化する。
             xg_bSolved = false;
             xg_bShowAnswer = false;
@@ -2269,13 +2261,8 @@ XgCancelGenerateRepeatedlyDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*
                 // ファイル名を生成する。
                 UINT u;
                 for (u = 1; u <= 0xFFFF; u++) {
-                    if (xg_bSaveAsJsonFile) {
-                        StringCbPrintf(szName, sizeof(szName), L"%dx%d-%04u.xwj",
-                                  xg_nRows, xg_nCols, u);
-                    } else {
-                        StringCbPrintf(szName, sizeof(szName), L"%dx%d-%04u.xwd",
-                                  xg_nRows, xg_nCols, u);
-                    }
+                    StringCbPrintf(szName, sizeof(szName), L"%dx%d-%04u.xwj",
+                              xg_nRows, xg_nCols, u);
                     StringCbCopy(szPath, sizeof(szPath), szDir);
                     StringCbCat(szPath, sizeof(szPath), szName);
                     if (::GetFileAttributesW(szPath) == 0xFFFFFFFF)
@@ -2492,13 +2479,8 @@ XgCancelSolveRepeatedlyDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lPa
                 // ファイル名を生成する。
                 UINT u;
                 for (u = 1; u <= 0xFFFF; u++) {
-                    if (xg_bSaveAsJsonFile) {
-                        StringCbPrintf(szName, sizeof(szName), L"%dx%d-%04u.xwj",
-                                  xg_nRows, xg_nCols, u);
-                    } else {
-                        StringCbPrintf(szName, sizeof(szName), L"%dx%d-%04u.xwd",
-                                  xg_nRows, xg_nCols, u);
-                    }
+                    StringCbPrintf(szName, sizeof(szName), L"%dx%d-%04u.xwj",
+                              xg_nRows, xg_nCols, u);
                     StringCbCopy(szPath, sizeof(szPath), szDir);
                     StringCbCat(szPath, sizeof(szPath), szName);
                     if (::GetFileAttributesW(szPath) == 0xFFFFFFFF)
@@ -6752,39 +6734,17 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
         ofn.lpstrTitle = XgLoadStringDx1(21);
         ofn.Flags = OFN_EXPLORER | OFN_ENABLESIZING | OFN_OVERWRITEPROMPT |
             OFN_PATHMUSTEXIST | OFN_HIDEREADONLY;
-        // 拡張子に応じて処理を変える。
-        if (::lstrcmpW(sz, L"") == 0) {
-            if (xg_bSaveAsJsonFile) {
-                ofn.nFilterIndex = 2;
-                ofn.lpstrDefExt = L"xwj";
-            } else {
-                ofn.nFilterIndex = 1;
-                ofn.lpstrDefExt = L"xwd";
-            }
-        } else {
-            LPTSTR pchDotExt = PathFindExtensionW(sz);
-            if (::lstrcmpiW(pchDotExt, L".xwj") == 0) {
-                ofn.nFilterIndex = 2;
-                ofn.lpstrDefExt = L"xwj";
-            } else if (::lstrcmpiW(pchDotExt, L".json") == 0) {
-                ofn.nFilterIndex = 2;
-                ofn.lpstrDefExt = L"json";
-            } else if (::lstrcmpiW(pchDotExt, L".crp") == 0 ||
-                       ::lstrcmpiW(pchDotExt, L".crx") == 0)
-            {
-                *pchDotExt = 0;
-                ofn.nFilterIndex = 1;
-                ofn.lpstrDefExt = L"xwd";
-            } else {
-                ofn.nFilterIndex = 1;
-                ofn.lpstrDefExt = L"xwd";
-            }
+        // JSON only
+        ofn.nFilterIndex = 1;
+        ofn.lpstrDefExt = L"xwj";
+        if (lstrcmpiW(PathFindExtensionW(sz), L".xwd") == 0)
+        {
+            PathRemoveExtensionW(sz);
         }
         // ユーザーにファイルの場所を問い合わせる。
         if (::GetSaveFileNameW(&ofn)) {
             // JSON形式で保存するか？
-            xg_bSaveAsJsonFile = (ofn.nFilterIndex == 2);
-
+            xg_bSaveAsJsonFile = true;
             // 保存する。
             if (!XgDoSave(hwnd, sz, xg_bSaveAsJsonFile)) {
                 // 保存に失敗。
