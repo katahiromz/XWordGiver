@@ -5173,6 +5173,60 @@ void __fastcall MainWnd_OnMove(HWND hwnd, int /*x*/, int /*y*/)
 // 一時的に保存する色のデータ。
 COLORREF s_rgbColors[3];
 
+// BLOCKのプレビュー。
+void UpdateBlockPreview(HWND hwnd)
+{
+    HWND hIco1 = GetDlgItem(hwnd, ico1);
+    HWND hIco2 = GetDlgItem(hwnd, ico2);
+    SetWindowPos(hIco1, NULL, 0, 0, 32, 32, SWP_NOMOVE | SWP_NOZORDER);
+    SetWindowPos(hIco2, NULL, 0, 0, 32, 32, SWP_NOMOVE | SWP_NOZORDER);
+    HBITMAP hbmOld = (HBITMAP)SendMessageW(hIco1, STM_GETIMAGE, IMAGE_BITMAP, 0);
+    HENHMETAFILE hOldEMF = (HENHMETAFILE)SendMessageW(hIco2, STM_GETIMAGE, IMAGE_ENHMETAFILE, 0);
+
+    WCHAR szPath[MAX_PATH], szName[128];
+    HWND hCmb1 = GetDlgItem(hwnd, cmb1);
+    ComboBox_GetText(hCmb1, szName, ARRAYSIZE(szName));
+
+    GetModuleFileNameW(NULL, szPath, ARRAYSIZE(szPath));
+    PathRemoveFileSpec(szPath);
+    PathAppend(szPath, L"BLOCK");
+    PathAppend(szPath, szName);
+
+    if (PathFileExistsW(szPath))
+    {
+        if (lstrcmpiW(PathFindExtensionW(szPath), L".bmp") == 0)
+        {
+            HBITMAP hbm = LoadBitmapFromFile(szPath);
+            if (hbm)
+            {
+                hbm = (HBITMAP)CopyImage(hbm, IMAGE_BITMAP, 32, 32, LR_CREATEDIBSECTION);
+                SendMessageW(hIco1, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)hbm);
+                SendMessageW(hIco2, STM_SETIMAGE, IMAGE_ENHMETAFILE, (LPARAM)NULL);
+                DeleteObject(hbmOld);
+                DeleteEnhMetaFile(hOldEMF);
+                return;
+            }
+        }
+        else if (lstrcmpiW(PathFindExtensionW(szPath), L".emf") == 0)
+        {
+            HENHMETAFILE hEMF = GetEnhMetaFile(szPath);
+            if (hEMF)
+            {
+                SendMessageW(hIco1, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)NULL);
+                SendMessageW(hIco2, STM_SETIMAGE, IMAGE_ENHMETAFILE, (LPARAM)hEMF);
+                DeleteObject(hbmOld);
+                DeleteEnhMetaFile(hOldEMF);
+                return;
+            }
+        }
+    }
+
+    SendDlgItemMessageW(hwnd, ico1, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)0);
+    SendDlgItemMessageW(hwnd, ico2, STM_SETIMAGE, IMAGE_ENHMETAFILE, (LPARAM)0);
+    DeleteObject(hbmOld);
+    DeleteEnhMetaFile(hOldEMF);
+}
+
 // [設定]ダイアログの初期化。
 BOOL SettingsDlg_OnInitDialog(HWND hwnd)
 {
@@ -5265,6 +5319,8 @@ BOOL SettingsDlg_OnInitDialog(HWND hwnd)
         ComboBox_SetText(hCmb1, psz);
         ComboBox_SetCurSel(hCmb1, ComboBox_FindStringExact(hCmb1, -1, psz));
     }
+
+    UpdateBlockPreview(hwnd);
 
     return TRUE;
 }
@@ -5712,54 +5768,7 @@ XgSettingsDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
         case cmb1:
             if (HIWORD(wParam) == CBN_SELCHANGE)
             {
-                HWND hIco1 = GetDlgItem(hwnd, ico1);
-                HWND hIco2 = GetDlgItem(hwnd, ico2);
-                SetWindowPos(hIco1, NULL, 0, 0, 32, 32, SWP_NOMOVE | SWP_NOZORDER);
-                SetWindowPos(hIco2, NULL, 0, 0, 32, 32, SWP_NOMOVE | SWP_NOZORDER);
-                HBITMAP hbmOld = (HBITMAP)SendMessageW(hIco1, STM_GETIMAGE, IMAGE_BITMAP, 0);
-                HENHMETAFILE hOldEMF = (HENHMETAFILE)SendMessageW(hIco2, STM_GETIMAGE, IMAGE_ENHMETAFILE, 0);
-
-                WCHAR szPath[MAX_PATH], szName[128];
-                HWND hCmb1 = GetDlgItem(hwnd, cmb1);
-                ComboBox_GetText(hCmb1, szName, ARRAYSIZE(szName));
-
-                GetModuleFileNameW(NULL, szPath, ARRAYSIZE(szPath));
-                PathRemoveFileSpec(szPath);
-                PathAppend(szPath, L"BLOCK");
-                PathAppend(szPath, szName);
-
-                if (PathFileExistsW(szPath))
-                {
-                    if (lstrcmpiW(PathFindExtensionW(szPath), L".bmp") == 0)
-                    {
-                        HBITMAP hbm = LoadBitmapFromFile(szPath);
-                        if (hbm)
-                        {
-                            hbm = (HBITMAP)CopyImage(hbm, IMAGE_BITMAP, 32, 32, LR_CREATEDIBSECTION);
-                            SendMessageW(hIco1, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)hbm);
-                            SendMessageW(hIco2, STM_SETIMAGE, IMAGE_ENHMETAFILE, (LPARAM)NULL);
-                            DeleteObject(hbmOld);
-                            DeleteEnhMetaFile(hOldEMF);
-                            break;
-                        }
-                    }
-                    else if (lstrcmpiW(PathFindExtensionW(szPath), L".emf") == 0)
-                    {
-                        HENHMETAFILE hEMF = GetEnhMetaFile(szPath);
-                        if (hEMF)
-                        {
-                            SendMessageW(hIco1, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)NULL);
-                            SendMessageW(hIco2, STM_SETIMAGE, IMAGE_ENHMETAFILE, (LPARAM)hEMF);
-                            DeleteObject(hbmOld);
-                            DeleteEnhMetaFile(hOldEMF);
-                            break;
-                        }
-                    }
-                    SendDlgItemMessageW(hwnd, ico1, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)0);
-                    SendDlgItemMessageW(hwnd, ico2, STM_SETIMAGE, IMAGE_ENHMETAFILE, (LPARAM)0);
-                    DeleteObject(hbmOld);
-                    DeleteEnhMetaFile(hOldEMF);
-                }
+                UpdateBlockPreview(hwnd);
             }
         }
         break;
