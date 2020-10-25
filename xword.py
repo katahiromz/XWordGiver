@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# xword.py --- クロスワードファイル (XWJ: JSON形式) を扱うPython3プログラム。
+# xword.py --- クロスワードファイルを扱うPython3プログラム。
 # Author: Katayama Hirofumi MZ
 # License: MIT
 #
