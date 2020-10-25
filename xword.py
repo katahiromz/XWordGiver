@@ -231,28 +231,28 @@ class クロスワード:
 			if filename != None:
 				print("ファイル「" + filename + "」を処理中...")
 				try:
-					self.data = JSON形式を開く(filename)
+					self.json = JSON形式を開く(filename)
 				except RuntimeError as err:
 					raise RuntimeError("ファイル「" + filename + "」が開けません。")
 			else:
-				self.data = json_data
-			JSON形式をチェック(data=self.data)
+				self.json = json_data
+			JSON形式をチェック(data=self.json)
 		except RuntimeError as err:
 			print(str(err))
 			raise err
-		self.列数 = self.data['column_count']
-		self.行数 = self.data['row_count']
-		self.セル = self.data['cell_data']
+		self.列数 = self.json['column_count']
+		self.行数 = self.json['row_count']
+		self.セル = self.json['cell_data']
 		self.タテのカギ = {}
 		self.ヨコのカギ = {}
-		if self.data['has_hints']:
-			self.タテのカギ = self.data['hints']['v']
-			self.ヨコのカギ = self.data['hints']['h']
-		self.解あり = self.data['is_solved']
+		if self.json['has_hints']:
+			self.タテのカギ = self.json['hints']['v']
+			self.ヨコのカギ = self.json['hints']['h']
+		self.解あり = self.json['is_solved']
 		self.二重 = {}
 		number = 0
-		if self.data['has_mark']:
-			for mark in self.data['marks']:
+		if self.json['has_mark']:
+			for mark in self.json['marks']:
 				self.二重[(mark[0] - 1, mark[1] - 1)] = number
 				number += 1
 		self.付番 = {}
@@ -284,7 +284,7 @@ class クロスワード:
 	def 斜同字(self):
 		return 斜同字(self.行数, self.列数, self.セル)
 	def JSON形式で保存(self, filename):
-		JSON形式で保存(filename, self.data)
+		JSON形式で保存(filename, self.json)
 		print("JSONファイル「" + filename + "」を保存しました。")
 	def 画像形式で保存(self, filename, フォントパス=None, 枠線の幅=5, 線の幅=2, セルサイズ=80, 文字サイズ=50, 小さい文字サイズ=20, 文字を隠す=False, 文字色="black", 背景色="white", 二重マスの色="yellow"):
 		from PIL import Image, ImageDraw, ImageFont
@@ -382,6 +382,26 @@ def 拡張子をJSONに(filename):
 	name, dotext = os.path.splitext(filename)
 	name += ".json"
 	return name
+
+def セルからクロスワードを作成(セル, header='', notes=''):
+	row_count = len(セル)
+	column_count = len(セル[0])
+	for line in セル:
+		if len(line) != column_count:
+			return None
+	import sys
+	json = {
+		'cell_data': [],
+		'row_count': row_count,
+		'column_count': column_count,
+		'creator_info': 'Python (' + sys.argv[0] + ") " + sys.version,
+		'has_hints': False,
+		'has_mark': False,
+		'header': header,
+		'is_solved': False,
+		'notes': notes
+	}
+	return クロスワード(json_data=json)
 
 # 主処理。
 def main():
