@@ -5178,8 +5178,8 @@ void UpdateBlockPreview(HWND hwnd)
 {
     HWND hIco1 = GetDlgItem(hwnd, ico1);
     HWND hIco2 = GetDlgItem(hwnd, ico2);
-    SetWindowPos(hIco1, NULL, 0, 0, 32, 32, SWP_NOMOVE | SWP_NOZORDER);
-    SetWindowPos(hIco2, NULL, 0, 0, 32, 32, SWP_NOMOVE | SWP_NOZORDER);
+    SetWindowPos(hIco1, NULL, 0, 0, 32, 32, SWP_NOMOVE | SWP_NOZORDER | SWP_HIDEWINDOW);
+    SetWindowPos(hIco2, NULL, 0, 0, 32, 32, SWP_NOMOVE | SWP_NOZORDER | SWP_HIDEWINDOW);
     HBITMAP hbmOld = (HBITMAP)SendMessageW(hIco1, STM_GETIMAGE, IMAGE_BITMAP, 0);
     HENHMETAFILE hOldEMF = (HENHMETAFILE)SendMessageW(hIco2, STM_GETIMAGE, IMAGE_ENHMETAFILE, 0);
 
@@ -5203,6 +5203,7 @@ void UpdateBlockPreview(HWND hwnd)
                 DeleteObject(hbm1);
                 SendMessageW(hIco1, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)hbm2);
                 SendMessageW(hIco2, STM_SETIMAGE, IMAGE_ENHMETAFILE, (LPARAM)NULL);
+                ShowWindow(hIco1, SW_SHOWNOACTIVATE);
                 DeleteObject(hbmOld);
                 DeleteEnhMetaFile(hOldEMF);
                 return;
@@ -5215,6 +5216,7 @@ void UpdateBlockPreview(HWND hwnd)
             {
                 SendMessageW(hIco1, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)NULL);
                 SendMessageW(hIco2, STM_SETIMAGE, IMAGE_ENHMETAFILE, (LPARAM)hEMF);
+                ShowWindow(hIco2, SW_SHOWNOACTIVATE);
                 DeleteObject(hbmOld);
                 DeleteEnhMetaFile(hOldEMF);
                 return;
