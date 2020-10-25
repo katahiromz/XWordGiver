@@ -2,6 +2,9 @@
 # xword.py --- クロスワードファイル (XWJ: JSON形式) を扱うPythonプログラム。
 # Author: Katayama Hirofumi MZ
 # License: MIT
+#
+# クロスワードファイル (*.xwj; JSON形式) の検査用、画像出力用にお使い下さい。
+# XWDファイルには対応してません。JSON形式のXWJファイルをお使い下さい。
 
 def JSON形式を開く(filename):
 	data = None
