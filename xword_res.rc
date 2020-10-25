@@ -116,7 +116,7 @@ FILETYPE        0x1
             VALUE "CompanyName", "片山博文MZ\0"
             VALUE "FileDescription", "クロスワード ギバー\0"
             VALUE "FileVersion", "4.3\0"
-            VALUE "LegalCopyright", "Copyright (C) 2012-2019 片山博文MZ. All rights reserved.\0"
+            VALUE "LegalCopyright", "Copyright (C) 2012-2020 片山博文MZ. All rights reserved.\0"
             VALUE "ProductName", "XWordGiver\0"
             VALUE "ProductVersion", "4.3\0"
         }
@@ -1329,7 +1329,7 @@ FONT 9, "MS UI Gothic"
 
 STRINGTABLE
 {
-    1, "クロスワード ギバー ver.4.3\nby 片山博文MZ\n\nCopyright (C) 2012-2019 片山博文MZ. All rights reserved."
+    1, "クロスワード ギバー ver.4.3\nby 片山博文MZ\n\nCopyright (C) 2012-2020 片山博文MZ. All rights reserved."
     2, "クロスワード ギバー"
     3, "ファイルが読み込めません。"
     4, "形式が間違っています。"
