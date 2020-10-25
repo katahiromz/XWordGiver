@@ -95,6 +95,8 @@ def 斜同字(row_count, column_count, cell_data):
 	for i in range(0, row_count):
 		for j in range(0, column_count):
 			ch = cell_data[i][j]
+			if ch == '　' or ch == '■':
+				continue
 			if i + 1 < row_count and j + 1 < column_count:
 				if cell_data[i + 1][j + 1] == ch:
 					return True
@@ -122,12 +124,13 @@ def JSON形式をチェック(filename=None, data=None):
 		raise RuntimeError('「has_mark」キーがありません。')
 	if 'header' not in data:
 		raise RuntimeError('「header」キーがありません。')
-	if 'hints' not in data:
-		raise RuntimeError('「hints」キーがありません。')
-	if 'h' not in data['hints']:
-		raise RuntimeError('「hints.h」キーがありません。')
-	if 'v' not in data['hints']:
-		raise RuntimeError('「hints.v」キーがありません。')
+	if data['has_hints']:
+		if 'hints' not in data:
+			raise RuntimeError('「hints」キーがありません。')
+		if 'h' not in data['hints']:
+			raise RuntimeError('「hints.h」キーがありません。')
+		if 'v' not in data['hints']:
+			raise RuntimeError('「hints.v」キーがありません。')
 	if 'is_solved' not in data:
 		raise RuntimeError('「is_solved」キーがありません。')
 	if 'notes' not in data:
@@ -166,44 +169,45 @@ def JSON形式をチェック(filename=None, data=None):
 			if cell_data[mark[0] - 1][mark[1] - 1] != mark[2]:
 				raise RuntimeError('二重マスの文字が一致しません')
 	# 解ならヒントとマスが合致するはず。
-	hints = data['hints']
-	h = {}
-	v = {}
-	if data['is_solved']:
-		for item in hints['h']:
-			if len(item) != 3:
-				raise RuntimeError('ヒントがおかしいです。')
-			h[item[0]] = [item[1], item[2]]
-		for item in hints['v']:
-			if len(item) != 3:
-				raise RuntimeError('ヒントがおかしいです。')
-			v[item[0]] = [item[1], item[2]]
-		number = 1
-		for i in range(0, row_count):
-			for j in range(0, column_count):
-				tate = yoko = False
-				if cell_data[i][j] == '■':
-					continue
-				if i == 0 or cell_data[i - 1][j] == '■':
-					if i + 1 < row_count and cell_data[i + 1][j] != '■':
-						tate = True
-				if j == 0 or cell_data[i][j - 1] == '■':
-					if j + 1 < column_count and cell_data[i][j + 1] != '■':
-						yoko = True
-				if tate:
-					k = 0
-					for ch in v[number][0]:
-						if cell_data[i + k][j] != ch:
-							raise RuntimeError('ヒントの文字が一致しません。')
-						k += 1
-				if yoko:
-					k = 0
-					for ch in h[number][0]:
-						if cell_data[i][j + k] != ch:
-							raise RuntimeError('ヒントの文字が一致しません。')
-						k += 1
-				if tate or yoko:
-					number += 1
+	if data['has_hints']:
+		hints = data['hints']
+		h = {}
+		v = {}
+		if data['is_solved']:
+			for item in hints['h']:
+				if len(item) != 3:
+					raise RuntimeError('ヒントがおかしいです。')
+				h[item[0]] = [item[1], item[2]]
+			for item in hints['v']:
+				if len(item) != 3:
+					raise RuntimeError('ヒントがおかしいです。')
+				v[item[0]] = [item[1], item[2]]
+			number = 1
+			for i in range(0, row_count):
+				for j in range(0, column_count):
+					tate = yoko = False
+					if cell_data[i][j] == '■':
+						continue
+					if i == 0 or cell_data[i - 1][j] == '■':
+						if i + 1 < row_count and cell_data[i + 1][j] != '■':
+							tate = True
+					if j == 0 or cell_data[i][j - 1] == '■':
+						if j + 1 < column_count and cell_data[i][j + 1] != '■':
+							yoko = True
+					if tate:
+						k = 0
+						for ch in v[number][0]:
+							if cell_data[i + k][j] != ch:
+								raise RuntimeError('ヒントの文字が一致しません。')
+							k += 1
+					if yoko:
+						k = 0
+						for ch in h[number][0]:
+							if cell_data[i][j + k] != ch:
+								raise RuntimeError('ヒントの文字が一致しません。')
+							k += 1
+					if tate or yoko:
+						number += 1
 	# 解なら正当であるはず。
 	if data['is_solved']:
 		if 四隅に黒マス(row_count, column_count, cell_data):
@@ -236,8 +240,11 @@ class クロスワード:
 		self.列数 = self.data['column_count']
 		self.行数 = self.data['row_count']
 		self.セル = self.data['cell_data']
-		self.タテのカギ = self.data['hints']['v']
-		self.ヨコのカギ = self.data['hints']['h']
+		self.タテのカギ = {}
+		self.ヨコのカギ = {}
+		if self.data['has_hints']:
+			self.タテのカギ = self.data['hints']['v']
+			self.ヨコのカギ = self.data['hints']['h']
 		self.解あり = self.data['is_solved']
 		self.二重 = {}
 		number = 0
