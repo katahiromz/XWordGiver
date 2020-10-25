@@ -392,7 +392,27 @@ def main():
 		if xword.斜同字():
 			print("警告: ファイル「" + filename + "」は、斜同字です。")
 		# TODO: ここでxwordに対して何かをする。
-		xword.画像形式で保存(filename + ".png")
-		xword.JSON形式で保存(filename + ".json")
+		if True:
+			xword.画像形式で保存(filename + ".png")
+		if False:
+			xword.JSON形式で保存(filename + ".json")
+		if False:
+			import os, shutil
+			head, tail = os.path.split(filename)
+			new_head = head + "検査済み/"
+			if not os.path.exists(new_head):
+				os.mkdir(new_head)
+			path = new_head + tail
+			shutil.move(filename, path)
+			print("「" + filename + "」を検査して「" + path + "」に移動しました。")
+		if False:
+			import os, shutil
+			head, tail = os.path.split(filename)
+			new_head = head + "検査済み/"
+			if not os.path.exists(new_head):
+				os.mkdir(new_head)
+			path = new_head + tail
+			shutil.copy(filename, path)
+			print("「" + filename + "」を検査して「" + path + "」にコピーしました。")
 if __name__ == "__main__":
 	main()
