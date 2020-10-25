@@ -5708,6 +5708,59 @@ XgSettingsDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
         case psh11:
             SetDlgItemInt(hwnd, edt5, DEF_SMALL_CHAR_SIZE, FALSE);
             break;
+
+        case cmb1:
+            if (HIWORD(wParam) == CBN_SELCHANGE)
+            {
+                HWND hIco1 = GetDlgItem(hwnd, ico1);
+                HWND hIco2 = GetDlgItem(hwnd, ico2);
+                SetWindowPos(hIco1, NULL, 0, 0, 32, 32, SWP_NOMOVE | SWP_NOZORDER);
+                SetWindowPos(hIco2, NULL, 0, 0, 32, 32, SWP_NOMOVE | SWP_NOZORDER);
+                HBITMAP hbmOld = (HBITMAP)SendMessageW(hIco1, STM_GETIMAGE, IMAGE_BITMAP, 0);
+                HENHMETAFILE hOldEMF = (HENHMETAFILE)SendMessageW(hIco2, STM_GETIMAGE, IMAGE_ENHMETAFILE, 0);
+
+                WCHAR szPath[MAX_PATH], szName[128];
+                HWND hCmb1 = GetDlgItem(hwnd, cmb1);
+                ComboBox_GetText(hCmb1, szName, ARRAYSIZE(szName));
+
+                GetModuleFileNameW(NULL, szPath, ARRAYSIZE(szPath));
+                PathRemoveFileSpec(szPath);
+                PathAppend(szPath, L"BLOCK");
+                PathAppend(szPath, szName);
+
+                if (PathFileExistsW(szPath))
+                {
+                    if (lstrcmpiW(PathFindExtensionW(szPath), L".bmp") == 0)
+                    {
+                        HBITMAP hbm = LoadBitmapFromFile(szPath);
+                        if (hbm)
+                        {
+                            hbm = (HBITMAP)CopyImage(hbm, IMAGE_BITMAP, 32, 32, LR_CREATEDIBSECTION);
+                            SendMessageW(hIco1, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)hbm);
+                            SendMessageW(hIco2, STM_SETIMAGE, IMAGE_ENHMETAFILE, (LPARAM)NULL);
+                            DeleteObject(hbmOld);
+                            DeleteEnhMetaFile(hOldEMF);
+                            break;
+                        }
+                    }
+                    else if (lstrcmpiW(PathFindExtensionW(szPath), L".emf") == 0)
+                    {
+                        HENHMETAFILE hEMF = GetEnhMetaFile(szPath);
+                        if (hEMF)
+                        {
+                            SendMessageW(hIco1, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)NULL);
+                            SendMessageW(hIco2, STM_SETIMAGE, IMAGE_ENHMETAFILE, (LPARAM)hEMF);
+                            DeleteObject(hbmOld);
+                            DeleteEnhMetaFile(hOldEMF);
+                            break;
+                        }
+                    }
+                    SendDlgItemMessageW(hwnd, ico1, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)0);
+                    SendDlgItemMessageW(hwnd, ico2, STM_SETIMAGE, IMAGE_ENHMETAFILE, (LPARAM)0);
+                    DeleteObject(hbmOld);
+                    DeleteEnhMetaFile(hOldEMF);
+                }
+            }
         }
         break;
     }
