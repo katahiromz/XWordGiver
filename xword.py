@@ -8,9 +8,14 @@
 
 def JSON形式を開く(filename):
 	data = None
-	with open(filename, 'r', encoding='utf-8-sig') as fp:
-		import json
-		data = json.load(fp)
+	try:
+		with open(filename, 'r', encoding='utf-8') as fp:
+			import json
+			data = json.load(fp)
+	except:
+		with open(filename, 'r', encoding='utf-8-sig') as fp:
+			import json
+			data = json.load(fp)
 	return data
 
 def JSON形式で保存(filename, data):
@@ -18,7 +23,7 @@ def JSON形式で保存(filename, data):
 		raise FileError
 	import sys
 	data['creator_info'] = 'Python (' + sys.argv[0] + ") " + sys.version
-	with open(filename, 'w', encoding='utf-8-sig') as fp:
+	with open(filename, 'w', encoding='utf-8') as fp:
 		import json
 		json.dump(data, fp, indent=4, ensure_ascii=False)
 
