@@ -8,9 +8,6 @@
 // 辞書データ。
 std::vector<XG_WordData>     xg_dict_data;
 
-// 辞書のヘッダー。
-static std::wstring s_header = L"";
-
 //////////////////////////////////////////////////////////////////////////////
 // 辞書データのファイル処理。
 
@@ -20,10 +17,8 @@ void XgReadUnicodeLine(LPWSTR pchLine)
     XG_WordData entry;
     WCHAR szWord[64];
 
-    // コメント行を読み取る。
+    // コメント行を無視する。
     if (*pchLine == L'#') {
-        s_header += pchLine;
-        s_header += xg_pszNewLine;
         return;
     }
 
@@ -142,7 +137,6 @@ bool __fastcall XgLoadDictFile(LPCWSTR pszFile)
 
     // 初期化する。
     xg_dict_data.clear();
-    s_header.clear();
 
     // ファイルを開く。
     HANDLE hFile = CreateFileW(pszFile, GENERIC_READ, FILE_SHARE_READ, nullptr,
