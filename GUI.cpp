@@ -8027,8 +8027,6 @@ XgHintEdit_WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
                 {
                     // ヒントを更新する。
                     XgUpdateHintsData();
-                    // ヒントに従って辞書を更新する。
-                    XgUpdateDictData();
                 }
                 hu2->Get();
                 xg_ubUndoBuffer.Commit(UC_HINTS_UPDATED, hu1, hu2);
@@ -8057,8 +8055,6 @@ XgHintEdit_WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
             {
                 // ヒントを更新する。
                 XgUpdateHintsData();
-                // ヒントに従って辞書を更新する。
-                XgUpdateDictData();
             }
             hu2->Get();
             xg_ubUndoBuffer.Commit(UC_HINTS_UPDATED, hu1, hu2);

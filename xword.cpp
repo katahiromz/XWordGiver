@@ -1943,7 +1943,6 @@ void __fastcall XG_Board::GetHintsStr(
     // ヒントに変更があれば、更新する。
     if (XgAreHintsModified()) {
         XgUpdateHintsData();
-        XgUpdateDictData();
     }
 
     assert(hint_type == 0 || hint_type == 1 || hint_type == 2);

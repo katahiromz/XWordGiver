@@ -11,8 +11,6 @@ std::vector<XG_WordData>     xg_dict_data;
 // 辞書のヘッダー。
 static std::wstring s_header = L"";
 
-bool s_bDictModified = false;
-
 //////////////////////////////////////////////////////////////////////////////
 // 辞書データのファイル処理。
 
@@ -257,103 +255,6 @@ XG_WordData *XgFindWordFromDict(const std::wstring& word)
         }
     }
     return NULL;
-}
-
-// 辞書に更新があるかどうか？
-bool __fastcall XgIsDictUpdated(void)
-{
-    // ヒント追加フラグが設定されている場合は、変更された。
-    if (xg_bHintsAdded || s_bDictModified) {
-        return true;
-    }
-
-    // 辞書にその単語が存在しないか、ヒントが違う場合は、更新された。
-    LPTSTR pszTate = XgLoadStringDx1(90);
-    for (auto& word_data : xg_vecTateHints) {
-        // 「タテ」を含むヒントは無視する。
-        if (word_data.m_strHint.find(pszTate) != std::wstring::npos)
-            continue;
-
-        XG_WordData *data = XgFindWordFromDict(word_data.m_strWord);
-        if (data == NULL) {
-            s_bDictModified = true;
-            return true;
-        }
-        if (data->m_hint != word_data.m_strHint) {
-            s_bDictModified = true;
-            return true;
-        }
-    }
-    LPTSTR pszYoko = XgLoadStringDx1(91);
-    for (auto& word_data : xg_vecYokoHints) {
-        // 「ヨコ」を含むヒントは無視する。
-        if (word_data.m_strHint.find(pszYoko) != std::wstring::npos)
-            continue;
-
-        XG_WordData *data = XgFindWordFromDict(word_data.m_strWord);
-        if (data == NULL) {
-            s_bDictModified = true;
-            return true;
-        }
-        if (data->m_hint != word_data.m_strHint) {
-            s_bDictModified = true;
-            return true;
-        }
-    }
-
-    // 更新されていない。
-    return false;
-}
-
-// 辞書に更新があるかどうか？
-void __fastcall XgDictSetModified(bool modified)
-{
-    s_bDictModified = modified;
-}
-
-// 辞書データを更新する。
-bool __fastcall XgUpdateDictData(void)
-{
-    bool updated = false;
-    LPTSTR pszTate = XgLoadStringDx1(90);
-    for (auto& word_data : xg_vecTateHints) {
-        if (word_data.m_strHint.find(pszTate) != std::wstring::npos)
-            continue;
-
-        XG_WordData *data = XgFindWordFromDict(word_data.m_strWord);
-        if (data == NULL) {
-            xg_dict_data.emplace_back(word_data.m_strWord,
-                                      word_data.m_strHint);
-            updated = true;
-            continue;
-        }
-        if (data->m_hint != word_data.m_strHint) {
-            data->m_hint = word_data.m_strHint;
-            updated = true;
-        }
-    }
-    LPTSTR pszYoko = XgLoadStringDx1(91);
-    for (auto& word_data : xg_vecYokoHints) {
-        if (word_data.m_strHint.find(pszYoko) != std::wstring::npos)
-            continue;
-
-        XG_WordData *data = XgFindWordFromDict(word_data.m_strWord);
-        if (data == NULL) {
-            xg_dict_data.emplace_back(word_data.m_strWord,
-                                      word_data.m_strHint);
-            updated = true;
-            continue;
-        }
-        if (data->m_hint != word_data.m_strHint) {
-            data->m_hint = word_data.m_strHint;
-            updated = true;
-        }
-    }
-    if (updated) {
-        XgSortAndUniqueDictData();
-        s_bDictModified = true;
-    }
-    return updated;
 }
 
 // 辞書データをソートし、一意的にする。

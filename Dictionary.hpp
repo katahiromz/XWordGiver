@@ -85,15 +85,6 @@ bool __fastcall XgLoadDictFile(LPCWSTR pszFile);
 // 辞書から単語を探し出す。
 XG_WordData *XgFindWordFromDict(const std::wstring& word);
 
-// 辞書に更新があるかどうか？
-bool __fastcall XgIsDictUpdated(void);
-
-// 辞書に更新があるかどうか？
-void __fastcall XgDictSetModified(bool modified);
-
-// 辞書データを更新する。
-bool __fastcall XgUpdateDictData(void);
-
 //////////////////////////////////////////////////////////////////////////////
 // XG_WordData構造体を比較するファンクタ。
 
