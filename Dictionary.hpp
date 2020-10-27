@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////////////////
 // Dictionary.hpp --- XWord Giver (Japanese Crossword Generator)
-// Copyright (C) 2012-2019 Katayama Hirofumi MZ. All Rights Reserved.
+// Copyright (C) 2012-2020 Katayama Hirofumi MZ. All Rights Reserved.
 // (Japanese, Shift_JIS)
 
 #ifndef __XG_DICTIONARY_HPP__
