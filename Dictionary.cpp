@@ -43,6 +43,12 @@ void XgReadUnicodeLine(LPWSTR pchLine)
         pchHint = nullptr;
     }
 
+    // 第３フィールド以降を無視する。
+    if (pchHint) {
+        if (LPWSTR pch = wcschr(pchHint, L'\t'))
+            *pch = 0;
+    }
+
     // 単語文字列を全角・カタカナ・大文字にする。
     LCMapStringW(JPN_LOCALE,
         LCMAP_FULLWIDTH | LCMAP_KATAKANA | LCMAP_UPPERCASE,
