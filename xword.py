@@ -74,11 +74,11 @@ def 分断(row_count, column_count, cell_data):
 		y = pair[1]
 		if not flags[x + y * column_count]:
 			flags[x + y * column_count] = True
-			if x != 0:
+			if x > 0:
 				pairs.append([x - 1, y])
 			if x + 1 < column_count:
 				pairs.append([x + 1, y])
-			if y != 0:
+			if y > 0:
 				pairs.append([x, y - 1])
 			if y + 1 < row_count:
 				pairs.append([x, y + 1])
