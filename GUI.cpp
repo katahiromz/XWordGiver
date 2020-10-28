@@ -6523,7 +6523,12 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
         break;
 
     case ID_LOADDICTFILE:
-        ::DialogBoxW(xg_hInstance, MAKEINTRESOURCE(IDD_READDICT), hwnd, XgLoadDictDlgProc);
+        if (::DialogBoxW(xg_hInstance, MAKEINTRESOURCE(IDD_READDICT),
+                         hwnd, XgLoadDictDlgProc) == IDOK)
+        {
+            // 二重マス単語をクリアする。
+            PostMessageW(hwnd, WM_COMMAND, ID_KILLMARKS, 0);
+        }
         break;
 
 #ifndef MZC_NO_SHAREWARE
