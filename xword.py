@@ -473,14 +473,14 @@ def main():
 	for i in range(1, len(sys.argv)):
 		filename = sys.argv[i]
 		xword = クロスワード(filename)
+		#####################################################################
+		# TODO: ここでxwordに対して何かをする。
 		if xword.斜同字():
 			print("警告: ファイル「" + filename + "」は、斜同字です。")
 		if xword.黒斜三連():
 			print("警告: ファイル「" + filename + "」は、黒斜三連です。")
 		if xword.黒斜四連():
 			print("警告: ファイル「" + filename + "」は、黒斜四連です。")
-		#####################################################################
-		# TODO: ここでxwordに対して何かをする。
 		if False:
 			xword.画像形式で保存(filename + ".png")
 		if False:
