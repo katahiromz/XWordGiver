@@ -480,7 +480,7 @@ def main():
 		if xword.黒斜四連():
 			print("警告: ファイル「" + filename + "」は、黒斜四連です。")
 		# TODO: ここでxwordに対して何かをする。
-		if True:
+		if False:
 			xword.画像形式で保存(filename + ".png")
 		if False:
 			xword.JSON形式で保存(filename + ".json")
