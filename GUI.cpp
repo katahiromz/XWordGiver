@@ -441,17 +441,15 @@ BOOL XgLoadDictsFromDir(LPWSTR pszDir)
 // 辞書ファイルをすべて読み込む。
 BOOL XgLoadDictsAll(void)
 {
-    WCHAR sz[MAX_PATH];
-
     xg_dict_files.clear();
 
     // 実行ファイルのパスを取得。
+    WCHAR sz[MAX_PATH];
     ::GetModuleFileNameW(nullptr, sz, sizeof(sz));
 
-    // 実行ファイルにある.dic/.tsvファイルを列挙する。
+    // 実行ファイルの近くにある.dic/.tsvファイルを列挙する。
     PathRemoveFileSpec(sz);
     PathAppend(sz, L"DICT");
-
     if (!XgLoadDictsFromDir(sz))
     {
         PathRemoveFileSpec(sz);
@@ -473,7 +471,8 @@ BOOL XgLoadDictsAll(void)
         for (auto& file : xg_dict_files)
         {
             if (file.find(pszBasicDict) != std::wstring::npos &&
-                file.find(pszKana) != std::wstring::npos)
+                file.find(pszKana) != std::wstring::npos &&
+                PathFileExistsW(file.c_str()))
             {
                 xg_dict_name = file;
                 break;
@@ -487,8 +486,8 @@ BOOL XgLoadDictsAll(void)
 
     // ファイルが実際に存在するかチェックし、存在しない項目は消す。
     for (size_t i = 0; i < xg_dict_files.size(); ++i) {
-        DWORD attrs = ::GetFileAttributesW(xg_dict_files[i].data());
-        if (attrs == 0xFFFFFFFF) {
+        auto& file = xg_dict_files[i];
+        if (!PathFileExistsW(file.c_str())) {
             xg_dict_files.erase(xg_dict_files.begin() + i);
             --i;
         }
@@ -1008,7 +1007,7 @@ bool __fastcall XgCheckCrossWord(HWND hwnd, bool check_words = true)
 }
 
 // 辞書名をセットする。
-void DoSetDict(const std::wstring& strFile)
+void XgSetDict(const std::wstring& strFile)
 {
     // 辞書名を格納。
     xg_dict_name = strFile;
@@ -1135,7 +1134,7 @@ XgNewDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam*/)
             // 正しく読み込めるか？
             if (XgLoadDictFile(strFile.data())) {
                 // 読み込めた。
-                DoSetDict(strFile);
+                XgSetDict(strFile);
 
                 // 初期化する。
                 xg_bSolved = false;
@@ -1306,7 +1305,7 @@ XgGenerateDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam*/)
             // 正しく読み込めるか？
             if (XgLoadDictFile(strFile.data())) {
                 // 読み込めた。
-                DoSetDict(strFile);
+                XgSetDict(strFile);
 
                 // 初期化する。
                 {
@@ -1592,7 +1591,7 @@ XgGenerateRepeatedlyDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam
             // 正しく読み込めるか？
             if (XgLoadDictFile(strFile.data())) {
                 // 読み込めた。
-                DoSetDict(strFile);
+                XgSetDict(strFile);
 
                 // 初期化する。
                 {
@@ -5970,7 +5969,7 @@ XgLoadDictDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
             // 正しく読み込めるか？
             if (XgLoadDictFile(strFile.data())) {
                 // 読み込めた。
-                DoSetDict(strFile);
+                XgSetDict(strFile);
 
                 // ダイアログを閉じる。
                 ::EndDialog(hwnd, IDOK);
@@ -6371,16 +6370,22 @@ bool __fastcall MainWnd_OnCommand2(HWND hwnd, INT id)
     return bOK;
 }
 
+// 辞書を切り替える。
 void MainWnd_DoDictionary(HWND hwnd, size_t iDict)
 {
+    // 範囲外は無視。
     if (iDict >= xg_dict_files.size())
         return;
 
+    // 辞書を読み込み、セットする。
     const auto& file = xg_dict_files[iDict];
     if (XgLoadDictFile(file.c_str()))
     {
-        xg_dict_name = file;
+        XgSetDict(file.c_str());
     }
+
+    // 二重マス単語をクリアする。
+    SendMessageW(hwnd, WM_COMMAND, ID_KILLMARKS, 0);
 }
 
 // コマンドを実行する。
@@ -6585,7 +6590,7 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
                          hwnd, XgLoadDictDlgProc) == IDOK)
         {
             // 二重マス単語をクリアする。
-            PostMessageW(hwnd, WM_COMMAND, ID_KILLMARKS, 0);
+            SendMessageW(hwnd, WM_COMMAND, ID_KILLMARKS, 0);
         }
         break;
 
