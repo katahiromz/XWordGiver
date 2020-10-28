@@ -5,6 +5,7 @@
 #
 # クロスワードファイル (*.xwj; JSON形式) の検査用、画像出力用にお使い下さい。
 # XWDファイルには対応してません。JSON形式のXWJファイルをお使い下さい。
+# 画像を出力するには、Python Imaging Libraryが必要です。
 
 def バージョン取得():
 	import sys
