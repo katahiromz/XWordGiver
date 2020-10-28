@@ -6,6 +6,10 @@
 # クロスワードファイル (*.xwj; JSON形式) の検査用、画像出力用にお使い下さい。
 # XWDファイルには対応してません。JSON形式のXWJファイルをお使い下さい。
 
+def バージョン取得():
+	import sys
+	return 'Python (' + sys.argv[0] + " ver.0.2) " + sys.version
+
 def JSON形式を開く(filename):
 	data = None
 	try:
@@ -21,8 +25,7 @@ def JSON形式を開く(filename):
 def JSON形式で保存(filename, data):
 	if data == None:
 		raise FileError
-	import sys
-	data['creator_info'] = 'Python (' + sys.argv[0] + ") " + sys.version
+	data['creator_info'] = バージョン取得()
 	with open(filename, 'w', encoding='utf-8') as fp:
 		import json
 		json.dump(data, fp, indent=4, ensure_ascii=False)
@@ -423,12 +426,11 @@ def セルからクロスワードを作成(セル, header='', notes=''):
 	for line in セル:
 		if len(line) != column_count:
 			return None
-	import sys
 	json = {
 		'cell_data': [],
 		'row_count': row_count,
 		'column_count': column_count,
-		'creator_info': 'Python (' + sys.argv[0] + ") " + sys.version,
+		'creator_info': バージョン取得(),
 		'has_hints': False,
 		'has_mark': False,
 		'header': header,
