@@ -481,21 +481,21 @@ def main():
 			print("警告: ファイル「" + filename + "」は、黒斜三連です。")
 		if xword.黒斜四連():
 			print("警告: ファイル「" + filename + "」は、黒斜四連です。")
-		if False:
+		if False: # 画像として保存
 			xword.画像形式で保存(filename + ".png")
-		if False:
+		if False: # JSON形式として保存
 			xword.JSON形式で保存(filename + ".json")
 		import os, shutil
 		head, tail = os.path.split(filename)
 		new_head = head + "検査済み/"
-		if False:
+		if False: # 「検査済み」フォルダへ移動
 			if not os.path.exists(new_head):
 				os.mkdir(new_head)
 			path = new_head + tail
 			shutil.move(filename, path)
 			print("「" + filename + "」を検査して「" + path + "」に移動しました。")
 			continue
-		if False:
+		if False: # 「検査済み」フォルダへコピー
 			if not os.path.exists(new_head):
 				os.mkdir(new_head)
 			path = new_head + tail
