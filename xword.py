@@ -493,11 +493,13 @@ def main():
 			path = new_head + tail
 			shutil.move(filename, path)
 			print("「" + filename + "」を検査して「" + path + "」に移動しました。")
+			continue
 		if False:
 			if not os.path.exists(new_head):
 				os.mkdir(new_head)
 			path = new_head + tail
 			shutil.copy(filename, path)
 			print("「" + filename + "」を検査して「" + path + "」にコピーしました。")
+			continue
 if __name__ == "__main__":
 	main()
