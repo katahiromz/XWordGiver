@@ -1945,7 +1945,7 @@ void __fastcall XG_Board::GetHintsStr(
         XgUpdateHintsData();
     }
 
-    assert(hint_type == 0 || hint_type == 1 || hint_type == 2);
+    assert(0 <= hint_type && hint_type < 6);
 
     if (hint_type == 0 || hint_type == 2) {
         // タテのカギの文字列を構成する。
