@@ -6395,8 +6395,8 @@ void MainWnd_DoDictionary(HWND hwnd, size_t iDict)
         XgSetDict(file.c_str());
     }
 
-    // 二重マス単語をクリアする。
-    SendMessageW(hwnd, WM_COMMAND, ID_KILLMARKS, 0);
+    // 二重マス単語の候補をクリアする。
+    xg_vMarkedCands.clear();
 }
 
 // コマンドを実行する。
