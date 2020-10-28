@@ -4752,12 +4752,20 @@ void DoUpdateDictMenu(HMENU hDictMenu)
     {
         LPCWSTR pszFileTitle = PathFindFileNameW(file.c_str());
         AppendMenuW(hDictMenu, MF_STRING | MF_ENABLED, id, pszFileTitle);
-        if (lstrcmpiW(file.c_str(), xg_dict_name.c_str()) == 0)
-        {
-            CheckMenuItem(hDictMenu, index, MF_CHECKED | MF_BYPOSITION);
-        }
         ++index;
         ++id;
+    }
+
+    index = 2;
+    for (const auto& file : xg_dict_files)
+    {
+        if (lstrcmpiW(file.c_str(), xg_dict_name.c_str()) == 0)
+        {
+            INT nCount = GetMenuItemCount(hDictMenu);
+            CheckMenuRadioItem(hDictMenu, 2, nCount - 1, index, MF_BYPOSITION);
+            break;
+        }
+        ++index;
     }
 }
 
