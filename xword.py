@@ -474,6 +474,8 @@ def main():
 		xword = クロスワード(filename)
 		if xword.斜同字():
 			print("警告: ファイル「" + filename + "」は、斜同字です。")
+		if xword.黒斜三連():
+			print("警告: ファイル「" + filename + "」は、黒斜三連です。")
 		if xword.黒斜四連():
 			print("警告: ファイル「" + filename + "」は、黒斜四連です。")
 		# TODO: ここでxwordに対して何かをする。
