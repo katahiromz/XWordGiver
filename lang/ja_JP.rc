@@ -425,7 +425,7 @@ FONT 9, "MS UI Gothic"
     PUSHBUTTON "参照(&B)...", psh1, 250, 85, 50, 14
     DEFPUSHBUTTON "新規作成(&N)", IDOK, 175, 110, 60, 14
     PUSHBUTTON "キャンセル", IDCANCEL, 240, 110, 60, 14
-    LTEXT "※辞書ファイルは拡張子.dicでDICTフォルダに追加して下さい。", -1, 10, 83, 209, 12
+    LTEXT "※辞書ファイルは拡張子.tsvでDICTフォルダに追加して下さい。", -1, 10, 83, 209, 12
 }
 
 IDD_CREATE DIALOG 0, 0, 310, 135
@@ -449,7 +449,7 @@ FONT 9, "MS UI Gothic"
     AUTOCHECKBOX "一定時間が過ぎたらリトライ(&T)", chx1, 5, 115, 135, 14
     DEFPUSHBUTTON "計算開始(&G)", IDOK, 175, 110, 60, 14
     PUSHBUTTON "キャンセル", IDCANCEL, 240, 110, 60, 14
-    LTEXT "※辞書ファイルは拡張子.dicでDICTフォルダに追加して下さい。", -1, 12, 80, 209, 12
+    LTEXT "※辞書ファイルは拡張子.tsvでDICTフォルダに追加して下さい。", -1, 12, 80, 209, 12
 }
 
 IDD_CALCULATING DIALOG 0, 0, 165, 75
@@ -504,7 +504,7 @@ FONT 9, "MS UI Gothic"
     AUTOCHECKBOX "&JSON形式で保存する", chx3, 10, 155, 96, 14
     DEFPUSHBUTTON "計算開始(&G)", IDOK, 175, 155, 60, 14
     PUSHBUTTON "キャンセル", IDCANCEL, 240, 155, 60, 14
-    LTEXT "※辞書ファイルは拡張子.dicでDICTフォルダに追加して下さい。", -1, 10, 80, 209, 12
+    LTEXT "※辞書ファイルは拡張子.tsvでDICTフォルダに追加して下さい。", -1, 10, 80, 209, 12
 }
 
 IDD_CONFIG DIALOG 0, 0, 274, 211
@@ -580,7 +580,7 @@ FONT 9, "MS UI Gothic"
     PUSHBUTTON "参照(&B)...", psh1, 250, 45, 50, 14
     DEFPUSHBUTTON "読み込む(&L)", IDOK, 175, 65, 60, 14
     PUSHBUTTON "キャンセル", IDCANCEL, 240, 65, 60, 14
-    LTEXT "※辞書ファイルは拡張子.dicでDICTフォルダに追加して下さい。", -1, 12, 42, 209, 12
+    LTEXT "※辞書ファイルは拡張子.tsvでDICTフォルダに追加して下さい。", -1, 12, 42, 209, 12
 }
 
 IDD_NOTES DIALOG 0, 0, 185, 185
@@ -1242,7 +1242,7 @@ STRINGTABLE
     47, "黒マスで分断されてはいけません（分断禁）。"
     48, "上から%u番目、左から%u番目に単語の候補がないマスがあります。"
     49, "ビットマップ画像 (*.bmp)|*.bmp|EMF画像 (*.emf)|*.emf||"
-    50, "辞書データ (*.dic;*.txt)|*.dic;*.txt|すべてのファイル (*.*)|*.*||"
+    50, "辞書データ (*.dic;*.tsv;*.txt)|*.dic;*.tsv;*.txt|すべてのファイル (*.*)|*.*||"
     51, "すべてのクロスワード (*.xwd;*.xwj;*.json;*.crp;*.crx)|*.xwd;*.xwj;*.json;*.crp;*.crx|標準クロスワード (*.xwd)|*.xwd|JSONクロスワード (*.xwj;*.json)|*.xwj;*.json|Crossword Builder ファイル(*.crp;*.crx)|*.crp;*.crx|すべてのファイル (*.*)|*.*||"
     52, "JSONクロスワード (*.xwj;*.json)|*.xwj;*.json||"
     53, "ReadMe.txt"
@@ -1263,7 +1263,7 @@ STRINGTABLE
     68, "Tahoma"
     69, "辞書データに更新があります。\n\n現在の場所には保存できませんので、次の操作で保存先をお選び下さい。保存しない場合は「キャンセル」をクリックして下さい。"
     70, "ヒント (Ctrl+L)"
-    71, "辞書ファイル (*.dic;*.txt)|*.dic;*.txt||"
+    71, "辞書ファイル (*.dic;*.tsv;*.txt)|*.dic;*.tsv;*.txt||"
     72, "辞書ファイルの保存先"
     73, "辞書ファイルが保存できませんでした。"
     74, "設定を消去しました。"

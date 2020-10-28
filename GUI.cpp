@@ -402,23 +402,38 @@ void __fastcall XgUpdateToolBarUI(HWND hwnd)
 BOOL XgLoadDictsFromDir(LPWSTR pszDir)
 {
     WCHAR szPath[MAX_PATH];
+    WIN32_FIND_DATAW find;
+    HANDLE hFind;
 
+    // ファイル *.dic を列挙する。
     StringCbCopy(szPath, sizeof(szPath), pszDir);
     PathAppend(szPath, L"*.dic");
-
-    WIN32_FIND_DATAW find;
-    HANDLE hFind = FindFirstFileW(szPath, &find);
-    if (hFind == INVALID_HANDLE_VALUE)
-        return FALSE;
-
-    do
+    hFind = FindFirstFileW(szPath, &find);
+    if (hFind != INVALID_HANDLE_VALUE)
     {
-        StringCbCopy(szPath, sizeof(szPath), pszDir);
-        PathAppend(szPath, find.cFileName);
-        xg_dict_files.emplace_back(szPath);
-    } while (FindNextFile(hFind, &find));
+        do
+        {
+            StringCbCopy(szPath, sizeof(szPath), pszDir);
+            PathAppend(szPath, find.cFileName);
+            xg_dict_files.emplace_back(szPath);
+        } while (FindNextFile(hFind, &find));
+        FindClose(hFind);
+    }
 
-    FindClose(hFind);
+    // ファイル *.tsv を列挙する。
+    StringCbCopy(szPath, sizeof(szPath), pszDir);
+    PathAppend(szPath, L"*.tsv");
+    hFind = FindFirstFileW(szPath, &find);
+    if (hFind != INVALID_HANDLE_VALUE)
+    {
+        do
+        {
+            StringCbCopy(szPath, sizeof(szPath), pszDir);
+            PathAppend(szPath, find.cFileName);
+            xg_dict_files.emplace_back(szPath);
+        } while (FindNextFile(hFind, &find));
+        FindClose(hFind);
+    }
 
     return !xg_dict_files.empty();
 }
@@ -433,7 +448,7 @@ BOOL XgLoadDictsAll(void)
     // 実行ファイルのパスを取得。
     ::GetModuleFileNameW(nullptr, sz, sizeof(sz));
 
-    // 実行ファイルにある.dicファイルを列挙する。
+    // 実行ファイルにある.dic/.tsvファイルを列挙する。
     PathRemoveFileSpec(sz);
     PathAppend(sz, L"DICT");
 
