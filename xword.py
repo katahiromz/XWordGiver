@@ -116,6 +116,29 @@ def 斜同字(row_count, column_count, cell_data):
 					return True
 	return False
 
+def 黒斜三連(row_count, column_count, cell_data):
+	for i in range(0, row_count - 2):
+		for j in range(0, column_count - 2):
+			ch = cell_data[i][j]
+			if ch != '■':
+				continue
+			if cell_data[i + 1][j + 1] != ch:
+				continue
+			if cell_data[i + 2][j + 2] != ch:
+				continue
+			return True
+	for i in range(0, row_count - 2):
+		for j in range(2, column_count):
+			ch = cell_data[i][j]
+			if ch != '■':
+				continue
+			if cell_data[i + 1][j - 1] != ch:
+				continue
+			if cell_data[i + 2][j - 2] != ch:
+				continue
+			return True
+	return False
+
 def 黒斜四連(row_count, column_count, cell_data):
 	for i in range(0, row_count - 3):
 		for j in range(0, column_count - 3):
@@ -318,6 +341,8 @@ class クロスワード:
 		return 単語の重複(self.ヨコのカギ, self.タテのカギ)
 	def 斜同字(self):
 		return 斜同字(self.行数, self.列数, self.セル)
+	def 黒斜三連(self):
+		return 黒斜三連(self.行数, self.列数, self.セル)
 	def 黒斜四連(self):
 		return 黒斜四連(self.行数, self.列数, self.セル)
 	def JSON形式で保存(self, filename):
