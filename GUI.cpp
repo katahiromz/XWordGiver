@@ -4748,10 +4748,13 @@ void DoUpdateDictMenu(HMENU hDictMenu)
     }
 
     INT index = 2, id = ID_DICTIONARY00;
+    WCHAR szText[MAX_PATH];
     for (const auto& file : xg_dict_files)
     {
         LPCWSTR pszFileTitle = PathFindFileNameW(file.c_str());
-        AppendMenuW(hDictMenu, MF_STRING | MF_ENABLED, id, pszFileTitle);
+        StringCbPrintfW(szText, sizeof(szText), L"&%c ", L"0123456789ABCDEF"[index - 2]);
+        StringCbCatW(szText, sizeof(szText), pszFileTitle);
+        AppendMenuW(hDictMenu, MF_STRING | MF_ENABLED, id, szText);
         ++index;
         ++id;
     }
