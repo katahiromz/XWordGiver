@@ -501,5 +501,6 @@ def main():
 			shutil.copy(filename, path)
 			print("「" + filename + "」を検査して「" + path + "」にコピーしました。")
 			continue
+		print("「" + filename + "」を検査しました。")
 if __name__ == "__main__":
 	main()
