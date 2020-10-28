@@ -452,11 +452,13 @@ BOOL XgLoadDictsAll(void)
 
     if (xg_dict_name.empty())
     {
-        // 辞書ファイルが未指定の場合は「カナ」を優先する。
+        // 辞書ファイルが未指定の場合は「カナ」の「基本辞書データ」を優先する。
         LPCWSTR pszKana = XgLoadStringDx1(1180);
+        LPCWSTR pszBasicDict = XgLoadStringDx2(111);
         for (auto& file : xg_dict_files)
         {
-            if (file.find(pszKana) != std::wstring::npos)
+            if (file.find(pszBasicDict) != std::wstring::npos &&
+                file.find(pszKana) != std::wstring::npos)
             {
                 xg_dict_name = file;
                 break;
