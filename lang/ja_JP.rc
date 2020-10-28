@@ -26,10 +26,6 @@ LANGUAGE LANG_JAPANESE, SUBLANG_DEFAULT
         MENUITEM "問題のみを印刷(&M)\tCtrl+Q", ID_PRINTPROBLEM
         MENUITEM "問題と解答を印刷(&P)\tCtrl+P", ID_PRINTANSWER
         MENUITEM SEPARATOR
-        MENUITEM "辞書を切り替える(&L)\tCtrl+F", ID_LOADDICTFILE
-        MENUITEM SEPARATOR
-        MENUITEM "メールで送る(&M)", ID_SENDMAIL
-        MENUITEM SEPARATOR
         MENUITEM "ヘッダーと備考欄(&H)...", ID_HEADERANDNOTES
         MENUITEM SEPARATOR
         MENUITEM "設定(&T)\tAlt+Enter", ID_SETTINGS
@@ -88,6 +84,12 @@ LANGUAGE LANG_JAPANESE, SUBLANG_DEFAULT
         MENUITEM "文字をクリア(&C)", ID_CLEARNONBLOCKS
         MENUITEM SEPARATOR
         MENUITEM "入力パレット(&P)\tCtrl+U", ID_PALETTE2
+    }
+    POPUP "辞書(&D)"
+    {
+        MENUITEM "辞書を切り替える(&L)\tCtrl+F", ID_LOADDICTFILE
+        MENUITEM SEPARATOR
+        MENUITEM "(なし)", -1
     }
     POPUP "解(&S)"
     {
@@ -1304,6 +1306,7 @@ STRINGTABLE
     109, "値が不正です。"
     110, "(なし)"
     111, "基本辞書データ"
+    112, "辞書"
     1100, "新規作成"
     1101, "問題を自動生成する"
     1102, "問題を開く"

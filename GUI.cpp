@@ -1007,6 +1007,23 @@ bool __fastcall XgCheckCrossWord(HWND hwnd, bool check_words = true)
     return true;
 }
 
+// 辞書名をセットする。
+void DoSetDict(const std::wstring& strFile)
+{
+    // 辞書名を格納。
+    xg_dict_name = strFile;
+
+    // 辞書として追加、ソート、一意にする。
+    const size_t MAX_DICTS = 16;
+    if (xg_dict_files.size() < MAX_DICTS)
+    {
+        xg_dict_files.emplace_back(strFile);
+        std::sort(xg_dict_files.begin(), xg_dict_files.end());
+        auto last = std::unique(xg_dict_files.begin(), xg_dict_files.end());
+        xg_dict_files.erase(last, xg_dict_files.end());
+    }
+}
+
 //////////////////////////////////////////////////////////////////////////////
 
 // [新規作成]ダイアログのダイアログ プロシージャ。
@@ -1118,16 +1135,7 @@ XgNewDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam*/)
             // 正しく読み込めるか？
             if (XgLoadDictFile(strFile.data())) {
                 // 読み込めた。
-                // 読み込んだファイル項目を一番上にする。
-                auto end = xg_dict_files.end();
-                for (auto it = xg_dict_files.begin(); it != end; it++) {
-                    if (_wcsicmp((*it).data(), strFile.data()) == 0) {
-                        xg_dict_files.erase(it);
-                        break;
-                    }
-                }
-                xg_dict_files.emplace_front(strFile);
-                xg_dict_name = strFile;
+                DoSetDict(strFile);
 
                 // 初期化する。
                 xg_bSolved = false;
@@ -1298,17 +1306,7 @@ XgGenerateDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam*/)
             // 正しく読み込めるか？
             if (XgLoadDictFile(strFile.data())) {
                 // 読み込めた。
-                // 読み込んだファイル項目を一番上にする。
-                auto end = xg_dict_files.end();
-                for (auto it = xg_dict_files.begin(); it != end; it++) {
-                    if (_wcsicmp(it->data(), strFile.data()) == 0) {
-                        // TODO: なぜかここでMinGW32が停止する。。。
-                        xg_dict_files.erase(it);
-                        break;
-                    }
-                }
-                xg_dict_files.emplace_front(strFile);
-                xg_dict_name = strFile;
+                DoSetDict(strFile);
 
                 // 初期化する。
                 {
@@ -1594,16 +1592,7 @@ XgGenerateRepeatedlyDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam
             // 正しく読み込めるか？
             if (XgLoadDictFile(strFile.data())) {
                 // 読み込めた。
-                // 読み込んだファイル項目を一番上にする。
-                auto end = xg_dict_files.end();
-                for (auto it = xg_dict_files.begin(); it != end; it++) {
-                    if (_wcsicmp((*it).data(), strFile.data()) == 0) {
-                        xg_dict_files.erase(it);
-                        break;
-                    }
-                }
-                xg_dict_files.emplace_front(strFile);
-                xg_dict_name = strFile;
+                DoSetDict(strFile);
 
                 // 初期化する。
                 {
@@ -4726,10 +4715,61 @@ void __fastcall MainWnd_OnVScroll(HWND hwnd, HWND /*hwndCtl*/, UINT code, int po
     XgUpdateImage(hwnd, XgGetHScrollPos(), si.nPos);
 }
 
+// 「辞書」メニューを取得する。
+HMENU DoFindDictMenu(HMENU hMenu)
+{
+    WCHAR szText[128];
+    LPCWSTR pszDict = XgLoadStringDx1(1174);
+    for (INT i = 0; i < 16; ++i)
+    {
+        if (GetMenuStringW(hMenu, i, szText, ARRAYSIZE(szText), MF_BYPOSITION))
+        {
+            if (wcsstr(szText, pszDict) != NULL)
+            {
+                return GetSubMenu(hMenu, i);
+            }
+        }
+    }
+    assert(0);
+    return NULL;
+}
+
+// 「辞書」メニューを更新する。
+void DoUpdateDictMenu(HMENU hDictMenu)
+{
+    while (RemoveMenu(hDictMenu, 2, MF_BYPOSITION))
+    {
+        ;
+    }
+
+    if (xg_dict_files.empty())
+    {
+        AppendMenuW(hDictMenu, MF_STRING | MF_GRAYED, -1, XgLoadStringDx1(110));
+        return;
+    }
+
+    INT index = 2, id = ID_DICTIONARY00;
+    for (const auto& file : xg_dict_files)
+    {
+        LPCWSTR pszFileTitle = PathFindFileNameW(file.c_str());
+        AppendMenuW(hDictMenu, MF_STRING | MF_ENABLED, id, pszFileTitle);
+        if (lstrcmpiW(file.c_str(), xg_dict_name.c_str()) == 0)
+        {
+            CheckMenuItem(hDictMenu, index, MF_CHECKED | MF_BYPOSITION);
+        }
+        ++index;
+        ++id;
+    }
+}
 
 // メニューを初期化する。
 void __fastcall MainWnd_OnInitMenu(HWND /*hwnd*/, HMENU hMenu)
 {
+    if (HMENU hDictMenu = DoFindDictMenu(hMenu))
+    {
+        DoUpdateDictMenu(hDictMenu);
+    }
+
     switch (xg_imode) {
     case xg_im_KANA:
         ::CheckMenuRadioItem(hMenu, ID_KANAINPUT, ID_RUSSIAINPUT, ID_KANAINPUT, MF_BYCOMMAND);
@@ -5930,16 +5970,7 @@ XgLoadDictDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
             // 正しく読み込めるか？
             if (XgLoadDictFile(strFile.data())) {
                 // 読み込めた。
-                // 読み込んだファイル項目を一番上にする。
-                auto end = xg_dict_files.end();
-                for (auto it = xg_dict_files.begin(); it != end; it++) {
-                    if (_wcsicmp((*it).data(), strFile.data()) == 0) {
-                        xg_dict_files.erase(it);
-                        break;
-                    }
-                }
-                xg_dict_files.emplace_front(strFile);
-                xg_dict_name = strFile;
+                DoSetDict(strFile);
 
                 // ダイアログを閉じる。
                 ::EndDialog(hwnd, IDOK);
@@ -6338,6 +6369,18 @@ bool __fastcall MainWnd_OnCommand2(HWND hwnd, INT id)
     xg_bCharFeed = bOldFeed;
 
     return bOK;
+}
+
+void MainWnd_DoDictionary(HWND hwnd, size_t iDict)
+{
+    if (iDict >= xg_dict_files.size())
+        return;
+
+    const auto& file = xg_dict_files[iDict];
+    if (XgLoadDictFile(file.c_str()))
+    {
+        xg_dict_name = file;
+    }
 }
 
 // コマンドを実行する。
@@ -7403,6 +7446,24 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
         if (xg_hwndInputPalette) {
             XgCreateInputPalette(hwnd);
         }
+        break;
+    case ID_DICTIONARY00:
+    case ID_DICTIONARY01:
+    case ID_DICTIONARY02:
+    case ID_DICTIONARY03:
+    case ID_DICTIONARY04:
+    case ID_DICTIONARY05:
+    case ID_DICTIONARY06:
+    case ID_DICTIONARY07:
+    case ID_DICTIONARY08:
+    case ID_DICTIONARY09:
+    case ID_DICTIONARY10:
+    case ID_DICTIONARY11:
+    case ID_DICTIONARY12:
+    case ID_DICTIONARY13:
+    case ID_DICTIONARY14:
+    case ID_DICTIONARY15:
+        MainWnd_DoDictionary(hwnd, id - ID_DICTIONARY00);
         break;
     default:
         if (!MainWnd_OnCommand2(hwnd, id)) {

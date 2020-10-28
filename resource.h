@@ -128,6 +128,22 @@
 #define ID_LOWERCASE                        230
 #define ID_HIRAGANA                         231
 #define ID_KATAKANA                         232
+#define ID_DICTIONARY00                     233
+#define ID_DICTIONARY01                     234
+#define ID_DICTIONARY02                     235
+#define ID_DICTIONARY03                     236
+#define ID_DICTIONARY04                     237
+#define ID_DICTIONARY05                     238
+#define ID_DICTIONARY06                     239
+#define ID_DICTIONARY07                     240
+#define ID_DICTIONARY08                     241
+#define ID_DICTIONARY09                     242
+#define ID_DICTIONARY10                     243
+#define ID_DICTIONARY11                     244
+#define ID_DICTIONARY12                     245
+#define ID_DICTIONARY13                     246
+#define ID_DICTIONARY14                     247
+#define ID_DICTIONARY15                     248
 
 #define ctl2                                1185
 
@@ -135,7 +151,7 @@
     #ifndef APSTUDIO_READONLY_SYMBOLS
         #define _APS_NO_MFC                 1
         #define _APS_NEXT_RESOURCE_VALUE    100
-        #define _APS_NEXT_COMMAND_VALUE     233
+        #define _APS_NEXT_COMMAND_VALUE     249
         #define _APS_NEXT_CONTROL_VALUE     1000
         #define _APS_NEXT_SYMED_VALUE       300
     #endif
