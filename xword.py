@@ -348,10 +348,10 @@ class クロスワード:
 		return 黒斜四連(self.行数, self.列数, self.セル)
 	def 二重マスがある(self):
 		return len(self.二重) > 0
-	def タイトル(self, title=None):
-		if title == None:
+	def ヘッダー(self, header=None):
+		if header == None:
 			return self.json['header']
-		self.json['header'] = title
+		self.json['header'] = header
 		return True
 	def 備考欄(self, notes=None):
 		if notes == None:
