@@ -346,6 +346,8 @@ class クロスワード:
 		return 黒斜三連(self.行数, self.列数, self.セル)
 	def 黒斜四連(self):
 		return 黒斜四連(self.行数, self.列数, self.セル)
+	def 二重マスがあるか(self):
+		return len(self.二重) > 0
 	def JSON形式で保存(self, filename):
 		JSON形式で保存(filename, self.json)
 		print("JSONファイル「" + filename + "」を保存しました。")
@@ -486,6 +488,8 @@ def main():
 			print("警告: ファイル「" + filename + "」は、黒斜三連です。")
 		if xword.黒斜四連():
 			print("警告: ファイル「" + filename + "」は、黒斜四連です。")
+		if not xword.二重マスがあるか():
+			print("警告: ファイル「" + filename + "」は、二重マスがありません。")
 		if False: # 画像として保存
 			xword.画像形式で保存(filename + ".png")
 		if False: # JSON形式として保存
