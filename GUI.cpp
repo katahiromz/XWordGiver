@@ -3933,7 +3933,9 @@ void __fastcall XgCopyBoard(HWND hwnd)
                         // EMFに描画する。
                         XgDrawXWord(*pxw, hdc, &siz, false);
 
+                        // EMFを設定。
                         HENHMETAFILE hEMF = ::CloseEnhMetaFile(hdc);
+                        ::SetClipboardData(CF_ENHMETAFILE, hEMF);
 
                         // DIBを設定。
                         if (HDC hDC = CreateCompatibleDC(NULL))
@@ -3942,7 +3944,6 @@ void __fastcall XgCopyBoard(HWND hwnd)
                             HGDIOBJ hbmOld = SelectObject(hDC, hbm);
                             XgDrawXWord(*pxw, hDC, &siz, false);
                             SelectObject(hDC, hbmOld);
-                            ::SetClipboardData(CF_BITMAP, hbm);
                             ::DeleteDC(hDC);
 
                             std::vector<BYTE> data;
@@ -3954,10 +3955,8 @@ void __fastcall XgCopyBoard(HWND hwnd)
                                 GlobalUnlock(hGlobal2);
                                 ::SetClipboardData(CF_DIB, hGlobal2);
                             }
+                            ::DeleteObject(hbm);
                         }
-
-                        // EMFを設定。
-                        ::SetClipboardData(CF_ENHMETAFILE, hEMF);
                     }
                     ::ReleaseDC(hwnd, hdcRef);
                 }
