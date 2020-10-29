@@ -493,6 +493,9 @@ def main():
 		#####################################################################
 		# TODO: ここでxwordに対して何かをする。
 		備考欄 = xword.備考欄()
+		if not xword.解あり:
+			print("警告: ファイル「" + filename + "」は、解ではありません。")
+			備考欄 += "[解なし]"
 		if xword.斜同字():
 			print("警告: ファイル「" + filename + "」は、斜同字です。")
 			備考欄 += "[斜同字]"
@@ -508,24 +511,15 @@ def main():
 		xword.備考欄(備考欄)
 		if False: # 画像として保存
 			xword.画像形式で保存(filename + ".png")
-		if False: # JSON形式として保存
-			xword.JSON形式で保存(filename + ".json")
-		import os, shutil
+		import os
 		head, tail = os.path.split(filename)
 		new_head = head + "検査済み/"
-		if False: # 「検査済み」フォルダへ移動
+		if True: # 「検査済み」フォルダへ保存
 			if not os.path.exists(new_head):
 				os.mkdir(new_head)
 			path = new_head + tail
-			shutil.move(filename, path)
-			print("「" + filename + "」を検査して「" + path + "」に移動しました。")
-			continue
-		if False: # 「検査済み」フォルダへコピー
-			if not os.path.exists(new_head):
-				os.mkdir(new_head)
-			path = new_head + tail
-			shutil.copy(filename, path)
-			print("「" + filename + "」を検査して「" + path + "」にコピーしました。")
+			xword.JSON形式で保存(path)
+			print("「" + filename + "」を検査して「" + path + "」に保存しました。")
 			continue
 		print("「" + filename + "」を検査しました。")
 		#####################################################################
