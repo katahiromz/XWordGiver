@@ -511,10 +511,10 @@ def main():
 		xword.備考欄(備考欄)
 		if False: # 画像として保存
 			xword.画像形式で保存(filename + ".png")
-		import os
-		head, tail = os.path.split(filename)
-		new_head = head + "検査済み/"
-		if True: # 「検査済み」フォルダへ保存
+		if False: # 「検査済み」フォルダへ保存
+			import os
+			head, tail = os.path.split(filename)
+			new_head = head + "検査済み/"
 			if not os.path.exists(new_head):
 				os.mkdir(new_head)
 			path = new_head + tail
