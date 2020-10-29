@@ -27,7 +27,7 @@ void __fastcall XgGetStringOfMarks(std::wstring& str)
 {
     WCHAR sz[64];
     str.clear();
-    str += XgLoadStringDx1(34);
+    str += XgLoadStringDx1(IDS_HLINE);
     str += xg_pszNewLine;
     for (const auto& mark : xg_vMarks) {
         if (xg_bSolved)
@@ -79,7 +79,7 @@ void __fastcall XgMarkUpdate(void)
         // マークされているか？ 答えを表示するか？
         LPWSTR pchFileTitle = PathFindFileNameW(xg_strFileName.c_str());
         if (XgGetMarkWord(xw, str) && xg_bShowAnswer) {
-            StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(38), str.data(), pchFileTitle);
+            StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(IDS_APPTITLE2), str.data(), pchFileTitle);
             ::SetWindowTextW(xg_hMainWnd, sz);
         } else {
             StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(15), pchFileTitle);
@@ -139,7 +139,7 @@ void __fastcall XgSetStringOfMarks(LPCWSTR psz)
     xg_vMarks.clear();
 
     // 区切り線があるか？
-    LPCWSTR pch = XgLoadStringDx1(34);
+    LPCWSTR pch = XgLoadStringDx1(IDS_HLINE);
     psz = wcsstr(psz, pch);
     if (psz == nullptr) {
         // 区切り線がなければ二重マスの情報はない。

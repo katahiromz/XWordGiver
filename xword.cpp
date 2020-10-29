@@ -1590,8 +1590,8 @@ bool __fastcall XgParseHintsStr(HWND hwnd, const std::wstring& strHints)
     xg_str_trim(str);
 
     // strCaption1とstrCaption2により、tateとyokoに分ける。
-    std::wstring strCaption1 = XgLoadStringDx1(22);
-    std::wstring strCaption2 = XgLoadStringDx1(23);
+    std::wstring strCaption1 = XgLoadStringDx1(IDS_DOWN);
+    std::wstring strCaption2 = XgLoadStringDx1(IDS_ACROSS);
     size_t i1 = str.find(strCaption1);
     if (i1 == std::wstring::npos)
         return false;
@@ -1943,12 +1943,12 @@ void __fastcall XG_Board::GetHintsStr(
 
     if (hint_type == 0 || hint_type == 2) {
         // タテのカギの文字列を構成する。
-        str += XgLoadStringDx1(22);
+        str += XgLoadStringDx1(IDS_DOWN);
         str += xg_pszNewLine;
 
         for (const auto& info : xg_vTateInfo) {
             // 番号を格納する。
-            StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(24), info.m_number);
+            StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(IDS_DOWNNUMBER), info.m_number);
             str += sz;
 
             // 答えを見せるかどうか？
@@ -1973,11 +1973,11 @@ void __fastcall XG_Board::GetHintsStr(
     }
     if (hint_type == 1 || hint_type == 2) {
         // ヨコのカギの文字列を構成する。
-        str += XgLoadStringDx1(23);
+        str += XgLoadStringDx1(IDS_ACROSS);
         str += xg_pszNewLine;
         for (const auto& info : xg_vYokoInfo) {
             // 番号を格納する。
-            StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(25), info.m_number);
+            StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(IDS_ACROSSNUMBER), info.m_number);
             str += sz;
 
             // 答えを見せるかどうか？
@@ -2910,7 +2910,7 @@ void __fastcall XgDrawMarkWord(HDC hdc, LPSIZE psiz)
         StringCbCopy(lf.lfFaceName, sizeof(lf.lfFaceName), XgLoadStringDx1(67));
     } else {
         // その他。
-        StringCbCopy(lf.lfFaceName, sizeof(lf.lfFaceName), XgLoadStringDx1(35));
+        StringCbCopy(lf.lfFaceName, sizeof(lf.lfFaceName), XgLoadStringDx1(IDS_MONOFONT));
     }
     if (xg_szCellFont[0])
         StringCbCopy(lf.lfFaceName, sizeof(lf.lfFaceName), xg_szCellFont);
@@ -3059,7 +3059,7 @@ void __fastcall XgDrawXWord(XG_Board& xw, HDC hdc, LPSIZE psiz, bool bCaret)
         StringCbCopy(lf.lfFaceName, sizeof(lf.lfFaceName), XgLoadStringDx1(67));
     } else {
         // その他。
-        StringCbCopy(lf.lfFaceName, sizeof(lf.lfFaceName), XgLoadStringDx1(35));
+        StringCbCopy(lf.lfFaceName, sizeof(lf.lfFaceName), XgLoadStringDx1(IDS_MONOFONT));
     }
     if (xg_szCellFont[0])
         StringCbCopy(lf.lfFaceName, sizeof(lf.lfFaceName), xg_szCellFont);
@@ -3673,76 +3673,6 @@ bool __fastcall XgDoLoadFile(HWND hwnd, LPCWSTR pszFile, bool json)
     return false;
 }
 
-// メールの件名を作成する。
-bool __fastcall XgGetMailTitle(HWND hwnd, std::wstring& strTitle)
-{
-    strTitle = XgLoadStringDx1(85);
-    return true;
-}
-
-// メールの本文を作成する。
-bool __fastcall XgGetMailBody(HWND hwnd, std::wstring& strBody)
-{
-    std::wstring str, strTable, strMarks, hints;
-
-    // マークを取得する。
-    if (!xg_vMarks.empty())
-        XgGetStringOfMarks(strMarks);
-
-    // ファイルに書き込む文字列を求める。
-    if (xg_bSolved) {
-        // ヒントあり。
-        xg_solution.GetString(strTable);
-        xg_solution.GetHintsStr(hints, 2, true);
-        // メールの本文。
-        xg_str_trim(xg_strHeader);
-        if (xg_strHeader.empty())
-            str += XgLoadStringDx1(84);
-        else
-            str += xg_strHeader;
-        str += xg_pszNewLine;       // 改行。
-        str += XgLoadStringDx1(81); // ヘッダー分離線。
-        str += XgLoadStringDx1(15); // アプリ情報。
-        str += xg_pszNewLine;       // 改行。
-        str += strMarks;            // マーク。
-        str += strTable;            // 本体。
-        str += hints;               // ヒント。
-    } else {
-        // ヒントなし。
-        xg_xword.GetString(strTable);
-        // メールの本文。
-        xg_str_trim(xg_strHeader);
-        if (xg_strHeader.empty())
-            str += XgLoadStringDx1(84);
-        else
-            str += xg_strHeader;
-        str += xg_pszNewLine;       // 改行。
-        str += XgLoadStringDx1(81); // ヘッダー分離線。
-        str += XgLoadStringDx1(15); // アプリ情報。
-        str += xg_pszNewLine;       // 改行。
-        str += strMarks;            // マーク。
-        str += strTable;            // 本体。
-    }
-    str += XgLoadStringDx1(82);     // フッター分離線。
-
-    // 備考欄。
-    LPCWSTR psz = XgLoadStringDx1(83);
-    str += psz;
-    str += xg_pszNewLine;
-    if (xg_strNotes.empty()) {
-        ;
-    } else {
-        if (xg_strNotes.find(psz) == 0) {
-            xg_strNotes = xg_strNotes.substr(std::wstring(psz).size());
-        }
-        xg_str_trim(xg_strNotes);
-        str += xg_strNotes;
-    }
-
-    strBody = str;
-    return true;
-}
-
 // .xwjファイル（JSON形式）を保存する。
 bool __fastcall XgDoSaveJson(HWND /*hwnd*/, LPCWSTR pszFile)
 {
@@ -4101,10 +4031,10 @@ void __fastcall XgSaveProbAsImage(HWND hwnd)
     ZeroMemory(&ofn, sizeof(ofn));
     ofn.lStructSize = OPENFILENAME_SIZE_VERSION_400W;
     ofn.hwndOwner = hwnd;
-    ofn.lpstrFilter = XgMakeFilterString(XgLoadStringDx2(49));
+    ofn.lpstrFilter = XgMakeFilterString(XgLoadStringDx2(IDS_IMGFILTER));
     ofn.lpstrFile = szFileName;
     ofn.nMaxFile = ARRAYSIZE(szFileName);
-    ofn.lpstrTitle = XgLoadStringDx1(30);
+    ofn.lpstrTitle = XgLoadStringDx1(IDS_SAVEPROBASIMG);
     ofn.Flags = OFN_EXPLORER | OFN_PATHMUSTEXIST | OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT;
     ofn.lpstrDefExt = L"bmp";
     if (::GetSaveFileNameW(&ofn)) {
@@ -4118,11 +4048,11 @@ void __fastcall XgSaveProbAsImage(HWND hwnd)
             if (hbm != nullptr) {
                 if (!XgSaveBitmapToFile(szFileName, hbm))
                 {
-                    XgCenterMessageBoxW(hwnd, XgLoadStringDx1(7), nullptr, MB_ICONERROR);
+                    XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_CANTSAVE2), nullptr, MB_ICONERROR);
                 }
                 ::DeleteObject(hbm);
             } else {
-                XgCenterMessageBoxW(hwnd, XgLoadStringDx1(7), nullptr, MB_ICONERROR);
+                XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_CANTSAVE2), nullptr, MB_ICONERROR);
             }
         } else {
             // EMFを保存する。
@@ -4132,7 +4062,7 @@ void __fastcall XgSaveProbAsImage(HWND hwnd)
                 XgDrawXWord(xg_xword, hdc, &siz, false);
                 ::CloseEnhMetaFile(hdc);
             } else {
-                XgCenterMessageBoxW(hwnd, XgLoadStringDx1(7), nullptr, MB_ICONERROR);
+                XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_CANTSAVE2), nullptr, MB_ICONERROR);
             }
             ::ReleaseDC(hwnd, hdcRef);
         }
@@ -4154,10 +4084,10 @@ void __fastcall XgSaveAnsAsImage(HWND hwnd)
     ZeroMemory(&ofn, sizeof(ofn));
     ofn.lStructSize = OPENFILENAME_SIZE_VERSION_400W;
     ofn.hwndOwner = hwnd;
-    ofn.lpstrFilter = XgMakeFilterString(XgLoadStringDx2(49));
+    ofn.lpstrFilter = XgMakeFilterString(XgLoadStringDx2(IDS_IMGFILTER));
     ofn.lpstrFile = szFileName;
     ofn.nMaxFile = ARRAYSIZE(szFileName);
-    ofn.lpstrTitle = XgLoadStringDx1(29);
+    ofn.lpstrTitle = XgLoadStringDx1(IDS_SAVEANSASIMG);
     ofn.Flags = OFN_EXPLORER | OFN_PATHMUSTEXIST | OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT;
     ofn.lpstrDefExt = L"bmp";
     if (::GetSaveFileNameW(&ofn)) {
@@ -4170,11 +4100,11 @@ void __fastcall XgSaveAnsAsImage(HWND hwnd)
             HBITMAP hbm = XgCreateXWordImage(xg_solution, &siz, false);
             if (hbm != nullptr) {
                 if (!XgSaveBitmapToFile(szFileName, hbm)) {
-                    XgCenterMessageBoxW(hwnd, XgLoadStringDx1(7), nullptr, MB_ICONERROR);
+                    XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_CANTSAVE2), nullptr, MB_ICONERROR);
                 }
                 ::DeleteObject(hbm);
             } else {
-                XgCenterMessageBoxW(hwnd, XgLoadStringDx1(7), nullptr, MB_ICONERROR);
+                XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_CANTSAVE2), nullptr, MB_ICONERROR);
             }
         } else {
             // EMFを保存する。
@@ -4184,7 +4114,7 @@ void __fastcall XgSaveAnsAsImage(HWND hwnd)
                 XgDrawXWord(xg_solution, hdc, &siz, false);
                 ::CloseEnhMetaFile(hdc);
             } else {
-                XgCenterMessageBoxW(hwnd, XgLoadStringDx1(7), nullptr, MB_ICONERROR);
+                XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_CANTSAVE2), nullptr, MB_ICONERROR);
             }
             ::ReleaseDC(hwnd, hdcRef);
         }

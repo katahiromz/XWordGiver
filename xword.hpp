@@ -468,12 +468,6 @@ void __fastcall XgStartSolveSmart(void);
 // 解を求めようとした後の後処理。
 void __fastcall XgEndSolve(void);
 
-// メールの件名を作成する。
-bool __fastcall XgGetMailTitle(HWND hwnd, std::wstring& strTitle);
-
-// メールの本文を作成する。
-bool __fastcall XgGetMailBody(HWND hwnd, std::wstring& strBody);
-
 // 黒マスパターンを生成する。
 void __fastcall XgStartGenerateBlacks(bool sym);
 

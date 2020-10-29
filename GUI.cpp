@@ -901,7 +901,7 @@ XgInputHintDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 
         // ダイアログを初期化する。
         s_word = *reinterpret_cast<std::wstring *>(lParam);
-        StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(42), s_word.data(), s_word.data());
+        StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(IDS_REGISTERWORD), s_word.data(), s_word.data());
         ::SetDlgItemTextW(hwnd, stc1, sz);
 
         // ヒントが追加された。
@@ -940,25 +940,25 @@ bool __fastcall XgCheckCrossWord(HWND hwnd, bool check_words = true)
 {
     // 四隅には黒マスは置けません。
     if (xg_xword.CornerBlack()) {
-        XgCenterMessageBoxW(hwnd, XgLoadStringDx1(43), nullptr, MB_ICONERROR);
+        XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_CORNERBLOCK), nullptr, MB_ICONERROR);
         return false;
     }
 
     // 連黒禁。
     if (xg_xword.DoubleBlack()) {
-        XgCenterMessageBoxW(hwnd, XgLoadStringDx1(44), nullptr, MB_ICONERROR);
+        XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_ADJACENTBLOCK), nullptr, MB_ICONERROR);
         return false;
     }
 
     // 三方向が黒マスで囲まれたマスを作ってはいけません。
     if (xg_xword.TriBlackArround()) {
-        XgCenterMessageBoxW(hwnd, XgLoadStringDx1(46), nullptr, MB_ICONERROR);
+        XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_TRIBLOCK), nullptr, MB_ICONERROR);
         return false;
     }
 
     // 分断禁。
     if (xg_xword.DividedByBlack()) {
-        XgCenterMessageBoxW(hwnd, XgLoadStringDx1(47), nullptr, MB_ICONERROR);
+        XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_DIVIDED), nullptr, MB_ICONERROR);
         return false;
     }
 
@@ -970,19 +970,19 @@ bool __fastcall XgCheckCrossWord(HWND hwnd, bool check_words = true)
         if (check_words) {
             // パターンにマッチしないマスがあった。
             WCHAR sz[128];
-            StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(48), pos.m_i + 1, pos.m_j + 1);
+            StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(IDS_NOCANDIDATE), pos.m_i + 1, pos.m_j + 1);
             XgCenterMessageBoxW(hwnd, sz, nullptr, MB_ICONERROR);
             return false;
         }
     } else if (code == xg_epv_DOUBLEWORD) {
         // すでに使用した単語があった。
-        XgCenterMessageBoxW(hwnd, XgLoadStringDx1(45), nullptr, MB_ICONERROR);
+        XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_DOUBLEDWORD), nullptr, MB_ICONERROR);
         return false;
     } else if (code == xg_epv_LENGTHMISMATCH) {
         if (check_words) {
             // 登録されている単語と長さの一致しないスペースがあった。
             WCHAR sz[128];
-            StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(54), pos.m_i + 1, pos.m_j + 1);
+            StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(IDS_TOOLONGSPACE), pos.m_i + 1, pos.m_j + 1);
             XgCenterMessageBoxW(hwnd, sz, nullptr, MB_ICONERROR);
             return false;
         }
@@ -1118,14 +1118,14 @@ XgNewDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam*/)
             n1 = static_cast<int>(::GetDlgItemInt(hwnd, edt1, nullptr, FALSE));
             if (n1 < xg_nMinSize || n1 > xg_nMaxSize) {
                 ::SendDlgItemMessageW(hwnd, edt1, EM_SETSEL, 0, -1);
-                XgCenterMessageBoxW(hwnd, XgLoadStringDx1(18), nullptr, MB_ICONERROR);
+                XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_ENTERINT), nullptr, MB_ICONERROR);
                 ::SetFocus(::GetDlgItem(hwnd, edt1));
                 return 0;
             }
             n2 = static_cast<int>(::GetDlgItemInt(hwnd, edt2, nullptr, FALSE));
             if (n2 < xg_nMinSize || n2 > xg_nMaxSize) {
                 ::SendDlgItemMessageW(hwnd, edt2, EM_SETSEL, 0, -1);
-                XgCenterMessageBoxW(hwnd, XgLoadStringDx1(18), nullptr, MB_ICONERROR);
+                XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_ENTERINT), nullptr, MB_ICONERROR);
                 ::SetFocus(::GetDlgItem(hwnd, edt2));
                 return 0;
             }
@@ -1155,7 +1155,7 @@ XgNewDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam*/)
             } else {
                 // 読み込めなかったのでエラーを表示する。
                 ::SendDlgItemMessageW(hwnd, cmb1, CB_SETEDITSEL, 0, MAKELPARAM(0, -1));
-                XgCenterMessageBoxW(hwnd, XgLoadStringDx1(3), nullptr, MB_ICONERROR);
+                XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_CANTLOAD), nullptr, MB_ICONERROR);
                 ::SetFocus(::GetDlgItem(hwnd, cmb1));
             }
             break;
@@ -1170,11 +1170,11 @@ XgNewDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam*/)
             ZeroMemory(&ofn, sizeof(ofn));
             ofn.lStructSize = OPENFILENAME_SIZE_VERSION_400W;
             ofn.hwndOwner = hwnd;
-            ofn.lpstrFilter = XgMakeFilterString(XgLoadStringDx2(50));
+            ofn.lpstrFilter = XgMakeFilterString(XgLoadStringDx2(IDS_DICTFILTER));
             szFile[0] = 0;
             ofn.lpstrFile = szFile;
             ofn.nMaxFile = MAX_PATH;
-            ofn.lpstrTitle = XgLoadStringDx1(19);
+            ofn.lpstrTitle = XgLoadStringDx1(IDS_OPENDICTDATA);
             ofn.Flags = OFN_EXPLORER | OFN_ENABLESIZING | OFN_FILEMUSTEXIST |
                 OFN_PATHMUSTEXIST | OFN_HIDEREADONLY;
             ofn.lpstrDefExt = L"dic";
@@ -1285,14 +1285,14 @@ XgGenerateDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam*/)
             n1 = static_cast<int>(::GetDlgItemInt(hwnd, edt1, nullptr, FALSE));
             if (n1 < xg_nMinSize || n1 > xg_nMaxSize) {
                 ::SendDlgItemMessageW(hwnd, edt1, EM_SETSEL, 0, -1);
-                XgCenterMessageBoxW(hwnd, XgLoadStringDx1(18), nullptr, MB_ICONERROR);
+                XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_ENTERINT), nullptr, MB_ICONERROR);
                 ::SetFocus(::GetDlgItem(hwnd, edt1));
                 return 0;
             }
             n2 = static_cast<int>(::GetDlgItemInt(hwnd, edt2, nullptr, FALSE));
             if (n2 < xg_nMinSize || n2 > xg_nMaxSize) {
                 ::SendDlgItemMessageW(hwnd, edt2, EM_SETSEL, 0, -1);
-                XgCenterMessageBoxW(hwnd, XgLoadStringDx1(18), nullptr, MB_ICONERROR);
+                XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_ENTERINT), nullptr, MB_ICONERROR);
                 ::SetFocus(::GetDlgItem(hwnd, edt2));
                 return 0;
             }
@@ -1326,7 +1326,7 @@ XgGenerateDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam*/)
             } else {
                 // 読み込めなかったのでエラーを表示する。
                 ::SendDlgItemMessageW(hwnd, cmb1, CB_SETEDITSEL, 0, MAKELPARAM(0, -1));
-                XgCenterMessageBoxW(hwnd, XgLoadStringDx1(3), nullptr, MB_ICONERROR);
+                XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_CANTLOAD), nullptr, MB_ICONERROR);
                 ::SetFocus(::GetDlgItem(hwnd, cmb1));
             }
             break;
@@ -1341,11 +1341,11 @@ XgGenerateDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam*/)
             ZeroMemory(&ofn, sizeof(ofn));
             ofn.lStructSize = OPENFILENAME_SIZE_VERSION_400W;
             ofn.hwndOwner = hwnd;
-            ofn.lpstrFilter = XgMakeFilterString(XgLoadStringDx2(50));
+            ofn.lpstrFilter = XgMakeFilterString(XgLoadStringDx2(IDS_DICTFILTER));
             szFile[0] = 0;
             ofn.lpstrFile = szFile;
             ofn.nMaxFile = ARRAYSIZE(szFile);
-            ofn.lpstrTitle = XgLoadStringDx1(19);
+            ofn.lpstrTitle = XgLoadStringDx1(IDS_OPENDICTDATA);
             ofn.Flags = OFN_EXPLORER | OFN_ENABLESIZING | OFN_FILEMUSTEXIST |
                 OFN_PATHMUSTEXIST | OFN_HIDEREADONLY;
             ofn.lpstrDefExt = L"dic";
@@ -1528,14 +1528,14 @@ XgGenerateRepeatedlyDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam
             n1 = static_cast<int>(::GetDlgItemInt(hwnd, edt1, nullptr, FALSE));
             if (n1 < xg_nMinSize || n1 > xg_nMaxSize) {
                 ::SendDlgItemMessageW(hwnd, edt1, EM_SETSEL, 0, -1);
-                XgCenterMessageBoxW(hwnd, XgLoadStringDx1(18), nullptr, MB_ICONERROR);
+                XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_ENTERINT), nullptr, MB_ICONERROR);
                 ::SetFocus(::GetDlgItem(hwnd, edt1));
                 return 0;
             }
             n2 = static_cast<int>(::GetDlgItemInt(hwnd, edt2, nullptr, FALSE));
             if (n2 < xg_nMinSize || n2 > xg_nMaxSize) {
                 ::SendDlgItemMessageW(hwnd, edt2, EM_SETSEL, 0, -1);
-                XgCenterMessageBoxW(hwnd, XgLoadStringDx1(18), nullptr, MB_ICONERROR);
+                XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_ENTERINT), nullptr, MB_ICONERROR);
                 ::SetFocus(::GetDlgItem(hwnd, edt2));
                 return 0;
             }
@@ -1553,7 +1553,7 @@ XgGenerateRepeatedlyDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam
                 if (!XgMakePathW(szFile)) {
                     // 作成に失敗。
                     ::SendDlgItemMessageW(hwnd, cmb2, CB_SETEDITSEL, 0, -1);
-                    XgCenterMessageBoxW(hwnd, XgLoadStringDx1(57), nullptr, MB_ICONERROR);
+                    XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_STORAGEINVALID), nullptr, MB_ICONERROR);
                     ::SetFocus(::GetDlgItem(hwnd, cmb2));
                     return 0;
                 }
@@ -1582,7 +1582,7 @@ XgGenerateRepeatedlyDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam
                 s_nNumberToGenerate = ::GetDlgItemInt(hwnd, edt3, &bTranslated, FALSE);
                 if (!bTranslated || s_nNumberToGenerate == 0) {
                     ::SendDlgItemMessageW(hwnd, edt3, EM_SETSEL, 0, -1);
-                    XgCenterMessageBoxW(hwnd, XgLoadStringDx1(58), nullptr, MB_ICONERROR);
+                    XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_ENTERPOSITIVE), nullptr, MB_ICONERROR);
                     ::SetFocus(::GetDlgItem(hwnd, edt3));
                     return 0;
                 }
@@ -1612,7 +1612,7 @@ XgGenerateRepeatedlyDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam
             } else {
                 // 読み込めなかったのでエラーを表示する。
                 ::SendDlgItemMessageW(hwnd, cmb1, CB_SETEDITSEL, 0, MAKELPARAM(0, -1));
-                XgCenterMessageBoxW(hwnd, XgLoadStringDx1(3), nullptr, MB_ICONERROR);
+                XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_CANTLOAD), nullptr, MB_ICONERROR);
                 ::SetFocus(::GetDlgItem(hwnd, cmb1));
             }
             break;
@@ -1627,11 +1627,11 @@ XgGenerateRepeatedlyDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam
             ZeroMemory(&ofn, sizeof(ofn));
             ofn.lStructSize = OPENFILENAME_SIZE_VERSION_400W;
             ofn.hwndOwner = hwnd;
-            ofn.lpstrFilter = XgMakeFilterString(XgLoadStringDx2(50));
+            ofn.lpstrFilter = XgMakeFilterString(XgLoadStringDx2(IDS_DICTFILTER));
             szFile[0] = 0;
             ofn.lpstrFile = szFile;
             ofn.nMaxFile = ARRAYSIZE(szFile);
-            ofn.lpstrTitle = XgLoadStringDx1(19);
+            ofn.lpstrTitle = XgLoadStringDx1(IDS_OPENDICTDATA);
             ofn.Flags = OFN_EXPLORER | OFN_ENABLESIZING | OFN_FILEMUSTEXIST |
                 OFN_PATHMUSTEXIST | OFN_HIDEREADONLY;
             ofn.lpstrDefExt = L"dic";
@@ -1645,7 +1645,7 @@ XgGenerateRepeatedlyDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam
             // ユーザーに保存先の場所を問い合わせる。
             ZeroMemory(&bi, sizeof(bi));
             bi.hwndOwner = hwnd;
-            bi.lpszTitle = XgLoadStringDx1(56);
+            bi.lpszTitle = XgLoadStringDx1(IDS_CROSSSTORAGE);
             bi.ulFlags = BIF_RETURNONLYFSDIRS;
             bi.lpfn = XgBrowseCallbackProc;
             ::GetDlgItemTextW(hwnd, cmb2, xg_szDir, ARRAYSIZE(xg_szDir));
@@ -1772,7 +1772,7 @@ XgSolveRepeatedlyDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam*/)
                 if (!XgMakePathW(szFile)) {
                     // 作成に失敗。
                     ::SendDlgItemMessageW(hwnd, cmb1, CB_SETEDITSEL, 0, -1);
-                    XgCenterMessageBoxW(hwnd, XgLoadStringDx1(57), nullptr, MB_ICONERROR);
+                    XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_STORAGEINVALID), nullptr, MB_ICONERROR);
                     ::SetFocus(::GetDlgItem(hwnd, cmb1));
                     return 0;
                 }
@@ -1801,7 +1801,7 @@ XgSolveRepeatedlyDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam*/)
                 s_nNumberToGenerate = ::GetDlgItemInt(hwnd, edt1, &bTranslated, FALSE);
                 if (!bTranslated || s_nNumberToGenerate == 0) {
                     ::SendDlgItemMessageW(hwnd, edt1, EM_SETSEL, 0, -1);
-                    XgCenterMessageBoxW(hwnd, XgLoadStringDx1(58), nullptr, MB_ICONERROR);
+                    XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_ENTERPOSITIVE), nullptr, MB_ICONERROR);
                     ::SetFocus(::GetDlgItem(hwnd, edt1));
                     return 0;
                 }
@@ -1829,7 +1829,7 @@ XgSolveRepeatedlyDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam*/)
             // ユーザーに保存先を問い合わせる。
             ZeroMemory(&bi, sizeof(bi));
             bi.hwndOwner = hwnd;
-            bi.lpszTitle = XgLoadStringDx1(56);
+            bi.lpszTitle = XgLoadStringDx1(IDS_CROSSSTORAGE);
             bi.ulFlags = BIF_RETURNONLYFSDIRS;
             bi.lpfn = XgBrowseCallbackProc;
             ::GetDlgItemTextW(hwnd, cmb1, xg_szDir, ARRAYSIZE(xg_szDir));
@@ -1874,7 +1874,7 @@ bool __fastcall XgOpenHintsByNotepad(HWND /*hwnd*/, bool bShowAnswer)
 
     // 一時ファイルを作成する。
     ::GetTempPathW(MAX_PATH, szPath);
-    StringCbCat(szPath, sizeof(szPath), XgLoadStringDx1(28));
+    StringCbCat(szPath, sizeof(szPath), XgLoadStringDx1(IDS_HINTSTXT));
     HANDLE hFile = ::CreateFileW(szPath, GENERIC_WRITE, FILE_SHARE_READ,
         nullptr, CREATE_ALWAYS, 0, nullptr);
     if (hFile == INVALID_HANDLE_VALUE)
@@ -1891,7 +1891,8 @@ bool __fastcall XgOpenHintsByNotepad(HWND /*hwnd*/, bool bShowAnswer)
         ::CloseHandle(hFile);
 
         // メモ帳でファイルを開く。
-        StringCbPrintf(szCmdLine, sizeof(szCmdLine), XgLoadStringDx1(27), szPath);
+        StringCbPrintf(szCmdLine, sizeof(szCmdLine),
+                       XgLoadStringDx1(IDS_NOTEPAD), szPath);
         ZeroMemory(&si, sizeof(si));
         si.cb = sizeof(si);
         si.dwFlags = STARTF_USESHOWWINDOW;
@@ -2094,7 +2095,7 @@ XgCancelSolveDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam*/)
             // 経過時間を表示する。
             WCHAR sz[MAX_PATH];
             DWORD dwTick = ::GetTickCount();
-            StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(32),
+            StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(IDS_NOWSOLVING),
                     (dwTick - s_dwTick0) / 1000,
                     (dwTick - s_dwTick0) / 100 % 10, s_nRetryCount);
             ::SetDlgItemTextW(hwnd, stc1, sz);
@@ -2239,7 +2240,7 @@ XgCancelGenerateRepeatedlyDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*
             // 生成した数を表示する。
             WCHAR sz[MAX_PATH];
             DWORD dwTick = ::GetTickCount();
-            StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(59), s_nNumberGenerated,
+            StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(IDS_PROBLEMSMAKING), s_nNumberGenerated,
                 (dwTick - s_dwTick0) / 1000,
                 (dwTick - s_dwTick0) / 100 % 10);
             ::SetDlgItemTextW(hwnd, stc1, sz);
@@ -2457,7 +2458,7 @@ XgCancelSolveRepeatedlyDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lPa
             // 生成した数を表示する。
             WCHAR sz[MAX_PATH];
             DWORD dwTick = ::GetTickCount();
-            StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(59), s_nNumberGenerated,
+            StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(IDS_PROBLEMSMAKING), s_nNumberGenerated,
                 (dwTick - s_dwTick0) / 1000,
                 (dwTick - s_dwTick0) / 100 % 10);
             ::SetDlgItemTextW(hwnd, stc1, sz);
@@ -2674,7 +2675,7 @@ XgCancelSolveDlgProcNoAddBlack(
         {
             WCHAR sz[MAX_PATH];
             DWORD dwTick = ::GetTickCount();
-            StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(32),
+            StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(IDS_NOWSOLVING),
                     (dwTick - s_dwTick0) / 1000,
                     (dwTick - s_dwTick0) / 100 % 10, s_nRetryCount);
             ::SetDlgItemTextW(hwnd, stc1, sz);
@@ -2815,7 +2816,7 @@ XgCancelSolveDlgProcSmart(
         {
             WCHAR sz[MAX_PATH];
             DWORD dwTick = ::GetTickCount();
-            StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(32),
+            StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(IDS_NOWSOLVING),
                     (dwTick - s_dwTick0) / 1000,
                     (dwTick - s_dwTick0) / 100 % 10, s_nRetryCount);
             ::SetDlgItemTextW(hwnd, stc1, sz);
@@ -2948,7 +2949,7 @@ void __fastcall XgPrintIt(HDC hdc, PRINTDLGW* ppd, bool bPrintAnswer)
     const int nYoko = ::GetDeviceCaps(hdc, HORZSIZE);
     if (nTate < nYoko) {
         // 印刷用紙が横長。メッセージを表示して終了。
-        ::XgCenterMessageBoxW(xg_hMainWnd, XgLoadStringDx1(41), nullptr,
+        ::XgCenterMessageBoxW(xg_hMainWnd, XgLoadStringDx1(IDS_SETPORTRAIT), nullptr,
                             MB_ICONERROR);
         ::DeleteDC(hdc);
         ::GlobalFree(ppd->hDevMode);
@@ -2959,7 +2960,7 @@ void __fastcall XgPrintIt(HDC hdc, PRINTDLGW* ppd, bool bPrintAnswer)
     DOCINFOW di;
     ZeroMemory(&di, sizeof(di));
     di.cbSize = sizeof(di);
-    di.lpszDocName = XgLoadStringDx1(39);
+    di.lpszDocName = XgLoadStringDx1(IDS_CROSSWORD);
 
     // 指定された部数を印刷する。
     for (int i = 0; i < ppd->nCopies; i++) {
@@ -2991,7 +2992,7 @@ void __fastcall XgPrintIt(HDC hdc, PRINTDLGW* ppd, bool bPrintAnswer)
                 if (xg_imode == xg_im_HANGUL)
                     StringCbCopy(lf.lfFaceName, sizeof(lf.lfFaceName), XgLoadStringDx1(67)); // ハングルの場合。
                 else
-                    StringCbCopy(lf.lfFaceName, sizeof(lf.lfFaceName), XgLoadStringDx1(35)); // その他の場合。
+                    StringCbCopy(lf.lfFaceName, sizeof(lf.lfFaceName), XgLoadStringDx1(IDS_MONOFONT)); // その他の場合。
                 if (xg_szCellFont[0])
                     StringCbCopy(lf.lfFaceName, sizeof(lf.lfFaceName), xg_szCellFont);
 
@@ -3006,7 +3007,7 @@ void __fastcall XgPrintIt(HDC hdc, PRINTDLGW* ppd, bool bPrintAnswer)
                 hFontOld = ::SelectObject(hdc, hFont);
                 ::SetRect(&rc, cxPaper / 8, cyPaper / 16,
                     cxPaper * 7 / 8, cyPaper / 8);
-                str = XgLoadStringDx1(40);
+                str = XgLoadStringDx1(IDS_ANSWER);
                 str += strMarkWord;
                 ::DrawTextW(hdc, str.data(), static_cast<int>(str.size()), &rc,
                     DT_LEFT | DT_TOP | DT_NOCLIP | DT_NOPREFIX);
@@ -3069,7 +3070,7 @@ void __fastcall XgPrintIt(HDC hdc, PRINTDLGW* ppd, bool bPrintAnswer)
             if (xg_imode == xg_im_HANGUL)
                 StringCbCopy(lf.lfFaceName, sizeof(lf.lfFaceName), XgLoadStringDx1(67)); // ハングルの場合。
             else
-                StringCbCopy(lf.lfFaceName, sizeof(lf.lfFaceName), XgLoadStringDx1(35)); // その他の場合。
+                StringCbCopy(lf.lfFaceName, sizeof(lf.lfFaceName), XgLoadStringDx1(IDS_MONOFONT)); // その他の場合。
             if (xg_szCellFont[0])
                 StringCbCopy(lf.lfFaceName, sizeof(lf.lfFaceName), xg_szCellFont);
 
@@ -3127,7 +3128,7 @@ void __fastcall XgPrintIt(HDC hdc, PRINTDLGW* ppd, bool bPrintAnswer)
                 if (xg_imode == xg_im_HANGUL)
                     StringCbCopy(lf.lfFaceName, sizeof(lf.lfFaceName), XgLoadStringDx1(67)); // ハングルの場合。
                 else
-                    StringCbCopy(lf.lfFaceName, sizeof(lf.lfFaceName), XgLoadStringDx1(35)); // その他の場合。
+                    StringCbCopy(lf.lfFaceName, sizeof(lf.lfFaceName), XgLoadStringDx1(IDS_MONOFONT)); // その他の場合。
                 lf.lfHeight = cyPaper / 2 / 45;
                 lf.lfWidth = 0;
                 lf.lfWeight = FW_NORMAL;
@@ -3199,8 +3200,8 @@ void __fastcall XgOnAbout(HWND hwnd)
     params.cbSize = sizeof(params);
     params.hwndOwner = hwnd;
     params.hInstance = xg_hInstance;
-    params.lpszText = XgLoadStringDx1(1);
-    params.lpszCaption = XgLoadStringDx2(2);
+    params.lpszText = XgLoadStringDx1(IDS_VERSION);
+    params.lpszCaption = XgLoadStringDx2(IDS_APPNAME);
     params.dwStyle = MB_USERICON;
     params.lpszIcon = MAKEINTRESOURCE(1);
     XgCenterMessageBoxIndirectW(&params);
@@ -3268,26 +3269,26 @@ bool __fastcall XgOnGenerate(HWND hwnd, bool show_answer)
 
         if (xg_bCancelled) {
             // キャンセルされた。
-            StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(31),
+            StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(IDS_CANCELLED),
                 (s_dwTick2 - s_dwTick0) / 1000,
                 (s_dwTick2 - s_dwTick0) / 100 % 10);
-            XgCenterMessageBoxW(hwnd, sz, XgLoadStringDx2(9), MB_ICONINFORMATION);
+            XgCenterMessageBoxW(hwnd, sz, XgLoadStringDx2(IDS_RESULTS), MB_ICONINFORMATION);
         } else if (xg_bSolved) {
             // 成功メッセージを表示する。
-            StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(16),
+            StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(IDS_MADEPROBLEM),
                 (s_dwTick2 - s_dwTick0) / 1000,
                 (s_dwTick2 - s_dwTick0) / 100 % 10);
-            XgCenterMessageBoxW(hwnd, sz, XgLoadStringDx2(9), MB_ICONINFORMATION);
+            XgCenterMessageBoxW(hwnd, sz, XgLoadStringDx2(IDS_RESULTS), MB_ICONINFORMATION);
 
             // ヒントを更新して開く。
             XgUpdateHints(hwnd);
             XgShowHints(hwnd);
         } else {
             // 失敗メッセージを表示する。
-            StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(17),
+            StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(IDS_CANTMAKEPROBLEM),
                 (s_dwTick2 - s_dwTick0) / 1000,
                 (s_dwTick2 - s_dwTick0) / 100 % 10);
-            XgCenterMessageBoxW(hwnd, sz, XgLoadStringDx2(9), MB_ICONERROR);
+            XgCenterMessageBoxW(hwnd, sz, XgLoadStringDx2(IDS_RESULTS), MB_ICONERROR);
         }
         return true;
     }
@@ -3351,18 +3352,18 @@ bool __fastcall XgOnGenerateRepeatedly(HWND hwnd)
         // ディスクに空きがあるか？
         if (s_bOutOfDiskSpace) {
             // なかった。
-            StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(61), s_nNumberGenerated,
+            StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(IDS_OUTOFSTORAGE), s_nNumberGenerated,
                 (s_dwTick2 - s_dwTick0) / 1000,
                 (s_dwTick2 - s_dwTick0) / 100 % 10);
         } else {
             // あった。
-            StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(60), s_nNumberGenerated,
+            StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(IDS_PROBLEMSMADE), s_nNumberGenerated,
                 (s_dwTick2 - s_dwTick0) / 1000,
                 (s_dwTick2 - s_dwTick0) / 100 % 10);
         }
 
         // 終了メッセージを表示する。
-        XgCenterMessageBoxW(hwnd, sz, XgLoadStringDx2(9), MB_ICONINFORMATION);
+        XgCenterMessageBoxW(hwnd, sz, XgLoadStringDx2(IDS_RESULTS), MB_ICONINFORMATION);
 
         // 保存先フォルダを開く。
         if (s_nNumberGenerated && !s_dirs_save_to.empty())
@@ -3407,15 +3408,15 @@ void XgOnGenerateBlacks(HWND hwnd, bool sym)
 
     WCHAR sz[MAX_PATH];
     if (xg_bCancelled) {
-        StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(31),
+        StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(IDS_CANCELLED),
             (s_dwTick2 - s_dwTick0) / 1000,
             (s_dwTick2 - s_dwTick0) / 100 % 10);
-        XgCenterMessageBoxW(hwnd, sz, XgLoadStringDx2(9), MB_ICONINFORMATION);
+        XgCenterMessageBoxW(hwnd, sz, XgLoadStringDx2(IDS_RESULTS), MB_ICONINFORMATION);
     } else {
         StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(108),
             (s_dwTick2 - s_dwTick0) / 1000,
             (s_dwTick2 - s_dwTick0) / 100 % 10);
-        XgCenterMessageBoxW(hwnd, sz, XgLoadStringDx2(9), MB_ICONINFORMATION);
+        XgCenterMessageBoxW(hwnd, sz, XgLoadStringDx2(IDS_RESULTS), MB_ICONINFORMATION);
     }
 }
 
@@ -3462,10 +3463,10 @@ bool __fastcall XgOnSolveAddBlack(HWND hwnd)
         XgMarkUpdate();
         XgUpdateImage(hwnd, 0, 0);
 
-        StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(31),
+        StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(IDS_CANCELLED),
             (s_dwTick2 - s_dwTick0) / 1000,
             (s_dwTick2 - s_dwTick0) / 100 % 10);
-        XgCenterMessageBoxW(hwnd, sz, XgLoadStringDx2(9), MB_ICONINFORMATION);
+        XgCenterMessageBoxW(hwnd, sz, XgLoadStringDx2(IDS_RESULTS), MB_ICONINFORMATION);
     } else if (xg_bSolved) {
         // 空マスがないか？
         if (xg_xword.IsFulfilled()) {
@@ -3487,10 +3488,10 @@ bool __fastcall XgOnSolveAddBlack(HWND hwnd)
         XgUpdateImage(hwnd, 0, 0);
 
         // 成功メッセージを表示する。
-        StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(8),
+        StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(IDS_SOLVED),
             (s_dwTick2 - s_dwTick0) / 1000,
             (s_dwTick2 - s_dwTick0) / 100 % 10);
-        XgCenterMessageBoxW(hwnd, sz, XgLoadStringDx2(9), MB_ICONINFORMATION);
+        XgCenterMessageBoxW(hwnd, sz, XgLoadStringDx2(IDS_RESULTS), MB_ICONINFORMATION);
 
         // ヒントを更新して開く。
         XgUpdateHints(hwnd);
@@ -3502,11 +3503,11 @@ bool __fastcall XgOnSolveAddBlack(HWND hwnd)
         XgMarkUpdate();
         XgUpdateImage(hwnd, 0, 0);
         // 失敗メッセージを表示する。
-        StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(11),
+        StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(IDS_CANTSOLVE),
             (s_dwTick2 - s_dwTick0) / 1000,
             (s_dwTick2 - s_dwTick0) / 100 % 10);
         ::InvalidateRect(hwnd, nullptr, FALSE);
-        XgCenterMessageBoxW(hwnd, sz, XgLoadStringDx2(9), MB_ICONERROR);
+        XgCenterMessageBoxW(hwnd, sz, XgLoadStringDx2(IDS_RESULTS), MB_ICONERROR);
     }
     return true;
 }
@@ -3555,10 +3556,10 @@ bool __fastcall XgOnSolveNoAddBlack(HWND hwnd)
         XgUpdateImage(hwnd, 0, 0);
 
         // 終了メッセージを表示する。
-        StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(31),
+        StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(IDS_CANCELLED),
             (s_dwTick2 - s_dwTick0) / 1000,
             (s_dwTick2 - s_dwTick0) / 100 % 10);
-        XgCenterMessageBoxW(hwnd, sz, XgLoadStringDx2(9), MB_ICONINFORMATION);
+        XgCenterMessageBoxW(hwnd, sz, XgLoadStringDx2(IDS_RESULTS), MB_ICONINFORMATION);
     } else if (xg_bSolved) {
         // 空マスがないか？
         if (xg_xword.IsFulfilled()) {
@@ -3580,10 +3581,10 @@ bool __fastcall XgOnSolveNoAddBlack(HWND hwnd)
         XgUpdateImage(hwnd, 0, 0);
 
         // 成功メッセージを表示する。
-        StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(8),
+        StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(IDS_SOLVED),
             (s_dwTick2 - s_dwTick0) / 1000,
             (s_dwTick2 - s_dwTick0) / 100 % 10);
-        XgCenterMessageBoxW(hwnd, sz, XgLoadStringDx2(9), MB_ICONINFORMATION);
+        XgCenterMessageBoxW(hwnd, sz, XgLoadStringDx2(IDS_RESULTS), MB_ICONINFORMATION);
 
         // ヒントを更新して開く。
         XgUpdateHints(hwnd);
@@ -3595,11 +3596,11 @@ bool __fastcall XgOnSolveNoAddBlack(HWND hwnd)
         XgMarkUpdate();
         XgUpdateImage(hwnd, 0, 0);
         // 失敗メッセージを表示する。
-        StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(11),
+        StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(IDS_CANTSOLVE),
             (s_dwTick2 - s_dwTick0) / 1000,
             (s_dwTick2 - s_dwTick0) / 100 % 10);
         ::InvalidateRect(hwnd, nullptr, FALSE);
-        XgCenterMessageBoxW(hwnd, sz, XgLoadStringDx2(9), MB_ICONERROR);
+        XgCenterMessageBoxW(hwnd, sz, XgLoadStringDx2(IDS_RESULTS), MB_ICONERROR);
     }
 
     return true;
@@ -3681,15 +3682,15 @@ bool __fastcall XgOnSolveRepeatedly(HWND hwnd)
         // 終了メッセージを表示する。
         WCHAR sz[MAX_PATH];
         if (s_bOutOfDiskSpace) {
-            StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(61), s_nNumberGenerated,
+            StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(IDS_OUTOFSTORAGE), s_nNumberGenerated,
                 (s_dwTick2 - s_dwTick0) / 1000,
                 (s_dwTick2 - s_dwTick0) / 100 % 10);
         } else {
-            StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(60), s_nNumberGenerated,
+            StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(IDS_PROBLEMSMADE), s_nNumberGenerated,
                 (s_dwTick2 - s_dwTick0) / 1000,
                 (s_dwTick2 - s_dwTick0) / 100 % 10);
         }
-        XgCenterMessageBoxW(hwnd, sz, XgLoadStringDx2(9), MB_ICONINFORMATION);
+        XgCenterMessageBoxW(hwnd, sz, XgLoadStringDx2(IDS_RESULTS), MB_ICONINFORMATION);
 
         // 保存先フォルダを開く。
         if (s_nNumberGenerated && !s_dirs_save_to.empty()) {
@@ -3776,15 +3777,15 @@ bool __fastcall XgOnSolveRepeatedlyNoAddBlack(HWND hwnd)
         // 終了メッセージを表示する。
         WCHAR sz[MAX_PATH];
         if (s_bOutOfDiskSpace) {
-            StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(61), s_nNumberGenerated,
+            StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(IDS_OUTOFSTORAGE), s_nNumberGenerated,
                 (s_dwTick2 - s_dwTick0) / 1000,
                 (s_dwTick2 - s_dwTick0) / 100 % 10);
         } else {
-            StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(60), s_nNumberGenerated,
+            StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(IDS_PROBLEMSMADE), s_nNumberGenerated,
                 (s_dwTick2 - s_dwTick0) / 1000,
                 (s_dwTick2 - s_dwTick0) / 100 % 10);
         }
-        XgCenterMessageBoxW(hwnd, sz, XgLoadStringDx2(9), MB_ICONINFORMATION);
+        XgCenterMessageBoxW(hwnd, sz, XgLoadStringDx2(IDS_RESULTS), MB_ICONINFORMATION);
 
         // 保存先フォルダを開く。
         if (s_nNumberGenerated && !s_dirs_save_to.empty()) {
@@ -3799,10 +3800,10 @@ bool __fastcall XgOnSolveRepeatedlyNoAddBlack(HWND hwnd)
 void XgOnLineSymmetryCheck(HWND hwnd)
 {
     if (xg_xword.IsLineSymmetry()) {
-        XgCenterMessageBoxW(hwnd, XgLoadStringDx1(62), XgLoadStringDx2(2),
+        XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_LINESYMMETRY), XgLoadStringDx2(IDS_APPNAME),
                           MB_ICONINFORMATION);
     } else {
-        XgCenterMessageBoxW(hwnd, XgLoadStringDx1(63), XgLoadStringDx2(2),
+        XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_NOTLINESYMMETRY), XgLoadStringDx2(IDS_APPNAME),
                           MB_ICONINFORMATION);
     }
 }
@@ -3811,10 +3812,10 @@ void XgOnLineSymmetryCheck(HWND hwnd)
 void XgOnPointSymmetryCheck(HWND hwnd)
 {
     if (xg_xword.IsPointSymmetry()) {
-        XgCenterMessageBoxW(hwnd, XgLoadStringDx1(64), XgLoadStringDx2(2),
+        XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_POINTSYMMETRY), XgLoadStringDx2(IDS_APPNAME),
                           MB_ICONINFORMATION);
     } else {
-        XgCenterMessageBoxW(hwnd, XgLoadStringDx1(65), XgLoadStringDx2(2),
+        XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_NOTPOINTSYMMETRY), XgLoadStringDx2(IDS_APPNAME),
                           MB_ICONINFORMATION);
     }
 }
@@ -4090,7 +4091,7 @@ ImageSize_DlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
             if (s_nImageCopyWidth <= 0) {
                 ::SendDlgItemMessageW(hwnd, edt1, EM_SETSEL, 0, -1);
                 SetFocus(::GetDlgItem(hwnd, edt1));
-                XgCenterMessageBoxW(hwnd, XgLoadStringDx1(58), NULL,
+                XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_ENTERPOSITIVE), NULL,
                                     MB_ICONERROR);
                 break;
             }
@@ -4098,7 +4099,7 @@ ImageSize_DlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
             if (s_nImageCopyHeight <= 0) {
                 ::SendDlgItemMessageW(hwnd, edt2, EM_SETSEL, 0, -1);
                 SetFocus(::GetDlgItem(hwnd, edt2));
-                XgCenterMessageBoxW(hwnd, XgLoadStringDx1(58), NULL,
+                XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_ENTERPOSITIVE), NULL,
                                     MB_ICONERROR);
                 break;
             }
@@ -4270,7 +4271,7 @@ MarksHeight_DlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
             if (s_nMarksHeight <= 0) {
                 ::SendDlgItemMessageW(hwnd, edt1, EM_SETSEL, 0, -1);
                 SetFocus(::GetDlgItem(hwnd, edt1));
-                XgCenterMessageBoxW(hwnd, XgLoadStringDx1(58), NULL,
+                XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_ENTERPOSITIVE), NULL,
                                     MB_ICONERROR);
                 break;
             }
@@ -5881,7 +5882,7 @@ void MainWnd_OnEraseSettings(HWND hwnd)
     XgDestroyHintsWnd();
 
     // 消去するのか確認。
-    if (XgCenterMessageBoxW(hwnd, XgLoadStringDx1(76), XgLoadStringDx2(2),
+    if (XgCenterMessageBoxW(hwnd, XgLoadStringDx1(76), XgLoadStringDx2(IDS_APPNAME),
                             MB_ICONWARNING | MB_YESNO) != IDYES)
     {
         return;
@@ -5930,12 +5931,12 @@ void MainWnd_OnEraseSettings(HWND hwnd)
     if (bSuccess) {
         // メッセージを表示する。
         XgCenterMessageBoxW(hwnd,
-            XgLoadStringDx1(74), XgLoadStringDx2(2),
+            XgLoadStringDx1(74), XgLoadStringDx2(IDS_APPNAME),
             MB_ICONINFORMATION);
     } else {
         // メッセージを表示する。
         XgCenterMessageBoxW(hwnd,
-            XgLoadStringDx1(75), XgLoadStringDx2(2),
+            XgLoadStringDx1(75), XgLoadStringDx2(IDS_APPNAME),
             MB_ICONINFORMATION);
     }
 }
@@ -6024,7 +6025,7 @@ XgLoadDictDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
             } else {
                 // 読み込めなかったのでエラーを表示する。
                 ::SendDlgItemMessageW(hwnd, cmb1, CB_SETEDITSEL, 0, MAKELPARAM(0, -1));
-                XgCenterMessageBoxW(hwnd, XgLoadStringDx1(3), nullptr, MB_ICONERROR);
+                XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_CANTLOAD), nullptr, MB_ICONERROR);
                 ::SetFocus(::GetDlgItem(hwnd, cmb1));
             }
             break;
@@ -6039,11 +6040,11 @@ XgLoadDictDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
             ZeroMemory(&ofn, sizeof(ofn));
             ofn.lStructSize = OPENFILENAME_SIZE_VERSION_400W;
             ofn.hwndOwner = hwnd;
-            ofn.lpstrFilter = XgMakeFilterString(XgLoadStringDx2(50));
+            ofn.lpstrFilter = XgMakeFilterString(XgLoadStringDx2(IDS_DICTFILTER));
             szFile[0] = 0;
             ofn.lpstrFile = szFile;
             ofn.nMaxFile = MAX_PATH;
-            ofn.lpstrTitle = XgLoadStringDx1(19);
+            ofn.lpstrTitle = XgLoadStringDx1(IDS_OPENDICTDATA);
             ofn.Flags = OFN_EXPLORER | OFN_ENABLESIZING | OFN_FILEMUSTEXIST |
                 OFN_PATHMUSTEXIST | OFN_HIDEREADONLY;
             ofn.lpstrDefExt = L"dic";
@@ -6788,11 +6789,11 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
         ZeroMemory(&ofn, sizeof(ofn));
         ofn.lStructSize = OPENFILENAME_SIZE_VERSION_400W;
         ofn.hwndOwner = hwnd;
-        ofn.lpstrFilter = XgMakeFilterString(XgLoadStringDx2(51));
+        ofn.lpstrFilter = XgMakeFilterString(XgLoadStringDx2(IDS_CROSSFILTER));
         sz[0] = 0;
         ofn.lpstrFile = sz;
         ofn.nMaxFile = static_cast<DWORD>(ARRAYSIZE(sz));
-        ofn.lpstrTitle = XgLoadStringDx1(20);
+        ofn.lpstrTitle = XgLoadStringDx1(IDS_OPENCROSSDATA);
         ofn.Flags = OFN_EXPLORER | OFN_ENABLESIZING | OFN_FILEMUSTEXIST |
             OFN_PATHMUSTEXIST | OFN_HIDEREADONLY;
         ofn.lpstrDefExt = L"xwd";
@@ -6814,7 +6815,7 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
             if (is_builder) {
                 if (!XgDoLoadBuilderFile(hwnd, sz)) {
                     // 失敗。
-                    XgCenterMessageBoxW(hwnd, XgLoadStringDx1(3), nullptr, MB_ICONERROR);
+                    XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_CANTLOAD), nullptr, MB_ICONERROR);
                 } else {
                     // 成功。
                     xg_ubUndoBuffer.Empty();
@@ -6825,7 +6826,7 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
             } else {
                 if (!XgDoLoadFile(hwnd, sz, is_json)) {
                     // 失敗。
-                    XgCenterMessageBoxW(hwnd, XgLoadStringDx1(3), nullptr, MB_ICONERROR);
+                    XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_CANTLOAD), nullptr, MB_ICONERROR);
                 } else {
                     // 成功。
                     xg_ubUndoBuffer.Empty();
@@ -6848,11 +6849,11 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
         ZeroMemory(&ofn, sizeof(ofn));
         ofn.lStructSize = OPENFILENAME_SIZE_VERSION_400W;
         ofn.hwndOwner = hwnd;
-        ofn.lpstrFilter = XgMakeFilterString(XgLoadStringDx2(52));
+        ofn.lpstrFilter = XgMakeFilterString(XgLoadStringDx2(IDS_JSONFILTER));
         StringCbCopy(sz, sizeof(sz), xg_strFileName.data());
         ofn.lpstrFile = sz;
         ofn.nMaxFile = static_cast<DWORD>(ARRAYSIZE(sz));
-        ofn.lpstrTitle = XgLoadStringDx1(21);
+        ofn.lpstrTitle = XgLoadStringDx1(IDS_SAVECROSSDATA);
         ofn.Flags = OFN_EXPLORER | OFN_ENABLESIZING | OFN_OVERWRITEPROMPT |
             OFN_PATHMUSTEXIST | OFN_HIDEREADONLY;
         // JSON only
@@ -7509,7 +7510,7 @@ void __fastcall MainWnd_OnDropFiles(HWND hwnd, HDROP hDrop)
     if (::lstrcmpiW(pch, L".xwd") == 0) {
         // 拡張子が.xwdだった。ファイルを開く。
         if (!XgDoLoadFile(hwnd, szFile, false)) {
-            XgCenterMessageBoxW(hwnd, XgLoadStringDx1(3), nullptr, MB_ICONERROR);
+            XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_CANTLOAD), nullptr, MB_ICONERROR);
         } else {
             xg_caret_pos.clear();
             // イメージを更新する。
@@ -7519,7 +7520,7 @@ void __fastcall MainWnd_OnDropFiles(HWND hwnd, HDROP hDrop)
     } else if (::lstrcmpiW(pch, L".xwj") == 0 || lstrcmpiW(pch, L".json") == 0) {
         // 拡張子が.xwjか.jsonだった。ファイルを開く。
         if (!XgDoLoadFile(hwnd, szFile, true)) {
-            XgCenterMessageBoxW(hwnd, XgLoadStringDx1(3), nullptr, MB_ICONERROR);
+            XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_CANTLOAD), nullptr, MB_ICONERROR);
         } else {
             xg_caret_pos.clear();
             // イメージを更新する。
@@ -7528,7 +7529,7 @@ void __fastcall MainWnd_OnDropFiles(HWND hwnd, HDROP hDrop)
         }
     } else if (::lstrcmpiW(pch, L".crp") == 0 || ::lstrcmpiW(pch, L".crx") == 0) {
         if (!XgDoLoadBuilderFile(hwnd, szFile)) {
-            XgCenterMessageBoxW(hwnd, XgLoadStringDx1(3), nullptr, MB_ICONERROR);
+            XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_CANTLOAD), nullptr, MB_ICONERROR);
         } else {
             xg_caret_pos.clear();
             // イメージを更新する。
@@ -7758,7 +7759,7 @@ bool __fastcall MainWnd_OnCreate(HWND hwnd, LPCREATESTRUCT /*lpCreateStruct*/)
 
     // パソコンが古い場合、警告を表示する。
     if (s_dwNumberOfProcessors <= 1 && !s_bOldNotice) {
-        XgCenterMessageBoxW(hwnd, XgLoadStringDx1(55), XgLoadStringDx2(2),
+        XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_TOOOLDPC), XgLoadStringDx2(IDS_APPNAME),
                           MB_ICONWARNING | MB_OK);
         s_bOldNotice = true;
     }
@@ -7809,7 +7810,7 @@ bool __fastcall MainWnd_OnCreate(HWND hwnd, LPCREATESTRUCT /*lpCreateStruct*/)
         if (bSuccess) {
             if (is_builder) {
                 if (!XgDoLoadBuilderFile(hwnd, szFile)) {
-                    XgCenterMessageBoxW(hwnd, XgLoadStringDx1(3), nullptr, MB_ICONERROR);
+                    XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_CANTLOAD), nullptr, MB_ICONERROR);
                 } else {
                     xg_caret_pos.clear();
                     // イメージを更新する。
@@ -7817,7 +7818,7 @@ bool __fastcall MainWnd_OnCreate(HWND hwnd, LPCREATESTRUCT /*lpCreateStruct*/)
                 }
             } else {
                 if (!XgDoLoadFile(hwnd, szFile, is_json)) {
-                    XgCenterMessageBoxW(hwnd, XgLoadStringDx1(3), nullptr, MB_ICONERROR);
+                    XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_CANTLOAD), nullptr, MB_ICONERROR);
                 } else {
                     xg_caret_pos.clear();
                     // イメージを更新する。
@@ -8022,7 +8023,7 @@ void HintsWnd_OnSize(HWND hwnd, UINT /*state*/, int /*cx*/, int /*cy*/)
     {
         HDC hdc = ::CreateCompatibleDC(NULL);
         WCHAR label[64];
-        StringCbPrintf(label, sizeof(label), XgLoadStringDx1(24), 100);
+        StringCbPrintf(label, sizeof(label), XgLoadStringDx1(IDS_DOWNNUMBER), 100);
         std::wstring strLabel = label;
         ::SelectObject(hdc, ::GetStockObject(SYSTEM_FIXED_FONT));
         ::GetTextExtentPoint32W(hdc, strLabel.data(), int(strLabel.size()), &size1);
@@ -8244,7 +8245,7 @@ BOOL HintsWnd_OnCreate(HWND hwnd, LPCREATESTRUCT /*lpCreateStruct*/)
     HWND hwndCtrl;
 
     hwndCtrl = ::CreateWindowW(
-        TEXT("STATIC"), XgLoadStringDx1(22),
+        TEXT("STATIC"), XgLoadStringDx1(IDS_DOWN),
         WS_CHILD | WS_VISIBLE | SS_LEFT | SS_NOPREFIX | SS_NOTIFY |
         SS_CENTER | SS_CENTERIMAGE,
         0, 0, 0, 0, hwnd, NULL, xg_hInstance, NULL);
@@ -8256,7 +8257,7 @@ BOOL HintsWnd_OnCreate(HWND hwnd, LPCREATESTRUCT /*lpCreateStruct*/)
         TRUE);
 
     hwndCtrl = ::CreateWindowW(
-        TEXT("STATIC"), XgLoadStringDx1(23),
+        TEXT("STATIC"), XgLoadStringDx1(IDS_ACROSS),
         WS_CHILD | WS_VISIBLE | SS_LEFT | SS_NOPREFIX | SS_NOTIFY |
         SS_CENTER | SS_CENTERIMAGE,
         0, 0, 0, 0, hwnd, NULL, xg_hInstance, NULL);
@@ -8270,7 +8271,7 @@ BOOL HintsWnd_OnCreate(HWND hwnd, LPCREATESTRUCT /*lpCreateStruct*/)
     XG_HintEditData *data;
     WCHAR sz[256];
     for (const auto& hint : xg_vecTateHints) {
-        StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(24), hint.m_number);
+        StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(IDS_DOWNNUMBER), hint.m_number);
         hwndCtrl = ::CreateWindowW(TEXT("STATIC"), sz,
             WS_CHILD | WS_VISIBLE | SS_RIGHT | SS_NOPREFIX | SS_NOTIFY | SS_CENTERIMAGE,
             0, 0, 0, 0, hwnd, NULL, xg_hInstance, NULL);
@@ -8306,7 +8307,7 @@ BOOL HintsWnd_OnCreate(HWND hwnd, LPCREATESTRUCT /*lpCreateStruct*/)
         xg_ahwndTateEdits.emplace_back(hwndCtrl);
     }
     for (const auto& hint : xg_vecYokoHints) {
-        StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(25), hint.m_number);
+        StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(IDS_ACROSSNUMBER), hint.m_number);
         hwndCtrl = ::CreateWindowW(TEXT("STATIC"), sz,
             WS_CHILD | WS_VISIBLE | SS_RIGHT | SS_NOPREFIX | SS_NOTIFY | SS_CENTERIMAGE,
             0, 0, 0, 0, hwnd, NULL, xg_hInstance, NULL);
@@ -9197,7 +9198,7 @@ int WINAPI WinMain(
         // ミューテックスを閉じる。
         ::CloseHandle(s_hMutex);
         // 多重起動禁止メッセージ。
-        XgCenterMessageBoxW(NULL, XgLoadStringDx1(66), XgLoadStringDx2(2),
+        XgCenterMessageBoxW(NULL, XgLoadStringDx1(66), XgLoadStringDx2(IDS_APPNAME),
                             MB_ICONERROR);
         return 999;
     }
@@ -9241,7 +9242,7 @@ int WINAPI WinMain(
         ::ReleaseMutex(s_hMutex);
         ::CloseHandle(s_hMutex);
         // アクセラレータ作成失敗メッセージ。
-        XgCenterMessageBoxW(nullptr, XgLoadStringDx1(12), nullptr, MB_ICONERROR);
+        XgCenterMessageBoxW(nullptr, XgLoadStringDx1(IDS_CANTACCEL), nullptr, MB_ICONERROR);
         return 3;
     }
 
@@ -9264,7 +9265,7 @@ int WINAPI WinMain(
         ::ReleaseMutex(s_hMutex);
         ::CloseHandle(s_hMutex);
         // ウィンドウ登録失敗メッセージ。
-        XgCenterMessageBoxW(nullptr, XgLoadStringDx1(13), nullptr, MB_ICONERROR);
+        XgCenterMessageBoxW(nullptr, XgLoadStringDx1(IDS_CANTREGWND), nullptr, MB_ICONERROR);
         return 1;
     }
     wcx.style = CS_HREDRAW | CS_VREDRAW | CS_DBLCLKS;
@@ -9278,7 +9279,7 @@ int WINAPI WinMain(
         ::ReleaseMutex(s_hMutex);
         ::CloseHandle(s_hMutex);
         // ウィンドウ登録失敗メッセージ。
-        XgCenterMessageBoxW(nullptr, XgLoadStringDx1(13), nullptr, MB_ICONERROR);
+        XgCenterMessageBoxW(nullptr, XgLoadStringDx1(IDS_CANTREGWND), nullptr, MB_ICONERROR);
         return 1;
     }
     wcx.style = CS_HREDRAW | CS_VREDRAW | CS_DBLCLKS;
@@ -9292,7 +9293,7 @@ int WINAPI WinMain(
         ::ReleaseMutex(s_hMutex);
         ::CloseHandle(s_hMutex);
         // ウィンドウ登録失敗メッセージ。
-        XgCenterMessageBoxW(nullptr, XgLoadStringDx1(13), nullptr, MB_ICONERROR);
+        XgCenterMessageBoxW(nullptr, XgLoadStringDx1(IDS_CANTREGWND), nullptr, MB_ICONERROR);
         return 1;
     }
 
@@ -9309,7 +9310,7 @@ int WINAPI WinMain(
         ::ReleaseMutex(s_hMutex);
         ::CloseHandle(s_hMutex);
         // ウィンドウ作成失敗メッセージ。
-        XgCenterMessageBoxW(nullptr, XgLoadStringDx1(14), nullptr, MB_ICONERROR);
+        XgCenterMessageBoxW(nullptr, XgLoadStringDx1(IDS_CANTMAKEWND), nullptr, MB_ICONERROR);
         return 2;
     }
 

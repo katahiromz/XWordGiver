@@ -305,7 +305,7 @@ void __fastcall XgOpenReadMe(HWND hwnd)
 
     // ReadMeへのパスを作成。
     PathRemoveFileSpec(szPath);
-    PathAppend(szPath, XgLoadStringDx1(53));
+    PathAppend(szPath, XgLoadStringDx1(IDS_README));
 
     // ReadMeを開く。
     ShellExecuteW(hwnd, nullptr, szPath, nullptr, nullptr, SW_SHOWNORMAL);
