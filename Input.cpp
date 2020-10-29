@@ -1032,38 +1032,38 @@ BOOL XgCreateInputPalette(HWND hwndOwner)
     switch (xg_imode) {
     case xg_im_ABC:
         if (xg_bLowercase) {
-            CreateDialogW(xg_hInstance, MAKEINTRESOURCEW(20), hwndOwner,
+            CreateDialogW(xg_hInstance, MAKEINTRESOURCEW(IDD_ABCLOWER), hwndOwner,
                           XgInputPaletteDlgProc);
         } else {
-            CreateDialogW(xg_hInstance, MAKEINTRESOURCEW(16), hwndOwner,
+            CreateDialogW(xg_hInstance, MAKEINTRESOURCEW(IDD_ABC), hwndOwner,
                           XgInputPaletteDlgProc);
         }
         break;
     case xg_im_KANA:
         if (xg_bTateOki) {
             if (xg_bHiragana) {
-                CreateDialogW(xg_hInstance, MAKEINTRESOURCEW(18), hwndOwner,
+                CreateDialogW(xg_hInstance, MAKEINTRESOURCEW(IDD_HIRATATE), hwndOwner,
                               XgInputPaletteDlgProc);
             } else {
-                CreateDialogW(xg_hInstance, MAKEINTRESOURCEW(14), hwndOwner,
+                CreateDialogW(xg_hInstance, MAKEINTRESOURCEW(IDD_KATATATE), hwndOwner,
                               XgInputPaletteDlgProc);
             }
         } else {
             if (xg_bHiragana) {
-                CreateDialogW(xg_hInstance, MAKEINTRESOURCEW(19), hwndOwner,
+                CreateDialogW(xg_hInstance, MAKEINTRESOURCEW(IDD_HIRAYOKO), hwndOwner,
                               XgInputPaletteDlgProc);
             } else {
-                CreateDialogW(xg_hInstance, MAKEINTRESOURCEW(15), hwndOwner,
+                CreateDialogW(xg_hInstance, MAKEINTRESOURCEW(IDD_KATAYOKO), hwndOwner,
                               XgInputPaletteDlgProc);
             }
         }
         break;
     case xg_im_RUSSIA:
         if (xg_bLowercase) {
-            CreateDialogW(xg_hInstance, MAKEINTRESOURCEW(21), hwndOwner,
+            CreateDialogW(xg_hInstance, MAKEINTRESOURCEW(IDD_RUSSIALOWER), hwndOwner,
                           XgInputPaletteDlgProc);
         } else {
-            CreateDialogW(xg_hInstance, MAKEINTRESOURCEW(17), hwndOwner,
+            CreateDialogW(xg_hInstance, MAKEINTRESOURCEW(IDD_RUSSIA), hwndOwner,
                           XgInputPaletteDlgProc);
         }
         break;
