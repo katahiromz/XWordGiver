@@ -4,6 +4,7 @@
 // (Japanese, Shift_JIS)
 
 #include "XWordGiver.hpp"
+#include "Auto.hpp"
 
 // 辞書データ。
 std::vector<XG_WordData>     xg_dict_data;
@@ -94,17 +95,9 @@ bool __fastcall XgReadAnsiFile(LPCSTR pszData, DWORD /*cchData*/)
         return false;
 
     // Unicodeに変換して処理する。
-    LPWSTR pszWide = new WCHAR[cchWide];
-    MultiByteToWideChar(SJIS_CODEPAGE, 0, pszData, -1, pszWide, cchWide);
-    if (XgReadUnicodeFile(pszWide, cchWide - 1)) {
-        // 成功。
-        delete[] pszWide;
-        return true;
-    }
-
-    // 失敗。
-    delete[] pszWide;
-    return false;
+    std::wstring strWide(cchWide, 0);
+    MultiByteToWideChar(SJIS_CODEPAGE, 0, pszData, -1, &strWide[0], cchWide);
+    return XgReadUnicodeFile(&strWide[0], cchWide - 1);
 }
 
 // UTF-8のファイルの中身を読み込む。
@@ -116,31 +109,22 @@ bool __fastcall XgReadUtf8File(LPCSTR pszData, DWORD /*cchData*/)
         return false;
 
     // Unicodeに変換して処理する。
-    LPWSTR pszWide = new WCHAR[cchWide];
-    MultiByteToWideChar(CP_UTF8, 0, pszData, -1, pszWide, cchWide);
-    if (XgReadUnicodeFile(pszWide, cchWide - 1)) {
-        // 成功。
-        delete[] pszWide;
-        return true;
-    }
-
-    // 失敗。
-    delete[] pszWide;
-    return false;
+    std::wstring strWide(cchWide, 0);
+    MultiByteToWideChar(CP_UTF8, 0, pszData, -1, &strWide[0], cchWide);
+    return XgReadUnicodeFile(&strWide[0], cchWide - 1);
 }
 
 // 辞書ファイルを読み込む。
 bool __fastcall XgLoadDictFile(LPCWSTR pszFile)
 {
     DWORD cbRead, i;
-    LPBYTE pbFile = nullptr;
 
     // 初期化する。
     xg_dict_data.clear();
 
     // ファイルを開く。
-    HANDLE hFile = CreateFileW(pszFile, GENERIC_READ, FILE_SHARE_READ, nullptr,
-        OPEN_EXISTING, 0, nullptr);
+    AutoCloseHandle hFile(CreateFileW(pszFile, GENERIC_READ, FILE_SHARE_READ, nullptr,
+                                      OPEN_EXISTING, 0, nullptr));
     if (hFile == INVALID_HANDLE_VALUE)
         return false;
 
@@ -151,93 +135,74 @@ bool __fastcall XgLoadDictFile(LPCWSTR pszFile)
 
     try {
         // メモリを確保してファイルから読み込む。
-        pbFile = new BYTE[cbFile + 3];
+        std::vector<BYTE> pbFile(cbFile + 4, 0);
         i = cbFile;
-        if (ReadFile(hFile, pbFile, cbFile, &cbRead, nullptr)) {
-            // BOMチェック。
-            if (pbFile[0] == 0xFF && pbFile[1] == 0xFE) {
-                // Unicode
-                pbFile[cbFile] = 0;
-                pbFile[cbFile + 1] = 0;
-                pbFile[cbFile + 2] = 0;
-                std::wstring str = reinterpret_cast<LPWSTR>(&pbFile[2]);
-                if (!XgReadUnicodeFile(const_cast<LPWSTR>(str.data()),
-                                     static_cast<DWORD>(str.size())))
-                    throw 0;
-                i = 0;
-            } else if (pbFile[0] == 0xFE && pbFile[1] == 0xFF) {
-                // Unicode BE
-                pbFile[cbFile] = 0;
-                pbFile[cbFile + 1] = 0;
-                pbFile[cbFile + 2] = 0;
-                XgSwab(pbFile, cbFile);
-                std::wstring str = reinterpret_cast<LPWSTR>(&pbFile[2]);
-                if (!XgReadUnicodeFile(const_cast<LPWSTR>(str.data()),
-                                     static_cast<DWORD>(str.size())))
-                    throw 0;
-                i = 0;
-            } else if (pbFile[0] == 0xEF && pbFile[1] == 0xBB && pbFile[2] == 0xBF) {
-                // UTF-8
-                pbFile[cbFile] = 0;
-                std::wstring str = XgUtf8ToUnicode(reinterpret_cast<LPCSTR>(&pbFile[3]));
-                if (!XgReadUnicodeFile(const_cast<LPWSTR>(str.data()),
-                                     static_cast<DWORD>(str.size())))
-                    throw 0;
-                i = 0;
-            } else {
-                for (i = 0; i < cbFile; i++) {
-                    // ナル文字があればUnicodeと判断する。
-                    if (pbFile[i] == 0) {
-                        pbFile[cbFile] = 0;
-                        pbFile[cbFile + 1] = 0;
-                        pbFile[cbFile + 2] = 0;
-                        if (i & 1) {
-                            // Unicode
-                            if (!XgReadUnicodeFile(reinterpret_cast<LPWSTR>(pbFile), cbFile / 2))
-                                throw 0;
-                        } else {
-                            // Unicode BE
-                            XgSwab(pbFile, cbFile);
-                            if (!XgReadUnicodeFile(reinterpret_cast<LPWSTR>(pbFile), cbFile / 2))
-                                throw 0;
-                        }
-                        i = 0;
-                        break;
+        if (!ReadFile(hFile, &pbFile[0], cbFile, &cbRead, nullptr))
+            return false;
+
+        // BOMチェック。
+        if (pbFile[0] == 0xFF && pbFile[1] == 0xFE) {
+            // Unicode
+            std::wstring str = reinterpret_cast<LPWSTR>(&pbFile[2]);
+            if (!XgReadUnicodeFile(&str[0], static_cast<DWORD>(str.size())))
+                return false;
+            i = 0;
+        } else if (pbFile[0] == 0xFE && pbFile[1] == 0xFF) {
+            // Unicode BE
+            XgSwab(&pbFile[0], cbFile);
+            std::wstring str = reinterpret_cast<LPWSTR>(&pbFile[2]);
+            if (!XgReadUnicodeFile(&str[0], static_cast<DWORD>(str.size())))
+                return false;
+            i = 0;
+        } else if (pbFile[0] == 0xEF && pbFile[1] == 0xBB && pbFile[2] == 0xBF) {
+            // UTF-8
+            std::wstring str = XgUtf8ToUnicode(reinterpret_cast<LPCSTR>(&pbFile[3]));
+            if (!XgReadUnicodeFile(&str[0], static_cast<DWORD>(str.size())))
+                return false;
+            i = 0;
+        } else {
+            for (i = 0; i < cbFile; i++) {
+                // ナル文字があればUnicodeと判断する。
+                if (pbFile[i] == 0) {
+                    if (i & 1) {
+                        // Unicode
+                        if (!XgReadUnicodeFile(reinterpret_cast<LPWSTR>(&pbFile[0]), cbFile / 2))
+                            return false;
+                    } else {
+                        // Unicode BE
+                        XgSwab(&pbFile[0], cbFile);
+                        if (!XgReadUnicodeFile(reinterpret_cast<LPWSTR>(&pbFile[0]), cbFile / 2))
+                            return false;
                     }
+                    i = 0;
+                    break;
                 }
             }
-            if (i == cbFile) {
-                pbFile[cbFile] = 0;
-                if (MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS,
-                                        reinterpret_cast<LPCSTR>(pbFile),
-                                        static_cast<int>(cbFile), nullptr, 0))
-                {
-                    // UTF-8
-                    if (!XgReadUtf8File(reinterpret_cast<LPSTR>(pbFile), cbFile))
-                        throw 0;
-                } else {
-                    // ANSI
-                    if (!XgReadAnsiFile(reinterpret_cast<LPSTR>(pbFile), cbFile))
-                        throw 0;
-                }
-            }
-
-            // 二分探索のために、並び替えておく。
-            std::sort(xg_dict_data.begin(), xg_dict_data.end(), xg_word_less());
-
-            // 成功。
-            delete[] pbFile;
-            CloseHandle(hFile);
-            return true;
         }
+
+        if (i == cbFile) {
+            if (MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS,
+                                    reinterpret_cast<LPCSTR>(pbFile[0]),
+                                    static_cast<int>(cbFile), nullptr, 0))
+            {
+                // UTF-8
+                if (!XgReadUtf8File(reinterpret_cast<LPSTR>(&pbFile[0]), cbFile))
+                    return false;
+            } else {
+                // ANSI
+                if (!XgReadAnsiFile(reinterpret_cast<LPSTR>(&pbFile[0]), cbFile))
+                    return false;
+            }
+        }
+
+        // 二分探索のために、並び替えておく。
+        std::sort(xg_dict_data.begin(), xg_dict_data.end(), xg_word_less());
+        return true; // 成功。
     } catch (...) {
         // 例外が発生した。
     }
 
-    // 失敗。
-    delete[] pbFile;
-    CloseHandle(hFile);
-    return false;
+    return false; // 失敗。
 }
 
 // 辞書から単語を探し出す。
