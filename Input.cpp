@@ -26,15 +26,15 @@ void __fastcall XgInputDirection(HWND hwnd, INT nDirection)
     if (xg_hwndInputPalette) {
         if (xg_bTateOki) {
             if (xg_bTateInput) {
-                SetDlgItemTextW(xg_hwndInputPalette, 20052, XgLoadStringDx1(1170));
+                SetDlgItemTextW(xg_hwndInputPalette, 20052, XgLoadStringDx1(IDS_VINPUT));
             } else {
-                SetDlgItemTextW(xg_hwndInputPalette, 20052, XgLoadStringDx1(1169));
+                SetDlgItemTextW(xg_hwndInputPalette, 20052, XgLoadStringDx1(IDS_HINPUT));
             }
         } else {
             if (xg_bTateInput) {
-                SetDlgItemTextW(xg_hwndInputPalette, 20052, XgLoadStringDx1(1179));
+                SetDlgItemTextW(xg_hwndInputPalette, 20052, XgLoadStringDx1(IDS_VINPUT2));
             } else {
-                SetDlgItemTextW(xg_hwndInputPalette, 20052, XgLoadStringDx1(1178));
+                SetDlgItemTextW(xg_hwndInputPalette, 20052, XgLoadStringDx1(IDS_HINPUT2));
             }
         }
     }

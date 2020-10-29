@@ -3689,7 +3689,7 @@ bool __fastcall XgDoSaveJson(HWND /*hwnd*/, LPCWSTR pszFile)
     try
     {
         json j;
-        j["creator_info"] = XgUnicodeToUtf8(XgLoadStringDx1(1176));
+        j["creator_info"] = XgUnicodeToUtf8(XgLoadStringDx1(IDS_APPINFO));
         j["row_count"] = xg_nRows;
         j["column_count"] = xg_nCols;
 
@@ -3843,7 +3843,7 @@ bool __fastcall XgDoSaveStandard(HWND hwnd, LPCWSTR pszFile, const XG_Board& boa
         str += xg_strHeader;        // ヘッダー文字列。
         str += xg_pszNewLine;       // 改行。
         str += XgLoadStringDx1(IDS_HEADERSEP1); // ヘッダー分離線。
-        str += XgLoadStringDx1(1176); // アプリ情報。
+        str += XgLoadStringDx1(IDS_APPINFO); // アプリ情報。
         str += xg_pszNewLine;       // 改行。
         str += strMarks;            // マーク。
         str += strTable;            // 本体。
@@ -3855,7 +3855,7 @@ bool __fastcall XgDoSaveStandard(HWND hwnd, LPCWSTR pszFile, const XG_Board& boa
         str += xg_strHeader;        // ヘッダー文字列。
         str += xg_pszNewLine;       // 改行。
         str += XgLoadStringDx1(IDS_HEADERSEP1); // ヘッダー分離線。
-        str += XgLoadStringDx1(1176); // アプリ情報。
+        str += XgLoadStringDx1(IDS_APPINFO); // アプリ情報。
         str += xg_pszNewLine;       // 改行。
         str += strMarks;            // マーク。
         str += strTable;            // 本体。

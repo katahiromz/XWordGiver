@@ -469,7 +469,7 @@ BOOL XgLoadDictsAll(void)
     if (xg_dict_name.empty())
     {
         // 辞書ファイルが未指定の場合は「カナ」の「基本辞書データ」を優先する。
-        LPCWSTR pszKana = XgLoadStringDx1(1180);
+        LPCWSTR pszKana = XgLoadStringDx1(IDS_KANA);
         LPCWSTR pszBasicDict = XgLoadStringDx2(IDS_BASICDICTDATA);
         for (auto& file : xg_dict_files)
         {
@@ -4753,7 +4753,7 @@ void __fastcall MainWnd_OnVScroll(HWND hwnd, HWND /*hwndCtl*/, UINT code, int po
 HMENU DoFindDictMenu(HMENU hMenu)
 {
     WCHAR szText[128];
-    LPCWSTR pszDict = XgLoadStringDx1(1174);
+    LPCWSTR pszDict = XgLoadStringDx1(IDS_DICTIONARY);
     for (INT i = 0; i < 16; ++i)
     {
         if (GetMenuStringW(hMenu, i, szText, ARRAYSIZE(szText), MF_BYPOSITION))
@@ -5117,24 +5117,24 @@ void __fastcall XgUpdateStatusBar(HWND hwnd)
     // 状態文字列を設定。
     std::wstring str;
     if (xg_bTateInput) {
-        str = XgLoadStringDx1(1184);
+        str = XgLoadStringDx1(IDS_VINPUT3);
     } else {
-        str = XgLoadStringDx1(1183);
+        str = XgLoadStringDx1(IDS_HINPUT3);
     }
     str += L" - ";
 
     switch (xg_imode) {
-    case xg_im_ABC: str += XgLoadStringDx1(1172); break;
-    case xg_im_KANA: str += XgLoadStringDx1(1180); break;
-    case xg_im_KANJI: str += XgLoadStringDx1(1181); break;
-    case xg_im_RUSSIA: str += XgLoadStringDx1(1185); break;
+    case xg_im_ABC: str += XgLoadStringDx1(IDS_ABC); break;
+    case xg_im_KANA: str += XgLoadStringDx1(IDS_KANA); break;
+    case xg_im_KANJI: str += XgLoadStringDx1(IDS_KANJI); break;
+    case xg_im_RUSSIA: str += XgLoadStringDx1(IDS_RUSSIA); break;
     default:
         break;
     }
 
     if (xg_bCharFeed) {
         str += L" - ";
-        str += XgLoadStringDx1(1182);
+        str += XgLoadStringDx1(IDS_CHARFEED);
     }
 
     // 状態を表示。
@@ -6191,18 +6191,18 @@ std::wstring URL_encode(const std::wstring& url)
 // ウェブ検索。
 void DoWebSearch(HWND hwnd, LPCWSTR str)
 {
-    std::wstring query = XgLoadStringDx1(1171);
+    std::wstring query = XgLoadStringDx1(IDS_GOOGLESEARCH);
     std::wstring raw = str;
     switch (xg_imode)
     {
     case xg_im_ABC:
         raw += L" ";
-        raw += XgLoadStringDx2(1172);
+        raw += XgLoadStringDx2(IDS_ABC);
         break;
     case xg_im_KANA:
     case xg_im_KANJI:
         raw += L" ";
-        raw += XgLoadStringDx2(1174);
+        raw += XgLoadStringDx2(IDS_DICTIONARY);
         break;
     case xg_im_HANGUL:
     case xg_im_RUSSIA:
@@ -7371,7 +7371,7 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
         PostMessageW(hwnd, WM_SIZE, 0, 0);
         break;
     case ID_HELPDICTSITE:
-        ShellExecuteW(hwnd, NULL, XgLoadStringDx1(1175), NULL, NULL, SW_SHOWNORMAL);
+        ShellExecuteW(hwnd, NULL, XgLoadStringDx1(IDS_MATRIXSEARCH), NULL, NULL, SW_SHOWNORMAL);
         break;
     case ID_BLOCKNOFEED:
         {
@@ -9302,7 +9302,7 @@ int WINAPI WinMain(
 
     // メインウィンドウを作成する。
     DWORD style = WS_OVERLAPPEDWINDOW | WS_CLIPSIBLINGS;
-    ::CreateWindowW(s_pszMainWndClass, XgLoadStringDx1(1176), style,
+    ::CreateWindowW(s_pszMainWndClass, XgLoadStringDx1(IDS_APPINFO), style,
         s_nMainWndX, s_nMainWndY, s_nMainWndCX, s_nMainWndCY,
         nullptr, nullptr, hInstance, nullptr);
     if (xg_hMainWnd == nullptr) {

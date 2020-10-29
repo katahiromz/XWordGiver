@@ -88,10 +88,10 @@ void __fastcall XgMarkUpdate(void)
     } else {
         // マークされているか？ 答えを表示するか？
         if (XgGetMarkWord(xw, str) && xg_bShowAnswer) {
-            StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(1177), str.data());
+            StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(IDS_APPINFO2), str.data());
             ::SetWindowTextW(xg_hMainWnd, sz);
         } else {
-            StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(1176));
+            StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(IDS_APPINFO));
             ::SetWindowTextW(xg_hMainWnd, sz);
         }
     }

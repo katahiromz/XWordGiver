@@ -116,6 +116,22 @@
 #define IDS_INVALIDVALUE                    209
 #define IDS_NONE                            210
 #define IDS_BASICDICTDATA                   211
+#define IDS_GOOGLESEARCH                    212
+#define IDS_MATRIXSEARCH                    213
+#define IDS_HINPUT                          214
+#define IDS_VINPUT                          215
+#define IDS_ABC                             216
+#define IDS_DICTIONARY                      217
+#define IDS_APPINFO                         218
+#define IDS_APPINFO2                        219
+#define IDS_HINPUT2                         220
+#define IDS_VINPUT2                         221
+#define IDS_KANA                            222
+#define IDS_KANJI                           223
+#define IDS_CHARFEED                        224
+#define IDS_HINPUT3                         225
+#define IDS_VINPUT3                         226
+#define IDS_RUSSIA                          227
 
 #define ID_NEW                              100
 #define ID_GENERATE                         101
