@@ -3821,60 +3821,17 @@ void XgOnPointSymmetryCheck(HWND hwnd)
 
 //////////////////////////////////////////////////////////////////////////////
 
-// クリップボードにクロスワードをコピー。
-void __fastcall XgCopyBoard(HWND hwnd)
+// 24BPPビットマップを作成。
+HBITMAP XgCreate24BppBitmap(HDC hDC, LONG width, LONG height)
 {
-    std::wstring str;
-
-    // コピーする盤を選ぶ。
-    XG_Board *pxw = (xg_bSolved && xg_bShowAnswer) ? &xg_solution : &xg_xword;
-
-    // クロスワードの文字列を取得する。
-    pxw->GetString(str);
-
-    // ヒープからメモリを確保する。
-    DWORD cb = static_cast<DWORD>((str.size() + 1) * sizeof(WCHAR));
-    HGLOBAL hGlobal = ::GlobalAlloc(GMEM_MOVEABLE | GMEM_DDESHARE, cb);
-    if (hGlobal) {
-        // メモリをロックする。
-        LPWSTR psz = reinterpret_cast<LPWSTR>(::GlobalLock(hGlobal));
-        if (psz) {
-            // メモリに文字列をコピーする。
-            ::CopyMemory(psz, str.data(), cb);
-            // メモリのロックを解除する。
-            ::GlobalUnlock(hGlobal);
-
-            // クリップボードを開く。
-            if (::OpenClipboard(hwnd)) {
-                // クリップボードを空にする。
-                if (::EmptyClipboard()) {
-                    // Unicodeテキストを設定。
-                    ::SetClipboardData(CF_UNICODETEXT, hGlobal);
-
-                    // 描画サイズを取得する。
-                    SIZE siz;
-                    XgGetXWordExtent(&siz);
-
-                    // EMFを作成する。
-                    HDC hdcRef = ::GetDC(hwnd);
-                    HDC hdc = ::CreateEnhMetaFileW(hdcRef, nullptr, nullptr, XgLoadStringDx1(2));
-                    if (hdc) {
-                        // EMFに描画する。
-                        XgDrawXWord(*pxw, hdc, &siz, false);
-
-                        // EMFを設定。
-                        ::SetClipboardData(CF_ENHMETAFILE, ::CloseEnhMetaFile(hdc));
-                    }
-                    ::ReleaseDC(hwnd, hdcRef);
-                }
-                // クリップボードを閉じる。
-                ::CloseClipboard();
-                return;
-            }
-        }
-        // 確保したメモリを解放する。
-        ::GlobalFree(hGlobal);
-    }
+    BITMAPINFO bmi;
+    ZeroMemory(&bmi, sizeof(bmi));
+    bmi.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
+    bmi.bmiHeader.biWidth = width;
+    bmi.bmiHeader.biHeight = height;
+    bmi.bmiHeader.biPlanes = 1;
+    bmi.bmiHeader.biBitCount = 24;
+    return CreateDIBSection(hDC, &bmi, DIB_RGB_COLORS, NULL, NULL, 0);
 }
 
 // BITMAPINFOEX構造体。
@@ -3927,15 +3884,92 @@ PackedDIB_CreateFromHandle(std::vector<BYTE>& vecData, HBITMAP hbm)
 
     DeleteDC(hDC);
 
-    LPBYTE pb;
-    pb = (LPBYTE)pbmih;
-    vecData.insert(vecData.end(), pb, pb + sizeof(*pbmih));
-    pb = (LPBYTE)bi.bmiColors;
-    vecData.insert(vecData.end(), pb, pb + cbColors);
-    pb = (LPBYTE)&Bits[0];
-    vecData.insert(vecData.end(), pb, pb + Bits.size());
-
+    std::string stream;
+    stream.append((const char *)pbmih, sizeof(*pbmih));
+    stream.append((const char *)bi.bmiColors, cbColors);
+    stream.append((const char *)&Bits[0], Bits.size());
+    vecData.assign(stream.begin(), stream.end());
     return TRUE;
+}
+
+// クリップボードにクロスワードをコピー。
+void __fastcall XgCopyBoard(HWND hwnd)
+{
+    std::wstring str;
+
+    // コピーする盤を選ぶ。
+    XG_Board *pxw = (xg_bSolved && xg_bShowAnswer) ? &xg_solution : &xg_xword;
+
+    // クロスワードの文字列を取得する。
+    pxw->GetString(str);
+
+    // ヒープからメモリを確保する。
+    DWORD cb = static_cast<DWORD>((str.size() + 1) * sizeof(WCHAR));
+    HGLOBAL hGlobal = ::GlobalAlloc(GMEM_MOVEABLE | GMEM_DDESHARE, cb);
+    if (hGlobal) {
+        // メモリをロックする。
+        LPWSTR psz = reinterpret_cast<LPWSTR>(::GlobalLock(hGlobal));
+        if (psz) {
+            // メモリに文字列をコピーする。
+            ::CopyMemory(psz, str.data(), cb);
+            // メモリのロックを解除する。
+            ::GlobalUnlock(hGlobal);
+
+            // クリップボードを開く。
+            if (::OpenClipboard(hwnd)) {
+                // クリップボードを空にする。
+                if (::EmptyClipboard()) {
+                    // Unicodeテキストを設定。
+                    ::SetClipboardData(CF_UNICODETEXT, hGlobal);
+
+                    // 描画サイズを取得する。
+                    SIZE siz;
+                    XgGetXWordExtent(&siz);
+
+                    // EMFを作成する。
+                    HDC hdcRef = ::GetDC(hwnd);
+                    HDC hdc = ::CreateEnhMetaFileW(hdcRef, nullptr, nullptr, XgLoadStringDx1(2));
+                    if (hdc) {
+                        // EMFに描画する。
+                        XgDrawXWord(*pxw, hdc, &siz, false);
+
+                        HENHMETAFILE hEMF = ::CloseEnhMetaFile(hdc);
+
+                        // DIBを設定。
+                        if (HDC hDC = CreateCompatibleDC(NULL))
+                        {
+                            HBITMAP hbm = XgCreate24BppBitmap(hDC, siz.cx, siz.cy);
+                            HGDIOBJ hbmOld = SelectObject(hDC, hbm);
+                            XgDrawXWord(*pxw, hDC, &siz, false);
+                            SelectObject(hDC, hbmOld);
+                            ::SetClipboardData(CF_BITMAP, hbm);
+                            ::DeleteDC(hDC);
+
+                            std::vector<BYTE> data;
+                            PackedDIB_CreateFromHandle(data, hbm);
+                            if (data.size())
+                            {
+                                HGLOBAL hGlobal2 = GlobalAlloc(GHND | GMEM_SHARE, data.size());
+                                LPVOID pv = GlobalLock(hGlobal2);
+                                memcpy(pv, &data[0], data.size());
+                                GlobalUnlock(hGlobal2);
+                                ::SetClipboardData(CF_DIB, hGlobal2);
+                            }
+                        }
+
+                        // EMFを設定。
+                        ::SetClipboardData(CF_ENHMETAFILE, hEMF);
+                    }
+                    ::ReleaseDC(hwnd, hdcRef);
+                }
+                // クリップボードを閉じる。
+                ::CloseClipboard();
+                return;
+            }
+        }
+        // 確保したメモリを解放する。
+        ::GlobalFree(hGlobal);
+    }
 }
 
 // クリップボードにクロスワードを画像としてコピー。

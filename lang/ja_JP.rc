@@ -503,7 +503,6 @@ FONT 9, "MS UI Gothic"
     CONTROL "", scr3, "msctls_updown32", UDS_ARROWKEYS | UDS_AUTOBUDDY | UDS_ALIGNRIGHT | UDS_SETBUDDYINT, 101, 24, 12, 20
     AUTOCHECKBOX "無制限に作成する(&I)", chx2, 165, 135, 135, 14
     PUSHBUTTON "参照(&O)...", psh2, 250, 110, 50, 14
-    AUTOCHECKBOX "&JSON形式で保存する", chx3, 10, 155, 96, 14
     DEFPUSHBUTTON "計算開始(&G)", IDOK, 175, 155, 60, 14
     PUSHBUTTON "キャンセル", IDCANCEL, 240, 155, 60, 14
     LTEXT "※辞書ファイルは拡張子.tsvでDICTフォルダに追加して下さい。", -1, 10, 80, 209, 12
@@ -567,7 +566,6 @@ FONT 9, "MS UI Gothic"
     AUTOCHECKBOX "無制限に作成する(&I)", chx2, 165, 25, 135, 14
     PUSHBUTTON "参照(&O)...", psh1, 250, 5, 50, 14
     AUTOCHECKBOX "一定時間が過ぎたらリトライ(&T)", chx1, 10, 45, 155, 14
-    AUTOCHECKBOX "&JSON形式で保存する", chx3, 10, 60, 102, 14
     DEFPUSHBUTTON "計算開始(&S)", IDOK, 175, 60, 60, 14
     PUSHBUTTON "キャンセル", IDCANCEL, 240, 60, 60, 14
 }
