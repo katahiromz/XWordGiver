@@ -4,6 +4,7 @@
 // (Japanese, Shift_JIS)
 
 #include "XWordGiver.hpp"
+#include "Auto.hpp"
 
 //////////////////////////////////////////////////////////////////////////////
 // global variables
@@ -325,14 +326,11 @@ bool __fastcall XG_Board::TriBlackArround() const
 // 黒マスで分断されているかどうか？
 bool __fastcall XG_Board::DividedByBlack() const
 {
-    const int nRows = xg_nRows, nCols = xg_nCols;
-    int nCount = nRows * nCols;
+    const INT nRows = xg_nRows, nCols = xg_nCols;
+    INT nCount = nRows * nCols;
 
     // 各マスに対応するフラグ群。
-    LPBYTE pb = new BYTE[nCount];
-
-    // フラグをすべてゼロにする。
-    memset(pb, 0, nCount);
+    std::vector<BYTE> pb(nCount, 0);
 
     // 位置のキュー。
     // 一番左上のマス(黒マスではないと仮定する)を追加。
@@ -368,13 +366,9 @@ bool __fastcall XG_Board::DividedByBlack() const
         // フラグが立っていないのに、黒マスではないマスがあったら、失敗。
         if (pb[nCount] == 0 && GetAt(nCount) != ZEN_BLACK) {
             // フラグ群を解放。
-            delete[] pb;
             return true;    // 分断されている。
         }
     }
-
-    // フラグ群を解放。
-    delete[] pb;
 
     return false;   // 分断されていない。
 }
@@ -3583,17 +3577,15 @@ bool __fastcall XgDoLoadBuilderFile(HWND hwnd, LPCWSTR pszFile)
 // ファイルを開く。
 bool __fastcall XgDoLoadFile(HWND hwnd, LPCWSTR pszFile, bool json)
 {
-    HANDLE hFile;
     DWORD i, cbFile, cbRead;
-    LPBYTE pbFile = nullptr;
     bool bOK = false;
 
     // 二重マス単語を空にする。
     XgSetMarkedWord();
 
     // ファイルを開く。
-    hFile = ::CreateFileW(pszFile, GENERIC_READ, FILE_SHARE_READ, nullptr,
-        OPEN_EXISTING, 0, nullptr);
+    AutoCloseHandle hFile(::CreateFileW(pszFile, GENERIC_READ, FILE_SHARE_READ,
+                                        nullptr, OPEN_EXISTING, 0, nullptr));
     if (hFile == INVALID_HANDLE_VALUE)
         return false;
 
@@ -3604,94 +3596,80 @@ bool __fastcall XgDoLoadFile(HWND hwnd, LPCWSTR pszFile, bool json)
 
     try {
         // メモリを確保してファイルから読み込む。
-        pbFile = new BYTE[cbFile + 3];
+        std::vector<BYTE> pbFile(cbFile + 4, 0);
         i = cbFile;
-        if (::ReadFile(hFile, pbFile, cbFile, &cbRead, nullptr)) {
-            // BOMチェック。
-            if (pbFile[0] == 0xFF && pbFile[1] == 0xFE) {
-                // Unicode
-                pbFile[cbFile] = 0;
-                pbFile[cbFile + 1] = 0;
-                pbFile[cbFile + 2] = 0;
-                std::wstring str = reinterpret_cast<LPWSTR>(&pbFile[2]);
-                bOK = XgSetString(hwnd, str, json);
-                i = 0;
-            } else if (pbFile[0] == 0xFE && pbFile[1] == 0xFF) {
-                // Unicode BigEndian
-                pbFile[cbFile] = 0;
-                pbFile[cbFile + 1] = 0;
-                pbFile[cbFile + 2] = 0;
-                XgSwab(pbFile, cbFile);
-                std::wstring str = reinterpret_cast<LPWSTR>(&pbFile[2]);
-                bOK = XgSetString(hwnd, str, json);
-                i = 0;
-            } else if (pbFile[0] == 0xEF && pbFile[1] == 0xBB &&
-                       pbFile[2] == 0xBF)
+        if (!::ReadFile(hFile, &pbFile[0], cbFile, &cbRead, nullptr))
+            return false;
+
+        // BOMチェック。
+        if (pbFile[0] == 0xFF && pbFile[1] == 0xFE) {
+            // Unicode
+            std::wstring str = reinterpret_cast<LPWSTR>(&pbFile[2]);
+            bOK = XgSetString(hwnd, str, json);
+            i = 0;
+        } else if (pbFile[0] == 0xFE && pbFile[1] == 0xFF) {
+            // Unicode BigEndian
+            XgSwab(&pbFile[0], cbFile);
+            std::wstring str = reinterpret_cast<LPWSTR>(&pbFile[2]);
+            bOK = XgSetString(hwnd, str, json);
+            i = 0;
+        } else if (pbFile[0] == 0xEF && pbFile[1] == 0xBB && pbFile[2] == 0xBF)
+        {
+            // UTF-8
+            std::wstring str = XgUtf8ToUnicode(reinterpret_cast<LPCSTR>(&pbFile[3]));
+            bOK = XgSetString(hwnd, str, json);
+            i = 0;
+        } else {
+            for (i = 0; i < cbFile; i++) {
+                // ナル文字があればUnicodeと判断する。
+                if (pbFile[i] == 0) {
+                    // エンディアンの判定。
+                    if (i & 1) {
+                        // Unicode
+                        std::wstring str = reinterpret_cast<LPWSTR>(&pbFile[0]);
+                        bOK = XgSetString(hwnd, str, json);
+                    } else {
+                        // Unicode BE
+                        XgSwab(&pbFile[0], cbFile);
+                        std::wstring str = reinterpret_cast<LPWSTR>(&pbFile[0]);
+                        bOK = XgSetString(hwnd, str, json);
+                    }
+                    break;
+                }
+            }
+        }
+
+        if (i == cbFile) {
+            if (MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS,
+                                    reinterpret_cast<LPCSTR>(&pbFile[0]),
+                                    static_cast<int>(cbFile), nullptr, 0))
             {
                 // UTF-8
-                pbFile[cbFile] = 0;
-                std::wstring str = XgUtf8ToUnicode(reinterpret_cast<LPCSTR>(&pbFile[3]));
+                std::wstring str = XgUtf8ToUnicode(reinterpret_cast<LPCSTR>(&pbFile[0]));
                 bOK = XgSetString(hwnd, str, json);
-                i = 0;
             } else {
-                for (i = 0; i < cbFile; i++) {
-                    // ナル文字があればUnicodeと判断する。
-                    if (pbFile[i] == 0) {
-                        pbFile[cbFile] = 0;
-                        pbFile[cbFile + 1] = 0;
-                        pbFile[cbFile + 2] = 0;
-                        // エンディアンの判定。
-                        if (i & 1) {
-                            // Unicode
-                            std::wstring str = reinterpret_cast<LPWSTR>(pbFile);
-                            bOK = XgSetString(hwnd, str, json);
-                        } else {
-                            // Unicode BE
-                            XgSwab(pbFile, cbFile);
-                            std::wstring str = reinterpret_cast<LPWSTR>(pbFile);
-                            bOK = XgSetString(hwnd, str, json);
-                        }
-                        break;
-                    }
-                }
+                // ANSI
+                std::wstring str = XgAnsiToUnicode(reinterpret_cast<LPCSTR>(&pbFile[0]));
+                bOK = XgSetString(hwnd, str, json);
             }
-            if (i == cbFile) {
-                pbFile[cbFile] = 0;
-                if (MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS,
-                                        reinterpret_cast<LPCSTR>(pbFile),
-                                        static_cast<int>(cbFile), nullptr, 0))
-                {
-                    // UTF-8
-                    std::wstring str = XgUtf8ToUnicode(reinterpret_cast<LPCSTR>(pbFile));
-                    bOK = XgSetString(hwnd, str, json);
-                } else {
-                    // ANSI
-                    std::wstring str = XgAnsiToUnicode(reinterpret_cast<LPCSTR>(pbFile));
-                    bOK = XgSetString(hwnd, str, json);
-                }
-            }
+        }
 
-            if (bOK) {
-                // 成功。
-                delete[] pbFile;
-                ::CloseHandle(hFile);
-                XgUpdateImage(hwnd, 0, 0);
-                XgMarkUpdate();
+        if (bOK) {
+            // 成功。
+            XgUpdateImage(hwnd, 0, 0);
+            XgMarkUpdate();
 
-                // ファイルパスをセットする。
-                WCHAR szFileName[MAX_PATH];
-                ::GetFullPathNameW(pszFile, MAX_PATH, szFileName, NULL);
-                xg_strFileName = szFileName;
-                return true;
-            }
+            // ファイルパスをセットする。
+            WCHAR szFileName[MAX_PATH];
+            ::GetFullPathNameW(pszFile, MAX_PATH, szFileName, NULL);
+            xg_strFileName = szFileName;
+            return true;
         }
     } catch (...) {
         // 例外が発生した。
     }
 
     // 失敗。
-    delete[] pbFile;
-    ::CloseHandle(hFile);
     return false;
 }
 
