@@ -470,6 +470,11 @@ def セルからクロスワードを作成(セル, header='', notes=''):
 # 主処理。
 def main():
 	import sys
+	if len(sys.argv) == 1:
+		print(バージョン取得());
+		print("");
+		print("使い方: python xword.py [処理したいファイル...]")
+		return;
 	for i in range(1, len(sys.argv)):
 		filename = sys.argv[i]
 		xword = クロスワード(filename)
