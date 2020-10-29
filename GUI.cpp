@@ -6083,11 +6083,14 @@ void __fastcall MainWnd_OnFlipVH(HWND hwnd)
     }
     std::swap(xg_nRows, xg_nCols);
     if (xg_bSolved) {
+        auto old_dict = xg_dict_data;
+        xg_dict_data = XgCreateMiniDict();
         xg_solution.DoNumbering();
         xg_solution.GetHintsStr(xg_strHints, 2, true);
         if (!XgParseHintsStr(hwnd, xg_strHints)) {
             xg_strHints.clear();
         }
+        std::swap(xg_dict_data, old_dict);
     }
     std::swap(xg_caret_pos.m_i, xg_caret_pos.m_j);
     for (auto& mark : xg_vMarks) {

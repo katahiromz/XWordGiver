@@ -85,6 +85,9 @@ bool __fastcall XgLoadDictFile(LPCWSTR pszFile);
 // 辞書から単語を探し出す。
 XG_WordData *XgFindWordFromDict(const std::wstring& word);
 
+// ミニ辞書を作成する。
+std::vector<XG_WordData> XgCreateMiniDict(void);
+
 //////////////////////////////////////////////////////////////////////////////
 // XG_WordData構造体を比較するファンクタ。
 

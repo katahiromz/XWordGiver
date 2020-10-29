@@ -228,3 +228,23 @@ void __fastcall XgSortAndUniqueDictData(void)
     }
     xg_dict_data = std::move(dict_data);
 }
+
+// ƒ~ƒj«‘‚ğì¬‚·‚éB
+std::vector<XG_WordData> XgCreateMiniDict(void)
+{
+    std::vector<XG_WordData> ret;
+    for (const auto& hint : xg_vecTateHints)
+    {
+        ret.emplace_back(hint.m_strWord, hint.m_strHint);
+    }
+    for (const auto& hint : xg_vecYokoHints)
+    {
+        ret.emplace_back(hint.m_strWord, hint.m_strHint);
+    }
+    std::sort(ret.begin(), ret.end(),
+        [](const XG_WordData& a, const XG_WordData& b) {
+            return a.m_word < b.m_word;
+        }
+    );
+    return ret;
+}
