@@ -305,6 +305,8 @@ class クロスワード:
 		except RuntimeError as err:
 			print(str(err))
 			raise err
+		self.do_init()
+	def do_init(self):
 		self.列数 = self.json['column_count']
 		self.行数 = self.json['row_count']
 		self.セル = self.json['cell_data']
