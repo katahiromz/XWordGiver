@@ -158,22 +158,16 @@ bool __fastcall xg_submultiseteq(const std::unordered_multiset<WCHAR>& ms1,
 // UTF-8 -> Unicode.
 std::wstring __fastcall XgUtf8ToUnicode(const std::string& ansi)
 {
-    std::wstring uni;
-
     // 変換先の文字数を取得する。
-    const int cch = MultiByteToWideChar(CP_UTF8, 0, ansi.data(), -1, nullptr, 0);
+    const INT cch = MultiByteToWideChar(CP_UTF8, 0, ansi.data(), -1, nullptr, 0);
     if (cch == 0)
-        return uni;
+        return L"";
 
     // 変換先のバッファを確保する。
-    LPWSTR pszWide = new WCHAR[cch];
+    std::wstring uni(cch - 1, 0);
 
     // 変換して格納する。
-    MultiByteToWideChar(CP_UTF8, 0, ansi.data(), -1, pszWide, cch);
-    uni = pszWide;
-
-    // バッファを解放する。
-    delete[] pszWide;
+    MultiByteToWideChar(CP_UTF8, 0, ansi.data(), -1, &uni[0], cch);
     return uni;
 }
 
@@ -388,58 +382,36 @@ bool __fastcall XgCanWriteFile(const WCHAR *pszFile)
 // Unicode -> UTF8
 std::string XgUnicodeToUtf8(const std::wstring& wide)
 {
-    std::string utf8;
-    int len = ::WideCharToMultiByte(CP_UTF8, 0, wide.data(), -1, NULL, 0, NULL, NULL);
-
+    const INT len = ::WideCharToMultiByte(CP_UTF8, 0, wide.data(), -1, NULL, 0, NULL, NULL);
     if (len == 0)
-        return utf8;
+        return "";
 
-    char *pszAnsi = new char[len + 1];
-    int ret = ::WideCharToMultiByte(CP_UTF8, 0, wide.data(), -1, pszAnsi, len, NULL, NULL);
-    pszAnsi[ret] = 0;
-
-    if (ret != 0) {
-        utf8 = pszAnsi;
-    }
-    delete [] pszAnsi;
+    std::string utf8(len - 1, 0);
+    ::WideCharToMultiByte(CP_UTF8, 0, wide.data(), -1, &utf8[0], len, NULL, NULL);
     return utf8;
 }
 
 // ANSI -> Unicode
 std::wstring XgAnsiToUnicode(const std::string& ansi)
 {
-    std::wstring uni;
-    int len = ::MultiByteToWideChar(SJIS_CODEPAGE, 0, ansi.data(), -1, NULL, 0);
+    const INT len = ::MultiByteToWideChar(SJIS_CODEPAGE, 0, ansi.data(), -1, NULL, 0);
     if (len == 0)
-        return uni;
+        return L"";
 
-    WCHAR *pszWide = new WCHAR[len + 1];
-    int ret = ::MultiByteToWideChar(SJIS_CODEPAGE, 0, ansi.data(), -1, pszWide, len);
-    pszWide[ret] = 0;
-
-    if (ret != 0) {
-        uni = pszWide;
-    }
-    delete [] pszWide;
+    std::wstring uni(len - 1, 0);
+    ::MultiByteToWideChar(SJIS_CODEPAGE, 0, ansi.data(), -1, &uni[0], len);
     return uni;
 }
 
 // Unicode -> ANSI
 std::string XgUnicodeToAnsi(const std::wstring& wide)
 {
-    std::string ansi;
     int len = ::WideCharToMultiByte(SJIS_CODEPAGE, 0, wide.data(), -1, NULL, 0, NULL, NULL);
     if (len == 0)
-        return ansi;
+        return "";
 
-    char *pszAnsi = new char[len + 1];
-    int ret = ::WideCharToMultiByte(SJIS_CODEPAGE, 0, wide.data(), -1, pszAnsi, len, NULL, NULL);
-    pszAnsi[ret] = 0;
-
-    if (ret != 0) {
-        ansi = pszAnsi;
-    }
-    delete [] pszAnsi;
+    std::string ansi(len - 1, 0);
+    ::WideCharToMultiByte(SJIS_CODEPAGE, 0, wide.data(), -1, &ansi[0], len, NULL, NULL);
     return ansi;
 }
 

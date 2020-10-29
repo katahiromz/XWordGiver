@@ -95,7 +95,7 @@ bool __fastcall XgReadAnsiFile(LPCSTR pszData, DWORD /*cchData*/)
         return false;
 
     // Unicode‚É•ÏŠ·‚µ‚Äˆ—‚·‚éB
-    std::wstring strWide(cchWide, 0);
+    std::wstring strWide(cchWide - 1, 0);
     MultiByteToWideChar(SJIS_CODEPAGE, 0, pszData, -1, &strWide[0], cchWide);
     return XgReadUnicodeFile(&strWide[0], cchWide - 1);
 }
@@ -109,7 +109,7 @@ bool __fastcall XgReadUtf8File(LPCSTR pszData, DWORD /*cchData*/)
         return false;
 
     // Unicode‚É•ÏŠ·‚µ‚Äˆ—‚·‚éB
-    std::wstring strWide(cchWide, 0);
+    std::wstring strWide(cchWide - 1, 0);
     MultiByteToWideChar(CP_UTF8, 0, pszData, -1, &strWide[0], cchWide);
     return XgReadUnicodeFile(&strWide[0], cchWide - 1);
 }
