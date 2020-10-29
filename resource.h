@@ -63,6 +63,9 @@
 #define IDS_NOTLINESYMMETRY 63
 #define IDS_POINTSYMMETRY 64
 #define IDS_NOTPOINTSYMMETRY 65
+#define IDS_MULTIPLESTARTUP 66
+#define IDS_KOREANFONT 67
+#define IDS_HINTS 70
 
 #define IDD_NEW                             1
 #define IDD_CREATE                          2

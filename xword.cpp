@@ -2907,7 +2907,7 @@ void __fastcall XgDrawMarkWord(HDC hdc, LPSIZE psiz)
     ZeroMemory(&lf, sizeof(lf));
     if (xg_imode == xg_im_HANGUL) {
         // ハングル文字。
-        StringCbCopy(lf.lfFaceName, sizeof(lf.lfFaceName), XgLoadStringDx1(67));
+        StringCbCopy(lf.lfFaceName, sizeof(lf.lfFaceName), XgLoadStringDx1(IDS_KOREANFONT));
     } else {
         // その他。
         StringCbCopy(lf.lfFaceName, sizeof(lf.lfFaceName), XgLoadStringDx1(IDS_MONOFONT));
@@ -3056,7 +3056,7 @@ void __fastcall XgDrawXWord(XG_Board& xw, HDC hdc, LPSIZE psiz, bool bCaret)
     ZeroMemory(&lf, sizeof(lf));
     if (xg_imode == xg_im_HANGUL) {
         // ハングル文字。
-        StringCbCopy(lf.lfFaceName, sizeof(lf.lfFaceName), XgLoadStringDx1(67));
+        StringCbCopy(lf.lfFaceName, sizeof(lf.lfFaceName), XgLoadStringDx1(IDS_KOREANFONT));
     } else {
         // その他。
         StringCbCopy(lf.lfFaceName, sizeof(lf.lfFaceName), XgLoadStringDx1(IDS_MONOFONT));

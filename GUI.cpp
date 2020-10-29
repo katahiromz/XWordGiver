@@ -2990,7 +2990,7 @@ void __fastcall XgPrintIt(HDC hdc, PRINTDLGW* ppd, bool bPrintAnswer)
 
                 // フォント名を取得する。
                 if (xg_imode == xg_im_HANGUL)
-                    StringCbCopy(lf.lfFaceName, sizeof(lf.lfFaceName), XgLoadStringDx1(67)); // ハングルの場合。
+                    StringCbCopy(lf.lfFaceName, sizeof(lf.lfFaceName), XgLoadStringDx1(IDS_KOREANFONT)); // ハングルの場合。
                 else
                     StringCbCopy(lf.lfFaceName, sizeof(lf.lfFaceName), XgLoadStringDx1(IDS_MONOFONT)); // その他の場合。
                 if (xg_szCellFont[0])
@@ -3068,7 +3068,7 @@ void __fastcall XgPrintIt(HDC hdc, PRINTDLGW* ppd, bool bPrintAnswer)
 
             // フォント名を取得する。
             if (xg_imode == xg_im_HANGUL)
-                StringCbCopy(lf.lfFaceName, sizeof(lf.lfFaceName), XgLoadStringDx1(67)); // ハングルの場合。
+                StringCbCopy(lf.lfFaceName, sizeof(lf.lfFaceName), XgLoadStringDx1(IDS_KOREANFONT)); // ハングルの場合。
             else
                 StringCbCopy(lf.lfFaceName, sizeof(lf.lfFaceName), XgLoadStringDx1(IDS_MONOFONT)); // その他の場合。
             if (xg_szCellFont[0])
@@ -3126,7 +3126,7 @@ void __fastcall XgPrintIt(HDC hdc, PRINTDLGW* ppd, bool bPrintAnswer)
                 hFont = reinterpret_cast<HFONT>(::GetStockObject(DEFAULT_GUI_FONT));
                 ::GetObjectW(hFont, sizeof(LOGFONTW), &lf);
                 if (xg_imode == xg_im_HANGUL)
-                    StringCbCopy(lf.lfFaceName, sizeof(lf.lfFaceName), XgLoadStringDx1(67)); // ハングルの場合。
+                    StringCbCopy(lf.lfFaceName, sizeof(lf.lfFaceName), XgLoadStringDx1(IDS_KOREANFONT)); // ハングルの場合。
                 else
                     StringCbCopy(lf.lfFaceName, sizeof(lf.lfFaceName), XgLoadStringDx1(IDS_MONOFONT)); // その他の場合。
                 lf.lfHeight = cyPaper / 2 / 45;
@@ -8573,7 +8573,7 @@ BOOL XgCreateHintsWnd(HWND hwnd)
     const DWORD style = WS_OVERLAPPED | WS_CAPTION |
         WS_SYSMENU | WS_THICKFRAME | WS_HSCROLL | WS_VSCROLL;
     CreateWindowExW(WS_EX_TOOLWINDOW,
-        s_pszHintsWndClass, XgLoadStringDx1(70), style,
+        s_pszHintsWndClass, XgLoadStringDx1(IDS_HINTS), style,
         s_nHintsWndX, s_nHintsWndY, s_nHintsWndCX, s_nHintsWndCY,
         hwnd, nullptr, xg_hInstance, nullptr);
     if (xg_hHintsWnd) {
@@ -9198,7 +9198,7 @@ int WINAPI WinMain(
         // ミューテックスを閉じる。
         ::CloseHandle(s_hMutex);
         // 多重起動禁止メッセージ。
-        XgCenterMessageBoxW(NULL, XgLoadStringDx1(66), XgLoadStringDx2(IDS_APPNAME),
+        XgCenterMessageBoxW(NULL, XgLoadStringDx1(IDS_MULTIPLESTARTUP), XgLoadStringDx2(IDS_APPNAME),
                             MB_ICONERROR);
         return 999;
     }
