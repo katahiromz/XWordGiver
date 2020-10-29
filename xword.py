@@ -18,9 +18,12 @@ def JSON形式を開く(filename):
 			import json
 			data = json.load(fp)
 	except:
-		with open(filename, 'r', encoding='utf-8-sig') as fp:
-			import json
-			data = json.load(fp)
+		try:
+			with open(filename, 'r', encoding='utf-8-sig') as fp:
+				import json
+				data = json.load(fp)
+		except:
+			pass
 	return data
 
 def JSON形式で保存(filename, data):
@@ -172,7 +175,10 @@ def JSON形式をチェック(filename=None, data=None):
 	if data == None:
 		data = JSON形式を開く(filename)
 	if data == None:
-		raise RuntimeError('ファイル「' + filename + '」の読み込みに失敗しました。')
+		if filename != None:
+			raise RuntimeError('ファイル「' + filename + '」の読み込みに失敗しました。')
+		else:
+			raise RuntimeError('読み込みに失敗しました。')
 	# キーの存在確認。
 	if 'cell_data' not in data:
 		raise RuntimeError('「cell_data」キーがありません。')
@@ -295,7 +301,7 @@ class クロスワード:
 					raise RuntimeError("ファイル「" + filename + "」が開けません。")
 			else:
 				self.json = json_data
-			JSON形式をチェック(data=self.json)
+			JSON形式をチェック(filename=filename, data=self.json)
 		except RuntimeError as err:
 			print(str(err))
 			raise err
@@ -307,7 +313,6 @@ class クロスワード:
 		if self.json['has_hints']:
 			self.タテのカギ = self.json['hints']['v']
 			self.ヨコのカギ = self.json['hints']['h']
-		self.解あり = self.json['is_solved']
 		self.二重 = {}
 		number = 0
 		if self.json['has_mark']:
@@ -330,6 +335,8 @@ class クロスワード:
 				if tate or yoko:
 					self.付番[i * self.行数 + j] = number
 					number += 1
+	def 解あり(self):
+		return self.json['is_solved']
 	def 四隅に黒マス(self):
 		return 四隅に黒マス(self.行数, self.列数, self.セル)
 	def 連黒(self):
@@ -493,7 +500,7 @@ def main():
 		#####################################################################
 		# TODO: ここでxwordに対して何かをする。
 		備考欄 = xword.備考欄()
-		if not xword.解あり:
+		if not xword.解あり():
 			print("警告: ファイル「" + filename + "」は、解ではありません。")
 			備考欄 += "[解なし]"
 		if xword.斜同字():
