@@ -348,6 +348,16 @@ class クロスワード:
 		return 黒斜四連(self.行数, self.列数, self.セル)
 	def 二重マスがある(self):
 		return len(self.二重) > 0
+	def タイトル(self, title=None):
+		if title == None:
+			return self.json['header']
+		self.json['header'] = title
+		return True
+	def 備考欄(self, notes=None):
+		if notes == None:
+			return self.json['notes']
+		self.json['notes'] = notes
+		return True
 	def JSON形式で保存(self, filename):
 		JSON形式で保存(filename, self.json)
 		print("JSONファイル「" + filename + "」を保存しました。")
@@ -482,14 +492,20 @@ def main():
 		xword = クロスワード(filename)
 		#####################################################################
 		# TODO: ここでxwordに対して何かをする。
+		備考欄 = xword.備考欄()
 		if xword.斜同字():
 			print("警告: ファイル「" + filename + "」は、斜同字です。")
+			備考欄 += "[斜同字]"
 		if xword.黒斜三連():
 			print("警告: ファイル「" + filename + "」は、黒斜三連です。")
+			備考欄 += "[黒斜三連]"
 		if xword.黒斜四連():
 			print("警告: ファイル「" + filename + "」は、黒斜四連です。")
+			備考欄 += "[黒斜四連]"
 		if not xword.二重マスがある():
 			print("警告: ファイル「" + filename + "」は、二重マスがありません。")
+			備考欄 += "[二重マスなし]"
+		xword.備考欄(備考欄)
 		if False: # 画像として保存
 			xword.画像形式で保存(filename + ".png")
 		if False: # JSON形式として保存
