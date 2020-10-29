@@ -313,11 +313,11 @@ class クロスワード:
 		if self.json['has_hints']:
 			self.タテのカギ = self.json['hints']['v']
 			self.ヨコのカギ = self.json['hints']['h']
-		self.二重 = {}
+		self.二重マス = {}
 		number = 0
 		if self.json['has_mark']:
 			for mark in self.json['marks']:
-				self.二重[(mark[0] - 1, mark[1] - 1)] = number
+				self.二重マス[(mark[0] - 1, mark[1] - 1)] = number
 				number += 1
 		self.付番 = {}
 		number = 1
@@ -354,7 +354,7 @@ class クロスワード:
 	def 黒斜四連(self):
 		return 黒斜四連(self.行数, self.列数, self.セル)
 	def 二重マスがある(self):
-		return len(self.二重) > 0
+		return len(self.二重マス) > 0
 	def ヘッダー(self, header=None):
 		if header == None:
 			return self.json['header']
@@ -395,7 +395,7 @@ class クロスワード:
 				ch = self.セル[i][j]
 				if ch == '■':
 					continue
-				if (i, j) in self.二重:
+				if (i, j) in self.二重マス:
 					draw.rectangle([x, y, x + セルサイズ, y + セルサイズ], fill=二重マスの色)
 		# 線を描く。
 		for i in range(0, self.行数 + 1):
@@ -435,8 +435,8 @@ class クロスワード:
 				ch = self.セル[i][j]
 				if ch == '■':
 					continue
-				if (i, j) in self.二重:
-					ch = chr(ord('A') + self.二重[(i, j)])
+				if (i, j) in self.二重マス:
+					ch = chr(ord('A') + self.二重マス[(i, j)])
 					w, h = draw.textsize(ch, font=small_font)
 					draw.text((x - w, y - h), ch, fill=文字色, font=small_font)
 		if not 文字を隠す:
