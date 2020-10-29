@@ -3016,7 +3016,7 @@ void __fastcall XgPrintIt(HDC hdc, PRINTDLGW* ppd, bool bPrintAnswer)
             }
 
             // EMFオブジェクトを作成する。
-            HDC hdcEMF = ::CreateEnhMetaFileW(hdc, nullptr, nullptr, XgLoadStringDx1(2));
+            HDC hdcEMF = ::CreateEnhMetaFileW(hdc, nullptr, nullptr, XgLoadStringDx1(IDS_APPNAME));
             if (hdcEMF != nullptr) {
                 // EMFオブジェクトにクロスワードを描画する。
                 SIZE siz;
@@ -3929,7 +3929,7 @@ void __fastcall XgCopyBoard(HWND hwnd)
 
                     // EMFを作成する。
                     HDC hdcRef = ::GetDC(hwnd);
-                    HDC hdc = ::CreateEnhMetaFileW(hdcRef, nullptr, nullptr, XgLoadStringDx1(2));
+                    HDC hdc = ::CreateEnhMetaFileW(hdcRef, nullptr, nullptr, XgLoadStringDx1(IDS_APPNAME));
                     if (hdc) {
                         // EMFに描画する。
                         XgDrawXWord(*pxw, hdc, &siz, false);
@@ -3983,7 +3983,7 @@ void __fastcall XgCopyBoardAsImage(HWND hwnd)
     // EMFを作成する。
     HENHMETAFILE hEMF = NULL;
     HDC hdcRef = ::GetDC(hwnd);
-    HDC hdc = ::CreateEnhMetaFileW(hdcRef, nullptr, nullptr, XgLoadStringDx1(2));
+    HDC hdc = ::CreateEnhMetaFileW(hdcRef, nullptr, nullptr, XgLoadStringDx1(IDS_APPNAME));
     if (hdc) {
         // EMFに描画する。
         XgDrawXWord(*pxw, hdc, &siz, false);
@@ -4138,7 +4138,7 @@ void __fastcall XgCopyBoardAsImageSized(HWND hwnd)
 
     // EMFを作成する。
     HDC hdcRef = ::GetDC(hwnd);
-    HDC hdc = ::CreateEnhMetaFileW(hdcRef, nullptr, nullptr, XgLoadStringDx1(2));
+    HDC hdc = ::CreateEnhMetaFileW(hdcRef, nullptr, nullptr, XgLoadStringDx1(IDS_APPNAME));
     // EMFに描画する。
     XgDrawXWord(*pxw, hdc, &siz, false);
     hEMF = ::CloseEnhMetaFile(hdc);
@@ -4154,7 +4154,7 @@ void __fastcall XgCopyBoardAsImageSized(HWND hwnd)
     siz.cx = rc.right - rc.left;
     siz.cy = rc.bottom - rc.top;
 
-    HDC hdc2 = ::CreateEnhMetaFileW(hdcRef, nullptr, nullptr, XgLoadStringDx1(2));
+    HDC hdc2 = ::CreateEnhMetaFileW(hdcRef, nullptr, nullptr, XgLoadStringDx1(IDS_APPNAME));
     ::PlayEnhMetaFile(hdc2, hEMF, &rc);
     hEMF2 = ::CloseEnhMetaFile(hdc2);
     ::DeleteEnhMetaFile(hEMF);
@@ -4232,7 +4232,7 @@ void __fastcall XgCopyMarkWordAsImage(HWND hwnd)
     // EMFを作成する。
     HENHMETAFILE hEMF = NULL;
     HDC hdcRef = ::GetDC(hwnd);
-    HDC hdc = ::CreateEnhMetaFileW(hdcRef, nullptr, nullptr, XgLoadStringDx1(2));
+    HDC hdc = ::CreateEnhMetaFileW(hdcRef, nullptr, nullptr, XgLoadStringDx1(IDS_APPNAME));
     if (hdc) {
         // EMFに描画する。
         XgDrawMarkWord(hdc, &siz);
@@ -4311,7 +4311,7 @@ void __fastcall XgCopyMarkWordAsImageSized(HWND hwnd)
 
     // EMFを作成する。
     HDC hdcRef = ::GetDC(hwnd);
-    HDC hdc = ::CreateEnhMetaFileW(hdcRef, nullptr, nullptr, XgLoadStringDx1(2));
+    HDC hdc = ::CreateEnhMetaFileW(hdcRef, nullptr, nullptr, XgLoadStringDx1(IDS_APPNAME));
     // EMFに描画する。
     XgDrawMarkWord(hdc, &siz);
     hEMF = ::CloseEnhMetaFile(hdc);
@@ -4321,7 +4321,7 @@ void __fastcall XgCopyMarkWordAsImageSized(HWND hwnd)
     ::SetRect(&rc, 0, 0, cx, s_nMarksHeight);
 
     // EMFを作成する。
-    HDC hdc2 = ::CreateEnhMetaFileW(hdcRef, nullptr, nullptr, XgLoadStringDx1(2));
+    HDC hdc2 = ::CreateEnhMetaFileW(hdcRef, nullptr, nullptr, XgLoadStringDx1(IDS_APPNAME));
     ::PlayEnhMetaFile(hdc2, hEMF, &rc);
     hEMF2 = ::CloseEnhMetaFile(hdc2);
 
@@ -6870,7 +6870,7 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
             // 保存する。
             if (!XgDoSave(hwnd, sz, xg_bSaveAsJsonFile)) {
                 // 保存に失敗。
-                XgCenterMessageBoxW(hwnd, XgLoadStringDx1(7), nullptr, MB_ICONERROR);
+                XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_CANTSAVE2), nullptr, MB_ICONERROR);
             }
         }
         // ツールバーのUIを更新する。

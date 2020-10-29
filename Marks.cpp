@@ -82,7 +82,7 @@ void __fastcall XgMarkUpdate(void)
             StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(IDS_APPTITLE2), str.data(), pchFileTitle);
             ::SetWindowTextW(xg_hMainWnd, sz);
         } else {
-            StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(15), pchFileTitle);
+            StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(IDS_APPTITLE), pchFileTitle);
             ::SetWindowTextW(xg_hMainWnd, sz);
         }
     } else {

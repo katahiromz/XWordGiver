@@ -4057,7 +4057,7 @@ void __fastcall XgSaveProbAsImage(HWND hwnd)
         } else {
             // EMFÇï€ë∂Ç∑ÇÈÅB
             HDC hdcRef = ::GetDC(hwnd);
-            HDC hdc = ::CreateEnhMetaFileW(hdcRef, szFileName, nullptr, XgLoadStringDx1(2));
+            HDC hdc = ::CreateEnhMetaFileW(hdcRef, szFileName, nullptr, XgLoadStringDx1(IDS_APPNAME));
             if (hdc) {
                 XgDrawXWord(xg_xword, hdc, &siz, false);
                 ::CloseEnhMetaFile(hdc);
@@ -4109,7 +4109,7 @@ void __fastcall XgSaveAnsAsImage(HWND hwnd)
         } else {
             // EMFÇï€ë∂Ç∑ÇÈÅB
             HDC hdcRef = ::GetDC(hwnd);
-            HDC hdc = ::CreateEnhMetaFileW(hdcRef, szFileName, nullptr, XgLoadStringDx1(2));
+            HDC hdc = ::CreateEnhMetaFileW(hdcRef, szFileName, nullptr, XgLoadStringDx1(IDS_APPNAME));
             if (hdc) {
                 XgDrawXWord(xg_solution, hdc, &siz, false);
                 ::CloseEnhMetaFile(hdc);
