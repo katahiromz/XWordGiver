@@ -11,7 +11,9 @@
 LPWSTR __fastcall XgLoadStringDx1(int id)
 {
     static WCHAR sz[256];
-    LoadStringW(xg_hInstance, id, sz, ARRAYSIZE(sz));
+    INT ret = LoadStringW(xg_hInstance, id, sz, ARRAYSIZE(sz));
+    assert(ret != 0);
+    UNREFERENCED_PARAMETER(ret);
     return sz;
 }
 
@@ -19,7 +21,9 @@ LPWSTR __fastcall XgLoadStringDx1(int id)
 LPWSTR __fastcall XgLoadStringDx2(int id)
 {
     static WCHAR sz[256];
-    LoadStringW(xg_hInstance, id, sz, ARRAYSIZE(sz));
+    INT ret = LoadStringW(xg_hInstance, id, sz, ARRAYSIZE(sz));
+    assert(ret != 0);
+    UNREFERENCED_PARAMETER(ret);
     return sz;
 }
 
@@ -335,7 +339,7 @@ void __fastcall XgOpenPatterns(HWND hwnd)
 
     // パターンファイルへのパスを作成。
     PathRemoveFileSpec(szPath);
-    PathAppend(szPath, XgLoadStringDx1(89));
+    PathAppend(szPath, XgLoadStringDx1(IDS_PATTERNSTXT));
 
     // パターンファイルを開く。
     ShellExecuteW(hwnd, nullptr, szPath, nullptr, nullptr, SW_SHOWNORMAL);

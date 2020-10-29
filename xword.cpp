@@ -1519,7 +1519,7 @@ bool __fastcall XgParseHints(
             return false;
         }
 
-        size_t i0 = str.find(XgLoadStringDx1(98), i);
+        size_t i0 = str.find(XgLoadStringDx1(IDS_KEYLEFT), i);
         if (i0 == std::wstring::npos) {
             break;
         }
@@ -1534,7 +1534,7 @@ bool __fastcall XgParseHints(
             return false;
         }
 
-        size_t i2 = str.find(XgLoadStringDx1(94), i0);
+        size_t i2 = str.find(XgLoadStringDx1(IDS_KEYRIGHT), i0);
         if (i2 == std::wstring::npos) {
             return false;
         }
@@ -1552,10 +1552,10 @@ bool __fastcall XgParseHints(
             word = str.substr(i3, i4 - i3);
             i4 += wcslen(s_szEndWord);
         } else {
-            i4 = i2 + wcslen(XgLoadStringDx1(94));
+            i4 = i2 + wcslen(XgLoadStringDx1(IDS_KEYRIGHT));
         }
 
-        size_t i5 = str.find(XgLoadStringDx1(98), i4);
+        size_t i5 = str.find(XgLoadStringDx1(IDS_KEYLEFT), i4);
         if (i5 == std::wstring::npos) {
             std::wstring hint = str.substr(i4);
             xg_str_replace_all(hint, L"\r", L"");
@@ -2000,16 +2000,16 @@ void __fastcall XG_Board::GetHintsStr(
     }
     if (hint_type == 3 || hint_type == 5) {
         // タテのカギの文字列を構成する。
-        str += XgLoadStringDx1(99);     // <p><b>
-        str += XgLoadStringDx1(101);
-        str += XgLoadStringDx1(100);    // </b></p>
+        str += XgLoadStringDx1(IDS_PARABOLD);     // <p><b>
+        str += XgLoadStringDx1(IDS_DOWNLABEL);
+        str += XgLoadStringDx1(IDS_ENDPARABOLD);    // </b></p>
         str += xg_pszNewLine;
-        str += XgLoadStringDx1(103);    // <ol>
+        str += XgLoadStringDx1(IDS_OL);    // <ol>
         str += xg_pszNewLine;
 
         for (const auto& info : xg_vTateInfo) {
             // <li>
-            StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(105), info.m_number);
+            StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(IDS_LI), info.m_number);
             str += sz;
 
             // ヒント文章を追加する。
@@ -2019,24 +2019,24 @@ void __fastcall XG_Board::GetHintsStr(
                     break;
                 }
             }
-            str += XgLoadStringDx1(106);    // </li>
+            str += XgLoadStringDx1(IDS_ENDLI);    // </li>
             str += xg_pszNewLine;           // 改行。
         }
-        str += XgLoadStringDx1(104);    // </ol>
+        str += XgLoadStringDx1(IDS_ENDOL);    // </ol>
         str += xg_pszNewLine;           // 改行。
     }
     if (hint_type == 4 || hint_type == 5) {
         // ヨコのカギの文字列を構成する。
-        str += XgLoadStringDx1(99);     // <p><b>
-        str += XgLoadStringDx1(102);
-        str += XgLoadStringDx1(100);    // </b></p>
+        str += XgLoadStringDx1(IDS_PARABOLD);     // <p><b>
+        str += XgLoadStringDx1(IDS_ACROSSLABEL);
+        str += XgLoadStringDx1(IDS_ENDPARABOLD);    // </b></p>
         str += xg_pszNewLine;
-        str += XgLoadStringDx1(103);    // <ol>
+        str += XgLoadStringDx1(IDS_OL);    // <ol>
         str += xg_pszNewLine;
 
         for (const auto& info : xg_vYokoInfo) {
             // <li>
-            StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(105), info.m_number);
+            StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(IDS_LI), info.m_number);
             str += sz;
 
             // ヒント文章を追加する。
@@ -2046,10 +2046,10 @@ void __fastcall XG_Board::GetHintsStr(
                     break;
                 }
             }
-            str += XgLoadStringDx1(106);    // </li>
+            str += XgLoadStringDx1(IDS_ENDLI);    // </li>
             str += xg_pszNewLine;           // 改行。
         }
-        str += XgLoadStringDx1(104);    // </ol>
+        str += XgLoadStringDx1(IDS_ENDOL);    // </ol>
         str += xg_pszNewLine;           // 改行。
     }
 }

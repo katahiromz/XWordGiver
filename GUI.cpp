@@ -470,7 +470,7 @@ BOOL XgLoadDictsAll(void)
     {
         // 辞書ファイルが未指定の場合は「カナ」の「基本辞書データ」を優先する。
         LPCWSTR pszKana = XgLoadStringDx1(1180);
-        LPCWSTR pszBasicDict = XgLoadStringDx2(111);
+        LPCWSTR pszBasicDict = XgLoadStringDx2(IDS_BASICDICTDATA);
         for (auto& file : xg_dict_files)
         {
             if (file.find(pszBasicDict) != std::wstring::npos &&
@@ -2912,7 +2912,7 @@ XgCancelGenBlacksDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
             // 経過時間を表示する。
             WCHAR sz[MAX_PATH];
             DWORD dwTick = ::GetTickCount();
-            StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(107),
+            StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(IDS_CALCULATING),
                     (dwTick - s_dwTick0) / 1000,
                     (dwTick - s_dwTick0) / 100 % 10);
             ::SetDlgItemTextW(hwnd, stc1, sz);
@@ -3413,7 +3413,7 @@ void XgOnGenerateBlacks(HWND hwnd, bool sym)
             (s_dwTick2 - s_dwTick0) / 100 % 10);
         XgCenterMessageBoxW(hwnd, sz, XgLoadStringDx2(IDS_RESULTS), MB_ICONINFORMATION);
     } else {
-        StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(108),
+        StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(IDS_BLOCKSGENERATED),
             (s_dwTick2 - s_dwTick0) / 1000,
             (s_dwTick2 - s_dwTick0) / 100 % 10);
         XgCenterMessageBoxW(hwnd, sz, XgLoadStringDx2(IDS_RESULTS), MB_ICONINFORMATION);
@@ -4495,9 +4495,9 @@ void __fastcall XgCopyHintsStyle1(HWND hwnd, int hint_type)
     xg_str_trim(str);
 
     // スタイルワンでは要らない部分を削除する。
-    xg_str_replace_all(str, XgLoadStringDx1(92), L"");
-    xg_str_replace_all(str, XgLoadStringDx1(93), L"");
-    xg_str_replace_all(str, XgLoadStringDx1(94), XgLoadStringDx2(95));
+    xg_str_replace_all(str, XgLoadStringDx1(IDS_DOWNLEFT), L"");
+    xg_str_replace_all(str, XgLoadStringDx1(IDS_ACROSSLEFT), L"");
+    xg_str_replace_all(str, XgLoadStringDx1(IDS_KEYRIGHT), XgLoadStringDx2(IDS_DOT));
 
     // HTMLデータ (UTF-8)を用意する。
     std::wstring html;
@@ -4778,7 +4778,7 @@ void DoUpdateDictMenu(HMENU hDictMenu)
 
     if (xg_dict_files.empty())
     {
-        AppendMenuW(hDictMenu, MF_STRING | MF_GRAYED, -1, XgLoadStringDx1(110));
+        AppendMenuW(hDictMenu, MF_STRING | MF_GRAYED, -1, XgLoadStringDx1(IDS_NONE));
         return;
     }
 
@@ -5390,7 +5390,7 @@ BOOL SettingsDlg_OnInitDialog(HWND hwnd)
 
     // コンボボックスに項目を追加する。
     HWND hCmb1 = GetDlgItem(hwnd, cmb1);
-    ComboBox_AddString(hCmb1, XgLoadStringDx1(110));
+    ComboBox_AddString(hCmb1, XgLoadStringDx1(IDS_NONE));
     for (auto& item : items)
     {
         ComboBox_AddString(hCmb1, item.c_str());
@@ -5399,8 +5399,8 @@ BOOL SettingsDlg_OnInitDialog(HWND hwnd)
     if (xg_strBlackCellImage.empty())
     {
         // 黒マス画像なし。
-        ComboBox_SetText(hCmb1, XgLoadStringDx1(110));
-        ComboBox_SetCurSel(hCmb1, ComboBox_FindStringExact(hCmb1, -1, XgLoadStringDx1(110)));
+        ComboBox_SetText(hCmb1, XgLoadStringDx1(IDS_NONE));
+        ComboBox_SetCurSel(hCmb1, ComboBox_FindStringExact(hCmb1, -1, XgLoadStringDx1(IDS_NONE)));
     }
     else
     {
@@ -5439,7 +5439,7 @@ void SettingsDlg_OnOK(HWND hwnd)
         HWND hEdt4 = GetDlgItem(hwnd, edt4);
         Edit_SetSel(hEdt4, 0, -1);
         SetFocus(hEdt4);
-        XgCenterMessageBoxW(hwnd, XgLoadStringDx1(109), NULL, MB_ICONERROR);
+        XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_INVALIDVALUE), NULL, MB_ICONERROR);
         return;
     }
 
@@ -5456,7 +5456,7 @@ void SettingsDlg_OnOK(HWND hwnd)
         HWND hEdt5 = GetDlgItem(hwnd, edt5);
         Edit_SetSel(hEdt5, 0, -1);
         SetFocus(hEdt5);
-        XgCenterMessageBoxW(hwnd, XgLoadStringDx1(109), NULL, MB_ICONERROR);
+        XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_INVALIDVALUE), NULL, MB_ICONERROR);
         return;
     }
 
@@ -9026,7 +9026,7 @@ void CandsWnd_OnPaint(HWND hwnd)
             ::GetClientRect(hwnd, &rcClient);
             ::SetTextColor(hdc, RGB(0, 0, 0));
             ::SetBkMode(hdc, TRANSPARENT);
-            ::DrawTextW(hdc, XgLoadStringDx1(97), -1,
+            ::DrawTextW(hdc, XgLoadStringDx1(IDS_NOCANDIDATES), -1,
                 &rcClient,
                 DT_SINGLELINE | DT_CENTER | DT_VCENTER | DT_NOPREFIX);
             ::EndPaint(hwnd, &ps);
@@ -9065,7 +9065,7 @@ BOOL XgCreateCandsWnd(HWND hwnd)
     const DWORD style = WS_OVERLAPPED | WS_CAPTION |
         WS_SYSMENU | WS_THICKFRAME | WS_HSCROLL | WS_VSCROLL;
     ::CreateWindowExW(WS_EX_TOOLWINDOW,
-        s_pszCandsWndClass, XgLoadStringDx1(96), style,
+        s_pszCandsWndClass, XgLoadStringDx1(IDS_CANDIDATES), style,
         s_nCandsWndX, s_nCandsWndY, s_nCandsWndCX, s_nCandsWndCY,
         hwnd, nullptr, xg_hInstance, nullptr);
     if (xg_hCandsWnd) {

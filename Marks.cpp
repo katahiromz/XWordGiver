@@ -342,7 +342,7 @@ void __fastcall XgGetNextMarkedWord(void)
         // 二重マス単語候補がない場合、候補を取得する。
         if (!XgGetMarkedCandidates()) {
             // 候補が無かった。
-            XgCenterMessageBoxW(xg_hMainWnd, XgLoadStringDx1(88), NULL,
+            XgCenterMessageBoxW(xg_hMainWnd, XgLoadStringDx1(IDS_NOMARKCANDIDATES), NULL,
                                 MB_ICONERROR);
             return;     // 失敗。
         }
@@ -367,7 +367,7 @@ void __fastcall XgGetPrevMarkedWord(void)
         // 二重マス単語候補がない場合、候補を取得する。
         if (!XgGetMarkedCandidates()) {
             // 候補が無かった。
-            XgCenterMessageBoxW(xg_hMainWnd, XgLoadStringDx1(88), NULL,
+            XgCenterMessageBoxW(xg_hMainWnd, XgLoadStringDx1(IDS_NOMARKCANDIDATES), NULL,
                                 MB_ICONERROR);
             return;
         }
