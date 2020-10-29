@@ -13,6 +13,9 @@
     #define WM_MOUSEHWHEEL 0x020E
 #endif
 
+// 辞書の最大数。
+#define MAX_DICTS 16
+
 #undef HANDLE_WM_MOUSEWHEEL     // might be wrong
 #define HANDLE_WM_MOUSEWHEEL(hwnd, wParam, lParam, fn) \
     ((fn)((hwnd), (int)(short)LOWORD(lParam), (int)(short)HIWORD(lParam), \
@@ -1013,7 +1016,6 @@ void XgSetDict(const std::wstring& strFile)
     xg_dict_name = strFile;
 
     // 辞書として追加、ソート、一意にする。
-    const size_t MAX_DICTS = 16;
     if (xg_dict_files.size() < MAX_DICTS)
     {
         xg_dict_files.emplace_back(strFile);
@@ -4747,16 +4749,19 @@ void DoUpdateDictMenu(HMENU hDictMenu)
         return;
     }
 
-    INT index = 2, id = ID_DICTIONARY00;
+    INT index = 2, count = 0, id = ID_DICTIONARY00;
     WCHAR szText[MAX_PATH];
     for (const auto& file : xg_dict_files)
     {
         LPCWSTR pszFileTitle = PathFindFileNameW(file.c_str());
-        StringCbPrintfW(szText, sizeof(szText), L"&%c ", L"0123456789ABCDEF"[index - 2]);
+        StringCbPrintfW(szText, sizeof(szText), L"&%c ", L"0123456789ABCDEF"[count]);
         StringCbCatW(szText, sizeof(szText), pszFileTitle);
         AppendMenuW(hDictMenu, MF_STRING | MF_ENABLED, id, szText);
         ++index;
+        ++count;
         ++id;
+        if (count >= MAX_DICTS)
+            break;
     }
 
     index = 2;
