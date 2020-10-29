@@ -7,7 +7,7 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   sodipodi:docname="new.svg"
+   sodipodi:docname="generate-2.svg"
    inkscape:version="1.0 (4035a4fb49, 2020-05-01)"
    id="svg8"
    version="1.1"
@@ -17,6 +17,8 @@
   <defs
      id="defs2" />
   <sodipodi:namedview
+     inkscape:snap-center="false"
+     inkscape:snap-object-midpoints="true"
      inkscape:window-maximized="1"
      inkscape:window-y="-8"
      inkscape:window-x="-8"
@@ -29,9 +31,9 @@
      inkscape:document-rotation="0"
      inkscape:current-layer="layer1"
      inkscape:document-units="mm"
-     inkscape:cy="6.9900673"
-     inkscape:cx="13.940559"
-     inkscape:zoom="3.959798"
+     inkscape:cy="18.818004"
+     inkscape:cx="29.744562"
+     inkscape:zoom="11.2"
      inkscape:pageshadow="2"
      inkscape:pageopacity="0.0"
      borderopacity="1.0"
@@ -62,8 +64,8 @@
      inkscape:groupmode="layer"
      inkscape:label="レイヤー 1">
     <rect
-       y="0"
-       x="0"
+       y="1.7838134e-07"
+       x="-6.0037216e-08"
        height="8.4666662"
        width="8.4666662"
        id="rect841"
@@ -75,13 +77,42 @@
        width="6.3499999"
        id="rect833"
        style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:0.453571;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:fill markers stroke;stop-color:#000000" />
-    <path
-       id="path837"
-       d="m 4.233333,1.0583333 c 0,6.3499997 0,6.3499997 0,6.3499997"
-       style="fill:none;stroke:#000000;stroke-width:0.52916667;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;stroke-miterlimit:4;stroke-dasharray:none" />
-    <path
-       id="path839"
-       d="M 1.0583333,4.233333 H 7.408333"
-       style="fill:none;stroke:#000000;stroke-width:0.52916667;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;stroke-miterlimit:4;stroke-dasharray:none" />
+    <rect
+       y="1.0583333"
+       x="4.2333331"
+       height="3.175"
+       width="3.175"
+       id="rect836"
+       style="fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.264583;stroke-opacity:1;paint-order:fill markers stroke;stop-color:#000000" />
+    <rect
+       style="fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.264583;stroke-opacity:1;paint-order:fill markers stroke;stop-color:#000000"
+       id="rect836-8"
+       width="3.175"
+       height="3.175"
+       x="1.0583333"
+       y="4.2333331" />
+    <text
+       id="text855"
+       y="4.1741199"
+       x="1.3224864"
+       style="font-style:normal;font-weight:normal;font-size:3.82987px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.478733"
+       xml:space="preserve"><tspan
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:3.82987px;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';stroke-width:0.478733"
+         y="4.1741199"
+         x="1.3224864"
+         id="tspan853"
+         sodipodi:role="line">X</tspan></text>
+    <text
+       transform="scale(0.84257768,1.1868342)"
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:3.22697px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.403369"
+       x="4.9957356"
+       y="6.0011196"
+       id="text855-1"><tspan
+         sodipodi:role="line"
+         id="tspan853-6"
+         x="4.9957356"
+         y="6.0011196"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:3.22697px;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';stroke-width:0.403369">W</tspan></text>
   </g>
 </svg>
