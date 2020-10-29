@@ -3946,8 +3946,7 @@ void __fastcall XgCopyBoard(HWND hwnd)
                             ::DeleteDC(hDC);
 
                             std::vector<BYTE> data;
-                            PackedDIB_CreateFromHandle(data, hbm);
-                            if (data.size())
+                            if (PackedDIB_CreateFromHandle(data, hbm))
                             {
                                 HGLOBAL hGlobal2 = GlobalAlloc(GHND | GMEM_SHARE, data.size());
                                 LPVOID pv = GlobalLock(hGlobal2);
