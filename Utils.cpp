@@ -320,7 +320,7 @@ void __fastcall XgOpenLicense(HWND hwnd)
 
     // Licenseへのパスを作成。
     PathRemoveFileSpec(szPath);
-    PathAppend(szPath, XgLoadStringDx1(87));
+    PathAppend(szPath, XgLoadStringDx1(IDS_LICENSE));
 
     // Licenseを開く。
     ShellExecuteW(hwnd, nullptr, szPath, nullptr, nullptr, SW_SHOWNORMAL);

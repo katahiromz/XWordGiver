@@ -1604,7 +1604,7 @@ bool __fastcall XgParseHintsStr(HWND hwnd, const std::wstring& strHints)
     std::wstring yoko = str.substr(i2);
 
     // 備考欄を取り除く。
-    size_t i3 = yoko.find(XgLoadStringDx1(82));
+    size_t i3 = yoko.find(XgLoadStringDx1(IDS_HEADERSEP2));
     if (i3 != std::wstring::npos) {
         yoko = yoko.substr(0, i3);
     }
@@ -1745,7 +1745,7 @@ bool __fastcall XgSetJsonString(HWND hwnd, const std::wstring& str)
             xg_strNotes = notes;
             xg_str_trim(xg_strNotes);
 
-            LPCWSTR psz = XgLoadStringDx1(83);
+            LPCWSTR psz = XgLoadStringDx1(IDS_BELOWISNOTES);
             if (xg_strNotes.empty()) {
                 ;
             } else if (xg_strNotes.find(psz) == 0) {
@@ -1805,14 +1805,14 @@ XgSetString(HWND hwnd, const std::wstring& str, bool json)
             std::wstring s = str.substr(i + 1);
 
             // フッターの備考欄を取得して、取り除く。
-            std::wstring strFooterSep = XgLoadStringDx1(82);
+            std::wstring strFooterSep = XgLoadStringDx1(IDS_HEADERSEP2);
             size_t i3 = s.find(strFooterSep);
             if (i3 != std::wstring::npos) {
                 xg_strNotes = s.substr(i3 + strFooterSep.size());
                 s = s.substr(0, i3);
             }
 
-            LPCWSTR psz = XgLoadStringDx1(83);
+            LPCWSTR psz = XgLoadStringDx1(IDS_BELOWISNOTES);
             if (xg_strNotes.find(psz) == 0) {
                 xg_strNotes = xg_strNotes.substr(std::wstring(psz).size());
                 xg_str_trim(xg_strNotes);
@@ -3773,7 +3773,7 @@ bool __fastcall XgDoSaveJson(HWND /*hwnd*/, LPCWSTR pszFile)
 
         // 備考欄。
         xg_str_trim(xg_strNotes);
-        LPCWSTR psz = XgLoadStringDx1(83);
+        LPCWSTR psz = XgLoadStringDx1(IDS_BELOWISNOTES);
         if (xg_strNotes.find(psz) == 0) {
             xg_strNotes = xg_strNotes.substr(std::wstring(psz).size());
         }
@@ -3842,7 +3842,7 @@ bool __fastcall XgDoSaveStandard(HWND hwnd, LPCWSTR pszFile, const XG_Board& boa
         board.GetHintsStr(hints, 2, true);
         str += xg_strHeader;        // ヘッダー文字列。
         str += xg_pszNewLine;       // 改行。
-        str += XgLoadStringDx1(81); // ヘッダー分離線。
+        str += XgLoadStringDx1(IDS_HEADERSEP1); // ヘッダー分離線。
         str += XgLoadStringDx1(1176); // アプリ情報。
         str += xg_pszNewLine;       // 改行。
         str += strMarks;            // マーク。
@@ -3854,16 +3854,16 @@ bool __fastcall XgDoSaveStandard(HWND hwnd, LPCWSTR pszFile, const XG_Board& boa
         board.GetString(strTable);
         str += xg_strHeader;        // ヘッダー文字列。
         str += xg_pszNewLine;       // 改行。
-        str += XgLoadStringDx1(81); // ヘッダー分離線。
+        str += XgLoadStringDx1(IDS_HEADERSEP1); // ヘッダー分離線。
         str += XgLoadStringDx1(1176); // アプリ情報。
         str += xg_pszNewLine;       // 改行。
         str += strMarks;            // マーク。
         str += strTable;            // 本体。
     }
-    str += XgLoadStringDx1(82);     // フッター分離線。
+    str += XgLoadStringDx1(IDS_HEADERSEP2);     // フッター分離線。
 
     // 備考欄。
-    LPCWSTR psz = XgLoadStringDx1(83);
+    LPCWSTR psz = XgLoadStringDx1(IDS_BELOWISNOTES);
     str += psz;
     str += xg_pszNewLine;
     if (xg_strNotes.find(psz) == 0) {
@@ -4158,7 +4158,7 @@ bool __fastcall XG_Board::SetString(const std::wstring& strToBeSet)
 
     // ヘッダーを取得する。
     xg_strHeader.clear();
-    std::wstring strHeaderSep = XgLoadStringDx1(81);
+    std::wstring strHeaderSep = XgLoadStringDx1(IDS_HEADERSEP1);
     size_t i0 = str.find(strHeaderSep);
     if (i0 != std::wstring::npos) {
         xg_strHeader = str.substr(0, i0);

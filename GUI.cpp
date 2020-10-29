@@ -5882,7 +5882,7 @@ void MainWnd_OnEraseSettings(HWND hwnd)
     XgDestroyHintsWnd();
 
     // 消去するのか確認。
-    if (XgCenterMessageBoxW(hwnd, XgLoadStringDx1(76), XgLoadStringDx2(IDS_APPNAME),
+    if (XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_QUERYERASESETTINGS), XgLoadStringDx2(IDS_APPNAME),
                             MB_ICONWARNING | MB_YESNO) != IDYES)
     {
         return;
@@ -5931,12 +5931,12 @@ void MainWnd_OnEraseSettings(HWND hwnd)
     if (bSuccess) {
         // メッセージを表示する。
         XgCenterMessageBoxW(hwnd,
-            XgLoadStringDx1(74), XgLoadStringDx2(IDS_APPNAME),
+            XgLoadStringDx1(IDS_ERASEDSETTINGS), XgLoadStringDx2(IDS_APPNAME),
             MB_ICONINFORMATION);
     } else {
         // メッセージを表示する。
         XgCenterMessageBoxW(hwnd,
-            XgLoadStringDx1(75), XgLoadStringDx2(IDS_APPNAME),
+            XgLoadStringDx1(IDS_FAILERASESETTINGS), XgLoadStringDx2(IDS_APPNAME),
             MB_ICONINFORMATION);
     }
 }
@@ -6077,7 +6077,7 @@ XgNotesDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
         // 備考欄を設定する。
         str = xg_strNotes;
         xg_str_trim(str);
-        psz = XgLoadStringDx1(83);
+        psz = XgLoadStringDx1(IDS_BELOWISNOTES);
         if (str.find(psz) == 0) {
             str = str.substr(::lstrlenW(psz));
         }

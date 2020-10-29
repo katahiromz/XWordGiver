@@ -66,6 +66,13 @@
 #define IDS_MULTIPLESTARTUP 66
 #define IDS_KOREANFONT 67
 #define IDS_HINTS 70
+#define IDS_ERASEDSETTINGS 74
+#define IDS_FAILERASESETTINGS 75
+#define IDS_QUERYERASESETTINGS 76
+#define IDS_HEADERSEP1 81
+#define IDS_HEADERSEP2 82
+#define IDS_BELOWISNOTES 83
+#define IDS_LICENSE 87
 
 #define IDD_NEW                             1
 #define IDD_CREATE                          2
