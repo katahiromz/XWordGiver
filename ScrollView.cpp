@@ -178,7 +178,7 @@ void MScrollView::UpdateCtrlsPos()
                 NULL,
                 rcCtrl.left - ScrollPos().x, rcCtrl.top - ScrollPos().y,
                 rcCtrl.Width(), rcCtrl.Height(),
-                SWP_NOACTIVATE | SWP_NOZORDER);
+                SWP_NOACTIVATE | SWP_NOZORDER | SWP_NOCOPYBITS);
         }
         ::EndDeferWindowPos(hDWP);
     }
