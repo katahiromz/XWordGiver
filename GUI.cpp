@@ -4764,7 +4764,6 @@ HMENU DoFindDictMenu(HMENU hMenu)
             }
         }
     }
-    assert(0);
     return NULL;
 }
 
