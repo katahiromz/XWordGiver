@@ -7247,46 +7247,6 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
         }
         break;
 
-    case ID_SENDMAIL:    // ÉÅÅ[ÉãÇëóÇÈÅB
-        {
-            std::wstring strTitle, strBody;
-            HINSTANCE hInst;
-
-            XgGetMailTitle(hwnd, strTitle);
-            XgGetMailBody(hwnd, strBody);
-            XgUrlEncodeStr(strTitle);
-            XgUrlEncodeStr(strBody);
-            #if 1
-                std::wstring strURL;
-                strURL += L"mailto:";
-                strURL += L"?subject=";
-                strURL += strTitle;
-                strURL += L"&body=";
-                strURL += strBody;
-                hInst = ::ShellExecuteW(hwnd, NULL,
-                    strURL.data(), NULL, NULL, SW_SHOWNORMAL);
-            #else
-                std::string utf8Title = XgUnicodeToUtf8(strTitle.data());
-                std::string utf8Body = XgUnicodeToUtf8(strBody.data());
-                std::string encodedTitle = XgUrlEncode(utf8Title);
-                std::string encodedBody = XgUrlEncode(utf8Body);
-                std::string strURL;
-                strURL += "mailto:";
-                strURL += "?subject=";
-                strURL += encodedTitle;
-                strURL += "&body=";
-                strURL += encodedBody;
-                std::wstring wide = XgAnsiToUnicode(strURL);
-                hInst = ::ShellExecuteW(hwnd, NULL,
-                    wide.data(), NULL, NULL, SW_SHOWNORMAL);
-            #endif
-            if (reinterpret_cast<INT_PTR>(hInst) <= 32) {
-                XgCenterMessageBoxW(hwnd, XgLoadStringDx1(86),
-                    XgLoadStringDx2(2), MB_ICONERROR | MB_OK);
-            }
-        }
-        break;
-
     case ID_CHARFEED:
         XgSetCharFeed(hwnd, -1);
         break;

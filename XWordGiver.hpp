@@ -383,9 +383,6 @@ void __fastcall XgSetInputModeFromDict(HWND hwnd);
 // Unicode -> UTF8
 std::string XgUnicodeToUtf8(const std::wstring& wide);
 
-// URL encoding
-std::string XgUrlEncode(const std::string& str);
-
 // ANSI -> Unicode
 std::wstring XgAnsiToUnicode(const std::string& ansi);
 
@@ -397,12 +394,6 @@ std::wstring __fastcall XgUtf8ToUnicode(const std::string& ansi);
 
 // JSON文字列を作る。
 std::wstring XgJsonEncodeString(const std::wstring& str);
-
-// URL encoding
-void XgUrlEncodeStr(std::wstring& str);
-
-// HTMLの特殊文字をエンティティに変換する。
-std::wstring XgHtmlEncode(std::wstring& str);
 
 // パスを作る。
 BOOL XgMakePathW(LPCWSTR pszPath);
