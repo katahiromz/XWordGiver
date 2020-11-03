@@ -24,3 +24,4 @@ Makefile
 Testing
 *-old
 検査済み
+*.user
