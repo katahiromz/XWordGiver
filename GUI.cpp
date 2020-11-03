@@ -7704,26 +7704,26 @@ bool __fastcall MainWnd_OnCreate(HWND hwnd, LPCREATESTRUCT /*lpCreateStruct*/)
     ::DeleteObject(hbmGrayed);
 
     // ツールバーのボタン情報。
-    const int c_nButtons = 18;
-    static const TBBUTTON atbb[c_nButtons] = {
+    static const TBBUTTON atbb[] = {
         {0, ID_NEW, TBSTATE_ENABLED, TBSTYLE_BUTTON},
         {1, ID_OPEN, TBSTATE_ENABLED, TBSTYLE_BUTTON},
         {2, ID_SAVEAS, TBSTATE_ENABLED, TBSTYLE_BUTTON},
         {0, 0, TBSTATE_ENABLED, TBSTYLE_SEP},
         {3, ID_GENERATE, TBSTATE_ENABLED, TBSTYLE_BUTTON},
-        {4, ID_GENERATEREPEATEDLY, TBSTATE_ENABLED, TBSTYLE_BUTTON},
+        {4, ID_GENERATEANSWER, TBSTATE_ENABLED, TBSTYLE_BUTTON},
+        {5, ID_GENERATEREPEATEDLY, TBSTATE_ENABLED, TBSTYLE_BUTTON},
         {0, 0, TBSTATE_ENABLED, TBSTYLE_SEP},
-        {5, ID_COPY, TBSTATE_ENABLED, TBSTYLE_BUTTON},
-        {6, ID_PASTE, TBSTATE_ENABLED, TBSTYLE_BUTTON},
+        {6, ID_COPY, TBSTATE_ENABLED, TBSTYLE_BUTTON},
+        {7, ID_PASTE, TBSTATE_ENABLED, TBSTYLE_BUTTON},
         {0, 0, TBSTATE_ENABLED, TBSTYLE_SEP},
-        {7, ID_SOLVE, TBSTATE_ENABLED, TBSTYLE_BUTTON},
-        {8, ID_SOLVENOADDBLACK, TBSTATE_ENABLED, TBSTYLE_BUTTON},
+        {8, ID_SOLVE, TBSTATE_ENABLED, TBSTYLE_BUTTON},
+        {9, ID_SOLVENOADDBLACK, TBSTATE_ENABLED, TBSTYLE_BUTTON},
         {0, 0, TBSTATE_ENABLED, TBSTYLE_SEP},
-        {9, ID_SOLVEREPEATEDLY, TBSTATE_ENABLED, TBSTYLE_BUTTON},
-        {10, ID_SOLVEREPEATEDLYNOADDBLACK, TBSTATE_ENABLED, TBSTYLE_BUTTON},
+        {10, ID_SOLVEREPEATEDLY, TBSTATE_ENABLED, TBSTYLE_BUTTON},
+        {11, ID_SOLVEREPEATEDLYNOADDBLACK, TBSTATE_ENABLED, TBSTYLE_BUTTON},
         {0, 0, TBSTATE_ENABLED, TBSTYLE_SEP},
-        {11, ID_PRINTPROBLEM, TBSTATE_ENABLED, TBSTYLE_BUTTON},
-        {12, ID_PRINTANSWER, TBSTATE_ENABLED, TBSTYLE_BUTTON},
+        {12, ID_PRINTPROBLEM, TBSTATE_ENABLED, TBSTYLE_BUTTON},
+        {13, ID_PRINTANSWER, TBSTATE_ENABLED, TBSTYLE_BUTTON},
     };
 
     xg_hStatusBar = ::CreateStatusWindow(WS_CHILD | WS_VISIBLE, L"", hwnd, 256);
@@ -7748,12 +7748,9 @@ bool __fastcall MainWnd_OnCreate(HWND hwnd, LPCREATESTRUCT /*lpCreateStruct*/)
     // ツールバーを初期化する。
     ::SendMessageW(xg_hToolBar, TB_BUTTONSTRUCTSIZE, sizeof(TBBUTTON), 0);
     ::SendMessageW(xg_hToolBar, TB_SETBITMAPSIZE, 0, MAKELPARAM(32, 32));
-    ::SendMessageW(xg_hToolBar, TB_SETIMAGELIST, 0,
-        reinterpret_cast<LPARAM>(xg_hImageList));
-    ::SendMessageW(xg_hToolBar, TB_SETDISABLEDIMAGELIST, 0,
-        reinterpret_cast<LPARAM>(xg_hGrayedImageList));
-    ::SendMessageW(xg_hToolBar, TB_ADDBUTTONS, c_nButtons,
-        reinterpret_cast<LPARAM>(atbb));
+    ::SendMessageW(xg_hToolBar, TB_SETIMAGELIST, 0, (LPARAM)xg_hImageList);
+    ::SendMessageW(xg_hToolBar, TB_SETDISABLEDIMAGELIST, 0, (LPARAM)xg_hGrayedImageList);
+    ::SendMessageW(xg_hToolBar, TB_ADDBUTTONS, ARRAYSIZE(atbb), (LPARAM)atbb);
     ::SendMessageW(xg_hToolBar, WM_SIZE, 0, 0);
 
     if (s_bShowToolBar)
@@ -7953,6 +7950,7 @@ void MainWnd_OnNotify(HWND hwnd, int idCtrl, LPNMHDR pnmh)
         pttt->lpszText = MAKEINTRESOURCE(pttt->hdr.idFrom + ID_TT_BASE);
         assert(IDS_TT_NEW == ID_TT_BASE + ID_NEW);
         assert(IDS_TT_GENERATE == ID_TT_BASE + ID_GENERATE);
+        assert(IDS_TT_GENERATEANSWER == ID_TT_BASE + ID_GENERATEANSWER);
         assert(IDS_TT_OPEN == ID_TT_BASE + ID_OPEN);
         assert(IDS_TT_SAVEAS == ID_TT_BASE + ID_SAVEAS);
         assert(IDS_TT_SOLVE == ID_TT_BASE + ID_SOLVE);
