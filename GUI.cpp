@@ -2137,7 +2137,8 @@ XgCancelSolveDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam*/)
 //////////////////////////////////////////////////////////////////////////////
 
 // 連続生成キャンセルダイアログ。
-extern "C" INT_PTR CALLBACK
+template <bool t_bNoAddBlack>
+INT_PTR CALLBACK
 XgCancelGenerateRepeatedlyDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam*/)
 {
     switch (uMsg) {
@@ -2168,7 +2169,10 @@ XgCancelGenerateRepeatedlyDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*
                        (xg_nRows + xg_nCols) + 800;
         #endif
         // 解を求めるのを開始。
-        XgStartSolve();
+        if (t_bNoAddBlack)
+            XgStartSolveNoAddBlack();
+        else
+            XgStartSolve();
         // タイマーをセットする。
         ::SetTimer(hwnd, 999, xg_dwTimerInterval, nullptr);
         // フォーカスをセットする。
@@ -2202,7 +2206,10 @@ XgCancelGenerateRepeatedlyDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*
             XgCloseThreads();
             ::InterlockedIncrement(&s_nRetryCount);
             s_dwTick1 = ::GetTickCount();
-            XgStartSolve();
+            if (t_bNoAddBlack)
+                XgStartSolveNoAddBlack();
+            else
+                XgStartSolve();
             // タイマーをセットする。
             ::SetTimer(hwnd, 999, xg_dwTimerInterval, nullptr);
             break;
@@ -2328,7 +2335,10 @@ XgCancelGenerateRepeatedlyDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*
                     XgCloseThreads();
                     ::InterlockedIncrement(&s_nRetryCount);
                     s_dwTick1 = ::GetTickCount();
-                    XgStartSolve();
+                    if (t_bNoAddBlack)
+                        XgStartSolveNoAddBlack();
+                    else
+                        XgStartSolve();
                     // タイマーをセットする。
                     ::SetTimer(hwnd, 999, xg_dwTimerInterval, nullptr);
                 }
@@ -2344,7 +2354,10 @@ XgCancelGenerateRepeatedlyDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*
                 XgCloseThreads();
                 ::InterlockedIncrement(&s_nRetryCount);
                 s_dwTick1 = ::GetTickCount();
-                XgStartSolve();
+                if (t_bNoAddBlack)
+                    XgStartSolveNoAddBlack();
+                else
+                    XgStartSolve();
                 // タイマーをセットする。
                 ::SetTimer(hwnd, 999, xg_dwTimerInterval, nullptr);
             }
@@ -3331,7 +3344,7 @@ bool __fastcall XgOnGenerateRepeatedly(HWND hwnd)
         // キャンセルダイアログを表示し、実行を開始する。
         ::EnableWindow(xg_hwndInputPalette, FALSE);
         ::DialogBoxW(xg_hInstance, MAKEINTRESOURCE(IDD_CALCULATING), hwnd,
-                     XgCancelGenerateRepeatedlyDlgProc);
+                     XgCancelGenerateRepeatedlyDlgProc<false>);
         ::EnableWindow(xg_hwndInputPalette, TRUE);
 
         // クリアする。
@@ -3756,7 +3769,7 @@ bool __fastcall XgOnSolveRepeatedlyNoAddBlack(HWND hwnd)
         // キャンセルダイアログを表示し、実行を開始する。
         ::EnableWindow(xg_hwndInputPalette, FALSE);
         ::DialogBoxW(xg_hInstance, MAKEINTRESOURCE(IDD_CALCULATING), hwnd,
-                     XgCancelSolveRepeatedlyDlgProc);
+                     XgCancelGenerateRepeatedlyDlgProc<true>);
         ::EnableWindow(xg_hwndInputPalette, TRUE);
 
         // 初期化する。

@@ -1767,7 +1767,7 @@ bool __fastcall XgSetJsonString(HWND hwnd, const std::wstring& str)
 
         return success;
     }
-    catch (json::exception& e)
+    catch (json::exception&)
     {
     }
 
