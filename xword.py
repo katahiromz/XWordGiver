@@ -34,6 +34,9 @@ def JSON形式で保存(filename, data):
 		import json
 		json.dump(data, fp, indent=4, ensure_ascii=False)
 
+def 文字マスか(ch):
+	return ch != '■' and ch != '　'
+
 def 四隅に黒マス(row_count, column_count, cell_data):
 	if cell_data[0][0] == '■':
 		return True
@@ -106,17 +109,45 @@ def 単語の重複(h, v):
 		words.append(pair[0])
 	return False
 
-def 斜同字(row_count, column_count, cell_data):
-	for i in range(0, row_count):
-		for j in range(0, column_count):
-			ch = cell_data[i][j]
-			if ch == '　' or ch == '■':
+def L字ワンペア(row_count, column_count, cell_data):
+	for i in range(0, row_count - 1):
+		for j in range(0, column_count - 1):
+			if not 文字マスか(cell_data[i][j]):
 				continue
-			if i + 1 < row_count and j + 1 < column_count:
-				if cell_data[i + 1][j + 1] == ch:
+			if cell_data[i + 1][j] == cell_data[i][j + 1] and 文字マスか(cell_data[i + 1][j]):
+				return True
+	for i in range(1, row_count):
+		for j in range(1, column_count):
+			if not 文字マスか(cell_data[i - 1][j - 1]):
+				continue
+			if cell_data[i - 1][j] == cell_data[i][j - 1] and 文字マスか(cell_data[i - 1][j]):
+				return True
+	return False
+
+def L字ツーペア(row_count, column_count, cell_data):
+	for i in range(0, row_count - 2):
+		for j in range(0, column_count - 2):
+			if not 文字マスか(cell_data[i][j]):
+				continue
+			if cell_data[i + 1][j] == cell_data[i][j + 1] and 文字マスか(cell_data[i + 1][j]):
+				if cell_data[i + 2][j] == cell_data[i][j + 2] and 文字マスか(cell_data[i + 2][j]):
 					return True
-			if i > 0 and j + 1 < column_count:
-				if cell_data[i - 1][j + 1] == ch:
+	for i in range(2, row_count):
+		for j in range(2, column_count):
+			if not 文字マスか(cell_data[i - 2][j - 2]):
+				continue
+			if cell_data[i - 1][j] == cell_data[i][j - 1] and 文字マスか(cell_data[i - 1][j]):
+				if cell_data[i - 2][j] == cell_data[i][j - 2] and 文字マスか(cell_data[i - 2][j]):
+					return True
+	return False
+
+def 十字ツーペア(row_count, column_count, cell_data):
+	for i in range(1, row_count - 1):
+		for j in range(1, column_count - 1):
+			if not 文字マスか(cell_data[i][j]):
+				continue
+			if cell_data[i - 1][j] == cell_data[i][j + 1] and 文字マスか(cell_data[i - 1][j]):
+				if cell_data[i][j - 1] == cell_data[i + 1][j] and 文字マスか(cell_data[i][j - 1]):
 					return True
 	return False
 
@@ -349,8 +380,12 @@ class クロスワード:
 		return 分断(self.行数, self.列数, self.セル)
 	def 単語の重複(self, h, v):
 		return 単語の重複(self.ヨコのカギ, self.タテのカギ)
-	def 斜同字(self):
-		return 斜同字(self.行数, self.列数, self.セル)
+	def L字ワンペア(self):
+		return L字ワンペア(self.行数, self.列数, self.セル)
+	def L字ツーペア(self):
+		return L字ツーペア(self.行数, self.列数, self.セル)
+	def 十字ツーペア(self):
+		return 十字ツーペア(self.行数, self.列数, self.セル)
 	def 黒斜三連(self):
 		return 黒斜三連(self.行数, self.列数, self.セル)
 	def 黒斜四連(self):
@@ -367,6 +402,9 @@ class クロスワード:
 			return self.json['notes']
 		self.json['notes'] = notes
 		return True
+	def 備考欄追記(self, text):
+		if text not in self.json['notes']:
+			self.json['notes'] += text
 	def JSON形式で保存(self, filename):
 		JSON形式で保存(filename, self.json)
 		print("JSONファイル「" + filename + "」を保存しました。")
@@ -501,28 +539,34 @@ def main():
 		xword = クロスワード(filename)
 		#####################################################################
 		# TODO: ここでxwordに対して何かをする。
-		備考欄 = xword.備考欄()
 		if not xword.解あり():
 			print("警告: ファイル「" + filename + "」は、解ではありません。")
-			備考欄 += "[解なし]"
-		if xword.斜同字():
-			print("警告: ファイル「" + filename + "」は、斜同字です。")
-			備考欄 += "[斜同字]"
+			xword.備考欄追記("[解なし]")
+		if xword.L字ワンペア():
+			print("警告: ファイル「" + filename + "」は、L字ワンペアです。")
+			xword.備考欄追記("[L字ワンペア]")
+		if xword.L字ツーペア():
+			print("警告: ファイル「" + filename + "」は、L字ツーペアです。")
+			xword.備考欄追記("[L字ツーペア]")
+		if xword.十字ツーペア():
+			print("警告: ファイル「" + filename + "」は、十字ツーペアです。")
+			xword.備考欄追記("[十字ツーペア]")
 		if xword.黒斜三連():
 			print("警告: ファイル「" + filename + "」は、黒斜三連です。")
-			備考欄 += "[黒斜三連]"
+			xword.備考欄追記("[黒斜三連]")
 		if xword.黒斜四連():
 			print("警告: ファイル「" + filename + "」は、黒斜四連です。")
-			備考欄 += "[黒斜四連]"
+			xword.備考欄追記("[黒斜四連]")
 		if not xword.二重マスがある():
 			print("警告: ファイル「" + filename + "」は、二重マスがありません。")
-			備考欄 += "[二重マスなし]"
-		xword.備考欄(備考欄)
-		if False: # 画像として保存
+			xword.備考欄追記("[二重マスなし]")
+		if True: # 画像として保存
 			xword.画像形式で保存(filename + ".png")
-		if False: # 「検査済み」フォルダへ保存
+		if True: # 「検査済み」フォルダへ保存
 			import os
 			head, tail = os.path.split(filename)
+			if len(head) > 0 and head[-1] != '/':
+				head += '/'
 			new_head = head + "検査済み/"
 			if not os.path.exists(new_head):
 				os.mkdir(new_head)
