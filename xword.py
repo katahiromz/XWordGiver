@@ -560,9 +560,9 @@ def main():
 		if not xword.二重マスがある():
 			print("警告: ファイル「" + filename + "」は、二重マスがありません。")
 			xword.備考欄追記("[二重マスなし]")
-		if True: # 画像として保存
+		if False: # 画像として保存
 			xword.画像形式で保存(filename + ".png")
-		if True: # 「検査済み」フォルダへ保存
+		if False: # 「検査済み」フォルダへ保存
 			import os
 			head, tail = os.path.split(filename)
 			if len(head) > 0 and head[-1] != '/':
