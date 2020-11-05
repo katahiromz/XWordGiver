@@ -3048,6 +3048,9 @@ bool __fastcall XgOnGenerateRepeatedly(HWND hwnd)
 
     WCHAR sz[MAX_PATH];
 
+    // 実行前のマスの状態を保存する。
+    XG_Board xword_save(xg_xword);
+
     // [問題の連続作成]ダイアログ。
     INT nID;
     ::EnableWindow(xg_hwndInputPalette, FALSE);
@@ -3073,8 +3076,8 @@ bool __fastcall XgOnGenerateRepeatedly(HWND hwnd)
                      XgCancelGenerateRepeatedlyDlgProc<false>);
         ::EnableWindow(xg_hwndInputPalette, TRUE);
 
-        // クリアする。
-        xg_xword.clear();
+        // 初期化する。
+        xg_xword = xword_save;
         xg_vMarkedCands.clear();
         xg_vMarks.clear();
         xg_vTateInfo.clear();
@@ -3083,6 +3086,7 @@ bool __fastcall XgOnGenerateRepeatedly(HWND hwnd)
         xg_vecYokoHints.clear();
 
         // イメージを更新する。
+        xg_bSolved = false;
         xg_bShowAnswer = false;
         xg_caret_pos.clear();
         XgMarkUpdate();
