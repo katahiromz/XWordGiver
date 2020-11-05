@@ -470,7 +470,7 @@ FONT 9, "MS UI Gothic"
     PUSHBUTTON "キャンセル", IDCANCEL, 155, 65, 60, 14
 }
 
-IDD_SEQCREATE DIALOG 0, 0, 310, 175
+IDD_SEQCREATE DIALOG 0, 0, 310, 137
 CAPTION "問題の連続作成"
 STYLE DS_CENTER | DS_MODALFRAME | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
 FONT 9, "MS UI Gothic"
@@ -484,20 +484,16 @@ FONT 9, "MS UI Gothic"
     CONTROL "", scr2, "msctls_updown32", UDS_ARROWKEYS | UDS_AUTOBUDDY | UDS_ALIGNRIGHT | UDS_SETBUDDYINT, 101, 24, 12, 20
     LTEXT "マス", -1, 248, 10, 20, 12
     LTEXT "※8×8以上のサイズの場合、計算にかなり時間がかかることがあります。", -1, 10, 30, 290, 14
-    LTEXT "辞書ファイル(&W):", -1, 10, 52, 90, 12
-    CONTROL "", cmb1, "ComboBoxEx32", CBS_AUTOHSCROLL | CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP, 10, 65, 290, 80
-    PUSHBUTTON "参照(&B)...", psh1, 250, 85, 50, 14
-    AUTOCHECKBOX "一定時間が過ぎたらリトライ(&T)", chx1, 10, 95, 135, 14
-    LTEXT "保存先フォルダ(&S):", -1, 10, 115, 60, 12
-    CONTROL "", cmb2, "ComboBoxEx32", CBS_AUTOHSCROLL | CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP, 78, 113, 165, 80
-    LTEXT "作成する問題の個数(&N):", -1, 10, 137, 102, 12
-    CONTROL "100", edt3, "EDIT", ES_NUMBER | ES_RIGHT | WS_BORDER | WS_TABSTOP, 90, 135, 65, 14
-    CONTROL "", scr3, "msctls_updown32", UDS_ARROWKEYS | UDS_AUTOBUDDY | UDS_ALIGNRIGHT | UDS_SETBUDDYINT, 101, 24, 12, 20
-    AUTOCHECKBOX "無制限に作成する(&I)", chx2, 165, 135, 135, 14
-    PUSHBUTTON "参照(&O)...", psh2, 250, 110, 50, 14
-    DEFPUSHBUTTON "計算開始(&G)", IDOK, 175, 155, 60, 14
-    PUSHBUTTON "キャンセル", IDCANCEL, 240, 155, 60, 14
-    LTEXT "※辞書ファイルは拡張子.tsvでDICTフォルダに追加して下さい。", -1, 10, 80, 209, 12
+    AUTOCHECKBOX "一定時間が過ぎたらリトライ(&T)", chx1, 10, 60, 135, 14
+    LTEXT "保存先フォルダ(&S):", -1, 10, 80, 60, 12
+    CONTROL "", cmb2, "ComboBoxEx32", CBS_AUTOHSCROLL | CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP, 78, 78, 165, 80
+    LTEXT "作成する問題の個数(&N):", -1, 10, 102, 102, 12
+    CONTROL "100", edt3, "EDIT", ES_NUMBER | ES_RIGHT | WS_BORDER | WS_TABSTOP, 90, 100, 65, 14
+    CONTROL "", scr3, "msctls_updown32", UDS_ARROWKEYS | UDS_AUTOBUDDY | UDS_ALIGNRIGHT | UDS_SETBUDDYINT, 145, 100, 12, 20
+    AUTOCHECKBOX "無制限に作成する(&I)", chx2, 165, 100, 135, 14
+    PUSHBUTTON "参照(&O)...", psh2, 250, 77, 50, 14
+    DEFPUSHBUTTON "計算開始(&G)", IDOK, 175, 120, 60, 14
+    PUSHBUTTON "キャンセル", IDCANCEL, 240, 120, 60, 14
 }
 
 IDD_CONFIG DIALOG 0, 0, 274, 211
