@@ -3185,6 +3185,8 @@ bool __fastcall XgOnSolveAddBlack(HWND hwnd)
     xg_vMarks.clear();
     xg_vMarkedCands.clear();
     xg_strFileName.clear();
+    // 辞書を読み込む。
+    XgLoadDictFile(xg_dict_name.c_str());
     XgSetInputModeFromDict(hwnd);
 
     // 候補ウィンドウを破棄する。
@@ -3277,6 +3279,8 @@ bool __fastcall XgOnSolveNoAddBlack(HWND hwnd)
     xg_vMarks.clear();
     xg_vMarkedCands.clear();
     xg_strFileName.clear();
+    // 辞書を読み込む。
+    XgLoadDictFile(xg_dict_name.c_str());
     XgSetInputModeFromDict(hwnd);
 
     // 候補ウィンドウを破棄する。
@@ -3398,7 +3402,8 @@ bool __fastcall XgOnSolveRepeatedly(HWND hwnd)
         xg_vYokoInfo.clear();
         xg_vecTateHints.clear();
         xg_vecYokoHints.clear();
-
+        // 辞書を読み込む。
+        XgLoadDictFile(xg_dict_name.c_str());
         XgSetInputModeFromDict(hwnd);
 
         // キャンセルダイアログを表示し、実行を開始する。
@@ -3494,6 +3499,8 @@ bool __fastcall XgOnSolveRepeatedlyNoAddBlack(HWND hwnd)
         xg_vYokoInfo.clear();
         xg_vecTateHints.clear();
         xg_vecYokoHints.clear();
+        // 辞書を読み込む。
+        XgLoadDictFile(xg_dict_name.c_str());
         XgSetInputModeFromDict(hwnd);
 
         // キャンセルダイアログを表示し、実行を開始する。
@@ -6176,6 +6183,7 @@ void MainWnd_DoDictionary(HWND hwnd, size_t iDict)
     if (XgLoadDictFile(file.c_str()))
     {
         XgSetDict(file.c_str());
+        XgSetInputModeFromDict(hwnd);
     }
 
     // 二重マス単語の候補をクリアする。
