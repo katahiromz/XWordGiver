@@ -1031,9 +1031,7 @@ void XgSetDict(const std::wstring& strFile)
 extern "C" INT_PTR CALLBACK
 XgNewDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam*/)
 {
-    int n1, n2;
-    std::wstring strFile;
-
+    INT n1, n2;
     switch (uMsg) {
     case WM_INITDIALOG:
         // ダイアログを中央へ移動する。
@@ -1104,13 +1102,7 @@ XgNewDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam*/)
 extern "C" INT_PTR CALLBACK
 XgGenerateDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam*/)
 {
-    int i, n1, n2;
-    WCHAR szFile[MAX_PATH], szTarget[MAX_PATH];
-    std::wstring strFile;
-    HWND hCmb1;
-    COMBOBOXEXITEMW item;
-    OPENFILENAMEW ofn;
-    HDROP hDrop;
+    INT n1, n2;
 
     switch (uMsg) {
     case WM_INITDIALOG:
@@ -1119,19 +1111,6 @@ XgGenerateDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam*/)
         // サイズの欄を設定する。
         ::SetDlgItemInt(hwnd, edt1, s_nRows, FALSE);
         ::SetDlgItemInt(hwnd, edt2, s_nCols, FALSE);
-        // 辞書ファイルをすべて読み込む。
-        XgLoadDictsAll();
-        // 辞書ファイルのパス名のベクターをコンボボックスに設定する。
-        hCmb1 = GetDlgItem(hwnd, cmb1);
-        for (const auto& dict_file : xg_dict_files) {
-            item.mask = CBEIF_TEXT;
-            item.iItem = -1;
-            StringCbCopy(szFile, sizeof(szFile), dict_file.data());
-            item.pszText = szFile;
-            item.cchTextMax = -1;
-            ::SendMessageW(hCmb1, CBEM_INSERTITEMW, 0, reinterpret_cast<LPARAM>(&item));
-        }
-        ComboBox_SetText(hCmb1, xg_dict_name.c_str());
 
         // 自動で再計算をするか？
         if (s_bAutoRetry)
@@ -1139,8 +1118,6 @@ XgGenerateDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam*/)
         // スマート解決か？
         if (xg_bSmartResolution)
             ::CheckDlgButton(hwnd, chx2, BST_CHECKED);
-        // ドラッグ＆ドロップを受け付ける。
-        ::DragAcceptFiles(hwnd, TRUE);
         // IMEをOFFにする。
         {
             HWND hwndCtrl;
@@ -1154,39 +1131,6 @@ XgGenerateDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam*/)
         SendDlgItemMessageW(hwnd, scr1, UDM_SETRANGE, 0, MAKELPARAM(xg_nMaxSize, xg_nMinSize));
         SendDlgItemMessageW(hwnd, scr2, UDM_SETRANGE, 0, MAKELPARAM(xg_nMaxSize, xg_nMinSize));
         return TRUE;
-
-    case WM_DROPFILES:
-        // ドロップされたファイルのパス名を取得する。
-        hDrop = reinterpret_cast<HDROP>(wParam);
-        ::DragQueryFileW(hDrop, 0, szFile, ARRAYSIZE(szFile));
-        ::DragFinish(hDrop);
-
-        // ショートカットだった場合は、ターゲットのパスを取得する。
-        if (::lstrcmpiW(PathFindExtensionW(szFile), s_szShellLinkDotExt) == 0) {
-            if (!XgGetPathOfShortcutW(szFile, szTarget)) {
-                ::MessageBeep(0xFFFFFFFF);
-                break;
-            }
-            StringCbCopy(szFile, sizeof(szFile), szTarget);
-        }
-
-        // 同じ項目がすでにあれば、削除する。
-        i = static_cast<int>(::SendDlgItemMessageW(
-            hwnd, cmb1, CB_FINDSTRINGEXACT, 0,
-            reinterpret_cast<LPARAM>(szFile)));
-        if (i != CB_ERR) {
-            ::SendDlgItemMessageW(hwnd, cmb1, CB_DELETESTRING, i, 0);
-        }
-        // コンボボックスの最初に挿入する。
-        item.mask = CBEIF_TEXT;
-        item.iItem = 0;
-        item.pszText = szFile;
-        item.cchTextMax = -1;
-        ::SendDlgItemMessageW(hwnd, cmb1, CBEM_INSERTITEMW, 0,
-                              reinterpret_cast<LPARAM>(&item));
-        // コンボボックスの最初の項目を選択する。
-        ::SendDlgItemMessageW(hwnd, cmb1, CB_SETCURSEL, 0, 0);
-        break;
 
     case WM_COMMAND:
         switch (LOWORD(wParam)) {
@@ -1210,59 +1154,25 @@ XgGenerateDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam*/)
             s_bAutoRetry = (::IsDlgButtonChecked(hwnd, chx1) == BST_CHECKED);
             // スマート解決か？
             xg_bSmartResolution = (::IsDlgButtonChecked(hwnd, chx2) == BST_CHECKED);
-            // 辞書ファイルのパス名を取得する。
-            ::GetDlgItemTextW(hwnd, cmb1, szFile, ARRAYSIZE(szFile));
-            strFile = szFile;
-            xg_str_trim(strFile);
-            // 正しく読み込めるか？
-            if (XgLoadDictFile(strFile.data())) {
-                // 読み込めた。
-                XgSetDict(strFile);
-
-                // 初期化する。
-                {
-                    xg_bSolved = false;
-                    xg_bShowAnswer = false;
-                    xg_xword.ResetAndSetSize(n1, n2);
-                    xg_nRows = s_nRows = n1;
-                    xg_nCols = s_nCols = n2;
-                    xg_vTateInfo.clear();
-                    xg_vYokoInfo.clear();
-                    xg_vMarks.clear();
-                    xg_vMarkedCands.clear();
-                }
-                // ダイアログを閉じる。
-                ::EndDialog(hwnd, IDOK);
-            } else {
-                // 読み込めなかったのでエラーを表示する。
-                ::SendDlgItemMessageW(hwnd, cmb1, CB_SETEDITSEL, 0, MAKELPARAM(0, -1));
-                XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_CANTLOAD), nullptr, MB_ICONERROR);
-                ::SetFocus(::GetDlgItem(hwnd, cmb1));
+            // 初期化する。
+            {
+                xg_bSolved = false;
+                xg_bShowAnswer = false;
+                xg_xword.ResetAndSetSize(n1, n2);
+                xg_nRows = s_nRows = n1;
+                xg_nCols = s_nCols = n2;
+                xg_vTateInfo.clear();
+                xg_vYokoInfo.clear();
+                xg_vMarks.clear();
+                xg_vMarkedCands.clear();
             }
+            // ダイアログを閉じる。
+            ::EndDialog(hwnd, IDOK);
             break;
 
         case IDCANCEL:
             // ダイアログを閉じる。
             ::EndDialog(hwnd, IDCANCEL);
-            break;
-
-        case psh1:  // [参照]ボタン。
-            // ユーザーに辞書ファイルの場所を問い合わせる。
-            ZeroMemory(&ofn, sizeof(ofn));
-            ofn.lStructSize = OPENFILENAME_SIZE_VERSION_400W;
-            ofn.hwndOwner = hwnd;
-            ofn.lpstrFilter = XgMakeFilterString(XgLoadStringDx2(IDS_DICTFILTER));
-            szFile[0] = 0;
-            ofn.lpstrFile = szFile;
-            ofn.nMaxFile = ARRAYSIZE(szFile);
-            ofn.lpstrTitle = XgLoadStringDx1(IDS_OPENDICTDATA);
-            ofn.Flags = OFN_EXPLORER | OFN_ENABLESIZING | OFN_FILEMUSTEXIST |
-                OFN_PATHMUSTEXIST | OFN_HIDEREADONLY;
-            ofn.lpstrDefExt = L"dic";
-            if (::GetOpenFileNameW(&ofn)) {
-                // コンボボックスにテキストを設定。
-                ::SetDlgItemTextW(hwnd, cmb1, szFile);
-            }
             break;
         }
     }
@@ -3170,6 +3080,8 @@ bool __fastcall XgOnGenerate(HWND hwnd, bool show_answer)
         xg_strHeader.clear();
         xg_strNotes.clear();
         xg_strFileName.clear();
+        // 辞書を読み込む。
+        XgLoadDictFile(xg_dict_name.c_str());
         XgSetInputModeFromDict(hwnd);
 
         // キャンセルダイアログを表示し、実行を開始する。

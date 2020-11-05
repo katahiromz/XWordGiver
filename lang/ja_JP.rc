@@ -426,7 +426,7 @@ FONT 9, "MS UI Gothic"
     PUSHBUTTON "キャンセル", IDCANCEL, 240, 55, 60, 14
 }
 
-IDD_CREATE DIALOG 0, 0, 310, 135
+IDD_CREATE DIALOG 0, 0, 310, 103
 CAPTION "問題の作成"
 STYLE DS_CENTER | DS_MODALFRAME | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
 FONT 9, "MS UI Gothic"
@@ -440,14 +440,10 @@ FONT 9, "MS UI Gothic"
     CONTROL "", scr2, "msctls_updown32", UDS_ARROWKEYS | UDS_AUTOBUDDY | UDS_ALIGNRIGHT | UDS_SETBUDDYINT, 101, 24, 12, 20
     LTEXT "マス", -1, 248, 10, 20, 12
     LTEXT "※8×8以上のサイズの場合、計算にかなり時間がかかることがあります。", -1, 10, 30, 290, 14
-    LTEXT "辞書ファイル(&W):", -1, 10, 52, 90, 12
-    CONTROL "", cmb1, "ComboBoxEx32", CBS_AUTOHSCROLL | CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP, 10, 65, 290, 80
-    PUSHBUTTON "参照(&B)...", psh1, 250, 85, 50, 14
-    AUTOCHECKBOX "スマート解決(&S)", chx2, 5, 96, 102, 14
-    AUTOCHECKBOX "一定時間が過ぎたらリトライ(&T)", chx1, 5, 115, 135, 14
-    DEFPUSHBUTTON "計算開始(&G)", IDOK, 175, 110, 60, 14
-    PUSHBUTTON "キャンセル", IDCANCEL, 240, 110, 60, 14
-    LTEXT "※辞書ファイルは拡張子.tsvでDICTフォルダに追加して下さい。", -1, 12, 80, 209, 12
+    AUTOCHECKBOX "スマート解決(&S)", chx2, 10, 60, 75, 14
+    AUTOCHECKBOX "一定時間が過ぎたらリトライ(&T)", chx1, 95, 60, 110, 14
+    DEFPUSHBUTTON "計算開始(&G)", IDOK, 175, 80, 60, 14
+    PUSHBUTTON "キャンセル", IDCANCEL, 240, 80, 60, 14
 }
 
 IDD_CALCULATING DIALOG 0, 0, 165, 75
