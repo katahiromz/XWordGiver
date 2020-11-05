@@ -466,9 +466,20 @@ BOOL XgLoadDictsAll(void)
         }
     }
 
-    if (xg_dict_name.empty())
+    // 読み込んだ中から見つかるか？
+    bool bFound = false;
+    for (auto& file : xg_dict_files)
     {
-        // 辞書ファイルが未指定の場合は「カナ」の「基本辞書データ」を優先する。
+        if (lstrcmpiW(file.c_str(), xg_dict_name.c_str()) == 0)
+        {
+            bFound = true;
+            break;
+        }
+    }
+
+    if (xg_dict_name.empty() || !bFound)
+    {
+        // 辞書ファイルが見つからない場合は「カナ」の「基本辞書データ」を優先する。
         LPCWSTR pszKana = XgLoadStringDx1(IDS_KANA);
         LPCWSTR pszBasicDict = XgLoadStringDx2(IDS_BASICDICTDATA);
         for (auto& file : xg_dict_files)
