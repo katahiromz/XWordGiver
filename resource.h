@@ -132,6 +132,20 @@
 #define IDS_HINPUT3                         225
 #define IDS_VINPUT3                         226
 #define IDS_RUSSIA                          227
+#define IDS_TT_NEW                          10100
+#define IDS_TT_GENERATE                     10101
+#define IDS_TT_OPEN                         10102
+#define IDS_TT_SAVEAS                       10103
+#define IDS_TT_SOLVE                        10108
+#define IDS_TT_COPY                         10135
+#define IDS_TT_PASTE                        10136
+#define IDS_TT_GENERATEANSWER               10143
+#define IDS_TT_PRINTPROBLEM                 10151
+#define IDS_TT_PRINTANSWER                  10152
+#define IDS_TT_SOLVENOADDBLACK              10153
+#define IDS_TT_GENERATEREPEATEDLY           10154
+#define IDS_TT_SOLVEREPEATEDLY              10167
+#define IDS_TT_SOLVEREPEATEDLYNOADDBLACK    10168
 
 #define ID_NEW                              100
 #define ID_GENERATE                         101
@@ -262,20 +276,6 @@
 #define ID_DICTIONARY14                     247
 #define ID_DICTIONARY15                     248
 #define ID_TT_BASE                          10000
-#define IDS_TT_NEW                          10100
-#define IDS_TT_GENERATE                     10101
-#define IDS_TT_OPEN                         10102
-#define IDS_TT_SAVEAS                       10103
-#define IDS_TT_SOLVE                        10108
-#define IDS_TT_COPY                         10135
-#define IDS_TT_PASTE                        10136
-#define IDS_TT_GENERATEANSWER               10143
-#define IDS_TT_PRINTPROBLEM                 10151
-#define IDS_TT_PRINTANSWER                  10152
-#define IDS_TT_SOLVENOADDBLACK              10153
-#define IDS_TT_GENERATEREPEATEDLY           10154
-#define IDS_TT_SOLVEREPEATEDLY              10167
-#define IDS_TT_SOLVEREPEATEDLYNOADDBLACK    10168
 
 #define ctl2                                1185
 
@@ -283,7 +283,7 @@
     #ifndef APSTUDIO_READONLY_SYMBOLS
         #define _APS_NO_MFC                 1
         #define _APS_NEXT_RESOURCE_VALUE    100
-        #define _APS_NEXT_COMMAND_VALUE     10169
+        #define _APS_NEXT_COMMAND_VALUE     10001
         #define _APS_NEXT_CONTROL_VALUE     1000
         #define _APS_NEXT_SYMED_VALUE       300
     #endif
