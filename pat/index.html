@@ -9,13 +9,40 @@
 	<style>
 	div#contents {
 		font-size: 11px;
-		line-height: 11px;
 	}
-	tt {
-		font-family: "ＭＳ ゴシック", "MS Gothic", monospace;
-		font-size: 11px;
-		line-height: 11px;
-		letter-spacing: 0;
+	table.data {
+		border: 0;
+		padding: 0;
+		line-height: 0;
+		font-size: 0;
+		border-collapse: collapse;
+		margin-left: auto;
+		margin-right: auto;
+	}
+	td {
+		width: 8px;
+		height: 8px;
+		border: 1px solid black;
+		padding: 0;
+		margin: 0;
+	}
+	td.black {
+		background-color: black;
+	}
+	td.white {
+		background-color: white;
+	}
+	.item {
+		display: block;
+		float: left;
+		width: 200px;
+		height: 250px;
+		border: 1px solid black;
+	}
+	.center {
+		margin-left: auto;
+		margin-right: auto;
+		text-align: center;
 	}
 	</style>
 	<script>
@@ -31,20 +58,29 @@ function copyText(text){
 	document.execCommand('copy');
 	document.body.removeChild(el);
 }
+function shuffle(array) {
+	var currentIndex = array.length, temporaryValue, randomIndex;
+	while (0 !== currentIndex) {
+		randomIndex = Math.floor(Math.random() * currentIndex);
+		currentIndex -= 1;
+		temporaryValue = array[currentIndex];
+		array[currentIndex] = array[randomIndex];
+		array[randomIndex] = temporaryValue;
+	}
+	return array;
+}
+function text2table(text) {
+	text = text.replace(/━/g, "");
+	text = text.replace(/┏┓\n┃/g, '<table class="data" align="center"><tr>');
+	text = text.replace(/┃\n┗┛/g, "</tr></table>");
+	text = text.replace(/┃\n┃/g, "</tr><tr>");
+	text = text.replace(/■/g, '<td class="black"></td>');
+	text = text.replace(/　/g, '<td class="white"></td>');
+	return text;
+}
 function refresh(target){
 	if (data === null) {
 		return;
-	}
-	function shuffle(array) {
-	  var currentIndex = array.length, temporaryValue, randomIndex;
-	  while (0 !== currentIndex) {
-	    randomIndex = Math.floor(Math.random() * currentIndex);
-	    currentIndex -= 1;
-	    temporaryValue = array[currentIndex];
-	    array[currentIndex] = array[randomIndex];
-	    array[randomIndex] = temporaryValue;
-	  }
-	  return array;
 	}
 	shuffle(data);
 	var html = "";
@@ -77,12 +113,11 @@ function refresh(target){
 			if (!(item['num_columns'] >= 13 && item['num_rows'] >= 13))
 				continue;
 		}
-		html += "<hr />";
-		html += "<tt>" + item['num_columns'] + " x " + item['num_rows'] + "<br />";
-		html += item['data'].join("<br />\n") + "<br />\n";
-		html += "</tt>";
-		html += "<a href=\"javascript:copyText('" + item['data'].join("\\n") + "')\"><img src=\"copy.png\" />コピー</a>"
-		html += "<br />";
+		html += '<div class="item">';
+		html += '<p class="center">' + item['num_columns'] + " x " + item['num_rows'] + "</p>";
+		html += text2table(item['data'].join("\n"));
+		html += "<p class=\"center\"><a href=\"javascript:copyText('" + item['data'].join("\\n") + "')\"><img src=\"copy.png\" />コピー</a></p>"
+		html += '</div>';
 	}
 	$("#contents").html(html);
 }
@@ -108,6 +143,8 @@ $(function(){
 <div id="contents">
 <p>(読み込み中...)</p>
 </div>
+
+<br clear="all" />
 
 <hr />
 
