@@ -1,0 +1,77 @@
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>クロスワード ギバー・黒マスパターン</title>
+	<script src="./jquery-3.5.1.js"></script>
+	<style>
+	body {
+		font-family: "ＭＳ ゴシック";
+	}
+	</style>
+</head>
+<body>
+<h1>黒マスパターン</h1>
+<p>
+	<textarea id="textarea1" cols="80" rows="12"></textarea>
+</p>
+<p>
+	<textarea id="textarea2" cols="80" rows="12"></textarea>
+</p>
+<p>
+	<input type="button" id="button1" value="Click!">
+</p>
+<script>
+$(function(){
+	$('#button1').click(function(){
+		var text = $('#textarea1').val();
+		var ary = [];
+		for (;;) {
+			var i = text.search('┏');
+			var j = text.search('┛');
+			if (i == -1 || j == -1)
+				break;
+			var subtext = text.substring(i, j + 1);
+			ary.push(subtext);
+			text = text.substring(j + 1);
+		}
+		function onlyUnique(value, index, self) {
+			return self.indexOf(value) === index;
+		}
+		ary.sort();
+		ary = ary.filter(onlyUnique);
+		text = "[\n";
+		for (var i = 0; i < ary.length; i++) {
+			var subtext = ary[i];
+			var k1 = subtext.search('┏');
+			var k2 = subtext.search('┓');
+			var k3 = subtext.split("\n").length;
+			text += "\t{\n";
+			text += "\t\t\"num_columns\": ";
+			text += (k2 - k1) - 1;
+			text += ",\n";
+			text += "\t\t\"num_rows\": ";
+			text += (k3 - 2);
+			text += ",\n";
+			text += "\t\t\"data\": [\n";
+			var items = subtext.split("\n");
+			for (var m = 0; m < items.length; ++m) {
+				text += "\t\t\t\"" + items[m] + "\"";
+				if (m != items.length - 1) {
+					text += ",";
+				}
+				text += "\n";
+			}
+			text += "\t\t]\n";
+			text += "\t}";
+			if (i != ary.length - 1) {
+				text += ",";
+			}
+			text += "\n";
+		}
+		text += "]\n";
+		$('#textarea2').val(text);
+	});
+});
+</script>
+
+</body></html>

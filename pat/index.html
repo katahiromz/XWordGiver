@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=11">
+	<meta charset="utf-8">
+	<meta http-equiv="Cache-Control" content="no-cache">
+	<title>クロスワード ギバー・黒マスパターン</title>
+	<script src="./jquery-3.5.1.js"></script>
+	<style>
+	div#contents {
+		font-size: 11px;
+		line-height: 11px;
+	}
+	tt {
+		font-family: "ＭＳ ゴシック", "MS Gothic", monospace;
+		font-size: 11px;
+		line-height: 11px;
+		letter-spacing: 0;
+	}
+	</style>
+	<script>
+var data = null;
+function copyText(text){
+	const el = document.createElement('textarea');
+	el.value = text;
+	el.setAttribute('readonly', '');
+	el.style.position = 'absolute';
+	el.style.left = '-9999px';
+	document.body.appendChild(el);
+	el.select();
+	document.execCommand('copy');
+	document.body.removeChild(el);
+}
+function refresh(target){
+	if (data === null) {
+		return;
+	}
+	function shuffle(array) {
+	  var currentIndex = array.length, temporaryValue, randomIndex;
+	  while (0 !== currentIndex) {
+	    randomIndex = Math.floor(Math.random() * currentIndex);
+	    currentIndex -= 1;
+	    temporaryValue = array[currentIndex];
+	    array[currentIndex] = array[randomIndex];
+	    array[randomIndex] = temporaryValue;
+	  }
+	  return array;
+	}
+	shuffle(data);
+	var html = "";
+	for (var i = 0; i < data.length; ++i) {
+		var item = data[i];
+		if (target == "horizontal") {
+			if (item['num_columns'] <= item['num_rows'])
+				continue;
+		}
+		else if (target == "vertical") {
+			if (item['num_columns'] >= item['num_rows'])
+				continue;
+		}
+		else {
+			if (item['num_columns'] != item['num_rows'])
+				continue;
+		}
+		if (target == "small") {
+			if (item['num_columns'] >= 8 || item['num_rows'] >= 8)
+				continue;
+		}
+		if (target == "medium") {
+			if (!(8 <= item['num_columns'] && item['num_columns'] <= 12 &&
+				  8 <= item['num_rows'] && item['num_rows'] <= 12))
+			{
+				continue;
+			}
+		}
+		if (target == "large") {
+			if (!(item['num_columns'] >= 13 && item['num_rows'] >= 13))
+				continue;
+		}
+		html += "<hr />";
+		html += "<tt>" + item['num_columns'] + " x " + item['num_rows'] + "<br />";
+		html += item['data'].join("<br />\n") + "<br />\n";
+		html += "</tt>";
+		html += "<a href=\"javascript:copyText('" + item['data'].join("\\n") + "')\"><img src=\"copy.png\" />コピー</a>"
+		html += "<br />";
+	}
+	$("#contents").html(html);
+}
+$(function(){
+	$.getJSON("./data.json", function(json) {
+		data = json;
+		refresh("");
+	});
+});
+	</script>
+</head>
+<body>
+<h1>黒マスパターン</h1>
+<p>
+	以下のパターンのいずれかをコピーし、クロスワード ギバーに貼り付けてから、「解」メニュー→「解を求める(黒マス追加なし)」でお使い下さい。
+</p>
+
+<p>
+<a href="javascript:refresh('small')">小 (Small)</a> | <a href="javascript:refresh('medium')">中 (Medium)</a> | <a href="javascript:refresh('large')">大 (Large)</a> |
+<a href="javascript:refresh('horizontal')">横長</a> | <a href="javascript:refresh('vertical')">縦長</a>
+</p>
+
+<div id="contents">
+<p>(読み込み中...)</p>
+</div>
+
+<hr />
+
+<p>&copy 2020 katahiromz.</p>
+
+</body></html>

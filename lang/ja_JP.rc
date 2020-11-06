@@ -142,7 +142,7 @@ LANGUAGE LANG_JAPANESE, SUBLANG_DEFAULT
     {
         MENUITEM "ReadMe.txtを開く(&R)\tF1", ID_OPENREADME
         MENUITEM "License.txtを開く(&C)", ID_OPENLICENSE
-        MENUITEM "点対称パターン.txtを開く(&T)", ID_OPENPATTERNS
+        MENUITEM "黒マスパターン (Web) を開く(&T)", ID_OPENPATTERNS
         MENUITEM SEPARATOR
         MENUITEM "作者のホームページを開く(&H)", ID_OPENHOMEPAGE
         MENUITEM "掲示板を開く(&B)", ID_OPENBBS

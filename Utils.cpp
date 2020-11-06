@@ -333,16 +333,8 @@ void __fastcall XgOpenLicense(HWND hwnd)
 // パターンを開く。
 void __fastcall XgOpenPatterns(HWND hwnd)
 {
-    // 実行ファイルのパスを取得。
-    WCHAR szPath[MAX_PATH];
-    ::GetModuleFileNameW(nullptr, szPath, ARRAYSIZE(szPath));
-
-    // パターンファイルへのパスを作成。
-    PathRemoveFileSpec(szPath);
-    PathAppend(szPath, XgLoadStringDx1(IDS_PATTERNSTXT));
-
     // パターンファイルを開く。
-    ShellExecuteW(hwnd, nullptr, szPath, nullptr, nullptr, SW_SHOWNORMAL);
+    ShellExecuteW(hwnd, nullptr, L"https://katahiromz.web.fc2.com/xword/pat/", nullptr, nullptr, SW_SHOWNORMAL);
 }
 
 // ファイルが書き込み可能か？
