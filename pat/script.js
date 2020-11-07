@@ -68,7 +68,7 @@ function refresh(target){
 		html += '<div class="item">';
 		html += '<p class="center">' + item['num_columns'] + " x " + item['num_rows'] + "</p>";
 		html += text2table(item['data'].join("\n"));
-		html += "<p class=\"center\"><a href=\"javascript:copyText('" + item['data'].join("\\n") + "')\"><img src=\"copy.png\" alt="" />コピー</a></p>"
+		html += "<p class=\"center\"><a href=\"javascript:copyText('" + item['data'].join("\\n") + "')\"><img src=\"copy.png\" alt=\"\" />コピー</a></p>"
 		html += '</div>';
 	}
 	$("#contents").html(html);
