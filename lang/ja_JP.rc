@@ -141,7 +141,7 @@ LANGUAGE LANG_JAPANESE, SUBLANG_DEFAULT
     POPUP "ヘルプ(&H)"
     {
         MENUITEM "ReadMe.txtを開く(&R)\tF1", ID_OPENREADME
-        MENUITEM "License.txtを開く(&C)", ID_OPENLICENSE
+        MENUITEM "LICENSE.txtを開く(&C)", ID_OPENLICENSE
         MENUITEM "黒マスパターン (Web) を開く(&T)", ID_OPENPATTERNS
         MENUITEM SEPARATOR
         MENUITEM "作者のホームページを開く(&H)", ID_OPENHOMEPAGE
