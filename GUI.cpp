@@ -647,10 +647,6 @@ bool __fastcall XgLoadSettings(void)
                 s_bInfinite = !!dwValue;
             }
 
-            //if (!app_key.QueryDword(s_pszDictSaveMode, dwValue)) {
-            //    s_nDictSaveMode = !!dwValue;
-            //}
-
             if (!app_key.QuerySz(L"CellFont", sz, ARRAYSIZE(sz))) {
                 StringCbCopy(xg_szCellFont, sizeof(xg_szCellFont), sz);
             }
@@ -814,7 +810,6 @@ bool __fastcall XgSaveSettings(void)
             app_key.SetDword(L"Rows", s_nRows);
             app_key.SetDword(L"Cols", s_nCols);
             app_key.SetDword(L"Infinite", s_bInfinite);
-            //app_key.SetDword(s_pszDictSaveMode, s_nDictSaveMode);
 
             app_key.SetSz(L"CellFont", xg_szCellFont, ARRAYSIZE(xg_szCellFont));
             app_key.SetSz(L"SmallFont", xg_szSmallFont, ARRAYSIZE(xg_szSmallFont));
