@@ -54,7 +54,6 @@ Source: "BLOCK\sakura.bmp"; DestDir: "{app}\BLOCK"; Flags: ignoreversion
 Source: "BLOCK\spade.emf"; DestDir: "{app}\BLOCK"; Flags: ignoreversion
 Source: "BLOCK\star.bmp"; DestDir: "{app}\BLOCK"; Flags: ignoreversion
 Source: "BLOCK\star.emf"; DestDir: "{app}\BLOCK"; Flags: ignoreversion
-Source: "点対称パターン.txt"; DestDir: "{app}"; Flags: ignoreversion
 Source: "LICENSE.txt"; DestDir: "{app}"; Flags: ignoreversion
 Source: "xword.py"; DestDir: "{app}"; Flags: ignoreversion
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
@@ -66,7 +65,6 @@ Name: "{group}\TechNote.txt"; Filename: "{app}\TechNote.txt"
 Name: "{group}\HISTORY.txt"; Filename: "{app}\HISTORY.txt"
 Name: "{group}\作者のホームページ"; Filename: "http://katahiromz.web.fc2.com/"
 Name: "{group}\{cm:UninstallProgram,クロスワード ギバー}"; Filename: "{uninstallexe}"
-Name: "{group}\点対称パターン.txt"; Filename: "{app}\点対称パターン.txt"
 Name: "{group}\DICT"; Filename: "{app}\DICT"
 Name: "{group}\BLOCK"; Filename: "{app}\BLOCK"
 Name: "{group}\LICENSE.txt"; Filename: "{app}\LICENSE.txt"
