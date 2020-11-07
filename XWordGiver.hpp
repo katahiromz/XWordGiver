@@ -110,7 +110,6 @@ enum XG_InputMode
 {
     xg_im_KANA,     // カナ入力。
     xg_im_ABC,      // 英字入力。
-    xg_im_HANGUL,   // ハングル入力。
     xg_im_KANJI,    // 漢字入力。
     xg_im_RUSSIA,   // ロシア文字。
 };

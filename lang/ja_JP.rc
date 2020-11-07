@@ -1247,7 +1247,6 @@ STRINGTABLE
     IDS_POINTSYMMETRY, "黒マスは点対称です。"
     IDS_NOTPOINTSYMMETRY, "黒マスは点対称ではありません。"
     IDS_MULTIPLESTARTUP, "クロスワード ギバーは多重起動できません。"
-    IDS_KOREANFONT, "GulimChe"
     IDS_HINTS, "ヒント (Ctrl+L)"
     IDS_ERASEDSETTINGS, "設定を消去しました。"
     IDS_FAILERASESETTINGS, "設定の消去に失敗しました。"

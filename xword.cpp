@@ -2905,13 +2905,7 @@ void __fastcall XgDrawMarkWord(HDC hdc, LPSIZE psiz)
 
     // 文字マスのフォントを作成する。
     ZeroMemory(&lf, sizeof(lf));
-    if (xg_imode == xg_im_HANGUL) {
-        // ハングル文字。
-        StringCbCopy(lf.lfFaceName, sizeof(lf.lfFaceName), XgLoadStringDx1(IDS_KOREANFONT));
-    } else {
-        // その他。
-        StringCbCopy(lf.lfFaceName, sizeof(lf.lfFaceName), XgLoadStringDx1(IDS_MONOFONT));
-    }
+    StringCbCopy(lf.lfFaceName, sizeof(lf.lfFaceName), XgLoadStringDx1(IDS_MONOFONT));
     if (xg_szCellFont[0])
         StringCbCopy(lf.lfFaceName, sizeof(lf.lfFaceName), xg_szCellFont);
     lf.lfHeight = -xg_nCellSize * xg_nCellCharPercents / 100;
@@ -3054,13 +3048,8 @@ void __fastcall XgDrawXWord(XG_Board& xw, HDC hdc, LPSIZE psiz, bool bCaret)
 
     // 文字マスのフォントを作成する。
     ZeroMemory(&lf, sizeof(lf));
-    if (xg_imode == xg_im_HANGUL) {
-        // ハングル文字。
-        StringCbCopy(lf.lfFaceName, sizeof(lf.lfFaceName), XgLoadStringDx1(IDS_KOREANFONT));
-    } else {
-        // その他。
-        StringCbCopy(lf.lfFaceName, sizeof(lf.lfFaceName), XgLoadStringDx1(IDS_MONOFONT));
-    }
+    // その他。
+    StringCbCopy(lf.lfFaceName, sizeof(lf.lfFaceName), XgLoadStringDx1(IDS_MONOFONT));
     if (xg_szCellFont[0])
         StringCbCopy(lf.lfFaceName, sizeof(lf.lfFaceName), xg_szCellFont);
     lf.lfHeight = -nCellSize * xg_nCellCharPercents / 100;
@@ -4251,10 +4240,6 @@ bool __fastcall XG_Board::SetString(const std::wstring& strToBeSet)
             }
             if (XgIsCharKanjiW(ch)) {
                 xg_imode = xg_im_KANJI;
-                goto break2;
-            }
-            if (XgIsCharHangulW(ch)) {
-                xg_imode = xg_im_HANGUL;
                 goto break2;
             }
             if (XgIsCharZenkakuCyrillicW(ch)) {

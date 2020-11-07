@@ -85,7 +85,6 @@
 #define IDS_POINTSYMMETRY                   164
 #define IDS_NOTPOINTSYMMETRY                165
 #define IDS_MULTIPLESTARTUP                 166
-#define IDS_KOREANFONT                      167
 #define IDS_HINTS                           170
 #define IDS_ERASEDSETTINGS                  174
 #define IDS_FAILERASESETTINGS               175

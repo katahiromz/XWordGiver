@@ -2719,10 +2719,7 @@ void __fastcall XgPrintIt(HDC hdc, PRINTDLGW* ppd, bool bPrintAnswer)
                 ::GetObjectW(hFont, sizeof(LOGFONTW), &lf);
 
                 // フォント名を取得する。
-                if (xg_imode == xg_im_HANGUL)
-                    StringCbCopy(lf.lfFaceName, sizeof(lf.lfFaceName), XgLoadStringDx1(IDS_KOREANFONT)); // ハングルの場合。
-                else
-                    StringCbCopy(lf.lfFaceName, sizeof(lf.lfFaceName), XgLoadStringDx1(IDS_MONOFONT)); // その他の場合。
+                StringCbCopy(lf.lfFaceName, sizeof(lf.lfFaceName), XgLoadStringDx1(IDS_MONOFONT));
                 if (xg_szCellFont[0])
                     StringCbCopy(lf.lfFaceName, sizeof(lf.lfFaceName), xg_szCellFont);
 
@@ -2797,10 +2794,7 @@ void __fastcall XgPrintIt(HDC hdc, PRINTDLGW* ppd, bool bPrintAnswer)
             ::GetObjectW(hFont, sizeof(LOGFONTW), &lf);
 
             // フォント名を取得する。
-            if (xg_imode == xg_im_HANGUL)
-                StringCbCopy(lf.lfFaceName, sizeof(lf.lfFaceName), XgLoadStringDx1(IDS_KOREANFONT)); // ハングルの場合。
-            else
-                StringCbCopy(lf.lfFaceName, sizeof(lf.lfFaceName), XgLoadStringDx1(IDS_MONOFONT)); // その他の場合。
+            StringCbCopy(lf.lfFaceName, sizeof(lf.lfFaceName), XgLoadStringDx1(IDS_MONOFONT));
             if (xg_szCellFont[0])
                 StringCbCopy(lf.lfFaceName, sizeof(lf.lfFaceName), xg_szCellFont);
 
@@ -2855,10 +2849,7 @@ void __fastcall XgPrintIt(HDC hdc, PRINTDLGW* ppd, bool bPrintAnswer)
                 // 文字のフォントを作成する。
                 hFont = reinterpret_cast<HFONT>(::GetStockObject(DEFAULT_GUI_FONT));
                 ::GetObjectW(hFont, sizeof(LOGFONTW), &lf);
-                if (xg_imode == xg_im_HANGUL)
-                    StringCbCopy(lf.lfFaceName, sizeof(lf.lfFaceName), XgLoadStringDx1(IDS_KOREANFONT)); // ハングルの場合。
-                else
-                    StringCbCopy(lf.lfFaceName, sizeof(lf.lfFaceName), XgLoadStringDx1(IDS_MONOFONT)); // その他の場合。
+                StringCbCopy(lf.lfFaceName, sizeof(lf.lfFaceName), XgLoadStringDx1(IDS_MONOFONT));
                 lf.lfHeight = cyPaper / 2 / 45;
                 lf.lfWidth = 0;
                 lf.lfWeight = FW_NORMAL;
@@ -4571,10 +4562,6 @@ void __fastcall MainWnd_OnInitMenu(HWND /*hwnd*/, HMENU hMenu)
         ::CheckMenuRadioItem(hMenu, ID_KANAINPUT, ID_RUSSIAINPUT, ID_ABCINPUT, MF_BYCOMMAND);
         break;
 
-    case xg_im_HANGUL:
-        ::CheckMenuRadioItem(hMenu, ID_KANAINPUT, ID_RUSSIAINPUT, ID_HANGULINPUT, MF_BYCOMMAND);
-        break;
-
     case xg_im_KANJI:
         ::CheckMenuRadioItem(hMenu, ID_KANAINPUT, ID_RUSSIAINPUT, ID_KANJIINPUT, MF_BYCOMMAND);
         break;
@@ -5948,7 +5935,6 @@ void DoWebSearch(HWND hwnd, LPCWSTR str)
         raw += L" ";
         raw += XgLoadStringDx2(IDS_DICTIONARY);
         break;
-    case xg_im_HANGUL:
     case xg_im_RUSSIA:
         break;
     default:
@@ -6938,10 +6924,6 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
 
     case ID_ABCINPUT:   // 英字入力モード。
         XgSetInputMode(hwnd, xg_im_ABC);
-        break;
-
-    case ID_HANGULINPUT: // ハングル入力モード。
-        XgSetInputMode(hwnd, xg_im_HANGUL);
         break;
 
     case ID_KANJIINPUT: // 漢字入力モード。

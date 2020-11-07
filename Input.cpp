@@ -599,24 +599,6 @@ katakana:;
             y = XgGetVScrollPos();
             XgUpdateImage(hwnd, x, y);
         }
-    } else if (xg_imode == xg_im_HANGUL) {
-        // ハングル入力の場合。
-        if (XgIsCharHangulW(ch)) {
-            // 候補ウィンドウを破棄する。
-            XgDestroyCandsWnd();
-            // ハングル直接入力。
-            sa2->ch = ch;
-            xg_ubUndoBuffer.Commit(UC_SETAT, sa1, sa2);
-            xg_xword.SetAt(xg_caret_pos, ch);
-
-            if (xg_bCharFeed)
-                XgCharFeed(hwnd);
-
-            XgEnsureCaretVisible(hwnd);
-            x = XgGetHScrollPos();
-            y = XgGetVScrollPos();
-            XgUpdateImage(hwnd, x, y);
-        }
     } else if (xg_imode == xg_im_RUSSIA) {
         // ロシア入力の場合。
         if (XgIsCharZenkakuCyrillicW(ch)) {
@@ -784,22 +766,6 @@ void __fastcall MainWnd_OnImeChar(HWND hwnd, WCHAR ch, LPARAM /*lKeyData*/)
             if (xg_bCharFeed)
                 XgCharFeed(hwnd);
             
-            x = XgGetHScrollPos();
-            y = XgGetVScrollPos();
-            XgUpdateImage(hwnd, x, y);
-        }
-    } else if (xg_imode == xg_im_HANGUL) {
-        // ハングル入力モードの場合。
-        // ハングルか？
-        if (XgIsCharHangulW(ch)) {
-            // 候補ウィンドウを破棄する。
-            XgDestroyCandsWnd();
-            xg_xword.SetAt(xg_caret_pos, ch);
-            XgEnsureCaretVisible(hwnd);
-
-            if (xg_bCharFeed)
-                XgCharFeed(hwnd);
-
             x = XgGetHScrollPos();
             y = XgGetVScrollPos();
             XgUpdateImage(hwnd, x, y);
