@@ -1286,7 +1286,7 @@ bool __fastcall XgGetCandidatesAddBlack(
     bool bSpaceFound = false;
     for (int i = 0; i < patlen; i++) {
         assert(pattern[i] != ZEN_BLACK);
-        if (pattern[i] != ZEN_SPACE)
+        if (pattern[i] == ZEN_SPACE)
             bSpaceFound = true;
     }
     assert(bSpaceFound);
