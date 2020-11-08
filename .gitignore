@@ -25,3 +25,5 @@ Testing
 *-old
 検査済み
 *.user
+*.wix*
+*.msi
