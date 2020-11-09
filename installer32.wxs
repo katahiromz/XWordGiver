@@ -25,6 +25,8 @@
                         <File Id="XWORD32.EXE" Name="xword32.exe" Source="xword32.exe" KeyPath="yes">
                             <Shortcut Id="ExeShortcut" Directory="ApplicationProgramsFolder" Name="クロスワード ギバー" Advertise="yes" Icon="MainIcon.exe" IconIndex="0" />
                         </File>
+                    </Component>
+                    <Component Id="XWordGiverAssociation" Guid="F57CE109-869A-4039-9330-B7B65F73C575">
                         <ProgId Id="XWordGiver.JsonFile" Description="クロスワードJSONデータ">
                             <Extension Id="xwj" ContentType="application/xwordjson">
                                 <Verb Id="open" Command="open" TargetFile="XWORD32.EXE" Argument="&quot;%1&quot;"/>
@@ -156,6 +158,7 @@
             <ComponentRef Id="DICTFILE7.TSV" />
             <ComponentRef Id="StartMenuShortcuts" />
             <ComponentRef Id="DesktopFolderShortcuts" />
+            <ComponentRef Id="XWordGiverAssociation" />
         </Feature>
         <UI />
         <UIRef Id="WixUI_InstallDir" />
