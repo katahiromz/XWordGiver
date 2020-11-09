@@ -25,13 +25,11 @@
                         <File Id="XWORD64.EXE" Name="xword64.exe" Source="xword64.exe" KeyPath="yes">
                             <Shortcut Id="ExeShortcut" Directory="ApplicationProgramsFolder" Name="クロスワード ギバー" Advertise="yes" Icon="MainIcon.exe" IconIndex="0" />
                         </File>
-                    </Component>
-                    <Component Id="XWordGiverAssociation" Guid="B0B7CEE3-4F7B-43D2-AE1C-89EFB7BECEB7">
-                        <RegistryValue Root="HKCR" Key=".xwj" Type="string" Value="XWordGiver.JsonFile" />
-                        <RegistryValue Root="HKCR" Key=".xwj" Name="Content Type" Type="string" Value="application/xwordjson" />
-                        <RegistryValue Root="HKCR" Key="XWordGiver.JsonFile" Type="string" Value="クロスワードJSONデータ" />
-                        <RegistryValue Root="HKCR" Key='XWordGiver.JsonFile\DefaultIcon' Type='string' Value='[XWORDGIVER64]xword64.exe,3' />
-                        <RegistryValue Root="HKCR" Key='XWordGiver.JsonFile\shell\open\command' Type='string' Value='[XWORDGIVER64]xword64.exe' />
+                        <ProgId Id="XWordGiver.JsonFile" Description="クロスワードJSONデータ">
+                            <Extension Id="xwj" ContentType="application/xwordjson">
+                                <Verb Id="open" Command="open" TargetFile="XWORD64.EXE" Argument="&quot;%1&quot;"/>
+                            </Extension>
+                        </ProgId>
                     </Component>
                     <Directory Id="BLOCK" Name="BLOCK">
                         <Component Id="CIRCLE.EMF" DiskId="1" Guid="D7EF9813-D063-468D-96CD-127702013194" Win64="yes">
@@ -158,9 +156,6 @@
             <ComponentRef Id="StartMenuShortcuts" />
             <Feature Id="DesktopShortcutsFeature" Title="デスクトップアイコンの作成" Level="1" AllowAdvertise="no">
                 <ComponentRef Id="DesktopFolderShortcuts" />
-            </Feature>
-            <Feature Id="AssociationFeature" Title="XWJファイルの関連付け" Level="1" AllowAdvertise="no">
-                <ComponentRef Id="XWordGiverAssociation" />
             </Feature>
         </Feature>
         <UI />
