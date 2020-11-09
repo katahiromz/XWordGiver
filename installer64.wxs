@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi" xmlns:util="http://schemas.microsoft.com/wix/UtilExtension">
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
     <Product Id="55FFF7FC-B10F-4F75-921A-D965D90E9DEA" Name="クロスワード ギバー (64ビット版)" Language="1041" Version="4.6.0" Manufacturer="片山博文MZ" UpgradeCode="A85DB838-95A5-483B-A734-6B4E59B7FBCE" Codepage="932">
         <Package Description="クロスワード自動作成ソフト" Comments="クロスワード ギバー (64ビット版)" InstallerVersion="200" Compressed="yes" SummaryCodepage="932" Platform="x64" />
         <MediaTemplate EmbedCab="yes" CompressionLevel="high" />
@@ -117,7 +117,6 @@
                 <Shortcut Id="TechNoteShortcut" Name="TechNote.txt" Target="[XWORDGIVER64]TechNote.txt" />
                 <Shortcut Id="DictionaryShortcut" Name="DICT" Target="[XWORDGIVER64]DICT" />
                 <Shortcut Id="BlockShortcut" Name="BLOCK" Target="[XWORDGIVER64]BLOCK" />
-                <util:InternetShortcut Id="WebsiteShortcut" Name="作者のホームページ" Target="https://katahiromz.web.fc2.com/" />
                 <RemoveFolder Id="ApplicationProgramsFolder" On="uninstall" />
                 <RegistryValue Root="HKCU" Key="Software\Katayama Hirofumi MZ\XWord64" Name="Installed" Type="integer" Value="1" KeyPath="yes" />
             </Component>

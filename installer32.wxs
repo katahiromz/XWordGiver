@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi" xmlns:util="http://schemas.microsoft.com/wix/UtilExtension">
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
     <Product Id="68AFA313-913D-4D4E-9235-17C9BF0CDDCF" Name="クロスワード ギバー (32ビット版)" Language="1041" Version="4.6.0" Manufacturer="片山博文MZ" UpgradeCode="221A005C-F94D-4BE3-96C4-6316FEABF002" Codepage="932">
         <Package Description="クロスワード自動作成ソフト" Comments="クロスワード ギバー (32ビット版)" InstallerVersion="200" Compressed="yes" SummaryCodepage="932" />
         <MediaTemplate EmbedCab="yes" CompressionLevel="high" />
@@ -117,7 +117,6 @@
                 <Shortcut Id="TechNoteShortcut" Name="TechNote.txt" Target="[XWORDGIVER32]TechNote.txt" />
                 <Shortcut Id="DictionaryShortcut" Name="DICT" Target="[XWORDGIVER32]DICT" />
                 <Shortcut Id="BlockShortcut" Name="BLOCK" Target="[XWORDGIVER32]BLOCK" />
-                <util:InternetShortcut Id="WebsiteShortcut" Name="作者のホームページ" Target="https://katahiromz.web.fc2.com/" />
                 <RemoveFolder Id="ApplicationProgramsFolder" On="uninstall" />
                 <RegistryValue Root="HKCU" Key="Software\Katayama Hirofumi MZ\XWord32" Name="Installed" Type="integer" Value="1" KeyPath="yes" />
             </Component>
