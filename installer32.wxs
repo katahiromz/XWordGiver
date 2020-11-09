@@ -113,7 +113,7 @@
                 <Shortcut Id="BlockShortcut" Name="BLOCK" Target="[XWORDGIVER32]BLOCK" />
                 <util:InternetShortcut Id="WebsiteShortcut" Name="作者のホームページ" Target="https://katahiromz.web.fc2.com/" />
                 <RemoveFolder Id="ApplicationProgramsFolder" On="uninstall" />
-                <RegistryValue Root="HKCU" Key="Software\Katayama Hirofumi MZ\XWord" Name="Installed" Type="integer" Value="1" KeyPath="yes" />
+                <RegistryValue Root="HKCU" Key="Software\Katayama Hirofumi MZ\XWord32" Name="Installed" Type="integer" Value="1" KeyPath="yes" />
             </Component>
         </DirectoryRef>
         <Feature Id="DefaultFeature" Title="Main Feature" Level="1">

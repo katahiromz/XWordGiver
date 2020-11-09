@@ -137,7 +137,11 @@ static const LPCWSTR
     s_pszSoftwareCompanyName = L"Software\\Katayama Hirofumi MZ";
 
 // アプリ名。
-static const LPCWSTR s_pszAppName = L"XWord";
+#ifdef _WIN64
+    static const LPCWSTR s_pszAppName = L"XWord64";
+#else
+    static const LPCWSTR s_pszAppName = L"XWord32";
+#endif
 
 // 会社名とアプリ名。
 static const LPCWSTR
