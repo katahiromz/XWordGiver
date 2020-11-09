@@ -26,13 +26,12 @@
                             <Shortcut Id="ExeShortcut" Directory="ApplicationProgramsFolder" Name="クロスワード ギバー" Advertise="yes" Icon="MainIcon.exe" IconIndex="0" />
                         </File>
                     </Component>
-                    <Component Id="XWordGiverAssociation" Guid="F57CE109-869A-4039-9330-B7B65F73C575">
-                        <ProgId Id="XWordGiver.JsonFile" Description="クロスワードJSONデータ">
-                            <Extension Id="xwj" ContentType="application/xwordjson">
-                                <Verb Id="open" Command="open" TargetFile="XWORD32.EXE" Argument="&quot;%1&quot;"/>
-                            </Extension>
-                        </ProgId>
+                    <Component Id="XWordGiverAssociation" Guid="48E4A70D-1AD8-4EB3-9E49-947F60F10170">
+                        <RegistryValue Root="HKCR" Key=".xwj" Type="string" Value="XWordGiver.JsonFile" />
+                        <RegistryValue Root="HKCR" Key=".xwj" Name="Content Type" Type="string" Value="application/xwordjson" />
+                        <RegistryValue Root="HKCR" Key="XWordGiver.JsonFile" Type="string" Value="クロスワードJSONデータ" />
                         <RegistryValue Root="HKCR" Key='XWordGiver.JsonFile\DefaultIcon' Type='string' Value='[XWORDGIVER32]xword32.exe,3' />
+                        <RegistryValue Root="HKCR" Key='XWordGiver.JsonFile\shell\open\command' Type='string' Value='[XWORDGIVER32]xword32.exe' />
                     </Component>
                     <Directory Id="BLOCK" Name="BLOCK">
                         <Component Id="CIRCLE.EMF" DiskId="1" Guid="3260B233-6FB2-44E0-A6C0-02C702A75EF6">
@@ -128,7 +127,7 @@
                 <RegistryValue Root="HKCU" Key="Software\Katayama Hirofumi MZ\XWord32" Name="Installed" Type="integer" Value="1" KeyPath="yes" />
             </Component>
         </DirectoryRef>
-        <Feature Id="DefaultFeature" Title="Main Feature" Level="1">
+        <Feature Id="DefaultFeature" Title="基本機能" Level="1" Display="expand">
             <ComponentRef Id="HISTORY.TXT" />
             <ComponentRef Id="LICENSE.TXT" />
             <ComponentRef Id="README.TXT" />
@@ -157,11 +156,15 @@
             <ComponentRef Id="DICTFILE6.TSV" />
             <ComponentRef Id="DICTFILE7.TSV" />
             <ComponentRef Id="StartMenuShortcuts" />
-            <ComponentRef Id="DesktopFolderShortcuts" />
-            <ComponentRef Id="XWordGiverAssociation" />
+            <Feature Id="DesktopShortcutsFeature" Title="デスクトップアイコンの作成" Level="1" AllowAdvertise="no">
+                <ComponentRef Id="DesktopFolderShortcuts" />
+            </Feature>
+            <Feature Id="AssociationFeature" Title="XWJファイルの関連付け" Level="1" AllowAdvertise="no">
+                <ComponentRef Id="XWordGiverAssociation" />
+            </Feature>
         </Feature>
         <UI />
-        <UIRef Id="WixUI_InstallDir" />
+        <UIRef Id="WixUI_FeatureTree" />
         <Icon Id="MainIcon.exe" SourceFile="res\Icon_1.ico" />
         <Property Id="WIXUI_INSTALLDIR" Value="XWORDGIVER32" />
         <WixVariable Id="WixUILicenseRtf" Value="LICENSE.rtf" />
