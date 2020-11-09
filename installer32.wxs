@@ -2,7 +2,7 @@
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi" xmlns:util="http://schemas.microsoft.com/wix/UtilExtension">
     <Product Id="68AFA313-913D-4D4E-9235-17C9BF0CDDCF" Name="クロスワード ギバー (32ビット版)" Language="1041" Version="4.6.0" Manufacturer="片山博文MZ" UpgradeCode="221A005C-F94D-4BE3-96C4-6316FEABF002" Codepage="932">
         <Package Description="クロスワード自動作成ソフト" Comments="クロスワード ギバー (32ビット版)" InstallerVersion="200" Compressed="yes" SummaryCodepage="932" />
-        <MediaTemplate CompressionLevel="high" />
+        <Media Id="1" Cabinet="Sample.cab" EmbedCab="yes" />
         <Directory Id="TARGETDIR" Name="SourceDir">
             <Directory Id="ProgramFilesFolder" Name="PFiles">
                 <Directory Id="XWORDGIVER32" Name="XWordGiver32">

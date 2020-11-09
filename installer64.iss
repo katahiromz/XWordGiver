@@ -22,6 +22,7 @@ ArchitecturesAllowed=x64
 UninstallDisplayIcon={app}\xword64.exe
 SetupIconFile=res\Icon_1.ico
 LicenseFile=LICENSE.txt
+ChangesAssociations=yes
 
 [Languages]
 Name: "japanese"; MessagesFile: "compiler:Languages\Japanese.isl"
@@ -70,6 +71,16 @@ Name: "{group}\DICT"; Filename: "{app}\DICT"
 Name: "{group}\BLOCK"; Filename: "{app}\DICT"
 Name: "{group}\LICENSE.txt"; Filename: "{app}\LICENSE.txt"
 Name: "{commondesktop}\クロスワード ギバー (64ビット版)"; Filename: "{app}\xword64.exe"; Tasks: desktopicon
+
+[Registry]
+Root: HKCU; Subkey: "Software\Katayama Hirofumi MZ\XWord64"; Flags: uninsdeletekey
+Root: HKCR; Subkey: ".xwj"; ValueType: string; ValueName: ""; ValueData: "XWordGiver.JsonFile"; Flags: uninsdeletevalue; Tasks: association
+Root: HKCR; Subkey: "XWordGiver.JsonFile"; ValueType: string; ValueName: ""; ValueData: "クロスワードJSONデータ"; Flags: uninsdeletekey; Tasks: association
+Root: HKCR; Subkey: "XWordGiver.JsonFile\DefaultIcon"; ValueType: string; ValueName: ""; ValueData: "{app}\xword64.exe,3"; Tasks: association
+Root: HKCR; Subkey: "XWordGiver.JsonFile\shell\open\command"; ValueType: string; ValueName: ""; ValueData: """{app}\xword64.exe"" ""%1"""; Tasks: association
+
+[Tasks] 
+Name: association; Description: "*.xwjファイルを関連付ける"
 
 [Run]
 Filename: "{app}\xword64.exe"; Description: "{cm:LaunchProgram,クロスワード ギバー}"; Flags: nowait postinstall skipifsilent
