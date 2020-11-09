@@ -105,6 +105,12 @@
         <DirectoryRef Id="ApplicationProgramsFolder">
             <Component Id="StartMenuShortcuts" Guid="E212A1B2-D161-4D3C-B47E-8441AF989DD5">
                 <Shortcut Id="UninstallProduct" Name="アンインストール" Description="クロスワード ギバーをアンインストールします" Target="[System64Folder]msiexec.exe" Arguments="/x [ProductCode]" />
+                <Shortcut Id="HistoryShortcut" Name="HISTORY.txt" Target="[XWORDGIVER32]HISTORY.txt" />
+                <Shortcut Id="LicenseShortcut" Name="LICENSE.txt" Target="[XWORDGIVER32]LICENSE.txt" />
+                <Shortcut Id="ReadMeShortcut" Name="ReadMe.txt" Target="[XWORDGIVER32]ReadMe.txt" />
+                <Shortcut Id="TechNoteShortcut" Name="TechNote.txt" Target="[XWORDGIVER32]TechNote.txt" />
+                <Shortcut Id="DictionaryShortcut" Name="DICT" Target="[XWORDGIVER32]DICT" />
+                <Shortcut Id="BlockShortcut" Name="BLOCK" Target="[XWORDGIVER32]BLOCK" />
                 <util:InternetShortcut Id="WebsiteShortcut" Name="作者のホームページ" Target="https://katahiromz.web.fc2.com/" />
                 <RemoveFolder Id="ApplicationProgramsFolder" On="uninstall" />
                 <RegistryValue Root="HKCU" Key="Software\Katayama Hirofumi MZ\XWord" Name="Installed" Type="integer" Value="1" KeyPath="yes" />
