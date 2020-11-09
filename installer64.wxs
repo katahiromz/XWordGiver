@@ -26,6 +26,12 @@
                             <Shortcut Id="desktopShortcut" Directory="DesktopFolder" Name="クロスワード ギバー (64ビット版)" Advertise="yes" WorkingDirectory="INSTALLDIR" Icon="DesktopIcon.exe" IconIndex="0" />
                             <Shortcut Id="ExeShortcut" Directory="ApplicationProgramsFolder" Name="クロスワード ギバー" Advertise="yes" Icon="StartMenuIcon.exe" IconIndex="0" />
                         </File>
+                        <ProgId Id="XWordGiver.JsonFile" Description="クロスワードJSONデータ">
+                            <Extension Id="xwj" ContentType="application/xwordjson">
+                                <Verb Id="open" Command="open" TargetFile="XWORD64.EXE" Argument="&quot;%1&quot;"/>
+                            </Extension>
+                        </ProgId>
+                        <RegistryValue Root="HKCR" Key='XWordGiver.JsonFile\DefaultIcon' Type='string' Value='[XWORDGIVER32]xword64.exe,3' />
                     </Component>
                     <Directory Id="BLOCK" Name="BLOCK">
                         <Component Id="CIRCLE.EMF" DiskId="1" Guid="D7EF9813-D063-468D-96CD-127702013194" Win64="yes">
