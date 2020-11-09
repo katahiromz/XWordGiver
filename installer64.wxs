@@ -23,8 +23,8 @@
                     </Component>
                     <Component Id="XWORD64.EXE" DiskId="1" Guid="6E1C964E-392C-4DA3-9D78-85690B29AFDA" Win64="yes">
                         <File Id="XWORD64.EXE" Name="xword64.exe" Source="xword64.exe" KeyPath="yes">
-                            <Shortcut Id="desktopShortcut" Directory="DesktopFolder" Name="クロスワード ギバー (64ビット版)" Advertise="yes" WorkingDirectory="INSTALLDIR" Icon="DesktopIcon.exe" IconIndex="0" />
-                            <Shortcut Id="ExeShortcut" Directory="ApplicationProgramsFolder" Name="クロスワード ギバー" Advertise="yes" Icon="StartMenuIcon.exe" IconIndex="0" />
+                            <Shortcut Id="desktopShortcut" Directory="DesktopFolder" Name="クロスワード ギバー (64ビット版)" Advertise="yes" WorkingDirectory="INSTALLDIR" Icon="MainIcon.exe" IconIndex="0" />
+                            <Shortcut Id="ExeShortcut" Directory="ApplicationProgramsFolder" Name="クロスワード ギバー" Advertise="yes" Icon="MainIcon.exe" IconIndex="0" />
                         </File>
                         <ProgId Id="XWordGiver.JsonFile" Description="クロスワードJSONデータ">
                             <Extension Id="xwj" ContentType="application/xwordjson">
@@ -154,8 +154,7 @@
         </Feature>
         <UI />
         <UIRef Id="WixUI_InstallDir" />
-        <Icon Id="DesktopIcon.exe" SourceFile="res\Icon_1.ico" />
-        <Icon Id="StartMenuIcon.exe" SourceFile="res\Icon_1.ico" />
+        <Icon Id="MainIcon.exe" SourceFile="res\Icon_1.ico" />
         <Property Id="WIXUI_INSTALLDIR" Value="XWORDGIVER64" />
         <WixVariable Id="WixUILicenseRtf" Value="LICENSE.rtf" />
     </Product>
