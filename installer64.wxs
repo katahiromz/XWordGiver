@@ -156,5 +156,7 @@
         <Icon Id="MainIcon.exe" SourceFile="res\Icon_1.ico" />
         <Property Id="WIXUI_INSTALLDIR" Value="XWORDGIVER64" />
         <WixVariable Id="WixUILicenseRtf" Value="LICENSE.rtf" />
+        <WixVariable Id="WixUIDialogBmp" Value="Dialog.bmp" />
+        <WixVariable Id="WixUIBannerBmp" Value="Banner.bmp" />
     </Product>
 </Wix>
