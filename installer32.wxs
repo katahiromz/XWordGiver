@@ -23,7 +23,6 @@
                     </Component>
                     <Component Id="XWORD32.EXE" DiskId="1" Guid="12E625DD-1BA5-4521-82E6-AE42B2D08A94">
                         <File Id="XWORD32.EXE" Name="xword32.exe" Source="xword32.exe" KeyPath="yes">
-                            <Shortcut Id="desktopShortcut" Directory="DesktopFolder" Name="クロスワード ギバー (32ビット版)" Advertise="yes" WorkingDirectory="INSTALLDIR" Icon="MainIcon.exe" IconIndex="0" />
                             <Shortcut Id="ExeShortcut" Directory="ApplicationProgramsFolder" Name="クロスワード ギバー" Advertise="yes" Icon="MainIcon.exe" IconIndex="0" />
                         </File>
                         <ProgId Id="XWordGiver.JsonFile" Description="クロスワードJSONデータ">
@@ -108,6 +107,12 @@
                 </Directory>
             </Directory>
         </Directory>
+        <DirectoryRef Id="DesktopFolder">
+            <Component Id="DesktopFolderShortcuts" Guid="B54567A6-6526-41B6-8EAD-3C40B6C617EF">
+                <Shortcut Id="DesktopShortcut" Directory="DesktopFolder" Name="クロスワード ギバー (32ビット版)" Target="[XWORDGIVER32]xword32.exe" Icon="MainIcon.exe" IconIndex="0" />
+                <RegistryValue Root="HKCU" Key="Software\Katayama Hirofumi MZ\XWord32" Name="DesktopShortcuts" Type="integer" Value="1" KeyPath="yes" />
+            </Component>
+        </DirectoryRef>
         <DirectoryRef Id="ApplicationProgramsFolder">
             <Component Id="StartMenuShortcuts" Guid="E212A1B2-D161-4D3C-B47E-8441AF989DD5">
                 <Shortcut Id="UninstallProduct" Name="アンインストール" Description="クロスワード ギバーをアンインストールします" Target="[System64Folder]msiexec.exe" Arguments="/x [ProductCode]" />
@@ -150,6 +155,7 @@
             <ComponentRef Id="DICTFILE6.TSV" />
             <ComponentRef Id="DICTFILE7.TSV" />
             <ComponentRef Id="StartMenuShortcuts" />
+            <ComponentRef Id="DesktopFolderShortcuts" />
         </Feature>
         <UI />
         <UIRef Id="WixUI_InstallDir" />
