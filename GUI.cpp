@@ -6288,7 +6288,7 @@ static void XgPattern_OnCopy(HWND hwnd)
 {
     HWND hLst1 = GetDlgItem(hwnd, lst1);
     INT i = ListBox_GetCurSel(hLst1);
-    if (i >= INT(s_patterns.size()))
+    if (i == LB_ERR || i >= INT(s_patterns.size()))
         return;
 
     auto& pat = s_patterns[i];
@@ -6302,7 +6302,7 @@ static void XgPattern_OnOK(HWND hwnd)
 {
     HWND hLst1 = GetDlgItem(hwnd, lst1);
     INT i = ListBox_GetCurSel(hLst1);
-    if (i >= INT(s_patterns.size()))
+    if (i == LB_ERR || i >= INT(s_patterns.size()))
         return;
 
     auto& pat = s_patterns[i];
