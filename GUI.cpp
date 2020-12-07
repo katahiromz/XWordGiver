@@ -6156,6 +6156,350 @@ bool __fastcall MainWnd_OnCommand2(HWND hwnd, INT id)
     return bOK;
 }
 
+// 黒マスパターンの構造体。
+struct PATDATA
+{
+    int num_columns;
+    int num_rows;
+    std::wstring data;
+};
+
+// 黒マスパターンのデータ。
+static std::vector<PATDATA> s_patterns;
+
+static BOOL
+XgPattern_RefreshContents(HWND hwnd, INT type)
+{
+    // パターンデータをクリアする。
+    s_patterns.clear();
+    ListBox_ResetContent(GetDlgItem(hwnd, lst1));
+
+    // パターンデータを読み込む。
+    WCHAR szPath[MAX_PATH];
+    GetModuleFileNameW(NULL, szPath, MAX_PATH);
+    PathRemoveFileSpecW(szPath);
+    WCHAR szFile[MAX_PATH];
+    StringCbCopyW(szFile, sizeof(szFile), szPath);
+    PathAppendW(szFile, L"pat\\data.json");
+    if (!PathFileExistsW(szFile))
+    {
+        StringCbCopyW(szFile, sizeof(szFile), szPath);
+        PathAppendW(szFile, L"..\\pat\\data.json");
+        if (!PathFileExistsW(szFile))
+        {
+            StringCbCopyW(szFile, sizeof(szFile), szPath);
+            PathAppendW(szFile, L"..\\..\\pat\\data.json");
+        }
+    }
+    std::string utf8;
+    CHAR buf[256];
+    if (FILE *fp = _wfopen(szFile, L"rb"))
+    {
+        while (fgets(buf, 256, fp))
+        {
+            utf8 += buf;
+        }
+        fclose(fp);
+    }
+    else
+    {
+        return FALSE;
+    }
+
+    json j = json::parse(utf8);
+    for (auto& item : j)
+    {
+        PATDATA data;
+        data.num_columns = item["num_columns"];
+        data.num_rows = item["num_rows"];
+
+        // タイプによりフィルターを行う。
+        switch (type)
+        {
+        case rad1:
+            if (data.num_columns != data.num_rows)
+                continue;
+            if (!(data.num_columns >= 13 && data.num_rows >= 13))
+                continue;
+            break;
+        case rad2:
+            if (data.num_columns != data.num_rows)
+                continue;
+            if (!(8 <= data.num_columns && data.num_columns <= 12 &&
+                  8 <= data.num_rows && data.num_rows <= 12))
+            {
+                continue;
+            }
+            break;
+        case rad3:
+            if (data.num_columns != data.num_rows)
+                continue;
+            if (!(data.num_columns <= 8 && data.num_rows <= 8))
+                continue;
+            break;
+        case rad4:
+            if (data.num_columns <= data.num_rows)
+                continue;
+            break;
+        case rad5:
+            if (data.num_columns >= data.num_rows)
+                continue;
+            break;
+        case rad6:
+            if (data.num_columns != data.num_rows)
+                continue;
+            break;
+        }
+
+        // dataをテキストデータにする。
+        std::string str;
+        for (auto& subitem : item["data"])
+        {
+            str += subitem;
+            str += "\r\n";
+        }
+        data.data = XgUtf8ToUnicode(str);
+        s_patterns.push_back(data);
+    }
+
+    // かき混ぜる。
+    std::random_shuffle(s_patterns.begin(), s_patterns.end());
+
+    // インデックスとして追加する。
+    for (size_t i = 0; i < s_patterns.size(); ++i)
+    {
+        SendDlgItemMessageW(hwnd, lst1, LB_ADDSTRING, 0, i);
+    }
+
+    return TRUE;
+}
+
+// WM_INITDIALOG
+static BOOL
+XgPattern_OnInitDialog(HWND hwnd, HWND hwndFocus, LPARAM lParam)
+{
+    CheckRadioButton(hwnd, rad1, rad6, rad6);
+    XgPattern_RefreshContents(hwnd, rad6);
+    return TRUE;
+}
+
+// 黒マスパターンのコピー。
+static void XgPattern_OnCopy(HWND hwnd)
+{
+    HWND hLst1 = GetDlgItem(hwnd, lst1);
+    INT i = ListBox_GetCurSel(hLst1);
+    if (i >= INT(s_patterns.size()))
+        return;
+
+    auto& pat = s_patterns[i];
+    XgPasteBoard(xg_hMainWnd, pat.data);
+    XgCopyBoard(xg_hMainWnd);
+    XgUpdateImage(xg_hMainWnd, 0, 0);
+}
+
+// 黒マスパターンで「OK」ボタンを押した。
+static void XgPattern_OnOK(HWND hwnd)
+{
+    HWND hLst1 = GetDlgItem(hwnd, lst1);
+    INT i = ListBox_GetCurSel(hLst1);
+    if (i >= INT(s_patterns.size()))
+        return;
+
+    auto& pat = s_patterns[i];
+    XgPasteBoard(xg_hMainWnd, pat.data);
+    XgCopyBoard(xg_hMainWnd);
+    XgUpdateImage(xg_hMainWnd, 0, 0);
+
+    EndDialog(hwnd, IDOK);
+
+    XgOnSolveNoAddBlack(xg_hMainWnd);
+}
+
+// WM_COMMAND
+static void
+XgPattern_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT codeNotify)
+{
+    switch (id)
+    {
+    case IDOK:
+        XgPattern_OnOK(hwnd);
+        break;
+    case IDCANCEL:
+        EndDialog(hwnd, IDCANCEL);
+        break;
+    case psh1:
+        XgPattern_OnCopy(hwnd);
+        break;
+    case lst1:
+        if (codeNotify == LBN_DBLCLK)
+        {
+            XgPattern_OnOK(hwnd);
+        }
+        break;
+    case rad1:
+    case rad2:
+    case rad3:
+    case rad4:
+    case rad5:
+    case rad6:
+        XgPattern_RefreshContents(hwnd, id);
+        break;
+    }
+}
+
+// WM_MEASUREITEM
+static void
+XgPattern_OnMeasureItem(HWND hwnd, MEASUREITEMSTRUCT * lpMeasureItem)
+{
+    HDC hDC = CreateCompatibleDC(NULL);
+    SelectObject(hDC, GetStockFont(DEFAULT_GUI_FONT));
+    TEXTMETRIC tm;
+    GetTextMetrics(hDC, &tm);
+    DeleteDC(hDC);
+    INT cxCell = 6, cyCell = 6;
+    lpMeasureItem->itemWidth = cxCell * 18 + 3;
+    lpMeasureItem->itemHeight = cyCell * 18 + 3 + tm.tmHeight;
+}
+
+// WM_DRAWITEM
+static void
+XgPattern_OnDrawItem(HWND hwnd, const DRAWITEMSTRUCT * lpDrawItem)
+{
+    // データがパターンのインデックスか？
+    LPARAM lParam = lpDrawItem->itemData;
+    if ((int)lParam >= (int)s_patterns.size())
+        return;
+
+    // インデックスに対応するパターンを取得。
+    const auto& pat = s_patterns[(int)lParam];
+    HDC hDC = lpDrawItem->hDC;
+    RECT rcItem = lpDrawItem->rcItem;
+
+    // サイズを表すテキスト。
+    WCHAR szText[64];
+    StringCbPrintfW(szText, sizeof(szText), L"%u x %u", int(pat.num_columns), int(pat.num_rows));
+
+    // テキストを描画する。
+    SelectObject(hDC, GetStockFont(DEFAULT_GUI_FONT));
+    SetBkMode(hDC, TRANSPARENT);
+    TEXTMETRIC tm;
+    GetTextMetrics(hDC, &tm);
+    if (lpDrawItem->itemState & ODS_SELECTED)
+    {
+        FillRect(hDC, &rcItem, GetSysColorBrush(COLOR_HIGHLIGHT));
+        SetTextColor(hDC, COLOR_HIGHLIGHTTEXT);
+    }
+    else
+    {
+        FillRect(hDC, &rcItem, GetSysColorBrush(COLOR_WINDOW));
+        SetTextColor(hDC, COLOR_WINDOWTEXT);
+    }
+    DrawTextW(hDC, szText, -1, &rcItem, DT_CENTER | DT_TOP | DT_SINGLELINE);
+
+    // パターンのテキストデータを扱いやすいよう、加工する。
+    std::wstring text = pat.data;
+    xg_str_replace_all(text, L"\r\n", L"\n");
+    xg_str_replace_all(text, L"\u2501", L"");
+    xg_str_replace_all(text, L"\u250F\u2513\n", L"");
+    xg_str_replace_all(text, L"\u2517\u251B\n", L"");
+    std::vector<WCHAR> data(pat.num_columns * pat.num_rows, UNICODE_NULL);
+    int x = 0, y = 0;
+    for (auto& ch : text)
+    {
+        switch (ch)
+        {
+        case ZEN_BLACK:
+            data[x + pat.num_columns * y] = ZEN_BLACK;
+            ++x;
+            break;
+        case ZEN_SPACE:
+            data[x + pat.num_columns * y] = ZEN_SPACE;
+            ++x;
+            break;
+        case L'\n':
+            x = 0;
+            ++y;
+            break;
+        }
+        if (y == pat.num_rows)
+            break;
+    }
+
+    // 描画項目のサイズ。
+    INT cxItem = rcItem.right - rcItem.left, cyItem = rcItem.bottom - rcItem.top;
+
+    // メモリーデバイスコンテキストを作成。
+    if (HDC hdcMem = CreateCompatibleDC(hDC))
+    {
+        INT cxCell = 6, cyCell = 6; // セルのサイズ。
+        INT cx = cxCell * pat.num_columns, cy = cyCell * pat.num_rows; // 全体のサイズ。
+        // ビットマップを作成する。
+        if (HBITMAP hbm = XgCreate24BppBitmap(hdcMem, cx + 3, cy + 3))
+        {
+            // ビットマップを選択。
+            HGDIOBJ hbmOld = SelectObject(hdcMem, hbm);
+            // 四角形を描く。
+            SelectObject(hdcMem, GetStockPen(BLACK_PEN)); // 黒いペン
+            SelectObject(hdcMem, GetStockBrush(WHITE_BRUSH)); // 白いブラシ
+            Rectangle(hdcMem, 0, 0, cx + 2, cy + 2);
+            // 黒マスを描画する。
+            for (y = 0; y < pat.num_rows; ++y)
+            {
+                RECT rc;
+                for (x = 0; x < pat.num_columns; ++x)
+                {
+                    rc.left = 1 + x * cxCell;
+                    rc.top = 1 + y * cyCell;
+                    rc.right = rc.left + cxCell;
+                    rc.bottom = rc.top + cyCell;
+                    if (data[x + pat.num_columns * y] == ZEN_BLACK)
+                        FillRect(hdcMem, &rc, GetStockBrush(BLACK_BRUSH));
+                }
+            }
+            // 境界線を描画する。
+            for (y = 0; y < pat.num_rows + 1; ++y)
+            {
+                MoveToEx(hdcMem, 1, 1 + y * cyCell, NULL);
+                LineTo(hdcMem, 1 + pat.num_columns * cxCell, 1 + y * cyCell);
+            }
+            for (x = 0; x < pat.num_columns + 1; ++x)
+            {
+                MoveToEx(hdcMem, 1 + x * cxCell, 1, NULL);
+                LineTo(hdcMem, 1 + x * cxCell, 1 + pat.num_rows * cyCell);
+            }
+            // ビットマップイメージをhDCに転送する。
+            BitBlt(hDC, rcItem.left + (cxItem - (cx + 3)) / 2, rcItem.top + tm.tmHeight,
+                   cx + 3, cy + 3, hdcMem, 0, 0, SRCCOPY);
+            // ビットマップの選択を解除する。
+            SelectObject(hdcMem, hbmOld);
+            // ビットマップを破棄する。
+            DeleteObject(hbm);
+        }
+        // メモリーデバイスコンテキストを破棄する。
+        DeleteDC(hdcMem);
+    }
+}
+
+// 「黒マスパターン」ダイアログプロシージャ。
+INT_PTR CALLBACK
+XgPatternDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+{
+    switch (uMsg)
+    {
+        HANDLE_MSG(hwnd, WM_INITDIALOG, XgPattern_OnInitDialog);
+        HANDLE_MSG(hwnd, WM_COMMAND, XgPattern_OnCommand);
+        HANDLE_MSG(hwnd, WM_MEASUREITEM, XgPattern_OnMeasureItem);
+        HANDLE_MSG(hwnd, WM_DRAWITEM, XgPattern_OnDrawItem);
+    }
+    return 0;
+}
+
+// 「黒マスパターン」を開く。
+void __fastcall XgOpenPatterns(HWND hwnd)
+{
+    DialogBoxW(xg_hInstance, MAKEINTRESOURCEW(IDD_BLOCKPATTERN), hwnd, XgPatternDlgProc);
+}
+
 // 辞書を切り替える。
 void MainWnd_DoDictionary(HWND hwnd, size_t iDict)
 {

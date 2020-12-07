@@ -23,6 +23,7 @@
 #define IDD_HIRAYOKO                        119
 #define IDD_ABCLOWER                        120
 #define IDD_RUSSIALOWER                     121
+#define IDD_BLOCKPATTERN                    122
 
 #define IDS_VERSION                         101
 #define IDS_APPNAME                         102

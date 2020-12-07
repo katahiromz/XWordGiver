@@ -17,6 +17,8 @@ LANGUAGE LANG_JAPANESE, SUBLANG_DEFAULT
         MENUITEM "問題を自動生成して答えを表示する(&E)\tCtrl+H", ID_GENERATEANSWER
         MENUITEM "問題を連続自動生成する(&R)\tCtrl+W", ID_GENERATEREPEATEDLY
         MENUITEM SEPARATOR
+        MENUITEM "黒マスパターンから自動生成(&T)...", ID_OPENPATTERNS
+        MENUITEM SEPARATOR
         MENUITEM "問題を開く(&O)...\tCtrl+O", ID_OPEN
         MENUITEM "問題を保存(&A)...\tCtrl+S", ID_SAVEAS
         MENUITEM SEPARATOR
@@ -142,7 +144,7 @@ LANGUAGE LANG_JAPANESE, SUBLANG_DEFAULT
     {
         MENUITEM "ReadMe.txtを開く(&R)\tF1", ID_OPENREADME
         MENUITEM "LICENSE.txtを開く(&C)", ID_OPENLICENSE
-        MENUITEM "黒マスパターン (Web) を開く(&T)", ID_OPENPATTERNS
+        MENUITEM "黒マスパターン(&T)...", ID_OPENPATTERNS
         MENUITEM SEPARATOR
         MENUITEM "作者のホームページを開く(&H)", ID_OPENHOMEPAGE
         MENUITEM "掲示板を開く(&B)", ID_OPENBBS
@@ -1179,6 +1181,24 @@ FONT 9, "MS UI Gothic"
     PUSHBUTTON "NL", 20064, 135, 60, 15, 15
     PUSHBUTTON "カナに", 20070, 75, 45, 30, 15
     PUSHBUTTON "英字に", 20072, 105, 45, 45, 15
+}
+
+IDD_BLOCKPATTERN DIALOG 0, 0, 405, 330
+CAPTION "黒マスパターン"
+STYLE DS_CENTER | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_THICKFRAME
+FONT 9, "MS UI Gothic"
+{
+    LTEXT "下のリストから黒マスパターンをお選び下さい。", -1, 5, 5, 220, 25
+    AUTORADIOBUTTON "大(&Large)", rad1, 5, 35, 60, 20, WS_TABSTOP
+    AUTORADIOBUTTON "中(&Medium)", rad2, 70, 35, 60, 20, WS_TABSTOP
+    AUTORADIOBUTTON "小(&Small)", rad3, 135, 35, 60, 20, WS_TABSTOP
+    AUTORADIOBUTTON "横長(&H)", rad4, 205, 35, 60, 20, WS_TABSTOP
+    AUTORADIOBUTTON "縦長(&V)", rad5, 270, 35, 60, 20, WS_TABSTOP
+    AUTORADIOBUTTON "指定なし(&N)", rad6, 340, 35, 60, 20, WS_TABSTOP
+    LISTBOX lst1, 5, 60, 395, 240, LBS_DISABLENOSCROLL | LBS_MULTICOLUMN | LBS_NOINTEGRALHEIGHT | LBS_OWNERDRAWFIXED | WS_VSCROLL | WS_HSCROLL | WS_TABSTOP
+    PUSHBUTTON "コピー(&C)", psh1, 5, 305, 60, 20
+    DEFPUSHBUTTON "解を求める(&O)", IDOK, 255, 305, 80, 20
+    PUSHBUTTON "キャンセル", IDCANCEL, 339, 305, 60, 20
 }
 
 //////////////////////////////////////////////////////////////////////////////

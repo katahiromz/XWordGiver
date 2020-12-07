@@ -330,13 +330,6 @@ void __fastcall XgOpenLicense(HWND hwnd)
     ShellExecuteW(hwnd, nullptr, szPath, nullptr, nullptr, SW_SHOWNORMAL);
 }
 
-// パターンを開く。
-void __fastcall XgOpenPatterns(HWND hwnd)
-{
-    // パターンファイルを開く。
-    ShellExecuteW(hwnd, nullptr, L"https://katahiromz.web.fc2.com/xword/pat/", nullptr, nullptr, SW_SHOWNORMAL);
-}
-
 // ファイルが書き込み可能か？
 bool __fastcall XgCanWriteFile(const WCHAR *pszFile)
 {
