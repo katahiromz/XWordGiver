@@ -1198,7 +1198,7 @@ FONT 9, "MS UI Gothic"
     LISTBOX lst1, 5, 60, 395, 240, LBS_DISABLENOSCROLL | LBS_MULTICOLUMN | LBS_NOINTEGRALHEIGHT | LBS_OWNERDRAWFIXED | WS_VSCROLL | WS_HSCROLL | WS_TABSTOP
     PUSHBUTTON "コピー(&C)", psh1, 5, 305, 60, 20
     DEFPUSHBUTTON "解を求める(&O)", IDOK, 255, 305, 80, 20
-    PUSHBUTTON "キャンセル", IDCANCEL, 339, 305, 60, 20
+    PUSHBUTTON "閉じる(&X)", IDCANCEL, 339, 305, 60, 20
 }
 
 //////////////////////////////////////////////////////////////////////////////
