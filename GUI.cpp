@@ -4,6 +4,7 @@
 // (Japanese, Shift_JIS)
 
 #include "XWordGiver.hpp"
+#include "layout.h"
 
 // クロスワードのサイズの制限。
 #define xg_nMinSize         3
@@ -28,6 +29,12 @@
 void __fastcall MainWnd_OnChar(HWND hwnd, TCHAR ch, int cRepeat);
 void __fastcall MainWnd_OnKey(HWND hwnd, UINT vk, bool fDown, int /*cRepeat*/, UINT /*flags*/);
 void __fastcall MainWnd_OnImeChar(HWND hwnd, WCHAR ch, LPARAM /*lKeyData*/);
+
+// 「黒マスパターン」ダイアログの位置とサイズ。
+INT xg_nPatWndX = CW_USEDEFAULT;
+INT xg_nPatWndY = CW_USEDEFAULT;
+INT xg_nPatWndCX = CW_USEDEFAULT;
+INT xg_nPatWndCY = CW_USEDEFAULT;
 
 //////////////////////////////////////////////////////////////////////////////
 // global variables
@@ -734,6 +741,19 @@ bool __fastcall XgLoadSettings(void)
                 xg_nSmallCharPercents = dwValue;
             }
 
+            if (!app_key.QueryDword(L"PatWndX", dwValue)) {
+                xg_nPatWndX = dwValue;
+            }
+            if (!app_key.QueryDword(L"PatWndY", dwValue)) {
+                xg_nPatWndY = dwValue;
+            }
+            if (!app_key.QueryDword(L"PatWndCX", dwValue)) {
+                xg_nPatWndCX = dwValue;
+            }
+            if (!app_key.QueryDword(L"PatWndCY", dwValue)) {
+                xg_nPatWndCY = dwValue;
+            }
+
             if (!app_key.QuerySz(L"Recent", sz, ARRAYSIZE(sz))) {
                 xg_dict_name = sz;
                 if (!PathFileExists(xg_dict_name.c_str()))
@@ -847,6 +867,11 @@ bool __fastcall XgSaveSettings(void)
 
             app_key.SetDword(L"CellCharPercents", xg_nCellCharPercents);
             app_key.SetDword(L"SmallCharPercents", xg_nSmallCharPercents);
+
+            app_key.SetDword(L"PatWndX", xg_nPatWndX);
+            app_key.SetDword(L"PatWndY", xg_nPatWndY);
+            app_key.SetDword(L"PatWndCX", xg_nPatWndCX);
+            app_key.SetDword(L"PatWndCY", xg_nPatWndCY);
 
             app_key.SetSz(L"Recent", xg_dict_name.c_str());
             app_key.SetSz(L"BlackCellImage", xg_strBlackCellImage.c_str());
@@ -6166,6 +6191,7 @@ struct PATDATA
 
 // 黒マスパターンのデータ。
 static std::vector<PATDATA> s_patterns;
+static LAYOUT_DATA *s_pLayout = NULL;
 
 static BOOL
 XgPattern_RefreshContents(HWND hwnd, INT type)
@@ -6278,8 +6304,37 @@ XgPattern_RefreshContents(HWND hwnd, INT type)
 static BOOL
 XgPattern_OnInitDialog(HWND hwnd, HWND hwndFocus, LPARAM lParam)
 {
+    if (s_pLayout)
+    {
+        LayoutDestroy(s_pLayout);
+        s_pLayout = NULL;
+    }
+
     CheckRadioButton(hwnd, rad1, rad6, rad6);
     XgPattern_RefreshContents(hwnd, rad6);
+
+    static const LAYOUT_INFO layouts[] =
+    {
+        { stc1, BF_LEFT | BF_TOP },
+        { rad1, BF_LEFT | BF_TOP },
+        { rad2, BF_LEFT | BF_TOP },
+        { rad3, BF_LEFT | BF_TOP },
+        { rad4, BF_LEFT | BF_TOP },
+        { rad5, BF_LEFT | BF_TOP },
+        { rad6, BF_LEFT | BF_TOP },
+        { lst1, BF_LEFT | BF_TOP | BF_RIGHT | BF_BOTTOM },
+        { psh1, BF_LEFT | BF_BOTTOM },
+        { IDOK, BF_RIGHT | BF_BOTTOM },
+        { IDCANCEL, BF_RIGHT | BF_BOTTOM },
+    };
+    s_pLayout = LayoutInit(hwnd, layouts, ARRAYSIZE(layouts));
+    LayoutEnableResize(s_pLayout, TRUE);
+
+    if (xg_nPatWndX != CW_USEDEFAULT && xg_nPatWndCX != CW_USEDEFAULT)
+    {
+        MoveWindow(hwnd, xg_nPatWndX, xg_nPatWndY, xg_nPatWndCX, xg_nPatWndCY, TRUE);
+    }
+
     return TRUE;
 }
 
@@ -6426,7 +6481,7 @@ XgPattern_OnDrawItem(HWND hwnd, const DRAWITEMSTRUCT * lpDrawItem)
     }
 
     // 描画項目のサイズ。
-    INT cxItem = rcItem.right - rcItem.left, cyItem = rcItem.bottom - rcItem.top;
+    INT cxItem = rcItem.right - rcItem.left;
 
     // メモリーデバイスコンテキストを作成。
     if (HDC hdcMem = CreateCompatibleDC(hDC))
@@ -6480,6 +6535,46 @@ XgPattern_OnDrawItem(HWND hwnd, const DRAWITEMSTRUCT * lpDrawItem)
     }
 }
 
+static void XgPattern_OnDestroy(HWND hwnd)
+{
+    if (s_pLayout)
+    {
+        LayoutDestroy(s_pLayout);
+        s_pLayout = NULL;
+    }
+}
+
+static void XgPattern_OnMove(HWND hwnd, int x, int y)
+{
+    RECT rc;
+    if (!IsMinimized(hwnd) && !IsMaximized(hwnd))
+    {
+        GetWindowRect(hwnd, &rc);
+        xg_nPatWndX = rc.left;
+        xg_nPatWndY = rc.top;
+    }
+}
+
+static void XgPattern_OnSize(HWND hwnd, UINT state, int cx, int cy)
+{
+    RECT rc;
+
+    LayoutUpdate(hwnd, s_pLayout, NULL, 0);
+
+    if (!IsMinimized(hwnd) && !IsMaximized(hwnd))
+    {
+        GetWindowRect(hwnd, &rc);
+        xg_nPatWndCX = rc.right - rc.left;
+        xg_nPatWndCY = rc.bottom - rc.top;
+    }
+}
+
+static void XgPattern_OnGetMinMaxInfo(HWND hwnd, LPMINMAXINFO lpMinMaxInfo)
+{
+    lpMinMaxInfo->ptMinTrackSize.x = 700;
+    lpMinMaxInfo->ptMinTrackSize.y = 300;
+}
+
 // 「黒マスパターン」ダイアログプロシージャ。
 INT_PTR CALLBACK
 XgPatternDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
@@ -6490,6 +6585,10 @@ XgPatternDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
         HANDLE_MSG(hwnd, WM_COMMAND, XgPattern_OnCommand);
         HANDLE_MSG(hwnd, WM_MEASUREITEM, XgPattern_OnMeasureItem);
         HANDLE_MSG(hwnd, WM_DRAWITEM, XgPattern_OnDrawItem);
+        HANDLE_MSG(hwnd, WM_MOVE, XgPattern_OnMove);
+        HANDLE_MSG(hwnd, WM_SIZE, XgPattern_OnSize);
+        HANDLE_MSG(hwnd, WM_GETMINMAXINFO, XgPattern_OnGetMinMaxInfo);
+        HANDLE_MSG(hwnd, WM_DESTROY, XgPattern_OnDestroy);
     }
     return 0;
 }

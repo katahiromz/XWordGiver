@@ -513,6 +513,12 @@ extern INT xg_nCellCharPercents;
 // 小さい文字の大きさ（％）。
 extern INT xg_nSmallCharPercents;
 
+// 「黒マスパターン」ダイアログの位置とサイズ。
+extern INT xg_nPatWndX;
+extern INT xg_nPatWndY;
+extern INT xg_nPatWndCX;
+extern INT xg_nPatWndCY;
+
 //////////////////////////////////////////////////////////////////////////////
 
 // 描画イメージを更新する。
