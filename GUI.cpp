@@ -6464,11 +6464,21 @@ XgPattern_OnDrawItem(HWND hwnd, const DRAWITEMSTRUCT * lpDrawItem)
     HDC hDC = lpDrawItem->hDC;
     RECT rcItem = lpDrawItem->rcItem;
 
+    // 必要ならフォーカス枠を描く。
+    if (lpDrawItem->itemAction & ODA_FOCUS)
+    {
+        DrawFocusRect(hDC, &rcItem);
+    }
+
+    // その他は無視。
+    if (!(lpDrawItem->itemAction & (ODA_DRAWENTIRE | ODA_SELECT)))
+        return;
+
     // サイズを表すテキスト。
     WCHAR szText[64];
     StringCbPrintfW(szText, sizeof(szText), L"%u x %u", int(pat.num_columns), int(pat.num_rows));
 
-    // テキストを描画する。
+    // 背景とテキストを描画する。
     SelectObject(hDC, GetStockFont(DEFAULT_GUI_FONT));
     SetBkMode(hDC, TRANSPARENT);
     TEXTMETRIC tm;
@@ -6484,6 +6494,12 @@ XgPattern_OnDrawItem(HWND hwnd, const DRAWITEMSTRUCT * lpDrawItem)
         SetTextColor(hDC, COLOR_WINDOWTEXT);
     }
     DrawTextW(hDC, szText, -1, &rcItem, DT_CENTER | DT_TOP | DT_SINGLELINE);
+
+    // 必要ならフォーカス枠を描く。
+    if (lpDrawItem->itemState & ODS_FOCUS)
+    {
+        DrawFocusRect(hDC, &rcItem);
+    }
 
     // パターンのテキストデータを扱いやすいよう、加工する。
     std::wstring text = pat.data;
@@ -6556,7 +6572,9 @@ XgPattern_OnDrawItem(HWND hwnd, const DRAWITEMSTRUCT * lpDrawItem)
                 LineTo(hdcMem, 1 + x * cxCell, 1 + pat.num_rows * cyCell);
             }
             // ビットマップイメージをhDCに転送する。
-            BitBlt(hDC, rcItem.left + (cxItem - (cx + 3)) / 2, rcItem.top + tm.tmHeight,
+            BitBlt(hDC,
+                   rcItem.left + (cxItem - (cx + 3)) / 2,
+                   rcItem.top + tm.tmHeight,
                    cx + 3, cy + 3, hdcMem, 0, 0, SRCCOPY);
             // ビットマップの選択を解除する。
             SelectObject(hdcMem, hbmOld);
