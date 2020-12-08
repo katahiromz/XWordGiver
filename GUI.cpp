@@ -6431,13 +6431,17 @@ XgPattern_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT codeNotify)
 static void
 XgPattern_OnMeasureItem(HWND hwnd, MEASUREITEMSTRUCT * lpMeasureItem)
 {
+    // リストボックスの lst1 か？
+    if (lpMeasureItem->CtlType != ODT_LISTBOX || lpMeasureItem->CtlID != lst1)
+        return;
+
     HDC hDC = CreateCompatibleDC(NULL);
     SelectObject(hDC, GetStockFont(DEFAULT_GUI_FONT));
     TEXTMETRIC tm;
     GetTextMetrics(hDC, &tm);
     DeleteDC(hDC);
     INT cxCell = 6, cyCell = 6;
-    lpMeasureItem->itemWidth = cxCell * 18 + 3;
+    lpMeasureItem->itemWidth = cxCell * 19 + 3;
     lpMeasureItem->itemHeight = cyCell * 18 + 3 + tm.tmHeight;
 }
 
@@ -6445,6 +6449,10 @@ XgPattern_OnMeasureItem(HWND hwnd, MEASUREITEMSTRUCT * lpMeasureItem)
 static void
 XgPattern_OnDrawItem(HWND hwnd, const DRAWITEMSTRUCT * lpDrawItem)
 {
+    // リストボックスの lst1 か？
+    if (lpDrawItem->CtlType != ODT_LISTBOX || lpDrawItem->CtlID != lst1)
+        return;
+
     // データがパターンのインデックスか？
     LPARAM lParam = lpDrawItem->itemData;
     if ((int)lParam >= (int)s_patterns.size())
