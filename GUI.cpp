@@ -6427,6 +6427,8 @@ XgPattern_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT codeNotify)
     }
 }
 
+static INT cxCell = 6, cyCell = 6; // 小さなセルのサイズ。
+
 // WM_MEASUREITEM
 static void
 XgPattern_OnMeasureItem(HWND hwnd, MEASUREITEMSTRUCT * lpMeasureItem)
@@ -6440,7 +6442,6 @@ XgPattern_OnMeasureItem(HWND hwnd, MEASUREITEMSTRUCT * lpMeasureItem)
     TEXTMETRIC tm;
     GetTextMetrics(hDC, &tm);
     DeleteDC(hDC);
-    INT cxCell = 6, cyCell = 6;
     lpMeasureItem->itemWidth = cxCell * 19 + 3;
     lpMeasureItem->itemHeight = cyCell * 18 + 3 + tm.tmHeight;
 }
@@ -6519,7 +6520,6 @@ XgPattern_OnDrawItem(HWND hwnd, const DRAWITEMSTRUCT * lpDrawItem)
     // メモリーデバイスコンテキストを作成。
     if (HDC hdcMem = CreateCompatibleDC(hDC))
     {
-        INT cxCell = 6, cyCell = 6; // セルのサイズ。
         INT cx = cxCell * pat.num_columns, cy = cyCell * pat.num_rows; // 全体のサイズ。
         // ビットマップを作成する。
         if (HBITMAP hbm = XgCreate24BppBitmap(hdcMem, cx + 3, cy + 3))
