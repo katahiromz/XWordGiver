@@ -6361,13 +6361,38 @@ static void XgPattern_OnOK(HWND hwnd)
         return;
 
     auto& pat = s_patterns[i];
-    XgPasteBoard(xg_hMainWnd, pat.data);
-    XgCopyBoard(xg_hMainWnd);
-    XgUpdateImage(xg_hMainWnd, 0, 0);
+    {
+        auto sa1 = std::make_shared<XG_UndoData_SetAll>();
+        auto sa2 = std::make_shared<XG_UndoData_SetAll>();
+        sa1->Get();
+        {
+            // コピー＆貼り付け。
+            XgPasteBoard(xg_hMainWnd, pat.data);
+            XgCopyBoard(xg_hMainWnd);
+        }
+        sa2->Get();
+        // 元に戻す情報を設定する。
+        xg_ubUndoBuffer.Commit(UC_SETALL, sa1, sa2);
+    }
 
+    XgUpdateImage(xg_hMainWnd, 0, 0);
     EndDialog(hwnd, IDOK);
 
-    XgOnSolveNoAddBlack(xg_hMainWnd);
+    {
+        auto sa1 = std::make_shared<XG_UndoData_SetAll>();
+        auto sa2 = std::make_shared<XG_UndoData_SetAll>();
+        sa1->Get();
+        {
+            // 解を求める（黒マス追加なし）。
+            XgOnSolveNoAddBlack(xg_hMainWnd);
+        }
+        sa2->Get();
+        // 元に戻す情報を設定する。
+        xg_ubUndoBuffer.Commit(UC_SETALL, sa1, sa2);
+    }
+
+    // ツールバーのUIを更新する。
+    XgUpdateToolBarUI(xg_hMainWnd);
 }
 
 // WM_COMMAND
