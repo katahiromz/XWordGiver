@@ -6336,7 +6336,13 @@ XgPattern_OnInitDialog(HWND hwnd, HWND hwndFocus, LPARAM lParam)
     }
     else
     {
+        RECT rc;
         XgCenterDialog(hwnd);
+        GetWindowRect(hwnd, &rc);
+        xg_nPatWndX = rc.left;
+        xg_nPatWndY = rc.top;
+        xg_nPatWndCX = rc.right - rc.left;
+        xg_nPatWndCY = rc.bottom - rc.top;
     }
 
     return TRUE;
