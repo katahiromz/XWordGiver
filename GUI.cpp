@@ -6334,6 +6334,10 @@ XgPattern_OnInitDialog(HWND hwnd, HWND hwndFocus, LPARAM lParam)
     {
         MoveWindow(hwnd, xg_nPatWndX, xg_nPatWndY, xg_nPatWndCX, xg_nPatWndCY, TRUE);
     }
+    else
+    {
+        XgCenterDialog(hwnd);
+    }
 
     return TRUE;
 }
