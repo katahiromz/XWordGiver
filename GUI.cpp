@@ -6375,6 +6375,8 @@ static void XgPattern_OnCopy(HWND hwnd)
         xg_ubUndoBuffer.Commit(UC_SETALL, sa1, sa2);
     }
     XgUpdateImage(xg_hMainWnd, 0, 0);
+
+    EndDialog(hwnd, IDCANCEL);
 }
 
 // 黒マスパターンで「OK」ボタンを押した。
