@@ -21,6 +21,44 @@
 	<input type="button" id="button1" value="Click!">
 </p>
 <script>
+function swap_xy(subtext) {
+	var text = subtext;
+	text = text.replace(/(┓|┛)\r?\n/g, '');
+	text = text.replace(/┏|━|┓|┃|┗|┛/g, '');
+	text = text.replace(/\n$/g, '');
+	var ary1 = text.split("\n");
+	var ary2 = [];
+	for (let i = 0; i < ary1[0].length; ++i) {
+		let ary = [];
+		for (let j = 0; j < ary1.length; ++j) {
+			ary[j] = "";
+		}
+		ary2.push(ary);
+	}
+	for (let i = 0; i < ary1.length; ++i) {
+		for (let j = 0; j < ary1[0].length; ++j) {
+			ary2[j][i] = ary1[i][j];
+		}
+	}
+	let str = "┏";
+	for (let j = 0; j < ary2[0].length; ++j) {
+		str += "━";
+	}
+	str += "┓\n";
+	for (let i = 0; i < ary2.length; ++i) {
+		str += "┃";
+		for (let j = 0; j < ary2[0].length; ++j) {
+			str += ary2[i][j];
+		}
+		str += "┃\n";
+	}
+	str += "┗";
+	for (let j = 0; j < ary2[0].length; ++j) {
+		str += "━";
+	}
+	str += "┛";
+	return str;
+}
 $(function(){
 	$('#button1').click(function(){
 		var text = $('#textarea1').val();
@@ -33,6 +71,7 @@ $(function(){
 			var subtext = text.substring(i, j + 1);
 			ary.push(subtext);
 			text = text.substring(j + 1);
+			ary.push(swap_xy(subtext));
 		}
 		function onlyUnique(value, index, self) {
 			return self.indexOf(value) === index;
