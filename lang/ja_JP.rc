@@ -17,7 +17,7 @@ LANGUAGE LANG_JAPANESE, SUBLANG_DEFAULT
         MENUITEM "問題を自動生成して答えを表示する(&E)\tCtrl+H", ID_GENERATEANSWER
         MENUITEM "問題を連続自動生成する(&R)\tCtrl+W", ID_GENERATEREPEATEDLY
         MENUITEM SEPARATOR
-        MENUITEM "黒マスパターンから自動生成(&T)...", ID_OPENPATTERNS
+        MENUITEM "黒マスパターンから自動生成(&T)...\tCtrl+;", ID_OPENPATTERNS
         MENUITEM SEPARATOR
         MENUITEM "問題を開く(&O)...\tCtrl+O", ID_OPEN
         MENUITEM "問題を保存(&A)...\tCtrl+S", ID_SAVEAS
