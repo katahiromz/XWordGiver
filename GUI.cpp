@@ -585,6 +585,11 @@ bool __fastcall XgLoadSettings(void)
 
     xg_strBlackCellImage.clear();
 
+    xg_nPatWndX = CW_USEDEFAULT;
+    xg_nPatWndY = CW_USEDEFAULT;
+    xg_nPatWndCX = CW_USEDEFAULT;
+    xg_nPatWndCY = CW_USEDEFAULT;
+
     // 会社名キーを開く。
     MRegKey company_key(HKEY_CURRENT_USER, s_pszSoftwareCompanyName, FALSE);
     if (company_key) {
@@ -6357,8 +6362,18 @@ static void XgPattern_OnCopy(HWND hwnd)
         return;
 
     auto& pat = s_patterns[i];
-    XgPasteBoard(xg_hMainWnd, pat.data);
-    XgCopyBoard(xg_hMainWnd);
+    {
+        auto sa1 = std::make_shared<XG_UndoData_SetAll>();
+        auto sa2 = std::make_shared<XG_UndoData_SetAll>();
+        sa1->Get();
+        {
+            XgPasteBoard(xg_hMainWnd, pat.data);
+            XgCopyBoard(xg_hMainWnd);
+        }
+        sa2->Get();
+        // 元に戻す情報を設定する。
+        xg_ubUndoBuffer.Commit(UC_SETALL, sa1, sa2);
+    }
     XgUpdateImage(xg_hMainWnd, 0, 0);
 }
 
