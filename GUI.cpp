@@ -6376,6 +6376,9 @@ static void XgPattern_OnCopy(HWND hwnd)
     }
     XgUpdateImage(xg_hMainWnd, 0, 0);
 
+    // ツールバーのUIを更新する。
+    XgUpdateToolBarUI(xg_hMainWnd);
+
     EndDialog(hwnd, IDCANCEL);
 }
 
