@@ -4,7 +4,7 @@
 
 「クロスワード ギバー」は、クロスワード パズルを自動で作成するソフトです。
 
-![スクリーンショット](http://i.imgur.com/Jjwsc.jpg "スクリーンショット")
+![スクリーンショット](screenshot.png "スクリーンショット")
 
 Sorry, this software is for Japanese Windows only.
 
