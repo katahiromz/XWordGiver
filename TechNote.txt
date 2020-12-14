@@ -285,7 +285,8 @@ Ver3.8 から「スマート解決」機能が追加されました。これは
 
     まず、CMakeをインストーラでインストールして下さい。
 
-    次に、Visual Studio のコマンドプロンプトを開き
+    次に、Visual Studio のコマンドプロンプトを開き、プロジェクトのフォルダへ
+    CD コマンドで移動し、
 
         「C:\Program Files\CMake\bin\cmake -G」
 
