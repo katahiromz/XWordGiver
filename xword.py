@@ -397,8 +397,6 @@ class クロスワード:
 		return 三方向黒マス(self.行数, self.列数, self.セル)
 	def 分断(self):
 		return 分断(self.行数, self.列数, self.セル)
-	def 単語の重複(self):
-		return 単語の重複(self.ヨコのカギ, self.タテのカギ)
 	def 単語の統計(self):
 		return 単語の統計(self.ヨコのカギ, self.タテのカギ)
 	def L字ワンペア(self):
