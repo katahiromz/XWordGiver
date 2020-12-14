@@ -151,8 +151,13 @@ static const LPCWSTR
 #endif
 
 // 会社名とアプリ名。
-static const LPCWSTR
-    s_pszSoftwareCompanyAndApp = L"Software\\Katayama Hirofumi MZ\\XWord";
+#ifdef _WIN64
+    static const LPCWSTR
+        s_pszSoftwareCompanyAndApp = L"Software\\Katayama Hirofumi MZ\\XWord64";
+#else
+    static const LPCWSTR
+        s_pszSoftwareCompanyAndApp = L"Software\\Katayama Hirofumi MZ\\XWord32";
+#endif
 
 // 連続生成の場合、無限に生成するか？
 static bool s_bInfinite = true;
@@ -6340,6 +6345,7 @@ XgPattern_OnInitDialog(HWND hwnd, HWND hwndFocus, LPARAM lParam)
         { rad4, BF_LEFT | BF_TOP },
         { rad5, BF_LEFT | BF_TOP },
         { rad6, BF_LEFT | BF_TOP },
+        { stc2, BF_LEFT | BF_TOP },
         { lst1, BF_LEFT | BF_TOP | BF_RIGHT | BF_BOTTOM },
         { psh1, BF_LEFT | BF_BOTTOM },
         { chx1, BF_LEFT | BF_BOTTOM },
@@ -6364,7 +6370,8 @@ XgPattern_OnInitDialog(HWND hwnd, HWND hwndFocus, LPARAM lParam)
         xg_nPatWndCY = rc.bottom - rc.top;
     }
 
-    return TRUE;
+    SetFocus(GetDlgItem(hwnd, lst1));
+    return FALSE;
 }
 
 // 黒マスパターンのコピー。
