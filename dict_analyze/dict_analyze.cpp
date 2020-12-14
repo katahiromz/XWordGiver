@@ -35,25 +35,30 @@ void mstr_trim_right(WCHAR (&str)[siz], const WCHAR *spaces)
 
 LPWSTR fgetws_be(LPWSTR psz, size_t cch, FILE *fp)
 {
+    if (cch == 0)
+        return NULL;
+
+    if (cch == 1)
+    {
+        *psz = 0;
+        return psz;
+    }
+
     WCHAR ch, *pch = psz;
     size_t ich = 0;
     BOOL bHasRead = FALSE;
-    if (cch == 0)
-        return NULL;
     while (fread(&ch, sizeof(WCHAR), 1, fp))
     {
         bHasRead = TRUE;
-        BYTE lo = LOBYTE(ch);
-        BYTE hi = HIBYTE(ch);
+        BYTE lo = LOBYTE(ch), hi = HIBYTE(ch);
         ch = MAKEWORD(hi, lo);
         *pch++ = ch;
         ++ich;
-        if (ch == L'\n' || ich == cch)
+        if (ch == L'\n' || ich + 1 == cch)
         {
             *pch = 0;
             break;
         }
-        ++ich;
     }
     return bHasRead ? psz : NULL;
 }
