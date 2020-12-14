@@ -17,7 +17,7 @@ LANGUAGE LANG_JAPANESE, SUBLANG_DEFAULT
 
 STRINGTABLE
 {
-    100, "使い方: dict_analyze dict-file.tsv\n"
+    100, "使い方: dict_analyze 辞書ファイル.tsv\n"
     101, "長さ %d の単語は %d 個ありました。\n"
     102, "ファイル「%s」は開けません。\n"
 }
