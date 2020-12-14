@@ -217,6 +217,9 @@ static int          s_nImageCopyHeight = 250;
 static bool         s_bImageCopyByHeight = false;
 static int          s_nMarksHeight = 40;
 
+// 黒マスパターンで答えを表示する。
+BOOL xg_bShowAnswerOnPattern = TRUE;
+
 //////////////////////////////////////////////////////////////////////////////
 // スクロール関連。
 
@@ -589,6 +592,7 @@ bool __fastcall XgLoadSettings(void)
     xg_nPatWndY = CW_USEDEFAULT;
     xg_nPatWndCX = CW_USEDEFAULT;
     xg_nPatWndCY = CW_USEDEFAULT;
+    xg_bShowAnswerOnPattern = TRUE;
 
     // 会社名キーを開く。
     MRegKey company_key(HKEY_CURRENT_USER, s_pszSoftwareCompanyName, FALSE);
@@ -758,6 +762,9 @@ bool __fastcall XgLoadSettings(void)
             if (!app_key.QueryDword(L"PatWndCY", dwValue)) {
                 xg_nPatWndCY = dwValue;
             }
+            if (!app_key.QueryDword(L"ShowAnsOnPat", dwValue)) {
+                xg_bShowAnswerOnPattern = dwValue;
+            }
 
             if (!app_key.QuerySz(L"Recent", sz, ARRAYSIZE(sz))) {
                 xg_dict_name = sz;
@@ -877,6 +884,7 @@ bool __fastcall XgSaveSettings(void)
             app_key.SetDword(L"PatWndY", xg_nPatWndY);
             app_key.SetDword(L"PatWndCX", xg_nPatWndCX);
             app_key.SetDword(L"PatWndCY", xg_nPatWndCY);
+            app_key.SetDword(L"ShowAnsOnPat", xg_bShowAnswerOnPattern);
 
             app_key.SetSz(L"Recent", xg_dict_name.c_str());
             app_key.SetSz(L"BlackCellImage", xg_strBlackCellImage.c_str());
@@ -3278,7 +3286,7 @@ bool __fastcall XgOnSolveAddBlack(HWND hwnd)
 }
 
 // 解を求める（黒マス追加なし）。
-bool __fastcall XgOnSolveNoAddBlack(HWND hwnd)
+bool __fastcall XgOnSolveNoAddBlack(HWND hwnd, bool bShowAnswer = true)
 {
     // すでに解かれている場合は、実行を拒否する。
     if (xg_bSolved) {
@@ -3342,7 +3350,7 @@ bool __fastcall XgOnSolveNoAddBlack(HWND hwnd)
         }
 
         // 解あり。表示を更新する。
-        xg_bShowAnswer = true;
+        xg_bShowAnswer = bShowAnswer;
         xg_caret_pos.clear();
         XgMarkUpdate();
         XgUpdateImage(hwnd, 0, 0);
@@ -6315,6 +6323,11 @@ XgPattern_OnInitDialog(HWND hwnd, HWND hwndFocus, LPARAM lParam)
         s_pLayout = NULL;
     }
 
+    if (xg_bShowAnswerOnPattern)
+        CheckDlgButton(hwnd, chx1, BST_CHECKED);
+    else
+        CheckDlgButton(hwnd, chx1, BST_UNCHECKED);
+
     CheckRadioButton(hwnd, rad1, rad6, rad6);
     XgPattern_RefreshContents(hwnd, rad6);
 
@@ -6329,6 +6342,7 @@ XgPattern_OnInitDialog(HWND hwnd, HWND hwndFocus, LPARAM lParam)
         { rad6, BF_LEFT | BF_TOP },
         { lst1, BF_LEFT | BF_TOP | BF_RIGHT | BF_BOTTOM },
         { psh1, BF_LEFT | BF_BOTTOM },
+        { chx1, BF_LEFT | BF_BOTTOM },
         { IDOK, BF_RIGHT | BF_BOTTOM },
         { IDCANCEL, BF_RIGHT | BF_BOTTOM },
     };
@@ -6405,8 +6419,11 @@ static void XgPattern_OnOK(HWND hwnd)
         xg_ubUndoBuffer.Commit(UC_SETALL, sa1, sa2);
     }
 
-    XgUpdateImage(xg_hMainWnd, 0, 0);
+    // ダイアログを閉じる。
     EndDialog(hwnd, IDOK);
+
+    // 答えを表示するか？
+    xg_bShowAnswerOnPattern = (IsDlgButtonChecked(hwnd, chx1) == BST_CHECKED);
 
     {
         auto sa1 = std::make_shared<XG_UndoData_SetAll>();
@@ -6414,12 +6431,15 @@ static void XgPattern_OnOK(HWND hwnd)
         sa1->Get();
         {
             // 解を求める（黒マス追加なし）。
-            XgOnSolveNoAddBlack(xg_hMainWnd);
+            XgOnSolveNoAddBlack(xg_hMainWnd, xg_bShowAnswerOnPattern);
         }
         sa2->Get();
         // 元に戻す情報を設定する。
         xg_ubUndoBuffer.Commit(UC_SETALL, sa1, sa2);
     }
+
+    // 表示を更新する。
+    XgUpdateImage(xg_hMainWnd, 0, 0);
 
     // ツールバーのUIを更新する。
     XgUpdateToolBarUI(xg_hMainWnd);
