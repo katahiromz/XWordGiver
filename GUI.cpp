@@ -6679,7 +6679,7 @@ static void XgPattern_OnSize(HWND hwnd, UINT state, int cx, int cy)
 
 static void XgPattern_OnGetMinMaxInfo(HWND hwnd, LPMINMAXINFO lpMinMaxInfo)
 {
-    lpMinMaxInfo->ptMinTrackSize.x = 700;
+    lpMinMaxInfo->ptMinTrackSize.x = 600;
     lpMinMaxInfo->ptMinTrackSize.y = 300;
 }
 

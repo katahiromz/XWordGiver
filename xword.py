@@ -99,15 +99,34 @@ def 分断(row_count, column_count, cell_data):
 
 def 単語の重複(h, v):
 	words = []
-	for pair in h.values():
-		if pair[0] in words:
+	for item in h.values():
+		if item[0] in words:
 			return True
-		words.append(pair[0])
-	for pair in v.values():
-		if pair[0] in words:
+		words.append(item[0])
+	for item in v.values():
+		if item[0] in words:
 			return True
-		words.append(pair[0])
+		words.append(item[0])
+	#print(words)
 	return False
+
+def 単語の統計(h, v):
+	words = []
+	for item in h:
+		words.append(item[1])
+	for item in v:
+		words.append(item[1])
+	map = {}
+	for word in words:
+		if len(word) in map:
+			map[len(word)] += 1
+		else:
+			map[len(word)] = 1
+	#print(map)
+	keys = list(map.keys())
+	keys.sort()
+	for key in keys:
+		print("長さ " + str(key) + " の単語は " + str(map[key]) + " 個ありました。");
 
 def L字ワンペア(row_count, column_count, cell_data):
 	for i in range(0, row_count - 1):
@@ -378,8 +397,10 @@ class クロスワード:
 		return 三方向黒マス(self.行数, self.列数, self.セル)
 	def 分断(self):
 		return 分断(self.行数, self.列数, self.セル)
-	def 単語の重複(self, h, v):
+	def 単語の重複(self):
 		return 単語の重複(self.ヨコのカギ, self.タテのカギ)
+	def 単語の統計(self):
+		return 単語の統計(self.ヨコのカギ, self.タテのカギ)
 	def L字ワンペア(self):
 		return L字ワンペア(self.行数, self.列数, self.セル)
 	def L字ツーペア(self):
@@ -542,6 +563,8 @@ def main():
 		if not xword.解あり():
 			print("警告: ファイル「" + filename + "」は、解ではありません。")
 			xword.備考欄追記("[解なし]")
+		else:
+			xword.単語の統計()
 		if xword.L字ワンペア():
 			print("警告: ファイル「" + filename + "」は、L字ワンペアです。")
 			xword.備考欄追記("[L字ワンペア]")
