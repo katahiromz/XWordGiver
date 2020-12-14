@@ -16,25 +16,20 @@ LPSTR LoadStringDx(INT nID)
     return s_buf;
 }
 
-void mstr_trim(std::wstring& str, const WCHAR *spaces)
+void mstr_trim_right(std::wstring& str, const WCHAR *spaces)
 {
-    size_t i = str.find_first_not_of(spaces);
     size_t j = str.find_last_not_of(spaces);
-    if ((i == std::wstring::npos) || (j == std::wstring::npos))
-    {
+    if (j == std::wstring::npos)
         str.clear();
-    }
     else
-    {
-        str = str.substr(i, j - i + 1);
-    }
+        str = str.substr(0, j + 1);
 }
 
 template <size_t siz>
-void mstr_trim(WCHAR (&str)[siz], const WCHAR *spaces)
+void mstr_trim_right(WCHAR (&str)[siz], const WCHAR *spaces)
 {
     std::wstring s = str;
-    mstr_trim(s, spaces);
+    mstr_trim_right(s, spaces);
     lstrcpyW(str, s.c_str());
 }
 
@@ -130,7 +125,7 @@ int main(int argc, char **argv)
                 if (szTextA[0] == '#')
                     continue;
                 MultiByteToWideChar(CP_ACP, 0, szTextA, -1, szTextW, ARRAYSIZE(szTextW));
-                mstr_trim(szTextW, L" \t\r\n");
+                mstr_trim_right(szTextW, L" \t\r\n");
                 if (WCHAR *pch = wcschr(szTextW, L'\t'))
                 {
                     *pch = 0;
@@ -147,7 +142,7 @@ int main(int argc, char **argv)
                 if (szTextA[0] == '#')
                     continue;
                 MultiByteToWideChar(CP_UTF8, 0, szTextA, -1, szTextW, ARRAYSIZE(szTextW));
-                mstr_trim(szTextW, L" \t\r\n");
+                mstr_trim_right(szTextW, L" \t\r\n");
                 if (WCHAR *pch = wcschr(szTextW, L'\t'))
                 {
                     *pch = 0;
@@ -163,7 +158,7 @@ int main(int argc, char **argv)
             {
                 if (szTextW[0] == L'#')
                     continue;
-                mstr_trim(szTextW, L" \t\r\n");
+                mstr_trim_right(szTextW, L" \t\r\n");
                 if (WCHAR *pch = wcschr(szTextW, L'\t'))
                 {
                     *pch = 0;
@@ -179,7 +174,7 @@ int main(int argc, char **argv)
             {
                 if (szTextW[0] == L'#')
                     continue;
-                mstr_trim(szTextW, L" \t\r\n");
+                mstr_trim_right(szTextW, L" \t\r\n");
                 if (WCHAR *pch = wcschr(szTextW, L'\t'))
                 {
                     *pch = 0;
