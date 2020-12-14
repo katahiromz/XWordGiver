@@ -30,7 +30,7 @@ Sorry, this software is for Japanese Windows only.
 
 ## 使用許諾
 
-「クロスワード ギバー」は、再びフリーソフトになりました。詳しくは、付属のファイルの [LICENSE.txt](LICENSE.txt) をご覧下さい。
+「クロスワード ギバー」は、フリーソフトです。詳しくは、付属のファイルの [LICENSE.txt](LICENSE.txt) をご覧下さい。
 
 ## 連絡先
 
