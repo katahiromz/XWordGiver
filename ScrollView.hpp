@@ -6,6 +6,13 @@
 #ifndef __MZC3_SCROLLVIEW__
 #define __MZC3_SCROLLVIEW__
 
+#ifndef _INC_WINDOWS
+    #include <windows.h>
+#endif
+#include <windowsx.h>
+#include <vector>
+#include "MPointSizeRect.hpp"
+
 ////////////////////////////////////////////////////////////////////////////
 // MScrollCtrlInfo
 

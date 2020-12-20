@@ -3,7 +3,7 @@
 // This file is part of MZC3.  See file "ReadMe.txt" and "License.txt".
 ////////////////////////////////////////////////////////////////////////////
 
-#include "XWordGiver.hpp"
+#include "ScrollView.hpp"
 
 #ifdef MZC_NO_INLINING
     #undef MZC_INLINE
