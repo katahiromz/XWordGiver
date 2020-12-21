@@ -361,7 +361,7 @@ public:
     // 黒マスが隣り合っているか？
     bool __fastcall DoubleBlack() const;
     // 三方向が黒マスで囲まれたマスがあるかどうか？
-    bool __fastcall TriBlackArround() const;
+    bool __fastcall TriBlackAround() const;
     // 黒マスで分断されているかどうか？
     bool __fastcall DividedByBlack() const;
     // すべてのパターンが正当かどうか調べる。
@@ -379,7 +379,7 @@ public:
     bool __fastcall CanPutBlackEasy(int iRow, int jCol) const;
 
     // マスの三方向が黒マスで囲まれているか？
-    int __fastcall BlacksArround(int iRow, int jCol) const;
+    int __fastcall BlacksAround(int iRow, int jCol) const;
 
     // 黒マスが線対称か？
     bool IsLineSymmetry() const;
@@ -657,7 +657,7 @@ inline void __fastcall XG_Board::SetAt(const XG_Pos& pos, WCHAR ch)
 }
 
 // マスの三方向が黒マスで囲まれているか？
-inline int __fastcall XG_Board::BlacksArround(int iRow, int jCol) const
+inline int __fastcall XG_Board::BlacksAround(int iRow, int jCol) const
 {
     assert(0 <= iRow && iRow < xg_nRows);
     assert(0 <= jCol && jCol < xg_nCols);
@@ -719,19 +719,19 @@ inline bool __fastcall XG_Board::CanPutBlack(int iRow, int jCol) const
 
     // 三方向が黒マスで囲まれたマスができるかどうか？
     if (0 <= iRow - 1) {
-        if (BlacksArround(iRow - 1, jCol) >= 2)
+        if (BlacksAround(iRow - 1, jCol) >= 2)
             return false;
     }
     if (iRow + 1 < xg_nRows) {
-        if (BlacksArround(iRow + 1, jCol) >= 2)
+        if (BlacksAround(iRow + 1, jCol) >= 2)
             return false;
     }
     if (0 <= jCol - 1) {
-        if (BlacksArround(iRow, jCol - 1) >= 2)
+        if (BlacksAround(iRow, jCol - 1) >= 2)
             return false;
     }
     if (jCol + 1 < xg_nCols) {
-        if (BlacksArround(iRow, jCol + 1) >= 2)
+        if (BlacksAround(iRow, jCol + 1) >= 2)
             return false;
     }
 
@@ -776,19 +776,19 @@ inline bool __fastcall XG_Board::CanPutBlackEasy(int iRow, int jCol) const
     if (0) {
         // 三方向が黒マスで囲まれたマスができるかどうか？
         if (0 <= iRow - 1) {
-            if (BlacksArround(iRow - 1, jCol) >= 2)
+            if (BlacksAround(iRow - 1, jCol) >= 2)
                 return false;
         }
         if (iRow + 1 < xg_nRows) {
-            if (BlacksArround(iRow + 1, jCol) >= 2)
+            if (BlacksAround(iRow + 1, jCol) >= 2)
                 return false;
         }
         if (0 <= jCol - 1) {
-            if (BlacksArround(iRow, jCol - 1) >= 2)
+            if (BlacksAround(iRow, jCol - 1) >= 2)
                 return false;
         }
         if (jCol + 1 < xg_nCols) {
-            if (BlacksArround(iRow, jCol + 1) >= 2)
+            if (BlacksAround(iRow, jCol + 1) >= 2)
                 return false;
         }
     }

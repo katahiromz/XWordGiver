@@ -1004,7 +1004,7 @@ bool __fastcall XgCheckCrossWord(HWND hwnd, bool check_words = true)
     }
 
     // 三方向が黒マスで囲まれたマスを作ってはいけません。
-    if (xg_xword.TriBlackArround()) {
+    if (xg_xword.TriBlackAround()) {
         XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_TRIBLOCK), nullptr, MB_ICONERROR);
         return false;
     }
@@ -9446,7 +9446,7 @@ bool __fastcall XgOpenCandsWnd(HWND hwnd, bool vertical)
         XG_Board xword(xg_xword);
         XgApplyCandidate(xword, cand);
         if (xword.CornerBlack() || xword.DoubleBlack() ||
-            xword.TriBlackArround() || xword.DividedByBlack())
+            xword.TriBlackAround() || xword.DividedByBlack())
         {
             ;
         } else {

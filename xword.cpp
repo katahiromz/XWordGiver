@@ -309,7 +309,7 @@ bool __fastcall XG_Board::DoubleBlack() const
 }
 
 // 三方向が黒マスで囲まれたマスがあるかどうか？
-bool __fastcall XG_Board::TriBlackArround() const
+bool __fastcall XG_Board::TriBlackAround() const
 {
     for (int i = xg_nRows - 2; i >= 1; --i) {
         for (int j = xg_nCols - 2; j >= 1; --j) {
@@ -884,7 +884,7 @@ inline bool __fastcall XG_Board::IsValid() const
     // 四隅には黒マスは置けません。
     // 連黒禁。
     // 三方向が黒マスで囲まれたマスを作ってはいけません。
-    if (CornerBlack() || DoubleBlack() || TriBlackArround())
+    if (CornerBlack() || DoubleBlack() || TriBlackAround())
         return false;
 
     // クロスワードに含まれる単語のチェック。
@@ -911,7 +911,7 @@ inline bool __fastcall XG_Board::IsOK() const
         // 四隅には黒マスは置けません。
         // 連黒禁。
         // 三方向が黒マスで囲まれたマスを作ってはいけません。
-        if (CornerBlack() || DoubleBlack() || TriBlackArround())
+        if (CornerBlack() || DoubleBlack() || TriBlackAround())
             return false;
     }
 
@@ -939,7 +939,7 @@ bool __fastcall XG_Board::IsNoAddBlackOK() const
         // 四隅には黒マスは置けません。
         // 連黒禁。
         // 三方向が黒マスで囲まれたマスを作ってはいけません。
-        if (CornerBlack() || DoubleBlack() || TriBlackArround())
+        if (CornerBlack() || DoubleBlack() || TriBlackAround())
             return false;
     }
 
@@ -1492,7 +1492,7 @@ bool __fastcall XG_Board::IsSolution() const
     // 四隅には黒マスは置けません。
     // 連黒禁。
     // 三方向が黒マスで囲まれたマスを作ってはいけません。
-    if (CornerBlack() || DoubleBlack() || TriBlackArround())
+    if (CornerBlack() || DoubleBlack() || TriBlackAround())
         return false;
 
     // 空のクロスワードを解いているときは、分断禁をチェックする必要はない。
@@ -2616,7 +2616,7 @@ void __fastcall XgSolveXWordAddBlack(const XG_Board& xw)
                             copy.SetAt(i, hi + 1, ZEN_BLACK);
                         }
 
-                        //if (copy.TriBlackArround()) {
+                        //if (copy.TriBlackAround()) {
                         //    continue;
                         //}
 
@@ -4345,7 +4345,7 @@ bool xg_bBlacksGenerated = false;
 template <int t_mode>
 bool __fastcall XgGenerateBlacksRecurse(const XG_Board& xword)
 {
-    if (xword.CornerBlack() || xword.DoubleBlack() || xword.TriBlackArround())
+    if (xword.CornerBlack() || xword.DoubleBlack() || xword.TriBlackAround())
         return false;
 
     if (xword.DividedByBlack())
@@ -4524,7 +4524,7 @@ bool __fastcall XgGenerateBlacksRecurse(const XG_Board& xword)
 
 bool __fastcall XgGenerateBlacksSym2Recurse(const XG_Board& xword)
 {
-    if (xword.CornerBlack() || xword.DoubleBlack() || xword.TriBlackArround())
+    if (xword.CornerBlack() || xword.DoubleBlack() || xword.TriBlackAround())
         return false;
 
     if (xword.DividedByBlack())
