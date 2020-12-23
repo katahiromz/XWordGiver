@@ -8813,6 +8813,7 @@ void HintsWnd_OnGetMinMaxInfo(HWND hwnd, LPMINMAXINFO lpMinMaxInfo)
     lpMinMaxInfo->ptMinTrackSize.y = 128;
 }
 
+// 「ヒント」ウィンドウのコンテキストメニュー。
 void HintsWnd_OnContextMenu(HWND hwnd, HWND hwndContext, UINT xPos, UINT yPos)
 {
     WCHAR szClass[8];
