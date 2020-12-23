@@ -8811,21 +8811,6 @@ HintsWnd_OnMouseWheel(HWND hwnd, int xPos, int yPos, int zDelta, UINT fwKeys)
     }
 }
 
-// ヒントウィンドウがアクティブ化された。
-void HintsWnd_OnActivate(HWND hwnd, UINT state, HWND hwndActDeact, BOOL fMinimized)
-{
-    if (state == WA_ACTIVE) {
-        HWND hwndFocus = ::GetFocus();
-        WCHAR sz[64];
-        ::GetClassNameW(hwndFocus, sz, static_cast<int>(ARRAYSIZE(sz)));
-        if (hwndFocus == NULL || lstrcmpiW(sz, L"EDIT") != 0) {
-            if (xg_ahwndTateEdits.size()) {
-                ::SetFocus(xg_ahwndTateEdits[0]);
-            }
-        }
-    }
-}
-
 // ヒント ウィンドウのサイズを制限する。
 void HintsWnd_OnGetMinMaxInfo(HWND hwnd, LPMINMAXINFO lpMinMaxInfo)
 {
@@ -8847,7 +8832,6 @@ XgHintsWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
     HANDLE_MSG(hWnd, WM_DESTROY, HintsWnd_OnDestroy);
     HANDLE_MSG(hWnd, WM_COMMAND, HintsWnd_OnCommand);
     HANDLE_MSG(hWnd, WM_MOUSEWHEEL, HintsWnd_OnMouseWheel);
-    HANDLE_MSG(hWnd, WM_ACTIVATE, HintsWnd_OnActivate);
     HANDLE_MSG(hWnd, WM_GETMINMAXINFO, HintsWnd_OnGetMinMaxInfo);
 
     default:
@@ -9275,20 +9259,6 @@ CandsWnd_OnMouseWheel(HWND hwnd, int xPos, int yPos, int zDelta, UINT fwKeys)
     }
 }
 
-void CandsWnd_OnActivate(HWND hwnd, UINT state, HWND hwndActDeact, BOOL fMinimized)
-{
-    if (state == WA_ACTIVE) {
-        HWND hwndFocus = ::GetFocus();
-        WCHAR sz[64];
-        ::GetClassNameW(hwndFocus, sz, 64);
-        if (hwndFocus == NULL || lstrcmpiW(sz, L"BUTTON") != 0) {
-            if (xg_ahwndCandButtons.size()) {
-                ::SetFocus(xg_ahwndCandButtons[0]);
-            }
-        }
-    }
-}
-
 // 候補ウィンドウのサイズを制限する。
 void CandsWnd_OnGetMinMaxInfo(HWND hwnd, LPMINMAXINFO lpMinMaxInfo)
 {
@@ -9330,7 +9300,6 @@ XgCandsWndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
     HANDLE_MSG(hwnd, WM_DESTROY, CandsWnd_OnDestroy);
     HANDLE_MSG(hwnd, WM_COMMAND, CandsWnd_OnCommand);
     HANDLE_MSG(hwnd, WM_MOUSEWHEEL, CandsWnd_OnMouseWheel);
-    HANDLE_MSG(hwnd, WM_ACTIVATE, CandsWnd_OnActivate);
     HANDLE_MSG(hwnd, WM_GETMINMAXINFO, CandsWnd_OnGetMinMaxInfo);
     HANDLE_MSG(hwnd, WM_PAINT, CandsWnd_OnPaint);
 
