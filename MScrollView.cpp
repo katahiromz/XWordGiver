@@ -100,11 +100,11 @@ void MScrollView::EnsureCtrlVisible(HWND hwndCtrl, bool update_all/* = true*/)
         MRect& rcCtrl = m_vecInfo[i].m_rcCtrl;
         if (rcCtrl.bottom > yScroll + rcClient.Height())
         {
-            ::SetScrollPos(m_hwndParent, SB_VERT, rcCtrl.bottom - rcClient.Height(), FALSE);
+            Scroll(SB_VERT, SB_THUMBPOSITION, rcCtrl.bottom - rcClient.Height());
         }
         if (rcCtrl.top < yScroll)
         {
-            ::SetScrollPos(m_hwndParent, SB_VERT, rcCtrl.top, FALSE);
+            Scroll(SB_VERT, SB_THUMBPOSITION, rcCtrl.top);
         }
         break;
     }
@@ -123,22 +123,22 @@ void MScrollView::SetExtentForAllCtrls()
             continue;
 
         MRect& rcCtrl = m_vecInfo[i].m_rcCtrl;
-        if (Extent().cx < rcCtrl.right)
-            Extent().cx = rcCtrl.right;
-        if (Extent().cy < rcCtrl.bottom)
-            Extent().cy = rcCtrl.bottom;
+        if (Extent().cx < rcCtrl.right - 1)
+            Extent().cx = rcCtrl.right - 1;
+        if (Extent().cy < rcCtrl.bottom - 1)
+            Extent().cy = rcCtrl.bottom - 1;
     }
 
     MRect rc;
     ::GetClientRect(m_hwndParent, &rc);
 
     SCROLLINFO si = { sizeof(si) };
-    si.fMask = SIF_PAGE | SIF_RANGE;
+    si.fMask = SIF_PAGE | SIF_RANGE | SIF_DISABLENOSCROLL;
     si.nMin = 0;
     si.nMax = Extent().cx;
     si.nPage = rc.Width();
     ::SetScrollInfo(m_hwndParent, SB_HORZ, &si, FALSE);
-    si.fMask = SIF_PAGE | SIF_RANGE;
+    si.fMask = SIF_PAGE | SIF_RANGE | SIF_DISABLENOSCROLL;
     si.nMin = 0;
     si.nMax = Extent().cy;
     si.nPage = rc.Height();
