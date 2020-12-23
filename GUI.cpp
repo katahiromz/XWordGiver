@@ -8831,7 +8831,8 @@ void HintsWnd_OnContextMenu(HWND hwnd, HWND hwndContext, UINT xPos, UINT yPos)
         hSubMenu, TPM_RIGHTBUTTON | TPM_LEFTALIGN | TPM_RETURNCMD,
         xPos, yPos, 0, hwnd, NULL);
     ::PostMessageW(hwnd, WM_NULL, 0, 0);
-    ::PostMessageW(xg_hMainWnd, WM_COMMAND, nCmd, 0);
+    if (nCmd)
+        ::PostMessageW(xg_hMainWnd, WM_COMMAND, nCmd, 0);
 
     ::DestroyMenu(hMenu);
 }
