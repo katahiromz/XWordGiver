@@ -405,6 +405,13 @@ LANGUAGE LANG_JAPANESE, SUBLANG_DEFAULT
         MENUITEM "単語をウェブ検索(&V) (タテ)\tAlt+↓", ID_ONLINEDICTV
         MENUITEM "単語をウェブ検索(&H) (ヨコ)\tAlt+→", ID_ONLINEDICTH
     }
+    POPUP "ポップアップ #1"
+    {
+        MENUITEM "タテのカギをコピー", ID_COPYVHINTSSTYLE0
+        MENUITEM "ヨコのカギをコピー", ID_COPYHHINTSSTYLE0
+        MENUITEM SEPARATOR
+        MENUITEM "すべてコピー", ID_COPYHINTSSTYLE0
+    }
 }
 
 //////////////////////////////////////////////////////////////////////////////

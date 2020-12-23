@@ -8643,11 +8643,6 @@ BOOL HintsWnd_OnCreate(HWND hwnd, LPCREATESTRUCT /*lpCreateStruct*/)
     return TRUE;
 }
 
-// ヒントウィンドウが横にスクロールされた。
-void HintsWnd_OnHScroll(HWND /*hwnd*/, HWND /*hwndCtl*/, UINT code, int pos)
-{
-}
-
 // ヒントウィンドウが縦にスクロールされた。
 void HintsWnd_OnVScroll(HWND /*hwnd*/, HWND /*hwndCtl*/, UINT code, int pos)
 {
@@ -8818,6 +8813,28 @@ void HintsWnd_OnGetMinMaxInfo(HWND hwnd, LPMINMAXINFO lpMinMaxInfo)
     lpMinMaxInfo->ptMinTrackSize.y = 128;
 }
 
+void HintsWnd_OnContextMenu(HWND hwnd, HWND hwndContext, UINT xPos, UINT yPos)
+{
+    WCHAR szClass[8];
+    szClass[0] = 0;
+    GetClassNameW(hwndContext, szClass, ARRAYSIZE(szClass));
+    if (lstrcmpiW(szClass, L"EDIT") == 0)
+        return;
+
+    HMENU hMenu = LoadMenuW(xg_hInstance, MAKEINTRESOURCEW(2));
+    HMENU hSubMenu = GetSubMenu(hMenu, 1);
+
+    // 右クリックメニューを表示する。
+    ::SetForegroundWindow(hwnd);
+    INT nCmd = ::TrackPopupMenu(
+        hSubMenu, TPM_RIGHTBUTTON | TPM_LEFTALIGN | TPM_RETURNCMD,
+        xPos, yPos, 0, hwnd, NULL);
+    ::PostMessageW(hwnd, WM_NULL, 0, 0);
+    ::PostMessageW(xg_hMainWnd, WM_COMMAND, nCmd, 0);
+
+    ::DestroyMenu(hMenu);
+}
+
 // ヒント ウィンドウのウィンドウ プロシージャー。
 extern "C"
 LRESULT CALLBACK
@@ -8833,6 +8850,7 @@ XgHintsWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
     HANDLE_MSG(hWnd, WM_COMMAND, HintsWnd_OnCommand);
     HANDLE_MSG(hWnd, WM_MOUSEWHEEL, HintsWnd_OnMouseWheel);
     HANDLE_MSG(hWnd, WM_GETMINMAXINFO, HintsWnd_OnGetMinMaxInfo);
+    HANDLE_MSG(hWnd, WM_CONTEXTMENU, HintsWnd_OnContextMenu);
 
     default:
         return DefWindowProcW(hWnd, uMsg, wParam, lParam);
