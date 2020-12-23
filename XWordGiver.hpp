@@ -64,7 +64,7 @@
 
 #include "MPointSizeRect.hpp"
 #include "MRegKey.hpp"
-#include "ScrollView.hpp"
+#include "MScrollView.hpp"
 
 #include "Dictionary.hpp"
 #include "xword.hpp"

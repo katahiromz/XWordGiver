@@ -8390,7 +8390,6 @@ void HintsWnd_OnSize(HWND hwnd, UINT /*state*/, int /*cx*/, int /*cy*/)
     ::DeleteDC(hdc);
 
     xg_svHintsScrollView.SetExtentForAllCtrls();
-    xg_svHintsScrollView.EnsureCtrlVisible(::GetFocus(), false);
     xg_svHintsScrollView.UpdateAll();
 }
 
@@ -8647,13 +8646,13 @@ BOOL HintsWnd_OnCreate(HWND hwnd, LPCREATESTRUCT /*lpCreateStruct*/)
 // ヒントウィンドウが横にスクロールされた。
 void HintsWnd_OnHScroll(HWND /*hwnd*/, HWND /*hwndCtl*/, UINT code, int pos)
 {
-    xg_svHintsScrollView.HScroll(code, pos);
+    xg_svHintsScrollView.Scroll(SB_VERT, code, pos);
 }
 
 // ヒントウィンドウが縦にスクロールされた。
 void HintsWnd_OnVScroll(HWND /*hwnd*/, HWND /*hwndCtl*/, UINT code, int pos)
 {
-    xg_svHintsScrollView.VScroll(code, pos);
+    xg_svHintsScrollView.Scroll(SB_VERT, code, pos);
 }
 
 // ヒントが変更されたか？
@@ -8741,7 +8740,6 @@ void HintsWnd_OnDestroy(HWND hwnd)
     xg_ahwndYokoStatics.clear();
     xg_ahwndYokoEdits.clear();
     xg_svHintsScrollView.clear();
-    xg_svHintsScrollView.ResetScrollPos();
 
     ::DeleteObject(xg_hHintsUIFont);
     xg_hHintsUIFont = NULL;
@@ -9079,7 +9077,6 @@ BOOL CandsWnd_OnCreate(HWND hwnd, LPCREATESTRUCT /*lpCreateStruct*/)
     // 初期化。
     xg_ahwndCandButtons.clear();
     xg_svCandsScrollView.clear();
-    xg_svCandsScrollView.ResetScrollPos();
 
     xg_svCandsScrollView.SetParent(hwnd);
     xg_svCandsScrollView.ShowScrollBars(FALSE, TRUE);
@@ -9133,13 +9130,12 @@ BOOL CandsWnd_OnCreate(HWND hwnd, LPCREATESTRUCT /*lpCreateStruct*/)
 // 候補ウィンドウが横にスクロールされた。
 void CandsWnd_OnHScroll(HWND /*hwnd*/, HWND /*hwndCtl*/, UINT code, int pos)
 {
-    xg_svCandsScrollView.HScroll(code, pos);
 }
 
 // 候補ウィンドウが縦にスクロールされた。
 void CandsWnd_OnVScroll(HWND /*hwnd*/, HWND /*hwndCtl*/, UINT code, int pos)
 {
-    xg_svCandsScrollView.VScroll(code, pos);
+    xg_svCandsScrollView.Scroll(SB_VERT, code, pos);
 }
 
 // キーが押された。
@@ -9189,7 +9185,6 @@ void CandsWnd_OnDestroy(HWND hwnd)
     xg_hCandsWnd = NULL;
     xg_ahwndCandButtons.clear();
     xg_svCandsScrollView.clear();
-    xg_svCandsScrollView.ResetScrollPos();
 
     ::DeleteObject(xg_hCandsUIFont);
     xg_hCandsUIFont = NULL;

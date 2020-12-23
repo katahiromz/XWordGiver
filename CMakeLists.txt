@@ -96,7 +96,7 @@ add_executable(xword${BITS} WIN32
     GUI.cpp
     Input.cpp
     Marks.cpp
-    ScrollView.cpp
+    MScrollView.cpp
     UndoBuffer.cpp
     Utils.cpp
     xword.cpp
