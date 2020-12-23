@@ -108,6 +108,7 @@ void MScrollView::EnsureCtrlVisible(HWND hwndCtrl, bool update_all/* = true*/)
         }
         break;
     }
+
     if (update_all)
         UpdateAll();
 }
@@ -122,10 +123,10 @@ void MScrollView::SetExtentForAllCtrls()
             continue;
 
         MRect& rcCtrl = m_vecInfo[i].m_rcCtrl;
-        if (Extent().cx < rcCtrl.right - 1)
-            Extent().cx = rcCtrl.right - 1;
-        if (Extent().cy < rcCtrl.bottom - 1)
-            Extent().cy = rcCtrl.bottom - 1;
+        if (Extent().cx < rcCtrl.right)
+            Extent().cx = rcCtrl.right;
+        if (Extent().cy < rcCtrl.bottom)
+            Extent().cy = rcCtrl.bottom;
     }
 
     MRect rc;
@@ -136,12 +137,14 @@ void MScrollView::SetExtentForAllCtrls()
     si.nMin = 0;
     si.nMax = Extent().cx;
     si.nPage = rc.Width();
-    ::SetScrollInfo(m_hwndParent, SB_HORZ, &si, TRUE);
+    ::SetScrollInfo(m_hwndParent, SB_HORZ, &si, FALSE);
     si.fMask = SIF_PAGE | SIF_RANGE;
     si.nMin = 0;
     si.nMax = Extent().cy;
     si.nPage = rc.Height();
-    ::SetScrollInfo(m_hwndParent, SB_VERT, &si, TRUE);
+    ::SetScrollInfo(m_hwndParent, SB_VERT, &si, FALSE);
+
+    ::InvalidateRect(m_hwndParent, NULL, TRUE);
 }
 
 void MScrollView::UpdateCtrlsPos()
@@ -184,20 +187,22 @@ INT MScrollView::GetNextPos(INT bar, INT nSB_, INT pos) const
         return std::max(0, INT(si.nPos - 16));
 
     case SB_LINERIGHT:
-        pos = si.nPos;
         return std::min(INT(si.nMax - si.nPage), INT(si.nPos + 16));
 
     case SB_PAGELEFT:
-        pos = si.nPos;
         return std::max(0, INT(si.nPos - si.nPage));
 
     case SB_PAGERIGHT:
         return std::min(INT(si.nMax - si.nPage), INT(si.nPos + si.nPage));
 
     case SB_THUMBPOSITION:
-    case SB_THUMBTRACK:
         pos = std::max(0, INT(pos));
-        pos = std::min(si.nMax, INT(pos));
+        pos = std::min(INT(si.nMax - si.nPage), INT(pos));
+        return pos;
+
+    case SB_THUMBTRACK:
+        pos = std::max(0, INT(si.nTrackPos));
+        pos = std::min(INT(si.nMax - si.nPage), INT(pos));
         return pos;
     }
 

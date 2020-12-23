@@ -8646,7 +8646,6 @@ BOOL HintsWnd_OnCreate(HWND hwnd, LPCREATESTRUCT /*lpCreateStruct*/)
 // ヒントウィンドウが横にスクロールされた。
 void HintsWnd_OnHScroll(HWND /*hwnd*/, HWND /*hwndCtl*/, UINT code, int pos)
 {
-    xg_svHintsScrollView.Scroll(SB_VERT, code, pos);
 }
 
 // ヒントウィンドウが縦にスクロールされた。
@@ -8842,7 +8841,6 @@ XgHintsWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
     switch (uMsg) {
     HANDLE_MSG(hWnd, WM_CREATE, HintsWnd_OnCreate);
     HANDLE_MSG(hWnd, WM_SIZE, HintsWnd_OnSize);
-    HANDLE_MSG(hWnd, WM_HSCROLL, HintsWnd_OnHScroll);
     HANDLE_MSG(hWnd, WM_VSCROLL, HintsWnd_OnVScroll);
     HANDLE_MSG(hWnd, WM_KEYDOWN, HintsWnd_OnKey);
     HANDLE_MSG(hWnd, WM_KEYUP, HintsWnd_OnKey);
@@ -9127,11 +9125,6 @@ BOOL CandsWnd_OnCreate(HWND hwnd, LPCREATESTRUCT /*lpCreateStruct*/)
     return TRUE;
 }
 
-// 候補ウィンドウが横にスクロールされた。
-void CandsWnd_OnHScroll(HWND /*hwnd*/, HWND /*hwndCtl*/, UINT code, int pos)
-{
-}
-
 // 候補ウィンドウが縦にスクロールされた。
 void CandsWnd_OnVScroll(HWND /*hwnd*/, HWND /*hwndCtl*/, UINT code, int pos)
 {
@@ -9323,6 +9316,7 @@ void CandsWnd_OnPaint(HWND hwnd)
         FORWARD_WM_PAINT(hwnd, DefWindowProcW);
     }
 }
+
 extern "C"
 LRESULT CALLBACK
 XgCandsWndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
@@ -9330,7 +9324,6 @@ XgCandsWndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
     switch (uMsg) {
     HANDLE_MSG(hwnd, WM_CREATE, CandsWnd_OnCreate);
     HANDLE_MSG(hwnd, WM_SIZE, CandsWnd_OnSize);
-    HANDLE_MSG(hwnd, WM_HSCROLL, CandsWnd_OnHScroll);
     HANDLE_MSG(hwnd, WM_VSCROLL, CandsWnd_OnVScroll);
     HANDLE_MSG(hwnd, WM_KEYDOWN, CandsWnd_OnKey);
     HANDLE_MSG(hwnd, WM_KEYUP, CandsWnd_OnKey);
