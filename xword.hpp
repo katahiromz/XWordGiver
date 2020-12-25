@@ -167,6 +167,23 @@ extern bool xg_bTateInput;
 #define ZEN_UNDERLINE   WCHAR(0xFF3F)  // L'＿'
 
 //////////////////////////////////////////////////////////////////////////////
+// ルール群。
+
+enum RULES
+{
+    RULE_DONTDOUBLEBLACK = (1 << 0),    // 連黒禁。
+    RULE_DONTCORNERBLACK = (1 << 1),    // 四隅黒禁。
+    RULE_DONTTRIDIRECTIONS = (1 << 2),  // 三方黒禁。
+    RULE_DONTDIVIDE = (1 << 3),         // 分断禁。
+    RULE_DONTFOURDIAGONALS = (1 << 4),  // 黒斜四連禁。
+    RULE_POINTSYMMETRY = (1 << 5)       // 黒マス点対称。
+};
+
+// デフォルトのルール。
+#define DEFAULT_RULES (RULE_DONTDOUBLEBLACK | RULE_DONTCORNERBLACK | \
+                       RULE_DONTTRIDIRECTIONS | RULE_DONTDIVIDE)
+
+//////////////////////////////////////////////////////////////////////////////
 // マスの位置。
 
 struct XG_Pos
