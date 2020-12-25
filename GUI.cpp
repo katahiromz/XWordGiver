@@ -6791,36 +6791,42 @@ static void OnOpenRulesTxt(HWND hwnd)
 static void OnRuleCheck(HWND hwnd)
 {
     XG_Board& board = (xg_bShowAnswer ? xg_solution : xg_xword);
+    // 連黒禁。
     if (xg_nRules & RULE_DONTDOUBLEBLACK) {
         if (board.DoubleBlack()) {
             XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_ADJACENTBLOCK), nullptr, MB_ICONERROR);
             return;
         }
     }
+    // 四隅黒禁。
     if (xg_nRules & RULE_DONTCORNERBLACK) {
         if (board.CornerBlack()) {
             XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_CORNERBLOCK), nullptr, MB_ICONERROR);
             return;
         }
     }
+    // 三方黒禁。
     if (xg_nRules & RULE_DONTTRIDIRECTIONS) {
         if (board.TriBlackAround()) {
             XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_TRIBLOCK), nullptr, MB_ICONERROR);
             return;
         }
     }
+    // 分断禁。
     if (xg_nRules & RULE_DONTDIVIDE) {
         if (board.DividedByBlack()) {
             XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_DIVIDED), nullptr, MB_ICONERROR);
             return;
         }
     }
+    // 黒斜四連禁。
     if (xg_nRules & RULE_DONTFOURDIAGONALS) {
         if (board.FourDiagonals()) {
             XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_FOURDIAGONALS), nullptr, MB_ICONERROR);
             return;
         }
     }
+    // 黒マス点対称。
     if (xg_nRules & RULE_POINTSYMMETRY) {
         if (!board.IsPointSymmetry()) {
             XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_NOTPOINTSYMMETRY), nullptr, MB_ICONERROR);
