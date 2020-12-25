@@ -7815,6 +7815,53 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
     case ID_DICTIONARY15:
         MainWnd_DoDictionary(hwnd, id - ID_DICTIONARY00);
         break;
+    case ID_RESETRULES:
+        xg_nRules = DEFAULT_RULES;
+        break;
+    case ID_HELPRULES:
+        // TODO:
+        break;
+    case ID_RULE_DONTDOUBLEBLACK:
+        if (xg_nRules & RULE_DONTDOUBLEBLACK) {
+            xg_nRules &= ~RULE_DONTDOUBLEBLACK;
+        } else {
+            xg_nRules |= RULE_DONTDOUBLEBLACK;
+        }
+        break;
+    case ID_RULE_DONTCORNERBLACK:
+        if (xg_nRules & RULE_DONTCORNERBLACK) {
+            xg_nRules &= ~RULE_DONTCORNERBLACK;
+        } else {
+            xg_nRules |= RULE_DONTCORNERBLACK;
+        }
+        break;
+    case ID_RULE_DONTTRIDIRECTIONS:
+        if (xg_nRules & RULE_DONTTRIDIRECTIONS) {
+            xg_nRules &= ~RULE_DONTTRIDIRECTIONS;
+        } else {
+            xg_nRules |= RULE_DONTTRIDIRECTIONS;
+        }
+        break;
+    case ID_RULE_DONTDIVIDE:
+        assert(0);
+        break;
+    case ID_RULE_DONTFOURDIAGONALS:
+        if (xg_nRules & RULE_DONTFOURDIAGONALS) {
+            xg_nRules &= ~RULE_DONTFOURDIAGONALS;
+        } else {
+            xg_nRules |= RULE_DONTFOURDIAGONALS;
+        }
+        break;
+    case ID_RULE_POINTSYMMETRY:
+        if (xg_nRules & RULE_POINTSYMMETRY) {
+            xg_nRules &= ~RULE_POINTSYMMETRY;
+        } else {
+            xg_nRules |= RULE_POINTSYMMETRY;
+        }
+        break;
+    case ID_RULE_CHECK:
+        // TODO:
+        break;
     default:
         if (!MainWnd_OnCommand2(hwnd, id)) {
             ::MessageBeep(0xFFFFFFFF);
