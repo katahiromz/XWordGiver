@@ -152,7 +152,7 @@ LANGUAGE LANG_JAPANESE, SUBLANG_DEFAULT
         MENUITEM "黒斜四連禁(&F)", ID_RULE_DONTFOURDIAGONALS
         MENUITEM "黒マス点対称(&I)", ID_RULE_POINTSYMMETRY
         MENUITEM SEPARATOR
-        MENUITEM "ルール適合チェック(&A)", ID_RULE_CHECK
+        MENUITEM "ルール適合チェック(&A)", ID_RULECHECK
     }
     POPUP "ヘルプ(&H)"
     {
@@ -1267,10 +1267,10 @@ STRINGTABLE
     IDS_SETPORTRAIT, "縦長の用紙設定で印刷して下さい。"
     IDS_REGISTERWORD, "'%s' は指定された辞書データに登録されていない単語です。\n\n単語 '%s' のヒントを入力して下さい。"
     IDS_CORNERBLOCK, "四隅には黒マスは置けません。"
-    IDS_ADJACENTBLOCK, "黒マスは隣り合ってはいけません（連黒禁）。"
+    IDS_ADJACENTBLOCK, "黒マスは隣り合っています。ルール「連黒禁」に反します。"
     IDS_DOUBLEDWORD, "単語は二度使えません。"
-    IDS_TRIBLOCK, "三方向が黒マスで囲まれたマスを作ってはいけません。"
-    IDS_DIVIDED, "黒マスで分断されてはいけません（分断禁）。"
+    IDS_TRIBLOCK, "三方向が黒マスで囲まれたマスがあります。ルール「三方黒禁」に反します。"
+    IDS_DIVIDED, "黒マスで分断されています。ルール「分断禁」に反します。"
     IDS_NOCANDIDATE, "上から%u番目、左から%u番目に単語の候補がないマスがあります。"
     IDS_IMGFILTER, "ビットマップ画像 (*.bmp)|*.bmp|EMF画像 (*.emf)|*.emf||"
     IDS_DICTFILTER, "辞書データ (*.dic;*.tsv)|*.dic;*.tsv|すべてのファイル (*.*)|*.*||"
@@ -1288,7 +1288,7 @@ STRINGTABLE
     IDS_LINESYMMETRY, "黒マスは線対称です。"
     IDS_NOTLINESYMMETRY, "黒マスは線対称ではありません。"
     IDS_POINTSYMMETRY, "黒マスは点対称です。"
-    IDS_NOTPOINTSYMMETRY, "黒マスは点対称ではありません。"
+    IDS_NOTPOINTSYMMETRY, "黒マスは点対称ではありません。ルール「黒マス点対称」に反します。"
     IDS_MULTIPLESTARTUP, "クロスワード ギバーは多重起動できません。"
     IDS_HINTS, "ヒント (Ctrl+L)"
     IDS_ERASEDSETTINGS, "設定を消去しました。"
@@ -1336,6 +1336,9 @@ STRINGTABLE
     IDS_HINPUT3, "ヨコ入力"
     IDS_VINPUT3, "タテ入力"
     IDS_RUSSIA, "ロシア"
+    IDS_FOURDIAGONALS, "黒マスが斜めに４つ連なっています。ルール「黒斜四連禁」に反します。"
+    IDS_RULESPASSED, "現在の盤は、指定されたルールに合格しました。"
+    IDS_PASSED, "合格！"
     IDS_TT_NEW, "新規作成"
     IDS_TT_GENERATE, "問題を自動生成する"
     IDS_TT_OPEN, "問題を開く"

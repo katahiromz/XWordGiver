@@ -404,6 +404,9 @@ public:
     // 黒マスが点対称か？
     bool IsPointSymmetry() const;
 
+    // 黒斜四連か？
+    bool FourDiagonals() const;
+
     // 縦と横を入れ替える。
     void SwapXandY();
 

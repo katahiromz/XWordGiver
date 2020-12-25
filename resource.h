@@ -132,6 +132,9 @@
 #define IDS_HINPUT3                         225
 #define IDS_VINPUT3                         226
 #define IDS_RUSSIA                          227
+#define IDS_FOURDIAGONALS                   228
+#define IDS_RULESPASSED                     229
+#define IDS_PASSED                          230
 #define IDS_TT_NEW                          10100
 #define IDS_TT_GENERATE                     10101
 #define IDS_TT_OPEN                         10102
@@ -283,7 +286,7 @@
 #define ID_RULE_DONTDIVIDE                  254
 #define ID_RULE_DONTFOURDIAGONALS           255
 #define ID_RULE_POINTSYMMETRY               256
-#define ID_RULE_CHECK                       257
+#define ID_RULECHECK                        257
 #define ID_TT_BASE                          10000
 
 #define ctl2                                1185

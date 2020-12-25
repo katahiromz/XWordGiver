@@ -6777,6 +6777,52 @@ void MainWnd_DoDictionary(HWND hwnd, size_t iDict)
     xg_vMarkedCands.clear();
 }
 
+// ルールチェックする。
+static void OnRuleCheck(HWND hwnd)
+{
+    XG_Board& board = (xg_bShowAnswer ? xg_solution : xg_xword);
+    if (xg_nRules & RULE_DONTDOUBLEBLACK) {
+        if (board.DoubleBlack()) {
+            XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_ADJACENTBLOCK), nullptr, MB_ICONERROR);
+            return;
+        }
+    }
+    if (xg_nRules & RULE_DONTCORNERBLACK) {
+        if (board.CornerBlack()) {
+            XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_CORNERBLOCK), nullptr, MB_ICONERROR);
+            return;
+        }
+    }
+    if (xg_nRules & RULE_DONTTRIDIRECTIONS) {
+        if (board.TriBlackAround()) {
+            XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_TRIBLOCK), nullptr, MB_ICONERROR);
+            return;
+        }
+    }
+    if (xg_nRules & RULE_DONTDIVIDE) {
+        if (board.DividedByBlack()) {
+            XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_DIVIDED), nullptr, MB_ICONERROR);
+            return;
+        }
+    }
+    if (xg_nRules & RULE_DONTFOURDIAGONALS) {
+        if (board.FourDiagonals()) {
+            XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_FOURDIAGONALS), nullptr, MB_ICONERROR);
+            return;
+        }
+    }
+    if (xg_nRules & RULE_POINTSYMMETRY) {
+        if (!board.IsPointSymmetry()) {
+            XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_NOTPOINTSYMMETRY), nullptr, MB_ICONERROR);
+            return;
+        }
+    }
+
+    // 合格。
+    XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_RULESPASSED),
+                        XgLoadStringDx2(IDS_PASSED), MB_ICONINFORMATION);
+}
+
 // コマンドを実行する。
 void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*codeNotify*/)
 {
@@ -7859,8 +7905,8 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
             xg_nRules |= RULE_POINTSYMMETRY;
         }
         break;
-    case ID_RULE_CHECK:
-        // TODO:
+    case ID_RULECHECK:
+        OnRuleCheck(hwnd);
         break;
     default:
         if (!MainWnd_OnCommand2(hwnd, id)) {

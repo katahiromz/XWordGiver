@@ -4350,6 +4350,40 @@ bool XG_Board::IsPointSymmetry() const
     return true;
 }
 
+// 黒斜四連か？
+bool XG_Board::FourDiagonals() const
+{
+    const int nRows = xg_nRows;
+    const int nCols = xg_nCols;
+    for (int i = 0; i < nRows - 3; i++) {
+        for (int j = 0; j < nCols - 3; j++) {
+            if (GetAt(i, j) != ZEN_BLACK)
+                continue;
+            if (GetAt(i + 1, j + 1) != ZEN_BLACK)
+                continue;
+            if (GetAt(i + 2, j + 2) != ZEN_BLACK)
+                continue;
+            if (GetAt(i + 3, j + 3) != ZEN_BLACK)
+                continue;
+            return true;
+        }
+    }
+    for (int i = 0; i < nRows - 3; i++) {
+        for (int j = 3; j < nCols; j++) {
+            if (GetAt(i, j) != ZEN_BLACK)
+                continue;
+            if (GetAt(i + 1, j - 1) != ZEN_BLACK)
+                continue;
+            if (GetAt(i + 2, j - 2) != ZEN_BLACK)
+                continue;
+            if (GetAt(i + 3, j - 3) != ZEN_BLACK)
+                continue;
+            return true;
+        }
+    }
+    return false;
+}
+
 //////////////////////////////////////////////////////////////////////////////
 // 黒マスパターンを生成する。
 
