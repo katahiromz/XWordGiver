@@ -280,8 +280,8 @@
 #define ID_RULE_DONTDOUBLEBLACK             251
 #define ID_RULE_DONTCORNERBLACK             252
 #define ID_RULE_DONTTRIDIRECTIONS           253
-#define ID_RULE_DONTFOURDIAGONALS           254
-#define ID_RULE_DONTDIVIDE                  255
+#define ID_RULE_DONTDIVIDE                  254
+#define ID_RULE_DONTFOURDIAGONALS           255
 #define ID_RULE_POINTSYMMETRY               256
 #define ID_RULE_CHECK                       257
 #define ID_TT_BASE                          10000
