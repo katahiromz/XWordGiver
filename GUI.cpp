@@ -225,6 +225,9 @@ static int          s_nMarksHeight = 40;
 // 黒マスパターンで答えを表示する。
 BOOL xg_bShowAnswerOnPattern = TRUE;
 
+// ルール群。
+INT xg_nRules = DEFAULT_RULES;
+
 //////////////////////////////////////////////////////////////////////////////
 // スクロール関連。
 
@@ -598,6 +601,7 @@ bool __fastcall XgLoadSettings(void)
     xg_nPatWndCX = CW_USEDEFAULT;
     xg_nPatWndCY = CW_USEDEFAULT;
     xg_bShowAnswerOnPattern = TRUE;
+    xg_nRules = DEFAULT_RULES;
 
     // 会社名キーを開く。
     MRegKey company_key(HKEY_CURRENT_USER, s_pszSoftwareCompanyName, FALSE);
@@ -770,6 +774,9 @@ bool __fastcall XgLoadSettings(void)
             if (!app_key.QueryDword(L"ShowAnsOnPat", dwValue)) {
                 xg_bShowAnswerOnPattern = dwValue;
             }
+            if (!app_key.QueryDword(L"Rules", dwValue)) {
+                xg_nRules = dwValue;
+            }
 
             if (!app_key.QuerySz(L"Recent", sz, ARRAYSIZE(sz))) {
                 xg_dict_name = sz;
@@ -890,6 +897,7 @@ bool __fastcall XgSaveSettings(void)
             app_key.SetDword(L"PatWndCX", xg_nPatWndCX);
             app_key.SetDword(L"PatWndCY", xg_nPatWndCY);
             app_key.SetDword(L"ShowAnsOnPat", xg_bShowAnswerOnPattern);
+            app_key.SetDword(L"Rules", xg_nRules);
 
             app_key.SetSz(L"Recent", xg_dict_name.c_str());
             app_key.SetSz(L"BlackCellImage", xg_strBlackCellImage.c_str());
@@ -4597,9 +4605,42 @@ void __fastcall MainWnd_OnInitMenu(HWND /*hwnd*/, HMENU hMenu)
 {
     if (HMENU hDictMenu = DoFindDictMenu(hMenu))
     {
+        // 辞書メニューを更新。
         DoUpdateDictMenu(hDictMenu);
     }
 
+    // 連黒禁。
+    if (xg_nRules & RULE_DONTDOUBLEBLACK)
+        ::CheckMenuItem(hMenu, ID_RULE_DONTDOUBLEBLACK, MF_CHECKED);
+    else
+        ::CheckMenuItem(hMenu, ID_RULE_DONTDOUBLEBLACK, MF_UNCHECKED);
+    // 四隅黒禁。
+    if (xg_nRules & RULE_DONTCORNERBLACK)
+        ::CheckMenuItem(hMenu, ID_RULE_DONTCORNERBLACK, MF_CHECKED);
+    else
+        ::CheckMenuItem(hMenu, ID_RULE_DONTCORNERBLACK, MF_UNCHECKED);
+    // 三方黒禁。
+    if (xg_nRules & RULE_DONTTRIDIRECTIONS)
+        ::CheckMenuItem(hMenu, ID_RULE_DONTTRIDIRECTIONS, MF_CHECKED);
+    else
+        ::CheckMenuItem(hMenu, ID_RULE_DONTTRIDIRECTIONS, MF_UNCHECKED);
+    // 分断禁。
+    if (xg_nRules & RULE_DONTDIVIDE)
+        ::CheckMenuItem(hMenu, ID_RULE_DONTDIVIDE, MF_CHECKED);
+    else
+        ::CheckMenuItem(hMenu, ID_RULE_DONTDIVIDE, MF_UNCHECKED);
+    // 黒斜四連禁。
+    if (xg_nRules & RULE_DONTFOURDIAGONALS)
+        ::CheckMenuItem(hMenu, ID_RULE_DONTFOURDIAGONALS, MF_CHECKED);
+    else
+        ::CheckMenuItem(hMenu, ID_RULE_DONTFOURDIAGONALS, MF_UNCHECKED);
+    // 黒マス点対称。
+    if (xg_nRules & RULE_POINTSYMMETRY)
+        ::CheckMenuItem(hMenu, ID_RULE_POINTSYMMETRY, MF_CHECKED);
+    else
+        ::CheckMenuItem(hMenu, ID_RULE_POINTSYMMETRY, MF_UNCHECKED);
+
+    // 入力モード。
     switch (xg_imode) {
     case xg_im_KANA:
         ::CheckMenuRadioItem(hMenu, ID_KANAINPUT, ID_RUSSIAINPUT, ID_KANAINPUT, MF_BYCOMMAND);
@@ -4618,6 +4659,7 @@ void __fastcall MainWnd_OnInitMenu(HWND /*hwnd*/, HMENU hMenu)
         break;
     }
 
+    // 「元に戻す」「やり直し」メニュー更新。
     if (xg_ubUndoBuffer.CanUndo()) {
         ::EnableMenuItem(hMenu, ID_UNDO, MF_BYCOMMAND | MF_ENABLED);
     } else {
@@ -4703,6 +4745,7 @@ void __fastcall MainWnd_OnInitMenu(HWND /*hwnd*/, HMENU hMenu)
         ::EnableMenuItem(hMenu, ID_DOWN, MF_BYCOMMAND | MF_ENABLED);
     }
 
+    // 二重マスメニュー更新。
     if (xg_vMarks.empty()) {
         ::EnableMenuItem(hMenu, ID_KILLMARKS, MF_BYCOMMAND | MF_GRAYED);
         ::EnableMenuItem(hMenu, ID_COPYMARKWORDASIMAGE, MF_BYCOMMAND | MF_GRAYED);
@@ -4713,12 +4756,14 @@ void __fastcall MainWnd_OnInitMenu(HWND /*hwnd*/, HMENU hMenu)
         ::EnableMenuItem(hMenu, ID_COPYMARKWORDASIMAGESIZED, MF_BYCOMMAND | MF_ENABLED);
     }
 
+    // ステータスバーのメニュー更新。
     if (s_bShowStatusBar) {
         ::CheckMenuItem(hMenu, ID_STATUS, MF_BYCOMMAND | MF_CHECKED);
     } else {
         ::CheckMenuItem(hMenu, ID_STATUS, MF_BYCOMMAND | MF_UNCHECKED);
     }
 
+    // 入力パレットのメニュー更新。
     if (xg_hwndInputPalette) {
         ::CheckMenuItem(hMenu, ID_PALETTE, MF_BYCOMMAND | MF_CHECKED);
         ::CheckMenuItem(hMenu, ID_PALETTE2, MF_BYCOMMAND | MF_CHECKED);
@@ -4727,36 +4772,42 @@ void __fastcall MainWnd_OnInitMenu(HWND /*hwnd*/, HMENU hMenu)
         ::CheckMenuItem(hMenu, ID_PALETTE2, MF_BYCOMMAND | MF_UNCHECKED);
     }
 
+    // ツールバーのメニュー更新。
     if (s_bShowToolBar) {
         ::CheckMenuItem(hMenu, ID_TOOLBAR, MF_BYCOMMAND | MF_CHECKED);
     } else {
         ::CheckMenuItem(hMenu, ID_TOOLBAR, MF_BYCOMMAND | MF_UNCHECKED);
     }
 
+    // ヒントウィンドウのメニュー更新。
     if (xg_hHintsWnd) {
         ::CheckMenuItem(hMenu, ID_SHOWHIDEHINTS, MF_BYCOMMAND | MF_CHECKED);
     } else {
         ::CheckMenuItem(hMenu, ID_SHOWHIDEHINTS, MF_BYCOMMAND | MF_UNCHECKED);
     }
 
+    // ひらがなウィンドウのメニュー更新。
     if (xg_bHiragana) {
         ::CheckMenuRadioItem(hMenu, ID_HIRAGANA, ID_KATAKANA, ID_HIRAGANA, MF_BYCOMMAND);
     } else {
         ::CheckMenuRadioItem(hMenu, ID_HIRAGANA, ID_KATAKANA, ID_KATAKANA, MF_BYCOMMAND);
     }
 
+    // Lowercaseウィンドウのメニュー更新。
     if (xg_bLowercase) {
         ::CheckMenuRadioItem(hMenu, ID_UPPERCASE, ID_LOWERCASE, ID_LOWERCASE, MF_BYCOMMAND);
     } else {
         ::CheckMenuRadioItem(hMenu, ID_UPPERCASE, ID_LOWERCASE, ID_UPPERCASE, MF_BYCOMMAND);
     }
 
+    // タテヨコ入力のメニュー更新。
     if (xg_bTateInput) {
         ::CheckMenuRadioItem(hMenu, ID_INPUTH, ID_INPUTV, ID_INPUTV, MF_BYCOMMAND);
     } else {
         ::CheckMenuRadioItem(hMenu, ID_INPUTH, ID_INPUTV, ID_INPUTH, MF_BYCOMMAND);
     }
 
+    // 文字送りのメニュー更新。
     if (xg_bCharFeed) {
         ::CheckMenuItem(hMenu, ID_CHARFEED, MF_BYCOMMAND | MF_CHECKED);
     } else {
