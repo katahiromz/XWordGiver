@@ -140,6 +140,20 @@ LANGUAGE LANG_JAPANESE, SUBLANG_DEFAULT
         MENUITEM "候補を表示(&C) (タテ)\tShift+Ctrl+↓", ID_OPENCANDSWNDVERT
         MENUITEM "候補を表示(&A) (ヨコ)\tShift+Ctrl+→", ID_OPENCANDSWNDHORZ
     }
+    POPUP "ルール(&R)"
+    {
+        MENUITEM "ルールをリセット(&R)", ID_RESETRULES
+        MENUITEM "黒マスルールの説明(&H)", ID_HELPRULES
+        MENUITEM SEPARATOR
+        MENUITEM "連黒禁(&D)", ID_RULE_DONTDOUBLEBLACK, CHECKED
+        MENUITEM "四隅黒禁(&C)", ID_RULE_DONTCORNERBLACK, CHECKED
+        MENUITEM "三方黒禁(&T)", ID_RULE_DONTTRIDIRECTIONS, CHECKED
+        MENUITEM "分断禁(&V)", ID_RULE_DONTDIVIDE, CHECKED, GRAYED
+        MENUITEM "黒斜四連禁(&F)", ID_RULE_DONTFOURDIAGONALS
+        MENUITEM "黒マス点対称(&I)", ID_RULE_POINTSYMMETRY
+        MENUITEM SEPARATOR
+        MENUITEM "ルール適合チェック(&A)", ID_RULE_CHECK
+    }
     POPUP "ヘルプ(&H)"
     {
         MENUITEM "ReadMe.txtを開く(&R)\tF1", ID_OPENREADME
