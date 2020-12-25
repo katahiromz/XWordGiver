@@ -6787,7 +6787,7 @@ static void OnOpenRulesTxt(HWND hwnd)
     ShellExecuteW(hwnd, NULL, szPath, NULL, NULL, SW_SHOWNORMAL);
 }
 
-// ルールチェックする。
+// 黒マスルールをチェックする。
 static void OnRuleCheck(HWND hwnd)
 {
     XG_Board& board = (xg_bShowAnswer ? xg_solution : xg_xword);
