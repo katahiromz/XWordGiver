@@ -333,9 +333,22 @@ bool __fastcall XG_Board::DividedByBlack() const
     std::vector<BYTE> pb(nCount, 0);
 
     // 位置のキュー。
-    // 一番左上のマス(黒マスではないと仮定する)を追加。
+    // 黒マスではないマスを探し、positionsに追加する。
     std::queue<XG_Pos> positions;
-    positions.emplace(0, 0);
+    if (GetAt(0, 0) != ZEN_BLACK) {
+        positions.emplace(0, 0);
+    } else {
+        for (INT i = 0; i < nRows; ++i) {
+            for (INT j = 0; j < nCols; ++j) {
+                if (GetAt(i, j) != ZEN_BLACK) {
+                    positions.emplace(i, j);
+                    i = nRows;
+                    j = nCols;
+                    break;
+                }
+            }
+        }
+    }
 
     // 連続領域の塗りつぶし。
     while (!positions.empty()) {
