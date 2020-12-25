@@ -6777,6 +6777,16 @@ void MainWnd_DoDictionary(HWND hwnd, size_t iDict)
     xg_vMarkedCands.clear();
 }
 
+// 「黒マスルールの説明.txt」を開く。
+static void OnOpenRulesTxt(HWND hwnd)
+{
+    WCHAR szPath[MAX_PATH];
+    GetModuleFileNameW(NULL, szPath, MAX_PATH);
+    PathRemoveFileSpecW(szPath);
+    PathAppendW(szPath, XgLoadStringDx1(IDS_RULESTXT));
+    ShellExecuteW(hwnd, NULL, szPath, NULL, NULL, SW_SHOWNORMAL);
+}
+
 // ルールチェックする。
 static void OnRuleCheck(HWND hwnd)
 {
@@ -7864,8 +7874,8 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
     case ID_RESETRULES:
         xg_nRules = DEFAULT_RULES;
         break;
-    case ID_HELPRULES:
-        // TODO:
+    case ID_OPENRULESTXT:
+        OnOpenRulesTxt(hwnd);
         break;
     case ID_RULE_DONTDOUBLEBLACK:
         if (xg_nRules & RULE_DONTDOUBLEBLACK) {
