@@ -1023,6 +1023,18 @@ bool __fastcall XgCheckCrossWord(HWND hwnd, bool check_words = true)
         return false;
     }
 
+    // 黒斜四連禁。
+    if ((xg_nRules & RULE_DONTFOURDIAGONALS) && xg_xword.FourDiagonals()) {
+        XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_FOURDIAGONALS), nullptr, MB_ICONERROR);
+        return false;
+    }
+
+    // 黒マス点対称。
+    if ((xg_nRules & RULE_POINTSYMMETRY) && !xg_xword.IsPointSymmetry()) {
+        XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_NOTPOINTSYMMETRY), nullptr, MB_ICONERROR);
+        return false;
+    }
+
     // クロスワードに含まれる単語のチェック。
     XG_Pos pos;
     std::vector<std::wstring> vNotFoundWords;
