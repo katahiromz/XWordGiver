@@ -4731,7 +4731,7 @@ void __fastcall XgStartGenerateBlacks(bool sym)
     xg_bCancelled = false;
 
     // スレッドを開始する。
-    if (sym) {
+    if (sym || (xg_nRules & RULE_POINTSYMMETRY)) {
         for (DWORD i = 0; i < xg_dwThreadCount; i++) {
             xg_ahThreads[i] = reinterpret_cast<HANDLE>(
                 _beginthreadex(nullptr, 0, XgGenerateBlacksSym2, &xg_aThreadInfo[i], 0,
