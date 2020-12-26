@@ -6816,7 +6816,7 @@ static void OnOpenRulesTxt(HWND hwnd)
 }
 
 // 黒マスルールをチェックする。
-static void OnRuleCheck(HWND hwnd)
+void __fastcall XgRuleCheck(HWND hwnd)
 {
     XG_Board& board = (xg_bShowAnswer ? xg_solution : xg_xword);
     // 連黒禁。
@@ -7961,7 +7961,7 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
         XgUpdateRules(hwnd);
         break;
     case ID_RULECHECK:
-        OnRuleCheck(hwnd);
+        XgRuleCheck(hwnd);
         break;
     default:
         if (!MainWnd_OnCommand2(hwnd, id)) {

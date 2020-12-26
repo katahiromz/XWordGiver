@@ -4680,7 +4680,16 @@ unsigned __stdcall XgGenerateBlacksSmart(void *param)
 
     XG_Board xword;
     srand(::GetTickCount() ^ ::GetCurrentThreadId());
-    if (xg_imode == xg_im_KANJI || xg_nRows < 5 || xg_nCols < 5) {
+    if (xg_nRules & RULE_POINTSYMMETRY) {
+        do {
+            if (xg_bCancelled)
+                break;
+            if (xg_bBlacksGenerated) {
+                break;
+            }
+            xword.clear();
+        } while (!XgGenerateBlacksSym2Recurse(xword));
+    } else if (xg_imode == xg_im_KANJI || xg_nRows < 5 || xg_nCols < 5) {
         do {
             if (xg_bCancelled)
                 break;

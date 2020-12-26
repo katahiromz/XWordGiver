@@ -497,6 +497,9 @@ void __fastcall XgStartGenerateBlacks(bool sym);
 // ステータスバーを更新する。
 void __fastcall XgUpdateStatusBar(HWND hwnd);
 
+// 黒マスルールをチェックする。
+void __fastcall XgRuleCheck(HWND hwnd);
+
 //////////////////////////////////////////////////////////////////////////////
 
 // クロスワードの問題。
