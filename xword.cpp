@@ -894,10 +894,15 @@ XG_EpvCode __fastcall XG_Board::EveryPatternValid2(
 // 正当などうか？
 inline bool __fastcall XG_Board::IsValid() const
 {
-    // 四隅には黒マスは置けません。
-    // 連黒禁。
-    // 三方向が黒マスで囲まれたマスを作ってはいけません。
-    if (CornerBlack() || DoubleBlack() || TriBlackAround())
+    if ((xg_nRules & RULE_DONTCORNERBLACK) && CornerBlack())
+        return false;
+    if ((xg_nRules & RULE_DONTDOUBLEBLACK) && DoubleBlack())
+        return false;
+    if ((xg_nRules & RULE_DONTTRIDIRECTIONS) && TriBlackAround())
+        return false;
+    if ((xg_nRules & RULE_DONTDIVIDE) && DividedByBlack())
+        return false;
+    if ((xg_nRules & RULE_DONTFOURDIAGONALS) && FourDiagonals())
         return false;
 
     // クロスワードに含まれる単語のチェック。
@@ -919,15 +924,6 @@ inline bool __fastcall XG_Board::IsValid() const
 // 正当などうか？（簡略版）
 inline bool __fastcall XG_Board::IsOK() const
 {
-    if (0)
-    {
-        // 四隅には黒マスは置けません。
-        // 連黒禁。
-        // 三方向が黒マスで囲まれたマスを作ってはいけません。
-        if (CornerBlack() || DoubleBlack() || TriBlackAround())
-            return false;
-    }
-
     // クロスワードに含まれる単語のチェック。
     XG_Pos pos;
     std::vector<std::wstring> vNotFoundWords;
@@ -947,15 +943,6 @@ inline bool __fastcall XG_Board::IsOK() const
 // 正当などうか？（簡略版、黒マス追加なし）
 bool __fastcall XG_Board::IsNoAddBlackOK() const
 {
-    if (0)
-    {
-        // 四隅には黒マスは置けません。
-        // 連黒禁。
-        // 三方向が黒マスで囲まれたマスを作ってはいけません。
-        if (CornerBlack() || DoubleBlack() || TriBlackAround())
-            return false;
-    }
-
     // クロスワードに含まれる単語のチェック。
     XG_Pos pos;
     std::vector<std::wstring> vNotFoundWords;
@@ -964,12 +951,7 @@ bool __fastcall XG_Board::IsNoAddBlackOK() const
     if (code != xg_epv_SUCCESS || !vNotFoundWords.empty())
         return false;
 
-    if (0) {
-        // 空のクロスワードを解いているときは、分断禁をチェックする必要はない。
-        // 分断禁。
-        if (!xg_bSolvingEmpty && DividedByBlack())
-            return false;
-    }
+    // 空のクロスワードを解いているときは、分断禁をチェックする必要はない。
 
     return true;    // 成功。
 }
@@ -1483,8 +1465,6 @@ XgGetCandidatesNoAddBlack(
 // 解か？
 bool __fastcall XG_Board::IsSolution() const
 {
-    assert(IsValid());
-
     const int nRows = xg_nRows;
     const int nCols = xg_nCols;
 
@@ -1501,22 +1481,7 @@ bool __fastcall XG_Board::IsSolution() const
     }
 #endif
 
-#if 0   // すでにIsValidメソッドで確認済み。
-    // 四隅には黒マスは置けません。
-    // 連黒禁。
-    // 三方向が黒マスで囲まれたマスを作ってはいけません。
-    if (CornerBlack() || DoubleBlack() || TriBlackAround())
-        return false;
-
-    // 空のクロスワードを解いているときは、分断禁をチェックする必要はない。
-    if (!xg_bSolvingEmpty) {
-        // 分断禁。
-        if (DividedByBlack())
-            return false;
-    }
-#endif  // 0
-
-    return true;
+    return IsValid();
 }
 
 // ヒント文字列を解析する。
@@ -4387,15 +4352,24 @@ bool XG_Board::FourDiagonals() const
 //////////////////////////////////////////////////////////////////////////////
 // 黒マスパターンを生成する。
 
+// t_mode 0: 最大4空白まで。
+// t_mode 1: 最大3空白まで。
+// t_mode 2: 最大3～5空白まで（乱数により変動）。
+
 bool xg_bBlacksGenerated = false;
 
 template <int t_mode>
 bool __fastcall XgGenerateBlacksRecurse(const XG_Board& xword)
 {
-    if (xword.CornerBlack() || xword.DoubleBlack() || xword.TriBlackAround())
+    if ((xg_nRules & RULE_DONTCORNERBLACK) && xword.CornerBlack())
         return false;
-
-    if (xword.DividedByBlack())
+    if ((xg_nRules & RULE_DONTDOUBLEBLACK) && xword.DoubleBlack())
+        return false;
+    if ((xg_nRules & RULE_DONTTRIDIRECTIONS) && xword.TriBlackAround())
+        return false;
+    if ((xg_nRules & RULE_DONTDIVIDE) && xword.DividedByBlack())
+        return false;
+    if ((xg_nRules & RULE_DONTFOURDIAGONALS) && xword.FourDiagonals())
         return false;
 
     const int nRows = xg_nRows;
@@ -4571,10 +4545,15 @@ bool __fastcall XgGenerateBlacksRecurse(const XG_Board& xword)
 
 bool __fastcall XgGenerateBlacksSym2Recurse(const XG_Board& xword)
 {
-    if (xword.CornerBlack() || xword.DoubleBlack() || xword.TriBlackAround())
+    if ((xg_nRules & RULE_DONTCORNERBLACK) && xword.CornerBlack())
         return false;
-
-    if (xword.DividedByBlack())
+    if ((xg_nRules & RULE_DONTDOUBLEBLACK) && xword.DoubleBlack())
+        return false;
+    if ((xg_nRules & RULE_DONTTRIDIRECTIONS) && xword.TriBlackAround())
+        return false;
+    if ((xg_nRules & RULE_DONTDIVIDE) && xword.DividedByBlack())
+        return false;
+    if ((xg_nRules & RULE_DONTFOURDIAGONALS) && xword.FourDiagonals())
         return false;
 
     const int nRows = xg_nRows;

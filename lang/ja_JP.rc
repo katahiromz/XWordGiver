@@ -142,7 +142,7 @@ LANGUAGE LANG_JAPANESE, SUBLANG_DEFAULT
     }
     POPUP "ルール(&R)"
     {
-        MENUITEM "ルールをリセット(&R)", ID_RESETRULES
+        MENUITEM "ルールを規定値にリセット(&R)", ID_RESETRULES
         MENUITEM "黒マスルールの説明(&H)", ID_OPENRULESTXT
         MENUITEM SEPARATOR
         MENUITEM "連黒禁(&D)", ID_RULE_DONTDOUBLEBLACK

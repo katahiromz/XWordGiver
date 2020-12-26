@@ -183,6 +183,9 @@ enum RULES
 #define DEFAULT_RULES (RULE_DONTDOUBLEBLACK | RULE_DONTCORNERBLACK | \
                        RULE_DONTTRIDIRECTIONS | RULE_DONTDIVIDE)
 
+// ルール群。
+extern INT xg_nRules;
+
 //////////////////////////////////////////////////////////////////////////////
 // マスの位置。
 
