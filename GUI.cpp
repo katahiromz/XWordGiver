@@ -999,26 +999,26 @@ XgInputHintDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 // クロスワードをチェックする。
 bool __fastcall XgCheckCrossWord(HWND hwnd, bool check_words = true)
 {
-    // 四隅には黒マスは置けません。
-    if (xg_xword.CornerBlack()) {
+    // 四隅黒禁。
+    if ((xg_nRules & RULE_DONTCORNERBLACK) && xg_xword.CornerBlack()) {
         XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_CORNERBLOCK), nullptr, MB_ICONERROR);
         return false;
     }
 
     // 連黒禁。
-    if (xg_xword.DoubleBlack()) {
+    if ((xg_nRules & RULE_DONTDOUBLEBLACK) && xg_xword.DoubleBlack()) {
         XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_ADJACENTBLOCK), nullptr, MB_ICONERROR);
         return false;
     }
 
-    // 三方向が黒マスで囲まれたマスを作ってはいけません。
-    if (xg_xword.TriBlackAround()) {
+    // 三方黒禁。
+    if ((xg_nRules & RULE_DONTTRIDIRECTIONS) && xg_xword.TriBlackAround()) {
         XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_TRIBLOCK), nullptr, MB_ICONERROR);
         return false;
     }
 
     // 分断禁。
-    if (xg_xword.DividedByBlack()) {
+    if ((xg_nRules & RULE_DONTDIVIDE) && xg_xword.DividedByBlack()) {
         XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_DIVIDED), nullptr, MB_ICONERROR);
         return false;
     }
@@ -5702,6 +5702,33 @@ void MainWnd_OnSettings(HWND hwnd)
     ::DialogBoxW(xg_hInstance, MAKEINTRESOURCE(IDD_CONFIG), hwnd, XgSettingsDlgProc);
 }
 
+// ルールが変更された。
+void XgUpdateRules(HWND hwnd)
+{
+    HMENU hMenu = ::GetMenu(hwnd);
+    INT nCount = ::GetMenuItemCount(hMenu);
+    WCHAR szText[32];
+    MENUITEMINFOW info = { sizeof(info) };
+    info.fMask = MIIM_TYPE;
+    info.fType = MFT_STRING;
+    for (INT i = nCount - 1; i >= 0; --i) {
+        szText[0] = 0;
+        ::GetMenuStringW(hMenu, i, szText, ARRAYSIZE(szText), MF_BYPOSITION);
+        if (wcsstr(szText, XgLoadStringDx1(IDS_RULES)) != NULL) {
+            if (xg_nRules == DEFAULT_RULES) {
+                StringCbCopyW(szText, sizeof(szText), XgLoadStringDx1(IDS_STANDARDRULES));
+            } else {
+                StringCbCopyW(szText, sizeof(szText), XgLoadStringDx1(IDS_MODIFIEDRULES));
+            }
+            info.dwTypeData = szText;
+            SetMenuItemInfoW(hMenu, i, TRUE, &info);
+            break;
+        }
+    }
+    // メニューバーを再描画。
+    ::DrawMenuBar(hwnd);
+}
+
 // 設定を消去する。
 void MainWnd_OnEraseSettings(HWND hwnd)
 {
@@ -5722,6 +5749,7 @@ void MainWnd_OnEraseSettings(HWND hwnd)
 
     // 初期化する。
     XgLoadSettings();
+    XgUpdateRules(hwnd);
     // 辞書ファイルの名前を読み込む。
     XgLoadDictsAll();
 
@@ -7879,6 +7907,7 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
         break;
     case ID_RESETRULES:
         xg_nRules = DEFAULT_RULES;
+        XgUpdateRules(hwnd);
         break;
     case ID_OPENRULESTXT:
         OnOpenRulesTxt(hwnd);
@@ -7889,6 +7918,7 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
         } else {
             xg_nRules |= RULE_DONTDOUBLEBLACK;
         }
+        XgUpdateRules(hwnd);
         break;
     case ID_RULE_DONTCORNERBLACK:
         if (xg_nRules & RULE_DONTCORNERBLACK) {
@@ -7896,6 +7926,7 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
         } else {
             xg_nRules |= RULE_DONTCORNERBLACK;
         }
+        XgUpdateRules(hwnd);
         break;
     case ID_RULE_DONTTRIDIRECTIONS:
         if (xg_nRules & RULE_DONTTRIDIRECTIONS) {
@@ -7903,9 +7934,15 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
         } else {
             xg_nRules |= RULE_DONTTRIDIRECTIONS;
         }
+        XgUpdateRules(hwnd);
         break;
     case ID_RULE_DONTDIVIDE:
-        assert(0);
+        if (xg_nRules & RULE_DONTDIVIDE) {
+            xg_nRules &= ~RULE_DONTDIVIDE;
+        } else {
+            xg_nRules |= RULE_DONTDIVIDE;
+        }
+        XgUpdateRules(hwnd);
         break;
     case ID_RULE_DONTFOURDIAGONALS:
         if (xg_nRules & RULE_DONTFOURDIAGONALS) {
@@ -7913,6 +7950,7 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
         } else {
             xg_nRules |= RULE_DONTFOURDIAGONALS;
         }
+        XgUpdateRules(hwnd);
         break;
     case ID_RULE_POINTSYMMETRY:
         if (xg_nRules & RULE_POINTSYMMETRY) {
@@ -7920,6 +7958,7 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
         } else {
             xg_nRules |= RULE_POINTSYMMETRY;
         }
+        XgUpdateRules(hwnd);
         break;
     case ID_RULECHECK:
         OnRuleCheck(hwnd);
@@ -8274,7 +8313,8 @@ bool __fastcall MainWnd_OnCreate(HWND hwnd, LPCREATESTRUCT /*lpCreateStruct*/)
 #endif
 
     ::PostMessageW(hwnd, WM_SIZE, 0, 0);
-
+    // ルールを更新する。
+    XgUpdateRules(hwnd);
     // ツールバーのUIを更新する。
     XgUpdateToolBarUI(hwnd);
 
@@ -9654,7 +9694,7 @@ int WINAPI WinMain(
     if (s_dwNumberOfProcessors <= 3)
         xg_dwThreadCount = 2;
     else
-        xg_dwThreadCount = s_dwNumberOfProcessors - 1;
+        xg_dwThreadCount = s_dwNumberOfProcessors;
 
     xg_aThreadInfo.resize(xg_dwThreadCount);
     xg_ahThreads.resize(xg_dwThreadCount);
