@@ -1808,7 +1808,7 @@ XgCancelSolveDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam*/)
                            (xg_nRows + xg_nCols) + 800;
         #endif
         // 解を求めるのを開始。
-        XgStartSolve();
+        XgStartSolve_AddBlack();
         // タイマーをセットする。
         ::SetTimer(hwnd, 999, xg_dwTimerInterval, nullptr);
         // フォーカスをセットする。
@@ -1842,7 +1842,7 @@ XgCancelSolveDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam*/)
             XgCloseThreads();
             ::InterlockedIncrement(&s_nRetryCount);
             s_dwTick1 = ::GetTickCount();
-            XgStartSolve();
+            XgStartSolve_AddBlack();
             // タイマーをセットする。
             ::SetTimer(hwnd, 999, xg_dwTimerInterval, nullptr);
             break;
@@ -1908,7 +1908,7 @@ XgCancelSolveDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam*/)
                 XgCloseThreads();
                 ::InterlockedIncrement(&s_nRetryCount);
                 s_dwTick1 = ::GetTickCount();
-                XgStartSolve();
+                XgStartSolve_AddBlack();
                 // タイマーをセットする。
                 ::SetTimer(hwnd, 999, xg_dwTimerInterval, nullptr);
             }
@@ -1954,9 +1954,9 @@ XgCancelGenerateRepeatedlyDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*
         #endif
         // 解を求めるのを開始。
         if (t_bNoAddBlack)
-            XgStartSolveNoAddBlack();
+            XgStartSolve_NoAddBlack();
         else
-            XgStartSolve();
+            XgStartSolve_AddBlack();
         // タイマーをセットする。
         ::SetTimer(hwnd, 999, xg_dwTimerInterval, nullptr);
         // フォーカスをセットする。
@@ -1991,9 +1991,9 @@ XgCancelGenerateRepeatedlyDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*
             ::InterlockedIncrement(&s_nRetryCount);
             s_dwTick1 = ::GetTickCount();
             if (t_bNoAddBlack)
-                XgStartSolveNoAddBlack();
+                XgStartSolve_NoAddBlack();
             else
-                XgStartSolve();
+                XgStartSolve_AddBlack();
             // タイマーをセットする。
             ::SetTimer(hwnd, 999, xg_dwTimerInterval, nullptr);
             break;
@@ -2120,9 +2120,9 @@ XgCancelGenerateRepeatedlyDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*
                     ::InterlockedIncrement(&s_nRetryCount);
                     s_dwTick1 = ::GetTickCount();
                     if (t_bNoAddBlack)
-                        XgStartSolveNoAddBlack();
+                        XgStartSolve_NoAddBlack();
                     else
-                        XgStartSolve();
+                        XgStartSolve_AddBlack();
                     // タイマーをセットする。
                     ::SetTimer(hwnd, 999, xg_dwTimerInterval, nullptr);
                 }
@@ -2139,9 +2139,9 @@ XgCancelGenerateRepeatedlyDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*
                 ::InterlockedIncrement(&s_nRetryCount);
                 s_dwTick1 = ::GetTickCount();
                 if (t_bNoAddBlack)
-                    XgStartSolveNoAddBlack();
+                    XgStartSolve_NoAddBlack();
                 else
-                    XgStartSolve();
+                    XgStartSolve_AddBlack();
                 // タイマーをセットする。
                 ::SetTimer(hwnd, 999, xg_dwTimerInterval, nullptr);
             }
@@ -2183,7 +2183,7 @@ XgCancelSolveRepeatedlyDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lPa
                        (xg_nRows + xg_nCols) + 800;
         #endif
         // 解を求めるのを開始。
-        XgStartSolve();
+        XgStartSolve_AddBlack();
         // タイマーをセットする。
         ::SetTimer(hwnd, 999, xg_dwTimerInterval, nullptr);
         // フォーカスをセットする。
@@ -2217,7 +2217,7 @@ XgCancelSolveRepeatedlyDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lPa
             XgCloseThreads();
             ::InterlockedIncrement(&s_nRetryCount);
             s_dwTick1 = ::GetTickCount();
-            XgStartSolve();
+            XgStartSolve_AddBlack();
             // タイマーをセットする。
             ::SetTimer(hwnd, 999, xg_dwTimerInterval, nullptr);
             break;
@@ -2343,7 +2343,7 @@ XgCancelSolveRepeatedlyDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lPa
                 XgCloseThreads();
                 ::InterlockedIncrement(&s_nRetryCount);
                 s_dwTick1 = ::GetTickCount();
-                XgStartSolve();
+                XgStartSolve_AddBlack();
                 // タイマーをセットする。
                 ::SetTimer(hwnd, 999, xg_dwTimerInterval, nullptr);
             }
@@ -2358,7 +2358,7 @@ XgCancelSolveRepeatedlyDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lPa
                 XgCloseThreads();
                 ::InterlockedIncrement(&s_nRetryCount);
                 s_dwTick1 = ::GetTickCount();
-                XgStartSolve();
+                XgStartSolve_AddBlack();
                 // タイマーをセットする。
                 ::SetTimer(hwnd, 999, xg_dwTimerInterval, nullptr);
             }
@@ -2403,7 +2403,7 @@ XgCancelSolveDlgProcNoAddBlack(
                        (xg_nRows + xg_nCols) + 800;
         #endif
         // 解を求めるのを開始。
-        XgStartSolveNoAddBlack();
+        XgStartSolve_NoAddBlack();
         // タイマーをセットする。
         ::SetTimer(hwnd, 999, xg_dwTimerInterval, nullptr);
         // フォーカスをセットする。
@@ -2437,7 +2437,7 @@ XgCancelSolveDlgProcNoAddBlack(
             XgCloseThreads();
             ::InterlockedIncrement(&s_nRetryCount);
             s_dwTick1 = ::GetTickCount();
-            XgStartSolveNoAddBlack();
+            XgStartSolve_NoAddBlack();
             // タイマーをセットする。
             ::SetTimer(hwnd, 999, xg_dwTimerInterval, nullptr);
             break;
@@ -2501,7 +2501,7 @@ XgCancelSolveDlgProcNoAddBlack(
                 ::InterlockedIncrement(&s_nRetryCount);
                 s_dwTick1 = ::GetTickCount();
                 // スマート解決なら、黒マスを生成する。
-                XgStartSolveNoAddBlack();
+                XgStartSolve_NoAddBlack();
                 // タイマーをセットする。
                 ::SetTimer(hwnd, 999, xg_dwTimerInterval, nullptr);
             }

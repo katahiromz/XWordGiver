@@ -393,10 +393,8 @@ public:
         std::vector<std::wstring>& vNotFoundWords,
         XG_Pos& pos, bool bNonBlackCheckSpace) const;
 
-    // マスが空マスであることを仮定して、白黒マスを置けるか？
+    // 黒マスを置けるか？
     bool __fastcall CanPutBlack(int iRow, int jCol) const;
-    // マスが空マスであることを仮定して、白黒マスを置けるか？（簡略版）。
-    bool __fastcall CanPutBlackEasy(int iRow, int jCol) const;
 
     // マスの三方向が黒マスで囲まれているか？
     int __fastcall BlacksAround(int iRow, int jCol) const;
@@ -480,10 +478,10 @@ void __fastcall XgDrawMarkWord(HDC hdc, LPSIZE psiz);
 void __fastcall XgDrawXWord(XG_Board& xw, HDC hdc, LPSIZE psiz, bool bCaret);
 
 // 解を求めるのを開始。
-void __fastcall XgStartSolve(void);
+void __fastcall XgStartSolve_AddBlack(void);
 
 // 解を求めるのを開始（黒マス追加なし）。
-void __fastcall XgStartSolveNoAddBlack(void);
+void __fastcall XgStartSolve_NoAddBlack(void);
 
 // 解を求めるのを開始（スマート解決）。
 void __fastcall XgStartSolveSmart(void);
@@ -708,12 +706,11 @@ inline int __fastcall XG_Board::BlacksAround(int iRow, int jCol) const
     return count;
 }
 
-// マスが空マスであることを仮定して、白黒マスを置けるか？
+// 黒マスを置けるか？
 inline bool __fastcall XG_Board::CanPutBlack(int iRow, int jCol) const
 {
     assert(0 <= iRow && iRow < xg_nRows);
     assert(0 <= jCol && jCol < xg_nCols);
-    assert(GetAt(iRow, jCol) == ZEN_SPACE);
 
     // 四隅かどうか？
     if (iRow == 0 && jCol == 0)
@@ -726,97 +723,32 @@ inline bool __fastcall XG_Board::CanPutBlack(int iRow, int jCol) const
         return false;
 
     // 黒マスが隣り合ってしまうか？
-    if (0 <= iRow - 1) {
-        if (GetAt(iRow - 1, jCol) == ZEN_BLACK)
-            return false;
-    }
-    if (iRow + 1 < xg_nRows) {
-        if (GetAt(iRow + 1, jCol) == ZEN_BLACK)
-            return false;
-    }
-    if (0 <= jCol - 1) {
-        if (GetAt(iRow, jCol - 1) == ZEN_BLACK)
-            return false;
-    }
-    if (jCol + 1 < xg_nCols) {
-        if (GetAt(iRow, jCol + 1) == ZEN_BLACK)
-            return false;
-    }
+    if (0 <= iRow - 1 && GetAt(iRow - 1, jCol) == ZEN_BLACK)
+        return false;
+    if (iRow + 1 < xg_nRows && GetAt(iRow + 1, jCol) == ZEN_BLACK)
+        return false;
+    if (0 <= jCol - 1 && GetAt(iRow, jCol - 1) == ZEN_BLACK)
+        return false;
+    if (jCol + 1 < xg_nCols && GetAt(iRow, jCol + 1) == ZEN_BLACK)
+        return false;
 
     // 三方向が黒マスで囲まれたマスができるかどうか？
+    BOOL bBlack = (GetAt(iRow, jCol) == ZEN_BLACK);
     if (0 <= iRow - 1) {
-        if (BlacksAround(iRow - 1, jCol) >= 2)
+        if (BlacksAround(iRow - 1, jCol) >= 2 + bBlack)
             return false;
     }
     if (iRow + 1 < xg_nRows) {
-        if (BlacksAround(iRow + 1, jCol) >= 2)
+        if (BlacksAround(iRow + 1, jCol) >= 2 + bBlack)
             return false;
     }
     if (0 <= jCol - 1) {
-        if (BlacksAround(iRow, jCol - 1) >= 2)
+        if (BlacksAround(iRow, jCol - 1) >= 2 + bBlack)
             return false;
     }
     if (jCol + 1 < xg_nCols) {
-        if (BlacksAround(iRow, jCol + 1) >= 2)
+        if (BlacksAround(iRow, jCol + 1) >= 2 + bBlack)
             return false;
-    }
-
-    return true;
-}
-
-// マスが空マスであることを仮定して、白黒マスを置けるか？（簡略版）
-inline bool __fastcall XG_Board::CanPutBlackEasy(int iRow, int jCol) const
-{
-    assert(0 <= iRow && iRow < xg_nRows);
-    assert(0 <= jCol && jCol < xg_nCols);
-    assert(GetAt(iRow, jCol) == ZEN_SPACE);
-
-    // 四隅かどうか？
-    if (iRow == 0 && jCol == 0)
-        return false;
-    if (iRow == xg_nRows - 1 && jCol == 0)
-        return false;
-    if (iRow == xg_nRows - 1 && jCol == xg_nCols - 1)
-        return false;
-    if (iRow == 0 && jCol == xg_nCols - 1)
-        return false;
-
-    // 黒マスが隣り合ってしまうか？
-    if (0 <= iRow - 1) {
-        if (GetAt(iRow - 1, jCol) == ZEN_BLACK)
-            return false;
-    }
-    if (iRow + 1 < xg_nRows) {
-        if (GetAt(iRow + 1, jCol) == ZEN_BLACK)
-            return false;
-    }
-    if (0 <= jCol - 1) {
-        if (GetAt(iRow, jCol - 1) == ZEN_BLACK)
-            return false;
-    }
-    if (jCol + 1 < xg_nCols) {
-        if (GetAt(iRow, jCol + 1) == ZEN_BLACK)
-            return false;
-    }
-
-    if (0) {
-        // 三方向が黒マスで囲まれたマスができるかどうか？
-        if (0 <= iRow - 1) {
-            if (BlacksAround(iRow - 1, jCol) >= 2)
-                return false;
-        }
-        if (iRow + 1 < xg_nRows) {
-            if (BlacksAround(iRow + 1, jCol) >= 2)
-                return false;
-        }
-        if (0 <= jCol - 1) {
-            if (BlacksAround(iRow, jCol - 1) >= 2)
-                return false;
-        }
-        if (jCol + 1 < xg_nCols) {
-            if (BlacksAround(iRow, jCol + 1) >= 2)
-                return false;
-        }
     }
 
     return true;

@@ -2044,7 +2044,7 @@ XG_ThreadInfo *__fastcall XgGetThreadInfo(void)
 }
 
 // 再帰する。
-void __fastcall XgSolveXWordAddBlackRecurse(const XG_Board& xw)
+void __fastcall XgSolveXWord_AddBlackRecurse(const XG_Board& xw)
 {
     // すでに解かれているなら、終了。
     if (xg_bSolved)
@@ -2128,7 +2128,7 @@ void __fastcall XgSolveXWordAddBlackRecurse(const XG_Board& xw)
 
                         bool bCanPutBlack = true;
                         for (int k = lo; k <= hi; k++) {
-                            if (cand[k - lo] == ZEN_BLACK && !xw.CanPutBlackEasy(i, k)) {
+                            if (cand[k - lo] == ZEN_BLACK && !xw.CanPutBlack(i, k)) {
                                 bCanPutBlack = false;
                                 break;
                             }
@@ -2156,7 +2156,7 @@ void __fastcall XgSolveXWordAddBlackRecurse(const XG_Board& xw)
                             }
 
                             // 再帰する。
-                            XgSolveXWordAddBlackRecurse(copy);
+                            XgSolveXWord_AddBlackRecurse(copy);
                         }
 
                         // 空ではないマスの個数をセットする。
@@ -2227,7 +2227,7 @@ void __fastcall XgSolveXWordAddBlackRecurse(const XG_Board& xw)
 
                         bool bCanPutBlack = true;
                         for (int k = lo; k <= hi; k++) {
-                            if (cand[k - lo] == ZEN_BLACK && !xw.CanPutBlackEasy(k, j)) {
+                            if (cand[k - lo] == ZEN_BLACK && !xw.CanPutBlack(k, j)) {
                                 bCanPutBlack = false;
                                 break;
                             }
@@ -2255,7 +2255,7 @@ void __fastcall XgSolveXWordAddBlackRecurse(const XG_Board& xw)
                             }
 
                             // 再帰する。
-                            XgSolveXWordAddBlackRecurse(copy);
+                            XgSolveXWord_AddBlackRecurse(copy);
                         }
 
                         // 空ではないマスの個数をセットする。
@@ -2289,7 +2289,7 @@ void __fastcall XgSolveXWordAddBlackRecurse(const XG_Board& xw)
 }
 
 // 再帰する（黒マス追加なし）。
-void __fastcall XgSolveXWordNoAddBlackRecurse(const XG_Board& xw)
+void __fastcall XgSolveXWord_NoAddBlackRecurse(const XG_Board& xw)
 {
     // すでに解かれているなら、終了。
     if (xg_bSolved)
@@ -2373,7 +2373,7 @@ void __fastcall XgSolveXWordNoAddBlackRecurse(const XG_Board& xw)
                         }
 
                         // 再帰する。
-                        XgSolveXWordNoAddBlackRecurse(copy);
+                        XgSolveXWord_NoAddBlackRecurse(copy);
 
                         // 空ではないマスの個数をセットする。
                         info->m_count = xw.Count();
@@ -2443,7 +2443,7 @@ void __fastcall XgSolveXWordNoAddBlackRecurse(const XG_Board& xw)
                         }
 
                         // 再帰する。
-                        XgSolveXWordNoAddBlackRecurse(copy);
+                        XgSolveXWord_NoAddBlackRecurse(copy);
 
                         // 空ではないマスの個数をセットする。
                         info->m_count = xw.Count();
@@ -2494,7 +2494,7 @@ void XG_Board::SwapXandY()
 }
 
 // 解く。
-void __fastcall XgSolveXWordAddBlack(const XG_Board& xw)
+void __fastcall XgSolveXWord_AddBlack(const XG_Board& xw)
 {
     const int nRows = xg_nRows, nCols = xg_nCols;
 
@@ -2509,7 +2509,7 @@ void __fastcall XgSolveXWordAddBlack(const XG_Board& xw)
     }
     if (bCharFound) {
         // 文字マスがあった場合は、そのまま解く。
-        XgSolveXWordAddBlackRecurse(xw);
+        XgSolveXWord_AddBlackRecurse(xw);
         return;
     }
 
@@ -2520,16 +2520,6 @@ void __fastcall XgSolveXWordAddBlack(const XG_Board& xw)
     // ランダムな順序の単語ベクターを作成する。
     std::vector<XG_WordData> words(xg_dict_data);
     std::random_shuffle(words.begin(), words.end());
-
-#if 0
-    // 長すぎる単語を削除する。
-    {
-        int n1 = xg_nRows;
-        int n2 = xg_nCols;
-        remove_if(words.begin(), words.end(),
-                  xg_word_toolong(n1 >= n2 ? n1 : n2));
-    }
-#endif
 
     for (int i = 0; i < nRows; i++) {
         for (int j = 0; j < nCols - 1; j++) {
@@ -2572,8 +2562,8 @@ void __fastcall XgSolveXWordAddBlack(const XG_Board& xw)
                         continue;
 
                     // 必要な黒マスは置けるか？
-                    if ((lo == 0 || xw.CanPutBlackEasy(i, lo - 1)) &&
-                        (hi + 1 >= nCols || xw.CanPutBlackEasy(i, hi + 1)))
+                    if ((lo == 0 || xw.CanPutBlack(i, lo - 1)) &&
+                        (hi + 1 >= nCols || xw.CanPutBlack(i, hi + 1)))
                     {
                         // 単語とその両端の外側の黒マスをセットして再帰する。
                         XG_Board copy(xw);
@@ -2599,7 +2589,83 @@ void __fastcall XgSolveXWordAddBlack(const XG_Board& xw)
                         //}
 
                         // 再帰する。
-                        XgSolveXWordAddBlackRecurse(copy);
+                        XgSolveXWord_AddBlackRecurse(copy);
+                    }
+                }
+                return;
+            }
+        }
+    }
+
+    for (int j = 0; j < nCols; j++) {
+        for (int i = 0; i < nRows - 1; i++) {
+            // すでに解かれているなら、終了。
+            // キャンセルされているなら、終了。
+            // 再計算すべきなら、終了する。
+            if (xg_bSolved || xg_bCancelled || xg_bRetrying)
+                return;
+
+            // 空白の連続があるか？
+            const WCHAR ch1 = xw.GetAt(i, j), ch2 = xw.GetAt(i + 1, j);
+            if (ch1 == ZEN_SPACE && ch2 == ZEN_SPACE) {
+                // 文字が置ける区間[lo, hi]を求める。
+                int lo = i;
+                while (lo > 0) {
+                    if (xw.GetAt(lo - 1, j) == ZEN_BLACK)
+                        break;
+                    lo--;
+                }
+                while (i + 1 < nRows) {
+                    if (xw.GetAt(i + 1, j) == ZEN_BLACK)
+                        break;
+                    j++;
+                }
+                const int hi = i;
+
+                // パターンの長さを求める。
+                const int patlen = hi - lo + 1;
+                for (const auto& word_data : words) {
+                    // すでに解かれているなら、終了。
+                    // キャンセルされているなら、終了。
+                    // 再計算すべきなら、終了する。
+                    if (xg_bSolved || xg_bCancelled || xg_bRetrying)
+                        return;
+
+                    // 単語の長さがパターンの長さ以下か？
+                    const std::wstring& word = word_data.m_word;
+                    const int wordlen = static_cast<int>(word.size());
+                    if (wordlen > patlen)
+                        continue;
+
+                    // 必要な黒マスは置けるか？
+                    if ((lo == 0 || xw.CanPutBlack(lo - 1, j)) &&
+                        (hi + 1 >= nRows || xw.CanPutBlack(hi + 1, j)))
+                    {
+                        // 単語とその両端の外側の黒マスをセットして再帰する。
+                        XG_Board copy(xw);
+                        for (int k = 0; k < wordlen; k++) {
+                            copy.SetAt(lo + k, j, word[k]);
+                        }
+
+                        if (lo > 0 && copy.GetAt(lo - 1, j) != ZEN_BLACK) {
+                            if (!copy.CanPutBlack(lo - 1, j))
+                                continue;
+
+                            copy.SetAt(lo - 1, j, ZEN_BLACK);
+                        }
+                        if (hi + 1 < nRows && copy.GetAt(hi + 1, j) != ZEN_BLACK) {
+                            if (!copy.CanPutBlack(hi + 1, j))
+                                continue;
+
+                            copy.SetAt(hi + 1, j, ZEN_BLACK);
+                        }
+
+                        //if (copy.TriBlackAround()) {
+                        //    continue;
+                        //}
+
+                        // 再帰する。
+                        XgSolveXWord_AddBlackRecurse(copy);
                     }
                 }
                 return;
@@ -2609,7 +2675,7 @@ void __fastcall XgSolveXWordAddBlack(const XG_Board& xw)
 }
 
 // 解く（黒マス追加なし）。
-void __fastcall XgSolveXWordNoAddBlack(const XG_Board& xw)
+void __fastcall XgSolveXWord_NoAddBlack(const XG_Board& xw)
 {
     const int nRows = xg_nRows, nCols = xg_nCols;
 
@@ -2623,7 +2689,7 @@ void __fastcall XgSolveXWordNoAddBlack(const XG_Board& xw)
     }
     if (bCharFound) {
         // 文字マスがあった場合は、そのまま解く。
-        XgSolveXWordNoAddBlackRecurse(xw);
+        XgSolveXWord_NoAddBlackRecurse(xw);
         return;
     }
 
@@ -2683,7 +2749,7 @@ void __fastcall XgSolveXWordNoAddBlack(const XG_Board& xw)
                     }
 
                     // 再帰する。
-                    XgSolveXWordNoAddBlackRecurse(copy);
+                    XgSolveXWord_NoAddBlackRecurse(copy);
                 }
                 return;
             }
@@ -2696,7 +2762,7 @@ void __fastcall XgSolveXWordNoAddBlack(const XG_Board& xw)
 #endif
 
 // マルチスレッド用の関数。
-unsigned __stdcall XgSolveProcAddBlack(void *param)
+unsigned __stdcall XgSolveProc_AddBlack(void *param)
 {
     // スレッド情報を取得する。
     XG_ThreadInfo *info = reinterpret_cast<XG_ThreadInfo *>(param);
@@ -2715,12 +2781,12 @@ unsigned __stdcall XgSolveProcAddBlack(void *param)
     #endif
 
     // 解く。
-    XgSolveXWordAddBlack(xg_xword);
+    XgSolveXWord_AddBlack(xg_xword);
     return 0;
 }
 
 // マルチスレッド用の関数（黒マス追加なし）。
-unsigned __stdcall XgSolveProcNoAddBlack(void *param)
+unsigned __stdcall XgSolveProc_NoAddBlack(void *param)
 {
     // スレッド情報を取得する。
     XG_ThreadInfo *info = reinterpret_cast<XG_ThreadInfo *>(param);
@@ -2739,7 +2805,7 @@ unsigned __stdcall XgSolveProcNoAddBlack(void *param)
     #endif
 
     // 解く（黒マス追加なし）。
-    XgSolveXWordNoAddBlack(xg_xword);
+    XgSolveXWord_NoAddBlack(xg_xword);
     return 0;
 }
 
@@ -2769,12 +2835,12 @@ unsigned __stdcall XgSolveProcSmart(void *param)
     info->m_count = xg_xword.Count();
 
     // 解く（黒マス追加なし）。
-    XgSolveXWordNoAddBlack(xg_xword);
+    XgSolveXWord_NoAddBlack(xg_xword);
     return 0;
 }
 
 // 解を求めるのを開始。
-void __fastcall XgStartSolve(void)
+void __fastcall XgStartSolve_AddBlack(void)
 {
     // フラグを初期化する。
     xg_bSolved = xg_bCancelled = xg_bRetrying = false;
@@ -2794,14 +2860,14 @@ void __fastcall XgStartSolve(void)
     for (DWORD i = 0; i < xg_dwThreadCount; i++) {
         xg_aThreadInfo[i].m_count = static_cast<DWORD>(xg_xword.Count());
         xg_ahThreads[i] = reinterpret_cast<HANDLE>(
-            _beginthreadex(nullptr, 0, XgSolveProcAddBlack, &xg_aThreadInfo[i], 0,
+            _beginthreadex(nullptr, 0, XgSolveProc_AddBlack, &xg_aThreadInfo[i], 0,
                 &xg_aThreadInfo[i].m_threadid));
         assert(xg_ahThreads[i] != nullptr);
     }
 }
 
 // 解を求めるのを開始（黒マス追加なし）。
-void __fastcall XgStartSolveNoAddBlack(void)
+void __fastcall XgStartSolve_NoAddBlack(void)
 {
     // フラグを初期化する。
     xg_bSolved = xg_bCancelled = xg_bRetrying = false;
@@ -2810,7 +2876,7 @@ void __fastcall XgStartSolveNoAddBlack(void)
     for (DWORD i = 0; i < xg_dwThreadCount; i++) {
         xg_aThreadInfo[i].m_count = static_cast<DWORD>(xg_xword.Count());
         xg_ahThreads[i] = reinterpret_cast<HANDLE>(
-            _beginthreadex(nullptr, 0, XgSolveProcNoAddBlack, &xg_aThreadInfo[i], 0,
+            _beginthreadex(nullptr, 0, XgSolveProc_NoAddBlack, &xg_aThreadInfo[i], 0,
                 &xg_aThreadInfo[i].m_threadid));
         assert(xg_ahThreads[i] != nullptr);
     }
