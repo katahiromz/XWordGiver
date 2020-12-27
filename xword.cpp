@@ -1596,6 +1596,98 @@ bool __fastcall XgParseHintsStr(HWND hwnd, const std::wstring& strHints)
            XgParseHints(xg_vecYokoHints, yoko);
 }
 
+template <typename T_STR_CONTAINER>
+inline void
+mstr_split(T_STR_CONTAINER& container,
+           const typename T_STR_CONTAINER::value_type& str,
+           const typename T_STR_CONTAINER::value_type& chars)
+{
+    container.clear();
+    size_t i = 0, k = str.find_first_of(chars);
+    while (k != T_STR_CONTAINER::value_type::npos)
+    {
+        container.push_back(str.substr(i, k - i));
+        i = k + 1;
+        k = str.find_first_of(chars, i);
+    }
+    container.push_back(str.substr(i));
+}
+
+// 文字列のルールを解析する。
+INT __fastcall XgParseRules(const std::string& utf8)
+{
+    std::wstring utf16 = XgUtf8ToUnicode(utf8);
+    std::vector<std::wstring> rules;
+    mstr_split(rules, utf16, L" \t");
+    INT nRules = 0;
+    for (auto& rule : rules) {
+        xg_str_trim(rule);
+        if (rule.empty())
+            continue;
+        if (rule == XgLoadStringDx1(IDS_RULE_DONTDOUBLEBLACK)) {
+            nRules |= RULE_DONTDOUBLEBLACK;
+        } else if (rule == XgLoadStringDx1(IDS_RULE_DONTCORNERBLACK)) {
+            nRules |= RULE_DONTCORNERBLACK;
+        } else if (rule == XgLoadStringDx1(IDS_RULE_DONTTRIDIRECTIONS)) {
+            nRules |= RULE_DONTTRIDIRECTIONS;
+        } else if (rule == XgLoadStringDx1(IDS_RULE_DONTDIVIDE)) {
+            nRules |= RULE_DONTDIVIDE;
+        } else if (rule == XgLoadStringDx1(IDS_RULE_DONTFOURDIAGONALS)) {
+            nRules |= RULE_DONTFOURDIAGONALS;
+        } else if (rule == XgLoadStringDx1(IDS_RULE_POINTSYMMETRY)) {
+            nRules |= RULE_POINTSYMMETRY;
+        } else {
+            nRules = DEFAULT_RULES;
+            break;
+        }
+    }
+    return nRules;
+}
+
+// ルールを文字列にする。
+std::wstring __fastcall XgGetRulesString(INT rules)
+{
+    std::wstring ret;
+
+    if (rules & RULE_DONTDOUBLEBLACK) {
+        if (ret.size())  {
+            ret += L' ';
+        }
+        ret += XgLoadStringDx1(IDS_RULE_DONTDOUBLEBLACK);
+    }
+    if (rules & RULE_DONTCORNERBLACK) {
+        if (ret.size())  {
+            ret += L' ';
+        }
+        ret += XgLoadStringDx1(IDS_RULE_DONTCORNERBLACK);
+    }
+    if (rules & RULE_DONTTRIDIRECTIONS) {
+        if (ret.size())  {
+            ret += L' ';
+        }
+        ret += XgLoadStringDx1(IDS_RULE_DONTTRIDIRECTIONS);
+    }
+    if (rules & RULE_DONTDIVIDE) {
+        if (ret.size())  {
+            ret += L' ';
+        }
+        ret += XgLoadStringDx1(IDS_RULE_DONTDIVIDE);
+    }
+    if (rules & RULE_DONTFOURDIAGONALS) {
+        if (ret.size())  {
+            ret += L' ';
+        }
+        ret += XgLoadStringDx1(IDS_RULE_DONTFOURDIAGONALS);
+    }
+    if (rules & RULE_POINTSYMMETRY) {
+        if (ret.size())  {
+            ret += L' ';
+        }
+        ret += XgLoadStringDx1(IDS_RULE_POINTSYMMETRY);
+    }
+    return ret;
+}
+
 // JSON文字列を設定する。
 bool __fastcall XgSetJsonString(HWND hwnd, const std::wstring& str)
 {
@@ -1612,6 +1704,10 @@ bool __fastcall XgSetJsonString(HWND hwnd, const std::wstring& str)
         bool is_solved = j["is_solved"];
         bool has_mark = j["has_mark"];
         bool has_hints = j["has_hints"];
+        INT rules = DEFAULT_RULES;
+        if (j["rules"].is_string()) {
+            rules = XgParseRules(j["rules"].get<std::string>());
+        }
 
         if (row_count <= 0 || column_count <= 0) {
             return false;
@@ -1743,6 +1839,7 @@ bool __fastcall XgSetJsonString(HWND hwnd, const std::wstring& str)
             xg_nCols = nColsSave;
         }
 
+        xg_nRules = rules;
         return success;
     }
     catch (json::exception&)
@@ -3725,6 +3822,7 @@ bool __fastcall XgDoSaveJson(HWND /*hwnd*/, LPCWSTR pszFile)
         j["creator_info"] = XgUnicodeToUtf8(XgLoadStringDx1(IDS_APPINFO));
         j["row_count"] = xg_nRows;
         j["column_count"] = xg_nCols;
+        j["rules"] = XgUnicodeToUtf8(XgGetRulesString(xg_nRules));
 
         // 盤の切り替え。
         XG_Board *xw = (xg_bSolved ? &xg_solution : &xg_xword);

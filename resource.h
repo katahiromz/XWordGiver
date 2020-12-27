@@ -140,6 +140,12 @@
 #define IDS_STANDARDRULES                   233
 #define IDS_MODIFIEDRULES                   234
 #define IDS_CANTSOLVESYMMETRY               235
+#define IDS_RULE_DONTDOUBLEBLACK            236
+#define IDS_RULE_DONTCORNERBLACK            237
+#define IDS_RULE_DONTTRIDIRECTIONS          238
+#define IDS_RULE_DONTDIVIDE                 239
+#define IDS_RULE_DONTFOURDIAGONALS          240
+#define IDS_RULE_POINTSYMMETRY              241
 #define IDS_TT_NEW                          10100
 #define IDS_TT_GENERATE                     10101
 #define IDS_TT_OPEN                         10102

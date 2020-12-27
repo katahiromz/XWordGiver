@@ -7296,6 +7296,8 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
         }
         // ツールバーのUIを更新する。
         XgUpdateToolBarUI(hwnd);
+        // ルールを更新する。
+        XgUpdateRules(hwnd);
         break;
 
     case ID_SAVEAS: // ファイルを保存する。
@@ -8064,6 +8066,8 @@ void __fastcall MainWnd_OnDropFiles(HWND hwnd, HDROP hDrop)
 
     // ツールバーのUIを更新する。
     XgUpdateToolBarUI(hwnd);
+    // ルールを更新する。
+    XgUpdateRules(hwnd);
 }
 
 // 無効状態のビットマップを作成する。
@@ -8344,6 +8348,8 @@ bool __fastcall MainWnd_OnCreate(HWND hwnd, LPCREATESTRUCT /*lpCreateStruct*/)
                     XgUpdateImage(hwnd, 0, 0);
                 }
             }
+            // ルールを更新する。
+            XgUpdateRules(hwnd);
         }
     }
     GlobalFree(wargv);
