@@ -139,6 +139,7 @@
 #define IDS_RULES                           232
 #define IDS_STANDARDRULES                   233
 #define IDS_MODIFIEDRULES                   234
+#define IDS_CANTSOLVESYMMETRY               235
 #define IDS_TT_NEW                          10100
 #define IDS_TT_GENERATE                     10101
 #define IDS_TT_OPEN                         10102

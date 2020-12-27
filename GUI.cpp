@@ -3217,7 +3217,7 @@ void XgOnGenerateBlacks(HWND hwnd, bool sym)
 }
 
 // 解を求める。
-bool __fastcall XgOnSolveAddBlack(HWND hwnd)
+bool __fastcall XgOnSolve_AddBlack(HWND hwnd)
 {
     // すでに解かれている場合は、実行を拒否する。
     if (xg_bSolved) {
@@ -3311,7 +3311,7 @@ bool __fastcall XgOnSolveAddBlack(HWND hwnd)
 }
 
 // 解を求める（黒マス追加なし）。
-bool __fastcall XgOnSolveNoAddBlack(HWND hwnd, bool bShowAnswer = true)
+bool __fastcall XgOnSolve_NoAddBlack(HWND hwnd, bool bShowAnswer = true)
 {
     // すでに解かれている場合は、実行を拒否する。
     if (xg_bSolved) {
@@ -6529,7 +6529,7 @@ static void XgPattern_OnOK(HWND hwnd)
         sa1->Get();
         {
             // 解を求める（黒マス追加なし）。
-            XgOnSolveNoAddBlack(xg_hMainWnd, xg_bShowAnswerOnPattern);
+            XgOnSolve_NoAddBlack(xg_hMainWnd, xg_bShowAnswerOnPattern);
         }
         sa2->Get();
         // 元に戻す情報を設定する。
@@ -6820,10 +6820,27 @@ void MainWnd_DoDictionary(HWND hwnd, size_t iDict)
 // 「黒マスルールの説明.txt」を開く。
 static void OnOpenRulesTxt(HWND hwnd)
 {
-    WCHAR szPath[MAX_PATH];
+    WCHAR szPath[MAX_PATH], szDir[MAX_PATH];
     GetModuleFileNameW(NULL, szPath, MAX_PATH);
     PathRemoveFileSpecW(szPath);
+    StringCbCopyW(szDir, sizeof(szDir), szPath);
+    StringCbCopyW(szPath, sizeof(szPath), szDir);
     PathAppendW(szPath, XgLoadStringDx1(IDS_RULESTXT));
+    if (!PathFileExistsW(szPath)) {
+        StringCbCopyW(szPath, sizeof(szPath), szDir);
+        PathAppendW(szPath, L"..");
+        PathAppendW(szPath, XgLoadStringDx1(IDS_RULESTXT));
+        if (!PathFileExistsW(szPath)) {
+            StringCbCopyW(szPath, sizeof(szPath), szDir);
+            PathAppendW(szPath, L"..\\..");
+            PathAppendW(szPath, XgLoadStringDx1(IDS_RULESTXT));
+            if (!PathFileExistsW(szPath)) {
+                StringCbCopyW(szPath, sizeof(szPath), szDir);
+                PathAppendW(szPath, L"..\\..\\..");
+                PathAppendW(szPath, XgLoadStringDx1(IDS_RULESTXT));
+            }
+        }
+    }
     ShellExecuteW(hwnd, NULL, szPath, NULL, NULL, SW_SHOWNORMAL);
 }
 
@@ -7404,13 +7421,17 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
         break;
 
     case ID_SOLVE:  // 解を求める。
+        if (xg_nRules & RULE_POINTSYMMETRY) {
+            XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_CANTSOLVESYMMETRY), NULL, MB_ICONERROR);
+            return;
+        }
         {
             auto sa1 = std::make_shared<XG_UndoData_SetAll>();
             auto sa2 = std::make_shared<XG_UndoData_SetAll>();
             sa1->Get();
             {
                 // 解を求める。
-                XgOnSolveAddBlack(hwnd);
+                XgOnSolve_AddBlack(hwnd);
             }
             sa2->Get();
             // 元に戻す情報を設定する。
@@ -7427,7 +7448,7 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
             sa1->Get();
             {
                 // 解を求める（黒マス追加なし）。
-                XgOnSolveNoAddBlack(hwnd);
+                XgOnSolve_NoAddBlack(hwnd);
             }
             sa2->Get();
             // 元に戻す情報を設定する。

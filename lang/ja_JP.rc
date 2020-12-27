@@ -1343,6 +1343,7 @@ STRINGTABLE
     IDS_RULES, "ルール"
     IDS_STANDARDRULES, "ルール(&R)"
     IDS_MODIFIEDRULES, "(!)ルール(&R)"
+    IDS_CANTSOLVESYMMETRY, "ルール「黒マス線対称」では黒マス追加ありの解を求めることはできません。"
     IDS_TT_NEW, "新規作成"
     IDS_TT_GENERATE, "問題を自動生成する"
     IDS_TT_OPEN, "問題を開く"
