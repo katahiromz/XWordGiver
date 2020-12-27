@@ -6433,6 +6433,7 @@ XgPattern_RefreshContents(HWND hwnd, INT type)
         std::vector<WCHAR> data;
         XgConvertPatternData(data, pat.data, pat.num_columns, pat.num_rows);
 
+        // 黒マスルールを適合する。
 #define GET_DATA(x, y) data[(y) * pat.num_columns + (x)]
         if (xg_nRules & RULE_DONTDOUBLEBLACK) {
             BOOL bFound = FALSE;
@@ -6536,7 +6537,6 @@ XgPattern_RefreshContents(HWND hwnd, INT type)
             BOOL bFound = FALSE;
             for (INT y = 0; y < pat.num_rows; ++y) {
                 for (INT x = 0; x < pat.num_columns; ++x) {
-                    INT nCount = 0;
                     if ((GET_DATA(x, y) == ZEN_BLACK) !=
                         (GET_DATA(pat.num_columns - (x + 1), pat.num_rows - (y + 1)) == ZEN_BLACK))
                     {
