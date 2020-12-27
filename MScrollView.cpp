@@ -3,6 +3,7 @@
 // This file is part of MZC3.  See file "ReadMe.txt" and "License.txt".
 ////////////////////////////////////////////////////////////////////////////
 
+#define NOMINMAX
 #include "MScrollView.hpp"
 
 #ifdef MZC_NO_INLINING
