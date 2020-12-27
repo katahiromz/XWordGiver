@@ -3043,6 +3043,8 @@ bool __fastcall XgOnGenerate(HWND hwnd, bool show_answer)
         ::EnableWindow(xg_hwndInputPalette, FALSE);
         if (xg_bSmartResolution && xg_nRows >= 7 && xg_nCols >= 7) {
             ::DialogBoxW(xg_hInstance, MAKEINTRESOURCE(IDD_CALCULATING), hwnd, XgCancelSolveDlgProcSmart);
+        } else if (xg_nRules & RULE_POINTSYMMETRY) {
+            ::DialogBoxW(xg_hInstance, MAKEINTRESOURCE(IDD_CALCULATING), hwnd, XgCancelSolveDlgProcSmart);
         } else {
             ::DialogBoxW(xg_hInstance, MAKEINTRESOURCE(IDD_CALCULATING), hwnd, XgCancelSolveDlgProc);
         }
