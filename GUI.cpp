@@ -7421,6 +7421,7 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
         break;
 
     case ID_SOLVE:  // 解を求める。
+        // ルール「黒マス線対称」では黒マス追加ありの解を求めることはできません。
         if (xg_nRules & RULE_POINTSYMMETRY) {
             XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_CANTSOLVESYMMETRY), NULL, MB_ICONERROR);
             return;
