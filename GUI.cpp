@@ -6304,6 +6304,38 @@ struct PATDATA
 static std::vector<PATDATA> s_patterns;
 static LAYOUT_DATA *s_pLayout = NULL;
 
+// パターンのテキストデータを扱いやすいよう、加工する。
+static void
+XgConvertPatternData(std::vector<WCHAR>& data, std::wstring text, INT cx, INT cy)
+{
+    xg_str_replace_all(text, L"\r\n", L"\n");
+    xg_str_replace_all(text, L"\u2501", L"");
+    xg_str_replace_all(text, L"\u250F\u2513\n", L"");
+    xg_str_replace_all(text, L"\u2517\u251B\n", L"");
+    data.resize(cx * cy);
+    int x = 0, y = 0;
+    for (auto& ch : text)
+    {
+        switch (ch)
+        {
+        case ZEN_BLACK:
+            data[x + cx * y] = ZEN_BLACK;
+            ++x;
+            break;
+        case ZEN_SPACE:
+            data[x + cx * y] = ZEN_SPACE;
+            ++x;
+            break;
+        case L'\n':
+            x = 0;
+            ++y;
+            break;
+        }
+        if (y == cy)
+            break;
+    }
+}
+
 static BOOL
 XgPattern_RefreshContents(HWND hwnd, INT type)
 {
@@ -6346,44 +6378,44 @@ XgPattern_RefreshContents(HWND hwnd, INT type)
     json j = json::parse(utf8);
     for (auto& item : j)
     {
-        PATDATA data;
-        data.num_columns = item["num_columns"];
-        data.num_rows = item["num_rows"];
+        PATDATA pat;
+        pat.num_columns = item["num_columns"];
+        pat.num_rows = item["num_rows"];
 
         // タイプによりフィルターを行う。
         switch (type)
         {
         case rad1:
-            if (data.num_columns != data.num_rows)
+            if (pat.num_columns != pat.num_rows)
                 continue;
-            if (!(data.num_columns >= 13 && data.num_rows >= 13))
+            if (!(pat.num_columns >= 13 && pat.num_rows >= 13))
                 continue;
             break;
         case rad2:
-            if (data.num_columns != data.num_rows)
+            if (pat.num_columns != pat.num_rows)
                 continue;
-            if (!(8 <= data.num_columns && data.num_columns <= 12 &&
-                  8 <= data.num_rows && data.num_rows <= 12))
+            if (!(8 <= pat.num_columns && pat.num_columns <= 12 &&
+                  8 <= pat.num_rows && pat.num_rows <= 12))
             {
                 continue;
             }
             break;
         case rad3:
-            if (data.num_columns != data.num_rows)
+            if (pat.num_columns != pat.num_rows)
                 continue;
-            if (!(data.num_columns <= 8 && data.num_rows <= 8))
+            if (!(pat.num_columns <= 8 && pat.num_rows <= 8))
                 continue;
             break;
         case rad4:
-            if (data.num_columns <= data.num_rows)
+            if (pat.num_columns <= pat.num_rows)
                 continue;
             break;
         case rad5:
-            if (data.num_columns >= data.num_rows)
+            if (pat.num_columns >= pat.num_rows)
                 continue;
             break;
         case rad6:
-            if (data.num_columns != data.num_rows)
+            if (pat.num_columns != pat.num_rows)
                 continue;
             break;
         }
@@ -6395,8 +6427,131 @@ XgPattern_RefreshContents(HWND hwnd, INT type)
             str += subitem;
             str += "\r\n";
         }
-        data.data = XgUtf8ToUnicode(str);
-        s_patterns.push_back(data);
+        pat.data = XgUtf8ToUnicode(str);
+
+        // パターンのテキストデータを扱いやすいよう、加工する。
+        std::vector<WCHAR> data;
+        XgConvertPatternData(data, pat.data, pat.num_columns, pat.num_rows);
+
+#define GET_DATA(x, y) data[(y) * pat.num_columns + (x)]
+        if (xg_nRules & RULE_DONTDOUBLEBLACK) {
+            BOOL bFound = FALSE;
+            for (INT y = 0; y < pat.num_rows; ++y) {
+                for (INT x = 0; x < pat.num_columns - 1; ++x) {
+                    if (GET_DATA(x, y) == ZEN_BLACK && GET_DATA(x + 1, y) == ZEN_BLACK) {
+                        x = pat.num_columns;
+                        y = pat.num_rows;
+                        bFound = TRUE;
+                    }
+                }
+            }
+            if (bFound)
+                continue;
+            bFound = FALSE;
+            for (INT x = 0; x < pat.num_columns; ++x) {
+                for (INT y = 0; y < pat.num_rows - 1; ++y) {
+                    if (GET_DATA(x, y) == ZEN_BLACK && GET_DATA(x, y + 1) == ZEN_BLACK) {
+                        x = pat.num_columns;
+                        y = pat.num_rows;
+                        bFound = TRUE;
+                    }
+                }
+            }
+            if (bFound)
+                continue;
+        }
+        if (xg_nRules & RULE_DONTCORNERBLACK) {
+            if (GET_DATA(0, 0) == ZEN_BLACK)
+                continue;
+            if (GET_DATA(pat.num_columns - 1, 0) == ZEN_BLACK)
+                continue;
+            if (GET_DATA(pat.num_columns - 1, pat.num_rows - 1) == ZEN_BLACK)
+                continue;
+            if (GET_DATA(0, pat.num_rows - 1) == ZEN_BLACK)
+                continue;
+        }
+        //if (xg_nRules & RULE_DONTDIVIDE)
+        if (xg_nRules & RULE_DONTFOURDIAGONALS) {
+            BOOL bFound = FALSE;
+            for (INT y = 0; y < pat.num_rows - 3; ++y) {
+                for (INT x = 0; x < pat.num_columns - 3; ++x) {
+                    if (GET_DATA(x, y) != ZEN_BLACK)
+                        continue;
+                    if (GET_DATA(x + 1, y + 1) != ZEN_BLACK)
+                        continue;
+                    if (GET_DATA(x + 2, y + 2) != ZEN_BLACK)
+                        continue;
+                    if (GET_DATA(x + 3, y + 3) != ZEN_BLACK)
+                        continue;
+                    x = pat.num_columns;
+                    y = pat.num_rows;
+                    bFound = TRUE;
+                }
+            }
+            if (bFound)
+                continue;
+            bFound = FALSE;
+            for (INT y = 0; y < pat.num_rows - 3; ++y) {
+                for (INT x = 3; x < pat.num_columns; ++x) {
+                    if (GET_DATA(x, y) != ZEN_BLACK)
+                        continue;
+                    if (GET_DATA(x - 1, y + 1) != ZEN_BLACK)
+                        continue;
+                    if (GET_DATA(x - 2, y + 2) != ZEN_BLACK)
+                        continue;
+                    if (GET_DATA(x - 3, y + 3) != ZEN_BLACK)
+                        continue;
+                    x = pat.num_columns;
+                    y = pat.num_rows;
+                    bFound = TRUE;
+                }
+            }
+            if (bFound)
+                continue;
+        }
+        if (xg_nRules & RULE_DONTTRIDIRECTIONS) {
+            BOOL bFound = FALSE;
+            for (INT y = 0; y < pat.num_rows; ++y) {
+                for (INT x = 0; x < pat.num_columns; ++x) {
+                    INT nCount = 0;
+                    if (x > 0 && GET_DATA(x - 1, y) == ZEN_BLACK)
+                        ++nCount;
+                    if (y > 0 && GET_DATA(x, y - 1) == ZEN_BLACK)
+                        ++nCount;
+                    if (x + 1 < pat.num_columns && GET_DATA(x + 1, y) == ZEN_BLACK)
+                        ++nCount;
+                    if (y + 1 < pat.num_rows && GET_DATA(x, y + 1) == ZEN_BLACK)
+                        ++nCount;
+                    if (nCount >= 3) {
+                        x = pat.num_columns;
+                        y = pat.num_rows;
+                        bFound = TRUE;
+                    }
+                }
+            }
+            if (bFound)
+                continue;
+        }
+        if (xg_nRules & RULE_POINTSYMMETRY) {
+            BOOL bFound = FALSE;
+            for (INT y = 0; y < pat.num_rows; ++y) {
+                for (INT x = 0; x < pat.num_columns; ++x) {
+                    INT nCount = 0;
+                    if ((GET_DATA(x, y) == ZEN_BLACK) !=
+                        (GET_DATA(pat.num_columns - (x + 1), pat.num_rows - (y + 1)) == ZEN_BLACK))
+                    {
+                        x = pat.num_columns;
+                        y = pat.num_rows;
+                        bFound = TRUE;
+                    }
+                }
+            }
+            if (bFound)
+                continue;
+        }
+#undef GET_DATA
+
+        s_patterns.push_back(pat);
     }
 
     // かき混ぜる。
@@ -6652,33 +6807,8 @@ XgPattern_OnDrawItem(HWND hwnd, const DRAWITEMSTRUCT * lpDrawItem)
     }
 
     // パターンのテキストデータを扱いやすいよう、加工する。
-    std::wstring text = pat.data;
-    xg_str_replace_all(text, L"\r\n", L"\n");
-    xg_str_replace_all(text, L"\u2501", L"");
-    xg_str_replace_all(text, L"\u250F\u2513\n", L"");
-    xg_str_replace_all(text, L"\u2517\u251B\n", L"");
-    std::vector<WCHAR> data(pat.num_columns * pat.num_rows, UNICODE_NULL);
-    int x = 0, y = 0;
-    for (auto& ch : text)
-    {
-        switch (ch)
-        {
-        case ZEN_BLACK:
-            data[x + pat.num_columns * y] = ZEN_BLACK;
-            ++x;
-            break;
-        case ZEN_SPACE:
-            data[x + pat.num_columns * y] = ZEN_SPACE;
-            ++x;
-            break;
-        case L'\n':
-            x = 0;
-            ++y;
-            break;
-        }
-        if (y == pat.num_rows)
-            break;
-    }
+    std::vector<WCHAR> data;
+    XgConvertPatternData(data, pat.data, pat.num_columns, pat.num_rows);
 
     // 描画項目のサイズ。
     INT cxItem = rcItem.right - rcItem.left;
@@ -6697,10 +6827,10 @@ XgPattern_OnDrawItem(HWND hwnd, const DRAWITEMSTRUCT * lpDrawItem)
             SelectObject(hdcMem, GetStockBrush(WHITE_BRUSH)); // 白いブラシ
             Rectangle(hdcMem, 0, 0, cx + 2, cy + 2);
             // 黒マスを描画する。
-            for (y = 0; y < pat.num_rows; ++y)
+            for (INT y = 0; y < pat.num_rows; ++y)
             {
                 RECT rc;
-                for (x = 0; x < pat.num_columns; ++x)
+                for (INT x = 0; x < pat.num_columns; ++x)
                 {
                     rc.left = 1 + x * cxCell;
                     rc.top = 1 + y * cyCell;
@@ -6711,12 +6841,12 @@ XgPattern_OnDrawItem(HWND hwnd, const DRAWITEMSTRUCT * lpDrawItem)
                 }
             }
             // 境界線を描画する。
-            for (y = 0; y < pat.num_rows + 1; ++y)
+            for (INT y = 0; y < pat.num_rows + 1; ++y)
             {
                 MoveToEx(hdcMem, 1, 1 + y * cyCell, NULL);
                 LineTo(hdcMem, 1 + pat.num_columns * cxCell, 1 + y * cyCell);
             }
-            for (x = 0; x < pat.num_columns + 1; ++x)
+            for (INT x = 0; x < pat.num_columns + 1; ++x)
             {
                 MoveToEx(hdcMem, 1 + x * cxCell, 1, NULL);
                 LineTo(hdcMem, 1 + x * cxCell, 1 + pat.num_rows * cyCell);

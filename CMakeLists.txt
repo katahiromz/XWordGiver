@@ -52,7 +52,7 @@ if (WIN32)
             set(CMAKE_C_FLAGS "-static -g -Wall -pedantic")
             set(CMAKE_CXX_FLAGS "-static -g -Wall -pedantic")
         endif()
-    elseif (MSVC)
+    elseif (MSVC AND NOT uppercase_CMAKE_BUILD_TYPE MATCHES "^DEBUG$")
         # replace "/MD" with "/MT" (building without runtime DLLs)
         set(CompilerFlags
             CMAKE_C_FLAGS
