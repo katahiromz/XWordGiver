@@ -8,7 +8,7 @@
 
 // クロスワードのサイズの制限。
 #define xg_nMinSize         3
-#define xg_nMaxSize         30
+#define xg_nMaxSize         20
 
 #ifndef WM_MOUSEHWHEEL
     #define WM_MOUSEHWHEEL 0x020E
