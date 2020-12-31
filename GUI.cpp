@@ -1774,7 +1774,14 @@ bool __fastcall XgIsAnyThreadTerminated(void)
 
 //////////////////////////////////////////////////////////////////////////////
 
+// プログレスバーの更新頻度。
 #define xg_dwTimerInterval 500
+
+// 再計算までの時間を概算する。
+inline DWORD XgGetRetryInterval(void)
+{
+    return 8 * (xg_nRows + xg_nCols) * (xg_nRows + xg_nCols) + 1000;
+}
 
 // キャンセルダイアログ。
 extern "C" INT_PTR CALLBACK
@@ -1799,14 +1806,8 @@ XgCancelSolveDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam*/)
                             MAKELPARAM(0, xg_nRows * xg_nCols));
         // 計算時間を求めるために、開始時間を取得する。
         s_dwTick0 = s_dwTick1 = ::GetTickCount();
-        // 再計算までの時間を求める。
-        #ifndef NDEBUG
-            s_dwWait = 8 * xg_nRows * xg_nCols *
-                           (xg_nRows + xg_nCols) + 800;
-        #else
-            s_dwWait = 4 * xg_nRows * xg_nCols *
-                           (xg_nRows + xg_nCols) + 800;
-        #endif
+        // 再計算までの時間を概算する。
+        s_dwWait = XgGetRetryInterval();
         // 解を求めるのを開始。
         XgStartSolve_AddBlack();
         // タイマーをセットする。
@@ -1944,19 +1945,13 @@ XgCancelGenerateRepeatedlyDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*
                             MAKELPARAM(0, xg_nRows * xg_nCols));
         // 計算時間を求めるために、開始時間を取得する。
         s_dwTick0 = s_dwTick1 = ::GetTickCount();
-        // 再計算までの時間を求める。
-        #ifndef NDEBUG
-            s_dwWait = 8 * xg_nRows * xg_nCols *
-                       (xg_nRows + xg_nCols) + 800;
-        #else
-            s_dwWait = 4 * xg_nRows * xg_nCols *
-                       (xg_nRows + xg_nCols) + 800;
-        #endif
+        // 再計算までの時間を概算する。
+        s_dwWait = XgGetRetryInterval();
         // 解を求めるのを開始。
         if (t_bNoAddBlack)
             XgStartSolve_NoAddBlack();
         else
-            XgStartSolve_AddBlack();
+            XgStartSolve_Smart();
         // タイマーをセットする。
         ::SetTimer(hwnd, 999, xg_dwTimerInterval, nullptr);
         // フォーカスをセットする。
@@ -1993,7 +1988,7 @@ XgCancelGenerateRepeatedlyDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*
             if (t_bNoAddBlack)
                 XgStartSolve_NoAddBlack();
             else
-                XgStartSolve_AddBlack();
+                XgStartSolve_Smart();
             // タイマーをセットする。
             ::SetTimer(hwnd, 999, xg_dwTimerInterval, nullptr);
             break;
@@ -2122,7 +2117,7 @@ XgCancelGenerateRepeatedlyDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*
                     if (t_bNoAddBlack)
                         XgStartSolve_NoAddBlack();
                     else
-                        XgStartSolve_AddBlack();
+                        XgStartSolve_Smart();
                     // タイマーをセットする。
                     ::SetTimer(hwnd, 999, xg_dwTimerInterval, nullptr);
                 }
@@ -2141,7 +2136,7 @@ XgCancelGenerateRepeatedlyDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*
                 if (t_bNoAddBlack)
                     XgStartSolve_NoAddBlack();
                 else
-                    XgStartSolve_AddBlack();
+                    XgStartSolve_Smart();
                 // タイマーをセットする。
                 ::SetTimer(hwnd, 999, xg_dwTimerInterval, nullptr);
             }
@@ -2174,14 +2169,8 @@ XgCancelSolveRepeatedlyDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lPa
                             MAKELPARAM(0, xg_nRows * xg_nCols));
         // 計算時間を求めるために、開始時間を取得する。
         s_dwTick0 = s_dwTick1 = ::GetTickCount();
-        // 再計算までの時間を求める。
-        #ifndef NDEBUG
-            s_dwWait = 8 * xg_nRows * xg_nCols *
-                       (xg_nRows + xg_nCols) + 800;
-        #else
-            s_dwWait = 4 * xg_nRows * xg_nCols *
-                       (xg_nRows + xg_nCols) + 800;
-        #endif
+        // 再計算までの時間を概算する。
+        s_dwWait = XgGetRetryInterval();
         // 解を求めるのを開始。
         XgStartSolve_AddBlack();
         // タイマーをセットする。
@@ -2394,14 +2383,8 @@ XgCancelSolveDlgProcNoAddBlack(
                             MAKELPARAM(0, xg_nRows * xg_nCols));
         // 計算時間を求めるために、開始時間を取得する。
         s_dwTick0 = s_dwTick1 = ::GetTickCount();
-        // 再計算までの時間を求める。
-        #ifndef NDEBUG
-            s_dwWait = 8 * xg_nRows * xg_nCols *
-                       (xg_nRows + xg_nCols) + 800;
-        #else
-            s_dwWait = 4 * xg_nRows * xg_nCols *
-                       (xg_nRows + xg_nCols) + 800;
-        #endif
+        // 再計算までの時間を概算する。
+        s_dwWait = XgGetRetryInterval();
         // 解を求めるのを開始。
         XgStartSolve_NoAddBlack();
         // タイマーをセットする。
@@ -2535,14 +2518,8 @@ XgCancelSolveDlgProcSmart(
                             MAKELPARAM(0, xg_nRows * xg_nCols));
         // 計算時間を求めるために、開始時間を取得する。
         s_dwTick0 = s_dwTick1 = ::GetTickCount();
-        // 再計算までの時間を求める。
-        #ifndef NDEBUG
-            s_dwWait = 7 * xg_nRows * xg_nCols *
-                           (xg_nRows + xg_nCols) + 1000;
-        #else
-            s_dwWait = 3 * xg_nRows * xg_nCols *
-                           (xg_nRows + xg_nCols) + 1000;
-        #endif
+        // 再計算までの時間を概算する。
+        s_dwWait = XgGetRetryInterval();
         // 解を求めるのを開始。
         XgStartSolve_Smart();
         // タイマーをセットする。
