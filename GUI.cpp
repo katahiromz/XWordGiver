@@ -2544,7 +2544,7 @@ XgCancelSolveDlgProcSmart(
                            (xg_nRows + xg_nCols) + 1000;
         #endif
         // 解を求めるのを開始。
-        XgStartSolveSmart();
+        XgStartSolve_Smart();
         // タイマーをセットする。
         ::SetTimer(hwnd, 999, xg_dwTimerInterval, nullptr);
         // フォーカスをセットする。
@@ -2578,7 +2578,7 @@ XgCancelSolveDlgProcSmart(
             XgCloseThreads();
             ::InterlockedIncrement(&s_nRetryCount);
             s_dwTick1 = ::GetTickCount();
-            XgStartSolveSmart();
+            XgStartSolve_Smart();
             // タイマーをセットする。
             ::SetTimer(hwnd, 999, xg_dwTimerInterval, nullptr);
             break;
@@ -2641,7 +2641,7 @@ XgCancelSolveDlgProcSmart(
                 XgCloseThreads();
                 ::InterlockedIncrement(&s_nRetryCount);
                 s_dwTick1 = ::GetTickCount();
-                XgStartSolveSmart();
+                XgStartSolve_Smart();
                 // タイマーをセットする。
                 ::SetTimer(hwnd, 999, xg_dwTimerInterval, nullptr);
             }

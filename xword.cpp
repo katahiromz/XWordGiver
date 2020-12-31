@@ -2980,7 +2980,7 @@ void __fastcall XgStartSolve_NoAddBlack(void)
 }
 
 // 解を求めるのを開始（スマート解決）。
-void __fastcall XgStartSolveSmart(void)
+void __fastcall XgStartSolve_Smart(void)
 {
     // フラグを初期化する。
     xg_bSolved = xg_bCancelled = xg_bRetrying = false;

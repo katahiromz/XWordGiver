@@ -484,7 +484,7 @@ void __fastcall XgStartSolve_AddBlack(void);
 void __fastcall XgStartSolve_NoAddBlack(void);
 
 // 解を求めるのを開始（スマート解決）。
-void __fastcall XgStartSolveSmart(void);
+void __fastcall XgStartSolve_Smart(void);
 
 // 解を求めようとした後の後処理。
 void __fastcall XgEndSolve(void);
