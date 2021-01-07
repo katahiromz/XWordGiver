@@ -205,17 +205,6 @@ bool __fastcall XgLoadDictFile(LPCWSTR pszFile)
     return false; // 失敗。
 }
 
-// 辞書から単語を探し出す。
-XG_WordData *XgFindWordFromDict(const std::wstring& word)
-{
-    for (size_t i = 0; i < xg_dict_data.size(); ++i) {
-        if (xg_dict_data[i].m_word == word) {
-            return &xg_dict_data[i];
-        }
-    }
-    return NULL;
-}
-
 // 辞書データをソートし、一意的にする。
 void __fastcall XgSortAndUniqueDictData(void)
 {
