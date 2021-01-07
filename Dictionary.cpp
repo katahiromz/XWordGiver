@@ -58,6 +58,7 @@ void XgReadUnicodeLine(LPWSTR pchLine)
     // •¶š—ñ‚Ì‘OŒã‚Ì‹ó”’‚ğæ‚èœ‚­B
     entry.m_word = szWord;
     xg_str_trim(entry.m_word);
+    auto word = entry.m_word;
 
     // ¬‚³‚Èš‚ğ‘å‚«‚Èš‚É‚·‚éB
     for (size_t i = 0; i < ARRAYSIZE(xg_large); i++)
@@ -81,7 +82,7 @@ void XgReadUnicodeLine(LPWSTR pchLine)
         std::wstring tags = pchTags;
         tags = L" " + tags + L" ";
         xg_str_replace_all(tags, L",", L" ");
-        xg_word_to_tags_map.emplace(entry.m_word, tags);
+        xg_word_to_tags_map.emplace(word, tags);
     }
 }
 
