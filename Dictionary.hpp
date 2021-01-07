@@ -78,6 +78,8 @@ namespace std
 
 // 辞書データ。
 extern std::vector<XG_WordData> xg_dict_data;
+// タグ付けデータ。
+extern std::unordered_map<std::wstring, std::wstring> xg_word_to_tags_map;
 
 // 辞書ファイルを読み込む。
 bool __fastcall XgLoadDictFile(LPCWSTR pszFile);

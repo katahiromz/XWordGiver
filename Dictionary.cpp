@@ -9,6 +9,9 @@
 // 辞書データ。
 std::vector<XG_WordData>     xg_dict_data;
 
+// タグ付けデータ。
+std::unordered_map<std::wstring, std::wstring> xg_word_to_tags_map;
+
 //////////////////////////////////////////////////////////////////////////////
 // 辞書データのファイル処理。
 
@@ -37,10 +40,14 @@ void XgReadUnicodeLine(LPWSTR pchLine)
         pchHint = nullptr;
     }
 
-    // 第３フィールド以降を無視する。
+    // 第３フィールドはタグ群。
+    LPWSTR pchTags = NULL;
     if (pchHint) {
-        if (LPWSTR pch = wcschr(pchHint, L'\t'))
-            *pch = 0;
+        pchTags = wcschr(pchHint, L'\t');
+        if (pchTags) {
+            *pchTags = 0;
+            ++pchTags;
+        }
     }
 
     // 単語文字列を全角・カタカナ・大文字にする。
@@ -67,6 +74,14 @@ void XgReadUnicodeLine(LPWSTR pchLine)
             entry.m_hint.clear();
 
         xg_dict_data.emplace_back(std::move(entry));
+    }
+
+    // タグがあれば、単語のタグ付けを行う。
+    if (pchTags) {
+        std::wstring tags = pchTags;
+        tags = L" " + tags + L" ";
+        xg_str_replace_all(tags, L",", L" ");
+        xg_word_to_tags_map.emplace(entry.m_word, tags);
     }
 }
 
@@ -121,6 +136,7 @@ bool __fastcall XgLoadDictFile(LPCWSTR pszFile)
 
     // 初期化する。
     xg_dict_data.clear();
+    xg_word_to_tags_map.clear();
 
     // ファイルを開く。
     AutoCloseHandle hFile(CreateFileW(pszFile, GENERIC_READ, FILE_SHARE_READ, nullptr,
