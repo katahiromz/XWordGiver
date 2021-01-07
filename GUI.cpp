@@ -9848,7 +9848,7 @@ int WINAPI WinMain(
     if (s_dwNumberOfProcessors <= 3)
         xg_dwThreadCount = 2;
     else
-        xg_dwThreadCount = s_dwNumberOfProcessors;
+        xg_dwThreadCount = s_dwNumberOfProcessors - 1;
 
     xg_aThreadInfo.resize(xg_dwThreadCount);
     xg_ahThreads.resize(xg_dwThreadCount);
