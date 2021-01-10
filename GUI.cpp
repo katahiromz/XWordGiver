@@ -7005,6 +7005,92 @@ void __fastcall XgRuleCheck(HWND hwnd)
                         XgLoadStringDx2(IDS_PASSED), MB_ICONINFORMATION);
 }
 
+// 「テーマ」ダイアログの初期化。
+static BOOL XgTheme_OnInitDialog(HWND hwnd, HWND hwndFocus, LPARAM lParam)
+{
+    XgCenterDialog(hwnd);
+
+    HWND hLst1 = GetDlgItem(hwnd, lst1);
+    DWORD exstyle = LVS_EX_FULLROWSELECT | LVS_EX_INFOTIP | LVS_EX_LABELTIP | LVS_EX_GRIDLINES;
+    ListView_SetExtendedListViewStyleEx(hLst1, exstyle, exstyle);
+    WCHAR szText[64];
+
+    LV_COLUMN column = { LVCF_TEXT | LVCF_WIDTH | LVCF_SUBITEM };
+
+    column.pszText = XgLoadStringDx1(IDS_TAGS);
+    column.cx = 100;
+    column.iSubItem = 0;
+    ListView_InsertColumn(hLst1, 0, &column);
+
+    column.pszText = XgLoadStringDx1(IDS_TAGCOUNT);
+    column.cx = 100;
+    column.iSubItem = 1;
+    ListView_InsertColumn(hLst1, 1, &column);
+
+    std::map<size_t, std::wstring> histgram;
+    typedef std::map<size_t, std::wstring>::reverse_iterator iterator;
+    for (auto& pair : xg_tag_histgram) {
+        histgram.emplace(pair.second, pair.first);
+    }
+
+    INT iItem = 0;
+    LV_ITEM item = { LVIF_TEXT };
+    for (iterator it = histgram.rbegin(); it != histgram.rend(); ++it) {
+        StringCbCopyW(szText, sizeof(szText), it->second.c_str());
+        item.iItem = iItem;
+        item.pszText = szText;
+        item.iSubItem = 0;
+        ListView_InsertItem(hLst1, &item);
+
+        StringCbCopyW(szText, sizeof(szText), std::to_wstring(it->first).c_str());
+        item.iItem = iItem;
+        item.pszText = szText;
+        item.iSubItem = 1;
+        ListView_SetItem(hLst1, &item);
+
+        ++iItem;
+    }
+
+    item.mask = LVIF_STATE;
+    item.iItem = 0;
+    item.iSubItem = 0;
+    item.state = LVIS_SELECTED | LVIS_FOCUSED;
+    item.stateMask = LVIS_SELECTED | LVIS_FOCUSED;
+    ListView_SetItem(hLst1, &item);
+
+    return TRUE;
+}
+
+// 「テーマ」ダイアログのコマンド処理。
+static void XgTheme_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT codeNotify)
+{
+    switch (id)
+    {
+    case IDOK:
+    case IDCANCEL:
+        EndDialog(hwnd, id);
+        break;
+    }
+}
+
+// 「テーマ」ダイアログプロシージャ。
+static INT_PTR CALLBACK
+XgThemeDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+{
+    switch (uMsg)
+    {
+        HANDLE_MSG(hwnd, WM_INITDIALOG, XgTheme_OnInitDialog);
+        HANDLE_MSG(hwnd, WM_COMMAND, XgTheme_OnCommand);
+    }
+    return 0;
+}
+
+// 「テーマ」ダイアログを表示する。
+void __fastcall XgTheme(HWND hwnd)
+{
+    DialogBoxW(xg_hInstance, MAKEINTRESOURCEW(IDD_THEME), hwnd, XgThemeDlgProc);
+}
+
 // コマンドを実行する。
 void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*codeNotify*/)
 {
@@ -8112,6 +8198,9 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
         break;
     case ID_RULECHECK:
         XgRuleCheck(hwnd);
+        break;
+    case ID_THEME:
+        XgTheme(hwnd);
         break;
     default:
         if (!MainWnd_OnCommand2(hwnd, id)) {

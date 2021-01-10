@@ -24,6 +24,7 @@
 #define IDD_ABCLOWER                        120
 #define IDD_RUSSIALOWER                     121
 #define IDD_BLOCKPATTERN                    122
+#define IDD_THEME                           123
 
 #define IDS_VERSION                         101
 #define IDS_APPNAME                         102
@@ -146,6 +147,8 @@
 #define IDS_RULE_DONTDIVIDE                 239
 #define IDS_RULE_DONTFOURDIAGONALS          240
 #define IDS_RULE_POINTSYMMETRY              241
+#define IDS_TAGS                            242
+#define IDS_TAGCOUNT                        243
 #define IDS_TT_NEW                          10100
 #define IDS_TT_GENERATE                     10101
 #define IDS_TT_OPEN                         10102
@@ -298,6 +301,7 @@
 #define ID_RULE_DONTFOURDIAGONALS           255
 #define ID_RULE_POINTSYMMETRY               256
 #define ID_RULECHECK                        257
+#define ID_THEME                            258
 #define ID_TT_BASE                          10000
 
 #define ctl2                                1185

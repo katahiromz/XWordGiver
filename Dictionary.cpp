@@ -12,8 +12,28 @@ std::vector<XG_WordData>     xg_dict_data;
 // タグ付けデータ。
 std::unordered_map<std::wstring, std::wstring> xg_word_to_tags_map;
 
+// タグのヒストグラム。
+std::unordered_map<std::wstring, size_t> xg_tag_histgram;
+
 //////////////////////////////////////////////////////////////////////////////
 // 辞書データのファイル処理。
+
+template <typename T_STR_CONTAINER>
+inline void
+mstr_split(T_STR_CONTAINER& container,
+           const typename T_STR_CONTAINER::value_type& str,
+           const typename T_STR_CONTAINER::value_type& chars)
+{
+    container.clear();
+    size_t i = 0, k = str.find_first_of(chars);
+    while (k != T_STR_CONTAINER::value_type::npos)
+    {
+        container.push_back(str.substr(i, k - i));
+        i = k + 1;
+        k = str.find_first_of(chars, i);
+    }
+    container.push_back(str.substr(i));
+}
 
 // Unicodeを一行読み込む。
 void XgReadUnicodeLine(LPWSTR pchLine)
@@ -79,10 +99,17 @@ void XgReadUnicodeLine(LPWSTR pchLine)
 
     // タグがあれば、単語のタグ付けを行う。
     if (pchTags) {
-        std::wstring tags = pchTags;
-        tags = L" " + tags + L" ";
-        xg_str_replace_all(tags, L",", L" ");
-        xg_word_to_tags_map.emplace(word, tags);
+        std::wstring strTags = pchTags;
+        xg_str_replace_all(strTags, L",", L" ");
+        xg_word_to_tags_map.emplace(word, L" " + strTags + L" ");
+
+        std::vector<std::wstring> tags;
+        mstr_split(tags, strTags, L" ");
+        for (auto& tag : tags) {
+            if (tag.empty())
+                continue;
+            xg_tag_histgram[tag] += 1;
+        }
     }
 }
 
@@ -138,6 +165,7 @@ bool __fastcall XgLoadDictFile(LPCWSTR pszFile)
     // 初期化する。
     xg_dict_data.clear();
     xg_word_to_tags_map.clear();
+    xg_tag_histgram.clear();
 
     // ファイルを開く。
     AutoCloseHandle hFile(CreateFileW(pszFile, GENERIC_READ, FILE_SHARE_READ, nullptr,
