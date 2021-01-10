@@ -1230,7 +1230,7 @@ CAPTION "テーマ"
 STYLE DS_CENTER | DS_MODALFRAME | WS_POPUPWINDOW | WS_CAPTION
 FONT 9, "MS UI Gothic"
 {
-    LTEXT "テーマでは、優先タグと除外タグを指定できます。タグというのは、単語に付けられた分類キーワードのことです。", -1, 5, 5, 298, 24
+    LTEXT "テーマでは、優先タグと除外タグを指定できます。タグというのは、辞書の単語に付けられた分類キーワードのことです。", -1, 5, 5, 298, 24
     LTEXT "すべてのタグ(&T):", -1, 5, 40, 75, 12
     CONTROL "", lst1, "SysListView32", LVS_SINGLESEL | LVS_REPORT | WS_BORDER | WS_TABSTOP, 5, 55, 119, 160
     PUSHBUTTON "→", psh1, 135, 55, 40, 14
