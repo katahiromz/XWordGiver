@@ -1377,6 +1377,7 @@ STRINGTABLE
     IDS_TAGS, "タグ"
     IDS_TAGCOUNT, "出現回数"
     IDS_RESETTHEME, "テーマをリセットしますか？"
+    IDS_NOTAGS, "この辞書には、テーマ設定に必要なタグがありません。"
     IDS_TT_NEW, "新規作成"
     IDS_TT_GENERATE, "問題を自動生成する"
     IDS_TT_OPEN, "問題を開く"

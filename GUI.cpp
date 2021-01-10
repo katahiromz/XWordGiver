@@ -4603,8 +4603,14 @@ void __fastcall MainWnd_OnInitMenu(HWND /*hwnd*/, HMENU hMenu)
     // テーマ。
     if (xg_priority_tags.size() || xg_forbidden_tags.size()) {
         CheckMenuItem(hMenu, ID_THEME, MF_BYCOMMAND | MF_CHECKED);
+        if (xg_tag_histgram.empty()) {
+            EnableMenuItem(hMenu, ID_RESETTHEME, MF_BYCOMMAND | MF_GRAYED);
+        } else {
+            EnableMenuItem(hMenu, ID_RESETTHEME, MF_BYCOMMAND | MF_ENABLED);
+        }
     } else {
         CheckMenuItem(hMenu, ID_THEME, MF_BYCOMMAND | MF_UNCHECKED);
+        EnableMenuItem(hMenu, ID_RESETTHEME, MF_BYCOMMAND | MF_GRAYED);
     }
 
     // 連黒禁。
@@ -7333,6 +7339,12 @@ XgThemeDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 // 「テーマ」ダイアログを表示する。
 void __fastcall XgTheme(HWND hwnd)
 {
+    if (xg_tag_histgram.empty()) {
+        // タグがありません。
+        XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_NOTAGS), NULL, MB_ICONERROR);
+        return;
+    }
+
     DialogBoxW(xg_hInstance, MAKEINTRESOURCEW(IDD_THEME), hwnd, XgThemeDlgProc);
 }
 
