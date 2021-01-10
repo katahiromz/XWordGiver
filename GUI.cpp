@@ -7132,68 +7132,104 @@ static BOOL XgTheme_OnInitDialog(HWND hwnd, HWND hwndFocus, LPARAM lParam)
     return TRUE;
 }
 
+// リストビューにタグ項目を追加する。
 static void XgTheme_AddTag(HWND hwnd, BOOL bPriority)
 {
+    // 選択中のテキストを取得する。
     HWND hLst1 = GetDlgItem(hwnd, lst1);
     INT iItem = ListView_GetNextItem(hLst1, -1, LVNI_ALL | LVNI_SELECTED);
     if (iItem < 0)
-        return;
-
+        return; // 選択なし。
     WCHAR szText1[64], szText2[64];
-    LV_ITEM item = { LVIF_TEXT };
-
-    item.iItem = iItem;
-    item.iSubItem = 0;
-    item.pszText = szText1;
-    item.cchTextMax = ARRAYSIZE(szText1);
-    ListView_GetItem(hLst1, &item);
-
-    item.iItem = iItem;
-    item.iSubItem = 1;
-    item.pszText = szText2;
-    item.cchTextMax = ARRAYSIZE(szText2);
-    ListView_GetItem(hLst1, &item);
+    ListView_GetItemText(hLst1, iItem, 0, szText1, ARRAYSIZE(szText1));
+    ListView_GetItemText(hLst1, iItem, 1, szText2, ARRAYSIZE(szText2));
 
     LV_FINDINFO find = { LVFI_STRING, szText1 };
     if (bPriority) {
         HWND hLst2 = GetDlgItem(hwnd, lst2);
         iItem = ListView_FindItem(hLst2, -1, &find);
-        if (iItem < 0) {
-            item.iItem = ListView_GetItemCount(hLst2);
-            item.iSubItem = 0;
-            item.pszText = szText1;
-            iItem = ListView_InsertItem(hLst2, &item);
-            item.iItem = iItem;
-            item.iSubItem = 1;
-            item.pszText = szText2;
-            ListView_SetItem(hLst2, &item);
+        if (iItem >= 0)
+            return; // すでにあった。
+
+        // タグ項目を追加。
+        INT cItems = ListView_GetItemCount(hLst2);
+        LV_ITEM item = { LVIF_TEXT };
+        item.iItem = cItems;
+        item.iSubItem = 0;
+        item.pszText = szText1;
+        iItem = ListView_InsertItem(hLst2, &item);
+        item.iItem = iItem;
+        item.iSubItem = 1;
+        item.pszText = szText2;
+        ListView_SetItem(hLst2, &item);
+
+        // カウンターを更新。
+        size_t count = 0;
+        cItems = ListView_GetItemCount(hLst2);
+        for (iItem = 0; iItem < cItems; ++iItem) {
+            ListView_GetItemText(hLst2, iItem, 1, szText2, ARRAYSIZE(szText2));
+            count += _wtoi(szText2);
         }
+        SetDlgItemInt(hwnd, stc1, INT(count), FALSE);
     } else {
         HWND hLst3 = GetDlgItem(hwnd, lst3);
         iItem = ListView_FindItem(hLst3, -1, &find);
-        if (iItem < 0) {
-            item.iItem = ListView_GetItemCount(hLst3);
-            item.iSubItem = 0;
-            item.pszText = szText1;
-            iItem = ListView_InsertItem(hLst3, &item);
-            item.iItem = iItem;
-            item.iSubItem = 1;
-            item.pszText = szText2;
-            ListView_SetItem(hLst3, &item);
+        if (iItem >= 0)
+            return; // すでにあった。
+
+        // タグ項目を追加。
+        INT cItems = ListView_GetItemCount(hLst3);
+        LV_ITEM item = { LVIF_TEXT };
+        item.iItem = cItems;
+        item.iSubItem = 0;
+        item.pszText = szText1;
+        iItem = ListView_InsertItem(hLst3, &item);
+        item.iItem = iItem;
+        item.iSubItem = 1;
+        item.pszText = szText2;
+        ListView_SetItem(hLst3, &item);
+
+        // カウンターを更新。
+        size_t count = 0;
+        cItems = ListView_GetItemCount(hLst3);
+        for (iItem = 0; iItem < cItems; ++iItem) {
+            ListView_GetItemText(hLst3, iItem, 1, szText2, ARRAYSIZE(szText2));
+            count += _wtoi(szText2);
         }
+        SetDlgItemInt(hwnd, stc2, INT(count), FALSE);
     }
 }
 
+// リストビューからタグ項目を削除する。
 static void XgTheme_RemoveTag(HWND hwnd, BOOL bPriority)
 {
+    WCHAR szText[64];
     if (bPriority) {
         HWND hLst2 = GetDlgItem(hwnd, lst2);
         INT iItem = ListView_GetNextItem(hLst2, -1, LVNI_ALL | LVNI_SELECTED);
         ListView_DeleteItem(hLst2, iItem);
+
+        // カウンターを更新。
+        INT cItems = ListView_GetItemCount(hLst2);
+        size_t count = 0;
+        for (iItem = 0; iItem < cItems; ++iItem) {
+            ListView_GetItemText(hLst2, iItem, 1, szText, ARRAYSIZE(szText));
+            count += _wtoi(szText);
+        }
+        SetDlgItemInt(hwnd, stc1, INT(count), FALSE);
     } else {
         HWND hLst3 = GetDlgItem(hwnd, lst3);
         INT iItem = ListView_GetNextItem(hLst3, -1, LVNI_ALL | LVNI_SELECTED);
         ListView_DeleteItem(hLst3, iItem);
+
+        // カウンターを更新。
+        INT cItems = ListView_GetItemCount(hLst3);
+        size_t count = 0;
+        for (iItem = 0; iItem < cItems; ++iItem) {
+            ListView_GetItemText(hLst3, iItem, 1, szText, ARRAYSIZE(szText));
+            count += _wtoi(szText);
+        }
+        SetDlgItemInt(hwnd, stc2, INT(count), FALSE);
     }
 }
 
