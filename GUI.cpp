@@ -4600,6 +4600,13 @@ void __fastcall MainWnd_OnInitMenu(HWND /*hwnd*/, HMENU hMenu)
         DoUpdateDictMenu(hDictMenu);
     }
 
+    // テーマ。
+    if (xg_priority_tags.size() || xg_forbidden_tags.size()) {
+        CheckMenuItem(hMenu, ID_THEME, MF_BYCOMMAND | MF_CHECKED);
+    } else {
+        CheckMenuItem(hMenu, ID_THEME, MF_BYCOMMAND | MF_UNCHECKED);
+    }
+
     // 連黒禁。
     if (xg_nRules & RULE_DONTDOUBLEBLACK)
         ::CheckMenuItem(hMenu, ID_RULE_DONTDOUBLEBLACK, MF_CHECKED);
@@ -7294,13 +7301,17 @@ void __fastcall XgTheme(HWND hwnd)
 }
 
 // テーマをリセットする。
-void __fastcall XgResetTheme(HWND hwnd)
+void __fastcall XgResetTheme(HWND hwnd, BOOL bForce = FALSE)
 {
-    INT id = XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_RESETTHEME),
-                                 XgLoadStringDx2(IDS_APPNAME), MB_ICONINFORMATION | MB_YESNOCANCEL);
-    if (id == IDYES) {
-        // TODO:
+    if (!bForce) {
+        INT id = XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_RESETTHEME),
+                                     XgLoadStringDx2(IDS_APPNAME),
+                                     MB_ICONINFORMATION | MB_YESNOCANCEL);
+        if (id != IDYES)
+            return;
     }
+    xg_priority_tags.clear();
+    xg_forbidden_tags.clear();
 }
 
 // コマンドを実行する。
@@ -8352,6 +8363,7 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
     case ID_DICTIONARY14:
     case ID_DICTIONARY15:
         MainWnd_DoDictionary(hwnd, id - ID_DICTIONARY00);
+        XgResetTheme(hwnd, TRUE);
         break;
     case ID_RESETRULES:
         xg_nRules = DEFAULT_RULES;
