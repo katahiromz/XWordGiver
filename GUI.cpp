@@ -4552,7 +4552,7 @@ HMENU DoFindDictMenu(HMENU hMenu)
 // 「辞書」メニューを更新する。
 void DoUpdateDictMenu(HMENU hDictMenu)
 {
-    while (RemoveMenu(hDictMenu, 2, MF_BYPOSITION))
+    while (RemoveMenu(hDictMenu, 3, MF_BYPOSITION))
     {
         ;
     }
@@ -4563,7 +4563,7 @@ void DoUpdateDictMenu(HMENU hDictMenu)
         return;
     }
 
-    INT index = 2, count = 0, id = ID_DICTIONARY00;
+    INT index = 3, count = 0, id = ID_DICTIONARY00;
     WCHAR szText[MAX_PATH];
     for (const auto& file : xg_dict_files)
     {
@@ -4578,7 +4578,7 @@ void DoUpdateDictMenu(HMENU hDictMenu)
             break;
     }
 
-    index = 2;
+    index = 3;
     for (const auto& file : xg_dict_files)
     {
         if (lstrcmpiW(file.c_str(), xg_dict_name.c_str()) == 0)
@@ -7015,15 +7015,17 @@ static BOOL XgTheme_OnInitDialog(HWND hwnd, HWND hwndFocus, LPARAM lParam)
     ListView_SetExtendedListViewStyleEx(hLst1, exstyle, exstyle);
     WCHAR szText[64];
 
-    LV_COLUMN column = { LVCF_TEXT | LVCF_WIDTH | LVCF_SUBITEM };
+    LV_COLUMN column = { LVCF_TEXT | LVCF_WIDTH | LVCF_SUBITEM | LVCF_FMT };
 
     column.pszText = XgLoadStringDx1(IDS_TAGS);
-    column.cx = 100;
+    column.fmt = LVCFMT_LEFT;
+    column.cx = 90;
     column.iSubItem = 0;
     ListView_InsertColumn(hLst1, 0, &column);
 
     column.pszText = XgLoadStringDx1(IDS_TAGCOUNT);
-    column.cx = 100;
+    column.fmt = LVCFMT_RIGHT;
+    column.cx = 84;
     column.iSubItem = 1;
     ListView_InsertColumn(hLst1, 1, &column);
 
@@ -7070,6 +7072,13 @@ static void XgTheme_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT codeNotify)
     case IDCANCEL:
         EndDialog(hwnd, id);
         break;
+    case psh1:
+    case psh2:
+    case psh3:
+    case psh4:
+    case psh5:
+        // TODO:
+        break;
     }
 }
 
@@ -7089,6 +7098,16 @@ XgThemeDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 void __fastcall XgTheme(HWND hwnd)
 {
     DialogBoxW(xg_hInstance, MAKEINTRESOURCEW(IDD_THEME), hwnd, XgThemeDlgProc);
+}
+
+// テーマをリセットする。
+void __fastcall XgResetTheme(HWND hwnd)
+{
+    INT id = XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_RESETTHEME),
+                                 XgLoadStringDx2(IDS_APPNAME), MB_ICONINFORMATION | MB_YESNOCANCEL);
+    if (id == IDYES) {
+        // TODO:
+    }
 }
 
 // コマンドを実行する。
@@ -8201,6 +8220,9 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
         break;
     case ID_THEME:
         XgTheme(hwnd);
+        break;
+    case ID_RESETTHEME:
+        XgResetTheme(hwnd);
         break;
     default:
         if (!MainWnd_OnCommand2(hwnd, id)) {

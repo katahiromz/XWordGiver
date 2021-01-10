@@ -149,6 +149,7 @@
 #define IDS_RULE_POINTSYMMETRY              241
 #define IDS_TAGS                            242
 #define IDS_TAGCOUNT                        243
+#define IDS_RESETTHEME                      244
 #define IDS_TT_NEW                          10100
 #define IDS_TT_GENERATE                     10101
 #define IDS_TT_OPEN                         10102
@@ -302,6 +303,7 @@
 #define ID_RULE_POINTSYMMETRY               256
 #define ID_RULECHECK                        257
 #define ID_THEME                            258
+#define ID_RESETTHEME                       259
 #define ID_TT_BASE                          10000
 
 #define ctl2                                1185
