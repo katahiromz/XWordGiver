@@ -7005,15 +7005,11 @@ void __fastcall XgRuleCheck(HWND hwnd)
                         XgLoadStringDx2(IDS_PASSED), MB_ICONINFORMATION);
 }
 
-// 「テーマ」ダイアログの初期化。
-static BOOL XgTheme_OnInitDialog(HWND hwnd, HWND hwndFocus, LPARAM lParam)
+// タグリストボックスを初期化。
+static void XgInitTagListView(HWND hwndLV)
 {
-    XgCenterDialog(hwnd);
-
-    HWND hLst1 = GetDlgItem(hwnd, lst1);
     DWORD exstyle = LVS_EX_FULLROWSELECT | LVS_EX_INFOTIP | LVS_EX_LABELTIP | LVS_EX_GRIDLINES;
-    ListView_SetExtendedListViewStyleEx(hLst1, exstyle, exstyle);
-    WCHAR szText[64];
+    ListView_SetExtendedListViewStyleEx(hwndLV, exstyle, exstyle);
 
     LV_COLUMN column = { LVCF_TEXT | LVCF_WIDTH | LVCF_SUBITEM | LVCF_FMT };
 
@@ -7021,22 +7017,40 @@ static BOOL XgTheme_OnInitDialog(HWND hwnd, HWND hwndFocus, LPARAM lParam)
     column.fmt = LVCFMT_LEFT;
     column.cx = 90;
     column.iSubItem = 0;
-    ListView_InsertColumn(hLst1, 0, &column);
+    ListView_InsertColumn(hwndLV, 0, &column);
 
     column.pszText = XgLoadStringDx1(IDS_TAGCOUNT);
     column.fmt = LVCFMT_RIGHT;
     column.cx = 84;
     column.iSubItem = 1;
-    ListView_InsertColumn(hLst1, 1, &column);
+    ListView_InsertColumn(hwndLV, 1, &column);
+}
 
+// 「テーマ」ダイアログの初期化。
+static BOOL XgTheme_OnInitDialog(HWND hwnd, HWND hwndFocus, LPARAM lParam)
+{
+    // ダイアログを中央寄せする。
+    XgCenterDialog(hwnd);
+
+    // リストビューを初期化。
+    HWND hLst1 = GetDlgItem(hwnd, lst1);
+    HWND hLst2 = GetDlgItem(hwnd, lst2);
+    HWND hLst3 = GetDlgItem(hwnd, lst3);
+    XgInitTagListView(hLst1);
+    XgInitTagListView(hLst2);
+    XgInitTagListView(hLst3);
+
+    // ヒストグラムを取得。
     std::map<size_t, std::wstring> histgram;
-    typedef std::map<size_t, std::wstring>::reverse_iterator iterator;
     for (auto& pair : xg_tag_histgram) {
         histgram.emplace(pair.second, pair.first);
     }
 
+    // リストビューを逆順のヒストグラムで埋める。
     INT iItem = 0;
     LV_ITEM item = { LVIF_TEXT };
+    typedef std::map<size_t, std::wstring>::reverse_iterator iterator;
+    WCHAR szText[64];
     for (iterator it = histgram.rbegin(); it != histgram.rend(); ++it) {
         StringCbCopyW(szText, sizeof(szText), it->second.c_str());
         item.iItem = iItem;
@@ -7053,12 +7067,152 @@ static BOOL XgTheme_OnInitDialog(HWND hwnd, HWND hwndFocus, LPARAM lParam)
         ++iItem;
     }
 
+    // 優先タグ。
+    iItem = 0;
+    for (auto& tag : xg_priority_tags) {
+        StringCbCopyW(szText, sizeof(szText), tag.c_str());
+        item.iItem = iItem;
+        item.pszText = szText;
+        item.iSubItem = 0;
+        ListView_InsertItem(hLst2, &item);
+
+        StringCbCopyW(szText, sizeof(szText), std::to_wstring(xg_tag_histgram[tag]).c_str());
+        item.iItem = iItem;
+        item.pszText = szText;
+        item.iSubItem = 1;
+        ListView_SetItem(hLst2, &item);
+
+        ++iItem;
+    }
+
+    // 除外タグ。
+    iItem = 0;
+    for (auto& tag : xg_forbidden_tags) {
+        StringCbCopyW(szText, sizeof(szText), tag.c_str());
+        item.iItem = iItem;
+        item.pszText = szText;
+        item.iSubItem = 0;
+        ListView_InsertItem(hLst2, &item);
+
+        StringCbCopyW(szText, sizeof(szText), std::to_wstring(xg_tag_histgram[tag]).c_str());
+        item.iItem = iItem;
+        item.pszText = szText;
+        item.iSubItem = 1;
+        ListView_SetItem(hLst2, &item);
+
+        ++iItem;
+    }
+
+    // 最初の項目を選択。
     item.mask = LVIF_STATE;
     item.iItem = 0;
     item.iSubItem = 0;
-    item.state = LVIS_SELECTED | LVIS_FOCUSED;
-    item.stateMask = LVIS_SELECTED | LVIS_FOCUSED;
+    item.state = item.stateMask = LVIS_SELECTED | LVIS_FOCUSED;
     ListView_SetItem(hLst1, &item);
+
+    item.mask = LVIF_STATE;
+    item.iItem = 0;
+    item.iSubItem = 0;
+    item.state = item.stateMask = LVIS_SELECTED | LVIS_FOCUSED;
+    ListView_SetItem(hLst2, &item);
+
+    item.mask = LVIF_STATE;
+    item.iItem = 0;
+    item.iSubItem = 0;
+    item.state = item.stateMask = LVIS_SELECTED | LVIS_FOCUSED;
+    ListView_SetItem(hLst3, &item);
+
+    return TRUE;
+}
+
+static void XgTheme_AddTag(HWND hwnd, BOOL bPriority)
+{
+    HWND hLst1 = GetDlgItem(hwnd, lst1);
+    INT iItem = ListView_GetNextItem(hLst1, -1, LVNI_ALL | LVNI_SELECTED);
+    if (iItem < 0)
+        return;
+
+    WCHAR szText1[64], szText2[64];
+    LV_ITEM item = { LVIF_TEXT };
+
+    item.iItem = iItem;
+    item.iSubItem = 0;
+    item.pszText = szText1;
+    item.cchTextMax = ARRAYSIZE(szText1);
+    ListView_GetItem(hLst1, &item);
+
+    item.iItem = iItem;
+    item.iSubItem = 1;
+    item.pszText = szText2;
+    item.cchTextMax = ARRAYSIZE(szText2);
+    ListView_GetItem(hLst1, &item);
+
+    LV_FINDINFO find = { LVFI_STRING, szText1 };
+    if (bPriority) {
+        HWND hLst2 = GetDlgItem(hwnd, lst2);
+        iItem = ListView_FindItem(hLst2, -1, &find);
+        if (iItem < 0) {
+            item.iItem = ListView_GetItemCount(hLst2);
+            item.iSubItem = 0;
+            item.pszText = szText1;
+            iItem = ListView_InsertItem(hLst2, &item);
+            item.iItem = iItem;
+            item.iSubItem = 1;
+            item.pszText = szText2;
+            ListView_SetItem(hLst2, &item);
+        }
+    } else {
+        HWND hLst3 = GetDlgItem(hwnd, lst3);
+        iItem = ListView_FindItem(hLst3, -1, &find);
+        if (iItem < 0) {
+            item.iItem = ListView_GetItemCount(hLst3);
+            item.iSubItem = 0;
+            item.pszText = szText1;
+            iItem = ListView_InsertItem(hLst3, &item);
+            item.iItem = iItem;
+            item.iSubItem = 1;
+            item.pszText = szText2;
+            ListView_SetItem(hLst3, &item);
+        }
+    }
+}
+
+static void XgTheme_RemoveTag(HWND hwnd, BOOL bPriority)
+{
+    if (bPriority) {
+        HWND hLst2 = GetDlgItem(hwnd, lst2);
+        INT iItem = ListView_GetNextItem(hLst2, -1, LVNI_ALL | LVNI_SELECTED);
+        ListView_DeleteItem(hLst2, iItem);
+    } else {
+        HWND hLst3 = GetDlgItem(hwnd, lst3);
+        INT iItem = ListView_GetNextItem(hLst3, -1, LVNI_ALL | LVNI_SELECTED);
+        ListView_DeleteItem(hLst3, iItem);
+    }
+}
+
+// 「テーマ」ダイアログで「OK」ボタンが押された。
+static BOOL XgTheme_OnOK(HWND hwnd)
+{
+    HWND hLst2 = GetDlgItem(hwnd, lst2);
+    HWND hLst3 = GetDlgItem(hwnd, lst3);
+
+    xg_priority_tags.clear();
+    xg_forbidden_tags.clear();
+
+    WCHAR szText[64];
+    INT cItems;
+
+    cItems = ListView_GetItemCount(hLst2);
+    for (INT iItem = 0; iItem < cItems; ++iItem) {
+        ListView_GetItemText(hLst2, iItem, 0, szText, ARRAYSIZE(szText));
+        xg_priority_tags.emplace(szText);
+    }
+
+    cItems = ListView_GetItemCount(hLst3);
+    for (INT iItem = 0; iItem < cItems; ++iItem) {
+        ListView_GetItemText(hLst3, iItem, 0, szText, ARRAYSIZE(szText));
+        xg_forbidden_tags.emplace(szText);
+    }
 
     return TRUE;
 }
@@ -7069,17 +7223,55 @@ static void XgTheme_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT codeNotify)
     switch (id)
     {
     case IDOK:
+        if (XgTheme_OnOK(hwnd)) {
+            EndDialog(hwnd, IDOK);
+        }
+        break;
     case IDCANCEL:
         EndDialog(hwnd, id);
         break;
-    case psh1:
-    case psh2:
-    case psh3:
-    case psh4:
-    case psh5:
-        // TODO:
+    case psh1: // →
+        XgTheme_AddTag(hwnd, TRUE);
+        break;
+    case psh2: // ←
+        XgTheme_RemoveTag(hwnd, TRUE);
+        break;
+    case psh3: // →
+        XgTheme_AddTag(hwnd, FALSE);
+        break;
+    case psh4: // ←
+        XgTheme_RemoveTag(hwnd, FALSE);
+        break;
+    case psh5: // リセット
+        xg_priority_tags.clear();
+        xg_forbidden_tags.clear();
+        EndDialog(hwnd, IDOK);
         break;
     }
+}
+
+LRESULT XgTheme_OnNotify(HWND hwnd, int idFrom, LPNMHDR pnmhdr)
+{
+    LV_KEYDOWN *pKeyDown;
+    switch (idFrom) {
+    case lst1:
+        break;
+    case lst2:
+        if (pnmhdr->code == LVN_KEYDOWN) {
+            pKeyDown = reinterpret_cast<LV_KEYDOWN *>(pnmhdr);
+            if (pKeyDown->wVKey == VK_DELETE)
+                XgTheme_RemoveTag(hwnd, TRUE);
+        }
+        break;
+    case lst3:
+        if (pnmhdr->code == LVN_KEYDOWN) {
+            pKeyDown = reinterpret_cast<LV_KEYDOWN *>(pnmhdr);
+            if (pKeyDown->wVKey == VK_DELETE)
+                XgTheme_RemoveTag(hwnd, FALSE);
+        }
+        break;
+    }
+    return 0;
 }
 
 // 「テーマ」ダイアログプロシージャ。
@@ -7090,6 +7282,7 @@ XgThemeDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
     {
         HANDLE_MSG(hwnd, WM_INITDIALOG, XgTheme_OnInitDialog);
         HANDLE_MSG(hwnd, WM_COMMAND, XgTheme_OnCommand);
+        HANDLE_MSG(hwnd, WM_NOTIFY, XgTheme_OnNotify);
     }
     return 0;
 }

@@ -82,6 +82,10 @@ extern std::vector<XG_WordData> xg_dict_data;
 extern std::unordered_map<std::wstring, std::wstring> xg_word_to_tags_map;
 // タグのヒストグラム。
 extern std::unordered_map<std::wstring, size_t> xg_tag_histgram;
+// 優先タグ。
+extern std::unordered_set<std::wstring> xg_priority_tags;
+// 除外タグ。
+extern std::unordered_set<std::wstring> xg_forbidden_tags;
 
 // 辞書ファイルを読み込む。
 bool __fastcall XgLoadDictFile(LPCWSTR pszFile);

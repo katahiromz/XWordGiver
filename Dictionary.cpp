@@ -15,6 +15,12 @@ std::unordered_map<std::wstring, std::wstring> xg_word_to_tags_map;
 // タグのヒストグラム。
 std::unordered_map<std::wstring, size_t> xg_tag_histgram;
 
+// 優先タグ。
+std::unordered_set<std::wstring> xg_priority_tags;
+
+// 除外タグ。
+std::unordered_set<std::wstring> xg_forbidden_tags;
+
 //////////////////////////////////////////////////////////////////////////////
 // 辞書データのファイル処理。
 
