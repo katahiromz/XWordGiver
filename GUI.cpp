@@ -7039,6 +7039,124 @@ static void XgInitTagListView(HWND hwndLV)
     ListView_InsertColumn(hwndLV, 1, &column);
 }
 
+template <typename T_STR_CONTAINER>
+inline void
+mstr_split(T_STR_CONTAINER& container,
+           const typename T_STR_CONTAINER::value_type& str,
+           const typename T_STR_CONTAINER::value_type& chars)
+{
+    container.clear();
+    size_t i = 0, k = str.find_first_of(chars);
+    while (k != T_STR_CONTAINER::value_type::npos)
+    {
+        container.push_back(str.substr(i, k - i));
+        i = k + 1;
+        k = str.find_first_of(chars, i);
+    }
+    container.push_back(str.substr(i));
+}
+
+static void XgTheme_SetPreset(HWND hwnd, LPCWSTR pszText)
+{
+    HWND hLst2 = GetDlgItem(hwnd, lst2);
+    HWND hLst3 = GetDlgItem(hwnd, lst3);
+    ListView_DeleteAllItems(hLst2);
+    ListView_DeleteAllItems(hLst3);
+
+    std::vector<std::wstring> strs;
+    std::wstring strText = pszText;
+
+    xg_str_replace_all(strText, L" ", L"");
+    mstr_split(strs, strText, L",");
+
+    WCHAR szText[64];
+
+    for (auto& str : strs) {
+        if (str.empty())
+            continue;
+
+        bool minus = false;
+        if (str[0] == L'-') {
+            minus = true;
+            str = str.substr(1);
+        }
+        if (str[0] == L'+') {
+            str = str.substr(1);
+        }
+
+        if (xg_tag_histgram[str] == 0)
+            continue;
+
+        LV_ITEM item = { LVIF_TEXT };
+        INT iItem = ListView_GetItemCount(hLst3);
+        StringCbCopyW(szText, sizeof(szText), str.c_str());
+        item.iItem = iItem;
+        item.pszText = szText;
+        item.iSubItem = 0;
+        if (minus)
+            ListView_InsertItem(hLst3, &item);
+        else
+            ListView_InsertItem(hLst2, &item);
+
+        StringCbCopyW(szText, sizeof(szText), std::to_wstring(xg_tag_histgram[str]).c_str());
+        item.iItem = iItem;
+        item.pszText = szText;
+        item.iSubItem = 1;
+        if (minus)
+            ListView_SetItem(hLst3, &item);
+        else
+            ListView_SetItem(hLst2, &item);
+    }
+}
+
+static void XgTheme_SetPreset(HWND hwnd)
+{
+    HWND hCmb1 = GetDlgItem(hwnd, cmb1);
+    INT iItem = ComboBox_GetCurSel(hCmb1);
+
+    WCHAR szText[MAX_PATH];
+    if (iItem == CB_ERR) {
+        GetDlgItemTextW(hwnd, cmb1, szText, ARRAYSIZE(szText));
+    } else {
+        ComboBox_GetLBText(hCmb1, iItem, szText);
+    }
+
+    XgTheme_SetPreset(hwnd, szText);
+}
+
+static BOOL xg_bUpdatingPreset = FALSE;
+
+static void XgTheme_UpdatePreset(HWND hwnd)
+{
+    HWND hLst2 = GetDlgItem(hwnd, lst2);
+    HWND hLst3 = GetDlgItem(hwnd, lst3);
+
+    std::wstring str;
+    WCHAR szText[64];
+    INT nCount2 = ListView_GetItemCount(hLst2);
+    INT nCount3 = ListView_GetItemCount(hLst3);
+    for (INT i = 0; i < nCount2; ++i) {
+        if (str.size()) {
+            str += L",";
+        }
+        ListView_GetItemText(hLst2, i, 0, szText, ARRAYSIZE(szText));
+        str += L"+";
+        str += szText;
+    }
+    for (INT i = 0; i < nCount3; ++i) {
+        if (str.size()) {
+            str += L",";
+        }
+        ListView_GetItemText(hLst3, i, 0, szText, ARRAYSIZE(szText));
+        str += L"-";
+        str += szText;
+    }
+
+    xg_bUpdatingPreset = TRUE;
+    SetDlgItemTextW(hwnd, cmb1, str.c_str());
+    xg_bUpdatingPreset = FALSE;
+}
+
 // 「テーマ」ダイアログの初期化。
 static BOOL XgTheme_OnInitDialog(HWND hwnd, HWND hwndFocus, LPARAM lParam)
 {
@@ -7140,6 +7258,9 @@ static BOOL XgTheme_OnInitDialog(HWND hwnd, HWND hwndFocus, LPARAM lParam)
     item.state = item.stateMask = LVIS_SELECTED | LVIS_FOCUSED;
     ListView_SetItem(hLst3, &item);
 
+    // プリセットを更新。
+    XgTheme_UpdatePreset(hwnd);
+
     return TRUE;
 }
 
@@ -7209,6 +7330,9 @@ static void XgTheme_AddTag(HWND hwnd, BOOL bPriority)
         }
         SetDlgItemInt(hwnd, stc2, INT(count), FALSE);
     }
+
+    // プリセットを更新。
+    XgTheme_UpdatePreset(hwnd);
 }
 
 // リストビューからタグ項目を削除する。
@@ -7242,6 +7366,9 @@ static void XgTheme_RemoveTag(HWND hwnd, BOOL bPriority)
         }
         SetDlgItemInt(hwnd, stc2, INT(count), FALSE);
     }
+
+    // プリセットを更新。
+    XgTheme_UpdatePreset(hwnd);
 }
 
 // 「テーマ」ダイアログで「OK」ボタンが押された。
@@ -7320,6 +7447,11 @@ static void XgTheme_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT codeNotify)
     case edt1:
         if (codeNotify == EN_CHANGE) {
             XgTheme_OnEdt1(hwnd);
+        }
+        break;
+    case cmb1:
+        if (codeNotify == CBN_EDITCHANGE && !xg_bUpdatingPreset) {
+            XgTheme_SetPreset(hwnd);
         }
         break;
     }
