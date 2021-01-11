@@ -262,7 +262,7 @@ bool __fastcall XgLoadDictFile(LPCWSTR pszFile)
 // 辞書データをソートし、一意的にする。
 void __fastcall XgSortAndUniqueDictData(void)
 {
-    sort(xg_dict_data.begin(), xg_dict_data.end(), xg_word_less());
+    std::sort(xg_dict_data.begin(), xg_dict_data.end(), xg_word_less());
     auto last = unique(xg_dict_data.begin(), xg_dict_data.end(),
                        XG_WordData_Equal());
     std::vector<XG_WordData> dict_data;

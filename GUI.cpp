@@ -7271,6 +7271,22 @@ static BOOL XgTheme_OnOK(HWND hwnd)
     return TRUE;
 }
 
+// タグの検索。
+static void XgTheme_OnEdt1(HWND hwnd)
+{
+    WCHAR szText[64];
+    GetDlgItemTextW(hwnd, edt1, szText, ARRAYSIZE(szText));
+
+    HWND hLst1 = GetDlgItem(hwnd, lst1);
+
+    LV_FINDINFO find = { LVFI_STRING | LVFI_PARTIAL };
+    find.psz = szText;
+    INT iItem = ListView_FindItem(hLst1, -1, &find);
+    UINT state = LVIS_FOCUSED | LVIS_SELECTED;
+    ListView_SetItemState(hLst1, iItem, state, state);
+    ListView_EnsureVisible(hLst1, iItem, FALSE);
+}
+
 // 「テーマ」ダイアログのコマンド処理。
 static void XgTheme_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT codeNotify)
 {
@@ -7300,6 +7316,11 @@ static void XgTheme_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT codeNotify)
         xg_priority_tags.clear();
         xg_forbidden_tags.clear();
         EndDialog(hwnd, IDOK);
+        break;
+    case edt1:
+        if (codeNotify == EN_CHANGE) {
+            XgTheme_OnEdt1(hwnd);
+        }
         break;
     }
 }
