@@ -7330,6 +7330,9 @@ LRESULT XgTheme_OnNotify(HWND hwnd, int idFrom, LPNMHDR pnmhdr)
     LV_KEYDOWN *pKeyDown;
     switch (idFrom) {
     case lst1:
+        if (pnmhdr->code == NM_DBLCLK) {
+            XgTheme_AddTag(hwnd, TRUE);
+        }
         break;
     case lst2:
         if (pnmhdr->code == LVN_KEYDOWN) {
