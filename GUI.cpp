@@ -7109,12 +7109,15 @@ static void XgTheme_SetPreset(HWND hwnd, LPCWSTR pszText)
     }
 }
 
+// タグ群の最大長。
+#define MAX_TAGSLEN 256
+
 static void XgTheme_SetPreset(HWND hwnd)
 {
     HWND hCmb1 = GetDlgItem(hwnd, cmb1);
     INT iItem = ComboBox_GetCurSel(hCmb1);
 
-    WCHAR szText[MAX_PATH];
+    WCHAR szText[MAX_TAGSLEN];
     if (iItem == CB_ERR) {
         GetDlgItemTextW(hwnd, cmb1, szText, ARRAYSIZE(szText));
     } else {
@@ -7152,6 +7155,10 @@ static void XgTheme_UpdatePreset(HWND hwnd)
         str += szText;
     }
 
+    // 長さ制限。
+    if (str.size() > MAX_TAGSLEN - 1)
+        str.resize(MAX_TAGSLEN - 1);
+
     xg_bUpdatingPreset = TRUE;
     SetDlgItemTextW(hwnd, cmb1, str.c_str());
     xg_bUpdatingPreset = FALSE;
@@ -7162,6 +7169,9 @@ static BOOL XgTheme_OnInitDialog(HWND hwnd, HWND hwndFocus, LPARAM lParam)
 {
     // ダイアログを中央寄せする。
     XgCenterDialog(hwnd);
+
+    // 長さを制限する。
+    SendDlgItemMessageW(hwnd, cmb1, CB_LIMITTEXT, MAX_TAGSLEN - 1, 0);
 
     // リストビューを初期化。
     HWND hLst1 = GetDlgItem(hwnd, lst1);
@@ -7467,14 +7477,18 @@ LRESULT XgTheme_OnNotify(HWND hwnd, int idFrom, LPNMHDR pnmhdr)
         }
         break;
     case lst2:
-        if (pnmhdr->code == LVN_KEYDOWN) {
+        if (pnmhdr->code == NM_DBLCLK) {
+            XgTheme_RemoveTag(hwnd, TRUE);
+        } else if (pnmhdr->code == LVN_KEYDOWN) {
             pKeyDown = reinterpret_cast<LV_KEYDOWN *>(pnmhdr);
             if (pKeyDown->wVKey == VK_DELETE)
                 XgTheme_RemoveTag(hwnd, TRUE);
         }
         break;
     case lst3:
-        if (pnmhdr->code == LVN_KEYDOWN) {
+        if (pnmhdr->code == NM_DBLCLK) {
+            XgTheme_RemoveTag(hwnd, FALSE);
+        } else if (pnmhdr->code == LVN_KEYDOWN) {
             pKeyDown = reinterpret_cast<LV_KEYDOWN *>(pnmhdr);
             if (pKeyDown->wVKey == VK_DELETE)
                 XgTheme_RemoveTag(hwnd, FALSE);
