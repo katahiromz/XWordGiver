@@ -7054,24 +7054,29 @@ static BOOL XgTheme_OnInitDialog(HWND hwnd, HWND hwndFocus, LPARAM lParam)
     XgInitTagListView(hLst3);
 
     // ヒストグラムを取得。
-    std::map<size_t, std::wstring> histgram;
+    std::vector<std::pair<size_t, std::wstring> > histgram;
     for (auto& pair : xg_tag_histgram) {
-        histgram.emplace(pair.second, pair.first);
+        histgram.emplace_back(std::make_pair(pair.second, pair.first));
     }
+    // 出現回数の逆順でソート。
+    std::sort(histgram.begin(), histgram.end(),
+        [](const std::pair<size_t, std::wstring>& a, const std::pair<size_t, std::wstring>& b) {
+            return a.first > b.first;
+        }
+    );
 
     // リストビューを逆順のヒストグラムで埋める。
     INT iItem = 0;
     LV_ITEM item = { LVIF_TEXT };
-    typedef std::map<size_t, std::wstring>::reverse_iterator iterator;
     WCHAR szText[64];
-    for (iterator it = histgram.rbegin(); it != histgram.rend(); ++it) {
-        StringCbCopyW(szText, sizeof(szText), it->second.c_str());
+    for (auto& pair : histgram) {
+        StringCbCopyW(szText, sizeof(szText), pair.second.c_str());
         item.iItem = iItem;
         item.pszText = szText;
         item.iSubItem = 0;
         ListView_InsertItem(hLst1, &item);
 
-        StringCbCopyW(szText, sizeof(szText), std::to_wstring(it->first).c_str());
+        StringCbCopyW(szText, sizeof(szText), std::to_wstring(pair.first).c_str());
         item.iItem = iItem;
         item.pszText = szText;
         item.iSubItem = 1;

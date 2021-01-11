@@ -10,7 +10,7 @@
 std::vector<XG_WordData>     xg_dict_data;
 
 // タグ付けデータ。
-std::unordered_map<std::wstring, std::wstring> xg_word_to_tags_map;
+std::unordered_map<std::wstring, std::unordered_set<std::wstring> > xg_word_to_tags_map;
 
 // タグのヒストグラム。
 std::unordered_map<std::wstring, size_t> xg_tag_histgram;
@@ -26,19 +26,19 @@ std::unordered_set<std::wstring> xg_forbidden_tags;
 
 template <typename T_STR_CONTAINER>
 inline void
-mstr_split(T_STR_CONTAINER& container,
-           const typename T_STR_CONTAINER::value_type& str,
-           const typename T_STR_CONTAINER::value_type& chars)
+mstr_split_insert(T_STR_CONTAINER& container,
+                  const typename T_STR_CONTAINER::value_type& str,
+                  const typename T_STR_CONTAINER::value_type& chars)
 {
     container.clear();
     size_t i = 0, k = str.find_first_of(chars);
     while (k != T_STR_CONTAINER::value_type::npos)
     {
-        container.push_back(str.substr(i, k - i));
+        container.insert(str.substr(i, k - i));
         i = k + 1;
         k = str.find_first_of(chars, i);
     }
-    container.push_back(str.substr(i));
+    container.insert(str.substr(i));
 }
 
 // Unicodeを一行読み込む。
@@ -107,10 +107,13 @@ void XgReadUnicodeLine(LPWSTR pchLine)
     if (pchTags) {
         std::wstring strTags = pchTags;
         xg_str_replace_all(strTags, L",", L" ");
-        xg_word_to_tags_map.emplace(word, L" " + strTags + L" ");
+        xg_str_replace_all(strTags, L"  ", L" ");
 
-        std::vector<std::wstring> tags;
-        mstr_split(tags, strTags, L" ");
+        std::unordered_set<std::wstring> tags;
+        mstr_split_insert(tags, strTags, L" ");
+
+        xg_word_to_tags_map[word] = tags;
+
         for (auto& tag : tags) {
             if (tag.empty())
                 continue;

@@ -2453,6 +2453,37 @@ void __fastcall XgSolveXWord_NoAddBlackRecurse(const XG_Board& xw)
                     // 候補をかき混ぜる。
                     std::random_shuffle(cands.begin(), cands.end());
 
+                    // 優先タグがあれば。。。
+                    if (xg_priority_tags.size()) {
+                        // とりあえずソートする。
+                        std::sort(cands.begin(), cands.end(), [](const std::wstring& a, const std::wstring& b){
+                            const auto& x = xg_word_to_tags_map[a];
+                            const auto& y = xg_word_to_tags_map[b];
+                            bool left = false, right = false;
+                            for (auto& tag1 : xg_priority_tags) {
+                                for (auto& tag2 : x) {
+                                    if (tag1 == tag2) {
+                                        left = true;
+                                        break;
+                                    }
+                                }
+                                if (left)
+                                    break;
+                            }
+                            for (auto& tag1 : xg_priority_tags) {
+                                for (auto& tag2 : y) {
+                                    if (tag1 == tag2) {
+                                        right = true;
+                                        break;
+                                    }
+                                }
+                                if (right)
+                                    break;
+                            }
+                            return (left > right);
+                        });
+                    }
+
                     for (const auto& cand : cands) {
                         // すでに解かれているなら、終了。
                         // キャンセルされているなら、終了。
@@ -2522,6 +2553,37 @@ void __fastcall XgSolveXWord_NoAddBlackRecurse(const XG_Board& xw)
                 if (XgGetCandidatesNoAddBlack(cands, pattern)) {
                     // 候補をかき混ぜる。
                     std::random_shuffle(cands.begin(), cands.end());
+
+                    // 優先タグがあれば。。。
+                    if (xg_priority_tags.size()) {
+                        // とりあえずソートする。
+                        std::sort(cands.begin(), cands.end(), [](const std::wstring& a, const std::wstring& b){
+                            const auto& x = xg_word_to_tags_map[a];
+                            const auto& y = xg_word_to_tags_map[b];
+                            bool left = false, right = false;
+                            for (auto& tag1 : xg_priority_tags) {
+                                for (auto& tag2 : x) {
+                                    if (tag1 == tag2) {
+                                        left = true;
+                                        break;
+                                    }
+                                }
+                                if (left)
+                                    break;
+                            }
+                            for (auto& tag1 : xg_priority_tags) {
+                                for (auto& tag2 : y) {
+                                    if (tag1 == tag2) {
+                                        right = true;
+                                        break;
+                                    }
+                                }
+                                if (right)
+                                    break;
+                            }
+                            return (left > right);
+                        });
+                    }
 
                     for (const auto& cand : cands) {
                         // すでに解かれているなら、終了。

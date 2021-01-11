@@ -79,7 +79,7 @@ namespace std
 // 辞書データ。
 extern std::vector<XG_WordData> xg_dict_data;
 // タグ付けデータ。
-extern std::unordered_map<std::wstring, std::wstring> xg_word_to_tags_map;
+extern std::unordered_map<std::wstring, std::unordered_set<std::wstring> > xg_word_to_tags_map;
 // タグのヒストグラム。
 extern std::unordered_map<std::wstring, size_t> xg_tag_histgram;
 // 優先タグ。
