@@ -21,6 +21,9 @@ std::unordered_set<std::wstring> xg_priority_tags;
 // 除外タグ。
 std::unordered_set<std::wstring> xg_forbidden_tags;
 
+// 既定のテーマ。
+std::wstring xg_default_theme;
+
 //////////////////////////////////////////////////////////////////////////////
 // 辞書データのファイル処理。
 
@@ -41,6 +44,22 @@ mstr_split_insert(T_STR_CONTAINER& container,
     container.insert(str.substr(i));
 }
 
+template <typename T_CHAR>
+inline void mstr_trim(std::basic_string<T_CHAR>& str, const T_CHAR *spaces)
+{
+    typedef std::basic_string<T_CHAR> string_type;
+    size_t i = str.find_first_not_of(spaces);
+    size_t j = str.find_last_not_of(spaces);
+    if ((i == string_type::npos) || (j == string_type::npos))
+    {
+        str.clear();
+    }
+    else
+    {
+        str = str.substr(i, j - i + 1);
+    }
+}
+
 // Unicodeを一行読み込む。
 void XgReadUnicodeLine(LPWSTR pchLine)
 {
@@ -49,6 +68,13 @@ void XgReadUnicodeLine(LPWSTR pchLine)
 
     // コメント行を無視する。
     if (*pchLine == L'#') {
+        // ただし、コメント内に"DEFAULT:"がある場合は例外として既定のテーマを読み取る。
+        pchLine = wcsstr(pchLine, L"DEFAULT:");
+        if (pchLine) {
+            pchLine += wcslen(L"DEFAULT:");
+            xg_default_theme = pchLine;
+            mstr_trim(xg_default_theme, L" \t\r\n");
+        }
         return;
     }
 
