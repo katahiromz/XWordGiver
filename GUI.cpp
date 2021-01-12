@@ -7084,9 +7084,6 @@ static void XgTheme_SetPreset(HWND hwnd, LPCWSTR pszText)
             str = str.substr(1);
         }
 
-        if (xg_tag_histgram[str] == 0)
-            continue;
-
         LV_ITEM item = { LVIF_TEXT };
         INT iItem = ListView_GetItemCount(hLst3);
         StringCbCopyW(szText, sizeof(szText), str.c_str());
