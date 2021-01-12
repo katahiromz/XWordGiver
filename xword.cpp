@@ -501,8 +501,7 @@ XG_EpvCode __fastcall XG_Board::EveryPatternValid1(
                 if (!bNonSpaceFound) {
                     // 非空白がない。
                     // パターンにマッチする候補が存在しなければ失敗する。
-                    if (!XgAnyCandidateWholeSpace(patlen))
-                    {
+                    if (!XgAnyCandidateWholeSpace(patlen)) {
                         // マッチしなかった位置。
                         pos = XG_Pos(i, lo);
                         return xg_epv_LENGTHMISMATCH;   // マッチしなかった。
@@ -4585,7 +4584,7 @@ bool XG_Board::FourDiagonals() const
 bool xg_bBlacksGenerated = false;
 
 template <int t_mode>
-bool __fastcall XgGenerateBlacksRecurse(const XG_Board& xword)
+bool __fastcall XgGenerateBlacksRecurse(const XG_Board& xword, LONG iRowjCol)
 {
     if ((xg_nRules & RULE_DONTCORNERBLACK) && xword.CornerBlack())
         return false;
@@ -4600,176 +4599,109 @@ bool __fastcall XgGenerateBlacksRecurse(const XG_Board& xword)
 
     const int nRows = xg_nRows;
     const int nCols = xg_nCols;
-    for (int i = 0; i < nRows; ++i) {
-        for (int j = 0; j < nCols; ++j) {
-            if (xg_bBlacksGenerated || xg_bCancelled)
-                return true;
+    INT iRow = LOWORD(iRowjCol);
+    INT jCol = HIWORD(iRowjCol);
 
-            if (xword.GetAt(i, j) == ZEN_SPACE) {
-                // 文字が置けるヨコ向きの区間[lo, hi]を求める。
-                int lo = j;
-                while (lo > 0) {
-                    if (xword.GetAt(i, lo - 1) != ZEN_SPACE)
-                        break;
-                    lo--;
-                }
-                while (j + 1 < nCols) {
-                    if (xword.GetAt(i, j + 1) != ZEN_SPACE)
-                        break;
-                    j++;
-                }
-                const int hi = j;
-                j++;
+    if (iRow == nRows && jCol == 0) {
+        EnterCriticalSection(&xg_cs);
+        if (!xg_bBlacksGenerated) {
+            xg_bBlacksGenerated = true;
+            xg_xword = xword;
+        }
+        ::LeaveCriticalSection(&xg_cs);
+        return xg_bBlacksGenerated || xg_bCancelled;
+    }
 
-                if (t_mode == 1) {
-                    if (lo + 4 <= hi) {
-                        char a[] = {0, 1, 2, 3};
-                        std::random_shuffle(std::begin(a), std::end(a));
+    INT nMaxLen;
+    switch (t_mode)
+    {
+    case 0:
+        nMaxLen = 4;
+        break;
+    case 1:
+        nMaxLen = 3;
+        break;
+    case 2:
+        nMaxLen = 5;
+        break;
+    default:
+        assert(0);
+        nMaxLen = 4;
+        break;
+    }
 
-                        for (int k = 0; k < 4; ++k) {
-                            XG_Board copy(xword);
-                            copy.SetAt(i, lo + a[k], ZEN_BLACK);
-                            if (XgGenerateBlacksRecurse<t_mode>(copy))
-                                return true;
-                        }
-                        return false;
-                    }
-                } else if (t_mode == 0) {
-                    if (lo + 5 <= hi) {
-                        char a[] = {0, 1, 2, 3, 4};
-                        std::random_shuffle(std::begin(a), std::end(a));
+    if (xg_bBlacksGenerated || xg_bCancelled)
+        return true;
 
-                        for (int k = 0; k < 5; ++k) {
-                            XG_Board copy(xword);
-                            copy.SetAt(i, lo + a[k], ZEN_BLACK);
-                            if (XgGenerateBlacksRecurse<t_mode>(copy))
-                                return true;
-                        }
-                        return false;
-                    }
-                } else if (t_mode == 2) {
-                    if (std::rand() & 1) {
-                        if (lo + 4 <= hi) {
-                            char a[] = {0, 1, 2, 3};
-                            std::random_shuffle(std::begin(a), std::end(a));
-
-                            for (int k = 0; k < 4; ++k) {
-                                XG_Board copy(xword);
-                                copy.SetAt(i, lo + a[k], ZEN_BLACK);
-                                if (XgGenerateBlacksRecurse<t_mode>(copy))
-                                    return true;
-                            }
-                            return false;
-                        }
-                    } else {
-                        if (lo + 6 <= hi) {
-                            char a[] = {0, 1, 2, 3, 4, 5};
-                            std::random_shuffle(std::begin(a), std::end(a));
-
-                            for (int k = 0; k < 6; ++k) {
-                                XG_Board copy(xword);
-                                copy.SetAt(i, lo + a[k], ZEN_BLACK);
-                                if (XgGenerateBlacksRecurse<t_mode>(copy))
-                                    return true;
-                            }
-                            return false;
-                        }
-                    }
-                }
-            }
+    INT iTop, jLeft;
+    for (iTop = iRow; iTop > 0; --iTop) {
+        if (xword.GetAt(iTop - 1, jCol) == ZEN_BLACK) {
+            break;
         }
     }
-
-    for (int j = 0; j < nCols; ++j) {
-        for (int i = 0; i < nRows; ++i) {
-            if (xg_bBlacksGenerated || xg_bCancelled)
+    if (iRow - iTop + 1 > nMaxLen) {
+        XG_Board copy(xword);
+        copy.SetAt(iRow, jCol, ZEN_BLACK);
+        if (jCol + 1 < nCols) {
+            if (XgGenerateBlacksRecurse<t_mode>(copy, MAKELONG(iRow, jCol + 1)))
                 return true;
-
-            if (xword.GetAt(i, j) == ZEN_SPACE) {
-                // 文字が置けるヨコ向きの区間[lo, hi]を求める。
-                int lo = i;
-                while (lo > 0) {
-                    if (xword.GetAt(lo - 1, j) != ZEN_SPACE)
-                        break;
-                    lo--;
-                }
-                while (i + 1 < nRows) {
-                    if (xword.GetAt(i + 1, j) != ZEN_SPACE)
-                        break;
-                    i++;
-                }
-                const int hi = i;
-                i++;
-
-                if (t_mode == 1) {
-                    if (lo + 4 <= hi) {
-                        char a[] = {0, 1, 2, 3};
-                        std::random_shuffle(std::begin(a), std::end(a));
-
-                        for (int k = 0; k < 4; ++k) {
-                            XG_Board copy(xword);
-                            copy.SetAt(lo + a[k], j, ZEN_BLACK);
-                            if (XgGenerateBlacksRecurse<t_mode>(copy))
-                                return true;
-                        }
-                        return false;
-                    }
-                } else if (t_mode == 0) {
-                    if (lo + 5 <= hi) {
-                        char a[] = {0, 1, 2, 3, 4};
-                        std::random_shuffle(std::begin(a), std::end(a));
-
-                        for (int k = 0; k < 5; ++k) {
-                            XG_Board copy(xword);
-                            copy.SetAt(lo + a[k], j, ZEN_BLACK);
-                            if (XgGenerateBlacksRecurse<t_mode>(copy))
-                                return true;
-                        }
-                        return false;
-                    }
-                } else if (t_mode == 2) {
-                    if (std::rand() & 1) {
-                        if (lo + 4 <= hi) {
-                            char a[] = {0, 1, 2, 3};
-                            std::random_shuffle(std::begin(a), std::end(a));
-
-                            for (int k = 0; k < 4; ++k) {
-                                XG_Board copy(xword);
-                                copy.SetAt(lo + a[k], j, ZEN_BLACK);
-                                if (XgGenerateBlacksRecurse<t_mode>(copy))
-                                    return true;
-                            }
-                            return false;
-                        }
-                    } else {
-                        if (lo + 6 <= hi) {
-                            char a[] = {0, 1, 2, 3, 4, 5};
-                            std::random_shuffle(std::begin(a), std::end(a));
-
-                            for (int k = 0; k < 6; ++k) {
-                                XG_Board copy(xword);
-                                copy.SetAt(lo + a[k], j, ZEN_BLACK);
-                                if (XgGenerateBlacksRecurse<t_mode>(copy))
-                                    return true;
-                            }
-                            return false;
-                        }
-                    }
-                }
-            }
+        } else {
+            if (XgGenerateBlacksRecurse<t_mode>(copy, MAKELONG(iRow + 1, 0)))
+                return true;
+        }
+        return false;
+    }
+    for (jLeft = jCol; jLeft > 0; --jLeft) {
+        if (xword.GetAt(iRow, jLeft - 1) == ZEN_BLACK) {
+            break;
         }
     }
-
-    EnterCriticalSection(&xg_cs);
-    if (!xg_bBlacksGenerated) {
-        xg_bBlacksGenerated = true;
-        xg_xword = xword;
+    if (jCol - jLeft + 1 > nMaxLen) {
+        XG_Board copy(xword);
+        copy.SetAt(iRow, jCol, ZEN_BLACK);
+        if (jCol + 1 < nCols) {
+            if (XgGenerateBlacksRecurse<t_mode>(copy, MAKELONG(iRow, jCol + 1)))
+                return true;
+        } else {
+            if (XgGenerateBlacksRecurse<t_mode>(copy, MAKELONG(iRow + 1, 0)))
+                return true;
+        }
+        return false;
     }
-    ::LeaveCriticalSection(&xg_cs);
-    return xg_bBlacksGenerated || xg_bCancelled;
+
+    if (rand() < RAND_MAX / 4) {
+        XG_Board copy(xword);
+        copy.SetAt(iRow, jCol, ZEN_BLACK);
+        if (jCol + 1 < nCols) {
+            if (XgGenerateBlacksRecurse<t_mode>(xword, MAKELONG(iRow, jCol + 1)))
+                return true;
+            if (XgGenerateBlacksRecurse<t_mode>(copy, MAKELONG(iRow, jCol + 1)))
+                return true;
+        } else {
+            if (XgGenerateBlacksRecurse<t_mode>(xword, MAKELONG(iRow + 1, 0)))
+                return true;
+            if (XgGenerateBlacksRecurse<t_mode>(copy, MAKELONG(iRow + 1, 0)))
+                return true;
+        }
+    } else {
+        XG_Board copy(xword);
+        copy.SetAt(iRow, jCol, ZEN_BLACK);
+        if (jCol + 1 < nCols) {
+            if (XgGenerateBlacksRecurse<t_mode>(copy, MAKELONG(iRow, jCol + 1)))
+                return true;
+            if (XgGenerateBlacksRecurse<t_mode>(xword, MAKELONG(iRow, jCol + 1)))
+                return true;
+        } else {
+            if (XgGenerateBlacksRecurse<t_mode>(copy, MAKELONG(iRow + 1, 0)))
+                return true;
+            if (XgGenerateBlacksRecurse<t_mode>(xword, MAKELONG(iRow + 1, 0)))
+                return true;
+        }
+    }
+    return false;
 }
 
-bool __fastcall XgGenerateBlacksSym2Recurse(const XG_Board& xword)
+bool __fastcall XgGenerateBlacksSym2Recurse(const XG_Board& xword, LONG iRowjCol)
 {
     if ((xg_nRules & RULE_DONTCORNERBLACK) && xword.CornerBlack())
         return false;
@@ -4784,89 +4716,94 @@ bool __fastcall XgGenerateBlacksSym2Recurse(const XG_Board& xword)
 
     const int nRows = xg_nRows;
     const int nCols = xg_nCols;
-    for (int i = 0; i < nRows; ++i) {
-        for (int j = 0; j < nCols; ++j) {
-            if (xg_bBlacksGenerated || xg_bCancelled)
-                return true;
+    INT iRow = LOWORD(iRowjCol);
+    INT jCol = HIWORD(iRowjCol);
 
-            if (xword.GetAt(i, j) == ZEN_SPACE) {
-                // 文字が置けるヨコ向きの区間[lo, hi]を求める。
-                int lo = j;
-                while (lo > 0) {
-                    if (xword.GetAt(i, lo - 1) != ZEN_SPACE)
-                        break;
-                    lo--;
-                }
-                while (j + 1 < nCols) {
-                    if (xword.GetAt(i, j + 1) != ZEN_SPACE)
-                        break;
-                    j++;
-                }
-                const int hi = j;
-                j++;
+    if (iRow == nRows && jCol == 0) {
+        EnterCriticalSection(&xg_cs);
+        if (!xg_bBlacksGenerated) {
+            xg_bBlacksGenerated = true;
+            xg_xword = xword;
+        }
+        ::LeaveCriticalSection(&xg_cs);
+        return xg_bBlacksGenerated || xg_bCancelled;
+    }
 
-                if (lo + 4 <= hi) {
-                    char a[4] = {0, 1, 2, 3};
-                    std::random_shuffle(&a[0], &a[4]);
+    INT nMaxLen = 4;
 
-                    for (int k = 0; k < 4; ++k) {
-                        XG_Board copy(xword);
-                        copy.SetAt(i, lo + a[k], ZEN_BLACK);
-                        copy.SetAt(nRows - (i + 1), nCols - (lo + a[k] + 1), ZEN_BLACK);
-                        if (XgGenerateBlacksSym2Recurse(copy))
-                            return true;
-                    }
-                    return false;
-                }
-            }
+    if (xg_bBlacksGenerated || xg_bCancelled)
+        return true;
+
+    INT iTop, jLeft;
+    for (iTop = iRow; iTop > 0; --iTop) {
+        if (xword.GetAt(iTop - 1, jCol) == ZEN_BLACK) {
+            break;
         }
     }
-
-    for (int j = 0; j < nCols; ++j) {
-        for (int i = 0; i < nRows; ++i) {
-            if (xg_bBlacksGenerated || xg_bCancelled)
+    if (iRow - iTop + 1 > nMaxLen) {
+        XG_Board copy(xword);
+        copy.SetAt(iRow, jCol, ZEN_BLACK);
+        copy.SetAt(nRows - (iRow + 1), nCols - (jCol + 1), ZEN_BLACK);
+        if (jCol + 1 < nCols) {
+            if (XgGenerateBlacksSym2Recurse(copy, MAKELONG(iRow, jCol + 1)))
                 return true;
-
-            if (xword.GetAt(i, j) == ZEN_SPACE) {
-                // 文字が置けるヨコ向きの区間[lo, hi]を求める。
-                int lo = i;
-                while (lo > 0) {
-                    if (xword.GetAt(lo - 1, j) != ZEN_SPACE)
-                        break;
-                    lo--;
-                }
-                while (i + 1 < nRows) {
-                    if (xword.GetAt(i + 1, j) != ZEN_SPACE)
-                        break;
-                    i++;
-                }
-                const int hi = i;
-                i++;
-
-                if (lo + 4 <= hi) {
-                    char a[4] = {0, 1, 2, 3};
-                    std::random_shuffle(&a[0], &a[4]);
-
-                    for (int k = 0; k < 4; ++k) {
-                        XG_Board copy(xword);
-                        copy.SetAt(lo + a[k], j, ZEN_BLACK);
-                        copy.SetAt(nRows - (lo + a[k] + 1), nCols - (j + 1), ZEN_BLACK);
-                        if (XgGenerateBlacksSym2Recurse(copy))
-                            return true;
-                    }
-                    return false;
-                }
-            }
+        } else {
+            if (XgGenerateBlacksSym2Recurse(copy, MAKELONG(iRow + 1, 0)))
+                return true;
+        }
+        return false;
+    }
+    for (jLeft = jCol; jLeft > 0; --jLeft) {
+        if (xword.GetAt(iRow, jLeft - 1) == ZEN_BLACK) {
+            break;
         }
     }
-
-    EnterCriticalSection(&xg_cs);
-    if (!xg_bBlacksGenerated && xword.IsPointSymmetry()) {
-        xg_bBlacksGenerated = true;
-        xg_xword = xword;
+    if (jCol - jLeft + 1 > nMaxLen) {
+        XG_Board copy(xword);
+        copy.SetAt(iRow, jCol, ZEN_BLACK);
+        copy.SetAt(nRows - (iRow + 1), nCols - (jCol + 1), ZEN_BLACK);
+        if (jCol + 1 < nCols) {
+            if (XgGenerateBlacksSym2Recurse(copy, MAKELONG(iRow, jCol + 1)))
+                return true;
+        } else {
+            if (XgGenerateBlacksSym2Recurse(copy, MAKELONG(iRow + 1, 0)))
+                return true;
+        }
+        return false;
     }
-    ::LeaveCriticalSection(&xg_cs);
-    return xg_bBlacksGenerated || xg_bCancelled;
+
+    if (rand() < RAND_MAX / 4) {
+        XG_Board copy(xword);
+        copy.SetAt(iRow, jCol, ZEN_BLACK);
+        copy.SetAt(nRows - (iRow + 1), nCols - (jCol + 1), ZEN_BLACK);
+        if (jCol + 1 < nCols) {
+            if (XgGenerateBlacksSym2Recurse(xword, MAKELONG(iRow, jCol + 1)))
+                return true;
+            if (XgGenerateBlacksSym2Recurse(copy, MAKELONG(iRow, jCol + 1)))
+                return true;
+        } else {
+            if (XgGenerateBlacksSym2Recurse(xword, MAKELONG(iRow + 1, 0)))
+                return true;
+            if (XgGenerateBlacksSym2Recurse(copy, MAKELONG(iRow + 1, 0)))
+                return true;
+        }
+    } else {
+        XG_Board copy(xword);
+        copy.SetAt(iRow, jCol, ZEN_BLACK);
+        copy.SetAt(nRows - (iRow + 1), nCols - (jCol + 1), ZEN_BLACK);
+        if (jCol + 1 < nCols) {
+            if (XgGenerateBlacksSym2Recurse(copy, MAKELONG(iRow, jCol + 1)))
+                return true;
+            if (XgGenerateBlacksSym2Recurse(xword, MAKELONG(iRow, jCol + 1)))
+                return true;
+        } else {
+            if (XgGenerateBlacksSym2Recurse(copy, MAKELONG(iRow + 1, 0)))
+                return true;
+            if (XgGenerateBlacksSym2Recurse(xword, MAKELONG(iRow + 1, 0)))
+                return true;
+        }
+    }
+    return false;
 }
 
 // マルチスレッド用の関数。
@@ -4881,19 +4818,19 @@ unsigned __stdcall XgGenerateBlacks(void *param)
             if (xg_bBlacksGenerated || xg_bCancelled)
                 break;
             xword.clear();
-        } while (!XgGenerateBlacksRecurse<1>(xword));
+        } while (!XgGenerateBlacksRecurse<1>(xword, 0));
     } else if (xg_imode == xg_im_RUSSIA) {
         do {
             if (xg_bBlacksGenerated || xg_bCancelled)
                 break;
             xword.clear();
-        } while (!XgGenerateBlacksRecurse<2>(xword));
+        } while (!XgGenerateBlacksRecurse<2>(xword, 0));
     } else {
         do {
             if (xg_bBlacksGenerated || xg_bCancelled)
                 break;
             xword.clear();
-        } while (!XgGenerateBlacksRecurse<0>(xword));
+        } while (!XgGenerateBlacksRecurse<0>(xword, 0));
     }
     return 1;
 }
@@ -4914,7 +4851,7 @@ unsigned __stdcall XgGenerateBlacksSmart(void *param)
                 break;
             }
             xword.clear();
-        } while (!XgGenerateBlacksSym2Recurse(xword));
+        } while (!XgGenerateBlacksSym2Recurse(xword, 0));
     } else if (xg_imode == xg_im_KANJI || xg_nRows < 5 || xg_nCols < 5) {
         do {
             if (xg_bCancelled)
@@ -4923,7 +4860,7 @@ unsigned __stdcall XgGenerateBlacksSmart(void *param)
                 break;
             }
             xword.clear();
-        } while (!XgGenerateBlacksRecurse<1>(xword));
+        } while (!XgGenerateBlacksRecurse<1>(xword, 0));
     } else if (xg_imode == xg_im_RUSSIA) {
         do {
             if (xg_bCancelled)
@@ -4932,7 +4869,7 @@ unsigned __stdcall XgGenerateBlacksSmart(void *param)
                 break;
             }
             xword.clear();
-        } while (!XgGenerateBlacksRecurse<2>(xword));
+        } while (!XgGenerateBlacksRecurse<2>(xword, 0));
     } else {
         do {
             if (xg_bCancelled)
@@ -4941,7 +4878,7 @@ unsigned __stdcall XgGenerateBlacksSmart(void *param)
                 break;
             }
             xword.clear();
-        } while (!XgGenerateBlacksRecurse<0>(xword));
+        } while (!XgGenerateBlacksRecurse<0>(xword, 0));
     }
     return 1;
 }
@@ -4956,7 +4893,7 @@ unsigned __stdcall XgGenerateBlacksSym2(void *param)
         if (xg_bBlacksGenerated || xg_bCancelled)
             break;
         xword.clear();
-    } while (!XgGenerateBlacksSym2Recurse(xword));
+    } while (!XgGenerateBlacksSym2Recurse(xword, 0));
     return 1;
 }
 
