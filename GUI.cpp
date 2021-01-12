@@ -7162,6 +7162,10 @@ static void XgTheme_UpdatePreset(HWND hwnd)
     xg_bUpdatingPreset = TRUE;
     SetDlgItemTextW(hwnd, cmb1, str.c_str());
     xg_bUpdatingPreset = FALSE;
+
+    // テーマ文字列を更新。
+    xg_strTheme = str;
+    xg_bThemeModified = (xg_strTheme != xg_strDefaultTheme);
 }
 
 // 「テーマ」ダイアログの初期化。
@@ -7452,6 +7456,8 @@ static void XgTheme_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT codeNotify)
     case psh5: // リセット
         xg_priority_tags.clear();
         xg_forbidden_tags.clear();
+        xg_bThemeModified = false;
+        xg_strTheme = xg_strDefaultTheme;
         EndDialog(hwnd, IDOK);
         break;
     case edt1:
@@ -7524,17 +7530,16 @@ void __fastcall XgTheme(HWND hwnd)
 }
 
 // テーマをリセットする。
-void __fastcall XgResetTheme(HWND hwnd, BOOL bForce = FALSE)
+void __fastcall XgResetTheme(HWND hwnd, BOOL bQuery)
 {
-    if (!bForce) {
+    if (bQuery) {
         INT id = XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_RESETTHEME),
                                      XgLoadStringDx2(IDS_APPNAME),
                                      MB_ICONINFORMATION | MB_YESNOCANCEL);
         if (id != IDYES)
             return;
     }
-    xg_priority_tags.clear();
-    xg_forbidden_tags.clear();
+    XgResetTheme(hwnd);
 }
 
 // コマンドを実行する。
@@ -8586,7 +8591,7 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
     case ID_DICTIONARY14:
     case ID_DICTIONARY15:
         MainWnd_DoDictionary(hwnd, id - ID_DICTIONARY00);
-        XgResetTheme(hwnd, TRUE);
+        XgResetTheme(hwnd, FALSE);
         break;
     case ID_RESETRULES:
         xg_nRules = DEFAULT_RULES;
@@ -8650,7 +8655,7 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
         XgTheme(hwnd);
         break;
     case ID_RESETTHEME:
-        XgResetTheme(hwnd);
+        XgResetTheme(hwnd, TRUE);
         break;
     default:
         if (!MainWnd_OnCommand2(hwnd, id)) {

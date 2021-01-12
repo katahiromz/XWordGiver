@@ -86,11 +86,17 @@ extern std::unordered_map<std::wstring, size_t> xg_tag_histgram;
 extern std::unordered_set<std::wstring> xg_priority_tags;
 // 除外タグ。
 extern std::unordered_set<std::wstring> xg_forbidden_tags;
-// 既定のテーマ。
-extern std::wstring xg_default_theme;
+// テーマ文字列。
+extern std::wstring xg_strTheme;
+// 既定のテーマ文字列。
+extern std::wstring xg_strDefaultTheme;
+// テーマが変更されたか？
+extern bool xg_bThemeModified;
 
 // 辞書ファイルを読み込む。
 bool __fastcall XgLoadDictFile(LPCWSTR pszFile);
+// テーマをリセットする。
+void __fastcall XgResetTheme(HWND hwnd);
 
 // ミニ辞書を作成する。
 std::vector<XG_WordData> XgCreateMiniDict(void);

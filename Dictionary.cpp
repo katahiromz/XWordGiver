@@ -21,11 +21,34 @@ std::unordered_set<std::wstring> xg_priority_tags;
 // 除外タグ。
 std::unordered_set<std::wstring> xg_forbidden_tags;
 
-// 既定のテーマ。
-std::wstring xg_default_theme;
+// テーマ文字列。
+std::wstring xg_strTheme;
+
+// 既定のテーマ文字列。
+std::wstring xg_strDefaultTheme;
+
+// テーマが変更されたか？
+bool xg_bThemeModified = false;
 
 //////////////////////////////////////////////////////////////////////////////
 // 辞書データのファイル処理。
+
+template <typename T_STR_CONTAINER>
+inline void
+mstr_split(T_STR_CONTAINER& container,
+           const typename T_STR_CONTAINER::value_type& str,
+           const typename T_STR_CONTAINER::value_type& chars)
+{
+    container.clear();
+    size_t i = 0, k = str.find_first_of(chars);
+    while (k != T_STR_CONTAINER::value_type::npos)
+    {
+        container.push_back(str.substr(i, k - i));
+        i = k + 1;
+        k = str.find_first_of(chars, i);
+    }
+    container.push_back(str.substr(i));
+}
 
 template <typename T_STR_CONTAINER>
 inline void
@@ -60,6 +83,43 @@ inline void mstr_trim(std::basic_string<T_CHAR>& str, const T_CHAR *spaces)
     }
 }
 
+// テーマを設定する。
+void XgSetThemeString(const std::wstring& strTheme)
+{
+    xg_priority_tags.clear();
+    xg_forbidden_tags.clear();
+
+    std::vector<std::wstring> strs;
+    mstr_split(strs, strTheme, L",");
+    for (const auto& str : strs) {
+        std::wstring item = str;
+        if (item.empty())
+            continue;
+        bool minus = false;
+        if (item[0] == L'-') {
+            minus = true;
+            item = item.substr(1);
+        }
+        if (item[0] == L'+') {
+            item = item.substr(1);
+        }
+        if (minus) {
+            xg_forbidden_tags.emplace(item);
+        } else {
+            xg_priority_tags.emplace(item);
+        }
+    }
+}
+
+// テーマをリセットする。
+void __fastcall XgResetTheme(HWND hwnd)
+{
+    xg_priority_tags.clear();
+    xg_forbidden_tags.clear();
+    xg_bThemeModified = false;
+    xg_strTheme = xg_strDefaultTheme;
+}
+
 // Unicodeを一行読み込む。
 void XgReadUnicodeLine(LPWSTR pchLine)
 {
@@ -72,8 +132,8 @@ void XgReadUnicodeLine(LPWSTR pchLine)
         pchLine = wcsstr(pchLine, L"DEFAULT:");
         if (pchLine) {
             pchLine += wcslen(L"DEFAULT:");
-            xg_default_theme = pchLine;
-            mstr_trim(xg_default_theme, L" \t\r\n");
+            xg_strDefaultTheme = pchLine;
+            mstr_trim(xg_strDefaultTheme, L" \t\r\n");
         }
         return;
     }
@@ -201,6 +261,7 @@ bool __fastcall XgLoadDictFile(LPCWSTR pszFile)
     xg_dict_data.clear();
     xg_word_to_tags_map.clear();
     xg_tag_histgram.clear();
+    xg_strDefaultTheme.clear();
 
     // ファイルを開く。
     AutoCloseHandle hFile(CreateFileW(pszFile, GENERIC_READ, FILE_SHARE_READ, nullptr,
@@ -273,6 +334,15 @@ bool __fastcall XgLoadDictFile(LPCWSTR pszFile)
                 if (!XgReadAnsiFile(reinterpret_cast<LPSTR>(&pbFile[0]), cbFile))
                     return false;
             }
+        }
+
+        // テーマが変更されたか？
+        if (!xg_bThemeModified) {
+            // テーマを設定する。
+            XgSetThemeString(xg_strDefaultTheme);
+        } else {
+            // テーマを設定する。
+            XgSetThemeString(xg_strTheme);
         }
 
         // xg_forbidden_tags のタグが付いた単語は除外する（erase-remove idiom）。
