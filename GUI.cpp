@@ -7,8 +7,8 @@
 #include "layout.h"
 
 // クロスワードのサイズの制限。
-#define xg_nMinSize         3
-#define xg_nMaxSize         20
+#define XG_MIN_SIZE         3
+#define XG_MAX_SIZE         25
 
 #ifndef WM_MOUSEHWHEEL
     #define WM_MOUSEHWHEEL 0x020E
@@ -1122,8 +1122,8 @@ XgNewDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam*/)
             hwndCtrl = ::GetDlgItem(hwnd, edt2);
             ::ImmAssociateContext(hwndCtrl, NULL);
         }
-        SendDlgItemMessageW(hwnd, scr1, UDM_SETRANGE, 0, MAKELPARAM(xg_nMaxSize, xg_nMinSize));
-        SendDlgItemMessageW(hwnd, scr2, UDM_SETRANGE, 0, MAKELPARAM(xg_nMaxSize, xg_nMinSize));
+        SendDlgItemMessageW(hwnd, scr1, UDM_SETRANGE, 0, MAKELPARAM(XG_MAX_SIZE, XG_MIN_SIZE));
+        SendDlgItemMessageW(hwnd, scr2, UDM_SETRANGE, 0, MAKELPARAM(XG_MAX_SIZE, XG_MIN_SIZE));
         return TRUE;
 
     case WM_COMMAND:
@@ -1131,14 +1131,14 @@ XgNewDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam*/)
         case IDOK:
             // サイズの欄をチェックする。
             n1 = static_cast<int>(::GetDlgItemInt(hwnd, edt1, nullptr, FALSE));
-            if (n1 < xg_nMinSize || n1 > xg_nMaxSize) {
+            if (n1 < XG_MIN_SIZE || n1 > XG_MAX_SIZE) {
                 ::SendDlgItemMessageW(hwnd, edt1, EM_SETSEL, 0, -1);
                 XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_ENTERINT), nullptr, MB_ICONERROR);
                 ::SetFocus(::GetDlgItem(hwnd, edt1));
                 return 0;
             }
             n2 = static_cast<int>(::GetDlgItemInt(hwnd, edt2, nullptr, FALSE));
-            if (n2 < xg_nMinSize || n2 > xg_nMaxSize) {
+            if (n2 < XG_MIN_SIZE || n2 > XG_MAX_SIZE) {
                 ::SendDlgItemMessageW(hwnd, edt2, EM_SETSEL, 0, -1);
                 XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_ENTERINT), nullptr, MB_ICONERROR);
                 ::SetFocus(::GetDlgItem(hwnd, edt2));
@@ -1201,8 +1201,8 @@ XgGenerateDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam*/)
             hwndCtrl = ::GetDlgItem(hwnd, edt2);
             ::ImmAssociateContext(hwndCtrl, NULL);
         }
-        SendDlgItemMessageW(hwnd, scr1, UDM_SETRANGE, 0, MAKELPARAM(xg_nMaxSize, xg_nMinSize));
-        SendDlgItemMessageW(hwnd, scr2, UDM_SETRANGE, 0, MAKELPARAM(xg_nMaxSize, xg_nMinSize));
+        SendDlgItemMessageW(hwnd, scr1, UDM_SETRANGE, 0, MAKELPARAM(XG_MAX_SIZE, XG_MIN_SIZE));
+        SendDlgItemMessageW(hwnd, scr2, UDM_SETRANGE, 0, MAKELPARAM(XG_MAX_SIZE, XG_MIN_SIZE));
         return TRUE;
 
     case WM_COMMAND:
@@ -1210,14 +1210,14 @@ XgGenerateDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam*/)
         case IDOK:
             // サイズの欄をチェックする。
             n1 = static_cast<int>(::GetDlgItemInt(hwnd, edt1, nullptr, FALSE));
-            if (n1 < xg_nMinSize || n1 > xg_nMaxSize) {
+            if (n1 < XG_MIN_SIZE || n1 > XG_MAX_SIZE) {
                 ::SendDlgItemMessageW(hwnd, edt1, EM_SETSEL, 0, -1);
                 XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_ENTERINT), nullptr, MB_ICONERROR);
                 ::SetFocus(::GetDlgItem(hwnd, edt1));
                 return 0;
             }
             n2 = static_cast<int>(::GetDlgItemInt(hwnd, edt2, nullptr, FALSE));
-            if (n2 < xg_nMinSize || n2 > xg_nMaxSize) {
+            if (n2 < XG_MIN_SIZE || n2 > XG_MAX_SIZE) {
                 ::SendDlgItemMessageW(hwnd, edt2, EM_SETSEL, 0, -1);
                 XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_ENTERINT), nullptr, MB_ICONERROR);
                 ::SetFocus(::GetDlgItem(hwnd, edt2));
@@ -1333,8 +1333,8 @@ XgGenerateRepeatedlyDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam
             hwndCtrl = ::GetDlgItem(hwnd, edt2);
             ::ImmAssociateContext(hwndCtrl, NULL);
         }
-        SendDlgItemMessageW(hwnd, scr1, UDM_SETRANGE, 0, MAKELPARAM(xg_nMaxSize, xg_nMinSize));
-        SendDlgItemMessageW(hwnd, scr2, UDM_SETRANGE, 0, MAKELPARAM(xg_nMaxSize, xg_nMinSize));
+        SendDlgItemMessageW(hwnd, scr1, UDM_SETRANGE, 0, MAKELPARAM(XG_MAX_SIZE, XG_MIN_SIZE));
+        SendDlgItemMessageW(hwnd, scr2, UDM_SETRANGE, 0, MAKELPARAM(XG_MAX_SIZE, XG_MIN_SIZE));
         SendDlgItemMessageW(hwnd, scr3, UDM_SETRANGE, 0, MAKELPARAM(2, 100));
         return true;
 
@@ -1344,14 +1344,14 @@ XgGenerateRepeatedlyDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam
         case IDOK:
             // サイズの欄をチェックする。
             n1 = static_cast<int>(::GetDlgItemInt(hwnd, edt1, nullptr, FALSE));
-            if (n1 < xg_nMinSize || n1 > xg_nMaxSize) {
+            if (n1 < XG_MIN_SIZE || n1 > XG_MAX_SIZE) {
                 ::SendDlgItemMessageW(hwnd, edt1, EM_SETSEL, 0, -1);
                 XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_ENTERINT), nullptr, MB_ICONERROR);
                 ::SetFocus(::GetDlgItem(hwnd, edt1));
                 return 0;
             }
             n2 = static_cast<int>(::GetDlgItemInt(hwnd, edt2, nullptr, FALSE));
-            if (n2 < xg_nMinSize || n2 > xg_nMaxSize) {
+            if (n2 < XG_MIN_SIZE || n2 > XG_MAX_SIZE) {
                 ::SendDlgItemMessageW(hwnd, edt2, EM_SETSEL, 0, -1);
                 XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_ENTERINT), nullptr, MB_ICONERROR);
                 ::SetFocus(::GetDlgItem(hwnd, edt2));
