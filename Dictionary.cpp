@@ -109,6 +109,8 @@ void XgSetThemeString(const std::wstring& strTheme)
             xg_priority_tags.emplace(item);
         }
     }
+
+    xg_strTheme = strTheme;
 }
 
 // テーマをリセットする。

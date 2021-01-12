@@ -4601,16 +4601,16 @@ void __fastcall MainWnd_OnInitMenu(HWND /*hwnd*/, HMENU hMenu)
     }
 
     // テーマ。
-    if (xg_priority_tags.size() || xg_forbidden_tags.size()) {
+    if (!xg_bThemeModified) {
+        CheckMenuItem(hMenu, ID_THEME, MF_BYCOMMAND | MF_UNCHECKED);
+        EnableMenuItem(hMenu, ID_RESETTHEME, MF_BYCOMMAND | MF_GRAYED);
+    } else {
         CheckMenuItem(hMenu, ID_THEME, MF_BYCOMMAND | MF_CHECKED);
         if (xg_tag_histgram.empty()) {
             EnableMenuItem(hMenu, ID_RESETTHEME, MF_BYCOMMAND | MF_GRAYED);
         } else {
             EnableMenuItem(hMenu, ID_RESETTHEME, MF_BYCOMMAND | MF_ENABLED);
         }
-    } else {
-        CheckMenuItem(hMenu, ID_THEME, MF_BYCOMMAND | MF_UNCHECKED);
-        EnableMenuItem(hMenu, ID_RESETTHEME, MF_BYCOMMAND | MF_GRAYED);
     }
 
     // 連黒禁。
@@ -7242,13 +7242,13 @@ static BOOL XgTheme_OnInitDialog(HWND hwnd, HWND hwndFocus, LPARAM lParam)
         item.iItem = iItem;
         item.pszText = szText;
         item.iSubItem = 0;
-        ListView_InsertItem(hLst2, &item);
+        ListView_InsertItem(hLst3, &item);
 
         StringCbCopyW(szText, sizeof(szText), std::to_wstring(xg_tag_histgram[tag]).c_str());
         item.iItem = iItem;
         item.pszText = szText;
         item.iSubItem = 1;
-        ListView_SetItem(hLst2, &item);
+        ListView_SetItem(hLst3, &item);
 
         ++iItem;
     }
