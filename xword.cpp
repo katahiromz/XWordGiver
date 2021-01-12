@@ -4583,9 +4583,11 @@ bool XG_Board::FourDiagonals() const
 
 bool xg_bBlacksGenerated = false;
 
+// 黒マスパターンを生成する。
 template <int t_mode>
 bool __fastcall XgGenerateBlacksRecurse(const XG_Board& xword, LONG iRowjCol)
 {
+    // ルールの適合性をチェックする。
     if ((xg_nRules & RULE_DONTCORNERBLACK) && xword.CornerBlack())
         return false;
     if ((xg_nRules & RULE_DONTDOUBLEBLACK) && xword.DoubleBlack())
@@ -4597,11 +4599,9 @@ bool __fastcall XgGenerateBlacksRecurse(const XG_Board& xword, LONG iRowjCol)
     if ((xg_nRules & RULE_DONTFOURDIAGONALS) && xword.FourDiagonals())
         return false;
 
-    const int nRows = xg_nRows;
-    const int nCols = xg_nCols;
-    INT iRow = LOWORD(iRowjCol);
-    INT jCol = HIWORD(iRowjCol);
-
+    const int nRows = xg_nRows, nCols = xg_nCols;
+    INT iRow = LOWORD(iRowjCol), jCol = HIWORD(iRowjCol);
+    // 終了条件。
     if (iRow == nRows && jCol == 0) {
         EnterCriticalSection(&xg_cs);
         if (!xg_bBlacksGenerated) {
@@ -4612,51 +4612,52 @@ bool __fastcall XgGenerateBlacksRecurse(const XG_Board& xword, LONG iRowjCol)
         return xg_bBlacksGenerated || xg_bCancelled;
     }
 
+    // モードに応じて空白の最大長を決める。
     INT nMaxLen;
     switch (t_mode)
     {
-    case 0:
-        nMaxLen = 4;
-        break;
-    case 1:
-        nMaxLen = 3;
-        break;
-    case 2:
-        nMaxLen = 5;
-        break;
+    case 0: nMaxLen = 4; break;
+    case 1: nMaxLen = 3; break;
+    case 2: nMaxLen = 5; break;
     default:
         assert(0);
         nMaxLen = 4;
         break;
     }
 
+    // 終了条件。
     if (xg_bBlacksGenerated || xg_bCancelled)
         return true;
 
-    INT iTop, jLeft;
-    for (iTop = iRow; iTop > 0; --iTop) {
-        if (xword.GetAt(iTop - 1, jCol) == ZEN_BLACK) {
-            break;
-        }
-    }
-    if (iRow - iTop + 1 > nMaxLen) {
-        XG_Board copy(xword);
-        copy.SetAt(iRow, jCol, ZEN_BLACK);
-        if (jCol + 1 < nCols) {
-            if (XgGenerateBlacksRecurse<t_mode>(copy, MAKELONG(iRow, jCol + 1)))
-                return true;
-        } else {
-            if (XgGenerateBlacksRecurse<t_mode>(copy, MAKELONG(iRow + 1, 0)))
-                return true;
-        }
-        return false;
-    }
+    // マスの左側を見る。
+    INT jLeft;
     for (jLeft = jCol; jLeft > 0; --jLeft) {
         if (xword.GetAt(iRow, jLeft - 1) == ZEN_BLACK) {
             break;
         }
     }
     if (jCol - jLeft + 1 > nMaxLen) {
+        // 空白が最大長よりも長い。黒マスをセットして再帰。
+        XG_Board copy(xword);
+        copy.SetAt(iRow, jCol, ZEN_BLACK);
+        if (jCol + 1 < nCols) {
+            if (XgGenerateBlacksRecurse<t_mode>(copy, MAKELONG(iRow, jCol + 1)))
+                return true;
+        } else {
+            if (XgGenerateBlacksRecurse<t_mode>(copy, MAKELONG(iRow + 1, 0)))
+                return true;
+        }
+        return false;
+    }
+    // マスの上側を見る。
+    INT iTop;
+    for (iTop = iRow; iTop > 0; --iTop) {
+        if (xword.GetAt(iTop - 1, jCol) == ZEN_BLACK) {
+            break;
+        }
+    }
+    if (iRow - iTop + 1 > nMaxLen) {
+        // 空白が最大長よりも長い。黒マスをセットして再帰。
         XG_Board copy(xword);
         copy.SetAt(iRow, jCol, ZEN_BLACK);
         if (jCol + 1 < nCols) {
@@ -4669,21 +4670,25 @@ bool __fastcall XgGenerateBlacksRecurse(const XG_Board& xword, LONG iRowjCol)
         return false;
     }
 
-    if (rand() < RAND_MAX / 4) {
-        XG_Board copy(xword);
-        copy.SetAt(iRow, jCol, ZEN_BLACK);
+    if (rand() < RAND_MAX / 4) { // 1/4の確率で。。。
+        // 黒マスをセットして再帰。
         if (jCol + 1 < nCols) {
             if (XgGenerateBlacksRecurse<t_mode>(xword, MAKELONG(iRow, jCol + 1)))
                 return true;
+            XG_Board copy(xword);
+            copy.SetAt(iRow, jCol, ZEN_BLACK);
             if (XgGenerateBlacksRecurse<t_mode>(copy, MAKELONG(iRow, jCol + 1)))
                 return true;
         } else {
             if (XgGenerateBlacksRecurse<t_mode>(xword, MAKELONG(iRow + 1, 0)))
                 return true;
+            XG_Board copy(xword);
+            copy.SetAt(iRow, jCol, ZEN_BLACK);
             if (XgGenerateBlacksRecurse<t_mode>(copy, MAKELONG(iRow + 1, 0)))
                 return true;
         }
     } else {
+        // 黒マスをセットして再帰。
         XG_Board copy(xword);
         copy.SetAt(iRow, jCol, ZEN_BLACK);
         if (jCol + 1 < nCols) {
@@ -4701,8 +4706,10 @@ bool __fastcall XgGenerateBlacksRecurse(const XG_Board& xword, LONG iRowjCol)
     return false;
 }
 
+// 黒マスパターンを生成する（点対称）。
 bool __fastcall XgGenerateBlacksSym2Recurse(const XG_Board& xword, LONG iRowjCol)
 {
+    // ルールの適合性をチェックする。
     if ((xg_nRules & RULE_DONTCORNERBLACK) && xword.CornerBlack())
         return false;
     if ((xg_nRules & RULE_DONTDOUBLEBLACK) && xword.DoubleBlack())
@@ -4714,11 +4721,10 @@ bool __fastcall XgGenerateBlacksSym2Recurse(const XG_Board& xword, LONG iRowjCol
     if ((xg_nRules & RULE_DONTFOURDIAGONALS) && xword.FourDiagonals())
         return false;
 
-    const int nRows = xg_nRows;
-    const int nCols = xg_nCols;
-    INT iRow = LOWORD(iRowjCol);
-    INT jCol = HIWORD(iRowjCol);
+    const int nRows = xg_nRows, nCols = xg_nCols;
+    INT iRow = LOWORD(iRowjCol), jCol = HIWORD(iRowjCol);
 
+    // 終了条件。
     if (iRow == nRows && jCol == 0) {
         EnterCriticalSection(&xg_cs);
         if (!xg_bBlacksGenerated) {
@@ -4729,36 +4735,43 @@ bool __fastcall XgGenerateBlacksSym2Recurse(const XG_Board& xword, LONG iRowjCol
         return xg_bBlacksGenerated || xg_bCancelled;
     }
 
+    // 空白の最大長を決める。
     INT nMaxLen = 4;
 
+    // 終了条件。
     if (xg_bBlacksGenerated || xg_bCancelled)
         return true;
 
-    INT iTop, jLeft;
-    for (iTop = iRow; iTop > 0; --iTop) {
-        if (xword.GetAt(iTop - 1, jCol) == ZEN_BLACK) {
-            break;
-        }
-    }
-    if (iRow - iTop + 1 > nMaxLen) {
-        XG_Board copy(xword);
-        copy.SetAt(iRow, jCol, ZEN_BLACK);
-        copy.SetAt(nRows - (iRow + 1), nCols - (jCol + 1), ZEN_BLACK);
-        if (jCol + 1 < nCols) {
-            if (XgGenerateBlacksSym2Recurse(copy, MAKELONG(iRow, jCol + 1)))
-                return true;
-        } else {
-            if (XgGenerateBlacksSym2Recurse(copy, MAKELONG(iRow + 1, 0)))
-                return true;
-        }
-        return false;
-    }
+    // マスの左側を見る。
+    INT jLeft;
     for (jLeft = jCol; jLeft > 0; --jLeft) {
         if (xword.GetAt(iRow, jLeft - 1) == ZEN_BLACK) {
             break;
         }
     }
     if (jCol - jLeft + 1 > nMaxLen) {
+        // 空白が最大長よりも長い。黒マスをセットして再帰。
+        XG_Board copy(xword);
+        copy.SetAt(iRow, jCol, ZEN_BLACK);
+        copy.SetAt(nRows - (iRow + 1), nCols - (jCol + 1), ZEN_BLACK);
+        if (jCol + 1 < nCols) {
+            if (XgGenerateBlacksSym2Recurse(copy, MAKELONG(iRow, jCol + 1)))
+                return true;
+        } else {
+            if (XgGenerateBlacksSym2Recurse(copy, MAKELONG(iRow + 1, 0)))
+                return true;
+        }
+        return false;
+    }
+    // マスの上側を見る。
+    INT iTop;
+    for (iTop = iRow; iTop > 0; --iTop) {
+        if (xword.GetAt(iTop - 1, jCol) == ZEN_BLACK) {
+            break;
+        }
+    }
+    if (iRow - iTop + 1 > nMaxLen) {
+        // 空白が最大長よりも長い。黒マスをセットして再帰。
         XG_Board copy(xword);
         copy.SetAt(iRow, jCol, ZEN_BLACK);
         copy.SetAt(nRows - (iRow + 1), nCols - (jCol + 1), ZEN_BLACK);
@@ -4772,22 +4785,27 @@ bool __fastcall XgGenerateBlacksSym2Recurse(const XG_Board& xword, LONG iRowjCol
         return false;
     }
 
-    if (rand() < RAND_MAX / 4) {
-        XG_Board copy(xword);
-        copy.SetAt(iRow, jCol, ZEN_BLACK);
-        copy.SetAt(nRows - (iRow + 1), nCols - (jCol + 1), ZEN_BLACK);
+    if (rand() < RAND_MAX / 4) { // 1/4の確率で。。。
+        // 黒マスをセットして再帰。
         if (jCol + 1 < nCols) {
             if (XgGenerateBlacksSym2Recurse(xword, MAKELONG(iRow, jCol + 1)))
                 return true;
+            XG_Board copy(xword);
+            copy.SetAt(iRow, jCol, ZEN_BLACK);
+            copy.SetAt(nRows - (iRow + 1), nCols - (jCol + 1), ZEN_BLACK);
             if (XgGenerateBlacksSym2Recurse(copy, MAKELONG(iRow, jCol + 1)))
                 return true;
         } else {
             if (XgGenerateBlacksSym2Recurse(xword, MAKELONG(iRow + 1, 0)))
                 return true;
+            XG_Board copy(xword);
+            copy.SetAt(iRow, jCol, ZEN_BLACK);
+            copy.SetAt(nRows - (iRow + 1), nCols - (jCol + 1), ZEN_BLACK);
             if (XgGenerateBlacksSym2Recurse(copy, MAKELONG(iRow + 1, 0)))
                 return true;
         }
     } else {
+        // 黒マスをセットして再帰。
         XG_Board copy(xword);
         copy.SetAt(iRow, jCol, ZEN_BLACK);
         copy.SetAt(nRows - (iRow + 1), nCols - (jCol + 1), ZEN_BLACK);
