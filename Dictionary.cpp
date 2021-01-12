@@ -249,6 +249,23 @@ bool __fastcall XgLoadDictFile(LPCWSTR pszFile)
             }
         }
 
+        // xg_forbidden_tags のタグが付いた単語は除外する（erase-remove idiom）。
+        auto it = std::remove_if(xg_dict_data.begin(), xg_dict_data.end(), [](const XG_WordData& data) {
+            auto found = xg_word_to_tags_map.find(data.m_word);
+            if (found != xg_word_to_tags_map.end()) {
+                auto& tags2 = found->second;
+                for (auto& tag2 : tags2) {
+                    for (auto& tag1 : xg_forbidden_tags) {
+                        if (tag1 == tag2) {
+                            return true;
+                        }
+                    }
+                }
+            }
+            return false;
+        });
+        xg_dict_data.erase(it, xg_dict_data.end());
+
         // 二分探索のために、並び替えておく。
         std::sort(xg_dict_data.begin(), xg_dict_data.end(), xg_word_less());
         return true; // 成功。
