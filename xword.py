@@ -9,7 +9,7 @@
 
 def バージョン取得():
 	import sys
-	return 'Python (' + sys.argv[0] + " ver.0.2) " + sys.version
+	return 'Python (' + sys.argv[0] + " ver.0.3) " + sys.version
 
 def JSON形式を開く(filename):
 	data = None
@@ -58,7 +58,7 @@ def 連黒(row_count, column_count, cell_data):
 					return True
 	return False
 
-def 三方向黒マス(row_count, column_count, cell_data):
+def 三方黒(row_count, column_count, cell_data):
 	for i in range(0, row_count):
 		for j in range(0, column_count):
 			count = 0
@@ -326,14 +326,7 @@ def JSON形式をチェック(filename=None, data=None):
 							k += 1
 					if tate or yoko:
 						number += 1
-	# 解なら正当であるはず。
 	if data['is_solved']:
-		if 四隅に黒マス(row_count, column_count, cell_data):
-			raise RuntimeError('四隅に黒マスがあります。')
-		if 連黒(row_count, column_count, cell_data):
-			raise RuntimeError('連黒。')
-		if 三方向黒マス(row_count, column_count, cell_data):
-			raise RuntimeError('三方向黒マス。')
 		if 分断(row_count, column_count, cell_data):
 			raise RuntimeError('分断。')
 		if 単語の重複(h, v):
@@ -393,8 +386,8 @@ class クロスワード:
 		return 四隅に黒マス(self.行数, self.列数, self.セル)
 	def 連黒(self):
 		return 連黒(self.行数, self.列数, self.セル)
-	def 三方向黒マス(self):
-		return 三方向黒マス(self.行数, self.列数, self.セル)
+	def 三方黒(self):
+		return 三方黒(self.行数, self.列数, self.セル)
 	def 分断(self):
 		return 分断(self.行数, self.列数, self.セル)
 	def 単語の統計(self):
@@ -563,6 +556,15 @@ def main():
 			xword.備考欄追記("[解なし]")
 		else:
 			xword.単語の統計()
+		if xword.四隅に黒マス():
+			print("警告: ファイル「" + filename + "」は、四隅に黒マスです。")
+			xword.備考欄追記("[四隅に黒マス]")
+		if xword.連黒():
+			print("警告: ファイル「" + filename + "」は、連黒です。")
+			xword.備考欄追記("[連黒]")
+		if xword.三方黒():
+			print("警告: ファイル「" + filename + "」は、三方黒です。")
+			xword.備考欄追記("[三方黒]")
 		if xword.L字ワンペア():
 			print("警告: ファイル「" + filename + "」は、L字ワンペアです。")
 			xword.備考欄追記("[L字ワンペア]")
