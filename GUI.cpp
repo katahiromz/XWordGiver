@@ -7426,9 +7426,9 @@ static BOOL XgTheme_OnOK(HWND hwnd)
     for (INT iItem = 0; iItem < cItems; ++iItem) {
         ListView_GetItemText(hLst2, iItem, 0, szText, ARRAYSIZE(szText));
         xg_priority_tags.emplace(szText);
-        if (strTheme.empty())
-            strTheme += L",";
-        strTheme += L"+";
+        if (strTheme.size())
+            strTheme += L',';
+        strTheme += L'+';
         strTheme += szText;
     }
 
@@ -7436,9 +7436,9 @@ static BOOL XgTheme_OnOK(HWND hwnd)
     for (INT iItem = 0; iItem < cItems; ++iItem) {
         ListView_GetItemText(hLst3, iItem, 0, szText, ARRAYSIZE(szText));
         xg_forbidden_tags.emplace(szText);
-        if (strTheme.empty())
-            strTheme += L",";
-        strTheme += L"-";
+        if (strTheme.size())
+            strTheme += L',';
+        strTheme += L'-';
         strTheme += szText;
     }
 
