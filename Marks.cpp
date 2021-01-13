@@ -239,8 +239,8 @@ bool __fastcall XgGetMarkedCandidates(void)
     std::unordered_multiset<WCHAR> msCells;
     xg_vec_to_multiset(msCells, xg_solution.m_vCells);
 
-    // すべての登録されている単語について繰り返す。
-    for (const auto& data : xg_dict_data) {
+    // xg_dict_1に登録されている単語について繰り返す。
+    for (const auto& data : xg_dict_1) {
         // 単語を取り出す。2文字以下は無視。
         const std::wstring& word = data.m_word;
         if (word.size() <= 2)
@@ -291,6 +291,61 @@ break2:;
             }
             xg_vMarkedCands.emplace_back(word);
 failed:;
+        }
+    }
+
+    // xg_dict_2に登録されている単語について繰り返す。
+    for (const auto& data : xg_dict_2) {
+        // 単語を取り出す。2文字以下は無視。
+        const std::wstring& word = data.m_word;
+        if (word.size() <= 2)
+            continue;
+
+        // 単語をマルチセットへ変換。
+        std::unordered_multiset<WCHAR> ms;
+        xg_str_to_multiset(ms, word);
+
+        // 部分マルチセットになっているか？
+        if (xg_submultiseteq(ms, msCells)) {
+            // 配置を調べる。
+            std::vector<XG_Pos> vPos;
+            for (size_t k = 0; k < word.size(); k++) {
+                for (int i = 0; i < xg_nRows; ++i) {
+                    for (int j = 0; j < xg_nCols; ++j) {
+                        if (word[k] == xg_solution.GetAt(i, j) &&
+                            XgGetMarked(vPos, i, j) == -1)
+                        {
+                            vPos.emplace_back(i, j);
+                            goto break2_2;
+                        }
+                    }
+                }
+break2_2:;
+            }
+
+            // 隣り合う配置があれば失敗。
+            const int size = static_cast<int>(vPos.size());
+            for (int i = 0; i < size - 1; i++) {
+                for (int j = i + 1; j < size; j++) {
+                    if (vPos[i].m_i == vPos[j].m_i) {
+                        if (vPos[i].m_j + 1 == vPos[j].m_j ||
+                            vPos[i].m_j == vPos[j].m_j + 1)
+                        {
+                            goto failed_2;
+                        }
+                    }
+                    if (vPos[i].m_j == vPos[j].m_j)
+                    {
+                        if (vPos[i].m_i + 1 == vPos[j].m_i ||
+                            vPos[i].m_i == vPos[j].m_i + 1)
+                        {
+                            goto failed_2;
+                        }
+                    }
+                }
+            }
+            xg_vMarkedCands.emplace_back(word);
+failed_2:;
         }
     }
 

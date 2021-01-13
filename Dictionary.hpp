@@ -77,7 +77,7 @@ namespace std
 }
 
 // 辞書データ。
-extern std::vector<XG_WordData> xg_dict_data;
+extern std::vector<XG_WordData> xg_dict_1, xg_dict_2;
 // タグ付けデータ。
 extern std::unordered_map<std::wstring, std::unordered_set<std::wstring> > xg_word_to_tags_map;
 // タグのヒストグラム。
@@ -114,16 +114,9 @@ public:
 };
 
 // 単語データが存在するか？
-inline bool XgWordDataExists(const XG_WordData& wd)
+inline bool XgWordDataExists(const std::vector<XG_WordData>& data, const XG_WordData& wd)
 {
-    return binary_search(xg_dict_data.begin(), xg_dict_data.end(),
-                         wd, xg_word_less());
-}
-
-// 辞書データをソートする。
-inline void XgSortDictData(void)
-{
-    sort(xg_dict_data.begin(), xg_dict_data.end(), xg_word_less());
+    return binary_search(data.begin(), data.end(), wd, xg_word_less());
 }
 
 struct XG_WordData_Equal
@@ -135,7 +128,7 @@ struct XG_WordData_Equal
 };
 
 // 辞書データをソートし、一意的にする。
-void __fastcall XgSortAndUniqueDictData(void);
+void __fastcall XgSortAndUniqueDictData(std::vector<XG_WordData>& data);
 
 //////////////////////////////////////////////////////////////////////////////
 // 単語が長すぎるかどうかを確認するファンクタ。

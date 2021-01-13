@@ -976,10 +976,10 @@ XgInputHintDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
             ::GetDlgItemTextW(hwnd, edt1, sz, ARRAYSIZE(sz));
 
             // 辞書データに追加する。
-            xg_dict_data.emplace_back(s_word, sz);
+            xg_dict_1.emplace_back(s_word, sz);
 
             // 二分探索のために、並び替えておく。
-            XgSortAndUniqueDictData();
+            XgSortAndUniqueDictData(xg_dict_1);
 
             // ダイアログを終了。
             ::EndDialog(hwnd, IDOK);
@@ -5982,14 +5982,17 @@ void __fastcall MainWnd_OnFlipVH(HWND hwnd)
     }
     std::swap(xg_nRows, xg_nCols);
     if (xg_bSolved) {
-        auto old_dict = xg_dict_data;
-        xg_dict_data = XgCreateMiniDict();
+        auto old_dict_1 = xg_dict_1;
+        auto old_dict_2 = xg_dict_2;
+        xg_dict_1 = XgCreateMiniDict();
+        xg_dict_2.clear();
         xg_solution.DoNumbering();
         xg_solution.GetHintsStr(xg_strHints, 2, true);
         if (!XgParseHintsStr(hwnd, xg_strHints)) {
             xg_strHints.clear();
         }
-        std::swap(xg_dict_data, old_dict);
+        std::swap(xg_dict_1, old_dict_1);
+        std::swap(xg_dict_2, old_dict_2);
     }
     std::swap(xg_caret_pos.m_i, xg_caret_pos.m_j);
     for (auto& mark : xg_vMarks) {
@@ -10308,8 +10311,10 @@ bool __fastcall XgOpenCandsWnd(HWND hwnd, bool vertical)
 
     // 候補を取得する。
     int nSkip = 0;
-    std::vector<std::wstring> cands;
-    XgGetCandidatesAddBlack(cands, pattern, nSkip, left_black, right_black);
+    std::vector<std::wstring> cands, cands2;
+    XgGetCandidatesAddBlack<false>(cands, pattern, nSkip, left_black, right_black);
+    XgGetCandidatesAddBlack<true>(cands2, pattern, nSkip, left_black, right_black);
+    cands.insert(cands.end(), cands2.begin(), cands2.end());
 
     // 仮に適用して、正当かどうか確かめ、正当なものだけを
     // 最終的な候補とする。

@@ -1070,18 +1070,24 @@ void __fastcall XgSetInputMode(HWND hwnd, XG_InputMode mode)
 
 void __fastcall XgSetInputModeFromDict(HWND hwnd)
 {
-    if (xg_dict_data.size()) {
-        WCHAR ch = xg_dict_data[0].m_word[0];
-        if (XgIsCharHiraganaW(ch) || XgIsCharKatakanaW(ch)) {
-            XgSetInputMode(hwnd, xg_im_KANA);
-        } else if (XgIsCharKanjiW(ch)) {
-            XgSetInputMode(hwnd, xg_im_KANJI);
-        } else if (XgIsCharZenkakuCyrillicW(ch)) {
-            XgSetInputMode(hwnd, xg_im_RUSSIA);
-        } else if (XgIsCharZenkakuUpperW(ch) || XgIsCharZenkakuLowerW(ch) ||
-                   XgIsCharHankakuUpperW(ch) || XgIsCharHankakuLowerW(ch))
-        {
-            XgSetInputMode(hwnd, xg_im_ABC);
-        }
+    WCHAR ch;
+    if (xg_dict_1.size()) {
+        ch = xg_dict_1[0].m_word[0];
+    } else if (xg_dict_2.size()) {
+        ch = xg_dict_2[0].m_word[0];
+    } else {
+        return;
+    }
+
+    if (XgIsCharHiraganaW(ch) || XgIsCharKatakanaW(ch)) {
+        XgSetInputMode(hwnd, xg_im_KANA);
+    } else if (XgIsCharKanjiW(ch)) {
+        XgSetInputMode(hwnd, xg_im_KANJI);
+    } else if (XgIsCharZenkakuCyrillicW(ch)) {
+        XgSetInputMode(hwnd, xg_im_RUSSIA);
+    } else if (XgIsCharZenkakuUpperW(ch) || XgIsCharZenkakuLowerW(ch) ||
+               XgIsCharHankakuUpperW(ch) || XgIsCharHankakuLowerW(ch))
+    {
+        XgSetInputMode(hwnd, xg_im_ABC);
     }
 }

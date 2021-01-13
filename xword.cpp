@@ -127,6 +127,7 @@ static const LPCWSTR s_szBeginWord = L"\x226A", s_szEndWord = L"\x226B";
 //////////////////////////////////////////////////////////////////////////////
 
 // 候補があるか？
+template <bool t_alternative>
 bool __fastcall XgAnyCandidateAddBlack(const std::wstring& pattern)
 {
     // パターンの長さ。
@@ -175,7 +176,7 @@ bool __fastcall XgAnyCandidateAddBlack(const std::wstring& pattern)
     }
 
     // すべての単語について調べる。
-    for (const auto& data : xg_dict_data) {
+    for (const auto& data : (t_alternative ? xg_dict_2 : xg_dict_1)) {
         const std::wstring& word = data.m_word;
         const int wordlen = static_cast<int>(word.size());
 
@@ -215,6 +216,7 @@ break_continue:;
 }
 
 // 候補があるか？（黒マス追加なし）
+template <bool t_alternative>
 bool __fastcall XgAnyCandidateNoAddBlack(const std::wstring& pattern)
 {
     // パターンの長さ。
@@ -234,7 +236,7 @@ bool __fastcall XgAnyCandidateNoAddBlack(const std::wstring& pattern)
 #endif
 
     // すべての単語について調べる。
-    for (const auto& data : xg_dict_data) {
+    for (const auto& data : (t_alternative ? xg_dict_2 : xg_dict_1)) {
         // 単語の長さ。
         const std::wstring& word = data.m_word;
         const int wordlen = static_cast<int>(word.size());
@@ -268,7 +270,13 @@ break_continue:;
 bool __fastcall XgAnyCandidateWholeSpace(int patlen)
 {
     // すべての単語について調べる。
-    for (const auto& data : xg_dict_data) {
+    for (const auto& data : xg_dict_1) {
+        const std::wstring& word = data.m_word;
+        const int wordlen = static_cast<int>(word.size());
+        if (wordlen == patlen)
+            return true;    // あった。
+    }
+    for (const auto& data : xg_dict_2) {
         const std::wstring& word = data.m_word;
         const int wordlen = static_cast<int>(word.size());
         if (wordlen == patlen)
@@ -443,13 +451,17 @@ XG_EpvCode __fastcall XG_Board::EveryPatternValid1(
                 if (bSpaceFound) {
                     // パターンにマッチする候補が存在しなければ失敗する。
                     if (xg_bNoAddBlack) {
-                        if (!XgAnyCandidateNoAddBlack(pattern)) {
+                        if (!XgAnyCandidateNoAddBlack<false>(pattern) &&
+                            !XgAnyCandidateNoAddBlack<true>(pattern))
+                        {
                             // マッチしなかった位置。
                             pos = XG_Pos(i, lo);
                             return xg_epv_PATNOTMATCH;  // マッチしなかった。
                         }
                     } else {
-                        if (!XgAnyCandidateAddBlack(pattern)) {
+                        if (!XgAnyCandidateAddBlack<false>(pattern) &&
+                            !XgAnyCandidateAddBlack<true>(pattern))
+                        {
                             // マッチしなかった位置。
                             pos = XG_Pos(i, lo);
                             return xg_epv_PATNOTMATCH;  // マッチしなかった。
@@ -461,7 +473,9 @@ XG_EpvCode __fastcall XG_Board::EveryPatternValid1(
                         return xg_epv_DOUBLEWORD;   // 単語の重複のため、失敗。
 
                     // 二分探索で単語があるかどうか調べる。
-                    if (!XgWordDataExists(XG_WordData(pattern))) {
+                    if (!XgWordDataExists(xg_dict_1, XG_WordData(pattern)) &&
+                        !XgWordDataExists(xg_dict_2, XG_WordData(pattern)))
+                    {
                         // 登録されていない単語なので、登録する。
                         vNotFoundWords.emplace_back(pattern);
                     }
@@ -552,13 +566,17 @@ XG_EpvCode __fastcall XG_Board::EveryPatternValid1(
                 if (bSpaceFound) {
                     // パターンにマッチする候補が存在しなければ失敗する。
                     if (xg_bNoAddBlack) {
-                        if (!XgAnyCandidateNoAddBlack(pattern)) {
+                        if (!XgAnyCandidateNoAddBlack<false>(pattern) &&
+                            !XgAnyCandidateNoAddBlack<true>(pattern))
+                        {
                             // マッチしなかった位置。
                             pos = XG_Pos(lo, j);
                             return xg_epv_PATNOTMATCH;  // マッチしなかった。
                         }
                     } else {
-                        if (!XgAnyCandidateAddBlack(pattern)) {
+                        if (!XgAnyCandidateAddBlack<false>(pattern) &&
+                            !XgAnyCandidateAddBlack<true>(pattern))
+                        {
                             // マッチしなかった位置。
                             pos = XG_Pos(lo, j);
                             return xg_epv_PATNOTMATCH;  // マッチしなかった。
@@ -571,7 +589,9 @@ XG_EpvCode __fastcall XG_Board::EveryPatternValid1(
                     }
 
                     // 二分探索で単語があるかどうか調べる。
-                    if (!XgWordDataExists(XG_WordData(pattern))) {
+                    if (!XgWordDataExists(xg_dict_1, XG_WordData(pattern)) &&
+                        !XgWordDataExists(xg_dict_2, XG_WordData(pattern)))
+                    {
                         // 登録されていない単語なので、登録する。
                         vNotFoundWords.emplace_back(pattern);
                     }
@@ -688,14 +708,18 @@ XG_EpvCode __fastcall XG_Board::EveryPatternValid2(
                 if (bSpaceFound) {
                     // パターンにマッチする候補が存在しなければ失敗する。
                     if (xg_bNoAddBlack) {
-                        if (!XgAnyCandidateNoAddBlack(pattern)) {
+                        if (!XgAnyCandidateNoAddBlack<false>(pattern) &&
+                            !XgAnyCandidateNoAddBlack<true>(pattern))
+                        {
                             // マッチしなかった位置。
                             j = lo;
                             pos = pos2;
                             return xg_epv_PATNOTMATCH;  // マッチしなかった。
                         }
                     } else {
-                        if (!XgAnyCandidateAddBlack(pattern)) {
+                        if (!XgAnyCandidateAddBlack<false>(pattern) &&
+                            !XgAnyCandidateAddBlack<true>(pattern))
+                        {
                             // マッチしなかった位置。
                             j = lo;
                             pos = pos2;
@@ -710,7 +734,9 @@ XG_EpvCode __fastcall XG_Board::EveryPatternValid2(
                     }
 
                     // 二分探索で単語があるかどうか調べる。
-                    if (!XgWordDataExists(XG_WordData(pattern))) {
+                    if (!XgWordDataExists(xg_dict_1, XG_WordData(pattern)) &&
+                        !XgWordDataExists(xg_dict_2, XG_WordData(pattern)))
+                    {
                         // 登録されていない単語なので、登録する。
                         vNotFoundWords.emplace_back(std::move(pattern));
                         pos = pos2;
@@ -810,14 +836,18 @@ XG_EpvCode __fastcall XG_Board::EveryPatternValid2(
                 if (bSpaceFound) {
                     // パターンにマッチする候補が存在しなければ失敗する。
                     if (xg_bNoAddBlack) {
-                        if (!XgAnyCandidateNoAddBlack(pattern)) {
+                        if (!XgAnyCandidateNoAddBlack<false>(pattern) &&
+                            !XgAnyCandidateNoAddBlack<true>(pattern))
+                        {
                             // マッチしなかった位置。
                             i = lo;
                             pos = pos2;
                             return xg_epv_PATNOTMATCH;  // マッチしなかった。
                         }
                     } else {
-                        if (!XgAnyCandidateAddBlack(pattern)) {
+                        if (!XgAnyCandidateAddBlack<false>(pattern) &&
+                            !XgAnyCandidateAddBlack<true>(pattern))
+                        {
                             // マッチしなかった位置。
                             i = lo;
                             pos = pos2;
@@ -832,7 +862,9 @@ XG_EpvCode __fastcall XG_Board::EveryPatternValid2(
                     }
 
                     // 二分探索で単語があるかどうか調べる。
-                    if (!XgWordDataExists(XG_WordData(pattern))) {
+                    if (!XgWordDataExists(xg_dict_1, XG_WordData(pattern)) &&
+                        !XgWordDataExists(xg_dict_2, XG_WordData(pattern)))
+                    {
                         // 登録されていない単語なので、登録する。
                         vNotFoundWords.emplace_back(std::move(pattern));
                         pos = pos2;
@@ -1018,7 +1050,7 @@ bool __fastcall XG_Board::DoNumbering()
 
                 // 二分探索で単語があるかどうか調べる。
                 wd.m_word = word;
-                if (XgWordDataExists(wd)) {
+                if (XgWordDataExists(xg_dict_1, wd) || XgWordDataExists(xg_dict_2, wd)) {
                     // 一度使った単語として登録。
                     used_words.emplace(word);
 
@@ -1068,7 +1100,7 @@ space_found_1:;
 
                 // 二分探索で単語があるかどうか調べる。
                 wd.m_word = word;
-                if (XgWordDataExists(wd)) {
+                if (XgWordDataExists(xg_dict_1, wd) || XgWordDataExists(xg_dict_2, wd)) {
                     // 一度使った単語として登録。
                     used_words.emplace(word);
 
@@ -1266,7 +1298,8 @@ void __fastcall XG_Board::DoNumberingNoCheck()
 }
 
 // 候補を取得する。
-bool __fastcall XgGetCandidatesAddBlack(
+template <bool t_alternative> bool __fastcall
+XgGetCandidatesAddBlack(
     std::vector<std::wstring>& cands, const std::wstring& pattern, int& nSkip,
     bool left_black_check, bool right_black_check)
 {
@@ -1289,7 +1322,10 @@ bool __fastcall XgGetCandidatesAddBlack(
     // 候補をクリアする。
     cands.clear();
     // スピードのために予約する。
-    cands.reserve(xg_dict_data.size() / 32);
+    if (t_alternative)
+        cands.reserve(xg_dict_2.size() / 32);
+    else
+        cands.reserve(xg_dict_1.size() / 32);
 
     // 初期化する。
     nSkip = 0;
@@ -1340,7 +1376,7 @@ bool __fastcall XgGetCandidatesAddBlack(
     }
 
     // すべての登録されている単語について。
-    for (const auto& data : xg_dict_data) {
+    for (const auto& data : (t_alternative ? xg_dict_2 : xg_dict_1)) {
         // パターンより単語の方が長い場合、スキップする。
         const std::wstring& word = data.m_word;
         const int wordlen = static_cast<int>(word.size());
@@ -1409,9 +1445,8 @@ bool __fastcall XgGetCandidatesAddBlack(
 }
 
 // 候補を取得する（黒マス追加なし）。
-bool __fastcall
-XgGetCandidatesNoAddBlack(
-    std::vector<std::wstring>& cands, const std::wstring& pattern)
+template <bool t_alternative> bool __fastcall
+XgGetCandidatesNoAddBlack(std::vector<std::wstring>& cands, const std::wstring& pattern)
 {
     // 単語の長さ。
     const int patlen = static_cast<int>(pattern.size());
@@ -1420,10 +1455,13 @@ XgGetCandidatesNoAddBlack(
     // 候補をクリアする。
     cands.clear();
     // スピードのため、予約する。
-    cands.reserve(xg_dict_data.size() / 32);
+    if (t_alternative)
+        cands.reserve(xg_dict_2.size() / 32);
+    else
+        cands.reserve(xg_dict_1.size() / 32);
 
     // すべての登録された単語について。
-    for (const auto& data : xg_dict_data) {
+    for (const auto& data : (t_alternative ? xg_dict_2 : xg_dict_1)) {
         // パターンと単語の長さが等しくなければ、スキップする。
         const std::wstring& word = data.m_word;
         const int wordlen = static_cast<int>(word.size());
@@ -2033,12 +2071,25 @@ void __fastcall XG_Board::GetHintsStr(
             }
 
             // ヒント文章を追加する。
-            for (const auto& data : xg_dict_data) {
+            bool added = false;
+            for (const auto& data : xg_dict_1) {
                 if (_wcsicmp(data.m_word.data(),
                              info.m_word.data()) == 0)
                 {
                     str += data.m_hint;
+                    added = true;
                     break;
+                }
+            }
+            if (!added) {
+                for (const auto& data : xg_dict_2) {
+                    if (_wcsicmp(data.m_word.data(),
+                                 info.m_word.data()) == 0)
+                    {
+                        str += data.m_hint;
+                        added = true;
+                        break;
+                    }
                 }
             }
             str += xg_pszNewLine;   // 改行。
@@ -2062,10 +2113,21 @@ void __fastcall XG_Board::GetHintsStr(
             }
 
             // ヒント文章を追加する。
-            for (const auto& data : xg_dict_data) {
+            bool added = false;
+            for (const auto& data : xg_dict_1) {
                 if (_wcsicmp(data.m_word.data(), info.m_word.data()) == 0) {
                     str += data.m_hint;
+                    added = true;
                     break;
+                }
+            }
+            if (!added) {
+                for (const auto& data : xg_dict_2) {
+                    if (_wcsicmp(data.m_word.data(), info.m_word.data()) == 0) {
+                        str += data.m_hint;
+                        added = true;
+                        break;
+                    }
                 }
             }
             str += xg_pszNewLine;   // 改行。
@@ -2087,10 +2149,21 @@ void __fastcall XG_Board::GetHintsStr(
             str += sz;
 
             // ヒント文章を追加する。
-            for (const auto& data : xg_dict_data) {
+            bool added = false;
+            for (const auto& data : xg_dict_1) {
                 if (_wcsicmp(data.m_word.data(), info.m_word.data()) == 0) {
                     str += data.m_hint;
+                    added = true;
                     break;
+                }
+            }
+            if (!added) {
+                for (const auto& data : xg_dict_2) {
+                    if (_wcsicmp(data.m_word.data(), info.m_word.data()) == 0) {
+                        str += data.m_hint;
+                        added = true;
+                        break;
+                    }
                 }
             }
             str += XgLoadStringDx1(IDS_ENDLI);    // </li>
@@ -2114,10 +2187,21 @@ void __fastcall XG_Board::GetHintsStr(
             str += sz;
 
             // ヒント文章を追加する。
-            for (const auto& data : xg_dict_data) {
+            bool added = false;
+            for (const auto& data : xg_dict_1) {
                 if (_wcsicmp(data.m_word.data(), info.m_word.data()) == 0) {
                     str += data.m_hint;
+                    added = true;
                     break;
+                }
+            }
+            if (!added) {
+                for (const auto& data : xg_dict_2) {
+                    if (_wcsicmp(data.m_word.data(), info.m_word.data()) == 0) {
+                        str += data.m_hint;
+                        added = true;
+                        break;
+                    }
                 }
             }
             str += XgLoadStringDx1(IDS_ENDLI);    // </li>
@@ -2207,8 +2291,60 @@ void __fastcall XgSolveXWord_AddBlackRecurse(const XG_Board& xw)
                 // パターンにマッチする候補を取得する。
                 int nSkip;
                 std::vector<std::wstring> cands;
-                if (XgGetCandidatesAddBlack(cands, pattern, nSkip,
-                                            left_black_check, right_black_check))
+                if (XgGetCandidatesAddBlack<false>(cands, pattern, nSkip,
+                                                   left_black_check, right_black_check))
+                {
+                    // 候補の一部をかき混ぜる。
+                    auto it = cands.begin();
+                    std::advance(it, nSkip);
+                    std::random_shuffle(it, cands.end());
+
+                    for (const auto& cand : cands) {
+                        // すでに解かれているなら、終了。
+                        // キャンセルされているなら、終了。
+                        // 再計算すべきなら、終了する。
+                        if (xg_bSolved || xg_bCancelled || xg_bRetrying)
+                            return;
+
+                        bool bCanPutBlack = true;
+                        for (int k = lo; k <= hi; k++) {
+                            if (cand[k - lo] == ZEN_BLACK && !xw.CanPutBlack(i, k)) {
+                                bCanPutBlack = false;
+                                break;
+                            }
+                        }
+                        if (bCanPutBlack) {
+                            // 候補を適用して再帰する。
+                            XG_Board copy(xw);
+
+                            assert(cand.size() == pattern.size());
+
+                            for (int k = lo; k <= hi; k++) {
+                                assert(copy.GetAt(i, k) == ZEN_SPACE ||
+                                       copy.GetAt(i, k) == cand[k - lo]);
+
+                                if (cand[k - lo] == ZEN_BLACK && !copy.CanPutBlack(i, k)) {
+                                    bCanPutBlack = false;
+                                    break;
+                                }
+
+                                copy.SetAt(i, k, cand[k - lo]);
+                            }
+
+                            if (!bCanPutBlack) {
+                                continue;
+                            }
+
+                            // 再帰する。
+                            XgSolveXWord_AddBlackRecurse(copy);
+                        }
+
+                        // 空ではないマスの個数をセットする。
+                        info->m_count = xw.Count();
+                    }
+                }
+                if (XgGetCandidatesAddBlack<true>(cands, pattern, nSkip,
+                                                  left_black_check, right_black_check))
                 {
                     // 候補の一部をかき混ぜる。
                     auto it = cands.begin();
@@ -2306,8 +2442,60 @@ void __fastcall XgSolveXWord_AddBlackRecurse(const XG_Board& xw)
                 // パターンにマッチする候補を取得する。
                 int nSkip;
                 std::vector<std::wstring> cands;
-                if (XgGetCandidatesAddBlack(cands, pattern, nSkip,
-                                            left_black_check, right_black_check))
+                if (XgGetCandidatesAddBlack<false>(cands, pattern, nSkip,
+                                                   left_black_check, right_black_check))
+                {
+                    // 候補の一部をかき混ぜる。
+                    auto it = cands.begin();
+                    std::advance(it, nSkip);
+                    std::random_shuffle(it, cands.end());
+
+                    for (const auto& cand : cands) {
+                        // すでに解かれているなら、終了。
+                        // キャンセルされているなら、終了。
+                        // 再計算すべきなら、終了する。
+                        if (xg_bSolved || xg_bCancelled || xg_bRetrying)
+                            return;
+
+                        bool bCanPutBlack = true;
+                        for (int k = lo; k <= hi; k++) {
+                            if (cand[k - lo] == ZEN_BLACK && !xw.CanPutBlack(k, j)) {
+                                bCanPutBlack = false;
+                                break;
+                            }
+                        }
+                        if (bCanPutBlack) {
+                            // 候補を適用して再帰する。
+                            XG_Board copy(xw);
+
+                            assert(cand.size() == pattern.size());
+
+                            for (int k = lo; k <= hi; k++) {
+                                assert(copy.GetAt(k, j) == ZEN_SPACE ||
+                                       copy.GetAt(k, j) == cand[k - lo]);
+
+                                if (cand[k - lo] == ZEN_BLACK && !copy.CanPutBlack(k, j)) {
+                                    bCanPutBlack = false;
+                                    break;
+                                }
+
+                                copy.SetAt(k, j, cand[k - lo]);
+                            }
+
+                            if (!bCanPutBlack) {
+                                continue;
+                            }
+
+                            // 再帰する。
+                            XgSolveXWord_AddBlackRecurse(copy);
+                        }
+
+                        // 空ではないマスの個数をセットする。
+                        info->m_count = xw.Count();
+                    }
+                }
+                if (XgGetCandidatesAddBlack<true>(cands, pattern, nSkip,
+                                                  left_black_check, right_black_check))
                 {
                     // 候補の一部をかき混ぜる。
                     auto it = cands.begin();
@@ -2448,40 +2636,36 @@ void __fastcall XgSolveXWord_NoAddBlackRecurse(const XG_Board& xw)
 
                 // パターンにマッチする候補を取得する（黒マス追加なし）。
                 std::vector<std::wstring> cands;
-                if (XgGetCandidatesNoAddBlack(cands, pattern)) {
+                if (XgGetCandidatesNoAddBlack<false>(cands, pattern)) {
                     // 候補をかき混ぜる。
                     std::random_shuffle(cands.begin(), cands.end());
 
-                    // 優先タグがあれば。。。
-                    if (xg_priority_tags.size()) {
-                        // とりあえずソートする。
-                        std::sort(cands.begin(), cands.end(), [](const std::wstring& a, const std::wstring& b){
-                            const auto& x = xg_word_to_tags_map[a];
-                            const auto& y = xg_word_to_tags_map[b];
-                            bool left = false, right = false;
-                            for (auto& tag1 : xg_priority_tags) {
-                                for (auto& tag2 : x) {
-                                    if (tag1 == tag2) {
-                                        left = true;
-                                        break;
-                                    }
-                                }
-                                if (left)
-                                    break;
-                            }
-                            for (auto& tag1 : xg_priority_tags) {
-                                for (auto& tag2 : y) {
-                                    if (tag1 == tag2) {
-                                        right = true;
-                                        break;
-                                    }
-                                }
-                                if (right)
-                                    break;
-                            }
-                            return (left > right);
-                        });
+                    for (const auto& cand : cands) {
+                        // すでに解かれているなら、終了。
+                        // キャンセルされているなら、終了。
+                        // 再計算すべきなら、終了する。
+                        if (xg_bSolved || xg_bCancelled || xg_bRetrying)
+                            return;
+
+                        // 候補を適用して再帰する。
+                        XG_Board copy(xw);
+                        assert(cand.size() == pattern.size());
+                        for (int k = lo; k <= hi; k++) {
+                            assert(copy.GetAt(i, k) == ZEN_SPACE ||
+                                   copy.GetAt(i, k) == cand[k - lo]);
+                            copy.SetAt(i, k, cand[k - lo]);
+                        }
+
+                        // 再帰する。
+                        XgSolveXWord_NoAddBlackRecurse(copy);
+
+                        // 空ではないマスの個数をセットする。
+                        info->m_count = xw.Count();
                     }
+                }
+                if (XgGetCandidatesNoAddBlack<true>(cands, pattern)) {
+                    // 候補をかき混ぜる。
+                    std::random_shuffle(cands.begin(), cands.end());
 
                     for (const auto& cand : cands) {
                         // すでに解かれているなら、終了。
@@ -2549,40 +2733,36 @@ void __fastcall XgSolveXWord_NoAddBlackRecurse(const XG_Board& xw)
 
                 // パターンにマッチする候補を取得する。
                 std::vector<std::wstring> cands;
-                if (XgGetCandidatesNoAddBlack(cands, pattern)) {
+                if (XgGetCandidatesNoAddBlack<false>(cands, pattern)) {
                     // 候補をかき混ぜる。
                     std::random_shuffle(cands.begin(), cands.end());
 
-                    // 優先タグがあれば。。。
-                    if (xg_priority_tags.size()) {
-                        // とりあえずソートする。
-                        std::sort(cands.begin(), cands.end(), [](const std::wstring& a, const std::wstring& b){
-                            const auto& x = xg_word_to_tags_map[a];
-                            const auto& y = xg_word_to_tags_map[b];
-                            bool left = false, right = false;
-                            for (auto& tag1 : xg_priority_tags) {
-                                for (auto& tag2 : x) {
-                                    if (tag1 == tag2) {
-                                        left = true;
-                                        break;
-                                    }
-                                }
-                                if (left)
-                                    break;
-                            }
-                            for (auto& tag1 : xg_priority_tags) {
-                                for (auto& tag2 : y) {
-                                    if (tag1 == tag2) {
-                                        right = true;
-                                        break;
-                                    }
-                                }
-                                if (right)
-                                    break;
-                            }
-                            return (left > right);
-                        });
+                    for (const auto& cand : cands) {
+                        // すでに解かれているなら、終了。
+                        // キャンセルされているなら、終了。
+                        // 再計算すべきなら、終了する。
+                        if (xg_bSolved || xg_bCancelled || xg_bRetrying)
+                            return;
+
+                        // 候補を適用して再帰する。
+                        XG_Board copy(xw);
+                        assert(cand.size() == pattern.size());
+                        for (int k = lo; k <= hi; k++) {
+                            assert(copy.GetAt(k, j) == ZEN_SPACE ||
+                                   copy.GetAt(k, j) == cand[k - lo]);
+                            copy.SetAt(k, j, cand[k - lo]);
+                        }
+
+                        // 再帰する。
+                        XgSolveXWord_NoAddBlackRecurse(copy);
+
+                        // 空ではないマスの個数をセットする。
+                        info->m_count = xw.Count();
                     }
+                }
+                if (XgGetCandidatesNoAddBlack<false>(cands, pattern)) {
+                    // 候補をかき混ぜる。
+                    std::random_shuffle(cands.begin(), cands.end());
 
                     for (const auto& cand : cands) {
                         // すでに解かれているなら、終了。
@@ -2676,7 +2856,7 @@ void __fastcall XgSolveXWord_AddBlack(const XG_Board& xw)
         return;
 
     // ランダムな順序の単語ベクターを作成する。
-    std::vector<XG_WordData> words(xg_dict_data);
+    std::vector<XG_WordData> words(xg_dict_1);
     std::random_shuffle(words.begin(), words.end());
 
     for (int i = 0; i < nRows; i++) {
@@ -2750,7 +2930,7 @@ void __fastcall XgSolveXWord_AddBlack(const XG_Board& xw)
                         XgSolveXWord_AddBlackRecurse(copy);
                     }
                 }
-                return;
+                goto retry_1;
             }
         }
     }
@@ -2826,10 +3006,168 @@ void __fastcall XgSolveXWord_AddBlack(const XG_Board& xw)
                         XgSolveXWord_AddBlackRecurse(copy);
                     }
                 }
-                return;
+                goto retry_1;
             }
         }
     }
+
+    // ランダムな順序の単語ベクターを作成する。
+retry_1:;
+    words = xg_dict_2;
+    std::random_shuffle(words.begin(), words.end());
+
+    for (int i = 0; i < nRows; i++) {
+        for (int j = 0; j < nCols - 1; j++) {
+            // すでに解かれているなら、終了。
+            // キャンセルされているなら、終了。
+            // 再計算すべきなら、終了する。
+            if (xg_bSolved || xg_bCancelled || xg_bRetrying)
+                return;
+
+            // 空白の連続があるか？
+            const WCHAR ch1 = xw.GetAt(i, j), ch2 = xw.GetAt(i, j + 1);
+            if (ch1 == ZEN_SPACE && ch2 == ZEN_SPACE) {
+                // 文字が置ける区間[lo, hi]を求める。
+                int lo = j;
+                while (lo > 0) {
+                    if (xw.GetAt(i, lo - 1) == ZEN_BLACK)
+                        break;
+                    lo--;
+                }
+                while (j + 1 < nCols) {
+                    if (xw.GetAt(i, j + 1) == ZEN_BLACK)
+                        break;
+                    j++;
+                }
+                const int hi = j;
+
+                // パターンの長さを求める。
+                const int patlen = hi - lo + 1;
+                for (const auto& word_data : words) {
+                    // すでに解かれているなら、終了。
+                    // キャンセルされているなら、終了。
+                    // 再計算すべきなら、終了する。
+                    if (xg_bSolved || xg_bCancelled || xg_bRetrying)
+                        return;
+
+                    // 単語の長さがパターンの長さ以下か？
+                    const std::wstring& word = word_data.m_word;
+                    const int wordlen = static_cast<int>(word.size());
+                    if (wordlen > patlen)
+                        continue;
+
+                    // 必要な黒マスは置けるか？
+                    if ((lo == 0 || xw.CanPutBlack(i, lo - 1)) &&
+                        (hi + 1 >= nCols || xw.CanPutBlack(i, hi + 1)))
+                    {
+                        // 単語とその両端の外側の黒マスをセットして再帰する。
+                        XG_Board copy(xw);
+                        for (int k = 0; k < wordlen; k++) {
+                            copy.SetAt(i, lo + k, word[k]);
+                        }
+
+                        if (lo > 0 && copy.GetAt(i, lo - 1) != ZEN_BLACK) {
+                            if (!copy.CanPutBlack(i, lo - 1))
+                                continue;
+
+                            copy.SetAt(i, lo - 1, ZEN_BLACK);
+                        }
+                        if (hi + 1 < nCols && copy.GetAt(i, hi + 1) != ZEN_BLACK) {
+                            if (!copy.CanPutBlack(i, hi + 1))
+                                continue;
+
+                            copy.SetAt(i, hi + 1, ZEN_BLACK);
+                        }
+
+                        //if (copy.TriBlackAround()) {
+                        //    continue;
+                        //}
+
+                        // 再帰する。
+                        XgSolveXWord_AddBlackRecurse(copy);
+                    }
+                }
+                goto retry_2;
+            }
+        }
+    }
+
+    for (int j = 0; j < nCols; j++) {
+        for (int i = 0; i < nRows - 1; i++) {
+            // すでに解かれているなら、終了。
+            // キャンセルされているなら、終了。
+            // 再計算すべきなら、終了する。
+            if (xg_bSolved || xg_bCancelled || xg_bRetrying)
+                return;
+
+            // 空白の連続があるか？
+            const WCHAR ch1 = xw.GetAt(i, j), ch2 = xw.GetAt(i + 1, j);
+            if (ch1 == ZEN_SPACE && ch2 == ZEN_SPACE) {
+                // 文字が置ける区間[lo, hi]を求める。
+                int lo = i;
+                while (lo > 0) {
+                    if (xw.GetAt(lo - 1, j) == ZEN_BLACK)
+                        break;
+                    lo--;
+                }
+                while (i + 1 < nRows) {
+                    if (xw.GetAt(i + 1, j) == ZEN_BLACK)
+                        break;
+                    j++;
+                }
+                const int hi = i;
+
+                // パターンの長さを求める。
+                const int patlen = hi - lo + 1;
+                for (const auto& word_data : words) {
+                    // すでに解かれているなら、終了。
+                    // キャンセルされているなら、終了。
+                    // 再計算すべきなら、終了する。
+                    if (xg_bSolved || xg_bCancelled || xg_bRetrying)
+                        return;
+
+                    // 単語の長さがパターンの長さ以下か？
+                    const std::wstring& word = word_data.m_word;
+                    const int wordlen = static_cast<int>(word.size());
+                    if (wordlen > patlen)
+                        continue;
+
+                    // 必要な黒マスは置けるか？
+                    if ((lo == 0 || xw.CanPutBlack(lo - 1, j)) &&
+                        (hi + 1 >= nRows || xw.CanPutBlack(hi + 1, j)))
+                    {
+                        // 単語とその両端の外側の黒マスをセットして再帰する。
+                        XG_Board copy(xw);
+                        for (int k = 0; k < wordlen; k++) {
+                            copy.SetAt(lo + k, j, word[k]);
+                        }
+
+                        if (lo > 0 && copy.GetAt(lo - 1, j) != ZEN_BLACK) {
+                            if (!copy.CanPutBlack(lo - 1, j))
+                                continue;
+
+                            copy.SetAt(lo - 1, j, ZEN_BLACK);
+                        }
+                        if (hi + 1 < nRows && copy.GetAt(hi + 1, j) != ZEN_BLACK) {
+                            if (!copy.CanPutBlack(hi + 1, j))
+                                continue;
+
+                            copy.SetAt(hi + 1, j, ZEN_BLACK);
+                        }
+
+                        //if (copy.TriBlackAround()) {
+                        //    continue;
+                        //}
+
+                        // 再帰する。
+                        XgSolveXWord_AddBlackRecurse(copy);
+                    }
+                }
+                goto retry_2;
+            }
+        }
+    }
+retry_2:;
 }
 
 // 解く（黒マス追加なし）。
@@ -2856,7 +3194,7 @@ void __fastcall XgSolveXWord_NoAddBlack(const XG_Board& xw)
         return;
 
     // ランダムな順序の単語ベクターを作成する。
-    std::vector<XG_WordData> words(xg_dict_data);
+    std::vector<XG_WordData> words(xg_dict_1);
     std::random_shuffle(words.begin(), words.end());
 
     // 文字マスがなかった場合。
@@ -2909,10 +3247,72 @@ void __fastcall XgSolveXWord_NoAddBlack(const XG_Board& xw)
                     // 再帰する。
                     XgSolveXWord_NoAddBlackRecurse(copy);
                 }
-                return;
+                goto retry_1;
             }
         }
     }
+
+    // ランダムな順序の単語ベクターを作成する。
+retry_1:;
+    words = xg_dict_2;
+    std::random_shuffle(words.begin(), words.end());
+
+    // 文字マスがなかった場合。
+    for (int i = 0; i < nRows; i++) {
+        for (int j = 0; j < nCols - 1; j++) {
+            // すでに解かれているなら、終了。
+            // キャンセルされているなら、終了。
+            // 再計算すべきなら、終了する。
+            if (xg_bSolved || xg_bCancelled || xg_bRetrying)
+                return;
+
+            // 空白の連続があるか？
+            const WCHAR ch1 = xw.GetAt(i, j), ch2 = xw.GetAt(i, j + 1);
+            if (ch1 == ZEN_SPACE && ch2 == ZEN_SPACE) {
+                // 文字が置ける区間[lo, hi]を求める。
+                int lo = j;
+                while (lo > 0) {
+                    if (xw.GetAt(i, lo - 1) == ZEN_BLACK)
+                        break;
+                    lo--;
+                }
+                while (j + 1 < nCols) {
+                    if (xw.GetAt(i, j + 1) == ZEN_BLACK)
+                        break;
+                    j++;
+                }
+                const int hi = j;
+
+                // パターンの長さを求める。
+                const int patlen = hi - lo + 1;
+                for (const auto& word_data : words) {
+                    // すでに解かれているなら、終了。
+                    // キャンセルされているなら、終了。
+                    // 再計算すべきなら、終了する。
+                    if (xg_bSolved || xg_bCancelled || xg_bRetrying)
+                        return;
+
+                    // 単語とパターンの長さが等しいか？
+                    const std::wstring& word = word_data.m_word;
+                    const int wordlen = static_cast<int>(word.size());
+                    if (wordlen != patlen)
+                        continue;
+
+                    // 単語をセットする。
+                    XG_Board copy(xw);
+                    for (int k = 0; k < wordlen; k++) {
+                        copy.SetAt(i, lo + k, word[k]);
+                    }
+
+                    // 再帰する。
+                    XgSolveXWord_NoAddBlackRecurse(copy);
+                }
+                goto retry_2;
+            }
+        }
+    }
+
+retry_2:;
 }
 
 #ifdef NO_RANDOM

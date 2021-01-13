@@ -7,7 +7,7 @@
 #include "Auto.hpp"
 
 // 辞書データ。
-std::vector<XG_WordData>     xg_dict_data;
+std::vector<XG_WordData>     xg_dict_1, xg_dict_2;
 
 // タグ付けデータ。
 std::unordered_map<std::wstring, std::unordered_set<std::wstring> > xg_word_to_tags_map;
@@ -116,10 +116,8 @@ void XgSetThemeString(const std::wstring& strTheme)
 // テーマをリセットする。
 void __fastcall XgResetTheme(HWND hwnd)
 {
-    xg_priority_tags.clear();
-    xg_forbidden_tags.clear();
     xg_bThemeModified = false;
-    xg_strTheme = xg_strDefaultTheme;
+    XgSetThemeString(xg_strDefaultTheme);
 }
 
 // Unicodeを一行読み込む。
@@ -188,7 +186,7 @@ void XgReadUnicodeLine(LPWSTR pchLine)
         else
             entry.m_hint.clear();
 
-        xg_dict_data.emplace_back(std::move(entry));
+        xg_dict_1.emplace_back(std::move(entry));
     }
 
     // タグがあれば、単語のタグ付けを行う。
@@ -260,7 +258,8 @@ bool __fastcall XgLoadDictFile(LPCWSTR pszFile)
     DWORD cbRead, i;
 
     // 初期化する。
-    xg_dict_data.clear();
+    xg_dict_1.clear();
+    xg_dict_2.clear();
     xg_word_to_tags_map.clear();
     xg_tag_histgram.clear();
     xg_strDefaultTheme.clear();
@@ -348,7 +347,7 @@ bool __fastcall XgLoadDictFile(LPCWSTR pszFile)
         }
 
         // xg_forbidden_tags のタグが付いた単語は除外する（erase-remove idiom）。
-        auto it = std::remove_if(xg_dict_data.begin(), xg_dict_data.end(), [](const XG_WordData& data) {
+        auto it = std::remove_if(xg_dict_1.begin(), xg_dict_1.end(), [](const XG_WordData& data) {
             auto found = xg_word_to_tags_map.find(data.m_word);
             if (found != xg_word_to_tags_map.end()) {
                 auto& tags2 = found->second;
@@ -362,10 +361,42 @@ bool __fastcall XgLoadDictFile(LPCWSTR pszFile)
             }
             return false;
         });
-        xg_dict_data.erase(it, xg_dict_data.end());
+        xg_dict_1.erase(it, xg_dict_1.end());
+
+        // xg_priority_tagsのタグのついてない単語をxg_dict_2に振り分ける。
+        std::vector<XG_WordData> tmp;
+        for (auto& data : xg_dict_1) {
+            auto found = xg_word_to_tags_map.find(data.m_word);
+            if (found == xg_word_to_tags_map.end()) {
+                xg_dict_2.push_back(data);
+            } else {
+                auto& tags2 = found->second;
+                for (auto& tag2 : tags2) {
+                    bool found = false;
+                    for (auto& tag1 : xg_priority_tags) {
+                        if (tag1 == tag2) {
+                            found = true;
+                            break;
+                        }
+                    }
+                    if (found) {
+                        tmp.push_back(data);
+                    } else {
+                        xg_dict_2.push_back(data);
+                    }
+                }
+            }
+        }
+        xg_dict_1 = std::move(tmp);
+
+        // xg_dict_1が空のときは交換する。
+        if (xg_dict_1.empty()) {
+            std::swap(xg_dict_1, xg_dict_2);
+        }
 
         // 二分探索のために、並び替えておく。
-        std::sort(xg_dict_data.begin(), xg_dict_data.end(), xg_word_less());
+        std::sort(xg_dict_1.begin(), xg_dict_1.end(), xg_word_less());
+        std::sort(xg_dict_2.begin(), xg_dict_2.end(), xg_word_less());
         return true; // 成功。
     } catch (...) {
         // 例外が発生した。
@@ -375,16 +406,11 @@ bool __fastcall XgLoadDictFile(LPCWSTR pszFile)
 }
 
 // 辞書データをソートし、一意的にする。
-void __fastcall XgSortAndUniqueDictData(void)
+void __fastcall XgSortAndUniqueDictData(std::vector<XG_WordData>& data)
 {
-    std::sort(xg_dict_data.begin(), xg_dict_data.end(), xg_word_less());
-    auto last = unique(xg_dict_data.begin(), xg_dict_data.end(),
-                       XG_WordData_Equal());
-    std::vector<XG_WordData> dict_data;
-    for (auto it = xg_dict_data.begin(); it != last; ++it) {
-        dict_data.emplace_back(*it);
-    }
-    xg_dict_data = std::move(dict_data);
+    std::sort(data.begin(), data.end(), xg_word_less());
+    auto it = std::unique(data.begin(), data.end(), XG_WordData_Equal());
+    data.erase(it, data.end());
 }
 
 // ミニ辞書を作成する。

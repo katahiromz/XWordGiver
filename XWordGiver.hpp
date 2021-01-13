@@ -567,13 +567,13 @@ BOOL XgCreateHintsWnd(HWND hwnd);
 // ヒントウィンドウを破棄する。
 void XgDestroyHintsWnd(void);
 
+template <bool t_alternative>
+bool __fastcall XgGetCandidatesAddBlack(
+    std::vector<std::wstring>& cands, const std::wstring& pattern, int& nSkip,
+    bool left_black_check, bool right_black_check);
+
 // UIフォントの論理オブジェクトを取得する。
 LOGFONTW *XgGetUIFont(void);
-
-// 候補を取得する。
-bool __fastcall XgGetCandidatesAddBlack(
-    std::vector<std::wstring>& cands, const std::wstring& pattern,
-    int& nSkip, bool left_black, bool right_black);
 
 // 候補の内容を候補ウィンドウで開く。
 bool __fastcall XgOpenCandsWnd(HWND hwnd, bool vertical);
