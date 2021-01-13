@@ -151,6 +151,9 @@
 #define IDS_TAGCOUNT                        243
 #define IDS_RESETTHEME                      244
 #define IDS_NOTAGS                          245
+#define IDS_DICT                            246
+#define IDS_DEFAULTDICT                     247
+#define IDS_MODIFIEDDICT                    248
 #define IDS_TT_NEW                          10100
 #define IDS_TT_GENERATE                     10101
 #define IDS_TT_OPEN                         10102

@@ -97,6 +97,8 @@ extern bool xg_bThemeModified;
 bool __fastcall XgLoadDictFile(LPCWSTR pszFile);
 // テーマをリセットする。
 void __fastcall XgResetTheme(HWND hwnd);
+// テーマを設定する。
+void XgSetThemeString(const std::wstring& strTheme);
 
 // ミニ辞書を作成する。
 std::vector<XG_WordData> XgCreateMiniDict(void);

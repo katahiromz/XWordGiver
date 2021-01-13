@@ -5706,6 +5706,34 @@ void MainWnd_OnSettings(HWND hwnd)
     ::DialogBoxW(xg_hInstance, MAKEINTRESOURCE(IDD_CONFIG), hwnd, XgSettingsDlgProc);
 }
 
+// テーマが変更された。
+void XgUpdateTheme(HWND hwnd)
+{
+    HMENU hMenu = ::GetMenu(hwnd);
+    INT nCount = ::GetMenuItemCount(hMenu);
+    assert(nCount > 0);
+    WCHAR szText[32];
+    MENUITEMINFOW info = { sizeof(info) };
+    info.fMask = MIIM_TYPE;
+    info.fType = MFT_STRING;
+    for (INT i = 0; i < nCount; ++i) {
+        szText[0] = 0;
+        ::GetMenuStringW(hMenu, i, szText, ARRAYSIZE(szText), MF_BYPOSITION);
+        if (wcsstr(szText, XgLoadStringDx1(IDS_DICT)) != NULL) {
+            if (xg_bThemeModified) {
+                StringCbCopyW(szText, sizeof(szText), XgLoadStringDx1(IDS_MODIFIEDDICT));
+            } else {
+                StringCbCopyW(szText, sizeof(szText), XgLoadStringDx1(IDS_DEFAULTDICT));
+            }
+            info.dwTypeData = szText;
+            SetMenuItemInfoW(hMenu, i, TRUE, &info);
+            break;
+        }
+    }
+    // メニューバーを再描画。
+    ::DrawMenuBar(hwnd);
+}
+
 // ルールが変更された。
 void XgUpdateRules(HWND hwnd)
 {
@@ -7162,10 +7190,6 @@ static void XgTheme_UpdatePreset(HWND hwnd)
     xg_bUpdatingPreset = TRUE;
     SetDlgItemTextW(hwnd, cmb1, str.c_str());
     xg_bUpdatingPreset = FALSE;
-
-    // テーマ文字列を更新。
-    xg_strTheme = str;
-    xg_bThemeModified = (xg_strTheme != xg_strDefaultTheme);
 }
 
 // 「テーマ」ダイアログの初期化。
@@ -7394,20 +7418,32 @@ static BOOL XgTheme_OnOK(HWND hwnd)
     xg_priority_tags.clear();
     xg_forbidden_tags.clear();
 
-    WCHAR szText[64];
+    std::wstring strTheme;
+    WCHAR szText[MAX_TAGSLEN];
     INT cItems;
 
     cItems = ListView_GetItemCount(hLst2);
     for (INT iItem = 0; iItem < cItems; ++iItem) {
         ListView_GetItemText(hLst2, iItem, 0, szText, ARRAYSIZE(szText));
         xg_priority_tags.emplace(szText);
+        if (strTheme.empty())
+            strTheme += L",";
+        strTheme += L"+";
+        strTheme += szText;
     }
 
     cItems = ListView_GetItemCount(hLst3);
     for (INT iItem = 0; iItem < cItems; ++iItem) {
         ListView_GetItemText(hLst3, iItem, 0, szText, ARRAYSIZE(szText));
         xg_forbidden_tags.emplace(szText);
+        if (strTheme.empty())
+            strTheme += L",";
+        strTheme += L"-";
+        strTheme += szText;
     }
+
+    XgSetThemeString(strTheme);
+    xg_bThemeModified = (xg_strTheme != xg_strDefaultTheme);
 
     return TRUE;
 }
@@ -7454,10 +7490,8 @@ static void XgTheme_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT codeNotify)
         XgTheme_RemoveTag(hwnd, FALSE);
         break;
     case psh5: // リセット
-        xg_priority_tags.clear();
-        xg_forbidden_tags.clear();
+        XgSetThemeString(xg_strDefaultTheme);
         xg_bThemeModified = false;
-        xg_strTheme = xg_strDefaultTheme;
         EndDialog(hwnd, IDOK);
         break;
     case edt1:
@@ -7526,7 +7560,10 @@ void __fastcall XgTheme(HWND hwnd)
         return;
     }
 
-    DialogBoxW(xg_hInstance, MAKEINTRESOURCEW(IDD_THEME), hwnd, XgThemeDlgProc);
+    INT id = DialogBoxW(xg_hInstance, MAKEINTRESOURCEW(IDD_THEME), hwnd, XgThemeDlgProc);
+    if (id == IDOK) {
+        XgUpdateTheme(hwnd);
+    }
 }
 
 // テーマをリセットする。
@@ -7540,6 +7577,7 @@ void __fastcall XgResetTheme(HWND hwnd, BOOL bQuery)
             return;
     }
     XgResetTheme(hwnd);
+    XgUpdateTheme(hwnd);
 }
 
 // コマンドを実行する。
