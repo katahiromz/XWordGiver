@@ -1230,7 +1230,7 @@ CAPTION "テーマ"
 STYLE DS_CENTER | DS_MODALFRAME | WS_POPUPWINDOW | WS_CAPTION
 FONT 9, "MS UI Gothic"
 {
-    LTEXT "テーマでは、優先タグと除外タグを指定できます。タグというのは、辞書の単語に付けられた分類キーワードのことです。", -1, 5, 5, 183, 24
+    LTEXT "　テーマでは、優先タグと除外タグを指定できます。タグというのは、辞書の単語に付けられた分類キーワードのことです。\r\n　優先タグの指定にはかなりの計算量がかかります。", -1, 5, 5, 183, 30
     LTEXT "プリセット(&S):", -1, 205, 5, 65, 12
     COMBOBOX cmb1, 205, 20, 100, 300, CBS_DISABLENOSCROLL | CBS_HASSTRINGS | CBS_AUTOHSCROLL | CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP
     LTEXT "すべてのタグ(&T):", -1, 5, 40, 75, 12
