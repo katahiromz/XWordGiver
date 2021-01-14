@@ -5817,6 +5817,9 @@ void MainWnd_OnEraseSettings(HWND hwnd)
     // イメージを更新する。
     XgUpdateImage(hwnd, 0, 0);
 
+    XgResetTheme(hwnd);
+    XgUpdateTheme(hwnd);
+
     if (bSuccess) {
         // メッセージを表示する。
         XgCenterMessageBoxW(hwnd,
