@@ -1823,6 +1823,9 @@ bool __fastcall XgSetJsonString(HWND hwnd, const std::wstring& str)
 
         auto header = XgUtf8ToUnicode(j["header"]);
         auto notes = XgUtf8ToUnicode(j["notes"]);
+        if (j["theme"].is_string()) {
+            xg_strTheme = XgUtf8ToUnicode(j["theme"]);
+        }
 
         if (success) {
             // カギをクリアする。
@@ -4370,6 +4373,9 @@ bool __fastcall XgDoSaveJson(HWND /*hwnd*/, LPCWSTR pszFile)
             xg_strNotes = xg_strNotes.substr(std::wstring(psz).size());
         }
         j["notes"] = XgUnicodeToUtf8(xg_strNotes);
+
+        // テーマ。
+        j["theme"] = XgUnicodeToUtf8(xg_strTheme);
 
         // UTF-8へ変換する。
         std::string utf8 = j.dump(1, '\t');

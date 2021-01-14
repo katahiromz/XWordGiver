@@ -7976,6 +7976,8 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
                     xg_caret_pos.clear();
                     // イメージを更新する。
                     XgUpdateImage(hwnd, 0, 0);
+                    // テーマを更新する。
+                    XgUpdateTheme(hwnd);
                 }
             }
         }
