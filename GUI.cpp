@@ -5816,7 +5816,7 @@ void MainWnd_OnEraseSettings(HWND hwnd)
 
     // イメージを更新する。
     XgUpdateImage(hwnd, 0, 0);
-
+    // テーマを初期化する。
     XgResetTheme(hwnd);
     XgUpdateTheme(hwnd);
 
