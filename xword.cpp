@@ -1825,6 +1825,8 @@ bool __fastcall XgSetJsonString(HWND hwnd, const std::wstring& str)
         auto notes = XgUtf8ToUnicode(j["notes"]);
         if (j["theme"].is_string()) {
             xg_strTheme = XgUtf8ToUnicode(j["theme"]);
+        } else {
+            xg_strTheme = xg_strDefaultTheme;
         }
 
         if (success) {

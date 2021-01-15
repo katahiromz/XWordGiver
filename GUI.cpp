@@ -5709,6 +5709,10 @@ void MainWnd_OnSettings(HWND hwnd)
 // テーマが変更された。
 void XgUpdateTheme(HWND hwnd)
 {
+    std::unordered_set<std::wstring> priority, forbidden;
+    XgParseTheme(priority, forbidden, xg_strDefaultTheme);
+    xg_bThemeModified = (priority != xg_priority_tags || forbidden != xg_forbidden_tags);
+
     HMENU hMenu = ::GetMenu(hwnd);
     INT nCount = ::GetMenuItemCount(hMenu);
     assert(nCount > 0);
@@ -7943,6 +7947,7 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
                     // イメージを更新する。
                     XgUpdateImage(hwnd, 0, 0);
                     // テーマを更新する。
+                    XgSetThemeString(xg_strTheme);
                     XgUpdateTheme(hwnd);
                 }
             }
@@ -8697,6 +8702,9 @@ void __fastcall MainWnd_OnDropFiles(HWND hwnd, HDROP hDrop)
             XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_CANTLOAD), nullptr, MB_ICONERROR);
         } else {
             xg_caret_pos.clear();
+            // テーマを更新する。
+            XgSetThemeString(xg_strTheme);
+            XgUpdateTheme(hwnd);
             // イメージを更新する。
             XgMarkUpdate();
             XgUpdateImage(hwnd, 0, 0);
@@ -8707,6 +8715,9 @@ void __fastcall MainWnd_OnDropFiles(HWND hwnd, HDROP hDrop)
             XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_CANTLOAD), nullptr, MB_ICONERROR);
         } else {
             xg_caret_pos.clear();
+            // テーマを更新する。
+            XgSetThemeString(xg_strTheme);
+            XgUpdateTheme(hwnd);
             // イメージを更新する。
             XgMarkUpdate();
             XgUpdateImage(hwnd, 0, 0);
@@ -8716,6 +8727,9 @@ void __fastcall MainWnd_OnDropFiles(HWND hwnd, HDROP hDrop)
             XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_CANTLOAD), nullptr, MB_ICONERROR);
         } else {
             xg_caret_pos.clear();
+            // テーマを更新する。
+            XgSetThemeString(xg_strTheme);
+            XgUpdateTheme(hwnd);
             // イメージを更新する。
             XgMarkUpdate();
             XgUpdateImage(hwnd, 0, 0);
@@ -9004,6 +9018,9 @@ bool __fastcall MainWnd_OnCreate(HWND hwnd, LPCREATESTRUCT /*lpCreateStruct*/)
                     XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_CANTLOAD), nullptr, MB_ICONERROR);
                 } else {
                     xg_caret_pos.clear();
+                    // テーマを更新する。
+                    XgSetThemeString(xg_strTheme);
+                    XgUpdateTheme(hwnd);
                     // イメージを更新する。
                     XgUpdateImage(hwnd, 0, 0);
                 }
