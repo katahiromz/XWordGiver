@@ -99,6 +99,10 @@ bool __fastcall XgLoadDictFile(LPCWSTR pszFile);
 void __fastcall XgResetTheme(HWND hwnd);
 // テーマを設定する。
 void XgSetThemeString(const std::wstring& strTheme);
+// テーマ文字列をパースする。
+void XgParseTheme(std::unordered_set<std::wstring>& priority,
+                  std::unordered_set<std::wstring>& forbidden,
+                  const std::wstring& strTheme);
 
 // ミニ辞書を作成する。
 std::vector<XG_WordData> XgCreateMiniDict(void);

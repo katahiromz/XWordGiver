@@ -7138,6 +7138,20 @@ static void XgTheme_SetPreset(HWND hwnd, LPCWSTR pszText)
         else
             ListView_SetItem(hLst2, &item);
     }
+
+    // 最初の項目を選択する。
+    LV_ITEM item;
+    item.mask = LVIF_STATE;
+    item.iItem = 0;
+    item.iSubItem = 0;
+    item.state = item.stateMask = LVIS_SELECTED | LVIS_FOCUSED;
+    ListView_SetItem(hLst2, &item);
+
+    item.mask = LVIF_STATE;
+    item.iItem = 0;
+    item.iSubItem = 0;
+    item.state = item.stateMask = LVIS_SELECTED | LVIS_FOCUSED;
+    ListView_SetItem(hLst3, &item);
 }
 
 // タグ群の最大長。
@@ -7244,41 +7258,10 @@ static BOOL XgTheme_OnInitDialog(HWND hwnd, HWND hwndFocus, LPARAM lParam)
         ++iItem;
     }
 
-    // 優先タグ。
-    iItem = 0;
-    for (auto& tag : xg_priority_tags) {
-        StringCbCopyW(szText, sizeof(szText), tag.c_str());
-        item.iItem = iItem;
-        item.pszText = szText;
-        item.iSubItem = 0;
-        ListView_InsertItem(hLst2, &item);
-
-        StringCbCopyW(szText, sizeof(szText), std::to_wstring(xg_tag_histgram[tag]).c_str());
-        item.iItem = iItem;
-        item.pszText = szText;
-        item.iSubItem = 1;
-        ListView_SetItem(hLst2, &item);
-
-        ++iItem;
-    }
-
-    // 除外タグ。
-    iItem = 0;
-    for (auto& tag : xg_forbidden_tags) {
-        StringCbCopyW(szText, sizeof(szText), tag.c_str());
-        item.iItem = iItem;
-        item.pszText = szText;
-        item.iSubItem = 0;
-        ListView_InsertItem(hLst3, &item);
-
-        StringCbCopyW(szText, sizeof(szText), std::to_wstring(xg_tag_histgram[tag]).c_str());
-        item.iItem = iItem;
-        item.pszText = szText;
-        item.iSubItem = 1;
-        ListView_SetItem(hLst3, &item);
-
-        ++iItem;
-    }
+    // コンボボックスにテキストを設定する。
+    SetDlgItemTextW(hwnd, cmb1, xg_strTheme.c_str());
+    // プリセットを設定する。
+    XgTheme_SetPreset(hwnd, xg_strTheme.c_str());
 
     // 最初の項目を選択。
     item.mask = LVIF_STATE;
@@ -7286,21 +7269,6 @@ static BOOL XgTheme_OnInitDialog(HWND hwnd, HWND hwndFocus, LPARAM lParam)
     item.iSubItem = 0;
     item.state = item.stateMask = LVIS_SELECTED | LVIS_FOCUSED;
     ListView_SetItem(hLst1, &item);
-
-    item.mask = LVIF_STATE;
-    item.iItem = 0;
-    item.iSubItem = 0;
-    item.state = item.stateMask = LVIS_SELECTED | LVIS_FOCUSED;
-    ListView_SetItem(hLst2, &item);
-
-    item.mask = LVIF_STATE;
-    item.iItem = 0;
-    item.iSubItem = 0;
-    item.state = item.stateMask = LVIS_SELECTED | LVIS_FOCUSED;
-    ListView_SetItem(hLst3, &item);
-
-    // プリセットを更新。
-    XgTheme_UpdatePreset(hwnd);
 
     return TRUE;
 }
@@ -7446,7 +7414,6 @@ static BOOL XgTheme_OnOK(HWND hwnd)
     }
 
     XgSetThemeString(strTheme);
-    xg_bThemeModified = (xg_strTheme != xg_strDefaultTheme);
 
     return TRUE;
 }
@@ -7494,7 +7461,6 @@ static void XgTheme_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT codeNotify)
         break;
     case psh5: // リセット
         XgSetThemeString(xg_strDefaultTheme);
-        xg_bThemeModified = false;
         EndDialog(hwnd, IDOK);
         break;
     case edt1:

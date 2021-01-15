@@ -83,11 +83,13 @@ inline void mstr_trim(std::basic_string<T_CHAR>& str, const T_CHAR *spaces)
     }
 }
 
-// テーマを設定する。
-void XgSetThemeString(const std::wstring& strTheme)
+// テーマ文字列をパースする。
+void XgParseTheme(std::unordered_set<std::wstring>& priority,
+                  std::unordered_set<std::wstring>& forbidden,
+                  const std::wstring& strTheme)
 {
-    xg_priority_tags.clear();
-    xg_forbidden_tags.clear();
+    priority.clear();
+    forbidden.clear();
 
     std::vector<std::wstring> strs;
     mstr_split(strs, strTheme, L",");
@@ -104,20 +106,29 @@ void XgSetThemeString(const std::wstring& strTheme)
             item = item.substr(1);
         }
         if (minus) {
-            xg_forbidden_tags.emplace(item);
+            forbidden.emplace(item);
         } else {
-            xg_priority_tags.emplace(item);
+            priority.emplace(item);
         }
     }
+}
 
+// テーマを設定する。
+void XgSetThemeString(const std::wstring& strTheme)
+{
+    XgParseTheme(xg_priority_tags, xg_forbidden_tags, strTheme);
     xg_strTheme = strTheme;
+
+    std::unordered_set<std::wstring> priority, forbidden;
+    XgParseTheme(priority, forbidden, xg_strDefaultTheme);
+    xg_bThemeModified = (priority != xg_priority_tags || forbidden != xg_forbidden_tags);
 }
 
 // テーマをリセットする。
 void __fastcall XgResetTheme(HWND hwnd)
 {
-    xg_bThemeModified = false;
     XgSetThemeString(xg_strDefaultTheme);
+    xg_bThemeModified = false;
 }
 
 // Unicodeを一行読み込む。
