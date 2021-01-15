@@ -1651,11 +1651,10 @@ mstr_split(T_STR_CONTAINER& container,
 }
 
 // ï∂éöóÒÇÃÉãÅ[ÉãÇâêÕÇ∑ÇÈÅB
-INT __fastcall XgParseRules(const std::string& utf8)
+INT __fastcall XgParseRules(const std::wstring& str)
 {
-    std::wstring utf16 = XgUtf8ToUnicode(utf8);
     std::vector<std::wstring> rules;
-    mstr_split(rules, utf16, L" \t");
+    mstr_split(rules, str, L" \t");
     INT nRules = 0;
     for (auto& rule : rules) {
         xg_str_trim(rule);
@@ -1743,7 +1742,12 @@ bool __fastcall XgSetJsonString(HWND hwnd, const std::wstring& str)
         bool has_hints = j["has_hints"];
         INT rules = DEFAULT_RULES;
         if (j["rules"].is_string()) {
-            rules = XgParseRules(j["rules"].get<std::string>());
+            auto str = XgUtf8ToUnicode(j["rules"].get<std::string>());
+            rules = XgParseRules(str);
+        }
+        std::wstring dictionary;
+        if (j["dictionary"].is_string()) {
+            dictionary = XgUtf8ToUnicode(j["dictionary"].get<std::string>());
         }
 
         if (row_count <= 0 || column_count <= 0) {
@@ -1882,6 +1886,15 @@ bool __fastcall XgSetJsonString(HWND hwnd, const std::wstring& str)
         }
 
         xg_nRules = rules;
+        if (dictionary.size()) {
+            for (auto& file : xg_dict_files) {
+                if (file.find(dictionary) != std::wstring::npos) {
+                    XgLoadDictFile(file.c_str());
+                    xg_dict_name = file.c_str();
+                    break;
+                }
+            }
+        }
         return success;
     }
     catch (json::exception&)

@@ -521,6 +521,8 @@ extern INT xg_nPatWndCY;
 
 // 現在の辞書名。
 extern std::wstring xg_dict_name;
+// すべての辞書ファイル。
+extern std::deque<std::wstring>  xg_dict_files;
 
 //////////////////////////////////////////////////////////////////////////////
 
