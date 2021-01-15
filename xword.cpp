@@ -1880,22 +1880,26 @@ bool __fastcall XgSetJsonString(HWND hwnd, const std::wstring& str)
                 // ヒントを表示する。
                 XgShowHints(hwnd);
             }
+
+            // ルールを設定する。
+            xg_nRules = rules;
+
+            // 辞書名の辞書を読み込む。
+            if (dictionary.size()) {
+                for (auto& file : xg_dict_files) {
+                    if (file.find(dictionary) != std::wstring::npos) {
+                        if (XgLoadDictFile(file.c_str())) {
+                            xg_dict_name = file.c_str();
+                            break;
+                        }
+                    }
+                }
+            }
         } else {
             xg_nRows = nRowsSave;
             xg_nCols = nColsSave;
         }
 
-        xg_nRules = rules;
-        if (dictionary.size()) {
-            for (auto& file : xg_dict_files) {
-                if (file.find(dictionary) != std::wstring::npos) {
-                    if (XgLoadDictFile(file.c_str())) {
-                        xg_dict_name = file.c_str();
-                        break;
-                    }
-                }
-            }
-        }
         return success;
     }
     catch (json::exception&)
