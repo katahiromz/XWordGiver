@@ -4289,6 +4289,7 @@ bool __fastcall XgDoSaveJson(HWND /*hwnd*/, LPCWSTR pszFile)
         j["row_count"] = xg_nRows;
         j["column_count"] = xg_nCols;
         j["rules"] = XgUnicodeToUtf8(XgGetRulesString(xg_nRules));
+        j["dictionary"] = XgUnicodeToUtf8(PathFindFileNameW(xg_dict_name.c_str()));
 
         // î’ÇÃêÿÇËë÷Ç¶ÅB
         XG_Board *xw = (xg_bSolved ? &xg_solution : &xg_xword);

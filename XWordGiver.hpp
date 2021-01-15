@@ -519,6 +519,9 @@ extern INT xg_nPatWndY;
 extern INT xg_nPatWndCX;
 extern INT xg_nPatWndCY;
 
+// 現在の辞書名。
+extern std::wstring xg_dict_name;
+
 //////////////////////////////////////////////////////////////////////////////
 
 // 描画イメージを更新する。
