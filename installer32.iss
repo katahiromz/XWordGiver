@@ -41,6 +41,7 @@ Source: "DICT\基本辞書データ（英和、自由）.tsv"; DestDir: "{app}\DICT"; Flags: i
 Source: "DICT\基本辞書データ（漢字、自由）.tsv"; DestDir: "{app}\DICT"; Flags: ignoreversion
 Source: "DICT\基本辞書データ（ロシア、自由）.tsv"; DestDir: "{app}\DICT"; Flags: ignoreversion
 Source: "DICT\★二重マス用四字熟語カナ辞書.tsv"; DestDir: "{app}\DICT"; Flags: ignoreversion
+Source: "DICT\★二重マス用ことわざカナ辞書.tsv"; DestDir: "{app}\DICT"; Flags: ignoreversion
 Source: "BLOCK\circle.emf"; DestDir: "{app}\BLOCK"; Flags: ignoreversion
 Source: "BLOCK\club.emf"; DestDir: "{app}\BLOCK"; Flags: ignoreversion
 Source: "BLOCK\diamond.emf"; DestDir: "{app}\BLOCK"; Flags: ignoreversion
