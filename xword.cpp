@@ -1889,9 +1889,10 @@ bool __fastcall XgSetJsonString(HWND hwnd, const std::wstring& str)
         if (dictionary.size()) {
             for (auto& file : xg_dict_files) {
                 if (file.find(dictionary) != std::wstring::npos) {
-                    XgLoadDictFile(file.c_str());
-                    xg_dict_name = file.c_str();
-                    break;
+                    if (XgLoadDictFile(file.c_str())) {
+                        xg_dict_name = file.c_str();
+                        break;
+                    }
                 }
             }
         }
