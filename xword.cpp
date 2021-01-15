@@ -4285,10 +4285,15 @@ bool __fastcall XgDoSaveJson(HWND /*hwnd*/, LPCWSTR pszFile)
     try
     {
         json j;
+        // 作成者情報。
         j["creator_info"] = XgUnicodeToUtf8(XgLoadStringDx1(IDS_APPINFO));
+        // 行の数。
         j["row_count"] = xg_nRows;
+        // 列の数。
         j["column_count"] = xg_nCols;
+        // ルール。
         j["rules"] = XgUnicodeToUtf8(XgGetRulesString(xg_nRules));
+        // 辞書名。
         j["dictionary"] = XgUnicodeToUtf8(PathFindFileNameW(xg_dict_name.c_str()));
 
         // 盤の切り替え。
