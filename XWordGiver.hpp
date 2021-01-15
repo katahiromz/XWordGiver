@@ -524,6 +524,9 @@ extern std::wstring xg_dict_name;
 // すべての辞書ファイル。
 extern std::deque<std::wstring>  xg_dict_files;
 
+// 辞書名をセットする。
+void XgSetDict(const std::wstring& strFile);
+
 //////////////////////////////////////////////////////////////////////////////
 
 // 描画イメージを更新する。
