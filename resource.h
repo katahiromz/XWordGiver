@@ -308,6 +308,7 @@
 #define ID_RULECHECK                        257
 #define ID_THEME                            258
 #define ID_RESETTHEME                       259
+#define ID_RETRYIFTIMEOUT                   260
 #define ID_TT_BASE                          10000
 
 #define ctl2                                1185

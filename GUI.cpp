@@ -4600,6 +4600,13 @@ void __fastcall MainWnd_OnInitMenu(HWND /*hwnd*/, HMENU hMenu)
         DoUpdateDictMenu(hDictMenu);
     }
 
+    // 一定時間が過ぎたらリトライ。
+    if (s_bAutoRetry) {
+        CheckMenuItem(hMenu, ID_RETRYIFTIMEOUT, MF_BYCOMMAND | MF_CHECKED);
+    } else {
+        CheckMenuItem(hMenu, ID_RETRYIFTIMEOUT, MF_BYCOMMAND | MF_UNCHECKED);
+    }
+
     // テーマ。
     if (!xg_bThemeModified) {
         CheckMenuItem(hMenu, ID_THEME, MF_BYCOMMAND | MF_UNCHECKED);
@@ -8670,6 +8677,9 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
         break;
     case ID_RESETTHEME:
         XgResetTheme(hwnd, TRUE);
+        break;
+    case ID_RETRYIFTIMEOUT:
+        s_bAutoRetry = !s_bAutoRetry;
         break;
     default:
         if (!MainWnd_OnCommand2(hwnd, id)) {
