@@ -5010,7 +5010,9 @@ bool XG_Board::FourDiagonals() const
 //////////////////////////////////////////////////////////////////////////////
 // 黒マスパターンを生成する。
 
+// 黒マスパターンが生成されたか？
 bool xg_bBlacksGenerated = false;
+// 配置できる最大単語長。
 INT xg_nMaxWordLen = 4;
 
 // 黒マスパターンを生成する。
@@ -5240,17 +5242,22 @@ bool __fastcall XgGenerateBlacksSym2Recurse(const XG_Board& xword, LONG iRowjCol
 // マルチスレッド用の関数。
 unsigned __stdcall XgGenerateBlacks(void *param)
 {
-    srand(::GetTickCount() ^ ::GetCurrentThreadId());
-    xg_solution.clear();
     XG_Board xword;
+    xg_solution.clear();
 
-    if (xg_imode == xg_im_KANJI || xg_nRows < 5 || xg_nCols < 5) {
-        xg_nMaxWordLen = 3;
-    } else if (xg_imode == xg_im_RUSSIA) {
+    // 乱数をかく乱する。
+    srand(::GetTickCount() ^ ::GetCurrentThreadId());
+
+    // 入力モードに応じて単語の最大長を設定する。
+    if (xg_imode == xg_im_KANJI) {
+        xg_nMaxWordLen = 4;
+    } else if (xg_imode == xg_im_RUSSIA || xg_imode == xg_im_ABC) {
         xg_nMaxWordLen = 5;
     } else {
         xg_nMaxWordLen = 4;
     }
+
+    // 再帰求解関数に突入する。
     do {
         if (xg_bBlacksGenerated || xg_bCancelled)
             break;
@@ -5266,15 +5273,21 @@ unsigned __stdcall XgGenerateBlacksSmart(void *param)
         return 1;
 
     XG_Board xword;
+
+    // 乱数をかく乱する。
     srand(::GetTickCount() ^ ::GetCurrentThreadId());
-    if (xg_imode == xg_im_KANJI || xg_nRows < 5 || xg_nCols < 5) {
-        xg_nMaxWordLen = 3;
-    } else if (xg_imode == xg_im_RUSSIA) {
+
+    // 入力モードに応じて単語の最大長を設定する。
+    if (xg_imode == xg_im_KANJI) {
+        xg_nMaxWordLen = 4;
+    } else if (xg_imode == xg_im_RUSSIA || xg_imode == xg_im_ABC) {
         xg_nMaxWordLen = 5;
     } else {
         xg_nMaxWordLen = 4;
     }
+
     if (xg_nRules & RULE_POINTSYMMETRY) {
+        // 再帰求解関数に突入する。
         do {
             if (xg_bCancelled)
                 break;
@@ -5284,6 +5297,7 @@ unsigned __stdcall XgGenerateBlacksSmart(void *param)
             xword.clear();
         } while (!XgGenerateBlacksSym2Recurse(xword, 0));
     } else {
+        // 再帰求解関数に突入する。
         do {
             if (xg_bCancelled)
                 break;
