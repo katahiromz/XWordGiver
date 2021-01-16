@@ -5010,14 +5010,10 @@ bool XG_Board::FourDiagonals() const
 //////////////////////////////////////////////////////////////////////////////
 // 黒マスパターンを生成する。
 
-// t_mode 0: 最大4空白まで。
-// t_mode 1: 最大3空白まで。
-// t_mode 2: 最大3～5空白まで（乱数により変動）。
-
 bool xg_bBlacksGenerated = false;
+INT xg_nMaxWordLen = 4;
 
 // 黒マスパターンを生成する。
-template <int t_mode>
 bool __fastcall XgGenerateBlacksRecurse(const XG_Board& xword, LONG iRowjCol)
 {
     // ルールの適合性をチェックする。
@@ -5045,19 +5041,6 @@ bool __fastcall XgGenerateBlacksRecurse(const XG_Board& xword, LONG iRowjCol)
         return xg_bBlacksGenerated || xg_bCancelled;
     }
 
-    // モードに応じて空白の最大長を決める。
-    INT nMaxLen;
-    switch (t_mode)
-    {
-    case 0: nMaxLen = 4; break;
-    case 1: nMaxLen = 3; break;
-    case 2: nMaxLen = 5; break;
-    default:
-        assert(0);
-        nMaxLen = 4;
-        break;
-    }
-
     // 終了条件。
     if (xg_bBlacksGenerated || xg_bCancelled)
         return true;
@@ -5069,15 +5052,15 @@ bool __fastcall XgGenerateBlacksRecurse(const XG_Board& xword, LONG iRowjCol)
             break;
         }
     }
-    if (jCol - jLeft + 1 > nMaxLen) {
+    if (jCol - jLeft + 1 > xg_nMaxWordLen) {
         // 空白が最大長よりも長い。黒マスをセットして再帰。
         XG_Board copy(xword);
         copy.SetAt(iRow, jCol, ZEN_BLACK);
         if (jCol + 1 < nCols) {
-            if (XgGenerateBlacksRecurse<t_mode>(copy, MAKELONG(iRow, jCol + 1)))
+            if (XgGenerateBlacksRecurse(copy, MAKELONG(iRow, jCol + 1)))
                 return true;
         } else {
-            if (XgGenerateBlacksRecurse<t_mode>(copy, MAKELONG(iRow + 1, 0)))
+            if (XgGenerateBlacksRecurse(copy, MAKELONG(iRow + 1, 0)))
                 return true;
         }
         return false;
@@ -5089,35 +5072,35 @@ bool __fastcall XgGenerateBlacksRecurse(const XG_Board& xword, LONG iRowjCol)
             break;
         }
     }
-    if (iRow - iTop + 1 > nMaxLen) {
+    if (iRow - iTop + 1 > xg_nMaxWordLen) {
         // 空白が最大長よりも長い。黒マスをセットして再帰。
         XG_Board copy(xword);
         copy.SetAt(iRow, jCol, ZEN_BLACK);
         if (jCol + 1 < nCols) {
-            if (XgGenerateBlacksRecurse<t_mode>(copy, MAKELONG(iRow, jCol + 1)))
+            if (XgGenerateBlacksRecurse(copy, MAKELONG(iRow, jCol + 1)))
                 return true;
         } else {
-            if (XgGenerateBlacksRecurse<t_mode>(copy, MAKELONG(iRow + 1, 0)))
+            if (XgGenerateBlacksRecurse(copy, MAKELONG(iRow + 1, 0)))
                 return true;
         }
         return false;
     }
 
-    if (rand() < RAND_MAX / 4) { // 1/4の確率で。。。
+    if (rand() < RAND_MAX / 2) { // 1/2の確率で。。。
         // 黒マスをセットして再帰。
         if (jCol + 1 < nCols) {
-            if (XgGenerateBlacksRecurse<t_mode>(xword, MAKELONG(iRow, jCol + 1)))
+            if (XgGenerateBlacksRecurse(xword, MAKELONG(iRow, jCol + 1)))
                 return true;
             XG_Board copy(xword);
             copy.SetAt(iRow, jCol, ZEN_BLACK);
-            if (XgGenerateBlacksRecurse<t_mode>(copy, MAKELONG(iRow, jCol + 1)))
+            if (XgGenerateBlacksRecurse(copy, MAKELONG(iRow, jCol + 1)))
                 return true;
         } else {
-            if (XgGenerateBlacksRecurse<t_mode>(xword, MAKELONG(iRow + 1, 0)))
+            if (XgGenerateBlacksRecurse(xword, MAKELONG(iRow + 1, 0)))
                 return true;
             XG_Board copy(xword);
             copy.SetAt(iRow, jCol, ZEN_BLACK);
-            if (XgGenerateBlacksRecurse<t_mode>(copy, MAKELONG(iRow + 1, 0)))
+            if (XgGenerateBlacksRecurse(copy, MAKELONG(iRow + 1, 0)))
                 return true;
         }
     } else {
@@ -5125,14 +5108,14 @@ bool __fastcall XgGenerateBlacksRecurse(const XG_Board& xword, LONG iRowjCol)
         XG_Board copy(xword);
         copy.SetAt(iRow, jCol, ZEN_BLACK);
         if (jCol + 1 < nCols) {
-            if (XgGenerateBlacksRecurse<t_mode>(copy, MAKELONG(iRow, jCol + 1)))
+            if (XgGenerateBlacksRecurse(copy, MAKELONG(iRow, jCol + 1)))
                 return true;
-            if (XgGenerateBlacksRecurse<t_mode>(xword, MAKELONG(iRow, jCol + 1)))
+            if (XgGenerateBlacksRecurse(xword, MAKELONG(iRow, jCol + 1)))
                 return true;
         } else {
-            if (XgGenerateBlacksRecurse<t_mode>(copy, MAKELONG(iRow + 1, 0)))
+            if (XgGenerateBlacksRecurse(copy, MAKELONG(iRow + 1, 0)))
                 return true;
-            if (XgGenerateBlacksRecurse<t_mode>(xword, MAKELONG(iRow + 1, 0)))
+            if (XgGenerateBlacksRecurse(xword, MAKELONG(iRow + 1, 0)))
                 return true;
         }
     }
@@ -5168,9 +5151,6 @@ bool __fastcall XgGenerateBlacksSym2Recurse(const XG_Board& xword, LONG iRowjCol
         return xg_bBlacksGenerated || xg_bCancelled;
     }
 
-    // 空白の最大長を決める。
-    INT nMaxLen = 4;
-
     // 終了条件。
     if (xg_bBlacksGenerated || xg_bCancelled)
         return true;
@@ -5182,7 +5162,7 @@ bool __fastcall XgGenerateBlacksSym2Recurse(const XG_Board& xword, LONG iRowjCol
             break;
         }
     }
-    if (jCol - jLeft + 1 > nMaxLen) {
+    if (jCol - jLeft + 1 > xg_nMaxWordLen) {
         // 空白が最大長よりも長い。黒マスをセットして再帰。
         XG_Board copy(xword);
         copy.SetAt(iRow, jCol, ZEN_BLACK);
@@ -5203,7 +5183,7 @@ bool __fastcall XgGenerateBlacksSym2Recurse(const XG_Board& xword, LONG iRowjCol
             break;
         }
     }
-    if (iRow - iTop + 1 > nMaxLen) {
+    if (iRow - iTop + 1 > xg_nMaxWordLen) {
         // 空白が最大長よりも長い。黒マスをセットして再帰。
         XG_Board copy(xword);
         copy.SetAt(iRow, jCol, ZEN_BLACK);
@@ -5218,7 +5198,7 @@ bool __fastcall XgGenerateBlacksSym2Recurse(const XG_Board& xword, LONG iRowjCol
         return false;
     }
 
-    if (rand() < RAND_MAX / 4) { // 1/4の確率で。。。
+    if (rand() < RAND_MAX / 2) { // 1/2の確率で。。。
         // 黒マスをセットして再帰。
         if (jCol + 1 < nCols) {
             if (XgGenerateBlacksSym2Recurse(xword, MAKELONG(iRow, jCol + 1)))
@@ -5265,24 +5245,17 @@ unsigned __stdcall XgGenerateBlacks(void *param)
     XG_Board xword;
 
     if (xg_imode == xg_im_KANJI || xg_nRows < 5 || xg_nCols < 5) {
-        do {
-            if (xg_bBlacksGenerated || xg_bCancelled)
-                break;
-            xword.clear();
-        } while (!XgGenerateBlacksRecurse<1>(xword, 0));
+        xg_nMaxWordLen = 3;
     } else if (xg_imode == xg_im_RUSSIA) {
-        do {
-            if (xg_bBlacksGenerated || xg_bCancelled)
-                break;
-            xword.clear();
-        } while (!XgGenerateBlacksRecurse<2>(xword, 0));
+        xg_nMaxWordLen = 5;
     } else {
-        do {
-            if (xg_bBlacksGenerated || xg_bCancelled)
-                break;
-            xword.clear();
-        } while (!XgGenerateBlacksRecurse<0>(xword, 0));
+        xg_nMaxWordLen = 4;
     }
+    do {
+        if (xg_bBlacksGenerated || xg_bCancelled)
+            break;
+        xword.clear();
+    } while (!XgGenerateBlacksRecurse(xword, 0));
     return 1;
 }
 
@@ -5294,6 +5267,13 @@ unsigned __stdcall XgGenerateBlacksSmart(void *param)
 
     XG_Board xword;
     srand(::GetTickCount() ^ ::GetCurrentThreadId());
+    if (xg_imode == xg_im_KANJI || xg_nRows < 5 || xg_nCols < 5) {
+        xg_nMaxWordLen = 3;
+    } else if (xg_imode == xg_im_RUSSIA) {
+        xg_nMaxWordLen = 5;
+    } else {
+        xg_nMaxWordLen = 4;
+    }
     if (xg_nRules & RULE_POINTSYMMETRY) {
         do {
             if (xg_bCancelled)
@@ -5303,24 +5283,6 @@ unsigned __stdcall XgGenerateBlacksSmart(void *param)
             }
             xword.clear();
         } while (!XgGenerateBlacksSym2Recurse(xword, 0));
-    } else if (xg_imode == xg_im_KANJI || xg_nRows < 5 || xg_nCols < 5) {
-        do {
-            if (xg_bCancelled)
-                break;
-            if (xg_bBlacksGenerated) {
-                break;
-            }
-            xword.clear();
-        } while (!XgGenerateBlacksRecurse<1>(xword, 0));
-    } else if (xg_imode == xg_im_RUSSIA) {
-        do {
-            if (xg_bCancelled)
-                break;
-            if (xg_bBlacksGenerated) {
-                break;
-            }
-            xword.clear();
-        } while (!XgGenerateBlacksRecurse<2>(xword, 0));
     } else {
         do {
             if (xg_bCancelled)
@@ -5329,7 +5291,7 @@ unsigned __stdcall XgGenerateBlacksSmart(void *param)
                 break;
             }
             xword.clear();
-        } while (!XgGenerateBlacksRecurse<0>(xword, 0));
+        } while (!XgGenerateBlacksRecurse(xword, 0));
     }
     return 1;
 }
