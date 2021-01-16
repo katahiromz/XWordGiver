@@ -3018,7 +3018,10 @@ bool __fastcall XgOnGenerate(HWND hwnd, bool show_answer)
 
         // キャンセルダイアログを表示し、実行を開始する。
         ::EnableWindow(xg_hwndInputPalette, FALSE);
-        if (xg_bSmartResolution && xg_nRows >= 7 && xg_nCols >= 7) {
+        if (xg_imode == xg_im_KANJI) {
+            // 漢字の場合はスマート解決を使用しない。
+            ::DialogBoxW(xg_hInstance, MAKEINTRESOURCE(IDD_CALCULATING), hwnd, XgCancelSolveDlgProc);
+        } else if (xg_bSmartResolution && xg_nRows >= 7 && xg_nCols >= 7) {
             ::DialogBoxW(xg_hInstance, MAKEINTRESOURCE(IDD_CALCULATING), hwnd, XgCancelSolveDlgProcSmart);
         } else if (xg_nRules & RULE_POINTSYMMETRY) {
             ::DialogBoxW(xg_hInstance, MAKEINTRESOURCE(IDD_CALCULATING), hwnd, XgCancelSolveDlgProcSmart);
