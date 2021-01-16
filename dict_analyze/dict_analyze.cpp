@@ -81,7 +81,8 @@ int main(int argc, char **argv)
         return EXIT_SUCCESS;
     }
 
-    if (FILE *fp = fopen(argv[1], "rb"))
+    FILE* fp;
+    if (fopen_s(&fp, argv[1], "rb") == 0)
     {
         char szTextA[256];
         WCHAR szTextW[256];
