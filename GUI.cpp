@@ -1175,7 +1175,7 @@ XgNewDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam*/)
 extern "C" INT_PTR CALLBACK
 XgGenerateDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam*/)
 {
-    INT n1, n2;
+    INT n1, n2, n3;
 
     switch (uMsg) {
     case WM_INITDIALOG:
@@ -1184,6 +1184,16 @@ XgGenerateDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam*/)
         // サイズの欄を設定する。
         ::SetDlgItemInt(hwnd, edt1, s_nRows, FALSE);
         ::SetDlgItemInt(hwnd, edt2, s_nCols, FALSE);
+
+        // 入力モードに応じて単語の最大長を設定する。
+        if (xg_imode == xg_im_KANJI) {
+            n3 = 4;
+        } else if (xg_imode == xg_im_RUSSIA || xg_imode == xg_im_ABC) {
+            n3 = 5;
+        } else {
+            n3 = 4;
+        }
+        ::SetDlgItemInt(hwnd, edt3, n3, FALSE);
 
         // 自動で再計算をするか？
         if (s_bAutoRetry)
@@ -1203,6 +1213,16 @@ XgGenerateDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam*/)
         }
         SendDlgItemMessageW(hwnd, scr1, UDM_SETRANGE, 0, MAKELPARAM(XG_MAX_SIZE, XG_MIN_SIZE));
         SendDlgItemMessageW(hwnd, scr2, UDM_SETRANGE, 0, MAKELPARAM(XG_MAX_SIZE, XG_MIN_SIZE));
+        SendDlgItemMessageW(hwnd, scr3, UDM_SETRANGE, 0, MAKELPARAM(4, 10));
+        if (::IsDlgButtonChecked(hwnd, chx2) == BST_CHECKED) {
+            EnableWindow(GetDlgItem(hwnd, stc1), TRUE);
+            EnableWindow(GetDlgItem(hwnd, edt3), TRUE);
+            EnableWindow(GetDlgItem(hwnd, scr3), TRUE);
+        } else {
+            EnableWindow(GetDlgItem(hwnd, stc1), FALSE);
+            EnableWindow(GetDlgItem(hwnd, edt3), FALSE);
+            EnableWindow(GetDlgItem(hwnd, scr3), FALSE);
+        }
         return TRUE;
 
     case WM_COMMAND:
@@ -1223,6 +1243,14 @@ XgGenerateDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam*/)
                 ::SetFocus(::GetDlgItem(hwnd, edt2));
                 return 0;
             }
+            n3 = static_cast<int>(::GetDlgItemInt(hwnd, edt3, nullptr, FALSE));
+            if (n3 < 4 || n3 > 10) {
+                ::SendDlgItemMessageW(hwnd, edt3, EM_SETSEL, 0, -1);
+                XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_ENTERINT), nullptr, MB_ICONERROR);
+                ::SetFocus(::GetDlgItem(hwnd, edt3));
+                return 0;
+            }
+            xg_nMaxWordLen = n3;
             // 自動で再計算をするか？
             s_bAutoRetry = (::IsDlgButtonChecked(hwnd, chx1) == BST_CHECKED);
             // スマート解決か？
@@ -1247,6 +1275,17 @@ XgGenerateDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam*/)
             // ダイアログを閉じる。
             ::EndDialog(hwnd, IDCANCEL);
             break;
+
+        case chx2:
+            if (::IsDlgButtonChecked(hwnd, chx2) == BST_CHECKED) {
+                EnableWindow(GetDlgItem(hwnd, stc1), TRUE);
+                EnableWindow(GetDlgItem(hwnd, edt3), TRUE);
+                EnableWindow(GetDlgItem(hwnd, scr3), TRUE);
+            } else {
+                EnableWindow(GetDlgItem(hwnd, stc1), FALSE);
+                EnableWindow(GetDlgItem(hwnd, edt3), FALSE);
+                EnableWindow(GetDlgItem(hwnd, scr3), FALSE);
+            }
         }
     }
     return 0;
@@ -3174,6 +3213,15 @@ void XgOnGenerateBlacks(HWND hwnd, bool sym)
     XgDestroyCandsWnd();
     // ヒントウィンドウを破棄する。
     XgDestroyHintsWnd();
+
+    // 入力モードに応じて単語の最大長を設定する。
+    if (xg_imode == xg_im_KANJI) {
+        xg_nMaxWordLen = 4;
+    } else if (xg_imode == xg_im_RUSSIA || xg_imode == xg_im_ABC) {
+        xg_nMaxWordLen = 5;
+    } else {
+        xg_nMaxWordLen = 4;
+    }
 
     // キャンセルダイアログを表示し、生成を開始する。
     ::EnableWindow(xg_hwndInputPalette, FALSE);

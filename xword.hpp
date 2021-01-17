@@ -73,6 +73,9 @@ extern bool xg_bCharFeed;
 // タテ入力？
 extern bool xg_bTateInput;
 
+// スマート解決のとき、配置できる最大単語長。
+extern INT xg_nMaxWordLen;
+
 // 全角文字。
 #define ZEN_SPACE       WCHAR(0x3000)  // L'　'
 #define ZEN_BLACK       WCHAR(0x25A0)  // L'■'

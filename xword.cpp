@@ -5248,15 +5248,6 @@ unsigned __stdcall XgGenerateBlacks(void *param)
     // 乱数をかく乱する。
     srand(::GetTickCount() ^ ::GetCurrentThreadId());
 
-    // 入力モードに応じて単語の最大長を設定する。
-    if (xg_imode == xg_im_KANJI) {
-        xg_nMaxWordLen = 4;
-    } else if (xg_imode == xg_im_RUSSIA || xg_imode == xg_im_ABC) {
-        xg_nMaxWordLen = 5;
-    } else {
-        xg_nMaxWordLen = 4;
-    }
-
     // 再帰求解関数に突入する。
     do {
         if (xg_bBlacksGenerated || xg_bCancelled)
@@ -5276,15 +5267,6 @@ unsigned __stdcall XgGenerateBlacksSmart(void *param)
 
     // 乱数をかく乱する。
     srand(::GetTickCount() ^ ::GetCurrentThreadId());
-
-    // 入力モードに応じて単語の最大長を設定する。
-    if (xg_imode == xg_im_KANJI) {
-        xg_nMaxWordLen = 4;
-    } else if (xg_imode == xg_im_RUSSIA || xg_imode == xg_im_ABC) {
-        xg_nMaxWordLen = 5;
-    } else {
-        xg_nMaxWordLen = 4;
-    }
 
     if (xg_nRules & RULE_POINTSYMMETRY) {
         // 再帰求解関数に突入する。
