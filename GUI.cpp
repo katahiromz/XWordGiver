@@ -8685,6 +8685,7 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
         break;
     case ID_RESETRULES:
         xg_nRules = DEFAULT_RULES;
+        xg_bSkeltonMode = FALSE;
         XgUpdateRules(hwnd);
         break;
     case ID_OPENRULESTXT:
