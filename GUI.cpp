@@ -1193,10 +1193,10 @@ XgGenerateDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam*/)
         ::SetDlgItemInt(hwnd, edt2, s_nCols, FALSE);
 
         // スケルトンモードと入力モードに応じて単語の最大長を設定する。
-        if (xg_bSkeltonMode) {
-            n3 = 6;
-        } else if (xg_imode == xg_im_KANJI) {
+        if (xg_imode == xg_im_KANJI) {
             n3 = 4;
+        } else if (xg_bSkeltonMode) {
+            n3 = 6;
         } else if (xg_imode == xg_im_RUSSIA || xg_imode == xg_im_ABC) {
             n3 = 5;
         } else {
@@ -3224,10 +3224,10 @@ void XgOnGenerateBlacks(HWND hwnd, bool sym)
     XgDestroyHintsWnd();
 
     // スケルトンモードと入力モードに応じて単語の最大長を設定する。
-    if (xg_bSkeltonMode) {
-        xg_nMaxWordLen = 6;
-    } else if (xg_imode == xg_im_KANJI) {
+    if (xg_imode == xg_im_KANJI) {
         xg_nMaxWordLen = 4;
+    } else if (xg_bSkeltonMode) {
+        xg_nMaxWordLen = 6;
     } else if (xg_imode == xg_im_RUSSIA || xg_imode == xg_im_ABC) {
         xg_nMaxWordLen = 5;
     } else {
@@ -8762,10 +8762,10 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
     case ID_SKELTONMODE:
         if (xg_bSkeltonMode) {
             xg_bSkeltonMode = FALSE;
-            xg_nRules |= (RULE_DONTDOUBLEBLACK | RULE_DONTCORNERBLACK | RULE_DONTTRIDIRECTIONS);
+            xg_nRules |= (RULE_DONTDOUBLEBLACK | RULE_DONTCORNERBLACK | RULE_DONTTRIDIRECTIONS | RULE_DONTFOURDIAGONALS);
         } else {
             xg_bSkeltonMode = TRUE;
-            xg_nRules &= ~(RULE_DONTDOUBLEBLACK | RULE_DONTCORNERBLACK | RULE_DONTTRIDIRECTIONS);
+            xg_nRules &= ~(RULE_DONTDOUBLEBLACK | RULE_DONTCORNERBLACK | RULE_DONTTRIDIRECTIONS | RULE_DONTFOURDIAGONALS);
         }
         XgUpdateRules(hwnd);
         break;
