@@ -109,6 +109,9 @@ INT xg_nForDisplay = 0;
 // ズーム比率(%)。
 INT xg_nZoomRate = 100;
 
+// スケルトンモードか？
+BOOL xg_bSkeltonMode = FALSE;
+
 //////////////////////////////////////////////////////////////////////////////
 // static variables
 
@@ -587,6 +590,7 @@ bool __fastcall XgLoadSettings(void)
     xg_bSmartResolution = TRUE;
     xg_imode = xg_im_KANA;
     xg_nZoomRate = 100;
+    xg_bSkeltonMode = FALSE;
 
     xg_bHiragana = FALSE;
     xg_bLowercase = FALSE;
@@ -745,6 +749,9 @@ bool __fastcall XgLoadSettings(void)
             if (!app_key.QueryDword(L"ZoomRate", dwValue)) {
                 xg_nZoomRate = dwValue;
             }
+            if (!app_key.QueryDword(L"SkeltonMode", dwValue)) {
+                xg_bSkeltonMode = dwValue;
+            }
             if (!app_key.QueryDword(L"Hiragana", dwValue)) {
                 xg_bHiragana = !!dwValue;
             }
@@ -885,7 +892,7 @@ bool __fastcall XgSaveSettings(void)
             app_key.SetDword(L"SmartResolution", xg_bSmartResolution);
             app_key.SetDword(L"InputMode", (DWORD)xg_imode);
             app_key.SetDword(L"ZoomRate", xg_nZoomRate);
-
+            app_key.SetDword(L"SkeltonMode", xg_bSkeltonMode);
             app_key.SetDword(L"Hiragana", xg_bHiragana);
             app_key.SetDword(L"Lowercase", xg_bLowercase);
 
@@ -1185,8 +1192,10 @@ XgGenerateDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam*/)
         ::SetDlgItemInt(hwnd, edt1, s_nRows, FALSE);
         ::SetDlgItemInt(hwnd, edt2, s_nCols, FALSE);
 
-        // 入力モードに応じて単語の最大長を設定する。
-        if (xg_imode == xg_im_KANJI) {
+        // スケルトンモードと入力モードに応じて単語の最大長を設定する。
+        if (xg_bSkeltonMode) {
+            n3 = 6;
+        } else if (xg_imode == xg_im_KANJI) {
             n3 = 4;
         } else if (xg_imode == xg_im_RUSSIA || xg_imode == xg_im_ABC) {
             n3 = 5;
@@ -3214,8 +3223,10 @@ void XgOnGenerateBlacks(HWND hwnd, bool sym)
     // ヒントウィンドウを破棄する。
     XgDestroyHintsWnd();
 
-    // 入力モードに応じて単語の最大長を設定する。
-    if (xg_imode == xg_im_KANJI) {
+    // スケルトンモードと入力モードに応じて単語の最大長を設定する。
+    if (xg_bSkeltonMode) {
+        xg_nMaxWordLen = 6;
+    } else if (xg_imode == xg_im_KANJI) {
         xg_nMaxWordLen = 4;
     } else if (xg_imode == xg_im_RUSSIA || xg_imode == xg_im_ABC) {
         xg_nMaxWordLen = 5;
@@ -4651,6 +4662,13 @@ void __fastcall MainWnd_OnInitMenu(HWND /*hwnd*/, HMENU hMenu)
         DoUpdateDictMenu(hDictMenu);
     }
 
+    // スケルトンモード。
+    if (xg_bSkeltonMode) {
+        CheckMenuItem(hMenu, ID_SKELTONMODE, MF_BYCOMMAND | MF_CHECKED);
+    } else {
+        CheckMenuItem(hMenu, ID_SKELTONMODE, MF_BYCOMMAND | MF_UNCHECKED);
+    }
+    
     // 一定時間が過ぎたらリトライ。
     if (s_bAutoRetry) {
         CheckMenuItem(hMenu, ID_RETRYIFTIMEOUT, MF_BYCOMMAND | MF_CHECKED);
@@ -8677,6 +8695,9 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
             xg_nRules &= ~RULE_DONTDOUBLEBLACK;
         } else {
             xg_nRules |= RULE_DONTDOUBLEBLACK;
+            if (xg_bSkeltonMode) {
+                xg_bSkeltonMode = FALSE;
+            }
         }
         XgUpdateRules(hwnd);
         break;
@@ -8685,6 +8706,9 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
             xg_nRules &= ~RULE_DONTCORNERBLACK;
         } else {
             xg_nRules |= RULE_DONTCORNERBLACK;
+            if (xg_bSkeltonMode) {
+                xg_bSkeltonMode = FALSE;
+            }
         }
         XgUpdateRules(hwnd);
         break;
@@ -8693,6 +8717,9 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
             xg_nRules &= ~RULE_DONTTRIDIRECTIONS;
         } else {
             xg_nRules |= RULE_DONTTRIDIRECTIONS;
+            if (xg_bSkeltonMode) {
+                xg_bSkeltonMode = FALSE;
+            }
         }
         XgUpdateRules(hwnd);
         break;
@@ -8731,6 +8758,16 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
         break;
     case ID_RETRYIFTIMEOUT:
         s_bAutoRetry = !s_bAutoRetry;
+        break;
+    case ID_SKELTONMODE:
+        if (xg_bSkeltonMode) {
+            xg_bSkeltonMode = FALSE;
+            xg_nRules |= (RULE_DONTDOUBLEBLACK | RULE_DONTCORNERBLACK | RULE_DONTTRIDIRECTIONS);
+        } else {
+            xg_bSkeltonMode = TRUE;
+            xg_nRules &= ~(RULE_DONTDOUBLEBLACK | RULE_DONTCORNERBLACK | RULE_DONTTRIDIRECTIONS);
+        }
+        XgUpdateRules(hwnd);
         break;
     default:
         if (!MainWnd_OnCommand2(hwnd, id)) {

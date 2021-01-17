@@ -309,6 +309,7 @@
 #define ID_THEME                            258
 #define ID_RESETTHEME                       259
 #define ID_RETRYIFTIMEOUT                   260
+#define ID_SKELTONMODE                      261
 #define ID_TT_BASE                          10000
 
 #define ctl2                                1185
