@@ -952,25 +952,6 @@ inline bool __fastcall XG_Board::IsValid() const
     return true;    // 成功。
 }
 
-// 正当などうか？（簡略版）
-inline bool __fastcall XG_Board::IsOK() const
-{
-    // クロスワードに含まれる単語のチェック。
-    XG_Pos pos;
-    std::vector<std::wstring> vNotFoundWords;
-    vNotFoundWords.reserve(xg_nRows * xg_nCols / 4);
-    XG_EpvCode code = EveryPatternValid2(vNotFoundWords, pos, false);
-    if (code != xg_epv_SUCCESS || !vNotFoundWords.empty())
-        return false;
-
-    // 空のクロスワードを解いているときは、分断禁をチェックする必要はない。
-    // 分断禁。
-    if (!xg_bSolvingEmpty && DividedByBlack())
-        return false;
-
-    return true;    // 成功。
-}
-
 // 正当などうか？（簡略版、黒マス追加なし）
 bool __fastcall XG_Board::IsNoAddBlackOK() const
 {
@@ -2268,7 +2249,7 @@ void __fastcall XgSolveXWord_AddBlackRecurse(const XG_Board& xw)
         return;
 
     // 無効であれば、終了。
-    if (!xw.IsOK())
+    if (!xw.IsValid())
         return;
 
     const int nRows = xg_nRows, nCols = xg_nCols;
@@ -2876,7 +2857,7 @@ void __fastcall XgSolveXWord_AddBlack(const XG_Board& xw)
     }
 
     // 無効であれば、終了。
-    if (!xw.IsOK())
+    if (!xw.IsValid())
         return;
 
     // ランダムな順序の単語ベクターを作成する。
