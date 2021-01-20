@@ -151,6 +151,7 @@ void DoAddText(HWND hwnd, LPCWSTR pszText) {
     Edit_ScrollCaret(hEdt1);
     cch = Edit_GetTextLength(hEdt1);
     Edit_SetSel(hEdt1, cch, cch);
+    EnableWindow(GetDlgItem(hwnd, psh1), TRUE);
 }
 
 void DoAddText(HWND hwnd, INT nIDS_) {
@@ -179,7 +180,11 @@ bool DoAnalyzeDict(HWND hwnd, LPCWSTR pszFileName, const std::vector<std::wstrin
 
     // count word for each length
     std::map<size_t, size_t> length_count;
+    std::wstring strPrevious;
     for (auto& item : list) {
+        if (item == strPrevious) {
+            DoPrintf(hwnd, 141, item.c_str());
+        }
         length_count[item.size()] += 1;
         if (item.size()) {
             WCHAR ch = item[0];
@@ -195,6 +200,7 @@ bool DoAnalyzeDict(HWND hwnd, LPCWSTR pszFileName, const std::vector<std::wstrin
                 ++types[4];
             }
         }
+        strPrevious = item;
     }
 
     DoPrintf(hwnd, 140, UINT(list.size()));
@@ -488,6 +494,7 @@ void JustDoIt(HWND hwnd, LPCWSTR pszFileName)
     if (DoLoadDict(hwnd, pszFileName, list)) {
         DoPrintf(hwnd, IDS_READINGDONE, pszFileTitle);
         DoPrintf(hwnd, IDS_ANALYZESTART, pszFileTitle);
+        std::sort(list.begin(), list.end());
         if (DoAnalyzeDict(hwnd, pszFileName, list)) {
             DoPrintf(hwnd, IDS_ANALYZEDONE, pszFileTitle);
             SetDlgItemTextW(hwnd, stc2, LoadStringDx(119));
@@ -513,6 +520,8 @@ BOOL OnInitDialog(HWND hwnd, HWND hwndFocus, LPARAM lParam)
     s_layout = LayoutInit(hwnd, info, ARRAYSIZE(info));
     LayoutEnableResize(s_layout, TRUE);
 
+    EnableWindow(GetDlgItem(hwnd, psh1), FALSE);
+
     INT argc;
     if (LPWSTR *wargv = CommandLineToArgvW(GetCommandLineW(), &argc)) {
         if (argc >= 2) {
@@ -534,6 +543,8 @@ void OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT codeNotify)
         break;
     case psh1:
         SetDlgItemTextW(hwnd, edt1, NULL);
+        EnableWindow(GetDlgItem(hwnd, psh1), FALSE);
+        break;
     }
 }
 
