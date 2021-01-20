@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 #include <map>
+#include <set>
 #include <unordered_set>
 #include <algorithm>
 #include <strsafe.h>
@@ -17,7 +18,7 @@
 #include "resource.h"
 
 typedef std::vector<std::wstring> word_list_t;
-typedef std::unordered_set<std::wstring> tags_t;
+typedef std::set<std::wstring> tags_t;
 typedef std::map<std::wstring, tags_t> tag_info_t;
 
 LAYOUT_DATA *s_layout = NULL;
@@ -429,6 +430,7 @@ bool DoAnalyzeDict(HWND hwnd, LPCWSTR pszFileName, const word_list_t& list, cons
         }
     }
 
+    // tag info
     if (tag_info.empty()) {
         DoPrintf(hwnd, 143);
     } else {
@@ -440,6 +442,10 @@ bool DoAnalyzeDict(HWND hwnd, LPCWSTR pszFileName, const word_list_t& list, cons
                 tags.insert(it->second.begin(), it->second.end());
             }
         }
+        tags.erase(L"");
+        typedef std::map<size_t, std::wstring> tag_histgram_t;
+        typedef tag_histgram_t::reverse_iterator it_t;
+        tag_histgram_t tag_histgram;
         for (auto& tag : tags) {
             size_t count = 0;
             for (auto& item : list) {
@@ -450,10 +456,17 @@ bool DoAnalyzeDict(HWND hwnd, LPCWSTR pszFileName, const word_list_t& list, cons
                     }
                 }
             }
-            DoPrintf(hwnd, 145, tag.c_str(), UINT(count));
-            size_t needed_count = std::min(list.size() / 10, (size_t)64);
+            tag_histgram[count] = tag;
+        }
+        for (it_t it = tag_histgram.rbegin(); it != tag_histgram.rend(); ++it) {
+            auto& pair = *it;
+            size_t count = pair.first;
+            auto& tag = pair.second;
+            DoPrintf(hwnd, 145, pair.second.c_str(), UINT(count));
+            size_t needed_count = std::min(list.size() / 10, (size_t)50);
             if (count < needed_count) {
-                DoPrintf(hwnd, 144, tag.c_str(), UINT(needed_count));
+                auto diff = needed_count - count;
+                DoPrintf(hwnd, 144, tag.c_str(), UINT(diff), tag.c_str());
             }
         }
     }
@@ -466,15 +479,14 @@ bool DoAnalyzeDict(HWND hwnd, LPCWSTR pszFileName, const word_list_t& list, cons
         }
     );
 
-    size_t head = 0;
-    const size_t t_max = 10;
+    size_t count = 0;
+    const size_t c_max = 24;
     for (auto& item : score_items) {
-        DoAddText(hwnd, item.second.c_str());
-        ++head;
-        if (head > t_max)
+        if (count++ > c_max)
             break;
+        DoAddText(hwnd, item.second.c_str());
     }
-    if (score_items.size() > t_max) {
+    if (count >= c_max) {
         DoAddText(hwnd, 120);
     }
 
@@ -538,6 +550,7 @@ bool DoLoadDict(HWND hwnd, const WCHAR *fname, word_list_t& list, tag_info_t& ta
             }
             list.push_back(wstr);
         }
+        tag_info.erase(L"");
         std::fclose(fp);
         return true;
     }
