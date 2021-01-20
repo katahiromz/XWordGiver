@@ -440,6 +440,25 @@ bool DoAnalyzeDict(HWND hwnd, LPCWSTR pszFileName, const word_list_t& list, cons
         DoPrintf(hwnd, 143);
     } else {
         DoPrintf(hwnd, 142);
+    }
+
+    std::sort(score_items.begin(), score_items.end(),
+        [](const std::pair<size_t, std::wstring>& a,
+           const std::pair<size_t, std::wstring>& b)
+        {
+            return (a.first > b.first);
+        }
+    );
+
+    size_t count = 0;
+    const size_t c_max = 24;
+    for (auto& item : score_items) {
+        if (count++ > c_max)
+            break;
+        DoAddText(hwnd, item.second.c_str());
+    }
+
+    if (tag_info.size()) {
         tags_t tags;
         for (auto& item : list) {
             auto it = tag_info.find(item);
@@ -474,7 +493,7 @@ bool DoAnalyzeDict(HWND hwnd, LPCWSTR pszFileName, const word_list_t& list, cons
                 size_t needed_count = std::min(list.size() / 10, (size_t)50);
                 if (count < needed_count) {
                     auto diff = needed_count - count;
-                    DoPrintf(hwnd, 144, tag.c_str(), UINT(diff), tag.c_str());
+                    DoPrintf(hwnd, 144, tag.c_str(), UINT(diff));
                     ++number;
                 }
             } else {
@@ -485,21 +504,6 @@ bool DoAnalyzeDict(HWND hwnd, LPCWSTR pszFileName, const word_list_t& list, cons
         }
     }
 
-    std::sort(score_items.begin(), score_items.end(),
-        [](const std::pair<size_t, std::wstring>& a,
-           const std::pair<size_t, std::wstring>& b)
-        {
-            return (a.first > b.first);
-        }
-    );
-
-    size_t count = 0;
-    const size_t c_max = 24;
-    for (auto& item : score_items) {
-        if (count++ > c_max)
-            break;
-        DoAddText(hwnd, item.second.c_str());
-    }
     if (count >= c_max) {
         DoAddText(hwnd, 120);
     }
