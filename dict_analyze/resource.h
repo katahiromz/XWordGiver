@@ -6,6 +6,8 @@
 #define IDD_MAIN                            100
 
 #define IDS_APPNAME                         100
+#define IDS_SMALL                           105
+#define IDS_LARGE                           106
 #define IDS_EXTDIFFERENT                    107
 #define IDS_READINGSTARTED                  108
 #define IDS_READINGDONE                     109

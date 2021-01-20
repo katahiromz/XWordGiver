@@ -557,8 +557,8 @@ bool DoLoadDict(HWND hwnd, const WCHAR *fname, word_list_t& list, tag_info_t& ta
                          wstr.c_str(), -1,
                          szText, ARRAYSIZE(szText));
             wstr = szText;
-            std::wstring from = LoadStringDx(105);
-            std::wstring to = LoadStringDx(106);
+            std::wstring from = LoadStringDx(IDS_SMALL);
+            std::wstring to = LoadStringDx(IDS_LARGE);
             for (auto& ch : wstr) {
                 for (size_t i = 0; i < from.size(); ++i) {
                     if (ch == from[i]) {
