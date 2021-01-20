@@ -463,6 +463,7 @@ bool DoAnalyzeDict(HWND hwnd, LPCWSTR pszFileName, const word_list_t& list, cons
             size_t count = pair.first;
             auto& tag = pair.second;
             DoPrintf(hwnd, 145, pair.second.c_str(), UINT(count));
+
             size_t needed_count = std::min(list.size() / 10, (size_t)50);
             if (count < needed_count) {
                 auto diff = needed_count - count;
