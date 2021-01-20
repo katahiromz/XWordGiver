@@ -1,3 +1,4 @@
+#define NOMINMAX
 #include <windows.h>
 #include <windowsx.h>
 #include <commctrl.h>
@@ -9,10 +10,15 @@
 #include <string>
 #include <vector>
 #include <map>
+#include <unordered_set>
 #include <algorithm>
 #include <strsafe.h>
 #include "layout.h"
 #include "resource.h"
+
+typedef std::vector<std::wstring> word_list_t;
+typedef std::unordered_set<std::wstring> tags_t;
+typedef std::map<std::wstring, tags_t> tag_info_t;
 
 LAYOUT_DATA *s_layout = NULL;
 
@@ -93,6 +99,23 @@ mstr_split(T_STR_CONTAINER& container,
 }
 
 template <typename T_STR_CONTAINER>
+inline void
+mstr_split_insert(T_STR_CONTAINER& container,
+                  const typename T_STR_CONTAINER::value_type& str,
+                  const typename T_STR_CONTAINER::value_type& chars)
+{
+    container.clear();
+    size_t i = 0, k = str.find_first_of(chars);
+    while (k != T_STR_CONTAINER::value_type::npos)
+    {
+        container.insert(str.substr(i, k - i));
+        i = k + 1;
+        k = str.find_first_of(chars, i);
+    }
+    container.insert(str.substr(i));
+}
+
+template <typename T_STR_CONTAINER>
 inline typename T_STR_CONTAINER::value_type
 mstr_join(const T_STR_CONTAINER& container,
           const typename T_STR_CONTAINER::value_type& sep)
@@ -146,6 +169,11 @@ void DoAddText(HWND hwnd, LPCWSTR pszText) {
     strText += L"\r\n";
     HWND hEdt1 = GetDlgItem(hwnd, edt1);
     INT cch = Edit_GetTextLength(hEdt1);
+    if (cch > 1 * 1024 * 1024) {
+        Edit_SetSel(hEdt1, 0, 1024);
+        Edit_ReplaceSel(hEdt1, L"");
+        cch = Edit_GetTextLength(hEdt1);
+    }
     Edit_SetSel(hEdt1, cch, cch);
     Edit_ReplaceSel(hEdt1, strText.c_str());
     Edit_ScrollCaret(hEdt1);
@@ -171,7 +199,7 @@ void DoPrintf(HWND hwnd, INT nIDS_, ...) {
     va_end(va);
 }
 
-bool DoAnalyzeDict(HWND hwnd, LPCWSTR pszFileName, const std::vector<std::wstring>& list)
+bool DoAnalyzeDict(HWND hwnd, LPCWSTR pszFileName, const word_list_t& list, const tag_info_t& tag_info)
 {
     std::vector<std::pair<size_t, std::wstring> > score_items;
     size_t score = 0, score_max = 0;
@@ -259,7 +287,7 @@ bool DoAnalyzeDict(HWND hwnd, LPCWSTR pszFileName, const std::vector<std::wstrin
     }
 
     for (auto& pair : length_count) {
-        DoPrintf(hwnd, 136, pair.first, pair.second);
+        DoPrintf(hwnd, 136, UINT(pair.first), UINT(pair.second));
     }
 
     if (wcsstr(pszFileName, LoadStringDx(137)) ||
@@ -401,6 +429,35 @@ bool DoAnalyzeDict(HWND hwnd, LPCWSTR pszFileName, const std::vector<std::wstrin
         }
     }
 
+    if (tag_info.empty()) {
+        DoPrintf(hwnd, 143);
+    } else {
+        DoPrintf(hwnd, 142);
+        tags_t tags;
+        for (auto& item : list) {
+            auto it = tag_info.find(item);
+            if (it != tag_info.end()) {
+                tags.insert(it->second.begin(), it->second.end());
+            }
+        }
+        for (auto& tag : tags) {
+            size_t count = 0;
+            for (auto& item : list) {
+                auto it = tag_info.find(item);
+                if (it != tag_info.end()) {
+                    if (it->second.count(tag)) {
+                        ++count;
+                    }
+                }
+            }
+            DoPrintf(hwnd, 145, tag.c_str(), UINT(count));
+            size_t needed_count = std::min(list.size() / 10, (size_t)64);
+            if (count < needed_count) {
+                DoPrintf(hwnd, 144, tag.c_str(), UINT(needed_count));
+            }
+        }
+    }
+
     std::sort(score_items.begin(), score_items.end(),
         [](const std::pair<size_t, std::wstring>& a,
            const std::pair<size_t, std::wstring>& b)
@@ -425,10 +482,11 @@ bool DoAnalyzeDict(HWND hwnd, LPCWSTR pszFileName, const std::vector<std::wstrin
     return true;
 }
 
-bool DoLoadDict(HWND hwnd, const WCHAR *fname, std::vector<std::wstring>& list) {
+bool DoLoadDict(HWND hwnd, const WCHAR *fname, word_list_t& list, tag_info_t& tag_info) {
     static char s_asz[1024];
     static WCHAR s_wsz[1024];
     list.clear();
+    tag_info.clear();
     if (FILE *fp = _wfopen(fname, L"rb")) {
         bool first_line = true;
         while (fgets(s_asz, sizeof(s_asz), fp)) {
@@ -446,13 +504,22 @@ bool DoLoadDict(HWND hwnd, const WCHAR *fname, std::vector<std::wstring>& list) 
             }
             if (str.empty() || str[0] == L'#')
                 continue;
-            str = str.substr(0, str.find(L'\t'));
-            mstr_trim(str, " \t\r\n");
             ::MultiByteToWideChar(CP_UTF8, 0, str.c_str(), -1, s_wsz, ARRAYSIZE(s_wsz));
-            if (WCHAR *pch = wcschr(s_wsz, L'\t')) {
-                *pch = 0;
-            }
             std::wstring wstr = s_wsz;
+            auto ich1 = wstr.find(L'\t');
+            if (ich1 != wstr.npos) {
+                auto ich2 = wstr.find(L'\t', ich1 + 1);
+                if (ich2 != wstr.npos) {
+                    std::wstring strTags = wstr.substr(ich2 + 1);
+                    mstr_trim(strTags, L" \t\r\n");
+                    tags_t tags;
+                    mstr_split_insert(tags, strTags, L",");
+                    wstr = wstr.substr(0, ich1);
+                    tag_info[wstr] = tags;
+                } else {
+                    wstr = wstr.substr(0, ich1);
+                }
+            }
             mstr_trim(wstr, L" \t\r\n");
             WCHAR szText[256];
             LCMapStringW(MAKELANGID(LANG_JAPANESE, SUBLANG_DEFAULT),
@@ -490,12 +557,13 @@ void JustDoIt(HWND hwnd, LPCWSTR pszFileName)
         return;
     }
 
-    std::vector<std::wstring> list;
-    if (DoLoadDict(hwnd, pszFileName, list)) {
+    word_list_t list;
+    tag_info_t tag_info;
+    if (DoLoadDict(hwnd, pszFileName, list, tag_info)) {
         DoPrintf(hwnd, IDS_READINGDONE, pszFileTitle);
         DoPrintf(hwnd, IDS_ANALYZESTART, pszFileTitle);
         std::sort(list.begin(), list.end());
-        if (DoAnalyzeDict(hwnd, pszFileName, list)) {
+        if (DoAnalyzeDict(hwnd, pszFileName, list, tag_info)) {
             DoPrintf(hwnd, IDS_ANALYZEDONE, pszFileTitle);
             SetDlgItemTextW(hwnd, stc2, LoadStringDx(119));
         } else {
