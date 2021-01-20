@@ -17,7 +17,7 @@ LANGUAGE LANG_JAPANESE, SUBLANG_DEFAULT
 // RT_DIALOG
 
 IDD_MAIN DIALOG 0, 0, 300, 240
-CAPTION "辞書分析ツール ver.0.0 by 片山博文MZ"
+CAPTION "辞書分析ツール ver.0.1 by 片山博文MZ"
 STYLE DS_CENTER | DS_MODALFRAME | WS_POPUPWINDOW | WS_CAPTION | WS_THICKFRAME | WS_MINIMIZEBOX
 FONT 9, "MS UI Gothic"
 {
@@ -34,7 +34,7 @@ FONT 9, "MS UI Gothic"
 
 STRINGTABLE
 {
-    IDS_APPNAME, "【辞書分析ツール ver.0.0 by 片山博文MZ】"
+    IDS_APPNAME, "【辞書分析ツール ver.0.1 by 片山博文MZ】"
     101, "2ch:300*4,3ch:1000*2,4ch:1000*2,5ch:500*1,6ch:100*1"
     102, "150:シカアコオイキトハジ,125:サチフマセニタスエク,122:ミヒウリホダナテケヤ,75:モロラメブバツドゴソ,50:ユヨボビガレノヘデパ,25:ベムゲギプグワルピネ,10:ゼポペザゾズヌ"
     103, "121:イウツヨクルユラリシ,120:ンーヤカマロキスオチ,100:タジトエナガコレミサ,70:ワホブバニドモメズア,40:ビノダケテセフグムソ,20:ボギネデゴハヌベザゲ,10:プヒピゼポヘパゾペヅ"
