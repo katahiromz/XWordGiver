@@ -197,6 +197,8 @@ bool DoAnalyzeDict(HWND hwnd, LPCWSTR pszFileName, const std::vector<std::wstrin
         }
     }
 
+    DoPrintf(hwnd, 140, UINT(list.size()));
+
     if (!!types[0] + !!types[1] + !!types[2] + !!types[3] + !!types[4] >= 2) {
         size_t imax = 0, max_type = 0;
         for (size_t i = 0; i < 5; ++i) {
