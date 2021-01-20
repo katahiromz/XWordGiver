@@ -1,1 +1,6 @@
-add_executable(dict_analyze dict_analyze.cpp dict_analyze_res.rc)
+cmake_minimum_required(VERSION 3.18)
+project(dict_analyze CXX RC)
+add_definitions(-DUNICODE -D_UNICODE)
+set(CMAKE_CXX_FLAGS "-static -Wall")
+add_executable(dict_analyze WIN32 dict_analyze.cpp dict_analyze_res.rc)
+target_link_libraries(dict_analyze comctl32 shlwapi)

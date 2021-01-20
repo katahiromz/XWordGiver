@@ -157,13 +157,13 @@ inline bool XgIsCharZenkakuAlphaW(WCHAR ch)
 // ひらがなか？
 inline bool XgIsCharHiraganaW(WCHAR ch)
 {
-    return ((L'\x3041' <= ch && ch <= L'\x3093') || ch == L'\x30FC');
+    return ((L'\x3041' <= ch && ch <= L'\x3093') || ch == L'\x30FC' || ch == L'\x3094');
 }
 
 // カタカナか？
 inline bool XgIsCharKatakanaW(WCHAR ch)
 {
-    return ((L'\x30A1' <= ch && ch <= L'\x30F3') || ch == L'\x30FC');
+    return ((L'\x30A1' <= ch && ch <= L'\x30F3') || ch == L'\x30FC' || ch == L'\x30F4');
 }
 
 // かなか？
