@@ -170,7 +170,7 @@ void DoPrintf(HWND hwnd, INT nIDS_, ...) {
     va_end(va);
 }
 
-bool DoAnalyzeDict(HWND hwnd, const std::vector<std::wstring>& list)
+bool DoAnalyzeDict(HWND hwnd, LPCWSTR pszFileName, const std::vector<std::wstring>& list)
 {
     std::vector<std::pair<size_t, std::wstring> > score_items;
     size_t score = 0, score_max = 0;
@@ -252,6 +252,13 @@ bool DoAnalyzeDict(HWND hwnd, const std::vector<std::wstring>& list)
 
     for (auto& pair : length_count) {
         DoPrintf(hwnd, 136, pair.first, pair.second);
+    }
+
+    if (wcsstr(pszFileName, LoadStringDx(137)) ||
+        wcsstr(pszFileName, LoadStringDx(138)))
+    {
+        DoPrintf(hwnd, 139);
+        return true;
     }
 
     // word length histogram
@@ -479,7 +486,7 @@ void JustDoIt(HWND hwnd, LPCWSTR pszFileName)
     if (DoLoadDict(hwnd, pszFileName, list)) {
         DoPrintf(hwnd, IDS_READINGDONE, pszFileTitle);
         DoPrintf(hwnd, IDS_ANALYZESTART, pszFileTitle);
-        if (DoAnalyzeDict(hwnd, list)) {
+        if (DoAnalyzeDict(hwnd, pszFileName, list)) {
             DoPrintf(hwnd, IDS_ANALYZEDONE, pszFileTitle);
             SetDlgItemTextW(hwnd, stc2, LoadStringDx(119));
         } else {
