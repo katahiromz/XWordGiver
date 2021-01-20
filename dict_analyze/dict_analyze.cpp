@@ -355,7 +355,7 @@ bool DoAnalyzeDict(HWND hwnd, LPCWSTR pszFileName, const word_list_t& list, cons
                 score += count;
                 score_items.push_back(
                     std::make_pair(
-                        diff,
+                        diff + 20,
                         LoadPrintfDx(115, ch, UINT(diff))
                     )
                 );
@@ -451,7 +451,7 @@ bool DoAnalyzeDict(HWND hwnd, LPCWSTR pszFileName, const word_list_t& list, cons
     );
 
     size_t count = 0;
-    const size_t c_max = 24;
+    const size_t c_max = 20;
     for (auto& item : score_items) {
         if (count++ > c_max)
             break;
@@ -497,7 +497,7 @@ bool DoAnalyzeDict(HWND hwnd, LPCWSTR pszFileName, const word_list_t& list, cons
                     ++number;
                 }
             } else {
-                if (count < 16) {
+                if (count < 10) {
                     DoPrintf(hwnd, 147, tag.c_str());
                 }
             }
