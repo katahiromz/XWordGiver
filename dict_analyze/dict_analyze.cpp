@@ -210,9 +210,11 @@ bool DoAnalyzeDict(HWND hwnd, LPCWSTR pszFileName, const word_list_t& list, cons
     // count word for each length
     std::map<size_t, size_t> length_count;
     std::wstring strPrevious;
+    bool doubled = false;
     for (auto& item : list) {
         if (item == strPrevious) {
             DoPrintf(hwnd, 141, item.c_str());
+            doubled = true;
         }
         length_count[item.size()] += 1;
         if (item.size()) {
@@ -230,6 +232,9 @@ bool DoAnalyzeDict(HWND hwnd, LPCWSTR pszFileName, const word_list_t& list, cons
             }
         }
         strPrevious = item;
+    }
+    if (!doubled) {
+        DoPrintf(hwnd, 146);
     }
 
     DoPrintf(hwnd, 140, UINT(list.size()));
@@ -471,6 +476,10 @@ bool DoAnalyzeDict(HWND hwnd, LPCWSTR pszFileName, const word_list_t& list, cons
                     auto diff = needed_count - count;
                     DoPrintf(hwnd, 144, tag.c_str(), UINT(diff), tag.c_str());
                     ++number;
+                }
+            } else {
+                if (count < 16) {
+                    DoPrintf(hwnd, 147, tag.c_str());
                 }
             }
         }
