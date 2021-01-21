@@ -609,7 +609,7 @@ BOOL OnInitDialog(HWND hwnd, HWND hwndFocus, LPARAM lParam)
 {
     DragAcceptFiles(hwnd, TRUE);
     static const LAYOUT_INFO info[] = {
-        { stc1, BF_LEFT | BF_TOP, },
+        { stc1, BF_LEFT | BF_RIGHT | BF_TOP, },
         { stc3, BF_LEFT | BF_TOP, },
         { edt1, BF_LEFT | BF_TOP | BF_RIGHT | BF_BOTTOM },
         { stc2, BF_LEFT | BF_BOTTOM },
