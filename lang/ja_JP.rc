@@ -586,7 +586,6 @@ FONT 9, "MS UI Gothic"
     LTEXT "作成する問題の個数(&N):", -1, 10, 27, 77, 12
     CONTROL "100", edt1, "EDIT", ES_NUMBER | ES_RIGHT | WS_BORDER | WS_TABSTOP, 90, 25, 65, 14
     CONTROL "", scr1, "msctls_updown32", UDS_ARROWKEYS | UDS_AUTOBUDDY | UDS_ALIGNRIGHT | UDS_SETBUDDYINT, 101, 24, 12, 20
-    AUTOCHECKBOX "無制限に作成する(&I)", chx2, 165, 25, 135, 14
     PUSHBUTTON "参照(&O)...", psh1, 250, 5, 50, 14
     AUTOCHECKBOX "一定時間が過ぎたらリトライ(&T)", chx1, 10, 45, 155, 14
     DEFPUSHBUTTON "計算開始(&S)", IDOK, 175, 60, 60, 14

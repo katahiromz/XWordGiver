@@ -1564,13 +1564,10 @@ XgSolveRepeatedlyDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam*/)
         // 無制限か？
         // 生成する数を設定する。
         ::SetDlgItemInt(hwnd, edt1, s_nNumberToGenerate, FALSE);
-        // JSONとして保存するか？
-        ::CheckDlgButton(hwnd, chx3, BST_CHECKED);
-        ::EnableWindow(::GetDlgItem(hwnd, chx3), FALSE);
         // ファイルドロップを有効にする。
         ::DragAcceptFiles(hwnd, TRUE);
-        SendDlgItemMessageW(hwnd, scr1, UDM_SETRANGE, 0, MAKELPARAM(2, 100));
-        return true;
+        SendDlgItemMessageW(hwnd, scr1, UDM_SETRANGE, 0, MAKELPARAM(100, 2));
+        return TRUE;
 
     case WM_DROPFILES:
         // ドロップされたファイルのパス名を取得する。
@@ -1689,14 +1686,6 @@ XgSolveRepeatedlyDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam*/)
                 ::SetDlgItemTextW(hwnd, cmb1, szFile);
                 ::CoTaskMemFree(pidl);
             }
-            break;
-
-        case chx2:
-            // 無制限にチェックが入っていれば、回数を無効にする。
-            if (::IsDlgButtonChecked(hwnd, chx2) == BST_CHECKED)
-                ::EnableWindow(::GetDlgItem(hwnd, edt1), FALSE);
-            else
-                ::EnableWindow(::GetDlgItem(hwnd, edt1), TRUE);
             break;
         }
     }
@@ -3519,8 +3508,32 @@ bool __fastcall XgOnSolveRepeatedly(HWND hwnd)
 
     // キャンセルダイアログを表示し、実行を開始する。
     ::EnableWindow(xg_hwndInputPalette, FALSE);
-    ::DialogBoxW(xg_hInstance, MAKEINTRESOURCE(IDD_CALCULATING), hwnd,
-               XgCancelSolveRepeatedlyDlgProc);
+    do
+    {
+        nID = ::DialogBoxW(xg_hInstance, MAKEINTRESOURCE(IDD_CALCULATING), hwnd,
+                           XgCancelSolveDlgProc);
+        // 生成成功のときはs_nNumberGeneratedを増やす。
+        if (nID == IDOK && xg_bSolved) {
+            ++s_nNumberGenerated;
+            if (!XgDoSaveToLocation(hwnd)) {
+                s_bOutOfDiskSpace = true;
+                break;
+            }
+            // 初期化。
+            xg_bSolved = false;
+            xg_xword = xword_save;
+            xg_vTateInfo.clear();
+            xg_vYokoInfo.clear();
+            xg_vMarks.clear();
+            xg_vMarkedCands.clear();
+            xg_strHeader.clear();
+            xg_strNotes.clear();
+            xg_strFileName.clear();
+            // 辞書を読み込む。
+            XgLoadDictFile(xg_dict_name.c_str());
+            XgSetInputModeFromDict(hwnd);
+        }
+    } while (nID == IDOK && s_nNumberGenerated < s_nNumberToGenerate);
     ::EnableWindow(xg_hwndInputPalette, TRUE);
 
     // 初期化する。
@@ -3606,8 +3619,32 @@ bool __fastcall XgOnSolveRepeatedlyNoAddBlack(HWND hwnd)
 
     // キャンセルダイアログを表示し、実行を開始する。
     ::EnableWindow(xg_hwndInputPalette, FALSE);
-    ::DialogBoxW(xg_hInstance, MAKEINTRESOURCE(IDD_CALCULATING), hwnd,
-                 XgCancelGenerateRepeatedlyDlgProc<true>);
+    do
+    {
+        nID = ::DialogBoxW(xg_hInstance, MAKEINTRESOURCE(IDD_CALCULATING), hwnd,
+                           XgCancelSolveDlgProcNoAddBlack);
+        // 生成成功のときはs_nNumberGeneratedを増やす。
+        if (nID == IDOK && xg_bSolved) {
+            ++s_nNumberGenerated;
+            if (!XgDoSaveToLocation(hwnd)) {
+                s_bOutOfDiskSpace = true;
+                break;
+            }
+            // 初期化。
+            xg_bSolved = false;
+            xg_xword = xword_save;
+            xg_vTateInfo.clear();
+            xg_vYokoInfo.clear();
+            xg_vMarks.clear();
+            xg_vMarkedCands.clear();
+            xg_strHeader.clear();
+            xg_strNotes.clear();
+            xg_strFileName.clear();
+            // 辞書を読み込む。
+            XgLoadDictFile(xg_dict_name.c_str());
+            XgSetInputModeFromDict(hwnd);
+        }
+    } while (nID == IDOK && s_nNumberGenerated < s_nNumberToGenerate);
     ::EnableWindow(xg_hwndInputPalette, TRUE);
 
     // 初期化する。
