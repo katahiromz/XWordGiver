@@ -1862,6 +1862,13 @@ XgCancelSolveDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam*/)
         ::SetTimer(hwnd, 999, xg_dwTimerInterval, nullptr);
         // フォーカスをセットする。
         ::SetFocus(::GetDlgItem(hwnd, psh1));
+        // 生成した問題の個数を表示する。
+        if (s_nNumberGenerated > 0) {
+            WCHAR sz[MAX_PATH];
+            StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(IDS_PROBLEMSMAKING),
+                           s_nNumberGenerated);
+            ::SetDlgItemTextW(hwnd, stc2, sz);
+        }
         return false;
 
     case WM_COMMAND:
@@ -2439,6 +2446,13 @@ XgCancelSolveDlgProcNoAddBlack(
         ::SetTimer(hwnd, 999, xg_dwTimerInterval, nullptr);
         // フォーカスをセットする。
         ::SetFocus(::GetDlgItem(hwnd, psh1));
+        // 生成した問題の個数を表示する。
+        if (s_nNumberGenerated > 0) {
+            WCHAR sz[MAX_PATH];
+            StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(IDS_PROBLEMSMAKING),
+                           s_nNumberGenerated);
+            ::SetDlgItemTextW(hwnd, stc2, sz);
+        }
         return false;
 
     case WM_COMMAND:
@@ -2574,6 +2588,13 @@ XgCancelSolveDlgProcSmart(
         ::SetTimer(hwnd, 999, xg_dwTimerInterval, nullptr);
         // フォーカスをセットする。
         ::SetFocus(::GetDlgItem(hwnd, psh1));
+        // 生成した問題の個数を表示する。
+        if (s_nNumberGenerated > 0) {
+            WCHAR sz[MAX_PATH];
+            StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(IDS_PROBLEMSMAKING),
+                           s_nNumberGenerated);
+            ::SetDlgItemTextW(hwnd, stc2, sz);
+        }
         return false;
 
     case WM_COMMAND:
