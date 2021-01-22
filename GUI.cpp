@@ -7627,13 +7627,21 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
         {
             auto sa1 = std::make_shared<XG_UndoData_SetAll>();
             sa1->Get();
+            auto sa2 = std::make_shared<XG_UndoData_SetAll>();
             // 候補ウィンドウを破棄する。
             XgDestroyCandsWnd();
             // ヒントウィンドウを破棄する。
             XgDestroyHintsWnd();
             // 連続生成ダイアログ。
             if (XgOnGenerate(hwnd, false, true)) {
-                sa1->Apply();
+                // クリアする。
+                xg_bShowAnswer = false;
+                xg_bSolved = false;
+                xg_xword.clear();
+                xg_solution.clear();
+                // 元に戻す情報を残す。
+                sa2->Get();
+                xg_ubUndoBuffer.Commit(UC_SETALL, sa1, sa2);
                 // イメージを更新する。
                 xg_caret_pos.clear();
                 XgMarkUpdate();
