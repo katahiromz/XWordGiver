@@ -3482,17 +3482,6 @@ bool __fastcall XgOnSolveRepeatedly(HWND hwnd)
         return false;
     }
 
-    #ifndef MZC_NO_SHAREWARE
-        // シェアウェアの場合、登録されているか？
-        if (!g_shareware.IsRegistered()) {
-            g_shareware.ThisCommandRequiresRegistering(hwnd);
-            if (!g_shareware.UrgeRegister(hwnd)) {
-                // 機能を実行しない。
-                return false;
-            }
-        }
-    #endif  // ndef MZC_NO_SHAREWARE
-
     // 黒マスルールなどをチェックする。
     xg_bNoAddBlack = false;
     if (!XgCheckCrossWord(hwnd)) {
@@ -3578,17 +3567,6 @@ bool __fastcall XgOnSolveRepeatedlyNoAddBlack(HWND hwnd)
         ::MessageBeep(0xFFFFFFFF);
         return false;
     }
-
-    #ifndef MZC_NO_SHAREWARE
-        // シェアウェアの場合、登録されているか？
-        if (!g_shareware.IsRegistered()) {
-            g_shareware.ThisCommandRequiresRegistering(hwnd);
-            if (!g_shareware.UrgeRegister(hwnd)) {
-                // 機能を実行しない。
-                return false;
-            }
-        }
-    #endif  // ndef MZC_NO_SHAREWARE
 
     // 黒マスルールなどをチェックする。
     xg_bNoAddBlack = true;
@@ -7916,22 +7894,6 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
         }
         break;
 
-#ifndef MZC_NO_SHAREWARE
-    case ID_STARTSHAREWARE:
-        // シェアウェアを開始する。
-        if (!g_shareware.Start(hwnd)) {
-            // 開始できないときは、ウィンドウを破棄する。
-            ::DestroyWindow(hwnd);
-        }
-        XgEnsureCaretVisible(hwnd);
-        break;
-
-    case ID_REGISTERKEY:
-        // シェアウェアの登録を促す。
-        g_shareware.UrgeRegister(hwnd);
-        break;
-#endif  // ndef MZC_NO_SHAREWARE
-
     case ID_SETTINGS:   // 設定。
         MainWnd_OnSettings(hwnd);
         break;
@@ -9216,11 +9178,6 @@ bool __fastcall MainWnd_OnCreate(HWND hwnd, LPCREATESTRUCT /*lpCreateStruct*/)
         }
     }
     GlobalFree(wargv);
-
-#ifndef MZC_NO_SHAREWARE
-    // シェアウェアを開始する。
-    ::PostMessageW(hwnd, WM_COMMAND, ID_STARTSHAREWARE, 0);
-#endif
 
     ::PostMessageW(hwnd, WM_SIZE, 0, 0);
     // ルールを更新する。
