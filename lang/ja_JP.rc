@@ -470,7 +470,7 @@ FONT 9, "MS UI Gothic"
     LTEXT "※8×8以上のサイズの場合、計算にかなり時間がかかることがあります。", -1, 10, 30, 290, 14
     AUTOCHECKBOX "スマート解決(&S)", chx2, 10, 60, 75, 14
     AUTOCHECKBOX "一定時間が過ぎたらリトライ(&T)", chx1, 95, 60, 110, 14
-    LTEXT "最大文字長(&L):", stc1, 10, 87, 60, 12
+    LTEXT "最大単語長(&L):", stc1, 10, 87, 60, 12
     EDITTEXT edt3, 80, 85, 30, 14, ES_NUMBER | ES_RIGHT
     CONTROL "", scr3, "msctls_updown32", UDS_ARROWKEYS | UDS_AUTOBUDDY | UDS_ALIGNRIGHT | UDS_SETBUDDYINT, 103, 90, 12, 20
     DEFPUSHBUTTON "計算開始(&G)", IDOK, 175, 80, 60, 14
@@ -518,7 +518,7 @@ FONT 9, "MS UI Gothic"
     LTEXT "※8×8以上のサイズの場合、計算にかなり時間がかかることがあります。", -1, 10, 30, 290, 14
     AUTOCHECKBOX "スマート解決(&S)", chx2, 10, 60, 75, 14
     AUTOCHECKBOX "一定時間が過ぎたらリトライ(&T)", chx1, 95, 60, 110, 14
-    LTEXT "最大文字長(&L):", stc1, 10, 87, 60, 12
+    LTEXT "最大単語長(&L):", stc1, 10, 87, 60, 12
     EDITTEXT edt3, 80, 85, 30, 14, ES_NUMBER | ES_RIGHT
     CONTROL "", scr3, "msctls_updown32", UDS_ARROWKEYS | UDS_AUTOBUDDY | UDS_ALIGNRIGHT | UDS_SETBUDDYINT, 103, 90, 12, 20
     LTEXT "作成する問題の個数(&N):", -1, 130, 87, 79, 12
