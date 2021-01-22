@@ -7569,6 +7569,7 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
             if (XgOnGenerate(hwnd, false, false)) {
                 flag = true;
                 sa2->Get();
+                xg_ubUndoBuffer.Commit(UC_SETALL, sa1, sa2);
                 // イメージを更新する。
                 xg_caret_pos.clear();
                 XgMarkUpdate();
@@ -7576,9 +7577,7 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
                 // メッセージボックスを表示する。
                 XgShowResults(hwnd);
             }
-            if (flag) {
-                xg_ubUndoBuffer.Commit(UC_SETALL, sa1, sa2);
-            } else {
+            if (!flag) {
                 sa1->Apply();
             }
             // イメージを更新する。
@@ -7604,6 +7603,7 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
             if (XgOnGenerate(hwnd, true, false)) {
                 flag = true;
                 sa2->Get();
+                xg_ubUndoBuffer.Commit(UC_SETALL, sa1, sa2);
                 // イメージを更新する。
                 xg_caret_pos.clear();
                 XgMarkUpdate();
@@ -7611,9 +7611,7 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
                 // メッセージボックスを表示する。
                 XgShowResults(hwnd);
             }
-            if (flag) {
-                xg_ubUndoBuffer.Commit(UC_SETALL, sa1, sa2);
-            } else {
+            if (!flag) {
                 sa1->Apply();
             }
             // イメージを更新する。
@@ -7635,6 +7633,7 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
             XgDestroyHintsWnd();
             // 連続生成ダイアログ。
             if (XgOnGenerate(hwnd, false, true)) {
+                sa1->Apply();
                 // イメージを更新する。
                 xg_caret_pos.clear();
                 XgMarkUpdate();
@@ -7642,7 +7641,6 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
                 // メッセージボックスを表示する。
                 XgShowResultsRepeatedly(hwnd);
             }
-            sa1->Apply();
             // イメージを更新する。
             xg_caret_pos.clear();
             XgMarkUpdate();
