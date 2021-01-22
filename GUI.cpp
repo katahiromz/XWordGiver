@@ -1268,7 +1268,6 @@ XgGenerateDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam*/)
                 xg_vYokoInfo.clear();
                 xg_vMarks.clear();
                 xg_vMarkedCands.clear();
-                s_nNumberToGenerate = 1;
             }
             // ダイアログを閉じる。
             ::EndDialog(hwnd, IDOK);
@@ -2743,7 +2742,7 @@ bool __fastcall XgOnGenerate(HWND hwnd, bool show_answer, bool multiple = false)
                 XgSetInputModeFromDict(hwnd);
             }
         }
-    } while (nID == IDOK && s_nNumberGenerated < s_nNumberToGenerate);
+    } while (nID == IDOK && multiple && s_nNumberGenerated < s_nNumberToGenerate);
     ::EnableWindow(xg_hwndInputPalette, TRUE);
 
     // 初期化する。
@@ -2847,7 +2846,6 @@ bool __fastcall XgOnSolve_AddBlack(HWND hwnd)
     xg_strFileName.clear();
     // 生成した数と生成する数。
     s_nNumberGenerated = 0;
-    s_nNumberToGenerate = 1;
     // 辞書を読み込む。
     XgLoadDictFile(xg_dict_name.c_str());
     XgSetInputModeFromDict(hwnd);
@@ -2947,7 +2945,6 @@ bool __fastcall XgOnSolve_NoAddBlack(HWND hwnd, bool bShowAnswer = true)
     XgSetInputModeFromDict(hwnd);
     // 生成した数と生成する数。
     s_nNumberGenerated = 0;
-    s_nNumberToGenerate = 1;
 
     // 候補ウィンドウを破棄する。
     XgDestroyCandsWnd();
