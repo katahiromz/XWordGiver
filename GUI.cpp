@@ -1390,7 +1390,7 @@ XgGenerateRepeatedlyDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam
         SendDlgItemMessageW(hwnd, scr1, UDM_SETRANGE, 0, MAKELPARAM(XG_MAX_SIZE, XG_MIN_SIZE));
         SendDlgItemMessageW(hwnd, scr2, UDM_SETRANGE, 0, MAKELPARAM(XG_MAX_SIZE, XG_MIN_SIZE));
         SendDlgItemMessageW(hwnd, scr3, UDM_SETRANGE, 0, MAKELPARAM(10, 4));
-        SendDlgItemMessageW(hwnd, scr4, UDM_SETRANGE, 0, MAKELPARAM(1, 100));
+        SendDlgItemMessageW(hwnd, scr4, UDM_SETRANGE, 0, MAKELPARAM(100, 1));
         if (::IsDlgButtonChecked(hwnd, chx2) == BST_CHECKED) {
             EnableWindow(GetDlgItem(hwnd, stc1), TRUE);
             EnableWindow(GetDlgItem(hwnd, edt3), TRUE);
