@@ -1275,6 +1275,7 @@ XgGenerateDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam*/)
                 xg_vYokoInfo.clear();
                 xg_vMarks.clear();
                 xg_vMarkedCands.clear();
+                s_nNumberToGenerate = 1;
             }
             // ダイアログを閉じる。
             ::EndDialog(hwnd, IDOK);
@@ -1295,6 +1296,7 @@ XgGenerateDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam*/)
                 EnableWindow(GetDlgItem(hwnd, edt3), FALSE);
                 EnableWindow(GetDlgItem(hwnd, scr3), FALSE);
             }
+            break;
         }
     }
     return 0;
@@ -1326,7 +1328,7 @@ int CALLBACK XgBrowseCallbackProc(
 extern "C" INT_PTR CALLBACK
 XgGenerateRepeatedlyDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam*/)
 {
-    INT n1, n2;
+    INT n1, n2, n3;
     WCHAR szFile[MAX_PATH];
     std::wstring strDir;
     COMBOBOXEXITEMW item;
@@ -1342,6 +1344,23 @@ XgGenerateRepeatedlyDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam
         // サイズの欄を設定する。
         ::SetDlgItemInt(hwnd, edt1, s_nRows, FALSE);
         ::SetDlgItemInt(hwnd, edt2, s_nCols, FALSE);
+        // スケルトンモードと入力モードに応じて単語の最大長を設定する。
+        if (xg_imode == xg_im_KANJI) {
+            n3 = 4;
+        } else if (xg_bSkeltonMode) {
+            n3 = 6;
+        } else if (xg_imode == xg_im_RUSSIA || xg_imode == xg_im_ABC) {
+            n3 = 5;
+        } else {
+            n3 = 4;
+        }
+        ::SetDlgItemInt(hwnd, edt3, n3, FALSE);
+        // スマート解決か？
+        if (xg_bSmartResolution) {
+            ::CheckDlgButton(hwnd, chx2, BST_CHECKED);
+        } else {
+            ::CheckDlgButton(hwnd, chx2, BST_UNCHECKED);
+        }
         // 保存先を設定する。
         for (const auto& dir : s_dirs_save_to) {
             item.mask = CBEIF_TEXT;
@@ -1358,33 +1377,30 @@ XgGenerateRepeatedlyDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam
         if (s_bAutoRetry)
             ::CheckDlgButton(hwnd, chx1, BST_CHECKED);
         // 無制限に生成するか？
-        if (s_bInfinite) {
-            // 「無制限に生成」チェックボックスにチェックを入れる。
-            ::CheckDlgButton(hwnd, chx2, BST_CHECKED);
-            // 回数を無効化する。
-            ::EnableWindow(::GetDlgItem(hwnd, edt3), FALSE);
-            ::SetDlgItemTextW(hwnd, edt3, NULL);
-        } else {
-            // 生成する数を設定する。
-            ::SetDlgItemInt(hwnd, edt3, s_nNumberToGenerate, FALSE);
-        }
-        // JSON形式で保存するか？
-        ::CheckDlgButton(hwnd, chx3, BST_CHECKED);
-        ::EnableWindow(::GetDlgItem(hwnd, chx3), FALSE);
+        s_bInfinite = false;
+        // 生成する数を設定する。
+        ::SetDlgItemInt(hwnd, edt4, s_nNumberToGenerate, FALSE);
         // IMEをOFFにする。
         {
-            HWND hwndCtrl;
-
-            hwndCtrl = ::GetDlgItem(hwnd, edt1);
+            HWND hwndCtrl = ::GetDlgItem(hwnd, edt1);
             ::ImmAssociateContext(hwndCtrl, NULL);
-
             hwndCtrl = ::GetDlgItem(hwnd, edt2);
             ::ImmAssociateContext(hwndCtrl, NULL);
         }
         SendDlgItemMessageW(hwnd, scr1, UDM_SETRANGE, 0, MAKELPARAM(XG_MAX_SIZE, XG_MIN_SIZE));
         SendDlgItemMessageW(hwnd, scr2, UDM_SETRANGE, 0, MAKELPARAM(XG_MAX_SIZE, XG_MIN_SIZE));
-        SendDlgItemMessageW(hwnd, scr3, UDM_SETRANGE, 0, MAKELPARAM(2, 100));
-        return true;
+        SendDlgItemMessageW(hwnd, scr3, UDM_SETRANGE, 0, MAKELPARAM(10, 4));
+        SendDlgItemMessageW(hwnd, scr4, UDM_SETRANGE, 0, MAKELPARAM(1, 100));
+        if (::IsDlgButtonChecked(hwnd, chx2) == BST_CHECKED) {
+            EnableWindow(GetDlgItem(hwnd, stc1), TRUE);
+            EnableWindow(GetDlgItem(hwnd, edt3), TRUE);
+            EnableWindow(GetDlgItem(hwnd, scr3), TRUE);
+        } else {
+            EnableWindow(GetDlgItem(hwnd, stc1), FALSE);
+            EnableWindow(GetDlgItem(hwnd, edt3), FALSE);
+            EnableWindow(GetDlgItem(hwnd, scr3), FALSE);
+        }
+        return TRUE;
 
     case WM_COMMAND:
         switch (LOWORD(wParam))
@@ -1405,8 +1421,18 @@ XgGenerateRepeatedlyDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam
                 ::SetFocus(::GetDlgItem(hwnd, edt2));
                 return 0;
             }
+            n3 = static_cast<int>(::GetDlgItemInt(hwnd, edt3, nullptr, FALSE));
+            if (n3 < 4 || n3 > 10) {
+                ::SendDlgItemMessageW(hwnd, edt3, EM_SETSEL, 0, -1);
+                XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_ENTERINT), nullptr, MB_ICONERROR);
+                ::SetFocus(::GetDlgItem(hwnd, edt3));
+                return 0;
+            }
+            xg_nMaxWordLen = n3;
             // 自動で再計算をするか？
             s_bAutoRetry = (::IsDlgButtonChecked(hwnd, chx1) == BST_CHECKED);
+            // スマート解決か？
+            xg_bSmartResolution = (::IsDlgButtonChecked(hwnd, chx2) == BST_CHECKED);
             // 保存先のパス名を取得する。
             ::GetDlgItemTextW(hwnd, cmb2, szFile, ARRAYSIZE(szFile));
             attrs = ::GetFileAttributesW(szFile);
@@ -1434,18 +1460,14 @@ XgGenerateRepeatedlyDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam
                 s_dirs_save_to.emplace_front(strDir);
             }
             // 問題の数を取得する。
-            if (::IsDlgButtonChecked(hwnd, chx2) == BST_CHECKED) {
-                // 無制限。
-                s_nNumberToGenerate = -1;
-                s_bInfinite = true;
-            } else {
+            {
                 // 無制限ではない。
                 BOOL bTranslated;
-                s_nNumberToGenerate = ::GetDlgItemInt(hwnd, edt3, &bTranslated, FALSE);
+                s_nNumberToGenerate = ::GetDlgItemInt(hwnd, edt4, &bTranslated, FALSE);
                 if (!bTranslated || s_nNumberToGenerate == 0) {
-                    ::SendDlgItemMessageW(hwnd, edt3, EM_SETSEL, 0, -1);
+                    ::SendDlgItemMessageW(hwnd, edt4, EM_SETSEL, 0, -1);
                     XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_ENTERPOSITIVE), nullptr, MB_ICONERROR);
-                    ::SetFocus(::GetDlgItem(hwnd, edt3));
+                    ::SetFocus(::GetDlgItem(hwnd, edt4));
                     return 0;
                 }
                 s_bInfinite = false;
@@ -1473,6 +1495,18 @@ XgGenerateRepeatedlyDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam
             ::EndDialog(hwnd, IDCANCEL);
             break;
 
+        case chx2:
+            if (::IsDlgButtonChecked(hwnd, chx2) == BST_CHECKED) {
+                EnableWindow(GetDlgItem(hwnd, stc1), TRUE);
+                EnableWindow(GetDlgItem(hwnd, edt3), TRUE);
+                EnableWindow(GetDlgItem(hwnd, scr3), TRUE);
+            } else {
+                EnableWindow(GetDlgItem(hwnd, stc1), FALSE);
+                EnableWindow(GetDlgItem(hwnd, edt3), FALSE);
+                EnableWindow(GetDlgItem(hwnd, scr3), FALSE);
+            }
+            break;
+
         case psh2:
             // ユーザーに保存先の場所を問い合わせる。
             ZeroMemory(&bi, sizeof(bi));
@@ -1488,14 +1522,6 @@ XgGenerateRepeatedlyDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam
                 ::SetDlgItemTextW(hwnd, cmb2, szFile);
                 ::CoTaskMemFree(pidl);
             }
-            break;
-
-        case chx2:
-            // 無制限にチェックが入っていれば、回数を無効にする。
-            if (::IsDlgButtonChecked(hwnd, chx2) == BST_CHECKED)
-                ::EnableWindow(::GetDlgItem(hwnd, edt3), FALSE);
-            else
-                ::EnableWindow(::GetDlgItem(hwnd, edt3), TRUE);
             break;
         }
     }
@@ -1536,14 +1562,8 @@ XgSolveRepeatedlyDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam*/)
             ::CheckDlgButton(hwnd, chx1, BST_CHECKED);
         }
         // 無制限か？
-        if (s_bInfinite) {
-            ::CheckDlgButton(hwnd, chx2, BST_CHECKED);
-            ::EnableWindow(::GetDlgItem(hwnd, edt1), FALSE);
-            ::SetDlgItemTextW(hwnd, edt1, NULL);
-        } else {
-            // 生成する数を設定する。
-            ::SetDlgItemInt(hwnd, edt1, s_nNumberToGenerate, FALSE);
-        }
+        // 生成する数を設定する。
+        ::SetDlgItemInt(hwnd, edt1, s_nNumberToGenerate, FALSE);
         // JSONとして保存するか？
         ::CheckDlgButton(hwnd, chx3, BST_CHECKED);
         ::EnableWindow(::GetDlgItem(hwnd, chx3), FALSE);
@@ -1625,10 +1645,7 @@ XgSolveRepeatedlyDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam*/)
             // 自動で再計算をするか？
             s_bAutoRetry = (::IsDlgButtonChecked(hwnd, chx1) == BST_CHECKED);
             // 問題の数を取得する。
-            if (::IsDlgButtonChecked(hwnd, chx2) == BST_CHECKED) {
-                s_nNumberToGenerate = -1;
-                s_bInfinite = true;
-            } else {
+            {
                 BOOL bTranslated;
                 s_nNumberToGenerate = ::GetDlgItemInt(hwnd, edt1, &bTranslated, FALSE);
                 if (!bTranslated || s_nNumberToGenerate == 0) {
@@ -3064,162 +3081,150 @@ bool __fastcall XgOnNew(HWND hwnd)
     return false;
 }
 
-// 問題の作成。
-bool __fastcall XgOnGenerate(HWND hwnd, bool show_answer)
+// 特定の場所にファイルを保存する。
+bool __fastcall XgDoSaveToLocation(HWND hwnd)
 {
-    WCHAR sz[MAX_PATH];
+    WCHAR szPath[MAX_PATH], szDir[MAX_PATH];
+    WCHAR szName[32];
 
-    // [問題の作成]ダイアログ。
-    INT nID;
-    nID = INT(::DialogBoxW(xg_hInstance, MAKEINTRESOURCE(IDD_CREATE), hwnd,
-                           XgGenerateDlgProc));
-    if (nID == IDOK) {
-        xg_bSolvingEmpty = true;
-        xg_bNoAddBlack = false;
-        s_nNumberGenerated = 0;
-        s_bOutOfDiskSpace = false;
-        xg_strHeader.clear();
-        xg_strNotes.clear();
-        xg_strFileName.clear();
-        // 辞書を読み込む。
-        XgLoadDictFile(xg_dict_name.c_str());
-        XgSetInputModeFromDict(hwnd);
+    // パスを生成する。
+    StringCbCopy(szDir, sizeof(szDir), s_dirs_save_to[0].data());
+    PathAddBackslashW(szDir);
 
-        // キャンセルダイアログを表示し、実行を開始する。
-        ::EnableWindow(xg_hwndInputPalette, FALSE);
-        if (xg_imode == xg_im_KANJI) {
-            // 漢字の場合はスマート解決を使用しない。
-            ::DialogBoxW(xg_hInstance, MAKEINTRESOURCE(IDD_CALCULATING), hwnd, XgCancelSolveDlgProc);
-        } else if (xg_bSmartResolution && xg_nRows >= 7 && xg_nCols >= 7) {
-            ::DialogBoxW(xg_hInstance, MAKEINTRESOURCE(IDD_CALCULATING), hwnd, XgCancelSolveDlgProcSmart);
-        } else if (xg_nRules & RULE_POINTSYMMETRY) {
-            ::DialogBoxW(xg_hInstance, MAKEINTRESOURCE(IDD_CALCULATING), hwnd, XgCancelSolveDlgProcSmart);
-        } else {
-            ::DialogBoxW(xg_hInstance, MAKEINTRESOURCE(IDD_CALCULATING), hwnd, XgCancelSolveDlgProc);
-        }
-        ::EnableWindow(xg_hwndInputPalette, TRUE);
-
-        // イメージを更新する。
-        xg_bShowAnswer = show_answer;
-        xg_caret_pos.clear();
-        if (xg_bSmartResolution && xg_bCancelled) {
-            xg_xword.clear();
-        }
-        XgMarkUpdate();
-        XgUpdateImage(hwnd, 0, 0);
-
-        if (xg_bCancelled) {
-            // キャンセルされた。
-            StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(IDS_CANCELLED),
-                (s_dwTick2 - s_dwTick0) / 1000,
-                (s_dwTick2 - s_dwTick0) / 100 % 10);
-            XgCenterMessageBoxW(hwnd, sz, XgLoadStringDx2(IDS_RESULTS), MB_ICONINFORMATION);
-        } else if (xg_bSolved) {
-            // 成功メッセージを表示する。
-            StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(IDS_MADEPROBLEM),
-                (s_dwTick2 - s_dwTick0) / 1000,
-                (s_dwTick2 - s_dwTick0) / 100 % 10);
-            XgCenterMessageBoxW(hwnd, sz, XgLoadStringDx2(IDS_RESULTS), MB_ICONINFORMATION);
-
-            // ヒントを更新して開く。
-            XgUpdateHints(hwnd);
-            XgShowHints(hwnd);
-        } else {
-            // 失敗メッセージを表示する。
-            StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(IDS_CANTMAKEPROBLEM),
-                (s_dwTick2 - s_dwTick0) / 1000,
-                (s_dwTick2 - s_dwTick0) / 100 % 10);
-            XgCenterMessageBoxW(hwnd, sz, XgLoadStringDx2(IDS_RESULTS), MB_ICONERROR);
-        }
-        return true;
+    // ファイル名を生成する。
+    UINT u;
+    for (u = 1; u <= 0xFFFF; u++) {
+        StringCbPrintf(szName, sizeof(szName), L"%dx%d-%04u.xwj",
+                  xg_nRows, xg_nCols, u);
+        StringCbCopy(szPath, sizeof(szPath), szDir);
+        StringCbCat(szPath, sizeof(szPath), szName);
+        if (::GetFileAttributesW(szPath) == 0xFFFFFFFF)
+            break;
     }
-    return false;
+
+    bool bOK = false;
+    if (u != 0x10000) {
+        // ファイル名が作成できた。排他制御しながら保存する。
+        ::EnterCriticalSection(&xg_cs);
+        {
+            // カギ番号を更新する。
+            xg_solution.DoNumberingNoCheck();
+
+            // ヒントを更新する。
+            XgUpdateHints(hwnd);
+
+            // ファイルに保存する。
+            bOK = XgDoSave(hwnd, szPath, xg_bSaveAsJsonFile);
+        }
+        ::LeaveCriticalSection(&xg_cs);
+    }
+
+    // ディスク容量を確認する。
+    ULARGE_INTEGER ull1, ull2, ull3;
+    if (::GetDiskFreeSpaceExW(szPath, &ull1, &ull2, &ull3)) {
+        if (ull1.QuadPart < 0x1000000)  // 1MB
+        {
+            s_bOutOfDiskSpace = true;
+        }
+    }
+
+    return bOK;
 }
 
-// 連続生成する。
-bool __fastcall XgOnGenerateRepeatedly(HWND hwnd)
+// 問題の作成。
+bool __fastcall XgOnGenerate(HWND hwnd, bool show_answer, bool multiple = false)
 {
-    #ifndef MZC_NO_SHAREWARE
-        // シェアウェアの場合、登録されているか？
-        if (!g_shareware.IsRegistered()) {
-            g_shareware.ThisCommandRequiresRegistering(hwnd);
-            if (!g_shareware.UrgeRegister(hwnd)) {
-                // 機能を実行しない。
-                return false;
-            }
-        }
-    #endif  // ndef MZC_NO_SHAREWARE
-
-    WCHAR sz[MAX_PATH];
-
-    // 実行前のマスの状態を保存する。
-    XG_Board xword_save(xg_xword);
-
-    // [問題の連続作成]ダイアログ。
     INT nID;
     ::EnableWindow(xg_hwndInputPalette, FALSE);
-    nID = INT(::DialogBoxW(xg_hInstance, MAKEINTRESOURCE(IDD_SEQCREATE), hwnd,
-                           XgGenerateRepeatedlyDlgProc));
+    if (multiple) {
+        // [問題の連続作成]ダイアログ。
+        nID = INT(::DialogBoxW(xg_hInstance, MAKEINTRESOURCE(IDD_SEQCREATE), hwnd,
+                               XgGenerateRepeatedlyDlgProc));
+    } else {
+        // [問題の作成]ダイアログ。
+        nID = INT(::DialogBoxW(xg_hInstance, MAKEINTRESOURCE(IDD_CREATE), hwnd,
+                               XgGenerateDlgProc));
+    }
     ::EnableWindow(xg_hwndInputPalette, TRUE);
-    if (nID == IDOK) {
-        // 初期化する。
-        xg_bSolvingEmpty = true;
-        xg_bNoAddBlack = false;
-        xg_strFileName.clear();
-        xg_strHeader.clear();
-        xg_strNotes.clear();
-        s_nNumberGenerated = 0;
-        s_bOutOfDiskSpace = false;
-        // 辞書を読み込む。
-        XgLoadDictFile(xg_dict_name.c_str());
-        XgSetInputModeFromDict(hwnd);
+    if (nID != IDOK)
+        return false;
 
-        // キャンセルダイアログを表示し、実行を開始する。
-        ::EnableWindow(xg_hwndInputPalette, FALSE);
-        ::DialogBoxW(xg_hInstance, MAKEINTRESOURCE(IDD_CALCULATING), hwnd,
-                     XgCancelGenerateRepeatedlyDlgProc<false>);
-        ::EnableWindow(xg_hwndInputPalette, TRUE);
+    xg_bSolvingEmpty = true;
+    xg_bNoAddBlack = false;
+    s_nNumberGenerated = 0;
+    s_bOutOfDiskSpace = false;
+    xg_strHeader.clear();
+    xg_strNotes.clear();
+    xg_strFileName.clear();
 
-        // 初期化する。
-        xg_xword = xword_save;
+    // 辞書を読み込む。
+    XgLoadDictFile(xg_dict_name.c_str());
+    XgSetInputModeFromDict(hwnd);
+
+    // キャンセルダイアログを表示し、実行を開始する。
+    ::EnableWindow(xg_hwndInputPalette, FALSE);
+    do {
+        if (xg_imode == xg_im_KANJI) {
+            // 漢字の場合はスマート解決を使用しない。
+            nID = ::DialogBoxW(xg_hInstance, MAKEINTRESOURCE(IDD_CALCULATING), hwnd, XgCancelSolveDlgProc);
+        } else if (xg_bSmartResolution && xg_nRows >= 7 && xg_nCols >= 7) {
+            nID = ::DialogBoxW(xg_hInstance, MAKEINTRESOURCE(IDD_CALCULATING), hwnd, XgCancelSolveDlgProcSmart);
+        } else if (xg_nRules & RULE_POINTSYMMETRY) {
+            nID = ::DialogBoxW(xg_hInstance, MAKEINTRESOURCE(IDD_CALCULATING), hwnd, XgCancelSolveDlgProcSmart);
+        } else {
+            nID = ::DialogBoxW(xg_hInstance, MAKEINTRESOURCE(IDD_CALCULATING), hwnd, XgCancelSolveDlgProc);
+        }
+        // 生成成功のときはs_nNumberGeneratedを増やす。
+        if (nID == IDOK && xg_bSolved) {
+            ++s_nNumberGenerated;
+            if (multiple) {
+                if (!XgDoSaveToLocation(hwnd)) {
+                    s_bOutOfDiskSpace = true;
+                    break;
+                }
+                // 初期化。
+                xg_bSolved = false;
+                xg_xword.ResetAndSetSize(xg_nRows, xg_nCols);
+                xg_vTateInfo.clear();
+                xg_vYokoInfo.clear();
+                xg_vMarks.clear();
+                xg_vMarkedCands.clear();
+                xg_bSolvingEmpty = true;
+                xg_strHeader.clear();
+                xg_strNotes.clear();
+                xg_strFileName.clear();
+                // 辞書を読み込む。
+                XgLoadDictFile(xg_dict_name.c_str());
+                XgSetInputModeFromDict(hwnd);
+            }
+        }
+    } while (nID == IDOK && s_nNumberGenerated < s_nNumberToGenerate);
+    ::EnableWindow(xg_hwndInputPalette, TRUE);
+
+    // 初期化する。
+    if (multiple) {
+        xg_xword.clear();
         xg_vMarkedCands.clear();
         xg_vMarks.clear();
         xg_vTateInfo.clear();
         xg_vYokoInfo.clear();
         xg_vecTateHints.clear();
         xg_vecYokoHints.clear();
-
-        // イメージを更新する。
         xg_bSolved = false;
         xg_bShowAnswer = false;
-        xg_caret_pos.clear();
-        XgMarkUpdate();
-        XgUpdateImage(hwnd, 0, 0);
-
-        // ディスクに空きがあるか？
-        if (s_bOutOfDiskSpace) {
-            // なかった。
-            StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(IDS_OUTOFSTORAGE), s_nNumberGenerated,
-                (s_dwTick2 - s_dwTick0) / 1000,
-                (s_dwTick2 - s_dwTick0) / 100 % 10);
-        } else {
-            // あった。
-            StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(IDS_PROBLEMSMADE), s_nNumberGenerated,
-                (s_dwTick2 - s_dwTick0) / 1000,
-                (s_dwTick2 - s_dwTick0) / 100 % 10);
+    } else {
+        xg_bShowAnswer = show_answer;
+        if (xg_bSmartResolution && xg_bCancelled) {
+            xg_xword.clear();
         }
-
-        // 終了メッセージを表示する。
-        XgCenterMessageBoxW(hwnd, sz, XgLoadStringDx2(IDS_RESULTS), MB_ICONINFORMATION);
-
-        // 保存先フォルダを開く。
-        if (s_nNumberGenerated && !s_dirs_save_to.empty())
-            ::ShellExecuteW(hwnd, nullptr, s_dirs_save_to[0].data(),
-                            nullptr, nullptr, SW_SHOWNORMAL);
-
-        return true;
     }
-    return false;
+
+    // イメージを更新する。
+    xg_caret_pos.clear();
+    XgMarkUpdate();
+    XgUpdateImage(hwnd, 0, 0);
+
+    return true;
 }
 
 // 黒マスパターンを生成する。
@@ -7650,6 +7655,61 @@ void __fastcall XgResetTheme(HWND hwnd, BOOL bQuery)
     XgUpdateTheme(hwnd);
 }
 
+void __fastcall XgShowResults(HWND hwnd)
+{
+    WCHAR sz[MAX_PATH];
+    if (xg_bCancelled) {
+        // キャンセルされた。
+        StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(IDS_CANCELLED),
+            (s_dwTick2 - s_dwTick0) / 1000,
+            (s_dwTick2 - s_dwTick0) / 100 % 10);
+        XgCenterMessageBoxW(hwnd, sz, XgLoadStringDx2(IDS_RESULTS), MB_ICONINFORMATION);
+    } else if (xg_bSolved) {
+        // 成功メッセージを表示する。
+        StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(IDS_MADEPROBLEM),
+            (s_dwTick2 - s_dwTick0) / 1000,
+            (s_dwTick2 - s_dwTick0) / 100 % 10);
+        XgCenterMessageBoxW(hwnd, sz, XgLoadStringDx2(IDS_RESULTS), MB_ICONINFORMATION);
+
+        // ヒントを更新して開く。
+        XgUpdateHints(hwnd);
+        XgShowHints(hwnd);
+    } else {
+        // 失敗メッセージを表示する。
+        StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(IDS_CANTMAKEPROBLEM),
+            (s_dwTick2 - s_dwTick0) / 1000,
+            (s_dwTick2 - s_dwTick0) / 100 % 10);
+        XgCenterMessageBoxW(hwnd, sz, XgLoadStringDx2(IDS_RESULTS), MB_ICONERROR);
+    }
+}
+
+// メッセージボックスを表示する。
+void __fastcall XgShowResultsRepeatedly(HWND hwnd)
+{
+    WCHAR sz[MAX_PATH];
+
+    // ディスクに空きがあるか？
+    if (s_bOutOfDiskSpace) {
+        // なかった。
+        StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(IDS_OUTOFSTORAGE), s_nNumberGenerated,
+            (s_dwTick2 - s_dwTick0) / 1000,
+            (s_dwTick2 - s_dwTick0) / 100 % 10);
+    } else {
+        // あった。
+        StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(IDS_PROBLEMSMADE), s_nNumberGenerated,
+            (s_dwTick2 - s_dwTick0) / 1000,
+            (s_dwTick2 - s_dwTick0) / 100 % 10);
+    }
+
+    // 終了メッセージを表示する。
+    XgCenterMessageBoxW(hwnd, sz, XgLoadStringDx2(IDS_RESULTS), MB_ICONINFORMATION);
+
+    // 保存先フォルダを開く。
+    if (s_nNumberGenerated && !s_dirs_save_to.empty())
+        ::ShellExecuteW(hwnd, nullptr, s_dirs_save_to[0].data(),
+                        nullptr, nullptr, SW_SHOWNORMAL);
+}
+
 // コマンドを実行する。
 void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*codeNotify*/)
 {
@@ -7938,9 +7998,11 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
             // ヒントウィンドウを破棄する。
             XgDestroyHintsWnd();
             // 問題の作成。
-            if (XgOnGenerate(hwnd, false)) {
+            if (XgOnGenerate(hwnd, false, false)) {
                 flag = true;
                 sa2->Get();
+                // メッセージボックスを表示する。
+                XgShowResults(hwnd);
             }
             if (flag) {
                 xg_ubUndoBuffer.Commit(UC_SETALL, sa1, sa2);
@@ -7963,9 +8025,11 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
             // ヒントウィンドウを破棄する。
             XgDestroyHintsWnd();
             // 問題の作成。
-            if (XgOnGenerate(hwnd, true)) {
+            if (XgOnGenerate(hwnd, true, false)) {
                 flag = true;
                 sa2->Get();
+                // メッセージボックスを表示する。
+                XgShowResults(hwnd);
             }
             if (flag) {
                 xg_ubUndoBuffer.Commit(UC_SETALL, sa1, sa2);
@@ -7986,8 +8050,10 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
             // ヒントウィンドウを破棄する。
             XgDestroyHintsWnd();
             // 連続生成ダイアログ。
-            XgOnGenerateRepeatedly(hwnd);
-
+            if (XgOnGenerate(hwnd, false, true)) {
+                // メッセージボックスを表示する。
+                XgShowResultsRepeatedly(hwnd);
+            }
             sa1->Apply();
         }
         // ツールバーのUIを更新する。
