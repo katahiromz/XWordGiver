@@ -3072,6 +3072,12 @@ bool __fastcall XgOnGenerateBlacksRepeatedly(HWND hwnd)
             (s_dwTick2 - s_dwTick0) / 100 % 10);
         XgCenterMessageBoxW(hwnd, sz, XgLoadStringDx2(IDS_RESULTS), MB_ICONINFORMATION);
     }
+
+    // 保存先フォルダを開く。
+    if (s_nNumberGenerated && !s_dirs_save_to.empty()) {
+        ::ShellExecuteW(hwnd, nullptr, s_dirs_save_to[0].data(),
+                      nullptr, nullptr, SW_SHOWNORMAL);
+    }
     return true;
 }
 
