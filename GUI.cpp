@@ -2691,10 +2691,6 @@ bool __fastcall XgOnGenerate(HWND hwnd, bool show_answer, bool multiple = false)
     }
     ::EnableWindow(xg_hwndInputPalette, TRUE);
     if (nID != IDOK) {
-        // イメージを更新する。
-        xg_caret_pos.clear();
-        XgMarkUpdate();
-        XgUpdateImage(hwnd, 0, 0);
         return false;
     }
 
@@ -2767,11 +2763,6 @@ bool __fastcall XgOnGenerate(HWND hwnd, bool show_answer, bool multiple = false)
             xg_xword.clear();
         }
     }
-
-    // イメージを更新する。
-    xg_caret_pos.clear();
-    XgMarkUpdate();
-    XgUpdateImage(hwnd, 0, 0);
 
     return true;
 }
@@ -2854,6 +2845,9 @@ bool __fastcall XgOnSolve_AddBlack(HWND hwnd)
     xg_vMarks.clear();
     xg_vMarkedCands.clear();
     xg_strFileName.clear();
+    // 生成した数と生成する数。
+    s_nNumberGenerated = 0;
+    s_nNumberToGenerate = 1;
     // 辞書を読み込む。
     XgLoadDictFile(xg_dict_name.c_str());
     XgSetInputModeFromDict(hwnd);
@@ -2951,6 +2945,9 @@ bool __fastcall XgOnSolve_NoAddBlack(HWND hwnd, bool bShowAnswer = true)
     // 辞書を読み込む。
     XgLoadDictFile(xg_dict_name.c_str());
     XgSetInputModeFromDict(hwnd);
+    // 生成した数と生成する数。
+    s_nNumberGenerated = 0;
+    s_nNumberToGenerate = 1;
 
     // 候補ウィンドウを破棄する。
     XgDestroyCandsWnd();
@@ -7572,6 +7569,10 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
             if (XgOnGenerate(hwnd, false, false)) {
                 flag = true;
                 sa2->Get();
+                // イメージを更新する。
+                xg_caret_pos.clear();
+                XgMarkUpdate();
+                XgUpdateImage(hwnd, 0, 0);
                 // メッセージボックスを表示する。
                 XgShowResults(hwnd);
             }
@@ -7580,6 +7581,10 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
             } else {
                 sa1->Apply();
             }
+            // イメージを更新する。
+            xg_caret_pos.clear();
+            XgMarkUpdate();
+            XgUpdateImage(hwnd, 0, 0);
         }
         // ツールバーのUIを更新する。
         XgUpdateToolBarUI(hwnd);
@@ -7599,6 +7604,10 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
             if (XgOnGenerate(hwnd, true, false)) {
                 flag = true;
                 sa2->Get();
+                // イメージを更新する。
+                xg_caret_pos.clear();
+                XgMarkUpdate();
+                XgUpdateImage(hwnd, 0, 0);
                 // メッセージボックスを表示する。
                 XgShowResults(hwnd);
             }
@@ -7607,6 +7616,10 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
             } else {
                 sa1->Apply();
             }
+            // イメージを更新する。
+            xg_caret_pos.clear();
+            XgMarkUpdate();
+            XgUpdateImage(hwnd, 0, 0);
         }
         // ツールバーのUIを更新する。
         XgUpdateToolBarUI(hwnd);
@@ -7622,10 +7635,18 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
             XgDestroyHintsWnd();
             // 連続生成ダイアログ。
             if (XgOnGenerate(hwnd, false, true)) {
+                // イメージを更新する。
+                xg_caret_pos.clear();
+                XgMarkUpdate();
+                XgUpdateImage(hwnd, 0, 0);
                 // メッセージボックスを表示する。
                 XgShowResultsRepeatedly(hwnd);
             }
             sa1->Apply();
+            // イメージを更新する。
+            xg_caret_pos.clear();
+            XgMarkUpdate();
+            XgUpdateImage(hwnd, 0, 0);
         }
         // ツールバーのUIを更新する。
         XgUpdateToolBarUI(hwnd);
@@ -7873,6 +7894,10 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
                 sa1->Apply();
             }
         }
+        // イメージを更新する。
+        xg_caret_pos.clear();
+        XgMarkUpdate();
+        XgUpdateImage(hwnd, 0, 0);
         // ツールバーのUIを更新する。
         XgUpdateToolBarUI(hwnd);
         break;
@@ -7890,6 +7915,10 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
                 sa1->Apply();
             }
         }
+        // イメージを更新する。
+        xg_caret_pos.clear();
+        XgMarkUpdate();
+        XgUpdateImage(hwnd, 0, 0);
         // ツールバーのUIを更新する。
         XgUpdateToolBarUI(hwnd);
         break;
