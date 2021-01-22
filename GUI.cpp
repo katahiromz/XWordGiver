@@ -162,9 +162,6 @@ static const LPCWSTR
         s_pszSoftwareCompanyAndApp = L"Software\\Katayama Hirofumi MZ\\XWord32";
 #endif
 
-// 連続生成の場合、無限に生成するか？
-static bool s_bInfinite = true;
-
 // 再計算するか？
 static bool s_bAutoRetry = true;
 
@@ -205,7 +202,7 @@ static DWORD        s_dwWait;     // 待ち時間。
 static bool         s_bOutOfDiskSpace = false;
 
 // 連続生成の場合、問題を生成する数。
-static int          s_nNumberToGenerate = 100;
+static int          s_nNumberToGenerate = 16;
 
 // 連続生成の場合、問題を生成した数。
 static int          s_nNumberGenerated = 0;
@@ -567,7 +564,6 @@ bool __fastcall XgLoadSettings(void)
     s_dirs_save_to.clear();
     s_bAutoRetry = true;
     s_nRows = s_nCols = 7;
-    s_bInfinite = true;
     xg_szCellFont[0] = 0;
     xg_szSmallFont[0] = 0;
     xg_szUIFont[0] = 0;
@@ -606,6 +602,8 @@ bool __fastcall XgLoadSettings(void)
     xg_nPatWndCY = CW_USEDEFAULT;
     xg_bShowAnswerOnPattern = TRUE;
     xg_nRules = DEFAULT_RULES;
+
+    s_nNumberToGenerate = 16;
 
     // 会社名キーを開く。
     MRegKey company_key(HKEY_CURRENT_USER, s_pszSoftwareCompanyName, FALSE);
@@ -674,10 +672,6 @@ bool __fastcall XgLoadSettings(void)
             }
             if (!app_key.QueryDword(L"Cols", dwValue)) {
                 s_nCols = dwValue;
-            }
-
-            if (!app_key.QueryDword(L"Infinite", dwValue)) {
-                s_bInfinite = !!dwValue;
             }
 
             if (!app_key.QuerySz(L"CellFont", sz, ARRAYSIZE(sz))) {
@@ -864,7 +858,6 @@ bool __fastcall XgSaveSettings(void)
             app_key.SetDword(L"AutoRetry", s_bAutoRetry);
             app_key.SetDword(L"Rows", s_nRows);
             app_key.SetDword(L"Cols", s_nCols);
-            app_key.SetDword(L"Infinite", s_bInfinite);
 
             app_key.SetSz(L"CellFont", xg_szCellFont, ARRAYSIZE(xg_szCellFont));
             app_key.SetSz(L"SmallFont", xg_szSmallFont, ARRAYSIZE(xg_szSmallFont));
@@ -1376,8 +1369,6 @@ XgGenerateRepeatedlyDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam
         // 自動で再計算をするか？
         if (s_bAutoRetry)
             ::CheckDlgButton(hwnd, chx1, BST_CHECKED);
-        // 無制限に生成するか？
-        s_bInfinite = false;
         // 生成する数を設定する。
         ::SetDlgItemInt(hwnd, edt4, s_nNumberToGenerate, FALSE);
         // IMEをOFFにする。
@@ -1385,6 +1376,10 @@ XgGenerateRepeatedlyDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam
             HWND hwndCtrl = ::GetDlgItem(hwnd, edt1);
             ::ImmAssociateContext(hwndCtrl, NULL);
             hwndCtrl = ::GetDlgItem(hwnd, edt2);
+            ::ImmAssociateContext(hwndCtrl, NULL);
+            hwndCtrl = ::GetDlgItem(hwnd, edt3);
+            ::ImmAssociateContext(hwndCtrl, NULL);
+            hwndCtrl = ::GetDlgItem(hwnd, edt4);
             ::ImmAssociateContext(hwndCtrl, NULL);
         }
         SendDlgItemMessageW(hwnd, scr1, UDM_SETRANGE, 0, MAKELPARAM(XG_MAX_SIZE, XG_MIN_SIZE));
@@ -1470,7 +1465,6 @@ XgGenerateRepeatedlyDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam
                     ::SetFocus(::GetDlgItem(hwnd, edt4));
                     return 0;
                 }
-                s_bInfinite = false;
             }
             // JSON形式として保存するか？
             xg_bSaveAsJsonFile = true;
@@ -1651,7 +1645,6 @@ XgSolveRepeatedlyDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam*/)
                     ::SetFocus(::GetDlgItem(hwnd, edt1));
                     return 0;
                 }
-                s_bInfinite = false;
             }
             // JSON形式で保存するか？
             xg_bSaveAsJsonFile = true;
@@ -2697,8 +2690,13 @@ bool __fastcall XgOnGenerate(HWND hwnd, bool show_answer, bool multiple = false)
                                XgGenerateDlgProc));
     }
     ::EnableWindow(xg_hwndInputPalette, TRUE);
-    if (nID != IDOK)
+    if (nID != IDOK) {
+        // イメージを更新する。
+        xg_caret_pos.clear();
+        XgMarkUpdate();
+        XgUpdateImage(hwnd, 0, 0);
         return false;
+    }
 
     xg_bSolvingEmpty = true;
     xg_bNoAddBlack = false;
@@ -3048,8 +3046,13 @@ bool __fastcall XgOnSolveRepeatedly(HWND hwnd)
     nID = INT(::DialogBoxW(xg_hInstance, MAKEINTRESOURCE(IDD_SEQSOLVE), hwnd,
                            XgSolveRepeatedlyDlgProc));
     ::EnableWindow(xg_hwndInputPalette, TRUE);
-    if (nID != IDOK)
+    if (nID != IDOK) {
+        // イメージを更新する。
+        xg_caret_pos.clear();
+        XgMarkUpdate();
+        XgUpdateImage(hwnd, 0, 0);
         return false;
+    }
 
     // 初期化する。
     xg_strFileName.clear();
@@ -3159,8 +3162,13 @@ bool __fastcall XgOnSolveRepeatedlyNoAddBlack(HWND hwnd)
     nID = INT(::DialogBoxW(xg_hInstance, MAKEINTRESOURCE(IDD_SEQSOLVE), hwnd,
                            XgSolveRepeatedlyDlgProc));
     ::EnableWindow(xg_hwndInputPalette, TRUE);
-    if (nID != IDOK)
+    if (nID != IDOK) {
+        // イメージを更新する。
+        xg_caret_pos.clear();
+        XgMarkUpdate();
+        XgUpdateImage(hwnd, 0, 0);
         return false;
+    }
 
     // 初期化する。
     xg_strFileName.clear();
