@@ -3497,63 +3497,64 @@ bool __fastcall XgOnSolveRepeatedly(HWND hwnd)
     nID = INT(::DialogBoxW(xg_hInstance, MAKEINTRESOURCE(IDD_SEQSOLVE), hwnd,
                            XgSolveRepeatedlyDlgProc));
     ::EnableWindow(xg_hwndInputPalette, TRUE);
-    if (nID == IDOK) {
-        // 初期化する。
-        xg_strFileName.clear();
-        xg_strHeader.clear();
-        xg_strNotes.clear();
-        s_nNumberGenerated = 0;
-        s_bOutOfDiskSpace = false;
+    if (nID != IDOK)
+        return false;
 
-        xg_bSolvingEmpty = xg_xword.IsEmpty();
-        xg_bNoAddBlack = false;
-        xg_vTateInfo.clear();
-        xg_vYokoInfo.clear();
-        xg_vecTateHints.clear();
-        xg_vecYokoHints.clear();
-        // 辞書を読み込む。
-        XgLoadDictFile(xg_dict_name.c_str());
-        XgSetInputModeFromDict(hwnd);
+    // 初期化する。
+    xg_strFileName.clear();
+    xg_strHeader.clear();
+    xg_strNotes.clear();
+    s_nNumberGenerated = 0;
+    s_bOutOfDiskSpace = false;
 
-        // キャンセルダイアログを表示し、実行を開始する。
-        ::EnableWindow(xg_hwndInputPalette, FALSE);
-        ::DialogBoxW(xg_hInstance, MAKEINTRESOURCE(IDD_CALCULATING), hwnd,
-                   XgCancelSolveRepeatedlyDlgProc);
-        ::EnableWindow(xg_hwndInputPalette, TRUE);
+    xg_bSolvingEmpty = xg_xword.IsEmpty();
+    xg_bNoAddBlack = false;
+    xg_vTateInfo.clear();
+    xg_vYokoInfo.clear();
+    xg_vecTateHints.clear();
+    xg_vecYokoHints.clear();
+    // 辞書を読み込む。
+    XgLoadDictFile(xg_dict_name.c_str());
+    XgSetInputModeFromDict(hwnd);
 
-        // 初期化する。
-        xg_xword = xword_save;
-        xg_vTateInfo.clear();
-        xg_vYokoInfo.clear();
-        xg_vecTateHints.clear();
-        xg_vecYokoHints.clear();
-        xg_strFileName.clear();
+    // キャンセルダイアログを表示し、実行を開始する。
+    ::EnableWindow(xg_hwndInputPalette, FALSE);
+    ::DialogBoxW(xg_hInstance, MAKEINTRESOURCE(IDD_CALCULATING), hwnd,
+               XgCancelSolveRepeatedlyDlgProc);
+    ::EnableWindow(xg_hwndInputPalette, TRUE);
 
-        // イメージを更新する。
-        xg_bSolved = false;
-        xg_bShowAnswer = false;
-        xg_caret_pos.clear();
-        XgMarkUpdate();
-        XgUpdateImage(hwnd, 0, 0);
+    // 初期化する。
+    xg_xword = xword_save;
+    xg_vTateInfo.clear();
+    xg_vYokoInfo.clear();
+    xg_vecTateHints.clear();
+    xg_vecYokoHints.clear();
+    xg_strFileName.clear();
 
-        // 終了メッセージを表示する。
-        WCHAR sz[MAX_PATH];
-        if (s_bOutOfDiskSpace) {
-            StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(IDS_OUTOFSTORAGE), s_nNumberGenerated,
-                (s_dwTick2 - s_dwTick0) / 1000,
-                (s_dwTick2 - s_dwTick0) / 100 % 10);
-        } else {
-            StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(IDS_PROBLEMSMADE), s_nNumberGenerated,
-                (s_dwTick2 - s_dwTick0) / 1000,
-                (s_dwTick2 - s_dwTick0) / 100 % 10);
-        }
-        XgCenterMessageBoxW(hwnd, sz, XgLoadStringDx2(IDS_RESULTS), MB_ICONINFORMATION);
+    // イメージを更新する。
+    xg_bSolved = false;
+    xg_bShowAnswer = false;
+    xg_caret_pos.clear();
+    XgMarkUpdate();
+    XgUpdateImage(hwnd, 0, 0);
 
-        // 保存先フォルダを開く。
-        if (s_nNumberGenerated && !s_dirs_save_to.empty()) {
-            ::ShellExecuteW(hwnd, nullptr, s_dirs_save_to[0].data(),
-                          nullptr, nullptr, SW_SHOWNORMAL);
-        }
+    // 終了メッセージを表示する。
+    WCHAR sz[MAX_PATH];
+    if (s_bOutOfDiskSpace) {
+        StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(IDS_OUTOFSTORAGE), s_nNumberGenerated,
+            (s_dwTick2 - s_dwTick0) / 1000,
+            (s_dwTick2 - s_dwTick0) / 100 % 10);
+    } else {
+        StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(IDS_PROBLEMSMADE), s_nNumberGenerated,
+            (s_dwTick2 - s_dwTick0) / 1000,
+            (s_dwTick2 - s_dwTick0) / 100 % 10);
+    }
+    XgCenterMessageBoxW(hwnd, sz, XgLoadStringDx2(IDS_RESULTS), MB_ICONINFORMATION);
+
+    // 保存先フォルダを開く。
+    if (s_nNumberGenerated && !s_dirs_save_to.empty()) {
+        ::ShellExecuteW(hwnd, nullptr, s_dirs_save_to[0].data(),
+                      nullptr, nullptr, SW_SHOWNORMAL);
     }
 
     return true;
@@ -3583,63 +3584,64 @@ bool __fastcall XgOnSolveRepeatedlyNoAddBlack(HWND hwnd)
     nID = INT(::DialogBoxW(xg_hInstance, MAKEINTRESOURCE(IDD_SEQSOLVE), hwnd,
                            XgSolveRepeatedlyDlgProc));
     ::EnableWindow(xg_hwndInputPalette, TRUE);
-    if (nID == IDOK) {
-        // 初期化する。
-        xg_strFileName.clear();
-        xg_strHeader.clear();
-        xg_strNotes.clear();
-        s_nNumberGenerated = 0;
-        s_bOutOfDiskSpace = false;
+    if (nID != IDOK)
+        return false;
 
-        xg_bSolvingEmpty = xg_xword.IsEmpty();
-        xg_bNoAddBlack = true;
-        xg_vTateInfo.clear();
-        xg_vYokoInfo.clear();
-        xg_vecTateHints.clear();
-        xg_vecYokoHints.clear();
-        // 辞書を読み込む。
-        XgLoadDictFile(xg_dict_name.c_str());
-        XgSetInputModeFromDict(hwnd);
+    // 初期化する。
+    xg_strFileName.clear();
+    xg_strHeader.clear();
+    xg_strNotes.clear();
+    s_nNumberGenerated = 0;
+    s_bOutOfDiskSpace = false;
 
-        // キャンセルダイアログを表示し、実行を開始する。
-        ::EnableWindow(xg_hwndInputPalette, FALSE);
-        ::DialogBoxW(xg_hInstance, MAKEINTRESOURCE(IDD_CALCULATING), hwnd,
-                     XgCancelGenerateRepeatedlyDlgProc<true>);
-        ::EnableWindow(xg_hwndInputPalette, TRUE);
+    xg_bSolvingEmpty = xg_xword.IsEmpty();
+    xg_bNoAddBlack = true;
+    xg_vTateInfo.clear();
+    xg_vYokoInfo.clear();
+    xg_vecTateHints.clear();
+    xg_vecYokoHints.clear();
+    // 辞書を読み込む。
+    XgLoadDictFile(xg_dict_name.c_str());
+    XgSetInputModeFromDict(hwnd);
 
-        // 初期化する。
-        xg_xword = xword_save;
-        xg_vTateInfo.clear();
-        xg_vYokoInfo.clear();
-        xg_vecTateHints.clear();
-        xg_vecYokoHints.clear();
-        xg_strFileName.clear();
+    // キャンセルダイアログを表示し、実行を開始する。
+    ::EnableWindow(xg_hwndInputPalette, FALSE);
+    ::DialogBoxW(xg_hInstance, MAKEINTRESOURCE(IDD_CALCULATING), hwnd,
+                 XgCancelGenerateRepeatedlyDlgProc<true>);
+    ::EnableWindow(xg_hwndInputPalette, TRUE);
 
-        // イメージを更新する。
-        xg_bSolved = false;
-        xg_bShowAnswer = false;
-        xg_caret_pos.clear();
-        XgMarkUpdate();
-        XgUpdateImage(hwnd, 0, 0);
+    // 初期化する。
+    xg_xword = xword_save;
+    xg_vTateInfo.clear();
+    xg_vYokoInfo.clear();
+    xg_vecTateHints.clear();
+    xg_vecYokoHints.clear();
+    xg_strFileName.clear();
 
-        // 終了メッセージを表示する。
-        WCHAR sz[MAX_PATH];
-        if (s_bOutOfDiskSpace) {
-            StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(IDS_OUTOFSTORAGE), s_nNumberGenerated,
-                (s_dwTick2 - s_dwTick0) / 1000,
-                (s_dwTick2 - s_dwTick0) / 100 % 10);
-        } else {
-            StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(IDS_PROBLEMSMADE), s_nNumberGenerated,
-                (s_dwTick2 - s_dwTick0) / 1000,
-                (s_dwTick2 - s_dwTick0) / 100 % 10);
-        }
-        XgCenterMessageBoxW(hwnd, sz, XgLoadStringDx2(IDS_RESULTS), MB_ICONINFORMATION);
+    // イメージを更新する。
+    xg_bSolved = false;
+    xg_bShowAnswer = false;
+    xg_caret_pos.clear();
+    XgMarkUpdate();
+    XgUpdateImage(hwnd, 0, 0);
 
-        // 保存先フォルダを開く。
-        if (s_nNumberGenerated && !s_dirs_save_to.empty()) {
-            ::ShellExecuteW(hwnd, nullptr, s_dirs_save_to[0].data(),
-                          nullptr, nullptr, SW_SHOWNORMAL);
-        }
+    // 終了メッセージを表示する。
+    WCHAR sz[MAX_PATH];
+    if (s_bOutOfDiskSpace) {
+        StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(IDS_OUTOFSTORAGE), s_nNumberGenerated,
+            (s_dwTick2 - s_dwTick0) / 1000,
+            (s_dwTick2 - s_dwTick0) / 100 % 10);
+    } else {
+        StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(IDS_PROBLEMSMADE), s_nNumberGenerated,
+            (s_dwTick2 - s_dwTick0) / 1000,
+            (s_dwTick2 - s_dwTick0) / 100 % 10);
+    }
+    XgCenterMessageBoxW(hwnd, sz, XgLoadStringDx2(IDS_RESULTS), MB_ICONINFORMATION);
+
+    // 保存先フォルダを開く。
+    if (s_nNumberGenerated && !s_dirs_save_to.empty()) {
+        ::ShellExecuteW(hwnd, nullptr, s_dirs_save_to[0].data(),
+                      nullptr, nullptr, SW_SHOWNORMAL);
     }
     return true;
 }
@@ -8260,8 +8262,9 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
             // ヒントウィンドウを破棄する。
             XgDestroyHintsWnd();
             // 連続で解を求める。
-            XgOnSolveRepeatedly(hwnd);
-            sa1->Apply();
+            if (XgOnSolveRepeatedly(hwnd)) {
+                sa1->Apply();
+            }
         }
         // ツールバーのUIを更新する。
         XgUpdateToolBarUI(hwnd);
@@ -8276,8 +8279,9 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
             // ヒントウィンドウを破棄する。
             XgDestroyHintsWnd();
             // 連続で解を求める。
-            XgOnSolveRepeatedlyNoAddBlack(hwnd);
-            sa1->Apply();
+            if (XgOnSolveRepeatedlyNoAddBlack(hwnd)) {
+                sa1->Apply();
+            }
         }
         // ツールバーのUIを更新する。
         XgUpdateToolBarUI(hwnd);
