@@ -25,6 +25,7 @@
 #define IDD_RUSSIALOWER                     121
 #define IDD_BLOCKPATTERN                    122
 #define IDD_THEME                           123
+#define IDD_SEQPATGEN                       124
 
 #define IDS_VERSION                         101
 #define IDS_APPNAME                         102
@@ -154,6 +155,7 @@
 #define IDS_DICT                            246
 #define IDS_DEFAULTDICT                     247
 #define IDS_MODIFIEDDICT                    248
+#define IDS_PATMAKING                       249
 #define IDS_TT_NEW                          10100
 #define IDS_TT_GENERATE                     10101
 #define IDS_TT_OPEN                         10102
@@ -310,6 +312,7 @@
 #define ID_RESETTHEME                       259
 #define ID_RETRYIFTIMEOUT                   260
 #define ID_SKELTONMODE                      261
+#define ID_SEQPATGEN                        262
 #define ID_TT_BASE                          10000
 
 #define ctl2                                1185
