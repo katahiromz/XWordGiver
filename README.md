@@ -25,8 +25,8 @@ Sorry, this software is for Japanese Windows only.
 - Windows Vista/7/8.1/10。
 - Intel Core i5 以上の処理性能。
 - マルチコア必須。
-- メインメモリー 1GB 以上。
-- ストレージ 1GB 以上。
+- メインメモリー 4GB 以上。
+- ストレージ 4GB 以上。
 
 ## 使用許諾
 
