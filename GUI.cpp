@@ -3007,6 +3007,8 @@ bool __fastcall XgOnGenerateBlacksRepeatedly(HWND hwnd)
     xg_strHeader.clear();
     xg_strNotes.clear();
     xg_strFileName.clear();
+    xg_bBlacksGenerated = false;
+    s_nNumberGenerated = 0;
 
     // 候補ウィンドウを破棄する。
     XgDestroyCandsWnd();
@@ -3037,6 +3039,7 @@ bool __fastcall XgOnGenerateBlacksRepeatedly(HWND hwnd)
             xg_strHeader.clear();
             xg_strNotes.clear();
             xg_strFileName.clear();
+            xg_bBlacksGenerated = false;
         }
     } while (nID == IDOK && s_nNumberGenerated < s_nNumberToGenerate);
     ::EnableWindow(xg_hwndInputPalette, TRUE);
@@ -3089,6 +3092,8 @@ bool __fastcall XgOnGenerateBlacks(HWND hwnd, bool sym)
     xg_strHeader.clear();
     xg_strNotes.clear();
     xg_strFileName.clear();
+    xg_bBlacksGenerated = false;
+    s_nNumberGenerated = 0;
 
     // 候補ウィンドウを破棄する。
     XgDestroyCandsWnd();
