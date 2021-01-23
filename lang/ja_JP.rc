@@ -170,8 +170,7 @@ LANGUAGE LANG_JAPANESE, SUBLANG_DEFAULT
         MENUITEM SEPARATOR
         MENUITEM "「クロスワード辞典」を開く(&D)", ID_HELPDICTSITE
         MENUITEM SEPARATOR
-        MENUITEM "黒マスパターンを生成する(&G)", ID_GENERATEBLACKS
-        MENUITEM "黒マスパターンを生成する (点対称2) (&E)", ID_GENERATEBLACKSSYMMETRIC2
+        MENUITEM "黒マスパターンを生成する(&G)...", ID_GENERATEBLACKS
         MENUITEM "黒マスパターンを連続生成する(&S)...", ID_SEQPATGEN
         MENUITEM SEPARATOR
         MENUITEM "黒マス線対称チェック(&L)\tCtrl+E", ID_LINESYMMETRYCHECK
@@ -1263,7 +1262,7 @@ FONT 9, "MS UI Gothic"
 }
 
 IDD_SEQPATGEN DIALOG 0, 0, 310, 75
-CAPTION "黒マスパターンの生成"
+CAPTION "黒マスパターンの連続生成"
 STYLE DS_CENTER | DS_MODALFRAME | WS_POPUPWINDOW | WS_CAPTION
 FONT 9, "MS UI Gothic"
 {
@@ -1278,6 +1277,18 @@ FONT 9, "MS UI Gothic"
     PUSHBUTTON "参照(&O)...", psh2, 250, 33, 50, 14
     DEFPUSHBUTTON "計算開始(&G)", IDOK, 175, 55, 60, 14
     PUSHBUTTON "キャンセル", IDCANCEL, 240, 55, 60, 14
+}
+
+IDD_PATGEN DIALOG 0, 0, 310, 25
+CAPTION "黒マスパターンの生成"
+STYLE DS_CENTER | DS_MODALFRAME | WS_POPUPWINDOW | WS_CAPTION
+FONT 9, "MS UI Gothic"
+{
+    LTEXT "最大単語長(&L):", stc1, 10, 7, 60, 12
+    EDITTEXT edt3, 80, 5, 30, 14, ES_NUMBER | ES_RIGHT
+    CONTROL "", scr3, "msctls_updown32", UDS_ARROWKEYS | UDS_AUTOBUDDY | UDS_ALIGNRIGHT | UDS_SETBUDDYINT, 100, 5, 12, 20
+    DEFPUSHBUTTON "計算開始(&G)", IDOK, 175, 5, 60, 14
+    PUSHBUTTON "キャンセル", IDCANCEL, 240, 5, 60, 14
 }
 
 //////////////////////////////////////////////////////////////////////////////

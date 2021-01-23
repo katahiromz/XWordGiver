@@ -26,6 +26,7 @@
 #define IDD_BLOCKPATTERN                    122
 #define IDD_THEME                           123
 #define IDD_SEQPATGEN                       124
+#define IDD_PATGEN                          125
 
 #define IDS_VERSION                         101
 #define IDS_APPNAME                         102

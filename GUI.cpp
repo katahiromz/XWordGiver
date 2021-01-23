@@ -1666,6 +1666,66 @@ XgGenerateBlacksRepeatedlyDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*
     return 0;
 }
 
+// [黒マスパターンの作成]ダイアログのダイアログ プロシージャ。
+extern "C" INT_PTR CALLBACK
+XgGenerateBlacksDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam*/)
+{
+    INT n3;
+
+    switch (uMsg)
+    {
+    case WM_INITDIALOG:
+        // ダイアログを中央へ移動する。
+        XgCenterDialog(hwnd);
+        // スケルトンモードと入力モードに応じて単語の最大長を設定する。
+        if (xg_imode == xg_im_KANJI) {
+            n3 = 4;
+        } else if (xg_bSkeltonMode) {
+            n3 = 6;
+        } else if (xg_imode == xg_im_RUSSIA || xg_imode == xg_im_ABC) {
+            n3 = 5;
+        } else {
+            n3 = 4;
+        }
+        ::SetDlgItemInt(hwnd, edt3, n3, FALSE);
+        SendDlgItemMessageW(hwnd, scr3, UDM_SETRANGE, 0, MAKELPARAM(10, 4));
+        return TRUE;
+
+    case WM_COMMAND:
+        switch (LOWORD(wParam))
+        {
+        case IDOK:
+            n3 = static_cast<int>(::GetDlgItemInt(hwnd, edt3, nullptr, FALSE));
+            if (n3 < 4 || n3 > 10) {
+                ::SendDlgItemMessageW(hwnd, edt3, EM_SETSEL, 0, -1);
+                XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_ENTERINT), nullptr, MB_ICONERROR);
+                ::SetFocus(::GetDlgItem(hwnd, edt3));
+                return 0;
+            }
+            xg_nMaxWordLen = n3;
+            // 初期化する。
+            {
+                xg_bSolved = false;
+                xg_bShowAnswer = false;
+                xg_xword.clear();
+                xg_vTateInfo.clear();
+                xg_vYokoInfo.clear();
+                xg_vMarks.clear();
+                xg_vMarkedCands.clear();
+            }
+            // ダイアログを閉じる。
+            ::EndDialog(hwnd, IDOK);
+            break;
+
+        case IDCANCEL:
+            // ダイアログを閉じる。
+            ::EndDialog(hwnd, IDCANCEL);
+            break;
+        }
+    }
+    return 0;
+}
+
 // [解の連続作成]ダイアログのダイアログ プロシージャー。
 extern "C" INT_PTR CALLBACK
 XgSolveRepeatedlyDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam*/)
@@ -2404,7 +2464,7 @@ XgCancelSolveDlgProcSmart(
 
 // キャンセルダイアログ。
 extern "C" INT_PTR CALLBACK
-XgCancelGenBlacksRepeatedlyDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+XgCancelGenBlacksDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
     switch (uMsg) {
     case WM_INITDIALOG:
@@ -2423,86 +2483,6 @@ XgCancelGenBlacksRepeatedlyDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM l
             StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(IDS_PATMAKING), s_nNumberGenerated);
             ::SetDlgItemTextW(hwnd, stc2, sz);
         }
-        // タイマーをセットする。
-        ::SetTimer(hwnd, 999, xg_dwTimerInterval, nullptr);
-        return false;
-
-    case WM_COMMAND:
-        switch(LOWORD(wParam)) {
-        case psh1:
-            // タイマーを解除する。
-            ::KillTimer(hwnd, 999);
-            // キャンセルしてスレッドを待つ。
-            xg_bCancelled = true;
-            XgWaitForThreads();
-            // スレッドを閉じる。
-            XgCloseThreads();
-            // 計算時間を求めるために、終了時間を取得する。
-            s_dwTick2 = ::GetTickCount();
-            // ダイアログを終了する。
-            ::EndDialog(hwnd, IDCANCEL);
-            break;
-        }
-        break;
-
-    case WM_SYSCOMMAND:
-        if (wParam == SC_CLOSE) {
-            // タイマーを解除する。
-            ::KillTimer(hwnd, 999);
-            // キャンセルしてスレッドを待つ。
-            xg_bCancelled = true;
-            XgWaitForThreads();
-            // スレッドを閉じる。
-            XgCloseThreads();
-            // 計算時間を求めるために、終了時間を取得する。
-            s_dwTick2 = ::GetTickCount();
-            // ダイアログを終了する。
-            ::EndDialog(hwnd, IDCANCEL);
-        }
-        break;
-
-    case WM_TIMER:
-        {
-            // 経過時間を表示する。
-            WCHAR sz[MAX_PATH];
-            DWORD dwTick = ::GetTickCount();
-            StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(IDS_CALCULATING),
-                    (dwTick - s_dwTick0) / 1000,
-                    (dwTick - s_dwTick0) / 100 % 10);
-            ::SetDlgItemTextW(hwnd, stc1, sz);
-        }
-
-        // 終了したスレッドがあるか？
-        if (XgIsAnyThreadTerminated()) {
-            // スレッドが終了した。タイマーを解除する。
-            ::KillTimer(hwnd, 999);
-            // 計算時間を求めるために、終了時間を取得する。
-            s_dwTick2 = ::GetTickCount();
-            // ダイアログを終了する。
-            ::EndDialog(hwnd, IDOK);
-            // スレッドを閉じる。
-            XgCloseThreads();
-        }
-        break;
-    }
-    return false;
-}
-
-// キャンセルダイアログ。
-extern "C" INT_PTR CALLBACK
-XgCancelGenBlacksDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
-{
-    switch (uMsg) {
-    case WM_INITDIALOG:
-        // ダイアログを中央へ移動する。
-        XgCenterDialog(hwnd);
-        // 解を求めるのを開始。
-        XgStartGenerateBlacks(!!lParam);
-        // フォーカスをセットする。
-        ::SetFocus(::GetDlgItem(hwnd, psh1));
-        // 開始時間。
-        s_dwTick0 = ::GetTickCount();
-        s_nRetryCount = 0;
         // タイマーをセットする。
         ::SetTimer(hwnd, 999, xg_dwTimerInterval, nullptr);
         return false;
@@ -2836,7 +2816,9 @@ void __fastcall XgOnAbout(HWND hwnd)
 bool __fastcall XgOnNew(HWND hwnd)
 {
     INT nID;
+    ::EnableWindow(xg_hwndInputPalette, FALSE);
     nID = INT(::DialogBoxW(xg_hInstance, MAKEINTRESOURCE(IDD_NEW), hwnd, XgNewDlgProc));
+    ::EnableWindow(xg_hwndInputPalette, TRUE);
     if (nID == IDOK) {
         // 初期化する。
         xg_bSolved = false;
@@ -3003,8 +2985,10 @@ bool __fastcall XgOnGenerate(HWND hwnd, bool show_answer, bool multiple = false)
 // 黒マスパターンを連続生成する。
 bool __fastcall XgOnGenerateBlacksRepeatedly(HWND hwnd)
 {
+    ::EnableWindow(xg_hwndInputPalette, FALSE);
     INT nID = DialogBoxW(xg_hInstance, MAKEINTRESOURCEW(IDD_SEQPATGEN), hwnd,
                          XgGenerateBlacksRepeatedlyDlgProc);
+    ::EnableWindow(xg_hwndInputPalette, TRUE);
     if (nID != IDOK) {
         return false;
     }
@@ -3034,7 +3018,7 @@ bool __fastcall XgOnGenerateBlacksRepeatedly(HWND hwnd)
     do
     {
         nID = ::DialogBoxParamW(xg_hInstance, MAKEINTRESOURCEW(IDD_CALCULATING),
-                                hwnd, XgCancelGenBlacksRepeatedlyDlgProc,
+                                hwnd, XgCancelGenBlacksDlgProc,
                                 !!(xg_nRules & RULE_POINTSYMMETRY));
         // 生成成功のときはs_nNumberGeneratedを増やす。
         if (nID == IDOK && xg_bBlacksGenerated) {
@@ -3082,8 +3066,16 @@ bool __fastcall XgOnGenerateBlacksRepeatedly(HWND hwnd)
 }
 
 // 黒マスパターンを生成する。
-void __fastcall XgOnGenerateBlacks(HWND hwnd, bool sym)
+bool __fastcall XgOnGenerateBlacks(HWND hwnd, bool sym)
 {
+    ::EnableWindow(xg_hwndInputPalette, FALSE);
+    INT nID = DialogBoxW(xg_hInstance, MAKEINTRESOURCEW(IDD_PATGEN), hwnd,
+                         XgGenerateBlacksDlgProc);
+    ::EnableWindow(xg_hwndInputPalette, TRUE);
+    if (nID != IDOK) {
+        return false;
+    }
+
     // 初期化する。
     xg_caret_pos.clear();
     xg_vMarks.clear();
@@ -3103,22 +3095,11 @@ void __fastcall XgOnGenerateBlacks(HWND hwnd, bool sym)
     // ヒントウィンドウを破棄する。
     XgDestroyHintsWnd();
 
-    // スケルトンモードと入力モードに応じて単語の最大長を設定する。
-    if (xg_imode == xg_im_KANJI) {
-        xg_nMaxWordLen = 4;
-    } else if (xg_bSkeltonMode) {
-        xg_nMaxWordLen = 6;
-    } else if (xg_imode == xg_im_RUSSIA || xg_imode == xg_im_ABC) {
-        xg_nMaxWordLen = 5;
-    } else {
-        xg_nMaxWordLen = 4;
-    }
-
     // キャンセルダイアログを表示し、生成を開始する。
     ::EnableWindow(xg_hwndInputPalette, FALSE);
-    ::DialogBoxParamW(xg_hInstance,
-        MAKEINTRESOURCE(IDD_BLACKGEN),
-        hwnd, XgCancelGenBlacksDlgProc, sym);
+    ::DialogBoxParamW(xg_hInstance, MAKEINTRESOURCEW(IDD_CALCULATING),
+                      hwnd, XgCancelGenBlacksDlgProc,
+                      !!(xg_nRules & RULE_POINTSYMMETRY));
     ::EnableWindow(xg_hwndInputPalette, TRUE);
     xg_caret_pos.clear();
     XgUpdateImage(hwnd, 0, 0);
@@ -3135,6 +3116,7 @@ void __fastcall XgOnGenerateBlacks(HWND hwnd, bool sym)
             (s_dwTick2 - s_dwTick0) / 100 % 10);
         XgCenterMessageBoxW(hwnd, sz, XgLoadStringDx2(IDS_RESULTS), MB_ICONINFORMATION);
     }
+    return true;
 }
 
 // 解を求める。
@@ -8128,12 +8110,11 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
             auto sa1 = std::make_shared<XG_UndoData_SetAll>();
             auto sa2 = std::make_shared<XG_UndoData_SetAll>();
             sa1->Get();
-            {
-                XgOnGenerateBlacks(hwnd, false);
+            if (XgOnGenerateBlacks(hwnd, false)) {
+                sa2->Get();
+                // 元に戻す情報を設定する。
+                xg_ubUndoBuffer.Commit(UC_SETALL, sa1, sa2);
             }
-            sa2->Get();
-            // 元に戻す情報を設定する。
-            xg_ubUndoBuffer.Commit(UC_SETALL, sa1, sa2);
             // ツールバーのUIを更新する。
             XgUpdateToolBarUI(hwnd);
         }
@@ -8144,12 +8125,11 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
             auto sa1 = std::make_shared<XG_UndoData_SetAll>();
             auto sa2 = std::make_shared<XG_UndoData_SetAll>();
             sa1->Get();
-            {
-                XgOnGenerateBlacks(hwnd, true);
+            if (XgOnGenerateBlacks(hwnd, true)) {
+                sa2->Get();
+                // 元に戻す情報を設定する。
+                xg_ubUndoBuffer.Commit(UC_SETALL, sa1, sa2);
             }
-            sa2->Get();
-            // 元に戻す情報を設定する。
-            xg_ubUndoBuffer.Commit(UC_SETALL, sa1, sa2);
             // ツールバーのUIを更新する。
             XgUpdateToolBarUI(hwnd);
         }
@@ -8782,8 +8762,7 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
             auto sa1 = std::make_shared<XG_UndoData_SetAll>();
             auto sa2 = std::make_shared<XG_UndoData_SetAll>();
             sa1->Get();
-            if (XgOnGenerateBlacksRepeatedly(hwnd))
-            {
+            if (XgOnGenerateBlacksRepeatedly(hwnd)) {
                 // クリアする。
                 xg_bShowAnswer = false;
                 xg_bSolved = false;
