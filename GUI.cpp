@@ -7593,6 +7593,46 @@ void __fastcall XgShowResultsRepeatedly(HWND hwnd)
                         nullptr, nullptr, SW_SHOWNORMAL);
 }
 
+// 盤を特定の文字で埋め尽くす。
+void __fastcall XgFillCells(HWND hwnd, WCHAR ch)
+{
+    auto sa1 = std::make_shared<XG_UndoData_SetAll>();
+    auto sa2 = std::make_shared<XG_UndoData_SetAll>();
+    sa1->Get();
+    // 候補ウィンドウを破棄する。
+    XgDestroyCandsWnd();
+    // ヒントウィンドウを破棄する。
+    XgDestroyHintsWnd();
+    // マークの更新を通知する。
+    XgMarkUpdate();
+    // 初期化する。
+    xg_bSolved = false;
+    xg_xword.ResetAndSetSize(xg_nRows, xg_nCols);
+    xg_bHintsAdded = false;
+    xg_bShowAnswer = false;
+    xg_caret_pos.clear();
+    xg_vTateInfo.clear();
+    xg_vYokoInfo.clear();
+    xg_strHeader.clear();
+    xg_strNotes.clear();
+    xg_strFileName.clear();
+    xg_vMarks.clear();
+    xg_vMarkedCands.clear();
+    for (INT iRow = 0; iRow < xg_nRows; ++iRow) {
+        for (INT jCol = 0; jCol < xg_nCols; ++jCol) {
+            xg_xword.SetAt(iRow, jCol, ch);
+        }
+    }
+    // イメージを更新する。
+    XgMarkUpdate();
+    XgUpdateImage(hwnd, 0, 0);
+    // 「元に戻す」情報を設定する。
+    sa2->Get();
+    xg_ubUndoBuffer.Commit(UC_SETALL, sa1, sa2);
+    // ツールバーのUIを更新する。
+    XgUpdateToolBarUI(hwnd);
+}
+
 // コマンドを実行する。
 void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*codeNotify*/)
 {
@@ -8780,6 +8820,12 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
             // ツールバーのUIを更新する。
             XgUpdateToolBarUI(hwnd);
         }
+        break;
+    case ID_FILLBYBLOCKS:
+        XgFillCells(hwnd, ZEN_BLACK);
+        break;
+    case ID_FILLBYWHITES:
+        XgFillCells(hwnd, ZEN_SPACE);
         break;
     default:
         if (!MainWnd_OnCommand2(hwnd, id)) {

@@ -314,6 +314,8 @@
 #define ID_RETRYIFTIMEOUT                   260
 #define ID_SKELTONMODE                      261
 #define ID_SEQPATGEN                        262
+#define ID_FILLBYBLOCKS                     263
+#define ID_FILLBYWHITES                     264
 #define ID_TT_BASE                          10000
 
 #define ctl2                                1185

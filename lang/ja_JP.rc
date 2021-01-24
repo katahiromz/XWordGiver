@@ -46,6 +46,9 @@ LANGUAGE LANG_JAPANESE, SUBLANG_DEFAULT
         MENUITEM "盤のコピー(&C)\tCtrl+C", ID_COPY
         MENUITEM "貼り付け(&P)\tCtrl+V", ID_PASTE
         MENUITEM SEPARATOR
+        MENUITEM "盤を黒マスで埋め尽くす(&B)", ID_FILLBYBLOCKS
+        MENUITEM "盤を空白マスで埋め尽くす(&W)", ID_FILLBYWHITES
+        MENUITEM SEPARATOR
         MENUITEM "画像をコピー(&I)\tShift+Ctrl+C", ID_COPYASIMAGE
         MENUITEM "サイズを指定して画像をコピー(&S)", ID_COPYASIMAGESIZED
         MENUITEM SEPARATOR
