@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
-    <Product Id="55FFF7FC-B10F-4F75-921A-D965D90E9DEA" Name="クロスワード ギバー (64ビット版)" Language="1041" Version="4.6.8" Manufacturer="片山博文MZ" UpgradeCode="A85DB838-95A5-483B-A734-6B4E59B7FBCE" Codepage="932">
+    <Product Id="55FFF7FC-B10F-4F75-921A-D965D90E9DEA" Name="クロスワード ギバー (64ビット版)" Language="1041" Version="4.6.9" Manufacturer="片山博文MZ" UpgradeCode="A85DB838-95A5-483B-A734-6B4E59B7FBCE" Codepage="932">
         <Package Description="クロスワード自動作成ソフト" Comments="クロスワード ギバー (64ビット版)" InstallerVersion="200" Compressed="yes" SummaryCodepage="932" Platform="x64" />
         <MediaTemplate EmbedCab="yes" CompressionLevel="high" />
         <Directory Id="TARGETDIR" Name="SourceDir">

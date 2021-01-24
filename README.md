@@ -36,6 +36,7 @@ Sorry, this software is for Japanese Windows only.
 
 katayama.hirofumi.mz@gmail.com までメールをお送り下さい。
 
-## 技術文書について
+## 電子書籍について
 
-ファイル [TechNote.txt](TechNote.txt) に技術的なことが書かれてあります。
+電子書籍『クロスワード自動生成の世界』https://www.amazon.co.jp/dp/B08T877944
+に詳しく使い方が書かれています。
