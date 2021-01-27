@@ -439,7 +439,7 @@ LANGUAGE LANG_JAPANESE, SUBLANG_DEFAULT
 //////////////////////////////////////////////////////////////////////////////
 // RT_DIALOG
 
-IDD_NEW DIALOG 0, 0, 310, 75
+IDD_NEW DIALOG 0, 0, 310, 125
 CAPTION "新規作成"
 STYLE DS_CENTER | DS_MODALFRAME | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
 FONT 9, "MS UI Gothic"
@@ -453,8 +453,12 @@ FONT 9, "MS UI Gothic"
     CONTROL "", scr2, "msctls_updown32", UDS_ARROWKEYS | UDS_AUTOBUDDY | UDS_ALIGNRIGHT | UDS_SETBUDDYINT, 101, 24, 12, 20
     LTEXT "マス", -1, 248, 10, 20, 12
     LTEXT "※8×8以上のサイズの場合、計算にかなり時間がかかることがあります。", -1, 10, 30, 290, 14
-    DEFPUSHBUTTON "新規作成(&N)", IDOK, 175, 55, 60, 14
-    PUSHBUTTON "キャンセル", IDCANCEL, 240, 55, 60, 14
+    GROUPBOX "処理", -1, 10, 50, 120, 70
+    AUTORADIOBUTTON "空白マスで埋める(&S)", rad1, 20, 60, 100, 14, WS_TABSTOP
+    AUTORADIOBUTTON "黒マスで埋める(&B)", rad2, 20, 80, 100, 14, WS_TABSTOP
+    AUTORADIOBUTTON "サイズのみ変更(&Z)", rad3, 20, 100, 100, 14, WS_TABSTOP
+    DEFPUSHBUTTON "新規作成(&N)", IDOK, 175, 105, 60, 14
+    PUSHBUTTON "キャンセル", IDCANCEL, 240, 105, 60, 14
 }
 
 IDD_CREATE DIALOG 0, 0, 310, 103

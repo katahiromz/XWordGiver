@@ -3,6 +3,7 @@
 // Copyright (C) 2012-2020 Katayama Hirofumi MZ. All Rights Reserved.
 // (Japanese, Shift_JIS)
 
+#define NOMINMAX
 #include "XWordGiver.hpp"
 #include "layout.h"
 
@@ -114,9 +115,6 @@ BOOL xg_bSkeltonMode = FALSE;
 
 //////////////////////////////////////////////////////////////////////////////
 // static variables
-
-// クロスワードのサイズの設定。
-static int s_nRows = 7, s_nCols = 7;
 
 // 保存先のパスのリスト。
 static std::deque<std::wstring>  s_dirs_save_to;
@@ -563,7 +561,7 @@ bool __fastcall XgLoadSettings(void)
     xg_dict_name.clear();
     s_dirs_save_to.clear();
     s_bAutoRetry = true;
-    s_nRows = s_nCols = 7;
+    xg_nRows = xg_nCols = 7;
     xg_szCellFont[0] = 0;
     xg_szSmallFont[0] = 0;
     xg_szUIFont[0] = 0;
@@ -668,10 +666,10 @@ bool __fastcall XgLoadSettings(void)
                 s_bAutoRetry = !!dwValue;
             }
             if (!app_key.QueryDword(L"Rows", dwValue)) {
-                s_nRows = dwValue;
+                xg_nRows = dwValue;
             }
             if (!app_key.QueryDword(L"Cols", dwValue)) {
-                s_nCols = dwValue;
+                xg_nCols = dwValue;
             }
 
             if (!app_key.QuerySz(L"CellFont", sz, ARRAYSIZE(sz))) {
@@ -856,8 +854,8 @@ bool __fastcall XgSaveSettings(void)
         if (app_key) {
             app_key.SetDword(L"OldNotice", s_bOldNotice);
             app_key.SetDword(L"AutoRetry", s_bAutoRetry);
-            app_key.SetDword(L"Rows", s_nRows);
-            app_key.SetDword(L"Cols", s_nCols);
+            app_key.SetDword(L"Rows", xg_nRows);
+            app_key.SetDword(L"Cols", xg_nCols);
 
             app_key.SetSz(L"CellFont", xg_szCellFont, ARRAYSIZE(xg_szCellFont));
             app_key.SetSz(L"SmallFont", xg_szSmallFont, ARRAYSIZE(xg_szSmallFont));
@@ -1100,6 +1098,98 @@ void XgSetDict(const std::wstring& strFile)
 
 //////////////////////////////////////////////////////////////////////////////
 
+// 盤を特定の文字で埋め尽くす。
+void __fastcall XgNewCells(HWND hwnd, WCHAR ch, INT nRows, INT nCols)
+{
+    auto sa1 = std::make_shared<XG_UndoData_SetAll>();
+    auto sa2 = std::make_shared<XG_UndoData_SetAll>();
+    sa1->Get();
+    // 候補ウィンドウを破棄する。
+    XgDestroyCandsWnd();
+    // ヒントウィンドウを破棄する。
+    XgDestroyHintsWnd();
+    // 初期化する。
+    xg_bSolved = false;
+    xg_nRows = nRows;
+    xg_nCols = nCols;
+    xg_xword.ResetAndSetSize(xg_nRows, xg_nCols);
+    xg_bHintsAdded = false;
+    xg_bShowAnswer = false;
+    xg_caret_pos.clear();
+    xg_vTateInfo.clear();
+    xg_vYokoInfo.clear();
+    xg_strHeader.clear();
+    xg_strNotes.clear();
+    xg_strFileName.clear();
+    xg_vMarks.clear();
+    xg_vMarkedCands.clear();
+    for (INT iRow = 0; iRow < xg_nRows; ++iRow) {
+        for (INT jCol = 0; jCol < xg_nCols; ++jCol) {
+            xg_xword.SetAt(iRow, jCol, ch);
+        }
+    }
+    // イメージを更新する。
+    XgMarkUpdate();
+    XgUpdateImage(hwnd, 0, 0);
+    // 「元に戻す」情報を設定する。
+    sa2->Get();
+    xg_ubUndoBuffer.Commit(UC_SETALL, sa1, sa2);
+    // ツールバーのUIを更新する。
+    XgUpdateToolBarUI(hwnd);
+}
+
+// 盤のサイズを変更する。
+void __fastcall XgResizeCells(HWND hwnd, INT nNewRows, INT nNewCols)
+{
+    auto sa1 = std::make_shared<XG_UndoData_SetAll>();
+    auto sa2 = std::make_shared<XG_UndoData_SetAll>();
+    sa1->Get();
+    // 候補ウィンドウを破棄する。
+    XgDestroyCandsWnd();
+    // ヒントウィンドウを破棄する。
+    XgDestroyHintsWnd();
+    // マークの更新を通知する。
+    XgMarkUpdate();
+    // サイズを変更する。
+    INT nOldRows = xg_nRows, nOldCols = xg_nCols;
+    INT iMin = std::min(xg_nRows, nNewRows);
+    INT jMin = std::min(xg_nCols, nNewCols);
+    XG_Board copy;
+    copy.ResetAndSetSize(nNewRows, nNewCols);
+    for (INT i = 0; i < iMin; ++i) {
+        for (INT j = 0; j < jMin; ++j) {
+            xg_nRows = nOldRows;
+            xg_nCols = nOldCols;
+            WCHAR ch = xg_xword.GetAt(i, j);
+            xg_nRows = nNewRows;
+            xg_nCols = nNewCols;
+            copy.SetAt(i, j, ch);
+        }
+    }
+    xg_nRows = nNewRows;
+    xg_nCols = nNewCols;
+    xg_xword = copy;
+    xg_bSolved = false;
+    xg_bHintsAdded = false;
+    xg_bShowAnswer = false;
+    xg_caret_pos.clear();
+    xg_vTateInfo.clear();
+    xg_vYokoInfo.clear();
+    xg_strHeader.clear();
+    xg_strNotes.clear();
+    xg_strFileName.clear();
+    xg_vMarks.clear();
+    xg_vMarkedCands.clear();
+    // イメージを更新する。
+    XgMarkUpdate();
+    XgUpdateImage(hwnd, 0, 0);
+    // 「元に戻す」情報を設定する。
+    sa2->Get();
+    xg_ubUndoBuffer.Commit(UC_SETALL, sa1, sa2);
+    // ツールバーのUIを更新する。
+    XgUpdateToolBarUI(hwnd);
+}
+
 // [新規作成]ダイアログのダイアログ プロシージャ。
 extern "C" INT_PTR CALLBACK
 XgNewDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam*/)
@@ -1110,8 +1200,8 @@ XgNewDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam*/)
         // ダイアログを中央へ移動する。
         XgCenterDialog(hwnd);
         // サイズの欄を設定する。
-        ::SetDlgItemInt(hwnd, edt1, s_nRows, FALSE);
-        ::SetDlgItemInt(hwnd, edt2, s_nCols, FALSE);
+        ::SetDlgItemInt(hwnd, edt1, xg_nRows, FALSE);
+        ::SetDlgItemInt(hwnd, edt2, xg_nCols, FALSE);
         // IMEをOFFにする。
         {
             HWND hwndCtrl;
@@ -1124,6 +1214,7 @@ XgNewDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam*/)
         }
         SendDlgItemMessageW(hwnd, scr1, UDM_SETRANGE, 0, MAKELPARAM(XG_MAX_SIZE, XG_MIN_SIZE));
         SendDlgItemMessageW(hwnd, scr2, UDM_SETRANGE, 0, MAKELPARAM(XG_MAX_SIZE, XG_MIN_SIZE));
+        CheckRadioButton(hwnd, rad1, rad3, rad1);
         return TRUE;
 
     case WM_COMMAND:
@@ -1144,20 +1235,19 @@ XgNewDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam*/)
                 ::SetFocus(::GetDlgItem(hwnd, edt2));
                 return 0;
             }
-            // 初期化する。
-            xg_bSolved = false;
-            xg_bShowAnswer = false;
-            xg_xword.ResetAndSetSize(n1, n2);
-            xg_nRows = s_nRows = n1;
-            xg_nCols = s_nCols = n2;
-            xg_vTateInfo.clear();
-            xg_vYokoInfo.clear();
-            xg_vMarks.clear();
-            xg_vMarkedCands.clear();
-            // マークの更新を通知する。
-            XgMarkUpdate();
             // ダイアログを閉じる。
             ::EndDialog(hwnd, IDOK);
+            // 処理を行う。
+            if (IsDlgButtonChecked(hwnd, rad1) == BST_CHECKED) {
+                // 盤を特定の文字で埋め尽くす。
+                XgNewCells(xg_hMainWnd, ZEN_SPACE, n1, n2);
+            } else if (IsDlgButtonChecked(hwnd, rad2) == BST_CHECKED) {
+                // 盤を特定の文字で埋め尽くす。
+                XgNewCells(xg_hMainWnd, ZEN_BLACK, n1, n2);
+            } else if (IsDlgButtonChecked(hwnd, rad3) == BST_CHECKED) {
+                // 盤のサイズを変更する。
+                XgResizeCells(xg_hMainWnd, n1, n2);
+            }
             break;
 
         case IDCANCEL:
@@ -1182,8 +1272,8 @@ XgGenerateDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam*/)
         // ダイアログを中央へ移動する。
         XgCenterDialog(hwnd);
         // サイズの欄を設定する。
-        ::SetDlgItemInt(hwnd, edt1, s_nRows, FALSE);
-        ::SetDlgItemInt(hwnd, edt2, s_nCols, FALSE);
+        ::SetDlgItemInt(hwnd, edt1, xg_nRows, FALSE);
+        ::SetDlgItemInt(hwnd, edt2, xg_nCols, FALSE);
 
         // スケルトンモードと入力モードに応じて単語の最大長を設定する。
         if (xg_imode == xg_im_KANJI) {
@@ -1262,8 +1352,8 @@ XgGenerateDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam*/)
                 xg_bSolved = false;
                 xg_bShowAnswer = false;
                 xg_xword.ResetAndSetSize(n1, n2);
-                xg_nRows = s_nRows = n1;
-                xg_nCols = s_nCols = n2;
+                xg_nRows = n1;
+                xg_nCols = n2;
                 xg_vTateInfo.clear();
                 xg_vYokoInfo.clear();
                 xg_vMarks.clear();
@@ -1334,8 +1424,8 @@ XgGenerateRepeatedlyDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam
         // ダイアログを中央へ移動する。
         XgCenterDialog(hwnd);
         // サイズの欄を設定する。
-        ::SetDlgItemInt(hwnd, edt1, s_nRows, FALSE);
-        ::SetDlgItemInt(hwnd, edt2, s_nCols, FALSE);
+        ::SetDlgItemInt(hwnd, edt1, xg_nRows, FALSE);
+        ::SetDlgItemInt(hwnd, edt2, xg_nCols, FALSE);
         // スケルトンモードと入力モードに応じて単語の最大長を設定する。
         if (xg_imode == xg_im_KANJI) {
             n3 = 4;
@@ -1472,8 +1562,8 @@ XgGenerateRepeatedlyDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam
                 xg_bSolved = false;
                 xg_bShowAnswer = false;
                 xg_xword.ResetAndSetSize(n1, n2);
-                xg_nRows = s_nRows = n1;
-                xg_nCols = s_nCols = n2;
+                xg_nRows = n1;
+                xg_nCols = n2;
                 xg_vTateInfo.clear();
                 xg_vYokoInfo.clear();
                 xg_vMarks.clear();
@@ -2819,22 +2909,10 @@ bool __fastcall XgOnNew(HWND hwnd)
     ::EnableWindow(xg_hwndInputPalette, FALSE);
     nID = INT(::DialogBoxW(xg_hInstance, MAKEINTRESOURCE(IDD_NEW), hwnd, XgNewDlgProc));
     ::EnableWindow(xg_hwndInputPalette, TRUE);
-    if (nID == IDOK) {
-        // 初期化する。
-        xg_bSolved = false;
-        xg_bHintsAdded = false;
-        xg_bShowAnswer = false;
-        xg_caret_pos.clear();
-        xg_strHeader.clear();
-        xg_strNotes.clear();
-        xg_strFileName.clear();
+    if (nID != IDOK)
+        return false;
 
-        // イメージを更新する。
-        XgMarkUpdate();
-        XgUpdateImage(hwnd, 0, 0);
-        return true;
-    }
-    return false;
+    return true;
 }
 
 // 特定の場所にファイルを保存する。
@@ -5777,8 +5855,6 @@ void MainWnd_OnEraseSettings(HWND hwnd)
     xg_bSolved = false;
     xg_bHintsAdded = false;
     xg_bShowAnswer = false;
-    xg_nRows = s_nRows;
-    xg_nCols = s_nCols;
     xg_xword.clear();
     xg_solution.clear();
     xg_caret_pos.clear();
@@ -7593,46 +7669,6 @@ void __fastcall XgShowResultsRepeatedly(HWND hwnd)
                         nullptr, nullptr, SW_SHOWNORMAL);
 }
 
-// 盤を特定の文字で埋め尽くす。
-void __fastcall XgFillCells(HWND hwnd, WCHAR ch)
-{
-    auto sa1 = std::make_shared<XG_UndoData_SetAll>();
-    auto sa2 = std::make_shared<XG_UndoData_SetAll>();
-    sa1->Get();
-    // 候補ウィンドウを破棄する。
-    XgDestroyCandsWnd();
-    // ヒントウィンドウを破棄する。
-    XgDestroyHintsWnd();
-    // マークの更新を通知する。
-    XgMarkUpdate();
-    // 初期化する。
-    xg_bSolved = false;
-    xg_xword.ResetAndSetSize(xg_nRows, xg_nCols);
-    xg_bHintsAdded = false;
-    xg_bShowAnswer = false;
-    xg_caret_pos.clear();
-    xg_vTateInfo.clear();
-    xg_vYokoInfo.clear();
-    xg_strHeader.clear();
-    xg_strNotes.clear();
-    xg_strFileName.clear();
-    xg_vMarks.clear();
-    xg_vMarkedCands.clear();
-    for (INT iRow = 0; iRow < xg_nRows; ++iRow) {
-        for (INT jCol = 0; jCol < xg_nCols; ++jCol) {
-            xg_xword.SetAt(iRow, jCol, ch);
-        }
-    }
-    // イメージを更新する。
-    XgMarkUpdate();
-    XgUpdateImage(hwnd, 0, 0);
-    // 「元に戻す」情報を設定する。
-    sa2->Get();
-    xg_ubUndoBuffer.Commit(UC_SETALL, sa1, sa2);
-    // ツールバーのUIを更新する。
-    XgUpdateToolBarUI(hwnd);
-}
-
 // コマンドを実行する。
 void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*codeNotify*/)
 {
@@ -8822,10 +8858,10 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
         }
         break;
     case ID_FILLBYBLOCKS:
-        XgFillCells(hwnd, ZEN_BLACK);
+        XgNewCells(hwnd, ZEN_BLACK, xg_nRows, xg_nCols);
         break;
     case ID_FILLBYWHITES:
-        XgFillCells(hwnd, ZEN_SPACE);
+        XgNewCells(hwnd, ZEN_SPACE, xg_nRows, xg_nCols);
         break;
     default:
         if (!MainWnd_OnCommand2(hwnd, id)) {
@@ -8994,9 +9030,6 @@ HBITMAP XgCreateGrayedBitmap(HBITMAP hbm, COLORREF crMask = CLR_INVALID)
 bool __fastcall MainWnd_OnCreate(HWND hwnd, LPCREATESTRUCT /*lpCreateStruct*/)
 {
     xg_hMainWnd = hwnd;
-
-    xg_nRows = s_nRows;
-    xg_nCols = s_nCols;
 
     // 水平スクロールバーを作る。
     xg_hHScrollBar = ::CreateWindowW(
