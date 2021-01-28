@@ -184,9 +184,6 @@ static const LPCWSTR s_pszCandsWndClass = L"XWord Giver Candidates Window";
 // アクセラレータのハンドル。
 static HACCEL       s_hAccel = nullptr;
 
-// 多重起動禁止ミューテックス。
-static HANDLE       s_hMutex = NULL;
-
 // プロセッサの数。
 static DWORD        s_dwNumberOfProcessors = 1;
 
@@ -10572,17 +10569,6 @@ int WINAPI WinMain(
     LPSTR /*pszCmdLine*/,
     int nCmdShow)
 {
-    // 多重起動禁止ミューテックスを作成。
-    s_hMutex = ::CreateMutexW(NULL, FALSE, L"XWordGiver Mutex");
-    if (::WaitForSingleObject(s_hMutex, 500) != WAIT_OBJECT_0) {
-        // ミューテックスを閉じる。
-        ::CloseHandle(s_hMutex);
-        // 多重起動禁止メッセージ。
-        XgCenterMessageBoxW(NULL, XgLoadStringDx1(IDS_MULTIPLESTARTUP), XgLoadStringDx2(IDS_APPNAME),
-                            MB_ICONERROR);
-        return 999;
-    }
-
     // アプリのインスタンスを保存する。
     xg_hInstance = hInstance;
 
@@ -10618,9 +10604,6 @@ int WINAPI WinMain(
     // アクセラレータを読み込む。
     s_hAccel = ::LoadAcceleratorsW(hInstance, MAKEINTRESOURCE(1));
     if (s_hAccel == nullptr) {
-        // ミューテックスを解放。
-        ::ReleaseMutex(s_hMutex);
-        ::CloseHandle(s_hMutex);
         // アクセラレータ作成失敗メッセージ。
         XgCenterMessageBoxW(nullptr, XgLoadStringDx1(IDS_CANTACCEL), nullptr, MB_ICONERROR);
         return 3;
@@ -10641,9 +10624,6 @@ int WINAPI WinMain(
     wcx.lpszClassName = s_pszMainWndClass;
     wcx.hIconSm = nullptr;
     if (!::RegisterClassExW(&wcx)) {
-        // ミューテックスを解放。
-        ::ReleaseMutex(s_hMutex);
-        ::CloseHandle(s_hMutex);
         // ウィンドウ登録失敗メッセージ。
         XgCenterMessageBoxW(nullptr, XgLoadStringDx1(IDS_CANTREGWND), nullptr, MB_ICONERROR);
         return 1;
@@ -10655,9 +10635,6 @@ int WINAPI WinMain(
     wcx.lpszMenuName = NULL;
     wcx.lpszClassName = s_pszHintsWndClass;
     if (!::RegisterClassExW(&wcx)) {
-        // ミューテックスを解放。
-        ::ReleaseMutex(s_hMutex);
-        ::CloseHandle(s_hMutex);
         // ウィンドウ登録失敗メッセージ。
         XgCenterMessageBoxW(nullptr, XgLoadStringDx1(IDS_CANTREGWND), nullptr, MB_ICONERROR);
         return 1;
@@ -10669,9 +10646,6 @@ int WINAPI WinMain(
     wcx.lpszMenuName = NULL;
     wcx.lpszClassName = s_pszCandsWndClass;
     if (!::RegisterClassExW(&wcx)) {
-        // ミューテックスを解放。
-        ::ReleaseMutex(s_hMutex);
-        ::CloseHandle(s_hMutex);
         // ウィンドウ登録失敗メッセージ。
         XgCenterMessageBoxW(nullptr, XgLoadStringDx1(IDS_CANTREGWND), nullptr, MB_ICONERROR);
         return 1;
@@ -10686,9 +10660,6 @@ int WINAPI WinMain(
         s_nMainWndX, s_nMainWndY, s_nMainWndCX, s_nMainWndCY,
         nullptr, nullptr, hInstance, nullptr);
     if (xg_hMainWnd == nullptr) {
-        // ミューテックスを解放。
-        ::ReleaseMutex(s_hMutex);
-        ::CloseHandle(s_hMutex);
         // ウィンドウ作成失敗メッセージ。
         XgCenterMessageBoxW(nullptr, XgLoadStringDx1(IDS_CANTMAKEWND), nullptr, MB_ICONERROR);
         return 2;
@@ -10758,10 +10729,6 @@ int WINAPI WinMain(
 
     // クリティカルセクションを破棄する。
     ::DeleteCriticalSection(&xg_cs);
-
-    // ミューテックスを解放。
-    ::ReleaseMutex(s_hMutex);
-    ::CloseHandle(s_hMutex);
 
     // 設定を保存。
     XgSaveSettings();
