@@ -3402,6 +3402,8 @@ unsigned __stdcall XgSolveProcSmart(void *param)
     return 0;
 }
 
+//#define SINGLE_THREAD_MODE
+
 // 解を求めるのを開始。
 void __fastcall XgStartSolve_AddBlack(void)
 {
@@ -3419,6 +3421,9 @@ void __fastcall XgStartSolve_AddBlack(void)
         std::swap(xg_nRows, xg_nCols);
     }
 
+#ifdef SINGLE_THREAD_MODE
+    XgSolveProc_AddBlack(&xg_aThreadInfo[0]);
+#else
     // スレッドを開始する。
     for (DWORD i = 0; i < xg_dwThreadCount; i++) {
         xg_aThreadInfo[i].m_count = static_cast<DWORD>(xg_xword.Count());
@@ -3427,6 +3432,7 @@ void __fastcall XgStartSolve_AddBlack(void)
                 &xg_aThreadInfo[i].m_threadid));
         assert(xg_ahThreads[i] != nullptr);
     }
+#endif
 }
 
 // 解を求めるのを開始（黒マス追加なし）。
@@ -3435,6 +3441,9 @@ void __fastcall XgStartSolve_NoAddBlack(void)
     // フラグを初期化する。
     xg_bSolved = xg_bCancelled = xg_bRetrying = false;
 
+#ifdef SINGLE_THREAD_MODE
+    XgSolveProc_NoAddBlack(&xg_aThreadInfo[0]);
+#else
     // スレッドを開始する。
     for (DWORD i = 0; i < xg_dwThreadCount; i++) {
         xg_aThreadInfo[i].m_count = static_cast<DWORD>(xg_xword.Count());
@@ -3443,6 +3452,7 @@ void __fastcall XgStartSolve_NoAddBlack(void)
                 &xg_aThreadInfo[i].m_threadid));
         assert(xg_ahThreads[i] != nullptr);
     }
+#endif
 }
 
 // 解を求めるのを開始（スマート解決）。
@@ -3454,6 +3464,9 @@ void __fastcall XgStartSolve_Smart(void)
     // まだブロック生成していない。
     xg_bBlacksGenerated = FALSE;
 
+#ifdef SINGLE_THREAD_MODE
+    XgSolveProcSmart(&xg_aThreadInfo[0]);
+#else
     // スレッドを開始する。
     for (DWORD i = 0; i < xg_dwThreadCount; i++) {
         xg_aThreadInfo[i].m_count = static_cast<DWORD>(xg_xword.Count());
@@ -3462,6 +3475,7 @@ void __fastcall XgStartSolve_Smart(void)
                 &xg_aThreadInfo[i].m_threadid));
         assert(xg_ahThreads[i] != nullptr);
     }
+#endif
 }
 
 // 解を求めようとした後の後処理。
@@ -5294,19 +5308,27 @@ void __fastcall XgStartGenerateBlacks(bool sym)
 
     // スレッドを開始する。
     if (sym || (xg_nRules & RULE_POINTSYMMETRY)) {
+#ifdef SINGLE_THREAD_MODE
+        XgGenerateBlacksSym2(&xg_aThreadInfo[0]);
+#else
         for (DWORD i = 0; i < xg_dwThreadCount; i++) {
             xg_ahThreads[i] = reinterpret_cast<HANDLE>(
                 _beginthreadex(nullptr, 0, XgGenerateBlacksSym2, &xg_aThreadInfo[i], 0,
                     &xg_aThreadInfo[i].m_threadid));
             assert(xg_ahThreads[i] != nullptr);
         }
+#endif
     } else {
+#ifdef SINGLE_THREAD_MODE
+        XgGenerateBlacks(&xg_aThreadInfo[0]);
+#else
         for (DWORD i = 0; i < xg_dwThreadCount; i++) {
             xg_ahThreads[i] = reinterpret_cast<HANDLE>(
                 _beginthreadex(nullptr, 0, XgGenerateBlacks, &xg_aThreadInfo[i], 0,
                     &xg_aThreadInfo[i].m_threadid));
             assert(xg_ahThreads[i] != nullptr);
         }
+#endif
     }
 }
 

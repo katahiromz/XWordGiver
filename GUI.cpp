@@ -3208,6 +3208,10 @@ bool __fastcall XgOnSolve_AddBlack(HWND hwnd)
         return false;
     }
 
+    // 辞書を読み込む。
+    XgLoadDictFile(xg_dict_name.c_str());
+    XgSetInputModeFromDict(hwnd);
+
     // 黒マスルールなどをチェックする。
     xg_bNoAddBlack = false;
     if (!XgCheckCrossWord(hwnd)) {
@@ -3223,9 +3227,6 @@ bool __fastcall XgOnSolve_AddBlack(HWND hwnd)
     xg_strFileName.clear();
     // 生成した数と生成する数。
     s_nNumberGenerated = 0;
-    // 辞書を読み込む。
-    XgLoadDictFile(xg_dict_name.c_str());
-    XgSetInputModeFromDict(hwnd);
 
     // 候補ウィンドウを破棄する。
     XgDestroyCandsWnd();
@@ -3304,6 +3305,10 @@ bool __fastcall XgOnSolve_NoAddBlack(HWND hwnd, bool bShowAnswer = true)
         return false;
     }
 
+    // 辞書を読み込む。
+    XgLoadDictFile(xg_dict_name.c_str());
+    XgSetInputModeFromDict(hwnd);
+
     // 黒マスルールなどをチェックする。
     xg_bNoAddBlack = true;
     if (!XgCheckCrossWord(hwnd)) {
@@ -3317,9 +3322,6 @@ bool __fastcall XgOnSolve_NoAddBlack(HWND hwnd, bool bShowAnswer = true)
     xg_vMarks.clear();
     xg_vMarkedCands.clear();
     xg_strFileName.clear();
-    // 辞書を読み込む。
-    XgLoadDictFile(xg_dict_name.c_str());
-    XgSetInputModeFromDict(hwnd);
     // 生成した数と生成する数。
     s_nNumberGenerated = 0;
 
@@ -3402,6 +3404,10 @@ bool __fastcall XgOnSolveRepeatedly(HWND hwnd)
         return false;
     }
 
+    // 辞書を読み込む。
+    XgLoadDictFile(xg_dict_name.c_str());
+    XgSetInputModeFromDict(hwnd);
+
     // 黒マスルールなどをチェックする。
     xg_bNoAddBlack = false;
     if (!XgCheckCrossWord(hwnd)) {
@@ -3438,9 +3444,6 @@ bool __fastcall XgOnSolveRepeatedly(HWND hwnd)
     xg_vYokoInfo.clear();
     xg_vecTateHints.clear();
     xg_vecYokoHints.clear();
-    // 辞書を読み込む。
-    XgLoadDictFile(xg_dict_name.c_str());
-    XgSetInputModeFromDict(hwnd);
 
     // キャンセルダイアログを表示し、実行を開始する。
     ::EnableWindow(xg_hwndInputPalette, FALSE);
@@ -3518,6 +3521,10 @@ bool __fastcall XgOnSolveRepeatedlyNoAddBlack(HWND hwnd)
         return false;
     }
 
+    // 辞書を読み込む。
+    XgLoadDictFile(xg_dict_name.c_str());
+    XgSetInputModeFromDict(hwnd);
+
     // 黒マスルールなどをチェックする。
     xg_bNoAddBlack = true;
     if (!XgCheckCrossWord(hwnd)) {
@@ -3554,9 +3561,6 @@ bool __fastcall XgOnSolveRepeatedlyNoAddBlack(HWND hwnd)
     xg_vYokoInfo.clear();
     xg_vecTateHints.clear();
     xg_vecYokoHints.clear();
-    // 辞書を読み込む。
-    XgLoadDictFile(xg_dict_name.c_str());
-    XgSetInputModeFromDict(hwnd);
 
     // キャンセルダイアログを表示し、実行を開始する。
     ::EnableWindow(xg_hwndInputPalette, FALSE);
