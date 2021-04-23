@@ -5515,10 +5515,8 @@ void SettingsDlg_OnChange(HWND hwnd, int i)
     switch (i) {
     case 0:
         cf.Flags = CF_NOSCRIPTSEL | CF_NOVERTFONTS | CF_SCALABLEONLY |
-                   CF_INITTOLOGFONTSTRUCT | CF_SCREENFONTS |
-                   CF_FIXEDPITCHONLY;
+                   CF_INITTOLOGFONTSTRUCT | CF_SCREENFONTS;
         StringCbCopy(lf.lfFaceName, sizeof(lf.lfFaceName), xg_szCellFont);
-        lf.lfPitchAndFamily = FIXED_PITCH | FF_DONTCARE;
         if (::ChooseFontW(&cf)) {
             // 取得したフォントをダイアログへ格納する。
             ::SetDlgItemTextW(hwnd, edt1, lf.lfFaceName);
