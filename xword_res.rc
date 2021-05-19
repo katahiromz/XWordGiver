@@ -100,33 +100,6 @@ LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
 100 ICON "res/Icon_100.ico"
 
 //////////////////////////////////////////////////////////////////////////////
-// RT_VERSION
-
-1 VERSIONINFO
-FILEVERSION     4, 7, 1, 0
-PRODUCTVERSION  4, 7, 1, 0
-FILEOS          0x40004
-FILETYPE        0x1
-{
-    BLOCK "StringFileInfo"
-    {
-        BLOCK "041103A4"
-        {
-            VALUE "CompanyName", "片山博文MZ\0"
-            VALUE "FileDescription", "クロスワード ギバー\0"
-            VALUE "FileVersion", "4.7.1\0"
-            VALUE "LegalCopyright", "Copyright (C) 2012-2020 片山博文MZ. All rights reserved.\0"
-            VALUE "ProductName", "XWordGiver\0"
-            VALUE "ProductVersion", "4.7.1\0"
-        }
-    }
-    BLOCK "VarFileInfo"
-    {
-        VALUE "Translation", 0x0411, 0x03A4
-    }
-}
-
-//////////////////////////////////////////////////////////////////////////////
 // RT_MANIFEST
 
 1 24 "res/Manifest_1.manifest"
