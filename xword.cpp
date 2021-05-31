@@ -4044,7 +4044,7 @@ void __fastcall XgUpdateImage(HWND hwnd, int x, int y)
     ::InvalidateRect(hwnd, &rcClient, TRUE);
 }
 
-// ファイルを開く。
+// CRPファイルを開く。
 bool __fastcall XgDoLoadCrpFile(HWND hwnd, LPCWSTR pszFile)
 {
     INT i, nWidth, nHeight;
@@ -4117,44 +4117,82 @@ bool __fastcall XgDoLoadCrpFile(HWND hwnd, LPCWSTR pszFile)
         xg_bSolved = false;
 
         if (xword.IsFulfilled()) {
+            // 番号付けを行う。
             xword.DoNumberingNoCheck();
 
-            for (i = 0; i < 256; ++i) {
-                StringCbPrintf(szName, sizeof(szName), L"Down%u", i + 1);
-                GetPrivateProfileStringW(L"Clue", szName, L"", szText, ARRAYSIZE(szText), pszFile);
+            INT nClueCount = GetPrivateProfileIntW(L"Clue", L"Count", 0, pszFile);
+            if (nClueCount) {
+                for (i = 0; i < nClueCount; ++i) {
+                    StringCbPrintf(szName, sizeof(szName), L"Clue%u", i + 1);
+                    GetPrivateProfileStringW(L"Clue", szName, L"", szText, ARRAYSIZE(szText), pszFile);
 
-                std::wstring str = szText;
-                xg_str_trim(str);
-                if (str.empty())
-                    break;
-                if (str == L"{N/A}")
-                    continue;
-                str = XgNormalizeString(str);
-
-                for (XG_PlaceInfo& item : xg_vTateInfo) {
-                    if (item.m_number == i + 1) {
-                        tate.emplace_back(item.m_number, item.m_word, str);
+                    std::wstring str = szText;
+                    xg_str_trim(str);
+                    if (str.empty())
                         break;
+                    size_t icolon = str.find(L':');
+                    if (icolon != str.npos) {
+                        std::wstring word = str.substr(0, icolon);
+                        std::wstring hint = str.substr(icolon + 1);
+                        word = XgNormalizeString(word);
+                        for (XG_PlaceInfo& item : xg_vTateInfo) {
+                            if (item.m_word == word) {
+                                tate.emplace_back(item.m_number, word, hint);
+                                break;
+                            }
+                        }
+                        for (XG_PlaceInfo& item : xg_vYokoInfo) {
+                            if (item.m_word == word) {
+                                yoko.emplace_back(item.m_number, word, hint);
+                                break;
+                            }
+                        }
                     }
                 }
-            }
+                std::sort(tate.begin(), tate.end(),
+                    [](const XG_Hint& a, const XG_Hint& b) {
+                        return a.m_number < b.m_number;
+                    }
+                );
+                std::sort(yoko.begin(), yoko.end(),
+                    [](const XG_Hint& a, const XG_Hint& b) {
+                        return a.m_number < b.m_number;
+                    }
+                );
+            } else {
+                for (i = 0; i < 256; ++i) {
+                    StringCbPrintf(szName, sizeof(szName), L"Down%u", i + 1);
+                    GetPrivateProfileStringW(L"Clue", szName, L"", szText, ARRAYSIZE(szText), pszFile);
 
-            for (i = 0; i < 256; ++i) {
-                StringCbPrintf(szName, sizeof(szName), L"Across%u", i + 1);
-                GetPrivateProfileStringW(L"Clue", szName, L"", szText, ARRAYSIZE(szText), pszFile);
-
-                std::wstring str = szText;
-                xg_str_trim(str);
-                if (str.empty())
-                    break;
-                if (str == L"{N/A}")
-                    continue;
-                str = XgNormalizeString(str);
-
-                for (XG_PlaceInfo& item : xg_vYokoInfo) {
-                    if (item.m_number == i + 1) {
-                        yoko.emplace_back(item.m_number, item.m_word, str);
+                    std::wstring str = szText;
+                    xg_str_trim(str);
+                    if (str.empty())
                         break;
+                    if (str == L"{N/A}")
+                        continue;
+                    for (XG_PlaceInfo& item : xg_vTateInfo) {
+                        if (item.m_number == i + 1) {
+                            tate.emplace_back(item.m_number, item.m_word, str);
+                            break;
+                        }
+                    }
+                }
+
+                for (i = 0; i < 256; ++i) {
+                    StringCbPrintf(szName, sizeof(szName), L"Across%u", i + 1);
+                    GetPrivateProfileStringW(L"Clue", szName, L"", szText, ARRAYSIZE(szText), pszFile);
+
+                    std::wstring str = szText;
+                    xg_str_trim(str);
+                    if (str.empty())
+                        break;
+                    if (str == L"{N/A}")
+                        continue;
+                    for (XG_PlaceInfo& item : xg_vYokoInfo) {
+                        if (item.m_number == i + 1) {
+                            yoko.emplace_back(item.m_number, item.m_word, str);
+                            break;
+                        }
                     }
                 }
             }
