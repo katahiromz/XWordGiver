@@ -7668,6 +7668,15 @@ void __fastcall XgShowResultsRepeatedly(HWND hwnd)
                         nullptr, nullptr, SW_SHOWNORMAL);
 }
 
+static void XgSetZoomRate(HWND hwnd, INT nZoomRate)
+{
+    xg_nZoomRate = nZoomRate;
+    INT x = XgGetHScrollPos();
+    INT y = XgGetVScrollPos();
+    XgUpdateScrollInfo(hwnd, x, y);
+    XgUpdateImage(hwnd, x, y);
+}
+
 // コマンドを実行する。
 void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*codeNotify*/)
 {
@@ -8681,11 +8690,22 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
         XgUpdateImage(hwnd, x, y);
         break;
     case ID_ZOOM100:
-        xg_nZoomRate = 100;
-        x = XgGetHScrollPos();
-        y = XgGetVScrollPos();
-        XgUpdateScrollInfo(hwnd, x, y);
-        XgUpdateImage(hwnd, x, y);
+        XgSetZoomRate(hwnd, 100);
+        break;
+    case ID_ZOOM30:
+        XgSetZoomRate(hwnd, 30);
+        break;
+    case ID_ZOOM50:
+        XgSetZoomRate(hwnd, 50);
+        break;
+    case ID_ZOOM65:
+        XgSetZoomRate(hwnd, 65);
+        break;
+    case ID_ZOOM80:
+        XgSetZoomRate(hwnd, 80);
+        break;
+    case ID_ZOOM90:
+        XgSetZoomRate(hwnd, 90);
         break;
     case ID_COPYWORDHORZ:
         MainWnd_OnCopyPatternHorz(hwnd);

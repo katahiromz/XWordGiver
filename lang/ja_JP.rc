@@ -132,6 +132,12 @@ LANGUAGE LANG_JAPANESE, SUBLANG_DEFAULT
             MENUITEM "ズームイン(&Z)\tCtrl+ホイール↑\tCtrl+]", ID_ZOOMIN
             MENUITEM "ズームアウト(&Z)\tCtrl+ホイール↓\tCtrl+[", ID_ZOOMOUT
             MENUITEM "ズーム &100%\tCtrl+\\", ID_ZOOM100
+            MENUITEM SEPARATOR
+            MENUITEM "ズーム 30%", ID_ZOOM30
+            MENUITEM "ズーム 50%", ID_ZOOM50
+            MENUITEM "ズーム 65%", ID_ZOOM65
+            MENUITEM "ズーム 80%", ID_ZOOM80
+            MENUITEM "ズーム 90%", ID_ZOOM90
         }
         MENUITEM SEPARATOR
         MENUITEM "ひらがな表示(&H)", ID_HIRAGANA

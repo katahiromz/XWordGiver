@@ -316,6 +316,11 @@
 #define ID_SEQPATGEN                        262
 #define ID_FILLBYBLOCKS                     263
 #define ID_FILLBYWHITES                     264
+#define ID_ZOOM30                           265
+#define ID_ZOOM50                           266
+#define ID_ZOOM65                           267
+#define ID_ZOOM80                           268
+#define ID_ZOOM90                           269
 #define ID_TT_BASE                          10000
 
 #define ctl2                                1185
