@@ -2948,7 +2948,7 @@ bool __fastcall XgDoSaveToLocation(HWND hwnd)
             }
 
             // ファイルに保存する。
-            bOK = XgDoSave(hwnd, szPath, xg_bSaveAsJsonFile);
+            bOK = XgDoSave(hwnd, szPath);
         }
         ::LeaveCriticalSection(&xg_cs);
     }
@@ -8061,7 +8061,7 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
             }
             // 開く。
             if (is_builder) {
-                if (!XgDoLoadBuilderFile(hwnd, sz)) {
+                if (!XgDoLoadCrpFile(hwnd, sz)) {
                     // 失敗。
                     XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_CANTLOAD), nullptr, MB_ICONERROR);
                 } else {
@@ -8102,7 +8102,7 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
         ZeroMemory(&ofn, sizeof(ofn));
         ofn.lStructSize = OPENFILENAME_SIZE_VERSION_400W;
         ofn.hwndOwner = hwnd;
-        ofn.lpstrFilter = XgMakeFilterString(XgLoadStringDx2(IDS_JSONFILTER));
+        ofn.lpstrFilter = XgMakeFilterString(XgLoadStringDx2(IDS_SAVEFILTER));
         StringCbCopy(sz, sizeof(sz), xg_strFileName.data());
         ofn.lpstrFile = sz;
         ofn.nMaxFile = static_cast<DWORD>(ARRAYSIZE(sz));
@@ -8118,10 +8118,8 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
         }
         // ユーザーにファイルの場所を問い合わせる。
         if (::GetSaveFileNameW(&ofn)) {
-            // JSON形式で保存するか？
-            xg_bSaveAsJsonFile = true;
             // 保存する。
-            if (!XgDoSave(hwnd, sz, xg_bSaveAsJsonFile)) {
+            if (!XgDoSave(hwnd, sz)) {
                 // 保存に失敗。
                 XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_CANTSAVE2), nullptr, MB_ICONERROR);
             }
@@ -8914,7 +8912,7 @@ void __fastcall MainWnd_OnDropFiles(HWND hwnd, HDROP hDrop)
             XgUpdateImage(hwnd, 0, 0);
         }
     } else if (::lstrcmpiW(pch, L".crp") == 0 || ::lstrcmpiW(pch, L".crx") == 0) {
-        if (!XgDoLoadBuilderFile(hwnd, szFile)) {
+        if (!XgDoLoadCrpFile(hwnd, szFile)) {
             XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_CANTLOAD), nullptr, MB_ICONERROR);
         } else {
             xg_caret_pos.clear();
@@ -9194,7 +9192,7 @@ bool __fastcall MainWnd_OnCreate(HWND hwnd, LPCREATESTRUCT /*lpCreateStruct*/)
         }
         if (bSuccess) {
             if (is_builder) {
-                if (!XgDoLoadBuilderFile(hwnd, szFile)) {
+                if (!XgDoLoadCrpFile(hwnd, szFile)) {
                     XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_CANTLOAD), nullptr, MB_ICONERROR);
                 } else {
                     xg_caret_pos.clear();

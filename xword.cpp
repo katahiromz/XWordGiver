@@ -4045,7 +4045,7 @@ void __fastcall XgUpdateImage(HWND hwnd, int x, int y)
 }
 
 // ファイルを開く。
-bool __fastcall XgDoLoadBuilderFile(HWND hwnd, LPCWSTR pszFile)
+bool __fastcall XgDoLoadCrpFile(HWND hwnd, LPCWSTR pszFile)
 {
     INT i, nWidth, nHeight;
     std::vector<std::wstring> rows;
@@ -4283,6 +4283,126 @@ bool __fastcall XgDoLoadFile(HWND hwnd, LPCWSTR pszFile, bool json)
     return false;
 }
 
+// ファイル（CRP形式）を保存する。
+bool __fastcall XgDoSaveCrpFile(HWND /*hwnd*/, LPCWSTR pszFile)
+{
+    // ファイルを作成する。
+    FILE *fout = _wfopen(pszFile, L"w");
+    if (fout == NULL)
+        return false;
+
+    XG_Board *xw = (xg_bSolved ? &xg_solution : &xg_xword);
+
+    try
+    {
+        fprintf(fout,
+            "[Version]\n"
+            "Ver=0.3.0\n"
+            "\n"
+            "[Puzzle]\n"
+            "Puzzle=0\n"
+            "\n"
+            "[Cross]\n"
+            "Width=%u\n"
+            "Height=%u\n", xg_nCols, xg_nRows);
+
+        // マス。
+        for (int i = 0; i < xg_nRows; ++i) {
+            std::wstring row;
+            for (int j = 0; j < xg_nCols; ++j) {
+                if (row.size())
+                    row += L",";
+                WCHAR ch = xw->GetAt(i, j);
+                if (ch == ZEN_SPACE)
+                    row += 0xFF3F; // '＿'
+                else
+                    row += ch;
+            }
+            fprintf(fout, "Line%u=%s\n", i + 1, XgUnicodeToAnsi(row).c_str());
+        }
+
+        // 二重マス。
+        std::vector<std::vector<INT> > marks;
+        marks.resize(xg_nRows);
+        for (auto& mark : marks) {
+            mark.resize(xg_nCols);
+        }
+
+        std::wstring answer;
+        if (xg_vMarks.size()) {
+            for (size_t i = 0; i < xg_vMarks.size(); ++i) {
+                answer += xw->GetAt(xg_vMarks[i].m_i, xg_vMarks[i].m_j);
+                marks[xg_vMarks[i].m_i][xg_vMarks[i].m_j] = INT(i) + 1;
+            }
+        }
+
+        for (int i = 0; i < xg_nRows; ++i) {
+            std::string row;
+            for (int j = 0; j < xg_nCols; ++j) {
+                if (row.size())
+                    row += ",";
+                row += std::to_string(marks[i][j]);
+            }
+            fprintf(fout, "MarkUpLine%u=%s\n", i + 1, row.c_str());
+        }
+        fprintf(fout,
+            "\n"
+            "[Property]\n"
+            "Symmetry=None\n"
+            "\n"
+            "[Clue]\n");
+
+        // ヒント。
+        if (xg_vecTateHints.size() && xg_vecYokoHints.size()) {
+            fprintf(fout, "Count=%u\n", int(xg_vecTateHints.size() + xg_vecYokoHints.size()));
+            int iHint = 1;
+            // タテのカギ。
+            for (size_t i = 0; i < xg_vecTateHints.size(); ++i) {
+                auto& tate_hint = xg_vecTateHints[i];
+                fprintf(fout, "Clue%u=%s:%s\n", iHint++,
+                    XgUnicodeToAnsi(tate_hint.m_strWord).c_str(),
+                    XgUnicodeToAnsi(tate_hint.m_strHint).c_str());
+            }
+            // ヨコのカギ。
+            for (size_t i = 0; i < xg_vecYokoHints.size(); ++i) {
+                auto& yoko_hint = xg_vecYokoHints[i];
+                fprintf(fout, "Clue%u=%s:%s\n", iHint++,
+                    XgUnicodeToAnsi(yoko_hint.m_strWord).c_str(),
+                    XgUnicodeToAnsi(yoko_hint.m_strHint).c_str());
+            }
+        }
+
+        fprintf(fout,
+            "\n"
+            "[Numbering]\n"
+            "Hint=%s\n"
+            "Answer=%s\n"
+            "Theme=%s\n"
+            "CantUseChar=%s\n",
+            "",
+            XgUnicodeToAnsi(answer).c_str(),
+            XgUnicodeToAnsi(xg_strTheme).c_str(),
+            "");
+
+        fclose(fout);
+
+        // ファイルパスをセットする。
+        WCHAR szFileName[MAX_PATH];
+        ::GetFullPathNameW(pszFile, MAX_PATH, szFileName, NULL);
+        xg_strFileName = szFileName;
+        XgMarkUpdate();
+        return true;
+    }
+    catch(...)
+    {
+        ;
+    }
+
+    // 正しく書き込めなかった。不正なファイルを消す。
+    ::DeleteFileW(pszFile);
+    return false;
+}
+
 // .xwjファイル（JSON形式）を保存する。
 bool __fastcall XgDoSaveJson(HWND /*hwnd*/, LPCWSTR pszFile)
 {
@@ -4509,12 +4629,19 @@ bool __fastcall XgDoSaveStandard(HWND hwnd, LPCWSTR pszFile, const XG_Board& boa
     return false;
 }
 
-bool __fastcall XgDoSave(HWND hwnd, LPCWSTR pszFile, bool json)
+bool __fastcall XgDoSave(HWND hwnd, LPCWSTR pszFile)
 {
     bool ret;
-    if (json) {
+    LPCWSTR pchDotExt = PathFindExtensionW(pszFile);
+    if (lstrcmpiW(pchDotExt, L".xwj") == 0 ||
+        lstrcmpiW(pchDotExt, L".json") == 0 ||
+        lstrcmpiW(pchDotExt, L".jso") == 0)
+    {
         // JSON形式で保存。
         ret = XgDoSaveJson(hwnd, pszFile);
+    } else if (lstrcmpiW(pchDotExt, L".crp") == 0) {
+        // Crossword Builder (*.crp) 形式で保存。
+        ret = XgDoSaveCrpFile(hwnd, pszFile);
     } else if (xg_bSolved) {
         // ヒントあり。
         ret = XgDoSaveStandard(hwnd, pszFile, xg_solution);

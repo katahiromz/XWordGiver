@@ -360,3 +360,4 @@
 	フォントの制限を緩和。
 
 2021年XX月YY日 ver.4.7.2
+	Crossword Builder形式のCRPファイルの書き込みをサポート。

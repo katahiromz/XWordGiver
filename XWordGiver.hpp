@@ -535,13 +535,15 @@ void __fastcall XgUpdateImage(HWND hwnd, int x, int y);
 // ファイルを開く。
 bool __fastcall XgDoLoadFile(HWND hwnd, LPCWSTR pszFile, bool json);
 // ファイルを開く。
-bool __fastcall XgDoLoadBuilderFile(HWND hwnd, LPCWSTR pszFile);
+bool __fastcall XgDoLoadCrpFile(HWND hwnd, LPCWSTR pszFile);
 
 // ファイルを保存する。
-bool __fastcall XgDoSave(HWND /*hwnd*/, LPCWSTR pszFile, bool json);
+bool __fastcall XgDoSave(HWND /*hwnd*/, LPCWSTR pszFile);
 
 // ファイル（JSON形式）を保存する。
 bool __fastcall XgDoSaveJson(HWND /*hwnd*/, LPCWSTR pszFile);
+// ファイル（CRP形式）を保存する。
+bool __fastcall XgDoSaveCrpFile(HWND /*hwnd*/, LPCWSTR pszFile);
 
 // ヒントを表示する。
 void __fastcall XgShowHints(HWND hwnd);

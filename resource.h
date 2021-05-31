@@ -74,7 +74,7 @@
 #define IDS_IMGFILTER                       149
 #define IDS_DICTFILTER                      150
 #define IDS_CROSSFILTER                     151
-#define IDS_JSONFILTER                      152
+#define IDS_SAVEFILTER                      152
 #define IDS_README                          153
 #define IDS_TOOLONGSPACE                    154
 #define IDS_TOOOLDPC                        155
