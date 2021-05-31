@@ -4149,16 +4149,6 @@ bool __fastcall XgDoLoadCrpFile(HWND hwnd, LPCWSTR pszFile)
                         }
                     }
                 }
-                std::sort(tate.begin(), tate.end(),
-                    [](const XG_Hint& a, const XG_Hint& b) {
-                        return a.m_number < b.m_number;
-                    }
-                );
-                std::sort(yoko.begin(), yoko.end(),
-                    [](const XG_Hint& a, const XG_Hint& b) {
-                        return a.m_number < b.m_number;
-                    }
-                );
             } else {
                 for (i = 0; i < 256; ++i) {
                     StringCbPrintf(szName, sizeof(szName), L"Down%u", i + 1);
@@ -4197,6 +4187,44 @@ bool __fastcall XgDoLoadCrpFile(HWND hwnd, LPCWSTR pszFile)
                 }
             }
         }
+
+        // 不足分を追加。
+        for (XG_PlaceInfo& item : xg_vYokoInfo) {
+            bool found = false;
+            for (auto& info : yoko) {
+                if (item.m_number == info.m_number) {
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
+                yoko.emplace_back(item.m_number, item.m_word, L"");
+            }
+        }
+        for (XG_PlaceInfo& item : xg_vTateInfo) {
+            bool found = false;
+            for (auto& info : tate) {
+                if (item.m_number == info.m_number) {
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
+                tate.emplace_back(item.m_number, item.m_word, L"");
+            }
+        }
+
+        // ソート。
+        std::sort(tate.begin(), tate.end(),
+            [](const XG_Hint& a, const XG_Hint& b) {
+                return a.m_number < b.m_number;
+            }
+        );
+        std::sort(yoko.begin(), yoko.end(),
+            [](const XG_Hint& a, const XG_Hint& b) {
+                return a.m_number < b.m_number;
+            }
+        );
 
         // 成功。
         xg_xword = xword;
