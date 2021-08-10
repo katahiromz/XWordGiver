@@ -1018,10 +1018,18 @@ bool __fastcall XgCheckCrossWord(HWND hwnd, bool check_words = true)
         return false;
     }
 
-    // 黒斜四連禁。
-    if ((xg_nRules & RULE_DONTFOURDIAGONALS) && xg_xword.FourDiagonals()) {
-        XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_FOURDIAGONALS), nullptr, MB_ICONERROR);
-        return false;
+    // 黒斜三連禁。
+    if (xg_nRules & RULE_DONTTHREEDIAGONALS) {
+        if (xg_xword.ThreeDiagonals()) {
+            XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_THREEDIAGONALS), nullptr, MB_ICONERROR);
+            return false;
+        }
+    } else if (xg_nRules & RULE_DONTFOURDIAGONALS) {
+        // 黒斜四連禁。
+        if (xg_xword.FourDiagonals()) {
+            XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_FOURDIAGONALS), nullptr, MB_ICONERROR);
+            return false;
+        }
     }
 
     // 黒マス点対称。
@@ -4697,11 +4705,18 @@ void __fastcall MainWnd_OnInitMenu(HWND /*hwnd*/, HMENU hMenu)
         ::CheckMenuItem(hMenu, ID_RULE_DONTDIVIDE, MF_CHECKED);
     else
         ::CheckMenuItem(hMenu, ID_RULE_DONTDIVIDE, MF_UNCHECKED);
-    // 黒斜四連禁。
-    if (xg_nRules & RULE_DONTFOURDIAGONALS)
-        ::CheckMenuItem(hMenu, ID_RULE_DONTFOURDIAGONALS, MF_CHECKED);
-    else
+    // 黒斜三連禁。
+    if (xg_nRules & RULE_DONTTHREEDIAGONALS) {
+        ::CheckMenuItem(hMenu, ID_RULE_DONTTHREEDIAGONALS, MF_CHECKED);
         ::CheckMenuItem(hMenu, ID_RULE_DONTFOURDIAGONALS, MF_UNCHECKED);
+    } else {
+        ::CheckMenuItem(hMenu, ID_RULE_DONTTHREEDIAGONALS, MF_UNCHECKED);
+        // 黒斜四連禁。
+        if (xg_nRules & RULE_DONTFOURDIAGONALS)
+            ::CheckMenuItem(hMenu, ID_RULE_DONTFOURDIAGONALS, MF_CHECKED);
+        else
+            ::CheckMenuItem(hMenu, ID_RULE_DONTFOURDIAGONALS, MF_UNCHECKED);
+    }
     // 黒マス点対称。
     if (xg_nRules & RULE_POINTSYMMETRY)
         ::CheckMenuItem(hMenu, ID_RULE_POINTSYMMETRY, MF_CHECKED);
@@ -6560,7 +6575,40 @@ XgPattern_RefreshContents(HWND hwnd, INT type)
                 continue;
         }
         //if (xg_nRules & RULE_DONTDIVIDE)
-        if (xg_nRules & RULE_DONTFOURDIAGONALS) {
+        if (xg_nRules & RULE_DONTTHREEDIAGONALS) {
+            BOOL bFound = FALSE;
+            for (INT y = 0; y < pat.num_rows - 2; ++y) {
+                for (INT x = 0; x < pat.num_columns - 2; ++x) {
+                    if (GET_DATA(x, y) != ZEN_BLACK)
+                        continue;
+                    if (GET_DATA(x + 1, y + 1) != ZEN_BLACK)
+                        continue;
+                    if (GET_DATA(x + 2, y + 2) != ZEN_BLACK)
+                        continue;
+                    x = pat.num_columns;
+                    y = pat.num_rows;
+                    bFound = TRUE;
+                }
+            }
+            if (bFound)
+                continue;
+            bFound = FALSE;
+            for (INT y = 0; y < pat.num_rows - 2; ++y) {
+                for (INT x = 2; x < pat.num_columns; ++x) {
+                    if (GET_DATA(x, y) != ZEN_BLACK)
+                        continue;
+                    if (GET_DATA(x - 1, y + 1) != ZEN_BLACK)
+                        continue;
+                    if (GET_DATA(x - 2, y + 2) != ZEN_BLACK)
+                        continue;
+                    x = pat.num_columns;
+                    y = pat.num_rows;
+                    bFound = TRUE;
+                }
+            }
+            if (bFound)
+                continue;
+        } else if (xg_nRules & RULE_DONTFOURDIAGONALS) {
             BOOL bFound = FALSE;
             for (INT y = 0; y < pat.num_rows - 3; ++y) {
                 for (INT x = 0; x < pat.num_columns - 3; ++x) {
@@ -7096,11 +7144,19 @@ void __fastcall XgRuleCheck(HWND hwnd)
             return;
         }
     }
-    // 黒斜四連禁。
-    if (xg_nRules & RULE_DONTFOURDIAGONALS) {
-        if (board.FourDiagonals()) {
-            XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_FOURDIAGONALS), nullptr, MB_ICONERROR);
+    // 黒斜三連禁。
+    if (xg_nRules & RULE_DONTTHREEDIAGONALS) {
+        if (board.ThreeDiagonals()) {
+            XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_THREEDIAGONALS), nullptr, MB_ICONERROR);
             return;
+        }
+    } else {
+        // 黒斜四連禁。
+        if (xg_nRules & RULE_DONTFOURDIAGONALS) {
+            if (board.FourDiagonals()) {
+                XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_FOURDIAGONALS), nullptr, MB_ICONERROR);
+                return;
+            }
         }
     }
     // 黒マス点対称。
@@ -8817,8 +8873,25 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
         }
         XgUpdateRules(hwnd);
         break;
+    case ID_RULE_DONTTHREEDIAGONALS:
+        if ((xg_nRules & RULE_DONTTHREEDIAGONALS) && (xg_nRules & RULE_DONTFOURDIAGONALS)) {
+            xg_nRules &= ~(RULE_DONTTHREEDIAGONALS | RULE_DONTFOURDIAGONALS);
+        } else if (!(xg_nRules & RULE_DONTTHREEDIAGONALS) && (xg_nRules & RULE_DONTFOURDIAGONALS)) {
+            xg_nRules |= RULE_DONTTHREEDIAGONALS | RULE_DONTFOURDIAGONALS;
+        } else if ((xg_nRules & RULE_DONTTHREEDIAGONALS) && !(xg_nRules & RULE_DONTFOURDIAGONALS)) {
+            xg_nRules &= ~RULE_DONTTHREEDIAGONALS;
+        } else {
+            xg_nRules |= (RULE_DONTTHREEDIAGONALS | RULE_DONTFOURDIAGONALS);
+        }
+        XgUpdateRules(hwnd);
+        break;
     case ID_RULE_DONTFOURDIAGONALS:
-        if (xg_nRules & RULE_DONTFOURDIAGONALS) {
+        if ((xg_nRules & RULE_DONTTHREEDIAGONALS) && (xg_nRules & RULE_DONTFOURDIAGONALS)) {
+            xg_nRules &= ~RULE_DONTTHREEDIAGONALS;
+            xg_nRules |= RULE_DONTFOURDIAGONALS;
+        } else if (!(xg_nRules & RULE_DONTTHREEDIAGONALS) && (xg_nRules & RULE_DONTFOURDIAGONALS)) {
+            xg_nRules &= ~(RULE_DONTTHREEDIAGONALS | RULE_DONTFOURDIAGONALS);
+        } else if ((xg_nRules & RULE_DONTTHREEDIAGONALS) && !(xg_nRules & RULE_DONTFOURDIAGONALS)) {
             xg_nRules &= ~RULE_DONTFOURDIAGONALS;
         } else {
             xg_nRules |= RULE_DONTFOURDIAGONALS;
@@ -8848,10 +8921,10 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
     case ID_SKELTONMODE:
         if (xg_bSkeltonMode) {
             xg_bSkeltonMode = FALSE;
-            xg_nRules |= (RULE_DONTDOUBLEBLACK | RULE_DONTCORNERBLACK | RULE_DONTTRIDIRECTIONS | RULE_DONTFOURDIAGONALS);
+            xg_nRules |= (RULE_DONTDOUBLEBLACK | RULE_DONTCORNERBLACK | RULE_DONTTRIDIRECTIONS | RULE_DONTFOURDIAGONALS | RULE_DONTTHREEDIAGONALS);
         } else {
             xg_bSkeltonMode = TRUE;
-            xg_nRules &= ~(RULE_DONTDOUBLEBLACK | RULE_DONTCORNERBLACK | RULE_DONTTRIDIRECTIONS | RULE_DONTFOURDIAGONALS);
+            xg_nRules &= ~(RULE_DONTDOUBLEBLACK | RULE_DONTCORNERBLACK | RULE_DONTTRIDIRECTIONS | RULE_DONTFOURDIAGONALS | RULE_DONTTHREEDIAGONALS);
         }
         XgUpdateRules(hwnd);
         break;

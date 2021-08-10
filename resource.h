@@ -157,6 +157,8 @@
 #define IDS_DEFAULTDICT                     247
 #define IDS_MODIFIEDDICT                    248
 #define IDS_PATMAKING                       249
+#define IDS_THREEDIAGONALS                  250
+#define IDS_RULE_DONTTHREEDIAGONALS         251
 #define IDS_TT_NEW                          10100
 #define IDS_TT_GENERATE                     10101
 #define IDS_TT_OPEN                         10102
@@ -321,6 +323,7 @@
 #define ID_ZOOM65                           267
 #define ID_ZOOM80                           268
 #define ID_ZOOM90                           269
+#define ID_RULE_DONTTHREEDIAGONALS          270
 #define ID_TT_BASE                          10000
 
 #define ctl2                                1185

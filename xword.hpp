@@ -178,8 +178,9 @@ enum RULES
     RULE_DONTCORNERBLACK = (1 << 1),    // 四隅黒禁。
     RULE_DONTTRIDIRECTIONS = (1 << 2),  // 三方黒禁。
     RULE_DONTDIVIDE = (1 << 3),         // 分断禁。
-    RULE_DONTFOURDIAGONALS = (1 << 4),  // 黒斜四連禁。
-    RULE_POINTSYMMETRY = (1 << 5)       // 黒マス点対称。
+    RULE_DONTTHREEDIAGONALS = (1 << 4), // 黒斜三連禁。
+    RULE_DONTFOURDIAGONALS = (1 << 5),  // 黒斜四連禁。
+    RULE_POINTSYMMETRY = (1 << 6)       // 黒マス点対称。
 };
 
 // デフォルトのルール。
@@ -406,6 +407,8 @@ public:
     // 黒マスが点対称か？
     bool IsPointSymmetry() const;
 
+    // 黒斜三連か？
+    bool ThreeDiagonals() const;
     // 黒斜四連か？
     bool FourDiagonals() const;
 

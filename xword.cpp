@@ -933,8 +933,13 @@ inline bool __fastcall XG_Board::IsValid() const
         return false;
     if ((xg_nRules & RULE_DONTDIVIDE) && DividedByBlack())
         return false;
-    if ((xg_nRules & RULE_DONTFOURDIAGONALS) && FourDiagonals())
-        return false;
+    if (xg_nRules & RULE_DONTTHREEDIAGONALS) {
+        if (ThreeDiagonals())
+            return false;
+    } else if (xg_nRules & RULE_DONTFOURDIAGONALS) {
+        if (FourDiagonals())
+            return false;
+    }
 
     // クロスワードに含まれる単語のチェック。
     XG_Pos pos;
@@ -1649,6 +1654,8 @@ INT __fastcall XgParseRules(const std::wstring& str)
             nRules |= RULE_DONTTRIDIRECTIONS;
         } else if (rule == XgLoadStringDx1(IDS_RULE_DONTDIVIDE)) {
             nRules |= RULE_DONTDIVIDE;
+        } else if (rule == XgLoadStringDx1(IDS_RULE_DONTTHREEDIAGONALS)) {
+            nRules |= RULE_DONTTHREEDIAGONALS;
         } else if (rule == XgLoadStringDx1(IDS_RULE_DONTFOURDIAGONALS)) {
             nRules |= RULE_DONTFOURDIAGONALS;
         } else if (rule == XgLoadStringDx1(IDS_RULE_POINTSYMMETRY)) {
@@ -1690,7 +1697,12 @@ std::wstring __fastcall XgGetRulesString(INT rules)
         }
         ret += XgLoadStringDx1(IDS_RULE_DONTDIVIDE);
     }
-    if (rules & RULE_DONTFOURDIAGONALS) {
+    if (rules & RULE_DONTTHREEDIAGONALS) {
+        if (ret.size())  {
+            ret += L' ';
+        }
+        ret += XgLoadStringDx1(IDS_RULE_DONTTHREEDIAGONALS);
+    } else if (rules & RULE_DONTFOURDIAGONALS) {
         if (ret.size())  {
             ret += L' ';
         }
@@ -5161,6 +5173,36 @@ bool XG_Board::IsPointSymmetry() const
     return true;
 }
 
+// 黒斜三連か？
+bool XG_Board::ThreeDiagonals() const
+{
+    const int nRows = xg_nRows;
+    const int nCols = xg_nCols;
+    for (int i = 0; i < nRows - 2; i++) {
+        for (int j = 0; j < nCols - 2; j++) {
+            if (GetAt(i, j) != ZEN_BLACK)
+                continue;
+            if (GetAt(i + 1, j + 1) != ZEN_BLACK)
+                continue;
+            if (GetAt(i + 2, j + 2) != ZEN_BLACK)
+                continue;
+            return true;
+        }
+    }
+    for (int i = 0; i < nRows - 2; i++) {
+        for (int j = 2; j < nCols; j++) {
+            if (GetAt(i, j) != ZEN_BLACK)
+                continue;
+            if (GetAt(i + 1, j - 1) != ZEN_BLACK)
+                continue;
+            if (GetAt(i + 2, j - 2) != ZEN_BLACK)
+                continue;
+            return true;
+        }
+    }
+    return false;
+}
+
 // 黒斜四連か？
 bool XG_Board::FourDiagonals() const
 {
@@ -5215,8 +5257,13 @@ bool __fastcall XgGenerateBlacksRecurse(const XG_Board& xword, LONG iRowjCol)
         return false;
     if ((xg_nRules & RULE_DONTDIVIDE) && xword.DividedByBlack())
         return false;
-    if ((xg_nRules & RULE_DONTFOURDIAGONALS) && xword.FourDiagonals())
-        return false;
+    if (xg_nRules & RULE_DONTTHREEDIAGONALS) {
+        if (xword.ThreeDiagonals())
+            return false;
+    } else if (xg_nRules & RULE_DONTFOURDIAGONALS) {
+        if (xword.FourDiagonals())
+            return false;
+    }
 
     const int nRows = xg_nRows, nCols = xg_nCols;
     INT iRow = LOWORD(iRowjCol), jCol = HIWORD(iRowjCol);
@@ -5324,8 +5371,16 @@ bool __fastcall XgGenerateBlacksSym2Recurse(const XG_Board& xword, LONG iRowjCol
         return false;
     if ((xg_nRules & RULE_DONTDIVIDE) && xword.DividedByBlack())
         return false;
-    if ((xg_nRules & RULE_DONTFOURDIAGONALS) && xword.FourDiagonals())
-        return false;
+    if (xg_nRules & RULE_DONTTHREEDIAGONALS)
+    {
+        if (xword.ThreeDiagonals())
+            return false;
+    }
+    else if (xg_nRules & RULE_DONTFOURDIAGONALS)
+    {
+        if (xword.FourDiagonals())
+            return false;
+    }
 
     const int nRows = xg_nRows, nCols = xg_nCols;
     INT iRow = LOWORD(iRowjCol), jCol = HIWORD(iRowjCol);
