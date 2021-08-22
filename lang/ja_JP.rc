@@ -1467,7 +1467,7 @@ STRINGTABLE
     IDS_PATMAKING, "%u個の黒マスパターンを作成しました。"
     IDS_THREEDIAGONALS, "黒斜三連禁"
     IDS_RULE_DONTTHREEDIAGONALS, "黒斜三連禁"
-    IDS_NORMAL_DICT, "JPN-Kana"
+    IDS_NORMAL_DICT, "JPN-Kana-Modesty"
     IDS_TT_NEW, "新規作成"
     IDS_TT_GENERATE, "問題を自動生成する"
     IDS_TT_OPEN, "問題を開く"
