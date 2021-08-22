@@ -20,7 +20,7 @@ Compression=lzma
 SolidCompression=yes
 UninstallDisplayIcon={app}\xword32.exe
 SetupIconFile=res\Icon_1.ico
-LicenseFile=LICENSE.txt
+LicenseFile=LICENSE-JPN.txt
 ChangesAssociations=yes
 
 [Languages]
@@ -57,7 +57,7 @@ Source: "BLOCK\sakura.bmp"; DestDir: "{app}\BLOCK"; Flags: ignoreversion
 Source: "BLOCK\spade.emf"; DestDir: "{app}\BLOCK"; Flags: ignoreversion
 Source: "BLOCK\star.bmp"; DestDir: "{app}\BLOCK"; Flags: ignoreversion
 Source: "BLOCK\star.emf"; DestDir: "{app}\BLOCK"; Flags: ignoreversion
-Source: "LICENSE.txt"; DestDir: "{app}"; Flags: ignoreversion
+Source: "LICENSE-JPN.txt"; DestDir: "{app}"; Flags: ignoreversion
 Source: "xword.py"; DestDir: "{app}"; Flags: ignoreversion
 Source: "pat\data.json"; DestDir: "{app}\pat"; Flags: ignoreversion
 Source: "dict_analyze\dict_analyze.exe"; DestDir: "{app}"; Flags: ignoreversion
@@ -74,7 +74,7 @@ Name: "{group}\作者のホームページ"; Filename: "http://katahiromz.web.fc2.com/"
 Name: "{group}\{cm:UninstallProgram,クロスワード ギバー}"; Filename: "{uninstallexe}"
 Name: "{group}\DICT"; Filename: "{app}\DICT"
 Name: "{group}\BLOCK"; Filename: "{app}\BLOCK"
-Name: "{group}\LICENSE.txt"; Filename: "{app}\LICENSE.txt"
+Name: "{group}\LICENSE-JPN.txt"; Filename: "{app}\LICENSE-JPN.txt"
 Name: "{commondesktop}\クロスワード ギバー (32ビット版)"; Filename: "{app}\xword32.exe"; Tasks: desktopicon
 
 [Registry]

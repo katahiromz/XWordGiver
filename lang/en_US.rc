@@ -172,7 +172,7 @@ LANGUAGE LANG_ENGLISH, SUBLANG_DEFAULT
     POPUP "&Help"
     {
         MENUITEM "Open ReadMeEnglish.txt\tF1", ID_OPENREADME
-        MENUITEM "Open LICENSE.txt", ID_OPENLICENSE
+        MENUITEM "Open LICENSE-ENG.txt", ID_OPENLICENSE
         MENUITEM "Block pa&tterns...", ID_OPENPATTERNS
         MENUITEM SEPARATOR
         MENUITEM "Author's &homepage", ID_OPENHOMEPAGE
@@ -1401,7 +1401,7 @@ STRINGTABLE
     IDS_HEADERSEP1, "----------(FROM HERE)-----------\r\n"
     IDS_HEADERSEP2, "----------(TO HERE)-----------"
     IDS_BELOWISNOTES, "\r\n(Remarks below)"
-    IDS_LICENSE, "License.txt"
+    IDS_LICENSE, "LICENSE-ENG.txt"
     IDS_NOMARKCANDIDATES, "No candidates for double-frame word"
     IDS_PATTERNSTXT, "Patterns.txt"
     IDS_DOWNLEFT, "[D."

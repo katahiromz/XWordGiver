@@ -21,7 +21,7 @@ SolidCompression=yes
 ArchitecturesAllowed=x64
 UninstallDisplayIcon={app}\xword64.exe
 SetupIconFile=res\Icon_1.ico
-LicenseFile=LICENSE.txt
+LicenseFile=LICENSE-ENG.txt
 ChangesAssociations=yes
 
 [Tasks]
@@ -55,7 +55,7 @@ Source: "BLOCK\sakura.bmp"; DestDir: "{app}\BLOCK"; Flags: ignoreversion
 Source: "BLOCK\spade.emf"; DestDir: "{app}\BLOCK"; Flags: ignoreversion
 Source: "BLOCK\star.bmp"; DestDir: "{app}\BLOCK"; Flags: ignoreversion
 Source: "BLOCK\star.emf"; DestDir: "{app}\BLOCK"; Flags: ignoreversion
-Source: "LICENSE.txt"; DestDir: "{app}"; Flags: ignoreversion
+Source: "LICENSE-ENG.txt"; DestDir: "{app}"; Flags: ignoreversion
 Source: "xword.py"; DestDir: "{app}"; Flags: ignoreversion
 Source: "pat\data.json"; DestDir: "{app}\pat"; Flags: ignoreversion
 Source: "dict_analyze\dict_analyze.exe"; DestDir: "{app}"; Flags: ignoreversion
@@ -72,7 +72,7 @@ Name: "{group}\Author's homepage"; Filename: "http://katahiromz.web.fc2.com/"
 Name: "{group}\{cm:UninstallProgram,XWordGiver}"; Filename: "{uninstallexe}"
 Name: "{group}\DICT"; Filename: "{app}\DICT"
 Name: "{group}\BLOCK"; Filename: "{app}\DICT"
-Name: "{group}\LICENSE.txt"; Filename: "{app}\LICENSE.txt"
+Name: "{group}\LICENSE-ENG.txt"; Filename: "{app}\LICENSE-ENG.txt"
 Name: "{commondesktop}\XWordGiver (x64)"; Filename: "{app}\xword64.exe"; Tasks: desktopicon
 
 [Registry]
