@@ -378,6 +378,7 @@
 	英語の入力パレットを改良。
 	ライセンスの単純化。
 	入力が文字でないときに文字送りをしない。
+	インストーラを単純化。
 
 ## History of XWordGiver (English)
 
@@ -391,3 +392,4 @@
     - Improved English Input Palette.
     - Simplified LICENSE.
     - Don't feed when input is not a character.
+    - Simplify installers.
