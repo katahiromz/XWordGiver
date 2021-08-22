@@ -36,14 +36,14 @@ Source: "ReadMe.txt"; DestDir: "{app}"; Flags: ignoreversion
 Source: "ReadMeEnglish.txt"; DestDir: "{app}"; Flags: ignoreversion
 Source: "TechNote.txt"; DestDir: "{app}"; Flags: ignoreversion
 Source: "HISTORY.txt"; DestDir: "{app}"; Flags: ignoreversion
-Source: "DICT\基本辞書データ（カナ、謹慎）.tsv"; DestDir: "{app}\DICT"; Flags: ignoreversion
-Source: "DICT\基本辞書データ（カナ、自由）.tsv"; DestDir: "{app}\DICT"; Flags: ignoreversion
-Source: "DICT\基本辞書データ（英和、謹慎）.tsv"; DestDir: "{app}\DICT"; Flags: ignoreversion
-Source: "DICT\基本辞書データ（英和、自由）.tsv"; DestDir: "{app}\DICT"; Flags: ignoreversion
-Source: "DICT\基本辞書データ（漢字、自由）.tsv"; DestDir: "{app}\DICT"; Flags: ignoreversion
-Source: "DICT\基本辞書データ（ロシア、自由）.tsv"; DestDir: "{app}\DICT"; Flags: ignoreversion
-Source: "DICT\★二重マス用四字熟語カナ辞書.tsv"; DestDir: "{app}\DICT"; Flags: ignoreversion
-Source: "DICT\★二重マス用ことわざカナ辞書.tsv"; DestDir: "{app}\DICT"; Flags: ignoreversion
+Source: "DICT\BasicDict-ENG-Freedom.tsv"; DestDir: "{app}\DICT"; Flags: ignoreversion
+Source: "DICT\BasicDict-ENG-Modesty.tsv"; DestDir: "{app}\DICT"; Flags: ignoreversion
+Source: "DICT\BasicDict-JPN-Kana-Freedom.tsv"; DestDir: "{app}\DICT"; Flags: ignoreversion
+Source: "DICT\BasicDict-JPN-Kana-Modesty.tsv"; DestDir: "{app}\DICT"; Flags: ignoreversion
+Source: "DICT\BasicDict-JPN-Kanji-Freedom.tsv"; DestDir: "{app}\DICT"; Flags: ignoreversion
+Source: "DICT\BasicDict-JPN-Kotowaza.tsv"; DestDir: "{app}\DICT"; Flags: ignoreversion
+Source: "DICT\BasicDict-JPN-4KanjiWords.tsv"; DestDir: "{app}\DICT"; Flags: ignoreversion
+Source: "DICT\BasicDict-RUS-Freedom.tsv"; DestDir: "{app}\DICT"; Flags: ignoreversion
 Source: "BLOCK\circle.emf"; DestDir: "{app}\BLOCK"; Flags: ignoreversion
 Source: "BLOCK\club.emf"; DestDir: "{app}\BLOCK"; Flags: ignoreversion
 Source: "BLOCK\diamond.emf"; DestDir: "{app}\BLOCK"; Flags: ignoreversion
@@ -62,7 +62,7 @@ Source: "LICENSE.txt"; DestDir: "{app}"; Flags: ignoreversion
 Source: "xword.py"; DestDir: "{app}"; Flags: ignoreversion
 Source: "pat\data.json"; DestDir: "{app}\pat"; Flags: ignoreversion
 Source: "dict_analyze\dict_analyze.exe"; DestDir: "{app}"; Flags: ignoreversion
-Source: "黒マスルールの説明.txt"; DestDir: "{app}"; Flags: ignoreversion
+Source: "Rules-JPN.txt"; DestDir: "{app}"; Flags: ignoreversion
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Icons]
