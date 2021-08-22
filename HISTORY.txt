@@ -372,7 +372,7 @@
 	文字送りをデフォルトに。
 	英語のサポートの再開。
 
-2021年XX月YY日 ver.4.7.5
+2021年8月22日 ver.4.7.5
 	英語サポートを改良。
 	日本語ファイル名を排除。
 	英語の入力パレットを改良。
@@ -384,7 +384,7 @@
     - Made character feed default.
     - Restarted English support.
 
-- 2021.XX.YY Ver.4.7.5
+- 2021.08.22 Ver.4.7.5
     - Improved English support.
     - Excluded Japanese filenames.
     - Improved English Input Palette.
