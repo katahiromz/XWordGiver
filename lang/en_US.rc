@@ -481,7 +481,7 @@ FONT 9, "Tahoma"
     LTEXT "* If the size is 8 x 8 or more, it may take a long time to calculate.", -1, 10, 30, 290, 14
     AUTOCHECKBOX "&SmartResolution", chx2, 10, 60, 75, 14
     AUTOCHECKBOX "Re&try regularly", chx1, 95, 60, 110, 14
-    LTEXT "Max. Word &Length:", stc1, 10, 87, 60, 12
+    LTEXT "Max. Word &Length:", stc1, 10, 87, 65, 12
     EDITTEXT edt3, 80, 85, 30, 14, ES_NUMBER | ES_RIGHT
     CONTROL "", scr3, "msctls_updown32", UDS_ARROWKEYS | UDS_AUTOBUDDY | UDS_ALIGNRIGHT | UDS_SETBUDDYINT, 103, 90, 12, 20
     DEFPUSHBUTTON "&Generate", IDOK, 175, 80, 60, 14
@@ -529,7 +529,7 @@ FONT 9, "Tahoma"
     LTEXT "* If the size is 8 x 8 or more, it may take a long time to calculate.", -1, 10, 30, 290, 14
     AUTOCHECKBOX "&SmartResolution", chx2, 10, 60, 75, 14
     AUTOCHECKBOX "Re&try regularly", chx1, 95, 60, 110, 14
-    LTEXT "Max. Word &Length:", stc1, 10, 87, 60, 12
+    LTEXT "Max. Word &Length:", stc1, 10, 87, 67, 12
     EDITTEXT edt3, 80, 85, 30, 14, ES_NUMBER | ES_RIGHT
     CONTROL "", scr3, "msctls_updown32", UDS_ARROWKEYS | UDS_AUTOBUDDY | UDS_ALIGNRIGHT | UDS_SETBUDDYINT, 103, 90, 12, 20
     LTEXT "# of generations:", -1, 130, 87, 79, 12
@@ -1242,7 +1242,7 @@ FONT 9, "Tahoma"
     LISTBOX lst1, 5, 50, 325, 190, LBS_DISABLENOSCROLL | LBS_MULTICOLUMN | LBS_NOINTEGRALHEIGHT | LBS_OWNERDRAWFIXED | WS_VSCROLL | WS_HSCROLL | WS_TABSTOP
     PUSHBUTTON "&Copy", psh1, 5, 245, 60, 15
     AUTOCHECKBOX "Show &Answer", chx1, 75, 245, 80, 15
-    DEFPUSHBUTTON "S&olve", IDOK, 185, 245, 80, 15
+    DEFPUSHBUTTON "Find Solution", IDOK, 185, 245, 80, 15
     PUSHBUTTON "E&xit", IDCANCEL, 270, 245, 60, 15
 }
 
@@ -1277,7 +1277,7 @@ CAPTION "Continuously generate block patterns"
 STYLE DS_CENTER | DS_MODALFRAME | WS_POPUPWINDOW | WS_CAPTION
 FONT 9, "Tahoma"
 {
-    LTEXT "Max. Word &Length:", stc1, 10, 7, 60, 12
+    LTEXT "Max. Word &Length:", stc1, 10, 7, 65, 12
     EDITTEXT edt3, 80, 5, 30, 14, ES_NUMBER | ES_RIGHT
     CONTROL "", scr3, "msctls_updown32", UDS_ARROWKEYS | UDS_AUTOBUDDY | UDS_ALIGNRIGHT | UDS_SETBUDDYINT, 100, 5, 12, 20
     LTEXT "# of generations:", -1, 128, 7, 85, 12
@@ -1295,7 +1295,7 @@ CAPTION "Generate block pattern"
 STYLE DS_CENTER | DS_MODALFRAME | WS_POPUPWINDOW | WS_CAPTION
 FONT 9, "Tahoma"
 {
-    LTEXT "Max. Word &Length:", stc1, 10, 7, 60, 12
+    LTEXT "Max. Word &Length:", stc1, 10, 7, 67, 12
     EDITTEXT edt3, 80, 5, 30, 14, ES_NUMBER | ES_RIGHT
     CONTROL "", scr3, "msctls_updown32", UDS_ARROWKEYS | UDS_AUTOBUDDY | UDS_ALIGNRIGHT | UDS_SETBUDDYINT, 100, 5, 12, 20
     DEFPUSHBUTTON "&Generate", IDOK, 175, 5, 60, 14
