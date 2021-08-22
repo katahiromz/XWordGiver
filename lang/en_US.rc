@@ -171,7 +171,7 @@ LANGUAGE LANG_ENGLISH, SUBLANG_DEFAULT
     }
     POPUP "&Help"
     {
-        MENUITEM "Open ReadMe.txt\tF1", ID_OPENREADME
+        MENUITEM "Open ReadMeEnglish.txt\tF1", ID_OPENREADME
         MENUITEM "Open LICENSE.txt", ID_OPENLICENSE
         MENUITEM "Block pa&tterns...", ID_OPENPATTERNS
         MENUITEM SEPARATOR
@@ -514,7 +514,7 @@ FONT 9, "MS UI Gothic"
 }
 
 IDD_SEQCREATE DIALOG 0, 0, 310, 155
-CAPTION "Continuously generate crowssword"
+CAPTION "Continuously generate crossword"
 STYLE DS_CENTER | DS_MODALFRAME | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
 FONT 9, "MS UI Gothic"
 {
@@ -1348,7 +1348,7 @@ STRINGTABLE
     IDS_CANTREGWND, "Cannot register window classes."
     IDS_CANTMAKEWND, "Cannot create the window."
     IDS_APPTITLE, "XWordGiver ver.4.7.5 - %s"
-    IDS_MADEPROBLEM, "I have generated a crowssword.\n\nCalculation time: %u.%u[sec]"
+    IDS_MADEPROBLEM, "I have generated a crossword.\n\nCalculation time: %u.%u[sec]"
     IDS_CANTMAKEPROBLEM, "Cannot create puzzle.\n\nPlease confirm the dictionary, the block pattern, and the policies.\n\nCalculation time: %u.%u[sec]"
     IDS_ENTERINT, "Please enter an integer between 3 and 30."
     IDS_OPENDICTDATA, "Open dictionary"
@@ -1381,7 +1381,7 @@ STRINGTABLE
     IDS_DICTFILTER, "Dict data (*.dic;*.tsv)|*.dic;*.tsv|All Files (*.*)|*.*||"
     IDS_CROSSFILTER, "All crosswords (*.xwd;*.xwj;*.json;*.jso;*.crp;*.crx)|*.xwd;*.xwj;*.json;*.jso;*.crp;*.crx|Standard crosswords (*.xwd)|*.xwd|JSON crosswords (*.xwj;*.json;*.jso)|*.xwj;*.json;*.jso|Crossword Builder files (*.crp;*.crx)|*.crp;*.crx|All files (*.*)|*.*||"
     IDS_SAVEFILTER, "JSON crosswords (*.xwj;*.json;*.jso)|*.xwj;*.json;*.jso|Crossword Builder files (*.crp)|*.crp||"
-    IDS_README, "ReadMe.txt"
+    IDS_README, "ReadMeEnglish.txt"
     IDS_TOOLONGSPACE, "There is a space at %u-th from the top and %u-th from the left that does not match the length of the registered word."
     IDS_TOOOLDPC, "Your computer is too old to be used with XWordGiver, so calculations may be slow."
     IDS_CROSSSTORAGE, "Specify the folder to save to"
@@ -1423,7 +1423,7 @@ STRINGTABLE
     IDS_BLOCKSGENERATED, "I have generated %u block patterns.\n\nCalculation time: %u.%u[sec]"
     IDS_INVALIDVALUE, "Invalid value."
     IDS_NONE, "(None)"
-    IDS_BASICDICTDATA, "基本辞書データ"
+    IDS_BASICDICTDATA, "BasicDict-"
     IDS_GOOGLESEARCH, "https://www.google.co.jp/search?hl=jp&gl=jp&q="
     IDS_MATRIXSEARCH, "http://cross.matrix.jp/search.cgi"
     IDS_HINPUT, "Horz"
@@ -1464,9 +1464,9 @@ STRINGTABLE
     IDS_PATMAKING, "I have created %u block patterns."
     IDS_THREEDIAGONALS, "Prohibit 3 blocks diagonally in a row"
     IDS_RULE_DONTTHREEDIAGONALS, "Prohibit 3 blocks diagonally in a row"
-    IDS_NORMAL_DICT, "ENG"
+    IDS_NORMAL_DICT, "ENG-Modesty"
     IDS_TT_NEW, "New crossword"
-    IDS_TT_GENERATE, "Generate crowssword"
+    IDS_TT_GENERATE, "Generate crossword"
     IDS_TT_OPEN, "Open crossword"
     IDS_TT_SAVEAS, "Save crossword"
     IDS_TT_SOLVE, "Solve"
