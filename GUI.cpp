@@ -573,7 +573,7 @@ bool __fastcall XgLoadSettings(void)
     s_nMarksHeight = 40;
     xg_bAddThickFrame = true;
     xg_bTateOki = true;
-    xg_bCharFeed = false;
+    xg_bCharFeed = true;
     xg_rgbWhiteCellColor = RGB(255, 255, 255);
     xg_rgbBlackCellColor = RGB(0x33, 0x33, 0x33);
     xg_rgbMarkedCellColor = RGB(255, 255, 255);

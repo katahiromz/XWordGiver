@@ -99,7 +99,7 @@ COLORREF xg_rgbMarkedCellColor = RGB(255, 255, 255);
 bool xg_bDrawFrameForMarkedCell = true;
 
 // 文字送り？
-bool xg_bCharFeed = false;
+bool xg_bCharFeed = true;
 
 // タテ入力？
 bool xg_bTateInput = false;
