@@ -251,9 +251,6 @@ void __fastcall MainWnd_OnChar(HWND hwnd, TCHAR ch, int cRepeat)
             xg_ubUndoBuffer.Commit(UC_SETAT, sa1, sa2);
             xg_xword.SetAt(xg_caret_pos, ZEN_SPACE);
 
-            if (xg_bCharFeed)
-                XgCharFeed(hwnd);
-
             XgEnsureCaretVisible(hwnd);
             x = XgGetHScrollPos();
             y = XgGetVScrollPos();
@@ -269,9 +266,6 @@ void __fastcall MainWnd_OnChar(HWND hwnd, TCHAR ch, int cRepeat)
                 xg_ubUndoBuffer.Commit(UC_SETAT, sa1, sa2);
                 xg_xword.SetAt(xg_caret_pos, ZEN_BLACK);
 
-                if (xg_bCharFeed)
-                    XgCharFeed(hwnd);
-
                 XgEnsureCaretVisible(hwnd);
                 x = XgGetHScrollPos();
                 y = XgGetVScrollPos();
@@ -280,9 +274,6 @@ void __fastcall MainWnd_OnChar(HWND hwnd, TCHAR ch, int cRepeat)
                 sa2->ch = ZEN_SPACE;
                 xg_ubUndoBuffer.Commit(UC_SETAT, sa1, sa2);
                 xg_xword.SetAt(xg_caret_pos, ZEN_SPACE);
-
-                if (xg_bCharFeed)
-                    XgCharFeed(hwnd);
 
                 XgEnsureCaretVisible(hwnd);
                 x = XgGetHScrollPos();
@@ -293,9 +284,6 @@ void __fastcall MainWnd_OnChar(HWND hwnd, TCHAR ch, int cRepeat)
                     sa2->ch = ZEN_SPACE;
                     xg_ubUndoBuffer.Commit(UC_SETAT, sa1, sa2);
                     xg_xword.SetAt(xg_caret_pos, ZEN_SPACE);
-
-                    if (xg_bCharFeed)
-                        XgCharFeed(hwnd);
 
                     XgEnsureCaretVisible(hwnd);
                     x = XgGetHScrollPos();
@@ -313,9 +301,6 @@ void __fastcall MainWnd_OnChar(HWND hwnd, TCHAR ch, int cRepeat)
             sa2->ch = ZEN_BLACK;
             xg_ubUndoBuffer.Commit(UC_SETAT, sa1, sa2);
             xg_xword.SetAt(xg_caret_pos, ZEN_BLACK);
-
-            if (xg_bCharFeed)
-                XgCharFeed(hwnd);
 
             XgEnsureCaretVisible(hwnd);
             x = XgGetHScrollPos();
@@ -604,7 +589,7 @@ katakana:;
         if (XgIsCharZenkakuCyrillicW(ch)) {
             // 候補ウィンドウを破棄する。
             XgDestroyCandsWnd();
-            // ハングル直接入力。
+            // キリル文字直接入力。
             sa2->ch = ch;
             xg_ubUndoBuffer.Commit(UC_SETAT, sa1, sa2);
             xg_xword.SetAt(xg_caret_pos, ch);
