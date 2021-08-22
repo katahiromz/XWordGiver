@@ -13,8 +13,8 @@ if(COMMAND cmake_policy)
   cmake_policy(SET CMP0003 NEW)
 endif(COMMAND cmake_policy)
 
-# project name and language
-project(xword CXX)
+# project name and languages
+project(xword CXX RC)
 
 # check build type
 if (NOT CMAKE_BUILD_TYPE)
@@ -31,14 +31,11 @@ if (NOT uppercase_CMAKE_BUILD_TYPE MATCHES "^(DEBUG|RELEASE|RELWITHDEBINFO|MINSI
 endif()
 
 if (WIN32)
-    # enable Win32 resource
-    enable_language(RC)
-
     if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
         # using Clang
         if (uppercase_CMAKE_BUILD_TYPE MATCHES "^RELEASE$")
-            set(CMAKE_C_FLAGS "-static -O9 -mtune=skylake -Wall -pedantic")
-            set(CMAKE_CXX_FLAGS "-static -O9 -mtune=skylake -Wall -pedantic")
+            set(CMAKE_C_FLAGS "-static -O9 -Wall -pedantic")
+            set(CMAKE_CXX_FLAGS "-static -O9 -Wall -pedantic")
         else()
             set(CMAKE_C_FLAGS "-static -g -Wall -pedantic")
             set(CMAKE_CXX_FLAGS "-static -g -Wall -pedantic")
