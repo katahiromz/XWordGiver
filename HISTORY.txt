@@ -377,7 +377,7 @@
 	日本語ファイル名を排除。
 	英語の入力パレットを改良。
 	ライセンスの単純化。
-	文字でないときに文字送りをしない。
+	入力が文字でないときに文字送りをしない。
 
 ## History of XWordGiver (English)
 
@@ -390,4 +390,4 @@
     - Excluded Japanese filenames.
     - Improved English Input Palette.
     - Simplified LICENSE.
-    - Don't feed characters when the input is not characters. 
+    - Don't feed when input is not a character.
