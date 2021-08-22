@@ -1,4 +1,7 @@
-﻿# Descriptions of policies
+﻿# XWordGiver policies
+
+In XWordGiver, the crossword data will be generated with the specified policies.
+Please choose the policies from "Policies" menu.
 
 ## Policy "Prohibit adjacent blocks" [Cost: +10%]
 
