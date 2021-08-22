@@ -29,8 +29,8 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{
 
 [Files]
 Source: "xword64.exe"; DestDir: "{app}"; Flags: ignoreversion
-Source: "ReadMe-JPN.txt"; DestDir: "{app}"; Flags: ignoreversion
 Source: "ReadMe-ENG.txt"; DestDir: "{app}"; Flags: ignoreversion
+Source: "ReadMe-JPN.txt"; DestDir: "{app}"; Flags: ignoreversion
 Source: "TechNote.txt"; DestDir: "{app}"; Flags: ignoreversion
 Source: "HISTORY.txt"; DestDir: "{app}"; Flags: ignoreversion
 Source: "DICT\BasicDict-ENG-Freedom.tsv"; DestDir: "{app}\DICT"; Flags: ignoreversion
@@ -67,6 +67,7 @@ Source: "Rules-JPN.txt"; DestDir: "{app}"; Flags: ignoreversion
 
 [Icons]
 Name: "{group}\XWordGiver (x64)"; Filename: "{app}\xword64.exe"
+Name: "{group}\ReadMe-ENG.txt"; Filename: "{app}\ReadMe-ENG.txt"
 Name: "{group}\ReadMe-JPN.txt"; Filename: "{app}\ReadMe-JPN.txt"
 Name: "{group}\TechNote.txt"; Filename: "{app}\TechNote.txt"
 Name: "{group}\HISTORY.txt"; Filename: "{app}\HISTORY.txt"

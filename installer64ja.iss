@@ -32,8 +32,8 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{
 
 [Files]
 Source: "xword64.exe"; DestDir: "{app}"; Flags: ignoreversion
-Source: "ReadMe-JPN.txt"; DestDir: "{app}"; Flags: ignoreversion
 Source: "ReadMe-ENG.txt"; DestDir: "{app}"; Flags: ignoreversion
+Source: "ReadMe-JPN.txt"; DestDir: "{app}"; Flags: ignoreversion
 Source: "TechNote.txt"; DestDir: "{app}"; Flags: ignoreversion
 Source: "HISTORY.txt"; DestDir: "{app}"; Flags: ignoreversion
 Source: "DICT\BasicDict-ENG-Freedom.tsv"; DestDir: "{app}\DICT"; Flags: ignoreversion
