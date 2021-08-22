@@ -5,7 +5,7 @@
 ; NOTE: The value of AppId uniquely identifies this application.
 ; Do not use the same AppId value in installers for other applications.
 ; (To generate a new GUID, click Tools | Generate GUID inside the IDE.)
-AppId={{07AF81F8-4484-4672-90B4-6262A94E8E1B}
+AppId={{CDECA641-CFBB-43E0-A075-13802703E7EC}
 AppName={cm:AppNameBits}
 AppVerName={cm:AppNameBits} ver.4.7.5
 AppPublisher={cm:Author}
@@ -22,6 +22,7 @@ UninstallDisplayIcon={app}\xword64.exe
 SetupIconFile=res\Icon_1.ico
 LicenseFile=LICENSE.txt
 ChangesAssociations=yes
+ArchitecturesInstallIn64BitMode=x64
 
 [Languages]
 Name: "en"; MessagesFile: "compiler:Default.isl"
