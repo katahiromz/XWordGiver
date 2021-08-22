@@ -32,13 +32,3 @@ See License.txt.
 ## Contact us
 
 katayama.hirofumi.mz@gmail.com
-
-## History
-
-- 2021.08.22 Ver.4.7.4
-    - Made character feed default.
-    - Restarted English support.
-
-- 2021.XX.YY Ver.4.7.5
-    - Improved English support.
-    - Excluded Japanese filenames.
