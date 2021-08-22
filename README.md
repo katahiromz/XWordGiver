@@ -25,7 +25,7 @@ You can solve and/or save your generated puzzles.
 
 ## License
 
-"XWordGiver" is released under the terms of the MIT License. See [LICENSE-ENG.txt](LICENSE-ENG.txt).
+"XWordGiver" is released under the terms of the MIT License. See [LICENSE.txt](LICENSE.txt).
 
 ## Contact
 

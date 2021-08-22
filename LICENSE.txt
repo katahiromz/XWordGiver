@@ -1,7 +1,4 @@
-﻿(English, UTF-8)
----
-
-The MIT License
+﻿The MIT License
 
 Copyright (c) 2013-2020 Katayama Hirofumi MZ
 Copyright (c) 2013-2019 Niels Lohmann

@@ -172,7 +172,7 @@ LANGUAGE LANG_JAPANESE, SUBLANG_DEFAULT
     POPUP "ヘルプ(&H)"
     {
         MENUITEM "ReadMe-JPN.txtを開く(&R)\tF1", ID_OPENREADME
-        MENUITEM "LICENSE-JPN.txtを開く(&C)", ID_OPENLICENSE
+        MENUITEM "LICENSE.txtを開く(&C)", ID_OPENLICENSE
         MENUITEM "黒マスパターン(&T)...", ID_OPENPATTERNS
         MENUITEM SEPARATOR
         MENUITEM "作者のホームページを開く(&H)", ID_OPENHOMEPAGE
@@ -1404,7 +1404,7 @@ STRINGTABLE
     IDS_HEADERSEP1, "----------(ここから)-----------\r\n"
     IDS_HEADERSEP2, "----------(ここまで)-----------"
     IDS_BELOWISNOTES, "\r\n(以下、備考欄)"
-    IDS_LICENSE, "LICENSE-JPN.txt"
+    IDS_LICENSE, "LICENSE.txt"
     IDS_NOMARKCANDIDATES, "二重マス単語の候補がありません。"
     IDS_PATTERNSTXT, "点対称パターン.txt"
     IDS_DOWNLEFT, "【タテ"
