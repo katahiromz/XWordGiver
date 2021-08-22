@@ -1,6 +1,6 @@
 ﻿# XWordGiver by katahiromz
 
-## Introduction
+## What's this?
 
 "XWordGiver" (pronounce as "crossword giver") is a Windows freeware to generate crossword data.
 

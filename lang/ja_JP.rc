@@ -171,7 +171,7 @@ LANGUAGE LANG_JAPANESE, SUBLANG_DEFAULT
     }
     POPUP "ヘルプ(&H)"
     {
-        MENUITEM "ReadMe.txtを開く(&R)\tF1", ID_OPENREADME
+        MENUITEM "ReadMe-JPN.txtを開く(&R)\tF1", ID_OPENREADME
         MENUITEM "LICENSE-JPN.txtを開く(&C)", ID_OPENLICENSE
         MENUITEM "黒マスパターン(&T)...", ID_OPENPATTERNS
         MENUITEM SEPARATOR
@@ -1384,7 +1384,7 @@ STRINGTABLE
     IDS_DICTFILTER, "辞書データ (*.dic;*.tsv)|*.dic;*.tsv|すべてのファイル (*.*)|*.*||"
     IDS_CROSSFILTER, "すべてのクロスワード (*.xwd;*.xwj;*.json;*.jso;*.crp;*.crx)|*.xwd;*.xwj;*.json;*.jso;*.crp;*.crx|標準クロスワード (*.xwd)|*.xwd|JSONクロスワード (*.xwj;*.json;*.jso)|*.xwj;*.json;*.jso|Crossword Builder ファイル(*.crp;*.crx)|*.crp;*.crx|すべてのファイル (*.*)|*.*||"
     IDS_SAVEFILTER, "JSONクロスワード (*.xwj;*.json;*.jso)|*.xwj;*.json;*.jso|Crossword Builder形式 (*.crp)|*.crp||"
-    IDS_README, "ReadMe.txt"
+    IDS_README, "ReadMe-JPN.txt"
     IDS_TOOLONGSPACE, "上から%u番目、左から%u番目に、登録されている単語と長さの一致しないスペースがあります。"
     IDS_TOOOLDPC, "あなたのパソコンは、クロスワードギバーで使うには古すぎるので、計算が遅くなる可能性があります。"
     IDS_CROSSSTORAGE, "クロスワード データの保存先"

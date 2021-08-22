@@ -171,7 +171,7 @@ LANGUAGE LANG_ENGLISH, SUBLANG_DEFAULT
     }
     POPUP "&Help"
     {
-        MENUITEM "Open ReadMeEnglish.txt\tF1", ID_OPENREADME
+        MENUITEM "Open ReadMe-ENG.txt\tF1", ID_OPENREADME
         MENUITEM "Open LICENSE-ENG.txt", ID_OPENLICENSE
         MENUITEM "Block pa&tterns...", ID_OPENPATTERNS
         MENUITEM SEPARATOR
@@ -1381,7 +1381,7 @@ STRINGTABLE
     IDS_DICTFILTER, "Dict data (*.dic;*.tsv)|*.dic;*.tsv|All Files (*.*)|*.*||"
     IDS_CROSSFILTER, "All crosswords (*.xwd;*.xwj;*.json;*.jso;*.crp;*.crx)|*.xwd;*.xwj;*.json;*.jso;*.crp;*.crx|Standard crosswords (*.xwd)|*.xwd|JSON crosswords (*.xwj;*.json;*.jso)|*.xwj;*.json;*.jso|Crossword Builder files (*.crp;*.crx)|*.crp;*.crx|All files (*.*)|*.*||"
     IDS_SAVEFILTER, "JSON crosswords (*.xwj;*.json;*.jso)|*.xwj;*.json;*.jso|Crossword Builder files (*.crp)|*.crp||"
-    IDS_README, "ReadMeEnglish.txt"
+    IDS_README, "ReadMe-ENG.txt"
     IDS_TOOLONGSPACE, "There is a space at %u-th from the top and %u-th from the left that does not match the length of the registered word."
     IDS_TOOOLDPC, "Your computer is too old to be used with XWordGiver, so calculations may be slow."
     IDS_CROSSSTORAGE, "Specify the folder to save to"
