@@ -1661,7 +1661,10 @@ INT __fastcall XgParseRules(const std::wstring& str)
         } else if (rule == XgLoadStringDx1(IDS_RULE_POINTSYMMETRY)) {
             nRules |= RULE_POINTSYMMETRY;
         } else {
-            nRules = DEFAULT_RULES;
+            if (XgIsUserJapanese())
+                nRules = DEFAULT_RULES_JAPANESE;
+            else
+                nRules = DEFAULT_RULES_ENGLISH;
             break;
         }
     }
@@ -1733,7 +1736,11 @@ bool __fastcall XgSetJsonString(HWND hwnd, const std::wstring& str)
         bool is_solved = j["is_solved"];
         bool has_mark = j["has_mark"];
         bool has_hints = j["has_hints"];
-        INT rules = DEFAULT_RULES;
+        INT rules;
+        if (XgIsUserJapanese())
+            rules = DEFAULT_RULES_JAPANESE;
+        else
+            rules = DEFAULT_RULES_ENGLISH;
         if (j["rules"].is_string()) {
             auto str = XgUtf8ToUnicode(j["rules"].get<std::string>());
             rules = XgParseRules(str);

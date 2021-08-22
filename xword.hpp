@@ -184,8 +184,9 @@ enum RULES
 };
 
 // デフォルトのルール。
-#define DEFAULT_RULES (RULE_DONTDOUBLEBLACK | RULE_DONTCORNERBLACK | \
-                       RULE_DONTTRIDIRECTIONS | RULE_DONTDIVIDE)
+#define DEFAULT_RULES_ENGLISH (RULE_DONTDIVIDE)
+#define DEFAULT_RULES_JAPANESE (RULE_DONTDOUBLEBLACK | RULE_DONTCORNERBLACK | \
+                                RULE_DONTTRIDIRECTIONS | RULE_DONTDIVIDE)
 
 // ルール群。
 extern INT xg_nRules;
@@ -756,6 +757,15 @@ inline bool __fastcall XG_Board::CanPutBlack(int iRow, int jCol) const
     }
 
     return true;
+}
+
+// ユーザは日本人か？
+inline BOOL XgIsUserJapanese(VOID)
+{
+#if 1
+    return FALSE;
+#endif
+    return PRIMARYLANGID(LANGIDFROMLCID(GetThreadLocale())) == LANG_JAPANESE;
 }
 
 //////////////////////////////////////////////////////////////////////////////

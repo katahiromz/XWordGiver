@@ -221,7 +221,7 @@ static int          s_nMarksHeight = 40;
 BOOL xg_bShowAnswerOnPattern = TRUE;
 
 // ルール群。
-INT xg_nRules = DEFAULT_RULES;
+INT xg_nRules = DEFAULT_RULES_JAPANESE;
 
 //////////////////////////////////////////////////////////////////////////////
 // スクロール関連。
@@ -496,13 +496,12 @@ BOOL XgLoadDictsAll(void)
 
     if (xg_dict_name.empty() || !bFound)
     {
-        // 辞書ファイルが見つからない場合は「カナ」の「基本辞書データ」を優先する。
-        LPCWSTR pszKana = XgLoadStringDx1(IDS_KANA);
+        LPCWSTR pszNormal = XgLoadStringDx1(IDS_NORMAL_DICT);
         LPCWSTR pszBasicDict = XgLoadStringDx2(IDS_BASICDICTDATA);
         for (auto& file : xg_dict_files)
         {
             if (file.find(pszBasicDict) != std::wstring::npos &&
-                file.find(pszKana) != std::wstring::npos &&
+                file.find(pszNormal) != std::wstring::npos &&
                 PathFileExistsW(file.c_str()))
             {
                 xg_dict_name = file;
@@ -596,7 +595,11 @@ bool __fastcall XgLoadSettings(void)
     xg_nPatWndCX = CW_USEDEFAULT;
     xg_nPatWndCY = CW_USEDEFAULT;
     xg_bShowAnswerOnPattern = TRUE;
-    xg_nRules = DEFAULT_RULES;
+
+    if (XgIsUserJapanese())
+        xg_nRules = DEFAULT_RULES_JAPANESE;
+    else
+        xg_nRules = DEFAULT_RULES_ENGLISH;
 
     s_nNumberToGenerate = 16;
 
@@ -5828,10 +5831,18 @@ void XgUpdateRules(HWND hwnd)
         szText[0] = 0;
         ::GetMenuStringW(hMenu, i, szText, ARRAYSIZE(szText), MF_BYPOSITION);
         if (wcsstr(szText, XgLoadStringDx1(IDS_RULES)) != NULL) {
-            if (xg_nRules == DEFAULT_RULES) {
-                StringCbCopyW(szText, sizeof(szText), XgLoadStringDx1(IDS_STANDARDRULES));
+            if (XgIsUserJapanese()) {
+                if (xg_nRules == DEFAULT_RULES_JAPANESE) {
+                    StringCbCopyW(szText, sizeof(szText), XgLoadStringDx1(IDS_STANDARDRULES));
+                } else {
+                    StringCbCopyW(szText, sizeof(szText), XgLoadStringDx1(IDS_MODIFIEDRULES));
+                }
             } else {
-                StringCbCopyW(szText, sizeof(szText), XgLoadStringDx1(IDS_MODIFIEDRULES));
+                if (xg_nRules == DEFAULT_RULES_ENGLISH) {
+                    StringCbCopyW(szText, sizeof(szText), XgLoadStringDx1(IDS_STANDARDRULES));
+                } else {
+                    StringCbCopyW(szText, sizeof(szText), XgLoadStringDx1(IDS_MODIFIEDRULES));
+                }
             }
             info.dwTypeData = szText;
             SetMenuItemInfoW(hMenu, i, TRUE, &info);
@@ -8825,7 +8836,10 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
         XgResetTheme(hwnd, FALSE);
         break;
     case ID_RESETRULES:
-        xg_nRules = DEFAULT_RULES;
+        if (XgIsUserJapanese())
+            xg_nRules = DEFAULT_RULES_JAPANESE;
+        else
+            xg_nRules = DEFAULT_RULES_ENGLISH;
         xg_bSkeltonMode = FALSE;
         XgUpdateRules(hwnd);
         break;
