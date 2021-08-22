@@ -446,7 +446,7 @@ LANGUAGE LANG_ENGLISH, SUBLANG_DEFAULT
 IDD_NEW DIALOG 0, 0, 310, 125
 CAPTION "New board"
 STYLE DS_CENTER | DS_MODALFRAME | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
-FONT 9, "MS UI Gothic"
+FONT 9, "Tahoma"
 {
     LTEXT "# of &rows:", -1, 10, 10, 50, 12
     EDITTEXT edt1, 65, 7, 30, 14, ES_NUMBER | ES_RIGHT
@@ -468,7 +468,7 @@ FONT 9, "MS UI Gothic"
 IDD_CREATE DIALOG 0, 0, 310, 103
 CAPTION "Generate Crossword"
 STYLE DS_CENTER | DS_MODALFRAME | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
-FONT 9, "MS UI Gothic"
+FONT 9, "Tahoma"
 {
     LTEXT "# of &rows:", -1, 10, 10, 50, 12
     EDITTEXT edt1, 65, 7, 30, 14, ES_NUMBER | ES_RIGHT
@@ -481,7 +481,7 @@ FONT 9, "MS UI Gothic"
     LTEXT "* If the size is 8 x 8 or more, it may take a long time to calculate.", -1, 10, 30, 290, 14
     AUTOCHECKBOX "&SmartResolution", chx2, 10, 60, 75, 14
     AUTOCHECKBOX "Re&try regularly", chx1, 95, 60, 110, 14
-    LTEXT "Max. &Length:", stc1, 10, 87, 60, 12
+    LTEXT "Max. Word &Length:", stc1, 10, 87, 60, 12
     EDITTEXT edt3, 80, 85, 30, 14, ES_NUMBER | ES_RIGHT
     CONTROL "", scr3, "msctls_updown32", UDS_ARROWKEYS | UDS_AUTOBUDDY | UDS_ALIGNRIGHT | UDS_SETBUDDYINT, 103, 90, 12, 20
     DEFPUSHBUTTON "&Generate", IDOK, 175, 80, 60, 14
@@ -491,7 +491,7 @@ FONT 9, "MS UI Gothic"
 IDD_CALCULATING DIALOG 0, 0, 165, 90
 CAPTION "Calculating..."
 STYLE DS_CENTER | DS_MODALFRAME | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
-FONT 9, "MS UI Gothic"
+FONT 9, "Tahoma"
 {
     LTEXT "I'm calculating...", stc1, 5, 7, 155, 12
     CONTROL "", ctl1, "msctls_progress32", 0, 5, 25, 155, 10
@@ -504,7 +504,7 @@ FONT 9, "MS UI Gothic"
 IDD_INPUTHINT DIALOG 0, 0, 220, 85
 CAPTION "Input Clue"
 STYLE DS_CENTER | DS_MODALFRAME | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
-FONT 9, "MS UI Gothic"
+FONT 9, "Tahoma"
 {
     LTEXT "'%s' is not registered word in the specified dictionary.\n\nPlease enter the clue of word '%s'.", stc1, 5, 5, 210, 35
     LTEXT "&Clue", -1, 5, 47, 34, 14
@@ -516,7 +516,7 @@ FONT 9, "MS UI Gothic"
 IDD_SEQCREATE DIALOG 0, 0, 310, 155
 CAPTION "Continuously generate crossword"
 STYLE DS_CENTER | DS_MODALFRAME | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
-FONT 9, "MS UI Gothic"
+FONT 9, "Tahoma"
 {
     LTEXT "# of &rows:", -1, 10, 10, 50, 12
     EDITTEXT edt1, 65, 7, 30, 14, ES_NUMBER | ES_RIGHT
@@ -529,7 +529,7 @@ FONT 9, "MS UI Gothic"
     LTEXT "* If the size is 8 x 8 or more, it may take a long time to calculate.", -1, 10, 30, 290, 14
     AUTOCHECKBOX "&SmartResolution", chx2, 10, 60, 75, 14
     AUTOCHECKBOX "Re&try regularly", chx1, 95, 60, 110, 14
-    LTEXT "Max. &length:", stc1, 10, 87, 60, 12
+    LTEXT "Max. Word &Length:", stc1, 10, 87, 60, 12
     EDITTEXT edt3, 80, 85, 30, 14, ES_NUMBER | ES_RIGHT
     CONTROL "", scr3, "msctls_updown32", UDS_ARROWKEYS | UDS_AUTOBUDDY | UDS_ALIGNRIGHT | UDS_SETBUDDYINT, 103, 90, 12, 20
     LTEXT "# of generations:", -1, 130, 87, 79, 12
@@ -545,7 +545,7 @@ FONT 9, "MS UI Gothic"
 IDD_CONFIG DIALOG 0, 0, 274, 211
 CAPTION "Configuration"
 STYLE DS_CENTER | DS_MODALFRAME | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
-FONT 9, "MS UI Gothic"
+FONT 9, "Tahoma"
 {
     RTEXT "Cell &Font:", -1, 5, 6, 60, 12
     EDITTEXT edt1, 70, 4, 85, 14, ES_READONLY
@@ -590,7 +590,7 @@ FONT 9, "MS UI Gothic"
 IDD_SEQSOLVE DIALOG 0, 0, 310, 80
 CAPTION "Continuously solve"
 STYLE DS_CENTER | DS_MODALFRAME | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
-FONT 9, "MS UI Gothic"
+FONT 9, "Tahoma"
 {
     LTEXT "&Save to:", -1, 10, 7, 60, 12
     CONTROL "", cmb1, "ComboBoxEx32", CBS_AUTOHSCROLL | CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP, 75, 5, 165, 100
@@ -606,7 +606,7 @@ FONT 9, "MS UI Gothic"
 IDD_READDICT DIALOG 0, 0, 310, 85
 CAPTION "Load dictionary"
 STYLE DS_CENTER | DS_MODALFRAME | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
-FONT 9, "MS UI Gothic"
+FONT 9, "Tahoma"
 {
     LTEXT "Dict &file:", -1, 10, 10, 90, 12
     CONTROL "", cmb1, "ComboBoxEx32", CBS_AUTOHSCROLL | CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP, 10, 25, 290, 200
@@ -619,7 +619,7 @@ FONT 9, "MS UI Gothic"
 IDD_NOTES DIALOG 0, 0, 185, 185
 CAPTION "Header and remarks"
 STYLE DS_CENTER | DS_MODALFRAME | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
-FONT 9, "MS UI Gothic"
+FONT 9, "Tahoma"
 {
     LTEXT "&Header:", -1, 5, 7, 55, 12
     EDITTEXT edt1, 5, 20, 175, 60, ES_AUTOVSCROLL | ES_MULTILINE | WS_VSCROLL
@@ -632,7 +632,7 @@ FONT 9, "MS UI Gothic"
 IDD_SIZES DIALOG 0, 0, 135, 75
 CAPTION "Specify image size"
 STYLE DS_CENTER | DS_MODALFRAME | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
-FONT 9, "MS UI Gothic"
+FONT 9, "Tahoma"
 {
     AUTORADIOBUTTON "&Width:", rad1, 5, 5, 45, 14, WS_GROUP | NOT WS_TABSTOP
     AUTORADIOBUTTON "&Height:", rad2, 5, 30, 45, 14, WS_TABSTOP
@@ -647,7 +647,7 @@ FONT 9, "MS UI Gothic"
 IDD_HEIGHT DIALOG 0, 0, 130, 54
 CAPTION "Specify height"
 STYLE DS_CENTER | DS_MODALFRAME | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
-FONT 9, "MS UI Gothic"
+FONT 9, "Tahoma"
 {
     RTEXT "&Height:", -1, 5, 12, 40, 12
     EDITTEXT edt1, 50, 10, 35, 14, ES_NUMBER
@@ -659,7 +659,7 @@ FONT 9, "MS UI Gothic"
 IDD_BLACKGEN DIALOG 0, 0, 130, 55
 CAPTION "Generating block pattern..."
 STYLE DS_CENTER | DS_MODALFRAME | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
-FONT 9, "MS UI Gothic"
+FONT 9, "Tahoma"
 {
     LTEXT "Generating block pattern...", -1, 5, 5, 120, 12
     LTEXT "", stc1, 5, 15, 120, 12
@@ -670,7 +670,7 @@ IDD_KATATATE DIALOG 0, 0, 75, 285
 CAPTION "Input Palette (Ctrl+U)"
 STYLE DS_CENTER | DS_MODALFRAME | WS_CAPTION | WS_SYSMENU
 EXSTYLE WS_EX_TOOLWINDOW
-FONT 9, "MS UI Gothic"
+FONT 9, "Tahoma"
 {
     PUSHBUTTON "ア", ID_TT_BASE, 0, 0, 15, 15
     PUSHBUTTON "イ", 10001, 15, 0, 15, 15
@@ -763,7 +763,7 @@ IDD_KATAYOKO DIALOG 0, 0, 270, 75
 CAPTION "Input Palette (Ctrl+U)"
 STYLE DS_CENTER | DS_MODALFRAME | WS_CAPTION | WS_SYSMENU
 EXSTYLE WS_EX_TOOLWINDOW
-FONT 9, "MS UI Gothic"
+FONT 9, "Tahoma"
 {
     PUSHBUTTON "ア", ID_TT_BASE, 0, 0, 15, 15
     PUSHBUTTON "イ", 10001, 0, 15, 15, 15
@@ -851,7 +851,7 @@ IDD_ABC DIALOG 0, 0, 165, 60
 CAPTION "Input Palette (Ctrl+U)"
 STYLE DS_CENTER | DS_MODALFRAME | WS_CAPTION | WS_SYSMENU
 EXSTYLE WS_EX_TOOLWINDOW
-FONT 9, "MS UI Gothic"
+FONT 9, "Tahoma"
 {
     PUSHBUTTON "A", 11000, 0, 0, 15, 15
     PUSHBUTTON "B", 11001, 15, 0, 15, 15
@@ -897,7 +897,7 @@ IDD_RUSSIA DIALOG 0, 0, 150, 75
 CAPTION "Input Palette (Ctrl+U)"
 STYLE DS_CENTER | DS_MODALFRAME | WS_CAPTION | WS_SYSMENU
 EXSTYLE WS_EX_TOOLWINDOW
-FONT 9, "MS UI Gothic"
+FONT 9, "Tahoma"
 {
     PUSHBUTTON "А", 11000, 0, 0, 15, 15
     PUSHBUTTON "Б", 11001, 15, 0, 15, 15
@@ -950,7 +950,7 @@ IDD_HIRATATE DIALOG 0, 0, 75, 285
 CAPTION "Input Palette (Ctrl+U)"
 STYLE DS_CENTER | DS_MODALFRAME | WS_CAPTION | WS_SYSMENU
 EXSTYLE WS_EX_TOOLWINDOW
-FONT 9, "MS UI Gothic"
+FONT 9, "Tahoma"
 {
     PUSHBUTTON "あ", ID_TT_BASE, 0, 0, 15, 15
     PUSHBUTTON "い", 10001, 15, 0, 15, 15
@@ -1043,7 +1043,7 @@ IDD_HIRAYOKO DIALOG 0, 0, 270, 75
 CAPTION "Input Palette (Ctrl+U)"
 STYLE DS_CENTER | DS_MODALFRAME | WS_CAPTION | WS_SYSMENU
 EXSTYLE WS_EX_TOOLWINDOW
-FONT 9, "MS UI Gothic"
+FONT 9, "Tahoma"
 {
     PUSHBUTTON "あ", ID_TT_BASE, 0, 0, 15, 15
     PUSHBUTTON "い", 10001, 0, 15, 15, 15
@@ -1131,7 +1131,7 @@ IDD_ABCLOWER DIALOG 0, 0, 165, 60
 CAPTION "Input Palette (Ctrl+U)"
 STYLE DS_CENTER | DS_MODALFRAME | WS_CAPTION | WS_SYSMENU
 EXSTYLE WS_EX_TOOLWINDOW
-FONT 9, "MS UI Gothic"
+FONT 9, "Tahoma"
 {
     PUSHBUTTON "a", 11000, 0, 0, 15, 15
     PUSHBUTTON "b", 11001, 15, 0, 15, 15
@@ -1177,7 +1177,7 @@ IDD_RUSSIALOWER DIALOG 0, 0, 150, 75
 CAPTION "Input Palette (Ctrl+U)"
 STYLE DS_CENTER | DS_MODALFRAME | WS_CAPTION | WS_SYSMENU
 EXSTYLE WS_EX_TOOLWINDOW
-FONT 9, "MS UI Gothic"
+FONT 9, "Tahoma"
 {
     PUSHBUTTON "а", 11000, 0, 0, 15, 15
     PUSHBUTTON "б", 11001, 15, 0, 15, 15
@@ -1229,7 +1229,7 @@ FONT 9, "MS UI Gothic"
 IDD_BLOCKPATTERN DIALOG 0, 0, 335, 265
 CAPTION "Choose pattern"
 STYLE DS_CENTER | DS_MODALFRAME | WS_POPUPWINDOW | WS_CAPTION | WS_THICKFRAME | WS_MAXIMIZEBOX
-FONT 9, "MS UI Gothic"
+FONT 9, "Tahoma"
 {
     LTEXT "Please select a pattern from the list below.", stc1, 5, 2, 220, 12
     AUTORADIOBUTTON "&Large", rad1, 5, 15, 45, 16, WS_TABSTOP
@@ -1249,9 +1249,9 @@ FONT 9, "MS UI Gothic"
 IDD_THEME DIALOG 0, 0, 310, 250
 CAPTION "Theme"
 STYLE DS_CENTER | DS_MODALFRAME | WS_POPUPWINDOW | WS_CAPTION
-FONT 9, "MS UI Gothic"
+FONT 9, "Tahoma"
 {
-    LTEXT "The theme allows you to specify preferred and excluded tags. A tag is a classification keyword attached to a word in the dictionary.\r\nSpecifying a preferred tag is quite computationally intensive.", -1, 5, 5, 183, 30
+    LTEXT "The theme can specify preferred and excluded tags. A tag is a keyword attached to a word in the dictionary. Specifying preferred tags is computationally intensive.", -1, 5, 5, 183, 30
     LTEXT "Pre&set:", -1, 205, 5, 65, 12
     COMBOBOX cmb1, 205, 20, 100, 300, CBS_DISABLENOSCROLL | CBS_HASSTRINGS | CBS_AUTOHSCROLL | CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP
     LTEXT "All the &tags:", -1, 5, 40, 75, 12
@@ -1275,9 +1275,9 @@ FONT 9, "MS UI Gothic"
 IDD_SEQPATGEN DIALOG 0, 0, 310, 75
 CAPTION "Continuously generate block patterns"
 STYLE DS_CENTER | DS_MODALFRAME | WS_POPUPWINDOW | WS_CAPTION
-FONT 9, "MS UI Gothic"
+FONT 9, "Tahoma"
 {
-    LTEXT "Max. &Length:", stc1, 10, 7, 60, 12
+    LTEXT "Max. Word &Length:", stc1, 10, 7, 60, 12
     EDITTEXT edt3, 80, 5, 30, 14, ES_NUMBER | ES_RIGHT
     CONTROL "", scr3, "msctls_updown32", UDS_ARROWKEYS | UDS_AUTOBUDDY | UDS_ALIGNRIGHT | UDS_SETBUDDYINT, 100, 5, 12, 20
     LTEXT "# of generations:", -1, 128, 7, 85, 12
@@ -1293,9 +1293,9 @@ FONT 9, "MS UI Gothic"
 IDD_PATGEN DIALOG 0, 0, 310, 25
 CAPTION "Generate block pattern"
 STYLE DS_CENTER | DS_MODALFRAME | WS_POPUPWINDOW | WS_CAPTION
-FONT 9, "MS UI Gothic"
+FONT 9, "Tahoma"
 {
-    LTEXT "Max. &Length:", stc1, 10, 7, 60, 12
+    LTEXT "Max. Word &Length:", stc1, 10, 7, 60, 12
     EDITTEXT edt3, 80, 5, 30, 14, ES_NUMBER | ES_RIGHT
     CONTROL "", scr3, "msctls_updown32", UDS_ARROWKEYS | UDS_AUTOBUDDY | UDS_ALIGNRIGHT | UDS_SETBUDDYINT, 100, 5, 12, 20
     DEFPUSHBUTTON "&Generate", IDOK, 175, 5, 60, 14
