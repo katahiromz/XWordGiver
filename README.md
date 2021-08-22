@@ -1,40 +1,32 @@
-﻿# クロスワード ギバー by 片山博文MZ
+﻿# XWordGiver by katahiromz
 
-## 概要
+## Introduction
 
-「クロスワード ギバー」は、クロスワード パズルを自動で作成するソフトです。
+"XWordGiver" (pronounce as "crossword giver") is a Windows freeware to generate crossword data.
 
-![スクリーンショット1](screenshot1.png "スクリーンショット1")
+![Screenshot 1](screenshot1.png "Screenshot 1")
 
-![スクリーンショット2](screenshot2.png "スクリーンショット2")
+![Screenshot 2](screenshot2.png "Screenshot 2")
 
-## 使い方
+## Usage
 
-「ファイル」メニューで「問題を自動生成する」を選び、「計算開始」ボタンをクリックすると、問題作成のための計算が始まります。しばらく待つと問題が作成されます。
+Please choose "Generate Crossword" from "File" menu, and click "Generate" button. Calculation will start.
 
-作った問題は、自分で解いたり、保存したりすることができます。
+You can solve and/or save your generated puzzles.
 
-※発見的な方法で計算しているので時間がかかることがあります。サイズが大きくなるほど、時間が長くかかります。計算中は、気長にお待ち下さい。
+* It may take some time as it is calculated in a heuristic way. The larger the size, the longer it will take. Please be patient during the calculation.
 
-- [詳しい使い方](https://katahiromz.web.fc2.com/colony3rd/xwordgiver/)
+## Requirements
 
-## 動作環境
+- Windows Vista/7/8.1/10.
+- Intel Core i5 or later.
+- Multicore.
+- Main memory 4GB+.
 
-- Windows Vista/7/8.1/10。
-- Intel Core i5 以上の処理性能。
-- マルチコア必須。
-- メインメモリー 4GB 以上。
-- ストレージ 4GB 以上。
+## License
 
-## 使用許諾
+"XWordGiver" is released under the terms of the MIT License. See [LICENSE-ENG.txt](LICENSE-ENG.txt).
 
-「クロスワード ギバー」は、フリーソフトです。詳しくは、付属のファイルの [LICENSE.txt](LICENSE.txt) をご覧下さい。
+## Contact
 
-## 連絡先
-
-katayama.hirofumi.mz@gmail.com までメールをお送り下さい。
-
-## 電子書籍について
-
-電子書籍『クロスワード自動生成の世界』https://www.amazon.co.jp/dp/B08T877944
-に詳しく使い方が書かれています。
+katayama.hirofumi.mz@gmail.com
