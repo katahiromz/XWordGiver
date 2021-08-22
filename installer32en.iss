@@ -34,6 +34,8 @@ Source: "TechNote.txt"; DestDir: "{app}"; Flags: ignoreversion
 Source: "HISTORY.txt"; DestDir: "{app}"; Flags: ignoreversion
 Source: "DICT\BasicDict-ENG-Freedom.tsv"; DestDir: "{app}\DICT"; Flags: ignoreversion
 Source: "DICT\BasicDict-ENG-Modesty.tsv"; DestDir: "{app}\DICT"; Flags: ignoreversion
+Source: "DICT\BasicDict-ENG2JPN-Modesty.tsv"; DestDir: "{app}\DICT"; Flags: ignoreversion
+Source: "DICT\BasicDict-ENG2JPN-Freedom.tsv"; DestDir: "{app}\DICT"; Flags: ignoreversion
 Source: "DICT\BasicDict-JPN-Kana-Freedom.tsv"; DestDir: "{app}\DICT"; Flags: ignoreversion
 Source: "DICT\BasicDict-JPN-Kana-Modesty.tsv"; DestDir: "{app}\DICT"; Flags: ignoreversion
 Source: "DICT\BasicDict-JPN-Kanji-Freedom.tsv"; DestDir: "{app}\DICT"; Flags: ignoreversion
