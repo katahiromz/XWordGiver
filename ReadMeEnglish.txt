@@ -40,3 +40,5 @@ katayama.hirofumi.mz@gmail.com
     - Restarted English support.
 
 - 2021.XX.YY Ver.4.7.5
+    - Improved English support.
+    - Excluded Japanese filenames.
