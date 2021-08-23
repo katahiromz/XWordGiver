@@ -5089,6 +5089,10 @@ bool __fastcall XG_Board::SetString(const std::wstring& strToBeSet)
                 xg_imode = xg_im_RUSSIA;
                 goto break2;
             }
+            if (XgIsCharZenkakuNumericW(ch) || XgIsCharHankakuNumericW(ch)) {
+                xg_imode = xg_im_DIGITS;
+                goto break2;
+            }
         }
     }
 break2:;

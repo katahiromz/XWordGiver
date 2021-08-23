@@ -73,6 +73,7 @@ LANGUAGE LANG_JAPANESE, SUBLANG_DEFAULT
         MENUITEM "英字入力(&A)", ID_ABCINPUT
         MENUITEM "漢字入力(&H)", ID_KANJIINPUT
         MENUITEM "ロシア入力(&R)", ID_RUSSIAINPUT
+        MENUITEM "数字入力(&D)", ID_DIGITINPUT
         MENUITEM SEPARATOR
         MENUITEM "ヨコ入力(&H)\tCtrl+/", ID_INPUTH
         MENUITEM "タテ入力(&V)\tCtrl+/", ID_INPUTV
@@ -205,6 +206,7 @@ LANGUAGE LANG_JAPANESE, SUBLANG_DEFAULT
             MENUITEM "英字入力(&A)", ID_ABCINPUT
             MENUITEM "漢字入力(&H)", ID_KANJIINPUT
             MENUITEM "ロシア入力(&R)", ID_RUSSIAINPUT
+            MENUITEM "数字入力(&D)", ID_DIGITINPUT
         }
         MENUITEM SEPARATOR
         POPUP "カナ"
@@ -424,6 +426,18 @@ LANGUAGE LANG_JAPANESE, SUBLANG_DEFAULT
                 MENUITEM "Ю", 30031
                 MENUITEM "Я", 30032
             }
+        }
+        POPUP "数字"
+        {
+            MENUITEM "0", 40000
+            MENUITEM "1", 40001
+            MENUITEM "2", 40002
+            MENUITEM "3", 40003
+            MENUITEM "4", 40004
+            MENUITEM "5", 40005
+            MENUITEM "6", 40006
+            MENUITEM "7", 40007
+            MENUITEM "8", 40008
         }
         MENUITEM SEPARATOR
         MENUITEM "二重マス切り替え(&T)\tCtrl+.", ID_TOGGLEMARK
@@ -1468,6 +1482,7 @@ STRINGTABLE
     IDS_THREEDIAGONALS, "黒斜三連禁"
     IDS_RULE_DONTTHREEDIAGONALS, "黒斜三連禁"
     IDS_NORMAL_DICT, "JPN-Kana-Modesty"
+    IDS_DIGITS, "数字"
     IDS_TT_NEW, "新規作成"
     IDS_TT_GENERATE, "問題を自動生成する"
     IDS_TT_OPEN, "問題を開く"

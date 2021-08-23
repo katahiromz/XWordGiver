@@ -73,6 +73,7 @@ LANGUAGE LANG_ENGLISH, SUBLANG_DEFAULT
         MENUITEM "&Alphabet Input", ID_ABCINPUT
         MENUITEM "Kanji Input", ID_KANJIINPUT
         MENUITEM "Cyrillic Input", ID_RUSSIAINPUT
+        MENUITEM "Digit Input", ID_DIGITINPUT
         MENUITEM SEPARATOR
         MENUITEM "&Horizontal Input\tCtrl+/", ID_INPUTH
         MENUITEM "&Vertical Input\tCtrl+/", ID_INPUTV
@@ -202,6 +203,7 @@ LANGUAGE LANG_ENGLISH, SUBLANG_DEFAULT
             MENUITEM "&Alphabet Input", ID_ABCINPUT
             MENUITEM "Kanji Input", ID_KANJIINPUT
             MENUITEM "Cyrillic Input", ID_RUSSIAINPUT
+            MENUITEM "Digit Input", ID_DIGITINPUT
         }
         MENUITEM SEPARATOR
         POPUP "Kana Input"
@@ -421,6 +423,18 @@ LANGUAGE LANG_ENGLISH, SUBLANG_DEFAULT
                 MENUITEM "Ю", 30031
                 MENUITEM "Я", 30032
             }
+        }
+        POPUP "Digits"
+        {
+            MENUITEM "0", 40000
+            MENUITEM "1", 40001
+            MENUITEM "2", 40002
+            MENUITEM "3", 40003
+            MENUITEM "4", 40004
+            MENUITEM "5", 40005
+            MENUITEM "6", 40006
+            MENUITEM "7", 40007
+            MENUITEM "8", 40008
         }
         MENUITEM SEPARATOR
         MENUITEM "&Toggle double-frame\tCtrl+.", ID_TOGGLEMARK
@@ -1465,6 +1479,7 @@ STRINGTABLE
     IDS_THREEDIAGONALS, "Prohibit 3 blocks diagonally in a row"
     IDS_RULE_DONTTHREEDIAGONALS, "Prohibit 3 blocks diagonally in a row"
     IDS_NORMAL_DICT, "ENG-Modesty"
+    IDS_DIGITS, "Digits"
     IDS_TT_NEW, "New crossword"
     IDS_TT_GENERATE, "Generate crossword"
     IDS_TT_OPEN, "Open crossword"

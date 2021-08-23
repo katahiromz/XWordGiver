@@ -1290,6 +1290,8 @@ XgGenerateDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam*/)
             n3 = 6;
         } else if (xg_imode == xg_im_RUSSIA || xg_imode == xg_im_ABC) {
             n3 = 5;
+        } else if (xg_imode == xg_im_DIGITS) {
+            n3 = 7;
         } else {
             n3 = 4;
         }
@@ -1441,6 +1443,8 @@ XgGenerateRepeatedlyDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam
             n3 = 6;
         } else if (xg_imode == xg_im_RUSSIA || xg_imode == xg_im_ABC) {
             n3 = 5;
+        } else if (xg_imode == xg_im_DIGITS) {
+            n3 = 7;
         } else {
             n3 = 4;
         }
@@ -1643,6 +1647,8 @@ XgGenerateBlacksRepeatedlyDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*
             n3 = 6;
         } else if (xg_imode == xg_im_RUSSIA || xg_imode == xg_im_ABC) {
             n3 = 5;
+        } else if (xg_imode == xg_im_DIGITS) {
+            n3 = 7;
         } else {
             n3 = 4;
         }
@@ -1782,6 +1788,8 @@ XgGenerateBlacksDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam*/)
             n3 = 6;
         } else if (xg_imode == xg_im_RUSSIA || xg_imode == xg_im_ABC) {
             n3 = 5;
+        } else if (xg_imode == xg_im_DIGITS) {
+            n3 = 7;
         } else {
             n3 = 4;
         }
@@ -4729,19 +4737,23 @@ void __fastcall MainWnd_OnInitMenu(HWND /*hwnd*/, HMENU hMenu)
     // 入力モード。
     switch (xg_imode) {
     case xg_im_KANA:
-        ::CheckMenuRadioItem(hMenu, ID_KANAINPUT, ID_RUSSIAINPUT, ID_KANAINPUT, MF_BYCOMMAND);
+        ::CheckMenuRadioItem(hMenu, ID_KANAINPUT, ID_DIGITINPUT, ID_KANAINPUT, MF_BYCOMMAND);
         break;
 
     case xg_im_ABC:
-        ::CheckMenuRadioItem(hMenu, ID_KANAINPUT, ID_RUSSIAINPUT, ID_ABCINPUT, MF_BYCOMMAND);
+        ::CheckMenuRadioItem(hMenu, ID_KANAINPUT, ID_DIGITINPUT, ID_ABCINPUT, MF_BYCOMMAND);
         break;
 
     case xg_im_KANJI:
-        ::CheckMenuRadioItem(hMenu, ID_KANAINPUT, ID_RUSSIAINPUT, ID_KANJIINPUT, MF_BYCOMMAND);
+        ::CheckMenuRadioItem(hMenu, ID_KANAINPUT, ID_DIGITINPUT, ID_KANJIINPUT, MF_BYCOMMAND);
         break;
 
     case xg_im_RUSSIA:
-        ::CheckMenuRadioItem(hMenu, ID_KANAINPUT, ID_RUSSIAINPUT, ID_RUSSIAINPUT, MF_BYCOMMAND);
+        ::CheckMenuRadioItem(hMenu, ID_KANAINPUT, ID_DIGITINPUT, ID_RUSSIAINPUT, MF_BYCOMMAND);
+        break;
+
+    case xg_im_DIGITS:
+        ::CheckMenuRadioItem(hMenu, ID_KANAINPUT, ID_DIGITINPUT, ID_DIGITINPUT, MF_BYCOMMAND);
         break;
     }
 
@@ -5043,6 +5055,7 @@ void __fastcall XgUpdateStatusBar(HWND hwnd)
     case xg_im_KANA: str += XgLoadStringDx1(IDS_KANA); break;
     case xg_im_KANJI: str += XgLoadStringDx1(IDS_KANJI); break;
     case xg_im_RUSSIA: str += XgLoadStringDx1(IDS_RUSSIA); break;
+    case xg_im_DIGITS: str += XgLoadStringDx1(IDS_DIGITS); break;
     default:
         break;
     }
@@ -6190,6 +6203,7 @@ void DoWebSearch(HWND hwnd, LPCWSTR str)
         raw += XgLoadStringDx2(IDS_DICTIONARY);
         break;
     case xg_im_RUSSIA:
+    case xg_im_DIGITS:
         break;
     default:
         break;
@@ -6398,6 +6412,17 @@ bool __fastcall MainWnd_OnCommand2(HWND hwnd, INT id)
     case 30030: MainWnd_OnImeChar(hwnd, 0x042D, 0); bOK = true; break;
     case 30031: MainWnd_OnImeChar(hwnd, 0x042E, 0); bOK = true; break;
     case 30032: MainWnd_OnImeChar(hwnd, 0x042F, 0); bOK = true; break;
+    // Digits
+    case 40000: MainWnd_OnImeChar(hwnd, L'0', 0); bOK = true; break;
+    case 40001: MainWnd_OnImeChar(hwnd, L'1', 0); bOK = true; break;
+    case 40002: MainWnd_OnImeChar(hwnd, L'2', 0); bOK = true; break;
+    case 40003: MainWnd_OnImeChar(hwnd, L'3', 0); bOK = true; break;
+    case 40004: MainWnd_OnImeChar(hwnd, L'4', 0); bOK = true; break;
+    case 40005: MainWnd_OnImeChar(hwnd, L'5', 0); bOK = true; break;
+    case 40006: MainWnd_OnImeChar(hwnd, L'6', 0); bOK = true; break;
+    case 40007: MainWnd_OnImeChar(hwnd, L'7', 0); bOK = true; break;
+    case 40008: MainWnd_OnImeChar(hwnd, L'8', 0); bOK = true; break;
+    case 40009: MainWnd_OnImeChar(hwnd, L'9', 0); bOK = true; break;
     default:
         break;
     }
@@ -8548,6 +8573,10 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
         XgSetInputMode(hwnd, xg_im_RUSSIA);
         break;
 
+    case ID_DIGITINPUT: // 数字入力モード。
+        XgSetInputMode(hwnd, xg_im_DIGITS);
+        break;
+
     case ID_SHOWHIDEHINTS:
         if (IsWindow(xg_hHintsWnd)) {
             ::DestroyWindow(xg_hHintsWnd);
@@ -9373,24 +9402,37 @@ HMENU XgLoadPopupMenu(HWND hwnd, INT nPos)
     HMENU hMenu = LoadMenuW(xg_hInstance, MAKEINTRESOURCE(2));
     HMENU hSubMenu = GetSubMenu(hMenu, nPos);
 
+    // POPUP "カナ"がインデックス5。
+    // POPUP "英字"がインデックス6。
+    // POPUP "ロシア"がインデックス7。
+    // POPUP "数字"がインデックス8。
+    // 大きいインデックスのメニュー項目から削除。
     switch (xg_imode)
     {
     case xg_im_ABC:
+        DeleteMenu(hSubMenu, 8, MF_BYPOSITION);
+        DeleteMenu(hSubMenu, 7, MF_BYPOSITION);
         DeleteMenu(hSubMenu, 5, MF_BYPOSITION);
-        DeleteMenu(hSubMenu, 6, MF_BYPOSITION);
         break;
     case xg_im_KANA:
-        DeleteMenu(hSubMenu, 6, MF_BYPOSITION);
+        DeleteMenu(hSubMenu, 8, MF_BYPOSITION);
+        DeleteMenu(hSubMenu, 7, MF_BYPOSITION);
         DeleteMenu(hSubMenu, 6, MF_BYPOSITION);
         break;
     case xg_im_KANJI:
-        DeleteMenu(hSubMenu, 5, MF_BYPOSITION);
-        DeleteMenu(hSubMenu, 5, MF_BYPOSITION);
-        DeleteMenu(hSubMenu, 5, MF_BYPOSITION);
+        DeleteMenu(hSubMenu, 8, MF_BYPOSITION);
+        DeleteMenu(hSubMenu, 7, MF_BYPOSITION);
+        DeleteMenu(hSubMenu, 6, MF_BYPOSITION);
         DeleteMenu(hSubMenu, 5, MF_BYPOSITION);
         break;
     case xg_im_RUSSIA:
+        DeleteMenu(hSubMenu, 8, MF_BYPOSITION);
+        DeleteMenu(hSubMenu, 6, MF_BYPOSITION);
         DeleteMenu(hSubMenu, 5, MF_BYPOSITION);
+        break;
+    case xg_im_DIGITS:
+        DeleteMenu(hSubMenu, 7, MF_BYPOSITION);
+        DeleteMenu(hSubMenu, 6, MF_BYPOSITION);
         DeleteMenu(hSubMenu, 5, MF_BYPOSITION);
         break;
     default:

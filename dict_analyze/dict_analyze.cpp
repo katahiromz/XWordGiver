@@ -40,6 +40,15 @@ inline bool XgIsCharZenkakuCyrillicW(WCHAR ch)
 {
     return 0x0400 <= ch && ch <= 0x04FF;
 }
+inline bool XgIsCharZenkakuNumericW(WCHAR ch)
+{
+    return 0xFF10 <= ch && ch <= 0xFF19;
+}
+inline bool XgIsCharHankakuNumericW(WCHAR ch)
+{
+    return L'0' <= ch && ch <= L'9';
+}
+
 
 template <typename T_STR>
 inline bool

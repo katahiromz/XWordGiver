@@ -381,6 +381,7 @@
 	インストーラを単純化。
 
 2021年XX月YY日 ver.4.7.6
+	数字入力を受け入れる。
 
 ## History of XWordGiver (English)
 
@@ -395,4 +396,6 @@
     - Simplified LICENSE.
     - Don't feed when input is not a character.
     - Simplify installers.
+
 - 2021.XX.YY Ver.4.7.6
+    - Accepted digits input.
