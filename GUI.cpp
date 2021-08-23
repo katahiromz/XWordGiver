@@ -115,6 +115,8 @@ BOOL xg_bSkeltonMode = FALSE;
 
 // 番号を表示するか？
 BOOL xg_bShowNumbering = TRUE;
+// キャレットを表示するか？
+BOOL xg_bShowCaret = TRUE;
 
 //////////////////////////////////////////////////////////////////////////////
 // static variables
@@ -585,6 +587,7 @@ bool __fastcall XgLoadSettings(void)
     xg_nZoomRate = 100;
     xg_bSkeltonMode = FALSE;
     xg_bShowNumbering = TRUE;
+    xg_bShowCaret = TRUE;
 
     xg_bHiragana = FALSE;
     xg_bLowercase = FALSE;
@@ -751,6 +754,10 @@ bool __fastcall XgLoadSettings(void)
             if (!app_key.QueryDword(L"ShowNumbering", dwValue)) {
                 xg_bShowNumbering = dwValue;
             }
+            if (!app_key.QueryDword(L"ShowCaret", dwValue)) {
+                xg_bShowCaret = dwValue;
+            }
+
             if (!app_key.QueryDword(L"Hiragana", dwValue)) {
                 xg_bHiragana = !!dwValue;
             }
@@ -892,6 +899,7 @@ bool __fastcall XgSaveSettings(void)
             app_key.SetDword(L"ZoomRate", xg_nZoomRate);
             app_key.SetDword(L"SkeltonMode", xg_bSkeltonMode);
             app_key.SetDword(L"ShowNumbering", xg_bShowNumbering);
+            app_key.SetDword(L"ShowCaret", xg_bShowCaret);
 
             app_key.SetDword(L"Hiragana", xg_bHiragana);
             app_key.SetDword(L"Lowercase", xg_bLowercase);
@@ -4690,6 +4698,13 @@ void __fastcall MainWnd_OnInitMenu(HWND /*hwnd*/, HMENU hMenu)
         CheckMenuItem(hMenu, ID_SHOWHIDENUMBERING, MF_BYCOMMAND | MF_CHECKED);
     } else {
         CheckMenuItem(hMenu, ID_SHOWHIDENUMBERING, MF_BYCOMMAND | MF_UNCHECKED);
+    }
+
+    // キャレットを表示するか？
+    if (xg_bShowCaret) {
+        CheckMenuItem(hMenu, ID_SHOWHIDECARET, MF_BYCOMMAND | MF_CHECKED);
+    } else {
+        CheckMenuItem(hMenu, ID_SHOWHIDECARET, MF_BYCOMMAND | MF_UNCHECKED);
     }
 
     // 一定時間が過ぎたらリトライ。
@@ -8777,6 +8792,12 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
         break;
     case ID_SHOWHIDENUMBERING:
         xg_bShowNumbering = !xg_bShowNumbering;
+        x = XgGetHScrollPos();
+        y = XgGetVScrollPos();
+        XgUpdateImage(hwnd, x, y);
+        break;
+    case ID_SHOWHIDECARET:
+        xg_bShowCaret = !xg_bShowCaret;
         x = XgGetHScrollPos();
         y = XgGetVScrollPos();
         XgUpdateImage(hwnd, x, y);

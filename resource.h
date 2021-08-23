@@ -328,6 +328,7 @@
 #define ID_RULE_DONTTHREEDIAGONALS          270
 #define ID_DIGITINPUT                       271
 #define ID_SHOWHIDENUMBERING                272
+#define ID_SHOWHIDECARET                    273
 #define ID_TT_BASE                          10000
 
 #define ctl2                                1185

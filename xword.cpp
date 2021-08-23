@@ -3921,7 +3921,7 @@ void __fastcall XgDrawXWord(XG_Board& xw, HDC hdc, LPSIZE psiz, bool bCaret)
     ::SelectObject(hdc, hFontOld);
 
     // キャレットを描画する。
-    if (bCaret) {
+    if (bCaret && xg_bShowCaret) {
         const int i = xg_caret_pos.m_i;
         const int j = xg_caret_pos.m_j;
         ::SetRect(&rc,

@@ -770,6 +770,8 @@ inline BOOL XgIsUserJapanese(VOID)
 
 // 番号を表示するか？
 extern BOOL xg_bShowNumbering;
+// キャレットを表示するか？
+extern BOOL xg_bShowCaret;
 
 //////////////////////////////////////////////////////////////////////////////
 
