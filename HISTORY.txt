@@ -380,6 +380,8 @@
 	入力が文字でないときに文字送りをしない。
 	インストーラを単純化。
 
+2021年XX月YY日 ver.4.7.6
+
 ## History of XWordGiver (English)
 
 - 2021.08.22 Ver.4.7.4
@@ -393,3 +395,4 @@
     - Simplified LICENSE.
     - Don't feed when input is not a character.
     - Simplify installers.
+- 2021.XX.YY Ver.4.7.6
