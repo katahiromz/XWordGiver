@@ -3876,14 +3876,16 @@ void __fastcall XgDrawXWord(XG_Board& xw, HDC hdc, LPSIZE psiz, bool bCaret)
                 ::SetBkColor(hdc, xg_rgbWhiteCellColor);
             }
 
-            // 数字を描く。
-            ::SetRect(&rc,
-                static_cast<int>(xg_nMargin + j * nCellSize), 
-                static_cast<int>(xg_nMargin + i * nCellSize),
-                static_cast<int>(xg_nMargin + (j + 1) * nCellSize), 
-                static_cast<int>(xg_nMargin + (i + 1) * nCellSize));
-            ::OffsetRect(&rc, 2, 1);
-            ::DrawTextW(hdc, sz, -1, &rc, DT_LEFT | DT_SINGLELINE | DT_TOP);
+            if (xg_bShowNumbering) {
+                // 数字を描く。
+                ::SetRect(&rc,
+                    static_cast<int>(xg_nMargin + j * nCellSize), 
+                    static_cast<int>(xg_nMargin + i * nCellSize),
+                    static_cast<int>(xg_nMargin + (j + 1) * nCellSize), 
+                    static_cast<int>(xg_nMargin + (i + 1) * nCellSize));
+                ::OffsetRect(&rc, 2, 1);
+                ::DrawTextW(hdc, sz, -1, &rc, DT_LEFT | DT_SINGLELINE | DT_TOP);
+            }
         }
     }
     // ヨコのカギの先頭マス。
@@ -3902,14 +3904,16 @@ void __fastcall XgDrawXWord(XG_Board& xw, HDC hdc, LPSIZE psiz, bool bCaret)
                 ::SetBkColor(hdc, xg_rgbWhiteCellColor);
             }
 
-            // 数字を描く。
-            ::SetRect(&rc,
-                static_cast<int>(xg_nMargin + j * nCellSize), 
-                static_cast<int>(xg_nMargin + i * nCellSize),
-                static_cast<int>(xg_nMargin + (j + 1) * nCellSize), 
-                static_cast<int>(xg_nMargin + (i + 1) * nCellSize));
-            ::OffsetRect(&rc, 2, 1);
-            ::DrawTextW(hdc, sz, -1, &rc, DT_LEFT | DT_SINGLELINE | DT_TOP);
+            if (xg_bShowNumbering) {
+                // 数字を描く。
+                ::SetRect(&rc,
+                    static_cast<int>(xg_nMargin + j * nCellSize), 
+                    static_cast<int>(xg_nMargin + i * nCellSize),
+                    static_cast<int>(xg_nMargin + (j + 1) * nCellSize), 
+                    static_cast<int>(xg_nMargin + (i + 1) * nCellSize));
+                ::OffsetRect(&rc, 2, 1);
+                ::DrawTextW(hdc, sz, -1, &rc, DT_LEFT | DT_SINGLELINE | DT_TOP);
+            }
         }
     }
 

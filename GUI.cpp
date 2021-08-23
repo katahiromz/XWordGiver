@@ -113,6 +113,9 @@ INT xg_nZoomRate = 100;
 // スケルトンモードか？
 BOOL xg_bSkeltonMode = FALSE;
 
+// 番号を表示するか？
+BOOL xg_bShowNumbering = TRUE;
+
 //////////////////////////////////////////////////////////////////////////////
 // static variables
 
@@ -581,6 +584,7 @@ bool __fastcall XgLoadSettings(void)
     xg_imode = xg_im_KANA;
     xg_nZoomRate = 100;
     xg_bSkeltonMode = FALSE;
+    xg_bShowNumbering = TRUE;
 
     xg_bHiragana = FALSE;
     xg_bLowercase = FALSE;
@@ -744,6 +748,9 @@ bool __fastcall XgLoadSettings(void)
             if (!app_key.QueryDword(L"SkeltonMode", dwValue)) {
                 xg_bSkeltonMode = dwValue;
             }
+            if (!app_key.QueryDword(L"ShowNumbering", dwValue)) {
+                xg_bShowNumbering = dwValue;
+            }
             if (!app_key.QueryDword(L"Hiragana", dwValue)) {
                 xg_bHiragana = !!dwValue;
             }
@@ -884,6 +891,8 @@ bool __fastcall XgSaveSettings(void)
             app_key.SetDword(L"InputMode", (DWORD)xg_imode);
             app_key.SetDword(L"ZoomRate", xg_nZoomRate);
             app_key.SetDword(L"SkeltonMode", xg_bSkeltonMode);
+            app_key.SetDword(L"ShowNumbering", xg_bShowNumbering);
+
             app_key.SetDword(L"Hiragana", xg_bHiragana);
             app_key.SetDword(L"Lowercase", xg_bLowercase);
 
@@ -4675,7 +4684,14 @@ void __fastcall MainWnd_OnInitMenu(HWND /*hwnd*/, HMENU hMenu)
     } else {
         CheckMenuItem(hMenu, ID_SKELTONMODE, MF_BYCOMMAND | MF_UNCHECKED);
     }
-    
+
+    // 数字を表示するか？
+    if (xg_bShowNumbering) {
+        CheckMenuItem(hMenu, ID_SHOWHIDENUMBERING, MF_BYCOMMAND | MF_CHECKED);
+    } else {
+        CheckMenuItem(hMenu, ID_SHOWHIDENUMBERING, MF_BYCOMMAND | MF_UNCHECKED);
+    }
+
     // 一定時間が過ぎたらリトライ。
     if (s_bAutoRetry) {
         CheckMenuItem(hMenu, ID_RETRYIFTIMEOUT, MF_BYCOMMAND | MF_CHECKED);
@@ -8758,6 +8774,12 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
             SendMessageW(hwnd, WM_CHAR, L'_', 0);
             xg_bCharFeed = bOldFeed;
         }
+        break;
+    case ID_SHOWHIDENUMBERING:
+        xg_bShowNumbering = !xg_bShowNumbering;
+        x = XgGetHScrollPos();
+        y = XgGetVScrollPos();
+        XgUpdateImage(hwnd, x, y);
         break;
     case ID_ZOOMIN:
         if (xg_nZoomRate < 50) {

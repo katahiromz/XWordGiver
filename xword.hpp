@@ -768,6 +768,9 @@ inline BOOL XgIsUserJapanese(VOID)
     return PRIMARYLANGID(LANGIDFROMLCID(GetThreadLocale())) == LANG_JAPANESE;
 }
 
+// î‘çÜÇï\é¶Ç∑ÇÈÇ©ÅH
+extern BOOL xg_bShowNumbering;
+
 //////////////////////////////////////////////////////////////////////////////
 
 #endif  // ndef __XWORD_HPP__
