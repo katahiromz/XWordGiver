@@ -115,6 +115,7 @@ LANGUAGE LANG_JAPANESE, SUBLANG_DEFAULT
         MENUITEM "前の二重マス単語(&P)\tCtrl+K", ID_MARKSPREV
         MENUITEM SEPARATOR
         MENUITEM "二重マスをすべて解除する(&K)\tCtrl+R", ID_KILLMARKS
+        MENUITEM "解を削除して編集ロックを解除(&U)", ID_ERASESOLUTIONANDUNLOCKEDIT
     }
     POPUP "表示(&V)"
     {

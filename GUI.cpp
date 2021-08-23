@@ -9043,6 +9043,14 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
     case ID_FILLBYWHITES:
         XgNewCells(hwnd, ZEN_SPACE, xg_nRows, xg_nCols);
         break;
+    case ID_ERASESOLUTIONANDUNLOCKEDIT:
+        {
+            std::wstring str;
+            XG_Board *pxw = (xg_bSolved && xg_bShowAnswer) ? &xg_solution : &xg_xword;
+            pxw->GetString(str);
+            XgPasteBoard(hwnd, str);
+        }
+        break;
     default:
         if (!MainWnd_OnCommand2(hwnd, id)) {
             ::MessageBeep(0xFFFFFFFF);
