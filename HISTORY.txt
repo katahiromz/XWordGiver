@@ -385,6 +385,7 @@
 	番号を消すことが可能に。
 	キャレットを消すことが可能に。
 	「解」メニューに「解を削除して編集ロックを解除」を追加。
+	黒マスパターンを追加。
 
 ## History of XWordGiver (English)
 
@@ -405,3 +406,4 @@
     - Able to hide numbering.
     - Able to hide caret.
     - Added menu item "Delete solution and &unlock edit" to "Solution" menu.
+    - Added more block patterns.
