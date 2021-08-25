@@ -380,7 +380,7 @@
 	入力が文字でないときに文字送りをしない。
 	インストーラを単純化。
 
-2021年XX月YY日 ver.4.7.6
+2021年8月25日 ver.4.7.6
 	数字入力を受け入れる。
 	番号を消すことが可能に。
 	キャレットを消すことが可能に。
@@ -401,7 +401,7 @@
     - Don't feed when input is not a character.
     - Simplify installers.
 
-- 2021.XX.YY Ver.4.7.6
+- 2021.08.25 Ver.4.7.6
     - Accepted digits input.
     - Able to hide numbering.
     - Able to hide caret.
