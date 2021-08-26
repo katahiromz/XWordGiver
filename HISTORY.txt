@@ -387,6 +387,9 @@
 	「解」メニューに「解を削除して編集ロックを解除」を追加。
 	黒マスパターンを追加。
 
+2021年8月26日 ver.4.7.7
+	英語辞書を強化。
+
 ## History of XWordGiver (English)
 
 - 2021.08.22 Ver.4.7.4
@@ -407,3 +410,6 @@
     - Able to hide caret.
     - Added menu item "Delete solution and &unlock edit" to "Solution" menu.
     - Added more block patterns.
+
+- 2021.08.26 Ver.4.7.7
+    - Strengthened English dictionary.

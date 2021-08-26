@@ -7,7 +7,7 @@
 ; (To generate a new GUID, click Tools | Generate GUID inside the IDE.)
 AppId={{CDECA641-CFBB-43E0-A075-13802703E7EC}
 AppName={cm:AppNameBits}
-AppVerName={cm:AppNameBits} ver.4.7.6
+AppVerName={cm:AppNameBits} ver.4.7.7
 AppPublisher={cm:Author}
 AppPublisherURL=http://katahiromz.web.fc2.com/
 AppSupportURL=http://katahiromz.web.fc2.com/
@@ -15,7 +15,7 @@ AppUpdatesURL=http://katahiromz.web.fc2.com/
 DefaultDirName={pf}\XWordGiver64
 DefaultGroupName={cm:AppNameBits}
 OutputDir=.
-OutputBaseFilename=XWordGiver-x64-4.7.6-setup
+OutputBaseFilename=XWordGiver-x64-4.7.7-setup
 Compression=lzma
 SolidCompression=yes
 UninstallDisplayIcon={app}\xword64.exe
@@ -38,7 +38,6 @@ Source: "ReadMe-JPN.txt"; DestDir: "{app}"; Flags: ignoreversion
 Source: "TechNote.txt"; DestDir: "{app}"; Flags: ignoreversion
 Source: "HISTORY.txt"; DestDir: "{app}"; Flags: ignoreversion
 Source: "DICT\BasicDict-ENG-Freedom.tsv"; DestDir: "{app}\DICT"; Flags: ignoreversion
-Source: "DICT\BasicDict-ENG-Modesty.tsv"; DestDir: "{app}\DICT"; Flags: ignoreversion
 Source: "DICT\BasicDict-ENG2JPN-Modesty.tsv"; DestDir: "{app}\DICT"; Flags: ignoreversion
 Source: "DICT\BasicDict-ENG2JPN-Freedom.tsv"; DestDir: "{app}\DICT"; Flags: ignoreversion
 Source: "DICT\BasicDict-JPN-Kana-Freedom.tsv"; DestDir: "{app}\DICT"; Flags: ignoreversion
