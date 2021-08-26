@@ -1481,7 +1481,7 @@ STRINGTABLE
     IDS_PATMAKING, "I have created %u block patterns."
     IDS_THREEDIAGONALS, "Prohibit 3 blocks diagonally in a row"
     IDS_RULE_DONTTHREEDIAGONALS, "Prohibit 3 blocks diagonally in a row"
-    IDS_NORMAL_DICT, "ENG-Modesty"
+    IDS_NORMAL_DICT, "ENG-Freedom"
     IDS_DIGITS, "Digits"
     IDS_TT_NEW, "New crossword"
     IDS_TT_GENERATE, "Generate crossword"
