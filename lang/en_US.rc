@@ -115,7 +115,7 @@ LANGUAGE LANG_ENGLISH, SUBLANG_DEFAULT
         MENUITEM "&Previous double-frame word\tCtrl+K", ID_MARKSPREV
         MENUITEM SEPARATOR
         MENUITEM "Reset all the double-frames\tCtrl+R", ID_KILLMARKS
-        MENUITEM "Delete solution and &unlock board", ID_ERASESOLUTIONANDUNLOCKEDIT
+        MENUITEM "Delete clues and &unlock board", ID_ERASESOLUTIONANDUNLOCKEDIT
     }
     POPUP "&View"
     {

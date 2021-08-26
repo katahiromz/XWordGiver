@@ -389,6 +389,7 @@
 
 2021年8月26日 ver.4.7.7
 	英語辞書を強化。
+	「解を削除して盤のロックを解除」を「ヒントを削除して盤のロックを解除」に変更。
 
 ## History of XWordGiver (English)
 
@@ -413,3 +414,4 @@
 
 - 2021.08.26 Ver.4.7.7
     - Strengthened English dictionary.
+    - Changed "Delete solution and unlock board" to "Delete clues and unlock board".
