@@ -762,10 +762,11 @@ inline bool __fastcall XG_Board::CanPutBlack(int iRow, int jCol) const
 // ユーザは日本人か？
 inline BOOL XgIsUserJapanese(VOID)
 {
-#if 0 // 偽る
-    return FALSE;
-#endif
-    return PRIMARYLANGID(LANGIDFROMLCID(GetThreadLocale())) == LANG_JAPANESE;
+    // 日本語リソースを読み込まなかったら日本語を使う。
+    WCHAR szText[64];
+    LoadStringW(NULL, IDS_MAIN_LANGUAGE, szText, _countof(szText));
+    return lstrcmpiW(szText, L"Japanese") == 0;
+    // return PRIMARYLANGID(LANGIDFROMLCID(GetThreadLocale())) == LANG_JAPANESE; // これはだめ。
 }
 
 // 番号を表示するか？

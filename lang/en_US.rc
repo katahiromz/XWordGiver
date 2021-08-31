@@ -1483,6 +1483,7 @@ STRINGTABLE
     IDS_RULE_DONTTHREEDIAGONALS, "Prohibit 3 blocks diagonally in a row"
     IDS_NORMAL_DICT, "ENG-Freedom"
     IDS_DIGITS, "Digits"
+    IDS_MAIN_LANGUAGE, "English"
     IDS_TT_NEW, "New crossword"
     IDS_TT_GENERATE, "Generate crossword"
     IDS_TT_OPEN, "Open crossword"

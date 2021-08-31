@@ -161,6 +161,7 @@
 #define IDS_RULE_DONTTHREEDIAGONALS         251
 #define IDS_NORMAL_DICT                     252
 #define IDS_DIGITS                          253
+#define IDS_MAIN_LANGUAGE                   254
 #define IDS_TT_NEW                          10100
 #define IDS_TT_GENERATE                     10101
 #define IDS_TT_OPEN                         10102
