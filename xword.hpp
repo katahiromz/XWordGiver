@@ -764,7 +764,7 @@ inline BOOL XgIsUserJapanese(VOID)
 {
     static BOOL s_bInit = FALSE, s_bIsJapanese = FALSE; // 高速化のためキャッシュを使う。
     if (!s_bInit) {
-        // 日本語リソースを読み込まなかったら日本語を使う。
+        // IDS_MAIN_LANGUAGEの値が"Japanese"だったら日本語と見なす。
         WCHAR szText[64];
         LoadStringW(NULL, IDS_MAIN_LANGUAGE, szText, _countof(szText));
         s_bIsJapanese = (lstrcmpiW(szText, L"Japanese") == 0);
