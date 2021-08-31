@@ -392,7 +392,8 @@
 	「解を削除して盤のロックを解除」を「ヒントを削除して盤のロックを解除」に変更。
 
 2021年XX月YY日 ver.4.7.8
-    英語のダイアログを改良。
+	英語のダイアログを改良。
+	黒マスパターンをさらに追加。
 
 ## History of XWordGiver (English)
 
@@ -421,3 +422,4 @@
 
 - 2021.XX.YY Ver.4.7.8
     - Improved English dialogs.
+    - Added more block patterns.
