@@ -762,10 +762,15 @@ inline bool __fastcall XG_Board::CanPutBlack(int iRow, int jCol) const
 // ユーザは日本人か？
 inline BOOL XgIsUserJapanese(VOID)
 {
-    // 日本語リソースを読み込まなかったら日本語を使う。
-    WCHAR szText[64];
-    LoadStringW(NULL, IDS_MAIN_LANGUAGE, szText, _countof(szText));
-    return lstrcmpiW(szText, L"Japanese") == 0;
+    static BOOL s_bInit = FALSE, s_bIsJapanese = FALSE; // 高速化のためキャッシュを使う。
+    if (!s_bInit) {
+        // 日本語リソースを読み込まなかったら日本語を使う。
+        WCHAR szText[64];
+        LoadStringW(NULL, IDS_MAIN_LANGUAGE, szText, _countof(szText));
+        s_bIsJapanese = (lstrcmpiW(szText, L"Japanese") == 0);
+        s_bInit = TRUE;
+    }
+    return s_bIsJapanese;
     // return PRIMARYLANGID(LANGIDFROMLCID(GetThreadLocale())) == LANG_JAPANESE; // これはだめ。
 }
 
