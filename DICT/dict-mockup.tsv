@@ -10,8 +10,8 @@ ACCENT	Characteristic way to pronounce words
 ACCEPTANCE	To say yes or agree to take
 ACCESS	To get information on your computer
 ACCESSIBILITY	Ability to get information
-ACCESSORY	A item which can be added to body
 ACCESSORIES	The items that can be added to body
+ACCESSORY	A item which can be added to body
 ACCIDENT	Injury, damage, or death in traffic
 ACCOMMODATION	Building or rooms where people live or stay
 ACCOMPLISHMENT	Something great that you achieved
@@ -51,9 +51,7 @@ ADVERB	A word that adds information to the verb
 ADVERT	Information on products, events, etc.
 ADVERTISING	The business of creating info on products, events, etc.
 ADVISOR	An expert whose job is to give suggestion
-ANTENNA	A equipment to receive TV or radio signals
 AEROBICS	Exercise to strengthen the heart and lungs
-AIRPLANE	A fixed-wing vehicle that flies in the sky
 AEROSOL	Fine solid or liquid particles in a gas
 AFFAIR	A sexual relationship between two unmarried people
 AFFAIRS	Important events and situations
@@ -72,6 +70,7 @@ AIM	The purpose or target of something
 AIR	The gases around us
 AIRCRAFT	A plane or helicopter
 AIRLINE	A company that provides air transport
+AIRPLANE	A fixed-wing vehicle that flies in the sky
 AIRPORT	A place where airplanes come and go
 AISLE	A narrow passage between rows
 ALARM	A warning notice of something
@@ -110,8 +109,8 @@ ANGEL	Heavenly messenger from God
 ANGER	Strong feelings against uncomfortable something
 ANGLE	Units are degrees or radians
 ANIMAL	A creature such as a dog or a cat
-ANIME	Moving cartoons
 ANIMATION	A method to show moving images
+ANIME	Moving cartoons
 ANKLE	The joint of foot and leg
 ANNIVERSARY	A memorable day after some years
 ANNOUNCEMENT	It tells people something officially
@@ -120,6 +119,7 @@ ANOTHER	A different thing
 ANSWER	A way to solve a problem
 ANT	A small crawling insect
 ANTENNA	A device to transmit/receive radio waves
+ANTENNA	A equipment to receive TV or radio signals
 ANTIBIOTIC	A drug to kill bacteria
 ANTICIPATION	Excitement that something is coming
 ANTIPERSPIRANT	A chemical that reduces sweating and perspiration
@@ -154,8 +154,8 @@ APRIL	The 4th month of the year
 APRON	Protective clothing for cooking
 AQUARIUM	A glass box filled with water to keep fish
 ARCH	A structure that is curved at the top
-ARCHAEOLOGY	The study of the ancient human past
 ARCHAEOLOGIST	A person that investigates historic site
+ARCHAEOLOGY	The study of the ancient human past
 ARCHITECT	A person who designs buildings
 ARCHITECTURE	The style of the design of a building
 AREA	A particular part of a town or country
@@ -196,8 +196,8 @@ ASTERISK	The sign *
 ASTHMA	A medical condition that affects the airways
 ASTONISHMENT	A feeling of great surprise
 ASTRONAUT	A person who travels beyond the Earth's atmosphere
-ASTRONOMY	The scientific study in the universe
 ASTRONOMER	A scientist who studies the universe
+ASTRONOMY	The scientific study in the universe
 ATHLETE	A person who do a professional sport
 ATLAS	A collection of maps
 ATM	A banking machine that serves people
@@ -267,15 +267,14 @@ BANNER	A piece of cloth that shows some information
 BAPTISM	Christian rite of admission using water
 BAR	Where alcoholic drinks are served
 BARBECUE	A cooking method for meat and other foods with fire
-BBQ	Abbreviation for barbecue
 BARBER	A person who cuts men's hair
+BARCODE	A machine-readable black lines and spaces
 BARGAIN	A sale in a lower price than its true value
 BARK	The outermost layers of stem or root of wood
 BARN	A large farm building
 BARRACKS	A temporary building used for housing people
 BARREL	The wine is brewed in this container
 BARRICADE	A barrier to stop enemies or vehicles
-BARCODE	A machine-readable black lines and spaces
 BARRIER	A fence or something that prevents movement
 BARTENDER	A person serving drinks at a bar
 BASE	The bottom or lowest part of something
@@ -297,6 +296,7 @@ BATTER	A flour mixture with liquid and other ingredients
 BATTERY	A source of electric power by chemical reaction
 BATTLE	An occurrence of combat in warfare
 BAY	An inlet of the sea or lake
+BBQ	Abbreviation for barbecue
 BC	Abbreviation for Before Christ
 BEACH	An expanse of sand or pebbles along a shore
 BEAD	A small and decorative object that is pierced for threading
@@ -404,6 +404,7 @@ BOOKSHOP	A store where books are sold
 BOOT	Italy is this shape
 BORDER	A line separating two countries
 BOSS	A person who exercises control or authority
+BOT
 BOTANY	The scientific study of plants
 BOTH	One and the other; two together
 BOTTLE	A glass or plastic container with a narrow neck
@@ -492,8 +493,6 @@ BURGER	A food consisting of meat and vegetables on buns
 BURGLAR	A person who illegally enters the building
 BURGLARY	The unlawful entry into the building
 BURIAL	The action of burying a dead body
-TOOTHBRUSH	A tool for brushing teeth
-HAIRBRUSH	A tool for combing hairs
 BURQA	A clothing that covers face and body of a Muslim woman
 BUS	A large automobile for carrying passengers
 BUSH	A shrub or clump of shrubs
@@ -518,6 +517,8 @@ CAGE	A box-like enclosure for confining someone or something
 CAKE	A sweet food made from flour, eggs, suger and butter
 CALCULATION	The process of adding, subtracting, multiplying, dividing etc.
 CALCULATOR	A small electoronic machine to get the numbers
+CALEBRATION	A comparison between a known measurement and the measurement
+CALEBRITY	A famous person, especially in entertainment or sport
 CALENDAR	A list of days, weeks, and months
 CALF	A young cow
 CALL	The telephone can do this
@@ -528,9 +529,6 @@ CAMERA	A machine to take photographs or make films
 CAMP	An aesthetic style and sensibility of bad taste and ironic
 CAMPAIGN	A series of actions that are meant to achieve something
 CAMPER	Someone who is staying in a tent
-COMPFIRE	A fire in camping
-COMPOSITE	A material made from two or more different materials
-CORONA
 CAMPUS	The grounds and buildings of a university or college
 CAN	A metal container for food, drink or paint
 CANAL	A long narrow river made by people to travel along
@@ -601,8 +599,6 @@ CAVEMAN	A prehistoric man who lived in caves
 CC	The abbreviation for "carbon copy"
 CD	Compact Disc
 CEILING	The upper interior surface of a room
-CALEBRATION	A comparison between a known measurement and the measurement
-CALEBRITY	A famous person, especially in entertainment or sport
 CELERY	A low-calorie vegetable with a high water content
 CELL	The basic building blocks of all living things
 CELLAR	A room below ground level in a house
@@ -612,15 +608,16 @@ CEMENT	The basic ingredient of concrete
 CEMETERY	A place of ground in which dead bodies are buried
 CENSUS	An official count or survey
 CENT	One hundredth
+CENTER	The middle point or part
 CENTILITRE	A metric unit of capacity, equal to one hundredth of a litre
 CENTIMETRE	A metric unit of length, equal to one hundredth of a metre
-CENTER	The middle point or part
 CENTURY	A period of one hundred years
 CERAMICS	An article made from clay hardened by heat
 CEREAL	A grain used for food
 CEREMONY	A formal religious or public occasion
 CERTAINTY	The degree of being sure
 CERTIFICATE	An official document attesting a fact
+CHAIM
 CHAIN	A series of linked metal rings
 CHAIR	A seat for one person that has a back and legs
 CHAIRMAN	A man chosen to preside over a meeting
@@ -645,8 +642,8 @@ CHARGE	The amount of electricity that a particle or object carries
 CHARITY	The act of giving money, food, or other help to people
 CHARM	A power of attracting, as personality or beauty
 CHART	A graphical representation for data visualization
-CHAT	An informal conversation
 CHARTER	A formal document describing the authority or rights of people
+CHAT	An informal conversation
 CHAUFFEUR	A person employed to drive a motor vehicle
 CHEAT	The act of deceiving
 CHECKIN	The first procedure when arriving at an airport
@@ -666,8 +663,8 @@ CHICK	A baby bird
 CHICKEN	A bird raised by people for its eggs and meat
 CHIEF	A leader or ruler of a people or clan
 CHILD	A young person under the age of 18
-CHILDREN	Young people under the age of 18
 CHILDHOOD	The period of being a young person
+CHILDREN	Young people under the age of 18
 CHILLI
 CHIMNEY
 CHIMPANZEE
@@ -705,7 +702,6 @@ CITY
 CIVIL
 CIVILIAN
 CIVILIZATION
-CHAIM
 CLAM	A type of shellfish
 CLAMP
 CLAP
@@ -767,10 +763,10 @@ COLESLAW
 COLLAGE
 COLLAR
 COLLARBONE
-COLLEGUE	A person someone works with
 COLLECTION
 COLLECTOR
 COLLEGE
+COLLEGUE	A person someone works with
 COLLIE
 COLLISION
 COLON	A mark :
@@ -806,11 +802,13 @@ COMPASS
 COMPETENCE
 COMPETITION
 COMPETITOR
+COMPFIRE	A fire in camping
 COMPLAINT
 COMPLEX
 COMPLEXION
 COMPLICATION
 COMPOSER
+COMPOSITE	A material made from two or more different materials
 COMPOSITION
 COMPOUND
 COMPREHENSION
@@ -858,19 +856,19 @@ CONTINUATION
 CONTRACT
 CONTRACTION
 CONTRAST
-CONTRIBUTOR
 CONTRIBUTION
+CONTRIBUTOR
 CONTROL
 CONTROVERSY
 CONVENIENCE
 CONVERSATION
+COODINATION
 COOK
 COOKBOOK
 COOKER
 COOKIE
 COOKING
 COOPERATION
-COODINATION
 COP
 COPE
 COPPER
@@ -883,6 +881,7 @@ CORKSCREW
 CORN
 CORNER
 CORNFLAKES
+CORONA
 CORPORATION	A large business or company
 CORPSE
 CORRECTION
@@ -927,8 +926,8 @@ CRAWL
 CRAYON
 CREAM
 CREASE	
-CREATOR	Someone who has made something
 CREATION	An act of producing or causing to exist
+CREATOR	Someone who has made something
 CREATURE	An animal, as distinct from a human being
 CREDIT	The ability to borrow money or access goods or services
 CRESCENT	A curved shape like the moon during its first and last quarters
@@ -1071,6 +1070,7 @@ DEVASTATION
 DEVELOPMENT
 DEVICE
 DEVIL
+DEVISION
 DEW
 DIAGNOSIS
 DIAGRAM
@@ -1143,10 +1143,9 @@ DISTRIBUTION
 DISTRICT
 DISTUBANCE
 DITCH
-DIVING
 DIVER
 DIVERSION
-DEVISION
+DIVING
 DIVORCE	The legal ending of marriage
 DIY
 DJ	Disc jockey
@@ -1185,10 +1184,10 @@ DRAIN
 DRAMA
 DRAMATIST
 DRAUGHT
-DRAWING
 DRAW
 DRAWBACK
 DRAWER
+DRAWING
 DREAM
 DRESS
 DRESSER
@@ -1197,6 +1196,7 @@ DRINK
 DRIVE	A trip in a car
 DRIVER	A person who drives a vehicle
 DRIVEWAY
+DRONE
 DROP	A tiny amount of liquid, shaped like a ball
 DROUGHT
 DRUG	A chemical that is used as a medicine
@@ -1345,8 +1345,8 @@ EXCLAMATION
 EXCUSE
 EXECUTIVE
 EXERCISE
-EXHAUSTION
 EXHAUST
+EXHAUSTION
 EXHIBITION
 EXISTENCE
 EXIT
@@ -1388,9 +1388,11 @@ FALL
 FAME
 FAMILY
 FAMINE
+FAMINISM
 FAN
 FANATIC
 FANTASY
+FAOUTAIN
 FAQ
 FARE
 FAREWELL
@@ -1420,7 +1422,6 @@ FEELING
 FEET
 FELT	A type of soft thick cloth
 FEMALE
-FAMINISM
 FEMINIST
 FENCE
 FERN
@@ -1440,6 +1441,7 @@ FIFTY	The number 50
 FIG
 FIGHTER
 FIGURE
+FIHSERMAN
 FILE
 FILENAME
 FILLING
@@ -1463,7 +1465,6 @@ FIREPLACE
 FIREWORK
 FIRM
 FISH
-FIHSERMAN
 FISHING
 FIST
 FIT
@@ -1542,7 +1543,6 @@ FORTY	The number 40
 FOSSIL
 FOUL
 FOUNDATION
-FAOUTAIN
 FOUR	The number 4
 FOURTEEN	The number 14
 FOWL
@@ -1556,8 +1556,8 @@ FRAUD
 FREAK
 FRECKLE
 FREEDOM
-FREEZING
 FREEZER
+FREEZING
 FREIGHT
 FREQUENCY
 FRIDAY	The day between Thursday and Saturday
@@ -1742,18 +1742,19 @@ HABIT
 HABITAT
 HAIL
 HAIR
+HAIRBRUSH	A tool for combing hairs
 HAIRCUT
 HAIRDRESSER
 HAIRDRYER
 HAIRSTYLE
 HALF
-HALVES
 HALFTIME
 HALFWAY
 HALL
 HALLOWEEN
 HALLWAY
 HALT
+HALVES
 HAM
 HAMBURGER
 HAMMER
@@ -2059,8 +2060,8 @@ JOGGING
 JOINT
 JOKE
 JOURNAL
-JOURNALIST
 JOURNALISM
+JOURNALIST
 JOURNEY
 JOY
 JUDAISM
@@ -2391,11 +2392,11 @@ MEETING
 MEGABYTE
 MELODY
 MELON
+MEM
 MEMBER
 MEMBERSHIP
 MEMO
 MEMORY
-MEM
 MENSWEAR
 MENU
 MERCHANDISE
@@ -2457,6 +2458,7 @@ MISSILE
 MISSION
 MIST
 MISTAKE
+MISTERY
 MISUNDERSTANDING
 MITTEN
 MIXER
@@ -2468,6 +2470,8 @@ MODAL
 MODEL
 MODESTY
 MODIFICATION
+MOINTAIN
+MOINTAINER
 MOISTURE
 MOLE
 MOLECULE
@@ -2488,13 +2492,14 @@ MOONLIGHT
 MOOSE
 MOP
 MORAL
-MORNING
 MORGAGE
+MORNING
 MOSAIC
 MOSQUE
 MOSQUITO
 MOSS
 MOTEL
+MOTERBIKE
 MOTH
 MOTHER
 MOTHERHOOD
@@ -2502,13 +2507,10 @@ MOTION
 MOTIVATION
 MOTIVE
 MOTOR
-MOTERBIKE
 MOTORIST
 MOTORWAY
 MOTTO
 MOULD
-MOINTAIN
-MOINTAINER
 MOURNER
 MOURNING
 MOUSE
@@ -2544,7 +2546,6 @@ MUSICIAN
 MUSLIM
 MUSTARD
 MYSELF
-MISTERY
 MYTH
 NAIL
 NAME
@@ -2563,6 +2564,7 @@ NAVY
 NECESSITY
 NECK
 NECKLACE
+NECLEUS
 NECTARINE
 NEED
 NEEDLE
@@ -2620,7 +2622,6 @@ NOVEL
 NOVELIST
 NOVELTY
 NOVEMBER	The 11th month of the year
-NECLEUS
 NUDE
 NUISANCE
 NUMBER
@@ -2696,8 +2697,8 @@ ORIGINAL
 ORNAMENT
 ORPHAN
 ORPHANAGE
-OS
 ORSTRICH
+OS
 OUNCE
 OURS
 OURSELVES
@@ -2836,6 +2837,8 @@ PERIMETER
 PERIOD
 PERMISSION
 PERMIT
+PERSIDENCY
+PERSIDENT
 PERSON
 PERSONALITY
 PERSONNEL
@@ -2850,8 +2853,8 @@ PETAL
 PETITION
 PETROL
 PHARMACIST
-PHERMACY
 PHASE
+PHERMACY
 PHILOSOPHER
 PHILOSOPHY
 PHONE
@@ -2861,15 +2864,15 @@ PHOTOCOPY
 PHOTOGRAPH
 PHOTOGRAPHER
 PHOTOGRAPHY
-PHOTOSYNTHESIS
 PHOTOSHOP
+PHOTOSYNTHESIS
 PHRASE
 PHYSICIST
 PHYSICS
 PIANIST
 PIANO
-PICCOLO
 PIC
+PICCOLO
 PICKLE
 PICNIC
 PICTURE
@@ -3010,10 +3013,8 @@ PRESCRIPTION
 PRESENCE
 PRESENT
 PRESENTATION
-PRESERVATIVE
 PRESERVATION
-PERSIDENCY
-PERSIDENT
+PRESERVATIVE
 PRESS
 PRESSURE
 PREVENTION
@@ -3069,8 +3070,8 @@ PROSE
 PROSECUTION
 PROTECTION
 PROTEIN
-PROTESTER
 PROTESTANT
+PROTESTER
 PROTRACTOR
 PROVERB
 PROVINCE
@@ -3078,8 +3079,8 @@ PROVISION
 PRUNE
 PS
 PSYCHIATRIST
-PSYCHOLOGY
 PSYCHOLOGIST
+PSYCHOLOGY
 PUB
 PUBLIC
 PUBLICATION
@@ -3091,8 +3092,8 @@ PUFF
 PULL
 PULLOVER
 PULSE
-PUMP
 PUMKIN
+PUMP
 PUN
 PUNCH
 PUNCTUATION
@@ -3118,14 +3119,14 @@ QUALITY
 QUANTITY
 QUARREL
 QUARRY
-QUATER
 QUARTET
+QUATER
 QUAY
 QUEEN
 QUERY
 QUESTION
-QUESTIONING
 QUESTIONAIRE
+QUESTIONING
 QUEUE
 QUILT
 QUIZ
@@ -3178,6 +3179,7 @@ RATTLE
 RAY
 RAZOR
 REACTION
+READ
 READER
 READING
 REALITY
@@ -3204,9 +3206,8 @@ RECRUIT
 RECTANGLE
 RED	The color of blood or a tomato
 REDUCTION
-READ
-REFERENCE
 REFEREE
+REFERENCE
 REFLECTION
 REFORM
 REFRESHMENTS
@@ -3320,7 +3321,6 @@ ROBBERY
 ROBE
 ROBIN
 ROBOT
-BOT
 ROCK
 ROCKET
 ROD
@@ -3351,17 +3351,17 @@ RULE
 RULER
 RUMBLE
 RUMOUR
-RUNNING
 RUNG
 RUNNER
+RUNNING
 RUNWAY
 RUSH
 RUST
 RUT
 SACK
 SACRIFICE
-SADNESS
 SADDLE
+SADNESS
 SAFARI
 SAFE
 SAFETY
@@ -3437,6 +3437,7 @@ SCREWDRIVER
 SCRIPT
 SCULPTOR
 SCULPTURE
+SDGS
 SEA
 SEAFOOD
 SEAGULL
@@ -3484,8 +3485,8 @@ SEVEN	The number 7
 SEVENTEEN	The number 17
 SEVENTY	The number 70
 SEVERAL
-SEWING
 SEWER
+SEWING
 SEX
 SHADE
 SHADOW
@@ -3714,6 +3715,7 @@ SQUARE
 SQUASH
 SQUID
 SQUIRREL
+ST
 STABILITY
 STABLE
 STACK
@@ -3775,7 +3777,6 @@ STRAW
 STRAWBERRY
 STREAK
 STREET
-ST
 STRENGTH
 STRESS
 STRETCH
@@ -3837,13 +3838,13 @@ SUPPER
 SUPPLEMENT
 SUPPLIER
 SUPPLIES
-SUPPORTER
 SUPPORT
+SUPPORTER
 SURF
-SURFER
-SURFING
 SURFACE
 SURFBOARD
+SURFER
+SURFING
 SURGEON
 SURGERY
 SURNAME
@@ -3864,8 +3865,8 @@ SWEATER
 SWEATSHIRT
 SWEET
 SWEETCORN
-SWIMMER
 SWIM
+SWIMMER
 SWIMMING
 SWIMSUIT
 SWING
@@ -3883,7 +3884,6 @@ SYNONYM
 SYRINGE
 SYRUP
 SYSTEM
-SDGS
 TABLE
 TABLECLOTH
 TABLESPOON
@@ -3965,6 +3965,7 @@ THANKSGIVIING
 THAT
 THEATRE
 THEFT
+THEIF
 THEIRS
 THEM
 THEME
@@ -3976,7 +3977,6 @@ THERE
 THERMOMETER
 THEY
 THICKNESS
-THEIF
 THIGH
 THING
 THIRD
@@ -3995,7 +3995,6 @@ THRILL
 THRILLER
 THROAT
 THRONE
-DRONE
 THUD
 THUMB
 THUNDER
@@ -4026,11 +4025,11 @@ TODAY
 TODDLER
 TOE
 TOENAIL
+TOERANCE
 TOFFEE
 TOILET
 TOILETRIES
 TOKEN
-TOERANCE
 TOMATO
 TOMB
 TOMBSTONE
@@ -4043,6 +4042,7 @@ TOOL
 TOOLBAR
 TOOTH
 TOOTHACHE
+TOOTHBRUSH	A tool for brushing teeth
 TOOTHPASTE
 TOP
 TOPIC
@@ -4106,8 +4106,8 @@ TRUMPET
 TRUNK
 TRUTH
 TRUTHFULNESS
-TSUNAMI
 TRY
+TSUNAMI
 TUB
 TUBA
 TUBE
@@ -4128,7 +4128,6 @@ TUSK
 TUTOR
 TV
 TWEEZERS
-TWITTER
 TWELFTH
 TWELVE	The number 12
 TWENTY	The number 20
@@ -4136,6 +4135,7 @@ TWICE
 TWIG
 TWILIGHT
 TWIN
+TWITTER
 TWO	The number 2
 TYPE
 TYPEWRITER
@@ -4311,8 +4311,8 @@ WHALE
 WHAT
 WHEAT
 WHEEL
-WHELLBARROW
 WHEELCHAIR
+WHELLBARROW
 WHEN
 WHERE
 WHICH
@@ -4359,6 +4359,7 @@ WIT
 WITCH
 WITNESS
 WIZARD
+WOKER
 WOLF
 WOLVES
 WOMAN
@@ -4369,12 +4370,10 @@ WOODWIND
 WOOL
 WORD
 WORK
-WOKER
 WORKFORCE
 WORKOUT
 WORKSHOP
 WORLD
-WWW
 WORM
 WORRY
 WORSHIP
@@ -4387,6 +4386,7 @@ WRINKLE
 WRIST
 WRITER
 WRITING
+WWW
 XMAS
 XRAY
 XYLOPHONE
