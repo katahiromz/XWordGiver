@@ -4638,7 +4638,7 @@ HMENU DoFindDictMenu(HMENU hMenu)
 // 「辞書」メニューを更新する。
 void DoUpdateDictMenu(HMENU hDictMenu)
 {
-    while (RemoveMenu(hDictMenu, 3, MF_BYPOSITION))
+    while (RemoveMenu(hDictMenu, 4, MF_BYPOSITION))
     {
         ;
     }
@@ -4649,7 +4649,7 @@ void DoUpdateDictMenu(HMENU hDictMenu)
         return;
     }
 
-    INT index = 3, count = 0, id = ID_DICTIONARY00;
+    INT index = 4, count = 0, id = ID_DICTIONARY00;
     WCHAR szText[MAX_PATH];
     for (const auto& file : xg_dict_files)
     {
@@ -4664,7 +4664,7 @@ void DoUpdateDictMenu(HMENU hDictMenu)
             break;
     }
 
-    index = 3;
+    index = 4;
     for (const auto& file : xg_dict_files)
     {
         if (lstrcmpiW(file.c_str(), xg_dict_name.c_str()) == 0)
@@ -9057,6 +9057,9 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
             pxw->GetString(str);
             XgPasteBoard(hwnd, str);
         }
+        break;
+    case ID_RELOADDICTS:
+        XgLoadDictsAll();
         break;
     default:
         if (!MainWnd_OnCommand2(hwnd, id)) {

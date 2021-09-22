@@ -394,6 +394,7 @@
 2021年XX月YY日 ver.4.7.8
 	英語のダイアログを改良。
 	黒マスパターンをさらに追加。
+	「辞書リストを再読み込み」メニュー項目を追加。
 
 ## History of XWordGiver (English)
 
@@ -423,3 +424,4 @@
 - 2021.XX.YY Ver.4.7.8
     - Improved English dialogs.
     - Added more block patterns.
+    - Added "Reload &Dict List" menu item.

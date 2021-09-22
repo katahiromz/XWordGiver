@@ -331,6 +331,7 @@
 #define ID_SHOWHIDENUMBERING                272
 #define ID_SHOWHIDECARET                    273
 #define ID_ERASESOLUTIONANDUNLOCKEDIT       274
+#define ID_RELOADDICTS                      275
 #define ID_TT_BASE                          10000
 
 #define ctl2                                1185

@@ -95,6 +95,7 @@ LANGUAGE LANG_ENGLISH, SUBLANG_DEFAULT
     {
         MENUITEM "&Theme...", ID_THEME
         MENUITEM "&Reset Theme...", ID_RESETTHEME
+        MENUITEM "Reload &Dict List", ID_RELOADDICTS
         MENUITEM SEPARATOR
         MENUITEM "(None)", -1
     }
