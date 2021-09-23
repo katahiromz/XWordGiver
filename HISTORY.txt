@@ -395,6 +395,7 @@
 	英語のダイアログを改良。
 	黒マスパターンをさらに追加。
 	「辞書リストを再読み込み」メニュー項目を追加。
+	ルール周りを改良。
 
 ## History of XWordGiver (English)
 
@@ -425,3 +426,4 @@
     - Improved English dialogs.
     - Added more block patterns.
     - Added "Reload &Dict List" menu item.
+    - Improved around policies.

@@ -9018,7 +9018,11 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
     case ID_SKELTONMODE:
         if (xg_bSkeltonMode) {
             xg_bSkeltonMode = FALSE;
-            xg_nRules |= (RULE_DONTDOUBLEBLACK | RULE_DONTCORNERBLACK | RULE_DONTTRIDIRECTIONS | RULE_DONTFOURDIAGONALS);
+            if (XgIsUserJapanese()) {
+                xg_nRules = DEFAULT_RULES_JAPANESE;
+            } else {
+                xg_nRules = DEFAULT_RULES_ENGLISH;
+            }
         } else {
             xg_bSkeltonMode = TRUE;
             xg_nRules &= ~(RULE_DONTDOUBLEBLACK | RULE_DONTCORNERBLACK | RULE_DONTTRIDIRECTIONS | RULE_DONTFOURDIAGONALS | RULE_DONTTHREEDIAGONALS);

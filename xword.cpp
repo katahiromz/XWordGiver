@@ -1639,33 +1639,63 @@ mstr_split(T_STR_CONTAINER& container,
 // 文字列のルールを解析する。
 INT __fastcall XgParseRules(const std::wstring& str)
 {
-    std::vector<std::wstring> rules;
-    mstr_split(rules, str, L" \t");
     INT nRules = 0;
-    for (auto& rule : rules) {
-        xg_str_trim(rule);
-        if (rule.empty())
-            continue;
-        if (rule == XgLoadStringDx1(IDS_RULE_DONTDOUBLEBLACK)) {
-            nRules |= RULE_DONTDOUBLEBLACK;
-        } else if (rule == XgLoadStringDx1(IDS_RULE_DONTCORNERBLACK)) {
-            nRules |= RULE_DONTCORNERBLACK;
-        } else if (rule == XgLoadStringDx1(IDS_RULE_DONTTRIDIRECTIONS)) {
-            nRules |= RULE_DONTTRIDIRECTIONS;
-        } else if (rule == XgLoadStringDx1(IDS_RULE_DONTDIVIDE)) {
-            nRules |= RULE_DONTDIVIDE;
-        } else if (rule == XgLoadStringDx1(IDS_RULE_DONTTHREEDIAGONALS)) {
-            nRules |= RULE_DONTTHREEDIAGONALS;
-        } else if (rule == XgLoadStringDx1(IDS_RULE_DONTFOURDIAGONALS)) {
-            nRules |= RULE_DONTFOURDIAGONALS;
-        } else if (rule == XgLoadStringDx1(IDS_RULE_POINTSYMMETRY)) {
-            nRules |= RULE_POINTSYMMETRY;
-        } else {
-            if (XgIsUserJapanese())
-                nRules = DEFAULT_RULES_JAPANESE;
-            else
-                nRules = DEFAULT_RULES_ENGLISH;
-            break;
+    std::vector<std::wstring> rules;
+    if (str.find(L" / ") != str.npos) { // もし" / "が含まれていたら
+        mstr_split(rules, str, L"/"); // "/"で分割する。
+        for (auto& rule : rules) {
+            xg_str_trim(rule); // 前後の空白を取り除く。
+            if (rule.empty())
+                continue;
+            if (rule == XgLoadStringDx1(IDS_RULE_DONTDOUBLEBLACK)) {
+                nRules |= RULE_DONTDOUBLEBLACK;
+            } else if (rule == XgLoadStringDx1(IDS_RULE_DONTCORNERBLACK)) {
+                nRules |= RULE_DONTCORNERBLACK;
+            } else if (rule == XgLoadStringDx1(IDS_RULE_DONTTRIDIRECTIONS)) {
+                nRules |= RULE_DONTTRIDIRECTIONS;
+            } else if (rule == XgLoadStringDx1(IDS_RULE_DONTDIVIDE)) {
+                nRules |= RULE_DONTDIVIDE;
+            } else if (rule == XgLoadStringDx1(IDS_RULE_DONTTHREEDIAGONALS)) {
+                nRules |= RULE_DONTTHREEDIAGONALS;
+            } else if (rule == XgLoadStringDx1(IDS_RULE_DONTFOURDIAGONALS)) {
+                nRules |= RULE_DONTFOURDIAGONALS;
+            } else if (rule == XgLoadStringDx1(IDS_RULE_POINTSYMMETRY)) {
+                nRules |= RULE_POINTSYMMETRY;
+            } else {
+                if (XgIsUserJapanese())
+                    nRules = DEFAULT_RULES_JAPANESE;
+                else
+                    nRules = DEFAULT_RULES_ENGLISH;
+                break;
+            }
+        }
+    } else { // " / "が含まれていなければ
+        mstr_split(rules, str, L" \t");
+        for (auto& rule : rules) {
+            xg_str_trim(rule); // 前後の空白を取り除く。
+            if (rule.empty())
+                continue;
+            if (rule == XgLoadStringDx1(IDS_RULE_DONTDOUBLEBLACK)) {
+                nRules |= RULE_DONTDOUBLEBLACK;
+            } else if (rule == XgLoadStringDx1(IDS_RULE_DONTCORNERBLACK)) {
+                nRules |= RULE_DONTCORNERBLACK;
+            } else if (rule == XgLoadStringDx1(IDS_RULE_DONTTRIDIRECTIONS)) {
+                nRules |= RULE_DONTTRIDIRECTIONS;
+            } else if (rule == XgLoadStringDx1(IDS_RULE_DONTDIVIDE)) {
+                nRules |= RULE_DONTDIVIDE;
+            } else if (rule == XgLoadStringDx1(IDS_RULE_DONTTHREEDIAGONALS)) {
+                nRules |= RULE_DONTTHREEDIAGONALS;
+            } else if (rule == XgLoadStringDx1(IDS_RULE_DONTFOURDIAGONALS)) {
+                nRules |= RULE_DONTFOURDIAGONALS;
+            } else if (rule == XgLoadStringDx1(IDS_RULE_POINTSYMMETRY)) {
+                nRules |= RULE_POINTSYMMETRY;
+            } else {
+                if (XgIsUserJapanese())
+                    nRules = DEFAULT_RULES_JAPANESE;
+                else
+                    nRules = DEFAULT_RULES_ENGLISH;
+                break;
+            }
         }
     }
     return nRules;
@@ -1674,46 +1704,47 @@ INT __fastcall XgParseRules(const std::wstring& str)
 // ルールを文字列にする。
 std::wstring __fastcall XgGetRulesString(INT rules)
 {
+    // メモ：英語対応のため、空白区切りから" / "区切りに変更しました。
     std::wstring ret;
 
     if (rules & RULE_DONTDOUBLEBLACK) {
         if (ret.size())  {
-            ret += L' ';
+            ret += L" / ";
         }
         ret += XgLoadStringDx1(IDS_RULE_DONTDOUBLEBLACK);
     }
     if (rules & RULE_DONTCORNERBLACK) {
         if (ret.size())  {
-            ret += L' ';
+            ret += L" / ";
         }
         ret += XgLoadStringDx1(IDS_RULE_DONTCORNERBLACK);
     }
     if (rules & RULE_DONTTRIDIRECTIONS) {
         if (ret.size())  {
-            ret += L' ';
+            ret += L" / ";
         }
         ret += XgLoadStringDx1(IDS_RULE_DONTTRIDIRECTIONS);
     }
     if (rules & RULE_DONTDIVIDE) {
         if (ret.size())  {
-            ret += L' ';
+            ret += L" / ";
         }
         ret += XgLoadStringDx1(IDS_RULE_DONTDIVIDE);
     }
     if (rules & RULE_DONTTHREEDIAGONALS) {
         if (ret.size())  {
-            ret += L' ';
+            ret += L" / ";
         }
         ret += XgLoadStringDx1(IDS_RULE_DONTTHREEDIAGONALS);
     } else if (rules & RULE_DONTFOURDIAGONALS) {
         if (ret.size())  {
-            ret += L' ';
+            ret += L" / ";
         }
         ret += XgLoadStringDx1(IDS_RULE_DONTFOURDIAGONALS);
     }
     if (rules & RULE_POINTSYMMETRY) {
         if (ret.size())  {
-            ret += L' ';
+            ret += L" / ";
         }
         ret += XgLoadStringDx1(IDS_RULE_POINTSYMMETRY);
     }
