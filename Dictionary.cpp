@@ -335,7 +335,7 @@ bool __fastcall XgLoadDictFile(LPCWSTR pszFile)
 
         if (i == cbFile) {
             if (MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS,
-                                    reinterpret_cast<LPCSTR>(pbFile[0]),
+                                    reinterpret_cast<LPCSTR>(&pbFile[0]),
                                     static_cast<int>(cbFile), nullptr, 0))
             {
                 // UTF-8
