@@ -166,8 +166,8 @@ LANGUAGE LANG_ENGLISH, SUBLANG_DEFAULT
         MENUITEM "Prohibit blocks at 4 corners", ID_RULE_DONTCORNERBLACK
         MENUITEM "Prohibit three-way blocks", ID_RULE_DONTTRIDIRECTIONS
         MENUITEM "No division", ID_RULE_DONTDIVIDE, GRAYED
-        MENUITEM "Prohibit 3 blocks diagonally in a line", ID_RULE_DONTTHREEDIAGONALS
-        MENUITEM "Prohibit 4 blocks diagonally in a line", ID_RULE_DONTFOURDIAGONALS
+        MENUITEM "Prohibit 3 blocks diagonally", ID_RULE_DONTTHREEDIAGONALS
+        MENUITEM "Prohibit 4 blocks diagonally", ID_RULE_DONTFOURDIAGONALS
         MENUITEM "Point symmetry of blocks", ID_RULE_POINTSYMMETRY
         MENUITEM SEPARATOR
         MENUITEM "&Skeleton Mode", ID_SKELTONMODE
