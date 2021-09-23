@@ -160,7 +160,7 @@ LANGUAGE LANG_ENGLISH, SUBLANG_DEFAULT
     POPUP "&Policies"
     {
         MENUITEM "&Reset Policies", ID_RESETRULES
-        MENUITEM "What are policies?", ID_OPENRULESTXT
+        MENUITEM "What's policy?", ID_OPENRULESTXT
         MENUITEM SEPARATOR
         MENUITEM "Prohibit adjacent blocks", ID_RULE_DONTDOUBLEBLACK
         MENUITEM "Prohibit blocks at 4 corners", ID_RULE_DONTCORNERBLACK
