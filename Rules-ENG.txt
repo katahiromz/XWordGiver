@@ -19,11 +19,11 @@ This policy prohibits blocks placed next to each other in three directions of a 
 
 This policy prohibits dividing the board by blocks.
 
-## Policy "Prohibit 3 blocks diagonally in a row" [Cost: +35%]
+## Policy "Prohibit 3 blocks diagonally" [Cost: +35%]
 
 This policy prohibits placing blocks diagonally in three consecutive rows.
 
-## Policy "Prohibit 4 blocks diagonally in a row" [Cost: +20%]
+## Policy "Prohibit 4 blocks diagonally" [Cost: +20%]
 
 This policy prohibits placing blocks diagonally in four consecutive rows.
 
