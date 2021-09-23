@@ -5193,6 +5193,36 @@ bool XG_Board::IsPointSymmetry() const
     return true;
 }
 
+// 黒マスが線対称（タテ）か？
+bool XG_Board::IsLineSymmetryV() const
+{
+    const int nRows = xg_nRows;
+    const int nHalfRows = nRows / 2;
+    const int nCols = xg_nCols;
+    for (int i = 0; i < nHalfRows; i++) {
+        for (int j = 0; j < nCols; j++) {
+            if ((GetAt(i, j) == ZEN_BLACK) != (GetAt(nRows - (i + 1), j) == ZEN_BLACK))
+                return false;
+        }
+    }
+    return true;
+}
+
+// 黒マスが線対称（ヨコ）か？
+bool XG_Board::IsLineSymmetryH() const
+{
+    const int nRows = xg_nRows;
+    const int nCols = xg_nCols;
+    const int nHalfCols = nCols / 2;
+    for (int j = 0; j < nHalfCols; j++) {
+        for (int i = 0; i < nRows; i++) {
+            if ((GetAt(i, j) == ZEN_BLACK) != (GetAt(i, nCols - (j + 1)) == ZEN_BLACK))
+                return false;
+        }
+    }
+    return true;
+}
+
 // 黒斜三連か？
 bool XG_Board::ThreeDiagonals() const
 {

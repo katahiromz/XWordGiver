@@ -402,11 +402,14 @@ public:
     // マスの三方向が黒マスで囲まれているか？
     int __fastcall BlacksAround(int iRow, int jCol) const;
 
-    // 黒マスが線対称か？
-    bool IsLineSymmetry() const;
-
     // 黒マスが点対称か？
     bool IsPointSymmetry() const;
+    // 黒マスが線対称か？
+    bool IsLineSymmetry() const;
+    // 黒マスが線対称（タテ）か？
+    bool IsLineSymmetryV() const;
+    // 黒マスが線対称（ヨコ）か？
+    bool IsLineSymmetryH() const;
 
     // 黒斜三連か？
     bool ThreeDiagonals() const;
