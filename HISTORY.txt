@@ -397,6 +397,7 @@
 	「辞書リストを再読み込み」メニュー項目を追加。
 	ルール周りを改良。
 	辞書読み込みを修正。
+    EXEファイルの名前を変更。
 
 ## History of XWordGiver (English)
 
@@ -429,3 +430,4 @@
     - Added "Reload &Dict List" menu item.
     - Improved around policies.
     - Fixed dictionary loading.
+    - Renamed the EXE file.

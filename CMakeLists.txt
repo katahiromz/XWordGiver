@@ -14,7 +14,7 @@ if(COMMAND cmake_policy)
 endif(COMMAND cmake_policy)
 
 # project name and languages
-project(xword CXX RC)
+project(XWordGiver CXX RC)
 
 # check build type
 if (NOT CMAKE_BUILD_TYPE)
@@ -87,8 +87,8 @@ if (MSVC)
     set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} /MANIFEST:NO")
 endif()
 
-# xword.exe
-add_executable(xword${BITS} WIN32
+# XWordGiver32.exe and XWordGiver64.exe
+add_executable(XWordGiver${BITS} WIN32
     Dictionary.cpp
     GUI.cpp
     Input.cpp
@@ -98,7 +98,6 @@ add_executable(xword${BITS} WIN32
     Utils.cpp
     xword.cpp
     xword_res.rc)
-target_link_libraries(xword${BITS}
-	comctl32 imm32 shell32 ole32 uuid shlwapi SaveBitmapToFile)
+target_link_libraries(XWordGiver${BITS} comctl32 imm32 shell32 ole32 uuid shlwapi SaveBitmapToFile)
 
 ##############################################################################

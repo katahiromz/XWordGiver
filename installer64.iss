@@ -18,7 +18,7 @@ OutputDir=.
 OutputBaseFilename=XWordGiver-x64-4.7.8-setup
 Compression=lzma
 SolidCompression=yes
-UninstallDisplayIcon={app}\xword64.exe
+UninstallDisplayIcon={app}\XWordGiver64.exe
 SetupIconFile=res\Icon_1.ico
 LicenseFile=LICENSE.txt
 ChangesAssociations=yes
@@ -32,7 +32,7 @@ Name: "ja"; MessagesFile: "compiler:Languages\Japanese.isl"
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"
 
 [Files]
-Source: "xword64.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "XWordGiver64.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "ReadMe-ENG.txt"; DestDir: "{app}"; Flags: ignoreversion
 Source: "ReadMe-JPN.txt"; DestDir: "{app}"; Flags: ignoreversion
 Source: "TechNote.txt"; DestDir: "{app}"; Flags: ignoreversion
@@ -69,7 +69,7 @@ Source: "Rules-JPN.txt"; DestDir: "{app}"; Flags: ignoreversion
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Icons]
-Name: "{group}\{cm:AppNameBits}"; Filename: "{app}\xword64.exe"
+Name: "{group}\{cm:AppNameBits}"; Filename: "{app}\XWordGiver64.exe"
 Name: "{group}\ReadMe-ENG.txt"; Filename: "{app}\ReadMe-ENG.txt"
 Name: "{group}\ReadMe-JPN.txt"; Filename: "{app}\ReadMe-JPN.txt"
 Name: "{group}\TechNote.txt"; Filename: "{app}\TechNote.txt"
@@ -79,14 +79,14 @@ Name: "{group}\{cm:UninstallProgram,{cm:AppName}}"; Filename: "{uninstallexe}"
 Name: "{group}\DICT"; Filename: "{app}\DICT"
 Name: "{group}\BLOCK"; Filename: "{app}\BLOCK"
 Name: "{group}\LICENSE.txt"; Filename: "{app}\LICENSE.txt"
-Name: "{commondesktop}\{cm:AppNameBits}"; Filename: "{app}\xword64.exe"; Tasks: desktopicon
+Name: "{commondesktop}\{cm:AppNameBits}"; Filename: "{app}\XWordGiver64.exe"; Tasks: desktopicon
 
 [Registry]
 Root: HKCU; Subkey: "Software\Katayama Hirofumi MZ\XWord64"; Flags: uninsdeletekey
 Root: HKCR; Subkey: ".xwj"; ValueType: string; ValueName: ""; ValueData: "XWordGiver.JsonFile"; Flags: uninsdeletevalue; Tasks: association
 Root: HKCR; Subkey: "XWordGiver.JsonFile"; ValueType: string; ValueName: ""; ValueData: "{cm:CrosswordJSONData}"; Flags: uninsdeletekey; Tasks: association
-Root: HKCR; Subkey: "XWordGiver.JsonFile\DefaultIcon"; ValueType: string; ValueName: ""; ValueData: "{app}\xword64.exe,3"; Tasks: association
-Root: HKCR; Subkey: "XWordGiver.JsonFile\shell\open\command"; ValueType: string; ValueName: ""; ValueData: """{app}\xword64.exe"" ""%1"""; Tasks: association
+Root: HKCR; Subkey: "XWordGiver.JsonFile\DefaultIcon"; ValueType: string; ValueName: ""; ValueData: "{app}\XWordGiver64.exe,3"; Tasks: association
+Root: HKCR; Subkey: "XWordGiver.JsonFile\shell\open\command"; ValueType: string; ValueName: ""; ValueData: """{app}\XWordGiver64.exe"" ""%1"""; Tasks: association
 
 [Tasks] 
 Name: association; Description: "{cm:AssociateXWJFiles}"
@@ -106,4 +106,4 @@ ja.CrosswordJSONData=クロスワード JSON データ
 ja.AuthorsHomepage=作者のホームページ
 
 [Run]
-Filename: "{app}\xword64.exe"; Description: "{cm:LaunchProgram,{cm:AppName}}"; Flags: nowait postinstall skipifsilent
+Filename: "{app}\XWordGiver64.exe"; Description: "{cm:LaunchProgram,{cm:AppName}}"; Flags: nowait postinstall skipifsilent
