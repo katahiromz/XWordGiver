@@ -162,6 +162,11 @@
 #define IDS_NORMAL_DICT                     252
 #define IDS_DIGITS                          253
 #define IDS_MAIN_LANGUAGE                   254
+#define IDS_RULE_LINESYMMETRYV              255
+#define IDS_RULE_LINESYMMETRYH              256
+#define IDS_CANTSOLVELINESYMMETRY           257
+#define IDS_NOTLINESYMMETRYV                258
+#define IDS_NOTLINESYMMETRYH                259
 #define IDS_TT_NEW                          10100
 #define IDS_TT_GENERATE                     10101
 #define IDS_TT_OPEN                         10102
@@ -332,6 +337,8 @@
 #define ID_SHOWHIDECARET                    273
 #define ID_ERASESOLUTIONANDUNLOCKEDIT       274
 #define ID_RELOADDICTS                      275
+#define ID_RULE_LINESYMMETRYV               276
+#define ID_RULE_LINESYMMETRYH               277
 #define ID_TT_BASE                          10000
 
 #define ctl2                                1185

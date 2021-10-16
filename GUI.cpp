@@ -1058,6 +1058,16 @@ bool __fastcall XgCheckCrossWord(HWND hwnd, bool check_words = true)
         return false;
     }
 
+    // 黒マス点対称。
+    if ((xg_nRules & RULE_LINESYMMETRYV) && !xg_xword.IsLineSymmetryV()) {
+        XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_NOTLINESYMMETRYV), nullptr, MB_ICONERROR);
+        return false;
+    }
+    if ((xg_nRules & RULE_LINESYMMETRYH) && !xg_xword.IsLineSymmetryH()) {
+        XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_NOTLINESYMMETRYH), nullptr, MB_ICONERROR);
+        return false;
+    }
+
     // クロスワードに含まれる単語のチェック。
     XG_Pos pos;
     std::vector<std::wstring> vNotFoundWords;
@@ -2594,7 +2604,7 @@ XgCancelGenBlacksDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
         // ダイアログを中央へ移動する。
         XgCenterDialog(hwnd);
         // 解を求めるのを開始。
-        XgStartGenerateBlacks(!!lParam);
+        XgStartGenerateBlacks();
         // フォーカスをセットする。
         ::SetFocus(::GetDlgItem(hwnd, psh1));
         // 開始時間。
@@ -3040,7 +3050,7 @@ bool __fastcall XgOnGenerate(HWND hwnd, bool show_answer, bool multiple = false)
             nID = ::DialogBoxW(xg_hInstance, MAKEINTRESOURCE(IDD_CALCULATING), hwnd, XgCancelSolveDlgProc);
         } else if (xg_bSmartResolution && xg_nRows >= 7 && xg_nCols >= 7) {
             nID = ::DialogBoxW(xg_hInstance, MAKEINTRESOURCE(IDD_CALCULATING), hwnd, XgCancelSolveDlgProcSmart);
-        } else if (xg_nRules & RULE_POINTSYMMETRY) {
+        } else if (xg_nRules & (RULE_POINTSYMMETRY | RULE_LINESYMMETRYV | RULE_LINESYMMETRYH)) {
             nID = ::DialogBoxW(xg_hInstance, MAKEINTRESOURCE(IDD_CALCULATING), hwnd, XgCancelSolveDlgProcSmart);
         } else {
             nID = ::DialogBoxW(xg_hInstance, MAKEINTRESOURCE(IDD_CALCULATING), hwnd, XgCancelSolveDlgProc);
@@ -3130,9 +3140,8 @@ bool __fastcall XgOnGenerateBlacksRepeatedly(HWND hwnd)
     ::EnableWindow(xg_hwndInputPalette, FALSE);
     do
     {
-        nID = ::DialogBoxParamW(xg_hInstance, MAKEINTRESOURCEW(IDD_CALCULATING),
-                                hwnd, XgCancelGenBlacksDlgProc,
-                                !!(xg_nRules & RULE_POINTSYMMETRY));
+        nID = ::DialogBoxW(xg_hInstance, MAKEINTRESOURCEW(IDD_CALCULATING),
+                           hwnd, XgCancelGenBlacksDlgProc);
         // 生成成功のときはs_nNumberGeneratedを増やす。
         if (nID == IDOK && xg_bBlacksGenerated) {
             ++s_nNumberGenerated;
@@ -3213,9 +3222,8 @@ bool __fastcall XgOnGenerateBlacks(HWND hwnd, bool sym)
 
     // キャンセルダイアログを表示し、生成を開始する。
     ::EnableWindow(xg_hwndInputPalette, FALSE);
-    ::DialogBoxParamW(xg_hInstance, MAKEINTRESOURCEW(IDD_CALCULATING),
-                      hwnd, XgCancelGenBlacksDlgProc,
-                      !!(xg_nRules & RULE_POINTSYMMETRY));
+    ::DialogBoxW(xg_hInstance, MAKEINTRESOURCEW(IDD_CALCULATING),
+                 hwnd, XgCancelGenBlacksDlgProc);
     ::EnableWindow(xg_hwndInputPalette, TRUE);
     xg_caret_pos.clear();
     XgUpdateImage(hwnd, 0, 0);
@@ -4764,6 +4772,15 @@ void __fastcall MainWnd_OnInitMenu(HWND /*hwnd*/, HMENU hMenu)
         ::CheckMenuItem(hMenu, ID_RULE_POINTSYMMETRY, MF_CHECKED);
     else
         ::CheckMenuItem(hMenu, ID_RULE_POINTSYMMETRY, MF_UNCHECKED);
+    // 黒マス線対称。
+    if (xg_nRules & RULE_LINESYMMETRYV)
+        ::CheckMenuItem(hMenu, ID_RULE_LINESYMMETRYV, MF_CHECKED);
+    else
+        ::CheckMenuItem(hMenu, ID_RULE_LINESYMMETRYV, MF_UNCHECKED);
+    if (xg_nRules & RULE_LINESYMMETRYH)
+        ::CheckMenuItem(hMenu, ID_RULE_LINESYMMETRYH, MF_CHECKED);
+    else
+        ::CheckMenuItem(hMenu, ID_RULE_LINESYMMETRYH, MF_UNCHECKED);
 
     // 入力モード。
     switch (xg_imode) {
@@ -6759,6 +6776,38 @@ XgPattern_RefreshContents(HWND hwnd, INT type)
             if (bFound)
                 continue;
         }
+        if (xg_nRules & RULE_LINESYMMETRYV) {
+            BOOL bFound = FALSE;
+            for (INT y = 0; y < pat.num_rows; ++y) {
+                for (INT x = 0; x < pat.num_columns; ++x) {
+                    if ((GET_DATA(x, y) == ZEN_BLACK) !=
+                        (GET_DATA(pat.num_rows - (x + 1), y) == ZEN_BLACK))
+                    {
+                        x = pat.num_columns;
+                        y = pat.num_rows;
+                        bFound = TRUE;
+                    }
+                }
+            }
+            if (bFound)
+                continue;
+        }
+        if (xg_nRules & RULE_LINESYMMETRYV) {
+            BOOL bFound = FALSE;
+            for (INT y = 0; y < pat.num_rows; ++y) {
+                for (INT x = 0; x < pat.num_columns; ++x) {
+                    if ((GET_DATA(x, y) == ZEN_BLACK) !=
+                        (GET_DATA(x, pat.num_columns - (y + 1)) == ZEN_BLACK))
+                    {
+                        x = pat.num_columns;
+                        y = pat.num_rows;
+                        bFound = TRUE;
+                    }
+                }
+            }
+            if (bFound)
+                continue;
+        }
 #undef GET_DATA
 
         s_patterns.push_back(pat);
@@ -7237,6 +7286,19 @@ void __fastcall XgRuleCheck(HWND hwnd)
     if (xg_nRules & RULE_POINTSYMMETRY) {
         if (!board.IsPointSymmetry()) {
             XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_NOTPOINTSYMMETRY), nullptr, MB_ICONERROR);
+            return;
+        }
+    }
+    // 黒マス線対称。
+    if (xg_nRules & RULE_LINESYMMETRYV) {
+        if (!board.IsLineSymmetryV()) {
+            XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_NOTLINESYMMETRYV), nullptr, MB_ICONERROR);
+            return;
+        }
+    }
+    if (xg_nRules & RULE_LINESYMMETRYH) {
+        if (!board.IsLineSymmetryH()) {
+            XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_NOTLINESYMMETRYH), nullptr, MB_ICONERROR);
             return;
         }
     }
@@ -8353,9 +8415,18 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
         break;
 
     case ID_SOLVE:  // 解を求める。
-        // ルール「黒マス線対称」では黒マス追加ありの解を求めることはできません。
+        // ルール「黒マス点対称」では黒マス追加ありの解を求めることはできません。
         if (xg_nRules & RULE_POINTSYMMETRY) {
             XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_CANTSOLVESYMMETRY), NULL, MB_ICONERROR);
+            return;
+        }
+        // ルール「黒マス線対称」では黒マス追加ありの解を求めることはできません。
+        if (xg_nRules & RULE_LINESYMMETRYV) {
+            XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_CANTSOLVELINESYMMETRY), NULL, MB_ICONERROR);
+            return;
+        }
+        if (xg_nRules & RULE_LINESYMMETRYH) {
+            XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_CANTSOLVELINESYMMETRY), NULL, MB_ICONERROR);
             return;
         }
         {
@@ -8392,9 +8463,18 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
         break;
 
     case ID_SOLVEREPEATEDLY:    // 連続で解を求める
-        // ルール「黒マス線対称」では黒マス追加ありの解を求めることはできません。
+        // ルール「黒マス点対称」では黒マス追加ありの解を求めることはできません。
         if (xg_nRules & RULE_POINTSYMMETRY) {
             XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_CANTSOLVESYMMETRY), NULL, MB_ICONERROR);
+            return;
+        }
+        // ルール「黒マス線対称」では黒マス追加ありの解を求めることはできません。
+        if (xg_nRules & RULE_LINESYMMETRYV) {
+            XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_CANTSOLVELINESYMMETRY), NULL, MB_ICONERROR);
+            return;
+        }
+        if (xg_nRules & RULE_LINESYMMETRYH) {
+            XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_CANTSOLVELINESYMMETRY), NULL, MB_ICONERROR);
             return;
         }
         {
@@ -9000,6 +9080,22 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
             xg_nRules &= ~RULE_POINTSYMMETRY;
         } else {
             xg_nRules |= RULE_POINTSYMMETRY;
+        }
+        XgUpdateRules(hwnd);
+        break;
+    case ID_RULE_LINESYMMETRYV:
+        if (xg_nRules & RULE_LINESYMMETRYV) {
+            xg_nRules &= ~RULE_LINESYMMETRYV;
+        } else {
+            xg_nRules |= RULE_LINESYMMETRYV;
+        }
+        XgUpdateRules(hwnd);
+        break;
+    case ID_RULE_LINESYMMETRYH:
+        if (xg_nRules & RULE_LINESYMMETRYH) {
+            xg_nRules &= ~RULE_LINESYMMETRYH;
+        } else {
+            xg_nRules |= RULE_LINESYMMETRYH;
         }
         XgUpdateRules(hwnd);
         break;

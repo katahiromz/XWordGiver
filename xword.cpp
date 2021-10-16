@@ -1664,6 +1664,10 @@ INT __fastcall XgParseRules(const std::wstring& str)
             nRules |= RULE_DONTFOURDIAGONALS;
         } else if (rule == XgLoadStringDx1(IDS_RULE_POINTSYMMETRY)) {
             nRules |= RULE_POINTSYMMETRY;
+        } else if (rule == XgLoadStringDx1(IDS_RULE_LINESYMMETRYV)) {
+            nRules |= RULE_LINESYMMETRYV;
+        } else if (rule == XgLoadStringDx1(IDS_RULE_LINESYMMETRYH)) {
+            nRules |= RULE_LINESYMMETRYH;
         } else {
             if (XgIsUserJapanese())
                 nRules = DEFAULT_RULES_JAPANESE;
@@ -1721,6 +1725,18 @@ std::wstring __fastcall XgGetRulesString(INT rules)
             ret += L" / ";
         }
         ret += XgLoadStringDx1(IDS_RULE_POINTSYMMETRY);
+    }
+    if (rules & RULE_LINESYMMETRYV) {
+        if (ret.size())  {
+            ret += L" / ";
+        }
+        ret += XgLoadStringDx1(IDS_RULE_LINESYMMETRYV);
+    }
+    if (rules & RULE_LINESYMMETRYH) {
+        if (ret.size())  {
+            ret += L" / ";
+        }
+        ret += XgLoadStringDx1(IDS_RULE_LINESYMMETRYH);
     }
     return ret;
 }
@@ -5410,7 +5426,7 @@ bool __fastcall XgGenerateBlacksRecurse(const XG_Board& xword, LONG iRowjCol)
 }
 
 // 黒マスパターンを生成する（点対称）。
-bool __fastcall XgGenerateBlacksSym2Recurse(const XG_Board& xword, LONG iRowjCol)
+bool __fastcall XgGenerateBlacksPointSymRecurse(const XG_Board& xword, LONG iRowjCol)
 {
     // ルールの適合性をチェックする。
     if ((xg_nRules & RULE_DONTCORNERBLACK) && xword.CornerBlack())
@@ -5463,10 +5479,10 @@ bool __fastcall XgGenerateBlacksSym2Recurse(const XG_Board& xword, LONG iRowjCol
         copy.SetAt(iRow, jCol, ZEN_BLACK);
         copy.SetAt(nRows - (iRow + 1), nCols - (jCol + 1), ZEN_BLACK);
         if (jCol + 1 < nCols) {
-            if (XgGenerateBlacksSym2Recurse(copy, MAKELONG(iRow, jCol + 1)))
+            if (XgGenerateBlacksPointSymRecurse(copy, MAKELONG(iRow, jCol + 1)))
                 return true;
         } else {
-            if (XgGenerateBlacksSym2Recurse(copy, MAKELONG(iRow + 1, 0)))
+            if (XgGenerateBlacksPointSymRecurse(copy, MAKELONG(iRow + 1, 0)))
                 return true;
         }
         return false;
@@ -5484,10 +5500,10 @@ bool __fastcall XgGenerateBlacksSym2Recurse(const XG_Board& xword, LONG iRowjCol
         copy.SetAt(iRow, jCol, ZEN_BLACK);
         copy.SetAt(nRows - (iRow + 1), nCols - (jCol + 1), ZEN_BLACK);
         if (jCol + 1 < nCols) {
-            if (XgGenerateBlacksSym2Recurse(copy, MAKELONG(iRow, jCol + 1)))
+            if (XgGenerateBlacksPointSymRecurse(copy, MAKELONG(iRow, jCol + 1)))
                 return true;
         } else {
-            if (XgGenerateBlacksSym2Recurse(copy, MAKELONG(iRow + 1, 0)))
+            if (XgGenerateBlacksPointSymRecurse(copy, MAKELONG(iRow + 1, 0)))
                 return true;
         }
         return false;
@@ -5496,20 +5512,20 @@ bool __fastcall XgGenerateBlacksSym2Recurse(const XG_Board& xword, LONG iRowjCol
     if (rand() < RAND_MAX / 2) { // 1/2の確率で。。。
         // 黒マスをセットして再帰。
         if (jCol + 1 < nCols) {
-            if (XgGenerateBlacksSym2Recurse(xword, MAKELONG(iRow, jCol + 1)))
+            if (XgGenerateBlacksPointSymRecurse(xword, MAKELONG(iRow, jCol + 1)))
                 return true;
             XG_Board copy(xword);
             copy.SetAt(iRow, jCol, ZEN_BLACK);
             copy.SetAt(nRows - (iRow + 1), nCols - (jCol + 1), ZEN_BLACK);
-            if (XgGenerateBlacksSym2Recurse(copy, MAKELONG(iRow, jCol + 1)))
+            if (XgGenerateBlacksPointSymRecurse(copy, MAKELONG(iRow, jCol + 1)))
                 return true;
         } else {
-            if (XgGenerateBlacksSym2Recurse(xword, MAKELONG(iRow + 1, 0)))
+            if (XgGenerateBlacksPointSymRecurse(xword, MAKELONG(iRow + 1, 0)))
                 return true;
             XG_Board copy(xword);
             copy.SetAt(iRow, jCol, ZEN_BLACK);
             copy.SetAt(nRows - (iRow + 1), nCols - (jCol + 1), ZEN_BLACK);
-            if (XgGenerateBlacksSym2Recurse(copy, MAKELONG(iRow + 1, 0)))
+            if (XgGenerateBlacksPointSymRecurse(copy, MAKELONG(iRow + 1, 0)))
                 return true;
         }
     } else {
@@ -5518,17 +5534,33 @@ bool __fastcall XgGenerateBlacksSym2Recurse(const XG_Board& xword, LONG iRowjCol
         copy.SetAt(iRow, jCol, ZEN_BLACK);
         copy.SetAt(nRows - (iRow + 1), nCols - (jCol + 1), ZEN_BLACK);
         if (jCol + 1 < nCols) {
-            if (XgGenerateBlacksSym2Recurse(copy, MAKELONG(iRow, jCol + 1)))
+            if (XgGenerateBlacksPointSymRecurse(copy, MAKELONG(iRow, jCol + 1)))
                 return true;
-            if (XgGenerateBlacksSym2Recurse(xword, MAKELONG(iRow, jCol + 1)))
+            if (XgGenerateBlacksPointSymRecurse(xword, MAKELONG(iRow, jCol + 1)))
                 return true;
         } else {
-            if (XgGenerateBlacksSym2Recurse(copy, MAKELONG(iRow + 1, 0)))
+            if (XgGenerateBlacksPointSymRecurse(copy, MAKELONG(iRow + 1, 0)))
                 return true;
-            if (XgGenerateBlacksSym2Recurse(xword, MAKELONG(iRow + 1, 0)))
+            if (XgGenerateBlacksPointSymRecurse(xword, MAKELONG(iRow + 1, 0)))
                 return true;
         }
     }
+    return false;
+}
+
+// 黒マスパターンを生成する（タテ線対称）。
+bool __fastcall XgGenerateBlacksLineSymVRecurse(const XG_Board& xword, LONG iRowjCol)
+{
+    // TODO: 実装して下さい。
+    assert(0);
+    return false;
+}
+
+// 黒マスパターンを生成する（ヨコ線対称）。
+bool __fastcall XgGenerateBlacksLineSymHRecurse(const XG_Board& xword, LONG iRowjCol)
+{
+    // TODO: 実装して下さい。
+    assert(0);
     return false;
 }
 
@@ -5570,7 +5602,27 @@ unsigned __stdcall XgGenerateBlacksSmart(void *param)
                 break;
             }
             xword.clear();
-        } while (!XgGenerateBlacksSym2Recurse(xword, 0));
+        } while (!XgGenerateBlacksPointSymRecurse(xword, 0));
+    } else if (xg_nRules & RULE_LINESYMMETRYV) {
+        // 再帰求解関数に突入する。
+        do {
+            if (xg_bCancelled)
+                break;
+            if (xg_bBlacksGenerated) {
+                break;
+            }
+            xword.clear();
+        } while (!XgGenerateBlacksLineSymVRecurse(xword, 0));
+    } else if (xg_nRules & RULE_LINESYMMETRYH) {
+        // 再帰求解関数に突入する。
+        do {
+            if (xg_bCancelled)
+                break;
+            if (xg_bBlacksGenerated) {
+                break;
+            }
+            xword.clear();
+        } while (!XgGenerateBlacksLineSymHRecurse(xword, 0));
     } else {
         // 再帰求解関数に突入する。
         do {
@@ -5586,7 +5638,7 @@ unsigned __stdcall XgGenerateBlacksSmart(void *param)
 }
 
 // マルチスレッド用の関数。
-unsigned __stdcall XgGenerateBlacksSym2(void *param)
+unsigned __stdcall XgGenerateBlacksPointSym(void *param)
 {
     srand(::GetTickCount() ^ ::GetCurrentThreadId());
     xg_solution.clear();
@@ -5595,23 +5647,73 @@ unsigned __stdcall XgGenerateBlacksSym2(void *param)
         if (xg_bBlacksGenerated || xg_bCancelled)
             break;
         xword.clear();
-    } while (!XgGenerateBlacksSym2Recurse(xword, 0));
+    } while (!XgGenerateBlacksPointSymRecurse(xword, 0));
     return 1;
 }
 
-void __fastcall XgStartGenerateBlacks(bool sym)
+// マルチスレッド用の関数。
+unsigned __stdcall XgGenerateBlacksLineSymV(void *param)
+{
+    srand(::GetTickCount() ^ ::GetCurrentThreadId());
+    xg_solution.clear();
+    XG_Board xword;
+    do {
+        if (xg_bBlacksGenerated || xg_bCancelled)
+            break;
+        xword.clear();
+    } while (!XgGenerateBlacksLineSymVRecurse(xword, 0));
+    return 1;
+}
+
+// マルチスレッド用の関数。
+unsigned __stdcall XgGenerateBlacksLineSymH(void *param)
+{
+    srand(::GetTickCount() ^ ::GetCurrentThreadId());
+    xg_solution.clear();
+    XG_Board xword;
+    do {
+        if (xg_bBlacksGenerated || xg_bCancelled)
+            break;
+        xword.clear();
+    } while (!XgGenerateBlacksLineSymHRecurse(xword, 0));
+    return 1;
+}
+
+void __fastcall XgStartGenerateBlacks(void)
 {
     xg_bBlacksGenerated = false;
     xg_bCancelled = false;
 
     // スレッドを開始する。
-    if (sym || (xg_nRules & RULE_POINTSYMMETRY)) {
+    if (xg_nRules & RULE_POINTSYMMETRY) {
 #ifdef SINGLE_THREAD_MODE
-        XgGenerateBlacksSym2(&xg_aThreadInfo[0]);
+        XgGenerateBlacksPointSym(&xg_aThreadInfo[0]);
 #else
         for (DWORD i = 0; i < xg_dwThreadCount; i++) {
             xg_ahThreads[i] = reinterpret_cast<HANDLE>(
-                _beginthreadex(nullptr, 0, XgGenerateBlacksSym2, &xg_aThreadInfo[i], 0,
+                _beginthreadex(nullptr, 0, XgGenerateBlacksPointSym, &xg_aThreadInfo[i], 0,
+                    &xg_aThreadInfo[i].m_threadid));
+            assert(xg_ahThreads[i] != nullptr);
+        }
+#endif
+    } else if (xg_nRules & RULE_LINESYMMETRYV) {
+#ifdef SINGLE_THREAD_MODE
+        XgGenerateBlacksLineSymV(&xg_aThreadInfo[0]);
+#else
+        for (DWORD i = 0; i < xg_dwThreadCount; i++) {
+            xg_ahThreads[i] = reinterpret_cast<HANDLE>(
+                _beginthreadex(nullptr, 0, XgGenerateBlacksLineSymV, &xg_aThreadInfo[i], 0,
+                    &xg_aThreadInfo[i].m_threadid));
+            assert(xg_ahThreads[i] != nullptr);
+        }
+#endif
+    } else if (xg_nRules & RULE_LINESYMMETRYV) {
+#ifdef SINGLE_THREAD_MODE
+        XgGenerateBlacksLineSymH(&xg_aThreadInfo[0]);
+#else
+        for (DWORD i = 0; i < xg_dwThreadCount; i++) {
+            xg_ahThreads[i] = reinterpret_cast<HANDLE>(
+                _beginthreadex(nullptr, 0, XgGenerateBlacksLineSymH, &xg_aThreadInfo[i], 0,
                     &xg_aThreadInfo[i].m_threadid));
             assert(xg_ahThreads[i] != nullptr);
         }

@@ -181,6 +181,8 @@ enum RULES
     RULE_DONTFOURDIAGONALS = (1 << 4),  // 黒斜四連禁。
     RULE_POINTSYMMETRY = (1 << 5),      // 黒マス点対称。
     RULE_DONTTHREEDIAGONALS = (1 << 6), // 黒斜三連禁。
+    RULE_LINESYMMETRYV = (1 << 7),      // 黒マス線対称（タテ）。
+    RULE_LINESYMMETRYH = (1 << 8),      // 黒マス線対称（ヨコ）。
 };
 
 // デフォルトのルール。
@@ -498,7 +500,7 @@ void __fastcall XgStartSolve_Smart(void);
 void __fastcall XgEndSolve(void);
 
 // 黒マスパターンを生成する。
-void __fastcall XgStartGenerateBlacks(bool sym);
+void __fastcall XgStartGenerateBlacks(void);
 
 // ステータスバーを更新する。
 void __fastcall XgUpdateStatusBar(HWND hwnd);
