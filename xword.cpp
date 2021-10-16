@@ -5551,7 +5551,7 @@ bool __fastcall XgGenerateBlacksPointSymRecurse(const XG_Board& xword, LONG iRow
 // 黒マスパターンを生成する（タテ線対称）。
 bool __fastcall XgGenerateBlacksLineSymVRecurse(const XG_Board& xword, LONG iRowjCol)
 {
-    // TODO: 実装して下さい。
+    // TODO: XgGenerateBlacksPointSymRecurseを参考に実装して下さい。
     assert(0);
     return false;
 }
@@ -5559,7 +5559,7 @@ bool __fastcall XgGenerateBlacksLineSymVRecurse(const XG_Board& xword, LONG iRow
 // 黒マスパターンを生成する（ヨコ線対称）。
 bool __fastcall XgGenerateBlacksLineSymHRecurse(const XG_Board& xword, LONG iRowjCol)
 {
-    // TODO: 実装して下さい。
+    // TODO: XgGenerateBlacksPointSymRecurseを参考に実装して下さい。
     assert(0);
     return false;
 }
