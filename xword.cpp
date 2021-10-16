@@ -5551,7 +5551,12 @@ bool __fastcall XgGenerateBlacksPointSymRecurse(const XG_Board& xword, LONG iRow
 // 黒マスパターンを生成する（タテ線対称）。
 bool __fastcall XgGenerateBlacksLineSymVRecurse(const XG_Board& xword, LONG iRowjCol)
 {
-    // TODO: XgGenerateBlacksPointSymRecurseを参考に実装して下さい。
+    // TODO: XgGenerateBlacksPointSymRecurse再帰関数を参考にこの再帰関数を実装して下さい。
+    // XG_Boardクラスの宣言と定義をよく読むこと。
+    // パターンが見つかったら、それをグローバル変数xg_xwordに書き込んで下さい。
+    // xg_xwordに書き込む前にクリティカルセクションxg_csを使用して排他制御して下さい。
+    // xg_nRowsは盤の行数、xg_nColsは盤の列数です。
+    // 引数iRowjColは自由にお使い下さい。処理速度優先。
     assert(0);
     return false;
 }
@@ -5559,7 +5564,12 @@ bool __fastcall XgGenerateBlacksLineSymVRecurse(const XG_Board& xword, LONG iRow
 // 黒マスパターンを生成する（ヨコ線対称）。
 bool __fastcall XgGenerateBlacksLineSymHRecurse(const XG_Board& xword, LONG iRowjCol)
 {
-    // TODO: XgGenerateBlacksPointSymRecurseを参考に実装して下さい。
+    // TODO: XgGenerateBlacksPointSymRecurse再帰関数を参考にこの再帰関数を実装して下さい。
+    // XG_Boardクラスの宣言と定義をよく読むこと。
+    // パターンが見つかったら、それをグローバル変数xg_xwordに書き込んで下さい。
+    // xg_xwordに書き込む前にクリティカルセクションxg_csを使用して排他制御して下さい。
+    // xg_nRowsは盤の行数、xg_nColsは盤の列数です。
+    // 引数iRowjColは自由にお使い下さい。処理速度優先。
     assert(0);
     return false;
 }
