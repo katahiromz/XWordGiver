@@ -391,13 +391,14 @@
 	英語辞書を強化。
 	「解を削除して盤のロックを解除」を「ヒントを削除して盤のロックを解除」に変更。
 
-2021年XX月YY日 ver.4.7.8
+2021年10月27日 ver.4.7.8
+	英語の辞書の品質を劇的に改良。
 	英語のダイアログを改良。
 	黒マスパターンをさらに追加。
 	「辞書リストを再読み込み」メニュー項目を追加。
 	ルール周りを改良。
 	辞書読み込みを修正。
-    EXEファイルの名前を変更。
+	EXEファイルの名前を変更。
 
 ## History of XWordGiver (English)
 
@@ -424,7 +425,8 @@
     - Strengthened English dictionary.
     - Changed "Delete solution and unlock board" to "Delete clues and unlock board".
 
-- 2021.XX.YY Ver.4.7.8
+- 2021.10.27 Ver.4.7.8
+    - Dramatically improved the quality of the English dictionary.
     - Improved English dialogs.
     - Added more block patterns.
     - Added "Reload &Dict List" menu item.
