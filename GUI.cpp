@@ -5518,10 +5518,12 @@ void SettingsDlg_OnOK(HWND hwnd)
             }
         }
 
-        if (!xg_hbmBlackCell && !xg_hBlackCellEMF)
-        {
+        if (!xg_hbmBlackCell && !xg_hBlackCellEMF) {
             // 画像が無効なら、パスも無効化。
             xg_strBlackCellImage.clear();
+        } else if (xg_nViewMode == XG_VIEW_SKELTON) {
+            // 画像が有効ならスケルトンビューを通常ビューに戻す。
+            xg_nViewMode = XG_VIEW_NORMAL;
         }
     }
 
@@ -9192,6 +9194,7 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
         XgUpdateImage(hwnd, x, y);
         break;
     case ID_VIEW_SKELTON_VIEW:
+        xg_strBlackCellImage.clear();
         xg_nViewMode = XG_VIEW_SKELTON;
         x = XgGetHScrollPos();
         y = XgGetVScrollPos();
