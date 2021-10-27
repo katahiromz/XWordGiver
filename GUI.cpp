@@ -9188,12 +9188,14 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
         XgLoadDictsAll();
         break;
     case ID_VIEW_NORMAL_VIEW:
+        // 通常ビューを設定。
         xg_nViewMode = XG_VIEW_NORMAL;
         x = XgGetHScrollPos();
         y = XgGetVScrollPos();
         XgUpdateImage(hwnd, x, y);
         break;
     case ID_VIEW_SKELTON_VIEW:
+        // 黒マス画像をクリアする。
         xg_strBlackCellImage.clear();
         if (xg_hbmBlackCell) {
             ::DeleteObject(xg_hbmBlackCell);
@@ -9203,6 +9205,7 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
             DeleteEnhMetaFile(xg_hBlackCellEMF);
             xg_hBlackCellEMF = NULL;
         }
+        // スケルトンビューを設定。
         xg_nViewMode = XG_VIEW_SKELTON;
         x = XgGetHScrollPos();
         y = XgGetVScrollPos();
