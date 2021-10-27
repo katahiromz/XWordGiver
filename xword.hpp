@@ -529,6 +529,14 @@ extern HBITMAP xg_hbmBlackCell;
 extern HENHMETAFILE xg_hBlackCellEMF;
 extern std::wstring xg_strBlackCellImage;
 
+// ビューモード。
+typedef enum XG_VIEW_MODE
+{
+    XG_VIEW_NORMAL, // 通常ビュー。
+    XG_VIEW_SKELTON // スケルトンビュー。
+} XG_VIEW_MODE;
+extern XG_VIEW_MODE xg_nViewMode;
+
 //////////////////////////////////////////////////////////////////////////////
 // inline functions
 

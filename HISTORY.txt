@@ -400,6 +400,9 @@
 	辞書読み込みを修正。
 	EXEファイルの名前を変更。
 
+2021年XX月YY日 ver.4.7.9
+	スケルトン ビューをサポート。「スケルトン ビュー」メニュー項目を追加。
+
 ## History of XWordGiver (English)
 
 - 2021.08.22 Ver.4.7.4
@@ -433,3 +436,6 @@
     - Improved around policies.
     - Fixed dictionary loading.
     - Renamed the EXE file.
+
+- 2021.XX.YY Ver.4.7.9
+    - Supported Skelton View. Added "Skelton View" menu item.

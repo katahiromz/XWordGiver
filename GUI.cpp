@@ -610,6 +610,8 @@ bool __fastcall XgLoadSettings(void)
 
     s_nNumberToGenerate = 16;
 
+    xg_nViewMode = XG_VIEW_NORMAL;
+
     // 会社名キーを開く。
     MRegKey company_key(HKEY_CURRENT_USER, s_pszSoftwareCompanyName, FALSE);
     if (company_key) {
@@ -790,6 +792,12 @@ bool __fastcall XgLoadSettings(void)
             if (!app_key.QueryDword(L"Rules", dwValue)) {
                 xg_nRules = dwValue;
             }
+            if (!app_key.QueryDword(L"ViewMode", dwValue)) {
+                xg_nViewMode = static_cast<XG_VIEW_MODE>(dwValue);
+                if (xg_nViewMode != XG_VIEW_NORMAL && xg_nViewMode != XG_VIEW_SKELTON) {
+                    xg_nViewMode = XG_VIEW_NORMAL;
+                }
+            }
 
             if (!app_key.QuerySz(L"Recent", sz, ARRAYSIZE(sz))) {
                 xg_dict_name = sz;
@@ -913,6 +921,7 @@ bool __fastcall XgSaveSettings(void)
             app_key.SetDword(L"PatWndCY", xg_nPatWndCY);
             app_key.SetDword(L"ShowAnsOnPat", xg_bShowAnswerOnPattern);
             app_key.SetDword(L"Rules", xg_nRules);
+            app_key.SetDword(L"ViewMode", xg_nViewMode);
 
             app_key.SetSz(L"Recent", xg_dict_name.c_str());
             app_key.SetSz(L"BlackCellImage", xg_strBlackCellImage.c_str());
@@ -4965,6 +4974,21 @@ void __fastcall MainWnd_OnInitMenu(HWND /*hwnd*/, HMENU hMenu)
         ::CheckMenuItem(hMenu, ID_CHARFEED, MF_BYCOMMAND | MF_CHECKED);
     } else {
         ::CheckMenuItem(hMenu, ID_CHARFEED, MF_BYCOMMAND | MF_UNCHECKED);
+    }
+
+    // ビューモード。
+    switch (xg_nViewMode) {
+    case XG_VIEW_NORMAL:
+    default:
+        // 通常ビュー。
+        ::CheckMenuRadioItem(hMenu, ID_VIEW_NORMAL_VIEW, ID_VIEW_SKELTON_VIEW,
+                             ID_VIEW_NORMAL_VIEW, MF_BYCOMMAND);
+        break;
+    case XG_VIEW_SKELTON:
+        // スケルトンビュー。
+        ::CheckMenuRadioItem(hMenu, ID_VIEW_NORMAL_VIEW, ID_VIEW_SKELTON_VIEW,
+                             ID_VIEW_SKELTON_VIEW, MF_BYCOMMAND);
+        break;
     }
 }
 
@@ -9160,6 +9184,18 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
         break;
     case ID_RELOADDICTS:
         XgLoadDictsAll();
+        break;
+    case ID_VIEW_NORMAL_VIEW:
+        xg_nViewMode = XG_VIEW_NORMAL;
+        x = XgGetHScrollPos();
+        y = XgGetVScrollPos();
+        XgUpdateImage(hwnd, x, y);
+        break;
+    case ID_VIEW_SKELTON_VIEW:
+        xg_nViewMode = XG_VIEW_SKELTON;
+        x = XgGetHScrollPos();
+        y = XgGetVScrollPos();
+        XgUpdateImage(hwnd, x, y);
         break;
     default:
         if (!MainWnd_OnCommand2(hwnd, id)) {
