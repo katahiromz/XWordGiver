@@ -4121,9 +4121,9 @@ void __fastcall XgCopyMarkWordAsImage(HWND hwnd)
     if (hdc) {
         // EMFに描画する。
         XgDrawMarkWord(hdc, &siz);
-        ::ReleaseDC(hwnd, hdcRef);
         hEMF = ::CloseEnhMetaFile(hdc);
     }
+    ::ReleaseDC(hwnd, hdcRef);
 
     // クリップボードを開く。
     if (::OpenClipboard(hwnd)) {

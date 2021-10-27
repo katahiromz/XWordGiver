@@ -3576,6 +3576,7 @@ void __fastcall XgDrawMarkWord(HDC hdc, LPSIZE psiz)
     lf.lfWidth = 0;
     lf.lfWeight = FW_NORMAL;
     lf.lfQuality = ANTIALIASED_QUALITY;
+    lf.lfCharSet = SHIFTJIS_CHARSET;
     HFONT hFont = ::CreateFontIndirectW(&lf);
 
     // 小さい文字のフォントを作成する。
@@ -3586,6 +3587,7 @@ void __fastcall XgDrawMarkWord(HDC hdc, LPSIZE psiz)
     lf.lfWidth = 0;
     lf.lfWeight = FW_NORMAL;
     lf.lfQuality = ANTIALIASED_QUALITY;
+    lf.lfCharSet = SHIFTJIS_CHARSET;
     HFONT hFontSmall = ::CreateFontIndirectW(&lf);
 
     // 全体を白で塗りつぶす。
@@ -3607,18 +3609,29 @@ void __fastcall XgDrawMarkWord(HDC hdc, LPSIZE psiz)
         ::FillRect(hdc, &rc, hbrMarked);
         ::InflateRect(&rc, -4, -4);
         if (xg_bDrawFrameForMarkedCell) {
-            ::SelectObject(hdc, ::GetStockObject(NULL_BRUSH));
-            ::Rectangle(hdc, rc.left, rc.top, rc.right + 1, rc.bottom + 1);
+            ::MoveToEx(hdc, rc.left, rc.top, NULL);
+            ::LineTo(hdc, rc.right + 1, rc.top);
+            ::LineTo(hdc, rc.right + 1, rc.bottom + 1);
+            ::LineTo(hdc, rc.left, rc.bottom + 1);
+            ::LineTo(hdc, rc.left, rc.top);
         }
         ::InflateRect(&rc, 4, 4);
 
-        // 二重マスの文字を描く。
-        ::SetTextColor(hdc, xg_rgbBlackCellColor);
-        ::SetBkMode(hdc, OPAQUE);
-        ::SetBkColor(hdc, xg_rgbMarkedCellColor);
         StringCbPrintf(sz, sizeof(sz), L"%c", ZEN_LARGE_A + i);
         ::GetTextExtentPoint32W(hdc, sz, int(wcslen(sz)), &siz);
-        ::DrawTextW(hdc, sz, -1, &rc, DT_RIGHT | DT_SINGLELINE | DT_BOTTOM);
+
+        RECT rcText = rc;
+        rcText.left = rc.right - std::max(siz.cx, siz.cy);
+        rcText.top = rc.bottom - std::max(siz.cx, siz.cy);
+        ::FillRect(hdc, &rcText, hbrMarked);
+
+        INT x = (rcText.left + rcText.right - siz.cx) / 2;
+        INT y = rcText.top;
+
+        // 二重マスの文字を描く。
+        ::SetTextColor(hdc, xg_rgbBlackCellColor);
+        ::SetBkMode(hdc, TRANSPARENT);
+        ::TextOutW(hdc, x, y, sz, lstrlenW(sz));
     }
     ::SelectObject(hdc, hFontOld);
     ::SelectObject(hdc, hPenOld);
@@ -3650,12 +3663,23 @@ void __fastcall XgDrawMarkWord(HDC hdc, LPSIZE psiz)
             WCHAR new_ch;
             LCMapStringW(JPN_LOCALE, LCMAP_FULLWIDTH | LCMAP_LOWERCASE, &ch, 1, &new_ch, 1);
             ch = new_ch;
+        } else {
+            WCHAR new_ch;
+            LCMapStringW(JPN_LOCALE, LCMAP_FULLWIDTH | LCMAP_UPPERCASE, &ch, 1, &new_ch, 1);
+            ch = new_ch;
         }
+
+        StringCbPrintf(sz, sizeof(sz), L"%c", ch);
+
+        ::GetTextExtentPoint32W(hdc, sz, int(wcslen(sz)), &siz);
+        INT x = (rc.left + rc.right) / 2 - siz.cx / 2;
+        INT y = (rc.top + rc.bottom) / 2 - siz.cy / 2;
 
         // マスの文字を描画する。
         ::SetTextColor(hdc, xg_rgbBlackCellColor);
         ::SetBkMode(hdc, TRANSPARENT);
-        ::DrawTextW(hdc, &ch, 1, &rc, DT_CENTER | DT_SINGLELINE | DT_VCENTER);
+        ::SetBkColor(hdc, xg_rgbMarkedCellColor);
+        ::TextOutW(hdc, x, y, sz, lstrlenW(sz));
     }
     ::SelectObject(hdc, hFontOld);
 

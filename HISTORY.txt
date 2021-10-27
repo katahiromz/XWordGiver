@@ -403,6 +403,7 @@
 2021年XX月YY日 ver.4.7.9
 	スケルトン ビューをサポート。「スケルトン ビュー」メニュー項目を追加。
 	二重マスの文字の表示を改善。
+	「二重マス単語の画像をコピー」を修正。
 
 ## History of XWordGiver (English)
 
@@ -441,3 +442,4 @@
 - 2021.XX.YY Ver.4.7.9
     - Supported Skelton View. Added "Skelton View" menu item.
     - Improved drawing the character of the double-frame cell.
+    - Fixed "Copy the double frame word image".
