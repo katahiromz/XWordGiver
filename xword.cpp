@@ -3595,6 +3595,15 @@ void __fastcall XgDrawMarkWord(HDC hdc, LPSIZE psiz)
     ::SetRect(&rc, 0, 0, psiz->cx, psiz->cy);
     ::FillRect(hdc, &rc, reinterpret_cast<HBRUSH>(::GetStockObject(WHITE_BRUSH)));
 
+    // 周りに太い線を描く。
+    if (xg_bAddThickFrame) {
+        InflateRect(&rc, -xg_nNarrowMargin, -xg_nNarrowMargin);
+        InflateRect(&rc, +c_nWide, +c_nWide);
+        FillRect(hdc, &rc, hbrBlack);
+        InflateRect(&rc, -c_nWide, -c_nWide);
+        InflateRect(&rc, +xg_nNarrowMargin, +xg_nNarrowMargin);
+    }
+
     // 二重マスを描画する。
     WCHAR sz[32];
     SIZE siz;
@@ -3695,18 +3704,6 @@ void __fastcall XgDrawMarkWord(HDC hdc, LPSIZE psiz)
     }
     ::SelectObject(hdc, hPenOld);
 
-    // 周りに太い線を描く。
-    if (xg_bAddThickFrame) {
-        hPenOld = ::SelectObject(hdc, hWidePen);
-        c_nWide /= 2;
-        ::MoveToEx(hdc, xg_nNarrowMargin - c_nWide, xg_nNarrowMargin - c_nWide, nullptr);
-        ::LineTo(hdc, psiz->cx - xg_nNarrowMargin + c_nWide, xg_nNarrowMargin - c_nWide);
-        ::LineTo(hdc, psiz->cx - xg_nNarrowMargin + c_nWide, psiz->cy - xg_nNarrowMargin + c_nWide);
-        ::LineTo(hdc, xg_nNarrowMargin - c_nWide, psiz->cy - xg_nNarrowMargin + c_nWide);
-        ::LineTo(hdc, xg_nNarrowMargin - c_nWide, xg_nNarrowMargin - c_nWide);
-        ::SelectObject(hdc, hPenOld);
-    }
-
     // 破棄する。
     ::DeleteObject(hWidePen);
     ::DeleteObject(hThinPen);
@@ -3743,6 +3740,7 @@ void __fastcall XgDrawXWord_NormalView(XG_Board& xw, HDC hdc, LPSIZE psiz, bool 
     lf.lfHeight = -nCellSize * xg_nCellCharPercents / 100;
     lf.lfWidth = 0;
     lf.lfQuality = ANTIALIASED_QUALITY;
+    lf.lfCharSet = SHIFTJIS_CHARSET;
     HFONT hFont = ::CreateFontIndirectW(&lf);
 
     // 小さい文字のフォントを作成する。
@@ -3752,6 +3750,7 @@ void __fastcall XgDrawXWord_NormalView(XG_Board& xw, HDC hdc, LPSIZE psiz, bool 
     lf.lfHeight = -nCellSize * xg_nSmallCharPercents / 100;
     lf.lfWidth = 0;
     lf.lfQuality = ANTIALIASED_QUALITY;
+    lf.lfCharSet = SHIFTJIS_CHARSET;
     HFONT hFontSmall = ::CreateFontIndirectW(&lf);
 
     // ブラシを作成する。
@@ -4068,6 +4067,7 @@ void __fastcall XgDrawXWord_SkeltonView(XG_Board& xw, HDC hdc, LPSIZE psiz, bool
     lf.lfHeight = -nCellSize * xg_nCellCharPercents / 100;
     lf.lfWidth = 0;
     lf.lfQuality = ANTIALIASED_QUALITY;
+    lf.lfCharSet = SHIFTJIS_CHARSET;
     HFONT hFont = ::CreateFontIndirectW(&lf);
 
     // 小さい文字のフォントを作成する。
@@ -4077,6 +4077,7 @@ void __fastcall XgDrawXWord_SkeltonView(XG_Board& xw, HDC hdc, LPSIZE psiz, bool
     lf.lfHeight = -nCellSize * xg_nSmallCharPercents / 100;
     lf.lfWidth = 0;
     lf.lfQuality = ANTIALIASED_QUALITY;
+    lf.lfCharSet = SHIFTJIS_CHARSET;
     HFONT hFontSmall = ::CreateFontIndirectW(&lf);
 
     // ブラシを作成する。
