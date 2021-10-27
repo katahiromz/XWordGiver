@@ -9195,6 +9195,14 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
         break;
     case ID_VIEW_SKELTON_VIEW:
         xg_strBlackCellImage.clear();
+        if (xg_hbmBlackCell) {
+            ::DeleteObject(xg_hbmBlackCell);
+            xg_hbmBlackCell = NULL;
+        }
+        if (xg_hBlackCellEMF) {
+            DeleteEnhMetaFile(xg_hBlackCellEMF);
+            xg_hBlackCellEMF = NULL;
+        }
         xg_nViewMode = XG_VIEW_SKELTON;
         x = XgGetHScrollPos();
         y = XgGetVScrollPos();
