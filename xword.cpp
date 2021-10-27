@@ -3870,8 +3870,8 @@ void __fastcall XgDrawXWord_NormalView(XG_Board& xw, HDC hdc, LPSIZE psiz, bool 
             RECT rcText;
             GetTextExtentPoint32(hdc, sz, lstrlen(sz), &siz);
             rcText = rc;
-            rcText.left = rc.right - siz.cx;
-            rcText.top = rc.bottom - siz.cy;
+            rcText.left = rc.right - std::max(siz.cx, siz.cy);
+            rcText.top = rc.bottom - std::max(siz.cx, siz.cy);
 
             HBRUSH hbr = CreateSolidBrush(xg_rgbMarkedCellColor);
             FillRect(hdc, &rcText, hbr);
@@ -3879,7 +3879,7 @@ void __fastcall XgDrawXWord_NormalView(XG_Board& xw, HDC hdc, LPSIZE psiz, bool 
 
             // 二重マスの右下端の文字を描く。
             ::SetBkMode(hdc, TRANSPARENT);
-            ::DrawTextW(hdc, sz, -1, &rc, DT_RIGHT | DT_SINGLELINE | DT_BOTTOM);
+            ::DrawTextW(hdc, sz, -1, &rcText, DT_CENTER | DT_SINGLELINE | DT_BOTTOM);
         }
     }
 
@@ -4213,8 +4213,8 @@ void __fastcall XgDrawXWord_SkeltonView(XG_Board& xw, HDC hdc, LPSIZE psiz, bool
             RECT rcText;
             GetTextExtentPoint32(hdc, sz, lstrlen(sz), &siz);
             rcText = rc;
-            rcText.left = rc.right - siz.cx;
-            rcText.top = rc.bottom - siz.cy;
+            rcText.left = rc.right - std::max(siz.cx, siz.cy);
+            rcText.top = rc.bottom - std::max(siz.cx, siz.cy);
 
             HBRUSH hbr = CreateSolidBrush(xg_rgbMarkedCellColor);
             FillRect(hdc, &rcText, hbr);
@@ -4222,7 +4222,7 @@ void __fastcall XgDrawXWord_SkeltonView(XG_Board& xw, HDC hdc, LPSIZE psiz, bool
 
             // 二重マスの右下端の文字を描く。
             ::SetBkMode(hdc, TRANSPARENT);
-            ::DrawTextW(hdc, sz, -1, &rc, DT_RIGHT | DT_SINGLELINE | DT_BOTTOM);
+            ::DrawTextW(hdc, sz, -1, &rcText, DT_CENTER | DT_SINGLELINE | DT_BOTTOM);
         }
     }
 
