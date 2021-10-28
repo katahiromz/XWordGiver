@@ -401,7 +401,7 @@
 	EXEファイルの名前を変更。
 
 2021年XX月YY日 ver.4.7.9
-	スケルトン ビューをサポート。「スケルトン ビュー」メニュー項目を追加。
+	「スケルトン ビュー」メニュー項目を追加。
 	Webサービスの Grammarly を使うことにより英英辞書を改良。
 	二重マスの文字の表示を改善。
 	「二重マス単語の画像をコピー」を修正。
@@ -442,7 +442,7 @@
     - Renamed the EXE file.
 
 - 2021.XX.YY Ver.4.7.9
-    - Supported Skelton View. Added "Skelton View" menu item.
+    - Added "Skelton View" menu item.
     - Improved the English dictionary by using the web service Grammarly.
     - Improved drawing the letter of the double-frame cell.
     - Fixed "Copy the double-frame word image".
