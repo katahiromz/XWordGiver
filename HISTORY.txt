@@ -404,6 +404,7 @@
 	スケルトン ビューをサポート。「スケルトン ビュー」メニュー項目を追加。
 	二重マスの文字の表示を改善。
 	「二重マス単語の画像をコピー」を修正。
+	サイズの制限を30x30に緩和。
 
 ## History of XWordGiver (English)
 
@@ -443,3 +444,4 @@
     - Supported Skelton View. Added "Skelton View" menu item.
     - Improved drawing the character of the double-frame cell.
     - Fixed "Copy the double frame word image".
+    - Relaxed the size limit of crosswords to 30x30.
