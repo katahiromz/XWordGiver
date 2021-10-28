@@ -402,6 +402,7 @@
 
 2021年XX月YY日 ver.4.7.9
 	スケルトン ビューをサポート。「スケルトン ビュー」メニュー項目を追加。
+	Webサービスの Grammarly を使うことにより英英辞書を改良。
 	二重マスの文字の表示を改善。
 	「二重マス単語の画像をコピー」を修正。
 	サイズの制限を30x30に緩和（ハイエンド向け）。
@@ -442,6 +443,7 @@
 
 - 2021.XX.YY Ver.4.7.9
     - Supported Skelton View. Added "Skelton View" menu item.
+    - Improved the English dictionary by using the web service Grammarly.
     - Improved drawing the character of the double-frame cell.
     - Fixed "Copy the double frame word image".
     - Relaxed the size limit of crosswords to 30x30 (for high end).
