@@ -407,6 +407,8 @@
 	「二重マス単語の画像をコピー」を修正。
 	サイズの制限を30x30に緩和（ハイエンド向け）。
 
+2021年XX月YY日 ver.4.8.0
+
 ## History of XWordGiver (English)
 
 - 2021.08.22 Ver.4.7.4
@@ -447,3 +449,5 @@
     - Improved drawing the letter of the double-frame cell.
     - Fixed "Copy the double-frame word image".
     - Relaxed the size limit of crosswords to 30x30 (for high end).
+
+- 2021.XX.YY Ver.4.8.0
