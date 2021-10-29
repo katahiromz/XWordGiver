@@ -400,7 +400,7 @@
 	辞書読み込みを修正。
 	EXEファイルの名前を変更。
 
-2021年XX月YY日 ver.4.7.9
+2021年10月29日 ver.4.7.9
 	「スケルトン ビュー」メニュー項目を追加。
 	Webサービスの Grammarly を使うことにより英英辞書を改良。
 	二重マスの文字の表示を改善。
@@ -441,7 +441,7 @@
     - Fixed dictionary loading.
     - Renamed the EXE file.
 
-- 2021.XX.YY Ver.4.7.9
+- 2021.10.29 Ver.4.7.9
     - Added "Skelton View" menu item.
     - Improved the English dictionary by using the web service Grammarly.
     - Improved drawing the letter of the double-frame cell.
