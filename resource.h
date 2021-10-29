@@ -13,7 +13,6 @@
 #define IDD_READDICT                        109
 #define IDD_NOTES                           110
 #define IDD_SIZES                           111
-#define IDD_HEIGHT                          112
 #define IDD_BLACKGEN                        113
 #define IDD_KATATATE                        114
 #define IDD_KATAYOKO                        115
