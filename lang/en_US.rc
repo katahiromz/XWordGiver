@@ -1342,7 +1342,7 @@ FILETYPE        0x1
 
 STRINGTABLE
 {
-    IDS_VERSION, "XWordGiver ver.4.8.0\nby katahiromz\n\nCopyright (C) 2012-2020 katahiromz. All rights reserved."
+    IDS_VERSION, "XWordGiver ver.4.8.0\nby katahiromz\n\nCopyright (C) 2012-2021 katahiromz & スフィンクス. All rights reserved."
     IDS_APPNAME, "XWordGiver"
     IDS_CANTLOAD, "Cannot load file."
     IDS_WRONGFORMAT, "Wrong format."
