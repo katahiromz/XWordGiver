@@ -16,7 +16,7 @@
 #endif
 
 // «‘‚ÌÅ‘å”B
-#define MAX_DICTS 16
+#define MAX_DICTS 64
 
 #undef HANDLE_WM_MOUSEWHEEL     // might be wrong
 #define HANDLE_WM_MOUSEWHEEL(hwnd, wParam, lParam, fn) \

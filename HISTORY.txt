@@ -411,6 +411,7 @@
 	「高さを指定して二重マス単語の画像をコピー」を廃止。
 	「二重マス単語の画像をコピー」を「二重マス単語をコピー」に変更。
 	「単語をウェブ検索」を改良。
+	辞書の個数の制限を64個までに緩和。
 
 ## History of XWordGiver (English)
 
@@ -457,3 +458,4 @@
     - Abolished "Copy the double-frame word image with height".
     - Changed "Copy the double-frame word image" to "Copy the double-frame word".
     - Improved "Web search word".
+    - Relaxed the limit on the number of dictionaries to 64.
