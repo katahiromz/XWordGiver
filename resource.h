@@ -238,7 +238,7 @@
 #define ID_COPYHINTSSTYLE0                  174
 #define ID_COPYHINTSSTYLE1                  175
 #define ID_HEADERANDNOTES                   177
-#define ID_COPYMARKWORDASIMAGE              178
+#define ID_COPYMARKWORD                     178
 #define ID_COPYVHINTSSTYLE0                 179
 #define ID_COPYHHINTSSTYLE0                 180
 #define ID_COPYVHINTSSTYLE1                 181

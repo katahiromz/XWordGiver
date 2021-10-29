@@ -64,7 +64,7 @@ LANGUAGE LANG_JAPANESE, SUBLANG_DEFAULT
         MENUITEM "ヒントをコピー (スタイル0) (&N)", ID_COPYHINTSSTYLE0
         MENUITEM "ヒントをコピー (スタイル1) (&N)", ID_COPYHINTSSTYLE1
         MENUITEM SEPARATOR
-        MENUITEM "二重マス単語の画像をコピー(&M)", ID_COPYMARKWORDASIMAGE
+        MENUITEM "二重マス単語をコピー(&M)", ID_COPYMARKWORD
     }
     POPUP "入力(&I)"
     {

@@ -4100,8 +4100,8 @@ void __fastcall XgCopyBoardAsImageSized(HWND hwnd)
     ::ReleaseDC(hwnd, hdcRef);
 }
 
-// 二重マス単語を画像としてコピー。
-void __fastcall XgCopyMarkWordAsImage(HWND hwnd)
+// 二重マス単語をコピー。
+void __fastcall XgCopyMarkWord(HWND hwnd)
 {
     // マークがなければ、実行を拒否する。
     if (xg_vMarks.empty()) {
@@ -4125,10 +4125,38 @@ void __fastcall XgCopyMarkWordAsImage(HWND hwnd)
     }
     ::ReleaseDC(hwnd, hdcRef);
 
+    // すでに解があるかどうかによって切り替え。
+    const XG_Board *xw = (xg_bSolved ? &xg_solution : &xg_xword);
+
+    // 二重マス単語のテキストを取得。
+    HGLOBAL hGlobal = NULL;
+    std::wstring strMarkWord;
+    if (XgGetMarkWord(xw, strMarkWord)) {
+        for (auto& wch : strMarkWord) {
+            if (ZEN_LARGE_A <= wch && wch <= ZEN_LARGE_Z)
+                wch = L'a' + (wch - ZEN_LARGE_A);
+            else if (ZEN_SMALL_A <= wch && wch <= ZEN_SMALL_Z)
+                wch = L'a' + (wch - ZEN_SMALL_A);
+        }
+
+        // CF_UNICODETEXTのデータを用意。
+        DWORD cbGlobal = (strMarkWord.size() + 1) * sizeof(WCHAR);
+        hGlobal = GlobalAlloc(GHND | GMEM_SHARE, cbGlobal);
+        if (LPWSTR psz = (LPWSTR)GlobalLock(hGlobal)) {
+            StringCbCopyW(psz, cbGlobal, strMarkWord.c_str());
+            GlobalUnlock(hGlobal);
+        } else {
+            GlobalFree(hGlobal);
+            hGlobal = NULL;
+        }
+    }
+
     // クリップボードを開く。
     if (::OpenClipboard(hwnd)) {
         // クリップボードを空にする。
         if (::EmptyClipboard()) {
+            // テキストを設定。
+            ::SetClipboardData(CF_UNICODETEXT, hGlobal);
             // EMFを設定。
             ::SetClipboardData(CF_ENHMETAFILE, hEMF);
         }
@@ -4808,10 +4836,10 @@ void __fastcall MainWnd_OnInitMenu(HWND /*hwnd*/, HMENU hMenu)
     // 二重マスメニュー更新。
     if (xg_vMarks.empty()) {
         ::EnableMenuItem(hMenu, ID_KILLMARKS, MF_BYCOMMAND | MF_GRAYED);
-        ::EnableMenuItem(hMenu, ID_COPYMARKWORDASIMAGE, MF_BYCOMMAND | MF_GRAYED);
+        ::EnableMenuItem(hMenu, ID_COPYMARKWORD, MF_BYCOMMAND | MF_GRAYED);
     } else {
         ::EnableMenuItem(hMenu, ID_KILLMARKS, MF_BYCOMMAND | MF_ENABLED);
-        ::EnableMenuItem(hMenu, ID_COPYMARKWORDASIMAGE, MF_BYCOMMAND | MF_ENABLED);
+        ::EnableMenuItem(hMenu, ID_COPYMARKWORD, MF_BYCOMMAND | MF_ENABLED);
     }
 
     // 「解を削除して盤のロックを解除」
@@ -8566,8 +8594,8 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
         }
         break;
 
-    case ID_COPYMARKWORDASIMAGE: // 二重マス単語の画像をコピー。
-        XgCopyMarkWordAsImage(hwnd);
+    case ID_COPYMARKWORD: // 二重マス単語をコピー。
+        XgCopyMarkWord(hwnd);
         break;
 
     case ID_PASTE:  // 貼り付け。

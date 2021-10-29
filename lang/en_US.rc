@@ -64,7 +64,7 @@ LANGUAGE LANG_ENGLISH, SUBLANG_DEFAULT
         MENUITEM "Copy the clues (Style 0) (&N)", ID_COPYHINTSSTYLE0
         MENUITEM "Copy the clues (Style 1) (&N)", ID_COPYHINTSSTYLE1
         MENUITEM SEPARATOR
-        MENUITEM "Copy the double-frame word image", ID_COPYMARKWORDASIMAGE
+        MENUITEM "Copy the double-frame word", ID_COPYMARKWORD
     }
     POPUP "&Input"
     {
