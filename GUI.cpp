@@ -4172,101 +4172,6 @@ MarksHeight_DlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
     return 0;
 }
 
-// 高さを指定して二重マス単語を画像としてコピー。
-void __fastcall XgCopyMarkWordAsImageSized(HWND hwnd)
-{
-    // マークがなければ、実行を拒否する。
-    if (xg_vMarks.empty()) {
-        ::MessageBeep(0xFFFFFFFF);
-        return;
-    }
-
-    if (IDOK != ::DialogBoxW(xg_hInstance, MAKEINTRESOURCE(IDD_HEIGHT), hwnd,
-                             MarksHeight_DlgProc))
-    {
-        return;
-    }
-
-    HENHMETAFILE hEMF = NULL, hEMF2 = NULL;
-
-    // 描画サイズを取得する。
-    SIZE siz;
-    int nCount = static_cast<int>(xg_vMarks.size());
-    XgGetMarkWordExtent(nCount, &siz);
-
-    // EMFを作成する。
-    HDC hdcRef = ::GetDC(hwnd);
-    HDC hdc = ::CreateEnhMetaFileW(hdcRef, nullptr, nullptr, XgLoadStringDx1(IDS_APPNAME));
-    // EMFに描画する。
-    XgDrawMarkWord(hdc, &siz);
-    hEMF = ::CloseEnhMetaFile(hdc);
-
-    MRect rc;
-    int cx = siz.cx * s_nMarksHeight / siz.cy;
-    ::SetRect(&rc, 0, 0, cx, s_nMarksHeight);
-
-    // EMFを作成する。
-    HDC hdc2 = ::CreateEnhMetaFileW(hdcRef, nullptr, nullptr, XgLoadStringDx1(IDS_APPNAME));
-    ::PlayEnhMetaFile(hdc2, hEMF, &rc);
-    hEMF2 = ::CloseEnhMetaFile(hdc2);
-
-    ::DeleteEnhMetaFile(hEMF);
-    ::ReleaseDC(hwnd, hdcRef);
-
-    // BMPを作成する。
-    HBITMAP hbm = NULL;
-    if (HDC hDC = CreateCompatibleDC(NULL))
-    {
-        BITMAPINFO bi;
-        ZeroMemory(&bi, sizeof(bi));
-        bi.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
-        bi.bmiHeader.biWidth = rc.right - rc.left;
-        bi.bmiHeader.biHeight = rc.bottom - rc.top;
-        bi.bmiHeader.biPlanes = 1;
-        bi.bmiHeader.biBitCount = 24;
-        bi.bmiHeader.biCompression = BI_RGB;
-        LPVOID pvBits;
-        hbm = CreateDIBSection(hDC, &bi, DIB_RGB_COLORS, &pvBits, NULL, 0);
-        if (HGDIOBJ hbmOld = SelectObject(hDC, hbm))
-        {
-            PlayEnhMetaFile(hDC, hEMF2, &rc);
-            SelectObject(hDC, hbmOld);
-        }
-        DeleteDC(hDC);
-    }
-    HGLOBAL hGlobal = NULL;
-    if (hbm)
-    {
-        std::vector<BYTE> data;
-        PackedDIB_CreateFromHandle(data, hbm);
-
-        hGlobal = GlobalAlloc(GHND | GMEM_SHARE, DWORD(data.size()));
-        if (hGlobal)
-        {
-            if (LPVOID pv = GlobalLock(hGlobal))
-            {
-                memcpy(pv, &data[0], data.size());
-                GlobalUnlock(hGlobal);
-            }
-        }
-        DeleteObject(hbm);
-        hbm = NULL;
-    }
-
-    // クリップボードを開く。
-    if (::OpenClipboard(hwnd)) {
-        // クリップボードを空にする。
-        if (::EmptyClipboard()) {
-            // EMFを設定。
-            ::SetClipboardData(CF_ENHMETAFILE, hEMF2);
-            // BMPを設定。
-            ::SetClipboardData(CF_DIB, hGlobal);
-        }
-        // クリップボードを閉じる。
-        ::CloseClipboard();
-    }
-}
-
 std::wstring XgGetClipboardUnicodeText(HWND hwnd)
 {
     std::wstring str;
@@ -4904,11 +4809,9 @@ void __fastcall MainWnd_OnInitMenu(HWND /*hwnd*/, HMENU hMenu)
     if (xg_vMarks.empty()) {
         ::EnableMenuItem(hMenu, ID_KILLMARKS, MF_BYCOMMAND | MF_GRAYED);
         ::EnableMenuItem(hMenu, ID_COPYMARKWORDASIMAGE, MF_BYCOMMAND | MF_GRAYED);
-        ::EnableMenuItem(hMenu, ID_COPYMARKWORDASIMAGESIZED, MF_BYCOMMAND | MF_GRAYED);
     } else {
         ::EnableMenuItem(hMenu, ID_KILLMARKS, MF_BYCOMMAND | MF_ENABLED);
         ::EnableMenuItem(hMenu, ID_COPYMARKWORDASIMAGE, MF_BYCOMMAND | MF_ENABLED);
-        ::EnableMenuItem(hMenu, ID_COPYMARKWORDASIMAGESIZED, MF_BYCOMMAND | MF_ENABLED);
     }
 
     // 「解を削除して盤のロックを解除」
@@ -8665,10 +8568,6 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
 
     case ID_COPYMARKWORDASIMAGE: // 二重マス単語の画像をコピー。
         XgCopyMarkWordAsImage(hwnd);
-        break;
-
-    case ID_COPYMARKWORDASIMAGESIZED:   // 高さを指定して二重マス単語の画像をコピー。
-        XgCopyMarkWordAsImageSized(hwnd);
         break;
 
     case ID_PASTE:  // 貼り付け。

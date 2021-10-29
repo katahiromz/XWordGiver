@@ -245,7 +245,6 @@
 #define ID_COPYVHINTSSTYLE1                 181
 #define ID_COPYHHINTSSTYLE1                 182
 #define ID_COPYASIMAGESIZED                 183
-#define ID_COPYMARKWORDASIMAGESIZED         184
 #define ID_GENERATEBLACKS                   185
 #define ID_GENERATEBLACKSSYMMETRIC2         186
 #define ID_FLIPVH                           187
