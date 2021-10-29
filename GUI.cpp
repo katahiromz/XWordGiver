@@ -6203,12 +6203,17 @@ void DoWebSearch(HWND hwnd, LPCWSTR str)
 {
     std::wstring query = XgLoadStringDx1(IDS_GOOGLESEARCH);
     std::wstring raw = str;
+
+    for (auto& wch : raw) {
+        if (ZEN_LARGE_A <= wch && wch <= ZEN_LARGE_Z)
+            wch = L'a' + (wch - ZEN_LARGE_A);
+        else if (ZEN_SMALL_A <= wch && wch <= ZEN_SMALL_Z)
+            wch = L'a' + (wch - ZEN_SMALL_A);
+    }
+
     switch (xg_imode)
     {
     case xg_im_ABC:
-        raw += L" ";
-        raw += XgLoadStringDx2(IDS_ABC);
-        break;
     case xg_im_KANA:
     case xg_im_KANJI:
         raw += L" ";
@@ -6220,6 +6225,7 @@ void DoWebSearch(HWND hwnd, LPCWSTR str)
     default:
         break;
     }
+
     std::wstring encoded = URL_encode(raw.c_str());
     query += encoded;
 

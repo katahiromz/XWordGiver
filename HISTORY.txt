@@ -410,6 +410,7 @@
 2021年XX月YY日 ver.4.8.0
 	「高さを指定して二重マス単語の画像をコピー」を廃止。
 	「二重マス単語の画像をコピー」を「二重マス単語をコピー」に変更。
+	「単語をウェブ検索」を改良。
 
 ## History of XWordGiver (English)
 
@@ -455,3 +456,4 @@
 - 2021.XX.YY Ver.4.8.0
     - Abolished "Copy the double-frame word image with height".
     - Changed "Copy the double-frame word image" to "Copy the double-frame word".
+    - Improved "Web search word".
