@@ -1671,12 +1671,6 @@ INT __fastcall XgParseRules(const std::wstring& str)
             nRules |= RULE_LINESYMMETRYV;
         } else if (rule == XgLoadStringDx1(IDS_RULE_LINESYMMETRYH)) {
             nRules |= RULE_LINESYMMETRYH;
-        } else {
-            if (XgIsUserJapanese())
-                nRules = DEFAULT_RULES_JAPANESE;
-            else
-                nRules = DEFAULT_RULES_ENGLISH;
-            break;
         }
     }
     return nRules;
