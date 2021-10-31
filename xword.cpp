@@ -3465,6 +3465,11 @@ void __fastcall XgStartSolve_AddBlack(void)
         std::swap(xg_nRows, xg_nCols);
     }
 
+    // 最大長を制限する。
+    if (xg_nMaxWordLen > xg_nDictMaxWordLen) {
+        xg_nMaxWordLen = xg_nDictMaxWordLen;
+    }
+
 #ifdef SINGLE_THREAD_MODE
     XgSolveProc_AddBlack(&xg_aThreadInfo[0]);
 #else
@@ -3507,6 +3512,11 @@ void __fastcall XgStartSolve_Smart(void)
 
     // まだブロック生成していない。
     xg_bBlacksGenerated = FALSE;
+
+    // 最大長を制限する。
+    if (xg_nMaxWordLen > xg_nDictMaxWordLen) {
+        xg_nMaxWordLen = xg_nDictMaxWordLen;
+    }
 
 #ifdef SINGLE_THREAD_MODE
     XgSolveProcSmart(&xg_aThreadInfo[0]);
