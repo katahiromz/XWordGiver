@@ -171,6 +171,8 @@ LANGUAGE LANG_JAPANESE, SUBLANG_DEFAULT
         MENUITEM "黒斜三連禁(&E)", ID_RULE_DONTTHREEDIAGONALS
         MENUITEM "黒斜四連禁(&F)", ID_RULE_DONTFOURDIAGONALS
         MENUITEM "黒マス点対称(&I)", ID_RULE_POINTSYMMETRY
+        MENUITEM "黒マス線対称(タテ)", ID_RULE_LINESYMMETRYV
+        MENUITEM "黒マス線対称(ヨコ)", ID_RULE_LINESYMMETRYH
         MENUITEM SEPARATOR
         MENUITEM "スケルトン モード(&S)", ID_SKELETONMODE
         MENUITEM SEPARATOR
@@ -1484,6 +1486,8 @@ STRINGTABLE
     IDS_NOTLINESYMMETRYV, "黒マスの配置が線対称ではありません。ルール「黒マス線対称（タテ）」に反します。"
     IDS_NOTLINESYMMETRYH, "黒マスの配置が線対称ではありません。ルール「黒マス線対称（ヨコ）」に反します。"
     IDS_SHALLIMIRROR, "指定されたルールに従って黒マスパターンを対称にしますか？"
+    IDS_EVENROWLINESYMV, "偶数行数でタテ線対称で連黒禁は不可です。"
+    IDS_EVENCOLLINESYMH, "偶数列数でヨコ線対称で連黒禁は不可です。"
     IDS_TT_NEW, "新規作成"
     IDS_TT_GENERATE, "問題を自動生成する"
     IDS_TT_OPEN, "問題を開く"

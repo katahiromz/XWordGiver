@@ -1071,13 +1071,24 @@ bool __fastcall XgCheckCrossWord(HWND hwnd, bool check_words = true)
         return false;
     }
 
-    // 黒マス点対称。
+    // 黒マス線対称。
     if ((xg_nRules & RULE_LINESYMMETRYV) && !xg_xword.IsLineSymmetryV()) {
         XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_NOTLINESYMMETRYV), nullptr, MB_ICONERROR);
         return false;
     }
     if ((xg_nRules & RULE_LINESYMMETRYH) && !xg_xword.IsLineSymmetryH()) {
         XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_NOTLINESYMMETRYH), nullptr, MB_ICONERROR);
+        return false;
+    }
+
+    // 偶数行数で黒マス線対称（タテ）の場合は連黒禁は不可。
+    if (!(xg_nRows & 1) && (xg_nRules & RULE_LINESYMMETRYV) && (xg_nRules & RULE_DONTDOUBLEBLACK)) {
+        XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_EVENROWLINESYMV), nullptr, MB_ICONERROR);
+        return false;
+    }
+    // 偶数列数で黒マス線対称（ヨコ）の場合は連黒禁は不可。
+    if (!(xg_nCols & 1) && (xg_nRules & RULE_LINESYMMETRYH) && (xg_nRules & RULE_DONTDOUBLEBLACK)) {
+        XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_EVENCOLLINESYMH), nullptr, MB_ICONERROR);
         return false;
     }
 
@@ -8352,26 +8363,21 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
         break;
 
     case ID_GENERATEBLACKS: // 黒マスパターンを生成。
+        // 偶数行数で黒マス線対称（タテ）の場合は連黒禁は不可。
+        if (!(xg_nRows & 1) && (xg_nRules & RULE_LINESYMMETRYV) && (xg_nRules & RULE_DONTDOUBLEBLACK)) {
+            XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_EVENROWLINESYMV), nullptr, MB_ICONERROR);
+            break;
+        }
+        // 偶数列数で黒マス線対称（ヨコ）の場合は連黒禁は不可。
+        if (!(xg_nCols & 1) && (xg_nRules & RULE_LINESYMMETRYH) && (xg_nRules & RULE_DONTDOUBLEBLACK)) {
+            XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_EVENCOLLINESYMH), nullptr, MB_ICONERROR);
+            break;
+        }
         {
             auto sa1 = std::make_shared<XG_UndoData_SetAll>();
             auto sa2 = std::make_shared<XG_UndoData_SetAll>();
             sa1->Get();
             if (XgOnGenerateBlacks(hwnd, false)) {
-                sa2->Get();
-                // 元に戻す情報を設定する。
-                xg_ubUndoBuffer.Commit(UC_SETALL, sa1, sa2);
-            }
-            // ツールバーのUIを更新する。
-            XgUpdateToolBarUI(hwnd);
-        }
-        break;
-
-    case ID_GENERATEBLACKSSYMMETRIC2: // 黒マスパターンを生成（点対称）。
-        {
-            auto sa1 = std::make_shared<XG_UndoData_SetAll>();
-            auto sa2 = std::make_shared<XG_UndoData_SetAll>();
-            sa1->Get();
-            if (XgOnGenerateBlacks(hwnd, true)) {
                 sa2->Get();
                 // 元に戻す情報を設定する。
                 xg_ubUndoBuffer.Commit(UC_SETALL, sa1, sa2);
@@ -8463,6 +8469,21 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
         {
             auto sa1 = std::make_shared<XG_UndoData_SetAll>();
             sa1->Get();
+
+            // 必要ならルールに従って対称にする。
+            XG_Board copy = xg_xword;
+            copy.Mirror();
+            if (!std::equal(xg_xword.m_vCells.cbegin(), xg_xword.m_vCells.cend(),
+                            copy.m_vCells.cbegin()))
+            {
+                if (XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_SHALLIMIRROR), NULL,
+                                        MB_ICONINFORMATION | MB_YESNO) == IDYES)
+                {
+                    xg_xword.m_vCells = copy.m_vCells;
+                    XgUpdateImage(hwnd, 0, 0);
+                }
+            }
+
             // 候補ウィンドウを破棄する。
             XgDestroyCandsWnd();
             // ヒントウィンドウを破棄する。
@@ -9056,24 +9077,27 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
         break;
     case ID_RULE_POINTSYMMETRY:
         if (xg_nRules & RULE_POINTSYMMETRY) {
-            xg_nRules &= ~RULE_POINTSYMMETRY;
+            xg_nRules &= ~(RULE_POINTSYMMETRY | RULE_LINESYMMETRYV | RULE_LINESYMMETRYH);
         } else {
+            xg_nRules &= ~(RULE_POINTSYMMETRY | RULE_LINESYMMETRYV | RULE_LINESYMMETRYH);
             xg_nRules |= RULE_POINTSYMMETRY;
         }
         XgUpdateRules(hwnd);
         break;
     case ID_RULE_LINESYMMETRYV:
         if (xg_nRules & RULE_LINESYMMETRYV) {
-            xg_nRules &= ~RULE_LINESYMMETRYV;
+            xg_nRules &= ~(RULE_POINTSYMMETRY | RULE_LINESYMMETRYV | RULE_LINESYMMETRYH);
         } else {
+            xg_nRules &= ~(RULE_POINTSYMMETRY | RULE_LINESYMMETRYV | RULE_LINESYMMETRYH);
             xg_nRules |= RULE_LINESYMMETRYV;
         }
         XgUpdateRules(hwnd);
         break;
     case ID_RULE_LINESYMMETRYH:
         if (xg_nRules & RULE_LINESYMMETRYH) {
-            xg_nRules &= ~RULE_LINESYMMETRYH;
+            xg_nRules &= ~(RULE_POINTSYMMETRY | RULE_LINESYMMETRYV | RULE_LINESYMMETRYH);
         } else {
+            xg_nRules &= ~(RULE_POINTSYMMETRY | RULE_LINESYMMETRYV | RULE_LINESYMMETRYH);
             xg_nRules |= RULE_LINESYMMETRYH;
         }
         XgUpdateRules(hwnd);
@@ -9105,6 +9129,16 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
         XgUpdateRules(hwnd);
         break;
     case ID_SEQPATGEN:
+        // 偶数行数で黒マス線対称（タテ）の場合は連黒禁は不可。
+        if (!(xg_nRows & 1) && (xg_nRules & RULE_LINESYMMETRYV) && (xg_nRules & RULE_DONTDOUBLEBLACK)) {
+            XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_EVENROWLINESYMV), nullptr, MB_ICONERROR);
+            break;
+        }
+        // 偶数列数で黒マス線対称（ヨコ）の場合は連黒禁は不可。
+        if (!(xg_nCols & 1) && (xg_nRules & RULE_LINESYMMETRYH) && (xg_nRules & RULE_DONTDOUBLEBLACK)) {
+            XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_EVENCOLLINESYMH), nullptr, MB_ICONERROR);
+            break;
+        }
         {
             auto sa1 = std::make_shared<XG_UndoData_SetAll>();
             auto sa2 = std::make_shared<XG_UndoData_SetAll>();

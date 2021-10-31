@@ -167,6 +167,8 @@
 #define IDS_NOTLINESYMMETRYV                258
 #define IDS_NOTLINESYMMETRYH                259
 #define IDS_SHALLIMIRROR                    260
+#define IDS_EVENROWLINESYMV                 261
+#define IDS_EVENCOLLINESYMH                 262
 #define IDS_TT_NEW                          10100
 #define IDS_TT_GENERATE                     10101
 #define IDS_TT_OPEN                         10102
@@ -246,7 +248,6 @@
 #define ID_COPYHHINTSSTYLE1                 182
 #define ID_COPYASIMAGESIZED                 183
 #define ID_GENERATEBLACKS                   185
-#define ID_GENERATEBLACKSSYMMETRIC2         186
 #define ID_FLIPVH                           187
 #define ID_OPENCANDSWNDHORZ                 188
 #define ID_OPENCANDSWNDVERT                 189

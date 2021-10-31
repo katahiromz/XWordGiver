@@ -5947,26 +5947,272 @@ bool __fastcall XgGenerateBlacksPointSymRecurse(const XG_Board& xword, LONG iRow
 // 黒マスパターンを生成する（タテ線対称）。
 bool __fastcall XgGenerateBlacksLineSymVRecurse(const XG_Board& xword, LONG iRowjCol)
 {
-    // TODO: XgGenerateBlacksPointSymRecurse再帰関数を参考にこの再帰関数を実装して下さい。
-    // XG_Boardクラスの宣言と定義をよく読むこと。
-    // パターンが見つかったら、それをグローバル変数xg_xwordに書き込んで下さい。
-    // xg_xwordに書き込む前にクリティカルセクションxg_csを使用して排他制御して下さい。
-    // xg_nRowsは盤の行数、xg_nColsは盤の列数です。
-    // 引数iRowjColは自由にお使い下さい。処理速度優先。
-    assert(0);
+    // ルールの適合性をチェックする。
+    if ((xg_nRules & RULE_DONTCORNERBLACK) && xword.CornerBlack())
+        return false;
+    if ((xg_nRules & RULE_DONTDOUBLEBLACK) && xword.DoubleBlack())
+        return false;
+    if ((xg_nRules & RULE_DONTTRIDIRECTIONS) && xword.TriBlackAround())
+        return false;
+    if ((xg_nRules & RULE_DONTDIVIDE) && xword.DividedByBlack())
+        return false;
+    if (xg_nRules & RULE_DONTTHREEDIAGONALS) {
+        if (xword.ThreeDiagonals())
+            return false;
+    } else if (xg_nRules & RULE_DONTFOURDIAGONALS) {
+        if (xword.FourDiagonals())
+            return false;
+    }
+
+    const INT nRows = xg_nRows, nCols = xg_nCols;
+    const INT nHalfRows = nRows / 2;
+    INT iRow = LOWORD(iRowjCol), jCol = HIWORD(iRowjCol);
+
+    // 終了条件。
+    if (iRow == 0 && jCol >= nCols) {
+        EnterCriticalSection(&xg_cs);
+        if (!xg_bBlacksGenerated) {
+            xg_bBlacksGenerated = true;
+            xg_xword = xword;
+        }
+        ::LeaveCriticalSection(&xg_cs);
+        return xg_bBlacksGenerated || xg_bCancelled;
+    }
+
+    // 終了条件。
+    if (xg_bBlacksGenerated || xg_bCancelled)
+        return true;
+
+    // マスの上側を見る。
+    INT iTop;
+    for (iTop = iRow; iTop > 0; --iTop) {
+        if (xword.GetAt(iTop - 1, jCol) == ZEN_BLACK) {
+            break;
+        }
+    }
+    if (iRow - iTop + 1 > xg_nMaxWordLen) {
+        // 空白が最大長よりも長い。黒マスをセットして再帰。
+        XG_Board copy(xword);
+        copy.SetAt(iRow, jCol, ZEN_BLACK);
+        copy.SetAt(nRows - (iRow + 1), jCol, ZEN_BLACK);
+        if (iRow + 1 <= nHalfRows) {
+            if (XgGenerateBlacksLineSymVRecurse(copy, MAKELONG(iRow + 1, jCol)))
+                return true;
+        } else {
+            if (XgGenerateBlacksLineSymVRecurse(copy, MAKELONG(0, jCol + 1)))
+                return true;
+        }
+        return false;
+    }
+
+    // マスの左側を見る。
+    INT jLeft;
+    for (jLeft = jCol; jLeft > 0; --jLeft) {
+        if (xword.GetAt(iRow, jLeft - 1) == ZEN_BLACK) {
+            break;
+        }
+    }
+    if (jCol - jLeft + 1 > xg_nMaxWordLen) {
+        // 空白が最大長よりも長い。黒マスをセットして再帰。
+        XG_Board copy(xword);
+        copy.SetAt(iRow, jCol, ZEN_BLACK);
+        copy.SetAt(nRows - (iRow + 1), jCol, ZEN_BLACK);
+        if (iRow + 1 <= nHalfRows) {
+            if (XgGenerateBlacksLineSymVRecurse(copy, MAKELONG(iRow + 1, jCol)))
+                return true;
+        } else {
+            if (XgGenerateBlacksLineSymVRecurse(copy, MAKELONG(0, jCol + 1)))
+                return true;
+        }
+        return false;
+    }
+
+    // 盤の真ん中か？
+    if (iRow >= nHalfRows) {
+        std::wstring strPattern = xword.GetPatternV(XG_Pos(iRow, jCol));
+        if ((INT)strPattern.size() > xg_nMaxWordLen) {
+            // 空白が最大長よりも長い。黒マスをセットして再帰。
+            XG_Board copy(xword);
+            copy.SetAt(iRow, jCol, ZEN_BLACK);
+            copy.SetAt(nRows - (iRow + 1), jCol, ZEN_BLACK);
+            if (XgGenerateBlacksLineSymVRecurse(copy, MAKELONG(0, jCol + 1)))
+                return true;
+            return false;
+        }
+    }
+
+    if (rand() < RAND_MAX / 2) { // 1/2の確率で。。。
+        // 黒マスをセットして再帰。
+        if (iRow + 1 <= nHalfRows) {
+            if (XgGenerateBlacksLineSymVRecurse(xword, MAKELONG(iRow + 1, jCol)))
+                return true;
+            XG_Board copy(xword);
+            copy.SetAt(iRow, jCol, ZEN_BLACK);
+            copy.SetAt(nRows - (iRow + 1), jCol, ZEN_BLACK);
+            if (XgGenerateBlacksLineSymVRecurse(copy, MAKELONG(iRow + 1, jCol)))
+                return true;
+        } else {
+            if (XgGenerateBlacksLineSymVRecurse(xword, MAKELONG(0, jCol + 1)))
+                return true;
+            XG_Board copy(xword);
+            copy.SetAt(iRow, jCol, ZEN_BLACK);
+            copy.SetAt(nRows - (iRow + 1), jCol, ZEN_BLACK);
+            if (XgGenerateBlacksLineSymVRecurse(copy, MAKELONG(0, jCol + 1)))
+                return true;
+        }
+    } else {
+        // 黒マスをセットして再帰。
+        XG_Board copy(xword);
+        copy.SetAt(iRow, jCol, ZEN_BLACK);
+        copy.SetAt(nRows - (iRow + 1), jCol, ZEN_BLACK);
+        if (iRow + 1 <= nHalfRows) {
+            if (XgGenerateBlacksLineSymVRecurse(copy, MAKELONG(iRow + 1, jCol)))
+                return true;
+            if (XgGenerateBlacksLineSymVRecurse(xword, MAKELONG(iRow + 1, jCol)))
+                return true;
+        } else {
+            if (XgGenerateBlacksLineSymVRecurse(copy, MAKELONG(0, jCol + 1)))
+                return true;
+            if (XgGenerateBlacksLineSymVRecurse(xword, MAKELONG(0, jCol + 1)))
+                return true;
+        }
+    }
     return false;
 }
 
 // 黒マスパターンを生成する（ヨコ線対称）。
 bool __fastcall XgGenerateBlacksLineSymHRecurse(const XG_Board& xword, LONG iRowjCol)
 {
-    // TODO: XgGenerateBlacksPointSymRecurse再帰関数を参考にこの再帰関数を実装して下さい。
-    // XG_Boardクラスの宣言と定義をよく読むこと。
-    // パターンが見つかったら、それをグローバル変数xg_xwordに書き込んで下さい。
-    // xg_xwordに書き込む前にクリティカルセクションxg_csを使用して排他制御して下さい。
-    // xg_nRowsは盤の行数、xg_nColsは盤の列数です。
-    // 引数iRowjColは自由にお使い下さい。処理速度優先。
-    assert(0);
+    // ルールの適合性をチェックする。
+    if ((xg_nRules & RULE_DONTCORNERBLACK) && xword.CornerBlack())
+        return false;
+    if ((xg_nRules & RULE_DONTDOUBLEBLACK) && xword.DoubleBlack())
+        return false;
+    if ((xg_nRules & RULE_DONTTRIDIRECTIONS) && xword.TriBlackAround())
+        return false;
+    if ((xg_nRules & RULE_DONTDIVIDE) && xword.DividedByBlack())
+        return false;
+    if (xg_nRules & RULE_DONTTHREEDIAGONALS) {
+        if (xword.ThreeDiagonals())
+            return false;
+    } else if (xg_nRules & RULE_DONTFOURDIAGONALS) {
+        if (xword.FourDiagonals())
+            return false;
+    }
+
+    const INT nRows = xg_nRows, nCols = xg_nCols;
+    const INT nHalfCols = nCols / 2;
+    INT iRow = LOWORD(iRowjCol), jCol = HIWORD(iRowjCol);
+
+    // 終了条件。
+    if (iRow >= nRows && jCol == 0) {
+        EnterCriticalSection(&xg_cs);
+        if (!xg_bBlacksGenerated) {
+            xg_bBlacksGenerated = true;
+            xg_xword = xword;
+        }
+        ::LeaveCriticalSection(&xg_cs);
+        return xg_bBlacksGenerated || xg_bCancelled;
+    }
+
+    // 終了条件。
+    if (xg_bBlacksGenerated || xg_bCancelled)
+        return true;
+
+    // マスの左側を見る。
+    INT jLeft;
+    for (jLeft = jCol; jLeft > 0; --jLeft) {
+        if (xword.GetAt(iRow, jLeft - 1) == ZEN_BLACK) {
+            break;
+        }
+    }
+    if (jCol - jLeft + 1 > xg_nMaxWordLen) {
+        // 空白が最大長よりも長い。黒マスをセットして再帰。
+        XG_Board copy(xword);
+        copy.SetAt(iRow, jCol, ZEN_BLACK);
+        copy.SetAt(iRow, nCols - (jCol + 1), ZEN_BLACK);
+        if (jCol + 1 <= nHalfCols) {
+            if (XgGenerateBlacksLineSymHRecurse(copy, MAKELONG(iRow, jCol + 1)))
+                return true;
+        } else {
+            if (XgGenerateBlacksLineSymHRecurse(copy, MAKELONG(iRow + 1, 0)))
+                return true;
+        }
+        return false;
+    }
+
+    // マスの上側を見る。
+    INT iTop;
+    for (iTop = iRow; iTop > 0; --iTop) {
+        if (xword.GetAt(iTop - 1, jCol) == ZEN_BLACK) {
+            break;
+        }
+    }
+    if (iRow - iTop + 1 > xg_nMaxWordLen) {
+        // 空白が最大長よりも長い。黒マスをセットして再帰。
+        XG_Board copy(xword);
+        copy.SetAt(iRow, jCol, ZEN_BLACK);
+        copy.SetAt(iRow, nCols - (jCol + 1), ZEN_BLACK);
+        if (jCol + 1 <= nHalfCols) {
+            if (XgGenerateBlacksLineSymHRecurse(copy, MAKELONG(iRow, jCol + 1)))
+                return true;
+        } else {
+            if (XgGenerateBlacksLineSymHRecurse(copy, MAKELONG(iRow + 1, 0)))
+                return true;
+        }
+        return false;
+    }
+
+    // 盤の真ん中か？
+    if (jCol >= nHalfCols) {
+        std::wstring strPattern = xword.GetPatternH(XG_Pos(iRow, jCol));
+        if ((INT)strPattern.size() > xg_nMaxWordLen) {
+            // 空白が最大長よりも長い。黒マスをセットして再帰。
+            XG_Board copy(xword);
+            copy.SetAt(iRow, jCol, ZEN_BLACK);
+            copy.SetAt(iRow, nCols - (jCol + 1), ZEN_BLACK);
+            if (XgGenerateBlacksLineSymHRecurse(copy, MAKELONG(iRow + 1, 0)))
+                return true;
+            return false;
+        }
+    }
+
+    if (rand() < RAND_MAX / 2) { // 1/2の確率で。。。
+        // 黒マスをセットして再帰。
+        if (jCol + 1 <= nHalfCols) {
+            if (XgGenerateBlacksLineSymHRecurse(xword, MAKELONG(iRow, jCol + 1)))
+                return true;
+            XG_Board copy(xword);
+            copy.SetAt(iRow, jCol, ZEN_BLACK);
+            copy.SetAt(iRow, nCols - (jCol + 1), ZEN_BLACK);
+            if (XgGenerateBlacksLineSymHRecurse(copy, MAKELONG(iRow, jCol + 1)))
+                return true;
+        } else {
+            if (XgGenerateBlacksLineSymHRecurse(xword, MAKELONG(iRow + 1, 0)))
+                return true;
+            XG_Board copy(xword);
+            copy.SetAt(iRow, jCol, ZEN_BLACK);
+            copy.SetAt(iRow, nCols - (jCol + 1), ZEN_BLACK);
+            if (XgGenerateBlacksLineSymHRecurse(copy, MAKELONG(iRow + 1, 0)))
+                return true;
+        }
+    } else {
+        // 黒マスをセットして再帰。
+        XG_Board copy(xword);
+        copy.SetAt(iRow, jCol, ZEN_BLACK);
+        copy.SetAt(iRow, nCols - (jCol + 1), ZEN_BLACK);
+        if (jCol + 1 <= nHalfCols) {
+            if (XgGenerateBlacksLineSymHRecurse(copy, MAKELONG(iRow, jCol + 1)))
+                return true;
+            if (XgGenerateBlacksLineSymHRecurse(xword, MAKELONG(iRow, jCol + 1)))
+                return true;
+        } else {
+            if (XgGenerateBlacksLineSymHRecurse(copy, MAKELONG(iRow + 1, 0)))
+                return true;
+            if (XgGenerateBlacksLineSymHRecurse(xword, MAKELONG(iRow + 1, 0)))
+                return true;
+        }
+    }
     return false;
 }
 
@@ -6118,7 +6364,7 @@ void __fastcall XgStartGenerateBlacks(void)
             assert(xg_ahThreads[i] != nullptr);
         }
 #endif
-    } else if (xg_nRules & RULE_LINESYMMETRYV) {
+    } else if (xg_nRules & RULE_LINESYMMETRYH) {
 #ifdef SINGLE_THREAD_MODE
         XgGenerateBlacksLineSymH(&xg_aThreadInfo[0]);
 #else
@@ -6166,16 +6412,18 @@ std::wstring __fastcall XG_Board::GetPatternV(const XG_Pos& pos) const
 {
     int lo, hi;
     std::wstring pattern;
+    if (GetAt(pos.m_i, pos.m_j) == ZEN_BLACK)
+        return pattern;
 
     lo = hi = pos.m_i;
     while (lo > 0) {
-        if (GetAt(lo - 1, xg_caret_pos.m_j) != ZEN_BLACK)
+        if (GetAt(lo - 1, pos.m_j) != ZEN_BLACK)
             --lo;
         else
             break;
     }
     while (hi + 1 < xg_nRows) {
-        if (GetAt(hi + 1, xg_caret_pos.m_j) != ZEN_BLACK)
+        if (GetAt(hi + 1, pos.m_j) != ZEN_BLACK)
             ++hi;
         else
             break;
@@ -6193,6 +6441,8 @@ std::wstring __fastcall XG_Board::GetPatternH(const XG_Pos& pos) const
 {
     int lo, hi;
     std::wstring pattern;
+    if (GetAt(pos.m_i, pos.m_j) == ZEN_BLACK)
+        return pattern;
 
     lo = hi = pos.m_j;
     while (lo > 0) {
