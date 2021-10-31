@@ -115,7 +115,7 @@ INT xg_nForDisplay = 0;
 INT xg_nZoomRate = 100;
 
 // スケルトンモードか？
-BOOL xg_bSkeltonMode = FALSE;
+BOOL xg_bSkeletonMode = FALSE;
 
 // 番号を表示するか？
 BOOL xg_bShowNumbering = TRUE;
@@ -589,7 +589,7 @@ bool __fastcall XgLoadSettings(void)
     xg_bSmartResolution = TRUE;
     xg_imode = xg_im_KANA;
     xg_nZoomRate = 100;
-    xg_bSkeltonMode = FALSE;
+    xg_bSkeletonMode = FALSE;
     xg_bShowNumbering = TRUE;
     xg_bShowCaret = TRUE;
 
@@ -755,7 +755,7 @@ bool __fastcall XgLoadSettings(void)
                 xg_nZoomRate = dwValue;
             }
             if (!app_key.QueryDword(L"SkeltonMode", dwValue)) {
-                xg_bSkeltonMode = dwValue;
+                xg_bSkeletonMode = dwValue;
             }
             if (!app_key.QueryDword(L"ShowNumbering", dwValue)) {
                 xg_bShowNumbering = dwValue;
@@ -798,7 +798,7 @@ bool __fastcall XgLoadSettings(void)
             }
             if (!app_key.QueryDword(L"ViewMode", dwValue)) {
                 xg_nViewMode = static_cast<XG_VIEW_MODE>(dwValue);
-                if (xg_nViewMode != XG_VIEW_NORMAL && xg_nViewMode != XG_VIEW_SKELTON) {
+                if (xg_nViewMode != XG_VIEW_NORMAL && xg_nViewMode != XG_VIEW_SKELETON) {
                     xg_nViewMode = XG_VIEW_NORMAL;
                 }
             }
@@ -909,7 +909,7 @@ bool __fastcall XgSaveSettings(void)
             app_key.SetDword(L"SmartResolution", xg_bSmartResolution);
             app_key.SetDword(L"InputMode", (DWORD)xg_imode);
             app_key.SetDword(L"ZoomRate", xg_nZoomRate);
-            app_key.SetDword(L"SkeltonMode", xg_bSkeltonMode);
+            app_key.SetDword(L"SkeltonMode", xg_bSkeletonMode);
             app_key.SetDword(L"ShowNumbering", xg_bShowNumbering);
             app_key.SetDword(L"ShowCaret", xg_bShowCaret);
 
@@ -1326,7 +1326,7 @@ XgGenerateDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam*/)
         // スケルトンモードと入力モードに応じて単語の最大長を設定する。
         if (xg_imode == xg_im_KANJI) {
             n3 = 4;
-        } else if (xg_bSkeltonMode) {
+        } else if (xg_bSkeletonMode) {
             n3 = 6;
         } else if (xg_imode == xg_im_RUSSIA || xg_imode == xg_im_ABC) {
             n3 = 5;
@@ -1479,7 +1479,7 @@ XgGenerateRepeatedlyDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam
         // スケルトンモードと入力モードに応じて単語の最大長を設定する。
         if (xg_imode == xg_im_KANJI) {
             n3 = 4;
-        } else if (xg_bSkeltonMode) {
+        } else if (xg_bSkeletonMode) {
             n3 = 6;
         } else if (xg_imode == xg_im_RUSSIA || xg_imode == xg_im_ABC) {
             n3 = 5;
@@ -1683,7 +1683,7 @@ XgGenerateBlacksRepeatedlyDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*
         // スケルトンモードと入力モードに応じて単語の最大長を設定する。
         if (xg_imode == xg_im_KANJI) {
             n3 = 4;
-        } else if (xg_bSkeltonMode) {
+        } else if (xg_bSkeletonMode) {
             n3 = 6;
         } else if (xg_imode == xg_im_RUSSIA || xg_imode == xg_im_ABC) {
             n3 = 5;
@@ -1824,7 +1824,7 @@ XgGenerateBlacksDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam*/)
         // スケルトンモードと入力モードに応じて単語の最大長を設定する。
         if (xg_imode == xg_im_KANJI) {
             n3 = 4;
-        } else if (xg_bSkeltonMode) {
+        } else if (xg_bSkeletonMode) {
             n3 = 6;
         } else if (xg_imode == xg_im_RUSSIA || xg_imode == xg_im_ABC) {
             n3 = 5;
@@ -4641,10 +4641,10 @@ void __fastcall MainWnd_OnInitMenu(HWND /*hwnd*/, HMENU hMenu)
     }
 
     // スケルトンモード。
-    if (xg_bSkeltonMode) {
-        CheckMenuItem(hMenu, ID_SKELTONMODE, MF_BYCOMMAND | MF_CHECKED);
+    if (xg_bSkeletonMode) {
+        CheckMenuItem(hMenu, ID_SKELETONMODE, MF_BYCOMMAND | MF_CHECKED);
     } else {
-        CheckMenuItem(hMenu, ID_SKELTONMODE, MF_BYCOMMAND | MF_UNCHECKED);
+        CheckMenuItem(hMenu, ID_SKELETONMODE, MF_BYCOMMAND | MF_UNCHECKED);
     }
 
     // 数字を表示するか？
@@ -4916,13 +4916,13 @@ void __fastcall MainWnd_OnInitMenu(HWND /*hwnd*/, HMENU hMenu)
     case XG_VIEW_NORMAL:
     default:
         // 通常ビュー。
-        ::CheckMenuRadioItem(hMenu, ID_VIEW_NORMAL_VIEW, ID_VIEW_SKELTON_VIEW,
+        ::CheckMenuRadioItem(hMenu, ID_VIEW_NORMAL_VIEW, ID_VIEW_SKELETON_VIEW,
                              ID_VIEW_NORMAL_VIEW, MF_BYCOMMAND);
         break;
-    case XG_VIEW_SKELTON:
+    case XG_VIEW_SKELETON:
         // スケルトンビュー。
-        ::CheckMenuRadioItem(hMenu, ID_VIEW_NORMAL_VIEW, ID_VIEW_SKELTON_VIEW,
-                             ID_VIEW_SKELTON_VIEW, MF_BYCOMMAND);
+        ::CheckMenuRadioItem(hMenu, ID_VIEW_NORMAL_VIEW, ID_VIEW_SKELETON_VIEW,
+                             ID_VIEW_SKELETON_VIEW, MF_BYCOMMAND);
         break;
     }
 }
@@ -5456,7 +5456,7 @@ void SettingsDlg_OnOK(HWND hwnd)
         if (!xg_hbmBlackCell && !xg_hBlackCellEMF) {
             // 画像が無効なら、パスも無効化。
             xg_strBlackCellImage.clear();
-        } else if (xg_nViewMode == XG_VIEW_SKELTON) {
+        } else if (xg_nViewMode == XG_VIEW_SKELETON) {
             // 画像が有効ならスケルトンビューを通常ビューに戻す。
             xg_nViewMode = XG_VIEW_NORMAL;
         }
@@ -8977,7 +8977,7 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
             xg_nRules = DEFAULT_RULES_JAPANESE;
         else
             xg_nRules = DEFAULT_RULES_ENGLISH;
-        xg_bSkeltonMode = FALSE;
+        xg_bSkeletonMode = FALSE;
         XgUpdateRules(hwnd);
         break;
     case ID_OPENRULESTXT:
@@ -8988,8 +8988,8 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
             xg_nRules &= ~RULE_DONTDOUBLEBLACK;
         } else {
             xg_nRules |= RULE_DONTDOUBLEBLACK;
-            if (xg_bSkeltonMode) {
-                xg_bSkeltonMode = FALSE;
+            if (xg_bSkeletonMode) {
+                xg_bSkeletonMode = FALSE;
             }
         }
         XgUpdateRules(hwnd);
@@ -8999,8 +8999,8 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
             xg_nRules &= ~RULE_DONTCORNERBLACK;
         } else {
             xg_nRules |= RULE_DONTCORNERBLACK;
-            if (xg_bSkeltonMode) {
-                xg_bSkeltonMode = FALSE;
+            if (xg_bSkeletonMode) {
+                xg_bSkeletonMode = FALSE;
             }
         }
         XgUpdateRules(hwnd);
@@ -9010,8 +9010,8 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
             xg_nRules &= ~RULE_DONTTRIDIRECTIONS;
         } else {
             xg_nRules |= RULE_DONTTRIDIRECTIONS;
-            if (xg_bSkeltonMode) {
-                xg_bSkeltonMode = FALSE;
+            if (xg_bSkeletonMode) {
+                xg_bSkeletonMode = FALSE;
             }
         }
         XgUpdateRules(hwnd);
@@ -9029,12 +9029,12 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
             xg_nRules &= ~(RULE_DONTTHREEDIAGONALS | RULE_DONTFOURDIAGONALS);
         } else if (!(xg_nRules & RULE_DONTTHREEDIAGONALS) && (xg_nRules & RULE_DONTFOURDIAGONALS)) {
             xg_nRules |= RULE_DONTTHREEDIAGONALS | RULE_DONTFOURDIAGONALS;
-            xg_bSkeltonMode = FALSE;
+            xg_bSkeletonMode = FALSE;
         } else if ((xg_nRules & RULE_DONTTHREEDIAGONALS) && !(xg_nRules & RULE_DONTFOURDIAGONALS)) {
             xg_nRules &= ~RULE_DONTTHREEDIAGONALS;
         } else {
             xg_nRules |= (RULE_DONTTHREEDIAGONALS | RULE_DONTFOURDIAGONALS);
-            xg_bSkeltonMode = FALSE;
+            xg_bSkeletonMode = FALSE;
         }
         XgUpdateRules(hwnd);
         break;
@@ -9042,14 +9042,14 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
         if ((xg_nRules & RULE_DONTTHREEDIAGONALS) && (xg_nRules & RULE_DONTFOURDIAGONALS)) {
             xg_nRules &= ~RULE_DONTTHREEDIAGONALS;
             xg_nRules |= RULE_DONTFOURDIAGONALS;
-            xg_bSkeltonMode = FALSE;
+            xg_bSkeletonMode = FALSE;
         } else if (!(xg_nRules & RULE_DONTTHREEDIAGONALS) && (xg_nRules & RULE_DONTFOURDIAGONALS)) {
             xg_nRules &= ~(RULE_DONTTHREEDIAGONALS | RULE_DONTFOURDIAGONALS);
         } else if ((xg_nRules & RULE_DONTTHREEDIAGONALS) && !(xg_nRules & RULE_DONTFOURDIAGONALS)) {
             xg_nRules &= ~RULE_DONTFOURDIAGONALS;
         } else {
             xg_nRules |= RULE_DONTFOURDIAGONALS;
-            xg_bSkeltonMode = FALSE;
+            xg_bSkeletonMode = FALSE;
         }
         XgUpdateRules(hwnd);
         break;
@@ -9089,16 +9089,16 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
     case ID_RETRYIFTIMEOUT:
         s_bAutoRetry = !s_bAutoRetry;
         break;
-    case ID_SKELTONMODE:
-        if (xg_bSkeltonMode) {
-            xg_bSkeltonMode = FALSE;
+    case ID_SKELETONMODE:
+        if (xg_bSkeletonMode) {
+            xg_bSkeletonMode = FALSE;
             if (XgIsUserJapanese()) {
                 xg_nRules = DEFAULT_RULES_JAPANESE;
             } else {
                 xg_nRules = DEFAULT_RULES_ENGLISH;
             }
         } else {
-            xg_bSkeltonMode = TRUE;
+            xg_bSkeletonMode = TRUE;
             xg_nRules &= ~(RULE_DONTDOUBLEBLACK | RULE_DONTCORNERBLACK | RULE_DONTTRIDIRECTIONS | RULE_DONTFOURDIAGONALS | RULE_DONTTHREEDIAGONALS);
         }
         XgUpdateRules(hwnd);
@@ -9146,7 +9146,7 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
         y = XgGetVScrollPos();
         XgUpdateImage(hwnd, x, y);
         break;
-    case ID_VIEW_SKELTON_VIEW:
+    case ID_VIEW_SKELETON_VIEW:
         // 黒マス画像をクリアする。
         xg_strBlackCellImage.clear();
         if (xg_hbmBlackCell) {
@@ -9158,7 +9158,7 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
             xg_hBlackCellEMF = NULL;
         }
         // スケルトンビューを設定。
-        xg_nViewMode = XG_VIEW_SKELTON;
+        xg_nViewMode = XG_VIEW_SKELETON;
         x = XgGetHScrollPos();
         y = XgGetVScrollPos();
         XgUpdateImage(hwnd, x, y);

@@ -4043,7 +4043,7 @@ void __fastcall XgDrawXWord_NormalView(XG_Board& xw, HDC hdc, LPSIZE psiz, bool 
 }
 
 // クロスワードを描画する（スケルトンビュー）。
-void __fastcall XgDrawXWord_SkeltonView(XG_Board& xw, HDC hdc, LPSIZE psiz, bool bCaret)
+void __fastcall XgDrawXWord_SkeletonView(XG_Board& xw, HDC hdc, LPSIZE psiz, bool bCaret)
 {
     INT nCellSize;
     if (xg_nForDisplay > 0) {
@@ -4372,8 +4372,8 @@ void __fastcall XgDrawXWord(XG_Board& xw, HDC hdc, LPSIZE psiz, bool bCaret)
     default:
         XgDrawXWord_NormalView(xw, hdc, psiz, bCaret);
         break;
-    case XG_VIEW_SKELTON:
-        XgDrawXWord_SkeltonView(xw, hdc, psiz, bCaret);
+    case XG_VIEW_SKELETON:
+        XgDrawXWord_SkeletonView(xw, hdc, psiz, bCaret);
         break;
     }
 }

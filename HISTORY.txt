@@ -414,6 +414,7 @@
 	辞書の個数の制限を64個までに緩和。
 	対称のルールのときに「解を求める(黒マス追加なし)」で盤を対称にするようにした。
 	最大単語長周りを修正。
+	「skeleton」のtypoを修正。
 
 ## History of XWordGiver (English)
 
@@ -450,7 +451,7 @@
     - Renamed the EXE file.
 
 - 2021.10.29 Ver.4.7.9
-    - Added "Skelton View" menu item.
+    - Added "Skeleton View" menu item.
     - Improved the English dictionary by using the web service Grammarly.
     - Improved drawing the letter of the double-frame cell.
     - Fixed "Copy the double-frame word image".
@@ -463,3 +464,4 @@
     - Relaxed the limit on the number of dictionaries to 64.
     - When the policy is symmetrical, "Finding solution (without adding blocks)" forces the board symmetrical.
     - Fixed around Max Word Length.
+    - Fixed typo of skeleton.

@@ -537,7 +537,7 @@ extern std::wstring xg_strBlackCellImage;
 typedef enum XG_VIEW_MODE
 {
     XG_VIEW_NORMAL, // 通常ビュー。
-    XG_VIEW_SKELTON // スケルトンビュー。
+    XG_VIEW_SKELETON // スケルトンビュー。
 } XG_VIEW_MODE;
 extern XG_VIEW_MODE xg_nViewMode;
 

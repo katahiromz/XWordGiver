@@ -321,7 +321,7 @@
 #define ID_THEME                            258
 #define ID_RESETTHEME                       259
 #define ID_RETRYIFTIMEOUT                   260
-#define ID_SKELTONMODE                      261
+#define ID_SKELETONMODE                     261
 #define ID_SEQPATGEN                        262
 #define ID_FILLBYBLOCKS                     263
 #define ID_FILLBYWHITES                     264
@@ -339,7 +339,7 @@
 #define ID_RULE_LINESYMMETRYV               276
 #define ID_RULE_LINESYMMETRYH               277
 #define ID_VIEW_NORMAL_VIEW                 278
-#define ID_VIEW_SKELTON_VIEW                279
+#define ID_VIEW_SKELETON_VIEW               279
 #define ID_TT_BASE                          10000
 
 #define ctl2                                1185
