@@ -1741,6 +1741,7 @@ std::wstring __fastcall XgGetRulesString(INT rules)
         }
         ret += XgLoadStringDx1(IDS_RULE_LINESYMMETRYH);
     }
+    ret += L" / ";
     return ret;
 }
 
