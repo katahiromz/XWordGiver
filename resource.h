@@ -166,6 +166,7 @@
 #define IDS_CANTSOLVELINESYMMETRY           257
 #define IDS_NOTLINESYMMETRYV                258
 #define IDS_NOTLINESYMMETRYH                259
+#define IDS_SHALLIMIRROR                    260
 #define IDS_TT_NEW                          10100
 #define IDS_TT_GENERATE                     10101
 #define IDS_TT_OPEN                         10102

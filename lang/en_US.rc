@@ -1480,6 +1480,7 @@ STRINGTABLE
     IDS_CANTSOLVELINESYMMETRY, "The policy ""Line symmetry of blocks"" doesn't allow you to find a solution with adding blocks."
     IDS_NOTLINESYMMETRYV, "The placement of the blocks is not line-symmetrical. This violates the policy ""Line symmetry (vertical) of blocks""."
     IDS_NOTLINESYMMETRYH, "The placement of the blocks is not line-symmetrical. This violates the policy ""Line symmetry (horizontal) of blocks""."
+    IDS_SHALLIMIRROR, "Shall I make the block pattern symmetrical according to the specified policy?"
     IDS_TT_NEW, "New crossword"
     IDS_TT_GENERATE, "Generate crossword"
     IDS_TT_OPEN, "Open crossword"

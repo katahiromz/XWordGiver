@@ -5601,6 +5601,35 @@ bool XG_Board::IsLineSymmetryH() const
     return true;
 }
 
+// 必要ならルールに従って対称にする。
+void XG_Board::Mirror()
+{
+    const int nRows = xg_nRows;
+    const int nCols = xg_nCols;
+    if (xg_nRules & RULE_POINTSYMMETRY) {
+        for (int i = 0; i < nRows; i++) {
+            for (int j = 0; j < nCols; j++) {
+                if (GetAt(i, j) == ZEN_BLACK)
+                    SetAt(nRows - (i + 1), nCols - (j + 1), ZEN_BLACK);
+            }
+        }
+    } else if (xg_nRules & RULE_LINESYMMETRYV) {
+        for (int i = 0; i < nRows; i++) {
+            for (int j = 0; j < nCols; j++) {
+                if (GetAt(i, j) == ZEN_BLACK)
+                    SetAt(nRows - (i + 1), j, ZEN_BLACK);
+            }
+        }
+    } else if (xg_nRules & RULE_LINESYMMETRYH) {
+        for (int j = 0; j < nCols; j++) {
+            for (int i = 0; i < nRows; i++) {
+                if (GetAt(i, j) == ZEN_BLACK)
+                    SetAt(i, nCols - (j + 1), ZEN_BLACK);
+            }
+        }
+    }
+}
+
 // 黒斜三連か？
 bool XG_Board::ThreeDiagonals() const
 {

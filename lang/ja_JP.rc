@@ -1483,6 +1483,7 @@ STRINGTABLE
     IDS_CANTSOLVELINESYMMETRY, "ルール「黒マス線対称」では黒マス追加ありの解を求めることはできません。"
     IDS_NOTLINESYMMETRYV, "黒マスの配置が線対称ではありません。ルール「黒マス線対称（タテ）」に反します。"
     IDS_NOTLINESYMMETRYH, "黒マスの配置が線対称ではありません。ルール「黒マス線対称（ヨコ）」に反します。"
+    IDS_SHALLIMIRROR, "指定されたルールに従って黒マスパターンを対称にしますか？"
     IDS_TT_NEW, "新規作成"
     IDS_TT_GENERATE, "問題を自動生成する"
     IDS_TT_OPEN, "問題を開く"

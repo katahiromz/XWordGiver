@@ -8410,6 +8410,21 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
 
     case ID_SOLVENOADDBLACK:    // 解を求める（黒マス追加なし）。
         {
+            // 必要ならルールに従って対称にする。
+            XG_Board copy = xg_xword;
+            copy.Mirror();
+            if (!std::equal(xg_xword.m_vCells.cbegin(), xg_xword.m_vCells.cend(),
+                            copy.m_vCells.cbegin()))
+            {
+                if (XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_SHALLIMIRROR), NULL,
+                                        MB_ICONINFORMATION | MB_YESNO) == IDYES)
+                {
+                    xg_xword = copy;
+                    XgUpdateImage(hwnd, 0, 0);
+                }
+            }
+        }
+        {
             auto sa1 = std::make_shared<XG_UndoData_SetAll>();
             auto sa2 = std::make_shared<XG_UndoData_SetAll>();
             sa1->Get();

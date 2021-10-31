@@ -414,6 +414,8 @@ public:
     bool IsLineSymmetryV() const;
     // 黒マスが線対称（ヨコ）か？
     bool IsLineSymmetryH() const;
+    // 必要ならルールに従って対称にする。
+    void Mirror();
 
     // 黒斜三連か？
     bool ThreeDiagonals() const;

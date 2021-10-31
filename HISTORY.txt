@@ -412,6 +412,7 @@
 	「二重マス単語の画像をコピー」を「二重マス単語をコピー」に変更。
 	「単語をウェブ検索」を改良。
 	辞書の個数の制限を64個までに緩和。
+	対称のルールのときに「解を求める(黒マス追加なし)」で盤を対称にするようにした。
 
 ## History of XWordGiver (English)
 
@@ -459,3 +460,4 @@
     - Changed "Copy the double-frame word image" to "Copy the double-frame word".
     - Improved "Web search word".
     - Relaxed the limit on the number of dictionaries to 64.
+    - When the policy is symmetrical, "Finding solution (without adding blocks)" forces the board symmetrical.
