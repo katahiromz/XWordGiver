@@ -6086,8 +6086,9 @@ void __fastcall XgStartGenerateBlacks(void)
     xg_bBlacksGenerated = false;
     xg_bCancelled = false;
 
-    if (xg_nMaxWordLen > xg_nDictMinWordLen) {
-        xg_nMaxWordLen = xg_nDictMinWordLen;
+    // 最大長を制限する。
+    if (xg_nMaxWordLen > xg_nDictMaxWordLen) {
+        xg_nMaxWordLen = xg_nDictMaxWordLen;
     }
 
     // スレッドを開始する。
