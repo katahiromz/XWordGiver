@@ -8414,6 +8414,9 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
 
     case ID_SOLVENOADDBLACK:    // 解を求める（黒マス追加なし）。
         {
+            auto sa1 = std::make_shared<XG_UndoData_SetAll>();
+            sa1->Get();
+
             // 必要ならルールに従って対称にする。
             XG_Board copy = xg_xword;
             copy.Mirror();
@@ -8427,16 +8430,14 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
                     XgUpdateImage(hwnd, 0, 0);
                 }
             }
-        }
-        {
-            auto sa1 = std::make_shared<XG_UndoData_SetAll>();
+
             auto sa2 = std::make_shared<XG_UndoData_SetAll>();
-            sa1->Get();
             {
                 // 解を求める（黒マス追加なし）。
                 XgOnSolve_NoAddBlack(hwnd);
             }
             sa2->Get();
+
             // 元に戻す情報を設定する。
             xg_ubUndoBuffer.Commit(UC_SETALL, sa1, sa2);
             // ツールバーのUIを更新する。
