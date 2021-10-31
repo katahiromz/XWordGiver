@@ -6086,6 +6086,10 @@ void __fastcall XgStartGenerateBlacks(void)
     xg_bBlacksGenerated = false;
     xg_bCancelled = false;
 
+    if (xg_nMaxWordLen > xg_nDictMinWordLen) {
+        xg_nMaxWordLen = xg_nDictMinWordLen;
+    }
+
     // スレッドを開始する。
     if (xg_nRules & RULE_POINTSYMMETRY) {
 #ifdef SINGLE_THREAD_MODE

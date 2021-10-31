@@ -33,6 +33,11 @@ bool xg_bThemeModified = false;
 // 単語の長さのヒストグラム。
 std::unordered_map<size_t, size_t> xg_word_length_histgram;
 
+// 配置できる最大単語長。
+INT xg_nDictMaxWordLen = 7;
+// 配置できる最小単語長。
+INT xg_nDictMinWordLen = 2;
+
 //////////////////////////////////////////////////////////////////////////////
 // 辞書データのファイル処理。
 
@@ -278,6 +283,8 @@ bool __fastcall XgLoadDictFile(LPCWSTR pszFile)
     xg_tag_histgram.clear();
     xg_strDefaultTheme.clear();
     xg_word_length_histgram.clear();
+    xg_nDictMaxWordLen = 255;
+    xg_nDictMinWordLen = 2;
 
     // ファイルを開く。
     AutoCloseHandle hFile(CreateFileW(pszFile, GENERIC_READ, FILE_SHARE_READ, nullptr,
@@ -414,13 +421,25 @@ bool __fastcall XgLoadDictFile(LPCWSTR pszFile)
         std::sort(xg_dict_2.begin(), xg_dict_2.end(), xg_word_less());
 
         // 単語の長さのヒストグラムを構築する。
-        for (auto& worddata : xg_dict_1)
-        {
-            xg_word_length_histgram[worddata.m_word.size()]++;
+        for (auto& worddata : xg_dict_1) {
+            auto len = worddata.m_word.size();
+            xg_word_length_histgram[len]++;
         }
-        for (auto& worddata : xg_dict_2)
-        {
-            xg_word_length_histgram[worddata.m_word.size()]++;
+        for (auto& worddata : xg_dict_2) {
+            auto len = worddata.m_word.size();
+            xg_word_length_histgram[len]++;
+        }
+
+        // 最長、最短を更新。
+        if (xg_word_length_histgram.size()) {
+            xg_nDictMaxWordLen = 2;
+            xg_nDictMinWordLen = 255;
+            for (auto& pair : xg_word_length_histgram) {
+                if (xg_nDictMaxWordLen < (INT)pair.first)
+                    xg_nDictMaxWordLen = (INT)pair.first;
+                if (xg_nDictMinWordLen > (INT)pair.first)
+                    xg_nDictMinWordLen = (INT)pair.first;
+            }
         }
 
         return true; // 成功。

@@ -93,6 +93,10 @@ extern std::wstring xg_strTheme;
 extern std::wstring xg_strDefaultTheme;
 // テーマが変更されたか？
 extern bool xg_bThemeModified;
+// 配置できる最大単語長。
+extern INT xg_nDictMaxWordLen;
+// 配置できる最小単語長。
+extern INT xg_nDictMinWordLen;
 
 // 辞書ファイルを読み込む。
 bool __fastcall XgLoadDictFile(LPCWSTR pszFile);

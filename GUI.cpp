@@ -1382,7 +1382,7 @@ XgGenerateDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam*/)
                 return 0;
             }
             n3 = static_cast<int>(::GetDlgItemInt(hwnd, edt3, nullptr, FALSE));
-            if (n3 < 4 || n3 > 10) {
+            if (n3 < 4 || n3 > 30) {
                 ::SendDlgItemMessageW(hwnd, edt3, EM_SETSEL, 0, -1);
                 XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_ENTERINT), nullptr, MB_ICONERROR);
                 ::SetFocus(::GetDlgItem(hwnd, edt3));
