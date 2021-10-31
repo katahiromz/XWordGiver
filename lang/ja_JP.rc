@@ -52,6 +52,7 @@ LANGUAGE LANG_JAPANESE, SUBLANG_DEFAULT
         MENUITEM SEPARATOR
         MENUITEM "タテの単語をコピー(&V)", ID_COPYWORDVERT
         MENUITEM "ヨコの単語をコピー(&H)", ID_COPYWORDHORZ
+        MENUITEM "単語リストをコピー(&O)", ID_COPY_WORD_LIST
         MENUITEM SEPARATOR
         MENUITEM "タテのカギをコピー (スタイル0) (&T)", ID_COPYVHINTSSTYLE0
         MENUITEM "ヨコのカギをコピー (スタイル0) (&Y)", ID_COPYHHINTSSTYLE0
@@ -63,7 +64,6 @@ LANGUAGE LANG_JAPANESE, SUBLANG_DEFAULT
         MENUITEM "ヒントをコピー (スタイル1) (&N)", ID_COPYHINTSSTYLE1
         MENUITEM SEPARATOR
         MENUITEM "二重マス単語をコピー(&M)", ID_COPYMARKWORD
-        MENUITEM "単語リストをコピー(&O)", ID_COPY_WORD_LIST
     }
     POPUP "入力(&I)"
     {

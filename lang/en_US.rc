@@ -50,9 +50,9 @@ LANGUAGE LANG_ENGLISH, SUBLANG_DEFAULT
         MENUITEM "Fill the board by &blocks", ID_FILLBYBLOCKS
         MENUITEM "Fill the board by &spaces", ID_FILLBYWHITES
         MENUITEM SEPARATOR
-        MENUITEM SEPARATOR
         MENUITEM "Copy the DOWN word", ID_COPYWORDVERT
         MENUITEM "Copy the ACROSS word", ID_COPYWORDHORZ
+        MENUITEM "Copy the list of w&ords", ID_COPY_WORD_LIST
         MENUITEM SEPARATOR
         MENUITEM "Copy DOWN clues (Style 0) (&T)", ID_COPYVHINTSSTYLE0
         MENUITEM "Copy ACROSS clues (Style 0) (&Y)", ID_COPYHHINTSSTYLE0
@@ -64,7 +64,6 @@ LANGUAGE LANG_ENGLISH, SUBLANG_DEFAULT
         MENUITEM "Copy the clues (Style 1) (&N)", ID_COPYHINTSSTYLE1
         MENUITEM SEPARATOR
         MENUITEM "Copy the double-frame word", ID_COPYMARKWORD
-        MENUITEM "Copy the list of w&ords", ID_COPY_WORD_LIST
     }
     POPUP "&Input"
     {
