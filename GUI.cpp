@@ -754,7 +754,7 @@ bool __fastcall XgLoadSettings(void)
             if (!app_key.QueryDword(L"ZoomRate", dwValue)) {
                 xg_nZoomRate = dwValue;
             }
-            if (!app_key.QueryDword(L"SkeltonMode", dwValue)) {
+            if (!app_key.QueryDword(L"SkeletonMode", dwValue)) {
                 xg_bSkeletonMode = dwValue;
             }
             if (!app_key.QueryDword(L"ShowNumbering", dwValue)) {
@@ -909,7 +909,7 @@ bool __fastcall XgSaveSettings(void)
             app_key.SetDword(L"SmartResolution", xg_bSmartResolution);
             app_key.SetDword(L"InputMode", (DWORD)xg_imode);
             app_key.SetDword(L"ZoomRate", xg_nZoomRate);
-            app_key.SetDword(L"SkeltonMode", xg_bSkeletonMode);
+            app_key.SetDword(L"SkeletonMode", xg_bSkeletonMode);
             app_key.SetDword(L"ShowNumbering", xg_bShowNumbering);
             app_key.SetDword(L"ShowCaret", xg_bShowCaret);
 
