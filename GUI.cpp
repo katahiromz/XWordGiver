@@ -11,6 +11,10 @@
 #define XG_MIN_SIZE         3
 #define XG_MAX_SIZE         30
 
+// íPåÍÇÃí∑Ç≥ÇÃêßå¿ÅB
+#define XG_MIN_WORD_LEN 2
+#define XG_MAX_WORD_LEN 30
+
 #ifndef WM_MOUSEHWHEEL
     #define WM_MOUSEHWHEEL 0x020E
 #endif
@@ -1351,7 +1355,7 @@ XgGenerateDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam*/)
         }
         SendDlgItemMessageW(hwnd, scr1, UDM_SETRANGE, 0, MAKELPARAM(XG_MAX_SIZE, XG_MIN_SIZE));
         SendDlgItemMessageW(hwnd, scr2, UDM_SETRANGE, 0, MAKELPARAM(XG_MAX_SIZE, XG_MIN_SIZE));
-        SendDlgItemMessageW(hwnd, scr3, UDM_SETRANGE, 0, MAKELPARAM(10, 4));
+        SendDlgItemMessageW(hwnd, scr3, UDM_SETRANGE, 0, MAKELPARAM(XG_MAX_WORD_LEN, XG_MIN_WORD_LEN));
         if (::IsDlgButtonChecked(hwnd, chx2) == BST_CHECKED) {
             EnableWindow(GetDlgItem(hwnd, stc1), TRUE);
             EnableWindow(GetDlgItem(hwnd, edt3), TRUE);
@@ -1382,7 +1386,7 @@ XgGenerateDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam*/)
                 return 0;
             }
             n3 = static_cast<int>(::GetDlgItemInt(hwnd, edt3, nullptr, FALSE));
-            if (n3 < 4 || n3 > 30) {
+            if (n3 < XG_MIN_WORD_LEN || n3 > XG_MAX_WORD_LEN) {
                 ::SendDlgItemMessageW(hwnd, edt3, EM_SETSEL, 0, -1);
                 XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_ENTERINT), nullptr, MB_ICONERROR);
                 ::SetFocus(::GetDlgItem(hwnd, edt3));
@@ -1521,7 +1525,7 @@ XgGenerateRepeatedlyDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam
         }
         SendDlgItemMessageW(hwnd, scr1, UDM_SETRANGE, 0, MAKELPARAM(XG_MAX_SIZE, XG_MIN_SIZE));
         SendDlgItemMessageW(hwnd, scr2, UDM_SETRANGE, 0, MAKELPARAM(XG_MAX_SIZE, XG_MIN_SIZE));
-        SendDlgItemMessageW(hwnd, scr3, UDM_SETRANGE, 0, MAKELPARAM(10, 4));
+        SendDlgItemMessageW(hwnd, scr3, UDM_SETRANGE, 0, MAKELPARAM(XG_MAX_WORD_LEN, XG_MIN_WORD_LEN));
         SendDlgItemMessageW(hwnd, scr4, UDM_SETRANGE, 0, MAKELPARAM(100, 1));
         if (::IsDlgButtonChecked(hwnd, chx2) == BST_CHECKED) {
             EnableWindow(GetDlgItem(hwnd, stc1), TRUE);
@@ -1554,7 +1558,7 @@ XgGenerateRepeatedlyDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam
                 return 0;
             }
             n3 = static_cast<int>(::GetDlgItemInt(hwnd, edt3, nullptr, FALSE));
-            if (n3 < 4 || n3 > 10) {
+            if (n3 < XG_MIN_WORD_LEN || n3 > XG_MAX_WORD_LEN) {
                 ::SendDlgItemMessageW(hwnd, edt3, EM_SETSEL, 0, -1);
                 XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_ENTERINT), nullptr, MB_ICONERROR);
                 ::SetFocus(::GetDlgItem(hwnd, edt3));
@@ -1710,7 +1714,7 @@ XgGenerateBlacksRepeatedlyDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*
             hwndCtrl = ::GetDlgItem(hwnd, edt4);
             ::ImmAssociateContext(hwndCtrl, NULL);
         }
-        SendDlgItemMessageW(hwnd, scr3, UDM_SETRANGE, 0, MAKELPARAM(10, 4));
+        SendDlgItemMessageW(hwnd, scr3, UDM_SETRANGE, 0, MAKELPARAM(XG_MAX_WORD_LEN, XG_MIN_WORD_LEN));
         SendDlgItemMessageW(hwnd, scr4, UDM_SETRANGE, 0, MAKELPARAM(100, 1));
         return TRUE;
 
@@ -1719,7 +1723,7 @@ XgGenerateBlacksRepeatedlyDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*
         {
         case IDOK:
             n3 = static_cast<int>(::GetDlgItemInt(hwnd, edt3, nullptr, FALSE));
-            if (n3 < 4 || n3 > 10) {
+            if (n3 < XG_MIN_WORD_LEN || n3 > XG_MAX_WORD_LEN) {
                 ::SendDlgItemMessageW(hwnd, edt3, EM_SETSEL, 0, -1);
                 XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_ENTERINT), nullptr, MB_ICONERROR);
                 ::SetFocus(::GetDlgItem(hwnd, edt3));
@@ -1830,7 +1834,7 @@ XgGenerateBlacksDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam*/)
             n3 = 4;
         }
         ::SetDlgItemInt(hwnd, edt3, n3, FALSE);
-        SendDlgItemMessageW(hwnd, scr3, UDM_SETRANGE, 0, MAKELPARAM(10, 4));
+        SendDlgItemMessageW(hwnd, scr3, UDM_SETRANGE, 0, MAKELPARAM(XG_MAX_WORD_LEN, XG_MIN_WORD_LEN));
         return TRUE;
 
     case WM_COMMAND:
@@ -1838,7 +1842,7 @@ XgGenerateBlacksDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam*/)
         {
         case IDOK:
             n3 = static_cast<int>(::GetDlgItemInt(hwnd, edt3, nullptr, FALSE));
-            if (n3 < 4 || n3 > 10) {
+            if (n3 < XG_MIN_WORD_LEN || n3 > XG_MAX_WORD_LEN) {
                 ::SendDlgItemMessageW(hwnd, edt3, EM_SETSEL, 0, -1);
                 XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_ENTERINT), nullptr, MB_ICONERROR);
                 ::SetFocus(::GetDlgItem(hwnd, edt3));
