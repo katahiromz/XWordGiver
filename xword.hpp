@@ -356,9 +356,9 @@ public:
     void __fastcall ResetAndSetSize(int nRows, int nCols);
     // 解か？
     bool __fastcall IsSolution() const;
-    // 正当などうか？
+    // 正当かどうか？
     bool __fastcall IsValid() const;
-    // 正当などうか？（簡略版、黒マス追加なし）
+    // 正当かどうか？（簡略版、黒マス追加なし）
     bool __fastcall IsNoAddBlackOK() const;
     // 番号をつける。
     bool __fastcall DoNumbering();

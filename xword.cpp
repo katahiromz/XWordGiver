@@ -925,7 +925,7 @@ XG_EpvCode __fastcall XG_Board::EveryPatternValid2(
     return xg_epv_SUCCESS;      // 成功。
 }
 
-// 正当などうか？
+// 正当かどうか？
 inline bool __fastcall XG_Board::IsValid() const
 {
     if ((xg_nRules & RULE_DONTCORNERBLACK) && CornerBlack())
@@ -960,7 +960,7 @@ inline bool __fastcall XG_Board::IsValid() const
     return true;    // 成功。
 }
 
-// 正当などうか？（簡略版、黒マス追加なし）
+// 正当かどうか？（簡略版、黒マス追加なし）
 bool __fastcall XG_Board::IsNoAddBlackOK() const
 {
     // クロスワードに含まれる単語のチェック。
