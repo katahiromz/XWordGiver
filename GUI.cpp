@@ -4040,101 +4040,6 @@ ImageSize_DlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
     return 0;
 }
 
-// サイズを指定してクリップボードにクロスワードを画像としてコピー。
-void __fastcall XgCopyBoardAsImageSized(HWND hwnd)
-{
-    if (IDOK != ::DialogBoxW(xg_hInstance, MAKEINTRESOURCE(IDD_SIZES), hwnd,
-                             ImageSize_DlgProc))
-    {
-        return;
-    }
-
-    HENHMETAFILE hEMF = NULL, hEMF2 = NULL;
-    XG_Board *pxw = (xg_bSolved && xg_bShowAnswer) ? &xg_solution : &xg_xword;
-
-    // 描画サイズを取得する。
-    SIZE siz;
-    XgGetXWordExtent(&siz);
-
-    // EMFを作成する。
-    HDC hdcRef = ::GetDC(hwnd);
-    HDC hdc = ::CreateEnhMetaFileW(hdcRef, nullptr, nullptr, XgLoadStringDx1(IDS_APPNAME));
-    // EMFに描画する。
-    XgDrawXWord(*pxw, hdc, &siz, false);
-    hEMF = ::CloseEnhMetaFile(hdc);
-
-    MRect rc;
-    if (s_bImageCopyByHeight) {
-        int cx = siz.cx * s_nImageCopyHeight / siz.cy;
-        ::SetRect(&rc, 0, 0, cx, s_nImageCopyHeight);
-    } else {
-        int cy = siz.cy * s_nImageCopyWidth / siz.cx;
-        ::SetRect(&rc, 0, 0, s_nImageCopyWidth, cy);
-    }
-    siz.cx = rc.right - rc.left;
-    siz.cy = rc.bottom - rc.top;
-
-    HDC hdc2 = ::CreateEnhMetaFileW(hdcRef, nullptr, nullptr, XgLoadStringDx1(IDS_APPNAME));
-    ::PlayEnhMetaFile(hdc2, hEMF, &rc);
-    hEMF2 = ::CloseEnhMetaFile(hdc2);
-    ::DeleteEnhMetaFile(hEMF);
-
-    // BMPを作成する。
-    HBITMAP hbm = NULL;
-    if (HDC hDC = CreateCompatibleDC(NULL))
-    {
-        BITMAPINFO bi;
-        ZeroMemory(&bi, sizeof(bi));
-        bi.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
-        bi.bmiHeader.biWidth = siz.cx;
-        bi.bmiHeader.biHeight = siz.cy;
-        bi.bmiHeader.biPlanes = 1;
-        bi.bmiHeader.biBitCount = 24;
-        bi.bmiHeader.biCompression = BI_RGB;
-        LPVOID pvBits;
-        hbm = CreateDIBSection(hDC, &bi, DIB_RGB_COLORS, &pvBits, NULL, 0);
-        if (HGDIOBJ hbmOld = SelectObject(hDC, hbm))
-        {
-            PlayEnhMetaFile(hDC, hEMF2, &rc);
-            SelectObject(hDC, hbmOld);
-        }
-        DeleteDC(hDC);
-    }
-    HGLOBAL hGlobal = NULL;
-    if (hbm)
-    {
-        std::vector<BYTE> data;
-        PackedDIB_CreateFromHandle(data, hbm);
-
-        hGlobal = GlobalAlloc(GHND | GMEM_SHARE, DWORD(data.size()));
-        if (hGlobal)
-        {
-            if (LPVOID pv = GlobalLock(hGlobal))
-            {
-                memcpy(pv, &data[0], data.size());
-                GlobalUnlock(hGlobal);
-            }
-        }
-        DeleteObject(hbm);
-        hbm = NULL;
-    }
-
-    // クリップボードを開く。
-    if (::OpenClipboard(hwnd)) {
-        // クリップボードを空にする。
-        if (::EmptyClipboard()) {
-            // BMPを設定。
-            ::SetClipboardData(CF_DIB, hGlobal);
-            // EMFを設定。
-            ::SetClipboardData(CF_ENHMETAFILE, hEMF2);
-        }
-        // クリップボードを閉じる。
-        ::CloseClipboard();
-    }
-
-    ::ReleaseDC(hwnd, hdcRef);
-}
-
 // 二重マス単語をコピー。
 void __fastcall XgCopyMarkWord(HWND hwnd)
 {
@@ -8652,12 +8557,6 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
     case ID_COPYASIMAGE:    // 画像をコピー。
         if (::GetForegroundWindow() == xg_hMainWnd) {
             XgCopyBoardAsImage(hwnd);
-        }
-        break;
-
-    case ID_COPYASIMAGESIZED:   // サイズを指定して画像をコピー。
-        if (::GetForegroundWindow() == xg_hMainWnd) {
-            XgCopyBoardAsImageSized(hwnd);
         }
         break;
 

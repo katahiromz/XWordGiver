@@ -12,7 +12,6 @@
 #define IDD_SEQSOLVE                        108
 #define IDD_READDICT                        109
 #define IDD_NOTES                           110
-#define IDD_SIZES                           111
 #define IDD_BLACKGEN                        113
 #define IDD_KATATATE                        114
 #define IDD_KATAYOKO                        115
@@ -246,7 +245,6 @@
 #define ID_COPYHHINTSSTYLE0                 180
 #define ID_COPYVHINTSSTYLE1                 181
 #define ID_COPYHHINTSSTYLE1                 182
-#define ID_COPYASIMAGESIZED                 183
 #define ID_GENERATEBLACKS                   185
 #define ID_FLIPVH                           187
 #define ID_OPENCANDSWNDHORZ                 188

@@ -411,6 +411,7 @@
 	黒マス線対称をサポート。
 	「二重マス単語の画像をコピー」を「二重マス単語をコピー」に変更。
 	「高さを指定して二重マス単語の画像をコピー」を廃止。
+	「サイズを指定して画像をコピー」を廃止。
 	「単語をウェブ検索」を改良。
 	辞書の個数の制限を64個までに緩和。
 	対称のルールのときに「解を求める(黒マス追加なし)」で盤を対称にするようにした。
@@ -462,6 +463,7 @@
     - Supported "Line symmetry of blocks".
     - Changed "Copy the double-frame word image" to "Copy the double-frame word".
     - Abolished "Copy the double-frame word image with height".
+    - Abolished "Copy Image with size".
     - Improved "Web search word".
     - Relaxed the limit on the number of dictionaries to 64.
     - When the policy is symmetrical, "Finding solution (without adding blocks)" forces the board symmetrical.
