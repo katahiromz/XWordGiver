@@ -1419,6 +1419,16 @@ XgGenerateDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam*/)
                 xg_vYokoInfo.clear();
                 xg_vMarks.clear();
                 xg_vMarkedCands.clear();
+                // 偶数行数で黒マス線対称（タテ）の場合は連黒禁は不可。
+                if (!(xg_nRows & 1) && (xg_nRules & RULE_LINESYMMETRYV) && (xg_nRules & RULE_DONTDOUBLEBLACK)) {
+                    XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_EVENROWLINESYMV), nullptr, MB_ICONERROR);
+                    break;
+                }
+                // 偶数列数で黒マス線対称（ヨコ）の場合は連黒禁は不可。
+                if (!(xg_nCols & 1) && (xg_nRules & RULE_LINESYMMETRYH) && (xg_nRules & RULE_DONTDOUBLEBLACK)) {
+                    XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_EVENCOLLINESYMH), nullptr, MB_ICONERROR);
+                    break;
+                }
             }
             // ダイアログを閉じる。
             ::EndDialog(hwnd, IDOK);
@@ -1631,6 +1641,16 @@ XgGenerateRepeatedlyDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam
                 xg_vYokoInfo.clear();
                 xg_vMarks.clear();
                 xg_vMarkedCands.clear();
+                // 偶数行数で黒マス線対称（タテ）の場合は連黒禁は不可。
+                if (!(xg_nRows & 1) && (xg_nRules & RULE_LINESYMMETRYV) && (xg_nRules & RULE_DONTDOUBLEBLACK)) {
+                    XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_EVENROWLINESYMV), nullptr, MB_ICONERROR);
+                    break;
+                }
+                // 偶数列数で黒マス線対称（ヨコ）の場合は連黒禁は不可。
+                if (!(xg_nCols & 1) && (xg_nRules & RULE_LINESYMMETRYH) && (xg_nRules & RULE_DONTDOUBLEBLACK)) {
+                    XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_EVENCOLLINESYMH), nullptr, MB_ICONERROR);
+                    break;
+                }
             }
             // ダイアログを閉じる。
             ::EndDialog(hwnd, IDOK);
