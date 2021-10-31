@@ -8419,7 +8419,7 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
                 if (XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_SHALLIMIRROR), NULL,
                                         MB_ICONINFORMATION | MB_YESNO) == IDYES)
                 {
-                    xg_xword = copy;
+                    xg_xword.m_vCells = copy.m_vCells;
                     XgUpdateImage(hwnd, 0, 0);
                 }
             }
