@@ -41,6 +41,27 @@ INT xg_nPatWndY = CW_USEDEFAULT;
 INT xg_nPatWndCX = CW_USEDEFAULT;
 INT xg_nPatWndCY = CW_USEDEFAULT;
 
+template <typename T_STR_CONTAINER>
+inline typename T_STR_CONTAINER::value_type
+mstr_join(const T_STR_CONTAINER& container,
+          const typename T_STR_CONTAINER::value_type& sep)
+{
+    typename T_STR_CONTAINER::value_type result;
+    typename T_STR_CONTAINER::const_iterator it, end;
+    it = container.begin();
+    end = container.end();
+    if (it != end)
+    {
+        result = *it;
+        for (++it; it != end; ++it)
+        {
+            result += sep;
+            result += *it;
+        }
+    }
+    return result;
+}
+
 //////////////////////////////////////////////////////////////////////////////
 // global variables
 
@@ -1195,6 +1216,62 @@ void __fastcall XgNewCells(HWND hwnd, WCHAR ch, INT nRows, INT nCols)
     xg_ubUndoBuffer.Commit(UC_SETALL, sa1, sa2);
     // ツールバーのUIを更新する。
     XgUpdateToolBarUI(hwnd);
+}
+
+// 単語リストのコピー。
+void XgCopyWordList(HWND hwnd)
+{
+    const XG_Board *xw = (xg_bSolved ? &xg_solution : &xg_xword);
+
+    // 全単語を取得。空白を含む単語は無視。
+    std::vector<std::wstring> words;
+    for (INT iRow = 0; iRow < xg_nRows; ++iRow) {
+        for (INT jCol = 0; jCol < xg_nCols; ++jCol) {
+            std::wstring str;
+            str = xw->GetPatternV(XG_Pos(iRow, jCol));
+            if (str.size() >= 2 && str.find(ZEN_SPACE) == str.npos) {
+                words.push_back(str);
+            }
+            str = xw->GetPatternH(XG_Pos(iRow, jCol));
+            if (str.size() >= 2 && str.find(ZEN_SPACE) == str.npos) {
+                words.push_back(str);
+            }
+        }
+    }
+
+    // ソートして一意化。
+    std::sort(words.begin(), words.end());
+    auto last = std::unique(words.begin(), words.end());
+    words.erase(last, words.end());
+
+    // 改行区切りにする。
+    std::wstring str = mstr_join(words, L"\r\n");
+    str += L"\r\n";
+
+    // 全角英数を半角英数にする。
+    for (auto& wch : str) {
+        if (ZEN_LARGE_A <= wch && wch <= ZEN_LARGE_Z)
+            wch = L'a' + (wch - ZEN_LARGE_A);
+        else if (ZEN_SMALL_A <= wch && wch <= ZEN_SMALL_Z)
+            wch = L'a' + (wch - ZEN_SMALL_A);
+    }
+
+    // クリップボードにコピー。
+    size_t cb = (str.size() + 1) * sizeof(WCHAR);
+    if (HGLOBAL hGlobal = ::GlobalAlloc(GHND | GMEM_SHARE, cb)) {
+        if (LPWSTR psz = reinterpret_cast<LPWSTR>(::GlobalLock(hGlobal))) {
+            StringCbCopyW(psz, cb, str.c_str());
+            ::GlobalUnlock(hGlobal);
+
+            if (::OpenClipboard(hwnd)) {
+                ::EmptyClipboard();
+                ::SetClipboardData(CF_UNICODETEXT, hGlobal);
+                ::CloseClipboard();
+                return;
+            }
+        }
+        ::GlobalFree(hGlobal);
+    }
 }
 
 // 盤のサイズを変更する。
@@ -9116,6 +9193,10 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
         x = XgGetHScrollPos();
         y = XgGetVScrollPos();
         XgUpdateImage(hwnd, x, y);
+        break;
+    case ID_COPY_WORD_LIST:
+        // 単語リストのコピー。
+        XgCopyWordList(hwnd);
         break;
     default:
         if (!MainWnd_OnCommand2(hwnd, id)) {

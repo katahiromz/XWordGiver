@@ -339,6 +339,7 @@
 #define ID_RULE_LINESYMMETRYH               277
 #define ID_VIEW_NORMAL_VIEW                 278
 #define ID_VIEW_SKELETON_VIEW               279
+#define ID_COPY_WORD_LIST                   280
 #define ID_TT_BASE                          10000
 
 #define ctl2                                1185
