@@ -69,19 +69,20 @@ struct XG_WordData
 namespace std
 {
     template <>
-    inline void swap(XG_WordData& data1, XG_WordData& data2)
-    {
+    inline void swap(XG_WordData& data1, XG_WordData& data2) {
         std::swap(data1.m_word, data2.m_word);
         std::swap(data1.m_hint, data2.m_hint);
     }
 }
 
-// 辞書データ。
+// 辞書データ。優先タグか否かで分ける。
 extern std::vector<XG_WordData> xg_dict_1, xg_dict_2;
 // タグ付けデータ。
 extern std::unordered_map<std::wstring, std::unordered_set<std::wstring> > xg_word_to_tags_map;
 // タグのヒストグラム。
 extern std::unordered_map<std::wstring, size_t> xg_tag_histgram;
+// 単語の長さのヒストグラム。
+extern std::unordered_map<size_t, size_t> xg_word_length_histgram;
 // 優先タグ。
 extern std::unordered_set<std::wstring> xg_priority_tags;
 // 除外タグ。

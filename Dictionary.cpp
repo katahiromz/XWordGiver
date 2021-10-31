@@ -30,6 +30,9 @@ std::wstring xg_strDefaultTheme;
 // テーマが変更されたか？
 bool xg_bThemeModified = false;
 
+// 単語の長さのヒストグラム。
+std::unordered_map<size_t, size_t> xg_word_length_histgram;
+
 //////////////////////////////////////////////////////////////////////////////
 // 辞書データのファイル処理。
 
@@ -274,6 +277,7 @@ bool __fastcall XgLoadDictFile(LPCWSTR pszFile)
     xg_word_to_tags_map.clear();
     xg_tag_histgram.clear();
     xg_strDefaultTheme.clear();
+    xg_word_length_histgram.clear();
 
     // ファイルを開く。
     AutoCloseHandle hFile(CreateFileW(pszFile, GENERIC_READ, FILE_SHARE_READ, nullptr,
@@ -408,6 +412,17 @@ bool __fastcall XgLoadDictFile(LPCWSTR pszFile)
         // 二分探索のために、並び替えておく。
         std::sort(xg_dict_1.begin(), xg_dict_1.end(), xg_word_less());
         std::sort(xg_dict_2.begin(), xg_dict_2.end(), xg_word_less());
+
+        // 単語の長さのヒストグラムを構築する。
+        for (auto& worddata : xg_dict_1)
+        {
+            xg_word_length_histgram[worddata.m_word.size()]++;
+        }
+        for (auto& worddata : xg_dict_2)
+        {
+            xg_word_length_histgram[worddata.m_word.size()]++;
+        }
+
         return true; // 成功。
     } catch (...) {
         // 例外が発生した。
