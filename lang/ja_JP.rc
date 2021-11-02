@@ -565,7 +565,7 @@ FONT 9, "MS UI Gothic"
     PUSHBUTTON "キャンセル", IDCANCEL, 240, 135, 60, 14
 }
 
-IDD_CONFIG DIALOG 0, 0, 274, 211
+IDD_CONFIG DIALOG 0, 0, 274, 250
 CAPTION "クロスワード ギバーの設定"
 STYLE DS_CENTER | DS_MODALFRAME | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
 FONT 9, "MS UI Gothic"
@@ -603,11 +603,13 @@ FONT 9, "MS UI Gothic"
     PUSHBUTTON "リセット", psh11, 209, 140, 35, 14
     LTEXT "黒マス画像(&M):", -1, 5, 166, 52, 11
     COMBOBOX cmb1, 60, 165, 102, 300, CBS_HASSTRINGS | CBS_AUTOHSCROLL | CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
-    DEFPUSHBUTTON "OK", IDOK, 145, 192, 60, 14
-    PUSHBUTTON "キャンセル", IDCANCEL, 210, 192, 60, 14
     LTEXT "BLOCKフォルダに好きな正方形の画像をBMP/EMF形式で放り込んで下さい。", -1, 10, 182, 128, 21
     CONTROL "", ico1, "STATIC", SS_BITMAP, 165, 165, 20, 20
     CONTROL "", ico2, "STATIC", SS_ENHMETAFILE, 165, 165, 20, 20
+    RTEXT "二重マス文字(&D):", -1, 5, 212, 80, 12
+    COMBOBOX cmb2, 90, 210, 180, 300, CBS_HASSTRINGS | CBS_AUTOHSCROLL | CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP
+    DEFPUSHBUTTON "OK", IDOK, 145, 230, 60, 14
+    PUSHBUTTON "キャンセル", IDCANCEL, 210, 230, 60, 14
 }
 
 IDD_SEQSOLVE DIALOG 0, 0, 310, 80
@@ -1471,6 +1473,12 @@ STRINGTABLE
     IDS_SHALLIMIRROR, "指定されたルールに従って黒マスパターンを対称にしますか？"
     IDS_EVENROWLINESYMV, "偶数行数でタテ線対称で連黒禁は不可です。ルールを再確認して下さい。"
     IDS_EVENCOLLINESYMH, "偶数列数でヨコ線対称で連黒禁は不可です。ルールを再確認して下さい。"
+    IDS_DBLFRAME_LETTERS_1, "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
+    IDS_DBLFRAME_LETTERS_2, "αβγδεζηθικλμνξοπρστυφχψωΑΒΓΔΕΖΗΘΙΚΛΜΝΞΟΠΡΣΤΥΦΧΨΩ"
+    IDS_DBLFRAME_LETTERS_3, "あいうえおかきくけこさしすせそたちつてとなにぬねのはひふへほまみむめもやゆよらりるれろわをん"
+    IDS_DBLFRAME_LETTERS_4, "アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン"
+    IDS_DBLFRAME_LETTERS_5, "いろはにほへとちりぬるをわかよたれそつねならむうゐのおくやまけふこえてあさきゆめみしゑひもせすん"
+    IDS_DBLFRAME_LETTERS_6, "イロハニホヘトチリヌルヲワカヨタレソツネナラムウヰノオクヤマケフコエテアサキユメミシヱヒモセスン"
     IDS_TT_NEW, "新規作成"
     IDS_TT_GENERATE, "問題を自動生成する"
     IDS_TT_OPEN, "問題を開く"

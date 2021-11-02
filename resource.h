@@ -168,6 +168,12 @@
 #define IDS_SHALLIMIRROR                    260
 #define IDS_EVENROWLINESYMV                 261
 #define IDS_EVENCOLLINESYMH                 262
+#define IDS_DBLFRAME_LETTERS_1              263
+#define IDS_DBLFRAME_LETTERS_2              264
+#define IDS_DBLFRAME_LETTERS_3              265
+#define IDS_DBLFRAME_LETTERS_4              266
+#define IDS_DBLFRAME_LETTERS_5              267
+#define IDS_DBLFRAME_LETTERS_6              268
 #define IDS_TT_NEW                          10100
 #define IDS_TT_GENERATE                     10101
 #define IDS_TT_OPEN                         10102

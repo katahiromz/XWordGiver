@@ -418,6 +418,7 @@
 	対称のルールのときに「解を求める(黒マス追加なし)」で盤を対称にするようにした。
 	最大単語長周りを修正。
 	「skeleton」のtypoを修正。
+	「二重マス文字」の指定が可能に。
 
 ## History of XWordGiver (English)
 
@@ -471,3 +472,4 @@
     - When the policy is symmetrical, "Finding solution (without adding blocks)" forces the board symmetrical.
     - Fixed around Max Word Length.
     - Fixed typo of skeleton.
+    - Enabled the "double-frame letters" settings.

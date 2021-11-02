@@ -795,6 +795,8 @@ inline BOOL XgIsUserJapanese(VOID)
 extern BOOL xg_bShowNumbering;
 // キャレットを表示するか？
 extern BOOL xg_bShowCaret;
+// 二重マス文字。
+extern std::wstring xg_strDoubleFrameLetters;
 
 //////////////////////////////////////////////////////////////////////////////
 

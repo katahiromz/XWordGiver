@@ -562,7 +562,7 @@ FONT 9, "Tahoma"
     PUSHBUTTON "Cancel", IDCANCEL, 240, 135, 60, 14
 }
 
-IDD_CONFIG DIALOG 0, 0, 274, 211
+IDD_CONFIG DIALOG 0, 0, 274, 250
 CAPTION "Configuration"
 STYLE DS_CENTER | DS_MODALFRAME | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
 FONT 9, "Tahoma"
@@ -600,11 +600,13 @@ FONT 9, "Tahoma"
     PUSHBUTTON "Reset", psh11, 209, 140, 35, 14
     LTEXT "Block i&mage:", -1, 5, 166, 52, 11
     COMBOBOX cmb1, 60, 165, 102, 300, CBS_HASSTRINGS | CBS_AUTOHSCROLL | CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
-    DEFPUSHBUTTON "OK", IDOK, 145, 192, 60, 14
-    PUSHBUTTON "Cancel", IDCANCEL, 210, 192, 60, 14
     LTEXT "Please drop your favorite square image into the BLOCK folder in BMP/EMF format.", -1, 5, 182, 138, 21
     CONTROL "", ico1, "STATIC", SS_BITMAP, 165, 165, 20, 20
     CONTROL "", ico2, "STATIC", SS_ENHMETAFILE, 165, 165, 20, 20
+    RTEXT "&Double-frame letters:", -1, 5, 212, 80, 12
+    COMBOBOX cmb2, 90, 210, 180, 300, CBS_HASSTRINGS | CBS_AUTOHSCROLL | CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP
+    DEFPUSHBUTTON "OK", IDOK, 145, 230, 60, 14
+    PUSHBUTTON "Cancel", IDCANCEL, 210, 230, 60, 14
 }
 
 IDD_SEQSOLVE DIALOG 0, 0, 310, 80
@@ -1468,6 +1470,12 @@ STRINGTABLE
     IDS_SHALLIMIRROR, "Shall I make the block pattern symmetrical according to the specified policy?"
     IDS_EVENROWLINESYMV, "Forcing symmetrical even rows and banning adjacent blocks is unreasonable. Please reconfirm the policies."
     IDS_EVENCOLLINESYMH, "Forcing symmetrical even columns and banning adjacent blocks is unreasonable. Please reconfirm the policies."
+    IDS_DBLFRAME_LETTERS_1, "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
+    IDS_DBLFRAME_LETTERS_2, "αβγδεζηθικλμνξοπρστυφχψωΑΒΓΔΕΖΗΘΙΚΛΜΝΞΟΠΡΣΤΥΦΧΨΩ"
+    IDS_DBLFRAME_LETTERS_3, "あいうえおかきくけこさしすせそたちつてとなにぬねのはひふへほまみむめもやゆよらりるれろわをん"
+    IDS_DBLFRAME_LETTERS_4, "アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン"
+    IDS_DBLFRAME_LETTERS_5, "いろはにほへとちりぬるをわかよたれそつねならむうゐのおくやまけふこえてあさきゆめみしゑひもせすん"
+    IDS_DBLFRAME_LETTERS_6, "イロハニホヘトチリヌルヲワカヨタレソツネナラムウヰノオクヤマケフコエテアサキユメミシヱヒモセスン"
     IDS_TT_NEW, "New crossword"
     IDS_TT_GENERATE, "Generate crossword"
     IDS_TT_OPEN, "Open crossword"

@@ -143,6 +143,9 @@ BOOL xg_bShowNumbering = TRUE;
 // キャレットを表示するか？
 BOOL xg_bShowCaret = TRUE;
 
+// 二重マス文字。
+std::wstring xg_strDoubleFrameLetters;
+
 //////////////////////////////////////////////////////////////////////////////
 // static variables
 
@@ -637,6 +640,8 @@ bool __fastcall XgLoadSettings(void)
 
     xg_nViewMode = XG_VIEW_NORMAL;
 
+    xg_strDoubleFrameLetters = XgLoadStringDx1(IDS_DBLFRAME_LETTERS_1);
+
     // 会社名キーを開く。
     MRegKey company_key(HKEY_CURRENT_USER, s_pszSoftwareCompanyName, FALSE);
     if (company_key) {
@@ -840,6 +845,10 @@ bool __fastcall XgLoadSettings(void)
                 }
             }
 
+            if (!app_key.QuerySz(L"DoubleFrameLetters", sz, ARRAYSIZE(sz))) {
+                xg_strDoubleFrameLetters = sz;
+            }
+
             // 保存先のリストを取得する。
             if (!app_key.QueryDword(L"SaveToCount", dwValue)) {
                 nDirCount = dwValue;
@@ -950,6 +959,7 @@ bool __fastcall XgSaveSettings(void)
 
             app_key.SetSz(L"Recent", xg_dict_name.c_str());
             app_key.SetSz(L"BlackCellImage", xg_strBlackCellImage.c_str());
+            app_key.SetSz(L"DoubleFrameLetters", xg_strDoubleFrameLetters.c_str());
 
             // 保存先のリストを設定する。
             nCount = static_cast<int>(s_dirs_save_to.size());
@@ -5365,6 +5375,13 @@ BOOL SettingsDlg_OnInitDialog(HWND hwnd)
         ComboBox_SetCurSel(hCmb1, ComboBox_FindStringExact(hCmb1, -1, psz));
     }
 
+    // 二重マス文字。
+    HWND hCmb2 = GetDlgItem(hwnd, cmb2);
+    for (INT i = IDS_DBLFRAME_LETTERS_1; i <= IDS_DBLFRAME_LETTERS_6; ++i) {
+        ComboBox_AddString(hCmb2, XgLoadStringDx1(i));
+    }
+    ComboBox_SetText(hCmb2, xg_strDoubleFrameLetters.c_str());
+
     UpdateBlockPreview(hwnd);
 
     return TRUE;
@@ -5500,6 +5517,11 @@ void SettingsDlg_OnOK(HWND hwnd)
         XgOpenHintsByWindow(xg_hHintsWnd);
         ::PostMessageW(xg_hHintsWnd, WM_SIZE, 0, 0);
     }
+
+    // 二重マス文字。
+    WCHAR szText[MAX_PATH];
+    ComboBox_GetText(GetDlgItem(hwnd, cmb2), szText, _countof(szText));
+    xg_strDoubleFrameLetters = szText;
 
     // イメージを更新する。
     int x = XgGetHScrollPos();

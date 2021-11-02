@@ -3631,7 +3631,10 @@ void __fastcall XgDrawMarkWord(HDC hdc, LPSIZE psiz)
         }
         ::InflateRect(&rc, 4, 4);
 
-        StringCbPrintf(sz, sizeof(sz), L"%c", ZEN_LARGE_A + i);
+        if (i < (INT)xg_strDoubleFrameLetters.size())
+            StringCbPrintf(sz, sizeof(sz), L"%c", xg_strDoubleFrameLetters[i]);
+        else
+            StringCbPrintf(sz, sizeof(sz), L"%c", ZEN_BLACK);
         ::GetTextExtentPoint32W(hdc, sz, int(wcslen(sz)), &siz);
 
         RECT rcText = rc;
@@ -3892,7 +3895,10 @@ void __fastcall XgDrawXWord_NormalView(XG_Board& xw, HDC hdc, LPSIZE psiz, bool 
                 ::InflateRect(&rc, 4, 4);
             }
 
-            StringCbPrintf(sz, sizeof(sz), L"%c", L'A' + nMarked);
+            if (nMarked < (INT)xg_strDoubleFrameLetters.size())
+                StringCbPrintf(sz, sizeof(sz), L"%c", xg_strDoubleFrameLetters[nMarked]);
+            else
+                StringCbPrintf(sz, sizeof(sz), L"%c", ZEN_BLACK);
 
             // “ñdƒ}ƒX‚Ì‰E‰º’[‚Ì•¶Žš‚Ì”wŒi‚ð“h‚è‚Â‚Ô‚·B
             RECT rcText;
