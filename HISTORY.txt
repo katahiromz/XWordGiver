@@ -407,8 +407,9 @@
 	「二重マス単語の画像をコピー」を修正。
 	サイズの制限を30x30に緩和（ハイエンド向け）。
 
-2021年XX月YY日 ver.4.8.0
+2021年11月3日 ver.4.8.0
 	黒マス線対称をサポート。
+	「二重マス文字」の指定が可能に。
 	「二重マス単語の画像をコピー」を「二重マス単語をコピー」に変更。
 	「高さを指定して二重マス単語の画像をコピー」を廃止。
 	「サイズを指定して画像をコピー」を廃止。
@@ -418,7 +419,6 @@
 	対称のルールのときに「解を求める(黒マス追加なし)」で盤を対称にするようにした。
 	最大単語長周りを修正。
 	「skeleton」のtypoを修正。
-	「二重マス文字」の指定が可能に。
 
 ## History of XWordGiver (English)
 
@@ -461,8 +461,9 @@
     - Fixed "Copy the double-frame word image".
     - Relaxed the size limit of crosswords to 30x30 (for high end).
 
-- 2021.XX.YY Ver.4.8.0
+- 2021.11.03 Ver.4.8.0
     - Supported "Line symmetry of blocks".
+    - Enabled the "double-frame letters" settings.
     - Changed "Copy the double-frame word image" to "Copy the double-frame word".
     - Abolished "Copy the double-frame word image with height".
     - Abolished "Copy Image with size".
@@ -472,4 +473,3 @@
     - When the policy is symmetrical, "Finding solution (without adding blocks)" forces the board symmetrical.
     - Fixed around Max Word Length.
     - Fixed typo of skeleton.
-    - Enabled the "double-frame letters" settings.
