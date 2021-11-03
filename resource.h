@@ -347,6 +347,12 @@
 #define ID_VIEW_SKELETON_VIEW               279
 #define ID_COPY_WORD_LIST                   280
 #define ID_VIEW_DOUBLEFRAME_LETTERS         281
+#define ID_INSERT_ROW_ABOVE                 282
+#define ID_INSERT_ROW_BELOW                 283
+#define ID_LEFT_INSERT_COLUMN               284
+#define ID_RIGHT_INSERT_COLUMN              285
+#define ID_DELETE_ROW                       286
+#define ID_DELETE_COLUMN                    287
 #define ID_TT_BASE                          10000
 
 #define ctl2                                1185

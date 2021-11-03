@@ -59,9 +59,14 @@ const LPCWSTR       xg_pszNewLine = L"\r\n";
 // キャレットの位置。
 XG_Pos              xg_caret_pos = {0, 0};
 
+// クロスワードの問題。
+XG_BoardEx xg_xword;
+// クロスワードの解。
+XG_Board xg_solution;
+
 // クロスワードのサイズ。
-int                 xg_nRows = 0;
-int                 xg_nCols = 0;
+volatile INT& xg_nRows = xg_xword.m_nRows;
+volatile INT& xg_nCols = xg_xword.m_nCols;
 
 // タテとヨコのかぎ。
 std::vector<XG_PlaceInfo> xg_vTateInfo, xg_vYokoInfo;
@@ -77,12 +82,6 @@ const LPCWSTR xg_large[11] =
     L"\x30A2", L"\x30A4", L"\x30A6", L"\x30A8", L"\x30AA", L"\x30C4",
     L"\x30E4", L"\x30E6", L"\x30E8", L"\x30AB", L"\x30B1",
 };
-
-// クロスワードの問題。
-XG_Board    xg_xword;
-
-// クロスワードの解。
-XG_Board    xg_solution;
 
 // ビットマップのハンドル。
 HBITMAP     xg_hbmImage = nullptr;
@@ -267,6 +266,85 @@ break_continue:;
     }
 
     return false;   // なかった。
+}
+
+// カウントを更新する。
+void XG_BoardEx::ReCount() {
+    INT nCount = 0;
+    for (INT i = 0; i < m_nRows; ++i) {
+        for (INT j = 0; j < m_nCols; ++j) {
+            nCount += (GetAt(i, j) != ZEN_SPACE);
+        }
+    }
+    m_vCells[m_nRows * m_nCols] = static_cast<WCHAR>(nCount);
+}
+
+// 行を挿入する。
+void XG_BoardEx::InsertRow(INT iRow) {
+    XG_Board copy;
+    copy.ResetAndSetSize(m_nRows + 1, m_nCols);
+    for (INT i = 0; i < m_nRows; ++i) {
+        for (INT j = 0; j < m_nCols; ++j) {
+            if (i < iRow)
+                copy.SetAt2(i, j, m_nRows + 1, m_nCols, GetAt(i, j));
+            else
+                copy.SetAt2(i + 1, j, m_nRows + 1, m_nCols, GetAt(i, j));
+        }
+    }
+    m_vCells = copy.m_vCells;
+    ++m_nRows;
+    ReCount();
+}
+
+// 列を挿入する。
+void XG_BoardEx::InsertColumn(INT jCol) {
+    XG_Board copy;
+    copy.ResetAndSetSize(m_nRows, m_nCols + 1);
+    for (INT i = 0; i < m_nRows; ++i) {
+        for (INT j = 0; j < m_nCols; ++j) {
+            if (j < jCol)
+                copy.SetAt2(i, j, m_nRows, m_nCols + 1, GetAt(i, j));
+            else
+                copy.SetAt2(i, j + 1, m_nRows, m_nCols + 1, GetAt(i, j));
+        }
+    }
+    m_vCells = copy.m_vCells;
+    ++m_nCols;
+    ReCount();
+}
+
+// 行を削除する。
+void XG_BoardEx::DeleteRow(INT iRow) {
+    XG_Board copy;
+    copy.ResetAndSetSize(m_nRows - 1, m_nCols);
+    for (INT i = 0; i < m_nRows - 1; ++i) {
+        for (INT j = 0; j < m_nCols; ++j) {
+            if (i < iRow)
+                copy.SetAt2(i, j, m_nRows - 1, m_nCols, GetAt(i, j));
+            else
+                copy.SetAt2(i, j, m_nRows - 1, m_nCols, GetAt(i + 1, j));
+        }
+    }
+    m_vCells = copy.m_vCells;
+    --m_nRows;
+    ReCount();
+}
+
+// 列を削除する。
+void XG_BoardEx::DeleteColumn(INT jCol) {
+    XG_Board copy;
+    copy.ResetAndSetSize(m_nRows, m_nCols - 1);
+    for (INT i = 0; i < m_nRows; ++i) {
+        for (INT j = 0; j < m_nCols - 1; ++j) {
+            if (j < jCol)
+                copy.SetAt2(i, j, m_nRows, m_nCols - 1, GetAt(i, j));
+            else
+                copy.SetAt2(i, j, m_nRows, m_nCols - 1, GetAt(i, j + 1));
+        }
+    }
+    m_vCells = copy.m_vCells;
+    --m_nCols;
+    ReCount();
 }
 
 // 候補があるか？（黒マス追加なし、すべて空白）

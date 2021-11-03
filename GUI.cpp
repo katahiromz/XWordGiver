@@ -593,7 +593,6 @@ bool __fastcall XgLoadSettings(void)
     xg_dict_name.clear();
     s_dirs_save_to.clear();
     s_bAutoRetry = true;
-    xg_nRows = xg_nCols = 7;
     xg_szCellFont[0] = 0;
     xg_szSmallFont[0] = 0;
     xg_szUIFont[0] = 0;
@@ -1306,8 +1305,8 @@ void __fastcall XgResizeCells(HWND hwnd, INT nNewRows, INT nNewCols)
     XgMarkUpdate();
     // サイズを変更する。
     INT nOldRows = xg_nRows, nOldCols = xg_nCols;
-    INT iMin = std::min(xg_nRows, nNewRows);
-    INT jMin = std::min(xg_nCols, nNewCols);
+    INT iMin = std::min((INT)xg_nRows, (INT)nNewRows);
+    INT jMin = std::min((INT)xg_nCols, (INT)nNewCols);
     XG_Board copy;
     copy.ResetAndSetSize(nNewRows, nNewCols);
     for (INT i = 0; i < iMin; ++i) {
@@ -4962,6 +4961,22 @@ void __fastcall MainWnd_OnInitMenu(HWND /*hwnd*/, HMENU hMenu)
         ::CheckMenuRadioItem(hMenu, ID_VIEW_NORMAL_VIEW, ID_VIEW_SKELETON_VIEW,
                              ID_VIEW_SKELETON_VIEW, MF_BYCOMMAND);
         break;
+    }
+
+    // 行と列の削除と追加。
+    if (xg_bSolved || xg_nRows - 1 < XG_MIN_SIZE) {
+        ::DeleteMenu(hMenu, ID_DELETE_ROW, MF_BYCOMMAND);
+    }
+    if (xg_bSolved || xg_nCols - 1 < XG_MIN_SIZE) {
+        ::DeleteMenu(hMenu, ID_DELETE_COLUMN, MF_BYCOMMAND);
+    }
+    if (xg_bSolved || xg_nRows + 1 > XG_MAX_SIZE) {
+        ::DeleteMenu(hMenu, ID_INSERT_ROW_ABOVE, MF_BYCOMMAND);
+        ::DeleteMenu(hMenu, ID_INSERT_ROW_BELOW, MF_BYCOMMAND);
+    }
+    if (xg_bSolved || xg_nCols + 1 > XG_MAX_SIZE) {
+        ::DeleteMenu(hMenu, ID_LEFT_INSERT_COLUMN, MF_BYCOMMAND);
+        ::DeleteMenu(hMenu, ID_RIGHT_INSERT_COLUMN, MF_BYCOMMAND);
     }
 }
 
@@ -9245,6 +9260,42 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
     case ID_VIEW_DOUBLEFRAME_LETTERS:
         // 二重マス文字を表示するか？
         xg_bShowDoubleFrameLetters = !xg_bShowDoubleFrameLetters;
+        x = XgGetHScrollPos();
+        y = XgGetVScrollPos();
+        XgUpdateImage(hwnd, x, y);
+        break;
+    case ID_DELETE_ROW:
+        xg_xword.DeleteRow(xg_caret_pos.m_i);
+        x = XgGetHScrollPos();
+        y = XgGetVScrollPos();
+        XgUpdateImage(hwnd, x, y);
+        break;
+    case ID_DELETE_COLUMN:
+        xg_xword.DeleteColumn(xg_caret_pos.m_j);
+        x = XgGetHScrollPos();
+        y = XgGetVScrollPos();
+        XgUpdateImage(hwnd, x, y);
+        break;
+    case ID_INSERT_ROW_ABOVE:
+        xg_xword.InsertRow(xg_caret_pos.m_i);
+        x = XgGetHScrollPos();
+        y = XgGetVScrollPos();
+        XgUpdateImage(hwnd, x, y);
+        break;
+    case ID_INSERT_ROW_BELOW:
+        xg_xword.InsertRow(xg_caret_pos.m_i + 1);
+        x = XgGetHScrollPos();
+        y = XgGetVScrollPos();
+        XgUpdateImage(hwnd, x, y);
+        break;
+    case ID_LEFT_INSERT_COLUMN:
+        xg_xword.InsertColumn(xg_caret_pos.m_j);
+        x = XgGetHScrollPos();
+        y = XgGetVScrollPos();
+        XgUpdateImage(hwnd, x, y);
+        break;
+    case ID_RIGHT_INSERT_COLUMN:
+        xg_xword.InsertColumn(xg_caret_pos.m_j + 1);
         x = XgGetHScrollPos();
         y = XgGetVScrollPos();
         XgUpdateImage(hwnd, x, y);
