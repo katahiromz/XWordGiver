@@ -342,14 +342,25 @@ public:
 
     // マスの内容を取得する。
     WCHAR __fastcall GetAt(int i) const;
-    WCHAR __fastcall GetAt(int iRow, int jCol) const;
-    WCHAR __fastcall GetAt(const XG_Pos& pos) const;
+    WCHAR __fastcall GetAt(int iRow, int jCol) const {
+        assert(0 <= iRow && iRow < xg_nRows);
+        assert(0 <= jCol && jCol < xg_nCols);
+        return GetAt(iRow * xg_nCols + jCol);
+    }
+    WCHAR __fastcall GetAt(const XG_Pos& pos) const {
+        return GetAt(pos.m_i, pos.m_j);
+    }
     // マスの内容を設定する。
     void __fastcall SetAt(int i, WCHAR ch);
-    void __fastcall SetAt(int iRow, int jCol, WCHAR ch);
-    void __fastcall SetAt(const XG_Pos& pos, WCHAR ch);
-    void __fastcall SetAt2(int i, int j, int nRows, int nCols, WCHAR ch)
-    {
+    void __fastcall SetAt(int iRow, int jCol, WCHAR ch) {
+        assert(0 <= iRow && iRow < xg_nRows);
+        assert(0 <= jCol && jCol < xg_nCols);
+        SetAt(iRow * xg_nCols + jCol, ch);
+    }
+    void __fastcall SetAt(const XG_Pos& pos, WCHAR ch) {
+        return SetAt(pos.m_i, pos.m_j, ch);
+    }
+    void __fastcall SetAt2(int i, int j, int nRows, int nCols, WCHAR ch) {
         m_vCells[i * nCols + j] = ch;
     }
     // 空ではないマスの個数を返す。
@@ -480,6 +491,30 @@ public:
     void DeleteRow(INT iRow);
     // 列を削除する。
     void DeleteColumn(INT jCol);
+    // マスの内容を取得する。
+    WCHAR __fastcall GetAt(int ij) const;
+    // マスの内容を取得する。
+    WCHAR __fastcall GetAt(int iRow, int jCol) const {
+        assert(0 <= iRow && iRow < m_nRows);
+        assert(0 <= jCol && jCol < m_nCols);
+        return GetAt(iRow * m_nCols + jCol);
+    }
+    // マスの内容を取得する。
+    WCHAR __fastcall GetAt(const XG_Pos& pos) const {
+        return GetAt(pos.m_i, pos.m_j);
+    }
+    // マスの内容を設定する。
+    void __fastcall SetAt(int ij, WCHAR ch);
+    // マスの内容を設定する。
+    void __fastcall SetAt(int iRow, int jCol, WCHAR ch) {
+        assert(0 <= iRow && iRow < m_nRows);
+        assert(0 <= jCol && jCol < m_nCols);
+        SetAt(iRow * m_nCols + jCol, ch);
+    }
+    // マスの内容を設定する。
+    void __fastcall SetAt(const XG_Pos& pos, WCHAR ch) {
+        SetAt(pos.m_i, pos.m_j, ch);
+    }
 };
 
 bool __fastcall XgDoSaveStandard(HWND hwnd, LPCWSTR pszFile, const XG_Board& board);
@@ -626,17 +661,8 @@ inline WCHAR __fastcall XG_Board::GetAt(int i) const
 }
 
 // マスの内容を取得する。
-inline WCHAR __fastcall XG_Board::GetAt(int iRow, int jCol) const
-{
-    assert(0 <= iRow && iRow < xg_nRows);
-    assert(0 <= jCol && jCol < xg_nCols);
-    return m_vCells[iRow * xg_nCols + jCol];
-}
-
-// マスの内容を取得する。
-inline WCHAR __fastcall XG_Board::GetAt(const XG_Pos& pos) const
-{
-    return GetAt(pos.m_i, pos.m_j);
+inline WCHAR __fastcall XG_BoardEx::GetAt(int ij) const {
+    return m_vCells[ij];
 }
 
 // 空マスじゃないマスの個数を返す。
@@ -722,11 +748,9 @@ inline void __fastcall XG_Board::SetAt(int i, WCHAR ch)
 }
 
 // マスの内容を設定する。
-inline void __fastcall XG_Board::SetAt(int iRow, int jCol, WCHAR ch)
+inline void __fastcall XG_BoardEx::SetAt(int ij, WCHAR ch)
 {
-    assert(0 <= iRow && iRow < xg_nRows);
-    assert(0 <= jCol && jCol < xg_nCols);
-    WCHAR& ch2 = m_vCells[iRow * xg_nCols + jCol];
+    WCHAR& ch2 = m_vCells[ij];
     if (ch2 != ZEN_SPACE)
     {
         if (ch == ZEN_SPACE)
@@ -741,12 +765,6 @@ inline void __fastcall XG_Board::SetAt(int iRow, int jCol, WCHAR ch)
             Count()++;
     }
     ch2 = ch;
-}
-
-// マスの内容を設定する。
-inline void __fastcall XG_Board::SetAt(const XG_Pos& pos, WCHAR ch)
-{
-    return SetAt(pos.m_i, pos.m_j, ch);
 }
 
 // マスの三方向が黒マスで囲まれているか？
