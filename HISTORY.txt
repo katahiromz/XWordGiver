@@ -420,6 +420,9 @@
 	最大単語長周りを修正。
 	「skeleton」のtypoを修正。
 
+2021年XX月YY日 ver.4.8.1
+
+
 ## History of XWordGiver (English)
 
 - 2021.08.22 Ver.4.7.4
@@ -473,3 +476,5 @@
     - When the policy is symmetrical, "Finding solution (without adding blocks)" forces the board symmetrical.
     - Fixed around Max Word Length.
     - Fixed typo of skeleton.
+
+- 2021.XX.YY Ver.4.8.1

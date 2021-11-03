@@ -29,7 +29,7 @@
 
 ☆ 動作環境 ☆
 
- * Windows Vista/7/8.1/10。
+ * Windows Vista/7/8.1/10/11。
  * Intel Core i5 以上の処理性能。
  * マルチコア必須。
  * メインメモリー 4GB 以上。
