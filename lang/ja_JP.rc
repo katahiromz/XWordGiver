@@ -117,7 +117,7 @@ LANGUAGE LANG_JAPANESE, SUBLANG_DEFAULT
     }
     POPUP "表示(&V)"
     {
-        MENUITEM "ツール バー(&S)", ID_TOOLBAR
+        MENUITEM "ツール バー(&T)", ID_TOOLBAR
         MENUITEM "ステータス バー(&S)", ID_STATUS
         MENUITEM "入力パレット(&I)\tCtrl+U", ID_PALETTE
         MENUITEM "ヒント(&H)\tCtrl+L", ID_SHOWHIDEHINTS
@@ -127,8 +127,8 @@ LANGUAGE LANG_JAPANESE, SUBLANG_DEFAULT
         MENUITEM "キャレット(&C)", ID_SHOWHIDECARET
         MENUITEM "二重マス文字(&E)", ID_VIEW_DOUBLEFRAME_LETTERS
         MENUITEM SEPARATOR
-        MENUITEM "通常ビュー", ID_VIEW_NORMAL_VIEW
-        MENUITEM "スケルトン ビュー", ID_VIEW_SKELETON_VIEW
+        MENUITEM "通常ビュー(&M)", ID_VIEW_NORMAL_VIEW
+        MENUITEM "スケルトン ビュー(&O)", ID_VIEW_SKELETON_VIEW
         MENUITEM SEPARATOR
         MENUITEM "次のペイン(&N)\tF6", ID_PANENEXT
         MENUITEM "前のペイン(&P)\tShift+F6", ID_PANEPREV
