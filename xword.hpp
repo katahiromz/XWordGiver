@@ -480,11 +480,6 @@ public:
     void DeleteRow(INT iRow);
     // —ñ‚ğíœ‚·‚éB
     void DeleteColumn(INT jCol);
-
-    WCHAR __fastcall Count() const
-    {
-        return m_vCells[m_nRows * m_nCols];
-    }
 };
 
 bool __fastcall XgDoSaveStandard(HWND hwnd, LPCWSTR pszFile, const XG_Board& board);
