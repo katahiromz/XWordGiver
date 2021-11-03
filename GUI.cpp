@@ -8412,19 +8412,26 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
         break;
 
     case ID_SOLVE:  // 解を求める。
-        // ルール「黒マス点対称」では黒マス追加ありの解を求めることはできません。
-        if (xg_nRules & RULE_POINTSYMMETRY) {
-            XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_CANTSOLVESYMMETRY), NULL, MB_ICONERROR);
-            return;
+        if (!xg_bSolved && xg_xword.IsFulfilled())
+        {
+            // 空白マスがない場合は「解を求める」を制限しない。
         }
-        // ルール「黒マス線対称」では黒マス追加ありの解を求めることはできません。
-        if (xg_nRules & RULE_LINESYMMETRYV) {
-            XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_CANTSOLVELINESYMMETRY), NULL, MB_ICONERROR);
-            return;
-        }
-        if (xg_nRules & RULE_LINESYMMETRYH) {
-            XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_CANTSOLVELINESYMMETRY), NULL, MB_ICONERROR);
-            return;
+        else
+        {
+            // ルール「黒マス点対称」では黒マス追加ありの解を求めることはできません。
+            if (xg_nRules & RULE_POINTSYMMETRY) {
+                XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_CANTSOLVESYMMETRY), NULL, MB_ICONERROR);
+                return;
+            }
+            // ルール「黒マス線対称」では黒マス追加ありの解を求めることはできません。
+            if (xg_nRules & RULE_LINESYMMETRYV) {
+                XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_CANTSOLVELINESYMMETRY), NULL, MB_ICONERROR);
+                return;
+            }
+            if (xg_nRules & RULE_LINESYMMETRYH) {
+                XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_CANTSOLVELINESYMMETRY), NULL, MB_ICONERROR);
+                return;
+            }
         }
         {
             auto sa1 = std::make_shared<XG_UndoData_SetAll>();

@@ -421,7 +421,7 @@
 	「skeleton」のtypoを修正。
 
 2021年XX月YY日 ver.4.8.1
-
+	空白マスがない場合は「解を求める」を制限しない。
 
 ## History of XWordGiver (English)
 
@@ -478,3 +478,4 @@
     - Fixed typo of skeleton.
 
 - 2021.XX.YY Ver.4.8.1
+    - If there are no empty cells, "Find a solution" is not restricted.
