@@ -452,6 +452,7 @@ public:
     std::vector<WCHAR> m_vCells;
 };
 
+// 盤にサイズ情報を追加。
 class XG_BoardEx : public XG_Board
 {
 public:
