@@ -626,15 +626,15 @@ inline void __fastcall XG_Board::operator=(XG_Board&& xw)
 // マスの内容を取得する。
 inline WCHAR __fastcall XG_Board::GetAt(int i) const
 {
-    //assert(0 <= i && i < xg_nRows * xg_nCols);
+    assert(0 <= i && i < xg_nRows * xg_nCols);
     return m_vCells[i];
 }
 
 // マスの内容を取得する。
 inline WCHAR __fastcall XG_Board::GetAt(int iRow, int jCol) const
 {
-    //assert(0 <= iRow && iRow < xg_nRows);
-    //assert(0 <= jCol && jCol < xg_nCols);
+    assert(0 <= iRow && iRow < xg_nRows);
+    assert(0 <= jCol && jCol < xg_nCols);
     return m_vCells[iRow * xg_nCols + jCol];
 }
 
