@@ -422,6 +422,7 @@
 
 2021年XX月YY日 ver.4.8.1
 	空白マスがない場合は「解を求める」を制限しない。
+	二重マス文字を表示するかを切り替え可能にした。
 
 ## History of XWordGiver (English)
 
@@ -479,3 +480,4 @@
 
 - 2021.XX.YY Ver.4.8.1
     - If there are no empty cells, "Find a solution" is not restricted.
+    - Able to toggle whether the double-frame letters are visible or not.

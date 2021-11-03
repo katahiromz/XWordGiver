@@ -3895,25 +3895,27 @@ void __fastcall XgDrawXWord_NormalView(XG_Board& xw, HDC hdc, LPSIZE psiz, bool 
                 ::InflateRect(&rc, 4, 4);
             }
 
-            if (nMarked < (INT)xg_strDoubleFrameLetters.size())
-                StringCbPrintf(sz, sizeof(sz), L"%c", xg_strDoubleFrameLetters[nMarked]);
-            else
-                StringCbPrintf(sz, sizeof(sz), L"%c", ZEN_BLACK);
+            if (xg_bShowDoubleFrameLetters) {
+                if (nMarked < (INT)xg_strDoubleFrameLetters.size())
+                    StringCbPrintf(sz, sizeof(sz), L"%c", xg_strDoubleFrameLetters[nMarked]);
+                else
+                    StringCbPrintf(sz, sizeof(sz), L"%c", ZEN_BLACK);
 
-            // 二重マスの右下端の文字の背景を塗りつぶす。
-            RECT rcText;
-            GetTextExtentPoint32(hdc, sz, lstrlen(sz), &siz);
-            rcText = rc;
-            rcText.left = rc.right - std::max(siz.cx, siz.cy);
-            rcText.top = rc.bottom - std::max(siz.cx, siz.cy);
+                // 二重マスの右下端の文字の背景を塗りつぶす。
+                RECT rcText;
+                GetTextExtentPoint32(hdc, sz, lstrlen(sz), &siz);
+                rcText = rc;
+                rcText.left = rc.right - std::max(siz.cx, siz.cy);
+                rcText.top = rc.bottom - std::max(siz.cx, siz.cy);
 
-            HBRUSH hbr = CreateSolidBrush(xg_rgbMarkedCellColor);
-            FillRect(hdc, &rcText, hbr);
-            DeleteObject(hbr);
+                HBRUSH hbr = CreateSolidBrush(xg_rgbMarkedCellColor);
+                FillRect(hdc, &rcText, hbr);
+                DeleteObject(hbr);
 
-            // 二重マスの右下端の文字を描く。
-            ::SetBkMode(hdc, TRANSPARENT);
-            ::DrawTextW(hdc, sz, -1, &rcText, DT_CENTER | DT_SINGLELINE | DT_BOTTOM);
+                // 二重マスの右下端の文字を描く。
+                ::SetBkMode(hdc, TRANSPARENT);
+                ::DrawTextW(hdc, sz, -1, &rcText, DT_CENTER | DT_SINGLELINE | DT_BOTTOM);
+            }
         }
     }
 
@@ -4243,22 +4245,24 @@ void __fastcall XgDrawXWord_SkeletonView(XG_Board& xw, HDC hdc, LPSIZE psiz, boo
                 ::InflateRect(&rc, 4, 4);
             }
 
-            StringCbPrintf(sz, sizeof(sz), L"%c", L'A' + nMarked);
+            if (xg_bShowDoubleFrameLetters) {
+                StringCbPrintf(sz, sizeof(sz), L"%c", L'A' + nMarked);
 
-            // 二重マスの右下端の文字の背景を塗りつぶす。
-            RECT rcText;
-            GetTextExtentPoint32(hdc, sz, lstrlen(sz), &siz);
-            rcText = rc;
-            rcText.left = rc.right - std::max(siz.cx, siz.cy);
-            rcText.top = rc.bottom - std::max(siz.cx, siz.cy);
+                // 二重マスの右下端の文字の背景を塗りつぶす。
+                RECT rcText;
+                GetTextExtentPoint32(hdc, sz, lstrlen(sz), &siz);
+                rcText = rc;
+                rcText.left = rc.right - std::max(siz.cx, siz.cy);
+                rcText.top = rc.bottom - std::max(siz.cx, siz.cy);
 
-            HBRUSH hbr = CreateSolidBrush(xg_rgbMarkedCellColor);
-            FillRect(hdc, &rcText, hbr);
-            DeleteObject(hbr);
+                HBRUSH hbr = CreateSolidBrush(xg_rgbMarkedCellColor);
+                FillRect(hdc, &rcText, hbr);
+                DeleteObject(hbr);
 
-            // 二重マスの右下端の文字を描く。
-            ::SetBkMode(hdc, TRANSPARENT);
-            ::DrawTextW(hdc, sz, -1, &rcText, DT_CENTER | DT_SINGLELINE | DT_BOTTOM);
+                // 二重マスの右下端の文字を描く。
+                ::SetBkMode(hdc, TRANSPARENT);
+                ::DrawTextW(hdc, sz, -1, &rcText, DT_CENTER | DT_SINGLELINE | DT_BOTTOM);
+            }
         }
     }
 

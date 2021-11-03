@@ -146,6 +146,9 @@ BOOL xg_bShowCaret = TRUE;
 // 二重マス文字。
 std::wstring xg_strDoubleFrameLetters;
 
+// 二重マス文字を表示するか？
+BOOL xg_bShowDoubleFrameLetters = TRUE;
+
 //////////////////////////////////////////////////////////////////////////////
 // static variables
 
@@ -616,6 +619,7 @@ bool __fastcall XgLoadSettings(void)
     xg_bSkeletonMode = FALSE;
     xg_bShowNumbering = TRUE;
     xg_bShowCaret = TRUE;
+    xg_bShowDoubleFrameLetters = TRUE;
 
     xg_bHiragana = FALSE;
     xg_bLowercase = FALSE;
@@ -822,6 +826,9 @@ bool __fastcall XgLoadSettings(void)
             if (!app_key.QueryDword(L"Rules", dwValue)) {
                 xg_nRules = dwValue;
             }
+            if (!app_key.QueryDword(L"ShowDoubleFrameLetters", dwValue)) {
+                xg_bShowDoubleFrameLetters = !!dwValue;
+            }
             if (!app_key.QueryDword(L"ViewMode", dwValue)) {
                 xg_nViewMode = static_cast<XG_VIEW_MODE>(dwValue);
                 if (xg_nViewMode != XG_VIEW_NORMAL && xg_nViewMode != XG_VIEW_SKELETON) {
@@ -955,6 +962,7 @@ bool __fastcall XgSaveSettings(void)
             app_key.SetDword(L"PatWndCY", xg_nPatWndCY);
             app_key.SetDword(L"ShowAnsOnPat", xg_bShowAnswerOnPattern);
             app_key.SetDword(L"Rules", xg_nRules);
+            app_key.SetDword(L"ShowDoubleFrameLetters", xg_bShowDoubleFrameLetters);
             app_key.SetDword(L"ViewMode", xg_nViewMode);
 
             app_key.SetSz(L"Recent", xg_dict_name.c_str());
@@ -4932,6 +4940,13 @@ void __fastcall MainWnd_OnInitMenu(HWND /*hwnd*/, HMENU hMenu)
         ::CheckMenuItem(hMenu, ID_CHARFEED, MF_BYCOMMAND | MF_CHECKED);
     } else {
         ::CheckMenuItem(hMenu, ID_CHARFEED, MF_BYCOMMAND | MF_UNCHECKED);
+    }
+
+    // 二重マス文字表示のメニュー更新。
+    if (xg_bShowDoubleFrameLetters) {
+        ::CheckMenuItem(hMenu, ID_VIEW_DOUBLEFRAME_LETTERS, MF_BYCOMMAND | MF_CHECKED);
+    } else {
+        ::CheckMenuItem(hMenu, ID_VIEW_DOUBLEFRAME_LETTERS, MF_BYCOMMAND | MF_UNCHECKED);
     }
 
     // ビューモード。
@@ -9226,6 +9241,13 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
     case ID_COPY_WORD_LIST:
         // 単語リストのコピー。
         XgCopyWordList(hwnd);
+        break;
+    case ID_VIEW_DOUBLEFRAME_LETTERS:
+        // 二重マス文字を表示するか？
+        xg_bShowDoubleFrameLetters = !xg_bShowDoubleFrameLetters;
+        x = XgGetHScrollPos();
+        y = XgGetVScrollPos();
+        XgUpdateImage(hwnd, x, y);
         break;
     default:
         if (!MainWnd_OnCommand2(hwnd, id)) {

@@ -797,6 +797,8 @@ extern BOOL xg_bShowNumbering;
 extern BOOL xg_bShowCaret;
 // 二重マス文字。
 extern std::wstring xg_strDoubleFrameLetters;
+// 二重マス文字を表示するか？
+extern BOOL xg_bShowDoubleFrameLetters;
 
 //////////////////////////////////////////////////////////////////////////////
 
