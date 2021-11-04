@@ -1011,55 +1011,6 @@ bool __fastcall XgEraseSettings(void)
 
 //////////////////////////////////////////////////////////////////////////////
 
-// 「ヒントの入力」ダイアログ。
-extern "C"
-INT_PTR CALLBACK
-XgInputHintDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
-{
-    WCHAR sz[512];
-    static std::wstring s_word;
-
-    switch (uMsg) {
-    case WM_INITDIALOG:
-        // ダイアログを中央に寄せる。
-        XgCenterDialog(hwnd);
-
-        // ダイアログを初期化する。
-        s_word = *reinterpret_cast<std::wstring *>(lParam);
-        StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(IDS_REGISTERWORD), s_word.data(), s_word.data());
-        ::SetDlgItemTextW(hwnd, stc1, sz);
-
-        // ヒントが追加された。
-        xg_bHintsAdded = true;
-        return true;
-
-    case WM_COMMAND:
-        switch (LOWORD(wParam)) {
-        case IDOK:
-            // テキストを取得する。
-            ::GetDlgItemTextW(hwnd, edt1, sz, ARRAYSIZE(sz));
-
-            // 辞書データに追加する。
-            xg_dict_1.emplace_back(s_word, sz);
-
-            // 二分探索のために、並び替えておく。
-            XgSortAndUniqueDictData(xg_dict_1);
-
-            // ダイアログを終了。
-            ::EndDialog(hwnd, IDOK);
-            break;
-
-        case IDCANCEL:
-            // ダイアログを終了。
-            ::EndDialog(hwnd, IDCANCEL);
-            break;
-        }
-        break;
-    }
-
-    return false;
-}
-
 // クロスワードをチェックする。
 bool __fastcall XgCheckCrossWord(HWND hwnd, bool check_words = true)
 {
@@ -1155,26 +1106,23 @@ bool __fastcall XgCheckCrossWord(HWND hwnd, bool check_words = true)
     }
 
     // 見つからなかった単語があるか？
-    if (!vNotFoundWords.empty()) {
-        if (check_words) {
-            if (1) {
-                // 未登録単語があることを1回だけ警告。
-                XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_NOTREGDWORD),
-                                    XgLoadStringDx2(IDS_WARNING), MB_ICONWARNING);
-            } else {
-                // 単語が登録されていない。
-                for (auto& word : vNotFoundWords) {
-                    // ヒントの入力を促す。
-                    if (::DialogBoxParamW(xg_hInstance, MAKEINTRESOURCE(IDD_INPUTHINT),
-                                          hwnd, XgInputHintDlgProc,
-                                          reinterpret_cast<LPARAM>(&word)) != IDOK)
-                    {
-                        // キャンセルされた。
-                        return false;
-                    }
-                }
-            }
+    if (!vNotFoundWords.empty() && check_words) {
+        // 未登録単語があることを1回だけ警告。
+        if (XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_NOTREGDWORD),
+                                XgLoadStringDx2(IDS_WARNING),
+                                MB_ICONWARNING | MB_OKCANCEL) == IDCANCEL)
+        {
+            // キャンセルされた。
+            return false;
         }
+
+        // 辞書データにヒントなしで追加する。
+        for (auto& word : vNotFoundWords) {
+            xg_dict_1.emplace_back(word, L"");
+        }
+
+        // 二分探索のために、並び替えておく。
+        XgSortAndUniqueDictData(xg_dict_1);
     }
 
     // 成功。

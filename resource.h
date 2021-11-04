@@ -6,7 +6,6 @@
 #define IDD_NEW                             101
 #define IDD_CREATE                          102
 #define IDD_CALCULATING                     103
-#define IDD_INPUTHINT                       104
 #define IDD_SEQCREATE                       105
 #define IDD_CONFIG                          107
 #define IDD_SEQSOLVE                        108

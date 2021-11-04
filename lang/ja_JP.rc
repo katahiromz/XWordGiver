@@ -532,18 +532,6 @@ FONT 9, "MS UI Gothic"
     PUSHBUTTON "キャンセル", psh1, 85, 70, 75, 14
 }
 
-IDD_INPUTHINT DIALOG 0, 0, 220, 85
-CAPTION "ヒントの入力"
-STYLE DS_CENTER | DS_MODALFRAME | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
-FONT 9, "MS UI Gothic"
-{
-    LTEXT "'%s' は指定された辞書データに登録されていない単語です。\n\n単語 '%s' のヒントを入力して下さい。", stc1, 5, 5, 210, 35
-    LTEXT "ヒント(&H):", -1, 5, 47, 34, 14
-    EDITTEXT edt1, 40, 45, 175, 14, ES_AUTOHSCROLL
-    DEFPUSHBUTTON "OK", IDOK, 90, 65, 60, 14
-    PUSHBUTTON "キャンセル", IDCANCEL, 155, 65, 60, 14
-}
-
 IDD_SEQCREATE DIALOG 0, 0, 310, 155
 CAPTION "問題の連続作成"
 STYLE DS_CENTER | DS_MODALFRAME | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
