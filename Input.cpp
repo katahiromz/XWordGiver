@@ -88,9 +88,7 @@ void __fastcall XgReturn(HWND hwnd)
 
     XgUpdateStatusBar(hwnd);
     XgEnsureCaretVisible(hwnd);
-    INT x = XgGetHScrollPos();
-    INT y = XgGetVScrollPos();
-    XgUpdateImage(hwnd, x, y);
+    XgUpdateImage(hwnd);
 
     xg_prev_vk = 0;
 }
@@ -151,9 +149,7 @@ void __fastcall XgClearNonBlocks(HWND hwnd)
     sa2->Get();
     xg_ubUndoBuffer.Commit(UC_SETALL, sa1, sa2);
 
-    INT x = XgGetHScrollPos();
-    INT y = XgGetVScrollPos();
-    XgUpdateImage(hwnd, x, y);
+    XgUpdateImage(hwnd);
 
     xg_prev_vk = 0;
 }
@@ -237,7 +233,6 @@ void __fastcall MainWnd_OnChar(HWND hwnd, TCHAR ch, int cRepeat)
     if (oldch == ZEN_BLACK && xg_bSolved)
         return;
 
-    int x, y;
     auto sa1 = std::make_shared<XG_UndoData_SetAt>();
     auto sa2 = std::make_shared<XG_UndoData_SetAt>();
     sa1->pos = sa2->pos = xg_caret_pos;
@@ -252,9 +247,7 @@ void __fastcall MainWnd_OnChar(HWND hwnd, TCHAR ch, int cRepeat)
             xg_xword.SetAt(xg_caret_pos, ZEN_SPACE);
 
             XgEnsureCaretVisible(hwnd);
-            x = XgGetHScrollPos();
-            y = XgGetVScrollPos();
-            XgUpdateImage(hwnd, x, y);
+            XgUpdateImage(hwnd);
         }
         xg_prev_vk = 0;
     } else if (ch == L' ') {
@@ -267,18 +260,14 @@ void __fastcall MainWnd_OnChar(HWND hwnd, TCHAR ch, int cRepeat)
                 xg_xword.SetAt(xg_caret_pos, ZEN_BLACK);
 
                 XgEnsureCaretVisible(hwnd);
-                x = XgGetHScrollPos();
-                y = XgGetVScrollPos();
-                XgUpdateImage(hwnd, x, y);
+                XgUpdateImage(hwnd);
             } else if (oldch == ZEN_BLACK && !xg_bSolved) {
                 sa2->ch = ZEN_SPACE;
                 xg_ubUndoBuffer.Commit(UC_SETAT, sa1, sa2);
                 xg_xword.SetAt(xg_caret_pos, ZEN_SPACE);
 
                 XgEnsureCaretVisible(hwnd);
-                x = XgGetHScrollPos();
-                y = XgGetVScrollPos();
-                XgUpdateImage(hwnd, x, y);
+                XgUpdateImage(hwnd);
             } else if (!xg_bSolved || !xg_bShowAnswer) {
                 if (oldch != ZEN_BLACK) {
                     sa2->ch = ZEN_SPACE;
@@ -286,9 +275,7 @@ void __fastcall MainWnd_OnChar(HWND hwnd, TCHAR ch, int cRepeat)
                     xg_xword.SetAt(xg_caret_pos, ZEN_SPACE);
 
                     XgEnsureCaretVisible(hwnd);
-                    x = XgGetHScrollPos();
-                    y = XgGetVScrollPos();
-                    XgUpdateImage(hwnd, x, y);
+                    XgUpdateImage(hwnd);
                 }
             }
         }
@@ -303,9 +290,7 @@ void __fastcall MainWnd_OnChar(HWND hwnd, TCHAR ch, int cRepeat)
             xg_xword.SetAt(xg_caret_pos, ZEN_BLACK);
 
             XgEnsureCaretVisible(hwnd);
-            x = XgGetHScrollPos();
-            y = XgGetVScrollPos();
-            XgUpdateImage(hwnd, x, y);
+            XgUpdateImage(hwnd);
         }
     } else if (xg_imode == xg_im_ABC) {
         // 英字入力の場合。
@@ -331,9 +316,7 @@ void __fastcall MainWnd_OnChar(HWND hwnd, TCHAR ch, int cRepeat)
                 XgCharFeed(hwnd);
 
             XgEnsureCaretVisible(hwnd);
-            x = XgGetHScrollPos();
-            y = XgGetVScrollPos();
-            XgUpdateImage(hwnd, x, y);
+            XgUpdateImage(hwnd);
         } else if (XgIsCharZenkakuUpperW(ch)) {
             // 候補ウィンドウを破棄する。
             XgDestroyCandsWnd();
@@ -347,9 +330,7 @@ void __fastcall MainWnd_OnChar(HWND hwnd, TCHAR ch, int cRepeat)
                 XgCharFeed(hwnd);
 
             XgEnsureCaretVisible(hwnd);
-            x = XgGetHScrollPos();
-            y = XgGetVScrollPos();
-            XgUpdateImage(hwnd, x, y);
+            XgUpdateImage(hwnd);
         } else if (XgIsCharZenkakuLowerW(ch)) {
             // 候補ウィンドウを破棄する。
             XgDestroyCandsWnd();
@@ -364,9 +345,7 @@ void __fastcall MainWnd_OnChar(HWND hwnd, TCHAR ch, int cRepeat)
                 XgCharFeed(hwnd);
 
             XgEnsureCaretVisible(hwnd);
-            x = XgGetHScrollPos();
-            y = XgGetVScrollPos();
-            XgUpdateImage(hwnd, x, y);
+            XgUpdateImage(hwnd);
         }
     } else if (xg_imode == xg_im_KANA) {
         WCHAR newch = 0;
@@ -580,9 +559,7 @@ katakana:;
                 XgCharFeed(hwnd);
 
             XgEnsureCaretVisible(hwnd);
-            x = XgGetHScrollPos();
-            y = XgGetVScrollPos();
-            XgUpdateImage(hwnd, x, y);
+            XgUpdateImage(hwnd);
         }
     } else if (xg_imode == xg_im_RUSSIA) {
         // ロシア入力の場合。
@@ -598,9 +575,7 @@ katakana:;
                 XgCharFeed(hwnd);
 
             XgEnsureCaretVisible(hwnd);
-            x = XgGetHScrollPos();
-            y = XgGetVScrollPos();
-            XgUpdateImage(hwnd, x, y);
+            XgUpdateImage(hwnd);
         }
     } else if (xg_imode == xg_im_DIGITS) {
         // 数字入力の場合。
@@ -618,9 +593,7 @@ katakana:;
                 XgCharFeed(hwnd);
 
             XgEnsureCaretVisible(hwnd);
-            x = XgGetHScrollPos();
-            y = XgGetVScrollPos();
-            XgUpdateImage(hwnd, x, y);
+            XgUpdateImage(hwnd);
         }
     }
 }
@@ -628,7 +601,6 @@ katakana:;
 // キーが押された。
 void __fastcall MainWnd_OnKey(HWND hwnd, UINT vk, bool fDown, int /*cRepeat*/, UINT /*flags*/)
 {
-    int x, y;
     WCHAR ch;
 
     // 特定の条件において、キー入力を拒否する。
@@ -702,9 +674,7 @@ void __fastcall MainWnd_OnKey(HWND hwnd, UINT vk, bool fDown, int /*cRepeat*/, U
                 xg_xword.SetAt(xg_caret_pos, ZEN_SPACE);
 
                 XgEnsureCaretVisible(hwnd);
-                x = XgGetHScrollPos();
-                y = XgGetVScrollPos();
-                XgUpdateImage(hwnd, x, y);
+                XgUpdateImage(hwnd);
             }
         }
         xg_prev_vk = 0;
@@ -718,8 +688,6 @@ void __fastcall MainWnd_OnKey(HWND hwnd, UINT vk, bool fDown, int /*cRepeat*/, U
 // IMEから文字が入力された。
 void __fastcall MainWnd_OnImeChar(HWND hwnd, WCHAR ch, LPARAM /*lKeyData*/)
 {
-    int x, y;
-
     if (ch == ZEN_BLACK) {
         SendMessageW(hwnd, WM_CHAR, L'#', 1);
         return;
@@ -755,9 +723,7 @@ void __fastcall MainWnd_OnImeChar(HWND hwnd, WCHAR ch, LPARAM /*lKeyData*/)
             if (xg_bCharFeed)
                 XgCharFeed(hwnd);
             
-            x = XgGetHScrollPos();
-            y = XgGetVScrollPos();
-            XgUpdateImage(hwnd, x, y);
+            XgUpdateImage(hwnd);
         }
     } else if (xg_imode == xg_im_KANJI) {
         // 漢字入力モードの場合。
@@ -771,9 +737,7 @@ void __fastcall MainWnd_OnImeChar(HWND hwnd, WCHAR ch, LPARAM /*lKeyData*/)
             if (xg_bCharFeed)
                 XgCharFeed(hwnd);
             
-            x = XgGetHScrollPos();
-            y = XgGetVScrollPos();
-            XgUpdateImage(hwnd, x, y);
+            XgUpdateImage(hwnd);
         }
     } else if (xg_imode == xg_im_KANA) {
         // カナ入力モードの場合。
@@ -804,9 +768,7 @@ katakana:;
             if (xg_bCharFeed)
                 XgCharFeed(hwnd);
 
-            x = XgGetHScrollPos();
-            y = XgGetVScrollPos();
-            XgUpdateImage(hwnd, x, y);
+            XgUpdateImage(hwnd);
         }
     } else if (xg_imode == xg_im_ABC) {
         if (XgIsCharHankakuUpperW(ch) || XgIsCharHankakuLowerW(ch) ||
@@ -827,9 +789,7 @@ katakana:;
             if (xg_bCharFeed)
                 XgCharFeed(hwnd);
 
-            x = XgGetHScrollPos();
-            y = XgGetVScrollPos();
-            XgUpdateImage(hwnd, x, y);
+            XgUpdateImage(hwnd);
         }
     } else if (xg_imode == xg_im_DIGITS) {
         // 数字入力の場合。
@@ -846,9 +806,7 @@ katakana:;
             if (xg_bCharFeed)
                 XgCharFeed(hwnd);
 
-            x = XgGetHScrollPos();
-            y = XgGetVScrollPos();
-            XgUpdateImage(hwnd, x, y);
+            XgUpdateImage(hwnd);
         }
     }
 }

@@ -542,7 +542,9 @@ void XgSetDict(const std::wstring& strFile);
 //////////////////////////////////////////////////////////////////////////////
 
 // 描画イメージを更新する。
-void __fastcall XgUpdateImage(HWND hwnd, int x, int y);
+void __fastcall XgUpdateImage(HWND hwnd, INT x, INT y);
+// 描画イメージを更新する。
+void __fastcall XgUpdateImage(HWND hwnd);
 
 // ファイルを開く。
 bool __fastcall XgDoLoadFile(HWND hwnd, LPCWSTR pszFile, bool json);

@@ -4506,7 +4506,7 @@ HBITMAP __fastcall XgCreateXWordImage(XG_Board& xw, LPSIZE psiz, bool bCaret)
 }
 
 // 描画イメージを更新する。
-void __fastcall XgUpdateImage(HWND hwnd, int x, int y)
+void __fastcall XgUpdateImage(HWND hwnd, INT x, INT y)
 {
     ForDisplay for_display;
 
@@ -4541,6 +4541,12 @@ void __fastcall XgUpdateImage(HWND hwnd, int x, int y)
 
     // 再描画する。
     ::InvalidateRect(hwnd, &rcClient, TRUE);
+}
+
+// 描画イメージを更新する。
+void __fastcall XgUpdateImage(HWND hwnd)
+{
+    XgUpdateImage(hwnd, XgGetHScrollPos(), XgGetVScrollPos());
 }
 
 // CRPファイルを開く。
