@@ -451,6 +451,13 @@ LANGUAGE LANG_ENGLISH, SUBLANG_DEFAULT
         MENUITEM SEPARATOR
         MENUITEM "Web search word (Down)\tAlt+↓", ID_ONLINEDICTV
         MENUITEM "Web search word (Across)\tAlt+→", ID_ONLINEDICTH
+        MENUITEM SEPARATOR
+        MENUITEM "Insert a row (above)", ID_INSERT_ROW_ABOVE
+        MENUITEM "Insert a row (below)", ID_INSERT_ROW_BELOW
+        MENUITEM "Left-insert a column", ID_LEFT_INSERT_COLUMN
+        MENUITEM "Right-insert a column", ID_RIGHT_INSERT_COLUMN
+        MENUITEM "Delete a row", ID_DELETE_ROW
+        MENUITEM "Delete a column", ID_DELETE_COLUMN
     }
     POPUP "Popup #1"
     {

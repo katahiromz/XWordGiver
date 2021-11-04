@@ -435,9 +435,7 @@ void __fastcall XgEnsureCaretVisible(HWND hwnd)
 
     // 必要ならば再描画する。
     if (bNeedRedraw) {
-        int x = XgGetHScrollPos();
-        int y = XgGetVScrollPos();
-        XgUpdateImage(hwnd, x, y);
+        XgUpdateImage(hwnd);
     }
 }
 
@@ -593,7 +591,6 @@ bool __fastcall XgLoadSettings(void)
     xg_dict_name.clear();
     s_dirs_save_to.clear();
     s_bAutoRetry = true;
-    xg_nRows = xg_nCols = 7;
     xg_szCellFont[0] = 0;
     xg_szSmallFont[0] = 0;
     xg_szUIFont[0] = 0;
@@ -1306,8 +1303,8 @@ void __fastcall XgResizeCells(HWND hwnd, INT nNewRows, INT nNewCols)
     XgMarkUpdate();
     // サイズを変更する。
     INT nOldRows = xg_nRows, nOldCols = xg_nCols;
-    INT iMin = std::min(xg_nRows, nNewRows);
-    INT jMin = std::min(xg_nCols, nNewCols);
+    INT iMin = std::min((INT)xg_nRows, (INT)nNewRows);
+    INT jMin = std::min((INT)xg_nCols, (INT)nNewCols);
     XG_Board copy;
     copy.ResetAndSetSize(nNewRows, nNewCols);
     for (INT i = 0; i < iMin; ++i) {
@@ -4963,6 +4960,22 @@ void __fastcall MainWnd_OnInitMenu(HWND /*hwnd*/, HMENU hMenu)
                              ID_VIEW_SKELETON_VIEW, MF_BYCOMMAND);
         break;
     }
+
+    // 行と列の削除と追加。
+    if (xg_bSolved || xg_nRows - 1 < XG_MIN_SIZE) {
+        ::DeleteMenu(hMenu, ID_DELETE_ROW, MF_BYCOMMAND);
+    }
+    if (xg_bSolved || xg_nCols - 1 < XG_MIN_SIZE) {
+        ::DeleteMenu(hMenu, ID_DELETE_COLUMN, MF_BYCOMMAND);
+    }
+    if (xg_bSolved || xg_nRows + 1 > XG_MAX_SIZE) {
+        ::DeleteMenu(hMenu, ID_INSERT_ROW_ABOVE, MF_BYCOMMAND);
+        ::DeleteMenu(hMenu, ID_INSERT_ROW_BELOW, MF_BYCOMMAND);
+    }
+    if (xg_bSolved || xg_nCols + 1 > XG_MAX_SIZE) {
+        ::DeleteMenu(hMenu, ID_LEFT_INSERT_COLUMN, MF_BYCOMMAND);
+        ::DeleteMenu(hMenu, ID_RIGHT_INSERT_COLUMN, MF_BYCOMMAND);
+    }
 }
 
 // マウスの左ボタンが離された。
@@ -5002,9 +5015,7 @@ void __fastcall MainWnd_OnLButtonUp(HWND hwnd, int x, int y, UINT /*keyFlags*/)
                 XgUpdateStatusBar(hwnd);
 
                 // イメージを更新する。
-                x = XgGetHScrollPos();
-                y = XgGetVScrollPos();
-                XgUpdateImage(hwnd, x, y);
+                XgUpdateImage(hwnd);
                 return;
             }
         }
@@ -5071,9 +5082,7 @@ void __fastcall MainWnd_OnLButtonDown(HWND hwnd, bool fDoubleClick, int x, int y
                 }
 
                 // イメージを更新する。
-                x = XgGetHScrollPos();
-                y = XgGetVScrollPos();
-                XgUpdateImage(hwnd, x, y);
+                XgUpdateImage(hwnd);
                 return;
             }
         }
@@ -5539,9 +5548,7 @@ void SettingsDlg_OnOK(HWND hwnd)
     xg_strDoubleFrameLetters = szText;
 
     // イメージを更新する。
-    int x = XgGetHScrollPos();
-    int y = XgGetVScrollPos();
-    XgUpdateImage(xg_hMainWnd, x, y);
+    XgUpdateImage(xg_hMainWnd);
 }
 
 // UIフォントの論理オブジェクトを取得する。
@@ -5955,21 +5962,9 @@ void MainWnd_OnEraseSettings(HWND hwnd)
     XgUpdateRules(hwnd);
     // 辞書ファイルの名前を読み込む。
     XgLoadDictsAll();
-
-    xg_bSolved = false;
-    xg_bHintsAdded = false;
-    xg_bShowAnswer = false;
-    xg_xword.clear();
-    xg_solution.clear();
+    // キャレット位置を初期化する。
     xg_caret_pos.clear();
-    xg_strHeader.clear();
-    xg_strNotes.clear();
-    xg_strFileName.clear();
-    xg_vTateInfo.clear();
-    xg_vYokoInfo.clear();
-    xg_vMarks.clear();
-    xg_vMarkedCands.clear();
-    XgMarkUpdate();
+    xg_bShowAnswer
 
     // ツールバーの表示を切り替える。
     if (s_bShowToolBar)
@@ -7899,9 +7894,7 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
         if (xg_caret_pos.m_j > 0) {
             xg_caret_pos.m_j--;
             XgEnsureCaretVisible(hwnd);
-            x = XgGetHScrollPos();
-            y = XgGetVScrollPos();
-            XgUpdateImage(hwnd, x, y);
+            XgUpdateImage(hwnd);
         } else {
             // 一番左のキャレットなら、左端へ移動。
             x = 0;
@@ -7915,9 +7908,7 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
         if (xg_caret_pos.m_j + 1 < xg_nCols) {
             xg_caret_pos.m_j++;
             XgEnsureCaretVisible(hwnd);
-            x = XgGetHScrollPos();
-            y = XgGetVScrollPos();
-            XgUpdateImage(hwnd, x, y);
+            XgUpdateImage(hwnd);
         } else {
             // 一番右のキャレットなら、右端へ移動。
             SIZE siz;
@@ -7936,9 +7927,7 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
         if (xg_caret_pos.m_i > 0) {
             xg_caret_pos.m_i--;
             XgEnsureCaretVisible(hwnd);
-            x = XgGetHScrollPos();
-            y = XgGetVScrollPos();
-            XgUpdateImage(hwnd, x, y);
+            XgUpdateImage(hwnd);
         } else {
             // 一番上のキャレットなら、上端へ移動。
             x = XgGetHScrollPos();
@@ -7952,9 +7941,7 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
         if (xg_caret_pos.m_i + 1 < xg_nRows) {
             xg_caret_pos.m_i++;
             XgEnsureCaretVisible(hwnd);
-            x = XgGetHScrollPos();
-            y = XgGetVScrollPos();
-            XgUpdateImage(hwnd, x, y);
+            XgUpdateImage(hwnd);
         } else {
             // 一番下のキャレットなら、下端へ移動。
             SIZE siz;
@@ -7974,9 +7961,7 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
             xg_caret_pos.m_j = 0;
             XgUpdateStatusBar(hwnd);
             XgEnsureCaretVisible(hwnd);
-            x = XgGetHScrollPos();
-            y = XgGetVScrollPos();
-            XgUpdateImage(hwnd, x, y);
+            XgUpdateImage(hwnd);
         } else {
             // 一番左のキャレットなら、左端へ移動。
             x = 0;
@@ -7991,9 +7976,7 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
             xg_caret_pos.m_j = xg_nCols - 1;
             XgUpdateStatusBar(hwnd);
             XgEnsureCaretVisible(hwnd);
-            x = XgGetHScrollPos();
-            y = XgGetVScrollPos();
-            XgUpdateImage(hwnd, x, y);
+            XgUpdateImage(hwnd);
         } else {
             // 一番右のキャレットなら、右端へ移動。
             SIZE siz;
@@ -8013,9 +7996,7 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
             xg_caret_pos.m_i = 0;
             XgUpdateStatusBar(hwnd);
             XgEnsureCaretVisible(hwnd);
-            x = XgGetHScrollPos();
-            y = XgGetVScrollPos();
-            XgUpdateImage(hwnd, x, y);
+            XgUpdateImage(hwnd);
         } else {
             // 一番上のキャレットなら、上端へ移動。
             x = XgGetHScrollPos();
@@ -8030,9 +8011,7 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
             xg_caret_pos.m_i = xg_nRows - 1;
             XgUpdateStatusBar(hwnd);
             XgEnsureCaretVisible(hwnd);
-            x = XgGetHScrollPos();
-            y = XgGetVScrollPos();
-            XgUpdateImage(hwnd, x, y);
+            XgUpdateImage(hwnd);
         } else {
             // 一番下のキャレットなら、下端へ移動。
             SIZE siz;
@@ -8919,15 +8898,11 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
         break;
     case ID_SHOWHIDENUMBERING:
         xg_bShowNumbering = !xg_bShowNumbering;
-        x = XgGetHScrollPos();
-        y = XgGetVScrollPos();
-        XgUpdateImage(hwnd, x, y);
+        XgUpdateImage(hwnd);
         break;
     case ID_SHOWHIDECARET:
         xg_bShowCaret = !xg_bShowCaret;
-        x = XgGetHScrollPos();
-        y = XgGetVScrollPos();
-        XgUpdateImage(hwnd, x, y);
+        XgUpdateImage(hwnd);
         break;
     case ID_ZOOMIN:
         if (xg_nZoomRate < 50) {
@@ -8981,36 +8956,28 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
         break;
     case ID_UPPERCASE:
         xg_bLowercase = FALSE;
-        x = XgGetHScrollPos();
-        y = XgGetVScrollPos();
-        XgUpdateImage(hwnd, x, y);
+        XgUpdateImage(hwnd);
         if (xg_hwndInputPalette) {
             XgCreateInputPalette(hwnd);
         }
         break;
     case ID_LOWERCASE:
         xg_bLowercase = TRUE;
-        x = XgGetHScrollPos();
-        y = XgGetVScrollPos();
-        XgUpdateImage(hwnd, x, y);
+        XgUpdateImage(hwnd);
         if (xg_hwndInputPalette) {
             XgCreateInputPalette(hwnd);
         }
         break;
     case ID_HIRAGANA:
         xg_bHiragana = TRUE;
-        x = XgGetHScrollPos();
-        y = XgGetVScrollPos();
-        XgUpdateImage(hwnd, x, y);
+        XgUpdateImage(hwnd);
         if (xg_hwndInputPalette) {
             XgCreateInputPalette(hwnd);
         }
         break;
     case ID_KATAKANA:
         xg_bHiragana = FALSE;
-        x = XgGetHScrollPos();
-        y = XgGetVScrollPos();
-        XgUpdateImage(hwnd, x, y);
+        XgUpdateImage(hwnd);
         if (xg_hwndInputPalette) {
             XgCreateInputPalette(hwnd);
         }
@@ -9217,9 +9184,7 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
     case ID_VIEW_NORMAL_VIEW:
         // 通常ビューを設定。
         xg_nViewMode = XG_VIEW_NORMAL;
-        x = XgGetHScrollPos();
-        y = XgGetVScrollPos();
-        XgUpdateImage(hwnd, x, y);
+        XgUpdateImage(hwnd);
         break;
     case ID_VIEW_SKELETON_VIEW:
         // 黒マス画像をクリアする。
@@ -9234,9 +9199,7 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
         }
         // スケルトンビューを設定。
         xg_nViewMode = XG_VIEW_SKELETON;
-        x = XgGetHScrollPos();
-        y = XgGetVScrollPos();
-        XgUpdateImage(hwnd, x, y);
+        XgUpdateImage(hwnd);
         break;
     case ID_COPY_WORD_LIST:
         // 単語リストのコピー。
@@ -9245,9 +9208,79 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
     case ID_VIEW_DOUBLEFRAME_LETTERS:
         // 二重マス文字を表示するか？
         xg_bShowDoubleFrameLetters = !xg_bShowDoubleFrameLetters;
-        x = XgGetHScrollPos();
-        y = XgGetVScrollPos();
-        XgUpdateImage(hwnd, x, y);
+        XgUpdateImage(hwnd);
+        break;
+    case ID_DELETE_ROW:
+        if (!xg_bSolved)
+        {
+            auto sa1 = std::make_shared<XG_UndoData_SetAll>();
+            auto sa2 = std::make_shared<XG_UndoData_SetAll>();
+            sa1->Get();
+            xg_xword.DeleteRow(xg_caret_pos.m_i);
+            sa2->Get();
+            xg_ubUndoBuffer.Commit(UC_SETALL, sa1, sa2);
+            XgUpdateImage(hwnd);
+        }
+        break;
+    case ID_DELETE_COLUMN:
+        if (!xg_bSolved)
+        {
+            auto sa1 = std::make_shared<XG_UndoData_SetAll>();
+            auto sa2 = std::make_shared<XG_UndoData_SetAll>();
+            sa1->Get();
+            xg_xword.DeleteColumn(xg_caret_pos.m_j);
+            sa2->Get();
+            xg_ubUndoBuffer.Commit(UC_SETALL, sa1, sa2);
+            XgUpdateImage(hwnd);
+        }
+        break;
+    case ID_INSERT_ROW_ABOVE:
+        if (!xg_bSolved)
+        {
+            auto sa1 = std::make_shared<XG_UndoData_SetAll>();
+            auto sa2 = std::make_shared<XG_UndoData_SetAll>();
+            sa1->Get();
+            xg_xword.InsertRow(xg_caret_pos.m_i);
+            sa2->Get();
+            xg_ubUndoBuffer.Commit(UC_SETALL, sa1, sa2);
+            XgUpdateImage(hwnd);
+        }
+        break;
+    case ID_INSERT_ROW_BELOW:
+        if (!xg_bSolved)
+        {
+            auto sa1 = std::make_shared<XG_UndoData_SetAll>();
+            auto sa2 = std::make_shared<XG_UndoData_SetAll>();
+            sa1->Get();
+            xg_xword.InsertRow(xg_caret_pos.m_i + 1);
+            sa2->Get();
+            xg_ubUndoBuffer.Commit(UC_SETALL, sa1, sa2);
+            XgUpdateImage(hwnd);
+        }
+        break;
+    case ID_LEFT_INSERT_COLUMN:
+        if (!xg_bSolved)
+        {
+            auto sa1 = std::make_shared<XG_UndoData_SetAll>();
+            auto sa2 = std::make_shared<XG_UndoData_SetAll>();
+            sa1->Get();
+            xg_xword.InsertColumn(xg_caret_pos.m_j);
+            sa2->Get();
+            xg_ubUndoBuffer.Commit(UC_SETALL, sa1, sa2);
+            XgUpdateImage(hwnd);
+        }
+        break;
+    case ID_RIGHT_INSERT_COLUMN:
+        if (!xg_bSolved)
+        {
+            auto sa1 = std::make_shared<XG_UndoData_SetAll>();
+            auto sa2 = std::make_shared<XG_UndoData_SetAll>();
+            sa1->Get();
+            xg_xword.InsertColumn(xg_caret_pos.m_j + 1);
+            sa2->Get();
+            xg_ubUndoBuffer.Commit(UC_SETALL, sa1, sa2);
+            XgUpdateImage(hwnd);
+        }
         break;
     default:
         if (!MainWnd_OnCommand2(hwnd, id)) {

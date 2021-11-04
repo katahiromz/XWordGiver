@@ -325,7 +325,8 @@ extern std::vector<XG_Hint> xg_vecTateHints, xg_vecYokoHints;
 // クロスワード データ。
 
 // クロスワードのサイズ。
-extern int xg_nRows, xg_nCols;
+extern volatile INT& xg_nRows;
+extern volatile INT& xg_nCols;
 
 class XG_Board
 {
@@ -341,15 +342,31 @@ public:
 
     // マスの内容を取得する。
     WCHAR __fastcall GetAt(int i) const;
-    WCHAR __fastcall GetAt(int iRow, int jCol) const;
-    WCHAR __fastcall GetAt(const XG_Pos& pos) const;
+    WCHAR __fastcall GetAt(int iRow, int jCol) const {
+        assert(0 <= iRow && iRow < xg_nRows);
+        assert(0 <= jCol && jCol < xg_nCols);
+        return GetAt(iRow * xg_nCols + jCol);
+    }
+    WCHAR __fastcall GetAt(const XG_Pos& pos) const {
+        return GetAt(pos.m_i, pos.m_j);
+    }
     // マスの内容を設定する。
     void __fastcall SetAt(int i, WCHAR ch);
-    void __fastcall SetAt(int iRow, int jCol, WCHAR ch);
-    void __fastcall SetAt(const XG_Pos& pos, WCHAR ch);
+    void __fastcall SetAt(int iRow, int jCol, WCHAR ch) {
+        assert(0 <= iRow && iRow < xg_nRows);
+        assert(0 <= jCol && jCol < xg_nCols);
+        SetAt(iRow * xg_nCols + jCol, ch);
+    }
+    void __fastcall SetAt(const XG_Pos& pos, WCHAR ch) {
+        return SetAt(pos.m_i, pos.m_j, ch);
+    }
+    void __fastcall SetAt2(int i, int j, int nRows, int nCols, WCHAR ch) {
+        m_vCells[i * nCols + j] = ch;
+    }
     // 空ではないマスの個数を返す。
     WCHAR& __fastcall Count();
     WCHAR __fastcall Count() const;
+    VOID ReCount();
     // クリアする。
     void __fastcall clear();
     // リセットしてサイズを設定する。
@@ -435,6 +452,72 @@ public:
     std::vector<WCHAR> m_vCells;
 };
 
+// 盤にサイズ情報を追加。
+class XG_BoardEx : public XG_Board
+{
+public:
+    volatile INT m_nRows;
+    volatile INT m_nCols;
+
+    XG_BoardEx() : XG_Board(), m_nRows(7), m_nCols(7) {
+    }
+    XG_BoardEx(const XG_Board& src) {
+        m_vCells = src.m_vCells;
+    }
+    XG_BoardEx(const XG_BoardEx& src) {
+        m_vCells = src.m_vCells;
+        m_nRows = src.m_nRows;
+        m_nCols = src.m_nCols;
+    }
+
+    XG_BoardEx& operator=(const XG_Board& src) {
+        m_vCells = src.m_vCells;
+        return *this;
+    }
+    XG_BoardEx& operator=(const XG_BoardEx& src) {
+        m_vCells = src.m_vCells;
+        m_nRows = src.m_nRows;
+        m_nCols = src.m_nCols;
+        return *this;
+    }
+
+    // カウントを更新する。
+    void ReCount();
+
+    // 行を挿入する。
+    void InsertRow(INT iRow);
+    // 列を挿入する。
+    void InsertColumn(INT jCol);
+    // 行を削除する。
+    void DeleteRow(INT iRow);
+    // 列を削除する。
+    void DeleteColumn(INT jCol);
+    // マスの内容を取得する。
+    WCHAR __fastcall GetAt(int ij) const;
+    // マスの内容を取得する。
+    WCHAR __fastcall GetAt(int iRow, int jCol) const {
+        assert(0 <= iRow && iRow < m_nRows);
+        assert(0 <= jCol && jCol < m_nCols);
+        return GetAt(iRow * m_nCols + jCol);
+    }
+    // マスの内容を取得する。
+    WCHAR __fastcall GetAt(const XG_Pos& pos) const {
+        return GetAt(pos.m_i, pos.m_j);
+    }
+    // マスの内容を設定する。
+    void __fastcall SetAt(int ij, WCHAR ch);
+    // マスの内容を設定する。
+    void __fastcall SetAt(int iRow, int jCol, WCHAR ch) {
+        assert(0 <= iRow && iRow < m_nRows);
+        assert(0 <= jCol && jCol < m_nCols);
+        SetAt(iRow * m_nCols + jCol, ch);
+    }
+    // マスの内容を設定する。
+    void __fastcall SetAt(const XG_Pos& pos, WCHAR ch) {
+        SetAt(pos.m_i, pos.m_j, ch);
+    }
+};
+
 bool __fastcall XgDoSaveStandard(HWND hwnd, LPCWSTR pszFile, const XG_Board& board);
 
 namespace std
@@ -515,7 +598,7 @@ void __fastcall XgRuleCheck(HWND hwnd);
 //////////////////////////////////////////////////////////////////////////////
 
 // クロスワードの問題。
-extern XG_Board         xg_xword;
+extern XG_BoardEx       xg_xword;
 
 // クロスワードの解。
 extern XG_Board         xg_solution;
@@ -579,17 +662,8 @@ inline WCHAR __fastcall XG_Board::GetAt(int i) const
 }
 
 // マスの内容を取得する。
-inline WCHAR __fastcall XG_Board::GetAt(int iRow, int jCol) const
-{
-    assert(0 <= iRow && iRow < xg_nRows);
-    assert(0 <= jCol && jCol < xg_nCols);
-    return m_vCells[iRow * xg_nCols + jCol];
-}
-
-// マスの内容を取得する。
-inline WCHAR __fastcall XG_Board::GetAt(const XG_Pos& pos) const
-{
-    return GetAt(pos.m_i, pos.m_j);
+inline WCHAR __fastcall XG_BoardEx::GetAt(int ij) const {
+    return m_vCells[ij];
 }
 
 // 空マスじゃないマスの個数を返す。
@@ -675,11 +749,9 @@ inline void __fastcall XG_Board::SetAt(int i, WCHAR ch)
 }
 
 // マスの内容を設定する。
-inline void __fastcall XG_Board::SetAt(int iRow, int jCol, WCHAR ch)
+inline void __fastcall XG_BoardEx::SetAt(int ij, WCHAR ch)
 {
-    assert(0 <= iRow && iRow < xg_nRows);
-    assert(0 <= jCol && jCol < xg_nCols);
-    WCHAR& ch2 = m_vCells[iRow * xg_nCols + jCol];
+    WCHAR& ch2 = m_vCells[ij];
     if (ch2 != ZEN_SPACE)
     {
         if (ch == ZEN_SPACE)
@@ -694,12 +766,6 @@ inline void __fastcall XG_Board::SetAt(int iRow, int jCol, WCHAR ch)
             Count()++;
     }
     ch2 = ch;
-}
-
-// マスの内容を設定する。
-inline void __fastcall XG_Board::SetAt(const XG_Pos& pos, WCHAR ch)
-{
-    return SetAt(pos.m_i, pos.m_j, ch);
 }
 
 // マスの三方向が黒マスで囲まれているか？

@@ -454,6 +454,13 @@ LANGUAGE LANG_JAPANESE, SUBLANG_DEFAULT
         MENUITEM SEPARATOR
         MENUITEM "単語をウェブ検索(&V) (タテ)\tAlt+↓", ID_ONLINEDICTV
         MENUITEM "単語をウェブ検索(&H) (ヨコ)\tAlt+→", ID_ONLINEDICTH
+        MENUITEM SEPARATOR
+        MENUITEM "行を挿入(上に)", ID_INSERT_ROW_ABOVE
+        MENUITEM "行を挿入(下に)", ID_INSERT_ROW_BELOW
+        MENUITEM "列を挿入(左に)", ID_LEFT_INSERT_COLUMN
+        MENUITEM "列を挿入(右に)", ID_RIGHT_INSERT_COLUMN
+        MENUITEM "行を削除", ID_DELETE_ROW
+        MENUITEM "列を削除", ID_DELETE_COLUMN
     }
     POPUP "ポップアップ #1"
     {
