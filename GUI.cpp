@@ -1157,15 +1157,21 @@ bool __fastcall XgCheckCrossWord(HWND hwnd, bool check_words = true)
     // 見つからなかった単語があるか？
     if (!vNotFoundWords.empty()) {
         if (check_words) {
-            // 単語が登録されていない。
-            for (auto& word : vNotFoundWords) {
-                // ヒントの入力を促す。
-                if (::DialogBoxParamW(xg_hInstance, MAKEINTRESOURCE(IDD_INPUTHINT),
-                                      hwnd, XgInputHintDlgProc,
-                                      reinterpret_cast<LPARAM>(&word)) != IDOK)
-                {
-                    // キャンセルされた。
-                    return false;
+            if (1) {
+                // 未登録単語があることを1回だけ警告。
+                XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_NOTREGDWORD),
+                                    XgLoadStringDx2(IDS_WARNING), MB_ICONWARNING);
+            } else {
+                // 単語が登録されていない。
+                for (auto& word : vNotFoundWords) {
+                    // ヒントの入力を促す。
+                    if (::DialogBoxParamW(xg_hInstance, MAKEINTRESOURCE(IDD_INPUTHINT),
+                                          hwnd, XgInputHintDlgProc,
+                                          reinterpret_cast<LPARAM>(&word)) != IDOK)
+                    {
+                        // キャンセルされた。
+                        return false;
+                    }
                 }
             }
         }
