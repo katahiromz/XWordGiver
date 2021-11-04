@@ -1107,10 +1107,16 @@ bool __fastcall XgCheckCrossWord(HWND hwnd, bool check_words = true)
 
     // 見つからなかった単語があるか？
     if (!vNotFoundWords.empty() && check_words) {
+        auto str = mstr_join(vNotFoundWords, L", ");
+        if (str.size() > 128)
+            str.resize(128);
+
+        WCHAR szText[256];
+        StringCchPrintfW(szText, _countof(szText), XgLoadStringDx1(IDS_NOTREGDWORD), str.c_str());
+
         // 未登録単語があることを1回だけ警告。
-        if (XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_NOTREGDWORD),
-                                XgLoadStringDx2(IDS_WARNING),
-                                MB_ICONWARNING | MB_OKCANCEL) == IDCANCEL)
+        if (XgCenterMessageBoxW(hwnd, szText, XgLoadStringDx2(IDS_WARNING),
+                                MB_ICONWARNING | MB_YESNOCANCEL) != IDYES)
         {
             // キャンセルされた。
             return false;

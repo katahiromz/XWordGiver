@@ -1476,7 +1476,7 @@ STRINGTABLE
     IDS_DBLFRAME_LETTERS_8, "いろはにほへとちりぬるをわかよたれそつねならむうゐのおくやまけふこえてあさきゆめみしゑひもせすん"
     IDS_DBLFRAME_LETTERS_9, "АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯабвгдеёжзийклмнопрстуфхцчшщъыьэюя"
     IDS_DBLFRAME_LETTERS_10, "абвгдеёжзийклмнопрстуфхцчшщъыьэюяАБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ"
-    IDS_NOTREGDWORD, "The dictionary didn't register some words yet."
+    IDS_NOTREGDWORD, "The dictionary didn't register some words yet.\n\n%s\n\nDo you want to continue?"
     IDS_WARNING, "Warning"
     IDS_HOMEPAGE, "https://katahiromz.web.fc2.com/eindex.html"
     IDS_TT_NEW, "New crossword"
