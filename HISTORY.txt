@@ -425,6 +425,7 @@
 	二重マス文字を表示するかを切り替え可能にした。
 	「行の追加」「列の追加」を追加。
 	「行の削除」「列の削除」を追加。
+	「設定の消去」を改良。
 
 ## History of XWordGiver (English)
 
@@ -485,3 +486,4 @@
     - Able to toggle whether the double-frame letters are visible or not.
     - Added "Insert Row/Column" feature.
     - Added "Delete Row/Column" feature.
+    - Improved "Erase Configuration".
