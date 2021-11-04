@@ -152,11 +152,11 @@ LANGUAGE LANG_ENGLISH, SUBLANG_DEFAULT
         MENUITEM "&Uppercase", ID_UPPERCASE
         MENUITEM "&Lowercase", ID_LOWERCASE
         MENUITEM SEPARATOR
-        MENUITEM "Web search word (Down)\tAlt+Down", ID_ONLINEDICTV
-        MENUITEM "Web search word (Across)\tAlt+Right", ID_ONLINEDICTH
+        MENUITEM "Web search word (DOWN)\tAlt+Down", ID_ONLINEDICTV
+        MENUITEM "Web search word (ACROSS)\tAlt+Right", ID_ONLINEDICTH
         MENUITEM SEPARATOR
-        MENUITEM "Show &candidates (&Down)\tShift+Ctrl+↓", ID_OPENCANDSWNDVERT
-        MENUITEM "Show &candidates (&Across)\tShift+Ctrl+→", ID_OPENCANDSWNDHORZ
+        MENUITEM "Show &candidates (&DOWN)\tShift+Ctrl+↓", ID_OPENCANDSWNDVERT
+        MENUITEM "Show &candidates (&ACROSS)\tShift+Ctrl+→", ID_OPENCANDSWNDHORZ
     }
     POPUP "&Policies"
     {
@@ -446,11 +446,11 @@ LANGUAGE LANG_ENGLISH, SUBLANG_DEFAULT
         MENUITEM SEPARATOR
         MENUITEM "&Toggle double-frame\tCtrl+.", ID_TOGGLEMARK
         MENUITEM SEPARATOR
-        MENUITEM "Show candidates (Down)\tShift+Ctrl+↓", ID_OPENCANDSWNDVERT
-        MENUITEM "Show candidates (Across)\tShift+Ctrl+→", ID_OPENCANDSWNDHORZ
+        MENUITEM "Show candidates (DOWN)\tShift+Ctrl+↓", ID_OPENCANDSWNDVERT
+        MENUITEM "Show candidates (ACROSS)\tShift+Ctrl+→", ID_OPENCANDSWNDHORZ
         MENUITEM SEPARATOR
-        MENUITEM "Web search word (Down)\tAlt+↓", ID_ONLINEDICTV
-        MENUITEM "Web search word (Across)\tAlt+→", ID_ONLINEDICTH
+        MENUITEM "Web search word (DOWN)\tAlt+↓", ID_ONLINEDICTV
+        MENUITEM "Web search word (ACROSS)\tAlt+→", ID_ONLINEDICTH
         MENUITEM SEPARATOR
         MENUITEM "Insert a row (above)", ID_INSERT_ROW_ABOVE
         MENUITEM "Insert a row (below)", ID_INSERT_ROW_BELOW
