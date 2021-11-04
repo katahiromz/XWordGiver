@@ -1,19 +1,19 @@
-//////////////////////////////////////////////////////////////////////////////
+ï»¿//////////////////////////////////////////////////////////////////////////////
 // xword.hpp --- XWord Giver (Japanese Crossword Generator)
 // Copyright (C) 2012-2020 Katayama Hirofumi MZ. All Rights Reserved.
-// (Japanese, Shift_JIS)
+// (Japanese, UTF-8)
 
 #ifndef __XWORD_HPP__
 #define __XWORD_HPP__
 
 //////////////////////////////////////////////////////////////////////////////
-// ƒNƒƒXƒ[ƒhB
+// ã‚¯ãƒ­ã‚¹ãƒ¯ãƒ¼ãƒ‰ã€‚
 
-// “ú–{ŒêƒƒP[ƒ‹B
+// æ—¥æœ¬èªãƒ­ã‚±ãƒ¼ãƒ«ã€‚
 #define JPN_LOCALE \
     MAKELCID(MAKELANGID(LANG_JAPANESE, SUBLANG_DEFAULT), SORT_DEFAULT)
 
-// ƒƒVƒAŒêƒƒP[ƒ‹B
+// ãƒ­ã‚·ã‚¢èªãƒ­ã‚±ãƒ¼ãƒ«ã€‚
 #define RUS_LOCALE \
     MAKELCID(MAKELANGID(LANG_RUSSIAN, SUBLANG_DEFAULT), SORT_DEFAULT)
 
@@ -23,11 +23,11 @@
 // Russian codepage
 #define RUS_CODEPAGE 1251
 
-// Šù’è‚Ì•¶š‚Ì‘å‚«‚³(%)B
+// æ—¢å®šã®æ–‡å­—ã®å¤§ãã•(%)ã€‚
 #define DEF_CELL_CHAR_SIZE 66
 #define DEF_SMALL_CHAR_SIZE 21
 
-// •\¦—p‚É•`‰æ‚·‚é‚©HiXgGetXWordExtent‚ÆXgDrawXWord‚ÆXgCreateXWordImage‚Åg‚¤jB
+// è¡¨ç¤ºç”¨ã«æç”»ã™ã‚‹ã‹ï¼Ÿï¼ˆXgGetXWordExtentã¨XgDrawXWordã¨XgCreateXWordImageã§ä½¿ã†ï¼‰ã€‚
 extern INT xg_nForDisplay;
 struct ForDisplay {
     ForDisplay() {
@@ -38,186 +38,186 @@ struct ForDisplay {
     }
 };
 
-// ƒY[ƒ€”ä—¦(%)B
+// ã‚ºãƒ¼ãƒ æ¯”ç‡(%)ã€‚
 extern INT xg_nZoomRate;
-// ƒZƒ‹‚Ì‘å‚«‚³B
+// ã‚»ãƒ«ã®å¤§ãã•ã€‚
 #define xg_nCellSize        48
-// ã‰º¶‰E‚Ìƒ}[ƒWƒ“B
+// ä¸Šä¸‹å·¦å³ã®ãƒãƒ¼ã‚¸ãƒ³ã€‚
 #define xg_nMargin          16
-// ã‰º¶‰E‚Ìƒ}[ƒWƒ“B
+// ä¸Šä¸‹å·¦å³ã®ãƒãƒ¼ã‚¸ãƒ³ã€‚
 #define xg_nNarrowMargin    8
-// Œó•â‚ÌÅ‘å”B
+// å€™è£œã®æœ€å¤§æ•°ã€‚
 #define xg_nMaxCandidates   500
 
-// XG_Board::EveryPatternValid1, XG_Board::EveryPatternValid2‚Ì–ß‚è’lB
+// XG_Board::EveryPatternValid1, XG_Board::EveryPatternValid2ã®æˆ»ã‚Šå€¤ã€‚
 enum XG_EpvCode
 {
-    xg_epv_SUCCESS,        // ¬Œ÷B
-    xg_epv_PATNOTMATCH,    // ƒ}ƒbƒ`‚µ‚È‚©‚Á‚½ƒpƒ^[ƒ“‚ª‚ ‚éB
-    xg_epv_DOUBLEWORD,     // ’PŒê‚ªd•¡‚µ‚Ä‚¢‚éB
-    xg_epv_LENGTHMISMATCH, // ‹ó”’‚Ì’·‚³‚ªˆê’v‚µ‚È‚¢B
-    xg_epv_NOTFOUNDWORD    // ’PŒê‚Éƒ}ƒbƒ`‚µ‚È‚©‚Á‚½ƒ}ƒX‚ª‚ ‚éB
+    xg_epv_SUCCESS,        // æˆåŠŸã€‚
+    xg_epv_PATNOTMATCH,    // ãƒãƒƒãƒã—ãªã‹ã£ãŸãƒ‘ã‚¿ãƒ¼ãƒ³ãŒã‚ã‚‹ã€‚
+    xg_epv_DOUBLEWORD,     // å˜èªãŒé‡è¤‡ã—ã¦ã„ã‚‹ã€‚
+    xg_epv_LENGTHMISMATCH, // ç©ºç™½ã®é•·ã•ãŒä¸€è‡´ã—ãªã„ã€‚
+    xg_epv_NOTFOUNDWORD    // å˜èªã«ãƒãƒƒãƒã—ãªã‹ã£ãŸãƒã‚¹ãŒã‚ã‚‹ã€‚
 };
 
-// ƒZƒ‹‚ÌFB
+// ã‚»ãƒ«ã®è‰²ã€‚
 extern COLORREF xg_rgbWhiteCellColor;
 extern COLORREF xg_rgbBlackCellColor;
 extern COLORREF xg_rgbMarkedCellColor;
 
-// “ñdƒ}ƒX‚É˜g‚ğ•`‚­‚©H
+// äºŒé‡ãƒã‚¹ã«æ ã‚’æãã‹ï¼Ÿ
 extern bool xg_bDrawFrameForMarkedCell;
 
-// •¶š‘—‚èH
+// æ–‡å­—é€ã‚Šï¼Ÿ
 extern bool xg_bCharFeed;
 
-// ƒ^ƒe“ü—ÍH
+// ã‚¿ãƒ†å…¥åŠ›ï¼Ÿ
 extern bool xg_bTateInput;
 
-// ƒXƒ}[ƒg‰ğŒˆ‚Ì‚Æ‚«A”z’u‚Å‚«‚éÅ‘å’PŒê’·B
+// ã‚¹ãƒãƒ¼ãƒˆè§£æ±ºã®ã¨ãã€é…ç½®ã§ãã‚‹æœ€å¤§å˜èªé•·ã€‚
 extern INT xg_nMaxWordLen;
 
-// ‘SŠp•¶šB
-#define ZEN_SPACE       WCHAR(0x3000)  // L'@'
-#define ZEN_BLACK       WCHAR(0x25A0)  // L'¡'
-#define ZEN_LARGE_A     WCHAR(0xFF21)  // L'‚`'
-#define ZEN_LARGE_Z     WCHAR(0xFF3A)  // L'‚y'
-#define ZEN_SMALL_A     WCHAR(0xFF41)  // L'‚'
-#define ZEN_SMALL_Z     WCHAR(0xFF5A)  // L'‚š'
-#define ZEN_A           WCHAR(0x30A2)  // L'ƒA'
-#define ZEN_I           WCHAR(0x30A4)  // L'ƒC'
-#define ZEN_U           WCHAR(0x30A6)  // L'ƒE'
-#define ZEN_E           WCHAR(0x30A8)  // L'ƒG'
-#define ZEN_O           WCHAR(0x30AA)  // L'ƒI'
-#define ZEN_KA          WCHAR(0x30AB)  // L'ƒJ'
-#define ZEN_KI          WCHAR(0x30AD)  // L'ƒL'
-#define ZEN_KU          WCHAR(0x30AF)  // L'ƒN'
-#define ZEN_KE          WCHAR(0x30B1)  // L'ƒP'
-#define ZEN_KO          WCHAR(0x30B3)  // L'ƒR'
-#define ZEN_SA          WCHAR(0x30B5)  // L'ƒT'
-#define ZEN_SI          WCHAR(0x30B7)  // L'ƒV'
-#define ZEN_SU          WCHAR(0x30B9)  // L'ƒX'
-#define ZEN_SE          WCHAR(0x30BB)  // L'ƒZ'
-#define ZEN_SO          WCHAR(0x30BD)  // L'ƒ\'
-#define ZEN_TA          WCHAR(0x30BF)  // L'ƒ^'
-#define ZEN_CHI         WCHAR(0x30C1)  // L'ƒ`'
-#define ZEN_TSU         WCHAR(0x30C4)  // L'ƒc'
-#define ZEN_TE          WCHAR(0x30C6)  // L'ƒe'
-#define ZEN_TO          WCHAR(0x30C8)  // L'ƒg'
-#define ZEN_NA          WCHAR(0x30CA)  // L'ƒi'
-#define ZEN_NI          WCHAR(0x30CB)  // L'ƒj'
-#define ZEN_NU          WCHAR(0x30CC)  // L'ƒk'
-#define ZEN_NE          WCHAR(0x30CD)  // L'ƒl'
-#define ZEN_NO          WCHAR(0x30CE)  // L'ƒm'
-#define ZEN_NN          WCHAR(0x30F3)  // L'ƒ“'
-#define ZEN_HA          WCHAR(0x30CF)  // L'ƒn'
-#define ZEN_HI          WCHAR(0x30D2)  // L'ƒq'
-#define ZEN_FU          WCHAR(0x30D5)  // L'ƒt'
-#define ZEN_HE          WCHAR(0x30D8)  // L'ƒw'
-#define ZEN_HO          WCHAR(0x30DB)  // L'ƒz'
-#define ZEN_MA          WCHAR(0x30DE)  // L'ƒ}'
-#define ZEN_MI          WCHAR(0x30DF)  // L'ƒ~'
-#define ZEN_MU          WCHAR(0x30E0)  // L'ƒ€'
-#define ZEN_ME          WCHAR(0x30E1)  // L'ƒ'
-#define ZEN_MO          WCHAR(0x30E2)  // L'ƒ‚'
-#define ZEN_YA          WCHAR(0x30E4)  // L'ƒ„'
-#define ZEN_YU          WCHAR(0x30E6)  // L'ƒ†'
-#define ZEN_YO          WCHAR(0x30E8)  // L'ƒˆ'
-#define ZEN_RA          WCHAR(0x30E9)  // L'ƒ‰'
-#define ZEN_RI          WCHAR(0x30EA)  // L'ƒŠ'
-#define ZEN_RU          WCHAR(0x30EB)  // L'ƒ‹'
-#define ZEN_RE          WCHAR(0x30EC)  // L'ƒŒ'
-#define ZEN_RO          WCHAR(0x30ED)  // L'ƒ'
-#define ZEN_WA          WCHAR(0x30EF)  // L'ƒ'
-#define ZEN_WI          WCHAR(0x30F0)  // L'ƒ'
-#define ZEN_WE          WCHAR(0x30F1)  // L'ƒ‘'
-#define ZEN_WO          WCHAR(0x30F2)  // L'ƒ’'
-#define ZEN_GA          WCHAR(0x30AC)  // L'ƒK'
-#define ZEN_GI          WCHAR(0x30AE)  // L'ƒM'
-#define ZEN_GU          WCHAR(0x30B0)  // L'ƒO'
-#define ZEN_GE          WCHAR(0x30B2)  // L'ƒQ'
-#define ZEN_GO          WCHAR(0x30B4)  // L'ƒS'
-#define ZEN_ZA          WCHAR(0x30B6)  // L'ƒU'
-#define ZEN_JI          WCHAR(0x30B8)  // L'ƒW'
-#define ZEN_ZU          WCHAR(0x30BA)  // L'ƒY'
-#define ZEN_ZE          WCHAR(0x30BC)  // L'ƒ['
-#define ZEN_ZO          WCHAR(0x30BE)  // L'ƒ]'
-#define ZEN_DA          WCHAR(0x30C0)  // L'ƒ_'
-#define ZEN_DI          WCHAR(0x30C2)  // L'ƒa'
-#define ZEN_DU          WCHAR(0x30C5)  // L'ƒd'
-#define ZEN_DE          WCHAR(0x30C7)  // L'ƒf'
-#define ZEN_DO          WCHAR(0x30C9)  // L'ƒh'
-#define ZEN_BA          WCHAR(0x30D0)  // L'ƒo'
-#define ZEN_BI          WCHAR(0x30D3)  // L'ƒr'
-#define ZEN_BU          WCHAR(0x30D6)  // L'ƒu'
-#define ZEN_BE          WCHAR(0x30D9)  // L'ƒx'
-#define ZEN_BO          WCHAR(0x30DC)  // L'ƒ{'
-#define ZEN_PA          WCHAR(0x30D1)  // L'ƒp'
-#define ZEN_PI          WCHAR(0x30D4)  // L'ƒs'
-#define ZEN_PU          WCHAR(0x30D7)  // L'ƒv'
-#define ZEN_PE          WCHAR(0x30DA)  // L'ƒy'
-#define ZEN_PO          WCHAR(0x30DD)  // L'ƒ|'
-#define ZEN_PROLONG     WCHAR(0x30FC)  // L'['
-#define ZEN_ULEFT       WCHAR(0x250F)  // L'„¬'
-#define ZEN_URIGHT      WCHAR(0x2513)  // L'„­'
-#define ZEN_LLEFT       WCHAR(0x2517)  // L'„¯'
-#define ZEN_LRIGHT      WCHAR(0x251B)  // L'„®'
-#define ZEN_VLINE       WCHAR(0x2503)  // L'„«'
-#define ZEN_HLINE       WCHAR(0x2501)  // L'„ª'
-#define ZEN_UP          WCHAR(0x2191)  // L'ª'
-#define ZEN_DOWN        WCHAR(0x2193)  // L'«'
-#define ZEN_LEFT        WCHAR(0x2190)  // L'©'
-#define ZEN_RIGHT       WCHAR(0x2192)  // L'¨'
-#define ZEN_ASTERISK    WCHAR(0xFF0A)  // L'–'
-#define ZEN_BULLET      WCHAR(0x25CF)  // L'œ'
-#define ZEN_UNDERLINE   WCHAR(0xFF3F)  // L'Q'
+// å…¨è§’æ–‡å­—ã€‚
+#define ZEN_SPACE       WCHAR(0x3000)  // L'ã€€'
+#define ZEN_BLACK       WCHAR(0x25A0)  // L'â– '
+#define ZEN_LARGE_A     WCHAR(0xFF21)  // L'ï¼¡'
+#define ZEN_LARGE_Z     WCHAR(0xFF3A)  // L'ï¼º'
+#define ZEN_SMALL_A     WCHAR(0xFF41)  // L'ï½'
+#define ZEN_SMALL_Z     WCHAR(0xFF5A)  // L'ï½š'
+#define ZEN_A           WCHAR(0x30A2)  // L'ã‚¢'
+#define ZEN_I           WCHAR(0x30A4)  // L'ã‚¤'
+#define ZEN_U           WCHAR(0x30A6)  // L'ã‚¦'
+#define ZEN_E           WCHAR(0x30A8)  // L'ã‚¨'
+#define ZEN_O           WCHAR(0x30AA)  // L'ã‚ª'
+#define ZEN_KA          WCHAR(0x30AB)  // L'ã‚«'
+#define ZEN_KI          WCHAR(0x30AD)  // L'ã‚­'
+#define ZEN_KU          WCHAR(0x30AF)  // L'ã‚¯'
+#define ZEN_KE          WCHAR(0x30B1)  // L'ã‚±'
+#define ZEN_KO          WCHAR(0x30B3)  // L'ã‚³'
+#define ZEN_SA          WCHAR(0x30B5)  // L'ã‚µ'
+#define ZEN_SI          WCHAR(0x30B7)  // L'ã‚·'
+#define ZEN_SU          WCHAR(0x30B9)  // L'ã‚¹'
+#define ZEN_SE          WCHAR(0x30BB)  // L'ã‚»'
+#define ZEN_SO          WCHAR(0x30BD)  // L'ã‚½'
+#define ZEN_TA          WCHAR(0x30BF)  // L'ã‚¿'
+#define ZEN_CHI         WCHAR(0x30C1)  // L'ãƒ'
+#define ZEN_TSU         WCHAR(0x30C4)  // L'ãƒ„'
+#define ZEN_TE          WCHAR(0x30C6)  // L'ãƒ†'
+#define ZEN_TO          WCHAR(0x30C8)  // L'ãƒˆ'
+#define ZEN_NA          WCHAR(0x30CA)  // L'ãƒŠ'
+#define ZEN_NI          WCHAR(0x30CB)  // L'ãƒ‹'
+#define ZEN_NU          WCHAR(0x30CC)  // L'ãƒŒ'
+#define ZEN_NE          WCHAR(0x30CD)  // L'ãƒ'
+#define ZEN_NO          WCHAR(0x30CE)  // L'ãƒ'
+#define ZEN_NN          WCHAR(0x30F3)  // L'ãƒ³'
+#define ZEN_HA          WCHAR(0x30CF)  // L'ãƒ'
+#define ZEN_HI          WCHAR(0x30D2)  // L'ãƒ’'
+#define ZEN_FU          WCHAR(0x30D5)  // L'ãƒ•'
+#define ZEN_HE          WCHAR(0x30D8)  // L'ãƒ˜'
+#define ZEN_HO          WCHAR(0x30DB)  // L'ãƒ›'
+#define ZEN_MA          WCHAR(0x30DE)  // L'ãƒ'
+#define ZEN_MI          WCHAR(0x30DF)  // L'ãƒŸ'
+#define ZEN_MU          WCHAR(0x30E0)  // L'ãƒ '
+#define ZEN_ME          WCHAR(0x30E1)  // L'ãƒ¡'
+#define ZEN_MO          WCHAR(0x30E2)  // L'ãƒ¢'
+#define ZEN_YA          WCHAR(0x30E4)  // L'ãƒ¤'
+#define ZEN_YU          WCHAR(0x30E6)  // L'ãƒ¦'
+#define ZEN_YO          WCHAR(0x30E8)  // L'ãƒ¨'
+#define ZEN_RA          WCHAR(0x30E9)  // L'ãƒ©'
+#define ZEN_RI          WCHAR(0x30EA)  // L'ãƒª'
+#define ZEN_RU          WCHAR(0x30EB)  // L'ãƒ«'
+#define ZEN_RE          WCHAR(0x30EC)  // L'ãƒ¬'
+#define ZEN_RO          WCHAR(0x30ED)  // L'ãƒ­'
+#define ZEN_WA          WCHAR(0x30EF)  // L'ãƒ¯'
+#define ZEN_WI          WCHAR(0x30F0)  // L'ãƒ°'
+#define ZEN_WE          WCHAR(0x30F1)  // L'ãƒ±'
+#define ZEN_WO          WCHAR(0x30F2)  // L'ãƒ²'
+#define ZEN_GA          WCHAR(0x30AC)  // L'ã‚¬'
+#define ZEN_GI          WCHAR(0x30AE)  // L'ã‚®'
+#define ZEN_GU          WCHAR(0x30B0)  // L'ã‚°'
+#define ZEN_GE          WCHAR(0x30B2)  // L'ã‚²'
+#define ZEN_GO          WCHAR(0x30B4)  // L'ã‚´'
+#define ZEN_ZA          WCHAR(0x30B6)  // L'ã‚¶'
+#define ZEN_JI          WCHAR(0x30B8)  // L'ã‚¸'
+#define ZEN_ZU          WCHAR(0x30BA)  // L'ã‚º'
+#define ZEN_ZE          WCHAR(0x30BC)  // L'ã‚¼'
+#define ZEN_ZO          WCHAR(0x30BE)  // L'ã‚¾'
+#define ZEN_DA          WCHAR(0x30C0)  // L'ãƒ€'
+#define ZEN_DI          WCHAR(0x30C2)  // L'ãƒ‚'
+#define ZEN_DU          WCHAR(0x30C5)  // L'ãƒ…'
+#define ZEN_DE          WCHAR(0x30C7)  // L'ãƒ‡'
+#define ZEN_DO          WCHAR(0x30C9)  // L'ãƒ‰'
+#define ZEN_BA          WCHAR(0x30D0)  // L'ãƒ'
+#define ZEN_BI          WCHAR(0x30D3)  // L'ãƒ“'
+#define ZEN_BU          WCHAR(0x30D6)  // L'ãƒ–'
+#define ZEN_BE          WCHAR(0x30D9)  // L'ãƒ™'
+#define ZEN_BO          WCHAR(0x30DC)  // L'ãƒœ'
+#define ZEN_PA          WCHAR(0x30D1)  // L'ãƒ‘'
+#define ZEN_PI          WCHAR(0x30D4)  // L'ãƒ”'
+#define ZEN_PU          WCHAR(0x30D7)  // L'ãƒ—'
+#define ZEN_PE          WCHAR(0x30DA)  // L'ãƒš'
+#define ZEN_PO          WCHAR(0x30DD)  // L'ãƒ'
+#define ZEN_PROLONG     WCHAR(0x30FC)  // L'ãƒ¼'
+#define ZEN_ULEFT       WCHAR(0x250F)  // L'â”'
+#define ZEN_URIGHT      WCHAR(0x2513)  // L'â”“'
+#define ZEN_LLEFT       WCHAR(0x2517)  // L'â”—'
+#define ZEN_LRIGHT      WCHAR(0x251B)  // L'â”›'
+#define ZEN_VLINE       WCHAR(0x2503)  // L'â”ƒ'
+#define ZEN_HLINE       WCHAR(0x2501)  // L'â”'
+#define ZEN_UP          WCHAR(0x2191)  // L'â†‘'
+#define ZEN_DOWN        WCHAR(0x2193)  // L'â†“'
+#define ZEN_LEFT        WCHAR(0x2190)  // L'â†'
+#define ZEN_RIGHT       WCHAR(0x2192)  // L'â†’'
+#define ZEN_ASTERISK    WCHAR(0xFF0A)  // L'ï¼Š'
+#define ZEN_BULLET      WCHAR(0x25CF)  // L'â—'
+#define ZEN_UNDERLINE   WCHAR(0xFF3F)  // L'ï¼¿'
 
 //////////////////////////////////////////////////////////////////////////////
-// ƒ‹[ƒ‹ŒQB
+// ãƒ«ãƒ¼ãƒ«ç¾¤ã€‚
 
 enum RULES
 {
-    RULE_DONTDOUBLEBLACK = (1 << 0),    // ˜A•‹ÖB
-    RULE_DONTCORNERBLACK = (1 << 1),    // l‹÷•‹ÖB
-    RULE_DONTTRIDIRECTIONS = (1 << 2),  // O•û•‹ÖB
-    RULE_DONTDIVIDE = (1 << 3),         // •ª’f‹ÖB
-    RULE_DONTFOURDIAGONALS = (1 << 4),  // •Îl˜A‹ÖB
-    RULE_POINTSYMMETRY = (1 << 5),      // •ƒ}ƒX“_‘ÎÌB
-    RULE_DONTTHREEDIAGONALS = (1 << 6), // •ÎO˜A‹ÖB
-    RULE_LINESYMMETRYV = (1 << 7),      // •ƒ}ƒXü‘ÎÌiƒ^ƒejB
-    RULE_LINESYMMETRYH = (1 << 8),      // •ƒ}ƒXü‘ÎÌiƒˆƒRjB
+    RULE_DONTDOUBLEBLACK = (1 << 0),    // é€£é»’ç¦ã€‚
+    RULE_DONTCORNERBLACK = (1 << 1),    // å››éš…é»’ç¦ã€‚
+    RULE_DONTTRIDIRECTIONS = (1 << 2),  // ä¸‰æ–¹é»’ç¦ã€‚
+    RULE_DONTDIVIDE = (1 << 3),         // åˆ†æ–­ç¦ã€‚
+    RULE_DONTFOURDIAGONALS = (1 << 4),  // é»’æ–œå››é€£ç¦ã€‚
+    RULE_POINTSYMMETRY = (1 << 5),      // é»’ãƒã‚¹ç‚¹å¯¾ç§°ã€‚
+    RULE_DONTTHREEDIAGONALS = (1 << 6), // é»’æ–œä¸‰é€£ç¦ã€‚
+    RULE_LINESYMMETRYV = (1 << 7),      // é»’ãƒã‚¹ç·šå¯¾ç§°ï¼ˆã‚¿ãƒ†ï¼‰ã€‚
+    RULE_LINESYMMETRYH = (1 << 8),      // é»’ãƒã‚¹ç·šå¯¾ç§°ï¼ˆãƒ¨ã‚³ï¼‰ã€‚
 };
 
-// ƒfƒtƒHƒ‹ƒg‚Ìƒ‹[ƒ‹B
+// ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆã®ãƒ«ãƒ¼ãƒ«ã€‚
 #define DEFAULT_RULES_ENGLISH (RULE_DONTDIVIDE)
 #define DEFAULT_RULES_JAPANESE (RULE_DONTDOUBLEBLACK | RULE_DONTCORNERBLACK | \
                                 RULE_DONTTRIDIRECTIONS | RULE_DONTDIVIDE)
 
-// ƒ‹[ƒ‹ŒQB
+// ãƒ«ãƒ¼ãƒ«ç¾¤ã€‚
 extern INT xg_nRules;
 
 //////////////////////////////////////////////////////////////////////////////
-// ƒ}ƒX‚ÌˆÊ’uB
+// ãƒã‚¹ã®ä½ç½®ã€‚
 
 struct XG_Pos
 {
-    int m_i;    // s‚ÌƒCƒ“ƒfƒbƒNƒXB
-    int m_j;    // —ñ‚ÌƒCƒ“ƒfƒbƒNƒXB
+    int m_i;    // è¡Œã®ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã€‚
+    int m_j;    // åˆ—ã®ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã€‚
 
-    // ƒRƒ“ƒXƒgƒ‰ƒNƒ^B
+    // ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ã€‚
     XG_Pos() { }
 
-    // ƒRƒ“ƒXƒgƒ‰ƒNƒ^B
+    // ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ã€‚
     xg_constexpr XG_Pos(int i, int j) : m_i(i), m_j(j) { }
 
-    // ƒRƒ“ƒXƒgƒ‰ƒNƒ^B
+    // ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ã€‚
     xg_constexpr XG_Pos(const XG_Pos& pos) : m_i(pos.m_i), m_j(pos.m_j) { }
 
-    // ”äŠrB
+    // æ¯”è¼ƒã€‚
     xg_constexpr bool __fastcall operator==(const XG_Pos& pos) const {
         return m_i == pos.m_i && m_j == pos.m_j;
     }
 
-    // ”äŠrB
+    // æ¯”è¼ƒã€‚
     xg_constexpr bool __fastcall operator!=(const XG_Pos& pos) const {
         return m_i != pos.m_i || m_j != pos.m_j;
     }
@@ -243,11 +243,11 @@ struct XG_PosHash
     }
 };
 
-// ƒLƒƒƒŒƒbƒg‚ÌˆÊ’uB
+// ã‚­ãƒ£ãƒ¬ãƒƒãƒˆã®ä½ç½®ã€‚
 extern XG_Pos xg_caret_pos;
 
 //////////////////////////////////////////////////////////////////////////////
-// ƒqƒ“ƒgƒf[ƒ^B
+// ãƒ’ãƒ³ãƒˆãƒ‡ãƒ¼ã‚¿ã€‚
 
 struct XG_Hint
 {
@@ -255,17 +255,17 @@ struct XG_Hint
     std::wstring    m_strWord;
     std::wstring    m_strHint;
 
-    // ƒRƒ“ƒXƒgƒ‰ƒNƒ^B
+    // ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ã€‚
     XG_Hint() { }
 
-    // ƒRƒ“ƒXƒgƒ‰ƒNƒ^B
+    // ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ã€‚
     inline
     XG_Hint(int number, const std::wstring& word, const std::wstring& hint) :
         m_number(number), m_strWord(word), m_strHint(hint)
     {
     }
 
-    // ƒRƒ“ƒXƒgƒ‰ƒNƒ^B
+    // ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ã€‚
     inline
     XG_Hint(int number, std::wstring&& word, std::wstring&& hint) :
         m_number(number),
@@ -274,7 +274,7 @@ struct XG_Hint
     {
     }
 
-    // ƒRƒs[ƒRƒ“ƒXƒgƒ‰ƒNƒ^B
+    // ã‚³ãƒ”ãƒ¼ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ã€‚
     inline
     XG_Hint(const XG_Hint& info) :
         m_number(info.m_number),
@@ -283,7 +283,7 @@ struct XG_Hint
     {
     }
 
-    // ƒRƒs[ƒRƒ“ƒXƒgƒ‰ƒNƒ^B
+    // ã‚³ãƒ”ãƒ¼ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ã€‚
     inline
     XG_Hint(XG_Hint&& info) :
         m_number(info.m_number),
@@ -322,25 +322,25 @@ namespace std
 extern std::vector<XG_Hint> xg_vecTateHints, xg_vecYokoHints;
 
 //////////////////////////////////////////////////////////////////////////////
-// ƒNƒƒXƒ[ƒh ƒf[ƒ^B
+// ã‚¯ãƒ­ã‚¹ãƒ¯ãƒ¼ãƒ‰ ãƒ‡ãƒ¼ã‚¿ã€‚
 
-// ƒNƒƒXƒ[ƒh‚ÌƒTƒCƒYB
+// ã‚¯ãƒ­ã‚¹ãƒ¯ãƒ¼ãƒ‰ã®ã‚µã‚¤ã‚ºã€‚
 extern volatile INT& xg_nRows;
 extern volatile INT& xg_nCols;
 
 class XG_Board
 {
 public:
-    // ƒRƒ“ƒXƒgƒ‰ƒNƒ^B
+    // ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ã€‚
     XG_Board();
     XG_Board(const XG_Board& xw);
     XG_Board(XG_Board&& xw);
 
-    // ‘ã“üB
+    // ä»£å…¥ã€‚
     void __fastcall operator=(const XG_Board& xw);
     void __fastcall operator=(XG_Board&& xw);
 
-    // ƒ}ƒX‚Ì“à—e‚ğæ“¾‚·‚éB
+    // ãƒã‚¹ã®å†…å®¹ã‚’å–å¾—ã™ã‚‹ã€‚
     WCHAR __fastcall GetAt(int i) const;
     WCHAR __fastcall GetAt(int iRow, int jCol) const {
         assert(0 <= iRow && iRow < xg_nRows);
@@ -350,7 +350,7 @@ public:
     WCHAR __fastcall GetAt(const XG_Pos& pos) const {
         return GetAt(pos.m_i, pos.m_j);
     }
-    // ƒ}ƒX‚Ì“à—e‚ğİ’è‚·‚éB
+    // ãƒã‚¹ã®å†…å®¹ã‚’è¨­å®šã™ã‚‹ã€‚
     void __fastcall SetAt(int i, WCHAR ch);
     void __fastcall SetAt(int iRow, int jCol, WCHAR ch) {
         assert(0 <= iRow && iRow < xg_nRows);
@@ -363,96 +363,96 @@ public:
     void __fastcall SetAt2(int i, int j, int nRows, int nCols, WCHAR ch) {
         m_vCells[i * nCols + j] = ch;
     }
-    // ‹ó‚Å‚Í‚È‚¢ƒ}ƒX‚ÌŒÂ”‚ğ•Ô‚·B
+    // ç©ºã§ã¯ãªã„ãƒã‚¹ã®å€‹æ•°ã‚’è¿”ã™ã€‚
     WCHAR& __fastcall Count();
     WCHAR __fastcall Count() const;
     VOID ReCount();
-    // ƒNƒŠƒA‚·‚éB
+    // ã‚¯ãƒªã‚¢ã™ã‚‹ã€‚
     void __fastcall clear();
-    // ƒŠƒZƒbƒg‚µ‚ÄƒTƒCƒY‚ğİ’è‚·‚éB
+    // ãƒªã‚»ãƒƒãƒˆã—ã¦ã‚µã‚¤ã‚ºã‚’è¨­å®šã™ã‚‹ã€‚
     void __fastcall ResetAndSetSize(int nRows, int nCols);
-    // ‰ğ‚©H
+    // è§£ã‹ï¼Ÿ
     bool __fastcall IsSolution() const;
-    // ³“–‚©‚Ç‚¤‚©H
+    // æ­£å½“ã‹ã©ã†ã‹ï¼Ÿ
     bool __fastcall IsValid() const;
-    // ³“–‚©‚Ç‚¤‚©HiŠÈ—ª”ÅA•ƒ}ƒX’Ç‰Á‚È‚µj
+    // æ­£å½“ã‹ã©ã†ã‹ï¼Ÿï¼ˆç°¡ç•¥ç‰ˆã€é»’ãƒã‚¹è¿½åŠ ãªã—ï¼‰
     bool __fastcall IsNoAddBlackOK() const;
-    // ”Ô†‚ğ‚Â‚¯‚éB
+    // ç•ªå·ã‚’ã¤ã‘ã‚‹ã€‚
     bool __fastcall DoNumbering();
-    // ”Ô†‚ğ‚Â‚¯‚éiƒ`ƒFƒbƒN‚È‚µjB
+    // ç•ªå·ã‚’ã¤ã‘ã‚‹ï¼ˆãƒã‚§ãƒƒã‚¯ãªã—ï¼‰ã€‚
     void __fastcall DoNumberingNoCheck();
 
-    // ƒNƒƒXƒ[ƒh‚Ì•¶š—ñ‚ğæ“¾‚·‚éB
+    // ã‚¯ãƒ­ã‚¹ãƒ¯ãƒ¼ãƒ‰ã®æ–‡å­—åˆ—ã‚’å–å¾—ã™ã‚‹ã€‚
     void __fastcall GetString(std::wstring& str) const;
     bool __fastcall SetString(const std::wstring& strToBeSet);
 
-    // ƒqƒ“ƒg•¶š—ñ‚ğæ“¾‚·‚éB
-    // hint_type 0: ƒ^ƒeB
-    // hint_type 1: ƒˆƒRB
-    // hint_type 2: ƒ^ƒe‚ÆƒˆƒRB
-    // hint_type 3: HTML‚Ìƒ^ƒeB
-    // hint_type 4: HTML‚ÌƒˆƒRB
-    // hint_type 5: HTML‚Ìƒ^ƒe‚ÆƒˆƒRB
+    // ãƒ’ãƒ³ãƒˆæ–‡å­—åˆ—ã‚’å–å¾—ã™ã‚‹ã€‚
+    // hint_type 0: ã‚¿ãƒ†ã€‚
+    // hint_type 1: ãƒ¨ã‚³ã€‚
+    // hint_type 2: ã‚¿ãƒ†ã¨ãƒ¨ã‚³ã€‚
+    // hint_type 3: HTMLã®ã‚¿ãƒ†ã€‚
+    // hint_type 4: HTMLã®ãƒ¨ã‚³ã€‚
+    // hint_type 5: HTMLã®ã‚¿ãƒ†ã¨ãƒ¨ã‚³ã€‚
     void __fastcall GetHintsStr(
         std::wstring& str, int hint_type, bool bShowAnswer = true) const;
 
-    // ƒNƒƒXƒ[ƒh‚ª‹ó‚©‚Ç‚¤‚©B
+    // ã‚¯ãƒ­ã‚¹ãƒ¯ãƒ¼ãƒ‰ãŒç©ºã‹ã©ã†ã‹ã€‚
     bool __fastcall IsEmpty() const;
-    // ƒNƒƒXƒ[ƒh‚ª‚·‚×‚Ä–„‚ßs‚­‚³‚ê‚Ä‚¢‚é‚©‚Ç‚¤‚©B
+    // ã‚¯ãƒ­ã‚¹ãƒ¯ãƒ¼ãƒ‰ãŒã™ã¹ã¦åŸ‹ã‚å°½ãã•ã‚Œã¦ã„ã‚‹ã‹ã©ã†ã‹ã€‚
     bool __fastcall IsFulfilled() const;
-    // l‹÷‚É•ƒ}ƒX‚ª‚ ‚é‚©‚Ç‚¤‚©B
+    // å››éš…ã«é»’ãƒã‚¹ãŒã‚ã‚‹ã‹ã©ã†ã‹ã€‚
     bool __fastcall CornerBlack() const;
-    // •ƒ}ƒX‚ª—×‚è‡‚Á‚Ä‚¢‚é‚©H
+    // é»’ãƒã‚¹ãŒéš£ã‚Šåˆã£ã¦ã„ã‚‹ã‹ï¼Ÿ
     bool __fastcall DoubleBlack() const;
-    // O•ûŒü‚ª•ƒ}ƒX‚ÅˆÍ‚Ü‚ê‚½ƒ}ƒX‚ª‚ ‚é‚©‚Ç‚¤‚©H
+    // ä¸‰æ–¹å‘ãŒé»’ãƒã‚¹ã§å›²ã¾ã‚ŒãŸãƒã‚¹ãŒã‚ã‚‹ã‹ã©ã†ã‹ï¼Ÿ
     bool __fastcall TriBlackAround() const;
-    // •ƒ}ƒX‚Å•ª’f‚³‚ê‚Ä‚¢‚é‚©‚Ç‚¤‚©H
+    // é»’ãƒã‚¹ã§åˆ†æ–­ã•ã‚Œã¦ã„ã‚‹ã‹ã©ã†ã‹ï¼Ÿ
     bool __fastcall DividedByBlack() const;
-    // ‚·‚×‚Ä‚Ìƒpƒ^[ƒ“‚ª³“–‚©‚Ç‚¤‚©’²‚×‚éB
+    // ã™ã¹ã¦ã®ãƒ‘ã‚¿ãƒ¼ãƒ³ãŒæ­£å½“ã‹ã©ã†ã‹èª¿ã¹ã‚‹ã€‚
     XG_EpvCode __fastcall EveryPatternValid1(
         std::vector<std::wstring>& vNotFoundWords,
         XG_Pos& pos, bool bNonBlackCheckSpace) const;
-    // ‚·‚×‚Ä‚Ìƒpƒ^[ƒ“‚ª³“–‚©‚Ç‚¤‚©’²‚×‚éB
+    // ã™ã¹ã¦ã®ãƒ‘ã‚¿ãƒ¼ãƒ³ãŒæ­£å½“ã‹ã©ã†ã‹èª¿ã¹ã‚‹ã€‚
     XG_EpvCode __fastcall EveryPatternValid2(
         std::vector<std::wstring>& vNotFoundWords,
         XG_Pos& pos, bool bNonBlackCheckSpace) const;
 
-    // •ƒ}ƒX‚ğ’u‚¯‚é‚©H
+    // é»’ãƒã‚¹ã‚’ç½®ã‘ã‚‹ã‹ï¼Ÿ
     bool __fastcall CanPutBlack(int iRow, int jCol) const;
 
-    // ƒ}ƒX‚ÌO•ûŒü‚ª•ƒ}ƒX‚ÅˆÍ‚Ü‚ê‚Ä‚¢‚é‚©H
+    // ãƒã‚¹ã®ä¸‰æ–¹å‘ãŒé»’ãƒã‚¹ã§å›²ã¾ã‚Œã¦ã„ã‚‹ã‹ï¼Ÿ
     int __fastcall BlacksAround(int iRow, int jCol) const;
 
-    // •ƒ}ƒX‚ª“_‘ÎÌ‚©H
+    // é»’ãƒã‚¹ãŒç‚¹å¯¾ç§°ã‹ï¼Ÿ
     bool IsPointSymmetry() const;
-    // •ƒ}ƒX‚ªü‘ÎÌ‚©H
+    // é»’ãƒã‚¹ãŒç·šå¯¾ç§°ã‹ï¼Ÿ
     bool IsLineSymmetry() const;
-    // •ƒ}ƒX‚ªü‘ÎÌiƒ^ƒej‚©H
+    // é»’ãƒã‚¹ãŒç·šå¯¾ç§°ï¼ˆã‚¿ãƒ†ï¼‰ã‹ï¼Ÿ
     bool IsLineSymmetryV() const;
-    // •ƒ}ƒX‚ªü‘ÎÌiƒˆƒRj‚©H
+    // é»’ãƒã‚¹ãŒç·šå¯¾ç§°ï¼ˆãƒ¨ã‚³ï¼‰ã‹ï¼Ÿ
     bool IsLineSymmetryH() const;
-    // •K—v‚È‚çƒ‹[ƒ‹‚É]‚Á‚Ä‘ÎÌ‚É‚·‚éB
+    // å¿…è¦ãªã‚‰ãƒ«ãƒ¼ãƒ«ã«å¾“ã£ã¦å¯¾ç§°ã«ã™ã‚‹ã€‚
     void Mirror();
 
-    // •ÎO˜A‚©H
+    // é»’æ–œä¸‰é€£ã‹ï¼Ÿ
     bool ThreeDiagonals() const;
-    // •Îl˜A‚©H
+    // é»’æ–œå››é€£ã‹ï¼Ÿ
     bool FourDiagonals() const;
 
-    // c‚Æ‰¡‚ğ“ü‚ê‘Ö‚¦‚éB
+    // ç¸¦ã¨æ¨ªã‚’å…¥ã‚Œæ›¿ãˆã‚‹ã€‚
     void SwapXandY();
 
-    // ƒ^ƒeŒü‚«‚Éƒpƒ^[ƒ“‚ğ“Ç‚İæ‚éB
+    // ã‚¿ãƒ†å‘ãã«ãƒ‘ã‚¿ãƒ¼ãƒ³ã‚’èª­ã¿å–ã‚‹ã€‚
     std::wstring __fastcall GetPatternV(const XG_Pos& pos) const;
-    // ƒˆƒRŒü‚«‚Éƒpƒ^[ƒ“‚ğ“Ç‚İæ‚éB
+    // ãƒ¨ã‚³å‘ãã«ãƒ‘ã‚¿ãƒ¼ãƒ³ã‚’èª­ã¿å–ã‚‹ã€‚
     std::wstring __fastcall GetPatternH(const XG_Pos& pos) const;
 
 public:
-    // ƒ}ƒXî•ñB
+    // ãƒã‚¹æƒ…å ±ã€‚
     std::vector<WCHAR> m_vCells;
 };
 
-// ”Õ‚ÉƒTƒCƒYî•ñ‚ğ’Ç‰ÁB
+// ç›¤ã«ã‚µã‚¤ã‚ºæƒ…å ±ã‚’è¿½åŠ ã€‚
 class XG_BoardEx : public XG_Board
 {
 public:
@@ -481,38 +481,38 @@ public:
         return *this;
     }
 
-    // ƒJƒEƒ“ƒg‚ğXV‚·‚éB
+    // ã‚«ã‚¦ãƒ³ãƒˆã‚’æ›´æ–°ã™ã‚‹ã€‚
     void ReCount();
 
-    // s‚ğ‘}“ü‚·‚éB
+    // è¡Œã‚’æŒ¿å…¥ã™ã‚‹ã€‚
     void InsertRow(INT iRow);
-    // —ñ‚ğ‘}“ü‚·‚éB
+    // åˆ—ã‚’æŒ¿å…¥ã™ã‚‹ã€‚
     void InsertColumn(INT jCol);
-    // s‚ğíœ‚·‚éB
+    // è¡Œã‚’å‰Šé™¤ã™ã‚‹ã€‚
     void DeleteRow(INT iRow);
-    // —ñ‚ğíœ‚·‚éB
+    // åˆ—ã‚’å‰Šé™¤ã™ã‚‹ã€‚
     void DeleteColumn(INT jCol);
-    // ƒ}ƒX‚Ì“à—e‚ğæ“¾‚·‚éB
+    // ãƒã‚¹ã®å†…å®¹ã‚’å–å¾—ã™ã‚‹ã€‚
     WCHAR __fastcall GetAt(int ij) const;
-    // ƒ}ƒX‚Ì“à—e‚ğæ“¾‚·‚éB
+    // ãƒã‚¹ã®å†…å®¹ã‚’å–å¾—ã™ã‚‹ã€‚
     WCHAR __fastcall GetAt(int iRow, int jCol) const {
         assert(0 <= iRow && iRow < m_nRows);
         assert(0 <= jCol && jCol < m_nCols);
         return GetAt(iRow * m_nCols + jCol);
     }
-    // ƒ}ƒX‚Ì“à—e‚ğæ“¾‚·‚éB
+    // ãƒã‚¹ã®å†…å®¹ã‚’å–å¾—ã™ã‚‹ã€‚
     WCHAR __fastcall GetAt(const XG_Pos& pos) const {
         return GetAt(pos.m_i, pos.m_j);
     }
-    // ƒ}ƒX‚Ì“à—e‚ğİ’è‚·‚éB
+    // ãƒã‚¹ã®å†…å®¹ã‚’è¨­å®šã™ã‚‹ã€‚
     void __fastcall SetAt(int ij, WCHAR ch);
-    // ƒ}ƒX‚Ì“à—e‚ğİ’è‚·‚éB
+    // ãƒã‚¹ã®å†…å®¹ã‚’è¨­å®šã™ã‚‹ã€‚
     void __fastcall SetAt(int iRow, int jCol, WCHAR ch) {
         assert(0 <= iRow && iRow < m_nRows);
         assert(0 <= jCol && jCol < m_nCols);
         SetAt(iRow * m_nCols + jCol, ch);
     }
-    // ƒ}ƒX‚Ì“à—e‚ğİ’è‚·‚éB
+    // ãƒã‚¹ã®å†…å®¹ã‚’è¨­å®šã™ã‚‹ã€‚
     void __fastcall SetAt(const XG_Pos& pos, WCHAR ch) {
         SetAt(pos.m_i, pos.m_j, ch);
     }
@@ -541,7 +541,7 @@ inline bool operator!=(const XG_Board& xw1, const XG_Board& xw2) {
     return !(xw1 == xw2);
 }
 
-// ƒNƒƒXƒ[ƒh‚Ì•`‰æƒTƒCƒY‚ğŒvZ‚·‚éB
+// ã‚¯ãƒ­ã‚¹ãƒ¯ãƒ¼ãƒ‰ã®æç”»ã‚µã‚¤ã‚ºã‚’è¨ˆç®—ã™ã‚‹ã€‚
 inline void __fastcall XgGetXWordExtent(LPSIZE psiz)
 {
     INT nCellSize;
@@ -553,7 +553,7 @@ inline void __fastcall XgGetXWordExtent(LPSIZE psiz)
     psiz->cy = static_cast<int>(xg_nMargin * 2 + xg_nRows * nCellSize);
 }
 
-// ƒNƒƒXƒ[ƒh‚Ì•`‰æƒTƒCƒY‚ğŒvZ‚·‚éB
+// ã‚¯ãƒ­ã‚¹ãƒ¯ãƒ¼ãƒ‰ã®æç”»ã‚µã‚¤ã‚ºã‚’è¨ˆç®—ã™ã‚‹ã€‚
 inline void __fastcall XgGetMarkWordExtent(int count, LPSIZE psiz)
 {
     INT nCellSize;
@@ -565,120 +565,120 @@ inline void __fastcall XgGetMarkWordExtent(int count, LPSIZE psiz)
     psiz->cy = static_cast<int>(xg_nNarrowMargin * 2 + 1 * nCellSize);
 }
 
-// ƒNƒƒXƒ[ƒh‚ÌƒCƒ[ƒW‚ğì¬‚·‚éB
+// ã‚¯ãƒ­ã‚¹ãƒ¯ãƒ¼ãƒ‰ã®ã‚¤ãƒ¡ãƒ¼ã‚¸ã‚’ä½œæˆã™ã‚‹ã€‚
 HBITMAP __fastcall XgCreateXWordImage(XG_Board& xw, LPSIZE psiz, bool bCaret);
 
-// “ñdƒ}ƒX’PŒê‚ğ•`‰æ‚·‚éB
+// äºŒé‡ãƒã‚¹å˜èªã‚’æç”»ã™ã‚‹ã€‚
 void __fastcall XgDrawMarkWord(HDC hdc, LPSIZE psiz);
 
-// ƒNƒƒXƒ[ƒh‚ğ•`‰æ‚·‚éB
+// ã‚¯ãƒ­ã‚¹ãƒ¯ãƒ¼ãƒ‰ã‚’æç”»ã™ã‚‹ã€‚
 void __fastcall XgDrawXWord(XG_Board& xw, HDC hdc, LPSIZE psiz, bool bCaret);
 
-// ‰ğ‚ğ‹‚ß‚é‚Ì‚ğŠJnB
+// è§£ã‚’æ±‚ã‚ã‚‹ã®ã‚’é–‹å§‹ã€‚
 void __fastcall XgStartSolve_AddBlack(void);
 
-// ‰ğ‚ğ‹‚ß‚é‚Ì‚ğŠJni•ƒ}ƒX’Ç‰Á‚È‚µjB
+// è§£ã‚’æ±‚ã‚ã‚‹ã®ã‚’é–‹å§‹ï¼ˆé»’ãƒã‚¹è¿½åŠ ãªã—ï¼‰ã€‚
 void __fastcall XgStartSolve_NoAddBlack(void);
 
-// ‰ğ‚ğ‹‚ß‚é‚Ì‚ğŠJniƒXƒ}[ƒg‰ğŒˆjB
+// è§£ã‚’æ±‚ã‚ã‚‹ã®ã‚’é–‹å§‹ï¼ˆã‚¹ãƒãƒ¼ãƒˆè§£æ±ºï¼‰ã€‚
 void __fastcall XgStartSolve_Smart(void);
 
-// ‰ğ‚ğ‹‚ß‚æ‚¤‚Æ‚µ‚½Œã‚ÌŒãˆ—B
+// è§£ã‚’æ±‚ã‚ã‚ˆã†ã¨ã—ãŸå¾Œã®å¾Œå‡¦ç†ã€‚
 void __fastcall XgEndSolve(void);
 
-// •ƒ}ƒXƒpƒ^[ƒ“‚ğ¶¬‚·‚éB
+// é»’ãƒã‚¹ãƒ‘ã‚¿ãƒ¼ãƒ³ã‚’ç”Ÿæˆã™ã‚‹ã€‚
 void __fastcall XgStartGenerateBlacks(void);
 
-// ƒXƒe[ƒ^ƒXƒo[‚ğXV‚·‚éB
+// ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹ãƒãƒ¼ã‚’æ›´æ–°ã™ã‚‹ã€‚
 void __fastcall XgUpdateStatusBar(HWND hwnd);
 
-// •ƒ}ƒXƒ‹[ƒ‹‚ğƒ`ƒFƒbƒN‚·‚éB
+// é»’ãƒã‚¹ãƒ«ãƒ¼ãƒ«ã‚’ãƒã‚§ãƒƒã‚¯ã™ã‚‹ã€‚
 void __fastcall XgRuleCheck(HWND hwnd);
 
 //////////////////////////////////////////////////////////////////////////////
 
-// ƒNƒƒXƒ[ƒh‚Ì–â‘èB
+// ã‚¯ãƒ­ã‚¹ãƒ¯ãƒ¼ãƒ‰ã®å•é¡Œã€‚
 extern XG_BoardEx       xg_xword;
 
-// ƒNƒƒXƒ[ƒh‚Ì‰ğB
+// ã‚¯ãƒ­ã‚¹ãƒ¯ãƒ¼ãƒ‰ã®è§£ã€‚
 extern XG_Board         xg_solution;
 
-// ƒNƒƒXƒ[ƒh‚Ì‰ğ‚ª‚ ‚é‚©‚Ç‚¤‚©H
+// ã‚¯ãƒ­ã‚¹ãƒ¯ãƒ¼ãƒ‰ã®è§£ãŒã‚ã‚‹ã‹ã©ã†ã‹ï¼Ÿ
 extern bool             xg_bSolved;
 
-// ƒwƒbƒ_[•¶š—ñB
+// ãƒ˜ãƒƒãƒ€ãƒ¼æ–‡å­—åˆ—ã€‚
 extern std::wstring     xg_strHeader;
-// ”õl•¶š—ñB
+// å‚™è€ƒæ–‡å­—åˆ—ã€‚
 extern std::wstring     xg_strNotes;
 
-// •ƒ}ƒX‰æ‘œB
+// é»’ãƒã‚¹ç”»åƒã€‚
 extern HBITMAP xg_hbmBlackCell;
 extern HENHMETAFILE xg_hBlackCellEMF;
 extern std::wstring xg_strBlackCellImage;
 
-// ƒrƒ…[ƒ‚[ƒhB
+// ãƒ“ãƒ¥ãƒ¼ãƒ¢ãƒ¼ãƒ‰ã€‚
 typedef enum XG_VIEW_MODE
 {
-    XG_VIEW_NORMAL, // ’Êíƒrƒ…[B
-    XG_VIEW_SKELETON // ƒXƒPƒ‹ƒgƒ“ƒrƒ…[B
+    XG_VIEW_NORMAL, // é€šå¸¸ãƒ“ãƒ¥ãƒ¼ã€‚
+    XG_VIEW_SKELETON // ã‚¹ã‚±ãƒ«ãƒˆãƒ³ãƒ“ãƒ¥ãƒ¼ã€‚
 } XG_VIEW_MODE;
 extern XG_VIEW_MODE xg_nViewMode;
 
 //////////////////////////////////////////////////////////////////////////////
 // inline functions
 
-// ƒRƒ“ƒXƒgƒ‰ƒNƒ^B
+// ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ã€‚
 inline XG_Board::XG_Board()
 {
 }
 
-// ƒRƒs[ƒRƒ“ƒXƒgƒ‰ƒNƒ^B
+// ã‚³ãƒ”ãƒ¼ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ã€‚
 inline XG_Board::XG_Board(const XG_Board& xw) : m_vCells(xw.m_vCells)
 {
 }
 
-// ‘ã“üB
+// ä»£å…¥ã€‚
 inline void __fastcall XG_Board::operator=(const XG_Board& xw)
 {
     m_vCells = xw.m_vCells;
 }
 
-// ƒRƒ“ƒXƒgƒ‰ƒNƒ^B
+// ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ã€‚
 inline XG_Board::XG_Board(XG_Board&& xw) : m_vCells(xw.m_vCells)
 {
 }
 
-// ‘ã“üB
+// ä»£å…¥ã€‚
 inline void __fastcall XG_Board::operator=(XG_Board&& xw)
 {
     m_vCells = std::move(xw.m_vCells);
 }
 
-// ƒ}ƒX‚Ì“à—e‚ğæ“¾‚·‚éB
+// ãƒã‚¹ã®å†…å®¹ã‚’å–å¾—ã™ã‚‹ã€‚
 inline WCHAR __fastcall XG_Board::GetAt(int i) const
 {
     assert(0 <= i && i < xg_nRows * xg_nCols);
     return m_vCells[i];
 }
 
-// ƒ}ƒX‚Ì“à—e‚ğæ“¾‚·‚éB
+// ãƒã‚¹ã®å†…å®¹ã‚’å–å¾—ã™ã‚‹ã€‚
 inline WCHAR __fastcall XG_BoardEx::GetAt(int ij) const {
     return m_vCells[ij];
 }
 
-// ‹óƒ}ƒX‚¶‚á‚È‚¢ƒ}ƒX‚ÌŒÂ”‚ğ•Ô‚·B
+// ç©ºãƒã‚¹ã˜ã‚ƒãªã„ãƒã‚¹ã®å€‹æ•°ã‚’è¿”ã™ã€‚
 inline WCHAR& __fastcall XG_Board::Count()
 {
     return m_vCells[xg_nRows * xg_nCols];
 }
 
-// ‹óƒ}ƒX‚¶‚á‚È‚¢ƒ}ƒX‚ÌŒÂ”‚ğ•Ô‚·B
+// ç©ºãƒã‚¹ã˜ã‚ƒãªã„ãƒã‚¹ã®å€‹æ•°ã‚’è¿”ã™ã€‚
 inline WCHAR __fastcall XG_Board::Count() const
 {
     return m_vCells[xg_nRows * xg_nCols];
 }
 
-// ƒNƒƒXƒ[ƒh‚ª‹ó‚©‚Ç‚¤‚©B
+// ã‚¯ãƒ­ã‚¹ãƒ¯ãƒ¼ãƒ‰ãŒç©ºã‹ã©ã†ã‹ã€‚
 inline bool __fastcall XG_Board::IsEmpty() const
 {
 #if 1
@@ -696,7 +696,7 @@ inline bool __fastcall XG_Board::IsEmpty() const
 #endif
 }
 
-// ƒNƒƒXƒ[ƒh‚ª‚·‚×‚Ä–„‚ßs‚­‚³‚ê‚Ä‚¢‚é‚©‚Ç‚¤‚©B
+// ã‚¯ãƒ­ã‚¹ãƒ¯ãƒ¼ãƒ‰ãŒã™ã¹ã¦åŸ‹ã‚å°½ãã•ã‚Œã¦ã„ã‚‹ã‹ã©ã†ã‹ã€‚
 inline bool __fastcall XG_Board::IsFulfilled() const
 {
 #if 1
@@ -714,20 +714,20 @@ inline bool __fastcall XG_Board::IsFulfilled() const
 #endif
 }
 
-// ƒŠƒZƒbƒg‚µ‚ÄƒTƒCƒY‚ğİ’è‚·‚éB
+// ãƒªã‚»ãƒƒãƒˆã—ã¦ã‚µã‚¤ã‚ºã‚’è¨­å®šã™ã‚‹ã€‚
 inline void __fastcall XG_Board::ResetAndSetSize(int nRows, int nCols)
 {
     m_vCells.assign(nRows * nCols + 1, ZEN_SPACE);
     m_vCells[nRows * nCols] = 0;
 }
 
-// ƒNƒŠƒA‚·‚éB
+// ã‚¯ãƒªã‚¢ã™ã‚‹ã€‚
 inline void __fastcall XG_Board::clear()
 {
     ResetAndSetSize(xg_nRows, xg_nCols);
 }
 
-// ƒ}ƒX‚Ì“à—e‚ğİ’è‚·‚éB
+// ãƒã‚¹ã®å†…å®¹ã‚’è¨­å®šã™ã‚‹ã€‚
 inline void __fastcall XG_Board::SetAt(int i, WCHAR ch)
 {
     assert(0 <= i && i < xg_nRows * xg_nCols);
@@ -748,7 +748,7 @@ inline void __fastcall XG_Board::SetAt(int i, WCHAR ch)
     ch2 = ch;
 }
 
-// ƒ}ƒX‚Ì“à—e‚ğİ’è‚·‚éB
+// ãƒã‚¹ã®å†…å®¹ã‚’è¨­å®šã™ã‚‹ã€‚
 inline void __fastcall XG_BoardEx::SetAt(int ij, WCHAR ch)
 {
     WCHAR& ch2 = m_vCells[ij];
@@ -768,7 +768,7 @@ inline void __fastcall XG_BoardEx::SetAt(int ij, WCHAR ch)
     ch2 = ch;
 }
 
-// ƒ}ƒX‚ÌO•ûŒü‚ª•ƒ}ƒX‚ÅˆÍ‚Ü‚ê‚Ä‚¢‚é‚©H
+// ãƒã‚¹ã®ä¸‰æ–¹å‘ãŒé»’ãƒã‚¹ã§å›²ã¾ã‚Œã¦ã„ã‚‹ã‹ï¼Ÿ
 inline int __fastcall XG_Board::BlacksAround(int iRow, int jCol) const
 {
     assert(0 <= iRow && iRow < xg_nRows);
@@ -794,13 +794,13 @@ inline int __fastcall XG_Board::BlacksAround(int iRow, int jCol) const
     return count;
 }
 
-// •ƒ}ƒX‚ğ’u‚¯‚é‚©H
+// é»’ãƒã‚¹ã‚’ç½®ã‘ã‚‹ã‹ï¼Ÿ
 inline bool __fastcall XG_Board::CanPutBlack(int iRow, int jCol) const
 {
     assert(0 <= iRow && iRow < xg_nRows);
     assert(0 <= jCol && jCol < xg_nCols);
 
-    // l‹÷‚©‚Ç‚¤‚©H
+    // å››éš…ã‹ã©ã†ã‹ï¼Ÿ
     if (iRow == 0 && jCol == 0)
         return false;
     if (iRow == xg_nRows - 1 && jCol == 0)
@@ -810,7 +810,7 @@ inline bool __fastcall XG_Board::CanPutBlack(int iRow, int jCol) const
     if (iRow == 0 && jCol == xg_nCols - 1)
         return false;
 
-    // •ƒ}ƒX‚ª—×‚è‡‚Á‚Ä‚µ‚Ü‚¤‚©H
+    // é»’ãƒã‚¹ãŒéš£ã‚Šåˆã£ã¦ã—ã¾ã†ã‹ï¼Ÿ
     if (0 <= iRow - 1 && GetAt(iRow - 1, jCol) == ZEN_BLACK)
         return false;
     if (iRow + 1 < xg_nRows && GetAt(iRow + 1, jCol) == ZEN_BLACK)
@@ -820,7 +820,7 @@ inline bool __fastcall XG_Board::CanPutBlack(int iRow, int jCol) const
     if (jCol + 1 < xg_nCols && GetAt(iRow, jCol + 1) == ZEN_BLACK)
         return false;
 
-    // O•ûŒü‚ª•ƒ}ƒX‚ÅˆÍ‚Ü‚ê‚½ƒ}ƒX‚ª‚Å‚«‚é‚©‚Ç‚¤‚©H
+    // ä¸‰æ–¹å‘ãŒé»’ãƒã‚¹ã§å›²ã¾ã‚ŒãŸãƒã‚¹ãŒã§ãã‚‹ã‹ã©ã†ã‹ï¼Ÿ
     BOOL bBlack = (GetAt(iRow, jCol) == ZEN_BLACK);
     if (0 <= iRow - 1) {
         if (BlacksAround(iRow - 1, jCol) >= 2 + bBlack)
@@ -842,28 +842,28 @@ inline bool __fastcall XG_Board::CanPutBlack(int iRow, int jCol) const
     return true;
 }
 
-// ƒ†[ƒU‚Í“ú–{l‚©H
+// ãƒ¦ãƒ¼ã‚¶ã¯æ—¥æœ¬äººã‹ï¼Ÿ
 inline BOOL XgIsUserJapanese(VOID)
 {
-    static BOOL s_bInit = FALSE, s_bIsJapanese = FALSE; // ‚‘¬‰»‚Ì‚½‚ßƒLƒƒƒbƒVƒ…‚ğg‚¤B
+    static BOOL s_bInit = FALSE, s_bIsJapanese = FALSE; // é«˜é€ŸåŒ–ã®ãŸã‚ã‚­ãƒ£ãƒƒã‚·ãƒ¥ã‚’ä½¿ã†ã€‚
     if (!s_bInit) {
-        // IDS_MAIN_LANGUAGE‚Ì’l‚ª"Japanese"‚¾‚Á‚½‚ç“ú–{Œê‚ÆŒ©‚È‚·B
+        // IDS_MAIN_LANGUAGEã®å€¤ãŒ"Japanese"ã ã£ãŸã‚‰æ—¥æœ¬èªã¨è¦‹ãªã™ã€‚
         WCHAR szText[64];
         LoadStringW(NULL, IDS_MAIN_LANGUAGE, szText, _countof(szText));
         s_bIsJapanese = (lstrcmpiW(szText, L"Japanese") == 0);
         s_bInit = TRUE;
     }
     return s_bIsJapanese;
-    // return PRIMARYLANGID(LANGIDFROMLCID(GetThreadLocale())) == LANG_JAPANESE; // ‚±‚ê‚Í‚¾‚ßB
+    // return PRIMARYLANGID(LANGIDFROMLCID(GetThreadLocale())) == LANG_JAPANESE; // ã“ã‚Œã¯ã ã‚ã€‚
 }
 
-// ”Ô†‚ğ•\¦‚·‚é‚©H
+// ç•ªå·ã‚’è¡¨ç¤ºã™ã‚‹ã‹ï¼Ÿ
 extern BOOL xg_bShowNumbering;
-// ƒLƒƒƒŒƒbƒg‚ğ•\¦‚·‚é‚©H
+// ã‚­ãƒ£ãƒ¬ãƒƒãƒˆã‚’è¡¨ç¤ºã™ã‚‹ã‹ï¼Ÿ
 extern BOOL xg_bShowCaret;
-// “ñdƒ}ƒX•¶šB
+// äºŒé‡ãƒã‚¹æ–‡å­—ã€‚
 extern std::wstring xg_strDoubleFrameLetters;
-// “ñdƒ}ƒX•¶š‚ğ•\¦‚·‚é‚©H
+// äºŒé‡ãƒã‚¹æ–‡å­—ã‚’è¡¨ç¤ºã™ã‚‹ã‹ï¼Ÿ
 extern BOOL xg_bShowDoubleFrameLetters;
 
 //////////////////////////////////////////////////////////////////////////////

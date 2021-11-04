@@ -1,13 +1,13 @@
-//////////////////////////////////////////////////////////////////////////////
+ï»¿//////////////////////////////////////////////////////////////////////////////
 // Utils.cpp --- XWord Giver (Japanese Crossword Generator)
 // Copyright (C) 2012-2020 Katayama Hirofumi MZ. All Rights Reserved.
-// (Japanese, Shift_JIS)
+// (Japanese, UTF-8)
 
 #include "XWordGiver.hpp"
 
 //////////////////////////////////////////////////////////////////////////////
 
-// ƒŠƒ\[ƒX•¶š—ñ‚ğ“Ç‚İ‚ŞB
+// ãƒªã‚½ãƒ¼ã‚¹æ–‡å­—åˆ—ã‚’èª­ã¿è¾¼ã‚€ã€‚
 LPWSTR __fastcall XgLoadStringDx1(int id)
 {
     static WCHAR sz[256];
@@ -17,7 +17,7 @@ LPWSTR __fastcall XgLoadStringDx1(int id)
     return sz;
 }
 
-// ƒŠƒ\[ƒX•¶š—ñ‚ğ“Ç‚İ‚ŞB
+// ãƒªã‚½ãƒ¼ã‚¹æ–‡å­—åˆ—ã‚’èª­ã¿è¾¼ã‚€ã€‚
 LPWSTR __fastcall XgLoadStringDx2(int id)
 {
     static WCHAR sz[256];
@@ -27,10 +27,10 @@ LPWSTR __fastcall XgLoadStringDx2(int id)
     return sz;
 }
 
-// ƒtƒBƒ‹ƒ^[•¶š—ñ‚ğì‚éB
+// ãƒ•ã‚£ãƒ«ã‚¿ãƒ¼æ–‡å­—åˆ—ã‚’ä½œã‚‹ã€‚
 LPWSTR __fastcall XgMakeFilterString(LPWSTR psz)
 {
-    // •¶š—ñ’†‚Ì '|' ‚ğ '\0' ‚É•ÏŠ·‚·‚éB
+    // æ–‡å­—åˆ—ä¸­ã® '|' ã‚’ '\0' ã«å¤‰æ›ã™ã‚‹ã€‚
     LPWSTR pch = psz;
     while (*pch != L'\0') {
         if (*pch == L'|')
@@ -40,7 +40,7 @@ LPWSTR __fastcall XgMakeFilterString(LPWSTR psz)
     return psz;
 }
 
-// ƒVƒ‡[ƒgƒJƒbƒg‚Ìƒ^[ƒQƒbƒg‚ÌƒpƒX‚ğæ“¾‚·‚éB
+// ã‚·ãƒ§ãƒ¼ãƒˆã‚«ãƒƒãƒˆã®ã‚¿ãƒ¼ã‚²ãƒƒãƒˆã®ãƒ‘ã‚¹ã‚’å–å¾—ã™ã‚‹ã€‚
 bool __fastcall XgGetPathOfShortcutW(LPCWSTR pszLnkFile, LPWSTR pszPath)
 {
     IShellLinkW*     pShellLink;
@@ -73,7 +73,7 @@ bool __fastcall XgGetPathOfShortcutW(LPCWSTR pszLnkFile, LPWSTR pszPath)
     return bRes;
 }
 
-// •¶š—ñ‚Ì‘OŒã‚Ì‹ó”’‚ğæ‚èœ‚­B
+// æ–‡å­—åˆ—ã®å‰å¾Œã®ç©ºç™½ã‚’å–ã‚Šé™¤ãã€‚
 void __fastcall xg_str_trim(std::wstring& str)
 {
     static const LPCWSTR s_white_space = L" \t\r\n\x3000";
@@ -89,7 +89,7 @@ void __fastcall xg_str_trim(std::wstring& str)
         str.clear();
 }
 
-// •¶š—ñ‚ğ’uŠ·‚·‚éB
+// æ–‡å­—åˆ—ã‚’ç½®æ›ã™ã‚‹ã€‚
 void __fastcall xg_str_replace_all(
     std::wstring &s, const std::wstring& from, const std::wstring& to)
 {
@@ -104,51 +104,51 @@ void __fastcall xg_str_replace_all(
     }
 }
 
-// •¶š—ñ‚©‚çƒ}ƒ‹ƒ`ƒZƒbƒg‚Ö•ÏŠ·‚·‚éB
+// æ–‡å­—åˆ—ã‹ã‚‰ãƒãƒ«ãƒã‚»ãƒƒãƒˆã¸å¤‰æ›ã™ã‚‹ã€‚
 void __fastcall xg_str_to_multiset(
     std::unordered_multiset<WCHAR>& mset, const std::wstring& str)
 {
-    // ƒ}ƒ‹ƒ`ƒZƒbƒg‚ª‹ó‚Å‚ ‚é‚±‚Æ‚ğ‰¼’è‚·‚éB
+    // ãƒãƒ«ãƒã‚»ãƒƒãƒˆãŒç©ºã§ã‚ã‚‹ã“ã¨ã‚’ä»®å®šã™ã‚‹ã€‚
     assert(mset.empty());
     //mset.clear();
 
-    // –‘O‚É—\–ñ‚µ‚ÄAƒXƒs[ƒh‚ğ“¾‚éB
+    // äº‹å‰ã«äºˆç´„ã—ã¦ã€ã‚¹ãƒ”ãƒ¼ãƒ‰ã‚’å¾—ã‚‹ã€‚
     mset.reserve(str.size());
 
-    // Še•¶š‚É‚Â‚¢‚ÄB
+    // å„æ–‡å­—ã«ã¤ã„ã¦ã€‚
     for (auto ch : str) {
-        // •ƒ}ƒX‚â‹ó”’ƒ}ƒX‚ğ–³‹‚·‚éB
+        // é»’ãƒã‚¹ã‚„ç©ºç™½ãƒã‚¹ã‚’ç„¡è¦–ã™ã‚‹ã€‚
         if (ch == ZEN_BLACK || ch == ZEN_SPACE)
             continue;
 
-        // •¶š‚ğƒ}ƒ‹ƒ`ƒZƒbƒg‚É’Ç‰Á‚·‚éB
+        // æ–‡å­—ã‚’ãƒãƒ«ãƒã‚»ãƒƒãƒˆã«è¿½åŠ ã™ã‚‹ã€‚
         mset.emplace(ch);
     }
 }
 
-// ƒxƒNƒ^[‚©‚çƒ}ƒ‹ƒ`ƒZƒbƒg‚Ö•ÏŠ·‚·‚éB
+// ãƒ™ã‚¯ã‚¿ãƒ¼ã‹ã‚‰ãƒãƒ«ãƒã‚»ãƒƒãƒˆã¸å¤‰æ›ã™ã‚‹ã€‚
 void __fastcall xg_vec_to_multiset(
     std::unordered_multiset<WCHAR>& mset, const std::vector<WCHAR>& str)
 {
-    // ƒ}ƒ‹ƒ`ƒZƒbƒg‚ª‹ó‚Å‚ ‚é‚±‚Æ‚ğ‰¼’è‚·‚éB
+    // ãƒãƒ«ãƒã‚»ãƒƒãƒˆãŒç©ºã§ã‚ã‚‹ã“ã¨ã‚’ä»®å®šã™ã‚‹ã€‚
     assert(mset.empty());
     //mset.clear();
 
-    // –‘O‚É—\–ñ‚µ‚ÄAƒXƒs[ƒh‚ğ“¾‚éB
+    // äº‹å‰ã«äºˆç´„ã—ã¦ã€ã‚¹ãƒ”ãƒ¼ãƒ‰ã‚’å¾—ã‚‹ã€‚
     mset.reserve(str.size());
 
-    // Še•¶š‚É‚Â‚¢‚ÄB
+    // å„æ–‡å­—ã«ã¤ã„ã¦ã€‚
     for (auto ch : str) {
-        // •ƒ}ƒX‚â‹ó”’ƒ}ƒX‚ğ–³‹‚·‚éB
+        // é»’ãƒã‚¹ã‚„ç©ºç™½ãƒã‚¹ã‚’ç„¡è¦–ã™ã‚‹ã€‚
         if (ch == ZEN_BLACK || ch == ZEN_SPACE)
             continue;
 
-        // •¶š‚ğƒ}ƒ‹ƒ`ƒZƒbƒg‚É’Ç‰Á‚·‚éB
+        // æ–‡å­—ã‚’ãƒãƒ«ãƒã‚»ãƒƒãƒˆã«è¿½åŠ ã™ã‚‹ã€‚
         mset.emplace(ch);
     }
 }
 
-// •”•ªƒ}ƒ‹ƒ`ƒZƒbƒg‚©‚Ç‚¤‚©H
+// éƒ¨åˆ†ãƒãƒ«ãƒã‚»ãƒƒãƒˆã‹ã©ã†ã‹ï¼Ÿ
 bool __fastcall xg_submultiseteq(const std::unordered_multiset<WCHAR>& ms1,
                                  const std::unordered_multiset<WCHAR>& ms2)
 {
@@ -162,83 +162,83 @@ bool __fastcall xg_submultiseteq(const std::unordered_multiset<WCHAR>& ms1,
 // UTF-8 -> Unicode.
 std::wstring __fastcall XgUtf8ToUnicode(const std::string& ansi)
 {
-    // •ÏŠ·æ‚Ì•¶š”‚ğæ“¾‚·‚éB
+    // å¤‰æ›å…ˆã®æ–‡å­—æ•°ã‚’å–å¾—ã™ã‚‹ã€‚
     const INT cch = MultiByteToWideChar(CP_UTF8, 0, ansi.data(), -1, nullptr, 0);
     if (cch == 0)
         return L"";
 
-    // •ÏŠ·æ‚Ìƒoƒbƒtƒ@‚ğŠm•Û‚·‚éB
+    // å¤‰æ›å…ˆã®ãƒãƒƒãƒ•ã‚¡ã‚’ç¢ºä¿ã™ã‚‹ã€‚
     std::wstring uni(cch - 1, 0);
 
-    // •ÏŠ·‚µ‚ÄŠi”[‚·‚éB
+    // å¤‰æ›ã—ã¦æ ¼ç´ã™ã‚‹ã€‚
     MultiByteToWideChar(CP_UTF8, 0, ansi.data(), -1, &uni[0], cch);
     return uni;
 }
 
-// ƒ_ƒCƒAƒƒO‚ğ’†‰›‚É‚æ‚¹‚éŠÖ”B
+// ãƒ€ã‚¤ã‚¢ãƒ­ã‚°ã‚’ä¸­å¤®ã«ã‚ˆã›ã‚‹é–¢æ•°ã€‚
 void __fastcall XgCenterDialog(HWND hwnd)
 {
-    // qƒEƒBƒ“ƒhƒE‚©H
+    // å­ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‹ï¼Ÿ
     bool bChild = !!(::GetWindowLong(hwnd, GWL_STYLE) & WS_CHILD);
 
-    // ƒI[ƒi[ƒEƒBƒ“ƒhƒEieƒEƒBƒ“ƒhƒEj‚ğæ“¾‚·‚éB
+    // ã‚ªãƒ¼ãƒŠãƒ¼ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ï¼ˆè¦ªã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ï¼‰ã‚’å–å¾—ã™ã‚‹ã€‚
     HWND hwndOwner;
     if (bChild)
         hwndOwner = ::GetParent(hwnd);
     else
         hwndOwner = ::GetWindow(hwnd, GW_OWNER);
 
-    // ƒI[ƒi[ƒEƒBƒ“ƒhƒEieƒEƒBƒ“ƒhƒEj‚ÌÀ•W‚ğæ“¾‚·‚éB
-    // ƒI[ƒi[ƒEƒBƒ“ƒhƒEieƒEƒBƒ“ƒhƒEj‚ª‚È‚¢‚Æ‚«‚Íƒ[ƒNƒGƒŠƒA‚ğg‚¤B
+    // ã‚ªãƒ¼ãƒŠãƒ¼ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ï¼ˆè¦ªã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ï¼‰ã®åº§æ¨™ã‚’å–å¾—ã™ã‚‹ã€‚
+    // ã‚ªãƒ¼ãƒŠãƒ¼ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ï¼ˆè¦ªã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ï¼‰ãŒãªã„ã¨ãã¯ãƒ¯ãƒ¼ã‚¯ã‚¨ãƒªã‚¢ã‚’ä½¿ã†ã€‚
     RECT rc, rcOwner;
     if (hwndOwner != nullptr)
         ::GetWindowRect(hwndOwner, &rcOwner);
     else
         ::SystemParametersInfo(SPI_GETWORKAREA, 0, &rcOwner, 0);
 
-    // ƒEƒBƒ“ƒhƒE‚ÌÀ•W‚ğƒXƒNƒŠ[ƒ“À•W‚Åæ“¾‚·‚éB
+    // ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®åº§æ¨™ã‚’ã‚¹ã‚¯ãƒªãƒ¼ãƒ³åº§æ¨™ã§å–å¾—ã™ã‚‹ã€‚
     ::GetWindowRect(hwnd, &rc);
 
-    // ƒXƒNƒŠ[ƒ“À•W‚Å’†‰›Šñ‚¹‚ÌˆÊ’u‚ğŒvZ‚·‚éB
+    // ã‚¹ã‚¯ãƒªãƒ¼ãƒ³åº§æ¨™ã§ä¸­å¤®å¯„ã›ã®ä½ç½®ã‚’è¨ˆç®—ã™ã‚‹ã€‚
     POINT pt;
     pt.x = rcOwner.left +
         ((rcOwner.right - rcOwner.left) - (rc.right - rc.left)) / 2;
     pt.y = rcOwner.top +
         ((rcOwner.bottom - rcOwner.top) - (rc.bottom - rc.top)) / 2;
 
-    // qƒEƒBƒ“ƒhƒE‚È‚çAƒXƒNƒŠ[ƒ“À•W‚ğƒNƒ‰ƒCƒAƒ“ƒgÀ•W‚É•ÏŠ·‚·‚éB
+    // å­ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãªã‚‰ã€ã‚¹ã‚¯ãƒªãƒ¼ãƒ³åº§æ¨™ã‚’ã‚¯ãƒ©ã‚¤ã‚¢ãƒ³ãƒˆåº§æ¨™ã«å¤‰æ›ã™ã‚‹ã€‚
     if (bChild && hwndOwner != nullptr)
         ::ScreenToClient(hwndOwner, &pt);
 
-    // ƒEƒBƒ“ƒhƒE‚ÌˆÊ’u‚ğİ’è‚·‚éB
+    // ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®ä½ç½®ã‚’è¨­å®šã™ã‚‹ã€‚
     ::SetWindowPos(hwnd, nullptr, pt.x, pt.y, 0, 0,
         SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE);
 
-    // ƒ[ƒNƒGƒŠƒA‚©‚ç‚Í‚İ‚Å‚Ä‚¢‚½‚çC³‚·‚éB
+    // ãƒ¯ãƒ¼ã‚¯ã‚¨ãƒªã‚¢ã‹ã‚‰ã¯ã¿ã§ã¦ã„ãŸã‚‰ä¿®æ­£ã™ã‚‹ã€‚
     ::SendMessageW(hwnd, DM_REPOSITION, 0, 0);
 }
 
-// ƒƒbƒZ[ƒWƒ{ƒbƒNƒXƒtƒbƒN—pB
+// ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ãƒœãƒƒã‚¯ã‚¹ãƒ•ãƒƒã‚¯ç”¨ã€‚
 static HHOOK s_hMsgBoxHook = nullptr;
 
-// ƒƒbƒZ[ƒWƒ{ƒbƒNƒXƒtƒbƒN—p‚ÌŠÖ”B
+// ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ãƒœãƒƒã‚¯ã‚¹ãƒ•ãƒƒã‚¯ç”¨ã®é–¢æ•°ã€‚
 extern "C" LRESULT CALLBACK
 XgMsgBoxCbtProc(int nCode, WPARAM wParam, LPARAM /*lParam*/)
 {
     if (nCode == HCBT_ACTIVATE) {
-        // ƒEƒBƒ“ƒhƒE‚ªƒAƒNƒeƒBƒu‰»‚³‚ê‚æ‚¤‚Æ‚µ‚Ä‚¢‚éB
-        // ƒEƒBƒ“ƒhƒEƒnƒ“ƒhƒ‹‚ğæ“¾B
+        // ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãŒã‚¢ã‚¯ãƒ†ã‚£ãƒ–åŒ–ã•ã‚Œã‚ˆã†ã¨ã—ã¦ã„ã‚‹ã€‚
+        // ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãƒãƒ³ãƒ‰ãƒ«ã‚’å–å¾—ã€‚
         HWND hwnd = reinterpret_cast<HWND>(wParam);
 
-        // ƒEƒBƒ“ƒhƒEƒNƒ‰ƒX‚ÌŠm”FB
+        // ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚¯ãƒ©ã‚¹ã®ç¢ºèªã€‚
         WCHAR szClassName[MAX_PATH];
         ::GetClassNameW(hwnd, szClassName, ARRAYSIZE(szClassName));
         if (::lstrcmpiW(szClassName, L"#32770") == 0) {
-            // ƒ_ƒCƒAƒƒO‚¾‚Á‚½B‚¨‚»‚ç‚­ƒƒbƒZ[ƒWƒ{ƒbƒNƒXB
-            // ’†‰›Šñ‚¹‚·‚éB
+            // ãƒ€ã‚¤ã‚¢ãƒ­ã‚°ã ã£ãŸã€‚ãŠãã‚‰ããƒ¡ãƒƒã‚»ãƒ¼ã‚¸ãƒœãƒƒã‚¯ã‚¹ã€‚
+            // ä¸­å¤®å¯„ã›ã™ã‚‹ã€‚
             XgCenterDialog(hwnd);
 
-            // ƒtƒbƒN‚ğ‰ğœ‚·‚éB
+            // ãƒ•ãƒƒã‚¯ã‚’è§£é™¤ã™ã‚‹ã€‚
             if (s_hMsgBoxHook != nullptr && UnhookWindowsHookEx(s_hMsgBoxHook))
                 s_hMsgBoxHook = nullptr;
         }
@@ -247,93 +247,93 @@ XgMsgBoxCbtProc(int nCode, WPARAM wParam, LPARAM /*lParam*/)
     return 0;
 }
 
-// ’†‰›Šñ‚¹ƒƒbƒZ[ƒWƒ{ƒbƒNƒX‚ğ•\¦‚·‚éB
+// ä¸­å¤®å¯„ã›ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ãƒœãƒƒã‚¯ã‚¹ã‚’è¡¨ç¤ºã™ã‚‹ã€‚
 int __fastcall
 XgCenterMessageBoxW(HWND hwnd, LPCWSTR pszText, LPCWSTR pszCaption, UINT uType)
 {
-    // ƒtƒbƒN‚³‚ê‚Ä‚¢‚½‚çƒtƒbƒN‚ğ‰ğœ‚·‚éB
+    // ãƒ•ãƒƒã‚¯ã•ã‚Œã¦ã„ãŸã‚‰ãƒ•ãƒƒã‚¯ã‚’è§£é™¤ã™ã‚‹ã€‚
     if (s_hMsgBoxHook != nullptr && UnhookWindowsHookEx(s_hMsgBoxHook))
         s_hMsgBoxHook = nullptr;
 
-    // ƒtƒbƒN‚Ì‚½‚ß‚ÉƒEƒBƒ“ƒhƒE‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚ğæ“¾‚·‚éB
+    // ãƒ•ãƒƒã‚¯ã®ãŸã‚ã«ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã‚’å–å¾—ã™ã‚‹ã€‚
     HINSTANCE hInst =
         reinterpret_cast<HINSTANCE>(::GetWindowLongPtr(hwnd, GWLP_HINSTANCE));
 
-    // ƒtƒbƒN‚ğŠJnB
+    // ãƒ•ãƒƒã‚¯ã‚’é–‹å§‹ã€‚
     DWORD dwThreadID = ::GetCurrentThreadId();
     s_hMsgBoxHook = ::SetWindowsHookEx(WH_CBT, XgMsgBoxCbtProc, hInst, dwThreadID);
 
-    // ƒƒbƒZ[ƒWƒ{ƒbƒNƒX‚ğ•\¦‚·‚éB
+    // ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ãƒœãƒƒã‚¯ã‚¹ã‚’è¡¨ç¤ºã™ã‚‹ã€‚
     int nID = MessageBoxW(hwnd, pszText, pszCaption, uType);
 
-    // ƒtƒbƒN‚³‚ê‚Ä‚¢‚½‚çƒtƒbƒN‚ğ‰ğœ‚·‚éB
+    // ãƒ•ãƒƒã‚¯ã•ã‚Œã¦ã„ãŸã‚‰ãƒ•ãƒƒã‚¯ã‚’è§£é™¤ã™ã‚‹ã€‚
     if (s_hMsgBoxHook != nullptr && UnhookWindowsHookEx(s_hMsgBoxHook))
         s_hMsgBoxHook = nullptr;
 
-    return nID;     // ƒƒbƒZ[ƒWƒ{ƒbƒNƒX‚Ì–ß‚è’lB
+    return nID;     // ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ãƒœãƒƒã‚¯ã‚¹ã®æˆ»ã‚Šå€¤ã€‚
 }
 
-// ’†‰›Šñ‚¹ƒƒbƒZ[ƒWƒ{ƒbƒNƒX‚ğ•\¦‚·‚éB
+// ä¸­å¤®å¯„ã›ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ãƒœãƒƒã‚¯ã‚¹ã‚’è¡¨ç¤ºã™ã‚‹ã€‚
 int __fastcall
 XgCenterMessageBoxIndirectW(LPMSGBOXPARAMS lpMsgBoxParams)
 {
-    // ƒtƒbƒN‚³‚ê‚Ä‚¢‚½‚çƒtƒbƒN‚ğ‰ğœ‚·‚éB
+    // ãƒ•ãƒƒã‚¯ã•ã‚Œã¦ã„ãŸã‚‰ãƒ•ãƒƒã‚¯ã‚’è§£é™¤ã™ã‚‹ã€‚
     if (s_hMsgBoxHook != nullptr && UnhookWindowsHookEx(s_hMsgBoxHook))
         s_hMsgBoxHook = nullptr;
 
-    // ƒtƒbƒN‚Ì‚½‚ß‚ÉƒEƒBƒ“ƒhƒE‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚ğæ“¾‚·‚éB
+    // ãƒ•ãƒƒã‚¯ã®ãŸã‚ã«ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã‚’å–å¾—ã™ã‚‹ã€‚
     HINSTANCE hInst =
         reinterpret_cast<HINSTANCE>(
             ::GetWindowLongPtr(lpMsgBoxParams->hwndOwner, GWLP_HINSTANCE));
 
-    // ƒtƒbƒN‚ğŠJnB
+    // ãƒ•ãƒƒã‚¯ã‚’é–‹å§‹ã€‚
     DWORD dwThreadID = ::GetCurrentThreadId();
     s_hMsgBoxHook = ::SetWindowsHookEx(WH_CBT, XgMsgBoxCbtProc, hInst, dwThreadID);
 
-    // ƒƒbƒZ[ƒWƒ{ƒbƒNƒX‚ğ•\¦‚·‚éB
+    // ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ãƒœãƒƒã‚¯ã‚¹ã‚’è¡¨ç¤ºã™ã‚‹ã€‚
     int nID = MessageBoxIndirectW(lpMsgBoxParams);
 
-    // ƒtƒbƒN‚³‚ê‚Ä‚¢‚½‚çƒtƒbƒN‚ğ‰ğœ‚·‚éB
+    // ãƒ•ãƒƒã‚¯ã•ã‚Œã¦ã„ãŸã‚‰ãƒ•ãƒƒã‚¯ã‚’è§£é™¤ã™ã‚‹ã€‚
     if (s_hMsgBoxHook != nullptr && UnhookWindowsHookEx(s_hMsgBoxHook))
         s_hMsgBoxHook = nullptr;
 
-    return nID;     // ƒƒbƒZ[ƒWƒ{ƒbƒNƒX‚Ì–ß‚è’lB
+    return nID;     // ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ãƒœãƒƒã‚¯ã‚¹ã®æˆ»ã‚Šå€¤ã€‚
 }
 
-// ReadMe‚ğŠJ‚­B
+// ReadMeã‚’é–‹ãã€‚
 void __fastcall XgOpenReadMe(HWND hwnd)
 {
-    // Àsƒtƒ@ƒCƒ‹‚ÌƒpƒX‚ğæ“¾B
+    // å®Ÿè¡Œãƒ•ã‚¡ã‚¤ãƒ«ã®ãƒ‘ã‚¹ã‚’å–å¾—ã€‚
     WCHAR szPath[MAX_PATH];
     ::GetModuleFileNameW(nullptr, szPath, ARRAYSIZE(szPath));
 
-    // ReadMe‚Ö‚ÌƒpƒX‚ğì¬B
+    // ReadMeã¸ã®ãƒ‘ã‚¹ã‚’ä½œæˆã€‚
     PathRemoveFileSpec(szPath);
     PathAppend(szPath, XgLoadStringDx1(IDS_README));
 
-    // ReadMe‚ğŠJ‚­B
+    // ReadMeã‚’é–‹ãã€‚
     ShellExecuteW(hwnd, nullptr, szPath, nullptr, nullptr, SW_SHOWNORMAL);
 }
 
-// License‚ğŠJ‚­B
+// Licenseã‚’é–‹ãã€‚
 void __fastcall XgOpenLicense(HWND hwnd)
 {
-    // Àsƒtƒ@ƒCƒ‹‚ÌƒpƒX‚ğæ“¾B
+    // å®Ÿè¡Œãƒ•ã‚¡ã‚¤ãƒ«ã®ãƒ‘ã‚¹ã‚’å–å¾—ã€‚
     WCHAR szPath[MAX_PATH];
     ::GetModuleFileNameW(nullptr, szPath, ARRAYSIZE(szPath));
 
-    // License‚Ö‚ÌƒpƒX‚ğì¬B
+    // Licenseã¸ã®ãƒ‘ã‚¹ã‚’ä½œæˆã€‚
     PathRemoveFileSpec(szPath);
     PathAppend(szPath, XgLoadStringDx1(IDS_LICENSE));
 
-    // License‚ğŠJ‚­B
+    // Licenseã‚’é–‹ãã€‚
     ShellExecuteW(hwnd, nullptr, szPath, nullptr, nullptr, SW_SHOWNORMAL);
 }
 
-// ƒtƒ@ƒCƒ‹‚ª‘‚«‚İ‰Â”\‚©H
+// ãƒ•ã‚¡ã‚¤ãƒ«ãŒæ›¸ãè¾¼ã¿å¯èƒ½ã‹ï¼Ÿ
 bool __fastcall XgCanWriteFile(const WCHAR *pszFile)
 {
-    // ‘‚«‚İ‚ğ‚·‚×‚«‚Å‚È‚¢“ÁêƒtƒHƒ‹ƒ_‚ÌIDB
+    // æ›¸ãè¾¼ã¿ã‚’ã™ã¹ãã§ãªã„ç‰¹æ®Šãƒ•ã‚©ãƒ«ãƒ€ã®IDã€‚
     static const int s_anFolders[] = {
         CSIDL_PROGRAM_FILES,
         CSIDL_PROGRAM_FILES_COMMON,
@@ -344,27 +344,27 @@ bool __fastcall XgCanWriteFile(const WCHAR *pszFile)
         CSIDL_WINDOWS
     };
 
-    // —^‚¦‚ç‚ê‚½ƒpƒXƒtƒ@ƒCƒ‹–¼B
+    // ä¸ãˆã‚‰ã‚ŒãŸãƒ‘ã‚¹ãƒ•ã‚¡ã‚¤ãƒ«åã€‚
     std::wstring str(pszFile);
 
     for (size_t i = 0; i < ARRAYSIZE(s_anFolders); ++i) {
-        // “ÁêƒtƒHƒ‹ƒ_‚ÌˆÊ’u‚Ìæ“¾B
+        // ç‰¹æ®Šãƒ•ã‚©ãƒ«ãƒ€ã®ä½ç½®ã®å–å¾—ã€‚
         LPITEMIDLIST pidl = NULL;
         if (SUCCEEDED(::SHGetSpecialFolderLocation(
             xg_hMainWnd, s_anFolders[i], &pidl)))
         {
-            // “ÁêƒtƒHƒ‹ƒ_‚ÌƒpƒX‚ğ“¾‚éB
+            // ç‰¹æ®Šãƒ•ã‚©ãƒ«ãƒ€ã®ãƒ‘ã‚¹ã‚’å¾—ã‚‹ã€‚
             WCHAR szPath[MAX_PATH];
             ::SHGetPathFromIDListW(pidl, szPath);
             ::CoTaskMemFree(pidl);
 
-            // ƒpƒX‚ªˆê’v‚·‚é‚©H
+            // ãƒ‘ã‚¹ãŒä¸€è‡´ã™ã‚‹ã‹ï¼Ÿ
             if (str.find(szPath) == 0)
-                return false;   // ‚±‚±‚É‚Í•Û‘¶‚·‚×‚«‚Å‚È‚¢B
+                return false;   // ã“ã“ã«ã¯ä¿å­˜ã™ã¹ãã§ãªã„ã€‚
         }
     }
 
-    // ‘‚«‚İ‚Å‚«‚é‚©H
+    // æ›¸ãè¾¼ã¿ã§ãã‚‹ã‹ï¼Ÿ
     return _waccess(pszFile, 02) == 0;
 }
 
@@ -404,7 +404,7 @@ std::string XgUnicodeToAnsi(const std::wstring& wide)
     return ansi;
 }
 
-// JSON•¶š—ñ‚ğì‚éB
+// JSONæ–‡å­—åˆ—ã‚’ä½œã‚‹ã€‚
 std::wstring XgJsonEncodeString(const std::wstring& str)
 {
     std::wstring encoded;
@@ -434,7 +434,7 @@ std::wstring XgJsonEncodeString(const std::wstring& str)
     return encoded;
 }
 
-// 16i‚Å•\‚·B
+// 16é€²ã§è¡¨ã™ã€‚
 char XgToHex(char code)
 {
     static const char s_hex[] = "0123456789abcdef";
@@ -443,7 +443,7 @@ char XgToHex(char code)
 }
 
 //////////////////////////////////////////////////////////////////////////////
-// ƒpƒX‚ğì‚éB
+// ãƒ‘ã‚¹ã‚’ä½œã‚‹ã€‚
 
 BOOL XgMakePathW(LPCWSTR pszPath)
 {
@@ -469,7 +469,7 @@ BOOL XgMakePathW(LPCWSTR pszPath)
 
 //////////////////////////////////////////////////////////////////////////////
 
-// ƒGƒ“ƒfƒBƒAƒ“•ÏŠ·B
+// ã‚¨ãƒ³ãƒ‡ã‚£ã‚¢ãƒ³å¤‰æ›ã€‚
 void XgSwab(LPBYTE pbFile, DWORD cbFile)
 {
     LPWORD pw = reinterpret_cast<LPWORD>(pbFile);
@@ -485,7 +485,7 @@ void XgSwab(LPBYTE pbFile, DWORD cbFile)
 
 //////////////////////////////////////////////////////////////////////////////
 
-// HTMLŒ`®‚ÌƒNƒŠƒbƒvƒ{[ƒhƒf[ƒ^‚ğì¬‚·‚éB
+// HTMLå½¢å¼ã®ã‚¯ãƒªãƒƒãƒ—ãƒœãƒ¼ãƒ‰ãƒ‡ãƒ¼ã‚¿ã‚’ä½œæˆã™ã‚‹ã€‚
 std::string XgMakeClipHtmlData(
     const std::string& html_utf8, const std::string& style_utf8/* = ""*/)
 {
@@ -538,7 +538,7 @@ std::string XgMakeClipHtmlData(
     return str;
 }
 
-// HTMLŒ`®‚ÌƒNƒŠƒbƒvƒ{[ƒhƒf[ƒ^‚ğì¬‚·‚éB
+// HTMLå½¢å¼ã®ã‚¯ãƒªãƒƒãƒ—ãƒœãƒ¼ãƒ‰ãƒ‡ãƒ¼ã‚¿ã‚’ä½œæˆã™ã‚‹ã€‚
 std::string XgMakeClipHtmlData(
     const std::wstring& html_wide, const std::wstring& style_wide/* = L""*/)
 {

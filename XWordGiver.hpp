@@ -1,7 +1,7 @@
-//////////////////////////////////////////////////////////////////////////////
+ï»¿//////////////////////////////////////////////////////////////////////////////
 // XWordGiver.hpp --- XWord Giver (Japanese Crossword Generator)
 // Copyright (C) 2012-2020 Katayama Hirofumi MZ. All Rights Reserved.
-// (Japanese, Shift_JIS)
+// (Japanese, UTF-8)
 
 #ifndef __XWORDGIVER_XG_H__
 #define __XWORDGIVER_XG_H__
@@ -80,7 +80,7 @@
 using json = nlohmann::json;
 
 //////////////////////////////////////////////////////////////////////////////
-// std::wstring‚ğ”äŠr‚·‚éƒtƒ@ƒ“ƒNƒ^B
+// std::wstringã‚’æ¯”è¼ƒã™ã‚‹ãƒ•ã‚¡ãƒ³ã‚¯ã‚¿ã€‚
 
 class xg_wstrinxg_less
 {
@@ -92,7 +92,7 @@ public:
     }
 };
 
-// ’·‚³‚Åstd::wstring‚ğ”äŠr‚·‚éƒtƒ@ƒ“ƒNƒ^B
+// é•·ã•ã§std::wstringã‚’æ¯”è¼ƒã™ã‚‹ãƒ•ã‚¡ãƒ³ã‚¯ã‚¿ã€‚
 class xg_wstring_size_greater
 {
 public:
@@ -104,83 +104,83 @@ public:
 };
 
 //////////////////////////////////////////////////////////////////////////////
-// “ü—Íƒ‚[ƒhB
+// å…¥åŠ›ãƒ¢ãƒ¼ãƒ‰ã€‚
 
 enum XG_InputMode
 {
-    xg_im_KANA,     // ƒJƒi“ü—ÍB
-    xg_im_ABC,      // ‰pš“ü—ÍB
-    xg_im_KANJI,    // Š¿š“ü—ÍB
-    xg_im_RUSSIA,   // ƒƒVƒA•¶šB
-    xg_im_DIGITS,   // ”š“ü—Í
+    xg_im_KANA,     // ã‚«ãƒŠå…¥åŠ›ã€‚
+    xg_im_ABC,      // è‹±å­—å…¥åŠ›ã€‚
+    xg_im_KANJI,    // æ¼¢å­—å…¥åŠ›ã€‚
+    xg_im_RUSSIA,   // ãƒ­ã‚·ã‚¢æ–‡å­—ã€‚
+    xg_im_DIGITS,   // æ•°å­—å…¥åŠ›
 };
 extern XG_InputMode xg_imode;
 
 //////////////////////////////////////////////////////////////////////////////
-// •¶š‚Ì”»’èB
+// æ–‡å­—ã®åˆ¤å®šã€‚
 
-// ”¼Šp‘å•¶š‰pš‚©H
+// åŠè§’å¤§æ–‡å­—è‹±å­—ã‹ï¼Ÿ
 inline bool XgIsCharHankakuUpperW(WCHAR ch)
 {
     return (L'A' <= ch && ch <= L'Z');
 }
 
-// ”¼Šp¬•¶š‰pš‚©H
+// åŠè§’å°æ–‡å­—è‹±å­—ã‹ï¼Ÿ
 inline bool XgIsCharHankakuLowerW(WCHAR ch)
 {
     return (L'a' <= ch && ch <= L'z');
 }
 
-// ”¼Šp‰pš‚©H
+// åŠè§’è‹±å­—ã‹ï¼Ÿ
 inline bool XgIsCharHankakuAlphaW(WCHAR ch)
 {
     return XgIsCharHankakuUpperW(ch) || XgIsCharHankakuLowerW(ch);
 }
 
-// ‘SŠp‘å•¶š‰pš‚©H
+// å…¨è§’å¤§æ–‡å­—è‹±å­—ã‹ï¼Ÿ
 inline bool XgIsCharZenkakuUpperW(WCHAR ch)
 {
     return (L'\xFF21' <= ch && ch <= L'\xFF3A');
 }
 
-// ‘SŠp¬•¶š‰pš‚©H
+// å…¨è§’å°æ–‡å­—è‹±å­—ã‹ï¼Ÿ
 inline bool XgIsCharZenkakuLowerW(WCHAR ch)
 {
     return (L'\xFF41' <= ch && ch <= L'\xFF5A');
 }
 
-// ‘SŠp‰pš‚©H
+// å…¨è§’è‹±å­—ã‹ï¼Ÿ
 inline bool XgIsCharZenkakuAlphaW(WCHAR ch)
 {
     return XgIsCharZenkakuUpperW(ch) || XgIsCharZenkakuLowerW(ch);
 }
 
-// ‚Ğ‚ç‚ª‚È‚©H
+// ã²ã‚‰ãŒãªã‹ï¼Ÿ
 inline bool XgIsCharHiraganaW(WCHAR ch)
 {
     return ((L'\x3041' <= ch && ch <= L'\x3093') || ch == L'\x30FC' || ch == L'\x3094');
 }
 
-// ƒJƒ^ƒJƒi‚©H
+// ã‚«ã‚¿ã‚«ãƒŠã‹ï¼Ÿ
 inline bool XgIsCharKatakanaW(WCHAR ch)
 {
     return ((L'\x30A1' <= ch && ch <= L'\x30F3') || ch == L'\x30FC' || ch == L'\x30F4');
 }
 
-// ‚©‚È‚©H
+// ã‹ãªã‹ï¼Ÿ
 inline bool XgIsCharKanaW(WCHAR ch)
 {
     return XgIsCharHiraganaW(ch) || XgIsCharKatakanaW(ch);
 }
 
-// Š¿š‚©H
+// æ¼¢å­—ã‹ï¼Ÿ
 inline bool XgIsCharKanjiW(WCHAR ch)
 {
     return ((0x3400 <= ch && ch <= 0x9FFF) ||
             (0xF900 <= ch && ch <= 0xFAFF) || ch == L'\x3007');
 }
 
-// ƒnƒ“ƒOƒ‹‚©H
+// ãƒãƒ³ã‚°ãƒ«ã‹ï¼Ÿ
 inline bool XgIsCharHangulW(WCHAR ch)
 {
     return ((0x1100 <= ch && ch <= 0x11FF) ||
@@ -188,18 +188,18 @@ inline bool XgIsCharHangulW(WCHAR ch)
             (0x3130 <= ch && ch <= 0x318F));
 }
 
-// ƒLƒŠƒ‹•¶š‚©H
+// ã‚­ãƒªãƒ«æ–‡å­—ã‹ï¼Ÿ
 inline bool XgIsCharZenkakuCyrillicW(WCHAR ch)
 {
     return 0x0400 <= ch && ch <= 0x04FF;
 }
 
-// ‘SŠp”š‚©H
+// å…¨è§’æ•°å­—ã‹ï¼Ÿ
 inline bool XgIsCharZenkakuNumericW(WCHAR ch)
 {
     return 0xFF10 <= ch && ch <= 0xFF19;
 }
-// ”¼Šp”š‚©H
+// åŠè§’æ•°å­—ã‹ï¼Ÿ
 inline bool XgIsCharHankakuNumericW(WCHAR ch)
 {
     return L'0' <= ch && ch <= L'9';
@@ -207,59 +207,59 @@ inline bool XgIsCharHankakuNumericW(WCHAR ch)
 
 //////////////////////////////////////////////////////////////////////////////
 
-// ƒXƒŒƒbƒhî•ñB
+// ã‚¹ãƒ¬ãƒƒãƒ‰æƒ…å ±ã€‚
 struct XG_ThreadInfo
 {
-    // ƒXƒŒƒbƒhIDB
+    // ã‚¹ãƒ¬ãƒƒãƒ‰IDã€‚
     unsigned    m_threadid;
-    // ‹ó‚Å‚Í‚È‚¢ƒ}ƒX‚Ì”B
+    // ç©ºã§ã¯ãªã„ãƒã‚¹ã®æ•°ã€‚
     int         m_count;
 };
 
-// ƒXƒŒƒbƒhî•ñB
+// ã‚¹ãƒ¬ãƒƒãƒ‰æƒ…å ±ã€‚
 extern std::vector<XG_ThreadInfo>       xg_aThreadInfo;
 
 //////////////////////////////////////////////////////////////////////////////
-// Ši”[î•ñB
+// æ ¼ç´æƒ…å ±ã€‚
 
-// ’PŒê‚ÌŠi”[î•ñB
+// å˜èªã®æ ¼ç´æƒ…å ±ã€‚
 struct XG_PlaceInfo
 {
-    int             m_iRow;         // s‚ÌƒCƒ“ƒfƒbƒNƒXB
-    int             m_jCol;         // —ñ‚ÌƒCƒ“ƒfƒbƒNƒXB
-    std::wstring    m_word;         // ’PŒêB
-    int             m_number;       // ”Ô†B
+    int             m_iRow;         // è¡Œã®ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã€‚
+    int             m_jCol;         // åˆ—ã®ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã€‚
+    std::wstring    m_word;         // å˜èªã€‚
+    int             m_number;       // ç•ªå·ã€‚
 
-    // ƒRƒ“ƒXƒgƒ‰ƒNƒ^B
+    // ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ã€‚
     XG_PlaceInfo()
     {
     }
 
-    // ƒRƒ“ƒXƒgƒ‰ƒNƒ^B
+    // ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ã€‚
     XG_PlaceInfo(int iRow_, int jCol_, const std::wstring& word_) :
         m_iRow(iRow_), m_jCol(jCol_), m_word(word_)
     {
     }
 
-    // ƒRƒ“ƒXƒgƒ‰ƒNƒ^B
+    // ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ã€‚
     XG_PlaceInfo(int iRow_, int jCol_, std::wstring&& word_) :
         m_iRow(iRow_), m_jCol(jCol_), m_word(std::move(word_))
     {
     }
 
-    // ƒRƒ“ƒXƒgƒ‰ƒNƒ^B
+    // ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ã€‚
     XG_PlaceInfo(int iRow_, int jCol_, const std::wstring& word_, int number_) :
         m_iRow(iRow_), m_jCol(jCol_), m_word(word_), m_number(number_)
     {
     }
 
-    // ƒRƒ“ƒXƒgƒ‰ƒNƒ^B
+    // ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ã€‚
     XG_PlaceInfo(int iRow_, int jCol_, std::wstring&& word_, int number_) :
         m_iRow(iRow_), m_jCol(jCol_), m_word(std::move(word_)), m_number(number_)
     {
     }
 
-    // ƒRƒs[ƒRƒ“ƒXƒgƒ‰ƒNƒ^B
+    // ã‚³ãƒ”ãƒ¼ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ã€‚
     XG_PlaceInfo(const XG_PlaceInfo& pi)
     {
         m_iRow = pi.m_iRow;
@@ -268,7 +268,7 @@ struct XG_PlaceInfo
         m_number = pi.m_number;
     }
 
-    // ƒRƒs[ƒRƒ“ƒXƒgƒ‰ƒNƒ^B
+    // ã‚³ãƒ”ãƒ¼ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ã€‚
     XG_PlaceInfo(XG_PlaceInfo&& pi)
     {
         m_iRow = pi.m_iRow;
@@ -277,7 +277,7 @@ struct XG_PlaceInfo
         m_number = pi.m_number;
     }
 
-    // ‘ã“üB
+    // ä»£å…¥ã€‚
     void __fastcall operator=(const XG_PlaceInfo& pi)
     {
         m_iRow = pi.m_iRow;
@@ -286,7 +286,7 @@ struct XG_PlaceInfo
         m_number = pi.m_number;
     }
 
-    // ‘ã“üB
+    // ä»£å…¥ã€‚
     void __fastcall operator=(XG_PlaceInfo&& pi)
     {
         m_iRow = pi.m_iRow;
@@ -307,12 +307,12 @@ namespace std
     }
 }
 
-// ƒ^ƒe‚ÆƒˆƒR‚Ì‚©‚¬B
+// ã‚¿ãƒ†ã¨ãƒ¨ã‚³ã®ã‹ãã€‚
 extern std::vector<XG_PlaceInfo> xg_vTateInfo, xg_vYokoInfo;
 
 //////////////////////////////////////////////////////////////////////////////
 
-// XG_PlaceInfo\‘¢‘Ì‚ğ”Ô†‚Å”äŠr‚·‚éƒtƒ@ƒ“ƒNƒ^B
+// XG_PlaceInfoæ§‹é€ ä½“ã‚’ç•ªå·ã§æ¯”è¼ƒã™ã‚‹ãƒ•ã‚¡ãƒ³ã‚¯ã‚¿ã€‚
 class xg_placeinfo_compare_number
 {
 public:
@@ -323,7 +323,7 @@ public:
     }
 };
 
-// XG_PlaceInfo\‘¢‘Ì‚ğˆÊ’u‚Å”äŠr‚·‚éƒtƒ@ƒ“ƒNƒ^B
+// XG_PlaceInfoæ§‹é€ ä½“ã‚’ä½ç½®ã§æ¯”è¼ƒã™ã‚‹ãƒ•ã‚¡ãƒ³ã‚¯ã‚¿ã€‚
 class xg_placeinfo_compare_position
 {
 public:
@@ -343,50 +343,50 @@ public:
 //////////////////////////////////////////////////////////////////////////////
 // Utils.cpp
 
-// ƒŠƒ\[ƒX•¶š—ñ‚ğ“Ç‚İ‚ŞB
+// ãƒªã‚½ãƒ¼ã‚¹æ–‡å­—åˆ—ã‚’èª­ã¿è¾¼ã‚€ã€‚
 LPWSTR __fastcall XgLoadStringDx1(int id);
-// ƒŠƒ\[ƒX•¶š—ñ‚ğ“Ç‚İ‚ŞB
+// ãƒªã‚½ãƒ¼ã‚¹æ–‡å­—åˆ—ã‚’èª­ã¿è¾¼ã‚€ã€‚
 LPWSTR __fastcall XgLoadStringDx2(int id);
 
-// ƒ_ƒCƒAƒƒO‚ğ’†‰›‚É‚æ‚¹‚éŠÖ”B
+// ãƒ€ã‚¤ã‚¢ãƒ­ã‚°ã‚’ä¸­å¤®ã«ã‚ˆã›ã‚‹é–¢æ•°ã€‚
 void __fastcall XgCenterDialog(HWND hwnd);
-// ƒƒbƒZ[ƒWƒ{ƒbƒNƒXƒtƒbƒN—p‚ÌŠÖ”B
+// ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ãƒœãƒƒã‚¯ã‚¹ãƒ•ãƒƒã‚¯ç”¨ã®é–¢æ•°ã€‚
 extern "C" LRESULT CALLBACK
 XgMsgBoxCbtProc(int nCode, WPARAM wParam, LPARAM /*lParam*/);
-// ’†‰›Šñ‚¹ƒƒbƒZ[ƒWƒ{ƒbƒNƒX‚ğ•\¦‚·‚éB
+// ä¸­å¤®å¯„ã›ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ãƒœãƒƒã‚¯ã‚¹ã‚’è¡¨ç¤ºã™ã‚‹ã€‚
 int __fastcall
 XgCenterMessageBoxW(HWND hwnd, LPCWSTR pszText, LPCWSTR pszCaption, UINT uType);
-// ’†‰›Šñ‚¹ƒƒbƒZ[ƒWƒ{ƒbƒNƒX‚ğ•\¦‚·‚éB
+// ä¸­å¤®å¯„ã›ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ãƒœãƒƒã‚¯ã‚¹ã‚’è¡¨ç¤ºã™ã‚‹ã€‚
 int __fastcall
 XgCenterMessageBoxIndirectW(LPMSGBOXPARAMS lpMsgBoxParams);
 
-// •¶š—ñ‚ğ’uŠ·‚·‚éB
+// æ–‡å­—åˆ—ã‚’ç½®æ›ã™ã‚‹ã€‚
 void __fastcall xg_str_replace_all(
     std::wstring &s, const std::wstring& from, const std::wstring& to);
-// •¶š—ñ‚Ì‘OŒã‚Ì‹ó”’‚ğæ‚èœ‚­B
+// æ–‡å­—åˆ—ã®å‰å¾Œã®ç©ºç™½ã‚’å–ã‚Šé™¤ãã€‚
 void __fastcall xg_str_trim(std::wstring& str);
-// ƒVƒ‡[ƒgƒJƒbƒg‚Ìƒ^[ƒQƒbƒg‚ÌƒpƒX‚ğæ“¾‚·‚éB
+// ã‚·ãƒ§ãƒ¼ãƒˆã‚«ãƒƒãƒˆã®ã‚¿ãƒ¼ã‚²ãƒƒãƒˆã®ãƒ‘ã‚¹ã‚’å–å¾—ã™ã‚‹ã€‚
 bool __fastcall XgGetPathOfShortcutW(LPCWSTR pszLnkFile, LPWSTR pszPath);
-// ƒtƒBƒ‹ƒ^[•¶š—ñ‚ğì‚éB
+// ãƒ•ã‚£ãƒ«ã‚¿ãƒ¼æ–‡å­—åˆ—ã‚’ä½œã‚‹ã€‚
 LPWSTR __fastcall XgMakeFilterString(LPWSTR psz);
 
-// •¶š—ñ‚©‚çƒ}ƒ‹ƒ`ƒZƒbƒg‚Ö•ÏŠ·‚·‚éB
+// æ–‡å­—åˆ—ã‹ã‚‰ãƒãƒ«ãƒã‚»ãƒƒãƒˆã¸å¤‰æ›ã™ã‚‹ã€‚
 void __fastcall xg_str_to_multiset(
     std::unordered_multiset<WCHAR>& mset, const std::wstring& str);
-// ƒxƒNƒ^[‚©‚çƒ}ƒ‹ƒ`ƒZƒbƒg‚Ö•ÏŠ·‚·‚éB
+// ãƒ™ã‚¯ã‚¿ãƒ¼ã‹ã‚‰ãƒãƒ«ãƒã‚»ãƒƒãƒˆã¸å¤‰æ›ã™ã‚‹ã€‚
 void __fastcall xg_vec_to_multiset(
     std::unordered_multiset<WCHAR>& mset, const std::vector<WCHAR>& str);
-// •”•ªƒ}ƒ‹ƒ`ƒZƒbƒg‚©‚Ç‚¤‚©H
+// éƒ¨åˆ†ãƒãƒ«ãƒã‚»ãƒƒãƒˆã‹ã©ã†ã‹ï¼Ÿ
 bool __fastcall xg_submultiseteq(const std::unordered_multiset<WCHAR>& ms1,
                                  const std::unordered_multiset<WCHAR>& ms2);
-// ReadMe‚ğŠJ‚­B
+// ReadMeã‚’é–‹ãã€‚
 void __fastcall XgOpenReadMe(HWND hwnd);
-// License‚ğŠJ‚­B
+// Licenseã‚’é–‹ãã€‚
 void __fastcall XgOpenLicense(HWND hwnd);
-// ƒpƒ^[ƒ“‚ğŠJ‚­B
+// ãƒ‘ã‚¿ãƒ¼ãƒ³ã‚’é–‹ãã€‚
 void __fastcall XgOpenPatterns(HWND hwnd);
 
-// ƒtƒ@ƒCƒ‹‚ª‘‚«‚İ‰Â”\‚©H
+// ãƒ•ã‚¡ã‚¤ãƒ«ãŒæ›¸ãè¾¼ã¿å¯èƒ½ã‹ï¼Ÿ
 bool __fastcall XgCanWriteFile(const WCHAR *pszFile);
 
 void __fastcall XgSetInputModeFromDict(HWND hwnd);
@@ -403,192 +403,192 @@ std::string XgUnicodeToAnsi(const std::wstring& wide);
 // UTF-8 -> Unicode.
 std::wstring __fastcall XgUtf8ToUnicode(const std::string& ansi);
 
-// JSON•¶š—ñ‚ğì‚éB
+// JSONæ–‡å­—åˆ—ã‚’ä½œã‚‹ã€‚
 std::wstring XgJsonEncodeString(const std::wstring& str);
 
-// ƒpƒX‚ğì‚éB
+// ãƒ‘ã‚¹ã‚’ä½œã‚‹ã€‚
 BOOL XgMakePathW(LPCWSTR pszPath);
 
-// ƒGƒ“ƒfƒBƒAƒ“•ÏŠ·B
+// ã‚¨ãƒ³ãƒ‡ã‚£ã‚¢ãƒ³å¤‰æ›ã€‚
 void XgSwab(LPBYTE pbFile, DWORD cbFile);
 
-// HTMLŒ`®‚ÌƒNƒŠƒbƒvƒ{[ƒhƒf[ƒ^‚ğì¬‚·‚éB
+// HTMLå½¢å¼ã®ã‚¯ãƒªãƒƒãƒ—ãƒœãƒ¼ãƒ‰ãƒ‡ãƒ¼ã‚¿ã‚’ä½œæˆã™ã‚‹ã€‚
 std::string XgMakeClipHtmlData(
     const std::string& html_utf8, const std::string& style_utf8 = "");
 
-// HTMLŒ`®‚ÌƒNƒŠƒbƒvƒ{[ƒhƒf[ƒ^‚ğì¬‚·‚éB
+// HTMLå½¢å¼ã®ã‚¯ãƒªãƒƒãƒ—ãƒœãƒ¼ãƒ‰ãƒ‡ãƒ¼ã‚¿ã‚’ä½œæˆã™ã‚‹ã€‚
 std::string XgMakeClipHtmlData(
     const std::wstring& html_wide, const std::wstring& style_wide = L"");
 
 //////////////////////////////////////////////////////////////////////////////
 
-// ‰üsB
+// æ”¹è¡Œã€‚
 extern const LPCWSTR xg_pszNewLine;
 
-// ƒCƒ“ƒXƒ^ƒ“ƒX‚Ìƒnƒ“ƒhƒ‹B
+// ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã®ãƒãƒ³ãƒ‰ãƒ«ã€‚
 extern HINSTANCE   xg_hInstance;
 
-// ƒƒCƒ“ƒEƒBƒ“ƒhƒE‚Ìƒnƒ“ƒhƒ‹B
+// ãƒ¡ã‚¤ãƒ³ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®ãƒãƒ³ãƒ‰ãƒ«ã€‚
 extern HWND        xg_hMainWnd;
 
-// ƒc[ƒ‹ƒo[‚Ìƒnƒ“ƒhƒ‹B
+// ãƒ„ãƒ¼ãƒ«ãƒãƒ¼ã®ãƒãƒ³ãƒ‰ãƒ«ã€‚
 extern HWND        xg_hToolBar;
 
-// ƒXƒe[ƒ^ƒXƒo[‚Ìƒnƒ“ƒhƒ‹B
+// ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹ãƒãƒ¼ã®ãƒãƒ³ãƒ‰ãƒ«ã€‚
 extern HWND        xg_hStatusBar;
 
-// ƒqƒ“ƒgƒEƒBƒ“ƒhƒE‚Ìƒnƒ“ƒhƒ‹B
+// ãƒ’ãƒ³ãƒˆã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®ãƒãƒ³ãƒ‰ãƒ«ã€‚
 extern HWND        xg_hHintsWnd;
 
-// “š‚¦‚ğ•\¦‚·‚é‚©H
+// ç­”ãˆã‚’è¡¨ç¤ºã™ã‚‹ã‹ï¼Ÿ
 extern bool xg_bShowAnswer;
 
-// “ü—ÍƒpƒŒƒbƒg‚ğ•\¦‚·‚é‚©H
+// å…¥åŠ›ãƒ‘ãƒ¬ãƒƒãƒˆã‚’è¡¨ç¤ºã™ã‚‹ã‹ï¼Ÿ
 extern bool xg_bShowInputPalette;
 
-// “ü—ÍƒpƒŒƒbƒg‚ÌˆÊ’uB
+// å…¥åŠ›ãƒ‘ãƒ¬ãƒƒãƒˆã®ä½ç½®ã€‚
 extern INT xg_nInputPaletteWndX;
 extern INT xg_nInputPaletteWndY;
 
-// •ƒ}ƒX’Ç‰Á‚È‚µ‚©H
+// é»’ãƒã‚¹è¿½åŠ ãªã—ã‹ï¼Ÿ
 extern bool xg_bNoAddBlack;
 
-// ”r‘¼§Œä‚Ì‚½‚ß‚ÌƒNƒŠƒeƒBƒJƒ‹ƒZƒNƒVƒ‡ƒ“B
+// æ’ä»–åˆ¶å¾¡ã®ãŸã‚ã®ã‚¯ãƒªãƒ†ã‚£ã‚«ãƒ«ã‚»ã‚¯ã‚·ãƒ§ãƒ³ã€‚
 extern CRITICAL_SECTION xg_cs;
 
-// ƒXƒŒƒbƒh‚Ì”B
+// ã‚¹ãƒ¬ãƒƒãƒ‰ã®æ•°ã€‚
 extern DWORD xg_dwThreadCount;
 
-// ŒvZ‚ªƒLƒƒƒ“ƒZƒ‹‚³‚ê‚½‚©H
+// è¨ˆç®—ãŒã‚­ãƒ£ãƒ³ã‚»ãƒ«ã•ã‚ŒãŸã‹ï¼Ÿ
 extern bool xg_bCancelled;
 
-// ‹ó‚ÌƒNƒƒXƒ[ƒh‚Ì‰ğ‚ğ‰ğ‚­ê‡‚©H
+// ç©ºã®ã‚¯ãƒ­ã‚¹ãƒ¯ãƒ¼ãƒ‰ã®è§£ã‚’è§£ãå ´åˆã‹ï¼Ÿ
 extern bool xg_bSolvingEmpty;
 
-// •ƒ}ƒXƒpƒ^[ƒ“‚ª¶¬‚³‚ê‚½‚©H
+// é»’ãƒã‚¹ãƒ‘ã‚¿ãƒ¼ãƒ³ãŒç”Ÿæˆã•ã‚ŒãŸã‹ï¼Ÿ
 extern bool xg_bBlacksGenerated;
 
-// ƒXƒ}[ƒg‰ğŒˆ‚©H
+// ã‚¹ãƒãƒ¼ãƒˆè§£æ±ºã‹ï¼Ÿ
 extern bool xg_bSmartResolution;
 
-// ‘¾˜g‚ğ‚Â‚¯‚é‚©H
+// å¤ªæ ã‚’ã¤ã‘ã‚‹ã‹ï¼Ÿ
 extern bool xg_bAddThickFrame;
 
-// u“ü—ÍƒpƒŒƒbƒgvc’u‚«H
+// ã€Œå…¥åŠ›ãƒ‘ãƒ¬ãƒƒãƒˆã€ç¸¦ç½®ãï¼Ÿ
 extern bool xg_bTateOki;
 
-// ’¼‘O‚ÉŠJ‚¢‚½ƒNƒƒXƒ[ƒhƒf[ƒ^ƒtƒ@ƒCƒ‹‚ÌƒpƒXƒtƒ@ƒCƒ‹–¼B
+// ç›´å‰ã«é–‹ã„ãŸã‚¯ãƒ­ã‚¹ãƒ¯ãƒ¼ãƒ‰ãƒ‡ãƒ¼ã‚¿ãƒ•ã‚¡ã‚¤ãƒ«ã®ãƒ‘ã‚¹ãƒ•ã‚¡ã‚¤ãƒ«åã€‚
 extern std::wstring xg_strFileName;
 
-// ƒqƒ“ƒg’Ç‰Áƒtƒ‰ƒOB
+// ãƒ’ãƒ³ãƒˆè¿½åŠ ãƒ•ãƒ©ã‚°ã€‚
 extern bool xg_bHintsAdded;
 
-// JSONƒtƒ@ƒCƒ‹‚Æ‚µ‚Ä•Û‘¶‚·‚é‚©H
+// JSONãƒ•ã‚¡ã‚¤ãƒ«ã¨ã—ã¦ä¿å­˜ã™ã‚‹ã‹ï¼Ÿ
 extern bool xg_bSaveAsJsonFile;
 
-// X‰¹•ÏŠ·—pƒf[ƒ^B
+// æ‹—éŸ³å¤‰æ›ç”¨ãƒ‡ãƒ¼ã‚¿ã€‚
 extern const LPCWSTR xg_small[11];
 extern const LPCWSTR xg_large[11];
 
-// ƒrƒbƒgƒ}ƒbƒv‚Ìƒnƒ“ƒhƒ‹B
+// ãƒ“ãƒƒãƒˆãƒãƒƒãƒ—ã®ãƒãƒ³ãƒ‰ãƒ«ã€‚
 extern HBITMAP          xg_hbmImage;
 
-// ƒqƒ“ƒg•¶š—ñB
+// ãƒ’ãƒ³ãƒˆæ–‡å­—åˆ—ã€‚
 extern std::wstring     xg_strHints;
 
-// ÄŒvZ‚µ‚È‚¨‚µ‚Ä‚¢‚é‚©H
+// å†è¨ˆç®—ã—ãªãŠã—ã¦ã„ã‚‹ã‹ï¼Ÿ
 extern bool             xg_bRetrying;
 
-// ƒXƒŒƒbƒh‚Ìƒnƒ“ƒhƒ‹B
+// ã‚¹ãƒ¬ãƒƒãƒ‰ã®ãƒãƒ³ãƒ‰ãƒ«ã€‚
 extern std::vector<HANDLE> xg_ahThreads;
 
-// ƒ}ƒX‚ÌƒtƒHƒ“ƒgB
+// ãƒã‚¹ã®ãƒ•ã‚©ãƒ³ãƒˆã€‚
 extern WCHAR xg_szCellFont[];
 
-// ”Ô†‚ÌƒtƒHƒ“ƒgB
+// ç•ªå·ã®ãƒ•ã‚©ãƒ³ãƒˆã€‚
 extern WCHAR xg_szSmallFont[];
 
-// ’¼‘O‚É‰Ÿ‚µ‚½ƒL[‚ğŠo‚¦‚Ä‚¨‚­B
+// ç›´å‰ã«æŠ¼ã—ãŸã‚­ãƒ¼ã‚’è¦šãˆã¦ãŠãã€‚
 extern WCHAR xg_prev_vk;
 
-// “ü—ÍƒpƒŒƒbƒgB
+// å…¥åŠ›ãƒ‘ãƒ¬ãƒƒãƒˆã€‚
 extern HWND xg_hwndInputPalette;
 
-// ‚Ğ‚ç‚ª‚È•\¦‚©H
+// ã²ã‚‰ãŒãªè¡¨ç¤ºã‹ï¼Ÿ
 extern BOOL xg_bHiragana;
-// Lowercase•\¦‚©H
+// Lowercaseè¡¨ç¤ºã‹ï¼Ÿ
 extern BOOL xg_bLowercase;
 
-// •¶š‚Ì‘å‚«‚³i“jB
+// æ–‡å­—ã®å¤§ãã•ï¼ˆï¼…ï¼‰ã€‚
 extern INT xg_nCellCharPercents;
 
-// ¬‚³‚¢•¶š‚Ì‘å‚«‚³i“jB
+// å°ã•ã„æ–‡å­—ã®å¤§ãã•ï¼ˆï¼…ï¼‰ã€‚
 extern INT xg_nSmallCharPercents;
 
-// u•ƒ}ƒXƒpƒ^[ƒ“vƒ_ƒCƒAƒƒO‚ÌˆÊ’u‚ÆƒTƒCƒYB
+// ã€Œé»’ãƒã‚¹ãƒ‘ã‚¿ãƒ¼ãƒ³ã€ãƒ€ã‚¤ã‚¢ãƒ­ã‚°ã®ä½ç½®ã¨ã‚µã‚¤ã‚ºã€‚
 extern INT xg_nPatWndX;
 extern INT xg_nPatWndY;
 extern INT xg_nPatWndCX;
 extern INT xg_nPatWndCY;
 
-// Œ»İ‚Ì«‘–¼B
+// ç¾åœ¨ã®è¾æ›¸åã€‚
 extern std::wstring xg_dict_name;
-// ‚·‚×‚Ä‚Ì«‘ƒtƒ@ƒCƒ‹B
+// ã™ã¹ã¦ã®è¾æ›¸ãƒ•ã‚¡ã‚¤ãƒ«ã€‚
 extern std::deque<std::wstring>  xg_dict_files;
 
-// «‘–¼‚ğƒZƒbƒg‚·‚éB
+// è¾æ›¸åã‚’ã‚»ãƒƒãƒˆã™ã‚‹ã€‚
 void XgSetDict(const std::wstring& strFile);
 
 //////////////////////////////////////////////////////////////////////////////
 
-// •`‰æƒCƒ[ƒW‚ğXV‚·‚éB
+// æç”»ã‚¤ãƒ¡ãƒ¼ã‚¸ã‚’æ›´æ–°ã™ã‚‹ã€‚
 void __fastcall XgUpdateImage(HWND hwnd, INT x, INT y);
-// •`‰æƒCƒ[ƒW‚ğXV‚·‚éB
+// æç”»ã‚¤ãƒ¡ãƒ¼ã‚¸ã‚’æ›´æ–°ã™ã‚‹ã€‚
 void __fastcall XgUpdateImage(HWND hwnd);
 
-// ƒtƒ@ƒCƒ‹‚ğŠJ‚­B
+// ãƒ•ã‚¡ã‚¤ãƒ«ã‚’é–‹ãã€‚
 bool __fastcall XgDoLoadFile(HWND hwnd, LPCWSTR pszFile, bool json);
-// ƒtƒ@ƒCƒ‹‚ğŠJ‚­B
+// ãƒ•ã‚¡ã‚¤ãƒ«ã‚’é–‹ãã€‚
 bool __fastcall XgDoLoadCrpFile(HWND hwnd, LPCWSTR pszFile);
 
-// ƒtƒ@ƒCƒ‹‚ğ•Û‘¶‚·‚éB
+// ãƒ•ã‚¡ã‚¤ãƒ«ã‚’ä¿å­˜ã™ã‚‹ã€‚
 bool __fastcall XgDoSave(HWND /*hwnd*/, LPCWSTR pszFile);
 
-// ƒtƒ@ƒCƒ‹iJSONŒ`®j‚ğ•Û‘¶‚·‚éB
+// ãƒ•ã‚¡ã‚¤ãƒ«ï¼ˆJSONå½¢å¼ï¼‰ã‚’ä¿å­˜ã™ã‚‹ã€‚
 bool __fastcall XgDoSaveJson(HWND /*hwnd*/, LPCWSTR pszFile);
-// ƒtƒ@ƒCƒ‹iCRPŒ`®j‚ğ•Û‘¶‚·‚éB
+// ãƒ•ã‚¡ã‚¤ãƒ«ï¼ˆCRPå½¢å¼ï¼‰ã‚’ä¿å­˜ã™ã‚‹ã€‚
 bool __fastcall XgDoSaveCrpFile(HWND /*hwnd*/, LPCWSTR pszFile);
 
-// ƒqƒ“ƒg‚ğ•\¦‚·‚éB
+// ãƒ’ãƒ³ãƒˆã‚’è¡¨ç¤ºã™ã‚‹ã€‚
 void __fastcall XgShowHints(HWND hwnd);
 
-// ƒqƒ“ƒg‚Ì“à—e‚ğƒqƒ“ƒgƒEƒBƒ“ƒhƒE‚ÅŠJ‚­B
+// ãƒ’ãƒ³ãƒˆã®å†…å®¹ã‚’ãƒ’ãƒ³ãƒˆã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã§é–‹ãã€‚
 bool __fastcall XgOpenHintsByWindow(HWND /*hwnd*/);
 
-// ƒqƒ“ƒg‚Ì“à—e‚ğƒƒ‚’ ‚ÅŠJ‚­B
+// ãƒ’ãƒ³ãƒˆã®å†…å®¹ã‚’ãƒ¡ãƒ¢å¸³ã§é–‹ãã€‚
 bool __fastcall XgOpenHintsByNotepad(HWND /*hwnd*/, bool bShowAnswer);
 
-// ƒqƒ“ƒg‚ª•ÏX‚³‚ê‚½‚©H
+// ãƒ’ãƒ³ãƒˆãŒå¤‰æ›´ã•ã‚ŒãŸã‹ï¼Ÿ
 bool __fastcall XgAreHintsModified(void);
 
-// ƒqƒ“ƒgƒf[ƒ^‚ğXV‚·‚éB
+// ãƒ’ãƒ³ãƒˆãƒ‡ãƒ¼ã‚¿ã‚’æ›´æ–°ã™ã‚‹ã€‚
 bool __fastcall XgUpdateHintsData(void);
 
-// ƒqƒ“ƒgƒf[ƒ^‚ğİ’è‚·‚éB
+// ãƒ’ãƒ³ãƒˆãƒ‡ãƒ¼ã‚¿ã‚’è¨­å®šã™ã‚‹ã€‚
 void __fastcall XgSetHintsData(void);
 
-// ƒqƒ“ƒg•¶š—ñ‚ğ‰ğÍ‚·‚éB
+// ãƒ’ãƒ³ãƒˆæ–‡å­—åˆ—ã‚’è§£æã™ã‚‹ã€‚
 bool __fastcall XgParseHintsStr(HWND hwnd, const std::wstring& strHints);
 
-// –â‘è‚ğ‰æ‘œƒtƒ@ƒCƒ‹‚Æ‚µ‚Ä•Û‘¶‚·‚éB
+// å•é¡Œã‚’ç”»åƒãƒ•ã‚¡ã‚¤ãƒ«ã¨ã—ã¦ä¿å­˜ã™ã‚‹ã€‚
 void __fastcall XgSaveProbAsImage(HWND hwnd);
 
-// ‰ğ“š‚ğ‰æ‘œƒtƒ@ƒCƒ‹‚Æ‚µ‚Ä•Û‘¶‚·‚éB
+// è§£ç­”ã‚’ç”»åƒãƒ•ã‚¡ã‚¤ãƒ«ã¨ã—ã¦ä¿å­˜ã™ã‚‹ã€‚
 void __fastcall XgSaveAnsAsImage(HWND hwnd);
 
-// ƒqƒ“ƒgƒEƒBƒ“ƒhƒE‚ğì¬‚·‚éB
+// ãƒ’ãƒ³ãƒˆã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚’ä½œæˆã™ã‚‹ã€‚
 BOOL XgCreateHintsWnd(HWND hwnd);
-// ƒqƒ“ƒgƒEƒBƒ“ƒhƒE‚ğ”jŠü‚·‚éB
+// ãƒ’ãƒ³ãƒˆã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚’ç ´æ£„ã™ã‚‹ã€‚
 void XgDestroyHintsWnd(void);
 
 template <bool t_alternative>
@@ -596,74 +596,74 @@ bool __fastcall XgGetCandidatesAddBlack(
     std::vector<std::wstring>& cands, const std::wstring& pattern, int& nSkip,
     bool left_black_check, bool right_black_check);
 
-// UIƒtƒHƒ“ƒg‚Ì˜_—ƒIƒuƒWƒFƒNƒg‚ğæ“¾‚·‚éB
+// UIãƒ•ã‚©ãƒ³ãƒˆã®è«–ç†ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’å–å¾—ã™ã‚‹ã€‚
 LOGFONTW *XgGetUIFont(void);
 
-// Œó•â‚Ì“à—e‚ğŒó•âƒEƒBƒ“ƒhƒE‚ÅŠJ‚­B
+// å€™è£œã®å†…å®¹ã‚’å€™è£œã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã§é–‹ãã€‚
 bool __fastcall XgOpenCandsWnd(HWND hwnd, bool vertical);
 
-// Œó•âƒEƒBƒ“ƒhƒE‚ğ”jŠü‚·‚éB
+// å€™è£œã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚’ç ´æ£„ã™ã‚‹ã€‚
 void XgDestroyCandsWnd(void);
 
-// “ü—ÍƒpƒŒƒbƒg‚ğì¬‚·‚éB
+// å…¥åŠ›ãƒ‘ãƒ¬ãƒƒãƒˆã‚’ä½œæˆã™ã‚‹ã€‚
 BOOL XgCreateInputPalette(HWND hwndOwner);
 
-// “ü—ÍƒpƒŒƒbƒg‚ğ”jŠü‚·‚éB
+// å…¥åŠ›ãƒ‘ãƒ¬ãƒƒãƒˆã‚’ç ´æ£„ã™ã‚‹ã€‚
 BOOL XgDestroyInputPalette(void);
 
-// “ü—Íƒ‚[ƒh‚ğØ‚è‘Ö‚¦‚éB
+// å…¥åŠ›ãƒ¢ãƒ¼ãƒ‰ã‚’åˆ‡ã‚Šæ›¿ãˆã‚‹ã€‚
 void __fastcall XgSetInputMode(HWND hwnd, XG_InputMode mode);
 
-// •¶š‚ª“ü—Í‚³‚ê‚½B
+// æ–‡å­—ãŒå…¥åŠ›ã•ã‚ŒãŸã€‚
 void __fastcall MainWnd_OnChar(HWND hwnd, TCHAR ch, int cRepeat);
 
-// BackSpace‚ğÀs‚·‚éB
+// BackSpaceã‚’å®Ÿè¡Œã™ã‚‹ã€‚
 void __fastcall XgCharBack(HWND hwnd);
 
-// “ü—Í•ûŒü‚ğØ‚è‘Ö‚¦‚éB
+// å…¥åŠ›æ–¹å‘ã‚’åˆ‡ã‚Šæ›¿ãˆã‚‹ã€‚
 void __fastcall XgInputDirection(HWND hwnd, INT nDirection);
-// •¶š‘—‚è‚ğØ‚è‘Ö‚¦‚éB
+// æ–‡å­—é€ã‚Šã‚’åˆ‡ã‚Šæ›¿ãˆã‚‹ã€‚
 void __fastcall XgSetCharFeed(HWND hwnd, INT nMode);
-// ‰üs‚·‚éB
+// æ”¹è¡Œã™ã‚‹ã€‚
 void __fastcall XgReturn(HWND hwnd);
-// •¶š‚ğƒNƒŠƒAB
+// æ–‡å­—ã‚’ã‚¯ãƒªã‚¢ã€‚
 void __fastcall XgClearNonBlocks(HWND hwnd);
 
-// ƒ}ƒ‹ƒ`ƒXƒŒƒbƒh—p‚ÌŠÖ”B
+// ãƒãƒ«ãƒã‚¹ãƒ¬ãƒƒãƒ‰ç”¨ã®é–¢æ•°ã€‚
 unsigned __stdcall XgGenerateBlacks(void *param);
-// ƒ}ƒ‹ƒ`ƒXƒŒƒbƒh—p‚ÌŠÖ”B
+// ãƒãƒ«ãƒã‚¹ãƒ¬ãƒƒãƒ‰ç”¨ã®é–¢æ•°ã€‚
 unsigned __stdcall XgGenerateBlacksSmart(void *param);
-// “ñdƒ}ƒXØ‚è‘Ö‚¦B
+// äºŒé‡ãƒã‚¹åˆ‡ã‚Šæ›¿ãˆã€‚
 void __fastcall XgToggleMark(HWND hwnd);
 
-// ƒNƒƒXƒ[ƒh‚Åg‚¤•¶š‚É•ÏŠ·‚·‚éB
+// ã‚¯ãƒ­ã‚¹ãƒ¯ãƒ¼ãƒ‰ã§ä½¿ã†æ–‡å­—ã«å¤‰æ›ã™ã‚‹ã€‚
 std::wstring __fastcall XgNormalizeString(const std::wstring& text);
 
-// ƒ|ƒbƒvƒAƒbƒvƒƒjƒ…[‚ğ“Ç‚İ‚ŞB
+// ãƒãƒƒãƒ—ã‚¢ãƒƒãƒ—ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã‚’èª­ã¿è¾¼ã‚€ã€‚
 HMENU XgLoadPopupMenu(HWND hwnd, INT nPos);
 
 //////////////////////////////////////////////////////////////////////////////
-// ƒXƒNƒ[ƒ‹B
+// ã‚¹ã‚¯ãƒ­ãƒ¼ãƒ«ã€‚
 
-// …•½ƒXƒNƒ[ƒ‹‚ÌˆÊ’u‚ğæ“¾‚·‚éB
+// æ°´å¹³ã‚¹ã‚¯ãƒ­ãƒ¼ãƒ«ã®ä½ç½®ã‚’å–å¾—ã™ã‚‹ã€‚
 int __fastcall XgGetHScrollPos(void);
-// ‚’¼ƒXƒNƒ[ƒ‹‚ÌˆÊ’u‚ğæ“¾‚·‚éB
+// å‚ç›´ã‚¹ã‚¯ãƒ­ãƒ¼ãƒ«ã®ä½ç½®ã‚’å–å¾—ã™ã‚‹ã€‚
 int __fastcall XgGetVScrollPos(void);
-// …•½ƒXƒNƒ[ƒ‹‚Ìî•ñ‚ğæ“¾‚·‚éB
+// æ°´å¹³ã‚¹ã‚¯ãƒ­ãƒ¼ãƒ«ã®æƒ…å ±ã‚’å–å¾—ã™ã‚‹ã€‚
 BOOL __fastcall XgGetHScrollInfo(LPSCROLLINFO psi);
-// ‚’¼ƒXƒNƒ[ƒ‹‚Ìî•ñ‚ğæ“¾‚·‚éB
+// å‚ç›´ã‚¹ã‚¯ãƒ­ãƒ¼ãƒ«ã®æƒ…å ±ã‚’å–å¾—ã™ã‚‹ã€‚
 BOOL __fastcall XgGetVScrollInfo(LPSCROLLINFO psi);
-// …•½ƒXƒNƒ[ƒ‹‚ÌˆÊ’u‚ğİ’è‚·‚éB
+// æ°´å¹³ã‚¹ã‚¯ãƒ­ãƒ¼ãƒ«ã®ä½ç½®ã‚’è¨­å®šã™ã‚‹ã€‚
 int __fastcall XgSetHScrollPos(int nPos, BOOL bRedraw);
-// ‚’¼ƒXƒNƒ[ƒ‹‚ÌˆÊ’u‚ğİ’è‚·‚éB
+// å‚ç›´ã‚¹ã‚¯ãƒ­ãƒ¼ãƒ«ã®ä½ç½®ã‚’è¨­å®šã™ã‚‹ã€‚
 int __fastcall XgSetVScrollPos(int nPos, BOOL bRedraw);
-// ƒXƒNƒ[ƒ‹î•ñ‚ğİ’è‚·‚éB
+// ã‚¹ã‚¯ãƒ­ãƒ¼ãƒ«æƒ…å ±ã‚’è¨­å®šã™ã‚‹ã€‚
 void __fastcall XgUpdateScrollInfo(HWND hwnd, int x, int y);
-// ƒLƒƒƒŒƒbƒg‚ªŒ©‚¦‚é‚æ‚¤‚ÉA•K—v‚È‚ç‚ÎƒXƒNƒ[ƒ‹‚·‚éB
+// ã‚­ãƒ£ãƒ¬ãƒƒãƒˆãŒè¦‹ãˆã‚‹ã‚ˆã†ã«ã€å¿…è¦ãªã‚‰ã°ã‚¹ã‚¯ãƒ­ãƒ¼ãƒ«ã™ã‚‹ã€‚
 void __fastcall XgEnsureCaretVisible(HWND hwnd);
 
 //////////////////////////////////////////////////////////////////////////////
-// Œó•âB
+// å€™è£œã€‚
 
 extern int  xg_iCandPos;
 extern int  xg_jCandPos;

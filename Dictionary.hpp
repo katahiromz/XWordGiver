@@ -1,60 +1,60 @@
-//////////////////////////////////////////////////////////////////////////////
+ï»¿//////////////////////////////////////////////////////////////////////////////
 // Dictionary.hpp --- XWord Giver (Japanese Crossword Generator)
 // Copyright (C) 2012-2020 Katayama Hirofumi MZ. All Rights Reserved.
-// (Japanese, Shift_JIS)
+// (Japanese, UTF-8)
 
 #ifndef __XG_DICTIONARY_HPP__
 #define __XG_DICTIONARY_HPP__
 
 //////////////////////////////////////////////////////////////////////////////
-// ’PŒêƒf[ƒ^B
+// å˜èªãƒ‡ãƒ¼ã‚¿ã€‚
 
 struct XG_WordData
 {
-    // ’PŒêB
+    // å˜èªã€‚
     std::wstring     m_word;
-    // ƒqƒ“ƒgB
+    // ãƒ’ãƒ³ãƒˆã€‚
     std::wstring     m_hint;
 
-    // ƒRƒ“ƒXƒgƒ‰ƒNƒ^B
+    // ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ã€‚
     XG_WordData() { }
 
-    // ƒRƒ“ƒXƒgƒ‰ƒNƒ^B
+    // ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ã€‚
     XG_WordData(const std::wstring& word_) : m_word(word_)
     {
     }
 
-    // ƒRƒ“ƒXƒgƒ‰ƒNƒ^B
+    // ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ã€‚
     XG_WordData(const std::wstring& word_, const std::wstring& hint_) :
         m_word(word_), m_hint(hint_)
     {
     }
 
-    // ƒRƒ“ƒXƒgƒ‰ƒNƒ^B
+    // ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ã€‚
     XG_WordData(std::wstring&& word_, std::wstring&& hint_) :
         m_word(std::move(word_)), m_hint(std::move(hint_))
     {
     }
 
-    // ƒRƒs[ƒRƒ“ƒXƒgƒ‰ƒNƒ^B
+    // ã‚³ãƒ”ãƒ¼ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ã€‚
     XG_WordData(const XG_WordData& wd) :
         m_word(wd.m_word), m_hint(wd.m_hint)
     {
     }
 
-    // ƒRƒs[ƒRƒ“ƒXƒgƒ‰ƒNƒ^B
+    // ã‚³ãƒ”ãƒ¼ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ã€‚
     XG_WordData(XG_WordData&& wd) :
         m_word(std::move(wd.m_word)), m_hint(std::move(wd.m_hint))
     {
     }
 
-    // ‘ã“üB
+    // ä»£å…¥ã€‚
     void __fastcall operator=(const XG_WordData& wd) {
         m_word = wd.m_word;
         m_hint = wd.m_hint;
     }
 
-    // ‘ã“üB
+    // ä»£å…¥ã€‚
     void __fastcall operator=(XG_WordData&& wd) {
         m_word = std::move(wd.m_word);
         m_hint = std::move(wd.m_hint);
@@ -75,45 +75,45 @@ namespace std
     }
 }
 
-// «‘ƒf[ƒ^B—Dæƒ^ƒO‚©”Û‚©‚Å•ª‚¯‚éB
+// è¾æ›¸ãƒ‡ãƒ¼ã‚¿ã€‚å„ªå…ˆã‚¿ã‚°ã‹å¦ã‹ã§åˆ†ã‘ã‚‹ã€‚
 extern std::vector<XG_WordData> xg_dict_1, xg_dict_2;
-// ƒ^ƒO•t‚¯ƒf[ƒ^B
+// ã‚¿ã‚°ä»˜ã‘ãƒ‡ãƒ¼ã‚¿ã€‚
 extern std::unordered_map<std::wstring, std::unordered_set<std::wstring> > xg_word_to_tags_map;
-// ƒ^ƒO‚ÌƒqƒXƒgƒOƒ‰ƒ€B
+// ã‚¿ã‚°ã®ãƒ’ã‚¹ãƒˆã‚°ãƒ©ãƒ ã€‚
 extern std::unordered_map<std::wstring, size_t> xg_tag_histgram;
-// ’PŒê‚Ì’·‚³‚ÌƒqƒXƒgƒOƒ‰ƒ€B
+// å˜èªã®é•·ã•ã®ãƒ’ã‚¹ãƒˆã‚°ãƒ©ãƒ ã€‚
 extern std::unordered_map<size_t, size_t> xg_word_length_histgram;
-// —Dæƒ^ƒOB
+// å„ªå…ˆã‚¿ã‚°ã€‚
 extern std::unordered_set<std::wstring> xg_priority_tags;
-// œŠOƒ^ƒOB
+// é™¤å¤–ã‚¿ã‚°ã€‚
 extern std::unordered_set<std::wstring> xg_forbidden_tags;
-// ƒe[ƒ}•¶š—ñB
+// ãƒ†ãƒ¼ãƒæ–‡å­—åˆ—ã€‚
 extern std::wstring xg_strTheme;
-// Šù’è‚Ìƒe[ƒ}•¶š—ñB
+// æ—¢å®šã®ãƒ†ãƒ¼ãƒæ–‡å­—åˆ—ã€‚
 extern std::wstring xg_strDefaultTheme;
-// ƒe[ƒ}‚ª•ÏX‚³‚ê‚½‚©H
+// ãƒ†ãƒ¼ãƒãŒå¤‰æ›´ã•ã‚ŒãŸã‹ï¼Ÿ
 extern bool xg_bThemeModified;
-// ”z’u‚Å‚«‚éÅ‘å’PŒê’·B
+// é…ç½®ã§ãã‚‹æœ€å¤§å˜èªé•·ã€‚
 extern INT xg_nDictMaxWordLen;
-// ”z’u‚Å‚«‚éÅ¬’PŒê’·B
+// é…ç½®ã§ãã‚‹æœ€å°å˜èªé•·ã€‚
 extern INT xg_nDictMinWordLen;
 
-// «‘ƒtƒ@ƒCƒ‹‚ğ“Ç‚İ‚ŞB
+// è¾æ›¸ãƒ•ã‚¡ã‚¤ãƒ«ã‚’èª­ã¿è¾¼ã‚€ã€‚
 bool __fastcall XgLoadDictFile(LPCWSTR pszFile);
-// ƒe[ƒ}‚ğƒŠƒZƒbƒg‚·‚éB
+// ãƒ†ãƒ¼ãƒã‚’ãƒªã‚»ãƒƒãƒˆã™ã‚‹ã€‚
 void __fastcall XgResetTheme(HWND hwnd);
-// ƒe[ƒ}‚ğİ’è‚·‚éB
+// ãƒ†ãƒ¼ãƒã‚’è¨­å®šã™ã‚‹ã€‚
 void XgSetThemeString(const std::wstring& strTheme);
-// ƒe[ƒ}•¶š—ñ‚ğƒp[ƒX‚·‚éB
+// ãƒ†ãƒ¼ãƒæ–‡å­—åˆ—ã‚’ãƒ‘ãƒ¼ã‚¹ã™ã‚‹ã€‚
 void XgParseTheme(std::unordered_set<std::wstring>& priority,
                   std::unordered_set<std::wstring>& forbidden,
                   const std::wstring& strTheme);
 
-// ƒ~ƒj«‘‚ğì¬‚·‚éB
+// ãƒŸãƒ‹è¾æ›¸ã‚’ä½œæˆã™ã‚‹ã€‚
 std::vector<XG_WordData> XgCreateMiniDict(void);
 
 //////////////////////////////////////////////////////////////////////////////
-// XG_WordData\‘¢‘Ì‚ğ”äŠr‚·‚éƒtƒ@ƒ“ƒNƒ^B
+// XG_WordDataæ§‹é€ ä½“ã‚’æ¯”è¼ƒã™ã‚‹ãƒ•ã‚¡ãƒ³ã‚¯ã‚¿ã€‚
 
 class xg_word_less
 {
@@ -124,7 +124,7 @@ public:
     }
 };
 
-// ’PŒêƒf[ƒ^‚ª‘¶İ‚·‚é‚©H
+// å˜èªãƒ‡ãƒ¼ã‚¿ãŒå­˜åœ¨ã™ã‚‹ã‹ï¼Ÿ
 inline bool XgWordDataExists(const std::vector<XG_WordData>& data, const XG_WordData& wd)
 {
     return binary_search(data.begin(), data.end(), wd, xg_word_less());
@@ -138,11 +138,11 @@ struct XG_WordData_Equal
     }
 };
 
-// «‘ƒf[ƒ^‚ğƒ\[ƒg‚µAˆêˆÓ“I‚É‚·‚éB
+// è¾æ›¸ãƒ‡ãƒ¼ã‚¿ã‚’ã‚½ãƒ¼ãƒˆã—ã€ä¸€æ„çš„ã«ã™ã‚‹ã€‚
 void __fastcall XgSortAndUniqueDictData(std::vector<XG_WordData>& data);
 
 //////////////////////////////////////////////////////////////////////////////
-// ’PŒê‚ª’·‚·‚¬‚é‚©‚Ç‚¤‚©‚ğŠm”F‚·‚éƒtƒ@ƒ“ƒNƒ^B
+// å˜èªãŒé•·ã™ãã‚‹ã‹ã©ã†ã‹ã‚’ç¢ºèªã™ã‚‹ãƒ•ã‚¡ãƒ³ã‚¯ã‚¿ã€‚
 
 class xg_word_toolong
 {
@@ -158,7 +158,7 @@ public:
     }
 
 protected:
-    int m_n;    // Å‘å’·B
+    int m_n;    // æœ€å¤§é•·ã€‚
 };
 
 //////////////////////////////////////////////////////////////////////////////
