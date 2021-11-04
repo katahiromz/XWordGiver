@@ -1488,7 +1488,7 @@ STRINGTABLE
     IDS_DBLFRAME_LETTERS_8, "いろはにほへとちりぬるをわかよたれそつねならむうゐのおくやまけふこえてあさきゆめみしゑひもせすん"
     IDS_DBLFRAME_LETTERS_9, "АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯабвгдеёжзийклмнопрстуфхцчшщъыьэюя"
     IDS_DBLFRAME_LETTERS_10, "абвгдеёжзийклмнопрстуфхцчшщъыьэюяАБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ"
-    IDS_NOTREGDWORD, "There are words that are not yet registered in the dictionary."
+    IDS_NOTREGDWORD, "Some words are not yet registered in the dictionary."
     IDS_WARNING, "Warning"
     IDS_TT_NEW, "New crossword"
     IDS_TT_GENERATE, "Generate crossword"
