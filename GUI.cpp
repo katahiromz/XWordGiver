@@ -4972,9 +4972,14 @@ void __fastcall MainWnd_OnInitMenu(HWND /*hwnd*/, HMENU hMenu)
         ::DeleteMenu(hMenu, ID_INSERT_ROW_ABOVE, MF_BYCOMMAND);
         ::DeleteMenu(hMenu, ID_INSERT_ROW_BELOW, MF_BYCOMMAND);
     }
+    BOOL bDeleteSepOK = FALSE;
     if (xg_bSolved || xg_nCols + 1 > XG_MAX_SIZE) {
         ::DeleteMenu(hMenu, ID_LEFT_INSERT_COLUMN, MF_BYCOMMAND);
-        ::DeleteMenu(hMenu, ID_RIGHT_INSERT_COLUMN, MF_BYCOMMAND);
+        bDeleteSepOK = ::DeleteMenu(hMenu, ID_RIGHT_INSERT_COLUMN, MF_BYCOMMAND);
+    }
+    if (xg_bSolved && bDeleteSepOK) {
+        INT cItems = ::GetMenuItemCount(hMenu);
+        ::DeleteMenu(hMenu, cItems - 1, MF_BYPOSITION);
     }
 }
 
