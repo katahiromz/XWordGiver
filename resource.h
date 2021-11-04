@@ -174,8 +174,9 @@
 #define IDS_DBLFRAME_LETTERS_4              266
 #define IDS_DBLFRAME_LETTERS_5              267
 #define IDS_DBLFRAME_LETTERS_6              268
-#define IDS_NOTREGDWORD                     269
-#define IDS_WARNING                         270
+#define IDS_DBLFRAME_LETTERS_7              269
+#define IDS_NOTREGDWORD                     270
+#define IDS_WARNING                         271
 #define IDS_TT_NEW                          10100
 #define IDS_TT_GENERATE                     10101
 #define IDS_TT_OPEN                         10102

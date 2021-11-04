@@ -1484,6 +1484,7 @@ STRINGTABLE
     IDS_DBLFRAME_LETTERS_4, "アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン"
     IDS_DBLFRAME_LETTERS_5, "いろはにほへとちりぬるをわかよたれそつねならむうゐのおくやまけふこえてあさきゆめみしゑひもせすん"
     IDS_DBLFRAME_LETTERS_6, "イロハニホヘトチリヌルヲワカヨタレソツネナラムウヰノオクヤマケフコエテアサキユメミシヱヒモセスン"
+    IDS_DBLFRAME_LETTERS_7, "АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯабвгдеёжзийклмнопрстуфхцчшщъыьэюя"
     IDS_NOTREGDWORD, "There are words that are not yet registered in the dictionary."
     IDS_WARNING, "Warning"
     IDS_TT_NEW, "New crossword"

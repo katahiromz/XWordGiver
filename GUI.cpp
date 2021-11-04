@@ -5412,7 +5412,7 @@ BOOL SettingsDlg_OnInitDialog(HWND hwnd)
 
     // 二重マス文字。
     HWND hCmb2 = GetDlgItem(hwnd, cmb2);
-    for (INT i = IDS_DBLFRAME_LETTERS_1; i <= IDS_DBLFRAME_LETTERS_6; ++i) {
+    for (INT i = IDS_DBLFRAME_LETTERS_1; i <= IDS_DBLFRAME_LETTERS_7; ++i) {
         ComboBox_AddString(hCmb2, XgLoadStringDx1(i));
     }
     ComboBox_SetText(hCmb2, xg_strDoubleFrameLetters.c_str());
