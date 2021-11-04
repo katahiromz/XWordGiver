@@ -2,7 +2,7 @@
 
 ## What's this?
 
-"XWordGiver" (pronounce as "crossword giver") is a Windows freeware to generate crossword data.
+"XWordGiver" (pronouncing as "crossword giver") is a Windows freeware to generate crossword data.
 
 ![Screenshot 1](screenshot1.png "Screenshot 1")
 
@@ -10,11 +10,14 @@
 
 ## Usage
 
-Please choose "Generate Crossword" from "File" menu, and click "Generate" button. Calculation will start.
+Please choose "Generate Crossword" from the "File" menu, and click the "Generate" button.
+The Calculation will start.
 
-You can solve and/or save your generated puzzles.
+You can solve or save your generated puzzles.
 
-* It may take some time as it is calculated in a heuristic way. The larger the size, the longer it will take. Please be patient during the calculation.
+* It may take some time as it is calculated in a heuristic way.
+  The larger the size, the longer it will take.
+  Please be patient during the calculation.
 
 ## Requirements
 
@@ -25,7 +28,7 @@ You can solve and/or save your generated puzzles.
 
 ## License
 
-"XWordGiver" is released under the terms of the MIT License. See [LICENSE.txt](LICENSE.txt).
+"XWordGiver" is released under the MIT License. See [LICENSE.txt](LICENSE.txt).
 
 ## Contact
 

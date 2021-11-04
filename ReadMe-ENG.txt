@@ -4,16 +4,16 @@ Copyright (C) 2013-2021 katahiromz. All Rights Reserved.
 
 ## Introduction
 
-"XWordGiver" is a Windows freeware for auto-generation of crossword puzzles.
+"XWordGiver" (pronouncing as "crossword giver") is a Windows freeware for auto-generation of crossword puzzles.
 
 ## Usage
 
-Please choose "Generate Crossword" from "File" menu, and
-click "Generate" button. Calculation will start.
+Please choose "Generate Crossword" from the "File" menu, and
+click the "Generate" button. The calculation will start.
 
-You can solve and/or save your generated puzzles.
+You can solve or save your generated puzzles.
 
-* It may take some time as it is calculated in a heuristic way.
+* It may take some time as it calculates in a heuristic way.
   The larger the size, the longer it will take.
   Please be patient during the calculation.
 
