@@ -1,7 +1,7 @@
-//////////////////////////////////////////////////////////////////////////////
+ï»¿//////////////////////////////////////////////////////////////////////////////
 // xword.cpp --- XWord Giver (Japanese Crossword Generator)
 // Copyright (C) 2012-2020 Katayama Hirofumi MZ. All Rights Reserved.
-// (Japanese, Shift_JIS)
+// (Japanese, UTF-8)
 
 #include "XWordGiver.hpp"
 #include "Auto.hpp"
@@ -9,69 +9,69 @@
 //////////////////////////////////////////////////////////////////////////////
 // global variables
 
-// ’¼‘O‚ÉŠJ‚¢‚½ƒNƒƒXƒ[ƒhƒf[ƒ^ƒtƒ@ƒCƒ‹‚ÌƒpƒXƒtƒ@ƒCƒ‹–¼B
+// ç›´å‰ã«é–‹ã„ãŸã‚¯ãƒ­ã‚¹ãƒ¯ãƒ¼ãƒ‰ãƒ‡ãƒ¼ã‚¿ãƒ•ã‚¡ã‚¤ãƒ«ã®ãƒ‘ã‚¹ãƒ•ã‚¡ã‚¤ãƒ«åã€‚
 std::wstring xg_strFileName;
 
-// ÄŒvZ‚µ‚È‚¨‚µ‚Ä‚¢‚é‚©H
+// å†è¨ˆç®—ã—ãªãŠã—ã¦ã„ã‚‹ã‹ï¼Ÿ
 bool xg_bRetrying = false;
 
-// ‹ó‚ÌƒNƒƒXƒ[ƒh‚Ì‰ğ‚ğ‰ğ‚­ê‡‚©H
+// ç©ºã®ã‚¯ãƒ­ã‚¹ãƒ¯ãƒ¼ãƒ‰ã®è§£ã‚’è§£ãå ´åˆã‹ï¼Ÿ
 bool xg_bSolvingEmpty = false;
 
-// ŒvZ‚ªƒLƒƒƒ“ƒZƒ‹‚³‚ê‚½‚©H
+// è¨ˆç®—ãŒã‚­ãƒ£ãƒ³ã‚»ãƒ«ã•ã‚ŒãŸã‹ï¼Ÿ
 bool xg_bCancelled = false;
 
-// ƒNƒƒXƒ[ƒh‚Ì‰ğ‚ª‚ ‚é‚©‚Ç‚¤‚©H
+// ã‚¯ãƒ­ã‚¹ãƒ¯ãƒ¼ãƒ‰ã®è§£ãŒã‚ã‚‹ã‹ã©ã†ã‹ï¼Ÿ
 bool xg_bSolved = false;
 
-// “š‚¦‚ğ•\¦‚·‚é‚©H
+// ç­”ãˆã‚’è¡¨ç¤ºã™ã‚‹ã‹ï¼Ÿ
 bool xg_bShowAnswer = false;
 
-// •ƒ}ƒX’Ç‰Á‚È‚µ‚©H
+// é»’ãƒã‚¹è¿½åŠ ãªã—ã‹ï¼Ÿ
 bool xg_bNoAddBlack = false;
 
-// ƒXƒ}[ƒg‰ğŒˆ‚©H
+// ã‚¹ãƒãƒ¼ãƒˆè§£æ±ºã‹ï¼Ÿ
 bool xg_bSmartResolution = true;
 
-// ƒXƒŒƒbƒh‚Ì”B
+// ã‚¹ãƒ¬ãƒƒãƒ‰ã®æ•°ã€‚
 DWORD               xg_dwThreadCount;
 
-// ƒXƒŒƒbƒhî•ñB
+// ã‚¹ãƒ¬ãƒƒãƒ‰æƒ…å ±ã€‚
 std::vector<XG_ThreadInfo>    xg_aThreadInfo;
 
-// ƒXƒŒƒbƒh‚Ìƒnƒ“ƒhƒ‹B
+// ã‚¹ãƒ¬ãƒƒãƒ‰ã®ãƒãƒ³ãƒ‰ãƒ«ã€‚
 std::vector<HANDLE>           xg_ahThreads;
 
-// ƒqƒ“ƒg•¶š—ñB
+// ãƒ’ãƒ³ãƒˆæ–‡å­—åˆ—ã€‚
 std::wstring             xg_strHints;
 
-// ƒwƒbƒ_[•¶š—ñB
+// ãƒ˜ãƒƒãƒ€ãƒ¼æ–‡å­—åˆ—ã€‚
 std::wstring             xg_strHeader;
-// ”õl•¶š—ñB
+// å‚™è€ƒæ–‡å­—åˆ—ã€‚
 std::wstring             xg_strNotes;
 
-// ”r‘¼§Œä‚Ì‚½‚ß‚ÌƒNƒŠƒeƒBƒJƒ‹ƒZƒNƒVƒ‡ƒ“B
+// æ’ä»–åˆ¶å¾¡ã®ãŸã‚ã®ã‚¯ãƒªãƒ†ã‚£ã‚«ãƒ«ã‚»ã‚¯ã‚·ãƒ§ãƒ³ã€‚
 CRITICAL_SECTION    xg_cs;
 
-// ‰üsB
+// æ”¹è¡Œã€‚
 const LPCWSTR       xg_pszNewLine = L"\r\n";
 
-// ƒLƒƒƒŒƒbƒg‚ÌˆÊ’uB
+// ã‚­ãƒ£ãƒ¬ãƒƒãƒˆã®ä½ç½®ã€‚
 XG_Pos              xg_caret_pos = {0, 0};
 
-// ƒNƒƒXƒ[ƒh‚Ì–â‘èB
+// ã‚¯ãƒ­ã‚¹ãƒ¯ãƒ¼ãƒ‰ã®å•é¡Œã€‚
 XG_BoardEx xg_xword;
-// ƒNƒƒXƒ[ƒh‚Ì‰ğB
+// ã‚¯ãƒ­ã‚¹ãƒ¯ãƒ¼ãƒ‰ã®è§£ã€‚
 XG_Board xg_solution;
 
-// ƒNƒƒXƒ[ƒh‚ÌƒTƒCƒYB
+// ã‚¯ãƒ­ã‚¹ãƒ¯ãƒ¼ãƒ‰ã®ã‚µã‚¤ã‚ºã€‚
 volatile INT& xg_nRows = xg_xword.m_nRows;
 volatile INT& xg_nCols = xg_xword.m_nCols;
 
-// ƒ^ƒe‚ÆƒˆƒR‚Ì‚©‚¬B
+// ã‚¿ãƒ†ã¨ãƒ¨ã‚³ã®ã‹ãã€‚
 std::vector<XG_PlaceInfo> xg_vTateInfo, xg_vYokoInfo;
 
-// X‰¹•ÏŠ·—pƒf[ƒ^B
+// æ‹—éŸ³å¤‰æ›ç”¨ãƒ‡ãƒ¼ã‚¿ã€‚
 const LPCWSTR xg_small[11] = 
 {
     L"\x30A1", L"\x30A3", L"\x30A5", L"\x30A7", L"\x30A9", L"\x30C3",
@@ -83,62 +83,62 @@ const LPCWSTR xg_large[11] =
     L"\x30E4", L"\x30E6", L"\x30E8", L"\x30AB", L"\x30B1",
 };
 
-// ƒrƒbƒgƒ}ƒbƒv‚Ìƒnƒ“ƒhƒ‹B
+// ãƒ“ãƒƒãƒˆãƒãƒƒãƒ—ã®ãƒãƒ³ãƒ‰ãƒ«ã€‚
 HBITMAP     xg_hbmImage = nullptr;
 
-// ƒqƒ“ƒgƒf[ƒ^B
+// ãƒ’ãƒ³ãƒˆãƒ‡ãƒ¼ã‚¿ã€‚
 std::vector<XG_Hint> xg_vecTateHints, xg_vecYokoHints;
 
-// ƒZƒ‹‚ÌFB
+// ã‚»ãƒ«ã®è‰²ã€‚
 COLORREF xg_rgbWhiteCellColor = RGB(255, 255, 255);
 COLORREF xg_rgbBlackCellColor = RGB(0x33, 0x33, 0x33);
 COLORREF xg_rgbMarkedCellColor = RGB(255, 255, 255);
 
-// “ñdƒ}ƒX‚É˜g‚ğ•`‚­‚©H
+// äºŒé‡ãƒã‚¹ã«æ ã‚’æãã‹ï¼Ÿ
 bool xg_bDrawFrameForMarkedCell = true;
 
-// •¶š‘—‚èH
+// æ–‡å­—é€ã‚Šï¼Ÿ
 bool xg_bCharFeed = true;
 
-// ƒ^ƒe“ü—ÍH
+// ã‚¿ãƒ†å…¥åŠ›ï¼Ÿ
 bool xg_bTateInput = false;
 
-// •¶š‚Ì‘å‚«‚³i“jB
+// æ–‡å­—ã®å¤§ãã•ï¼ˆï¼…ï¼‰ã€‚
 INT xg_nCellCharPercents = DEF_SMALL_CHAR_SIZE;
 
-// ¬‚³‚¢•¶š‚Ì‘å‚«‚³i“jB
+// å°ã•ã„æ–‡å­—ã®å¤§ãã•ï¼ˆï¼…ï¼‰ã€‚
 INT xg_nSmallCharPercents = DEF_SMALL_CHAR_SIZE;
 
-// •ƒ}ƒX‰æ‘œB
+// é»’ãƒã‚¹ç”»åƒã€‚
 HBITMAP xg_hbmBlackCell = NULL;
 HENHMETAFILE xg_hBlackCellEMF = NULL;
 std::wstring xg_strBlackCellImage;
 
-// ƒrƒ…[ƒ‚[ƒhB
+// ãƒ“ãƒ¥ãƒ¼ãƒ¢ãƒ¼ãƒ‰ã€‚
 XG_VIEW_MODE xg_nViewMode = XG_VIEW_NORMAL;
 
 //////////////////////////////////////////////////////////////////////////////
 // static variables
 
-// c‚Æ‰¡‚ğ”½“]‚µ‚Ä‚¢‚é‚©H
+// ç¸¦ã¨æ¨ªã‚’åè»¢ã—ã¦ã„ã‚‹ã‹ï¼Ÿ
 static bool s_bSwapped = false;
 
-// ƒJƒM‚Ì“š‚¦‚ğˆÍ‚Ş˜gB
+// ã‚«ã‚®ã®ç­”ãˆã‚’å›²ã‚€æ ã€‚
 static const LPCWSTR s_szBeginWord = L"\x226A", s_szEndWord = L"\x226B";
 
 //////////////////////////////////////////////////////////////////////////////
 
-// Œó•â‚ª‚ ‚é‚©H
+// å€™è£œãŒã‚ã‚‹ã‹ï¼Ÿ
 template <bool t_alternative>
 bool __fastcall XgAnyCandidateAddBlack(const std::wstring& pattern)
 {
-    // ƒpƒ^[ƒ“‚Ì’·‚³B
+    // ãƒ‘ã‚¿ãƒ¼ãƒ³ã®é•·ã•ã€‚
     const int patlen = static_cast<int>(pattern.size());
     assert(patlen >= 2);
 
 #ifndef NDEBUG
-    // ƒpƒ^[ƒ“‚É•ƒ}ƒX‚ª‚È‚¢‚±‚Æ‚ğ‰¼’è‚·‚éB
-    // ƒpƒ^[ƒ“‚É‹ó”’‚ª‚ ‚é‚±‚Æ‚ğ‰¼’è‚·‚éB
+    // ãƒ‘ã‚¿ãƒ¼ãƒ³ã«é»’ãƒã‚¹ãŒãªã„ã“ã¨ã‚’ä»®å®šã™ã‚‹ã€‚
+    // ãƒ‘ã‚¿ãƒ¼ãƒ³ã«ç©ºç™½ãŒã‚ã‚‹ã“ã¨ã‚’ä»®å®šã™ã‚‹ã€‚
     bool bSpaceFound = false;
     for (int i = 0; i < patlen; i++) {
         assert(pattern[i] != ZEN_BLACK);
@@ -148,20 +148,20 @@ bool __fastcall XgAnyCandidateAddBlack(const std::wstring& pattern)
     assert(bSpaceFound);
 #endif
 
-    // ƒpƒ^[ƒ“‚ª‚RšˆÈã‚©H
+    // ãƒ‘ã‚¿ãƒ¼ãƒ³ãŒï¼“å­—ä»¥ä¸Šã‹ï¼Ÿ
     if (patlen > 2) {
-        // ŒÇ—§‚µ‚½•¶šƒ}ƒX‚ª¶’[‚©H
+        // å­¤ç«‹ã—ãŸæ–‡å­—ãƒã‚¹ãŒå·¦ç«¯ã‹ï¼Ÿ
         if (pattern[0] != ZEN_SPACE && pattern[1] == ZEN_SPACE) {
-            return true;    // ŒÇ—§‚µ‚½•¶šƒ}ƒX‚ª‚ ‚Á‚½B
+            return true;    // å­¤ç«‹ã—ãŸæ–‡å­—ãƒã‚¹ãŒã‚ã£ãŸã€‚
         } else {
-            bool bCharNotFound = true;  // •¶šƒ}ƒX‚ª‚È‚©‚Á‚½‚©H
+            bool bCharNotFound = true;  // æ–‡å­—ãƒã‚¹ãŒãªã‹ã£ãŸã‹ï¼Ÿ
 
-            // ŒÇ—§‚µ‚½•¶šƒ}ƒX‚ª’†‚É‚ ‚é‚©‚ğ’²‚×‚éB
-            // ‚Â‚¢‚Å‚É•¶šƒ}ƒX‚ª“r’†‚É‚ ‚é‚©’²‚×‚éB
+            // å­¤ç«‹ã—ãŸæ–‡å­—ãƒã‚¹ãŒä¸­ã«ã‚ã‚‹ã‹ã‚’èª¿ã¹ã‚‹ã€‚
+            // ã¤ã„ã§ã«æ–‡å­—ãƒã‚¹ãŒé€”ä¸­ã«ã‚ã‚‹ã‹èª¿ã¹ã‚‹ã€‚
             for (int j = 1; j < patlen - 1; j++) {
                 if (pattern[j] != ZEN_SPACE) {
                     if (pattern[j - 1] == ZEN_SPACE && pattern[j + 1] == ZEN_SPACE) {
-                        return true;    // ŒÇ—§‚µ‚½•¶šƒ}ƒX‚ª‚ ‚Á‚½B
+                        return true;    // å­¤ç«‹ã—ãŸæ–‡å­—ãƒã‚¹ãŒã‚ã£ãŸã€‚
                     }
                     bCharNotFound = false;
                     break;
@@ -169,65 +169,65 @@ bool __fastcall XgAnyCandidateAddBlack(const std::wstring& pattern)
             }
 
             if (bCharNotFound) {
-                // ŒÇ—§‚µ‚½•¶šƒ}ƒX‚ª‰E’[‚©H
+                // å­¤ç«‹ã—ãŸæ–‡å­—ãƒã‚¹ãŒå³ç«¯ã‹ï¼Ÿ
                 if (pattern[patlen - 1] != ZEN_SPACE && pattern[patlen - 2] == ZEN_SPACE) {
-                    return true;    // ŒÇ—§‚µ‚½•¶šƒ}ƒX‚ª‚ ‚Á‚½B
+                    return true;    // å­¤ç«‹ã—ãŸæ–‡å­—ãƒã‚¹ãŒã‚ã£ãŸã€‚
                 }
             }
         }
     }
 
-    // ‚·‚×‚Ä‚Ì’PŒê‚É‚Â‚¢‚Ä’²‚×‚éB
+    // ã™ã¹ã¦ã®å˜èªã«ã¤ã„ã¦èª¿ã¹ã‚‹ã€‚
     for (const auto& data : (t_alternative ? xg_dict_2 : xg_dict_1)) {
         const std::wstring& word = data.m_word;
         const int wordlen = static_cast<int>(word.size());
 
-        // ƒpƒ^[ƒ“‚æ‚è’PŒê‚Ì•û‚ª’·‚¢ê‡AƒXƒLƒbƒv‚·‚éB
+        // ãƒ‘ã‚¿ãƒ¼ãƒ³ã‚ˆã‚Šå˜èªã®æ–¹ãŒé•·ã„å ´åˆã€ã‚¹ã‚­ãƒƒãƒ—ã™ã‚‹ã€‚
         if (wordlen > patlen)
             continue;
 
-        // ’PŒê‚Ì’u‚¯‚é‹æŠÔ‚É‚Â‚¢‚Ä’²‚×‚éB
+        // å˜èªã®ç½®ã‘ã‚‹åŒºé–“ã«ã¤ã„ã¦èª¿ã¹ã‚‹ã€‚
         const int patlen_minus_wordlen = patlen - wordlen;
         for (int j = 0; j <= patlen_minus_wordlen; j++) {
-            // ‚à‚µ’PŒê‚ÌˆÊ’u‚Ì‘OŒã‚É•¶š‚ª‚ ‚Á‚½‚çƒXƒLƒbƒv‚·‚éB
+            // ã‚‚ã—å˜èªã®ä½ç½®ã®å‰å¾Œã«æ–‡å­—ãŒã‚ã£ãŸã‚‰ã‚¹ã‚­ãƒƒãƒ—ã™ã‚‹ã€‚
             if (j > 0 && pattern[j - 1] != ZEN_SPACE)
                 continue;
             if (j < patlen_minus_wordlen && pattern[j + wordlen] != ZEN_SPACE)
                 continue;
 
-            // ‹æŠÔ[j, j + wordlen - 1]‚É•¶šƒ}ƒX‚ª‚ ‚é‚©H
-            // ’PŒê‚ª‚Éƒ}ƒbƒ`‚·‚é‚©H
+            // åŒºé–“[j, j + wordlen - 1]ã«æ–‡å­—ãƒã‚¹ãŒã‚ã‚‹ã‹ï¼Ÿ
+            // å˜èªãŒã«ãƒãƒƒãƒã™ã‚‹ã‹ï¼Ÿ
             bool bCharFound = false;
             for (int k = 0; k < wordlen; k++) {
                 if (pattern[j + k] != ZEN_SPACE) {
                     bCharFound = true;
                     if (pattern[j + k] != word[k]) {
-                        // ƒ}ƒbƒ`‚µ‚È‚©‚Á‚½B
+                        // ãƒãƒƒãƒã—ãªã‹ã£ãŸã€‚
                         goto break_continue;
                     }
                 }
             }
-            // ƒ}ƒbƒ`‚µ‚½B
+            // ãƒãƒƒãƒã—ãŸã€‚
             if (bCharFound)
-                return bCharFound;  // ‚ ‚Á‚½B
+                return bCharFound;  // ã‚ã£ãŸã€‚
 break_continue:;
         }
     }
 
-    return false;   // ‚È‚©‚Á‚½B
+    return false;   // ãªã‹ã£ãŸã€‚
 }
 
-// Œó•â‚ª‚ ‚é‚©Hi•ƒ}ƒX’Ç‰Á‚È‚µj
+// å€™è£œãŒã‚ã‚‹ã‹ï¼Ÿï¼ˆé»’ãƒã‚¹è¿½åŠ ãªã—ï¼‰
 template <bool t_alternative>
 bool __fastcall XgAnyCandidateNoAddBlack(const std::wstring& pattern)
 {
-    // ƒpƒ^[ƒ“‚Ì’·‚³B
+    // ãƒ‘ã‚¿ãƒ¼ãƒ³ã®é•·ã•ã€‚
     const int patlen = static_cast<int>(pattern.size());
     assert(patlen >= 2);
 
 #ifndef NDEBUG
-    // ƒpƒ^[ƒ“‚É•ƒ}ƒX‚ª‚È‚¢‚±‚Æ‚ğ‰¼’è‚·‚éB
-    // ƒpƒ^[ƒ“‚É‹ó”’‚ª‚ ‚é‚±‚Æ‚ğ‰¼’è‚·‚éB
+    // ãƒ‘ã‚¿ãƒ¼ãƒ³ã«é»’ãƒã‚¹ãŒãªã„ã“ã¨ã‚’ä»®å®šã™ã‚‹ã€‚
+    // ãƒ‘ã‚¿ãƒ¼ãƒ³ã«ç©ºç™½ãŒã‚ã‚‹ã“ã¨ã‚’ä»®å®šã™ã‚‹ã€‚
     bool bSpaceFound = false;
     for (int i = 0; i < patlen; i++) {
         assert(pattern[i] != ZEN_BLACK);
@@ -237,38 +237,38 @@ bool __fastcall XgAnyCandidateNoAddBlack(const std::wstring& pattern)
     assert(bSpaceFound);
 #endif
 
-    // ‚·‚×‚Ä‚Ì’PŒê‚É‚Â‚¢‚Ä’²‚×‚éB
+    // ã™ã¹ã¦ã®å˜èªã«ã¤ã„ã¦èª¿ã¹ã‚‹ã€‚
     for (const auto& data : (t_alternative ? xg_dict_2 : xg_dict_1)) {
-        // ’PŒê‚Ì’·‚³B
+        // å˜èªã®é•·ã•ã€‚
         const std::wstring& word = data.m_word;
         const int wordlen = static_cast<int>(word.size());
 
-        // ƒpƒ^[ƒ“‚Æ’PŒê‚Ì’·‚³‚ªˆÙ‚È‚é‚Æ‚«AƒXƒLƒbƒv‚·‚éB
+        // ãƒ‘ã‚¿ãƒ¼ãƒ³ã¨å˜èªã®é•·ã•ãŒç•°ãªã‚‹ã¨ãã€ã‚¹ã‚­ãƒƒãƒ—ã™ã‚‹ã€‚
         if (wordlen != patlen)
             continue;
 
-        // ’PŒê‚ªƒ}ƒbƒ`‚·‚é‚©H
-        // ‹æŠÔ[0, wordlen - 1]‚É•¶šƒ}ƒX‚ª‚ ‚é‚©H
+        // å˜èªãŒãƒãƒƒãƒã™ã‚‹ã‹ï¼Ÿ
+        // åŒºé–“[0, wordlen - 1]ã«æ–‡å­—ãƒã‚¹ãŒã‚ã‚‹ã‹ï¼Ÿ
         bool bCharFound = false;
         for (int k = 0; k < wordlen; k++) {
             if (pattern[k] != ZEN_SPACE) {
                 bCharFound = true;
                 if (pattern[k] != word[k]) {
-                    // ƒ}ƒbƒ`‚µ‚È‚©‚Á‚½B
+                    // ãƒãƒƒãƒã—ãªã‹ã£ãŸã€‚
                     goto break_continue;
                 }
             }
         }
-        // ƒ}ƒbƒ`‚µ‚½B
+        // ãƒãƒƒãƒã—ãŸã€‚
         if (bCharFound)
-            return bCharFound;      // ‚ ‚Á‚½B
+            return bCharFound;      // ã‚ã£ãŸã€‚
 break_continue:;
     }
 
-    return false;   // ‚È‚©‚Á‚½B
+    return false;   // ãªã‹ã£ãŸã€‚
 }
 
-// ƒJƒEƒ“ƒg‚ğXV‚·‚éB
+// ã‚«ã‚¦ãƒ³ãƒˆã‚’æ›´æ–°ã™ã‚‹ã€‚
 void XG_BoardEx::ReCount() {
     INT nCount = 0;
     for (INT i = 0; i < m_nRows; ++i) {
@@ -279,7 +279,7 @@ void XG_BoardEx::ReCount() {
     m_vCells[m_nRows * m_nCols] = static_cast<WCHAR>(nCount);
 }
 
-// s‚ğ‘}“ü‚·‚éB
+// è¡Œã‚’æŒ¿å…¥ã™ã‚‹ã€‚
 void XG_BoardEx::InsertRow(INT iRow) {
     XG_Board copy;
     copy.ResetAndSetSize(m_nRows + 1, m_nCols);
@@ -296,7 +296,7 @@ void XG_BoardEx::InsertRow(INT iRow) {
     ReCount();
 }
 
-// —ñ‚ğ‘}“ü‚·‚éB
+// åˆ—ã‚’æŒ¿å…¥ã™ã‚‹ã€‚
 void XG_BoardEx::InsertColumn(INT jCol) {
     XG_Board copy;
     copy.ResetAndSetSize(m_nRows, m_nCols + 1);
@@ -313,7 +313,7 @@ void XG_BoardEx::InsertColumn(INT jCol) {
     ReCount();
 }
 
-// s‚ğíœ‚·‚éB
+// è¡Œã‚’å‰Šé™¤ã™ã‚‹ã€‚
 void XG_BoardEx::DeleteRow(INT iRow) {
     XG_Board copy;
     copy.ResetAndSetSize(m_nRows - 1, m_nCols);
@@ -330,7 +330,7 @@ void XG_BoardEx::DeleteRow(INT iRow) {
     ReCount();
 }
 
-// —ñ‚ğíœ‚·‚éB
+// åˆ—ã‚’å‰Šé™¤ã™ã‚‹ã€‚
 void XG_BoardEx::DeleteColumn(INT jCol) {
     XG_Board copy;
     copy.ResetAndSetSize(m_nRows, m_nCols - 1);
@@ -347,26 +347,26 @@ void XG_BoardEx::DeleteColumn(INT jCol) {
     ReCount();
 }
 
-// Œó•â‚ª‚ ‚é‚©Hi•ƒ}ƒX’Ç‰Á‚È‚µA‚·‚×‚Ä‹ó”’j
+// å€™è£œãŒã‚ã‚‹ã‹ï¼Ÿï¼ˆé»’ãƒã‚¹è¿½åŠ ãªã—ã€ã™ã¹ã¦ç©ºç™½ï¼‰
 bool __fastcall XgAnyCandidateWholeSpace(int patlen)
 {
-    // ‚·‚×‚Ä‚Ì’PŒê‚É‚Â‚¢‚Ä’²‚×‚éB
+    // ã™ã¹ã¦ã®å˜èªã«ã¤ã„ã¦èª¿ã¹ã‚‹ã€‚
     for (const auto& data : xg_dict_1) {
         const std::wstring& word = data.m_word;
         const int wordlen = static_cast<int>(word.size());
         if (wordlen == patlen)
-            return true;    // ‚ ‚Á‚½B
+            return true;    // ã‚ã£ãŸã€‚
     }
     for (const auto& data : xg_dict_2) {
         const std::wstring& word = data.m_word;
         const int wordlen = static_cast<int>(word.size());
         if (wordlen == patlen)
-            return true;    // ‚ ‚Á‚½B
+            return true;    // ã‚ã£ãŸã€‚
     }
-    return false;   // ‚È‚©‚Á‚½B
+    return false;   // ãªã‹ã£ãŸã€‚
 }
 
-// l‹÷‚É•ƒ}ƒX‚ª‚ ‚é‚©‚Ç‚¤‚©B
+// å››éš…ã«é»’ãƒã‚¹ãŒã‚ã‚‹ã‹ã©ã†ã‹ã€‚
 bool __fastcall XG_Board::CornerBlack() const
 {
     return (GetAt(0, 0) == ZEN_BLACK ||
@@ -375,7 +375,7 @@ bool __fastcall XG_Board::CornerBlack() const
             GetAt(0, xg_nCols - 1) == ZEN_BLACK);
 }
 
-// •ƒ}ƒX‚ª—×‚è‡‚Á‚Ä‚¢‚é‚©H
+// é»’ãƒã‚¹ãŒéš£ã‚Šåˆã£ã¦ã„ã‚‹ã‹ï¼Ÿ
 bool __fastcall XG_Board::DoubleBlack() const
 {
     const int n1 = xg_nCols - 1;
@@ -384,20 +384,20 @@ bool __fastcall XG_Board::DoubleBlack() const
     for (--i; i >= 0; --i) {
         for (int j = 0; j < n1; j++) {
             if (GetAt(i, j) == ZEN_BLACK && GetAt(i, j + 1) == ZEN_BLACK)
-                return true;    // —×‚è‡‚Á‚Ä‚¢‚½B
+                return true;    // éš£ã‚Šåˆã£ã¦ã„ãŸã€‚
         }
     }
     int j = xg_nCols;
     for (--j; j >= 0; --j) {
         for (int i = 0; i < n2; i++) {
             if (GetAt(i, j) == ZEN_BLACK && GetAt(i + 1, j) == ZEN_BLACK)
-                return true;    // —×‚è‡‚Á‚Ä‚¢‚½B
+                return true;    // éš£ã‚Šåˆã£ã¦ã„ãŸã€‚
         }
     }
-    return false;   // —×‚è‡‚Á‚Ä‚¢‚È‚©‚Á‚½B
+    return false;   // éš£ã‚Šåˆã£ã¦ã„ãªã‹ã£ãŸã€‚
 }
 
-// O•ûŒü‚ª•ƒ}ƒX‚ÅˆÍ‚Ü‚ê‚½ƒ}ƒX‚ª‚ ‚é‚©‚Ç‚¤‚©H
+// ä¸‰æ–¹å‘ãŒé»’ãƒã‚¹ã§å›²ã¾ã‚ŒãŸãƒã‚¹ãŒã‚ã‚‹ã‹ã©ã†ã‹ï¼Ÿ
 bool __fastcall XG_Board::TriBlackAround() const
 {
     for (int i = xg_nRows - 2; i >= 1; --i) {
@@ -405,24 +405,24 @@ bool __fastcall XG_Board::TriBlackAround() const
             if ((GetAt(i - 1, j) == ZEN_BLACK) + (GetAt(i + 1, j) == ZEN_BLACK) + 
                 (GetAt(i, j - 1) == ZEN_BLACK) + (GetAt(i, j + 1) == ZEN_BLACK) >= 3)
             {
-                return true;    // ‚ ‚Á‚½B
+                return true;    // ã‚ã£ãŸã€‚
             }
         }
     }
-    return false;   // ‚È‚©‚Á‚½B
+    return false;   // ãªã‹ã£ãŸã€‚
 }
 
-// •ƒ}ƒX‚Å•ª’f‚³‚ê‚Ä‚¢‚é‚©‚Ç‚¤‚©H
+// é»’ãƒã‚¹ã§åˆ†æ–­ã•ã‚Œã¦ã„ã‚‹ã‹ã©ã†ã‹ï¼Ÿ
 bool __fastcall XG_Board::DividedByBlack() const
 {
     const INT nRows = xg_nRows, nCols = xg_nCols;
     INT nCount = nRows * nCols;
 
-    // Šeƒ}ƒX‚É‘Î‰‚·‚éƒtƒ‰ƒOŒQB
+    // å„ãƒã‚¹ã«å¯¾å¿œã™ã‚‹ãƒ•ãƒ©ã‚°ç¾¤ã€‚
     std::vector<BYTE> pb(nCount, 0);
 
-    // ˆÊ’u‚ÌƒLƒ…[B
-    // •ƒ}ƒX‚Å‚Í‚È‚¢ƒ}ƒX‚ğ’T‚µApositions‚É’Ç‰Á‚·‚éB
+    // ä½ç½®ã®ã‚­ãƒ¥ãƒ¼ã€‚
+    // é»’ãƒã‚¹ã§ã¯ãªã„ãƒã‚¹ã‚’æ¢ã—ã€positionsã«è¿½åŠ ã™ã‚‹ã€‚
     std::queue<XG_Pos> positions;
     if (GetAt(0, 0) != ZEN_BLACK) {
         positions.emplace(0, 0);
@@ -439,67 +439,67 @@ bool __fastcall XG_Board::DividedByBlack() const
         }
     }
 
-    // ˜A‘±—Ìˆæ‚Ì“h‚è‚Â‚Ô‚µB
+    // é€£ç¶šé ˜åŸŸã®å¡—ã‚Šã¤ã¶ã—ã€‚
     while (!positions.empty()) {
-        // ˆÊ’u‚ğƒLƒ…[‚Ìˆê”Ôã‚©‚çæ‚èo‚·B
+        // ä½ç½®ã‚’ã‚­ãƒ¥ãƒ¼ã®ä¸€ç•ªä¸Šã‹ã‚‰å–ã‚Šå‡ºã™ã€‚
         XG_Pos pos = positions.front();
         positions.pop();
-        // ƒtƒ‰ƒO‚ª—§‚Á‚Ä‚¢‚È‚¢‚©H
+        // ãƒ•ãƒ©ã‚°ãŒç«‹ã£ã¦ã„ãªã„ã‹ï¼Ÿ
         if (!pb[pos.m_i * nCols + pos.m_j]) {
-            // ƒtƒ‰ƒO‚ğ—§‚Ä‚éB
+            // ãƒ•ãƒ©ã‚°ã‚’ç«‹ã¦ã‚‹ã€‚
             pb[pos.m_i * nCols + pos.m_j] = 1;
-            // ãB
+            // ä¸Šã€‚
             if (pos.m_i > 0 && GetAt(pos.m_i - 1, pos.m_j) != ZEN_BLACK)
                 positions.emplace(pos.m_i - 1, pos.m_j);
-            // ‰ºB
+            // ä¸‹ã€‚
             if (pos.m_i < nRows - 1 && GetAt(pos.m_i + 1, pos.m_j) != ZEN_BLACK)
                 positions.emplace(pos.m_i + 1, pos.m_j);
-            // ¶B
+            // å·¦ã€‚
             if (pos.m_j > 0 && GetAt(pos.m_i, pos.m_j - 1) != ZEN_BLACK)
                 positions.emplace(pos.m_i, pos.m_j - 1);
-            // ‰EB
+            // å³ã€‚
             if (pos.m_j < nCols - 1 && GetAt(pos.m_i, pos.m_j + 1) != ZEN_BLACK)
                 positions.emplace(pos.m_i, pos.m_j + 1);
         }
     }
 
-    // ‚·‚×‚Ä‚Ìƒ}ƒX‚É‚Â‚¢‚ÄB
+    // ã™ã¹ã¦ã®ãƒã‚¹ã«ã¤ã„ã¦ã€‚
     while (nCount-- > 0) {
-        // ƒtƒ‰ƒO‚ª—§‚Á‚Ä‚¢‚È‚¢‚Ì‚ÉA•ƒ}ƒX‚Å‚Í‚È‚¢ƒ}ƒX‚ª‚ ‚Á‚½‚çA¸”sB
+        // ãƒ•ãƒ©ã‚°ãŒç«‹ã£ã¦ã„ãªã„ã®ã«ã€é»’ãƒã‚¹ã§ã¯ãªã„ãƒã‚¹ãŒã‚ã£ãŸã‚‰ã€å¤±æ•—ã€‚
         if (pb[nCount] == 0 && GetAt(nCount) != ZEN_BLACK) {
-            // ƒtƒ‰ƒOŒQ‚ğ‰ğ•úB
-            return true;    // •ª’f‚³‚ê‚Ä‚¢‚éB
+            // ãƒ•ãƒ©ã‚°ç¾¤ã‚’è§£æ”¾ã€‚
+            return true;    // åˆ†æ–­ã•ã‚Œã¦ã„ã‚‹ã€‚
         }
     }
 
-    return false;   // •ª’f‚³‚ê‚Ä‚¢‚È‚¢B
+    return false;   // åˆ†æ–­ã•ã‚Œã¦ã„ãªã„ã€‚
 }
 
-// ‚·‚×‚Ä‚Ìƒpƒ^[ƒ“‚ª³“–‚©‚Ç‚¤‚©’²‚×‚éB
+// ã™ã¹ã¦ã®ãƒ‘ã‚¿ãƒ¼ãƒ³ãŒæ­£å½“ã‹ã©ã†ã‹èª¿ã¹ã‚‹ã€‚
 XG_EpvCode __fastcall XG_Board::EveryPatternValid1(
     std::vector<std::wstring>& vNotFoundWords,
     XG_Pos& pos, bool bNonBlackCheckSpace) const
 {
     const int nRows = xg_nRows, nCols = xg_nCols;
 
-    // g‚Á‚½’PŒê‚ÌW‡B
+    // ä½¿ã£ãŸå˜èªã®é›†åˆã€‚
     std::unordered_set<std::wstring> used_words;
-    // ƒXƒs[ƒh‚Ì‚½‚ß‚ÉA—\–ñB
+    // ã‚¹ãƒ”ãƒ¼ãƒ‰ã®ãŸã‚ã«ã€äºˆç´„ã€‚
     used_words.reserve(nRows * nCols / 4);
 
-    // ’PŒêƒxƒNƒ^[‚ª‹ó‚Å‚ ‚é‚±‚Æ‚ğ‰¼’è‚·‚éB
+    // å˜èªãƒ™ã‚¯ã‚¿ãƒ¼ãŒç©ºã§ã‚ã‚‹ã“ã¨ã‚’ä»®å®šã™ã‚‹ã€‚
     assert(vNotFoundWords.empty());
     //vNotFoundWords.clear();
 
-    // Šes‚É‚Â‚¢‚ÄA‰¡Œü‚«‚ÉƒXƒLƒƒƒ“‚·‚éB
+    // å„è¡Œã«ã¤ã„ã¦ã€æ¨ªå‘ãã«ã‚¹ã‚­ãƒ£ãƒ³ã™ã‚‹ã€‚
     for (int i = 0; i < nRows; i++) {
         for (int j = 0; j < nCols - 1; j++) {
-            // •ƒ}ƒX‚Å‚Í‚È‚¢A•¶š‚ªŠÜ‚Ü‚ê‚Ä‚¢‚é˜A‘±‚µ‚½‚Qƒ}ƒX‚©H
+            // é»’ãƒã‚¹ã§ã¯ãªã„ã€æ–‡å­—ãŒå«ã¾ã‚Œã¦ã„ã‚‹é€£ç¶šã—ãŸï¼’ãƒã‚¹ã‹ï¼Ÿ
             const WCHAR ch1 = GetAt(i, j), ch2 = GetAt(i, j + 1);
             if (ch1 != ZEN_BLACK && ch2 != ZEN_BLACK &&
                 (ch1 != ZEN_SPACE || ch2 != ZEN_SPACE))
             {
-                // •¶š‚ª’u‚¯‚éƒˆƒRŒü‚«‚Ì‹æŠÔ[lo, hi]‚ğ‹‚ß‚éB
+                // æ–‡å­—ãŒç½®ã‘ã‚‹ãƒ¨ã‚³å‘ãã®åŒºé–“[lo, hi]ã‚’æ±‚ã‚ã‚‹ã€‚
                 int lo = j;
                 while (lo > 0) {
                     if (GetAt(i, lo - 1) == ZEN_BLACK)
@@ -514,7 +514,7 @@ XG_EpvCode __fastcall XG_Board::EveryPatternValid1(
                 const int hi = j;
                 j++;
 
-                // ƒpƒ^[ƒ“‚ğ¶¬‚·‚éB
+                // ãƒ‘ã‚¿ãƒ¼ãƒ³ã‚’ç”Ÿæˆã™ã‚‹ã€‚
                 bool bSpaceFound = false;
                 std::wstring pattern;
                 for (int k = lo; k <= hi; k++) {
@@ -528,44 +528,44 @@ XG_EpvCode __fastcall XG_Board::EveryPatternValid1(
                     pattern += ch;
                 }
 
-                // ƒXƒy[ƒX‚ª‚ ‚Á‚½‚©H
+                // ã‚¹ãƒšãƒ¼ã‚¹ãŒã‚ã£ãŸã‹ï¼Ÿ
                 if (bSpaceFound) {
-                    // ƒpƒ^[ƒ“‚Éƒ}ƒbƒ`‚·‚éŒó•â‚ª‘¶İ‚µ‚È‚¯‚ê‚Î¸”s‚·‚éB
+                    // ãƒ‘ã‚¿ãƒ¼ãƒ³ã«ãƒãƒƒãƒã™ã‚‹å€™è£œãŒå­˜åœ¨ã—ãªã‘ã‚Œã°å¤±æ•—ã™ã‚‹ã€‚
                     if (xg_bNoAddBlack) {
                         if (!XgAnyCandidateNoAddBlack<false>(pattern) &&
                             !XgAnyCandidateNoAddBlack<true>(pattern))
                         {
-                            // ƒ}ƒbƒ`‚µ‚È‚©‚Á‚½ˆÊ’uB
+                            // ãƒãƒƒãƒã—ãªã‹ã£ãŸä½ç½®ã€‚
                             pos = XG_Pos(i, lo);
-                            return xg_epv_PATNOTMATCH;  // ƒ}ƒbƒ`‚µ‚È‚©‚Á‚½B
+                            return xg_epv_PATNOTMATCH;  // ãƒãƒƒãƒã—ãªã‹ã£ãŸã€‚
                         }
                     } else {
                         if (!XgAnyCandidateAddBlack<false>(pattern) &&
                             !XgAnyCandidateAddBlack<true>(pattern))
                         {
-                            // ƒ}ƒbƒ`‚µ‚È‚©‚Á‚½ˆÊ’uB
+                            // ãƒãƒƒãƒã—ãªã‹ã£ãŸä½ç½®ã€‚
                             pos = XG_Pos(i, lo);
-                            return xg_epv_PATNOTMATCH;  // ƒ}ƒbƒ`‚µ‚È‚©‚Á‚½B
+                            return xg_epv_PATNOTMATCH;  // ãƒãƒƒãƒã—ãªã‹ã£ãŸã€‚
                         }
                     }
                 } else {
-                    // ‚·‚Å‚Ég—p‚µ‚½’PŒê‚ª‚ ‚é‚©H
+                    // ã™ã§ã«ä½¿ç”¨ã—ãŸå˜èªãŒã‚ã‚‹ã‹ï¼Ÿ
                     if (used_words.count(pattern))
-                        return xg_epv_DOUBLEWORD;   // ’PŒê‚Ìd•¡‚Ì‚½‚ßA¸”sB
+                        return xg_epv_DOUBLEWORD;   // å˜èªã®é‡è¤‡ã®ãŸã‚ã€å¤±æ•—ã€‚
 
-                    // “ñ•ª’Tõ‚Å’PŒê‚ª‚ ‚é‚©‚Ç‚¤‚©’²‚×‚éB
+                    // äºŒåˆ†æ¢ç´¢ã§å˜èªãŒã‚ã‚‹ã‹ã©ã†ã‹èª¿ã¹ã‚‹ã€‚
                     if (!XgWordDataExists(xg_dict_1, XG_WordData(pattern)) &&
                         !XgWordDataExists(xg_dict_2, XG_WordData(pattern)))
                     {
-                        // “o˜^‚³‚ê‚Ä‚¢‚È‚¢’PŒê‚È‚Ì‚ÅA“o˜^‚·‚éB
+                        // ç™»éŒ²ã•ã‚Œã¦ã„ãªã„å˜èªãªã®ã§ã€ç™»éŒ²ã™ã‚‹ã€‚
                         vNotFoundWords.emplace_back(pattern);
                     }
 
-                    // ˆê“xg‚Á‚½’PŒê‚Æ‚µ‚Ä“o˜^B
+                    // ä¸€åº¦ä½¿ã£ãŸå˜èªã¨ã—ã¦ç™»éŒ²ã€‚
                     used_words.emplace(pattern);
                 }
             } else if (bNonBlackCheckSpace && ch1 == ZEN_SPACE && ch2 == ZEN_SPACE) {
-                // ƒˆƒRŒü‚«‚Ì‹æŠÔ[lo, hi]‚ğ‹‚ß‚éB
+                // ãƒ¨ã‚³å‘ãã®åŒºé–“[lo, hi]ã‚’æ±‚ã‚ã‚‹ã€‚
                 int lo = j;
                 while (lo > 0) {
                     if (GetAt(i, lo - 1) == ZEN_BLACK)
@@ -580,8 +580,8 @@ XG_EpvCode __fastcall XG_Board::EveryPatternValid1(
                 const int hi = j;
                 j++;
 
-                // ƒpƒ^[ƒ“‚ğ¶¬‚·‚éB
-                // ”ñ‹ó”’‚ª‚ ‚é‚©H
+                // ãƒ‘ã‚¿ãƒ¼ãƒ³ã‚’ç”Ÿæˆã™ã‚‹ã€‚
+                // éç©ºç™½ãŒã‚ã‚‹ã‹ï¼Ÿ
                 bool bNonSpaceFound = false;
                 int patlen = 0;
                 for (int k = lo; k <= hi; k++) {
@@ -594,27 +594,27 @@ XG_EpvCode __fastcall XG_Board::EveryPatternValid1(
                 }
 
                 if (!bNonSpaceFound) {
-                    // ”ñ‹ó”’‚ª‚È‚¢B
-                    // ƒpƒ^[ƒ“‚Éƒ}ƒbƒ`‚·‚éŒó•â‚ª‘¶İ‚µ‚È‚¯‚ê‚Î¸”s‚·‚éB
+                    // éç©ºç™½ãŒãªã„ã€‚
+                    // ãƒ‘ã‚¿ãƒ¼ãƒ³ã«ãƒãƒƒãƒã™ã‚‹å€™è£œãŒå­˜åœ¨ã—ãªã‘ã‚Œã°å¤±æ•—ã™ã‚‹ã€‚
                     if (!XgAnyCandidateWholeSpace(patlen)) {
-                        // ƒ}ƒbƒ`‚µ‚È‚©‚Á‚½ˆÊ’uB
+                        // ãƒãƒƒãƒã—ãªã‹ã£ãŸä½ç½®ã€‚
                         pos = XG_Pos(i, lo);
-                        return xg_epv_LENGTHMISMATCH;   // ƒ}ƒbƒ`‚µ‚È‚©‚Á‚½B
+                        return xg_epv_LENGTHMISMATCH;   // ãƒãƒƒãƒã—ãªã‹ã£ãŸã€‚
                     }
                 }
             }
         }
     }
 
-    // Še—ñ‚É‚Â‚¢‚ÄAcŒü‚«‚ÉƒXƒLƒƒƒ“‚·‚éB
+    // å„åˆ—ã«ã¤ã„ã¦ã€ç¸¦å‘ãã«ã‚¹ã‚­ãƒ£ãƒ³ã™ã‚‹ã€‚
     for (int j = 0; j < nCols; j++) {
         for (int i = 0; i < nRows - 1; i++) {
-            // •ƒ}ƒX‚Å‚Í‚È‚¢A•¶š‚ªŠÜ‚Ü‚ê‚Ä‚¢‚é˜A‘±‚µ‚½‚Qƒ}ƒX‚©H
+            // é»’ãƒã‚¹ã§ã¯ãªã„ã€æ–‡å­—ãŒå«ã¾ã‚Œã¦ã„ã‚‹é€£ç¶šã—ãŸï¼’ãƒã‚¹ã‹ï¼Ÿ
             const WCHAR ch1 = GetAt(i, j), ch2 = GetAt(i + 1, j);
             if (ch1 != ZEN_BLACK && ch2 != ZEN_BLACK &&
                 (ch1 != ZEN_SPACE || ch2 != ZEN_SPACE))
             {
-                // •¶š‚ª’u‚¯‚éƒ^ƒeŒü‚«‚Ì‹æŠÔ[lo, hi]‚ğ‹‚ß‚éB
+                // æ–‡å­—ãŒç½®ã‘ã‚‹ã‚¿ãƒ†å‘ãã®åŒºé–“[lo, hi]ã‚’æ±‚ã‚ã‚‹ã€‚
                 int lo = i;
                 while (lo > 0) {
                     if (GetAt(lo - 1, j) == ZEN_BLACK)
@@ -629,7 +629,7 @@ XG_EpvCode __fastcall XG_Board::EveryPatternValid1(
                 const int hi = i;
                 i++;
 
-                // ƒpƒ^[ƒ“‚ğ¶¬‚·‚éB
+                // ãƒ‘ã‚¿ãƒ¼ãƒ³ã‚’ç”Ÿæˆã™ã‚‹ã€‚
                 bool bSpaceFound = false;
                 std::wstring pattern;
                 for (int k = lo; k <= hi; k++) {
@@ -643,45 +643,45 @@ XG_EpvCode __fastcall XG_Board::EveryPatternValid1(
                     pattern += ch;
                 }
 
-                // ƒXƒy[ƒX‚ª‚ ‚Á‚½‚©H
+                // ã‚¹ãƒšãƒ¼ã‚¹ãŒã‚ã£ãŸã‹ï¼Ÿ
                 if (bSpaceFound) {
-                    // ƒpƒ^[ƒ“‚Éƒ}ƒbƒ`‚·‚éŒó•â‚ª‘¶İ‚µ‚È‚¯‚ê‚Î¸”s‚·‚éB
+                    // ãƒ‘ã‚¿ãƒ¼ãƒ³ã«ãƒãƒƒãƒã™ã‚‹å€™è£œãŒå­˜åœ¨ã—ãªã‘ã‚Œã°å¤±æ•—ã™ã‚‹ã€‚
                     if (xg_bNoAddBlack) {
                         if (!XgAnyCandidateNoAddBlack<false>(pattern) &&
                             !XgAnyCandidateNoAddBlack<true>(pattern))
                         {
-                            // ƒ}ƒbƒ`‚µ‚È‚©‚Á‚½ˆÊ’uB
+                            // ãƒãƒƒãƒã—ãªã‹ã£ãŸä½ç½®ã€‚
                             pos = XG_Pos(lo, j);
-                            return xg_epv_PATNOTMATCH;  // ƒ}ƒbƒ`‚µ‚È‚©‚Á‚½B
+                            return xg_epv_PATNOTMATCH;  // ãƒãƒƒãƒã—ãªã‹ã£ãŸã€‚
                         }
                     } else {
                         if (!XgAnyCandidateAddBlack<false>(pattern) &&
                             !XgAnyCandidateAddBlack<true>(pattern))
                         {
-                            // ƒ}ƒbƒ`‚µ‚È‚©‚Á‚½ˆÊ’uB
+                            // ãƒãƒƒãƒã—ãªã‹ã£ãŸä½ç½®ã€‚
                             pos = XG_Pos(lo, j);
-                            return xg_epv_PATNOTMATCH;  // ƒ}ƒbƒ`‚µ‚È‚©‚Á‚½B
+                            return xg_epv_PATNOTMATCH;  // ãƒãƒƒãƒã—ãªã‹ã£ãŸã€‚
                         }
                     }
                 } else {
-                    // ‚·‚Å‚Ég—p‚µ‚½’PŒê‚ª‚ ‚é‚©H
+                    // ã™ã§ã«ä½¿ç”¨ã—ãŸå˜èªãŒã‚ã‚‹ã‹ï¼Ÿ
                     if (used_words.count(pattern)) {
-                        return xg_epv_DOUBLEWORD;   // ’PŒê‚Ìd•¡‚Ì‚½‚ßA¸”sB
+                        return xg_epv_DOUBLEWORD;   // å˜èªã®é‡è¤‡ã®ãŸã‚ã€å¤±æ•—ã€‚
                     }
 
-                    // “ñ•ª’Tõ‚Å’PŒê‚ª‚ ‚é‚©‚Ç‚¤‚©’²‚×‚éB
+                    // äºŒåˆ†æ¢ç´¢ã§å˜èªãŒã‚ã‚‹ã‹ã©ã†ã‹èª¿ã¹ã‚‹ã€‚
                     if (!XgWordDataExists(xg_dict_1, XG_WordData(pattern)) &&
                         !XgWordDataExists(xg_dict_2, XG_WordData(pattern)))
                     {
-                        // “o˜^‚³‚ê‚Ä‚¢‚È‚¢’PŒê‚È‚Ì‚ÅA“o˜^‚·‚éB
+                        // ç™»éŒ²ã•ã‚Œã¦ã„ãªã„å˜èªãªã®ã§ã€ç™»éŒ²ã™ã‚‹ã€‚
                         vNotFoundWords.emplace_back(pattern);
                     }
 
-                    // ˆê“xg‚Á‚½’PŒê‚Æ‚µ‚Ä“o˜^B
+                    // ä¸€åº¦ä½¿ã£ãŸå˜èªã¨ã—ã¦ç™»éŒ²ã€‚
                     used_words.emplace(pattern);
                 }
             } else if (bNonBlackCheckSpace && ch1 == ZEN_SPACE && ch2 == ZEN_SPACE) {
-                // ƒ^ƒeŒü‚«‚Ì‹æŠÔ[lo, hi]‚ğ‹‚ß‚éB
+                // ã‚¿ãƒ†å‘ãã®åŒºé–“[lo, hi]ã‚’æ±‚ã‚ã‚‹ã€‚
                 int lo = i;
                 while (lo > 0) {
                     if (GetAt(lo - 1, j) == ZEN_BLACK)
@@ -696,8 +696,8 @@ XG_EpvCode __fastcall XG_Board::EveryPatternValid1(
                 const int hi = i;
                 i++;
 
-                // ƒpƒ^[ƒ“‚ğ¶¬‚·‚éB
-                // ”ñ‹ó”’‚ª‚ ‚é‚©H
+                // ãƒ‘ã‚¿ãƒ¼ãƒ³ã‚’ç”Ÿæˆã™ã‚‹ã€‚
+                // éç©ºç™½ãŒã‚ã‚‹ã‹ï¼Ÿ
                 bool bNonSpaceFound = false;
                 int patlen = 0;
                 for (int k = lo; k <= hi; k++) {
@@ -710,22 +710,22 @@ XG_EpvCode __fastcall XG_Board::EveryPatternValid1(
                 }
 
                 if (!bNonSpaceFound) {
-                    // ”ñ‹ó”’‚ª‚È‚¢B
-                    // ƒpƒ^[ƒ“‚Éƒ}ƒbƒ`‚·‚éŒó•â‚ª‘¶İ‚µ‚È‚¯‚ê‚Î¸”s‚·‚éB
+                    // éç©ºç™½ãŒãªã„ã€‚
+                    // ãƒ‘ã‚¿ãƒ¼ãƒ³ã«ãƒãƒƒãƒã™ã‚‹å€™è£œãŒå­˜åœ¨ã—ãªã‘ã‚Œã°å¤±æ•—ã™ã‚‹ã€‚
                     if (!XgAnyCandidateWholeSpace(patlen)) {
-                        // ƒ}ƒbƒ`‚µ‚È‚©‚Á‚½ˆÊ’uB
+                        // ãƒãƒƒãƒã—ãªã‹ã£ãŸä½ç½®ã€‚
                         pos = XG_Pos(lo, j);
-                        return xg_epv_LENGTHMISMATCH;   // ’·‚³‚ªˆê’v‚µ‚È‚©‚Á‚½B
+                        return xg_epv_LENGTHMISMATCH;   // é•·ã•ãŒä¸€è‡´ã—ãªã‹ã£ãŸã€‚
                     }
                 }
             }
         }
     }
 
-    return xg_epv_SUCCESS;      // ¬Œ÷B
+    return xg_epv_SUCCESS;      // æˆåŠŸã€‚
 }
 
-// ‚·‚×‚Ä‚Ìƒpƒ^[ƒ“‚ª³“–‚©‚Ç‚¤‚©’²‚×‚éB
+// ã™ã¹ã¦ã®ãƒ‘ã‚¿ãƒ¼ãƒ³ãŒæ­£å½“ã‹ã©ã†ã‹èª¿ã¹ã‚‹ã€‚
 XG_EpvCode __fastcall XG_Board::EveryPatternValid2(
     std::vector<std::wstring>& vNotFoundWords,
     XG_Pos& pos, bool bNonBlackCheckSpace) const
@@ -736,25 +736,25 @@ XG_EpvCode __fastcall XG_Board::EveryPatternValid2(
     int& i = pos2.m_i;
     int& j = pos2.m_j;
 
-    // g‚Á‚½’PŒê‚ÌW‡B
+    // ä½¿ã£ãŸå˜èªã®é›†åˆã€‚
     std::unordered_set<std::wstring> used_words;
-    // ƒXƒs[ƒh‚Ì‚½‚ßA—\–ñB
+    // ã‚¹ãƒ”ãƒ¼ãƒ‰ã®ãŸã‚ã€äºˆç´„ã€‚
     used_words.reserve(nRows * nCols / 4);
 
-    // ’PŒêƒxƒNƒ^[‚ª‹ó‚Å‚ ‚é‚±‚Æ‚ğ‰¼’è‚·‚éB
+    // å˜èªãƒ™ã‚¯ã‚¿ãƒ¼ãŒç©ºã§ã‚ã‚‹ã“ã¨ã‚’ä»®å®šã™ã‚‹ã€‚
     assert(vNotFoundWords.empty());
     //vNotFoundWords.clear();
 
-    // Šes‚É‚Â‚¢‚ÄA‰¡Œü‚«‚ÉƒXƒLƒƒƒ“‚·‚éB
+    // å„è¡Œã«ã¤ã„ã¦ã€æ¨ªå‘ãã«ã‚¹ã‚­ãƒ£ãƒ³ã™ã‚‹ã€‚
     const int nColsMinusOne = nCols - 1;
     for (i = 0; i < nRows; i++) {
         for (j = 0; j < nColsMinusOne; j++) {
-            // •ƒ}ƒX‚Å‚Í‚È‚¢A•¶š‚ªŠÜ‚Ü‚ê‚Ä‚¢‚é˜A‘±‚µ‚½‚Qƒ}ƒX‚©H
+            // é»’ãƒã‚¹ã§ã¯ãªã„ã€æ–‡å­—ãŒå«ã¾ã‚Œã¦ã„ã‚‹é€£ç¶šã—ãŸï¼’ãƒã‚¹ã‹ï¼Ÿ
             const WCHAR ch1 = GetAt(i, j), ch2 = GetAt(i, j + 1);
             if (ch1 != ZEN_BLACK && ch2 != ZEN_BLACK &&
                 (ch1 != ZEN_SPACE || ch2 != ZEN_SPACE))
             {
-                // •¶š‚ª’u‚¯‚éƒˆƒRŒü‚«‚Ì‹æŠÔ[lo, hi]‚ğ‹‚ß‚éB
+                // æ–‡å­—ãŒç½®ã‘ã‚‹ãƒ¨ã‚³å‘ãã®åŒºé–“[lo, hi]ã‚’æ±‚ã‚ã‚‹ã€‚
                 int lo = j;
                 while (lo > 0) {
                     if (GetAt(i, --lo) == ZEN_BLACK) {
@@ -771,7 +771,7 @@ XG_EpvCode __fastcall XG_Board::EveryPatternValid2(
                 const int hi = j;
                 j++;
 
-                // ƒpƒ^[ƒ“‚ğ¶¬‚·‚éB
+                // ãƒ‘ã‚¿ãƒ¼ãƒ³ã‚’ç”Ÿæˆã™ã‚‹ã€‚
                 bool bSpaceFound = false;
                 std::wstring pattern;
                 for (int k = lo; k <= hi; k++) {
@@ -785,50 +785,50 @@ XG_EpvCode __fastcall XG_Board::EveryPatternValid2(
                     pattern += ch;
                 }
 
-                // ƒXƒy[ƒX‚ª‚ ‚Á‚½‚©H
+                // ã‚¹ãƒšãƒ¼ã‚¹ãŒã‚ã£ãŸã‹ï¼Ÿ
                 if (bSpaceFound) {
-                    // ƒpƒ^[ƒ“‚Éƒ}ƒbƒ`‚·‚éŒó•â‚ª‘¶İ‚µ‚È‚¯‚ê‚Î¸”s‚·‚éB
+                    // ãƒ‘ã‚¿ãƒ¼ãƒ³ã«ãƒãƒƒãƒã™ã‚‹å€™è£œãŒå­˜åœ¨ã—ãªã‘ã‚Œã°å¤±æ•—ã™ã‚‹ã€‚
                     if (xg_bNoAddBlack) {
                         if (!XgAnyCandidateNoAddBlack<false>(pattern) &&
                             !XgAnyCandidateNoAddBlack<true>(pattern))
                         {
-                            // ƒ}ƒbƒ`‚µ‚È‚©‚Á‚½ˆÊ’uB
+                            // ãƒãƒƒãƒã—ãªã‹ã£ãŸä½ç½®ã€‚
                             j = lo;
                             pos = pos2;
-                            return xg_epv_PATNOTMATCH;  // ƒ}ƒbƒ`‚µ‚È‚©‚Á‚½B
+                            return xg_epv_PATNOTMATCH;  // ãƒãƒƒãƒã—ãªã‹ã£ãŸã€‚
                         }
                     } else {
                         if (!XgAnyCandidateAddBlack<false>(pattern) &&
                             !XgAnyCandidateAddBlack<true>(pattern))
                         {
-                            // ƒ}ƒbƒ`‚µ‚È‚©‚Á‚½ˆÊ’uB
+                            // ãƒãƒƒãƒã—ãªã‹ã£ãŸä½ç½®ã€‚
                             j = lo;
                             pos = pos2;
-                            return xg_epv_PATNOTMATCH;  // ƒ}ƒbƒ`‚µ‚È‚©‚Á‚½B
+                            return xg_epv_PATNOTMATCH;  // ãƒãƒƒãƒã—ãªã‹ã£ãŸã€‚
                         }
                     }
                 } else {
-                    // ‚·‚Å‚Ég—p‚µ‚½’PŒê‚ª‚ ‚é‚©H
+                    // ã™ã§ã«ä½¿ç”¨ã—ãŸå˜èªãŒã‚ã‚‹ã‹ï¼Ÿ
                     if (used_words.count(pattern)) {
                         pos = pos2;
-                        return xg_epv_DOUBLEWORD;   // ’PŒê‚Ìd•¡‚Ì‚½‚ßA¸”sB
+                        return xg_epv_DOUBLEWORD;   // å˜èªã®é‡è¤‡ã®ãŸã‚ã€å¤±æ•—ã€‚
                     }
 
-                    // “ñ•ª’Tõ‚Å’PŒê‚ª‚ ‚é‚©‚Ç‚¤‚©’²‚×‚éB
+                    // äºŒåˆ†æ¢ç´¢ã§å˜èªãŒã‚ã‚‹ã‹ã©ã†ã‹èª¿ã¹ã‚‹ã€‚
                     if (!XgWordDataExists(xg_dict_1, XG_WordData(pattern)) &&
                         !XgWordDataExists(xg_dict_2, XG_WordData(pattern)))
                     {
-                        // “o˜^‚³‚ê‚Ä‚¢‚È‚¢’PŒê‚È‚Ì‚ÅA“o˜^‚·‚éB
+                        // ç™»éŒ²ã•ã‚Œã¦ã„ãªã„å˜èªãªã®ã§ã€ç™»éŒ²ã™ã‚‹ã€‚
                         vNotFoundWords.emplace_back(std::move(pattern));
                         pos = pos2;
-                        return xg_epv_NOTFOUNDWORD; // “o˜^‚³‚ê‚Ä‚¢‚È‚¢’PŒê‚ª‚ ‚Á‚½B
+                        return xg_epv_NOTFOUNDWORD; // ç™»éŒ²ã•ã‚Œã¦ã„ãªã„å˜èªãŒã‚ã£ãŸã€‚
                     }
 
-                    // ˆê“xg‚Á‚½’PŒê‚Æ‚µ‚Ä“o˜^B
+                    // ä¸€åº¦ä½¿ã£ãŸå˜èªã¨ã—ã¦ç™»éŒ²ã€‚
                     used_words.emplace(std::move(pattern));
                 }
             } else if (bNonBlackCheckSpace && ch1 == ZEN_SPACE && ch2 == ZEN_SPACE) {
-                // ƒˆƒRŒü‚«‚Ì‹æŠÔ[lo, hi]‚ğ‹‚ß‚éB
+                // ãƒ¨ã‚³å‘ãã®åŒºé–“[lo, hi]ã‚’æ±‚ã‚ã‚‹ã€‚
                 int lo = j;
                 while (lo > 0) {
                     if (GetAt(i, --lo) == ZEN_BLACK) {
@@ -846,8 +846,8 @@ XG_EpvCode __fastcall XG_Board::EveryPatternValid2(
                 const int hi = j;
                 j++;
 
-                // ƒpƒ^[ƒ“‚ğ¶¬‚·‚éB
-                // ”ñ‹ó”’‚ª‚ ‚é‚©H
+                // ãƒ‘ã‚¿ãƒ¼ãƒ³ã‚’ç”Ÿæˆã™ã‚‹ã€‚
+                // éç©ºç™½ãŒã‚ã‚‹ã‹ï¼Ÿ
                 bool bNonSpaceFound = false;
                 int patlen = 0;
                 for (int k = lo; k <= hi; k++) {
@@ -860,29 +860,29 @@ XG_EpvCode __fastcall XG_Board::EveryPatternValid2(
                 }
 
                 if (!bNonSpaceFound) {
-                    // ”ñ‹ó”’‚ª‚È‚¢B
-                    // ƒpƒ^[ƒ“‚Éƒ}ƒbƒ`‚·‚éŒó•â‚ª‘¶İ‚µ‚È‚¯‚ê‚Î¸”s‚·‚éB
+                    // éç©ºç™½ãŒãªã„ã€‚
+                    // ãƒ‘ã‚¿ãƒ¼ãƒ³ã«ãƒãƒƒãƒã™ã‚‹å€™è£œãŒå­˜åœ¨ã—ãªã‘ã‚Œã°å¤±æ•—ã™ã‚‹ã€‚
                     if (!XgAnyCandidateWholeSpace(patlen)) {
-                        // ƒ}ƒbƒ`‚µ‚È‚©‚Á‚½ˆÊ’uB
+                        // ãƒãƒƒãƒã—ãªã‹ã£ãŸä½ç½®ã€‚
                         j = lo;
                         pos = pos2;
-                        return xg_epv_LENGTHMISMATCH;   // ’·‚³‚ªƒ}ƒbƒ`‚µ‚È‚©‚Á‚½B
+                        return xg_epv_LENGTHMISMATCH;   // é•·ã•ãŒãƒãƒƒãƒã—ãªã‹ã£ãŸã€‚
                     }
                 }
             }
         }
     }
 
-    // Še—ñ‚É‚Â‚¢‚ÄAcŒü‚«‚ÉƒXƒLƒƒƒ“‚·‚éB
+    // å„åˆ—ã«ã¤ã„ã¦ã€ç¸¦å‘ãã«ã‚¹ã‚­ãƒ£ãƒ³ã™ã‚‹ã€‚
     const int nRowsMinusOne = nRows - 1;
     for (j = 0; j < nCols; j++) {
         for (i = 0; i < nRowsMinusOne; i++) {
-            // •ƒ}ƒX‚Å‚Í‚È‚¢A•¶š‚ªŠÜ‚Ü‚ê‚Ä‚¢‚é˜A‘±‚µ‚½‚Qƒ}ƒX‚©H
+            // é»’ãƒã‚¹ã§ã¯ãªã„ã€æ–‡å­—ãŒå«ã¾ã‚Œã¦ã„ã‚‹é€£ç¶šã—ãŸï¼’ãƒã‚¹ã‹ï¼Ÿ
             const WCHAR ch1 = GetAt(i, j), ch2 = GetAt(i + 1, j);
             if (ch1 != ZEN_BLACK && ch2 != ZEN_BLACK &&
                 (ch1 != ZEN_SPACE || ch2 != ZEN_SPACE))
             {
-                // •¶š‚ª’u‚¯‚éƒ^ƒeŒü‚«‚Ì‹æŠÔ[lo, hi]‚ğ‹‚ß‚éB
+                // æ–‡å­—ãŒç½®ã‘ã‚‹ã‚¿ãƒ†å‘ãã®åŒºé–“[lo, hi]ã‚’æ±‚ã‚ã‚‹ã€‚
                 int lo = i;
                 while (lo > 0) {
                     if (GetAt(--lo, j) == ZEN_BLACK) {
@@ -899,7 +899,7 @@ XG_EpvCode __fastcall XG_Board::EveryPatternValid2(
                 const int hi = i;
                 i++;
 
-                // ƒpƒ^[ƒ“‚ğ¶¬‚·‚éB
+                // ãƒ‘ã‚¿ãƒ¼ãƒ³ã‚’ç”Ÿæˆã™ã‚‹ã€‚
                 bool bSpaceFound = false;
                 std::wstring pattern;
                 for (int k = lo; k <= hi; k++) {
@@ -913,50 +913,50 @@ XG_EpvCode __fastcall XG_Board::EveryPatternValid2(
                     pattern += ch;
                 }
 
-                // ƒXƒy[ƒX‚ª‚ ‚Á‚½‚©H
+                // ã‚¹ãƒšãƒ¼ã‚¹ãŒã‚ã£ãŸã‹ï¼Ÿ
                 if (bSpaceFound) {
-                    // ƒpƒ^[ƒ“‚Éƒ}ƒbƒ`‚·‚éŒó•â‚ª‘¶İ‚µ‚È‚¯‚ê‚Î¸”s‚·‚éB
+                    // ãƒ‘ã‚¿ãƒ¼ãƒ³ã«ãƒãƒƒãƒã™ã‚‹å€™è£œãŒå­˜åœ¨ã—ãªã‘ã‚Œã°å¤±æ•—ã™ã‚‹ã€‚
                     if (xg_bNoAddBlack) {
                         if (!XgAnyCandidateNoAddBlack<false>(pattern) &&
                             !XgAnyCandidateNoAddBlack<true>(pattern))
                         {
-                            // ƒ}ƒbƒ`‚µ‚È‚©‚Á‚½ˆÊ’uB
+                            // ãƒãƒƒãƒã—ãªã‹ã£ãŸä½ç½®ã€‚
                             i = lo;
                             pos = pos2;
-                            return xg_epv_PATNOTMATCH;  // ƒ}ƒbƒ`‚µ‚È‚©‚Á‚½B
+                            return xg_epv_PATNOTMATCH;  // ãƒãƒƒãƒã—ãªã‹ã£ãŸã€‚
                         }
                     } else {
                         if (!XgAnyCandidateAddBlack<false>(pattern) &&
                             !XgAnyCandidateAddBlack<true>(pattern))
                         {
-                            // ƒ}ƒbƒ`‚µ‚È‚©‚Á‚½ˆÊ’uB
+                            // ãƒãƒƒãƒã—ãªã‹ã£ãŸä½ç½®ã€‚
                             i = lo;
                             pos = pos2;
-                            return xg_epv_PATNOTMATCH;  // ƒ}ƒbƒ`‚µ‚È‚©‚Á‚½B
+                            return xg_epv_PATNOTMATCH;  // ãƒãƒƒãƒã—ãªã‹ã£ãŸã€‚
                         }
                     }
                 } else {
-                    // ‚·‚Å‚Ég—p‚µ‚½’PŒê‚ª‚ ‚é‚©H
+                    // ã™ã§ã«ä½¿ç”¨ã—ãŸå˜èªãŒã‚ã‚‹ã‹ï¼Ÿ
                     if (used_words.count(pattern)) {
                         pos = pos2;
                         return xg_epv_DOUBLEWORD;
                     }
 
-                    // “ñ•ª’Tõ‚Å’PŒê‚ª‚ ‚é‚©‚Ç‚¤‚©’²‚×‚éB
+                    // äºŒåˆ†æ¢ç´¢ã§å˜èªãŒã‚ã‚‹ã‹ã©ã†ã‹èª¿ã¹ã‚‹ã€‚
                     if (!XgWordDataExists(xg_dict_1, XG_WordData(pattern)) &&
                         !XgWordDataExists(xg_dict_2, XG_WordData(pattern)))
                     {
-                        // “o˜^‚³‚ê‚Ä‚¢‚È‚¢’PŒê‚È‚Ì‚ÅA“o˜^‚·‚éB
+                        // ç™»éŒ²ã•ã‚Œã¦ã„ãªã„å˜èªãªã®ã§ã€ç™»éŒ²ã™ã‚‹ã€‚
                         vNotFoundWords.emplace_back(std::move(pattern));
                         pos = pos2;
-                        return xg_epv_NOTFOUNDWORD; // “o˜^‚³‚ê‚Ä‚¢‚È‚¢’PŒê‚ª‚ ‚Á‚½Bs
+                        return xg_epv_NOTFOUNDWORD; // ç™»éŒ²ã•ã‚Œã¦ã„ãªã„å˜èªãŒã‚ã£ãŸã€‚s
                     }
 
-                    // ˆê“xg‚Á‚½’PŒê‚Æ‚µ‚Ä“o˜^B
+                    // ä¸€åº¦ä½¿ã£ãŸå˜èªã¨ã—ã¦ç™»éŒ²ã€‚
                     used_words.emplace(std::move(pattern));
                 }
             } else if (bNonBlackCheckSpace && ch1 == ZEN_SPACE && ch2 == ZEN_SPACE) {
-                // ƒ^ƒeŒü‚«‚Ì‹æŠÔ[lo, hi]‚ğ‹‚ß‚éB
+                // ã‚¿ãƒ†å‘ãã®åŒºé–“[lo, hi]ã‚’æ±‚ã‚ã‚‹ã€‚
                 int lo = i;
                 while (lo > 0) {
                     if (GetAt(--lo, j) == ZEN_BLACK) {
@@ -973,8 +973,8 @@ XG_EpvCode __fastcall XG_Board::EveryPatternValid2(
                 const int hi = i;
                 i++;
 
-                // ƒpƒ^[ƒ“‚ğ¶¬‚·‚éB
-                // ”ñ‹ó”’‚ª‚ ‚é‚©H
+                // ãƒ‘ã‚¿ãƒ¼ãƒ³ã‚’ç”Ÿæˆã™ã‚‹ã€‚
+                // éç©ºç™½ãŒã‚ã‚‹ã‹ï¼Ÿ
                 bool bNonSpaceFound = false;
                 int patlen = 0;
                 for (int k = lo; k <= hi; k++) {
@@ -987,23 +987,23 @@ XG_EpvCode __fastcall XG_Board::EveryPatternValid2(
                 }
 
                 if (!bNonSpaceFound) {
-                    // ”ñ‹ó”’‚ª‚È‚¢B
-                    // ƒpƒ^[ƒ“‚Éƒ}ƒbƒ`‚·‚éŒó•â‚ª‘¶İ‚µ‚È‚¯‚ê‚Î¸”s‚·‚éB
+                    // éç©ºç™½ãŒãªã„ã€‚
+                    // ãƒ‘ã‚¿ãƒ¼ãƒ³ã«ãƒãƒƒãƒã™ã‚‹å€™è£œãŒå­˜åœ¨ã—ãªã‘ã‚Œã°å¤±æ•—ã™ã‚‹ã€‚
                     if (!XgAnyCandidateWholeSpace(patlen)) {
-                        // ƒ}ƒbƒ`‚µ‚È‚©‚Á‚½ˆÊ’uB
+                        // ãƒãƒƒãƒã—ãªã‹ã£ãŸä½ç½®ã€‚
                         i = lo;
                         pos = pos2;
-                        return xg_epv_LENGTHMISMATCH;   // ’·‚³‚ªƒ}ƒbƒ`‚µ‚È‚©‚Á‚½B
+                        return xg_epv_LENGTHMISMATCH;   // é•·ã•ãŒãƒãƒƒãƒã—ãªã‹ã£ãŸã€‚
                     }
                 }
             }
         }
     }
 
-    return xg_epv_SUCCESS;      // ¬Œ÷B
+    return xg_epv_SUCCESS;      // æˆåŠŸã€‚
 }
 
-// ³“–‚©‚Ç‚¤‚©H
+// æ­£å½“ã‹ã©ã†ã‹ï¼Ÿ
 inline bool __fastcall XG_Board::IsValid() const
 {
     if ((xg_nRules & RULE_DONTCORNERBLACK) && CornerBlack())
@@ -1022,7 +1022,7 @@ inline bool __fastcall XG_Board::IsValid() const
             return false;
     }
 
-    // ƒNƒƒXƒ[ƒh‚ÉŠÜ‚Ü‚ê‚é’PŒê‚Ìƒ`ƒFƒbƒNB
+    // ã‚¯ãƒ­ã‚¹ãƒ¯ãƒ¼ãƒ‰ã«å«ã¾ã‚Œã‚‹å˜èªã®ãƒã‚§ãƒƒã‚¯ã€‚
     XG_Pos pos;
     std::vector<std::wstring> vNotFoundWords;
     vNotFoundWords.reserve(xg_nRows * xg_nCols / 4);
@@ -1030,18 +1030,18 @@ inline bool __fastcall XG_Board::IsValid() const
     if (code != xg_epv_SUCCESS || !vNotFoundWords.empty())
         return false;
 
-    // ‹ó‚ÌƒNƒƒXƒ[ƒh‚ğ‰ğ‚¢‚Ä‚¢‚é‚Æ‚«‚ÍA•ª’f‹Ö‚ğƒ`ƒFƒbƒN‚·‚é•K—v‚Í‚È‚¢B
-    // •ª’f‹ÖB
+    // ç©ºã®ã‚¯ãƒ­ã‚¹ãƒ¯ãƒ¼ãƒ‰ã‚’è§£ã„ã¦ã„ã‚‹ã¨ãã¯ã€åˆ†æ–­ç¦ã‚’ãƒã‚§ãƒƒã‚¯ã™ã‚‹å¿…è¦ã¯ãªã„ã€‚
+    // åˆ†æ–­ç¦ã€‚
     if (!xg_bSolvingEmpty && DividedByBlack())
         return false;
 
-    return true;    // ¬Œ÷B
+    return true;    // æˆåŠŸã€‚
 }
 
-// ³“–‚©‚Ç‚¤‚©HiŠÈ—ª”ÅA•ƒ}ƒX’Ç‰Á‚È‚µj
+// æ­£å½“ã‹ã©ã†ã‹ï¼Ÿï¼ˆç°¡ç•¥ç‰ˆã€é»’ãƒã‚¹è¿½åŠ ãªã—ï¼‰
 bool __fastcall XG_Board::IsNoAddBlackOK() const
 {
-    // ƒNƒƒXƒ[ƒh‚ÉŠÜ‚Ü‚ê‚é’PŒê‚Ìƒ`ƒFƒbƒNB
+    // ã‚¯ãƒ­ã‚¹ãƒ¯ãƒ¼ãƒ‰ã«å«ã¾ã‚Œã‚‹å˜èªã®ãƒã‚§ãƒƒã‚¯ã€‚
     XG_Pos pos;
     std::vector<std::wstring> vNotFoundWords;
     vNotFoundWords.reserve(xg_nRows * xg_nCols / 4);
@@ -1049,27 +1049,27 @@ bool __fastcall XG_Board::IsNoAddBlackOK() const
     if (code != xg_epv_SUCCESS || !vNotFoundWords.empty())
         return false;
 
-    // ‹ó‚ÌƒNƒƒXƒ[ƒh‚ğ‰ğ‚¢‚Ä‚¢‚é‚Æ‚«‚ÍA•ª’f‹Ö‚ğƒ`ƒFƒbƒN‚·‚é•K—v‚Í‚È‚¢B
+    // ç©ºã®ã‚¯ãƒ­ã‚¹ãƒ¯ãƒ¼ãƒ‰ã‚’è§£ã„ã¦ã„ã‚‹ã¨ãã¯ã€åˆ†æ–­ç¦ã‚’ãƒã‚§ãƒƒã‚¯ã™ã‚‹å¿…è¦ã¯ãªã„ã€‚
 
-    return true;    // ¬Œ÷B
+    return true;    // æˆåŠŸã€‚
 }
 
-// ”Ô†‚ğ‚Â‚¯‚éB
+// ç•ªå·ã‚’ã¤ã‘ã‚‹ã€‚
 bool __fastcall XG_Board::DoNumbering()
 {
     const int nRows = xg_nRows;
     const int nCols = xg_nCols;
 
-    // g‚Á‚½’PŒê‚ÌW‡B
+    // ä½¿ã£ãŸå˜èªã®é›†åˆã€‚
     std::unordered_set<std::wstring> used_words;
-    // ƒXƒs[ƒh‚Ì‚½‚ßA—\–ñB
+    // ã‚¹ãƒ”ãƒ¼ãƒ‰ã®ãŸã‚ã€äºˆç´„ã€‚
     used_words.reserve(nRows * nCols / 4);
 
-    // ’PŒêƒf[ƒ^B
+    // å˜èªãƒ‡ãƒ¼ã‚¿ã€‚
     XG_WordData wd;
 
 #ifndef NDEBUG
-    // ‹óƒ}ƒX‚ª‚È‚¢‚±‚Æ‚ğ‰¼’è‚·‚éB
+    // ç©ºãƒã‚¹ãŒãªã„ã“ã¨ã‚’ä»®å®šã™ã‚‹ã€‚
     for (int i = 0; i < nRows; i++) {
         for (int j = 0; j < nCols; j++) {
             assert(GetAt(i, j) != ZEN_SPACE);
@@ -1077,18 +1077,18 @@ bool __fastcall XG_Board::DoNumbering()
     }
 #endif
 
-    // ƒJƒM‚ğƒNƒŠƒA‚·‚éB
+    // ã‚«ã‚®ã‚’ã‚¯ãƒªã‚¢ã™ã‚‹ã€‚
     xg_vTateInfo.clear();
     xg_vYokoInfo.clear();
 
-    // Še—ñ‚É‚Â‚¢‚ÄAcŒü‚«‚ÉƒXƒLƒƒƒ“‚·‚éB
+    // å„åˆ—ã«ã¤ã„ã¦ã€ç¸¦å‘ãã«ã‚¹ã‚­ãƒ£ãƒ³ã™ã‚‹ã€‚
     for (int j = 0; j < nCols; j++) {
         for (int i = 0; i < nRows - 1; i++) {
-            // •¶šƒ}ƒX‚Ì˜A‘±‚ªŒ©‚Â‚©‚Á‚½‚©H
+            // æ–‡å­—ãƒã‚¹ã®é€£ç¶šãŒè¦‹ã¤ã‹ã£ãŸã‹ï¼Ÿ
             if (GetAt(i, j) != ZEN_BLACK && GetAt(i + 1, j) != ZEN_BLACK) {
                 int lo, hi;
 
-                // ’PŒê‚ª’u‚¯‚é‹æŠÔ‚ğ‹‚ß‚éB
+                // å˜èªãŒç½®ã‘ã‚‹åŒºé–“ã‚’æ±‚ã‚ã‚‹ã€‚
                 lo = hi = i;
                 while (hi + 1 < nRows) {
                     if (GetAt(hi + 1, j) == ZEN_BLACK)
@@ -1097,10 +1097,10 @@ bool __fastcall XG_Board::DoNumbering()
                 }
                 assert(hi == nRows - 1 || GetAt(hi + 1, j) == ZEN_BLACK);
 
-                // Ÿ‚ÌˆÊ’u‚ğİ’è‚·‚éB
+                // æ¬¡ã®ä½ç½®ã‚’è¨­å®šã™ã‚‹ã€‚
                 i = hi + 1;
 
-                // ‹ó”’‚ª‚ ‚é‚©‚ğ’²‚×‚é‚Æ“¯‚ÉA‚»‚Ì‹æŠÔ‚É‚ ‚é’PŒê‚ğæ“¾‚·‚éB
+                // ç©ºç™½ãŒã‚ã‚‹ã‹ã‚’èª¿ã¹ã‚‹ã¨åŒæ™‚ã«ã€ãã®åŒºé–“ã«ã‚ã‚‹å˜èªã‚’å–å¾—ã™ã‚‹ã€‚
                 std::wstring word;
                 for (int k = lo; k <= hi; k++) {
                     if (GetAt(k, j) == ZEN_SPACE)
@@ -1109,36 +1109,36 @@ bool __fastcall XG_Board::DoNumbering()
                     word += GetAt(k, j);
                 }
 
-                // ‹ó”’‚ªŒ©‚Â‚©‚ç‚È‚©‚Á‚½B
-                // ‚·‚Å‚Ég—p‚µ‚½’PŒê‚ª‚ ‚é‚©H
+                // ç©ºç™½ãŒè¦‹ã¤ã‹ã‚‰ãªã‹ã£ãŸã€‚
+                // ã™ã§ã«ä½¿ç”¨ã—ãŸå˜èªãŒã‚ã‚‹ã‹ï¼Ÿ
                 if (used_words.count(word)) {
-                    return false;   // ‚·‚Å‚Ég—p‚µ‚½’PŒê‚ªg‚í‚ê‚½‚Ì‚ÅA¸”sB
+                    return false;   // ã™ã§ã«ä½¿ç”¨ã—ãŸå˜èªãŒä½¿ã‚ã‚ŒãŸã®ã§ã€å¤±æ•—ã€‚
                 }
 
-                // “ñ•ª’Tõ‚Å’PŒê‚ª‚ ‚é‚©‚Ç‚¤‚©’²‚×‚éB
+                // äºŒåˆ†æ¢ç´¢ã§å˜èªãŒã‚ã‚‹ã‹ã©ã†ã‹èª¿ã¹ã‚‹ã€‚
                 wd.m_word = word;
                 if (XgWordDataExists(xg_dict_1, wd) || XgWordDataExists(xg_dict_2, wd)) {
-                    // ˆê“xg‚Á‚½’PŒê‚Æ‚µ‚Ä“o˜^B
+                    // ä¸€åº¦ä½¿ã£ãŸå˜èªã¨ã—ã¦ç™»éŒ²ã€‚
                     used_words.emplace(word);
 
-                    // c‚ÌƒJƒM‚É“o˜^B
+                    // ç¸¦ã®ã‚«ã‚®ã«ç™»éŒ²ã€‚
                     xg_vTateInfo.emplace_back(lo, j, std::move(word));
                 } else {
-                    return false;   // “o˜^‚³‚ê‚Ä‚¢‚È‚¢’PŒê‚ª‚ ‚Á‚½‚Ì‚Å¸”sB
+                    return false;   // ç™»éŒ²ã•ã‚Œã¦ã„ãªã„å˜èªãŒã‚ã£ãŸã®ã§å¤±æ•—ã€‚
                 }
 space_found_1:;
             }
         }
     }
 
-    // Šes‚É‚Â‚¢‚Ä‰¡Œü‚«‚ÉƒXƒLƒƒƒ“‚·‚éB
+    // å„è¡Œã«ã¤ã„ã¦æ¨ªå‘ãã«ã‚¹ã‚­ãƒ£ãƒ³ã™ã‚‹ã€‚
     for (int i = 0; i < nRows; i++) {
         for (int j = 0; j < nCols - 1; j++) {
-            // •¶šƒ}ƒX‚Ì˜A‘±‚ªŒ©‚Â‚©‚Á‚½‚©H
+            // æ–‡å­—ãƒã‚¹ã®é€£ç¶šãŒè¦‹ã¤ã‹ã£ãŸã‹ï¼Ÿ
             if (GetAt(i, j) != ZEN_BLACK && GetAt(i, j + 1) != ZEN_BLACK) {
                 int lo, hi;
 
-                // ’PŒê‚ª’u‚¯‚é‹æŠÔ‚ğ‹‚ß‚éB
+                // å˜èªãŒç½®ã‘ã‚‹åŒºé–“ã‚’æ±‚ã‚ã‚‹ã€‚
                 lo = hi = j;
                 while (hi + 1 < nCols) {
                     if (GetAt(i, hi + 1) == ZEN_BLACK)
@@ -1147,10 +1147,10 @@ space_found_1:;
                 }
                 assert(hi == nCols - 1 || GetAt(i, hi + 1) == ZEN_BLACK);
 
-                // Ÿ‚ÌˆÊ’u‚ğİ’è‚·‚éB
+                // æ¬¡ã®ä½ç½®ã‚’è¨­å®šã™ã‚‹ã€‚
                 j = hi + 1;
 
-                // ‹ó”’‚ª‚ ‚é‚©‚ğ’²‚×‚é‚Æ“¯‚ÉA‚»‚Ì‹æŠÔ‚É‚ ‚é’PŒê‚ğæ“¾‚·‚éB
+                // ç©ºç™½ãŒã‚ã‚‹ã‹ã‚’èª¿ã¹ã‚‹ã¨åŒæ™‚ã«ã€ãã®åŒºé–“ã«ã‚ã‚‹å˜èªã‚’å–å¾—ã™ã‚‹ã€‚
                 std::wstring word;
                 for (int k = lo; k <= hi; k++) {
                     if (GetAt(i, k) == ZEN_SPACE)
@@ -1159,29 +1159,29 @@ space_found_1:;
                     word += GetAt(i, k);
                 }
 
-                // ‹ó”’‚ªŒ©‚Â‚©‚ç‚È‚©‚Á‚½B
-                // ‚·‚Å‚Ég—p‚µ‚½’PŒê‚ª‚ ‚é‚©H
+                // ç©ºç™½ãŒè¦‹ã¤ã‹ã‚‰ãªã‹ã£ãŸã€‚
+                // ã™ã§ã«ä½¿ç”¨ã—ãŸå˜èªãŒã‚ã‚‹ã‹ï¼Ÿ
                 if (used_words.count(word)) {
-                    return false;   // g—p‚µ‚½’PŒê‚ªg‚í‚ê‚½‚½‚ßA¸”sB
+                    return false;   // ä½¿ç”¨ã—ãŸå˜èªãŒä½¿ã‚ã‚ŒãŸãŸã‚ã€å¤±æ•—ã€‚
                 }
 
-                // “ñ•ª’Tõ‚Å’PŒê‚ª‚ ‚é‚©‚Ç‚¤‚©’²‚×‚éB
+                // äºŒåˆ†æ¢ç´¢ã§å˜èªãŒã‚ã‚‹ã‹ã©ã†ã‹èª¿ã¹ã‚‹ã€‚
                 wd.m_word = word;
                 if (XgWordDataExists(xg_dict_1, wd) || XgWordDataExists(xg_dict_2, wd)) {
-                    // ˆê“xg‚Á‚½’PŒê‚Æ‚µ‚Ä“o˜^B
+                    // ä¸€åº¦ä½¿ã£ãŸå˜èªã¨ã—ã¦ç™»éŒ²ã€‚
                     used_words.emplace(word);
 
-                    // ‰¡‚ÌƒJƒM‚Æ‚µ‚Ä“o˜^B
+                    // æ¨ªã®ã‚«ã‚®ã¨ã—ã¦ç™»éŒ²ã€‚
                     xg_vYokoInfo.emplace_back(i, lo, std::move(word));
                 } else {
-                    return false;   // “o˜^‚³‚ê‚Ä‚¢‚È‚¢’PŒê‚Ì‚½‚ßA¸”sB
+                    return false;   // ç™»éŒ²ã•ã‚Œã¦ã„ãªã„å˜èªã®ãŸã‚ã€å¤±æ•—ã€‚
                 }
 space_found_2:;
             }
         }
     }
 
-    // ƒJƒM‚ÌŠi”[î•ñ‚É‡˜‚ğ‚Â‚¯‚éB
+    // ã‚«ã‚®ã®æ ¼ç´æƒ…å ±ã«é †åºã‚’ã¤ã‘ã‚‹ã€‚
     std::vector<XG_PlaceInfo *> data;
     const int size1 = static_cast<int>(xg_vTateInfo.size());
     const int size2 = static_cast<int>(xg_vYokoInfo.size());
@@ -1194,63 +1194,63 @@ space_found_2:;
     }
     sort(data.begin(), data.end(), xg_placeinfo_compare_position());
 
-    // ‡˜•t‚¯‚ç‚ê‚½ƒJƒM‚ÌŠi”[î•ñ‚É”Ô†‚ğİ’è‚·‚éB
+    // é †åºä»˜ã‘ã‚‰ã‚ŒãŸã‚«ã‚®ã®æ ¼ç´æƒ…å ±ã«ç•ªå·ã‚’è¨­å®šã™ã‚‹ã€‚
     int number = 1;
     {
         const int size = static_cast<int>(data.size());
         for (int k = 0; k < size; k++) {
-            // ”Ô†‚ğİ’è‚·‚éB
+            // ç•ªå·ã‚’è¨­å®šã™ã‚‹ã€‚
             data[k]->m_number = number;
             if (k + 1 < size) {
-                // Ÿ‚ÌŠi”[î•ñ‚ª“¯‚¶ˆÊ’u‚È‚ç‚Î
+                // æ¬¡ã®æ ¼ç´æƒ…å ±ãŒåŒã˜ä½ç½®ãªã‚‰ã°
                 if (data[k]->m_iRow == data[k + 1]->m_iRow &&
                     data[k]->m_jCol == data[k + 1]->m_jCol)
                 {
-                    // –³‹‚·‚éB
+                    // ç„¡è¦–ã™ã‚‹ã€‚
                     ;
                 } else {
-                    // ˆá‚¤ˆÊ’u‚È‚çA”Ô†‚ğ‘‚â‚·B
+                    // é•ã†ä½ç½®ãªã‚‰ã€ç•ªå·ã‚’å¢—ã‚„ã™ã€‚
                     number++;
                 }
             }
         }
     }
 
-    // ƒJƒM‚ÌŠi”[î•ñ‚ğ”Ô†‡‚É•À‚×‘Ö‚¦‚éB
+    // ã‚«ã‚®ã®æ ¼ç´æƒ…å ±ã‚’ç•ªå·é †ã«ä¸¦ã¹æ›¿ãˆã‚‹ã€‚
     sort(xg_vTateInfo.begin(), xg_vTateInfo.end(), xg_placeinfo_compare_number());
     sort(xg_vYokoInfo.begin(), xg_vYokoInfo.end(), xg_placeinfo_compare_number());
 
     return true;
 }
 
-// ”Ô†‚ğ‚Â‚¯‚éiƒ`ƒFƒbƒN‚È‚µjB
+// ç•ªå·ã‚’ã¤ã‘ã‚‹ï¼ˆãƒã‚§ãƒƒã‚¯ãªã—ï¼‰ã€‚
 void __fastcall XG_Board::DoNumberingNoCheck()
 {
-    // ’PŒêƒf[ƒ^B
+    // å˜èªãƒ‡ãƒ¼ã‚¿ã€‚
     XG_WordData wd;
 
     const int nRows = xg_nRows;
     const int nCols = xg_nCols;
 
 #ifndef NDEBUG
-    // ‹óƒ}ƒX‚ª‚È‚¢‚Æ‰¼’è‚·‚éB
+    // ç©ºãƒã‚¹ãŒãªã„ã¨ä»®å®šã™ã‚‹ã€‚
     for (int i = 0; i < nRows * nCols; i++) {
         assert(GetAt(i) != ZEN_SPACE);
     }
 #endif
 
-    // ƒJƒM‚ğƒNƒŠƒA‚·‚éB
+    // ã‚«ã‚®ã‚’ã‚¯ãƒªã‚¢ã™ã‚‹ã€‚
     xg_vTateInfo.clear();
     xg_vYokoInfo.clear();
 
-    // Še—ñ‚É‚Â‚¢‚ÄAcŒü‚«‚ÉƒXƒLƒƒƒ“‚·‚éB
+    // å„åˆ—ã«ã¤ã„ã¦ã€ç¸¦å‘ãã«ã‚¹ã‚­ãƒ£ãƒ³ã™ã‚‹ã€‚
     for (int j = 0; j < nCols; j++) {
         for (int i = 0; i < nRows - 1; i++) {
-            // •¶šƒ}ƒX‚Ì˜A‘±‚ªŒ©‚Â‚©‚Á‚½‚©H
+            // æ–‡å­—ãƒã‚¹ã®é€£ç¶šãŒè¦‹ã¤ã‹ã£ãŸã‹ï¼Ÿ
             if (GetAt(i, j) != ZEN_BLACK && GetAt(i + 1, j) != ZEN_BLACK) {
                 int lo, hi;
 
-                // ’PŒê‚ª’u‚¯‚é‹æŠÔ‚ğ‹‚ß‚éB
+                // å˜èªãŒç½®ã‘ã‚‹åŒºé–“ã‚’æ±‚ã‚ã‚‹ã€‚
                 lo = hi = i;
                 while (hi + 1 < nRows) {
                     if (GetAt(hi + 1, j) == ZEN_BLACK)
@@ -1259,10 +1259,10 @@ void __fastcall XG_Board::DoNumberingNoCheck()
                 }
                 assert(hi == nRows - 1 || GetAt(hi + 1, j) == ZEN_BLACK);
 
-                // Ÿ‚ÌˆÊ’u‚ğİ’è‚·‚éB
+                // æ¬¡ã®ä½ç½®ã‚’è¨­å®šã™ã‚‹ã€‚
                 i = hi + 1;
 
-                // ‹ó”’‚ª‚ ‚é‚©‚ğ’²‚×‚é‚Æ“¯‚ÉA‚»‚Ì‹æŠÔ‚É‚ ‚é’PŒê‚ğæ“¾‚·‚éB
+                // ç©ºç™½ãŒã‚ã‚‹ã‹ã‚’èª¿ã¹ã‚‹ã¨åŒæ™‚ã«ã€ãã®åŒºé–“ã«ã‚ã‚‹å˜èªã‚’å–å¾—ã™ã‚‹ã€‚
                 bool bFound = false;
                 std::wstring word;
                 for (int k = lo; k <= hi; k++) {
@@ -1273,23 +1273,23 @@ void __fastcall XG_Board::DoNumberingNoCheck()
                     word += GetAt(k, j);
                 }
 
-                // ‹ó”’‚ªŒ©‚Â‚©‚ç‚È‚©‚Á‚½‚©H
+                // ç©ºç™½ãŒè¦‹ã¤ã‹ã‚‰ãªã‹ã£ãŸã‹ï¼Ÿ
                 if (!bFound) {
-                    // ’PŒê‚ğ“o˜^‚·‚éB
+                    // å˜èªã‚’ç™»éŒ²ã™ã‚‹ã€‚
                     xg_vTateInfo.emplace_back(lo, j, std::move(word));
                 }
             }
         }
     }
 
-    // Šes‚É‚Â‚¢‚ÄA‰¡Œü‚«‚ÉƒXƒLƒƒƒ“‚·‚éB
+    // å„è¡Œã«ã¤ã„ã¦ã€æ¨ªå‘ãã«ã‚¹ã‚­ãƒ£ãƒ³ã™ã‚‹ã€‚
     for (int i = 0; i < nRows; i++) {
         for (int j = 0; j < nCols - 1; j++) {
-            // •¶šƒ}ƒX‚Ì˜A‘±‚ªŒ©‚Â‚©‚Á‚½‚©H
+            // æ–‡å­—ãƒã‚¹ã®é€£ç¶šãŒè¦‹ã¤ã‹ã£ãŸã‹ï¼Ÿ
             if (GetAt(i, j) != ZEN_BLACK && GetAt(i, j + 1) != ZEN_BLACK) {
                 int lo, hi;
 
-                // ’PŒê‚ª’u‚¯‚é‹æŠÔ‚ğ‹‚ß‚éB
+                // å˜èªãŒç½®ã‘ã‚‹åŒºé–“ã‚’æ±‚ã‚ã‚‹ã€‚
                 lo = hi = j;
                 while (hi + 1 < nCols) {
                     if (GetAt(i, hi + 1) == ZEN_BLACK)
@@ -1298,10 +1298,10 @@ void __fastcall XG_Board::DoNumberingNoCheck()
                 }
                 assert(hi == nCols - 1 || GetAt(i, hi + 1) == ZEN_BLACK);
 
-                // Ÿ‚ÌˆÊ’u‚ğİ’è‚·‚éB
+                // æ¬¡ã®ä½ç½®ã‚’è¨­å®šã™ã‚‹ã€‚
                 j = hi + 1;
 
-                // ‹ó”’‚ª‚ ‚é‚©‚ğ’²‚×‚é‚Æ“¯‚ÉA‚»‚Ì‹æŠÔ‚É‚ ‚é’PŒê‚ğæ“¾‚·‚éB
+                // ç©ºç™½ãŒã‚ã‚‹ã‹ã‚’èª¿ã¹ã‚‹ã¨åŒæ™‚ã«ã€ãã®åŒºé–“ã«ã‚ã‚‹å˜èªã‚’å–å¾—ã™ã‚‹ã€‚
                 std::wstring word;
                 bool bFound = false;
                 for (int k = lo; k <= hi; k++) {
@@ -1312,16 +1312,16 @@ void __fastcall XG_Board::DoNumberingNoCheck()
                     word += GetAt(i, k);
                 }
 
-                // ‹ó”’‚ªŒ©‚Â‚©‚ç‚È‚©‚Á‚½‚©H
+                // ç©ºç™½ãŒè¦‹ã¤ã‹ã‚‰ãªã‹ã£ãŸã‹ï¼Ÿ
                 if (!bFound) {
-                    // ‰¡‚ÌƒJƒM‚Æ‚µ‚Ä“o˜^B
+                    // æ¨ªã®ã‚«ã‚®ã¨ã—ã¦ç™»éŒ²ã€‚
                     xg_vYokoInfo.emplace_back(i, lo, std::move(word));
                 }
             }
         }
     }
 
-    // ƒJƒM‚ÌŠi”[î•ñ‚É‡˜‚ğ‚Â‚¯‚éB
+    // ã‚«ã‚®ã®æ ¼ç´æƒ…å ±ã«é †åºã‚’ã¤ã‘ã‚‹ã€‚
     std::vector<XG_PlaceInfo *> data;
     {
         const int size = static_cast<int>(xg_vTateInfo.size());
@@ -1337,46 +1337,46 @@ void __fastcall XG_Board::DoNumberingNoCheck()
     }
     sort(data.begin(), data.end(), xg_placeinfo_compare_position());
 
-    // ‡˜•t‚¯‚ç‚ê‚½ƒJƒM‚ÌŠi”[î•ñ‚É”Ô†‚ğİ’è‚·‚éB
+    // é †åºä»˜ã‘ã‚‰ã‚ŒãŸã‚«ã‚®ã®æ ¼ç´æƒ…å ±ã«ç•ªå·ã‚’è¨­å®šã™ã‚‹ã€‚
     int number = 1;
     {
         const int size = static_cast<int>(data.size());
         for (int k = 0; k < size; k++) {
-            // ”Ô†‚ğİ’è‚·‚éB
+            // ç•ªå·ã‚’è¨­å®šã™ã‚‹ã€‚
             data[k]->m_number = number;
             if (k + 1 < size) {
-                // Ÿ‚ÌŠi”[î•ñ‚ª“¯‚¶ˆÊ’u‚È‚ç‚Î
+                // æ¬¡ã®æ ¼ç´æƒ…å ±ãŒåŒã˜ä½ç½®ãªã‚‰ã°
                 if (data[k]->m_iRow == data[k + 1]->m_iRow &&
                     data[k]->m_jCol == data[k + 1]->m_jCol)
                 {
-                    // –³‹‚·‚éB
+                    // ç„¡è¦–ã™ã‚‹ã€‚
                     ;
                 } else {
-                    // ˆá‚¤ˆÊ’u‚È‚çA”Ô†‚ğ‘‚â‚·B
+                    // é•ã†ä½ç½®ãªã‚‰ã€ç•ªå·ã‚’å¢—ã‚„ã™ã€‚
                     number++;
                 }
             }
         }
     }
 
-    // ƒJƒM‚ÌŠi”[î•ñ‚ğ”Ô†‡‚É•À‚×‘Ö‚¦‚éB
+    // ã‚«ã‚®ã®æ ¼ç´æƒ…å ±ã‚’ç•ªå·é †ã«ä¸¦ã¹æ›¿ãˆã‚‹ã€‚
     sort(xg_vTateInfo.begin(), xg_vTateInfo.end(), xg_placeinfo_compare_number());
     sort(xg_vYokoInfo.begin(), xg_vYokoInfo.end(), xg_placeinfo_compare_number());
 }
 
-// Œó•â‚ğæ“¾‚·‚éB
+// å€™è£œã‚’å–å¾—ã™ã‚‹ã€‚
 template <bool t_alternative> bool __fastcall
 XgGetCandidatesAddBlack(
     std::vector<std::wstring>& cands, const std::wstring& pattern, int& nSkip,
     bool left_black_check, bool right_black_check)
 {
-    // ƒpƒ^[ƒ“‚Ì’·‚³B
+    // ãƒ‘ã‚¿ãƒ¼ãƒ³ã®é•·ã•ã€‚
     const int patlen = static_cast<int>(pattern.size());
     assert(patlen >= 2);
 
 #ifndef NDEBUG
-    // ƒpƒ^[ƒ“‚É•ƒ}ƒX‚ª‚È‚¢‚±‚Æ‚ğ‰¼’è‚·‚éB
-    // ƒpƒ^[ƒ“‚É‹ó”’‚ª‚ ‚é‚±‚Æ‚ğ‰¼’è‚·‚éB
+    // ãƒ‘ã‚¿ãƒ¼ãƒ³ã«é»’ãƒã‚¹ãŒãªã„ã“ã¨ã‚’ä»®å®šã™ã‚‹ã€‚
+    // ãƒ‘ã‚¿ãƒ¼ãƒ³ã«ç©ºç™½ãŒã‚ã‚‹ã“ã¨ã‚’ä»®å®šã™ã‚‹ã€‚
     bool bSpaceFound = false;
     for (int i = 0; i < patlen; i++) {
         assert(pattern[i] != ZEN_BLACK);
@@ -1386,41 +1386,41 @@ XgGetCandidatesAddBlack(
     assert(bSpaceFound);
 #endif
 
-    // Œó•â‚ğƒNƒŠƒA‚·‚éB
+    // å€™è£œã‚’ã‚¯ãƒªã‚¢ã™ã‚‹ã€‚
     cands.clear();
-    // ƒXƒs[ƒh‚Ì‚½‚ß‚É—\–ñ‚·‚éB
+    // ã‚¹ãƒ”ãƒ¼ãƒ‰ã®ãŸã‚ã«äºˆç´„ã™ã‚‹ã€‚
     if (t_alternative)
         cands.reserve(xg_dict_2.size() / 32);
     else
         cands.reserve(xg_dict_1.size() / 32);
 
-    // ‰Šú‰»‚·‚éB
+    // åˆæœŸåŒ–ã™ã‚‹ã€‚
     nSkip = 0;
     std::wstring result(pattern);
 
-    // ƒpƒ^[ƒ“‚ª3šˆÈã‚©H
+    // ãƒ‘ã‚¿ãƒ¼ãƒ³ãŒ3å­—ä»¥ä¸Šã‹ï¼Ÿ
     if (patlen > 2) {
-        // ŒÇ—§‚µ‚½•¶šƒ}ƒX‚ª¶’[‚©H
+        // å­¤ç«‹ã—ãŸæ–‡å­—ãƒã‚¹ãŒå·¦ç«¯ã‹ï¼Ÿ
         if (result[0] != ZEN_SPACE && result[1] == ZEN_SPACE) {
-            // ‚»‚Ì‰E‚ÉƒuƒƒbƒN‚ğ’u‚¢‚½‚à‚Ì‚ğŒó•â‚É‚·‚éB
+            // ãã®å³ã«ãƒ–ãƒ­ãƒƒã‚¯ã‚’ç½®ã„ãŸã‚‚ã®ã‚’å€™è£œã«ã™ã‚‹ã€‚
             result[1] = ZEN_BLACK;
             cands.emplace_back(result);
             result = pattern;
-            // ‚±‚ê‚Íæ‚Éˆ—‚³‚ê‚é‚×‚«‚È‚Ì‚ÅAƒ‰ƒ“ƒ_ƒ€‰»‚©‚çœŠO‚·‚éB
+            // ã“ã‚Œã¯å…ˆã«å‡¦ç†ã•ã‚Œã‚‹ã¹ããªã®ã§ã€ãƒ©ãƒ³ãƒ€ãƒ åŒ–ã‹ã‚‰é™¤å¤–ã™ã‚‹ã€‚
             nSkip++;
         } else {
-            bool bCharNotFound = true;  // •¶šƒ}ƒX‚ª‚È‚©‚Á‚½‚©H
+            bool bCharNotFound = true;  // æ–‡å­—ãƒã‚¹ãŒãªã‹ã£ãŸã‹ï¼Ÿ
 
-            // ŒÇ—§‚µ‚½•¶šƒ}ƒX‚ª’†‚É‚ ‚é‚©H
+            // å­¤ç«‹ã—ãŸæ–‡å­—ãƒã‚¹ãŒä¸­ã«ã‚ã‚‹ã‹ï¼Ÿ
             for (int j = 1; j < patlen - 1; j++) {
                 if (result[j] != ZEN_SPACE) {
                     if (result[j - 1] == ZEN_SPACE && result[j + 1] == ZEN_SPACE) {
-                        // ŒÇ—§‚µ‚½•¶šƒ}ƒX‚ª‚ ‚Á‚½B
-                        // ‚»‚Ì—¼’[‚ÉƒuƒƒbƒN‚ğ’u‚­B
+                        // å­¤ç«‹ã—ãŸæ–‡å­—ãƒã‚¹ãŒã‚ã£ãŸã€‚
+                        // ãã®ä¸¡ç«¯ã«ãƒ–ãƒ­ãƒƒã‚¯ã‚’ç½®ãã€‚
                         result[j - 1] = result[j + 1] = ZEN_BLACK;
                         cands.emplace_back(result);
                         result = pattern;
-                        // ‚±‚ê‚Íæ‚Éˆ—‚³‚ê‚é‚×‚«‚È‚Ì‚ÅAƒ‰ƒ“ƒ_ƒ€‰»‚©‚çœŠO‚·‚éB
+                        // ã“ã‚Œã¯å…ˆã«å‡¦ç†ã•ã‚Œã‚‹ã¹ããªã®ã§ã€ãƒ©ãƒ³ãƒ€ãƒ åŒ–ã‹ã‚‰é™¤å¤–ã™ã‚‹ã€‚
                         nSkip++;
                     }
                     bCharNotFound = false;
@@ -1429,37 +1429,37 @@ XgGetCandidatesAddBlack(
             }
 
             if (bCharNotFound) {
-                // ŒÇ—§‚µ‚½•¶šƒ}ƒX‚ª‰E’[‚©H
+                // å­¤ç«‹ã—ãŸæ–‡å­—ãƒã‚¹ãŒå³ç«¯ã‹ï¼Ÿ
                 if (result[patlen - 1] != ZEN_SPACE && result[patlen - 2] == ZEN_SPACE) {
-                    // ‚»‚Ì¶‚ÉƒuƒƒbƒN‚ğ’u‚­B
+                    // ãã®å·¦ã«ãƒ–ãƒ­ãƒƒã‚¯ã‚’ç½®ãã€‚
                     result[patlen - 2] = ZEN_BLACK;
                     cands.emplace_back(result);
                     result = pattern;
-                    // ‚±‚ê‚Íæ‚Éˆ—‚³‚ê‚é‚×‚«‚È‚Ì‚ÅAƒ‰ƒ“ƒ_ƒ€‰»‚©‚çœŠO‚·‚éB
+                    // ã“ã‚Œã¯å…ˆã«å‡¦ç†ã•ã‚Œã‚‹ã¹ããªã®ã§ã€ãƒ©ãƒ³ãƒ€ãƒ åŒ–ã‹ã‚‰é™¤å¤–ã™ã‚‹ã€‚
                     nSkip++;
                 }
             }
         }
     }
 
-    // ‚·‚×‚Ä‚Ì“o˜^‚³‚ê‚Ä‚¢‚é’PŒê‚É‚Â‚¢‚ÄB
+    // ã™ã¹ã¦ã®ç™»éŒ²ã•ã‚Œã¦ã„ã‚‹å˜èªã«ã¤ã„ã¦ã€‚
     for (const auto& data : (t_alternative ? xg_dict_2 : xg_dict_1)) {
-        // ƒpƒ^[ƒ“‚æ‚è’PŒê‚Ì•û‚ª’·‚¢ê‡AƒXƒLƒbƒv‚·‚éB
+        // ãƒ‘ã‚¿ãƒ¼ãƒ³ã‚ˆã‚Šå˜èªã®æ–¹ãŒé•·ã„å ´åˆã€ã‚¹ã‚­ãƒƒãƒ—ã™ã‚‹ã€‚
         const std::wstring& word = data.m_word;
         const int wordlen = static_cast<int>(word.size());
         if (wordlen > patlen)
             continue;
 
-        // ’PŒê‚Ì’u‚¯‚é‹æŠÔ‚É‚Â‚¢‚Ä’²‚×‚éB
+        // å˜èªã®ç½®ã‘ã‚‹åŒºé–“ã«ã¤ã„ã¦èª¿ã¹ã‚‹ã€‚
         const int patlen_minus_wordlen = patlen - wordlen;
         for (int j = 0; j <= patlen_minus_wordlen; j++) {
-            // ‹æŠÔ[j, j + wordlen - 1]‚Ì‘OŒã‚É•¶š‚ª‚ ‚Á‚½‚çƒXƒLƒbƒv‚·‚éB
+            // åŒºé–“[j, j + wordlen - 1]ã®å‰å¾Œã«æ–‡å­—ãŒã‚ã£ãŸã‚‰ã‚¹ã‚­ãƒƒãƒ—ã™ã‚‹ã€‚
             if (j > 0 && pattern[j - 1] != ZEN_SPACE)
                 continue;
             if (j < patlen_minus_wordlen && pattern[j + wordlen] != ZEN_SPACE)
                 continue;
 
-            // ‹æŠÔ[j, j + wordlen - 1]‚É•¶šƒ}ƒX‚ª‚ ‚é‚©H
+            // åŒºé–“[j, j + wordlen - 1]ã«æ–‡å­—ãƒã‚¹ãŒã‚ã‚‹ã‹ï¼Ÿ
             bool bCharFound = false;
             const int j_plus_wordlen = j + wordlen;
             for (int m = j; m < j_plus_wordlen; m++) {
@@ -1472,7 +1472,7 @@ XgGetCandidatesAddBlack(
             if (!bCharFound)
                 continue;
 
-            // ƒpƒ^[ƒ“‚ª’PŒê‚Éƒ}ƒbƒ`‚·‚é‚©H
+            // ãƒ‘ã‚¿ãƒ¼ãƒ³ãŒå˜èªã«ãƒãƒƒãƒã™ã‚‹ã‹ï¼Ÿ
             bool bMatched = true;
             for (int m = j, n = 0; n < wordlen; m++, n++) {
                 if (pattern[m] != ZEN_SPACE && pattern[m] != word[n]) {
@@ -1483,59 +1483,59 @@ XgGetCandidatesAddBlack(
             if (!bMatched)
                 continue;
 
-            // ƒ}ƒbƒ`‚µ‚½B
+            // ãƒãƒƒãƒã—ãŸã€‚
             result = pattern;
 
-            // ‹æŠÔ[j, j + wordlen - 1]‚Ì‘OŒã‚É¡‚ğ‚¨‚­B
+            // åŒºé–“[j, j + wordlen - 1]ã®å‰å¾Œã«â– ã‚’ãŠãã€‚
             if (j > 0)
                 result[j - 1] = ZEN_BLACK;
             if (j < patlen_minus_wordlen)
                 result[j + wordlen] = ZEN_BLACK;
 
-            // ‹æŠÔ[j, j + wordlen - 1]‚É’PŒê‚ğ“K—p‚·‚éB
+            // åŒºé–“[j, j + wordlen - 1]ã«å˜èªã‚’é©ç”¨ã™ã‚‹ã€‚
             for (int k = 0, m = j; k < wordlen; k++, m++)
                 result[m] = word[k];
 
-            // •ƒ}ƒX‚Ì˜A‘±‚ğœŠO‚·‚éB
+            // é»’ãƒã‚¹ã®é€£ç¶šã‚’é™¤å¤–ã™ã‚‹ã€‚
             if (left_black_check && result[0] == ZEN_BLACK)
                 continue;
             if (right_black_check && result[patlen - 1] == ZEN_BLACK)
                 continue;
 
-            // ’Ç‰Á‚·‚éB
+            // è¿½åŠ ã™ã‚‹ã€‚
             cands.emplace_back(result);
         }
     }
 
-    // Œó•â‚ª‹ó‚Å‚È‚¯‚ê‚Î¬Œ÷B
+    // å€™è£œãŒç©ºã§ãªã‘ã‚Œã°æˆåŠŸã€‚
     return !cands.empty();
 }
 
-// Œó•â‚ğæ“¾‚·‚éi•ƒ}ƒX’Ç‰Á‚È‚µjB
+// å€™è£œã‚’å–å¾—ã™ã‚‹ï¼ˆé»’ãƒã‚¹è¿½åŠ ãªã—ï¼‰ã€‚
 template <bool t_alternative> bool __fastcall
 XgGetCandidatesNoAddBlack(std::vector<std::wstring>& cands, const std::wstring& pattern)
 {
-    // ’PŒê‚Ì’·‚³B
+    // å˜èªã®é•·ã•ã€‚
     const int patlen = static_cast<int>(pattern.size());
     assert(patlen >= 2);
 
-    // Œó•â‚ğƒNƒŠƒA‚·‚éB
+    // å€™è£œã‚’ã‚¯ãƒªã‚¢ã™ã‚‹ã€‚
     cands.clear();
-    // ƒXƒs[ƒh‚Ì‚½‚ßA—\–ñ‚·‚éB
+    // ã‚¹ãƒ”ãƒ¼ãƒ‰ã®ãŸã‚ã€äºˆç´„ã™ã‚‹ã€‚
     if (t_alternative)
         cands.reserve(xg_dict_2.size() / 32);
     else
         cands.reserve(xg_dict_1.size() / 32);
 
-    // ‚·‚×‚Ä‚Ì“o˜^‚³‚ê‚½’PŒê‚É‚Â‚¢‚ÄB
+    // ã™ã¹ã¦ã®ç™»éŒ²ã•ã‚ŒãŸå˜èªã«ã¤ã„ã¦ã€‚
     for (const auto& data : (t_alternative ? xg_dict_2 : xg_dict_1)) {
-        // ƒpƒ^[ƒ“‚Æ’PŒê‚Ì’·‚³‚ª“™‚µ‚­‚È‚¯‚ê‚ÎAƒXƒLƒbƒv‚·‚éB
+        // ãƒ‘ã‚¿ãƒ¼ãƒ³ã¨å˜èªã®é•·ã•ãŒç­‰ã—ããªã‘ã‚Œã°ã€ã‚¹ã‚­ãƒƒãƒ—ã™ã‚‹ã€‚
         const std::wstring& word = data.m_word;
         const int wordlen = static_cast<int>(word.size());
         if (wordlen != patlen)
             continue;
 
-        // ‹æŠÔ[0, wordlen - 1]‚É•¶šƒ}ƒX‚ª‚ ‚é‚©H
+        // åŒºé–“[0, wordlen - 1]ã«æ–‡å­—ãƒã‚¹ãŒã‚ã‚‹ã‹ï¼Ÿ
         bool bCharFound = false;
         for (int k = 0; k < wordlen; k++) {
             assert(pattern[k] != ZEN_BLACK);
@@ -1547,7 +1547,7 @@ XgGetCandidatesNoAddBlack(std::vector<std::wstring>& cands, const std::wstring& 
         if (!bCharFound)
             continue;
 
-        // ƒpƒ^[ƒ“‚ª’PŒê‚Éƒ}ƒbƒ`‚·‚é‚©H
+        // ãƒ‘ã‚¿ãƒ¼ãƒ³ãŒå˜èªã«ãƒãƒƒãƒã™ã‚‹ã‹ï¼Ÿ
         bool bMatched = true;
         for (int k = 0; k < wordlen; k++) {
             if (pattern[k] != ZEN_SPACE && pattern[k] != word[k]) {
@@ -1558,21 +1558,21 @@ XgGetCandidatesNoAddBlack(std::vector<std::wstring>& cands, const std::wstring& 
         if (!bMatched)
             continue;
 
-        // ’Ç‰Á‚·‚éB
+        // è¿½åŠ ã™ã‚‹ã€‚
         cands.emplace_back(word);
     }
 
-    // Œó•â‚ª‹ó‚Å‚È‚¯‚ê‚Î¬Œ÷B
+    // å€™è£œãŒç©ºã§ãªã‘ã‚Œã°æˆåŠŸã€‚
     return !cands.empty();
 }
 
-// ‰ğ‚©H
+// è§£ã‹ï¼Ÿ
 bool __fastcall XG_Board::IsSolution() const
 {
     const int nRows = xg_nRows;
     const int nCols = xg_nCols;
 
-    // ‹ó‚«ƒ}ƒX‚ª‚ ‚ê‚Î‰ğ‚Å‚Í‚È‚¢B
+    // ç©ºããƒã‚¹ãŒã‚ã‚Œã°è§£ã§ã¯ãªã„ã€‚
 #if 1
     if (Count() != nRows * nCols)
         return false;
@@ -1588,11 +1588,11 @@ bool __fastcall XG_Board::IsSolution() const
     return IsValid();
 }
 
-// ƒqƒ“ƒg•¶š—ñ‚ğ‰ğÍ‚·‚éB
+// ãƒ’ãƒ³ãƒˆæ–‡å­—åˆ—ã‚’è§£æã™ã‚‹ã€‚
 bool __fastcall XgParseHints(
     std::vector<XG_Hint>& hints, const std::wstring& str)
 {
-    // ƒqƒ“ƒg‚ğƒNƒŠƒA‚·‚éB
+    // ãƒ’ãƒ³ãƒˆã‚’ã‚¯ãƒªã‚¢ã™ã‚‹ã€‚
     hints.clear();
 
     int count = 0;
@@ -1660,18 +1660,18 @@ bool __fastcall XgParseHints(
     return true;
 }
 
-// ƒqƒ“ƒg•¶š—ñ‚ğ‰ğÍ‚·‚éB
+// ãƒ’ãƒ³ãƒˆæ–‡å­—åˆ—ã‚’è§£æã™ã‚‹ã€‚
 bool __fastcall XgParseHintsStr(HWND hwnd, const std::wstring& strHints)
 {
-    // ƒqƒ“ƒg‚ğƒNƒŠƒA‚·‚éB
+    // ãƒ’ãƒ³ãƒˆã‚’ã‚¯ãƒªã‚¢ã™ã‚‹ã€‚
     xg_vecTateHints.clear();
     xg_vecYokoHints.clear();
 
-    // ƒqƒ“ƒg•¶š—ñ‚Ì‘OŒã‚Ì‹ó”’‚ğæ‚èœ‚­B
+    // ãƒ’ãƒ³ãƒˆæ–‡å­—åˆ—ã®å‰å¾Œã®ç©ºç™½ã‚’å–ã‚Šé™¤ãã€‚
     std::wstring str(strHints);
     xg_str_trim(str);
 
-    // strCaption1‚ÆstrCaption2‚É‚æ‚èAtate‚Æyoko‚É•ª‚¯‚éB
+    // strCaption1ã¨strCaption2ã«ã‚ˆã‚Šã€tateã¨yokoã«åˆ†ã‘ã‚‹ã€‚
     std::wstring strCaption1 = XgLoadStringDx1(IDS_DOWN);
     std::wstring strCaption2 = XgLoadStringDx1(IDS_ACROSS);
     size_t i1 = str.find(strCaption1);
@@ -1685,17 +1685,17 @@ bool __fastcall XgParseHintsStr(HWND hwnd, const std::wstring& strHints)
     i2 += strCaption2.size();
     std::wstring yoko = str.substr(i2);
 
-    // ”õl—“‚ğæ‚èœ‚­B
+    // å‚™è€ƒæ¬„ã‚’å–ã‚Šé™¤ãã€‚
     size_t i3 = yoko.find(XgLoadStringDx1(IDS_HEADERSEP2));
     if (i3 != std::wstring::npos) {
         yoko = yoko.substr(0, i3);
     }
 
-    // ‘OŒã‚Ì‹ó”’‚ğæ‚èœ‚­B
+    // å‰å¾Œã®ç©ºç™½ã‚’å–ã‚Šé™¤ãã€‚
     xg_str_trim(tate);
     xg_str_trim(yoko);
 
-    // ‚»‚ê‚¼‚ê‚É‚Â‚¢‚Ä‰ğÍ‚·‚éB
+    // ãã‚Œãã‚Œã«ã¤ã„ã¦è§£æã™ã‚‹ã€‚
     return XgParseHints(xg_vecTateHints, tate) &&
            XgParseHints(xg_vecYokoHints, yoko);
 }
@@ -1717,18 +1717,18 @@ mstr_split(T_STR_CONTAINER& container,
     container.push_back(str.substr(i));
 }
 
-// •¶š—ñ‚Ìƒ‹[ƒ‹‚ğ‰ğÍ‚·‚éB
+// æ–‡å­—åˆ—ã®ãƒ«ãƒ¼ãƒ«ã‚’è§£æã™ã‚‹ã€‚
 INT __fastcall XgParseRules(const std::wstring& str)
 {
     INT nRules = 0;
     std::vector<std::wstring> rules;
-    if (str.find(L" / ") != str.npos) { // ‚à‚µ" / "‚ªŠÜ‚Ü‚ê‚Ä‚¢‚½‚ç
-        mstr_split(rules, str, L"/"); // "/"‚Å•ªŠ„‚·‚éB
-    } else { // ŠÜ‚Ü‚ê‚Ä‚¢‚È‚¯‚ê‚Î
-        mstr_split(rules, str, L" \t"); // ‹ó”’‚Å•ªŠ„‚·‚éB
+    if (str.find(L" / ") != str.npos) { // ã‚‚ã—" / "ãŒå«ã¾ã‚Œã¦ã„ãŸã‚‰
+        mstr_split(rules, str, L"/"); // "/"ã§åˆ†å‰²ã™ã‚‹ã€‚
+    } else { // å«ã¾ã‚Œã¦ã„ãªã‘ã‚Œã°
+        mstr_split(rules, str, L" \t"); // ç©ºç™½ã§åˆ†å‰²ã™ã‚‹ã€‚
     }
     for (auto& rule : rules) {
-        xg_str_trim(rule); // ‘OŒã‚Ì‹ó”’‚ğæ‚èœ‚­B
+        xg_str_trim(rule); // å‰å¾Œã®ç©ºç™½ã‚’å–ã‚Šé™¤ãã€‚
         if (rule.empty())
             continue;
         if (rule == XgLoadStringDx1(IDS_RULE_DONTDOUBLEBLACK)) {
@@ -1754,10 +1754,10 @@ INT __fastcall XgParseRules(const std::wstring& str)
     return nRules;
 }
 
-// ƒ‹[ƒ‹‚ğ•¶š—ñ‚É‚·‚éB
+// ãƒ«ãƒ¼ãƒ«ã‚’æ–‡å­—åˆ—ã«ã™ã‚‹ã€‚
 std::wstring __fastcall XgGetRulesString(INT rules)
 {
-    // ƒƒ‚F‰pŒê‘Î‰‚Ì‚½‚ßA‹ó”’‹æØ‚è‚©‚ç" / "‹æØ‚è‚É•ÏX‚µ‚Ü‚µ‚½B
+    // ãƒ¡ãƒ¢ï¼šè‹±èªå¯¾å¿œã®ãŸã‚ã€ç©ºç™½åŒºåˆ‡ã‚Šã‹ã‚‰" / "åŒºåˆ‡ã‚Šã«å¤‰æ›´ã—ã¾ã—ãŸã€‚
     std::wstring ret;
 
     if (rules & RULE_DONTDOUBLEBLACK) {
@@ -1817,7 +1817,7 @@ std::wstring __fastcall XgGetRulesString(INT rules)
     return ret;
 }
 
-// JSON•¶š—ñ‚ğİ’è‚·‚éB
+// JSONæ–‡å­—åˆ—ã‚’è¨­å®šã™ã‚‹ã€‚
 bool __fastcall XgSetJsonString(HWND hwnd, const std::wstring& str)
 {
     ::DestroyWindow(xg_hHintsWnd);
@@ -1931,7 +1931,7 @@ bool __fastcall XgSetJsonString(HWND hwnd, const std::wstring& str)
         }
 
         if (success) {
-            // ƒJƒM‚ğƒNƒŠƒA‚·‚éB
+            // ã‚«ã‚®ã‚’ã‚¯ãƒªã‚¢ã™ã‚‹ã€‚
             xg_vTateInfo.clear();
             xg_vYokoInfo.clear();
 
@@ -1941,7 +1941,7 @@ bool __fastcall XgSetJsonString(HWND hwnd, const std::wstring& str)
                 xg_xword.ResetAndSetSize(row_count, column_count);
                 for (int i = 0; i < xg_nRows; i++) {
                     for (int j = 0; j < xg_nCols; j++) {
-                        // ‰ğ‚É‡‚í‚¹‚ÄA–â‘è‚É•ƒ}ƒX‚ğ’u‚­B
+                        // è§£ã«åˆã‚ã›ã¦ã€å•é¡Œã«é»’ãƒã‚¹ã‚’ç½®ãã€‚
                         if (xg_solution.GetAt(i, j) == ZEN_BLACK)
                             xg_xword.SetAt(i, j, ZEN_BLACK);
                     }
@@ -1970,18 +1970,18 @@ bool __fastcall XgSetJsonString(HWND hwnd, const std::wstring& str)
                 xg_str_trim(xg_strNotes);
             }
 
-            // ƒqƒ“ƒg’Ç‰Áƒtƒ‰ƒO‚ğƒNƒŠƒA‚·‚éB
+            // ãƒ’ãƒ³ãƒˆè¿½åŠ ãƒ•ãƒ©ã‚°ã‚’ã‚¯ãƒªã‚¢ã™ã‚‹ã€‚
             xg_bHintsAdded = false;
 
             if (is_solved) {
-                // ƒqƒ“ƒg‚ğ•\¦‚·‚éB
+                // ãƒ’ãƒ³ãƒˆã‚’è¡¨ç¤ºã™ã‚‹ã€‚
                 XgShowHints(hwnd);
             }
 
-            // ƒ‹[ƒ‹‚ğİ’è‚·‚éB
+            // ãƒ«ãƒ¼ãƒ«ã‚’è¨­å®šã™ã‚‹ã€‚
             xg_nRules = rules;
 
-            // «‘–¼‚Ì«‘‚ğ“Ç‚İ‚ŞB
+            // è¾æ›¸åã®è¾æ›¸ã‚’èª­ã¿è¾¼ã‚€ã€‚
             if (dictionary.size()) {
                 for (auto& file : xg_dict_files) {
                     if (file.find(dictionary) != std::wstring::npos) {
@@ -2007,7 +2007,7 @@ bool __fastcall XgSetJsonString(HWND hwnd, const std::wstring& str)
     return false;
 }
 
-// •¶š—ñ‚ğİ’è‚·‚éB
+// æ–‡å­—åˆ—ã‚’è¨­å®šã™ã‚‹ã€‚
 bool __fastcall
 XgSetString(HWND hwnd, const std::wstring& str, bool json)
 {
@@ -2015,29 +2015,29 @@ XgSetString(HWND hwnd, const std::wstring& str, bool json)
     xg_hHintsWnd = NULL;
 
     if (json) {
-        // JSONŒ`®B
+        // JSONå½¢å¼ã€‚
         return XgSetJsonString(hwnd, str);
     }
 
-    // ƒNƒƒXƒ[ƒhƒf[ƒ^B
+    // ã‚¯ãƒ­ã‚¹ãƒ¯ãƒ¼ãƒ‰ãƒ‡ãƒ¼ã‚¿ã€‚
     XG_Board xword;
 
-    // •¶š—ñ‚ğ“Ç‚İ‚ŞB
+    // æ–‡å­—åˆ—ã‚’èª­ã¿è¾¼ã‚€ã€‚
     if (!xword.SetString(str))
         return false;
 
-    // ‹ó‚«ƒ}ƒX‚ª‘¶İ‚µ‚È‚¢‚©H
+    // ç©ºããƒã‚¹ãŒå­˜åœ¨ã—ãªã„ã‹ï¼Ÿ
     bool bFulfilled = xword.IsFulfilled();
     if (bFulfilled) {
-        // ‹ó‚«ƒ}ƒX‚ª‚È‚©‚Á‚½B
+        // ç©ºããƒã‚¹ãŒãªã‹ã£ãŸã€‚
 
-        // ƒqƒ“ƒg‚ğİ’è‚·‚éB
+        // ãƒ’ãƒ³ãƒˆã‚’è¨­å®šã™ã‚‹ã€‚
         size_t i = str.find(ZEN_LRIGHT, 0);
         if (i != std::wstring::npos) {
-            // ƒtƒbƒ^[‚ğæ“¾‚·‚éB
+            // ãƒ•ãƒƒã‚¿ãƒ¼ã‚’å–å¾—ã™ã‚‹ã€‚
             std::wstring s = str.substr(i + 1);
 
-            // ƒtƒbƒ^[‚Ì”õl—“‚ğæ“¾‚µ‚ÄAæ‚èœ‚­B
+            // ãƒ•ãƒƒã‚¿ãƒ¼ã®å‚™è€ƒæ¬„ã‚’å–å¾—ã—ã¦ã€å–ã‚Šé™¤ãã€‚
             std::wstring strFooterSep = XgLoadStringDx1(IDS_HEADERSEP2);
             size_t i3 = s.find(strFooterSep);
             if (i3 != std::wstring::npos) {
@@ -2051,27 +2051,27 @@ XgSetString(HWND hwnd, const std::wstring& str, bool json)
                 xg_str_trim(xg_strNotes);
             }
 
-            // ƒqƒ“ƒg‚Ì‘OŒã‚Ì‹ó”’‚ğæ‚èœ‚­B
+            // ãƒ’ãƒ³ãƒˆã®å‰å¾Œã®ç©ºç™½ã‚’å–ã‚Šé™¤ãã€‚
             xg_str_trim(s);
 
-            // ƒqƒ“ƒg•¶š—ñ‚ğİ’è‚·‚éB
+            // ãƒ’ãƒ³ãƒˆæ–‡å­—åˆ—ã‚’è¨­å®šã™ã‚‹ã€‚
             if (!s.empty()) {
                 xg_strHints = s;
                 xg_strHints += xg_pszNewLine;
             }
         } else {
-            // ƒqƒ“ƒg‚ª‚È‚¢B
+            // ãƒ’ãƒ³ãƒˆãŒãªã„ã€‚
             xg_strHints.clear();
         }
 
-        // ƒqƒ“ƒg•¶š—ñ‚ğ‰ğÍ‚·‚éB
+        // ãƒ’ãƒ³ãƒˆæ–‡å­—åˆ—ã‚’è§£æã™ã‚‹ã€‚
         if (xg_strHints.empty() || !XgParseHintsStr(hwnd, xg_strHints)) {
-            // ¸”s‚µ‚½B
+            // å¤±æ•—ã—ãŸã€‚
             xg_strHints.clear();
             xg_vecTateHints.clear();
             xg_vecYokoHints.clear();
         } else {
-            // ƒJƒM‚É’PŒê‚ª‘‚©‚ê‚Ä‚¢‚È‚©‚Á‚½ê‡‚Ìˆ—B
+            // ã‚«ã‚®ã«å˜èªãŒæ›¸ã‹ã‚Œã¦ã„ãªã‹ã£ãŸå ´åˆã®å‡¦ç†ã€‚
             for (auto& hint : xg_vecTateHints) {
                 if (hint.m_strWord.size())
                     continue;
@@ -2109,18 +2109,18 @@ XgSetString(HWND hwnd, const std::wstring& str, bool json)
                 }
             }
 
-            // ƒqƒ“ƒg‚ğ•\¦‚·‚éB
+            // ãƒ’ãƒ³ãƒˆã‚’è¡¨ç¤ºã™ã‚‹ã€‚
             XgShowHints(hwnd);
         }
 
-        // ƒqƒ“ƒg‚ª‚ ‚é‚©H
+        // ãƒ’ãƒ³ãƒˆãŒã‚ã‚‹ã‹ï¼Ÿ
         if (xg_strHints.empty()) {
-            // ƒqƒ“ƒg‚ª‚È‚©‚Á‚½B‰ğ‚Å‚Í‚È‚¢B
+            // ãƒ’ãƒ³ãƒˆãŒãªã‹ã£ãŸã€‚è§£ã§ã¯ãªã„ã€‚
             xg_xword = xword;
             xg_bSolved = false;
             xg_bShowAnswer = false;
         } else {
-            // ‹ó‚«ƒ}ƒX‚ª‚È‚­Aƒqƒ“ƒg‚ª‚ ‚Á‚½B‚±‚ê‚Í‰ğ‚Å‚ ‚éB
+            // ç©ºããƒã‚¹ãŒãªãã€ãƒ’ãƒ³ãƒˆãŒã‚ã£ãŸã€‚ã“ã‚Œã¯è§£ã§ã‚ã‚‹ã€‚
             xg_solution = xword;
             xg_bSolved = true;
             xg_bShowAnswer = false;
@@ -2128,46 +2128,46 @@ XgSetString(HWND hwnd, const std::wstring& str, bool json)
             xg_xword.clear();
             for (int i = 0; i < xg_nRows; i++) {
                 for (int j = 0; j < xg_nCols; j++) {
-                    // ‰ğ‚É‡‚í‚¹‚ÄA–â‘è‚É•ƒ}ƒX‚ğ’u‚­B
+                    // è§£ã«åˆã‚ã›ã¦ã€å•é¡Œã«é»’ãƒã‚¹ã‚’ç½®ãã€‚
                     if (xword.GetAt(i, j) == ZEN_BLACK)
                         xg_xword.SetAt(i, j, ZEN_BLACK);
                 }
             }
 
-            // ”Ô†•t‚¯‚ğs‚¤B
+            // ç•ªå·ä»˜ã‘ã‚’è¡Œã†ã€‚
             xg_solution.DoNumberingNoCheck();
         }
     } else {
-        // ‹ó‚«ƒ}ƒX‚ª‚ ‚Á‚½B‰ğ‚Å‚Í‚È‚¢B
+        // ç©ºããƒã‚¹ãŒã‚ã£ãŸã€‚è§£ã§ã¯ãªã„ã€‚
         xg_xword = xword;
         xg_bSolved = false;
         xg_bShowAnswer = false;
     }
 
-    // ƒqƒ“ƒg’Ç‰Áƒtƒ‰ƒO‚ğƒNƒŠƒA‚·‚éB
+    // ãƒ’ãƒ³ãƒˆè¿½åŠ ãƒ•ãƒ©ã‚°ã‚’ã‚¯ãƒªã‚¢ã™ã‚‹ã€‚
     xg_bHintsAdded = false;
 
-    // ƒ}[ƒN•¶š—ñ‚ğ“Ç‚İ‚ŞB
+    // ãƒãƒ¼ã‚¯æ–‡å­—åˆ—ã‚’èª­ã¿è¾¼ã‚€ã€‚
     XgSetStringOfMarks(str.data());
 
     return true;
 }
 
-// ƒqƒ“ƒg‚ğæ“¾‚·‚éB
+// ãƒ’ãƒ³ãƒˆã‚’å–å¾—ã™ã‚‹ã€‚
 void __fastcall XG_Board::GetHintsStr(
     std::wstring& str, int hint_type, bool bShowAnswer) const
 {
-    // •¶š—ñƒoƒbƒtƒ@B
+    // æ–‡å­—åˆ—ãƒãƒƒãƒ•ã‚¡ã€‚
     WCHAR sz[64];
 
-    // ‰Šú‰»B
+    // åˆæœŸåŒ–ã€‚
     str.clear();
 
-    // ‚Ü‚¾‰ğ‚©‚ê‚Ä‚¢‚È‚¢ê‡‚ÍA‰½‚à•Ô‚³‚È‚¢B
+    // ã¾ã è§£ã‹ã‚Œã¦ã„ãªã„å ´åˆã¯ã€ä½•ã‚‚è¿”ã•ãªã„ã€‚
     if (!xg_bSolved)
         return;
 
-    // ƒqƒ“ƒg‚É•ÏX‚ª‚ ‚ê‚ÎAXV‚·‚éB
+    // ãƒ’ãƒ³ãƒˆã«å¤‰æ›´ãŒã‚ã‚Œã°ã€æ›´æ–°ã™ã‚‹ã€‚
     if (XgAreHintsModified()) {
         XgUpdateHintsData();
     }
@@ -2175,23 +2175,23 @@ void __fastcall XG_Board::GetHintsStr(
     assert(0 <= hint_type && hint_type < 6);
 
     if (hint_type == 0 || hint_type == 2) {
-        // ƒ^ƒe‚ÌƒJƒM‚Ì•¶š—ñ‚ğ\¬‚·‚éB
+        // ã‚¿ãƒ†ã®ã‚«ã‚®ã®æ–‡å­—åˆ—ã‚’æ§‹æˆã™ã‚‹ã€‚
         str += XgLoadStringDx1(IDS_DOWN);
         str += xg_pszNewLine;
 
         for (const auto& info : xg_vTateInfo) {
-            // ”Ô†‚ğŠi”[‚·‚éB
+            // ç•ªå·ã‚’æ ¼ç´ã™ã‚‹ã€‚
             StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(IDS_DOWNNUMBER), info.m_number);
             str += sz;
 
-            // “š‚¦‚ğŒ©‚¹‚é‚©‚Ç‚¤‚©H
+            // ç­”ãˆã‚’è¦‹ã›ã‚‹ã‹ã©ã†ã‹ï¼Ÿ
             if (bShowAnswer) {
                 str += s_szBeginWord;
                 str += info.m_word;
                 str += s_szEndWord;
             }
 
-            // ƒqƒ“ƒg•¶Í‚ğ’Ç‰Á‚·‚éB
+            // ãƒ’ãƒ³ãƒˆæ–‡ç« ã‚’è¿½åŠ ã™ã‚‹ã€‚
             bool added = false;
             for (const auto& data : xg_dict_1) {
                 if (_wcsicmp(data.m_word.data(),
@@ -2213,27 +2213,27 @@ void __fastcall XG_Board::GetHintsStr(
                     }
                 }
             }
-            str += xg_pszNewLine;   // ‰üsB
+            str += xg_pszNewLine;   // æ”¹è¡Œã€‚
         }
         str += xg_pszNewLine;
     }
     if (hint_type == 1 || hint_type == 2) {
-        // ƒˆƒR‚ÌƒJƒM‚Ì•¶š—ñ‚ğ\¬‚·‚éB
+        // ãƒ¨ã‚³ã®ã‚«ã‚®ã®æ–‡å­—åˆ—ã‚’æ§‹æˆã™ã‚‹ã€‚
         str += XgLoadStringDx1(IDS_ACROSS);
         str += xg_pszNewLine;
         for (const auto& info : xg_vYokoInfo) {
-            // ”Ô†‚ğŠi”[‚·‚éB
+            // ç•ªå·ã‚’æ ¼ç´ã™ã‚‹ã€‚
             StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(IDS_ACROSSNUMBER), info.m_number);
             str += sz;
 
-            // “š‚¦‚ğŒ©‚¹‚é‚©‚Ç‚¤‚©H
+            // ç­”ãˆã‚’è¦‹ã›ã‚‹ã‹ã©ã†ã‹ï¼Ÿ
             if (bShowAnswer) {
                 str += s_szBeginWord;
                 str += info.m_word;
                 str += s_szEndWord;
             }
 
-            // ƒqƒ“ƒg•¶Í‚ğ’Ç‰Á‚·‚éB
+            // ãƒ’ãƒ³ãƒˆæ–‡ç« ã‚’è¿½åŠ ã™ã‚‹ã€‚
             bool added = false;
             for (const auto& data : xg_dict_1) {
                 if (_wcsicmp(data.m_word.data(), info.m_word.data()) == 0) {
@@ -2251,12 +2251,12 @@ void __fastcall XG_Board::GetHintsStr(
                     }
                 }
             }
-            str += xg_pszNewLine;   // ‰üsB
+            str += xg_pszNewLine;   // æ”¹è¡Œã€‚
         }
         str += xg_pszNewLine;
     }
     if (hint_type == 3 || hint_type == 5) {
-        // ƒ^ƒe‚ÌƒJƒM‚Ì•¶š—ñ‚ğ\¬‚·‚éB
+        // ã‚¿ãƒ†ã®ã‚«ã‚®ã®æ–‡å­—åˆ—ã‚’æ§‹æˆã™ã‚‹ã€‚
         str += XgLoadStringDx1(IDS_PARABOLD);     // <p><b>
         str += XgLoadStringDx1(IDS_DOWNLABEL);
         str += XgLoadStringDx1(IDS_ENDPARABOLD);    // </b></p>
@@ -2269,7 +2269,7 @@ void __fastcall XG_Board::GetHintsStr(
             StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(IDS_LI), info.m_number);
             str += sz;
 
-            // ƒqƒ“ƒg•¶Í‚ğ’Ç‰Á‚·‚éB
+            // ãƒ’ãƒ³ãƒˆæ–‡ç« ã‚’è¿½åŠ ã™ã‚‹ã€‚
             bool added = false;
             for (const auto& data : xg_dict_1) {
                 if (_wcsicmp(data.m_word.data(), info.m_word.data()) == 0) {
@@ -2288,13 +2288,13 @@ void __fastcall XG_Board::GetHintsStr(
                 }
             }
             str += XgLoadStringDx1(IDS_ENDLI);    // </li>
-            str += xg_pszNewLine;           // ‰üsB
+            str += xg_pszNewLine;           // æ”¹è¡Œã€‚
         }
         str += XgLoadStringDx1(IDS_ENDOL);    // </ol>
-        str += xg_pszNewLine;           // ‰üsB
+        str += xg_pszNewLine;           // æ”¹è¡Œã€‚
     }
     if (hint_type == 4 || hint_type == 5) {
-        // ƒˆƒR‚ÌƒJƒM‚Ì•¶š—ñ‚ğ\¬‚·‚éB
+        // ãƒ¨ã‚³ã®ã‚«ã‚®ã®æ–‡å­—åˆ—ã‚’æ§‹æˆã™ã‚‹ã€‚
         str += XgLoadStringDx1(IDS_PARABOLD);     // <p><b>
         str += XgLoadStringDx1(IDS_ACROSSLABEL);
         str += XgLoadStringDx1(IDS_ENDPARABOLD);    // </b></p>
@@ -2307,7 +2307,7 @@ void __fastcall XG_Board::GetHintsStr(
             StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(IDS_LI), info.m_number);
             str += sz;
 
-            // ƒqƒ“ƒg•¶Í‚ğ’Ç‰Á‚·‚éB
+            // ãƒ’ãƒ³ãƒˆæ–‡ç« ã‚’è¿½åŠ ã™ã‚‹ã€‚
             bool added = false;
             for (const auto& data : xg_dict_1) {
                 if (_wcsicmp(data.m_word.data(), info.m_word.data()) == 0) {
@@ -2326,14 +2326,14 @@ void __fastcall XG_Board::GetHintsStr(
                 }
             }
             str += XgLoadStringDx1(IDS_ENDLI);    // </li>
-            str += xg_pszNewLine;           // ‰üsB
+            str += xg_pszNewLine;           // æ”¹è¡Œã€‚
         }
         str += XgLoadStringDx1(IDS_ENDOL);    // </ol>
-        str += xg_pszNewLine;           // ‰üsB
+        str += xg_pszNewLine;           // æ”¹è¡Œã€‚
     }
 }
 
-// ƒXƒŒƒbƒhî•ñ‚ğæ“¾‚·‚éB
+// ã‚¹ãƒ¬ãƒƒãƒ‰æƒ…å ±ã‚’å–å¾—ã™ã‚‹ã€‚
 XG_ThreadInfo *__fastcall XgGetThreadInfo(void)
 {
     const DWORD threadid = ::GetCurrentThreadId();
@@ -2344,50 +2344,50 @@ XG_ThreadInfo *__fastcall XgGetThreadInfo(void)
     return nullptr;
 }
 
-// Ä‹A‚·‚éB
+// å†å¸°ã™ã‚‹ã€‚
 void __fastcall XgSolveXWord_AddBlackRecurse(const XG_Board& xw)
 {
-    // ‚·‚Å‚É‰ğ‚©‚ê‚Ä‚¢‚é‚È‚çAI—¹B
+    // ã™ã§ã«è§£ã‹ã‚Œã¦ã„ã‚‹ãªã‚‰ã€çµ‚äº†ã€‚
     if (xg_bSolved)
         return;
 
-    // ƒXƒŒƒbƒhî•ñ‚ğæ“¾‚·‚éB
+    // ã‚¹ãƒ¬ãƒƒãƒ‰æƒ…å ±ã‚’å–å¾—ã™ã‚‹ã€‚
     XG_ThreadInfo *info = XgGetThreadInfo();
     if (info == nullptr)
         return;
 
-    // ‹ó‚Å‚Í‚È‚¢ƒ}ƒX‚ÌŒÂ”‚ğƒZƒbƒg‚·‚éB
+    // ç©ºã§ã¯ãªã„ãƒã‚¹ã®å€‹æ•°ã‚’ã‚»ãƒƒãƒˆã™ã‚‹ã€‚
     info->m_count = xw.Count();
 
-    // ƒLƒƒƒ“ƒZƒ‹‚³‚ê‚Ä‚¢‚é‚È‚çAI—¹B
-    // ÄŒvZ‚·‚×‚«‚È‚çAI—¹‚·‚éB
+    // ã‚­ãƒ£ãƒ³ã‚»ãƒ«ã•ã‚Œã¦ã„ã‚‹ãªã‚‰ã€çµ‚äº†ã€‚
+    // å†è¨ˆç®—ã™ã¹ããªã‚‰ã€çµ‚äº†ã™ã‚‹ã€‚
     if (xg_bCancelled || xg_bRetrying)
         return;
 
-    // –³Œø‚Å‚ ‚ê‚ÎAI—¹B
+    // ç„¡åŠ¹ã§ã‚ã‚Œã°ã€çµ‚äº†ã€‚
     if (!xw.IsValid())
         return;
 
     const int nRows = xg_nRows, nCols = xg_nCols;
 
-    // Šes‚É‚Â‚¢‚ÄA‰¡Œü‚«‚ÉƒXƒLƒƒƒ“‚·‚éB
+    // å„è¡Œã«ã¤ã„ã¦ã€æ¨ªå‘ãã«ã‚¹ã‚­ãƒ£ãƒ³ã™ã‚‹ã€‚
     const int nColsMinusOne = nCols - 1;
     for (int i = 0; i < nRows; i++) {
         for (int j = 0; j < nColsMinusOne; j++) {
-            // ‚·‚Å‚É‰ğ‚©‚ê‚Ä‚¢‚é‚È‚çAI—¹B
-            // ƒLƒƒƒ“ƒZƒ‹‚³‚ê‚Ä‚¢‚é‚È‚çAI—¹B
-            // ÄŒvZ‚·‚×‚«‚È‚çAI—¹‚·‚éB
+            // ã™ã§ã«è§£ã‹ã‚Œã¦ã„ã‚‹ãªã‚‰ã€çµ‚äº†ã€‚
+            // ã‚­ãƒ£ãƒ³ã‚»ãƒ«ã•ã‚Œã¦ã„ã‚‹ãªã‚‰ã€çµ‚äº†ã€‚
+            // å†è¨ˆç®—ã™ã¹ããªã‚‰ã€çµ‚äº†ã™ã‚‹ã€‚
             if (xg_bSolved || xg_bCancelled || xg_bRetrying)
                 return;
 
-            // ‹ó”’‚Æ•¶š‚ª—×‚è‡‚Á‚Ä‚¢‚é‚©H
+            // ç©ºç™½ã¨æ–‡å­—ãŒéš£ã‚Šåˆã£ã¦ã„ã‚‹ã‹ï¼Ÿ
             WCHAR ch1 = xw.GetAt(i, j), ch2 = xw.GetAt(i, j + 1);
             if ((ch1 == ZEN_SPACE && ch2 != ZEN_BLACK && ch2 != ZEN_SPACE) ||
                 (ch1 != ZEN_SPACE && ch1 != ZEN_BLACK && ch2 == ZEN_SPACE))
             {
                 int lo, hi;
 
-                // •¶š‚ª’u‚¯‚é‹æŠÔ[lo, hi]‚ğ‹‚ß‚éB
+                // æ–‡å­—ãŒç½®ã‘ã‚‹åŒºé–“[lo, hi]ã‚’æ±‚ã‚ã‚‹ã€‚
                 lo = hi = j;
                 while (lo > 0) {
                     if (xw.GetAt(i, lo - 1) == ZEN_BLACK)
@@ -2400,7 +2400,7 @@ void __fastcall XgSolveXWord_AddBlackRecurse(const XG_Board& xw)
                     hi++;
                 }
 
-                // ƒpƒ^[ƒ“‚ğ¶¬‚·‚éB
+                // ãƒ‘ã‚¿ãƒ¼ãƒ³ã‚’ç”Ÿæˆã™ã‚‹ã€‚
                 std::wstring pattern;
                 for (int k = lo; k <= hi; k++) {
                     pattern += xw.GetAt(i, k);
@@ -2409,21 +2409,21 @@ void __fastcall XgSolveXWord_AddBlackRecurse(const XG_Board& xw)
                 const bool left_black_check = (lo != 0);
                 const bool right_black_check = (hi + 1 != nCols);
 
-                // ƒpƒ^[ƒ“‚Éƒ}ƒbƒ`‚·‚éŒó•â‚ğæ“¾‚·‚éB
+                // ãƒ‘ã‚¿ãƒ¼ãƒ³ã«ãƒãƒƒãƒã™ã‚‹å€™è£œã‚’å–å¾—ã™ã‚‹ã€‚
                 int nSkip;
                 std::vector<std::wstring> cands;
                 if (XgGetCandidatesAddBlack<false>(cands, pattern, nSkip,
                                                    left_black_check, right_black_check))
                 {
-                    // Œó•â‚Ìˆê•”‚ğ‚©‚«¬‚º‚éB
+                    // å€™è£œã®ä¸€éƒ¨ã‚’ã‹ãæ··ãœã‚‹ã€‚
                     auto it = cands.begin();
                     std::advance(it, nSkip);
                     std::random_shuffle(it, cands.end());
 
                     for (const auto& cand : cands) {
-                        // ‚·‚Å‚É‰ğ‚©‚ê‚Ä‚¢‚é‚È‚çAI—¹B
-                        // ƒLƒƒƒ“ƒZƒ‹‚³‚ê‚Ä‚¢‚é‚È‚çAI—¹B
-                        // ÄŒvZ‚·‚×‚«‚È‚çAI—¹‚·‚éB
+                        // ã™ã§ã«è§£ã‹ã‚Œã¦ã„ã‚‹ãªã‚‰ã€çµ‚äº†ã€‚
+                        // ã‚­ãƒ£ãƒ³ã‚»ãƒ«ã•ã‚Œã¦ã„ã‚‹ãªã‚‰ã€çµ‚äº†ã€‚
+                        // å†è¨ˆç®—ã™ã¹ããªã‚‰ã€çµ‚äº†ã™ã‚‹ã€‚
                         if (xg_bSolved || xg_bCancelled || xg_bRetrying)
                             return;
 
@@ -2435,7 +2435,7 @@ void __fastcall XgSolveXWord_AddBlackRecurse(const XG_Board& xw)
                             }
                         }
                         if (bCanPutBlack) {
-                            // Œó•â‚ğ“K—p‚µ‚ÄÄ‹A‚·‚éB
+                            // å€™è£œã‚’é©ç”¨ã—ã¦å†å¸°ã™ã‚‹ã€‚
                             XG_Board copy(xw);
 
                             assert(cand.size() == pattern.size());
@@ -2456,26 +2456,26 @@ void __fastcall XgSolveXWord_AddBlackRecurse(const XG_Board& xw)
                                 continue;
                             }
 
-                            // Ä‹A‚·‚éB
+                            // å†å¸°ã™ã‚‹ã€‚
                             XgSolveXWord_AddBlackRecurse(copy);
                         }
 
-                        // ‹ó‚Å‚Í‚È‚¢ƒ}ƒX‚ÌŒÂ”‚ğƒZƒbƒg‚·‚éB
+                        // ç©ºã§ã¯ãªã„ãƒã‚¹ã®å€‹æ•°ã‚’ã‚»ãƒƒãƒˆã™ã‚‹ã€‚
                         info->m_count = xw.Count();
                     }
                 }
                 if (XgGetCandidatesAddBlack<true>(cands, pattern, nSkip,
                                                   left_black_check, right_black_check))
                 {
-                    // Œó•â‚Ìˆê•”‚ğ‚©‚«¬‚º‚éB
+                    // å€™è£œã®ä¸€éƒ¨ã‚’ã‹ãæ··ãœã‚‹ã€‚
                     auto it = cands.begin();
                     std::advance(it, nSkip);
                     std::random_shuffle(it, cands.end());
 
                     for (const auto& cand : cands) {
-                        // ‚·‚Å‚É‰ğ‚©‚ê‚Ä‚¢‚é‚È‚çAI—¹B
-                        // ƒLƒƒƒ“ƒZƒ‹‚³‚ê‚Ä‚¢‚é‚È‚çAI—¹B
-                        // ÄŒvZ‚·‚×‚«‚È‚çAI—¹‚·‚éB
+                        // ã™ã§ã«è§£ã‹ã‚Œã¦ã„ã‚‹ãªã‚‰ã€çµ‚äº†ã€‚
+                        // ã‚­ãƒ£ãƒ³ã‚»ãƒ«ã•ã‚Œã¦ã„ã‚‹ãªã‚‰ã€çµ‚äº†ã€‚
+                        // å†è¨ˆç®—ã™ã¹ããªã‚‰ã€çµ‚äº†ã™ã‚‹ã€‚
                         if (xg_bSolved || xg_bCancelled || xg_bRetrying)
                             return;
 
@@ -2487,7 +2487,7 @@ void __fastcall XgSolveXWord_AddBlackRecurse(const XG_Board& xw)
                             }
                         }
                         if (bCanPutBlack) {
-                            // Œó•â‚ğ“K—p‚µ‚ÄÄ‹A‚·‚éB
+                            // å€™è£œã‚’é©ç”¨ã—ã¦å†å¸°ã™ã‚‹ã€‚
                             XG_Board copy(xw);
 
                             assert(cand.size() == pattern.size());
@@ -2508,11 +2508,11 @@ void __fastcall XgSolveXWord_AddBlackRecurse(const XG_Board& xw)
                                 continue;
                             }
 
-                            // Ä‹A‚·‚éB
+                            // å†å¸°ã™ã‚‹ã€‚
                             XgSolveXWord_AddBlackRecurse(copy);
                         }
 
-                        // ‹ó‚Å‚Í‚È‚¢ƒ}ƒX‚ÌŒÂ”‚ğƒZƒbƒg‚·‚éB
+                        // ç©ºã§ã¯ãªã„ãƒã‚¹ã®å€‹æ•°ã‚’ã‚»ãƒƒãƒˆã™ã‚‹ã€‚
                         info->m_count = xw.Count();
                     }
                 }
@@ -2521,24 +2521,24 @@ void __fastcall XgSolveXWord_AddBlackRecurse(const XG_Board& xw)
         }
     }
 
-    // Še—ñ‚É‚Â‚¢‚ÄAcŒü‚«‚ÉƒXƒLƒƒƒ“‚·‚éB
+    // å„åˆ—ã«ã¤ã„ã¦ã€ç¸¦å‘ãã«ã‚¹ã‚­ãƒ£ãƒ³ã™ã‚‹ã€‚
     const int nRowsMinusOne = nRows - 1;
     for (int j = 0; j < nCols; j++) {
         for (int i = 0; i < nRowsMinusOne; i++) {
-            // ‚·‚Å‚É‰ğ‚©‚ê‚Ä‚¢‚é‚È‚çAI—¹B
-            // ƒLƒƒƒ“ƒZƒ‹‚³‚ê‚Ä‚¢‚é‚È‚çAI—¹B
-            // ÄŒvZ‚·‚×‚«‚È‚çAI—¹‚·‚éB
+            // ã™ã§ã«è§£ã‹ã‚Œã¦ã„ã‚‹ãªã‚‰ã€çµ‚äº†ã€‚
+            // ã‚­ãƒ£ãƒ³ã‚»ãƒ«ã•ã‚Œã¦ã„ã‚‹ãªã‚‰ã€çµ‚äº†ã€‚
+            // å†è¨ˆç®—ã™ã¹ããªã‚‰ã€çµ‚äº†ã™ã‚‹ã€‚
             if (xg_bSolved || xg_bCancelled || xg_bRetrying)
                 return;
 
-            // ‹ó”’‚Æ•¶š‚ª—×‚è‡‚Á‚Ä‚¢‚é‚©H
+            // ç©ºç™½ã¨æ–‡å­—ãŒéš£ã‚Šåˆã£ã¦ã„ã‚‹ã‹ï¼Ÿ
             WCHAR ch1 = xw.GetAt(i, j), ch2 = xw.GetAt(i + 1, j);
             if ((ch1 == ZEN_SPACE && ch2 != ZEN_BLACK && ch2 != ZEN_SPACE) ||
                 (ch1 != ZEN_SPACE && ch1 != ZEN_BLACK && ch2 == ZEN_SPACE))
             {
                 int lo, hi;
 
-                // •¶š‚ª’u‚¯‚é‹æŠÔ[lo, hi]‚ğ‹‚ß‚éB
+                // æ–‡å­—ãŒç½®ã‘ã‚‹åŒºé–“[lo, hi]ã‚’æ±‚ã‚ã‚‹ã€‚
                 lo = hi = i;
                 while (lo > 0) {
                     if (xw.GetAt(lo - 1, j) == ZEN_BLACK)
@@ -2551,7 +2551,7 @@ void __fastcall XgSolveXWord_AddBlackRecurse(const XG_Board& xw)
                     hi++;
                 }
 
-                // ƒpƒ^[ƒ“‚ğ¶¬‚·‚éB
+                // ãƒ‘ã‚¿ãƒ¼ãƒ³ã‚’ç”Ÿæˆã™ã‚‹ã€‚
                 std::wstring pattern;
                 for (int k = lo; k <= hi; k++) {
                     pattern += xw.GetAt(k, j);
@@ -2560,21 +2560,21 @@ void __fastcall XgSolveXWord_AddBlackRecurse(const XG_Board& xw)
                 const bool left_black_check = (lo != 0);
                 const bool right_black_check = (hi + 1 != nRows);
 
-                // ƒpƒ^[ƒ“‚Éƒ}ƒbƒ`‚·‚éŒó•â‚ğæ“¾‚·‚éB
+                // ãƒ‘ã‚¿ãƒ¼ãƒ³ã«ãƒãƒƒãƒã™ã‚‹å€™è£œã‚’å–å¾—ã™ã‚‹ã€‚
                 int nSkip;
                 std::vector<std::wstring> cands;
                 if (XgGetCandidatesAddBlack<false>(cands, pattern, nSkip,
                                                    left_black_check, right_black_check))
                 {
-                    // Œó•â‚Ìˆê•”‚ğ‚©‚«¬‚º‚éB
+                    // å€™è£œã®ä¸€éƒ¨ã‚’ã‹ãæ··ãœã‚‹ã€‚
                     auto it = cands.begin();
                     std::advance(it, nSkip);
                     std::random_shuffle(it, cands.end());
 
                     for (const auto& cand : cands) {
-                        // ‚·‚Å‚É‰ğ‚©‚ê‚Ä‚¢‚é‚È‚çAI—¹B
-                        // ƒLƒƒƒ“ƒZƒ‹‚³‚ê‚Ä‚¢‚é‚È‚çAI—¹B
-                        // ÄŒvZ‚·‚×‚«‚È‚çAI—¹‚·‚éB
+                        // ã™ã§ã«è§£ã‹ã‚Œã¦ã„ã‚‹ãªã‚‰ã€çµ‚äº†ã€‚
+                        // ã‚­ãƒ£ãƒ³ã‚»ãƒ«ã•ã‚Œã¦ã„ã‚‹ãªã‚‰ã€çµ‚äº†ã€‚
+                        // å†è¨ˆç®—ã™ã¹ããªã‚‰ã€çµ‚äº†ã™ã‚‹ã€‚
                         if (xg_bSolved || xg_bCancelled || xg_bRetrying)
                             return;
 
@@ -2586,7 +2586,7 @@ void __fastcall XgSolveXWord_AddBlackRecurse(const XG_Board& xw)
                             }
                         }
                         if (bCanPutBlack) {
-                            // Œó•â‚ğ“K—p‚µ‚ÄÄ‹A‚·‚éB
+                            // å€™è£œã‚’é©ç”¨ã—ã¦å†å¸°ã™ã‚‹ã€‚
                             XG_Board copy(xw);
 
                             assert(cand.size() == pattern.size());
@@ -2607,26 +2607,26 @@ void __fastcall XgSolveXWord_AddBlackRecurse(const XG_Board& xw)
                                 continue;
                             }
 
-                            // Ä‹A‚·‚éB
+                            // å†å¸°ã™ã‚‹ã€‚
                             XgSolveXWord_AddBlackRecurse(copy);
                         }
 
-                        // ‹ó‚Å‚Í‚È‚¢ƒ}ƒX‚ÌŒÂ”‚ğƒZƒbƒg‚·‚éB
+                        // ç©ºã§ã¯ãªã„ãƒã‚¹ã®å€‹æ•°ã‚’ã‚»ãƒƒãƒˆã™ã‚‹ã€‚
                         info->m_count = xw.Count();
                     }
                 }
                 if (XgGetCandidatesAddBlack<true>(cands, pattern, nSkip,
                                                   left_black_check, right_black_check))
                 {
-                    // Œó•â‚Ìˆê•”‚ğ‚©‚«¬‚º‚éB
+                    // å€™è£œã®ä¸€éƒ¨ã‚’ã‹ãæ··ãœã‚‹ã€‚
                     auto it = cands.begin();
                     std::advance(it, nSkip);
                     std::random_shuffle(it, cands.end());
 
                     for (const auto& cand : cands) {
-                        // ‚·‚Å‚É‰ğ‚©‚ê‚Ä‚¢‚é‚È‚çAI—¹B
-                        // ƒLƒƒƒ“ƒZƒ‹‚³‚ê‚Ä‚¢‚é‚È‚çAI—¹B
-                        // ÄŒvZ‚·‚×‚«‚È‚çAI—¹‚·‚éB
+                        // ã™ã§ã«è§£ã‹ã‚Œã¦ã„ã‚‹ãªã‚‰ã€çµ‚äº†ã€‚
+                        // ã‚­ãƒ£ãƒ³ã‚»ãƒ«ã•ã‚Œã¦ã„ã‚‹ãªã‚‰ã€çµ‚äº†ã€‚
+                        // å†è¨ˆç®—ã™ã¹ããªã‚‰ã€çµ‚äº†ã™ã‚‹ã€‚
                         if (xg_bSolved || xg_bCancelled || xg_bRetrying)
                             return;
 
@@ -2638,7 +2638,7 @@ void __fastcall XgSolveXWord_AddBlackRecurse(const XG_Board& xw)
                             }
                         }
                         if (bCanPutBlack) {
-                            // Œó•â‚ğ“K—p‚µ‚ÄÄ‹A‚·‚éB
+                            // å€™è£œã‚’é©ç”¨ã—ã¦å†å¸°ã™ã‚‹ã€‚
                             XG_Board copy(xw);
 
                             assert(cand.size() == pattern.size());
@@ -2659,11 +2659,11 @@ void __fastcall XgSolveXWord_AddBlackRecurse(const XG_Board& xw)
                                 continue;
                             }
 
-                            // Ä‹A‚·‚éB
+                            // å†å¸°ã™ã‚‹ã€‚
                             XgSolveXWord_AddBlackRecurse(copy);
                         }
 
-                        // ‹ó‚Å‚Í‚È‚¢ƒ}ƒX‚ÌŒÂ”‚ğƒZƒbƒg‚·‚éB
+                        // ç©ºã§ã¯ãªã„ãƒã‚¹ã®å€‹æ•°ã‚’ã‚»ãƒƒãƒˆã™ã‚‹ã€‚
                         info->m_count = xw.Count();
                     }
                 }
@@ -2672,18 +2672,18 @@ void __fastcall XgSolveXWord_AddBlackRecurse(const XG_Board& xw)
         }
     }
 
-    // ‰ğ‚©‚Ç‚¤‚©H
+    // è§£ã‹ã©ã†ã‹ï¼Ÿ
     EnterCriticalSection(&xg_cs);
     bool ok = xw.IsSolution();
     ::LeaveCriticalSection(&xg_cs);
     if (ok) {
-        // ‰ğ‚¾‚Á‚½B
+        // è§£ã ã£ãŸã€‚
         ::EnterCriticalSection(&xg_cs);
         xg_bSolved = true;
         xg_solution = xw;
         xg_solution.DoNumbering();
 
-        // ‰ğ‚É‡‚í‚¹‚ÄA–â‘è‚É•ƒ}ƒX‚ğ’u‚­B
+        // è§£ã«åˆã‚ã›ã¦ã€å•é¡Œã«é»’ãƒã‚¹ã‚’ç½®ãã€‚
         const int nCount = nRows * nCols;
         for (int i = 0; i < nCount; i++) {
             if (xw.GetAt(i) == ZEN_BLACK)
@@ -2693,50 +2693,50 @@ void __fastcall XgSolveXWord_AddBlackRecurse(const XG_Board& xw)
     }
 }
 
-// Ä‹A‚·‚éi•ƒ}ƒX’Ç‰Á‚È‚µjB
+// å†å¸°ã™ã‚‹ï¼ˆé»’ãƒã‚¹è¿½åŠ ãªã—ï¼‰ã€‚
 void __fastcall XgSolveXWord_NoAddBlackRecurse(const XG_Board& xw)
 {
-    // ‚·‚Å‚É‰ğ‚©‚ê‚Ä‚¢‚é‚È‚çAI—¹B
+    // ã™ã§ã«è§£ã‹ã‚Œã¦ã„ã‚‹ãªã‚‰ã€çµ‚äº†ã€‚
     if (xg_bSolved)
         return;
 
-    // ƒXƒŒƒbƒhî•ñ‚ğæ“¾‚·‚éB
+    // ã‚¹ãƒ¬ãƒƒãƒ‰æƒ…å ±ã‚’å–å¾—ã™ã‚‹ã€‚
     XG_ThreadInfo *info = XgGetThreadInfo();
     if (info == nullptr)
         return;
 
-    // ‹ó‚Å‚Í‚È‚¢ƒ}ƒX‚ÌŒÂ”‚ğƒZƒbƒg‚·‚éB
+    // ç©ºã§ã¯ãªã„ãƒã‚¹ã®å€‹æ•°ã‚’ã‚»ãƒƒãƒˆã™ã‚‹ã€‚
     info->m_count = xw.Count();
 
-    // ƒLƒƒƒ“ƒZƒ‹‚³‚ê‚Ä‚¢‚é‚È‚çAI—¹B
-    // ÄŒvZ‚·‚×‚«‚È‚çAI—¹‚·‚éB
+    // ã‚­ãƒ£ãƒ³ã‚»ãƒ«ã•ã‚Œã¦ã„ã‚‹ãªã‚‰ã€çµ‚äº†ã€‚
+    // å†è¨ˆç®—ã™ã¹ããªã‚‰ã€çµ‚äº†ã™ã‚‹ã€‚
     if (xg_bCancelled || xg_bRetrying)
         return;
 
-    // –³Œø‚Å‚ ‚ê‚ÎAI—¹B
+    // ç„¡åŠ¹ã§ã‚ã‚Œã°ã€çµ‚äº†ã€‚
     if (!xw.IsNoAddBlackOK())
         return;
 
     const int nRows = xg_nRows, nCols = xg_nCols;
 
-    // Šes‚É‚Â‚¢‚ÄA‰¡Œü‚«‚ÉƒXƒLƒƒƒ“‚·‚éB
+    // å„è¡Œã«ã¤ã„ã¦ã€æ¨ªå‘ãã«ã‚¹ã‚­ãƒ£ãƒ³ã™ã‚‹ã€‚
     const int nColsMinusOne = nCols - 1;
     for (int i = 0; i < nRows; i++) {
         for (int j = 0; j < nColsMinusOne; j++) {
-            // ‚·‚Å‚É‰ğ‚©‚ê‚Ä‚¢‚é‚È‚çAI—¹B
-            // ƒLƒƒƒ“ƒZƒ‹‚³‚ê‚Ä‚¢‚é‚È‚çAI—¹B
-            // ÄŒvZ‚·‚×‚«‚È‚çAI—¹‚·‚éB
+            // ã™ã§ã«è§£ã‹ã‚Œã¦ã„ã‚‹ãªã‚‰ã€çµ‚äº†ã€‚
+            // ã‚­ãƒ£ãƒ³ã‚»ãƒ«ã•ã‚Œã¦ã„ã‚‹ãªã‚‰ã€çµ‚äº†ã€‚
+            // å†è¨ˆç®—ã™ã¹ããªã‚‰ã€çµ‚äº†ã™ã‚‹ã€‚
             if (xg_bSolved || xg_bCancelled || xg_bRetrying)
                 return;
 
-            // ‹ó”’‚Æ•¶š‚ª—×‚è‡‚Á‚Ä‚¢‚é‚©H
+            // ç©ºç™½ã¨æ–‡å­—ãŒéš£ã‚Šåˆã£ã¦ã„ã‚‹ã‹ï¼Ÿ
             WCHAR ch1 = xw.GetAt(i, j), ch2 = xw.GetAt(i, j + 1);
             if ((ch1 == ZEN_SPACE && ch2 != ZEN_BLACK && ch2 != ZEN_SPACE) ||
                 (ch1 != ZEN_SPACE && ch1 != ZEN_BLACK && ch2 == ZEN_SPACE))
             {
                 int lo, hi;
 
-                // •¶š‚ª’u‚¯‚é‹æŠÔ[lo, hi]‚ğ‹‚ß‚éB
+                // æ–‡å­—ãŒç½®ã‘ã‚‹åŒºé–“[lo, hi]ã‚’æ±‚ã‚ã‚‹ã€‚
                 lo = hi = j;
                 while (lo > 0) {
                     if (xw.GetAt(i, lo - 1) == ZEN_BLACK)
@@ -2749,26 +2749,26 @@ void __fastcall XgSolveXWord_NoAddBlackRecurse(const XG_Board& xw)
                     hi++;
                 }
 
-                // ƒpƒ^[ƒ“‚ğ¶¬‚·‚éB
+                // ãƒ‘ã‚¿ãƒ¼ãƒ³ã‚’ç”Ÿæˆã™ã‚‹ã€‚
                 std::wstring pattern;
                 for (int k = lo; k <= hi; k++) {
                     pattern += xw.GetAt(i, k);
                 }
 
-                // ƒpƒ^[ƒ“‚Éƒ}ƒbƒ`‚·‚éŒó•â‚ğæ“¾‚·‚éi•ƒ}ƒX’Ç‰Á‚È‚µjB
+                // ãƒ‘ã‚¿ãƒ¼ãƒ³ã«ãƒãƒƒãƒã™ã‚‹å€™è£œã‚’å–å¾—ã™ã‚‹ï¼ˆé»’ãƒã‚¹è¿½åŠ ãªã—ï¼‰ã€‚
                 std::vector<std::wstring> cands;
                 if (XgGetCandidatesNoAddBlack<false>(cands, pattern)) {
-                    // Œó•â‚ğ‚©‚«¬‚º‚éB
+                    // å€™è£œã‚’ã‹ãæ··ãœã‚‹ã€‚
                     std::random_shuffle(cands.begin(), cands.end());
 
                     for (const auto& cand : cands) {
-                        // ‚·‚Å‚É‰ğ‚©‚ê‚Ä‚¢‚é‚È‚çAI—¹B
-                        // ƒLƒƒƒ“ƒZƒ‹‚³‚ê‚Ä‚¢‚é‚È‚çAI—¹B
-                        // ÄŒvZ‚·‚×‚«‚È‚çAI—¹‚·‚éB
+                        // ã™ã§ã«è§£ã‹ã‚Œã¦ã„ã‚‹ãªã‚‰ã€çµ‚äº†ã€‚
+                        // ã‚­ãƒ£ãƒ³ã‚»ãƒ«ã•ã‚Œã¦ã„ã‚‹ãªã‚‰ã€çµ‚äº†ã€‚
+                        // å†è¨ˆç®—ã™ã¹ããªã‚‰ã€çµ‚äº†ã™ã‚‹ã€‚
                         if (xg_bSolved || xg_bCancelled || xg_bRetrying)
                             return;
 
-                        // Œó•â‚ğ“K—p‚µ‚ÄÄ‹A‚·‚éB
+                        // å€™è£œã‚’é©ç”¨ã—ã¦å†å¸°ã™ã‚‹ã€‚
                         XG_Board copy(xw);
                         assert(cand.size() == pattern.size());
                         for (int k = lo; k <= hi; k++) {
@@ -2777,25 +2777,25 @@ void __fastcall XgSolveXWord_NoAddBlackRecurse(const XG_Board& xw)
                             copy.SetAt(i, k, cand[k - lo]);
                         }
 
-                        // Ä‹A‚·‚éB
+                        // å†å¸°ã™ã‚‹ã€‚
                         XgSolveXWord_NoAddBlackRecurse(copy);
 
-                        // ‹ó‚Å‚Í‚È‚¢ƒ}ƒX‚ÌŒÂ”‚ğƒZƒbƒg‚·‚éB
+                        // ç©ºã§ã¯ãªã„ãƒã‚¹ã®å€‹æ•°ã‚’ã‚»ãƒƒãƒˆã™ã‚‹ã€‚
                         info->m_count = xw.Count();
                     }
                 }
                 if (XgGetCandidatesNoAddBlack<true>(cands, pattern)) {
-                    // Œó•â‚ğ‚©‚«¬‚º‚éB
+                    // å€™è£œã‚’ã‹ãæ··ãœã‚‹ã€‚
                     std::random_shuffle(cands.begin(), cands.end());
 
                     for (const auto& cand : cands) {
-                        // ‚·‚Å‚É‰ğ‚©‚ê‚Ä‚¢‚é‚È‚çAI—¹B
-                        // ƒLƒƒƒ“ƒZƒ‹‚³‚ê‚Ä‚¢‚é‚È‚çAI—¹B
-                        // ÄŒvZ‚·‚×‚«‚È‚çAI—¹‚·‚éB
+                        // ã™ã§ã«è§£ã‹ã‚Œã¦ã„ã‚‹ãªã‚‰ã€çµ‚äº†ã€‚
+                        // ã‚­ãƒ£ãƒ³ã‚»ãƒ«ã•ã‚Œã¦ã„ã‚‹ãªã‚‰ã€çµ‚äº†ã€‚
+                        // å†è¨ˆç®—ã™ã¹ããªã‚‰ã€çµ‚äº†ã™ã‚‹ã€‚
                         if (xg_bSolved || xg_bCancelled || xg_bRetrying)
                             return;
 
-                        // Œó•â‚ğ“K—p‚µ‚ÄÄ‹A‚·‚éB
+                        // å€™è£œã‚’é©ç”¨ã—ã¦å†å¸°ã™ã‚‹ã€‚
                         XG_Board copy(xw);
                         assert(cand.size() == pattern.size());
                         for (int k = lo; k <= hi; k++) {
@@ -2804,10 +2804,10 @@ void __fastcall XgSolveXWord_NoAddBlackRecurse(const XG_Board& xw)
                             copy.SetAt(i, k, cand[k - lo]);
                         }
 
-                        // Ä‹A‚·‚éB
+                        // å†å¸°ã™ã‚‹ã€‚
                         XgSolveXWord_NoAddBlackRecurse(copy);
 
-                        // ‹ó‚Å‚Í‚È‚¢ƒ}ƒX‚ÌŒÂ”‚ğƒZƒbƒg‚·‚éB
+                        // ç©ºã§ã¯ãªã„ãƒã‚¹ã®å€‹æ•°ã‚’ã‚»ãƒƒãƒˆã™ã‚‹ã€‚
                         info->m_count = xw.Count();
                     }
                 }
@@ -2816,24 +2816,24 @@ void __fastcall XgSolveXWord_NoAddBlackRecurse(const XG_Board& xw)
         }
     }
 
-    // Še—ñ‚É‚Â‚¢‚ÄAcŒü‚«‚ÉƒXƒLƒƒƒ“‚·‚éB
+    // å„åˆ—ã«ã¤ã„ã¦ã€ç¸¦å‘ãã«ã‚¹ã‚­ãƒ£ãƒ³ã™ã‚‹ã€‚
     const int nRowsMinusOne = nRows - 1;
     for (int j = 0; j < nCols; j++) {
         for (int i = 0; i < nRowsMinusOne; i++) {
-            // ‚·‚Å‚É‰ğ‚©‚ê‚Ä‚¢‚é‚È‚çAI—¹B
-            // ƒLƒƒƒ“ƒZƒ‹‚³‚ê‚Ä‚¢‚é‚È‚çAI—¹B
-            // ÄŒvZ‚·‚×‚«‚È‚çAI—¹‚·‚éB
+            // ã™ã§ã«è§£ã‹ã‚Œã¦ã„ã‚‹ãªã‚‰ã€çµ‚äº†ã€‚
+            // ã‚­ãƒ£ãƒ³ã‚»ãƒ«ã•ã‚Œã¦ã„ã‚‹ãªã‚‰ã€çµ‚äº†ã€‚
+            // å†è¨ˆç®—ã™ã¹ããªã‚‰ã€çµ‚äº†ã™ã‚‹ã€‚
             if (xg_bSolved || xg_bCancelled || xg_bRetrying)
                 return;
 
-            // ‹ó”’‚Æ•¶š‚ª—×‚è‡‚Á‚Ä‚¢‚é‚©H
+            // ç©ºç™½ã¨æ–‡å­—ãŒéš£ã‚Šåˆã£ã¦ã„ã‚‹ã‹ï¼Ÿ
             WCHAR ch1 = xw.GetAt(i, j), ch2 = xw.GetAt(i + 1, j);
             if ((ch1 == ZEN_SPACE && ch2 != ZEN_BLACK && ch2 != ZEN_SPACE) ||
                 (ch1 != ZEN_SPACE && ch1 != ZEN_BLACK && ch2 == ZEN_SPACE))
             {
                 int lo, hi;
 
-                // •¶š‚ª’u‚¯‚é‹æŠÔ[lo, hi]‚ğ‹‚ß‚éB
+                // æ–‡å­—ãŒç½®ã‘ã‚‹åŒºé–“[lo, hi]ã‚’æ±‚ã‚ã‚‹ã€‚
                 lo = hi = i;
                 while (lo > 0) {
                     if (xw.GetAt(lo - 1, j) == ZEN_BLACK)
@@ -2846,26 +2846,26 @@ void __fastcall XgSolveXWord_NoAddBlackRecurse(const XG_Board& xw)
                     hi++;
                 }
 
-                // ƒpƒ^[ƒ“‚ğ¶¬‚·‚éB
+                // ãƒ‘ã‚¿ãƒ¼ãƒ³ã‚’ç”Ÿæˆã™ã‚‹ã€‚
                 std::wstring pattern;
                 for (int k = lo; k <= hi; k++) {
                     pattern += xw.GetAt(k, j);
                 }
 
-                // ƒpƒ^[ƒ“‚Éƒ}ƒbƒ`‚·‚éŒó•â‚ğæ“¾‚·‚éB
+                // ãƒ‘ã‚¿ãƒ¼ãƒ³ã«ãƒãƒƒãƒã™ã‚‹å€™è£œã‚’å–å¾—ã™ã‚‹ã€‚
                 std::vector<std::wstring> cands;
                 if (XgGetCandidatesNoAddBlack<false>(cands, pattern)) {
-                    // Œó•â‚ğ‚©‚«¬‚º‚éB
+                    // å€™è£œã‚’ã‹ãæ··ãœã‚‹ã€‚
                     std::random_shuffle(cands.begin(), cands.end());
 
                     for (const auto& cand : cands) {
-                        // ‚·‚Å‚É‰ğ‚©‚ê‚Ä‚¢‚é‚È‚çAI—¹B
-                        // ƒLƒƒƒ“ƒZƒ‹‚³‚ê‚Ä‚¢‚é‚È‚çAI—¹B
-                        // ÄŒvZ‚·‚×‚«‚È‚çAI—¹‚·‚éB
+                        // ã™ã§ã«è§£ã‹ã‚Œã¦ã„ã‚‹ãªã‚‰ã€çµ‚äº†ã€‚
+                        // ã‚­ãƒ£ãƒ³ã‚»ãƒ«ã•ã‚Œã¦ã„ã‚‹ãªã‚‰ã€çµ‚äº†ã€‚
+                        // å†è¨ˆç®—ã™ã¹ããªã‚‰ã€çµ‚äº†ã™ã‚‹ã€‚
                         if (xg_bSolved || xg_bCancelled || xg_bRetrying)
                             return;
 
-                        // Œó•â‚ğ“K—p‚µ‚ÄÄ‹A‚·‚éB
+                        // å€™è£œã‚’é©ç”¨ã—ã¦å†å¸°ã™ã‚‹ã€‚
                         XG_Board copy(xw);
                         assert(cand.size() == pattern.size());
                         for (int k = lo; k <= hi; k++) {
@@ -2874,25 +2874,25 @@ void __fastcall XgSolveXWord_NoAddBlackRecurse(const XG_Board& xw)
                             copy.SetAt(k, j, cand[k - lo]);
                         }
 
-                        // Ä‹A‚·‚éB
+                        // å†å¸°ã™ã‚‹ã€‚
                         XgSolveXWord_NoAddBlackRecurse(copy);
 
-                        // ‹ó‚Å‚Í‚È‚¢ƒ}ƒX‚ÌŒÂ”‚ğƒZƒbƒg‚·‚éB
+                        // ç©ºã§ã¯ãªã„ãƒã‚¹ã®å€‹æ•°ã‚’ã‚»ãƒƒãƒˆã™ã‚‹ã€‚
                         info->m_count = xw.Count();
                     }
                 }
                 if (XgGetCandidatesNoAddBlack<false>(cands, pattern)) {
-                    // Œó•â‚ğ‚©‚«¬‚º‚éB
+                    // å€™è£œã‚’ã‹ãæ··ãœã‚‹ã€‚
                     std::random_shuffle(cands.begin(), cands.end());
 
                     for (const auto& cand : cands) {
-                        // ‚·‚Å‚É‰ğ‚©‚ê‚Ä‚¢‚é‚È‚çAI—¹B
-                        // ƒLƒƒƒ“ƒZƒ‹‚³‚ê‚Ä‚¢‚é‚È‚çAI—¹B
-                        // ÄŒvZ‚·‚×‚«‚È‚çAI—¹‚·‚éB
+                        // ã™ã§ã«è§£ã‹ã‚Œã¦ã„ã‚‹ãªã‚‰ã€çµ‚äº†ã€‚
+                        // ã‚­ãƒ£ãƒ³ã‚»ãƒ«ã•ã‚Œã¦ã„ã‚‹ãªã‚‰ã€çµ‚äº†ã€‚
+                        // å†è¨ˆç®—ã™ã¹ããªã‚‰ã€çµ‚äº†ã™ã‚‹ã€‚
                         if (xg_bSolved || xg_bCancelled || xg_bRetrying)
                             return;
 
-                        // Œó•â‚ğ“K—p‚µ‚ÄÄ‹A‚·‚éB
+                        // å€™è£œã‚’é©ç”¨ã—ã¦å†å¸°ã™ã‚‹ã€‚
                         XG_Board copy(xw);
                         assert(cand.size() == pattern.size());
                         for (int k = lo; k <= hi; k++) {
@@ -2901,10 +2901,10 @@ void __fastcall XgSolveXWord_NoAddBlackRecurse(const XG_Board& xw)
                             copy.SetAt(k, j, cand[k - lo]);
                         }
 
-                        // Ä‹A‚·‚éB
+                        // å†å¸°ã™ã‚‹ã€‚
                         XgSolveXWord_NoAddBlackRecurse(copy);
 
-                        // ‹ó‚Å‚Í‚È‚¢ƒ}ƒX‚ÌŒÂ”‚ğƒZƒbƒg‚·‚éB
+                        // ç©ºã§ã¯ãªã„ãƒã‚¹ã®å€‹æ•°ã‚’ã‚»ãƒƒãƒˆã™ã‚‹ã€‚
                         info->m_count = xw.Count();
                     }
                 }
@@ -2913,18 +2913,18 @@ void __fastcall XgSolveXWord_NoAddBlackRecurse(const XG_Board& xw)
         }
     }
 
-    // ‰ğ‚©‚Ç‚¤‚©H
+    // è§£ã‹ã©ã†ã‹ï¼Ÿ
     ::EnterCriticalSection(&xg_cs);
     bool ok = xw.IsSolution();
     ::LeaveCriticalSection(&xg_cs);
     if (ok) {
-        // ‰ğ‚¾‚Á‚½B
+        // è§£ã ã£ãŸã€‚
         xg_bSolved = true;
         ::EnterCriticalSection(&xg_cs);
         xg_solution = xw;
         xg_solution.DoNumbering();
 
-        // ‰ğ‚É‡‚í‚¹‚ÄA–â‘è‚É•ƒ}ƒX‚ğ’u‚­B
+        // è§£ã«åˆã‚ã›ã¦ã€å•é¡Œã«é»’ãƒã‚¹ã‚’ç½®ãã€‚
         const int nCount = nRows * nCols;
         for (int i = 0; i < nCount; i++) {
             if (xw.GetAt(i) == ZEN_BLACK)
@@ -2934,7 +2934,7 @@ void __fastcall XgSolveXWord_NoAddBlackRecurse(const XG_Board& xw)
     }
 }
 
-// c‚Æ‰¡‚ğ“ü‚ê‘Ö‚¦‚éB
+// ç¸¦ã¨æ¨ªã‚’å…¥ã‚Œæ›¿ãˆã‚‹ã€‚
 void XG_Board::SwapXandY()
 {
     const int nRows = xg_nRows;
@@ -2952,12 +2952,12 @@ void XG_Board::SwapXandY()
     m_vCells = vCells;
 }
 
-// ‰ğ‚­B
+// è§£ãã€‚
 void __fastcall XgSolveXWord_AddBlack(const XG_Board& xw)
 {
     const int nRows = xg_nRows, nCols = xg_nCols;
 
-    // •¶šƒ}ƒX‚ª‚ ‚é‚©H
+    // æ–‡å­—ãƒã‚¹ãŒã‚ã‚‹ã‹ï¼Ÿ
     bool bCharFound = false;
     for (int i = 0; i < nRows * nCols; i++) {
         const WCHAR ch1 = xw.GetAt(i);
@@ -2967,31 +2967,31 @@ void __fastcall XgSolveXWord_AddBlack(const XG_Board& xw)
         }
     }
     if (bCharFound) {
-        // •¶šƒ}ƒX‚ª‚ ‚Á‚½ê‡‚ÍA‚»‚Ì‚Ü‚Ü‰ğ‚­B
+        // æ–‡å­—ãƒã‚¹ãŒã‚ã£ãŸå ´åˆã¯ã€ãã®ã¾ã¾è§£ãã€‚
         XgSolveXWord_AddBlackRecurse(xw);
         return;
     }
 
-    // –³Œø‚Å‚ ‚ê‚ÎAI—¹B
+    // ç„¡åŠ¹ã§ã‚ã‚Œã°ã€çµ‚äº†ã€‚
     if (!xw.IsValid())
         return;
 
-    // ƒ‰ƒ“ƒ_ƒ€‚È‡˜‚Ì’PŒêƒxƒNƒ^[‚ğì¬‚·‚éB
+    // ãƒ©ãƒ³ãƒ€ãƒ ãªé †åºã®å˜èªãƒ™ã‚¯ã‚¿ãƒ¼ã‚’ä½œæˆã™ã‚‹ã€‚
     std::vector<XG_WordData> words(xg_dict_1);
     std::random_shuffle(words.begin(), words.end());
 
     for (int i = 0; i < nRows; i++) {
         for (int j = 0; j < nCols - 1; j++) {
-            // ‚·‚Å‚É‰ğ‚©‚ê‚Ä‚¢‚é‚È‚çAI—¹B
-            // ƒLƒƒƒ“ƒZƒ‹‚³‚ê‚Ä‚¢‚é‚È‚çAI—¹B
-            // ÄŒvZ‚·‚×‚«‚È‚çAI—¹‚·‚éB
+            // ã™ã§ã«è§£ã‹ã‚Œã¦ã„ã‚‹ãªã‚‰ã€çµ‚äº†ã€‚
+            // ã‚­ãƒ£ãƒ³ã‚»ãƒ«ã•ã‚Œã¦ã„ã‚‹ãªã‚‰ã€çµ‚äº†ã€‚
+            // å†è¨ˆç®—ã™ã¹ããªã‚‰ã€çµ‚äº†ã™ã‚‹ã€‚
             if (xg_bSolved || xg_bCancelled || xg_bRetrying)
                 return;
 
-            // ‹ó”’‚Ì˜A‘±‚ª‚ ‚é‚©H
+            // ç©ºç™½ã®é€£ç¶šãŒã‚ã‚‹ã‹ï¼Ÿ
             const WCHAR ch1 = xw.GetAt(i, j), ch2 = xw.GetAt(i, j + 1);
             if (ch1 == ZEN_SPACE && ch2 == ZEN_SPACE) {
-                // •¶š‚ª’u‚¯‚é‹æŠÔ[lo, hi]‚ğ‹‚ß‚éB
+                // æ–‡å­—ãŒç½®ã‘ã‚‹åŒºé–“[lo, hi]ã‚’æ±‚ã‚ã‚‹ã€‚
                 int lo = j;
                 while (lo > 0) {
                     if (xw.GetAt(i, lo - 1) == ZEN_BLACK)
@@ -3005,26 +3005,26 @@ void __fastcall XgSolveXWord_AddBlack(const XG_Board& xw)
                 }
                 const int hi = j;
 
-                // ƒpƒ^[ƒ“‚Ì’·‚³‚ğ‹‚ß‚éB
+                // ãƒ‘ã‚¿ãƒ¼ãƒ³ã®é•·ã•ã‚’æ±‚ã‚ã‚‹ã€‚
                 const int patlen = hi - lo + 1;
                 for (const auto& word_data : words) {
-                    // ‚·‚Å‚É‰ğ‚©‚ê‚Ä‚¢‚é‚È‚çAI—¹B
-                    // ƒLƒƒƒ“ƒZƒ‹‚³‚ê‚Ä‚¢‚é‚È‚çAI—¹B
-                    // ÄŒvZ‚·‚×‚«‚È‚çAI—¹‚·‚éB
+                    // ã™ã§ã«è§£ã‹ã‚Œã¦ã„ã‚‹ãªã‚‰ã€çµ‚äº†ã€‚
+                    // ã‚­ãƒ£ãƒ³ã‚»ãƒ«ã•ã‚Œã¦ã„ã‚‹ãªã‚‰ã€çµ‚äº†ã€‚
+                    // å†è¨ˆç®—ã™ã¹ããªã‚‰ã€çµ‚äº†ã™ã‚‹ã€‚
                     if (xg_bSolved || xg_bCancelled || xg_bRetrying)
                         return;
 
-                    // ’PŒê‚Ì’·‚³‚ªƒpƒ^[ƒ“‚Ì’·‚³ˆÈ‰º‚©H
+                    // å˜èªã®é•·ã•ãŒãƒ‘ã‚¿ãƒ¼ãƒ³ã®é•·ã•ä»¥ä¸‹ã‹ï¼Ÿ
                     const std::wstring& word = word_data.m_word;
                     const int wordlen = static_cast<int>(word.size());
                     if (wordlen > patlen)
                         continue;
 
-                    // •K—v‚È•ƒ}ƒX‚Í’u‚¯‚é‚©H
+                    // å¿…è¦ãªé»’ãƒã‚¹ã¯ç½®ã‘ã‚‹ã‹ï¼Ÿ
                     if ((lo == 0 || xw.CanPutBlack(i, lo - 1)) &&
                         (hi + 1 >= nCols || xw.CanPutBlack(i, hi + 1)))
                     {
-                        // ’PŒê‚Æ‚»‚Ì—¼’[‚ÌŠO‘¤‚Ì•ƒ}ƒX‚ğƒZƒbƒg‚µ‚ÄÄ‹A‚·‚éB
+                        // å˜èªã¨ãã®ä¸¡ç«¯ã®å¤–å´ã®é»’ãƒã‚¹ã‚’ã‚»ãƒƒãƒˆã—ã¦å†å¸°ã™ã‚‹ã€‚
                         XG_Board copy(xw);
                         for (int k = 0; k < wordlen; k++) {
                             copy.SetAt(i, lo + k, word[k]);
@@ -3047,7 +3047,7 @@ void __fastcall XgSolveXWord_AddBlack(const XG_Board& xw)
                         //    continue;
                         //}
 
-                        // Ä‹A‚·‚éB
+                        // å†å¸°ã™ã‚‹ã€‚
                         XgSolveXWord_AddBlackRecurse(copy);
                     }
                 }
@@ -3058,16 +3058,16 @@ void __fastcall XgSolveXWord_AddBlack(const XG_Board& xw)
 
     for (int j = 0; j < nCols; j++) {
         for (int i = 0; i < nRows - 1; i++) {
-            // ‚·‚Å‚É‰ğ‚©‚ê‚Ä‚¢‚é‚È‚çAI—¹B
-            // ƒLƒƒƒ“ƒZƒ‹‚³‚ê‚Ä‚¢‚é‚È‚çAI—¹B
-            // ÄŒvZ‚·‚×‚«‚È‚çAI—¹‚·‚éB
+            // ã™ã§ã«è§£ã‹ã‚Œã¦ã„ã‚‹ãªã‚‰ã€çµ‚äº†ã€‚
+            // ã‚­ãƒ£ãƒ³ã‚»ãƒ«ã•ã‚Œã¦ã„ã‚‹ãªã‚‰ã€çµ‚äº†ã€‚
+            // å†è¨ˆç®—ã™ã¹ããªã‚‰ã€çµ‚äº†ã™ã‚‹ã€‚
             if (xg_bSolved || xg_bCancelled || xg_bRetrying)
                 return;
 
-            // ‹ó”’‚Ì˜A‘±‚ª‚ ‚é‚©H
+            // ç©ºç™½ã®é€£ç¶šãŒã‚ã‚‹ã‹ï¼Ÿ
             const WCHAR ch1 = xw.GetAt(i, j), ch2 = xw.GetAt(i + 1, j);
             if (ch1 == ZEN_SPACE && ch2 == ZEN_SPACE) {
-                // •¶š‚ª’u‚¯‚é‹æŠÔ[lo, hi]‚ğ‹‚ß‚éB
+                // æ–‡å­—ãŒç½®ã‘ã‚‹åŒºé–“[lo, hi]ã‚’æ±‚ã‚ã‚‹ã€‚
                 int lo = i;
                 while (lo > 0) {
                     if (xw.GetAt(lo - 1, j) == ZEN_BLACK)
@@ -3081,26 +3081,26 @@ void __fastcall XgSolveXWord_AddBlack(const XG_Board& xw)
                 }
                 const int hi = i;
 
-                // ƒpƒ^[ƒ“‚Ì’·‚³‚ğ‹‚ß‚éB
+                // ãƒ‘ã‚¿ãƒ¼ãƒ³ã®é•·ã•ã‚’æ±‚ã‚ã‚‹ã€‚
                 const int patlen = hi - lo + 1;
                 for (const auto& word_data : words) {
-                    // ‚·‚Å‚É‰ğ‚©‚ê‚Ä‚¢‚é‚È‚çAI—¹B
-                    // ƒLƒƒƒ“ƒZƒ‹‚³‚ê‚Ä‚¢‚é‚È‚çAI—¹B
-                    // ÄŒvZ‚·‚×‚«‚È‚çAI—¹‚·‚éB
+                    // ã™ã§ã«è§£ã‹ã‚Œã¦ã„ã‚‹ãªã‚‰ã€çµ‚äº†ã€‚
+                    // ã‚­ãƒ£ãƒ³ã‚»ãƒ«ã•ã‚Œã¦ã„ã‚‹ãªã‚‰ã€çµ‚äº†ã€‚
+                    // å†è¨ˆç®—ã™ã¹ããªã‚‰ã€çµ‚äº†ã™ã‚‹ã€‚
                     if (xg_bSolved || xg_bCancelled || xg_bRetrying)
                         return;
 
-                    // ’PŒê‚Ì’·‚³‚ªƒpƒ^[ƒ“‚Ì’·‚³ˆÈ‰º‚©H
+                    // å˜èªã®é•·ã•ãŒãƒ‘ã‚¿ãƒ¼ãƒ³ã®é•·ã•ä»¥ä¸‹ã‹ï¼Ÿ
                     const std::wstring& word = word_data.m_word;
                     const int wordlen = static_cast<int>(word.size());
                     if (wordlen > patlen)
                         continue;
 
-                    // •K—v‚È•ƒ}ƒX‚Í’u‚¯‚é‚©H
+                    // å¿…è¦ãªé»’ãƒã‚¹ã¯ç½®ã‘ã‚‹ã‹ï¼Ÿ
                     if ((lo == 0 || xw.CanPutBlack(lo - 1, j)) &&
                         (hi + 1 >= nRows || xw.CanPutBlack(hi + 1, j)))
                     {
-                        // ’PŒê‚Æ‚»‚Ì—¼’[‚ÌŠO‘¤‚Ì•ƒ}ƒX‚ğƒZƒbƒg‚µ‚ÄÄ‹A‚·‚éB
+                        // å˜èªã¨ãã®ä¸¡ç«¯ã®å¤–å´ã®é»’ãƒã‚¹ã‚’ã‚»ãƒƒãƒˆã—ã¦å†å¸°ã™ã‚‹ã€‚
                         XG_Board copy(xw);
                         for (int k = 0; k < wordlen; k++) {
                             copy.SetAt(lo + k, j, word[k]);
@@ -3123,7 +3123,7 @@ void __fastcall XgSolveXWord_AddBlack(const XG_Board& xw)
                         //    continue;
                         //}
 
-                        // Ä‹A‚·‚éB
+                        // å†å¸°ã™ã‚‹ã€‚
                         XgSolveXWord_AddBlackRecurse(copy);
                     }
                 }
@@ -3132,23 +3132,23 @@ void __fastcall XgSolveXWord_AddBlack(const XG_Board& xw)
         }
     }
 
-    // ƒ‰ƒ“ƒ_ƒ€‚È‡˜‚Ì’PŒêƒxƒNƒ^[‚ğì¬‚·‚éB
+    // ãƒ©ãƒ³ãƒ€ãƒ ãªé †åºã®å˜èªãƒ™ã‚¯ã‚¿ãƒ¼ã‚’ä½œæˆã™ã‚‹ã€‚
 retry_1:;
     words = xg_dict_2;
     std::random_shuffle(words.begin(), words.end());
 
     for (int i = 0; i < nRows; i++) {
         for (int j = 0; j < nCols - 1; j++) {
-            // ‚·‚Å‚É‰ğ‚©‚ê‚Ä‚¢‚é‚È‚çAI—¹B
-            // ƒLƒƒƒ“ƒZƒ‹‚³‚ê‚Ä‚¢‚é‚È‚çAI—¹B
-            // ÄŒvZ‚·‚×‚«‚È‚çAI—¹‚·‚éB
+            // ã™ã§ã«è§£ã‹ã‚Œã¦ã„ã‚‹ãªã‚‰ã€çµ‚äº†ã€‚
+            // ã‚­ãƒ£ãƒ³ã‚»ãƒ«ã•ã‚Œã¦ã„ã‚‹ãªã‚‰ã€çµ‚äº†ã€‚
+            // å†è¨ˆç®—ã™ã¹ããªã‚‰ã€çµ‚äº†ã™ã‚‹ã€‚
             if (xg_bSolved || xg_bCancelled || xg_bRetrying)
                 return;
 
-            // ‹ó”’‚Ì˜A‘±‚ª‚ ‚é‚©H
+            // ç©ºç™½ã®é€£ç¶šãŒã‚ã‚‹ã‹ï¼Ÿ
             const WCHAR ch1 = xw.GetAt(i, j), ch2 = xw.GetAt(i, j + 1);
             if (ch1 == ZEN_SPACE && ch2 == ZEN_SPACE) {
-                // •¶š‚ª’u‚¯‚é‹æŠÔ[lo, hi]‚ğ‹‚ß‚éB
+                // æ–‡å­—ãŒç½®ã‘ã‚‹åŒºé–“[lo, hi]ã‚’æ±‚ã‚ã‚‹ã€‚
                 int lo = j;
                 while (lo > 0) {
                     if (xw.GetAt(i, lo - 1) == ZEN_BLACK)
@@ -3162,26 +3162,26 @@ retry_1:;
                 }
                 const int hi = j;
 
-                // ƒpƒ^[ƒ“‚Ì’·‚³‚ğ‹‚ß‚éB
+                // ãƒ‘ã‚¿ãƒ¼ãƒ³ã®é•·ã•ã‚’æ±‚ã‚ã‚‹ã€‚
                 const int patlen = hi - lo + 1;
                 for (const auto& word_data : words) {
-                    // ‚·‚Å‚É‰ğ‚©‚ê‚Ä‚¢‚é‚È‚çAI—¹B
-                    // ƒLƒƒƒ“ƒZƒ‹‚³‚ê‚Ä‚¢‚é‚È‚çAI—¹B
-                    // ÄŒvZ‚·‚×‚«‚È‚çAI—¹‚·‚éB
+                    // ã™ã§ã«è§£ã‹ã‚Œã¦ã„ã‚‹ãªã‚‰ã€çµ‚äº†ã€‚
+                    // ã‚­ãƒ£ãƒ³ã‚»ãƒ«ã•ã‚Œã¦ã„ã‚‹ãªã‚‰ã€çµ‚äº†ã€‚
+                    // å†è¨ˆç®—ã™ã¹ããªã‚‰ã€çµ‚äº†ã™ã‚‹ã€‚
                     if (xg_bSolved || xg_bCancelled || xg_bRetrying)
                         return;
 
-                    // ’PŒê‚Ì’·‚³‚ªƒpƒ^[ƒ“‚Ì’·‚³ˆÈ‰º‚©H
+                    // å˜èªã®é•·ã•ãŒãƒ‘ã‚¿ãƒ¼ãƒ³ã®é•·ã•ä»¥ä¸‹ã‹ï¼Ÿ
                     const std::wstring& word = word_data.m_word;
                     const int wordlen = static_cast<int>(word.size());
                     if (wordlen > patlen)
                         continue;
 
-                    // •K—v‚È•ƒ}ƒX‚Í’u‚¯‚é‚©H
+                    // å¿…è¦ãªé»’ãƒã‚¹ã¯ç½®ã‘ã‚‹ã‹ï¼Ÿ
                     if ((lo == 0 || xw.CanPutBlack(i, lo - 1)) &&
                         (hi + 1 >= nCols || xw.CanPutBlack(i, hi + 1)))
                     {
-                        // ’PŒê‚Æ‚»‚Ì—¼’[‚ÌŠO‘¤‚Ì•ƒ}ƒX‚ğƒZƒbƒg‚µ‚ÄÄ‹A‚·‚éB
+                        // å˜èªã¨ãã®ä¸¡ç«¯ã®å¤–å´ã®é»’ãƒã‚¹ã‚’ã‚»ãƒƒãƒˆã—ã¦å†å¸°ã™ã‚‹ã€‚
                         XG_Board copy(xw);
                         for (int k = 0; k < wordlen; k++) {
                             copy.SetAt(i, lo + k, word[k]);
@@ -3204,7 +3204,7 @@ retry_1:;
                         //    continue;
                         //}
 
-                        // Ä‹A‚·‚éB
+                        // å†å¸°ã™ã‚‹ã€‚
                         XgSolveXWord_AddBlackRecurse(copy);
                     }
                 }
@@ -3215,16 +3215,16 @@ retry_1:;
 
     for (int j = 0; j < nCols; j++) {
         for (int i = 0; i < nRows - 1; i++) {
-            // ‚·‚Å‚É‰ğ‚©‚ê‚Ä‚¢‚é‚È‚çAI—¹B
-            // ƒLƒƒƒ“ƒZƒ‹‚³‚ê‚Ä‚¢‚é‚È‚çAI—¹B
-            // ÄŒvZ‚·‚×‚«‚È‚çAI—¹‚·‚éB
+            // ã™ã§ã«è§£ã‹ã‚Œã¦ã„ã‚‹ãªã‚‰ã€çµ‚äº†ã€‚
+            // ã‚­ãƒ£ãƒ³ã‚»ãƒ«ã•ã‚Œã¦ã„ã‚‹ãªã‚‰ã€çµ‚äº†ã€‚
+            // å†è¨ˆç®—ã™ã¹ããªã‚‰ã€çµ‚äº†ã™ã‚‹ã€‚
             if (xg_bSolved || xg_bCancelled || xg_bRetrying)
                 return;
 
-            // ‹ó”’‚Ì˜A‘±‚ª‚ ‚é‚©H
+            // ç©ºç™½ã®é€£ç¶šãŒã‚ã‚‹ã‹ï¼Ÿ
             const WCHAR ch1 = xw.GetAt(i, j), ch2 = xw.GetAt(i + 1, j);
             if (ch1 == ZEN_SPACE && ch2 == ZEN_SPACE) {
-                // •¶š‚ª’u‚¯‚é‹æŠÔ[lo, hi]‚ğ‹‚ß‚éB
+                // æ–‡å­—ãŒç½®ã‘ã‚‹åŒºé–“[lo, hi]ã‚’æ±‚ã‚ã‚‹ã€‚
                 int lo = i;
                 while (lo > 0) {
                     if (xw.GetAt(lo - 1, j) == ZEN_BLACK)
@@ -3238,26 +3238,26 @@ retry_1:;
                 }
                 const int hi = i;
 
-                // ƒpƒ^[ƒ“‚Ì’·‚³‚ğ‹‚ß‚éB
+                // ãƒ‘ã‚¿ãƒ¼ãƒ³ã®é•·ã•ã‚’æ±‚ã‚ã‚‹ã€‚
                 const int patlen = hi - lo + 1;
                 for (const auto& word_data : words) {
-                    // ‚·‚Å‚É‰ğ‚©‚ê‚Ä‚¢‚é‚È‚çAI—¹B
-                    // ƒLƒƒƒ“ƒZƒ‹‚³‚ê‚Ä‚¢‚é‚È‚çAI—¹B
-                    // ÄŒvZ‚·‚×‚«‚È‚çAI—¹‚·‚éB
+                    // ã™ã§ã«è§£ã‹ã‚Œã¦ã„ã‚‹ãªã‚‰ã€çµ‚äº†ã€‚
+                    // ã‚­ãƒ£ãƒ³ã‚»ãƒ«ã•ã‚Œã¦ã„ã‚‹ãªã‚‰ã€çµ‚äº†ã€‚
+                    // å†è¨ˆç®—ã™ã¹ããªã‚‰ã€çµ‚äº†ã™ã‚‹ã€‚
                     if (xg_bSolved || xg_bCancelled || xg_bRetrying)
                         return;
 
-                    // ’PŒê‚Ì’·‚³‚ªƒpƒ^[ƒ“‚Ì’·‚³ˆÈ‰º‚©H
+                    // å˜èªã®é•·ã•ãŒãƒ‘ã‚¿ãƒ¼ãƒ³ã®é•·ã•ä»¥ä¸‹ã‹ï¼Ÿ
                     const std::wstring& word = word_data.m_word;
                     const int wordlen = static_cast<int>(word.size());
                     if (wordlen > patlen)
                         continue;
 
-                    // •K—v‚È•ƒ}ƒX‚Í’u‚¯‚é‚©H
+                    // å¿…è¦ãªé»’ãƒã‚¹ã¯ç½®ã‘ã‚‹ã‹ï¼Ÿ
                     if ((lo == 0 || xw.CanPutBlack(lo - 1, j)) &&
                         (hi + 1 >= nRows || xw.CanPutBlack(hi + 1, j)))
                     {
-                        // ’PŒê‚Æ‚»‚Ì—¼’[‚ÌŠO‘¤‚Ì•ƒ}ƒX‚ğƒZƒbƒg‚µ‚ÄÄ‹A‚·‚éB
+                        // å˜èªã¨ãã®ä¸¡ç«¯ã®å¤–å´ã®é»’ãƒã‚¹ã‚’ã‚»ãƒƒãƒˆã—ã¦å†å¸°ã™ã‚‹ã€‚
                         XG_Board copy(xw);
                         for (int k = 0; k < wordlen; k++) {
                             copy.SetAt(lo + k, j, word[k]);
@@ -3280,7 +3280,7 @@ retry_1:;
                         //    continue;
                         //}
 
-                        // Ä‹A‚·‚éB
+                        // å†å¸°ã™ã‚‹ã€‚
                         XgSolveXWord_AddBlackRecurse(copy);
                     }
                 }
@@ -3291,12 +3291,12 @@ retry_1:;
 retry_2:;
 }
 
-// ‰ğ‚­i•ƒ}ƒX’Ç‰Á‚È‚µjB
+// è§£ãï¼ˆé»’ãƒã‚¹è¿½åŠ ãªã—ï¼‰ã€‚
 void __fastcall XgSolveXWord_NoAddBlack(const XG_Board& xw)
 {
     const int nRows = xg_nRows, nCols = xg_nCols;
 
-    // •¶šƒ}ƒX‚ª‚ ‚é‚©H
+    // æ–‡å­—ãƒã‚¹ãŒã‚ã‚‹ã‹ï¼Ÿ
     bool bCharFound = false;
     for (int i = 0; i < nRows * nCols; i++) {
         const WCHAR ch1 = xw.GetAt(i);
@@ -3305,32 +3305,32 @@ void __fastcall XgSolveXWord_NoAddBlack(const XG_Board& xw)
         }
     }
     if (bCharFound) {
-        // •¶šƒ}ƒX‚ª‚ ‚Á‚½ê‡‚ÍA‚»‚Ì‚Ü‚Ü‰ğ‚­B
+        // æ–‡å­—ãƒã‚¹ãŒã‚ã£ãŸå ´åˆã¯ã€ãã®ã¾ã¾è§£ãã€‚
         XgSolveXWord_NoAddBlackRecurse(xw);
         return;
     }
 
-    // –³Œø‚Å‚ ‚ê‚ÎAI—¹B
+    // ç„¡åŠ¹ã§ã‚ã‚Œã°ã€çµ‚äº†ã€‚
     if (!xw.IsNoAddBlackOK())
         return;
 
-    // ƒ‰ƒ“ƒ_ƒ€‚È‡˜‚Ì’PŒêƒxƒNƒ^[‚ğì¬‚·‚éB
+    // ãƒ©ãƒ³ãƒ€ãƒ ãªé †åºã®å˜èªãƒ™ã‚¯ã‚¿ãƒ¼ã‚’ä½œæˆã™ã‚‹ã€‚
     std::vector<XG_WordData> words(xg_dict_1);
     std::random_shuffle(words.begin(), words.end());
 
-    // •¶šƒ}ƒX‚ª‚È‚©‚Á‚½ê‡B
+    // æ–‡å­—ãƒã‚¹ãŒãªã‹ã£ãŸå ´åˆã€‚
     for (int i = 0; i < nRows; i++) {
         for (int j = 0; j < nCols - 1; j++) {
-            // ‚·‚Å‚É‰ğ‚©‚ê‚Ä‚¢‚é‚È‚çAI—¹B
-            // ƒLƒƒƒ“ƒZƒ‹‚³‚ê‚Ä‚¢‚é‚È‚çAI—¹B
-            // ÄŒvZ‚·‚×‚«‚È‚çAI—¹‚·‚éB
+            // ã™ã§ã«è§£ã‹ã‚Œã¦ã„ã‚‹ãªã‚‰ã€çµ‚äº†ã€‚
+            // ã‚­ãƒ£ãƒ³ã‚»ãƒ«ã•ã‚Œã¦ã„ã‚‹ãªã‚‰ã€çµ‚äº†ã€‚
+            // å†è¨ˆç®—ã™ã¹ããªã‚‰ã€çµ‚äº†ã™ã‚‹ã€‚
             if (xg_bSolved || xg_bCancelled || xg_bRetrying)
                 return;
 
-            // ‹ó”’‚Ì˜A‘±‚ª‚ ‚é‚©H
+            // ç©ºç™½ã®é€£ç¶šãŒã‚ã‚‹ã‹ï¼Ÿ
             const WCHAR ch1 = xw.GetAt(i, j), ch2 = xw.GetAt(i, j + 1);
             if (ch1 == ZEN_SPACE && ch2 == ZEN_SPACE) {
-                // •¶š‚ª’u‚¯‚é‹æŠÔ[lo, hi]‚ğ‹‚ß‚éB
+                // æ–‡å­—ãŒç½®ã‘ã‚‹åŒºé–“[lo, hi]ã‚’æ±‚ã‚ã‚‹ã€‚
                 int lo = j;
                 while (lo > 0) {
                     if (xw.GetAt(i, lo - 1) == ZEN_BLACK)
@@ -3344,28 +3344,28 @@ void __fastcall XgSolveXWord_NoAddBlack(const XG_Board& xw)
                 }
                 const int hi = j;
 
-                // ƒpƒ^[ƒ“‚Ì’·‚³‚ğ‹‚ß‚éB
+                // ãƒ‘ã‚¿ãƒ¼ãƒ³ã®é•·ã•ã‚’æ±‚ã‚ã‚‹ã€‚
                 const int patlen = hi - lo + 1;
                 for (const auto& word_data : words) {
-                    // ‚·‚Å‚É‰ğ‚©‚ê‚Ä‚¢‚é‚È‚çAI—¹B
-                    // ƒLƒƒƒ“ƒZƒ‹‚³‚ê‚Ä‚¢‚é‚È‚çAI—¹B
-                    // ÄŒvZ‚·‚×‚«‚È‚çAI—¹‚·‚éB
+                    // ã™ã§ã«è§£ã‹ã‚Œã¦ã„ã‚‹ãªã‚‰ã€çµ‚äº†ã€‚
+                    // ã‚­ãƒ£ãƒ³ã‚»ãƒ«ã•ã‚Œã¦ã„ã‚‹ãªã‚‰ã€çµ‚äº†ã€‚
+                    // å†è¨ˆç®—ã™ã¹ããªã‚‰ã€çµ‚äº†ã™ã‚‹ã€‚
                     if (xg_bSolved || xg_bCancelled || xg_bRetrying)
                         return;
 
-                    // ’PŒê‚Æƒpƒ^[ƒ“‚Ì’·‚³‚ª“™‚µ‚¢‚©H
+                    // å˜èªã¨ãƒ‘ã‚¿ãƒ¼ãƒ³ã®é•·ã•ãŒç­‰ã—ã„ã‹ï¼Ÿ
                     const std::wstring& word = word_data.m_word;
                     const int wordlen = static_cast<int>(word.size());
                     if (wordlen != patlen)
                         continue;
 
-                    // ’PŒê‚ğƒZƒbƒg‚·‚éB
+                    // å˜èªã‚’ã‚»ãƒƒãƒˆã™ã‚‹ã€‚
                     XG_Board copy(xw);
                     for (int k = 0; k < wordlen; k++) {
                         copy.SetAt(i, lo + k, word[k]);
                     }
 
-                    // Ä‹A‚·‚éB
+                    // å†å¸°ã™ã‚‹ã€‚
                     XgSolveXWord_NoAddBlackRecurse(copy);
                 }
                 goto retry_1;
@@ -3373,24 +3373,24 @@ void __fastcall XgSolveXWord_NoAddBlack(const XG_Board& xw)
         }
     }
 
-    // ƒ‰ƒ“ƒ_ƒ€‚È‡˜‚Ì’PŒêƒxƒNƒ^[‚ğì¬‚·‚éB
+    // ãƒ©ãƒ³ãƒ€ãƒ ãªé †åºã®å˜èªãƒ™ã‚¯ã‚¿ãƒ¼ã‚’ä½œæˆã™ã‚‹ã€‚
 retry_1:;
     words = xg_dict_2;
     std::random_shuffle(words.begin(), words.end());
 
-    // •¶šƒ}ƒX‚ª‚È‚©‚Á‚½ê‡B
+    // æ–‡å­—ãƒã‚¹ãŒãªã‹ã£ãŸå ´åˆã€‚
     for (int i = 0; i < nRows; i++) {
         for (int j = 0; j < nCols - 1; j++) {
-            // ‚·‚Å‚É‰ğ‚©‚ê‚Ä‚¢‚é‚È‚çAI—¹B
-            // ƒLƒƒƒ“ƒZƒ‹‚³‚ê‚Ä‚¢‚é‚È‚çAI—¹B
-            // ÄŒvZ‚·‚×‚«‚È‚çAI—¹‚·‚éB
+            // ã™ã§ã«è§£ã‹ã‚Œã¦ã„ã‚‹ãªã‚‰ã€çµ‚äº†ã€‚
+            // ã‚­ãƒ£ãƒ³ã‚»ãƒ«ã•ã‚Œã¦ã„ã‚‹ãªã‚‰ã€çµ‚äº†ã€‚
+            // å†è¨ˆç®—ã™ã¹ããªã‚‰ã€çµ‚äº†ã™ã‚‹ã€‚
             if (xg_bSolved || xg_bCancelled || xg_bRetrying)
                 return;
 
-            // ‹ó”’‚Ì˜A‘±‚ª‚ ‚é‚©H
+            // ç©ºç™½ã®é€£ç¶šãŒã‚ã‚‹ã‹ï¼Ÿ
             const WCHAR ch1 = xw.GetAt(i, j), ch2 = xw.GetAt(i, j + 1);
             if (ch1 == ZEN_SPACE && ch2 == ZEN_SPACE) {
-                // •¶š‚ª’u‚¯‚é‹æŠÔ[lo, hi]‚ğ‹‚ß‚éB
+                // æ–‡å­—ãŒç½®ã‘ã‚‹åŒºé–“[lo, hi]ã‚’æ±‚ã‚ã‚‹ã€‚
                 int lo = j;
                 while (lo > 0) {
                     if (xw.GetAt(i, lo - 1) == ZEN_BLACK)
@@ -3404,28 +3404,28 @@ retry_1:;
                 }
                 const int hi = j;
 
-                // ƒpƒ^[ƒ“‚Ì’·‚³‚ğ‹‚ß‚éB
+                // ãƒ‘ã‚¿ãƒ¼ãƒ³ã®é•·ã•ã‚’æ±‚ã‚ã‚‹ã€‚
                 const int patlen = hi - lo + 1;
                 for (const auto& word_data : words) {
-                    // ‚·‚Å‚É‰ğ‚©‚ê‚Ä‚¢‚é‚È‚çAI—¹B
-                    // ƒLƒƒƒ“ƒZƒ‹‚³‚ê‚Ä‚¢‚é‚È‚çAI—¹B
-                    // ÄŒvZ‚·‚×‚«‚È‚çAI—¹‚·‚éB
+                    // ã™ã§ã«è§£ã‹ã‚Œã¦ã„ã‚‹ãªã‚‰ã€çµ‚äº†ã€‚
+                    // ã‚­ãƒ£ãƒ³ã‚»ãƒ«ã•ã‚Œã¦ã„ã‚‹ãªã‚‰ã€çµ‚äº†ã€‚
+                    // å†è¨ˆç®—ã™ã¹ããªã‚‰ã€çµ‚äº†ã™ã‚‹ã€‚
                     if (xg_bSolved || xg_bCancelled || xg_bRetrying)
                         return;
 
-                    // ’PŒê‚Æƒpƒ^[ƒ“‚Ì’·‚³‚ª“™‚µ‚¢‚©H
+                    // å˜èªã¨ãƒ‘ã‚¿ãƒ¼ãƒ³ã®é•·ã•ãŒç­‰ã—ã„ã‹ï¼Ÿ
                     const std::wstring& word = word_data.m_word;
                     const int wordlen = static_cast<int>(word.size());
                     if (wordlen != patlen)
                         continue;
 
-                    // ’PŒê‚ğƒZƒbƒg‚·‚éB
+                    // å˜èªã‚’ã‚»ãƒƒãƒˆã™ã‚‹ã€‚
                     XG_Board copy(xw);
                     for (int k = 0; k < wordlen; k++) {
                         copy.SetAt(i, lo + k, word[k]);
                     }
 
-                    // Ä‹A‚·‚éB
+                    // å†å¸°ã™ã‚‹ã€‚
                     XgSolveXWord_NoAddBlackRecurse(copy);
                 }
                 goto retry_2;
@@ -3440,104 +3440,104 @@ retry_2:;
     int xg_random_seed = 0;
 #endif
 
-// ƒ}ƒ‹ƒ`ƒXƒŒƒbƒh—p‚ÌŠÖ”B
+// ãƒãƒ«ãƒã‚¹ãƒ¬ãƒƒãƒ‰ç”¨ã®é–¢æ•°ã€‚
 unsigned __stdcall XgSolveProc_AddBlack(void *param)
 {
-    // ƒXƒŒƒbƒhî•ñ‚ğæ“¾‚·‚éB
+    // ã‚¹ãƒ¬ãƒƒãƒ‰æƒ…å ±ã‚’å–å¾—ã™ã‚‹ã€‚
     XG_ThreadInfo *info = reinterpret_cast<XG_ThreadInfo *>(param);
 
-    // ‹ó‚Å‚Í‚È‚¢ƒ}ƒX‚ÌŒÂ”‚ğƒZƒbƒg‚·‚éB
+    // ç©ºã§ã¯ãªã„ãƒã‚¹ã®å€‹æ•°ã‚’ã‚»ãƒƒãƒˆã™ã‚‹ã€‚
     info->m_count = xg_xword.Count();
 
-    // ƒXƒŒƒbƒh‚Ì—Dæ“x‚ğã‚°‚éB
+    // ã‚¹ãƒ¬ãƒƒãƒ‰ã®å„ªå…ˆåº¦ã‚’ä¸Šã’ã‚‹ã€‚
     ::SetThreadPriority(::GetCurrentThread(), THREAD_PRIORITY_ABOVE_NORMAL);
 
-    // —”¶¬ƒ‹[ƒ`ƒ“‚ğ‰Šú‰»‚·‚éB
+    // ä¹±æ•°ç”Ÿæˆãƒ«ãƒ¼ãƒãƒ³ã‚’åˆæœŸåŒ–ã™ã‚‹ã€‚
     #ifndef NO_RANDOM
         srand(::GetTickCount() ^ info->m_threadid);
     #else
         srand(xg_random_seed++);
     #endif
 
-    // ‰ğ‚­B
+    // è§£ãã€‚
     XgSolveXWord_AddBlack(xg_xword);
     return 0;
 }
 
-// ƒ}ƒ‹ƒ`ƒXƒŒƒbƒh—p‚ÌŠÖ”i•ƒ}ƒX’Ç‰Á‚È‚µjB
+// ãƒãƒ«ãƒã‚¹ãƒ¬ãƒƒãƒ‰ç”¨ã®é–¢æ•°ï¼ˆé»’ãƒã‚¹è¿½åŠ ãªã—ï¼‰ã€‚
 unsigned __stdcall XgSolveProc_NoAddBlack(void *param)
 {
-    // ƒXƒŒƒbƒhî•ñ‚ğæ“¾‚·‚éB
+    // ã‚¹ãƒ¬ãƒƒãƒ‰æƒ…å ±ã‚’å–å¾—ã™ã‚‹ã€‚
     XG_ThreadInfo *info = reinterpret_cast<XG_ThreadInfo *>(param);
 
-    // ‹ó‚Å‚Í‚È‚¢ƒ}ƒX‚ÌŒÂ”‚ğƒZƒbƒg‚·‚éB
+    // ç©ºã§ã¯ãªã„ãƒã‚¹ã®å€‹æ•°ã‚’ã‚»ãƒƒãƒˆã™ã‚‹ã€‚
     info->m_count = xg_xword.Count();
 
-    // ƒXƒŒƒbƒh‚Ì—Dæ“x‚ğã‚°‚éB
+    // ã‚¹ãƒ¬ãƒƒãƒ‰ã®å„ªå…ˆåº¦ã‚’ä¸Šã’ã‚‹ã€‚
     ::SetThreadPriority(::GetCurrentThread(), THREAD_PRIORITY_ABOVE_NORMAL);
 
-    // —”¶¬ƒ‹[ƒ`ƒ“‚ğ‰Šú‰»‚·‚éB
+    // ä¹±æ•°ç”Ÿæˆãƒ«ãƒ¼ãƒãƒ³ã‚’åˆæœŸåŒ–ã™ã‚‹ã€‚
     #ifndef NO_RANDOM
         srand(::GetTickCount() ^ info->m_threadid);
     #else
         srand(xg_random_seed++);
     #endif
 
-    // ‰ğ‚­i•ƒ}ƒX’Ç‰Á‚È‚µjB
+    // è§£ãï¼ˆé»’ãƒã‚¹è¿½åŠ ãªã—ï¼‰ã€‚
     XgSolveXWord_NoAddBlack(xg_xword);
     return 0;
 }
 
-// ƒ}ƒ‹ƒ`ƒXƒŒƒbƒh—p‚ÌŠÖ”iƒXƒ}[ƒg‰ğŒˆjB
+// ãƒãƒ«ãƒã‚¹ãƒ¬ãƒƒãƒ‰ç”¨ã®é–¢æ•°ï¼ˆã‚¹ãƒãƒ¼ãƒˆè§£æ±ºï¼‰ã€‚
 unsigned __stdcall XgSolveProcSmart(void *param)
 {
-    // ƒXƒŒƒbƒhî•ñ‚ğæ“¾‚·‚éB
+    // ã‚¹ãƒ¬ãƒƒãƒ‰æƒ…å ±ã‚’å–å¾—ã™ã‚‹ã€‚
     XG_ThreadInfo *info = reinterpret_cast<XG_ThreadInfo *>(param);
 
-    // ‹ó‚Å‚Í‚È‚¢ƒ}ƒX‚ÌŒÂ”‚ğƒZƒbƒg‚·‚éB
+    // ç©ºã§ã¯ãªã„ãƒã‚¹ã®å€‹æ•°ã‚’ã‚»ãƒƒãƒˆã™ã‚‹ã€‚
     info->m_count = xg_xword.Count();
 
-    // ƒXƒŒƒbƒh‚Ì—Dæ“x‚ğã‚°‚éB
+    // ã‚¹ãƒ¬ãƒƒãƒ‰ã®å„ªå…ˆåº¦ã‚’ä¸Šã’ã‚‹ã€‚
     ::SetThreadPriority(::GetCurrentThread(), THREAD_PRIORITY_ABOVE_NORMAL);
 
-    // —”¶¬ƒ‹[ƒ`ƒ“‚ğ‰Šú‰»‚·‚éB
+    // ä¹±æ•°ç”Ÿæˆãƒ«ãƒ¼ãƒãƒ³ã‚’åˆæœŸåŒ–ã™ã‚‹ã€‚
     #ifndef NO_RANDOM
         srand(::GetTickCount() ^ info->m_threadid);
     #else
         srand(xg_random_seed++);
     #endif
 
-    // •ƒ}ƒX‚ğ¶¬‚·‚éB
+    // é»’ãƒã‚¹ã‚’ç”Ÿæˆã™ã‚‹ã€‚
     XgGenerateBlacksSmart(NULL);
 
-    // ‹ó‚Å‚Í‚È‚¢ƒ}ƒX‚ÌŒÂ”‚ğƒZƒbƒg‚·‚éB
+    // ç©ºã§ã¯ãªã„ãƒã‚¹ã®å€‹æ•°ã‚’ã‚»ãƒƒãƒˆã™ã‚‹ã€‚
     info->m_count = xg_xword.Count();
 
-    // ‰ğ‚­i•ƒ}ƒX’Ç‰Á‚È‚µjB
+    // è§£ãï¼ˆé»’ãƒã‚¹è¿½åŠ ãªã—ï¼‰ã€‚
     XgSolveXWord_NoAddBlack(xg_xword);
     return 0;
 }
 
 //#define SINGLE_THREAD_MODE
 
-// ‰ğ‚ğ‹‚ß‚é‚Ì‚ğŠJnB
+// è§£ã‚’æ±‚ã‚ã‚‹ã®ã‚’é–‹å§‹ã€‚
 void __fastcall XgStartSolve_AddBlack(void)
 {
-    // ƒtƒ‰ƒO‚ğ‰Šú‰»‚·‚éB
+    // ãƒ•ãƒ©ã‚°ã‚’åˆæœŸåŒ–ã™ã‚‹ã€‚
     xg_bSolved = xg_bCancelled = xg_bRetrying = false;
 
     if (xg_bSolvingEmpty)
         xg_xword.clear();
 
-    // ‰¡‚æ‚èc‚Ì•û‚ª’·‚¢ê‡AŒvZŠÔ‚ğŒ¸‚ç‚·‚½‚ß‚ÉA
-    // c‚Æ‰¡‚ğ“ü‚ê‘Ö‚¦AŒã‚Å‚à‚¤ˆê“xc‚Æ‰¡‚ğ“ü‚ê‘Ö‚¦‚éB
+    // æ¨ªã‚ˆã‚Šç¸¦ã®æ–¹ãŒé•·ã„å ´åˆã€è¨ˆç®—æ™‚é–“ã‚’æ¸›ã‚‰ã™ãŸã‚ã«ã€
+    // ç¸¦ã¨æ¨ªã‚’å…¥ã‚Œæ›¿ãˆã€å¾Œã§ã‚‚ã†ä¸€åº¦ç¸¦ã¨æ¨ªã‚’å…¥ã‚Œæ›¿ãˆã‚‹ã€‚
     if (xg_nRows > xg_nCols) {
         s_bSwapped = true;
         xg_xword.SwapXandY();
         std::swap(xg_nRows, xg_nCols);
     }
 
-    // Å‘å’·‚ğ§ŒÀ‚·‚éB
+    // æœ€å¤§é•·ã‚’åˆ¶é™ã™ã‚‹ã€‚
     if (xg_nMaxWordLen > xg_nDictMaxWordLen) {
         xg_nMaxWordLen = xg_nDictMaxWordLen;
     }
@@ -3545,7 +3545,7 @@ void __fastcall XgStartSolve_AddBlack(void)
 #ifdef SINGLE_THREAD_MODE
     XgSolveProc_AddBlack(&xg_aThreadInfo[0]);
 #else
-    // ƒXƒŒƒbƒh‚ğŠJn‚·‚éB
+    // ã‚¹ãƒ¬ãƒƒãƒ‰ã‚’é–‹å§‹ã™ã‚‹ã€‚
     for (DWORD i = 0; i < xg_dwThreadCount; i++) {
         xg_aThreadInfo[i].m_count = static_cast<DWORD>(xg_xword.Count());
         xg_ahThreads[i] = reinterpret_cast<HANDLE>(
@@ -3556,16 +3556,16 @@ void __fastcall XgStartSolve_AddBlack(void)
 #endif
 }
 
-// ‰ğ‚ğ‹‚ß‚é‚Ì‚ğŠJni•ƒ}ƒX’Ç‰Á‚È‚µjB
+// è§£ã‚’æ±‚ã‚ã‚‹ã®ã‚’é–‹å§‹ï¼ˆé»’ãƒã‚¹è¿½åŠ ãªã—ï¼‰ã€‚
 void __fastcall XgStartSolve_NoAddBlack(void)
 {
-    // ƒtƒ‰ƒO‚ğ‰Šú‰»‚·‚éB
+    // ãƒ•ãƒ©ã‚°ã‚’åˆæœŸåŒ–ã™ã‚‹ã€‚
     xg_bSolved = xg_bCancelled = xg_bRetrying = false;
 
 #ifdef SINGLE_THREAD_MODE
     XgSolveProc_NoAddBlack(&xg_aThreadInfo[0]);
 #else
-    // ƒXƒŒƒbƒh‚ğŠJn‚·‚éB
+    // ã‚¹ãƒ¬ãƒƒãƒ‰ã‚’é–‹å§‹ã™ã‚‹ã€‚
     for (DWORD i = 0; i < xg_dwThreadCount; i++) {
         xg_aThreadInfo[i].m_count = static_cast<DWORD>(xg_xword.Count());
         xg_ahThreads[i] = reinterpret_cast<HANDLE>(
@@ -3576,16 +3576,16 @@ void __fastcall XgStartSolve_NoAddBlack(void)
 #endif
 }
 
-// ‰ğ‚ğ‹‚ß‚é‚Ì‚ğŠJniƒXƒ}[ƒg‰ğŒˆjB
+// è§£ã‚’æ±‚ã‚ã‚‹ã®ã‚’é–‹å§‹ï¼ˆã‚¹ãƒãƒ¼ãƒˆè§£æ±ºï¼‰ã€‚
 void __fastcall XgStartSolve_Smart(void)
 {
-    // ƒtƒ‰ƒO‚ğ‰Šú‰»‚·‚éB
+    // ãƒ•ãƒ©ã‚°ã‚’åˆæœŸåŒ–ã™ã‚‹ã€‚
     xg_bSolved = xg_bCancelled = xg_bRetrying = false;
 
-    // ‚Ü‚¾ƒuƒƒbƒN¶¬‚µ‚Ä‚¢‚È‚¢B
+    // ã¾ã ãƒ–ãƒ­ãƒƒã‚¯ç”Ÿæˆã—ã¦ã„ãªã„ã€‚
     xg_bBlacksGenerated = FALSE;
 
-    // Å‘å’·‚ğ§ŒÀ‚·‚éB
+    // æœ€å¤§é•·ã‚’åˆ¶é™ã™ã‚‹ã€‚
     if (xg_nMaxWordLen > xg_nDictMaxWordLen) {
         xg_nMaxWordLen = xg_nDictMaxWordLen;
     }
@@ -3593,7 +3593,7 @@ void __fastcall XgStartSolve_Smart(void)
 #ifdef SINGLE_THREAD_MODE
     XgSolveProcSmart(&xg_aThreadInfo[0]);
 #else
-    // ƒXƒŒƒbƒh‚ğŠJn‚·‚éB
+    // ã‚¹ãƒ¬ãƒƒãƒ‰ã‚’é–‹å§‹ã™ã‚‹ã€‚
     for (DWORD i = 0; i < xg_dwThreadCount; i++) {
         xg_aThreadInfo[i].m_count = static_cast<DWORD>(xg_xword.Count());
         xg_ahThreads[i] = reinterpret_cast<HANDLE>(
@@ -3604,7 +3604,7 @@ void __fastcall XgStartSolve_Smart(void)
 #endif
 }
 
-// ‰ğ‚ğ‹‚ß‚æ‚¤‚Æ‚µ‚½Œã‚ÌŒãˆ—B
+// è§£ã‚’æ±‚ã‚ã‚ˆã†ã¨ã—ãŸå¾Œã®å¾Œå‡¦ç†ã€‚
 void __fastcall XgEndSolve(void)
 {
     if (s_bSwapped) {
@@ -3623,7 +3623,7 @@ void __fastcall XgEndSolve(void)
     }
 }
 
-// “ñdƒ}ƒX’PŒê‚ğ•`‰æ‚·‚éB
+// äºŒé‡ãƒã‚¹å˜èªã‚’æç”»ã™ã‚‹ã€‚
 void __fastcall XgDrawMarkWord(HDC hdc, LPSIZE psiz)
 {
     int nCount = static_cast<int>(xg_vMarks.size());
@@ -3632,15 +3632,15 @@ void __fastcall XgDrawMarkWord(HDC hdc, LPSIZE psiz)
         return;
     }
 
-    // ƒuƒ‰ƒV‚ğì¬‚·‚éB
+    // ãƒ–ãƒ©ã‚·ã‚’ä½œæˆã™ã‚‹ã€‚
     HBRUSH hbrBlack = ::CreateSolidBrush(xg_rgbBlackCellColor);
     HBRUSH hbrWhite = ::CreateSolidBrush(xg_rgbWhiteCellColor);
     HBRUSH hbrMarked = ::CreateSolidBrush(xg_rgbMarkedCellColor);
 
-    // ×‚¢ƒyƒ“‚ğì¬‚µA‘I‘ğ‚·‚éB
+    // ç´°ã„ãƒšãƒ³ã‚’ä½œæˆã—ã€é¸æŠã™ã‚‹ã€‚
     HPEN hThinPen = ::CreatePen(PS_SOLID, 1, xg_rgbBlackCellColor);
 
-    // ‘¾‚¢ü‚Æ•‚¢ƒuƒ‰ƒV‚ğì¬‚·‚éB
+    // å¤ªã„ç·šã¨é»’ã„ãƒ–ãƒ©ã‚·ã‚’ä½œæˆã™ã‚‹ã€‚
     LOGBRUSH lbBlack;
     ::GetObject(hbrBlack, sizeof(lbBlack), &lbBlack);
     int c_nWide = 4;
@@ -3650,7 +3650,7 @@ void __fastcall XgDrawMarkWord(HDC hdc, LPSIZE psiz)
 
     LOGFONTW lf;
 
-    // •¶šƒ}ƒX‚ÌƒtƒHƒ“ƒg‚ğì¬‚·‚éB
+    // æ–‡å­—ãƒã‚¹ã®ãƒ•ã‚©ãƒ³ãƒˆã‚’ä½œæˆã™ã‚‹ã€‚
     ZeroMemory(&lf, sizeof(lf));
     StringCbCopy(lf.lfFaceName, sizeof(lf.lfFaceName), XgLoadStringDx1(IDS_MONOFONT));
     if (xg_szCellFont[0])
@@ -3662,7 +3662,7 @@ void __fastcall XgDrawMarkWord(HDC hdc, LPSIZE psiz)
     lf.lfCharSet = SHIFTJIS_CHARSET;
     HFONT hFont = ::CreateFontIndirectW(&lf);
 
-    // ¬‚³‚¢•¶š‚ÌƒtƒHƒ“ƒg‚ğì¬‚·‚éB
+    // å°ã•ã„æ–‡å­—ã®ãƒ•ã‚©ãƒ³ãƒˆã‚’ä½œæˆã™ã‚‹ã€‚
     ZeroMemory(&lf, sizeof(lf));
     if (xg_szSmallFont[0])
         StringCbCopy(lf.lfFaceName, sizeof(lf.lfFaceName), xg_szSmallFont);
@@ -3673,12 +3673,12 @@ void __fastcall XgDrawMarkWord(HDC hdc, LPSIZE psiz)
     lf.lfCharSet = SHIFTJIS_CHARSET;
     HFONT hFontSmall = ::CreateFontIndirectW(&lf);
 
-    // ‘S‘Ì‚ğ”’‚Å“h‚è‚Â‚Ô‚·B
+    // å…¨ä½“ã‚’ç™½ã§å¡—ã‚Šã¤ã¶ã™ã€‚
     RECT rc;
     ::SetRect(&rc, 0, 0, psiz->cx, psiz->cy);
     ::FillRect(hdc, &rc, reinterpret_cast<HBRUSH>(::GetStockObject(WHITE_BRUSH)));
 
-    // ü‚è‚É‘¾‚¢ü‚ğ•`‚­B
+    // å‘¨ã‚Šã«å¤ªã„ç·šã‚’æãã€‚
     if (xg_bAddThickFrame) {
         InflateRect(&rc, -xg_nNarrowMargin, -xg_nNarrowMargin);
         InflateRect(&rc, +c_nWide, +c_nWide);
@@ -3687,7 +3687,7 @@ void __fastcall XgDrawMarkWord(HDC hdc, LPSIZE psiz)
         InflateRect(&rc, +xg_nNarrowMargin, +xg_nNarrowMargin);
     }
 
-    // “ñdƒ}ƒX‚ğ•`‰æ‚·‚éB
+    // äºŒé‡ãƒã‚¹ã‚’æç”»ã™ã‚‹ã€‚
     WCHAR sz[32];
     SIZE siz;
     HGDIOBJ hFontOld = ::SelectObject(hdc, hFontSmall);
@@ -3723,7 +3723,7 @@ void __fastcall XgDrawMarkWord(HDC hdc, LPSIZE psiz)
         INT x = (rcText.left + rcText.right - siz.cx) / 2;
         INT y = rcText.top;
 
-        // “ñdƒ}ƒX‚Ì•¶š‚ğ•`‚­B
+        // äºŒé‡ãƒã‚¹ã®æ–‡å­—ã‚’æãã€‚
         ::SetTextColor(hdc, xg_rgbBlackCellColor);
         ::SetBkMode(hdc, TRANSPARENT);
         ::TextOutW(hdc, x, y, sz, lstrlenW(sz));
@@ -3731,7 +3731,7 @@ void __fastcall XgDrawMarkWord(HDC hdc, LPSIZE psiz)
     ::SelectObject(hdc, hFontOld);
     ::SelectObject(hdc, hPenOld);
 
-    // ƒ}ƒX‚Ì•¶š‚ğ•`‰æ‚·‚éB
+    // ãƒã‚¹ã®æ–‡å­—ã‚’æç”»ã™ã‚‹ã€‚
     hFontOld = ::SelectObject(hdc, hFont);
     for (int i = 0; i < nCount; i++) {
         ::SetRect(&rc,
@@ -3748,7 +3748,7 @@ void __fastcall XgDrawMarkWord(HDC hdc, LPSIZE psiz)
             ch = xg_xword.GetAt(pos.m_i, pos.m_j);
         }
 
-        // •¶š‚ğ•ÏŠ·‚·‚éB
+        // æ–‡å­—ã‚’å¤‰æ›ã™ã‚‹ã€‚
         if (xg_bHiragana) {
             WCHAR new_ch;
             LCMapStringW(JPN_LOCALE, LCMAP_FULLWIDTH | LCMAP_HIRAGANA, &ch, 1, &new_ch, 1);
@@ -3770,7 +3770,7 @@ void __fastcall XgDrawMarkWord(HDC hdc, LPSIZE psiz)
         INT x = (rc.left + rc.right) / 2 - siz.cx / 2;
         INT y = (rc.top + rc.bottom) / 2 - siz.cy / 2;
 
-        // ƒ}ƒX‚Ì•¶š‚ğ•`‰æ‚·‚éB
+        // ãƒã‚¹ã®æ–‡å­—ã‚’æç”»ã™ã‚‹ã€‚
         ::SetTextColor(hdc, xg_rgbBlackCellColor);
         ::SetBkMode(hdc, TRANSPARENT);
         ::SetBkColor(hdc, xg_rgbMarkedCellColor);
@@ -3778,7 +3778,7 @@ void __fastcall XgDrawMarkWord(HDC hdc, LPSIZE psiz)
     }
     ::SelectObject(hdc, hFontOld);
 
-    // ü‚ğˆø‚­B“h‚è‚Â‚Ô‚³‚È‚¢B
+    // ç·šã‚’å¼•ãã€‚å¡—ã‚Šã¤ã¶ã•ãªã„ã€‚
     ::SelectObject(hdc, ::GetStockObject(NULL_BRUSH));
     hPenOld = ::SelectObject(hdc, hThinPen);
     for (int i = 0; i < nCount; i++) {
@@ -3790,7 +3790,7 @@ void __fastcall XgDrawMarkWord(HDC hdc, LPSIZE psiz)
     }
     ::SelectObject(hdc, hPenOld);
 
-    // ”jŠü‚·‚éB
+    // ç ´æ£„ã™ã‚‹ã€‚
     ::DeleteObject(hWidePen);
     ::DeleteObject(hThinPen);
     ::DeleteObject(hFont);
@@ -3800,7 +3800,7 @@ void __fastcall XgDrawMarkWord(HDC hdc, LPSIZE psiz)
     ::DeleteObject(hbrMarked);
 }
 
-// ƒNƒƒXƒ[ƒh‚ğ•`‰æ‚·‚éi’Êíƒrƒ…[jB
+// ã‚¯ãƒ­ã‚¹ãƒ¯ãƒ¼ãƒ‰ã‚’æç”»ã™ã‚‹ï¼ˆé€šå¸¸ãƒ“ãƒ¥ãƒ¼ï¼‰ã€‚
 void __fastcall XgDrawXWord_NormalView(XG_Board& xw, HDC hdc, LPSIZE psiz, bool bCaret)
 {
     INT nCellSize;
@@ -3810,16 +3810,16 @@ void __fastcall XgDrawXWord_NormalView(XG_Board& xw, HDC hdc, LPSIZE psiz, bool 
         nCellSize = xg_nCellSize;
     }
 
-    // ‘S‘Ì‚ğ”’‚Å“h‚è‚Â‚Ô‚·B
+    // å…¨ä½“ã‚’ç™½ã§å¡—ã‚Šã¤ã¶ã™ã€‚
     RECT rc;
     ::SetRect(&rc, 0, 0, psiz->cx, psiz->cy);
     ::FillRect(hdc, &rc, reinterpret_cast<HBRUSH>(::GetStockObject(WHITE_BRUSH)));
 
     LOGFONTW lf;
 
-    // •¶šƒ}ƒX‚ÌƒtƒHƒ“ƒg‚ğì¬‚·‚éB
+    // æ–‡å­—ãƒã‚¹ã®ãƒ•ã‚©ãƒ³ãƒˆã‚’ä½œæˆã™ã‚‹ã€‚
     ZeroMemory(&lf, sizeof(lf));
-    // ‚»‚Ì‘¼B
+    // ãã®ä»–ã€‚
     StringCbCopy(lf.lfFaceName, sizeof(lf.lfFaceName), XgLoadStringDx1(IDS_MONOFONT));
     if (xg_szCellFont[0])
         StringCbCopy(lf.lfFaceName, sizeof(lf.lfFaceName), xg_szCellFont);
@@ -3829,7 +3829,7 @@ void __fastcall XgDrawXWord_NormalView(XG_Board& xw, HDC hdc, LPSIZE psiz, bool 
     lf.lfCharSet = SHIFTJIS_CHARSET;
     HFONT hFont = ::CreateFontIndirectW(&lf);
 
-    // ¬‚³‚¢•¶š‚ÌƒtƒHƒ“ƒg‚ğì¬‚·‚éB
+    // å°ã•ã„æ–‡å­—ã®ãƒ•ã‚©ãƒ³ãƒˆã‚’ä½œæˆã™ã‚‹ã€‚
     ZeroMemory(&lf, sizeof(lf));
     if (xg_szSmallFont[0])
         StringCbCopy(lf.lfFaceName, sizeof(lf.lfFaceName), xg_szSmallFont);
@@ -3839,15 +3839,15 @@ void __fastcall XgDrawXWord_NormalView(XG_Board& xw, HDC hdc, LPSIZE psiz, bool 
     lf.lfCharSet = SHIFTJIS_CHARSET;
     HFONT hFontSmall = ::CreateFontIndirectW(&lf);
 
-    // ƒuƒ‰ƒV‚ğì¬‚·‚éB
+    // ãƒ–ãƒ©ã‚·ã‚’ä½œæˆã™ã‚‹ã€‚
     HBRUSH hbrBlack = ::CreateSolidBrush(xg_rgbBlackCellColor);
     HBRUSH hbrWhite = ::CreateSolidBrush(xg_rgbWhiteCellColor);
     HBRUSH hbrMarked = ::CreateSolidBrush(xg_rgbMarkedCellColor);
 
-    // •‚Ì×‚¢ƒyƒ“‚ğì¬‚·‚éB
+    // é»’ã®ç´°ã„ãƒšãƒ³ã‚’ä½œæˆã™ã‚‹ã€‚
     HPEN hThinPen = ::CreatePen(PS_SOLID, 1, xg_rgbBlackCellColor);
 
-    // Ô‚¢ƒLƒƒƒŒƒbƒgƒyƒ“‚ğì¬‚·‚éB
+    // èµ¤ã„ã‚­ãƒ£ãƒ¬ãƒƒãƒˆãƒšãƒ³ã‚’ä½œæˆã™ã‚‹ã€‚
     LOGBRUSH lbRed;
     lbRed.lbStyle = BS_SOLID;
     lbRed.lbColor = RGB(255, 0, 0);
@@ -3855,7 +3855,7 @@ void __fastcall XgDrawXWord_NormalView(XG_Board& xw, HDC hdc, LPSIZE psiz, bool 
         PS_GEOMETRIC | PS_SOLID | PS_ENDCAP_ROUND | PS_JOIN_BEVEL,
         1, &lbRed, 0, NULL);
 
-    // •‚¢‘¾‚¢ƒyƒ“‚ğì¬‚·‚éB
+    // é»’ã„å¤ªã„ãƒšãƒ³ã‚’ä½œæˆã™ã‚‹ã€‚
     LOGBRUSH lbBlack;
     ::GetObject(hbrBlack, sizeof(lbBlack), &lbBlack);
     int c_nWide = 4;
@@ -3874,23 +3874,23 @@ void __fastcall XgDrawXWord_NormalView(XG_Board& xw, HDC hdc, LPSIZE psiz, bool 
     SelectObject(hdcMem, xg_hbmBlackCell);
     SetStretchBltMode(hdcMem, STRETCH_HALFTONE);
 
-    // ƒZƒ‹‚ğ•`‰æ‚·‚éB
+    // ã‚»ãƒ«ã‚’æç”»ã™ã‚‹ã€‚
     for (int i = 0; i < xg_nRows; i++) {
         for (int j = 0; j < xg_nCols; j++) {
-            // ƒZƒ‹‚ÌÀ•W‚ğƒZƒbƒg‚·‚éB
+            // ã‚»ãƒ«ã®åº§æ¨™ã‚’ã‚»ãƒƒãƒˆã™ã‚‹ã€‚
             ::SetRect(&rc,
                 static_cast<int>(xg_nMargin + j * nCellSize), 
                 static_cast<int>(xg_nMargin + i * nCellSize),
                 static_cast<int>(xg_nMargin + (j + 1) * nCellSize), 
                 static_cast<int>(xg_nMargin + (i + 1) * nCellSize));
 
-            // “ñdƒ}ƒX‚©H
+            // äºŒé‡ãƒã‚¹ã‹ï¼Ÿ
             int nMarked = XgGetMarked(i, j);
 
-            // “h‚è‚Â‚Ô‚·B
+            // å¡—ã‚Šã¤ã¶ã™ã€‚
             WCHAR ch = xw.GetAt(i, j);
             if (ch == ZEN_BLACK) {
-                // •ƒ}ƒXB
+                // é»’ãƒã‚¹ã€‚
                 if (xg_hbmBlackCell)
                 {
                     StretchBlt(hdc,
@@ -3909,17 +3909,17 @@ void __fastcall XgDrawXWord_NormalView(XG_Board& xw, HDC hdc, LPSIZE psiz, bool 
                     ::FillRect(hdc, &rc, hbrBlack);
                 }
             } else if (nMarked != -1) {
-                // “ñdƒ}ƒXB
+                // äºŒé‡ãƒã‚¹ã€‚
                 ::FillRect(hdc, &rc, hbrMarked);
             } else {
-                // ‚»‚Ì‘¼‚Ìƒ}ƒXB
+                // ãã®ä»–ã®ãƒã‚¹ã€‚
                 ::FillRect(hdc, &rc, hbrWhite);
             }
 
-            // •¶š‚Ì”wŒi‚Í“§–¾B“h‚è‚Â‚Ô‚³‚È‚¢B
+            // æ–‡å­—ã®èƒŒæ™¯ã¯é€æ˜ã€‚å¡—ã‚Šã¤ã¶ã•ãªã„ã€‚
             ::SetBkMode(hdc, TRANSPARENT);
 
-            // •¶š‚ğ•ÏŠ·‚·‚éB
+            // æ–‡å­—ã‚’å¤‰æ›ã™ã‚‹ã€‚
             if (xg_bHiragana) {
                 WCHAR new_ch;
                 LCMapStringW(JPN_LOCALE, LCMAP_FULLWIDTH | LCMAP_HIRAGANA, &ch, 1, &new_ch, 1);
@@ -3933,7 +3933,7 @@ void __fastcall XgDrawXWord_NormalView(XG_Board& xw, HDC hdc, LPSIZE psiz, bool 
 
             if (ch != ZEN_BLACK)
             {
-                // •¶š‚ğ‘‚­B
+                // æ–‡å­—ã‚’æ›¸ãã€‚
                 hFontOld = ::SelectObject(hdc, hFont);
                 ::SetTextColor(hdc, xg_rgbBlackCellColor);
                 ::DrawTextW(hdc, &ch, 1, &rc, DT_CENTER | DT_SINGLELINE | DT_VCENTER);
@@ -3944,26 +3944,26 @@ void __fastcall XgDrawXWord_NormalView(XG_Board& xw, HDC hdc, LPSIZE psiz, bool 
 
     ::DeleteDC(hdcMem);
 
-    // ¬‚³‚¢•¶š‚ÌƒtƒHƒ“ƒg‚ğ‘I‘ğ‚·‚éB
+    // å°ã•ã„æ–‡å­—ã®ãƒ•ã‚©ãƒ³ãƒˆã‚’é¸æŠã™ã‚‹ã€‚
     hFontOld = ::SelectObject(hdc, hFontSmall);
 
-    // “ñdƒ}ƒX‚ğ•`‰æ‚·‚éB
+    // äºŒé‡ãƒã‚¹ã‚’æç”»ã™ã‚‹ã€‚
     for (int i = 0; i < xg_nRows; i++) {
         for (int j = 0; j < xg_nCols; j++) {
-            // ƒZƒ‹‚ÌÀ•W‚ğƒZƒbƒg‚·‚éB
+            // ã‚»ãƒ«ã®åº§æ¨™ã‚’ã‚»ãƒƒãƒˆã™ã‚‹ã€‚
             ::SetRect(&rc,
                 static_cast<int>(xg_nMargin + j * nCellSize),
                 static_cast<int>(xg_nMargin + i * nCellSize),
                 static_cast<int>(xg_nMargin + (j + 1) * nCellSize) - 1,
                 static_cast<int>(xg_nMargin + (i + 1) * nCellSize));
 
-            // “ñdƒ}ƒX‚©H
+            // äºŒé‡ãƒã‚¹ã‹ï¼Ÿ
             int nMarked = XgGetMarked(i, j);
             if (nMarked == -1) {
                 continue;
             }
 
-            // “ñdƒ}ƒX‚Ì“à‘¤‚Ì˜g‚ğ•`‚­B
+            // äºŒé‡ãƒã‚¹ã®å†…å´ã®æ ã‚’æãã€‚
             if (xg_bDrawFrameForMarkedCell) {
                 ::InflateRect(&rc, -4, -4);
                 ::SelectObject(hdc, ::GetStockObject(NULL_BRUSH));
@@ -3979,7 +3979,7 @@ void __fastcall XgDrawXWord_NormalView(XG_Board& xw, HDC hdc, LPSIZE psiz, bool 
                 else
                     StringCbPrintf(sz, sizeof(sz), L"%c", ZEN_BLACK);
 
-                // “ñdƒ}ƒX‚Ì‰E‰º’[‚Ì•¶š‚Ì”wŒi‚ğ“h‚è‚Â‚Ô‚·B
+                // äºŒé‡ãƒã‚¹ã®å³ä¸‹ç«¯ã®æ–‡å­—ã®èƒŒæ™¯ã‚’å¡—ã‚Šã¤ã¶ã™ã€‚
                 RECT rcText;
                 GetTextExtentPoint32(hdc, sz, lstrlen(sz), &siz);
                 rcText = rc;
@@ -3990,14 +3990,14 @@ void __fastcall XgDrawXWord_NormalView(XG_Board& xw, HDC hdc, LPSIZE psiz, bool 
                 FillRect(hdc, &rcText, hbr);
                 DeleteObject(hbr);
 
-                // “ñdƒ}ƒX‚Ì‰E‰º’[‚Ì•¶š‚ğ•`‚­B
+                // äºŒé‡ãƒã‚¹ã®å³ä¸‹ç«¯ã®æ–‡å­—ã‚’æãã€‚
                 ::SetBkMode(hdc, TRANSPARENT);
                 ::DrawTextW(hdc, sz, -1, &rcText, DT_CENTER | DT_SINGLELINE | DT_BOTTOM);
             }
         }
     }
 
-    // ƒ^ƒe‚ÌƒJƒM‚Ìæ“ªƒ}ƒXB
+    // ã‚¿ãƒ†ã®ã‚«ã‚®ã®å…ˆé ­ãƒã‚¹ã€‚
     {
         const int size = static_cast<int>(xg_vTateInfo.size());
         for (int k = 0; k < size; k++) {
@@ -4005,7 +4005,7 @@ void __fastcall XgDrawXWord_NormalView(XG_Board& xw, HDC hdc, LPSIZE psiz, bool 
             const int j = xg_vTateInfo[k].m_jCol;
             StringCbPrintf(sz, sizeof(sz), L"%u", xg_vTateInfo[k].m_number);
 
-            // •¶š‚Ì”wŒi‚ğ“h‚è‚Â‚Ô‚·B
+            // æ–‡å­—ã®èƒŒæ™¯ã‚’å¡—ã‚Šã¤ã¶ã™ã€‚
             ::SetBkMode(hdc, OPAQUE);
             int nMarked = XgGetMarked(i, j);
             if (nMarked != -1) {
@@ -4015,7 +4015,7 @@ void __fastcall XgDrawXWord_NormalView(XG_Board& xw, HDC hdc, LPSIZE psiz, bool 
             }
 
             if (xg_bShowNumbering) {
-                // ”š‚ğ•`‚­B
+                // æ•°å­—ã‚’æãã€‚
                 ::SetRect(&rc,
                     static_cast<int>(xg_nMargin + j * nCellSize), 
                     static_cast<int>(xg_nMargin + i * nCellSize),
@@ -4026,7 +4026,7 @@ void __fastcall XgDrawXWord_NormalView(XG_Board& xw, HDC hdc, LPSIZE psiz, bool 
             }
         }
     }
-    // ƒˆƒR‚ÌƒJƒM‚Ìæ“ªƒ}ƒXB
+    // ãƒ¨ã‚³ã®ã‚«ã‚®ã®å…ˆé ­ãƒã‚¹ã€‚
     {
         const int size = static_cast<int>(xg_vYokoInfo.size());
         for (int k = 0; k < size; k++) {
@@ -4034,7 +4034,7 @@ void __fastcall XgDrawXWord_NormalView(XG_Board& xw, HDC hdc, LPSIZE psiz, bool 
             const int j = xg_vYokoInfo[k].m_jCol;
             StringCbPrintf(sz, sizeof(sz), L"%u", xg_vYokoInfo[k].m_number);
 
-            // •¶š‚Ì”wŒi‚ğ“h‚è‚Â‚Ô‚·B
+            // æ–‡å­—ã®èƒŒæ™¯ã‚’å¡—ã‚Šã¤ã¶ã™ã€‚
             int nMarked = XgGetMarked(i, j);
             if (nMarked != -1) {
                 ::SetBkColor(hdc, xg_rgbMarkedCellColor);
@@ -4043,7 +4043,7 @@ void __fastcall XgDrawXWord_NormalView(XG_Board& xw, HDC hdc, LPSIZE psiz, bool 
             }
 
             if (xg_bShowNumbering) {
-                // ”š‚ğ•`‚­B
+                // æ•°å­—ã‚’æãã€‚
                 ::SetRect(&rc,
                     static_cast<int>(xg_nMargin + j * nCellSize), 
                     static_cast<int>(xg_nMargin + i * nCellSize),
@@ -4055,10 +4055,10 @@ void __fastcall XgDrawXWord_NormalView(XG_Board& xw, HDC hdc, LPSIZE psiz, bool 
         }
     }
 
-    // ƒtƒHƒ“ƒg‚Ì‘I‘ğ‚ğ‰ğœ‚·‚éB
+    // ãƒ•ã‚©ãƒ³ãƒˆã®é¸æŠã‚’è§£é™¤ã™ã‚‹ã€‚
     ::SelectObject(hdc, hFontOld);
 
-    // ƒLƒƒƒŒƒbƒg‚ğ•`‰æ‚·‚éB
+    // ã‚­ãƒ£ãƒ¬ãƒƒãƒˆã‚’æç”»ã™ã‚‹ã€‚
     if (bCaret && xg_bShowCaret) {
         const int i = xg_caret_pos.m_i;
         const int j = xg_caret_pos.m_j;
@@ -4097,7 +4097,7 @@ void __fastcall XgDrawXWord_NormalView(XG_Board& xw, HDC hdc, LPSIZE psiz, bool 
         ::SelectObject(hdc, hPenOld);
     }
 
-    // ü‚ğˆø‚­B
+    // ç·šã‚’å¼•ãã€‚
     hPenOld = ::SelectObject(hdc, hThinPen);
     for (int i = 0; i <= xg_nRows; i++) {
         ::MoveToEx(hdc, xg_nMargin, static_cast<int>(xg_nMargin + i * nCellSize), nullptr);
@@ -4109,7 +4109,7 @@ void __fastcall XgDrawXWord_NormalView(XG_Board& xw, HDC hdc, LPSIZE psiz, bool 
     }
     ::SelectObject(hdc, hPenOld);
 
-    // ü‚è‚É‘¾‚¢ü‚ğ•`‚­B
+    // å‘¨ã‚Šã«å¤ªã„ç·šã‚’æãã€‚
     hPenOld = ::SelectObject(hdc, hWidePen);
     if (xg_bAddThickFrame) {
         c_nWide /= 2;
@@ -4121,7 +4121,7 @@ void __fastcall XgDrawXWord_NormalView(XG_Board& xw, HDC hdc, LPSIZE psiz, bool 
     }
     ::SelectObject(hdc, hPenOld);
 
-    // ”jŠü‚·‚éB
+    // ç ´æ£„ã™ã‚‹ã€‚
     ::DeleteObject(hFont);
     ::DeleteObject(hFontSmall);
     ::DeleteObject(hThinPen);
@@ -4132,7 +4132,7 @@ void __fastcall XgDrawXWord_NormalView(XG_Board& xw, HDC hdc, LPSIZE psiz, bool 
     ::DeleteObject(hbrMarked);
 }
 
-// ƒNƒƒXƒ[ƒh‚ğ•`‰æ‚·‚éiƒXƒPƒ‹ƒgƒ“ƒrƒ…[jB
+// ã‚¯ãƒ­ã‚¹ãƒ¯ãƒ¼ãƒ‰ã‚’æç”»ã™ã‚‹ï¼ˆã‚¹ã‚±ãƒ«ãƒˆãƒ³ãƒ“ãƒ¥ãƒ¼ï¼‰ã€‚
 void __fastcall XgDrawXWord_SkeletonView(XG_Board& xw, HDC hdc, LPSIZE psiz, bool bCaret)
 {
     INT nCellSize;
@@ -4142,16 +4142,16 @@ void __fastcall XgDrawXWord_SkeletonView(XG_Board& xw, HDC hdc, LPSIZE psiz, boo
         nCellSize = xg_nCellSize;
     }
 
-    // ‘S‘Ì‚ğ”’‚Å“h‚è‚Â‚Ô‚·B
+    // å…¨ä½“ã‚’ç™½ã§å¡—ã‚Šã¤ã¶ã™ã€‚
     RECT rc;
     ::SetRect(&rc, 0, 0, psiz->cx, psiz->cy);
     ::FillRect(hdc, &rc, reinterpret_cast<HBRUSH>(::GetStockObject(WHITE_BRUSH)));
 
     LOGFONTW lf;
 
-    // •¶šƒ}ƒX‚ÌƒtƒHƒ“ƒg‚ğì¬‚·‚éB
+    // æ–‡å­—ãƒã‚¹ã®ãƒ•ã‚©ãƒ³ãƒˆã‚’ä½œæˆã™ã‚‹ã€‚
     ZeroMemory(&lf, sizeof(lf));
-    // ‚»‚Ì‘¼B
+    // ãã®ä»–ã€‚
     StringCbCopy(lf.lfFaceName, sizeof(lf.lfFaceName), XgLoadStringDx1(IDS_MONOFONT));
     if (xg_szCellFont[0])
         StringCbCopy(lf.lfFaceName, sizeof(lf.lfFaceName), xg_szCellFont);
@@ -4161,7 +4161,7 @@ void __fastcall XgDrawXWord_SkeletonView(XG_Board& xw, HDC hdc, LPSIZE psiz, boo
     lf.lfCharSet = SHIFTJIS_CHARSET;
     HFONT hFont = ::CreateFontIndirectW(&lf);
 
-    // ¬‚³‚¢•¶š‚ÌƒtƒHƒ“ƒg‚ğì¬‚·‚éB
+    // å°ã•ã„æ–‡å­—ã®ãƒ•ã‚©ãƒ³ãƒˆã‚’ä½œæˆã™ã‚‹ã€‚
     ZeroMemory(&lf, sizeof(lf));
     if (xg_szSmallFont[0])
         StringCbCopy(lf.lfFaceName, sizeof(lf.lfFaceName), xg_szSmallFont);
@@ -4171,15 +4171,15 @@ void __fastcall XgDrawXWord_SkeletonView(XG_Board& xw, HDC hdc, LPSIZE psiz, boo
     lf.lfCharSet = SHIFTJIS_CHARSET;
     HFONT hFontSmall = ::CreateFontIndirectW(&lf);
 
-    // ƒuƒ‰ƒV‚ğì¬‚·‚éB
+    // ãƒ–ãƒ©ã‚·ã‚’ä½œæˆã™ã‚‹ã€‚
     HBRUSH hbrBlack = ::CreateSolidBrush(xg_rgbBlackCellColor);
     HBRUSH hbrWhite = ::CreateSolidBrush(xg_rgbWhiteCellColor);
     HBRUSH hbrMarked = ::CreateSolidBrush(xg_rgbMarkedCellColor);
 
-    // •‚Ì×‚¢ƒyƒ“‚ğì¬‚·‚éB
+    // é»’ã®ç´°ã„ãƒšãƒ³ã‚’ä½œæˆã™ã‚‹ã€‚
     HPEN hThinPen = ::CreatePen(PS_SOLID, 1, xg_rgbBlackCellColor);
 
-    // Ô‚¢ƒLƒƒƒŒƒbƒgƒyƒ“‚ğì¬‚·‚éB
+    // èµ¤ã„ã‚­ãƒ£ãƒ¬ãƒƒãƒˆãƒšãƒ³ã‚’ä½œæˆã™ã‚‹ã€‚
     LOGBRUSH lbRed;
     lbRed.lbStyle = BS_SOLID;
     lbRed.lbColor = RGB(255, 0, 0);
@@ -4187,7 +4187,7 @@ void __fastcall XgDrawXWord_SkeletonView(XG_Board& xw, HDC hdc, LPSIZE psiz, boo
         PS_GEOMETRIC | PS_SOLID | PS_ENDCAP_ROUND | PS_JOIN_BEVEL,
         1, &lbRed, 0, NULL);
 
-    // •‚¢‘¾‚¢ƒyƒ“‚ğì¬‚·‚éB
+    // é»’ã„å¤ªã„ãƒšãƒ³ã‚’ä½œæˆã™ã‚‹ã€‚
     LOGBRUSH lbBlack;
     ::GetObject(hbrBlack, sizeof(lbBlack), &lbBlack);
     int c_nWide = 4;
@@ -4206,10 +4206,10 @@ void __fastcall XgDrawXWord_SkeletonView(XG_Board& xw, HDC hdc, LPSIZE psiz, boo
     SelectObject(hdcMem, xg_hbmBlackCell);
     SetStretchBltMode(hdcMem, STRETCH_HALFTONE);
 
-    // ƒZƒ‹‚Ì”wŒi‚ğ•`‰æ‚·‚éB
+    // ã‚»ãƒ«ã®èƒŒæ™¯ã‚’æç”»ã™ã‚‹ã€‚
     for (int i = 0; i < xg_nRows; i++) {
         for (int j = 0; j < xg_nCols; j++) {
-            // ƒZƒ‹‚ÌÀ•W‚ğƒZƒbƒg‚·‚éB
+            // ã‚»ãƒ«ã®åº§æ¨™ã‚’ã‚»ãƒƒãƒˆã™ã‚‹ã€‚
             ::SetRect(&rc,
                 static_cast<int>(xg_nMargin + j * nCellSize), 
                 static_cast<int>(xg_nMargin + i * nCellSize),
@@ -4221,7 +4221,7 @@ void __fastcall XgDrawXWord_SkeletonView(XG_Board& xw, HDC hdc, LPSIZE psiz, boo
 
             WCHAR ch = xw.GetAt(i, j);
             if (ch != ZEN_BLACK) {
-                // ”wŒi‚ğ“h‚è‚Â‚Ô‚·B
+                // èƒŒæ™¯ã‚’å¡—ã‚Šã¤ã¶ã™ã€‚
                 ::FillRect(hdc, &rcExtended, hbrBlack);
             }
         }
@@ -4229,33 +4229,33 @@ void __fastcall XgDrawXWord_SkeletonView(XG_Board& xw, HDC hdc, LPSIZE psiz, boo
 
     for (int i = 0; i < xg_nRows; i++) {
         for (int j = 0; j < xg_nCols; j++) {
-            // ƒZƒ‹‚ÌÀ•W‚ğƒZƒbƒg‚·‚éB
+            // ã‚»ãƒ«ã®åº§æ¨™ã‚’ã‚»ãƒƒãƒˆã™ã‚‹ã€‚
             ::SetRect(&rc,
                 static_cast<int>(xg_nMargin + j * nCellSize), 
                 static_cast<int>(xg_nMargin + i * nCellSize),
                 static_cast<int>(xg_nMargin + (j + 1) * nCellSize), 
                 static_cast<int>(xg_nMargin + (i + 1) * nCellSize));
 
-            // “ñdƒ}ƒX‚©H
+            // äºŒé‡ãƒã‚¹ã‹ï¼Ÿ
             int nMarked = XgGetMarked(i, j);
 
             WCHAR ch = xw.GetAt(i, j);
             if (ch == ZEN_BLACK)
                 continue;
 
-            // “h‚è‚Â‚Ô‚·B
+            // å¡—ã‚Šã¤ã¶ã™ã€‚
             if (nMarked != -1) {
-                // “ñdƒ}ƒXB
+                // äºŒé‡ãƒã‚¹ã€‚
                 ::FillRect(hdc, &rc, hbrMarked);
             } else {
-                // ‚»‚Ì‘¼‚Ìƒ}ƒXB
+                // ãã®ä»–ã®ãƒã‚¹ã€‚
                 ::FillRect(hdc, &rc, hbrWhite);
             }
 
-            // •¶š‚Ì”wŒi‚Í“§–¾B“h‚è‚Â‚Ô‚³‚È‚¢B
+            // æ–‡å­—ã®èƒŒæ™¯ã¯é€æ˜ã€‚å¡—ã‚Šã¤ã¶ã•ãªã„ã€‚
             ::SetBkMode(hdc, TRANSPARENT);
 
-            // •¶š‚ğ•ÏŠ·‚·‚éB
+            // æ–‡å­—ã‚’å¤‰æ›ã™ã‚‹ã€‚
             if (xg_bHiragana) {
                 WCHAR new_ch;
                 LCMapStringW(JPN_LOCALE, LCMAP_FULLWIDTH | LCMAP_HIRAGANA, &ch, 1, &new_ch, 1);
@@ -4268,13 +4268,13 @@ void __fastcall XgDrawXWord_SkeletonView(XG_Board& xw, HDC hdc, LPSIZE psiz, boo
             }
 
             if (ch != ZEN_BLACK) {
-                // •¶š‚ğ‘‚­B
+                // æ–‡å­—ã‚’æ›¸ãã€‚
                 hFontOld = ::SelectObject(hdc, hFont);
                 ::SetTextColor(hdc, xg_rgbBlackCellColor);
                 ::DrawTextW(hdc, &ch, 1, &rc, DT_CENTER | DT_SINGLELINE | DT_VCENTER);
                 ::SelectObject(hdc, hFontOld);
 
-                // ü‚ğˆø‚­B
+                // ç·šã‚’å¼•ãã€‚
                 hPenOld = ::SelectObject(hdc, hThinPen);
                 {
                     ::MoveToEx(hdc, static_cast<int>(xg_nMargin + j * nCellSize), static_cast<int>(xg_nMargin + i * nCellSize), nullptr);
@@ -4294,26 +4294,26 @@ void __fastcall XgDrawXWord_SkeletonView(XG_Board& xw, HDC hdc, LPSIZE psiz, boo
 
     ::DeleteDC(hdcMem);
 
-    // ¬‚³‚¢•¶š‚ÌƒtƒHƒ“ƒg‚ğ‘I‘ğ‚·‚éB
+    // å°ã•ã„æ–‡å­—ã®ãƒ•ã‚©ãƒ³ãƒˆã‚’é¸æŠã™ã‚‹ã€‚
     hFontOld = ::SelectObject(hdc, hFontSmall);
 
-    // “ñdƒ}ƒX‚ğ•`‰æ‚·‚éB
+    // äºŒé‡ãƒã‚¹ã‚’æç”»ã™ã‚‹ã€‚
     for (int i = 0; i < xg_nRows; i++) {
         for (int j = 0; j < xg_nCols; j++) {
-            // ƒZƒ‹‚ÌÀ•W‚ğƒZƒbƒg‚·‚éB
+            // ã‚»ãƒ«ã®åº§æ¨™ã‚’ã‚»ãƒƒãƒˆã™ã‚‹ã€‚
             ::SetRect(&rc,
                 static_cast<int>(xg_nMargin + j * nCellSize),
                 static_cast<int>(xg_nMargin + i * nCellSize),
                 static_cast<int>(xg_nMargin + (j + 1) * nCellSize) - 1,
                 static_cast<int>(xg_nMargin + (i + 1) * nCellSize));
 
-            // “ñdƒ}ƒX‚©H
+            // äºŒé‡ãƒã‚¹ã‹ï¼Ÿ
             int nMarked = XgGetMarked(i, j);
             if (nMarked == -1) {
                 continue;
             }
 
-            // “ñdƒ}ƒX‚Ì“à‘¤‚Ì˜g‚ğ•`‚­B
+            // äºŒé‡ãƒã‚¹ã®å†…å´ã®æ ã‚’æãã€‚
             if (xg_bDrawFrameForMarkedCell) {
                 ::InflateRect(&rc, -4, -4);
                 ::SelectObject(hdc, ::GetStockObject(NULL_BRUSH));
@@ -4326,7 +4326,7 @@ void __fastcall XgDrawXWord_SkeletonView(XG_Board& xw, HDC hdc, LPSIZE psiz, boo
             if (xg_bShowDoubleFrameLetters) {
                 StringCbPrintf(sz, sizeof(sz), L"%c", L'A' + nMarked);
 
-                // “ñdƒ}ƒX‚Ì‰E‰º’[‚Ì•¶š‚Ì”wŒi‚ğ“h‚è‚Â‚Ô‚·B
+                // äºŒé‡ãƒã‚¹ã®å³ä¸‹ç«¯ã®æ–‡å­—ã®èƒŒæ™¯ã‚’å¡—ã‚Šã¤ã¶ã™ã€‚
                 RECT rcText;
                 GetTextExtentPoint32(hdc, sz, lstrlen(sz), &siz);
                 rcText = rc;
@@ -4337,14 +4337,14 @@ void __fastcall XgDrawXWord_SkeletonView(XG_Board& xw, HDC hdc, LPSIZE psiz, boo
                 FillRect(hdc, &rcText, hbr);
                 DeleteObject(hbr);
 
-                // “ñdƒ}ƒX‚Ì‰E‰º’[‚Ì•¶š‚ğ•`‚­B
+                // äºŒé‡ãƒã‚¹ã®å³ä¸‹ç«¯ã®æ–‡å­—ã‚’æãã€‚
                 ::SetBkMode(hdc, TRANSPARENT);
                 ::DrawTextW(hdc, sz, -1, &rcText, DT_CENTER | DT_SINGLELINE | DT_BOTTOM);
             }
         }
     }
 
-    // ƒ^ƒe‚ÌƒJƒM‚Ìæ“ªƒ}ƒXB
+    // ã‚¿ãƒ†ã®ã‚«ã‚®ã®å…ˆé ­ãƒã‚¹ã€‚
     {
         const int size = static_cast<int>(xg_vTateInfo.size());
         for (int k = 0; k < size; k++) {
@@ -4352,7 +4352,7 @@ void __fastcall XgDrawXWord_SkeletonView(XG_Board& xw, HDC hdc, LPSIZE psiz, boo
             const int j = xg_vTateInfo[k].m_jCol;
             StringCbPrintf(sz, sizeof(sz), L"%u", xg_vTateInfo[k].m_number);
 
-            // •¶š‚Ì”wŒi‚ğ“h‚è‚Â‚Ô‚·B
+            // æ–‡å­—ã®èƒŒæ™¯ã‚’å¡—ã‚Šã¤ã¶ã™ã€‚
             ::SetBkMode(hdc, OPAQUE);
             int nMarked = XgGetMarked(i, j);
             if (nMarked != -1) {
@@ -4362,7 +4362,7 @@ void __fastcall XgDrawXWord_SkeletonView(XG_Board& xw, HDC hdc, LPSIZE psiz, boo
             }
 
             if (xg_bShowNumbering) {
-                // ”š‚ğ•`‚­B
+                // æ•°å­—ã‚’æãã€‚
                 ::SetRect(&rc,
                     static_cast<int>(xg_nMargin + j * nCellSize), 
                     static_cast<int>(xg_nMargin + i * nCellSize),
@@ -4373,7 +4373,7 @@ void __fastcall XgDrawXWord_SkeletonView(XG_Board& xw, HDC hdc, LPSIZE psiz, boo
             }
         }
     }
-    // ƒˆƒR‚ÌƒJƒM‚Ìæ“ªƒ}ƒXB
+    // ãƒ¨ã‚³ã®ã‚«ã‚®ã®å…ˆé ­ãƒã‚¹ã€‚
     {
         const int size = static_cast<int>(xg_vYokoInfo.size());
         for (int k = 0; k < size; k++) {
@@ -4381,7 +4381,7 @@ void __fastcall XgDrawXWord_SkeletonView(XG_Board& xw, HDC hdc, LPSIZE psiz, boo
             const int j = xg_vYokoInfo[k].m_jCol;
             StringCbPrintf(sz, sizeof(sz), L"%u", xg_vYokoInfo[k].m_number);
 
-            // •¶š‚Ì”wŒi‚ğ“h‚è‚Â‚Ô‚·B
+            // æ–‡å­—ã®èƒŒæ™¯ã‚’å¡—ã‚Šã¤ã¶ã™ã€‚
             int nMarked = XgGetMarked(i, j);
             if (nMarked != -1) {
                 ::SetBkColor(hdc, xg_rgbMarkedCellColor);
@@ -4390,7 +4390,7 @@ void __fastcall XgDrawXWord_SkeletonView(XG_Board& xw, HDC hdc, LPSIZE psiz, boo
             }
 
             if (xg_bShowNumbering) {
-                // ”š‚ğ•`‚­B
+                // æ•°å­—ã‚’æãã€‚
                 ::SetRect(&rc,
                     static_cast<int>(xg_nMargin + j * nCellSize), 
                     static_cast<int>(xg_nMargin + i * nCellSize),
@@ -4402,10 +4402,10 @@ void __fastcall XgDrawXWord_SkeletonView(XG_Board& xw, HDC hdc, LPSIZE psiz, boo
         }
     }
 
-    // ƒtƒHƒ“ƒg‚Ì‘I‘ğ‚ğ‰ğœ‚·‚éB
+    // ãƒ•ã‚©ãƒ³ãƒˆã®é¸æŠã‚’è§£é™¤ã™ã‚‹ã€‚
     ::SelectObject(hdc, hFontOld);
 
-    // ƒLƒƒƒŒƒbƒg‚ğ•`‰æ‚·‚éB
+    // ã‚­ãƒ£ãƒ¬ãƒƒãƒˆã‚’æç”»ã™ã‚‹ã€‚
     if (bCaret && xg_bShowCaret) {
         const int i = xg_caret_pos.m_i;
         const int j = xg_caret_pos.m_j;
@@ -4444,7 +4444,7 @@ void __fastcall XgDrawXWord_SkeletonView(XG_Board& xw, HDC hdc, LPSIZE psiz, boo
         ::SelectObject(hdc, hPenOld);
     }
 
-    // ”jŠü‚·‚éB
+    // ç ´æ£„ã™ã‚‹ã€‚
     ::DeleteObject(hFont);
     ::DeleteObject(hFontSmall);
     ::DeleteObject(hThinPen);
@@ -4455,7 +4455,7 @@ void __fastcall XgDrawXWord_SkeletonView(XG_Board& xw, HDC hdc, LPSIZE psiz, boo
     ::DeleteObject(hbrMarked);
 }
 
-// ƒNƒƒXƒ[ƒh‚ğ•`‰æ‚·‚éB
+// ã‚¯ãƒ­ã‚¹ãƒ¯ãƒ¼ãƒ‰ã‚’æç”»ã™ã‚‹ã€‚
 void __fastcall XgDrawXWord(XG_Board& xw, HDC hdc, LPSIZE psiz, bool bCaret)
 {
     switch (xg_nViewMode)
@@ -4470,15 +4470,15 @@ void __fastcall XgDrawXWord(XG_Board& xw, HDC hdc, LPSIZE psiz, bool bCaret)
     }
 }
 
-// ƒNƒƒXƒ[ƒh‚ÌƒCƒ[ƒW‚ğì¬‚·‚éB
+// ã‚¯ãƒ­ã‚¹ãƒ¯ãƒ¼ãƒ‰ã®ã‚¤ãƒ¡ãƒ¼ã‚¸ã‚’ä½œæˆã™ã‚‹ã€‚
 HBITMAP __fastcall XgCreateXWordImage(XG_Board& xw, LPSIZE psiz, bool bCaret)
 {
-    // ŒİŠ·DC‚ğì¬‚·‚éB
+    // äº’æ›DCã‚’ä½œæˆã™ã‚‹ã€‚
     HDC hdc = ::CreateCompatibleDC(nullptr);
     if (hdc == nullptr)
         return nullptr;
 
-    // DIB‚ğì¬‚·‚éB
+    // DIBã‚’ä½œæˆã™ã‚‹ã€‚
     BITMAPINFO bi;
     LPVOID pvBits;
     ZeroMemory(&bi, sizeof(BITMAPINFOHEADER));
@@ -4495,26 +4495,26 @@ HBITMAP __fastcall XgCreateXWordImage(XG_Board& xw, LPSIZE psiz, bool bCaret)
         return nullptr;
     }
 
-    // •`‰æ‚·‚éB
+    // æç”»ã™ã‚‹ã€‚
     HGDIOBJ hbmOld = ::SelectObject(hdc, hbm);
     XgDrawXWord(xw, hdc, psiz, bCaret);
     ::SelectObject(hdc, hbmOld);
 
-    // ŒİŠ·DC‚ğ”jŠü‚·‚éB
+    // äº’æ›DCã‚’ç ´æ£„ã™ã‚‹ã€‚
     ::DeleteDC(hdc);
     return hbm;
 }
 
-// •`‰æƒCƒ[ƒW‚ğXV‚·‚éB
+// æç”»ã‚¤ãƒ¡ãƒ¼ã‚¸ã‚’æ›´æ–°ã™ã‚‹ã€‚
 void __fastcall XgUpdateImage(HWND hwnd, INT x, INT y)
 {
     ForDisplay for_display;
 
-    // ƒCƒ[ƒW‚ª‚ ‚ê‚Î”jŠü‚·‚éB
+    // ã‚¤ãƒ¡ãƒ¼ã‚¸ãŒã‚ã‚Œã°ç ´æ£„ã™ã‚‹ã€‚
     if (xg_hbmImage)
         ::DeleteObject(xg_hbmImage);
 
-    // •`‰æƒTƒCƒY‚ğæ“¾‚µAƒCƒ[ƒW‚ğì¬‚·‚éB
+    // æç”»ã‚µã‚¤ã‚ºã‚’å–å¾—ã—ã€ã‚¤ãƒ¡ãƒ¼ã‚¸ã‚’ä½œæˆã™ã‚‹ã€‚
     SIZE siz;
     XgGetXWordExtent(&siz);
     if (xg_bSolved && xg_bShowAnswer)
@@ -4522,7 +4522,7 @@ void __fastcall XgUpdateImage(HWND hwnd, INT x, INT y)
     else
         xg_hbmImage = XgCreateXWordImage(xg_xword, &siz, true);
 
-    // ƒXƒNƒ[ƒ‹î•ñ‚ğXV‚·‚éB
+    // ã‚¹ã‚¯ãƒ­ãƒ¼ãƒ«æƒ…å ±ã‚’æ›´æ–°ã™ã‚‹ã€‚
     XgUpdateScrollInfo(hwnd, x, y);
 
     MRect rc, rcClient;
@@ -4539,17 +4539,17 @@ void __fastcall XgUpdateImage(HWND hwnd, INT x, INT y)
     rcClient.right -= ::GetSystemMetrics(SM_CXVSCROLL);
     rcClient.bottom -= ::GetSystemMetrics(SM_CYHSCROLL);
 
-    // Ä•`‰æ‚·‚éB
+    // å†æç”»ã™ã‚‹ã€‚
     ::InvalidateRect(hwnd, &rcClient, TRUE);
 }
 
-// •`‰æƒCƒ[ƒW‚ğXV‚·‚éB
+// æç”»ã‚¤ãƒ¡ãƒ¼ã‚¸ã‚’æ›´æ–°ã™ã‚‹ã€‚
 void __fastcall XgUpdateImage(HWND hwnd)
 {
     XgUpdateImage(hwnd, XgGetHScrollPos(), XgGetVScrollPos());
 }
 
-// CRPƒtƒ@ƒCƒ‹‚ğŠJ‚­B
+// CRPãƒ•ã‚¡ã‚¤ãƒ«ã‚’é–‹ãã€‚
 bool __fastcall XgDoLoadCrpFile(HWND hwnd, LPCWSTR pszFile)
 {
     INT i, nWidth, nHeight;
@@ -4607,7 +4607,7 @@ bool __fastcall XgDoLoadCrpFile(HWND hwnd, LPCWSTR pszFile)
             str += ZEN_LRIGHT;
             str += L"\r\n";
 
-            // •¶š—ñ‚ğ“Ç‚İ‚ŞB
+            // æ–‡å­—åˆ—ã‚’èª­ã¿è¾¼ã‚€ã€‚
             bOK = xword.SetString(str);
         }
     }
@@ -4622,7 +4622,7 @@ bool __fastcall XgDoLoadCrpFile(HWND hwnd, LPCWSTR pszFile)
         xg_bSolved = false;
 
         if (xword.IsFulfilled()) {
-            // ”Ô†•t‚¯‚ğs‚¤B
+            // ç•ªå·ä»˜ã‘ã‚’è¡Œã†ã€‚
             xword.DoNumberingNoCheck();
 
             INT nClueCount = GetPrivateProfileIntW(L"Clue", L"Count", 0, pszFile);
@@ -4693,7 +4693,7 @@ bool __fastcall XgDoLoadCrpFile(HWND hwnd, LPCWSTR pszFile)
             }
         }
 
-        // •s‘«•ª‚ğ’Ç‰ÁB
+        // ä¸è¶³åˆ†ã‚’è¿½åŠ ã€‚
         for (XG_PlaceInfo& item : xg_vYokoInfo) {
             bool found = false;
             for (auto& info : yoko) {
@@ -4719,7 +4719,7 @@ bool __fastcall XgDoLoadCrpFile(HWND hwnd, LPCWSTR pszFile)
             }
         }
 
-        // ƒ\[ƒgB
+        // ã‚½ãƒ¼ãƒˆã€‚
         std::sort(tate.begin(), tate.end(),
             [](const XG_Hint& a, const XG_Hint& b) {
                 return a.m_number < b.m_number;
@@ -4731,7 +4731,7 @@ bool __fastcall XgDoLoadCrpFile(HWND hwnd, LPCWSTR pszFile)
             }
         );
 
-        // ¬Œ÷B
+        // æˆåŠŸã€‚
         xg_xword = xword;
         xg_solution = xword;
         if (tate.size() && yoko.size()) {
@@ -4746,7 +4746,7 @@ bool __fastcall XgDoLoadCrpFile(HWND hwnd, LPCWSTR pszFile)
         XgUpdateImage(hwnd, 0, 0);
         XgMarkUpdate();
 
-        // ƒtƒ@ƒCƒ‹ƒpƒX‚ğƒZƒbƒg‚·‚éB
+        // ãƒ•ã‚¡ã‚¤ãƒ«ãƒ‘ã‚¹ã‚’ã‚»ãƒƒãƒˆã™ã‚‹ã€‚
         WCHAR szFileName[MAX_PATH];
         ::GetFullPathNameW(pszFile, MAX_PATH, szFileName, NULL);
         xg_strFileName = szFileName;
@@ -4755,34 +4755,34 @@ bool __fastcall XgDoLoadCrpFile(HWND hwnd, LPCWSTR pszFile)
     return bOK;
 }
 
-// ƒtƒ@ƒCƒ‹‚ğŠJ‚­B
+// ãƒ•ã‚¡ã‚¤ãƒ«ã‚’é–‹ãã€‚
 bool __fastcall XgDoLoadFile(HWND hwnd, LPCWSTR pszFile, bool json)
 {
     DWORD i, cbFile, cbRead;
     bool bOK = false;
 
-    // “ñdƒ}ƒX’PŒê‚ğ‹ó‚É‚·‚éB
+    // äºŒé‡ãƒã‚¹å˜èªã‚’ç©ºã«ã™ã‚‹ã€‚
     XgSetMarkedWord();
 
-    // ƒtƒ@ƒCƒ‹‚ğŠJ‚­B
+    // ãƒ•ã‚¡ã‚¤ãƒ«ã‚’é–‹ãã€‚
     AutoCloseHandle hFile(::CreateFileW(pszFile, GENERIC_READ, FILE_SHARE_READ,
                                         nullptr, OPEN_EXISTING, 0, nullptr));
     if (hFile == INVALID_HANDLE_VALUE)
         return false;
 
-    // ƒtƒ@ƒCƒ‹ƒTƒCƒY‚ğæ“¾B
+    // ãƒ•ã‚¡ã‚¤ãƒ«ã‚µã‚¤ã‚ºã‚’å–å¾—ã€‚
     cbFile = ::GetFileSize(hFile, nullptr);
     if (cbFile == 0xFFFFFFFF)
         return false;
 
     try {
-        // ƒƒ‚ƒŠ‚ğŠm•Û‚µ‚Äƒtƒ@ƒCƒ‹‚©‚ç“Ç‚İ‚ŞB
+        // ãƒ¡ãƒ¢ãƒªã‚’ç¢ºä¿ã—ã¦ãƒ•ã‚¡ã‚¤ãƒ«ã‹ã‚‰èª­ã¿è¾¼ã‚€ã€‚
         std::vector<BYTE> pbFile(cbFile + 4, 0);
         i = cbFile;
         if (!::ReadFile(hFile, &pbFile[0], cbFile, &cbRead, nullptr))
             return false;
 
-        // BOMƒ`ƒFƒbƒNB
+        // BOMãƒã‚§ãƒƒã‚¯ã€‚
         if (pbFile[0] == 0xFF && pbFile[1] == 0xFE) {
             // Unicode
             std::wstring str = reinterpret_cast<LPWSTR>(&pbFile[2]);
@@ -4802,9 +4802,9 @@ bool __fastcall XgDoLoadFile(HWND hwnd, LPCWSTR pszFile, bool json)
             i = 0;
         } else {
             for (i = 0; i < cbFile; i++) {
-                // ƒiƒ‹•¶š‚ª‚ ‚ê‚ÎUnicode‚Æ”»’f‚·‚éB
+                // ãƒŠãƒ«æ–‡å­—ãŒã‚ã‚Œã°Unicodeã¨åˆ¤æ–­ã™ã‚‹ã€‚
                 if (pbFile[i] == 0) {
-                    // ƒGƒ“ƒfƒBƒAƒ“‚Ì”»’èB
+                    // ã‚¨ãƒ³ãƒ‡ã‚£ã‚¢ãƒ³ã®åˆ¤å®šã€‚
                     if (i & 1) {
                         // Unicode
                         std::wstring str = reinterpret_cast<LPWSTR>(&pbFile[0]);
@@ -4836,28 +4836,28 @@ bool __fastcall XgDoLoadFile(HWND hwnd, LPCWSTR pszFile, bool json)
         }
 
         if (bOK) {
-            // ¬Œ÷B
+            // æˆåŠŸã€‚
             XgUpdateImage(hwnd, 0, 0);
             XgMarkUpdate();
 
-            // ƒtƒ@ƒCƒ‹ƒpƒX‚ğƒZƒbƒg‚·‚éB
+            // ãƒ•ã‚¡ã‚¤ãƒ«ãƒ‘ã‚¹ã‚’ã‚»ãƒƒãƒˆã™ã‚‹ã€‚
             WCHAR szFileName[MAX_PATH];
             ::GetFullPathNameW(pszFile, MAX_PATH, szFileName, NULL);
             xg_strFileName = szFileName;
             return true;
         }
     } catch (...) {
-        // —áŠO‚ª”­¶‚µ‚½B
+        // ä¾‹å¤–ãŒç™ºç”Ÿã—ãŸã€‚
     }
 
-    // ¸”sB
+    // å¤±æ•—ã€‚
     return false;
 }
 
-// ƒtƒ@ƒCƒ‹iCRPŒ`®j‚ğ•Û‘¶‚·‚éB
+// ãƒ•ã‚¡ã‚¤ãƒ«ï¼ˆCRPå½¢å¼ï¼‰ã‚’ä¿å­˜ã™ã‚‹ã€‚
 bool __fastcall XgDoSaveCrpFile(HWND /*hwnd*/, LPCWSTR pszFile)
 {
-    // ƒtƒ@ƒCƒ‹‚ğì¬‚·‚éB
+    // ãƒ•ã‚¡ã‚¤ãƒ«ã‚’ä½œæˆã™ã‚‹ã€‚
     FILE *fout = _wfopen(pszFile, L"w");
     if (fout == NULL)
         return false;
@@ -4877,7 +4877,7 @@ bool __fastcall XgDoSaveCrpFile(HWND /*hwnd*/, LPCWSTR pszFile)
             "Width=%u\n"
             "Height=%u\n", xg_nCols, xg_nRows);
 
-        // ƒ}ƒXB
+        // ãƒã‚¹ã€‚
         for (int i = 0; i < xg_nRows; ++i) {
             std::wstring row;
             for (int j = 0; j < xg_nCols; ++j) {
@@ -4885,14 +4885,14 @@ bool __fastcall XgDoSaveCrpFile(HWND /*hwnd*/, LPCWSTR pszFile)
                     row += L",";
                 WCHAR ch = xw->GetAt(i, j);
                 if (ch == ZEN_SPACE)
-                    row += 0xFF3F; // 'Q'
+                    row += 0xFF3F; // 'ï¼¿'
                 else
                     row += ch;
             }
             fprintf(fout, "Line%u=%s\n", i + 1, XgUnicodeToAnsi(row).c_str());
         }
 
-        // “ñdƒ}ƒXB
+        // äºŒé‡ãƒã‚¹ã€‚
         std::vector<std::vector<INT> > marks;
         marks.resize(xg_nRows);
         for (auto& mark : marks) {
@@ -4923,18 +4923,18 @@ bool __fastcall XgDoSaveCrpFile(HWND /*hwnd*/, LPCWSTR pszFile)
             "\n"
             "[Clue]\n");
 
-        // ƒqƒ“ƒgB
+        // ãƒ’ãƒ³ãƒˆã€‚
         if (xg_vecTateHints.size() && xg_vecYokoHints.size()) {
             fprintf(fout, "Count=%u\n", int(xg_vecTateHints.size() + xg_vecYokoHints.size()));
             int iHint = 1;
-            // ƒ^ƒe‚ÌƒJƒMB
+            // ã‚¿ãƒ†ã®ã‚«ã‚®ã€‚
             for (size_t i = 0; i < xg_vecTateHints.size(); ++i) {
                 auto& tate_hint = xg_vecTateHints[i];
                 fprintf(fout, "Clue%u=%s:%s\n", iHint++,
                     XgUnicodeToAnsi(tate_hint.m_strWord).c_str(),
                     XgUnicodeToAnsi(tate_hint.m_strHint).c_str());
             }
-            // ƒˆƒR‚ÌƒJƒMB
+            // ãƒ¨ã‚³ã®ã‚«ã‚®ã€‚
             for (size_t i = 0; i < xg_vecYokoHints.size(); ++i) {
                 auto& yoko_hint = xg_vecYokoHints[i];
                 fprintf(fout, "Clue%u=%s:%s\n", iHint++,
@@ -4957,7 +4957,7 @@ bool __fastcall XgDoSaveCrpFile(HWND /*hwnd*/, LPCWSTR pszFile)
 
         fclose(fout);
 
-        // ƒtƒ@ƒCƒ‹ƒpƒX‚ğƒZƒbƒg‚·‚éB
+        // ãƒ•ã‚¡ã‚¤ãƒ«ãƒ‘ã‚¹ã‚’ã‚»ãƒƒãƒˆã™ã‚‹ã€‚
         WCHAR szFileName[MAX_PATH];
         ::GetFullPathNameW(pszFile, MAX_PATH, szFileName, NULL);
         xg_strFileName = szFileName;
@@ -4969,19 +4969,19 @@ bool __fastcall XgDoSaveCrpFile(HWND /*hwnd*/, LPCWSTR pszFile)
         ;
     }
 
-    // ³‚µ‚­‘‚«‚ß‚È‚©‚Á‚½B•s³‚Èƒtƒ@ƒCƒ‹‚ğÁ‚·B
+    // æ­£ã—ãæ›¸ãè¾¼ã‚ãªã‹ã£ãŸã€‚ä¸æ­£ãªãƒ•ã‚¡ã‚¤ãƒ«ã‚’æ¶ˆã™ã€‚
     ::DeleteFileW(pszFile);
     return false;
 }
 
-// .xwjƒtƒ@ƒCƒ‹iJSONŒ`®j‚ğ•Û‘¶‚·‚éB
+// .xwjãƒ•ã‚¡ã‚¤ãƒ«ï¼ˆJSONå½¢å¼ï¼‰ã‚’ä¿å­˜ã™ã‚‹ã€‚
 bool __fastcall XgDoSaveJson(HWND /*hwnd*/, LPCWSTR pszFile)
 {
     HANDLE hFile;
     std::wstring str, strTable, strMarks, hints;
     DWORD size;
 
-    // ƒtƒ@ƒCƒ‹‚ğì¬‚·‚éB
+    // ãƒ•ã‚¡ã‚¤ãƒ«ã‚’ä½œæˆã™ã‚‹ã€‚
     hFile = ::CreateFileW(pszFile, GENERIC_WRITE, FILE_SHARE_READ, nullptr,
         CREATE_ALWAYS, 0, nullptr);
     if (hFile == INVALID_HANDLE_VALUE)
@@ -4990,22 +4990,22 @@ bool __fastcall XgDoSaveJson(HWND /*hwnd*/, LPCWSTR pszFile)
     try
     {
         json j;
-        // ì¬Òî•ñB
+        // ä½œæˆè€…æƒ…å ±ã€‚
         j["creator_info"] = XgUnicodeToUtf8(XgLoadStringDx1(IDS_APPINFO));
-        // s‚Ì”B
+        // è¡Œã®æ•°ã€‚
         j["row_count"] = xg_nRows;
-        // —ñ‚Ì”B
+        // åˆ—ã®æ•°ã€‚
         j["column_count"] = xg_nCols;
-        // ƒ‹[ƒ‹B
+        // ãƒ«ãƒ¼ãƒ«ã€‚
         j["rules"] = XgUnicodeToUtf8(XgGetRulesString(xg_nRules));
-        // «‘–¼B
+        // è¾æ›¸åã€‚
         j["dictionary"] = XgUnicodeToUtf8(PathFindFileNameW(xg_dict_name.c_str()));
 
-        // ”Õ‚ÌØ‚è‘Ö‚¦B
+        // ç›¤ã®åˆ‡ã‚Šæ›¿ãˆã€‚
         XG_Board *xw = (xg_bSolved ? &xg_solution : &xg_xword);
         j["is_solved"] = !!xg_bSolved;
 
-        // ƒ}ƒXB
+        // ãƒã‚¹ã€‚
         for (int i = 0; i < xg_nRows; ++i) {
             std::wstring row;
             for (int j = 0; j < xg_nCols; ++j) {
@@ -5015,7 +5015,7 @@ bool __fastcall XgDoSaveJson(HWND /*hwnd*/, LPCWSTR pszFile)
             j["cell_data"].push_back(XgUnicodeToUtf8(row));
         }
 
-        // “ñdƒ}ƒXB
+        // äºŒé‡ãƒã‚¹ã€‚
         if (xg_vMarks.size()) {
             j["has_mark"] = true;
 
@@ -5040,13 +5040,13 @@ bool __fastcall XgDoSaveJson(HWND /*hwnd*/, LPCWSTR pszFile)
             j["has_mark"] = false;
         }
 
-        // ƒqƒ“ƒgB
+        // ãƒ’ãƒ³ãƒˆã€‚
         if (xg_vecTateHints.size() && xg_vecYokoHints.size()) {
             j["has_hints"] = true;
 
             json hints;
 
-            // ƒ^ƒe‚ÌƒJƒMB
+            // ã‚¿ãƒ†ã®ã‚«ã‚®ã€‚
             json v;
             for (size_t i = 0; i < xg_vecTateHints.size(); ++i) {
                 json hint;
@@ -5058,7 +5058,7 @@ bool __fastcall XgDoSaveJson(HWND /*hwnd*/, LPCWSTR pszFile)
             }
             hints["v"] = v;
 
-            // ƒˆƒR‚ÌƒJƒMB
+            // ãƒ¨ã‚³ã®ã‚«ã‚®ã€‚
             json h;
             for (size_t i = 0; i < xg_vecYokoHints.size(); ++i) {
                 json hint;
@@ -5075,11 +5075,11 @@ bool __fastcall XgDoSaveJson(HWND /*hwnd*/, LPCWSTR pszFile)
             j["has_hints"] = false;
         }
 
-        // ƒwƒbƒ_[B
+        // ãƒ˜ãƒƒãƒ€ãƒ¼ã€‚
         xg_str_trim(xg_strHeader);
         j["header"] = XgUnicodeToUtf8(xg_strHeader);
 
-        // ”õl—“B
+        // å‚™è€ƒæ¬„ã€‚
         xg_str_trim(xg_strNotes);
         LPCWSTR psz = XgLoadStringDx1(IDS_BELOWISNOTES);
         if (xg_strNotes.find(psz) == 0) {
@@ -5087,10 +5087,10 @@ bool __fastcall XgDoSaveJson(HWND /*hwnd*/, LPCWSTR pszFile)
         }
         j["notes"] = XgUnicodeToUtf8(xg_strNotes);
 
-        // ƒe[ƒ}B
+        // ãƒ†ãƒ¼ãƒã€‚
         j["theme"] = XgUnicodeToUtf8(xg_strTheme);
 
-        // UTF-8‚Ö•ÏŠ·‚·‚éB
+        // UTF-8ã¸å¤‰æ›ã™ã‚‹ã€‚
         std::string utf8 = j.dump(1, '\t');
         utf8 += '\n';
 
@@ -5103,12 +5103,12 @@ bool __fastcall XgDoSaveJson(HWND /*hwnd*/, LPCWSTR pszFile)
         }
         utf8 = std::move(replaced);
 
-        // ƒtƒ@ƒCƒ‹‚É‘‚«‚ñ‚ÅAƒtƒ@ƒCƒ‹‚ğ•Â‚¶‚éB
+        // ãƒ•ã‚¡ã‚¤ãƒ«ã«æ›¸ãè¾¼ã‚“ã§ã€ãƒ•ã‚¡ã‚¤ãƒ«ã‚’é–‰ã˜ã‚‹ã€‚
         size = static_cast<DWORD>(utf8.size()) * sizeof(CHAR);
         if (::WriteFile(hFile, utf8.data(), size, &size, nullptr)) {
             ::CloseHandle(hFile);
 
-            // ƒtƒ@ƒCƒ‹ƒpƒX‚ğƒZƒbƒg‚·‚éB
+            // ãƒ•ã‚¡ã‚¤ãƒ«ãƒ‘ã‚¹ã‚’ã‚»ãƒƒãƒˆã™ã‚‹ã€‚
             WCHAR szFileName[MAX_PATH];
             ::GetFullPathNameW(pszFile, MAX_PATH, szFileName, NULL);
             xg_strFileName = szFileName;
@@ -5122,58 +5122,58 @@ bool __fastcall XgDoSaveJson(HWND /*hwnd*/, LPCWSTR pszFile)
         ;
     }
 
-    // ³‚µ‚­‘‚«‚ß‚È‚©‚Á‚½B•s³‚Èƒtƒ@ƒCƒ‹‚ğÁ‚·B
+    // æ­£ã—ãæ›¸ãè¾¼ã‚ãªã‹ã£ãŸã€‚ä¸æ­£ãªãƒ•ã‚¡ã‚¤ãƒ«ã‚’æ¶ˆã™ã€‚
     ::DeleteFileW(pszFile);
     return false;
 }
 
-// .xwd/.xwjƒtƒ@ƒCƒ‹‚ğ•Û‘¶‚·‚éB
+// .xwd/.xwjãƒ•ã‚¡ã‚¤ãƒ«ã‚’ä¿å­˜ã™ã‚‹ã€‚
 bool __fastcall XgDoSaveStandard(HWND hwnd, LPCWSTR pszFile, const XG_Board& board)
 {
     HANDLE hFile;
     std::wstring str, strTable, strMarks, hints;
     DWORD size;
 
-    // ƒtƒ@ƒCƒ‹‚ğì¬‚·‚éB
+    // ãƒ•ã‚¡ã‚¤ãƒ«ã‚’ä½œæˆã™ã‚‹ã€‚
     hFile = ::CreateFileW(pszFile, GENERIC_WRITE, FILE_SHARE_READ, nullptr,
         CREATE_ALWAYS, 0, nullptr);
     if (hFile == INVALID_HANDLE_VALUE)
         return false;
 
-    // ƒ}[ƒN‚ğæ“¾‚·‚éB
+    // ãƒãƒ¼ã‚¯ã‚’å–å¾—ã™ã‚‹ã€‚
     if (!xg_vMarks.empty())
         XgGetStringOfMarks(strMarks);
 
-    // ƒtƒ@ƒCƒ‹‚É‘‚«‚Ş•¶š—ñ‚ğ‹‚ß‚éB
+    // ãƒ•ã‚¡ã‚¤ãƒ«ã«æ›¸ãè¾¼ã‚€æ–‡å­—åˆ—ã‚’æ±‚ã‚ã‚‹ã€‚
     xg_str_trim(xg_strHeader);
 
     if (xg_bSolved) {
-        // ƒqƒ“ƒg‚ ‚èB
+        // ãƒ’ãƒ³ãƒˆã‚ã‚Šã€‚
         board.GetString(strTable);
         board.GetHintsStr(hints, 2, true);
-        str += xg_strHeader;        // ƒwƒbƒ_[•¶š—ñB
-        str += xg_pszNewLine;       // ‰üsB
-        str += XgLoadStringDx1(IDS_HEADERSEP1); // ƒwƒbƒ_[•ª—£üB
-        str += XgLoadStringDx1(IDS_APPINFO); // ƒAƒvƒŠî•ñB
-        str += xg_pszNewLine;       // ‰üsB
-        str += strMarks;            // ƒ}[ƒNB
-        str += strTable;            // –{‘ÌB
-        str += xg_pszNewLine;       // ‰üsB
-        str += hints;               // ƒqƒ“ƒgB
+        str += xg_strHeader;        // ãƒ˜ãƒƒãƒ€ãƒ¼æ–‡å­—åˆ—ã€‚
+        str += xg_pszNewLine;       // æ”¹è¡Œã€‚
+        str += XgLoadStringDx1(IDS_HEADERSEP1); // ãƒ˜ãƒƒãƒ€ãƒ¼åˆ†é›¢ç·šã€‚
+        str += XgLoadStringDx1(IDS_APPINFO); // ã‚¢ãƒ—ãƒªæƒ…å ±ã€‚
+        str += xg_pszNewLine;       // æ”¹è¡Œã€‚
+        str += strMarks;            // ãƒãƒ¼ã‚¯ã€‚
+        str += strTable;            // æœ¬ä½“ã€‚
+        str += xg_pszNewLine;       // æ”¹è¡Œã€‚
+        str += hints;               // ãƒ’ãƒ³ãƒˆã€‚
     } else {
-        // ƒqƒ“ƒg‚È‚µB
+        // ãƒ’ãƒ³ãƒˆãªã—ã€‚
         board.GetString(strTable);
-        str += xg_strHeader;        // ƒwƒbƒ_[•¶š—ñB
-        str += xg_pszNewLine;       // ‰üsB
-        str += XgLoadStringDx1(IDS_HEADERSEP1); // ƒwƒbƒ_[•ª—£üB
-        str += XgLoadStringDx1(IDS_APPINFO); // ƒAƒvƒŠî•ñB
-        str += xg_pszNewLine;       // ‰üsB
-        str += strMarks;            // ƒ}[ƒNB
-        str += strTable;            // –{‘ÌB
+        str += xg_strHeader;        // ãƒ˜ãƒƒãƒ€ãƒ¼æ–‡å­—åˆ—ã€‚
+        str += xg_pszNewLine;       // æ”¹è¡Œã€‚
+        str += XgLoadStringDx1(IDS_HEADERSEP1); // ãƒ˜ãƒƒãƒ€ãƒ¼åˆ†é›¢ç·šã€‚
+        str += XgLoadStringDx1(IDS_APPINFO); // ã‚¢ãƒ—ãƒªæƒ…å ±ã€‚
+        str += xg_pszNewLine;       // æ”¹è¡Œã€‚
+        str += strMarks;            // ãƒãƒ¼ã‚¯ã€‚
+        str += strTable;            // æœ¬ä½“ã€‚
     }
-    str += XgLoadStringDx1(IDS_HEADERSEP2);     // ƒtƒbƒ^[•ª—£üB
+    str += XgLoadStringDx1(IDS_HEADERSEP2);     // ãƒ•ãƒƒã‚¿ãƒ¼åˆ†é›¢ç·šã€‚
 
-    // ”õl—“B
+    // å‚™è€ƒæ¬„ã€‚
     LPCWSTR psz = XgLoadStringDx1(IDS_BELOWISNOTES);
     str += psz;
     str += xg_pszNewLine;
@@ -5184,7 +5184,7 @@ bool __fastcall XgDoSaveStandard(HWND hwnd, LPCWSTR pszFile, const XG_Board& boa
     str += xg_strNotes;
     str += xg_pszNewLine;
 
-    // ƒtƒ@ƒCƒ‹‚É‘‚«‚ñ‚ÅAƒtƒ@ƒCƒ‹‚ğ•Â‚¶‚éB
+    // ãƒ•ã‚¡ã‚¤ãƒ«ã«æ›¸ãè¾¼ã‚“ã§ã€ãƒ•ã‚¡ã‚¤ãƒ«ã‚’é–‰ã˜ã‚‹ã€‚
     size = 2;
     if (::WriteFile(hFile, "\xFF\xFE", size, &size, nullptr)) {
         size = static_cast<DWORD>(str.size()) * sizeof(WCHAR);
@@ -5195,7 +5195,7 @@ bool __fastcall XgDoSaveStandard(HWND hwnd, LPCWSTR pszFile, const XG_Board& boa
     }
     ::CloseHandle(hFile);
 
-    // ³‚µ‚­‘‚«‚ß‚È‚©‚Á‚½B•s³‚Èƒtƒ@ƒCƒ‹‚ğÁ‚·B
+    // æ­£ã—ãæ›¸ãè¾¼ã‚ãªã‹ã£ãŸã€‚ä¸æ­£ãªãƒ•ã‚¡ã‚¤ãƒ«ã‚’æ¶ˆã™ã€‚
     ::DeleteFileW(pszFile);
     return false;
 }
@@ -5208,19 +5208,19 @@ bool __fastcall XgDoSave(HWND hwnd, LPCWSTR pszFile)
         lstrcmpiW(pchDotExt, L".json") == 0 ||
         lstrcmpiW(pchDotExt, L".jso") == 0)
     {
-        // JSONŒ`®‚Å•Û‘¶B
+        // JSONå½¢å¼ã§ä¿å­˜ã€‚
         ret = XgDoSaveJson(hwnd, pszFile);
     } else if (lstrcmpiW(pchDotExt, L".crp") == 0) {
-        // Crossword Builder (*.crp) Œ`®‚Å•Û‘¶B
+        // Crossword Builder (*.crp) å½¢å¼ã§ä¿å­˜ã€‚
         ret = XgDoSaveCrpFile(hwnd, pszFile);
     } else if (xg_bSolved) {
-        // ƒqƒ“ƒg‚ ‚èB
+        // ãƒ’ãƒ³ãƒˆã‚ã‚Šã€‚
         ret = XgDoSaveStandard(hwnd, pszFile, xg_solution);
     } else {
         ret = XgDoSaveStandard(hwnd, pszFile, xg_xword);
     }
     if (ret) {
-        // ƒtƒ@ƒCƒ‹ƒpƒX‚ğƒZƒbƒg‚·‚éB
+        // ãƒ•ã‚¡ã‚¤ãƒ«ãƒ‘ã‚¹ã‚’ã‚»ãƒƒãƒˆã™ã‚‹ã€‚
         WCHAR szFileName[MAX_PATH];
         ::GetFullPathNameW(pszFile, MAX_PATH, szFileName, NULL);
         xg_strFileName = szFileName;
@@ -5229,14 +5229,14 @@ bool __fastcall XgDoSave(HWND hwnd, LPCWSTR pszFile)
     return ret;
 }
 
-// BITMAPINFOEX\‘¢‘ÌB
+// BITMAPINFOEXæ§‹é€ ä½“ã€‚
 typedef struct tagBITMAPINFOEX
 {
     BITMAPINFOHEADER bmiHeader;
     RGBQUAD          bmiColors[256];
 } BITMAPINFOEX, FAR * LPBITMAPINFOEX;
 
-// ƒrƒbƒgƒ}ƒbƒv‚ğƒtƒ@ƒCƒ‹‚É•Û‘¶‚·‚éB
+// ãƒ“ãƒƒãƒˆãƒãƒƒãƒ—ã‚’ãƒ•ã‚¡ã‚¤ãƒ«ã«ä¿å­˜ã™ã‚‹ã€‚
 bool __fastcall XgSaveBitmapToFile(LPCWSTR pszFileName, HBITMAP hbm)
 {
     bool f;
@@ -5251,11 +5251,11 @@ bool __fastcall XgSaveBitmapToFile(LPCWSTR pszFileName, HBITMAP hbm)
     BITMAP bm;
     DWORD dwError = 0;
 
-    // ƒrƒbƒgƒ}ƒbƒv‚Ìî•ñ‚ğæ“¾‚·‚éB
+    // ãƒ“ãƒƒãƒˆãƒãƒƒãƒ—ã®æƒ…å ±ã‚’å–å¾—ã™ã‚‹ã€‚
     if (!::GetObject(hbm, sizeof(BITMAP), &bm))
         return false;
 
-    // BITMAPINFO\‘¢‘Ì‚ğİ’è‚·‚éB
+    // BITMAPINFOæ§‹é€ ä½“ã‚’è¨­å®šã™ã‚‹ã€‚
     pbmih = &bi.bmiHeader;
     ZeroMemory(pbmih, sizeof(BITMAPINFOHEADER));
     pbmih->biSize             = sizeof(BITMAPINFOHEADER);
@@ -5272,7 +5272,7 @@ bool __fastcall XgSaveBitmapToFile(LPCWSTR pszFileName, HBITMAP hbm)
         cColors = 0;
     cbColors = cColors * sizeof(RGBQUAD);
 
-    // BITMAPFILEHEADER\‘¢‘Ì‚ğİ’è‚·‚éB
+    // BITMAPFILEHEADERæ§‹é€ ä½“ã‚’è¨­å®šã™ã‚‹ã€‚
     bf.bfType = 0x4d42;
     bf.bfReserved1 = 0;
     bf.bfReserved2 = 0;
@@ -5280,33 +5280,33 @@ bool __fastcall XgSaveBitmapToFile(LPCWSTR pszFileName, HBITMAP hbm)
     bf.bfOffBits = cb;
     bf.bfSize = cb + pbmih->biSizeImage;
 
-    // ƒrƒbƒgŠi”[—p‚Ìƒƒ‚ƒŠ‚ğŠm•Û‚·‚éB
+    // ãƒ“ãƒƒãƒˆæ ¼ç´ç”¨ã®ãƒ¡ãƒ¢ãƒªã‚’ç¢ºä¿ã™ã‚‹ã€‚
     pBits = ::HeapAlloc(::GetProcessHeap(), 0, pbmih->biSizeImage);
     if (pBits == nullptr)
         return false;
 
-    // DC‚ğæ“¾‚·‚éB
+    // DCã‚’å–å¾—ã™ã‚‹ã€‚
     f = false;
     hDC = ::GetDC(nullptr);
     if (hDC != nullptr) {
-        // ƒrƒbƒg‚ğæ“¾‚·‚éB
+        // ãƒ“ãƒƒãƒˆã‚’å–å¾—ã™ã‚‹ã€‚
         if (::GetDIBits(hDC, hbm, 0, bm.bmHeight, pBits,
                       reinterpret_cast<BITMAPINFO*>(&bi),
                       DIB_RGB_COLORS))
         {
-            // ƒtƒ@ƒCƒ‹‚ğì¬‚·‚éB
+            // ãƒ•ã‚¡ã‚¤ãƒ«ã‚’ä½œæˆã™ã‚‹ã€‚
             hFile = ::CreateFileW(pszFileName, GENERIC_WRITE, FILE_SHARE_READ, nullptr,
                                 CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL |
                                 FILE_FLAG_WRITE_THROUGH, nullptr);
             if (hFile != INVALID_HANDLE_VALUE) {
-                // ƒtƒ@ƒCƒ‹‚É‘‚«‚ŞB
+                // ãƒ•ã‚¡ã‚¤ãƒ«ã«æ›¸ãè¾¼ã‚€ã€‚
                 f = ::WriteFile(hFile, &bf, sizeof(BITMAPFILEHEADER), &cb, nullptr) &&
                     ::WriteFile(hFile, &bi, sizeof(BITMAPINFOHEADER), &cb, nullptr) &&
                     ::WriteFile(hFile, bi.bmiColors, cbColors, &cb, nullptr) &&
                     ::WriteFile(hFile, pBits, pbmih->biSizeImage, &cb, nullptr);
                 if (!f)
                     dwError = ::GetLastError();
-                // ƒtƒ@ƒCƒ‹‚ğ•Â‚¶‚éB
+                // ãƒ•ã‚¡ã‚¤ãƒ«ã‚’é–‰ã˜ã‚‹ã€‚
                 ::CloseHandle(hFile);
 
                 if (!f)
@@ -5318,15 +5318,15 @@ bool __fastcall XgSaveBitmapToFile(LPCWSTR pszFileName, HBITMAP hbm)
             dwError = ::GetLastError();
         }
 
-        // DC‚ğ‰ğ•ú‚·‚éB
+        // DCã‚’è§£æ”¾ã™ã‚‹ã€‚
         ::ReleaseDC(nullptr, hDC);
     } else {
         dwError = ::GetLastError();
     }
 
-    // Šm•Û‚µ‚½ƒƒ‚ƒŠ‚ğ‰ğ•ú‚·‚éB
+    // ç¢ºä¿ã—ãŸãƒ¡ãƒ¢ãƒªã‚’è§£æ”¾ã™ã‚‹ã€‚
     ::HeapFree(::GetProcessHeap(), 0, pBits);
-    // ƒGƒ‰[ƒR[ƒh‚ğİ’è‚·‚éB
+    // ã‚¨ãƒ©ãƒ¼ã‚³ãƒ¼ãƒ‰ã‚’è¨­å®šã™ã‚‹ã€‚
     ::SetLastError(dwError);
     return f;
 }
@@ -5339,13 +5339,13 @@ bool __fastcall XgSaveBitmapToFile(LPCWSTR pszFileName, HBITMAP hbm)
     #define OPENFILENAME_SIZE_VERSION_400W CDSIZEOF_STRUCT(OPENFILENAMEW,lpTemplateName)
 #endif
 
-// –â‘è‚ğ‰æ‘œƒtƒ@ƒCƒ‹‚Æ‚µ‚Ä•Û‘¶‚·‚éB
+// å•é¡Œã‚’ç”»åƒãƒ•ã‚¡ã‚¤ãƒ«ã¨ã—ã¦ä¿å­˜ã™ã‚‹ã€‚
 void __fastcall XgSaveProbAsImage(HWND hwnd)
 {
     OPENFILENAMEW ofn;
     WCHAR szFileName[MAX_PATH] = L"";
 
-    // u–â‘è‚ğ‰æ‘œƒtƒ@ƒCƒ‹‚Æ‚µ‚Ä•Û‘¶vƒ_ƒCƒAƒƒO‚ğ•\¦B
+    // ã€Œå•é¡Œã‚’ç”»åƒãƒ•ã‚¡ã‚¤ãƒ«ã¨ã—ã¦ä¿å­˜ã€ãƒ€ã‚¤ã‚¢ãƒ­ã‚°ã‚’è¡¨ç¤ºã€‚
     ZeroMemory(&ofn, sizeof(ofn));
     ofn.lStructSize = OPENFILENAME_SIZE_VERSION_400W;
     ofn.hwndOwner = hwnd;
@@ -5356,12 +5356,12 @@ void __fastcall XgSaveProbAsImage(HWND hwnd)
     ofn.Flags = OFN_EXPLORER | OFN_PATHMUSTEXIST | OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT;
     ofn.lpstrDefExt = L"bmp";
     if (::GetSaveFileNameW(&ofn)) {
-        // •`‰æƒTƒCƒY‚ğæ“¾‚·‚éB
+        // æç”»ã‚µã‚¤ã‚ºã‚’å–å¾—ã™ã‚‹ã€‚
         SIZE siz;
         XgGetXWordExtent(&siz);
 
         if (ofn.nFilterIndex <= 1) {
-            // ƒrƒbƒgƒ}ƒbƒv‚ğ•Û‘¶‚·‚éB
+            // ãƒ“ãƒƒãƒˆãƒãƒƒãƒ—ã‚’ä¿å­˜ã™ã‚‹ã€‚
             HBITMAP hbm = XgCreateXWordImage(xg_xword, &siz, false);
             if (hbm != nullptr) {
                 if (!XgSaveBitmapToFile(szFileName, hbm))
@@ -5373,7 +5373,7 @@ void __fastcall XgSaveProbAsImage(HWND hwnd)
                 XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_CANTSAVE2), nullptr, MB_ICONERROR);
             }
         } else {
-            // EMF‚ğ•Û‘¶‚·‚éB
+            // EMFã‚’ä¿å­˜ã™ã‚‹ã€‚
             HDC hdcRef = ::GetDC(hwnd);
             HDC hdc = ::CreateEnhMetaFileW(hdcRef, szFileName, nullptr, XgLoadStringDx1(IDS_APPNAME));
             if (hdc) {
@@ -5387,7 +5387,7 @@ void __fastcall XgSaveProbAsImage(HWND hwnd)
     }
 }
 
-// ‰ğ“š‚ğ‰æ‘œƒtƒ@ƒCƒ‹‚Æ‚µ‚Ä•Û‘¶‚·‚éB
+// è§£ç­”ã‚’ç”»åƒãƒ•ã‚¡ã‚¤ãƒ«ã¨ã—ã¦ä¿å­˜ã™ã‚‹ã€‚
 void __fastcall XgSaveAnsAsImage(HWND hwnd)
 {
     OPENFILENAMEW ofn;
@@ -5398,7 +5398,7 @@ void __fastcall XgSaveAnsAsImage(HWND hwnd)
         return;
     }
 
-    // u‰ğ“š‚ğ‰æ‘œƒtƒ@ƒCƒ‹‚Æ‚µ‚Ä•Û‘¶vƒ_ƒCƒAƒƒO‚ğ•\¦B
+    // ã€Œè§£ç­”ã‚’ç”»åƒãƒ•ã‚¡ã‚¤ãƒ«ã¨ã—ã¦ä¿å­˜ã€ãƒ€ã‚¤ã‚¢ãƒ­ã‚°ã‚’è¡¨ç¤ºã€‚
     ZeroMemory(&ofn, sizeof(ofn));
     ofn.lStructSize = OPENFILENAME_SIZE_VERSION_400W;
     ofn.hwndOwner = hwnd;
@@ -5409,12 +5409,12 @@ void __fastcall XgSaveAnsAsImage(HWND hwnd)
     ofn.Flags = OFN_EXPLORER | OFN_PATHMUSTEXIST | OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT;
     ofn.lpstrDefExt = L"bmp";
     if (::GetSaveFileNameW(&ofn)) {
-        // •`‰æƒTƒCƒY‚ğæ“¾‚·‚éB
+        // æç”»ã‚µã‚¤ã‚ºã‚’å–å¾—ã™ã‚‹ã€‚
         SIZE siz;
         XgGetXWordExtent(&siz);
 
         if (ofn.nFilterIndex <= 1) {
-            // ƒrƒbƒgƒ}ƒbƒv‚ğ•Û‘¶‚·‚éB
+            // ãƒ“ãƒƒãƒˆãƒãƒƒãƒ—ã‚’ä¿å­˜ã™ã‚‹ã€‚
             HBITMAP hbm = XgCreateXWordImage(xg_solution, &siz, false);
             if (hbm != nullptr) {
                 if (!XgSaveBitmapToFile(szFileName, hbm)) {
@@ -5425,7 +5425,7 @@ void __fastcall XgSaveAnsAsImage(HWND hwnd)
                 XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_CANTSAVE2), nullptr, MB_ICONERROR);
             }
         } else {
-            // EMF‚ğ•Û‘¶‚·‚éB
+            // EMFã‚’ä¿å­˜ã™ã‚‹ã€‚
             HDC hdcRef = ::GetDC(hwnd);
             HDC hdc = ::CreateEnhMetaFileW(hdcRef, szFileName, nullptr, XgLoadStringDx1(IDS_APPNAME));
             if (hdc) {
@@ -5439,7 +5439,7 @@ void __fastcall XgSaveAnsAsImage(HWND hwnd)
     }
 }
 
-// ƒNƒƒXƒ[ƒh‚Ì•¶š—ñ‚ğæ“¾‚·‚éB
+// ã‚¯ãƒ­ã‚¹ãƒ¯ãƒ¼ãƒ‰ã®æ–‡å­—åˆ—ã‚’å–å¾—ã™ã‚‹ã€‚
 void __fastcall XG_Board::GetString(std::wstring& str) const
 {
     str.clear();
@@ -5467,14 +5467,14 @@ void __fastcall XG_Board::GetString(std::wstring& str) const
     str += L"\r\n";
 }
 
-// ƒNƒƒXƒ[ƒh‚É•¶š—ñ‚ğİ’è‚·‚éB
+// ã‚¯ãƒ­ã‚¹ãƒ¯ãƒ¼ãƒ‰ã«æ–‡å­—åˆ—ã‚’è¨­å®šã™ã‚‹ã€‚
 bool __fastcall XG_Board::SetString(const std::wstring& strToBeSet)
 {
     int i, nRows, nCols;
     std::vector<WCHAR> v;
     std::wstring str(strToBeSet);
 
-    // ƒwƒbƒ_[‚ğæ“¾‚·‚éB
+    // ãƒ˜ãƒƒãƒ€ãƒ¼ã‚’å–å¾—ã™ã‚‹ã€‚
     xg_strHeader.clear();
     std::wstring strHeaderSep = XgLoadStringDx1(IDS_HEADERSEP1);
     size_t i0 = str.find(strHeaderSep);
@@ -5484,65 +5484,65 @@ bool __fastcall XG_Board::SetString(const std::wstring& strToBeSet)
     }
     xg_str_trim(xg_strHeader);
 
-    // ‰Šú‰»‚·‚éB
+    // åˆæœŸåŒ–ã™ã‚‹ã€‚
     const int size = static_cast<int>(str.size());
     nRows = nCols = 0;
 
-    // ¶ã‚ÌŠp‚ª‚ ‚é‚©H
+    // å·¦ä¸Šã®è§’ãŒã‚ã‚‹ã‹ï¼Ÿ
     for (i = 0; i < size; i++) {
         if (str[i] == ZEN_ULEFT)
             break;
     }
     if (i == size) {
-        // Œ©‚Â‚©‚ç‚È‚©‚Á‚½B¸”sB
+        // è¦‹ã¤ã‹ã‚‰ãªã‹ã£ãŸã€‚å¤±æ•—ã€‚
         return false;
     }
 
-    // •¶š—ñ‚ğ“Ç‚İ‚ŞB
+    // æ–‡å­—åˆ—ã‚’èª­ã¿è¾¼ã‚€ã€‚
     bool bFoundLastCorner = false;
     for (; i < size; i++) {
         if (str[i] == ZEN_VLINE) {
-            // ¶‚Ì‹«ŠEü‚ªŒ©‚Â‚©‚Á‚½B
-            i++;    // Ÿ‚Ì•¶š‚ÖB
+            // å·¦ã®å¢ƒç•Œç·šãŒè¦‹ã¤ã‹ã£ãŸã€‚
+            i++;    // æ¬¡ã®æ–‡å­—ã¸ã€‚
 
-            // ‰¡üˆÈŠO‚Ì•¶š‚ğŠi”[‚·‚éB
+            // æ¨ªç·šä»¥å¤–ã®æ–‡å­—ã‚’æ ¼ç´ã™ã‚‹ã€‚
             while (i < size && str[i] != ZEN_VLINE) {
                 v.emplace_back(str[i]);
-                i++;    // Ÿ‚Ì•¶š‚ÖB
+                i++;    // æ¬¡ã®æ–‡å­—ã¸ã€‚
             }
 
-            // •¶š—ñ‚Ì’·‚³‚ğ’´‚¦‚½‚çA’†’f‚·‚éB
+            // æ–‡å­—åˆ—ã®é•·ã•ã‚’è¶…ãˆãŸã‚‰ã€ä¸­æ–­ã™ã‚‹ã€‚
             if (i >= size)
                 break;
 
-            // ‰E‚Ì‹«ŠEü‚ªŒ©‚Â‚©‚Á‚½B—ñ”‚ª–¢Ši”[‚È‚çAŠi”[‚·‚éB
+            // å³ã®å¢ƒç•Œç·šãŒè¦‹ã¤ã‹ã£ãŸã€‚åˆ—æ•°ãŒæœªæ ¼ç´ãªã‚‰ã€æ ¼ç´ã™ã‚‹ã€‚
             if (nCols == 0)
                 nCols = static_cast<int>(v.size());
 
-            nRows++;    // Ÿ‚Ìs‚ÖB
-            i++;    // Ÿ‚Ì•¶š‚ÖB
+            nRows++;    // æ¬¡ã®è¡Œã¸ã€‚
+            i++;    // æ¬¡ã®æ–‡å­—ã¸ã€‚
         } else if (str[i] == ZEN_LRIGHT) {
-            // ‰E‰º‚ÌŠp‚ªŒ©‚Â‚©‚Á‚½B
+            // å³ä¸‹ã®è§’ãŒè¦‹ã¤ã‹ã£ãŸã€‚
             bFoundLastCorner = true;
             break;
         }
-        // ‚»‚Ì‘¼‚Ì•¶š‚Í“Ç‚İÌ‚ÄB
+        // ãã®ä»–ã®æ–‡å­—ã¯èª­ã¿æ¨ã¦ã€‚
     }
 
-    // ‚«‚¿‚ñ‚Æ“Ç‚İ‚ß‚½‚©Šm”F‚·‚éB
+    // ãã¡ã‚“ã¨èª­ã¿è¾¼ã‚ãŸã‹ç¢ºèªã™ã‚‹ã€‚
     if (nRows == 0 || nCols == 0 || !bFoundLastCorner) {
-        // ¸”sB
+        // å¤±æ•—ã€‚
         return false;
     }
 
-    // ƒNƒƒXƒ[ƒh‚ğ‰Šú‰»‚·‚éB
+    // ã‚¯ãƒ­ã‚¹ãƒ¯ãƒ¼ãƒ‰ã‚’åˆæœŸåŒ–ã™ã‚‹ã€‚
     xg_bSolved = false;
     xg_bShowAnswer = false;
     ResetAndSetSize(nRows, nCols);
     xg_nRows = nRows;
     xg_nCols = nCols;
 
-    // ‹ó”’‚¶‚á‚È‚¢ƒ}ƒX‚ÌŒÂ”‚ğ”‚¦‚éB
+    // ç©ºç™½ã˜ã‚ƒãªã„ãƒã‚¹ã®å€‹æ•°ã‚’æ•°ãˆã‚‹ã€‚
     WCHAR ch = 0;
     for (int i = 0; i < nRows; i++) {
         for (int j = 0; j < nCols; j++) {
@@ -5552,10 +5552,10 @@ bool __fastcall XG_Board::SetString(const std::wstring& strToBeSet)
     }
     v.emplace_back(ch);
 
-    // ƒ}ƒXî•ñ‚ğŠi”[‚·‚éB
+    // ãƒã‚¹æƒ…å ±ã‚’æ ¼ç´ã™ã‚‹ã€‚
     m_vCells = v;
 
-    // ƒ}ƒX‚Ì•¶š‚Ìí—Ş‚É‰‚¶‚Ä“ü—Íƒ‚[ƒh‚ğØ‚è‘Ö‚¦‚éB
+    // ãƒã‚¹ã®æ–‡å­—ã®ç¨®é¡ã«å¿œã˜ã¦å…¥åŠ›ãƒ¢ãƒ¼ãƒ‰ã‚’åˆ‡ã‚Šæ›¿ãˆã‚‹ã€‚
     for (int i = 0; i < nRows; i++) {
         for (int j = 0; j < nCols; j++) {
             ch = GetAt(i, j);
@@ -5583,17 +5583,17 @@ bool __fastcall XG_Board::SetString(const std::wstring& strToBeSet)
     }
 break2:;
 
-    // ƒJƒM‚ğƒNƒŠƒA‚·‚éB
+    // ã‚«ã‚®ã‚’ã‚¯ãƒªã‚¢ã™ã‚‹ã€‚
     xg_vTateInfo.clear();
     xg_vYokoInfo.clear();
 
-    // ¬Œ÷B
+    // æˆåŠŸã€‚
     return true;
 }
 
 //////////////////////////////////////////////////////////////////////////////
 
-// •ƒ}ƒX‚ªü‘ÎÌ‚©H
+// é»’ãƒã‚¹ãŒç·šå¯¾ç§°ã‹ï¼Ÿ
 bool XG_Board::IsLineSymmetry() const
 {
     const int nRows = xg_nRows;
@@ -5653,7 +5653,7 @@ skip04:;
     return false;
 }
 
-// •ƒ}ƒX‚ª“_‘ÎÌ‚©H
+// é»’ãƒã‚¹ãŒç‚¹å¯¾ç§°ã‹ï¼Ÿ
 bool XG_Board::IsPointSymmetry() const
 {
     const int nRows = xg_nRows;
@@ -5670,7 +5670,7 @@ bool XG_Board::IsPointSymmetry() const
     return true;
 }
 
-// •ƒ}ƒX‚ªü‘ÎÌiƒ^ƒej‚©H
+// é»’ãƒã‚¹ãŒç·šå¯¾ç§°ï¼ˆã‚¿ãƒ†ï¼‰ã‹ï¼Ÿ
 bool XG_Board::IsLineSymmetryV() const
 {
     const int nRows = xg_nRows;
@@ -5685,7 +5685,7 @@ bool XG_Board::IsLineSymmetryV() const
     return true;
 }
 
-// •ƒ}ƒX‚ªü‘ÎÌiƒˆƒRj‚©H
+// é»’ãƒã‚¹ãŒç·šå¯¾ç§°ï¼ˆãƒ¨ã‚³ï¼‰ã‹ï¼Ÿ
 bool XG_Board::IsLineSymmetryH() const
 {
     const int nRows = xg_nRows;
@@ -5700,7 +5700,7 @@ bool XG_Board::IsLineSymmetryH() const
     return true;
 }
 
-// •K—v‚È‚çƒ‹[ƒ‹‚É]‚Á‚Ä‘ÎÌ‚É‚·‚éB
+// å¿…è¦ãªã‚‰ãƒ«ãƒ¼ãƒ«ã«å¾“ã£ã¦å¯¾ç§°ã«ã™ã‚‹ã€‚
 void XG_Board::Mirror()
 {
     const int nRows = xg_nRows;
@@ -5729,7 +5729,7 @@ void XG_Board::Mirror()
     }
 }
 
-// •ÎO˜A‚©H
+// é»’æ–œä¸‰é€£ã‹ï¼Ÿ
 bool XG_Board::ThreeDiagonals() const
 {
     const int nRows = xg_nRows;
@@ -5759,7 +5759,7 @@ bool XG_Board::ThreeDiagonals() const
     return false;
 }
 
-// •Îl˜A‚©H
+// é»’æ–œå››é€£ã‹ï¼Ÿ
 bool XG_Board::FourDiagonals() const
 {
     const int nRows = xg_nRows;
@@ -5794,17 +5794,17 @@ bool XG_Board::FourDiagonals() const
 }
 
 //////////////////////////////////////////////////////////////////////////////
-// •ƒ}ƒXƒpƒ^[ƒ“‚ğ¶¬‚·‚éB
+// é»’ãƒã‚¹ãƒ‘ã‚¿ãƒ¼ãƒ³ã‚’ç”Ÿæˆã™ã‚‹ã€‚
 
-// •ƒ}ƒXƒpƒ^[ƒ“‚ª¶¬‚³‚ê‚½‚©H
+// é»’ãƒã‚¹ãƒ‘ã‚¿ãƒ¼ãƒ³ãŒç”Ÿæˆã•ã‚ŒãŸã‹ï¼Ÿ
 bool xg_bBlacksGenerated = false;
-// ”z’u‚Å‚«‚éÅ‘å’PŒê’·B
+// é…ç½®ã§ãã‚‹æœ€å¤§å˜èªé•·ã€‚
 INT xg_nMaxWordLen = 4;
 
-// •ƒ}ƒXƒpƒ^[ƒ“‚ğ¶¬‚·‚éB
+// é»’ãƒã‚¹ãƒ‘ã‚¿ãƒ¼ãƒ³ã‚’ç”Ÿæˆã™ã‚‹ã€‚
 bool __fastcall XgGenerateBlacksRecurse(const XG_Board& xword, LONG iRowjCol)
 {
-    // ƒ‹[ƒ‹‚Ì“K‡«‚ğƒ`ƒFƒbƒN‚·‚éB
+    // ãƒ«ãƒ¼ãƒ«ã®é©åˆæ€§ã‚’ãƒã‚§ãƒƒã‚¯ã™ã‚‹ã€‚
     if ((xg_nRules & RULE_DONTCORNERBLACK) && xword.CornerBlack())
         return false;
     if ((xg_nRules & RULE_DONTDOUBLEBLACK) && xword.DoubleBlack())
@@ -5823,7 +5823,7 @@ bool __fastcall XgGenerateBlacksRecurse(const XG_Board& xword, LONG iRowjCol)
 
     const int nRows = xg_nRows, nCols = xg_nCols;
     INT iRow = LOWORD(iRowjCol), jCol = HIWORD(iRowjCol);
-    // I—¹ğŒB
+    // çµ‚äº†æ¡ä»¶ã€‚
     if (iRow == nRows && jCol == 0) {
         EnterCriticalSection(&xg_cs);
         if (!xg_bBlacksGenerated) {
@@ -5834,11 +5834,11 @@ bool __fastcall XgGenerateBlacksRecurse(const XG_Board& xword, LONG iRowjCol)
         return xg_bBlacksGenerated || xg_bCancelled;
     }
 
-    // I—¹ğŒB
+    // çµ‚äº†æ¡ä»¶ã€‚
     if (xg_bBlacksGenerated || xg_bCancelled)
         return true;
 
-    // ƒ}ƒX‚Ì¶‘¤‚ğŒ©‚éB
+    // ãƒã‚¹ã®å·¦å´ã‚’è¦‹ã‚‹ã€‚
     INT jLeft;
     for (jLeft = jCol; jLeft > 0; --jLeft) {
         if (xword.GetAt(iRow, jLeft - 1) == ZEN_BLACK) {
@@ -5846,7 +5846,7 @@ bool __fastcall XgGenerateBlacksRecurse(const XG_Board& xword, LONG iRowjCol)
         }
     }
     if (jCol - jLeft + 1 > xg_nMaxWordLen) {
-        // ‹ó”’‚ªÅ‘å’·‚æ‚è‚à’·‚¢B•ƒ}ƒX‚ğƒZƒbƒg‚µ‚ÄÄ‹AB
+        // ç©ºç™½ãŒæœ€å¤§é•·ã‚ˆã‚Šã‚‚é•·ã„ã€‚é»’ãƒã‚¹ã‚’ã‚»ãƒƒãƒˆã—ã¦å†å¸°ã€‚
         XG_Board copy(xword);
         copy.SetAt(iRow, jCol, ZEN_BLACK);
         if (jCol + 1 < nCols) {
@@ -5858,7 +5858,7 @@ bool __fastcall XgGenerateBlacksRecurse(const XG_Board& xword, LONG iRowjCol)
         }
         return false;
     }
-    // ƒ}ƒX‚Ìã‘¤‚ğŒ©‚éB
+    // ãƒã‚¹ã®ä¸Šå´ã‚’è¦‹ã‚‹ã€‚
     INT iTop;
     for (iTop = iRow; iTop > 0; --iTop) {
         if (xword.GetAt(iTop - 1, jCol) == ZEN_BLACK) {
@@ -5866,7 +5866,7 @@ bool __fastcall XgGenerateBlacksRecurse(const XG_Board& xword, LONG iRowjCol)
         }
     }
     if (iRow - iTop + 1 > xg_nMaxWordLen) {
-        // ‹ó”’‚ªÅ‘å’·‚æ‚è‚à’·‚¢B•ƒ}ƒX‚ğƒZƒbƒg‚µ‚ÄÄ‹AB
+        // ç©ºç™½ãŒæœ€å¤§é•·ã‚ˆã‚Šã‚‚é•·ã„ã€‚é»’ãƒã‚¹ã‚’ã‚»ãƒƒãƒˆã—ã¦å†å¸°ã€‚
         XG_Board copy(xword);
         copy.SetAt(iRow, jCol, ZEN_BLACK);
         if (jCol + 1 < nCols) {
@@ -5879,8 +5879,8 @@ bool __fastcall XgGenerateBlacksRecurse(const XG_Board& xword, LONG iRowjCol)
         return false;
     }
 
-    if (rand() < RAND_MAX / 2) { // 1/2‚ÌŠm—¦‚ÅBBB
-        // •ƒ}ƒX‚ğƒZƒbƒg‚µ‚ÄÄ‹AB
+    if (rand() < RAND_MAX / 2) { // 1/2ã®ç¢ºç‡ã§ã€‚ã€‚ã€‚
+        // é»’ãƒã‚¹ã‚’ã‚»ãƒƒãƒˆã—ã¦å†å¸°ã€‚
         if (jCol + 1 < nCols) {
             if (XgGenerateBlacksRecurse(xword, MAKELONG(iRow, jCol + 1)))
                 return true;
@@ -5897,7 +5897,7 @@ bool __fastcall XgGenerateBlacksRecurse(const XG_Board& xword, LONG iRowjCol)
                 return true;
         }
     } else {
-        // •ƒ}ƒX‚ğƒZƒbƒg‚µ‚ÄÄ‹AB
+        // é»’ãƒã‚¹ã‚’ã‚»ãƒƒãƒˆã—ã¦å†å¸°ã€‚
         XG_Board copy(xword);
         copy.SetAt(iRow, jCol, ZEN_BLACK);
         if (jCol + 1 < nCols) {
@@ -5915,10 +5915,10 @@ bool __fastcall XgGenerateBlacksRecurse(const XG_Board& xword, LONG iRowjCol)
     return false;
 }
 
-// •ƒ}ƒXƒpƒ^[ƒ“‚ğ¶¬‚·‚éi“_‘ÎÌjB
+// é»’ãƒã‚¹ãƒ‘ã‚¿ãƒ¼ãƒ³ã‚’ç”Ÿæˆã™ã‚‹ï¼ˆç‚¹å¯¾ç§°ï¼‰ã€‚
 bool __fastcall XgGenerateBlacksPointSymRecurse(const XG_Board& xword, LONG iRowjCol)
 {
-    // ƒ‹[ƒ‹‚Ì“K‡«‚ğƒ`ƒFƒbƒN‚·‚éB
+    // ãƒ«ãƒ¼ãƒ«ã®é©åˆæ€§ã‚’ãƒã‚§ãƒƒã‚¯ã™ã‚‹ã€‚
     if ((xg_nRules & RULE_DONTCORNERBLACK) && xword.CornerBlack())
         return false;
     if ((xg_nRules & RULE_DONTDOUBLEBLACK) && xword.DoubleBlack())
@@ -5941,7 +5941,7 @@ bool __fastcall XgGenerateBlacksPointSymRecurse(const XG_Board& xword, LONG iRow
     const int nRows = xg_nRows, nCols = xg_nCols;
     INT iRow = LOWORD(iRowjCol), jCol = HIWORD(iRowjCol);
 
-    // I—¹ğŒB
+    // çµ‚äº†æ¡ä»¶ã€‚
     if (iRow == nRows && jCol == 0) {
         EnterCriticalSection(&xg_cs);
         if (!xg_bBlacksGenerated) {
@@ -5952,11 +5952,11 @@ bool __fastcall XgGenerateBlacksPointSymRecurse(const XG_Board& xword, LONG iRow
         return xg_bBlacksGenerated || xg_bCancelled;
     }
 
-    // I—¹ğŒB
+    // çµ‚äº†æ¡ä»¶ã€‚
     if (xg_bBlacksGenerated || xg_bCancelled)
         return true;
 
-    // ƒ}ƒX‚Ì¶‘¤‚ğŒ©‚éB
+    // ãƒã‚¹ã®å·¦å´ã‚’è¦‹ã‚‹ã€‚
     INT jLeft;
     for (jLeft = jCol; jLeft > 0; --jLeft) {
         if (xword.GetAt(iRow, jLeft - 1) == ZEN_BLACK) {
@@ -5964,7 +5964,7 @@ bool __fastcall XgGenerateBlacksPointSymRecurse(const XG_Board& xword, LONG iRow
         }
     }
     if (jCol - jLeft + 1 > xg_nMaxWordLen) {
-        // ‹ó”’‚ªÅ‘å’·‚æ‚è‚à’·‚¢B•ƒ}ƒX‚ğƒZƒbƒg‚µ‚ÄÄ‹AB
+        // ç©ºç™½ãŒæœ€å¤§é•·ã‚ˆã‚Šã‚‚é•·ã„ã€‚é»’ãƒã‚¹ã‚’ã‚»ãƒƒãƒˆã—ã¦å†å¸°ã€‚
         XG_Board copy(xword);
         copy.SetAt(iRow, jCol, ZEN_BLACK);
         copy.SetAt(nRows - (iRow + 1), nCols - (jCol + 1), ZEN_BLACK);
@@ -5977,7 +5977,7 @@ bool __fastcall XgGenerateBlacksPointSymRecurse(const XG_Board& xword, LONG iRow
         }
         return false;
     }
-    // ƒ}ƒX‚Ìã‘¤‚ğŒ©‚éB
+    // ãƒã‚¹ã®ä¸Šå´ã‚’è¦‹ã‚‹ã€‚
     INT iTop;
     for (iTop = iRow; iTop > 0; --iTop) {
         if (xword.GetAt(iTop - 1, jCol) == ZEN_BLACK) {
@@ -5985,7 +5985,7 @@ bool __fastcall XgGenerateBlacksPointSymRecurse(const XG_Board& xword, LONG iRow
         }
     }
     if (iRow - iTop + 1 > xg_nMaxWordLen) {
-        // ‹ó”’‚ªÅ‘å’·‚æ‚è‚à’·‚¢B•ƒ}ƒX‚ğƒZƒbƒg‚µ‚ÄÄ‹AB
+        // ç©ºç™½ãŒæœ€å¤§é•·ã‚ˆã‚Šã‚‚é•·ã„ã€‚é»’ãƒã‚¹ã‚’ã‚»ãƒƒãƒˆã—ã¦å†å¸°ã€‚
         XG_Board copy(xword);
         copy.SetAt(iRow, jCol, ZEN_BLACK);
         copy.SetAt(nRows - (iRow + 1), nCols - (jCol + 1), ZEN_BLACK);
@@ -5999,8 +5999,8 @@ bool __fastcall XgGenerateBlacksPointSymRecurse(const XG_Board& xword, LONG iRow
         return false;
     }
 
-    if (rand() < RAND_MAX / 2) { // 1/2‚ÌŠm—¦‚ÅBBB
-        // •ƒ}ƒX‚ğƒZƒbƒg‚µ‚ÄÄ‹AB
+    if (rand() < RAND_MAX / 2) { // 1/2ã®ç¢ºç‡ã§ã€‚ã€‚ã€‚
+        // é»’ãƒã‚¹ã‚’ã‚»ãƒƒãƒˆã—ã¦å†å¸°ã€‚
         if (jCol + 1 < nCols) {
             if (XgGenerateBlacksPointSymRecurse(xword, MAKELONG(iRow, jCol + 1)))
                 return true;
@@ -6019,7 +6019,7 @@ bool __fastcall XgGenerateBlacksPointSymRecurse(const XG_Board& xword, LONG iRow
                 return true;
         }
     } else {
-        // •ƒ}ƒX‚ğƒZƒbƒg‚µ‚ÄÄ‹AB
+        // é»’ãƒã‚¹ã‚’ã‚»ãƒƒãƒˆã—ã¦å†å¸°ã€‚
         XG_Board copy(xword);
         copy.SetAt(iRow, jCol, ZEN_BLACK);
         copy.SetAt(nRows - (iRow + 1), nCols - (jCol + 1), ZEN_BLACK);
@@ -6038,10 +6038,10 @@ bool __fastcall XgGenerateBlacksPointSymRecurse(const XG_Board& xword, LONG iRow
     return false;
 }
 
-// •ƒ}ƒXƒpƒ^[ƒ“‚ğ¶¬‚·‚éiƒ^ƒeü‘ÎÌjB
+// é»’ãƒã‚¹ãƒ‘ã‚¿ãƒ¼ãƒ³ã‚’ç”Ÿæˆã™ã‚‹ï¼ˆã‚¿ãƒ†ç·šå¯¾ç§°ï¼‰ã€‚
 bool __fastcall XgGenerateBlacksLineSymVRecurse(const XG_Board& xword, LONG iRowjCol)
 {
-    // ƒ‹[ƒ‹‚Ì“K‡«‚ğƒ`ƒFƒbƒN‚·‚éB
+    // ãƒ«ãƒ¼ãƒ«ã®é©åˆæ€§ã‚’ãƒã‚§ãƒƒã‚¯ã™ã‚‹ã€‚
     if ((xg_nRules & RULE_DONTCORNERBLACK) && xword.CornerBlack())
         return false;
     if ((xg_nRules & RULE_DONTDOUBLEBLACK) && xword.DoubleBlack())
@@ -6062,7 +6062,7 @@ bool __fastcall XgGenerateBlacksLineSymVRecurse(const XG_Board& xword, LONG iRow
     const INT nHalfRows = nRows / 2;
     INT iRow = LOWORD(iRowjCol), jCol = HIWORD(iRowjCol);
 
-    // I—¹ğŒB
+    // çµ‚äº†æ¡ä»¶ã€‚
     if (iRow == 0 && jCol >= nCols) {
         EnterCriticalSection(&xg_cs);
         if (!xg_bBlacksGenerated) {
@@ -6073,11 +6073,11 @@ bool __fastcall XgGenerateBlacksLineSymVRecurse(const XG_Board& xword, LONG iRow
         return xg_bBlacksGenerated || xg_bCancelled;
     }
 
-    // I—¹ğŒB
+    // çµ‚äº†æ¡ä»¶ã€‚
     if (xg_bBlacksGenerated || xg_bCancelled)
         return true;
 
-    // ƒ}ƒX‚Ìã‘¤‚ğŒ©‚éB
+    // ãƒã‚¹ã®ä¸Šå´ã‚’è¦‹ã‚‹ã€‚
     INT iTop;
     for (iTop = iRow; iTop > 0; --iTop) {
         if (xword.GetAt(iTop - 1, jCol) == ZEN_BLACK) {
@@ -6085,7 +6085,7 @@ bool __fastcall XgGenerateBlacksLineSymVRecurse(const XG_Board& xword, LONG iRow
         }
     }
     if (iRow - iTop + 1 > xg_nMaxWordLen) {
-        // ‹ó”’‚ªÅ‘å’·‚æ‚è‚à’·‚¢B•ƒ}ƒX‚ğƒZƒbƒg‚µ‚ÄÄ‹AB
+        // ç©ºç™½ãŒæœ€å¤§é•·ã‚ˆã‚Šã‚‚é•·ã„ã€‚é»’ãƒã‚¹ã‚’ã‚»ãƒƒãƒˆã—ã¦å†å¸°ã€‚
         XG_Board copy(xword);
         copy.SetAt(iRow, jCol, ZEN_BLACK);
         copy.SetAt(nRows - (iRow + 1), jCol, ZEN_BLACK);
@@ -6099,7 +6099,7 @@ bool __fastcall XgGenerateBlacksLineSymVRecurse(const XG_Board& xword, LONG iRow
         return false;
     }
 
-    // ƒ}ƒX‚Ì¶‘¤‚ğŒ©‚éB
+    // ãƒã‚¹ã®å·¦å´ã‚’è¦‹ã‚‹ã€‚
     INT jLeft;
     for (jLeft = jCol; jLeft > 0; --jLeft) {
         if (xword.GetAt(iRow, jLeft - 1) == ZEN_BLACK) {
@@ -6107,7 +6107,7 @@ bool __fastcall XgGenerateBlacksLineSymVRecurse(const XG_Board& xword, LONG iRow
         }
     }
     if (jCol - jLeft + 1 > xg_nMaxWordLen) {
-        // ‹ó”’‚ªÅ‘å’·‚æ‚è‚à’·‚¢B•ƒ}ƒX‚ğƒZƒbƒg‚µ‚ÄÄ‹AB
+        // ç©ºç™½ãŒæœ€å¤§é•·ã‚ˆã‚Šã‚‚é•·ã„ã€‚é»’ãƒã‚¹ã‚’ã‚»ãƒƒãƒˆã—ã¦å†å¸°ã€‚
         XG_Board copy(xword);
         copy.SetAt(iRow, jCol, ZEN_BLACK);
         copy.SetAt(nRows - (iRow + 1), jCol, ZEN_BLACK);
@@ -6121,11 +6121,11 @@ bool __fastcall XgGenerateBlacksLineSymVRecurse(const XG_Board& xword, LONG iRow
         return false;
     }
 
-    // ”Õ‚Ì^‚ñ’†‚©H
+    // ç›¤ã®çœŸã‚“ä¸­ã‹ï¼Ÿ
     if (iRow >= nHalfRows) {
         std::wstring strPattern = xword.GetPatternV(XG_Pos(iRow, jCol));
         if ((INT)strPattern.size() > xg_nMaxWordLen) {
-            // ‹ó”’‚ªÅ‘å’·‚æ‚è‚à’·‚¢B•ƒ}ƒX‚ğƒZƒbƒg‚µ‚ÄÄ‹AB
+            // ç©ºç™½ãŒæœ€å¤§é•·ã‚ˆã‚Šã‚‚é•·ã„ã€‚é»’ãƒã‚¹ã‚’ã‚»ãƒƒãƒˆã—ã¦å†å¸°ã€‚
             XG_Board copy(xword);
             copy.SetAt(iRow, jCol, ZEN_BLACK);
             copy.SetAt(nRows - (iRow + 1), jCol, ZEN_BLACK);
@@ -6135,8 +6135,8 @@ bool __fastcall XgGenerateBlacksLineSymVRecurse(const XG_Board& xword, LONG iRow
         }
     }
 
-    if (rand() < RAND_MAX / 2) { // 1/2‚ÌŠm—¦‚ÅBBB
-        // •ƒ}ƒX‚ğƒZƒbƒg‚µ‚ÄÄ‹AB
+    if (rand() < RAND_MAX / 2) { // 1/2ã®ç¢ºç‡ã§ã€‚ã€‚ã€‚
+        // é»’ãƒã‚¹ã‚’ã‚»ãƒƒãƒˆã—ã¦å†å¸°ã€‚
         if (iRow + 1 <= nHalfRows) {
             if (XgGenerateBlacksLineSymVRecurse(xword, MAKELONG(iRow + 1, jCol)))
                 return true;
@@ -6155,7 +6155,7 @@ bool __fastcall XgGenerateBlacksLineSymVRecurse(const XG_Board& xword, LONG iRow
                 return true;
         }
     } else {
-        // •ƒ}ƒX‚ğƒZƒbƒg‚µ‚ÄÄ‹AB
+        // é»’ãƒã‚¹ã‚’ã‚»ãƒƒãƒˆã—ã¦å†å¸°ã€‚
         XG_Board copy(xword);
         copy.SetAt(iRow, jCol, ZEN_BLACK);
         copy.SetAt(nRows - (iRow + 1), jCol, ZEN_BLACK);
@@ -6174,10 +6174,10 @@ bool __fastcall XgGenerateBlacksLineSymVRecurse(const XG_Board& xword, LONG iRow
     return false;
 }
 
-// •ƒ}ƒXƒpƒ^[ƒ“‚ğ¶¬‚·‚éiƒˆƒRü‘ÎÌjB
+// é»’ãƒã‚¹ãƒ‘ã‚¿ãƒ¼ãƒ³ã‚’ç”Ÿæˆã™ã‚‹ï¼ˆãƒ¨ã‚³ç·šå¯¾ç§°ï¼‰ã€‚
 bool __fastcall XgGenerateBlacksLineSymHRecurse(const XG_Board& xword, LONG iRowjCol)
 {
-    // ƒ‹[ƒ‹‚Ì“K‡«‚ğƒ`ƒFƒbƒN‚·‚éB
+    // ãƒ«ãƒ¼ãƒ«ã®é©åˆæ€§ã‚’ãƒã‚§ãƒƒã‚¯ã™ã‚‹ã€‚
     if ((xg_nRules & RULE_DONTCORNERBLACK) && xword.CornerBlack())
         return false;
     if ((xg_nRules & RULE_DONTDOUBLEBLACK) && xword.DoubleBlack())
@@ -6198,7 +6198,7 @@ bool __fastcall XgGenerateBlacksLineSymHRecurse(const XG_Board& xword, LONG iRow
     const INT nHalfCols = nCols / 2;
     INT iRow = LOWORD(iRowjCol), jCol = HIWORD(iRowjCol);
 
-    // I—¹ğŒB
+    // çµ‚äº†æ¡ä»¶ã€‚
     if (iRow >= nRows && jCol == 0) {
         EnterCriticalSection(&xg_cs);
         if (!xg_bBlacksGenerated) {
@@ -6209,11 +6209,11 @@ bool __fastcall XgGenerateBlacksLineSymHRecurse(const XG_Board& xword, LONG iRow
         return xg_bBlacksGenerated || xg_bCancelled;
     }
 
-    // I—¹ğŒB
+    // çµ‚äº†æ¡ä»¶ã€‚
     if (xg_bBlacksGenerated || xg_bCancelled)
         return true;
 
-    // ƒ}ƒX‚Ì¶‘¤‚ğŒ©‚éB
+    // ãƒã‚¹ã®å·¦å´ã‚’è¦‹ã‚‹ã€‚
     INT jLeft;
     for (jLeft = jCol; jLeft > 0; --jLeft) {
         if (xword.GetAt(iRow, jLeft - 1) == ZEN_BLACK) {
@@ -6221,7 +6221,7 @@ bool __fastcall XgGenerateBlacksLineSymHRecurse(const XG_Board& xword, LONG iRow
         }
     }
     if (jCol - jLeft + 1 > xg_nMaxWordLen) {
-        // ‹ó”’‚ªÅ‘å’·‚æ‚è‚à’·‚¢B•ƒ}ƒX‚ğƒZƒbƒg‚µ‚ÄÄ‹AB
+        // ç©ºç™½ãŒæœ€å¤§é•·ã‚ˆã‚Šã‚‚é•·ã„ã€‚é»’ãƒã‚¹ã‚’ã‚»ãƒƒãƒˆã—ã¦å†å¸°ã€‚
         XG_Board copy(xword);
         copy.SetAt(iRow, jCol, ZEN_BLACK);
         copy.SetAt(iRow, nCols - (jCol + 1), ZEN_BLACK);
@@ -6235,7 +6235,7 @@ bool __fastcall XgGenerateBlacksLineSymHRecurse(const XG_Board& xword, LONG iRow
         return false;
     }
 
-    // ƒ}ƒX‚Ìã‘¤‚ğŒ©‚éB
+    // ãƒã‚¹ã®ä¸Šå´ã‚’è¦‹ã‚‹ã€‚
     INT iTop;
     for (iTop = iRow; iTop > 0; --iTop) {
         if (xword.GetAt(iTop - 1, jCol) == ZEN_BLACK) {
@@ -6243,7 +6243,7 @@ bool __fastcall XgGenerateBlacksLineSymHRecurse(const XG_Board& xword, LONG iRow
         }
     }
     if (iRow - iTop + 1 > xg_nMaxWordLen) {
-        // ‹ó”’‚ªÅ‘å’·‚æ‚è‚à’·‚¢B•ƒ}ƒX‚ğƒZƒbƒg‚µ‚ÄÄ‹AB
+        // ç©ºç™½ãŒæœ€å¤§é•·ã‚ˆã‚Šã‚‚é•·ã„ã€‚é»’ãƒã‚¹ã‚’ã‚»ãƒƒãƒˆã—ã¦å†å¸°ã€‚
         XG_Board copy(xword);
         copy.SetAt(iRow, jCol, ZEN_BLACK);
         copy.SetAt(iRow, nCols - (jCol + 1), ZEN_BLACK);
@@ -6257,11 +6257,11 @@ bool __fastcall XgGenerateBlacksLineSymHRecurse(const XG_Board& xword, LONG iRow
         return false;
     }
 
-    // ”Õ‚Ì^‚ñ’†‚©H
+    // ç›¤ã®çœŸã‚“ä¸­ã‹ï¼Ÿ
     if (jCol >= nHalfCols) {
         std::wstring strPattern = xword.GetPatternH(XG_Pos(iRow, jCol));
         if ((INT)strPattern.size() > xg_nMaxWordLen) {
-            // ‹ó”’‚ªÅ‘å’·‚æ‚è‚à’·‚¢B•ƒ}ƒX‚ğƒZƒbƒg‚µ‚ÄÄ‹AB
+            // ç©ºç™½ãŒæœ€å¤§é•·ã‚ˆã‚Šã‚‚é•·ã„ã€‚é»’ãƒã‚¹ã‚’ã‚»ãƒƒãƒˆã—ã¦å†å¸°ã€‚
             XG_Board copy(xword);
             copy.SetAt(iRow, jCol, ZEN_BLACK);
             copy.SetAt(iRow, nCols - (jCol + 1), ZEN_BLACK);
@@ -6271,8 +6271,8 @@ bool __fastcall XgGenerateBlacksLineSymHRecurse(const XG_Board& xword, LONG iRow
         }
     }
 
-    if (rand() < RAND_MAX / 2) { // 1/2‚ÌŠm—¦‚ÅBBB
-        // •ƒ}ƒX‚ğƒZƒbƒg‚µ‚ÄÄ‹AB
+    if (rand() < RAND_MAX / 2) { // 1/2ã®ç¢ºç‡ã§ã€‚ã€‚ã€‚
+        // é»’ãƒã‚¹ã‚’ã‚»ãƒƒãƒˆã—ã¦å†å¸°ã€‚
         if (jCol + 1 <= nHalfCols) {
             if (XgGenerateBlacksLineSymHRecurse(xword, MAKELONG(iRow, jCol + 1)))
                 return true;
@@ -6291,7 +6291,7 @@ bool __fastcall XgGenerateBlacksLineSymHRecurse(const XG_Board& xword, LONG iRow
                 return true;
         }
     } else {
-        // •ƒ}ƒX‚ğƒZƒbƒg‚µ‚ÄÄ‹AB
+        // é»’ãƒã‚¹ã‚’ã‚»ãƒƒãƒˆã—ã¦å†å¸°ã€‚
         XG_Board copy(xword);
         copy.SetAt(iRow, jCol, ZEN_BLACK);
         copy.SetAt(iRow, nCols - (jCol + 1), ZEN_BLACK);
@@ -6310,16 +6310,16 @@ bool __fastcall XgGenerateBlacksLineSymHRecurse(const XG_Board& xword, LONG iRow
     return false;
 }
 
-// ƒ}ƒ‹ƒ`ƒXƒŒƒbƒh—p‚ÌŠÖ”B
+// ãƒãƒ«ãƒã‚¹ãƒ¬ãƒƒãƒ‰ç”¨ã®é–¢æ•°ã€‚
 unsigned __stdcall XgGenerateBlacks(void *param)
 {
     XG_Board xword;
     xg_solution.clear();
 
-    // —”‚ğ‚©‚­—‚·‚éB
+    // ä¹±æ•°ã‚’ã‹ãä¹±ã™ã‚‹ã€‚
     srand(::GetTickCount() ^ ::GetCurrentThreadId());
 
-    // Ä‹A‹‰ğŠÖ”‚É“Ë“ü‚·‚éB
+    // å†å¸°æ±‚è§£é–¢æ•°ã«çªå…¥ã™ã‚‹ã€‚
     do {
         if (xg_bBlacksGenerated || xg_bCancelled)
             break;
@@ -6328,7 +6328,7 @@ unsigned __stdcall XgGenerateBlacks(void *param)
     return 1;
 }
 
-// ƒ}ƒ‹ƒ`ƒXƒŒƒbƒh—p‚ÌŠÖ”B
+// ãƒãƒ«ãƒã‚¹ãƒ¬ãƒƒãƒ‰ç”¨ã®é–¢æ•°ã€‚
 unsigned __stdcall XgGenerateBlacksSmart(void *param)
 {
     if (xg_bBlacksGenerated)
@@ -6336,11 +6336,11 @@ unsigned __stdcall XgGenerateBlacksSmart(void *param)
 
     XG_Board xword;
 
-    // —”‚ğ‚©‚­—‚·‚éB
+    // ä¹±æ•°ã‚’ã‹ãä¹±ã™ã‚‹ã€‚
     srand(::GetTickCount() ^ ::GetCurrentThreadId());
 
     if (xg_nRules & RULE_POINTSYMMETRY) {
-        // Ä‹A‹‰ğŠÖ”‚É“Ë“ü‚·‚éB
+        // å†å¸°æ±‚è§£é–¢æ•°ã«çªå…¥ã™ã‚‹ã€‚
         do {
             if (xg_bCancelled)
                 break;
@@ -6350,7 +6350,7 @@ unsigned __stdcall XgGenerateBlacksSmart(void *param)
             xword.clear();
         } while (!XgGenerateBlacksPointSymRecurse(xword, 0));
     } else if (xg_nRules & RULE_LINESYMMETRYV) {
-        // Ä‹A‹‰ğŠÖ”‚É“Ë“ü‚·‚éB
+        // å†å¸°æ±‚è§£é–¢æ•°ã«çªå…¥ã™ã‚‹ã€‚
         do {
             if (xg_bCancelled)
                 break;
@@ -6360,7 +6360,7 @@ unsigned __stdcall XgGenerateBlacksSmart(void *param)
             xword.clear();
         } while (!XgGenerateBlacksLineSymVRecurse(xword, 0));
     } else if (xg_nRules & RULE_LINESYMMETRYH) {
-        // Ä‹A‹‰ğŠÖ”‚É“Ë“ü‚·‚éB
+        // å†å¸°æ±‚è§£é–¢æ•°ã«çªå…¥ã™ã‚‹ã€‚
         do {
             if (xg_bCancelled)
                 break;
@@ -6370,7 +6370,7 @@ unsigned __stdcall XgGenerateBlacksSmart(void *param)
             xword.clear();
         } while (!XgGenerateBlacksLineSymHRecurse(xword, 0));
     } else {
-        // Ä‹A‹‰ğŠÖ”‚É“Ë“ü‚·‚éB
+        // å†å¸°æ±‚è§£é–¢æ•°ã«çªå…¥ã™ã‚‹ã€‚
         do {
             if (xg_bCancelled)
                 break;
@@ -6383,7 +6383,7 @@ unsigned __stdcall XgGenerateBlacksSmart(void *param)
     return 1;
 }
 
-// ƒ}ƒ‹ƒ`ƒXƒŒƒbƒh—p‚ÌŠÖ”B
+// ãƒãƒ«ãƒã‚¹ãƒ¬ãƒƒãƒ‰ç”¨ã®é–¢æ•°ã€‚
 unsigned __stdcall XgGenerateBlacksPointSym(void *param)
 {
     srand(::GetTickCount() ^ ::GetCurrentThreadId());
@@ -6397,7 +6397,7 @@ unsigned __stdcall XgGenerateBlacksPointSym(void *param)
     return 1;
 }
 
-// ƒ}ƒ‹ƒ`ƒXƒŒƒbƒh—p‚ÌŠÖ”B
+// ãƒãƒ«ãƒã‚¹ãƒ¬ãƒƒãƒ‰ç”¨ã®é–¢æ•°ã€‚
 unsigned __stdcall XgGenerateBlacksLineSymV(void *param)
 {
     srand(::GetTickCount() ^ ::GetCurrentThreadId());
@@ -6411,7 +6411,7 @@ unsigned __stdcall XgGenerateBlacksLineSymV(void *param)
     return 1;
 }
 
-// ƒ}ƒ‹ƒ`ƒXƒŒƒbƒh—p‚ÌŠÖ”B
+// ãƒãƒ«ãƒã‚¹ãƒ¬ãƒƒãƒ‰ç”¨ã®é–¢æ•°ã€‚
 unsigned __stdcall XgGenerateBlacksLineSymH(void *param)
 {
     srand(::GetTickCount() ^ ::GetCurrentThreadId());
@@ -6430,12 +6430,12 @@ void __fastcall XgStartGenerateBlacks(void)
     xg_bBlacksGenerated = false;
     xg_bCancelled = false;
 
-    // Å‘å’·‚ğ§ŒÀ‚·‚éB
+    // æœ€å¤§é•·ã‚’åˆ¶é™ã™ã‚‹ã€‚
     if (xg_nMaxWordLen > xg_nDictMaxWordLen) {
         xg_nMaxWordLen = xg_nDictMaxWordLen;
     }
 
-    // ƒXƒŒƒbƒh‚ğŠJn‚·‚éB
+    // ã‚¹ãƒ¬ãƒƒãƒ‰ã‚’é–‹å§‹ã™ã‚‹ã€‚
     if (xg_nRules & RULE_POINTSYMMETRY) {
 #ifdef SINGLE_THREAD_MODE
         XgGenerateBlacksPointSym(&xg_aThreadInfo[0]);
@@ -6483,14 +6483,14 @@ void __fastcall XgStartGenerateBlacks(void)
     }
 }
 
-// ƒNƒƒXƒ[ƒh‚Åg‚¤•¶š‚É•ÏŠ·‚·‚éB
+// ã‚¯ãƒ­ã‚¹ãƒ¯ãƒ¼ãƒ‰ã§ä½¿ã†æ–‡å­—ã«å¤‰æ›ã™ã‚‹ã€‚
 std::wstring __fastcall XgNormalizeString(const std::wstring& text) {
     WCHAR szText[512];
     LCMapStringW(JPN_LOCALE, LCMAP_FULLWIDTH | LCMAP_KATAKANA | LCMAP_UPPERCASE,
         text.c_str(), -1, szText, 512);
     std::wstring ret = szText;
     for (auto& ch : ret) {
-        // ¬‚³‚Èš‚ğ‘å‚«‚Èš‚É‚·‚éB
+        // å°ã•ãªå­—ã‚’å¤§ããªå­—ã«ã™ã‚‹ã€‚
         for (size_t i = 0; i < ARRAYSIZE(xg_small); i++) {
             if (ch == xg_small[i][0]) {
                 ch = xg_large[i][0];
@@ -6501,7 +6501,7 @@ std::wstring __fastcall XgNormalizeString(const std::wstring& text) {
     return ret;
 }
 
-// ƒ^ƒeŒü‚«‚Éƒpƒ^[ƒ“‚ğ“Ç‚İæ‚éB
+// ã‚¿ãƒ†å‘ãã«ãƒ‘ã‚¿ãƒ¼ãƒ³ã‚’èª­ã¿å–ã‚‹ã€‚
 std::wstring __fastcall XG_Board::GetPatternV(const XG_Pos& pos) const
 {
     int lo, hi;
@@ -6530,7 +6530,7 @@ std::wstring __fastcall XG_Board::GetPatternV(const XG_Pos& pos) const
     return pattern;
 }
 
-// ƒˆƒRŒü‚«‚Éƒpƒ^[ƒ“‚ğ“Ç‚İæ‚éB
+// ãƒ¨ã‚³å‘ãã«ãƒ‘ã‚¿ãƒ¼ãƒ³ã‚’èª­ã¿å–ã‚‹ã€‚
 std::wstring __fastcall XG_Board::GetPatternH(const XG_Pos& pos) const
 {
     int lo, hi;

@@ -1,7 +1,7 @@
-//////////////////////////////////////////////////////////////////////////////
+ï»¿//////////////////////////////////////////////////////////////////////////////
 // Marks.hpp --- XWord Giver (Japanese Crossword Generator)
 // Copyright (C) 2012-2020 Katayama Hirofumi MZ. All Rights Reserved.
-// (Japanese, Shift_JIS)
+// (Japanese, UTF-8)
 
 #ifndef __XWORDGIVER_MARKS_HPP__
 #define __XWORDGIVER_MARKS_HPP__
@@ -10,38 +10,38 @@ extern std::vector<XG_Pos> xg_vMarks;
 
 //////////////////////////////////////////////////////////////////////////////
 
-// “ñdƒ}ƒX’PŒêŒó•âB
+// äºŒé‡ãƒã‚¹å˜èªå€™è£œã€‚
 extern std::vector<std::wstring>  xg_vMarkedCands;
 
 //////////////////////////////////////////////////////////////////////////////
 
-// ƒ}[ƒN•¶š—ñ‚ğæ“¾‚·‚éB
+// ãƒãƒ¼ã‚¯æ–‡å­—åˆ—ã‚’å–å¾—ã™ã‚‹ã€‚
 void __fastcall XgGetStringOfMarks(std::wstring& str);
-// ƒ}[ƒN‚³‚ê‚Ä‚¢‚é‚©i“ñdƒ}ƒXjH
+// ãƒãƒ¼ã‚¯ã•ã‚Œã¦ã„ã‚‹ã‹ï¼ˆäºŒé‡ãƒã‚¹ï¼‰ï¼Ÿ
 int __fastcall XgGetMarked(const std::vector<XG_Pos>& vMarks, const XG_Pos& pos);
-// ƒ}[ƒN‚³‚ê‚Ä‚¢‚é‚©i“ñdƒ}ƒXjH
+// ãƒãƒ¼ã‚¯ã•ã‚Œã¦ã„ã‚‹ã‹ï¼ˆäºŒé‡ãƒã‚¹ï¼‰ï¼Ÿ
 int __fastcall XgGetMarked(const std::vector<XG_Pos>& vMarks, int i, int j);
-// ƒ}[ƒN‚³‚ê‚Ä‚¢‚é‚©i“ñdƒ}ƒXjH
+// ãƒãƒ¼ã‚¯ã•ã‚Œã¦ã„ã‚‹ã‹ï¼ˆäºŒé‡ãƒã‚¹ï¼‰ï¼Ÿ
 int __fastcall XgGetMarked(int i, int j);
-// “ñdƒ}ƒX‚ªXV‚³‚ê‚½B
+// äºŒé‡ãƒã‚¹ãŒæ›´æ–°ã•ã‚ŒãŸã€‚
 void __fastcall XgMarkUpdate(void);
-// w’è‚Ìƒ}ƒX‚Éƒ}[ƒN‚·‚éi“ñdƒ}ƒXjB
+// æŒ‡å®šã®ãƒã‚¹ã«ãƒãƒ¼ã‚¯ã™ã‚‹ï¼ˆäºŒé‡ãƒã‚¹ï¼‰ã€‚
 void __fastcall XgSetMark(const XG_Pos& pos);
-// w’è‚Ìƒ}ƒX‚Éƒ}[ƒN‚·‚éi“ñdƒ}ƒXjB
+// æŒ‡å®šã®ãƒã‚¹ã«ãƒãƒ¼ã‚¯ã™ã‚‹ï¼ˆäºŒé‡ãƒã‚¹ï¼‰ã€‚
 void __fastcall XgSetMark(int i, int j);
-// w’è‚Ìƒ}ƒX‚Ìƒ}[ƒNi“ñdƒ}ƒXj‚ğ‰ğœ‚·‚éB
+// æŒ‡å®šã®ãƒã‚¹ã®ãƒãƒ¼ã‚¯ï¼ˆäºŒé‡ãƒã‚¹ï¼‰ã‚’è§£é™¤ã™ã‚‹ã€‚
 void __fastcall XgDeleteMark(int i, int j);
-// ƒ}[ƒN•¶š—ñ‚ğİ’è‚·‚éB
+// ãƒãƒ¼ã‚¯æ–‡å­—åˆ—ã‚’è¨­å®šã™ã‚‹ã€‚
 void __fastcall XgSetStringOfMarks(LPCWSTR psz);
-// “ñdƒ}ƒX’PŒê‚ğæ“¾‚·‚éB
+// äºŒé‡ãƒã‚¹å˜èªã‚’å–å¾—ã™ã‚‹ã€‚
 bool __fastcall XgGetMarkWord(const XG_Board *xw, std::wstring& str);
-// “ñdƒ}ƒX’PŒê‚ğİ’è‚·‚éB
+// äºŒé‡ãƒã‚¹å˜èªã‚’è¨­å®šã™ã‚‹ã€‚
 void __fastcall XgSetMarkedWord(const std::wstring& str);
-// “ñdƒ}ƒX’PŒê‚ğ‹ó‚É‚·‚éB
+// äºŒé‡ãƒã‚¹å˜èªã‚’ç©ºã«ã™ã‚‹ã€‚
 void __fastcall XgSetMarkedWord(void);
-// Ÿ‚Ì“ñdƒ}ƒX’PŒê‚ğæ“¾‚·‚éB
+// æ¬¡ã®äºŒé‡ãƒã‚¹å˜èªã‚’å–å¾—ã™ã‚‹ã€‚
 void __fastcall XgGetNextMarkedWord(void);
-// ‘O‚Ì“ñdƒ}ƒX’PŒê‚ğæ“¾‚·‚éB
+// å‰ã®äºŒé‡ãƒã‚¹å˜èªã‚’å–å¾—ã™ã‚‹ã€‚
 void __fastcall XgGetPrevMarkedWord(void);
 
 //////////////////////////////////////////////////////////////////////////////

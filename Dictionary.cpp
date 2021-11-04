@@ -1,45 +1,45 @@
-//////////////////////////////////////////////////////////////////////////////
+ï»¿//////////////////////////////////////////////////////////////////////////////
 // Dictionary.cpp --- XWord Giver (Japanese Crossword Generator)
 // Copyright (C) 2012-2020 Katayama Hirofumi MZ. All Rights Reserved.
-// (Japanese, Shift_JIS)
+// (Japanese, UTF-8)
 
 #include "XWordGiver.hpp"
 #include "Auto.hpp"
 
-// «‘ƒf[ƒ^B
+// è¾æ›¸ãƒ‡ãƒ¼ã‚¿ã€‚
 std::vector<XG_WordData>     xg_dict_1, xg_dict_2;
 
-// ƒ^ƒO•t‚¯ƒf[ƒ^B
+// ã‚¿ã‚°ä»˜ã‘ãƒ‡ãƒ¼ã‚¿ã€‚
 std::unordered_map<std::wstring, std::unordered_set<std::wstring> > xg_word_to_tags_map;
 
-// ƒ^ƒO‚ÌƒqƒXƒgƒOƒ‰ƒ€B
+// ã‚¿ã‚°ã®ãƒ’ã‚¹ãƒˆã‚°ãƒ©ãƒ ã€‚
 std::unordered_map<std::wstring, size_t> xg_tag_histgram;
 
-// —Dæƒ^ƒOB
+// å„ªå…ˆã‚¿ã‚°ã€‚
 std::unordered_set<std::wstring> xg_priority_tags;
 
-// œŠOƒ^ƒOB
+// é™¤å¤–ã‚¿ã‚°ã€‚
 std::unordered_set<std::wstring> xg_forbidden_tags;
 
-// ƒe[ƒ}•¶š—ñB
+// ãƒ†ãƒ¼ãƒæ–‡å­—åˆ—ã€‚
 std::wstring xg_strTheme;
 
-// Šù’è‚Ìƒe[ƒ}•¶š—ñB
+// æ—¢å®šã®ãƒ†ãƒ¼ãƒæ–‡å­—åˆ—ã€‚
 std::wstring xg_strDefaultTheme;
 
-// ƒe[ƒ}‚ª•ÏX‚³‚ê‚½‚©H
+// ãƒ†ãƒ¼ãƒãŒå¤‰æ›´ã•ã‚ŒãŸã‹ï¼Ÿ
 bool xg_bThemeModified = false;
 
-// ’PŒê‚Ì’·‚³‚ÌƒqƒXƒgƒOƒ‰ƒ€B
+// å˜èªã®é•·ã•ã®ãƒ’ã‚¹ãƒˆã‚°ãƒ©ãƒ ã€‚
 std::unordered_map<size_t, size_t> xg_word_length_histgram;
 
-// ”z’u‚Å‚«‚éÅ‘å’PŒê’·B
+// é…ç½®ã§ãã‚‹æœ€å¤§å˜èªé•·ã€‚
 INT xg_nDictMaxWordLen = 7;
-// ”z’u‚Å‚«‚éÅ¬’PŒê’·B
+// é…ç½®ã§ãã‚‹æœ€å°å˜èªé•·ã€‚
 INT xg_nDictMinWordLen = 2;
 
 //////////////////////////////////////////////////////////////////////////////
-// «‘ƒf[ƒ^‚Ìƒtƒ@ƒCƒ‹ˆ—B
+// è¾æ›¸ãƒ‡ãƒ¼ã‚¿ã®ãƒ•ã‚¡ã‚¤ãƒ«å‡¦ç†ã€‚
 
 template <typename T_STR_CONTAINER>
 inline void
@@ -91,7 +91,7 @@ inline void mstr_trim(std::basic_string<T_CHAR>& str, const T_CHAR *spaces)
     }
 }
 
-// ƒe[ƒ}•¶š—ñ‚ğƒp[ƒX‚·‚éB
+// ãƒ†ãƒ¼ãƒæ–‡å­—åˆ—ã‚’ãƒ‘ãƒ¼ã‚¹ã™ã‚‹ã€‚
 void XgParseTheme(std::unordered_set<std::wstring>& priority,
                   std::unordered_set<std::wstring>& forbidden,
                   const std::wstring& strTheme)
@@ -121,7 +121,7 @@ void XgParseTheme(std::unordered_set<std::wstring>& priority,
     }
 }
 
-// ƒe[ƒ}‚ğİ’è‚·‚éB
+// ãƒ†ãƒ¼ãƒã‚’è¨­å®šã™ã‚‹ã€‚
 void XgSetThemeString(const std::wstring& strTheme)
 {
     XgParseTheme(xg_priority_tags, xg_forbidden_tags, strTheme);
@@ -132,22 +132,22 @@ void XgSetThemeString(const std::wstring& strTheme)
     xg_bThemeModified = (priority != xg_priority_tags || forbidden != xg_forbidden_tags);
 }
 
-// ƒe[ƒ}‚ğƒŠƒZƒbƒg‚·‚éB
+// ãƒ†ãƒ¼ãƒã‚’ãƒªã‚»ãƒƒãƒˆã™ã‚‹ã€‚
 void __fastcall XgResetTheme(HWND hwnd)
 {
     XgSetThemeString(xg_strDefaultTheme);
     xg_bThemeModified = false;
 }
 
-// Unicode‚ğˆês“Ç‚İ‚ŞB
+// Unicodeã‚’ä¸€è¡Œèª­ã¿è¾¼ã‚€ã€‚
 void XgReadUnicodeLine(LPWSTR pchLine)
 {
     XG_WordData entry;
     WCHAR szWord[64];
 
-    // ƒRƒƒ“ƒgs‚ğ–³‹‚·‚éB
+    // ã‚³ãƒ¡ãƒ³ãƒˆè¡Œã‚’ç„¡è¦–ã™ã‚‹ã€‚
     if (*pchLine == L'#') {
-        // ‚½‚¾‚µAƒRƒƒ“ƒg“à‚É"DEFAULT:"‚ª‚ ‚éê‡‚Í—áŠO‚Æ‚µ‚ÄŠù’è‚Ìƒe[ƒ}‚ğ“Ç‚İæ‚éB
+        // ãŸã ã—ã€ã‚³ãƒ¡ãƒ³ãƒˆå†…ã«"DEFAULT:"ãŒã‚ã‚‹å ´åˆã¯ä¾‹å¤–ã¨ã—ã¦æ—¢å®šã®ãƒ†ãƒ¼ãƒã‚’èª­ã¿å–ã‚‹ã€‚
         pchLine = wcsstr(pchLine, L"DEFAULT:");
         if (pchLine) {
             pchLine += wcslen(L"DEFAULT:");
@@ -157,12 +157,12 @@ void XgReadUnicodeLine(LPWSTR pchLine)
         return;
     }
 
-    // ‹ós‚ğ–³‹‚·‚éB
+    // ç©ºè¡Œã‚’ç„¡è¦–ã™ã‚‹ã€‚
     if (*pchLine == L'\0') {
         return;
     }
 
-    // ƒqƒ“ƒg‚ğ‚³‚ª‚·B
+    // ãƒ’ãƒ³ãƒˆã‚’ã•ãŒã™ã€‚
     LPWSTR pchHint = wcschr(pchLine, L'\t');
     if (pchHint) {
         *pchHint = 0;
@@ -171,7 +171,7 @@ void XgReadUnicodeLine(LPWSTR pchLine)
         pchHint = nullptr;
     }
 
-    // ‘æ‚RƒtƒB[ƒ‹ƒh‚Íƒ^ƒOŒQB
+    // ç¬¬ï¼“ãƒ•ã‚£ãƒ¼ãƒ«ãƒ‰ã¯ã‚¿ã‚°ç¾¤ã€‚
     LPWSTR pchTags = NULL;
     if (pchHint) {
         pchTags = wcschr(pchHint, L'\t');
@@ -181,22 +181,22 @@ void XgReadUnicodeLine(LPWSTR pchLine)
         }
     }
 
-    // ’PŒê•¶š—ñ‚ğ‘SŠpEƒJƒ^ƒJƒiE‘å•¶š‚É‚·‚éB
+    // å˜èªæ–‡å­—åˆ—ã‚’å…¨è§’ãƒ»ã‚«ã‚¿ã‚«ãƒŠãƒ»å¤§æ–‡å­—ã«ã™ã‚‹ã€‚
     LCMapStringW(JPN_LOCALE,
         LCMAP_FULLWIDTH | LCMAP_KATAKANA | LCMAP_UPPERCASE,
         pchLine, static_cast<int>(wcslen(pchLine) + 1), szWord, 64);
 
-    // •¶š—ñ‚Ì‘OŒã‚Ì‹ó”’‚ğæ‚èœ‚­B
+    // æ–‡å­—åˆ—ã®å‰å¾Œã®ç©ºç™½ã‚’å–ã‚Šé™¤ãã€‚
     entry.m_word = szWord;
     xg_str_trim(entry.m_word);
     auto word = entry.m_word;
 
-    // ¬‚³‚Èš‚ğ‘å‚«‚Èš‚É‚·‚éB
+    // å°ã•ãªå­—ã‚’å¤§ããªå­—ã«ã™ã‚‹ã€‚
     for (size_t i = 0; i < ARRAYSIZE(xg_large); i++)
         xg_str_replace_all(entry.m_word,
             std::wstring(xg_small[i]), std::wstring(xg_large[i]));
 
-    // ’PŒê‚Æƒqƒ“ƒg‚ğ“o˜^‚·‚éBˆêšˆÈ‰º‚Ì’PŒê‚Í“o˜^‚µ‚È‚¢B
+    // å˜èªã¨ãƒ’ãƒ³ãƒˆã‚’ç™»éŒ²ã™ã‚‹ã€‚ä¸€å­—ä»¥ä¸‹ã®å˜èªã¯ç™»éŒ²ã—ãªã„ã€‚
     if (entry.m_word.size() > 1) {
         if (pchHint) {
             entry.m_hint = pchHint;
@@ -208,7 +208,7 @@ void XgReadUnicodeLine(LPWSTR pchLine)
         xg_dict_1.emplace_back(std::move(entry));
     }
 
-    // ƒ^ƒO‚ª‚ ‚ê‚ÎA’PŒê‚Ìƒ^ƒO•t‚¯‚ğs‚¤B
+    // ã‚¿ã‚°ãŒã‚ã‚Œã°ã€å˜èªã®ã‚¿ã‚°ä»˜ã‘ã‚’è¡Œã†ã€‚
     if (pchTags) {
         std::wstring strTags = pchTags;
         xg_str_replace_all(strTags, L",", L" ");
@@ -227,15 +227,15 @@ void XgReadUnicodeLine(LPWSTR pchLine)
     }
 }
 
-// Unicode‚Ìƒtƒ@ƒCƒ‹‚Ì’†g‚ğ“Ç‚İ‚ŞB
+// Unicodeã®ãƒ•ã‚¡ã‚¤ãƒ«ã®ä¸­èº«ã‚’èª­ã¿è¾¼ã‚€ã€‚
 bool XgReadUnicodeFile(LPWSTR pszData, DWORD /*cchData*/)
 {
-    // Å‰‚Ìˆês‚ğæ‚èo‚·B
+    // æœ€åˆã®ä¸€è¡Œã‚’å–ã‚Šå‡ºã™ã€‚
     LPWSTR pchLine = wcstok(pszData, xg_pszNewLine);
     if (pchLine == nullptr)
         return false;
 
-    // ˆês‚¸‚Âˆ—‚·‚éB
+    // ä¸€è¡Œãšã¤å‡¦ç†ã™ã‚‹ã€‚
     do {
         XgReadUnicodeLine(pchLine);
         pchLine = wcstok(nullptr, xg_pszNewLine);
@@ -243,40 +243,40 @@ bool XgReadUnicodeFile(LPWSTR pszData, DWORD /*cchData*/)
     return true;
 }
 
-// ANSI (Shift_JIS) ‚Ìƒtƒ@ƒCƒ‹‚Ì’†g‚ğ“Ç‚İ‚ŞB
+// ANSI (Shift_JIS) ã®ãƒ•ã‚¡ã‚¤ãƒ«ã®ä¸­èº«ã‚’èª­ã¿è¾¼ã‚€ã€‚
 bool __fastcall XgReadAnsiFile(LPCSTR pszData, DWORD /*cchData*/)
 {
-    // Unicode‚É•ÏŠ·‚Å‚«‚È‚¢‚Æ‚«‚Í¸”sB
+    // Unicodeã«å¤‰æ›ã§ããªã„ã¨ãã¯å¤±æ•—ã€‚
     int cchWide = MultiByteToWideChar(SJIS_CODEPAGE, 0, pszData, -1, nullptr, 0);
     if (cchWide == 0)
         return false;
 
-    // Unicode‚É•ÏŠ·‚µ‚Äˆ—‚·‚éB
+    // Unicodeã«å¤‰æ›ã—ã¦å‡¦ç†ã™ã‚‹ã€‚
     std::wstring strWide(cchWide - 1, 0);
     MultiByteToWideChar(SJIS_CODEPAGE, 0, pszData, -1, &strWide[0], cchWide);
     return XgReadUnicodeFile(&strWide[0], cchWide - 1);
 }
 
-// UTF-8‚Ìƒtƒ@ƒCƒ‹‚Ì’†g‚ğ“Ç‚İ‚ŞB
+// UTF-8ã®ãƒ•ã‚¡ã‚¤ãƒ«ã®ä¸­èº«ã‚’èª­ã¿è¾¼ã‚€ã€‚
 bool __fastcall XgReadUtf8File(LPCSTR pszData, DWORD /*cchData*/)
 {
-    // Unicode‚É•ÏŠ·‚Å‚«‚È‚¢‚Æ‚«‚Í¸”sB
+    // Unicodeã«å¤‰æ›ã§ããªã„ã¨ãã¯å¤±æ•—ã€‚
     int cchWide = MultiByteToWideChar(CP_UTF8, 0, pszData, -1, nullptr, 0);
     if (cchWide == 0)
         return false;
 
-    // Unicode‚É•ÏŠ·‚µ‚Äˆ—‚·‚éB
+    // Unicodeã«å¤‰æ›ã—ã¦å‡¦ç†ã™ã‚‹ã€‚
     std::wstring strWide(cchWide - 1, 0);
     MultiByteToWideChar(CP_UTF8, 0, pszData, -1, &strWide[0], cchWide);
     return XgReadUnicodeFile(&strWide[0], cchWide - 1);
 }
 
-// «‘ƒtƒ@ƒCƒ‹‚ğ“Ç‚İ‚ŞB
+// è¾æ›¸ãƒ•ã‚¡ã‚¤ãƒ«ã‚’èª­ã¿è¾¼ã‚€ã€‚
 bool __fastcall XgLoadDictFile(LPCWSTR pszFile)
 {
     DWORD cbRead, i;
 
-    // ‰Šú‰»‚·‚éB
+    // åˆæœŸåŒ–ã™ã‚‹ã€‚
     xg_dict_1.clear();
     xg_dict_2.clear();
     xg_word_to_tags_map.clear();
@@ -286,25 +286,25 @@ bool __fastcall XgLoadDictFile(LPCWSTR pszFile)
     xg_nDictMaxWordLen = 255;
     xg_nDictMinWordLen = 2;
 
-    // ƒtƒ@ƒCƒ‹‚ğŠJ‚­B
+    // ãƒ•ã‚¡ã‚¤ãƒ«ã‚’é–‹ãã€‚
     AutoCloseHandle hFile(CreateFileW(pszFile, GENERIC_READ, FILE_SHARE_READ, nullptr,
                                       OPEN_EXISTING, 0, nullptr));
     if (hFile == INVALID_HANDLE_VALUE)
         return false;
 
-    // ƒtƒ@ƒCƒ‹ƒTƒCƒY‚ğæ“¾‚·‚éB
+    // ãƒ•ã‚¡ã‚¤ãƒ«ã‚µã‚¤ã‚ºã‚’å–å¾—ã™ã‚‹ã€‚
     DWORD cbFile = ::GetFileSize(hFile, nullptr);
     if (cbFile == 0xFFFFFFFF)
         return false;
 
     try {
-        // ƒƒ‚ƒŠ‚ğŠm•Û‚µ‚Äƒtƒ@ƒCƒ‹‚©‚ç“Ç‚İ‚ŞB
+        // ãƒ¡ãƒ¢ãƒªã‚’ç¢ºä¿ã—ã¦ãƒ•ã‚¡ã‚¤ãƒ«ã‹ã‚‰èª­ã¿è¾¼ã‚€ã€‚
         std::vector<BYTE> pbFile(cbFile + 4, 0);
         i = cbFile;
         if (!ReadFile(hFile, &pbFile[0], cbFile, &cbRead, nullptr))
             return false;
 
-        // BOMƒ`ƒFƒbƒNB
+        // BOMãƒã‚§ãƒƒã‚¯ã€‚
         if (pbFile[0] == 0xFF && pbFile[1] == 0xFE) {
             // Unicode
             std::wstring str = reinterpret_cast<LPWSTR>(&pbFile[2]);
@@ -326,7 +326,7 @@ bool __fastcall XgLoadDictFile(LPCWSTR pszFile)
             i = 0;
         } else {
             for (i = 0; i < cbFile; i++) {
-                // ƒiƒ‹•¶š‚ª‚ ‚ê‚ÎUnicode‚Æ”»’f‚·‚éB
+                // ãƒŠãƒ«æ–‡å­—ãŒã‚ã‚Œã°Unicodeã¨åˆ¤æ–­ã™ã‚‹ã€‚
                 if (pbFile[i] == 0) {
                     if (i & 1) {
                         // Unicode
@@ -359,16 +359,16 @@ bool __fastcall XgLoadDictFile(LPCWSTR pszFile)
             }
         }
 
-        // ƒe[ƒ}‚ª•ÏX‚³‚ê‚½‚©H
+        // ãƒ†ãƒ¼ãƒãŒå¤‰æ›´ã•ã‚ŒãŸã‹ï¼Ÿ
         if (!xg_bThemeModified) {
-            // ƒe[ƒ}‚ğİ’è‚·‚éB
+            // ãƒ†ãƒ¼ãƒã‚’è¨­å®šã™ã‚‹ã€‚
             XgSetThemeString(xg_strDefaultTheme);
         } else {
-            // ƒe[ƒ}‚ğİ’è‚·‚éB
+            // ãƒ†ãƒ¼ãƒã‚’è¨­å®šã™ã‚‹ã€‚
             XgSetThemeString(xg_strTheme);
         }
 
-        // xg_forbidden_tags ‚Ìƒ^ƒO‚ª•t‚¢‚½’PŒê‚ÍœŠO‚·‚éierase-remove idiomjB
+        // xg_forbidden_tags ã®ã‚¿ã‚°ãŒä»˜ã„ãŸå˜èªã¯é™¤å¤–ã™ã‚‹ï¼ˆerase-remove idiomï¼‰ã€‚
         auto it = std::remove_if(xg_dict_1.begin(), xg_dict_1.end(), [](const XG_WordData& data) {
             auto found = xg_word_to_tags_map.find(data.m_word);
             if (found != xg_word_to_tags_map.end()) {
@@ -385,7 +385,7 @@ bool __fastcall XgLoadDictFile(LPCWSTR pszFile)
         });
         xg_dict_1.erase(it, xg_dict_1.end());
 
-        // xg_priority_tags‚Ìƒ^ƒO‚Ì‚Â‚¢‚Ä‚È‚¢’PŒê‚ğxg_dict_2‚ÉU‚è•ª‚¯‚éB
+        // xg_priority_tagsã®ã‚¿ã‚°ã®ã¤ã„ã¦ãªã„å˜èªã‚’xg_dict_2ã«æŒ¯ã‚Šåˆ†ã‘ã‚‹ã€‚
         std::vector<XG_WordData> tmp;
         for (auto& data : xg_dict_1) {
             auto found = xg_word_to_tags_map.find(data.m_word);
@@ -411,16 +411,16 @@ bool __fastcall XgLoadDictFile(LPCWSTR pszFile)
         }
         xg_dict_1 = std::move(tmp);
 
-        // xg_dict_1‚ª‹ó‚Ì‚Æ‚«‚ÍŒğŠ·‚·‚éB
+        // xg_dict_1ãŒç©ºã®ã¨ãã¯äº¤æ›ã™ã‚‹ã€‚
         if (xg_dict_1.empty()) {
             std::swap(xg_dict_1, xg_dict_2);
         }
 
-        // “ñ•ª’Tõ‚Ì‚½‚ß‚ÉA•À‚Ñ‘Ö‚¦‚Ä‚¨‚­B
+        // äºŒåˆ†æ¢ç´¢ã®ãŸã‚ã«ã€ä¸¦ã³æ›¿ãˆã¦ãŠãã€‚
         std::sort(xg_dict_1.begin(), xg_dict_1.end(), xg_word_less());
         std::sort(xg_dict_2.begin(), xg_dict_2.end(), xg_word_less());
 
-        // ’PŒê‚Ì’·‚³‚ÌƒqƒXƒgƒOƒ‰ƒ€‚ğ\’z‚·‚éB
+        // å˜èªã®é•·ã•ã®ãƒ’ã‚¹ãƒˆã‚°ãƒ©ãƒ ã‚’æ§‹ç¯‰ã™ã‚‹ã€‚
         for (auto& worddata : xg_dict_1) {
             auto len = worddata.m_word.size();
             xg_word_length_histgram[len]++;
@@ -430,7 +430,7 @@ bool __fastcall XgLoadDictFile(LPCWSTR pszFile)
             xg_word_length_histgram[len]++;
         }
 
-        // Å’·AÅ’Z‚ğXVB
+        // æœ€é•·ã€æœ€çŸ­ã‚’æ›´æ–°ã€‚
         if (xg_word_length_histgram.size()) {
             xg_nDictMaxWordLen = 2;
             xg_nDictMinWordLen = 255;
@@ -442,15 +442,15 @@ bool __fastcall XgLoadDictFile(LPCWSTR pszFile)
             }
         }
 
-        return true; // ¬Œ÷B
+        return true; // æˆåŠŸã€‚
     } catch (...) {
-        // —áŠO‚ª”­¶‚µ‚½B
+        // ä¾‹å¤–ãŒç™ºç”Ÿã—ãŸã€‚
     }
 
-    return false; // ¸”sB
+    return false; // å¤±æ•—ã€‚
 }
 
-// «‘ƒf[ƒ^‚ğƒ\[ƒg‚µAˆêˆÓ“I‚É‚·‚éB
+// è¾æ›¸ãƒ‡ãƒ¼ã‚¿ã‚’ã‚½ãƒ¼ãƒˆã—ã€ä¸€æ„çš„ã«ã™ã‚‹ã€‚
 void __fastcall XgSortAndUniqueDictData(std::vector<XG_WordData>& data)
 {
     std::sort(data.begin(), data.end(), xg_word_less());
@@ -458,7 +458,7 @@ void __fastcall XgSortAndUniqueDictData(std::vector<XG_WordData>& data)
     data.erase(it, data.end());
 }
 
-// ƒ~ƒj«‘‚ğì¬‚·‚éB
+// ãƒŸãƒ‹è¾æ›¸ã‚’ä½œæˆã™ã‚‹ã€‚
 std::vector<XG_WordData> XgCreateMiniDict(void)
 {
     std::vector<XG_WordData> ret;

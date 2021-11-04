@@ -1,17 +1,17 @@
-//////////////////////////////////////////////////////////////////////////////
+ï»¿//////////////////////////////////////////////////////////////////////////////
 // GUI.cpp --- XWord Giver (Japanese Crossword Generator)
 // Copyright (C) 2012-2020 Katayama Hirofumi MZ. All Rights Reserved.
-// (Japanese, Shift_JIS)
+// (Japanese, UTF-8)
 
 #define NOMINMAX
 #include "XWordGiver.hpp"
 #include "layout.h"
 
-// ƒNƒƒXƒ[ƒh‚ÌƒTƒCƒY‚Ì§ŒÀB
+// ã‚¯ãƒ­ã‚¹ãƒ¯ãƒ¼ãƒ‰ã®ã‚µã‚¤ã‚ºã®åˆ¶é™ã€‚
 #define XG_MIN_SIZE         3
 #define XG_MAX_SIZE         30
 
-// ’PŒê‚Ì’·‚³‚Ì§ŒÀB
+// å˜èªã®é•·ã•ã®åˆ¶é™ã€‚
 #define XG_MIN_WORD_LEN 2
 #define XG_MAX_WORD_LEN 30
 
@@ -19,7 +19,7 @@
     #define WM_MOUSEHWHEEL 0x020E
 #endif
 
-// «‘‚ÌÅ‘å”B
+// è¾æ›¸ã®æœ€å¤§æ•°ã€‚
 #define MAX_DICTS 64
 
 #undef HANDLE_WM_MOUSEWHEEL     // might be wrong
@@ -35,7 +35,7 @@ void __fastcall MainWnd_OnChar(HWND hwnd, TCHAR ch, int cRepeat);
 void __fastcall MainWnd_OnKey(HWND hwnd, UINT vk, bool fDown, int /*cRepeat*/, UINT /*flags*/);
 void __fastcall MainWnd_OnImeChar(HWND hwnd, WCHAR ch, LPARAM /*lKeyData*/);
 
-// u•ƒ}ƒXƒpƒ^[ƒ“vƒ_ƒCƒAƒƒO‚ÌˆÊ’u‚ÆƒTƒCƒYB
+// ã€Œé»’ãƒã‚¹ãƒ‘ã‚¿ãƒ¼ãƒ³ã€ãƒ€ã‚¤ã‚¢ãƒ­ã‚°ã®ä½ç½®ã¨ã‚µã‚¤ã‚ºã€‚
 INT xg_nPatWndX = CW_USEDEFAULT;
 INT xg_nPatWndY = CW_USEDEFAULT;
 INT xg_nPatWndCX = CW_USEDEFAULT;
@@ -65,129 +65,129 @@ mstr_join(const T_STR_CONTAINER& container,
 //////////////////////////////////////////////////////////////////////////////
 // global variables
 
-// “ü—Íƒ‚[ƒhB
+// å…¥åŠ›ãƒ¢ãƒ¼ãƒ‰ã€‚
 XG_InputMode    xg_imode = xg_im_KANA;
 
-// ƒCƒ“ƒXƒ^ƒ“ƒX‚Ìƒnƒ“ƒhƒ‹B
+// ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã®ãƒãƒ³ãƒ‰ãƒ«ã€‚
 HINSTANCE       xg_hInstance = nullptr;
 
-// ƒƒCƒ“ƒEƒBƒ“ƒhƒE‚Ìƒnƒ“ƒhƒ‹B
+// ãƒ¡ã‚¤ãƒ³ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®ãƒãƒ³ãƒ‰ãƒ«ã€‚
 HWND            xg_hMainWnd = nullptr;
 
-// ƒqƒ“ƒgƒEƒBƒ“ƒhƒE‚Ìƒnƒ“ƒhƒ‹B
+// ãƒ’ãƒ³ãƒˆã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®ãƒãƒ³ãƒ‰ãƒ«ã€‚
 HWND            xg_hHintsWnd = nullptr;
 
-// Œó•âƒEƒBƒ“ƒhƒE‚Ìƒnƒ“ƒhƒ‹B
+// å€™è£œã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®ãƒãƒ³ãƒ‰ãƒ«ã€‚
 HWND            xg_hCandsWnd = nullptr;
 
-// “ü—ÍƒpƒŒƒbƒgB
+// å…¥åŠ›ãƒ‘ãƒ¬ãƒƒãƒˆã€‚
 HWND            xg_hwndInputPalette = nullptr;
 
-// ƒXƒNƒ[ƒ‹ƒo[B
+// ã‚¹ã‚¯ãƒ­ãƒ¼ãƒ«ãƒãƒ¼ã€‚
 HWND xg_hVScrollBar          = nullptr;
 HWND xg_hHScrollBar          = nullptr;
 HWND xg_hSizeGrip            = nullptr;
 
-// ƒc[ƒ‹ƒo[‚Ìƒnƒ“ƒhƒ‹B
+// ãƒ„ãƒ¼ãƒ«ãƒãƒ¼ã®ãƒãƒ³ãƒ‰ãƒ«ã€‚
 HWND            xg_hToolBar  = nullptr;
 
-// ƒXƒe[ƒ^ƒXƒo[‚Ìƒnƒ“ƒhƒ‹
+// ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹ãƒãƒ¼ã®ãƒãƒ³ãƒ‰ãƒ«
 HWND            xg_hStatusBar  = nullptr;
 
-// ƒc[ƒ‹ƒo[‚ÌƒCƒ[ƒWƒŠƒXƒgB
+// ãƒ„ãƒ¼ãƒ«ãƒãƒ¼ã®ã‚¤ãƒ¡ãƒ¼ã‚¸ãƒªã‚¹ãƒˆã€‚
 HIMAGELIST      xg_hImageList     = nullptr;
 HIMAGELIST      xg_hGrayedImageList = nullptr;
 
-// «‘ƒtƒ@ƒCƒ‹‚ÌêŠiƒpƒXjB
+// è¾æ›¸ãƒ•ã‚¡ã‚¤ãƒ«ã®å ´æ‰€ï¼ˆãƒ‘ã‚¹ï¼‰ã€‚
 std::wstring xg_dict_name;
 std::deque<std::wstring>  xg_dict_files;
 
-// ƒqƒ“ƒg‚É’Ç‰Á‚ª‚ ‚Á‚½‚©H
+// ãƒ’ãƒ³ãƒˆã«è¿½åŠ ãŒã‚ã£ãŸã‹ï¼Ÿ
 bool            xg_bHintsAdded = false;
 
-// JSONƒtƒ@ƒCƒ‹‚Æ‚µ‚Ä•Û‘¶‚·‚é‚©H
+// JSONãƒ•ã‚¡ã‚¤ãƒ«ã¨ã—ã¦ä¿å­˜ã™ã‚‹ã‹ï¼Ÿ
 bool            xg_bSaveAsJsonFile = true;
 
-// ‘¾˜g‚ğ‚Â‚¯‚é‚©H
+// å¤ªæ ã‚’ã¤ã‘ã‚‹ã‹ï¼Ÿ
 bool            xg_bAddThickFrame = true;
 
-// ƒ}ƒX‚ÌƒtƒHƒ“ƒgB
+// ãƒã‚¹ã®ãƒ•ã‚©ãƒ³ãƒˆã€‚
 WCHAR xg_szCellFont[LF_FACESIZE] = L"";
 
-// ¬‚³‚È•¶š‚ÌƒtƒHƒ“ƒgB
+// å°ã•ãªæ–‡å­—ã®ãƒ•ã‚©ãƒ³ãƒˆã€‚
 WCHAR xg_szSmallFont[LF_FACESIZE] = L"";
 
-// UIƒtƒHƒ“ƒgB
+// UIãƒ•ã‚©ãƒ³ãƒˆã€‚
 WCHAR xg_szUIFont[LF_FACESIZE] = L"";
 
-// uŒ³‚É–ß‚·v‚½‚ß‚Ìƒoƒbƒtƒ@B
+// ã€Œå…ƒã«æˆ»ã™ã€ãŸã‚ã®ãƒãƒƒãƒ•ã‚¡ã€‚
 XG_UndoBuffer                        xg_ubUndoBuffer;
 
-// ’¼‘O‚É‰Ÿ‚µ‚½ƒL[‚ğŠo‚¦‚Ä‚¨‚­B
+// ç›´å‰ã«æŠ¼ã—ãŸã‚­ãƒ¼ã‚’è¦šãˆã¦ãŠãã€‚
 WCHAR xg_prev_vk = 0;
 
-// u“ü—ÍƒpƒŒƒbƒgvc’u‚«H
+// ã€Œå…¥åŠ›ãƒ‘ãƒ¬ãƒƒãƒˆã€ç¸¦ç½®ãï¼Ÿ
 bool xg_bTateOki = true;
 
-// •\¦—p‚É•`‰æ‚·‚é‚©HiXgGetXWordExtent‚ÆXgDrawXWord‚ÆXgCreateXWordImage‚Åg‚¤jB
+// è¡¨ç¤ºç”¨ã«æç”»ã™ã‚‹ã‹ï¼Ÿï¼ˆXgGetXWordExtentã¨XgDrawXWordã¨XgCreateXWordImageã§ä½¿ã†ï¼‰ã€‚
 INT xg_nForDisplay = 0;
 
-// ƒY[ƒ€”ä—¦(%)B
+// ã‚ºãƒ¼ãƒ æ¯”ç‡(%)ã€‚
 INT xg_nZoomRate = 100;
 
-// ƒXƒPƒ‹ƒgƒ“ƒ‚[ƒh‚©H
+// ã‚¹ã‚±ãƒ«ãƒˆãƒ³ãƒ¢ãƒ¼ãƒ‰ã‹ï¼Ÿ
 BOOL xg_bSkeletonMode = FALSE;
 
-// ”Ô†‚ğ•\¦‚·‚é‚©H
+// ç•ªå·ã‚’è¡¨ç¤ºã™ã‚‹ã‹ï¼Ÿ
 BOOL xg_bShowNumbering = TRUE;
-// ƒLƒƒƒŒƒbƒg‚ğ•\¦‚·‚é‚©H
+// ã‚­ãƒ£ãƒ¬ãƒƒãƒˆã‚’è¡¨ç¤ºã™ã‚‹ã‹ï¼Ÿ
 BOOL xg_bShowCaret = TRUE;
 
-// “ñdƒ}ƒX•¶šB
+// äºŒé‡ãƒã‚¹æ–‡å­—ã€‚
 std::wstring xg_strDoubleFrameLetters;
 
-// “ñdƒ}ƒX•¶š‚ğ•\¦‚·‚é‚©H
+// äºŒé‡ãƒã‚¹æ–‡å­—ã‚’è¡¨ç¤ºã™ã‚‹ã‹ï¼Ÿ
 BOOL xg_bShowDoubleFrameLetters = TRUE;
 
 //////////////////////////////////////////////////////////////////////////////
 // static variables
 
-// •Û‘¶æ‚ÌƒpƒX‚ÌƒŠƒXƒgB
+// ä¿å­˜å…ˆã®ãƒ‘ã‚¹ã®ãƒªã‚¹ãƒˆã€‚
 static std::deque<std::wstring>  s_dirs_save_to;
 
-// ƒƒCƒ“ƒEƒBƒ“ƒhƒE‚ÌˆÊ’u‚ÆƒTƒCƒYB
+// ãƒ¡ã‚¤ãƒ³ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®ä½ç½®ã¨ã‚µã‚¤ã‚ºã€‚
 static int s_nMainWndX = CW_USEDEFAULT, s_nMainWndY = CW_USEDEFAULT;
 static int s_nMainWndCX = CW_USEDEFAULT, s_nMainWndCY = CW_USEDEFAULT;
 
-// ƒqƒ“ƒgƒEƒBƒ“ƒhƒE‚ÌˆÊ’u‚ÆƒTƒCƒYB
+// ãƒ’ãƒ³ãƒˆã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®ä½ç½®ã¨ã‚µã‚¤ã‚ºã€‚
 static int s_nHintsWndX = CW_USEDEFAULT, s_nHintsWndY = CW_USEDEFAULT;
 static int s_nHintsWndCX = CW_USEDEFAULT, s_nHintsWndCY = CW_USEDEFAULT;
 
-// Œó•âƒEƒBƒ“ƒhƒE‚ÌˆÊ’u‚ÆƒTƒCƒYB
+// å€™è£œã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®ä½ç½®ã¨ã‚µã‚¤ã‚ºã€‚
 static int s_nCandsWndX = CW_USEDEFAULT, s_nCandsWndY = CW_USEDEFAULT;
 static int s_nCandsWndCX = CW_USEDEFAULT, s_nCandsWndCY = CW_USEDEFAULT;
 
-// “ü—ÍƒpƒŒƒbƒg‚ÌˆÊ’uB
+// å…¥åŠ›ãƒ‘ãƒ¬ãƒƒãƒˆã®ä½ç½®ã€‚
 INT xg_nInputPaletteWndX = CW_USEDEFAULT;
 INT xg_nInputPaletteWndY = CW_USEDEFAULT;
 
-// ‚Ğ‚ç‚ª‚È•\¦‚©H
+// ã²ã‚‰ãŒãªè¡¨ç¤ºã‹ï¼Ÿ
 BOOL xg_bHiragana = FALSE;
-// Lowercase•\¦‚©H
+// Lowercaseè¡¨ç¤ºã‹ï¼Ÿ
 BOOL xg_bLowercase = FALSE;
 
-// ‰ïĞ–¼B
+// ä¼šç¤¾åã€‚
 static const LPCWSTR
     s_pszSoftwareCompanyName = L"Software\\Katayama Hirofumi MZ";
 
-// ƒAƒvƒŠ–¼B
+// ã‚¢ãƒ—ãƒªåã€‚
 #ifdef _WIN64
     static const LPCWSTR s_pszAppName = L"XWord64";
 #else
     static const LPCWSTR s_pszAppName = L"XWord32";
 #endif
 
-// ‰ïĞ–¼‚ÆƒAƒvƒŠ–¼B
+// ä¼šç¤¾åã¨ã‚¢ãƒ—ãƒªåã€‚
 #ifdef _WIN64
     static const LPCWSTR
         s_pszSoftwareCompanyAndApp = L"Software\\Katayama Hirofumi MZ\\XWord64";
@@ -196,121 +196,121 @@ static const LPCWSTR
         s_pszSoftwareCompanyAndApp = L"Software\\Katayama Hirofumi MZ\\XWord32";
 #endif
 
-// ÄŒvZ‚·‚é‚©H
+// å†è¨ˆç®—ã™ã‚‹ã‹ï¼Ÿ
 static bool s_bAutoRetry = true;
 
-// ŒÃ‚¢ƒpƒ\ƒRƒ“‚Å‚ ‚é‚±‚Æ‚ğ’Ê’m‚µ‚½‚©H
+// å¤ã„ãƒ‘ã‚½ã‚³ãƒ³ã§ã‚ã‚‹ã“ã¨ã‚’é€šçŸ¥ã—ãŸã‹ï¼Ÿ
 static bool s_bOldNotice = false;
 
-// «‘ƒtƒ@ƒCƒ‹‚Ì•Û‘¶ƒ‚[ƒhi0: Šm”F‚·‚éA1:©“®“I‚É•Û‘¶‚·‚éA2:•Û‘¶‚µ‚È‚¢jB
+// è¾æ›¸ãƒ•ã‚¡ã‚¤ãƒ«ã®ä¿å­˜ãƒ¢ãƒ¼ãƒ‰ï¼ˆ0: ç¢ºèªã™ã‚‹ã€1:è‡ªå‹•çš„ã«ä¿å­˜ã™ã‚‹ã€2:ä¿å­˜ã—ãªã„ï¼‰ã€‚
 static int s_nDictSaveMode = 2;
 
-// ƒVƒ‡[ƒgƒJƒbƒg‚ÌŠg’£qB
+// ã‚·ãƒ§ãƒ¼ãƒˆã‚«ãƒƒãƒˆã®æ‹¡å¼µå­ã€‚
 static const LPCWSTR s_szShellLinkDotExt = L".LNK";
 
-// ƒƒCƒ“ƒEƒBƒ“ƒhƒEƒNƒ‰ƒX–¼B
+// ãƒ¡ã‚¤ãƒ³ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚¯ãƒ©ã‚¹åã€‚
 static const LPCWSTR s_pszMainWndClass = L"XWord Giver Main Window";
 
-// ƒqƒ“ƒgƒEƒBƒ“ƒhƒEƒNƒ‰ƒX–¼B
+// ãƒ’ãƒ³ãƒˆã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚¯ãƒ©ã‚¹åã€‚
 static const LPCWSTR s_pszHintsWndClass = L"XWord Giver Hints Window";
 
-// Œó•âƒEƒBƒ“ƒhƒEƒNƒ‰ƒX–¼B
+// å€™è£œã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚¯ãƒ©ã‚¹åã€‚
 static const LPCWSTR s_pszCandsWndClass = L"XWord Giver Candidates Window";
 
-// ƒAƒNƒZƒ‰ƒŒ[ƒ^‚Ìƒnƒ“ƒhƒ‹B
+// ã‚¢ã‚¯ã‚»ãƒ©ãƒ¬ãƒ¼ã‚¿ã®ãƒãƒ³ãƒ‰ãƒ«ã€‚
 static HACCEL       s_hAccel = nullptr;
 
-// ƒvƒƒZƒbƒT‚Ì”B
+// ãƒ—ãƒ­ã‚»ãƒƒã‚µã®æ•°ã€‚
 static DWORD        s_dwNumberOfProcessors = 1;
 
-// ŒvZŠÔ‘ª’è—pB
-static DWORD        s_dwTick0;    // ŠJnŠÔB
-static DWORD        s_dwTick1;    // ÄŒvZŠÔB
-static DWORD        s_dwTick2;    // I—¹ŠÔB
-static DWORD        s_dwWait;     // ‘Ò‚¿ŠÔB
+// è¨ˆç®—æ™‚é–“æ¸¬å®šç”¨ã€‚
+static DWORD        s_dwTick0;    // é–‹å§‹æ™‚é–“ã€‚
+static DWORD        s_dwTick1;    // å†è¨ˆç®—æ™‚é–“ã€‚
+static DWORD        s_dwTick2;    // çµ‚äº†æ™‚é–“ã€‚
+static DWORD        s_dwWait;     // å¾…ã¡æ™‚é–“ã€‚
 
-// ƒfƒBƒXƒN—e—Ê‚ª‘«‚è‚È‚¢‚©H
+// ãƒ‡ã‚£ã‚¹ã‚¯å®¹é‡ãŒè¶³ã‚Šãªã„ã‹ï¼Ÿ
 static bool         s_bOutOfDiskSpace = false;
 
-// ˜A‘±¶¬‚Ìê‡A–â‘è‚ğ¶¬‚·‚é”B
+// é€£ç¶šç”Ÿæˆã®å ´åˆã€å•é¡Œã‚’ç”Ÿæˆã™ã‚‹æ•°ã€‚
 static int          s_nNumberToGenerate = 16;
 
-// ˜A‘±¶¬‚Ìê‡A–â‘è‚ğ¶¬‚µ‚½”B
+// é€£ç¶šç”Ÿæˆã®å ´åˆã€å•é¡Œã‚’ç”Ÿæˆã—ãŸæ•°ã€‚
 static int          s_nNumberGenerated = 0;
 
-// ÄŒvZ‚Ì‰ñ”B
+// å†è¨ˆç®—ã®å›æ•°ã€‚
 static LONG         s_nRetryCount;
 
-// ƒc[ƒ‹ƒo[‚ğ•\¦‚·‚é‚©H
+// ãƒ„ãƒ¼ãƒ«ãƒãƒ¼ã‚’è¡¨ç¤ºã™ã‚‹ã‹ï¼Ÿ
 static bool         s_bShowToolBar = true;
 
-// ƒXƒe[ƒ^ƒXƒo[‚ğ•\¦‚·‚é‚©H
+// ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹ãƒãƒ¼ã‚’è¡¨ç¤ºã™ã‚‹ã‹ï¼Ÿ
 static bool         s_bShowStatusBar = true;
 
-// ƒTƒCƒY‚ğw’è‚µ‚Ä‰æ‘œ‚ğƒRƒs[‚·‚é‚Æ‚«‚ÌƒTƒCƒYB
+// ã‚µã‚¤ã‚ºã‚’æŒ‡å®šã—ã¦ç”»åƒã‚’ã‚³ãƒ”ãƒ¼ã™ã‚‹ã¨ãã®ã‚µã‚¤ã‚ºã€‚
 static int          s_nImageCopyWidth = 250;
 static int          s_nImageCopyHeight = 250;
 static bool         s_bImageCopyByHeight = false;
 static int          s_nMarksHeight = 40;
 
-// •ƒ}ƒXƒpƒ^[ƒ“‚Å“š‚¦‚ğ•\¦‚·‚éB
+// é»’ãƒã‚¹ãƒ‘ã‚¿ãƒ¼ãƒ³ã§ç­”ãˆã‚’è¡¨ç¤ºã™ã‚‹ã€‚
 BOOL xg_bShowAnswerOnPattern = TRUE;
 
-// ƒ‹[ƒ‹ŒQB
+// ãƒ«ãƒ¼ãƒ«ç¾¤ã€‚
 INT xg_nRules = DEFAULT_RULES_JAPANESE;
 
 //////////////////////////////////////////////////////////////////////////////
-// ƒXƒNƒ[ƒ‹ŠÖ˜AB
+// ã‚¹ã‚¯ãƒ­ãƒ¼ãƒ«é–¢é€£ã€‚
 
-// …•½ƒXƒNƒ[ƒ‹‚ÌˆÊ’u‚ğæ“¾‚·‚éB
+// æ°´å¹³ã‚¹ã‚¯ãƒ­ãƒ¼ãƒ«ã®ä½ç½®ã‚’å–å¾—ã™ã‚‹ã€‚
 int __fastcall XgGetHScrollPos(void)
 {
     return ::GetScrollPos(xg_hHScrollBar, SB_CTL);
 }
 
-// ‚’¼ƒXƒNƒ[ƒ‹‚ÌˆÊ’u‚ğæ“¾‚·‚éB
+// å‚ç›´ã‚¹ã‚¯ãƒ­ãƒ¼ãƒ«ã®ä½ç½®ã‚’å–å¾—ã™ã‚‹ã€‚
 int __fastcall XgGetVScrollPos(void)
 {
     return ::GetScrollPos(xg_hVScrollBar, SB_CTL);
 }
 
-// …•½ƒXƒNƒ[ƒ‹‚ÌˆÊ’u‚ğİ’è‚·‚éB
+// æ°´å¹³ã‚¹ã‚¯ãƒ­ãƒ¼ãƒ«ã®ä½ç½®ã‚’è¨­å®šã™ã‚‹ã€‚
 int __fastcall XgSetHScrollPos(int nPos, BOOL bRedraw)
 {
     return ::SetScrollPos(xg_hHScrollBar, SB_CTL, nPos, bRedraw);
 }
 
-// ‚’¼ƒXƒNƒ[ƒ‹‚ÌˆÊ’u‚ğİ’è‚·‚éB
+// å‚ç›´ã‚¹ã‚¯ãƒ­ãƒ¼ãƒ«ã®ä½ç½®ã‚’è¨­å®šã™ã‚‹ã€‚
 int __fastcall XgSetVScrollPos(int nPos, BOOL bRedraw)
 {
     return ::SetScrollPos(xg_hVScrollBar, SB_CTL, nPos, bRedraw);
 }
 
-// …•½ƒXƒNƒ[ƒ‹‚Ìî•ñ‚ğæ“¾‚·‚éB
+// æ°´å¹³ã‚¹ã‚¯ãƒ­ãƒ¼ãƒ«ã®æƒ…å ±ã‚’å–å¾—ã™ã‚‹ã€‚
 BOOL __fastcall XgGetHScrollInfo(LPSCROLLINFO psi)
 {
     return ::GetScrollInfo(xg_hHScrollBar, SB_CTL, psi);
 }
 
-// ‚’¼ƒXƒNƒ[ƒ‹‚Ìî•ñ‚ğæ“¾‚·‚éB
+// å‚ç›´ã‚¹ã‚¯ãƒ­ãƒ¼ãƒ«ã®æƒ…å ±ã‚’å–å¾—ã™ã‚‹ã€‚
 BOOL __fastcall XgGetVScrollInfo(LPSCROLLINFO psi)
 {
     return ::GetScrollInfo(xg_hVScrollBar, SB_CTL, psi);
 }
 
-// …•½ƒXƒNƒ[ƒ‹‚Ìî•ñ‚ğİ’è‚·‚éB
+// æ°´å¹³ã‚¹ã‚¯ãƒ­ãƒ¼ãƒ«ã®æƒ…å ±ã‚’è¨­å®šã™ã‚‹ã€‚
 BOOL __fastcall XgSetHScrollInfo(LPSCROLLINFO psi, BOOL bRedraw)
 {
     return ::SetScrollInfo(xg_hHScrollBar, SB_CTL, psi, bRedraw);
 }
 
-// ‚’¼ƒXƒNƒ[ƒ‹‚Ìî•ñ‚ğİ’è‚·‚éB
+// å‚ç›´ã‚¹ã‚¯ãƒ­ãƒ¼ãƒ«ã®æƒ…å ±ã‚’è¨­å®šã™ã‚‹ã€‚
 BOOL __fastcall XgSetVScrollInfo(LPSCROLLINFO psi, BOOL bRedraw)
 {
     return ::SetScrollInfo(xg_hVScrollBar, SB_CTL, psi, bRedraw);
 }
 
-// –{“–‚ÌƒNƒ‰ƒCƒAƒ“ƒg—Ìˆæ‚ğŒvZ‚·‚éB
+// æœ¬å½“ã®ã‚¯ãƒ©ã‚¤ã‚¢ãƒ³ãƒˆé ˜åŸŸã‚’è¨ˆç®—ã™ã‚‹ã€‚
 void __fastcall XgGetRealClientRect(HWND hwnd, LPRECT prcClient)
 {
     MRect rc, rcClient;
@@ -333,21 +333,21 @@ void __fastcall XgGetRealClientRect(HWND hwnd, LPRECT prcClient)
     *prcClient = rcClient;
 }
 
-// ƒXƒNƒ[ƒ‹î•ñ‚ğİ’è‚·‚éB
+// ã‚¹ã‚¯ãƒ­ãƒ¼ãƒ«æƒ…å ±ã‚’è¨­å®šã™ã‚‹ã€‚
 void __fastcall XgUpdateScrollInfo(HWND hwnd, int x, int y)
 {
     SIZE siz;
     MRect rcClient;
     SCROLLINFO si;
 
-    // ƒNƒƒXƒ[ƒh‚Ì‘å‚«‚³‚ğæ“¾‚·‚éB
+    // ã‚¯ãƒ­ã‚¹ãƒ¯ãƒ¼ãƒ‰ã®å¤§ãã•ã‚’å–å¾—ã™ã‚‹ã€‚
     ForDisplay for_display;
     XgGetXWordExtent(&siz);
 
-    // ƒNƒ‰ƒCƒAƒ“ƒg—Ãˆç‚ğæ“¾‚·‚éB
+    // ã‚¯ãƒ©ã‚¤ã‚¢ãƒ³ãƒˆç™‚è‚²ã‚’å–å¾—ã™ã‚‹ã€‚
     XgGetRealClientRect(hwnd, &rcClient);
 
-    // ‰¡ƒXƒNƒ[ƒ‹î•ñ‚ğİ’è‚·‚éB
+    // æ¨ªã‚¹ã‚¯ãƒ­ãƒ¼ãƒ«æƒ…å ±ã‚’è¨­å®šã™ã‚‹ã€‚
     si.cbSize = sizeof(si);
     si.fMask = SIF_ALL | SIF_DISABLENOSCROLL;
     XgGetHScrollInfo(&si);
@@ -358,7 +358,7 @@ void __fastcall XgUpdateScrollInfo(HWND hwnd, int x, int y)
     si.nPos = x;
     XgSetHScrollInfo(&si, TRUE);
 
-    // cƒXƒNƒ[ƒ‹î•ñ‚ğİ’è‚·‚éB
+    // ç¸¦ã‚¹ã‚¯ãƒ­ãƒ¼ãƒ«æƒ…å ±ã‚’è¨­å®šã™ã‚‹ã€‚
     si.cbSize = sizeof(si);
     si.fMask = SIF_ALL | SIF_DISABLENOSCROLL;
     XgGetVScrollInfo(&si);
@@ -370,17 +370,17 @@ void __fastcall XgUpdateScrollInfo(HWND hwnd, int x, int y)
     XgSetVScrollInfo(&si, TRUE);
 }
 
-// ƒLƒƒƒŒƒbƒg‚ªŒ©‚¦‚é‚æ‚¤‚ÉA•K—v‚È‚ç‚ÎƒXƒNƒ[ƒ‹‚·‚éB
+// ã‚­ãƒ£ãƒ¬ãƒƒãƒˆãŒè¦‹ãˆã‚‹ã‚ˆã†ã«ã€å¿…è¦ãªã‚‰ã°ã‚¹ã‚¯ãƒ­ãƒ¼ãƒ«ã™ã‚‹ã€‚
 void __fastcall XgEnsureCaretVisible(HWND hwnd)
 {
     MRect rc, rcClient;
     SCROLLINFO si;
     bool bNeedRedraw = false;
 
-    // ƒNƒ‰ƒCƒAƒ“ƒg—Ìˆæ‚ğæ“¾‚·‚éB
+    // ã‚¯ãƒ©ã‚¤ã‚¢ãƒ³ãƒˆé ˜åŸŸã‚’å–å¾—ã™ã‚‹ã€‚
     ::GetClientRect(hwnd, &rcClient);
 
-    // ƒc[ƒ‹ƒo[‚ªŒ©‚¦‚é‚È‚çAƒNƒ‰ƒCƒAƒ“ƒg—Ìˆæ‚ğ•â³‚·‚éB
+    // ãƒ„ãƒ¼ãƒ«ãƒãƒ¼ãŒè¦‹ãˆã‚‹ãªã‚‰ã€ã‚¯ãƒ©ã‚¤ã‚¢ãƒ³ãƒˆé ˜åŸŸã‚’è£œæ­£ã™ã‚‹ã€‚
     if (::IsWindowVisible(xg_hToolBar)) {
         ::GetWindowRect(xg_hToolBar, &rc);
         rcClient.top += rc.Height();
@@ -393,14 +393,14 @@ void __fastcall XgEnsureCaretVisible(HWND hwnd)
 
     INT nCellSize = xg_nCellSize * xg_nZoomRate / 100;
 
-    // ƒLƒƒƒŒƒbƒg‚Ì‹éŒ`‚ğİ’è‚·‚éB
+    // ã‚­ãƒ£ãƒ¬ãƒƒãƒˆã®çŸ©å½¢ã‚’è¨­å®šã™ã‚‹ã€‚
     ::SetRect(&rc,
         static_cast<int>(xg_nMargin + xg_caret_pos.m_j * nCellSize), 
         static_cast<int>(xg_nMargin + xg_caret_pos.m_i * nCellSize), 
         static_cast<int>(xg_nMargin + (xg_caret_pos.m_j + 1) * nCellSize), 
         static_cast<int>(xg_nMargin + (xg_caret_pos.m_i + 1) * nCellSize));
 
-    // ‰¡ƒXƒNƒ[ƒ‹î•ñ‚ğC³‚·‚éB
+    // æ¨ªã‚¹ã‚¯ãƒ­ãƒ¼ãƒ«æƒ…å ±ã‚’ä¿®æ­£ã™ã‚‹ã€‚
     si.cbSize = sizeof(si);
     si.fMask = SIF_ALL;
     XgGetHScrollInfo(&si);
@@ -412,7 +412,7 @@ void __fastcall XgEnsureCaretVisible(HWND hwnd)
         bNeedRedraw = true;
     }
 
-    // cƒXƒNƒ[ƒ‹î•ñ‚ğC³‚·‚éB
+    // ç¸¦ã‚¹ã‚¯ãƒ­ãƒ¼ãƒ«æƒ…å ±ã‚’ä¿®æ­£ã™ã‚‹ã€‚
     si.cbSize = sizeof(si);
     si.fMask = SIF_ALL;
     XgGetVScrollInfo(&si);
@@ -424,7 +424,7 @@ void __fastcall XgEnsureCaretVisible(HWND hwnd)
         bNeedRedraw = true;
     }
 
-    // •ÏŠ·ƒEƒBƒ“ƒhƒE‚ÌˆÊ’u‚ğİ’è‚·‚éB
+    // å¤‰æ›ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®ä½ç½®ã‚’è¨­å®šã™ã‚‹ã€‚
     COMPOSITIONFORM CompForm;
     CompForm.dwStyle = CFS_POINT;
     CompForm.ptCurrentPos.x = rcClient.left + rc.left - XgGetHScrollPos();
@@ -433,7 +433,7 @@ void __fastcall XgEnsureCaretVisible(HWND hwnd)
     ::ImmSetCompositionWindow(hIMC, &CompForm);
     ::ImmReleaseContext(hwnd, hIMC);
 
-    // •K—v‚È‚ç‚ÎÄ•`‰æ‚·‚éB
+    // å¿…è¦ãªã‚‰ã°å†æç”»ã™ã‚‹ã€‚
     if (bNeedRedraw) {
         XgUpdateImage(hwnd);
     }
@@ -441,7 +441,7 @@ void __fastcall XgEnsureCaretVisible(HWND hwnd)
 
 //////////////////////////////////////////////////////////////////////////////
 
-// ƒc[ƒ‹ƒo[‚ÌUI‚ğXV‚·‚éB
+// ãƒ„ãƒ¼ãƒ«ãƒãƒ¼ã®UIã‚’æ›´æ–°ã™ã‚‹ã€‚
 void __fastcall XgUpdateToolBarUI(HWND hwnd)
 {
     ::SendMessageW(xg_hToolBar, TB_ENABLEBUTTON, ID_SOLVE, !xg_bSolved);
@@ -459,7 +459,7 @@ BOOL XgLoadDictsFromDir(LPWSTR pszDir)
     WIN32_FIND_DATAW find;
     HANDLE hFind;
 
-    // ƒtƒ@ƒCƒ‹ *.dic ‚ğ—ñ‹“‚·‚éB
+    // ãƒ•ã‚¡ã‚¤ãƒ« *.dic ã‚’åˆ—æŒ™ã™ã‚‹ã€‚
     StringCbCopy(szPath, sizeof(szPath), pszDir);
     PathAppend(szPath, L"*.dic");
     hFind = FindFirstFileW(szPath, &find);
@@ -474,7 +474,7 @@ BOOL XgLoadDictsFromDir(LPWSTR pszDir)
         FindClose(hFind);
     }
 
-    // ƒtƒ@ƒCƒ‹ *.tsv ‚ğ—ñ‹“‚·‚éB
+    // ãƒ•ã‚¡ã‚¤ãƒ« *.tsv ã‚’åˆ—æŒ™ã™ã‚‹ã€‚
     StringCbCopy(szPath, sizeof(szPath), pszDir);
     PathAppend(szPath, L"*.tsv");
     hFind = FindFirstFileW(szPath, &find);
@@ -492,16 +492,16 @@ BOOL XgLoadDictsFromDir(LPWSTR pszDir)
     return !xg_dict_files.empty();
 }
 
-// «‘ƒtƒ@ƒCƒ‹‚ğ‚·‚×‚Ä“Ç‚İ‚ŞB
+// è¾æ›¸ãƒ•ã‚¡ã‚¤ãƒ«ã‚’ã™ã¹ã¦èª­ã¿è¾¼ã‚€ã€‚
 BOOL XgLoadDictsAll(void)
 {
     xg_dict_files.clear();
 
-    // Àsƒtƒ@ƒCƒ‹‚ÌƒpƒX‚ğæ“¾B
+    // å®Ÿè¡Œãƒ•ã‚¡ã‚¤ãƒ«ã®ãƒ‘ã‚¹ã‚’å–å¾—ã€‚
     WCHAR sz[MAX_PATH];
     ::GetModuleFileNameW(nullptr, sz, sizeof(sz));
 
-    // Àsƒtƒ@ƒCƒ‹‚Ì‹ß‚­‚É‚ ‚é.dic/.tsvƒtƒ@ƒCƒ‹‚ğ—ñ‹“‚·‚éB
+    // å®Ÿè¡Œãƒ•ã‚¡ã‚¤ãƒ«ã®è¿‘ãã«ã‚ã‚‹.dic/.tsvãƒ•ã‚¡ã‚¤ãƒ«ã‚’åˆ—æŒ™ã™ã‚‹ã€‚
     PathRemoveFileSpec(sz);
     PathAppend(sz, L"DICT");
     if (!XgLoadDictsFromDir(sz))
@@ -517,7 +517,7 @@ BOOL XgLoadDictsAll(void)
         }
     }
 
-    // “Ç‚İ‚ñ‚¾’†‚©‚çŒ©‚Â‚©‚é‚©H
+    // èª­ã¿è¾¼ã‚“ã ä¸­ã‹ã‚‰è¦‹ã¤ã‹ã‚‹ã‹ï¼Ÿ
     bool bFound = false;
     for (auto& file : xg_dict_files)
     {
@@ -548,7 +548,7 @@ BOOL XgLoadDictsAll(void)
         }
     }
 
-    // ƒtƒ@ƒCƒ‹‚ªÀÛ‚É‘¶İ‚·‚é‚©ƒ`ƒFƒbƒN‚µA‘¶İ‚µ‚È‚¢€–Ú‚ÍÁ‚·B
+    // ãƒ•ã‚¡ã‚¤ãƒ«ãŒå®Ÿéš›ã«å­˜åœ¨ã™ã‚‹ã‹ãƒã‚§ãƒƒã‚¯ã—ã€å­˜åœ¨ã—ãªã„é …ç›®ã¯æ¶ˆã™ã€‚
     for (size_t i = 0; i < xg_dict_files.size(); ++i) {
         auto& file = xg_dict_files[i];
         if (!PathFileExistsW(file.c_str())) {
@@ -560,7 +560,7 @@ BOOL XgLoadDictsAll(void)
     return !xg_dict_files.empty();
 }
 
-// İ’è‚ğ“Ç‚İ‚ŞB
+// è¨­å®šã‚’èª­ã¿è¾¼ã‚€ã€‚
 bool __fastcall XgLoadSettings(void)
 {
     int i, nDirCount = 0;
@@ -568,7 +568,7 @@ bool __fastcall XgLoadSettings(void)
     WCHAR szFormat[32];
     DWORD dwValue;
 
-    // ‰Šú‰»‚·‚éB
+    // åˆæœŸåŒ–ã™ã‚‹ã€‚
     s_nMainWndX = CW_USEDEFAULT;
     s_nMainWndY = CW_USEDEFAULT;
     s_nMainWndCX = 475;
@@ -643,10 +643,10 @@ bool __fastcall XgLoadSettings(void)
 
     xg_strDoubleFrameLetters = XgLoadStringDx1(IDS_DBLFRAME_LETTERS_1);
 
-    // ‰ïĞ–¼ƒL[‚ğŠJ‚­B
+    // ä¼šç¤¾åã‚­ãƒ¼ã‚’é–‹ãã€‚
     MRegKey company_key(HKEY_CURRENT_USER, s_pszSoftwareCompanyName, FALSE);
     if (company_key) {
-        // ƒAƒvƒŠ–¼ƒL[‚ğŠJ‚­B
+        // ã‚¢ãƒ—ãƒªåã‚­ãƒ¼ã‚’é–‹ãã€‚
         MRegKey app_key(company_key, s_pszAppName, FALSE);
         if (app_key) {
             if (!app_key.QueryDword(L"WindowX", dwValue)) {
@@ -853,7 +853,7 @@ bool __fastcall XgLoadSettings(void)
                 xg_strDoubleFrameLetters = sz;
             }
 
-            // •Û‘¶æ‚ÌƒŠƒXƒg‚ğæ“¾‚·‚éB
+            // ä¿å­˜å…ˆã®ãƒªã‚¹ãƒˆã‚’å–å¾—ã™ã‚‹ã€‚
             if (!app_key.QueryDword(L"SaveToCount", dwValue)) {
                 nDirCount = dwValue;
                 for (i = 0; i < nDirCount; i++) {
@@ -869,7 +869,7 @@ bool __fastcall XgLoadSettings(void)
         }
     }
 
-    // •Û‘¶æƒŠƒXƒg‚ª‹ó‚¾‚Á‚½‚çA‰Šú‰»‚·‚éB
+    // ä¿å­˜å…ˆãƒªã‚¹ãƒˆãŒç©ºã ã£ãŸã‚‰ã€åˆæœŸåŒ–ã™ã‚‹ã€‚
     if (nDirCount == 0 || s_dirs_save_to.empty()) {
         LPITEMIDLIST pidl;
         WCHAR szPath[MAX_PATH];
@@ -900,16 +900,16 @@ bool __fastcall XgLoadSettings(void)
     return true;
 }
 
-// İ’è‚ğ•Û‘¶‚·‚éB
+// è¨­å®šã‚’ä¿å­˜ã™ã‚‹ã€‚
 bool __fastcall XgSaveSettings(void)
 {
     int i, nCount;
     WCHAR szFormat[32];
 
-    // ‰ïĞ–¼ƒL[‚ğŠJ‚­BƒL[‚ª‚È‚¯‚ê‚Îì¬‚·‚éB
+    // ä¼šç¤¾åã‚­ãƒ¼ã‚’é–‹ãã€‚ã‚­ãƒ¼ãŒãªã‘ã‚Œã°ä½œæˆã™ã‚‹ã€‚
     MRegKey company_key(HKEY_CURRENT_USER, s_pszSoftwareCompanyName, TRUE);
     if (company_key) {
-        // ƒAƒvƒŠ–¼ƒL[‚ğŠJ‚­BƒL[‚ª‚È‚¯‚ê‚Îì¬‚·‚éB
+        // ã‚¢ãƒ—ãƒªåã‚­ãƒ¼ã‚’é–‹ãã€‚ã‚­ãƒ¼ãŒãªã‘ã‚Œã°ä½œæˆã™ã‚‹ã€‚
         MRegKey app_key(company_key, s_pszAppName, TRUE);
         if (app_key) {
             app_key.SetDword(L"OldNotice", s_bOldNotice);
@@ -966,7 +966,7 @@ bool __fastcall XgSaveSettings(void)
             app_key.SetSz(L"BlackCellImage", xg_strBlackCellImage.c_str());
             app_key.SetSz(L"DoubleFrameLetters", xg_strDoubleFrameLetters.c_str());
 
-            // •Û‘¶æ‚ÌƒŠƒXƒg‚ğİ’è‚·‚éB
+            // ä¿å­˜å…ˆã®ãƒªã‚¹ãƒˆã‚’è¨­å®šã™ã‚‹ã€‚
             nCount = static_cast<int>(s_dirs_save_to.size());
             app_key.SetDword(L"SaveToCount", nCount);
             for (i = 0; i < nCount; i++)
@@ -1000,10 +1000,10 @@ bool __fastcall XgSaveSettings(void)
     return true;
 }
 
-// İ’è‚ğÁ‹‚·‚éB
+// è¨­å®šã‚’æ¶ˆå»ã™ã‚‹ã€‚
 bool __fastcall XgEraseSettings(void)
 {
-    // ‰ïĞ–¼ƒL[‚ğŠJ‚­B
+    // ä¼šç¤¾åã‚­ãƒ¼ã‚’é–‹ãã€‚
     RegDeleteTreeDx(HKEY_CURRENT_USER, s_pszSoftwareCompanyAndApp);
 
     return true;
@@ -1011,7 +1011,7 @@ bool __fastcall XgEraseSettings(void)
 
 //////////////////////////////////////////////////////////////////////////////
 
-// uƒqƒ“ƒg‚Ì“ü—Ívƒ_ƒCƒAƒƒOB
+// ã€Œãƒ’ãƒ³ãƒˆã®å…¥åŠ›ã€ãƒ€ã‚¤ã‚¢ãƒ­ã‚°ã€‚
 extern "C"
 INT_PTR CALLBACK
 XgInputHintDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
@@ -1021,36 +1021,36 @@ XgInputHintDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 
     switch (uMsg) {
     case WM_INITDIALOG:
-        // ƒ_ƒCƒAƒƒO‚ğ’†‰›‚ÉŠñ‚¹‚éB
+        // ãƒ€ã‚¤ã‚¢ãƒ­ã‚°ã‚’ä¸­å¤®ã«å¯„ã›ã‚‹ã€‚
         XgCenterDialog(hwnd);
 
-        // ƒ_ƒCƒAƒƒO‚ğ‰Šú‰»‚·‚éB
+        // ãƒ€ã‚¤ã‚¢ãƒ­ã‚°ã‚’åˆæœŸåŒ–ã™ã‚‹ã€‚
         s_word = *reinterpret_cast<std::wstring *>(lParam);
         StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(IDS_REGISTERWORD), s_word.data(), s_word.data());
         ::SetDlgItemTextW(hwnd, stc1, sz);
 
-        // ƒqƒ“ƒg‚ª’Ç‰Á‚³‚ê‚½B
+        // ãƒ’ãƒ³ãƒˆãŒè¿½åŠ ã•ã‚ŒãŸã€‚
         xg_bHintsAdded = true;
         return true;
 
     case WM_COMMAND:
         switch (LOWORD(wParam)) {
         case IDOK:
-            // ƒeƒLƒXƒg‚ğæ“¾‚·‚éB
+            // ãƒ†ã‚­ã‚¹ãƒˆã‚’å–å¾—ã™ã‚‹ã€‚
             ::GetDlgItemTextW(hwnd, edt1, sz, ARRAYSIZE(sz));
 
-            // «‘ƒf[ƒ^‚É’Ç‰Á‚·‚éB
+            // è¾æ›¸ãƒ‡ãƒ¼ã‚¿ã«è¿½åŠ ã™ã‚‹ã€‚
             xg_dict_1.emplace_back(s_word, sz);
 
-            // “ñ•ª’Tõ‚Ì‚½‚ß‚ÉA•À‚Ñ‘Ö‚¦‚Ä‚¨‚­B
+            // äºŒåˆ†æ¢ç´¢ã®ãŸã‚ã«ã€ä¸¦ã³æ›¿ãˆã¦ãŠãã€‚
             XgSortAndUniqueDictData(xg_dict_1);
 
-            // ƒ_ƒCƒAƒƒO‚ğI—¹B
+            // ãƒ€ã‚¤ã‚¢ãƒ­ã‚°ã‚’çµ‚äº†ã€‚
             ::EndDialog(hwnd, IDOK);
             break;
 
         case IDCANCEL:
-            // ƒ_ƒCƒAƒƒO‚ğI—¹B
+            // ãƒ€ã‚¤ã‚¢ãƒ­ã‚°ã‚’çµ‚äº†ã€‚
             ::EndDialog(hwnd, IDCANCEL);
             break;
         }
@@ -1060,54 +1060,54 @@ XgInputHintDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
     return false;
 }
 
-// ƒNƒƒXƒ[ƒh‚ğƒ`ƒFƒbƒN‚·‚éB
+// ã‚¯ãƒ­ã‚¹ãƒ¯ãƒ¼ãƒ‰ã‚’ãƒã‚§ãƒƒã‚¯ã™ã‚‹ã€‚
 bool __fastcall XgCheckCrossWord(HWND hwnd, bool check_words = true)
 {
-    // l‹÷•‹ÖB
+    // å››éš…é»’ç¦ã€‚
     if ((xg_nRules & RULE_DONTCORNERBLACK) && xg_xword.CornerBlack()) {
         XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_CORNERBLOCK), nullptr, MB_ICONERROR);
         return false;
     }
 
-    // ˜A•‹ÖB
+    // é€£é»’ç¦ã€‚
     if ((xg_nRules & RULE_DONTDOUBLEBLACK) && xg_xword.DoubleBlack()) {
         XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_ADJACENTBLOCK), nullptr, MB_ICONERROR);
         return false;
     }
 
-    // O•û•‹ÖB
+    // ä¸‰æ–¹é»’ç¦ã€‚
     if ((xg_nRules & RULE_DONTTRIDIRECTIONS) && xg_xword.TriBlackAround()) {
         XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_TRIBLOCK), nullptr, MB_ICONERROR);
         return false;
     }
 
-    // •ª’f‹ÖB
+    // åˆ†æ–­ç¦ã€‚
     if ((xg_nRules & RULE_DONTDIVIDE) && xg_xword.DividedByBlack()) {
         XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_DIVIDED), nullptr, MB_ICONERROR);
         return false;
     }
 
-    // •ÎO˜A‹ÖB
+    // é»’æ–œä¸‰é€£ç¦ã€‚
     if (xg_nRules & RULE_DONTTHREEDIAGONALS) {
         if (xg_xword.ThreeDiagonals()) {
             XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_THREEDIAGONALS), nullptr, MB_ICONERROR);
             return false;
         }
     } else if (xg_nRules & RULE_DONTFOURDIAGONALS) {
-        // •Îl˜A‹ÖB
+        // é»’æ–œå››é€£ç¦ã€‚
         if (xg_xword.FourDiagonals()) {
             XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_FOURDIAGONALS), nullptr, MB_ICONERROR);
             return false;
         }
     }
 
-    // •ƒ}ƒX“_‘ÎÌB
+    // é»’ãƒã‚¹ç‚¹å¯¾ç§°ã€‚
     if ((xg_nRules & RULE_POINTSYMMETRY) && !xg_xword.IsPointSymmetry()) {
         XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_NOTPOINTSYMMETRY), nullptr, MB_ICONERROR);
         return false;
     }
 
-    // •ƒ}ƒXü‘ÎÌB
+    // é»’ãƒã‚¹ç·šå¯¾ç§°ã€‚
     if ((xg_nRules & RULE_LINESYMMETRYV) && !xg_xword.IsLineSymmetryV()) {
         XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_NOTLINESYMMETRYV), nullptr, MB_ICONERROR);
         return false;
@@ -1117,36 +1117,36 @@ bool __fastcall XgCheckCrossWord(HWND hwnd, bool check_words = true)
         return false;
     }
 
-    // ‹ô”s”‚Å•ƒ}ƒXü‘ÎÌiƒ^ƒej‚Ìê‡‚Í˜A•‹Ö‚Í•s‰ÂB
+    // å¶æ•°è¡Œæ•°ã§é»’ãƒã‚¹ç·šå¯¾ç§°ï¼ˆã‚¿ãƒ†ï¼‰ã®å ´åˆã¯é€£é»’ç¦ã¯ä¸å¯ã€‚
     if (!(xg_nRows & 1) && (xg_nRules & RULE_LINESYMMETRYV) && (xg_nRules & RULE_DONTDOUBLEBLACK)) {
         XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_EVENROWLINESYMV), nullptr, MB_ICONERROR);
         return false;
     }
-    // ‹ô”—ñ”‚Å•ƒ}ƒXü‘ÎÌiƒˆƒRj‚Ìê‡‚Í˜A•‹Ö‚Í•s‰ÂB
+    // å¶æ•°åˆ—æ•°ã§é»’ãƒã‚¹ç·šå¯¾ç§°ï¼ˆãƒ¨ã‚³ï¼‰ã®å ´åˆã¯é€£é»’ç¦ã¯ä¸å¯ã€‚
     if (!(xg_nCols & 1) && (xg_nRules & RULE_LINESYMMETRYH) && (xg_nRules & RULE_DONTDOUBLEBLACK)) {
         XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_EVENCOLLINESYMH), nullptr, MB_ICONERROR);
         return false;
     }
 
-    // ƒNƒƒXƒ[ƒh‚ÉŠÜ‚Ü‚ê‚é’PŒê‚Ìƒ`ƒFƒbƒNB
+    // ã‚¯ãƒ­ã‚¹ãƒ¯ãƒ¼ãƒ‰ã«å«ã¾ã‚Œã‚‹å˜èªã®ãƒã‚§ãƒƒã‚¯ã€‚
     XG_Pos pos;
     std::vector<std::wstring> vNotFoundWords;
     XG_EpvCode code = xg_xword.EveryPatternValid1(vNotFoundWords, pos, xg_bNoAddBlack);
     if (code == xg_epv_PATNOTMATCH) {
         if (check_words) {
-            // ƒpƒ^[ƒ“‚Éƒ}ƒbƒ`‚µ‚È‚¢ƒ}ƒX‚ª‚ ‚Á‚½B
+            // ãƒ‘ã‚¿ãƒ¼ãƒ³ã«ãƒãƒƒãƒã—ãªã„ãƒã‚¹ãŒã‚ã£ãŸã€‚
             WCHAR sz[128];
             StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(IDS_NOCANDIDATE), pos.m_i + 1, pos.m_j + 1);
             XgCenterMessageBoxW(hwnd, sz, nullptr, MB_ICONERROR);
             return false;
         }
     } else if (code == xg_epv_DOUBLEWORD) {
-        // ‚·‚Å‚Ég—p‚µ‚½’PŒê‚ª‚ ‚Á‚½B
+        // ã™ã§ã«ä½¿ç”¨ã—ãŸå˜èªãŒã‚ã£ãŸã€‚
         XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_DOUBLEDWORD), nullptr, MB_ICONERROR);
         return false;
     } else if (code == xg_epv_LENGTHMISMATCH) {
         if (check_words) {
-            // “o˜^‚³‚ê‚Ä‚¢‚é’PŒê‚Æ’·‚³‚Ìˆê’v‚µ‚È‚¢ƒXƒy[ƒX‚ª‚ ‚Á‚½B
+            // ç™»éŒ²ã•ã‚Œã¦ã„ã‚‹å˜èªã¨é•·ã•ã®ä¸€è‡´ã—ãªã„ã‚¹ãƒšãƒ¼ã‚¹ãŒã‚ã£ãŸã€‚
             WCHAR sz[128];
             StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(IDS_TOOLONGSPACE), pos.m_i + 1, pos.m_j + 1);
             XgCenterMessageBoxW(hwnd, sz, nullptr, MB_ICONERROR);
@@ -1154,34 +1154,34 @@ bool __fastcall XgCheckCrossWord(HWND hwnd, bool check_words = true)
         }
     }
 
-    // Œ©‚Â‚©‚ç‚È‚©‚Á‚½’PŒê‚ª‚ ‚é‚©H
+    // è¦‹ã¤ã‹ã‚‰ãªã‹ã£ãŸå˜èªãŒã‚ã‚‹ã‹ï¼Ÿ
     if (!vNotFoundWords.empty()) {
         if (check_words) {
-            // ’PŒê‚ª“o˜^‚³‚ê‚Ä‚¢‚È‚¢B
+            // å˜èªãŒç™»éŒ²ã•ã‚Œã¦ã„ãªã„ã€‚
             for (auto& word : vNotFoundWords) {
-                // ƒqƒ“ƒg‚Ì“ü—Í‚ğ‘£‚·B
+                // ãƒ’ãƒ³ãƒˆã®å…¥åŠ›ã‚’ä¿ƒã™ã€‚
                 if (::DialogBoxParamW(xg_hInstance, MAKEINTRESOURCE(IDD_INPUTHINT),
                                       hwnd, XgInputHintDlgProc,
                                       reinterpret_cast<LPARAM>(&word)) != IDOK)
                 {
-                    // ƒLƒƒƒ“ƒZƒ‹‚³‚ê‚½B
+                    // ã‚­ãƒ£ãƒ³ã‚»ãƒ«ã•ã‚ŒãŸã€‚
                     return false;
                 }
             }
         }
     }
 
-    // ¬Œ÷B
+    // æˆåŠŸã€‚
     return true;
 }
 
-// «‘–¼‚ğƒZƒbƒg‚·‚éB
+// è¾æ›¸åã‚’ã‚»ãƒƒãƒˆã™ã‚‹ã€‚
 void XgSetDict(const std::wstring& strFile)
 {
-    // «‘–¼‚ğŠi”[B
+    // è¾æ›¸åã‚’æ ¼ç´ã€‚
     xg_dict_name = strFile;
 
-    // «‘‚Æ‚µ‚Ä’Ç‰ÁAƒ\[ƒgAˆêˆÓ‚É‚·‚éB
+    // è¾æ›¸ã¨ã—ã¦è¿½åŠ ã€ã‚½ãƒ¼ãƒˆã€ä¸€æ„ã«ã™ã‚‹ã€‚
     if (xg_dict_files.size() < MAX_DICTS)
     {
         xg_dict_files.emplace_back(strFile);
@@ -1193,17 +1193,17 @@ void XgSetDict(const std::wstring& strFile)
 
 //////////////////////////////////////////////////////////////////////////////
 
-// ”Õ‚ğ“Á’è‚Ì•¶š‚Å–„‚ßs‚­‚·B
+// ç›¤ã‚’ç‰¹å®šã®æ–‡å­—ã§åŸ‹ã‚å°½ãã™ã€‚
 void __fastcall XgNewCells(HWND hwnd, WCHAR ch, INT nRows, INT nCols)
 {
     auto sa1 = std::make_shared<XG_UndoData_SetAll>();
     auto sa2 = std::make_shared<XG_UndoData_SetAll>();
     sa1->Get();
-    // Œó•âƒEƒBƒ“ƒhƒE‚ğ”jŠü‚·‚éB
+    // å€™è£œã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚’ç ´æ£„ã™ã‚‹ã€‚
     XgDestroyCandsWnd();
-    // ƒqƒ“ƒgƒEƒBƒ“ƒhƒE‚ğ”jŠü‚·‚éB
+    // ãƒ’ãƒ³ãƒˆã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚’ç ´æ£„ã™ã‚‹ã€‚
     XgDestroyHintsWnd();
-    // ‰Šú‰»‚·‚éB
+    // åˆæœŸåŒ–ã™ã‚‹ã€‚
     xg_bSolved = false;
     xg_nRows = nRows;
     xg_nCols = nCols;
@@ -1223,22 +1223,22 @@ void __fastcall XgNewCells(HWND hwnd, WCHAR ch, INT nRows, INT nCols)
             xg_xword.SetAt(iRow, jCol, ch);
         }
     }
-    // ƒCƒ[ƒW‚ğXV‚·‚éB
+    // ã‚¤ãƒ¡ãƒ¼ã‚¸ã‚’æ›´æ–°ã™ã‚‹ã€‚
     XgMarkUpdate();
     XgUpdateImage(hwnd, 0, 0);
-    // uŒ³‚É–ß‚·vî•ñ‚ğİ’è‚·‚éB
+    // ã€Œå…ƒã«æˆ»ã™ã€æƒ…å ±ã‚’è¨­å®šã™ã‚‹ã€‚
     sa2->Get();
     xg_ubUndoBuffer.Commit(UC_SETALL, sa1, sa2);
-    // ƒc[ƒ‹ƒo[‚ÌUI‚ğXV‚·‚éB
+    // ãƒ„ãƒ¼ãƒ«ãƒãƒ¼ã®UIã‚’æ›´æ–°ã™ã‚‹ã€‚
     XgUpdateToolBarUI(hwnd);
 }
 
-// ’PŒêƒŠƒXƒg‚ÌƒRƒs[B
+// å˜èªãƒªã‚¹ãƒˆã®ã‚³ãƒ”ãƒ¼ã€‚
 void XgCopyWordList(HWND hwnd)
 {
     const XG_Board *xw = (xg_bSolved ? &xg_solution : &xg_xword);
 
-    // ‘S’PŒê‚ğæ“¾B‹ó”’‚ğŠÜ‚Ş’PŒê‚Í–³‹B
+    // å…¨å˜èªã‚’å–å¾—ã€‚ç©ºç™½ã‚’å«ã‚€å˜èªã¯ç„¡è¦–ã€‚
     std::vector<std::wstring> words;
     for (INT iRow = 0; iRow < xg_nRows; ++iRow) {
         for (INT jCol = 0; jCol < xg_nCols; ++jCol) {
@@ -1254,16 +1254,16 @@ void XgCopyWordList(HWND hwnd)
         }
     }
 
-    // ƒ\[ƒg‚µ‚ÄˆêˆÓ‰»B
+    // ã‚½ãƒ¼ãƒˆã—ã¦ä¸€æ„åŒ–ã€‚
     std::sort(words.begin(), words.end());
     auto last = std::unique(words.begin(), words.end());
     words.erase(last, words.end());
 
-    // ‰üs‹æØ‚è‚É‚·‚éB
+    // æ”¹è¡ŒåŒºåˆ‡ã‚Šã«ã™ã‚‹ã€‚
     std::wstring str = mstr_join(words, L"\r\n");
     str += L"\r\n";
 
-    // ‘SŠp‰p”‚ğ”¼Šp‰p”‚É‚·‚éB
+    // å…¨è§’è‹±æ•°ã‚’åŠè§’è‹±æ•°ã«ã™ã‚‹ã€‚
     for (auto& wch : str) {
         if (ZEN_LARGE_A <= wch && wch <= ZEN_LARGE_Z)
             wch = L'a' + (wch - ZEN_LARGE_A);
@@ -1271,7 +1271,7 @@ void XgCopyWordList(HWND hwnd)
             wch = L'a' + (wch - ZEN_SMALL_A);
     }
 
-    // ƒNƒŠƒbƒvƒ{[ƒh‚ÉƒRƒs[B
+    // ã‚¯ãƒªãƒƒãƒ—ãƒœãƒ¼ãƒ‰ã«ã‚³ãƒ”ãƒ¼ã€‚
     size_t cb = (str.size() + 1) * sizeof(WCHAR);
     if (HGLOBAL hGlobal = ::GlobalAlloc(GHND | GMEM_SHARE, cb)) {
         if (LPWSTR psz = reinterpret_cast<LPWSTR>(::GlobalLock(hGlobal))) {
@@ -1289,19 +1289,19 @@ void XgCopyWordList(HWND hwnd)
     }
 }
 
-// ”Õ‚ÌƒTƒCƒY‚ğ•ÏX‚·‚éB
+// ç›¤ã®ã‚µã‚¤ã‚ºã‚’å¤‰æ›´ã™ã‚‹ã€‚
 void __fastcall XgResizeCells(HWND hwnd, INT nNewRows, INT nNewCols)
 {
     auto sa1 = std::make_shared<XG_UndoData_SetAll>();
     auto sa2 = std::make_shared<XG_UndoData_SetAll>();
     sa1->Get();
-    // Œó•âƒEƒBƒ“ƒhƒE‚ğ”jŠü‚·‚éB
+    // å€™è£œã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚’ç ´æ£„ã™ã‚‹ã€‚
     XgDestroyCandsWnd();
-    // ƒqƒ“ƒgƒEƒBƒ“ƒhƒE‚ğ”jŠü‚·‚éB
+    // ãƒ’ãƒ³ãƒˆã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚’ç ´æ£„ã™ã‚‹ã€‚
     XgDestroyHintsWnd();
-    // ƒ}[ƒN‚ÌXV‚ğ’Ê’m‚·‚éB
+    // ãƒãƒ¼ã‚¯ã®æ›´æ–°ã‚’é€šçŸ¥ã™ã‚‹ã€‚
     XgMarkUpdate();
-    // ƒTƒCƒY‚ğ•ÏX‚·‚éB
+    // ã‚µã‚¤ã‚ºã‚’å¤‰æ›´ã™ã‚‹ã€‚
     INT nOldRows = xg_nRows, nOldCols = xg_nCols;
     INT iMin = std::min((INT)xg_nRows, (INT)nNewRows);
     INT jMin = std::min((INT)xg_nCols, (INT)nNewCols);
@@ -1331,29 +1331,29 @@ void __fastcall XgResizeCells(HWND hwnd, INT nNewRows, INT nNewCols)
     xg_strFileName.clear();
     xg_vMarks.clear();
     xg_vMarkedCands.clear();
-    // ƒCƒ[ƒW‚ğXV‚·‚éB
+    // ã‚¤ãƒ¡ãƒ¼ã‚¸ã‚’æ›´æ–°ã™ã‚‹ã€‚
     XgMarkUpdate();
     XgUpdateImage(hwnd, 0, 0);
-    // uŒ³‚É–ß‚·vî•ñ‚ğİ’è‚·‚éB
+    // ã€Œå…ƒã«æˆ»ã™ã€æƒ…å ±ã‚’è¨­å®šã™ã‚‹ã€‚
     sa2->Get();
     xg_ubUndoBuffer.Commit(UC_SETALL, sa1, sa2);
-    // ƒc[ƒ‹ƒo[‚ÌUI‚ğXV‚·‚éB
+    // ãƒ„ãƒ¼ãƒ«ãƒãƒ¼ã®UIã‚’æ›´æ–°ã™ã‚‹ã€‚
     XgUpdateToolBarUI(hwnd);
 }
 
-// [V‹Kì¬]ƒ_ƒCƒAƒƒO‚Ìƒ_ƒCƒAƒƒO ƒvƒƒV[ƒWƒƒB
+// [æ–°è¦ä½œæˆ]ãƒ€ã‚¤ã‚¢ãƒ­ã‚°ã®ãƒ€ã‚¤ã‚¢ãƒ­ã‚° ãƒ—ãƒ­ã‚·ãƒ¼ã‚¸ãƒ£ã€‚
 extern "C" INT_PTR CALLBACK
 XgNewDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam*/)
 {
     INT n1, n2;
     switch (uMsg) {
     case WM_INITDIALOG:
-        // ƒ_ƒCƒAƒƒO‚ğ’†‰›‚ÖˆÚ“®‚·‚éB
+        // ãƒ€ã‚¤ã‚¢ãƒ­ã‚°ã‚’ä¸­å¤®ã¸ç§»å‹•ã™ã‚‹ã€‚
         XgCenterDialog(hwnd);
-        // ƒTƒCƒY‚Ì—“‚ğİ’è‚·‚éB
+        // ã‚µã‚¤ã‚ºã®æ¬„ã‚’è¨­å®šã™ã‚‹ã€‚
         ::SetDlgItemInt(hwnd, edt1, xg_nRows, FALSE);
         ::SetDlgItemInt(hwnd, edt2, xg_nCols, FALSE);
-        // IME‚ğOFF‚É‚·‚éB
+        // IMEã‚’OFFã«ã™ã‚‹ã€‚
         {
             HWND hwndCtrl;
 
@@ -1371,7 +1371,7 @@ XgNewDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam*/)
     case WM_COMMAND:
         switch (LOWORD(wParam)) {
         case IDOK:
-            // ƒTƒCƒY‚Ì—“‚ğƒ`ƒFƒbƒN‚·‚éB
+            // ã‚µã‚¤ã‚ºã®æ¬„ã‚’ãƒã‚§ãƒƒã‚¯ã™ã‚‹ã€‚
             n1 = static_cast<int>(::GetDlgItemInt(hwnd, edt1, nullptr, FALSE));
             if (n1 < XG_MIN_SIZE || n1 > XG_MAX_SIZE) {
                 ::SendDlgItemMessageW(hwnd, edt1, EM_SETSEL, 0, -1);
@@ -1386,23 +1386,23 @@ XgNewDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam*/)
                 ::SetFocus(::GetDlgItem(hwnd, edt2));
                 return 0;
             }
-            // ƒ_ƒCƒAƒƒO‚ğ•Â‚¶‚éB
+            // ãƒ€ã‚¤ã‚¢ãƒ­ã‚°ã‚’é–‰ã˜ã‚‹ã€‚
             ::EndDialog(hwnd, IDOK);
-            // ˆ—‚ğs‚¤B
+            // å‡¦ç†ã‚’è¡Œã†ã€‚
             if (IsDlgButtonChecked(hwnd, rad1) == BST_CHECKED) {
-                // ”Õ‚ğ“Á’è‚Ì•¶š‚Å–„‚ßs‚­‚·B
+                // ç›¤ã‚’ç‰¹å®šã®æ–‡å­—ã§åŸ‹ã‚å°½ãã™ã€‚
                 XgNewCells(xg_hMainWnd, ZEN_SPACE, n1, n2);
             } else if (IsDlgButtonChecked(hwnd, rad2) == BST_CHECKED) {
-                // ”Õ‚ğ“Á’è‚Ì•¶š‚Å–„‚ßs‚­‚·B
+                // ç›¤ã‚’ç‰¹å®šã®æ–‡å­—ã§åŸ‹ã‚å°½ãã™ã€‚
                 XgNewCells(xg_hMainWnd, ZEN_BLACK, n1, n2);
             } else if (IsDlgButtonChecked(hwnd, rad3) == BST_CHECKED) {
-                // ”Õ‚ÌƒTƒCƒY‚ğ•ÏX‚·‚éB
+                // ç›¤ã®ã‚µã‚¤ã‚ºã‚’å¤‰æ›´ã™ã‚‹ã€‚
                 XgResizeCells(xg_hMainWnd, n1, n2);
             }
             break;
 
         case IDCANCEL:
-            // ƒ_ƒCƒAƒƒO‚ğ•Â‚¶‚éB
+            // ãƒ€ã‚¤ã‚¢ãƒ­ã‚°ã‚’é–‰ã˜ã‚‹ã€‚
             ::EndDialog(hwnd, IDCANCEL);
             break;
         }
@@ -1412,7 +1412,7 @@ XgNewDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam*/)
 
 //////////////////////////////////////////////////////////////////////////////
 
-// [–â‘è‚Ìì¬]ƒ_ƒCƒAƒƒO‚Ìƒ_ƒCƒAƒƒO ƒvƒƒV[ƒWƒƒB
+// [å•é¡Œã®ä½œæˆ]ãƒ€ã‚¤ã‚¢ãƒ­ã‚°ã®ãƒ€ã‚¤ã‚¢ãƒ­ã‚° ãƒ—ãƒ­ã‚·ãƒ¼ã‚¸ãƒ£ã€‚
 extern "C" INT_PTR CALLBACK
 XgGenerateDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam*/)
 {
@@ -1420,13 +1420,13 @@ XgGenerateDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam*/)
 
     switch (uMsg) {
     case WM_INITDIALOG:
-        // ƒ_ƒCƒAƒƒO‚ğ’†‰›‚ÖˆÚ“®‚·‚éB
+        // ãƒ€ã‚¤ã‚¢ãƒ­ã‚°ã‚’ä¸­å¤®ã¸ç§»å‹•ã™ã‚‹ã€‚
         XgCenterDialog(hwnd);
-        // ƒTƒCƒY‚Ì—“‚ğİ’è‚·‚éB
+        // ã‚µã‚¤ã‚ºã®æ¬„ã‚’è¨­å®šã™ã‚‹ã€‚
         ::SetDlgItemInt(hwnd, edt1, xg_nRows, FALSE);
         ::SetDlgItemInt(hwnd, edt2, xg_nCols, FALSE);
 
-        // ƒXƒPƒ‹ƒgƒ“ƒ‚[ƒh‚Æ“ü—Íƒ‚[ƒh‚É‰‚¶‚Ä’PŒê‚ÌÅ‘å’·‚ğİ’è‚·‚éB
+        // ã‚¹ã‚±ãƒ«ãƒˆãƒ³ãƒ¢ãƒ¼ãƒ‰ã¨å…¥åŠ›ãƒ¢ãƒ¼ãƒ‰ã«å¿œã˜ã¦å˜èªã®æœ€å¤§é•·ã‚’è¨­å®šã™ã‚‹ã€‚
         if (xg_imode == xg_im_KANJI) {
             n3 = 4;
         } else if (xg_bSkeletonMode) {
@@ -1440,13 +1440,13 @@ XgGenerateDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam*/)
         }
         ::SetDlgItemInt(hwnd, edt3, n3, FALSE);
 
-        // ©“®‚ÅÄŒvZ‚ğ‚·‚é‚©H
+        // è‡ªå‹•ã§å†è¨ˆç®—ã‚’ã™ã‚‹ã‹ï¼Ÿ
         if (s_bAutoRetry)
             ::CheckDlgButton(hwnd, chx1, BST_CHECKED);
-        // ƒXƒ}[ƒg‰ğŒˆ‚©H
+        // ã‚¹ãƒãƒ¼ãƒˆè§£æ±ºã‹ï¼Ÿ
         if (xg_bSmartResolution)
             ::CheckDlgButton(hwnd, chx2, BST_CHECKED);
-        // IME‚ğOFF‚É‚·‚éB
+        // IMEã‚’OFFã«ã™ã‚‹ã€‚
         {
             HWND hwndCtrl;
 
@@ -1473,7 +1473,7 @@ XgGenerateDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam*/)
     case WM_COMMAND:
         switch (LOWORD(wParam)) {
         case IDOK:
-            // ƒTƒCƒY‚Ì—“‚ğƒ`ƒFƒbƒN‚·‚éB
+            // ã‚µã‚¤ã‚ºã®æ¬„ã‚’ãƒã‚§ãƒƒã‚¯ã™ã‚‹ã€‚
             n1 = static_cast<int>(::GetDlgItemInt(hwnd, edt1, nullptr, FALSE));
             if (n1 < XG_MIN_SIZE || n1 > XG_MAX_SIZE) {
                 ::SendDlgItemMessageW(hwnd, edt1, EM_SETSEL, 0, -1);
@@ -1496,11 +1496,11 @@ XgGenerateDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam*/)
                 return 0;
             }
             xg_nMaxWordLen = n3;
-            // ©“®‚ÅÄŒvZ‚ğ‚·‚é‚©H
+            // è‡ªå‹•ã§å†è¨ˆç®—ã‚’ã™ã‚‹ã‹ï¼Ÿ
             s_bAutoRetry = (::IsDlgButtonChecked(hwnd, chx1) == BST_CHECKED);
-            // ƒXƒ}[ƒg‰ğŒˆ‚©H
+            // ã‚¹ãƒãƒ¼ãƒˆè§£æ±ºã‹ï¼Ÿ
             xg_bSmartResolution = (::IsDlgButtonChecked(hwnd, chx2) == BST_CHECKED);
-            // ‰Šú‰»‚·‚éB
+            // åˆæœŸåŒ–ã™ã‚‹ã€‚
             {
                 xg_bSolved = false;
                 xg_bShowAnswer = false;
@@ -1511,23 +1511,23 @@ XgGenerateDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam*/)
                 xg_vYokoInfo.clear();
                 xg_vMarks.clear();
                 xg_vMarkedCands.clear();
-                // ‹ô”s”‚Å•ƒ}ƒXü‘ÎÌiƒ^ƒej‚Ìê‡‚Í˜A•‹Ö‚Í•s‰ÂB
+                // å¶æ•°è¡Œæ•°ã§é»’ãƒã‚¹ç·šå¯¾ç§°ï¼ˆã‚¿ãƒ†ï¼‰ã®å ´åˆã¯é€£é»’ç¦ã¯ä¸å¯ã€‚
                 if (!(xg_nRows & 1) && (xg_nRules & RULE_LINESYMMETRYV) && (xg_nRules & RULE_DONTDOUBLEBLACK)) {
                     XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_EVENROWLINESYMV), nullptr, MB_ICONERROR);
                     break;
                 }
-                // ‹ô”—ñ”‚Å•ƒ}ƒXü‘ÎÌiƒˆƒRj‚Ìê‡‚Í˜A•‹Ö‚Í•s‰ÂB
+                // å¶æ•°åˆ—æ•°ã§é»’ãƒã‚¹ç·šå¯¾ç§°ï¼ˆãƒ¨ã‚³ï¼‰ã®å ´åˆã¯é€£é»’ç¦ã¯ä¸å¯ã€‚
                 if (!(xg_nCols & 1) && (xg_nRules & RULE_LINESYMMETRYH) && (xg_nRules & RULE_DONTDOUBLEBLACK)) {
                     XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_EVENCOLLINESYMH), nullptr, MB_ICONERROR);
                     break;
                 }
             }
-            // ƒ_ƒCƒAƒƒO‚ğ•Â‚¶‚éB
+            // ãƒ€ã‚¤ã‚¢ãƒ­ã‚°ã‚’é–‰ã˜ã‚‹ã€‚
             ::EndDialog(hwnd, IDOK);
             break;
 
         case IDCANCEL:
-            // ƒ_ƒCƒAƒƒO‚ğ•Â‚¶‚éB
+            // ãƒ€ã‚¤ã‚¢ãƒ­ã‚°ã‚’é–‰ã˜ã‚‹ã€‚
             ::EndDialog(hwnd, IDCANCEL);
             break;
 
@@ -1549,10 +1549,10 @@ XgGenerateDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam*/)
 
 //////////////////////////////////////////////////////////////////////////////
 
-// •Û‘¶æB
+// ä¿å­˜å…ˆã€‚
 WCHAR xg_szDir[MAX_PATH] = L"";
 
-// u•Û‘¶ævQÆB
+// ã€Œä¿å­˜å…ˆã€å‚ç…§ã€‚
 extern "C"
 int CALLBACK XgBrowseCallbackProc(
     HWND hwnd,
@@ -1561,7 +1561,7 @@ int CALLBACK XgBrowseCallbackProc(
     LPARAM /*lpData*/)
 {
     if (uMsg == BFFM_INITIALIZED) {
-        // ‰Šú‰»‚ÌÛ‚ÉAƒtƒHƒ‹ƒ_[‚ÌêŠ‚ğw’è‚·‚éB
+        // åˆæœŸåŒ–ã®éš›ã«ã€ãƒ•ã‚©ãƒ«ãƒ€ãƒ¼ã®å ´æ‰€ã‚’æŒ‡å®šã™ã‚‹ã€‚
         ::SendMessageW(hwnd, BFFM_SETSELECTION, TRUE, reinterpret_cast<LPARAM>(xg_szDir));
     }
     return 0;
@@ -1569,7 +1569,7 @@ int CALLBACK XgBrowseCallbackProc(
 
 //////////////////////////////////////////////////////////////////////////////
 
-// [–â‘è‚Ì˜A‘±ì¬]ƒ_ƒCƒAƒƒO‚Ìƒ_ƒCƒAƒƒO ƒvƒƒV[ƒWƒƒB
+// [å•é¡Œã®é€£ç¶šä½œæˆ]ãƒ€ã‚¤ã‚¢ãƒ­ã‚°ã®ãƒ€ã‚¤ã‚¢ãƒ­ã‚° ãƒ—ãƒ­ã‚·ãƒ¼ã‚¸ãƒ£ã€‚
 extern "C" INT_PTR CALLBACK
 XgGenerateRepeatedlyDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam*/)
 {
@@ -1584,12 +1584,12 @@ XgGenerateRepeatedlyDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam
     switch (uMsg)
     {
     case WM_INITDIALOG:
-        // ƒ_ƒCƒAƒƒO‚ğ’†‰›‚ÖˆÚ“®‚·‚éB
+        // ãƒ€ã‚¤ã‚¢ãƒ­ã‚°ã‚’ä¸­å¤®ã¸ç§»å‹•ã™ã‚‹ã€‚
         XgCenterDialog(hwnd);
-        // ƒTƒCƒY‚Ì—“‚ğİ’è‚·‚éB
+        // ã‚µã‚¤ã‚ºã®æ¬„ã‚’è¨­å®šã™ã‚‹ã€‚
         ::SetDlgItemInt(hwnd, edt1, xg_nRows, FALSE);
         ::SetDlgItemInt(hwnd, edt2, xg_nCols, FALSE);
-        // ƒXƒPƒ‹ƒgƒ“ƒ‚[ƒh‚Æ“ü—Íƒ‚[ƒh‚É‰‚¶‚Ä’PŒê‚ÌÅ‘å’·‚ğİ’è‚·‚éB
+        // ã‚¹ã‚±ãƒ«ãƒˆãƒ³ãƒ¢ãƒ¼ãƒ‰ã¨å…¥åŠ›ãƒ¢ãƒ¼ãƒ‰ã«å¿œã˜ã¦å˜èªã®æœ€å¤§é•·ã‚’è¨­å®šã™ã‚‹ã€‚
         if (xg_imode == xg_im_KANJI) {
             n3 = 4;
         } else if (xg_bSkeletonMode) {
@@ -1602,13 +1602,13 @@ XgGenerateRepeatedlyDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam
             n3 = 4;
         }
         ::SetDlgItemInt(hwnd, edt3, n3, FALSE);
-        // ƒXƒ}[ƒg‰ğŒˆ‚©H
+        // ã‚¹ãƒãƒ¼ãƒˆè§£æ±ºã‹ï¼Ÿ
         if (xg_bSmartResolution) {
             ::CheckDlgButton(hwnd, chx2, BST_CHECKED);
         } else {
             ::CheckDlgButton(hwnd, chx2, BST_UNCHECKED);
         }
-        // •Û‘¶æ‚ğİ’è‚·‚éB
+        // ä¿å­˜å…ˆã‚’è¨­å®šã™ã‚‹ã€‚
         for (const auto& dir : s_dirs_save_to) {
             item.mask = CBEIF_TEXT;
             item.iItem = -1;
@@ -1618,14 +1618,14 @@ XgGenerateRepeatedlyDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam
             ::SendDlgItemMessageW(hwnd, cmb2, CBEM_INSERTITEMW, 0,
                                   reinterpret_cast<LPARAM>(&item));
         }
-        // ƒRƒ“ƒ{ƒ{ƒbƒNƒX‚ÌÅ‰‚Ì€–Ú‚ğ‘I‘ğ‚·‚éB
+        // ã‚³ãƒ³ãƒœãƒœãƒƒã‚¯ã‚¹ã®æœ€åˆã®é …ç›®ã‚’é¸æŠã™ã‚‹ã€‚
         ::SendDlgItemMessageW(hwnd, cmb2, CB_SETCURSEL, 0, 0);
-        // ©“®‚ÅÄŒvZ‚ğ‚·‚é‚©H
+        // è‡ªå‹•ã§å†è¨ˆç®—ã‚’ã™ã‚‹ã‹ï¼Ÿ
         if (s_bAutoRetry)
             ::CheckDlgButton(hwnd, chx1, BST_CHECKED);
-        // ¶¬‚·‚é”‚ğİ’è‚·‚éB
+        // ç”Ÿæˆã™ã‚‹æ•°ã‚’è¨­å®šã™ã‚‹ã€‚
         ::SetDlgItemInt(hwnd, edt4, s_nNumberToGenerate, FALSE);
-        // IME‚ğOFF‚É‚·‚éB
+        // IMEã‚’OFFã«ã™ã‚‹ã€‚
         {
             HWND hwndCtrl = ::GetDlgItem(hwnd, edt1);
             ::ImmAssociateContext(hwndCtrl, NULL);
@@ -1655,7 +1655,7 @@ XgGenerateRepeatedlyDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam
         switch (LOWORD(wParam))
         {
         case IDOK:
-            // ƒTƒCƒY‚Ì—“‚ğƒ`ƒFƒbƒN‚·‚éB
+            // ã‚µã‚¤ã‚ºã®æ¬„ã‚’ãƒã‚§ãƒƒã‚¯ã™ã‚‹ã€‚
             n1 = static_cast<int>(::GetDlgItemInt(hwnd, edt1, nullptr, FALSE));
             if (n1 < XG_MIN_SIZE || n1 > XG_MAX_SIZE) {
                 ::SendDlgItemMessageW(hwnd, edt1, EM_SETSEL, 0, -1);
@@ -1678,24 +1678,24 @@ XgGenerateRepeatedlyDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam
                 return 0;
             }
             xg_nMaxWordLen = n3;
-            // ©“®‚ÅÄŒvZ‚ğ‚·‚é‚©H
+            // è‡ªå‹•ã§å†è¨ˆç®—ã‚’ã™ã‚‹ã‹ï¼Ÿ
             s_bAutoRetry = (::IsDlgButtonChecked(hwnd, chx1) == BST_CHECKED);
-            // ƒXƒ}[ƒg‰ğŒˆ‚©H
+            // ã‚¹ãƒãƒ¼ãƒˆè§£æ±ºã‹ï¼Ÿ
             xg_bSmartResolution = (::IsDlgButtonChecked(hwnd, chx2) == BST_CHECKED);
-            // •Û‘¶æ‚ÌƒpƒX–¼‚ğæ“¾‚·‚éB
+            // ä¿å­˜å…ˆã®ãƒ‘ã‚¹åã‚’å–å¾—ã™ã‚‹ã€‚
             ::GetDlgItemTextW(hwnd, cmb2, szFile, ARRAYSIZE(szFile));
             attrs = ::GetFileAttributesW(szFile);
             if (attrs == 0xFFFFFFFF || !(attrs & FILE_ATTRIBUTE_DIRECTORY)) {
-                // ƒpƒX‚ª‚È‚¯‚ê‚Îì¬‚·‚éB
+                // ãƒ‘ã‚¹ãŒãªã‘ã‚Œã°ä½œæˆã™ã‚‹ã€‚
                 if (!XgMakePathW(szFile)) {
-                    // ì¬‚É¸”sB
+                    // ä½œæˆã«å¤±æ•—ã€‚
                     ::SendDlgItemMessageW(hwnd, cmb2, CB_SETEDITSEL, 0, -1);
                     XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_STORAGEINVALID), nullptr, MB_ICONERROR);
                     ::SetFocus(::GetDlgItem(hwnd, cmb2));
                     return 0;
                 }
             }
-            // •Û‘¶æ‚ğƒZƒbƒg‚·‚éB
+            // ä¿å­˜å…ˆã‚’ã‚»ãƒƒãƒˆã™ã‚‹ã€‚
             strDir = szFile;
             xg_str_trim(strDir);
             {
@@ -1708,9 +1708,9 @@ XgGenerateRepeatedlyDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam
                 }
                 s_dirs_save_to.emplace_front(strDir);
             }
-            // –â‘è‚Ì”‚ğæ“¾‚·‚éB
+            // å•é¡Œã®æ•°ã‚’å–å¾—ã™ã‚‹ã€‚
             {
-                // –³§ŒÀ‚Å‚Í‚È‚¢B
+                // ç„¡åˆ¶é™ã§ã¯ãªã„ã€‚
                 BOOL bTranslated;
                 s_nNumberToGenerate = ::GetDlgItemInt(hwnd, edt4, &bTranslated, FALSE);
                 if (!bTranslated || s_nNumberToGenerate == 0) {
@@ -1720,9 +1720,9 @@ XgGenerateRepeatedlyDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam
                     return 0;
                 }
             }
-            // JSONŒ`®‚Æ‚µ‚Ä•Û‘¶‚·‚é‚©H
+            // JSONå½¢å¼ã¨ã—ã¦ä¿å­˜ã™ã‚‹ã‹ï¼Ÿ
             xg_bSaveAsJsonFile = true;
-            // ‰Šú‰»‚·‚éB
+            // åˆæœŸåŒ–ã™ã‚‹ã€‚
             {
                 xg_bSolved = false;
                 xg_bShowAnswer = false;
@@ -1733,23 +1733,23 @@ XgGenerateRepeatedlyDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam
                 xg_vYokoInfo.clear();
                 xg_vMarks.clear();
                 xg_vMarkedCands.clear();
-                // ‹ô”s”‚Å•ƒ}ƒXü‘ÎÌiƒ^ƒej‚Ìê‡‚Í˜A•‹Ö‚Í•s‰ÂB
+                // å¶æ•°è¡Œæ•°ã§é»’ãƒã‚¹ç·šå¯¾ç§°ï¼ˆã‚¿ãƒ†ï¼‰ã®å ´åˆã¯é€£é»’ç¦ã¯ä¸å¯ã€‚
                 if (!(xg_nRows & 1) && (xg_nRules & RULE_LINESYMMETRYV) && (xg_nRules & RULE_DONTDOUBLEBLACK)) {
                     XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_EVENROWLINESYMV), nullptr, MB_ICONERROR);
                     break;
                 }
-                // ‹ô”—ñ”‚Å•ƒ}ƒXü‘ÎÌiƒˆƒRj‚Ìê‡‚Í˜A•‹Ö‚Í•s‰ÂB
+                // å¶æ•°åˆ—æ•°ã§é»’ãƒã‚¹ç·šå¯¾ç§°ï¼ˆãƒ¨ã‚³ï¼‰ã®å ´åˆã¯é€£é»’ç¦ã¯ä¸å¯ã€‚
                 if (!(xg_nCols & 1) && (xg_nRules & RULE_LINESYMMETRYH) && (xg_nRules & RULE_DONTDOUBLEBLACK)) {
                     XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_EVENCOLLINESYMH), nullptr, MB_ICONERROR);
                     break;
                 }
             }
-            // ƒ_ƒCƒAƒƒO‚ğ•Â‚¶‚éB
+            // ãƒ€ã‚¤ã‚¢ãƒ­ã‚°ã‚’é–‰ã˜ã‚‹ã€‚
             ::EndDialog(hwnd, IDOK);
             break;
 
         case IDCANCEL:
-            // ƒ_ƒCƒAƒƒO‚ğ•Â‚¶‚éB
+            // ãƒ€ã‚¤ã‚¢ãƒ­ã‚°ã‚’é–‰ã˜ã‚‹ã€‚
             ::EndDialog(hwnd, IDCANCEL);
             break;
 
@@ -1766,7 +1766,7 @@ XgGenerateRepeatedlyDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam
             break;
 
         case psh2:
-            // ƒ†[ƒU[‚É•Û‘¶æ‚ÌêŠ‚ğ–â‚¢‡‚í‚¹‚éB
+            // ãƒ¦ãƒ¼ã‚¶ãƒ¼ã«ä¿å­˜å…ˆã®å ´æ‰€ã‚’å•ã„åˆã‚ã›ã‚‹ã€‚
             ZeroMemory(&bi, sizeof(bi));
             bi.hwndOwner = hwnd;
             bi.lpszTitle = XgLoadStringDx1(IDS_CROSSSTORAGE);
@@ -1775,7 +1775,7 @@ XgGenerateRepeatedlyDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam
             ::GetDlgItemTextW(hwnd, cmb2, xg_szDir, ARRAYSIZE(xg_szDir));
             pidl = ::SHBrowseForFolderW(&bi);
             if (pidl) {
-                // ƒpƒX‚ğƒRƒ“ƒ{ƒ{ƒbƒNƒX‚Éİ’èB
+                // ãƒ‘ã‚¹ã‚’ã‚³ãƒ³ãƒœãƒœãƒƒã‚¯ã‚¹ã«è¨­å®šã€‚
                 ::SHGetPathFromIDListW(pidl, szFile);
                 ::SetDlgItemTextW(hwnd, cmb2, szFile);
                 ::CoTaskMemFree(pidl);
@@ -1786,7 +1786,7 @@ XgGenerateRepeatedlyDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam
     return 0;
 }
 
-// [•ƒ}ƒXƒpƒ^[ƒ“‚Ì˜A‘±ì¬]ƒ_ƒCƒAƒƒO‚Ìƒ_ƒCƒAƒƒO ƒvƒƒV[ƒWƒƒB
+// [é»’ãƒã‚¹ãƒ‘ã‚¿ãƒ¼ãƒ³ã®é€£ç¶šä½œæˆ]ãƒ€ã‚¤ã‚¢ãƒ­ã‚°ã®ãƒ€ã‚¤ã‚¢ãƒ­ã‚° ãƒ—ãƒ­ã‚·ãƒ¼ã‚¸ãƒ£ã€‚
 extern "C" INT_PTR CALLBACK
 XgGenerateBlacksRepeatedlyDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam*/)
 {
@@ -1801,9 +1801,9 @@ XgGenerateBlacksRepeatedlyDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*
     switch (uMsg)
     {
     case WM_INITDIALOG:
-        // ƒ_ƒCƒAƒƒO‚ğ’†‰›‚ÖˆÚ“®‚·‚éB
+        // ãƒ€ã‚¤ã‚¢ãƒ­ã‚°ã‚’ä¸­å¤®ã¸ç§»å‹•ã™ã‚‹ã€‚
         XgCenterDialog(hwnd);
-        // ƒXƒPƒ‹ƒgƒ“ƒ‚[ƒh‚Æ“ü—Íƒ‚[ƒh‚É‰‚¶‚Ä’PŒê‚ÌÅ‘å’·‚ğİ’è‚·‚éB
+        // ã‚¹ã‚±ãƒ«ãƒˆãƒ³ãƒ¢ãƒ¼ãƒ‰ã¨å…¥åŠ›ãƒ¢ãƒ¼ãƒ‰ã«å¿œã˜ã¦å˜èªã®æœ€å¤§é•·ã‚’è¨­å®šã™ã‚‹ã€‚
         if (xg_imode == xg_im_KANJI) {
             n3 = 4;
         } else if (xg_bSkeletonMode) {
@@ -1816,7 +1816,7 @@ XgGenerateBlacksRepeatedlyDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*
             n3 = 4;
         }
         ::SetDlgItemInt(hwnd, edt3, n3, FALSE);
-        // •Û‘¶æ‚ğİ’è‚·‚éB
+        // ä¿å­˜å…ˆã‚’è¨­å®šã™ã‚‹ã€‚
         for (const auto& dir : s_dirs_save_to) {
             item.mask = CBEIF_TEXT;
             item.iItem = -1;
@@ -1826,11 +1826,11 @@ XgGenerateBlacksRepeatedlyDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*
             ::SendDlgItemMessageW(hwnd, cmb2, CBEM_INSERTITEMW, 0,
                                   reinterpret_cast<LPARAM>(&item));
         }
-        // ƒRƒ“ƒ{ƒ{ƒbƒNƒX‚ÌÅ‰‚Ì€–Ú‚ğ‘I‘ğ‚·‚éB
+        // ã‚³ãƒ³ãƒœãƒœãƒƒã‚¯ã‚¹ã®æœ€åˆã®é …ç›®ã‚’é¸æŠã™ã‚‹ã€‚
         ::SendDlgItemMessageW(hwnd, cmb2, CB_SETCURSEL, 0, 0);
-        // ¶¬‚·‚é”‚ğİ’è‚·‚éB
+        // ç”Ÿæˆã™ã‚‹æ•°ã‚’è¨­å®šã™ã‚‹ã€‚
         ::SetDlgItemInt(hwnd, edt4, s_nNumberToGenerate, FALSE);
-        // IME‚ğOFF‚É‚·‚éB
+        // IMEã‚’OFFã«ã™ã‚‹ã€‚
         {
             HWND hwndCtrl = ::GetDlgItem(hwnd, edt3);
             ::ImmAssociateContext(hwndCtrl, NULL);
@@ -1853,20 +1853,20 @@ XgGenerateBlacksRepeatedlyDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*
                 return 0;
             }
             xg_nMaxWordLen = n3;
-            // •Û‘¶æ‚ÌƒpƒX–¼‚ğæ“¾‚·‚éB
+            // ä¿å­˜å…ˆã®ãƒ‘ã‚¹åã‚’å–å¾—ã™ã‚‹ã€‚
             ::GetDlgItemTextW(hwnd, cmb2, szFile, ARRAYSIZE(szFile));
             attrs = ::GetFileAttributesW(szFile);
             if (attrs == 0xFFFFFFFF || !(attrs & FILE_ATTRIBUTE_DIRECTORY)) {
-                // ƒpƒX‚ª‚È‚¯‚ê‚Îì¬‚·‚éB
+                // ãƒ‘ã‚¹ãŒãªã‘ã‚Œã°ä½œæˆã™ã‚‹ã€‚
                 if (!XgMakePathW(szFile)) {
-                    // ì¬‚É¸”sB
+                    // ä½œæˆã«å¤±æ•—ã€‚
                     ::SendDlgItemMessageW(hwnd, cmb2, CB_SETEDITSEL, 0, -1);
                     XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_STORAGEINVALID), nullptr, MB_ICONERROR);
                     ::SetFocus(::GetDlgItem(hwnd, cmb2));
                     return 0;
                 }
             }
-            // •Û‘¶æ‚ğƒZƒbƒg‚·‚éB
+            // ä¿å­˜å…ˆã‚’ã‚»ãƒƒãƒˆã™ã‚‹ã€‚
             strDir = szFile;
             xg_str_trim(strDir);
             {
@@ -1879,9 +1879,9 @@ XgGenerateBlacksRepeatedlyDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*
                 }
                 s_dirs_save_to.emplace_front(strDir);
             }
-            // –â‘è‚Ì”‚ğæ“¾‚·‚éB
+            // å•é¡Œã®æ•°ã‚’å–å¾—ã™ã‚‹ã€‚
             {
-                // –³§ŒÀ‚Å‚Í‚È‚¢B
+                // ç„¡åˆ¶é™ã§ã¯ãªã„ã€‚
                 BOOL bTranslated;
                 s_nNumberToGenerate = ::GetDlgItemInt(hwnd, edt4, &bTranslated, FALSE);
                 if (!bTranslated || s_nNumberToGenerate == 0) {
@@ -1891,9 +1891,9 @@ XgGenerateBlacksRepeatedlyDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*
                     return 0;
                 }
             }
-            // JSONŒ`®‚Æ‚µ‚Ä•Û‘¶‚·‚é‚©H
+            // JSONå½¢å¼ã¨ã—ã¦ä¿å­˜ã™ã‚‹ã‹ï¼Ÿ
             xg_bSaveAsJsonFile = true;
-            // ‰Šú‰»‚·‚éB
+            // åˆæœŸåŒ–ã™ã‚‹ã€‚
             {
                 xg_bSolved = false;
                 xg_bShowAnswer = false;
@@ -1903,17 +1903,17 @@ XgGenerateBlacksRepeatedlyDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*
                 xg_vMarks.clear();
                 xg_vMarkedCands.clear();
             }
-            // ƒ_ƒCƒAƒƒO‚ğ•Â‚¶‚éB
+            // ãƒ€ã‚¤ã‚¢ãƒ­ã‚°ã‚’é–‰ã˜ã‚‹ã€‚
             ::EndDialog(hwnd, IDOK);
             break;
 
         case IDCANCEL:
-            // ƒ_ƒCƒAƒƒO‚ğ•Â‚¶‚éB
+            // ãƒ€ã‚¤ã‚¢ãƒ­ã‚°ã‚’é–‰ã˜ã‚‹ã€‚
             ::EndDialog(hwnd, IDCANCEL);
             break;
 
         case psh2:
-            // ƒ†[ƒU[‚É•Û‘¶æ‚ÌêŠ‚ğ–â‚¢‡‚í‚¹‚éB
+            // ãƒ¦ãƒ¼ã‚¶ãƒ¼ã«ä¿å­˜å…ˆã®å ´æ‰€ã‚’å•ã„åˆã‚ã›ã‚‹ã€‚
             ZeroMemory(&bi, sizeof(bi));
             bi.hwndOwner = hwnd;
             bi.lpszTitle = XgLoadStringDx1(IDS_CROSSSTORAGE);
@@ -1922,7 +1922,7 @@ XgGenerateBlacksRepeatedlyDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*
             ::GetDlgItemTextW(hwnd, cmb2, xg_szDir, ARRAYSIZE(xg_szDir));
             pidl = ::SHBrowseForFolderW(&bi);
             if (pidl) {
-                // ƒpƒX‚ğƒRƒ“ƒ{ƒ{ƒbƒNƒX‚Éİ’èB
+                // ãƒ‘ã‚¹ã‚’ã‚³ãƒ³ãƒœãƒœãƒƒã‚¯ã‚¹ã«è¨­å®šã€‚
                 ::SHGetPathFromIDListW(pidl, szFile);
                 ::SetDlgItemTextW(hwnd, cmb2, szFile);
                 ::CoTaskMemFree(pidl);
@@ -1933,7 +1933,7 @@ XgGenerateBlacksRepeatedlyDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*
     return 0;
 }
 
-// [•ƒ}ƒXƒpƒ^[ƒ“‚Ìì¬]ƒ_ƒCƒAƒƒO‚Ìƒ_ƒCƒAƒƒO ƒvƒƒV[ƒWƒƒB
+// [é»’ãƒã‚¹ãƒ‘ã‚¿ãƒ¼ãƒ³ã®ä½œæˆ]ãƒ€ã‚¤ã‚¢ãƒ­ã‚°ã®ãƒ€ã‚¤ã‚¢ãƒ­ã‚° ãƒ—ãƒ­ã‚·ãƒ¼ã‚¸ãƒ£ã€‚
 extern "C" INT_PTR CALLBACK
 XgGenerateBlacksDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam*/)
 {
@@ -1942,9 +1942,9 @@ XgGenerateBlacksDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam*/)
     switch (uMsg)
     {
     case WM_INITDIALOG:
-        // ƒ_ƒCƒAƒƒO‚ğ’†‰›‚ÖˆÚ“®‚·‚éB
+        // ãƒ€ã‚¤ã‚¢ãƒ­ã‚°ã‚’ä¸­å¤®ã¸ç§»å‹•ã™ã‚‹ã€‚
         XgCenterDialog(hwnd);
-        // ƒXƒPƒ‹ƒgƒ“ƒ‚[ƒh‚Æ“ü—Íƒ‚[ƒh‚É‰‚¶‚Ä’PŒê‚ÌÅ‘å’·‚ğİ’è‚·‚éB
+        // ã‚¹ã‚±ãƒ«ãƒˆãƒ³ãƒ¢ãƒ¼ãƒ‰ã¨å…¥åŠ›ãƒ¢ãƒ¼ãƒ‰ã«å¿œã˜ã¦å˜èªã®æœ€å¤§é•·ã‚’è¨­å®šã™ã‚‹ã€‚
         if (xg_imode == xg_im_KANJI) {
             n3 = 4;
         } else if (xg_bSkeletonMode) {
@@ -1972,7 +1972,7 @@ XgGenerateBlacksDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam*/)
                 return 0;
             }
             xg_nMaxWordLen = n3;
-            // ‰Šú‰»‚·‚éB
+            // åˆæœŸåŒ–ã™ã‚‹ã€‚
             {
                 xg_bSolved = false;
                 xg_bShowAnswer = false;
@@ -1982,12 +1982,12 @@ XgGenerateBlacksDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam*/)
                 xg_vMarks.clear();
                 xg_vMarkedCands.clear();
             }
-            // ƒ_ƒCƒAƒƒO‚ğ•Â‚¶‚éB
+            // ãƒ€ã‚¤ã‚¢ãƒ­ã‚°ã‚’é–‰ã˜ã‚‹ã€‚
             ::EndDialog(hwnd, IDOK);
             break;
 
         case IDCANCEL:
-            // ƒ_ƒCƒAƒƒO‚ğ•Â‚¶‚éB
+            // ãƒ€ã‚¤ã‚¢ãƒ­ã‚°ã‚’é–‰ã˜ã‚‹ã€‚
             ::EndDialog(hwnd, IDCANCEL);
             break;
         }
@@ -1995,7 +1995,7 @@ XgGenerateBlacksDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam*/)
     return 0;
 }
 
-// [‰ğ‚Ì˜A‘±ì¬]ƒ_ƒCƒAƒƒO‚Ìƒ_ƒCƒAƒƒO ƒvƒƒV[ƒWƒƒ[B
+// [è§£ã®é€£ç¶šä½œæˆ]ãƒ€ã‚¤ã‚¢ãƒ­ã‚°ã®ãƒ€ã‚¤ã‚¢ãƒ­ã‚° ãƒ—ãƒ­ã‚·ãƒ¼ã‚¸ãƒ£ãƒ¼ã€‚
 extern "C" INT_PTR CALLBACK
 XgSolveRepeatedlyDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam*/)
 {
@@ -2010,9 +2010,9 @@ XgSolveRepeatedlyDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam*/)
 
     switch (uMsg) {
     case WM_INITDIALOG:
-        // ƒ_ƒCƒAƒƒO‚ğ’†‰›‚ÖˆÚ“®‚·‚éB
+        // ãƒ€ã‚¤ã‚¢ãƒ­ã‚°ã‚’ä¸­å¤®ã¸ç§»å‹•ã™ã‚‹ã€‚
         XgCenterDialog(hwnd);
-        // •Û‘¶æ‚ğİ’è‚·‚éB
+        // ä¿å­˜å…ˆã‚’è¨­å®šã™ã‚‹ã€‚
         for (const auto& dir : s_dirs_save_to) {
             item.mask = CBEIF_TEXT;
             item.iItem = -1;
@@ -2022,27 +2022,27 @@ XgSolveRepeatedlyDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam*/)
             ::SendDlgItemMessageW(hwnd, cmb1, CBEM_INSERTITEMW, 0,
                                   reinterpret_cast<LPARAM>(&item));
         }
-        // ƒRƒ“ƒ{ƒ{ƒbƒNƒX‚ÌÅ‰‚Ì€–Ú‚ğ‘I‘ğ‚·‚éB
+        // ã‚³ãƒ³ãƒœãƒœãƒƒã‚¯ã‚¹ã®æœ€åˆã®é …ç›®ã‚’é¸æŠã™ã‚‹ã€‚
         ::SendDlgItemMessageW(hwnd, cmb1, CB_SETCURSEL, 0, 0);
-        // ©“®‚ÅÄŒvZ‚ğ‚·‚é‚©H
+        // è‡ªå‹•ã§å†è¨ˆç®—ã‚’ã™ã‚‹ã‹ï¼Ÿ
         if (s_bAutoRetry) {
             ::CheckDlgButton(hwnd, chx1, BST_CHECKED);
         }
-        // –³§ŒÀ‚©H
-        // ¶¬‚·‚é”‚ğİ’è‚·‚éB
+        // ç„¡åˆ¶é™ã‹ï¼Ÿ
+        // ç”Ÿæˆã™ã‚‹æ•°ã‚’è¨­å®šã™ã‚‹ã€‚
         ::SetDlgItemInt(hwnd, edt1, s_nNumberToGenerate, FALSE);
-        // ƒtƒ@ƒCƒ‹ƒhƒƒbƒv‚ğ—LŒø‚É‚·‚éB
+        // ãƒ•ã‚¡ã‚¤ãƒ«ãƒ‰ãƒ­ãƒƒãƒ—ã‚’æœ‰åŠ¹ã«ã™ã‚‹ã€‚
         ::DragAcceptFiles(hwnd, TRUE);
         SendDlgItemMessageW(hwnd, scr1, UDM_SETRANGE, 0, MAKELPARAM(100, 2));
         return TRUE;
 
     case WM_DROPFILES:
-        // ƒhƒƒbƒv‚³‚ê‚½ƒtƒ@ƒCƒ‹‚ÌƒpƒX–¼‚ğæ“¾‚·‚éB
+        // ãƒ‰ãƒ­ãƒƒãƒ—ã•ã‚ŒãŸãƒ•ã‚¡ã‚¤ãƒ«ã®ãƒ‘ã‚¹åã‚’å–å¾—ã™ã‚‹ã€‚
         hDrop = reinterpret_cast<HDROP>(wParam);
         ::DragQueryFileW(hDrop, 0, szFile, ARRAYSIZE(szFile));
         ::DragFinish(hDrop);
 
-        // ƒVƒ‡[ƒgƒJƒbƒg‚¾‚Á‚½ê‡‚ÍAƒ^[ƒQƒbƒg‚ÌƒpƒX‚ğæ“¾‚·‚éB
+        // ã‚·ãƒ§ãƒ¼ãƒˆã‚«ãƒƒãƒˆã ã£ãŸå ´åˆã¯ã€ã‚¿ãƒ¼ã‚²ãƒƒãƒˆã®ãƒ‘ã‚¹ã‚’å–å¾—ã™ã‚‹ã€‚
         if (::lstrcmpiW(PathFindExtensionW(szFile), s_szShellLinkDotExt) == 0) {
             if (!XgGetPathOfShortcutW(szFile, szTarget)) {
                 ::MessageBeep(0xFFFFFFFF);
@@ -2051,28 +2051,28 @@ XgSolveRepeatedlyDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam*/)
             StringCbCopy(szFile, sizeof(szFile), szTarget);
         }
 
-        // ƒtƒ@ƒCƒ‹‚Ì‘®«‚ğŠm”F‚·‚éB
+        // ãƒ•ã‚¡ã‚¤ãƒ«ã®å±æ€§ã‚’ç¢ºèªã™ã‚‹ã€‚
         attrs = ::GetFileAttributesW(szFile);
         if (attrs & FILE_ATTRIBUTE_DIRECTORY) {
-            // ƒfƒBƒŒƒNƒgƒŠ[‚¾‚Á‚½B
-            // “¯‚¶€–Ú‚ª‚·‚Å‚É‚ ‚ê‚ÎAíœ‚·‚éB
+            // ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªãƒ¼ã ã£ãŸã€‚
+            // åŒã˜é …ç›®ãŒã™ã§ã«ã‚ã‚Œã°ã€å‰Šé™¤ã™ã‚‹ã€‚
             i = static_cast<int>(::SendDlgItemMessageW(
                 hwnd, cmb1, CB_FINDSTRINGEXACT, 0,
                 reinterpret_cast<LPARAM>(szFile)));
             if (i != CB_ERR) {
                 ::SendDlgItemMessageW(hwnd, cmb1, CB_DELETESTRING, i, 0);
             }
-            // ƒRƒ“ƒ{ƒ{ƒbƒNƒX‚ÌÅ‰‚É‘}“ü‚·‚éB
+            // ã‚³ãƒ³ãƒœãƒœãƒƒã‚¯ã‚¹ã®æœ€åˆã«æŒ¿å…¥ã™ã‚‹ã€‚
             item.mask = CBEIF_TEXT;
             item.iItem = 0;
             item.pszText = szFile;
             item.cchTextMax = -1;
             ::SendDlgItemMessageW(hwnd, cmb1, CBEM_INSERTITEMW, 0,
                                 reinterpret_cast<LPARAM>(&item));
-            // ƒRƒ“ƒ{ƒ{ƒbƒNƒX‚ÌÅ‰‚Ì€–Ú‚ğ‘I‘ğ‚·‚éB
+            // ã‚³ãƒ³ãƒœãƒœãƒƒã‚¯ã‚¹ã®æœ€åˆã®é …ç›®ã‚’é¸æŠã™ã‚‹ã€‚
             ::SendDlgItemMessageW(hwnd, cmb1, CB_SETCURSEL, 0, 0);
         } else {
-            // ƒfƒBƒŒƒNƒgƒŠ[‚Å‚Í‚È‚©‚Á‚½B
+            // ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªãƒ¼ã§ã¯ãªã‹ã£ãŸã€‚
             ::MessageBeep(0xFFFFFFFF);
         }
         break;
@@ -2080,20 +2080,20 @@ XgSolveRepeatedlyDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam*/)
     case WM_COMMAND:
         switch (LOWORD(wParam)) {
         case IDOK:
-            // •Û‘¶æ‚ÌƒpƒX–¼‚ğæ“¾‚·‚éB
+            // ä¿å­˜å…ˆã®ãƒ‘ã‚¹åã‚’å–å¾—ã™ã‚‹ã€‚
             ::GetDlgItemTextW(hwnd, cmb1, szFile, ARRAYSIZE(szFile));
             attrs = ::GetFileAttributesW(szFile);
             if (attrs == 0xFFFFFFFF || !(attrs & FILE_ATTRIBUTE_DIRECTORY)) {
-                // ƒpƒX‚ª‚È‚¯‚ê‚Îì¬‚·‚éB
+                // ãƒ‘ã‚¹ãŒãªã‘ã‚Œã°ä½œæˆã™ã‚‹ã€‚
                 if (!XgMakePathW(szFile)) {
-                    // ì¬‚É¸”sB
+                    // ä½œæˆã«å¤±æ•—ã€‚
                     ::SendDlgItemMessageW(hwnd, cmb1, CB_SETEDITSEL, 0, -1);
                     XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_STORAGEINVALID), nullptr, MB_ICONERROR);
                     ::SetFocus(::GetDlgItem(hwnd, cmb1));
                     return 0;
                 }
             }
-            // •Û‘¶æ‚ğƒZƒbƒg‚·‚éB
+            // ä¿å­˜å…ˆã‚’ã‚»ãƒƒãƒˆã™ã‚‹ã€‚
             strDir = szFile;
             xg_str_trim(strDir);
             {
@@ -2106,9 +2106,9 @@ XgSolveRepeatedlyDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam*/)
                 }
                 s_dirs_save_to.emplace_front(strDir);
             }
-            // ©“®‚ÅÄŒvZ‚ğ‚·‚é‚©H
+            // è‡ªå‹•ã§å†è¨ˆç®—ã‚’ã™ã‚‹ã‹ï¼Ÿ
             s_bAutoRetry = (::IsDlgButtonChecked(hwnd, chx1) == BST_CHECKED);
-            // –â‘è‚Ì”‚ğæ“¾‚·‚éB
+            // å•é¡Œã®æ•°ã‚’å–å¾—ã™ã‚‹ã€‚
             {
                 BOOL bTranslated;
                 s_nNumberToGenerate = ::GetDlgItemInt(hwnd, edt1, &bTranslated, FALSE);
@@ -2119,26 +2119,26 @@ XgSolveRepeatedlyDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam*/)
                     return 0;
                 }
             }
-            // JSONŒ`®‚Å•Û‘¶‚·‚é‚©H
+            // JSONå½¢å¼ã§ä¿å­˜ã™ã‚‹ã‹ï¼Ÿ
             xg_bSaveAsJsonFile = true;
-            // ‰Šú‰»‚·‚éB
+            // åˆæœŸåŒ–ã™ã‚‹ã€‚
             xg_bSolved = false;
             xg_bShowAnswer = false;
             xg_vTateInfo.clear();
             xg_vYokoInfo.clear();
             xg_vMarks.clear();
             xg_vMarkedCands.clear();
-            // ƒ_ƒCƒAƒƒO‚ğ•Â‚¶‚éB
+            // ãƒ€ã‚¤ã‚¢ãƒ­ã‚°ã‚’é–‰ã˜ã‚‹ã€‚
             ::EndDialog(hwnd, IDOK);
             break;
 
         case IDCANCEL:
-            // ƒ_ƒCƒAƒƒO‚ğ•Â‚¶‚éB
+            // ãƒ€ã‚¤ã‚¢ãƒ­ã‚°ã‚’é–‰ã˜ã‚‹ã€‚
             ::EndDialog(hwnd, IDCANCEL);
             break;
 
         case psh1:
-            // ƒ†[ƒU[‚É•Û‘¶æ‚ğ–â‚¢‡‚í‚¹‚éB
+            // ãƒ¦ãƒ¼ã‚¶ãƒ¼ã«ä¿å­˜å…ˆã‚’å•ã„åˆã‚ã›ã‚‹ã€‚
             ZeroMemory(&bi, sizeof(bi));
             bi.hwndOwner = hwnd;
             bi.lpszTitle = XgLoadStringDx1(IDS_CROSSSTORAGE);
@@ -2147,7 +2147,7 @@ XgSolveRepeatedlyDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam*/)
             ::GetDlgItemTextW(hwnd, cmb1, xg_szDir, ARRAYSIZE(xg_szDir));
             pidl = ::SHBrowseForFolderW(&bi);
             if (pidl) {
-                // ƒRƒ“ƒ{ƒ{ƒbƒNƒX‚ÉƒpƒX‚ğİ’è‚·‚éB
+                // ã‚³ãƒ³ãƒœãƒœãƒƒã‚¯ã‚¹ã«ãƒ‘ã‚¹ã‚’è¨­å®šã™ã‚‹ã€‚
                 ::SHGetPathFromIDListW(pidl, szFile);
                 ::SetDlgItemTextW(hwnd, cmb1, szFile);
                 ::CoTaskMemFree(pidl);
@@ -2160,7 +2160,7 @@ XgSolveRepeatedlyDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam*/)
 
 //////////////////////////////////////////////////////////////////////////////
 
-// ƒqƒ“ƒg‚Ì“à—e‚ğƒƒ‚’ ‚ÅŠJ‚­B
+// ãƒ’ãƒ³ãƒˆã®å†…å®¹ã‚’ãƒ¡ãƒ¢å¸³ã§é–‹ãã€‚
 bool __fastcall XgOpenHintsByNotepad(HWND /*hwnd*/, bool bShowAnswer)
 {
     WCHAR szPath[MAX_PATH];
@@ -2170,13 +2170,13 @@ bool __fastcall XgOpenHintsByNotepad(HWND /*hwnd*/, bool bShowAnswer)
     STARTUPINFOW si;
     PROCESS_INFORMATION pi;
 
-    // ‰ğ‚ª‚È‚¢‚Æ‚«‚ÍAƒqƒ“ƒg‚Í‚È‚¢B
+    // è§£ãŒãªã„ã¨ãã¯ã€ãƒ’ãƒ³ãƒˆã¯ãªã„ã€‚
     if (!xg_bSolved) {
         ::MessageBeep(0xFFFFFFFF);
         return false;
     }
 
-    // ˆêƒtƒ@ƒCƒ‹‚ğì¬‚·‚éB
+    // ä¸€æ™‚ãƒ•ã‚¡ã‚¤ãƒ«ã‚’ä½œæˆã™ã‚‹ã€‚
     ::GetTempPathW(MAX_PATH, szPath);
     StringCbCat(szPath, sizeof(szPath), XgLoadStringDx1(IDS_HINTSTXT));
     HANDLE hFile = ::CreateFileW(szPath, GENERIC_WRITE, FILE_SHARE_READ,
@@ -2184,17 +2184,17 @@ bool __fastcall XgOpenHintsByNotepad(HWND /*hwnd*/, bool bShowAnswer)
     if (hFile == INVALID_HANDLE_VALUE)
         return false;
 
-    // BOM‚Æƒqƒ“ƒg‚Ì•¶š—ñ‚ğƒtƒ@ƒCƒ‹‚É‘‚«‚ŞB
+    // BOMã¨ãƒ’ãƒ³ãƒˆã®æ–‡å­—åˆ—ã‚’ãƒ•ã‚¡ã‚¤ãƒ«ã«æ›¸ãè¾¼ã‚€ã€‚
     str = reinterpret_cast<LPCWSTR>("\xFF\xFE\x00");
     str += xg_pszNewLine;
     xg_solution.GetHintsStr(xg_strHints, 2, true);
     str += xg_strHints;
     cb = static_cast<DWORD>(str.size() * sizeof(WCHAR));
     if (::WriteFile(hFile, str.data(), cb, &cb, nullptr)) {
-        // ƒtƒ@ƒCƒ‹‚ğ•Â‚¶‚éB
+        // ãƒ•ã‚¡ã‚¤ãƒ«ã‚’é–‰ã˜ã‚‹ã€‚
         ::CloseHandle(hFile);
 
-        // ƒƒ‚’ ‚Åƒtƒ@ƒCƒ‹‚ğŠJ‚­B
+        // ãƒ¡ãƒ¢å¸³ã§ãƒ•ã‚¡ã‚¤ãƒ«ã‚’é–‹ãã€‚
         StringCbPrintf(szCmdLine, sizeof(szCmdLine),
                        XgLoadStringDx1(IDS_NOTEPAD), szPath);
         ZeroMemory(&si, sizeof(si));
@@ -2204,35 +2204,35 @@ bool __fastcall XgOpenHintsByNotepad(HWND /*hwnd*/, bool bShowAnswer)
         if (::CreateProcessW(nullptr, szCmdLine, nullptr, nullptr, FALSE,
                              0, nullptr, nullptr, &si, &pi))
         {
-            // ƒƒ‚’ ‚ª‘Ò‚¿ó‘Ô‚É‚È‚é‚Ü‚Å‘Ò‚ÂB
+            // ãƒ¡ãƒ¢å¸³ãŒå¾…ã¡çŠ¶æ…‹ã«ãªã‚‹ã¾ã§å¾…ã¤ã€‚
             if (::WaitForInputIdle(pi.hProcess, 5 * 1000) != WAIT_TIMEOUT) {
-                // 0.2•b‘Ò‚ÂB
+                // 0.2ç§’å¾…ã¤ã€‚
                 ::Sleep(200);
-                // ƒtƒ@ƒCƒ‹‚ğíœ‚·‚éB
+                // ãƒ•ã‚¡ã‚¤ãƒ«ã‚’å‰Šé™¤ã™ã‚‹ã€‚
                 ::DeleteFileW(szPath);
             }
-            // ƒnƒ“ƒhƒ‹‚ğ•Â‚¶‚éB
+            // ãƒãƒ³ãƒ‰ãƒ«ã‚’é–‰ã˜ã‚‹ã€‚
             ::CloseHandle(pi.hProcess);
             ::CloseHandle(pi.hThread);
             return true;
         }
     }
-    // ƒtƒ@ƒCƒ‹‚ğ•Â‚¶‚éB
+    // ãƒ•ã‚¡ã‚¤ãƒ«ã‚’é–‰ã˜ã‚‹ã€‚
     ::CloseHandle(hFile);
     return false;
 }
 
-// ƒqƒ“ƒg‚Ì“à—e‚ğƒqƒ“ƒgƒEƒBƒ“ƒhƒE‚ÅŠJ‚­B
+// ãƒ’ãƒ³ãƒˆã®å†…å®¹ã‚’ãƒ’ãƒ³ãƒˆã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã§é–‹ãã€‚
 bool __fastcall XgOpenHintsByWindow(HWND hwnd)
 {
-    // ‚à‚µƒqƒ“ƒgƒEƒBƒ“ƒhƒE‚ª‘¶İ‚·‚ê‚Î”jŠü‚·‚éB
+    // ã‚‚ã—ãƒ’ãƒ³ãƒˆã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãŒå­˜åœ¨ã™ã‚Œã°ç ´æ£„ã™ã‚‹ã€‚
     if (xg_hHintsWnd) {
         HWND hwnd = xg_hHintsWnd;
         xg_hHintsWnd = NULL;
         ::DestroyWindow(hwnd);
     }
 
-    // ƒqƒ“ƒgƒEƒBƒ“ƒhƒE‚ğì¬‚·‚éB
+    // ãƒ’ãƒ³ãƒˆã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚’ä½œæˆã™ã‚‹ã€‚
     if (XgCreateHintsWnd(xg_hMainWnd)) {
         ::ShowWindow(xg_hHintsWnd, SW_SHOWNOACTIVATE);
         ::SetForegroundWindow(xg_hMainWnd);
@@ -2241,7 +2241,7 @@ bool __fastcall XgOpenHintsByWindow(HWND hwnd)
     return false;
 }
 
-// ƒqƒ“ƒg‚ğXV‚·‚éB
+// ãƒ’ãƒ³ãƒˆã‚’æ›´æ–°ã™ã‚‹ã€‚
 void __fastcall XgUpdateHints(HWND hwnd)
 {
     xg_vecTateHints.clear();
@@ -2255,7 +2255,7 @@ void __fastcall XgUpdateHints(HWND hwnd)
     }
 }
 
-// ƒqƒ“ƒg‚ğ•\¦‚·‚éB
+// ãƒ’ãƒ³ãƒˆã‚’è¡¨ç¤ºã™ã‚‹ã€‚
 void __fastcall XgShowHints(HWND hwnd)
 {
     #if 1
@@ -2265,7 +2265,7 @@ void __fastcall XgShowHints(HWND hwnd)
     #endif
 }
 
-// ƒXƒŒƒbƒh‚ğ•Â‚¶‚éB
+// ã‚¹ãƒ¬ãƒƒãƒ‰ã‚’é–‰ã˜ã‚‹ã€‚
 void __fastcall XgCloseThreads(void)
 {
     for (DWORD i = 0; i < xg_dwThreadCount; i++) {
@@ -2274,13 +2274,13 @@ void __fastcall XgCloseThreads(void)
     }
 }
 
-// ƒXƒŒƒbƒh‚ğ‘Ò‚ÂB
+// ã‚¹ãƒ¬ãƒƒãƒ‰ã‚’å¾…ã¤ã€‚
 inline void __fastcall XgWaitForThreads(void)
 {
     ::WaitForMultipleObjects(xg_dwThreadCount, xg_ahThreads.data(), true, 1000);
 }
 
-// ƒXƒŒƒbƒh‚ªI—¹‚µ‚½‚©H
+// ã‚¹ãƒ¬ãƒƒãƒ‰ãŒçµ‚äº†ã—ãŸã‹ï¼Ÿ
 bool __fastcall XgIsAnyThreadTerminated(void)
 {
     DWORD dwExitCode;
@@ -2294,16 +2294,16 @@ bool __fastcall XgIsAnyThreadTerminated(void)
 
 //////////////////////////////////////////////////////////////////////////////
 
-// ƒvƒƒOƒŒƒXƒo[‚ÌXV•p“xB
+// ãƒ—ãƒ­ã‚°ãƒ¬ã‚¹ãƒãƒ¼ã®æ›´æ–°é »åº¦ã€‚
 #define xg_dwTimerInterval 500
 
-// ÄŒvZ‚Ü‚Å‚ÌŠÔ‚ğŠTZ‚·‚éB
+// å†è¨ˆç®—ã¾ã§ã®æ™‚é–“ã‚’æ¦‚ç®—ã™ã‚‹ã€‚
 inline DWORD XgGetRetryInterval(void)
 {
     return 8 * (xg_nRows + xg_nCols) * (xg_nRows + xg_nCols) + 1000;
 }
 
-// ƒLƒƒƒ“ƒZƒ‹ƒ_ƒCƒAƒƒOB
+// ã‚­ãƒ£ãƒ³ã‚»ãƒ«ãƒ€ã‚¤ã‚¢ãƒ­ã‚°ã€‚
 extern "C" INT_PTR CALLBACK
 XgCancelSolveDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam*/)
 {
@@ -2315,26 +2315,26 @@ XgCancelSolveDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam*/)
             xg_random_seed = 100;
         }
         #endif
-        // ƒ_ƒCƒAƒƒO‚ğ’†‰›‚ÖˆÚ“®‚·‚éB
+        // ãƒ€ã‚¤ã‚¢ãƒ­ã‚°ã‚’ä¸­å¤®ã¸ç§»å‹•ã™ã‚‹ã€‚
         XgCenterDialog(hwnd);
-        // ÄsƒJƒEƒ“ƒg‚ğƒNƒŠƒA‚·‚éB
+        // å†è©¦è¡Œã‚«ã‚¦ãƒ³ãƒˆã‚’ã‚¯ãƒªã‚¢ã™ã‚‹ã€‚
         s_nRetryCount = 0;
-        // ƒvƒƒOƒŒƒXƒo[‚Ì”ÍˆÍ‚ğƒZƒbƒg‚·‚éB
+        // ãƒ—ãƒ­ã‚°ãƒ¬ã‚¹ãƒãƒ¼ã®ç¯„å›²ã‚’ã‚»ãƒƒãƒˆã™ã‚‹ã€‚
         ::SendDlgItemMessageW(hwnd, ctl1, PBM_SETRANGE, 0,
                             MAKELPARAM(0, xg_nRows * xg_nCols));
         ::SendDlgItemMessageW(hwnd, ctl2, PBM_SETRANGE, 0,
                             MAKELPARAM(0, xg_nRows * xg_nCols));
-        // ŒvZŠÔ‚ğ‹‚ß‚é‚½‚ß‚ÉAŠJnŠÔ‚ğæ“¾‚·‚éB
+        // è¨ˆç®—æ™‚é–“ã‚’æ±‚ã‚ã‚‹ãŸã‚ã«ã€é–‹å§‹æ™‚é–“ã‚’å–å¾—ã™ã‚‹ã€‚
         s_dwTick0 = s_dwTick1 = ::GetTickCount();
-        // ÄŒvZ‚Ü‚Å‚ÌŠÔ‚ğŠTZ‚·‚éB
+        // å†è¨ˆç®—ã¾ã§ã®æ™‚é–“ã‚’æ¦‚ç®—ã™ã‚‹ã€‚
         s_dwWait = XgGetRetryInterval();
-        // ‰ğ‚ğ‹‚ß‚é‚Ì‚ğŠJnB
+        // è§£ã‚’æ±‚ã‚ã‚‹ã®ã‚’é–‹å§‹ã€‚
         XgStartSolve_AddBlack();
-        // ƒ^ƒCƒ}[‚ğƒZƒbƒg‚·‚éB
+        // ã‚¿ã‚¤ãƒãƒ¼ã‚’ã‚»ãƒƒãƒˆã™ã‚‹ã€‚
         ::SetTimer(hwnd, 999, xg_dwTimerInterval, nullptr);
-        // ƒtƒH[ƒJƒX‚ğƒZƒbƒg‚·‚éB
+        // ãƒ•ã‚©ãƒ¼ã‚«ã‚¹ã‚’ã‚»ãƒƒãƒˆã™ã‚‹ã€‚
         ::SetFocus(::GetDlgItem(hwnd, psh1));
-        // ¶¬‚µ‚½–â‘è‚ÌŒÂ”‚ğ•\¦‚·‚éB
+        // ç”Ÿæˆã—ãŸå•é¡Œã®å€‹æ•°ã‚’è¡¨ç¤ºã™ã‚‹ã€‚
         if (s_nNumberGenerated > 0) {
             WCHAR sz[MAX_PATH];
             StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(IDS_PROBLEMSMAKING),
@@ -2346,32 +2346,32 @@ XgCancelSolveDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam*/)
     case WM_COMMAND:
         switch(LOWORD(wParam)) {
         case psh1:
-            // ƒ^ƒCƒ}[‚ğ‰ğœ‚·‚éB
+            // ã‚¿ã‚¤ãƒãƒ¼ã‚’è§£é™¤ã™ã‚‹ã€‚
             ::KillTimer(hwnd, 999);
-            // ƒLƒƒƒ“ƒZƒ‹‚µ‚ÄƒXƒŒƒbƒh‚ğ‘Ò‚ÂB
+            // ã‚­ãƒ£ãƒ³ã‚»ãƒ«ã—ã¦ã‚¹ãƒ¬ãƒƒãƒ‰ã‚’å¾…ã¤ã€‚
             xg_bCancelled = true;
             XgWaitForThreads();
-            // ƒXƒŒƒbƒh‚ğ•Â‚¶‚éB
+            // ã‚¹ãƒ¬ãƒƒãƒ‰ã‚’é–‰ã˜ã‚‹ã€‚
             XgCloseThreads();
-            // ŒvZŠÔ‚ğ‹‚ß‚é‚½‚ß‚ÉAI—¹ŠÔ‚ğæ“¾‚·‚éB
+            // è¨ˆç®—æ™‚é–“ã‚’æ±‚ã‚ã‚‹ãŸã‚ã«ã€çµ‚äº†æ™‚é–“ã‚’å–å¾—ã™ã‚‹ã€‚
             s_dwTick2 = ::GetTickCount();
-            // ‰ğ‚ğ‹‚ß‚æ‚¤‚Æ‚µ‚½Œã‚ÌŒãˆ—B
+            // è§£ã‚’æ±‚ã‚ã‚ˆã†ã¨ã—ãŸå¾Œã®å¾Œå‡¦ç†ã€‚
             XgEndSolve();
-            // ƒ_ƒCƒAƒƒO‚ğI—¹‚·‚éB
+            // ãƒ€ã‚¤ã‚¢ãƒ­ã‚°ã‚’çµ‚äº†ã™ã‚‹ã€‚
             ::EndDialog(hwnd, IDCANCEL);
             break;
 
         case psh2:
-            // ƒ^ƒCƒ}[‚ğ‰ğœ‚·‚éB
+            // ã‚¿ã‚¤ãƒãƒ¼ã‚’è§£é™¤ã™ã‚‹ã€‚
             ::KillTimer(hwnd, 999);
-            // ÄŒvZ‚µ‚È‚¨‚·B
+            // å†è¨ˆç®—ã—ãªãŠã™ã€‚
             xg_bRetrying = true;
             XgWaitForThreads();
             XgCloseThreads();
             ::InterlockedIncrement(&s_nRetryCount);
             s_dwTick1 = ::GetTickCount();
             XgStartSolve_AddBlack();
-            // ƒ^ƒCƒ}[‚ğƒZƒbƒg‚·‚éB
+            // ã‚¿ã‚¤ãƒãƒ¼ã‚’ã‚»ãƒƒãƒˆã™ã‚‹ã€‚
             ::SetTimer(hwnd, 999, xg_dwTimerInterval, nullptr);
             break;
         }
@@ -2379,24 +2379,24 @@ XgCancelSolveDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam*/)
 
     case WM_SYSCOMMAND:
         if (wParam == SC_CLOSE) {
-            // ƒ^ƒCƒ}[‚ğ‰ğœ‚·‚éB
+            // ã‚¿ã‚¤ãƒãƒ¼ã‚’è§£é™¤ã™ã‚‹ã€‚
             ::KillTimer(hwnd, 999);
-            // ƒLƒƒƒ“ƒZƒ‹‚µ‚ÄƒXƒŒƒbƒh‚ğ‘Ò‚ÂB
+            // ã‚­ãƒ£ãƒ³ã‚»ãƒ«ã—ã¦ã‚¹ãƒ¬ãƒƒãƒ‰ã‚’å¾…ã¤ã€‚
             xg_bCancelled = true;
             XgWaitForThreads();
-            // ƒXƒŒƒbƒh‚ğ•Â‚¶‚éB
+            // ã‚¹ãƒ¬ãƒƒãƒ‰ã‚’é–‰ã˜ã‚‹ã€‚
             XgCloseThreads();
-            // ŒvZŠÔ‚ğ‹‚ß‚é‚½‚ß‚ÉAI—¹ŠÔ‚ğæ“¾‚·‚éB
+            // è¨ˆç®—æ™‚é–“ã‚’æ±‚ã‚ã‚‹ãŸã‚ã«ã€çµ‚äº†æ™‚é–“ã‚’å–å¾—ã™ã‚‹ã€‚
             s_dwTick2 = ::GetTickCount();
-            // ‰ğ‚ğ‹‚ß‚æ‚¤‚Æ‚µ‚½Œã‚ÌŒãˆ—B
+            // è§£ã‚’æ±‚ã‚ã‚ˆã†ã¨ã—ãŸå¾Œã®å¾Œå‡¦ç†ã€‚
             XgEndSolve();
-            // ƒ_ƒCƒAƒƒO‚ğI—¹‚·‚éB
+            // ãƒ€ã‚¤ã‚¢ãƒ­ã‚°ã‚’çµ‚äº†ã™ã‚‹ã€‚
             ::EndDialog(hwnd, IDCANCEL);
         }
         break;
 
     case WM_TIMER:
-        // ƒvƒƒOƒŒƒXƒo[‚ğXV‚·‚éB
+        // ãƒ—ãƒ­ã‚°ãƒ¬ã‚¹ãƒãƒ¼ã‚’æ›´æ–°ã™ã‚‹ã€‚
         //for (DWORD i = 0; i < xg_dwThreadCount; i++)
         for (DWORD i = 0; i < 2; i++) {
             ::SendDlgItemMessageW(hwnd, ctl1 + i, PBM_SETPOS,
@@ -2404,7 +2404,7 @@ XgCancelSolveDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam*/)
         }
 
         {
-            // Œo‰ßŠÔ‚ğ•\¦‚·‚éB
+            // çµŒéæ™‚é–“ã‚’è¡¨ç¤ºã™ã‚‹ã€‚
             WCHAR sz[MAX_PATH];
             DWORD dwTick = ::GetTickCount();
             StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(IDS_NOWSOLVING),
@@ -2413,31 +2413,31 @@ XgCancelSolveDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam*/)
             ::SetDlgItemTextW(hwnd, stc1, sz);
         }
 
-        // I—¹‚µ‚½ƒXƒŒƒbƒh‚ª‚ ‚é‚©H
+        // çµ‚äº†ã—ãŸã‚¹ãƒ¬ãƒƒãƒ‰ãŒã‚ã‚‹ã‹ï¼Ÿ
         if (XgIsAnyThreadTerminated()) {
-            // ƒXƒŒƒbƒh‚ªI—¹‚µ‚½Bƒ^ƒCƒ}[‚ğ‰ğœ‚·‚éB
+            // ã‚¹ãƒ¬ãƒƒãƒ‰ãŒçµ‚äº†ã—ãŸã€‚ã‚¿ã‚¤ãƒãƒ¼ã‚’è§£é™¤ã™ã‚‹ã€‚
             ::KillTimer(hwnd, 999);
-            // ŒvZŠÔ‚ğ‹‚ß‚é‚½‚ß‚ÉAI—¹ŠÔ‚ğæ“¾‚·‚éB
+            // è¨ˆç®—æ™‚é–“ã‚’æ±‚ã‚ã‚‹ãŸã‚ã«ã€çµ‚äº†æ™‚é–“ã‚’å–å¾—ã™ã‚‹ã€‚
             s_dwTick2 = ::GetTickCount();
-            // ‰ğ‚ğ‹‚ß‚æ‚¤‚Æ‚µ‚½Œã‚ÌŒãˆ—B
+            // è§£ã‚’æ±‚ã‚ã‚ˆã†ã¨ã—ãŸå¾Œã®å¾Œå‡¦ç†ã€‚
             XgEndSolve();
-            // ƒ_ƒCƒAƒƒO‚ğI—¹‚·‚éB
+            // ãƒ€ã‚¤ã‚¢ãƒ­ã‚°ã‚’çµ‚äº†ã™ã‚‹ã€‚
             ::EndDialog(hwnd, IDOK);
-            // ƒXƒŒƒbƒh‚ğ•Â‚¶‚éB
+            // ã‚¹ãƒ¬ãƒƒãƒ‰ã‚’é–‰ã˜ã‚‹ã€‚
             XgCloseThreads();
         } else {
-            // ÄŒvZ‚ª•K—v‚©H
+            // å†è¨ˆç®—ãŒå¿…è¦ã‹ï¼Ÿ
             if (s_bAutoRetry && ::GetTickCount() - s_dwTick1 > s_dwWait) {
-                // ƒ^ƒCƒ}[‚ğ‰ğœ‚·‚éB
+                // ã‚¿ã‚¤ãƒãƒ¼ã‚’è§£é™¤ã™ã‚‹ã€‚
                 ::KillTimer(hwnd, 999);
-                // ÄŒvZ‚µ‚È‚¨‚·B
+                // å†è¨ˆç®—ã—ãªãŠã™ã€‚
                 xg_bRetrying = true;
                 XgWaitForThreads();
                 XgCloseThreads();
                 ::InterlockedIncrement(&s_nRetryCount);
                 s_dwTick1 = ::GetTickCount();
                 XgStartSolve_AddBlack();
-                // ƒ^ƒCƒ}[‚ğƒZƒbƒg‚·‚éB
+                // ã‚¿ã‚¤ãƒãƒ¼ã‚’ã‚»ãƒƒãƒˆã™ã‚‹ã€‚
                 ::SetTimer(hwnd, 999, xg_dwTimerInterval, nullptr);
             }
         }
@@ -2448,7 +2448,7 @@ XgCancelSolveDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam*/)
 
 //////////////////////////////////////////////////////////////////////////////
 
-// ƒLƒƒƒ“ƒZƒ‹ƒ_ƒCƒAƒƒOi•ƒ}ƒX’Ç‰Á‚È‚µjB
+// ã‚­ãƒ£ãƒ³ã‚»ãƒ«ãƒ€ã‚¤ã‚¢ãƒ­ã‚°ï¼ˆé»’ãƒã‚¹è¿½åŠ ãªã—ï¼‰ã€‚
 extern "C" INT_PTR CALLBACK
 XgCancelSolveDlgProcNoAddBlack(
     HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam*/)
@@ -2461,26 +2461,26 @@ XgCancelSolveDlgProcNoAddBlack(
             xg_random_seed = 100;
         }
         #endif
-        // ƒ_ƒCƒAƒƒO‚ğ’†‰›‚ÖˆÚ“®‚·‚éB
+        // ãƒ€ã‚¤ã‚¢ãƒ­ã‚°ã‚’ä¸­å¤®ã¸ç§»å‹•ã™ã‚‹ã€‚
         XgCenterDialog(hwnd);
-        // ‰Šú‰»‚·‚éB
+        // åˆæœŸåŒ–ã™ã‚‹ã€‚
         s_nRetryCount = 0;
-        // ƒvƒƒOƒŒƒXƒo[‚Ì”ÍˆÍ‚ğƒZƒbƒg‚·‚éB
+        // ãƒ—ãƒ­ã‚°ãƒ¬ã‚¹ãƒãƒ¼ã®ç¯„å›²ã‚’ã‚»ãƒƒãƒˆã™ã‚‹ã€‚
         ::SendDlgItemMessageW(hwnd, ctl1, PBM_SETRANGE, 0,
                             MAKELPARAM(0, xg_nRows * xg_nCols));
         ::SendDlgItemMessageW(hwnd, ctl2, PBM_SETRANGE, 0,
                             MAKELPARAM(0, xg_nRows * xg_nCols));
-        // ŒvZŠÔ‚ğ‹‚ß‚é‚½‚ß‚ÉAŠJnŠÔ‚ğæ“¾‚·‚éB
+        // è¨ˆç®—æ™‚é–“ã‚’æ±‚ã‚ã‚‹ãŸã‚ã«ã€é–‹å§‹æ™‚é–“ã‚’å–å¾—ã™ã‚‹ã€‚
         s_dwTick0 = s_dwTick1 = ::GetTickCount();
-        // ÄŒvZ‚Ü‚Å‚ÌŠÔ‚ğŠTZ‚·‚éB
+        // å†è¨ˆç®—ã¾ã§ã®æ™‚é–“ã‚’æ¦‚ç®—ã™ã‚‹ã€‚
         s_dwWait = XgGetRetryInterval();
-        // ‰ğ‚ğ‹‚ß‚é‚Ì‚ğŠJnB
+        // è§£ã‚’æ±‚ã‚ã‚‹ã®ã‚’é–‹å§‹ã€‚
         XgStartSolve_NoAddBlack();
-        // ƒ^ƒCƒ}[‚ğƒZƒbƒg‚·‚éB
+        // ã‚¿ã‚¤ãƒãƒ¼ã‚’ã‚»ãƒƒãƒˆã™ã‚‹ã€‚
         ::SetTimer(hwnd, 999, xg_dwTimerInterval, nullptr);
-        // ƒtƒH[ƒJƒX‚ğƒZƒbƒg‚·‚éB
+        // ãƒ•ã‚©ãƒ¼ã‚«ã‚¹ã‚’ã‚»ãƒƒãƒˆã™ã‚‹ã€‚
         ::SetFocus(::GetDlgItem(hwnd, psh1));
-        // ¶¬‚µ‚½–â‘è‚ÌŒÂ”‚ğ•\¦‚·‚éB
+        // ç”Ÿæˆã—ãŸå•é¡Œã®å€‹æ•°ã‚’è¡¨ç¤ºã™ã‚‹ã€‚
         if (s_nNumberGenerated > 0) {
             WCHAR sz[MAX_PATH];
             StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(IDS_PROBLEMSMAKING),
@@ -2492,32 +2492,32 @@ XgCancelSolveDlgProcNoAddBlack(
     case WM_COMMAND:
         switch(LOWORD(wParam)) {
         case psh1:
-            // ƒ^ƒCƒ}[‚ğ‰ğœ‚·‚éB
+            // ã‚¿ã‚¤ãƒãƒ¼ã‚’è§£é™¤ã™ã‚‹ã€‚
             ::KillTimer(hwnd, 999);
-            // ƒLƒƒƒ“ƒZƒ‹‚µ‚ÄƒXƒŒƒbƒh‚ğ‘Ò‚ÂB
+            // ã‚­ãƒ£ãƒ³ã‚»ãƒ«ã—ã¦ã‚¹ãƒ¬ãƒƒãƒ‰ã‚’å¾…ã¤ã€‚
             xg_bCancelled = true;
             XgWaitForThreads();
-            // ƒXƒŒƒbƒh‚ğ•Â‚¶‚éB
+            // ã‚¹ãƒ¬ãƒƒãƒ‰ã‚’é–‰ã˜ã‚‹ã€‚
             XgCloseThreads();
-            // ŒvZŠÔ‚ğ‹‚ß‚é‚½‚ß‚ÉAI—¹ŠÔ‚ğæ“¾‚·‚éB
+            // è¨ˆç®—æ™‚é–“ã‚’æ±‚ã‚ã‚‹ãŸã‚ã«ã€çµ‚äº†æ™‚é–“ã‚’å–å¾—ã™ã‚‹ã€‚
             s_dwTick2 = ::GetTickCount();
-            // ‰ğ‚ğ‹‚ß‚æ‚¤‚Æ‚µ‚½Œã‚ÌŒãˆ—B
+            // è§£ã‚’æ±‚ã‚ã‚ˆã†ã¨ã—ãŸå¾Œã®å¾Œå‡¦ç†ã€‚
             XgEndSolve();
-            // ƒ_ƒCƒAƒƒO‚ğI—¹‚·‚éB
+            // ãƒ€ã‚¤ã‚¢ãƒ­ã‚°ã‚’çµ‚äº†ã™ã‚‹ã€‚
             ::EndDialog(hwnd, IDCANCEL);
             break;
 
         case psh2:
-            // ƒ^ƒCƒ}[‚ğ‰ğœ‚·‚éB
+            // ã‚¿ã‚¤ãƒãƒ¼ã‚’è§£é™¤ã™ã‚‹ã€‚
             ::KillTimer(hwnd, 999);
-            // ÄŒvZ‚µ‚È‚¨‚·B
+            // å†è¨ˆç®—ã—ãªãŠã™ã€‚
             xg_bRetrying = true;
             XgWaitForThreads();
             XgCloseThreads();
             ::InterlockedIncrement(&s_nRetryCount);
             s_dwTick1 = ::GetTickCount();
             XgStartSolve_NoAddBlack();
-            // ƒ^ƒCƒ}[‚ğƒZƒbƒg‚·‚éB
+            // ã‚¿ã‚¤ãƒãƒ¼ã‚’ã‚»ãƒƒãƒˆã™ã‚‹ã€‚
             ::SetTimer(hwnd, 999, xg_dwTimerInterval, nullptr);
             break;
         }
@@ -2525,29 +2525,29 @@ XgCancelSolveDlgProcNoAddBlack(
 
     case WM_SYSCOMMAND:
         if (wParam == SC_CLOSE) {
-            // ƒ^ƒCƒ}[‚ğ‰ğœ‚·‚éB
+            // ã‚¿ã‚¤ãƒãƒ¼ã‚’è§£é™¤ã™ã‚‹ã€‚
             ::KillTimer(hwnd, 999);
-            // ƒLƒƒƒ“ƒZƒ‹‚µ‚ÄƒXƒŒƒbƒh‚ğ‘Ò‚ÂB
+            // ã‚­ãƒ£ãƒ³ã‚»ãƒ«ã—ã¦ã‚¹ãƒ¬ãƒƒãƒ‰ã‚’å¾…ã¤ã€‚
             xg_bCancelled = true;
             XgWaitForThreads();
-            // ƒXƒŒƒbƒh‚ğ•Â‚¶‚éB
+            // ã‚¹ãƒ¬ãƒƒãƒ‰ã‚’é–‰ã˜ã‚‹ã€‚
             XgCloseThreads();
-            // ŒvZŠÔ‚ğ‹‚ß‚é‚½‚ß‚ÉAI—¹ŠÔ‚ğæ“¾‚·‚éB
+            // è¨ˆç®—æ™‚é–“ã‚’æ±‚ã‚ã‚‹ãŸã‚ã«ã€çµ‚äº†æ™‚é–“ã‚’å–å¾—ã™ã‚‹ã€‚
             s_dwTick2 = ::GetTickCount();
-            // ‰ğ‚ğ‹‚ß‚æ‚¤‚Æ‚µ‚½Œã‚ÌŒãˆ—B
+            // è§£ã‚’æ±‚ã‚ã‚ˆã†ã¨ã—ãŸå¾Œã®å¾Œå‡¦ç†ã€‚
             XgEndSolve();
-            // ƒ_ƒCƒAƒƒO‚ğI—¹‚·‚éB
+            // ãƒ€ã‚¤ã‚¢ãƒ­ã‚°ã‚’çµ‚äº†ã™ã‚‹ã€‚
             ::EndDialog(hwnd, IDCANCEL);
         }
         break;
 
     case WM_TIMER:
-        // ƒvƒƒOƒŒƒXƒo[‚ğXV‚·‚éB
+        // ãƒ—ãƒ­ã‚°ãƒ¬ã‚¹ãƒãƒ¼ã‚’æ›´æ–°ã™ã‚‹ã€‚
         for (DWORD i = 0; i < xg_dwThreadCount; i++) {
             ::SendDlgItemMessageW(hwnd, ctl1 + i, PBM_SETPOS,
                 static_cast<WPARAM>(xg_aThreadInfo[i].m_count), 0);
         }
-        // Œo‰ßŠÔ‚ğ•\¦‚·‚éB
+        // çµŒéæ™‚é–“ã‚’è¡¨ç¤ºã™ã‚‹ã€‚
         {
             WCHAR sz[MAX_PATH];
             DWORD dwTick = ::GetTickCount();
@@ -2556,32 +2556,32 @@ XgCancelSolveDlgProcNoAddBlack(
                     (dwTick - s_dwTick0) / 100 % 10, s_nRetryCount);
             ::SetDlgItemTextW(hwnd, stc1, sz);
         }
-        // ˆê‚ÂˆÈã‚ÌƒXƒŒƒbƒh‚ªI—¹‚µ‚½‚©H
+        // ä¸€ã¤ä»¥ä¸Šã®ã‚¹ãƒ¬ãƒƒãƒ‰ãŒçµ‚äº†ã—ãŸã‹ï¼Ÿ
         if (XgIsAnyThreadTerminated()) {
-            // ƒXƒŒƒbƒh‚ªI—¹‚µ‚½Bƒ^ƒCƒ}[‚ğ‰ğœ‚·‚éB
+            // ã‚¹ãƒ¬ãƒƒãƒ‰ãŒçµ‚äº†ã—ãŸã€‚ã‚¿ã‚¤ãƒãƒ¼ã‚’è§£é™¤ã™ã‚‹ã€‚
             ::KillTimer(hwnd, 999);
-            // ŒvZŠÔ‚ğ‹‚ß‚é‚½‚ß‚ÉAI—¹ŠÔ‚ğæ“¾‚·‚éB
+            // è¨ˆç®—æ™‚é–“ã‚’æ±‚ã‚ã‚‹ãŸã‚ã«ã€çµ‚äº†æ™‚é–“ã‚’å–å¾—ã™ã‚‹ã€‚
             s_dwTick2 = ::GetTickCount();
-            // ‰ğ‚ğ‹‚ß‚æ‚¤‚Æ‚µ‚½Œã‚ÌŒãˆ—B
+            // è§£ã‚’æ±‚ã‚ã‚ˆã†ã¨ã—ãŸå¾Œã®å¾Œå‡¦ç†ã€‚
             XgEndSolve();
-            // ƒ_ƒCƒAƒƒO‚ğI—¹‚·‚éB
+            // ãƒ€ã‚¤ã‚¢ãƒ­ã‚°ã‚’çµ‚äº†ã™ã‚‹ã€‚
             ::EndDialog(hwnd, IDOK);
-            // ƒXƒŒƒbƒh‚ğ•Â‚¶‚éB
+            // ã‚¹ãƒ¬ãƒƒãƒ‰ã‚’é–‰ã˜ã‚‹ã€‚
             XgCloseThreads();
         } else {
-            // ÄŒvZ‚ª•K—v‚©H
+            // å†è¨ˆç®—ãŒå¿…è¦ã‹ï¼Ÿ
             if (s_bAutoRetry && ::GetTickCount() - s_dwTick1 > s_dwWait) {
-                // ƒ^ƒCƒ}[‚ğ‰ğœ‚·‚éB
+                // ã‚¿ã‚¤ãƒãƒ¼ã‚’è§£é™¤ã™ã‚‹ã€‚
                 ::KillTimer(hwnd, 999);
-                // ÄŒvZ‚µ‚È‚¨‚·B
+                // å†è¨ˆç®—ã—ãªãŠã™ã€‚
                 xg_bRetrying = true;
                 XgWaitForThreads();
                 XgCloseThreads();
                 ::InterlockedIncrement(&s_nRetryCount);
                 s_dwTick1 = ::GetTickCount();
-                // ƒXƒ}[ƒg‰ğŒˆ‚È‚çA•ƒ}ƒX‚ğ¶¬‚·‚éB
+                // ã‚¹ãƒãƒ¼ãƒˆè§£æ±ºãªã‚‰ã€é»’ãƒã‚¹ã‚’ç”Ÿæˆã™ã‚‹ã€‚
                 XgStartSolve_NoAddBlack();
-                // ƒ^ƒCƒ}[‚ğƒZƒbƒg‚·‚éB
+                // ã‚¿ã‚¤ãƒãƒ¼ã‚’ã‚»ãƒƒãƒˆã™ã‚‹ã€‚
                 ::SetTimer(hwnd, 999, xg_dwTimerInterval, nullptr);
             }
         }
@@ -2590,7 +2590,7 @@ XgCancelSolveDlgProcNoAddBlack(
     return false;
 }
 
-// ƒLƒƒƒ“ƒZƒ‹ƒ_ƒCƒAƒƒOiƒXƒ}[ƒg‰ğŒˆjB
+// ã‚­ãƒ£ãƒ³ã‚»ãƒ«ãƒ€ã‚¤ã‚¢ãƒ­ã‚°ï¼ˆã‚¹ãƒãƒ¼ãƒˆè§£æ±ºï¼‰ã€‚
 extern "C" INT_PTR CALLBACK
 XgCancelSolveDlgProcSmart(
     HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam*/)
@@ -2603,26 +2603,26 @@ XgCancelSolveDlgProcSmart(
             xg_random_seed = 100;
         }
         #endif
-        // ƒ_ƒCƒAƒƒO‚ğ’†‰›‚ÖˆÚ“®‚·‚éB
+        // ãƒ€ã‚¤ã‚¢ãƒ­ã‚°ã‚’ä¸­å¤®ã¸ç§»å‹•ã™ã‚‹ã€‚
         XgCenterDialog(hwnd);
-        // ‰Šú‰»‚·‚éB
+        // åˆæœŸåŒ–ã™ã‚‹ã€‚
         s_nRetryCount = 0;
-        // ƒvƒƒOƒŒƒXƒo[‚Ì”ÍˆÍ‚ğƒZƒbƒg‚·‚éB
+        // ãƒ—ãƒ­ã‚°ãƒ¬ã‚¹ãƒãƒ¼ã®ç¯„å›²ã‚’ã‚»ãƒƒãƒˆã™ã‚‹ã€‚
         ::SendDlgItemMessageW(hwnd, ctl1, PBM_SETRANGE, 0,
                             MAKELPARAM(0, xg_nRows * xg_nCols));
         ::SendDlgItemMessageW(hwnd, ctl2, PBM_SETRANGE, 0,
                             MAKELPARAM(0, xg_nRows * xg_nCols));
-        // ŒvZŠÔ‚ğ‹‚ß‚é‚½‚ß‚ÉAŠJnŠÔ‚ğæ“¾‚·‚éB
+        // è¨ˆç®—æ™‚é–“ã‚’æ±‚ã‚ã‚‹ãŸã‚ã«ã€é–‹å§‹æ™‚é–“ã‚’å–å¾—ã™ã‚‹ã€‚
         s_dwTick0 = s_dwTick1 = ::GetTickCount();
-        // ÄŒvZ‚Ü‚Å‚ÌŠÔ‚ğŠTZ‚·‚éB
+        // å†è¨ˆç®—ã¾ã§ã®æ™‚é–“ã‚’æ¦‚ç®—ã™ã‚‹ã€‚
         s_dwWait = XgGetRetryInterval();
-        // ‰ğ‚ğ‹‚ß‚é‚Ì‚ğŠJnB
+        // è§£ã‚’æ±‚ã‚ã‚‹ã®ã‚’é–‹å§‹ã€‚
         XgStartSolve_Smart();
-        // ƒ^ƒCƒ}[‚ğƒZƒbƒg‚·‚éB
+        // ã‚¿ã‚¤ãƒãƒ¼ã‚’ã‚»ãƒƒãƒˆã™ã‚‹ã€‚
         ::SetTimer(hwnd, 999, xg_dwTimerInterval, nullptr);
-        // ƒtƒH[ƒJƒX‚ğƒZƒbƒg‚·‚éB
+        // ãƒ•ã‚©ãƒ¼ã‚«ã‚¹ã‚’ã‚»ãƒƒãƒˆã™ã‚‹ã€‚
         ::SetFocus(::GetDlgItem(hwnd, psh1));
-        // ¶¬‚µ‚½–â‘è‚ÌŒÂ”‚ğ•\¦‚·‚éB
+        // ç”Ÿæˆã—ãŸå•é¡Œã®å€‹æ•°ã‚’è¡¨ç¤ºã™ã‚‹ã€‚
         if (s_nNumberGenerated > 0) {
             WCHAR sz[MAX_PATH];
             StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(IDS_PROBLEMSMAKING),
@@ -2634,32 +2634,32 @@ XgCancelSolveDlgProcSmart(
     case WM_COMMAND:
         switch(LOWORD(wParam)) {
         case psh1:
-            // ƒ^ƒCƒ}[‚ğ‰ğœ‚·‚éB
+            // ã‚¿ã‚¤ãƒãƒ¼ã‚’è§£é™¤ã™ã‚‹ã€‚
             ::KillTimer(hwnd, 999);
-            // ƒLƒƒƒ“ƒZƒ‹‚µ‚ÄƒXƒŒƒbƒh‚ğ‘Ò‚ÂB
+            // ã‚­ãƒ£ãƒ³ã‚»ãƒ«ã—ã¦ã‚¹ãƒ¬ãƒƒãƒ‰ã‚’å¾…ã¤ã€‚
             xg_bCancelled = true;
             XgWaitForThreads();
-            // ƒXƒŒƒbƒh‚ğ•Â‚¶‚éB
+            // ã‚¹ãƒ¬ãƒƒãƒ‰ã‚’é–‰ã˜ã‚‹ã€‚
             XgCloseThreads();
-            // ŒvZŠÔ‚ğ‹‚ß‚é‚½‚ß‚ÉAI—¹ŠÔ‚ğæ“¾‚·‚éB
+            // è¨ˆç®—æ™‚é–“ã‚’æ±‚ã‚ã‚‹ãŸã‚ã«ã€çµ‚äº†æ™‚é–“ã‚’å–å¾—ã™ã‚‹ã€‚
             s_dwTick2 = ::GetTickCount();
-            // ‰ğ‚ğ‹‚ß‚æ‚¤‚Æ‚µ‚½Œã‚ÌŒãˆ—B
+            // è§£ã‚’æ±‚ã‚ã‚ˆã†ã¨ã—ãŸå¾Œã®å¾Œå‡¦ç†ã€‚
             XgEndSolve();
-            // ƒ_ƒCƒAƒƒO‚ğI—¹‚·‚éB
+            // ãƒ€ã‚¤ã‚¢ãƒ­ã‚°ã‚’çµ‚äº†ã™ã‚‹ã€‚
             ::EndDialog(hwnd, IDCANCEL);
             break;
 
         case psh2:
-            // ƒ^ƒCƒ}[‚ğ‰ğœ‚·‚éB
+            // ã‚¿ã‚¤ãƒãƒ¼ã‚’è§£é™¤ã™ã‚‹ã€‚
             ::KillTimer(hwnd, 999);
-            // ÄŒvZ‚µ‚È‚¨‚·B
+            // å†è¨ˆç®—ã—ãªãŠã™ã€‚
             xg_bRetrying = true;
             XgWaitForThreads();
             XgCloseThreads();
             ::InterlockedIncrement(&s_nRetryCount);
             s_dwTick1 = ::GetTickCount();
             XgStartSolve_Smart();
-            // ƒ^ƒCƒ}[‚ğƒZƒbƒg‚·‚éB
+            // ã‚¿ã‚¤ãƒãƒ¼ã‚’ã‚»ãƒƒãƒˆã™ã‚‹ã€‚
             ::SetTimer(hwnd, 999, xg_dwTimerInterval, nullptr);
             break;
         }
@@ -2667,29 +2667,29 @@ XgCancelSolveDlgProcSmart(
 
     case WM_SYSCOMMAND:
         if (wParam == SC_CLOSE) {
-            // ƒ^ƒCƒ}[‚ğ‰ğœ‚·‚éB
+            // ã‚¿ã‚¤ãƒãƒ¼ã‚’è§£é™¤ã™ã‚‹ã€‚
             ::KillTimer(hwnd, 999);
-            // ƒLƒƒƒ“ƒZƒ‹‚µ‚ÄƒXƒŒƒbƒh‚ğ‘Ò‚ÂB
+            // ã‚­ãƒ£ãƒ³ã‚»ãƒ«ã—ã¦ã‚¹ãƒ¬ãƒƒãƒ‰ã‚’å¾…ã¤ã€‚
             xg_bCancelled = true;
             XgWaitForThreads();
-            // ƒXƒŒƒbƒh‚ğ•Â‚¶‚éB
+            // ã‚¹ãƒ¬ãƒƒãƒ‰ã‚’é–‰ã˜ã‚‹ã€‚
             XgCloseThreads();
-            // ŒvZŠÔ‚ğ‹‚ß‚é‚½‚ß‚ÉAI—¹ŠÔ‚ğæ“¾‚·‚éB
+            // è¨ˆç®—æ™‚é–“ã‚’æ±‚ã‚ã‚‹ãŸã‚ã«ã€çµ‚äº†æ™‚é–“ã‚’å–å¾—ã™ã‚‹ã€‚
             s_dwTick2 = ::GetTickCount();
-            // ‰ğ‚ğ‹‚ß‚æ‚¤‚Æ‚µ‚½Œã‚ÌŒãˆ—B
+            // è§£ã‚’æ±‚ã‚ã‚ˆã†ã¨ã—ãŸå¾Œã®å¾Œå‡¦ç†ã€‚
             XgEndSolve();
-            // ƒ_ƒCƒAƒƒO‚ğI—¹‚·‚éB
+            // ãƒ€ã‚¤ã‚¢ãƒ­ã‚°ã‚’çµ‚äº†ã™ã‚‹ã€‚
             ::EndDialog(hwnd, IDCANCEL);
         }
         break;
 
     case WM_TIMER:
-        // ƒvƒƒOƒŒƒXƒo[‚ğXV‚·‚éB
+        // ãƒ—ãƒ­ã‚°ãƒ¬ã‚¹ãƒãƒ¼ã‚’æ›´æ–°ã™ã‚‹ã€‚
         for (DWORD i = 0; i < xg_dwThreadCount; i++) {
             ::SendDlgItemMessageW(hwnd, ctl1 + i, PBM_SETPOS,
                 static_cast<WPARAM>(xg_aThreadInfo[i].m_count), 0);
         }
-        // Œo‰ßŠÔ‚ğ•\¦‚·‚éB
+        // çµŒéæ™‚é–“ã‚’è¡¨ç¤ºã™ã‚‹ã€‚
         {
             WCHAR sz[MAX_PATH];
             DWORD dwTick = ::GetTickCount();
@@ -2698,31 +2698,31 @@ XgCancelSolveDlgProcSmart(
                     (dwTick - s_dwTick0) / 100 % 10, s_nRetryCount);
             ::SetDlgItemTextW(hwnd, stc1, sz);
         }
-        // ˆê‚ÂˆÈã‚ÌƒXƒŒƒbƒh‚ªI—¹‚µ‚½‚©H
+        // ä¸€ã¤ä»¥ä¸Šã®ã‚¹ãƒ¬ãƒƒãƒ‰ãŒçµ‚äº†ã—ãŸã‹ï¼Ÿ
         if (XgIsAnyThreadTerminated()) {
-            // ƒXƒŒƒbƒh‚ªI—¹‚µ‚½Bƒ^ƒCƒ}[‚ğ‰ğœ‚·‚éB
+            // ã‚¹ãƒ¬ãƒƒãƒ‰ãŒçµ‚äº†ã—ãŸã€‚ã‚¿ã‚¤ãƒãƒ¼ã‚’è§£é™¤ã™ã‚‹ã€‚
             ::KillTimer(hwnd, 999);
-            // ŒvZŠÔ‚ğ‹‚ß‚é‚½‚ß‚ÉAI—¹ŠÔ‚ğæ“¾‚·‚éB
+            // è¨ˆç®—æ™‚é–“ã‚’æ±‚ã‚ã‚‹ãŸã‚ã«ã€çµ‚äº†æ™‚é–“ã‚’å–å¾—ã™ã‚‹ã€‚
             s_dwTick2 = ::GetTickCount();
-            // ‰ğ‚ğ‹‚ß‚æ‚¤‚Æ‚µ‚½Œã‚ÌŒãˆ—B
+            // è§£ã‚’æ±‚ã‚ã‚ˆã†ã¨ã—ãŸå¾Œã®å¾Œå‡¦ç†ã€‚
             XgEndSolve();
-            // ƒ_ƒCƒAƒƒO‚ğI—¹‚·‚éB
+            // ãƒ€ã‚¤ã‚¢ãƒ­ã‚°ã‚’çµ‚äº†ã™ã‚‹ã€‚
             ::EndDialog(hwnd, IDOK);
-            // ƒXƒŒƒbƒh‚ğ•Â‚¶‚éB
+            // ã‚¹ãƒ¬ãƒƒãƒ‰ã‚’é–‰ã˜ã‚‹ã€‚
             XgCloseThreads();
         } else {
-            // ÄŒvZ‚ª•K—v‚©H
+            // å†è¨ˆç®—ãŒå¿…è¦ã‹ï¼Ÿ
             if (s_bAutoRetry && ::GetTickCount() - s_dwTick1 > s_dwWait) {
-                // ƒ^ƒCƒ}[‚ğ‰ğœ‚·‚éB
+                // ã‚¿ã‚¤ãƒãƒ¼ã‚’è§£é™¤ã™ã‚‹ã€‚
                 ::KillTimer(hwnd, 999);
-                // ÄŒvZ‚µ‚È‚¨‚·B
+                // å†è¨ˆç®—ã—ãªãŠã™ã€‚
                 xg_bRetrying = true;
                 XgWaitForThreads();
                 XgCloseThreads();
                 ::InterlockedIncrement(&s_nRetryCount);
                 s_dwTick1 = ::GetTickCount();
                 XgStartSolve_Smart();
-                // ƒ^ƒCƒ}[‚ğƒZƒbƒg‚·‚éB
+                // ã‚¿ã‚¤ãƒãƒ¼ã‚’ã‚»ãƒƒãƒˆã™ã‚‹ã€‚
                 ::SetTimer(hwnd, 999, xg_dwTimerInterval, nullptr);
             }
         }
@@ -2731,44 +2731,44 @@ XgCancelSolveDlgProcSmart(
     return false;
 }
 
-// ƒLƒƒƒ“ƒZƒ‹ƒ_ƒCƒAƒƒOB
+// ã‚­ãƒ£ãƒ³ã‚»ãƒ«ãƒ€ã‚¤ã‚¢ãƒ­ã‚°ã€‚
 extern "C" INT_PTR CALLBACK
 XgCancelGenBlacksDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
     switch (uMsg) {
     case WM_INITDIALOG:
-        // ƒ_ƒCƒAƒƒO‚ğ’†‰›‚ÖˆÚ“®‚·‚éB
+        // ãƒ€ã‚¤ã‚¢ãƒ­ã‚°ã‚’ä¸­å¤®ã¸ç§»å‹•ã™ã‚‹ã€‚
         XgCenterDialog(hwnd);
-        // ‰ğ‚ğ‹‚ß‚é‚Ì‚ğŠJnB
+        // è§£ã‚’æ±‚ã‚ã‚‹ã®ã‚’é–‹å§‹ã€‚
         XgStartGenerateBlacks();
-        // ƒtƒH[ƒJƒX‚ğƒZƒbƒg‚·‚éB
+        // ãƒ•ã‚©ãƒ¼ã‚«ã‚¹ã‚’ã‚»ãƒƒãƒˆã™ã‚‹ã€‚
         ::SetFocus(::GetDlgItem(hwnd, psh1));
-        // ŠJnŠÔB
+        // é–‹å§‹æ™‚é–“ã€‚
         s_dwTick0 = ::GetTickCount();
         s_nRetryCount = 0;
-        // ¶¬‚µ‚½ƒpƒ^[ƒ“‚ÌŒÂ”‚ğ•\¦‚·‚éB
+        // ç”Ÿæˆã—ãŸãƒ‘ã‚¿ãƒ¼ãƒ³ã®å€‹æ•°ã‚’è¡¨ç¤ºã™ã‚‹ã€‚
         if (s_nNumberGenerated > 0) {
             WCHAR sz[MAX_PATH];
             StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(IDS_PATMAKING), s_nNumberGenerated);
             ::SetDlgItemTextW(hwnd, stc2, sz);
         }
-        // ƒ^ƒCƒ}[‚ğƒZƒbƒg‚·‚éB
+        // ã‚¿ã‚¤ãƒãƒ¼ã‚’ã‚»ãƒƒãƒˆã™ã‚‹ã€‚
         ::SetTimer(hwnd, 999, xg_dwTimerInterval, nullptr);
         return false;
 
     case WM_COMMAND:
         switch(LOWORD(wParam)) {
         case psh1:
-            // ƒ^ƒCƒ}[‚ğ‰ğœ‚·‚éB
+            // ã‚¿ã‚¤ãƒãƒ¼ã‚’è§£é™¤ã™ã‚‹ã€‚
             ::KillTimer(hwnd, 999);
-            // ƒLƒƒƒ“ƒZƒ‹‚µ‚ÄƒXƒŒƒbƒh‚ğ‘Ò‚ÂB
+            // ã‚­ãƒ£ãƒ³ã‚»ãƒ«ã—ã¦ã‚¹ãƒ¬ãƒƒãƒ‰ã‚’å¾…ã¤ã€‚
             xg_bCancelled = true;
             XgWaitForThreads();
-            // ƒXƒŒƒbƒh‚ğ•Â‚¶‚éB
+            // ã‚¹ãƒ¬ãƒƒãƒ‰ã‚’é–‰ã˜ã‚‹ã€‚
             XgCloseThreads();
-            // ŒvZŠÔ‚ğ‹‚ß‚é‚½‚ß‚ÉAI—¹ŠÔ‚ğæ“¾‚·‚éB
+            // è¨ˆç®—æ™‚é–“ã‚’æ±‚ã‚ã‚‹ãŸã‚ã«ã€çµ‚äº†æ™‚é–“ã‚’å–å¾—ã™ã‚‹ã€‚
             s_dwTick2 = ::GetTickCount();
-            // ƒ_ƒCƒAƒƒO‚ğI—¹‚·‚éB
+            // ãƒ€ã‚¤ã‚¢ãƒ­ã‚°ã‚’çµ‚äº†ã™ã‚‹ã€‚
             ::EndDialog(hwnd, IDCANCEL);
             break;
         }
@@ -2776,23 +2776,23 @@ XgCancelGenBlacksDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 
     case WM_SYSCOMMAND:
         if (wParam == SC_CLOSE) {
-            // ƒ^ƒCƒ}[‚ğ‰ğœ‚·‚éB
+            // ã‚¿ã‚¤ãƒãƒ¼ã‚’è§£é™¤ã™ã‚‹ã€‚
             ::KillTimer(hwnd, 999);
-            // ƒLƒƒƒ“ƒZƒ‹‚µ‚ÄƒXƒŒƒbƒh‚ğ‘Ò‚ÂB
+            // ã‚­ãƒ£ãƒ³ã‚»ãƒ«ã—ã¦ã‚¹ãƒ¬ãƒƒãƒ‰ã‚’å¾…ã¤ã€‚
             xg_bCancelled = true;
             XgWaitForThreads();
-            // ƒXƒŒƒbƒh‚ğ•Â‚¶‚éB
+            // ã‚¹ãƒ¬ãƒƒãƒ‰ã‚’é–‰ã˜ã‚‹ã€‚
             XgCloseThreads();
-            // ŒvZŠÔ‚ğ‹‚ß‚é‚½‚ß‚ÉAI—¹ŠÔ‚ğæ“¾‚·‚éB
+            // è¨ˆç®—æ™‚é–“ã‚’æ±‚ã‚ã‚‹ãŸã‚ã«ã€çµ‚äº†æ™‚é–“ã‚’å–å¾—ã™ã‚‹ã€‚
             s_dwTick2 = ::GetTickCount();
-            // ƒ_ƒCƒAƒƒO‚ğI—¹‚·‚éB
+            // ãƒ€ã‚¤ã‚¢ãƒ­ã‚°ã‚’çµ‚äº†ã™ã‚‹ã€‚
             ::EndDialog(hwnd, IDCANCEL);
         }
         break;
 
     case WM_TIMER:
         {
-            // Œo‰ßŠÔ‚ğ•\¦‚·‚éB
+            // çµŒéæ™‚é–“ã‚’è¡¨ç¤ºã™ã‚‹ã€‚
             WCHAR sz[MAX_PATH];
             DWORD dwTick = ::GetTickCount();
             StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(IDS_CALCULATING),
@@ -2801,15 +2801,15 @@ XgCancelGenBlacksDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
             ::SetDlgItemTextW(hwnd, stc1, sz);
         }
 
-        // I—¹‚µ‚½ƒXƒŒƒbƒh‚ª‚ ‚é‚©H
+        // çµ‚äº†ã—ãŸã‚¹ãƒ¬ãƒƒãƒ‰ãŒã‚ã‚‹ã‹ï¼Ÿ
         if (XgIsAnyThreadTerminated()) {
-            // ƒXƒŒƒbƒh‚ªI—¹‚µ‚½Bƒ^ƒCƒ}[‚ğ‰ğœ‚·‚éB
+            // ã‚¹ãƒ¬ãƒƒãƒ‰ãŒçµ‚äº†ã—ãŸã€‚ã‚¿ã‚¤ãƒãƒ¼ã‚’è§£é™¤ã™ã‚‹ã€‚
             ::KillTimer(hwnd, 999);
-            // ŒvZŠÔ‚ğ‹‚ß‚é‚½‚ß‚ÉAI—¹ŠÔ‚ğæ“¾‚·‚éB
+            // è¨ˆç®—æ™‚é–“ã‚’æ±‚ã‚ã‚‹ãŸã‚ã«ã€çµ‚äº†æ™‚é–“ã‚’å–å¾—ã™ã‚‹ã€‚
             s_dwTick2 = ::GetTickCount();
-            // ƒ_ƒCƒAƒƒO‚ğI—¹‚·‚éB
+            // ãƒ€ã‚¤ã‚¢ãƒ­ã‚°ã‚’çµ‚äº†ã™ã‚‹ã€‚
             ::EndDialog(hwnd, IDOK);
-            // ƒXƒŒƒbƒh‚ğ•Â‚¶‚éB
+            // ã‚¹ãƒ¬ãƒƒãƒ‰ã‚’é–‰ã˜ã‚‹ã€‚
             XgCloseThreads();
         }
         break;
@@ -2818,9 +2818,9 @@ XgCancelGenBlacksDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 }
 
 //////////////////////////////////////////////////////////////////////////////
-// ˆóüB
+// å°åˆ·ã€‚
 
-// ˆóü‚·‚éB
+// å°åˆ·ã™ã‚‹ã€‚
 void __fastcall XgPrintIt(HDC hdc, PRINTDLGW* ppd, bool bPrintAnswer)
 {
     LOGFONTW lf;
@@ -2831,7 +2831,7 @@ void __fastcall XgPrintIt(HDC hdc, PRINTDLGW* ppd, bool bPrintAnswer)
     const int nTate = ::GetDeviceCaps(hdc, VERTSIZE);
     const int nYoko = ::GetDeviceCaps(hdc, HORZSIZE);
     if (nTate < nYoko) {
-        // ˆóü—p†‚ª‰¡’·BƒƒbƒZ[ƒW‚ğ•\¦‚µ‚ÄI—¹B
+        // å°åˆ·ç”¨ç´™ãŒæ¨ªé•·ã€‚ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã‚’è¡¨ç¤ºã—ã¦çµ‚äº†ã€‚
         ::XgCenterMessageBoxW(xg_hMainWnd, XgLoadStringDx1(IDS_SETPORTRAIT), nullptr,
                             MB_ICONERROR);
         ::DeleteDC(hdc);
@@ -2845,9 +2845,9 @@ void __fastcall XgPrintIt(HDC hdc, PRINTDLGW* ppd, bool bPrintAnswer)
     di.cbSize = sizeof(di);
     di.lpszDocName = XgLoadStringDx1(IDS_CROSSWORD);
 
-    // w’è‚³‚ê‚½•””‚ğˆóü‚·‚éB
+    // æŒ‡å®šã•ã‚ŒãŸéƒ¨æ•°ã‚’å°åˆ·ã™ã‚‹ã€‚
     for (int i = 0; i < ppd->nCopies; i++) {
-        // •¶‘‚ğŠJn‚·‚éB
+        // æ–‡æ›¸ã‚’é–‹å§‹ã™ã‚‹ã€‚
         if (::StartDocW(hdc, &di) <= 0)
             continue;
 
@@ -2855,34 +2855,34 @@ void __fastcall XgPrintIt(HDC hdc, PRINTDLGW* ppd, bool bPrintAnswer)
         std::wstring str, strMarkWord, strHints;
         int yLast = 0;
 
-        // ˜_—ƒsƒNƒZƒ‹‚ÌƒAƒXƒyƒNƒg”ä‚ğæ“¾‚·‚éB
+        // è«–ç†ãƒ”ã‚¯ã‚»ãƒ«ã®ã‚¢ã‚¹ãƒšã‚¯ãƒˆæ¯”ã‚’å–å¾—ã™ã‚‹ã€‚
         const int nLogPixelX = ::GetDeviceCaps(hdc, LOGPIXELSX);
         const int nLogPixelY = ::GetDeviceCaps(hdc, LOGPIXELSY);
 
-        // —p†‚ÌƒsƒNƒZƒ‹ƒTƒCƒY‚ğæ“¾‚·‚éB
+        // ç”¨ç´™ã®ãƒ”ã‚¯ã‚»ãƒ«ã‚µã‚¤ã‚ºã‚’å–å¾—ã™ã‚‹ã€‚
         int cxPaper = ::GetDeviceCaps(hdc, HORZRES);
         int cyPaper = ::GetDeviceCaps(hdc, VERTRES);
 
-        // ƒy[ƒWŠJnB
+        // ãƒšãƒ¼ã‚¸é–‹å§‹ã€‚
         if (::StartPage(hdc) > 0) {
-            // “ñdƒ}ƒX’PŒê‚ğ•`‰æ‚·‚éB
+            // äºŒé‡ãƒã‚¹å˜èªã‚’æç”»ã™ã‚‹ã€‚
             if (bPrintAnswer && XgGetMarkWord(&xg_solution, strMarkWord)) {
-                // Šù’è‚ÌƒtƒHƒ“ƒgî•ñ‚ğæ“¾‚·‚éB
+                // æ—¢å®šã®ãƒ•ã‚©ãƒ³ãƒˆæƒ…å ±ã‚’å–å¾—ã™ã‚‹ã€‚
                 hFont = reinterpret_cast<HFONT>(::GetStockObject(DEFAULT_GUI_FONT));
                 ::GetObjectW(hFont, sizeof(LOGFONTW), &lf);
 
-                // ƒtƒHƒ“ƒg–¼‚ğæ“¾‚·‚éB
+                // ãƒ•ã‚©ãƒ³ãƒˆåã‚’å–å¾—ã™ã‚‹ã€‚
                 StringCbCopy(lf.lfFaceName, sizeof(lf.lfFaceName), XgLoadStringDx1(IDS_MONOFONT));
                 if (xg_szCellFont[0])
                     StringCbCopy(lf.lfFaceName, sizeof(lf.lfFaceName), xg_szCellFont);
 
-                // ƒtƒHƒ“ƒgî•ñ‚ğİ’è‚·‚éB
+                // ãƒ•ã‚©ãƒ³ãƒˆæƒ…å ±ã‚’è¨­å®šã™ã‚‹ã€‚
                 lf.lfHeight = cyPaper / 2 / 15;
                 lf.lfWidth = 0;
                 lf.lfWeight = FW_NORMAL;
                 lf.lfQuality = ANTIALIASED_QUALITY;
 
-                // “ñdƒ}ƒX’PŒê‚ğ•`‰æ‚·‚éB
+                // äºŒé‡ãƒã‚¹å˜èªã‚’æç”»ã™ã‚‹ã€‚
                 hFont = ::CreateFontIndirectW(&lf);
                 hFontOld = ::SelectObject(hdc, hFont);
                 ::SetRect(&rc, cxPaper / 8, cyPaper / 16,
@@ -2895,10 +2895,10 @@ void __fastcall XgPrintIt(HDC hdc, PRINTDLGW* ppd, bool bPrintAnswer)
                 ::DeleteFont(hFont);
             }
 
-            // EMFƒIƒuƒWƒFƒNƒg‚ğì¬‚·‚éB
+            // EMFã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’ä½œæˆã™ã‚‹ã€‚
             HDC hdcEMF = ::CreateEnhMetaFileW(hdc, nullptr, nullptr, XgLoadStringDx1(IDS_APPNAME));
             if (hdcEMF != nullptr) {
-                // EMFƒIƒuƒWƒFƒNƒg‚ÉƒNƒƒXƒ[ƒh‚ğ•`‰æ‚·‚éB
+                // EMFã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã«ã‚¯ãƒ­ã‚¹ãƒ¯ãƒ¼ãƒ‰ã‚’æç”»ã™ã‚‹ã€‚
                 SIZE siz;
                 XgGetXWordExtent(&siz);
                 if (bPrintAnswer)
@@ -2906,10 +2906,10 @@ void __fastcall XgPrintIt(HDC hdc, PRINTDLGW* ppd, bool bPrintAnswer)
                 else
                     XgDrawXWord(xg_xword, hdcEMF, &siz, false);
 
-                // EMFƒIƒuƒWƒFƒNƒg‚ğ•Â‚¶‚éB
+                // EMFã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’é–‰ã˜ã‚‹ã€‚
                 HENHMETAFILE hEMF = ::CloseEnhMetaFile(hdcEMF);
                 if (hEMF != nullptr) {
-                    // EMF‚ğ•`‰æ‚·‚é—Ìˆæ‚ğŒvZ‚·‚éB
+                    // EMFã‚’æç”»ã™ã‚‹é ˜åŸŸã‚’è¨ˆç®—ã™ã‚‹ã€‚
                     int x, y, cx, cy;
                     if (xg_nCols >= 10) {
                         x = cxPaper / 6;
@@ -2924,14 +2924,14 @@ void __fastcall XgPrintIt(HDC hdc, PRINTDLGW* ppd, bool bPrintAnswer)
                     }
                     ::SetRect(&rc, x, y, x + cx, y + cy);
 
-                    // EMF‚ğ•`‰æ‚·‚éB
+                    // EMFã‚’æç”»ã™ã‚‹ã€‚
                     ::PlayEnhMetaFile(hdc, hEMF, &rc);
                     ::DeleteEnhMetaFile(hEMF);
                     yLast = y + cy;
                 }
             }
 
-            // ƒqƒ“ƒg‚ğæ“¾‚·‚éB
+            // ãƒ’ãƒ³ãƒˆã‚’å–å¾—ã™ã‚‹ã€‚
             if (xg_bSolved) {
                 xg_solution.GetHintsStr(xg_strHints, 2, bPrintAnswer);
                 strHints = xg_strHints;
@@ -2939,19 +2939,19 @@ void __fastcall XgPrintIt(HDC hdc, PRINTDLGW* ppd, bool bPrintAnswer)
                 strHints.clear();
             }
 
-            // •¶šF‚ğƒZƒbƒg‚·‚éB
+            // æ–‡å­—è‰²ã‚’ã‚»ãƒƒãƒˆã™ã‚‹ã€‚
             ::SetTextColor(hdc, RGB(0, 0, 0));
 
-            // Šù’è‚ÌƒtƒHƒ“ƒgî•ñ‚ğæ“¾‚·‚éB
+            // æ—¢å®šã®ãƒ•ã‚©ãƒ³ãƒˆæƒ…å ±ã‚’å–å¾—ã™ã‚‹ã€‚
             hFont = reinterpret_cast<HFONT>(::GetStockObject(DEFAULT_GUI_FONT));
             ::GetObjectW(hFont, sizeof(LOGFONTW), &lf);
 
-            // ƒtƒHƒ“ƒg–¼‚ğæ“¾‚·‚éB
+            // ãƒ•ã‚©ãƒ³ãƒˆåã‚’å–å¾—ã™ã‚‹ã€‚
             StringCbCopy(lf.lfFaceName, sizeof(lf.lfFaceName), XgLoadStringDx1(IDS_MONOFONT));
             if (xg_szCellFont[0])
                 StringCbCopy(lf.lfFaceName, sizeof(lf.lfFaceName), xg_szCellFont);
 
-            // ƒtƒHƒ“ƒgî•ñ‚ğİ’è‚·‚éB
+            // ãƒ•ã‚©ãƒ³ãƒˆæƒ…å ±ã‚’è¨­å®šã™ã‚‹ã€‚
             lf.lfHeight = cyPaper / 2 / 45;
             lf.lfWidth = 0;
             lf.lfWeight = FW_NORMAL;
@@ -2959,20 +2959,20 @@ void __fastcall XgPrintIt(HDC hdc, PRINTDLGW* ppd, bool bPrintAnswer)
             hFont = ::CreateFontIndirectW(&lf);
             hFontOld = ::SelectObject(hdc, hFont);
 
-            // ƒqƒ“ƒg‚ğˆês‚¸‚Â•`‰æ‚·‚éB
+            // ãƒ’ãƒ³ãƒˆã‚’ä¸€è¡Œãšã¤æç”»ã™ã‚‹ã€‚
             ::SetRect(&rc, cxPaper / 8, cyPaper / 2,
                 cxPaper * 7 / 8, cyPaper * 8 / 9);
             for (ichOld = ich = 0; rc.bottom <= cyPaper * 8 / 9; ichOld = ich + 1) {
                 ich = strHints.find(L"\n", ichOld);
                 if (ich == std::wstring::npos)
                     break;
-                str = strHints.substr(0, ich);  // ˆêsæ‚èo‚·B
+                str = strHints.substr(0, ich);  // ä¸€è¡Œå–ã‚Šå‡ºã™ã€‚
                 ::SetRect(&rc, cxPaper / 8, yLast,
                     cxPaper * 7 / 8, cyPaper * 8 / 9);
                 ::DrawTextW(hdc, str.data(), static_cast<int>(str.size()), &rc,
                     DT_LEFT | DT_TOP | DT_CALCRECT | DT_NOPREFIX | DT_WORDBREAK);
             }
-            // ÅŒã‚Ìs‚ğ•`‰æ‚·‚éB
+            // æœ€å¾Œã®è¡Œã‚’æç”»ã™ã‚‹ã€‚
             ::SetRect(&rc, cxPaper / 8, yLast,
                 cxPaper * 7 / 8, cyPaper * 8 / 9);
             if (ich == std::wstring::npos) {
@@ -2987,19 +2987,19 @@ void __fastcall XgPrintIt(HDC hdc, PRINTDLGW* ppd, bool bPrintAnswer)
                 strHints = strHints.substr(ichOld);
             }
 
-            // •¶š‚ÌƒtƒHƒ“ƒg‚Ì‘I‘ğ‚ğ‰ğœ‚µ‚Äíœ‚·‚éB
+            // æ–‡å­—ã®ãƒ•ã‚©ãƒ³ãƒˆã®é¸æŠã‚’è§£é™¤ã—ã¦å‰Šé™¤ã™ã‚‹ã€‚
             ::SelectObject(hdc, hFontOld);
             ::DeleteFont(hFont);
 
-            // ƒy[ƒWI—¹B
+            // ãƒšãƒ¼ã‚¸çµ‚äº†ã€‚
             ::EndPage(hdc);
         }
 
-        // ƒqƒ“ƒg‚Ìc‚è‚ğ•`‰æ‚·‚éB
+        // ãƒ’ãƒ³ãƒˆã®æ®‹ã‚Šã‚’æç”»ã™ã‚‹ã€‚
         if (!strHints.empty()) {
-            // ƒy[ƒWŠJnB
+            // ãƒšãƒ¼ã‚¸é–‹å§‹ã€‚
             if (::StartPage(hdc) > 0) {
-                // •¶š‚ÌƒtƒHƒ“ƒg‚ğì¬‚·‚éB
+                // æ–‡å­—ã®ãƒ•ã‚©ãƒ³ãƒˆã‚’ä½œæˆã™ã‚‹ã€‚
                 hFont = reinterpret_cast<HFONT>(::GetStockObject(DEFAULT_GUI_FONT));
                 ::GetObjectW(hFont, sizeof(LOGFONTW), &lf);
                 StringCbCopy(lf.lfFaceName, sizeof(lf.lfFaceName), XgLoadStringDx1(IDS_MONOFONT));
@@ -3008,7 +3008,7 @@ void __fastcall XgPrintIt(HDC hdc, PRINTDLGW* ppd, bool bPrintAnswer)
                 lf.lfWeight = FW_NORMAL;
                 lf.lfQuality = ANTIALIASED_QUALITY;
 
-                // ƒqƒ“ƒg‚Ìc‚è‚ğ•`‰æ‚·‚éB
+                // ãƒ’ãƒ³ãƒˆã®æ®‹ã‚Šã‚’æç”»ã™ã‚‹ã€‚
                 hFont = ::CreateFontIndirectW(&lf);
                 hFontOld = ::SelectObject(hdc, hFont);
                 str = strHints;
@@ -3019,11 +3019,11 @@ void __fastcall XgPrintIt(HDC hdc, PRINTDLGW* ppd, bool bPrintAnswer)
                 ::SelectObject(hdc, hFontOld);
                 ::DeleteFont(hFont);
 
-                // ƒy[ƒWI—¹B
+                // ãƒšãƒ¼ã‚¸çµ‚äº†ã€‚
                 ::EndPage(hdc);
             }
         }
-        // •¶‘I—¹B
+        // æ–‡æ›¸çµ‚äº†ã€‚
         ::EndDoc(hdc);
     }
 
@@ -3032,7 +3032,7 @@ void __fastcall XgPrintIt(HDC hdc, PRINTDLGW* ppd, bool bPrintAnswer)
     ::GlobalFree(ppd->hDevNames);
 }
 
-// –â‘è‚Ì‚İ‚ğˆóü‚·‚éB
+// å•é¡Œã®ã¿ã‚’å°åˆ·ã™ã‚‹ã€‚
 void __fastcall XgPrintProblem(void)
 {
     PRINTDLGW pd;
@@ -3048,7 +3048,7 @@ void __fastcall XgPrintProblem(void)
     }
 }
 
-// –â‘è‚Æ‰ğ“š‚ğˆóü‚·‚éB
+// å•é¡Œã¨è§£ç­”ã‚’å°åˆ·ã™ã‚‹ã€‚
 void __fastcall XgPrintAnswer(void)
 {
     PRINTDLGW pd;
@@ -3066,7 +3066,7 @@ void __fastcall XgPrintAnswer(void)
 
 //////////////////////////////////////////////////////////////////////////////
 
-// ƒo[ƒWƒ‡ƒ“î•ñ‚ğ•\¦‚·‚éB
+// ãƒãƒ¼ã‚¸ãƒ§ãƒ³æƒ…å ±ã‚’è¡¨ç¤ºã™ã‚‹ã€‚
 void __fastcall XgOnAbout(HWND hwnd)
 {
     MSGBOXPARAMS params;
@@ -3081,7 +3081,7 @@ void __fastcall XgOnAbout(HWND hwnd)
     XgCenterMessageBoxIndirectW(&params);
 }
 
-// V‹Kì¬ƒ_ƒCƒAƒƒOB
+// æ–°è¦ä½œæˆãƒ€ã‚¤ã‚¢ãƒ­ã‚°ã€‚
 bool __fastcall XgOnNew(HWND hwnd)
 {
     INT nID;
@@ -3094,17 +3094,17 @@ bool __fastcall XgOnNew(HWND hwnd)
     return true;
 }
 
-// “Á’è‚ÌêŠ‚Éƒtƒ@ƒCƒ‹‚ğ•Û‘¶‚·‚éB
+// ç‰¹å®šã®å ´æ‰€ã«ãƒ•ã‚¡ã‚¤ãƒ«ã‚’ä¿å­˜ã™ã‚‹ã€‚
 bool __fastcall XgDoSaveToLocation(HWND hwnd)
 {
     WCHAR szPath[MAX_PATH], szDir[MAX_PATH];
     WCHAR szName[32];
 
-    // ƒpƒX‚ğ¶¬‚·‚éB
+    // ãƒ‘ã‚¹ã‚’ç”Ÿæˆã™ã‚‹ã€‚
     StringCbCopy(szDir, sizeof(szDir), s_dirs_save_to[0].data());
     PathAddBackslashW(szDir);
 
-    // ƒtƒ@ƒCƒ‹–¼‚ğ¶¬‚·‚éB
+    // ãƒ•ã‚¡ã‚¤ãƒ«åã‚’ç”Ÿæˆã™ã‚‹ã€‚
     UINT u;
     for (u = 1; u <= 0xFFFF; u++) {
         StringCbPrintf(szName, sizeof(szName), L"%dx%d-%04u.xwj",
@@ -3117,25 +3117,25 @@ bool __fastcall XgDoSaveToLocation(HWND hwnd)
 
     bool bOK = false;
     if (u != 0x10000) {
-        // ƒtƒ@ƒCƒ‹–¼‚ªì¬‚Å‚«‚½B”r‘¼§Œä‚µ‚È‚ª‚ç•Û‘¶‚·‚éB
+        // ãƒ•ã‚¡ã‚¤ãƒ«åãŒä½œæˆã§ããŸã€‚æ’ä»–åˆ¶å¾¡ã—ãªãŒã‚‰ä¿å­˜ã™ã‚‹ã€‚
         ::EnterCriticalSection(&xg_cs);
         {
-            // ‰ğ‚ ‚èH
+            // è§£ã‚ã‚Šï¼Ÿ
             if (xg_bSolved) {
-                // ƒJƒM”Ô†‚ğXV‚·‚éB
+                // ã‚«ã‚®ç•ªå·ã‚’æ›´æ–°ã™ã‚‹ã€‚
                 xg_solution.DoNumberingNoCheck();
 
-                // ƒqƒ“ƒg‚ğXV‚·‚éB
+                // ãƒ’ãƒ³ãƒˆã‚’æ›´æ–°ã™ã‚‹ã€‚
                 XgUpdateHints(hwnd);
             }
 
-            // ƒtƒ@ƒCƒ‹‚É•Û‘¶‚·‚éB
+            // ãƒ•ã‚¡ã‚¤ãƒ«ã«ä¿å­˜ã™ã‚‹ã€‚
             bOK = XgDoSave(hwnd, szPath);
         }
         ::LeaveCriticalSection(&xg_cs);
     }
 
-    // ƒfƒBƒXƒN—e—Ê‚ğŠm”F‚·‚éB
+    // ãƒ‡ã‚£ã‚¹ã‚¯å®¹é‡ã‚’ç¢ºèªã™ã‚‹ã€‚
     ULARGE_INTEGER ull1, ull2, ull3;
     if (::GetDiskFreeSpaceExW(szPath, &ull1, &ull2, &ull3)) {
         if (ull1.QuadPart < 0x1000000)  // 1MB
@@ -3147,17 +3147,17 @@ bool __fastcall XgDoSaveToLocation(HWND hwnd)
     return bOK;
 }
 
-// –â‘è‚Ìì¬B
+// å•é¡Œã®ä½œæˆã€‚
 bool __fastcall XgOnGenerate(HWND hwnd, bool show_answer, bool multiple = false)
 {
     INT nID;
     ::EnableWindow(xg_hwndInputPalette, FALSE);
     if (multiple) {
-        // [–â‘è‚Ì˜A‘±ì¬]ƒ_ƒCƒAƒƒOB
+        // [å•é¡Œã®é€£ç¶šä½œæˆ]ãƒ€ã‚¤ã‚¢ãƒ­ã‚°ã€‚
         nID = INT(::DialogBoxW(xg_hInstance, MAKEINTRESOURCE(IDD_SEQCREATE), hwnd,
                                XgGenerateRepeatedlyDlgProc));
     } else {
-        // [–â‘è‚Ìì¬]ƒ_ƒCƒAƒƒOB
+        // [å•é¡Œã®ä½œæˆ]ãƒ€ã‚¤ã‚¢ãƒ­ã‚°ã€‚
         nID = INT(::DialogBoxW(xg_hInstance, MAKEINTRESOURCE(IDD_CREATE), hwnd,
                                XgGenerateDlgProc));
     }
@@ -3174,15 +3174,15 @@ bool __fastcall XgOnGenerate(HWND hwnd, bool show_answer, bool multiple = false)
     xg_strNotes.clear();
     xg_strFileName.clear();
 
-    // «‘‚ğ“Ç‚İ‚ŞB
+    // è¾æ›¸ã‚’èª­ã¿è¾¼ã‚€ã€‚
     XgLoadDictFile(xg_dict_name.c_str());
     XgSetInputModeFromDict(hwnd);
 
-    // ƒLƒƒƒ“ƒZƒ‹ƒ_ƒCƒAƒƒO‚ğ•\¦‚µAÀs‚ğŠJn‚·‚éB
+    // ã‚­ãƒ£ãƒ³ã‚»ãƒ«ãƒ€ã‚¤ã‚¢ãƒ­ã‚°ã‚’è¡¨ç¤ºã—ã€å®Ÿè¡Œã‚’é–‹å§‹ã™ã‚‹ã€‚
     ::EnableWindow(xg_hwndInputPalette, FALSE);
     do {
         if (xg_imode == xg_im_KANJI) {
-            // Š¿š‚Ìê‡‚ÍƒXƒ}[ƒg‰ğŒˆ‚ğg—p‚µ‚È‚¢B
+            // æ¼¢å­—ã®å ´åˆã¯ã‚¹ãƒãƒ¼ãƒˆè§£æ±ºã‚’ä½¿ç”¨ã—ãªã„ã€‚
             nID = ::DialogBoxW(xg_hInstance, MAKEINTRESOURCE(IDD_CALCULATING), hwnd, XgCancelSolveDlgProc);
         } else if (xg_bSmartResolution && xg_nRows >= 7 && xg_nCols >= 7) {
             nID = ::DialogBoxW(xg_hInstance, MAKEINTRESOURCE(IDD_CALCULATING), hwnd, XgCancelSolveDlgProcSmart);
@@ -3191,7 +3191,7 @@ bool __fastcall XgOnGenerate(HWND hwnd, bool show_answer, bool multiple = false)
         } else {
             nID = ::DialogBoxW(xg_hInstance, MAKEINTRESOURCE(IDD_CALCULATING), hwnd, XgCancelSolveDlgProc);
         }
-        // ¶¬¬Œ÷‚Ì‚Æ‚«‚Ís_nNumberGenerated‚ğ‘‚â‚·B
+        // ç”ŸæˆæˆåŠŸã®ã¨ãã¯s_nNumberGeneratedã‚’å¢—ã‚„ã™ã€‚
         if (nID == IDOK && xg_bSolved) {
             ++s_nNumberGenerated;
             if (multiple) {
@@ -3199,7 +3199,7 @@ bool __fastcall XgOnGenerate(HWND hwnd, bool show_answer, bool multiple = false)
                     s_bOutOfDiskSpace = true;
                     break;
                 }
-                // ‰Šú‰»B
+                // åˆæœŸåŒ–ã€‚
                 xg_bSolved = false;
                 xg_xword.ResetAndSetSize(xg_nRows, xg_nCols);
                 xg_vTateInfo.clear();
@@ -3210,7 +3210,7 @@ bool __fastcall XgOnGenerate(HWND hwnd, bool show_answer, bool multiple = false)
                 xg_strHeader.clear();
                 xg_strNotes.clear();
                 xg_strFileName.clear();
-                // «‘‚ğ“Ç‚İ‚ŞB
+                // è¾æ›¸ã‚’èª­ã¿è¾¼ã‚€ã€‚
                 XgLoadDictFile(xg_dict_name.c_str());
                 XgSetInputModeFromDict(hwnd);
             }
@@ -3218,7 +3218,7 @@ bool __fastcall XgOnGenerate(HWND hwnd, bool show_answer, bool multiple = false)
     } while (nID == IDOK && multiple && s_nNumberGenerated < s_nNumberToGenerate);
     ::EnableWindow(xg_hwndInputPalette, TRUE);
 
-    // ‰Šú‰»‚·‚éB
+    // åˆæœŸåŒ–ã™ã‚‹ã€‚
     if (multiple) {
         xg_xword.clear();
         xg_vMarkedCands.clear();
@@ -3239,7 +3239,7 @@ bool __fastcall XgOnGenerate(HWND hwnd, bool show_answer, bool multiple = false)
     return true;
 }
 
-// •ƒ}ƒXƒpƒ^[ƒ“‚ğ˜A‘±¶¬‚·‚éB
+// é»’ãƒã‚¹ãƒ‘ã‚¿ãƒ¼ãƒ³ã‚’é€£ç¶šç”Ÿæˆã™ã‚‹ã€‚
 bool __fastcall XgOnGenerateBlacksRepeatedly(HWND hwnd)
 {
     ::EnableWindow(xg_hwndInputPalette, FALSE);
@@ -3250,7 +3250,7 @@ bool __fastcall XgOnGenerateBlacksRepeatedly(HWND hwnd)
         return false;
     }
 
-    // ‰Šú‰»‚·‚éB
+    // åˆæœŸåŒ–ã™ã‚‹ã€‚
     xg_xword.clear();
     xg_caret_pos.clear();
     xg_vMarks.clear();
@@ -3267,25 +3267,25 @@ bool __fastcall XgOnGenerateBlacksRepeatedly(HWND hwnd)
     xg_bBlacksGenerated = false;
     s_nNumberGenerated = 0;
 
-    // Œó•âƒEƒBƒ“ƒhƒE‚ğ”jŠü‚·‚éB
+    // å€™è£œã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚’ç ´æ£„ã™ã‚‹ã€‚
     XgDestroyCandsWnd();
-    // ƒqƒ“ƒgƒEƒBƒ“ƒhƒE‚ğ”jŠü‚·‚éB
+    // ãƒ’ãƒ³ãƒˆã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚’ç ´æ£„ã™ã‚‹ã€‚
     XgDestroyHintsWnd();
 
-    // ƒLƒƒƒ“ƒZƒ‹ƒ_ƒCƒAƒƒO‚ğ•\¦‚µA¶¬‚ğŠJn‚·‚éB
+    // ã‚­ãƒ£ãƒ³ã‚»ãƒ«ãƒ€ã‚¤ã‚¢ãƒ­ã‚°ã‚’è¡¨ç¤ºã—ã€ç”Ÿæˆã‚’é–‹å§‹ã™ã‚‹ã€‚
     ::EnableWindow(xg_hwndInputPalette, FALSE);
     do
     {
         nID = ::DialogBoxW(xg_hInstance, MAKEINTRESOURCEW(IDD_CALCULATING),
                            hwnd, XgCancelGenBlacksDlgProc);
-        // ¶¬¬Œ÷‚Ì‚Æ‚«‚Ís_nNumberGenerated‚ğ‘‚â‚·B
+        // ç”ŸæˆæˆåŠŸã®ã¨ãã¯s_nNumberGeneratedã‚’å¢—ã‚„ã™ã€‚
         if (nID == IDOK && xg_bBlacksGenerated) {
             ++s_nNumberGenerated;
             if (!XgDoSaveToLocation(hwnd)) {
                 s_bOutOfDiskSpace = true;
                 break;
             }
-            // ‰Šú‰»B
+            // åˆæœŸåŒ–ã€‚
             xg_bSolved = false;
             xg_xword.clear();
             xg_vTateInfo.clear();
@@ -3316,7 +3316,7 @@ bool __fastcall XgOnGenerateBlacksRepeatedly(HWND hwnd)
         XgCenterMessageBoxW(hwnd, sz, XgLoadStringDx2(IDS_RESULTS), MB_ICONINFORMATION);
     }
 
-    // •Û‘¶æƒtƒHƒ‹ƒ_‚ğŠJ‚­B
+    // ä¿å­˜å…ˆãƒ•ã‚©ãƒ«ãƒ€ã‚’é–‹ãã€‚
     if (s_nNumberGenerated && !s_dirs_save_to.empty()) {
         ::ShellExecuteW(hwnd, nullptr, s_dirs_save_to[0].data(),
                       nullptr, nullptr, SW_SHOWNORMAL);
@@ -3324,7 +3324,7 @@ bool __fastcall XgOnGenerateBlacksRepeatedly(HWND hwnd)
     return true;
 }
 
-// •ƒ}ƒXƒpƒ^[ƒ“‚ğ¶¬‚·‚éB
+// é»’ãƒã‚¹ãƒ‘ã‚¿ãƒ¼ãƒ³ã‚’ç”Ÿæˆã™ã‚‹ã€‚
 bool __fastcall XgOnGenerateBlacks(HWND hwnd, bool sym)
 {
     ::EnableWindow(xg_hwndInputPalette, FALSE);
@@ -3335,7 +3335,7 @@ bool __fastcall XgOnGenerateBlacks(HWND hwnd, bool sym)
         return false;
     }
 
-    // ‰Šú‰»‚·‚éB
+    // åˆæœŸåŒ–ã™ã‚‹ã€‚
     xg_caret_pos.clear();
     xg_vMarks.clear();
     xg_vTateInfo.clear();
@@ -3351,12 +3351,12 @@ bool __fastcall XgOnGenerateBlacks(HWND hwnd, bool sym)
     xg_bBlacksGenerated = false;
     s_nNumberGenerated = 0;
 
-    // Œó•âƒEƒBƒ“ƒhƒE‚ğ”jŠü‚·‚éB
+    // å€™è£œã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚’ç ´æ£„ã™ã‚‹ã€‚
     XgDestroyCandsWnd();
-    // ƒqƒ“ƒgƒEƒBƒ“ƒhƒE‚ğ”jŠü‚·‚éB
+    // ãƒ’ãƒ³ãƒˆã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚’ç ´æ£„ã™ã‚‹ã€‚
     XgDestroyHintsWnd();
 
-    // ƒLƒƒƒ“ƒZƒ‹ƒ_ƒCƒAƒƒO‚ğ•\¦‚µA¶¬‚ğŠJn‚·‚éB
+    // ã‚­ãƒ£ãƒ³ã‚»ãƒ«ãƒ€ã‚¤ã‚¢ãƒ­ã‚°ã‚’è¡¨ç¤ºã—ã€ç”Ÿæˆã‚’é–‹å§‹ã™ã‚‹ã€‚
     ::EnableWindow(xg_hwndInputPalette, FALSE);
     ::DialogBoxW(xg_hInstance, MAKEINTRESOURCEW(IDD_CALCULATING),
                  hwnd, XgCancelGenBlacksDlgProc);
@@ -3379,49 +3379,49 @@ bool __fastcall XgOnGenerateBlacks(HWND hwnd, bool sym)
     return true;
 }
 
-// ‰ğ‚ğ‹‚ß‚éB
+// è§£ã‚’æ±‚ã‚ã‚‹ã€‚
 bool __fastcall XgOnSolve_AddBlack(HWND hwnd)
 {
-    // ‚·‚Å‚É‰ğ‚©‚ê‚Ä‚¢‚éê‡‚ÍAÀs‚ğ‹‘”Û‚·‚éB
+    // ã™ã§ã«è§£ã‹ã‚Œã¦ã„ã‚‹å ´åˆã¯ã€å®Ÿè¡Œã‚’æ‹’å¦ã™ã‚‹ã€‚
     if (xg_bSolved) {
         ::MessageBeep(0xFFFFFFFF);
         return false;
     }
 
-    // «‘‚ğ“Ç‚İ‚ŞB
+    // è¾æ›¸ã‚’èª­ã¿è¾¼ã‚€ã€‚
     XgLoadDictFile(xg_dict_name.c_str());
     XgSetInputModeFromDict(hwnd);
 
-    // •ƒ}ƒXƒ‹[ƒ‹‚È‚Ç‚ğƒ`ƒFƒbƒN‚·‚éB
+    // é»’ãƒã‚¹ãƒ«ãƒ¼ãƒ«ãªã©ã‚’ãƒã‚§ãƒƒã‚¯ã™ã‚‹ã€‚
     xg_bNoAddBlack = false;
     if (!XgCheckCrossWord(hwnd)) {
         return false;
     }
 
-    // ‰Šú‰»‚·‚éB
+    // åˆæœŸåŒ–ã™ã‚‹ã€‚
     xg_bSolvingEmpty = xg_xword.IsEmpty();
     xg_vTateInfo.clear();
     xg_vYokoInfo.clear();
     xg_vMarks.clear();
     xg_vMarkedCands.clear();
     xg_strFileName.clear();
-    // ¶¬‚µ‚½”‚Æ¶¬‚·‚é”B
+    // ç”Ÿæˆã—ãŸæ•°ã¨ç”Ÿæˆã™ã‚‹æ•°ã€‚
     s_nNumberGenerated = 0;
 
-    // Œó•âƒEƒBƒ“ƒhƒE‚ğ”jŠü‚·‚éB
+    // å€™è£œã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚’ç ´æ£„ã™ã‚‹ã€‚
     XgDestroyCandsWnd();
-    // ƒqƒ“ƒgƒEƒBƒ“ƒhƒE‚ğ”jŠü‚·‚éB
+    // ãƒ’ãƒ³ãƒˆã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚’ç ´æ£„ã™ã‚‹ã€‚
     XgDestroyHintsWnd();
 
-    // ƒLƒƒƒ“ƒZƒ‹ƒ_ƒCƒAƒƒO‚ğ•\¦‚µAÀs‚ğŠJn‚·‚éB
+    // ã‚­ãƒ£ãƒ³ã‚»ãƒ«ãƒ€ã‚¤ã‚¢ãƒ­ã‚°ã‚’è¡¨ç¤ºã—ã€å®Ÿè¡Œã‚’é–‹å§‹ã™ã‚‹ã€‚
     ::EnableWindow(xg_hwndInputPalette, FALSE);
     ::DialogBoxW(xg_hInstance, MAKEINTRESOURCE(IDD_CALCULATING), hwnd, XgCancelSolveDlgProc);
     ::EnableWindow(xg_hwndInputPalette, TRUE);
 
     WCHAR sz[MAX_PATH];
     if (xg_bCancelled) {
-        // ƒLƒƒƒ“ƒZƒ‹‚³‚ê‚½B
-        // ‰ğ‚È‚µB•\¦‚ğXV‚·‚éB
+        // ã‚­ãƒ£ãƒ³ã‚»ãƒ«ã•ã‚ŒãŸã€‚
+        // è§£ãªã—ã€‚è¡¨ç¤ºã‚’æ›´æ–°ã™ã‚‹ã€‚
         xg_bShowAnswer = false;
         xg_caret_pos.clear();
         XgMarkUpdate();
@@ -3432,11 +3432,11 @@ bool __fastcall XgOnSolve_AddBlack(HWND hwnd)
             (s_dwTick2 - s_dwTick0) / 100 % 10);
         XgCenterMessageBoxW(hwnd, sz, XgLoadStringDx2(IDS_RESULTS), MB_ICONINFORMATION);
     } else if (xg_bSolved) {
-        // ‹óƒ}ƒX‚ª‚È‚¢‚©H
+        // ç©ºãƒã‚¹ãŒãªã„ã‹ï¼Ÿ
         if (xg_xword.IsFulfilled()) {
-            // ‹óƒ}ƒX‚ª‚È‚¢BƒNƒŠƒAB
+            // ç©ºãƒã‚¹ãŒãªã„ã€‚ã‚¯ãƒªã‚¢ã€‚
             xg_xword.clear();
-            // ‰ğ‚É‡‚í‚¹‚ÄA–â‘è‚É•ƒ}ƒX‚ğ’u‚­B
+            // è§£ã«åˆã‚ã›ã¦ã€å•é¡Œã«é»’ãƒã‚¹ã‚’ç½®ãã€‚
             for (int i = 0; i < xg_nRows; i++) {
                 for (int j = 0; j < xg_nCols; j++) {
                     if (xg_solution.GetAt(i, j) == ZEN_BLACK)
@@ -3445,28 +3445,28 @@ bool __fastcall XgOnSolve_AddBlack(HWND hwnd)
             }
         }
 
-        // ‰ğ‚ ‚èB•\¦‚ğXV‚·‚éB
+        // è§£ã‚ã‚Šã€‚è¡¨ç¤ºã‚’æ›´æ–°ã™ã‚‹ã€‚
         xg_bShowAnswer = true;
         xg_caret_pos.clear();
         XgMarkUpdate();
         XgUpdateImage(hwnd, 0, 0);
 
-        // ¬Œ÷ƒƒbƒZ[ƒW‚ğ•\¦‚·‚éB
+        // æˆåŠŸãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã‚’è¡¨ç¤ºã™ã‚‹ã€‚
         StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(IDS_SOLVED),
             (s_dwTick2 - s_dwTick0) / 1000,
             (s_dwTick2 - s_dwTick0) / 100 % 10);
         XgCenterMessageBoxW(hwnd, sz, XgLoadStringDx2(IDS_RESULTS), MB_ICONINFORMATION);
 
-        // ƒqƒ“ƒg‚ğXV‚µ‚ÄŠJ‚­B
+        // ãƒ’ãƒ³ãƒˆã‚’æ›´æ–°ã—ã¦é–‹ãã€‚
         XgUpdateHints(hwnd);
         XgShowHints(hwnd);
     } else {
-        // ‰ğ‚È‚µB•\¦‚ğXV‚·‚éB
+        // è§£ãªã—ã€‚è¡¨ç¤ºã‚’æ›´æ–°ã™ã‚‹ã€‚
         xg_bShowAnswer = false;
         xg_caret_pos.clear();
         XgMarkUpdate();
         XgUpdateImage(hwnd, 0, 0);
-        // ¸”sƒƒbƒZ[ƒW‚ğ•\¦‚·‚éB
+        // å¤±æ•—ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã‚’è¡¨ç¤ºã™ã‚‹ã€‚
         StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(IDS_CANTSOLVE),
             (s_dwTick2 - s_dwTick0) / 1000,
             (s_dwTick2 - s_dwTick0) / 100 % 10);
@@ -3476,40 +3476,40 @@ bool __fastcall XgOnSolve_AddBlack(HWND hwnd)
     return true;
 }
 
-// ‰ğ‚ğ‹‚ß‚éi•ƒ}ƒX’Ç‰Á‚È‚µjB
+// è§£ã‚’æ±‚ã‚ã‚‹ï¼ˆé»’ãƒã‚¹è¿½åŠ ãªã—ï¼‰ã€‚
 bool __fastcall XgOnSolve_NoAddBlack(HWND hwnd, bool bShowAnswer = true)
 {
-    // ‚·‚Å‚É‰ğ‚©‚ê‚Ä‚¢‚éê‡‚ÍAÀs‚ğ‹‘”Û‚·‚éB
+    // ã™ã§ã«è§£ã‹ã‚Œã¦ã„ã‚‹å ´åˆã¯ã€å®Ÿè¡Œã‚’æ‹’å¦ã™ã‚‹ã€‚
     if (xg_bSolved) {
         ::MessageBeep(0xFFFFFFFF);
         return false;
     }
 
-    // «‘‚ğ“Ç‚İ‚ŞB
+    // è¾æ›¸ã‚’èª­ã¿è¾¼ã‚€ã€‚
     XgLoadDictFile(xg_dict_name.c_str());
     XgSetInputModeFromDict(hwnd);
 
-    // •ƒ}ƒXƒ‹[ƒ‹‚È‚Ç‚ğƒ`ƒFƒbƒN‚·‚éB
+    // é»’ãƒã‚¹ãƒ«ãƒ¼ãƒ«ãªã©ã‚’ãƒã‚§ãƒƒã‚¯ã™ã‚‹ã€‚
     xg_bNoAddBlack = true;
     if (!XgCheckCrossWord(hwnd)) {
         return false;
     }
 
-    // ‰Šú‰»‚·‚éB
+    // åˆæœŸåŒ–ã™ã‚‹ã€‚
     xg_bSolvingEmpty = xg_xword.IsEmpty();
     xg_vTateInfo.clear();
     xg_vYokoInfo.clear();
     xg_vMarks.clear();
     xg_vMarkedCands.clear();
     xg_strFileName.clear();
-    // ¶¬‚µ‚½”‚Æ¶¬‚·‚é”B
+    // ç”Ÿæˆã—ãŸæ•°ã¨ç”Ÿæˆã™ã‚‹æ•°ã€‚
     s_nNumberGenerated = 0;
 
-    // Œó•âƒEƒBƒ“ƒhƒE‚ğ”jŠü‚·‚éB
+    // å€™è£œã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚’ç ´æ£„ã™ã‚‹ã€‚
     XgDestroyCandsWnd();
-    // ƒqƒ“ƒgƒEƒBƒ“ƒhƒE‚ğ”jŠü‚·‚éB
+    // ãƒ’ãƒ³ãƒˆã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚’ç ´æ£„ã™ã‚‹ã€‚
     XgDestroyHintsWnd();
-    // ƒLƒƒƒ“ƒZƒ‹ƒ_ƒCƒAƒƒO‚ğ•\¦‚µAÀs‚ğŠJn‚·‚éB
+    // ã‚­ãƒ£ãƒ³ã‚»ãƒ«ãƒ€ã‚¤ã‚¢ãƒ­ã‚°ã‚’è¡¨ç¤ºã—ã€å®Ÿè¡Œã‚’é–‹å§‹ã™ã‚‹ã€‚
     ::EnableWindow(xg_hwndInputPalette, FALSE);
     ::DialogBoxW(xg_hInstance, MAKEINTRESOURCE(IDD_CALCULATING), hwnd,
                  XgCancelSolveDlgProcNoAddBlack);
@@ -3517,24 +3517,24 @@ bool __fastcall XgOnSolve_NoAddBlack(HWND hwnd, bool bShowAnswer = true)
 
     WCHAR sz[MAX_PATH];
     if (xg_bCancelled) {
-        // ƒLƒƒƒ“ƒZƒ‹‚³‚ê‚½B
-        // ‰ğ‚È‚µB•\¦‚ğXV‚·‚éB
+        // ã‚­ãƒ£ãƒ³ã‚»ãƒ«ã•ã‚ŒãŸã€‚
+        // è§£ãªã—ã€‚è¡¨ç¤ºã‚’æ›´æ–°ã™ã‚‹ã€‚
         xg_bShowAnswer = false;
         xg_caret_pos.clear();
         XgMarkUpdate();
         XgUpdateImage(hwnd, 0, 0);
 
-        // I—¹ƒƒbƒZ[ƒW‚ğ•\¦‚·‚éB
+        // çµ‚äº†ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã‚’è¡¨ç¤ºã™ã‚‹ã€‚
         StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(IDS_CANCELLED),
             (s_dwTick2 - s_dwTick0) / 1000,
             (s_dwTick2 - s_dwTick0) / 100 % 10);
         XgCenterMessageBoxW(hwnd, sz, XgLoadStringDx2(IDS_RESULTS), MB_ICONINFORMATION);
     } else if (xg_bSolved) {
-        // ‹óƒ}ƒX‚ª‚È‚¢‚©H
+        // ç©ºãƒã‚¹ãŒãªã„ã‹ï¼Ÿ
         if (xg_xword.IsFulfilled()) {
-            // ‹óƒ}ƒX‚ª‚È‚¢BƒNƒŠƒAB
+            // ç©ºãƒã‚¹ãŒãªã„ã€‚ã‚¯ãƒªã‚¢ã€‚
             xg_xword.clear();
-            // ‰ğ‚É‡‚í‚¹‚ÄA–â‘è‚É•ƒ}ƒX‚ğ’u‚­B
+            // è§£ã«åˆã‚ã›ã¦ã€å•é¡Œã«é»’ãƒã‚¹ã‚’ç½®ãã€‚
             for (int i = 0; i < xg_nRows; i++) {
                 for (int j = 0; j < xg_nCols; j++) {
                     if (xg_solution.GetAt(i, j) == ZEN_BLACK)
@@ -3543,28 +3543,28 @@ bool __fastcall XgOnSolve_NoAddBlack(HWND hwnd, bool bShowAnswer = true)
             }
         }
 
-        // ‰ğ‚ ‚èB•\¦‚ğXV‚·‚éB
+        // è§£ã‚ã‚Šã€‚è¡¨ç¤ºã‚’æ›´æ–°ã™ã‚‹ã€‚
         xg_bShowAnswer = bShowAnswer;
         xg_caret_pos.clear();
         XgMarkUpdate();
         XgUpdateImage(hwnd, 0, 0);
 
-        // ¬Œ÷ƒƒbƒZ[ƒW‚ğ•\¦‚·‚éB
+        // æˆåŠŸãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã‚’è¡¨ç¤ºã™ã‚‹ã€‚
         StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(IDS_SOLVED),
             (s_dwTick2 - s_dwTick0) / 1000,
             (s_dwTick2 - s_dwTick0) / 100 % 10);
         XgCenterMessageBoxW(hwnd, sz, XgLoadStringDx2(IDS_RESULTS), MB_ICONINFORMATION);
 
-        // ƒqƒ“ƒg‚ğXV‚µ‚ÄŠJ‚­B
+        // ãƒ’ãƒ³ãƒˆã‚’æ›´æ–°ã—ã¦é–‹ãã€‚
         XgUpdateHints(hwnd);
         XgShowHints(hwnd);
     } else {
-        // ‰ğ‚È‚µB•\¦‚ğXV‚·‚éB
+        // è§£ãªã—ã€‚è¡¨ç¤ºã‚’æ›´æ–°ã™ã‚‹ã€‚
         xg_bShowAnswer = false;
         xg_caret_pos.clear();
         XgMarkUpdate();
         XgUpdateImage(hwnd, 0, 0);
-        // ¸”sƒƒbƒZ[ƒW‚ğ•\¦‚·‚éB
+        // å¤±æ•—ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã‚’è¡¨ç¤ºã™ã‚‹ã€‚
         StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(IDS_CANTSOLVE),
             (s_dwTick2 - s_dwTick0) / 1000,
             (s_dwTick2 - s_dwTick0) / 100 % 10);
@@ -3575,43 +3575,43 @@ bool __fastcall XgOnSolve_NoAddBlack(HWND hwnd, bool bShowAnswer = true)
     return true;
 }
 
-// ˜A‘±‚Å‰ğ‚ğ‹‚ß‚éB
+// é€£ç¶šã§è§£ã‚’æ±‚ã‚ã‚‹ã€‚
 bool __fastcall XgOnSolveRepeatedly(HWND hwnd)
 {
-    // ‚·‚Å‚É‰ğ‚©‚ê‚Ä‚¢‚éê‡‚ÍAÀs‚ğ‹‘”Û‚·‚éB
+    // ã™ã§ã«è§£ã‹ã‚Œã¦ã„ã‚‹å ´åˆã¯ã€å®Ÿè¡Œã‚’æ‹’å¦ã™ã‚‹ã€‚
     if (xg_bSolved) {
         ::MessageBeep(0xFFFFFFFF);
         return false;
     }
 
-    // «‘‚ğ“Ç‚İ‚ŞB
+    // è¾æ›¸ã‚’èª­ã¿è¾¼ã‚€ã€‚
     XgLoadDictFile(xg_dict_name.c_str());
     XgSetInputModeFromDict(hwnd);
 
-    // •ƒ}ƒXƒ‹[ƒ‹‚È‚Ç‚ğƒ`ƒFƒbƒN‚·‚éB
+    // é»’ãƒã‚¹ãƒ«ãƒ¼ãƒ«ãªã©ã‚’ãƒã‚§ãƒƒã‚¯ã™ã‚‹ã€‚
     xg_bNoAddBlack = false;
     if (!XgCheckCrossWord(hwnd)) {
         return false;
     }
 
-    // Às‘O‚Ìƒ}ƒX‚Ìó‘Ô‚ğ•Û‘¶‚·‚éB
+    // å®Ÿè¡Œå‰ã®ãƒã‚¹ã®çŠ¶æ…‹ã‚’ä¿å­˜ã™ã‚‹ã€‚
     XG_Board xword_save(xg_xword);
 
-    // [‰ğ‚Ì˜A‘±ì¬]ƒ_ƒCƒAƒƒOB
+    // [è§£ã®é€£ç¶šä½œæˆ]ãƒ€ã‚¤ã‚¢ãƒ­ã‚°ã€‚
     INT nID;
     ::EnableWindow(xg_hwndInputPalette, FALSE);
     nID = INT(::DialogBoxW(xg_hInstance, MAKEINTRESOURCE(IDD_SEQSOLVE), hwnd,
                            XgSolveRepeatedlyDlgProc));
     ::EnableWindow(xg_hwndInputPalette, TRUE);
     if (nID != IDOK) {
-        // ƒCƒ[ƒW‚ğXV‚·‚éB
+        // ã‚¤ãƒ¡ãƒ¼ã‚¸ã‚’æ›´æ–°ã™ã‚‹ã€‚
         xg_caret_pos.clear();
         XgMarkUpdate();
         XgUpdateImage(hwnd, 0, 0);
         return false;
     }
 
-    // ‰Šú‰»‚·‚éB
+    // åˆæœŸåŒ–ã™ã‚‹ã€‚
     xg_strFileName.clear();
     xg_strHeader.clear();
     xg_strNotes.clear();
@@ -3625,20 +3625,20 @@ bool __fastcall XgOnSolveRepeatedly(HWND hwnd)
     xg_vecTateHints.clear();
     xg_vecYokoHints.clear();
 
-    // ƒLƒƒƒ“ƒZƒ‹ƒ_ƒCƒAƒƒO‚ğ•\¦‚µAÀs‚ğŠJn‚·‚éB
+    // ã‚­ãƒ£ãƒ³ã‚»ãƒ«ãƒ€ã‚¤ã‚¢ãƒ­ã‚°ã‚’è¡¨ç¤ºã—ã€å®Ÿè¡Œã‚’é–‹å§‹ã™ã‚‹ã€‚
     ::EnableWindow(xg_hwndInputPalette, FALSE);
     do
     {
         nID = ::DialogBoxW(xg_hInstance, MAKEINTRESOURCE(IDD_CALCULATING), hwnd,
                            XgCancelSolveDlgProc);
-        // ¶¬¬Œ÷‚Ì‚Æ‚«‚Ís_nNumberGenerated‚ğ‘‚â‚·B
+        // ç”ŸæˆæˆåŠŸã®ã¨ãã¯s_nNumberGeneratedã‚’å¢—ã‚„ã™ã€‚
         if (nID == IDOK && xg_bSolved) {
             ++s_nNumberGenerated;
             if (!XgDoSaveToLocation(hwnd)) {
                 s_bOutOfDiskSpace = true;
                 break;
             }
-            // ‰Šú‰»B
+            // åˆæœŸåŒ–ã€‚
             xg_bSolved = false;
             xg_xword = xword_save;
             xg_vTateInfo.clear();
@@ -3648,14 +3648,14 @@ bool __fastcall XgOnSolveRepeatedly(HWND hwnd)
             xg_strHeader.clear();
             xg_strNotes.clear();
             xg_strFileName.clear();
-            // «‘‚ğ“Ç‚İ‚ŞB
+            // è¾æ›¸ã‚’èª­ã¿è¾¼ã‚€ã€‚
             XgLoadDictFile(xg_dict_name.c_str());
             XgSetInputModeFromDict(hwnd);
         }
     } while (nID == IDOK && s_nNumberGenerated < s_nNumberToGenerate);
     ::EnableWindow(xg_hwndInputPalette, TRUE);
 
-    // ‰Šú‰»‚·‚éB
+    // åˆæœŸåŒ–ã™ã‚‹ã€‚
     xg_xword = xword_save;
     xg_vTateInfo.clear();
     xg_vYokoInfo.clear();
@@ -3663,14 +3663,14 @@ bool __fastcall XgOnSolveRepeatedly(HWND hwnd)
     xg_vecYokoHints.clear();
     xg_strFileName.clear();
 
-    // ƒCƒ[ƒW‚ğXV‚·‚éB
+    // ã‚¤ãƒ¡ãƒ¼ã‚¸ã‚’æ›´æ–°ã™ã‚‹ã€‚
     xg_bSolved = false;
     xg_bShowAnswer = false;
     xg_caret_pos.clear();
     XgMarkUpdate();
     XgUpdateImage(hwnd, 0, 0);
 
-    // I—¹ƒƒbƒZ[ƒW‚ğ•\¦‚·‚éB
+    // çµ‚äº†ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã‚’è¡¨ç¤ºã™ã‚‹ã€‚
     WCHAR sz[MAX_PATH];
     if (s_bOutOfDiskSpace) {
         StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(IDS_OUTOFSTORAGE), s_nNumberGenerated,
@@ -3683,7 +3683,7 @@ bool __fastcall XgOnSolveRepeatedly(HWND hwnd)
     }
     XgCenterMessageBoxW(hwnd, sz, XgLoadStringDx2(IDS_RESULTS), MB_ICONINFORMATION);
 
-    // •Û‘¶æƒtƒHƒ‹ƒ_‚ğŠJ‚­B
+    // ä¿å­˜å…ˆãƒ•ã‚©ãƒ«ãƒ€ã‚’é–‹ãã€‚
     if (s_nNumberGenerated && !s_dirs_save_to.empty()) {
         ::ShellExecuteW(hwnd, nullptr, s_dirs_save_to[0].data(),
                       nullptr, nullptr, SW_SHOWNORMAL);
@@ -3692,43 +3692,43 @@ bool __fastcall XgOnSolveRepeatedly(HWND hwnd)
     return true;
 }
 
-// ˜A‘±‚Å‰ğ‚ğ‹‚ß‚éi•ƒ}ƒX’Ç‰Á‚È‚µjB
+// é€£ç¶šã§è§£ã‚’æ±‚ã‚ã‚‹ï¼ˆé»’ãƒã‚¹è¿½åŠ ãªã—ï¼‰ã€‚
 bool __fastcall XgOnSolveRepeatedlyNoAddBlack(HWND hwnd)
 {
-    // ‚·‚Å‚É‰ğ‚©‚ê‚Ä‚¢‚éê‡‚ÍAÀs‚ğ‹‘”Û‚·‚éB
+    // ã™ã§ã«è§£ã‹ã‚Œã¦ã„ã‚‹å ´åˆã¯ã€å®Ÿè¡Œã‚’æ‹’å¦ã™ã‚‹ã€‚
     if (xg_bSolved) {
         ::MessageBeep(0xFFFFFFFF);
         return false;
     }
 
-    // «‘‚ğ“Ç‚İ‚ŞB
+    // è¾æ›¸ã‚’èª­ã¿è¾¼ã‚€ã€‚
     XgLoadDictFile(xg_dict_name.c_str());
     XgSetInputModeFromDict(hwnd);
 
-    // •ƒ}ƒXƒ‹[ƒ‹‚È‚Ç‚ğƒ`ƒFƒbƒN‚·‚éB
+    // é»’ãƒã‚¹ãƒ«ãƒ¼ãƒ«ãªã©ã‚’ãƒã‚§ãƒƒã‚¯ã™ã‚‹ã€‚
     xg_bNoAddBlack = true;
     if (!XgCheckCrossWord(hwnd)) {
         return false;
     }
 
-    // Às‘O‚Ìƒ}ƒX‚Ìó‘Ô‚ğ•Û‘¶‚·‚éB
+    // å®Ÿè¡Œå‰ã®ãƒã‚¹ã®çŠ¶æ…‹ã‚’ä¿å­˜ã™ã‚‹ã€‚
     XG_Board xword_save(xg_xword);
 
-    // [‰ğ‚Ì˜A‘±ì¬]ƒ_ƒCƒAƒƒOB
+    // [è§£ã®é€£ç¶šä½œæˆ]ãƒ€ã‚¤ã‚¢ãƒ­ã‚°ã€‚
     INT nID;
     ::EnableWindow(xg_hwndInputPalette, FALSE);
     nID = INT(::DialogBoxW(xg_hInstance, MAKEINTRESOURCE(IDD_SEQSOLVE), hwnd,
                            XgSolveRepeatedlyDlgProc));
     ::EnableWindow(xg_hwndInputPalette, TRUE);
     if (nID != IDOK) {
-        // ƒCƒ[ƒW‚ğXV‚·‚éB
+        // ã‚¤ãƒ¡ãƒ¼ã‚¸ã‚’æ›´æ–°ã™ã‚‹ã€‚
         xg_caret_pos.clear();
         XgMarkUpdate();
         XgUpdateImage(hwnd, 0, 0);
         return false;
     }
 
-    // ‰Šú‰»‚·‚éB
+    // åˆæœŸåŒ–ã™ã‚‹ã€‚
     xg_strFileName.clear();
     xg_strHeader.clear();
     xg_strNotes.clear();
@@ -3742,20 +3742,20 @@ bool __fastcall XgOnSolveRepeatedlyNoAddBlack(HWND hwnd)
     xg_vecTateHints.clear();
     xg_vecYokoHints.clear();
 
-    // ƒLƒƒƒ“ƒZƒ‹ƒ_ƒCƒAƒƒO‚ğ•\¦‚µAÀs‚ğŠJn‚·‚éB
+    // ã‚­ãƒ£ãƒ³ã‚»ãƒ«ãƒ€ã‚¤ã‚¢ãƒ­ã‚°ã‚’è¡¨ç¤ºã—ã€å®Ÿè¡Œã‚’é–‹å§‹ã™ã‚‹ã€‚
     ::EnableWindow(xg_hwndInputPalette, FALSE);
     do
     {
         nID = ::DialogBoxW(xg_hInstance, MAKEINTRESOURCE(IDD_CALCULATING), hwnd,
                            XgCancelSolveDlgProcNoAddBlack);
-        // ¶¬¬Œ÷‚Ì‚Æ‚«‚Ís_nNumberGenerated‚ğ‘‚â‚·B
+        // ç”ŸæˆæˆåŠŸã®ã¨ãã¯s_nNumberGeneratedã‚’å¢—ã‚„ã™ã€‚
         if (nID == IDOK && xg_bSolved) {
             ++s_nNumberGenerated;
             if (!XgDoSaveToLocation(hwnd)) {
                 s_bOutOfDiskSpace = true;
                 break;
             }
-            // ‰Šú‰»B
+            // åˆæœŸåŒ–ã€‚
             xg_bSolved = false;
             xg_xword = xword_save;
             xg_vTateInfo.clear();
@@ -3765,14 +3765,14 @@ bool __fastcall XgOnSolveRepeatedlyNoAddBlack(HWND hwnd)
             xg_strHeader.clear();
             xg_strNotes.clear();
             xg_strFileName.clear();
-            // «‘‚ğ“Ç‚İ‚ŞB
+            // è¾æ›¸ã‚’èª­ã¿è¾¼ã‚€ã€‚
             XgLoadDictFile(xg_dict_name.c_str());
             XgSetInputModeFromDict(hwnd);
         }
     } while (nID == IDOK && s_nNumberGenerated < s_nNumberToGenerate);
     ::EnableWindow(xg_hwndInputPalette, TRUE);
 
-    // ‰Šú‰»‚·‚éB
+    // åˆæœŸåŒ–ã™ã‚‹ã€‚
     xg_xword = xword_save;
     xg_vTateInfo.clear();
     xg_vYokoInfo.clear();
@@ -3780,14 +3780,14 @@ bool __fastcall XgOnSolveRepeatedlyNoAddBlack(HWND hwnd)
     xg_vecYokoHints.clear();
     xg_strFileName.clear();
 
-    // ƒCƒ[ƒW‚ğXV‚·‚éB
+    // ã‚¤ãƒ¡ãƒ¼ã‚¸ã‚’æ›´æ–°ã™ã‚‹ã€‚
     xg_bSolved = false;
     xg_bShowAnswer = false;
     xg_caret_pos.clear();
     XgMarkUpdate();
     XgUpdateImage(hwnd, 0, 0);
 
-    // I—¹ƒƒbƒZ[ƒW‚ğ•\¦‚·‚éB
+    // çµ‚äº†ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã‚’è¡¨ç¤ºã™ã‚‹ã€‚
     WCHAR sz[MAX_PATH];
     if (s_bOutOfDiskSpace) {
         StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(IDS_OUTOFSTORAGE), s_nNumberGenerated,
@@ -3800,7 +3800,7 @@ bool __fastcall XgOnSolveRepeatedlyNoAddBlack(HWND hwnd)
     }
     XgCenterMessageBoxW(hwnd, sz, XgLoadStringDx2(IDS_RESULTS), MB_ICONINFORMATION);
 
-    // •Û‘¶æƒtƒHƒ‹ƒ_‚ğŠJ‚­B
+    // ä¿å­˜å…ˆãƒ•ã‚©ãƒ«ãƒ€ã‚’é–‹ãã€‚
     if (s_nNumberGenerated && !s_dirs_save_to.empty()) {
         ::ShellExecuteW(hwnd, nullptr, s_dirs_save_to[0].data(),
                       nullptr, nullptr, SW_SHOWNORMAL);
@@ -3808,7 +3808,7 @@ bool __fastcall XgOnSolveRepeatedlyNoAddBlack(HWND hwnd)
     return true;
 }
 
-// •ƒ}ƒXü‘ÎÌƒ`ƒFƒbƒNB
+// é»’ãƒã‚¹ç·šå¯¾ç§°ãƒã‚§ãƒƒã‚¯ã€‚
 void XgOnLineSymmetryCheck(HWND hwnd)
 {
     if (xg_xword.IsLineSymmetry()) {
@@ -3820,7 +3820,7 @@ void XgOnLineSymmetryCheck(HWND hwnd)
     }
 }
 
-// •ƒ}ƒX“_‘ÎÌƒ`ƒFƒbƒNB
+// é»’ãƒã‚¹ç‚¹å¯¾ç§°ãƒã‚§ãƒƒã‚¯ã€‚
 void XgOnPointSymmetryCheck(HWND hwnd)
 {
     if (xg_xword.IsPointSymmetry()) {
@@ -3834,7 +3834,7 @@ void XgOnPointSymmetryCheck(HWND hwnd)
 
 //////////////////////////////////////////////////////////////////////////////
 
-// 24BPPƒrƒbƒgƒ}ƒbƒv‚ğì¬B
+// 24BPPãƒ“ãƒƒãƒˆãƒãƒƒãƒ—ã‚’ä½œæˆã€‚
 HBITMAP XgCreate24BppBitmap(HDC hDC, LONG width, LONG height)
 {
     BITMAPINFO bmi;
@@ -3847,7 +3847,7 @@ HBITMAP XgCreate24BppBitmap(HDC hDC, LONG width, LONG height)
     return CreateDIBSection(hDC, &bmi, DIB_RGB_COLORS, NULL, NULL, 0);
 }
 
-// BITMAPINFOEX\‘¢‘ÌB
+// BITMAPINFOEXæ§‹é€ ä½“ã€‚
 typedef struct tagBITMAPINFOEX
 {
     BITMAPINFOHEADER bmiHeader;
@@ -3905,52 +3905,52 @@ PackedDIB_CreateFromHandle(std::vector<BYTE>& vecData, HBITMAP hbm)
     return TRUE;
 }
 
-// ƒNƒŠƒbƒvƒ{[ƒh‚ÉƒNƒƒXƒ[ƒh‚ğƒRƒs[B
+// ã‚¯ãƒªãƒƒãƒ—ãƒœãƒ¼ãƒ‰ã«ã‚¯ãƒ­ã‚¹ãƒ¯ãƒ¼ãƒ‰ã‚’ã‚³ãƒ”ãƒ¼ã€‚
 void __fastcall XgCopyBoard(HWND hwnd)
 {
     std::wstring str;
 
-    // ƒRƒs[‚·‚é”Õ‚ğ‘I‚ÔB
+    // ã‚³ãƒ”ãƒ¼ã™ã‚‹ç›¤ã‚’é¸ã¶ã€‚
     XG_Board *pxw = (xg_bSolved && xg_bShowAnswer) ? &xg_solution : &xg_xword;
 
-    // ƒNƒƒXƒ[ƒh‚Ì•¶š—ñ‚ğæ“¾‚·‚éB
+    // ã‚¯ãƒ­ã‚¹ãƒ¯ãƒ¼ãƒ‰ã®æ–‡å­—åˆ—ã‚’å–å¾—ã™ã‚‹ã€‚
     pxw->GetString(str);
 
-    // ƒq[ƒv‚©‚çƒƒ‚ƒŠ‚ğŠm•Û‚·‚éB
+    // ãƒ’ãƒ¼ãƒ—ã‹ã‚‰ãƒ¡ãƒ¢ãƒªã‚’ç¢ºä¿ã™ã‚‹ã€‚
     DWORD cb = static_cast<DWORD>((str.size() + 1) * sizeof(WCHAR));
     HGLOBAL hGlobal = ::GlobalAlloc(GMEM_MOVEABLE | GMEM_DDESHARE, cb);
     if (hGlobal) {
-        // ƒƒ‚ƒŠ‚ğƒƒbƒN‚·‚éB
+        // ãƒ¡ãƒ¢ãƒªã‚’ãƒ­ãƒƒã‚¯ã™ã‚‹ã€‚
         LPWSTR psz = reinterpret_cast<LPWSTR>(::GlobalLock(hGlobal));
         if (psz) {
-            // ƒƒ‚ƒŠ‚É•¶š—ñ‚ğƒRƒs[‚·‚éB
+            // ãƒ¡ãƒ¢ãƒªã«æ–‡å­—åˆ—ã‚’ã‚³ãƒ”ãƒ¼ã™ã‚‹ã€‚
             ::CopyMemory(psz, str.data(), cb);
-            // ƒƒ‚ƒŠ‚ÌƒƒbƒN‚ğ‰ğœ‚·‚éB
+            // ãƒ¡ãƒ¢ãƒªã®ãƒ­ãƒƒã‚¯ã‚’è§£é™¤ã™ã‚‹ã€‚
             ::GlobalUnlock(hGlobal);
 
-            // ƒNƒŠƒbƒvƒ{[ƒh‚ğŠJ‚­B
+            // ã‚¯ãƒªãƒƒãƒ—ãƒœãƒ¼ãƒ‰ã‚’é–‹ãã€‚
             if (::OpenClipboard(hwnd)) {
-                // ƒNƒŠƒbƒvƒ{[ƒh‚ğ‹ó‚É‚·‚éB
+                // ã‚¯ãƒªãƒƒãƒ—ãƒœãƒ¼ãƒ‰ã‚’ç©ºã«ã™ã‚‹ã€‚
                 if (::EmptyClipboard()) {
-                    // UnicodeƒeƒLƒXƒg‚ğİ’èB
+                    // Unicodeãƒ†ã‚­ã‚¹ãƒˆã‚’è¨­å®šã€‚
                     ::SetClipboardData(CF_UNICODETEXT, hGlobal);
 
-                    // •`‰æƒTƒCƒY‚ğæ“¾‚·‚éB
+                    // æç”»ã‚µã‚¤ã‚ºã‚’å–å¾—ã™ã‚‹ã€‚
                     SIZE siz;
                     XgGetXWordExtent(&siz);
 
-                    // EMF‚ğì¬‚·‚éB
+                    // EMFã‚’ä½œæˆã™ã‚‹ã€‚
                     HDC hdcRef = ::GetDC(hwnd);
                     HDC hdc = ::CreateEnhMetaFileW(hdcRef, nullptr, nullptr, XgLoadStringDx1(IDS_APPNAME));
                     if (hdc) {
-                        // EMF‚É•`‰æ‚·‚éB
+                        // EMFã«æç”»ã™ã‚‹ã€‚
                         XgDrawXWord(*pxw, hdc, &siz, false);
 
-                        // EMF‚ğİ’èB
+                        // EMFã‚’è¨­å®šã€‚
                         HENHMETAFILE hEMF = ::CloseEnhMetaFile(hdc);
                         ::SetClipboardData(CF_ENHMETAFILE, hEMF);
 
-                        // DIB‚ğİ’èB
+                        // DIBã‚’è¨­å®šã€‚
                         if (HDC hDC = CreateCompatibleDC(NULL))
                         {
                             HBITMAP hbm = XgCreate24BppBitmap(hDC, siz.cx, siz.cy);
@@ -3973,36 +3973,36 @@ void __fastcall XgCopyBoard(HWND hwnd)
                     }
                     ::ReleaseDC(hwnd, hdcRef);
                 }
-                // ƒNƒŠƒbƒvƒ{[ƒh‚ğ•Â‚¶‚éB
+                // ã‚¯ãƒªãƒƒãƒ—ãƒœãƒ¼ãƒ‰ã‚’é–‰ã˜ã‚‹ã€‚
                 ::CloseClipboard();
                 return;
             }
         }
-        // Šm•Û‚µ‚½ƒƒ‚ƒŠ‚ğ‰ğ•ú‚·‚éB
+        // ç¢ºä¿ã—ãŸãƒ¡ãƒ¢ãƒªã‚’è§£æ”¾ã™ã‚‹ã€‚
         ::GlobalFree(hGlobal);
     }
 }
 
-// ƒNƒŠƒbƒvƒ{[ƒh‚ÉƒNƒƒXƒ[ƒh‚ğ‰æ‘œ‚Æ‚µ‚ÄƒRƒs[B
+// ã‚¯ãƒªãƒƒãƒ—ãƒœãƒ¼ãƒ‰ã«ã‚¯ãƒ­ã‚¹ãƒ¯ãƒ¼ãƒ‰ã‚’ç”»åƒã¨ã—ã¦ã‚³ãƒ”ãƒ¼ã€‚
 void __fastcall XgCopyBoardAsImage(HWND hwnd)
 {
     XG_Board *pxw = (xg_bSolved && xg_bShowAnswer) ? &xg_solution : &xg_xword;
 
-    // •`‰æƒTƒCƒY‚ğæ“¾‚·‚éB
+    // æç”»ã‚µã‚¤ã‚ºã‚’å–å¾—ã™ã‚‹ã€‚
     SIZE siz;
     XgGetXWordExtent(&siz);
 
-    // EMF‚ğì¬‚·‚éB
+    // EMFã‚’ä½œæˆã™ã‚‹ã€‚
     HENHMETAFILE hEMF = NULL;
     HDC hdcRef = ::GetDC(hwnd);
     HDC hdc = ::CreateEnhMetaFileW(hdcRef, nullptr, nullptr, XgLoadStringDx1(IDS_APPNAME));
     if (hdc) {
-        // EMF‚É•`‰æ‚·‚éB
+        // EMFã«æç”»ã™ã‚‹ã€‚
         XgDrawXWord(*pxw, hdc, &siz, false);
         hEMF = ::CloseEnhMetaFile(hdc);
     }
 
-    // BMP‚ğì¬‚·‚éB
+    // BMPã‚’ä½œæˆã™ã‚‹ã€‚
     HBITMAP hbm = NULL;
     if (HDC hDC = CreateCompatibleDC(NULL))
     {
@@ -4044,29 +4044,29 @@ void __fastcall XgCopyBoardAsImage(HWND hwnd)
         hbm = NULL;
     }
 
-    // ƒNƒŠƒbƒvƒ{[ƒh‚ğŠJ‚­B
+    // ã‚¯ãƒªãƒƒãƒ—ãƒœãƒ¼ãƒ‰ã‚’é–‹ãã€‚
     if (::OpenClipboard(hwnd)) {
-        // ƒNƒŠƒbƒvƒ{[ƒh‚ğ‹ó‚É‚·‚éB
+        // ã‚¯ãƒªãƒƒãƒ—ãƒœãƒ¼ãƒ‰ã‚’ç©ºã«ã™ã‚‹ã€‚
         if (::EmptyClipboard()) {
-            // BMP‚ğİ’èB
+            // BMPã‚’è¨­å®šã€‚
             ::SetClipboardData(CF_DIB, hGlobal);
-            // EMF‚ğİ’èB
+            // EMFã‚’è¨­å®šã€‚
             ::SetClipboardData(CF_ENHMETAFILE, hEMF);
 
             ::ReleaseDC(hwnd, hdcRef);
         }
-        // ƒNƒŠƒbƒvƒ{[ƒh‚ğ•Â‚¶‚éB
+        // ã‚¯ãƒªãƒƒãƒ—ãƒœãƒ¼ãƒ‰ã‚’é–‰ã˜ã‚‹ã€‚
         ::CloseClipboard();
     }
 }
 
-// uƒTƒCƒY‚ğw’èvƒ_ƒCƒAƒƒOƒvƒƒV[ƒWƒƒ[B
+// ã€Œã‚µã‚¤ã‚ºã‚’æŒ‡å®šã€ãƒ€ã‚¤ã‚¢ãƒ­ã‚°ãƒ—ãƒ­ã‚·ãƒ¼ã‚¸ãƒ£ãƒ¼ã€‚
 INT_PTR CALLBACK
 ImageSize_DlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
     switch (uMsg) {
     case WM_INITDIALOG:
-        // ƒ_ƒCƒAƒƒO‚ğ’†‰›‚ÖˆÚ“®‚·‚éB
+        // ãƒ€ã‚¤ã‚¢ãƒ­ã‚°ã‚’ä¸­å¤®ã¸ç§»å‹•ã™ã‚‹ã€‚
         XgCenterDialog(hwnd);
 
         ::SetDlgItemInt(hwnd, edt1, s_nImageCopyWidth, FALSE);
@@ -4120,7 +4120,7 @@ ImageSize_DlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
             } else {
                 s_bImageCopyByHeight = false;
             }
-            // ƒ_ƒCƒAƒƒO‚ğ•Â‚¶‚éB
+            // ãƒ€ã‚¤ã‚¢ãƒ­ã‚°ã‚’é–‰ã˜ã‚‹ã€‚
             ::EndDialog(hwnd, IDOK);
             break;
 
@@ -4132,35 +4132,35 @@ ImageSize_DlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
     return 0;
 }
 
-// “ñdƒ}ƒX’PŒê‚ğƒRƒs[B
+// äºŒé‡ãƒã‚¹å˜èªã‚’ã‚³ãƒ”ãƒ¼ã€‚
 void __fastcall XgCopyMarkWord(HWND hwnd)
 {
-    // ƒ}[ƒN‚ª‚È‚¯‚ê‚ÎAÀs‚ğ‹‘”Û‚·‚éB
+    // ãƒãƒ¼ã‚¯ãŒãªã‘ã‚Œã°ã€å®Ÿè¡Œã‚’æ‹’å¦ã™ã‚‹ã€‚
     if (xg_vMarks.empty()) {
         ::MessageBeep(0xFFFFFFFF);
         return;
     }
 
-    // •`‰æƒTƒCƒY‚ğæ“¾‚·‚éB
+    // æç”»ã‚µã‚¤ã‚ºã‚’å–å¾—ã™ã‚‹ã€‚
     SIZE siz;
     int nCount = static_cast<int>(xg_vMarks.size());
     XgGetMarkWordExtent(nCount, &siz);
 
-    // EMF‚ğì¬‚·‚éB
+    // EMFã‚’ä½œæˆã™ã‚‹ã€‚
     HENHMETAFILE hEMF = NULL;
     HDC hdcRef = ::GetDC(hwnd);
     HDC hdc = ::CreateEnhMetaFileW(hdcRef, nullptr, nullptr, XgLoadStringDx1(IDS_APPNAME));
     if (hdc) {
-        // EMF‚É•`‰æ‚·‚éB
+        // EMFã«æç”»ã™ã‚‹ã€‚
         XgDrawMarkWord(hdc, &siz);
         hEMF = ::CloseEnhMetaFile(hdc);
     }
     ::ReleaseDC(hwnd, hdcRef);
 
-    // ‚·‚Å‚É‰ğ‚ª‚ ‚é‚©‚Ç‚¤‚©‚É‚æ‚Á‚ÄØ‚è‘Ö‚¦B
+    // ã™ã§ã«è§£ãŒã‚ã‚‹ã‹ã©ã†ã‹ã«ã‚ˆã£ã¦åˆ‡ã‚Šæ›¿ãˆã€‚
     const XG_Board *xw = (xg_bSolved ? &xg_solution : &xg_xword);
 
-    // “ñdƒ}ƒX’PŒê‚ÌƒeƒLƒXƒg‚ğæ“¾B
+    // äºŒé‡ãƒã‚¹å˜èªã®ãƒ†ã‚­ã‚¹ãƒˆã‚’å–å¾—ã€‚
     HGLOBAL hGlobal = NULL;
     std::wstring strMarkWord;
     if (XgGetMarkWord(xw, strMarkWord)) {
@@ -4171,7 +4171,7 @@ void __fastcall XgCopyMarkWord(HWND hwnd)
                 wch = L'a' + (wch - ZEN_SMALL_A);
         }
 
-        // CF_UNICODETEXT‚Ìƒf[ƒ^‚ğ—pˆÓB
+        // CF_UNICODETEXTã®ãƒ‡ãƒ¼ã‚¿ã‚’ç”¨æ„ã€‚
         DWORD cbGlobal = (strMarkWord.size() + 1) * sizeof(WCHAR);
         hGlobal = GlobalAlloc(GHND | GMEM_SHARE, cbGlobal);
         if (LPWSTR psz = (LPWSTR)GlobalLock(hGlobal)) {
@@ -4183,27 +4183,27 @@ void __fastcall XgCopyMarkWord(HWND hwnd)
         }
     }
 
-    // ƒNƒŠƒbƒvƒ{[ƒh‚ğŠJ‚­B
+    // ã‚¯ãƒªãƒƒãƒ—ãƒœãƒ¼ãƒ‰ã‚’é–‹ãã€‚
     if (::OpenClipboard(hwnd)) {
-        // ƒNƒŠƒbƒvƒ{[ƒh‚ğ‹ó‚É‚·‚éB
+        // ã‚¯ãƒªãƒƒãƒ—ãƒœãƒ¼ãƒ‰ã‚’ç©ºã«ã™ã‚‹ã€‚
         if (::EmptyClipboard()) {
-            // ƒeƒLƒXƒg‚ğİ’èB
+            // ãƒ†ã‚­ã‚¹ãƒˆã‚’è¨­å®šã€‚
             ::SetClipboardData(CF_UNICODETEXT, hGlobal);
-            // EMF‚ğİ’èB
+            // EMFã‚’è¨­å®šã€‚
             ::SetClipboardData(CF_ENHMETAFILE, hEMF);
         }
-        // ƒNƒŠƒbƒvƒ{[ƒh‚ğ•Â‚¶‚éB
+        // ã‚¯ãƒªãƒƒãƒ—ãƒœãƒ¼ãƒ‰ã‚’é–‰ã˜ã‚‹ã€‚
         ::CloseClipboard();
     }
 }
 
-// u‚‚³‚ğw’èvƒ_ƒCƒAƒƒOƒvƒƒV[ƒWƒƒ[B
+// ã€Œé«˜ã•ã‚’æŒ‡å®šã€ãƒ€ã‚¤ã‚¢ãƒ­ã‚°ãƒ—ãƒ­ã‚·ãƒ¼ã‚¸ãƒ£ãƒ¼ã€‚
 INT_PTR CALLBACK
 MarksHeight_DlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
     switch (uMsg) {
     case WM_INITDIALOG:
-        // ƒ_ƒCƒAƒƒO‚ğ’†‰›‚ÖˆÚ“®‚·‚éB
+        // ãƒ€ã‚¤ã‚¢ãƒ­ã‚°ã‚’ä¸­å¤®ã¸ç§»å‹•ã™ã‚‹ã€‚
         XgCenterDialog(hwnd);
 
         ::SetDlgItemInt(hwnd, edt1, s_nMarksHeight, FALSE);
@@ -4220,7 +4220,7 @@ MarksHeight_DlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
                                     MB_ICONERROR);
                 break;
             }
-            // ƒ_ƒCƒAƒƒO‚ğ•Â‚¶‚éB
+            // ãƒ€ã‚¤ã‚¢ãƒ­ã‚°ã‚’é–‰ã˜ã‚‹ã€‚
             ::EndDialog(hwnd, IDOK);
             break;
 
@@ -4236,34 +4236,34 @@ std::wstring XgGetClipboardUnicodeText(HWND hwnd)
 {
     std::wstring str;
 
-    // ƒNƒŠƒbƒvƒ{[ƒh‚ğŠJ‚­B
+    // ã‚¯ãƒªãƒƒãƒ—ãƒœãƒ¼ãƒ‰ã‚’é–‹ãã€‚
     HGLOBAL hGlobal;
     if (::OpenClipboard(hwnd)) {
-        // Unicode•¶š—ñ‚ğæ“¾B
+        // Unicodeæ–‡å­—åˆ—ã‚’å–å¾—ã€‚
         hGlobal = ::GetClipboardData(CF_UNICODETEXT);
         LPWSTR psz = reinterpret_cast<LPWSTR>(::GlobalLock(hGlobal));
         if (psz) {
             str = psz;
             ::GlobalUnlock(hGlobal);
         }
-        // ƒNƒŠƒbƒvƒ{[ƒh‚ğ•Â‚¶‚éB
+        // ã‚¯ãƒªãƒƒãƒ—ãƒœãƒ¼ãƒ‰ã‚’é–‰ã˜ã‚‹ã€‚
         ::CloseClipboard();
     }
 
     return str;
 }
 
-// ƒNƒŠƒbƒvƒ{[ƒh‚©‚ç“\‚è•t‚¯B
+// ã‚¯ãƒªãƒƒãƒ—ãƒœãƒ¼ãƒ‰ã‹ã‚‰è²¼ã‚Šä»˜ã‘ã€‚
 void __fastcall XgPasteBoard(HWND hwnd, const std::wstring& str)
 {
-    // •¶š—ñ‚ª‹ó‚¶‚á‚È‚¢‚©H
+    // æ–‡å­—åˆ—ãŒç©ºã˜ã‚ƒãªã„ã‹ï¼Ÿ
     if (!str.empty()) {
-        // •¶š—ñ‚ªƒNƒƒXƒ[ƒh‚ğ•\‚µ‚Ä‚¢‚é‚Æ‰¼’è‚·‚éB
-        // ƒNƒƒXƒ[ƒh‚É•¶š—ñ‚ğİ’èB
+        // æ–‡å­—åˆ—ãŒã‚¯ãƒ­ã‚¹ãƒ¯ãƒ¼ãƒ‰ã‚’è¡¨ã—ã¦ã„ã‚‹ã¨ä»®å®šã™ã‚‹ã€‚
+        // ã‚¯ãƒ­ã‚¹ãƒ¯ãƒ¼ãƒ‰ã«æ–‡å­—åˆ—ã‚’è¨­å®šã€‚
         if (xg_xword.SetString(str)) {
-            // Œó•âƒEƒBƒ“ƒhƒE‚ğ”jŠü‚·‚éB
+            // å€™è£œã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚’ç ´æ£„ã™ã‚‹ã€‚
             XgDestroyCandsWnd();
-            // ƒqƒ“ƒgƒEƒBƒ“ƒhƒE‚ğ”jŠü‚·‚éB
+            // ãƒ’ãƒ³ãƒˆã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚’ç ´æ£„ã™ã‚‹ã€‚
             XgDestroyHintsWnd();
 
             xg_bSolved = false;
@@ -4278,148 +4278,148 @@ void __fastcall XgPasteBoard(HWND hwnd, const std::wstring& str)
     }
 }
 
-// ƒNƒŠƒbƒvƒ{[ƒh‚ÉƒeƒLƒXƒg‚ğƒRƒs[‚·‚éB
+// ã‚¯ãƒªãƒƒãƒ—ãƒœãƒ¼ãƒ‰ã«ãƒ†ã‚­ã‚¹ãƒˆã‚’ã‚³ãƒ”ãƒ¼ã™ã‚‹ã€‚
 BOOL XgSetClipboardUnicodeText(HWND hwnd, const std::wstring& str)
 {
-    // ƒq[ƒv‚©‚çƒƒ‚ƒŠ‚ğŠm•Û‚·‚éB
+    // ãƒ’ãƒ¼ãƒ—ã‹ã‚‰ãƒ¡ãƒ¢ãƒªã‚’ç¢ºä¿ã™ã‚‹ã€‚
     DWORD cb = static_cast<DWORD>((str.size() + 1) * sizeof(WCHAR));
     HGLOBAL hGlobal = ::GlobalAlloc(GMEM_MOVEABLE | GMEM_DDESHARE, cb);
     if (hGlobal) {
-        // ƒƒ‚ƒŠ‚ğƒƒbƒN‚·‚éB
+        // ãƒ¡ãƒ¢ãƒªã‚’ãƒ­ãƒƒã‚¯ã™ã‚‹ã€‚
         LPWSTR psz = reinterpret_cast<LPWSTR>(::GlobalLock(hGlobal));
         if (psz) {
-            // ƒƒ‚ƒŠ‚É•¶š—ñ‚ğƒRƒs[‚·‚éB
+            // ãƒ¡ãƒ¢ãƒªã«æ–‡å­—åˆ—ã‚’ã‚³ãƒ”ãƒ¼ã™ã‚‹ã€‚
             ::CopyMemory(psz, str.data(), cb);
-            // ƒƒ‚ƒŠ‚ÌƒƒbƒN‚ğ‰ğœ‚·‚éB
+            // ãƒ¡ãƒ¢ãƒªã®ãƒ­ãƒƒã‚¯ã‚’è§£é™¤ã™ã‚‹ã€‚
             ::GlobalUnlock(hGlobal);
 
-            // ƒNƒŠƒbƒvƒ{[ƒh‚ğŠJ‚­B
+            // ã‚¯ãƒªãƒƒãƒ—ãƒœãƒ¼ãƒ‰ã‚’é–‹ãã€‚
             if (::OpenClipboard(hwnd)) {
-                // ƒNƒŠƒbƒvƒ{[ƒh‚ğ‹ó‚É‚·‚éB
+                // ã‚¯ãƒªãƒƒãƒ—ãƒœãƒ¼ãƒ‰ã‚’ç©ºã«ã™ã‚‹ã€‚
                 if (::EmptyClipboard()) {
-                    // UnicodeƒeƒLƒXƒg‚ğİ’èB
+                    // Unicodeãƒ†ã‚­ã‚¹ãƒˆã‚’è¨­å®šã€‚
                     ::SetClipboardData(CF_UNICODETEXT, hGlobal);
                 }
-                // ƒNƒŠƒbƒvƒ{[ƒh‚ğ•Â‚¶‚éB
+                // ã‚¯ãƒªãƒƒãƒ—ãƒœãƒ¼ãƒ‰ã‚’é–‰ã˜ã‚‹ã€‚
                 ::CloseClipboard();
                 return TRUE;
             }
         }
-        // Šm•Û‚µ‚½ƒƒ‚ƒŠ‚ğ‰ğ•ú‚·‚éB
+        // ç¢ºä¿ã—ãŸãƒ¡ãƒ¢ãƒªã‚’è§£æ”¾ã™ã‚‹ã€‚
         ::GlobalFree(hGlobal);
     }
 
     return FALSE;
 }
 
-// ƒNƒŠƒbƒvƒ{[ƒh‚Éƒqƒ“ƒg‚ğƒRƒs[iƒXƒ^ƒCƒ‹ƒ[ƒjB
+// ã‚¯ãƒªãƒƒãƒ—ãƒœãƒ¼ãƒ‰ã«ãƒ’ãƒ³ãƒˆã‚’ã‚³ãƒ”ãƒ¼ï¼ˆã‚¹ã‚¿ã‚¤ãƒ«ã‚¼ãƒ­ï¼‰ã€‚
 void __fastcall XgCopyHintsStyle0(HWND hwnd, int hint_type)
 {
-    // ‰ğ‚©‚ê‚Ä‚¢‚È‚¯‚ê‚Îˆ—‚ğ‹‘”Û‚·‚éB
+    // è§£ã‹ã‚Œã¦ã„ãªã‘ã‚Œã°å‡¦ç†ã‚’æ‹’å¦ã™ã‚‹ã€‚
     if (!xg_bSolved) {
         ::MessageBeep(0xFFFFFFFF);
         return;
     }
 
-    // ƒNƒƒXƒ[ƒh‚Ì•¶š—ñ‚ğæ“¾‚·‚éB
+    // ã‚¯ãƒ­ã‚¹ãƒ¯ãƒ¼ãƒ‰ã®æ–‡å­—åˆ—ã‚’å–å¾—ã™ã‚‹ã€‚
     std::wstring str;
     xg_solution.GetHintsStr(str, hint_type, false);
     xg_str_trim(str);
 
-    // ƒNƒŠƒbƒvƒ{[ƒh‚ÉƒeƒLƒXƒg‚ğƒRƒs[‚·‚éB
+    // ã‚¯ãƒªãƒƒãƒ—ãƒœãƒ¼ãƒ‰ã«ãƒ†ã‚­ã‚¹ãƒˆã‚’ã‚³ãƒ”ãƒ¼ã™ã‚‹ã€‚
     XgSetClipboardUnicodeText(hwnd, str);
 }
 
-// ƒNƒŠƒbƒvƒ{[ƒh‚Éƒqƒ“ƒg‚ğƒRƒs[iƒXƒ^ƒCƒ‹ƒƒ“jB
+// ã‚¯ãƒªãƒƒãƒ—ãƒœãƒ¼ãƒ‰ã«ãƒ’ãƒ³ãƒˆã‚’ã‚³ãƒ”ãƒ¼ï¼ˆã‚¹ã‚¿ã‚¤ãƒ«ãƒ¯ãƒ³ï¼‰ã€‚
 void __fastcall XgCopyHintsStyle1(HWND hwnd, int hint_type)
 {
-    // ‰ğ‚©‚ê‚Ä‚¢‚È‚¢‚Æ‚«‚ÍAˆ—‚ğ‹‘”Û‚·‚éB
+    // è§£ã‹ã‚Œã¦ã„ãªã„ã¨ãã¯ã€å‡¦ç†ã‚’æ‹’å¦ã™ã‚‹ã€‚
     if (!xg_bSolved) {
         ::MessageBeep(0xFFFFFFFF);
         return;
     }
 
-    // ƒNƒƒXƒ[ƒh‚Ì•¶š—ñ‚ğæ“¾‚·‚éB
+    // ã‚¯ãƒ­ã‚¹ãƒ¯ãƒ¼ãƒ‰ã®æ–‡å­—åˆ—ã‚’å–å¾—ã™ã‚‹ã€‚
     std::wstring str;
     xg_solution.GetHintsStr(str, hint_type, false);
     xg_str_trim(str);
 
-    // ƒXƒ^ƒCƒ‹ƒƒ“‚Å‚Í—v‚ç‚È‚¢•”•ª‚ğíœ‚·‚éB
+    // ã‚¹ã‚¿ã‚¤ãƒ«ãƒ¯ãƒ³ã§ã¯è¦ã‚‰ãªã„éƒ¨åˆ†ã‚’å‰Šé™¤ã™ã‚‹ã€‚
     xg_str_replace_all(str, XgLoadStringDx1(IDS_DOWNLEFT), L"");
     xg_str_replace_all(str, XgLoadStringDx1(IDS_ACROSSLEFT), L"");
     xg_str_replace_all(str, XgLoadStringDx1(IDS_KEYRIGHT), XgLoadStringDx2(IDS_DOT));
 
-    // HTMLƒf[ƒ^ (UTF-8)‚ğ—pˆÓ‚·‚éB
+    // HTMLãƒ‡ãƒ¼ã‚¿ (UTF-8)ã‚’ç”¨æ„ã™ã‚‹ã€‚
     std::wstring html;
     xg_solution.GetHintsStr(html, hint_type + 3, false);
     xg_str_trim(html);
     std::string htmldata = XgMakeClipHtmlData(html,
         L"p, ol, li { margin-top: 0px; margin-bottom: 0px; }\r\n");
 
-    // ƒNƒŠƒbƒvƒ{[ƒh‚ÌHTMLŒ`®‚ğ“o˜^‚·‚éB
+    // ã‚¯ãƒªãƒƒãƒ—ãƒœãƒ¼ãƒ‰ã®HTMLå½¢å¼ã‚’ç™»éŒ²ã™ã‚‹ã€‚
     UINT CF_HTML = ::RegisterClipboardFormatW(L"HTML Format");
 
-    // ƒq[ƒv‚©‚çƒƒ‚ƒŠ‚ğŠm•Û‚·‚éB
+    // ãƒ’ãƒ¼ãƒ—ã‹ã‚‰ãƒ¡ãƒ¢ãƒªã‚’ç¢ºä¿ã™ã‚‹ã€‚
     DWORD cb = static_cast<DWORD>((str.size() + 1) * sizeof(WCHAR));
     HGLOBAL hGlobal = ::GlobalAlloc(GMEM_MOVEABLE | GMEM_DDESHARE, cb);
     if (hGlobal) {
-        // ƒƒ‚ƒŠ‚ğƒƒbƒN‚·‚éB
+        // ãƒ¡ãƒ¢ãƒªã‚’ãƒ­ãƒƒã‚¯ã™ã‚‹ã€‚
         LPWSTR psz = reinterpret_cast<LPWSTR>(::GlobalLock(hGlobal));
         if (psz) {
-            // ƒƒ‚ƒŠ‚É•¶š—ñ‚ğƒRƒs[‚·‚éB
+            // ãƒ¡ãƒ¢ãƒªã«æ–‡å­—åˆ—ã‚’ã‚³ãƒ”ãƒ¼ã™ã‚‹ã€‚
             ::CopyMemory(psz, str.data(), cb);
-            // ƒƒ‚ƒŠ‚ÌƒƒbƒN‚ğ‰ğœ‚·‚éB
+            // ãƒ¡ãƒ¢ãƒªã®ãƒ­ãƒƒã‚¯ã‚’è§£é™¤ã™ã‚‹ã€‚
             ::GlobalUnlock(hGlobal);
 
-            // ƒq[ƒv‚©‚çƒƒ‚ƒŠ‚ğŠm•Û‚·‚éB
+            // ãƒ’ãƒ¼ãƒ—ã‹ã‚‰ãƒ¡ãƒ¢ãƒªã‚’ç¢ºä¿ã™ã‚‹ã€‚
             cb = static_cast<DWORD>((htmldata.size() + 1) * sizeof(char));
             HGLOBAL hGlobal2 = ::GlobalAlloc(GMEM_MOVEABLE | GMEM_DDESHARE, cb);
             if (hGlobal2) {
-                // ƒƒ‚ƒŠ‚ğƒƒbƒN‚·‚éB
+                // ãƒ¡ãƒ¢ãƒªã‚’ãƒ­ãƒƒã‚¯ã™ã‚‹ã€‚
                 LPVOID p2 = ::GlobalLock(hGlobal2);
                 if (p2) {
-                    // ƒƒ‚ƒŠ‚É•¶š—ñ‚ğƒRƒs[‚·‚éB
+                    // ãƒ¡ãƒ¢ãƒªã«æ–‡å­—åˆ—ã‚’ã‚³ãƒ”ãƒ¼ã™ã‚‹ã€‚
                     LPBYTE pb2 = reinterpret_cast<LPBYTE>(p2);
                     CopyMemory(pb2, htmldata.data(), htmldata.size());
                     pb2[htmldata.size()] = 0;
-                    // ƒƒ‚ƒŠ‚ÌƒƒbƒN‚ğ‰ğœ‚·‚éB
+                    // ãƒ¡ãƒ¢ãƒªã®ãƒ­ãƒƒã‚¯ã‚’è§£é™¤ã™ã‚‹ã€‚
                     ::GlobalUnlock(hGlobal);
 
-                    // ƒNƒŠƒbƒvƒ{[ƒh‚ğŠJ‚­B
+                    // ã‚¯ãƒªãƒƒãƒ—ãƒœãƒ¼ãƒ‰ã‚’é–‹ãã€‚
                     if (::OpenClipboard(hwnd)) {
-                        // ƒNƒŠƒbƒvƒ{[ƒh‚ğ‹ó‚É‚·‚éB
+                        // ã‚¯ãƒªãƒƒãƒ—ãƒœãƒ¼ãƒ‰ã‚’ç©ºã«ã™ã‚‹ã€‚
                         if (::EmptyClipboard()) {
-                            // UnicodeƒeƒLƒXƒg‚ğİ’èB
+                            // Unicodeãƒ†ã‚­ã‚¹ãƒˆã‚’è¨­å®šã€‚
                             ::SetClipboardData(CF_UNICODETEXT, hGlobal);
-                            // HTMLƒf[ƒ^‚ğİ’èB
+                            // HTMLãƒ‡ãƒ¼ã‚¿ã‚’è¨­å®šã€‚
                             ::SetClipboardData(CF_HTML, hGlobal2);
                         }
-                        // ƒNƒŠƒbƒvƒ{[ƒh‚ğ•Â‚¶‚éB
+                        // ã‚¯ãƒªãƒƒãƒ—ãƒœãƒ¼ãƒ‰ã‚’é–‰ã˜ã‚‹ã€‚
                         ::CloseClipboard();
                         return;
                     }
                 }
-                // Šm•Û‚µ‚½ƒƒ‚ƒŠ‚ğ‰ğ•ú‚·‚éB
+                // ç¢ºä¿ã—ãŸãƒ¡ãƒ¢ãƒªã‚’è§£æ”¾ã™ã‚‹ã€‚
                 ::GlobalFree(hGlobal2);
             }
         }
-        // Šm•Û‚µ‚½ƒƒ‚ƒŠ‚ğ‰ğ•ú‚·‚éB
+        // ç¢ºä¿ã—ãŸãƒ¡ãƒ¢ãƒªã‚’è§£æ”¾ã™ã‚‹ã€‚
         ::GlobalFree(hGlobal);
     }
 }
 
 //////////////////////////////////////////////////////////////////////////////
 
-// ƒEƒBƒ“ƒhƒE‚ª”jŠü‚³‚ê‚½B
+// ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãŒç ´æ£„ã•ã‚ŒãŸã€‚
 void __fastcall MainWnd_OnDestroy(HWND /*hwnd*/)
 {
-    // ƒCƒ[ƒWƒŠƒXƒg‚ğ”jŠü‚·‚éB
+    // ã‚¤ãƒ¡ãƒ¼ã‚¸ãƒªã‚¹ãƒˆã‚’ç ´æ£„ã™ã‚‹ã€‚
     ::ImageList_Destroy(xg_hImageList);
     xg_hImageList = NULL;
     ::ImageList_Destroy(xg_hGrayedImageList);
     xg_hGrayedImageList = NULL;
 
-    // ƒEƒBƒ“ƒhƒE‚ğ”jŠü‚·‚éB
+    // ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚’ç ´æ£„ã™ã‚‹ã€‚
     ::DestroyWindow(xg_hToolBar);
     xg_hToolBar = NULL;
     ::DestroyWindow(xg_hHScrollBar);
@@ -4435,30 +4435,30 @@ void __fastcall MainWnd_OnDestroy(HWND /*hwnd*/)
     ::DestroyWindow(xg_hwndInputPalette);
     xg_hwndInputPalette = NULL;
 
-    // ƒAƒvƒŠ‚ğI—¹‚·‚éB
+    // ã‚¢ãƒ—ãƒªã‚’çµ‚äº†ã™ã‚‹ã€‚
     ::PostQuitMessage(0);
 
     xg_hMainWnd = NULL;
 }
 
-// ƒEƒBƒ“ƒhƒE‚ğ•`‰æ‚·‚éB
+// ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚’æç”»ã™ã‚‹ã€‚
 void __fastcall MainWnd_OnPaint(HWND hwnd)
 {
-    // ƒc[ƒ‹ƒo[‚ª‚È‚¯‚ê‚ÎA‰Šú‰»‚Ì‘O‚È‚Ì‚ÅA–³‹‚·‚éB
+    // ãƒ„ãƒ¼ãƒ«ãƒãƒ¼ãŒãªã‘ã‚Œã°ã€åˆæœŸåŒ–ã®å‰ãªã®ã§ã€ç„¡è¦–ã™ã‚‹ã€‚
     if (xg_hToolBar == NULL)
         return;
 
-    // ƒNƒƒXƒ[ƒh‚Ì•`‰æƒTƒCƒY‚ğæ“¾‚·‚éB
+    // ã‚¯ãƒ­ã‚¹ãƒ¯ãƒ¼ãƒ‰ã®æç”»ã‚µã‚¤ã‚ºã‚’å–å¾—ã™ã‚‹ã€‚
     SIZE siz;
     ForDisplay for_display;
     XgGetXWordExtent(&siz);
 
-    // •`‰æ‚ğŠJn‚·‚éB
+    // æç”»ã‚’é–‹å§‹ã™ã‚‹ã€‚
     PAINTSTRUCT ps;
     HDC hdc = ::BeginPaint(hwnd, &ps);
     assert(hdc);
     if (hdc) {
-        // ƒCƒ[ƒW‚ª‚È‚¢ê‡‚ÍAƒCƒ[ƒW‚ğæ“¾‚·‚éB
+        // ã‚¤ãƒ¡ãƒ¼ã‚¸ãŒãªã„å ´åˆã¯ã€ã‚¤ãƒ¡ãƒ¼ã‚¸ã‚’å–å¾—ã™ã‚‹ã€‚
         if (xg_hbmImage == nullptr) {
             if (xg_bSolved && xg_bShowAnswer)
                 xg_hbmImage = XgCreateXWordImage(xg_solution, &siz, true);
@@ -4466,15 +4466,15 @@ void __fastcall MainWnd_OnPaint(HWND hwnd)
                 xg_hbmImage = XgCreateXWordImage(xg_xword, &siz, true);
         }
 
-        // ƒNƒ‰ƒCƒAƒ“ƒg—Ìˆæ‚ğ“¾‚éB
+        // ã‚¯ãƒ©ã‚¤ã‚¢ãƒ³ãƒˆé ˜åŸŸã‚’å¾—ã‚‹ã€‚
         MRect rcClient;
         XgGetRealClientRect(hwnd, &rcClient);
 
-        // ƒXƒNƒ[ƒ‹ˆÊ’u‚ğæ“¾‚·‚éB
+        // ã‚¹ã‚¯ãƒ­ãƒ¼ãƒ«ä½ç½®ã‚’å–å¾—ã™ã‚‹ã€‚
         int x = XgGetHScrollPos();
         int y = XgGetVScrollPos();
 
-        // ƒrƒbƒgƒ}ƒbƒv ƒCƒ[ƒW‚ğƒEƒBƒ“ƒhƒE‚É“]‘—‚·‚éB
+        // ãƒ“ãƒƒãƒˆãƒãƒƒãƒ— ã‚¤ãƒ¡ãƒ¼ã‚¸ã‚’ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã«è»¢é€ã™ã‚‹ã€‚
         HDC hdcMem = ::CreateCompatibleDC(hdc);
         ::IntersectClipRect(hdc, rcClient.left, rcClient.top,
             rcClient.right, rcClient.bottom);
@@ -4484,22 +4484,22 @@ void __fastcall MainWnd_OnPaint(HWND hwnd)
         ::SelectObject(hdcMem, hbmOld);
         ::DeleteDC(hdcMem);
 
-        // •`‰æ‚ğI—¹‚·‚éB
+        // æç”»ã‚’çµ‚äº†ã™ã‚‹ã€‚
         ::EndPaint(hwnd, &ps);
     }
 }
 
-// ‰¡ƒXƒNƒ[ƒ‹‚·‚éB
+// æ¨ªã‚¹ã‚¯ãƒ­ãƒ¼ãƒ«ã™ã‚‹ã€‚
 void __fastcall MainWnd_OnHScroll(HWND hwnd, HWND /*hwndCtl*/, UINT code, int pos)
 {
     SCROLLINFO si;
 
-    // ‰¡ƒXƒNƒ[ƒ‹î•ñ‚ğæ“¾‚·‚éB
+    // æ¨ªã‚¹ã‚¯ãƒ­ãƒ¼ãƒ«æƒ…å ±ã‚’å–å¾—ã™ã‚‹ã€‚
     si.cbSize = sizeof(si);
     si.fMask = SIF_ALL;
     XgGetHScrollInfo(&si);
 
-    // ƒR[ƒh‚É‰‚¶‚ÄˆÊ’uî•ñ‚ğİ’è‚·‚éB
+    // ã‚³ãƒ¼ãƒ‰ã«å¿œã˜ã¦ä½ç½®æƒ…å ±ã‚’è¨­å®šã™ã‚‹ã€‚
     switch (code) {
     case SB_LEFT:
         si.nPos = si.nMin;
@@ -4539,22 +4539,22 @@ void __fastcall MainWnd_OnHScroll(HWND hwnd, HWND /*hwndCtl*/, UINT code, int po
         break;
     }
 
-    // ƒXƒNƒ[ƒ‹î•ñ‚ğİ’è‚µAƒCƒ[ƒW‚ğXV‚·‚éB
+    // ã‚¹ã‚¯ãƒ­ãƒ¼ãƒ«æƒ…å ±ã‚’è¨­å®šã—ã€ã‚¤ãƒ¡ãƒ¼ã‚¸ã‚’æ›´æ–°ã™ã‚‹ã€‚
     XgSetHScrollInfo(&si, TRUE);
     XgUpdateImage(hwnd, si.nPos, XgGetVScrollPos());
 }
 
-// cƒXƒNƒ[ƒ‹‚·‚éB
+// ç¸¦ã‚¹ã‚¯ãƒ­ãƒ¼ãƒ«ã™ã‚‹ã€‚
 void __fastcall MainWnd_OnVScroll(HWND hwnd, HWND /*hwndCtl*/, UINT code, int pos)
 {
     SCROLLINFO si;
 
-    // cƒXƒNƒ[ƒ‹î•ñ‚ğæ“¾‚·‚éB
+    // ç¸¦ã‚¹ã‚¯ãƒ­ãƒ¼ãƒ«æƒ…å ±ã‚’å–å¾—ã™ã‚‹ã€‚
     si.cbSize = sizeof(si);
     si.fMask = SIF_ALL | SIF_DISABLENOSCROLL;
     XgGetVScrollInfo(&si);
 
-    // ƒR[ƒh‚É‰‚¶‚ÄˆÊ’uî•ñ‚ğİ’è‚·‚éB
+    // ã‚³ãƒ¼ãƒ‰ã«å¿œã˜ã¦ä½ç½®æƒ…å ±ã‚’è¨­å®šã™ã‚‹ã€‚
     switch (code) {
     case SB_TOP:
         si.nPos = si.nMin;
@@ -4594,12 +4594,12 @@ void __fastcall MainWnd_OnVScroll(HWND hwnd, HWND /*hwndCtl*/, UINT code, int po
         break;
     }
 
-    // ƒXƒNƒ[ƒ‹î•ñ‚ğİ’è‚µAƒCƒ[ƒW‚ğXV‚·‚éB
+    // ã‚¹ã‚¯ãƒ­ãƒ¼ãƒ«æƒ…å ±ã‚’è¨­å®šã—ã€ã‚¤ãƒ¡ãƒ¼ã‚¸ã‚’æ›´æ–°ã™ã‚‹ã€‚
     XgSetVScrollPos(si.nPos, TRUE);
     XgUpdateImage(hwnd, XgGetHScrollPos(), si.nPos);
 }
 
-// u«‘vƒƒjƒ…[‚ğæ“¾‚·‚éB
+// ã€Œè¾æ›¸ã€ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã‚’å–å¾—ã™ã‚‹ã€‚
 HMENU DoFindDictMenu(HMENU hMenu)
 {
     WCHAR szText[128];
@@ -4617,7 +4617,7 @@ HMENU DoFindDictMenu(HMENU hMenu)
     return NULL;
 }
 
-// u«‘vƒƒjƒ…[‚ğXV‚·‚éB
+// ã€Œè¾æ›¸ã€ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã‚’æ›´æ–°ã™ã‚‹ã€‚
 void DoUpdateDictMenu(HMENU hDictMenu)
 {
     while (RemoveMenu(hDictMenu, 4, MF_BYPOSITION))
@@ -4659,44 +4659,44 @@ void DoUpdateDictMenu(HMENU hDictMenu)
     }
 }
 
-// ƒƒjƒ…[‚ğ‰Šú‰»‚·‚éB
+// ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã‚’åˆæœŸåŒ–ã™ã‚‹ã€‚
 void __fastcall MainWnd_OnInitMenu(HWND /*hwnd*/, HMENU hMenu)
 {
     if (HMENU hDictMenu = DoFindDictMenu(hMenu))
     {
-        // «‘ƒƒjƒ…[‚ğXVB
+        // è¾æ›¸ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã‚’æ›´æ–°ã€‚
         DoUpdateDictMenu(hDictMenu);
     }
 
-    // ƒXƒPƒ‹ƒgƒ“ƒ‚[ƒhB
+    // ã‚¹ã‚±ãƒ«ãƒˆãƒ³ãƒ¢ãƒ¼ãƒ‰ã€‚
     if (xg_bSkeletonMode) {
         CheckMenuItem(hMenu, ID_SKELETONMODE, MF_BYCOMMAND | MF_CHECKED);
     } else {
         CheckMenuItem(hMenu, ID_SKELETONMODE, MF_BYCOMMAND | MF_UNCHECKED);
     }
 
-    // ”š‚ğ•\¦‚·‚é‚©H
+    // æ•°å­—ã‚’è¡¨ç¤ºã™ã‚‹ã‹ï¼Ÿ
     if (xg_bShowNumbering) {
         CheckMenuItem(hMenu, ID_SHOWHIDENUMBERING, MF_BYCOMMAND | MF_CHECKED);
     } else {
         CheckMenuItem(hMenu, ID_SHOWHIDENUMBERING, MF_BYCOMMAND | MF_UNCHECKED);
     }
 
-    // ƒLƒƒƒŒƒbƒg‚ğ•\¦‚·‚é‚©H
+    // ã‚­ãƒ£ãƒ¬ãƒƒãƒˆã‚’è¡¨ç¤ºã™ã‚‹ã‹ï¼Ÿ
     if (xg_bShowCaret) {
         CheckMenuItem(hMenu, ID_SHOWHIDECARET, MF_BYCOMMAND | MF_CHECKED);
     } else {
         CheckMenuItem(hMenu, ID_SHOWHIDECARET, MF_BYCOMMAND | MF_UNCHECKED);
     }
 
-    // ˆê’èŠÔ‚ª‰ß‚¬‚½‚çƒŠƒgƒ‰ƒCB
+    // ä¸€å®šæ™‚é–“ãŒéããŸã‚‰ãƒªãƒˆãƒ©ã‚¤ã€‚
     if (s_bAutoRetry) {
         CheckMenuItem(hMenu, ID_RETRYIFTIMEOUT, MF_BYCOMMAND | MF_CHECKED);
     } else {
         CheckMenuItem(hMenu, ID_RETRYIFTIMEOUT, MF_BYCOMMAND | MF_UNCHECKED);
     }
 
-    // ƒe[ƒ}B
+    // ãƒ†ãƒ¼ãƒã€‚
     if (!xg_bThemeModified) {
         CheckMenuItem(hMenu, ID_THEME, MF_BYCOMMAND | MF_UNCHECKED);
         EnableMenuItem(hMenu, ID_RESETTHEME, MF_BYCOMMAND | MF_GRAYED);
@@ -4709,44 +4709,44 @@ void __fastcall MainWnd_OnInitMenu(HWND /*hwnd*/, HMENU hMenu)
         }
     }
 
-    // ˜A•‹ÖB
+    // é€£é»’ç¦ã€‚
     if (xg_nRules & RULE_DONTDOUBLEBLACK)
         ::CheckMenuItem(hMenu, ID_RULE_DONTDOUBLEBLACK, MF_CHECKED);
     else
         ::CheckMenuItem(hMenu, ID_RULE_DONTDOUBLEBLACK, MF_UNCHECKED);
-    // l‹÷•‹ÖB
+    // å››éš…é»’ç¦ã€‚
     if (xg_nRules & RULE_DONTCORNERBLACK)
         ::CheckMenuItem(hMenu, ID_RULE_DONTCORNERBLACK, MF_CHECKED);
     else
         ::CheckMenuItem(hMenu, ID_RULE_DONTCORNERBLACK, MF_UNCHECKED);
-    // O•û•‹ÖB
+    // ä¸‰æ–¹é»’ç¦ã€‚
     if (xg_nRules & RULE_DONTTRIDIRECTIONS)
         ::CheckMenuItem(hMenu, ID_RULE_DONTTRIDIRECTIONS, MF_CHECKED);
     else
         ::CheckMenuItem(hMenu, ID_RULE_DONTTRIDIRECTIONS, MF_UNCHECKED);
-    // •ª’f‹ÖB
+    // åˆ†æ–­ç¦ã€‚
     if (xg_nRules & RULE_DONTDIVIDE)
         ::CheckMenuItem(hMenu, ID_RULE_DONTDIVIDE, MF_CHECKED);
     else
         ::CheckMenuItem(hMenu, ID_RULE_DONTDIVIDE, MF_UNCHECKED);
-    // •ÎO˜A‹ÖB
+    // é»’æ–œä¸‰é€£ç¦ã€‚
     if (xg_nRules & RULE_DONTTHREEDIAGONALS) {
         ::CheckMenuItem(hMenu, ID_RULE_DONTTHREEDIAGONALS, MF_CHECKED);
         ::CheckMenuItem(hMenu, ID_RULE_DONTFOURDIAGONALS, MF_UNCHECKED);
     } else {
         ::CheckMenuItem(hMenu, ID_RULE_DONTTHREEDIAGONALS, MF_UNCHECKED);
-        // •Îl˜A‹ÖB
+        // é»’æ–œå››é€£ç¦ã€‚
         if (xg_nRules & RULE_DONTFOURDIAGONALS)
             ::CheckMenuItem(hMenu, ID_RULE_DONTFOURDIAGONALS, MF_CHECKED);
         else
             ::CheckMenuItem(hMenu, ID_RULE_DONTFOURDIAGONALS, MF_UNCHECKED);
     }
-    // •ƒ}ƒX“_‘ÎÌB
+    // é»’ãƒã‚¹ç‚¹å¯¾ç§°ã€‚
     if (xg_nRules & RULE_POINTSYMMETRY)
         ::CheckMenuItem(hMenu, ID_RULE_POINTSYMMETRY, MF_CHECKED);
     else
         ::CheckMenuItem(hMenu, ID_RULE_POINTSYMMETRY, MF_UNCHECKED);
-    // •ƒ}ƒXü‘ÎÌB
+    // é»’ãƒã‚¹ç·šå¯¾ç§°ã€‚
     if (xg_nRules & RULE_LINESYMMETRYV)
         ::CheckMenuItem(hMenu, ID_RULE_LINESYMMETRYV, MF_CHECKED);
     else
@@ -4756,7 +4756,7 @@ void __fastcall MainWnd_OnInitMenu(HWND /*hwnd*/, HMENU hMenu)
     else
         ::CheckMenuItem(hMenu, ID_RULE_LINESYMMETRYH, MF_UNCHECKED);
 
-    // “ü—Íƒ‚[ƒhB
+    // å…¥åŠ›ãƒ¢ãƒ¼ãƒ‰ã€‚
     switch (xg_imode) {
     case xg_im_KANA:
         ::CheckMenuRadioItem(hMenu, ID_KANAINPUT, ID_DIGITINPUT, ID_KANAINPUT, MF_BYCOMMAND);
@@ -4779,7 +4779,7 @@ void __fastcall MainWnd_OnInitMenu(HWND /*hwnd*/, HMENU hMenu)
         break;
     }
 
-    // uŒ³‚É–ß‚·vu‚â‚è’¼‚µvƒƒjƒ…[XVB
+    // ã€Œå…ƒã«æˆ»ã™ã€ã€Œã‚„ã‚Šç›´ã—ã€ãƒ¡ãƒ‹ãƒ¥ãƒ¼æ›´æ–°ã€‚
     if (xg_ubUndoBuffer.CanUndo()) {
         ::EnableMenuItem(hMenu, ID_UNDO, MF_BYCOMMAND | MF_ENABLED);
     } else {
@@ -4865,7 +4865,7 @@ void __fastcall MainWnd_OnInitMenu(HWND /*hwnd*/, HMENU hMenu)
         ::EnableMenuItem(hMenu, ID_DOWN, MF_BYCOMMAND | MF_ENABLED);
     }
 
-    // “ñdƒ}ƒXƒƒjƒ…[XVB
+    // äºŒé‡ãƒã‚¹ãƒ¡ãƒ‹ãƒ¥ãƒ¼æ›´æ–°ã€‚
     if (xg_vMarks.empty()) {
         ::EnableMenuItem(hMenu, ID_KILLMARKS, MF_BYCOMMAND | MF_GRAYED);
         ::EnableMenuItem(hMenu, ID_COPYMARKWORD, MF_BYCOMMAND | MF_GRAYED);
@@ -4874,21 +4874,21 @@ void __fastcall MainWnd_OnInitMenu(HWND /*hwnd*/, HMENU hMenu)
         ::EnableMenuItem(hMenu, ID_COPYMARKWORD, MF_BYCOMMAND | MF_ENABLED);
     }
 
-    // u‰ğ‚ğíœ‚µ‚Ä”Õ‚ÌƒƒbƒN‚ğ‰ğœv
+    // ã€Œè§£ã‚’å‰Šé™¤ã—ã¦ç›¤ã®ãƒ­ãƒƒã‚¯ã‚’è§£é™¤ã€
     if (xg_bSolved) {
         ::EnableMenuItem(hMenu, ID_ERASESOLUTIONANDUNLOCKEDIT, MF_BYCOMMAND | MF_ENABLED);
     } else {
         ::EnableMenuItem(hMenu, ID_ERASESOLUTIONANDUNLOCKEDIT, MF_BYCOMMAND | MF_GRAYED);
     }
 
-    // ƒXƒe[ƒ^ƒXƒo[‚Ìƒƒjƒ…[XVB
+    // ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹ãƒãƒ¼ã®ãƒ¡ãƒ‹ãƒ¥ãƒ¼æ›´æ–°ã€‚
     if (s_bShowStatusBar) {
         ::CheckMenuItem(hMenu, ID_STATUS, MF_BYCOMMAND | MF_CHECKED);
     } else {
         ::CheckMenuItem(hMenu, ID_STATUS, MF_BYCOMMAND | MF_UNCHECKED);
     }
 
-    // “ü—ÍƒpƒŒƒbƒg‚Ìƒƒjƒ…[XVB
+    // å…¥åŠ›ãƒ‘ãƒ¬ãƒƒãƒˆã®ãƒ¡ãƒ‹ãƒ¥ãƒ¼æ›´æ–°ã€‚
     if (xg_hwndInputPalette) {
         ::CheckMenuItem(hMenu, ID_PALETTE, MF_BYCOMMAND | MF_CHECKED);
         ::CheckMenuItem(hMenu, ID_PALETTE2, MF_BYCOMMAND | MF_CHECKED);
@@ -4897,71 +4897,71 @@ void __fastcall MainWnd_OnInitMenu(HWND /*hwnd*/, HMENU hMenu)
         ::CheckMenuItem(hMenu, ID_PALETTE2, MF_BYCOMMAND | MF_UNCHECKED);
     }
 
-    // ƒc[ƒ‹ƒo[‚Ìƒƒjƒ…[XVB
+    // ãƒ„ãƒ¼ãƒ«ãƒãƒ¼ã®ãƒ¡ãƒ‹ãƒ¥ãƒ¼æ›´æ–°ã€‚
     if (s_bShowToolBar) {
         ::CheckMenuItem(hMenu, ID_TOOLBAR, MF_BYCOMMAND | MF_CHECKED);
     } else {
         ::CheckMenuItem(hMenu, ID_TOOLBAR, MF_BYCOMMAND | MF_UNCHECKED);
     }
 
-    // ƒqƒ“ƒgƒEƒBƒ“ƒhƒE‚Ìƒƒjƒ…[XVB
+    // ãƒ’ãƒ³ãƒˆã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®ãƒ¡ãƒ‹ãƒ¥ãƒ¼æ›´æ–°ã€‚
     if (xg_hHintsWnd) {
         ::CheckMenuItem(hMenu, ID_SHOWHIDEHINTS, MF_BYCOMMAND | MF_CHECKED);
     } else {
         ::CheckMenuItem(hMenu, ID_SHOWHIDEHINTS, MF_BYCOMMAND | MF_UNCHECKED);
     }
 
-    // ‚Ğ‚ç‚ª‚ÈƒEƒBƒ“ƒhƒE‚Ìƒƒjƒ…[XVB
+    // ã²ã‚‰ãŒãªã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®ãƒ¡ãƒ‹ãƒ¥ãƒ¼æ›´æ–°ã€‚
     if (xg_bHiragana) {
         ::CheckMenuRadioItem(hMenu, ID_HIRAGANA, ID_KATAKANA, ID_HIRAGANA, MF_BYCOMMAND);
     } else {
         ::CheckMenuRadioItem(hMenu, ID_HIRAGANA, ID_KATAKANA, ID_KATAKANA, MF_BYCOMMAND);
     }
 
-    // LowercaseƒEƒBƒ“ƒhƒE‚Ìƒƒjƒ…[XVB
+    // Lowercaseã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®ãƒ¡ãƒ‹ãƒ¥ãƒ¼æ›´æ–°ã€‚
     if (xg_bLowercase) {
         ::CheckMenuRadioItem(hMenu, ID_UPPERCASE, ID_LOWERCASE, ID_LOWERCASE, MF_BYCOMMAND);
     } else {
         ::CheckMenuRadioItem(hMenu, ID_UPPERCASE, ID_LOWERCASE, ID_UPPERCASE, MF_BYCOMMAND);
     }
 
-    // ƒ^ƒeƒˆƒR“ü—Í‚Ìƒƒjƒ…[XVB
+    // ã‚¿ãƒ†ãƒ¨ã‚³å…¥åŠ›ã®ãƒ¡ãƒ‹ãƒ¥ãƒ¼æ›´æ–°ã€‚
     if (xg_bTateInput) {
         ::CheckMenuRadioItem(hMenu, ID_INPUTH, ID_INPUTV, ID_INPUTV, MF_BYCOMMAND);
     } else {
         ::CheckMenuRadioItem(hMenu, ID_INPUTH, ID_INPUTV, ID_INPUTH, MF_BYCOMMAND);
     }
 
-    // •¶š‘—‚è‚Ìƒƒjƒ…[XVB
+    // æ–‡å­—é€ã‚Šã®ãƒ¡ãƒ‹ãƒ¥ãƒ¼æ›´æ–°ã€‚
     if (xg_bCharFeed) {
         ::CheckMenuItem(hMenu, ID_CHARFEED, MF_BYCOMMAND | MF_CHECKED);
     } else {
         ::CheckMenuItem(hMenu, ID_CHARFEED, MF_BYCOMMAND | MF_UNCHECKED);
     }
 
-    // “ñdƒ}ƒX•¶š•\¦‚Ìƒƒjƒ…[XVB
+    // äºŒé‡ãƒã‚¹æ–‡å­—è¡¨ç¤ºã®ãƒ¡ãƒ‹ãƒ¥ãƒ¼æ›´æ–°ã€‚
     if (xg_bShowDoubleFrameLetters) {
         ::CheckMenuItem(hMenu, ID_VIEW_DOUBLEFRAME_LETTERS, MF_BYCOMMAND | MF_CHECKED);
     } else {
         ::CheckMenuItem(hMenu, ID_VIEW_DOUBLEFRAME_LETTERS, MF_BYCOMMAND | MF_UNCHECKED);
     }
 
-    // ƒrƒ…[ƒ‚[ƒhB
+    // ãƒ“ãƒ¥ãƒ¼ãƒ¢ãƒ¼ãƒ‰ã€‚
     switch (xg_nViewMode) {
     case XG_VIEW_NORMAL:
     default:
-        // ’Êíƒrƒ…[B
+        // é€šå¸¸ãƒ“ãƒ¥ãƒ¼ã€‚
         ::CheckMenuRadioItem(hMenu, ID_VIEW_NORMAL_VIEW, ID_VIEW_SKELETON_VIEW,
                              ID_VIEW_NORMAL_VIEW, MF_BYCOMMAND);
         break;
     case XG_VIEW_SKELETON:
-        // ƒXƒPƒ‹ƒgƒ“ƒrƒ…[B
+        // ã‚¹ã‚±ãƒ«ãƒˆãƒ³ãƒ“ãƒ¥ãƒ¼ã€‚
         ::CheckMenuRadioItem(hMenu, ID_VIEW_NORMAL_VIEW, ID_VIEW_SKELETON_VIEW,
                              ID_VIEW_SKELETON_VIEW, MF_BYCOMMAND);
         break;
     }
 
-    // s‚Æ—ñ‚Ìíœ‚Æ’Ç‰ÁB
+    // è¡Œã¨åˆ—ã®å‰Šé™¤ã¨è¿½åŠ ã€‚
     if (xg_bSolved || xg_nRows - 1 < XG_MIN_SIZE) {
         ::DeleteMenu(hMenu, ID_DELETE_ROW, MF_BYCOMMAND);
     }
@@ -4978,7 +4978,7 @@ void __fastcall MainWnd_OnInitMenu(HWND /*hwnd*/, HMENU hMenu)
     }
 }
 
-// ƒ}ƒEƒX‚Ì¶ƒ{ƒ^ƒ“‚ª—£‚³‚ê‚½B
+// ãƒã‚¦ã‚¹ã®å·¦ãƒœã‚¿ãƒ³ãŒé›¢ã•ã‚ŒãŸã€‚
 void __fastcall MainWnd_OnLButtonUp(HWND hwnd, int x, int y, UINT /*keyFlags*/)
 {
     int i, j;
@@ -4986,35 +4986,35 @@ void __fastcall MainWnd_OnLButtonUp(HWND hwnd, int x, int y, UINT /*keyFlags*/)
     POINT pt;
     INT nCellSize = xg_nCellSize * xg_nZoomRate / 100;
 
-    // ¶ƒ{ƒ^ƒ“‚ª—£‚³‚ê‚½ˆÊ’u‚ğ‹‚ß‚éB
+    // å·¦ãƒœã‚¿ãƒ³ãŒé›¢ã•ã‚ŒãŸä½ç½®ã‚’æ±‚ã‚ã‚‹ã€‚
     pt.x = x + XgGetHScrollPos();
     pt.y = y + XgGetVScrollPos();
 
-    // ƒc[ƒ‹ƒo[‚ª•\¦‚³‚ê‚Ä‚¢‚½‚çAˆÊ’u‚ğ•â³‚·‚éB
+    // ãƒ„ãƒ¼ãƒ«ãƒãƒ¼ãŒè¡¨ç¤ºã•ã‚Œã¦ã„ãŸã‚‰ã€ä½ç½®ã‚’è£œæ­£ã™ã‚‹ã€‚
     if (::IsWindowVisible(xg_hToolBar)) {
         ::GetWindowRect(xg_hToolBar, &rc);
         pt.y -= (rc.bottom - rc.top);
     }
 
-    // ‚»‚ê‚¼‚ê‚Ìƒ}ƒX‚É‚Â‚¢‚Ä’²‚×‚éB
+    // ãã‚Œãã‚Œã®ãƒã‚¹ã«ã¤ã„ã¦èª¿ã¹ã‚‹ã€‚
     for (i = 0; i < xg_nRows; i++) {
         for (j = 0; j < xg_nCols; j++) {
-            // ƒ}ƒX‚Ì‹éŒ`‚ğ‹‚ß‚éB
+            // ãƒã‚¹ã®çŸ©å½¢ã‚’æ±‚ã‚ã‚‹ã€‚
             ::SetRect(&rc,
                 static_cast<int>(xg_nMargin + j * nCellSize),
                 static_cast<int>(xg_nMargin + i * nCellSize),
                 static_cast<int>(xg_nMargin + (j + 1) * nCellSize),
                 static_cast<int>(xg_nMargin + (i + 1) * nCellSize));
 
-            // ƒ}ƒX‚Ì’†‚©H
+            // ãƒã‚¹ã®ä¸­ã‹ï¼Ÿ
             if (::PtInRect(&rc, pt)) {
-                // ƒLƒƒƒŒƒbƒg‚ğˆÚ“®‚µ‚ÄAƒCƒ[ƒW‚ğXV‚·‚éB
+                // ã‚­ãƒ£ãƒ¬ãƒƒãƒˆã‚’ç§»å‹•ã—ã¦ã€ã‚¤ãƒ¡ãƒ¼ã‚¸ã‚’æ›´æ–°ã™ã‚‹ã€‚
                 xg_caret_pos.m_i = i;
                 xg_caret_pos.m_j = j;
                 XgEnsureCaretVisible(hwnd);
                 XgUpdateStatusBar(hwnd);
 
-                // ƒCƒ[ƒW‚ğXV‚·‚éB
+                // ã‚¤ãƒ¡ãƒ¼ã‚¸ã‚’æ›´æ–°ã™ã‚‹ã€‚
                 XgUpdateImage(hwnd);
                 return;
             }
@@ -5022,7 +5022,7 @@ void __fastcall MainWnd_OnLButtonUp(HWND hwnd, int x, int y, UINT /*keyFlags*/)
     }
 }
 
-// ƒ_ƒuƒ‹ƒNƒŠƒbƒN‚³‚ê‚½B
+// ãƒ€ãƒ–ãƒ«ã‚¯ãƒªãƒƒã‚¯ã•ã‚ŒãŸã€‚
 void __fastcall MainWnd_OnLButtonDown(HWND hwnd, bool fDoubleClick, int x, int y, UINT /*keyFlags*/)
 {
     int i, j;
@@ -5030,41 +5030,41 @@ void __fastcall MainWnd_OnLButtonDown(HWND hwnd, bool fDoubleClick, int x, int y
     POINT pt;
     INT nCellSize = xg_nCellSize * xg_nZoomRate / 100;
 
-    // ƒ_ƒuƒ‹ƒNƒŠƒbƒN‚Í–³‹B
+    // ãƒ€ãƒ–ãƒ«ã‚¯ãƒªãƒƒã‚¯ã¯ç„¡è¦–ã€‚
     if (!fDoubleClick)
         return;
 
-    // ¶ƒ{ƒ^ƒ“‚ª—£‚³‚ê‚½ˆÊ’u‚ğ‹‚ß‚éB
+    // å·¦ãƒœã‚¿ãƒ³ãŒé›¢ã•ã‚ŒãŸä½ç½®ã‚’æ±‚ã‚ã‚‹ã€‚
     pt.x = x + XgGetHScrollPos();
     pt.y = y + XgGetVScrollPos();
 
-    // ƒc[ƒ‹ƒo[‚ª•\¦‚³‚ê‚Ä‚¢‚½‚çAˆÊ’u‚ğ•â³‚·‚éB
+    // ãƒ„ãƒ¼ãƒ«ãƒãƒ¼ãŒè¡¨ç¤ºã•ã‚Œã¦ã„ãŸã‚‰ã€ä½ç½®ã‚’è£œæ­£ã™ã‚‹ã€‚
     if (::IsWindowVisible(xg_hToolBar)) {
         ::GetWindowRect(xg_hToolBar, &rc);
         pt.y -= (rc.bottom - rc.top);
     }
 
-    // ‚»‚ê‚¼‚ê‚Ìƒ}ƒX‚É‚Â‚¢‚Ä’²‚×‚éB
+    // ãã‚Œãã‚Œã®ãƒã‚¹ã«ã¤ã„ã¦èª¿ã¹ã‚‹ã€‚
     for (i = 0; i < xg_nRows; i++) {
         for (j = 0; j < xg_nCols; j++) {
-            // ƒ}ƒX‚Ì‹éŒ`‚ğ‹‚ß‚éB
+            // ãƒã‚¹ã®çŸ©å½¢ã‚’æ±‚ã‚ã‚‹ã€‚
             ::SetRect(&rc,
                 static_cast<int>(xg_nMargin + j * nCellSize),
                 static_cast<int>(xg_nMargin + i * nCellSize),
                 static_cast<int>(xg_nMargin + (j + 1) * nCellSize),
                 static_cast<int>(xg_nMargin + (i + 1) * nCellSize));
 
-            // ƒ}ƒX‚Ì’†‚©H
+            // ãƒã‚¹ã®ä¸­ã‹ï¼Ÿ
             if (::PtInRect(&rc, pt)) {
-                // ƒLƒƒƒŒƒbƒg‚ğˆÚ“®‚µ‚ÄAƒCƒ[ƒW‚ğXV‚·‚éB
+                // ã‚­ãƒ£ãƒ¬ãƒƒãƒˆã‚’ç§»å‹•ã—ã¦ã€ã‚¤ãƒ¡ãƒ¼ã‚¸ã‚’æ›´æ–°ã™ã‚‹ã€‚
                 xg_caret_pos.m_i = i;
                 xg_caret_pos.m_j = j;
                 XgEnsureCaretVisible(hwnd);
                 XgUpdateStatusBar(hwnd);
 
-                // ƒ}[ƒN‚³‚ê‚Ä‚¢‚È‚¢‚©H
+                // ãƒãƒ¼ã‚¯ã•ã‚Œã¦ã„ãªã„ã‹ï¼Ÿ
                 if (XgGetMarked(i, j) == -1) {
-                    // ƒ}[ƒN‚³‚ê‚Ä‚¢‚È‚¢ƒ}ƒXBƒ}[ƒN‚ğƒZƒbƒg‚·‚éB
+                    // ãƒãƒ¼ã‚¯ã•ã‚Œã¦ã„ãªã„ãƒã‚¹ã€‚ãƒãƒ¼ã‚¯ã‚’ã‚»ãƒƒãƒˆã™ã‚‹ã€‚
                     XG_Board *pxw;
 
                     if (xg_bSolved && xg_bShowAnswer)
@@ -5077,11 +5077,11 @@ void __fastcall MainWnd_OnLButtonDown(HWND hwnd, bool fDoubleClick, int x, int y
                     else
                         ::MessageBeep(0xFFFFFFFF);
                 } else {
-                    // ƒ}[ƒN‚ªƒZƒbƒg‚³‚ê‚Ä‚¢‚éƒ}ƒXBƒ}[ƒN‚ğ‰ğœ‚·‚éB
+                    // ãƒãƒ¼ã‚¯ãŒã‚»ãƒƒãƒˆã•ã‚Œã¦ã„ã‚‹ãƒã‚¹ã€‚ãƒãƒ¼ã‚¯ã‚’è§£é™¤ã™ã‚‹ã€‚
                     XgDeleteMark(i, j);
                 }
 
-                // ƒCƒ[ƒW‚ğXV‚·‚éB
+                // ã‚¤ãƒ¡ãƒ¼ã‚¸ã‚’æ›´æ–°ã™ã‚‹ã€‚
                 XgUpdateImage(hwnd);
                 return;
             }
@@ -5089,20 +5089,20 @@ void __fastcall MainWnd_OnLButtonDown(HWND hwnd, bool fDoubleClick, int x, int y
     }
 }
 
-// ƒXƒe[ƒ^ƒXƒo[‚ğXV‚·‚éB
+// ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹ãƒãƒ¼ã‚’æ›´æ–°ã™ã‚‹ã€‚
 void __fastcall XgUpdateStatusBar(HWND hwnd)
 {
-    // ƒNƒ‰ƒCƒAƒ“ƒg—Ìˆæ‚ğæ“¾‚·‚éB
+    // ã‚¯ãƒ©ã‚¤ã‚¢ãƒ³ãƒˆé ˜åŸŸã‚’å–å¾—ã™ã‚‹ã€‚
     RECT rc;
     GetClientRect(hwnd, &rc);
 
-    // ƒp[ƒc‚ÌƒTƒCƒY‚ğŒˆ’è‚·‚éB
+    // ãƒ‘ãƒ¼ãƒ„ã®ã‚µã‚¤ã‚ºã‚’æ±ºå®šã™ã‚‹ã€‚
     INT anWidth[] = { rc.right - 200, rc.right - 100, rc.right };
 
-    // ƒXƒe[ƒ^ƒXƒo[‚ğƒp[ƒc‚É•ª‚¯‚éB
+    // ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹ãƒãƒ¼ã‚’ãƒ‘ãƒ¼ãƒ„ã«åˆ†ã‘ã‚‹ã€‚
     SendMessageW(xg_hStatusBar, SB_SETPARTS, 3, (LPARAM)anWidth);
 
-    // ó‘Ô•¶š—ñ‚ğİ’èB
+    // çŠ¶æ…‹æ–‡å­—åˆ—ã‚’è¨­å®šã€‚
     std::wstring str;
     if (xg_bTateInput) {
         str = XgLoadStringDx1(IDS_VINPUT3);
@@ -5126,32 +5126,32 @@ void __fastcall XgUpdateStatusBar(HWND hwnd)
         str += XgLoadStringDx1(IDS_CHARFEED);
     }
 
-    // ó‘Ô‚ğ•\¦B
+    // çŠ¶æ…‹ã‚’è¡¨ç¤ºã€‚
     SendMessageW(xg_hStatusBar, SB_SETTEXT, 0, (LPARAM)str.c_str());
 
-    // ƒLƒƒƒŒƒbƒgˆÊ’uB
+    // ã‚­ãƒ£ãƒ¬ãƒƒãƒˆä½ç½®ã€‚
     WCHAR szText[64];
     StringCbPrintf(szText, sizeof(szText), L"(%u, %u)", xg_caret_pos.m_j + 1, xg_caret_pos.m_i + 1);
     SendMessageW(xg_hStatusBar, SB_SETTEXT, 1, (LPARAM)szText);
 
-    // ”Õ‚ÌƒTƒCƒYB
+    // ç›¤ã®ã‚µã‚¤ã‚ºã€‚
     StringCbPrintf(szText, sizeof(szText), L"%u x %u", xg_nCols, xg_nRows);
     SendMessageW(xg_hStatusBar, SB_SETTEXT, 2, (LPARAM)szText);
 }
 
-// ƒTƒCƒY‚ª•ÏX‚³‚ê‚½B
+// ã‚µã‚¤ã‚ºãŒå¤‰æ›´ã•ã‚ŒãŸã€‚
 void __fastcall MainWnd_OnSize(HWND hwnd, UINT /*state*/, int /*cx*/, int /*cy*/)
 {
     int x, y;
 
-    // ƒc[ƒ‹ƒo[‚ªì¬‚³‚ê‚Ä‚¢‚È‚¯‚ê‚ÎA‰Šú‰»‘O‚È‚Ì‚ÅA–³‹B
+    // ãƒ„ãƒ¼ãƒ«ãƒãƒ¼ãŒä½œæˆã•ã‚Œã¦ã„ãªã‘ã‚Œã°ã€åˆæœŸåŒ–å‰ãªã®ã§ã€ç„¡è¦–ã€‚
     if (xg_hToolBar == NULL)
         return;
 
-    // ƒXƒe[ƒ^ƒXƒo[‚Ì‚‚³‚ğæ“¾B
+    // ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹ãƒãƒ¼ã®é«˜ã•ã‚’å–å¾—ã€‚
     INT cyStatus = 0;
     if (s_bShowStatusBar) {
-        // ƒXƒe[ƒ^ƒXƒo[‚ÌˆÊ’u‚ğ©“®‚ÅC³B
+        // ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹ãƒãƒ¼ã®ä½ç½®ã‚’è‡ªå‹•ã§ä¿®æ­£ã€‚
         ::SendMessageW(xg_hStatusBar, WM_SIZE, 0, 0);
 
         MRect rcStatus;
@@ -5167,32 +5167,32 @@ void __fastcall MainWnd_OnSize(HWND hwnd, UINT /*state*/, int /*cx*/, int /*cy*/
 
     MRect rc, rcClient;
 
-    // ƒNƒ‰ƒCƒAƒ“ƒg—Ìˆæ‚ğŒvZ‚·‚éB
+    // ã‚¯ãƒ©ã‚¤ã‚¢ãƒ³ãƒˆé ˜åŸŸã‚’è¨ˆç®—ã™ã‚‹ã€‚
     ::GetClientRect(hwnd, &rcClient);
     x = rcClient.left;
     y = rcClient.top;
     INT cx = rcClient.Width(), cy = rcClient.Height();
 
-    // ƒc[ƒ‹ƒo[‚Ì‚‚³‚ğæ“¾B
+    // ãƒ„ãƒ¼ãƒ«ãƒãƒ¼ã®é«˜ã•ã‚’å–å¾—ã€‚
     INT cyToolBar = 0;
     if (s_bShowToolBar) {
-        // ƒc[ƒ‹ƒo[‚ÌˆÊ’u‚ğ©“®‚ÅC³B
+        // ãƒ„ãƒ¼ãƒ«ãƒãƒ¼ã®ä½ç½®ã‚’è‡ªå‹•ã§ä¿®æ­£ã€‚
         ::SendMessageW(xg_hToolBar, WM_SIZE, 0, 0);
 
         ::GetWindowRect(xg_hToolBar, &rc);
         cyToolBar = rc.Height();
     }
 
-    // ƒc[ƒ‹ƒo[‚ª•\¦‚³‚ê‚Ä‚¢‚½‚çAˆÊ’u‚ğ•â³‚·‚éB
+    // ãƒ„ãƒ¼ãƒ«ãƒãƒ¼ãŒè¡¨ç¤ºã•ã‚Œã¦ã„ãŸã‚‰ã€ä½ç½®ã‚’è£œæ­£ã™ã‚‹ã€‚
     y += cyToolBar;
     cy -= cyToolBar;
     cy -= cyStatus;
 
-    // ƒXƒNƒ[ƒ‹ƒo[‚ÌƒTƒCƒY‚ğæ“¾‚·‚éB
+    // ã‚¹ã‚¯ãƒ­ãƒ¼ãƒ«ãƒãƒ¼ã®ã‚µã‚¤ã‚ºã‚’å–å¾—ã™ã‚‹ã€‚
     int cyHScrollBar = ::GetSystemMetrics(SM_CYHSCROLL);
     int cxVScrollBar = ::GetSystemMetrics(SM_CXVSCROLL);
 
-    // •¡”‚ÌƒEƒBƒ“ƒhƒE‚ÌˆÊ’u‚ÆƒTƒCƒY‚ğ‚¢‚Á‚Ø‚ñ‚É•ÏX‚·‚éB
+    // è¤‡æ•°ã®ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®ä½ç½®ã¨ã‚µã‚¤ã‚ºã‚’ã„ã£ãºã‚“ã«å¤‰æ›´ã™ã‚‹ã€‚
     HDWP hDwp = ::BeginDeferWindowPos(3);
     if (hDwp) {
         ::DeferWindowPos(hDwp, xg_hHScrollBar, NULL,
@@ -5212,21 +5212,21 @@ void __fastcall MainWnd_OnSize(HWND hwnd, UINT /*state*/, int /*cx*/, int /*cy*/
         ::EndDeferWindowPos(hDwp);
     }
 
-    // Ä•`‰æ‚·‚éB
+    // å†æç”»ã™ã‚‹ã€‚
     ::InvalidateRect(xg_hToolBar, NULL, TRUE);
     ::InvalidateRect(xg_hStatusBar, NULL, TRUE);
     ::InvalidateRect(xg_hHScrollBar, NULL, TRUE);
     ::InvalidateRect(xg_hVScrollBar, NULL, TRUE);
     ::InvalidateRect(xg_hSizeGrip, NULL, TRUE);
 
-    // ƒXƒNƒ[ƒ‹ˆÊ’u‚ğæ“¾‚µAƒXƒNƒ[ƒ‹î•ñ‚ğXV‚·‚éB
+    // ã‚¹ã‚¯ãƒ­ãƒ¼ãƒ«ä½ç½®ã‚’å–å¾—ã—ã€ã‚¹ã‚¯ãƒ­ãƒ¼ãƒ«æƒ…å ±ã‚’æ›´æ–°ã™ã‚‹ã€‚
     x = XgGetHScrollPos();
     y = XgGetVScrollPos();
     XgUpdateImage(hwnd, x, y);
 
     if (!IsZoomed(hwnd) && !IsIconic(hwnd))
     {
-        // İ’è‚Ì•Û‘¶‚Ì‚½‚ß‚ÉAƒEƒBƒ“ƒhƒE‚Ì’Êíó‘Ô‚Ì‚Æ‚«‚Ì•‚Æ‚‚³‚ğŠi”[‚µ‚Ä‚¨‚­B
+        // è¨­å®šã®ä¿å­˜ã®ãŸã‚ã«ã€ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®é€šå¸¸çŠ¶æ…‹ã®ã¨ãã®å¹…ã¨é«˜ã•ã‚’æ ¼ç´ã—ã¦ãŠãã€‚
         WINDOWPLACEMENT wndpl;
         wndpl.length = sizeof(wndpl);
         ::GetWindowPlacement(hwnd, &wndpl);
@@ -5235,7 +5235,7 @@ void __fastcall MainWnd_OnSize(HWND hwnd, UINT /*state*/, int /*cx*/, int /*cy*/
     }
 }
 
-// ˆÊ’u‚ª•ÏX‚³‚ê‚½B
+// ä½ç½®ãŒå¤‰æ›´ã•ã‚ŒãŸã€‚
 void __fastcall MainWnd_OnMove(HWND hwnd, int /*x*/, int /*y*/)
 {
     if (!IsZoomed(hwnd) && !IsIconic(hwnd)) {
@@ -5246,10 +5246,10 @@ void __fastcall MainWnd_OnMove(HWND hwnd, int /*x*/, int /*y*/)
     }
 }
 
-// ˆê“I‚É•Û‘¶‚·‚éF‚Ìƒf[ƒ^B
+// ä¸€æ™‚çš„ã«ä¿å­˜ã™ã‚‹è‰²ã®ãƒ‡ãƒ¼ã‚¿ã€‚
 COLORREF s_rgbColors[3];
 
-// BLOCK‚ÌƒvƒŒƒrƒ…[B
+// BLOCKã®ãƒ—ãƒ¬ãƒ“ãƒ¥ãƒ¼ã€‚
 void UpdateBlockPreview(HWND hwnd)
 {
     HWND hIco1 = GetDlgItem(hwnd, ico1);
@@ -5306,36 +5306,36 @@ void UpdateBlockPreview(HWND hwnd)
     DeleteEnhMetaFile(hOldEMF);
 }
 
-// [İ’è]ƒ_ƒCƒAƒƒO‚Ì‰Šú‰»B
+// [è¨­å®š]ãƒ€ã‚¤ã‚¢ãƒ­ã‚°ã®åˆæœŸåŒ–ã€‚
 BOOL SettingsDlg_OnInitDialog(HWND hwnd)
 {
-    // F‚ğˆê“I‚Èƒf[ƒ^‚Æ‚µ‚ÄƒZƒbƒg‚·‚éB
+    // è‰²ã‚’ä¸€æ™‚çš„ãªãƒ‡ãƒ¼ã‚¿ã¨ã—ã¦ã‚»ãƒƒãƒˆã™ã‚‹ã€‚
     s_rgbColors[0] = xg_rgbWhiteCellColor;
     s_rgbColors[1] = xg_rgbBlackCellColor;
     s_rgbColors[2] = xg_rgbMarkedCellColor;
 
-    // ‰æ–Ê‚Ì’†‰›‚ÉŠñ‚¹‚éB
+    // ç”»é¢ã®ä¸­å¤®ã«å¯„ã›ã‚‹ã€‚
     XgCenterDialog(hwnd);
 
-    // ƒtƒHƒ“ƒg–¼‚ğŠi”[‚·‚éB
+    // ãƒ•ã‚©ãƒ³ãƒˆåã‚’æ ¼ç´ã™ã‚‹ã€‚
     ::SetDlgItemTextW(hwnd, edt1, xg_szCellFont);
     ::SetDlgItemTextW(hwnd, edt2, xg_szSmallFont);
     ::SetDlgItemTextW(hwnd, edt3, xg_szUIFont);
 
-    // ƒc[ƒ‹ƒo[‚ğ•\¦‚·‚é‚©H
+    // ãƒ„ãƒ¼ãƒ«ãƒãƒ¼ã‚’è¡¨ç¤ºã™ã‚‹ã‹ï¼Ÿ
     ::CheckDlgButton(hwnd, chx1,
         (s_bShowToolBar ? BST_CHECKED : BST_UNCHECKED));
-    // ‘¾˜g‚ğ‚Â‚¯‚é‚©H
+    // å¤ªæ ã‚’ã¤ã‘ã‚‹ã‹ï¼Ÿ
     ::CheckDlgButton(hwnd, chx2,
         (xg_bAddThickFrame ? BST_CHECKED : BST_UNCHECKED));
-    // “ñdƒ}ƒX‚É˜g‚ğ‚Â‚¯‚é‚©H
+    // äºŒé‡ãƒã‚¹ã«æ ã‚’ã¤ã‘ã‚‹ã‹ï¼Ÿ
     ::CheckDlgButton(hwnd, chx3,
         (xg_bDrawFrameForMarkedCell ? BST_CHECKED : BST_UNCHECKED));
 
-    // •¶š‚Ì‘å‚«‚³B
+    // æ–‡å­—ã®å¤§ãã•ã€‚
     ::SetDlgItemInt(hwnd, edt4, xg_nCellCharPercents, FALSE);
     ::SetDlgItemInt(hwnd, edt5, xg_nSmallCharPercents, FALSE);
-    // ‘å‚«‚³‚Ì”ÍˆÍ‚ğw’èB
+    // å¤§ãã•ã®ç¯„å›²ã‚’æŒ‡å®šã€‚
     ::SendDlgItemMessage(hwnd, scr1, UDM_SETRANGE, 0, MAKELPARAM(100, 3));
     ::SendDlgItemMessage(hwnd, scr2, UDM_SETRANGE, 0, MAKELPARAM(100, 3));
 
@@ -5374,10 +5374,10 @@ BOOL SettingsDlg_OnInitDialog(HWND hwnd)
         FindClose(hFind);
     }
 
-    // ƒ\[ƒg‚·‚éB
+    // ã‚½ãƒ¼ãƒˆã™ã‚‹ã€‚
     std::sort(items.begin(), items.end());
 
-    // ƒRƒ“ƒ{ƒ{ƒbƒNƒX‚É€–Ú‚ğ’Ç‰Á‚·‚éB
+    // ã‚³ãƒ³ãƒœãƒœãƒƒã‚¯ã‚¹ã«é …ç›®ã‚’è¿½åŠ ã™ã‚‹ã€‚
     HWND hCmb1 = GetDlgItem(hwnd, cmb1);
     ComboBox_AddString(hCmb1, XgLoadStringDx1(IDS_NONE));
     for (auto& item : items)
@@ -5387,19 +5387,19 @@ BOOL SettingsDlg_OnInitDialog(HWND hwnd)
 
     if (xg_strBlackCellImage.empty())
     {
-        // •ƒ}ƒX‰æ‘œ‚È‚µB
+        // é»’ãƒã‚¹ç”»åƒãªã—ã€‚
         ComboBox_SetText(hCmb1, XgLoadStringDx1(IDS_NONE));
         ComboBox_SetCurSel(hCmb1, ComboBox_FindStringExact(hCmb1, -1, XgLoadStringDx1(IDS_NONE)));
     }
     else
     {
-        // •ƒ}ƒX‰æ‘œ‚ ‚èB
+        // é»’ãƒã‚¹ç”»åƒã‚ã‚Šã€‚
         LPCWSTR psz = PathFindFileName(xg_strBlackCellImage.c_str());
         ComboBox_SetText(hCmb1, psz);
         ComboBox_SetCurSel(hCmb1, ComboBox_FindStringExact(hCmb1, -1, psz));
     }
 
-    // “ñdƒ}ƒX•¶šB
+    // äºŒé‡ãƒã‚¹æ–‡å­—ã€‚
     HWND hCmb2 = GetDlgItem(hwnd, cmb2);
     for (INT i = IDS_DBLFRAME_LETTERS_1; i <= IDS_DBLFRAME_LETTERS_6; ++i) {
         ComboBox_AddString(hCmb2, XgLoadStringDx1(i));
@@ -5411,10 +5411,10 @@ BOOL SettingsDlg_OnInitDialog(HWND hwnd)
     return TRUE;
 }
 
-// [İ’è]ƒ_ƒCƒAƒƒO‚Å[OK]ƒ{ƒ^ƒ“‚ğ‰Ÿ‚³‚ê‚½B
+// [è¨­å®š]ãƒ€ã‚¤ã‚¢ãƒ­ã‚°ã§[OK]ãƒœã‚¿ãƒ³ã‚’æŠ¼ã•ã‚ŒãŸã€‚
 void SettingsDlg_OnOK(HWND hwnd)
 {
-    // «‘ƒtƒ@ƒCƒ‹‚Ì•Û‘¶ƒ‚[ƒh‚ğæ“¾‚·‚éB
+    // è¾æ›¸ãƒ•ã‚¡ã‚¤ãƒ«ã®ä¿å­˜ãƒ¢ãƒ¼ãƒ‰ã‚’å–å¾—ã™ã‚‹ã€‚
     //s_nDictSaveMode = 
     //    static_cast<int>(::SendDlgItemMessageW(hwnd, cmb1, CB_GETCURSEL, 0, 0));
     s_nDictSaveMode = 2;
@@ -5422,7 +5422,7 @@ void SettingsDlg_OnOK(HWND hwnd)
     INT nValue1, nValue2;
     BOOL bTranslated;
 
-    // ƒZƒ‹‚Ì•¶š‚Ì‘å‚«‚³B
+    // ã‚»ãƒ«ã®æ–‡å­—ã®å¤§ãã•ã€‚
     bTranslated = FALSE;
     nValue1 = GetDlgItemInt(hwnd, edt4, &bTranslated, FALSE);
     if (bTranslated && 0 <= nValue1 && nValue1 <= 100)
@@ -5431,7 +5431,7 @@ void SettingsDlg_OnOK(HWND hwnd)
     }
     else
     {
-        // ƒGƒ‰[B
+        // ã‚¨ãƒ©ãƒ¼ã€‚
         HWND hEdt4 = GetDlgItem(hwnd, edt4);
         Edit_SetSel(hEdt4, 0, -1);
         SetFocus(hEdt4);
@@ -5439,7 +5439,7 @@ void SettingsDlg_OnOK(HWND hwnd)
         return;
     }
 
-    // ¬‚³‚¢•¶š‚Ì‘å‚«‚³B
+    // å°ã•ã„æ–‡å­—ã®å¤§ãã•ã€‚
     bTranslated = FALSE;
     nValue2 = GetDlgItemInt(hwnd, edt5, &bTranslated, FALSE);
     if (bTranslated && 0 <= nValue2 && nValue2 <= 100)
@@ -5448,7 +5448,7 @@ void SettingsDlg_OnOK(HWND hwnd)
     }
     else
     {
-        // ƒGƒ‰[B
+        // ã‚¨ãƒ©ãƒ¼ã€‚
         HWND hEdt5 = GetDlgItem(hwnd, edt5);
         Edit_SetSel(hEdt5, 0, -1);
         SetFocus(hEdt5);
@@ -5456,40 +5456,40 @@ void SettingsDlg_OnOK(HWND hwnd)
         return;
     }
 
-    // •¶š‚Ì‘å‚«‚³‚Ìİ’èB
+    // æ–‡å­—ã®å¤§ãã•ã®è¨­å®šã€‚
     xg_nCellCharPercents = nValue1;
     xg_nSmallCharPercents = nValue2;
 
-    // ƒtƒHƒ“ƒg–¼‚ğæ“¾‚·‚éB
+    // ãƒ•ã‚©ãƒ³ãƒˆåã‚’å–å¾—ã™ã‚‹ã€‚
     WCHAR szName[LF_FACESIZE];
 
-    // ƒZƒ‹ƒtƒHƒ“ƒgB
+    // ã‚»ãƒ«ãƒ•ã‚©ãƒ³ãƒˆã€‚
     ::GetDlgItemTextW(hwnd, edt1, szName, ARRAYSIZE(szName));
     StringCbCopy(xg_szCellFont, sizeof(xg_szCellFont), szName);
 
-    // ¬‚³‚¢•¶š‚ÌƒtƒHƒ“ƒgB
+    // å°ã•ã„æ–‡å­—ã®ãƒ•ã‚©ãƒ³ãƒˆã€‚
     ::GetDlgItemTextW(hwnd, edt2, szName, ARRAYSIZE(szName));
     StringCbCopy(xg_szSmallFont, sizeof(xg_szSmallFont), szName);
 
-    // UIƒtƒHƒ“ƒgB
+    // UIãƒ•ã‚©ãƒ³ãƒˆã€‚
     ::GetDlgItemTextW(hwnd, edt3, szName, ARRAYSIZE(szName));
     StringCbCopy(xg_szUIFont, sizeof(xg_szUIFont), szName);
 
-    // •ƒ}ƒX‰æ‘œ‚Ì–¼‘O‚ğæ“¾B
+    // é»’ãƒã‚¹ç”»åƒã®åå‰ã‚’å–å¾—ã€‚
     HWND hCmb1 = GetDlgItem(hwnd, cmb1);
     ComboBox_GetText(hCmb1, szName, ARRAYSIZE(szName));
 
-    // •ƒ}ƒX‰æ‘œ‚Ì‰Šú‰»B
+    // é»’ãƒã‚¹ç”»åƒã®åˆæœŸåŒ–ã€‚
     xg_strBlackCellImage.clear();
     ::DeleteObject(xg_hbmBlackCell);
     xg_hbmBlackCell = NULL;
     DeleteEnhMetaFile(xg_hBlackCellEMF);
     xg_hBlackCellEMF = NULL;
 
-    // ‚à‚µ•ƒ}ƒX‰æ‘œ‚ªw’è‚³‚ê‚Ä‚¢‚ê‚Î
+    // ã‚‚ã—é»’ãƒã‚¹ç”»åƒãŒæŒ‡å®šã•ã‚Œã¦ã„ã‚Œã°
     if (szName[0])
     {
-        // ƒpƒX–¼‚ğƒZƒbƒgB
+        // ãƒ‘ã‚¹åã‚’ã‚»ãƒƒãƒˆã€‚
         WCHAR szPath[MAX_PATH];
         GetModuleFileNameW(NULL, szPath, ARRAYSIZE(szPath));
         PathRemoveFileSpec(szPath);
@@ -5498,7 +5498,7 @@ void SettingsDlg_OnOK(HWND hwnd)
 
         if (PathFileExists(szPath))
         {
-            // ƒtƒ@ƒCƒ‹‚ª‘¶İ‚·‚ê‚ÎA‰æ‘œ‚ğ“Ç‚İ‚ŞB
+            // ãƒ•ã‚¡ã‚¤ãƒ«ãŒå­˜åœ¨ã™ã‚Œã°ã€ç”»åƒã‚’èª­ã¿è¾¼ã‚€ã€‚
             xg_strBlackCellImage = szPath;
             xg_hbmBlackCell = LoadBitmapFromFile(xg_strBlackCellImage.c_str());
             if (!xg_hbmBlackCell)
@@ -5508,33 +5508,33 @@ void SettingsDlg_OnOK(HWND hwnd)
         }
 
         if (!xg_hbmBlackCell && !xg_hBlackCellEMF) {
-            // ‰æ‘œ‚ª–³Œø‚È‚çAƒpƒX‚à–³Œø‰»B
+            // ç”»åƒãŒç„¡åŠ¹ãªã‚‰ã€ãƒ‘ã‚¹ã‚‚ç„¡åŠ¹åŒ–ã€‚
             xg_strBlackCellImage.clear();
         } else if (xg_nViewMode == XG_VIEW_SKELETON) {
-            // ‰æ‘œ‚ª—LŒø‚È‚çƒXƒPƒ‹ƒgƒ“ƒrƒ…[‚ğ’Êíƒrƒ…[‚É–ß‚·B
+            // ç”»åƒãŒæœ‰åŠ¹ãªã‚‰ã‚¹ã‚±ãƒ«ãƒˆãƒ³ãƒ“ãƒ¥ãƒ¼ã‚’é€šå¸¸ãƒ“ãƒ¥ãƒ¼ã«æˆ»ã™ã€‚
             xg_nViewMode = XG_VIEW_NORMAL;
         }
     }
 
-    // ƒc[ƒ‹ƒo[‚ğ•\¦‚·‚é‚©H
+    // ãƒ„ãƒ¼ãƒ«ãƒãƒ¼ã‚’è¡¨ç¤ºã™ã‚‹ã‹ï¼Ÿ
     s_bShowToolBar = (::IsDlgButtonChecked(hwnd, chx1) == BST_CHECKED);
     if (s_bShowToolBar)
         ::ShowWindow(xg_hToolBar, SW_SHOWNOACTIVATE);
     else
         ::ShowWindow(xg_hToolBar, SW_HIDE);
 
-    // ‘¾˜g‚ğ‚Â‚¯‚é‚©H
+    // å¤ªæ ã‚’ã¤ã‘ã‚‹ã‹ï¼Ÿ
     xg_bAddThickFrame = (::IsDlgButtonChecked(hwnd, chx2) == BST_CHECKED);
 
-    // F‚ğİ’è‚·‚éB
+    // è‰²ã‚’è¨­å®šã™ã‚‹ã€‚
     xg_rgbWhiteCellColor = s_rgbColors[0];
     xg_rgbBlackCellColor = s_rgbColors[1];
     xg_rgbMarkedCellColor = s_rgbColors[2];
 
-    // “ñdƒ}ƒX‚É˜g‚ğ‚Â‚¯‚é‚©H
+    // äºŒé‡ãƒã‚¹ã«æ ã‚’ã¤ã‘ã‚‹ã‹ï¼Ÿ
     xg_bDrawFrameForMarkedCell = (::IsDlgButtonChecked(hwnd, chx3) == BST_CHECKED);
 
-    // ƒŒƒCƒAƒEƒg‚ğ’²®‚·‚éB
+    // ãƒ¬ã‚¤ã‚¢ã‚¦ãƒˆã‚’èª¿æ•´ã™ã‚‹ã€‚
     ::PostMessageW(xg_hMainWnd, WM_SIZE, 0, 0);
     if (::IsWindow(xg_hHintsWnd)) {
         XgUpdateHintsData();
@@ -5542,16 +5542,16 @@ void SettingsDlg_OnOK(HWND hwnd)
         ::PostMessageW(xg_hHintsWnd, WM_SIZE, 0, 0);
     }
 
-    // “ñdƒ}ƒX•¶šB
+    // äºŒé‡ãƒã‚¹æ–‡å­—ã€‚
     WCHAR szText[MAX_PATH];
     ComboBox_GetText(GetDlgItem(hwnd, cmb2), szText, _countof(szText));
     xg_strDoubleFrameLetters = szText;
 
-    // ƒCƒ[ƒW‚ğXV‚·‚éB
+    // ã‚¤ãƒ¡ãƒ¼ã‚¸ã‚’æ›´æ–°ã™ã‚‹ã€‚
     XgUpdateImage(xg_hMainWnd);
 }
 
-// UIƒtƒHƒ“ƒg‚Ì˜_—ƒIƒuƒWƒFƒNƒg‚ğæ“¾‚·‚éB
+// UIãƒ•ã‚©ãƒ³ãƒˆã®è«–ç†ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’å–å¾—ã™ã‚‹ã€‚
 LOGFONTW *XgGetUIFont(void)
 {
     static LOGFONTW s_lf;
@@ -5583,7 +5583,7 @@ LOGFONTW *XgGetUIFont(void)
     return &s_lf;
 }
 
-// UIƒtƒHƒ“ƒg‚Ì˜_—ƒIƒuƒWƒFƒNƒg‚ğİ’è‚·‚éB
+// UIãƒ•ã‚©ãƒ³ãƒˆã®è«–ç†ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’è¨­å®šã™ã‚‹ã€‚
 void SettingsDlg_SetUIFont(HWND hwnd, const LOGFONTW *plf)
 {
     if (plf == NULL) {
@@ -5600,14 +5600,14 @@ void SettingsDlg_SetUIFont(HWND hwnd, const LOGFONTW *plf)
     ::SetDlgItemTextW(hwnd, edt3, szData);
 }
 
-// [İ’è]ƒ_ƒCƒAƒƒO‚Å[•ÏX...]ƒ{ƒ^ƒ“‚ğ‰Ÿ‚³‚ê‚½B
+// [è¨­å®š]ãƒ€ã‚¤ã‚¢ãƒ­ã‚°ã§[å¤‰æ›´...]ãƒœã‚¿ãƒ³ã‚’æŠ¼ã•ã‚ŒãŸã€‚
 void SettingsDlg_OnChange(HWND hwnd, int i)
 {
     LOGFONTW lf;
     ZeroMemory(&lf, sizeof(lf));
     lf.lfQuality = ANTIALIASED_QUALITY;
 
-    // ƒ†[ƒU[‚ÉƒtƒHƒ“ƒg–¼‚ğ–â‚¢‡‚í‚¹‚éB
+    // ãƒ¦ãƒ¼ã‚¶ãƒ¼ã«ãƒ•ã‚©ãƒ³ãƒˆåã‚’å•ã„åˆã‚ã›ã‚‹ã€‚
     CHOOSEFONTW cf;
     ZeroMemory(&cf, sizeof(cf));
     cf.lStructSize = sizeof(cf);
@@ -5622,7 +5622,7 @@ void SettingsDlg_OnChange(HWND hwnd, int i)
                    CF_INITTOLOGFONTSTRUCT | CF_SCREENFONTS;
         StringCbCopy(lf.lfFaceName, sizeof(lf.lfFaceName), xg_szCellFont);
         if (::ChooseFontW(&cf)) {
-            // æ“¾‚µ‚½ƒtƒHƒ“ƒg‚ğƒ_ƒCƒAƒƒO‚ÖŠi”[‚·‚éB
+            // å–å¾—ã—ãŸãƒ•ã‚©ãƒ³ãƒˆã‚’ãƒ€ã‚¤ã‚¢ãƒ­ã‚°ã¸æ ¼ç´ã™ã‚‹ã€‚
             ::SetDlgItemTextW(hwnd, edt1, lf.lfFaceName);
         }
         break;
@@ -5632,7 +5632,7 @@ void SettingsDlg_OnChange(HWND hwnd, int i)
                    CF_INITTOLOGFONTSTRUCT | CF_SCREENFONTS;
         StringCbCopy(lf.lfFaceName, sizeof(lf.lfFaceName), xg_szSmallFont);
         if (::ChooseFontW(&cf)) {
-            // æ“¾‚µ‚½ƒtƒHƒ“ƒg‚ğƒ_ƒCƒAƒƒO‚ÖŠi”[‚·‚éB
+            // å–å¾—ã—ãŸãƒ•ã‚©ãƒ³ãƒˆã‚’ãƒ€ã‚¤ã‚¢ãƒ­ã‚°ã¸æ ¼ç´ã™ã‚‹ã€‚
             ::SetDlgItemTextW(hwnd, edt2, lf.lfFaceName);
         }
         break;
@@ -5644,14 +5644,14 @@ void SettingsDlg_OnChange(HWND hwnd, int i)
         cf.nSizeMin = 8;
         cf.nSizeMax = 20;
         if (::ChooseFontW(&cf)) {
-            // æ“¾‚µ‚½ƒtƒHƒ“ƒg‚ğƒ_ƒCƒAƒƒO‚ÖŠi”[‚·‚éB
+            // å–å¾—ã—ãŸãƒ•ã‚©ãƒ³ãƒˆã‚’ãƒ€ã‚¤ã‚¢ãƒ­ã‚°ã¸æ ¼ç´ã™ã‚‹ã€‚
             SettingsDlg_SetUIFont(hwnd, cf.lpLogFont);
         }
         break;
     }
 }
 
-// [İ’è]ƒ_ƒCƒAƒƒO‚Å[ƒŠƒZƒbƒg]ƒ{ƒ^ƒ“‚ğ‰Ÿ‚³‚ê‚½B
+// [è¨­å®š]ãƒ€ã‚¤ã‚¢ãƒ­ã‚°ã§[ãƒªã‚»ãƒƒãƒˆ]ãƒœã‚¿ãƒ³ã‚’æŠ¼ã•ã‚ŒãŸã€‚
 void SettingsDlg_OnReset(HWND hwnd, int i)
 {
     switch (i) {
@@ -5669,7 +5669,7 @@ void SettingsDlg_OnReset(HWND hwnd, int i)
     }
 }
 
-// [İ’è]ƒ_ƒCƒAƒƒO‚ÌƒI[ƒi[ƒhƒ[B
+// [è¨­å®š]ãƒ€ã‚¤ã‚¢ãƒ­ã‚°ã®ã‚ªãƒ¼ãƒŠãƒ¼ãƒ‰ãƒ­ãƒ¼ã€‚
 void SettingDlg_OnDrawItem(HWND hwnd, WPARAM wParam, LPARAM lParam)
 {
     LPDRAWITEMSTRUCT pdis = reinterpret_cast<LPDRAWITEMSTRUCT>(lParam);
@@ -5735,7 +5735,7 @@ COLORREF s_rgbColorTable[] = {
     RGB(0xCC, 0, 0),
 };
 
-// F‚ğw’è‚·‚éB
+// è‰²ã‚’æŒ‡å®šã™ã‚‹ã€‚
 void SettingsDlg_OnSetColor(HWND hwnd, int nIndex)
 {
     COLORREF clr;
@@ -5787,7 +5787,7 @@ void SettingsDlg_OnSetColor(HWND hwnd, int nIndex)
     }
 }
 
-// [İ’è]ƒ_ƒCƒAƒƒO‚Ìƒ_ƒCƒAƒƒO ƒvƒƒV[ƒWƒƒ[B
+// [è¨­å®š]ãƒ€ã‚¤ã‚¢ãƒ­ã‚°ã®ãƒ€ã‚¤ã‚¢ãƒ­ã‚° ãƒ—ãƒ­ã‚·ãƒ¼ã‚¸ãƒ£ãƒ¼ã€‚
 INT_PTR CALLBACK
 XgSettingsDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
@@ -5865,14 +5865,14 @@ XgSettingsDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
     return 0;
 }
 
-// İ’èB
+// è¨­å®šã€‚
 void MainWnd_OnSettings(HWND hwnd)
 {
     XgDestroyCandsWnd();
     ::DialogBoxW(xg_hInstance, MAKEINTRESOURCE(IDD_CONFIG), hwnd, XgSettingsDlgProc);
 }
 
-// ƒe[ƒ}‚ª•ÏX‚³‚ê‚½B
+// ãƒ†ãƒ¼ãƒãŒå¤‰æ›´ã•ã‚ŒãŸã€‚
 void XgUpdateTheme(HWND hwnd)
 {
     std::unordered_set<std::wstring> priority, forbidden;
@@ -5900,11 +5900,11 @@ void XgUpdateTheme(HWND hwnd)
             break;
         }
     }
-    // ƒƒjƒ…[ƒo[‚ğÄ•`‰æB
+    // ãƒ¡ãƒ‹ãƒ¥ãƒ¼ãƒãƒ¼ã‚’å†æç”»ã€‚
     ::DrawMenuBar(hwnd);
 }
 
-// ƒ‹[ƒ‹‚ª•ÏX‚³‚ê‚½B
+// ãƒ«ãƒ¼ãƒ«ãŒå¤‰æ›´ã•ã‚ŒãŸã€‚
 void XgUpdateRules(HWND hwnd)
 {
     HMENU hMenu = ::GetMenu(hwnd);
@@ -5935,69 +5935,68 @@ void XgUpdateRules(HWND hwnd)
             break;
         }
     }
-    // ƒƒjƒ…[ƒo[‚ğÄ•`‰æB
+    // ãƒ¡ãƒ‹ãƒ¥ãƒ¼ãƒãƒ¼ã‚’å†æç”»ã€‚
     ::DrawMenuBar(hwnd);
 }
 
-// İ’è‚ğÁ‹‚·‚éB
+// è¨­å®šã‚’æ¶ˆå»ã™ã‚‹ã€‚
 void MainWnd_OnEraseSettings(HWND hwnd)
 {
-    // Œó•âƒEƒBƒ“ƒhƒE‚ğ”jŠü‚·‚éB
+    // å€™è£œã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚’ç ´æ£„ã™ã‚‹ã€‚
     XgDestroyCandsWnd();
-    // ƒqƒ“ƒgƒEƒBƒ“ƒhƒE‚ğ”jŠü‚·‚éB
+    // ãƒ’ãƒ³ãƒˆã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚’ç ´æ£„ã™ã‚‹ã€‚
     XgDestroyHintsWnd();
 
-    // Á‹‚·‚é‚Ì‚©Šm”FB
+    // æ¶ˆå»ã™ã‚‹ã®ã‹ç¢ºèªã€‚
     if (XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_QUERYERASESETTINGS), XgLoadStringDx2(IDS_APPNAME),
                             MB_ICONWARNING | MB_YESNO) != IDYES)
     {
         return;
     }
 
-    // İ’è‚ğÁ‹‚·‚éB
+    // è¨­å®šã‚’æ¶ˆå»ã™ã‚‹ã€‚
     bool bSuccess = XgEraseSettings();
 
-    // ‰Šú‰»‚·‚éB
+    // åˆæœŸåŒ–ã™ã‚‹ã€‚
     XgLoadSettings();
     XgUpdateRules(hwnd);
-    // «‘ƒtƒ@ƒCƒ‹‚Ì–¼‘O‚ğ“Ç‚İ‚ŞB
+    // è¾æ›¸ãƒ•ã‚¡ã‚¤ãƒ«ã®åå‰ã‚’èª­ã¿è¾¼ã‚€ã€‚
     XgLoadDictsAll();
-    // ƒLƒƒƒŒƒbƒgˆÊ’u‚ğ‰Šú‰»‚·‚éB
+    // ã‚­ãƒ£ãƒ¬ãƒƒãƒˆä½ç½®ã‚’åˆæœŸåŒ–ã™ã‚‹ã€‚
     xg_caret_pos.clear();
-    xg_bShowAnswer
 
-    // ƒc[ƒ‹ƒo[‚Ì•\¦‚ğØ‚è‘Ö‚¦‚éB
+    // ãƒ„ãƒ¼ãƒ«ãƒãƒ¼ã®è¡¨ç¤ºã‚’åˆ‡ã‚Šæ›¿ãˆã‚‹ã€‚
     if (s_bShowToolBar)
         ::ShowWindow(xg_hToolBar, SW_SHOWNOACTIVATE);
     else
         ::ShowWindow(xg_hToolBar, SW_HIDE);
 
-    // ƒc[ƒ‹ƒo[‚Ì•\¦‚ğØ‚è‘Ö‚¦‚éB
+    // ãƒ„ãƒ¼ãƒ«ãƒãƒ¼ã®è¡¨ç¤ºã‚’åˆ‡ã‚Šæ›¿ãˆã‚‹ã€‚
     if (s_bShowStatusBar)
         ::ShowWindow(xg_hStatusBar, SW_SHOWNOACTIVATE);
     else
         ::ShowWindow(xg_hStatusBar, SW_HIDE);
 
-    // ƒCƒ[ƒW‚ğXV‚·‚éB
+    // ã‚¤ãƒ¡ãƒ¼ã‚¸ã‚’æ›´æ–°ã™ã‚‹ã€‚
     XgUpdateImage(hwnd, 0, 0);
-    // ƒe[ƒ}‚ğ‰Šú‰»‚·‚éB
+    // ãƒ†ãƒ¼ãƒã‚’åˆæœŸåŒ–ã™ã‚‹ã€‚
     XgResetTheme(hwnd);
     XgUpdateTheme(hwnd);
 
     if (bSuccess) {
-        // ƒƒbƒZ[ƒW‚ğ•\¦‚·‚éB
+        // ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã‚’è¡¨ç¤ºã™ã‚‹ã€‚
         XgCenterMessageBoxW(hwnd,
             XgLoadStringDx1(IDS_ERASEDSETTINGS), XgLoadStringDx2(IDS_APPNAME),
             MB_ICONINFORMATION);
     } else {
-        // ƒƒbƒZ[ƒW‚ğ•\¦‚·‚éB
+        // ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã‚’è¡¨ç¤ºã™ã‚‹ã€‚
         XgCenterMessageBoxW(hwnd,
             XgLoadStringDx1(IDS_FAILERASESETTINGS), XgLoadStringDx2(IDS_APPNAME),
             MB_ICONINFORMATION);
     }
 }
 
-// «‘‚ğ“Ç‚İ‚ŞB
+// è¾æ›¸ã‚’èª­ã¿è¾¼ã‚€ã€‚
 extern "C"
 INT_PTR CALLBACK
 XgLoadDictDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
@@ -6012,11 +6011,11 @@ XgLoadDictDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 
     switch (uMsg) {
     case WM_INITDIALOG:
-        // ƒ_ƒCƒAƒƒO‚ğ’†‰›‚ÖˆÚ“®‚·‚éB
+        // ãƒ€ã‚¤ã‚¢ãƒ­ã‚°ã‚’ä¸­å¤®ã¸ç§»å‹•ã™ã‚‹ã€‚
         XgCenterDialog(hwnd);
-        // «‘ƒtƒ@ƒCƒ‹‚ğ‚·‚×‚Ä“Ç‚İ‚ŞB
+        // è¾æ›¸ãƒ•ã‚¡ã‚¤ãƒ«ã‚’ã™ã¹ã¦èª­ã¿è¾¼ã‚€ã€‚
         XgLoadDictsAll();
-        // «‘ƒtƒ@ƒCƒ‹‚ÌƒpƒX–¼‚ÌƒxƒNƒ^[‚ğƒRƒ“ƒ{ƒ{ƒbƒNƒX‚Éİ’è‚·‚éB
+        // è¾æ›¸ãƒ•ã‚¡ã‚¤ãƒ«ã®ãƒ‘ã‚¹åã®ãƒ™ã‚¯ã‚¿ãƒ¼ã‚’ã‚³ãƒ³ãƒœãƒœãƒƒã‚¯ã‚¹ã«è¨­å®šã™ã‚‹ã€‚
         hCmb1 = GetDlgItem(hwnd, cmb1);
         for (const auto& dict_file : xg_dict_files) {
             item.mask = CBEIF_TEXT;
@@ -6028,17 +6027,17 @@ XgLoadDictDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
         }
         ComboBox_SetText(hCmb1, xg_dict_name.c_str());
 
-        // ƒhƒ‰ƒbƒO•ƒhƒƒbƒv‚ğó‚¯•t‚¯‚éB
+        // ãƒ‰ãƒ©ãƒƒã‚°ï¼†ãƒ‰ãƒ­ãƒƒãƒ—ã‚’å—ã‘ä»˜ã‘ã‚‹ã€‚
         ::DragAcceptFiles(hwnd, TRUE);
         return TRUE;
 
     case WM_DROPFILES:
-        // ƒhƒƒbƒv‚³‚ê‚½ƒtƒ@ƒCƒ‹‚ÌƒpƒX–¼‚ğæ“¾‚·‚éB
+        // ãƒ‰ãƒ­ãƒƒãƒ—ã•ã‚ŒãŸãƒ•ã‚¡ã‚¤ãƒ«ã®ãƒ‘ã‚¹åã‚’å–å¾—ã™ã‚‹ã€‚
         hDrop = reinterpret_cast<HDROP>(wParam);
         ::DragQueryFileW(hDrop, 0, szFile, MAX_PATH);
         ::DragFinish(hDrop);
 
-        // ƒVƒ‡[ƒgƒJƒbƒg‚¾‚Á‚½ê‡‚ÍAƒ^[ƒQƒbƒg‚ÌƒpƒX‚ğæ“¾‚·‚éB
+        // ã‚·ãƒ§ãƒ¼ãƒˆã‚«ãƒƒãƒˆã ã£ãŸå ´åˆã¯ã€ã‚¿ãƒ¼ã‚²ãƒƒãƒˆã®ãƒ‘ã‚¹ã‚’å–å¾—ã™ã‚‹ã€‚
         if (::lstrcmpiW(PathFindExtensionW(szFile), s_szShellLinkDotExt) == 0) {
             if (!XgGetPathOfShortcutW(szFile, szTarget)) {
                 ::MessageBeep(0xFFFFFFFF);
@@ -6047,39 +6046,39 @@ XgLoadDictDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
             StringCbCopy(szFile, sizeof(szFile), szTarget);
         }
 
-        // “¯‚¶€–Ú‚ª‚·‚Å‚É‚ ‚ê‚ÎAíœ‚·‚éB
+        // åŒã˜é …ç›®ãŒã™ã§ã«ã‚ã‚Œã°ã€å‰Šé™¤ã™ã‚‹ã€‚
         i = static_cast<int>(::SendDlgItemMessageW(hwnd, cmb1, CB_FINDSTRINGEXACT, 0,
                                                  reinterpret_cast<LPARAM>(szFile)));
         if (i != CB_ERR) {
             ::SendDlgItemMessageW(hwnd, cmb1, CB_DELETESTRING, i, 0);
         }
-        // ƒRƒ“ƒ{ƒ{ƒbƒNƒX‚ÌÅ‰‚É‘}“ü‚·‚éB
+        // ã‚³ãƒ³ãƒœãƒœãƒƒã‚¯ã‚¹ã®æœ€åˆã«æŒ¿å…¥ã™ã‚‹ã€‚
         item.mask = CBEIF_TEXT;
         item.iItem = 0;
         item.pszText = szFile;
         item.cchTextMax = -1;
         ::SendDlgItemMessageW(hwnd, cmb1, CBEM_INSERTITEMW, 0,
                             reinterpret_cast<LPARAM>(&item));
-        // ƒRƒ“ƒ{ƒ{ƒbƒNƒX‚ÌÅ‰‚Ì€–Ú‚ğ‘I‘ğ‚·‚éB
+        // ã‚³ãƒ³ãƒœãƒœãƒƒã‚¯ã‚¹ã®æœ€åˆã®é …ç›®ã‚’é¸æŠã™ã‚‹ã€‚
         ::SendDlgItemMessageW(hwnd, cmb1, CB_SETCURSEL, 0, 0);
         break;
 
     case WM_COMMAND:
         switch (LOWORD(wParam)) {
         case IDOK:
-            // «‘ƒtƒ@ƒCƒ‹‚ÌƒpƒX–¼‚ğæ“¾‚·‚éB
+            // è¾æ›¸ãƒ•ã‚¡ã‚¤ãƒ«ã®ãƒ‘ã‚¹åã‚’å–å¾—ã™ã‚‹ã€‚
             ::GetDlgItemTextW(hwnd, cmb1, szFile, ARRAYSIZE(szFile));
             strFile = szFile;
             xg_str_trim(strFile);
-            // ³‚µ‚­“Ç‚İ‚ß‚é‚©H
+            // æ­£ã—ãèª­ã¿è¾¼ã‚ã‚‹ã‹ï¼Ÿ
             if (XgLoadDictFile(strFile.data())) {
-                // “Ç‚İ‚ß‚½B
+                // èª­ã¿è¾¼ã‚ãŸã€‚
                 XgSetDict(strFile);
 
-                // ƒ_ƒCƒAƒƒO‚ğ•Â‚¶‚éB
+                // ãƒ€ã‚¤ã‚¢ãƒ­ã‚°ã‚’é–‰ã˜ã‚‹ã€‚
                 ::EndDialog(hwnd, IDOK);
             } else {
-                // “Ç‚İ‚ß‚È‚©‚Á‚½‚Ì‚ÅƒGƒ‰[‚ğ•\¦‚·‚éB
+                // èª­ã¿è¾¼ã‚ãªã‹ã£ãŸã®ã§ã‚¨ãƒ©ãƒ¼ã‚’è¡¨ç¤ºã™ã‚‹ã€‚
                 ::SendDlgItemMessageW(hwnd, cmb1, CB_SETEDITSEL, 0, MAKELPARAM(0, -1));
                 XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_CANTLOAD), nullptr, MB_ICONERROR);
                 ::SetFocus(::GetDlgItem(hwnd, cmb1));
@@ -6087,12 +6086,12 @@ XgLoadDictDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
             break;
 
         case IDCANCEL:
-            // ƒ_ƒCƒAƒƒO‚ğ•Â‚¶‚éB
+            // ãƒ€ã‚¤ã‚¢ãƒ­ã‚°ã‚’é–‰ã˜ã‚‹ã€‚
             ::EndDialog(hwnd, IDCANCEL);
             break;
 
-        case psh1:  // [QÆ]ƒ{ƒ^ƒ“B
-            // ƒ†[ƒU[‚É«‘ƒtƒ@ƒCƒ‹‚ÌêŠ‚ğ–â‚¢‡‚í‚¹‚éB
+        case psh1:  // [å‚ç…§]ãƒœã‚¿ãƒ³ã€‚
+            // ãƒ¦ãƒ¼ã‚¶ãƒ¼ã«è¾æ›¸ãƒ•ã‚¡ã‚¤ãƒ«ã®å ´æ‰€ã‚’å•ã„åˆã‚ã›ã‚‹ã€‚
             ZeroMemory(&ofn, sizeof(ofn));
             ofn.lStructSize = OPENFILENAME_SIZE_VERSION_400W;
             ofn.hwndOwner = hwnd;
@@ -6106,7 +6105,7 @@ XgLoadDictDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
             ofn.lpstrDefExt = L"dic";
             if (::GetOpenFileNameW(&ofn))
             {
-                // ƒRƒ“ƒ{ƒ{ƒbƒNƒX‚ÉƒeƒLƒXƒg‚ğİ’èB
+                // ã‚³ãƒ³ãƒœãƒœãƒƒã‚¯ã‚¹ã«ãƒ†ã‚­ã‚¹ãƒˆã‚’è¨­å®šã€‚
                 ::SetDlgItemTextW(hwnd, cmb1, szFile);
             }
             break;
@@ -6115,7 +6114,7 @@ XgLoadDictDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
     return 0;
 }
 
-// [ƒwƒbƒ_[‚Æ”õl—“]ƒ_ƒCƒAƒƒOB
+// [ãƒ˜ãƒƒãƒ€ãƒ¼ã¨å‚™è€ƒæ¬„]ãƒ€ã‚¤ã‚¢ãƒ­ã‚°ã€‚
 extern "C"
 INT_PTR CALLBACK
 XgNotesDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
@@ -6126,11 +6125,11 @@ XgNotesDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 
     switch (uMsg) {
     case WM_INITDIALOG:
-        // ƒ_ƒCƒAƒƒO‚ğ’†‰›‚ÖˆÚ“®‚·‚éB
+        // ãƒ€ã‚¤ã‚¢ãƒ­ã‚°ã‚’ä¸­å¤®ã¸ç§»å‹•ã™ã‚‹ã€‚
         XgCenterDialog(hwnd);
-        // ƒwƒbƒ_[‚ğİ’è‚·‚éB
+        // ãƒ˜ãƒƒãƒ€ãƒ¼ã‚’è¨­å®šã™ã‚‹ã€‚
         ::SetDlgItemTextW(hwnd, edt1, xg_strHeader.data());
-        // ”õl—“‚ğİ’è‚·‚éB
+        // å‚™è€ƒæ¬„ã‚’è¨­å®šã™ã‚‹ã€‚
         str = xg_strNotes;
         xg_str_trim(str);
         psz = XgLoadStringDx1(IDS_BELOWISNOTES);
@@ -6143,24 +6142,24 @@ XgNotesDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
     case WM_COMMAND:
         switch (LOWORD(wParam)) {
         case IDOK:
-            // ƒwƒbƒ_[‚ğæ“¾‚·‚éB
+            // ãƒ˜ãƒƒãƒ€ãƒ¼ã‚’å–å¾—ã™ã‚‹ã€‚
             ::GetDlgItemTextW(hwnd, edt1, sz, static_cast<int>(ARRAYSIZE(sz)));
             str = sz;
             xg_str_trim(str);
             xg_strHeader = str;
 
-            // ”õl—“‚ğæ“¾‚·‚éB
+            // å‚™è€ƒæ¬„ã‚’å–å¾—ã™ã‚‹ã€‚
             ::GetDlgItemTextW(hwnd, edt2, sz, static_cast<int>(ARRAYSIZE(sz)));
             str = sz;
             xg_str_trim(str);
             xg_strNotes = str;
 
-            // ƒ_ƒCƒAƒƒO‚ğ•Â‚¶‚éB
+            // ãƒ€ã‚¤ã‚¢ãƒ­ã‚°ã‚’é–‰ã˜ã‚‹ã€‚
             ::EndDialog(hwnd, IDOK);
             break;
 
         case IDCANCEL:
-            // ƒ_ƒCƒAƒƒO‚ğ•Â‚¶‚éB
+            // ãƒ€ã‚¤ã‚¢ãƒ­ã‚°ã‚’é–‰ã˜ã‚‹ã€‚
             ::EndDialog(hwnd, IDCANCEL);
             break;
         }
@@ -6168,7 +6167,7 @@ XgNotesDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
     return 0;
 }
 
-// c‚Æ‰¡‚ğ“ü‚ê‘Ö‚¦‚éB
+// ç¸¦ã¨æ¨ªã‚’å…¥ã‚Œæ›¿ãˆã‚‹ã€‚
 void __fastcall MainWnd_OnFlipVH(HWND hwnd)
 {
     xg_xword.SwapXandY();
@@ -6193,7 +6192,7 @@ void __fastcall MainWnd_OnFlipVH(HWND hwnd)
     for (auto& mark : xg_vMarks) {
         std::swap(mark.m_i, mark.m_j);
     }
-    // ƒCƒ[ƒW‚ğXV‚·‚éB
+    // ã‚¤ãƒ¡ãƒ¼ã‚¸ã‚’æ›´æ–°ã™ã‚‹ã€‚
     XgUpdateImage(hwnd, 0, 0);
 }
 
@@ -6247,7 +6246,7 @@ std::wstring URL_encode(const std::wstring& url)
     return ret;
 }
 
-// ƒEƒFƒuŒŸõB
+// ã‚¦ã‚§ãƒ–æ¤œç´¢ã€‚
 void DoWebSearch(HWND hwnd, LPCWSTR str)
 {
     std::wstring query = XgLoadStringDx1(IDS_GOOGLESEARCH);
@@ -6290,7 +6289,7 @@ void __fastcall MainWnd_OnCopyPattern(HWND hwnd, BOOL bTate)
         pxword = &xg_xword;
     }
 
-    // ƒpƒ^[ƒ“‚ğæ“¾‚·‚éB
+    // ãƒ‘ã‚¿ãƒ¼ãƒ³ã‚’å–å¾—ã™ã‚‹ã€‚
     std::wstring pattern;
     if (bTate) {
         pattern = pxword->GetPatternV(xg_caret_pos);
@@ -6311,7 +6310,7 @@ void __fastcall MainWnd_OnCopyPatternVert(HWND hwnd)
     MainWnd_OnCopyPattern(hwnd, TRUE);
 }
 
-// ƒIƒ“ƒ‰ƒCƒ“«‘‚ğˆø‚­B
+// ã‚ªãƒ³ãƒ©ã‚¤ãƒ³è¾æ›¸ã‚’å¼•ãã€‚
 void __fastcall XgOnlineDict(HWND hwnd, BOOL bTate)
 {
     XG_Board *pxword;
@@ -6321,7 +6320,7 @@ void __fastcall XgOnlineDict(HWND hwnd, BOOL bTate)
         pxword = &xg_xword;
     }
 
-    // ƒpƒ^[ƒ“‚ğæ“¾‚·‚éB
+    // ãƒ‘ã‚¿ãƒ¼ãƒ³ã‚’å–å¾—ã™ã‚‹ã€‚
     std::wstring pattern;
     if (bTate) {
         pattern = pxword->GetPatternV(xg_caret_pos);
@@ -6329,7 +6328,7 @@ void __fastcall XgOnlineDict(HWND hwnd, BOOL bTate)
         pattern = pxword->GetPatternH(xg_caret_pos);
     }
 
-    // ‹ó”’‚ğŠÜ‚ñ‚Å‚¢‚½‚çA–³‹B
+    // ç©ºç™½ã‚’å«ã‚“ã§ã„ãŸã‚‰ã€ç„¡è¦–ã€‚
     if (pattern.find(ZEN_SPACE) != std::wstring::npos) {
         return;
     }
@@ -6498,7 +6497,7 @@ bool __fastcall MainWnd_OnCommand2(HWND hwnd, INT id)
     return bOK;
 }
 
-// •ƒ}ƒXƒpƒ^[ƒ“‚Ì\‘¢‘ÌB
+// é»’ãƒã‚¹ãƒ‘ã‚¿ãƒ¼ãƒ³ã®æ§‹é€ ä½“ã€‚
 struct PATDATA
 {
     int num_columns;
@@ -6506,11 +6505,11 @@ struct PATDATA
     std::wstring data;
 };
 
-// •ƒ}ƒXƒpƒ^[ƒ“‚Ìƒf[ƒ^B
+// é»’ãƒã‚¹ãƒ‘ã‚¿ãƒ¼ãƒ³ã®ãƒ‡ãƒ¼ã‚¿ã€‚
 static std::vector<PATDATA> s_patterns;
 static LAYOUT_DATA *s_pLayout = NULL;
 
-// ƒpƒ^[ƒ“‚ÌƒeƒLƒXƒgƒf[ƒ^‚ğˆµ‚¢‚â‚·‚¢‚æ‚¤A‰ÁH‚·‚éB
+// ãƒ‘ã‚¿ãƒ¼ãƒ³ã®ãƒ†ã‚­ã‚¹ãƒˆãƒ‡ãƒ¼ã‚¿ã‚’æ‰±ã„ã‚„ã™ã„ã‚ˆã†ã€åŠ å·¥ã™ã‚‹ã€‚
 static void
 XgConvertPatternData(std::vector<WCHAR>& data, std::wstring text, INT cx, INT cy)
 {
@@ -6545,11 +6544,11 @@ XgConvertPatternData(std::vector<WCHAR>& data, std::wstring text, INT cx, INT cy
 static BOOL
 XgPattern_RefreshContents(HWND hwnd, INT type)
 {
-    // ƒpƒ^[ƒ“ƒf[ƒ^‚ğƒNƒŠƒA‚·‚éB
+    // ãƒ‘ã‚¿ãƒ¼ãƒ³ãƒ‡ãƒ¼ã‚¿ã‚’ã‚¯ãƒªã‚¢ã™ã‚‹ã€‚
     s_patterns.clear();
     ListBox_ResetContent(GetDlgItem(hwnd, lst1));
 
-    // ƒpƒ^[ƒ“ƒf[ƒ^‚ğ“Ç‚İ‚ŞB
+    // ãƒ‘ã‚¿ãƒ¼ãƒ³ãƒ‡ãƒ¼ã‚¿ã‚’èª­ã¿è¾¼ã‚€ã€‚
     WCHAR szPath[MAX_PATH];
     GetModuleFileNameW(NULL, szPath, MAX_PATH);
     PathRemoveFileSpecW(szPath);
@@ -6588,7 +6587,7 @@ XgPattern_RefreshContents(HWND hwnd, INT type)
         pat.num_columns = item["num_columns"];
         pat.num_rows = item["num_rows"];
 
-        // ƒ^ƒCƒv‚É‚æ‚èƒtƒBƒ‹ƒ^[‚ğs‚¤B
+        // ã‚¿ã‚¤ãƒ—ã«ã‚ˆã‚Šãƒ•ã‚£ãƒ«ã‚¿ãƒ¼ã‚’è¡Œã†ã€‚
         switch (type)
         {
         case rad1:
@@ -6626,7 +6625,7 @@ XgPattern_RefreshContents(HWND hwnd, INT type)
             break;
         }
 
-        // data‚ğƒeƒLƒXƒgƒf[ƒ^‚É‚·‚éB
+        // dataã‚’ãƒ†ã‚­ã‚¹ãƒˆãƒ‡ãƒ¼ã‚¿ã«ã™ã‚‹ã€‚
         std::string str;
         for (auto& subitem : item["data"])
         {
@@ -6635,11 +6634,11 @@ XgPattern_RefreshContents(HWND hwnd, INT type)
         }
         pat.data = XgUtf8ToUnicode(str);
 
-        // ƒpƒ^[ƒ“‚ÌƒeƒLƒXƒgƒf[ƒ^‚ğˆµ‚¢‚â‚·‚¢‚æ‚¤A‰ÁH‚·‚éB
+        // ãƒ‘ã‚¿ãƒ¼ãƒ³ã®ãƒ†ã‚­ã‚¹ãƒˆãƒ‡ãƒ¼ã‚¿ã‚’æ‰±ã„ã‚„ã™ã„ã‚ˆã†ã€åŠ å·¥ã™ã‚‹ã€‚
         std::vector<WCHAR> data;
         XgConvertPatternData(data, pat.data, pat.num_columns, pat.num_rows);
 
-        // •ƒ}ƒXƒ‹[ƒ‹‚ğ“K‡‚·‚éB
+        // é»’ãƒã‚¹ãƒ«ãƒ¼ãƒ«ã‚’é©åˆã™ã‚‹ã€‚
 #define GET_DATA(x, y) data[(y) * pat.num_columns + (x)]
         if (xg_nRules & RULE_DONTDOUBLEBLACK) {
             BOOL bFound = FALSE;
@@ -6825,10 +6824,10 @@ XgPattern_RefreshContents(HWND hwnd, INT type)
         s_patterns.push_back(pat);
     }
 
-    // ‚©‚«¬‚º‚éB
+    // ã‹ãæ··ãœã‚‹ã€‚
     std::random_shuffle(s_patterns.begin(), s_patterns.end());
 
-    // ƒCƒ“ƒfƒbƒNƒX‚Æ‚µ‚Ä’Ç‰Á‚·‚éB
+    // ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã¨ã—ã¦è¿½åŠ ã™ã‚‹ã€‚
     for (size_t i = 0; i < s_patterns.size(); ++i)
     {
         SendDlgItemMessageW(hwnd, lst1, LB_ADDSTRING, 0, i);
@@ -6893,7 +6892,7 @@ XgPattern_OnInitDialog(HWND hwnd, HWND hwndFocus, LPARAM lParam)
     return FALSE;
 }
 
-// •ƒ}ƒXƒpƒ^[ƒ“‚ÌƒRƒs[B
+// é»’ãƒã‚¹ãƒ‘ã‚¿ãƒ¼ãƒ³ã®ã‚³ãƒ”ãƒ¼ã€‚
 static void XgPattern_OnCopy(HWND hwnd)
 {
     HWND hLst1 = GetDlgItem(hwnd, lst1);
@@ -6911,18 +6910,18 @@ static void XgPattern_OnCopy(HWND hwnd)
             XgCopyBoard(xg_hMainWnd);
         }
         sa2->Get();
-        // Œ³‚É–ß‚·î•ñ‚ğİ’è‚·‚éB
+        // å…ƒã«æˆ»ã™æƒ…å ±ã‚’è¨­å®šã™ã‚‹ã€‚
         xg_ubUndoBuffer.Commit(UC_SETALL, sa1, sa2);
     }
     XgUpdateImage(xg_hMainWnd, 0, 0);
 
-    // ƒc[ƒ‹ƒo[‚ÌUI‚ğXV‚·‚éB
+    // ãƒ„ãƒ¼ãƒ«ãƒãƒ¼ã®UIã‚’æ›´æ–°ã™ã‚‹ã€‚
     XgUpdateToolBarUI(xg_hMainWnd);
 
     EndDialog(hwnd, IDCANCEL);
 }
 
-// •ƒ}ƒXƒpƒ^[ƒ“‚ÅuOKvƒ{ƒ^ƒ“‚ğ‰Ÿ‚µ‚½B
+// é»’ãƒã‚¹ãƒ‘ã‚¿ãƒ¼ãƒ³ã§ã€ŒOKã€ãƒœã‚¿ãƒ³ã‚’æŠ¼ã—ãŸã€‚
 static void XgPattern_OnOK(HWND hwnd)
 {
     HWND hLst1 = GetDlgItem(hwnd, lst1);
@@ -6936,19 +6935,19 @@ static void XgPattern_OnOK(HWND hwnd)
         auto sa2 = std::make_shared<XG_UndoData_SetAll>();
         sa1->Get();
         {
-            // ƒRƒs[•“\‚è•t‚¯B
+            // ã‚³ãƒ”ãƒ¼ï¼†è²¼ã‚Šä»˜ã‘ã€‚
             XgPasteBoard(xg_hMainWnd, pat.data);
             XgCopyBoard(xg_hMainWnd);
         }
         sa2->Get();
-        // Œ³‚É–ß‚·î•ñ‚ğİ’è‚·‚éB
+        // å…ƒã«æˆ»ã™æƒ…å ±ã‚’è¨­å®šã™ã‚‹ã€‚
         xg_ubUndoBuffer.Commit(UC_SETALL, sa1, sa2);
     }
 
-    // ƒ_ƒCƒAƒƒO‚ğ•Â‚¶‚éB
+    // ãƒ€ã‚¤ã‚¢ãƒ­ã‚°ã‚’é–‰ã˜ã‚‹ã€‚
     EndDialog(hwnd, IDOK);
 
-    // “š‚¦‚ğ•\¦‚·‚é‚©H
+    // ç­”ãˆã‚’è¡¨ç¤ºã™ã‚‹ã‹ï¼Ÿ
     xg_bShowAnswerOnPattern = (IsDlgButtonChecked(hwnd, chx1) == BST_CHECKED);
 
     {
@@ -6956,18 +6955,18 @@ static void XgPattern_OnOK(HWND hwnd)
         auto sa2 = std::make_shared<XG_UndoData_SetAll>();
         sa1->Get();
         {
-            // ‰ğ‚ğ‹‚ß‚éi•ƒ}ƒX’Ç‰Á‚È‚µjB
+            // è§£ã‚’æ±‚ã‚ã‚‹ï¼ˆé»’ãƒã‚¹è¿½åŠ ãªã—ï¼‰ã€‚
             XgOnSolve_NoAddBlack(xg_hMainWnd, xg_bShowAnswerOnPattern);
         }
         sa2->Get();
-        // Œ³‚É–ß‚·î•ñ‚ğİ’è‚·‚éB
+        // å…ƒã«æˆ»ã™æƒ…å ±ã‚’è¨­å®šã™ã‚‹ã€‚
         xg_ubUndoBuffer.Commit(UC_SETALL, sa1, sa2);
     }
 
-    // •\¦‚ğXV‚·‚éB
+    // è¡¨ç¤ºã‚’æ›´æ–°ã™ã‚‹ã€‚
     XgUpdateImage(xg_hMainWnd, 0, 0);
 
-    // ƒc[ƒ‹ƒo[‚ÌUI‚ğXV‚·‚éB
+    // ãƒ„ãƒ¼ãƒ«ãƒãƒ¼ã®UIã‚’æ›´æ–°ã™ã‚‹ã€‚
     XgUpdateToolBarUI(xg_hMainWnd);
 }
 
@@ -7003,13 +7002,13 @@ XgPattern_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT codeNotify)
     }
 }
 
-static INT cxCell = 6, cyCell = 6; // ¬‚³‚ÈƒZƒ‹‚ÌƒTƒCƒYB
+static INT cxCell = 6, cyCell = 6; // å°ã•ãªã‚»ãƒ«ã®ã‚µã‚¤ã‚ºã€‚
 
 // WM_MEASUREITEM
 static void
 XgPattern_OnMeasureItem(HWND hwnd, MEASUREITEMSTRUCT * lpMeasureItem)
 {
-    // ƒŠƒXƒgƒ{ƒbƒNƒX‚Ì lst1 ‚©H
+    // ãƒªã‚¹ãƒˆãƒœãƒƒã‚¯ã‚¹ã® lst1 ã‹ï¼Ÿ
     if (lpMeasureItem->CtlType != ODT_LISTBOX || lpMeasureItem->CtlID != lst1)
         return;
 
@@ -7026,35 +7025,35 @@ XgPattern_OnMeasureItem(HWND hwnd, MEASUREITEMSTRUCT * lpMeasureItem)
 static void
 XgPattern_OnDrawItem(HWND hwnd, const DRAWITEMSTRUCT * lpDrawItem)
 {
-    // ƒŠƒXƒgƒ{ƒbƒNƒX‚Ì lst1 ‚©H
+    // ãƒªã‚¹ãƒˆãƒœãƒƒã‚¯ã‚¹ã® lst1 ã‹ï¼Ÿ
     if (lpDrawItem->CtlType != ODT_LISTBOX || lpDrawItem->CtlID != lst1)
         return;
 
-    // ƒf[ƒ^‚ªƒpƒ^[ƒ“‚ÌƒCƒ“ƒfƒbƒNƒX‚©H
+    // ãƒ‡ãƒ¼ã‚¿ãŒãƒ‘ã‚¿ãƒ¼ãƒ³ã®ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã‹ï¼Ÿ
     LPARAM lParam = lpDrawItem->itemData;
     if ((int)lParam >= (int)s_patterns.size())
         return;
 
-    // ƒCƒ“ƒfƒbƒNƒX‚É‘Î‰‚·‚éƒpƒ^[ƒ“‚ğæ“¾B
+    // ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã«å¯¾å¿œã™ã‚‹ãƒ‘ã‚¿ãƒ¼ãƒ³ã‚’å–å¾—ã€‚
     const auto& pat = s_patterns[(int)lParam];
     HDC hDC = lpDrawItem->hDC;
     RECT rcItem = lpDrawItem->rcItem;
 
-    // •K—v‚È‚çƒtƒH[ƒJƒX˜g‚ğ•`‚­B
+    // å¿…è¦ãªã‚‰ãƒ•ã‚©ãƒ¼ã‚«ã‚¹æ ã‚’æãã€‚
     if (lpDrawItem->itemAction & ODA_FOCUS)
     {
         DrawFocusRect(hDC, &rcItem);
     }
 
-    // ‚»‚Ì‘¼‚Í–³‹B
+    // ãã®ä»–ã¯ç„¡è¦–ã€‚
     if (!(lpDrawItem->itemAction & (ODA_DRAWENTIRE | ODA_SELECT)))
         return;
 
-    // ƒTƒCƒY‚ğ•\‚·ƒeƒLƒXƒgB
+    // ã‚µã‚¤ã‚ºã‚’è¡¨ã™ãƒ†ã‚­ã‚¹ãƒˆã€‚
     WCHAR szText[64];
     StringCbPrintfW(szText, sizeof(szText), L"%u x %u", int(pat.num_columns), int(pat.num_rows));
 
-    // ”wŒi‚ÆƒeƒLƒXƒg‚ğ•`‰æ‚·‚éB
+    // èƒŒæ™¯ã¨ãƒ†ã‚­ã‚¹ãƒˆã‚’æç”»ã™ã‚‹ã€‚
     SelectObject(hDC, GetStockFont(DEFAULT_GUI_FONT));
     SetBkMode(hDC, TRANSPARENT);
     TEXTMETRIC tm;
@@ -7071,33 +7070,33 @@ XgPattern_OnDrawItem(HWND hwnd, const DRAWITEMSTRUCT * lpDrawItem)
     }
     DrawTextW(hDC, szText, -1, &rcItem, DT_CENTER | DT_TOP | DT_SINGLELINE);
 
-    // •K—v‚È‚çƒtƒH[ƒJƒX˜g‚ğ•`‚­B
+    // å¿…è¦ãªã‚‰ãƒ•ã‚©ãƒ¼ã‚«ã‚¹æ ã‚’æãã€‚
     if (lpDrawItem->itemState & ODS_FOCUS)
     {
         DrawFocusRect(hDC, &rcItem);
     }
 
-    // ƒpƒ^[ƒ“‚ÌƒeƒLƒXƒgƒf[ƒ^‚ğˆµ‚¢‚â‚·‚¢‚æ‚¤A‰ÁH‚·‚éB
+    // ãƒ‘ã‚¿ãƒ¼ãƒ³ã®ãƒ†ã‚­ã‚¹ãƒˆãƒ‡ãƒ¼ã‚¿ã‚’æ‰±ã„ã‚„ã™ã„ã‚ˆã†ã€åŠ å·¥ã™ã‚‹ã€‚
     std::vector<WCHAR> data;
     XgConvertPatternData(data, pat.data, pat.num_columns, pat.num_rows);
 
-    // •`‰æ€–Ú‚ÌƒTƒCƒYB
+    // æç”»é …ç›®ã®ã‚µã‚¤ã‚ºã€‚
     INT cxItem = rcItem.right - rcItem.left;
 
-    // ƒƒ‚ƒŠ[ƒfƒoƒCƒXƒRƒ“ƒeƒLƒXƒg‚ğì¬B
+    // ãƒ¡ãƒ¢ãƒªãƒ¼ãƒ‡ãƒã‚¤ã‚¹ã‚³ãƒ³ãƒ†ã‚­ã‚¹ãƒˆã‚’ä½œæˆã€‚
     if (HDC hdcMem = CreateCompatibleDC(hDC))
     {
-        INT cx = cxCell * pat.num_columns, cy = cyCell * pat.num_rows; // ‘S‘Ì‚ÌƒTƒCƒYB
-        // ƒrƒbƒgƒ}ƒbƒv‚ğì¬‚·‚éB
+        INT cx = cxCell * pat.num_columns, cy = cyCell * pat.num_rows; // å…¨ä½“ã®ã‚µã‚¤ã‚ºã€‚
+        // ãƒ“ãƒƒãƒˆãƒãƒƒãƒ—ã‚’ä½œæˆã™ã‚‹ã€‚
         if (HBITMAP hbm = XgCreate24BppBitmap(hdcMem, cx + 3, cy + 3))
         {
-            // ƒrƒbƒgƒ}ƒbƒv‚ğ‘I‘ğB
+            // ãƒ“ãƒƒãƒˆãƒãƒƒãƒ—ã‚’é¸æŠã€‚
             HGDIOBJ hbmOld = SelectObject(hdcMem, hbm);
-            // lŠpŒ`‚ğ•`‚­B
-            SelectObject(hdcMem, GetStockPen(BLACK_PEN)); // •‚¢ƒyƒ“
-            SelectObject(hdcMem, GetStockBrush(WHITE_BRUSH)); // ”’‚¢ƒuƒ‰ƒV
+            // å››è§’å½¢ã‚’æãã€‚
+            SelectObject(hdcMem, GetStockPen(BLACK_PEN)); // é»’ã„ãƒšãƒ³
+            SelectObject(hdcMem, GetStockBrush(WHITE_BRUSH)); // ç™½ã„ãƒ–ãƒ©ã‚·
             Rectangle(hdcMem, 0, 0, cx + 2, cy + 2);
-            // •ƒ}ƒX‚ğ•`‰æ‚·‚éB
+            // é»’ãƒã‚¹ã‚’æç”»ã™ã‚‹ã€‚
             for (INT y = 0; y < pat.num_rows; ++y)
             {
                 RECT rc;
@@ -7111,7 +7110,7 @@ XgPattern_OnDrawItem(HWND hwnd, const DRAWITEMSTRUCT * lpDrawItem)
                         FillRect(hdcMem, &rc, GetStockBrush(BLACK_BRUSH));
                 }
             }
-            // ‹«ŠEü‚ğ•`‰æ‚·‚éB
+            // å¢ƒç•Œç·šã‚’æç”»ã™ã‚‹ã€‚
             for (INT y = 0; y < pat.num_rows + 1; ++y)
             {
                 MoveToEx(hdcMem, 1, 1 + y * cyCell, NULL);
@@ -7122,17 +7121,17 @@ XgPattern_OnDrawItem(HWND hwnd, const DRAWITEMSTRUCT * lpDrawItem)
                 MoveToEx(hdcMem, 1 + x * cxCell, 1, NULL);
                 LineTo(hdcMem, 1 + x * cxCell, 1 + pat.num_rows * cyCell);
             }
-            // ƒrƒbƒgƒ}ƒbƒvƒCƒ[ƒW‚ğhDC‚É“]‘—‚·‚éB
+            // ãƒ“ãƒƒãƒˆãƒãƒƒãƒ—ã‚¤ãƒ¡ãƒ¼ã‚¸ã‚’hDCã«è»¢é€ã™ã‚‹ã€‚
             BitBlt(hDC,
                    rcItem.left + (cxItem - (cx + 3)) / 2,
                    rcItem.top + tm.tmHeight,
                    cx + 3, cy + 3, hdcMem, 0, 0, SRCCOPY);
-            // ƒrƒbƒgƒ}ƒbƒv‚Ì‘I‘ğ‚ğ‰ğœ‚·‚éB
+            // ãƒ“ãƒƒãƒˆãƒãƒƒãƒ—ã®é¸æŠã‚’è§£é™¤ã™ã‚‹ã€‚
             SelectObject(hdcMem, hbmOld);
-            // ƒrƒbƒgƒ}ƒbƒv‚ğ”jŠü‚·‚éB
+            // ãƒ“ãƒƒãƒˆãƒãƒƒãƒ—ã‚’ç ´æ£„ã™ã‚‹ã€‚
             DeleteObject(hbm);
         }
-        // ƒƒ‚ƒŠ[ƒfƒoƒCƒXƒRƒ“ƒeƒLƒXƒg‚ğ”jŠü‚·‚éB
+        // ãƒ¡ãƒ¢ãƒªãƒ¼ãƒ‡ãƒã‚¤ã‚¹ã‚³ãƒ³ãƒ†ã‚­ã‚¹ãƒˆã‚’ç ´æ£„ã™ã‚‹ã€‚
         DeleteDC(hdcMem);
     }
 }
@@ -7177,7 +7176,7 @@ static void XgPattern_OnGetMinMaxInfo(HWND hwnd, LPMINMAXINFO lpMinMaxInfo)
     lpMinMaxInfo->ptMinTrackSize.y = 300;
 }
 
-// u•ƒ}ƒXƒpƒ^[ƒ“vƒ_ƒCƒAƒƒOƒvƒƒV[ƒWƒƒB
+// ã€Œé»’ãƒã‚¹ãƒ‘ã‚¿ãƒ¼ãƒ³ã€ãƒ€ã‚¤ã‚¢ãƒ­ã‚°ãƒ—ãƒ­ã‚·ãƒ¼ã‚¸ãƒ£ã€‚
 INT_PTR CALLBACK
 XgPatternDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
@@ -7195,20 +7194,20 @@ XgPatternDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
     return 0;
 }
 
-// u•ƒ}ƒXƒpƒ^[ƒ“v‚ğŠJ‚­B
+// ã€Œé»’ãƒã‚¹ãƒ‘ã‚¿ãƒ¼ãƒ³ã€ã‚’é–‹ãã€‚
 void __fastcall XgOpenPatterns(HWND hwnd)
 {
     DialogBoxW(xg_hInstance, MAKEINTRESOURCEW(IDD_BLOCKPATTERN), hwnd, XgPatternDlgProc);
 }
 
-// «‘‚ğØ‚è‘Ö‚¦‚éB
+// è¾æ›¸ã‚’åˆ‡ã‚Šæ›¿ãˆã‚‹ã€‚
 void MainWnd_DoDictionary(HWND hwnd, size_t iDict)
 {
-    // ”ÍˆÍŠO‚Í–³‹B
+    // ç¯„å›²å¤–ã¯ç„¡è¦–ã€‚
     if (iDict >= xg_dict_files.size())
         return;
 
-    // «‘‚ğ“Ç‚İ‚İAƒZƒbƒg‚·‚éB
+    // è¾æ›¸ã‚’èª­ã¿è¾¼ã¿ã€ã‚»ãƒƒãƒˆã™ã‚‹ã€‚
     const auto& file = xg_dict_files[iDict];
     if (XgLoadDictFile(file.c_str()))
     {
@@ -7216,11 +7215,11 @@ void MainWnd_DoDictionary(HWND hwnd, size_t iDict)
         XgSetInputModeFromDict(hwnd);
     }
 
-    // “ñdƒ}ƒX’PŒê‚ÌŒó•â‚ğƒNƒŠƒA‚·‚éB
+    // äºŒé‡ãƒã‚¹å˜èªã®å€™è£œã‚’ã‚¯ãƒªã‚¢ã™ã‚‹ã€‚
     xg_vMarkedCands.clear();
 }
 
-// u•ƒ}ƒXƒ‹[ƒ‹‚Ìà–¾.txtv‚ğŠJ‚­B
+// ã€Œé»’ãƒã‚¹ãƒ«ãƒ¼ãƒ«ã®èª¬æ˜.txtã€ã‚’é–‹ãã€‚
 static void OnOpenRulesTxt(HWND hwnd)
 {
     WCHAR szPath[MAX_PATH], szDir[MAX_PATH];
@@ -7247,46 +7246,46 @@ static void OnOpenRulesTxt(HWND hwnd)
     ShellExecuteW(hwnd, NULL, szPath, NULL, NULL, SW_SHOWNORMAL);
 }
 
-// •ƒ}ƒXƒ‹[ƒ‹‚ğƒ`ƒFƒbƒN‚·‚éB
+// é»’ãƒã‚¹ãƒ«ãƒ¼ãƒ«ã‚’ãƒã‚§ãƒƒã‚¯ã™ã‚‹ã€‚
 void __fastcall XgRuleCheck(HWND hwnd)
 {
     XG_Board& board = (xg_bShowAnswer ? xg_solution : xg_xword);
-    // ˜A•‹ÖB
+    // é€£é»’ç¦ã€‚
     if (xg_nRules & RULE_DONTDOUBLEBLACK) {
         if (board.DoubleBlack()) {
             XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_ADJACENTBLOCK), nullptr, MB_ICONERROR);
             return;
         }
     }
-    // l‹÷•‹ÖB
+    // å››éš…é»’ç¦ã€‚
     if (xg_nRules & RULE_DONTCORNERBLACK) {
         if (board.CornerBlack()) {
             XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_CORNERBLOCK), nullptr, MB_ICONERROR);
             return;
         }
     }
-    // O•û•‹ÖB
+    // ä¸‰æ–¹é»’ç¦ã€‚
     if (xg_nRules & RULE_DONTTRIDIRECTIONS) {
         if (board.TriBlackAround()) {
             XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_TRIBLOCK), nullptr, MB_ICONERROR);
             return;
         }
     }
-    // •ª’f‹ÖB
+    // åˆ†æ–­ç¦ã€‚
     if (xg_nRules & RULE_DONTDIVIDE) {
         if (board.DividedByBlack()) {
             XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_DIVIDED), nullptr, MB_ICONERROR);
             return;
         }
     }
-    // •ÎO˜A‹ÖB
+    // é»’æ–œä¸‰é€£ç¦ã€‚
     if (xg_nRules & RULE_DONTTHREEDIAGONALS) {
         if (board.ThreeDiagonals()) {
             XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_THREEDIAGONALS), nullptr, MB_ICONERROR);
             return;
         }
     } else {
-        // •Îl˜A‹ÖB
+        // é»’æ–œå››é€£ç¦ã€‚
         if (xg_nRules & RULE_DONTFOURDIAGONALS) {
             if (board.FourDiagonals()) {
                 XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_FOURDIAGONALS), nullptr, MB_ICONERROR);
@@ -7294,14 +7293,14 @@ void __fastcall XgRuleCheck(HWND hwnd)
             }
         }
     }
-    // •ƒ}ƒX“_‘ÎÌB
+    // é»’ãƒã‚¹ç‚¹å¯¾ç§°ã€‚
     if (xg_nRules & RULE_POINTSYMMETRY) {
         if (!board.IsPointSymmetry()) {
             XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_NOTPOINTSYMMETRY), nullptr, MB_ICONERROR);
             return;
         }
     }
-    // •ƒ}ƒXü‘ÎÌB
+    // é»’ãƒã‚¹ç·šå¯¾ç§°ã€‚
     if (xg_nRules & RULE_LINESYMMETRYV) {
         if (!board.IsLineSymmetryV()) {
             XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_NOTLINESYMMETRYV), nullptr, MB_ICONERROR);
@@ -7315,12 +7314,12 @@ void __fastcall XgRuleCheck(HWND hwnd)
         }
     }
 
-    // ‡ŠiB
+    // åˆæ ¼ã€‚
     XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_RULESPASSED),
                         XgLoadStringDx2(IDS_PASSED), MB_ICONINFORMATION);
 }
 
-// ƒ^ƒOƒŠƒXƒgƒ{ƒbƒNƒX‚ğ‰Šú‰»B
+// ã‚¿ã‚°ãƒªã‚¹ãƒˆãƒœãƒƒã‚¯ã‚¹ã‚’åˆæœŸåŒ–ã€‚
 static void XgInitTagListView(HWND hwndLV)
 {
     DWORD exstyle = LVS_EX_FULLROWSELECT | LVS_EX_INFOTIP | LVS_EX_LABELTIP | LVS_EX_GRIDLINES;
@@ -7407,7 +7406,7 @@ static void XgTheme_SetPreset(HWND hwnd, LPCWSTR pszText)
             ListView_SetItem(hLst2, &item);
     }
 
-    // Å‰‚Ì€–Ú‚ğ‘I‘ğ‚·‚éB
+    // æœ€åˆã®é …ç›®ã‚’é¸æŠã™ã‚‹ã€‚
     LV_ITEM item;
     item.mask = LVIF_STATE;
     item.iItem = 0;
@@ -7422,7 +7421,7 @@ static void XgTheme_SetPreset(HWND hwnd, LPCWSTR pszText)
     ListView_SetItem(hLst3, &item);
 }
 
-// ƒ^ƒOŒQ‚ÌÅ‘å’·B
+// ã‚¿ã‚°ç¾¤ã®æœ€å¤§é•·ã€‚
 #define MAX_TAGSLEN 256
 
 static void XgTheme_SetPreset(HWND hwnd)
@@ -7468,7 +7467,7 @@ static void XgTheme_UpdatePreset(HWND hwnd)
         str += szText;
     }
 
-    // ’·‚³§ŒÀB
+    // é•·ã•åˆ¶é™ã€‚
     if (str.size() > MAX_TAGSLEN - 1)
         str.resize(MAX_TAGSLEN - 1);
 
@@ -7477,16 +7476,16 @@ static void XgTheme_UpdatePreset(HWND hwnd)
     xg_bUpdatingPreset = FALSE;
 }
 
-// uƒe[ƒ}vƒ_ƒCƒAƒƒO‚Ì‰Šú‰»B
+// ã€Œãƒ†ãƒ¼ãƒã€ãƒ€ã‚¤ã‚¢ãƒ­ã‚°ã®åˆæœŸåŒ–ã€‚
 static BOOL XgTheme_OnInitDialog(HWND hwnd, HWND hwndFocus, LPARAM lParam)
 {
-    // ƒ_ƒCƒAƒƒO‚ğ’†‰›Šñ‚¹‚·‚éB
+    // ãƒ€ã‚¤ã‚¢ãƒ­ã‚°ã‚’ä¸­å¤®å¯„ã›ã™ã‚‹ã€‚
     XgCenterDialog(hwnd);
 
-    // ’·‚³‚ğ§ŒÀ‚·‚éB
+    // é•·ã•ã‚’åˆ¶é™ã™ã‚‹ã€‚
     SendDlgItemMessageW(hwnd, cmb1, CB_LIMITTEXT, MAX_TAGSLEN - 1, 0);
 
-    // ƒŠƒXƒgƒrƒ…[‚ğ‰Šú‰»B
+    // ãƒªã‚¹ãƒˆãƒ“ãƒ¥ãƒ¼ã‚’åˆæœŸåŒ–ã€‚
     HWND hLst1 = GetDlgItem(hwnd, lst1);
     HWND hLst2 = GetDlgItem(hwnd, lst2);
     HWND hLst3 = GetDlgItem(hwnd, lst3);
@@ -7494,19 +7493,19 @@ static BOOL XgTheme_OnInitDialog(HWND hwnd, HWND hwndFocus, LPARAM lParam)
     XgInitTagListView(hLst2);
     XgInitTagListView(hLst3);
 
-    // ƒqƒXƒgƒOƒ‰ƒ€‚ğæ“¾B
+    // ãƒ’ã‚¹ãƒˆã‚°ãƒ©ãƒ ã‚’å–å¾—ã€‚
     std::vector<std::pair<size_t, std::wstring> > histgram;
     for (auto& pair : xg_tag_histgram) {
         histgram.emplace_back(std::make_pair(pair.second, pair.first));
     }
-    // oŒ»‰ñ”‚Ì‹t‡‚Åƒ\[ƒgB
+    // å‡ºç¾å›æ•°ã®é€†é †ã§ã‚½ãƒ¼ãƒˆã€‚
     std::sort(histgram.begin(), histgram.end(),
         [](const std::pair<size_t, std::wstring>& a, const std::pair<size_t, std::wstring>& b) {
             return a.first > b.first;
         }
     );
 
-    // ƒŠƒXƒgƒrƒ…[‚ğ‹t‡‚ÌƒqƒXƒgƒOƒ‰ƒ€‚Å–„‚ß‚éB
+    // ãƒªã‚¹ãƒˆãƒ“ãƒ¥ãƒ¼ã‚’é€†é †ã®ãƒ’ã‚¹ãƒˆã‚°ãƒ©ãƒ ã§åŸ‹ã‚ã‚‹ã€‚
     INT iItem = 0;
     LV_ITEM item = { LVIF_TEXT };
     WCHAR szText[64];
@@ -7526,12 +7525,12 @@ static BOOL XgTheme_OnInitDialog(HWND hwnd, HWND hwndFocus, LPARAM lParam)
         ++iItem;
     }
 
-    // ƒRƒ“ƒ{ƒ{ƒbƒNƒX‚ÉƒeƒLƒXƒg‚ğİ’è‚·‚éB
+    // ã‚³ãƒ³ãƒœãƒœãƒƒã‚¯ã‚¹ã«ãƒ†ã‚­ã‚¹ãƒˆã‚’è¨­å®šã™ã‚‹ã€‚
     SetDlgItemTextW(hwnd, cmb1, xg_strTheme.c_str());
-    // ƒvƒŠƒZƒbƒg‚ğİ’è‚·‚éB
+    // ãƒ—ãƒªã‚»ãƒƒãƒˆã‚’è¨­å®šã™ã‚‹ã€‚
     XgTheme_SetPreset(hwnd, xg_strTheme.c_str());
 
-    // Å‰‚Ì€–Ú‚ğ‘I‘ğB
+    // æœ€åˆã®é …ç›®ã‚’é¸æŠã€‚
     item.mask = LVIF_STATE;
     item.iItem = 0;
     item.iSubItem = 0;
@@ -7541,14 +7540,14 @@ static BOOL XgTheme_OnInitDialog(HWND hwnd, HWND hwndFocus, LPARAM lParam)
     return TRUE;
 }
 
-// ƒŠƒXƒgƒrƒ…[‚Éƒ^ƒO€–Ú‚ğ’Ç‰Á‚·‚éB
+// ãƒªã‚¹ãƒˆãƒ“ãƒ¥ãƒ¼ã«ã‚¿ã‚°é …ç›®ã‚’è¿½åŠ ã™ã‚‹ã€‚
 static void XgTheme_AddTag(HWND hwnd, BOOL bPriority)
 {
-    // ‘I‘ğ’†‚ÌƒeƒLƒXƒg‚ğæ“¾‚·‚éB
+    // é¸æŠä¸­ã®ãƒ†ã‚­ã‚¹ãƒˆã‚’å–å¾—ã™ã‚‹ã€‚
     HWND hLst1 = GetDlgItem(hwnd, lst1);
     INT iItem = ListView_GetNextItem(hLst1, -1, LVNI_ALL | LVNI_SELECTED);
     if (iItem < 0)
-        return; // ‘I‘ğ‚È‚µB
+        return; // é¸æŠãªã—ã€‚
     WCHAR szText1[64], szText2[64];
     ListView_GetItemText(hLst1, iItem, 0, szText1, ARRAYSIZE(szText1));
     ListView_GetItemText(hLst1, iItem, 1, szText2, ARRAYSIZE(szText2));
@@ -7558,9 +7557,9 @@ static void XgTheme_AddTag(HWND hwnd, BOOL bPriority)
         HWND hLst2 = GetDlgItem(hwnd, lst2);
         iItem = ListView_FindItem(hLst2, -1, &find);
         if (iItem >= 0)
-            return; // ‚·‚Å‚É‚ ‚Á‚½B
+            return; // ã™ã§ã«ã‚ã£ãŸã€‚
 
-        // ƒ^ƒO€–Ú‚ğ’Ç‰ÁB
+        // ã‚¿ã‚°é …ç›®ã‚’è¿½åŠ ã€‚
         INT cItems = ListView_GetItemCount(hLst2);
         LV_ITEM item = { LVIF_TEXT };
         item.iItem = cItems;
@@ -7572,7 +7571,7 @@ static void XgTheme_AddTag(HWND hwnd, BOOL bPriority)
         item.pszText = szText2;
         ListView_SetItem(hLst2, &item);
 
-        // ƒJƒEƒ“ƒ^[‚ğXVB
+        // ã‚«ã‚¦ãƒ³ã‚¿ãƒ¼ã‚’æ›´æ–°ã€‚
         size_t count = 0;
         cItems = ListView_GetItemCount(hLst2);
         for (iItem = 0; iItem < cItems; ++iItem) {
@@ -7584,9 +7583,9 @@ static void XgTheme_AddTag(HWND hwnd, BOOL bPriority)
         HWND hLst3 = GetDlgItem(hwnd, lst3);
         iItem = ListView_FindItem(hLst3, -1, &find);
         if (iItem >= 0)
-            return; // ‚·‚Å‚É‚ ‚Á‚½B
+            return; // ã™ã§ã«ã‚ã£ãŸã€‚
 
-        // ƒ^ƒO€–Ú‚ğ’Ç‰ÁB
+        // ã‚¿ã‚°é …ç›®ã‚’è¿½åŠ ã€‚
         INT cItems = ListView_GetItemCount(hLst3);
         LV_ITEM item = { LVIF_TEXT };
         item.iItem = cItems;
@@ -7598,7 +7597,7 @@ static void XgTheme_AddTag(HWND hwnd, BOOL bPriority)
         item.pszText = szText2;
         ListView_SetItem(hLst3, &item);
 
-        // ƒJƒEƒ“ƒ^[‚ğXVB
+        // ã‚«ã‚¦ãƒ³ã‚¿ãƒ¼ã‚’æ›´æ–°ã€‚
         size_t count = 0;
         cItems = ListView_GetItemCount(hLst3);
         for (iItem = 0; iItem < cItems; ++iItem) {
@@ -7608,11 +7607,11 @@ static void XgTheme_AddTag(HWND hwnd, BOOL bPriority)
         SetDlgItemInt(hwnd, stc2, INT(count), FALSE);
     }
 
-    // ƒvƒŠƒZƒbƒg‚ğXVB
+    // ãƒ—ãƒªã‚»ãƒƒãƒˆã‚’æ›´æ–°ã€‚
     XgTheme_UpdatePreset(hwnd);
 }
 
-// ƒŠƒXƒgƒrƒ…[‚©‚çƒ^ƒO€–Ú‚ğíœ‚·‚éB
+// ãƒªã‚¹ãƒˆãƒ“ãƒ¥ãƒ¼ã‹ã‚‰ã‚¿ã‚°é …ç›®ã‚’å‰Šé™¤ã™ã‚‹ã€‚
 static void XgTheme_RemoveTag(HWND hwnd, BOOL bPriority)
 {
     WCHAR szText[64];
@@ -7621,7 +7620,7 @@ static void XgTheme_RemoveTag(HWND hwnd, BOOL bPriority)
         INT iItem = ListView_GetNextItem(hLst2, -1, LVNI_ALL | LVNI_SELECTED);
         ListView_DeleteItem(hLst2, iItem);
 
-        // ƒJƒEƒ“ƒ^[‚ğXVB
+        // ã‚«ã‚¦ãƒ³ã‚¿ãƒ¼ã‚’æ›´æ–°ã€‚
         INT cItems = ListView_GetItemCount(hLst2);
         size_t count = 0;
         for (iItem = 0; iItem < cItems; ++iItem) {
@@ -7634,7 +7633,7 @@ static void XgTheme_RemoveTag(HWND hwnd, BOOL bPriority)
         INT iItem = ListView_GetNextItem(hLst3, -1, LVNI_ALL | LVNI_SELECTED);
         ListView_DeleteItem(hLst3, iItem);
 
-        // ƒJƒEƒ“ƒ^[‚ğXVB
+        // ã‚«ã‚¦ãƒ³ã‚¿ãƒ¼ã‚’æ›´æ–°ã€‚
         INT cItems = ListView_GetItemCount(hLst3);
         size_t count = 0;
         for (iItem = 0; iItem < cItems; ++iItem) {
@@ -7644,11 +7643,11 @@ static void XgTheme_RemoveTag(HWND hwnd, BOOL bPriority)
         SetDlgItemInt(hwnd, stc2, INT(count), FALSE);
     }
 
-    // ƒvƒŠƒZƒbƒg‚ğXVB
+    // ãƒ—ãƒªã‚»ãƒƒãƒˆã‚’æ›´æ–°ã€‚
     XgTheme_UpdatePreset(hwnd);
 }
 
-// uƒe[ƒ}vƒ_ƒCƒAƒƒO‚ÅuOKvƒ{ƒ^ƒ“‚ª‰Ÿ‚³‚ê‚½B
+// ã€Œãƒ†ãƒ¼ãƒã€ãƒ€ã‚¤ã‚¢ãƒ­ã‚°ã§ã€ŒOKã€ãƒœã‚¿ãƒ³ãŒæŠ¼ã•ã‚ŒãŸã€‚
 static BOOL XgTheme_OnOK(HWND hwnd)
 {
     HWND hLst2 = GetDlgItem(hwnd, lst2);
@@ -7686,7 +7685,7 @@ static BOOL XgTheme_OnOK(HWND hwnd)
     return TRUE;
 }
 
-// ƒ^ƒO‚ÌŒŸõB
+// ã‚¿ã‚°ã®æ¤œç´¢ã€‚
 static void XgTheme_OnEdt1(HWND hwnd)
 {
     WCHAR szText[64];
@@ -7702,7 +7701,7 @@ static void XgTheme_OnEdt1(HWND hwnd)
     ListView_EnsureVisible(hLst1, iItem, FALSE);
 }
 
-// uƒe[ƒ}vƒ_ƒCƒAƒƒO‚ÌƒRƒ}ƒ“ƒhˆ—B
+// ã€Œãƒ†ãƒ¼ãƒã€ãƒ€ã‚¤ã‚¢ãƒ­ã‚°ã®ã‚³ãƒãƒ³ãƒ‰å‡¦ç†ã€‚
 static void XgTheme_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT codeNotify)
 {
     switch (id)
@@ -7715,19 +7714,19 @@ static void XgTheme_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT codeNotify)
     case IDCANCEL:
         EndDialog(hwnd, id);
         break;
-    case psh1: // ¨
+    case psh1: // â†’
         XgTheme_AddTag(hwnd, TRUE);
         break;
-    case psh2: // ©
+    case psh2: // â†
         XgTheme_RemoveTag(hwnd, TRUE);
         break;
-    case psh3: // ¨
+    case psh3: // â†’
         XgTheme_AddTag(hwnd, FALSE);
         break;
-    case psh4: // ©
+    case psh4: // â†
         XgTheme_RemoveTag(hwnd, FALSE);
         break;
-    case psh5: // ƒŠƒZƒbƒg
+    case psh5: // ãƒªã‚»ãƒƒãƒˆ
         XgSetThemeString(xg_strDefaultTheme);
         EndDialog(hwnd, IDOK);
         break;
@@ -7775,7 +7774,7 @@ LRESULT XgTheme_OnNotify(HWND hwnd, int idFrom, LPNMHDR pnmhdr)
     return 0;
 }
 
-// uƒe[ƒ}vƒ_ƒCƒAƒƒOƒvƒƒV[ƒWƒƒB
+// ã€Œãƒ†ãƒ¼ãƒã€ãƒ€ã‚¤ã‚¢ãƒ­ã‚°ãƒ—ãƒ­ã‚·ãƒ¼ã‚¸ãƒ£ã€‚
 static INT_PTR CALLBACK
 XgThemeDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
@@ -7788,11 +7787,11 @@ XgThemeDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
     return 0;
 }
 
-// uƒe[ƒ}vƒ_ƒCƒAƒƒO‚ğ•\¦‚·‚éB
+// ã€Œãƒ†ãƒ¼ãƒã€ãƒ€ã‚¤ã‚¢ãƒ­ã‚°ã‚’è¡¨ç¤ºã™ã‚‹ã€‚
 void __fastcall XgTheme(HWND hwnd)
 {
     if (xg_tag_histgram.empty()) {
-        // ƒ^ƒO‚ª‚ ‚è‚Ü‚¹‚ñB
+        // ã‚¿ã‚°ãŒã‚ã‚Šã¾ã›ã‚“ã€‚
         XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_NOTAGS), NULL, MB_ICONERROR);
         return;
     }
@@ -7803,7 +7802,7 @@ void __fastcall XgTheme(HWND hwnd)
     }
 }
 
-// ƒe[ƒ}‚ğƒŠƒZƒbƒg‚·‚éB
+// ãƒ†ãƒ¼ãƒã‚’ãƒªã‚»ãƒƒãƒˆã™ã‚‹ã€‚
 void __fastcall XgResetTheme(HWND hwnd, BOOL bQuery)
 {
     if (bQuery) {
@@ -7821,23 +7820,23 @@ void __fastcall XgShowResults(HWND hwnd)
 {
     WCHAR sz[MAX_PATH];
     if (xg_bCancelled) {
-        // ƒLƒƒƒ“ƒZƒ‹‚³‚ê‚½B
+        // ã‚­ãƒ£ãƒ³ã‚»ãƒ«ã•ã‚ŒãŸã€‚
         StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(IDS_CANCELLED),
             (s_dwTick2 - s_dwTick0) / 1000,
             (s_dwTick2 - s_dwTick0) / 100 % 10);
         XgCenterMessageBoxW(hwnd, sz, XgLoadStringDx2(IDS_RESULTS), MB_ICONINFORMATION);
     } else if (xg_bSolved) {
-        // ¬Œ÷ƒƒbƒZ[ƒW‚ğ•\¦‚·‚éB
+        // æˆåŠŸãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã‚’è¡¨ç¤ºã™ã‚‹ã€‚
         StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(IDS_MADEPROBLEM),
             (s_dwTick2 - s_dwTick0) / 1000,
             (s_dwTick2 - s_dwTick0) / 100 % 10);
         XgCenterMessageBoxW(hwnd, sz, XgLoadStringDx2(IDS_RESULTS), MB_ICONINFORMATION);
 
-        // ƒqƒ“ƒg‚ğXV‚µ‚ÄŠJ‚­B
+        // ãƒ’ãƒ³ãƒˆã‚’æ›´æ–°ã—ã¦é–‹ãã€‚
         XgUpdateHints(hwnd);
         XgShowHints(hwnd);
     } else {
-        // ¸”sƒƒbƒZ[ƒW‚ğ•\¦‚·‚éB
+        // å¤±æ•—ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã‚’è¡¨ç¤ºã™ã‚‹ã€‚
         StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(IDS_CANTMAKEPROBLEM),
             (s_dwTick2 - s_dwTick0) / 1000,
             (s_dwTick2 - s_dwTick0) / 100 % 10);
@@ -7845,28 +7844,28 @@ void __fastcall XgShowResults(HWND hwnd)
     }
 }
 
-// ƒƒbƒZ[ƒWƒ{ƒbƒNƒX‚ğ•\¦‚·‚éB
+// ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ãƒœãƒƒã‚¯ã‚¹ã‚’è¡¨ç¤ºã™ã‚‹ã€‚
 void __fastcall XgShowResultsRepeatedly(HWND hwnd)
 {
     WCHAR sz[MAX_PATH];
 
-    // ƒfƒBƒXƒN‚É‹ó‚«‚ª‚ ‚é‚©H
+    // ãƒ‡ã‚£ã‚¹ã‚¯ã«ç©ºããŒã‚ã‚‹ã‹ï¼Ÿ
     if (s_bOutOfDiskSpace) {
-        // ‚È‚©‚Á‚½B
+        // ãªã‹ã£ãŸã€‚
         StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(IDS_OUTOFSTORAGE), s_nNumberGenerated,
             (s_dwTick2 - s_dwTick0) / 1000,
             (s_dwTick2 - s_dwTick0) / 100 % 10);
     } else {
-        // ‚ ‚Á‚½B
+        // ã‚ã£ãŸã€‚
         StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(IDS_PROBLEMSMADE), s_nNumberGenerated,
             (s_dwTick2 - s_dwTick0) / 1000,
             (s_dwTick2 - s_dwTick0) / 100 % 10);
     }
 
-    // I—¹ƒƒbƒZ[ƒW‚ğ•\¦‚·‚éB
+    // çµ‚äº†ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã‚’è¡¨ç¤ºã™ã‚‹ã€‚
     XgCenterMessageBoxW(hwnd, sz, XgLoadStringDx2(IDS_RESULTS), MB_ICONINFORMATION);
 
-    // •Û‘¶æƒtƒHƒ‹ƒ_‚ğŠJ‚­B
+    // ä¿å­˜å…ˆãƒ•ã‚©ãƒ«ãƒ€ã‚’é–‹ãã€‚
     if (s_nNumberGenerated && !s_dirs_save_to.empty())
         ::ShellExecuteW(hwnd, nullptr, s_dirs_save_to[0].data(),
                         nullptr, nullptr, SW_SHOWNORMAL);
@@ -7881,7 +7880,7 @@ static void XgSetZoomRate(HWND hwnd, INT nZoomRate)
     XgUpdateImage(hwnd, x, y);
 }
 
-// ƒRƒ}ƒ“ƒh‚ğÀs‚·‚éB
+// ã‚³ãƒãƒ³ãƒ‰ã‚’å®Ÿè¡Œã™ã‚‹ã€‚
 void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*codeNotify*/)
 {
     WCHAR sz[MAX_PATH];
@@ -7890,13 +7889,13 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
 
     switch (id) {
     case ID_LEFT:
-        // ƒLƒƒƒŒƒbƒg‚ğ¶‚ÖˆÚ“®B
+        // ã‚­ãƒ£ãƒ¬ãƒƒãƒˆã‚’å·¦ã¸ç§»å‹•ã€‚
         if (xg_caret_pos.m_j > 0) {
             xg_caret_pos.m_j--;
             XgEnsureCaretVisible(hwnd);
             XgUpdateImage(hwnd);
         } else {
-            // ˆê”Ô¶‚ÌƒLƒƒƒŒƒbƒg‚È‚çA¶’[‚ÖˆÚ“®B
+            // ä¸€ç•ªå·¦ã®ã‚­ãƒ£ãƒ¬ãƒƒãƒˆãªã‚‰ã€å·¦ç«¯ã¸ç§»å‹•ã€‚
             x = 0;
             y = XgGetVScrollPos();
             XgUpdateImage(hwnd, x, y);
@@ -7904,13 +7903,13 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
         xg_prev_vk = 0;
         break;
     case ID_RIGHT:
-        // ƒLƒƒƒŒƒbƒg‚ğ‰E‚ÖˆÚ“®B
+        // ã‚­ãƒ£ãƒ¬ãƒƒãƒˆã‚’å³ã¸ç§»å‹•ã€‚
         if (xg_caret_pos.m_j + 1 < xg_nCols) {
             xg_caret_pos.m_j++;
             XgEnsureCaretVisible(hwnd);
             XgUpdateImage(hwnd);
         } else {
-            // ˆê”Ô‰E‚ÌƒLƒƒƒŒƒbƒg‚È‚çA‰E’[‚ÖˆÚ“®B
+            // ä¸€ç•ªå³ã®ã‚­ãƒ£ãƒ¬ãƒƒãƒˆãªã‚‰ã€å³ç«¯ã¸ç§»å‹•ã€‚
             SIZE siz;
             ForDisplay for_display;
             XgGetXWordExtent(&siz);
@@ -7923,13 +7922,13 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
         xg_prev_vk = 0;
         break;
     case ID_UP:
-        // ƒLƒƒƒŒƒbƒg‚ğã‚ÖˆÚ“®B
+        // ã‚­ãƒ£ãƒ¬ãƒƒãƒˆã‚’ä¸Šã¸ç§»å‹•ã€‚
         if (xg_caret_pos.m_i > 0) {
             xg_caret_pos.m_i--;
             XgEnsureCaretVisible(hwnd);
             XgUpdateImage(hwnd);
         } else {
-            // ˆê”Ôã‚ÌƒLƒƒƒŒƒbƒg‚È‚çAã’[‚ÖˆÚ“®B
+            // ä¸€ç•ªä¸Šã®ã‚­ãƒ£ãƒ¬ãƒƒãƒˆãªã‚‰ã€ä¸Šç«¯ã¸ç§»å‹•ã€‚
             x = XgGetHScrollPos();
             y = 0;
             XgUpdateImage(hwnd, x, y);
@@ -7937,13 +7936,13 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
         xg_prev_vk = 0;
         break;
     case ID_DOWN:
-        // ƒLƒƒƒŒƒbƒg‚ğ‰º‚ÖˆÚ“®B
+        // ã‚­ãƒ£ãƒ¬ãƒƒãƒˆã‚’ä¸‹ã¸ç§»å‹•ã€‚
         if (xg_caret_pos.m_i + 1 < xg_nRows) {
             xg_caret_pos.m_i++;
             XgEnsureCaretVisible(hwnd);
             XgUpdateImage(hwnd);
         } else {
-            // ˆê”Ô‰º‚ÌƒLƒƒƒŒƒbƒg‚È‚çA‰º’[‚ÖˆÚ“®B
+            // ä¸€ç•ªä¸‹ã®ã‚­ãƒ£ãƒ¬ãƒƒãƒˆãªã‚‰ã€ä¸‹ç«¯ã¸ç§»å‹•ã€‚
             SIZE siz;
             ForDisplay for_display;
             XgGetXWordExtent(&siz);
@@ -7956,14 +7955,14 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
         xg_prev_vk = 0;
         break;
     case ID_MOSTLEFT:
-        // Ctrl+©B
+        // Ctrl+â†ã€‚
         if (xg_caret_pos.m_j > 0) {
             xg_caret_pos.m_j = 0;
             XgUpdateStatusBar(hwnd);
             XgEnsureCaretVisible(hwnd);
             XgUpdateImage(hwnd);
         } else {
-            // ˆê”Ô¶‚ÌƒLƒƒƒŒƒbƒg‚È‚çA¶’[‚ÖˆÚ“®B
+            // ä¸€ç•ªå·¦ã®ã‚­ãƒ£ãƒ¬ãƒƒãƒˆãªã‚‰ã€å·¦ç«¯ã¸ç§»å‹•ã€‚
             x = 0;
             y = XgGetVScrollPos();
             XgUpdateImage(hwnd, x, y);
@@ -7971,14 +7970,14 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
         xg_prev_vk = 0;
         break;
     case ID_MOSTRIGHT:
-        // Ctrl+¨B
+        // Ctrl+â†’ã€‚
         if (xg_caret_pos.m_j + 1 < xg_nCols) {
             xg_caret_pos.m_j = xg_nCols - 1;
             XgUpdateStatusBar(hwnd);
             XgEnsureCaretVisible(hwnd);
             XgUpdateImage(hwnd);
         } else {
-            // ˆê”Ô‰E‚ÌƒLƒƒƒŒƒbƒg‚È‚çA‰E’[‚ÖˆÚ“®B
+            // ä¸€ç•ªå³ã®ã‚­ãƒ£ãƒ¬ãƒƒãƒˆãªã‚‰ã€å³ç«¯ã¸ç§»å‹•ã€‚
             SIZE siz;
             ForDisplay for_display;
             XgGetXWordExtent(&siz);
@@ -7991,14 +7990,14 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
         xg_prev_vk = 0;
         break;
     case ID_MOSTUPPER:
-        // Ctrl+ªB
+        // Ctrl+â†‘ã€‚
         if (xg_caret_pos.m_i > 0) {
             xg_caret_pos.m_i = 0;
             XgUpdateStatusBar(hwnd);
             XgEnsureCaretVisible(hwnd);
             XgUpdateImage(hwnd);
         } else {
-            // ˆê”Ôã‚ÌƒLƒƒƒŒƒbƒg‚È‚çAã’[‚ÖˆÚ“®B
+            // ä¸€ç•ªä¸Šã®ã‚­ãƒ£ãƒ¬ãƒƒãƒˆãªã‚‰ã€ä¸Šç«¯ã¸ç§»å‹•ã€‚
             x = XgGetHScrollPos();
             y = 0;
             XgUpdateImage(hwnd, x, y);
@@ -8006,14 +8005,14 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
         xg_prev_vk = 0;
         break;
     case ID_MOSTLOWER:
-        // Ctrl+«B
+        // Ctrl+â†“ã€‚
         if (xg_caret_pos.m_i + 1 < xg_nRows) {
             xg_caret_pos.m_i = xg_nRows - 1;
             XgUpdateStatusBar(hwnd);
             XgEnsureCaretVisible(hwnd);
             XgUpdateImage(hwnd);
         } else {
-            // ˆê”Ô‰º‚ÌƒLƒƒƒŒƒbƒg‚È‚çA‰º’[‚ÖˆÚ“®B
+            // ä¸€ç•ªä¸‹ã®ã‚­ãƒ£ãƒ¬ãƒƒãƒˆãªã‚‰ã€ä¸‹ç«¯ã¸ç§»å‹•ã€‚
             SIZE siz;
             ForDisplay for_display;
             XgGetXWordExtent(&siz);
@@ -8066,52 +8065,52 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
         if (::DialogBoxW(xg_hInstance, MAKEINTRESOURCE(IDD_READDICT),
                          hwnd, XgLoadDictDlgProc) == IDOK)
         {
-            // “ñdƒ}ƒX’PŒê‚ğƒNƒŠƒA‚·‚éB
+            // äºŒé‡ãƒã‚¹å˜èªã‚’ã‚¯ãƒªã‚¢ã™ã‚‹ã€‚
             SendMessageW(hwnd, WM_COMMAND, ID_KILLMARKS, 0);
         }
         break;
 
-    case ID_SETTINGS:   // İ’èB
+    case ID_SETTINGS:   // è¨­å®šã€‚
         MainWnd_OnSettings(hwnd);
         break;
 
-    case ID_ERASESETTINGS:  // İ’è‚ÌíœB
+    case ID_ERASESETTINGS:  // è¨­å®šã®å‰Šé™¤ã€‚
         MainWnd_OnEraseSettings(hwnd);
         break;
 
-    case ID_FLIPVH: // c‚Æ‰¡‚ğ“ü‚ê‘Ö‚¦‚éB
+    case ID_FLIPVH: // ç¸¦ã¨æ¨ªã‚’å…¥ã‚Œæ›¿ãˆã‚‹ã€‚
         {
             bool flag = !!::IsWindow(xg_hHintsWnd);
             auto sa1 = std::make_shared<XG_UndoData_SetAll>();
             auto sa2 = std::make_shared<XG_UndoData_SetAll>();
             sa1->Get();
-            // Œó•âƒEƒBƒ“ƒhƒE‚ğ”jŠü‚·‚éB
+            // å€™è£œã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚’ç ´æ£„ã™ã‚‹ã€‚
             XgDestroyCandsWnd();
-            // ƒqƒ“ƒgƒEƒBƒ“ƒhƒE‚ğ”jŠü‚·‚éB
+            // ãƒ’ãƒ³ãƒˆã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚’ç ´æ£„ã™ã‚‹ã€‚
             XgDestroyHintsWnd();
-            // c‚Æ‰¡‚ğ“ü‚ê‘Ö‚¦‚éB
+            // ç¸¦ã¨æ¨ªã‚’å…¥ã‚Œæ›¿ãˆã‚‹ã€‚
             MainWnd_OnFlipVH(hwnd);
             if (flag) {
                 XgShowHints(hwnd);
             }
             sa2->Get();
             xg_ubUndoBuffer.Commit(UC_SETALL, sa1, sa2);
-            // ƒc[ƒ‹ƒo[‚ÌUI‚ğXV‚·‚éB
+            // ãƒ„ãƒ¼ãƒ«ãƒãƒ¼ã®UIã‚’æ›´æ–°ã™ã‚‹ã€‚
             XgUpdateToolBarUI(hwnd);
         }
         break;
 
-    case ID_NEW:    // V‹Kì¬B
+    case ID_NEW:    // æ–°è¦ä½œæˆã€‚
         {
             bool flag = false;
             auto sa1 = std::make_shared<XG_UndoData_SetAll>();
             auto sa2 = std::make_shared<XG_UndoData_SetAll>();
             sa1->Get();
-            // Œó•âƒEƒBƒ“ƒhƒE‚ğ”jŠü‚·‚éB
+            // å€™è£œã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚’ç ´æ£„ã™ã‚‹ã€‚
             XgDestroyCandsWnd();
-            // ƒqƒ“ƒgƒEƒBƒ“ƒhƒE‚ğ”jŠü‚·‚éB
+            // ãƒ’ãƒ³ãƒˆã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚’ç ´æ£„ã™ã‚‹ã€‚
             XgDestroyHintsWnd();
-            // V‹Kì¬ƒ_ƒCƒAƒƒOB
+            // æ–°è¦ä½œæˆãƒ€ã‚¤ã‚¢ãƒ­ã‚°ã€‚
             if (XgOnNew(hwnd)) {
                 flag = true;
                 sa2->Get();
@@ -8122,115 +8121,115 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
                 sa1->Apply();
             }
         }
-        // ƒc[ƒ‹ƒo[‚ÌUI‚ğXV‚·‚éB
+        // ãƒ„ãƒ¼ãƒ«ãƒãƒ¼ã®UIã‚’æ›´æ–°ã™ã‚‹ã€‚
         XgUpdateToolBarUI(hwnd);
         break;
 
-    case ID_GENERATE:   // –â‘è‚ğ©“®¶¬‚·‚éB
+    case ID_GENERATE:   // å•é¡Œã‚’è‡ªå‹•ç”Ÿæˆã™ã‚‹ã€‚
         {
             bool flag = false;
             auto sa1 = std::make_shared<XG_UndoData_SetAll>();
             auto sa2 = std::make_shared<XG_UndoData_SetAll>();
             sa1->Get();
-            // Œó•âƒEƒBƒ“ƒhƒE‚ğ”jŠü‚·‚éB
+            // å€™è£œã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚’ç ´æ£„ã™ã‚‹ã€‚
             XgDestroyCandsWnd();
-            // ƒqƒ“ƒgƒEƒBƒ“ƒhƒE‚ğ”jŠü‚·‚éB
+            // ãƒ’ãƒ³ãƒˆã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚’ç ´æ£„ã™ã‚‹ã€‚
             XgDestroyHintsWnd();
-            // –â‘è‚Ìì¬B
+            // å•é¡Œã®ä½œæˆã€‚
             if (XgOnGenerate(hwnd, false, false)) {
                 flag = true;
                 sa2->Get();
                 xg_ubUndoBuffer.Commit(UC_SETALL, sa1, sa2);
-                // ƒCƒ[ƒW‚ğXV‚·‚éB
+                // ã‚¤ãƒ¡ãƒ¼ã‚¸ã‚’æ›´æ–°ã™ã‚‹ã€‚
                 xg_caret_pos.clear();
                 XgMarkUpdate();
                 XgUpdateImage(hwnd, 0, 0);
-                // ƒƒbƒZ[ƒWƒ{ƒbƒNƒX‚ğ•\¦‚·‚éB
+                // ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ãƒœãƒƒã‚¯ã‚¹ã‚’è¡¨ç¤ºã™ã‚‹ã€‚
                 XgShowResults(hwnd);
             }
             if (!flag) {
                 sa1->Apply();
             }
-            // ƒCƒ[ƒW‚ğXV‚·‚éB
+            // ã‚¤ãƒ¡ãƒ¼ã‚¸ã‚’æ›´æ–°ã™ã‚‹ã€‚
             xg_caret_pos.clear();
             XgMarkUpdate();
             XgUpdateImage(hwnd, 0, 0);
         }
-        // ƒc[ƒ‹ƒo[‚ÌUI‚ğXV‚·‚éB
+        // ãƒ„ãƒ¼ãƒ«ãƒãƒ¼ã®UIã‚’æ›´æ–°ã™ã‚‹ã€‚
         XgUpdateToolBarUI(hwnd);
         break;
 
-    case ID_GENERATEANSWER:   // –â‘è‚ğ©“®¶¬‚·‚éi“š‚¦•t‚«jB
+    case ID_GENERATEANSWER:   // å•é¡Œã‚’è‡ªå‹•ç”Ÿæˆã™ã‚‹ï¼ˆç­”ãˆä»˜ãï¼‰ã€‚
         {
             bool flag = false;
             auto sa1 = std::make_shared<XG_UndoData_SetAll>();
             auto sa2 = std::make_shared<XG_UndoData_SetAll>();
             sa1->Get();
-            // Œó•âƒEƒBƒ“ƒhƒE‚ğ”jŠü‚·‚éB
+            // å€™è£œã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚’ç ´æ£„ã™ã‚‹ã€‚
             XgDestroyCandsWnd();
-            // ƒqƒ“ƒgƒEƒBƒ“ƒhƒE‚ğ”jŠü‚·‚éB
+            // ãƒ’ãƒ³ãƒˆã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚’ç ´æ£„ã™ã‚‹ã€‚
             XgDestroyHintsWnd();
-            // –â‘è‚Ìì¬B
+            // å•é¡Œã®ä½œæˆã€‚
             if (XgOnGenerate(hwnd, true, false)) {
                 flag = true;
                 sa2->Get();
                 xg_ubUndoBuffer.Commit(UC_SETALL, sa1, sa2);
-                // ƒCƒ[ƒW‚ğXV‚·‚éB
+                // ã‚¤ãƒ¡ãƒ¼ã‚¸ã‚’æ›´æ–°ã™ã‚‹ã€‚
                 xg_caret_pos.clear();
                 XgMarkUpdate();
                 XgUpdateImage(hwnd, 0, 0);
-                // ƒƒbƒZ[ƒWƒ{ƒbƒNƒX‚ğ•\¦‚·‚éB
+                // ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ãƒœãƒƒã‚¯ã‚¹ã‚’è¡¨ç¤ºã™ã‚‹ã€‚
                 XgShowResults(hwnd);
             }
             if (!flag) {
                 sa1->Apply();
             }
-            // ƒCƒ[ƒW‚ğXV‚·‚éB
+            // ã‚¤ãƒ¡ãƒ¼ã‚¸ã‚’æ›´æ–°ã™ã‚‹ã€‚
             xg_caret_pos.clear();
             XgMarkUpdate();
             XgUpdateImage(hwnd, 0, 0);
         }
-        // ƒc[ƒ‹ƒo[‚ÌUI‚ğXV‚·‚éB
+        // ãƒ„ãƒ¼ãƒ«ãƒãƒ¼ã®UIã‚’æ›´æ–°ã™ã‚‹ã€‚
         XgUpdateToolBarUI(hwnd);
         break;
 
-    case ID_GENERATEREPEATEDLY:     // –â‘è‚ğ˜A‘±©“®¶¬‚·‚é
+    case ID_GENERATEREPEATEDLY:     // å•é¡Œã‚’é€£ç¶šè‡ªå‹•ç”Ÿæˆã™ã‚‹
         {
             auto sa1 = std::make_shared<XG_UndoData_SetAll>();
             sa1->Get();
             auto sa2 = std::make_shared<XG_UndoData_SetAll>();
-            // Œó•âƒEƒBƒ“ƒhƒE‚ğ”jŠü‚·‚éB
+            // å€™è£œã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚’ç ´æ£„ã™ã‚‹ã€‚
             XgDestroyCandsWnd();
-            // ƒqƒ“ƒgƒEƒBƒ“ƒhƒE‚ğ”jŠü‚·‚éB
+            // ãƒ’ãƒ³ãƒˆã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚’ç ´æ£„ã™ã‚‹ã€‚
             XgDestroyHintsWnd();
-            // ˜A‘±¶¬ƒ_ƒCƒAƒƒOB
+            // é€£ç¶šç”Ÿæˆãƒ€ã‚¤ã‚¢ãƒ­ã‚°ã€‚
             if (XgOnGenerate(hwnd, false, true)) {
-                // ƒNƒŠƒA‚·‚éB
+                // ã‚¯ãƒªã‚¢ã™ã‚‹ã€‚
                 xg_bShowAnswer = false;
                 xg_bSolved = false;
                 xg_xword.clear();
                 xg_solution.clear();
-                // Œ³‚É–ß‚·î•ñ‚ğc‚·B
+                // å…ƒã«æˆ»ã™æƒ…å ±ã‚’æ®‹ã™ã€‚
                 sa2->Get();
                 xg_ubUndoBuffer.Commit(UC_SETALL, sa1, sa2);
-                // ƒCƒ[ƒW‚ğXV‚·‚éB
+                // ã‚¤ãƒ¡ãƒ¼ã‚¸ã‚’æ›´æ–°ã™ã‚‹ã€‚
                 xg_caret_pos.clear();
                 XgMarkUpdate();
                 XgUpdateImage(hwnd, 0, 0);
-                // ƒƒbƒZ[ƒWƒ{ƒbƒNƒX‚ğ•\¦‚·‚éB
+                // ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ãƒœãƒƒã‚¯ã‚¹ã‚’è¡¨ç¤ºã™ã‚‹ã€‚
                 XgShowResultsRepeatedly(hwnd);
             }
-            // ƒCƒ[ƒW‚ğXV‚·‚éB
+            // ã‚¤ãƒ¡ãƒ¼ã‚¸ã‚’æ›´æ–°ã™ã‚‹ã€‚
             xg_caret_pos.clear();
             XgMarkUpdate();
             XgUpdateImage(hwnd, 0, 0);
         }
-        // ƒc[ƒ‹ƒo[‚ÌUI‚ğXV‚·‚éB
+        // ãƒ„ãƒ¼ãƒ«ãƒãƒ¼ã®UIã‚’æ›´æ–°ã™ã‚‹ã€‚
         XgUpdateToolBarUI(hwnd);
         break;
 
-    case ID_OPEN:   // ƒtƒ@ƒCƒ‹‚ğŠJ‚­B
-        // ƒ†[ƒU[‚Éƒtƒ@ƒCƒ‹‚ÌêŠ‚ğ–â‚¢‡‚í‚¹‚éB
+    case ID_OPEN:   // ãƒ•ã‚¡ã‚¤ãƒ«ã‚’é–‹ãã€‚
+        // ãƒ¦ãƒ¼ã‚¶ãƒ¼ã«ãƒ•ã‚¡ã‚¤ãƒ«ã®å ´æ‰€ã‚’å•ã„åˆã‚ã›ã‚‹ã€‚
         ZeroMemory(&ofn, sizeof(ofn));
         ofn.lStructSize = OPENFILENAME_SIZE_VERSION_400W;
         ofn.hwndOwner = hwnd;
@@ -8243,7 +8242,7 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
             OFN_PATHMUSTEXIST | OFN_HIDEREADONLY;
         ofn.lpstrDefExt = L"xwd";
         if (::GetOpenFileNameW(&ofn)) {
-            // JSONŒ`®‚©H
+            // JSONå½¢å¼ã‹ï¼Ÿ
             bool is_json = false;
             bool is_builder = false;
             if (::lstrcmpiW(PathFindExtensionW(sz), L".xwj") == 0 ||
@@ -8256,46 +8255,46 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
             {
                 is_builder = true;
             }
-            // ŠJ‚­B
+            // é–‹ãã€‚
             if (is_builder) {
                 if (!XgDoLoadCrpFile(hwnd, sz)) {
-                    // ¸”sB
+                    // å¤±æ•—ã€‚
                     XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_CANTLOAD), nullptr, MB_ICONERROR);
                 } else {
-                    // ¬Œ÷B
+                    // æˆåŠŸã€‚
                     xg_ubUndoBuffer.Empty();
                     xg_caret_pos.clear();
-                    // ƒCƒ[ƒW‚ğXV‚·‚éB
+                    // ã‚¤ãƒ¡ãƒ¼ã‚¸ã‚’æ›´æ–°ã™ã‚‹ã€‚
                     XgUpdateImage(hwnd, 0, 0);
                 }
             } else {
                 if (!XgDoLoadFile(hwnd, sz, is_json)) {
-                    // ¸”sB
+                    // å¤±æ•—ã€‚
                     XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_CANTLOAD), nullptr, MB_ICONERROR);
                 } else {
-                    // ¬Œ÷B
+                    // æˆåŠŸã€‚
                     xg_ubUndoBuffer.Empty();
                     xg_caret_pos.clear();
-                    // ƒCƒ[ƒW‚ğXV‚·‚éB
+                    // ã‚¤ãƒ¡ãƒ¼ã‚¸ã‚’æ›´æ–°ã™ã‚‹ã€‚
                     XgUpdateImage(hwnd, 0, 0);
-                    // ƒe[ƒ}‚ğXV‚·‚éB
+                    // ãƒ†ãƒ¼ãƒã‚’æ›´æ–°ã™ã‚‹ã€‚
                     XgSetThemeString(xg_strTheme);
                     XgUpdateTheme(hwnd);
                 }
             }
         }
-        // ƒc[ƒ‹ƒo[‚ÌUI‚ğXV‚·‚éB
+        // ãƒ„ãƒ¼ãƒ«ãƒãƒ¼ã®UIã‚’æ›´æ–°ã™ã‚‹ã€‚
         XgUpdateToolBarUI(hwnd);
-        // ƒ‹[ƒ‹‚ğXV‚·‚éB
+        // ãƒ«ãƒ¼ãƒ«ã‚’æ›´æ–°ã™ã‚‹ã€‚
         XgUpdateRules(hwnd);
         break;
 
-    case ID_SAVEAS: // ƒtƒ@ƒCƒ‹‚ğ•Û‘¶‚·‚éB
+    case ID_SAVEAS: // ãƒ•ã‚¡ã‚¤ãƒ«ã‚’ä¿å­˜ã™ã‚‹ã€‚
         if (xg_dict_files.empty()) {
-            // «‘ƒtƒ@ƒCƒ‹‚Ì–¼‘O‚ğ“Ç‚İ‚ŞB
+            // è¾æ›¸ãƒ•ã‚¡ã‚¤ãƒ«ã®åå‰ã‚’èª­ã¿è¾¼ã‚€ã€‚
             XgLoadDictsAll();
         }
-        // ƒ†[ƒU[‚Éƒtƒ@ƒCƒ‹‚ÌêŠ‚ğ–â‚¢‡‚í‚¹‚é€”õB
+        // ãƒ¦ãƒ¼ã‚¶ãƒ¼ã«ãƒ•ã‚¡ã‚¤ãƒ«ã®å ´æ‰€ã‚’å•ã„åˆã‚ã›ã‚‹æº–å‚™ã€‚
         ZeroMemory(&ofn, sizeof(ofn));
         ofn.lStructSize = OPENFILENAME_SIZE_VERSION_400W;
         ofn.hwndOwner = hwnd;
@@ -8313,39 +8312,39 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
         {
             PathRemoveExtensionW(sz);
         }
-        // ƒ†[ƒU[‚Éƒtƒ@ƒCƒ‹‚ÌêŠ‚ğ–â‚¢‡‚í‚¹‚éB
+        // ãƒ¦ãƒ¼ã‚¶ãƒ¼ã«ãƒ•ã‚¡ã‚¤ãƒ«ã®å ´æ‰€ã‚’å•ã„åˆã‚ã›ã‚‹ã€‚
         if (::GetSaveFileNameW(&ofn)) {
-            // •Û‘¶‚·‚éB
+            // ä¿å­˜ã™ã‚‹ã€‚
             if (!XgDoSave(hwnd, sz)) {
-                // •Û‘¶‚É¸”sB
+                // ä¿å­˜ã«å¤±æ•—ã€‚
                 XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_CANTSAVE2), nullptr, MB_ICONERROR);
             }
         }
-        // ƒc[ƒ‹ƒo[‚ÌUI‚ğXV‚·‚éB
+        // ãƒ„ãƒ¼ãƒ«ãƒãƒ¼ã®UIã‚’æ›´æ–°ã™ã‚‹ã€‚
         XgUpdateToolBarUI(hwnd);
         break;
 
-    case ID_SAVEPROBASIMAGE:    // –â‘è‚ğ‰æ‘œƒtƒ@ƒCƒ‹‚Æ‚µ‚Ä•Û‘¶‚·‚éB
+    case ID_SAVEPROBASIMAGE:    // å•é¡Œã‚’ç”»åƒãƒ•ã‚¡ã‚¤ãƒ«ã¨ã—ã¦ä¿å­˜ã™ã‚‹ã€‚
         XgSaveProbAsImage(hwnd);
         break;
 
-    case ID_SAVEANSASIMAGE:     // ‰ğ“š‚ğ‰æ‘œƒtƒ@ƒCƒ‹‚Æ‚µ‚Ä•Û‘¶‚·‚éB
+    case ID_SAVEANSASIMAGE:     // è§£ç­”ã‚’ç”»åƒãƒ•ã‚¡ã‚¤ãƒ«ã¨ã—ã¦ä¿å­˜ã™ã‚‹ã€‚
         XgSaveAnsAsImage(hwnd);
         break;
 
-    case ID_LINESYMMETRYCHECK:  // ü‘ÎÌƒ`ƒFƒbƒNB
+    case ID_LINESYMMETRYCHECK:  // ç·šå¯¾ç§°ãƒã‚§ãƒƒã‚¯ã€‚
         XgOnLineSymmetryCheck(hwnd);
         break;
 
-    case ID_POINTSYMMETRYCHECK: // “_‘ÎÌƒ`ƒFƒbƒNB
+    case ID_POINTSYMMETRYCHECK: // ç‚¹å¯¾ç§°ãƒã‚§ãƒƒã‚¯ã€‚
         XgOnPointSymmetryCheck(hwnd);
         break;
 
-    case ID_EXIT:   // I—¹‚·‚éB
+    case ID_EXIT:   // çµ‚äº†ã™ã‚‹ã€‚
         DestroyWindow(hwnd);
         break;
 
-    case ID_UNDO:   // Œ³‚É–ß‚·B
+    case ID_UNDO:   // å…ƒã«æˆ»ã™ã€‚
         if (::GetForegroundWindow() != xg_hMainWnd) {
             HWND hwnd = ::GetFocus();
             ::SendMessageW(hwnd, WM_UNDO, 0, 0);
@@ -8355,7 +8354,7 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
                 if (::IsWindow(xg_hHintsWnd)) {
                     XgSetHintsData();
                 }
-                // ƒCƒ[ƒW‚ğXV‚·‚éB
+                // ã‚¤ãƒ¡ãƒ¼ã‚¸ã‚’æ›´æ–°ã™ã‚‹ã€‚
                 XgUpdateImage(hwnd, 0, 0);
             } else {
                 ::MessageBeep(0xFFFFFFFF);
@@ -8363,7 +8362,7 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
         }
         break;
 
-    case ID_REDO:   // ‚â‚è’¼‚·B
+    case ID_REDO:   // ã‚„ã‚Šç›´ã™ã€‚
         if (::GetForegroundWindow() != xg_hMainWnd) {
             ;
         } else {
@@ -8372,7 +8371,7 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
                 if (::IsWindow(xg_hHintsWnd)) {
                     XgSetHintsData();
                 }
-                // ƒCƒ[ƒW‚ğXV‚·‚éB
+                // ã‚¤ãƒ¡ãƒ¼ã‚¸ã‚’æ›´æ–°ã™ã‚‹ã€‚
                 XgUpdateImage(hwnd, 0, 0);
             } else {
                 ::MessageBeep(0xFFFFFFFF);
@@ -8380,13 +8379,13 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
         }
         break;
 
-    case ID_GENERATEBLACKS: // •ƒ}ƒXƒpƒ^[ƒ“‚ğ¶¬B
-        // ‹ô”s”‚Å•ƒ}ƒXü‘ÎÌiƒ^ƒej‚Ìê‡‚Í˜A•‹Ö‚Í•s‰ÂB
+    case ID_GENERATEBLACKS: // é»’ãƒã‚¹ãƒ‘ã‚¿ãƒ¼ãƒ³ã‚’ç”Ÿæˆã€‚
+        // å¶æ•°è¡Œæ•°ã§é»’ãƒã‚¹ç·šå¯¾ç§°ï¼ˆã‚¿ãƒ†ï¼‰ã®å ´åˆã¯é€£é»’ç¦ã¯ä¸å¯ã€‚
         if (!(xg_nRows & 1) && (xg_nRules & RULE_LINESYMMETRYV) && (xg_nRules & RULE_DONTDOUBLEBLACK)) {
             XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_EVENROWLINESYMV), nullptr, MB_ICONERROR);
             break;
         }
-        // ‹ô”—ñ”‚Å•ƒ}ƒXü‘ÎÌiƒˆƒRj‚Ìê‡‚Í˜A•‹Ö‚Í•s‰ÂB
+        // å¶æ•°åˆ—æ•°ã§é»’ãƒã‚¹ç·šå¯¾ç§°ï¼ˆãƒ¨ã‚³ï¼‰ã®å ´åˆã¯é€£é»’ç¦ã¯ä¸å¯ã€‚
         if (!(xg_nCols & 1) && (xg_nRules & RULE_LINESYMMETRYH) && (xg_nRules & RULE_DONTDOUBLEBLACK)) {
             XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_EVENCOLLINESYMH), nullptr, MB_ICONERROR);
             break;
@@ -8397,27 +8396,27 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
             sa1->Get();
             if (XgOnGenerateBlacks(hwnd, false)) {
                 sa2->Get();
-                // Œ³‚É–ß‚·î•ñ‚ğİ’è‚·‚éB
+                // å…ƒã«æˆ»ã™æƒ…å ±ã‚’è¨­å®šã™ã‚‹ã€‚
                 xg_ubUndoBuffer.Commit(UC_SETALL, sa1, sa2);
             }
-            // ƒc[ƒ‹ƒo[‚ÌUI‚ğXV‚·‚éB
+            // ãƒ„ãƒ¼ãƒ«ãƒãƒ¼ã®UIã‚’æ›´æ–°ã™ã‚‹ã€‚
             XgUpdateToolBarUI(hwnd);
         }
         break;
 
-    case ID_SOLVE:  // ‰ğ‚ğ‹‚ß‚éB
+    case ID_SOLVE:  // è§£ã‚’æ±‚ã‚ã‚‹ã€‚
         if (!xg_bSolved && xg_xword.IsFulfilled())
         {
-            // ‹ó”’ƒ}ƒX‚ª‚È‚¢ê‡‚Íu‰ğ‚ğ‹‚ß‚év‚ğ§ŒÀ‚µ‚È‚¢B
+            // ç©ºç™½ãƒã‚¹ãŒãªã„å ´åˆã¯ã€Œè§£ã‚’æ±‚ã‚ã‚‹ã€ã‚’åˆ¶é™ã—ãªã„ã€‚
         }
         else
         {
-            // ƒ‹[ƒ‹u•ƒ}ƒX“_‘ÎÌv‚Å‚Í•ƒ}ƒX’Ç‰Á‚ ‚è‚Ì‰ğ‚ğ‹‚ß‚é‚±‚Æ‚Í‚Å‚«‚Ü‚¹‚ñB
+            // ãƒ«ãƒ¼ãƒ«ã€Œé»’ãƒã‚¹ç‚¹å¯¾ç§°ã€ã§ã¯é»’ãƒã‚¹è¿½åŠ ã‚ã‚Šã®è§£ã‚’æ±‚ã‚ã‚‹ã“ã¨ã¯ã§ãã¾ã›ã‚“ã€‚
             if (xg_nRules & RULE_POINTSYMMETRY) {
                 XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_CANTSOLVESYMMETRY), NULL, MB_ICONERROR);
                 return;
             }
-            // ƒ‹[ƒ‹u•ƒ}ƒXü‘ÎÌv‚Å‚Í•ƒ}ƒX’Ç‰Á‚ ‚è‚Ì‰ğ‚ğ‹‚ß‚é‚±‚Æ‚Í‚Å‚«‚Ü‚¹‚ñB
+            // ãƒ«ãƒ¼ãƒ«ã€Œé»’ãƒã‚¹ç·šå¯¾ç§°ã€ã§ã¯é»’ãƒã‚¹è¿½åŠ ã‚ã‚Šã®è§£ã‚’æ±‚ã‚ã‚‹ã“ã¨ã¯ã§ãã¾ã›ã‚“ã€‚
             if (xg_nRules & RULE_LINESYMMETRYV) {
                 XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_CANTSOLVELINESYMMETRY), NULL, MB_ICONERROR);
                 return;
@@ -8432,23 +8431,23 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
             auto sa2 = std::make_shared<XG_UndoData_SetAll>();
             sa1->Get();
             {
-                // ‰ğ‚ğ‹‚ß‚éB
+                // è§£ã‚’æ±‚ã‚ã‚‹ã€‚
                 XgOnSolve_AddBlack(hwnd);
             }
             sa2->Get();
-            // Œ³‚É–ß‚·î•ñ‚ğİ’è‚·‚éB
+            // å…ƒã«æˆ»ã™æƒ…å ±ã‚’è¨­å®šã™ã‚‹ã€‚
             xg_ubUndoBuffer.Commit(UC_SETALL, sa1, sa2);
-            // ƒc[ƒ‹ƒo[‚ÌUI‚ğXV‚·‚éB
+            // ãƒ„ãƒ¼ãƒ«ãƒãƒ¼ã®UIã‚’æ›´æ–°ã™ã‚‹ã€‚
             XgUpdateToolBarUI(hwnd);
         }
         break;
 
-    case ID_SOLVENOADDBLACK:    // ‰ğ‚ğ‹‚ß‚éi•ƒ}ƒX’Ç‰Á‚È‚µjB
+    case ID_SOLVENOADDBLACK:    // è§£ã‚’æ±‚ã‚ã‚‹ï¼ˆé»’ãƒã‚¹è¿½åŠ ãªã—ï¼‰ã€‚
         {
             auto sa1 = std::make_shared<XG_UndoData_SetAll>();
             sa1->Get();
 
-            // •K—v‚È‚çƒ‹[ƒ‹‚É]‚Á‚Ä‘ÎÌ‚É‚·‚éB
+            // å¿…è¦ãªã‚‰ãƒ«ãƒ¼ãƒ«ã«å¾“ã£ã¦å¯¾ç§°ã«ã™ã‚‹ã€‚
             XG_Board copy = xg_xword;
             copy.Mirror();
             if (!std::equal(xg_xword.m_vCells.cbegin(), xg_xword.m_vCells.cend(),
@@ -8464,25 +8463,25 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
 
             auto sa2 = std::make_shared<XG_UndoData_SetAll>();
             {
-                // ‰ğ‚ğ‹‚ß‚éi•ƒ}ƒX’Ç‰Á‚È‚µjB
+                // è§£ã‚’æ±‚ã‚ã‚‹ï¼ˆé»’ãƒã‚¹è¿½åŠ ãªã—ï¼‰ã€‚
                 XgOnSolve_NoAddBlack(hwnd);
             }
             sa2->Get();
 
-            // Œ³‚É–ß‚·î•ñ‚ğİ’è‚·‚éB
+            // å…ƒã«æˆ»ã™æƒ…å ±ã‚’è¨­å®šã™ã‚‹ã€‚
             xg_ubUndoBuffer.Commit(UC_SETALL, sa1, sa2);
-            // ƒc[ƒ‹ƒo[‚ÌUI‚ğXV‚·‚éB
+            // ãƒ„ãƒ¼ãƒ«ãƒãƒ¼ã®UIã‚’æ›´æ–°ã™ã‚‹ã€‚
             XgUpdateToolBarUI(hwnd);
         }
         break;
 
-    case ID_SOLVEREPEATEDLY:    // ˜A‘±‚Å‰ğ‚ğ‹‚ß‚é
-        // ƒ‹[ƒ‹u•ƒ}ƒX“_‘ÎÌv‚Å‚Í•ƒ}ƒX’Ç‰Á‚ ‚è‚Ì‰ğ‚ğ‹‚ß‚é‚±‚Æ‚Í‚Å‚«‚Ü‚¹‚ñB
+    case ID_SOLVEREPEATEDLY:    // é€£ç¶šã§è§£ã‚’æ±‚ã‚ã‚‹
+        // ãƒ«ãƒ¼ãƒ«ã€Œé»’ãƒã‚¹ç‚¹å¯¾ç§°ã€ã§ã¯é»’ãƒã‚¹è¿½åŠ ã‚ã‚Šã®è§£ã‚’æ±‚ã‚ã‚‹ã“ã¨ã¯ã§ãã¾ã›ã‚“ã€‚
         if (xg_nRules & RULE_POINTSYMMETRY) {
             XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_CANTSOLVESYMMETRY), NULL, MB_ICONERROR);
             return;
         }
-        // ƒ‹[ƒ‹u•ƒ}ƒXü‘ÎÌv‚Å‚Í•ƒ}ƒX’Ç‰Á‚ ‚è‚Ì‰ğ‚ğ‹‚ß‚é‚±‚Æ‚Í‚Å‚«‚Ü‚¹‚ñB
+        // ãƒ«ãƒ¼ãƒ«ã€Œé»’ãƒã‚¹ç·šå¯¾ç§°ã€ã§ã¯é»’ãƒã‚¹è¿½åŠ ã‚ã‚Šã®è§£ã‚’æ±‚ã‚ã‚‹ã“ã¨ã¯ã§ãã¾ã›ã‚“ã€‚
         if (xg_nRules & RULE_LINESYMMETRYV) {
             XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_CANTSOLVELINESYMMETRY), NULL, MB_ICONERROR);
             return;
@@ -8495,7 +8494,7 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
             auto sa1 = std::make_shared<XG_UndoData_SetAll>();
             sa1->Get();
 
-            // •K—v‚È‚çƒ‹[ƒ‹‚É]‚Á‚Ä‘ÎÌ‚É‚·‚éB
+            // å¿…è¦ãªã‚‰ãƒ«ãƒ¼ãƒ«ã«å¾“ã£ã¦å¯¾ç§°ã«ã™ã‚‹ã€‚
             XG_Board copy = xg_xword;
             copy.Mirror();
             if (!std::equal(xg_xword.m_vCells.cbegin(), xg_xword.m_vCells.cend(),
@@ -8509,82 +8508,82 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
                 }
             }
 
-            // Œó•âƒEƒBƒ“ƒhƒE‚ğ”jŠü‚·‚éB
+            // å€™è£œã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚’ç ´æ£„ã™ã‚‹ã€‚
             XgDestroyCandsWnd();
-            // ƒqƒ“ƒgƒEƒBƒ“ƒhƒE‚ğ”jŠü‚·‚éB
+            // ãƒ’ãƒ³ãƒˆã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚’ç ´æ£„ã™ã‚‹ã€‚
             XgDestroyHintsWnd();
-            // ˜A‘±‚Å‰ğ‚ğ‹‚ß‚éB
+            // é€£ç¶šã§è§£ã‚’æ±‚ã‚ã‚‹ã€‚
             if (XgOnSolveRepeatedly(hwnd)) {
                 sa1->Apply();
             }
         }
-        // ƒCƒ[ƒW‚ğXV‚·‚éB
+        // ã‚¤ãƒ¡ãƒ¼ã‚¸ã‚’æ›´æ–°ã™ã‚‹ã€‚
         xg_caret_pos.clear();
         XgMarkUpdate();
         XgUpdateImage(hwnd, 0, 0);
-        // ƒc[ƒ‹ƒo[‚ÌUI‚ğXV‚·‚éB
+        // ãƒ„ãƒ¼ãƒ«ãƒãƒ¼ã®UIã‚’æ›´æ–°ã™ã‚‹ã€‚
         XgUpdateToolBarUI(hwnd);
         break;
 
-    case ID_SOLVEREPEATEDLYNOADDBLACK:  // ˜A‘±‚Å‰ğ‚ğ‹‚ß‚é(•ƒ}ƒX’Ç‰Á‚È‚µ)
+    case ID_SOLVEREPEATEDLYNOADDBLACK:  // é€£ç¶šã§è§£ã‚’æ±‚ã‚ã‚‹(é»’ãƒã‚¹è¿½åŠ ãªã—)
         {
             auto sa1 = std::make_shared<XG_UndoData_SetAll>();
             sa1->Get();
-            // Œó•âƒEƒBƒ“ƒhƒE‚ğ”jŠü‚·‚éB
+            // å€™è£œã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚’ç ´æ£„ã™ã‚‹ã€‚
             XgDestroyCandsWnd();
-            // ƒqƒ“ƒgƒEƒBƒ“ƒhƒE‚ğ”jŠü‚·‚éB
+            // ãƒ’ãƒ³ãƒˆã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚’ç ´æ£„ã™ã‚‹ã€‚
             XgDestroyHintsWnd();
-            // ˜A‘±‚Å‰ğ‚ğ‹‚ß‚éB
+            // é€£ç¶šã§è§£ã‚’æ±‚ã‚ã‚‹ã€‚
             if (XgOnSolveRepeatedlyNoAddBlack(hwnd)) {
                 sa1->Apply();
             }
         }
-        // ƒCƒ[ƒW‚ğXV‚·‚éB
+        // ã‚¤ãƒ¡ãƒ¼ã‚¸ã‚’æ›´æ–°ã™ã‚‹ã€‚
         xg_caret_pos.clear();
         XgMarkUpdate();
         XgUpdateImage(hwnd, 0, 0);
-        // ƒc[ƒ‹ƒo[‚ÌUI‚ğXV‚·‚éB
+        // ãƒ„ãƒ¼ãƒ«ãƒãƒ¼ã®UIã‚’æ›´æ–°ã™ã‚‹ã€‚
         XgUpdateToolBarUI(hwnd);
         break;
 
-    case ID_SHOWSOLUTION:   // ‰ğ‚ğ•\¦‚·‚éB
+    case ID_SHOWSOLUTION:   // è§£ã‚’è¡¨ç¤ºã™ã‚‹ã€‚
         xg_bShowAnswer = true;
         XgMarkUpdate();
-        // ƒCƒ[ƒW‚ğXV‚·‚éB
+        // ã‚¤ãƒ¡ãƒ¼ã‚¸ã‚’æ›´æ–°ã™ã‚‹ã€‚
         XgUpdateImage(hwnd, 0, 0);
         break;
 
-    case ID_NOSOLUTION: // ‰ğ‚ğ•\¦‚µ‚È‚¢B
+    case ID_NOSOLUTION: // è§£ã‚’è¡¨ç¤ºã—ãªã„ã€‚
         xg_bShowAnswer = false;
         XgMarkUpdate();
-        // ƒCƒ[ƒW‚ğXV‚·‚éB
+        // ã‚¤ãƒ¡ãƒ¼ã‚¸ã‚’æ›´æ–°ã™ã‚‹ã€‚
         XgUpdateImage(hwnd, 0, 0);
         break;
 
-    case ID_SHOWHIDESOLUTION:   // ‰ğ‚Ì•\¦‚ğØ‚è‘Ö‚¦‚éB
+    case ID_SHOWHIDESOLUTION:   // è§£ã®è¡¨ç¤ºã‚’åˆ‡ã‚Šæ›¿ãˆã‚‹ã€‚
         xg_bShowAnswer = !xg_bShowAnswer;
         XgMarkUpdate();
-        // ƒCƒ[ƒW‚ğXV‚·‚éB
+        // ã‚¤ãƒ¡ãƒ¼ã‚¸ã‚’æ›´æ–°ã™ã‚‹ã€‚
         XgUpdateImage(hwnd, 0, 0);
         break;
 
-    case ID_OPENREADME:     // ReadMe‚ğŠJ‚­B
+    case ID_OPENREADME:     // ReadMeã‚’é–‹ãã€‚
         XgOpenReadMe(hwnd);
         break;
 
-    case ID_OPENLICENSE:    // License‚ğŠJ‚­B
+    case ID_OPENLICENSE:    // Licenseã‚’é–‹ãã€‚
         XgOpenLicense(hwnd);
         break;
 
-    case ID_OPENPATTERNS:    // ƒpƒ^[ƒ“‚ğŠJ‚­B
+    case ID_OPENPATTERNS:    // ãƒ‘ã‚¿ãƒ¼ãƒ³ã‚’é–‹ãã€‚
         XgOpenPatterns(hwnd);
         break;
 
-    case ID_ABOUT:      // ƒo[ƒWƒ‡ƒ“î•ñB
+    case ID_ABOUT:      // ãƒãƒ¼ã‚¸ãƒ§ãƒ³æƒ…å ±ã€‚
         XgOnAbout(hwnd);
         break;
 
-    case ID_PANENEXT:   // Ÿ‚Ìƒy[ƒ“B
+    case ID_PANENEXT:   // æ¬¡ã®ãƒšãƒ¼ãƒ³ã€‚
         {
             HWND ahwnd[] = {
                 xg_hMainWnd,
@@ -8609,7 +8608,7 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
         }
         break;
 
-    case ID_PANEPREV:   // ‘O‚Ìƒy[ƒ“B
+    case ID_PANEPREV:   // å‰ã®ãƒšãƒ¼ãƒ³ã€‚
         {
             HWND ahwnd[] = {
                 xg_hwndInputPalette,
@@ -8634,7 +8633,7 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
         }
         break;
 
-    case ID_CUT:    // Ø‚èæ‚èB
+    case ID_CUT:    // åˆ‡ã‚Šå–ã‚Šã€‚
         if (::GetForegroundWindow() == xg_hMainWnd) {
             ;
         } else {
@@ -8643,28 +8642,28 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
         }
         break;
 
-    case ID_COPY:   // ƒRƒs[B
+    case ID_COPY:   // ã‚³ãƒ”ãƒ¼ã€‚
         if (::GetForegroundWindow() == xg_hMainWnd) {
             XgCopyBoard(hwnd);
         } else {
             HWND hwnd = ::GetFocus();
             ::SendMessageW(hwnd, WM_COPY, 0, 0);
         }
-        // ƒc[ƒ‹ƒo[‚ÌUI‚ğXV‚·‚éB
+        // ãƒ„ãƒ¼ãƒ«ãƒãƒ¼ã®UIã‚’æ›´æ–°ã™ã‚‹ã€‚
         XgUpdateToolBarUI(hwnd);
         break;
 
-    case ID_COPYASIMAGE:    // ‰æ‘œ‚ğƒRƒs[B
+    case ID_COPYASIMAGE:    // ç”»åƒã‚’ã‚³ãƒ”ãƒ¼ã€‚
         if (::GetForegroundWindow() == xg_hMainWnd) {
             XgCopyBoardAsImage(hwnd);
         }
         break;
 
-    case ID_COPYMARKWORD: // “ñdƒ}ƒX’PŒê‚ğƒRƒs[B
+    case ID_COPYMARKWORD: // äºŒé‡ãƒã‚¹å˜èªã‚’ã‚³ãƒ”ãƒ¼ã€‚
         XgCopyMarkWord(hwnd);
         break;
 
-    case ID_PASTE:  // “\‚è•t‚¯B
+    case ID_PASTE:  // è²¼ã‚Šä»˜ã‘ã€‚
         if (::GetForegroundWindow() == xg_hMainWnd) {
             std::wstring str = XgGetClipboardUnicodeText(hwnd);
             if (str.find(ZEN_ULEFT) != std::wstring::npos &&
@@ -8674,14 +8673,14 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
                 auto sa2 = std::make_shared<XG_UndoData_SetAll>();
                 sa1->Get();
                 {
-                    // ”Õ‚Ì“\‚è•t‚¯B
+                    // ç›¤ã®è²¼ã‚Šä»˜ã‘ã€‚
                     XgPasteBoard(hwnd, str);
                 }
                 sa2->Get();
-                // Œ³‚É–ß‚·î•ñ‚ğİ’è‚·‚éB
+                // å…ƒã«æˆ»ã™æƒ…å ±ã‚’è¨­å®šã™ã‚‹ã€‚
                 xg_ubUndoBuffer.Commit(UC_SETALL, sa1, sa2);
             } else {
-                // ’PŒê‚Ì“\‚è•t‚¯B
+                // å˜èªã®è²¼ã‚Šä»˜ã‘ã€‚
                 for (auto& ch : str) {
                     MainWnd_OnImeChar(hwnd, ch, 0);
                 }
@@ -8690,27 +8689,27 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
             HWND hwnd = ::GetFocus();
             ::SendMessageW(hwnd, WM_PASTE, 0, 0);
         }
-        // ƒc[ƒ‹ƒo[‚ÌUI‚ğXV‚·‚éB
+        // ãƒ„ãƒ¼ãƒ«ãƒãƒ¼ã®UIã‚’æ›´æ–°ã™ã‚‹ã€‚
         XgUpdateToolBarUI(hwnd);
         break;
 
-    case ID_KANAINPUT:  // ƒJƒi“ü—Íƒ‚[ƒhB
+    case ID_KANAINPUT:  // ã‚«ãƒŠå…¥åŠ›ãƒ¢ãƒ¼ãƒ‰ã€‚
         XgSetInputMode(hwnd, xg_im_KANA);
         break;
 
-    case ID_ABCINPUT:   // ‰pš“ü—Íƒ‚[ƒhB
+    case ID_ABCINPUT:   // è‹±å­—å…¥åŠ›ãƒ¢ãƒ¼ãƒ‰ã€‚
         XgSetInputMode(hwnd, xg_im_ABC);
         break;
 
-    case ID_KANJIINPUT: // Š¿š“ü—Íƒ‚[ƒhB
+    case ID_KANJIINPUT: // æ¼¢å­—å…¥åŠ›ãƒ¢ãƒ¼ãƒ‰ã€‚
         XgSetInputMode(hwnd, xg_im_KANJI);
         break;
 
-    case ID_RUSSIAINPUT: // ƒƒVƒA“ü—Íƒ‚[ƒhB
+    case ID_RUSSIAINPUT: // ãƒ­ã‚·ã‚¢å…¥åŠ›ãƒ¢ãƒ¼ãƒ‰ã€‚
         XgSetInputMode(hwnd, xg_im_RUSSIA);
         break;
 
-    case ID_DIGITINPUT: // ”š“ü—Íƒ‚[ƒhB
+    case ID_DIGITINPUT: // æ•°å­—å…¥åŠ›ãƒ¢ãƒ¼ãƒ‰ã€‚
         XgSetInputMode(hwnd, xg_im_DIGITS);
         break;
 
@@ -8724,7 +8723,7 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
         }
         break;
 
-    case ID_MARKSNEXT:  // Ÿ‚Ì“ñdƒ}ƒX’PŒê
+    case ID_MARKSNEXT:  // æ¬¡ã®äºŒé‡ãƒã‚¹å˜èª
         {
             auto mu1 = std::make_shared<XG_UndoData_MarksUpdated>();
             auto mu2 = std::make_shared<XG_UndoData_MarksUpdated>();
@@ -8733,12 +8732,12 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
                 XgGetNextMarkedWord();
             }
             mu2->Get();
-            // Œ³‚É–ß‚·î•ñ‚ğİ’è‚·‚éB
+            // å…ƒã«æˆ»ã™æƒ…å ±ã‚’è¨­å®šã™ã‚‹ã€‚
             xg_ubUndoBuffer.Commit(UC_MARKS_UPDATED, mu1, mu2);
         }
         break;
 
-    case ID_MARKSPREV:  // ‘O‚Ì“ñdƒ}ƒX’PŒê
+    case ID_MARKSPREV:  // å‰ã®äºŒé‡ãƒã‚¹å˜èª
         {
             auto mu1 = std::make_shared<XG_UndoData_MarksUpdated>();
             auto mu2 = std::make_shared<XG_UndoData_MarksUpdated>();
@@ -8747,12 +8746,12 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
                 XgGetPrevMarkedWord();
             }
             mu2->Get();
-            // Œ³‚É–ß‚·î•ñ‚ğİ’è‚·‚éB
+            // å…ƒã«æˆ»ã™æƒ…å ±ã‚’è¨­å®šã™ã‚‹ã€‚
             xg_ubUndoBuffer.Commit(UC_MARKS_UPDATED, mu1, mu2);
         }
         break;
 
-    case ID_KILLMARKS:  // “ñdƒ}ƒX‚ğ‚·‚×‚Ä‰ğœ‚·‚é
+    case ID_KILLMARKS:  // äºŒé‡ãƒã‚¹ã‚’ã™ã¹ã¦è§£é™¤ã™ã‚‹
         {
             auto mu1 = std::make_shared<XG_UndoData_MarksUpdated>();
             auto mu2 = std::make_shared<XG_UndoData_MarksUpdated>();
@@ -8761,34 +8760,34 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
                 xg_vMarks.clear();
                 xg_vMarkedCands.clear();
                 XgMarkUpdate();
-                // ƒCƒ[ƒW‚ğXV‚·‚éB
+                // ã‚¤ãƒ¡ãƒ¼ã‚¸ã‚’æ›´æ–°ã™ã‚‹ã€‚
                 XgUpdateImage(hwnd, 0, 0);
             }
             mu2->Get();
-            // Œ³‚É–ß‚·î•ñ‚ğİ’è‚·‚éB
+            // å…ƒã«æˆ»ã™æƒ…å ±ã‚’è¨­å®šã™ã‚‹ã€‚
             xg_ubUndoBuffer.Commit(UC_MARKS_UPDATED, mu1, mu2);
         }
         break;
 
-    case ID_PRINTPROBLEM:   // –â‘è‚Ì‚İ‚ğˆóü‚·‚éB
+    case ID_PRINTPROBLEM:   // å•é¡Œã®ã¿ã‚’å°åˆ·ã™ã‚‹ã€‚
         XgPrintProblem();
         break;
 
-    case ID_PRINTANSWER:    // –â‘è‚Æ‰ğ“š‚ğˆóü‚·‚éB
+    case ID_PRINTANSWER:    // å•é¡Œã¨è§£ç­”ã‚’å°åˆ·ã™ã‚‹ã€‚
         if (xg_bSolved)
             XgPrintAnswer();
         else
             ::MessageBeep(0xFFFFFFFF);
         break;
 
-    case ID_OPENHOMEPAGE:   // ƒz[ƒ€ƒy[ƒW‚ğŠJ‚­B
+    case ID_OPENHOMEPAGE:   // ãƒ›ãƒ¼ãƒ ãƒšãƒ¼ã‚¸ã‚’é–‹ãã€‚
         {
             static LPCWSTR s_pszHomepage = L"http://katahiromz.web.fc2.com/";
             ::ShellExecuteW(hwnd, NULL, s_pszHomepage, NULL, NULL, SW_SHOWNORMAL);
         }
         break;
 
-    case ID_OPENBBS:        // Œf¦”Â‚ğŠJ‚­B
+    case ID_OPENBBS:        // æ²ç¤ºæ¿ã‚’é–‹ãã€‚
         {
             static LPCWSTR s_pszBBS = L"http://katahiromz.bbs.fc2.com/";
             ::ShellExecuteW(hwnd, NULL, s_pszBBS, NULL, NULL, SW_SHOWNORMAL);
@@ -9136,12 +9135,12 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
         XgUpdateRules(hwnd);
         break;
     case ID_SEQPATGEN:
-        // ‹ô”s”‚Å•ƒ}ƒXü‘ÎÌiƒ^ƒej‚Ìê‡‚Í˜A•‹Ö‚Í•s‰ÂB
+        // å¶æ•°è¡Œæ•°ã§é»’ãƒã‚¹ç·šå¯¾ç§°ï¼ˆã‚¿ãƒ†ï¼‰ã®å ´åˆã¯é€£é»’ç¦ã¯ä¸å¯ã€‚
         if (!(xg_nRows & 1) && (xg_nRules & RULE_LINESYMMETRYV) && (xg_nRules & RULE_DONTDOUBLEBLACK)) {
             XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_EVENROWLINESYMV), nullptr, MB_ICONERROR);
             break;
         }
-        // ‹ô”—ñ”‚Å•ƒ}ƒXü‘ÎÌiƒˆƒRj‚Ìê‡‚Í˜A•‹Ö‚Í•s‰ÂB
+        // å¶æ•°åˆ—æ•°ã§é»’ãƒã‚¹ç·šå¯¾ç§°ï¼ˆãƒ¨ã‚³ï¼‰ã®å ´åˆã¯é€£é»’ç¦ã¯ä¸å¯ã€‚
         if (!(xg_nCols & 1) && (xg_nRules & RULE_LINESYMMETRYH) && (xg_nRules & RULE_DONTDOUBLEBLACK)) {
             XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_EVENCOLLINESYMH), nullptr, MB_ICONERROR);
             break;
@@ -9151,16 +9150,16 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
             auto sa2 = std::make_shared<XG_UndoData_SetAll>();
             sa1->Get();
             if (XgOnGenerateBlacksRepeatedly(hwnd)) {
-                // ƒNƒŠƒA‚·‚éB
+                // ã‚¯ãƒªã‚¢ã™ã‚‹ã€‚
                 xg_bShowAnswer = false;
                 xg_bSolved = false;
                 xg_xword.clear();
                 xg_solution.clear();
-                // Œ³‚É–ß‚·î•ñ‚ğc‚·B
+                // å…ƒã«æˆ»ã™æƒ…å ±ã‚’æ®‹ã™ã€‚
                 sa2->Get();
                 xg_ubUndoBuffer.Commit(UC_SETALL, sa1, sa2);
             }
-            // ƒc[ƒ‹ƒo[‚ÌUI‚ğXV‚·‚éB
+            // ãƒ„ãƒ¼ãƒ«ãƒãƒ¼ã®UIã‚’æ›´æ–°ã™ã‚‹ã€‚
             XgUpdateToolBarUI(hwnd);
         }
         break;
@@ -9182,12 +9181,12 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
         XgLoadDictsAll();
         break;
     case ID_VIEW_NORMAL_VIEW:
-        // ’Êíƒrƒ…[‚ğİ’èB
+        // é€šå¸¸ãƒ“ãƒ¥ãƒ¼ã‚’è¨­å®šã€‚
         xg_nViewMode = XG_VIEW_NORMAL;
         XgUpdateImage(hwnd);
         break;
     case ID_VIEW_SKELETON_VIEW:
-        // •ƒ}ƒX‰æ‘œ‚ğƒNƒŠƒA‚·‚éB
+        // é»’ãƒã‚¹ç”»åƒã‚’ã‚¯ãƒªã‚¢ã™ã‚‹ã€‚
         xg_strBlackCellImage.clear();
         if (xg_hbmBlackCell) {
             ::DeleteObject(xg_hbmBlackCell);
@@ -9197,16 +9196,16 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
             DeleteEnhMetaFile(xg_hBlackCellEMF);
             xg_hBlackCellEMF = NULL;
         }
-        // ƒXƒPƒ‹ƒgƒ“ƒrƒ…[‚ğİ’èB
+        // ã‚¹ã‚±ãƒ«ãƒˆãƒ³ãƒ“ãƒ¥ãƒ¼ã‚’è¨­å®šã€‚
         xg_nViewMode = XG_VIEW_SKELETON;
         XgUpdateImage(hwnd);
         break;
     case ID_COPY_WORD_LIST:
-        // ’PŒêƒŠƒXƒg‚ÌƒRƒs[B
+        // å˜èªãƒªã‚¹ãƒˆã®ã‚³ãƒ”ãƒ¼ã€‚
         XgCopyWordList(hwnd);
         break;
     case ID_VIEW_DOUBLEFRAME_LETTERS:
-        // “ñdƒ}ƒX•¶š‚ğ•\¦‚·‚é‚©H
+        // äºŒé‡ãƒã‚¹æ–‡å­—ã‚’è¡¨ç¤ºã™ã‚‹ã‹ï¼Ÿ
         xg_bShowDoubleFrameLetters = !xg_bShowDoubleFrameLetters;
         XgUpdateImage(hwnd);
         break;
@@ -9292,44 +9291,44 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
     XgUpdateStatusBar(hwnd);
 }
 
-// ƒtƒ@ƒCƒ‹‚ªƒhƒƒbƒv‚³‚ê‚½B
+// ãƒ•ã‚¡ã‚¤ãƒ«ãŒãƒ‰ãƒ­ãƒƒãƒ—ã•ã‚ŒãŸã€‚
 void __fastcall MainWnd_OnDropFiles(HWND hwnd, HDROP hDrop)
 {
-    // Å‰‚Ìƒtƒ@ƒCƒ‹‚ÌƒpƒX–¼‚ğæ“¾‚·‚éB
+    // æœ€åˆã®ãƒ•ã‚¡ã‚¤ãƒ«ã®ãƒ‘ã‚¹åã‚’å–å¾—ã™ã‚‹ã€‚
     WCHAR szFile[MAX_PATH], szTarget[MAX_PATH];
     ::DragQueryFileW(hDrop, 0, szFile, ARRAYSIZE(szFile));
     ::DragFinish(hDrop);
 
-    // ƒVƒ‡[ƒgƒJƒbƒg‚¾‚Á‚½ê‡‚ÍAƒ^[ƒQƒbƒg‚ÌƒpƒX‚ğæ“¾‚·‚éB
+    // ã‚·ãƒ§ãƒ¼ãƒˆã‚«ãƒƒãƒˆã ã£ãŸå ´åˆã¯ã€ã‚¿ãƒ¼ã‚²ãƒƒãƒˆã®ãƒ‘ã‚¹ã‚’å–å¾—ã™ã‚‹ã€‚
     if (XgGetPathOfShortcutW(szFile, szTarget))
         StringCbCopy(szFile, sizeof(szFile), szTarget);
 
-    // Šg’£q‚ğæ“¾‚·‚éB
+    // æ‹¡å¼µå­ã‚’å–å¾—ã™ã‚‹ã€‚
     LPWSTR pch = PathFindExtensionW(szFile);
 
     if (::lstrcmpiW(pch, L".xwd") == 0) {
-        // Šg’£q‚ª.xwd‚¾‚Á‚½Bƒtƒ@ƒCƒ‹‚ğŠJ‚­B
+        // æ‹¡å¼µå­ãŒ.xwdã ã£ãŸã€‚ãƒ•ã‚¡ã‚¤ãƒ«ã‚’é–‹ãã€‚
         if (!XgDoLoadFile(hwnd, szFile, false)) {
             XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_CANTLOAD), nullptr, MB_ICONERROR);
         } else {
             xg_caret_pos.clear();
-            // ƒe[ƒ}‚ğXV‚·‚éB
+            // ãƒ†ãƒ¼ãƒã‚’æ›´æ–°ã™ã‚‹ã€‚
             XgSetThemeString(xg_strTheme);
             XgUpdateTheme(hwnd);
-            // ƒCƒ[ƒW‚ğXV‚·‚éB
+            // ã‚¤ãƒ¡ãƒ¼ã‚¸ã‚’æ›´æ–°ã™ã‚‹ã€‚
             XgMarkUpdate();
             XgUpdateImage(hwnd, 0, 0);
         }
     } else if (::lstrcmpiW(pch, L".xwj") == 0 || lstrcmpiW(pch, L".json") == 0) {
-        // Šg’£q‚ª.xwj‚©.json‚¾‚Á‚½Bƒtƒ@ƒCƒ‹‚ğŠJ‚­B
+        // æ‹¡å¼µå­ãŒ.xwjã‹.jsonã ã£ãŸã€‚ãƒ•ã‚¡ã‚¤ãƒ«ã‚’é–‹ãã€‚
         if (!XgDoLoadFile(hwnd, szFile, true)) {
             XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_CANTLOAD), nullptr, MB_ICONERROR);
         } else {
             xg_caret_pos.clear();
-            // ƒe[ƒ}‚ğXV‚·‚éB
+            // ãƒ†ãƒ¼ãƒã‚’æ›´æ–°ã™ã‚‹ã€‚
             XgSetThemeString(xg_strTheme);
             XgUpdateTheme(hwnd);
-            // ƒCƒ[ƒW‚ğXV‚·‚éB
+            // ã‚¤ãƒ¡ãƒ¼ã‚¸ã‚’æ›´æ–°ã™ã‚‹ã€‚
             XgMarkUpdate();
             XgUpdateImage(hwnd, 0, 0);
         }
@@ -9338,10 +9337,10 @@ void __fastcall MainWnd_OnDropFiles(HWND hwnd, HDROP hDrop)
             XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_CANTLOAD), nullptr, MB_ICONERROR);
         } else {
             xg_caret_pos.clear();
-            // ƒe[ƒ}‚ğXV‚·‚éB
+            // ãƒ†ãƒ¼ãƒã‚’æ›´æ–°ã™ã‚‹ã€‚
             XgSetThemeString(xg_strTheme);
             XgUpdateTheme(hwnd);
-            // ƒCƒ[ƒW‚ğXV‚·‚éB
+            // ã‚¤ãƒ¡ãƒ¼ã‚¸ã‚’æ›´æ–°ã™ã‚‹ã€‚
             XgMarkUpdate();
             XgUpdateImage(hwnd, 0, 0);
         }
@@ -9349,13 +9348,13 @@ void __fastcall MainWnd_OnDropFiles(HWND hwnd, HDROP hDrop)
         ::MessageBeep(0xFFFFFFFF);
     }
 
-    // ƒc[ƒ‹ƒo[‚ÌUI‚ğXV‚·‚éB
+    // ãƒ„ãƒ¼ãƒ«ãƒãƒ¼ã®UIã‚’æ›´æ–°ã™ã‚‹ã€‚
     XgUpdateToolBarUI(hwnd);
-    // ƒ‹[ƒ‹‚ğXV‚·‚éB
+    // ãƒ«ãƒ¼ãƒ«ã‚’æ›´æ–°ã™ã‚‹ã€‚
     XgUpdateRules(hwnd);
 }
 
-// –³Œøó‘Ô‚Ìƒrƒbƒgƒ}ƒbƒv‚ğì¬‚·‚éB
+// ç„¡åŠ¹çŠ¶æ…‹ã®ãƒ“ãƒƒãƒˆãƒãƒƒãƒ—ã‚’ä½œæˆã™ã‚‹ã€‚
 HBITMAP XgCreateGrayedBitmap(HBITMAP hbm, COLORREF crMask = CLR_INVALID)
 {
     HDC hdc = ::GetDC(NULL);
@@ -9445,12 +9444,12 @@ HBITMAP XgCreateGrayedBitmap(HBITMAP hbm, COLORREF crMask = CLR_INVALID)
     return hbmNew;
 }
 
-// ƒEƒBƒ“ƒhƒE‚Ìì¬‚ÌÛ‚ÉŒÄ‚Î‚ê‚éB
+// ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®ä½œæˆã®éš›ã«å‘¼ã°ã‚Œã‚‹ã€‚
 bool __fastcall MainWnd_OnCreate(HWND hwnd, LPCREATESTRUCT /*lpCreateStruct*/)
 {
     xg_hMainWnd = hwnd;
 
-    // …•½ƒXƒNƒ[ƒ‹ƒo[‚ğì‚éB
+    // æ°´å¹³ã‚¹ã‚¯ãƒ­ãƒ¼ãƒ«ãƒãƒ¼ã‚’ä½œã‚‹ã€‚
     xg_hHScrollBar = ::CreateWindowW(
         L"SCROLLBAR", NULL,
         WS_CHILD | WS_VISIBLE | SBS_HORZ,
@@ -9459,7 +9458,7 @@ bool __fastcall MainWnd_OnCreate(HWND hwnd, LPCREATESTRUCT /*lpCreateStruct*/)
     if (xg_hHScrollBar == NULL)
         return false;
 
-    // ‚’¼ƒXƒNƒ[ƒ‹ƒo[‚ğì‚éB
+    // å‚ç›´ã‚¹ã‚¯ãƒ­ãƒ¼ãƒ«ãƒãƒ¼ã‚’ä½œã‚‹ã€‚
     xg_hVScrollBar = ::CreateWindowW(
         L"SCROLLBAR", NULL,
         WS_CHILD | WS_VISIBLE | SBS_VERT,
@@ -9468,7 +9467,7 @@ bool __fastcall MainWnd_OnCreate(HWND hwnd, LPCREATESTRUCT /*lpCreateStruct*/)
     if (xg_hVScrollBar == NULL)
         return false;
 
-    // ƒTƒCƒYƒOƒŠƒbƒv‚ğì‚éB
+    // ã‚µã‚¤ã‚ºã‚°ãƒªãƒƒãƒ—ã‚’ä½œã‚‹ã€‚
     xg_hSizeGrip = ::CreateWindowW(
         L"SCROLLBAR", NULL,
         WS_CHILD | WS_VISIBLE | SBS_SIZEGRIP,
@@ -9477,7 +9476,7 @@ bool __fastcall MainWnd_OnCreate(HWND hwnd, LPCREATESTRUCT /*lpCreateStruct*/)
     if (xg_hSizeGrip == NULL)
         return false;
 
-    // ƒCƒ[ƒWƒŠƒXƒg‚Ì€”õ‚ğ‚·‚éB
+    // ã‚¤ãƒ¡ãƒ¼ã‚¸ãƒªã‚¹ãƒˆã®æº–å‚™ã‚’ã™ã‚‹ã€‚
     xg_hImageList = ::ImageList_Create(32, 32, ILC_COLOR24, 0, 0);
     if (xg_hImageList == NULL)
         return FALSE;
@@ -9499,7 +9498,7 @@ bool __fastcall MainWnd_OnCreate(HWND hwnd, LPCREATESTRUCT /*lpCreateStruct*/)
     ::DeleteObject(hbm);
     ::DeleteObject(hbmGrayed);
 
-    // ƒc[ƒ‹ƒo[‚Ìƒ{ƒ^ƒ“î•ñB
+    // ãƒ„ãƒ¼ãƒ«ãƒãƒ¼ã®ãƒœã‚¿ãƒ³æƒ…å ±ã€‚
     static const TBBUTTON atbb[] = {
         {0, ID_NEW, TBSTATE_ENABLED, TBSTYLE_BUTTON},
         {1, ID_OPEN, TBSTATE_ENABLED, TBSTYLE_BUTTON},
@@ -9528,7 +9527,7 @@ bool __fastcall MainWnd_OnCreate(HWND hwnd, LPCREATESTRUCT /*lpCreateStruct*/)
 
     XgUpdateStatusBar(hwnd);
 
-    // ƒc[ƒ‹ƒo[‚ğì¬‚·‚éB
+    // ãƒ„ãƒ¼ãƒ«ãƒãƒ¼ã‚’ä½œæˆã™ã‚‹ã€‚
     const int c_IDW_TOOLBAR = 1;
     xg_hToolBar = ::CreateWindowW(
         TOOLBARCLASSNAMEW, NULL, 
@@ -9541,7 +9540,7 @@ bool __fastcall MainWnd_OnCreate(HWND hwnd, LPCREATESTRUCT /*lpCreateStruct*/)
     if (xg_hToolBar == NULL)
         return FALSE;
 
-    // ƒc[ƒ‹ƒo[‚ğ‰Šú‰»‚·‚éB
+    // ãƒ„ãƒ¼ãƒ«ãƒãƒ¼ã‚’åˆæœŸåŒ–ã™ã‚‹ã€‚
     ::SendMessageW(xg_hToolBar, TB_BUTTONSTRUCTSIZE, sizeof(TBBUTTON), 0);
     ::SendMessageW(xg_hToolBar, TB_SETBITMAPSIZE, 0, MAKELPARAM(32, 32));
     ::SendMessageW(xg_hToolBar, TB_SETIMAGELIST, 0, (LPARAM)xg_hImageList);
@@ -9562,24 +9561,24 @@ bool __fastcall MainWnd_OnCreate(HWND hwnd, LPCREATESTRUCT /*lpCreateStruct*/)
     if (xg_bShowInputPalette)
         XgCreateInputPalette(hwnd);
 
-    // ƒpƒ\ƒRƒ“‚ªŒÃ‚¢ê‡AŒx‚ğ•\¦‚·‚éB
+    // ãƒ‘ã‚½ã‚³ãƒ³ãŒå¤ã„å ´åˆã€è­¦å‘Šã‚’è¡¨ç¤ºã™ã‚‹ã€‚
     if (s_dwNumberOfProcessors <= 1 && !s_bOldNotice) {
         XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_TOOOLDPC), XgLoadStringDx2(IDS_APPNAME),
                           MB_ICONWARNING | MB_OK);
         s_bOldNotice = true;
     }
 
-    // ƒNƒƒXƒ[ƒh‚ğ‰Šú‰»‚·‚éB
+    // ã‚¯ãƒ­ã‚¹ãƒ¯ãƒ¼ãƒ‰ã‚’åˆæœŸåŒ–ã™ã‚‹ã€‚
     xg_xword.clear();
 
-    // «‘ƒtƒ@ƒCƒ‹‚ğ“Ç‚İ‚ŞB
+    // è¾æ›¸ãƒ•ã‚¡ã‚¤ãƒ«ã‚’èª­ã¿è¾¼ã‚€ã€‚
     if (xg_dict_name.size())
         XgLoadDictFile(xg_dict_name.c_str());
 
-    // ƒtƒ@ƒCƒ‹ƒhƒƒbƒv‚ğó‚¯•t‚¯‚éB
+    // ãƒ•ã‚¡ã‚¤ãƒ«ãƒ‰ãƒ­ãƒƒãƒ—ã‚’å—ã‘ä»˜ã‘ã‚‹ã€‚
     ::DragAcceptFiles(hwnd, TRUE);
 
-    // ƒCƒ[ƒW‚ğXV‚·‚éB
+    // ã‚¤ãƒ¡ãƒ¼ã‚¸ã‚’æ›´æ–°ã™ã‚‹ã€‚
     XgUpdateImage(hwnd, 0, 0);
 
     int argc;
@@ -9588,11 +9587,11 @@ bool __fastcall MainWnd_OnCreate(HWND hwnd, LPCREATESTRUCT /*lpCreateStruct*/)
         WCHAR szFile[MAX_PATH], szTarget[MAX_PATH];
         StringCbCopy(szFile, sizeof(szFile), wargv[1]);
 
-        // ƒRƒ}ƒ“ƒhƒ‰ƒCƒ“ˆø”‚ª‚ ‚ê‚ÎA‚»‚ê‚ğŠJ‚­B
+        // ã‚³ãƒãƒ³ãƒ‰ãƒ©ã‚¤ãƒ³å¼•æ•°ãŒã‚ã‚Œã°ã€ãã‚Œã‚’é–‹ãã€‚
         bool bSuccess = true;
         if (::lstrcmpiW(PathFindExtensionW(szFile), s_szShellLinkDotExt) == 0)
         {
-            // ƒVƒ‡[ƒgƒJƒbƒg‚¾‚Á‚½ê‡‚ÍAƒ^[ƒQƒbƒg‚ÌƒpƒX‚ğæ“¾‚·‚éB
+            // ã‚·ãƒ§ãƒ¼ãƒˆã‚«ãƒƒãƒˆã ã£ãŸå ´åˆã¯ã€ã‚¿ãƒ¼ã‚²ãƒƒãƒˆã®ãƒ‘ã‚¹ã‚’å–å¾—ã™ã‚‹ã€‚
             if (XgGetPathOfShortcutW(szFile, szTarget)) {
                 StringCbCopy(szFile, sizeof(szFile), szTarget);
             } else {
@@ -9618,7 +9617,7 @@ bool __fastcall MainWnd_OnCreate(HWND hwnd, LPCREATESTRUCT /*lpCreateStruct*/)
                     XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_CANTLOAD), nullptr, MB_ICONERROR);
                 } else {
                     xg_caret_pos.clear();
-                    // ƒCƒ[ƒW‚ğXV‚·‚éB
+                    // ã‚¤ãƒ¡ãƒ¼ã‚¸ã‚’æ›´æ–°ã™ã‚‹ã€‚
                     XgUpdateImage(hwnd, 0, 0);
                 }
             } else {
@@ -9626,29 +9625,29 @@ bool __fastcall MainWnd_OnCreate(HWND hwnd, LPCREATESTRUCT /*lpCreateStruct*/)
                     XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_CANTLOAD), nullptr, MB_ICONERROR);
                 } else {
                     xg_caret_pos.clear();
-                    // ƒe[ƒ}‚ğXV‚·‚éB
+                    // ãƒ†ãƒ¼ãƒã‚’æ›´æ–°ã™ã‚‹ã€‚
                     XgSetThemeString(xg_strTheme);
                     XgUpdateTheme(hwnd);
-                    // ƒCƒ[ƒW‚ğXV‚·‚éB
+                    // ã‚¤ãƒ¡ãƒ¼ã‚¸ã‚’æ›´æ–°ã™ã‚‹ã€‚
                     XgUpdateImage(hwnd, 0, 0);
                 }
             }
-            // ƒ‹[ƒ‹‚ğXV‚·‚éB
+            // ãƒ«ãƒ¼ãƒ«ã‚’æ›´æ–°ã™ã‚‹ã€‚
             XgUpdateRules(hwnd);
         }
     }
     GlobalFree(wargv);
 
     ::PostMessageW(hwnd, WM_SIZE, 0, 0);
-    // ƒ‹[ƒ‹‚ğXV‚·‚éB
+    // ãƒ«ãƒ¼ãƒ«ã‚’æ›´æ–°ã™ã‚‹ã€‚
     XgUpdateRules(hwnd);
-    // ƒc[ƒ‹ƒo[‚ÌUI‚ğXV‚·‚éB
+    // ãƒ„ãƒ¼ãƒ«ãƒãƒ¼ã®UIã‚’æ›´æ–°ã™ã‚‹ã€‚
     XgUpdateToolBarUI(hwnd);
 
     return true;
 }
 
-// ƒ}ƒEƒXƒzƒC[ƒ‹‚ª‰ñ“]‚µ‚½B
+// ãƒã‚¦ã‚¹ãƒ›ã‚¤ãƒ¼ãƒ«ãŒå›è»¢ã—ãŸã€‚
 void __fastcall
 MainWnd_OnMouseWheel(HWND hwnd, int xPos, int yPos, int zDelta, UINT fwKeys)
 {
@@ -9678,17 +9677,17 @@ MainWnd_OnMouseWheel(HWND hwnd, int xPos, int yPos, int zDelta, UINT fwKeys)
     }
 }
 
-// ƒ|ƒbƒvƒAƒbƒvƒƒjƒ…[‚ğ“Ç‚İ‚ŞB
+// ãƒãƒƒãƒ—ã‚¢ãƒƒãƒ—ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã‚’èª­ã¿è¾¼ã‚€ã€‚
 HMENU XgLoadPopupMenu(HWND hwnd, INT nPos)
 {
     HMENU hMenu = LoadMenuW(xg_hInstance, MAKEINTRESOURCE(2));
     HMENU hSubMenu = GetSubMenu(hMenu, nPos);
 
-    // POPUP "ƒJƒi"‚ªƒCƒ“ƒfƒbƒNƒX5B
-    // POPUP "‰pš"‚ªƒCƒ“ƒfƒbƒNƒX6B
-    // POPUP "ƒƒVƒA"‚ªƒCƒ“ƒfƒbƒNƒX7B
-    // POPUP "”š"‚ªƒCƒ“ƒfƒbƒNƒX8B
-    // ‘å‚«‚¢ƒCƒ“ƒfƒbƒNƒX‚Ìƒƒjƒ…[€–Ú‚©‚çíœB
+    // POPUP "ã‚«ãƒŠ"ãŒã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹5ã€‚
+    // POPUP "è‹±å­—"ãŒã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹6ã€‚
+    // POPUP "ãƒ­ã‚·ã‚¢"ãŒã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹7ã€‚
+    // POPUP "æ•°å­—"ãŒã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹8ã€‚
+    // å¤§ãã„ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã®ãƒ¡ãƒ‹ãƒ¥ãƒ¼é …ç›®ã‹ã‚‰å‰Šé™¤ã€‚
     switch (xg_imode)
     {
     case xg_im_ABC:
@@ -9724,7 +9723,7 @@ HMENU XgLoadPopupMenu(HWND hwnd, INT nPos)
     return hMenu;
 }
 
-// ‰EƒNƒŠƒbƒN‚³‚ê‚½B
+// å³ã‚¯ãƒªãƒƒã‚¯ã•ã‚ŒãŸã€‚
 void
 MainWnd_OnRButtonDown(HWND hwnd, BOOL fDoubleClick, int x, int y, UINT keyFlags)
 {
@@ -9733,13 +9732,13 @@ MainWnd_OnRButtonDown(HWND hwnd, BOOL fDoubleClick, int x, int y, UINT keyFlags)
     HMENU hMenu = XgLoadPopupMenu(hwnd, 0);
     HMENU hSubMenu = GetSubMenu(hMenu, 0);
 
-    // ƒXƒNƒŠ[ƒ“À•W‚Ö•ÏŠ·‚·‚éB
+    // ã‚¹ã‚¯ãƒªãƒ¼ãƒ³åº§æ¨™ã¸å¤‰æ›ã™ã‚‹ã€‚
     POINT pt;
     pt.x = x;
     pt.y = y;
     ::ClientToScreen(hwnd, &pt);
 
-    // ‰EƒNƒŠƒbƒNƒƒjƒ…[‚ğ•\¦‚·‚éB
+    // å³ã‚¯ãƒªãƒƒã‚¯ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã‚’è¡¨ç¤ºã™ã‚‹ã€‚
     ::SetForegroundWindow(hwnd);
     ::TrackPopupMenu(
         hSubMenu, TPM_RIGHTBUTTON | TPM_LEFTALIGN,
@@ -9749,11 +9748,11 @@ MainWnd_OnRButtonDown(HWND hwnd, BOOL fDoubleClick, int x, int y, UINT keyFlags)
     ::DestroyMenu(hMenu);
 }
 
-// ’Ê’mB
+// é€šçŸ¥ã€‚
 void MainWnd_OnNotify(HWND hwnd, int idCtrl, LPNMHDR pnmh)
 {
     if (pnmh->code == TTN_NEEDTEXT) {
-        // ƒc[ƒ‹ƒ`ƒbƒv‚Ìî•ñ‚ğƒZƒbƒg‚·‚éB
+        // ãƒ„ãƒ¼ãƒ«ãƒãƒƒãƒ—ã®æƒ…å ±ã‚’ã‚»ãƒƒãƒˆã™ã‚‹ã€‚
         LPTOOLTIPTEXT pttt;
         pttt = reinterpret_cast<LPTOOLTIPTEXT>(pnmh);
         pttt->hinst = xg_hInstance;
@@ -9775,7 +9774,7 @@ void MainWnd_OnNotify(HWND hwnd, int idCtrl, LPNMHDR pnmh)
     }
 }
 
-// ƒEƒBƒ“ƒhƒE‚ÌƒTƒCƒY‚ğ§ŒÀ‚·‚éB
+// ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®ã‚µã‚¤ã‚ºã‚’åˆ¶é™ã™ã‚‹ã€‚
 void MainWnd_OnGetMinMaxInfo(HWND hwnd, LPMINMAXINFO lpMinMaxInfo)
 {
     lpMinMaxInfo->ptMinTrackSize.x = 300;
@@ -9784,7 +9783,7 @@ void MainWnd_OnGetMinMaxInfo(HWND hwnd, LPMINMAXINFO lpMinMaxInfo)
 
 //////////////////////////////////////////////////////////////////////////////
 
-// ƒEƒBƒ“ƒhƒEƒvƒƒV[ƒWƒƒB
+// ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãƒ—ãƒ­ã‚·ãƒ¼ã‚¸ãƒ£ã€‚
 extern "C"
 LRESULT CALLBACK
 XgWindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
@@ -9823,25 +9822,25 @@ XgWindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 }
 
 //////////////////////////////////////////////////////////////////////////////
-// ƒqƒ“ƒgƒEƒBƒ“ƒhƒEB
+// ãƒ’ãƒ³ãƒˆã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã€‚
 
-// ƒqƒ“ƒgƒEƒBƒ“ƒhƒE‚ÌƒXƒNƒ[ƒ‹ƒrƒ…[B
+// ãƒ’ãƒ³ãƒˆã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®ã‚¹ã‚¯ãƒ­ãƒ¼ãƒ«ãƒ“ãƒ¥ãƒ¼ã€‚
 MScrollView         xg_svHintsScrollView;
 
-// ƒqƒ“ƒgƒEƒBƒ“ƒhƒE‚ÌUIƒtƒHƒ“ƒgB
+// ãƒ’ãƒ³ãƒˆã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®UIãƒ•ã‚©ãƒ³ãƒˆã€‚
 HFONT               xg_hHintsUIFont = NULL;
 
-// c‚ÌƒJƒM‚ÌƒRƒ“ƒgƒ[ƒ‹ŒQB
+// ç¸¦ã®ã‚«ã‚®ã®ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«ç¾¤ã€‚
 HWND                xg_hwndTateCaptionStatic = NULL;
 std::vector<HWND>   xg_ahwndTateStatics;
 std::vector<HWND>   xg_ahwndTateEdits;
 
-// ‰¡‚ÌƒJƒM‚ÌƒRƒ“ƒgƒ[ƒ‹ŒQB
+// æ¨ªã®ã‚«ã‚®ã®ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«ç¾¤ã€‚
 HWND                xg_hwndYokoCaptionStatic = NULL;
 std::vector<HWND>   xg_ahwndYokoStatics;
 std::vector<HWND>   xg_ahwndYokoEdits;
 
-// ƒqƒ“ƒgƒEƒBƒ“ƒhƒE‚ÌƒTƒCƒY‚ª•Ï‚í‚Á‚½B
+// ãƒ’ãƒ³ãƒˆã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®ã‚µã‚¤ã‚ºãŒå¤‰ã‚ã£ãŸã€‚
 void HintsWnd_OnSize(HWND hwnd, UINT /*state*/, int /*cx*/, int /*cy*/)
 {
     if (xg_hwndTateCaptionStatic == NULL)
@@ -9870,7 +9869,7 @@ void HintsWnd_OnSize(HWND hwnd, UINT /*state*/, int /*cx*/, int /*cy*/)
     HGDIOBJ hFontOld = ::SelectObject(hdc, xg_hHintsUIFont);
     int y = 0;
 
-    // ƒ^ƒe‚ÌƒJƒMB
+    // ã‚¿ãƒ†ã®ã‚«ã‚®ã€‚
     {
         MRect rcCtrl(MPoint(0, y + 4), 
                      MSize(rcClient.Width(), size1.cy + 4));
@@ -9898,7 +9897,7 @@ void HintsWnd_OnSize(HWND hwnd, UINT /*state*/, int /*cx*/, int /*cy*/)
             y += rcCtrl.Height();
         }
     }
-    // ƒˆƒR‚ÌƒJƒMB
+    // ãƒ¨ã‚³ã®ã‚«ã‚®ã€‚
     {
         MRect rcCtrl(MPoint(0, y + 4),
                      MSize(rcClient.Width(), size1.cy + 4));
@@ -9951,13 +9950,13 @@ XgHintEdit_WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
     switch (uMsg) {
     case WM_CHAR:
         if (wParam == L'\r' || wParam == L'\n') {
-            // ‰üs‚ª‰Ÿ‚³‚ê‚½B•K—v‚È‚ç‚Îƒf[ƒ^‚ğXV‚·‚éB
+            // æ”¹è¡ŒãŒæŠ¼ã•ã‚ŒãŸã€‚å¿…è¦ãªã‚‰ã°ãƒ‡ãƒ¼ã‚¿ã‚’æ›´æ–°ã™ã‚‹ã€‚
             if (XgAreHintsModified()) {
                 auto hu1 = std::make_shared<XG_UndoData_HintsUpdated>();
                 auto hu2 = std::make_shared<XG_UndoData_HintsUpdated>();
                 hu1->Get();
                 {
-                    // ƒqƒ“ƒg‚ğXV‚·‚éB
+                    // ãƒ’ãƒ³ãƒˆã‚’æ›´æ–°ã™ã‚‹ã€‚
                     XgUpdateHintsData();
                 }
                 hu2->Get();
@@ -9967,31 +9966,31 @@ XgHintEdit_WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
         return ::CallWindowProc(data->m_fnOldWndProc,
             hwnd, uMsg, wParam, lParam);
 
-    case WM_SETFOCUS: // ƒtƒH[ƒJƒX‚ğ“¾‚½B
+    case WM_SETFOCUS: // ãƒ•ã‚©ãƒ¼ã‚«ã‚¹ã‚’å¾—ãŸã€‚
         if (wParam) {
-            // ƒtƒH[ƒJƒX‚ğ¸‚¤ƒRƒ“ƒgƒ[ƒ‹‚Ì‘I‘ğ‚ğ‰ğœ‚·‚éB
+            // ãƒ•ã‚©ãƒ¼ã‚«ã‚¹ã‚’å¤±ã†ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«ã®é¸æŠã‚’è§£é™¤ã™ã‚‹ã€‚
             HWND hwndLoseFocus = reinterpret_cast<HWND>(wParam);
             ::SendMessageW(hwndLoseFocus, EM_SETSEL, 0, 0);
         }
-        // ƒtƒH[ƒJƒX‚Ì‚ ‚éƒRƒ“ƒgƒ[ƒ‹‚ªŒ©‚¦‚é‚æ‚¤‚ÉˆÚ“®‚·‚éB
+        // ãƒ•ã‚©ãƒ¼ã‚«ã‚¹ã®ã‚ã‚‹ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«ãŒè¦‹ãˆã‚‹ã‚ˆã†ã«ç§»å‹•ã™ã‚‹ã€‚
         xg_svHintsScrollView.EnsureCtrlVisible(hwnd);
         return ::CallWindowProc(data->m_fnOldWndProc,
             hwnd, uMsg, wParam, lParam);
 
-    case WM_KILLFOCUS:  // ƒtƒH[ƒJƒX‚ğ¸‚Á‚½B
-        // ƒqƒ“ƒg‚ÉXV‚ª‚ ‚ê‚ÎAƒf[ƒ^‚ğXV‚·‚éB
+    case WM_KILLFOCUS:  // ãƒ•ã‚©ãƒ¼ã‚«ã‚¹ã‚’å¤±ã£ãŸã€‚
+        // ãƒ’ãƒ³ãƒˆã«æ›´æ–°ãŒã‚ã‚Œã°ã€ãƒ‡ãƒ¼ã‚¿ã‚’æ›´æ–°ã™ã‚‹ã€‚
         if (XgAreHintsModified()) {
             auto hu1 = std::make_shared<XG_UndoData_HintsUpdated>();
             auto hu2 = std::make_shared<XG_UndoData_HintsUpdated>();
             hu1->Get();
             {
-                // ƒqƒ“ƒg‚ğXV‚·‚éB
+                // ãƒ’ãƒ³ãƒˆã‚’æ›´æ–°ã™ã‚‹ã€‚
                 XgUpdateHintsData();
             }
             hu2->Get();
             xg_ubUndoBuffer.Commit(UC_HINTS_UPDATED, hu1, hu2);
         }
-        // ƒŒƒCƒAƒEƒg‚ğ’²®‚·‚éB
+        // ãƒ¬ã‚¤ã‚¢ã‚¦ãƒˆã‚’èª¿æ•´ã™ã‚‹ã€‚
         ::PostMessageW(xg_hHintsWnd, WM_SIZE, 0, 0);
         return ::CallWindowProc(data->m_fnOldWndProc,
             hwnd, uMsg, wParam, lParam);
@@ -10051,12 +10050,12 @@ XgHintEdit_WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
     return 0;
 }
 
-// ƒqƒ“ƒgƒEƒBƒ“ƒhƒE‚ªì¬‚³‚ê‚½B
+// ãƒ’ãƒ³ãƒˆã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãŒä½œæˆã•ã‚ŒãŸã€‚
 BOOL HintsWnd_OnCreate(HWND hwnd, LPCREATESTRUCT /*lpCreateStruct*/)
 {
     xg_hHintsWnd = hwnd;
 
-    // ‰Šú‰»B
+    // åˆæœŸåŒ–ã€‚
     xg_ahwndTateStatics.clear();
     xg_ahwndTateEdits.clear();
     xg_ahwndYokoStatics.clear();
@@ -10183,13 +10182,13 @@ BOOL HintsWnd_OnCreate(HWND hwnd, LPCREATESTRUCT /*lpCreateStruct*/)
     return TRUE;
 }
 
-// ƒqƒ“ƒgƒEƒBƒ“ƒhƒE‚ªc‚ÉƒXƒNƒ[ƒ‹‚³‚ê‚½B
+// ãƒ’ãƒ³ãƒˆã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãŒç¸¦ã«ã‚¹ã‚¯ãƒ­ãƒ¼ãƒ«ã•ã‚ŒãŸã€‚
 void HintsWnd_OnVScroll(HWND /*hwnd*/, HWND /*hwndCtl*/, UINT code, int pos)
 {
     xg_svHintsScrollView.Scroll(SB_VERT, code, pos);
 }
 
-// ƒqƒ“ƒg‚ª•ÏX‚³‚ê‚½‚©H
+// ãƒ’ãƒ³ãƒˆãŒå¤‰æ›´ã•ã‚ŒãŸã‹ï¼Ÿ
 bool __fastcall XgAreHintsModified(void)
 {
     if (xg_bHintsAdded) {
@@ -10211,7 +10210,7 @@ bool __fastcall XgAreHintsModified(void)
     return false;
 }
 
-// ƒqƒ“ƒgƒf[ƒ^‚ğİ’è‚·‚éB
+// ãƒ’ãƒ³ãƒˆãƒ‡ãƒ¼ã‚¿ã‚’è¨­å®šã™ã‚‹ã€‚
 void __fastcall XgSetHintsData(void)
 {
     for (size_t i = 0; i < xg_vecTateHints.size(); ++i) {
@@ -10222,7 +10221,7 @@ void __fastcall XgSetHintsData(void)
     }
 }
 
-// ƒqƒ“ƒgƒf[ƒ^‚ğXV‚·‚éB
+// ãƒ’ãƒ³ãƒˆãƒ‡ãƒ¼ã‚¿ã‚’æ›´æ–°ã™ã‚‹ã€‚
 bool __fastcall XgUpdateHintsData(void)
 {
     bool updated = false;
@@ -10250,15 +10249,15 @@ bool __fastcall XgUpdateHintsData(void)
     return updated;
 }
 
-// ƒqƒ“ƒgƒEƒBƒ“ƒhƒE‚ª”jŠü‚³‚ê‚½B
+// ãƒ’ãƒ³ãƒˆã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãŒç ´æ£„ã•ã‚ŒãŸã€‚
 void HintsWnd_OnDestroy(HWND hwnd)
 {
     if (xg_hHintsWnd) {
-        // ƒqƒ“ƒgƒf[ƒ^‚ğXV‚·‚éB
+        // ãƒ’ãƒ³ãƒˆãƒ‡ãƒ¼ã‚¿ã‚’æ›´æ–°ã™ã‚‹ã€‚
         XgUpdateHintsData();
     }
 
-    // Œ»İ‚ÌˆÊ’u‚ÆƒTƒCƒY‚ğ•Û‘¶‚·‚éB
+    // ç¾åœ¨ã®ä½ç½®ã¨ã‚µã‚¤ã‚ºã‚’ä¿å­˜ã™ã‚‹ã€‚
     MRect rc;
     ::GetWindowRect(hwnd, &rc);
     s_nHintsWndX = rc.left;
@@ -10299,7 +10298,7 @@ void HintsWnd_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT codeNotify)
     }
 }
 
-// ƒL[‚ª‰Ÿ‚³‚ê‚½B
+// ã‚­ãƒ¼ãŒæŠ¼ã•ã‚ŒãŸã€‚
 void HintsWnd_OnKey(HWND hwnd, UINT vk, BOOL fDown, int cRepeat, UINT flags)
 {
     if (!fDown)
@@ -10329,7 +10328,7 @@ void HintsWnd_OnKey(HWND hwnd, UINT vk, BOOL fDown, int cRepeat, UINT flags)
 }
 
 
-// ƒ}ƒEƒXƒzƒC[ƒ‹‚ª‰ñ“]‚µ‚½B
+// ãƒã‚¦ã‚¹ãƒ›ã‚¤ãƒ¼ãƒ«ãŒå›è»¢ã—ãŸã€‚
 void __fastcall
 HintsWnd_OnMouseWheel(HWND hwnd, int xPos, int yPos, int zDelta, UINT fwKeys)
 {
@@ -10346,14 +10345,14 @@ HintsWnd_OnMouseWheel(HWND hwnd, int xPos, int yPos, int zDelta, UINT fwKeys)
     }
 }
 
-// ƒqƒ“ƒg ƒEƒBƒ“ƒhƒE‚ÌƒTƒCƒY‚ğ§ŒÀ‚·‚éB
+// ãƒ’ãƒ³ãƒˆ ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®ã‚µã‚¤ã‚ºã‚’åˆ¶é™ã™ã‚‹ã€‚
 void HintsWnd_OnGetMinMaxInfo(HWND hwnd, LPMINMAXINFO lpMinMaxInfo)
 {
     lpMinMaxInfo->ptMinTrackSize.x = 256;
     lpMinMaxInfo->ptMinTrackSize.y = 128;
 }
 
-// uƒqƒ“ƒgvƒEƒBƒ“ƒhƒE‚ÌƒRƒ“ƒeƒLƒXƒgƒƒjƒ…[B
+// ã€Œãƒ’ãƒ³ãƒˆã€ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®ã‚³ãƒ³ãƒ†ã‚­ã‚¹ãƒˆãƒ¡ãƒ‹ãƒ¥ãƒ¼ã€‚
 void HintsWnd_OnContextMenu(HWND hwnd, HWND hwndContext, UINT xPos, UINT yPos)
 {
     WCHAR szClass[8];
@@ -10365,7 +10364,7 @@ void HintsWnd_OnContextMenu(HWND hwnd, HWND hwndContext, UINT xPos, UINT yPos)
     HMENU hMenu = LoadMenuW(xg_hInstance, MAKEINTRESOURCEW(2));
     HMENU hSubMenu = GetSubMenu(hMenu, 1);
 
-    // ‰EƒNƒŠƒbƒNƒƒjƒ…[‚ğ•\¦‚·‚éB
+    // å³ã‚¯ãƒªãƒƒã‚¯ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã‚’è¡¨ç¤ºã™ã‚‹ã€‚
     ::SetForegroundWindow(hwnd);
     INT nCmd = ::TrackPopupMenu(
         hSubMenu, TPM_RIGHTBUTTON | TPM_LEFTALIGN | TPM_RETURNCMD,
@@ -10377,7 +10376,7 @@ void HintsWnd_OnContextMenu(HWND hwnd, HWND hwndContext, UINT xPos, UINT yPos)
     ::DestroyMenu(hMenu);
 }
 
-// ƒqƒ“ƒg ƒEƒBƒ“ƒhƒE‚ÌƒEƒBƒ“ƒhƒE ƒvƒƒV[ƒWƒƒ[B
+// ãƒ’ãƒ³ãƒˆ ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ ãƒ—ãƒ­ã‚·ãƒ¼ã‚¸ãƒ£ãƒ¼ã€‚
 extern "C"
 LRESULT CALLBACK
 XgHintsWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
@@ -10400,7 +10399,7 @@ XgHintsWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
     return 0;
 }
 
-// ƒqƒ“ƒgƒEƒBƒ“ƒhƒE‚ğì¬‚·‚éB
+// ãƒ’ãƒ³ãƒˆã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚’ä½œæˆã™ã‚‹ã€‚
 BOOL XgCreateHintsWnd(HWND hwnd)
 {
     const DWORD style = WS_OVERLAPPED | WS_CAPTION |
@@ -10417,12 +10416,12 @@ BOOL XgCreateHintsWnd(HWND hwnd)
     return FALSE;
 }
 
-// ƒqƒ“ƒgƒEƒBƒ“ƒhƒE‚ğ”jŠü‚·‚éB
+// ãƒ’ãƒ³ãƒˆã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚’ç ´æ£„ã™ã‚‹ã€‚
 void XgDestroyHintsWnd(void)
 {
-    // ƒqƒ“ƒgƒEƒBƒ“ƒhƒE‚ª‘¶İ‚·‚é‚©H
+    // ãƒ’ãƒ³ãƒˆã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãŒå­˜åœ¨ã™ã‚‹ã‹ï¼Ÿ
     if (xg_hHintsWnd && ::IsWindow(xg_hHintsWnd)) {
-        // XV‚ğ–³‹E”jŠü‚·‚éB
+        // æ›´æ–°ã‚’ç„¡è¦–ãƒ»ç ´æ£„ã™ã‚‹ã€‚
         HWND hwnd = xg_hHintsWnd;
         xg_hHintsWnd = NULL;
         ::DestroyWindow(hwnd);
@@ -10466,25 +10465,25 @@ LRESULT CALLBACK XgCtrlAMessageProc(INT nCode, WPARAM wParam, LPARAM lParam)
 }
 
 //////////////////////////////////////////////////////////////////////////////
-// Œó•âƒEƒBƒ“ƒhƒEB
+// å€™è£œã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã€‚
 
-// Œó•âƒEƒBƒ“ƒhƒE‚ÌƒXƒNƒ[ƒ‹ƒrƒ…[B
+// å€™è£œã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®ã‚¹ã‚¯ãƒ­ãƒ¼ãƒ«ãƒ“ãƒ¥ãƒ¼ã€‚
 MScrollView                 xg_svCandsScrollView;
 
-// Œó•âƒEƒBƒ“ƒhƒE‚ÌUIƒtƒHƒ“ƒgB
+// å€™è£œã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®UIãƒ•ã‚©ãƒ³ãƒˆã€‚
 HFONT                       xg_hCandsUIFont = NULL;
 
-// Œó•âB
+// å€™è£œã€‚
 std::vector<std::wstring>   xg_vecCandidates;
 
-// Œó•âƒ{ƒ^ƒ“B
+// å€™è£œãƒœã‚¿ãƒ³ã€‚
 std::vector<HWND>           xg_ahwndCandButtons;
 
-// Œó•â‚ğ‹‚ß‚éˆÊ’uB
+// å€™è£œã‚’æ±‚ã‚ã‚‹ä½ç½®ã€‚
 int  xg_jCandPos;
 int  xg_iCandPos;
 
-// Œó•â‚Íƒ^ƒe‚©ƒˆƒR‚©B
+// å€™è£œã¯ã‚¿ãƒ†ã‹ãƒ¨ã‚³ã‹ã€‚
 bool xg_bCandVertical;
 
 struct XG_CandsButtonData
@@ -10560,7 +10559,7 @@ XgCandsButton_WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
     return 0;
 }
 
-// Œó•âƒEƒBƒ“ƒhƒE‚ÌƒTƒCƒY‚ª•Ï‚í‚Á‚½B
+// å€™è£œã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®ã‚µã‚¤ã‚ºãŒå¤‰ã‚ã£ãŸã€‚
 void CandsWnd_OnSize(HWND hwnd, UINT /*state*/, int /*cx*/, int /*cy*/)
 {
     if (xg_ahwndCandButtons.empty())
@@ -10602,7 +10601,7 @@ void CandsWnd_OnSize(HWND hwnd, UINT /*state*/, int /*cx*/, int /*cy*/)
     xg_svCandsScrollView.UpdateAll();
 }
 
-// Œó•âƒEƒBƒ“ƒhƒE‚ªì¬‚³‚ê‚½B
+// å€™è£œã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãŒä½œæˆã•ã‚ŒãŸã€‚
 BOOL CandsWnd_OnCreate(HWND hwnd, LPCREATESTRUCT /*lpCreateStruct*/)
 {
     xg_hCandsWnd = hwnd;
@@ -10616,7 +10615,7 @@ BOOL CandsWnd_OnCreate(HWND hwnd, LPCREATESTRUCT /*lpCreateStruct*/)
             ::GetStockObject(DEFAULT_GUI_FONT));
     }
 
-    // ‰Šú‰»B
+    // åˆæœŸåŒ–ã€‚
     xg_ahwndCandButtons.clear();
     xg_svCandsScrollView.clear();
 
@@ -10669,13 +10668,13 @@ BOOL CandsWnd_OnCreate(HWND hwnd, LPCREATESTRUCT /*lpCreateStruct*/)
     return TRUE;
 }
 
-// Œó•âƒEƒBƒ“ƒhƒE‚ªc‚ÉƒXƒNƒ[ƒ‹‚³‚ê‚½B
+// å€™è£œã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãŒç¸¦ã«ã‚¹ã‚¯ãƒ­ãƒ¼ãƒ«ã•ã‚ŒãŸã€‚
 void CandsWnd_OnVScroll(HWND /*hwnd*/, HWND /*hwndCtl*/, UINT code, int pos)
 {
     xg_svCandsScrollView.Scroll(SB_VERT, code, pos);
 }
 
-// ƒL[‚ª‰Ÿ‚³‚ê‚½B
+// ã‚­ãƒ¼ãŒæŠ¼ã•ã‚ŒãŸã€‚
 void CandsWnd_OnKey(HWND hwnd, UINT vk, BOOL fDown, int cRepeat, UINT flags)
 {
     if (!fDown)
@@ -10708,10 +10707,10 @@ void CandsWnd_OnKey(HWND hwnd, UINT vk, BOOL fDown, int cRepeat, UINT flags)
     }
 }
 
-// Œó•âƒEƒBƒ“ƒhƒE‚ª”jŠü‚³‚ê‚½B
+// å€™è£œã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãŒç ´æ£„ã•ã‚ŒãŸã€‚
 void CandsWnd_OnDestroy(HWND hwnd)
 {
-    // Œ»İ‚ÌˆÊ’u‚ÆƒTƒCƒY‚ğ•Û‘¶‚·‚éB
+    // ç¾åœ¨ã®ä½ç½®ã¨ã‚µã‚¤ã‚ºã‚’ä¿å­˜ã™ã‚‹ã€‚
     MRect rc;
     ::GetWindowRect(hwnd, &rc);
     s_nCandsWndX = rc.left;
@@ -10729,19 +10728,19 @@ void CandsWnd_OnDestroy(HWND hwnd)
     SetForegroundWindow(xg_hMainWnd);
 }
 
-// Œó•âƒEƒBƒ“ƒhƒE‚ğ”jŠü‚·‚éB
+// å€™è£œã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚’ç ´æ£„ã™ã‚‹ã€‚
 void XgDestroyCandsWnd(void)
 {
-    // Œó•âƒEƒBƒ“ƒhƒE‚ª‘¶İ‚·‚é‚©H
+    // å€™è£œã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãŒå­˜åœ¨ã™ã‚‹ã‹ï¼Ÿ
     if (xg_hCandsWnd && ::IsWindow(xg_hCandsWnd)) {
-        // XV‚ğ–³‹E”jŠü‚·‚éB
+        // æ›´æ–°ã‚’ç„¡è¦–ãƒ»ç ´æ£„ã™ã‚‹ã€‚
         HWND hwnd = xg_hCandsWnd;
         xg_hCandsWnd = NULL;
         ::DestroyWindow(hwnd);
     }
 }
 
-// Œó•â‚ğ“K—p‚·‚éB
+// å€™è£œã‚’é©ç”¨ã™ã‚‹ã€‚
 void XgApplyCandidate(XG_Board& xword, const std::wstring& strCand)
 {
     std::wstring cand = XgNormalizeString(strCand);
@@ -10786,13 +10785,13 @@ void CandsWnd_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT codeNotify)
         for (size_t i = 0; i < xg_ahwndCandButtons.size(); ++i) {
             if (xg_ahwndCandButtons[i] == hwndCtl)
             {
-                // Œó•â‚ğ“K—p‚·‚éB
+                // å€™è£œã‚’é©ç”¨ã™ã‚‹ã€‚
                 XgApplyCandidate(xg_xword, xg_vecCandidates[i]);
 
-                // Œó•âƒEƒBƒ“ƒhƒE‚ğ”jŠü‚·‚éB
+                // å€™è£œã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚’ç ´æ£„ã™ã‚‹ã€‚
                 XgDestroyCandsWnd();
 
-                // ƒCƒ[ƒW‚ğXV‚·‚éB
+                // ã‚¤ãƒ¡ãƒ¼ã‚¸ã‚’æ›´æ–°ã™ã‚‹ã€‚
                 int x = XgGetHScrollPos();
                 int y = XgGetVScrollPos();
                 XgUpdateImage(xg_hMainWnd, x, y);
@@ -10802,7 +10801,7 @@ void CandsWnd_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT codeNotify)
     }
 }
 
-// ƒ}ƒEƒXƒzƒC[ƒ‹‚ª‰ñ“]‚µ‚½B
+// ãƒã‚¦ã‚¹ãƒ›ã‚¤ãƒ¼ãƒ«ãŒå›è»¢ã—ãŸã€‚
 void __fastcall
 CandsWnd_OnMouseWheel(HWND hwnd, int xPos, int yPos, int zDelta, UINT fwKeys)
 {
@@ -10819,14 +10818,14 @@ CandsWnd_OnMouseWheel(HWND hwnd, int xPos, int yPos, int zDelta, UINT fwKeys)
     }
 }
 
-// Œó•âƒEƒBƒ“ƒhƒE‚ÌƒTƒCƒY‚ğ§ŒÀ‚·‚éB
+// å€™è£œã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®ã‚µã‚¤ã‚ºã‚’åˆ¶é™ã™ã‚‹ã€‚
 void CandsWnd_OnGetMinMaxInfo(HWND hwnd, LPMINMAXINFO lpMinMaxInfo)
 {
     lpMinMaxInfo->ptMinTrackSize.x = 256;
     lpMinMaxInfo->ptMinTrackSize.y = 128;
 }
 
-// Œó•âƒEƒBƒ“ƒhƒE‚ğ•`‰æ‚·‚éB
+// å€™è£œã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚’æç”»ã™ã‚‹ã€‚
 void CandsWnd_OnPaint(HWND hwnd)
 {
     if (xg_vecCandidates.empty()) {
@@ -10869,7 +10868,7 @@ XgCandsWndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
     return 0;
 }
 
-// Œó•âƒEƒBƒ“ƒhƒE‚ğì¬‚·‚éB
+// å€™è£œã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚’ä½œæˆã™ã‚‹ã€‚
 BOOL XgCreateCandsWnd(HWND hwnd)
 {
     const DWORD style = WS_OVERLAPPED | WS_CAPTION |
@@ -10885,17 +10884,17 @@ BOOL XgCreateCandsWnd(HWND hwnd)
     return FALSE;
 }
 
-// Œó•â‚Ì“à—e‚ğŒó•âƒEƒBƒ“ƒhƒE‚ÅŠJ‚­B
+// å€™è£œã®å†…å®¹ã‚’å€™è£œã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã§é–‹ãã€‚
 bool __fastcall XgOpenCandsWnd(HWND hwnd, bool vertical)
 {
-    // ‚à‚µŒó•âƒEƒBƒ“ƒhƒE‚ª‘¶İ‚·‚ê‚Î”jŠü‚·‚éB
+    // ã‚‚ã—å€™è£œã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãŒå­˜åœ¨ã™ã‚Œã°ç ´æ£„ã™ã‚‹ã€‚
     if (xg_hCandsWnd) {
         HWND hwnd = xg_hCandsWnd;
         xg_hCandsWnd = NULL;
         DestroyWindow(hwnd);
     }
 
-    // Œó•â‚ğì¬‚·‚éB
+    // å€™è£œã‚’ä½œæˆã™ã‚‹ã€‚
     xg_iCandPos = xg_caret_pos.m_i;
     xg_jCandPos = xg_caret_pos.m_j;
     xg_bCandVertical = vertical;
@@ -10904,7 +10903,7 @@ bool __fastcall XgOpenCandsWnd(HWND hwnd, bool vertical)
         return false;
     }
 
-    // ƒpƒ^[ƒ“‚ğæ“¾‚·‚éB
+    // ãƒ‘ã‚¿ãƒ¼ãƒ³ã‚’å–å¾—ã™ã‚‹ã€‚
     int lo, hi;
     std::wstring pattern;
     bool left_black, right_black;
@@ -10951,15 +10950,15 @@ bool __fastcall XgOpenCandsWnd(HWND hwnd, bool vertical)
     }
     left_black = (lo != 0);
 
-    // Œó•â‚ğæ“¾‚·‚éB
+    // å€™è£œã‚’å–å¾—ã™ã‚‹ã€‚
     int nSkip = 0;
     std::vector<std::wstring> cands, cands2;
     XgGetCandidatesAddBlack<false>(cands, pattern, nSkip, left_black, right_black);
     XgGetCandidatesAddBlack<true>(cands2, pattern, nSkip, left_black, right_black);
     cands.insert(cands.end(), cands2.begin(), cands2.end());
 
-    // ‰¼‚É“K—p‚µ‚ÄA³“–‚©‚Ç‚¤‚©Šm‚©‚ßA³“–‚È‚à‚Ì‚¾‚¯‚ğ
-    // ÅI“I‚ÈŒó•â‚Æ‚·‚éB
+    // ä»®ã«é©ç”¨ã—ã¦ã€æ­£å½“ã‹ã©ã†ã‹ç¢ºã‹ã‚ã€æ­£å½“ãªã‚‚ã®ã ã‘ã‚’
+    // æœ€çµ‚çš„ãªå€™è£œã¨ã™ã‚‹ã€‚
     xg_vecCandidates.clear();
     for (const auto& cand : cands) {
         XG_Board xword(xg_xword);
@@ -10973,7 +10972,7 @@ bool __fastcall XgOpenCandsWnd(HWND hwnd, bool vertical)
         }
     }
 
-    // ŒÂ”§ŒÀB
+    // å€‹æ•°åˆ¶é™ã€‚
     if (xg_vecCandidates.size() > xg_nMaxCandidates)
         xg_vecCandidates.resize(xg_nMaxCandidates);
 
@@ -10985,7 +10984,7 @@ bool __fastcall XgOpenCandsWnd(HWND hwnd, bool vertical)
         }
     }
 
-    // ƒqƒ“ƒgƒEƒBƒ“ƒhƒE‚ğì¬‚·‚éB
+    // ãƒ’ãƒ³ãƒˆã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚’ä½œæˆã™ã‚‹ã€‚
     if (XgCreateCandsWnd(xg_hMainWnd)) {
         ::ShowWindow(xg_hCandsWnd, SW_SHOWNORMAL);
         ::UpdateWindow(xg_hCandsWnd);
@@ -10996,7 +10995,7 @@ bool __fastcall XgOpenCandsWnd(HWND hwnd, bool vertical)
 
 //////////////////////////////////////////////////////////////////////////////
 
-// WindowsƒAƒvƒŠ‚ÌƒƒCƒ“ŠÖ”B
+// Windowsã‚¢ãƒ—ãƒªã®ãƒ¡ã‚¤ãƒ³é–¢æ•°ã€‚
 extern "C"
 int WINAPI WinMain(
     HINSTANCE hInstance,
@@ -11004,24 +11003,24 @@ int WINAPI WinMain(
     LPSTR /*pszCmdLine*/,
     int nCmdShow)
 {
-    // ƒAƒvƒŠ‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚ğ•Û‘¶‚·‚éB
+    // ã‚¢ãƒ—ãƒªã®ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã‚’ä¿å­˜ã™ã‚‹ã€‚
     xg_hInstance = hInstance;
 
-    // İ’è‚ğ“Ç‚İ‚ŞB
+    // è¨­å®šã‚’èª­ã¿è¾¼ã‚€ã€‚
     XgLoadSettings();
 
-    // «‘ƒtƒ@ƒCƒ‹‚Ì–¼‘O‚ğ“Ç‚İ‚ŞB
+    // è¾æ›¸ãƒ•ã‚¡ã‚¤ãƒ«ã®åå‰ã‚’èª­ã¿è¾¼ã‚€ã€‚
     XgLoadDictsAll();
 
-    // —”ƒ‚ƒWƒ…[ƒ‹‚ğ‰Šú‰»‚·‚éB
+    // ä¹±æ•°ãƒ¢ã‚¸ãƒ¥ãƒ¼ãƒ«ã‚’åˆæœŸåŒ–ã™ã‚‹ã€‚
     srand(::GetTickCount() ^ ::GetCurrentThreadId());
 
-    // ƒvƒƒZƒbƒT‚Ì”‚ğæ“¾‚·‚éB
+    // ãƒ—ãƒ­ã‚»ãƒƒã‚µã®æ•°ã‚’å–å¾—ã™ã‚‹ã€‚
     SYSTEM_INFO si;
     ::GetSystemInfo(&si);
     s_dwNumberOfProcessors = si.dwNumberOfProcessors;
 
-    // ƒvƒƒZƒbƒT‚Ì”‚É‡‚í‚¹‚ÄƒXƒŒƒbƒh‚Ì”‚ğŒˆ‚ß‚éB
+    // ãƒ—ãƒ­ã‚»ãƒƒã‚µã®æ•°ã«åˆã‚ã›ã¦ã‚¹ãƒ¬ãƒƒãƒ‰ã®æ•°ã‚’æ±ºã‚ã‚‹ã€‚
     if (s_dwNumberOfProcessors <= 3)
         xg_dwThreadCount = 2;
     else
@@ -11030,21 +11029,21 @@ int WINAPI WinMain(
     xg_aThreadInfo.resize(xg_dwThreadCount);
     xg_ahThreads.resize(xg_dwThreadCount);
 
-    // ƒRƒ‚ƒ“ ƒRƒ“ƒgƒ[ƒ‹‚ğ‰Šú‰»‚·‚éB
+    // ã‚³ãƒ¢ãƒ³ ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«ã‚’åˆæœŸåŒ–ã™ã‚‹ã€‚
     INITCOMMONCONTROLSEX iccx;
     iccx.dwSize = sizeof(iccx);
     iccx.dwICC = ICC_USEREX_CLASSES | ICC_PROGRESS_CLASS;
     ::InitCommonControlsEx(&iccx);
 
-    // ƒAƒNƒZƒ‰ƒŒ[ƒ^‚ğ“Ç‚İ‚ŞB
+    // ã‚¢ã‚¯ã‚»ãƒ©ãƒ¬ãƒ¼ã‚¿ã‚’èª­ã¿è¾¼ã‚€ã€‚
     s_hAccel = ::LoadAcceleratorsW(hInstance, MAKEINTRESOURCE(1));
     if (s_hAccel == nullptr) {
-        // ƒAƒNƒZƒ‰ƒŒ[ƒ^ì¬¸”sƒƒbƒZ[ƒWB
+        // ã‚¢ã‚¯ã‚»ãƒ©ãƒ¬ãƒ¼ã‚¿ä½œæˆå¤±æ•—ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã€‚
         XgCenterMessageBoxW(nullptr, XgLoadStringDx1(IDS_CANTACCEL), nullptr, MB_ICONERROR);
         return 3;
     }
 
-    // ƒEƒBƒ“ƒhƒEƒNƒ‰ƒX‚ğ“o˜^‚·‚éB
+    // ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚¯ãƒ©ã‚¹ã‚’ç™»éŒ²ã™ã‚‹ã€‚
     WNDCLASSEXW wcx;
     wcx.cbSize = sizeof(wcx);
     wcx.style = CS_HREDRAW | CS_VREDRAW | CS_DBLCLKS;
@@ -11059,7 +11058,7 @@ int WINAPI WinMain(
     wcx.lpszClassName = s_pszMainWndClass;
     wcx.hIconSm = nullptr;
     if (!::RegisterClassExW(&wcx)) {
-        // ƒEƒBƒ“ƒhƒE“o˜^¸”sƒƒbƒZ[ƒWB
+        // ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ç™»éŒ²å¤±æ•—ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã€‚
         XgCenterMessageBoxW(nullptr, XgLoadStringDx1(IDS_CANTREGWND), nullptr, MB_ICONERROR);
         return 1;
     }
@@ -11070,7 +11069,7 @@ int WINAPI WinMain(
     wcx.lpszMenuName = NULL;
     wcx.lpszClassName = s_pszHintsWndClass;
     if (!::RegisterClassExW(&wcx)) {
-        // ƒEƒBƒ“ƒhƒE“o˜^¸”sƒƒbƒZ[ƒWB
+        // ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ç™»éŒ²å¤±æ•—ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã€‚
         XgCenterMessageBoxW(nullptr, XgLoadStringDx1(IDS_CANTREGWND), nullptr, MB_ICONERROR);
         return 1;
     }
@@ -11081,34 +11080,34 @@ int WINAPI WinMain(
     wcx.lpszMenuName = NULL;
     wcx.lpszClassName = s_pszCandsWndClass;
     if (!::RegisterClassExW(&wcx)) {
-        // ƒEƒBƒ“ƒhƒE“o˜^¸”sƒƒbƒZ[ƒWB
+        // ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ç™»éŒ²å¤±æ•—ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã€‚
         XgCenterMessageBoxW(nullptr, XgLoadStringDx1(IDS_CANTREGWND), nullptr, MB_ICONERROR);
         return 1;
     }
 
-    // ƒNƒŠƒeƒBƒJƒ‹ƒZƒNƒVƒ‡ƒ“‚ğ‰Šú‰»‚·‚éB
+    // ã‚¯ãƒªãƒ†ã‚£ã‚«ãƒ«ã‚»ã‚¯ã‚·ãƒ§ãƒ³ã‚’åˆæœŸåŒ–ã™ã‚‹ã€‚
     ::InitializeCriticalSection(&xg_cs);
 
-    // ƒƒCƒ“ƒEƒBƒ“ƒhƒE‚ğì¬‚·‚éB
+    // ãƒ¡ã‚¤ãƒ³ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚’ä½œæˆã™ã‚‹ã€‚
     DWORD style = WS_OVERLAPPEDWINDOW | WS_CLIPSIBLINGS;
     ::CreateWindowW(s_pszMainWndClass, XgLoadStringDx1(IDS_APPINFO), style,
         s_nMainWndX, s_nMainWndY, s_nMainWndCX, s_nMainWndCY,
         nullptr, nullptr, hInstance, nullptr);
     if (xg_hMainWnd == nullptr) {
-        // ƒEƒBƒ“ƒhƒEì¬¸”sƒƒbƒZ[ƒWB
+        // ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ä½œæˆå¤±æ•—ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã€‚
         XgCenterMessageBoxW(nullptr, XgLoadStringDx1(IDS_CANTMAKEWND), nullptr, MB_ICONERROR);
         return 2;
     }
 
-    // ƒEƒBƒ“ƒhƒE‚ğ•\¦‚·‚éB
+    // ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚’è¡¨ç¤ºã™ã‚‹ã€‚
     ::ShowWindow(xg_hMainWnd, nCmdShow);
     ::UpdateWindow(xg_hMainWnd);
 
-    // Ctrl+A‚Ì‹@”\‚ğ—LŒø‚É‚·‚éB
+    // Ctrl+Aã®æ©Ÿèƒ½ã‚’æœ‰åŠ¹ã«ã™ã‚‹ã€‚
     xg_hCtrlAHook = ::SetWindowsHookEx(WH_MSGFILTER,
         XgCtrlAMessageProc, NULL, ::GetCurrentThreadId());
 
-    // ƒƒbƒZ[ƒWƒ‹[ƒvB
+    // ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ãƒ«ãƒ¼ãƒ—ã€‚
     MSG msg;
     while (::GetMessageW(&msg, nullptr, 0, 0)) {
         if (msg.message == WM_KEYDOWN && msg.wParam == VK_F6) {
@@ -11158,14 +11157,14 @@ int WINAPI WinMain(
         }
     }
 
-    // Ctrl+A‚Ì‹@”\‚ğ‰ğœ‚·‚éB
+    // Ctrl+Aã®æ©Ÿèƒ½ã‚’è§£é™¤ã™ã‚‹ã€‚
     ::UnhookWindowsHookEx(xg_hCtrlAHook);
     xg_hCtrlAHook = NULL;
 
-    // ƒNƒŠƒeƒBƒJƒ‹ƒZƒNƒVƒ‡ƒ“‚ğ”jŠü‚·‚éB
+    // ã‚¯ãƒªãƒ†ã‚£ã‚«ãƒ«ã‚»ã‚¯ã‚·ãƒ§ãƒ³ã‚’ç ´æ£„ã™ã‚‹ã€‚
     ::DeleteCriticalSection(&xg_cs);
 
-    // İ’è‚ğ•Û‘¶B
+    // è¨­å®šã‚’ä¿å­˜ã€‚
     XgSaveSettings();
 
     return static_cast<int>(msg.wParam);
