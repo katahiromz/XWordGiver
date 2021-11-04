@@ -180,6 +180,7 @@
 #define IDS_DBLFRAME_LETTERS_10             272
 #define IDS_NOTREGDWORD                     273
 #define IDS_WARNING                         274
+#define IDS_HOMEPAGE                        275
 #define IDS_TT_NEW                          10100
 #define IDS_TT_GENERATE                     10101
 #define IDS_TT_OPEN                         10102

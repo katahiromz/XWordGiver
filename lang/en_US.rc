@@ -13,14 +13,14 @@ LANGUAGE LANG_ENGLISH, SUBLANG_DEFAULT
     POPUP "&File"
     {
         MENUITEM "&New board\tCtrl+N", ID_NEW
-        MENUITEM "&Generate Crossword\tCtrl+G", ID_GENERATE
-        MENUITEM "G&enerate Crossword and show answer\tCtrl+H", ID_GENERATEANSWER
+        MENUITEM "&Generate crossword\tCtrl+G", ID_GENERATE
+        MENUITEM "G&enerate crossword and show answer\tCtrl+H", ID_GENERATEANSWER
         MENUITEM "Continuously generate crosswords\tCtrl+W", ID_GENERATEREPEATEDLY
         MENUITEM SEPARATOR
         MENUITEM "Generate from block pa&ttern...\tCtrl+;", ID_OPENPATTERNS
         MENUITEM SEPARATOR
-        MENUITEM "&Open Crossword...\tCtrl+O", ID_OPEN
-        MENUITEM "Save Crossword &as...\tCtrl+S", ID_SAVEAS
+        MENUITEM "&Open crossword...\tCtrl+O", ID_OPEN
+        MENUITEM "Save crossword &as...\tCtrl+S", ID_SAVEAS
         MENUITEM SEPARATOR
         MENUITEM "Save crossword as &image...\tCtrl+I", ID_SAVEPROBASIMAGE
         MENUITEM "Save crossword answer &as image...\tCtrl+B", ID_SAVEANSASIMAGE
@@ -31,7 +31,7 @@ LANGUAGE LANG_ENGLISH, SUBLANG_DEFAULT
         MENUITEM "&Header and remarks...", ID_HEADERANDNOTES
         MENUITEM SEPARATOR
         MENUITEM "Configuration\tAlt+Enter", ID_SETTINGS
-        MENUITEM "Erase Configuration", ID_ERASESETTINGS
+        MENUITEM "Erase the configuration", ID_ERASESETTINGS
         MENUITEM SEPARATOR
         MENUITEM "E&xit\tAlt+F4", ID_EXIT
     }
@@ -40,11 +40,11 @@ LANGUAGE LANG_ENGLISH, SUBLANG_DEFAULT
         MENUITEM "&Undo\tCtrl+Z", ID_UNDO
         MENUITEM "&Redo\tCtrl+Y", ID_REDO
         MENUITEM SEPARATOR
-        MENUITEM "Show Candidates (DOWN)...", ID_OPENCANDSWNDVERT
-        MENUITEM "Show Candidates (ACROSS)...", ID_OPENCANDSWNDHORZ
+        MENUITEM "Show candidates (DOWN)...", ID_OPENCANDSWNDVERT
+        MENUITEM "Show candidates (ACROSS)...", ID_OPENCANDSWNDHORZ
         MENUITEM SEPARATOR
         MENUITEM "&Copy the board\tCtrl+C", ID_COPY
-        MENUITEM "Copy the board as &Image\tShift+Ctrl+C", ID_COPYASIMAGE
+        MENUITEM "Copy the board as &image\tShift+Ctrl+C", ID_COPYASIMAGE
         MENUITEM "&Paste\tCtrl+V", ID_PASTE
         MENUITEM SEPARATOR
         MENUITEM "Fill the board by &blocks", ID_FILLBYBLOCKS
@@ -55,11 +55,11 @@ LANGUAGE LANG_ENGLISH, SUBLANG_DEFAULT
         MENUITEM "Copy the list of w&ords", ID_COPY_WORD_LIST
         MENUITEM "Copy the double-frame word", ID_COPYMARKWORD
         MENUITEM SEPARATOR
-        MENUITEM "Copy DOWN clues (Style 0) (&T)", ID_COPYVHINTSSTYLE0
-        MENUITEM "Copy ACROSS clues (Style 0) (&Y)", ID_COPYHHINTSSTYLE0
+        MENUITEM "Copy the DOWN clues (Style 0) (&T)", ID_COPYVHINTSSTYLE0
+        MENUITEM "Copy the ACROSS clues (Style 0) (&Y)", ID_COPYHHINTSSTYLE0
         MENUITEM SEPARATOR
-        MENUITEM "Copy DOWN clues (Style 1) (&L)", ID_COPYVHINTSSTYLE1
-        MENUITEM "Copy ACROSS clues (Style 1) (&E)", ID_COPYHHINTSSTYLE1
+        MENUITEM "Copy the DOWN clues (Style 1) (&L)", ID_COPYVHINTSSTYLE1
+        MENUITEM "Copy the ACROSS clues (Style 1) (&E)", ID_COPYHHINTSSTYLE1
         MENUITEM SEPARATOR
         MENUITEM "Copy the clues (Style 0) (&N)", ID_COPYHINTSSTYLE0
         MENUITEM "Copy the clues (Style 1) (&N)", ID_COPYHINTSSTYLE1
@@ -91,8 +91,8 @@ LANGUAGE LANG_ENGLISH, SUBLANG_DEFAULT
     POPUP "&Dictionary"
     {
         MENUITEM "&Theme...", ID_THEME
-        MENUITEM "&Reset Theme...", ID_RESETTHEME
-        MENUITEM "Reload &Dict List", ID_RELOADDICTS
+        MENUITEM "&Reset the theme...", ID_RESETTHEME
+        MENUITEM "Reload the &dict list", ID_RELOADDICTS
         MENUITEM SEPARATOR
         MENUITEM "(None)", -1
     }
@@ -152,16 +152,16 @@ LANGUAGE LANG_ENGLISH, SUBLANG_DEFAULT
         MENUITEM "&Uppercase", ID_UPPERCASE
         MENUITEM "&Lowercase", ID_LOWERCASE
         MENUITEM SEPARATOR
-        MENUITEM "Web search word (DOWN)\tAlt+Down", ID_ONLINEDICTV
-        MENUITEM "Web search word (ACROSS)\tAlt+Right", ID_ONLINEDICTH
+        MENUITEM "Search the word on the Web (DOWN)\tAlt+Down", ID_ONLINEDICTV
+        MENUITEM "Search the word on the Web (ACROSS)\tAlt+Right", ID_ONLINEDICTH
         MENUITEM SEPARATOR
-        MENUITEM "Show &candidates (&DOWN)\tShift+Ctrl+↓", ID_OPENCANDSWNDVERT
-        MENUITEM "Show &candidates (&ACROSS)\tShift+Ctrl+→", ID_OPENCANDSWNDHORZ
+        MENUITEM "Show the &candidates (&DOWN)\tShift+Ctrl+↓", ID_OPENCANDSWNDVERT
+        MENUITEM "Show the &candidates (&ACROSS)\tShift+Ctrl+→", ID_OPENCANDSWNDHORZ
     }
     POPUP "&Policies"
     {
-        MENUITEM "&Reset Policies", ID_RESETRULES
-        MENUITEM "What's policy?", ID_OPENRULESTXT
+        MENUITEM "&Reset the policies", ID_RESETRULES
+        MENUITEM "What's a policy?", ID_OPENRULESTXT
         MENUITEM SEPARATOR
         MENUITEM "Prohibit adjacent blocks", ID_RULE_DONTDOUBLEBLACK
         MENUITEM "Prohibit blocks at 4 corners", ID_RULE_DONTCORNERBLACK
@@ -191,7 +191,7 @@ LANGUAGE LANG_ENGLISH, SUBLANG_DEFAULT
         MENUITEM "Blocks line symmetry check\tCtrl+E", ID_LINESYMMETRYCHECK
         MENUITEM "Blocks point symmetry check\tCtrl+T", ID_POINTSYMMETRYCHECK
         MENUITEM SEPARATOR
-        MENUITEM "Swap vertical and horizontal", ID_FLIPVH
+        MENUITEM "Swap DOWN and ACROSS", ID_FLIPVH
         MENUITEM SEPARATOR
         MENUITEM "&About", ID_ABOUT
     }
@@ -1490,6 +1490,7 @@ STRINGTABLE
     IDS_DBLFRAME_LETTERS_10, "абвгдеёжзийклмнопрстуфхцчшщъыьэюяАБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ"
     IDS_NOTREGDWORD, "The dictionary didn't register some words yet."
     IDS_WARNING, "Warning"
+    IDS_HOMEPAGE, "https://katahiromz.web.fc2.com/eindex.html"
     IDS_TT_NEW, "New crossword"
     IDS_TT_GENERATE, "Generate crossword"
     IDS_TT_OPEN, "Open crossword"

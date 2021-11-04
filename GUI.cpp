@@ -8792,10 +8792,7 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
         break;
 
     case ID_OPENHOMEPAGE:   // ホームページを開く。
-        {
-            static LPCWSTR s_pszHomepage = L"http://katahiromz.web.fc2.com/";
-            ::ShellExecuteW(hwnd, NULL, s_pszHomepage, NULL, NULL, SW_SHOWNORMAL);
-        }
+        ::ShellExecuteW(hwnd, NULL, XgLoadStringDx1(IDS_HOMEPAGE), NULL, NULL, SW_SHOWNORMAL);
         break;
 
     case ID_OPENBBS:        // 掲示板を開く。

@@ -53,6 +53,7 @@
     - Added "Delete Row/Column" feature.
     - Improved "Erase Configuration".
     - Improved GUI a little.
+    - Improved the English of the GUI.
 
 # 開発履歴 (Japanese)
 
@@ -418,3 +419,4 @@
     - 「行の削除」「列の削除」を追加。
     - 「設定の消去」を改良。
     - GUIの軽微な改良。
+    - GUIの英語を改良。
