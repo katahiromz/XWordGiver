@@ -8,7 +8,7 @@
 #include "layout.h"
 
 // クロスワードのサイズの制限。
-#define XG_MIN_SIZE         3
+#define XG_MIN_SIZE         2
 #define XG_MAX_SIZE         256
 
 // 単語の長さの制限。
