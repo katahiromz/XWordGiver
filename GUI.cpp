@@ -8051,6 +8051,7 @@ void XgGenerateFromWordListDlgProc(HWND hwnd)
 
         // 再描画。
         XgUpdateImage(hwnd);
+        XgUpdateStatusBar(hwnd);
 
         // 成功メッセージ。
         XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_GENERATED),
