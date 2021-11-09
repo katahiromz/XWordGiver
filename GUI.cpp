@@ -8959,6 +8959,54 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
     case ID_DICTIONARY13:
     case ID_DICTIONARY14:
     case ID_DICTIONARY15:
+    case ID_DICTIONARY16:
+    case ID_DICTIONARY17:
+    case ID_DICTIONARY18:
+    case ID_DICTIONARY19:
+    case ID_DICTIONARY20:
+    case ID_DICTIONARY21:
+    case ID_DICTIONARY22:
+    case ID_DICTIONARY23:
+    case ID_DICTIONARY24:
+    case ID_DICTIONARY25:
+    case ID_DICTIONARY26:
+    case ID_DICTIONARY27:
+    case ID_DICTIONARY28:
+    case ID_DICTIONARY29:
+    case ID_DICTIONARY30:
+    case ID_DICTIONARY31:
+    case ID_DICTIONARY32:
+    case ID_DICTIONARY33:
+    case ID_DICTIONARY34:
+    case ID_DICTIONARY35:
+    case ID_DICTIONARY36:
+    case ID_DICTIONARY37:
+    case ID_DICTIONARY38:
+    case ID_DICTIONARY39:
+    case ID_DICTIONARY40:
+    case ID_DICTIONARY41:
+    case ID_DICTIONARY42:
+    case ID_DICTIONARY43:
+    case ID_DICTIONARY44:
+    case ID_DICTIONARY45:
+    case ID_DICTIONARY46:
+    case ID_DICTIONARY47:
+    case ID_DICTIONARY48:
+    case ID_DICTIONARY49:
+    case ID_DICTIONARY50:
+    case ID_DICTIONARY51:
+    case ID_DICTIONARY52:
+    case ID_DICTIONARY53:
+    case ID_DICTIONARY54:
+    case ID_DICTIONARY55:
+    case ID_DICTIONARY56:
+    case ID_DICTIONARY57:
+    case ID_DICTIONARY58:
+    case ID_DICTIONARY59:
+    case ID_DICTIONARY60:
+    case ID_DICTIONARY61:
+    case ID_DICTIONARY62:
+    case ID_DICTIONARY63:
         MainWnd_DoDictionary(hwnd, id - ID_DICTIONARY00);
         XgResetTheme(hwnd, FALSE);
         break;
