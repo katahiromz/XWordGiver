@@ -1359,7 +1359,7 @@ STRINGTABLE
     IDS_APPTITLE, "クロスワード ギバー ver.4.8.1 - %s"
     IDS_MADEPROBLEM, "問題を作成しました。\n\n計算時間: %u.%u[秒]"
     IDS_CANTMAKEPROBLEM, "問題を作成できませんでした。\n\n辞書の設定や黒マスの配置やルールを確認して下さい。\n\n計算時間: %u.%u[秒]"
-    IDS_ENTERINT, "3以上30以下の整数を入力して下さい。"
+    IDS_ENTERINT, "2以上256以下の整数を入力して下さい。"
     IDS_OPENDICTDATA, "辞書データを開く"
     IDS_OPENCROSSDATA, "クロスワード データを開く"
     IDS_SAVECROSSDATA, "クロスワード データを保存する"
