@@ -4596,7 +4596,7 @@ void DoUpdateDictMenu(HMENU hDictMenu)
     for (const auto& file : xg_dict_files)
     {
         LPCWSTR pszFileTitle = PathFindFileNameW(file.c_str());
-        StringCbPrintfW(szText, sizeof(szText), L"&%c ", L"0123456789ABCDEF"[count]);
+        StringCbPrintfW(szText, sizeof(szText), L"&%c ", L"0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF"[count]);
         StringCbCatW(szText, sizeof(szText), pszFileTitle);
         AppendMenuW(hDictMenu, MF_STRING | MF_ENABLED, id, szText);
         ++index;
