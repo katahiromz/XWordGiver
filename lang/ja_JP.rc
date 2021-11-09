@@ -18,7 +18,7 @@ LANGUAGE LANG_JAPANESE, SUBLANG_DEFAULT
         MENUITEM "問題を連続自動生成する(&R)\tCtrl+W", ID_GENERATEREPEATEDLY
         MENUITEM SEPARATOR
         MENUITEM "黒マスパターンから自動生成(&T)...\tCtrl+;", ID_OPENPATTERNS
-        MENUITEM "単語リストから自動生成(&L)...", ID_GENERATEFROMWORDLIST
+        MENUITEM "単語リストから自動生成(&L)...\tCtrl+:", ID_GENERATEFROMWORDLIST
         MENUITEM SEPARATOR
         MENUITEM "問題を開く(&O)...\tCtrl+O", ID_OPEN
         MENUITEM "問題を保存(&A)...\tCtrl+S", ID_SAVEAS
@@ -1302,7 +1302,7 @@ CAPTION "単語リストから生成"
 STYLE DS_CENTER | DS_MODALFRAME | WS_POPUPWINDOW | WS_CAPTION
 FONT 9, "MS UI Gothic"
 {
-    ICON 0, ico1, 5, 5, 0, 0
+    ICON 1, ico1, 5, 5, 0, 0
     LTEXT "可能ならば指定された単語をすべて使用したクロスワード パズルを生成します。\n\n改行区切りの単語リストを下に指定して下さい。", -1, 30, 5, 220, 35
     EDITTEXT edt1, 6, 45, 245, 160, ES_WANTRETURN | ES_MULTILINE | WS_VSCROLL | WS_HSCROLL
     LTEXT "すべての単語は連結可能でなければなりません。いくつかの不適合なルールは自動的に解除されます。", -1, 5, 210, 245, 20
