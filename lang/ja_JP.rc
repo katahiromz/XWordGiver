@@ -490,9 +490,9 @@ FONT 9, "MS UI Gothic"
     LTEXT "マス", -1, 248, 10, 20, 12
     LTEXT "※8×8以上のサイズの場合、計算にかなり時間がかかることがあります。", -1, 10, 30, 290, 14
     GROUPBOX "処理", -1, 10, 50, 120, 70
-    AUTORADIOBUTTON "空白マスで埋める(&S)", rad1, 20, 60, 100, 14, WS_TABSTOP
-    AUTORADIOBUTTON "黒マスで埋める(&B)", rad2, 20, 80, 100, 14, WS_TABSTOP
-    AUTORADIOBUTTON "サイズのみ変更(&Z)", rad3, 20, 100, 100, 14, WS_TABSTOP
+    AUTORADIOBUTTON "空白マスで埋める(&S)", ID_DICTIONARY56, 20, 60, 100, 14, WS_TABSTOP
+    AUTORADIOBUTTON "黒マスで埋める(&B)", ID_DICTIONARY57, 20, 80, 100, 14, WS_TABSTOP
+    AUTORADIOBUTTON "サイズのみ変更(&Z)", ID_DICTIONARY58, 20, 100, 100, 14, WS_TABSTOP
     DEFPUSHBUTTON "新規作成(&N)", IDOK, 175, 105, 60, 14
     PUSHBUTTON "キャンセル", IDCANCEL, 240, 105, 60, 14
 }
@@ -511,8 +511,8 @@ FONT 9, "MS UI Gothic"
     CONTROL "", scr2, "msctls_updown32", UDS_ARROWKEYS | UDS_AUTOBUDDY | UDS_ALIGNRIGHT | UDS_SETBUDDYINT, 101, 24, 12, 20
     LTEXT "マス", -1, 248, 10, 20, 12
     LTEXT "※8×8以上のサイズの場合、計算にかなり時間がかかることがあります。", -1, 10, 30, 290, 14
-    AUTOCHECKBOX "スマート解決(&S)", chx2, 10, 60, 75, 14
-    AUTOCHECKBOX "一定時間が過ぎたらリトライ(&T)", chx1, 95, 60, 110, 14
+    AUTOCHECKBOX "スマート解決(&S)", ID_DICTIONARY41, 10, 60, 75, 14
+    AUTOCHECKBOX "一定時間が過ぎたらリトライ(&T)", ID_DICTIONARY40, 95, 60, 110, 14
     LTEXT "最大単語長(&L):", stc1, 10, 87, 60, 12
     EDITTEXT edt3, 80, 85, 30, 14, ES_NUMBER | ES_RIGHT
     CONTROL "", scr3, "msctls_updown32", UDS_ARROWKEYS | UDS_AUTOBUDDY | UDS_ALIGNRIGHT | UDS_SETBUDDYINT, 103, 90, 12, 20
@@ -529,8 +529,8 @@ FONT 9, "MS UI Gothic"
     CONTROL "", ctl1, "msctls_progress32", 0, 5, 25, 155, 10
     CONTROL "", 1185, "msctls_progress32", 0, 5, 40, 155, 10
     LTEXT "", stc2, 5, 55, 155, 12
-    PUSHBUTTON "リトライ(&R)", psh2, 5, 70, 75, 14
-    PUSHBUTTON "キャンセル", psh1, 85, 70, 75, 14
+    PUSHBUTTON "リトライ(&R)", ID_DICTIONARY25, 5, 70, 75, 14
+    PUSHBUTTON "キャンセル", ID_DICTIONARY24, 85, 70, 75, 14
 }
 
 IDD_SEQCREATE DIALOG 0, 0, 310, 155
@@ -547,8 +547,8 @@ FONT 9, "MS UI Gothic"
     CONTROL "", scr2, "msctls_updown32", UDS_ARROWKEYS | UDS_AUTOBUDDY | UDS_ALIGNRIGHT | UDS_SETBUDDYINT, 101, 24, 12, 20
     LTEXT "マス", -1, 248, 10, 20, 12
     LTEXT "※8×8以上のサイズの場合、計算にかなり時間がかかることがあります。", -1, 10, 30, 290, 14
-    AUTOCHECKBOX "スマート解決(&S)", chx2, 10, 60, 75, 14
-    AUTOCHECKBOX "一定時間が過ぎたらリトライ(&T)", chx1, 95, 60, 110, 14
+    AUTOCHECKBOX "スマート解決(&S)", ID_DICTIONARY41, 10, 60, 75, 14
+    AUTOCHECKBOX "一定時間が過ぎたらリトライ(&T)", ID_DICTIONARY40, 95, 60, 110, 14
     LTEXT "最大単語長(&L):", stc1, 10, 87, 60, 12
     EDITTEXT edt3, 80, 85, 30, 14, ES_NUMBER | ES_RIGHT
     CONTROL "", scr3, "msctls_updown32", UDS_ARROWKEYS | UDS_AUTOBUDDY | UDS_ALIGNRIGHT | UDS_SETBUDDYINT, 103, 90, 12, 20
@@ -557,7 +557,7 @@ FONT 9, "MS UI Gothic"
     CONTROL "", scr4, "msctls_updown32", UDS_ARROWKEYS | UDS_AUTOBUDDY | UDS_ALIGNRIGHT | UDS_SETBUDDYINT, 259, 87, 12, 20
     LTEXT "保存先フォルダ(&S):", -1, 10, 115, 60, 12
     CONTROL "", cmb2, "ComboBoxEx32", CBS_AUTOHSCROLL | CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP, 78, 113, 165, 80
-    PUSHBUTTON "参照(&O)...", psh2, 250, 113, 50, 14
+    PUSHBUTTON "参照(&O)...", ID_DICTIONARY25, 250, 113, 50, 14
     DEFPUSHBUTTON "計算開始(&G)", IDOK, 175, 135, 60, 14
     PUSHBUTTON "キャンセル", IDCANCEL, 240, 135, 60, 14
 }
@@ -569,35 +569,35 @@ FONT 9, "MS UI Gothic"
 {
     RTEXT "マスのフォント(&F):", -1, 5, 6, 60, 12
     EDITTEXT edt1, 70, 4, 85, 14, ES_READONLY
-    PUSHBUTTON "変更(&C)...", psh1, 160, 4, 55, 14
-    PUSHBUTTON "リセット(&R)", psh3, 220, 4, 50, 14
+    PUSHBUTTON "変更(&C)...", ID_DICTIONARY24, 160, 4, 55, 14
+    PUSHBUTTON "リセット(&R)", ID_DICTIONARY26, 220, 4, 50, 14
     RTEXT "小さいフォント(&S):", -1, 5, 26, 60, 12
     EDITTEXT edt2, 70, 24, 85, 14, ES_READONLY
-    PUSHBUTTON "変更(&H)...", psh2, 160, 24, 55, 14
-    PUSHBUTTON "リセット(&E)", psh4, 220, 24, 50, 14
+    PUSHBUTTON "変更(&H)...", ID_DICTIONARY25, 160, 24, 55, 14
+    PUSHBUTTON "リセット(&E)", ID_DICTIONARY27, 220, 24, 50, 14
     RTEXT "UIフォント(&U):", -1, 5, 46, 60, 12
     EDITTEXT edt3, 70, 44, 85, 14, ES_READONLY
-    PUSHBUTTON "変更(&G)...", psh5, 160, 44, 55, 14
-    PUSHBUTTON "リセット(&T)", psh6, 220, 44, 50, 14
-    AUTOCHECKBOX "ツールバーを表示する(&B)", chx1, 10, 70, 85, 14
-    AUTOCHECKBOX "太枠をつける(&I)", chx2, 105, 70, 70, 14
-    AUTOCHECKBOX "二重マスの枠を描く(&A)", chx3, 180, 70, 90, 14
+    PUSHBUTTON "変更(&G)...", ID_DICTIONARY28, 160, 44, 55, 14
+    PUSHBUTTON "リセット(&T)", ID_DICTIONARY29, 220, 44, 50, 14
+    AUTOCHECKBOX "ツールバーを表示する(&B)", ID_DICTIONARY40, 10, 70, 85, 14
+    AUTOCHECKBOX "太枠をつける(&I)", ID_DICTIONARY41, 105, 70, 70, 14
+    AUTOCHECKBOX "二重マスの枠を描く(&A)", ID_DICTIONARY42, 180, 70, 90, 14
     RTEXT "白マスの色(&1):", -1, 10, 96, 45, 12
-    CONTROL "", psh7, "BUTTON", BS_OWNERDRAW | WS_TABSTOP, 60, 94, 15, 15
+    CONTROL "", ID_DICTIONARY30, "BUTTON", BS_OWNERDRAW | WS_TABSTOP, 60, 94, 15, 15
     RTEXT "黒マスの色(&2):", -1, 90, 96, 45, 12
-    CONTROL "", psh8, "BUTTON", BS_OWNERDRAW | WS_TABSTOP, 140, 94, 15, 15
+    CONTROL "", ID_DICTIONARY31, "BUTTON", BS_OWNERDRAW | WS_TABSTOP, 140, 94, 15, 15
     RTEXT "二重マスの色(&3):", -1, 172, 96, 55, 12
-    CONTROL "", psh9, "BUTTON", BS_OWNERDRAW | WS_TABSTOP, 232, 94, 15, 15
+    CONTROL "", ID_DICTIONARY32, "BUTTON", BS_OWNERDRAW | WS_TABSTOP, 232, 94, 15, 15
     LTEXT "セル文字の大きさ(&P):", -1, 5, 124, 65, 12
     EDITTEXT edt4, 72, 122, 33, 14, ES_NUMBER | ES_AUTOHSCROLL
     CONTROL "", scr1, "msctls_updown32", UDS_ARROWKEYS | UDS_AUTOBUDDY | UDS_ALIGNRIGHT | UDS_SETBUDDYINT, 94, 122, 12, 20
     LTEXT "%", -1, 112, 124, 14, 12
-    PUSHBUTTON "リセット", psh10, 70, 140, 35, 14
+    PUSHBUTTON "リセット", ID_DICTIONARY33, 70, 140, 35, 14
     LTEXT "小さい文字の大きさ(&L):", -1, 137, 124, 70, 12
     EDITTEXT edt5, 209, 122, 33, 14, ES_NUMBER | ES_AUTOHSCROLL
     CONTROL "", scr2, "msctls_updown32", UDS_ARROWKEYS | UDS_AUTOBUDDY | UDS_ALIGNRIGHT | UDS_SETBUDDYINT, 232, 122, 12, 20
     LTEXT "%", -1, 248, 124, 14, 12
-    PUSHBUTTON "リセット", psh11, 209, 140, 35, 14
+    PUSHBUTTON "リセット", ID_DICTIONARY34, 209, 140, 35, 14
     LTEXT "黒マス画像(&M):", -1, 5, 166, 52, 11
     COMBOBOX cmb1, 60, 165, 102, 300, CBS_HASSTRINGS | CBS_AUTOHSCROLL | CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
     LTEXT "BLOCKフォルダに好きな正方形の画像をBMP/EMF形式で放り込んで下さい。", -1, 10, 182, 128, 21
@@ -619,8 +619,8 @@ FONT 9, "MS UI Gothic"
     LTEXT "作成する問題の個数(&N):", -1, 10, 27, 77, 12
     CONTROL "100", edt1, "EDIT", ES_NUMBER | ES_RIGHT | WS_BORDER | WS_TABSTOP, 90, 25, 65, 14
     CONTROL "", scr1, "msctls_updown32", UDS_ARROWKEYS | UDS_AUTOBUDDY | UDS_ALIGNRIGHT | UDS_SETBUDDYINT, 101, 24, 12, 20
-    PUSHBUTTON "参照(&O)...", psh1, 250, 5, 50, 14
-    AUTOCHECKBOX "一定時間が過ぎたらリトライ(&T)", chx1, 10, 45, 155, 14
+    PUSHBUTTON "参照(&O)...", ID_DICTIONARY24, 250, 5, 50, 14
+    AUTOCHECKBOX "一定時間が過ぎたらリトライ(&T)", ID_DICTIONARY40, 10, 45, 155, 14
     DEFPUSHBUTTON "計算開始(&S)", IDOK, 175, 60, 60, 14
     PUSHBUTTON "キャンセル", IDCANCEL, 240, 60, 60, 14
 }
@@ -632,7 +632,7 @@ FONT 9, "MS UI Gothic"
 {
     LTEXT "辞書ファイル(&W):", -1, 10, 10, 90, 12
     CONTROL "", cmb1, "ComboBoxEx32", CBS_AUTOHSCROLL | CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP, 10, 25, 290, 200
-    PUSHBUTTON "参照(&B)...", psh1, 250, 45, 50, 14
+    PUSHBUTTON "参照(&B)...", ID_DICTIONARY24, 250, 45, 50, 14
     DEFPUSHBUTTON "読み込む(&L)", IDOK, 175, 65, 60, 14
     PUSHBUTTON "キャンセル", IDCANCEL, 240, 65, 60, 14
     LTEXT "※辞書ファイルは拡張子.tsvでDICTフォルダに追加して下さい。", -1, 12, 42, 209, 12
@@ -658,7 +658,7 @@ FONT 9, "MS UI Gothic"
 {
     LTEXT "黒マスパターンを生成中...", -1, 5, 5, 120, 12
     LTEXT "", stc1, 5, 15, 120, 12
-    PUSHBUTTON "キャンセル", psh1, 40, 35, 60, 14
+    PUSHBUTTON "キャンセル", ID_DICTIONARY24, 40, 35, 60, 14
 }
 
 IDD_KATATATE DIALOG 0, 0, 75, 285
@@ -1227,16 +1227,16 @@ STYLE DS_CENTER | DS_MODALFRAME | WS_POPUPWINDOW | WS_CAPTION | WS_THICKFRAME | 
 FONT 9, "MS UI Gothic"
 {
     LTEXT "下のリストから黒マスパターンをお選び下さい。", stc1, 5, 2, 220, 12
-    AUTORADIOBUTTON "大(&Large)", rad1, 5, 15, 45, 16, WS_TABSTOP
-    AUTORADIOBUTTON "中(&Medium)", rad2, 55, 15, 50, 16, WS_TABSTOP
-    AUTORADIOBUTTON "小(&Small)", rad3, 110, 15, 50, 16, WS_TABSTOP
-    AUTORADIOBUTTON "横長(&H)", rad4, 175, 15, 40, 16, WS_TABSTOP
-    AUTORADIOBUTTON "縦長(&V)", rad5, 220, 15, 40, 16, WS_TABSTOP
-    AUTORADIOBUTTON "指定なし(&N)", rad6, 275, 15, 55, 16, WS_TABSTOP
+    AUTORADIOBUTTON "大(&Large)", ID_DICTIONARY56, 5, 15, 45, 16, WS_TABSTOP
+    AUTORADIOBUTTON "中(&Medium)", ID_DICTIONARY57, 55, 15, 50, 16, WS_TABSTOP
+    AUTORADIOBUTTON "小(&Small)", ID_DICTIONARY58, 110, 15, 50, 16, WS_TABSTOP
+    AUTORADIOBUTTON "横長(&H)", ID_DICTIONARY59, 175, 15, 40, 16, WS_TABSTOP
+    AUTORADIOBUTTON "縦長(&V)", ID_DICTIONARY60, 220, 15, 40, 16, WS_TABSTOP
+    AUTORADIOBUTTON "指定なし(&N)", ID_DICTIONARY61, 275, 15, 55, 16, WS_TABSTOP
     LTEXT "リスト(&T):", stc2, 8, 37, 47, 12
     LISTBOX lst1, 5, 50, 325, 190, LBS_DISABLENOSCROLL | LBS_MULTICOLUMN | LBS_NOINTEGRALHEIGHT | LBS_OWNERDRAWFIXED | WS_VSCROLL | WS_HSCROLL | WS_TABSTOP
-    PUSHBUTTON "コピー(&C)", psh1, 5, 245, 60, 15
-    AUTOCHECKBOX "答えを表示する(&A)", chx1, 75, 245, 80, 15
+    PUSHBUTTON "コピー(&C)", ID_DICTIONARY24, 5, 245, 60, 15
+    AUTOCHECKBOX "答えを表示する(&A)", ID_DICTIONARY40, 75, 245, 80, 15
     DEFPUSHBUTTON "解を求める(&O)", IDOK, 185, 245, 80, 15
     PUSHBUTTON "閉じる(&X)", IDCANCEL, 270, 245, 60, 15
 }
@@ -1252,15 +1252,15 @@ FONT 9, "MS UI Gothic"
     LTEXT "すべてのタグ(&T):", -1, 5, 40, 75, 12
     EDITTEXT edt1, 85, 40, 40, 14, ES_AUTOHSCROLL
     CONTROL "", lst1, "SysListView32", LVS_SHOWSELALWAYS | LVS_SINGLESEL | LVS_REPORT | WS_BORDER | WS_TABSTOP, 5, 55, 120, 160
-    PUSHBUTTON "→", psh1, 135, 55, 40, 14
+    PUSHBUTTON "→", ID_DICTIONARY24, 135, 55, 40, 14
     LTEXT "優先タグ(&P):", -1, 185, 40, 70, 12
     CONTROL "", lst2, "SysListView32", LVS_SHOWSELALWAYS | LVS_SINGLESEL | LVS_REPORT | WS_BORDER | WS_TABSTOP, 185, 55, 120, 66
-    PUSHBUTTON "←", psh2, 135, 105, 40, 14
-    PUSHBUTTON "→", psh3, 135, 150, 40, 14
+    PUSHBUTTON "←", ID_DICTIONARY25, 135, 105, 40, 14
+    PUSHBUTTON "→", ID_DICTIONARY26, 135, 150, 40, 14
     LTEXT "除外タグ(&F):", -1, 185, 135, 70, 12
     CONTROL "", lst3, "SysListView32", LVS_SHOWSELALWAYS | LVS_SINGLESEL | LVS_REPORT | WS_BORDER | WS_TABSTOP, 185, 150, 120, 65
-    PUSHBUTTON "←", psh4, 135, 200, 40, 14
-    PUSHBUTTON "すべてリセット(&A)", psh5, 5, 230, 85, 14
+    PUSHBUTTON "←", ID_DICTIONARY27, 135, 200, 40, 14
+    PUSHBUTTON "すべてリセット(&A)", ID_DICTIONARY28, 5, 230, 85, 14
     DEFPUSHBUTTON "OK", IDOK, 180, 230, 60, 14
     PUSHBUTTON "キャンセル", IDCANCEL, 246, 230, 60, 14
     RTEXT "", stc1, 275, 40, 30, 12
@@ -1280,7 +1280,7 @@ FONT 9, "MS UI Gothic"
     CONTROL "", scr4, "msctls_updown32", UDS_ARROWKEYS | UDS_AUTOBUDDY | UDS_ALIGNRIGHT | UDS_SETBUDDYINT, 235, 5, 12, 20
     LTEXT "保存先フォルダ(&S):", -1, 10, 35, 60, 12
     CONTROL "", cmb2, "ComboBoxEx32", CBS_AUTOHSCROLL | CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP, 78, 33, 165, 80
-    PUSHBUTTON "参照(&O)...", psh2, 250, 33, 50, 14
+    PUSHBUTTON "参照(&O)...", ID_DICTIONARY25, 250, 33, 50, 14
     DEFPUSHBUTTON "計算開始(&G)", IDOK, 175, 55, 60, 14
     PUSHBUTTON "キャンセル", IDCANCEL, 240, 55, 60, 14
 }
@@ -1302,10 +1302,11 @@ CAPTION "単語リストから生成"
 STYLE DS_CENTER | DS_MODALFRAME | WS_POPUPWINDOW | WS_CAPTION
 FONT 9, "MS UI Gothic"
 {
-    ICON 1, ico1, 5, 5, 0, 0
+    ICON 1, ico1, 5, 5, 20, 20
     LTEXT "可能ならば指定された単語をすべて使用したクロスワード パズルを生成します。\n\n改行区切りの単語リストを下に指定して下さい。", -1, 30, 5, 220, 35
     EDITTEXT edt1, 6, 45, 245, 160, ES_WANTRETURN | ES_MULTILINE | WS_VSCROLL | WS_HSCROLL
     LTEXT "指定単語はすべて連結可能でなければなりません。いくつかの不適合なルールは自動的に解除されます。", -1, 5, 210, 245, 20
+    AUTOCHECKBOX "すべてでなくてもよい(&N)", chx1, 5, 235, 100, 14
     DEFPUSHBUTTON "生成する(&G)", IDOK, 110, 235, 75, 14
     PUSHBUTTON "閉じる(&C)", IDCANCEL, 190, 235, 60, 14
 }

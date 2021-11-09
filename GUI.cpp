@@ -7908,6 +7908,22 @@ BOOL XgWordList_OnOK(HWND hwnd)
 
     std::wstring nonconnected;
     std::unordered_set<std::wstring> wordset(words.begin(), words.end());
+
+    // すべてでなくてもよい？ "Not all is also ok"?
+    if (::IsDlgButtonChecked(hwnd, chx1) == BST_CHECKED) {
+        while (!check_connectivity<wchar_t>(wordset, nonconnected)) {
+            // 接続されていない単語を削除。
+            wordset.erase(nonconnected);
+            words.erase(std::remove(words.begin(), words.end(), nonconnected), words.end());
+
+            // 単語が少ない？
+            if (words.size() < 2) {
+                XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_ADDMOREWORDS), NULL, MB_ICONERROR);
+                return FALSE;
+            }
+        }
+    }
+
     if (!check_connectivity<wchar_t>(wordset, nonconnected)) {
         // 連結されていない。エラー。
         WCHAR szText[256];
