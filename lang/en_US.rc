@@ -1302,7 +1302,7 @@ FONT 8, "MS Shell Dlg"
     ICON 1, ico1, 5, 5, 0, 0
     LTEXT "Okay, I will create a crossword puzzle with all the specified words if possible.\n\nPlease specify the words below, separated by newlines.", -1, 30, 5, 220, 35
     EDITTEXT edt1, 6, 45, 245, 160, ES_WANTRETURN | ES_MULTILINE | WS_VSCROLL | WS_HSCROLL
-    LTEXT "All the words must be connectable. Some incompatible policies will be automatically canceled.", -1, 5, 210, 245, 20
+    LTEXT "All the words to specify must be connectable. Some incompatible policies will be automatically canceled.", -1, 5, 210, 245, 20
     DEFPUSHBUTTON "&Generate", IDOK, 110, 235, 75, 14
     PUSHBUTTON "&Close", IDCANCEL, 190, 235, 60, 14
 }
@@ -1493,7 +1493,7 @@ STRINGTABLE
     IDS_NOTREGDWORD, "The dictionary didn't register some words yet.\n\n%s\n\nDo you want to continue?"
     IDS_WARNING, "Warning"
     IDS_HOMEPAGE, "https://katahiromz.web.fc2.com/eindex.html"
-    IDS_NOTCONNECTIVE, "The word '%ls' was not connective."
+    IDS_NOTCONNECTABLE, "The word '%ls' was not connectable."
     IDS_GENERATED, "Generated."
     IDS_CANTGENERATE, "I couldn't generate."
     IDS_TT_NEW, "New crossword"

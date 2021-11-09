@@ -181,7 +181,7 @@
 #define IDS_NOTREGDWORD                     273
 #define IDS_WARNING                         274
 #define IDS_HOMEPAGE                        275
-#define IDS_NOTCONNECTIVE                   276
+#define IDS_NOTCONNECTABLE                  276
 #define IDS_GENERATED                       277
 #define IDS_CANTGENERATE                    278
 #define IDS_TT_NEW                          10100

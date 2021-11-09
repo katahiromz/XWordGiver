@@ -7901,7 +7901,7 @@ BOOL XgWordList_OnOK(HWND hwnd)
     if (!check_connectivity<wchar_t>(wordset, nonconnected)) {
         // 連結されていない。エラー。
         WCHAR szText[256];
-        StringCchPrintfW(szText, _countof(szText), XgLoadStringDx1(IDS_NOTCONNECTIVE),
+        StringCchPrintfW(szText, _countof(szText), XgLoadStringDx1(IDS_NOTCONNECTABLE),
                          nonconnected.c_str());
         XgCenterMessageBoxW(hwnd, szText, NULL, MB_ICONERROR);
     } else {

@@ -1305,7 +1305,7 @@ FONT 9, "MS UI Gothic"
     ICON 1, ico1, 5, 5, 0, 0
     LTEXT "可能ならば指定された単語をすべて使用したクロスワード パズルを生成します。\n\n改行区切りの単語リストを下に指定して下さい。", -1, 30, 5, 220, 35
     EDITTEXT edt1, 6, 45, 245, 160, ES_WANTRETURN | ES_MULTILINE | WS_VSCROLL | WS_HSCROLL
-    LTEXT "すべての単語は連結可能でなければなりません。いくつかの不適合なルールは自動的に解除されます。", -1, 5, 210, 245, 20
+    LTEXT "指定単語はすべて連結可能でなければなりません。いくつかの不適合なルールは自動的に解除されます。", -1, 5, 210, 245, 20
     DEFPUSHBUTTON "生成する(&G)", IDOK, 110, 235, 75, 14
     PUSHBUTTON "閉じる(&C)", IDCANCEL, 190, 235, 60, 14
 }
@@ -1496,7 +1496,7 @@ STRINGTABLE
     IDS_NOTREGDWORD, "辞書に未登録の単語があります。\n\n%s\n\n続行しますか？"
     IDS_WARNING, "警告"
     IDS_HOMEPAGE, "https://katahiromz.web.fc2.com/"
-    IDS_NOTCONNECTIVE, "単語「%ls」は連結できませんでした。"
+    IDS_NOTCONNECTABLE, "単語「%ls」は連結できませんでした。"
     IDS_GENERATED, "生成しました。"
     IDS_CANTGENERATE, "生成できませんでした。"
     IDS_TT_NEW, "新規作成"
