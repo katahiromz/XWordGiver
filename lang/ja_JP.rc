@@ -1499,6 +1499,7 @@ STRINGTABLE
     IDS_NOTCONNECTABLE, "単語「%ls」は連結できませんでした。"
     IDS_GENERATED, "生成しました。"
     IDS_CANTGENERATE, "生成できませんでした。"
+    IDS_ADDMOREWORDS, "2個未満の単語では生成できません。単語を増やして下さい。"
     IDS_TT_NEW, "新規作成"
     IDS_TT_GENERATE, "問題を自動生成する"
     IDS_TT_OPEN, "問題を開く"

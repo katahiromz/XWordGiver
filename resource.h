@@ -184,6 +184,7 @@
 #define IDS_NOTCONNECTABLE                  276
 #define IDS_GENERATED                       277
 #define IDS_CANTGENERATE                    278
+#define IDS_ADDMOREWORDS                    279
 #define IDS_TT_NEW                          10100
 #define IDS_TT_GENERATE                     10101
 #define IDS_TT_OPEN                         10102

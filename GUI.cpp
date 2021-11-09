@@ -7855,6 +7855,10 @@ BOOL XgWordList_OnOK(HWND hwnd)
     // edt1からテキストを取得する。
     HWND hEdt1 = GetDlgItem(hwnd, edt1);
     INT cch = GetWindowTextLengthW(hEdt1);
+    if (cch == 0) {
+        XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_ADDMOREWORDS), NULL, MB_ICONERROR);
+        return FALSE;
+    }
     LPWSTR psz = new WCHAR[cch + 1];
     if (!GetWindowTextW(hEdt1, psz, cch + 1))
     {
@@ -7893,6 +7897,12 @@ BOOL XgWordList_OnOK(HWND hwnd)
         }
     }
     items.clear();
+
+    // 単語が少ない？
+    if (words.size() < 2) {
+        XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_ADDMOREWORDS), NULL, MB_ICONERROR);
+        return FALSE;
+    }
 
     using namespace crossword_generation;
 
