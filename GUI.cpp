@@ -7954,6 +7954,14 @@ BOOL XgWordList_OnOK(HWND hwnd)
             xg_solution.DoNumberingNoCheck();
             XgUpdateHints(xg_hMainWnd);
             // 単語リストを保存して後で使う。
+            for (auto& word : words) {
+                for (auto& wch : word) {
+                    if (ZEN_LARGE_A <= wch && wch <= ZEN_LARGE_Z)
+                        wch = L'a' + (wch - ZEN_LARGE_A);
+                    else if (ZEN_SMALL_A <= wch && wch <= ZEN_SMALL_Z)
+                        wch = L'a' + (wch - ZEN_SMALL_A);
+                }
+            }
             if (has_hints) {
                 for (auto& word : words) {
                     auto hint = dict[word];
