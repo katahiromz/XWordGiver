@@ -7933,8 +7933,11 @@ BOOL XgWordList_OnOK(HWND hwnd)
     } else {
         // 単語リストから生成する。
         generation_t<wchar_t>::do_generate_mt(wordset);
-        if (generation_t<wchar_t>::s_generated) {
-            // 成功。ルールを補正する。
+        if (generation_t<wchar_t>::s_generated) { // 成功。
+            // 「元に戻す」情報を取得する。
+            auto sa1 = std::make_shared<XG_UndoData_SetAll>();
+            sa1->Get();
+            // ルールを補正する。
             xg_nRules &= ~(RULE_POINTSYMMETRY | RULE_LINESYMMETRYV | RULE_LINESYMMETRYH);
             xg_nRules &= ~(RULE_DONTCORNERBLACK | RULE_DONTDOUBLEBLACK | RULE_DONTTRIDIRECTIONS);
             xg_nRules &= ~(RULE_DONTFOURDIAGONALS | RULE_DONTTHREEDIAGONALS);
@@ -7969,6 +7972,9 @@ BOOL XgWordList_OnOK(HWND hwnd)
             // 番号とヒントを付ける。
             xg_solution.DoNumberingNoCheck();
             XgUpdateHints(xg_hMainWnd);
+            // テーマをリセットする。
+            XgResetTheme(xg_hMainWnd);
+            XgUpdateTheme(xg_hMainWnd);
             // 単語リストを保存して後で使う。
             for (auto& word : words) {
                 for (auto& wch : word) {
@@ -7986,6 +7992,10 @@ BOOL XgWordList_OnOK(HWND hwnd)
                 }
             }
             xg_str_word_list = mstr_join(words, L"\r\n");
+            // 「元に戻す」情報を設定する。
+            auto sa2 = std::make_shared<XG_UndoData_SetAll>();
+            sa2->Get();
+            xg_ubUndoBuffer.Commit(UC_SETALL, sa1, sa2);
             return TRUE; // 成功。
         } else {
             // 生成できなかった。
@@ -8023,6 +8033,49 @@ XgWordListDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
     return 0;
 }
 
+// ズームを実際のウィンドウに合わせる。
+void __fastcall XgFitZoom(HWND hwnd)
+{
+    // クライアント領域のサイズを取得する。
+    RECT rc;
+    GetClientRect(hwnd, &rc);
+    SIZE sizClient = { rc.right - rc.left, rc.bottom - rc.top };
+
+    // コントロールの領域で引き算する。
+    if (::IsWindowVisible(xg_hToolBar)) {
+        ::GetWindowRect(xg_hToolBar, &rc);
+        sizClient.cy -= rc.bottom - rc.top;
+    }
+    if (::IsWindowVisible(xg_hStatusBar)) {
+        ::GetWindowRect(xg_hStatusBar, &rc);
+        sizClient.cy -= rc.bottom - rc.top;
+    }
+    sizClient.cx -= ::GetSystemMetrics(SM_CXVSCROLL);
+    sizClient.cy -= ::GetSystemMetrics(SM_CYHSCROLL);
+
+    // 画像を更新。
+    XgUpdateImage(hwnd);
+
+    // サイズをクライアント領域にフィットさせる。
+    SIZE siz;
+    XgGetXWordExtent(&siz);
+    if (sizClient.cx * siz.cy > siz.cx * sizClient.cy) {
+        xg_nZoomRate = sizClient.cy * 100 / siz.cy;
+    } else {
+        xg_nZoomRate = sizClient.cx * 100 / siz.cx;
+    }
+
+    // ズーム倍率を修正。
+    if (xg_nZoomRate == 0)
+        xg_nZoomRate = 1;
+    if (xg_nZoomRate > 100)
+        xg_nZoomRate = 100;
+
+    // 再描画。
+    XgUpdateImage(hwnd);
+    XgUpdateStatusBar(hwnd);
+}
+
 // 単語リストから生成。
 void XgGenerateFromWordListDlgProc(HWND hwnd)
 {
@@ -8030,44 +8083,8 @@ void XgGenerateFromWordListDlgProc(HWND hwnd)
     if (DialogBoxW(xg_hInstance, MAKEINTRESOURCEW(IDD_WORDLIST),
                    hwnd, XgWordListDlgProc) == IDOK)
     {
-        // クライアント領域のサイズを取得する。
-        RECT rc;
-        GetClientRect(hwnd, &rc);
-        SIZE sizClient = { rc.right - rc.left, rc.bottom - rc.top };
-
-        // コントロールの領域で引き算する。
-        if (::IsWindowVisible(xg_hToolBar)) {
-            ::GetWindowRect(xg_hToolBar, &rc);
-            sizClient.cy -= rc.bottom - rc.top;
-        }
-        if (::IsWindowVisible(xg_hStatusBar)) {
-            ::GetWindowRect(xg_hStatusBar, &rc);
-            sizClient.cy -= rc.bottom - rc.top;
-        }
-        sizClient.cx -= ::GetSystemMetrics(SM_CXVSCROLL);
-        sizClient.cy -= ::GetSystemMetrics(SM_CYHSCROLL);
-
-        // 画像を更新。
-        XgUpdateImage(hwnd);
-
-        // サイズをクライアント領域にフィットさせる。
-        SIZE siz;
-        XgGetXWordExtent(&siz);
-        if (sizClient.cx * siz.cy > siz.cx * sizClient.cy) {
-            xg_nZoomRate = sizClient.cy * 100 / siz.cy;
-        } else {
-            xg_nZoomRate = sizClient.cx * 100 / siz.cx;
-        }
-
-        // ズーム倍率を修正。
-        if (xg_nZoomRate == 0)
-            xg_nZoomRate = 1;
-        if (xg_nZoomRate > 100)
-            xg_nZoomRate = 100;
-
-        // 再描画。
-        XgUpdateImage(hwnd);
-        XgUpdateStatusBar(hwnd);
+        // ズームを実際のウィンドウに合わせる。
+        XgFitZoom(hwnd);
 
         // 成功メッセージ。
         XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_GENERATED),
@@ -8077,6 +8094,7 @@ void XgGenerateFromWordListDlgProc(HWND hwnd)
     }
 }
 
+// ズーム倍率を設定する。
 static void XgSetZoomRate(HWND hwnd, INT nZoomRate)
 {
     xg_nZoomRate = nZoomRate;
@@ -8470,6 +8488,8 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
                     // 成功。
                     xg_ubUndoBuffer.Empty();
                     xg_caret_pos.clear();
+                    // ズームを実際のウィンドウに合わせる。
+                    XgFitZoom(hwnd);
                     // イメージを更新する。
                     XgUpdateImage(hwnd, 0, 0);
                 }
@@ -8481,6 +8501,8 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
                     // 成功。
                     xg_ubUndoBuffer.Empty();
                     xg_caret_pos.clear();
+                    // ズームを実際のウィンドウに合わせる。
+                    XgFitZoom(hwnd);
                     // イメージを更新する。
                     XgUpdateImage(hwnd, 0, 0);
                     // テーマを更新する。
@@ -9568,6 +9590,8 @@ void __fastcall MainWnd_OnDropFiles(HWND hwnd, HDROP hDrop)
             XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_CANTLOAD), nullptr, MB_ICONERROR);
         } else {
             xg_caret_pos.clear();
+            // ズームを実際のウィンドウに合わせる。
+            XgFitZoom(hwnd);
             // テーマを更新する。
             XgSetThemeString(xg_strTheme);
             XgUpdateTheme(hwnd);
@@ -9581,6 +9605,8 @@ void __fastcall MainWnd_OnDropFiles(HWND hwnd, HDROP hDrop)
             XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_CANTLOAD), nullptr, MB_ICONERROR);
         } else {
             xg_caret_pos.clear();
+            // ズームを実際のウィンドウに合わせる。
+            XgFitZoom(hwnd);
             // テーマを更新する。
             XgSetThemeString(xg_strTheme);
             XgUpdateTheme(hwnd);
@@ -9593,6 +9619,8 @@ void __fastcall MainWnd_OnDropFiles(HWND hwnd, HDROP hDrop)
             XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_CANTLOAD), nullptr, MB_ICONERROR);
         } else {
             xg_caret_pos.clear();
+            // ズームを実際のウィンドウに合わせる。
+            XgFitZoom(hwnd);
             // テーマを更新する。
             XgSetThemeString(xg_strTheme);
             XgUpdateTheme(hwnd);
