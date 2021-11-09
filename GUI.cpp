@@ -9901,6 +9901,8 @@ bool __fastcall MainWnd_OnCreate(HWND hwnd, LPCREATESTRUCT /*lpCreateStruct*/)
                     XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_CANTLOAD), nullptr, MB_ICONERROR);
                 } else {
                     xg_caret_pos.clear();
+                    // ズームを実際のウィンドウに合わせる。
+                    XgFitZoom(hwnd);
                     // イメージを更新する。
                     XgUpdateImage(hwnd, 0, 0);
                 }
@@ -9909,6 +9911,8 @@ bool __fastcall MainWnd_OnCreate(HWND hwnd, LPCREATESTRUCT /*lpCreateStruct*/)
                     XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_CANTLOAD), nullptr, MB_ICONERROR);
                 } else {
                     xg_caret_pos.clear();
+                    // ズームを実際のウィンドウに合わせる。
+                    XgFitZoom(hwnd);
                     // テーマを更新する。
                     XgSetThemeString(xg_strTheme);
                     XgUpdateTheme(hwnd);
