@@ -1303,9 +1303,9 @@ FONT 8, "MS Shell Dlg"
     LTEXT "Okay, I will create a crossword puzzle with all the specified words if possible.\n\nPlease specify the words below, separated by newlines.", -1, 30, 5, 220, 35
     EDITTEXT edt1, 6, 45, 245, 160, ES_WANTRETURN | ES_MULTILINE | WS_VSCROLL | WS_HSCROLL
     LTEXT "All the words to specify must be connectable. Some incompatible policies will be automatically canceled.", -1, 5, 210, 245, 20
-    AUTOCHECKBOX "&Not All is also OK", chx1, 5, 235, 100, 14
+    AUTOCHECKBOX "&Accept partial", chx1, 5, 235, 100, 14
     DEFPUSHBUTTON "&Generate", IDOK, 110, 235, 75, 14
-    PUSHBUTTON "&Close", IDCANCEL, 190, 235, 60, 14
+    PUSHBUTTON "&Cancel", IDCANCEL, 190, 235, 60, 14
 }
 
 //////////////////////////////////////////////////////////////////////////////

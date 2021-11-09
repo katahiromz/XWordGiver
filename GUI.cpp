@@ -7909,7 +7909,7 @@ BOOL XgWordList_OnOK(HWND hwnd)
     std::wstring nonconnected;
     std::unordered_set<std::wstring> wordset(words.begin(), words.end());
 
-    // すべてでなくてもよい？ "Not all is also ok"?
+    // すべてでなくてもよい？
     if (::IsDlgButtonChecked(hwnd, chx1) == BST_CHECKED) {
         while (!check_connectivity<wchar_t>(wordset, nonconnected)) {
             // 接続されていない単語を削除。
