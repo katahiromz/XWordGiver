@@ -8033,12 +8033,22 @@ XgWordListDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
     return 0;
 }
 
+// ズーム倍率を設定する。
+static void XgSetZoomRate(HWND hwnd, INT nZoomRate)
+{
+    xg_nZoomRate = nZoomRate;
+    INT x = XgGetHScrollPos();
+    INT y = XgGetVScrollPos();
+    XgUpdateScrollInfo(hwnd, x, y);
+    XgUpdateImage(hwnd, x, y);
+}
+
 // ズームを実際のウィンドウに合わせる。
 void __fastcall XgFitZoom(HWND hwnd)
 {
     // クライアント領域のサイズを取得する。
     RECT rc;
-    GetClientRect(hwnd, &rc);
+    ::GetClientRect(hwnd, &rc);
     SIZE sizClient = { rc.right - rc.left, rc.bottom - rc.top };
 
     // コントロールの領域で引き算する。
@@ -8053,26 +8063,31 @@ void __fastcall XgFitZoom(HWND hwnd)
     sizClient.cx -= ::GetSystemMetrics(SM_CXVSCROLL);
     sizClient.cy -= ::GetSystemMetrics(SM_CYHSCROLL);
 
-    // 画像を更新。
+    // イメージを更新。
     XgUpdateImage(hwnd);
 
-    // サイズをクライアント領域にフィットさせる。
+    // 描画サイズを取得。
     SIZE siz;
     XgGetXWordExtent(&siz);
+
+    // サイズをクライアント領域にフィットさせる。
+    INT nZoomRate;
     if (sizClient.cx * siz.cy > siz.cx * sizClient.cy) {
-        xg_nZoomRate = sizClient.cy * 100 / siz.cy;
+        nZoomRate = sizClient.cy * 100 / siz.cy;
     } else {
-        xg_nZoomRate = sizClient.cx * 100 / siz.cx;
+        nZoomRate = sizClient.cx * 100 / siz.cx;
     }
 
     // ズーム倍率を修正。
-    if (xg_nZoomRate == 0)
-        xg_nZoomRate = 1;
-    if (xg_nZoomRate > 100)
-        xg_nZoomRate = 100;
+    if (nZoomRate == 0)
+        nZoomRate = 1;
+    if (nZoomRate > 100)
+        nZoomRate = 100;
+    xg_nZoomRate = nZoomRate;
+    XgUpdateScrollInfo(hwnd, 0, 0);
 
     // 再描画。
-    XgUpdateImage(hwnd);
+    XgUpdateImage(hwnd, 0, 0);
     XgUpdateStatusBar(hwnd);
 }
 
@@ -8092,16 +8107,6 @@ void XgGenerateFromWordListDlgProc(HWND hwnd)
         // ヒントを表示する。
         XgShowHints(hwnd);
     }
-}
-
-// ズーム倍率を設定する。
-static void XgSetZoomRate(HWND hwnd, INT nZoomRate)
-{
-    xg_nZoomRate = nZoomRate;
-    INT x = XgGetHScrollPos();
-    INT y = XgGetVScrollPos();
-    XgUpdateScrollInfo(hwnd, x, y);
-    XgUpdateImage(hwnd, x, y);
 }
 
 // コマンドを実行する。
