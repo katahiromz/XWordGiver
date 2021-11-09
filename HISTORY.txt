@@ -46,7 +46,8 @@
     - Fixed around Max Word Length.
     - Fixed typo of skeleton.
 - 2021.XX.YY Ver.4.8.1
-    - If there are no empty cells, "Find a solution" is not restricted.
+    - Added "Generate from a word list" feature.
+    - Relaxed the limit on the size of the board.
     - Able to toggle whether the double-frame letters are visible or not.
     - Do not repeatedly warn about the existence of unregistered words.
     - Added "Insert Row/Column" feature.
@@ -55,6 +56,7 @@
     - Improved GUI a little.
     - Improved the English of the GUI.
     - Added more block patterns.
+    - If there are no empty cells, "Find a solution" is not restricted.
 
 # 開発履歴 (Japanese)
 
@@ -413,7 +415,8 @@
     - 最大単語長周りを修正。
     - 「skeleton」のtypoを修正。
 - 2021年XX月YY日 ver.4.8.1
-    - 空白マスがない場合は「解を求める」を制限しない。
+    - 「単語リストから自動生成」機能を追加。
+    - 盤のサイズの制限を緩和。
     - 二重マス文字を表示するかを切り替え可能にした。
     - 未登録単語を何度も警告しない。
     - 「行の追加」「列の追加」を追加。
@@ -422,3 +425,4 @@
     - GUIの軽微な改良。
     - GUIの英語を改良。
     - さらに黒マスパターンを追加。
+    - 空白マスがない場合は「解を求める」を制限しない。

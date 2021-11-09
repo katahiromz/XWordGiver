@@ -9,7 +9,7 @@
 
 // クロスワードのサイズの制限。
 #define XG_MIN_SIZE         3
-#define XG_MAX_SIZE         30
+#define XG_MAX_SIZE         256
 
 // 単語の長さの制限。
 #define XG_MIN_WORD_LEN 2
@@ -258,6 +258,9 @@ BOOL xg_bShowAnswerOnPattern = TRUE;
 
 // ルール群。
 INT xg_nRules = DEFAULT_RULES_JAPANESE;
+
+// 単語リスト。
+static std::wstring xg_str_word_list;
 
 //////////////////////////////////////////////////////////////////////////////
 // スクロール関連。
@@ -7837,6 +7840,196 @@ void __fastcall XgShowResultsRepeatedly(HWND hwnd)
                         nullptr, nullptr, SW_SHOWNORMAL);
 }
 
+BOOL XgWordList_OnInitDialog(HWND hwnd, HWND hwndFocus, LPARAM lParam)
+{
+    XgCenterDialog(hwnd);
+    ::SendDlgItemMessageW(hwnd, edt1, EM_SETLIMITTEXT, MAXSHORT, 0);
+    SetDlgItemTextW(hwnd, edt1, xg_str_word_list.c_str());
+    return TRUE;
+}
+
+#include "crossword_generation.hpp"
+
+BOOL XgWordList_OnOK(HWND hwnd)
+{
+    // edt1からテキストを取得する。
+    HWND hEdt1 = GetDlgItem(hwnd, edt1);
+    INT cch = GetWindowTextLengthW(hEdt1);
+    LPWSTR psz = new WCHAR[cch + 1];
+    if (!GetWindowTextW(hEdt1, psz, cch + 1))
+    {
+        delete[] psz;
+        XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_OUTOFMEMORY), NULL, MB_ICONERROR);
+        return FALSE;
+    }
+    std::wstring str = psz;
+    delete[] psz;
+
+    // 単語リストと辞書を取得する。
+    std::vector<std::wstring> items, words;
+    std::unordered_map<std::wstring, std::wstring> dict;
+    mstr_split(items, str, L"\n");
+    bool has_hints = false;
+    for (auto& item : items) {
+        size_t ich = item.find(L'\t');
+        std::wstring hint;
+        if (ich != item.npos) {
+            hint = item.substr(ich + 1);
+            item.resize(ich);
+            ich = hint.find(L'\t');
+            if (ich != hint.npos) {
+                hint.resize(ich);
+            }
+            xg_str_trim(hint);
+            has_hints = true;
+        }
+        xg_str_replace_all(item, L"-", L"");
+        xg_str_replace_all(item, L"'", L"");
+        xg_str_trim(item);
+        item = XgNormalizeString(item);
+        if (!item.empty()) {
+            dict[item] = hint;
+            words.push_back(item);
+        }
+    }
+    items.clear();
+
+    using namespace crossword_generation;
+
+    std::wstring nonconnected;
+    std::unordered_set<std::wstring> wordset(words.begin(), words.end());
+    if (!check_connectivity<wchar_t>(wordset, nonconnected)) {
+        // 連結されていない。エラー。
+        WCHAR szText[256];
+        StringCchPrintfW(szText, _countof(szText), XgLoadStringDx1(IDS_NOTCONNECTIVE),
+                         nonconnected.c_str());
+        XgCenterMessageBoxW(hwnd, szText, NULL, MB_ICONERROR);
+    } else {
+        // 単語リストから生成する。
+        generation_t<wchar_t>::do_generate_mt(wordset);
+        if (generation_t<wchar_t>::s_generated) {
+            // 成功。ルールを補正する。
+            xg_nRules &= ~(RULE_POINTSYMMETRY | RULE_LINESYMMETRYV | RULE_LINESYMMETRYH);
+            xg_nRules &= ~(RULE_DONTCORNERBLACK | RULE_DONTDOUBLEBLACK | RULE_DONTTRIDIRECTIONS);
+            xg_nRules &= ~(RULE_DONTFOURDIAGONALS | RULE_DONTTHREEDIAGONALS);
+            xg_bSkeletonMode = TRUE;
+            // 解をセットする。
+            auto solution = generation_t<wchar_t>::s_solution;
+            xg_bSolved = true;
+            xg_bShowAnswer = true;
+            xg_nRows = solution.m_cy;
+            xg_nCols = solution.m_cx;
+            xg_xword.ResetAndSetSize(xg_nRows, xg_nCols);
+            xg_solution.ResetAndSetSize(xg_nRows, xg_nCols);
+            xg_dict_1.clear();
+            xg_dict_2.clear();
+            xg_dict_name.clear();
+            for (int y = 0; y < solution.m_cy; ++y) {
+                for (int x = 0; x < solution.m_cx; ++x) {
+                    auto ch = solution.get_at(x, y);
+                    if (ch == L'#') {
+                        xg_solution.SetAt(y, x, ZEN_BLACK);
+                        xg_xword.SetAt(y, x, ZEN_BLACK);
+                    } else {
+                        xg_solution.SetAt(y, x, ch);
+                        xg_xword.SetAt(y, x, ZEN_SPACE);
+                    }
+                }
+            }
+            // 一時的な辞書をセットする。
+            for (auto& word : words) {
+                xg_dict_1.emplace_back(word, dict[word]);
+            }
+            // 番号とヒントを付ける。
+            xg_solution.DoNumberingNoCheck();
+            XgUpdateHints(xg_hMainWnd);
+            // 単語リストを保存して後で使う。
+            if (has_hints) {
+                for (auto& word : words) {
+                    auto hint = dict[word];
+                    word += L"\t";
+                    word += hint;
+                }
+            }
+            xg_str_word_list = mstr_join(words, L"\r\n");
+            return TRUE; // 成功。
+        } else {
+            // 生成できなかった。
+            XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_CANTGENERATE), NULL, MB_ICONERROR);
+        }
+    }
+
+    return FALSE;
+}
+
+void XgWordList_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT codeNotify)
+{
+    switch (id)
+    {
+    case IDOK:
+        if (XgWordList_OnOK(hwnd)) {
+            ::EndDialog(hwnd, id);
+        }
+        break;
+    case IDCANCEL:
+        ::EndDialog(hwnd, id);
+        break;
+    }
+}
+
+// 「単語リストから生成」ダイアログ。
+INT_PTR CALLBACK
+XgWordListDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+{
+    switch (uMsg)
+    {
+        HANDLE_MSG(hwnd, WM_INITDIALOG, XgWordList_OnInitDialog);
+        HANDLE_MSG(hwnd, WM_COMMAND, XgWordList_OnCommand);
+    }
+    return 0;
+}
+
+// 単語リストから生成。
+void XgGenerateFromWordListDlgProc(HWND hwnd)
+{
+    // ダイアログを表示。
+    if (DialogBoxW(xg_hInstance, MAKEINTRESOURCEW(IDD_WORDLIST),
+                   hwnd, XgWordListDlgProc) == IDOK)
+    {
+        // クライアント領域のサイズを取得する。
+        RECT rc;
+        GetClientRect(hwnd, &rc);
+        SIZE sizClient = { rc.right - rc.left, rc.bottom - rc.top };
+
+        // 画像を更新。
+        XgUpdateImage(hwnd);
+
+        // サイズをクライアント領域にフィットさせる。
+        SIZE siz;
+        XgGetXWordExtent(&siz);
+        if (sizClient.cx * siz.cy > siz.cx * sizClient.cy) {
+            xg_nZoomRate = sizClient.cy * 100 / siz.cy;
+        } else {
+            xg_nZoomRate = sizClient.cx * 100 / siz.cx;
+        }
+
+        // ズーム倍率を修正。
+        if (xg_nZoomRate == 0)
+            xg_nZoomRate = 1;
+        if (xg_nZoomRate > 100)
+            xg_nZoomRate = 100;
+
+        // 再描画。
+        XgUpdateImage(hwnd);
+
+        // 成功メッセージ。
+        XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_GENERATED),
+                            XgLoadStringDx2(IDS_APPNAME), MB_ICONINFORMATION);
+        // ヒントを表示する。
+        XgShowHints(hwnd);
+    }
+}
+
 static void XgSetZoomRate(HWND hwnd, INT nZoomRate)
 {
     xg_nZoomRate = nZoomRate;
@@ -8886,6 +9079,8 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
             xg_nZoomRate -= 10;
         } else if (xg_nZoomRate > 50) {
             xg_nZoomRate -= 5;
+        } else if (xg_nZoomRate > 1) {
+            xg_nZoomRate -= 1;
         }
         x = XgGetHScrollPos();
         y = XgGetVScrollPos();
@@ -9291,6 +9486,9 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
             xg_ubUndoBuffer.Commit(UC_SETALL, sa1, sa2);
             XgUpdateImage(hwnd);
         }
+        break;
+    case ID_GENERATEFROMWORDLIST:
+        XgGenerateFromWordListDlgProc(hwnd);
         break;
     default:
         if (!MainWnd_OnCommand2(hwnd, id)) {

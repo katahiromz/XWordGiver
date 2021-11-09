@@ -18,6 +18,7 @@ LANGUAGE LANG_ENGLISH, SUBLANG_DEFAULT
         MENUITEM "Continuously generate crosswords\tCtrl+W", ID_GENERATEREPEATEDLY
         MENUITEM SEPARATOR
         MENUITEM "Generate from block pa&ttern...\tCtrl+;", ID_OPENPATTERNS
+        MENUITEM "Generate from a word &list...", ID_GENERATEFROMWORDLIST
         MENUITEM SEPARATOR
         MENUITEM "&Open crossword...\tCtrl+O", ID_OPEN
         MENUITEM "Save crossword &as...\tCtrl+S", ID_SAVEAS
@@ -1293,6 +1294,19 @@ FONT 9, "Tahoma"
     PUSHBUTTON "Cancel", IDCANCEL, 240, 5, 60, 14
 }
 
+IDD_WORDLIST DIALOG 0, 0, 255, 255
+CAPTION "Generate from the word list"
+STYLE DS_CENTER | DS_MODALFRAME | WS_POPUPWINDOW | WS_CAPTION
+FONT 8, "MS Shell Dlg"
+{
+    ICON 0, ico1, 5, 5, 0, 0
+    LTEXT "Okay, I will create a crossword puzzle with all the specified words if possible.\n\nPlease specify the words below, separated by newlines.", -1, 30, 5, 220, 35
+    EDITTEXT edt1, 6, 45, 245, 160, ES_WANTRETURN | ES_MULTILINE | WS_VSCROLL | WS_HSCROLL
+    LTEXT "All the words must be connectable. Some incompatible policies will be automatically canceled.", -1, 5, 210, 245, 20
+    DEFPUSHBUTTON "&Generate", IDOK, 110, 235, 75, 14
+    PUSHBUTTON "&Close", IDCANCEL, 190, 235, 60, 14
+}
+
 //////////////////////////////////////////////////////////////////////////////
 // RT_VERSION
 
@@ -1479,6 +1493,9 @@ STRINGTABLE
     IDS_NOTREGDWORD, "The dictionary didn't register some words yet.\n\n%s\n\nDo you want to continue?"
     IDS_WARNING, "Warning"
     IDS_HOMEPAGE, "https://katahiromz.web.fc2.com/eindex.html"
+    IDS_NOTCONNECTIVE, "The word '%ls' was not connective."
+    IDS_GENERATED, "Generated."
+    IDS_CANTGENERATE, "I couldn't generate."
     IDS_TT_NEW, "New crossword"
     IDS_TT_GENERATE, "Generate crossword"
     IDS_TT_OPEN, "Open crossword"

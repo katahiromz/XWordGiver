@@ -24,6 +24,7 @@
 #define IDD_THEME                           123
 #define IDD_SEQPATGEN                       124
 #define IDD_PATGEN                          125
+#define IDD_WORDLIST                        126
 
 #define IDS_VERSION                         101
 #define IDS_APPNAME                         102
@@ -180,6 +181,9 @@
 #define IDS_NOTREGDWORD                     273
 #define IDS_WARNING                         274
 #define IDS_HOMEPAGE                        275
+#define IDS_NOTCONNECTIVE                   276
+#define IDS_GENERATED                       277
+#define IDS_CANTGENERATE                    278
 #define IDS_TT_NEW                          10100
 #define IDS_TT_GENERATE                     10101
 #define IDS_TT_OPEN                         10102
@@ -343,6 +347,7 @@
 #define ID_RIGHT_INSERT_COLUMN              285
 #define ID_DELETE_ROW                       286
 #define ID_DELETE_COLUMN                    287
+#define ID_GENERATEFROMWORDLIST             288
 #define ID_DICTIONARY00                     1000
 #define ID_DICTIONARY01                     1001
 #define ID_DICTIONARY02                     1002
