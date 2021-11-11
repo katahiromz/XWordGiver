@@ -45,7 +45,7 @@
     - When the policy is symmetrical, "Finding solution (without adding blocks)" forces the board symmetrical.
     - Fixed around Max Word Length.
     - Fixed typo of skeleton.
-- 2021.XX.YY Ver.4.8.1
+- 2021.11.11 Ver.4.8.1
     - Added "Generate from a word list" feature.
     - Relaxed the limit on the size of the board.
     - Able to toggle whether the double-frame letters are visible or not.
@@ -416,7 +416,7 @@
     - 対称のルールのときに「解を求める(黒マス追加なし)」で盤を対称にするようにした。
     - 最大単語長周りを修正。
     - 「skeleton」のtypoを修正。
-- 2021年XX月YY日 ver.4.8.1
+- 2021年11月11日 ver.4.8.1
     - 「単語リストから自動生成」機能を追加。
     - 盤のサイズの制限を緩和。
     - 二重マス文字を表示するかを切り替え可能にした。
