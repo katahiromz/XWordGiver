@@ -7942,6 +7942,7 @@ BOOL XgWordList_OnOK(HWND hwnd)
             xg_nRules &= ~(RULE_DONTCORNERBLACK | RULE_DONTDOUBLEBLACK | RULE_DONTTRIDIRECTIONS);
             xg_nRules &= ~(RULE_DONTFOURDIAGONALS | RULE_DONTTHREEDIAGONALS);
             xg_bSkeletonMode = TRUE;
+            XgUpdateRules(xg_hMainWnd);
             // 解をセットする。
             auto solution = generation_t<wchar_t>::s_solution;
             xg_bSolved = true;
@@ -7975,6 +7976,10 @@ BOOL XgWordList_OnOK(HWND hwnd)
             // テーマをリセットする。
             XgResetTheme(xg_hMainWnd);
             XgUpdateTheme(xg_hMainWnd);
+            // 二重マスをリセットする。
+            xg_vMarks.clear();
+            xg_vMarkedCands.clear();
+            XgMarkUpdate();
             // 単語リストを保存して後で使う。
             for (auto& word : words) {
                 for (auto& wch : word) {
