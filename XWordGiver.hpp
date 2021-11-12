@@ -3,8 +3,8 @@
 // Copyright (C) 2012-2020 Katayama Hirofumi MZ. All Rights Reserved.
 // (Japanese, UTF-8)
 
-#ifndef __XWORDGIVER_XG_H__
-#define __XWORDGIVER_XG_H__
+#ifndef XWORDGIVER
+#define XWORDGIVER
 
 #ifndef __cplusplus
     #error You lose.    // not C++ compiler
@@ -673,4 +673,4 @@ extern bool xg_bCandVertical;
 
 #include "UndoBuffer.hpp"
 
-#endif  // ndef __XWORDGIVER_XG_H__
+#endif  // ndef XWORDGIVER

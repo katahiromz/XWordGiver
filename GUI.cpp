@@ -6,6 +6,7 @@
 #define NOMINMAX
 #include "XWordGiver.hpp"
 #include "layout.h"
+#include "crossword_generation.hpp"
 
 // クロスワードのサイズの制限。
 #define XG_MIN_SIZE         2
@@ -7848,8 +7849,6 @@ BOOL XgWordList_OnInitDialog(HWND hwnd, HWND hwndFocus, LPARAM lParam)
     return TRUE;
 }
 
-#include "crossword_generation.hpp"
-
 BOOL XgWordList_OnOK(HWND hwnd)
 {
     // edt1からテキストを取得する。
@@ -7932,7 +7931,7 @@ BOOL XgWordList_OnOK(HWND hwnd)
         XgCenterMessageBoxW(hwnd, szText, NULL, MB_ICONERROR);
     } else {
         // 単語リストから生成する。
-        generation_t<wchar_t>::do_generate_mt(wordset);
+        generation_t<wchar_t>::generate_from_words(wordset);
         if (generation_t<wchar_t>::s_generated) { // 成功。
             // 「元に戻す」情報を取得する。
             auto sa1 = std::make_shared<XG_UndoData_SetAll>();
