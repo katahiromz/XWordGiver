@@ -870,7 +870,7 @@ extern BOOL xg_bShowDoubleFrameLetters;
 
 // std::random_shuffleの代わり。
 template <typename t_elem>
-inline void xg_random_shuffle(t_elem& begin, t_elem& end) {
+inline void xg_random_shuffle(const t_elem& begin, const t_elem& end) {
     std::random_device rd;
     std::mt19937 g(rd());
     std::shuffle(begin, end, g);
