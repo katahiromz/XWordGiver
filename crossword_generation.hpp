@@ -51,6 +51,13 @@ namespace std {
 } // namespace std
 
 namespace crossword_generation {
+inline static bool s_generated = false;
+inline static bool s_canceled = false;
+inline static int s_count = 0;
+
+inline void reset() {
+    s_generated = s_canceled = false;
+}
 
 template <typename t_char>
 struct candidate_t {
@@ -518,9 +525,6 @@ template <typename t_char, bool t_fixed>
 struct generation_t {
     typedef std::basic_string<t_char> t_string;
 
-    inline static bool s_generated = false;
-    inline static bool s_canceled = false;
-    inline static int s_count = 0;
     inline static board_t<t_char, t_fixed> s_solution;
     inline static std::mutex s_mutex;
     board_t<t_char, t_fixed> m_board;
