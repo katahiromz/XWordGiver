@@ -6801,20 +6801,8 @@ void __fastcall XgFitZoom(HWND hwnd)
 {
     // クライアント領域のサイズを取得する。
     RECT rc;
-    ::GetClientRect(hwnd, &rc);
+    XgGetRealClientRect(hwnd, &rc);
     SIZE sizClient = { rc.right - rc.left, rc.bottom - rc.top };
-
-    // コントロールの領域で引き算する。
-    if (::IsWindowVisible(xg_hToolBar)) {
-        ::GetWindowRect(xg_hToolBar, &rc);
-        sizClient.cy -= rc.bottom - rc.top;
-    }
-    if (::IsWindowVisible(xg_hStatusBar)) {
-        ::GetWindowRect(xg_hStatusBar, &rc);
-        sizClient.cy -= rc.bottom - rc.top;
-    }
-    sizClient.cx -= ::GetSystemMetrics(SM_CXVSCROLL);
-    sizClient.cy -= ::GetSystemMetrics(SM_CYHSCROLL);
 
     // イメージを更新。
     XgUpdateImage(hwnd);
