@@ -18,11 +18,11 @@
 #else
     #include <unistd.h>
     #include <sys/types.h>
-    inline unsigned GetTickCount(void) {
+    inline uint64_t GetTickCount64(void) {
         using namespace std;
         struct timespec ts;
         clock_gettime(CLOCK_REALTIME, &ts);
-        unsigned tick = ts.tv_nsec / 1000000;
+        uint64_t tick = ts.tv_nsec / 1000000;
         tick += ts.tv_sec * 1000;
         return tick;
     }
@@ -76,7 +76,7 @@ inline uint32_t get_num_processors(void) {
 
 // replacement of std::random_shuffle
 template <typename t_elem>
-inline void random_shuffle(t_elem& begin, t_elem& end) {
+inline void random_shuffle(const t_elem& begin, const t_elem& end) {
     std::random_device rd;
     std::mt19937 g(rd());
     std::shuffle(begin, end, g);
@@ -915,7 +915,7 @@ struct generation_t {
     }
 
     static bool generate_from_words_proc(const std::unordered_set<t_string> *words, int iThread) {
-        std::srand(::GetTickCount() ^ ::GetCurrentThreadId());
+        std::srand(uint32_t(::GetTickCount64()) ^ ::GetCurrentThreadId());
 #if defined(_WIN32)
         ::SetThreadPriority(::GetCurrentThread(), THREAD_PRIORITY_ABOVE_NORMAL);
 #endif

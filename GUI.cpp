@@ -228,10 +228,10 @@ static HACCEL       s_hAccel = nullptr;
 static DWORD        s_dwNumberOfProcessors = 1;
 
 // 計算時間測定用。
-static DWORD        s_dwTick0;    // 開始時間。
-static DWORD        s_dwTick1;    // 再計算時間。
-static DWORD        s_dwTick2;    // 終了時間。
-static DWORD        s_dwWait;     // 待ち時間。
+static DWORDLONG s_dwTick0;    // 開始時間。
+static DWORDLONG s_dwTick1;    // 再計算時間。
+static DWORDLONG s_dwTick2;    // 終了時間。
+static DWORD     s_dwWait;     // 待ち時間。
 
 // ディスク容量が足りないか？
 static bool         s_bOutOfDiskSpace = false;
@@ -2282,14 +2282,14 @@ XgCancelSolveDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam*/)
         // ダイアログを中央へ移動する。
         XgCenterDialog(hwnd);
         // 再試行カウントをクリアする。
-        s_nRetryCount = 0;
+        ::InterlockedExchange(&s_nRetryCount, 0);
         // プログレスバーの範囲をセットする。
         ::SendDlgItemMessageW(hwnd, ctl1, PBM_SETRANGE, 0,
                             MAKELPARAM(0, xg_nRows * xg_nCols));
         ::SendDlgItemMessageW(hwnd, ctl2, PBM_SETRANGE, 0,
                             MAKELPARAM(0, xg_nRows * xg_nCols));
         // 計算時間を求めるために、開始時間を取得する。
-        s_dwTick0 = s_dwTick1 = ::GetTickCount();
+        s_dwTick0 = s_dwTick1 = ::GetTickCount64();
         // 再計算までの時間を概算する。
         s_dwWait = XgGetRetryInterval();
         // 解を求めるのを開始。
@@ -2318,7 +2318,7 @@ XgCancelSolveDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam*/)
             // スレッドを閉じる。
             XgCloseThreads();
             // 計算時間を求めるために、終了時間を取得する。
-            s_dwTick2 = ::GetTickCount();
+            s_dwTick2 = ::GetTickCount64();
             // 解を求めようとした後の後処理。
             XgEndSolve();
             // ダイアログを終了する。
@@ -2333,7 +2333,7 @@ XgCancelSolveDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam*/)
             XgWaitForThreads();
             XgCloseThreads();
             ::InterlockedIncrement(&s_nRetryCount);
-            s_dwTick1 = ::GetTickCount();
+            s_dwTick1 = ::GetTickCount64();
             XgStartSolve_AddBlack();
             // タイマーをセットする。
             ::SetTimer(hwnd, 999, xg_dwTimerInterval, nullptr);
@@ -2351,7 +2351,7 @@ XgCancelSolveDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam*/)
             // スレッドを閉じる。
             XgCloseThreads();
             // 計算時間を求めるために、終了時間を取得する。
-            s_dwTick2 = ::GetTickCount();
+            s_dwTick2 = ::GetTickCount64();
             // 解を求めようとした後の後処理。
             XgEndSolve();
             // ダイアログを終了する。
@@ -2370,10 +2370,10 @@ XgCancelSolveDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam*/)
         {
             // 経過時間を表示する。
             WCHAR sz[MAX_PATH];
-            DWORD dwTick = ::GetTickCount();
+            DWORDLONG dwTick = ::GetTickCount64();
             StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(IDS_NOWSOLVING),
-                    (dwTick - s_dwTick0) / 1000,
-                    (dwTick - s_dwTick0) / 100 % 10, s_nRetryCount);
+                DWORD(dwTick - s_dwTick0) / 1000,
+                DWORD(dwTick - s_dwTick0) / 100 % 10, s_nRetryCount);
             ::SetDlgItemTextW(hwnd, stc1, sz);
         }
 
@@ -2382,7 +2382,7 @@ XgCancelSolveDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam*/)
             // スレッドが終了した。タイマーを解除する。
             ::KillTimer(hwnd, 999);
             // 計算時間を求めるために、終了時間を取得する。
-            s_dwTick2 = ::GetTickCount();
+            s_dwTick2 = ::GetTickCount64();
             // 解を求めようとした後の後処理。
             XgEndSolve();
             // ダイアログを終了する。
@@ -2391,7 +2391,7 @@ XgCancelSolveDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam*/)
             XgCloseThreads();
         } else {
             // 再計算が必要か？
-            if (s_bAutoRetry && ::GetTickCount() - s_dwTick1 > s_dwWait) {
+            if (s_bAutoRetry && ::GetTickCount64() - s_dwTick1 > s_dwWait) {
                 // タイマーを解除する。
                 ::KillTimer(hwnd, 999);
                 // 再計算しなおす。
@@ -2399,7 +2399,7 @@ XgCancelSolveDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam*/)
                 XgWaitForThreads();
                 XgCloseThreads();
                 ::InterlockedIncrement(&s_nRetryCount);
-                s_dwTick1 = ::GetTickCount();
+                s_dwTick1 = ::GetTickCount64();
                 XgStartSolve_AddBlack();
                 // タイマーをセットする。
                 ::SetTimer(hwnd, 999, xg_dwTimerInterval, nullptr);
@@ -2428,14 +2428,14 @@ XgCancelSolveDlgProcNoAddBlack(
         // ダイアログを中央へ移動する。
         XgCenterDialog(hwnd);
         // 初期化する。
-        s_nRetryCount = 0;
+        ::InterlockedExchange(&s_nRetryCount, 0);
         // プログレスバーの範囲をセットする。
         ::SendDlgItemMessageW(hwnd, ctl1, PBM_SETRANGE, 0,
                             MAKELPARAM(0, xg_nRows * xg_nCols));
         ::SendDlgItemMessageW(hwnd, ctl2, PBM_SETRANGE, 0,
                             MAKELPARAM(0, xg_nRows * xg_nCols));
         // 計算時間を求めるために、開始時間を取得する。
-        s_dwTick0 = s_dwTick1 = ::GetTickCount();
+        s_dwTick0 = s_dwTick1 = ::GetTickCount64();
         // 再計算までの時間を概算する。
         s_dwWait = XgGetRetryInterval();
         // 解を求めるのを開始。
@@ -2464,7 +2464,7 @@ XgCancelSolveDlgProcNoAddBlack(
             // スレッドを閉じる。
             XgCloseThreads();
             // 計算時間を求めるために、終了時間を取得する。
-            s_dwTick2 = ::GetTickCount();
+            s_dwTick2 = ::GetTickCount64();
             // 解を求めようとした後の後処理。
             XgEndSolve();
             // ダイアログを終了する。
@@ -2479,7 +2479,7 @@ XgCancelSolveDlgProcNoAddBlack(
             XgWaitForThreads();
             XgCloseThreads();
             ::InterlockedIncrement(&s_nRetryCount);
-            s_dwTick1 = ::GetTickCount();
+            s_dwTick1 = ::GetTickCount64();
             XgStartSolve_NoAddBlack();
             // タイマーをセットする。
             ::SetTimer(hwnd, 999, xg_dwTimerInterval, nullptr);
@@ -2497,7 +2497,7 @@ XgCancelSolveDlgProcNoAddBlack(
             // スレッドを閉じる。
             XgCloseThreads();
             // 計算時間を求めるために、終了時間を取得する。
-            s_dwTick2 = ::GetTickCount();
+            s_dwTick2 = ::GetTickCount64();
             // 解を求めようとした後の後処理。
             XgEndSolve();
             // ダイアログを終了する。
@@ -2514,10 +2514,10 @@ XgCancelSolveDlgProcNoAddBlack(
         // 経過時間を表示する。
         {
             WCHAR sz[MAX_PATH];
-            DWORD dwTick = ::GetTickCount();
+            DWORDLONG dwTick = ::GetTickCount64();
             StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(IDS_NOWSOLVING),
-                    (dwTick - s_dwTick0) / 1000,
-                    (dwTick - s_dwTick0) / 100 % 10, s_nRetryCount);
+                DWORD(dwTick - s_dwTick0) / 1000,
+                DWORD(dwTick - s_dwTick0) / 100 % 10, s_nRetryCount);
             ::SetDlgItemTextW(hwnd, stc1, sz);
         }
         // 一つ以上のスレッドが終了したか？
@@ -2525,7 +2525,7 @@ XgCancelSolveDlgProcNoAddBlack(
             // スレッドが終了した。タイマーを解除する。
             ::KillTimer(hwnd, 999);
             // 計算時間を求めるために、終了時間を取得する。
-            s_dwTick2 = ::GetTickCount();
+            s_dwTick2 = ::GetTickCount64();
             // 解を求めようとした後の後処理。
             XgEndSolve();
             // ダイアログを終了する。
@@ -2534,7 +2534,7 @@ XgCancelSolveDlgProcNoAddBlack(
             XgCloseThreads();
         } else {
             // 再計算が必要か？
-            if (s_bAutoRetry && ::GetTickCount() - s_dwTick1 > s_dwWait) {
+            if (s_bAutoRetry && ::GetTickCount64() - s_dwTick1 > s_dwWait) {
                 // タイマーを解除する。
                 ::KillTimer(hwnd, 999);
                 // 再計算しなおす。
@@ -2542,7 +2542,7 @@ XgCancelSolveDlgProcNoAddBlack(
                 XgWaitForThreads();
                 XgCloseThreads();
                 ::InterlockedIncrement(&s_nRetryCount);
-                s_dwTick1 = ::GetTickCount();
+                s_dwTick1 = ::GetTickCount64();
                 // スマート解決なら、黒マスを生成する。
                 XgStartSolve_NoAddBlack();
                 // タイマーをセットする。
@@ -2570,14 +2570,14 @@ XgCancelSolveDlgProcSmart(
         // ダイアログを中央へ移動する。
         XgCenterDialog(hwnd);
         // 初期化する。
-        s_nRetryCount = 0;
+        ::InterlockedExchange(&s_nRetryCount, 0);
         // プログレスバーの範囲をセットする。
         ::SendDlgItemMessageW(hwnd, ctl1, PBM_SETRANGE, 0,
                             MAKELPARAM(0, xg_nRows * xg_nCols));
         ::SendDlgItemMessageW(hwnd, ctl2, PBM_SETRANGE, 0,
                             MAKELPARAM(0, xg_nRows * xg_nCols));
         // 計算時間を求めるために、開始時間を取得する。
-        s_dwTick0 = s_dwTick1 = ::GetTickCount();
+        s_dwTick0 = s_dwTick1 = ::GetTickCount64();
         // 再計算までの時間を概算する。
         s_dwWait = XgGetRetryInterval();
         // 解を求めるのを開始。
@@ -2606,7 +2606,7 @@ XgCancelSolveDlgProcSmart(
             // スレッドを閉じる。
             XgCloseThreads();
             // 計算時間を求めるために、終了時間を取得する。
-            s_dwTick2 = ::GetTickCount();
+            s_dwTick2 = ::GetTickCount64();
             // 解を求めようとした後の後処理。
             XgEndSolve();
             // ダイアログを終了する。
@@ -2621,7 +2621,7 @@ XgCancelSolveDlgProcSmart(
             XgWaitForThreads();
             XgCloseThreads();
             ::InterlockedIncrement(&s_nRetryCount);
-            s_dwTick1 = ::GetTickCount();
+            s_dwTick1 = ::GetTickCount64();
             XgStartSolve_Smart();
             // タイマーをセットする。
             ::SetTimer(hwnd, 999, xg_dwTimerInterval, nullptr);
@@ -2639,7 +2639,7 @@ XgCancelSolveDlgProcSmart(
             // スレッドを閉じる。
             XgCloseThreads();
             // 計算時間を求めるために、終了時間を取得する。
-            s_dwTick2 = ::GetTickCount();
+            s_dwTick2 = ::GetTickCount64();
             // 解を求めようとした後の後処理。
             XgEndSolve();
             // ダイアログを終了する。
@@ -2656,10 +2656,10 @@ XgCancelSolveDlgProcSmart(
         // 経過時間を表示する。
         {
             WCHAR sz[MAX_PATH];
-            DWORD dwTick = ::GetTickCount();
+            DWORDLONG dwTick = ::GetTickCount64();
             StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(IDS_NOWSOLVING),
-                    (dwTick - s_dwTick0) / 1000,
-                    (dwTick - s_dwTick0) / 100 % 10, s_nRetryCount);
+                DWORD(dwTick - s_dwTick0) / 1000,
+                DWORD(dwTick - s_dwTick0) / 100 % 10, s_nRetryCount);
             ::SetDlgItemTextW(hwnd, stc1, sz);
         }
         // 一つ以上のスレッドが終了したか？
@@ -2667,7 +2667,7 @@ XgCancelSolveDlgProcSmart(
             // スレッドが終了した。タイマーを解除する。
             ::KillTimer(hwnd, 999);
             // 計算時間を求めるために、終了時間を取得する。
-            s_dwTick2 = ::GetTickCount();
+            s_dwTick2 = ::GetTickCount64();
             // 解を求めようとした後の後処理。
             XgEndSolve();
             // ダイアログを終了する。
@@ -2676,7 +2676,7 @@ XgCancelSolveDlgProcSmart(
             XgCloseThreads();
         } else {
             // 再計算が必要か？
-            if (s_bAutoRetry && ::GetTickCount() - s_dwTick1 > s_dwWait) {
+            if (s_bAutoRetry && ::GetTickCount64() - s_dwTick1 > s_dwWait) {
                 // タイマーを解除する。
                 ::KillTimer(hwnd, 999);
                 // 再計算しなおす。
@@ -2684,7 +2684,7 @@ XgCancelSolveDlgProcSmart(
                 XgWaitForThreads();
                 XgCloseThreads();
                 ::InterlockedIncrement(&s_nRetryCount);
-                s_dwTick1 = ::GetTickCount();
+                s_dwTick1 = ::GetTickCount64();
                 XgStartSolve_Smart();
                 // タイマーをセットする。
                 ::SetTimer(hwnd, 999, xg_dwTimerInterval, nullptr);
@@ -2708,7 +2708,7 @@ XgCancelGenBlacksDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
         // フォーカスをセットする。
         ::SetFocus(::GetDlgItem(hwnd, psh1));
         // 開始時間。
-        s_dwTick0 = ::GetTickCount();
+        s_dwTick0 = ::GetTickCount64();
         s_nRetryCount = 0;
         // 生成したパターンの個数を表示する。
         if (s_nNumberGenerated > 0) {
@@ -2731,7 +2731,7 @@ XgCancelGenBlacksDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
             // スレッドを閉じる。
             XgCloseThreads();
             // 計算時間を求めるために、終了時間を取得する。
-            s_dwTick2 = ::GetTickCount();
+            s_dwTick2 = ::GetTickCount64();
             // ダイアログを終了する。
             ::EndDialog(hwnd, IDCANCEL);
             break;
@@ -2748,7 +2748,7 @@ XgCancelGenBlacksDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
             // スレッドを閉じる。
             XgCloseThreads();
             // 計算時間を求めるために、終了時間を取得する。
-            s_dwTick2 = ::GetTickCount();
+            s_dwTick2 = ::GetTickCount64();
             // ダイアログを終了する。
             ::EndDialog(hwnd, IDCANCEL);
         }
@@ -2758,10 +2758,10 @@ XgCancelGenBlacksDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
         {
             // 経過時間を表示する。
             WCHAR sz[MAX_PATH];
-            DWORD dwTick = ::GetTickCount();
+            DWORDLONG dwTick = ::GetTickCount64();
             StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(IDS_CALCULATING),
-                    (dwTick - s_dwTick0) / 1000,
-                    (dwTick - s_dwTick0) / 100 % 10);
+                DWORD(dwTick - s_dwTick0) / 1000,
+                DWORD(dwTick - s_dwTick0) / 100 % 10);
             ::SetDlgItemTextW(hwnd, stc1, sz);
         }
 
@@ -2770,7 +2770,7 @@ XgCancelGenBlacksDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
             // スレッドが終了した。タイマーを解除する。
             ::KillTimer(hwnd, 999);
             // 計算時間を求めるために、終了時間を取得する。
-            s_dwTick2 = ::GetTickCount();
+            s_dwTick2 = ::GetTickCount64();
             // ダイアログを終了する。
             ::EndDialog(hwnd, IDOK);
             // スレッドを閉じる。
@@ -2803,7 +2803,7 @@ XgCancelFromWordsDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
         ::SendDlgItemMessageW(hwnd, ctl1, PBM_SETRANGE, 0, MAKELPARAM(0, XG_WordListDialog::s_wordset.size()));
         ::SendDlgItemMessageW(hwnd, ctl2, PBM_SETRANGE, 0, MAKELPARAM(0, XG_WordListDialog::s_wordset.size()));
         // 計算時間を求めるために、開始時間を取得する。
-        s_dwTick0 = s_dwTick1 = ::GetTickCount();
+        s_dwTick0 = s_dwTick1 = ::GetTickCount64();
         // 再計算までの時間を概算する。
         s_dwWait = DWORD(XG_WordListDialog::s_wordset.size() * 50);
         // 解を求めるのを開始。
@@ -2824,7 +2824,7 @@ XgCancelFromWordsDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
             s_canceled = true;
             wait_for_threads(xg_dwThreadCount, 0x7FFF);
             // 計算時間を求めるために、終了時間を取得する。
-            s_dwTick2 = ::GetTickCount();
+            s_dwTick2 = ::GetTickCount64();
             // ダイアログを終了する。
             ::EndDialog(hwnd, IDCANCEL);
             break;
@@ -2836,7 +2836,7 @@ XgCancelFromWordsDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
             s_canceled = true;
             wait_for_threads(xg_dwThreadCount, 0x7FFF);
             ::InterlockedIncrement(&s_nRetryCount);
-            s_dwTick1 = ::GetTickCount();
+            s_dwTick1 = ::GetTickCount64();
             reset();
             generation_t<wchar_t, false>::do_generate_from_words(XG_WordListDialog::s_wordset);
             // タイマーをセットする。
@@ -2853,7 +2853,7 @@ XgCancelFromWordsDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
             s_canceled = true;
             wait_for_threads(xg_dwThreadCount, 0x7FFF);
             // 計算時間を求めるために、終了時間を取得する。
-            s_dwTick2 = ::GetTickCount();
+            s_dwTick2 = ::GetTickCount64();
             // ダイアログを終了する。
             ::EndDialog(hwnd, IDCANCEL);
         }
@@ -2868,10 +2868,10 @@ XgCancelFromWordsDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
         // 経過時間を表示する。
         {
             WCHAR sz[MAX_PATH];
-            DWORD dwTick = ::GetTickCount();
+            DWORDLONG dwTick = ::GetTickCount64();
             StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(IDS_NOWSOLVING),
-                    (dwTick - s_dwTick0) / 1000,
-                    (dwTick - s_dwTick0) / 100 % 10, s_nRetryCount);
+                DWORD(dwTick - s_dwTick0) / 1000,
+                DWORD(dwTick - s_dwTick0) / 100 % 10, s_nRetryCount);
             ::SetDlgItemTextW(hwnd, stc1, sz);
         }
         // 一つ以上のスレッドが終了したか？
@@ -2879,21 +2879,21 @@ XgCancelFromWordsDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
             // スレッドが終了した。タイマーを解除する。
             ::KillTimer(hwnd, 999);
             // 計算時間を求めるために、終了時間を取得する。
-            s_dwTick2 = ::GetTickCount();
+            s_dwTick2 = ::GetTickCount64();
             // ダイアログを終了する。
             ::EndDialog(hwnd, IDOK);
             // スレッドを閉じる。
             XgCloseThreads();
         } else {
             // 再計算が必要か？
-            if (s_bAutoRetry && ::GetTickCount() - s_dwTick1 > s_dwWait) {
+            if (s_bAutoRetry && ::GetTickCount64() - s_dwTick1 > s_dwWait) {
                 // タイマーを解除する。
                 ::KillTimer(hwnd, 999);
                 // 再計算しなおす。
                 s_canceled = true;
                 wait_for_threads(xg_dwThreadCount, 0x7FFF);
                 ::InterlockedIncrement(&s_nRetryCount);
-                s_dwTick1 = ::GetTickCount();
+                s_dwTick1 = ::GetTickCount64();
                 reset();
                 generation_t<wchar_t, false>::do_generate_from_words(XG_WordListDialog::s_wordset);
                 // タイマーをセットする。
@@ -10868,7 +10868,7 @@ int WINAPI WinMain(
     XgLoadDictsAll();
 
     // 乱数モジュールを初期化する。
-    srand(::GetTickCount() ^ ::GetCurrentThreadId());
+    srand(DWORD(::GetTickCount64()) ^ ::GetCurrentThreadId());
 
     // プロセッサの数を取得する。
     SYSTEM_INFO si;

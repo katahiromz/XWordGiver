@@ -17,45 +17,45 @@ struct XG_WordData
     std::wstring     m_hint;
 
     // コンストラクタ。
-    XG_WordData() { }
+    XG_WordData() noexcept { }
 
     // コンストラクタ。
-    XG_WordData(const std::wstring& word_) : m_word(word_)
+    XG_WordData(const std::wstring& word_) noexcept : m_word(word_)
     {
     }
 
     // コンストラクタ。
-    XG_WordData(const std::wstring& word_, const std::wstring& hint_) :
+    XG_WordData(const std::wstring& word_, const std::wstring& hint_) noexcept :
         m_word(word_), m_hint(hint_)
     {
     }
 
     // コンストラクタ。
-    XG_WordData(std::wstring&& word_, std::wstring&& hint_) :
+    XG_WordData(std::wstring&& word_, std::wstring&& hint_) noexcept :
         m_word(std::move(word_)), m_hint(std::move(hint_))
     {
     }
 
     // コピーコンストラクタ。
-    XG_WordData(const XG_WordData& wd) :
+    XG_WordData(const XG_WordData& wd) noexcept :
         m_word(wd.m_word), m_hint(wd.m_hint)
     {
     }
 
     // コピーコンストラクタ。
-    XG_WordData(XG_WordData&& wd) :
+    XG_WordData(XG_WordData&& wd) noexcept :
         m_word(std::move(wd.m_word)), m_hint(std::move(wd.m_hint))
     {
     }
 
     // 代入。
-    void __fastcall operator=(const XG_WordData& wd) {
+    void __fastcall operator=(const XG_WordData& wd) noexcept {
         m_word = wd.m_word;
         m_hint = wd.m_hint;
     }
 
     // 代入。
-    void __fastcall operator=(XG_WordData&& wd) {
+    void __fastcall operator=(XG_WordData&& wd) noexcept {
         m_word = std::move(wd.m_word);
         m_hint = std::move(wd.m_hint);
     }

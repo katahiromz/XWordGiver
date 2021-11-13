@@ -6317,7 +6317,7 @@ unsigned __stdcall XgGenerateBlacks(void *param)
     xg_solution.clear();
 
     // 乱数をかく乱する。
-    srand(::GetTickCount() ^ ::GetCurrentThreadId());
+    srand(DWORD(::GetTickCount64()) ^ ::GetCurrentThreadId());
 
     // 再帰求解関数に突入する。
     do {
@@ -6337,7 +6337,7 @@ unsigned __stdcall XgGenerateBlacksSmart(void *param)
     XG_Board xword;
 
     // 乱数をかく乱する。
-    srand(::GetTickCount() ^ ::GetCurrentThreadId());
+    srand(DWORD(::GetTickCount64()) ^ ::GetCurrentThreadId());
 
     if (xg_nRules & RULE_POINTSYMMETRY) {
         // 再帰求解関数に突入する。
@@ -6386,7 +6386,7 @@ unsigned __stdcall XgGenerateBlacksSmart(void *param)
 // マルチスレッド用の関数。
 unsigned __stdcall XgGenerateBlacksPointSym(void *param)
 {
-    srand(::GetTickCount() ^ ::GetCurrentThreadId());
+    srand(DWORD(::GetTickCount64()) ^ ::GetCurrentThreadId());
     xg_solution.clear();
     XG_Board xword;
     do {
@@ -6400,7 +6400,7 @@ unsigned __stdcall XgGenerateBlacksPointSym(void *param)
 // マルチスレッド用の関数。
 unsigned __stdcall XgGenerateBlacksLineSymV(void *param)
 {
-    srand(::GetTickCount() ^ ::GetCurrentThreadId());
+    srand(DWORD(::GetTickCount64()) ^ ::GetCurrentThreadId());
     xg_solution.clear();
     XG_Board xword;
     do {
@@ -6414,7 +6414,7 @@ unsigned __stdcall XgGenerateBlacksLineSymV(void *param)
 // マルチスレッド用の関数。
 unsigned __stdcall XgGenerateBlacksLineSymH(void *param)
 {
-    srand(::GetTickCount() ^ ::GetCurrentThreadId());
+    srand(DWORD(::GetTickCount64()) ^ ::GetCurrentThreadId());
     xg_solution.clear();
     XG_Board xword;
     do {

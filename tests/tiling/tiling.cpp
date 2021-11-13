@@ -1,5 +1,14 @@
 #include "../tests.hpp"
 
+// replacement of std::random_shuffle
+#include <random>
+template <typename t_elem>
+inline void random_shuffle(const t_elem& begin, const t_elem& end) {
+    std::random_device rd;
+    std::mt19937 g(rd());
+    std::shuffle(begin, end, g);
+}
+
 int g_rows;
 int g_columns;
 int g_trial_count;
@@ -176,7 +185,7 @@ bool do_recurse_2(const BOARD& board, int level)
                 {
                     a.push_back(k);
                 }
-                std::random_shuffle(a.begin(), a.end());
+                random_shuffle(a.begin(), a.end());
 
                 for (int k = 0; k < count; ++k)
                 {
@@ -211,7 +220,7 @@ bool do_recurse_2(const BOARD& board, int level)
                 {
                     a.push_back(k);
                 }
-                std::random_shuffle(a.begin(), a.end());
+                random_shuffle(a.begin(), a.end());
 
                 for (int k = 0; k < count; ++k)
                 {
