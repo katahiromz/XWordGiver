@@ -30,6 +30,15 @@ public:
     inline static std::vector<PATDATA> s_patterns;
     inline static LAYOUT_DATA *s_pLayout = NULL;
 
+    // 「黒マスパターン」ダイアログの位置とサイズ。
+    inline static INT xg_nPatWndX = CW_USEDEFAULT;
+    inline static INT xg_nPatWndY = CW_USEDEFAULT;
+    inline static INT xg_nPatWndCX = CW_USEDEFAULT;
+    inline static INT xg_nPatWndCY = CW_USEDEFAULT;
+
+    // 黒マスパターンで答えを表示する。
+    inline static BOOL xg_bShowAnswerOnPattern = TRUE;
+
     XG_PatternDialog()
     {
     }

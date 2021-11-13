@@ -21,14 +21,7 @@
 
 // 単語の長さの制限。
 #define XG_MIN_WORD_LEN 2
-#define XG_MAX_WORD_LEN 30
-
-#ifndef WM_MOUSEHWHEEL
-    #define WM_MOUSEHWHEEL 0x020E
-#endif
-
-// 辞書の最大数。
-#define MAX_DICTS 64
+#define XG_MAX_WORD_LEN 100
 
 #undef HANDLE_WM_MOUSEWHEEL     // might be wrong
 #define HANDLE_WM_MOUSEWHEEL(hwnd, wParam, lParam, fn) \
@@ -42,12 +35,6 @@
 void __fastcall MainWnd_OnChar(HWND hwnd, TCHAR ch, int cRepeat);
 void __fastcall MainWnd_OnKey(HWND hwnd, UINT vk, bool fDown, int /*cRepeat*/, UINT /*flags*/);
 void __fastcall MainWnd_OnImeChar(HWND hwnd, WCHAR ch, LPARAM /*lKeyData*/);
-
-// 「黒マスパターン」ダイアログの位置とサイズ。
-INT xg_nPatWndX = CW_USEDEFAULT;
-INT xg_nPatWndY = CW_USEDEFAULT;
-INT xg_nPatWndCX = CW_USEDEFAULT;
-INT xg_nPatWndCY = CW_USEDEFAULT;
 
 template <typename T_STR_CONTAINER>
 inline typename T_STR_CONTAINER::value_type
@@ -245,15 +232,6 @@ bool xg_bShowToolBar = true;
 
 // ステータスバーを表示するか？
 static bool         s_bShowStatusBar = true;
-
-// サイズを指定して画像をコピーするときのサイズ。
-static int          s_nImageCopyWidth = 250;
-static int          s_nImageCopyHeight = 250;
-static bool         s_bImageCopyByHeight = false;
-static int          s_nMarksHeight = 40;
-
-// 黒マスパターンで答えを表示する。
-BOOL xg_bShowAnswerOnPattern = TRUE;
 
 // ルール群。
 INT xg_nRules = DEFAULT_RULES_JAPANESE;
@@ -597,10 +575,6 @@ bool __fastcall XgLoadSettings(void)
     s_bShowStatusBar = true;
     xg_bShowInputPalette = false;
     xg_bSaveAsJsonFile = true;
-    s_nImageCopyWidth = 250;
-    s_nImageCopyHeight = 250;
-    s_bImageCopyByHeight = false;
-    s_nMarksHeight = 40;
     xg_bAddThickFrame = true;
     xg_bTateOki = true;
     xg_bCharFeed = true;
@@ -624,11 +598,11 @@ bool __fastcall XgLoadSettings(void)
 
     xg_strBlackCellImage.clear();
 
-    xg_nPatWndX = CW_USEDEFAULT;
-    xg_nPatWndY = CW_USEDEFAULT;
-    xg_nPatWndCX = CW_USEDEFAULT;
-    xg_nPatWndCY = CW_USEDEFAULT;
-    xg_bShowAnswerOnPattern = TRUE;
+    XG_PatternDialog::xg_nPatWndX = CW_USEDEFAULT;
+    XG_PatternDialog::xg_nPatWndY = CW_USEDEFAULT;
+    XG_PatternDialog::xg_nPatWndCX = CW_USEDEFAULT;
+    XG_PatternDialog::xg_nPatWndCY = CW_USEDEFAULT;
+    XG_PatternDialog::xg_bShowAnswerOnPattern = TRUE;
 
     if (XgIsUserJapanese())
         xg_nRules = DEFAULT_RULES_JAPANESE;
@@ -735,18 +709,6 @@ bool __fastcall XgLoadSettings(void)
             if (!app_key.QueryDword(L"NumberToGenerate", dwValue)) {
                 s_nNumberToGenerate = dwValue;
             }
-            if (!app_key.QueryDword(L"ImageCopyWidth", dwValue)) {
-                s_nImageCopyWidth = dwValue;
-            }
-            if (!app_key.QueryDword(L"ImageCopyHeight", dwValue)) {
-                s_nImageCopyHeight = dwValue;
-            }
-            if (!app_key.QueryDword(L"ImageCopyByHeight", dwValue)) {
-                s_bImageCopyByHeight = dwValue;
-            }
-            if (!app_key.QueryDword(L"MarksHeight", dwValue)) {
-                s_nMarksHeight = dwValue;
-            }
             if (!app_key.QueryDword(L"AddThickFrame", dwValue)) {
                 xg_bAddThickFrame = !!dwValue;
             }
@@ -804,19 +766,19 @@ bool __fastcall XgLoadSettings(void)
             }
 
             if (!app_key.QueryDword(L"PatWndX", dwValue)) {
-                xg_nPatWndX = dwValue;
+                XG_PatternDialog::xg_nPatWndX = dwValue;
             }
             if (!app_key.QueryDword(L"PatWndY", dwValue)) {
-                xg_nPatWndY = dwValue;
+                XG_PatternDialog::xg_nPatWndY = dwValue;
             }
             if (!app_key.QueryDword(L"PatWndCX", dwValue)) {
-                xg_nPatWndCX = dwValue;
+                XG_PatternDialog::xg_nPatWndCX = dwValue;
             }
             if (!app_key.QueryDword(L"PatWndCY", dwValue)) {
-                xg_nPatWndCY = dwValue;
+                XG_PatternDialog::xg_nPatWndCY = dwValue;
             }
             if (!app_key.QueryDword(L"ShowAnsOnPat", dwValue)) {
-                xg_bShowAnswerOnPattern = dwValue;
+                XG_PatternDialog::xg_bShowAnswerOnPattern = dwValue;
             }
             if (!app_key.QueryDword(L"Rules", dwValue)) {
                 xg_nRules = dwValue;
@@ -925,10 +887,6 @@ bool __fastcall XgSaveSettings(void)
 
             app_key.SetDword(L"SaveAsJsonFile", xg_bSaveAsJsonFile);
             app_key.SetDword(L"NumberToGenerate", s_nNumberToGenerate);
-            app_key.SetDword(L"ImageCopyWidth", s_nImageCopyWidth);
-            app_key.SetDword(L"ImageCopyHeight", s_nImageCopyHeight);
-            app_key.SetDword(L"ImageCopyByHeight", s_bImageCopyByHeight);
-            app_key.SetDword(L"MarksHeight", s_nMarksHeight);
             app_key.SetDword(L"AddThickFrame", xg_bAddThickFrame);
             app_key.SetDword(L"CharFeed", xg_bCharFeed);
             app_key.SetDword(L"TateOki", xg_bTateOki);
@@ -951,11 +909,12 @@ bool __fastcall XgSaveSettings(void)
             app_key.SetDword(L"CellCharPercents", xg_nCellCharPercents);
             app_key.SetDword(L"SmallCharPercents", xg_nSmallCharPercents);
 
-            app_key.SetDword(L"PatWndX", xg_nPatWndX);
-            app_key.SetDword(L"PatWndY", xg_nPatWndY);
-            app_key.SetDword(L"PatWndCX", xg_nPatWndCX);
-            app_key.SetDword(L"PatWndCY", xg_nPatWndCY);
-            app_key.SetDword(L"ShowAnsOnPat", xg_bShowAnswerOnPattern);
+            app_key.SetDword(L"PatWndX", XG_PatternDialog::xg_nPatWndX);
+            app_key.SetDword(L"PatWndY", XG_PatternDialog::xg_nPatWndY);
+            app_key.SetDword(L"PatWndCX", XG_PatternDialog::xg_nPatWndCX);
+            app_key.SetDword(L"PatWndCY", XG_PatternDialog::xg_nPatWndCY);
+            app_key.SetDword(L"ShowAnsOnPat", XG_PatternDialog::xg_bShowAnswerOnPattern);
+
             app_key.SetDword(L"Rules", xg_nRules);
             app_key.SetDword(L"ShowDoubleFrameLetters", xg_bShowDoubleFrameLetters);
             app_key.SetDword(L"ViewMode", xg_nViewMode);
@@ -1133,20 +1092,178 @@ bool __fastcall XgCheckCrossWord(HWND hwnd, bool check_words = true)
     return true;
 }
 
-// 辞書名をセットする。
-void XgSetDict(const std::wstring& strFile)
-{
-    // 辞書名を格納。
-    xg_dict_name = strFile;
+//////////////////////////////////////////////////////////////////////////////
+// 候補ウィンドウ。
 
-    // 辞書として追加、ソート、一意にする。
-    if (xg_dict_files.size() < MAX_DICTS)
-    {
-        xg_dict_files.emplace_back(strFile);
-        std::sort(xg_dict_files.begin(), xg_dict_files.end());
-        auto last = std::unique(xg_dict_files.begin(), xg_dict_files.end());
-        xg_dict_files.erase(last, xg_dict_files.end());
+// 候補ウィンドウを破棄する。
+void XgDestroyCandsWnd(void)
+{
+    // 候補ウィンドウが存在するか？
+    if (xg_hCandsWnd && ::IsWindow(xg_hCandsWnd)) {
+        // 更新を無視・破棄する。
+        HWND hwnd = xg_hCandsWnd;
+        xg_hCandsWnd = NULL;
+        ::DestroyWindow(hwnd);
     }
+}
+
+// 候補を適用する。
+void XgApplyCandidate(XG_Board& xword, const std::wstring& strCand)
+{
+    std::wstring cand = XgNormalizeString(strCand);
+
+    int lo, hi;
+    if (xg_bCandVertical) {
+        for (lo = xg_iCandPos; lo > 0; --lo) {
+            if (xword.GetAt(lo - 1, xg_jCandPos) == ZEN_BLACK)
+                break;
+        }
+        for (hi = xg_iCandPos; hi + 1 < xg_nRows; ++hi) {
+            if (xword.GetAt(hi + 1, xg_jCandPos) == ZEN_BLACK)
+                break;
+        }
+
+        int m = 0;
+        for (int k = lo; k <= hi; ++k, ++m) {
+            xword.SetAt(k, xg_jCandPos, cand[m]);
+        }
+    }
+    else
+    {
+        for (lo = xg_jCandPos; lo > 0; --lo) {
+            if (xword.GetAt(xg_iCandPos, lo - 1) == ZEN_BLACK)
+                break;
+        }
+        for (hi = xg_jCandPos; hi + 1 < xg_nCols; ++hi) {
+            if (xword.GetAt(xg_iCandPos, hi + 1) == ZEN_BLACK)
+                break;
+        }
+
+        int m = 0;
+        for (int k = lo; k <= hi; ++k, ++m) {
+            xword.SetAt(xg_iCandPos, k, cand[m]);
+        }
+    }
+}
+
+// 候補ウィンドウを作成する。
+BOOL XgCreateCandsWnd(HWND hwnd)
+{
+    auto style = WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME | WS_HSCROLL | WS_VSCROLL;
+    auto exstyle = WS_EX_TOOLWINDOW;
+    auto text = XgLoadStringDx1(IDS_CANDIDATES);
+    return xg_cands_wnd.CreateWindowDx(hwnd, text, style, exstyle,
+                                       XG_CandsWnd::s_nCandsWndX, XG_CandsWnd::s_nCandsWndY,
+                                       XG_CandsWnd::s_nCandsWndCX, XG_CandsWnd::s_nCandsWndCY);
+}
+
+// 候補の内容を候補ウィンドウで開く。
+inline bool XgOpenCandsWnd(HWND hwnd, bool vertical)
+{
+    // もし候補ウィンドウが存在すれば破棄する。
+    if (xg_hCandsWnd) {
+        HWND hwnd = xg_hCandsWnd;
+        xg_hCandsWnd = NULL;
+        DestroyWindow(hwnd);
+    }
+
+    // 候補を作成する。
+    xg_iCandPos = xg_caret_pos.m_i;
+    xg_jCandPos = xg_caret_pos.m_j;
+    xg_bCandVertical = vertical;
+    if (xg_xword.GetAt(xg_iCandPos, xg_jCandPos) == ZEN_BLACK) {
+        ::MessageBeep(0xFFFFFFFF);
+        return false;
+    }
+
+    // パターンを取得する。
+    int lo, hi;
+    std::wstring pattern;
+    bool left_black, right_black;
+    if (xg_bCandVertical) {
+        lo = hi = xg_iCandPos;
+        while (lo > 0) {
+            if (xg_xword.GetAt(lo - 1, xg_jCandPos) != ZEN_BLACK)
+                --lo;
+            else
+                break;
+        }
+        while (hi + 1 < xg_nRows) {
+            if (xg_xword.GetAt(hi + 1, xg_jCandPos) != ZEN_BLACK)
+                ++hi;
+            else
+                break;
+        }
+
+        for (int i = lo; i <= hi; ++i) {
+            pattern += xg_xword.GetAt(i, xg_jCandPos);
+        }
+
+        right_black = (hi + 1 != xg_nRows);
+    } else {
+        lo = hi = xg_jCandPos;
+        while (lo > 0) {
+            if (xg_xword.GetAt(xg_iCandPos, lo - 1) != ZEN_BLACK)
+                --lo;
+            else
+                break;
+        }
+        while (hi + 1 < xg_nCols) {
+            if (xg_xword.GetAt(xg_iCandPos, hi + 1) != ZEN_BLACK)
+                ++hi;
+            else
+                break;
+        }
+
+        for (int j = lo; j <= hi; ++j) {
+            pattern += xg_xword.GetAt(xg_iCandPos, j);
+        }
+
+        right_black = (hi + 1 != xg_nCols);
+    }
+    left_black = (lo != 0);
+
+    // 候補を取得する。
+    int nSkip = 0;
+    std::vector<std::wstring> cands, cands2;
+    XgGetCandidatesAddBlack<false>(cands, pattern, nSkip, left_black, right_black);
+    XgGetCandidatesAddBlack<true>(cands2, pattern, nSkip, left_black, right_black);
+    cands.insert(cands.end(), cands2.begin(), cands2.end());
+
+    // 仮に適用して、正当かどうか確かめ、正当なものだけを
+    // 最終的な候補とする。
+    XG_CandsWnd::xg_vecCandidates.clear();
+    for (const auto& cand : cands) {
+        XG_Board xword(xg_xword);
+        XgApplyCandidate(xword, cand);
+        if (xword.CornerBlack() || xword.DoubleBlack() ||
+            xword.TriBlackAround() || xword.DividedByBlack())
+        {
+            ;
+        } else {
+            XG_CandsWnd::xg_vecCandidates.emplace_back(cand);
+        }
+    }
+
+    // 個数制限。
+    if (XG_CandsWnd::xg_vecCandidates.size() > xg_nMaxCandidates)
+        XG_CandsWnd::xg_vecCandidates.resize(xg_nMaxCandidates);
+
+    if (XG_CandsWnd::xg_vecCandidates.empty()) {
+        if (XgCheckCrossWord(hwnd, false)) {
+            ::MessageBeep(0xFFFFFFFF);
+        } else {
+            return false;
+        }
+    }
+
+    // ヒントウィンドウを作成する。
+    if (XgCreateCandsWnd(xg_hMainWnd)) {
+        ::ShowWindow(xg_hCandsWnd, SW_SHOWNORMAL);
+        ::UpdateWindow(xg_hCandsWnd);
+        return true;
+    }
+    return false;
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -4128,78 +4245,6 @@ void __fastcall XgCopyBoardAsImage(HWND hwnd)
     }
 }
 
-// 「サイズを指定」ダイアログプロシージャー。
-INT_PTR CALLBACK
-ImageSize_DlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
-{
-    switch (uMsg) {
-    case WM_INITDIALOG:
-        // ダイアログを中央へ移動する。
-        XgCenterDialog(hwnd);
-
-        ::SetDlgItemInt(hwnd, edt1, s_nImageCopyWidth, FALSE);
-        ::SetDlgItemInt(hwnd, edt2, s_nImageCopyHeight, FALSE);
-        if (s_bImageCopyByHeight) {
-            ::CheckRadioButton(hwnd, rad1, rad2, rad2);
-            ::EnableWindow(::GetDlgItem(hwnd, edt1), FALSE);
-            ::EnableWindow(::GetDlgItem(hwnd, edt2), TRUE);
-        } else {
-            ::CheckRadioButton(hwnd, rad1, rad2, rad1);
-            ::EnableWindow(::GetDlgItem(hwnd, edt1), TRUE);
-            ::EnableWindow(::GetDlgItem(hwnd, edt2), FALSE);
-        }
-        return TRUE;
-
-    case WM_COMMAND:
-        switch (LOWORD(wParam)) {
-        case rad1:
-            if (HIWORD(wParam) == BN_CLICKED) {
-                ::EnableWindow(::GetDlgItem(hwnd, edt1), TRUE);
-                ::EnableWindow(::GetDlgItem(hwnd, edt2), FALSE);
-            }
-            break;
-
-        case rad2:
-            if (HIWORD(wParam) == BN_CLICKED) {
-                ::EnableWindow(::GetDlgItem(hwnd, edt1), FALSE);
-                ::EnableWindow(::GetDlgItem(hwnd, edt2), TRUE);
-            }
-            break;
-
-        case IDOK:
-            s_nImageCopyWidth = ::GetDlgItemInt(hwnd, edt1, NULL, FALSE);
-            if (s_nImageCopyWidth <= 0) {
-                ::SendDlgItemMessageW(hwnd, edt1, EM_SETSEL, 0, -1);
-                SetFocus(::GetDlgItem(hwnd, edt1));
-                XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_ENTERPOSITIVE), NULL,
-                                    MB_ICONERROR);
-                break;
-            }
-            s_nImageCopyHeight = ::GetDlgItemInt(hwnd, edt2, NULL, FALSE);
-            if (s_nImageCopyHeight <= 0) {
-                ::SendDlgItemMessageW(hwnd, edt2, EM_SETSEL, 0, -1);
-                SetFocus(::GetDlgItem(hwnd, edt2));
-                XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_ENTERPOSITIVE), NULL,
-                                    MB_ICONERROR);
-                break;
-            }
-            if (::IsDlgButtonChecked(hwnd, rad2) == BST_CHECKED) {
-                s_bImageCopyByHeight = true;
-            } else {
-                s_bImageCopyByHeight = false;
-            }
-            // ダイアログを閉じる。
-            ::EndDialog(hwnd, IDOK);
-            break;
-
-        case IDCANCEL:
-            ::EndDialog(hwnd, IDCANCEL);
-            break;
-        }
-    }
-    return 0;
-}
-
 // 二重マス単語をコピー。
 void __fastcall XgCopyMarkWord(HWND hwnd)
 {
@@ -4263,41 +4308,6 @@ void __fastcall XgCopyMarkWord(HWND hwnd)
         // クリップボードを閉じる。
         ::CloseClipboard();
     }
-}
-
-// 「高さを指定」ダイアログプロシージャー。
-INT_PTR CALLBACK
-MarksHeight_DlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
-{
-    switch (uMsg) {
-    case WM_INITDIALOG:
-        // ダイアログを中央へ移動する。
-        XgCenterDialog(hwnd);
-
-        ::SetDlgItemInt(hwnd, edt1, s_nMarksHeight, FALSE);
-        return TRUE;
-
-    case WM_COMMAND:
-        switch (LOWORD(wParam)) {
-        case IDOK:
-            s_nMarksHeight = ::GetDlgItemInt(hwnd, edt1, NULL, FALSE);
-            if (s_nMarksHeight <= 0) {
-                ::SendDlgItemMessageW(hwnd, edt1, EM_SETSEL, 0, -1);
-                SetFocus(::GetDlgItem(hwnd, edt1));
-                XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_ENTERPOSITIVE), NULL,
-                                    MB_ICONERROR);
-                break;
-            }
-            // ダイアログを閉じる。
-            ::EndDialog(hwnd, IDOK);
-            break;
-
-        case IDCANCEL:
-            ::EndDialog(hwnd, IDCANCEL);
-            break;
-        }
-    }
-    return 0;
 }
 
 std::wstring XgGetClipboardUnicodeText(HWND hwnd)
@@ -8434,177 +8444,6 @@ LRESULT CALLBACK XgCtrlAMessageProc(INT nCode, WPARAM wParam, LPARAM lParam)
 
 //////////////////////////////////////////////////////////////////////////////
 // 候補ウィンドウ。
-
-// 候補ウィンドウを破棄する。
-void XgDestroyCandsWnd(void)
-{
-    // 候補ウィンドウが存在するか？
-    if (xg_hCandsWnd && ::IsWindow(xg_hCandsWnd)) {
-        // 更新を無視・破棄する。
-        HWND hwnd = xg_hCandsWnd;
-        xg_hCandsWnd = NULL;
-        ::DestroyWindow(hwnd);
-    }
-}
-
-// 候補を適用する。
-void XgApplyCandidate(XG_Board& xword, const std::wstring& strCand)
-{
-    std::wstring cand = XgNormalizeString(strCand);
-
-    int lo, hi;
-    if (xg_bCandVertical) {
-        for (lo = xg_iCandPos; lo > 0; --lo) {
-            if (xword.GetAt(lo - 1, xg_jCandPos) == ZEN_BLACK)
-                break;
-        }
-        for (hi = xg_iCandPos; hi + 1 < xg_nRows; ++hi) {
-            if (xword.GetAt(hi + 1, xg_jCandPos) == ZEN_BLACK)
-                break;
-        }
-
-        int m = 0;
-        for (int k = lo; k <= hi; ++k, ++m) {
-            xword.SetAt(k, xg_jCandPos, cand[m]);
-        }
-    }
-    else
-    {
-        for (lo = xg_jCandPos; lo > 0; --lo) {
-            if (xword.GetAt(xg_iCandPos, lo - 1) == ZEN_BLACK)
-                break;
-        }
-        for (hi = xg_jCandPos; hi + 1 < xg_nCols; ++hi) {
-            if (xword.GetAt(xg_iCandPos, hi + 1) == ZEN_BLACK)
-                break;
-        }
-
-        int m = 0;
-        for (int k = lo; k <= hi; ++k, ++m) {
-            xword.SetAt(xg_iCandPos, k, cand[m]);
-        }
-    }
-}
-
-// 候補ウィンドウを作成する。
-BOOL XgCreateCandsWnd(HWND hwnd)
-{
-    auto style = WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME | WS_HSCROLL | WS_VSCROLL;
-    auto exstyle = WS_EX_TOOLWINDOW;
-    auto text = XgLoadStringDx1(IDS_CANDIDATES);
-    return xg_cands_wnd.CreateWindowDx(hwnd, text, style, exstyle,
-                                       XG_CandsWnd::s_nCandsWndX, XG_CandsWnd::s_nCandsWndY,
-                                       XG_CandsWnd::s_nCandsWndCX, XG_CandsWnd::s_nCandsWndCY);
-}
-
-// 候補の内容を候補ウィンドウで開く。
-bool __fastcall XgOpenCandsWnd(HWND hwnd, bool vertical)
-{
-    // もし候補ウィンドウが存在すれば破棄する。
-    if (xg_hCandsWnd) {
-        HWND hwnd = xg_hCandsWnd;
-        xg_hCandsWnd = NULL;
-        DestroyWindow(hwnd);
-    }
-
-    // 候補を作成する。
-    xg_iCandPos = xg_caret_pos.m_i;
-    xg_jCandPos = xg_caret_pos.m_j;
-    xg_bCandVertical = vertical;
-    if (xg_xword.GetAt(xg_iCandPos, xg_jCandPos) == ZEN_BLACK) {
-        ::MessageBeep(0xFFFFFFFF);
-        return false;
-    }
-
-    // パターンを取得する。
-    int lo, hi;
-    std::wstring pattern;
-    bool left_black, right_black;
-    if (xg_bCandVertical) {
-        lo = hi = xg_iCandPos;
-        while (lo > 0) {
-            if (xg_xword.GetAt(lo - 1, xg_jCandPos) != ZEN_BLACK)
-                --lo;
-            else
-                break;
-        }
-        while (hi + 1 < xg_nRows) {
-            if (xg_xword.GetAt(hi + 1, xg_jCandPos) != ZEN_BLACK)
-                ++hi;
-            else
-                break;
-        }
-
-        for (int i = lo; i <= hi; ++i) {
-            pattern += xg_xword.GetAt(i, xg_jCandPos);
-        }
-
-        right_black = (hi + 1 != xg_nRows);
-    } else {
-        lo = hi = xg_jCandPos;
-        while (lo > 0) {
-            if (xg_xword.GetAt(xg_iCandPos, lo - 1) != ZEN_BLACK)
-                --lo;
-            else
-                break;
-        }
-        while (hi + 1 < xg_nCols) {
-            if (xg_xword.GetAt(xg_iCandPos, hi + 1) != ZEN_BLACK)
-                ++hi;
-            else
-                break;
-        }
-
-        for (int j = lo; j <= hi; ++j) {
-            pattern += xg_xword.GetAt(xg_iCandPos, j);
-        }
-
-        right_black = (hi + 1 != xg_nCols);
-    }
-    left_black = (lo != 0);
-
-    // 候補を取得する。
-    int nSkip = 0;
-    std::vector<std::wstring> cands, cands2;
-    XgGetCandidatesAddBlack<false>(cands, pattern, nSkip, left_black, right_black);
-    XgGetCandidatesAddBlack<true>(cands2, pattern, nSkip, left_black, right_black);
-    cands.insert(cands.end(), cands2.begin(), cands2.end());
-
-    // 仮に適用して、正当かどうか確かめ、正当なものだけを
-    // 最終的な候補とする。
-    XG_CandsWnd::xg_vecCandidates.clear();
-    for (const auto& cand : cands) {
-        XG_Board xword(xg_xword);
-        XgApplyCandidate(xword, cand);
-        if (xword.CornerBlack() || xword.DoubleBlack() ||
-            xword.TriBlackAround() || xword.DividedByBlack())
-        {
-            ;
-        } else {
-            XG_CandsWnd::xg_vecCandidates.emplace_back(cand);
-        }
-    }
-
-    // 個数制限。
-    if (XG_CandsWnd::xg_vecCandidates.size() > xg_nMaxCandidates)
-        XG_CandsWnd::xg_vecCandidates.resize(xg_nMaxCandidates);
-
-    if (XG_CandsWnd::xg_vecCandidates.empty()) {
-        if (XgCheckCrossWord(hwnd, false)) {
-            ::MessageBeep(0xFFFFFFFF);
-        } else {
-            return false;
-        }
-    }
-
-    // ヒントウィンドウを作成する。
-    if (XgCreateCandsWnd(xg_hMainWnd)) {
-        ::ShowWindow(xg_hCandsWnd, SW_SHOWNORMAL);
-        ::UpdateWindow(xg_hCandsWnd);
-        return true;
-    }
-    return false;
-}
 
 //////////////////////////////////////////////////////////////////////////////
 

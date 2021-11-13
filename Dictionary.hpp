@@ -6,6 +6,9 @@
 #ifndef __XG_DICTIONARY_HPP__
 #define __XG_DICTIONARY_HPP__
 
+// 辞書の最大数。
+#define MAX_DICTS 64
+
 //////////////////////////////////////////////////////////////////////////////
 // 単語データ。
 
@@ -186,5 +189,25 @@ inline bool XgTrimDict(std::vector<t_string>& words)
 }
 
 //////////////////////////////////////////////////////////////////////////////
+
+// 辞書ファイルの場所（パス）。
+extern std::wstring xg_dict_name;
+extern std::deque<std::wstring>  xg_dict_files;
+
+// 辞書名をセットする。
+inline void XgSetDict(const std::wstring& strFile)
+{
+    // 辞書名を格納。
+    xg_dict_name = strFile;
+
+    // 辞書として追加、ソート、一意にする。
+    if (xg_dict_files.size() < MAX_DICTS)
+    {
+        xg_dict_files.emplace_back(strFile);
+        std::sort(xg_dict_files.begin(), xg_dict_files.end());
+        auto last = std::unique(xg_dict_files.begin(), xg_dict_files.end());
+        xg_dict_files.erase(last, xg_dict_files.end());
+    }
+}
 
 #endif  // ndef __XG_DICTIONARY_HPP__

@@ -590,12 +590,6 @@ bool __fastcall XgGetCandidatesAddBlack(
 // UIフォントの論理オブジェクトを取得する。
 LOGFONTW *XgGetUIFont(void);
 
-// 候補の内容を候補ウィンドウで開く。
-bool __fastcall XgOpenCandsWnd(HWND hwnd, bool vertical);
-
-// 候補ウィンドウを破棄する。
-void XgDestroyCandsWnd(void);
-
 // 入力パレットを作成する。
 BOOL XgCreateInputPalette(HWND hwndOwner);
 
@@ -652,6 +646,8 @@ int __fastcall XgSetVScrollPos(int nPos, BOOL bRedraw);
 void __fastcall XgUpdateScrollInfo(HWND hwnd, int x, int y);
 // キャレットが見えるように、必要ならばスクロールする。
 void __fastcall XgEnsureCaretVisible(HWND hwnd);
+// 候補ウィンドウを破棄する。
+void XgDestroyCandsWnd(void);
 
 //////////////////////////////////////////////////////////////////////////////
 // 候補。
