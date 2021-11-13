@@ -185,7 +185,7 @@ bool do_recurse_2(const BOARD& board, int level)
                 {
                     a.push_back(k);
                 }
-                random_shuffle(a.begin(), a.end());
+                ::random_shuffle(a.begin(), a.end());
 
                 for (int k = 0; k < count; ++k)
                 {
@@ -220,7 +220,7 @@ bool do_recurse_2(const BOARD& board, int level)
                 {
                     a.push_back(k);
                 }
-                random_shuffle(a.begin(), a.end());
+                ::random_shuffle(a.begin(), a.end());
 
                 for (int k = 0; k < count; ++k)
                 {

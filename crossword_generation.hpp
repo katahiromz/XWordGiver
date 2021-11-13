@@ -825,7 +825,7 @@ struct generation_t {
             return s_generated;
         }
 
-        random_shuffle(candidates.begin(), candidates.end());
+        ::random_shuffle(candidates.begin(), candidates.end());
 
         for (auto& cand : candidates) {
             if (s_canceled)

@@ -9,6 +9,10 @@ class XG_Dialog
 {
 public:
     HWND m_hWnd;
+    operator HWND() const
+    {
+        return m_hWnd;
+    }
 
     XG_Dialog() : m_hWnd(NULL)
     {
