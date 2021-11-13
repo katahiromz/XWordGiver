@@ -61,7 +61,7 @@ Source: "BLOCK\spade.emf"; DestDir: "{app}\BLOCK"; Flags: ignoreversion
 Source: "BLOCK\star.bmp"; DestDir: "{app}\BLOCK"; Flags: ignoreversion
 Source: "BLOCK\star.emf"; DestDir: "{app}\BLOCK"; Flags: ignoreversion
 Source: "LICENSE.txt"; DestDir: "{app}"; Flags: ignoreversion
-Source: "xword.py"; DestDir: "{app}"; Flags: ignoreversion
+Source: "XWordGiver.py"; DestDir: "{app}"; Flags: ignoreversion
 Source: "pat\data.json"; DestDir: "{app}\pat"; Flags: ignoreversion
 Source: "dict_analyze\dict_analyze.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "Policy-ENG.txt"; DestDir: "{app}"; Flags: ignoreversion
