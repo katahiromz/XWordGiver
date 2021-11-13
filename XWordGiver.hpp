@@ -1526,9 +1526,9 @@ extern bool xg_bCandVertical;
 
 //////////////////////////////////////////////////////////////////////////////
 
+#include "XG_UndoBuffer.hpp"
 #include "Dictionary.hpp"
 #include "Marks.hpp"
 #include "SaveBitmapToFile.h"
-#include "UndoBuffer.hpp"
 
 #endif  // ndef XWORDGIVER

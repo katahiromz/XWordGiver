@@ -43,6 +43,10 @@ public:
                 pWindow = reinterpret_cast<XG_Window *>(pCS->lpCreateParams);
                 pWindow->m_hWnd = hwnd;
             }
+            else
+            {
+                return 0;
+            }
         }
         else
         {
