@@ -953,38 +953,4 @@ skip:;
     return true;
 }
 
-inline static std::string s_character_mapping =
-    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/_-*%=~|&@.<>(){}"
-    "\x80\x81\x82\x83\x84\x85\x86\x87\x88\x89\x8A\x8B\x8C\x8D\x8E\x8F"
-    "\x90\x91\x92\x93\x94\x95\x96\x97\x98\x99\x9A\x9B\x9C\x9D\x9E\x9F";
-
-inline bool
-convert_dictionary(std::wstring& charset, std::unordered_set<std::string>& dest,
-                   const std::vector<std::wstring>& src)
-{
-    std::unordered_set<wchar_t> characters;
-    for (auto& word : src) {
-        for (auto& ch : word) {
-            characters.insert(ch);
-        }
-    }
-
-    charset.assign(characters.begin(), characters.end());
-
-    if (charset.size() > s_character_mapping.size())
-        return false;
-
-    for (auto& word : src) {
-        std::string ansi;
-        for (auto& ch : word) {
-            size_t ich = charset.find(ch);
-            assert(ich != charset.npos);
-            ansi += s_character_mapping[ich];
-        }
-        dest.insert(ansi);
-    }
-
-    return true;
-}
-
 } // namespace crossword_generation
