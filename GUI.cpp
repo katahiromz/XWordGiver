@@ -2814,7 +2814,7 @@ XgCancelFromWordsDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
         s_dwWait = DWORD(s_wordset.size() * 50);
         // 解を求めるのを開始。
         reset();
-        generation_t<wchar_t, false>::do_generate_from_words(s_wordset, xg_dwThreadCount);
+        generation_t<wchar_t, false>::do_generate_from_words(s_wordset);
         // タイマーをセットする。
         ::SetTimer(hwnd, 999, xg_dwTimerInterval, nullptr);
         // フォーカスをセットする。
@@ -2844,7 +2844,7 @@ XgCancelFromWordsDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
             ::InterlockedIncrement(&s_nRetryCount);
             s_dwTick1 = ::GetTickCount();
             reset();
-            generation_t<wchar_t, false>::do_generate_from_words(s_wordset, xg_dwThreadCount);
+            generation_t<wchar_t, false>::do_generate_from_words(s_wordset);
             // タイマーをセットする。
             ::SetTimer(hwnd, 999, xg_dwTimerInterval, nullptr);
             break;
@@ -2901,7 +2901,7 @@ XgCancelFromWordsDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
                 ::InterlockedIncrement(&s_nRetryCount);
                 s_dwTick1 = ::GetTickCount();
                 reset();
-                generation_t<wchar_t, false>::do_generate_from_words(s_wordset, xg_dwThreadCount);
+                generation_t<wchar_t, false>::do_generate_from_words(s_wordset);
                 // タイマーをセットする。
                 ::SetTimer(hwnd, 999, xg_dwTimerInterval, nullptr);
             }
