@@ -2,6 +2,8 @@
 
 #ifndef _INC_WINDOWS
     #include <windows.h>
+#endif
+#ifndef _INC_WINDOWSX
     #include <windowsx.h>
 #endif
 
