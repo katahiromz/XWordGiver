@@ -7,7 +7,9 @@
 #include "XWordGiver.hpp"
 #include "layout.h"
 #include <algorithm>
-#include "crossword_generation.hpp"
+#include "XG_Dialog.hpp"
+#include "XG_ThemeDialog.hpp"
+#include "XG_WordListDialog.hpp"
 
 // クロスワードのサイズの制限。
 #define XG_MIN_SIZE         2
@@ -260,9 +262,6 @@ BOOL xg_bShowAnswerOnPattern = TRUE;
 
 // ルール群。
 INT xg_nRules = DEFAULT_RULES_JAPANESE;
-
-// 単語リスト。
-static std::wstring xg_str_word_list;
 
 //////////////////////////////////////////////////////////////////////////////
 // スクロール関連。
@@ -2782,11 +2781,6 @@ XgCancelGenBlacksDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
     return false;
 }
 
-
-static std::vector<std::wstring> s_words;
-static std::unordered_set<std::wstring> s_wordset;
-static std::unordered_map<std::wstring, std::wstring> s_dict;
-
 // キャンセルダイアログ（単語リストから生成）。
 extern "C" INT_PTR CALLBACK
 XgCancelFromWordsDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
@@ -2806,15 +2800,15 @@ XgCancelFromWordsDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
         // 初期化する。
         s_nRetryCount = 0;
         // プログレスバーの範囲をセットする。
-        ::SendDlgItemMessageW(hwnd, ctl1, PBM_SETRANGE, 0, MAKELPARAM(0, s_wordset.size()));
-        ::SendDlgItemMessageW(hwnd, ctl2, PBM_SETRANGE, 0, MAKELPARAM(0, s_wordset.size()));
+        ::SendDlgItemMessageW(hwnd, ctl1, PBM_SETRANGE, 0, MAKELPARAM(0, XG_WordListDialog::s_wordset.size()));
+        ::SendDlgItemMessageW(hwnd, ctl2, PBM_SETRANGE, 0, MAKELPARAM(0, XG_WordListDialog::s_wordset.size()));
         // 計算時間を求めるために、開始時間を取得する。
         s_dwTick0 = s_dwTick1 = ::GetTickCount();
         // 再計算までの時間を概算する。
-        s_dwWait = DWORD(s_wordset.size() * 50);
+        s_dwWait = DWORD(XG_WordListDialog::s_wordset.size() * 50);
         // 解を求めるのを開始。
         reset();
-        generation_t<wchar_t, false>::do_generate_from_words(s_wordset);
+        generation_t<wchar_t, false>::do_generate_from_words(XG_WordListDialog::s_wordset);
         // タイマーをセットする。
         ::SetTimer(hwnd, 999, xg_dwTimerInterval, nullptr);
         // フォーカスをセットする。
@@ -2844,7 +2838,7 @@ XgCancelFromWordsDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
             ::InterlockedIncrement(&s_nRetryCount);
             s_dwTick1 = ::GetTickCount();
             reset();
-            generation_t<wchar_t, false>::do_generate_from_words(s_wordset);
+            generation_t<wchar_t, false>::do_generate_from_words(XG_WordListDialog::s_wordset);
             // タイマーをセットする。
             ::SetTimer(hwnd, 999, xg_dwTimerInterval, nullptr);
             break;
@@ -2901,7 +2895,7 @@ XgCancelFromWordsDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
                 ::InterlockedIncrement(&s_nRetryCount);
                 s_dwTick1 = ::GetTickCount();
                 reset();
-                generation_t<wchar_t, false>::do_generate_from_words(s_wordset);
+                generation_t<wchar_t, false>::do_generate_from_words(XG_WordListDialog::s_wordset);
                 // タイマーをセットする。
                 ::SetTimer(hwnd, 999, xg_dwTimerInterval, nullptr);
             }
@@ -7419,474 +7413,6 @@ void __fastcall XgRuleCheck(HWND hwnd)
                         XgLoadStringDx2(IDS_PASSED), MB_ICONINFORMATION);
 }
 
-// タグリストボックスを初期化。
-static void XgInitTagListView(HWND hwndLV)
-{
-    DWORD exstyle = LVS_EX_FULLROWSELECT | LVS_EX_INFOTIP | LVS_EX_LABELTIP | LVS_EX_GRIDLINES;
-    ListView_SetExtendedListViewStyleEx(hwndLV, exstyle, exstyle);
-
-    LV_COLUMN column = { LVCF_TEXT | LVCF_WIDTH | LVCF_SUBITEM | LVCF_FMT };
-
-    column.pszText = XgLoadStringDx1(IDS_TAGS);
-    column.fmt = LVCFMT_LEFT;
-    column.cx = 90;
-    column.iSubItem = 0;
-    ListView_InsertColumn(hwndLV, 0, &column);
-
-    column.pszText = XgLoadStringDx1(IDS_TAGCOUNT);
-    column.fmt = LVCFMT_RIGHT;
-    column.cx = 84;
-    column.iSubItem = 1;
-    ListView_InsertColumn(hwndLV, 1, &column);
-}
-
-template <typename T_STR_CONTAINER>
-inline void
-mstr_split(T_STR_CONTAINER& container,
-           const typename T_STR_CONTAINER::value_type& str,
-           const typename T_STR_CONTAINER::value_type& chars)
-{
-    container.clear();
-    size_t i = 0, k = str.find_first_of(chars);
-    while (k != T_STR_CONTAINER::value_type::npos)
-    {
-        container.push_back(str.substr(i, k - i));
-        i = k + 1;
-        k = str.find_first_of(chars, i);
-    }
-    container.push_back(str.substr(i));
-}
-
-static void XgTheme_SetPreset(HWND hwnd, LPCWSTR pszText)
-{
-    HWND hLst2 = GetDlgItem(hwnd, lst2);
-    HWND hLst3 = GetDlgItem(hwnd, lst3);
-    ListView_DeleteAllItems(hLst2);
-    ListView_DeleteAllItems(hLst3);
-
-    std::vector<std::wstring> strs;
-    std::wstring strText = pszText;
-
-    xg_str_replace_all(strText, L" ", L"");
-    mstr_split(strs, strText, L",");
-
-    WCHAR szText[64];
-
-    for (auto& str : strs) {
-        if (str.empty())
-            continue;
-
-        bool minus = false;
-        if (str[0] == L'-') {
-            minus = true;
-            str = str.substr(1);
-        }
-        if (str[0] == L'+') {
-            str = str.substr(1);
-        }
-
-        LV_ITEM item = { LVIF_TEXT };
-        INT iItem = ListView_GetItemCount(hLst3);
-        StringCbCopyW(szText, sizeof(szText), str.c_str());
-        item.iItem = iItem;
-        item.pszText = szText;
-        item.iSubItem = 0;
-        if (minus)
-            ListView_InsertItem(hLst3, &item);
-        else
-            ListView_InsertItem(hLst2, &item);
-
-        StringCbCopyW(szText, sizeof(szText), std::to_wstring(xg_tag_histgram[str]).c_str());
-        item.iItem = iItem;
-        item.pszText = szText;
-        item.iSubItem = 1;
-        if (minus)
-            ListView_SetItem(hLst3, &item);
-        else
-            ListView_SetItem(hLst2, &item);
-    }
-
-    // 最初の項目を選択する。
-    LV_ITEM item;
-    item.mask = LVIF_STATE;
-    item.iItem = 0;
-    item.iSubItem = 0;
-    item.state = item.stateMask = LVIS_SELECTED | LVIS_FOCUSED;
-    ListView_SetItem(hLst2, &item);
-
-    item.mask = LVIF_STATE;
-    item.iItem = 0;
-    item.iSubItem = 0;
-    item.state = item.stateMask = LVIS_SELECTED | LVIS_FOCUSED;
-    ListView_SetItem(hLst3, &item);
-}
-
-// タグ群の最大長。
-#define MAX_TAGSLEN 256
-
-static void XgTheme_SetPreset(HWND hwnd)
-{
-    HWND hCmb1 = GetDlgItem(hwnd, cmb1);
-    INT iItem = ComboBox_GetCurSel(hCmb1);
-
-    WCHAR szText[MAX_TAGSLEN];
-    if (iItem == CB_ERR) {
-        GetDlgItemTextW(hwnd, cmb1, szText, ARRAYSIZE(szText));
-    } else {
-        ComboBox_GetLBText(hCmb1, iItem, szText);
-    }
-
-    XgTheme_SetPreset(hwnd, szText);
-}
-
-static BOOL xg_bUpdatingPreset = FALSE;
-
-static void XgTheme_UpdatePreset(HWND hwnd)
-{
-    HWND hLst2 = GetDlgItem(hwnd, lst2);
-    HWND hLst3 = GetDlgItem(hwnd, lst3);
-
-    std::wstring str;
-    WCHAR szText[64];
-    INT nCount2 = ListView_GetItemCount(hLst2);
-    INT nCount3 = ListView_GetItemCount(hLst3);
-    for (INT i = 0; i < nCount2; ++i) {
-        if (str.size()) {
-            str += L",";
-        }
-        ListView_GetItemText(hLst2, i, 0, szText, ARRAYSIZE(szText));
-        str += L"+";
-        str += szText;
-    }
-    for (INT i = 0; i < nCount3; ++i) {
-        if (str.size()) {
-            str += L",";
-        }
-        ListView_GetItemText(hLst3, i, 0, szText, ARRAYSIZE(szText));
-        str += L"-";
-        str += szText;
-    }
-
-    // 長さ制限。
-    if (str.size() > MAX_TAGSLEN - 1)
-        str.resize(MAX_TAGSLEN - 1);
-
-    xg_bUpdatingPreset = TRUE;
-    SetDlgItemTextW(hwnd, cmb1, str.c_str());
-    xg_bUpdatingPreset = FALSE;
-}
-
-// 「テーマ」ダイアログの初期化。
-static BOOL XgTheme_OnInitDialog(HWND hwnd, HWND hwndFocus, LPARAM lParam)
-{
-    // ダイアログを中央寄せする。
-    XgCenterDialog(hwnd);
-
-    // 長さを制限する。
-    SendDlgItemMessageW(hwnd, cmb1, CB_LIMITTEXT, MAX_TAGSLEN - 1, 0);
-
-    // リストビューを初期化。
-    HWND hLst1 = GetDlgItem(hwnd, lst1);
-    HWND hLst2 = GetDlgItem(hwnd, lst2);
-    HWND hLst3 = GetDlgItem(hwnd, lst3);
-    XgInitTagListView(hLst1);
-    XgInitTagListView(hLst2);
-    XgInitTagListView(hLst3);
-
-    // ヒストグラムを取得。
-    std::vector<std::pair<size_t, std::wstring> > histgram;
-    for (auto& pair : xg_tag_histgram) {
-        histgram.emplace_back(std::make_pair(pair.second, pair.first));
-    }
-    // 出現回数の逆順でソート。
-    std::sort(histgram.begin(), histgram.end(),
-        [](const std::pair<size_t, std::wstring>& a, const std::pair<size_t, std::wstring>& b) {
-            return a.first > b.first;
-        }
-    );
-
-    // リストビューを逆順のヒストグラムで埋める。
-    INT iItem = 0;
-    LV_ITEM item = { LVIF_TEXT };
-    WCHAR szText[64];
-    for (auto& pair : histgram) {
-        StringCbCopyW(szText, sizeof(szText), pair.second.c_str());
-        item.iItem = iItem;
-        item.pszText = szText;
-        item.iSubItem = 0;
-        ListView_InsertItem(hLst1, &item);
-
-        StringCbCopyW(szText, sizeof(szText), std::to_wstring(pair.first).c_str());
-        item.iItem = iItem;
-        item.pszText = szText;
-        item.iSubItem = 1;
-        ListView_SetItem(hLst1, &item);
-
-        ++iItem;
-    }
-
-    // コンボボックスにテキストを設定する。
-    SetDlgItemTextW(hwnd, cmb1, xg_strTheme.c_str());
-    // プリセットを設定する。
-    XgTheme_SetPreset(hwnd, xg_strTheme.c_str());
-
-    // 最初の項目を選択。
-    item.mask = LVIF_STATE;
-    item.iItem = 0;
-    item.iSubItem = 0;
-    item.state = item.stateMask = LVIS_SELECTED | LVIS_FOCUSED;
-    ListView_SetItem(hLst1, &item);
-
-    return TRUE;
-}
-
-// リストビューにタグ項目を追加する。
-static void XgTheme_AddTag(HWND hwnd, BOOL bPriority)
-{
-    // 選択中のテキストを取得する。
-    HWND hLst1 = GetDlgItem(hwnd, lst1);
-    INT iItem = ListView_GetNextItem(hLst1, -1, LVNI_ALL | LVNI_SELECTED);
-    if (iItem < 0)
-        return; // 選択なし。
-    WCHAR szText1[64], szText2[64];
-    ListView_GetItemText(hLst1, iItem, 0, szText1, ARRAYSIZE(szText1));
-    ListView_GetItemText(hLst1, iItem, 1, szText2, ARRAYSIZE(szText2));
-
-    LV_FINDINFO find = { LVFI_STRING, szText1 };
-    if (bPriority) {
-        HWND hLst2 = GetDlgItem(hwnd, lst2);
-        iItem = ListView_FindItem(hLst2, -1, &find);
-        if (iItem >= 0)
-            return; // すでにあった。
-
-        // タグ項目を追加。
-        INT cItems = ListView_GetItemCount(hLst2);
-        LV_ITEM item = { LVIF_TEXT };
-        item.iItem = cItems;
-        item.iSubItem = 0;
-        item.pszText = szText1;
-        iItem = ListView_InsertItem(hLst2, &item);
-        item.iItem = iItem;
-        item.iSubItem = 1;
-        item.pszText = szText2;
-        ListView_SetItem(hLst2, &item);
-
-        // カウンターを更新。
-        size_t count = 0;
-        cItems = ListView_GetItemCount(hLst2);
-        for (iItem = 0; iItem < cItems; ++iItem) {
-            ListView_GetItemText(hLst2, iItem, 1, szText2, ARRAYSIZE(szText2));
-            count += _wtoi(szText2);
-        }
-        SetDlgItemInt(hwnd, stc1, INT(count), FALSE);
-    } else {
-        HWND hLst3 = GetDlgItem(hwnd, lst3);
-        iItem = ListView_FindItem(hLst3, -1, &find);
-        if (iItem >= 0)
-            return; // すでにあった。
-
-        // タグ項目を追加。
-        INT cItems = ListView_GetItemCount(hLst3);
-        LV_ITEM item = { LVIF_TEXT };
-        item.iItem = cItems;
-        item.iSubItem = 0;
-        item.pszText = szText1;
-        iItem = ListView_InsertItem(hLst3, &item);
-        item.iItem = iItem;
-        item.iSubItem = 1;
-        item.pszText = szText2;
-        ListView_SetItem(hLst3, &item);
-
-        // カウンターを更新。
-        size_t count = 0;
-        cItems = ListView_GetItemCount(hLst3);
-        for (iItem = 0; iItem < cItems; ++iItem) {
-            ListView_GetItemText(hLst3, iItem, 1, szText2, ARRAYSIZE(szText2));
-            count += _wtoi(szText2);
-        }
-        SetDlgItemInt(hwnd, stc2, INT(count), FALSE);
-    }
-
-    // プリセットを更新。
-    XgTheme_UpdatePreset(hwnd);
-}
-
-// リストビューからタグ項目を削除する。
-static void XgTheme_RemoveTag(HWND hwnd, BOOL bPriority)
-{
-    WCHAR szText[64];
-    if (bPriority) {
-        HWND hLst2 = GetDlgItem(hwnd, lst2);
-        INT iItem = ListView_GetNextItem(hLst2, -1, LVNI_ALL | LVNI_SELECTED);
-        ListView_DeleteItem(hLst2, iItem);
-
-        // カウンターを更新。
-        INT cItems = ListView_GetItemCount(hLst2);
-        size_t count = 0;
-        for (iItem = 0; iItem < cItems; ++iItem) {
-            ListView_GetItemText(hLst2, iItem, 1, szText, ARRAYSIZE(szText));
-            count += _wtoi(szText);
-        }
-        SetDlgItemInt(hwnd, stc1, INT(count), FALSE);
-    } else {
-        HWND hLst3 = GetDlgItem(hwnd, lst3);
-        INT iItem = ListView_GetNextItem(hLst3, -1, LVNI_ALL | LVNI_SELECTED);
-        ListView_DeleteItem(hLst3, iItem);
-
-        // カウンターを更新。
-        INT cItems = ListView_GetItemCount(hLst3);
-        size_t count = 0;
-        for (iItem = 0; iItem < cItems; ++iItem) {
-            ListView_GetItemText(hLst3, iItem, 1, szText, ARRAYSIZE(szText));
-            count += _wtoi(szText);
-        }
-        SetDlgItemInt(hwnd, stc2, INT(count), FALSE);
-    }
-
-    // プリセットを更新。
-    XgTheme_UpdatePreset(hwnd);
-}
-
-// 「テーマ」ダイアログで「OK」ボタンが押された。
-static BOOL XgTheme_OnOK(HWND hwnd)
-{
-    HWND hLst2 = GetDlgItem(hwnd, lst2);
-    HWND hLst3 = GetDlgItem(hwnd, lst3);
-
-    xg_priority_tags.clear();
-    xg_forbidden_tags.clear();
-
-    std::wstring strTheme;
-    WCHAR szText[MAX_TAGSLEN];
-    INT cItems;
-
-    cItems = ListView_GetItemCount(hLst2);
-    for (INT iItem = 0; iItem < cItems; ++iItem) {
-        ListView_GetItemText(hLst2, iItem, 0, szText, ARRAYSIZE(szText));
-        xg_priority_tags.emplace(szText);
-        if (strTheme.size())
-            strTheme += L',';
-        strTheme += L'+';
-        strTheme += szText;
-    }
-
-    cItems = ListView_GetItemCount(hLst3);
-    for (INT iItem = 0; iItem < cItems; ++iItem) {
-        ListView_GetItemText(hLst3, iItem, 0, szText, ARRAYSIZE(szText));
-        xg_forbidden_tags.emplace(szText);
-        if (strTheme.size())
-            strTheme += L',';
-        strTheme += L'-';
-        strTheme += szText;
-    }
-
-    XgSetThemeString(strTheme);
-
-    return TRUE;
-}
-
-// タグの検索。
-static void XgTheme_OnEdt1(HWND hwnd)
-{
-    WCHAR szText[64];
-    GetDlgItemTextW(hwnd, edt1, szText, ARRAYSIZE(szText));
-
-    HWND hLst1 = GetDlgItem(hwnd, lst1);
-
-    LV_FINDINFO find = { LVFI_STRING | LVFI_PARTIAL };
-    find.psz = szText;
-    INT iItem = ListView_FindItem(hLst1, -1, &find);
-    UINT state = LVIS_FOCUSED | LVIS_SELECTED;
-    ListView_SetItemState(hLst1, iItem, state, state);
-    ListView_EnsureVisible(hLst1, iItem, FALSE);
-}
-
-// 「テーマ」ダイアログのコマンド処理。
-static void XgTheme_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT codeNotify)
-{
-    switch (id)
-    {
-    case IDOK:
-        if (XgTheme_OnOK(hwnd)) {
-            EndDialog(hwnd, IDOK);
-        }
-        break;
-    case IDCANCEL:
-        EndDialog(hwnd, id);
-        break;
-    case psh1: // →
-        XgTheme_AddTag(hwnd, TRUE);
-        break;
-    case psh2: // ←
-        XgTheme_RemoveTag(hwnd, TRUE);
-        break;
-    case psh3: // →
-        XgTheme_AddTag(hwnd, FALSE);
-        break;
-    case psh4: // ←
-        XgTheme_RemoveTag(hwnd, FALSE);
-        break;
-    case psh5: // リセット
-        XgSetThemeString(xg_strDefaultTheme);
-        EndDialog(hwnd, IDOK);
-        break;
-    case edt1:
-        if (codeNotify == EN_CHANGE) {
-            XgTheme_OnEdt1(hwnd);
-        }
-        break;
-    case cmb1:
-        if (codeNotify == CBN_EDITCHANGE && !xg_bUpdatingPreset) {
-            XgTheme_SetPreset(hwnd);
-        }
-        break;
-    }
-}
-
-LRESULT XgTheme_OnNotify(HWND hwnd, int idFrom, LPNMHDR pnmhdr)
-{
-    LV_KEYDOWN *pKeyDown;
-    switch (idFrom) {
-    case lst1:
-        if (pnmhdr->code == NM_DBLCLK) {
-            XgTheme_AddTag(hwnd, TRUE);
-        }
-        break;
-    case lst2:
-        if (pnmhdr->code == NM_DBLCLK) {
-            XgTheme_RemoveTag(hwnd, TRUE);
-        } else if (pnmhdr->code == LVN_KEYDOWN) {
-            pKeyDown = reinterpret_cast<LV_KEYDOWN *>(pnmhdr);
-            if (pKeyDown->wVKey == VK_DELETE)
-                XgTheme_RemoveTag(hwnd, TRUE);
-        }
-        break;
-    case lst3:
-        if (pnmhdr->code == NM_DBLCLK) {
-            XgTheme_RemoveTag(hwnd, FALSE);
-        } else if (pnmhdr->code == LVN_KEYDOWN) {
-            pKeyDown = reinterpret_cast<LV_KEYDOWN *>(pnmhdr);
-            if (pKeyDown->wVKey == VK_DELETE)
-                XgTheme_RemoveTag(hwnd, FALSE);
-        }
-        break;
-    }
-    return 0;
-}
-
-// 「テーマ」ダイアログプロシージャ。
-static INT_PTR CALLBACK
-XgThemeDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
-{
-    switch (uMsg)
-    {
-        HANDLE_MSG(hwnd, WM_INITDIALOG, XgTheme_OnInitDialog);
-        HANDLE_MSG(hwnd, WM_COMMAND, XgTheme_OnCommand);
-        HANDLE_MSG(hwnd, WM_NOTIFY, XgTheme_OnNotify);
-    }
-    return 0;
-}
-
 // 「テーマ」ダイアログを表示する。
 void __fastcall XgTheme(HWND hwnd)
 {
@@ -7896,7 +7422,8 @@ void __fastcall XgTheme(HWND hwnd)
         return;
     }
 
-    INT id = DialogBoxW(xg_hInstance, MAKEINTRESOURCEW(IDD_THEME), hwnd, XgThemeDlgProc);
+    XG_ThemeDialog dialog;
+    INT_PTR id = dialog.DialogBoxDx(hwnd, MAKEINTRESOURCEW(IDD_THEME));
     if (id == IDOK) {
         XgUpdateTheme(hwnd);
     }
@@ -7971,133 +7498,6 @@ void __fastcall XgShowResultsRepeatedly(HWND hwnd)
                         nullptr, nullptr, SW_SHOWNORMAL);
 }
 
-BOOL XgWordList_OnInitDialog(HWND hwnd, HWND hwndFocus, LPARAM lParam)
-{
-    XgCenterDialog(hwnd);
-    ::SendDlgItemMessageW(hwnd, edt1, EM_SETLIMITTEXT, MAXSHORT, 0);
-    SetDlgItemTextW(hwnd, edt1, xg_str_word_list.c_str());
-    return TRUE;
-}
-
-BOOL XgWordList_OnOK(HWND hwnd)
-{
-    s_words.clear();
-    s_wordset.clear();
-    s_dict.clear();
-
-    // edt1からテキストを取得する。
-    HWND hEdt1 = GetDlgItem(hwnd, edt1);
-    INT cch = GetWindowTextLengthW(hEdt1);
-    if (cch == 0) {
-        XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_ADDMOREWORDS), NULL, MB_ICONERROR);
-        return FALSE;
-    }
-    LPWSTR psz = new WCHAR[cch + 1];
-    if (!GetWindowTextW(hEdt1, psz, cch + 1))
-    {
-        delete[] psz;
-        XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_OUTOFMEMORY), NULL, MB_ICONERROR);
-        return FALSE;
-    }
-    std::wstring str = psz;
-    delete[] psz;
-
-    // 単語リストと辞書を取得する。
-    std::vector<std::wstring> items;
-    mstr_split(items, str, L"\n");
-    for (auto& item : items) {
-        size_t ich = item.find(L'\t');
-        std::wstring hint;
-        if (ich != item.npos) {
-            hint = item.substr(ich + 1);
-            item.resize(ich);
-            ich = hint.find(L'\t');
-            if (ich != hint.npos) {
-                hint.resize(ich);
-            }
-            xg_str_trim(hint);
-        }
-        xg_str_replace_all(item, L"-", L"");
-        xg_str_replace_all(item, L"'", L"");
-        xg_str_trim(item);
-        item = XgNormalizeString(item);
-        if (!item.empty()) {
-            if (hint.size())
-                s_dict[item] = hint;
-            s_words.push_back(item);
-        }
-    }
-    items.clear();
-
-    // 2文字未満の単語を削除する。
-    XgTrimDict(s_words);
-
-    // 単語が少ない？
-    if (s_words.size() < 2) {
-        XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_ADDMOREWORDS), NULL, MB_ICONERROR);
-        return FALSE;
-    }
-
-    using namespace crossword_generation;
-
-    std::wstring nonconnected;
-    s_wordset = { s_words.begin(), s_words.end() };
-
-    // すべてでなくてもよい？
-    if (::IsDlgButtonChecked(hwnd, chx1) == BST_CHECKED) {
-        while (!check_connectivity<wchar_t>(s_wordset, nonconnected)) {
-            // 接続されていない単語を削除。
-            s_wordset.erase(nonconnected);
-            s_words.erase(std::remove(s_words.begin(), s_words.end(), nonconnected), s_words.end());
-
-            // 単語が少ない？
-            if (s_words.size() < 2) {
-                XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_ADDMOREWORDS), NULL, MB_ICONERROR);
-                return FALSE;
-            }
-        }
-    }
-
-    if (!check_connectivity<wchar_t>(s_wordset, nonconnected)) {
-        // 連結されていない。エラー。
-        WCHAR szText[256];
-        StringCchPrintfW(szText, _countof(szText), XgLoadStringDx1(IDS_NOTCONNECTABLE),
-                         nonconnected.c_str());
-        XgCenterMessageBoxW(hwnd, szText, NULL, MB_ICONERROR);
-    } else {
-        return TRUE;
-    }
-
-    return FALSE;
-}
-
-void XgWordList_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT codeNotify)
-{
-    switch (id)
-    {
-    case IDOK:
-        if (XgWordList_OnOK(hwnd)) {
-            ::EndDialog(hwnd, id);
-        }
-        break;
-    case IDCANCEL:
-        ::EndDialog(hwnd, id);
-        break;
-    }
-}
-
-// 「単語リストから生成」ダイアログ。
-INT_PTR CALLBACK
-XgWordListDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
-{
-    switch (uMsg)
-    {
-        HANDLE_MSG(hwnd, WM_INITDIALOG, XgWordList_OnInitDialog);
-        HANDLE_MSG(hwnd, WM_COMMAND, XgWordList_OnCommand);
-    }
-    return 0;
-}
-
 // ズーム倍率を設定する。
 static void XgSetZoomRate(HWND hwnd, INT nZoomRate)
 {
@@ -8157,13 +7557,14 @@ void __fastcall XgFitZoom(HWND hwnd)
 }
 
 // 単語リストから生成。
-void XgGenerateFromWordListDlgProc(HWND hwnd)
+void XgGenerateFromWordList(HWND hwnd)
 {
     using namespace crossword_generation;
 
     // ダイアログを表示。
     INT nID;
-    nID = DialogBoxW(xg_hInstance, MAKEINTRESOURCEW(IDD_WORDLIST), hwnd, XgWordListDlgProc);
+    XG_WordListDialog dialog;
+    nID = dialog.DialogBoxDx(hwnd, MAKEINTRESOURCEW(IDD_WORDLIST));
     if (nID != IDOK)
         return;
 
@@ -8218,8 +7619,8 @@ void XgGenerateFromWordListDlgProc(HWND hwnd)
         }
     }
     // 一時的な辞書をセットする。
-    for (auto& word : s_words) {
-        xg_dict_1.emplace_back(word, s_dict[word]);
+    for (auto& word : XG_WordListDialog::s_words) {
+        xg_dict_1.emplace_back(word, XG_WordListDialog::s_dict[word]);
     }
     // 番号とヒントを付ける。
     xg_solution.DoNumberingNoCheck();
@@ -8232,7 +7633,7 @@ void XgGenerateFromWordListDlgProc(HWND hwnd)
     xg_vMarkedCands.clear();
     XgMarkUpdate();
     // 単語リストを保存して後で使う。
-    for (auto& word : s_words) {
+    for (auto& word : XG_WordListDialog::s_words) {
         for (auto& wch : word) {
             if (ZEN_LARGE_A <= wch && wch <= ZEN_LARGE_Z)
                 wch = L'a' + (wch - ZEN_LARGE_A);
@@ -8240,16 +7641,16 @@ void XgGenerateFromWordListDlgProc(HWND hwnd)
                 wch = L'a' + (wch - ZEN_SMALL_A);
         }
     }
-    if (s_dict.size()) {
-        for (auto& word : s_words) {
-            auto hint = s_dict[word];
+    if (XG_WordListDialog::s_dict.size()) {
+        for (auto& word : XG_WordListDialog::s_words) {
+            auto hint = XG_WordListDialog::s_dict[word];
             if (hint.size()) {
                 word += L"\t";
                 word += hint;
             }
         }
     }
-    xg_str_word_list = mstr_join(s_words, L"\r\n");
+    XG_WordListDialog::s_str_word_list = mstr_join(XG_WordListDialog::s_words, L"\r\n");
     // 「元に戻す」情報を設定する。
     auto sa2 = std::make_shared<XG_UndoData_SetAll>();
     sa2->Get();
@@ -8265,9 +7666,9 @@ void XgGenerateFromWordListDlgProc(HWND hwnd)
     XgShowHints(hwnd);
 
     // クリア。
-    s_words.clear();
-    s_wordset.clear();
-    s_dict.clear();
+    XG_WordListDialog::s_words.clear();
+    XG_WordListDialog::s_wordset.clear();
+    XG_WordListDialog::s_dict.clear();
 }
 
 // コマンドを実行する。
@@ -9723,7 +9124,7 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
         }
         break;
     case ID_GENERATEFROMWORDLIST:
-        XgGenerateFromWordListDlgProc(hwnd);
+        XgGenerateFromWordList(hwnd);
         break;
     default:
         if (!MainWnd_OnCommand2(hwnd, id)) {
@@ -11572,8 +10973,8 @@ int WINAPI WinMain(
             continue;
         }
 
-        if (xg_hHintsWnd && GetParent(msg.hwnd) == xg_hHintsWnd && 
-            msg.message == WM_KEYDOWN && msg.wParam == VK_RETURN) 
+        if (xg_hHintsWnd && GetParent(msg.hwnd) == xg_hHintsWnd &&
+            msg.message == WM_KEYDOWN && msg.wParam == VK_RETURN)
         {
             msg.wParam = VK_TAB;
         }
