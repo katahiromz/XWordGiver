@@ -55,6 +55,7 @@ namespace crossword_generation {
 inline static bool s_generated = false;
 inline static bool s_canceled = false;
 inline static int s_count = 0;
+inline static std::mutex s_mutex;
 
 template <typename t_char>
 inline bool is_letter(t_char ch) {
@@ -601,7 +602,6 @@ struct generation_t {
     typedef std::basic_string<t_char> t_string;
 
     inline static board_t<t_char, t_fixed> s_solution;
-    inline static std::mutex s_mutex;
     board_t<t_char, t_fixed> m_board;
     std::unordered_set<t_string> m_words, m_dict;
     std::unordered_set<pos_t> m_crossable_x, m_crossable_y;
