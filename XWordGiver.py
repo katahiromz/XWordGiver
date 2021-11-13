@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# xword.py --- クロスワードファイルを扱うPython3プログラム。
+# XWordGiver.py --- クロスワードファイルを扱うPython3プログラム。
 # Author: Katayama Hirofumi MZ
 # License: MIT
 #
