@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #ifndef _INC_WINDOWS
     #include <windows.h>

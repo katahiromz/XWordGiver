@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include "XG_Dialog.hpp"
 #include "crossword_generation.hpp"
