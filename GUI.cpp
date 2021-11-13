@@ -12,6 +12,7 @@
 #include "XG_WordListDialog.hpp"
 #include "XG_PatternDialog.hpp"
 #include "XG_HintsWnd.hpp"
+#include "XG_CandsWnd.hpp"
 
 // クロスワードのサイズの制限。
 #define XG_MIN_SIZE         2
@@ -82,9 +83,11 @@ HWND            xg_hMainWnd = nullptr;
 
 // ヒントウィンドウのハンドル。
 HWND            xg_hHintsWnd = nullptr;
+XG_HintsWnd xg_hints_wnd;
 
 // 候補ウィンドウのハンドル。
 HWND            xg_hCandsWnd = nullptr;
+XG_CandsWnd xg_cands_wnd;
 
 // 入力パレット。
 HWND            xg_hwndInputPalette = nullptr;
@@ -103,6 +106,12 @@ HWND            xg_hStatusBar  = nullptr;
 // ツールバーのイメージリスト。
 HIMAGELIST      xg_hImageList     = nullptr;
 HIMAGELIST      xg_hGrayedImageList = nullptr;
+
+// 候補を求める位置。
+INT xg_jCandPos, xg_iCandPos;
+
+// 候補はタテかヨコか。
+bool xg_bCandVertical;
 
 // 辞書ファイルの場所（パス）。
 std::wstring xg_dict_name;
@@ -165,10 +174,6 @@ static std::deque<std::wstring>  s_dirs_save_to;
 static int s_nMainWndX = CW_USEDEFAULT, s_nMainWndY = CW_USEDEFAULT;
 static int s_nMainWndCX = CW_USEDEFAULT, s_nMainWndCY = CW_USEDEFAULT;
 
-// 候補ウィンドウの位置とサイズ。
-static int s_nCandsWndX = CW_USEDEFAULT, s_nCandsWndY = CW_USEDEFAULT;
-static int s_nCandsWndCX = CW_USEDEFAULT, s_nCandsWndCY = CW_USEDEFAULT;
-
 // 入力パレットの位置。
 INT xg_nInputPaletteWndX = CW_USEDEFAULT;
 INT xg_nInputPaletteWndY = CW_USEDEFAULT;
@@ -212,12 +217,6 @@ static const LPCWSTR s_szShellLinkDotExt = L".LNK";
 
 // メインウィンドウクラス名。
 static const LPCWSTR s_pszMainWndClass = L"XWord Giver Main Window";
-
-// ヒントウィンドウクラス名。
-static const LPCWSTR s_pszHintsWndClass = L"XWord Giver Hints Window";
-
-// 候補ウィンドウクラス名。
-static const LPCWSTR s_pszCandsWndClass = L"XWord Giver Candidates Window";
 
 // アクセラレータのハンドル。
 static HACCEL       s_hAccel = nullptr;
@@ -581,10 +580,10 @@ bool __fastcall XgLoadSettings(void)
     XG_HintsWnd::s_nHintsWndCX = 420;
     XG_HintsWnd::s_nHintsWndCY = 250;
 
-    s_nCandsWndX = CW_USEDEFAULT;
-    s_nCandsWndY = CW_USEDEFAULT;
-    s_nCandsWndCX = 420;
-    s_nCandsWndCY = 250;
+    XG_CandsWnd::s_nCandsWndX = CW_USEDEFAULT;
+    XG_CandsWnd::s_nCandsWndY = CW_USEDEFAULT;
+    XG_CandsWnd::s_nCandsWndCX = 420;
+    XG_CandsWnd::s_nCandsWndCY = 250;
 
     xg_nInputPaletteWndX = CW_USEDEFAULT;
     xg_nInputPaletteWndY = CW_USEDEFAULT;
@@ -682,16 +681,16 @@ bool __fastcall XgLoadSettings(void)
             }
 
             if (!app_key.QueryDword(L"CandsX", dwValue)) {
-                s_nCandsWndX = dwValue;
+                XG_CandsWnd::s_nCandsWndX = dwValue;
             }
             if (!app_key.QueryDword(L"CandsY", dwValue)) {
-                s_nCandsWndY = dwValue;
+                XG_CandsWnd::s_nCandsWndY = dwValue;
             }
             if (!app_key.QueryDword(L"CandsCX", dwValue)) {
-                s_nCandsWndCX = dwValue;
+                XG_CandsWnd::s_nCandsWndCX = dwValue;
             }
             if (!app_key.QueryDword(L"CandsCY", dwValue)) {
-                s_nCandsWndCY = dwValue;
+                XG_CandsWnd::s_nCandsWndCY = dwValue;
             }
 
             if (!app_key.QueryDword(L"IPaletteX", dwValue)) {
@@ -982,10 +981,10 @@ bool __fastcall XgSaveSettings(void)
             app_key.SetDword(L"HintsCX", XG_HintsWnd::s_nHintsWndCX);
             app_key.SetDword(L"HintsCY", XG_HintsWnd::s_nHintsWndCY);
 
-            app_key.SetDword(L"CandsX", s_nCandsWndX);
-            app_key.SetDword(L"CandsY", s_nCandsWndY);
-            app_key.SetDword(L"CandsCX", s_nCandsWndCX);
-            app_key.SetDword(L"CandsCY", s_nCandsWndCY);
+            app_key.SetDword(L"CandsX", XG_CandsWnd::s_nCandsWndX);
+            app_key.SetDword(L"CandsY", XG_CandsWnd::s_nCandsWndY);
+            app_key.SetDword(L"CandsCX", XG_CandsWnd::s_nCandsWndCX);
+            app_key.SetDword(L"CandsCY", XG_CandsWnd::s_nCandsWndCY);
 
             app_key.SetDword(L"IPaletteX", xg_nInputPaletteWndX);
             app_key.SetDword(L"IPaletteY", xg_nInputPaletteWndY);
@@ -8955,8 +8954,6 @@ XgWindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 //////////////////////////////////////////////////////////////////////////////
 // ヒントウィンドウ。
 
-XG_HintsWnd xg_hints_wnd;
-
 // ヒントウィンドウを作成する。
 BOOL XgCreateHintsWnd(HWND hwnd)
 {
@@ -9027,267 +9024,6 @@ LRESULT CALLBACK XgCtrlAMessageProc(INT nCode, WPARAM wParam, LPARAM lParam)
 //////////////////////////////////////////////////////////////////////////////
 // 候補ウィンドウ。
 
-// 候補ウィンドウのスクロールビュー。
-MScrollView                 xg_svCandsScrollView;
-
-// 候補ウィンドウのUIフォント。
-HFONT                       xg_hCandsUIFont = NULL;
-
-// 候補。
-std::vector<std::wstring>   xg_vecCandidates;
-
-// 候補ボタン。
-std::vector<HWND>           xg_ahwndCandButtons;
-
-// 候補を求める位置。
-int  xg_jCandPos;
-int  xg_iCandPos;
-
-// 候補はタテかヨコか。
-bool xg_bCandVertical;
-
-struct XG_CandsButtonData
-{
-    WNDPROC m_fnOldWndProc;
-};
-
-extern "C"
-LRESULT CALLBACK
-XgCandsButton_WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
-{
-    WNDPROC fn;
-    XG_CandsButtonData *data =
-        reinterpret_cast<XG_CandsButtonData *>(
-            ::GetWindowLongPtr(hwnd, GWLP_USERDATA));
-    switch (uMsg) {
-    case WM_CHAR:
-        #if 0
-            if (wParam == L'\t' || wParam == L'\r' || wParam == L'\n')
-                break;
-        #endif
-        return ::CallWindowProc(data->m_fnOldWndProc,
-            hwnd, uMsg, wParam, lParam);
-
-    case WM_SETFOCUS:
-        xg_svCandsScrollView.EnsureCtrlVisible(hwnd);
-        return ::CallWindowProc(data->m_fnOldWndProc,
-            hwnd, uMsg, wParam, lParam);
-
-    case WM_KEYDOWN:
-        if (wParam == VK_RETURN) {
-            ::SetFocus(NULL);
-            break;
-        }
-
-        if (wParam == VK_PRIOR || wParam == VK_NEXT) {
-            HWND hwndParent = ::GetParent(hwnd);
-            ::SendMessageW(hwndParent, uMsg, wParam, lParam);
-            break;
-        }
-
-        if (wParam == VK_F6) {
-            if (::GetAsyncKeyState(VK_SHIFT) < 0)
-                ::SendMessageW(xg_hMainWnd, WM_COMMAND, ID_PANEPREV, 0);
-            else
-                ::SendMessageW(xg_hMainWnd, WM_COMMAND, ID_PANENEXT, 0);
-            break;
-        }
-
-        if (wParam == VK_ESCAPE) {
-            DestroyWindow(GetParent(hwnd));
-            break;
-        }
-
-        return ::CallWindowProc(data->m_fnOldWndProc, hwnd, uMsg, wParam, lParam);
-
-    case WM_NCDESTROY:
-        fn = data->m_fnOldWndProc;
-        ::LocalFree(data);
-        return ::CallWindowProc(fn, hwnd, uMsg, wParam, lParam);
-
-    case WM_MOUSEWHEEL:
-        {
-            HWND hwndParent = ::GetParent(hwnd);
-            ::SendMessageW(hwndParent, uMsg, wParam, lParam);
-        }
-        break;
-
-    default:
-        return ::CallWindowProc(data->m_fnOldWndProc,
-            hwnd, uMsg, wParam, lParam);
-    }
-    return 0;
-}
-
-// 候補ウィンドウのサイズが変わった。
-void CandsWnd_OnSize(HWND hwnd, UINT /*state*/, int /*cx*/, int /*cy*/)
-{
-    if (xg_ahwndCandButtons.empty())
-        return;
-
-    xg_svCandsScrollView.clear();
-
-    MRect rcClient;
-    ::GetClientRect(hwnd, &rcClient);
-
-    HDC hdc = ::CreateCompatibleDC(NULL);
-    HGDIOBJ hFontOld = ::SelectObject(hdc, xg_hCandsUIFont);
-    {
-        MPoint pt;
-        for (size_t i = 0; i < xg_vecCandidates.size(); ++i) {
-            const std::wstring& strLabel = xg_vecCandidates[i];
-
-            MSize siz;
-            ::GetTextExtentPoint32W(hdc, strLabel.data(),
-                                    static_cast<int>(strLabel.size()), &siz);
-
-            if (pt.x != 0 && pt.x + siz.cx + 16 > rcClient.Width()) {
-                pt.x = 0;
-                pt.y += siz.cy + 16;
-            }
-
-            MRect rcCtrl(MPoint(pt.x + 4, pt.y + 4), MSize(siz.cx + 8, siz.cy + 8));
-            xg_svCandsScrollView.AddCtrlInfo(xg_ahwndCandButtons[i], rcCtrl);
-
-            pt.x += siz.cx + 16;
-        }
-    }
-    ::SelectObject(hdc, hFontOld);
-    ::DeleteDC(hdc);
-
-    xg_svCandsScrollView.SetExtentForAllCtrls();
-    xg_svCandsScrollView.Extent().cy += 4;
-    xg_svCandsScrollView.EnsureCtrlVisible(::GetFocus(), false);
-    xg_svCandsScrollView.UpdateAll();
-}
-
-// 候補ウィンドウが作成された。
-BOOL CandsWnd_OnCreate(HWND hwnd, LPCREATESTRUCT /*lpCreateStruct*/)
-{
-    xg_hCandsWnd = hwnd;
-
-    if (xg_hCandsUIFont) {
-        ::DeleteObject(xg_hCandsUIFont);
-    }
-    xg_hCandsUIFont = ::CreateFontIndirectW(XgGetUIFont());
-    if (xg_hCandsUIFont == NULL) {
-        xg_hCandsUIFont = reinterpret_cast<HFONT>(
-            ::GetStockObject(DEFAULT_GUI_FONT));
-    }
-
-    // 初期化。
-    xg_ahwndCandButtons.clear();
-    xg_svCandsScrollView.clear();
-
-    xg_svCandsScrollView.SetParent(hwnd);
-    xg_svCandsScrollView.ShowScrollBars(FALSE, TRUE);
-
-    HWND hwndCtrl;
-    XG_CandsButtonData *data;
-    for (size_t i = 0; i < xg_vecCandidates.size(); ++i) {
-        WCHAR szText[64];
-        if (xg_bHiragana) {
-            LCMapStringW(JPN_LOCALE, LCMAP_FULLWIDTH | LCMAP_HIRAGANA,
-                         xg_vecCandidates[i].data(), -1, szText, ARRAYSIZE(szText));
-            xg_vecCandidates[i] = szText;
-        }
-        if (xg_bLowercase) {
-            LCMapStringW(JPN_LOCALE, LCMAP_FULLWIDTH | LCMAP_LOWERCASE,
-                         xg_vecCandidates[i].data(), -1, szText, ARRAYSIZE(szText));
-            xg_vecCandidates[i] = szText;
-        }
-
-        hwndCtrl = ::CreateWindowW(
-            TEXT("BUTTON"), xg_vecCandidates[i].data(),
-            WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | WS_TABSTOP,
-            0, 0, 0, 0, hwnd, NULL, xg_hInstance, NULL);
-        assert(hwndCtrl);
-        if (hwndCtrl == NULL)
-            return FALSE;
-
-        ::SendMessageW(hwndCtrl, WM_SETFONT,
-            reinterpret_cast<WPARAM>(xg_hCandsUIFont),
-            FALSE);
-        xg_ahwndCandButtons.emplace_back(hwndCtrl);
-
-        data = reinterpret_cast<XG_CandsButtonData *>(
-            ::LocalAlloc(LMEM_FIXED, sizeof(XG_CandsButtonData)));
-        data->m_fnOldWndProc = reinterpret_cast<WNDPROC>(
-            ::SetWindowLongPtr(hwndCtrl, GWLP_WNDPROC,
-                reinterpret_cast<LONG_PTR>(XgCandsButton_WndProc)));
-        ::SetWindowLongPtr(hwndCtrl, GWLP_USERDATA,
-            reinterpret_cast<LONG_PTR>(data));
-    }
-    CandsWnd_OnSize(hwnd, 0, 0, 0);
-
-    if (xg_ahwndCandButtons.size())
-        ::SetFocus(xg_ahwndCandButtons[0]);
-    else
-        ::SetFocus(hwnd);
-
-    return TRUE;
-}
-
-// 候補ウィンドウが縦にスクロールされた。
-void CandsWnd_OnVScroll(HWND /*hwnd*/, HWND /*hwndCtl*/, UINT code, int pos)
-{
-    xg_svCandsScrollView.Scroll(SB_VERT, code, pos);
-}
-
-// キーが押された。
-void CandsWnd_OnKey(HWND hwnd, UINT vk, BOOL fDown, int cRepeat, UINT flags)
-{
-    if (!fDown)
-        return;
-
-    switch (vk) {
-    case VK_PRIOR:
-        ::PostMessageW(hwnd, WM_VSCROLL, MAKELPARAM(SB_PAGEUP, 0), 0);
-        break;
-
-    case VK_NEXT:
-        ::PostMessageW(hwnd, WM_VSCROLL, MAKELPARAM(SB_PAGEDOWN, 0), 0);
-        break;
-
-    case VK_TAB:
-        if (xg_ahwndCandButtons.size())
-            ::SetFocus(xg_ahwndCandButtons[0]);
-        break;
-
-    case VK_F6:
-        if (::GetAsyncKeyState(VK_SHIFT) < 0)
-            ::SendMessageW(xg_hMainWnd, WM_COMMAND, ID_PANEPREV, 0);
-        else
-            ::SendMessageW(xg_hMainWnd, WM_COMMAND, ID_PANENEXT, 0);
-        break;
-
-    case VK_ESCAPE:
-        DestroyWindow(hwnd);
-        break;
-    }
-}
-
-// 候補ウィンドウが破棄された。
-void CandsWnd_OnDestroy(HWND hwnd)
-{
-    // 現在の位置とサイズを保存する。
-    MRect rc;
-    ::GetWindowRect(hwnd, &rc);
-    s_nCandsWndX = rc.left;
-    s_nCandsWndY = rc.top;
-    s_nCandsWndCX = rc.Width();
-    s_nCandsWndCY = rc.Height();
-
-    xg_hCandsWnd = NULL;
-    xg_ahwndCandButtons.clear();
-    xg_svCandsScrollView.clear();
-
-    ::DeleteObject(xg_hCandsUIFont);
-    xg_hCandsUIFont = NULL;
-
-    SetForegroundWindow(xg_hMainWnd);
-}
-
 // 候補ウィンドウを破棄する。
 void XgDestroyCandsWnd(void)
 {
@@ -9339,109 +9075,15 @@ void XgApplyCandidate(XG_Board& xword, const std::wstring& strCand)
     }
 }
 
-void CandsWnd_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT codeNotify)
-{
-    if (codeNotify == BN_CLICKED) {
-        for (size_t i = 0; i < xg_ahwndCandButtons.size(); ++i) {
-            if (xg_ahwndCandButtons[i] == hwndCtl)
-            {
-                // 候補を適用する。
-                XgApplyCandidate(xg_xword, xg_vecCandidates[i]);
-
-                // 候補ウィンドウを破棄する。
-                XgDestroyCandsWnd();
-
-                // イメージを更新する。
-                int x = XgGetHScrollPos();
-                int y = XgGetVScrollPos();
-                XgUpdateImage(xg_hMainWnd, x, y);
-                return;
-            }
-        }
-    }
-}
-
-// マウスホイールが回転した。
-void __fastcall
-CandsWnd_OnMouseWheel(HWND hwnd, int xPos, int yPos, int zDelta, UINT fwKeys)
-{
-    if (::GetAsyncKeyState(VK_SHIFT) < 0) {
-        if (zDelta < 0)
-            ::PostMessageW(hwnd, WM_HSCROLL, MAKEWPARAM(SB_LINEDOWN, 0), 0);
-        else if (zDelta > 0)
-            ::PostMessageW(hwnd, WM_HSCROLL, MAKEWPARAM(SB_LINEUP, 0), 0);
-    } else {
-        if (zDelta < 0)
-            ::PostMessageW(hwnd, WM_VSCROLL, MAKEWPARAM(SB_LINEDOWN, 0), 0);
-        else if (zDelta > 0)
-            ::PostMessageW(hwnd, WM_VSCROLL, MAKEWPARAM(SB_LINEUP, 0), 0);
-    }
-}
-
-// 候補ウィンドウのサイズを制限する。
-void CandsWnd_OnGetMinMaxInfo(HWND hwnd, LPMINMAXINFO lpMinMaxInfo)
-{
-    lpMinMaxInfo->ptMinTrackSize.x = 256;
-    lpMinMaxInfo->ptMinTrackSize.y = 128;
-}
-
-// 候補ウィンドウを描画する。
-void CandsWnd_OnPaint(HWND hwnd)
-{
-    if (xg_vecCandidates.empty()) {
-        PAINTSTRUCT ps;
-        HDC hdc = ::BeginPaint(hwnd, &ps);
-        if (hdc) {
-            MRect rcClient;
-            ::GetClientRect(hwnd, &rcClient);
-            ::SetTextColor(hdc, RGB(0, 0, 0));
-            ::SetBkMode(hdc, TRANSPARENT);
-            ::DrawTextW(hdc, XgLoadStringDx1(IDS_NOCANDIDATES), -1,
-                &rcClient,
-                DT_SINGLELINE | DT_CENTER | DT_VCENTER | DT_NOPREFIX);
-            ::EndPaint(hwnd, &ps);
-        }
-    } else {
-        FORWARD_WM_PAINT(hwnd, DefWindowProcW);
-    }
-}
-
-extern "C"
-LRESULT CALLBACK
-XgCandsWndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
-{
-    switch (uMsg) {
-    HANDLE_MSG(hwnd, WM_CREATE, CandsWnd_OnCreate);
-    HANDLE_MSG(hwnd, WM_SIZE, CandsWnd_OnSize);
-    HANDLE_MSG(hwnd, WM_VSCROLL, CandsWnd_OnVScroll);
-    HANDLE_MSG(hwnd, WM_KEYDOWN, CandsWnd_OnKey);
-    HANDLE_MSG(hwnd, WM_KEYUP, CandsWnd_OnKey);
-    HANDLE_MSG(hwnd, WM_DESTROY, CandsWnd_OnDestroy);
-    HANDLE_MSG(hwnd, WM_COMMAND, CandsWnd_OnCommand);
-    HANDLE_MSG(hwnd, WM_MOUSEWHEEL, CandsWnd_OnMouseWheel);
-    HANDLE_MSG(hwnd, WM_GETMINMAXINFO, CandsWnd_OnGetMinMaxInfo);
-    HANDLE_MSG(hwnd, WM_PAINT, CandsWnd_OnPaint);
-
-    default:
-        return ::DefWindowProcW(hwnd, uMsg, wParam, lParam);
-    }
-    return 0;
-}
-
 // 候補ウィンドウを作成する。
 BOOL XgCreateCandsWnd(HWND hwnd)
 {
-    const DWORD style = WS_OVERLAPPED | WS_CAPTION |
-        WS_SYSMENU | WS_THICKFRAME | WS_HSCROLL | WS_VSCROLL;
-    ::CreateWindowExW(WS_EX_TOOLWINDOW,
-        s_pszCandsWndClass, XgLoadStringDx1(IDS_CANDIDATES), style,
-        s_nCandsWndX, s_nCandsWndY, s_nCandsWndCX, s_nCandsWndCY,
-        hwnd, nullptr, xg_hInstance, nullptr);
-    if (xg_hCandsWnd) {
-        return TRUE;
-    }
-
-    return FALSE;
+    auto style = WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME | WS_HSCROLL | WS_VSCROLL;
+    auto exstyle = WS_EX_TOOLWINDOW;
+    auto text = XgLoadStringDx1(IDS_CANDIDATES);
+    return xg_cands_wnd.CreateWindowDx(hwnd, text, style, exstyle,
+                                       XG_CandsWnd::s_nCandsWndX, XG_CandsWnd::s_nCandsWndY,
+                                       XG_CandsWnd::s_nCandsWndCX, XG_CandsWnd::s_nCandsWndCY);
 }
 
 // 候補の内容を候補ウィンドウで開く。
@@ -9519,7 +9161,7 @@ bool __fastcall XgOpenCandsWnd(HWND hwnd, bool vertical)
 
     // 仮に適用して、正当かどうか確かめ、正当なものだけを
     // 最終的な候補とする。
-    xg_vecCandidates.clear();
+    XG_CandsWnd::xg_vecCandidates.clear();
     for (const auto& cand : cands) {
         XG_Board xword(xg_xword);
         XgApplyCandidate(xword, cand);
@@ -9528,15 +9170,15 @@ bool __fastcall XgOpenCandsWnd(HWND hwnd, bool vertical)
         {
             ;
         } else {
-            xg_vecCandidates.emplace_back(cand);
+            XG_CandsWnd::xg_vecCandidates.emplace_back(cand);
         }
     }
 
     // 個数制限。
-    if (xg_vecCandidates.size() > xg_nMaxCandidates)
-        xg_vecCandidates.resize(xg_nMaxCandidates);
+    if (XG_CandsWnd::xg_vecCandidates.size() > xg_nMaxCandidates)
+        XG_CandsWnd::xg_vecCandidates.resize(xg_nMaxCandidates);
 
-    if (xg_vecCandidates.empty()) {
+    if (XG_CandsWnd::xg_vecCandidates.empty()) {
         if (XgCheckCrossWord(hwnd, false)) {
             ::MessageBeep(0xFFFFFFFF);
         } else {
@@ -9628,13 +9270,7 @@ int WINAPI WinMain(
         XgCenterMessageBoxW(nullptr, XgLoadStringDx1(IDS_CANTREGWND), nullptr, MB_ICONERROR);
         return 1;
     }
-    wcx.style = CS_HREDRAW | CS_VREDRAW | CS_DBLCLKS;
-    wcx.lpfnWndProc = XgCandsWndProc;
-    wcx.hIcon = NULL;
-    wcx.hbrBackground = ::CreateSolidBrush(RGB(255, 255, 192));
-    wcx.lpszMenuName = NULL;
-    wcx.lpszClassName = s_pszCandsWndClass;
-    if (!::RegisterClassExW(&wcx)) {
+    if (!xg_cands_wnd.RegisterClassDx()) {
         // ウィンドウ登録失敗メッセージ。
         XgCenterMessageBoxW(nullptr, XgLoadStringDx1(IDS_CANTREGWND), nullptr, MB_ICONERROR);
         return 1;

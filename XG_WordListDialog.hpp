@@ -3,7 +3,7 @@
 #include "XG_Dialog.hpp"
 #include "crossword_generation.hpp"
 
-// u’PŒêƒŠƒXƒg‚©‚ç¶¬vƒ_ƒCƒAƒƒOB
+// ã€Œå˜èªãƒªã‚¹ãƒˆã‹ã‚‰ç”Ÿæˆã€ãƒ€ã‚¤ã‚¢ãƒ­ã‚°ã€‚
 class XG_WordListDialog : public XG_Dialog
 {
 public:
@@ -30,7 +30,7 @@ public:
         s_wordset.clear();
         s_dict.clear();
 
-        // edt1‚©‚çƒeƒLƒXƒg‚ğæ“¾‚·‚éB
+        // edt1ã‹ã‚‰ãƒ†ã‚­ã‚¹ãƒˆã‚’å–å¾—ã™ã‚‹ã€‚
         HWND hEdt1 = GetDlgItem(hwnd, edt1);
         INT cch = GetWindowTextLengthW(hEdt1);
         if (cch == 0) {
@@ -47,7 +47,7 @@ public:
         std::wstring str = psz;
         delete[] psz;
 
-        // ’PŒêƒŠƒXƒg‚Æ«‘‚ğæ“¾‚·‚éB
+        // å˜èªãƒªã‚¹ãƒˆã¨è¾æ›¸ã‚’å–å¾—ã™ã‚‹ã€‚
         std::vector<std::wstring> items;
         mstr_split(items, str, L"\n");
         for (auto& item : items) {
@@ -74,10 +74,10 @@ public:
         }
         items.clear();
 
-        // 2•¶š–¢–‚Ì’PŒê‚ğíœ‚·‚éB
+        // 2æ–‡å­—æœªæº€ã®å˜èªã‚’å‰Šé™¤ã™ã‚‹ã€‚
         XgTrimDict(s_words);
 
-        // ’PŒê‚ª­‚È‚¢H
+        // å˜èªãŒå°‘ãªã„ï¼Ÿ
         if (s_words.size() < 2) {
             XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_ADDMOREWORDS), NULL, MB_ICONERROR);
             return FALSE;
@@ -88,14 +88,14 @@ public:
         std::wstring nonconnected;
         s_wordset = { s_words.begin(), s_words.end() };
 
-        // ‚·‚×‚Ä‚Å‚È‚­‚Ä‚à‚æ‚¢H
+        // ã™ã¹ã¦ã§ãªãã¦ã‚‚ã‚ˆã„ï¼Ÿ
         if (::IsDlgButtonChecked(hwnd, chx1) == BST_CHECKED) {
             while (!check_connectivity<wchar_t>(s_wordset, nonconnected)) {
-                // Ú‘±‚³‚ê‚Ä‚¢‚È‚¢’PŒê‚ğíœB
+                // æ¥ç¶šã•ã‚Œã¦ã„ãªã„å˜èªã‚’å‰Šé™¤ã€‚
                 s_wordset.erase(nonconnected);
                 s_words.erase(std::remove(s_words.begin(), s_words.end(), nonconnected), s_words.end());
 
-                // ’PŒê‚ª­‚È‚¢H
+                // å˜èªãŒå°‘ãªã„ï¼Ÿ
                 if (s_words.size() < 2) {
                     XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_ADDMOREWORDS), NULL, MB_ICONERROR);
                     return FALSE;
@@ -104,7 +104,7 @@ public:
         }
 
         if (!check_connectivity<wchar_t>(s_wordset, nonconnected)) {
-            // ˜AŒ‹‚³‚ê‚Ä‚¢‚È‚¢BƒGƒ‰[B
+            // é€£çµã•ã‚Œã¦ã„ãªã„ã€‚ã‚¨ãƒ©ãƒ¼ã€‚
             WCHAR szText[256];
             StringCchPrintfW(szText, _countof(szText), XgLoadStringDx1(IDS_NOTCONNECTABLE),
                              nonconnected.c_str());
