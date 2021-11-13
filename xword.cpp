@@ -2418,7 +2418,7 @@ void __fastcall XgSolveXWord_AddBlackRecurse(const XG_Board& xw)
                     // 候補の一部をかき混ぜる。
                     auto it = cands.begin();
                     std::advance(it, nSkip);
-                    std::random_shuffle(it, cands.end());
+                    xg_random_shuffle(it, cands.end());
 
                     for (const auto& cand : cands) {
                         // すでに解かれているなら、終了。
@@ -2470,7 +2470,7 @@ void __fastcall XgSolveXWord_AddBlackRecurse(const XG_Board& xw)
                     // 候補の一部をかき混ぜる。
                     auto it = cands.begin();
                     std::advance(it, nSkip);
-                    std::random_shuffle(it, cands.end());
+                    xg_random_shuffle(it, cands.end());
 
                     for (const auto& cand : cands) {
                         // すでに解かれているなら、終了。
@@ -2569,7 +2569,7 @@ void __fastcall XgSolveXWord_AddBlackRecurse(const XG_Board& xw)
                     // 候補の一部をかき混ぜる。
                     auto it = cands.begin();
                     std::advance(it, nSkip);
-                    std::random_shuffle(it, cands.end());
+                    xg_random_shuffle(it, cands.end());
 
                     for (const auto& cand : cands) {
                         // すでに解かれているなら、終了。
@@ -2621,7 +2621,7 @@ void __fastcall XgSolveXWord_AddBlackRecurse(const XG_Board& xw)
                     // 候補の一部をかき混ぜる。
                     auto it = cands.begin();
                     std::advance(it, nSkip);
-                    std::random_shuffle(it, cands.end());
+                    xg_random_shuffle(it, cands.end());
 
                     for (const auto& cand : cands) {
                         // すでに解かれているなら、終了。
@@ -2759,7 +2759,7 @@ void __fastcall XgSolveXWord_NoAddBlackRecurse(const XG_Board& xw)
                 std::vector<std::wstring> cands;
                 if (XgGetCandidatesNoAddBlack<false>(cands, pattern)) {
                     // 候補をかき混ぜる。
-                    std::random_shuffle(cands.begin(), cands.end());
+                    xg_random_shuffle(cands.begin(), cands.end());
 
                     for (const auto& cand : cands) {
                         // すでに解かれているなら、終了。
@@ -2786,7 +2786,7 @@ void __fastcall XgSolveXWord_NoAddBlackRecurse(const XG_Board& xw)
                 }
                 if (XgGetCandidatesNoAddBlack<true>(cands, pattern)) {
                     // 候補をかき混ぜる。
-                    std::random_shuffle(cands.begin(), cands.end());
+                    xg_random_shuffle(cands.begin(), cands.end());
 
                     for (const auto& cand : cands) {
                         // すでに解かれているなら、終了。
@@ -2856,7 +2856,7 @@ void __fastcall XgSolveXWord_NoAddBlackRecurse(const XG_Board& xw)
                 std::vector<std::wstring> cands;
                 if (XgGetCandidatesNoAddBlack<false>(cands, pattern)) {
                     // 候補をかき混ぜる。
-                    std::random_shuffle(cands.begin(), cands.end());
+                    xg_random_shuffle(cands.begin(), cands.end());
 
                     for (const auto& cand : cands) {
                         // すでに解かれているなら、終了。
@@ -2883,7 +2883,7 @@ void __fastcall XgSolveXWord_NoAddBlackRecurse(const XG_Board& xw)
                 }
                 if (XgGetCandidatesNoAddBlack<false>(cands, pattern)) {
                     // 候補をかき混ぜる。
-                    std::random_shuffle(cands.begin(), cands.end());
+                    xg_random_shuffle(cands.begin(), cands.end());
 
                     for (const auto& cand : cands) {
                         // すでに解かれているなら、終了。
@@ -2978,7 +2978,7 @@ void __fastcall XgSolveXWord_AddBlack(const XG_Board& xw)
 
     // ランダムな順序の単語ベクターを作成する。
     std::vector<XG_WordData> words(xg_dict_1);
-    std::random_shuffle(words.begin(), words.end());
+    xg_random_shuffle(words.begin(), words.end());
 
     for (int i = 0; i < nRows; i++) {
         for (int j = 0; j < nCols - 1; j++) {
@@ -3135,7 +3135,7 @@ void __fastcall XgSolveXWord_AddBlack(const XG_Board& xw)
     // ランダムな順序の単語ベクターを作成する。
 retry_1:;
     words = xg_dict_2;
-    std::random_shuffle(words.begin(), words.end());
+    xg_random_shuffle(words.begin(), words.end());
 
     for (int i = 0; i < nRows; i++) {
         for (int j = 0; j < nCols - 1; j++) {
@@ -3316,7 +3316,7 @@ void __fastcall XgSolveXWord_NoAddBlack(const XG_Board& xw)
 
     // ランダムな順序の単語ベクターを作成する。
     std::vector<XG_WordData> words(xg_dict_1);
-    std::random_shuffle(words.begin(), words.end());
+    xg_random_shuffle(words.begin(), words.end());
 
     // 文字マスがなかった場合。
     for (int i = 0; i < nRows; i++) {
@@ -3376,7 +3376,7 @@ void __fastcall XgSolveXWord_NoAddBlack(const XG_Board& xw)
     // ランダムな順序の単語ベクターを作成する。
 retry_1:;
     words = xg_dict_2;
-    std::random_shuffle(words.begin(), words.end());
+    xg_random_shuffle(words.begin(), words.end());
 
     // 文字マスがなかった場合。
     for (int i = 0; i < nRows; i++) {

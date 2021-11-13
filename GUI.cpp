@@ -6,6 +6,7 @@
 #define NOMINMAX
 #include "XWordGiver.hpp"
 #include "layout.h"
+#include <algorithm>
 #include "crossword_generation.hpp"
 
 // クロスワードのサイズの制限。
@@ -2775,6 +2776,135 @@ XgCancelGenBlacksDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
             ::EndDialog(hwnd, IDOK);
             // スレッドを閉じる。
             XgCloseThreads();
+        }
+        break;
+    }
+    return false;
+}
+
+
+static std::vector<std::wstring> s_words;
+static std::unordered_set<std::wstring> s_wordset;
+static std::unordered_map<std::wstring, std::wstring> s_dict;
+
+// キャンセルダイアログ（単語リストから生成）。
+extern "C" INT_PTR CALLBACK
+XgCancelFromWordsDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+{
+    using namespace crossword_generation;
+
+    switch (uMsg) {
+    case WM_INITDIALOG:
+        #ifdef NO_RANDOM
+        {
+            extern int xg_random_seed;
+            xg_random_seed = 100;
+        }
+        #endif
+        // ダイアログを中央へ移動する。
+        XgCenterDialog(hwnd);
+        // 初期化する。
+        s_nRetryCount = 0;
+        // プログレスバーの範囲をセットする。
+        ::SendDlgItemMessageW(hwnd, ctl1, PBM_SETRANGE, 0, MAKELPARAM(0, s_wordset.size()));
+        ::SendDlgItemMessageW(hwnd, ctl2, PBM_SETRANGE, 0, MAKELPARAM(0, s_wordset.size()));
+        // 計算時間を求めるために、開始時間を取得する。
+        s_dwTick0 = s_dwTick1 = ::GetTickCount();
+        // 再計算までの時間を概算する。
+        s_dwWait = DWORD(s_wordset.size() * 50);
+        // 解を求めるのを開始。
+        reset();
+        generation_t<wchar_t, false>::do_generate_from_words(s_wordset, xg_dwThreadCount);
+        // タイマーをセットする。
+        ::SetTimer(hwnd, 999, xg_dwTimerInterval, nullptr);
+        // フォーカスをセットする。
+        ::SetFocus(::GetDlgItem(hwnd, psh1));
+        return false;
+
+    case WM_COMMAND:
+        switch(LOWORD(wParam)) {
+        case psh1:
+            // タイマーを解除する。
+            ::KillTimer(hwnd, 999);
+            // キャンセルしてスレッドを待つ。
+            s_canceled = true;
+            wait_for_threads(xg_dwThreadCount, 0x7FFF);
+            // 計算時間を求めるために、終了時間を取得する。
+            s_dwTick2 = ::GetTickCount();
+            // ダイアログを終了する。
+            ::EndDialog(hwnd, IDCANCEL);
+            break;
+
+        case psh2:
+            // タイマーを解除する。
+            ::KillTimer(hwnd, 999);
+            // 再計算しなおす。
+            s_canceled = true;
+            wait_for_threads(xg_dwThreadCount, 0x7FFF);
+            ::InterlockedIncrement(&s_nRetryCount);
+            s_dwTick1 = ::GetTickCount();
+            reset();
+            generation_t<wchar_t, false>::do_generate_from_words(s_wordset, xg_dwThreadCount);
+            // タイマーをセットする。
+            ::SetTimer(hwnd, 999, xg_dwTimerInterval, nullptr);
+            break;
+        }
+        break;
+
+    case WM_SYSCOMMAND:
+        if (wParam == SC_CLOSE) {
+            // タイマーを解除する。
+            ::KillTimer(hwnd, 999);
+            // キャンセルしてスレッドを待つ。
+            s_canceled = true;
+            wait_for_threads(xg_dwThreadCount, 0x7FFF);
+            // 計算時間を求めるために、終了時間を取得する。
+            s_dwTick2 = ::GetTickCount();
+            // ダイアログを終了する。
+            ::EndDialog(hwnd, IDCANCEL);
+        }
+        break;
+
+    case WM_TIMER:
+        // プログレスバーを更新する。
+        for (DWORD i = 0; i < xg_dwThreadCount; i++) {
+            ::SendDlgItemMessageW(hwnd, ctl1 + i, PBM_SETPOS,
+                static_cast<WPARAM>(xg_aThreadInfo[i].m_count), 0);
+        }
+        // 経過時間を表示する。
+        {
+            WCHAR sz[MAX_PATH];
+            DWORD dwTick = ::GetTickCount();
+            StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(IDS_NOWSOLVING),
+                    (dwTick - s_dwTick0) / 1000,
+                    (dwTick - s_dwTick0) / 100 % 10, s_nRetryCount);
+            ::SetDlgItemTextW(hwnd, stc1, sz);
+        }
+        // 一つ以上のスレッドが終了したか？
+        if (s_generated) {
+            // スレッドが終了した。タイマーを解除する。
+            ::KillTimer(hwnd, 999);
+            // 計算時間を求めるために、終了時間を取得する。
+            s_dwTick2 = ::GetTickCount();
+            // ダイアログを終了する。
+            ::EndDialog(hwnd, IDOK);
+            // スレッドを閉じる。
+            XgCloseThreads();
+        } else {
+            // 再計算が必要か？
+            if (s_bAutoRetry && ::GetTickCount() - s_dwTick1 > s_dwWait) {
+                // タイマーを解除する。
+                ::KillTimer(hwnd, 999);
+                // 再計算しなおす。
+                s_canceled = true;
+                wait_for_threads(xg_dwThreadCount, 0x7FFF);
+                ::InterlockedIncrement(&s_nRetryCount);
+                s_dwTick1 = ::GetTickCount();
+                reset();
+                generation_t<wchar_t, false>::do_generate_from_words(s_wordset, xg_dwThreadCount);
+                // タイマーをセットする。
+                ::SetTimer(hwnd, 999, xg_dwTimerInterval, nullptr);
+            }
         }
         break;
     }
@@ -6795,7 +6925,7 @@ XgPattern_RefreshContents(HWND hwnd, INT type)
     }
 
     // かき混ぜる。
-    std::random_shuffle(s_patterns.begin(), s_patterns.end());
+    xg_random_shuffle(s_patterns.begin(), s_patterns.end());
 
     // インデックスとして追加する。
     for (size_t i = 0; i < s_patterns.size(); ++i)
@@ -7851,6 +7981,10 @@ BOOL XgWordList_OnInitDialog(HWND hwnd, HWND hwndFocus, LPARAM lParam)
 
 BOOL XgWordList_OnOK(HWND hwnd)
 {
+    s_words.clear();
+    s_wordset.clear();
+    s_dict.clear();
+
     // edt1からテキストを取得する。
     HWND hEdt1 = GetDlgItem(hwnd, edt1);
     INT cch = GetWindowTextLengthW(hEdt1);
@@ -7869,10 +8003,8 @@ BOOL XgWordList_OnOK(HWND hwnd)
     delete[] psz;
 
     // 単語リストと辞書を取得する。
-    std::vector<std::wstring> items, words;
-    std::unordered_map<std::wstring, std::wstring> dict;
+    std::vector<std::wstring> items;
     mstr_split(items, str, L"\n");
-    bool has_hints = false;
     for (auto& item : items) {
         size_t ich = item.find(L'\t');
         std::wstring hint;
@@ -7884,24 +8016,24 @@ BOOL XgWordList_OnOK(HWND hwnd)
                 hint.resize(ich);
             }
             xg_str_trim(hint);
-            has_hints = true;
         }
         xg_str_replace_all(item, L"-", L"");
         xg_str_replace_all(item, L"'", L"");
         xg_str_trim(item);
         item = XgNormalizeString(item);
         if (!item.empty()) {
-            dict[item] = hint;
-            words.push_back(item);
+            if (hint.size())
+                s_dict[item] = hint;
+            s_words.push_back(item);
         }
     }
     items.clear();
 
     // 2文字未満の単語を削除する。
-    XgTrimDict(words);
+    XgTrimDict(s_words);
 
     // 単語が少ない？
-    if (words.size() < 2) {
+    if (s_words.size() < 2) {
         XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_ADDMOREWORDS), NULL, MB_ICONERROR);
         return FALSE;
     }
@@ -7909,106 +8041,31 @@ BOOL XgWordList_OnOK(HWND hwnd)
     using namespace crossword_generation;
 
     std::wstring nonconnected;
-    std::unordered_set<std::wstring> wordset(words.begin(), words.end());
+    s_wordset = { s_words.begin(), s_words.end() };
 
     // すべてでなくてもよい？
     if (::IsDlgButtonChecked(hwnd, chx1) == BST_CHECKED) {
-        while (!check_connectivity<wchar_t>(wordset, nonconnected)) {
+        while (!check_connectivity<wchar_t>(s_wordset, nonconnected)) {
             // 接続されていない単語を削除。
-            wordset.erase(nonconnected);
-            words.erase(std::remove(words.begin(), words.end(), nonconnected), words.end());
+            s_wordset.erase(nonconnected);
+            s_words.erase(std::remove(s_words.begin(), s_words.end(), nonconnected), s_words.end());
 
             // 単語が少ない？
-            if (words.size() < 2) {
+            if (s_words.size() < 2) {
                 XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_ADDMOREWORDS), NULL, MB_ICONERROR);
                 return FALSE;
             }
         }
     }
 
-    if (!check_connectivity<wchar_t>(wordset, nonconnected)) {
+    if (!check_connectivity<wchar_t>(s_wordset, nonconnected)) {
         // 連結されていない。エラー。
         WCHAR szText[256];
         StringCchPrintfW(szText, _countof(szText), XgLoadStringDx1(IDS_NOTCONNECTABLE),
                          nonconnected.c_str());
         XgCenterMessageBoxW(hwnd, szText, NULL, MB_ICONERROR);
     } else {
-        // 単語リストから生成する。
-        reset();
-        generation_t<wchar_t, false>::do_generate_from_words(wordset);
-        if (s_generated) { // 成功。
-            // 「元に戻す」情報を取得する。
-            auto sa1 = std::make_shared<XG_UndoData_SetAll>();
-            sa1->Get();
-            // ルールを補正する。
-            xg_nRules &= ~(RULE_POINTSYMMETRY | RULE_LINESYMMETRYV | RULE_LINESYMMETRYH);
-            xg_nRules &= ~(RULE_DONTCORNERBLACK | RULE_DONTDOUBLEBLACK | RULE_DONTTRIDIRECTIONS);
-            xg_nRules &= ~(RULE_DONTFOURDIAGONALS | RULE_DONTTHREEDIAGONALS);
-            xg_bSkeletonMode = TRUE;
-            XgUpdateRules(xg_hMainWnd);
-            // 解をセットする。
-            auto solution = generation_t<wchar_t, false>::s_solution;
-            xg_bSolved = true;
-            xg_bShowAnswer = true;
-            xg_nRows = solution.m_cy;
-            xg_nCols = solution.m_cx;
-            xg_xword.ResetAndSetSize(xg_nRows, xg_nCols);
-            xg_solution.ResetAndSetSize(xg_nRows, xg_nCols);
-            xg_dict_1.clear();
-            xg_dict_2.clear();
-            xg_dict_name.clear();
-            for (int y = 0; y < solution.m_cy; ++y) {
-                for (int x = 0; x < solution.m_cx; ++x) {
-                    auto ch = solution.get_at(x, y);
-                    if (ch == L'#') {
-                        xg_solution.SetAt(y, x, ZEN_BLACK);
-                        xg_xword.SetAt(y, x, ZEN_BLACK);
-                    } else {
-                        xg_solution.SetAt(y, x, ch);
-                        xg_xword.SetAt(y, x, ZEN_SPACE);
-                    }
-                }
-            }
-            // 一時的な辞書をセットする。
-            for (auto& word : words) {
-                xg_dict_1.emplace_back(word, dict[word]);
-            }
-            // 番号とヒントを付ける。
-            xg_solution.DoNumberingNoCheck();
-            XgUpdateHints(xg_hMainWnd);
-            // テーマをリセットする。
-            XgResetTheme(xg_hMainWnd);
-            XgUpdateTheme(xg_hMainWnd);
-            // 二重マスをリセットする。
-            xg_vMarks.clear();
-            xg_vMarkedCands.clear();
-            XgMarkUpdate();
-            // 単語リストを保存して後で使う。
-            for (auto& word : words) {
-                for (auto& wch : word) {
-                    if (ZEN_LARGE_A <= wch && wch <= ZEN_LARGE_Z)
-                        wch = L'a' + (wch - ZEN_LARGE_A);
-                    else if (ZEN_SMALL_A <= wch && wch <= ZEN_SMALL_Z)
-                        wch = L'a' + (wch - ZEN_SMALL_A);
-                }
-            }
-            if (has_hints) {
-                for (auto& word : words) {
-                    auto hint = dict[word];
-                    word += L"\t";
-                    word += hint;
-                }
-            }
-            xg_str_word_list = mstr_join(words, L"\r\n");
-            // 「元に戻す」情報を設定する。
-            auto sa2 = std::make_shared<XG_UndoData_SetAll>();
-            sa2->Get();
-            xg_ubUndoBuffer.Commit(UC_SETALL, sa1, sa2);
-            return TRUE; // 成功。
-        } else {
-            // 生成できなかった。
-            XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_CANTGENERATE), NULL, MB_ICONERROR);
-        }
+        return TRUE;
     }
 
     return FALSE;
@@ -8102,19 +8159,115 @@ void __fastcall XgFitZoom(HWND hwnd)
 // 単語リストから生成。
 void XgGenerateFromWordListDlgProc(HWND hwnd)
 {
-    // ダイアログを表示。
-    if (DialogBoxW(xg_hInstance, MAKEINTRESOURCEW(IDD_WORDLIST),
-                   hwnd, XgWordListDlgProc) == IDOK)
-    {
-        // ズームを実際のウィンドウに合わせる。
-        XgFitZoom(hwnd);
+    using namespace crossword_generation;
 
-        // 成功メッセージ。
-        XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_GENERATED),
-                            XgLoadStringDx2(IDS_APPNAME), MB_ICONINFORMATION);
-        // ヒントを表示する。
-        XgShowHints(hwnd);
+    // ダイアログを表示。
+    INT nID;
+    nID = DialogBoxW(xg_hInstance, MAKEINTRESOURCEW(IDD_WORDLIST), hwnd, XgWordListDlgProc);
+    if (nID != IDOK)
+        return;
+
+    // 単語リストから生成する。
+    nID = ::DialogBoxW(xg_hInstance, MAKEINTRESOURCE(IDD_CALCULATING), hwnd, XgCancelFromWordsDlgProc);
+    if (nID == IDCANCEL) {
+        // キャンセルされた。
+        WCHAR sz[256];
+        StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(IDS_CANCELLED),
+            (s_dwTick2 - s_dwTick0) / 1000,
+            (s_dwTick2 - s_dwTick0) / 100 % 10);
+        XgCenterMessageBoxW(hwnd, sz, XgLoadStringDx2(IDS_RESULTS), MB_ICONINFORMATION);
+        return;
     }
+
+    if (!s_generated) {
+        // 生成できなかった。
+        XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_CANTGENERATE), NULL, MB_ICONERROR);
+        return;
+    }
+
+    // 「元に戻す」情報を取得する。
+    auto sa1 = std::make_shared<XG_UndoData_SetAll>();
+    sa1->Get();
+    // ルールを補正する。
+    xg_nRules &= ~(RULE_POINTSYMMETRY | RULE_LINESYMMETRYV | RULE_LINESYMMETRYH);
+    xg_nRules &= ~(RULE_DONTCORNERBLACK | RULE_DONTDOUBLEBLACK | RULE_DONTTRIDIRECTIONS);
+    xg_nRules &= ~(RULE_DONTFOURDIAGONALS | RULE_DONTTHREEDIAGONALS);
+    xg_bSkeletonMode = TRUE;
+    XgUpdateRules(xg_hMainWnd);
+    // 解をセットする。
+    auto solution = generation_t<wchar_t, false>::s_solution;
+    xg_bSolved = true;
+    xg_bShowAnswer = true;
+    xg_nRows = solution.m_cy;
+    xg_nCols = solution.m_cx;
+    xg_xword.ResetAndSetSize(xg_nRows, xg_nCols);
+    xg_solution.ResetAndSetSize(xg_nRows, xg_nCols);
+    xg_dict_1.clear();
+    xg_dict_2.clear();
+    xg_dict_name.clear();
+    for (int y = 0; y < solution.m_cy; ++y) {
+        for (int x = 0; x < solution.m_cx; ++x) {
+            auto ch = solution.get_at(x, y);
+            if (ch == L'#') {
+                xg_solution.SetAt(y, x, ZEN_BLACK);
+                xg_xword.SetAt(y, x, ZEN_BLACK);
+            } else {
+                xg_solution.SetAt(y, x, ch);
+                xg_xword.SetAt(y, x, ZEN_SPACE);
+            }
+        }
+    }
+    // 一時的な辞書をセットする。
+    for (auto& word : s_words) {
+        xg_dict_1.emplace_back(word, s_dict[word]);
+    }
+    // 番号とヒントを付ける。
+    xg_solution.DoNumberingNoCheck();
+    XgUpdateHints(xg_hMainWnd);
+    // テーマをリセットする。
+    XgResetTheme(xg_hMainWnd);
+    XgUpdateTheme(xg_hMainWnd);
+    // 二重マスをリセットする。
+    xg_vMarks.clear();
+    xg_vMarkedCands.clear();
+    XgMarkUpdate();
+    // 単語リストを保存して後で使う。
+    for (auto& word : s_words) {
+        for (auto& wch : word) {
+            if (ZEN_LARGE_A <= wch && wch <= ZEN_LARGE_Z)
+                wch = L'a' + (wch - ZEN_LARGE_A);
+            else if (ZEN_SMALL_A <= wch && wch <= ZEN_SMALL_Z)
+                wch = L'a' + (wch - ZEN_SMALL_A);
+        }
+    }
+    if (s_dict.size()) {
+        for (auto& word : s_words) {
+            auto hint = s_dict[word];
+            if (hint.size()) {
+                word += L"\t";
+                word += hint;
+            }
+        }
+    }
+    xg_str_word_list = mstr_join(s_words, L"\r\n");
+    // 「元に戻す」情報を設定する。
+    auto sa2 = std::make_shared<XG_UndoData_SetAll>();
+    sa2->Get();
+    xg_ubUndoBuffer.Commit(UC_SETALL, sa1, sa2);
+
+    // ズームを実際のウィンドウに合わせる。
+    XgFitZoom(hwnd);
+
+    // 成功メッセージ。
+    XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_GENERATED),
+                        XgLoadStringDx2(IDS_APPNAME), MB_ICONINFORMATION);
+    // ヒントを表示する。
+    XgShowHints(hwnd);
+
+    // クリア。
+    s_words.clear();
+    s_wordset.clear();
+    s_dict.clear();
 }
 
 // コマンドを実行する。

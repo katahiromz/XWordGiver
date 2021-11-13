@@ -866,6 +866,16 @@ extern std::wstring xg_strDoubleFrameLetters;
 // 二重マス文字を表示するか？
 extern BOOL xg_bShowDoubleFrameLetters;
 
+#include <random>
+
+// std::random_shuffleの代わり。
+template <typename t_elem>
+inline void xg_random_shuffle(t_elem& begin, t_elem& end) {
+    std::random_device rd;
+    std::mt19937 g(rd());
+    std::shuffle(begin, end, g);
+}
+
 //////////////////////////////////////////////////////////////////////////////
 
 #endif  // ndef __XWORD_HPP__
