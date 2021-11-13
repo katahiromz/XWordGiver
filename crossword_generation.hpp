@@ -12,6 +12,7 @@
 #include <mutex>
 #include <algorithm>
 #include <utility>
+#include <random>
 #if defined(_WIN32)
     #include <windows.h>
 #else
@@ -55,6 +56,23 @@ inline static bool s_generated = false;
 inline static bool s_canceled = false;
 inline static int s_count = 0;
 
+template <typename t_char>
+inline bool is_letter(t_char ch) {
+    return (ch != ' ' && ch != '#' && ch != '?');
+}
+
+inline uint32_t get_num_processors(void) {
+#ifdef XWORDGIVER
+    return xg_dwThreadCount;
+#elif defined(_WIN32)
+    SYSTEM_INFO info;
+    ::GetSystemInfo(&info);
+    return info.dwNumberOfProcessors;
+#else
+    return std::thread::hardware_concurrency();
+#endif
+}
+
 // replacement of std::random_shuffle
 template <typename t_elem>
 inline void random_shuffle(t_elem& begin, t_elem& end) {
@@ -73,7 +91,7 @@ inline void reset() {
 #endif
 }
 
-inline void wait_for_threads(int num_threads, int retry_count = 3) {
+inline void wait_for_threads(int num_threads = get_num_processors(), int retry_count = 3) {
     const int INTERVAL = 100;
     for (int i = 0; i < retry_count; ++i) {
         if (s_generated || s_canceled)
@@ -138,21 +156,6 @@ struct candidate_t {
     bool m_vertical = false;
     t_string m_word;
 };
-
-template <typename t_char>
-inline bool is_letter(t_char ch) {
-    return (ch != ' ' && ch != '#' && ch != '?');
-}
-
-inline uint32_t get_num_processors(void) {
-#if defined(_WIN32)
-    SYSTEM_INFO info;
-    ::GetSystemInfo(&info);
-    return info.dwNumberOfProcessors;
-#else
-    return std::thread::hardware_concurrency();
-#endif
-}
 
 template <typename t_char>
 struct board_data_t {
@@ -925,7 +928,10 @@ struct generation_t {
         return flag;
     }
 
-    static bool do_generate_from_words(const std::unordered_set<t_string>& words, int num_threads) {
+    static bool
+    do_generate_from_words(const std::unordered_set<t_string>& words,
+                           int num_threads = get_num_processors())
+    {
         //printf("num_threads: %d\n", int(num_threads));
 
         for (int i = 0; i < num_threads; ++i) {
