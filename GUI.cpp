@@ -7897,6 +7897,9 @@ BOOL XgWordList_OnOK(HWND hwnd)
     }
     items.clear();
 
+    // 2文字未満の単語を削除する。
+    XgTrimDict(words);
+
     // 単語が少ない？
     if (words.size() < 2) {
         XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_ADDMOREWORDS), NULL, MB_ICONERROR);
