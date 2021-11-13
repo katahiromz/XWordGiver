@@ -99,8 +99,8 @@ add_executable(XWordGiver${BITS} WIN32
     MScrollView.cpp
     UndoBuffer.cpp
     Utils.cpp
-    xword.cpp
-    xword_res.rc)
+    XWordGiver.cpp
+    XWordGiver_res.rc)
 target_link_libraries(XWordGiver${BITS} comctl32 imm32 shell32 ole32 uuid shlwapi SaveBitmapToFile)
 
 ##############################################################################
