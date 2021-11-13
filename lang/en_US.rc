@@ -1449,7 +1449,7 @@ STRINGTABLE
     IDS_FOURDIAGONALS, "There are four diagonally connected blocks in a line. This violates the policy ""Prohibit blocks at 4 corners""."
     IDS_RULESPASSED, "The current board has passed the specified policies."
     IDS_PASSED, "Passed!"
-    IDS_RULESTXT, "Rules-ENG.txt"
+    IDS_RULESTXT, "Policy-ENG.txt"
     IDS_RULES, "Policies"
     IDS_STANDARDRULES, "&Policies"
     IDS_MODIFIEDRULES, "(!)&Policies"

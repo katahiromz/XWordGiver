@@ -1452,7 +1452,7 @@ STRINGTABLE
     IDS_FOURDIAGONALS, "黒マスが斜めに４つ連なっています。ルール「黒斜四連禁」に反します。"
     IDS_RULESPASSED, "現在の盤は、指定されたルールに合格しました。"
     IDS_PASSED, "合格！"
-    IDS_RULESTXT, "Rules-JPN.txt"
+    IDS_RULESTXT, "Policy-JPN.txt"
     IDS_RULES, "ルール"
     IDS_STANDARDRULES, "ルール(&R)"
     IDS_MODIFIEDRULES, "(!)ルール(&R)"
