@@ -5,6 +5,7 @@
 
 #include "XWordGiver.hpp"
 #include "Auto.hpp"
+#include "XG_HintsWnd.hpp"
 
 //////////////////////////////////////////////////////////////////////////////
 // global variables
@@ -2168,8 +2169,8 @@ void __fastcall XG_Board::GetHintsStr(
         return;
 
     // ヒントに変更があれば、更新する。
-    if (XgAreHintsModified()) {
-        XgUpdateHintsData();
+    if (XG_HintsWnd::AreHintsModified()) {
+        XG_HintsWnd::UpdateHintData();
     }
 
     assert(0 <= hint_type && hint_type < 6);

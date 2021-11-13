@@ -568,15 +568,6 @@ bool __fastcall XgOpenHintsByWindow(HWND /*hwnd*/);
 // ヒントの内容をメモ帳で開く。
 bool __fastcall XgOpenHintsByNotepad(HWND /*hwnd*/, bool bShowAnswer);
 
-// ヒントが変更されたか？
-bool __fastcall XgAreHintsModified(void);
-
-// ヒントデータを更新する。
-bool __fastcall XgUpdateHintsData(void);
-
-// ヒントデータを設定する。
-void __fastcall XgSetHintsData(void);
-
 // ヒント文字列を解析する。
 bool __fastcall XgParseHintsStr(HWND hwnd, const std::wstring& strHints);
 

@@ -20,6 +20,11 @@ public:
     {
     }
 
+    virtual LPCTSTR GetWndClassName() const
+    {
+        return TEXT("XG_Window");
+    }
+
     virtual LRESULT CALLBACK
     WindowProcDx(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
     {
@@ -52,14 +57,37 @@ public:
         return pWindow->WindowProcDx(hwnd, uMsg, wParam, lParam);
     }
 
-    BOOL CreateWindowDx(HWND hwnd, LPCWSTR cls, LPCWSTR text,
-                        DWORD style, DWORD exstyle = 0,
+    BOOL CreateWindowDx(HWND hwnd, LPCTSTR text, DWORD style, DWORD exstyle = 0,
                         INT x = CW_USEDEFAULT, INT y = CW_USEDEFAULT,
                         INT cx = CW_USEDEFAULT, INT cy = CW_USEDEFAULT,
                         HMENU hMenu = NULL)
     {
+        auto cls = GetWndClassName();
         ::CreateWindowEx(exstyle, cls, text, style, x, y, cx, cy, hwnd, hMenu,
                          ::GetModuleHandle(NULL), this);
         return m_hWnd != NULL;
+    }
+
+    virtual void ModifyWndClassDx(WNDCLASSEX& wcx)
+    {
+    }
+
+    BOOL RegisterClassDx()
+    {
+        WNDCLASSEX wcx;
+        ZeroMemory(&wcx, sizeof(wcx));
+        wcx.cbSize = sizeof(wcx);
+        wcx.style = CS_HREDRAW | CS_VREDRAW | CS_DBLCLKS;
+        wcx.lpfnWndProc = WindowProc;
+        wcx.cbClsExtra = 0;
+        wcx.cbWndExtra = DLGWINDOWEXTRA;
+        wcx.hInstance = ::GetModuleHandle(NULL);
+        wcx.hIcon = ::LoadIcon(nullptr, IDI_APPLICATION);
+        wcx.hCursor = ::LoadCursor(nullptr, IDC_ARROW);
+        wcx.hbrBackground = reinterpret_cast<HBRUSH>(INT_PTR(COLOR_3DFACE + 1));
+        wcx.lpszClassName = GetWndClassName();
+        wcx.hIconSm = nullptr;
+        ModifyWndClassDx(wcx);
+        return ::RegisterClassEx(&wcx);
     }
 };
