@@ -6259,10 +6259,12 @@ void XgGenerateFromWordList(HWND hwnd)
 
     // ダイアログを表示。
     INT nID;
-    XG_WordListDialog dialog;
-    nID = dialog.DialogBoxDx(hwnd, IDD_WORDLIST);
-    if (nID != IDOK)
-        return;
+    {
+        XG_WordListDialog dialog;
+        nID = dialog.DialogBoxDx(hwnd, IDD_WORDLIST);
+        if (nID != IDOK)
+            return;
+    }
 
     // 単語リストから生成する。
     nID = ::DialogBoxW(xg_hInstance, MAKEINTRESOURCE(IDD_CALCULATING), hwnd, XgCancelFromWordsDlgProc);
