@@ -1589,9 +1589,22 @@ bool __fastcall XG_Board::IsSolution() const
     return IsValid();
 }
 
+// ヒントを更新する。
+void __fastcall XgUpdateHints(void)
+{
+    xg_vecTateHints.clear();
+    xg_vecYokoHints.clear();
+    xg_strHints.clear();
+    if (xg_bSolved) {
+        xg_solution.GetHintsStr(xg_strHints, 2, true);
+        if (!XgParseHintsStr(xg_strHints)) {
+            xg_strHints.clear();
+        }
+    }
+}
+
 // ヒント文字列を解析する。
-bool __fastcall XgParseHints(
-    std::vector<XG_Hint>& hints, const std::wstring& str)
+bool __fastcall XgParseHints(std::vector<XG_Hint>& hints, const std::wstring& str)
 {
     // ヒントをクリアする。
     hints.clear();
@@ -1662,7 +1675,7 @@ bool __fastcall XgParseHints(
 }
 
 // ヒント文字列を解析する。
-bool __fastcall XgParseHintsStr(HWND hwnd, const std::wstring& strHints)
+bool __fastcall XgParseHintsStr(const std::wstring& strHints)
 {
     // ヒントをクリアする。
     xg_vecTateHints.clear();
@@ -2066,7 +2079,7 @@ XgSetString(HWND hwnd, const std::wstring& str, bool json)
         }
 
         // ヒント文字列を解析する。
-        if (xg_strHints.empty() || !XgParseHintsStr(hwnd, xg_strHints)) {
+        if (xg_strHints.empty() || !XgParseHintsStr(xg_strHints)) {
             // 失敗した。
             xg_strHints.clear();
             xg_vecTateHints.clear();
@@ -3616,7 +3629,7 @@ void __fastcall XgEndSolve(void)
         std::swap(xg_nRows, xg_nCols);
         if (xg_bSolved) {
             xg_solution.DoNumbering();
-            if (!XgParseHintsStr(xg_hMainWnd, xg_strHints)) {
+            if (!XgParseHintsStr(xg_strHints)) {
                 xg_strHints.clear();
             }
         }

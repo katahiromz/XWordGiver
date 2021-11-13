@@ -321,6 +321,9 @@ namespace std
 
 extern std::vector<XG_Hint> xg_vecTateHints, xg_vecYokoHints;
 
+// ヒントを更新する。
+void __fastcall XgUpdateHints(void);
+
 //////////////////////////////////////////////////////////////////////////////
 // クロスワード データ。
 

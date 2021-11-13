@@ -569,7 +569,7 @@ bool __fastcall XgOpenHintsByWindow(HWND /*hwnd*/);
 bool __fastcall XgOpenHintsByNotepad(HWND /*hwnd*/, bool bShowAnswer);
 
 // ヒント文字列を解析する。
-bool __fastcall XgParseHintsStr(HWND hwnd, const std::wstring& strHints);
+bool __fastcall XgParseHintsStr(const std::wstring& strHints);
 
 // 問題を画像ファイルとして保存する。
 void __fastcall XgSaveProbAsImage(HWND hwnd);

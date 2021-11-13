@@ -2203,20 +2203,6 @@ bool __fastcall XgOpenHintsByWindow(HWND hwnd)
     return false;
 }
 
-// ヒントを更新する。
-void __fastcall XgUpdateHints(HWND hwnd)
-{
-    xg_vecTateHints.clear();
-    xg_vecYokoHints.clear();
-    xg_strHints.clear();
-    if (xg_bSolved) {
-        xg_solution.GetHintsStr(xg_strHints, 2, true);
-        if (!XgParseHintsStr(hwnd, xg_strHints)) {
-            xg_strHints.clear();
-        }
-    }
-}
-
 // ヒントを表示する。
 void __fastcall XgShowHints(HWND hwnd)
 {
@@ -3212,7 +3198,7 @@ bool __fastcall XgDoSaveToLocation(HWND hwnd)
                 xg_solution.DoNumberingNoCheck();
 
                 // ヒントを更新する。
-                XgUpdateHints(hwnd);
+                XgUpdateHints();
             }
 
             // ファイルに保存する。
@@ -3544,7 +3530,7 @@ bool __fastcall XgOnSolve_AddBlack(HWND hwnd)
         XgCenterMessageBoxW(hwnd, sz, XgLoadStringDx2(IDS_RESULTS), MB_ICONINFORMATION);
 
         // ヒントを更新して開く。
-        XgUpdateHints(hwnd);
+        XgUpdateHints();
         XgShowHints(hwnd);
     } else {
         // 解なし。表示を更新する。
@@ -3642,7 +3628,7 @@ bool __fastcall XgOnSolve_NoAddBlack(HWND hwnd, bool bShowAnswer/* = true*/)
         XgCenterMessageBoxW(hwnd, sz, XgLoadStringDx2(IDS_RESULTS), MB_ICONINFORMATION);
 
         // ヒントを更新して開く。
-        XgUpdateHints(hwnd);
+        XgUpdateHints();
         XgShowHints(hwnd);
     } else {
         // 解なし。表示を更新する。
@@ -6274,7 +6260,7 @@ void __fastcall MainWnd_OnFlipVH(HWND hwnd)
         xg_dict_2.clear();
         xg_solution.DoNumbering();
         xg_solution.GetHintsStr(xg_strHints, 2, true);
-        if (!XgParseHintsStr(hwnd, xg_strHints)) {
+        if (!XgParseHintsStr(xg_strHints)) {
             xg_strHints.clear();
         }
         std::swap(xg_dict_1, old_dict_1);
@@ -6762,7 +6748,7 @@ void __fastcall XgShowResults(HWND hwnd)
         XgCenterMessageBoxW(hwnd, sz, XgLoadStringDx2(IDS_RESULTS), MB_ICONINFORMATION);
 
         // ヒントを更新して開く。
-        XgUpdateHints(hwnd);
+        XgUpdateHints();
         XgShowHints(hwnd);
     } else {
         // 失敗メッセージを表示する。
@@ -6926,7 +6912,7 @@ void XgGenerateFromWordList(HWND hwnd)
     }
     // 番号とヒントを付ける。
     xg_solution.DoNumberingNoCheck();
-    XgUpdateHints(xg_hMainWnd);
+    XgUpdateHints();
     // テーマをリセットする。
     XgResetTheme(xg_hMainWnd);
     XgUpdateTheme(xg_hMainWnd);
