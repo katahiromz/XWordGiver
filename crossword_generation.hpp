@@ -97,7 +97,7 @@ struct board_data_t {
     }
 };
 
-template <typename t_char>
+template <typename t_char, bool t_fixed>
 struct board_t : board_data_t<t_char> {
     typedef std::basic_string<t_char> t_string;
 
@@ -108,43 +108,61 @@ struct board_t : board_data_t<t_char> {
         : board_data_t<t_char>(cx, cy, ch), m_x0(x0), m_y0(y0), m_cx(cx), m_cy(cy)
     {
     }
-    board_t(const board_t<t_char>& b) = default;
-    board_t<t_char>& operator=(const board_t<t_char>& b) = default;
+    board_t(const board_t<t_char, t_fixed>& b) = default;
+    board_t<t_char, t_fixed>& operator=(const board_t<t_char, t_fixed>& b) = default;
+
+    // x, y: absolute coordinate
+    bool in_range(int x, int y) const {
+        return (0 <= x && x < m_cx && 0 <= y && y < m_cy);
+    }
 
     // x, y: absolute coordinate
     t_char get_at(int x, int y) const {
-        if (0 <= x && x < m_cx && 0 <= y && y < m_cy) {
+        if (in_range(x, y))
             return board_data_t<t_char>::m_data[y * m_cx + x];
-        }
-        return '?';
+        return t_fixed ? '#' : '?';
     }
     // x, y: absolute coordinate
     void set_at(int x, int y, t_char ch) {
-        if (0 <= x && x < m_cx && 0 <= y && y < m_cy) {
+        if (in_range(x, y))
             board_data_t<t_char>::m_data[y * m_cx + x] = ch;
-        }
     }
 
     // x: relative coordinate
-    void ensure_x(int x) {
-        if (x < m_x0) {
-            grow_x0(m_x0 - x, '?');
-        } else if (m_cx + m_x0 <= x) {
-            grow_x1(x - (m_cx + m_x0) + 1, '?');
+    bool ensure_x(int x) {
+        if (t_fixed) {
+            return (0 <= x && x < m_cx);
+        } else {
+            if (x < m_x0) {
+                grow_x0(m_x0 - x, '?');
+            } else if (m_cx + m_x0 <= x) {
+                grow_x1(x - (m_cx + m_x0) + 1, '?');
+            }
+            return true;
         }
     }
     // y: relative coordinate
-    void ensure_y(int y) {
-        if (y < m_y0) {
-            grow_y0(m_y0 - y, '?');
-        } else if (m_cy + m_y0 <= y) {
-            grow_y1(y - (m_cy + m_y0) + 1, '?');
+    bool ensure_y(int y) {
+        if (t_fixed) {
+            return (0 <= y && y < m_cy);
+        } else {
+            if (y < m_y0) {
+                grow_y0(m_y0 - y, '?');
+            } else if (m_cy + m_y0 <= y) {
+                grow_y1(y - (m_cy + m_y0) + 1, '?');
+            }
+            return true;
         }
     }
     // x, y: relative coordinate
-    void ensure(int x, int y) {
-        ensure_x(x);
-        ensure_y(y);
+    bool ensure(int x, int y) {
+        if (t_fixed) {
+            return in_range(x, y);
+        } else {
+            ensure_x(x);
+            ensure_y(y);
+            return true;
+        }
     }
 
     // x, y: relative coordinate
@@ -164,7 +182,7 @@ struct board_t : board_data_t<t_char> {
     void insert_x(int x0, int cx = 1, t_char ch = ' ') {
         assert(0 <= x0 && x0 <= m_cx);
 
-        board_t<t_char> data(m_cx + cx, m_cy, ch);
+        board_t<t_char, t_fixed> data(m_cx + cx, m_cy, ch);
 
         for (int y = 0; y < m_cy; ++y) {
             for (int x = 0; x < m_cx; ++x) {
@@ -184,7 +202,7 @@ struct board_t : board_data_t<t_char> {
     void insert_y(int y0, int cy = 1, t_char ch = ' ') {
         assert(0 <= y0 && y0 <= m_cy);
 
-        board_t<t_char> data(m_cx, m_cy + cy, ch);
+        board_t<t_char, t_fixed> data(m_cx, m_cy + cy, ch);
 
         for (int y = 0; y < m_cy; ++y) {
             for (int x = 0; x < m_cx; ++x) {
@@ -204,7 +222,7 @@ struct board_t : board_data_t<t_char> {
     void delete_x(int x0) {
         assert(0 <= x0 && x0 < m_cx);
 
-        board_t<t_char> data(m_cx - 1, m_cy, ' ');
+        board_t<t_char, t_fixed> data(m_cx - 1, m_cy, ' ');
 
         for (int y = 0; y < m_cy; ++y) {
             for (int x = 0; x < m_cx - 1; ++x) {
@@ -223,7 +241,7 @@ struct board_t : board_data_t<t_char> {
     void delete_y(int y0) {
         assert(0 <= y0 && y0 < m_cy);
 
-        board_t<t_char> data(m_cx, m_cy - 1, ' ');
+        board_t<t_char, t_fixed> data(m_cx, m_cy - 1, ' ');
 
         for (int y = 0; y < m_cy - 1; ++y) {
             for (int x = 0; x < m_cx; ++x) {
@@ -405,7 +423,7 @@ struct board_t : board_data_t<t_char> {
 
     static void unittest() {
 #ifndef NDEBUG
-        board_t<t_char> b(3, 3, '#');
+        board_t<t_char, t_fixed> b(3, 3, '#');
         b.insert_x(1, 1, '|');
         assert(b.get_at(0, 0) == '#');
         assert(b.get_at(1, 0) == '|');
@@ -496,26 +514,31 @@ struct board_t : board_data_t<t_char> {
     }
 };
 
-template <typename t_char>
+template <typename t_char, bool t_fixed>
 struct generation_t {
     typedef std::basic_string<t_char> t_string;
 
     inline static bool s_generated = false;
     inline static bool s_canceled = false;
     inline static int s_count = 0;
-    inline static board_t<t_char> s_solution;
+    inline static board_t<t_char, t_fixed> s_solution;
     inline static std::mutex s_mutex;
-    board_t<t_char> m_board;
+    board_t<t_char, t_fixed> m_board;
     std::unordered_set<t_string> m_words, m_dict;
     std::unordered_set<pos_t> m_crossable_x, m_crossable_y;
 
-    void apply_candidate(const candidate_t<t_char>& cand) {
+    bool apply_candidate(const candidate_t<t_char>& cand) {
         auto& word = cand.m_word;
         m_words.erase(word);
         int x = cand.m_x, y = cand.m_y;
         if (cand.m_vertical) {
-            m_board.ensure(x, y - 1);
-            m_board.ensure(x, y + int(word.size()));
+            if (t_fixed) {
+                if (!m_board.ensure_y(y) || !m_board.ensure_y(y + int(word.size()) - 1))
+                    return false;
+            } else {
+                m_board.ensure(x, y - 1);
+                m_board.ensure(x, y + int(word.size()));
+            }
             m_board.set_on(x, y - 1, '#');
             m_board.set_on(x, y + int(word.size()), '#');
             for (size_t ich = 0; ich < word.size(); ++ich) {
@@ -526,8 +549,13 @@ struct generation_t {
                     m_crossable_x.insert({ x, y0 });
             }
         } else {
-            m_board.ensure(x - 1, y);
-            m_board.ensure(x + int(word.size()), y);
+            if (t_fixed) {
+                if (!m_board.ensure_x(x) || !m_board.ensure_x(x + int(word.size()) - 1))
+                    return false;
+            } else {
+                m_board.ensure(x - 1, y);
+                m_board.ensure(x + int(word.size()), y);
+            }
             m_board.set_on(x - 1, y, '#');
             m_board.set_on(x + int(word.size()), y, '#');
             for (size_t ich = 0; ich < word.size(); ++ich) {
@@ -538,6 +566,7 @@ struct generation_t {
                     m_crossable_y.insert({ x0, y });
             }
         }
+        return true;
     }
 
     std::vector<candidate_t<t_char> >
@@ -699,7 +728,7 @@ struct generation_t {
 
         if (m_words.empty()) {
             if (fixup_candidates(candidates)) {
-                board_t<t_char> board0 = m_board;
+                board_t<t_char, t_fixed> board0 = m_board;
                 board0.trim();
                 board0.replace('?', '#');
                 if (is_solution(board0)) {
@@ -717,10 +746,10 @@ struct generation_t {
         for (auto& cand : candidates) {
             if (s_canceled)
                 return s_generated;
-            generation_t<t_char> copy(*this);
-            copy.apply_candidate(cand);
-            if (copy.generate_recurse())
+            generation_t<t_char, t_fixed> copy(*this);
+            if (copy.apply_candidate(cand) && copy.generate_recurse()) {
                 return true;
+            }
         }
 
         return false;
@@ -749,7 +778,7 @@ struct generation_t {
         return true;
     }
 
-    bool is_solution(const board_t<t_char>& board) const {
+    bool is_solution(const board_t<t_char, t_fixed>& board) const {
         for (int y = board.m_y0; y < board.m_y0 + board.m_cy; ++y) {
             for (int x = board.m_x0; x < board.m_x0 + board.m_cx; ++x) {
                 auto ch = board.get_on(x, y);
@@ -816,7 +845,7 @@ struct generation_t {
 #if defined(_WIN32)
         ::SetThreadPriority(::GetCurrentThread(), THREAD_PRIORITY_ABOVE_NORMAL);
 #endif
-        generation_t<t_char> data;
+        generation_t<t_char, t_fixed> data;
         data.m_words = data.m_dict = *words;
         bool flag = data.generate();
         ++s_count;

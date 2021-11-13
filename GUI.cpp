@@ -7931,8 +7931,8 @@ BOOL XgWordList_OnOK(HWND hwnd)
         XgCenterMessageBoxW(hwnd, szText, NULL, MB_ICONERROR);
     } else {
         // 単語リストから生成する。
-        generation_t<wchar_t>::generate_from_words(wordset);
-        if (generation_t<wchar_t>::s_generated) { // 成功。
+        generation_t<wchar_t, false>::generate_from_words(wordset);
+        if (generation_t<wchar_t, false>::s_generated) { // 成功。
             // 「元に戻す」情報を取得する。
             auto sa1 = std::make_shared<XG_UndoData_SetAll>();
             sa1->Get();
@@ -7943,7 +7943,7 @@ BOOL XgWordList_OnOK(HWND hwnd)
             xg_bSkeletonMode = TRUE;
             XgUpdateRules(xg_hMainWnd);
             // 解をセットする。
-            auto solution = generation_t<wchar_t>::s_solution;
+            auto solution = generation_t<wchar_t, false>::s_solution;
             xg_bSolved = true;
             xg_bShowAnswer = true;
             xg_nRows = solution.m_cy;
