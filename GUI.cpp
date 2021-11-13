@@ -7931,7 +7931,7 @@ BOOL XgWordList_OnOK(HWND hwnd)
         XgCenterMessageBoxW(hwnd, szText, NULL, MB_ICONERROR);
     } else {
         // 単語リストから生成する。
-        generation_t<wchar_t, false>::generate_from_words(wordset);
+        generation_t<wchar_t, false>::do_generate_from_words(wordset);
         if (generation_t<wchar_t, false>::s_generated) { // 成功。
             // 「元に戻す」情報を取得する。
             auto sa1 = std::make_shared<XG_UndoData_SetAll>();

@@ -755,29 +755,6 @@ struct generation_t {
         return false;
     }
 
-    bool generate() {
-        auto words = m_words;
-        if (words.empty())
-            return false;
-
-        for (auto& word : m_words) {
-            if (word.size() <= 1) {
-                words.erase(word);
-            }
-        }
-
-        if (words.empty())
-            return false;
-
-        auto word = *words.begin();
-        candidate_t<t_char> cand = { 0, 0, false, word };
-        apply_candidate(cand);
-        if (!generate_recurse())
-            return false;
-
-        return true;
-    }
-
     bool is_solution(const board_t<t_char, t_fixed>& board) const {
         for (int y = board.m_y0; y < board.m_y0 + board.m_cy; ++y) {
             for (int x = board.m_x0; x < board.m_x0 + board.m_cx; ++x) {
@@ -840,6 +817,29 @@ struct generation_t {
         return words.size() == m_dict.size();
     }
 
+    bool generate_from_words() {
+        auto words = m_words;
+        if (words.empty())
+            return false;
+
+        for (auto& word : m_words) {
+            if (word.size() <= 1) {
+                words.erase(word);
+            }
+        }
+
+        if (words.empty())
+            return false;
+
+        auto word = *words.begin();
+        candidate_t<t_char> cand = { 0, 0, false, word };
+        apply_candidate(cand);
+        if (!generate_recurse())
+            return false;
+
+        return true;
+    }
+
     static bool generate_from_words_proc(const std::unordered_set<t_string> *words, int iThread) {
         std::srand(::GetTickCount() ^ ::GetCurrentThreadId());
 #if defined(_WIN32)
@@ -847,13 +847,13 @@ struct generation_t {
 #endif
         generation_t<t_char, t_fixed> data;
         data.m_words = data.m_dict = *words;
-        bool flag = data.generate();
+        bool flag = data.generate_from_words();
         ++s_count;
         delete words;
         return flag;
     }
 
-    static bool generate_from_words(const std::unordered_set<t_string>& words) {
+    static bool do_generate_from_words(const std::unordered_set<t_string>& words) {
 #ifdef XWORDGIVER
         int num_threads = (int)xg_dwThreadCount;
 #else
