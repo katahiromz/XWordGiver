@@ -3569,6 +3569,27 @@ void __fastcall XgStartSolve_Smart(void)
 #endif
 }
 
+// 文字をクリア。
+void __fastcall XgClearNonBlocks(void)
+{
+    xg_caret_pos.clear();
+
+    if (xg_bSolved) {
+        xg_bShowAnswer = false;
+    }
+
+    for (INT i = 0; i < xg_nRows; ++i) {
+        for (INT j = 0; j < xg_nCols; ++j) {
+            WCHAR oldch = xg_xword.GetAt(i, j);
+            if (oldch != ZEN_BLACK && oldch != ZEN_SPACE) {
+                xg_xword.SetAt(i, j, ZEN_SPACE);
+            }
+        }
+    }
+
+    xg_prev_vk = 0;
+}
+
 // 解を求めようとした後の後処理。
 void __fastcall XgEndSolve(void)
 {
@@ -4656,7 +4677,7 @@ bool __fastcall XgDoLoadCrpFile(HWND hwnd, LPCWSTR pszFile)
         if (tate.size() && yoko.size()) {
             xg_bSolved = true;
             xg_bShowAnswer = false;
-            XgClearNonBlocks(hwnd);
+            XgClearNonBlocks();
             xg_vecTateHints = tate;
             xg_vecYokoHints = yoko;
         }

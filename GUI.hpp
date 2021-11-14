@@ -32,6 +32,22 @@ LOGFONTW *XgGetUIFont(void);
 
 //////////////////////////////////////////////////////////////////////////////
 
+// 入力パレットを表示するか？
+extern bool xg_bShowInputPalette;
+
+// 入力パレットの位置。
+extern INT xg_nInputPaletteWndX;
+extern INT xg_nInputPaletteWndY;
+
+// 「入力パレット」縦置き？
+extern bool xg_bTateOki;
+
+// 入力パレット。
+extern HWND xg_hwndInputPalette;
+
+// タテ入力？
+extern bool xg_bTateInput;
+
 // 入力パレットを作成する。
 BOOL XgCreateInputPalette(HWND hwndOwner);
 // 入力パレットを破棄する。
@@ -49,6 +65,8 @@ void __fastcall XgInputDirection(HWND hwnd, INT nDirection);
 void __fastcall XgSetCharFeed(HWND hwnd, INT nMode);
 // 改行する。
 void __fastcall XgReturn(HWND hwnd);
+// 二重マス切り替え。
+void __fastcall XgToggleMark(HWND hwnd);
 
 //////////////////////////////////////////////////////////////////////////////
 

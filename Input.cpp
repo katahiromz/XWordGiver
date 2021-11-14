@@ -127,35 +127,6 @@ void __fastcall XgToggleMark(HWND hwnd)
     XgUpdateImage(hwnd, x, y);
 }
 
-// 文字をクリア。
-void __fastcall XgClearNonBlocks(HWND hwnd)
-{
-    xg_caret_pos.clear();
-
-    auto sa1 = std::make_shared<XG_UndoData_SetAll>();
-    auto sa2 = std::make_shared<XG_UndoData_SetAll>();
-    sa1->Get();
-
-    if (xg_bSolved) {
-        xg_bShowAnswer = false;
-    }
-    for (INT i = 0; i < xg_nRows; ++i) {
-        for (INT j = 0; j < xg_nCols; ++j) {
-            WCHAR oldch = xg_xword.GetAt(i, j);
-            if (oldch != ZEN_BLACK && oldch != ZEN_SPACE) {
-                xg_xword.SetAt(i, j, ZEN_SPACE);
-            }
-        }
-    }
-
-    sa2->Get();
-    xg_ubUndoBuffer.Commit(UC_SETALL, sa1, sa2);
-
-    XgUpdateImage(hwnd);
-
-    xg_prev_vk = 0;
-}
-
 // 字送りを実行する。
 void __fastcall XgCharFeed(HWND hwnd)
 {

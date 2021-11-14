@@ -6001,7 +6001,19 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
         PostMessageW(hwnd, WM_CHAR, L'_', 0);
         break;
     case ID_CLEARNONBLOCKS:
-        XgClearNonBlocks(hwnd);
+        {
+            // 「元に戻す」情報を読み込む。
+            auto sa1 = std::make_shared<XG_UndoData_SetAll>();
+            auto sa2 = std::make_shared<XG_UndoData_SetAll>();
+            sa1->Get();
+            // 文字マスを消す。
+            XgClearNonBlocks();
+            // 「元に戻す」情報を確定。
+            sa2->Get();
+            xg_ubUndoBuffer.Commit(UC_SETALL, sa1, sa2);
+            // イメージを更新する。
+            XgUpdateImage(hwnd);
+        }
         break;
     case ID_ONLINEDICT:
         XgOnlineDict(hwnd, xg_bTateInput);

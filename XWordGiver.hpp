@@ -117,6 +117,9 @@ extern INT xg_nZoomRate;
 // 候補の最大数。
 #define xg_nMaxCandidates   500
 
+// クロスワードで使う文字に変換する。
+std::wstring __fastcall XgNormalizeString(const std::wstring& text);
+
 // XG_Board::EveryPatternValid1, XG_Board::EveryPatternValid2の戻り値。
 enum XG_EpvCode
 {
@@ -976,9 +979,6 @@ enum XG_InputMode
 };
 extern XG_InputMode xg_imode;
 
-// タテ入力？
-extern bool xg_bTateInput;
-
 void __fastcall XgSetInputModeFromDict(HWND hwnd);
 
 //////////////////////////////////////////////////////////////////////////////
@@ -1232,13 +1232,6 @@ extern HWND xg_hHintsWnd;
 // 答えを表示するか？
 extern bool xg_bShowAnswer;
 
-// 入力パレットを表示するか？
-extern bool xg_bShowInputPalette;
-
-// 入力パレットの位置。
-extern INT xg_nInputPaletteWndX;
-extern INT xg_nInputPaletteWndY;
-
 // 黒マス追加なしか？
 extern bool xg_bNoAddBlack;
 
@@ -1262,9 +1255,6 @@ extern bool xg_bSmartResolution;
 
 // 太枠をつけるか？
 extern bool xg_bAddThickFrame;
-
-// 「入力パレット」縦置き？
-extern bool xg_bTateOki;
 
 // 直前に開いたクロスワードデータファイルのパスファイル名。
 extern std::wstring xg_strFileName;
@@ -1299,9 +1289,6 @@ extern WCHAR xg_szSmallFont[];
 
 // 直前に押したキーを覚えておく。
 extern WCHAR xg_prev_vk;
-
-// 入力パレット。
-extern HWND xg_hwndInputPalette;
 
 // ひらがな表示か？
 extern BOOL xg_bHiragana;
@@ -1355,18 +1342,10 @@ bool __fastcall XgGetCandidatesAddBlack(
     std::vector<std::wstring>& cands, const std::wstring& pattern, int& nSkip,
     bool left_black_check, bool right_black_check);
 
-// 文字をクリア。
-void __fastcall XgClearNonBlocks(HWND hwnd);
-
 // マルチスレッド用の関数。
 unsigned __stdcall XgGenerateBlacks(void *param);
 // マルチスレッド用の関数。
 unsigned __stdcall XgGenerateBlacksSmart(void *param);
-// 二重マス切り替え。
-void __fastcall XgToggleMark(HWND hwnd);
-
-// クロスワードで使う文字に変換する。
-std::wstring __fastcall XgNormalizeString(const std::wstring& text);
 
 // ヒント文字列を取得する。
 // hint_type 0: タテ。
@@ -1377,6 +1356,9 @@ std::wstring __fastcall XgNormalizeString(const std::wstring& text);
 // hint_type 5: HTMLのタテとヨコ。
 void __fastcall XgGetHintsStr(const XG_Board& board, std::wstring& str, int hint_type,
                               bool bShowAnswer = true);
+
+// 文字マスをクリア。
+void __fastcall XgClearNonBlocks(void);
 
 //////////////////////////////////////////////////////////////////////////////
 
