@@ -67,6 +67,10 @@ void __fastcall XgSetCharFeed(HWND hwnd, INT nMode);
 void __fastcall XgReturn(HWND hwnd);
 // 二重マス切り替え。
 void __fastcall XgToggleMark(HWND hwnd);
+// キー入力のハンドラ。
+void __fastcall XgOnChar(HWND hwnd, TCHAR ch, int cRepeat);
+void __fastcall XgOnKey(HWND hwnd, UINT vk, bool fDown, int /*cRepeat*/, UINT /*flags*/);
+void __fastcall XgOnImeChar(HWND hwnd, WCHAR ch, LPARAM /*lKeyData*/);
 
 //////////////////////////////////////////////////////////////////////////////
 

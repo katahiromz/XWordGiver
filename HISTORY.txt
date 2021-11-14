@@ -61,6 +61,7 @@
     - The zoom is now aligned with the window when a file is opened.
 - 2021.XX.YY Ver.4.8.2
     - Fixed the bugs around "Generate from a word list".
+    - Dragging with the middle mouse button is now possible.
 
 # 開発履歴 (Japanese)
 
@@ -434,3 +435,4 @@
     - ファイルを開いたときにズームをウィンドウに合わせるようにした。
 - 2021年XX月YY日 ver.4.8.2
     - 「単語リストから自動生成」の周辺を修正。
+    - マウスの中央ボタンでドラッグが可能に。

@@ -31,10 +31,6 @@
 #define FORWARD_WM_MOUSEWHEEL(hwnd, xPos, yPos, zDelta, fwKeys, fn) \
     (void)(fn)((hwnd), WM_MOUSEWHEEL, MAKEWPARAM((fwKeys),(zDelta)), MAKELPARAM((xPos),(yPos)))
 
-void __fastcall XgOnChar(HWND hwnd, TCHAR ch, int cRepeat);
-void __fastcall XgOnKey(HWND hwnd, UINT vk, bool fDown, int /*cRepeat*/, UINT /*flags*/);
-void __fastcall XgOnImeChar(HWND hwnd, WCHAR ch, LPARAM /*lKeyData*/);
-
 //////////////////////////////////////////////////////////////////////////////
 // global variables
 
@@ -128,6 +124,9 @@ std::deque<std::wstring> xg_dirs_save_to;
 
 // 連続生成の場合、問題を生成する数。
 INT xg_nNumberToGenerate = 16;
+
+BOOL xg_bMButtonDragging = FALSE;
+POINT xg_ptMButtonDragging;
 
 //////////////////////////////////////////////////////////////////////////////
 // static variables
@@ -3994,6 +3993,71 @@ void __fastcall MainWnd_OnLButtonDown(HWND hwnd, bool fDoubleClick, int x, int y
     }
 }
 
+void MainWnd_OnMButtonDown(HWND hwnd, BOOL fDoubleClick, int x, int y, UINT keyFlags)
+{
+    if (!xg_bMButtonDragging)
+    {
+        xg_bMButtonDragging = TRUE;
+        xg_ptMButtonDragging = { x, y };
+        ::SetCapture(hwnd);
+    }
+}
+
+void MainWnd_OnMouseScroll(HWND hwnd, int x, int y)
+{
+    SCROLLINFO si;
+
+    // 横スクロール情報を取得する。
+    si.cbSize = sizeof(si);
+    si.fMask = SIF_ALL;
+    XgGetHScrollInfo(&si);
+    INT x0 = si.nPos;
+    // 縦スクロール情報を取得する。
+    si.cbSize = sizeof(si);
+    si.fMask = SIF_ALL;
+    XgGetVScrollInfo(&si);
+    INT y0 = si.nPos;
+
+    x0 += xg_ptMButtonDragging.x - x;
+    y0 += xg_ptMButtonDragging.y - y;
+
+    // スクロール情報を設定し、イメージを更新する。
+    si.fMask = SIF_POS;
+    si.nPos = x0;
+    XgSetHScrollInfo(&si, FALSE);
+    si.fMask = SIF_POS;
+    si.nPos = y0;
+    XgSetVScrollInfo(&si, FALSE);
+
+    xg_ptMButtonDragging.x = x;
+    xg_ptMButtonDragging.y = y;
+
+    // 画面を更新する。
+    XgUpdateImage(hwnd, x0, y0);
+
+    RECT rcClient;
+    XgGetRealClientRect(hwnd, &rcClient);
+    InvalidateRect(hwnd, &rcClient, TRUE);
+}
+
+void MainWnd_OnMouseMove(HWND hwnd, int x, int y, UINT keyFlags)
+{
+    if (xg_bMButtonDragging && ::GetCapture() == hwnd)
+    {
+        MainWnd_OnMouseScroll(hwnd, x, y);
+    }
+}
+
+void MainWnd_OnMButtonUp(HWND hwnd, int x, int y, UINT flags)
+{
+    if (xg_bMButtonDragging && ::GetCapture() == hwnd)
+    {
+        MainWnd_OnMouseScroll(hwnd, x, y);
+        xg_bMButtonDragging = FALSE;
+        ::ReleaseCapture();
+    }
+}
+
 // ステータスバーを更新する。
 void __fastcall XgUpdateStatusBar(HWND hwnd)
 {
@@ -7074,8 +7138,12 @@ XgWindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
     HANDLE_MSG(hWnd, WM_KEYUP, XgOnKey);
     HANDLE_MSG(hWnd, WM_CHAR, XgOnChar);
     HANDLE_MSG(hWnd, WM_LBUTTONDBLCLK, MainWnd_OnLButtonDown);
+    HANDLE_MSG(hWnd, WM_LBUTTONDOWN, MainWnd_OnLButtonDown);
     HANDLE_MSG(hWnd, WM_LBUTTONUP, MainWnd_OnLButtonUp);
+    HANDLE_MSG(hWnd, WM_MBUTTONDOWN, MainWnd_OnMButtonDown);
+    HANDLE_MSG(hWnd, WM_MBUTTONUP, MainWnd_OnMButtonUp);
     HANDLE_MSG(hWnd, WM_RBUTTONDOWN, MainWnd_OnRButtonDown);
+    HANDLE_MSG(hWnd, WM_MOUSEMOVE, MainWnd_OnMouseMove);
     HANDLE_MSG(hWnd, WM_COMMAND, MainWnd_OnCommand);
     HANDLE_MSG(hWnd, WM_INITMENU, MainWnd_OnInitMenu);
     HANDLE_MSG(hWnd, WM_DROPFILES, MainWnd_OnDropFiles);
