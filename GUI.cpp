@@ -391,6 +391,7 @@ void __fastcall XgEnsureCaretVisible(HWND hwnd)
 }
 
 // 現在の状態で好ましいと思われる単語の最大長を取得する。
+// 旧来のスマート解決では最大長を指定する必要があった。
 INT __fastcall XgGetPreferredMaxLength(void)
 {
     if (xg_imode == xg_im_KANJI) {
