@@ -452,16 +452,6 @@ public:
     void __fastcall GetString(std::wstring& str) const;
     bool __fastcall SetString(const std::wstring& strToBeSet);
 
-    // ヒント文字列を取得する。
-    // hint_type 0: タテ。
-    // hint_type 1: ヨコ。
-    // hint_type 2: タテとヨコ。
-    // hint_type 3: HTMLのタテ。
-    // hint_type 4: HTMLのヨコ。
-    // hint_type 5: HTMLのタテとヨコ。
-    void __fastcall GetHintsStr(
-        std::wstring& str, int hint_type, bool bShowAnswer = true) const;
-
     // クロスワードが空かどうか。
     bool __fastcall IsEmpty() const;
     // クロスワードがすべて埋め尽くされているかどうか。
@@ -1380,7 +1370,6 @@ std::wstring __fastcall XgNormalizeString(const std::wstring& text);
 
 //////////////////////////////////////////////////////////////////////////////
 
-#include "XG_UndoBuffer.hpp"
 #include "Dictionary.hpp"
 #include "Marks.hpp"
 #include "SaveBitmapToFile.h"

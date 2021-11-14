@@ -3,6 +3,7 @@
 // Copyright (C) 2012-2020 Katayama Hirofumi MZ. All Rights Reserved.
 
 #include "XWordGiver.hpp"
+#include "XG_UndoBuffer.hpp"
 
 //////////////////////////////////////////////////////////////////////////////
 

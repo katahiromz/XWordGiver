@@ -4,6 +4,7 @@
 // (Japanese, UTF-8)
 
 #include "XWordGiver.hpp"
+#include "XG_UndoBuffer.hpp"
 
 // 入力パレットを表示するか？
 bool xg_bShowInputPalette = false;

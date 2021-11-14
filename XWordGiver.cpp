@@ -124,9 +124,6 @@ XG_VIEW_MODE xg_nViewMode = XG_VIEW_NORMAL;
 // 縦と横を反転しているか？
 static bool s_bSwapped = false;
 
-// カギの答えを囲む枠。
-static const LPCWSTR s_szBeginWord = L"\x226A", s_szEndWord = L"\x226B";
-
 //////////////////////////////////////////////////////////////////////////////
 
 // 候補があるか？
@@ -1596,7 +1593,7 @@ void __fastcall XgUpdateHints(void)
     xg_vecYokoHints.clear();
     xg_strHints.clear();
     if (xg_bSolved) {
-        xg_solution.GetHintsStr(xg_strHints, 2, true);
+        XgGetHintsStr(xg_solution, xg_strHints, 2, true);
         if (!XgParseHintsStr(xg_strHints)) {
             xg_strHints.clear();
         }
@@ -1637,16 +1634,16 @@ bool __fastcall XgParseHints(std::vector<XG_Hint>& hints, const std::wstring& st
 
         std::wstring word;
         size_t i3, i4;
-        i3 = str.find(s_szBeginWord, i2);
+        i3 = str.find(L"\x226A", i2);
         if (i3 != std::wstring::npos) {
-            i3 += wcslen(s_szBeginWord);
+            i3 += wcslen(L"\x226A");
 
-            i4 = str.find(s_szEndWord, i3);
+            i4 = str.find(L"\x226B", i3);
             if (i4 == std::wstring::npos) {
                 return false;
             }
             word = str.substr(i3, i4 - i3);
-            i4 += wcslen(s_szEndWord);
+            i4 += wcslen(L"\x226B");
         } else {
             i4 = i2 + wcslen(XgLoadStringDx1(IDS_KEYRIGHT));
         }
@@ -1946,7 +1943,7 @@ bool __fastcall XgSetJsonString(HWND hwnd, const std::wstring& str)
                 if (has_hints) {
                     xg_solution.DoNumberingNoCheck();
                 }
-                xg_solution.GetHintsStr(xg_strHints, 2, true);
+                XgGetHintsStr(xg_solution, xg_strHints, 2, true);
             } else {
                 xg_bSolved = false;
                 xg_xword = xw;
@@ -2148,186 +2145,6 @@ XgSetString(HWND hwnd, const std::wstring& str, bool json)
     XgSetStringOfMarks(str.data());
 
     return true;
-}
-
-// ヒントを取得する。
-void __fastcall XG_Board::GetHintsStr(
-    std::wstring& str, int hint_type, bool bShowAnswer) const
-{
-    // 文字列バッファ。
-    WCHAR sz[64];
-
-    // 初期化。
-    str.clear();
-
-    // まだ解かれていない場合は、何も返さない。
-    if (!xg_bSolved)
-        return;
-
-    // ヒントに変更があれば、更新する。
-    if (XG_HintsWnd::AreHintsModified()) {
-        XG_HintsWnd::UpdateHintData();
-    }
-
-    assert(0 <= hint_type && hint_type < 6);
-
-    if (hint_type == 0 || hint_type == 2) {
-        // タテのカギの文字列を構成する。
-        str += XgLoadStringDx1(IDS_DOWN);
-        str += xg_pszNewLine;
-
-        for (const auto& info : xg_vTateInfo) {
-            // 番号を格納する。
-            StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(IDS_DOWNNUMBER), info.m_number);
-            str += sz;
-
-            // 答えを見せるかどうか？
-            if (bShowAnswer) {
-                str += s_szBeginWord;
-                str += info.m_word;
-                str += s_szEndWord;
-            }
-
-            // ヒント文章を追加する。
-            bool added = false;
-            for (const auto& data : xg_dict_1) {
-                if (_wcsicmp(data.m_word.data(),
-                             info.m_word.data()) == 0)
-                {
-                    str += data.m_hint;
-                    added = true;
-                    break;
-                }
-            }
-            if (!added) {
-                for (const auto& data : xg_dict_2) {
-                    if (_wcsicmp(data.m_word.data(),
-                                 info.m_word.data()) == 0)
-                    {
-                        str += data.m_hint;
-                        added = true;
-                        break;
-                    }
-                }
-            }
-            str += xg_pszNewLine;   // 改行。
-        }
-        str += xg_pszNewLine;
-    }
-    if (hint_type == 1 || hint_type == 2) {
-        // ヨコのカギの文字列を構成する。
-        str += XgLoadStringDx1(IDS_ACROSS);
-        str += xg_pszNewLine;
-        for (const auto& info : xg_vYokoInfo) {
-            // 番号を格納する。
-            StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(IDS_ACROSSNUMBER), info.m_number);
-            str += sz;
-
-            // 答えを見せるかどうか？
-            if (bShowAnswer) {
-                str += s_szBeginWord;
-                str += info.m_word;
-                str += s_szEndWord;
-            }
-
-            // ヒント文章を追加する。
-            bool added = false;
-            for (const auto& data : xg_dict_1) {
-                if (_wcsicmp(data.m_word.data(), info.m_word.data()) == 0) {
-                    str += data.m_hint;
-                    added = true;
-                    break;
-                }
-            }
-            if (!added) {
-                for (const auto& data : xg_dict_2) {
-                    if (_wcsicmp(data.m_word.data(), info.m_word.data()) == 0) {
-                        str += data.m_hint;
-                        added = true;
-                        break;
-                    }
-                }
-            }
-            str += xg_pszNewLine;   // 改行。
-        }
-        str += xg_pszNewLine;
-    }
-    if (hint_type == 3 || hint_type == 5) {
-        // タテのカギの文字列を構成する。
-        str += XgLoadStringDx1(IDS_PARABOLD);     // <p><b>
-        str += XgLoadStringDx1(IDS_DOWNLABEL);
-        str += XgLoadStringDx1(IDS_ENDPARABOLD);    // </b></p>
-        str += xg_pszNewLine;
-        str += XgLoadStringDx1(IDS_OL);    // <ol>
-        str += xg_pszNewLine;
-
-        for (const auto& info : xg_vTateInfo) {
-            // <li>
-            StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(IDS_LI), info.m_number);
-            str += sz;
-
-            // ヒント文章を追加する。
-            bool added = false;
-            for (const auto& data : xg_dict_1) {
-                if (_wcsicmp(data.m_word.data(), info.m_word.data()) == 0) {
-                    str += data.m_hint;
-                    added = true;
-                    break;
-                }
-            }
-            if (!added) {
-                for (const auto& data : xg_dict_2) {
-                    if (_wcsicmp(data.m_word.data(), info.m_word.data()) == 0) {
-                        str += data.m_hint;
-                        added = true;
-                        break;
-                    }
-                }
-            }
-            str += XgLoadStringDx1(IDS_ENDLI);    // </li>
-            str += xg_pszNewLine;           // 改行。
-        }
-        str += XgLoadStringDx1(IDS_ENDOL);    // </ol>
-        str += xg_pszNewLine;           // 改行。
-    }
-    if (hint_type == 4 || hint_type == 5) {
-        // ヨコのカギの文字列を構成する。
-        str += XgLoadStringDx1(IDS_PARABOLD);     // <p><b>
-        str += XgLoadStringDx1(IDS_ACROSSLABEL);
-        str += XgLoadStringDx1(IDS_ENDPARABOLD);    // </b></p>
-        str += xg_pszNewLine;
-        str += XgLoadStringDx1(IDS_OL);    // <ol>
-        str += xg_pszNewLine;
-
-        for (const auto& info : xg_vYokoInfo) {
-            // <li>
-            StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(IDS_LI), info.m_number);
-            str += sz;
-
-            // ヒント文章を追加する。
-            bool added = false;
-            for (const auto& data : xg_dict_1) {
-                if (_wcsicmp(data.m_word.data(), info.m_word.data()) == 0) {
-                    str += data.m_hint;
-                    added = true;
-                    break;
-                }
-            }
-            if (!added) {
-                for (const auto& data : xg_dict_2) {
-                    if (_wcsicmp(data.m_word.data(), info.m_word.data()) == 0) {
-                        str += data.m_hint;
-                        added = true;
-                        break;
-                    }
-                }
-            }
-            str += XgLoadStringDx1(IDS_ENDLI);    // </li>
-            str += xg_pszNewLine;           // 改行。
-        }
-        str += XgLoadStringDx1(IDS_ENDOL);    // </ol>
-        str += xg_pszNewLine;           // 改行。
-    }
 }
 
 // スレッド情報を取得する。
@@ -5103,7 +4920,7 @@ bool XgDoSaveStandard(HWND hwnd, LPCWSTR pszFile, const XG_Board& board)
     if (xg_bSolved) {
         // ヒントあり。
         board.GetString(strTable);
-        board.GetHintsStr(hints, 2, true);
+        XgGetHintsStr(board, hints, 2, true);
         str += xg_strHeader;        // ヘッダー文字列。
         str += xg_pszNewLine;       // 改行。
         str += XgLoadStringDx1(IDS_HEADERSEP1); // ヘッダー分離線。

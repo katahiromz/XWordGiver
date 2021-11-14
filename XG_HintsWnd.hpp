@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include "XG_Window.hpp"
+#include "XG_UndoBuffer.hpp"
 
 class XG_HintsWnd : public XG_Window
 {
@@ -222,8 +223,7 @@ public:
                     xg_ubUndoBuffer.Commit(UC_HINTS_UPDATED, hu1, hu2);
                 }
             }
-            return ::CallWindowProc(data->m_fnOldWndProc,
-                hwnd, uMsg, wParam, lParam);
+            return ::CallWindowProc(data->m_fnOldWndProc, hwnd, uMsg, wParam, lParam);
 
         case WM_SETFOCUS: // フォーカスを得た。
             if (wParam) {
@@ -233,8 +233,7 @@ public:
             }
             // フォーカスのあるコントロールが見えるように移動する。
             xg_svHintsScrollView.EnsureCtrlVisible(hwnd);
-            return ::CallWindowProc(data->m_fnOldWndProc,
-                hwnd, uMsg, wParam, lParam);
+            return ::CallWindowProc(data->m_fnOldWndProc, hwnd, uMsg, wParam, lParam);
 
         case WM_KILLFOCUS:  // フォーカスを失った。
             // ヒントに更新があれば、データを更新する。
@@ -251,8 +250,7 @@ public:
             }
             // レイアウトを調整する。
             ::PostMessageW(xg_hHintsWnd, WM_SIZE, 0, 0);
-            return ::CallWindowProc(data->m_fnOldWndProc,
-                hwnd, uMsg, wParam, lParam);
+            return ::CallWindowProc(data->m_fnOldWndProc, hwnd, uMsg, wParam, lParam);
 
         case WM_KEYDOWN:
             if (wParam == VK_RETURN) {
@@ -287,8 +285,7 @@ public:
                 break;
             }
 
-            return ::CallWindowProc(data->m_fnOldWndProc,
-                hwnd, uMsg, wParam, lParam);
+            return ::CallWindowProc(data->m_fnOldWndProc, hwnd, uMsg, wParam, lParam);
 
         case WM_NCDESTROY:
             fn = data->m_fnOldWndProc;
@@ -303,8 +300,7 @@ public:
             break;
 
         default:
-            return ::CallWindowProc(data->m_fnOldWndProc,
-                hwnd, uMsg, wParam, lParam);
+            return ::CallWindowProc(data->m_fnOldWndProc, hwnd, uMsg, wParam, lParam);
         }
         return 0;
     }
