@@ -14,14 +14,7 @@
 #include "XG_HintsWnd.hpp"
 #include "XG_CandsWnd.hpp"
 #include "XG_SettingsDialog.hpp"
-
-// クロスワードのサイズの制限。
-#define XG_MIN_SIZE         2
-#define XG_MAX_SIZE         256
-
-// 単語の長さの制限。
-#define XG_MIN_WORD_LEN 2
-#define XG_MAX_WORD_LEN 100
+#include "XG_NewDialog.hpp"
 
 #undef HANDLE_WM_MOUSEWHEEL     // might be wrong
 #define HANDLE_WM_MOUSEWHEEL(hwnd, wParam, lParam, fn) \
@@ -1248,7 +1241,7 @@ inline bool XgOpenCandsWnd(HWND hwnd, bool vertical)
 //////////////////////////////////////////////////////////////////////////////
 
 // 盤を特定の文字で埋め尽くす。
-void __fastcall XgNewCells(HWND hwnd, WCHAR ch, INT nRows, INT nCols)
+void XgNewCells(HWND hwnd, WCHAR ch, INT nRows, INT nCols)
 {
     auto sa1 = std::make_shared<XG_UndoData_SetAll>();
     auto sa2 = std::make_shared<XG_UndoData_SetAll>();
@@ -1344,7 +1337,7 @@ void XgCopyWordList(HWND hwnd)
 }
 
 // 盤のサイズを変更する。
-void __fastcall XgResizeCells(HWND hwnd, INT nNewRows, INT nNewCols)
+void XgResizeCells(HWND hwnd, INT nNewRows, INT nNewCols)
 {
     auto sa1 = std::make_shared<XG_UndoData_SetAll>();
     auto sa2 = std::make_shared<XG_UndoData_SetAll>();
@@ -1393,75 +1386,6 @@ void __fastcall XgResizeCells(HWND hwnd, INT nNewRows, INT nNewCols)
     xg_ubUndoBuffer.Commit(UC_SETALL, sa1, sa2);
     // ツールバーのUIを更新する。
     XgUpdateToolBarUI(hwnd);
-}
-
-// [新規作成]ダイアログのダイアログ プロシージャ。
-extern "C" INT_PTR CALLBACK
-XgNewDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam*/)
-{
-    INT n1, n2;
-    switch (uMsg) {
-    case WM_INITDIALOG:
-        // ダイアログを中央へ移動する。
-        XgCenterDialog(hwnd);
-        // サイズの欄を設定する。
-        ::SetDlgItemInt(hwnd, edt1, xg_nRows, FALSE);
-        ::SetDlgItemInt(hwnd, edt2, xg_nCols, FALSE);
-        // IMEをOFFにする。
-        {
-            HWND hwndCtrl;
-
-            hwndCtrl = ::GetDlgItem(hwnd, edt1);
-            ::ImmAssociateContext(hwndCtrl, NULL);
-
-            hwndCtrl = ::GetDlgItem(hwnd, edt2);
-            ::ImmAssociateContext(hwndCtrl, NULL);
-        }
-        SendDlgItemMessageW(hwnd, scr1, UDM_SETRANGE, 0, MAKELPARAM(XG_MAX_SIZE, XG_MIN_SIZE));
-        SendDlgItemMessageW(hwnd, scr2, UDM_SETRANGE, 0, MAKELPARAM(XG_MAX_SIZE, XG_MIN_SIZE));
-        CheckRadioButton(hwnd, rad1, rad3, rad1);
-        return TRUE;
-
-    case WM_COMMAND:
-        switch (LOWORD(wParam)) {
-        case IDOK:
-            // サイズの欄をチェックする。
-            n1 = static_cast<int>(::GetDlgItemInt(hwnd, edt1, nullptr, FALSE));
-            if (n1 < XG_MIN_SIZE || n1 > XG_MAX_SIZE) {
-                ::SendDlgItemMessageW(hwnd, edt1, EM_SETSEL, 0, -1);
-                XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_ENTERINT), nullptr, MB_ICONERROR);
-                ::SetFocus(::GetDlgItem(hwnd, edt1));
-                return 0;
-            }
-            n2 = static_cast<int>(::GetDlgItemInt(hwnd, edt2, nullptr, FALSE));
-            if (n2 < XG_MIN_SIZE || n2 > XG_MAX_SIZE) {
-                ::SendDlgItemMessageW(hwnd, edt2, EM_SETSEL, 0, -1);
-                XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_ENTERINT), nullptr, MB_ICONERROR);
-                ::SetFocus(::GetDlgItem(hwnd, edt2));
-                return 0;
-            }
-            // ダイアログを閉じる。
-            ::EndDialog(hwnd, IDOK);
-            // 処理を行う。
-            if (IsDlgButtonChecked(hwnd, rad1) == BST_CHECKED) {
-                // 盤を特定の文字で埋め尽くす。
-                XgNewCells(xg_hMainWnd, ZEN_SPACE, n1, n2);
-            } else if (IsDlgButtonChecked(hwnd, rad2) == BST_CHECKED) {
-                // 盤を特定の文字で埋め尽くす。
-                XgNewCells(xg_hMainWnd, ZEN_BLACK, n1, n2);
-            } else if (IsDlgButtonChecked(hwnd, rad3) == BST_CHECKED) {
-                // 盤のサイズを変更する。
-                XgResizeCells(xg_hMainWnd, n1, n2);
-            }
-            break;
-
-        case IDCANCEL:
-            // ダイアログを閉じる。
-            ::EndDialog(hwnd, IDCANCEL);
-            break;
-        }
-    }
-    return 0;
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -3250,12 +3174,10 @@ bool __fastcall XgOnNew(HWND hwnd)
 {
     INT nID;
     ::EnableWindow(xg_hwndInputPalette, FALSE);
-    nID = INT(::DialogBoxW(xg_hInstance, MAKEINTRESOURCE(IDD_NEW), hwnd, XgNewDlgProc));
+    XG_NewDialog dialog;
+    nID = dialog.DoModal(hwnd);
     ::EnableWindow(xg_hwndInputPalette, TRUE);
-    if (nID != IDOK)
-        return false;
-
-    return true;
+    return (nID == IDOK);
 }
 
 // 特定の場所にファイルを保存する。

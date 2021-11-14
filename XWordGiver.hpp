@@ -69,6 +69,14 @@
 //////////////////////////////////////////////////////////////////////////////
 // クロスワード。
 
+// クロスワードのサイズの制限。
+#define XG_MIN_SIZE 2
+#define XG_MAX_SIZE 256
+
+// 単語の長さの制限。
+#define XG_MIN_WORD_LEN 2
+#define XG_MAX_WORD_LEN 100
+
 // 日本語ロケール。
 #define JPN_LOCALE \
     MAKELCID(MAKELANGID(LANG_JAPANESE, SUBLANG_DEFAULT), SORT_DEFAULT)
