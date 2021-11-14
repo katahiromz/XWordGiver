@@ -1367,15 +1367,6 @@ bool __fastcall XgDoSaveJson(HWND /*hwnd*/, LPCWSTR pszFile);
 // ファイル（CRP形式）を保存する。
 bool __fastcall XgDoSaveCrpFile(HWND /*hwnd*/, LPCWSTR pszFile);
 
-// ヒントを表示する。
-void __fastcall XgShowHints(HWND hwnd);
-
-// ヒントの内容をヒントウィンドウで開く。
-bool __fastcall XgOpenHintsByWindow(HWND /*hwnd*/);
-
-// ヒントの内容をメモ帳で開く。
-bool __fastcall XgOpenHintsByNotepad(HWND /*hwnd*/, bool bShowAnswer);
-
 // ヒント文字列を解析する。
 bool __fastcall XgParseHintsStr(const std::wstring& strHints);
 
@@ -1384,11 +1375,6 @@ void __fastcall XgSaveProbAsImage(HWND hwnd);
 
 // 解答を画像ファイルとして保存する。
 void __fastcall XgSaveAnsAsImage(HWND hwnd);
-
-// ヒントウィンドウを作成する。
-BOOL XgCreateHintsWnd(HWND hwnd);
-// ヒントウィンドウを破棄する。
-void XgDestroyHintsWnd(void);
 
 template <bool t_alternative>
 bool __fastcall XgGetCandidatesAddBlack(
@@ -1432,9 +1418,6 @@ void __fastcall XgToggleMark(HWND hwnd);
 // クロスワードで使う文字に変換する。
 std::wstring __fastcall XgNormalizeString(const std::wstring& text);
 
-// ポップアップメニューを読み込む。
-HMENU XgLoadPopupMenu(HWND hwnd, INT nPos);
-
 //////////////////////////////////////////////////////////////////////////////
 // スクロール。
 
@@ -1470,5 +1453,6 @@ extern bool xg_bCandVertical;
 #include "Dictionary.hpp"
 #include "Marks.hpp"
 #include "SaveBitmapToFile.h"
+#include "GUI.hpp"
 
 #endif  // ndef XWORDGIVER

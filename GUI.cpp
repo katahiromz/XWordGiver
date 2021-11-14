@@ -1401,7 +1401,7 @@ INT CALLBACK XgBrowseCallbackProc(HWND hwnd, UINT uMsg, LPARAM /*lParam*/, LPARA
 //////////////////////////////////////////////////////////////////////////////
 
 // ヒントの内容をメモ帳で開く。
-bool __fastcall XgOpenHintsByNotepad(HWND /*hwnd*/, bool bShowAnswer)
+bool XgOpenHintsByNotepad(HWND /*hwnd*/, bool bShowAnswer)
 {
     WCHAR szPath[MAX_PATH];
     WCHAR szCmdLine[MAX_PATH * 2];
@@ -1460,35 +1460,6 @@ bool __fastcall XgOpenHintsByNotepad(HWND /*hwnd*/, bool bShowAnswer)
     // ファイルを閉じる。
     ::CloseHandle(hFile);
     return false;
-}
-
-// ヒントの内容をヒントウィンドウで開く。
-bool __fastcall XgOpenHintsByWindow(HWND hwnd)
-{
-    // もしヒントウィンドウが存在すれば破棄する。
-    if (xg_hHintsWnd) {
-        HWND hwnd = xg_hHintsWnd;
-        xg_hHintsWnd = NULL;
-        ::DestroyWindow(hwnd);
-    }
-
-    // ヒントウィンドウを作成する。
-    if (XgCreateHintsWnd(xg_hMainWnd)) {
-        ::ShowWindow(xg_hHintsWnd, SW_SHOWNOACTIVATE);
-        ::SetForegroundWindow(xg_hMainWnd);
-        return true;
-    }
-    return false;
-}
-
-// ヒントを表示する。
-void __fastcall XgShowHints(HWND hwnd)
-{
-    #if 1
-        XgOpenHintsByWindow(hwnd);
-    #else
-        XgOpenHintsByNotepad(hwnd, xg_bShowAnswer);
-    #endif
 }
 
 // スレッドを閉じる。
@@ -2171,7 +2142,7 @@ XgCancelFromWordsDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 // 印刷。
 
 // 印刷する。
-void __fastcall XgPrintIt(HDC hdc, PRINTDLGW* ppd, bool bPrintAnswer)
+static void XgPrintIt(HDC hdc, PRINTDLGW* ppd, bool bPrintAnswer)
 {
     LOGFONTW lf;
     HFONT hFont;
@@ -2383,7 +2354,7 @@ void __fastcall XgPrintIt(HDC hdc, PRINTDLGW* ppd, bool bPrintAnswer)
 }
 
 // 問題のみを印刷する。
-void __fastcall XgPrintProblem(void)
+static void XgPrintProblem(void)
 {
     PRINTDLGW pd;
 
@@ -2399,7 +2370,7 @@ void __fastcall XgPrintProblem(void)
 }
 
 // 問題と解答を印刷する。
-void __fastcall XgPrintAnswer(void)
+static void XgPrintAnswer(void)
 {
     PRINTDLGW pd;
 
@@ -3177,79 +3148,8 @@ void XgOnPointSymmetryCheck(HWND hwnd)
 
 //////////////////////////////////////////////////////////////////////////////
 
-// 24BPPビットマップを作成。
-HBITMAP XgCreate24BppBitmap(HDC hDC, LONG width, LONG height)
-{
-    BITMAPINFO bmi;
-    ZeroMemory(&bmi, sizeof(bmi));
-    bmi.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
-    bmi.bmiHeader.biWidth = width;
-    bmi.bmiHeader.biHeight = height;
-    bmi.bmiHeader.biPlanes = 1;
-    bmi.bmiHeader.biBitCount = 24;
-    return CreateDIBSection(hDC, &bmi, DIB_RGB_COLORS, NULL, NULL, 0);
-}
-
-// BITMAPINFOEX構造体。
-typedef struct tagBITMAPINFOEX
-{
-    BITMAPINFOHEADER bmiHeader;
-    RGBQUAD          bmiColors[256];
-} BITMAPINFOEX, FAR * LPBITMAPINFOEX;
-
-BOOL
-PackedDIB_CreateFromHandle(std::vector<BYTE>& vecData, HBITMAP hbm)
-{
-    vecData.clear();
-
-    BITMAP bm;
-    if (!GetObject(hbm, sizeof(bm), &bm))
-        return FALSE;
-
-    BITMAPINFOEX bi;
-    BITMAPINFOHEADER *pbmih;
-    DWORD cColors, cbColors;
-
-    pbmih = &bi.bmiHeader;
-    ZeroMemory(pbmih, sizeof(BITMAPINFOHEADER));
-    pbmih->biSize             = sizeof(BITMAPINFOHEADER);
-    pbmih->biWidth            = bm.bmWidth;
-    pbmih->biHeight           = bm.bmHeight;
-    pbmih->biPlanes           = 1;
-    pbmih->biBitCount         = bm.bmBitsPixel;
-    pbmih->biCompression      = BI_RGB;
-    pbmih->biSizeImage        = bm.bmWidthBytes * bm.bmHeight;
-
-    if (bm.bmBitsPixel < 16)
-        cColors = 1 << bm.bmBitsPixel;
-    else
-        cColors = 0;
-    cbColors = cColors * sizeof(RGBQUAD);
-
-    std::vector<BYTE> Bits(pbmih->biSizeImage);
-    HDC hDC = CreateCompatibleDC(NULL);
-    if (hDC == NULL)
-        return FALSE;
-
-    LPBITMAPINFO pbi = LPBITMAPINFO(&bi);
-    if (!GetDIBits(hDC, hbm, 0, bm.bmHeight, &Bits[0], pbi, DIB_RGB_COLORS))
-    {
-        DeleteDC(hDC);
-        return FALSE;
-    }
-
-    DeleteDC(hDC);
-
-    std::string stream;
-    stream.append((const char *)pbmih, sizeof(*pbmih));
-    stream.append((const char *)bi.bmiColors, cbColors);
-    stream.append((const char *)&Bits[0], Bits.size());
-    vecData.assign(stream.begin(), stream.end());
-    return TRUE;
-}
-
 // クリップボードにクロスワードをコピー。
-void __fastcall XgCopyBoard(HWND hwnd)
+void XgCopyBoard(HWND hwnd)
 {
     std::wstring str;
 
@@ -3327,7 +3227,7 @@ void __fastcall XgCopyBoard(HWND hwnd)
 }
 
 // クリップボードにクロスワードを画像としてコピー。
-void __fastcall XgCopyBoardAsImage(HWND hwnd)
+void XgCopyBoardAsImage(HWND hwnd)
 {
     XG_Board *pxw = (xg_bSolved && xg_bShowAnswer) ? &xg_solution : &xg_xword;
 
@@ -3490,7 +3390,7 @@ std::wstring XgGetClipboardUnicodeText(HWND hwnd)
 }
 
 // クリップボードから貼り付け。
-void __fastcall XgPasteBoard(HWND hwnd, const std::wstring& str)
+void XgPasteBoard(HWND hwnd, const std::wstring& str)
 {
     // 文字列が空じゃないか？
     if (!str.empty()) {
@@ -7388,6 +7288,35 @@ void XgDestroyHintsWnd(void)
     }
 }
 
+// ヒントの内容をヒントウィンドウで開く。
+bool XgOpenHintsByWindow(HWND hwnd)
+{
+    // もしヒントウィンドウが存在すれば破棄する。
+    if (xg_hHintsWnd) {
+        HWND hwnd = xg_hHintsWnd;
+        xg_hHintsWnd = NULL;
+        ::DestroyWindow(hwnd);
+    }
+
+    // ヒントウィンドウを作成する。
+    if (XgCreateHintsWnd(xg_hMainWnd)) {
+        ::ShowWindow(xg_hHintsWnd, SW_SHOWNOACTIVATE);
+        ::SetForegroundWindow(xg_hMainWnd);
+        return true;
+    }
+    return false;
+}
+
+// ヒントを表示する。
+void XgShowHints(HWND hwnd)
+{
+    #if 1
+        XgOpenHintsByWindow(hwnd);
+    #else
+        XgOpenHintsByNotepad(hwnd, xg_bShowAnswer);
+    #endif
+}
+
 //////////////////////////////////////////////////////////////////////////////
 
 // hook for Ctrl+A
@@ -7423,9 +7352,6 @@ LRESULT CALLBACK XgCtrlAMessageProc(INT nCode, WPARAM wParam, LPARAM lParam)
 
     return ::CallNextHookEx(xg_hCtrlAHook, nCode, wParam, lParam);
 }
-
-//////////////////////////////////////////////////////////////////////////////
-// 候補ウィンドウ。
 
 //////////////////////////////////////////////////////////////////////////////
 

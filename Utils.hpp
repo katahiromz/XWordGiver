@@ -74,6 +74,11 @@ std::wstring XgJsonEncodeString(const std::wstring& str);
 // 16進で表す。
 char XgToHex(char code);
 
+// 24BPPビットマップを作成。
+HBITMAP XgCreate24BppBitmap(HDC hDC, LONG width, LONG height);
+
+BOOL PackedDIB_CreateFromHandle(std::vector<BYTE>& vecData, HBITMAP hbm);
+
 //////////////////////////////////////////////////////////////////////////////
 // パスを作る。
 

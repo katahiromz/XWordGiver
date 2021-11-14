@@ -13,16 +13,8 @@ struct PATDATA
 
 // 黒マスパターンで答えを表示する。
 extern BOOL xg_bShowAnswerOnPattern;
-// クリップボードから貼り付け。
-void __fastcall XgPasteBoard(HWND hwnd, const std::wstring& str);
-// クリップボードにクロスワードをコピー。
-void __fastcall XgCopyBoard(HWND hwnd);
-// ツールバーのUIを更新する。
-void XgUpdateToolBarUI(HWND hwnd);
 // 解を求める（黒マス追加なし）。
 bool __fastcall XgOnSolve_NoAddBlack(HWND hwnd, bool bShowAnswer = true);
-// 24BPPビットマップを作成。
-HBITMAP XgCreate24BppBitmap(HDC hDC, LONG width, LONG height);
 
 class XG_PatternDialog : public XG_Dialog
 {

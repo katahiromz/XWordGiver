@@ -486,8 +486,8 @@ void XgSwab(LPBYTE pbFile, DWORD cbFile)
 //////////////////////////////////////////////////////////////////////////////
 
 // HTML形式のクリップボードデータを作成する。
-std::string XgMakeClipHtmlData(
-    const std::string& html_utf8, const std::string& style_utf8/* = ""*/)
+std::string XgMakeClipHtmlData(const std::string& html_utf8,
+                               const std::string& style_utf8/* = ""*/)
 {
     using namespace std;
     std::string str(
@@ -539,11 +539,81 @@ std::string XgMakeClipHtmlData(
 }
 
 // HTML形式のクリップボードデータを作成する。
-std::string XgMakeClipHtmlData(
-    const std::wstring& html_wide, const std::wstring& style_wide/* = L""*/)
+std::string XgMakeClipHtmlData(const std::wstring& html_wide,
+                               const std::wstring& style_wide/* = L""*/)
 {
     return XgMakeClipHtmlData(
         XgUnicodeToUtf8(html_wide), XgUnicodeToUtf8(style_wide));
 }
 
 //////////////////////////////////////////////////////////////////////////////
+
+// 24BPPビットマップを作成。
+HBITMAP XgCreate24BppBitmap(HDC hDC, LONG width, LONG height)
+{
+    BITMAPINFO bmi;
+    ZeroMemory(&bmi, sizeof(bmi));
+    bmi.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
+    bmi.bmiHeader.biWidth = width;
+    bmi.bmiHeader.biHeight = height;
+    bmi.bmiHeader.biPlanes = 1;
+    bmi.bmiHeader.biBitCount = 24;
+    return CreateDIBSection(hDC, &bmi, DIB_RGB_COLORS, NULL, NULL, 0);
+}
+
+// BITMAPINFOEX構造体。
+typedef struct tagBITMAPINFOEX
+{
+    BITMAPINFOHEADER bmiHeader;
+    RGBQUAD          bmiColors[256];
+} BITMAPINFOEX, FAR * LPBITMAPINFOEX;
+
+BOOL PackedDIB_CreateFromHandle(std::vector<BYTE>& vecData, HBITMAP hbm)
+{
+    vecData.clear();
+
+    BITMAP bm;
+    if (!GetObject(hbm, sizeof(bm), &bm))
+        return FALSE;
+
+    BITMAPINFOEX bi;
+    BITMAPINFOHEADER *pbmih;
+    DWORD cColors, cbColors;
+
+    pbmih = &bi.bmiHeader;
+    ZeroMemory(pbmih, sizeof(BITMAPINFOHEADER));
+    pbmih->biSize             = sizeof(BITMAPINFOHEADER);
+    pbmih->biWidth            = bm.bmWidth;
+    pbmih->biHeight           = bm.bmHeight;
+    pbmih->biPlanes           = 1;
+    pbmih->biBitCount         = bm.bmBitsPixel;
+    pbmih->biCompression      = BI_RGB;
+    pbmih->biSizeImage        = bm.bmWidthBytes * bm.bmHeight;
+
+    if (bm.bmBitsPixel < 16)
+        cColors = 1 << bm.bmBitsPixel;
+    else
+        cColors = 0;
+    cbColors = cColors * sizeof(RGBQUAD);
+
+    std::vector<BYTE> Bits(pbmih->biSizeImage);
+    HDC hDC = CreateCompatibleDC(NULL);
+    if (hDC == NULL)
+        return FALSE;
+
+    LPBITMAPINFO pbi = LPBITMAPINFO(&bi);
+    if (!GetDIBits(hDC, hbm, 0, bm.bmHeight, &Bits[0], pbi, DIB_RGB_COLORS))
+    {
+        DeleteDC(hDC);
+        return FALSE;
+    }
+
+    DeleteDC(hDC);
+
+    std::string stream;
+    stream.append((const char *)pbmih, sizeof(*pbmih));
+    stream.append((const char *)bi.bmiColors, cbColors);
+    stream.append((const char *)&Bits[0], Bits.size());
+    vecData.assign(stream.begin(), stream.end());
+    return TRUE;
+}
