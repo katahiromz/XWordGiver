@@ -7,19 +7,19 @@
 #include "XWordGiver.hpp"
 #include "layout.h"
 #include <algorithm>
-#include "XG_Dialog.hpp"
+#include "XG_CandsWnd.hpp"
+#include "XG_GenDialog.hpp"
+#include "XG_HintsWnd.hpp"
+#include "XG_NewDialog.hpp"
+#include "XG_NotesDialog.hpp"
+#include "XG_PatGenDialog.hpp"
+#include "XG_PatternDialog.hpp"
+#include "XG_SeqGenerateDialog.hpp"
+#include "XG_SeqPatGenDialog.hpp"
+#include "XG_SeqSolveDialog.hpp"
+#include "XG_SettingsDialog.hpp"
 #include "XG_ThemeDialog.hpp"
 #include "XG_WordListDialog.hpp"
-#include "XG_PatternDialog.hpp"
-#include "XG_HintsWnd.hpp"
-#include "XG_CandsWnd.hpp"
-#include "XG_SettingsDialog.hpp"
-#include "XG_NewDialog.hpp"
-#include "XG_GenDialog.hpp"
-#include "XG_SeqGenerateDialog.hpp"
-#include "XG_PatGenDialog.hpp"
-#include "XG_SeqPatGenDialog.hpp"
-#include "XG_NotesDialog.hpp"
 
 #undef HANDLE_WM_MOUSEWHEEL     // might be wrong
 #define HANDLE_WM_MOUSEWHEEL(hwnd, wParam, lParam, fn) \
@@ -176,9 +176,6 @@ bool xg_bAutoRetry = true;
 
 // 古いパソコンであることを通知したか？
 static bool s_bOldNotice = false;
-
-// ショートカットの拡張子。
-static const LPCWSTR s_szShellLinkDotExt = L".LNK";
 
 // メインウィンドウクラス名。
 static const LPCWSTR s_pszMainWndClass = L"XWord Giver Main Window";
@@ -1404,171 +1401,6 @@ INT CALLBACK XgBrowseCallbackProc(HWND hwnd, UINT uMsg, LPARAM /*lParam*/, LPARA
     if (uMsg == BFFM_INITIALIZED) {
         // 初期化の際に、フォルダーの場所を指定する。
         ::SendMessageW(hwnd, BFFM_SETSELECTION, TRUE, reinterpret_cast<LPARAM>(xg_szDir));
-    }
-    return 0;
-}
-
-//////////////////////////////////////////////////////////////////////////////
-
-// [解の連続作成]ダイアログのダイアログ プロシージャー。
-extern "C" INT_PTR CALLBACK
-XgSolveRepeatedlyDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam*/)
-{
-    int i;
-    WCHAR szFile[MAX_PATH], szTarget[MAX_PATH];
-    std::wstring strFile, strDir;
-    COMBOBOXEXITEMW item;
-    HDROP hDrop;
-    BROWSEINFOW bi;
-    DWORD attrs;
-    LPITEMIDLIST pidl;
-
-    switch (uMsg) {
-    case WM_INITDIALOG:
-        // ダイアログを中央へ移動する。
-        XgCenterDialog(hwnd);
-        // 保存先を設定する。
-        for (const auto& dir : xg_dirs_save_to) {
-            item.mask = CBEIF_TEXT;
-            item.iItem = -1;
-            StringCbCopy(szFile, sizeof(szFile), dir.data());
-            item.pszText = szFile;
-            item.cchTextMax = -1;
-            ::SendDlgItemMessageW(hwnd, cmb1, CBEM_INSERTITEMW, 0,
-                                  reinterpret_cast<LPARAM>(&item));
-        }
-        // コンボボックスの最初の項目を選択する。
-        ::SendDlgItemMessageW(hwnd, cmb1, CB_SETCURSEL, 0, 0);
-        // 自動で再計算をするか？
-        if (xg_bAutoRetry) {
-            ::CheckDlgButton(hwnd, chx1, BST_CHECKED);
-        }
-        // 無制限か？
-        // 生成する数を設定する。
-        ::SetDlgItemInt(hwnd, edt1, xg_nNumberToGenerate, FALSE);
-        // ファイルドロップを有効にする。
-        ::DragAcceptFiles(hwnd, TRUE);
-        SendDlgItemMessageW(hwnd, scr1, UDM_SETRANGE, 0, MAKELPARAM(100, 2));
-        return TRUE;
-
-    case WM_DROPFILES:
-        // ドロップされたファイルのパス名を取得する。
-        hDrop = reinterpret_cast<HDROP>(wParam);
-        ::DragQueryFileW(hDrop, 0, szFile, ARRAYSIZE(szFile));
-        ::DragFinish(hDrop);
-
-        // ショートカットだった場合は、ターゲットのパスを取得する。
-        if (::lstrcmpiW(PathFindExtensionW(szFile), s_szShellLinkDotExt) == 0) {
-            if (!XgGetPathOfShortcutW(szFile, szTarget)) {
-                ::MessageBeep(0xFFFFFFFF);
-                break;
-            }
-            StringCbCopy(szFile, sizeof(szFile), szTarget);
-        }
-
-        // ファイルの属性を確認する。
-        attrs = ::GetFileAttributesW(szFile);
-        if (attrs & FILE_ATTRIBUTE_DIRECTORY) {
-            // ディレクトリーだった。
-            // 同じ項目がすでにあれば、削除する。
-            i = static_cast<int>(::SendDlgItemMessageW(
-                hwnd, cmb1, CB_FINDSTRINGEXACT, 0,
-                reinterpret_cast<LPARAM>(szFile)));
-            if (i != CB_ERR) {
-                ::SendDlgItemMessageW(hwnd, cmb1, CB_DELETESTRING, i, 0);
-            }
-            // コンボボックスの最初に挿入する。
-            item.mask = CBEIF_TEXT;
-            item.iItem = 0;
-            item.pszText = szFile;
-            item.cchTextMax = -1;
-            ::SendDlgItemMessageW(hwnd, cmb1, CBEM_INSERTITEMW, 0,
-                                reinterpret_cast<LPARAM>(&item));
-            // コンボボックスの最初の項目を選択する。
-            ::SendDlgItemMessageW(hwnd, cmb1, CB_SETCURSEL, 0, 0);
-        } else {
-            // ディレクトリーではなかった。
-            ::MessageBeep(0xFFFFFFFF);
-        }
-        break;
-
-    case WM_COMMAND:
-        switch (LOWORD(wParam)) {
-        case IDOK:
-            // 保存先のパス名を取得する。
-            ::GetDlgItemTextW(hwnd, cmb1, szFile, ARRAYSIZE(szFile));
-            attrs = ::GetFileAttributesW(szFile);
-            if (attrs == 0xFFFFFFFF || !(attrs & FILE_ATTRIBUTE_DIRECTORY)) {
-                // パスがなければ作成する。
-                if (!XgMakePathW(szFile)) {
-                    // 作成に失敗。
-                    ::SendDlgItemMessageW(hwnd, cmb1, CB_SETEDITSEL, 0, -1);
-                    XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_STORAGEINVALID), nullptr, MB_ICONERROR);
-                    ::SetFocus(::GetDlgItem(hwnd, cmb1));
-                    return 0;
-                }
-            }
-            // 保存先をセットする。
-            strDir = szFile;
-            xg_str_trim(strDir);
-            {
-                auto end = xg_dirs_save_to.end();
-                for (auto it = xg_dirs_save_to.begin(); it != end; it++) {
-                    if (_wcsicmp((*it).data(), strDir.data()) == 0) {
-                        xg_dirs_save_to.erase(it);
-                        break;
-                    }
-                }
-                xg_dirs_save_to.emplace_front(strDir);
-            }
-            // 自動で再計算をするか？
-            xg_bAutoRetry = (::IsDlgButtonChecked(hwnd, chx1) == BST_CHECKED);
-            // 問題の数を取得する。
-            {
-                BOOL bTranslated;
-                xg_nNumberToGenerate = ::GetDlgItemInt(hwnd, edt1, &bTranslated, FALSE);
-                if (!bTranslated || xg_nNumberToGenerate == 0) {
-                    ::SendDlgItemMessageW(hwnd, edt1, EM_SETSEL, 0, -1);
-                    XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_ENTERPOSITIVE), nullptr, MB_ICONERROR);
-                    ::SetFocus(::GetDlgItem(hwnd, edt1));
-                    return 0;
-                }
-            }
-            // JSON形式で保存するか？
-            xg_bSaveAsJsonFile = true;
-            // 初期化する。
-            xg_bSolved = false;
-            xg_bShowAnswer = false;
-            xg_vTateInfo.clear();
-            xg_vYokoInfo.clear();
-            xg_vMarks.clear();
-            xg_vMarkedCands.clear();
-            // ダイアログを閉じる。
-            ::EndDialog(hwnd, IDOK);
-            break;
-
-        case IDCANCEL:
-            // ダイアログを閉じる。
-            ::EndDialog(hwnd, IDCANCEL);
-            break;
-
-        case psh1:
-            // ユーザーに保存先を問い合わせる。
-            ZeroMemory(&bi, sizeof(bi));
-            bi.hwndOwner = hwnd;
-            bi.lpszTitle = XgLoadStringDx1(IDS_CROSSSTORAGE);
-            bi.ulFlags = BIF_RETURNONLYFSDIRS;
-            bi.lpfn = XgBrowseCallbackProc;
-            ::GetDlgItemTextW(hwnd, cmb1, xg_szDir, ARRAYSIZE(xg_szDir));
-            pidl = ::SHBrowseForFolderW(&bi);
-            if (pidl) {
-                // コンボボックスにパスを設定する。
-                ::SHGetPathFromIDListW(pidl, szFile);
-                ::SetDlgItemTextW(hwnd, cmb1, szFile);
-                ::CoTaskMemFree(pidl);
-            }
-            break;
-        }
     }
     return 0;
 }
@@ -3123,8 +2955,8 @@ bool __fastcall XgOnSolveRepeatedly(HWND hwnd)
     // [解の連続作成]ダイアログ。
     INT nID;
     ::EnableWindow(xg_hwndInputPalette, FALSE);
-    nID = INT(::DialogBoxW(xg_hInstance, MAKEINTRESOURCE(IDD_SEQSOLVE), hwnd,
-                           XgSolveRepeatedlyDlgProc));
+    XG_SeqSolveDialog dialog;
+    nID = INT(dialog.DoModal(hwnd));
     ::EnableWindow(xg_hwndInputPalette, TRUE);
     if (nID != IDOK) {
         // イメージを更新する。
@@ -3240,8 +3072,8 @@ bool __fastcall XgOnSolveRepeatedlyNoAddBlack(HWND hwnd)
     // [解の連続作成]ダイアログ。
     INT nID;
     ::EnableWindow(xg_hwndInputPalette, FALSE);
-    nID = INT(::DialogBoxW(xg_hInstance, MAKEINTRESOURCE(IDD_SEQSOLVE), hwnd,
-                           XgSolveRepeatedlyDlgProc));
+    XG_SeqSolveDialog dialog;
+    nID = INT(dialog.DoModal(hwnd));
     ::EnableWindow(xg_hwndInputPalette, TRUE);
     if (nID != IDOK) {
         // イメージを更新する。
@@ -7299,7 +7131,7 @@ bool __fastcall MainWnd_OnCreate(HWND hwnd, LPCREATESTRUCT /*lpCreateStruct*/)
 
         // コマンドライン引数があれば、それを開く。
         bool bSuccess = true;
-        if (::lstrcmpiW(PathFindExtensionW(szFile), s_szShellLinkDotExt) == 0)
+        if (::lstrcmpiW(PathFindExtensionW(szFile), L".LNK") == 0)
         {
             // ショートカットだった場合は、ターゲットのパスを取得する。
             if (XgGetPathOfShortcutW(szFile, szTarget)) {
