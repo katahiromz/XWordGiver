@@ -1780,6 +1780,7 @@ extern "C" INT_PTR CALLBACK
 XgCancelFromWordsDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
     using namespace crossword_generation;
+    const DWORD SLEEP = 250;
 
     switch (uMsg) {
     case WM_INITDIALOG:
@@ -1816,7 +1817,7 @@ XgCancelFromWordsDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
             ::KillTimer(hwnd, 999);
             // キャンセルしてスレッドを待つ。
             s_canceled = true;
-            wait_for_threads(xg_dwThreadCount, 4);
+            ::Sleep(SLEEP);
             // 計算時間を求めるために、終了時間を取得する。
             s_dwTick2 = ::GetTickCount64();
             // ダイアログを終了する。
@@ -1828,7 +1829,7 @@ XgCancelFromWordsDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
             ::KillTimer(hwnd, 999);
             // 再計算しなおす。
             s_canceled = true;
-            wait_for_threads(xg_dwThreadCount, 4);
+            ::Sleep(SLEEP);
             ::InterlockedIncrement(&s_nRetryCount);
             s_dwTick1 = ::GetTickCount64();
             reset();
@@ -1845,7 +1846,7 @@ XgCancelFromWordsDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
             ::KillTimer(hwnd, 999);
             // キャンセルしてスレッドを待つ。
             s_canceled = true;
-            wait_for_threads(xg_dwThreadCount, 4);
+            ::Sleep(SLEEP);
             // 計算時間を求めるために、終了時間を取得する。
             s_dwTick2 = ::GetTickCount64();
             // ダイアログを終了する。
@@ -1885,7 +1886,7 @@ XgCancelFromWordsDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
                 ::KillTimer(hwnd, 999);
                 // 再計算しなおす。
                 s_canceled = true;
-                wait_for_threads(xg_dwThreadCount, 4);
+                ::Sleep(SLEEP);
                 ::InterlockedIncrement(&s_nRetryCount);
                 s_dwTick1 = ::GetTickCount64();
                 reset();
