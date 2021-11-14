@@ -1341,6 +1341,12 @@ extern std::deque<std::wstring>  xg_dict_files;
 // 辞書名をセットする。
 void XgSetDict(const std::wstring& strFile);
 
+// 再計算するか？
+extern bool xg_bAutoRetry;
+
+// スケルトンモードか？
+extern BOOL xg_bSkeletonMode;
+
 //////////////////////////////////////////////////////////////////////////////
 
 // 描画イメージを更新する。

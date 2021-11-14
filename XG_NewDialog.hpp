@@ -7,7 +7,7 @@ void XgNewCells(HWND hwnd, WCHAR ch, INT nRows, INT nCols);
 // 盤のサイズを変更する。
 void XgResizeCells(HWND hwnd, INT nNewRows, INT nNewCols);
 
-// [新規作成]ダイアログのダイアログ プロシージャ。
+// [新規作成]ダイアログ。
 class XG_NewDialog : public XG_Dialog
 {
 public:
