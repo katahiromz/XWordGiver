@@ -11,6 +11,7 @@
 #include "XG_CancelFromWordsDialog.hpp"
 #include "XG_CancelSmartSolveDialog.hpp"
 #include "XG_CancelSolveDialog.hpp"
+#include "XG_CancelSolveNoAddBlackDialog.hpp"
 #include "XG_CandsWnd.hpp"
 #include "XG_GenDialog.hpp"
 #include "XG_HintsWnd.hpp"
@@ -1226,148 +1227,6 @@ INT CALLBACK XgBrowseCallbackProc(HWND hwnd, UINT uMsg, LPARAM /*lParam*/, LPARA
 
 //////////////////////////////////////////////////////////////////////////////
 
-// キャンセルダイアログ（黒マス追加なし）。
-extern "C" INT_PTR CALLBACK
-XgCancelSolveDlgProcNoAddBlack(
-    HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam*/)
-{
-    switch (uMsg) {
-    case WM_INITDIALOG:
-        #ifdef NO_RANDOM
-        {
-            extern int xg_random_seed;
-            xg_random_seed = 100;
-        }
-        #endif
-        // ダイアログを中央へ移動する。
-        XgCenterDialog(hwnd);
-        // 初期化する。
-        ::InterlockedExchange(&xg_nRetryCount, 0);
-        // プログレスバーの範囲をセットする。
-        ::SendDlgItemMessageW(hwnd, ctl1, PBM_SETRANGE, 0,
-                            MAKELPARAM(0, xg_nRows * xg_nCols));
-        ::SendDlgItemMessageW(hwnd, ctl2, PBM_SETRANGE, 0,
-                            MAKELPARAM(0, xg_nRows * xg_nCols));
-        // 計算時間を求めるために、開始時間を取得する。
-        xg_dwlTick0 = xg_dwlTick1 = ::GetTickCount64();
-        // 再計算までの時間を概算する。
-        xg_dwWait = XgGetRetryInterval();
-        // 解を求めるのを開始。
-        XgStartSolve_NoAddBlack();
-        // タイマーをセットする。
-        ::SetTimer(hwnd, 999, xg_dwTimerInterval, nullptr);
-        // フォーカスをセットする。
-        ::SetFocus(::GetDlgItem(hwnd, psh1));
-        // 生成した問題の個数を表示する。
-        if (xg_nNumberGenerated > 0) {
-            WCHAR sz[MAX_PATH];
-            StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(IDS_PROBLEMSMAKING),
-                           xg_nNumberGenerated);
-            ::SetDlgItemTextW(hwnd, stc2, sz);
-        }
-        return false;
-
-    case WM_COMMAND:
-        switch(LOWORD(wParam)) {
-        case psh1:
-            // タイマーを解除する。
-            ::KillTimer(hwnd, 999);
-            // キャンセルしてスレッドを待つ。
-            xg_bCancelled = true;
-            XgWaitForThreads();
-            // スレッドを閉じる。
-            XgCloseThreads();
-            // 計算時間を求めるために、終了時間を取得する。
-            xg_dwlTick2 = ::GetTickCount64();
-            // 解を求めようとした後の後処理。
-            XgEndSolve();
-            // ダイアログを終了する。
-            ::EndDialog(hwnd, IDCANCEL);
-            break;
-
-        case psh2:
-            // タイマーを解除する。
-            ::KillTimer(hwnd, 999);
-            // 再計算しなおす。
-            xg_bCancelled = true;
-            XgWaitForThreads();
-            XgCloseThreads();
-            ::InterlockedIncrement(&xg_nRetryCount);
-            xg_dwlTick1 = ::GetTickCount64();
-            XgStartSolve_NoAddBlack();
-            // タイマーをセットする。
-            ::SetTimer(hwnd, 999, xg_dwTimerInterval, nullptr);
-            break;
-        }
-        break;
-
-    case WM_SYSCOMMAND:
-        if (wParam == SC_CLOSE) {
-            // タイマーを解除する。
-            ::KillTimer(hwnd, 999);
-            // キャンセルしてスレッドを待つ。
-            xg_bCancelled = true;
-            XgWaitForThreads();
-            // スレッドを閉じる。
-            XgCloseThreads();
-            // 計算時間を求めるために、終了時間を取得する。
-            xg_dwlTick2 = ::GetTickCount64();
-            // 解を求めようとした後の後処理。
-            XgEndSolve();
-            // ダイアログを終了する。
-            ::EndDialog(hwnd, IDCANCEL);
-        }
-        break;
-
-    case WM_TIMER:
-        // プログレスバーを更新する。
-        for (DWORD i = 0; i < xg_dwThreadCount; i++) {
-            ::SendDlgItemMessageW(hwnd, ctl1 + i, PBM_SETPOS,
-                static_cast<WPARAM>(xg_aThreadInfo[i].m_count), 0);
-        }
-        // 経過時間を表示する。
-        {
-            WCHAR sz[MAX_PATH];
-            DWORDLONG dwTick = ::GetTickCount64();
-            StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(IDS_NOWSOLVING),
-                DWORD(dwTick - xg_dwlTick0) / 1000,
-                DWORD(dwTick - xg_dwlTick0) / 100 % 10, xg_nRetryCount);
-            ::SetDlgItemTextW(hwnd, stc1, sz);
-        }
-        // 一つ以上のスレッドが終了したか？
-        if (XgIsAnyThreadTerminated()) {
-            // スレッドが終了した。タイマーを解除する。
-            ::KillTimer(hwnd, 999);
-            // 計算時間を求めるために、終了時間を取得する。
-            xg_dwlTick2 = ::GetTickCount64();
-            // 解を求めようとした後の後処理。
-            XgEndSolve();
-            // ダイアログを終了する。
-            ::EndDialog(hwnd, IDOK);
-            // スレッドを閉じる。
-            XgCloseThreads();
-        } else {
-            // 再計算が必要か？
-            if (xg_bAutoRetry && ::GetTickCount64() - xg_dwlTick1 > xg_dwWait) {
-                // タイマーを解除する。
-                ::KillTimer(hwnd, 999);
-                // 再計算しなおす。
-                xg_bCancelled = true;
-                XgWaitForThreads();
-                XgCloseThreads();
-                ::InterlockedIncrement(&xg_nRetryCount);
-                xg_dwlTick1 = ::GetTickCount64();
-                // スマート解決なら、黒マスを生成する。
-                XgStartSolve_NoAddBlack();
-                // タイマーをセットする。
-                ::SetTimer(hwnd, 999, xg_dwTimerInterval, nullptr);
-            }
-        }
-        break;
-    }
-    return false;
-}
-
 // キャンセルダイアログ。
 extern "C" INT_PTR CALLBACK
 XgCancelGenBlacksDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
@@ -2153,7 +2012,10 @@ bool __fastcall XgOnSolve_NoAddBlack(HWND hwnd, bool bShowAnswer/* = true*/)
     XgDestroyHintsWnd();
     // キャンセルダイアログを表示し、実行を開始する。
     ::EnableWindow(xg_hwndInputPalette, FALSE);
-    ::DialogBoxW(xg_hInstance, MAKEINTRESOURCE(IDD_CALCULATING), hwnd, XgCancelSolveDlgProcNoAddBlack);
+    {
+        XG_CancelSolveNoAddBlackDialog dialog;
+        dialog.DoModal(hwnd);
+    }
     ::EnableWindow(xg_hwndInputPalette, TRUE);
 
     WCHAR sz[MAX_PATH];
@@ -2387,7 +2249,8 @@ bool __fastcall XgOnSolveRepeatedlyNoAddBlack(HWND hwnd)
     ::EnableWindow(xg_hwndInputPalette, FALSE);
     do
     {
-        nID = ::DialogBoxW(xg_hInstance, MAKEINTRESOURCE(IDD_CALCULATING), hwnd, XgCancelSolveDlgProcNoAddBlack);
+        XG_CancelSolveNoAddBlackDialog dialog;
+        nID = dialog.DoModal(hwnd);
         // 生成成功のときはxg_nNumberGeneratedを増やす。
         if (nID == IDOK && xg_bSolved) {
             ++xg_nNumberGenerated;
