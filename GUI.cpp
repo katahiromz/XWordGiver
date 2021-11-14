@@ -394,16 +394,22 @@ void __fastcall XgEnsureCaretVisible(HWND hwnd)
 INT __fastcall XgGetPreferredMaxLength(void)
 {
     if (xg_imode == xg_im_KANJI) {
+        // ４文字以上の熟語は少ないので避ける。
         return 4;
     } else if (xg_bSkeletonMode) {
+        // スケルトンモードでは長い方がいい。
         return 6;
     } else if (xg_imode == xg_im_RUSSIA || xg_imode == xg_im_ABC) {
+        // ロシア語や英語は日本語の単語より長い傾向にある。
         return 5;
     } else if (xg_imode == xg_im_DIGITS) {
+        // 数字の単語？　何に使うんだ？
         return 7;
     } else if (xg_nRules & (RULE_LINESYMMETRYH | RULE_LINESYMMETRYV)) {
+        // 線対称のときに偶数長はまずいと思われる。
         return 5;
     } else {
+        // おそらく日本語のカナと思われる。
         return 4;
     }
 }
