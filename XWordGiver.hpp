@@ -1337,9 +1337,9 @@ bool __fastcall XgDoLoadCrpFile(HWND hwnd, LPCWSTR pszFile);
 bool __fastcall XgDoSave(HWND /*hwnd*/, LPCWSTR pszFile);
 
 // ファイル（JSON形式）を保存する。
-bool __fastcall XgDoSaveJson(HWND /*hwnd*/, LPCWSTR pszFile);
+bool __fastcall XgDoSaveJson(LPCWSTR pszFile);
 // ファイル（CRP形式）を保存する。
-bool __fastcall XgDoSaveCrpFile(HWND /*hwnd*/, LPCWSTR pszFile);
+bool __fastcall XgDoSaveCrpFile(LPCWSTR pszFile);
 
 // ヒント文字列を解析する。
 bool __fastcall XgParseHintsStr(const std::wstring& strHints);
@@ -1368,11 +1368,20 @@ void __fastcall XgToggleMark(HWND hwnd);
 // クロスワードで使う文字に変換する。
 std::wstring __fastcall XgNormalizeString(const std::wstring& text);
 
+// ヒント文字列を取得する。
+// hint_type 0: タテ。
+// hint_type 1: ヨコ。
+// hint_type 2: タテとヨコ。
+// hint_type 3: HTMLのタテ。
+// hint_type 4: HTMLのヨコ。
+// hint_type 5: HTMLのタテとヨコ。
+void __fastcall XgGetHintsStr(const XG_Board& board, std::wstring& str, int hint_type,
+                              bool bShowAnswer = true);
+
 //////////////////////////////////////////////////////////////////////////////
 
 #include "Dictionary.hpp"
 #include "Marks.hpp"
 #include "SaveBitmapToFile.h"
-#include "GUI.hpp"
 
 #endif  // ndef XWORDGIVER

@@ -5,6 +5,7 @@
 
 #define NOMINMAX
 #include "XWordGiver.hpp"
+#include "GUI.hpp"
 #include "XG_UndoBuffer.hpp"
 
 #include "XG_CandsWnd.hpp"
@@ -977,6 +978,21 @@ bool XgOpenCandsWnd(HWND hwnd, bool vertical)
     return xg_cands_wnd.Open(hwnd, vertical);
 }
 
+// ヒントを更新する。
+void __fastcall XgUpdateHints(void)
+{
+    xg_vecTateHints.clear();
+    xg_vecYokoHints.clear();
+    xg_strHints.clear();
+    if (xg_bSolved) {
+        XG_HintsWnd::UpdateHintData(); // ヒントに変更があれば、更新する。
+        XgGetHintsStr(xg_solution, xg_strHints, 2, true);
+        if (!XgParseHintsStr(xg_strHints)) {
+            xg_strHints.clear();
+        }
+    }
+}
+
 // ヒントの内容をメモ帳で開く。
 bool XgOpenHintsByNotepad(HWND /*hwnd*/, bool bShowAnswer)
 {
@@ -1004,6 +1020,7 @@ bool XgOpenHintsByNotepad(HWND /*hwnd*/, bool bShowAnswer)
     // BOMとヒントの文字列をファイルに書き込む。
     str = reinterpret_cast<LPCWSTR>("\xFF\xFE\x00");
     str += xg_pszNewLine;
+    XG_HintsWnd::UpdateHintData(); // ヒントに変更があれば、更新する。
     XgGetHintsStr(xg_solution, xg_strHints, 2, true);
     str += xg_strHints;
     cb = static_cast<DWORD>(str.size() * sizeof(WCHAR));
@@ -1998,6 +2015,7 @@ static void XgPrintIt(HDC hdc, PRINTDLGW* ppd, bool bPrintAnswer)
 
             // ヒントを取得する。
             if (xg_bSolved) {
+                XG_HintsWnd::UpdateHintData(); // ヒントに変更があれば、更新する。
                 XgGetHintsStr(xg_solution, xg_strHints, 2, bPrintAnswer);
                 strHints = xg_strHints;
             } else {
@@ -3203,6 +3221,7 @@ void __fastcall XgCopyHintsStyle0(HWND hwnd, int hint_type)
 
     // クロスワードの文字列を取得する。
     std::wstring str;
+    XG_HintsWnd::UpdateHintData(); // ヒントに変更があれば、更新する。
     XgGetHintsStr(xg_solution, str, hint_type, false);
     xg_str_trim(str);
 
@@ -3221,6 +3240,7 @@ void __fastcall XgCopyHintsStyle1(HWND hwnd, int hint_type)
 
     // クロスワードの文字列を取得する。
     std::wstring str;
+    XG_HintsWnd::UpdateHintData(); // ヒントに変更があれば、更新する。
     XgGetHintsStr(xg_solution, str, hint_type, false);
     xg_str_trim(str);
 
@@ -3285,186 +3305,6 @@ void __fastcall XgCopyHintsStyle1(HWND hwnd, int hint_type)
         }
         // 確保したメモリを解放する。
         ::GlobalFree(hGlobal);
-    }
-}
-
-// ヒントを取得する。
-void __fastcall
-XgGetHintsStr(const XG_Board& board, std::wstring& str, int hint_type, bool bShowAnswer)
-{
-    // 文字列バッファ。
-    WCHAR sz[64];
-
-    // 初期化。
-    str.clear();
-
-    // まだ解かれていない場合は、何も返さない。
-    if (!xg_bSolved)
-        return;
-
-    // ヒントに変更があれば、更新する。
-    if (XG_HintsWnd::AreHintsModified()) {
-        XG_HintsWnd::UpdateHintData();
-    }
-
-    assert(0 <= hint_type && hint_type < 6);
-
-    if (hint_type == 0 || hint_type == 2) {
-        // タテのカギの文字列を構成する。
-        str += XgLoadStringDx1(IDS_DOWN);
-        str += xg_pszNewLine;
-
-        for (const auto& info : xg_vTateInfo) {
-            // 番号を格納する。
-            StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(IDS_DOWNNUMBER), info.m_number);
-            str += sz;
-
-            // 答えを見せるかどうか？
-            if (bShowAnswer) {
-                str += L"\x226A";
-                str += info.m_word;
-                str += L"\x226B";
-            }
-
-            // ヒント文章を追加する。
-            bool added = false;
-            for (const auto& data : xg_dict_1) {
-                if (_wcsicmp(data.m_word.data(),
-                             info.m_word.data()) == 0)
-                {
-                    str += data.m_hint;
-                    added = true;
-                    break;
-                }
-            }
-            if (!added) {
-                for (const auto& data : xg_dict_2) {
-                    if (_wcsicmp(data.m_word.data(),
-                                 info.m_word.data()) == 0)
-                    {
-                        str += data.m_hint;
-                        added = true;
-                        break;
-                    }
-                }
-            }
-            str += xg_pszNewLine;   // 改行。
-        }
-        str += xg_pszNewLine;
-    }
-    if (hint_type == 1 || hint_type == 2) {
-        // ヨコのカギの文字列を構成する。
-        str += XgLoadStringDx1(IDS_ACROSS);
-        str += xg_pszNewLine;
-        for (const auto& info : xg_vYokoInfo) {
-            // 番号を格納する。
-            StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(IDS_ACROSSNUMBER), info.m_number);
-            str += sz;
-
-            // 答えを見せるかどうか？
-            if (bShowAnswer) {
-                str += L"\x226A";
-                str += info.m_word;
-                str += L"\x226B";
-            }
-
-            // ヒント文章を追加する。
-            bool added = false;
-            for (const auto& data : xg_dict_1) {
-                if (_wcsicmp(data.m_word.data(), info.m_word.data()) == 0) {
-                    str += data.m_hint;
-                    added = true;
-                    break;
-                }
-            }
-            if (!added) {
-                for (const auto& data : xg_dict_2) {
-                    if (_wcsicmp(data.m_word.data(), info.m_word.data()) == 0) {
-                        str += data.m_hint;
-                        added = true;
-                        break;
-                    }
-                }
-            }
-            str += xg_pszNewLine;   // 改行。
-        }
-        str += xg_pszNewLine;
-    }
-    if (hint_type == 3 || hint_type == 5) {
-        // タテのカギの文字列を構成する。
-        str += XgLoadStringDx1(IDS_PARABOLD);     // <p><b>
-        str += XgLoadStringDx1(IDS_DOWNLABEL);
-        str += XgLoadStringDx1(IDS_ENDPARABOLD);    // </b></p>
-        str += xg_pszNewLine;
-        str += XgLoadStringDx1(IDS_OL);    // <ol>
-        str += xg_pszNewLine;
-
-        for (const auto& info : xg_vTateInfo) {
-            // <li>
-            StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(IDS_LI), info.m_number);
-            str += sz;
-
-            // ヒント文章を追加する。
-            bool added = false;
-            for (const auto& data : xg_dict_1) {
-                if (_wcsicmp(data.m_word.data(), info.m_word.data()) == 0) {
-                    str += data.m_hint;
-                    added = true;
-                    break;
-                }
-            }
-            if (!added) {
-                for (const auto& data : xg_dict_2) {
-                    if (_wcsicmp(data.m_word.data(), info.m_word.data()) == 0) {
-                        str += data.m_hint;
-                        added = true;
-                        break;
-                    }
-                }
-            }
-            str += XgLoadStringDx1(IDS_ENDLI);    // </li>
-            str += xg_pszNewLine;           // 改行。
-        }
-        str += XgLoadStringDx1(IDS_ENDOL);    // </ol>
-        str += xg_pszNewLine;           // 改行。
-    }
-    if (hint_type == 4 || hint_type == 5) {
-        // ヨコのカギの文字列を構成する。
-        str += XgLoadStringDx1(IDS_PARABOLD);     // <p><b>
-        str += XgLoadStringDx1(IDS_ACROSSLABEL);
-        str += XgLoadStringDx1(IDS_ENDPARABOLD);    // </b></p>
-        str += xg_pszNewLine;
-        str += XgLoadStringDx1(IDS_OL);    // <ol>
-        str += xg_pszNewLine;
-
-        for (const auto& info : xg_vYokoInfo) {
-            // <li>
-            StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(IDS_LI), info.m_number);
-            str += sz;
-
-            // ヒント文章を追加する。
-            bool added = false;
-            for (const auto& data : xg_dict_1) {
-                if (_wcsicmp(data.m_word.data(), info.m_word.data()) == 0) {
-                    str += data.m_hint;
-                    added = true;
-                    break;
-                }
-            }
-            if (!added) {
-                for (const auto& data : xg_dict_2) {
-                    if (_wcsicmp(data.m_word.data(), info.m_word.data()) == 0) {
-                        str += data.m_hint;
-                        added = true;
-                        break;
-                    }
-                }
-            }
-            str += XgLoadStringDx1(IDS_ENDLI);    // </li>
-            str += xg_pszNewLine;           // 改行。
-        }
-        str += XgLoadStringDx1(IDS_ENDOL);    // </ol>
-        str += xg_pszNewLine;           // 改行。
     }
 }
 
@@ -4489,6 +4329,7 @@ void __fastcall MainWnd_OnFlipVH(HWND hwnd)
         xg_dict_1 = XgCreateMiniDict();
         xg_dict_2.clear();
         xg_solution.DoNumbering();
+        XG_HintsWnd::UpdateHintData(); // ヒントに変更があれば、更新する。
         XgGetHintsStr(xg_solution, xg_strHints, 2, true);
         if (!XgParseHintsStr(xg_strHints)) {
             xg_strHints.clear();
@@ -5548,6 +5389,10 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
             {
                 is_builder = true;
             }
+            // 候補ウィンドウを破棄する。
+            XgDestroyCandsWnd();
+            // ヒントウィンドウを破棄する。
+            XgDestroyHintsWnd();
             // 開く。
             if (is_builder) {
                 if (!XgDoLoadCrpFile(hwnd, sz)) {
@@ -5561,8 +5406,11 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
                     XgFitZoom(hwnd);
                     // イメージを更新する。
                     XgUpdateImage(hwnd, 0, 0);
+                    // ヒントを表示する。
+                    XgShowHints(hwnd);
                 }
             } else {
+                // ファイルを読み込む。
                 if (!XgDoLoadFile(hwnd, sz, is_json)) {
                     // 失敗。
                     XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_CANTLOAD), nullptr, MB_ICONERROR);
@@ -5577,6 +5425,8 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
                     // テーマを更新する。
                     XgSetThemeString(xg_strTheme);
                     XgUpdateTheme(hwnd);
+                    // ヒントを表示する。
+                    XgShowHints(hwnd);
                 }
             }
         }
@@ -6657,6 +6507,11 @@ void __fastcall MainWnd_OnDropFiles(HWND hwnd, HDROP hDrop)
     // 拡張子を取得する。
     LPWSTR pch = PathFindExtensionW(szFile);
 
+    // 候補ウィンドウを破棄する。
+    XgDestroyCandsWnd();
+    // ヒントウィンドウを破棄する。
+    XgDestroyHintsWnd();
+
     if (::lstrcmpiW(pch, L".xwd") == 0) {
         // 拡張子が.xwdだった。ファイルを開く。
         if (!XgDoLoadFile(hwnd, szFile, false)) {
@@ -6671,6 +6526,8 @@ void __fastcall MainWnd_OnDropFiles(HWND hwnd, HDROP hDrop)
             // イメージを更新する。
             XgMarkUpdate();
             XgUpdateImage(hwnd, 0, 0);
+            // ヒントを表示する。
+            XgShowHints(hwnd);
         }
     } else if (::lstrcmpiW(pch, L".xwj") == 0 || lstrcmpiW(pch, L".json") == 0) {
         // 拡張子が.xwjか.jsonだった。ファイルを開く。
@@ -6686,6 +6543,8 @@ void __fastcall MainWnd_OnDropFiles(HWND hwnd, HDROP hDrop)
             // イメージを更新する。
             XgMarkUpdate();
             XgUpdateImage(hwnd, 0, 0);
+            // ヒントを表示する。
+            XgShowHints(hwnd);
         }
     } else if (::lstrcmpiW(pch, L".crp") == 0 || ::lstrcmpiW(pch, L".crx") == 0) {
         if (!XgDoLoadCrpFile(hwnd, szFile)) {
@@ -6969,6 +6828,11 @@ bool __fastcall MainWnd_OnCreate(HWND hwnd, LPCREATESTRUCT /*lpCreateStruct*/)
             is_builder = true;
         }
         if (bSuccess) {
+            // 候補ウィンドウを破棄する。
+            XgDestroyCandsWnd();
+            // ヒントウィンドウを破棄する。
+            XgDestroyHintsWnd();
+            // Crossword Builderか？
             if (is_builder) {
                 if (!XgDoLoadCrpFile(hwnd, szFile)) {
                     XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_CANTLOAD), nullptr, MB_ICONERROR);
@@ -6978,8 +6842,11 @@ bool __fastcall MainWnd_OnCreate(HWND hwnd, LPCREATESTRUCT /*lpCreateStruct*/)
                     XgFitZoom(hwnd);
                     // イメージを更新する。
                     XgUpdateImage(hwnd, 0, 0);
+                    // ヒントを表示する。
+                    XgShowHints(hwnd);
                 }
             } else {
+                // ファイルを読み込む。
                 if (!XgDoLoadFile(hwnd, szFile, is_json)) {
                     XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_CANTLOAD), nullptr, MB_ICONERROR);
                 } else {
@@ -6991,6 +6858,8 @@ bool __fastcall MainWnd_OnCreate(HWND hwnd, LPCREATESTRUCT /*lpCreateStruct*/)
                     XgUpdateTheme(hwnd);
                     // イメージを更新する。
                     XgUpdateImage(hwnd, 0, 0);
+                    // ヒントを表示する。
+                    XgShowHints(hwnd);
                 }
             }
             // ルールを更新する。
@@ -7257,6 +7126,10 @@ bool XgOpenHintsByWindow(HWND hwnd)
         xg_hHintsWnd = NULL;
         ::DestroyWindow(hwnd);
     }
+
+    // ヒントが空なら開かない。
+    if (!xg_bSolved)
+        return false;
 
     // ヒントウィンドウを作成する。
     if (XgCreateHintsWnd(xg_hMainWnd)) {

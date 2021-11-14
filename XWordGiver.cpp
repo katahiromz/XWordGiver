@@ -5,7 +5,6 @@
 
 #include "XWordGiver.hpp"
 #include "Auto.hpp"
-#include "XG_HintsWnd.hpp"
 
 //////////////////////////////////////////////////////////////////////////////
 // global variables
@@ -1586,20 +1585,6 @@ bool __fastcall XG_Board::IsSolution() const
     return IsValid();
 }
 
-// ヒントを更新する。
-void __fastcall XgUpdateHints(void)
-{
-    xg_vecTateHints.clear();
-    xg_vecYokoHints.clear();
-    xg_strHints.clear();
-    if (xg_bSolved) {
-        XgGetHintsStr(xg_solution, xg_strHints, 2, true);
-        if (!XgParseHintsStr(xg_strHints)) {
-            xg_strHints.clear();
-        }
-    }
-}
-
 // ヒント文字列を解析する。
 bool __fastcall XgParseHints(std::vector<XG_Hint>& hints, const std::wstring& str)
 {
@@ -1711,6 +1696,181 @@ bool __fastcall XgParseHintsStr(const std::wstring& strHints)
            XgParseHints(xg_vecYokoHints, yoko);
 }
 
+// ヒントを取得する。
+void __fastcall
+XgGetHintsStr(const XG_Board& board, std::wstring& str, int hint_type, bool bShowAnswer)
+{
+    // 文字列バッファ。
+    WCHAR sz[64];
+
+    // 初期化。
+    str.clear();
+
+    // まだ解かれていない場合は、何も返さない。
+    if (!xg_bSolved)
+        return;
+
+    assert(0 <= hint_type && hint_type < 6);
+
+    if (hint_type == 0 || hint_type == 2) {
+        // タテのカギの文字列を構成する。
+        str += XgLoadStringDx1(IDS_DOWN);
+        str += xg_pszNewLine;
+
+        for (const auto& info : xg_vTateInfo) {
+            // 番号を格納する。
+            StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(IDS_DOWNNUMBER), info.m_number);
+            str += sz;
+
+            // 答えを見せるかどうか？
+            if (bShowAnswer) {
+                str += L"\x226A";
+                str += info.m_word;
+                str += L"\x226B";
+            }
+
+            // ヒント文章を追加する。
+            bool added = false;
+            for (const auto& data : xg_dict_1) {
+                if (_wcsicmp(data.m_word.data(),
+                             info.m_word.data()) == 0)
+                {
+                    str += data.m_hint;
+                    added = true;
+                    break;
+                }
+            }
+            if (!added) {
+                for (const auto& data : xg_dict_2) {
+                    if (_wcsicmp(data.m_word.data(),
+                                 info.m_word.data()) == 0)
+                    {
+                        str += data.m_hint;
+                        added = true;
+                        break;
+                    }
+                }
+            }
+            str += xg_pszNewLine;   // 改行。
+        }
+        str += xg_pszNewLine;
+    }
+    if (hint_type == 1 || hint_type == 2) {
+        // ヨコのカギの文字列を構成する。
+        str += XgLoadStringDx1(IDS_ACROSS);
+        str += xg_pszNewLine;
+        for (const auto& info : xg_vYokoInfo) {
+            // 番号を格納する。
+            StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(IDS_ACROSSNUMBER), info.m_number);
+            str += sz;
+
+            // 答えを見せるかどうか？
+            if (bShowAnswer) {
+                str += L"\x226A";
+                str += info.m_word;
+                str += L"\x226B";
+            }
+
+            // ヒント文章を追加する。
+            bool added = false;
+            for (const auto& data : xg_dict_1) {
+                if (_wcsicmp(data.m_word.data(), info.m_word.data()) == 0) {
+                    str += data.m_hint;
+                    added = true;
+                    break;
+                }
+            }
+            if (!added) {
+                for (const auto& data : xg_dict_2) {
+                    if (_wcsicmp(data.m_word.data(), info.m_word.data()) == 0) {
+                        str += data.m_hint;
+                        added = true;
+                        break;
+                    }
+                }
+            }
+            str += xg_pszNewLine;   // 改行。
+        }
+        str += xg_pszNewLine;
+    }
+    if (hint_type == 3 || hint_type == 5) {
+        // タテのカギの文字列を構成する。
+        str += XgLoadStringDx1(IDS_PARABOLD);     // <p><b>
+        str += XgLoadStringDx1(IDS_DOWNLABEL);
+        str += XgLoadStringDx1(IDS_ENDPARABOLD);    // </b></p>
+        str += xg_pszNewLine;
+        str += XgLoadStringDx1(IDS_OL);    // <ol>
+        str += xg_pszNewLine;
+
+        for (const auto& info : xg_vTateInfo) {
+            // <li>
+            StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(IDS_LI), info.m_number);
+            str += sz;
+
+            // ヒント文章を追加する。
+            bool added = false;
+            for (const auto& data : xg_dict_1) {
+                if (_wcsicmp(data.m_word.data(), info.m_word.data()) == 0) {
+                    str += data.m_hint;
+                    added = true;
+                    break;
+                }
+            }
+            if (!added) {
+                for (const auto& data : xg_dict_2) {
+                    if (_wcsicmp(data.m_word.data(), info.m_word.data()) == 0) {
+                        str += data.m_hint;
+                        added = true;
+                        break;
+                    }
+                }
+            }
+            str += XgLoadStringDx1(IDS_ENDLI);    // </li>
+            str += xg_pszNewLine;           // 改行。
+        }
+        str += XgLoadStringDx1(IDS_ENDOL);    // </ol>
+        str += xg_pszNewLine;           // 改行。
+    }
+    if (hint_type == 4 || hint_type == 5) {
+        // ヨコのカギの文字列を構成する。
+        str += XgLoadStringDx1(IDS_PARABOLD);     // <p><b>
+        str += XgLoadStringDx1(IDS_ACROSSLABEL);
+        str += XgLoadStringDx1(IDS_ENDPARABOLD);    // </b></p>
+        str += xg_pszNewLine;
+        str += XgLoadStringDx1(IDS_OL);    // <ol>
+        str += xg_pszNewLine;
+
+        for (const auto& info : xg_vYokoInfo) {
+            // <li>
+            StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(IDS_LI), info.m_number);
+            str += sz;
+
+            // ヒント文章を追加する。
+            bool added = false;
+            for (const auto& data : xg_dict_1) {
+                if (_wcsicmp(data.m_word.data(), info.m_word.data()) == 0) {
+                    str += data.m_hint;
+                    added = true;
+                    break;
+                }
+            }
+            if (!added) {
+                for (const auto& data : xg_dict_2) {
+                    if (_wcsicmp(data.m_word.data(), info.m_word.data()) == 0) {
+                        str += data.m_hint;
+                        added = true;
+                        break;
+                    }
+                }
+            }
+            str += XgLoadStringDx1(IDS_ENDLI);    // </li>
+            str += xg_pszNewLine;           // 改行。
+        }
+        str += XgLoadStringDx1(IDS_ENDOL);    // </ol>
+        str += xg_pszNewLine;           // 改行。
+    }
+}
+
 // 文字列のルールを解析する。
 INT __fastcall XgParseRules(const std::wstring& str)
 {
@@ -1814,9 +1974,6 @@ std::wstring __fastcall XgGetRulesString(INT rules)
 // JSON文字列を設定する。
 bool __fastcall XgSetJsonString(HWND hwnd, const std::wstring& str)
 {
-    ::DestroyWindow(xg_hHintsWnd);
-    xg_hHintsWnd = NULL;
-
     std::string utf8 = XgUnicodeToUtf8(str);
 
     try {
@@ -1967,11 +2124,6 @@ bool __fastcall XgSetJsonString(HWND hwnd, const std::wstring& str)
             // ヒント追加フラグをクリアする。
             xg_bHintsAdded = false;
 
-            if (is_solved) {
-                // ヒントを表示する。
-                XgShowHints(hwnd);
-            }
-
             // ルールを設定する。
             xg_nRules = rules;
 
@@ -2002,17 +2154,8 @@ bool __fastcall XgSetJsonString(HWND hwnd, const std::wstring& str)
 }
 
 // 文字列を設定する。
-bool __fastcall
-XgSetString(HWND hwnd, const std::wstring& str, bool json)
+bool __fastcall XgSetStdString(HWND hwnd, const std::wstring& str)
 {
-    ::DestroyWindow(xg_hHintsWnd);
-    xg_hHintsWnd = NULL;
-
-    if (json) {
-        // JSON形式。
-        return XgSetJsonString(hwnd, str);
-    }
-
     // クロスワードデータ。
     XG_Board xword;
 
@@ -2102,9 +2245,6 @@ XgSetString(HWND hwnd, const std::wstring& str, bool json)
                     }
                 }
             }
-
-            // ヒントを表示する。
-            XgShowHints(hwnd);
         }
 
         // ヒントがあるか？
@@ -2145,6 +2285,17 @@ XgSetString(HWND hwnd, const std::wstring& str, bool json)
     XgSetStringOfMarks(str.data());
 
     return true;
+}
+
+// 文字列を設定する。
+bool __fastcall XgSetString(HWND hwnd, const std::wstring& str, bool json)
+{
+    if (json) {
+        // JSON形式。
+        return XgSetJsonString(hwnd, str);
+    } else {
+        return XgSetStdString(hwnd, str);
+    }
 }
 
 // スレッド情報を取得する。
@@ -4387,8 +4538,6 @@ bool __fastcall XgDoLoadCrpFile(HWND hwnd, LPCWSTR pszFile)
         xg_nRows = nHeight;
         xg_vecTateHints.clear();
         xg_vecYokoHints.clear();
-        XgDestroyCandsWnd();
-        XgDestroyHintsWnd();
         xg_bSolved = false;
 
         if (xword.IsFulfilled()) {
@@ -4510,11 +4659,7 @@ bool __fastcall XgDoLoadCrpFile(HWND hwnd, LPCWSTR pszFile)
             XgClearNonBlocks(hwnd);
             xg_vecTateHints = tate;
             xg_vecYokoHints = yoko;
-            XgShowHints(hwnd);
         }
-
-        XgUpdateImage(hwnd, 0, 0);
-        XgMarkUpdate();
 
         // ファイルパスをセットする。
         WCHAR szFileName[MAX_PATH];
@@ -4564,8 +4709,7 @@ bool __fastcall XgDoLoadFile(HWND hwnd, LPCWSTR pszFile, bool json)
             std::wstring str = reinterpret_cast<LPWSTR>(&pbFile[2]);
             bOK = XgSetString(hwnd, str, json);
             i = 0;
-        } else if (pbFile[0] == 0xEF && pbFile[1] == 0xBB && pbFile[2] == 0xBF)
-        {
+        } else if (pbFile[0] == 0xEF && pbFile[1] == 0xBB && pbFile[2] == 0xBF) {
             // UTF-8
             std::wstring str = XgUtf8ToUnicode(reinterpret_cast<LPCSTR>(&pbFile[3]));
             bOK = XgSetString(hwnd, str, json);
@@ -4606,10 +4750,6 @@ bool __fastcall XgDoLoadFile(HWND hwnd, LPCWSTR pszFile, bool json)
         }
 
         if (bOK) {
-            // 成功。
-            XgUpdateImage(hwnd, 0, 0);
-            XgMarkUpdate();
-
             // ファイルパスをセットする。
             WCHAR szFileName[MAX_PATH];
             ::GetFullPathNameW(pszFile, MAX_PATH, szFileName, NULL);
@@ -4625,7 +4765,7 @@ bool __fastcall XgDoLoadFile(HWND hwnd, LPCWSTR pszFile, bool json)
 }
 
 // ファイル（CRP形式）を保存する。
-bool __fastcall XgDoSaveCrpFile(HWND /*hwnd*/, LPCWSTR pszFile)
+bool __fastcall XgDoSaveCrpFile(LPCWSTR pszFile)
 {
     // ファイルを作成する。
     FILE *fout = _wfopen(pszFile, L"w");
@@ -4745,7 +4885,7 @@ bool __fastcall XgDoSaveCrpFile(HWND /*hwnd*/, LPCWSTR pszFile)
 }
 
 // .xwjファイル（JSON形式）を保存する。
-bool __fastcall XgDoSaveJson(HWND /*hwnd*/, LPCWSTR pszFile)
+bool __fastcall XgDoSaveJson(LPCWSTR pszFile)
 {
     HANDLE hFile;
     std::wstring str, strTable, strMarks, hints;
@@ -4979,10 +5119,10 @@ bool __fastcall XgDoSave(HWND hwnd, LPCWSTR pszFile)
         lstrcmpiW(pchDotExt, L".jso") == 0)
     {
         // JSON形式で保存。
-        ret = XgDoSaveJson(hwnd, pszFile);
+        ret = XgDoSaveJson(pszFile);
     } else if (lstrcmpiW(pchDotExt, L".crp") == 0) {
         // Crossword Builder (*.crp) 形式で保存。
-        ret = XgDoSaveCrpFile(hwnd, pszFile);
+        ret = XgDoSaveCrpFile(pszFile);
     } else if (xg_bSolved) {
         // ヒントあり。
         ret = XgDoSaveStandard(hwnd, pszFile, xg_solution);

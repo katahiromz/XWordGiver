@@ -11,16 +11,6 @@ void XgShowHints(HWND hwnd);
 // ヒントの内容をメモ帳で開く。
 bool XgOpenHintsByNotepad(HWND /*hwnd*/, bool bShowAnswer);
 
-// ヒント文字列を取得する。
-// hint_type 0: タテ。
-// hint_type 1: ヨコ。
-// hint_type 2: タテとヨコ。
-// hint_type 3: HTMLのタテ。
-// hint_type 4: HTMLのヨコ。
-// hint_type 5: HTMLのタテとヨコ。
-void __fastcall XgGetHintsStr(const XG_Board& board, std::wstring& str, int hint_type,
-                              bool bShowAnswer = true);
-
 //////////////////////////////////////////////////////////////////////////////
 
 // ポップアップメニューを読み込む。
