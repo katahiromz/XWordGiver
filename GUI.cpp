@@ -36,23 +36,23 @@ void __fastcall MainWnd_OnImeChar(HWND hwnd, WCHAR ch, LPARAM /*lKeyData*/);
 // global variables
 
 // 入力モード。
-XG_InputMode    xg_imode = xg_im_KANA;
+XG_InputMode xg_imode = xg_im_KANA;
 
 // インスタンスのハンドル。
-HINSTANCE       xg_hInstance = nullptr;
+HINSTANCE xg_hInstance = nullptr;
 
 // メインウィンドウのハンドル。
-HWND            xg_hMainWnd = nullptr;
+HWND xg_hMainWnd = nullptr;
 
 // ヒントウィンドウのハンドル。
-HWND            xg_hHintsWnd = nullptr;
+HWND xg_hHintsWnd = nullptr;
 XG_HintsWnd xg_hints_wnd;
 
 // 候補ウィンドウ。
 XG_CandsWnd xg_cands_wnd;
 
 // 入力パレット。
-HWND            xg_hwndInputPalette = nullptr;
+HWND xg_hwndInputPalette = nullptr;
 
 // マスのフォント。
 WCHAR xg_szCellFont[LF_FACESIZE] = L"";
@@ -64,19 +64,19 @@ WCHAR xg_szSmallFont[LF_FACESIZE] = L"";
 WCHAR xg_szUIFont[LF_FACESIZE] = L"";
 
 // スクロールバー。
-HWND xg_hVScrollBar          = nullptr;
-HWND xg_hHScrollBar          = nullptr;
-HWND xg_hSizeGrip            = nullptr;
+HWND xg_hVScrollBar = nullptr;
+HWND xg_hHScrollBar = nullptr;
+HWND xg_hSizeGrip = nullptr;
 
 // ツールバーのハンドル。
-HWND            xg_hToolBar  = nullptr;
+HWND xg_hToolBar  = nullptr;
 
 // ステータスバーのハンドル
-HWND            xg_hStatusBar  = nullptr;
+HWND xg_hStatusBar  = nullptr;
 
 // ツールバーのイメージリスト。
-HIMAGELIST      xg_hImageList     = nullptr;
-HIMAGELIST      xg_hGrayedImageList = nullptr;
+HIMAGELIST xg_hImageList = nullptr;
+HIMAGELIST xg_hGrayedImageList = nullptr;
 
 // 候補を求める位置。
 INT xg_jCandPos, xg_iCandPos;
@@ -89,16 +89,16 @@ std::wstring xg_dict_name;
 std::deque<std::wstring>  xg_dict_files;
 
 // ヒントに追加があったか？
-bool            xg_bHintsAdded = false;
+bool xg_bHintsAdded = false;
 
 // JSONファイルとして保存するか？
-bool            xg_bSaveAsJsonFile = true;
+bool xg_bSaveAsJsonFile = true;
 
 // 太枠をつけるか？
-bool            xg_bAddThickFrame = true;
+bool xg_bAddThickFrame = true;
 
 // 「元に戻す」ためのバッファ。
-XG_UndoBuffer                        xg_ubUndoBuffer;
+XG_UndoBuffer xg_ubUndoBuffer;
 
 // 直前に押したキーを覚えておく。
 WCHAR xg_prev_vk = 0;
@@ -178,10 +178,10 @@ static bool s_bOldNotice = false;
 static const LPCWSTR s_pszMainWndClass = L"XWord Giver Main Window";
 
 // アクセラレータのハンドル。
-static HACCEL       s_hAccel = nullptr;
+static HACCEL s_hAccel = nullptr;
 
 // プロセッサの数。
-static DWORD        s_dwNumberOfProcessors = 1;
+static DWORD s_dwNumberOfProcessors = 1;
 
 // 計算時間測定用。
 static DWORDLONG s_dwTick0;    // 開始時間。
@@ -190,19 +190,19 @@ static DWORDLONG s_dwTick2;    // 終了時間。
 static DWORD     s_dwWait;     // 待ち時間。
 
 // ディスク容量が足りないか？
-static bool         s_bOutOfDiskSpace = false;
+static bool s_bOutOfDiskSpace = false;
 
 // 連続生成の場合、問題を生成した数。
-static int          s_nNumberGenerated = 0;
+static int s_nNumberGenerated = 0;
 
 // 再計算の回数。
-static LONG         s_nRetryCount;
+static LONG s_nRetryCount;
 
 // ツールバーを表示するか？
 bool xg_bShowToolBar = true;
 
 // ステータスバーを表示するか？
-static bool         s_bShowStatusBar = true;
+static bool s_bShowStatusBar = true;
 
 // ルール群。
 INT xg_nRules = DEFAULT_RULES_JAPANESE;
