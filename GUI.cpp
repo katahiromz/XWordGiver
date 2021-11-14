@@ -125,6 +125,7 @@ std::deque<std::wstring> xg_dirs_save_to;
 // 連続生成の場合、問題を生成する数。
 INT xg_nNumberToGenerate = 16;
 
+// マウスの中央ボタンの処理に使う変数。
 BOOL xg_bMButtonDragging = FALSE;
 POINT xg_ptMButtonDragging;
 
