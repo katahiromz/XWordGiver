@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 // ヒントウィンドウを作成する。
 BOOL XgCreateHintsWnd(HWND hwnd);

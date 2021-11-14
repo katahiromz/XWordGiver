@@ -4977,6 +4977,11 @@ void XgGenerateFromWordList(HWND hwnd)
 {
     using namespace crossword_generation;
 
+    // 候補ウィンドウを破棄する。
+    XgDestroyCandsWnd();
+    // ヒントウィンドウを破棄する。
+    XgDestroyHintsWnd();
+
     // ダイアログを表示。
     INT nID;
     {

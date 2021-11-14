@@ -668,6 +668,9 @@ struct generation_t {
         }
 
         for (auto& word : m_words) {
+            if (s_canceled)
+                return cands;
+
             for (size_t ich = 0; ich < word.size(); ++ich) {
                 if (word[ich] != ch0)
                     continue;
@@ -717,6 +720,9 @@ struct generation_t {
         }
 
         for (auto& word : m_words) {
+            if (s_canceled)
+                return cands;
+
             for (size_t ich = 0; ich < word.size(); ++ich) {
                 if (word[ich] != ch0)
                     continue;
@@ -755,18 +761,24 @@ struct generation_t {
         std::vector<candidate_t<t_char> > cands;
         std::unordered_set<pos_t> positions;
         for (auto& cand : candidates) {
+            if (s_canceled)
+                return false;
             if (cand.m_word.size() == 1) {
                 cands.push_back(cand);
                 positions.insert( {cand.m_x, cand.m_y} );
             }
         }
         for (auto& cand : candidates) {
+            if (s_canceled)
+                return false;
             if (cand.m_word.size() != 1) {
                 if (positions.count(pos_t(cand.m_x, cand.m_y)) == 0)
                     return false;
             }
         }
         for (auto& cand : cands) {
+            if (s_canceled)
+                return false;
             apply_candidate(cand);
         }
         return true;
@@ -789,6 +801,8 @@ struct generation_t {
         std::vector<candidate_t<t_char> > candidates;
 
         for (auto& cross : m_crossable_x) {
+            if (s_canceled)
+                return s_generated;
             auto cands = get_candidates_x(cross.m_x, cross.m_y);
             if (cands.empty()) {
                 if (m_board.must_be_cross(cross.m_x, cross.m_y))
@@ -802,6 +816,8 @@ struct generation_t {
         }
 
         for (auto& cross : m_crossable_y) {
+            if (s_canceled)
+                return s_generated;
             auto cands = get_candidates_y(cross.m_x, cross.m_y);
             if (cands.empty()) {
                 if (m_board.must_be_cross(cross.m_x, cross.m_y))
