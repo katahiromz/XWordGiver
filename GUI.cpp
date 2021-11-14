@@ -29,7 +29,7 @@
     (void)(fn)((hwnd), WM_MOUSEWHEEL, MAKEWPARAM((fwKeys),(zDelta)), MAKELPARAM((xPos),(yPos)))
 
 void __fastcall XgOnChar(HWND hwnd, TCHAR ch, int cRepeat);
-void __fastcall MainWnd_OnKey(HWND hwnd, UINT vk, bool fDown, int /*cRepeat*/, UINT /*flags*/);
+void __fastcall XgOnKey(HWND hwnd, UINT vk, bool fDown, int /*cRepeat*/, UINT /*flags*/);
 void __fastcall XgOnImeChar(HWND hwnd, WCHAR ch, LPARAM /*lKeyData*/);
 
 //////////////////////////////////////////////////////////////////////////////
@@ -7007,8 +7007,8 @@ XgWindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
     HANDLE_MSG(hWnd, WM_VSCROLL, MainWnd_OnVScroll);
     HANDLE_MSG(hWnd, WM_MOVE, MainWnd_OnMove);
     HANDLE_MSG(hWnd, WM_SIZE, MainWnd_OnSize);
-    HANDLE_MSG(hWnd, WM_KEYDOWN, MainWnd_OnKey);
-    HANDLE_MSG(hWnd, WM_KEYUP, MainWnd_OnKey);
+    HANDLE_MSG(hWnd, WM_KEYDOWN, XgOnKey);
+    HANDLE_MSG(hWnd, WM_KEYUP, XgOnKey);
     HANDLE_MSG(hWnd, WM_CHAR, XgOnChar);
     HANDLE_MSG(hWnd, WM_LBUTTONDBLCLK, MainWnd_OnLButtonDown);
     HANDLE_MSG(hWnd, WM_LBUTTONUP, MainWnd_OnLButtonUp);

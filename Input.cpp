@@ -599,7 +599,7 @@ katakana:;
 }
 
 // キーが押された。
-void __fastcall MainWnd_OnKey(HWND hwnd, UINT vk, bool fDown, int /*cRepeat*/, UINT /*flags*/)
+void __fastcall XgOnKey(HWND hwnd, UINT vk, bool fDown, int /*cRepeat*/, UINT /*flags*/)
 {
     WCHAR ch;
 
