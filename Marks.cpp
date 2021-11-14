@@ -377,9 +377,6 @@ void __fastcall XgSetMarkedWord(const std::wstring& str)
         }
 break2:;
     }
-
-    // イメージを更新する。
-    XgUpdateImage(xg_hMainWnd, 0, 0);
 }
 
 // 二重マス単語を空にする。

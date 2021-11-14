@@ -5845,6 +5845,8 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
             mu1->Get();
             {
                 XgGetNextMarkedWord();
+                // イメージを更新する。
+                XgUpdateImage(xg_hMainWnd, 0, 0);
             }
             mu2->Get();
             // 元に戻す情報を設定する。
@@ -5859,6 +5861,8 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
             mu1->Get();
             {
                 XgGetPrevMarkedWord();
+                // イメージを更新する。
+                XgUpdateImage(xg_hMainWnd, 0, 0);
             }
             mu2->Get();
             // 元に戻す情報を設定する。
