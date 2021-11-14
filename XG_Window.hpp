@@ -11,12 +11,14 @@ class XG_Window
 {
 public:
     HWND m_hWnd;
+    WNDPROC m_fnOldWndProc;
+
     operator HWND() const
     {
         return m_hWnd;
     }
 
-    XG_Window() : m_hWnd(NULL)
+    XG_Window() : m_hWnd(NULL), m_fnOldWndProc(NULL)
     {
     }
 
@@ -25,10 +27,36 @@ public:
         return TEXT("XG_Window");
     }
 
+    BOOL SubclassDx(HWND hwnd)
+    {
+        m_fnOldWndProc =
+            reinterpret_cast<WNDPROC>(SetWindowLongPtr(hwnd,
+                GWLP_WNDPROC, reinterpret_cast<LONG_PTR>(WindowProc)));
+        return m_fnOldWndProc != NULL;
+    }
+
+    void UnsubclassDx(HWND hwnd)
+    {
+        if (m_fnOldWndProc)
+        {
+            SetWindowLongPtr(hwnd, GWLP_WNDPROC, reinterpret_cast<LONG_PTR>(m_fnOldWndProc));
+            m_fnOldWndProc = NULL;
+        }
+    }
+
+    virtual LRESULT CALLBACK
+    DefProcDx(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+    {
+        if (m_fnOldWndProc)
+            return ::CallWindowProc(m_fnOldWndProc, hwnd, uMsg, wParam, lParam);
+        else
+            return ::DefWindowProc(hwnd, uMsg, wParam, lParam);
+    }
+
     virtual LRESULT CALLBACK
     WindowProcDx(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
     {
-        return ::DefWindowProc(hwnd, uMsg, wParam, lParam);
+        return DefProcDx(hwnd, uMsg, wParam, lParam);
     }
 
     static LRESULT CALLBACK
@@ -76,21 +104,17 @@ public:
     {
     }
 
-    BOOL RegisterClassDx()
+    BOOL RegisterClassDx(HINSTANCE hInstance = ::GetModuleHandle(NULL))
     {
-        WNDCLASSEX wcx;
-        ZeroMemory(&wcx, sizeof(wcx));
-        wcx.cbSize = sizeof(wcx);
+        WNDCLASSEX wcx = { sizeof(wcx) };
         wcx.style = CS_HREDRAW | CS_VREDRAW | CS_DBLCLKS;
         wcx.lpfnWndProc = WindowProc;
-        wcx.cbClsExtra = 0;
         wcx.cbWndExtra = DLGWINDOWEXTRA;
-        wcx.hInstance = ::GetModuleHandle(NULL);
+        wcx.hInstance = hInstance;
         wcx.hIcon = ::LoadIcon(nullptr, IDI_APPLICATION);
         wcx.hCursor = ::LoadCursor(nullptr, IDC_ARROW);
         wcx.hbrBackground = reinterpret_cast<HBRUSH>(INT_PTR(COLOR_3DFACE + 1));
         wcx.lpszClassName = GetWndClassName();
-        wcx.hIconSm = nullptr;
         ModifyWndClassDx(wcx);
         return ::RegisterClassEx(&wcx);
     }
