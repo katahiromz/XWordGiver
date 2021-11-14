@@ -9,6 +9,7 @@
 #include "XG_UndoBuffer.hpp"
 
 #include "XG_CancelFromWordsDialog.hpp"
+#include "XG_CancelGenBlacksDialog.hpp"
 #include "XG_CancelSmartSolveDialog.hpp"
 #include "XG_CancelSolveDialog.hpp"
 #include "XG_CancelSolveNoAddBlackDialog.hpp"
@@ -1226,95 +1227,6 @@ INT CALLBACK XgBrowseCallbackProc(HWND hwnd, UINT uMsg, LPARAM /*lParam*/, LPARA
 }
 
 //////////////////////////////////////////////////////////////////////////////
-
-// キャンセルダイアログ。
-extern "C" INT_PTR CALLBACK
-XgCancelGenBlacksDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
-{
-    switch (uMsg) {
-    case WM_INITDIALOG:
-        // ダイアログを中央へ移動する。
-        XgCenterDialog(hwnd);
-        // 解を求めるのを開始。
-        XgStartGenerateBlacks();
-        // フォーカスをセットする。
-        ::SetFocus(::GetDlgItem(hwnd, psh1));
-        // 開始時間。
-        xg_dwlTick0 = ::GetTickCount64();
-        ::InterlockedExchange(&xg_nRetryCount, 0);
-        // 生成したパターンの個数を表示する。
-        if (xg_nNumberGenerated > 0) {
-            WCHAR sz[MAX_PATH];
-            StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(IDS_PATMAKING), xg_nNumberGenerated);
-            ::SetDlgItemTextW(hwnd, stc2, sz);
-        }
-        // タイマーをセットする。
-        ::SetTimer(hwnd, 999, xg_dwTimerInterval, nullptr);
-        return false;
-
-    case WM_COMMAND:
-        switch(LOWORD(wParam)) {
-        case psh1:
-            // タイマーを解除する。
-            ::KillTimer(hwnd, 999);
-            // キャンセルしてスレッドを待つ。
-            xg_bCancelled = true;
-            XgWaitForThreads();
-            // スレッドを閉じる。
-            XgCloseThreads();
-            // 計算時間を求めるために、終了時間を取得する。
-            xg_dwlTick2 = ::GetTickCount64();
-            // ダイアログを終了する。
-            ::EndDialog(hwnd, IDCANCEL);
-            break;
-        }
-        break;
-
-    case WM_SYSCOMMAND:
-        if (wParam == SC_CLOSE) {
-            // タイマーを解除する。
-            ::KillTimer(hwnd, 999);
-            // キャンセルしてスレッドを待つ。
-            xg_bCancelled = true;
-            XgWaitForThreads();
-            // スレッドを閉じる。
-            XgCloseThreads();
-            // 計算時間を求めるために、終了時間を取得する。
-            xg_dwlTick2 = ::GetTickCount64();
-            // ダイアログを終了する。
-            ::EndDialog(hwnd, IDCANCEL);
-        }
-        break;
-
-    case WM_TIMER:
-        {
-            // 経過時間を表示する。
-            WCHAR sz[MAX_PATH];
-            DWORDLONG dwTick = ::GetTickCount64();
-            StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(IDS_CALCULATING),
-                DWORD(dwTick - xg_dwlTick0) / 1000,
-                DWORD(dwTick - xg_dwlTick0) / 100 % 10);
-            ::SetDlgItemTextW(hwnd, stc1, sz);
-        }
-
-        // 終了したスレッドがあるか？
-        if (XgIsAnyThreadTerminated()) {
-            // スレッドが終了した。タイマーを解除する。
-            ::KillTimer(hwnd, 999);
-            // 計算時間を求めるために、終了時間を取得する。
-            xg_dwlTick2 = ::GetTickCount64();
-            // ダイアログを終了する。
-            ::EndDialog(hwnd, IDOK);
-            // スレッドを閉じる。
-            XgCloseThreads();
-        }
-        break;
-    }
-    return false;
-}
-
-
-//////////////////////////////////////////////////////////////////////////////
 // 印刷。
 
 // 印刷する。
@@ -1776,7 +1688,8 @@ bool __fastcall XgOnGenerateBlacksRepeatedly(HWND hwnd)
     ::EnableWindow(xg_hwndInputPalette, FALSE);
     do
     {
-        nID = ::DialogBoxW(xg_hInstance, MAKEINTRESOURCEW(IDD_CALCULATING), hwnd, XgCancelGenBlacksDlgProc);
+        XG_CancelGenBlacksDialog dialog;
+        nID = dialog.DoModal(hwnd);
         // 生成成功のときはxg_nNumberGeneratedを増やす。
         if (nID == IDOK && xg_bBlacksGenerated) {
             ++xg_nNumberGenerated;
@@ -1857,7 +1770,10 @@ bool __fastcall XgOnGenerateBlacks(HWND hwnd, bool sym)
 
     // キャンセルダイアログを表示し、生成を開始する。
     ::EnableWindow(xg_hwndInputPalette, FALSE);
-    ::DialogBoxW(xg_hInstance, MAKEINTRESOURCEW(IDD_CALCULATING), hwnd, XgCancelGenBlacksDlgProc);
+    {
+        XG_CancelGenBlacksDialog dialog;
+        dialog.DoModal(hwnd);
+    }
     ::EnableWindow(xg_hwndInputPalette, TRUE);
     xg_caret_pos.clear();
     XgUpdateImage(hwnd, 0, 0);
