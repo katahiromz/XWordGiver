@@ -17,6 +17,7 @@
 #include "XG_NewDialog.hpp"
 #include "XG_GenerateDialog.hpp"
 #include "XG_GenerateRepeatedlyDialog.hpp"
+#include "XG_PatGenDialog.hpp"
 
 #undef HANDLE_WM_MOUSEWHEEL     // might be wrong
 #define HANDLE_WM_MOUSEWHEEL(hwnd, wParam, lParam, fn) \
@@ -1554,68 +1555,6 @@ XgGenerateBlacksRepeatedlyDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*
     return 0;
 }
 
-// [黒マスパターンの作成]ダイアログのダイアログ プロシージャ。
-extern "C" INT_PTR CALLBACK
-XgGenerateBlacksDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam*/)
-{
-    INT n3;
-
-    switch (uMsg)
-    {
-    case WM_INITDIALOG:
-        // ダイアログを中央へ移動する。
-        XgCenterDialog(hwnd);
-        // スケルトンモードと入力モードに応じて単語の最大長を設定する。
-        if (xg_imode == xg_im_KANJI) {
-            n3 = 4;
-        } else if (xg_bSkeletonMode) {
-            n3 = 6;
-        } else if (xg_imode == xg_im_RUSSIA || xg_imode == xg_im_ABC) {
-            n3 = 5;
-        } else if (xg_imode == xg_im_DIGITS) {
-            n3 = 7;
-        } else {
-            n3 = 4;
-        }
-        ::SetDlgItemInt(hwnd, edt3, n3, FALSE);
-        SendDlgItemMessageW(hwnd, scr3, UDM_SETRANGE, 0, MAKELPARAM(XG_MAX_WORD_LEN, XG_MIN_WORD_LEN));
-        return TRUE;
-
-    case WM_COMMAND:
-        switch (LOWORD(wParam))
-        {
-        case IDOK:
-            n3 = static_cast<int>(::GetDlgItemInt(hwnd, edt3, nullptr, FALSE));
-            if (n3 < XG_MIN_WORD_LEN || n3 > XG_MAX_WORD_LEN) {
-                ::SendDlgItemMessageW(hwnd, edt3, EM_SETSEL, 0, -1);
-                XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_ENTERINT), nullptr, MB_ICONERROR);
-                ::SetFocus(::GetDlgItem(hwnd, edt3));
-                return 0;
-            }
-            xg_nMaxWordLen = n3;
-            // 初期化する。
-            {
-                xg_bSolved = false;
-                xg_bShowAnswer = false;
-                xg_xword.clear();
-                xg_vTateInfo.clear();
-                xg_vYokoInfo.clear();
-                xg_vMarks.clear();
-                xg_vMarkedCands.clear();
-            }
-            // ダイアログを閉じる。
-            ::EndDialog(hwnd, IDOK);
-            break;
-
-        case IDCANCEL:
-            // ダイアログを閉じる。
-            ::EndDialog(hwnd, IDCANCEL);
-            break;
-        }
-    }
-    return 0;
-}
-
 // [解の連続作成]ダイアログのダイアログ プロシージャー。
 extern "C" INT_PTR CALLBACK
 XgSolveRepeatedlyDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam*/)
@@ -3057,8 +2996,8 @@ bool __fastcall XgOnGenerateBlacksRepeatedly(HWND hwnd)
 bool __fastcall XgOnGenerateBlacks(HWND hwnd, bool sym)
 {
     ::EnableWindow(xg_hwndInputPalette, FALSE);
-    INT nID = DialogBoxW(xg_hInstance, MAKEINTRESOURCEW(IDD_PATGEN), hwnd,
-                         XgGenerateBlacksDlgProc);
+    XG_PatGenDialog dialog;
+    INT nID = dialog.DoModal(hwnd);
     ::EnableWindow(xg_hwndInputPalette, TRUE);
     if (nID != IDOK) {
         return false;
