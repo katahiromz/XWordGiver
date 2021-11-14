@@ -30,6 +30,15 @@ void __fastcall XgUpdateImage(HWND hwnd);
 // UIフォントの論理オブジェクトを取得する。
 LOGFONTW *XgGetUIFont(void);
 
+// 計算時間測定用。
+extern DWORDLONG xg_dwlTick0;    // 開始時間。
+extern DWORDLONG xg_dwlTick1;    // 再計算時間。
+extern DWORDLONG xg_dwlTick2;    // 終了時間。
+extern DWORD     xg_dwWait;     // 待ち時間。
+
+// 再計算の回数。
+extern LONG xg_nRetryCount;
+
 //////////////////////////////////////////////////////////////////////////////
 
 // 入力パレットを表示するか？
