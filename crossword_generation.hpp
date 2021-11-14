@@ -13,7 +13,7 @@
 #include <algorithm>
 #include <utility>
 #include <random>
-#if defined(_WIN32)
+#ifdef _WIN32
     #include <windows.h>
 #else
     #include <unistd.h>
@@ -54,7 +54,7 @@ namespace std {
 namespace crossword_generation {
 inline static bool s_generated = false;
 inline static bool s_canceled = false;
-inline static int s_count = 0;
+inline static long s_count = 0;
 inline static std::mutex s_mutex;
 
 template <typename t_char>
@@ -83,7 +83,11 @@ inline void random_shuffle(const t_elem& begin, const t_elem& end) {
 }
 
 inline void reset() {
+#ifdef _WIN32
+    ::InterlockedExchange(&s_count, 0);
+#else
     s_count = 0;
+#endif
     s_generated = s_canceled = false;
 #ifdef XWORDGIVER
     for (auto& info : xg_aThreadInfo) {
@@ -916,14 +920,18 @@ struct generation_t {
 
     static bool generate_from_words_proc(const std::unordered_set<t_string> *words, int iThread) {
         std::srand(uint32_t(::GetTickCount64()) ^ ::GetCurrentThreadId());
-#if defined(_WIN32)
+#ifdef _WIN32
         ::SetThreadPriority(::GetCurrentThread(), THREAD_PRIORITY_ABOVE_NORMAL);
 #endif
         generation_t<t_char, t_fixed> data;
         data.m_iThread = iThread;
         data.m_words = data.m_dict = *words;
         bool flag = data.generate_from_words();
+#ifdef _WIN32
+        ::InterlockedIncrement(&s_count);
+#else
         ++s_count;
+#endif
         delete words;
         return flag;
     }
@@ -941,7 +949,11 @@ struct generation_t {
                 t.detach();
             } catch (std::system_error&) {
                 delete clone;
-                s_count++;
+#ifdef _WIN32
+                ::InterlockedIncrement(&s_count);
+#else
+                ++s_count;
+#endif
             }
         }
 

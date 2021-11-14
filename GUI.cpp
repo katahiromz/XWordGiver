@@ -1703,7 +1703,7 @@ XgCancelGenBlacksDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
         ::SetFocus(::GetDlgItem(hwnd, psh1));
         // 開始時間。
         s_dwTick0 = ::GetTickCount64();
-        s_nRetryCount = 0;
+        ::InterlockedExchange(&s_nRetryCount, 0);
         // 生成したパターンの個数を表示する。
         if (s_nNumberGenerated > 0) {
             WCHAR sz[MAX_PATH];
@@ -1792,7 +1792,7 @@ XgCancelFromWordsDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
         // ダイアログを中央へ移動する。
         XgCenterDialog(hwnd);
         // 初期化する。
-        s_nRetryCount = 0;
+        ::InterlockedExchange(&s_nRetryCount, 0);
         // プログレスバーの範囲をセットする。
         ::SendDlgItemMessageW(hwnd, ctl1, PBM_SETRANGE, 0, MAKELPARAM(0, XG_WordListDialog::s_wordset.size()));
         ::SendDlgItemMessageW(hwnd, ctl2, PBM_SETRANGE, 0, MAKELPARAM(0, XG_WordListDialog::s_wordset.size()));
@@ -1816,7 +1816,7 @@ XgCancelFromWordsDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
             ::KillTimer(hwnd, 999);
             // キャンセルしてスレッドを待つ。
             s_canceled = true;
-            wait_for_threads(xg_dwThreadCount, 0x7FFF);
+            wait_for_threads(xg_dwThreadCount, 4);
             // 計算時間を求めるために、終了時間を取得する。
             s_dwTick2 = ::GetTickCount64();
             // ダイアログを終了する。
@@ -1828,7 +1828,7 @@ XgCancelFromWordsDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
             ::KillTimer(hwnd, 999);
             // 再計算しなおす。
             s_canceled = true;
-            wait_for_threads(xg_dwThreadCount, 0x7FFF);
+            wait_for_threads(xg_dwThreadCount, 4);
             ::InterlockedIncrement(&s_nRetryCount);
             s_dwTick1 = ::GetTickCount64();
             reset();
@@ -1845,7 +1845,7 @@ XgCancelFromWordsDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
             ::KillTimer(hwnd, 999);
             // キャンセルしてスレッドを待つ。
             s_canceled = true;
-            wait_for_threads(xg_dwThreadCount, 0x7FFF);
+            wait_for_threads(xg_dwThreadCount, 4);
             // 計算時間を求めるために、終了時間を取得する。
             s_dwTick2 = ::GetTickCount64();
             // ダイアログを終了する。
@@ -1885,7 +1885,7 @@ XgCancelFromWordsDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
                 ::KillTimer(hwnd, 999);
                 // 再計算しなおす。
                 s_canceled = true;
-                wait_for_threads(xg_dwThreadCount, 0x7FFF);
+                wait_for_threads(xg_dwThreadCount, 4);
                 ::InterlockedIncrement(&s_nRetryCount);
                 s_dwTick1 = ::GetTickCount64();
                 reset();
@@ -5078,8 +5078,8 @@ void XgGenerateFromWordList(HWND hwnd)
     XgFitZoom(hwnd);
 
     // 成功メッセージ。
-    XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_GENERATED),
-                        XgLoadStringDx2(IDS_APPNAME), MB_ICONINFORMATION);
+    XgShowResults(hwnd);
+
     // ヒントを表示する。
     XgShowHints(hwnd);
 
