@@ -48,8 +48,7 @@ HWND            xg_hMainWnd = nullptr;
 HWND            xg_hHintsWnd = nullptr;
 XG_HintsWnd xg_hints_wnd;
 
-// 候補ウィンドウのハンドル。
-HWND            xg_hCandsWnd = nullptr;
+// 候補ウィンドウ。
 XG_CandsWnd xg_cands_wnd;
 
 // 入力パレット。
@@ -1071,11 +1070,9 @@ bool __fastcall XgCheckCrossWord(HWND hwnd, bool check_words = true)
 void XgDestroyCandsWnd(void)
 {
     // 候補ウィンドウが存在するか？
-    if (xg_hCandsWnd && ::IsWindow(xg_hCandsWnd)) {
+    if (::IsWindow(xg_cands_wnd)) {
         // 更新を無視・破棄する。
-        HWND hwnd = xg_hCandsWnd;
-        xg_hCandsWnd = NULL;
-        ::DestroyWindow(hwnd);
+        ::DestroyWindow(xg_cands_wnd);
     }
 }
 
@@ -1133,10 +1130,8 @@ BOOL XgCreateCandsWnd(HWND hwnd)
 inline bool XgOpenCandsWnd(HWND hwnd, bool vertical)
 {
     // もし候補ウィンドウが存在すれば破棄する。
-    if (xg_hCandsWnd) {
-        HWND hwnd = xg_hCandsWnd;
-        xg_hCandsWnd = NULL;
-        DestroyWindow(hwnd);
+    if (IsWindow(xg_cands_wnd)) {
+        DestroyWindow(xg_cands_wnd);
     }
 
     // 候補を作成する。
@@ -1231,8 +1226,8 @@ inline bool XgOpenCandsWnd(HWND hwnd, bool vertical)
 
     // ヒントウィンドウを作成する。
     if (XgCreateCandsWnd(xg_hMainWnd)) {
-        ::ShowWindow(xg_hCandsWnd, SW_SHOWNORMAL);
-        ::UpdateWindow(xg_hCandsWnd);
+        ::ShowWindow(xg_cands_wnd, SW_SHOWNORMAL);
+        ::UpdateWindow(xg_cands_wnd);
         return true;
     }
     return false;
@@ -3669,8 +3664,7 @@ void __fastcall MainWnd_OnDestroy(HWND /*hwnd*/)
     xg_hVScrollBar = NULL;
     ::DestroyWindow(xg_hSizeGrip);
     xg_hSizeGrip = NULL;
-    ::DestroyWindow(xg_hCandsWnd);
-    xg_hCandsWnd = NULL;
+    ::DestroyWindow(xg_cands_wnd);
     ::DestroyWindow(xg_hHintsWnd);
     xg_hHintsWnd = NULL;
     ::DestroyWindow(xg_hwndInputPalette);
@@ -6067,7 +6061,7 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
             HWND ahwnd[] = {
                 xg_hMainWnd,
                 xg_hHintsWnd,
-                xg_hCandsWnd,
+                xg_cands_wnd,
                 xg_hwndInputPalette,
             };
 
@@ -6091,7 +6085,7 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
         {
             HWND ahwnd[] = {
                 xg_hwndInputPalette,
-                xg_hCandsWnd,
+                xg_cands_wnd,
                 xg_hHintsWnd,
                 xg_hMainWnd,
             };
@@ -7568,9 +7562,9 @@ int WINAPI WinMain(
         if (xg_hHintsWnd && ::IsDialogMessageW(xg_hHintsWnd, &msg))
             continue;
 
-        if (xg_hCandsWnd) {
+        if (xg_cands_wnd) {
             if (msg.message != WM_KEYDOWN || msg.wParam != VK_ESCAPE) {
-                if (::IsDialogMessageW(xg_hCandsWnd, &msg))
+                if (::IsDialogMessageW(xg_cands_wnd, &msg))
                     continue;
             }
         }

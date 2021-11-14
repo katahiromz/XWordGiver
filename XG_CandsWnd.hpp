@@ -7,8 +7,6 @@ struct XG_CandsButtonData
     WNDPROC m_fnOldWndProc;
 };
 
-extern HWND xg_hCandsWnd;
-
 // 候補を求める位置。
 extern INT xg_jCandPos, xg_iCandPos;
 
@@ -164,8 +162,6 @@ public:
     // 候補ウィンドウが作成された。
     BOOL OnCreate(HWND hwnd, LPCREATESTRUCT /*lpCreateStruct*/)
     {
-        xg_hCandsWnd = hwnd;
-
         if (xg_hCandsUIFont) {
             ::DeleteObject(xg_hCandsUIFont);
         }
@@ -278,7 +274,6 @@ public:
         s_nCandsWndCX = rc.Width();
         s_nCandsWndCY = rc.Height();
 
-        xg_hCandsWnd = NULL;
         xg_ahwndCandButtons.clear();
         xg_svCandsScrollView.clear();
 
