@@ -80,6 +80,8 @@ void __fastcall XgToggleMark(HWND hwnd);
 void __fastcall XgOnChar(HWND hwnd, TCHAR ch, int cRepeat);
 void __fastcall XgOnKey(HWND hwnd, UINT vk, bool fDown, int /*cRepeat*/, UINT /*flags*/);
 void __fastcall XgOnImeChar(HWND hwnd, WCHAR ch, LPARAM /*lKeyData*/);
+// その他のコマンド。
+bool __fastcall XgOnCommandExtra(HWND hwnd, INT id);
 
 //////////////////////////////////////////////////////////////////////////////
 

@@ -1050,3 +1050,166 @@ void __fastcall XgSetInputModeFromDict(HWND hwnd)
         XgSetInputMode(hwnd, xg_im_ABC);
     }
 }
+
+bool __fastcall XgOnCommandExtra(HWND hwnd, INT id)
+{
+    bool bOK = false;
+
+    bool bOldFeed = xg_bCharFeed;
+    xg_bCharFeed = false;
+
+    switch (id)
+    {
+    // kana
+    case 10000: XgOnImeChar(hwnd, ZEN_A, 0); bOK = true; break;
+    case 10001: XgOnImeChar(hwnd, ZEN_I, 0); bOK = true; break;
+    case 10002: XgOnImeChar(hwnd, ZEN_U, 0); bOK = true; break;
+    case 10003: XgOnImeChar(hwnd, ZEN_E, 0); bOK = true; break;
+    case 10004: XgOnImeChar(hwnd, ZEN_O, 0); bOK = true; break;
+    case 10010: XgOnImeChar(hwnd, ZEN_KA, 0); bOK = true; break;
+    case 10011: XgOnImeChar(hwnd, ZEN_KI, 0); bOK = true; break;
+    case 10012: XgOnImeChar(hwnd, ZEN_KU, 0); bOK = true; break;
+    case 10013: XgOnImeChar(hwnd, ZEN_KE, 0); bOK = true; break;
+    case 10014: XgOnImeChar(hwnd, ZEN_KO, 0); bOK = true; break;
+    case 10020: XgOnImeChar(hwnd, ZEN_SA, 0); bOK = true; break;
+    case 10021: XgOnImeChar(hwnd, ZEN_SI, 0); bOK = true; break;
+    case 10022: XgOnImeChar(hwnd, ZEN_SU, 0); bOK = true; break;
+    case 10023: XgOnImeChar(hwnd, ZEN_SE, 0); bOK = true; break;
+    case 10024: XgOnImeChar(hwnd, ZEN_SO, 0); bOK = true; break;
+    case 10030: XgOnImeChar(hwnd, ZEN_TA, 0); bOK = true; break;
+    case 10031: XgOnImeChar(hwnd, ZEN_CHI, 0); bOK = true; break;
+    case 10032: XgOnImeChar(hwnd, ZEN_TSU, 0); bOK = true; break;
+    case 10033: XgOnImeChar(hwnd, ZEN_TE, 0); bOK = true; break;
+    case 10034: XgOnImeChar(hwnd, ZEN_TO, 0); bOK = true; break;
+    case 10040: XgOnImeChar(hwnd, ZEN_NA, 0); bOK = true; break;
+    case 10041: XgOnImeChar(hwnd, ZEN_NI, 0); bOK = true; break;
+    case 10042: XgOnImeChar(hwnd, ZEN_NU, 0); bOK = true; break;
+    case 10043: XgOnImeChar(hwnd, ZEN_NE, 0); bOK = true; break;
+    case 10044: XgOnImeChar(hwnd, ZEN_NO, 0); bOK = true; break;
+    case 10050: XgOnImeChar(hwnd, ZEN_HA, 0); bOK = true; break;
+    case 10051: XgOnImeChar(hwnd, ZEN_HI, 0); bOK = true; break;
+    case 10052: XgOnImeChar(hwnd, ZEN_FU, 0); bOK = true; break;
+    case 10053: XgOnImeChar(hwnd, ZEN_HE, 0); bOK = true; break;
+    case 10054: XgOnImeChar(hwnd, ZEN_HO, 0); bOK = true; break;
+    case 10060: XgOnImeChar(hwnd, ZEN_MA, 0); bOK = true; break;
+    case 10061: XgOnImeChar(hwnd, ZEN_MI, 0); bOK = true; break;
+    case 10062: XgOnImeChar(hwnd, ZEN_MU, 0); bOK = true; break;
+    case 10063: XgOnImeChar(hwnd, ZEN_ME, 0); bOK = true; break;
+    case 10064: XgOnImeChar(hwnd, ZEN_MO, 0); bOK = true; break;
+    case 10070: XgOnImeChar(hwnd, ZEN_YA, 0); bOK = true; break;
+    case 10071: XgOnImeChar(hwnd, ZEN_YU, 0); bOK = true; break;
+    case 10072: XgOnImeChar(hwnd, ZEN_YO, 0); bOK = true; break;
+    case 10080: XgOnImeChar(hwnd, ZEN_RA, 0); bOK = true; break;
+    case 10081: XgOnImeChar(hwnd, ZEN_RI, 0); bOK = true; break;
+    case 10082: XgOnImeChar(hwnd, ZEN_RU, 0); bOK = true; break;
+    case 10083: XgOnImeChar(hwnd, ZEN_RE, 0); bOK = true; break;
+    case 10084: XgOnImeChar(hwnd, ZEN_RO, 0); bOK = true; break;
+    case 10090: XgOnImeChar(hwnd, ZEN_WA, 0); bOK = true; break;
+    case 10091: XgOnImeChar(hwnd, ZEN_NN, 0); bOK = true; break;
+    case 10092: XgOnImeChar(hwnd, ZEN_PROLONG, 0); bOK = true; break;
+    case 10100: XgOnImeChar(hwnd, ZEN_GA, 0); bOK = true; break;
+    case 10101: XgOnImeChar(hwnd, ZEN_GI, 0); bOK = true; break;
+    case 10102: XgOnImeChar(hwnd, ZEN_GU, 0); bOK = true; break;
+    case 10103: XgOnImeChar(hwnd, ZEN_GE, 0); bOK = true; break;
+    case 10104: XgOnImeChar(hwnd, ZEN_GO, 0); bOK = true; break;
+    case 10110: XgOnImeChar(hwnd, ZEN_ZA, 0); bOK = true; break;
+    case 10111: XgOnImeChar(hwnd, ZEN_JI, 0); bOK = true; break;
+    case 10112: XgOnImeChar(hwnd, ZEN_ZU, 0); bOK = true; break;
+    case 10113: XgOnImeChar(hwnd, ZEN_ZE, 0); bOK = true; break;
+    case 10114: XgOnImeChar(hwnd, ZEN_ZO, 0); bOK = true; break;
+    case 10120: XgOnImeChar(hwnd, ZEN_DA, 0); bOK = true; break;
+    case 10121: XgOnImeChar(hwnd, ZEN_DI, 0); bOK = true; break;
+    case 10122: XgOnImeChar(hwnd, ZEN_DU, 0); bOK = true; break;
+    case 10123: XgOnImeChar(hwnd, ZEN_DE, 0); bOK = true; break;
+    case 10124: XgOnImeChar(hwnd, ZEN_DO, 0); bOK = true; break;
+    case 10130: XgOnImeChar(hwnd, ZEN_BA, 0); bOK = true; break;
+    case 10131: XgOnImeChar(hwnd, ZEN_BI, 0); bOK = true; break;
+    case 10132: XgOnImeChar(hwnd, ZEN_BU, 0); bOK = true; break;
+    case 10133: XgOnImeChar(hwnd, ZEN_BE, 0); bOK = true; break;
+    case 10134: XgOnImeChar(hwnd, ZEN_BO, 0); bOK = true; break;
+    case 10140: XgOnImeChar(hwnd, ZEN_PA, 0); bOK = true; break;
+    case 10141: XgOnImeChar(hwnd, ZEN_PI, 0); bOK = true; break;
+    case 10142: XgOnImeChar(hwnd, ZEN_PU, 0); bOK = true; break;
+    case 10143: XgOnImeChar(hwnd, ZEN_PE, 0); bOK = true; break;
+    case 10144: XgOnImeChar(hwnd, ZEN_PO, 0); bOK = true; break;
+    case 10150: XgOnImeChar(hwnd, ZEN_PROLONG, 0); bOK = true; break;
+    // ABC
+    case 20000: XgOnChar(hwnd, L'A', 1); bOK = true; break;
+    case 20001: XgOnChar(hwnd, L'B', 1); bOK = true; break;
+    case 20002: XgOnChar(hwnd, L'C', 1); bOK = true; break;
+    case 20003: XgOnChar(hwnd, L'D', 1); bOK = true; break;
+    case 20004: XgOnChar(hwnd, L'E', 1); bOK = true; break;
+    case 20005: XgOnChar(hwnd, L'F', 1); bOK = true; break;
+    case 20006: XgOnChar(hwnd, L'G', 1); bOK = true; break;
+    case 20007: XgOnChar(hwnd, L'H', 1); bOK = true; break;
+    case 20008: XgOnChar(hwnd, L'I', 1); bOK = true; break;
+    case 20009: XgOnChar(hwnd, L'J', 1); bOK = true; break;
+    case 20010: XgOnChar(hwnd, L'K', 1); bOK = true; break;
+    case 20011: XgOnChar(hwnd, L'L', 1); bOK = true; break;
+    case 20012: XgOnChar(hwnd, L'M', 1); bOK = true; break;
+    case 20013: XgOnChar(hwnd, L'N', 1); bOK = true; break;
+    case 20014: XgOnChar(hwnd, L'O', 1); bOK = true; break;
+    case 20015: XgOnChar(hwnd, L'P', 1); bOK = true; break;
+    case 20016: XgOnChar(hwnd, L'Q', 1); bOK = true; break;
+    case 20017: XgOnChar(hwnd, L'R', 1); bOK = true; break;
+    case 20018: XgOnChar(hwnd, L'S', 1); bOK = true; break;
+    case 20019: XgOnChar(hwnd, L'T', 1); bOK = true; break;
+    case 20020: XgOnChar(hwnd, L'U', 1); bOK = true; break;
+    case 20021: XgOnChar(hwnd, L'V', 1); bOK = true; break;
+    case 20022: XgOnChar(hwnd, L'W', 1); bOK = true; break;
+    case 20023: XgOnChar(hwnd, L'X', 1); bOK = true; break;
+    case 20024: XgOnChar(hwnd, L'Y', 1); bOK = true; break;
+    case 20025: XgOnChar(hwnd, L'Z', 1); bOK = true; break;
+    // Russian
+    case 30000: XgOnImeChar(hwnd, 0x0410, 0); bOK = true; break;
+    case 30001: XgOnImeChar(hwnd, 0x0411, 0); bOK = true; break;
+    case 30002: XgOnImeChar(hwnd, 0x0412, 0); bOK = true; break;
+    case 30003: XgOnImeChar(hwnd, 0x0413, 0); bOK = true; break;
+    case 30004: XgOnImeChar(hwnd, 0x0414, 0); bOK = true; break;
+    case 30005: XgOnImeChar(hwnd, 0x0415, 0); bOK = true; break;
+    case 30006: XgOnImeChar(hwnd, 0x0401, 0); bOK = true; break;
+    case 30007: XgOnImeChar(hwnd, 0x0416, 0); bOK = true; break;
+    case 30008: XgOnImeChar(hwnd, 0x0417, 0); bOK = true; break;
+    case 30009: XgOnImeChar(hwnd, 0x0418, 0); bOK = true; break;
+    case 30010: XgOnImeChar(hwnd, 0x0419, 0); bOK = true; break;
+    case 30011: XgOnImeChar(hwnd, 0x041A, 0); bOK = true; break;
+    case 30012: XgOnImeChar(hwnd, 0x041B, 0); bOK = true; break;
+    case 30013: XgOnImeChar(hwnd, 0x041C, 0); bOK = true; break;
+    case 30014: XgOnImeChar(hwnd, 0x041D, 0); bOK = true; break;
+    case 30015: XgOnImeChar(hwnd, 0x041E, 0); bOK = true; break;
+    case 30016: XgOnImeChar(hwnd, 0x041F, 0); bOK = true; break;
+    case 30017: XgOnImeChar(hwnd, 0x0420, 0); bOK = true; break;
+    case 30018: XgOnImeChar(hwnd, 0x0421, 0); bOK = true; break;
+    case 30019: XgOnImeChar(hwnd, 0x0422, 0); bOK = true; break;
+    case 30020: XgOnImeChar(hwnd, 0x0423, 0); bOK = true; break;
+    case 30021: XgOnImeChar(hwnd, 0x0424, 0); bOK = true; break;
+    case 30022: XgOnImeChar(hwnd, 0x0425, 0); bOK = true; break;
+    case 30023: XgOnImeChar(hwnd, 0x0426, 0); bOK = true; break;
+    case 30024: XgOnImeChar(hwnd, 0x0427, 0); bOK = true; break;
+    case 30025: XgOnImeChar(hwnd, 0x0428, 0); bOK = true; break;
+    case 30026: XgOnImeChar(hwnd, 0x0429, 0); bOK = true; break;
+    case 30027: XgOnImeChar(hwnd, 0x042A, 0); bOK = true; break;
+    case 30028: XgOnImeChar(hwnd, 0x042B, 0); bOK = true; break;
+    case 30029: XgOnImeChar(hwnd, 0x042C, 0); bOK = true; break;
+    case 30030: XgOnImeChar(hwnd, 0x042D, 0); bOK = true; break;
+    case 30031: XgOnImeChar(hwnd, 0x042E, 0); bOK = true; break;
+    case 30032: XgOnImeChar(hwnd, 0x042F, 0); bOK = true; break;
+    // Digits
+    case 40000: XgOnImeChar(hwnd, L'0', 0); bOK = true; break;
+    case 40001: XgOnImeChar(hwnd, L'1', 0); bOK = true; break;
+    case 40002: XgOnImeChar(hwnd, L'2', 0); bOK = true; break;
+    case 40003: XgOnImeChar(hwnd, L'3', 0); bOK = true; break;
+    case 40004: XgOnImeChar(hwnd, L'4', 0); bOK = true; break;
+    case 40005: XgOnImeChar(hwnd, L'5', 0); bOK = true; break;
+    case 40006: XgOnImeChar(hwnd, L'6', 0); bOK = true; break;
+    case 40007: XgOnImeChar(hwnd, L'7', 0); bOK = true; break;
+    case 40008: XgOnImeChar(hwnd, L'8', 0); bOK = true; break;
+    case 40009: XgOnImeChar(hwnd, L'9', 0); bOK = true; break;
+    default:
+        break;
+    }
+
+    xg_bCharFeed = bOldFeed;
+
+    return bOK;
+}
