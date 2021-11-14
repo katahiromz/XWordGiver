@@ -394,7 +394,7 @@ void __fastcall XgEnsureCaretVisible(HWND hwnd)
 INT __fastcall XgGetPreferredMaxLength(void)
 {
     if (xg_imode == xg_im_KANJI) {
-        // ４文字以上の熟語は少ないので避ける。
+        // ５文字以上の熟語は少ないので避ける。
         return 4;
     } else if (xg_bSkeletonMode) {
         // スケルトンモードでは長い方がいい。
@@ -408,9 +408,12 @@ INT __fastcall XgGetPreferredMaxLength(void)
     } else if (xg_nRules & (RULE_LINESYMMETRYH | RULE_LINESYMMETRYV)) {
         // 線対称のときに偶数長はまずいと思われる。
         return 5;
-    } else {
-        // おそらく日本語のカナと思われる。
+    } else if (xg_imode == xg_im_KANA) {
+        // 日本語のカナと思われる。4文字の単語が一番多い。
         return 4;
+    } else {
+        // よくわからない。とりあえず5文字。
+        return 5;
     }
 }
 
