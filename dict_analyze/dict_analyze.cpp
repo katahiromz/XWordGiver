@@ -49,7 +49,6 @@ inline bool XgIsCharHankakuNumericW(WCHAR ch)
     return L'0' <= ch && ch <= L'9';
 }
 
-
 template <typename T_STR>
 inline bool
 mstr_replace_all(T_STR& str, const T_STR& from, const T_STR& to)

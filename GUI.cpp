@@ -36,27 +36,6 @@ void __fastcall MainWnd_OnChar(HWND hwnd, TCHAR ch, int cRepeat);
 void __fastcall MainWnd_OnKey(HWND hwnd, UINT vk, bool fDown, int /*cRepeat*/, UINT /*flags*/);
 void __fastcall MainWnd_OnImeChar(HWND hwnd, WCHAR ch, LPARAM /*lKeyData*/);
 
-template <typename T_STR_CONTAINER>
-inline typename T_STR_CONTAINER::value_type
-mstr_join(const T_STR_CONTAINER& container,
-          const typename T_STR_CONTAINER::value_type& sep)
-{
-    typename T_STR_CONTAINER::value_type result;
-    typename T_STR_CONTAINER::const_iterator it, end;
-    it = container.begin();
-    end = container.end();
-    if (it != end)
-    {
-        result = *it;
-        for (++it; it != end; ++it)
-        {
-            result += sep;
-            result += *it;
-        }
-    }
-    return result;
-}
-
 //////////////////////////////////////////////////////////////////////////////
 // global variables
 

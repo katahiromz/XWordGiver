@@ -130,9 +130,6 @@ extern bool xg_bDrawFrameForMarkedCell;
 // 文字送り？
 extern bool xg_bCharFeed;
 
-// タテ入力？
-extern bool xg_bTateInput;
-
 // スマート解決のとき、配置できる最大単語長。
 extern INT xg_nMaxWordLen;
 
@@ -984,6 +981,11 @@ enum XG_InputMode
 };
 extern XG_InputMode xg_imode;
 
+// タテ入力？
+extern bool xg_bTateInput;
+
+void __fastcall XgSetInputModeFromDict(HWND hwnd);
+
 //////////////////////////////////////////////////////////////////////////////
 // 文字の判定。
 
@@ -1209,84 +1211,8 @@ public:
 };
 
 //////////////////////////////////////////////////////////////////////////////
-// Utils.cpp
 
-// リソース文字列を読み込む。
-LPWSTR __fastcall XgLoadStringDx1(int id);
-// リソース文字列を読み込む。
-LPWSTR __fastcall XgLoadStringDx2(int id);
-
-// ダイアログを中央によせる関数。
-void __fastcall XgCenterDialog(HWND hwnd);
-// メッセージボックスフック用の関数。
-extern "C" LRESULT CALLBACK
-XgMsgBoxCbtProc(int nCode, WPARAM wParam, LPARAM /*lParam*/);
-// 中央寄せメッセージボックスを表示する。
-int __fastcall
-XgCenterMessageBoxW(HWND hwnd, LPCWSTR pszText, LPCWSTR pszCaption, UINT uType);
-// 中央寄せメッセージボックスを表示する。
-int __fastcall
-XgCenterMessageBoxIndirectW(LPMSGBOXPARAMS lpMsgBoxParams);
-
-// 文字列を置換する。
-void __fastcall xg_str_replace_all(
-    std::wstring &s, const std::wstring& from, const std::wstring& to);
-// 文字列の前後の空白を取り除く。
-void __fastcall xg_str_trim(std::wstring& str);
-// ショートカットのターゲットのパスを取得する。
-bool __fastcall XgGetPathOfShortcutW(LPCWSTR pszLnkFile, LPWSTR pszPath);
-// フィルター文字列を作る。
-LPWSTR __fastcall XgMakeFilterString(LPWSTR psz);
-
-// 文字列からマルチセットへ変換する。
-void __fastcall xg_str_to_multiset(
-    std::unordered_multiset<WCHAR>& mset, const std::wstring& str);
-// ベクターからマルチセットへ変換する。
-void __fastcall xg_vec_to_multiset(
-    std::unordered_multiset<WCHAR>& mset, const std::vector<WCHAR>& str);
-// 部分マルチセットかどうか？
-bool __fastcall xg_submultiseteq(const std::unordered_multiset<WCHAR>& ms1,
-                                 const std::unordered_multiset<WCHAR>& ms2);
-// ReadMeを開く。
-void __fastcall XgOpenReadMe(HWND hwnd);
-// Licenseを開く。
-void __fastcall XgOpenLicense(HWND hwnd);
-// パターンを開く。
-void __fastcall XgOpenPatterns(HWND hwnd);
-
-// ファイルが書き込み可能か？
-bool __fastcall XgCanWriteFile(const WCHAR *pszFile);
-
-void __fastcall XgSetInputModeFromDict(HWND hwnd);
-
-// Unicode -> UTF8
-std::string XgUnicodeToUtf8(const std::wstring& wide);
-
-// ANSI -> Unicode
-std::wstring XgAnsiToUnicode(const std::string& ansi);
-
-// Unicode -> ANSI
-std::string XgUnicodeToAnsi(const std::wstring& wide);
-
-// UTF-8 -> Unicode.
-std::wstring __fastcall XgUtf8ToUnicode(const std::string& ansi);
-
-// JSON文字列を作る。
-std::wstring XgJsonEncodeString(const std::wstring& str);
-
-// パスを作る。
-BOOL XgMakePathW(LPCWSTR pszPath);
-
-// エンディアン変換。
-void XgSwab(LPBYTE pbFile, DWORD cbFile);
-
-// HTML形式のクリップボードデータを作成する。
-std::string XgMakeClipHtmlData(
-    const std::string& html_utf8, const std::string& style_utf8 = "");
-
-// HTML形式のクリップボードデータを作成する。
-std::string XgMakeClipHtmlData(
-    const std::wstring& html_wide, const std::wstring& style_wide = L"");
+#include "Utils.hpp"
 
 //////////////////////////////////////////////////////////////////////////////
 

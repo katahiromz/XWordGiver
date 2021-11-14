@@ -5,23 +5,6 @@
 // タグ群の最大長。
 #define MAX_TAGSLEN 256
 
-template <typename T_STR_CONTAINER>
-inline void
-mstr_split(T_STR_CONTAINER& container,
-           const typename T_STR_CONTAINER::value_type& str,
-           const typename T_STR_CONTAINER::value_type& chars)
-{
-    container.clear();
-    size_t i = 0, k = str.find_first_of(chars);
-    while (k != T_STR_CONTAINER::value_type::npos)
-    {
-        container.push_back(str.substr(i, k - i));
-        i = k + 1;
-        k = str.find_first_of(chars, i);
-    }
-    container.push_back(str.substr(i));
-}
-
 // 「テーマ」ダイアログ。
 class XG_ThemeDialog : public XG_Dialog
 {
