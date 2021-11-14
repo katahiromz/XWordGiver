@@ -1,31 +1,31 @@
-#pragma once
+ï»¿#pragma once
 
 #include "XG_Window.hpp"
 
 class XG_HintsWnd : public XG_Window
 {
 public:
-    // ƒqƒ“ƒgƒEƒBƒ“ƒhƒE‚ÌƒXƒNƒ[ƒ‹ƒrƒ…[B
+    // ãƒ’ãƒ³ãƒˆã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®ã‚¹ã‚¯ãƒ­ãƒ¼ãƒ«ãƒ“ãƒ¥ãƒ¼ã€‚
     inline static MScrollView         xg_svHintsScrollView;
 
-    // ƒqƒ“ƒgƒEƒBƒ“ƒhƒE‚ÌUIƒtƒHƒ“ƒgB
+    // ãƒ’ãƒ³ãƒˆã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®UIãƒ•ã‚©ãƒ³ãƒˆã€‚
     inline static HFONT               xg_hHintsUIFont = NULL;
 
-    // c‚ÌƒJƒM‚ÌƒRƒ“ƒgƒ[ƒ‹ŒQB
+    // ç¸¦ã®ã‚«ã‚®ã®ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«ç¾¤ã€‚
     inline static HWND                xg_hwndTateCaptionStatic = NULL;
     inline static std::vector<HWND>   xg_ahwndTateStatics;
     inline static std::vector<HWND>   xg_ahwndTateEdits;
 
-    // ‰¡‚ÌƒJƒM‚ÌƒRƒ“ƒgƒ[ƒ‹ŒQB
+    // æ¨ªã®ã‚«ã‚®ã®ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«ç¾¤ã€‚
     inline static HWND                xg_hwndYokoCaptionStatic = NULL;
     inline static std::vector<HWND>   xg_ahwndYokoStatics;
     inline static std::vector<HWND>   xg_ahwndYokoEdits;
 
-    // ƒqƒ“ƒgƒEƒBƒ“ƒhƒE‚ÌˆÊ’u‚ÆƒTƒCƒYB
+    // ãƒ’ãƒ³ãƒˆã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®ä½ç½®ã¨ã‚µã‚¤ã‚ºã€‚
     inline static int s_nHintsWndX = CW_USEDEFAULT, s_nHintsWndY = CW_USEDEFAULT;
     inline static int s_nHintsWndCX = CW_USEDEFAULT, s_nHintsWndCY = CW_USEDEFAULT;
 
-    // ƒqƒ“ƒg‚ª•ÏX‚³‚ê‚½‚©H
+    // ãƒ’ãƒ³ãƒˆãŒå¤‰æ›´ã•ã‚ŒãŸã‹ï¼Ÿ
     static bool AreHintsModified(void)
     {
         if (xg_bHintsAdded) {
@@ -47,7 +47,7 @@ public:
         return false;
     }
 
-    // ƒqƒ“ƒgƒf[ƒ^‚ğİ’è‚·‚éB
+    // ãƒ’ãƒ³ãƒˆãƒ‡ãƒ¼ã‚¿ã‚’è¨­å®šã™ã‚‹ã€‚
     static void SetHintsData(void)
     {
         for (size_t i = 0; i < xg_vecTateHints.size(); ++i) {
@@ -58,7 +58,7 @@ public:
         }
     }
 
-    // ƒqƒ“ƒgƒf[ƒ^‚ğXV‚·‚éB
+    // ãƒ’ãƒ³ãƒˆãƒ‡ãƒ¼ã‚¿ã‚’æ›´æ–°ã™ã‚‹ã€‚
     static bool UpdateHintData(void)
     {
         bool updated = false;
@@ -101,7 +101,7 @@ public:
         // No change
     }
 
-    // ƒqƒ“ƒgƒEƒBƒ“ƒhƒE‚ÌƒTƒCƒY‚ª•Ï‚í‚Á‚½B
+    // ãƒ’ãƒ³ãƒˆã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®ã‚µã‚¤ã‚ºãŒå¤‰ã‚ã£ãŸã€‚
     void OnSize(HWND hwnd, UINT /*state*/, int /*cx*/, int /*cy*/)
     {
         if (xg_hwndTateCaptionStatic == NULL)
@@ -130,7 +130,7 @@ public:
         HGDIOBJ hFontOld = ::SelectObject(hdc, xg_hHintsUIFont);
         int y = 0;
 
-        // ƒ^ƒe‚ÌƒJƒMB
+        // ã‚¿ãƒ†ã®ã‚«ã‚®ã€‚
         {
             MRect rcCtrl(MPoint(0, y + 4), 
                          MSize(rcClient.Width(), size1.cy + 4));
@@ -158,7 +158,7 @@ public:
                 y += rcCtrl.Height();
             }
         }
-        // ƒˆƒR‚ÌƒJƒMB
+        // ãƒ¨ã‚³ã®ã‚«ã‚®ã€‚
         {
             MRect rcCtrl(MPoint(0, y + 4),
                          MSize(rcClient.Width(), size1.cy + 4));
@@ -209,13 +209,13 @@ public:
         switch (uMsg) {
         case WM_CHAR:
             if (wParam == L'\r' || wParam == L'\n') {
-                // ‰üs‚ª‰Ÿ‚³‚ê‚½B•K—v‚È‚ç‚Îƒf[ƒ^‚ğXV‚·‚éB
+                // æ”¹è¡ŒãŒæŠ¼ã•ã‚ŒãŸã€‚å¿…è¦ãªã‚‰ã°ãƒ‡ãƒ¼ã‚¿ã‚’æ›´æ–°ã™ã‚‹ã€‚
                 if (AreHintsModified()) {
                     auto hu1 = std::make_shared<XG_UndoData_HintsUpdated>();
                     auto hu2 = std::make_shared<XG_UndoData_HintsUpdated>();
                     hu1->Get();
                     {
-                        // ƒqƒ“ƒg‚ğXV‚·‚éB
+                        // ãƒ’ãƒ³ãƒˆã‚’æ›´æ–°ã™ã‚‹ã€‚
                         UpdateHintData();
                     }
                     hu2->Get();
@@ -225,31 +225,31 @@ public:
             return ::CallWindowProc(data->m_fnOldWndProc,
                 hwnd, uMsg, wParam, lParam);
 
-        case WM_SETFOCUS: // ƒtƒH[ƒJƒX‚ğ“¾‚½B
+        case WM_SETFOCUS: // ãƒ•ã‚©ãƒ¼ã‚«ã‚¹ã‚’å¾—ãŸã€‚
             if (wParam) {
-                // ƒtƒH[ƒJƒX‚ğ¸‚¤ƒRƒ“ƒgƒ[ƒ‹‚Ì‘I‘ğ‚ğ‰ğœ‚·‚éB
+                // ãƒ•ã‚©ãƒ¼ã‚«ã‚¹ã‚’å¤±ã†ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«ã®é¸æŠã‚’è§£é™¤ã™ã‚‹ã€‚
                 HWND hwndLoseFocus = reinterpret_cast<HWND>(wParam);
                 ::SendMessageW(hwndLoseFocus, EM_SETSEL, 0, 0);
             }
-            // ƒtƒH[ƒJƒX‚Ì‚ ‚éƒRƒ“ƒgƒ[ƒ‹‚ªŒ©‚¦‚é‚æ‚¤‚ÉˆÚ“®‚·‚éB
+            // ãƒ•ã‚©ãƒ¼ã‚«ã‚¹ã®ã‚ã‚‹ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«ãŒè¦‹ãˆã‚‹ã‚ˆã†ã«ç§»å‹•ã™ã‚‹ã€‚
             xg_svHintsScrollView.EnsureCtrlVisible(hwnd);
             return ::CallWindowProc(data->m_fnOldWndProc,
                 hwnd, uMsg, wParam, lParam);
 
-        case WM_KILLFOCUS:  // ƒtƒH[ƒJƒX‚ğ¸‚Á‚½B
-            // ƒqƒ“ƒg‚ÉXV‚ª‚ ‚ê‚ÎAƒf[ƒ^‚ğXV‚·‚éB
+        case WM_KILLFOCUS:  // ãƒ•ã‚©ãƒ¼ã‚«ã‚¹ã‚’å¤±ã£ãŸã€‚
+            // ãƒ’ãƒ³ãƒˆã«æ›´æ–°ãŒã‚ã‚Œã°ã€ãƒ‡ãƒ¼ã‚¿ã‚’æ›´æ–°ã™ã‚‹ã€‚
             if (AreHintsModified()) {
                 auto hu1 = std::make_shared<XG_UndoData_HintsUpdated>();
                 auto hu2 = std::make_shared<XG_UndoData_HintsUpdated>();
                 hu1->Get();
                 {
-                    // ƒqƒ“ƒg‚ğXV‚·‚éB
+                    // ãƒ’ãƒ³ãƒˆã‚’æ›´æ–°ã™ã‚‹ã€‚
                     UpdateHintData();
                 }
                 hu2->Get();
                 xg_ubUndoBuffer.Commit(UC_HINTS_UPDATED, hu1, hu2);
             }
-            // ƒŒƒCƒAƒEƒg‚ğ’²®‚·‚éB
+            // ãƒ¬ã‚¤ã‚¢ã‚¦ãƒˆã‚’èª¿æ•´ã™ã‚‹ã€‚
             ::PostMessageW(xg_hHintsWnd, WM_SIZE, 0, 0);
             return ::CallWindowProc(data->m_fnOldWndProc,
                 hwnd, uMsg, wParam, lParam);
@@ -309,12 +309,12 @@ public:
         return 0;
     }
 
-    // ƒqƒ“ƒgƒEƒBƒ“ƒhƒE‚ªì¬‚³‚ê‚½B
+    // ãƒ’ãƒ³ãƒˆã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãŒä½œæˆã•ã‚ŒãŸã€‚
     BOOL OnCreate(HWND hwnd, LPCREATESTRUCT /*lpCreateStruct*/)
     {
         xg_hHintsWnd = hwnd;
 
-        // ‰Šú‰»B
+        // åˆæœŸåŒ–ã€‚
         xg_ahwndTateStatics.clear();
         xg_ahwndTateEdits.clear();
         xg_ahwndYokoStatics.clear();
@@ -441,21 +441,21 @@ public:
         return TRUE;
     }
 
-    // ƒqƒ“ƒgƒEƒBƒ“ƒhƒE‚ªc‚ÉƒXƒNƒ[ƒ‹‚³‚ê‚½B
+    // ãƒ’ãƒ³ãƒˆã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãŒç¸¦ã«ã‚¹ã‚¯ãƒ­ãƒ¼ãƒ«ã•ã‚ŒãŸã€‚
     void OnVScroll(HWND /*hwnd*/, HWND /*hwndCtl*/, UINT code, int pos)
     {
         xg_svHintsScrollView.Scroll(SB_VERT, code, pos);
     }
 
-    // ƒqƒ“ƒgƒEƒBƒ“ƒhƒE‚ª”jŠü‚³‚ê‚½B
+    // ãƒ’ãƒ³ãƒˆã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãŒç ´æ£„ã•ã‚ŒãŸã€‚
     void OnDestroy(HWND hwnd)
     {
         if (xg_hHintsWnd) {
-            // ƒqƒ“ƒgƒf[ƒ^‚ğXV‚·‚éB
+            // ãƒ’ãƒ³ãƒˆãƒ‡ãƒ¼ã‚¿ã‚’æ›´æ–°ã™ã‚‹ã€‚
             UpdateHintData();
         }
 
-        // Œ»İ‚ÌˆÊ’u‚ÆƒTƒCƒY‚ğ•Û‘¶‚·‚éB
+        // ç¾åœ¨ã®ä½ç½®ã¨ã‚µã‚¤ã‚ºã‚’ä¿å­˜ã™ã‚‹ã€‚
         MRect rc;
         ::GetWindowRect(hwnd, &rc);
         XG_HintsWnd::s_nHintsWndX = rc.left;
@@ -496,7 +496,7 @@ public:
         }
     }
 
-    // ƒL[‚ª‰Ÿ‚³‚ê‚½B
+    // ã‚­ãƒ¼ãŒæŠ¼ã•ã‚ŒãŸã€‚
     void OnKey(HWND hwnd, UINT vk, BOOL fDown, int cRepeat, UINT flags)
     {
         if (!fDown)
@@ -526,7 +526,7 @@ public:
     }
 
 
-    // ƒ}ƒEƒXƒzƒC[ƒ‹‚ª‰ñ“]‚µ‚½B
+    // ãƒã‚¦ã‚¹ãƒ›ã‚¤ãƒ¼ãƒ«ãŒå›è»¢ã—ãŸã€‚
     void __fastcall
     OnMouseWheel(HWND hwnd, int xPos, int yPos, int zDelta, UINT fwKeys)
     {
@@ -543,14 +543,14 @@ public:
         }
     }
 
-    // ƒqƒ“ƒg ƒEƒBƒ“ƒhƒE‚ÌƒTƒCƒY‚ğ§ŒÀ‚·‚éB
+    // ãƒ’ãƒ³ãƒˆ ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®ã‚µã‚¤ã‚ºã‚’åˆ¶é™ã™ã‚‹ã€‚
     void OnGetMinMaxInfo(HWND hwnd, LPMINMAXINFO lpMinMaxInfo)
     {
         lpMinMaxInfo->ptMinTrackSize.x = 256;
         lpMinMaxInfo->ptMinTrackSize.y = 128;
     }
 
-    // uƒqƒ“ƒgvƒEƒBƒ“ƒhƒE‚ÌƒRƒ“ƒeƒLƒXƒgƒƒjƒ…[B
+    // ã€Œãƒ’ãƒ³ãƒˆã€ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®ã‚³ãƒ³ãƒ†ã‚­ã‚¹ãƒˆãƒ¡ãƒ‹ãƒ¥ãƒ¼ã€‚
     void OnContextMenu(HWND hwnd, HWND hwndContext, UINT xPos, UINT yPos)
     {
         WCHAR szClass[8];
@@ -562,7 +562,7 @@ public:
         HMENU hMenu = LoadMenuW(xg_hInstance, MAKEINTRESOURCEW(2));
         HMENU hSubMenu = GetSubMenu(hMenu, 1);
 
-        // ‰EƒNƒŠƒbƒNƒƒjƒ…[‚ğ•\¦‚·‚éB
+        // å³ã‚¯ãƒªãƒƒã‚¯ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã‚’è¡¨ç¤ºã™ã‚‹ã€‚
         ::SetForegroundWindow(hwnd);
         INT nCmd = ::TrackPopupMenu(
             hSubMenu, TPM_RIGHTBUTTON | TPM_LEFTALIGN | TPM_RETURNCMD,
@@ -574,7 +574,7 @@ public:
         ::DestroyMenu(hMenu);
     }
 
-    // ƒqƒ“ƒg ƒEƒBƒ“ƒhƒE‚ÌƒEƒBƒ“ƒhƒE ƒvƒƒV[ƒWƒƒ[B
+    // ãƒ’ãƒ³ãƒˆ ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ ãƒ—ãƒ­ã‚·ãƒ¼ã‚¸ãƒ£ãƒ¼ã€‚
     virtual LRESULT CALLBACK
     WindowProcDx(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
     {
