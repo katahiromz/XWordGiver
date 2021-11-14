@@ -43,8 +43,8 @@ Source: "DICT\BasicDict-ENG2JPN-Freedom.tsv"; DestDir: "{app}\DICT"; Flags: igno
 Source: "DICT\BasicDict-JPN-Kana-Freedom.tsv"; DestDir: "{app}\DICT"; Flags: ignoreversion
 Source: "DICT\BasicDict-JPN-Kana-Modesty.tsv"; DestDir: "{app}\DICT"; Flags: ignoreversion
 Source: "DICT\BasicDict-JPN-Kanji-Freedom.tsv"; DestDir: "{app}\DICT"; Flags: ignoreversion
-Source: "DICT\BasicDict-JPN-Kotowaza.tsv"; DestDir: "{app}\DICT"; Flags: ignoreversion
-Source: "DICT\BasicDict-JPN-Kana-4KanjiWords.tsv"; DestDir: "{app}\DICT"; Flags: ignoreversion
+Source: "DICT\SubDict-JPN-Kotowaza.tsv"; DestDir: "{app}\DICT"; Flags: ignoreversion
+Source: "DICT\SubDict-JPN-Kana-4KanjiWords.tsv"; DestDir: "{app}\DICT"; Flags: ignoreversion
 Source: "DICT\BasicDict-RUS-Freedom.tsv"; DestDir: "{app}\DICT"; Flags: ignoreversion
 Source: "BLOCK\circle.emf"; DestDir: "{app}\BLOCK"; Flags: ignoreversion
 Source: "BLOCK\club.emf"; DestDir: "{app}\BLOCK"; Flags: ignoreversion

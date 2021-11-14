@@ -6,8 +6,9 @@
 #define NOMINMAX
 #include "XWordGiver.hpp"
 #include "GUI.hpp"
-#include "XG_UndoBuffer.hpp"
+#include "XG_UndoBuffer.hpp"    // 「元に戻す」情報。
 
+// ダイアログとウィンドウ。
 #include "XG_CancelFromWordsDialog.hpp"
 #include "XG_CancelGenBlacksDialog.hpp"
 #include "XG_CancelSmartSolveDialog.hpp"
@@ -3904,25 +3905,6 @@ void __fastcall XgOpenPatterns(HWND hwnd)
     dialog.DoModal(hwnd);
 }
 
-// 辞書を切り替える。
-void MainWnd_DoDictionary(HWND hwnd, size_t iDict)
-{
-    // 範囲外は無視。
-    if (iDict >= xg_dict_files.size())
-        return;
-
-    // 辞書を読み込み、セットする。
-    const auto& file = xg_dict_files[iDict];
-    if (XgLoadDictFile(file.c_str()))
-    {
-        XgSetDict(file.c_str());
-        XgSetInputModeFromDict(hwnd);
-    }
-
-    // 二重マス単語の候補をクリアする。
-    xg_vMarkedCands.clear();
-}
-
 // 「黒マスルールの説明.txt」を開く。
 static void OnOpenRulesTxt(HWND hwnd)
 {
@@ -5466,7 +5448,7 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
     case ID_DICTIONARY61:
     case ID_DICTIONARY62:
     case ID_DICTIONARY63:
-        MainWnd_DoDictionary(hwnd, id - ID_DICTIONARY00);
+        XgSelectDict(hwnd, id - ID_DICTIONARY00);
         XgResetTheme(hwnd, FALSE);
         break;
     case ID_RESETRULES:

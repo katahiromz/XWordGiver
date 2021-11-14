@@ -205,5 +205,7 @@ void XgSetDict(const std::wstring& strFile);
 BOOL XgLoadDictsFromDir(LPCWSTR pszDir);
 // 辞書ファイルをすべて読み込む。
 BOOL XgLoadDictsAll(void);
+// 辞書を切り替える。
+void XgSelectDict(HWND hwnd, size_t iDict);
 
 #endif  // ndef __XG_DICTIONARY_HPP__

@@ -551,3 +551,22 @@ void XgSetDict(const std::wstring& strFile)
         xg_dict_files.erase(last, xg_dict_files.end());
     }
 }
+
+// 辞書を切り替える。
+void XgSelectDict(HWND hwnd, size_t iDict)
+{
+    // 範囲外は無視。
+    if (iDict >= xg_dict_files.size())
+        return;
+
+    // 辞書を読み込み、セットする。
+    const auto& file = xg_dict_files[iDict];
+    if (XgLoadDictFile(file.c_str()))
+    {
+        XgSetDict(file.c_str());
+        XgSetInputModeFromDict(hwnd);
+    }
+
+    // 二重マス単語の候補をクリアする。
+    xg_vMarkedCands.clear();
+}
