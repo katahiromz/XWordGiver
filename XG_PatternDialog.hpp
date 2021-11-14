@@ -18,7 +18,7 @@ void __fastcall XgPasteBoard(HWND hwnd, const std::wstring& str);
 // クリップボードにクロスワードをコピー。
 void __fastcall XgCopyBoard(HWND hwnd);
 // ツールバーのUIを更新する。
-void __fastcall XgUpdateToolBarUI(HWND hwnd);
+void XgUpdateToolBarUI(HWND hwnd);
 // 解を求める（黒マス追加なし）。
 bool __fastcall XgOnSolve_NoAddBlack(HWND hwnd, bool bShowAnswer = true);
 // 24BPPビットマップを作成。

@@ -12,7 +12,7 @@
 #include "XG_NotesDialog.hpp"
 #include "XG_PatGenDialog.hpp"
 #include "XG_PatternDialog.hpp"
-#include "XG_SeqGenerateDialog.hpp"
+#include "XG_SeqGenDialog.hpp"
 #include "XG_SeqPatGenDialog.hpp"
 #include "XG_SeqSolveDialog.hpp"
 #include "XG_SettingsDialog.hpp"
@@ -391,7 +391,7 @@ void __fastcall XgEnsureCaretVisible(HWND hwnd)
 //////////////////////////////////////////////////////////////////////////////
 
 // ツールバーのUIを更新する。
-void __fastcall XgUpdateToolBarUI(HWND hwnd)
+void XgUpdateToolBarUI(HWND hwnd)
 {
     ::SendMessageW(xg_hToolBar, TB_ENABLEBUTTON, ID_SOLVE, !xg_bSolved);
     ::SendMessageW(xg_hToolBar, TB_ENABLEBUTTON, ID_SOLVENOADDBLACK, !xg_bSolved);
