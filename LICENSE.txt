@@ -1,6 +1,6 @@
 ﻿The MIT License
 
-Copyright (c) 2013-2020 Katayama Hirofumi MZ
+Copyright (c) 2013-2021 Katayama Hirofumi MZ
 Copyright (c) 2013-2019 Niels Lohmann
 Copyright (c) 2021 スフィンクス.
 
