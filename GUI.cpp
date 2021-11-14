@@ -18,6 +18,7 @@
 #include "XG_GenerateDialog.hpp"
 #include "XG_GenerateRepeatedlyDialog.hpp"
 #include "XG_PatGenDialog.hpp"
+#include "XG_SeqPatGenDialog.hpp"
 
 #undef HANDLE_WM_MOUSEWHEEL     // might be wrong
 #define HANDLE_WM_MOUSEWHEEL(hwnd, wParam, lParam, fn) \
@@ -1408,153 +1409,6 @@ INT CALLBACK XgBrowseCallbackProc(HWND hwnd, UINT uMsg, LPARAM /*lParam*/, LPARA
 
 //////////////////////////////////////////////////////////////////////////////
 
-// [黒マスパターンの連続作成]ダイアログのダイアログ プロシージャ。
-extern "C" INT_PTR CALLBACK
-XgGenerateBlacksRepeatedlyDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam*/)
-{
-    INT n3;
-    WCHAR szFile[MAX_PATH];
-    std::wstring strDir;
-    COMBOBOXEXITEMW item;
-    BROWSEINFOW bi;
-    DWORD attrs;
-    LPITEMIDLIST pidl;
-
-    switch (uMsg)
-    {
-    case WM_INITDIALOG:
-        // ダイアログを中央へ移動する。
-        XgCenterDialog(hwnd);
-        // スケルトンモードと入力モードに応じて単語の最大長を設定する。
-        if (xg_imode == xg_im_KANJI) {
-            n3 = 4;
-        } else if (xg_bSkeletonMode) {
-            n3 = 6;
-        } else if (xg_imode == xg_im_RUSSIA || xg_imode == xg_im_ABC) {
-            n3 = 5;
-        } else if (xg_imode == xg_im_DIGITS) {
-            n3 = 7;
-        } else {
-            n3 = 4;
-        }
-        ::SetDlgItemInt(hwnd, edt3, n3, FALSE);
-        // 保存先を設定する。
-        for (const auto& dir : xg_dirs_save_to) {
-            item.mask = CBEIF_TEXT;
-            item.iItem = -1;
-            StringCbCopy(szFile, sizeof(szFile), dir.data());
-            item.pszText = szFile;
-            item.cchTextMax = -1;
-            ::SendDlgItemMessageW(hwnd, cmb2, CBEM_INSERTITEMW, 0,
-                                  reinterpret_cast<LPARAM>(&item));
-        }
-        // コンボボックスの最初の項目を選択する。
-        ::SendDlgItemMessageW(hwnd, cmb2, CB_SETCURSEL, 0, 0);
-        // 生成する数を設定する。
-        ::SetDlgItemInt(hwnd, edt4, xg_nNumberToGenerate, FALSE);
-        // IMEをOFFにする。
-        {
-            HWND hwndCtrl = ::GetDlgItem(hwnd, edt3);
-            ::ImmAssociateContext(hwndCtrl, NULL);
-            hwndCtrl = ::GetDlgItem(hwnd, edt4);
-            ::ImmAssociateContext(hwndCtrl, NULL);
-        }
-        SendDlgItemMessageW(hwnd, scr3, UDM_SETRANGE, 0, MAKELPARAM(XG_MAX_WORD_LEN, XG_MIN_WORD_LEN));
-        SendDlgItemMessageW(hwnd, scr4, UDM_SETRANGE, 0, MAKELPARAM(100, 1));
-        return TRUE;
-
-    case WM_COMMAND:
-        switch (LOWORD(wParam))
-        {
-        case IDOK:
-            n3 = static_cast<int>(::GetDlgItemInt(hwnd, edt3, nullptr, FALSE));
-            if (n3 < XG_MIN_WORD_LEN || n3 > XG_MAX_WORD_LEN) {
-                ::SendDlgItemMessageW(hwnd, edt3, EM_SETSEL, 0, -1);
-                XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_ENTERINT), nullptr, MB_ICONERROR);
-                ::SetFocus(::GetDlgItem(hwnd, edt3));
-                return 0;
-            }
-            xg_nMaxWordLen = n3;
-            // 保存先のパス名を取得する。
-            ::GetDlgItemTextW(hwnd, cmb2, szFile, ARRAYSIZE(szFile));
-            attrs = ::GetFileAttributesW(szFile);
-            if (attrs == 0xFFFFFFFF || !(attrs & FILE_ATTRIBUTE_DIRECTORY)) {
-                // パスがなければ作成する。
-                if (!XgMakePathW(szFile)) {
-                    // 作成に失敗。
-                    ::SendDlgItemMessageW(hwnd, cmb2, CB_SETEDITSEL, 0, -1);
-                    XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_STORAGEINVALID), nullptr, MB_ICONERROR);
-                    ::SetFocus(::GetDlgItem(hwnd, cmb2));
-                    return 0;
-                }
-            }
-            // 保存先をセットする。
-            strDir = szFile;
-            xg_str_trim(strDir);
-            {
-                auto end = xg_dirs_save_to.end();
-                for (auto it = xg_dirs_save_to.begin(); it != end; it++) {
-                    if (_wcsicmp((*it).data(), strDir.data()) == 0) {
-                        xg_dirs_save_to.erase(it);
-                        break;
-                    }
-                }
-                xg_dirs_save_to.emplace_front(strDir);
-            }
-            // 問題の数を取得する。
-            {
-                // 無制限ではない。
-                BOOL bTranslated;
-                xg_nNumberToGenerate = ::GetDlgItemInt(hwnd, edt4, &bTranslated, FALSE);
-                if (!bTranslated || xg_nNumberToGenerate == 0) {
-                    ::SendDlgItemMessageW(hwnd, edt4, EM_SETSEL, 0, -1);
-                    XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_ENTERPOSITIVE), nullptr, MB_ICONERROR);
-                    ::SetFocus(::GetDlgItem(hwnd, edt4));
-                    return 0;
-                }
-            }
-            // JSON形式として保存するか？
-            xg_bSaveAsJsonFile = true;
-            // 初期化する。
-            {
-                xg_bSolved = false;
-                xg_bShowAnswer = false;
-                xg_xword.clear();
-                xg_vTateInfo.clear();
-                xg_vYokoInfo.clear();
-                xg_vMarks.clear();
-                xg_vMarkedCands.clear();
-            }
-            // ダイアログを閉じる。
-            ::EndDialog(hwnd, IDOK);
-            break;
-
-        case IDCANCEL:
-            // ダイアログを閉じる。
-            ::EndDialog(hwnd, IDCANCEL);
-            break;
-
-        case psh2:
-            // ユーザーに保存先の場所を問い合わせる。
-            ZeroMemory(&bi, sizeof(bi));
-            bi.hwndOwner = hwnd;
-            bi.lpszTitle = XgLoadStringDx1(IDS_CROSSSTORAGE);
-            bi.ulFlags = BIF_RETURNONLYFSDIRS;
-            bi.lpfn = XgBrowseCallbackProc;
-            ::GetDlgItemTextW(hwnd, cmb2, xg_szDir, ARRAYSIZE(xg_szDir));
-            pidl = ::SHBrowseForFolderW(&bi);
-            if (pidl) {
-                // パスをコンボボックスに設定。
-                ::SHGetPathFromIDListW(pidl, szFile);
-                ::SetDlgItemTextW(hwnd, cmb2, szFile);
-                ::CoTaskMemFree(pidl);
-            }
-            break;
-        }
-    }
-    return 0;
-}
-
 // [解の連続作成]ダイアログのダイアログ プロシージャー。
 extern "C" INT_PTR CALLBACK
 XgSolveRepeatedlyDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam*/)
@@ -2911,8 +2765,8 @@ bool __fastcall XgOnGenerate(HWND hwnd, bool show_answer, bool multiple = false)
 bool __fastcall XgOnGenerateBlacksRepeatedly(HWND hwnd)
 {
     ::EnableWindow(xg_hwndInputPalette, FALSE);
-    INT nID = DialogBoxW(xg_hInstance, MAKEINTRESOURCEW(IDD_SEQPATGEN), hwnd,
-                         XgGenerateBlacksRepeatedlyDlgProc);
+    XG_SeqPatGenDialog dialog;
+    INT nID = INT(dialog.DoModal(hwnd));
     ::EnableWindow(xg_hwndInputPalette, TRUE);
     if (nID != IDOK) {
         return false;
