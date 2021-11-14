@@ -390,6 +390,24 @@ void __fastcall XgEnsureCaretVisible(HWND hwnd)
     }
 }
 
+// 現在の状態で好ましいと思われる単語の最大長を取得する。
+INT __fastcall XgGetPreferredMaxLength(void)
+{
+    if (xg_imode == xg_im_KANJI) {
+        return 4;
+    } else if (xg_bSkeletonMode) {
+        return 6;
+    } else if (xg_imode == xg_im_RUSSIA || xg_imode == xg_im_ABC) {
+        return 5;
+    } else if (xg_imode == xg_im_DIGITS) {
+        return 7;
+    } else if (xg_nRules & (RULE_LINESYMMETRYH | RULE_LINESYMMETRYV)) {
+        return 5;
+    } else {
+        return 4;
+    }
+}
+
 //////////////////////////////////////////////////////////////////////////////
 
 // ツールバーのUIを更新する。

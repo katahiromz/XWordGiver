@@ -12,25 +12,14 @@ public:
 
     BOOL OnInitDialog(HWND hwnd, HWND hwndFocus, LPARAM lParam)
     {
-        INT n3;
         // ダイアログを中央へ移動する。
         XgCenterDialog(hwnd);
         // サイズの欄を設定する。
         ::SetDlgItemInt(hwnd, edt1, xg_nRows, FALSE);
         ::SetDlgItemInt(hwnd, edt2, xg_nCols, FALSE);
 
-        // スケルトンモードと入力モードに応じて単語の最大長を設定する。
-        if (xg_imode == xg_im_KANJI) {
-            n3 = 4;
-        } else if (xg_bSkeletonMode) {
-            n3 = 6;
-        } else if (xg_imode == xg_im_RUSSIA || xg_imode == xg_im_ABC) {
-            n3 = 5;
-        } else if (xg_imode == xg_im_DIGITS) {
-            n3 = 7;
-        } else {
-            n3 = 4;
-        }
+        // 現在の状態で好ましいと思われる単語の最大長を取得する。
+        INT n3 = XgGetPreferredMaxLength();
         ::SetDlgItemInt(hwnd, edt3, n3, FALSE);
 
         // 自動で再計算をするか？

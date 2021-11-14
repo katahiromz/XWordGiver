@@ -29,21 +29,22 @@ public:
     {
         // ダイアログを中央へ移動する。
         XgCenterDialog(hwnd);
-        // 解を求めるのを開始。
-        XgStartGenerateBlacks();
-        // フォーカスをセットする。
-        ::SetFocus(::GetDlgItem(hwnd, psh1));
         // 開始時間。
         xg_dwlTick0 = ::GetTickCount64();
+        // 解を求めるのを開始。
+        XgStartGenerateBlacks();
+        // リトライ回数をリセット。
         ::InterlockedExchange(&xg_nRetryCount, 0);
+        // タイマーをセットする。
+        ::SetTimer(hwnd, uTimerID, INTERVAL, nullptr);
         // 生成したパターンの個数を表示する。
         if (xg_nNumberGenerated > 0) {
             WCHAR sz[MAX_PATH];
             StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(IDS_PATMAKING), xg_nNumberGenerated);
             ::SetDlgItemTextW(hwnd, stc2, sz);
         }
-        // タイマーをセットする。
-        ::SetTimer(hwnd, uTimerID, INTERVAL, nullptr);
+        // フォーカスをセットする。
+        ::SetFocus(::GetDlgItem(hwnd, psh1));
         return FALSE;
     }
 
