@@ -15,10 +15,11 @@
 #include "XG_CandsWnd.hpp"
 #include "XG_SettingsDialog.hpp"
 #include "XG_NewDialog.hpp"
-#include "XG_GenerateDialog.hpp"
-#include "XG_GenerateRepeatedlyDialog.hpp"
+#include "XG_GenDialog.hpp"
+#include "XG_SeqGenerateDialog.hpp"
 #include "XG_PatGenDialog.hpp"
 #include "XG_SeqPatGenDialog.hpp"
+#include "XG_NotesDialog.hpp"
 
 #undef HANDLE_WM_MOUSEWHEEL     // might be wrong
 #define HANDLE_WM_MOUSEWHEEL(hwnd, wParam, lParam, fn) \
@@ -2676,11 +2677,11 @@ bool __fastcall XgOnGenerate(HWND hwnd, bool show_answer, bool multiple = false)
     ::EnableWindow(xg_hwndInputPalette, FALSE);
     if (multiple) {
         // [問題の連続作成]ダイアログ。
-        XG_GenerateRepeatedlyDialog dialog;
+        XG_SeqGenDialog dialog;
         nID = INT(dialog.DoModal(hwnd));
     } else {
         // [問題の作成]ダイアログ。
-        XG_GenerateDialog dialog;
+        XG_GenDialog dialog;
         nID = INT(dialog.DoModal(hwnd));
     }
     ::EnableWindow(xg_hwndInputPalette, TRUE);
@@ -4949,59 +4950,6 @@ XgLoadDictDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
     return 0;
 }
 
-// [ヘッダーと備考欄]ダイアログ。
-extern "C"
-INT_PTR CALLBACK
-XgNotesDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
-{
-    WCHAR sz[512];
-    std::wstring str;
-    LPWSTR psz;
-
-    switch (uMsg) {
-    case WM_INITDIALOG:
-        // ダイアログを中央へ移動する。
-        XgCenterDialog(hwnd);
-        // ヘッダーを設定する。
-        ::SetDlgItemTextW(hwnd, edt1, xg_strHeader.data());
-        // 備考欄を設定する。
-        str = xg_strNotes;
-        xg_str_trim(str);
-        psz = XgLoadStringDx1(IDS_BELOWISNOTES);
-        if (str.find(psz) == 0) {
-            str = str.substr(::lstrlenW(psz));
-        }
-        ::SetDlgItemTextW(hwnd, edt2, str.data());
-        return TRUE;
-
-    case WM_COMMAND:
-        switch (LOWORD(wParam)) {
-        case IDOK:
-            // ヘッダーを取得する。
-            ::GetDlgItemTextW(hwnd, edt1, sz, static_cast<int>(ARRAYSIZE(sz)));
-            str = sz;
-            xg_str_trim(str);
-            xg_strHeader = str;
-
-            // 備考欄を取得する。
-            ::GetDlgItemTextW(hwnd, edt2, sz, static_cast<int>(ARRAYSIZE(sz)));
-            str = sz;
-            xg_str_trim(str);
-            xg_strNotes = str;
-
-            // ダイアログを閉じる。
-            ::EndDialog(hwnd, IDOK);
-            break;
-
-        case IDCANCEL:
-            // ダイアログを閉じる。
-            ::EndDialog(hwnd, IDCANCEL);
-            break;
-        }
-    }
-    return 0;
-}
-
 // 縦と横を入れ替える。
 void __fastcall MainWnd_OnFlipVH(HWND hwnd)
 {
@@ -5860,7 +5808,10 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
         break;
 
     case ID_HEADERANDNOTES:
-        ::DialogBoxW(xg_hInstance, MAKEINTRESOURCE(IDD_NOTES), hwnd, XgNotesDlgProc);
+        {
+            XG_NotesDialog dialog;
+            dialog.DoModal(hwnd);
+        }
         break;
 
     case ID_COPYHINTSSTYLE0:

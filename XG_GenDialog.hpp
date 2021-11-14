@@ -3,10 +3,10 @@
 #include "XG_Dialog.hpp"
 
 // [問題の作成]ダイアログ。
-class XG_GenerateDialog : public XG_Dialog
+class XG_GenDialog : public XG_Dialog
 {
 public:
-    XG_GenerateDialog()
+    XG_GenDialog()
     {
     }
 

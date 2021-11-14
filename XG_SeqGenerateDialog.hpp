@@ -15,10 +15,10 @@ INT CALLBACK XgBrowseCallbackProc(HWND hwnd, UINT uMsg, LPARAM /*lParam*/, LPARA
 extern WCHAR xg_szDir[MAX_PATH];
 
 // [問題の連続作成]ダイアログ。
-class XG_GenerateRepeatedlyDialog : public XG_Dialog
+class XG_SeqGenDialog : public XG_Dialog
 {
 public:
-    XG_GenerateRepeatedlyDialog()
+    XG_SeqGenDialog()
     {
     }
 
