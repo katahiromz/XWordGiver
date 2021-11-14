@@ -3993,6 +3993,7 @@ void __fastcall MainWnd_OnLButtonDown(HWND hwnd, bool fDoubleClick, int x, int y
     }
 }
 
+// マウスの中央ボタンが押された。
 void MainWnd_OnMButtonDown(HWND hwnd, BOOL fDoubleClick, int x, int y, UINT keyFlags)
 {
     if (!xg_bMButtonDragging)
@@ -4003,6 +4004,7 @@ void MainWnd_OnMButtonDown(HWND hwnd, BOOL fDoubleClick, int x, int y, UINT keyF
     }
 }
 
+// マウスの中央ボタンでドラッグされた。
 void MainWnd_OnMouseScroll(HWND hwnd, int x, int y)
 {
     SCROLLINFO si;
@@ -4040,6 +4042,7 @@ void MainWnd_OnMouseScroll(HWND hwnd, int x, int y)
     InvalidateRect(hwnd, &rcClient, TRUE);
 }
 
+// ウィンドウ上でマウスが動いた。
 void MainWnd_OnMouseMove(HWND hwnd, int x, int y, UINT keyFlags)
 {
     if (xg_bMButtonDragging && ::GetCapture() == hwnd)
@@ -4048,6 +4051,7 @@ void MainWnd_OnMouseMove(HWND hwnd, int x, int y, UINT keyFlags)
     }
 }
 
+// マウスの中央ボタンが離された。
 void MainWnd_OnMButtonUp(HWND hwnd, int x, int y, UINT flags)
 {
     if (xg_bMButtonDragging && ::GetCapture() == hwnd)
