@@ -721,4 +721,9 @@ public:
         }
         return 0;
     }
+
+    INT_PTR DoModal(HWND hwnd)
+    {
+        return DialogBoxDx(hwnd, IDD_BLOCKPATTERN);
+    }
 };

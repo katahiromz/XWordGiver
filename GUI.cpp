@@ -5367,7 +5367,7 @@ void MainWnd_OnSettings(HWND hwnd)
 {
     XgDestroyCandsWnd();
     XG_SettingsDialog dialog;
-    dialog.DialogBoxDx(hwnd, IDD_CONFIG);
+    dialog.DoModal(hwnd);
 }
 
 // テーマが変更された。
@@ -5999,7 +5999,7 @@ bool __fastcall MainWnd_OnCommand2(HWND hwnd, INT id)
 void __fastcall XgOpenPatterns(HWND hwnd)
 {
     XG_PatternDialog dialog;
-    dialog.DialogBoxDx(hwnd, IDD_BLOCKPATTERN);
+    dialog.DoModal(hwnd);
 }
 
 // 辞書を切り替える。
@@ -6131,7 +6131,7 @@ void __fastcall XgTheme(HWND hwnd)
     }
 
     XG_ThemeDialog dialog;
-    INT_PTR id = dialog.DialogBoxDx(hwnd, IDD_THEME);
+    INT_PTR id = dialog.DoModal(hwnd);
     if (id == IDOK) {
         XgUpdateTheme(hwnd);
     }
@@ -6261,7 +6261,7 @@ void XgGenerateFromWordList(HWND hwnd)
     INT nID;
     {
         XG_WordListDialog dialog;
-        nID = dialog.DialogBoxDx(hwnd, IDD_WORDLIST);
+        nID = dialog.DoModal(hwnd);
         if (nID != IDOK)
             return;
     }

@@ -7,10 +7,10 @@
 class XG_WordListDialog : public XG_Dialog
 {
 public:
-    static std::vector<std::wstring> s_words;
-    static std::unordered_set<std::wstring> s_wordset;
-    static std::unordered_map<std::wstring, std::wstring> s_dict;
-    static std::wstring s_str_word_list;
+    inline static std::vector<std::wstring> s_words;
+    inline static std::unordered_set<std::wstring> s_wordset;
+    inline static std::unordered_map<std::wstring, std::wstring> s_dict;
+    inline static std::wstring s_str_word_list;
 
     XG_WordListDialog()
     {
@@ -141,9 +141,9 @@ public:
         }
         return 0;
     }
-};
 
-/*static*/ std::vector<std::wstring> XG_WordListDialog::s_words;
-/*static*/ std::unordered_set<std::wstring> XG_WordListDialog::s_wordset;
-/*static*/ std::unordered_map<std::wstring, std::wstring> XG_WordListDialog::s_dict;
-/*static*/ std::wstring XG_WordListDialog::s_str_word_list;
+    INT_PTR DoModal(HWND hwnd)
+    {
+        return DialogBoxDx(hwnd, IDD_WORDLIST);
+    }
+};

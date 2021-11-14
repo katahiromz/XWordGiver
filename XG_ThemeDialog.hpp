@@ -477,4 +477,9 @@ public:
         SetDlgItemTextW(hwnd, cmb1, str.c_str());
         xg_bUpdatingPreset = FALSE;
     }
+
+    INT_PTR DoModal(HWND hwnd)
+    {
+        return DialogBoxDx(hwnd, IDD_THEME);
+    }
 };
