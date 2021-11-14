@@ -9,7 +9,6 @@
 #define IDD_SEQCREATE                       105
 #define IDD_CONFIG                          107
 #define IDD_SEQSOLVE                        108
-#define IDD_READDICT                        109
 #define IDD_NOTES                           110
 #define IDD_BLACKGEN                        113
 #define IDD_KATATATE                        114
@@ -253,7 +252,6 @@
 #define ID_REGISTERKEY                      170
 #define ID_COPYASIMAGE                      171
 #define ID_OPENPATTERNS                     172
-#define ID_LOADDICTFILE                     173
 #define ID_COPYHINTSSTYLE0                  174
 #define ID_COPYHINTSSTYLE1                  175
 #define ID_HEADERANDNOTES                   177

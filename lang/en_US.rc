@@ -622,19 +622,6 @@ FONT 9, "Tahoma"
     PUSHBUTTON "Cancel", IDCANCEL, 240, 60, 60, 14
 }
 
-IDD_READDICT DIALOG 0, 0, 310, 85
-CAPTION "Load dictionary"
-STYLE DS_CENTER | DS_MODALFRAME | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
-FONT 9, "Tahoma"
-{
-    LTEXT "Dict &file:", -1, 10, 10, 90, 12
-    CONTROL "", cmb1, "ComboBoxEx32", CBS_AUTOHSCROLL | CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP, 10, 25, 290, 200
-    PUSHBUTTON "&Browse...", ID_DICTIONARY24, 250, 45, 50, 14
-    DEFPUSHBUTTON "&Load", IDOK, 175, 65, 60, 14
-    PUSHBUTTON "Cancel", IDCANCEL, 240, 65, 60, 14
-    LTEXT "* Add the dictionary file(s) to the DICT folder with extension .tsv.", -1, 12, 42, 209, 12
-}
-
 IDD_NOTES DIALOG 0, 0, 185, 185
 CAPTION "Header and remarks"
 STYLE DS_CENTER | DS_MODALFRAME | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
