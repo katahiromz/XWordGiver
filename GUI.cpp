@@ -5,8 +5,6 @@
 
 #define NOMINMAX
 #include "XWordGiver.hpp"
-#include "layout.h"
-#include <algorithm>
 #include "XG_CandsWnd.hpp"
 #include "XG_GenDialog.hpp"
 #include "XG_HintsWnd.hpp"
@@ -2631,8 +2629,7 @@ bool __fastcall XgOnGenerateBlacksRepeatedly(HWND hwnd)
     ::EnableWindow(xg_hwndInputPalette, FALSE);
     do
     {
-        nID = ::DialogBoxW(xg_hInstance, MAKEINTRESOURCEW(IDD_CALCULATING),
-                           hwnd, XgCancelGenBlacksDlgProc);
+        nID = ::DialogBoxW(xg_hInstance, MAKEINTRESOURCEW(IDD_CALCULATING), hwnd, XgCancelGenBlacksDlgProc);
         // 生成成功のときはs_nNumberGeneratedを増やす。
         if (nID == IDOK && xg_bBlacksGenerated) {
             ++s_nNumberGenerated;
@@ -2713,8 +2710,7 @@ bool __fastcall XgOnGenerateBlacks(HWND hwnd, bool sym)
 
     // キャンセルダイアログを表示し、生成を開始する。
     ::EnableWindow(xg_hwndInputPalette, FALSE);
-    ::DialogBoxW(xg_hInstance, MAKEINTRESOURCEW(IDD_CALCULATING),
-                 hwnd, XgCancelGenBlacksDlgProc);
+    ::DialogBoxW(xg_hInstance, MAKEINTRESOURCEW(IDD_CALCULATING), hwnd, XgCancelGenBlacksDlgProc);
     ::EnableWindow(xg_hwndInputPalette, TRUE);
     xg_caret_pos.clear();
     XgUpdateImage(hwnd, 0, 0);
@@ -2866,8 +2862,7 @@ bool __fastcall XgOnSolve_NoAddBlack(HWND hwnd, bool bShowAnswer/* = true*/)
     XgDestroyHintsWnd();
     // キャンセルダイアログを表示し、実行を開始する。
     ::EnableWindow(xg_hwndInputPalette, FALSE);
-    ::DialogBoxW(xg_hInstance, MAKEINTRESOURCE(IDD_CALCULATING), hwnd,
-                 XgCancelSolveDlgProcNoAddBlack);
+    ::DialogBoxW(xg_hInstance, MAKEINTRESOURCE(IDD_CALCULATING), hwnd, XgCancelSolveDlgProcNoAddBlack);
     ::EnableWindow(xg_hwndInputPalette, TRUE);
 
     WCHAR sz[MAX_PATH];
@@ -2984,8 +2979,7 @@ bool __fastcall XgOnSolveRepeatedly(HWND hwnd)
     ::EnableWindow(xg_hwndInputPalette, FALSE);
     do
     {
-        nID = ::DialogBoxW(xg_hInstance, MAKEINTRESOURCE(IDD_CALCULATING), hwnd,
-                           XgCancelSolveDlgProc);
+        nID = ::DialogBoxW(xg_hInstance, MAKEINTRESOURCE(IDD_CALCULATING), hwnd, XgCancelSolveDlgProc);
         // 生成成功のときはs_nNumberGeneratedを増やす。
         if (nID == IDOK && xg_bSolved) {
             ++s_nNumberGenerated;
@@ -3101,8 +3095,7 @@ bool __fastcall XgOnSolveRepeatedlyNoAddBlack(HWND hwnd)
     ::EnableWindow(xg_hwndInputPalette, FALSE);
     do
     {
-        nID = ::DialogBoxW(xg_hInstance, MAKEINTRESOURCE(IDD_CALCULATING), hwnd,
-                           XgCancelSolveDlgProcNoAddBlack);
+        nID = ::DialogBoxW(xg_hInstance, MAKEINTRESOURCE(IDD_CALCULATING), hwnd, XgCancelSolveDlgProcNoAddBlack);
         // 生成成功のときはs_nNumberGeneratedを増やす。
         if (nID == IDOK && xg_bSolved) {
             ++s_nNumberGenerated;

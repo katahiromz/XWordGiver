@@ -1,6 +1,7 @@
 #pragma once
 
 #include "XG_Dialog.hpp"
+#include "layout.h"
 
 // 黒マスパターンの構造体。
 struct PATDATA
