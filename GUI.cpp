@@ -28,9 +28,9 @@
 #define FORWARD_WM_MOUSEWHEEL(hwnd, xPos, yPos, zDelta, fwKeys, fn) \
     (void)(fn)((hwnd), WM_MOUSEWHEEL, MAKEWPARAM((fwKeys),(zDelta)), MAKELPARAM((xPos),(yPos)))
 
-void __fastcall MainWnd_OnChar(HWND hwnd, TCHAR ch, int cRepeat);
+void __fastcall XgOnChar(HWND hwnd, TCHAR ch, int cRepeat);
 void __fastcall MainWnd_OnKey(HWND hwnd, UINT vk, bool fDown, int /*cRepeat*/, UINT /*flags*/);
-void __fastcall MainWnd_OnImeChar(HWND hwnd, WCHAR ch, LPARAM /*lKeyData*/);
+void __fastcall XgOnImeChar(HWND hwnd, WCHAR ch, LPARAM /*lKeyData*/);
 
 //////////////////////////////////////////////////////////////////////////////
 // global variables
@@ -77,12 +77,6 @@ HWND xg_hStatusBar  = nullptr;
 // ツールバーのイメージリスト。
 HIMAGELIST xg_hImageList = nullptr;
 HIMAGELIST xg_hGrayedImageList = nullptr;
-
-// 候補を求める位置。
-INT xg_jCandPos, xg_iCandPos;
-
-// 候補はタテかヨコか。
-bool xg_bCandVertical;
 
 // 辞書ファイルの場所（パス）。
 std::wstring xg_dict_name;
@@ -400,113 +394,6 @@ void XgUpdateToolBarUI(HWND hwnd)
 }
 
 //////////////////////////////////////////////////////////////////////////////
-
-BOOL XgLoadDictsFromDir(LPWSTR pszDir)
-{
-    WCHAR szPath[MAX_PATH];
-    WIN32_FIND_DATAW find;
-    HANDLE hFind;
-
-    // ファイル *.dic を列挙する。
-    StringCbCopy(szPath, sizeof(szPath), pszDir);
-    PathAppend(szPath, L"*.dic");
-    hFind = FindFirstFileW(szPath, &find);
-    if (hFind != INVALID_HANDLE_VALUE)
-    {
-        do
-        {
-            StringCbCopy(szPath, sizeof(szPath), pszDir);
-            PathAppend(szPath, find.cFileName);
-            xg_dict_files.emplace_back(szPath);
-        } while (FindNextFile(hFind, &find));
-        FindClose(hFind);
-    }
-
-    // ファイル *.tsv を列挙する。
-    StringCbCopy(szPath, sizeof(szPath), pszDir);
-    PathAppend(szPath, L"*.tsv");
-    hFind = FindFirstFileW(szPath, &find);
-    if (hFind != INVALID_HANDLE_VALUE)
-    {
-        do
-        {
-            StringCbCopy(szPath, sizeof(szPath), pszDir);
-            PathAppend(szPath, find.cFileName);
-            xg_dict_files.emplace_back(szPath);
-        } while (FindNextFile(hFind, &find));
-        FindClose(hFind);
-    }
-
-    return !xg_dict_files.empty();
-}
-
-// 辞書ファイルをすべて読み込む。
-BOOL XgLoadDictsAll(void)
-{
-    xg_dict_files.clear();
-
-    // 実行ファイルのパスを取得。
-    WCHAR sz[MAX_PATH];
-    ::GetModuleFileNameW(nullptr, sz, sizeof(sz));
-
-    // 実行ファイルの近くにある.dic/.tsvファイルを列挙する。
-    PathRemoveFileSpec(sz);
-    PathAppend(sz, L"DICT");
-    if (!XgLoadDictsFromDir(sz))
-    {
-        PathRemoveFileSpec(sz);
-        PathRemoveFileSpec(sz);
-        PathAppend(sz, L"DICT");
-        if (!XgLoadDictsFromDir(sz))
-        {
-            PathRemoveFileSpec(sz);
-            PathAppend(sz, L"DICT");
-            XgLoadDictsFromDir(sz);
-        }
-    }
-
-    // 読み込んだ中から見つかるか？
-    bool bFound = false;
-    for (auto& file : xg_dict_files)
-    {
-        if (lstrcmpiW(file.c_str(), xg_dict_name.c_str()) == 0)
-        {
-            bFound = true;
-            break;
-        }
-    }
-
-    if (xg_dict_name.empty() || !bFound)
-    {
-        LPCWSTR pszNormal = XgLoadStringDx1(IDS_NORMAL_DICT);
-        LPCWSTR pszBasicDict = XgLoadStringDx2(IDS_BASICDICTDATA);
-        for (auto& file : xg_dict_files)
-        {
-            if (file.find(pszBasicDict) != std::wstring::npos &&
-                file.find(pszNormal) != std::wstring::npos &&
-                PathFileExistsW(file.c_str()))
-            {
-                xg_dict_name = file;
-                break;
-            }
-        }
-        if (xg_dict_name.empty() && xg_dict_files.size())
-        {
-            xg_dict_name = xg_dict_files[0];
-        }
-    }
-
-    // ファイルが実際に存在するかチェックし、存在しない項目は消す。
-    for (size_t i = 0; i < xg_dict_files.size(); ++i) {
-        auto& file = xg_dict_files[i];
-        if (!PathFileExistsW(file.c_str())) {
-            xg_dict_files.erase(xg_dict_files.begin() + i);
-            --i;
-        }
-    }
-
-    return !xg_dict_files.empty();
-}
 
 // 設定を読み込む。
 bool __fastcall XgLoadSettings(void)
@@ -1070,166 +957,83 @@ bool __fastcall XgCheckCrossWord(HWND hwnd, bool check_words = true)
 void XgDestroyCandsWnd(void)
 {
     // 候補ウィンドウが存在するか？
-    if (::IsWindow(xg_cands_wnd)) {
+    if (::IsWindow(xg_cands_wnd))
+    {
         // 更新を無視・破棄する。
         ::DestroyWindow(xg_cands_wnd);
     }
 }
 
-// 候補を適用する。
-void XgApplyCandidate(XG_Board& xword, const std::wstring& strCand)
-{
-    std::wstring cand = XgNormalizeString(strCand);
-
-    int lo, hi;
-    if (xg_bCandVertical) {
-        for (lo = xg_iCandPos; lo > 0; --lo) {
-            if (xword.GetAt(lo - 1, xg_jCandPos) == ZEN_BLACK)
-                break;
-        }
-        for (hi = xg_iCandPos; hi + 1 < xg_nRows; ++hi) {
-            if (xword.GetAt(hi + 1, xg_jCandPos) == ZEN_BLACK)
-                break;
-        }
-
-        int m = 0;
-        for (int k = lo; k <= hi; ++k, ++m) {
-            xword.SetAt(k, xg_jCandPos, cand[m]);
-        }
-    }
-    else
-    {
-        for (lo = xg_jCandPos; lo > 0; --lo) {
-            if (xword.GetAt(xg_iCandPos, lo - 1) == ZEN_BLACK)
-                break;
-        }
-        for (hi = xg_jCandPos; hi + 1 < xg_nCols; ++hi) {
-            if (xword.GetAt(xg_iCandPos, hi + 1) == ZEN_BLACK)
-                break;
-        }
-
-        int m = 0;
-        for (int k = lo; k <= hi; ++k, ++m) {
-            xword.SetAt(xg_iCandPos, k, cand[m]);
-        }
-    }
-}
-
-// 候補ウィンドウを作成する。
-BOOL XgCreateCandsWnd(HWND hwnd)
-{
-    auto style = WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME | WS_HSCROLL | WS_VSCROLL;
-    auto exstyle = WS_EX_TOOLWINDOW;
-    auto text = XgLoadStringDx1(IDS_CANDIDATES);
-    return xg_cands_wnd.CreateWindowDx(hwnd, text, style, exstyle,
-                                       XG_CandsWnd::s_nCandsWndX, XG_CandsWnd::s_nCandsWndY,
-                                       XG_CandsWnd::s_nCandsWndCX, XG_CandsWnd::s_nCandsWndCY);
-}
-
 // 候補の内容を候補ウィンドウで開く。
-inline bool XgOpenCandsWnd(HWND hwnd, bool vertical)
+bool XgOpenCandsWnd(HWND hwnd, bool vertical)
 {
     // もし候補ウィンドウが存在すれば破棄する。
     if (IsWindow(xg_cands_wnd)) {
         DestroyWindow(xg_cands_wnd);
     }
 
-    // 候補を作成する。
-    xg_iCandPos = xg_caret_pos.m_i;
-    xg_jCandPos = xg_caret_pos.m_j;
-    xg_bCandVertical = vertical;
-    if (xg_xword.GetAt(xg_iCandPos, xg_jCandPos) == ZEN_BLACK) {
+    return xg_cands_wnd.Open(hwnd, vertical);
+}
+
+// ヒントの内容をメモ帳で開く。
+bool XgOpenHintsByNotepad(HWND /*hwnd*/, bool bShowAnswer)
+{
+    WCHAR szPath[MAX_PATH];
+    WCHAR szCmdLine[MAX_PATH * 2];
+    std::wstring str;
+    DWORD cb;
+    STARTUPINFOW si;
+    PROCESS_INFORMATION pi;
+
+    // 解がないときは、ヒントはない。
+    if (!xg_bSolved) {
         ::MessageBeep(0xFFFFFFFF);
         return false;
     }
 
-    // パターンを取得する。
-    int lo, hi;
-    std::wstring pattern;
-    bool left_black, right_black;
-    if (xg_bCandVertical) {
-        lo = hi = xg_iCandPos;
-        while (lo > 0) {
-            if (xg_xword.GetAt(lo - 1, xg_jCandPos) != ZEN_BLACK)
-                --lo;
-            else
-                break;
-        }
-        while (hi + 1 < xg_nRows) {
-            if (xg_xword.GetAt(hi + 1, xg_jCandPos) != ZEN_BLACK)
-                ++hi;
-            else
-                break;
-        }
+    // 一時ファイルを作成する。
+    ::GetTempPathW(MAX_PATH, szPath);
+    StringCbCat(szPath, sizeof(szPath), XgLoadStringDx1(IDS_HINTSTXT));
+    HANDLE hFile = ::CreateFileW(szPath, GENERIC_WRITE, FILE_SHARE_READ,
+        nullptr, CREATE_ALWAYS, 0, nullptr);
+    if (hFile == INVALID_HANDLE_VALUE)
+        return false;
 
-        for (int i = lo; i <= hi; ++i) {
-            pattern += xg_xword.GetAt(i, xg_jCandPos);
-        }
+    // BOMとヒントの文字列をファイルに書き込む。
+    str = reinterpret_cast<LPCWSTR>("\xFF\xFE\x00");
+    str += xg_pszNewLine;
+    xg_solution.GetHintsStr(xg_strHints, 2, true);
+    str += xg_strHints;
+    cb = static_cast<DWORD>(str.size() * sizeof(WCHAR));
+    if (::WriteFile(hFile, str.data(), cb, &cb, nullptr)) {
+        // ファイルを閉じる。
+        ::CloseHandle(hFile);
 
-        right_black = (hi + 1 != xg_nRows);
-    } else {
-        lo = hi = xg_jCandPos;
-        while (lo > 0) {
-            if (xg_xword.GetAt(xg_iCandPos, lo - 1) != ZEN_BLACK)
-                --lo;
-            else
-                break;
-        }
-        while (hi + 1 < xg_nCols) {
-            if (xg_xword.GetAt(xg_iCandPos, hi + 1) != ZEN_BLACK)
-                ++hi;
-            else
-                break;
-        }
-
-        for (int j = lo; j <= hi; ++j) {
-            pattern += xg_xword.GetAt(xg_iCandPos, j);
-        }
-
-        right_black = (hi + 1 != xg_nCols);
-    }
-    left_black = (lo != 0);
-
-    // 候補を取得する。
-    int nSkip = 0;
-    std::vector<std::wstring> cands, cands2;
-    XgGetCandidatesAddBlack<false>(cands, pattern, nSkip, left_black, right_black);
-    XgGetCandidatesAddBlack<true>(cands2, pattern, nSkip, left_black, right_black);
-    cands.insert(cands.end(), cands2.begin(), cands2.end());
-
-    // 仮に適用して、正当かどうか確かめ、正当なものだけを
-    // 最終的な候補とする。
-    XG_CandsWnd::xg_vecCandidates.clear();
-    for (const auto& cand : cands) {
-        XG_Board xword(xg_xword);
-        XgApplyCandidate(xword, cand);
-        if (xword.CornerBlack() || xword.DoubleBlack() ||
-            xword.TriBlackAround() || xword.DividedByBlack())
+        // メモ帳でファイルを開く。
+        StringCbPrintf(szCmdLine, sizeof(szCmdLine),
+                       XgLoadStringDx1(IDS_NOTEPAD), szPath);
+        ZeroMemory(&si, sizeof(si));
+        si.cb = sizeof(si);
+        si.dwFlags = STARTF_USESHOWWINDOW;
+        si.wShowWindow = SW_SHOWNORMAL;
+        if (::CreateProcessW(nullptr, szCmdLine, nullptr, nullptr, FALSE,
+                             0, nullptr, nullptr, &si, &pi))
         {
-            ;
-        } else {
-            XG_CandsWnd::xg_vecCandidates.emplace_back(cand);
+            // メモ帳が待ち状態になるまで待つ。
+            if (::WaitForInputIdle(pi.hProcess, 5 * 1000) != WAIT_TIMEOUT) {
+                // 0.2秒待つ。
+                ::Sleep(200);
+                // ファイルを削除する。
+                ::DeleteFileW(szPath);
+            }
+            // ハンドルを閉じる。
+            ::CloseHandle(pi.hProcess);
+            ::CloseHandle(pi.hThread);
+            return true;
         }
     }
-
-    // 個数制限。
-    if (XG_CandsWnd::xg_vecCandidates.size() > xg_nMaxCandidates)
-        XG_CandsWnd::xg_vecCandidates.resize(xg_nMaxCandidates);
-
-    if (XG_CandsWnd::xg_vecCandidates.empty()) {
-        if (XgCheckCrossWord(hwnd, false)) {
-            ::MessageBeep(0xFFFFFFFF);
-        } else {
-            return false;
-        }
-    }
-
-    // ヒントウィンドウを作成する。
-    if (XgCreateCandsWnd(xg_hMainWnd)) {
-        ::ShowWindow(xg_cands_wnd, SW_SHOWNORMAL);
-        ::UpdateWindow(xg_cands_wnd);
-        return true;
-    }
+    // ファイルを閉じる。
+    ::CloseHandle(hFile);
     return false;
 }
 
@@ -1399,68 +1203,6 @@ INT CALLBACK XgBrowseCallbackProc(HWND hwnd, UINT uMsg, LPARAM /*lParam*/, LPARA
 }
 
 //////////////////////////////////////////////////////////////////////////////
-
-// ヒントの内容をメモ帳で開く。
-bool XgOpenHintsByNotepad(HWND /*hwnd*/, bool bShowAnswer)
-{
-    WCHAR szPath[MAX_PATH];
-    WCHAR szCmdLine[MAX_PATH * 2];
-    std::wstring str;
-    DWORD cb;
-    STARTUPINFOW si;
-    PROCESS_INFORMATION pi;
-
-    // 解がないときは、ヒントはない。
-    if (!xg_bSolved) {
-        ::MessageBeep(0xFFFFFFFF);
-        return false;
-    }
-
-    // 一時ファイルを作成する。
-    ::GetTempPathW(MAX_PATH, szPath);
-    StringCbCat(szPath, sizeof(szPath), XgLoadStringDx1(IDS_HINTSTXT));
-    HANDLE hFile = ::CreateFileW(szPath, GENERIC_WRITE, FILE_SHARE_READ,
-        nullptr, CREATE_ALWAYS, 0, nullptr);
-    if (hFile == INVALID_HANDLE_VALUE)
-        return false;
-
-    // BOMとヒントの文字列をファイルに書き込む。
-    str = reinterpret_cast<LPCWSTR>("\xFF\xFE\x00");
-    str += xg_pszNewLine;
-    xg_solution.GetHintsStr(xg_strHints, 2, true);
-    str += xg_strHints;
-    cb = static_cast<DWORD>(str.size() * sizeof(WCHAR));
-    if (::WriteFile(hFile, str.data(), cb, &cb, nullptr)) {
-        // ファイルを閉じる。
-        ::CloseHandle(hFile);
-
-        // メモ帳でファイルを開く。
-        StringCbPrintf(szCmdLine, sizeof(szCmdLine),
-                       XgLoadStringDx1(IDS_NOTEPAD), szPath);
-        ZeroMemory(&si, sizeof(si));
-        si.cb = sizeof(si);
-        si.dwFlags = STARTF_USESHOWWINDOW;
-        si.wShowWindow = SW_SHOWNORMAL;
-        if (::CreateProcessW(nullptr, szCmdLine, nullptr, nullptr, FALSE,
-                             0, nullptr, nullptr, &si, &pi))
-        {
-            // メモ帳が待ち状態になるまで待つ。
-            if (::WaitForInputIdle(pi.hProcess, 5 * 1000) != WAIT_TIMEOUT) {
-                // 0.2秒待つ。
-                ::Sleep(200);
-                // ファイルを削除する。
-                ::DeleteFileW(szPath);
-            }
-            // ハンドルを閉じる。
-            ::CloseHandle(pi.hProcess);
-            ::CloseHandle(pi.hThread);
-            return true;
-        }
-    }
-    // ファイルを閉じる。
-    ::CloseHandle(hFile);
-    return false;
-}
 
 // スレッドを閉じる。
 void __fastcall XgCloseThreads(void)
@@ -4729,150 +4471,150 @@ bool __fastcall MainWnd_OnCommand2(HWND hwnd, INT id)
     switch (id)
     {
     // kana
-    case 10000: MainWnd_OnImeChar(hwnd, ZEN_A, 0); bOK = true; break;
-    case 10001: MainWnd_OnImeChar(hwnd, ZEN_I, 0); bOK = true; break;
-    case 10002: MainWnd_OnImeChar(hwnd, ZEN_U, 0); bOK = true; break;
-    case 10003: MainWnd_OnImeChar(hwnd, ZEN_E, 0); bOK = true; break;
-    case 10004: MainWnd_OnImeChar(hwnd, ZEN_O, 0); bOK = true; break;
-    case 10010: MainWnd_OnImeChar(hwnd, ZEN_KA, 0); bOK = true; break;
-    case 10011: MainWnd_OnImeChar(hwnd, ZEN_KI, 0); bOK = true; break;
-    case 10012: MainWnd_OnImeChar(hwnd, ZEN_KU, 0); bOK = true; break;
-    case 10013: MainWnd_OnImeChar(hwnd, ZEN_KE, 0); bOK = true; break;
-    case 10014: MainWnd_OnImeChar(hwnd, ZEN_KO, 0); bOK = true; break;
-    case 10020: MainWnd_OnImeChar(hwnd, ZEN_SA, 0); bOK = true; break;
-    case 10021: MainWnd_OnImeChar(hwnd, ZEN_SI, 0); bOK = true; break;
-    case 10022: MainWnd_OnImeChar(hwnd, ZEN_SU, 0); bOK = true; break;
-    case 10023: MainWnd_OnImeChar(hwnd, ZEN_SE, 0); bOK = true; break;
-    case 10024: MainWnd_OnImeChar(hwnd, ZEN_SO, 0); bOK = true; break;
-    case 10030: MainWnd_OnImeChar(hwnd, ZEN_TA, 0); bOK = true; break;
-    case 10031: MainWnd_OnImeChar(hwnd, ZEN_CHI, 0); bOK = true; break;
-    case 10032: MainWnd_OnImeChar(hwnd, ZEN_TSU, 0); bOK = true; break;
-    case 10033: MainWnd_OnImeChar(hwnd, ZEN_TE, 0); bOK = true; break;
-    case 10034: MainWnd_OnImeChar(hwnd, ZEN_TO, 0); bOK = true; break;
-    case 10040: MainWnd_OnImeChar(hwnd, ZEN_NA, 0); bOK = true; break;
-    case 10041: MainWnd_OnImeChar(hwnd, ZEN_NI, 0); bOK = true; break;
-    case 10042: MainWnd_OnImeChar(hwnd, ZEN_NU, 0); bOK = true; break;
-    case 10043: MainWnd_OnImeChar(hwnd, ZEN_NE, 0); bOK = true; break;
-    case 10044: MainWnd_OnImeChar(hwnd, ZEN_NO, 0); bOK = true; break;
-    case 10050: MainWnd_OnImeChar(hwnd, ZEN_HA, 0); bOK = true; break;
-    case 10051: MainWnd_OnImeChar(hwnd, ZEN_HI, 0); bOK = true; break;
-    case 10052: MainWnd_OnImeChar(hwnd, ZEN_FU, 0); bOK = true; break;
-    case 10053: MainWnd_OnImeChar(hwnd, ZEN_HE, 0); bOK = true; break;
-    case 10054: MainWnd_OnImeChar(hwnd, ZEN_HO, 0); bOK = true; break;
-    case 10060: MainWnd_OnImeChar(hwnd, ZEN_MA, 0); bOK = true; break;
-    case 10061: MainWnd_OnImeChar(hwnd, ZEN_MI, 0); bOK = true; break;
-    case 10062: MainWnd_OnImeChar(hwnd, ZEN_MU, 0); bOK = true; break;
-    case 10063: MainWnd_OnImeChar(hwnd, ZEN_ME, 0); bOK = true; break;
-    case 10064: MainWnd_OnImeChar(hwnd, ZEN_MO, 0); bOK = true; break;
-    case 10070: MainWnd_OnImeChar(hwnd, ZEN_YA, 0); bOK = true; break;
-    case 10071: MainWnd_OnImeChar(hwnd, ZEN_YU, 0); bOK = true; break;
-    case 10072: MainWnd_OnImeChar(hwnd, ZEN_YO, 0); bOK = true; break;
-    case 10080: MainWnd_OnImeChar(hwnd, ZEN_RA, 0); bOK = true; break;
-    case 10081: MainWnd_OnImeChar(hwnd, ZEN_RI, 0); bOK = true; break;
-    case 10082: MainWnd_OnImeChar(hwnd, ZEN_RU, 0); bOK = true; break;
-    case 10083: MainWnd_OnImeChar(hwnd, ZEN_RE, 0); bOK = true; break;
-    case 10084: MainWnd_OnImeChar(hwnd, ZEN_RO, 0); bOK = true; break;
-    case 10090: MainWnd_OnImeChar(hwnd, ZEN_WA, 0); bOK = true; break;
-    case 10091: MainWnd_OnImeChar(hwnd, ZEN_NN, 0); bOK = true; break;
-    case 10092: MainWnd_OnImeChar(hwnd, ZEN_PROLONG, 0); bOK = true; break;
-    case 10100: MainWnd_OnImeChar(hwnd, ZEN_GA, 0); bOK = true; break;
-    case 10101: MainWnd_OnImeChar(hwnd, ZEN_GI, 0); bOK = true; break;
-    case 10102: MainWnd_OnImeChar(hwnd, ZEN_GU, 0); bOK = true; break;
-    case 10103: MainWnd_OnImeChar(hwnd, ZEN_GE, 0); bOK = true; break;
-    case 10104: MainWnd_OnImeChar(hwnd, ZEN_GO, 0); bOK = true; break;
-    case 10110: MainWnd_OnImeChar(hwnd, ZEN_ZA, 0); bOK = true; break;
-    case 10111: MainWnd_OnImeChar(hwnd, ZEN_JI, 0); bOK = true; break;
-    case 10112: MainWnd_OnImeChar(hwnd, ZEN_ZU, 0); bOK = true; break;
-    case 10113: MainWnd_OnImeChar(hwnd, ZEN_ZE, 0); bOK = true; break;
-    case 10114: MainWnd_OnImeChar(hwnd, ZEN_ZO, 0); bOK = true; break;
-    case 10120: MainWnd_OnImeChar(hwnd, ZEN_DA, 0); bOK = true; break;
-    case 10121: MainWnd_OnImeChar(hwnd, ZEN_DI, 0); bOK = true; break;
-    case 10122: MainWnd_OnImeChar(hwnd, ZEN_DU, 0); bOK = true; break;
-    case 10123: MainWnd_OnImeChar(hwnd, ZEN_DE, 0); bOK = true; break;
-    case 10124: MainWnd_OnImeChar(hwnd, ZEN_DO, 0); bOK = true; break;
-    case 10130: MainWnd_OnImeChar(hwnd, ZEN_BA, 0); bOK = true; break;
-    case 10131: MainWnd_OnImeChar(hwnd, ZEN_BI, 0); bOK = true; break;
-    case 10132: MainWnd_OnImeChar(hwnd, ZEN_BU, 0); bOK = true; break;
-    case 10133: MainWnd_OnImeChar(hwnd, ZEN_BE, 0); bOK = true; break;
-    case 10134: MainWnd_OnImeChar(hwnd, ZEN_BO, 0); bOK = true; break;
-    case 10140: MainWnd_OnImeChar(hwnd, ZEN_PA, 0); bOK = true; break;
-    case 10141: MainWnd_OnImeChar(hwnd, ZEN_PI, 0); bOK = true; break;
-    case 10142: MainWnd_OnImeChar(hwnd, ZEN_PU, 0); bOK = true; break;
-    case 10143: MainWnd_OnImeChar(hwnd, ZEN_PE, 0); bOK = true; break;
-    case 10144: MainWnd_OnImeChar(hwnd, ZEN_PO, 0); bOK = true; break;
-    case 10150: MainWnd_OnImeChar(hwnd, ZEN_PROLONG, 0); bOK = true; break;
+    case 10000: XgOnImeChar(hwnd, ZEN_A, 0); bOK = true; break;
+    case 10001: XgOnImeChar(hwnd, ZEN_I, 0); bOK = true; break;
+    case 10002: XgOnImeChar(hwnd, ZEN_U, 0); bOK = true; break;
+    case 10003: XgOnImeChar(hwnd, ZEN_E, 0); bOK = true; break;
+    case 10004: XgOnImeChar(hwnd, ZEN_O, 0); bOK = true; break;
+    case 10010: XgOnImeChar(hwnd, ZEN_KA, 0); bOK = true; break;
+    case 10011: XgOnImeChar(hwnd, ZEN_KI, 0); bOK = true; break;
+    case 10012: XgOnImeChar(hwnd, ZEN_KU, 0); bOK = true; break;
+    case 10013: XgOnImeChar(hwnd, ZEN_KE, 0); bOK = true; break;
+    case 10014: XgOnImeChar(hwnd, ZEN_KO, 0); bOK = true; break;
+    case 10020: XgOnImeChar(hwnd, ZEN_SA, 0); bOK = true; break;
+    case 10021: XgOnImeChar(hwnd, ZEN_SI, 0); bOK = true; break;
+    case 10022: XgOnImeChar(hwnd, ZEN_SU, 0); bOK = true; break;
+    case 10023: XgOnImeChar(hwnd, ZEN_SE, 0); bOK = true; break;
+    case 10024: XgOnImeChar(hwnd, ZEN_SO, 0); bOK = true; break;
+    case 10030: XgOnImeChar(hwnd, ZEN_TA, 0); bOK = true; break;
+    case 10031: XgOnImeChar(hwnd, ZEN_CHI, 0); bOK = true; break;
+    case 10032: XgOnImeChar(hwnd, ZEN_TSU, 0); bOK = true; break;
+    case 10033: XgOnImeChar(hwnd, ZEN_TE, 0); bOK = true; break;
+    case 10034: XgOnImeChar(hwnd, ZEN_TO, 0); bOK = true; break;
+    case 10040: XgOnImeChar(hwnd, ZEN_NA, 0); bOK = true; break;
+    case 10041: XgOnImeChar(hwnd, ZEN_NI, 0); bOK = true; break;
+    case 10042: XgOnImeChar(hwnd, ZEN_NU, 0); bOK = true; break;
+    case 10043: XgOnImeChar(hwnd, ZEN_NE, 0); bOK = true; break;
+    case 10044: XgOnImeChar(hwnd, ZEN_NO, 0); bOK = true; break;
+    case 10050: XgOnImeChar(hwnd, ZEN_HA, 0); bOK = true; break;
+    case 10051: XgOnImeChar(hwnd, ZEN_HI, 0); bOK = true; break;
+    case 10052: XgOnImeChar(hwnd, ZEN_FU, 0); bOK = true; break;
+    case 10053: XgOnImeChar(hwnd, ZEN_HE, 0); bOK = true; break;
+    case 10054: XgOnImeChar(hwnd, ZEN_HO, 0); bOK = true; break;
+    case 10060: XgOnImeChar(hwnd, ZEN_MA, 0); bOK = true; break;
+    case 10061: XgOnImeChar(hwnd, ZEN_MI, 0); bOK = true; break;
+    case 10062: XgOnImeChar(hwnd, ZEN_MU, 0); bOK = true; break;
+    case 10063: XgOnImeChar(hwnd, ZEN_ME, 0); bOK = true; break;
+    case 10064: XgOnImeChar(hwnd, ZEN_MO, 0); bOK = true; break;
+    case 10070: XgOnImeChar(hwnd, ZEN_YA, 0); bOK = true; break;
+    case 10071: XgOnImeChar(hwnd, ZEN_YU, 0); bOK = true; break;
+    case 10072: XgOnImeChar(hwnd, ZEN_YO, 0); bOK = true; break;
+    case 10080: XgOnImeChar(hwnd, ZEN_RA, 0); bOK = true; break;
+    case 10081: XgOnImeChar(hwnd, ZEN_RI, 0); bOK = true; break;
+    case 10082: XgOnImeChar(hwnd, ZEN_RU, 0); bOK = true; break;
+    case 10083: XgOnImeChar(hwnd, ZEN_RE, 0); bOK = true; break;
+    case 10084: XgOnImeChar(hwnd, ZEN_RO, 0); bOK = true; break;
+    case 10090: XgOnImeChar(hwnd, ZEN_WA, 0); bOK = true; break;
+    case 10091: XgOnImeChar(hwnd, ZEN_NN, 0); bOK = true; break;
+    case 10092: XgOnImeChar(hwnd, ZEN_PROLONG, 0); bOK = true; break;
+    case 10100: XgOnImeChar(hwnd, ZEN_GA, 0); bOK = true; break;
+    case 10101: XgOnImeChar(hwnd, ZEN_GI, 0); bOK = true; break;
+    case 10102: XgOnImeChar(hwnd, ZEN_GU, 0); bOK = true; break;
+    case 10103: XgOnImeChar(hwnd, ZEN_GE, 0); bOK = true; break;
+    case 10104: XgOnImeChar(hwnd, ZEN_GO, 0); bOK = true; break;
+    case 10110: XgOnImeChar(hwnd, ZEN_ZA, 0); bOK = true; break;
+    case 10111: XgOnImeChar(hwnd, ZEN_JI, 0); bOK = true; break;
+    case 10112: XgOnImeChar(hwnd, ZEN_ZU, 0); bOK = true; break;
+    case 10113: XgOnImeChar(hwnd, ZEN_ZE, 0); bOK = true; break;
+    case 10114: XgOnImeChar(hwnd, ZEN_ZO, 0); bOK = true; break;
+    case 10120: XgOnImeChar(hwnd, ZEN_DA, 0); bOK = true; break;
+    case 10121: XgOnImeChar(hwnd, ZEN_DI, 0); bOK = true; break;
+    case 10122: XgOnImeChar(hwnd, ZEN_DU, 0); bOK = true; break;
+    case 10123: XgOnImeChar(hwnd, ZEN_DE, 0); bOK = true; break;
+    case 10124: XgOnImeChar(hwnd, ZEN_DO, 0); bOK = true; break;
+    case 10130: XgOnImeChar(hwnd, ZEN_BA, 0); bOK = true; break;
+    case 10131: XgOnImeChar(hwnd, ZEN_BI, 0); bOK = true; break;
+    case 10132: XgOnImeChar(hwnd, ZEN_BU, 0); bOK = true; break;
+    case 10133: XgOnImeChar(hwnd, ZEN_BE, 0); bOK = true; break;
+    case 10134: XgOnImeChar(hwnd, ZEN_BO, 0); bOK = true; break;
+    case 10140: XgOnImeChar(hwnd, ZEN_PA, 0); bOK = true; break;
+    case 10141: XgOnImeChar(hwnd, ZEN_PI, 0); bOK = true; break;
+    case 10142: XgOnImeChar(hwnd, ZEN_PU, 0); bOK = true; break;
+    case 10143: XgOnImeChar(hwnd, ZEN_PE, 0); bOK = true; break;
+    case 10144: XgOnImeChar(hwnd, ZEN_PO, 0); bOK = true; break;
+    case 10150: XgOnImeChar(hwnd, ZEN_PROLONG, 0); bOK = true; break;
     // ABC
-    case 20000: MainWnd_OnChar(hwnd, L'A', 1); bOK = true; break;
-    case 20001: MainWnd_OnChar(hwnd, L'B', 1); bOK = true; break;
-    case 20002: MainWnd_OnChar(hwnd, L'C', 1); bOK = true; break;
-    case 20003: MainWnd_OnChar(hwnd, L'D', 1); bOK = true; break;
-    case 20004: MainWnd_OnChar(hwnd, L'E', 1); bOK = true; break;
-    case 20005: MainWnd_OnChar(hwnd, L'F', 1); bOK = true; break;
-    case 20006: MainWnd_OnChar(hwnd, L'G', 1); bOK = true; break;
-    case 20007: MainWnd_OnChar(hwnd, L'H', 1); bOK = true; break;
-    case 20008: MainWnd_OnChar(hwnd, L'I', 1); bOK = true; break;
-    case 20009: MainWnd_OnChar(hwnd, L'J', 1); bOK = true; break;
-    case 20010: MainWnd_OnChar(hwnd, L'K', 1); bOK = true; break;
-    case 20011: MainWnd_OnChar(hwnd, L'L', 1); bOK = true; break;
-    case 20012: MainWnd_OnChar(hwnd, L'M', 1); bOK = true; break;
-    case 20013: MainWnd_OnChar(hwnd, L'N', 1); bOK = true; break;
-    case 20014: MainWnd_OnChar(hwnd, L'O', 1); bOK = true; break;
-    case 20015: MainWnd_OnChar(hwnd, L'P', 1); bOK = true; break;
-    case 20016: MainWnd_OnChar(hwnd, L'Q', 1); bOK = true; break;
-    case 20017: MainWnd_OnChar(hwnd, L'R', 1); bOK = true; break;
-    case 20018: MainWnd_OnChar(hwnd, L'S', 1); bOK = true; break;
-    case 20019: MainWnd_OnChar(hwnd, L'T', 1); bOK = true; break;
-    case 20020: MainWnd_OnChar(hwnd, L'U', 1); bOK = true; break;
-    case 20021: MainWnd_OnChar(hwnd, L'V', 1); bOK = true; break;
-    case 20022: MainWnd_OnChar(hwnd, L'W', 1); bOK = true; break;
-    case 20023: MainWnd_OnChar(hwnd, L'X', 1); bOK = true; break;
-    case 20024: MainWnd_OnChar(hwnd, L'Y', 1); bOK = true; break;
-    case 20025: MainWnd_OnChar(hwnd, L'Z', 1); bOK = true; break;
+    case 20000: XgOnChar(hwnd, L'A', 1); bOK = true; break;
+    case 20001: XgOnChar(hwnd, L'B', 1); bOK = true; break;
+    case 20002: XgOnChar(hwnd, L'C', 1); bOK = true; break;
+    case 20003: XgOnChar(hwnd, L'D', 1); bOK = true; break;
+    case 20004: XgOnChar(hwnd, L'E', 1); bOK = true; break;
+    case 20005: XgOnChar(hwnd, L'F', 1); bOK = true; break;
+    case 20006: XgOnChar(hwnd, L'G', 1); bOK = true; break;
+    case 20007: XgOnChar(hwnd, L'H', 1); bOK = true; break;
+    case 20008: XgOnChar(hwnd, L'I', 1); bOK = true; break;
+    case 20009: XgOnChar(hwnd, L'J', 1); bOK = true; break;
+    case 20010: XgOnChar(hwnd, L'K', 1); bOK = true; break;
+    case 20011: XgOnChar(hwnd, L'L', 1); bOK = true; break;
+    case 20012: XgOnChar(hwnd, L'M', 1); bOK = true; break;
+    case 20013: XgOnChar(hwnd, L'N', 1); bOK = true; break;
+    case 20014: XgOnChar(hwnd, L'O', 1); bOK = true; break;
+    case 20015: XgOnChar(hwnd, L'P', 1); bOK = true; break;
+    case 20016: XgOnChar(hwnd, L'Q', 1); bOK = true; break;
+    case 20017: XgOnChar(hwnd, L'R', 1); bOK = true; break;
+    case 20018: XgOnChar(hwnd, L'S', 1); bOK = true; break;
+    case 20019: XgOnChar(hwnd, L'T', 1); bOK = true; break;
+    case 20020: XgOnChar(hwnd, L'U', 1); bOK = true; break;
+    case 20021: XgOnChar(hwnd, L'V', 1); bOK = true; break;
+    case 20022: XgOnChar(hwnd, L'W', 1); bOK = true; break;
+    case 20023: XgOnChar(hwnd, L'X', 1); bOK = true; break;
+    case 20024: XgOnChar(hwnd, L'Y', 1); bOK = true; break;
+    case 20025: XgOnChar(hwnd, L'Z', 1); bOK = true; break;
     // Russian
-    case 30000: MainWnd_OnImeChar(hwnd, 0x0410, 0); bOK = true; break;
-    case 30001: MainWnd_OnImeChar(hwnd, 0x0411, 0); bOK = true; break;
-    case 30002: MainWnd_OnImeChar(hwnd, 0x0412, 0); bOK = true; break;
-    case 30003: MainWnd_OnImeChar(hwnd, 0x0413, 0); bOK = true; break;
-    case 30004: MainWnd_OnImeChar(hwnd, 0x0414, 0); bOK = true; break;
-    case 30005: MainWnd_OnImeChar(hwnd, 0x0415, 0); bOK = true; break;
-    case 30006: MainWnd_OnImeChar(hwnd, 0x0401, 0); bOK = true; break;
-    case 30007: MainWnd_OnImeChar(hwnd, 0x0416, 0); bOK = true; break;
-    case 30008: MainWnd_OnImeChar(hwnd, 0x0417, 0); bOK = true; break;
-    case 30009: MainWnd_OnImeChar(hwnd, 0x0418, 0); bOK = true; break;
-    case 30010: MainWnd_OnImeChar(hwnd, 0x0419, 0); bOK = true; break;
-    case 30011: MainWnd_OnImeChar(hwnd, 0x041A, 0); bOK = true; break;
-    case 30012: MainWnd_OnImeChar(hwnd, 0x041B, 0); bOK = true; break;
-    case 30013: MainWnd_OnImeChar(hwnd, 0x041C, 0); bOK = true; break;
-    case 30014: MainWnd_OnImeChar(hwnd, 0x041D, 0); bOK = true; break;
-    case 30015: MainWnd_OnImeChar(hwnd, 0x041E, 0); bOK = true; break;
-    case 30016: MainWnd_OnImeChar(hwnd, 0x041F, 0); bOK = true; break;
-    case 30017: MainWnd_OnImeChar(hwnd, 0x0420, 0); bOK = true; break;
-    case 30018: MainWnd_OnImeChar(hwnd, 0x0421, 0); bOK = true; break;
-    case 30019: MainWnd_OnImeChar(hwnd, 0x0422, 0); bOK = true; break;
-    case 30020: MainWnd_OnImeChar(hwnd, 0x0423, 0); bOK = true; break;
-    case 30021: MainWnd_OnImeChar(hwnd, 0x0424, 0); bOK = true; break;
-    case 30022: MainWnd_OnImeChar(hwnd, 0x0425, 0); bOK = true; break;
-    case 30023: MainWnd_OnImeChar(hwnd, 0x0426, 0); bOK = true; break;
-    case 30024: MainWnd_OnImeChar(hwnd, 0x0427, 0); bOK = true; break;
-    case 30025: MainWnd_OnImeChar(hwnd, 0x0428, 0); bOK = true; break;
-    case 30026: MainWnd_OnImeChar(hwnd, 0x0429, 0); bOK = true; break;
-    case 30027: MainWnd_OnImeChar(hwnd, 0x042A, 0); bOK = true; break;
-    case 30028: MainWnd_OnImeChar(hwnd, 0x042B, 0); bOK = true; break;
-    case 30029: MainWnd_OnImeChar(hwnd, 0x042C, 0); bOK = true; break;
-    case 30030: MainWnd_OnImeChar(hwnd, 0x042D, 0); bOK = true; break;
-    case 30031: MainWnd_OnImeChar(hwnd, 0x042E, 0); bOK = true; break;
-    case 30032: MainWnd_OnImeChar(hwnd, 0x042F, 0); bOK = true; break;
+    case 30000: XgOnImeChar(hwnd, 0x0410, 0); bOK = true; break;
+    case 30001: XgOnImeChar(hwnd, 0x0411, 0); bOK = true; break;
+    case 30002: XgOnImeChar(hwnd, 0x0412, 0); bOK = true; break;
+    case 30003: XgOnImeChar(hwnd, 0x0413, 0); bOK = true; break;
+    case 30004: XgOnImeChar(hwnd, 0x0414, 0); bOK = true; break;
+    case 30005: XgOnImeChar(hwnd, 0x0415, 0); bOK = true; break;
+    case 30006: XgOnImeChar(hwnd, 0x0401, 0); bOK = true; break;
+    case 30007: XgOnImeChar(hwnd, 0x0416, 0); bOK = true; break;
+    case 30008: XgOnImeChar(hwnd, 0x0417, 0); bOK = true; break;
+    case 30009: XgOnImeChar(hwnd, 0x0418, 0); bOK = true; break;
+    case 30010: XgOnImeChar(hwnd, 0x0419, 0); bOK = true; break;
+    case 30011: XgOnImeChar(hwnd, 0x041A, 0); bOK = true; break;
+    case 30012: XgOnImeChar(hwnd, 0x041B, 0); bOK = true; break;
+    case 30013: XgOnImeChar(hwnd, 0x041C, 0); bOK = true; break;
+    case 30014: XgOnImeChar(hwnd, 0x041D, 0); bOK = true; break;
+    case 30015: XgOnImeChar(hwnd, 0x041E, 0); bOK = true; break;
+    case 30016: XgOnImeChar(hwnd, 0x041F, 0); bOK = true; break;
+    case 30017: XgOnImeChar(hwnd, 0x0420, 0); bOK = true; break;
+    case 30018: XgOnImeChar(hwnd, 0x0421, 0); bOK = true; break;
+    case 30019: XgOnImeChar(hwnd, 0x0422, 0); bOK = true; break;
+    case 30020: XgOnImeChar(hwnd, 0x0423, 0); bOK = true; break;
+    case 30021: XgOnImeChar(hwnd, 0x0424, 0); bOK = true; break;
+    case 30022: XgOnImeChar(hwnd, 0x0425, 0); bOK = true; break;
+    case 30023: XgOnImeChar(hwnd, 0x0426, 0); bOK = true; break;
+    case 30024: XgOnImeChar(hwnd, 0x0427, 0); bOK = true; break;
+    case 30025: XgOnImeChar(hwnd, 0x0428, 0); bOK = true; break;
+    case 30026: XgOnImeChar(hwnd, 0x0429, 0); bOK = true; break;
+    case 30027: XgOnImeChar(hwnd, 0x042A, 0); bOK = true; break;
+    case 30028: XgOnImeChar(hwnd, 0x042B, 0); bOK = true; break;
+    case 30029: XgOnImeChar(hwnd, 0x042C, 0); bOK = true; break;
+    case 30030: XgOnImeChar(hwnd, 0x042D, 0); bOK = true; break;
+    case 30031: XgOnImeChar(hwnd, 0x042E, 0); bOK = true; break;
+    case 30032: XgOnImeChar(hwnd, 0x042F, 0); bOK = true; break;
     // Digits
-    case 40000: MainWnd_OnImeChar(hwnd, L'0', 0); bOK = true; break;
-    case 40001: MainWnd_OnImeChar(hwnd, L'1', 0); bOK = true; break;
-    case 40002: MainWnd_OnImeChar(hwnd, L'2', 0); bOK = true; break;
-    case 40003: MainWnd_OnImeChar(hwnd, L'3', 0); bOK = true; break;
-    case 40004: MainWnd_OnImeChar(hwnd, L'4', 0); bOK = true; break;
-    case 40005: MainWnd_OnImeChar(hwnd, L'5', 0); bOK = true; break;
-    case 40006: MainWnd_OnImeChar(hwnd, L'6', 0); bOK = true; break;
-    case 40007: MainWnd_OnImeChar(hwnd, L'7', 0); bOK = true; break;
-    case 40008: MainWnd_OnImeChar(hwnd, L'8', 0); bOK = true; break;
-    case 40009: MainWnd_OnImeChar(hwnd, L'9', 0); bOK = true; break;
+    case 40000: XgOnImeChar(hwnd, L'0', 0); bOK = true; break;
+    case 40001: XgOnImeChar(hwnd, L'1', 0); bOK = true; break;
+    case 40002: XgOnImeChar(hwnd, L'2', 0); bOK = true; break;
+    case 40003: XgOnImeChar(hwnd, L'3', 0); bOK = true; break;
+    case 40004: XgOnImeChar(hwnd, L'4', 0); bOK = true; break;
+    case 40005: XgOnImeChar(hwnd, L'5', 0); bOK = true; break;
+    case 40006: XgOnImeChar(hwnd, L'6', 0); bOK = true; break;
+    case 40007: XgOnImeChar(hwnd, L'7', 0); bOK = true; break;
+    case 40008: XgOnImeChar(hwnd, L'8', 0); bOK = true; break;
+    case 40009: XgOnImeChar(hwnd, L'9', 0); bOK = true; break;
     default:
         break;
     }
@@ -6055,7 +5797,7 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
             } else {
                 // 単語の貼り付け。
                 for (auto& ch : str) {
-                    MainWnd_OnImeChar(hwnd, ch, 0);
+                    XgOnImeChar(hwnd, ch, 0);
                 }
             }
         } else {
@@ -7216,6 +6958,38 @@ void MainWnd_OnGetMinMaxInfo(HWND hwnd, LPMINMAXINFO lpMinMaxInfo)
 
 //////////////////////////////////////////////////////////////////////////////
 
+// 描画イメージを更新する。
+void __fastcall XgUpdateImage(HWND hwnd, INT x, INT y)
+{
+    ForDisplay for_display;
+
+    // イメージがあれば破棄する。
+    if (xg_hbmImage)
+        ::DeleteObject(xg_hbmImage);
+
+    // 描画サイズを取得し、イメージを作成する。
+    SIZE siz;
+    XgGetXWordExtent(&siz);
+    if (xg_bSolved && xg_bShowAnswer)
+        xg_hbmImage = XgCreateXWordImage(xg_solution, &siz, true);
+    else
+        xg_hbmImage = XgCreateXWordImage(xg_xword, &siz, true);
+
+    // スクロール情報を更新する。
+    XgUpdateScrollInfo(hwnd, x, y);
+
+    // 再描画する。
+    MRect rcClient;
+    XgGetRealClientRect(hwnd, &rcClient);
+    ::InvalidateRect(hwnd, &rcClient, TRUE);
+}
+
+// 描画イメージを更新する。
+void __fastcall XgUpdateImage(HWND hwnd)
+{
+    XgUpdateImage(hwnd, XgGetHScrollPos(), XgGetVScrollPos());
+}
+
 // ウィンドウプロシージャ。
 extern "C"
 LRESULT CALLBACK
@@ -7231,7 +7005,7 @@ XgWindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
     HANDLE_MSG(hWnd, WM_SIZE, MainWnd_OnSize);
     HANDLE_MSG(hWnd, WM_KEYDOWN, MainWnd_OnKey);
     HANDLE_MSG(hWnd, WM_KEYUP, MainWnd_OnKey);
-    HANDLE_MSG(hWnd, WM_CHAR, MainWnd_OnChar);
+    HANDLE_MSG(hWnd, WM_CHAR, XgOnChar);
     HANDLE_MSG(hWnd, WM_LBUTTONDBLCLK, MainWnd_OnLButtonDown);
     HANDLE_MSG(hWnd, WM_LBUTTONUP, MainWnd_OnLButtonUp);
     HANDLE_MSG(hWnd, WM_RBUTTONDOWN, MainWnd_OnRButtonDown);
@@ -7245,7 +7019,7 @@ XgWindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
         break;
 
     case WM_IME_CHAR:
-        MainWnd_OnImeChar(hWnd, static_cast<WCHAR>(wParam), lParam);
+        XgOnImeChar(hWnd, static_cast<WCHAR>(wParam), lParam);
         break;
 
     default:

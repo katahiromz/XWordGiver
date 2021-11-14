@@ -357,16 +357,14 @@ struct XG_Hint
     {
     }
 
-    inline
-    void operator=(const XG_Hint& info)
+    inline void operator=(const XG_Hint& info)
     {
         m_number = info.m_number;
         m_strWord = info.m_strWord;
         m_strHint = info.m_strHint;
     }
 
-    inline
-    void operator=(XG_Hint&& info)
+    inline void operator=(XG_Hint&& info)
     {
         m_number = info.m_number;
         m_strWord = std::move(info.m_strWord);
@@ -586,7 +584,7 @@ public:
     }
 };
 
-bool __fastcall XgDoSaveStandard(HWND hwnd, LPCWSTR pszFile, const XG_Board& board);
+bool XgDoSaveStandard(HWND hwnd, LPCWSTR pszFile, const XG_Board& board);
 
 namespace std
 {
@@ -934,9 +932,8 @@ extern std::wstring xg_strDoubleFrameLetters;
 // 二重マス文字を表示するか？
 extern BOOL xg_bShowDoubleFrameLetters;
 
-#include <random>
-
 // std::random_shuffleの代わり。
+#include <random>
 template <typename t_elem>
 inline void xg_random_shuffle(const t_elem& begin, const t_elem& end) {
     std::random_device rd;
@@ -1228,19 +1225,19 @@ public:
 extern const LPCWSTR xg_pszNewLine;
 
 // インスタンスのハンドル。
-extern HINSTANCE   xg_hInstance;
+extern HINSTANCE xg_hInstance;
 
 // メインウィンドウのハンドル。
-extern HWND        xg_hMainWnd;
+extern HWND xg_hMainWnd;
 
 // ツールバーのハンドル。
-extern HWND        xg_hToolBar;
+extern HWND xg_hToolBar;
 
 // ステータスバーのハンドル。
-extern HWND        xg_hStatusBar;
+extern HWND xg_hStatusBar;
 
 // ヒントウィンドウのハンドル。
-extern HWND        xg_hHintsWnd;
+extern HWND xg_hHintsWnd;
 
 // 答えを表示するか？
 extern bool xg_bShowAnswer;
@@ -1293,13 +1290,13 @@ extern const LPCWSTR xg_small[11];
 extern const LPCWSTR xg_large[11];
 
 // ビットマップのハンドル。
-extern HBITMAP          xg_hbmImage;
+extern HBITMAP xg_hbmImage;
 
 // ヒント文字列。
-extern std::wstring     xg_strHints;
+extern std::wstring xg_strHints;
 
 // 再計算しなおしているか？
-extern bool             xg_bRetrying;
+extern bool xg_bRetrying;
 
 // スレッドのハンドル。
 extern std::vector<HANDLE> xg_ahThreads;
@@ -1333,14 +1330,6 @@ extern INT xg_nPatWndY;
 extern INT xg_nPatWndCX;
 extern INT xg_nPatWndCY;
 
-// 現在の辞書名。
-extern std::wstring xg_dict_name;
-// すべての辞書ファイル。
-extern std::deque<std::wstring>  xg_dict_files;
-
-// 辞書名をセットする。
-void XgSetDict(const std::wstring& strFile);
-
 // 再計算するか？
 extern bool xg_bAutoRetry;
 
@@ -1348,11 +1337,6 @@ extern bool xg_bAutoRetry;
 extern BOOL xg_bSkeletonMode;
 
 //////////////////////////////////////////////////////////////////////////////
-
-// 描画イメージを更新する。
-void __fastcall XgUpdateImage(HWND hwnd, INT x, INT y);
-// 描画イメージを更新する。
-void __fastcall XgUpdateImage(HWND hwnd);
 
 // ファイルを開く。
 bool __fastcall XgDoLoadFile(HWND hwnd, LPCWSTR pszFile, bool json);
@@ -1381,30 +1365,6 @@ bool __fastcall XgGetCandidatesAddBlack(
     std::vector<std::wstring>& cands, const std::wstring& pattern, int& nSkip,
     bool left_black_check, bool right_black_check);
 
-// UIフォントの論理オブジェクトを取得する。
-LOGFONTW *XgGetUIFont(void);
-
-// 入力パレットを作成する。
-BOOL XgCreateInputPalette(HWND hwndOwner);
-
-// 入力パレットを破棄する。
-BOOL XgDestroyInputPalette(void);
-
-// 入力モードを切り替える。
-void __fastcall XgSetInputMode(HWND hwnd, XG_InputMode mode);
-
-// 文字が入力された。
-void __fastcall MainWnd_OnChar(HWND hwnd, TCHAR ch, int cRepeat);
-
-// BackSpaceを実行する。
-void __fastcall XgCharBack(HWND hwnd);
-
-// 入力方向を切り替える。
-void __fastcall XgInputDirection(HWND hwnd, INT nDirection);
-// 文字送りを切り替える。
-void __fastcall XgSetCharFeed(HWND hwnd, INT nMode);
-// 改行する。
-void __fastcall XgReturn(HWND hwnd);
 // 文字をクリア。
 void __fastcall XgClearNonBlocks(HWND hwnd);
 
@@ -1417,35 +1377,6 @@ void __fastcall XgToggleMark(HWND hwnd);
 
 // クロスワードで使う文字に変換する。
 std::wstring __fastcall XgNormalizeString(const std::wstring& text);
-
-//////////////////////////////////////////////////////////////////////////////
-// スクロール。
-
-// 水平スクロールの位置を取得する。
-int __fastcall XgGetHScrollPos(void);
-// 垂直スクロールの位置を取得する。
-int __fastcall XgGetVScrollPos(void);
-// 水平スクロールの情報を取得する。
-BOOL __fastcall XgGetHScrollInfo(LPSCROLLINFO psi);
-// 垂直スクロールの情報を取得する。
-BOOL __fastcall XgGetVScrollInfo(LPSCROLLINFO psi);
-// 水平スクロールの位置を設定する。
-int __fastcall XgSetHScrollPos(int nPos, BOOL bRedraw);
-// 垂直スクロールの位置を設定する。
-int __fastcall XgSetVScrollPos(int nPos, BOOL bRedraw);
-// スクロール情報を設定する。
-void __fastcall XgUpdateScrollInfo(HWND hwnd, int x, int y);
-// キャレットが見えるように、必要ならばスクロールする。
-void __fastcall XgEnsureCaretVisible(HWND hwnd);
-// 候補ウィンドウを破棄する。
-void XgDestroyCandsWnd(void);
-
-//////////////////////////////////////////////////////////////////////////////
-// 候補。
-
-extern int  xg_iCandPos;
-extern int  xg_jCandPos;
-extern bool xg_bCandVertical;
 
 //////////////////////////////////////////////////////////////////////////////
 

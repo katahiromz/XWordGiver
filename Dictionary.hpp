@@ -194,20 +194,16 @@ inline bool XgTrimDict(std::vector<t_string>& words)
 extern std::wstring xg_dict_name;
 extern std::deque<std::wstring>  xg_dict_files;
 
-// 辞書名をセットする。
-inline void XgSetDict(const std::wstring& strFile)
-{
-    // 辞書名を格納。
-    xg_dict_name = strFile;
+// 現在の辞書名。
+extern std::wstring xg_dict_name;
+// すべての辞書ファイル。
+extern std::deque<std::wstring> xg_dict_files;
 
-    // 辞書として追加、ソート、一意にする。
-    if (xg_dict_files.size() < MAX_DICTS)
-    {
-        xg_dict_files.emplace_back(strFile);
-        std::sort(xg_dict_files.begin(), xg_dict_files.end());
-        auto last = std::unique(xg_dict_files.begin(), xg_dict_files.end());
-        xg_dict_files.erase(last, xg_dict_files.end());
-    }
-}
+// 辞書名をセットする。
+void XgSetDict(const std::wstring& strFile);
+// フォルダから辞書群を読み込む。
+BOOL XgLoadDictsFromDir(LPCWSTR pszDir);
+// 辞書ファイルをすべて読み込む。
+BOOL XgLoadDictsAll(void);
 
 #endif  // ndef __XG_DICTIONARY_HPP__

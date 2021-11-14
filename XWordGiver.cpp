@@ -4502,50 +4502,6 @@ HBITMAP __fastcall XgCreateXWordImage(XG_Board& xw, LPSIZE psiz, bool bCaret)
     return hbm;
 }
 
-// 描画イメージを更新する。
-void __fastcall XgUpdateImage(HWND hwnd, INT x, INT y)
-{
-    ForDisplay for_display;
-
-    // イメージがあれば破棄する。
-    if (xg_hbmImage)
-        ::DeleteObject(xg_hbmImage);
-
-    // 描画サイズを取得し、イメージを作成する。
-    SIZE siz;
-    XgGetXWordExtent(&siz);
-    if (xg_bSolved && xg_bShowAnswer)
-        xg_hbmImage = XgCreateXWordImage(xg_solution, &siz, true);
-    else
-        xg_hbmImage = XgCreateXWordImage(xg_xword, &siz, true);
-
-    // スクロール情報を更新する。
-    XgUpdateScrollInfo(hwnd, x, y);
-
-    MRect rc, rcClient;
-    ::GetClientRect(hwnd, &rcClient);
-
-    if (::IsWindowVisible(xg_hToolBar)) {
-        ::GetWindowRect(xg_hToolBar, &rc);
-        rcClient.top += rc.Height();
-    }
-    if (::IsWindowVisible(xg_hStatusBar)) {
-        ::GetWindowRect(xg_hStatusBar, &rc);
-        rcClient.bottom -= rc.Height();
-    }
-    rcClient.right -= ::GetSystemMetrics(SM_CXVSCROLL);
-    rcClient.bottom -= ::GetSystemMetrics(SM_CYHSCROLL);
-
-    // 再描画する。
-    ::InvalidateRect(hwnd, &rcClient, TRUE);
-}
-
-// 描画イメージを更新する。
-void __fastcall XgUpdateImage(HWND hwnd)
-{
-    XgUpdateImage(hwnd, XgGetHScrollPos(), XgGetVScrollPos());
-}
-
 // CRPファイルを開く。
 bool __fastcall XgDoLoadCrpFile(HWND hwnd, LPCWSTR pszFile)
 {
@@ -5125,7 +5081,7 @@ bool __fastcall XgDoSaveJson(HWND /*hwnd*/, LPCWSTR pszFile)
 }
 
 // .xwd/.xwjファイルを保存する。
-bool __fastcall XgDoSaveStandard(HWND hwnd, LPCWSTR pszFile, const XG_Board& board)
+bool XgDoSaveStandard(HWND hwnd, LPCWSTR pszFile, const XG_Board& board)
 {
     HANDLE hFile;
     std::wstring str, strTable, strMarks, hints;

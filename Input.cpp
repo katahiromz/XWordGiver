@@ -188,7 +188,7 @@ void __fastcall XgCharFeed(HWND hwnd)
 void __fastcall XgCharBack(HWND hwnd)
 {
     if (!xg_bCharFeed) {
-        MainWnd_OnChar(hwnd, L'_', 1);
+        XgOnChar(hwnd, L'_', 1);
         return;
     }
 
@@ -219,7 +219,7 @@ void __fastcall XgCharBack(HWND hwnd)
     }
 
     xg_bCharFeed = false;
-    MainWnd_OnChar(hwnd, L'_', 1);
+    XgOnChar(hwnd, L'_', 1);
     xg_bCharFeed = true;
 
     XgUpdateStatusBar(hwnd);
@@ -227,7 +227,7 @@ void __fastcall XgCharBack(HWND hwnd)
 }
 
 // 文字が入力された。
-void __fastcall MainWnd_OnChar(HWND hwnd, TCHAR ch, int cRepeat)
+void __fastcall XgOnChar(HWND hwnd, TCHAR ch, int cRepeat)
 {
     WCHAR oldch = xg_xword.GetAt(xg_caret_pos);
     if (oldch == ZEN_BLACK && xg_bSolved)
@@ -686,7 +686,7 @@ void __fastcall MainWnd_OnKey(HWND hwnd, UINT vk, bool fDown, int /*cRepeat*/, U
 }
 
 // IMEから文字が入力された。
-void __fastcall MainWnd_OnImeChar(HWND hwnd, WCHAR ch, LPARAM /*lKeyData*/)
+void __fastcall XgOnImeChar(HWND hwnd, WCHAR ch, LPARAM /*lKeyData*/)
 {
     if (ch == ZEN_BLACK) {
         SendMessageW(hwnd, WM_CHAR, L'#', 1);
@@ -840,7 +840,7 @@ void InputPal_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT codeNotify)
     if (sz[0] && sz[1] == 0) {
         switch (sz[0]) {
         case ZEN_SPACE:
-            MainWnd_OnImeChar(xg_hMainWnd, L'_', 0);
+            XgOnImeChar(xg_hMainWnd, L'_', 0);
             break;
         case ZEN_UP:
             if (GetAsyncKeyState(VK_CONTROL) < 0) {
@@ -871,7 +871,7 @@ void InputPal_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT codeNotify)
             }
             break;
         default:
-            MainWnd_OnImeChar(xg_hMainWnd, sz[0], 0);
+            XgOnImeChar(xg_hMainWnd, sz[0], 0);
             break;
         }
     } else {

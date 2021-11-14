@@ -7,15 +7,10 @@ struct XG_CandsButtonData
     WNDPROC m_fnOldWndProc;
 };
 
-// 候補を求める位置。
-extern INT xg_jCandPos, xg_iCandPos;
+// クロスワードをチェックする。
+bool __fastcall XgCheckCrossWord(HWND hwnd, bool check_words);
 
-// 候補はタテかヨコか。
-extern bool xg_bCandVertical;
-
-// 候補を適用する。
-void XgApplyCandidate(XG_Board& xword, const std::wstring& strCand);
-
+// 候補ウィンドウ。
 class XG_CandsWnd : public XG_Window
 {
 public:
@@ -34,6 +29,124 @@ public:
 
     // 候補ボタン。
     inline static std::vector<HWND>           xg_ahwndCandButtons;
+
+    // 候補を求める位置。
+    inline static INT xg_jCandPos, xg_iCandPos;
+
+    // 候補はタテかヨコか。
+    inline static bool xg_bCandVertical;
+
+    // 候補ウィンドウを作成する。
+    BOOL Create(HWND hwnd)
+    {
+        auto style = WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME | WS_HSCROLL | WS_VSCROLL;
+        auto exstyle = WS_EX_TOOLWINDOW;
+        auto text = XgLoadStringDx1(IDS_CANDIDATES);
+        return CreateWindowDx(hwnd, text, style, exstyle,
+                              s_nCandsWndX, s_nCandsWndY,
+                              s_nCandsWndCX, s_nCandsWndCY);
+    }
+
+    bool Open(HWND hwnd, bool vertical)
+    {
+        // 候補を作成する。
+        xg_iCandPos = xg_caret_pos.m_i;
+        xg_jCandPos = xg_caret_pos.m_j;
+        xg_bCandVertical = vertical;
+        if (xg_xword.GetAt(xg_iCandPos, xg_jCandPos) == ZEN_BLACK) {
+            ::MessageBeep(0xFFFFFFFF);
+            return false;
+        }
+
+        // パターンを取得する。
+        int lo, hi;
+        std::wstring pattern;
+        bool left_black, right_black;
+        if (xg_bCandVertical) {
+            lo = hi = xg_iCandPos;
+            while (lo > 0) {
+                if (xg_xword.GetAt(lo - 1, xg_jCandPos) != ZEN_BLACK)
+                    --lo;
+                else
+                    break;
+            }
+            while (hi + 1 < xg_nRows) {
+                if (xg_xword.GetAt(hi + 1, xg_jCandPos) != ZEN_BLACK)
+                    ++hi;
+                else
+                    break;
+            }
+
+            for (int i = lo; i <= hi; ++i) {
+                pattern += xg_xword.GetAt(i, xg_jCandPos);
+            }
+
+            right_black = (hi + 1 != xg_nRows);
+        } else {
+            lo = hi = xg_jCandPos;
+            while (lo > 0) {
+                if (xg_xword.GetAt(xg_iCandPos, lo - 1) != ZEN_BLACK)
+                    --lo;
+                else
+                    break;
+            }
+            while (hi + 1 < xg_nCols) {
+                if (xg_xword.GetAt(xg_iCandPos, hi + 1) != ZEN_BLACK)
+                    ++hi;
+                else
+                    break;
+            }
+
+            for (int j = lo; j <= hi; ++j) {
+                pattern += xg_xword.GetAt(xg_iCandPos, j);
+            }
+
+            right_black = (hi + 1 != xg_nCols);
+        }
+        left_black = (lo != 0);
+
+        // 候補を取得する。
+        int nSkip = 0;
+        std::vector<std::wstring> cands, cands2;
+        XgGetCandidatesAddBlack<false>(cands, pattern, nSkip, left_black, right_black);
+        XgGetCandidatesAddBlack<true>(cands2, pattern, nSkip, left_black, right_black);
+        cands.insert(cands.end(), cands2.begin(), cands2.end());
+
+        // 仮に適用して、正当かどうか確かめ、正当なものだけを
+        // 最終的な候補とする。
+        XG_CandsWnd::xg_vecCandidates.clear();
+        for (const auto& cand : cands) {
+            XG_Board xword(xg_xword);
+            XgApplyCandidate(xword, cand);
+            if (xword.CornerBlack() || xword.DoubleBlack() ||
+                xword.TriBlackAround() || xword.DividedByBlack())
+            {
+                ;
+            } else {
+                XG_CandsWnd::xg_vecCandidates.emplace_back(cand);
+            }
+        }
+
+        // 個数制限。
+        if (XG_CandsWnd::xg_vecCandidates.size() > xg_nMaxCandidates)
+            XG_CandsWnd::xg_vecCandidates.resize(xg_nMaxCandidates);
+
+        if (XG_CandsWnd::xg_vecCandidates.empty()) {
+            if (XgCheckCrossWord(hwnd, false)) {
+                ::MessageBeep(0xFFFFFFFF);
+            } else {
+                return false;
+            }
+        }
+
+        // ヒントウィンドウを作成する。
+        if (Create(xg_hMainWnd)) {
+            ::ShowWindow(*this, SW_SHOWNORMAL);
+            ::UpdateWindow(*this);
+            return true;
+        }
+        return false;
+    }
 
     static LRESULT CALLBACK
     XgCandsButton_WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
@@ -366,5 +479,44 @@ public:
         default: return ::DefWindowProcW(hwnd, uMsg, wParam, lParam);
         }
         return 0;
+    }
+
+    // 候補を適用する。
+    void XgApplyCandidate(XG_Board& xword, const std::wstring& strCand)
+    {
+        std::wstring cand = XgNormalizeString(strCand);
+
+        int lo, hi;
+        if (xg_bCandVertical) {
+            for (lo = xg_iCandPos; lo > 0; --lo) {
+                if (xword.GetAt(lo - 1, xg_jCandPos) == ZEN_BLACK)
+                    break;
+            }
+            for (hi = xg_iCandPos; hi + 1 < xg_nRows; ++hi) {
+                if (xword.GetAt(hi + 1, xg_jCandPos) == ZEN_BLACK)
+                    break;
+            }
+
+            int m = 0;
+            for (int k = lo; k <= hi; ++k, ++m) {
+                xword.SetAt(k, xg_jCandPos, cand[m]);
+            }
+        }
+        else
+        {
+            for (lo = xg_jCandPos; lo > 0; --lo) {
+                if (xword.GetAt(xg_iCandPos, lo - 1) == ZEN_BLACK)
+                    break;
+            }
+            for (hi = xg_jCandPos; hi + 1 < xg_nCols; ++hi) {
+                if (xword.GetAt(xg_iCandPos, hi + 1) == ZEN_BLACK)
+                    break;
+            }
+
+            int m = 0;
+            for (int k = lo; k <= hi; ++k, ++m) {
+                xword.SetAt(xg_iCandPos, k, cand[m]);
+            }
+        }
     }
 };
