@@ -302,14 +302,14 @@ namespace std
         std::swap(pos1.m_i, pos2.m_i);
         std::swap(pos1.m_j, pos2.m_j);
     }
-}
 
-struct XG_PosHash
-{
-    size_t operator()(const XG_Pos& pos) const {
-        return static_cast<size_t>((pos.m_i << 16) | pos.m_j);
-    }
-};
+    template <>
+    struct hash<XG_Pos> {
+        size_t operator()(const XG_Pos& pos) const {
+            return MAKELONG(pos.m_i, pos.m_j);
+        }
+    };
+} // namespace std
 
 // キャレットの位置。
 extern XG_Pos xg_caret_pos;
