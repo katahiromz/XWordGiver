@@ -4214,7 +4214,7 @@ void XgGenerateFromWordList(HWND hwnd)
     xg_bSkeletonMode = TRUE;
     XgUpdateRules(xg_hMainWnd);
     // 解をセットする。
-    auto solution = generation_t<wchar_t, false>::s_solution;
+    auto& solution = from_words_t<wchar_t, false>::s_solution;
     xg_bSolved = true;
     xg_bShowAnswer = true;
     xg_nRows = solution.m_cy;
@@ -6235,8 +6235,7 @@ HMENU XgLoadPopupMenu(HWND hwnd, INT nPos)
 }
 
 // 右クリックされた。
-void
-MainWnd_OnRButtonDown(HWND hwnd, BOOL fDoubleClick, int x, int y, UINT keyFlags)
+void MainWnd_OnRButtonDown(HWND hwnd, BOOL fDoubleClick, int x, int y, UINT keyFlags)
 {
     MainWnd_OnLButtonUp(hwnd, x, y, keyFlags);
 

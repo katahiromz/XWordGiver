@@ -602,7 +602,7 @@ struct board_t : board_data_t<t_char> {
 };
 
 template <typename t_char, bool t_fixed>
-struct generation_t {
+struct from_words_t {
     typedef std::basic_string<t_char> t_string;
 
     inline static board_t<t_char, t_fixed> s_solution;
@@ -799,7 +799,7 @@ struct generation_t {
             return false;
 
 #ifdef XWORDGIVER
-        xg_aThreadInfo[m_iThread].m_count = int(m_words.size());
+        xg_aThreadInfo[m_iThread].m_count = int(m_dict.size() - m_words.size());
 #endif
 
         std::vector<candidate_t<t_char> > candidates;
@@ -872,7 +872,7 @@ struct generation_t {
         for (auto& cand : candidates) {
             if (s_canceled)
                 return s_generated;
-            generation_t<t_char, t_fixed> copy(*this);
+            from_words_t<t_char, t_fixed> copy(*this);
             if (copy.apply_candidate(cand) && copy.generate_recurse()) {
                 return true;
             }
@@ -943,7 +943,7 @@ struct generation_t {
         return words.size() == m_dict.size();
     }
 
-    bool generate_from_words() {
+    bool generate() {
         if (m_words.empty())
             return false;
 
@@ -956,15 +956,15 @@ struct generation_t {
         return true;
     }
 
-    static bool generate_from_words_proc(const std::unordered_set<t_string> *words, int iThread) {
+    static bool generate_proc(const std::unordered_set<t_string> *words, int iThread) {
         std::srand(uint32_t(::GetTickCount64()) ^ ::GetCurrentThreadId());
 #ifdef _WIN32
         ::SetThreadPriority(::GetCurrentThread(), THREAD_PRIORITY_ABOVE_NORMAL);
 #endif
-        generation_t<t_char, t_fixed> data;
+        from_words_t<t_char, t_fixed> data;
         data.m_iThread = iThread;
         data.m_words = data.m_dict = *words;
-        bool flag = data.generate_from_words();
+        bool flag = data.generate();
 #ifdef _WIN32
         ::InterlockedIncrement(&s_count);
 #else
@@ -975,15 +975,15 @@ struct generation_t {
     }
 
     static bool
-    do_generate_from_words(const std::unordered_set<t_string>& words,
-                           int num_threads = get_num_processors())
+    do_generate(const std::unordered_set<t_string>& words,
+                int num_threads = get_num_processors())
     {
         //printf("num_threads: %d\n", int(num_threads));
 
         for (int i = 0; i < num_threads; ++i) {
             auto clone = new std::unordered_set<t_string>(words);
             try {
-                std::thread t(generate_from_words_proc, clone, i);
+                std::thread t(generate_proc, clone, i);
                 t.detach();
             } catch (std::system_error&) {
                 delete clone;
@@ -997,6 +997,6 @@ struct generation_t {
 
         return s_generated;
     }
-};
+}; // struct from_words_t
 
 } // namespace crossword_generation

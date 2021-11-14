@@ -18,7 +18,7 @@ public:
     {
         using namespace crossword_generation;
         reset();
-        generation_t<wchar_t, false>::do_generate_from_words(XG_WordListDialog::s_wordset);
+        from_words_t<wchar_t, false>::do_generate(XG_WordListDialog::s_wordset);
         // タイマーをセットする。
         ::SetTimer(hwnd, uTimerID, INTERVAL, nullptr);
     }
@@ -45,8 +45,8 @@ public:
         // 初期化する。
         ::InterlockedExchange(&xg_nRetryCount, 0);
         // プログレスバーの範囲をセットする。
-        ::SendDlgItemMessageW(hwnd, ctl1, PBM_SETRANGE, 0, MAKELPARAM(0, XG_WordListDialog::s_wordset.size()));
-        ::SendDlgItemMessageW(hwnd, ctl2, PBM_SETRANGE, 0, MAKELPARAM(0, XG_WordListDialog::s_wordset.size()));
+        ::SendDlgItemMessageW(hwnd, ctl1, PBM_SETRANGE, 0, MAKELPARAM(0, XG_WordListDialog::s_wordset.size() + 1));
+        ::SendDlgItemMessageW(hwnd, ctl2, PBM_SETRANGE, 0, MAKELPARAM(0, XG_WordListDialog::s_wordset.size() + 1));
         // 計算時間を求めるために、開始時間を取得する。
         xg_dwlTick0 = xg_dwlTick1 = ::GetTickCount64();
         // 再計算までの時間を概算する。
