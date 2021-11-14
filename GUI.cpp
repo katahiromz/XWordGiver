@@ -9,6 +9,8 @@
 #include "XG_UndoBuffer.hpp"
 
 #include "XG_CancelFromWordsDialog.hpp"
+#include "XG_CancelSmartSolveDialog.hpp"
+#include "XG_CancelSolveDialog.hpp"
 #include "XG_CandsWnd.hpp"
 #include "XG_GenDialog.hpp"
 #include "XG_HintsWnd.hpp"
@@ -191,7 +193,7 @@ DWORD     xg_dwWait;     // 待ち時間。
 static bool s_bOutOfDiskSpace = false;
 
 // 連続生成の場合、問題を生成した数。
-static int s_nNumberGenerated = 0;
+INT xg_nNumberGenerated = 0;
 
 // 再計算の回数。
 LONG xg_nRetryCount;
@@ -1224,189 +1226,6 @@ INT CALLBACK XgBrowseCallbackProc(HWND hwnd, UINT uMsg, LPARAM /*lParam*/, LPARA
 
 //////////////////////////////////////////////////////////////////////////////
 
-// スレッドを閉じる。
-void __fastcall XgCloseThreads(void)
-{
-    for (DWORD i = 0; i < xg_dwThreadCount; i++) {
-        ::CloseHandle(xg_ahThreads[i]);
-        xg_ahThreads[i] = nullptr;
-    }
-}
-
-// スレッドを待つ。
-inline void __fastcall XgWaitForThreads(void)
-{
-    ::WaitForMultipleObjects(xg_dwThreadCount, xg_ahThreads.data(), true, 1000);
-}
-
-// スレッドが終了したか？
-bool __fastcall XgIsAnyThreadTerminated(void)
-{
-    DWORD dwExitCode;
-    for (DWORD i = 0; i < xg_dwThreadCount; i++) {
-        ::GetExitCodeThread(xg_ahThreads[i], &dwExitCode);
-        if (dwExitCode != STILL_ACTIVE)
-            return true;
-    }
-    return false;
-}
-
-//////////////////////////////////////////////////////////////////////////////
-
-// プログレスバーの更新頻度。
-#define xg_dwTimerInterval 500
-
-// 再計算までの時間を概算する。
-inline DWORD XgGetRetryInterval(void)
-{
-    return 8 * (xg_nRows + xg_nCols) * (xg_nRows + xg_nCols) + 1000;
-}
-
-// キャンセルダイアログ。
-extern "C" INT_PTR CALLBACK
-XgCancelSolveDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam*/)
-{
-    switch (uMsg) {
-    case WM_INITDIALOG:
-        #ifdef NO_RANDOM
-        {
-            extern int xg_random_seed;
-            xg_random_seed = 100;
-        }
-        #endif
-        // ダイアログを中央へ移動する。
-        XgCenterDialog(hwnd);
-        // 再試行カウントをクリアする。
-        ::InterlockedExchange(&xg_nRetryCount, 0);
-        // プログレスバーの範囲をセットする。
-        ::SendDlgItemMessageW(hwnd, ctl1, PBM_SETRANGE, 0,
-                            MAKELPARAM(0, xg_nRows * xg_nCols));
-        ::SendDlgItemMessageW(hwnd, ctl2, PBM_SETRANGE, 0,
-                            MAKELPARAM(0, xg_nRows * xg_nCols));
-        // 計算時間を求めるために、開始時間を取得する。
-        xg_dwlTick0 = xg_dwlTick1 = ::GetTickCount64();
-        // 再計算までの時間を概算する。
-        xg_dwWait = XgGetRetryInterval();
-        // 解を求めるのを開始。
-        XgStartSolve_AddBlack();
-        // タイマーをセットする。
-        ::SetTimer(hwnd, 999, xg_dwTimerInterval, nullptr);
-        // フォーカスをセットする。
-        ::SetFocus(::GetDlgItem(hwnd, psh1));
-        // 生成した問題の個数を表示する。
-        if (s_nNumberGenerated > 0) {
-            WCHAR sz[MAX_PATH];
-            StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(IDS_PROBLEMSMAKING),
-                           s_nNumberGenerated);
-            ::SetDlgItemTextW(hwnd, stc2, sz);
-        }
-        return false;
-
-    case WM_COMMAND:
-        switch(LOWORD(wParam)) {
-        case psh1:
-            // タイマーを解除する。
-            ::KillTimer(hwnd, 999);
-            // キャンセルしてスレッドを待つ。
-            xg_bCancelled = true;
-            XgWaitForThreads();
-            // スレッドを閉じる。
-            XgCloseThreads();
-            // 計算時間を求めるために、終了時間を取得する。
-            xg_dwlTick2 = ::GetTickCount64();
-            // 解を求めようとした後の後処理。
-            XgEndSolve();
-            // ダイアログを終了する。
-            ::EndDialog(hwnd, IDCANCEL);
-            break;
-
-        case psh2:
-            // タイマーを解除する。
-            ::KillTimer(hwnd, 999);
-            // 再計算しなおす。
-            xg_bRetrying = true;
-            XgWaitForThreads();
-            XgCloseThreads();
-            ::InterlockedIncrement(&xg_nRetryCount);
-            xg_dwlTick1 = ::GetTickCount64();
-            XgStartSolve_AddBlack();
-            // タイマーをセットする。
-            ::SetTimer(hwnd, 999, xg_dwTimerInterval, nullptr);
-            break;
-        }
-        break;
-
-    case WM_SYSCOMMAND:
-        if (wParam == SC_CLOSE) {
-            // タイマーを解除する。
-            ::KillTimer(hwnd, 999);
-            // キャンセルしてスレッドを待つ。
-            xg_bCancelled = true;
-            XgWaitForThreads();
-            // スレッドを閉じる。
-            XgCloseThreads();
-            // 計算時間を求めるために、終了時間を取得する。
-            xg_dwlTick2 = ::GetTickCount64();
-            // 解を求めようとした後の後処理。
-            XgEndSolve();
-            // ダイアログを終了する。
-            ::EndDialog(hwnd, IDCANCEL);
-        }
-        break;
-
-    case WM_TIMER:
-        // プログレスバーを更新する。
-        //for (DWORD i = 0; i < xg_dwThreadCount; i++)
-        for (DWORD i = 0; i < 2; i++) {
-            ::SendDlgItemMessageW(hwnd, ctl1 + i, PBM_SETPOS,
-                static_cast<WPARAM>(xg_aThreadInfo[i].m_count), 0);
-        }
-
-        {
-            // 経過時間を表示する。
-            WCHAR sz[MAX_PATH];
-            DWORDLONG dwTick = ::GetTickCount64();
-            StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(IDS_NOWSOLVING),
-                DWORD(dwTick - xg_dwlTick0) / 1000,
-                DWORD(dwTick - xg_dwlTick0) / 100 % 10, xg_nRetryCount);
-            ::SetDlgItemTextW(hwnd, stc1, sz);
-        }
-
-        // 終了したスレッドがあるか？
-        if (XgIsAnyThreadTerminated()) {
-            // スレッドが終了した。タイマーを解除する。
-            ::KillTimer(hwnd, 999);
-            // 計算時間を求めるために、終了時間を取得する。
-            xg_dwlTick2 = ::GetTickCount64();
-            // 解を求めようとした後の後処理。
-            XgEndSolve();
-            // ダイアログを終了する。
-            ::EndDialog(hwnd, IDOK);
-            // スレッドを閉じる。
-            XgCloseThreads();
-        } else {
-            // 再計算が必要か？
-            if (xg_bAutoRetry && ::GetTickCount64() - xg_dwlTick1 > xg_dwWait) {
-                // タイマーを解除する。
-                ::KillTimer(hwnd, 999);
-                // 再計算しなおす。
-                xg_bRetrying = true;
-                XgWaitForThreads();
-                XgCloseThreads();
-                ::InterlockedIncrement(&xg_nRetryCount);
-                xg_dwlTick1 = ::GetTickCount64();
-                XgStartSolve_AddBlack();
-                // タイマーをセットする。
-                ::SetTimer(hwnd, 999, xg_dwTimerInterval, nullptr);
-            }
-        }
-        break;
-    }
-    return false;
-}
-
-//////////////////////////////////////////////////////////////////////////////
-
 // キャンセルダイアログ（黒マス追加なし）。
 extern "C" INT_PTR CALLBACK
 XgCancelSolveDlgProcNoAddBlack(
@@ -1440,10 +1259,10 @@ XgCancelSolveDlgProcNoAddBlack(
         // フォーカスをセットする。
         ::SetFocus(::GetDlgItem(hwnd, psh1));
         // 生成した問題の個数を表示する。
-        if (s_nNumberGenerated > 0) {
+        if (xg_nNumberGenerated > 0) {
             WCHAR sz[MAX_PATH];
             StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(IDS_PROBLEMSMAKING),
-                           s_nNumberGenerated);
+                           xg_nNumberGenerated);
             ::SetDlgItemTextW(hwnd, stc2, sz);
         }
         return false;
@@ -1470,7 +1289,7 @@ XgCancelSolveDlgProcNoAddBlack(
             // タイマーを解除する。
             ::KillTimer(hwnd, 999);
             // 再計算しなおす。
-            xg_bRetrying = true;
+            xg_bCancelled = true;
             XgWaitForThreads();
             XgCloseThreads();
             ::InterlockedIncrement(&xg_nRetryCount);
@@ -1533,154 +1352,13 @@ XgCancelSolveDlgProcNoAddBlack(
                 // タイマーを解除する。
                 ::KillTimer(hwnd, 999);
                 // 再計算しなおす。
-                xg_bRetrying = true;
+                xg_bCancelled = true;
                 XgWaitForThreads();
                 XgCloseThreads();
                 ::InterlockedIncrement(&xg_nRetryCount);
                 xg_dwlTick1 = ::GetTickCount64();
                 // スマート解決なら、黒マスを生成する。
                 XgStartSolve_NoAddBlack();
-                // タイマーをセットする。
-                ::SetTimer(hwnd, 999, xg_dwTimerInterval, nullptr);
-            }
-        }
-        break;
-    }
-    return false;
-}
-
-// キャンセルダイアログ（スマート解決）。
-extern "C" INT_PTR CALLBACK
-XgCancelSolveDlgProcSmart(
-    HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM /*lParam*/)
-{
-    switch (uMsg) {
-    case WM_INITDIALOG:
-        #ifdef NO_RANDOM
-        {
-            extern int xg_random_seed;
-            xg_random_seed = 100;
-        }
-        #endif
-        // ダイアログを中央へ移動する。
-        XgCenterDialog(hwnd);
-        // 初期化する。
-        ::InterlockedExchange(&xg_nRetryCount, 0);
-        // プログレスバーの範囲をセットする。
-        ::SendDlgItemMessageW(hwnd, ctl1, PBM_SETRANGE, 0,
-                            MAKELPARAM(0, xg_nRows * xg_nCols));
-        ::SendDlgItemMessageW(hwnd, ctl2, PBM_SETRANGE, 0,
-                            MAKELPARAM(0, xg_nRows * xg_nCols));
-        // 計算時間を求めるために、開始時間を取得する。
-        xg_dwlTick0 = xg_dwlTick1 = ::GetTickCount64();
-        // 再計算までの時間を概算する。
-        xg_dwWait = XgGetRetryInterval();
-        // 解を求めるのを開始。
-        XgStartSolve_Smart();
-        // タイマーをセットする。
-        ::SetTimer(hwnd, 999, xg_dwTimerInterval, nullptr);
-        // フォーカスをセットする。
-        ::SetFocus(::GetDlgItem(hwnd, psh1));
-        // 生成した問題の個数を表示する。
-        if (s_nNumberGenerated > 0) {
-            WCHAR sz[MAX_PATH];
-            StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(IDS_PROBLEMSMAKING),
-                           s_nNumberGenerated);
-            ::SetDlgItemTextW(hwnd, stc2, sz);
-        }
-        return false;
-
-    case WM_COMMAND:
-        switch(LOWORD(wParam)) {
-        case psh1:
-            // タイマーを解除する。
-            ::KillTimer(hwnd, 999);
-            // キャンセルしてスレッドを待つ。
-            xg_bCancelled = true;
-            XgWaitForThreads();
-            // スレッドを閉じる。
-            XgCloseThreads();
-            // 計算時間を求めるために、終了時間を取得する。
-            xg_dwlTick2 = ::GetTickCount64();
-            // 解を求めようとした後の後処理。
-            XgEndSolve();
-            // ダイアログを終了する。
-            ::EndDialog(hwnd, IDCANCEL);
-            break;
-
-        case psh2:
-            // タイマーを解除する。
-            ::KillTimer(hwnd, 999);
-            // 再計算しなおす。
-            xg_bRetrying = true;
-            XgWaitForThreads();
-            XgCloseThreads();
-            ::InterlockedIncrement(&xg_nRetryCount);
-            xg_dwlTick1 = ::GetTickCount64();
-            XgStartSolve_Smart();
-            // タイマーをセットする。
-            ::SetTimer(hwnd, 999, xg_dwTimerInterval, nullptr);
-            break;
-        }
-        break;
-
-    case WM_SYSCOMMAND:
-        if (wParam == SC_CLOSE) {
-            // タイマーを解除する。
-            ::KillTimer(hwnd, 999);
-            // キャンセルしてスレッドを待つ。
-            xg_bCancelled = true;
-            XgWaitForThreads();
-            // スレッドを閉じる。
-            XgCloseThreads();
-            // 計算時間を求めるために、終了時間を取得する。
-            xg_dwlTick2 = ::GetTickCount64();
-            // 解を求めようとした後の後処理。
-            XgEndSolve();
-            // ダイアログを終了する。
-            ::EndDialog(hwnd, IDCANCEL);
-        }
-        break;
-
-    case WM_TIMER:
-        // プログレスバーを更新する。
-        for (DWORD i = 0; i < xg_dwThreadCount; i++) {
-            ::SendDlgItemMessageW(hwnd, ctl1 + i, PBM_SETPOS,
-                static_cast<WPARAM>(xg_aThreadInfo[i].m_count), 0);
-        }
-        // 経過時間を表示する。
-        {
-            WCHAR sz[MAX_PATH];
-            DWORDLONG dwTick = ::GetTickCount64();
-            StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(IDS_NOWSOLVING),
-                DWORD(dwTick - xg_dwlTick0) / 1000,
-                DWORD(dwTick - xg_dwlTick0) / 100 % 10, xg_nRetryCount);
-            ::SetDlgItemTextW(hwnd, stc1, sz);
-        }
-        // 一つ以上のスレッドが終了したか？
-        if (XgIsAnyThreadTerminated()) {
-            // スレッドが終了した。タイマーを解除する。
-            ::KillTimer(hwnd, 999);
-            // 計算時間を求めるために、終了時間を取得する。
-            xg_dwlTick2 = ::GetTickCount64();
-            // 解を求めようとした後の後処理。
-            XgEndSolve();
-            // ダイアログを終了する。
-            ::EndDialog(hwnd, IDOK);
-            // スレッドを閉じる。
-            XgCloseThreads();
-        } else {
-            // 再計算が必要か？
-            if (xg_bAutoRetry && ::GetTickCount64() - xg_dwlTick1 > xg_dwWait) {
-                // タイマーを解除する。
-                ::KillTimer(hwnd, 999);
-                // 再計算しなおす。
-                xg_bRetrying = true;
-                XgWaitForThreads();
-                XgCloseThreads();
-                ::InterlockedIncrement(&xg_nRetryCount);
-                xg_dwlTick1 = ::GetTickCount64();
-                XgStartSolve_Smart();
                 // タイマーをセットする。
                 ::SetTimer(hwnd, 999, xg_dwTimerInterval, nullptr);
             }
@@ -1706,9 +1384,9 @@ XgCancelGenBlacksDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
         xg_dwlTick0 = ::GetTickCount64();
         ::InterlockedExchange(&xg_nRetryCount, 0);
         // 生成したパターンの個数を表示する。
-        if (s_nNumberGenerated > 0) {
+        if (xg_nNumberGenerated > 0) {
             WCHAR sz[MAX_PATH];
-            StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(IDS_PATMAKING), s_nNumberGenerated);
+            StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(IDS_PATMAKING), xg_nNumberGenerated);
             ::SetDlgItemTextW(hwnd, stc2, sz);
         }
         // タイマーをセットする。
@@ -2127,7 +1805,7 @@ bool __fastcall XgOnGenerate(HWND hwnd, bool show_answer, bool multiple = false)
 
     xg_bSolvingEmpty = true;
     xg_bNoAddBlack = false;
-    s_nNumberGenerated = 0;
+    xg_nNumberGenerated = 0;
     s_bOutOfDiskSpace = false;
     xg_strHeader.clear();
     xg_strNotes.clear();
@@ -2142,17 +1820,21 @@ bool __fastcall XgOnGenerate(HWND hwnd, bool show_answer, bool multiple = false)
     do {
         if (xg_imode == xg_im_KANJI) {
             // 漢字の場合はスマート解決を使用しない。
-            nID = ::DialogBoxW(xg_hInstance, MAKEINTRESOURCE(IDD_CALCULATING), hwnd, XgCancelSolveDlgProc);
+            XG_CancelSolveDialog dialog;
+            nID = dialog.DoModal(hwnd);
         } else if (xg_bSmartResolution && xg_nRows >= 7 && xg_nCols >= 7) {
-            nID = ::DialogBoxW(xg_hInstance, MAKEINTRESOURCE(IDD_CALCULATING), hwnd, XgCancelSolveDlgProcSmart);
+            XG_CancelSmartSolveDialog dialog;
+            nID = dialog.DoModal(hwnd);
         } else if (xg_nRules & (RULE_POINTSYMMETRY | RULE_LINESYMMETRYV | RULE_LINESYMMETRYH)) {
-            nID = ::DialogBoxW(xg_hInstance, MAKEINTRESOURCE(IDD_CALCULATING), hwnd, XgCancelSolveDlgProcSmart);
+            XG_CancelSmartSolveDialog dialog;
+            nID = dialog.DoModal(hwnd);
         } else {
-            nID = ::DialogBoxW(xg_hInstance, MAKEINTRESOURCE(IDD_CALCULATING), hwnd, XgCancelSolveDlgProc);
+            XG_CancelSolveDialog dialog;
+            nID = dialog.DoModal(hwnd);
         }
-        // 生成成功のときはs_nNumberGeneratedを増やす。
+        // 生成成功のときはxg_nNumberGeneratedを増やす。
         if (nID == IDOK && xg_bSolved) {
-            ++s_nNumberGenerated;
+            ++xg_nNumberGenerated;
             if (multiple) {
                 if (!XgDoSaveToLocation(hwnd)) {
                     s_bOutOfDiskSpace = true;
@@ -2174,7 +1856,7 @@ bool __fastcall XgOnGenerate(HWND hwnd, bool show_answer, bool multiple = false)
                 XgSetInputModeFromDict(hwnd);
             }
         }
-    } while (nID == IDOK && multiple && s_nNumberGenerated < xg_nNumberToGenerate);
+    } while (nID == IDOK && multiple && xg_nNumberGenerated < xg_nNumberToGenerate);
     ::EnableWindow(xg_hwndInputPalette, TRUE);
 
     // 初期化する。
@@ -2224,7 +1906,7 @@ bool __fastcall XgOnGenerateBlacksRepeatedly(HWND hwnd)
     xg_strNotes.clear();
     xg_strFileName.clear();
     xg_bBlacksGenerated = false;
-    s_nNumberGenerated = 0;
+    xg_nNumberGenerated = 0;
 
     // 候補ウィンドウを破棄する。
     XgDestroyCandsWnd();
@@ -2236,9 +1918,9 @@ bool __fastcall XgOnGenerateBlacksRepeatedly(HWND hwnd)
     do
     {
         nID = ::DialogBoxW(xg_hInstance, MAKEINTRESOURCEW(IDD_CALCULATING), hwnd, XgCancelGenBlacksDlgProc);
-        // 生成成功のときはs_nNumberGeneratedを増やす。
+        // 生成成功のときはxg_nNumberGeneratedを増やす。
         if (nID == IDOK && xg_bBlacksGenerated) {
-            ++s_nNumberGenerated;
+            ++xg_nNumberGenerated;
             if (!XgDoSaveToLocation(hwnd)) {
                 s_bOutOfDiskSpace = true;
                 break;
@@ -2255,7 +1937,7 @@ bool __fastcall XgOnGenerateBlacksRepeatedly(HWND hwnd)
             xg_strFileName.clear();
             xg_bBlacksGenerated = false;
         }
-    } while (nID == IDOK && s_nNumberGenerated < xg_nNumberToGenerate);
+    } while (nID == IDOK && xg_nNumberGenerated < xg_nNumberToGenerate);
     ::EnableWindow(xg_hwndInputPalette, TRUE);
     xg_caret_pos.clear();
     XgUpdateImage(hwnd, 0, 0);
@@ -2268,14 +1950,14 @@ bool __fastcall XgOnGenerateBlacksRepeatedly(HWND hwnd)
         XgCenterMessageBoxW(hwnd, sz, XgLoadStringDx2(IDS_RESULTS), MB_ICONINFORMATION);
     } else {
         StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(IDS_BLOCKSGENERATED),
-            s_nNumberGenerated,
+            xg_nNumberGenerated,
             (xg_dwlTick2 - xg_dwlTick0) / 1000,
             (xg_dwlTick2 - xg_dwlTick0) / 100 % 10);
         XgCenterMessageBoxW(hwnd, sz, XgLoadStringDx2(IDS_RESULTS), MB_ICONINFORMATION);
     }
 
     // 保存先フォルダを開く。
-    if (s_nNumberGenerated && !xg_dirs_save_to.empty()) {
+    if (xg_nNumberGenerated && !xg_dirs_save_to.empty()) {
         ::ShellExecuteW(hwnd, nullptr, xg_dirs_save_to[0].data(),
                       nullptr, nullptr, SW_SHOWNORMAL);
     }
@@ -2307,7 +1989,7 @@ bool __fastcall XgOnGenerateBlacks(HWND hwnd, bool sym)
     xg_strNotes.clear();
     xg_strFileName.clear();
     xg_bBlacksGenerated = false;
-    s_nNumberGenerated = 0;
+    xg_nNumberGenerated = 0;
 
     // 候補ウィンドウを破棄する。
     XgDestroyCandsWnd();
@@ -2363,7 +2045,7 @@ bool __fastcall XgOnSolve_AddBlack(HWND hwnd)
     xg_vMarkedCands.clear();
     xg_strFileName.clear();
     // 生成した数と生成する数。
-    s_nNumberGenerated = 0;
+    xg_nNumberGenerated = 0;
 
     // 候補ウィンドウを破棄する。
     XgDestroyCandsWnd();
@@ -2372,7 +2054,10 @@ bool __fastcall XgOnSolve_AddBlack(HWND hwnd)
 
     // キャンセルダイアログを表示し、実行を開始する。
     ::EnableWindow(xg_hwndInputPalette, FALSE);
-    ::DialogBoxW(xg_hInstance, MAKEINTRESOURCE(IDD_CALCULATING), hwnd, XgCancelSolveDlgProc);
+    {
+        XG_CancelSolveDialog dialog;
+        dialog.DoModal(hwnd);
+    }
     ::EnableWindow(xg_hwndInputPalette, TRUE);
 
     WCHAR sz[MAX_PATH];
@@ -2460,7 +2145,7 @@ bool __fastcall XgOnSolve_NoAddBlack(HWND hwnd, bool bShowAnswer/* = true*/)
     xg_vMarkedCands.clear();
     xg_strFileName.clear();
     // 生成した数と生成する数。
-    s_nNumberGenerated = 0;
+    xg_nNumberGenerated = 0;
 
     // 候補ウィンドウを破棄する。
     XgDestroyCandsWnd();
@@ -2571,7 +2256,7 @@ bool __fastcall XgOnSolveRepeatedly(HWND hwnd)
     xg_strFileName.clear();
     xg_strHeader.clear();
     xg_strNotes.clear();
-    s_nNumberGenerated = 0;
+    xg_nNumberGenerated = 0;
     s_bOutOfDiskSpace = false;
 
     xg_bSolvingEmpty = xg_xword.IsEmpty();
@@ -2585,10 +2270,11 @@ bool __fastcall XgOnSolveRepeatedly(HWND hwnd)
     ::EnableWindow(xg_hwndInputPalette, FALSE);
     do
     {
-        nID = ::DialogBoxW(xg_hInstance, MAKEINTRESOURCE(IDD_CALCULATING), hwnd, XgCancelSolveDlgProc);
-        // 生成成功のときはs_nNumberGeneratedを増やす。
+        XG_CancelSolveDialog dialog;
+        nID = dialog.DoModal(hwnd);
+        // 生成成功のときはxg_nNumberGeneratedを増やす。
         if (nID == IDOK && xg_bSolved) {
-            ++s_nNumberGenerated;
+            ++xg_nNumberGenerated;
             if (!XgDoSaveToLocation(hwnd)) {
                 s_bOutOfDiskSpace = true;
                 break;
@@ -2607,7 +2293,7 @@ bool __fastcall XgOnSolveRepeatedly(HWND hwnd)
             XgLoadDictFile(xg_dict_name.c_str());
             XgSetInputModeFromDict(hwnd);
         }
-    } while (nID == IDOK && s_nNumberGenerated < xg_nNumberToGenerate);
+    } while (nID == IDOK && xg_nNumberGenerated < xg_nNumberToGenerate);
     ::EnableWindow(xg_hwndInputPalette, TRUE);
 
     // 初期化する。
@@ -2628,18 +2314,18 @@ bool __fastcall XgOnSolveRepeatedly(HWND hwnd)
     // 終了メッセージを表示する。
     WCHAR sz[MAX_PATH];
     if (s_bOutOfDiskSpace) {
-        StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(IDS_OUTOFSTORAGE), s_nNumberGenerated,
+        StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(IDS_OUTOFSTORAGE), xg_nNumberGenerated,
             (xg_dwlTick2 - xg_dwlTick0) / 1000,
             (xg_dwlTick2 - xg_dwlTick0) / 100 % 10);
     } else {
-        StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(IDS_PROBLEMSMADE), s_nNumberGenerated,
+        StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(IDS_PROBLEMSMADE), xg_nNumberGenerated,
             (xg_dwlTick2 - xg_dwlTick0) / 1000,
             (xg_dwlTick2 - xg_dwlTick0) / 100 % 10);
     }
     XgCenterMessageBoxW(hwnd, sz, XgLoadStringDx2(IDS_RESULTS), MB_ICONINFORMATION);
 
     // 保存先フォルダを開く。
-    if (s_nNumberGenerated && !xg_dirs_save_to.empty()) {
+    if (xg_nNumberGenerated && !xg_dirs_save_to.empty()) {
         ::ShellExecuteW(hwnd, nullptr, xg_dirs_save_to[0].data(),
                       nullptr, nullptr, SW_SHOWNORMAL);
     }
@@ -2687,7 +2373,7 @@ bool __fastcall XgOnSolveRepeatedlyNoAddBlack(HWND hwnd)
     xg_strFileName.clear();
     xg_strHeader.clear();
     xg_strNotes.clear();
-    s_nNumberGenerated = 0;
+    xg_nNumberGenerated = 0;
     s_bOutOfDiskSpace = false;
 
     xg_bSolvingEmpty = xg_xword.IsEmpty();
@@ -2702,9 +2388,9 @@ bool __fastcall XgOnSolveRepeatedlyNoAddBlack(HWND hwnd)
     do
     {
         nID = ::DialogBoxW(xg_hInstance, MAKEINTRESOURCE(IDD_CALCULATING), hwnd, XgCancelSolveDlgProcNoAddBlack);
-        // 生成成功のときはs_nNumberGeneratedを増やす。
+        // 生成成功のときはxg_nNumberGeneratedを増やす。
         if (nID == IDOK && xg_bSolved) {
-            ++s_nNumberGenerated;
+            ++xg_nNumberGenerated;
             if (!XgDoSaveToLocation(hwnd)) {
                 s_bOutOfDiskSpace = true;
                 break;
@@ -2723,7 +2409,7 @@ bool __fastcall XgOnSolveRepeatedlyNoAddBlack(HWND hwnd)
             XgLoadDictFile(xg_dict_name.c_str());
             XgSetInputModeFromDict(hwnd);
         }
-    } while (nID == IDOK && s_nNumberGenerated < xg_nNumberToGenerate);
+    } while (nID == IDOK && xg_nNumberGenerated < xg_nNumberToGenerate);
     ::EnableWindow(xg_hwndInputPalette, TRUE);
 
     // 初期化する。
@@ -2744,18 +2430,18 @@ bool __fastcall XgOnSolveRepeatedlyNoAddBlack(HWND hwnd)
     // 終了メッセージを表示する。
     WCHAR sz[MAX_PATH];
     if (s_bOutOfDiskSpace) {
-        StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(IDS_OUTOFSTORAGE), s_nNumberGenerated,
+        StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(IDS_OUTOFSTORAGE), xg_nNumberGenerated,
             (xg_dwlTick2 - xg_dwlTick0) / 1000,
             (xg_dwlTick2 - xg_dwlTick0) / 100 % 10);
     } else {
-        StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(IDS_PROBLEMSMADE), s_nNumberGenerated,
+        StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(IDS_PROBLEMSMADE), xg_nNumberGenerated,
             (xg_dwlTick2 - xg_dwlTick0) / 1000,
             (xg_dwlTick2 - xg_dwlTick0) / 100 % 10);
     }
     XgCenterMessageBoxW(hwnd, sz, XgLoadStringDx2(IDS_RESULTS), MB_ICONINFORMATION);
 
     // 保存先フォルダを開く。
-    if (s_nNumberGenerated && !xg_dirs_save_to.empty()) {
+    if (xg_nNumberGenerated && !xg_dirs_save_to.empty()) {
         ::ShellExecuteW(hwnd, nullptr, xg_dirs_save_to[0].data(),
                       nullptr, nullptr, SW_SHOWNORMAL);
     }
@@ -4785,12 +4471,12 @@ void __fastcall XgShowResultsRepeatedly(HWND hwnd)
     // ディスクに空きがあるか？
     if (s_bOutOfDiskSpace) {
         // なかった。
-        StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(IDS_OUTOFSTORAGE), s_nNumberGenerated,
+        StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(IDS_OUTOFSTORAGE), xg_nNumberGenerated,
             (xg_dwlTick2 - xg_dwlTick0) / 1000,
             (xg_dwlTick2 - xg_dwlTick0) / 100 % 10);
     } else {
         // あった。
-        StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(IDS_PROBLEMSMADE), s_nNumberGenerated,
+        StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(IDS_PROBLEMSMADE), xg_nNumberGenerated,
             (xg_dwlTick2 - xg_dwlTick0) / 1000,
             (xg_dwlTick2 - xg_dwlTick0) / 100 % 10);
     }
@@ -4799,7 +4485,7 @@ void __fastcall XgShowResultsRepeatedly(HWND hwnd)
     XgCenterMessageBoxW(hwnd, sz, XgLoadStringDx2(IDS_RESULTS), MB_ICONINFORMATION);
 
     // 保存先フォルダを開く。
-    if (s_nNumberGenerated && !xg_dirs_save_to.empty())
+    if (xg_nNumberGenerated && !xg_dirs_save_to.empty())
         ::ShellExecuteW(hwnd, nullptr, xg_dirs_save_to[0].data(),
                         nullptr, nullptr, SW_SHOWNORMAL);
 }

@@ -12,9 +12,6 @@
 // 直前に開いたクロスワードデータファイルのパスファイル名。
 std::wstring xg_strFileName;
 
-// 再計算しなおしているか？
-bool xg_bRetrying = false;
-
 // 空のクロスワードの解を解く場合か？
 bool xg_bSolvingEmpty = false;
 
@@ -34,7 +31,7 @@ bool xg_bNoAddBlack = false;
 bool xg_bSmartResolution = true;
 
 // スレッドの数。
-DWORD               xg_dwThreadCount;
+DWORD xg_dwThreadCount;
 
 // スレッド情報。
 std::vector<XG_ThreadInfo>    xg_aThreadInfo;
@@ -2326,7 +2323,7 @@ void __fastcall XgSolveXWord_AddBlackRecurse(const XG_Board& xw)
 
     // キャンセルされているなら、終了。
     // 再計算すべきなら、終了する。
-    if (xg_bCancelled || xg_bRetrying)
+    if (xg_bCancelled)
         return;
 
     // 無効であれば、終了。
@@ -2342,7 +2339,7 @@ void __fastcall XgSolveXWord_AddBlackRecurse(const XG_Board& xw)
             // すでに解かれているなら、終了。
             // キャンセルされているなら、終了。
             // 再計算すべきなら、終了する。
-            if (xg_bSolved || xg_bCancelled || xg_bRetrying)
+            if (xg_bSolved || xg_bCancelled)
                 return;
 
             // 空白と文字が隣り合っているか？
@@ -2389,7 +2386,7 @@ void __fastcall XgSolveXWord_AddBlackRecurse(const XG_Board& xw)
                         // すでに解かれているなら、終了。
                         // キャンセルされているなら、終了。
                         // 再計算すべきなら、終了する。
-                        if (xg_bSolved || xg_bCancelled || xg_bRetrying)
+                        if (xg_bSolved || xg_bCancelled)
                             return;
 
                         bool bCanPutBlack = true;
@@ -2441,7 +2438,7 @@ void __fastcall XgSolveXWord_AddBlackRecurse(const XG_Board& xw)
                         // すでに解かれているなら、終了。
                         // キャンセルされているなら、終了。
                         // 再計算すべきなら、終了する。
-                        if (xg_bSolved || xg_bCancelled || xg_bRetrying)
+                        if (xg_bSolved || xg_bCancelled)
                             return;
 
                         bool bCanPutBlack = true;
@@ -2493,7 +2490,7 @@ void __fastcall XgSolveXWord_AddBlackRecurse(const XG_Board& xw)
             // すでに解かれているなら、終了。
             // キャンセルされているなら、終了。
             // 再計算すべきなら、終了する。
-            if (xg_bSolved || xg_bCancelled || xg_bRetrying)
+            if (xg_bSolved || xg_bCancelled)
                 return;
 
             // 空白と文字が隣り合っているか？
@@ -2540,7 +2537,7 @@ void __fastcall XgSolveXWord_AddBlackRecurse(const XG_Board& xw)
                         // すでに解かれているなら、終了。
                         // キャンセルされているなら、終了。
                         // 再計算すべきなら、終了する。
-                        if (xg_bSolved || xg_bCancelled || xg_bRetrying)
+                        if (xg_bSolved || xg_bCancelled)
                             return;
 
                         bool bCanPutBlack = true;
@@ -2592,7 +2589,7 @@ void __fastcall XgSolveXWord_AddBlackRecurse(const XG_Board& xw)
                         // すでに解かれているなら、終了。
                         // キャンセルされているなら、終了。
                         // 再計算すべきなら、終了する。
-                        if (xg_bSolved || xg_bCancelled || xg_bRetrying)
+                        if (xg_bSolved || xg_bCancelled)
                             return;
 
                         bool bCanPutBlack = true;
@@ -2675,7 +2672,7 @@ void __fastcall XgSolveXWord_NoAddBlackRecurse(const XG_Board& xw)
 
     // キャンセルされているなら、終了。
     // 再計算すべきなら、終了する。
-    if (xg_bCancelled || xg_bRetrying)
+    if (xg_bCancelled)
         return;
 
     // 無効であれば、終了。
@@ -2691,7 +2688,7 @@ void __fastcall XgSolveXWord_NoAddBlackRecurse(const XG_Board& xw)
             // すでに解かれているなら、終了。
             // キャンセルされているなら、終了。
             // 再計算すべきなら、終了する。
-            if (xg_bSolved || xg_bCancelled || xg_bRetrying)
+            if (xg_bSolved || xg_bCancelled)
                 return;
 
             // 空白と文字が隣り合っているか？
@@ -2730,7 +2727,7 @@ void __fastcall XgSolveXWord_NoAddBlackRecurse(const XG_Board& xw)
                         // すでに解かれているなら、終了。
                         // キャンセルされているなら、終了。
                         // 再計算すべきなら、終了する。
-                        if (xg_bSolved || xg_bCancelled || xg_bRetrying)
+                        if (xg_bSolved || xg_bCancelled)
                             return;
 
                         // 候補を適用して再帰する。
@@ -2757,7 +2754,7 @@ void __fastcall XgSolveXWord_NoAddBlackRecurse(const XG_Board& xw)
                         // すでに解かれているなら、終了。
                         // キャンセルされているなら、終了。
                         // 再計算すべきなら、終了する。
-                        if (xg_bSolved || xg_bCancelled || xg_bRetrying)
+                        if (xg_bSolved || xg_bCancelled)
                             return;
 
                         // 候補を適用して再帰する。
@@ -2788,7 +2785,7 @@ void __fastcall XgSolveXWord_NoAddBlackRecurse(const XG_Board& xw)
             // すでに解かれているなら、終了。
             // キャンセルされているなら、終了。
             // 再計算すべきなら、終了する。
-            if (xg_bSolved || xg_bCancelled || xg_bRetrying)
+            if (xg_bSolved || xg_bCancelled)
                 return;
 
             // 空白と文字が隣り合っているか？
@@ -2827,7 +2824,7 @@ void __fastcall XgSolveXWord_NoAddBlackRecurse(const XG_Board& xw)
                         // すでに解かれているなら、終了。
                         // キャンセルされているなら、終了。
                         // 再計算すべきなら、終了する。
-                        if (xg_bSolved || xg_bCancelled || xg_bRetrying)
+                        if (xg_bSolved || xg_bCancelled)
                             return;
 
                         // 候補を適用して再帰する。
@@ -2854,7 +2851,7 @@ void __fastcall XgSolveXWord_NoAddBlackRecurse(const XG_Board& xw)
                         // すでに解かれているなら、終了。
                         // キャンセルされているなら、終了。
                         // 再計算すべきなら、終了する。
-                        if (xg_bSolved || xg_bCancelled || xg_bRetrying)
+                        if (xg_bSolved || xg_bCancelled)
                             return;
 
                         // 候補を適用して再帰する。
@@ -2950,7 +2947,7 @@ void __fastcall XgSolveXWord_AddBlack(const XG_Board& xw)
             // すでに解かれているなら、終了。
             // キャンセルされているなら、終了。
             // 再計算すべきなら、終了する。
-            if (xg_bSolved || xg_bCancelled || xg_bRetrying)
+            if (xg_bSolved || xg_bCancelled)
                 return;
 
             // 空白の連続があるか？
@@ -2976,7 +2973,7 @@ void __fastcall XgSolveXWord_AddBlack(const XG_Board& xw)
                     // すでに解かれているなら、終了。
                     // キャンセルされているなら、終了。
                     // 再計算すべきなら、終了する。
-                    if (xg_bSolved || xg_bCancelled || xg_bRetrying)
+                    if (xg_bSolved || xg_bCancelled)
                         return;
 
                     // 単語の長さがパターンの長さ以下か？
@@ -3026,7 +3023,7 @@ void __fastcall XgSolveXWord_AddBlack(const XG_Board& xw)
             // すでに解かれているなら、終了。
             // キャンセルされているなら、終了。
             // 再計算すべきなら、終了する。
-            if (xg_bSolved || xg_bCancelled || xg_bRetrying)
+            if (xg_bSolved || xg_bCancelled)
                 return;
 
             // 空白の連続があるか？
@@ -3052,7 +3049,7 @@ void __fastcall XgSolveXWord_AddBlack(const XG_Board& xw)
                     // すでに解かれているなら、終了。
                     // キャンセルされているなら、終了。
                     // 再計算すべきなら、終了する。
-                    if (xg_bSolved || xg_bCancelled || xg_bRetrying)
+                    if (xg_bSolved || xg_bCancelled)
                         return;
 
                     // 単語の長さがパターンの長さ以下か？
@@ -3107,7 +3104,7 @@ retry_1:;
             // すでに解かれているなら、終了。
             // キャンセルされているなら、終了。
             // 再計算すべきなら、終了する。
-            if (xg_bSolved || xg_bCancelled || xg_bRetrying)
+            if (xg_bSolved || xg_bCancelled)
                 return;
 
             // 空白の連続があるか？
@@ -3133,7 +3130,7 @@ retry_1:;
                     // すでに解かれているなら、終了。
                     // キャンセルされているなら、終了。
                     // 再計算すべきなら、終了する。
-                    if (xg_bSolved || xg_bCancelled || xg_bRetrying)
+                    if (xg_bSolved || xg_bCancelled)
                         return;
 
                     // 単語の長さがパターンの長さ以下か？
@@ -3183,7 +3180,7 @@ retry_1:;
             // すでに解かれているなら、終了。
             // キャンセルされているなら、終了。
             // 再計算すべきなら、終了する。
-            if (xg_bSolved || xg_bCancelled || xg_bRetrying)
+            if (xg_bSolved || xg_bCancelled)
                 return;
 
             // 空白の連続があるか？
@@ -3209,7 +3206,7 @@ retry_1:;
                     // すでに解かれているなら、終了。
                     // キャンセルされているなら、終了。
                     // 再計算すべきなら、終了する。
-                    if (xg_bSolved || xg_bCancelled || xg_bRetrying)
+                    if (xg_bSolved || xg_bCancelled)
                         return;
 
                     // 単語の長さがパターンの長さ以下か？
@@ -3289,7 +3286,7 @@ void __fastcall XgSolveXWord_NoAddBlack(const XG_Board& xw)
             // すでに解かれているなら、終了。
             // キャンセルされているなら、終了。
             // 再計算すべきなら、終了する。
-            if (xg_bSolved || xg_bCancelled || xg_bRetrying)
+            if (xg_bSolved || xg_bCancelled)
                 return;
 
             // 空白の連続があるか？
@@ -3315,7 +3312,7 @@ void __fastcall XgSolveXWord_NoAddBlack(const XG_Board& xw)
                     // すでに解かれているなら、終了。
                     // キャンセルされているなら、終了。
                     // 再計算すべきなら、終了する。
-                    if (xg_bSolved || xg_bCancelled || xg_bRetrying)
+                    if (xg_bSolved || xg_bCancelled)
                         return;
 
                     // 単語とパターンの長さが等しいか？
@@ -3349,7 +3346,7 @@ retry_1:;
             // すでに解かれているなら、終了。
             // キャンセルされているなら、終了。
             // 再計算すべきなら、終了する。
-            if (xg_bSolved || xg_bCancelled || xg_bRetrying)
+            if (xg_bSolved || xg_bCancelled)
                 return;
 
             // 空白の連続があるか？
@@ -3375,7 +3372,7 @@ retry_1:;
                     // すでに解かれているなら、終了。
                     // キャンセルされているなら、終了。
                     // 再計算すべきなら、終了する。
-                    if (xg_bSolved || xg_bCancelled || xg_bRetrying)
+                    if (xg_bSolved || xg_bCancelled)
                         return;
 
                     // 単語とパターンの長さが等しいか？
@@ -3489,7 +3486,7 @@ unsigned __stdcall XgSolveProcSmart(void *param)
 void __fastcall XgStartSolve_AddBlack(void)
 {
     // フラグを初期化する。
-    xg_bSolved = xg_bCancelled = xg_bRetrying = false;
+    xg_bSolved = xg_bCancelled = false;
 
     if (xg_bSolvingEmpty)
         xg_xword.clear();
@@ -3525,7 +3522,7 @@ void __fastcall XgStartSolve_AddBlack(void)
 void __fastcall XgStartSolve_NoAddBlack(void)
 {
     // フラグを初期化する。
-    xg_bSolved = xg_bCancelled = xg_bRetrying = false;
+    xg_bSolved = xg_bCancelled = false;
 
 #ifdef SINGLE_THREAD_MODE
     XgSolveProc_NoAddBlack(&xg_aThreadInfo[0]);
@@ -3545,7 +3542,7 @@ void __fastcall XgStartSolve_NoAddBlack(void)
 void __fastcall XgStartSolve_Smart(void)
 {
     // フラグを初期化する。
-    xg_bSolved = xg_bCancelled = xg_bRetrying = false;
+    xg_bSolved = xg_bCancelled = false;
 
     // まだブロック生成していない。
     xg_bBlacksGenerated = FALSE;
@@ -6488,4 +6485,31 @@ std::wstring __fastcall XG_Board::GetPatternH(const XG_Pos& pos) const
     }
 
     return pattern;
+}
+
+// スレッドを閉じる。
+void __fastcall XgCloseThreads(void)
+{
+    for (DWORD i = 0; i < xg_dwThreadCount; i++) {
+        ::CloseHandle(xg_ahThreads[i]);
+        xg_ahThreads[i] = nullptr;
+    }
+}
+
+// スレッドを待つ。
+void __fastcall XgWaitForThreads(void)
+{
+    ::WaitForMultipleObjects(xg_dwThreadCount, xg_ahThreads.data(), true, 1000);
+}
+
+// スレッドが終了したか？
+bool __fastcall XgIsAnyThreadTerminated(void)
+{
+    DWORD dwExitCode;
+    for (DWORD i = 0; i < xg_dwThreadCount; i++) {
+        ::GetExitCodeThread(xg_ahThreads[i], &dwExitCode);
+        if (dwExitCode != STILL_ACTIVE)
+            return true;
+    }
+    return false;
 }

@@ -1235,15 +1235,6 @@ extern bool xg_bShowAnswer;
 // 黒マス追加なしか？
 extern bool xg_bNoAddBlack;
 
-// 排他制御のためのクリティカルセクション。
-extern CRITICAL_SECTION xg_cs;
-
-// スレッドの数。
-extern DWORD xg_dwThreadCount;
-
-// 計算がキャンセルされたか？
-extern bool xg_bCancelled;
-
 // 空のクロスワードの解を解く場合か？
 extern bool xg_bSolvingEmpty;
 
@@ -1275,9 +1266,6 @@ extern HBITMAP xg_hbmImage;
 // ヒント文字列。
 extern std::wstring xg_strHints;
 
-// 再計算しなおしているか？
-extern bool xg_bRetrying;
-
 // スレッドのハンドル。
 extern std::vector<HANDLE> xg_ahThreads;
 
@@ -1307,11 +1295,44 @@ extern INT xg_nPatWndY;
 extern INT xg_nPatWndCX;
 extern INT xg_nPatWndCY;
 
+// スケルトンモードか？
+extern BOOL xg_bSkeletonMode;
+
+//////////////////////////////////////////////////////////////////////////////
+
 // 再計算するか？
 extern bool xg_bAutoRetry;
 
-// スケルトンモードか？
-extern BOOL xg_bSkeletonMode;
+// 排他制御のためのクリティカルセクション。
+extern CRITICAL_SECTION xg_cs;
+
+// スレッドの数。
+extern DWORD xg_dwThreadCount;
+
+// 計算がキャンセルされたか？
+extern bool xg_bCancelled;
+
+// スレッドの数。
+extern DWORD xg_dwThreadCount;
+
+// 連続生成の場合、問題を生成した数。
+extern INT xg_nNumberGenerated;
+
+// プログレスバーの更新頻度。
+#define xg_dwTimerInterval 300
+
+// スレッドを閉じる。
+void __fastcall XgCloseThreads(void);
+// スレッドを待つ。
+void __fastcall XgWaitForThreads(void);
+// スレッドが終了したか？
+bool __fastcall XgIsAnyThreadTerminated(void);
+
+// 再計算までの時間を概算する。
+inline DWORD XgGetRetryInterval(void)
+{
+    return 8 * (xg_nRows + xg_nCols) * (xg_nRows + xg_nCols) + 1000;
+}
 
 //////////////////////////////////////////////////////////////////////////////
 
