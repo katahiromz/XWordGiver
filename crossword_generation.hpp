@@ -57,21 +57,23 @@ inline static bool s_canceled = false;
 inline static long s_count = 0;
 inline static std::mutex s_mutex;
 
-enum struct RULES {
-    DONTDOUBLEBLACK = (1 << 0),
-    DONTCORNERBLACK = (1 << 1),
-    DONTTRIDIRECTIONS = (1 << 2),
-    DONTDIVIDE = (1 << 3),
-    DONTFOURDIAGONALS = (1 << 4),
-    POINTSYMMETRY = (1 << 5),
-    DONTTHREEDIAGONALS = (1 << 6),
-    LINESYMMETRYV = (1 << 7),
-    LINESYMMETRYH = (1 << 8),
+struct RULES {
+    enum {
+        DONTDOUBLEBLACK = (1 << 0),
+        DONTCORNERBLACK = (1 << 1),
+        DONTTRIDIRECTIONS = (1 << 2),
+        DONTDIVIDE = (1 << 3),
+        DONTFOURDIAGONALS = (1 << 4),
+        POINTSYMMETRY = (1 << 5),
+        DONTTHREEDIAGONALS = (1 << 6),
+        LINESYMMETRYV = (1 << 7),
+        LINESYMMETRYH = (1 << 8),
+    };
 };
 
 template <typename t_char>
 inline bool is_letter(t_char ch) {
-    return (ch != ' ' && ch != '#' && ch != '?');
+    return (ch != '#' && ch != '?');
 }
 
 inline uint32_t get_num_processors(void) {
@@ -180,10 +182,14 @@ struct board_data_t {
     t_string m_data;
 
     board_data_t(int cx = 1, int cy = 1, t_char ch = ' ') {
-        allocate(cx, cy, ch);
+        resize(cx, cy, ch);
     }
 
-    void allocate(int cx, int cy, t_char ch = ' ') {
+    size_t size() const {
+        return m_data.size();
+    }
+
+    void resize(int cx, int cy, t_char ch = ' ') {
         m_data.assign(cx * cy, ch);
     }
 
@@ -194,17 +200,35 @@ struct board_data_t {
     void replace(t_char chOld, t_char chNew) {
         std::replace(m_data.begin(), m_data.end(), chOld, chNew);
     }
+
+    size_t count(t_char ch) const {
+        size_t ret = 0;
+        for (size_t xy = 0; xy < size(); ++xy) {
+            if (m_data[xy] == ch)
+                ++ret;
+        }
+        return ret;
+    }
+
+    bool is_empty() const {
+        return count('?') == size();
+    }
+    bool is_full() const {
+        return count('?') == 0;
+    }
 };
 
 template <typename t_char, bool t_fixed>
 struct board_t : board_data_t<t_char> {
     typedef std::basic_string<t_char> t_string;
 
-    int m_x0, m_y0;
     int m_cx, m_cy;
+    int m_rules;
+    int m_x0, m_y0;
 
-    board_t(int cx = 1, int cy = 1, t_char ch = ' ', int x0 = 0, int y0 = 0)
-        : board_data_t<t_char>(cx, cy, ch), m_x0(x0), m_y0(y0), m_cx(cx), m_cy(cy)
+    board_t(int cx = 1, int cy = 1, t_char ch = ' ', int rules = 0, int x0 = 0, int y0 = 0)
+        : board_data_t<t_char>(cx, cy, ch), m_cx(cx), m_cy(cy)
+        , m_rules(rules), m_x0(x0), m_y0(y0)
     {
     }
     board_t(const board_t<t_char, t_fixed>& b) = default;
@@ -533,6 +557,32 @@ struct board_t : board_data_t<t_char> {
         }
     }
 
+    bool rules_ok() const {
+        if (m_rules == 0)
+            return true;
+        if ((m_rules & RULES::DONTDOUBLEBLACK) && double_black())
+            return false;
+        if ((m_rules & RULES::DONTCORNERBLACK) && corner_black())
+            return false;
+        if ((m_rules & RULES::DONTTRIDIRECTIONS) && tri_black_around())
+            return false;
+        if ((m_rules & RULES::DONTTHREEDIAGONALS) && three_diagonals())
+            return false;
+        else if ((m_rules & RULES::DONTFOURDIAGONALS) && four_diagonals())
+            return false;
+        if ((m_rules & RULES::POINTSYMMETRY) && !is_point_symmetry()) {
+            return false;
+        } else {
+            if ((m_rules & RULES::LINESYMMETRYH) && !is_line_symmetry_h())
+                return false;
+            if ((m_rules & RULES::LINESYMMETRYV) && !is_line_symmetry_v())
+                return false;
+        }
+        if ((m_rules & RULES::DONTDIVIDE) && divided_by_black())
+            return false;
+        return true;
+    }
+
     bool corner_black() const {
         return get_at(0, 0) == '#' ||
                get_at(m_cx - 1, 0) == '#' ||
@@ -771,7 +821,7 @@ skip:;
         assert(b.get_on(1, 2) == '#');
         assert(b.get_on(1, 3) == '-');
         b.delete_y(3);
-        b.allocate(3, 3, '?');
+        b.resize(3, 3, '?');
         b.grow_x0(1, '?');
         b.set_on(1, 1, 'A');
         b.trim_x();
@@ -1089,16 +1139,9 @@ struct from_words_t {
         return false;
     }
 
-    bool is_solution(const board_t<t_char, t_fixed>& board) const {
-        for (int y = board.m_y0; y < board.m_y0 + board.m_cy; ++y) {
-            for (int x = board.m_x0; x < board.m_x0 + board.m_cx; ++x) {
-                auto ch = board.get_on(x, y);
-                if (!is_letter(ch) && ch != '#')
-                    return false;
-            }
-        }
-
-        std::unordered_set<t_string> words;
+    bool check_used_words(const board_t<t_char, t_fixed>& board) const
+    {
+        std::unordered_set<t_string> used;
 
         for (int y = board.m_y0; y < board.m_y0 + board.m_cy; ++y) {
             for (int x = board.m_x0; x < board.m_x0 + board.m_cx - 1; ++x) {
@@ -1116,10 +1159,10 @@ struct from_words_t {
                             break;
                         word += ch1;
                     }
-                    if (words.count(word) > 0 || m_dict.count(word) == 0) {
+                    if (used.count(word) > 0 || m_dict.count(word) == 0) {
                         return false;
                     }
-                    words.insert(word);
+                    used.insert(word);
                 }
             }
         }
@@ -1140,15 +1183,23 @@ struct from_words_t {
                             break;
                         word += ch1;
                     }
-                    if (words.count(word) > 0 || m_dict.count(word) == 0) {
+                    if (used.count(word) > 0 || m_dict.count(word) == 0) {
                         return false;
                     }
-                    words.insert(word);
+                    used.insert(word);
                 }
             }
         }
 
-        return words.size() == m_dict.size();
+        return used.size() == m_dict.size();
+    }
+
+    bool is_solution(const board_t<t_char, t_fixed>& board) const {
+        if (board.count('?') > 0)
+            return false;
+        if (!board.rules_ok())
+            return false;
+        return check_used_words(board);
     }
 
     bool generate() {
