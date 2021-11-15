@@ -57,6 +57,18 @@ inline static bool s_canceled = false;
 inline static long s_count = 0;
 inline static std::mutex s_mutex;
 
+enum struct RULES {
+    DONTDOUBLEBLACK = (1 << 0),
+    DONTCORNERBLACK = (1 << 1),
+    DONTTRIDIRECTIONS = (1 << 2),
+    DONTDIVIDE = (1 << 3),
+    DONTFOURDIAGONALS = (1 << 4),
+    POINTSYMMETRY = (1 << 5),
+    DONTTHREEDIAGONALS = (1 << 6),
+    LINESYMMETRYV = (1 << 7),
+    LINESYMMETRYH = (1 << 8),
+};
+
 template <typename t_char>
 inline bool is_letter(t_char ch) {
     return (ch != ' ' && ch != '#' && ch != '?');
@@ -197,6 +209,19 @@ struct board_t : board_data_t<t_char> {
     }
     board_t(const board_t<t_char, t_fixed>& b) = default;
     board_t<t_char, t_fixed>& operator=(const board_t<t_char, t_fixed>& b) = default;
+
+    bool in_range(int xy) const {
+        return (0 <= xy && xy < m_cx * m_cy);
+    }
+    t_char get_at(int xy) const {
+        if (in_range(xy))
+            return board_data_t<t_char>::m_data[xy];
+        return t_fixed ? '#' : '?';
+    }
+    void set_at(int xy, t_char ch) {
+        if (in_range(xy))
+            board_data_t<t_char>::m_data[xy] = ch;
+    }
 
     // x, y: absolute coordinate
     bool in_range(int x, int y) const {
@@ -506,6 +531,189 @@ struct board_t : board_data_t<t_char> {
             ensure(x - 1, y);
             ensure(x + int(word.size()), y);
         }
+    }
+
+    bool corner_black() const {
+        return get_at(0, 0) == '#' ||
+               get_at(m_cx - 1, 0) == '#' ||
+               get_at(m_cx - 1, m_cy - 1) == '#' ||
+               get_at(0, m_cy - 1) == '#';
+    }
+
+    bool double_black() const {
+        const int n1 = m_cx - 1;
+        const int n2 = m_cy - 1;
+        int i = m_cy;
+        for (--i; i >= 0; --i) {
+            for (int j = 0; j < n1; j++) {
+                if (get_at(j, i) == '#' && get_at(j + 1, i) == '#')
+                    return true;
+            }
+        }
+        int j = m_cx;
+        for (--j; j >= 0; --j) {
+            for (int i = 0; i < n2; i++) {
+                if (get_at(j, i) == '#' && get_at(j, i + 1) == '#')
+                    return true;
+            }
+        }
+        return false;
+    }
+
+    bool tri_black_around() const {
+        for (int i = m_cy - 2; i >= 1; --i) {
+            for (int j = m_cx - 2; j >= 1; --j) {
+                if ((get_at(j, i - 1) == '#') + (get_at(j, i + 1) == '#') + 
+                    (get_at(j - 1, i) == '#') + (get_at(j + 1, i) == '#') >= 3)
+                {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    bool divided_by_black() const {
+        int count = m_cx * m_cy;
+
+        std::vector<uint8_t> pb(count, 0);
+        std::queue<pos_t> positions;
+        if (get_at(0, 0) != '#') {
+            positions.emplace(0, 0);
+        } else {
+            for (int i = 0; i < m_cy; ++i) {
+                for (int j = 0; j < m_cx; ++j) {
+                    if (get_at(j, i) != '#') {
+                        positions.emplace(j, i);
+                        goto skip;
+                    }
+                }
+            }
+skip:;
+        }
+
+        while (!positions.empty()) {
+            pos_t pos = positions.front();
+            positions.pop();
+            if (!pb[pos.m_y * m_cx + pos.m_x]) {
+                pb[pos.m_y * m_cx + pos.m_x] = 1;
+                // above
+                if (pos.m_y > 0 && get_at(pos.m_x, pos.m_y - 1) != '#')
+                    positions.emplace(pos.m_x, pos.m_y - 1);
+                // below
+                if (pos.m_y < m_cy - 1 && get_at(pos.m_x, pos.m_y + 1) != '#')
+                    positions.emplace(pos.m_x, pos.m_y + 1);
+                // left
+                if (pos.m_x > 0 && get_at(pos.m_x - 1, pos.m_y) != '#')
+                    positions.emplace(pos.m_x - 1, pos.m_y);
+                // right
+                if (pos.m_x < m_cx - 1 && get_at(pos.m_x + 1, pos.m_y) != '#')
+                    positions.emplace(pos.m_x + 1, pos.m_y);
+            }
+        }
+
+        while (count-- > 0) {
+            if (pb[count] == 0 && get_at(count) != '#') {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    bool four_diagonals() const {
+        for (int i = 0; i < m_cy - 3; i++) {
+            for (int j = 0; j < m_cx - 3; j++) {
+                if (get_at(j, i) != '#')
+                    continue;
+                if (get_at(j + 1, i + 1) != '#')
+                    continue;
+                if (get_at(j + 2, i + 2) != '#')
+                    continue;
+                if (get_at(j + 3, i + 3) != '#')
+                    continue;
+                return true;
+            }
+        }
+        for (int i = 0; i < m_cy - 3; i++) {
+            for (int j = 3; j < m_cx; j++) {
+                if (get_at(j, i) != '#')
+                    continue;
+                if (get_at(j - 1, i + 1) != '#')
+                    continue;
+                if (get_at(j - 2, i + 2) != '#')
+                    continue;
+                if (get_at(j - 3, i + 3) != '#')
+                    continue;
+                return true;
+            }
+        }
+        return false;
+    }
+
+    bool three_diagonals() const {
+        for (int i = 0; i < m_cy - 2; i++) {
+            for (int j = 0; j < m_cx - 2; j++) {
+                if (get_at(j, i) != '#')
+                    continue;
+                if (get_at(j + 1, i + 1) != '#')
+                    continue;
+                if (get_at(j + 2, i + 2) != '#')
+                    continue;
+                return true;
+            }
+        }
+        for (int i = 0; i < m_cy - 2; i++) {
+            for (int j = 2; j < m_cx; j++) {
+                if (get_at(j, i) != '#')
+                    continue;
+                if (get_at(j - 1, i + 1) != '#')
+                    continue;
+                if (get_at(j - 2, i + 2) != '#')
+                    continue;
+                return true;
+            }
+        }
+        return false;
+    }
+
+    bool is_point_symmetry() const {
+        for (int i = 0; i < m_cy; i++) {
+            for (int j = 0; j < m_cx; j++) {
+                if (get_at(j, i) == '#') {
+                    auto ch = get_at(m_cx - (j + 1), m_cy - (i + 1));
+                    if (ch != '#' && ch != '?')
+                        return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    bool is_line_symmetry_h() const {
+        for (int j = 0; j < m_cx; j++) {
+            for (int i = 0; i < m_cy; i++) {
+                if (get_at(j, i) == '#') {
+                    auto ch = get_at(m_cx - (j + 1), i);
+                    if (ch != '#' && ch != '?')
+                        return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    bool is_line_symmetry_v() const {
+        for (int i = 0; i < m_cy; i++) {
+            for (int j = 0; j < m_cx; j++) {
+                if (get_at(j, i) == '#') {
+                    auto ch = get_at(j, m_cy - (i + 1));
+                    if (ch != '#' && ch != '?')
+                        return false;
+                }
+            }
+        }
+        return true;
     }
 
     static void unittest() {
