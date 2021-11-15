@@ -1,4 +1,7 @@
 #pragma once
+
+#define CROSSWORD_GENERATION 10 // crossword_generation version
+
 #define _GNU_SOURCE
 #include <cstdio>
 #include <cstdint>
@@ -31,8 +34,6 @@
         return gettid();
     }
 #endif
-
-#define CROSSWORD_GENERATION 9 // crossword_generation version
 
 namespace crossword_generation {
     struct pos_t {
@@ -1175,9 +1176,7 @@ struct from_words_t {
                 if (matched) {
                     t_char ch1 = m_board.get_on(x0 - 1, y);
                     t_char ch2 = m_board.get_on(x1, y);
-                    if (is_letter(ch1) || ch1 == ' ') {
-                        matched = false;
-                    } else if (is_letter(ch2) || ch2 == ' ') {
+                    if (is_letter(ch1) || is_letter(ch2)) {
                         matched = false;
                     }
                 }
@@ -1229,9 +1228,7 @@ struct from_words_t {
                 if (matched) {
                     t_char ch1 = m_board.get_on(x, y0 - 1);
                     t_char ch2 = m_board.get_on(x, y1);
-                    if (is_letter(ch1) || ch1 == ' ') {
-                        matched = false;
-                    } else if (is_letter(ch2) || ch2 == ' ') {
+                    if (is_letter(ch1) || is_letter(ch2)) {
                         matched = false;
                     }
                 }
