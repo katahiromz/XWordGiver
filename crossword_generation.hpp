@@ -253,6 +253,12 @@ struct board_t : board_data_t<t_char> {
     }
 
     // x, y: absolute coordinate
+    t_char real_get_at(int x, int y) const {
+        if (in_range(x, y))
+            return board_data_t<t_char>::m_data[y * m_cx + x];
+        return ' ';
+    }
+    // x, y: absolute coordinate
     t_char get_at(int x, int y) const {
         if (in_range(x, y))
             return board_data_t<t_char>::m_data[y * m_cx + x];
@@ -262,6 +268,242 @@ struct board_t : board_data_t<t_char> {
     void set_at(int x, int y, t_char ch) {
         if (in_range(x, y))
             board_data_t<t_char>::m_data[y * m_cx + x] = ch;
+    }
+
+    bool is_corner(int x, int y) const {
+        if (y == 0 || y == m_cy - 1) {
+            if (x == 0 || m_cx - 1)
+                return true;
+        }
+        return false;
+    }
+
+    bool can_make_double_black(int x, int y) const {
+        return (real_get_at(x - 1, y) == '#' || real_get_at(x + 1, y) == '#' ||
+                real_get_at(x, y - 1) == '#' || real_get_at(x, y + 1) == '#');
+    }
+
+    bool can_make_tri_direction(int x, int y) {
+        auto ch = get_at(x, y);
+        set_at(x, y, '#');
+        bool ret = false;
+        for (int i = y - 4; i <= y + 4; ++y) {
+            for (int j = x - 4; i <= x + 4; ++i) {
+                int sum = 0;
+                sum += (real_get_at(j, i - 1) == '#');
+                sum += (real_get_at(j, i + 1) == '#');
+                sum += (real_get_at(j - 1, i) == '#');
+                sum += (real_get_at(j + 1, i) == '#');
+                if (sum >= 3) {
+                    ret = true;
+                    goto skip;
+                }
+            }
+        }
+skip:;
+        set_at(x, y, ch);
+        return ret;
+    }
+
+    bool can_make_three_diagonals(int x, int y) {
+        auto ch = get_at(x, y);
+        set_at(x, y, '#');
+        bool ret = false;
+        for (int i = y - 3; i <= y + 3; ++y) {
+            for (int j = x - 3; i <= x + 3; ++i) {
+                if (get_at(j, i) != '#')
+                    continue;
+                if (get_at(j + 1, i + 1) != '#')
+                    continue;
+                if (get_at(j + 2, i + 2) != '#')
+                    continue;
+                ret = true;
+                goto skip;
+            }
+        }
+        for (int i = y - 3; i <= y + 3; ++y) {
+            for (int j = x - 3; i <= x + 3; ++i) {
+                if (real_get_at(j, i) != '#')
+                    continue;
+                if (real_get_at(j - 1, i + 1) != '#')
+                    continue;
+                if (real_get_at(j - 2, i + 2) != '#')
+                    continue;
+                ret = true;
+                goto skip;
+            }
+        }
+skip:;
+        set_at(x, y, ch);
+        return ret;
+    }
+
+    bool can_make_four_diagonals(int x, int y) {
+        auto ch = get_at(x, y);
+        set_at(x, y, '#');
+        bool ret = false;
+        for (int i = y - 4; i <= y + 4; ++y) {
+            for (int j = x - 4; i <= x + 4; ++i) {
+                if (real_get_at(j, i) != '#')
+                    continue;
+                if (real_get_at(j + 1, i + 1) != '#')
+                    continue;
+                if (real_get_at(j + 2, i + 2) != '#')
+                    continue;
+                if (real_get_at(j + 3, i + 3) != '#')
+                    continue;
+                ret = true;
+                goto skip;
+            }
+        }
+        for (int i = y - 4; i <= y + 4; ++y) {
+            for (int j = x - 4; i <= x + 4; ++i) {
+                if (real_get_at(j, i) != '#')
+                    continue;
+                if (real_get_at(j - 1, i + 1) != '#')
+                    continue;
+                if (real_get_at(j - 2, i + 2) != '#')
+                    continue;
+                if (real_get_at(j - 3, i + 3) != '#')
+                    continue;
+                ret = true;
+                goto skip;
+            }
+        }
+skip:;
+        set_at(x, y, ch);
+        return ret;
+    }
+
+    bool can_set_black_at(int x, int y) {
+        if (get_at(x, y) == '#')
+            return true;
+        if (!in_range(x, y) || get_at(x, y) != '?')
+            return false;
+        if (m_rules == 0) {
+            return true;
+        }
+
+        if (m_rules & RULES::DONTCORNERBLACK) {
+            if (is_corner(x, y))
+                return false;
+        }
+
+        if (m_rules & RULES::DONTDOUBLEBLACK) {
+            if (m_rules & RULES::POINTSYMMETRY) {
+                if (can_make_double_black(x, y) ||
+                    can_make_double_black(m_cx - (x + 1), m_cy - (y + 1)))
+                {
+                    return false;
+                }
+            } else if (m_rules & RULES::LINESYMMETRYV) {
+                if (can_make_double_black(x, y) ||
+                    can_make_double_black(x, m_cy - (y + 1)))
+                {
+                    return false;
+                }
+            } else if (m_rules & RULES::LINESYMMETRYH) {
+                if (can_make_double_black(x, y) ||
+                    can_make_double_black(m_cx - (x + 1), y))
+                {
+                    return false;
+                }
+            } else {
+                if (can_make_double_black(x, y))
+                    return false;
+            }
+        }
+
+        if (m_rules & RULES::DONTTRIDIRECTIONS) {
+            if (m_rules & RULES::POINTSYMMETRY) {
+                if (can_make_tri_direction(x, y) ||
+                    can_make_tri_direction(m_cx - (x + 1), m_cy - (y + 1)))
+                {
+                    return false;
+                }
+            } else if (m_rules & RULES::LINESYMMETRYV) {
+                if (can_make_tri_direction(x, y) ||
+                    can_make_tri_direction(x, m_cy - (y + 1)))
+                {
+                    return false;
+                }
+            } else if (m_rules & RULES::LINESYMMETRYH) {
+                if (can_make_tri_direction(x, y) ||
+                    can_make_tri_direction(m_cx - (x + 1), y))
+                {
+                    return false;
+                }
+            } else {
+                if (can_make_tri_direction(x, y))
+                    return false;
+            }
+        }
+
+        if (m_rules & RULES::DONTTHREEDIAGONALS) {
+            if (m_rules & RULES::POINTSYMMETRY) {
+                if (can_make_three_diagonals(x, y) ||
+                    can_make_three_diagonals(m_cx - (x + 1), m_cy - (y + 1)))
+                {
+                    return false;
+                }
+            } else if (m_rules & RULES::LINESYMMETRYV) {
+                if (can_make_three_diagonals(x, y) ||
+                    can_make_three_diagonals(x, m_cy - (y + 1)))
+                {
+                    return false;
+                }
+            } else if (m_rules & RULES::LINESYMMETRYH) {
+                if (can_make_three_diagonals(x, y) ||
+                    can_make_three_diagonals(m_cx - (x + 1), y))
+                {
+                    return false;
+                }
+            } else {
+                if (can_make_three_diagonals(x, y))
+                    return false;
+            }
+        } else if (m_rules & RULES::DONTFOURDIAGONALS) {
+            if (m_rules & RULES::POINTSYMMETRY) {
+                if (can_make_four_diagonals(x, y) ||
+                    can_make_four_diagonals(m_cx - (x + 1), m_cy - (y + 1)))
+                {
+                    return false;
+                }
+            } else if (m_rules & RULES::LINESYMMETRYV) {
+                if (can_make_four_diagonals(x, y) ||
+                    can_make_four_diagonals(x, m_cy - (y + 1)))
+                {
+                    return false;
+                }
+            } else if (m_rules & RULES::LINESYMMETRYH) {
+                if (can_make_four_diagonals(x, y) ||
+                    can_make_four_diagonals(m_cx - (x + 1), y))
+                {
+                    return false;
+                }
+            } else {
+                if (can_make_four_diagonals(x, y))
+                    return false;
+            }
+        }
+
+        if (m_rules & RULES::POINTSYMMETRY) {
+            auto ch = real_get_at(m_cx - (x + 1), m_cy - (y + 1));
+            if (is_letter(ch))
+                return false;
+        } else if (m_rules & RULES::LINESYMMETRYV) {
+            auto ch = real_get_at(x, m_cy - (y + 1));
+            if (is_letter(ch))
+                return false;
+        } else if (m_rules & RULES::LINESYMMETRYH) {
+            auto ch = real_get_at(m_cx - (x + 1), y);
+            if (is_letter(ch))
+                return false;
+        } else {
+            ;
+        }
+
+        return !divided_by_black();
     }
 
     // x: relative coordinate
