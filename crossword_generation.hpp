@@ -32,6 +32,8 @@
     }
 #endif
 
+#define CROSSWORD_GENERATION 8 // crossword_generation version
+
 namespace crossword_generation {
     struct pos_t {
         int m_x, m_y;
