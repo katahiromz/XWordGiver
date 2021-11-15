@@ -32,7 +32,7 @@
     }
 #endif
 
-#define CROSSWORD_GENERATION 8 // crossword_generation version
+#define CROSSWORD_GENERATION 9 // crossword_generation version
 
 namespace crossword_generation {
     struct pos_t {
@@ -56,7 +56,6 @@ namespace std {
 namespace crossword_generation {
 inline static bool s_generated = false;
 inline static bool s_canceled = false;
-inline static long s_count = 0;
 inline static std::mutex s_mutex;
 
 struct RULES {
@@ -99,11 +98,6 @@ inline void random_shuffle(const t_elem& begin, const t_elem& end) {
 }
 
 inline void reset() {
-#ifdef _WIN32
-    ::InterlockedExchange(&s_count, 0);
-#else
-    s_count = 0;
-#endif
     s_generated = s_canceled = false;
 #ifdef XWORDGIVER
     for (auto& info : xg_aThreadInfo) {
@@ -1464,11 +1458,6 @@ struct from_words_t {
         data.m_iThread = iThread;
         data.m_words = data.m_dict = *words;
         bool flag = data.generate();
-#ifdef _WIN32
-        ::InterlockedIncrement(&s_count);
-#else
-        ++s_count;
-#endif
         delete words;
         return flag;
     }
@@ -1486,11 +1475,6 @@ struct from_words_t {
                 t.detach();
             } catch (std::system_error&) {
                 delete clone;
-#ifdef _WIN32
-                ::InterlockedIncrement(&s_count);
-#else
-                ++s_count;
-#endif
             }
         }
 
