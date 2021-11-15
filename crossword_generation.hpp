@@ -305,45 +305,40 @@ skip:;
         return ret;
     }
 
-    bool can_make_three_diagonals(int x, int y) {
-        auto ch = get_at(x, y);
-        set_at(x, y, '#');
-        bool ret = false;
-        for (int i = y - 3; i <= y + 3; ++y) {
-            for (int j = x - 3; i <= x + 3; ++i) {
-                if (get_at(j, i) != '#')
-                    continue;
-                if (get_at(j + 1, i + 1) != '#')
-                    continue;
-                if (get_at(j + 2, i + 2) != '#')
-                    continue;
-                ret = true;
-                goto skip;
-            }
+    bool can_make_three_diagonals(int x, int y) const {
+        // center (right down)
+        if (real_get_at(x - 1, y - 1) == '#' || real_get_at(x + 1, y + 1) == '#') {
+            return true;
         }
-        for (int i = y - 3; i <= y + 3; ++y) {
-            for (int j = x - 3; i <= x + 3; ++i) {
-                if (real_get_at(j, i) != '#')
-                    continue;
-                if (real_get_at(j - 1, i + 1) != '#')
-                    continue;
-                if (real_get_at(j - 2, i + 2) != '#')
-                    continue;
-                ret = true;
-                goto skip;
-            }
+        // center (right up)
+        if (real_get_at(x + 1, y - 1) == '#' || real_get_at(x - 1, y + 1) == '#') {
+            return true;
         }
-skip:;
-        set_at(x, y, ch);
-        return ret;
+        // upper left
+        if (real_get_at(x - 2, y - 2) == '#' || real_get_at(x - 1, y - 1) == '#') {
+            return true;
+        }
+        // lower right
+        if (real_get_at(x + 1, y + 1) == '#' || real_get_at(x + 2, y + 2) == '#') {
+            return true;
+        }
+        // upper right
+        if (real_get_at(x + 2, y - 2) == '#' || real_get_at(x + 1, y - 1) == '#') {
+            return true;
+        }
+        // lower left
+        if (real_get_at(x - 2, y + 1) == '#' || real_get_at(x - 1, y + 2) == '#') {
+            return true;
+        }
+        return false;
     }
 
     bool can_make_four_diagonals(int x, int y) {
         auto ch = get_at(x, y);
         set_at(x, y, '#');
         bool ret = false;
-        for (int i = y - 4; i <= y + 4; ++y) {
-            for (int j = x - 4; i <= x + 4; ++i) {
+        for (int i = y - 3; i <= y + 3; ++y) {
+            for (int j = x - 3; i <= x + 3; ++i) {
                 if (real_get_at(j, i) != '#')
                     continue;
                 if (real_get_at(j + 1, i + 1) != '#')
@@ -356,8 +351,8 @@ skip:;
                 goto skip;
             }
         }
-        for (int i = y - 4; i <= y + 4; ++y) {
-            for (int j = x - 4; i <= x + 4; ++i) {
+        for (int i = y - 3; i <= y + 3; ++y) {
+            for (int j = x - 3; i <= x + 3; ++i) {
                 if (real_get_at(j, i) != '#')
                     continue;
                 if (real_get_at(j - 1, i + 1) != '#')
