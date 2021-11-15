@@ -668,7 +668,7 @@ struct from_words_t {
         }
 
         for (auto& word : m_words) {
-            if (s_canceled) {
+            if (s_canceled || s_generated) {
                 cands.clear();
                 return cands;
             }
@@ -722,7 +722,7 @@ struct from_words_t {
         }
 
         for (auto& word : m_words) {
-            if (s_canceled) {
+            if (s_canceled || s_generated) {
                 cands.clear();
                 return cands;
             }
@@ -765,31 +765,31 @@ struct from_words_t {
         std::vector<candidate_t<t_char> > cands;
         std::unordered_set<pos_t> positions;
         for (auto& cand : candidates) {
-            if (s_canceled)
-                return false;
+            if (s_canceled || s_generated)
+                return s_generated;
             if (cand.m_word.size() == 1) {
                 cands.push_back(cand);
                 positions.insert( {cand.m_x, cand.m_y} );
             }
         }
         for (auto& cand : candidates) {
-            if (s_canceled)
-                return false;
+            if (s_canceled || s_generated)
+                return s_generated;
             if (cand.m_word.size() != 1) {
                 if (positions.count(pos_t(cand.m_x, cand.m_y)) == 0)
                     return false;
             }
         }
         for (auto& cand : cands) {
-            if (s_canceled)
-                return false;
+            if (s_canceled || s_generated)
+                return s_generated;
             apply_candidate(cand);
         }
         return true;
     }
 
     bool generate_recurse() {
-        if (s_canceled)
+        if (s_canceled || s_generated)
             return s_generated;
 
         if (s_generated)
@@ -805,7 +805,7 @@ struct from_words_t {
         std::vector<candidate_t<t_char> > candidates;
 
         for (auto& cross : m_crossable_x) {
-            if (s_canceled)
+            if (s_canceled || s_generated)
                 return s_generated;
             auto cands = get_candidates_x(cross.m_x, cross.m_y);
             if (cands.empty()) {
@@ -820,7 +820,7 @@ struct from_words_t {
         }
 
         for (auto& cross : m_crossable_y) {
-            if (s_canceled)
+            if (s_canceled || s_generated)
                 return s_generated;
             auto cands = get_candidates_y(cross.m_x, cross.m_y);
             if (cands.empty()) {
@@ -870,7 +870,7 @@ struct from_words_t {
 #endif
 
         for (auto& cand : candidates) {
-            if (s_canceled)
+            if (s_canceled || s_generated)
                 return s_generated;
             from_words_t<t_char, t_fixed> copy(*this);
             if (copy.apply_candidate(cand) && copy.generate_recurse()) {
