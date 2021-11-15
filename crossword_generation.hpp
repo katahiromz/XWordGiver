@@ -375,6 +375,7 @@ skip:;
         return ret;
     }
 
+    // NOTE: This method doesn't check divided_by_black.
     bool can_set_black_at(int x, int y) {
         if (get_at(x, y) == '#')
             return true;
@@ -503,7 +504,7 @@ skip:;
             ;
         }
 
-        return !divided_by_black();
+        return true;
     }
 
     // x: relative coordinate
