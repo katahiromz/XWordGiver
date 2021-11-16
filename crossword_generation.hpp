@@ -1,6 +1,6 @@
 #pragma once
 
-#define CROSSWORD_GENERATION 12 // crossword_generation version
+#define CROSSWORD_GENERATION 13 // crossword_generation version
 
 #define _GNU_SOURCE
 #include <cstdio>
@@ -320,6 +320,47 @@ struct board_t : board_data_t<t_char> {
                 }
             }
         }
+    }
+
+    // x, y: absolute coordinate
+    t_string get_pat_x(int x, int y) const {
+        if (!in_range(x, y) || get_at(x, y) == '#')
+            return t_string();
+
+        int x0 = x;
+        while (get_at(x0 - 1, y) != '#') {
+            --x0;
+        }
+        int x1 = x;
+        while (get_at(x1 + 1, y) != '#') {
+            ++x1;
+        }
+
+        t_string pat;
+        for (int x2 = x0; x2 <= x1; ++x2) {
+            pat += get_at(x2, y);
+        }
+        return pat;
+    }
+    // x, y: absolute coordinate
+    t_string get_pat_y(int x, int y) const {
+        if (!in_range(x, y) || get_at(x, y) == '#')
+            return t_string();
+
+        int y0 = y;
+        while (get_at(x, y0 - 1) != '#') {
+            --y0;
+        }
+        int y1 = y;
+        while (get_at(x, y1 + 1) != '#') {
+            ++y1;
+        }
+
+        t_string pat;
+        for (int y2 = y0; y2 <= y1; ++y2) {
+            pat += get_at(x, y2);
+        }
+        return pat;
     }
 
     bool is_corner(int x, int y) const {
@@ -808,18 +849,14 @@ skip:;
         t_char ch1, ch2;
         ch1 = get_on(x - 1, y);
         ch2 = get_on(x + 1, y);
-        if (ch1 == '?' || ch2 == '?')
-            return true;
-        return false;
+        return (ch1 == '?' || ch2 == '?');
     }
     bool is_crossable_y(int x, int y) const {
         assert(is_letter(get_on(x, y)));
         t_char ch1, ch2;
         ch1 = get_on(x, y - 1);
         ch2 = get_on(x, y + 1);
-        if (ch1 == '?' || ch2 == '?')
-            return true;
-        return false;
+        return (ch1 == '?' || ch2 == '?');
     }
 
     bool must_be_cross(int x, int y) const {
