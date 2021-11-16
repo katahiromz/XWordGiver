@@ -1,6 +1,6 @@
 #pragma once
 
-#define CROSSWORD_GENERATION 11 // crossword_generation version
+#define CROSSWORD_GENERATION 12 // crossword_generation version
 
 #define _GNU_SOURCE
 #include <cstdio>
@@ -93,9 +93,11 @@ inline uint32_t get_num_processors(void) {
 // replacement of std::random_shuffle
 template <typename t_elem>
 inline void random_shuffle(const t_elem& begin, const t_elem& end) {
+#ifdef NO_RANDOM
     std::random_device rd;
     std::mt19937 g(rd());
     std::shuffle(begin, end, g);
+#endif
 }
 
 inline void reset() {
@@ -274,19 +276,19 @@ struct board_t : board_data_t<t_char> {
             board_data_t<t_char>::m_data[y * m_cx + x] = ch;
     }
     // x, y: absolute coordinate
-    void mirror_set_at(int x, int y, t_char ch) {
+    void mirror_set_black_at(int x, int y) {
         if (!in_range(x, y))
             return;
-        set_at(x, y, ch);
+        set_at(x, y, '#');
         if (m_rules == 0) {
             return;
         }
         if (m_rules & RULES::POINTSYMMETRY) {
-            set_at(m_cx - (x + 1), m_cy - (y + 1), ch);
+            set_at(m_cx - (x + 1), m_cy - (y + 1), '#');
         } else if (m_rules & RULES::LINESYMMETRYV) {
-            set_at(m_cx - (x + 1), y, ch);
+            set_at(m_cx - (x + 1), y, '#');
         } else if (m_rules & RULES::LINESYMMETRYH) {
-            set_at(x, m_cy - (y + 1), ch);
+            set_at(x, m_cy - (y + 1), '#');
         }
     }
 
@@ -1518,7 +1520,7 @@ struct from_words_t {
     {
 #ifdef SINGLETHREADDEBUG
         auto clone = new std::unordered_set<t_string>(words);
-        generate_proc(clone, i);
+        generate_proc(clone, 0);
 #else
         for (int i = 0; i < num_threads; ++i) {
             auto clone = new std::unordered_set<t_string>(words);
