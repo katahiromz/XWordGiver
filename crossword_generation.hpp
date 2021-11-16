@@ -213,6 +213,13 @@ struct board_data_t {
     bool is_full() const {
         return count('?') == 0;
     }
+    bool has_letter() const {
+        for (size_t xy = 0; xy < size(); ++xy) {
+            if (is_letter(m_data[xy]))
+                return true;
+        }
+        return false;
+    }
 };
 
 template <typename t_char, bool t_fixed>
@@ -265,6 +272,52 @@ struct board_t : board_data_t<t_char> {
     void set_at(int x, int y, t_char ch) {
         if (in_range(x, y))
             board_data_t<t_char>::m_data[y * m_cx + x] = ch;
+    }
+    // x, y: absolute coordinate
+    void mirror_set_at(int x, int y, t_char ch) {
+        if (!in_range(x, y))
+            return;
+        set_at(x, y, ch);
+        if (m_rules == 0) {
+            return;
+        }
+        if (m_rules & RULES::POINTSYMMETRY) {
+            set_at(m_cx - (x + 1), m_cy - (y + 1), ch);
+        } else if (m_rules & RULES::LINESYMMETRYV) {
+            set_at(m_cx - (x + 1), y, ch);
+        } else if (m_rules & RULES::LINESYMMETRYH) {
+            set_at(x, m_cy - (y + 1), ch);
+        }
+    }
+
+    void do_mirror() {
+        if (m_rules == 0)
+            return;
+        if (m_rules & RULES::POINTSYMMETRY) {
+            for (int y = 0; y < m_cy; ++y) {
+                for (int x = 0; x < m_cx; ++x) {
+                    if (get_at(x, y) == '#') {
+                        set_at(m_cx - (x + 1), m_cy - (y + 1), '#');
+                    }
+                }
+            }
+        } else if (m_rules & RULES::LINESYMMETRYV) {
+            for (int y = 0; y < m_cy; ++y) {
+                for (int x = 0; x < m_cx; ++x) {
+                    if (get_at(x, y) == '#') {
+                        set_at(m_cx - (x + 1), y, '#');
+                    }
+                }
+            }
+        } else if (m_rules & RULES::LINESYMMETRYH) {
+            for (int y = 0; y < m_cy; ++y) {
+                for (int x = 0; x < m_cx; ++x) {
+                    if (get_at(x, y) == '#') {
+                        set_at(x, m_cy - (y + 1), '#');
+                    }
+                }
+            }
+        }
     }
 
     bool is_corner(int x, int y) const {
