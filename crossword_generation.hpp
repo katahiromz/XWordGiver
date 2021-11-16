@@ -1,6 +1,6 @@
 #pragma once
 
-#define CROSSWORD_GENERATION 13 // crossword_generation version
+#define CROSSWORD_GENERATION 14 // crossword_generation version
 
 #define _GNU_SOURCE
 #include <cstdio>
@@ -323,7 +323,7 @@ struct board_t : board_data_t<t_char> {
     }
 
     // x, y: absolute coordinate
-    t_string get_pat_x(int x, int y) const {
+    t_string get_pat_x(int x, int y, int *px0 = nullptr) const {
         if (!in_range(x, y) || get_at(x, y) == '#')
             return t_string();
 
@@ -340,10 +340,12 @@ struct board_t : board_data_t<t_char> {
         for (int x2 = x0; x2 <= x1; ++x2) {
             pat += get_at(x2, y);
         }
+        if (px0)
+            *px0 = x0;
         return pat;
     }
     // x, y: absolute coordinate
-    t_string get_pat_y(int x, int y) const {
+    t_string get_pat_y(int x, int y, int *py0 = nullptr) const {
         if (!in_range(x, y) || get_at(x, y) == '#')
             return t_string();
 
@@ -360,6 +362,8 @@ struct board_t : board_data_t<t_char> {
         for (int y2 = y0; y2 <= y1; ++y2) {
             pat += get_at(x, y2);
         }
+        if (py0)
+            *py0 = y0;
         return pat;
     }
 
