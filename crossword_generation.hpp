@@ -93,7 +93,7 @@ inline uint32_t get_num_processors(void) {
 // replacement of std::random_shuffle
 template <typename t_elem>
 inline void random_shuffle(const t_elem& begin, const t_elem& end) {
-#ifdef NO_RANDOM
+#ifndef NO_RANDOM
     std::random_device rd;
     std::mt19937 g(rd());
     std::shuffle(begin, end, g);
