@@ -1,6 +1,6 @@
 #pragma once
 
-#define CROSSWORD_GENERATION 10 // crossword_generation version
+#define CROSSWORD_GENERATION 11 // crossword_generation version
 
 #define _GNU_SOURCE
 #include <cstdio>
@@ -1516,8 +1516,10 @@ struct from_words_t {
     do_generate(const std::unordered_set<t_string>& words,
                 int num_threads = get_num_processors())
     {
-        //printf("num_threads: %d\n", int(num_threads));
-
+#ifdef SINGLETHREADTEST
+        auto clone = new std::unordered_set<t_string>(words);
+        generate_proc(clone, i);
+#else
         for (int i = 0; i < num_threads; ++i) {
             auto clone = new std::unordered_set<t_string>(words);
             try {
@@ -1527,7 +1529,7 @@ struct from_words_t {
                 delete clone;
             }
         }
-
+#endif
         return s_generated;
     }
 }; // struct from_words_t
