@@ -1516,7 +1516,7 @@ struct from_words_t {
     do_generate(const std::unordered_set<t_string>& words,
                 int num_threads = get_num_processors())
     {
-#ifdef SINGLETHREADTEST
+#ifdef SINGLETHREADDEBUG
         auto clone = new std::unordered_set<t_string>(words);
         generate_proc(clone, i);
 #else
