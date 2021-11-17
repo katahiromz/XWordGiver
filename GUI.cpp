@@ -4187,7 +4187,7 @@ void XgGenerateFromWordList(HWND hwnd)
     xg_dwlTick0 = xg_dwlTick1 = ::GetTickCount64();
     // 再計算までの時間を概算する。
     auto size = XG_WordListDialog::s_wordset.size();
-    xg_dwlWait = size * size / 2; // ミリ秒。
+    xg_dwlWait = size * size * 2 / 3 + 100; // ミリ秒。
 
     // 単語リストから生成する。
     {
