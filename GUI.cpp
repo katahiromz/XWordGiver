@@ -190,7 +190,7 @@ static DWORD s_dwNumberOfProcessors = 1;
 DWORDLONG xg_dwlTick0;    // 開始時間。
 DWORDLONG xg_dwlTick1;    // 再計算時間。
 DWORDLONG xg_dwlTick2;    // 終了時間。
-DWORD     xg_dwWait;     // 待ち時間。
+DWORDLONG xg_dwlWait;     // 待ち時間。
 
 // ディスク容量が足りないか？
 static bool s_bOutOfDiskSpace = false;
@@ -4178,10 +4178,16 @@ void XgGenerateFromWordList(HWND hwnd)
     INT nID;
     {
         XG_WordListDialog dialog;
-        nID = dialog.DoModal(hwnd);
+        nID = INT(dialog.DoModal(hwnd));
         if (nID != IDOK)
             return;
     }
+
+    // 計算時間を求めるために、開始時間を取得する。
+    xg_dwlTick0 = xg_dwlTick1 = ::GetTickCount64();
+    // 再計算までの時間を概算する。
+    auto size = XG_WordListDialog::s_wordset.size();
+    xg_dwlWait = size * size / 2; // ミリ秒。
 
     // 単語リストから生成する。
     {

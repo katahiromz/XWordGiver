@@ -34,7 +34,7 @@ LOGFONTW *XgGetUIFont(void);
 extern DWORDLONG xg_dwlTick0;    // 開始時間。
 extern DWORDLONG xg_dwlTick1;    // 再計算時間。
 extern DWORDLONG xg_dwlTick2;    // 終了時間。
-extern DWORD     xg_dwWait;     // 待ち時間。
+extern DWORDLONG xg_dwlWait;     // 待ち時間。
 
 // 再計算の回数。
 extern LONG xg_nRetryCount;

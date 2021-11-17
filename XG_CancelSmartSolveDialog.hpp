@@ -64,7 +64,7 @@ public:
         // 計算時間を求めるために、開始時間を取得する。
         xg_dwlTick0 = xg_dwlTick1 = ::GetTickCount64();
         // 再計算までの時間を概算する。
-        xg_dwWait = XgGetRetryInterval();
+        xg_dwlWait = XgGetRetryInterval();
         // 解を求めるのを開始。
         Restart(hwnd);
         // フォーカスをセットする。
@@ -137,7 +137,7 @@ public:
             XgCloseThreads();
         } else {
             // 再計算が必要か？
-            if (xg_bAutoRetry && ::GetTickCount64() - xg_dwlTick1 > xg_dwWait) {
+            if (xg_bAutoRetry && ::GetTickCount64() - xg_dwlTick1 > xg_dwlWait) {
                 DoRetry(hwnd);
             }
         }
