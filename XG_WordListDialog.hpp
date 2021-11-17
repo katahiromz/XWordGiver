@@ -82,6 +82,11 @@ public:
             XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_ADDMOREWORDS), NULL, MB_ICONERROR);
             return FALSE;
         }
+        // 多すぎる？
+        if (s_words.size() > 100) {
+            XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_TOOMANYWORDS), NULL, MB_ICONERROR);
+            return FALSE;
+        }
 
         using namespace crossword_generation;
 
