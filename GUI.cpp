@@ -3374,6 +3374,7 @@ void MainWnd_OnMButtonDown(HWND hwnd, BOOL fDoubleClick, int x, int y, UINT keyF
         xg_bMButtonDragging = TRUE;
         xg_ptMButtonDragging = { x, y };
         ::SetCapture(hwnd);
+        ::SetCursor(::LoadCursor(xg_hInstance, MAKEINTRESOURCEW(IDC_MYHAND)));
     }
 }
 
@@ -3413,6 +3414,8 @@ void MainWnd_OnMouseScroll(HWND hwnd, int x, int y)
     RECT rcClient;
     XgGetRealClientRect(hwnd, &rcClient);
     InvalidateRect(hwnd, &rcClient, TRUE);
+
+    ::SetCursor(::LoadCursor(xg_hInstance, MAKEINTRESOURCEW(IDC_MYHAND)));
 }
 
 // ウィンドウ上でマウスが動いた。
@@ -3432,6 +3435,7 @@ void MainWnd_OnMButtonUp(HWND hwnd, int x, int y, UINT flags)
         MainWnd_OnMouseScroll(hwnd, x, y);
         xg_bMButtonDragging = FALSE;
         ::ReleaseCapture();
+        ::SetCursor(::LoadCursor(NULL, IDC_ARROW));
     }
 }
 
