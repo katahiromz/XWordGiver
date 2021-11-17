@@ -64,6 +64,7 @@
     - Dragging with the middle mouse button is now possible.
     - Fine-tuned the max word length when linear symmetry.
     - Fixed and improved the block patterns.
+    - Properly handled the parse error when loading "data.json".
 
 # 開発履歴 (Japanese)
 
@@ -440,3 +441,4 @@
     - マウスの中央ボタンでドラッグが可能に。
     - 線対称のときの最大単語長を微調整。
     - 黒マスパターンを改良と修正。
+    - 「data.json」の読み込み時にエラーを適切に処理するようにした。
