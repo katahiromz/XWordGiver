@@ -83,8 +83,11 @@ public:
             return FALSE;
         }
         // 多すぎる？
-        if (s_words.size() > 200) {
-            XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_TOOMANYWORDS), NULL, MB_ICONERROR);
+        const size_t max_num = 300;
+        if (s_words.size() > max_num) {
+            WCHAR szText[128];
+            StringCchPrintfW(szText, _countof(szText), XgLoadStringDx1(IDS_TOOMANYWORDS), (int)max_num);
+            XgCenterMessageBoxW(hwnd, szText, NULL, MB_ICONERROR);
             return FALSE;
         }
 

@@ -1441,7 +1441,7 @@ struct from_words_t {
         }
 
 #ifdef XWORDGIVER
-        if (m_words.size() <= 100 && m_words.size() < m_dict.size() / 2 && !t_fixed) {
+        if (m_dict.size() <= 100 && m_words.size() < m_dict.size() / 2 && !t_fixed) {
             std::sort(candidates.begin(), candidates.end(),
                 [&](const candidate_t<t_char>& cand0, const candidate_t<t_char>& cand1) {
                     board_t<t_char, false> board0 = m_board;
