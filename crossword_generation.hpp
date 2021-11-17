@@ -1,6 +1,6 @@
 #pragma once
 
-#define CROSSWORD_GENERATION 14 // crossword_generation version
+#define CROSSWORD_GENERATION 15 // crossword_generation version
 
 #define _GNU_SOURCE
 #include <cstdio>
@@ -176,6 +176,15 @@ struct candidate_t {
 };
 
 template <typename t_char>
+struct cross_candidate_t {
+    candidate_t<t_char> m_cand_x, m_cand_y;
+    cross_candidate_t() {
+        m_cand_x.m_vertical = false;
+        m_cand_y.m_vertical = true;
+    }
+};
+
+template <typename t_char>
 struct board_data_t {
     typedef std::basic_string<t_char> t_string;
     t_string m_data;
@@ -184,8 +193,8 @@ struct board_data_t {
         resize(cx, cy, ch);
     }
 
-    size_t size() const {
-        return m_data.size();
+    int size() const {
+        return int(m_data.size());
     }
 
     void resize(int cx, int cy, t_char ch = ' ') {
@@ -200,9 +209,9 @@ struct board_data_t {
         std::replace(m_data.begin(), m_data.end(), chOld, chNew);
     }
 
-    size_t count(t_char ch) const {
-        size_t ret = 0;
-        for (size_t xy = 0; xy < size(); ++xy) {
+    int count(t_char ch) const {
+        int ret = 0;
+        for (int xy = 0; xy < size(); ++xy) {
             if (m_data[xy] == ch)
                 ++ret;
         }
@@ -240,16 +249,13 @@ struct board_t : board_data_t<t_char> {
     board_t(const board_t<t_char, t_fixed>& b) = default;
     board_t<t_char, t_fixed>& operator=(const board_t<t_char, t_fixed>& b) = default;
 
-    bool in_range(int xy) const {
-        return (0 <= xy && xy < m_cx * m_cy);
-    }
-    t_char get_at(int xy) const {
-        if (in_range(xy))
+    t_char get(int xy) const {
+        if (0 <= xy && xy < this->size())
             return board_data_t<t_char>::m_data[xy];
         return t_fixed ? '#' : '?';
     }
-    void set_at(int xy, t_char ch) {
-        if (in_range(xy))
+    void set(int xy, t_char ch) {
+        if (0 <= xy && xy < this->size())
             board_data_t<t_char>::m_data[xy] = ch;
     }
 
@@ -994,7 +1000,7 @@ skip:;
         }
 
         while (count-- > 0) {
-            if (pb[count] == 0 && get_at(count) != '#') {
+            if (pb[count] == 0 && get(count) != '#') {
                 return true;
             }
         }
