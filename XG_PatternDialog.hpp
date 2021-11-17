@@ -362,9 +362,8 @@ public:
             }
 
             return TRUE;
-        }
-        catch (...) {
-            MessageBoxA(hwnd, "json parse error", NULL, MB_ICONERROR);
+        } catch (...) {
+            MessageBoxW(hwnd, XgLoadStringDx1(IDS_JSONSYNTAXERROR), NULL, MB_ICONERROR);
         }
 
         return FALSE;
