@@ -62,6 +62,7 @@
 - 2021.XX.YY Ver.4.8.2
     - Fixed the bugs around "Generate from a word list".
     - Dragging with the middle mouse button is now possible.
+    - Fine-tuned the max word length when linear symmetry.
 
 # 開発履歴 (Japanese)
 
@@ -436,3 +437,4 @@
 - 2021年XX月YY日 ver.4.8.2
     - 「単語リストから自動生成」の周辺を修正。
     - マウスの中央ボタンでドラッグが可能に。
+    - 線対称のときの最大単語長を微調整。
