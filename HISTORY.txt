@@ -63,7 +63,7 @@
     - Fixed the bugs around "Generate from a word list".
     - Dragging with the middle mouse button is now possible.
     - Fine-tuned the max word length when linear symmetry.
-    - Improved the block patterns.
+    - Fixed and improved the block patterns.
 
 # 開発履歴 (Japanese)
 
@@ -439,4 +439,4 @@
     - 「単語リストから自動生成」の周辺を修正。
     - マウスの中央ボタンでドラッグが可能に。
     - 線対称のときの最大単語長を微調整。
-    - 黒マスパターンを改良。
+    - 黒マスパターンを改良と修正。

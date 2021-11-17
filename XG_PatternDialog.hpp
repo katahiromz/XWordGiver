@@ -164,7 +164,7 @@ public:
             XgConvertPatternData(data, pat.data, pat.num_columns, pat.num_rows);
 
             // 黒マスルールを適合する。
-    #define GET_DATA(x, y) data[(y) * pat.num_columns + (x)]
+#define GET_DATA(x, y) data[(y) * pat.num_columns + (x)]
             if (xg_nRules & RULE_DONTDOUBLEBLACK) {
                 BOOL bFound = FALSE;
                 for (INT y = 0; y < pat.num_rows; ++y) {
@@ -313,38 +313,38 @@ public:
                     continue;
             }
             if (xg_nRules & RULE_LINESYMMETRYV) {
-                BOOL bFound = FALSE;
+                BOOL bOK = TRUE;
                 for (INT y = 0; y < pat.num_rows; ++y) {
                     for (INT x = 0; x < pat.num_columns; ++x) {
                         if ((GET_DATA(x, y) == ZEN_BLACK) !=
-                            (GET_DATA(pat.num_rows - (x + 1), y) == ZEN_BLACK))
+                            (GET_DATA(x, pat.num_rows - (y + 1)) == ZEN_BLACK))
                         {
+                            bOK = FALSE;
                             x = pat.num_columns;
                             y = pat.num_rows;
-                            bFound = TRUE;
                         }
                     }
                 }
-                if (bFound)
+                if (!bOK)
                     continue;
             }
-            if (xg_nRules & RULE_LINESYMMETRYV) {
-                BOOL bFound = FALSE;
+            if (xg_nRules & RULE_LINESYMMETRYH) {
+                BOOL bOK = TRUE;
                 for (INT y = 0; y < pat.num_rows; ++y) {
                     for (INT x = 0; x < pat.num_columns; ++x) {
                         if ((GET_DATA(x, y) == ZEN_BLACK) !=
-                            (GET_DATA(x, pat.num_columns - (y + 1)) == ZEN_BLACK))
+                            (GET_DATA(pat.num_columns - (x + 1), y) == ZEN_BLACK))
                         {
+                            bOK = FALSE;
                             x = pat.num_columns;
                             y = pat.num_rows;
-                            bFound = TRUE;
                         }
                     }
                 }
-                if (bFound)
+                if (!bOK)
                     continue;
             }
-    #undef GET_DATA
+#undef GET_DATA
 
             s_patterns.push_back(pat);
         }
