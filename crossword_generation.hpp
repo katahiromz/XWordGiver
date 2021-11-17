@@ -1,6 +1,6 @@
 #pragma once
 
-#define CROSSWORD_GENERATION 15 // crossword_generation version
+#define CROSSWORD_GENERATION 16 // crossword_generation version
 
 #define _GNU_SOURCE
 #include <cstdio>
@@ -170,9 +170,9 @@ skip:;
 template <typename t_char>
 struct candidate_t {
     typedef std::basic_string<t_char> t_string;
-    int m_x = 0, m_y = 0;
-    bool m_vertical = false;
+    int m_x, m_y;
     t_string m_word;
+    bool m_vertical;
 };
 
 template <typename t_char>
@@ -1259,7 +1259,7 @@ struct from_words_t {
         t_char ch2 = m_board.get_on(x + 1, y);
         if (!is_letter(ch1) && !is_letter(ch2)) {
             t_char sz[2] = { ch0, 0 };
-            cands.push_back({ x, y, false, sz });
+            cands.push_back({ x, y, sz, false });
         }
 
         for (auto& word : m_words) {
@@ -1292,7 +1292,7 @@ struct from_words_t {
                     }
                 }
                 if (matched) {
-                    cands.push_back({x0, y, false, word});
+                    cands.push_back({x0, y, word, false});
                 }
             }
         }
@@ -1311,7 +1311,7 @@ struct from_words_t {
         t_char ch2 = m_board.get_on(x, y + 1);
         if (!is_letter(ch1) && !is_letter(ch2)) {
             t_char sz[2] = { ch0, 0 };
-            cands.push_back({ x, y, true, sz });
+            cands.push_back({ x, y, sz, true });
         }
 
         for (auto& word : m_words) {
@@ -1344,7 +1344,7 @@ struct from_words_t {
                     }
                 }
                 if (matched) {
-                    cands.push_back({x, y0, true, word});
+                    cands.push_back({x, y0, word, true});
                 }
             }
         }
@@ -1540,7 +1540,7 @@ struct from_words_t {
             return false;
 
         auto word = *m_words.begin();
-        candidate_t<t_char> cand = { 0, 0, false, word };
+        candidate_t<t_char> cand = { 0, 0, word, false };
         apply_candidate(cand);
         if (!generate_recurse())
             return false;
