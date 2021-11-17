@@ -1,6 +1,6 @@
 #pragma once
 
-#define CROSSWORD_GENERATION 16 // crossword_generation version
+#define CROSSWORD_GENERATION 17 // crossword_generation version
 
 #define _GNU_SOURCE
 #include <cstdio>
@@ -330,19 +330,20 @@ struct board_t : board_data_t<t_char> {
 
     // x, y: absolute coordinate
     t_string get_pat_x(int x, int y, int *px0 = nullptr) const {
+        t_string pat;
         if (!in_range(x, y) || get_at(x, y) == '#')
-            return t_string();
+            return pat;
 
-        int x0 = x;
+        int x0, x1;
+        x0 = x1 = x;
         while (get_at(x0 - 1, y) != '#') {
             --x0;
         }
-        int x1 = x;
+        int 
         while (get_at(x1 + 1, y) != '#') {
             ++x1;
         }
 
-        t_string pat;
         for (int x2 = x0; x2 <= x1; ++x2) {
             pat += get_at(x2, y);
         }
@@ -352,19 +353,19 @@ struct board_t : board_data_t<t_char> {
     }
     // x, y: absolute coordinate
     t_string get_pat_y(int x, int y, int *py0 = nullptr) const {
+        t_string pat;
         if (!in_range(x, y) || get_at(x, y) == '#')
-            return t_string();
+            return pat;
 
-        int y0 = y;
+        int y0, y1;
+        y0 = y1 = y;
         while (get_at(x, y0 - 1) != '#') {
             --y0;
         }
-        int y1 = y;
         while (get_at(x, y1 + 1) != '#') {
             ++y1;
         }
 
-        t_string pat;
         for (int y2 = y0; y2 <= y1; ++y2) {
             pat += get_at(x, y2);
         }
@@ -375,7 +376,7 @@ struct board_t : board_data_t<t_char> {
 
     bool is_corner(int x, int y) const {
         if (y == 0 || y == m_cy - 1) {
-            if (x == 0 || m_cx - 1)
+            if (x == 0 || x == m_cx - 1)
                 return true;
         }
         return false;
