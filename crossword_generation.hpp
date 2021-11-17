@@ -1,6 +1,6 @@
 #pragma once
 
-#define CROSSWORD_GENERATION 17 // crossword_generation version
+#define CROSSWORD_GENERATION 18 // crossword_generation version
 
 #define _GNU_SOURCE
 #include <cstdio>
@@ -339,7 +339,6 @@ struct board_t : board_data_t<t_char> {
         while (get_at(x0 - 1, y) != '#') {
             --x0;
         }
-        int 
         while (get_at(x1 + 1, y) != '#') {
             ++x1;
         }
