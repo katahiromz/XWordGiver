@@ -59,7 +59,7 @@
     - If there are no empty cells, "Find a solution" is not restricted.
     - Fixed a bug when the number of dictionaries is large.
     - The zoom is now aligned with the window when a file is opened.
-- 2021.XX.YY Ver.4.8.2
+- 2021.11.18 Ver.4.8.2
     - Fixed the bugs around "Generate from a word list".
     - Dragging with the middle mouse button is now possible.
     - Fine-tuned the max word length when linear symmetry.
@@ -436,7 +436,7 @@
     - 空白マスがない場合は「解を求める」を制限しない。
     - 辞書の個数が多い時の不具合を修正。
     - ファイルを開いたときにズームをウィンドウに合わせるようにした。
-- 2021年XX月YY日 ver.4.8.2
+- 2021年11月18日 ver.4.8.2
     - 「単語リストから自動生成」の周辺を修正。
     - マウスの中央ボタンでドラッグが可能に。
     - 線対称のときの最大単語長を微調整。
