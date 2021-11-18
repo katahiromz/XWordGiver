@@ -136,8 +136,8 @@ LANGUAGE LANG_ENGLISH, SUBLANG_DEFAULT
         MENUITEM SEPARATOR
         POPUP "&Zoom"
         {
-            MENUITEM "&Zoom in\tCtrl+]", ID_ZOOMIN
-            MENUITEM "&Zoom out\tCtrl+[", ID_ZOOMOUT
+            MENUITEM "&Zoom in\tCtrl+Wheel+Up", ID_ZOOMIN
+            MENUITEM "&Zoom out\tCtrl+Wheel+Down", ID_ZOOMOUT
             MENUITEM "Zoom &100%\tCtrl+\\", ID_ZOOM100
             MENUITEM SEPARATOR
             MENUITEM "Zoom 30%", ID_ZOOM30
