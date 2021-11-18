@@ -65,6 +65,7 @@
     - Fine-tuned the max word length when linear symmetry.
     - Fixed and improved the block patterns.
     - Properly handled the parse error when loading "data.json".
+- 2021.XX.YY Ver.4.8.3
 
 # 開発履歴 (Japanese)
 
@@ -442,3 +443,4 @@
     - 線対称のときの最大単語長を微調整。
     - 黒マスパターンを改良と修正。
     - 「data.json」の読み込み時にエラーを適切に処理するようにした。
+- 2021年XX月YY日 ver.4.8.3

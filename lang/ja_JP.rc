@@ -1302,8 +1302,8 @@ FONT 9, "MS UI Gothic"
 // RT_VERSION
 
 1 VERSIONINFO
-FILEVERSION     4, 8, 2, 0
-PRODUCTVERSION  4, 8, 2, 0
+FILEVERSION     4, 8, 3, 0
+PRODUCTVERSION  4, 8, 3, 0
 FILEOS          0x40004
 FILETYPE        0x1
 {
@@ -1313,10 +1313,10 @@ FILETYPE        0x1
         {
             VALUE "CompanyName", "片山博文MZ\0"
             VALUE "FileDescription", "クロスワード ギバー\0"
-            VALUE "FileVersion", "4.8.2\0"
+            VALUE "FileVersion", "4.8.3\0"
             VALUE "LegalCopyright", "Copyright (C) 2012-2020 片山博文MZ. All rights reserved.\0"
             VALUE "ProductName", "XWordGiver\0"
-            VALUE "ProductVersion", "4.8.2\0"
+            VALUE "ProductVersion", "4.8.3\0"
         }
     }
     BLOCK "VarFileInfo"
@@ -1330,7 +1330,7 @@ FILETYPE        0x1
 
 STRINGTABLE
 {
-    IDS_VERSION, "クロスワード ギバー ver.4.8.2\nby 片山博文MZ\n\nCopyright (C) 2012-2021 片山博文MZ.\nCopyright (C) 2021 スフィンクス.\nAll rights reserved."
+    IDS_VERSION, "クロスワード ギバー ver.4.8.3\nby 片山博文MZ\n\nCopyright (C) 2012-2021 片山博文MZ.\nCopyright (C) 2021 スフィンクス.\nAll rights reserved."
     IDS_APPNAME, "クロスワード ギバー"
     IDS_CANTLOAD, "ファイルが読み込めません。"
     IDS_WRONGFORMAT, "形式が間違っています。"
@@ -1343,7 +1343,7 @@ STRINGTABLE
     IDS_CANTACCEL, "アクセラレータの読み込みに失敗しました。"
     IDS_CANTREGWND, "ウィンドウクラスの登録に失敗しました。"
     IDS_CANTMAKEWND, "ウィンドウ作成に失敗しました。"
-    IDS_APPTITLE, "クロスワード ギバー ver.4.8.2 - %s"
+    IDS_APPTITLE, "クロスワード ギバー ver.4.8.3 - %s"
     IDS_MADEPROBLEM, "問題を作成しました。\n\n計算時間: %u.%u[秒]"
     IDS_CANTMAKEPROBLEM, "問題を作成できませんでした。\n\n辞書の設定や黒マスの配置やルールを確認して下さい。\n\n計算時間: %u.%u[秒]"
     IDS_ENTERINT, "2以上256以下の整数を入力して下さい。"
@@ -1362,7 +1362,7 @@ STRINGTABLE
     IDS_NOWSOLVING, "計算しています...（%u.%u秒経過） Retry×%u"
     IDS_HLINE, "――――――――――――――"
     IDS_MONOFONT, "ＭＳ ゴシック"
-    IDS_APPTITLE2, "クロスワード ギバー ver.4.8.2 (%s) - %s"
+    IDS_APPTITLE2, "クロスワード ギバー ver.4.8.3 (%s) - %s"
     IDS_CROSSWORD, "クロスワード"
     IDS_ANSWER, "答え："
     IDS_SETPORTRAIT, "縦長の用紙設定で印刷して下さい。"
@@ -1426,8 +1426,8 @@ STRINGTABLE
     IDS_VINPUT, "ﾀﾃ入力"
     IDS_ABC, "英字"
     IDS_DICTIONARY, "辞書"
-    IDS_APPINFO, "クロスワード ギバー ver.4.8.2"
-    IDS_APPINFO2, "クロスワード ギバー ver.4.8.2 (%s)"
+    IDS_APPINFO, "クロスワード ギバー ver.4.8.3"
+    IDS_APPINFO2, "クロスワード ギバー ver.4.8.3 (%s)"
     IDS_HINPUT2, "ﾖｺ\n入\n力"
     IDS_VINPUT2, "ﾀﾃ\n入\n力"
     IDS_KANA, "カナ"
