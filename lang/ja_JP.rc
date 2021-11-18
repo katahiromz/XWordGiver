@@ -136,8 +136,8 @@ LANGUAGE LANG_JAPANESE, SUBLANG_DEFAULT
         MENUITEM SEPARATOR
         POPUP "ズーム(&Z)"
         {
-            MENUITEM "ズームイン(&Z)\tCtrl+ホイール+↑", ID_ZOOMIN
-            MENUITEM "ズームアウト(&Z)\tCtrl+ホイール+↓", ID_ZOOMOUT
+            MENUITEM "ズームイン(&Z)\tCtrl+ホイール↑", ID_ZOOMIN
+            MENUITEM "ズームアウト(&Z)\tCtrl+ホイール↓", ID_ZOOMOUT
             MENUITEM "ズーム &100%\tCtrl+\\", ID_ZOOM100
             MENUITEM SEPARATOR
             MENUITEM "ズーム 30%", ID_ZOOM30
