@@ -3738,14 +3738,26 @@ void __fastcall XgDrawMarkWord(HDC hdc, LPSIZE psiz)
             ch = new_ch;
         }
 
-        if (xg_bLowercase) {
-            WCHAR new_ch;
-            LCMapStringW(JPN_LOCALE, LCMAP_FULLWIDTH | LCMAP_LOWERCASE, &ch, 1, &new_ch, 1);
-            ch = new_ch;
+        if (xg_imode == xg_im_ABC || xg_imode == xg_im_DIGITS) {
+            if (xg_bLowercase) {
+                WCHAR new_ch;
+                LCMapStringW(JPN_LOCALE, LCMAP_HALFWIDTH | LCMAP_LOWERCASE, &ch, 1, &new_ch, 1);
+                ch = new_ch;
+            } else {
+                WCHAR new_ch;
+                LCMapStringW(JPN_LOCALE, LCMAP_HALFWIDTH | LCMAP_UPPERCASE, &ch, 1, &new_ch, 1);
+                ch = new_ch;
+            }
         } else {
-            WCHAR new_ch;
-            LCMapStringW(JPN_LOCALE, LCMAP_FULLWIDTH | LCMAP_UPPERCASE, &ch, 1, &new_ch, 1);
-            ch = new_ch;
+            if (xg_bLowercase) {
+                WCHAR new_ch;
+                LCMapStringW(JPN_LOCALE, LCMAP_FULLWIDTH | LCMAP_LOWERCASE, &ch, 1, &new_ch, 1);
+                ch = new_ch;
+            } else {
+                WCHAR new_ch;
+                LCMapStringW(JPN_LOCALE, LCMAP_FULLWIDTH | LCMAP_UPPERCASE, &ch, 1, &new_ch, 1);
+                ch = new_ch;
+            }
         }
 
         StringCbPrintf(sz, sizeof(sz), L"%c", ch);
@@ -3909,10 +3921,26 @@ void __fastcall XgDrawXWord_NormalView(XG_Board& xw, HDC hdc, LPSIZE psiz, bool 
                 LCMapStringW(JPN_LOCALE, LCMAP_FULLWIDTH | LCMAP_HIRAGANA, &ch, 1, &new_ch, 1);
                 ch = new_ch;
             }
-            if (xg_bLowercase) {
-                WCHAR new_ch;
-                LCMapStringW(JPN_LOCALE, LCMAP_FULLWIDTH | LCMAP_LOWERCASE, &ch, 1, &new_ch, 1);
-                ch = new_ch;
+            if (xg_imode == xg_im_ABC || xg_imode == xg_im_DIGITS) {
+                if (xg_bLowercase) {
+                    WCHAR new_ch;
+                    LCMapStringW(JPN_LOCALE, LCMAP_HALFWIDTH | LCMAP_LOWERCASE, &ch, 1, &new_ch, 1);
+                    ch = new_ch;
+                } else {
+                    WCHAR new_ch;
+                    LCMapStringW(JPN_LOCALE, LCMAP_HALFWIDTH | LCMAP_UPPERCASE, &ch, 1, &new_ch, 1);
+                    ch = new_ch;
+                }
+            } else {
+                if (xg_bLowercase) {
+                    WCHAR new_ch;
+                    LCMapStringW(JPN_LOCALE, LCMAP_FULLWIDTH | LCMAP_LOWERCASE, &ch, 1, &new_ch, 1);
+                    ch = new_ch;
+                } else {
+                    WCHAR new_ch;
+                    LCMapStringW(JPN_LOCALE, LCMAP_FULLWIDTH | LCMAP_UPPERCASE, &ch, 1, &new_ch, 1);
+                    ch = new_ch;
+                }
             }
 
             if (ch != ZEN_BLACK)
@@ -4245,10 +4273,27 @@ void __fastcall XgDrawXWord_SkeletonView(XG_Board& xw, HDC hdc, LPSIZE psiz, boo
                 LCMapStringW(JPN_LOCALE, LCMAP_FULLWIDTH | LCMAP_HIRAGANA, &ch, 1, &new_ch, 1);
                 ch = new_ch;
             }
-            if (xg_bLowercase) {
-                WCHAR new_ch;
-                LCMapStringW(JPN_LOCALE, LCMAP_FULLWIDTH | LCMAP_LOWERCASE, &ch, 1, &new_ch, 1);
-                ch = new_ch;
+
+            if (xg_imode == xg_im_ABC || xg_imode == xg_im_DIGITS) {
+                if (xg_bLowercase) {
+                    WCHAR new_ch;
+                    LCMapStringW(JPN_LOCALE, LCMAP_FULLWIDTH | LCMAP_LOWERCASE, &ch, 1, &new_ch, 1);
+                    ch = new_ch;
+                } else {
+                    WCHAR new_ch;
+                    LCMapStringW(JPN_LOCALE, LCMAP_FULLWIDTH | LCMAP_UPPERCASE, &ch, 1, &new_ch, 1);
+                    ch = new_ch;
+                }
+            } else {
+                if (xg_bLowercase) {
+                    WCHAR new_ch;
+                    LCMapStringW(JPN_LOCALE, LCMAP_HALFWIDTH | LCMAP_LOWERCASE, &ch, 1, &new_ch, 1);
+                    ch = new_ch;
+                } else {
+                    WCHAR new_ch;
+                    LCMapStringW(JPN_LOCALE, LCMAP_HALFWIDTH | LCMAP_UPPERCASE, &ch, 1, &new_ch, 1);
+                    ch = new_ch;
+                }
             }
 
             if (ch != ZEN_BLACK) {
