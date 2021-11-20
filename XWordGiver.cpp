@@ -3738,24 +3738,24 @@ void __fastcall XgDrawMarkWord(HDC hdc, LPSIZE psiz)
             ch = new_ch;
         }
 
-        if (xg_imode == xg_im_ABC || xg_imode == xg_im_DIGITS) {
+        if (XgIsCharKanaW(ch) || ch == ZEN_PROLONG ||
+            xg_imode == xg_im_KANA || xg_imode == xg_im_KANJI)
+        {
+            WCHAR new_ch;
             if (xg_bLowercase) {
-                WCHAR new_ch;
-                LCMapStringW(JPN_LOCALE, LCMAP_HALFWIDTH | LCMAP_LOWERCASE, &ch, 1, &new_ch, 1);
-                ch = new_ch;
-            } else {
-                WCHAR new_ch;
-                LCMapStringW(JPN_LOCALE, LCMAP_HALFWIDTH | LCMAP_UPPERCASE, &ch, 1, &new_ch, 1);
-                ch = new_ch;
-            }
-        } else {
-            if (xg_bLowercase) {
-                WCHAR new_ch;
                 LCMapStringW(JPN_LOCALE, LCMAP_FULLWIDTH | LCMAP_LOWERCASE, &ch, 1, &new_ch, 1);
                 ch = new_ch;
             } else {
-                WCHAR new_ch;
                 LCMapStringW(JPN_LOCALE, LCMAP_FULLWIDTH | LCMAP_UPPERCASE, &ch, 1, &new_ch, 1);
+                ch = new_ch;
+            }
+        } else {
+            WCHAR new_ch;
+            if (xg_bLowercase) {
+                LCMapStringW(JPN_LOCALE, LCMAP_HALFWIDTH | LCMAP_LOWERCASE, &ch, 1, &new_ch, 1);
+                ch = new_ch;
+            } else {
+                LCMapStringW(JPN_LOCALE, LCMAP_HALFWIDTH | LCMAP_UPPERCASE, &ch, 1, &new_ch, 1);
                 ch = new_ch;
             }
         }
@@ -3921,24 +3921,25 @@ void __fastcall XgDrawXWord_NormalView(XG_Board& xw, HDC hdc, LPSIZE psiz, bool 
                 LCMapStringW(JPN_LOCALE, LCMAP_FULLWIDTH | LCMAP_HIRAGANA, &ch, 1, &new_ch, 1);
                 ch = new_ch;
             }
-            if (xg_imode == xg_im_ABC || xg_imode == xg_im_DIGITS) {
+
+            if (XgIsCharKanaW(ch) || ch == ZEN_PROLONG ||
+                xg_imode == xg_im_KANA || xg_imode == xg_im_KANJI)
+            {
+                WCHAR new_ch;
                 if (xg_bLowercase) {
-                    WCHAR new_ch;
-                    LCMapStringW(JPN_LOCALE, LCMAP_HALFWIDTH | LCMAP_LOWERCASE, &ch, 1, &new_ch, 1);
-                    ch = new_ch;
-                } else {
-                    WCHAR new_ch;
-                    LCMapStringW(JPN_LOCALE, LCMAP_HALFWIDTH | LCMAP_UPPERCASE, &ch, 1, &new_ch, 1);
-                    ch = new_ch;
-                }
-            } else {
-                if (xg_bLowercase) {
-                    WCHAR new_ch;
                     LCMapStringW(JPN_LOCALE, LCMAP_FULLWIDTH | LCMAP_LOWERCASE, &ch, 1, &new_ch, 1);
                     ch = new_ch;
                 } else {
-                    WCHAR new_ch;
                     LCMapStringW(JPN_LOCALE, LCMAP_FULLWIDTH | LCMAP_UPPERCASE, &ch, 1, &new_ch, 1);
+                    ch = new_ch;
+                }
+            } else {
+                WCHAR new_ch;
+                if (xg_bLowercase) {
+                    LCMapStringW(JPN_LOCALE, LCMAP_HALFWIDTH | LCMAP_LOWERCASE, &ch, 1, &new_ch, 1);
+                    ch = new_ch;
+                } else {
+                    LCMapStringW(JPN_LOCALE, LCMAP_HALFWIDTH | LCMAP_UPPERCASE, &ch, 1, &new_ch, 1);
                     ch = new_ch;
                 }
             }
@@ -4274,7 +4275,9 @@ void __fastcall XgDrawXWord_SkeletonView(XG_Board& xw, HDC hdc, LPSIZE psiz, boo
                 ch = new_ch;
             }
 
-            if (xg_imode == xg_im_ABC || xg_imode == xg_im_DIGITS) {
+            if (XgIsCharKanaW(ch) || ch == ZEN_PROLONG ||
+                xg_imode == xg_im_KANA || xg_imode == xg_im_KANJI)
+            {
                 if (xg_bLowercase) {
                     WCHAR new_ch;
                     LCMapStringW(JPN_LOCALE, LCMAP_FULLWIDTH | LCMAP_LOWERCASE, &ch, 1, &new_ch, 1);
