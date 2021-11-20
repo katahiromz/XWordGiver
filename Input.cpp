@@ -791,15 +791,20 @@ void __fastcall XgOnKey(HWND hwnd, UINT vk, bool fDown, int /*cRepeat*/, UINT /*
     default:
         if (::GetKeyState(VK_CONTROL) < 0 && ::GetKeyState(VK_SHIFT) < 0) {
             // [Shift]キーと[Ctrl]キーが押されている。
-            WCHAR sz[2];
+            WCHAR sz1[2], sz2[2];
             BYTE state[256] = { 0 };
-            state[VK_SHIFT] = state[VK_LSHIFT] = state[VK_RSHIFT] = 1;
-            if (::ToUnicode(vk, 0, state, sz, 2, 0) > 0) {
-                WCHAR ch = sz[0];
-                if (ch == L'^' || ch == L'`' || ch == L'\'' || ch == L':') {
-                    // アクセント記号。
-                    xg_chAccent = ch;
-                }
+            // 仮想キーコードを文字に変換。
+            ::ToUnicode(vk, 0, state, sz1, _countof(sz1), 0); // [Shift]なしの場合。
+            state[VK_SHIFT] = state[VK_LSHIFT] = state[VK_RSHIFT] = 0x80;
+            ::ToUnicode(vk, 0, state, sz2, _countof(sz2), 0); // [Shift]ありの場合。
+            // アクセント記号か？
+            WCHAR ch1 = sz1[0], ch2 = sz2[0];
+            if (wcschr(L"^`':", ch1) != NULL) {
+                xg_chAccent = ch1;
+            } else if (wcschr(L"^`':", ch2) != NULL) {
+                xg_chAccent = ch2;
+            } else {
+                xg_chAccent = 0;
             }
         }
         break;
