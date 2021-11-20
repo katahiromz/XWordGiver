@@ -3737,6 +3737,7 @@ void __fastcall XgDrawMarkWord(HDC hdc, LPSIZE psiz)
             LCMapStringW(JPN_LOCALE, LCMAP_FULLWIDTH | LCMAP_HIRAGANA, &ch, 1, &new_ch, 1);
             ch = new_ch;
         }
+
         if (xg_bLowercase) {
             WCHAR new_ch;
             LCMapStringW(JPN_LOCALE, LCMAP_FULLWIDTH | LCMAP_LOWERCASE, &ch, 1, &new_ch, 1);

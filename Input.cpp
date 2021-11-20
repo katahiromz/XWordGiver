@@ -439,14 +439,15 @@ void __fastcall XgOnChar(HWND hwnd, TCHAR ch, int cRepeat)
             // 候補ウィンドウを破棄する。
             XgDestroyCandsWnd();
 
+            // 英字小文字を大文字に変換。
+            WCHAR sz[2] = { ch, 0 };
+            ::CharUpperW(sz);
+            ch = sz[0];
+
             if (xg_chAccent) { // アクセントがあるか？
                 // アクセント記号付きの文字にする。
                 ch = XgConvertAccent(xg_chAccent, ch);
             } else {
-                // 英字小文字を大文字に変換。
-                if (XgIsCharHankakuLowerW(ch)) {
-                    ch = ch + L'A' - L'a';
-                }
                 // 半角英字を全角英字に変換。
                 ch = ZEN_LARGE_A + (ch - L'A');
             }
