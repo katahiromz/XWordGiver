@@ -155,6 +155,15 @@ WCHAR XgConvertAccent(WCHAR chAccent, WCHAR ch)
         case L'Y': case L'y':
             ch = 0x00DD; // LATIN CAPITAL LETTER Y WITH ACUTE
             break;
+        case L'G': case L'g':
+            ch = 0x01F4; // LATIN CAPITAL LETTER G WITH ACUTE
+            break;
+        case L'N': case L'n':
+            ch = 0x0143; // LATIN CAPITAL LETTER N WITH ACUTE
+            break;
+        case L'W': case L'w':
+            ch = 0x1E82; // LATIN CAPITAL LETTER W WITH ACUTE
+            break;
         }
         break;
     case L',':
@@ -481,22 +490,16 @@ void __fastcall XgOnChar(HWND hwnd, TCHAR ch, int cRepeat)
 
             XgEnsureCaretVisible(hwnd);
             XgUpdateImage(hwnd);
-        } else if (0x0080 <= ch && ch <= 0x00FF) { // ラテン補助
+        } else if ((0x0080 <= ch && ch <= 0x00FF) ||  // ラテン補助
+                   (0x0100 <= ch && ch <= 0x017F) || // ラテン文字拡張A
+                   (0x1E00 <= ch && ch <= 0x1EFF)) // ラテン文字拡張追加
+        {
             // 候補ウィンドウを破棄する。
             XgDestroyCandsWnd();
 
-            sa2->ch = ch;
-            xg_ubUndoBuffer.Commit(UC_SETAT, sa1, sa2);
-            xg_xword.SetAt(xg_caret_pos, ch);
-
-            if (xg_bCharFeed)
-                XgCharFeed(hwnd);
-
-            XgEnsureCaretVisible(hwnd);
-            XgUpdateImage(hwnd);
-        } else if (0x0100 <= ch && ch <= 0x017F) { // ラテン文字拡張A
-            // 候補ウィンドウを破棄する。
-            XgDestroyCandsWnd();
+            WCHAR sz[2] = { ch, 0 };
+            ::CharUpperW(sz);
+            ch = sz[0];
 
             sa2->ch = ch;
             xg_ubUndoBuffer.Commit(UC_SETAT, sa1, sa2);
@@ -960,7 +963,8 @@ katakana:;
         if (XgIsCharHankakuUpperW(ch) || XgIsCharHankakuLowerW(ch) ||
             XgIsCharZenkakuUpperW(ch) || XgIsCharZenkakuLowerW(ch) ||
             (0x0080 <= ch && ch <= 0x00FF) || // ラテン補助
-            (0x0100 <= ch && ch <= 0x017F)) // ラテン文字拡張A
+            (0x0100 <= ch && ch <= 0x017F) || // ラテン文字拡張A
+            (0x1E00 <= ch && ch <= 0x1EFF)) // ラテン文字拡張追加
         {
             WCHAR sz[2];
             LCMapStringW(JPN_LOCALE,
