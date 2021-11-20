@@ -10,6 +10,9 @@
 // 入力パレットを表示するか？
 bool xg_bShowInputPalette = false;
 
+// 直前のアクセント記号。
+WCHAR xg_chAccent = 0;
+
 // 入力方向を切り替える。
 void __fastcall XgInputDirection(HWND hwnd, INT nDirection)
 {
@@ -43,6 +46,7 @@ void __fastcall XgInputDirection(HWND hwnd, INT nDirection)
 
     XgUpdateStatusBar(hwnd);
     xg_prev_vk = 0;
+    xg_chAccent = 0;
 }
 
 // 文字送りを切り替える。
@@ -69,6 +73,7 @@ void __fastcall XgSetCharFeed(HWND hwnd, INT nMode)
     }
 
     xg_prev_vk = 0;
+    xg_chAccent = 0;
 }
 
 // 改行する。
@@ -93,6 +98,7 @@ void __fastcall XgReturn(HWND hwnd)
     XgUpdateImage(hwnd);
 
     xg_prev_vk = 0;
+    xg_chAccent = 0;
 }
 
 // 二重マス切り替え。
@@ -155,6 +161,7 @@ void __fastcall XgCharFeed(HWND hwnd)
 
     XgUpdateStatusBar(hwnd);
     xg_prev_vk = 0;
+    xg_chAccent = 0;
 }
 
 // BackSpaceを実行する。
@@ -197,6 +204,7 @@ void __fastcall XgCharBack(HWND hwnd)
 
     XgUpdateStatusBar(hwnd);
     xg_prev_vk = 0;
+    xg_chAccent = 0;
 }
 
 // 文字が入力された。
@@ -223,6 +231,7 @@ void __fastcall XgOnChar(HWND hwnd, TCHAR ch, int cRepeat)
             XgUpdateImage(hwnd);
         }
         xg_prev_vk = 0;
+        xg_chAccent = 0;
     } else if (ch == L' ') {
         // 候補ウィンドウを破棄する。
         XgDestroyCandsWnd();
@@ -253,6 +262,7 @@ void __fastcall XgOnChar(HWND hwnd, TCHAR ch, int cRepeat)
             }
         }
         xg_prev_vk = 0;
+        xg_chAccent = 0;
     } else if (ch == L'#') {
         // 候補ウィンドウを破棄する。
         XgDestroyCandsWnd();
@@ -267,19 +277,111 @@ void __fastcall XgOnChar(HWND hwnd, TCHAR ch, int cRepeat)
         }
     } else if (xg_imode == xg_im_ABC) {
         // 英字入力の場合。
-        if (::GetAsyncKeyState(VK_CONTROL) < 0) {
-            // [Ctrl]キーが押されている。
-        } else if (XgIsCharHankakuUpperW(ch) || XgIsCharHankakuLowerW(ch)) {
+        if (XgIsCharHankakuUpperW(ch) || XgIsCharHankakuLowerW(ch)) {
             // 候補ウィンドウを破棄する。
             XgDestroyCandsWnd();
 
-            // 英字小文字を大文字に変換。
-            if (XgIsCharHankakuLowerW(ch)) {
-                ch = ch + L'A' - L'a';
+            if (xg_chAccent) { // アクセントがあるか？
+                switch (xg_chAccent) {
+                case L'^':
+                    switch (ch) {
+                    case L'A': case L'a':
+                        ch = 0x00C2; // Â
+                        break;
+                    case L'I': case L'i':
+                        ch = 0x00CE; // Î
+                        break;
+                    case L'U': case L'u':
+                        ch = 0x00DB; // Û
+                        break;
+                    case L'E': case L'e':
+                        ch = 0x00CA; // Ê
+                        break;
+                    case L'O': case L'o':
+                        ch = 0x00D4; // Ô
+                        break;
+                    case L'Y': case L'y':
+                        ch = 0x0176; // LATIN CAPITAL LETTER Y WITH CIRCUMFLEX
+                        break;
+                    }
+                    break;
+                case L'`':
+                    switch (ch) {
+                    case L'A': case L'a':
+                        ch = 0x00C0; // À
+                        break;
+                    case L'I': case L'i':
+                        ch = 0x00CC; // LATIN CAPITAL LETTER I WITH GRAVE
+                        break;
+                    case L'U': case L'u':
+                        ch = 0x00D9; // Ù
+                        break;
+                    case L'E': case L'e':
+                        ch = 0x00C8; // È
+                        break;
+                    case L'O': case L'o':
+                        ch = 0x00D2; // LATIN CAPITAL LETTER O WITH GRAVE
+                        break;
+                    case L'Y': case L'y':
+                        ch = 0x1EF2; // LATIN CAPITAL LETTER Y WITH GRAVE
+                        break;
+                    }
+                    break;
+                case L':':
+                    switch (ch) {
+                    case L'A': case L'a':
+                        ch = 0x00C4; // Ä
+                        break;
+                    case L'I': case L'i':
+                        ch = 0x00CF; // Ï
+                        break;
+                    case L'U': case L'u':
+                        ch = 0x00DC; // Ü
+                        break;
+                    case L'E': case L'e':
+                        ch = 0x00CB; // Ë
+                        break;
+                    case L'O': case L'o':
+                        ch = 0x00D6; // Ö
+                        break;
+                    case L'Y': case L'y':
+                        ch = 0x0178; // Ÿ
+                        break;
+                    }
+                    break;
+                    break;
+                case L'\'':
+                    switch (ch) {
+                    case L'A': case L'a':
+                        ch = 0x00C1; // LATIN CAPITAL LETTER A WITH ACUTE
+                        break;
+                    case L'I': case L'i':
+                        ch = 0x00CD; // LATIN CAPITAL LETTER I WITH ACUTE
+                        break;
+                    case L'U': case L'u':
+                        ch = 0x00DA; // LATIN CAPITAL LETTER U WITH ACUTE
+                        break;
+                    case L'E': case L'e':
+                        ch = 0x00C9; // É
+                        break;
+                    case L'O': case L'o':
+                        ch = 0x00D3; // LATIN CAPITAL LETTER O WITH ACUTE
+                        break;
+                    case L'Y': case L'y':
+                        ch = 0x00DD; // LATIN CAPITAL LETTER Y WITH ACUTE
+                        break;
+                    }
+                    break;
+                }
+            } else {
+                // 英字小文字を大文字に変換。
+                if (XgIsCharHankakuLowerW(ch)) {
+                    ch = ch + L'A' - L'a';
+                }
+                // 半角英字を全角英字に変換。
+                ch = ZEN_LARGE_A + (ch - L'A');
             }
-
-            // 半角英字を全角英字に変換。
-            ch = ZEN_LARGE_A + (ch - L'A');
+            xg_chAccent = 0; // アクセントを解除する。
 
             sa2->ch = ch;
             xg_ubUndoBuffer.Commit(UC_SETAT, sa1, sa2);
@@ -319,15 +421,39 @@ void __fastcall XgOnChar(HWND hwnd, TCHAR ch, int cRepeat)
 
             XgEnsureCaretVisible(hwnd);
             XgUpdateImage(hwnd);
+        } else if (0x0080 <= ch && ch <= 0x00FF) { // ラテン補助
+            // 候補ウィンドウを破棄する。
+            XgDestroyCandsWnd();
+
+            sa2->ch = ch;
+            xg_ubUndoBuffer.Commit(UC_SETAT, sa1, sa2);
+            xg_xword.SetAt(xg_caret_pos, ch);
+
+            if (xg_bCharFeed)
+                XgCharFeed(hwnd);
+
+            XgEnsureCaretVisible(hwnd);
+            XgUpdateImage(hwnd);
+        } else if (0x0100 <= ch && ch <= 0x017F) { // ラテン文字拡張A
+            // 候補ウィンドウを破棄する。
+            XgDestroyCandsWnd();
+
+            sa2->ch = ch;
+            xg_ubUndoBuffer.Commit(UC_SETAT, sa1, sa2);
+            xg_xword.SetAt(xg_caret_pos, ch);
+
+            if (xg_bCharFeed)
+                XgCharFeed(hwnd);
+
+            XgEnsureCaretVisible(hwnd);
+            XgUpdateImage(hwnd);
         }
     } else if (xg_imode == xg_im_KANA) {
         WCHAR newch = 0;
         // カナ入力の場合。
         if (::GetAsyncKeyState(VK_CONTROL) < 0) {
             // [Ctrl]キーが押されている。
-        }
-        else if (XgIsCharHankakuUpperW(ch) || XgIsCharHankakuLowerW(ch))
-        {
+        } else if (XgIsCharHankakuUpperW(ch) || XgIsCharHankakuLowerW(ch)) {
             ch = (WCHAR)(UINT_PTR)CharUpperW((LPWSTR)(UINT_PTR)ch);
 
             // ローマ字入力。
@@ -485,8 +611,10 @@ void __fastcall XgOnChar(HWND hwnd, TCHAR ch, int cRepeat)
                     }
                     break;
                 }
-                if (newch)
+                if (newch) {
                     xg_prev_vk = 0;
+                    xg_chAccent = 0;
+                }
             } else if (xg_prev_vk == L'C' && ch == 'H') {
                 xg_prev_vk = L'T';
             } else {
@@ -512,12 +640,15 @@ katakana:;
             }
             if (newch) {
                 xg_prev_vk = 0;
+                xg_chAccent = 0;
             }
         } else if (ch == '-' || ch == ZEN_PROLONG) {
             newch = ZEN_PROLONG;
             xg_prev_vk = 0;
+            xg_chAccent = 0;
         } else {
             xg_prev_vk = 0;
+            xg_chAccent = 0;
         }
 
         if (newch) {
@@ -619,16 +750,19 @@ void __fastcall XgOnKey(HWND hwnd, UINT vk, bool fDown, int /*cRepeat*/, UINT /*
             ::DestroyMenu(hMenu);
         }
         xg_prev_vk = 0;
+        xg_chAccent = 0;
         break;
 
     case VK_PRIOR:  // PgUpキー。
         ::SendMessageW(hwnd, WM_VSCROLL, MAKEWPARAM(SB_PAGEUP, 0), 0);
         xg_prev_vk = 0;
+        xg_chAccent = 0;
         break;
 
     case VK_NEXT:   // PgDnキー。
         ::SendMessageW(hwnd, WM_VSCROLL, MAKEWPARAM(SB_PAGEDOWN, 0), 0);
         xg_prev_vk = 0;
+        xg_chAccent = 0;
         break;
 
     case VK_DELETE:
@@ -651,9 +785,23 @@ void __fastcall XgOnKey(HWND hwnd, UINT vk, bool fDown, int /*cRepeat*/, UINT /*
             }
         }
         xg_prev_vk = 0;
+        xg_chAccent = 0;
         break;
 
     default:
+        if (::GetKeyState(VK_CONTROL) < 0 && ::GetKeyState(VK_SHIFT) < 0) {
+            // [Shift]キーと[Ctrl]キーが押されている。
+            WCHAR sz[2];
+            BYTE state[256] = { 0 };
+            state[VK_SHIFT] = state[VK_LSHIFT] = state[VK_RSHIFT] = 1;
+            if (::ToUnicode(vk, 0, state, sz, 2, 0) > 0) {
+                WCHAR ch = sz[0];
+                if (ch == L'^' || ch == L'`' || ch == L'\'' || ch == L':') {
+                    // アクセント記号。
+                    xg_chAccent = ch;
+                }
+            }
+        }
         break;
     }
 }
@@ -745,7 +893,9 @@ katakana:;
         }
     } else if (xg_imode == xg_im_ABC) {
         if (XgIsCharHankakuUpperW(ch) || XgIsCharHankakuLowerW(ch) ||
-            XgIsCharZenkakuUpperW(ch) || XgIsCharZenkakuLowerW(ch))
+            XgIsCharZenkakuUpperW(ch) || XgIsCharZenkakuLowerW(ch) ||
+            (0x0080 <= ch && ch <= 0x00FF) || // ラテン補助
+            (0x0100 <= ch && ch <= 0x017F)) // ラテン文字拡張A
         {
             WCHAR sz[2];
             LCMapStringW(JPN_LOCALE,
@@ -1045,7 +1195,9 @@ void __fastcall XgSetInputModeFromDict(HWND hwnd)
     } else if (XgIsCharZenkakuNumericW(ch) || XgIsCharHankakuNumericW(ch)) {
         XgSetInputMode(hwnd, xg_im_DIGITS);
     } else if (XgIsCharZenkakuUpperW(ch) || XgIsCharZenkakuLowerW(ch) ||
-               XgIsCharHankakuUpperW(ch) || XgIsCharHankakuLowerW(ch))
+               XgIsCharHankakuUpperW(ch) || XgIsCharHankakuLowerW(ch) ||
+               (0x0080 <= ch && ch <= 0x00FF) || // ラテン補助
+               (0x0100 <= ch && ch <= 0x017F)) // ラテン文字拡張A
     {
         XgSetInputMode(hwnd, xg_im_ABC);
     }
