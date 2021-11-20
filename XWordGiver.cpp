@@ -3736,6 +3736,10 @@ void __fastcall XgDrawMarkWord(HDC hdc, LPSIZE psiz)
             WCHAR new_ch;
             LCMapStringW(JPN_LOCALE, LCMAP_FULLWIDTH | LCMAP_HIRAGANA, &ch, 1, &new_ch, 1);
             ch = new_ch;
+        } else {
+            WCHAR new_ch;
+            LCMapStringW(JPN_LOCALE, LCMAP_FULLWIDTH | LCMAP_KATAKANA, &ch, 1, &new_ch, 1);
+            ch = new_ch;
         }
 
         if (XgIsCharKanaW(ch) || ch == ZEN_PROLONG ||
@@ -3919,6 +3923,10 @@ void __fastcall XgDrawXWord_NormalView(XG_Board& xw, HDC hdc, LPSIZE psiz, bool 
             if (xg_bHiragana) {
                 WCHAR new_ch;
                 LCMapStringW(JPN_LOCALE, LCMAP_FULLWIDTH | LCMAP_HIRAGANA, &ch, 1, &new_ch, 1);
+                ch = new_ch;
+            } else {
+                WCHAR new_ch;
+                LCMapStringW(JPN_LOCALE, LCMAP_FULLWIDTH | LCMAP_KATAKANA, &ch, 1, &new_ch, 1);
                 ch = new_ch;
             }
 
@@ -4272,6 +4280,10 @@ void __fastcall XgDrawXWord_SkeletonView(XG_Board& xw, HDC hdc, LPSIZE psiz, boo
             if (xg_bHiragana) {
                 WCHAR new_ch;
                 LCMapStringW(JPN_LOCALE, LCMAP_FULLWIDTH | LCMAP_HIRAGANA, &ch, 1, &new_ch, 1);
+                ch = new_ch;
+            } else {
+                WCHAR new_ch;
+                LCMapStringW(JPN_LOCALE, LCMAP_FULLWIDTH | LCMAP_KATAKANA, &ch, 1, &new_ch, 1);
                 ch = new_ch;
             }
 
