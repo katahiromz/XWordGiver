@@ -51,6 +51,10 @@ public:
         std::vector<std::wstring> items;
         mstr_split(items, str, L"\n");
         for (auto& item : items) {
+            // コメントは無視する。
+            if (item.size() && item[0] == L'#')
+                continue;
+            // タブ区切りでヒントを取得する。
             size_t ich = item.find(L'\t');
             std::wstring hint;
             if (ich != item.npos) {
@@ -62,10 +66,25 @@ public:
                 }
                 xg_str_trim(hint);
             }
-            xg_str_replace_all(item, L"-", L"");
-            xg_str_replace_all(item, L"'", L"");
+            // ハイフン、アポストロフィ、ピリオド、カンマを取り除く。
+            std::wstring tmp;
+            for (auto ch : item) {
+                if (ch == L'-' || ch == 0xFF0D)
+                    continue;
+                if (ch == L'\'' || ch == 0xFF07)
+                    continue;
+                if (ch == L'.' || ch == 0xFF0E)
+                    continue;
+                if (ch == L',' || ch == 0xFF0C)
+                    continue;
+                tmp += ch;
+            }
+            item = std::move(tmp);
+            // 前後の空白を取り除く。
             xg_str_trim(item);
+            // 文字列を標準化。
             item = XgNormalizeString(item);
+            // 空でなければ追加。
             if (!item.empty()) {
                 if (hint.size())
                     s_dict[item] = hint;

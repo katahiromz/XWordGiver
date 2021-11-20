@@ -146,6 +146,21 @@ void XgReadUnicodeLine(LPWSTR pchLine)
         xg_str_replace_all(entry.m_word,
             std::wstring(xg_small[i]), std::wstring(xg_large[i]));
 
+    // ハイフン、アポストロフィ、ピリオド、カンマを取り除く。
+    std::wstring tmp;
+    for (auto ch : entry.m_word) {
+        if (ch == L'-' || ch == 0xFF0D)
+            continue;
+        if (ch == L'\'' || ch == 0xFF07)
+            continue;
+        if (ch == L'.' || ch == 0xFF0E)
+            continue;
+        if (ch == L',' || ch == 0xFF0C)
+            continue;
+        tmp += ch;
+    }
+    entry.m_word = std::move(tmp);
+
     // 単語とヒントを登録する。一字以下の単語は登録しない。
     if (entry.m_word.size() > 1) {
         if (pchHint) {
