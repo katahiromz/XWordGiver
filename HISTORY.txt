@@ -67,6 +67,7 @@
     - Properly handled the parse error when loading "data.json".
 - 2021.XX.YY Ver.4.8.3
     - Supported French input (Ctrl+Shift+^ A for Â etc.).
+    - Added a French dictionary.
 
 # 開発履歴 (Japanese)
 
@@ -446,3 +447,4 @@
     - 「data.json」の読み込み時にエラーを適切に処理するようにした。
 - 2021年XX月YY日 ver.4.8.3
     - フランス語入力をサポート (Ctrl+Shift+^ A for Â etc.)。
+    - フランス語辞書を追加。
