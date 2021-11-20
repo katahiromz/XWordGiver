@@ -197,12 +197,20 @@ WCHAR XgConvertAccent(WCHAR chAccent, WCHAR ch)
             break;
         }
         break;
-    case '&':
+    case L'&':
         switch (ch) {
         case L'O': case L'o':
             ch = 0x0152; // Œ
             break;
         }
+        break;
+    case L'.':
+        switch (ch) {
+        case L'I': case L'i':
+            ch = 0x0130; // İ
+            break;
+        }
+        break;
     }
     return ch;
 }
@@ -863,9 +871,9 @@ void __fastcall XgOnKey(HWND hwnd, UINT vk, bool fDown, int /*cRepeat*/, UINT /*
             ::ToUnicode(vk, 0, state, sz2, _countof(sz2), 0); // [Shift]ありの場合。
             // アクセント記号か？
             WCHAR ch1 = sz1[0], ch2 = sz2[0];
-            if (wcschr(L"^`':,&", ch1) != NULL) {
+            if (wcschr(L"^`':,&.", ch1) != NULL) {
                 xg_chAccent = ch1;
-            } else if (wcschr(L"^`':,&", ch2) != NULL) {
+            } else if (wcschr(L"^`':,&.", ch2) != NULL) {
                 xg_chAccent = ch2;
             } else {
                 xg_chAccent = 0;
