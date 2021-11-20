@@ -282,6 +282,7 @@ void __fastcall XgOnChar(HWND hwnd, TCHAR ch, int cRepeat)
             XgDestroyCandsWnd();
 
             if (xg_chAccent) { // アクセントがあるか？
+                // アクセントはフランス語サポートに必要。
                 switch (xg_chAccent) {
                 case L'^':
                     switch (ch) {
@@ -372,6 +373,43 @@ void __fastcall XgOnChar(HWND hwnd, TCHAR ch, int cRepeat)
                         break;
                     }
                     break;
+                case L',':
+                    switch (ch) {
+                    case L'C': case L'c':
+                        ch = 0x00C7; // Ç: LATIN CAPITAL LETTER C WITH CEDILLA
+                        break;
+                    case L'D': case L'd':
+                        ch = 0x1E10; // LATIN CAPITAL LETTER D WITH CEDILLA
+                        break;
+                    case L'G': case L'g':
+                        ch = 0x0122; // LATIN CAPITAL LETTER G CEDILLA
+                        break;
+                    case L'K': case L'k':
+                        ch = 0x0136; // LATIN CAPITAL LETTER K CEDILLA
+                        break;
+                    case L'L': case L'l':
+                        ch = 0x013B; // LATIN CAPITAL LETTER L CEDILLA
+                        break;
+                    case L'N': case L'n':
+                        ch = 0x0145; // LATIN CAPITAL LETTER N CEDILLA
+                        break;
+                    case L'R': case L'r':
+                        ch = 0x0156; // LATIN CAPITAL LETTER R CEDILLA
+                        break;
+                    case L'S': case L's':
+                        ch = 0x015E; // LATIN CAPITAL LETTER S CEDILLA
+                        break;
+                    case L'T': case L't':
+                        ch = 0x0162; // LATIN CAPITAL LETTER T CEDILLA
+                        break;
+                    }
+                    break;
+                case '&':
+                    switch (ch) {
+                    case L'O': case L'o':
+                        ch = 0x0152; // Œ
+                        break;
+                    }
                 }
             } else {
                 // 英字小文字を大文字に変換。
@@ -799,9 +837,9 @@ void __fastcall XgOnKey(HWND hwnd, UINT vk, bool fDown, int /*cRepeat*/, UINT /*
             ::ToUnicode(vk, 0, state, sz2, _countof(sz2), 0); // [Shift]ありの場合。
             // アクセント記号か？
             WCHAR ch1 = sz1[0], ch2 = sz2[0];
-            if (wcschr(L"^`':", ch1) != NULL) {
+            if (wcschr(L"^`':,&", ch1) != NULL) {
                 xg_chAccent = ch1;
-            } else if (wcschr(L"^`':", ch2) != NULL) {
+            } else if (wcschr(L"^`':,&", ch2) != NULL) {
                 xg_chAccent = ch2;
             } else {
                 xg_chAccent = 0;
