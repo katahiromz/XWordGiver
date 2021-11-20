@@ -49,6 +49,155 @@ void __fastcall XgInputDirection(HWND hwnd, INT nDirection)
     xg_chAccent = 0;
 }
 
+// アクセント記号付きの文字にする。
+WCHAR XgConvertAccent(WCHAR chAccent, WCHAR ch)
+{
+    switch (chAccent) {
+    case L'^':
+        switch (ch) {
+        case L'A': case L'a':
+            ch = 0x00C2; // Â
+            break;
+        case L'I': case L'i':
+            ch = 0x00CE; // Î
+            break;
+        case L'U': case L'u':
+            ch = 0x00DB; // Û
+            break;
+        case L'E': case L'e':
+            ch = 0x00CA; // Ê
+            break;
+        case L'O': case L'o':
+            ch = 0x00D4; // Ô
+            break;
+        case L'Y': case L'y':
+            ch = 0x0176; // LATIN CAPITAL LETTER Y WITH CIRCUMFLEX
+            break;
+        case L'C': case L'c':
+            ch = 0x0108; // LATIN CAPITAL LETTER C WITH CIRCUMFLEX
+            break;
+        case L'G': case L'g':
+            ch = 0x011C; // LATIN CAPITAL LETTER G WITH CIRCUMFLEX
+            break;
+        case L'H': case L'h':
+            ch = 0x0124; // LATIN CAPITAL LETTER H WITH CIRCUMFLEX
+            break;
+        case L'J': case L'j':
+            ch = 0x0134; // LATIN CAPITAL LETTER J WITH CIRCUMFLEX
+            break;
+        case L'S': case L's':
+            ch = 0x015C; // LATIN CAPITAL LETTER S WITH CIRCUMFLEX
+            break;
+        }
+        break;
+    case L'`':
+        switch (ch) {
+        case L'A': case L'a':
+            ch = 0x00C0; // À
+            break;
+        case L'I': case L'i':
+            ch = 0x00CC; // LATIN CAPITAL LETTER I WITH GRAVE
+            break;
+        case L'U': case L'u':
+            ch = 0x00D9; // Ù
+            break;
+        case L'E': case L'e':
+            ch = 0x00C8; // È
+            break;
+        case L'O': case L'o':
+            ch = 0x00D2; // LATIN CAPITAL LETTER O WITH GRAVE
+            break;
+        case L'Y': case L'y':
+            ch = 0x1EF2; // LATIN CAPITAL LETTER Y WITH GRAVE
+            break;
+        }
+        break;
+    case L':':
+        switch (ch) {
+        case L'A': case L'a':
+            ch = 0x00C4; // Ä
+            break;
+        case L'I': case L'i':
+            ch = 0x00CF; // Ï
+            break;
+        case L'U': case L'u':
+            ch = 0x00DC; // Ü
+            break;
+        case L'E': case L'e':
+            ch = 0x00CB; // Ë
+            break;
+        case L'O': case L'o':
+            ch = 0x00D6; // Ö
+            break;
+        case L'Y': case L'y':
+            ch = 0x0178; // Ÿ
+            break;
+        }
+        break;
+        break;
+    case L'\'':
+        switch (ch) {
+        case L'A': case L'a':
+            ch = 0x00C1; // LATIN CAPITAL LETTER A WITH ACUTE
+            break;
+        case L'I': case L'i':
+            ch = 0x00CD; // LATIN CAPITAL LETTER I WITH ACUTE
+            break;
+        case L'U': case L'u':
+            ch = 0x00DA; // LATIN CAPITAL LETTER U WITH ACUTE
+            break;
+        case L'E': case L'e':
+            ch = 0x00C9; // É
+            break;
+        case L'O': case L'o':
+            ch = 0x00D3; // LATIN CAPITAL LETTER O WITH ACUTE
+            break;
+        case L'Y': case L'y':
+            ch = 0x00DD; // LATIN CAPITAL LETTER Y WITH ACUTE
+            break;
+        }
+        break;
+    case L',':
+        switch (ch) {
+        case L'C': case L'c':
+            ch = 0x00C7; // Ç: LATIN CAPITAL LETTER C WITH CEDILLA
+            break;
+        case L'D': case L'd':
+            ch = 0x1E10; // LATIN CAPITAL LETTER D WITH CEDILLA
+            break;
+        case L'G': case L'g':
+            ch = 0x0122; // LATIN CAPITAL LETTER G CEDILLA
+            break;
+        case L'K': case L'k':
+            ch = 0x0136; // LATIN CAPITAL LETTER K CEDILLA
+            break;
+        case L'L': case L'l':
+            ch = 0x013B; // LATIN CAPITAL LETTER L CEDILLA
+            break;
+        case L'N': case L'n':
+            ch = 0x0145; // LATIN CAPITAL LETTER N CEDILLA
+            break;
+        case L'R': case L'r':
+            ch = 0x0156; // LATIN CAPITAL LETTER R CEDILLA
+            break;
+        case L'S': case L's':
+            ch = 0x015E; // LATIN CAPITAL LETTER S CEDILLA
+            break;
+        case L'T': case L't':
+            ch = 0x0162; // LATIN CAPITAL LETTER T CEDILLA
+            break;
+        }
+        break;
+    case '&':
+        switch (ch) {
+        case L'O': case L'o':
+            ch = 0x0152; // Œ
+            break;
+        }
+    }
+    return ch;
+}
+
 // 文字送りを切り替える。
 void __fastcall XgSetCharFeed(HWND hwnd, INT nMode)
 {
@@ -282,135 +431,8 @@ void __fastcall XgOnChar(HWND hwnd, TCHAR ch, int cRepeat)
             XgDestroyCandsWnd();
 
             if (xg_chAccent) { // アクセントがあるか？
-                // アクセントはフランス語サポートに必要。
-                switch (xg_chAccent) {
-                case L'^':
-                    switch (ch) {
-                    case L'A': case L'a':
-                        ch = 0x00C2; // Â
-                        break;
-                    case L'I': case L'i':
-                        ch = 0x00CE; // Î
-                        break;
-                    case L'U': case L'u':
-                        ch = 0x00DB; // Û
-                        break;
-                    case L'E': case L'e':
-                        ch = 0x00CA; // Ê
-                        break;
-                    case L'O': case L'o':
-                        ch = 0x00D4; // Ô
-                        break;
-                    case L'Y': case L'y':
-                        ch = 0x0176; // LATIN CAPITAL LETTER Y WITH CIRCUMFLEX
-                        break;
-                    }
-                    break;
-                case L'`':
-                    switch (ch) {
-                    case L'A': case L'a':
-                        ch = 0x00C0; // À
-                        break;
-                    case L'I': case L'i':
-                        ch = 0x00CC; // LATIN CAPITAL LETTER I WITH GRAVE
-                        break;
-                    case L'U': case L'u':
-                        ch = 0x00D9; // Ù
-                        break;
-                    case L'E': case L'e':
-                        ch = 0x00C8; // È
-                        break;
-                    case L'O': case L'o':
-                        ch = 0x00D2; // LATIN CAPITAL LETTER O WITH GRAVE
-                        break;
-                    case L'Y': case L'y':
-                        ch = 0x1EF2; // LATIN CAPITAL LETTER Y WITH GRAVE
-                        break;
-                    }
-                    break;
-                case L':':
-                    switch (ch) {
-                    case L'A': case L'a':
-                        ch = 0x00C4; // Ä
-                        break;
-                    case L'I': case L'i':
-                        ch = 0x00CF; // Ï
-                        break;
-                    case L'U': case L'u':
-                        ch = 0x00DC; // Ü
-                        break;
-                    case L'E': case L'e':
-                        ch = 0x00CB; // Ë
-                        break;
-                    case L'O': case L'o':
-                        ch = 0x00D6; // Ö
-                        break;
-                    case L'Y': case L'y':
-                        ch = 0x0178; // Ÿ
-                        break;
-                    }
-                    break;
-                    break;
-                case L'\'':
-                    switch (ch) {
-                    case L'A': case L'a':
-                        ch = 0x00C1; // LATIN CAPITAL LETTER A WITH ACUTE
-                        break;
-                    case L'I': case L'i':
-                        ch = 0x00CD; // LATIN CAPITAL LETTER I WITH ACUTE
-                        break;
-                    case L'U': case L'u':
-                        ch = 0x00DA; // LATIN CAPITAL LETTER U WITH ACUTE
-                        break;
-                    case L'E': case L'e':
-                        ch = 0x00C9; // É
-                        break;
-                    case L'O': case L'o':
-                        ch = 0x00D3; // LATIN CAPITAL LETTER O WITH ACUTE
-                        break;
-                    case L'Y': case L'y':
-                        ch = 0x00DD; // LATIN CAPITAL LETTER Y WITH ACUTE
-                        break;
-                    }
-                    break;
-                case L',':
-                    switch (ch) {
-                    case L'C': case L'c':
-                        ch = 0x00C7; // Ç: LATIN CAPITAL LETTER C WITH CEDILLA
-                        break;
-                    case L'D': case L'd':
-                        ch = 0x1E10; // LATIN CAPITAL LETTER D WITH CEDILLA
-                        break;
-                    case L'G': case L'g':
-                        ch = 0x0122; // LATIN CAPITAL LETTER G CEDILLA
-                        break;
-                    case L'K': case L'k':
-                        ch = 0x0136; // LATIN CAPITAL LETTER K CEDILLA
-                        break;
-                    case L'L': case L'l':
-                        ch = 0x013B; // LATIN CAPITAL LETTER L CEDILLA
-                        break;
-                    case L'N': case L'n':
-                        ch = 0x0145; // LATIN CAPITAL LETTER N CEDILLA
-                        break;
-                    case L'R': case L'r':
-                        ch = 0x0156; // LATIN CAPITAL LETTER R CEDILLA
-                        break;
-                    case L'S': case L's':
-                        ch = 0x015E; // LATIN CAPITAL LETTER S CEDILLA
-                        break;
-                    case L'T': case L't':
-                        ch = 0x0162; // LATIN CAPITAL LETTER T CEDILLA
-                        break;
-                    }
-                    break;
-                case '&':
-                    switch (ch) {
-                    case L'O': case L'o':
-                        ch = 0x0152; // Œ
-                        break;
-                    }
-                }
+                // アクセント記号付きの文字にする。
+                ch = XgConvertAccent(xg_chAccent, ch);
             } else {
                 // 英字小文字を大文字に変換。
                 if (XgIsCharHankakuLowerW(ch)) {
