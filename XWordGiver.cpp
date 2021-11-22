@@ -5270,20 +5270,20 @@ bool __fastcall XgDoSaveXdFile(LPCWSTR pszFile)
             // タテのカギ。
             for (auto& tate_hint : xg_vecTateHints) {
                 auto word = XgNormalizeStringEx(tate_hint.m_strWord);
-                StringCchPrintfA(line, _countof(line), "A%u. %s ~ %s\n",
+                StringCchPrintfA(line, _countof(line), "D%u. %s ~ %s\n",
                                  tate_hint.m_number,
                                  XgUnicodeToUtf8(tate_hint.m_strHint).c_str(),
                                  XgUnicodeToUtf8(word).c_str());
-                strACROSS += line;
+                strDOWN += line;
             }
             // ヨコのカギ。
             for (auto& yoko_hint : xg_vecYokoHints) {
                 auto word = XgNormalizeStringEx(yoko_hint.m_strWord);
-                StringCchPrintfA(line, _countof(line), "D%u. %s ~ %s\n",
+                StringCchPrintfA(line, _countof(line), "A%u. %s ~ %s\n",
                                  yoko_hint.m_number,
                                  XgUnicodeToUtf8(yoko_hint.m_strHint).c_str(),
                                  XgUnicodeToUtf8(word).c_str());
-                strDOWN += line;
+                strACROSS += line;
             }
 
             fprintf(fout, "%s\n%s\n\n", strACROSS.c_str(), strDOWN.c_str());
