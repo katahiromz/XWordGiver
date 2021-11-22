@@ -15,6 +15,9 @@ public:
         // ダイアログを中央へ移動する。
         XgCenterDialog(hwnd);
         // ヘッダーを設定する。
+        if (xg_strHeader.empty()) {
+            xg_strHeader = L"Title: (Untitled)\r\nAuthor: \r\nEditor: \r\nCopyright: \r\nDate: YYYY-MM-DD";
+        }
         ::SetDlgItemTextW(hwnd, edt1, xg_strHeader.data());
         // 備考欄を設定する。
         std::wstring str = xg_strNotes;

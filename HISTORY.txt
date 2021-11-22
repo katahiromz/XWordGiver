@@ -70,6 +70,7 @@
     - Added a French dictionary.
     - Changed to use half-width characters when drawing alphabet and digits.
     - Improved IDS_DOWNNUMBER and IDS_ACROSSNUMBER.
+    - Improved Header and Notes.
 
 # 開発履歴 (Japanese)
 
@@ -451,3 +452,4 @@
     - フランス語入力をサポート (Ctrl+Shift+^ A for Â etc.)。
     - フランス語辞書を追加。
     - 英字入力と数字入力の描画時に半角を使うようにした。
+    - ヘッダと備考欄を改良。
