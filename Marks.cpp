@@ -42,6 +42,23 @@ void __fastcall XgGetStringOfMarks(std::wstring& str)
     }
 }
 
+// マーク文字列を取得する2。
+void __fastcall XgGetStringOfMarks2(std::wstring& str)
+{
+    WCHAR sz[64];
+    str.clear();
+    int i = 0;
+    auto xg = (xg_bSolved ? &xg_solution : &xg_xword);
+    for (const auto& mark : xg_vMarks) {
+        WCHAR szLetter[2] = { xg->GetAt(mark.m_i, mark.m_j), 0 };
+        auto letter = XgNormalizeStringEx(szLetter);
+        StringCbPrintf(sz, sizeof(sz), L"MARK%u. (%u, %u): %s\r\n",
+                       i + 1, mark.m_j + 1, mark.m_i + 1, letter.c_str());
+        str += sz;
+        ++i;
+    }
+}
+
 // マークされているか（二重マス）？
 int __fastcall XgGetMarked(const std::vector<XG_Pos>& vMarks, const XG_Pos& pos)
 {

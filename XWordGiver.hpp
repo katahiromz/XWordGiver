@@ -119,6 +119,8 @@ extern INT xg_nZoomRate;
 
 // クロスワードで使う文字に変換する。
 std::wstring __fastcall XgNormalizeString(const std::wstring& text);
+// 文字列を標準化する。
+std::wstring XgNormalizeStringEx(const std::wstring& str, BOOL bUppercase = TRUE, BOOL bKatakana = TRUE);
 
 // XG_Board::EveryPatternValid1, XG_Board::EveryPatternValid2の戻り値。
 enum XG_EpvCode

@@ -5190,22 +5190,24 @@ bool XgDoSaveStandard(HWND hwnd, LPCWSTR pszFile, const XG_Board& board)
 }
 
 // 文字列を標準化する。
-std::wstring XgNormalizeStringEx(const std::wstring& str, BOOL bUppercase = TRUE) {
+std::wstring XgNormalizeStringEx(const std::wstring& str, BOOL bUppercase, BOOL bKatakana) {
     std::wstring ret;
     for (auto& ch : str) {
+        WCHAR newch;
         if (XgIsCharKanaW(ch) || XgIsCharKanjiW(ch)) {
-            ret += ch;
-        } else {
-            WCHAR newch;
-            if (bUppercase) {
-                LCMapStringW(JPN_LOCALE, LCMAP_HALFWIDTH | LCMAP_UPPERCASE,
-                             &ch, 1, &newch, 1);
+            if (bKatakana) {
+                LCMapStringW(JPN_LOCALE, LCMAP_FULLWIDTH | LCMAP_KATAKANA, &ch, 1, &newch, 1);
             } else {
-                LCMapStringW(JPN_LOCALE, LCMAP_HALFWIDTH | LCMAP_LOWERCASE,
-                             &ch, 1, &newch, 1);
+                LCMapStringW(JPN_LOCALE, LCMAP_FULLWIDTH | LCMAP_HIRAGANA, &ch, 1, &newch, 1);
             }
-            ret += newch;
+        } else {
+            if (bUppercase) {
+                LCMapStringW(JPN_LOCALE, LCMAP_HALFWIDTH | LCMAP_UPPERCASE, &ch, 1, &newch, 1);
+            } else {
+                LCMapStringW(JPN_LOCALE, LCMAP_HALFWIDTH | LCMAP_LOWERCASE, &ch, 1, &newch, 1);
+            }
         }
+        ret += newch;
     }
     return ret;
 }
@@ -5286,8 +5288,24 @@ bool __fastcall XgDoSaveXdFile(LPCWSTR pszFile)
                 strACROSS += line;
             }
 
-            fprintf(fout, "%s\n%s\n\n", strACROSS.c_str(), strDOWN.c_str());
+            fprintf(fout, "%s\n%s", strACROSS.c_str(), strDOWN.c_str());
         }
+        fprintf(fout, "\n\n");
+
+        // マーク。
+        if (xg_vMarks.size()) {
+            std::wstring strMarks;
+            XgGetStringOfMarks2(strMarks);
+            fprintf(fout, "%s\n", XgUnicodeToUtf8(strMarks).c_str());
+        }
+        fprintf(fout, "\n");
+
+        // 備考欄。
+        if (xg_strNotes.size()) {
+            fprintf(fout, "--- Notes ---\n");
+            fprintf(fout, "%s\n", XgUnicodeToUtf8(xg_strNotes).c_str());
+        }
+        fprintf(fout, "\n");
 
         fclose(fout);
 

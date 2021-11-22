@@ -17,6 +17,8 @@ extern std::vector<std::wstring>  xg_vMarkedCands;
 
 // マーク文字列を取得する。
 void __fastcall XgGetStringOfMarks(std::wstring& str);
+// マーク文字列を取得する2。
+void __fastcall XgGetStringOfMarks2(std::wstring& str);
 // マークされているか（二重マス）？
 int __fastcall XgGetMarked(const std::vector<XG_Pos>& vMarks, const XG_Pos& pos);
 // マークされているか（二重マス）？
