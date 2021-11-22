@@ -69,6 +69,7 @@
     - Supported French input (Ctrl+Shift+^ A for Â etc.).
     - Added a French dictionary.
     - Changed to use half-width characters when drawing alphabet and digits.
+    - Improved IDS_DOWNNUMBER and IDS_ACROSSNUMBER.
 
 # 開発履歴 (Japanese)
 
