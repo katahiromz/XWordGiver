@@ -5189,6 +5189,125 @@ bool XgDoSaveStandard(HWND hwnd, LPCWSTR pszFile, const XG_Board& board)
     return false;
 }
 
+// 文字列を標準化する。
+std::wstring XgNormalizeStringEx(const std::wstring& str, BOOL bUppercase = TRUE) {
+    std::wstring ret;
+    for (auto& ch : str) {
+        if (XgIsCharKanaW(ch) || XgIsCharKanjiW(ch)) {
+            ret += ch;
+        } else {
+            WCHAR newch;
+            if (bUppercase) {
+                LCMapStringW(JPN_LOCALE, LCMAP_HALFWIDTH | LCMAP_UPPERCASE,
+                             &ch, 1, &newch, 1);
+            } else {
+                LCMapStringW(JPN_LOCALE, LCMAP_HALFWIDTH | LCMAP_LOWERCASE,
+                             &ch, 1, &newch, 1);
+            }
+            ret += newch;
+        }
+    }
+    return ret;
+}
+
+// ファイル（XD形式）を保存する。
+bool __fastcall XgDoSaveXdFile(LPCWSTR pszFile)
+{
+    // ファイルを作成する。
+    FILE *fout = _wfopen(pszFile, L"wb");
+    if (fout == NULL)
+        return false;
+
+    XG_Board *xw = (xg_bSolved ? &xg_solution : &xg_xword);
+
+    try
+    {
+        // ヘッダ。
+        auto strHeader = xg_strHeader;
+        xg_str_trim(strHeader);
+        if (strHeader.empty()) {
+            WCHAR szFileTitle[MAX_PATH];
+            StringCchCopyW(szFileTitle, _countof(szFileTitle), PathFindFileNameW(pszFile));
+            PathRemoveExtensionW(szFileTitle);
+            fprintf(fout, "Title: %s\n", XgUnicodeToUtf8(szFileTitle).c_str());
+            fprintf(fout, "Author: \n");
+            fprintf(fout, "Editor: \n");
+            fprintf(fout, "Copyright: \n");
+            SYSTEMTIME st;
+            ::GetLocalTime(&st);
+            fprintf(fout, "Date: %04u-%02u-%02u\n", st.wYear, st.wMonth, st.wDay);
+        } else {
+            std::vector<std::wstring> items;
+            mstr_split(items, strHeader, L"\n");
+            for (auto& item : items) {
+                xg_str_trim(item);
+                fprintf(fout, "%s\n", XgUnicodeToUtf8(item).c_str());
+            }
+        }
+        fprintf(fout, "\n\n");
+
+        // マス。
+        for (int i = 0; i < xg_nRows; ++i) {
+            std::wstring row;
+            for (int j = 0; j < xg_nCols; ++j) {
+                WCHAR ch = xw->GetAt(i, j);
+                if (ch == ZEN_SPACE)
+                    row += L'_';
+                else if (ch == ZEN_BLACK)
+                    row += L'#';
+                else
+                    row += ch;
+            }
+            row = XgNormalizeStringEx(row);
+            fprintf(fout, "%s\n", XgUnicodeToUtf8(row).c_str());
+        }
+        fprintf(fout, "\n\n");
+
+        // ヒント。
+        if (xg_vecTateHints.size() && xg_vecYokoHints.size()) {
+            char line[512];
+            std::string strACROSS, strDOWN;
+            // タテのカギ。
+            for (auto& tate_hint : xg_vecTateHints) {
+                auto word = XgNormalizeStringEx(tate_hint.m_strWord);
+                StringCchPrintfA(line, _countof(line), "A%u. %s ~ %s\n",
+                                 tate_hint.m_number,
+                                 XgUnicodeToUtf8(tate_hint.m_strHint).c_str(),
+                                 XgUnicodeToUtf8(word).c_str());
+                strACROSS += line;
+            }
+            // ヨコのカギ。
+            for (auto& yoko_hint : xg_vecYokoHints) {
+                auto word = XgNormalizeStringEx(yoko_hint.m_strWord);
+                StringCchPrintfA(line, _countof(line), "D%u. %s ~ %s\n",
+                                 yoko_hint.m_number,
+                                 XgUnicodeToUtf8(yoko_hint.m_strHint).c_str(),
+                                 XgUnicodeToUtf8(word).c_str());
+                strDOWN += line;
+            }
+
+            fprintf(fout, "%s\n%s\n\n", strACROSS.c_str(), strDOWN.c_str());
+        }
+
+        fclose(fout);
+
+        // ファイルパスをセットする。
+        WCHAR szFileName[MAX_PATH];
+        ::GetFullPathNameW(pszFile, MAX_PATH, szFileName, NULL);
+        xg_strFileName = szFileName;
+        XgMarkUpdate();
+        return true;
+    }
+    catch(...)
+    {
+        ;
+    }
+
+    // 正しく書き込めなかった。不正なファイルを消す。
+    ::DeleteFileW(pszFile);
+    return false;
+}
+
 bool __fastcall XgDoSave(HWND hwnd, LPCWSTR pszFile)
 {
     bool ret;
@@ -5202,6 +5321,9 @@ bool __fastcall XgDoSave(HWND hwnd, LPCWSTR pszFile)
     } else if (lstrcmpiW(pchDotExt, L".crp") == 0) {
         // Crossword Builder (*.crp) 形式で保存。
         ret = XgDoSaveCrpFile(pszFile);
+    } else if (lstrcmpiW(pchDotExt, L".xd") == 0) {
+        // ファイル（XD形式）を保存する。
+        ret = XgDoSaveXdFile(pszFile);
     } else if (xg_bSolved) {
         // ヒントあり。
         ret = XgDoSaveStandard(hwnd, pszFile, xg_solution);

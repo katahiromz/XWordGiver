@@ -578,6 +578,8 @@ public:
 };
 
 bool XgDoSaveStandard(HWND hwnd, LPCWSTR pszFile, const XG_Board& board);
+// ファイル（XD形式）を保存する。
+bool __fastcall XgDoSaveXdFile(LPCWSTR pszFile);
 
 namespace std
 {

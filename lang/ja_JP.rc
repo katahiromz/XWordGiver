@@ -1376,7 +1376,7 @@ STRINGTABLE
     IDS_IMGFILTER, "ビットマップ画像 (*.bmp)|*.bmp|EMF画像 (*.emf)|*.emf||"
     IDS_DICTFILTER, "辞書データ (*.dic;*.tsv)|*.dic;*.tsv|すべてのファイル (*.*)|*.*||"
     IDS_CROSSFILTER, "すべてのクロスワード (*.xwd;*.xwj;*.json;*.jso;*.crp;*.crx)|*.xwd;*.xwj;*.json;*.jso;*.crp;*.crx|標準クロスワード (*.xwd)|*.xwd|JSONクロスワード (*.xwj;*.json;*.jso)|*.xwj;*.json;*.jso|Crossword Builder ファイル(*.crp;*.crx)|*.crp;*.crx|すべてのファイル (*.*)|*.*||"
-    IDS_SAVEFILTER, "JSONクロスワード (*.xwj;*.json;*.jso)|*.xwj;*.json;*.jso|Crossword Builder形式 (*.crp)|*.crp||"
+    IDS_SAVEFILTER, "JSONクロスワード (*.xwj;*.json;*.jso)|*.xwj;*.json;*.jso|Crossword Builder形式 (*.crp)|*.crp|XD Files (*.xd)|*.xd||"
     IDS_README, "ReadMe-JPN.txt"
     IDS_TOOLONGSPACE, "上から%u番目、左から%u番目に、登録されている単語と長さの一致しないスペースがあります。"
     IDS_TOOOLDPC, "あなたのパソコンは、クロスワードギバーで使うには古すぎるので、計算が遅くなる可能性があります。"
