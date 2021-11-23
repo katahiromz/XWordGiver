@@ -5532,28 +5532,34 @@ bool __fastcall XgDoSaveXdFile(LPCWSTR pszFile)
     return false;
 }
 
-bool __fastcall XgDoSave(HWND hwnd, LPCWSTR pszFile)
+// ファイルを保存する。
+bool __fastcall XgDoSaveFile(HWND hwnd, LPCWSTR pszFile, XG_FILETYPE type)
 {
     bool ret;
-    LPCWSTR pchDotExt = PathFindExtensionW(pszFile);
-    if (lstrcmpiW(pchDotExt, L".xwj") == 0 ||
-        lstrcmpiW(pchDotExt, L".json") == 0 ||
-        lstrcmpiW(pchDotExt, L".jso") == 0)
+    switch (type)
     {
-        // JSON形式で保存。
+    case XG_FILETYPE_XWD:
+        if (xg_bSolved) {
+            // ヒントあり。
+            ret = XgDoSaveStandard(hwnd, pszFile, xg_solution);
+        } else {
+            ret = XgDoSaveStandard(hwnd, pszFile, xg_xword);
+        }
+        break;
+    case XG_FILETYPE_XWJ:
         ret = XgDoSaveJson(pszFile);
-    } else if (lstrcmpiW(pchDotExt, L".crp") == 0) {
-        // Crossword Builder (*.crp) 形式で保存。
+        break;
+    case XG_FILETYPE_CRP:
         ret = XgDoSaveCrpFile(pszFile);
-    } else if (lstrcmpiW(pchDotExt, L".xd") == 0) {
-        // ファイル（XD形式）を保存する。
+        break;
+    case XG_FILETYPE_XD:
         ret = XgDoSaveXdFile(pszFile);
-    } else if (xg_bSolved) {
-        // ヒントあり。
-        ret = XgDoSaveStandard(hwnd, pszFile, xg_solution);
-    } else {
-        ret = XgDoSaveStandard(hwnd, pszFile, xg_xword);
+        break;
+    default:
+        assert(0);
+        ret = false;
     }
+
     if (ret) {
         // ファイルパスをセットする。
         WCHAR szFileName[MAX_PATH];
@@ -5562,6 +5568,23 @@ bool __fastcall XgDoSave(HWND hwnd, LPCWSTR pszFile)
         XgMarkUpdate();
     }
     return ret;
+}
+
+bool __fastcall XgDoSave(HWND hwnd, LPCWSTR pszFile)
+{
+    LPCWSTR pchDotExt = PathFindExtensionW(pszFile);
+    if (lstrcmpiW(pchDotExt, L".xwj") == 0 ||
+        lstrcmpiW(pchDotExt, L".json") == 0 ||
+        lstrcmpiW(pchDotExt, L".jso") == 0)
+    {
+        return XgDoSaveFile(hwnd, pszFile, XG_FILETYPE_XWJ);
+    } else if (lstrcmpiW(pchDotExt, L".crp") == 0) {
+        return XgDoSaveFile(hwnd, pszFile, XG_FILETYPE_CRP);
+    } else if (lstrcmpiW(pchDotExt, L".xd") == 0) {
+        return XgDoSaveFile(hwnd, pszFile, XG_FILETYPE_XD);
+    } else {
+        return XgDoSaveFile(hwnd, pszFile, XG_FILETYPE_XWD);
+    }
 }
 
 // BITMAPINFOEX構造体。

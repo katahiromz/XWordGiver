@@ -1355,10 +1355,8 @@ bool __fastcall XgDoLoadCrpFile(HWND hwnd, LPCWSTR pszFile);
 
 // ファイルを保存する。
 bool __fastcall XgDoSave(HWND /*hwnd*/, LPCWSTR pszFile);
-// ファイル（JSON形式）を保存する。
-bool __fastcall XgDoSaveJson(LPCWSTR pszFile);
-// ファイル（CRP形式）を保存する。
-bool __fastcall XgDoSaveCrpFile(LPCWSTR pszFile);
+// ファイルを保存する。
+bool __fastcall XgDoSaveFile(HWND /*hwnd*/, LPCWSTR pszFile, XG_FILETYPE type);
 
 // ヒント文字列を解析する。
 bool __fastcall XgParseHintsStr(const std::wstring& strHints);
