@@ -380,6 +380,16 @@ LANGUAGE LANG_JAPANESE, SUBLANG_DEFAULT
                 MENUITEM "Y", 20024
                 MENUITEM "Z", 20025
             }
+            POPUP "アクセント"
+            {
+                MENUITEM "^\tShift+Ctrl+^", 20026
+                MENUITEM "`\tShift+Ctrl+`", 20027
+                MENUITEM "'\tShift+Ctrl+'", 20028
+                MENUITEM ":\tShift+Ctrl+:", 20029
+                MENUITEM ",\tShift+Ctrl+,", 20030
+                MENUITEM "&\tShift+Ctrl+&", 20031
+                MENUITEM ".\tShift+Ctrl+.", 20032
+            }
         }
         POPUP "ロシア"
         {

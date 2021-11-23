@@ -1390,6 +1390,13 @@ bool __fastcall XgOnCommandExtra(HWND hwnd, INT id)
     case 20023: XgOnChar(hwnd, L'X', 1); bOK = true; break;
     case 20024: XgOnChar(hwnd, L'Y', 1); bOK = true; break;
     case 20025: XgOnChar(hwnd, L'Z', 1); bOK = true; break;
+    case 20026: xg_chAccent = L'^'; bOK = true; break;
+    case 20027: xg_chAccent = L'`'; bOK = true; break;
+    case 20028: xg_chAccent = L'\''; bOK = true; break;
+    case 20029: xg_chAccent = L':'; bOK = true; break;
+    case 20030: xg_chAccent = L','; bOK = true; break;
+    case 20031: xg_chAccent = L'&'; bOK = true; break;
+    case 20032: xg_chAccent = L'.'; bOK = true; break;
     // Russian
     case 30000: XgOnImeChar(hwnd, 0x0410, 0); bOK = true; break;
     case 30001: XgOnImeChar(hwnd, 0x0411, 0); bOK = true; break;
