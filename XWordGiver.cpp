@@ -2284,14 +2284,223 @@ bool __fastcall XgSetStdString(HWND hwnd, const std::wstring& str)
     return true;
 }
 
-// 文字列を設定する。
-bool __fastcall XgSetString(HWND hwnd, const std::wstring& str, bool json)
+bool __fastcall XgSetXDString(HWND hwnd, const std::wstring& str)
 {
-    if (json) {
-        // JSON形式。
-        return XgSetJsonString(hwnd, str);
-    } else {
+    std::wstring header, notes;
+    std::vector<std::wstring> lines, rows, clues, marks;
+
+    int iSection = 0;
+    int cEmpty = 0;
+    mstr_split(lines, str, L"\n");
+    for (auto& line : lines) {
+        xg_str_trim(line);
+
+        if (line.empty() && iSection < 3) {
+            if (cEmpty == 1) {
+                ++iSection;
+            }
+            ++cEmpty;
+        } else {
+            cEmpty = 0;
+            switch (iSection) {
+            case 0:
+                header += line;
+                header += L"\r\n";
+                break;
+            case 1:
+                rows.push_back(line);
+                break;
+            case 2:
+                clues.push_back(line);
+                break;
+            case 3:
+                if (line.find(L"MARK") == 0 && L'0' <= line[4] && line[4] <= L'9') {
+                    marks.push_back(line);
+                } else {
+                    notes += line;
+                    notes += L"\r\n";
+                }
+                break;
+            }
+        }
+    }
+
+    if (header.empty())
+        return false;
+    if (rows.size() <= 1 || rows[0].size() <= 1)
+        return false;
+    for (auto& line : rows) {
+        if (line.size() != rows[0].size())
+            return false;
+    }
+
+    for (auto& line : rows) {
+        for (auto& ch : line) {
+            if (ch == L'_')
+                ch = ZEN_SPACE;
+            else if (ch == L'#' || ch == L'.')
+                ch = ZEN_BLACK;
+        }
+        line = XgNormalizeString(line);
+    }
+
+    bool bOK = false;
+    XG_Board xword;
+    std::vector<XG_Hint> tate, yoko;
+    {
+        std::wstring str;
+        int i, nWidth = INT(rows[0].size());
+
+        str += ZEN_ULEFT;
+        for (i = 0; i < nWidth; ++i) {
+            str += ZEN_HLINE;
+        }
+        str += ZEN_URIGHT;
+        str += L"\r\n";
+
+        for (auto& item : rows) {
+            str += ZEN_VLINE;
+            for (i = 0; i < nWidth; ++i) {
+                str += item[i];
+            }
+            str += ZEN_VLINE;
+            str += L"\r\n";
+        }
+
+        str += ZEN_LLEFT;
+        for (i = 0; i < nWidth; ++i) {
+            str += ZEN_HLINE;
+        }
+        str += ZEN_LRIGHT;
+        str += L"\r\n";
+
+        // 文字列を読み込む。
+        bOK = xword.SetString(str);
+    }
+
+    if (!bOK)
+        return false;
+
+    xg_str_trim(header);
+    xg_strHeader = header;
+    xg_str_trim(notes);
+    xg_strNotes = notes;
+    xg_nCols = INT(rows[0].size());
+    xg_nRows = INT(rows.size());
+    xg_vecTateHints.clear();
+    xg_vecYokoHints.clear();
+    xg_bSolved = false;
+
+    if (xword.IsFulfilled()) {
+        // 番号付けを行う。
+        xword.DoNumberingNoCheck();
+
+        for (auto& str : clues) {
+            xg_str_trim(str);
+            if (str.empty() || (str[0] != L'A' && str[0] != L'D'))
+                break;
+            size_t iDot = str.find(L'.');
+            size_t iTilda = str.rfind(L'~');
+            if (iDot != str.npos && iTilda != str.npos) {
+                auto word = str.substr(iTilda + 1);
+                xg_str_trim(word);
+                auto hint = str.substr(iDot + 1, iTilda - (iDot + 1));
+                xg_str_trim(hint);
+                word = XgNormalizeString(word);
+                for (XG_PlaceInfo& item : xg_vTateInfo) {
+                    if (item.m_word == word) {
+                        tate.emplace_back(item.m_number, word, hint);
+                        break;
+                    }
+                }
+                for (XG_PlaceInfo& item : xg_vYokoInfo) {
+                    if (item.m_word == word) {
+                        yoko.emplace_back(item.m_number, word, hint);
+                        break;
+                    }
+                }
+            }
+        }
+
+        // 不足分を追加。
+        for (XG_PlaceInfo& item : xg_vYokoInfo) {
+            bool found = false;
+            for (auto& info : yoko) {
+                if (item.m_number == info.m_number) {
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
+                yoko.emplace_back(item.m_number, item.m_word, L"");
+            }
+        }
+        for (XG_PlaceInfo& item : xg_vTateInfo) {
+            bool found = false;
+            for (auto& info : tate) {
+                if (item.m_number == info.m_number) {
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
+                tate.emplace_back(item.m_number, item.m_word, L"");
+            }
+        }
+
+        // ソート。
+        std::sort(tate.begin(), tate.end(),
+            [](const XG_Hint& a, const XG_Hint& b) {
+                return a.m_number < b.m_number;
+            }
+        );
+        std::sort(yoko.begin(), yoko.end(),
+            [](const XG_Hint& a, const XG_Hint& b) {
+                return a.m_number < b.m_number;
+            }
+        );
+
+        // 成功。
+        xg_xword = xword;
+        xg_solution = xword;
+        if (tate.size() && yoko.size()) {
+            xg_bSolved = true;
+            xg_bShowAnswer = false;
+            XgClearNonBlocks();
+            xg_vecTateHints = tate;
+            xg_vecYokoHints = yoko;
+        }
+
+        for (auto& mark : marks) {
+            if (mark.substr(0, 4) == L"MARK" && L'0' <= mark[4] && mark[4] <= L'9') {
+                size_t i0 = mark.find(L'(');
+                size_t i1 = mark.find(L", ");
+                int x = _wtoi(&mark[i0 + 1]) - 1;
+                int y = _wtoi(&mark[i1 + 2]) - 1;
+                XgSetMark(XG_Pos(y, x));
+            }
+        }
+    }
+
+    return true;
+}
+
+// 文字列を設定する。
+bool __fastcall XgSetString(HWND hwnd, const std::wstring& str, XG_FILETYPE type)
+{
+    switch (type) {
+    case XG_FILETYPE_XWD:
         return XgSetStdString(hwnd, str);
+    case XG_FILETYPE_XWJ:
+        return XgSetJsonString(hwnd, str);
+    case XG_FILETYPE_CRP:
+        assert(0);
+        return false;
+    case XG_FILETYPE_XD:
+        return XgSetXDString(hwnd, str);
+    default:
+        return (XgSetXDString(hwnd, str) || XgSetJsonString(hwnd, str) ||
+                XgSetStdString(hwnd, str));
     }
 }
 
@@ -4749,207 +4958,6 @@ bool __fastcall XgDoLoadCrpFile(HWND hwnd, LPCWSTR pszFile)
     return bOK;
 }
 
-bool __fastcall XgSetXDString(HWND hwnd, const std::wstring& str)
-{
-    std::wstring header, notes;
-    std::vector<std::wstring> lines, rows, clues, marks;
-
-    int iSection = 0;
-    int cEmpty = 0;
-    mstr_split(lines, str, L"\n");
-    for (auto& line : lines) {
-        xg_str_trim(line);
-
-        if (line.empty() && iSection < 3) {
-            if (cEmpty == 1) {
-                ++iSection;
-            }
-            ++cEmpty;
-        } else {
-            cEmpty = 0;
-            switch (iSection) {
-            case 0:
-                header += line;
-                header += L"\r\n";
-                break;
-            case 1:
-                rows.push_back(line);
-                break;
-            case 2:
-                clues.push_back(line);
-                break;
-            case 3:
-                if (line.find(L"MARK") == 0 && L'0' <= line[4] && line[4] <= L'9') {
-                    marks.push_back(line);
-                } else {
-                    notes += line;
-                    notes += L"\r\n";
-                }
-                break;
-            }
-        }
-    }
-
-    if (header.empty())
-        return false;
-    if (rows.size() <= 1 || rows[0].size() <= 1)
-        return false;
-    for (auto& line : rows) {
-        if (line.size() != rows[0].size())
-            return false;
-    }
-
-    for (auto& line : rows) {
-        for (auto& ch : line) {
-            if (ch == L'_')
-                ch = ZEN_SPACE;
-            else if (ch == L'#' || ch == L'.')
-                ch = ZEN_BLACK;
-        }
-        line = XgNormalizeString(line);
-    }
-
-    bool bOK = false;
-    XG_Board xword;
-    std::vector<XG_Hint> tate, yoko;
-    {
-        std::wstring str;
-        int i, nWidth = INT(rows[0].size());
-
-        str += ZEN_ULEFT;
-        for (i = 0; i < nWidth; ++i) {
-            str += ZEN_HLINE;
-        }
-        str += ZEN_URIGHT;
-        str += L"\r\n";
-
-        for (auto& item : rows) {
-            str += ZEN_VLINE;
-            for (i = 0; i < nWidth; ++i) {
-                str += item[i];
-            }
-            str += ZEN_VLINE;
-            str += L"\r\n";
-        }
-
-        str += ZEN_LLEFT;
-        for (i = 0; i < nWidth; ++i) {
-            str += ZEN_HLINE;
-        }
-        str += ZEN_LRIGHT;
-        str += L"\r\n";
-
-        // 文字列を読み込む。
-        bOK = xword.SetString(str);
-    }
-
-    if (!bOK)
-        return false;
-
-    xg_str_trim(header);
-    xg_strHeader = header;
-    xg_str_trim(notes);
-    xg_strNotes = notes;
-    xg_nCols = INT(rows[0].size());
-    xg_nRows = INT(rows.size());
-    xg_vecTateHints.clear();
-    xg_vecYokoHints.clear();
-    xg_bSolved = false;
-
-    if (xword.IsFulfilled()) {
-        // 番号付けを行う。
-        xword.DoNumberingNoCheck();
-
-        for (auto& str : clues) {
-            xg_str_trim(str);
-            if (str.empty() || (str[0] != L'A' && str[0] != L'D'))
-                break;
-            size_t iDot = str.find(L'.');
-            size_t iTilda = str.rfind(L'~');
-            if (iDot != str.npos && iTilda != str.npos) {
-                auto word = str.substr(iTilda + 1);
-                xg_str_trim(word);
-                auto hint = str.substr(iDot + 1, iTilda - (iDot + 1));
-                xg_str_trim(hint);
-                word = XgNormalizeString(word);
-                for (XG_PlaceInfo& item : xg_vTateInfo) {
-                    if (item.m_word == word) {
-                        tate.emplace_back(item.m_number, word, hint);
-                        break;
-                    }
-                }
-                for (XG_PlaceInfo& item : xg_vYokoInfo) {
-                    if (item.m_word == word) {
-                        yoko.emplace_back(item.m_number, word, hint);
-                        break;
-                    }
-                }
-            }
-        }
-
-        // 不足分を追加。
-        for (XG_PlaceInfo& item : xg_vYokoInfo) {
-            bool found = false;
-            for (auto& info : yoko) {
-                if (item.m_number == info.m_number) {
-                    found = true;
-                    break;
-                }
-            }
-            if (!found) {
-                yoko.emplace_back(item.m_number, item.m_word, L"");
-            }
-        }
-        for (XG_PlaceInfo& item : xg_vTateInfo) {
-            bool found = false;
-            for (auto& info : tate) {
-                if (item.m_number == info.m_number) {
-                    found = true;
-                    break;
-                }
-            }
-            if (!found) {
-                tate.emplace_back(item.m_number, item.m_word, L"");
-            }
-        }
-
-        // ソート。
-        std::sort(tate.begin(), tate.end(),
-            [](const XG_Hint& a, const XG_Hint& b) {
-                return a.m_number < b.m_number;
-            }
-        );
-        std::sort(yoko.begin(), yoko.end(),
-            [](const XG_Hint& a, const XG_Hint& b) {
-                return a.m_number < b.m_number;
-            }
-        );
-
-        // 成功。
-        xg_xword = xword;
-        xg_solution = xword;
-        if (tate.size() && yoko.size()) {
-            xg_bSolved = true;
-            xg_bShowAnswer = false;
-            XgClearNonBlocks();
-            xg_vecTateHints = tate;
-            xg_vecYokoHints = yoko;
-        }
-
-        for (auto& mark : marks) {
-            if (mark.substr(0, 4) == L"MARK" && L'0' <= mark[4] && mark[4] <= L'9') {
-                size_t i0 = mark.find(L'(');
-                size_t i1 = mark.find(L", ");
-                int x = _wtoi(&mark[i0 + 1]) - 1;
-                int y = _wtoi(&mark[i1 + 2]) - 1;
-                XgSetMark(XG_Pos(y, x));
-            }
-        }
-    }
-
-    return true;
-}
-
 // XDファイルを開く。
 bool __fastcall XgDoLoadXdFile(HWND hwnd, LPCWSTR pszFile)
 {
@@ -5045,10 +5053,13 @@ bool __fastcall XgDoLoadXdFile(HWND hwnd, LPCWSTR pszFile)
 }
 
 // ファイルを開く。
-bool __fastcall XgDoLoadFile(HWND hwnd, LPCWSTR pszFile, bool json)
+bool __fastcall XgDoLoadFile(HWND hwnd, LPCWSTR pszFile, XG_FILETYPE type)
 {
     DWORD i, cbFile, cbRead;
     bool bOK = false;
+
+    if (type == XG_FILETYPE_CRP)
+        return XgDoLoadCrpFile(hwnd, pszFile);
 
     // 二重マス単語を空にする。
     XgSetMarkedWord();
@@ -5075,18 +5086,18 @@ bool __fastcall XgDoLoadFile(HWND hwnd, LPCWSTR pszFile, bool json)
         if (pbFile[0] == 0xFF && pbFile[1] == 0xFE) {
             // Unicode
             std::wstring str = reinterpret_cast<LPWSTR>(&pbFile[2]);
-            bOK = XgSetString(hwnd, str, json);
+            bOK = XgSetString(hwnd, str, type);
             i = 0;
         } else if (pbFile[0] == 0xFE && pbFile[1] == 0xFF) {
             // Unicode BigEndian
             XgSwab(&pbFile[0], cbFile);
             std::wstring str = reinterpret_cast<LPWSTR>(&pbFile[2]);
-            bOK = XgSetString(hwnd, str, json);
+            bOK = XgSetString(hwnd, str, type);
             i = 0;
         } else if (pbFile[0] == 0xEF && pbFile[1] == 0xBB && pbFile[2] == 0xBF) {
             // UTF-8
             std::wstring str = XgUtf8ToUnicode(reinterpret_cast<LPCSTR>(&pbFile[3]));
-            bOK = XgSetString(hwnd, str, json);
+            bOK = XgSetString(hwnd, str, type);
             i = 0;
         } else {
             for (i = 0; i < cbFile; i++) {
@@ -5096,12 +5107,12 @@ bool __fastcall XgDoLoadFile(HWND hwnd, LPCWSTR pszFile, bool json)
                     if (i & 1) {
                         // Unicode
                         std::wstring str = reinterpret_cast<LPWSTR>(&pbFile[0]);
-                        bOK = XgSetString(hwnd, str, json);
+                        bOK = XgSetString(hwnd, str, type);
                     } else {
                         // Unicode BE
                         XgSwab(&pbFile[0], cbFile);
                         std::wstring str = reinterpret_cast<LPWSTR>(&pbFile[0]);
-                        bOK = XgSetString(hwnd, str, json);
+                        bOK = XgSetString(hwnd, str, type);
                     }
                     break;
                 }
@@ -5115,11 +5126,11 @@ bool __fastcall XgDoLoadFile(HWND hwnd, LPCWSTR pszFile, bool json)
             {
                 // UTF-8
                 std::wstring str = XgUtf8ToUnicode(reinterpret_cast<LPCSTR>(&pbFile[0]));
-                bOK = XgSetString(hwnd, str, json);
+                bOK = XgSetString(hwnd, str, type);
             } else {
                 // ANSI
                 std::wstring str = XgAnsiToUnicode(reinterpret_cast<LPCSTR>(&pbFile[0]));
-                bOK = XgSetString(hwnd, str, json);
+                bOK = XgSetString(hwnd, str, type);
             }
         }
 

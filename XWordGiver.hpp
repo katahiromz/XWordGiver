@@ -1340,8 +1340,16 @@ inline DWORD XgGetRetryInterval(void)
 
 //////////////////////////////////////////////////////////////////////////////
 
+// ファイルの種類。
+typedef enum XG_FILETYPE {
+    XG_FILETYPE_XWD = 0, // XWordGiver 形式。
+    XG_FILETYPE_XWJ, // XWordGiver JSON 形式。
+    XG_FILETYPE_CRP, // Crossword Builder 形式。
+    XG_FILETYPE_XD, // XD形式。
+} XG_FILETYPE;
+
 // ファイルを開く。
-bool __fastcall XgDoLoadFile(HWND hwnd, LPCWSTR pszFile, bool json);
+bool __fastcall XgDoLoadFile(HWND hwnd, LPCWSTR pszFile, XG_FILETYPE type);
 // CRPファイルを開く。
 bool __fastcall XgDoLoadCrpFile(HWND hwnd, LPCWSTR pszFile);
 // XDファイルを開く。
@@ -1349,7 +1357,6 @@ bool __fastcall XgDoLoadXdFile(HWND hwnd, LPCWSTR pszFile);
 
 // ファイルを保存する。
 bool __fastcall XgDoSave(HWND /*hwnd*/, LPCWSTR pszFile);
-
 // ファイル（JSON形式）を保存する。
 bool __fastcall XgDoSaveJson(LPCWSTR pszFile);
 // ファイル（CRP形式）を保存する。
