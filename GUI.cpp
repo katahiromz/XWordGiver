@@ -4656,8 +4656,7 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
         ofn.lpstrDefExt = L"xwd";
         if (::GetOpenFileNameW(&ofn)) {
             // JSON形式か？
-            bool is_json = false;
-            bool is_builder = false;
+            bool is_json = false, is_builder = false, is_xd = false;
             if (::lstrcmpiW(PathFindExtensionW(sz), L".xwj") == 0 ||
                 ::lstrcmpiW(PathFindExtensionW(sz), L".json") == 0)
             {
@@ -4668,6 +4667,10 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
             {
                 is_builder = true;
             }
+            if (::lstrcmpiW(PathFindExtensionW(sz), L".xd") == 0)
+            {
+                is_xd = true;
+            }
             // 候補ウィンドウを破棄する。
             XgDestroyCandsWnd();
             // ヒントウィンドウを破棄する。
@@ -4675,6 +4678,21 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
             // 開く。
             if (is_builder) {
                 if (!XgDoLoadCrpFile(hwnd, sz)) {
+                    // 失敗。
+                    XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_CANTLOAD), nullptr, MB_ICONERROR);
+                } else {
+                    // 成功。
+                    xg_ubUndoBuffer.Empty();
+                    xg_caret_pos.clear();
+                    // ズームを実際のウィンドウに合わせる。
+                    XgFitZoom(hwnd);
+                    // イメージを更新する。
+                    XgUpdateImage(hwnd, 0, 0);
+                    // ヒントを表示する。
+                    XgShowHints(hwnd);
+                }
+            } else if (is_xd) {
+                if (!XgDoLoadXdFile(hwnd, sz)) {
                     // 失敗。
                     XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_CANTLOAD), nullptr, MB_ICONERROR);
                 } else {
@@ -5820,6 +5838,23 @@ void __fastcall MainWnd_OnDropFiles(HWND hwnd, HDROP hDrop)
             // ヒントを表示する。
             XgShowHints(hwnd);
         }
+    } else if (::lstrcmpiW(pch, L".xd") == 0) {
+        // 拡張子が.xdだった。ファイルを開く。
+        if (!XgDoLoadXdFile(hwnd, szFile)) {
+            XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_CANTLOAD), nullptr, MB_ICONERROR);
+        } else {
+            xg_caret_pos.clear();
+            // ズームを実際のウィンドウに合わせる。
+            XgFitZoom(hwnd);
+            // テーマを更新する。
+            XgSetThemeString(xg_strTheme);
+            XgUpdateTheme(hwnd);
+            // イメージを更新する。
+            XgMarkUpdate();
+            XgUpdateImage(hwnd, 0, 0);
+            // ヒントを表示する。
+            XgShowHints(hwnd);
+        }
     } else if (::lstrcmpiW(pch, L".xwj") == 0 || lstrcmpiW(pch, L".json") == 0) {
         // 拡張子が.xwjか.jsonだった。ファイルを開く。
         if (!XgDoLoadFile(hwnd, szFile, true)) {
@@ -6106,17 +6141,20 @@ bool __fastcall MainWnd_OnCreate(HWND hwnd, LPCREATESTRUCT /*lpCreateStruct*/)
                 MessageBeep(0xFFFFFFFF);
             }
         }
-        bool is_json = false;
+        bool is_json = false, is_builder = false, is_xd = false;
         if (::lstrcmpiW(PathFindExtensionW(szFile), L".xwj") == 0 ||
             ::lstrcmpiW(PathFindExtensionW(szFile), L".json") == 0)
         {
             is_json = true;
         }
-        bool is_builder = false;
         if (::lstrcmpiW(PathFindExtensionW(szFile), L".crp") == 0 ||
             ::lstrcmpiW(PathFindExtensionW(szFile), L".crx") == 0)
         {
             is_builder = true;
+        }
+        if (::lstrcmpiW(PathFindExtensionW(szFile), L".xd") == 0)
+        {
+            is_xd = true;
         }
         if (bSuccess) {
             // 候補ウィンドウを破棄する。
@@ -6126,6 +6164,18 @@ bool __fastcall MainWnd_OnCreate(HWND hwnd, LPCREATESTRUCT /*lpCreateStruct*/)
             // Crossword Builderか？
             if (is_builder) {
                 if (!XgDoLoadCrpFile(hwnd, szFile)) {
+                    XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_CANTLOAD), nullptr, MB_ICONERROR);
+                } else {
+                    xg_caret_pos.clear();
+                    // ズームを実際のウィンドウに合わせる。
+                    XgFitZoom(hwnd);
+                    // イメージを更新する。
+                    XgUpdateImage(hwnd, 0, 0);
+                    // ヒントを表示する。
+                    XgShowHints(hwnd);
+                }
+            } else if (is_xd) {
+                if (!XgDoLoadXdFile(hwnd, szFile)) {
                     XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_CANTLOAD), nullptr, MB_ICONERROR);
                 } else {
                     xg_caret_pos.clear();

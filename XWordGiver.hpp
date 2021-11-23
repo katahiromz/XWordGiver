@@ -1342,8 +1342,10 @@ inline DWORD XgGetRetryInterval(void)
 
 // ファイルを開く。
 bool __fastcall XgDoLoadFile(HWND hwnd, LPCWSTR pszFile, bool json);
-// ファイルを開く。
+// CRPファイルを開く。
 bool __fastcall XgDoLoadCrpFile(HWND hwnd, LPCWSTR pszFile);
+// XDファイルを開く。
+bool __fastcall XgDoLoadXdFile(HWND hwnd, LPCWSTR pszFile);
 
 // ファイルを保存する。
 bool __fastcall XgDoSave(HWND /*hwnd*/, LPCWSTR pszFile);
