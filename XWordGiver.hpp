@@ -1352,8 +1352,6 @@ typedef enum XG_FILETYPE {
 bool __fastcall XgDoLoadFile(HWND hwnd, LPCWSTR pszFile, XG_FILETYPE type);
 // CRPファイルを開く。
 bool __fastcall XgDoLoadCrpFile(HWND hwnd, LPCWSTR pszFile);
-// XDファイルを開く。
-bool __fastcall XgDoLoadXdFile(HWND hwnd, LPCWSTR pszFile);
 
 // ファイルを保存する。
 bool __fastcall XgDoSave(HWND /*hwnd*/, LPCWSTR pszFile);
