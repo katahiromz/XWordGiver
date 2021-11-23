@@ -72,6 +72,7 @@
     - Improved IDS_DOWNNUMBER and IDS_ACROSSNUMBER.
     - Improved Header and Notes.
     - Supported reading/writing XD files.
+    - Command line "--convert input.xwj output.xd" makes file conversion automated.
 
 # 開発履歴 (Japanese)
 
@@ -455,3 +456,4 @@
     - 英字入力と数字入力の描画時に半角を使うようにした。
     - ヘッダと備考欄を改良。
     - XDファイルの読み書きをサポート。
+    - コマンドライン「--convert input.xwj output.xd」でファイル変換を自動化。

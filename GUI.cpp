@@ -5898,6 +5898,8 @@ HBITMAP XgCreateGrayedBitmap(HBITMAP hbm, COLORREF crMask = CLR_INVALID)
     return hbmNew;
 }
 
+BOOL xg_bNoGUI = FALSE;
+
 // ウィンドウの作成の際に呼ばれる。
 bool __fastcall MainWnd_OnCreate(HWND hwnd, LPCREATESTRUCT /*lpCreateStruct*/)
 {
@@ -6038,6 +6040,20 @@ bool __fastcall MainWnd_OnCreate(HWND hwnd, LPCREATESTRUCT /*lpCreateStruct*/)
     int argc;
     LPWSTR *wargv = ::CommandLineToArgvW(::GetCommandLineW(), &argc);
     if (argc >= 2) {
+        // 変換コマンドラインか？
+        if (argc == 4 && lstrcmpiW(wargv[1], L"--convert") == 0) {
+            // 読み込んで名前を付けて保存する。
+            auto input = wargv[2];
+            auto output = wargv[3];
+            if (XgDoLoad(hwnd, input) && XgDoSave(hwnd, output)) {
+                PostQuitMessage(0);
+            } else {
+                PostQuitMessage(-1);
+            }
+            xg_bNoGUI = TRUE;
+            return true;
+        }
+
         WCHAR szFile[MAX_PATH], szTarget[MAX_PATH];
         StringCbCopy(szFile, sizeof(szFile), wargv[1]);
 
@@ -6495,9 +6511,11 @@ int WINAPI WinMain(
         return 2;
     }
 
-    // ウィンドウを表示する。
-    ::ShowWindow(xg_hMainWnd, nCmdShow);
-    ::UpdateWindow(xg_hMainWnd);
+    if (!xg_bNoGUI) {
+        // 表示する。
+        ::ShowWindow(xg_hMainWnd, nCmdShow);
+        ::UpdateWindow(xg_hMainWnd);
+    }
 
     // Ctrl+Aの機能を有効にする。
     xg_hCtrlAHook = ::SetWindowsHookEx(WH_MSGFILTER,
