@@ -1375,7 +1375,7 @@ STRINGTABLE
     IDS_NOCANDIDATE, "上から%u番目、左から%u番目に単語の候補がないマスがあります。"
     IDS_IMGFILTER, "ビットマップ画像 (*.bmp)|*.bmp|EMF画像 (*.emf)|*.emf||"
     IDS_DICTFILTER, "辞書データ (*.dic;*.tsv)|*.dic;*.tsv|すべてのファイル (*.*)|*.*||"
-    IDS_CROSSFILTER, "すべてのクロスワード (*.xwd;*.xwj;*.json;*.jso;*.crp;*.crx)|*.xwd;*.xwj;*.json;*.jso;*.crp;*.crx|標準クロスワード (*.xwd)|*.xwd|JSONクロスワード (*.xwj;*.json;*.jso)|*.xwj;*.json;*.jso|Crossword Builder ファイル (*.crp;*.crx)|*.crp;*.crx|XDファイル (*.xd)|*.xd|すべてのファイル (*.*)|*.*||"
+    IDS_CROSSFILTER, "すべてのクロスワード (*.xwd;*.xwj;*.json;*.jso;*.crp;*.crx;*.xd)|*.xwd;*.xwj;*.json;*.jso;*.crp;*.crx;*.xd|標準クロスワード (*.xwd)|*.xwd|JSONクロスワード (*.xwj;*.json;*.jso)|*.xwj;*.json;*.jso|Crossword Builder ファイル (*.crp;*.crx)|*.crp;*.crx|XDファイル (*.xd)|*.xd|すべてのファイル (*.*)|*.*||"
     IDS_SAVEFILTER, "JSONクロスワード (*.xwj;*.json;*.jso)|*.xwj;*.json;*.jso|Crossword Builder形式 (*.crp)|*.crp|XDファイル (*.xd)|*.xd||"
     IDS_README, "ReadMe-JPN.txt"
     IDS_TOOLONGSPACE, "上から%u番目、左から%u番目に、登録されている単語と長さの一致しないスペースがあります。"

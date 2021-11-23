@@ -1372,7 +1372,7 @@ STRINGTABLE
     IDS_NOCANDIDATE, "There is a space at %u-th from the top and %u-th from the left that doesn't match any candidates."
     IDS_IMGFILTER, "Bitmap files (*.bmp)|*.bmp|EMF files (*.emf)|*.emf||"
     IDS_DICTFILTER, "Dict data (*.dic;*.tsv)|*.dic;*.tsv|All Files (*.*)|*.*||"
-    IDS_CROSSFILTER, "All crosswords (*.xwd;*.xwj;*.json;*.jso;*.crp;*.crx)|*.xwd;*.xwj;*.json;*.jso;*.crp;*.crx|Standard crosswords (*.xwd)|*.xwd|JSON crosswords (*.xwj;*.json;*.jso)|*.xwj;*.json;*.jso|Crossword Builder files (*.crp;*.crx)|*.crp;*.crx|XD Files (*.xd)|*.xd|All files (*.*)|*.*||"
+    IDS_CROSSFILTER, "All crosswords (*.xwd;*.xwj;*.json;*.jso;*.crp;*.crx;*.xd)|*.xwd;*.xwj;*.json;*.jso;*.crp;*.crx;*.xd|Standard crosswords (*.xwd)|*.xwd|JSON crosswords (*.xwj;*.json;*.jso)|*.xwj;*.json;*.jso|Crossword Builder files (*.crp;*.crx)|*.crp;*.crx|XD Files (*.xd)|*.xd|All files (*.*)|*.*||"
     IDS_SAVEFILTER, "JSON crosswords (*.xwj;*.json;*.jso)|*.xwj;*.json;*.jso|Crossword Builder files (*.crp)|*.crp|XD Files (*.xd)|*.xd||"
     IDS_README, "ReadMe-ENG.txt"
     IDS_TOOLONGSPACE, "The space at %u-th from the top and %u-th from the left does not match the length of the registered word."

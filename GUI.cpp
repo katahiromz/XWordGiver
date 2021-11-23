@@ -4750,11 +4750,27 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
         ofn.Flags = OFN_EXPLORER | OFN_ENABLESIZING | OFN_OVERWRITEPROMPT |
             OFN_PATHMUSTEXIST | OFN_HIDEREADONLY;
         // JSON only
-        ofn.nFilterIndex = 1;
         ofn.lpstrDefExt = L"xwj";
-        if (lstrcmpiW(PathFindExtensionW(sz), L".xwd") == 0)
+        if (lstrcmpiW(PathFindExtensionW(sz), L".xwj") == 0 ||
+            lstrcmpiW(PathFindExtensionW(sz), L".json") == 0 ||
+            lstrcmpiW(PathFindExtensionW(sz), L".jso") == 0)
         {
             PathRemoveExtensionW(sz);
+            ofn.nFilterIndex = 1;
+        }
+        else if (lstrcmpiW(PathFindExtensionW(sz), L".crp") == 0)
+        {
+            PathRemoveExtensionW(sz);
+            ofn.nFilterIndex = 2;
+        }
+        else if (lstrcmpiW(PathFindExtensionW(sz), L".xd") == 0)
+        {
+            PathRemoveExtensionW(sz);
+            ofn.nFilterIndex = 3;
+        }
+        else
+        {
+            ofn.nFilterIndex = 0;
         }
         // ユーザーにファイルの場所を問い合わせる。
         if (::GetSaveFileNameW(&ofn)) {
