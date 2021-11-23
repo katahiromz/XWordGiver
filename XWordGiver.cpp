@@ -4751,7 +4751,7 @@ bool __fastcall XgDoLoadCrpFile(HWND hwnd, LPCWSTR pszFile)
 
 bool __fastcall XgSetXDString(HWND hwnd, const std::wstring& str)
 {
-    std::wstring header;
+    std::wstring header, notes;
     std::vector<std::wstring> lines, rows, clues, marks;
 
     int iSection = 0;
@@ -4760,7 +4760,7 @@ bool __fastcall XgSetXDString(HWND hwnd, const std::wstring& str)
     for (auto& line : lines) {
         xg_str_trim(line);
 
-        if (line.empty()) {
+        if (line.empty() && iSection < 3) {
             if (cEmpty == 1) {
                 ++iSection;
             }
@@ -4770,7 +4770,7 @@ bool __fastcall XgSetXDString(HWND hwnd, const std::wstring& str)
             switch (iSection) {
             case 0:
                 header += line;
-                header += L"\n";
+                header += L"\r\n";
                 break;
             case 1:
                 rows.push_back(line);
@@ -4781,6 +4781,9 @@ bool __fastcall XgSetXDString(HWND hwnd, const std::wstring& str)
             case 3:
                 if (line.find(L"MARK") == 0 && L'0' <= line[4] && line[4] <= L'9') {
                     marks.push_back(line);
+                } else {
+                    notes += line;
+                    notes += L"\r\n";
                 }
                 break;
             }
@@ -4843,6 +4846,10 @@ bool __fastcall XgSetXDString(HWND hwnd, const std::wstring& str)
     if (!bOK)
         return false;
 
+    xg_str_trim(header);
+    xg_strHeader = header;
+    xg_str_trim(notes);
+    xg_strNotes = notes;
     xg_nCols = INT(rows[0].size());
     xg_nRows = INT(rows.size());
     xg_vecTateHints.clear();
@@ -5528,12 +5535,8 @@ bool __fastcall XgDoSaveXdFile(LPCWSTR pszFile)
             ::GetLocalTime(&st);
             fprintf(fout, "Date: %04u-%02u-%02u\n", st.wYear, st.wMonth, st.wDay);
         } else {
-            std::vector<std::wstring> items;
-            mstr_split(items, strHeader, L"\n");
-            for (auto& item : items) {
-                xg_str_trim(item);
-                fprintf(fout, "%s\n", XgUnicodeToUtf8(item).c_str());
-            }
+            xg_str_replace_all(strHeader, L"\r\n", L"\n");
+            fprintf(fout, "%s\n", XgUnicodeToUtf8(strHeader).c_str());
         }
         fprintf(fout, "\n\n");
 
@@ -5577,24 +5580,22 @@ bool __fastcall XgDoSaveXdFile(LPCWSTR pszFile)
                 strACROSS += line;
             }
 
-            fprintf(fout, "%s\n%s", strACROSS.c_str(), strDOWN.c_str());
+            fprintf(fout, "%s\n%s\n\n", strACROSS.c_str(), strDOWN.c_str());
         }
-        fprintf(fout, "\n\n");
 
         // マーク。
         if (xg_vMarks.size()) {
             std::wstring strMarks;
             XgGetStringOfMarks2(strMarks);
-            fprintf(fout, "%s\n", XgUnicodeToUtf8(strMarks).c_str());
+            fprintf(fout, "%s\n\n", XgUnicodeToUtf8(strMarks).c_str());
         }
-        fprintf(fout, "\n");
 
         // 備考欄。
         if (xg_strNotes.size()) {
-            fprintf(fout, "--- Notes ---\n");
-            fprintf(fout, "%s\n", XgUnicodeToUtf8(xg_strNotes).c_str());
+            auto str = xg_strNotes;
+            xg_str_replace_all(str, L"\r\n", L"\n");
+            fprintf(fout, "%s\n", XgUnicodeToUtf8(str).c_str());
         }
-        fprintf(fout, "\n");
 
         fclose(fout);
 

@@ -52,7 +52,7 @@ void __fastcall XgGetStringOfMarks2(std::wstring& str)
     for (const auto& mark : xg_vMarks) {
         WCHAR szLetter[2] = { xg->GetAt(mark.m_i, mark.m_j), 0 };
         auto letter = XgNormalizeStringEx(szLetter);
-        StringCbPrintf(sz, sizeof(sz), L"MARK%u. (%u, %u): %s\r\n",
+        StringCbPrintf(sz, sizeof(sz), L"MARK%u. (%u, %u): %s\n",
                        i + 1, mark.m_j + 1, mark.m_i + 1, letter.c_str());
         str += sz;
         ++i;
