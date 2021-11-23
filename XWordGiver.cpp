@@ -4938,7 +4938,6 @@ bool __fastcall XgSetXDString(HWND hwnd, const std::wstring& str)
 
         for (auto& mark : marks) {
             if (mark.substr(0, 4) == L"MARK" && L'0' <= mark[4] && mark[4] <= L'9') {
-                int number = _wtoi(&mark[4]);
                 size_t i0 = mark.find(L'(');
                 size_t i1 = mark.find(L", ");
                 int x = _wtoi(&mark[i0 + 1]) - 1;
@@ -5490,7 +5489,7 @@ std::wstring XgNormalizeStringEx(const std::wstring& str, BOOL bUppercase, BOOL 
     std::wstring ret;
     for (auto& ch : str) {
         WCHAR newch;
-        if (XgIsCharKanaW(ch) || XgIsCharKanjiW(ch)) {
+        if (XgIsCharKanaW(ch) || XgIsCharKanjiW(ch) || ch == ZEN_PROLONG) {
             if (bKatakana) {
                 LCMapStringW(JPN_LOCALE, LCMAP_FULLWIDTH | LCMAP_KATAKANA, &ch, 1, &newch, 1);
             } else {
@@ -5982,7 +5981,7 @@ bool __fastcall XG_Board::SetString(const std::wstring& strToBeSet)
                 xg_imode = xg_im_ABC;
                 goto break2;
             }
-            if (XgIsCharKanaW(ch)) {
+            if (XgIsCharKanaW(ch) || ch == ZEN_PROLONG) {
                 xg_imode = xg_im_KANA;
                 goto break2;
             }

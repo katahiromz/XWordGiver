@@ -202,9 +202,10 @@ void __fastcall XgSetStringOfMarks(LPCWSTR psz)
         // 読み飛ばし。
         while ((L'0' <= *psz && *psz <= L'9') || *psz == L')')
             psz++;
+
         while (XgIsCharKanaW(*psz) || XgIsCharHankakuAlphaW(*psz) ||
                XgIsCharZenkakuAlphaW(*psz) || XgIsCharKanjiW(*psz) ||
-               XgIsCharHangulW(*psz))
+               XgIsCharHangulW(*psz) || *psz == ZEN_PROLONG)
         {
             psz++;
         }
