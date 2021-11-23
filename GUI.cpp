@@ -4655,27 +4655,12 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
             OFN_PATHMUSTEXIST | OFN_HIDEREADONLY;
         ofn.lpstrDefExt = L"xwd";
         if (::GetOpenFileNameW(&ofn)) {
-            // JSON形式か？
-            XG_FILETYPE type = XG_FILETYPE_XWJ;
-            if (::lstrcmpiW(PathFindExtensionW(sz), L".xwd")) {
-                type = XG_FILETYPE_XWD;
-            } else if (::lstrcmpiW(PathFindExtensionW(sz), L".xwj") == 0 ||
-                       ::lstrcmpiW(PathFindExtensionW(sz), L".json") == 0)
-            {
-                type = XG_FILETYPE_XWJ;
-            } else if (::lstrcmpiW(PathFindExtensionW(sz), L".crp") == 0 ||
-                       ::lstrcmpiW(PathFindExtensionW(sz), L".crx") == 0)
-            {
-                type = XG_FILETYPE_CRP;
-            } else if (::lstrcmpiW(PathFindExtensionW(sz), L".xd") == 0) {
-                type = XG_FILETYPE_XD;
-            }
             // 候補ウィンドウを破棄する。
             XgDestroyCandsWnd();
             // ヒントウィンドウを破棄する。
             XgDestroyHintsWnd();
             // 開く。
-            if (!XgDoLoadFile(hwnd, sz, type)) {
+            if (!XgDoLoad(hwnd, sz)) {
                 // 失敗。
                 XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_CANTLOAD), nullptr, MB_ICONERROR);
             } else {
@@ -5795,26 +5780,13 @@ void __fastcall MainWnd_OnDropFiles(HWND hwnd, HDROP hDrop)
     if (XgGetPathOfShortcutW(szFile, szTarget))
         StringCbCopy(szFile, sizeof(szFile), szTarget);
 
-    // 拡張子を取得する。
-    LPWSTR pch = PathFindExtensionW(szFile);
-
     // 候補ウィンドウを破棄する。
     XgDestroyCandsWnd();
     // ヒントウィンドウを破棄する。
     XgDestroyHintsWnd();
 
-    XG_FILETYPE type = XG_FILETYPE_XWJ;
-    if (::lstrcmpiW(pch, L".xwd") == 0) {
-        type = XG_FILETYPE_XWD;
-    } else if (::lstrcmpiW(pch, L".xwj") == 0 || lstrcmpiW(pch, L".json") == 0) {
-        type = XG_FILETYPE_XWJ;
-    } else if (::lstrcmpiW(pch, L".xd") == 0) {
-        type = XG_FILETYPE_XD;
-    } else if (::lstrcmpiW(pch, L".crp") == 0 || ::lstrcmpiW(pch, L".crx") == 0) {
-        type = XG_FILETYPE_CRP;
-    }
     // ファイルを開く。
-    if (!XgDoLoadFile(hwnd, szFile, type)) {
+    if (!XgDoLoad(hwnd, szFile)) {
         XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_CANTLOAD), nullptr, MB_ICONERROR);
     } else {
         xg_caret_pos.clear();
@@ -6081,28 +6053,13 @@ bool __fastcall MainWnd_OnCreate(HWND hwnd, LPCREATESTRUCT /*lpCreateStruct*/)
                 MessageBeep(0xFFFFFFFF);
             }
         }
-        XG_FILETYPE type = XG_FILETYPE_XWJ;
-        if (::lstrcmpiW(PathFindExtensionW(szFile), L".xwj") == 0 ||
-            ::lstrcmpiW(PathFindExtensionW(szFile), L".json") == 0)
-        {
-            type = XG_FILETYPE_XWJ;
-        }
-        if (::lstrcmpiW(PathFindExtensionW(szFile), L".crp") == 0 ||
-            ::lstrcmpiW(PathFindExtensionW(szFile), L".crx") == 0)
-        {
-            type = XG_FILETYPE_CRP;
-        }
-        if (::lstrcmpiW(PathFindExtensionW(szFile), L".xd") == 0)
-        {
-            type = XG_FILETYPE_XD;
-        }
         if (bSuccess) {
             // 候補ウィンドウを破棄する。
             XgDestroyCandsWnd();
             // ヒントウィンドウを破棄する。
             XgDestroyHintsWnd();
-            // Crossword Builderか？
-            if (!XgDoLoadFile(hwnd, szFile, type)) {
+            // ファイルを開く。
+            if (!XgDoLoad(hwnd, szFile)) {
                 XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_CANTLOAD), nullptr, MB_ICONERROR);
             } else {
                 xg_caret_pos.clear();

@@ -5570,6 +5570,25 @@ bool __fastcall XgDoSaveFile(HWND hwnd, LPCWSTR pszFile, XG_FILETYPE type)
     return ret;
 }
 
+bool __fastcall XgDoLoad(HWND hwnd, LPCWSTR pszFile)
+{
+    LPCWSTR pchDotExt = PathFindExtensionW(pszFile);
+    if (lstrcmpiW(pchDotExt, L".xwj") == 0 ||
+        lstrcmpiW(pchDotExt, L".json") == 0 ||
+        lstrcmpiW(pchDotExt, L".jso") == 0)
+    {
+        return XgDoLoadFile(hwnd, pszFile, XG_FILETYPE_XWJ);
+    } else if (lstrcmpiW(pchDotExt, L".crp") == 0) {
+        return XgDoLoadFile(hwnd, pszFile, XG_FILETYPE_CRP);
+    } else if (lstrcmpiW(pchDotExt, L".xd") == 0) {
+        return XgDoLoadFile(hwnd, pszFile, XG_FILETYPE_XD);
+    } else if (lstrcmpiW(pchDotExt, L".xwd") == 0) {
+        return XgDoLoadFile(hwnd, pszFile, XG_FILETYPE_XWD);
+    } else {
+        return XgDoLoadFile(hwnd, pszFile, XG_FILETYPE_XWJ);
+    }
+}
+
 bool __fastcall XgDoSave(HWND hwnd, LPCWSTR pszFile)
 {
     LPCWSTR pchDotExt = PathFindExtensionW(pszFile);
@@ -5582,8 +5601,13 @@ bool __fastcall XgDoSave(HWND hwnd, LPCWSTR pszFile)
         return XgDoSaveFile(hwnd, pszFile, XG_FILETYPE_CRP);
     } else if (lstrcmpiW(pchDotExt, L".xd") == 0) {
         return XgDoSaveFile(hwnd, pszFile, XG_FILETYPE_XD);
-    } else {
+    } else if (lstrcmpiW(pchDotExt, L".xwd") == 0) {
         return XgDoSaveFile(hwnd, pszFile, XG_FILETYPE_XWD);
+    } else {
+        WCHAR szPath[MAX_PATH];
+        StringCchCopyW(szPath, _countof(szPath), pszFile);
+        PathAddExtensionW(szPath, L".xwj");
+        return XgDoSaveFile(hwnd, szPath, XG_FILETYPE_XWJ);
     }
 }
 
