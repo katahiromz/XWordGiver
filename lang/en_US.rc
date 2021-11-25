@@ -216,7 +216,7 @@ LANGUAGE LANG_ENGLISH, SUBLANG_DEFAULT
             MENUITEM "Digit Input", ID_DIGITINPUT
         }
         MENUITEM SEPARATOR
-        POPUP "Kana Input"
+        POPUP "Kana letters"
         {
             POPUP "ア行"
             {
@@ -390,7 +390,7 @@ LANGUAGE LANG_ENGLISH, SUBLANG_DEFAULT
                 MENUITEM ".\tShift+Ctrl+.", 20032
             }
         }
-        POPUP "Cyrillic"
+        POPUP "Cyrillic letters"
         {
             POPUP "А - Е"
             {
@@ -456,7 +456,7 @@ LANGUAGE LANG_ENGLISH, SUBLANG_DEFAULT
             MENUITEM "7", 40007
             MENUITEM "8", 40008
         }
-        POPUP "Greek"
+        POPUP "Greek letters"
         {
             POPUP "α - ζ"
             {
