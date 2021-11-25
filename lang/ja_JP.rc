@@ -458,6 +458,45 @@ LANGUAGE LANG_JAPANESE, SUBLANG_DEFAULT
             MENUITEM "7", 40007
             MENUITEM "8", 40008
         }
+        POPUP "ギリシャ文字"
+        {
+            POPUP "α - ζ"
+            {
+                MENUITEM "α", 41000
+                MENUITEM "β", 41001
+                MENUITEM "γ", 41002
+                MENUITEM "δ", 41003
+                MENUITEM "ε", 41004
+                MENUITEM "ζ", 41005
+            }
+            POPUP "η - μ"
+            {
+                MENUITEM "η", 41006
+                MENUITEM "θ", 41007
+                MENUITEM "ι", 41008
+                MENUITEM "κ", 41009
+                MENUITEM "λ", 41010
+                MENUITEM "μ", 41011
+            }
+            POPUP "ν - σ"
+            {
+                MENUITEM "ν", 41012
+                MENUITEM "ξ", 41013
+                MENUITEM "ο", 41014
+                MENUITEM "π", 41015
+                MENUITEM "ρ", 41016
+                MENUITEM "σ", 41017
+            }
+            POPUP "τ - ω"
+            {
+                MENUITEM "τ", 41018
+                MENUITEM "υ", 41019
+                MENUITEM "φ", 41020
+                MENUITEM "χ", 41021
+                MENUITEM "ψ", 41022
+                MENUITEM "ω", 41023
+            }
+        }
         MENUITEM SEPARATOR
         MENUITEM "二重マス切り替え(&T)\tCtrl+.", ID_TOGGLEMARK
         MENUITEM SEPARATOR

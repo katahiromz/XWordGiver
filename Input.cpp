@@ -738,7 +738,7 @@ katakana:;
         if (XgIsCharGreekW(ch)) {
             // 大文字にする。
             CharUpperBuffW(&ch, 1);
-            
+
             // 候補ウィンドウを破棄する。
             XgDestroyCandsWnd();
 
@@ -1446,6 +1446,31 @@ bool __fastcall XgOnCommandExtra(HWND hwnd, INT id)
     case 40007: XgOnImeChar(hwnd, L'7', 0); bOK = true; break;
     case 40008: XgOnImeChar(hwnd, L'8', 0); bOK = true; break;
     case 40009: XgOnImeChar(hwnd, L'9', 0); bOK = true; break;
+    // Greek
+    case 41000: XgOnImeChar(hwnd, 0x03B1, 0); bOK = true; break;
+    case 41001: XgOnImeChar(hwnd, 0x03B2, 0); bOK = true; break;
+    case 41002: XgOnImeChar(hwnd, 0x03B3, 0); bOK = true; break;
+    case 41003: XgOnImeChar(hwnd, 0x03B4, 0); bOK = true; break;
+    case 41004: XgOnImeChar(hwnd, 0x03B5, 0); bOK = true; break;
+    case 41005: XgOnImeChar(hwnd, 0x03B6, 0); bOK = true; break;
+    case 41006: XgOnImeChar(hwnd, 0x03B7, 0); bOK = true; break;
+    case 41007: XgOnImeChar(hwnd, 0x03B8, 0); bOK = true; break;
+    case 41008: XgOnImeChar(hwnd, 0x03B9, 0); bOK = true; break;
+    case 41009: XgOnImeChar(hwnd, 0x03BA, 0); bOK = true; break;
+    case 41010: XgOnImeChar(hwnd, 0x03BB, 0); bOK = true; break;
+    case 41011: XgOnImeChar(hwnd, 0x03BC, 0); bOK = true; break;
+    case 41012: XgOnImeChar(hwnd, 0x03BD, 0); bOK = true; break;
+    case 41013: XgOnImeChar(hwnd, 0x03BE, 0); bOK = true; break;
+    case 41014: XgOnImeChar(hwnd, 0x03BF, 0); bOK = true; break;
+    case 41015: XgOnImeChar(hwnd, 0x03C0, 0); bOK = true; break;
+    case 41016: XgOnImeChar(hwnd, 0x03C1, 0); bOK = true; break;
+    case 41017: XgOnImeChar(hwnd, 0x03C3, 0); bOK = true; break;
+    case 41018: XgOnImeChar(hwnd, 0x03C4, 0); bOK = true; break;
+    case 41019: XgOnImeChar(hwnd, 0x03C5, 0); bOK = true; break;
+    case 41020: XgOnImeChar(hwnd, 0x03C6, 0); bOK = true; break;
+    case 41021: XgOnImeChar(hwnd, 0x03C7, 0); bOK = true; break;
+    case 41022: XgOnImeChar(hwnd, 0x03C8, 0); bOK = true; break;
+    case 41023: XgOnImeChar(hwnd, 0x03C9, 0); bOK = true; break;
     default:
         break;
     }

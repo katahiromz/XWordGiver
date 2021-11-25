@@ -6158,22 +6158,26 @@ HMENU XgLoadPopupMenu(HWND hwnd, INT nPos)
     switch (xg_imode)
     {
     case xg_im_ABC:
+        DeleteMenu(hSubMenu, 9, MF_BYPOSITION);
         DeleteMenu(hSubMenu, 8, MF_BYPOSITION);
         DeleteMenu(hSubMenu, 7, MF_BYPOSITION);
         DeleteMenu(hSubMenu, 5, MF_BYPOSITION);
         break;
     case xg_im_KANA:
+        DeleteMenu(hSubMenu, 9, MF_BYPOSITION);
         DeleteMenu(hSubMenu, 8, MF_BYPOSITION);
         DeleteMenu(hSubMenu, 7, MF_BYPOSITION);
         DeleteMenu(hSubMenu, 6, MF_BYPOSITION);
         break;
     case xg_im_KANJI:
+        DeleteMenu(hSubMenu, 9, MF_BYPOSITION);
         DeleteMenu(hSubMenu, 8, MF_BYPOSITION);
         DeleteMenu(hSubMenu, 7, MF_BYPOSITION);
         DeleteMenu(hSubMenu, 6, MF_BYPOSITION);
         DeleteMenu(hSubMenu, 5, MF_BYPOSITION);
         break;
     case xg_im_RUSSIA:
+        DeleteMenu(hSubMenu, 9, MF_BYPOSITION);
         DeleteMenu(hSubMenu, 8, MF_BYPOSITION);
         DeleteMenu(hSubMenu, 6, MF_BYPOSITION);
         DeleteMenu(hSubMenu, 5, MF_BYPOSITION);
@@ -6185,6 +6189,7 @@ HMENU XgLoadPopupMenu(HWND hwnd, INT nPos)
         DeleteMenu(hSubMenu, 5, MF_BYPOSITION);
         break;
     case xg_im_DIGITS:
+        DeleteMenu(hSubMenu, 9, MF_BYPOSITION);
         DeleteMenu(hSubMenu, 7, MF_BYPOSITION);
         DeleteMenu(hSubMenu, 6, MF_BYPOSITION);
         DeleteMenu(hSubMenu, 5, MF_BYPOSITION);
