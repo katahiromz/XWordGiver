@@ -845,6 +845,10 @@ void __fastcall XgOnKey(HWND hwnd, UINT vk, bool fDown, int /*cRepeat*/, UINT /*
     default:
         if (::GetKeyState(VK_CONTROL) < 0 && ::GetKeyState(VK_SHIFT) < 0) {
             // [Shift]キーと[Ctrl]キーが押されている。
+            if (vk == 'G') {
+                XgOnChar(hwnd, 0x011E, 1); // Ğ
+                return;
+            }
             WCHAR sz1[2], sz2[2];
             BYTE state[256] = { 0 };
             // 仮想キーコードを文字に変換。
@@ -1401,6 +1405,7 @@ bool __fastcall XgOnCommandExtra(HWND hwnd, INT id)
     case 20030: xg_chAccent = L','; bOK = true; break;
     case 20031: xg_chAccent = L'&'; bOK = true; break;
     case 20032: xg_chAccent = L'.'; bOK = true; break;
+    case 20033: XgOnChar(hwnd, 0x011E, 1); bOK = true; break; // Ğ
     // Russian
     case 30000: XgOnImeChar(hwnd, 0x0410, 0); bOK = true; break;
     case 30001: XgOnImeChar(hwnd, 0x0411, 0); bOK = true; break;
