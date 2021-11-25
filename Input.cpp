@@ -506,8 +506,11 @@ void __fastcall XgOnChar(HWND hwnd, TCHAR ch, int cRepeat)
             // 候補ウィンドウを破棄する。
             XgDestroyCandsWnd();
 
-            WCHAR sz[2] = { ch, 0 };
-            ::CharUpperW(sz);
+            WCHAR sz[2];
+            LCMapStringW(JPN_LOCALE,
+                LCMAP_FULLWIDTH | LCMAP_KATAKANA | LCMAP_UPPERCASE,
+                &ch, 1, sz, ARRAYSIZE(sz));
+            CharUpperW(sz);
             ch = sz[0];
 
             sa2->ch = ch;
@@ -883,6 +886,21 @@ void __fastcall XgOnKey(HWND hwnd, UINT vk, bool fDown, int /*cRepeat*/, UINT /*
     }
 }
 
+// 文字をセット。
+void __fastcall XgSetChar(WCHAR ch)
+{
+    auto sa1 = std::make_shared<XG_UndoData_SetAt>();
+    sa1->pos = xg_caret_pos;
+    sa1->ch = xg_xword.GetAt(xg_caret_pos);
+
+    auto sa2 = std::make_shared<XG_UndoData_SetAt>();
+    sa2->pos = xg_caret_pos;
+    sa2->ch = ch;
+
+    xg_ubUndoBuffer.Commit(UC_SETAT, sa1, sa2);
+    xg_xword.SetAt(xg_caret_pos, ch);
+}
+
 // IMEから文字が入力された。
 void __fastcall XgOnImeChar(HWND hwnd, WCHAR ch, LPARAM /*lKeyData*/)
 {
@@ -915,7 +933,8 @@ void __fastcall XgOnImeChar(HWND hwnd, WCHAR ch, LPARAM /*lKeyData*/)
 
             // 候補ウィンドウを破棄する。
             XgDestroyCandsWnd();
-            xg_xword.SetAt(xg_caret_pos, ch);
+
+            XgSetChar(ch);
             XgEnsureCaretVisible(hwnd);
 
             if (xg_bCharFeed)
@@ -929,7 +948,7 @@ void __fastcall XgOnImeChar(HWND hwnd, WCHAR ch, LPARAM /*lKeyData*/)
         if (XgIsCharKanjiW(ch)) {
             // 候補ウィンドウを破棄する。
             XgDestroyCandsWnd();
-            xg_xword.SetAt(xg_caret_pos, ch);
+            XgSetChar(ch);
             XgEnsureCaretVisible(hwnd);
 
             if (xg_bCharFeed)
@@ -960,7 +979,7 @@ katakana:;
             // 候補ウィンドウを破棄する。
             XgDestroyCandsWnd();
             // 文字を設定する。
-            xg_xword.SetAt(xg_caret_pos, ch);
+            XgSetChar(ch);
             XgEnsureCaretVisible(hwnd);
 
             if (xg_bCharFeed)
@@ -979,12 +998,13 @@ katakana:;
             LCMapStringW(JPN_LOCALE,
                 LCMAP_FULLWIDTH | LCMAP_KATAKANA | LCMAP_UPPERCASE,
                 &ch, 1, sz, ARRAYSIZE(sz));
+            CharUpperW(sz);
             ch = sz[0];
 
             // 候補ウィンドウを破棄する。
             XgDestroyCandsWnd();
             // 文字を設定する。
-            xg_xword.SetAt(xg_caret_pos, ch);
+            XgSetChar(ch);
             XgEnsureCaretVisible(hwnd);
 
             if (xg_bCharFeed)
@@ -1001,7 +1021,7 @@ katakana:;
             // 候補ウィンドウを破棄する。
             XgDestroyCandsWnd();
             // 文字を設定する。
-            xg_xword.SetAt(xg_caret_pos, ch);
+            XgSetChar(ch);
             XgEnsureCaretVisible(hwnd);
 
             if (xg_bCharFeed)
@@ -1275,7 +1295,8 @@ void __fastcall XgSetInputModeFromDict(HWND hwnd)
     } else if (XgIsCharZenkakuUpperW(ch) || XgIsCharZenkakuLowerW(ch) ||
                XgIsCharHankakuUpperW(ch) || XgIsCharHankakuLowerW(ch) ||
                (0x0080 <= ch && ch <= 0x00FF) || // ラテン補助
-               (0x0100 <= ch && ch <= 0x017F)) // ラテン文字拡張A
+               (0x0100 <= ch && ch <= 0x017F) || // ラテン文字拡張A
+               (0x1E00 <= ch && ch <= 0x1EFF)) // ラテン文字拡張追加
     {
         XgSetInputMode(hwnd, xg_im_ABC);
     }
