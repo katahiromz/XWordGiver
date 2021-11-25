@@ -68,11 +68,12 @@
 - 2021.11.25 Ver.4.8.3
     - Supported French input (Ctrl+Shift+^ A for Â etc.).
     - Added a French dictionary.
-    - Supported Greek input.
+    - Supported Greek and Turkish input.
     - Supported reading/writing XD files.
     - Improved Header and Notes.
     - Command line "--convert input.xwj output.xd" makes file conversion automated.
     - Changed to use half-width characters when drawing alphabet and digits.
+    - Fixed the accelerators.
 
 # 開発履歴 (Japanese)
 
@@ -453,9 +454,10 @@
 - 2021年11月25日 ver.4.8.3
     - フランス語入力をサポート (Ctrl+Shift+^ A for Â etc.)。
     - フランス語辞書を追加。
-    - ギリシャ文字入力をサポート。
+    - ギリシャ文字とトルコ語の入力をサポート。
     - XDファイルの読み書きをサポート。
     - ヘッダと備考欄を改良。
     - コマンドライン「--convert input.xwj output.xd」でファイル変換を自動化。
     - 英字入力と数字入力の描画時に半角を使うようにした。
     - 長音「ー」の処理を修正。
+    - アクセスキーを修正。

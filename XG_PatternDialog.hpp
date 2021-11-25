@@ -372,6 +372,8 @@ public:
     // WM_INITDIALOG
     BOOL OnInitDialog(HWND hwnd, HWND hwndFocus, LPARAM lParam)
     {
+        XgCenterDialog(hwnd);
+
         if (s_pLayout)
         {
             LayoutDestroy(s_pLayout);

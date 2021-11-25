@@ -843,6 +843,63 @@ void __fastcall XgOnKey(HWND hwnd, UINT vk, bool fDown, int /*cRepeat*/, UINT /*
         break;
 
     default:
+        if (::GetKeyState(VK_CONTROL) < 0 && ::GetKeyState(VK_SHIFT) >= 0) {
+            // [Ctrl] キーが押されている。
+            WCHAR sz1[2], sz2[2];
+            BYTE state[256] = { 0 };
+            // 仮想キーコードを文字に変換。
+            ::ToUnicode(vk, 0, state, sz1, _countof(sz1), 0); // [Shift]なし。
+            state[VK_SHIFT] = state[VK_LSHIFT] = state[VK_RSHIFT] = 0x80;
+            ::ToUnicode(vk, 0, state, sz2, _countof(sz2), 0); // [Shift]あり。
+            WCHAR ch1 = sz1[0], ch2 = sz2[0];
+            switch (ch1) {
+            case L'.':
+                ::PostMessageW(hwnd, WM_COMMAND, ID_TOGGLEMARK, 0);
+                return;
+            case L']':
+                ::PostMessageW(hwnd, WM_COMMAND, ID_ZOOMIN, 0);
+                return;
+            case L'[':
+                ::PostMessageW(hwnd, WM_COMMAND, ID_ZOOMOUT, 0);
+                return;
+            case L'\\':
+                ::PostMessageW(hwnd, WM_COMMAND, ID_ZOOM100, 0);
+                return;
+            case L'^':
+                ::PostMessageW(hwnd, WM_COMMAND, ID_CHARFEED, 0);
+                return;
+            case L':':
+                ::PostMessageW(hwnd, WM_COMMAND, ID_GENERATEFROMWORDLIST, 0);
+                return;
+            case L';':
+                ::PostMessageW(hwnd, WM_COMMAND, ID_OPENPATTERNS, 0);
+                return;
+            }
+            switch (ch2) {
+            case L'.':
+                ::PostMessageW(hwnd, WM_COMMAND, ID_TOGGLEMARK, 0);
+                return;
+            case L']':
+                ::PostMessageW(hwnd, WM_COMMAND, ID_ZOOMIN, 0);
+                return;
+            case L'[':
+                ::PostMessageW(hwnd, WM_COMMAND, ID_ZOOMOUT, 0);
+                return;
+            case L'\\':
+                ::PostMessageW(hwnd, WM_COMMAND, ID_ZOOM100, 0);
+                return;
+            case L'^':
+                ::PostMessageW(hwnd, WM_COMMAND, ID_CHARFEED, 0);
+                return;
+            case L':':
+                ::PostMessageW(hwnd, WM_COMMAND, ID_GENERATEFROMWORDLIST, 0);
+                return;
+            case L';':
+                ::PostMessageW(hwnd, WM_COMMAND, ID_OPENPATTERNS, 0);
+                return;
+            }
+            return;
+        }
         if (::GetKeyState(VK_CONTROL) < 0 && ::GetKeyState(VK_SHIFT) < 0) {
             // [Shift]キーと[Ctrl]キーが押されている。
             if (vk == 'G') {
