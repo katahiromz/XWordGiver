@@ -334,7 +334,7 @@
 #define ID_ZOOM80                           268
 #define ID_ZOOM90                           269
 #define ID_RULE_DONTTHREEDIAGONALS          270
-#define ID_DIGITINPUT                       271
+#define ID_GREEKINPUT                       271
 #define ID_SHOWHIDENUMBERING                272
 #define ID_SHOWHIDECARET                    273
 #define ID_ERASESOLUTIONANDUNLOCKEDIT       274
@@ -352,6 +352,7 @@
 #define ID_DELETE_ROW                       286
 #define ID_DELETE_COLUMN                    287
 #define ID_GENERATEFROMWORDLIST             288
+#define ID_DIGITINPUT                       289
 #define ID_DICTIONARY00                     500
 #define ID_DICTIONARY01                     501
 #define ID_DICTIONARY02                     502
@@ -416,7 +417,6 @@
 #define ID_DICTIONARY61                     561
 #define ID_DICTIONARY62                     562
 #define ID_DICTIONARY63                     563
-#define ID_GREEKINPUT                       564
 #define ID_TT_BASE                          10000
 
 #define ctl2                                1185

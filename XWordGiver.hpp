@@ -979,8 +979,8 @@ enum XG_InputMode
     xg_im_ABC,      // 英字入力。
     xg_im_KANJI,    // 漢字入力。
     xg_im_RUSSIA,   // ロシア文字。
-    xg_im_GREEK,    // ギリシャ文字。
     xg_im_DIGITS,   // 数字入力
+    xg_im_GREEK,    // ギリシャ文字。
 };
 extern XG_InputMode xg_imode;
 
