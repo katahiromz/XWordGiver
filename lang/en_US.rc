@@ -212,6 +212,7 @@ LANGUAGE LANG_ENGLISH, SUBLANG_DEFAULT
             MENUITEM "&Alphabet Input", ID_ABCINPUT
             MENUITEM "Kanji Input", ID_KANJIINPUT
             MENUITEM "Cyrillic Input", ID_RUSSIAINPUT
+            MENUITEM "Greek Input", ID_GREEKINPUT
             MENUITEM "Digit Input", ID_DIGITINPUT
         }
         MENUITEM SEPARATOR

@@ -215,6 +215,7 @@ LANGUAGE LANG_JAPANESE, SUBLANG_DEFAULT
             MENUITEM "英字入力(&A)", ID_ABCINPUT
             MENUITEM "漢字入力(&H)", ID_KANJIINPUT
             MENUITEM "ロシア入力(&R)", ID_RUSSIAINPUT
+            MENUITEM "ギリシャ入力(&R)", ID_GREEKINPUT
             MENUITEM "数字入力(&D)", ID_DIGITINPUT
         }
         MENUITEM SEPARATOR
