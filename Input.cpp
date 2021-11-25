@@ -736,6 +736,9 @@ katakana:;
         }
     } else if (xg_imode == xg_im_GREEK) {
         if (XgIsCharGreekW(ch)) {
+            // 大文字にする。
+            CharUpperBuffW(&ch, 1);
+            
             // 候補ウィンドウを破棄する。
             XgDestroyCandsWnd();
 
@@ -975,6 +978,8 @@ katakana:;
         }
     } else if (xg_imode == xg_im_GREEK) {
         if (XgIsCharGreekW(ch)) {
+            // 大文字にする。
+            CharUpperBuffW(&ch, 1);
             // 候補ウィンドウを破棄する。
             XgDestroyCandsWnd();
             // 文字を設定する。
