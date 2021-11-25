@@ -49,6 +49,21 @@ void __fastcall XgInputDirection(HWND hwnd, INT nDirection)
     xg_chAccent = 0;
 }
 
+// 文字と「元に戻す」情報をセット。
+void __fastcall XgSetChar(HWND hwnd, WCHAR ch)
+{
+    auto sa1 = std::make_shared<XG_UndoData_SetAt>();
+    sa1->pos = xg_caret_pos;
+    sa1->ch = xg_xword.GetAt(xg_caret_pos);
+
+    auto sa2 = std::make_shared<XG_UndoData_SetAt>();
+    sa2->pos = xg_caret_pos;
+    sa2->ch = ch;
+
+    xg_ubUndoBuffer.Commit(UC_SETAT, sa1, sa2);
+    xg_xword.SetAt(xg_caret_pos, ch);
+}
+
 // アクセント記号付きの文字にする。
 WCHAR XgConvertAccent(WCHAR chAccent, WCHAR ch)
 {
@@ -380,19 +395,11 @@ void __fastcall XgOnChar(HWND hwnd, TCHAR ch, int cRepeat)
     if (oldch == ZEN_BLACK && xg_bSolved)
         return;
 
-    auto sa1 = std::make_shared<XG_UndoData_SetAt>();
-    auto sa2 = std::make_shared<XG_UndoData_SetAt>();
-    sa1->pos = sa2->pos = xg_caret_pos;
-    sa1->ch = oldch;
-
     if (ch == L'_') {
         // 候補ウィンドウを破棄する。
         XgDestroyCandsWnd();
         if (!(xg_bSolved && oldch == ZEN_BLACK)) {
-            sa2->ch = ZEN_SPACE;
-            xg_ubUndoBuffer.Commit(UC_SETAT, sa1, sa2);
-            xg_xword.SetAt(xg_caret_pos, ZEN_SPACE);
-
+            XgSetChar(hwnd, ZEN_SPACE);
             XgEnsureCaretVisible(hwnd);
             XgUpdateImage(hwnd);
         }
@@ -403,25 +410,16 @@ void __fastcall XgOnChar(HWND hwnd, TCHAR ch, int cRepeat)
         XgDestroyCandsWnd();
         {
             if (oldch == ZEN_SPACE && !xg_bSolved) {
-                sa2->ch = ZEN_BLACK;
-                xg_ubUndoBuffer.Commit(UC_SETAT, sa1, sa2);
-                xg_xword.SetAt(xg_caret_pos, ZEN_BLACK);
-
+                XgSetChar(hwnd, ZEN_BLACK);
                 XgEnsureCaretVisible(hwnd);
                 XgUpdateImage(hwnd);
             } else if (oldch == ZEN_BLACK && !xg_bSolved) {
-                sa2->ch = ZEN_SPACE;
-                xg_ubUndoBuffer.Commit(UC_SETAT, sa1, sa2);
-                xg_xword.SetAt(xg_caret_pos, ZEN_SPACE);
-
+                XgSetChar(hwnd, ZEN_SPACE);
                 XgEnsureCaretVisible(hwnd);
                 XgUpdateImage(hwnd);
             } else if (!xg_bSolved || !xg_bShowAnswer) {
                 if (oldch != ZEN_BLACK) {
-                    sa2->ch = ZEN_SPACE;
-                    xg_ubUndoBuffer.Commit(UC_SETAT, sa1, sa2);
-                    xg_xword.SetAt(xg_caret_pos, ZEN_SPACE);
-
+                    XgSetChar(hwnd, ZEN_SPACE);
                     XgEnsureCaretVisible(hwnd);
                     XgUpdateImage(hwnd);
                 }
@@ -434,10 +432,7 @@ void __fastcall XgOnChar(HWND hwnd, TCHAR ch, int cRepeat)
         XgDestroyCandsWnd();
 
         if (!xg_bSolved) {
-            sa2->ch = ZEN_BLACK;
-            xg_ubUndoBuffer.Commit(UC_SETAT, sa1, sa2);
-            xg_xword.SetAt(xg_caret_pos, ZEN_BLACK);
-
+            XgSetChar(hwnd, ZEN_BLACK);
             XgEnsureCaretVisible(hwnd);
             XgUpdateImage(hwnd);
         }
@@ -461,9 +456,7 @@ void __fastcall XgOnChar(HWND hwnd, TCHAR ch, int cRepeat)
             }
             xg_chAccent = 0; // アクセントを解除する。
 
-            sa2->ch = ch;
-            xg_ubUndoBuffer.Commit(UC_SETAT, sa1, sa2);
-            xg_xword.SetAt(xg_caret_pos, ch);
+            XgSetChar(hwnd, ch);
 
             if (xg_bCharFeed)
                 XgCharFeed(hwnd);
@@ -473,12 +466,8 @@ void __fastcall XgOnChar(HWND hwnd, TCHAR ch, int cRepeat)
         } else if (XgIsCharZenkakuUpperW(ch)) {
             // 候補ウィンドウを破棄する。
             XgDestroyCandsWnd();
-            // 全角大文字英字が入力された。
-            sa2->ch = ch;
 
-            xg_ubUndoBuffer.Commit(UC_SETAT, sa1, sa2);
-            xg_xword.SetAt(xg_caret_pos, ch);
-
+            XgSetChar(hwnd, ch);
             if (xg_bCharFeed)
                 XgCharFeed(hwnd);
 
@@ -490,10 +479,7 @@ void __fastcall XgOnChar(HWND hwnd, TCHAR ch, int cRepeat)
             // 全角小文字英字が入力された。
             ch = ZEN_LARGE_A + (ch - ZEN_SMALL_A);
 
-            sa2->ch = ch;
-            xg_ubUndoBuffer.Commit(UC_SETAT, sa1, sa2);
-            xg_xword.SetAt(xg_caret_pos, ch);
-
+            XgSetChar(hwnd, ch);
             if (xg_bCharFeed)
                 XgCharFeed(hwnd);
 
@@ -513,10 +499,7 @@ void __fastcall XgOnChar(HWND hwnd, TCHAR ch, int cRepeat)
             CharUpperW(sz);
             ch = sz[0];
 
-            sa2->ch = ch;
-            xg_ubUndoBuffer.Commit(UC_SETAT, sa1, sa2);
-            xg_xword.SetAt(xg_caret_pos, ch);
-
+            XgSetChar(hwnd, ch);
             if (xg_bCharFeed)
                 XgCharFeed(hwnd);
 
@@ -730,10 +713,7 @@ katakana:;
             // 候補ウィンドウを破棄する。
             XgDestroyCandsWnd();
 
-            sa2->ch = newch;
-            xg_ubUndoBuffer.Commit(UC_SETAT, sa1, sa2);
-            xg_xword.SetAt(xg_caret_pos, newch);
-
+            XgSetChar(hwnd, newch);
             if (xg_bCharFeed)
                 XgCharFeed(hwnd);
 
@@ -745,11 +725,9 @@ katakana:;
         if (XgIsCharZenkakuCyrillicW(ch)) {
             // 候補ウィンドウを破棄する。
             XgDestroyCandsWnd();
-            // キリル文字直接入力。
-            sa2->ch = ch;
-            xg_ubUndoBuffer.Commit(UC_SETAT, sa1, sa2);
-            xg_xword.SetAt(xg_caret_pos, ch);
 
+            // キリル文字直接入力。
+            XgSetChar(hwnd, ch);
             if (xg_bCharFeed)
                 XgCharFeed(hwnd);
 
@@ -763,11 +741,9 @@ katakana:;
         if (XgIsCharZenkakuNumericW(ch)) {
             // 候補ウィンドウを破棄する。
             XgDestroyCandsWnd();
-            // 数字直接入力。
-            sa2->ch = ch;
-            xg_ubUndoBuffer.Commit(UC_SETAT, sa1, sa2);
-            xg_xword.SetAt(xg_caret_pos, ch);
 
+            // 数字直接入力。
+            XgSetChar(hwnd, ch);
             if (xg_bCharFeed)
                 XgCharFeed(hwnd);
 
@@ -780,8 +756,6 @@ katakana:;
 // キーが押された。
 void __fastcall XgOnKey(HWND hwnd, UINT vk, bool fDown, int /*cRepeat*/, UINT /*flags*/)
 {
-    WCHAR ch;
-
     // 特定の条件において、キー入力を拒否する。
     if (!fDown)
         return;
@@ -844,20 +818,10 @@ void __fastcall XgOnKey(HWND hwnd, UINT vk, bool fDown, int /*cRepeat*/, UINT /*
         // 候補ウィンドウを破棄する。
         XgDestroyCandsWnd();
         // 現在のキャレット位置のマスの中身を消去する。
-        {
-            auto sa1 = std::make_shared<XG_UndoData_SetAt>();
-            auto sa2 = std::make_shared<XG_UndoData_SetAt>();
-            sa1->pos = sa2->pos = xg_caret_pos;
-            sa1->ch = ch = xg_xword.GetAt(xg_caret_pos);
-
-            if (ch != ZEN_SPACE && !xg_bSolved) {
-                sa1->ch = ZEN_SPACE;
-                xg_ubUndoBuffer.Commit(UC_SETAT, sa1, sa2);
-                xg_xword.SetAt(xg_caret_pos, ZEN_SPACE);
-
-                XgEnsureCaretVisible(hwnd);
-                XgUpdateImage(hwnd);
-            }
+        if (xg_xword.GetAt(xg_caret_pos) != ZEN_SPACE && !xg_bSolved) {
+            XgSetChar(hwnd, ZEN_SPACE);
+            XgEnsureCaretVisible(hwnd);
+            XgUpdateImage(hwnd);
         }
         xg_prev_vk = 0;
         xg_chAccent = 0;
@@ -884,21 +848,6 @@ void __fastcall XgOnKey(HWND hwnd, UINT vk, bool fDown, int /*cRepeat*/, UINT /*
         }
         break;
     }
-}
-
-// 文字をセット。
-void __fastcall XgSetChar(WCHAR ch)
-{
-    auto sa1 = std::make_shared<XG_UndoData_SetAt>();
-    sa1->pos = xg_caret_pos;
-    sa1->ch = xg_xword.GetAt(xg_caret_pos);
-
-    auto sa2 = std::make_shared<XG_UndoData_SetAt>();
-    sa2->pos = xg_caret_pos;
-    sa2->ch = ch;
-
-    xg_ubUndoBuffer.Commit(UC_SETAT, sa1, sa2);
-    xg_xword.SetAt(xg_caret_pos, ch);
 }
 
 // IMEから文字が入力された。
@@ -934,7 +883,7 @@ void __fastcall XgOnImeChar(HWND hwnd, WCHAR ch, LPARAM /*lKeyData*/)
             // 候補ウィンドウを破棄する。
             XgDestroyCandsWnd();
 
-            XgSetChar(ch);
+            XgSetChar(hwnd, ch);
             XgEnsureCaretVisible(hwnd);
 
             if (xg_bCharFeed)
@@ -948,7 +897,7 @@ void __fastcall XgOnImeChar(HWND hwnd, WCHAR ch, LPARAM /*lKeyData*/)
         if (XgIsCharKanjiW(ch)) {
             // 候補ウィンドウを破棄する。
             XgDestroyCandsWnd();
-            XgSetChar(ch);
+            XgSetChar(hwnd, ch);
             XgEnsureCaretVisible(hwnd);
 
             if (xg_bCharFeed)
@@ -979,7 +928,7 @@ katakana:;
             // 候補ウィンドウを破棄する。
             XgDestroyCandsWnd();
             // 文字を設定する。
-            XgSetChar(ch);
+            XgSetChar(hwnd, ch);
             XgEnsureCaretVisible(hwnd);
 
             if (xg_bCharFeed)
@@ -1004,7 +953,7 @@ katakana:;
             // 候補ウィンドウを破棄する。
             XgDestroyCandsWnd();
             // 文字を設定する。
-            XgSetChar(ch);
+            XgSetChar(hwnd, ch);
             XgEnsureCaretVisible(hwnd);
 
             if (xg_bCharFeed)
@@ -1021,7 +970,7 @@ katakana:;
             // 候補ウィンドウを破棄する。
             XgDestroyCandsWnd();
             // 文字を設定する。
-            XgSetChar(ch);
+            XgSetChar(hwnd, ch);
             XgEnsureCaretVisible(hwnd);
 
             if (xg_bCharFeed)
