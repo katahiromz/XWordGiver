@@ -71,6 +71,7 @@ LANGUAGE LANG_ENGLISH, SUBLANG_DEFAULT
         MENUITEM "&Alphabet Input", ID_ABCINPUT
         MENUITEM "Kanji Input", ID_KANJIINPUT
         MENUITEM "Cyrillic Input", ID_RUSSIAINPUT
+        MENUITEM "Greek Input", ID_GREEKINPUT
         MENUITEM "Digit Input", ID_DIGITINPUT
         MENUITEM SEPARATOR
         MENUITEM "&Horizontal Input\tCtrl+/", ID_INPUTH
@@ -1497,6 +1498,7 @@ STRINGTABLE
     IDS_ADDMOREWORDS, "Less than 2 words, the puzzle will not be generated. Please increase the number of words."
     IDS_TOOMANYWORDS, "More than %u words is too much."
     IDS_JSONSYNTAXERROR, "JSON syntax error happened."
+    IDS_GREEK, "Greek"
     IDS_TT_NEW, "New crossword"
     IDS_TT_GENERATE, "Generate crossword"
     IDS_TT_OPEN, "Open crossword"

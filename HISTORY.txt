@@ -65,14 +65,14 @@
     - Fine-tuned the max word length when linear symmetry.
     - Fixed and improved the block patterns.
     - Properly handled the parse error when loading "data.json".
-- 2021.XX.YY Ver.4.8.3
+- 2021.11.25 Ver.4.8.3
     - Supported French input (Ctrl+Shift+^ A for Â etc.).
     - Added a French dictionary.
-    - Changed to use half-width characters when drawing alphabet and digits.
-    - Improved IDS_DOWNNUMBER and IDS_ACROSSNUMBER.
-    - Improved Header and Notes.
+    - Supported Greek input.
     - Supported reading/writing XD files.
+    - Improved Header and Notes.
     - Command line "--convert input.xwj output.xd" makes file conversion automated.
+    - Changed to use half-width characters when drawing alphabet and digits.
 
 # 開発履歴 (Japanese)
 
@@ -450,11 +450,12 @@
     - 線対称のときの最大単語長を微調整。
     - 黒マスパターンを改良と修正。
     - 「data.json」の読み込み時にエラーを適切に処理するようにした。
-- 2021年XX月YY日 ver.4.8.3
+- 2021年11月25日 ver.4.8.3
     - フランス語入力をサポート (Ctrl+Shift+^ A for Â etc.)。
     - フランス語辞書を追加。
+    - ギリシャ文字入力をサポート。
+    - XDファイルの読み書きをサポート。
+    - ヘッダと備考欄を改良。
+    - コマンドライン「--convert input.xwj output.xd」でファイル変換を自動化。
     - 英字入力と数字入力の描画時に半角を使うようにした。
     - 長音「ー」の処理を修正。
-    - ヘッダと備考欄を改良。
-    - XDファイルの読み書きをサポート。
-    - コマンドライン「--convert input.xwj output.xd」でファイル変換を自動化。

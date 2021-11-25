@@ -734,6 +734,18 @@ katakana:;
             XgEnsureCaretVisible(hwnd);
             XgUpdateImage(hwnd);
         }
+    } else if (xg_imode == xg_im_GREEK) {
+        if (XgIsCharGreekW(ch)) {
+            // 候補ウィンドウを破棄する。
+            XgDestroyCandsWnd();
+
+            XgSetChar(hwnd, ch);
+            if (xg_bCharFeed)
+                XgCharFeed(hwnd);
+
+            XgEnsureCaretVisible(hwnd);
+            XgUpdateImage(hwnd);
+        }
     } else if (xg_imode == xg_im_DIGITS) {
         // 数字入力の場合。
         if (XgIsCharHankakuNumericW(ch))
@@ -950,6 +962,19 @@ katakana:;
             CharUpperW(sz);
             ch = sz[0];
 
+            // 候補ウィンドウを破棄する。
+            XgDestroyCandsWnd();
+            // 文字を設定する。
+            XgSetChar(hwnd, ch);
+            XgEnsureCaretVisible(hwnd);
+
+            if (xg_bCharFeed)
+                XgCharFeed(hwnd);
+
+            XgUpdateImage(hwnd);
+        }
+    } else if (xg_imode == xg_im_GREEK) {
+        if (XgIsCharGreekW(ch)) {
             // 候補ウィンドウを破棄する。
             XgDestroyCandsWnd();
             // 文字を設定する。
@@ -1185,6 +1210,8 @@ BOOL XgCreateInputPalette(HWND hwndOwner)
                           XgInputPaletteDlgProc);
         }
         break;
+    case xg_im_GREEK:
+        // TODO: ギリシャ文字入力パレットを追加せよ。
     case xg_im_DIGITS:
         // TODO: 数字入力パレットを追加せよ。
     default:
@@ -1241,6 +1268,8 @@ void __fastcall XgSetInputModeFromDict(HWND hwnd)
         XgSetInputMode(hwnd, xg_im_RUSSIA);
     } else if (XgIsCharZenkakuNumericW(ch) || XgIsCharHankakuNumericW(ch)) {
         XgSetInputMode(hwnd, xg_im_DIGITS);
+    } else if (XgIsCharGreekW(ch)) {
+        XgSetInputMode(hwnd, xg_im_GREEK);
     } else if (XgIsCharZenkakuUpperW(ch) || XgIsCharZenkakuLowerW(ch) ||
                XgIsCharHankakuUpperW(ch) || XgIsCharHankakuLowerW(ch) ||
                (0x0080 <= ch && ch <= 0x00FF) || // ラテン補助

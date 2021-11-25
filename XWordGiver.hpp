@@ -979,6 +979,7 @@ enum XG_InputMode
     xg_im_ABC,      // 英字入力。
     xg_im_KANJI,    // 漢字入力。
     xg_im_RUSSIA,   // ロシア文字。
+    xg_im_GREEK,    // ギリシャ文字。
     xg_im_DIGITS,   // 数字入力
 };
 extern XG_InputMode xg_imode;
@@ -1072,6 +1073,12 @@ inline bool XgIsCharZenkakuNumericW(WCHAR ch)
 inline bool XgIsCharHankakuNumericW(WCHAR ch)
 {
     return L'0' <= ch && ch <= L'9';
+}
+
+// ギリシャ文字か？
+inline bool XgIsCharGreekW(WCHAR ch)
+{
+    return 0x0370 <= ch && ch <= 0x03FF;
 }
 
 //////////////////////////////////////////////////////////////////////////////

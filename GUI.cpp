@@ -400,7 +400,7 @@ INT __fastcall XgGetPreferredMaxLength(void)
     } else if (xg_bSkeletonMode) {
         // スケルトンモードでは長い方がいい。
         return 6;
-    } else if (xg_imode == xg_im_RUSSIA || xg_imode == xg_im_ABC) {
+    } else if (xg_imode == xg_im_RUSSIA || xg_imode == xg_im_ABC || xg_imode == xg_im_GREEK) {
         // ロシア語や英語は日本語の単語より長い傾向にある。
         return 5;
     } else if (xg_imode == xg_im_DIGITS) {
@@ -3046,6 +3046,10 @@ void __fastcall MainWnd_OnInitMenu(HWND /*hwnd*/, HMENU hMenu)
         ::CheckMenuRadioItem(hMenu, ID_KANAINPUT, ID_DIGITINPUT, ID_RUSSIAINPUT, MF_BYCOMMAND);
         break;
 
+    case xg_im_GREEK:
+        ::CheckMenuRadioItem(hMenu, ID_KANAINPUT, ID_DIGITINPUT, ID_GREEKINPUT, MF_BYCOMMAND);
+        break;
+
     case xg_im_DIGITS:
         ::CheckMenuRadioItem(hMenu, ID_KANAINPUT, ID_DIGITINPUT, ID_DIGITINPUT, MF_BYCOMMAND);
         break;
@@ -3466,6 +3470,7 @@ void __fastcall XgUpdateStatusBar(HWND hwnd)
     case xg_im_KANA: str += XgLoadStringDx1(IDS_KANA); break;
     case xg_im_KANJI: str += XgLoadStringDx1(IDS_KANJI); break;
     case xg_im_RUSSIA: str += XgLoadStringDx1(IDS_RUSSIA); break;
+    case xg_im_GREEK: str += XgLoadStringDx1(IDS_GREEK); break;
     case xg_im_DIGITS: str += XgLoadStringDx1(IDS_DIGITS); break;
     default:
         break;
@@ -3862,6 +3867,7 @@ void DoWebSearch(HWND hwnd, LPCWSTR str)
         raw += XgLoadStringDx2(IDS_DICTIONARY);
         break;
     case xg_im_RUSSIA:
+    case xg_im_GREEK:
     case xg_im_DIGITS:
         break;
     default:
@@ -5120,6 +5126,10 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
         XgSetInputMode(hwnd, xg_im_RUSSIA);
         break;
 
+    case ID_GREEKINPUT: // ギリシャ文字入力モード。
+        XgSetInputMode(hwnd, xg_im_GREEK);
+        break;
+
     case ID_DIGITINPUT: // 数字入力モード。
         XgSetInputMode(hwnd, xg_im_DIGITS);
         break;
@@ -6165,6 +6175,12 @@ HMENU XgLoadPopupMenu(HWND hwnd, INT nPos)
         break;
     case xg_im_RUSSIA:
         DeleteMenu(hSubMenu, 8, MF_BYPOSITION);
+        DeleteMenu(hSubMenu, 6, MF_BYPOSITION);
+        DeleteMenu(hSubMenu, 5, MF_BYPOSITION);
+        break;
+    case xg_im_GREEK:
+        DeleteMenu(hSubMenu, 8, MF_BYPOSITION);
+        DeleteMenu(hSubMenu, 7, MF_BYPOSITION);
         DeleteMenu(hSubMenu, 6, MF_BYPOSITION);
         DeleteMenu(hSubMenu, 5, MF_BYPOSITION);
         break;

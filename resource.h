@@ -188,6 +188,7 @@
 #define IDS_ADDMOREWORDS                    279
 #define IDS_TOOMANYWORDS                    280
 #define IDS_JSONSYNTAXERROR                 281
+#define IDS_GREEK                           282
 #define IDS_TT_NEW                          10100
 #define IDS_TT_GENERATE                     10101
 #define IDS_TT_OPEN                         10102
@@ -415,6 +416,7 @@
 #define ID_DICTIONARY61                     561
 #define ID_DICTIONARY62                     562
 #define ID_DICTIONARY63                     563
+#define ID_GREEKINPUT                       564
 #define ID_TT_BASE                          10000
 
 #define ctl2                                1185
