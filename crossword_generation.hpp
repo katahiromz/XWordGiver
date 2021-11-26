@@ -1,6 +1,6 @@
 #pragma once
 
-#define CROSSWORD_GENERATION 19 // crossword_generation version
+#define CROSSWORD_GENERATION 20 // crossword_generation version
 
 #define _GNU_SOURCE
 #include <cstdio>
@@ -225,7 +225,7 @@ struct board_data_t {
         return count('?') == 0;
     }
     bool has_letter() const {
-        for (size_t xy = 0; xy < size(); ++xy) {
+        for (int xy = 0; xy < size(); ++xy) {
             if (is_letter(m_data[xy]))
                 return true;
         }
