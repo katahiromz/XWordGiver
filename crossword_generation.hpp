@@ -1,6 +1,6 @@
 #pragma once
 
-#define CROSSWORD_GENERATION 20 // crossword_generation version
+#define CROSSWORD_GENERATION 23 // crossword_generation version
 
 #define _GNU_SOURCE
 #include <cstdio>
@@ -1555,10 +1555,10 @@ struct from_words_t {
 #endif
         from_words_t<t_char, t_fixed> data;
         data.m_iThread = iThread;
-        data.m_words = data.m_dict = *words;
-        bool flag = data.generate();
+        data.m_words = *words;
+        data.m_dict = std::move(*words);
         delete words;
-        return flag;
+        return data.generate();
     }
 
     static bool
@@ -1582,5 +1582,272 @@ struct from_words_t {
         return s_generated;
     }
 }; // struct from_words_t
+
+template <typename t_char>
+struct non_add_block_t {
+    typedef std::basic_string<t_char> t_string;
+    enum { t_fixed = 1 };
+
+    inline static board_t<t_char, t_fixed> s_solution;
+    board_t<t_char, t_fixed> m_board;
+    std::unordered_set<t_string> m_words, m_dict;
+    std::unordered_set<pos_t> m_checked_x, m_checked_y;
+    int m_iThread;
+
+    std::vector<candidate_t<t_char>>
+    get_candidates_from_pat(int x, int y, const t_string& pat, bool vertical) const {
+        std::vector<candidate_t<t_char>> ret;
+        assert(pat.size() > 0);
+        if (pat.find('?') == pat.npos) {
+            if (m_words.count(pat) > 0)
+                ret.push_back({ x, y, pat, vertical });
+            return ret;
+        }
+        ret.reserve(m_words.size() >> 4);
+        for (auto& word : m_words) {
+            if (word.size() != pat.size())
+                continue;
+            bool matched = true;
+            for (size_t ich = 0; ich < word.size(); ++ich) {
+                if (pat[ich] != '?' && pat[ich] != word[ich]) {
+                    matched = false;
+                    break;
+                }
+            }
+            if (matched)
+                ret.push_back({ x, y, word, vertical});
+        }
+        return ret;
+    }
+
+    bool check_words() {
+        for (int y = 0; y < m_board.m_cy; ++y) {
+            for (int x = 0; x < m_board.m_cx; ++x) {
+                if (m_checked_x.count(pos_t(x, y)) > 0)
+                    continue;
+
+                int x0;
+                auto pat = m_board.get_pat_x(x, y, &x0);
+                if (pat.find('?') != pat.npos)
+                    continue;
+
+                if (pat.size() <= 1) {
+                    m_checked_x.emplace(x, y);
+                    continue;
+                }
+
+                if (m_dict.count(pat) == 0)
+                    return false;
+
+                for (size_t i = 0; i < pat.size(); ++i, ++x0) {
+                    m_checked_x.emplace(x0, y);
+                }
+            }
+        }
+
+        for (int x = 0; x < m_board.m_cx; ++x) {
+            for (int y = 0; y < m_board.m_cy; ++y) {
+                if (m_checked_y.count(pos_t(x, y)) > 0)
+                    continue;
+
+                int y0;
+                auto pat = m_board.get_pat_y(x, y, &y0);
+                if (pat.find('?') != pat.npos)
+                    continue;
+
+                if (pat.size() <= 1) {
+                    m_checked_y.emplace(x, y);
+                    continue;
+                }
+
+                if (m_dict.count(pat) == 0)
+                    return false;
+
+                for (size_t i = 0; i < pat.size(); ++i, ++y0) {
+                    m_checked_y.emplace(x, y0);
+                }
+            }
+        }
+
+        return true;
+    }
+
+    bool apply_candidate_x(const candidate_t<t_char>& cand) {
+        auto& word = cand.m_word;
+        m_words.erase(word);
+        int x = cand.m_x, y = cand.m_y;
+        for (size_t ich = 0; ich < word.size(); ++ich, ++x) {
+            m_checked_x.emplace(x, y);
+            m_board.set_at(x, y, word[ich]);
+        }
+        return true;
+    }
+    bool apply_candidate_y(const candidate_t<t_char>& cand) {
+        auto& word = cand.m_word;
+        m_words.erase(word);
+        int x = cand.m_x, y = cand.m_y;
+        for (size_t ich = 0; ich < word.size(); ++ich, ++y) {
+            m_checked_y.emplace(x, y);
+            m_board.set_at(x, y, word[ich]);
+        }
+        return true;
+    }
+
+    bool generate_recurse() {
+        if (s_canceled || s_generated || !check_words())
+            return s_generated;
+
+        for (int y = 0; y < m_board.m_cy; ++y) {
+            for (int x = 0; x < m_board.m_cx - 1; ++x) {
+                if (s_canceled || s_generated)
+                    return s_generated;
+
+                t_char ch0 = m_board.get_at(x, y);
+                t_char ch1 = m_board.get_at(x + 1, y);
+                if ((is_letter(ch0) && ch1 == '?') || (ch0 == '?' && is_letter(ch1))) {
+                    int x0;
+                    auto pat = m_board.get_pat_x(x, y, &x0);
+                    auto cands = get_candidates_from_pat(x0, y, pat, false);
+                    if (cands.empty())
+                        return false;
+                    crossword_generation::random_shuffle(cands.begin(), cands.end());
+                    for (auto& cand : cands) {
+                        if (s_canceled || s_generated)
+                            return s_generated;
+
+                        non_add_block_t<t_char> copy(*this);
+                        copy.apply_candidate_x(cand);
+                        if (copy.generate_recurse())
+                            break;
+                    }
+                    return s_generated;
+                }
+            }
+        }
+
+        for (int x = 0; x < m_board.m_cx; ++x) {
+            for (int y = 0; y < m_board.m_cy - 1; ++y) {
+                if (s_canceled || s_generated)
+                    return s_generated;
+
+                t_char ch0 = m_board.get_at(x, y);
+                t_char ch1 = m_board.get_at(x, y + 1);
+                if ((is_letter(ch0) && ch1 == '?') || (ch0 == '?' && is_letter(ch1))) {
+                    int y0;
+                    auto pat = m_board.get_pat_y(x, y, &y0);
+                    auto cands = get_candidates_from_pat(x, y0, pat, true);
+                    if (cands.empty())
+                        return false;
+                    crossword_generation::random_shuffle(cands.begin(), cands.end());
+                    for (auto& cand : cands) {
+                        if (s_canceled || s_generated)
+                            return s_generated;
+
+                        non_add_block_t<t_char> copy(*this);
+                        copy.apply_candidate_y(cand);
+                        if (copy.generate_recurse())
+                            break;
+                    }
+                    return s_generated;
+                }
+            }
+        }
+
+        if (is_solution(m_board)) {
+            std::lock_guard<std::mutex> lock(s_mutex);
+            s_generated = true;
+            s_solution = m_board;
+            return true;
+        }
+
+        return s_generated;
+    }
+
+    bool is_solution(const board_t<t_char, t_fixed>& board) {
+        return (board.count('?') == 0);
+    }
+
+    bool generate() {
+        if (m_words.empty())
+            return false;
+
+        assert(m_board.rules_ok());
+
+        if (m_board.has_letter())
+            return generate_recurse();
+
+        std::vector<t_string> words(m_words.begin(), m_words.end());
+        crossword_generation::random_shuffle(words.begin(), words.end());
+
+        for (int y = 0; y < m_board.m_cy; ++y) {
+            for (int x = 0; x < m_board.m_cx - 1; ++x) {
+                if (s_canceled || s_generated)
+                    return s_generated;
+                if (m_board.get_at(x, y) == '?' && m_board.get_at(x + 1, y) == '?') {
+                    int x0;
+                    auto pat = m_board.get_pat_x(x, y, &x0);
+                    auto cands = get_candidates_from_pat(x0, y, pat, false);
+                    for (auto& cand : cands) {
+                        if (s_canceled || s_generated)
+                            return s_generated;
+
+                        non_add_block_t<t_char> copy(*this);
+                        copy.apply_candidate_x(cand);
+                        if (copy.generate_recurse())
+                            return true;
+                    }
+                    x += int(pat.size());
+                }
+            }
+        }
+
+        return false;
+    }
+
+    static bool
+    generate_proc(board_t<t_char, t_fixed> *pboard,
+                  std::unordered_set<t_string> *pwords, int iThread)
+    {
+        std::srand(uint32_t(::GetTickCount64()) ^ ::GetCurrentThreadId());
+#ifdef _WIN32
+        //::SetThreadPriority(::GetCurrentThread(), THREAD_PRIORITY_ABOVE_NORMAL);
+#endif
+        non_add_block_t<t_char> data;
+        data.m_iThread = iThread;
+        data.m_board = std::move(*pboard);
+        delete pboard;
+        data.m_words = *pwords;
+        data.m_dict = std::move(*pwords);
+        delete pwords;
+        return data.generate();
+    }
+
+    static bool
+    do_generate(const board_t<t_char, t_fixed>& board,
+                const std::unordered_set<t_string>& words,
+                int num_threads = get_num_processors())
+    {
+        board_t<t_char, t_fixed> *pboard = nullptr;
+        std::unordered_set<t_string> *pwords = nullptr;
+#ifdef SINGLETHREADDEBUG
+        pboard = new board_t<t_char, t_fixed>(board);
+        pwords = new std::unordered_set<t_string>(words);
+        generate_proc(pboard, pwords, 0);
+#else
+        for (int i = 0; i < num_threads; ++i) {
+            pboard = new board_t<t_char, t_fixed>(board);
+            pwords = new std::unordered_set<t_string>(words);
+            try {
+                std::thread t(generate_proc, pboard, pwords, i);
+                t.detach();
+            } catch (std::system_error&) {
+                delete pboard;
+                delete pwords;
+            }
+        }
+#endif
+        return s_generated;
+    }
+}; // struct non_add_block_t
 
 } // namespace crossword_generation
