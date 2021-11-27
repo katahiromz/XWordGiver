@@ -4254,7 +4254,7 @@ void XgGenerateFromWordList(HWND hwnd)
     }
     // 一時的な辞書をセットする。
     for (auto& word : XG_WordListDialog::s_words) {
-        xg_dict_1.emplace_back(word, XG_WordListDialog::s_dict[word]);
+        xg_dict_1.emplace_back(word, L"");
     }
     // 番号とヒントを付ける。
     xg_solution.DoNumberingNoCheck();
@@ -4274,17 +4274,9 @@ void XgGenerateFromWordList(HWND hwnd)
             else if (ZEN_SMALL_A <= wch && wch <= ZEN_SMALL_Z)
                 wch = L'a' + (wch - ZEN_SMALL_A);
         }
+        CharLowerBuffW(&word[0], word.size());
     }
-    if (XG_WordListDialog::s_dict.size()) {
-        for (auto& word : XG_WordListDialog::s_words) {
-            auto hint = XG_WordListDialog::s_dict[word];
-            if (hint.size()) {
-                word += L"\t";
-                word += hint;
-            }
-        }
-    }
-    XG_WordListDialog::s_str_word_list = mstr_join(XG_WordListDialog::s_words, L"\r\n");
+    XG_WordListDialog::s_str_word_list = mstr_join(XG_WordListDialog::s_words, L" ");
     // 「元に戻す」情報を設定する。
     auto sa2 = std::make_shared<XG_UndoData_SetAll>();
     sa2->Get();
@@ -4302,7 +4294,6 @@ void XgGenerateFromWordList(HWND hwnd)
     // クリア。
     XG_WordListDialog::s_words.clear();
     XG_WordListDialog::s_wordset.clear();
-    XG_WordListDialog::s_dict.clear();
 }
 
 // コマンドを実行する。

@@ -76,6 +76,7 @@
     - Fixed the accelerators.
 - 20XX.YY.ZZ Ver.4.8.4
     - Added more patterns.
+    - Improved "Generate from words".
 
 # 開発履歴 (Japanese)
 
@@ -465,3 +466,4 @@
     - アクセスキーを修正。
 - 20XX年YY月ZZ日 ver.4.8.4
     - さらに黒マスパターンを追加。
+    - 「単語リストから生成」を改良。

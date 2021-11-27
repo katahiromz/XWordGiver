@@ -16,6 +16,8 @@ LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
 
 1 BITMAP "res/Bitmap_1.bmp"
 
+IDB_FROMWORDS BITMAP "res/Bitmap_100.bmp"
+
 //////////////////////////////////////////////////////////////////////////////
 // RT_ACCELERATOR
 

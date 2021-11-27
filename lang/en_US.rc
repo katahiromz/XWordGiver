@@ -18,7 +18,7 @@ LANGUAGE LANG_ENGLISH, SUBLANG_DEFAULT
         MENUITEM "Continuously generate crosswords\tCtrl+W", ID_GENERATEREPEATEDLY
         MENUITEM SEPARATOR
         MENUITEM "Generate from block pa&ttern...\tCtrl+;", ID_OPENPATTERNS
-        MENUITEM "Generate from a word &list...\tCtrl+:", ID_GENERATEFROMWORDLIST
+        MENUITEM "Generate from &words...\tCtrl+:", ID_GENERATEFROMWORDLIST
         MENUITEM SEPARATOR
         MENUITEM "&Open crossword...\tCtrl+O", ID_OPEN
         MENUITEM "Save crossword &as...\tCtrl+S", ID_SAVEAS
@@ -1336,18 +1336,17 @@ FONT 9, "Tahoma"
     PUSHBUTTON "Cancel", IDCANCEL, 240, 5, 60, 14
 }
 
-IDD_WORDLIST DIALOG 0, 0, 255, 255
-CAPTION "Generate from the word list"
+IDD_WORDLIST DIALOG 0, 0, 235, 185
+CAPTION "Generate from words"
 STYLE DS_CENTER | DS_MODALFRAME | WS_POPUPWINDOW | WS_CAPTION
-FONT 8, "MS Shell Dlg"
+FONT 9, "MS Shell Dlg"
 {
-    ICON 1, ico1, 5, 5, 0, 0
-    LTEXT "Okay, I will create a crossword puzzle with all the specified words if possible.\n\nPlease specify the words below, separated by newlines.", -1, 30, 5, 220, 35
-    EDITTEXT edt1, 6, 45, 245, 160, ES_WANTRETURN | ES_MULTILINE | WS_VSCROLL | WS_HSCROLL
-    LTEXT "All the words to specify must be connectable. Some incompatible policies will be automatically canceled.", -1, 5, 210, 245, 20
-    AUTOCHECKBOX "&Non-all can be OK", chx1, 5, 235, 100, 14
-    DEFPUSHBUTTON "&Generate", IDOK, 110, 235, 75, 14
-    PUSHBUTTON "&Cancel", IDCANCEL, 190, 235, 60, 14
+    LTEXT "", stc1, 0, 0, 235, 80
+    LTEXT "Please enter your multiple words (separated by space or newline):", -1, 5, 83, 224, 12
+    EDITTEXT edt1, 5, 100, 225, 60, ES_WANTRETURN | ES_AUTOVSCROLL | ES_MULTILINE | WS_VSCROLL
+    AUTOCHECKBOX "&Non-all can be OK", chx1, 5, 165, 85, 14
+    DEFPUSHBUTTON "&Generate", IDOK, 105, 165, 60, 14
+    PUSHBUTTON "Cancel", IDCANCEL, 170, 165, 60, 14
 }
 
 //////////////////////////////////////////////////////////////////////////////

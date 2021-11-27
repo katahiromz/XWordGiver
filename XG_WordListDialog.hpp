@@ -9,8 +9,11 @@ class XG_WordListDialog : public XG_Dialog
 public:
     inline static std::vector<std::wstring> s_words;
     inline static std::unordered_set<std::wstring> s_wordset;
-    inline static std::unordered_map<std::wstring, std::wstring> s_dict;
     inline static std::wstring s_str_word_list;
+
+    RECT m_rcBitmap;
+    SIZE m_sizBitmap;
+    HBITMAP m_hbmBitmap = NULL;
 
     XG_WordListDialog()
     {
@@ -19,8 +22,35 @@ public:
     BOOL OnInitDialog(HWND hwnd, HWND hwndFocus, LPARAM lParam)
     {
         XgCenterDialog(hwnd);
+        // 文字数の限界を増やす。
         ::SendDlgItemMessageW(hwnd, edt1, EM_SETLIMITTEXT, MAXSHORT, 0);
-        SetDlgItemTextW(hwnd, edt1, s_str_word_list.c_str());
+
+        // コントロールstc1の位置とサイズを取得。
+        HWND hStc1 = GetDlgItem(hwnd, stc1);
+        assert(hStc1 != NULL);
+        GetWindowRect(hStc1, &m_rcBitmap);
+        MapWindowRect(NULL, hwnd, &m_rcBitmap);
+        DestroyWindow(hStc1);
+
+        // ビットマップをリソースから読み込む。
+        m_hbmBitmap = LoadBitmapW(GetModuleHandleW(NULL), MAKEINTRESOURCEW(IDB_FROMWORDS));
+        assert(m_hbmBitmap != NULL);
+
+        // ビットマップのサイズを取得。
+        BITMAP bm;
+        GetObject(m_hbmBitmap, sizeof(bm), &bm);
+        m_sizBitmap.cx = bm.bmWidth;
+        m_sizBitmap.cy = bm.bmHeight;
+
+        // 再描画。
+        InvalidateRect(hwnd, &m_rcBitmap, TRUE);
+
+        // テキストを設定。
+        if (s_str_word_list.empty())
+            SetDlgItemTextW(hwnd, edt1, L"This is an example words for XWordGiver");
+        else
+            SetDlgItemTextW(hwnd, edt1, s_str_word_list.c_str());
+
         return TRUE;
     }
 
@@ -28,7 +58,6 @@ public:
     {
         s_words.clear();
         s_wordset.clear();
-        s_dict.clear();
 
         // edt1からテキストを取得する。
         HWND hEdt1 = GetDlgItem(hwnd, edt1);
@@ -49,23 +78,8 @@ public:
 
         // 単語リストと辞書を取得する。
         std::vector<std::wstring> items;
-        mstr_split(items, str, L"\n");
+        mstr_split(items, str, L" \t\r\n\x3000");
         for (auto& item : items) {
-            // コメントは無視する。
-            if (item.size() && item[0] == L'#')
-                continue;
-            // タブ区切りでヒントを取得する。
-            size_t ich = item.find(L'\t');
-            std::wstring hint;
-            if (ich != item.npos) {
-                hint = item.substr(ich + 1);
-                item.resize(ich);
-                ich = hint.find(L'\t');
-                if (ich != hint.npos) {
-                    hint.resize(ich);
-                }
-                xg_str_trim(hint);
-            }
             // ハイフン、アポストロフィ、ピリオド、カンマを取り除く。
             std::wstring tmp;
             for (auto ch : item) {
@@ -84,10 +98,8 @@ public:
             xg_str_trim(item);
             // 文字列を標準化。
             item = XgNormalizeString(item);
-            // 空でなければ追加。
-            if (!item.empty()) {
-                if (hint.size())
-                    s_dict[item] = hint;
+            // 2文字以上なら追加。
+            if (item.size() >= 2) {
                 s_words.push_back(item);
             }
         }
@@ -150,11 +162,40 @@ public:
         case IDOK:
             if (OnOK(hwnd)) {
                 ::EndDialog(hwnd, id);
+                ::DeleteObject(m_hbmBitmap);
             }
             break;
         case IDCANCEL:
             ::EndDialog(hwnd, id);
+            ::DeleteObject(m_hbmBitmap);
             break;
+        }
+    }
+
+    void OnPaint(HWND hwnd)
+    {
+        // ここでビットマップを使って、イメージを描画する。
+        PAINTSTRUCT ps;
+        if (HDC hdc = BeginPaint(hwnd, &ps))
+        {
+            if (HDC hdcMem = CreateCompatibleDC(hdc))
+            {
+                HGDIOBJ hbmOld = SelectObject(hdcMem, m_hbmBitmap);
+                SetStretchBltMode(hdc, STRETCH_HALFTONE);
+                StretchBlt(hdc, m_rcBitmap.left, m_rcBitmap.top,
+                    m_rcBitmap.right - m_rcBitmap.left,
+                    m_rcBitmap.bottom - m_rcBitmap.top,
+                    hdcMem,
+                    0, 0, m_sizBitmap.cx, m_sizBitmap.cy,
+                    SRCCOPY);
+                SelectObject(hdcMem, hbmOld);
+                DeleteObject(hdcMem);
+            }
+            else
+            {
+                assert(0);
+            }
+            EndPaint(hwnd, &ps);
         }
     }
 
@@ -165,6 +206,7 @@ public:
         {
             HANDLE_MSG(hwnd, WM_INITDIALOG, OnInitDialog);
             HANDLE_MSG(hwnd, WM_COMMAND, OnCommand);
+            HANDLE_MSG(hwnd, WM_PAINT, OnPaint);
         }
         return 0;
     }

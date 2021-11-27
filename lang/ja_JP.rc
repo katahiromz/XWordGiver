@@ -1339,18 +1339,17 @@ FONT 9, "MS UI Gothic"
     PUSHBUTTON "キャンセル", IDCANCEL, 240, 5, 60, 14
 }
 
-IDD_WORDLIST DIALOG 0, 0, 255, 255
+IDD_WORDLIST DIALOG 0, 0, 235, 185
 CAPTION "単語リストから生成"
 STYLE DS_CENTER | DS_MODALFRAME | WS_POPUPWINDOW | WS_CAPTION
 FONT 9, "MS UI Gothic"
 {
-    ICON 1, ico1, 5, 5, 0, 0
-    LTEXT "可能ならば指定された単語をすべて使用したクロスワード パズルを生成します。\n\n改行区切りの単語リストを下に指定して下さい。", -1, 30, 5, 220, 35
-    EDITTEXT edt1, 6, 45, 245, 160, ES_WANTRETURN | ES_MULTILINE | WS_VSCROLL | WS_HSCROLL
-    LTEXT "指定単語はすべて連結可能でなければなりません。いくつかの不適合なルールは自動的に解除されます。", -1, 5, 210, 245, 20
-    AUTOCHECKBOX "すべてでなくてもよい(&N)", chx1, 5, 235, 100, 14
-    DEFPUSHBUTTON "生成する(&G)", IDOK, 110, 235, 75, 14
-    PUSHBUTTON "キャンセル(&C)", IDCANCEL, 190, 235, 60, 14
+    LTEXT "", stc1, 0, 0, 235, 80
+    LTEXT "複数の単語をスペースまたは改行区切りで入力して下さい:", -1, 5, 83, 224, 12
+    EDITTEXT edt1, 5, 100, 225, 60, ES_WANTRETURN | ES_AUTOVSCROLL | ES_MULTILINE | WS_VSCROLL
+    DEFPUSHBUTTON "生成開始(&G)", IDOK, 105, 165, 60, 14
+    PUSHBUTTON "キャンセル", IDCANCEL, 170, 165, 60, 14
+    AUTOCHECKBOX "すべてでなくてもよい(&N)", chx1, 5, 165, 90, 14
 }
 
 //////////////////////////////////////////////////////////////////////////////
