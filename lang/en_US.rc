@@ -1340,7 +1340,7 @@ FONT 9, "Tahoma"
 IDD_WORDLIST DIALOG 0, 0, 235, 185
 CAPTION "Generate from words"
 STYLE DS_CENTER | DS_MODALFRAME | WS_POPUPWINDOW | WS_CAPTION
-FONT 9, "MS Shell Dlg"
+FONT 10, "MS Shell Dlg"
 {
     LTEXT "", stc1, 0, 0, 235, 80
     LTEXT "Please enter your multiple words (separated by space or newline):", -1, 5, 83, 224, 12
