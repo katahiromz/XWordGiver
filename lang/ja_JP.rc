@@ -18,7 +18,7 @@ LANGUAGE LANG_JAPANESE, SUBLANG_DEFAULT
         MENUITEM "問題を連続自動生成する(&R)\tCtrl+W", ID_GENERATEREPEATEDLY
         MENUITEM SEPARATOR
         MENUITEM "黒マスパターンから自動生成(&T)...\tCtrl+;", ID_OPENPATTERNS
-        MENUITEM "単語リストから自動生成(&L)...\tCtrl+:", ID_GENERATEFROMWORDLIST
+        MENUITEM "単語群から自動生成(&L)...\tCtrl+:", ID_GENERATEFROMWORDLIST
         MENUITEM SEPARATOR
         MENUITEM "問題を開く(&O)...\tCtrl+O", ID_OPEN
         MENUITEM "問題を保存(&A)...\tCtrl+S", ID_SAVEAS
@@ -1341,7 +1341,7 @@ FONT 9, "MS UI Gothic"
 }
 
 IDD_WORDLIST DIALOG 0, 0, 235, 185
-CAPTION "単語リストから生成"
+CAPTION "単語群から生成"
 STYLE DS_CENTER | DS_MODALFRAME | WS_POPUPWINDOW | WS_CAPTION
 FONT 10, "MS UI Gothic"
 {
