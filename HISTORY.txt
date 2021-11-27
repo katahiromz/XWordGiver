@@ -78,6 +78,7 @@
     - Added more patterns.
     - Improved "Generate from words".
     - Made the small letter size 30%.
+    - Set the skeleton view as the default for non-Japanese users.
 
 # 開発履歴 (Japanese)
 
@@ -469,3 +470,4 @@
     - さらに黒マスパターンを追加。
     - 「単語リストから生成」を改良。
     - 小さい文字の大きさを30%に。
+    - 英語ユーザーの場合はスケルトンビューをデフォルトに。

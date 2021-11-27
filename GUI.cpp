@@ -506,7 +506,10 @@ bool __fastcall XgLoadSettings(void)
 
     xg_nNumberToGenerate = 16;
 
-    xg_nViewMode = XG_VIEW_NORMAL;
+    if (XgIsUserJapanese())
+        xg_nViewMode = XG_VIEW_NORMAL;
+    else
+        xg_nViewMode = XG_VIEW_SKELETON;
 
     xg_strDoubleFrameLetters = XgLoadStringDx1(IDS_DBLFRAME_LETTERS_1);
 
