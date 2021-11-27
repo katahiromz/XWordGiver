@@ -79,6 +79,7 @@
     - Improved "Generate from words".
     - Made the small letter size 30%.
     - Set the skeleton view as the default for non-Japanese users.
+    - "View" → "Zoom" → "Fit the whole" added.
 
 # 開発履歴 (Japanese)
 
@@ -471,3 +472,4 @@
     - 「単語リストから生成」を改良。
     - 小さい文字の大きさを30%に。
     - 英語ユーザーの場合はスケルトンビューをデフォルトに。
+    - 「表示」→「ズーム」→「全体に合わせる」を追加。

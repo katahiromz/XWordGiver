@@ -140,6 +140,7 @@ LANGUAGE LANG_JAPANESE, SUBLANG_DEFAULT
             MENUITEM "ズームイン(&Z)\tCtrl+ホイール↑", ID_ZOOMIN
             MENUITEM "ズームアウト(&Z)\tCtrl+ホイール↓", ID_ZOOMOUT
             MENUITEM "ズーム &100%\tCtrl+\\", ID_ZOOM100
+            MENUITEM "全体に合わせる(&F)\tCtrl+F", ID_FITZOOM
             MENUITEM SEPARATOR
             MENUITEM "ズーム 30%", ID_ZOOM30
             MENUITEM "ズーム 50%", ID_ZOOM50

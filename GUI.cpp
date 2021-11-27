@@ -5762,6 +5762,9 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
     case ID_GENERATEFROMWORDLIST:
         XgGenerateFromWordList(hwnd);
         break;
+    case ID_FITZOOM:
+        XgFitZoom(hwnd);
+        break;
     default:
         if (!XgOnCommandExtra(hwnd, id)) {
             ::MessageBeep(0xFFFFFFFF);

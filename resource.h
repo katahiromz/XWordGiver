@@ -355,6 +355,7 @@
 #define ID_DELETE_COLUMN                    287
 #define ID_GENERATEFROMWORDLIST             288
 #define ID_DIGITINPUT                       289
+#define ID_FITZOOM                          290
 #define ID_DICTIONARY00                     500
 #define ID_DICTIONARY01                     501
 #define ID_DICTIONARY02                     502

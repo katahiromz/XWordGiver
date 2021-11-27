@@ -140,6 +140,7 @@ LANGUAGE LANG_ENGLISH, SUBLANG_DEFAULT
             MENUITEM "&Zoom in\tCtrl+Wheel Forward", ID_ZOOMIN
             MENUITEM "&Zoom out\tCtrl+Wheel Back", ID_ZOOMOUT
             MENUITEM "Zoom &100%\tCtrl+\\", ID_ZOOM100
+            MENUITEM "&Fit the whole\tCtrl+F", ID_FITZOOM
             MENUITEM SEPARATOR
             MENUITEM "Zoom 30%", ID_ZOOM30
             MENUITEM "Zoom 50%", ID_ZOOM50
