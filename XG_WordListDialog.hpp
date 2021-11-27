@@ -47,7 +47,7 @@ public:
 
         // テキストを設定。
         if (s_str_word_list.empty())
-            SetDlgItemTextW(hwnd, edt1, L"This is an example words for XWordGiver");
+            SetDlgItemTextW(hwnd, edt1, L"Here are the example words for XWordGiver");
         else
             SetDlgItemTextW(hwnd, edt1, s_str_word_list.c_str());
 
@@ -80,7 +80,7 @@ public:
         std::vector<std::wstring> items;
         mstr_split(items, str, L" \t\r\n\x3000");
         for (auto& item : items) {
-            // ハイフン、アポストロフィ、ピリオド、カンマを取り除く。
+            // ハイフン、アポストロフィ、ピリオド、カンマ、カッコを取り除く。
             std::wstring tmp;
             for (auto ch : item) {
                 if (ch == L'-' || ch == 0xFF0D)
@@ -90,6 +90,10 @@ public:
                 if (ch == L'.' || ch == 0xFF0E)
                     continue;
                 if (ch == L',' || ch == 0xFF0C)
+                    continue;
+                if (ch == L'(' || ch == 0xFF08)
+                    continue;
+                if (ch == L')' || ch == 0xFF09)
                     continue;
                 tmp += ch;
             }
