@@ -3651,27 +3651,37 @@ void XgUpdateTheme(HWND hwnd)
     XgParseTheme(priority, forbidden, xg_strDefaultTheme);
     xg_bThemeModified = (priority != xg_priority_tags || forbidden != xg_forbidden_tags);
 
+    // メニュー項目の個数を取得。
     HMENU hMenu = ::GetMenu(hwnd);
     INT nCount = ::GetMenuItemCount(hMenu);
     assert(nCount > 0);
+    // 辞書の文字列から「辞書」メニューのインデックスiMenuを取得。
+    INT iMenu;
     WCHAR szText[32];
     MENUITEMINFOW info = { sizeof(info) };
     info.fMask = MIIM_TYPE;
     info.fType = MFT_STRING;
-    for (INT i = 0; i < nCount; ++i) {
+    for (iMenu = 0; iMenu < nCount; ++iMenu) {
         szText[0] = 0;
-        ::GetMenuStringW(hMenu, i, szText, ARRAYSIZE(szText), MF_BYPOSITION);
+        ::GetMenuStringW(hMenu, iMenu, szText, ARRAYSIZE(szText), MF_BYPOSITION);
         if (wcsstr(szText, XgLoadStringDx1(IDS_DICT)) != NULL) {
-            if (xg_bThemeModified) {
-                StringCbCopyW(szText, sizeof(szText), XgLoadStringDx1(IDS_MODIFIEDDICT));
-            } else {
-                StringCbCopyW(szText, sizeof(szText), XgLoadStringDx1(IDS_DEFAULTDICT));
-            }
-            info.dwTypeData = szText;
-            SetMenuItemInfoW(hMenu, i, TRUE, &info);
             break;
         }
     }
+    assert(iMenu != nCount);
+    // 辞書の状態に対して文字列を指定。
+    if (xg_bThemeModified || xg_dict_name.empty() ||
+        xg_dict_name.find(L"\\SubDict") != xg_dict_name.npos)
+    {
+        StringCbCopyW(szText, sizeof(szText), XgLoadStringDx1(IDS_MODIFIEDDICT));
+    } else {
+        StringCbCopyW(szText, sizeof(szText), XgLoadStringDx1(IDS_DEFAULTDICT));
+    }
+    // メニュー文字列を変更。
+    info.fMask = MIIM_TYPE;
+    info.fType = MFT_STRING;
+    info.dwTypeData = szText;
+    ::SetMenuItemInfoW(hMenu, iMenu, TRUE, &info);
     // メニューバーを再描画。
     ::DrawMenuBar(hwnd);
 }
@@ -5477,6 +5487,7 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
     case ID_DICTIONARY63:
         XgSelectDict(hwnd, id - ID_DICTIONARY00);
         XgResetTheme(hwnd, FALSE);
+        XgUpdateTheme(hwnd);
         break;
     case ID_RESETRULES:
         if (XgIsUserJapanese())
@@ -6107,6 +6118,8 @@ bool __fastcall MainWnd_OnCreate(HWND hwnd, LPCREATESTRUCT /*lpCreateStruct*/)
     XgUpdateRules(hwnd);
     // ツールバーのUIを更新する。
     XgUpdateToolBarUI(hwnd);
+    // 辞書メニューの表示を更新。
+    XgUpdateTheme(hwnd);
 
     return true;
 }
