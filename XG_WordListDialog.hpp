@@ -161,13 +161,21 @@ public:
         {
         case IDOK:
             if (OnOK(hwnd)) {
-                ::EndDialog(hwnd, id);
+                // スケルトンビューにする。
+                xg_nViewMode = XG_VIEW_SKELETON;
+                // ビットマップを破棄。
                 ::DeleteObject(m_hbmBitmap);
+                m_hbmBitmap = NULL;
+                // ダイアログを終了。
+                ::EndDialog(hwnd, id);
             }
             break;
         case IDCANCEL:
-            ::EndDialog(hwnd, id);
+            // ビットマップを破棄。
             ::DeleteObject(m_hbmBitmap);
+            m_hbmBitmap = NULL;
+            // ダイアログを終了。
+            ::EndDialog(hwnd, id);
             break;
         }
     }
