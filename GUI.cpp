@@ -4784,6 +4784,29 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
             if (!XgDoSave(hwnd, sz)) {
                 // 保存に失敗。
                 XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_CANTSAVE2), nullptr, MB_ICONERROR);
+            } else {
+                // ファイルの種類を保存する。
+                if (lstrcmpiW(PathFindExtensionW(sz), L".xwj") == 0 ||
+                    lstrcmpiW(PathFindExtensionW(sz), L".json") == 0 ||
+                    lstrcmpiW(PathFindExtensionW(sz), L".jso") == 0)
+                {
+                    xg_nFileType = XG_FILETYPE_XWJ;
+                }
+                else if (lstrcmpiW(PathFindExtensionW(sz), L".crp") == 0)
+                {
+                    xg_nFileType = XG_FILETYPE_CRP;
+                }
+                else if (lstrcmpiW(PathFindExtensionW(sz), L".xd") == 0)
+                {
+                    xg_nFileType = XG_FILETYPE_XD;
+                }
+                else
+                {
+                    if (XgIsUserJapanese())
+                        xg_nFileType = XG_FILETYPE_XWJ;
+                    else
+                        xg_nFileType = XG_FILETYPE_XD;
+                }
             }
         }
         // ツールバーのUIを更新する。
