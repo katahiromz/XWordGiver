@@ -2349,7 +2349,7 @@ bool __fastcall XgSetXDString(HWND hwnd, const std::wstring& str)
 
     for (auto& line : rows) {
         for (auto& ch : line) {
-            if (ch == ' ' || ch == L'_' || ch == ZEN_UNDERLINE)
+            if (ch == L' ' || ch == L'_' || ch == ZEN_UNDERLINE)
                 ch = ZEN_SPACE;
             else if (ch == L'#' || ch == L'.' || ch == ZEN_BLACK)
                 ch = ZEN_BLACK;
@@ -2404,7 +2404,7 @@ bool __fastcall XgSetXDString(HWND hwnd, const std::wstring& str)
     xg_vecYokoHints.clear();
     xg_bSolved = false;
 
-    if (xword.IsFulfilled()) {
+    if (xword.IsFulfilled() && clues.size()) {
         // 番号付けを行う。
         xword.DoNumberingNoCheck();
 
@@ -2473,25 +2473,35 @@ bool __fastcall XgSetXDString(HWND hwnd, const std::wstring& str)
             }
         );
 
-        // 成功。
-        xg_xword = xword;
-        xg_solution = xword;
         if (tate.size() && yoko.size()) {
-            xg_bSolved = true;
-            xg_bShowAnswer = false;
-            XgClearNonBlocks();
-            xg_vecTateHints = tate;
-            xg_vecYokoHints = yoko;
-        }
-
-        for (auto& mark : marks) {
-            if (mark.substr(0, 4) == L"MARK" && L'0' <= mark[4] && mark[4] <= L'9') {
-                size_t i0 = mark.find(L'(');
-                size_t i1 = mark.find(L", ");
-                int x = _wtoi(&mark[i0 + 1]) - 1;
-                int y = _wtoi(&mark[i1 + 2]) - 1;
-                XgSetMark(XG_Pos(y, x));
+            // 成功。
+            xg_xword = xword;
+            xg_solution = xword;
+            if (tate.size() && yoko.size()) {
+                xg_bSolved = true;
+                xg_bShowAnswer = false;
+                XgClearNonBlocks();
+                xg_vecTateHints = tate;
+                xg_vecYokoHints = yoko;
             }
+
+            for (auto& mark : marks) {
+                if (mark.substr(0, 4) == L"MARK" && L'0' <= mark[4] && mark[4] <= L'9') {
+                    size_t i0 = mark.find(L'(');
+                    size_t i1 = mark.find(L", ");
+                    int x = _wtoi(&mark[i0 + 1]) - 1;
+                    int y = _wtoi(&mark[i1 + 2]) - 1;
+                    XgSetMark(XG_Pos(y, x));
+                }
+            }
+        } else {
+            // 成功。
+            xg_xword = xword;
+            xg_solution.ResetAndSetSize(xg_nRows, xg_nCols);
+            xg_bSolved = false;
+            xg_bShowAnswer = false;
+            xg_vecTateHints.clear();
+            xg_vecYokoHints.clear();
         }
     } else {
         // 成功。
