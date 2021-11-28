@@ -79,7 +79,7 @@
     - Improved "Generate from words".
     - Made the small letter size 30%.
     - Set the skeleton view as the default for non-Japanese users.
-    - "View" → "Zoom" → "Fit the whole" added.
+    - "View" → "Zoom" → "Fit the whole" (Ctrl+F) added.
     - Improved the "Dictionary" menu display.
     - Saving the current view mode to XWJ files.
     - Saving the current file type.
@@ -477,7 +477,7 @@
     - 「単語リストから自動生成」を改良して「単語群から自動生成」に。
     - 小さい文字の大きさを30%に。
     - 英語ユーザーの場合はスケルトンビューをデフォルトに。
-    - 「表示」→「ズーム」→「全体に合わせる」を追加。
+    - 「表示」→「ズーム」→「全体に合わせる」(Ctrl+F)を追加。
     - 「辞書」メニューの表示を改良。
     - XWJファイルに現在のビューモードを保存するようにした。
     - 現在のファイルの種類を保存するようにした。
