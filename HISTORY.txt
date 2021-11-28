@@ -84,7 +84,7 @@
     - Saving the current view mode to XWJ files.
     - Saving the current file type.
     - Made saving XD Files default for non-Japanese users.
-    - Fixed the fatal bug on generation and configuration.
+    - Fixed the fatal bug on generation and policy.
 
 # 開発履歴 (Japanese)
 
@@ -482,4 +482,4 @@
     - XWJファイルに現在のビューモードを保存するようにした。
     - 現在のファイルの種類を保存するようにした。
     - 英語ユーザーの場合はXDファイルをデフォルトにした。
-    - 設定と生成における致命的な不具合を修正。
+    - 生成とルールにおける致命的な不具合を修正。
