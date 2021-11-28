@@ -2571,6 +2571,8 @@ void XgPasteBoard(HWND hwnd, const std::wstring& str)
             xg_bShowAnswer = false;
             xg_caret_pos.clear();
             xg_vMarks.clear();
+            xg_vecTateHints.clear();
+            xg_vecYokoHints.clear();
             XgMarkUpdate();
             XgUpdateImage(hwnd, 0, 0);
         } else {
