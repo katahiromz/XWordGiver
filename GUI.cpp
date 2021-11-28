@@ -2563,25 +2563,26 @@ void XgPasteBoard(HWND hwnd, const std::wstring& str)
 
     // 文字列がクロスワードを表していると仮定する。
     // クロスワードに文字列を設定。
-    if (xg_xword.SetString(str)) {
-        // 候補ウィンドウを破棄する。
-        XgDestroyCandsWnd();
-        // ヒントウィンドウを破棄する。
-        XgDestroyHintsWnd();
-
-        xg_bSolved = false;
-        xg_bShowAnswer = false;
-        xg_caret_pos.clear();
-        xg_vMarks.clear();
-        xg_vecTateHints.clear();
-        xg_vecYokoHints.clear();
-        xg_vTateInfo.clear();
-        xg_vYokoInfo.clear();
-        XgMarkUpdate();
-        XgUpdateImage(hwnd, 0, 0);
-    } else {
+    if (!xg_xword.SetString(str)) {
         ::MessageBeep(0xFFFFFFFF);
+        return;
     }
+
+    // 候補ウィンドウを破棄する。
+    XgDestroyCandsWnd();
+    // ヒントウィンドウを破棄する。
+    XgDestroyHintsWnd();
+
+    xg_bSolved = false;
+    xg_bShowAnswer = false;
+    xg_caret_pos.clear();
+    xg_vMarks.clear();
+    xg_vecTateHints.clear();
+    xg_vecYokoHints.clear();
+    xg_vTateInfo.clear();
+    xg_vYokoInfo.clear();
+    XgMarkUpdate();
+    XgUpdateImage(hwnd, 0, 0);
 }
 
 // クリップボードにテキストをコピーする。
