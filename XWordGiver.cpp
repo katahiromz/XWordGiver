@@ -2349,9 +2349,9 @@ bool __fastcall XgSetXDString(HWND hwnd, const std::wstring& str)
 
     for (auto& line : rows) {
         for (auto& ch : line) {
-            if (ch == L'_')
+            if (ch == ' ' || ch == L'_' || ch == ZEN_UNDERLINE)
                 ch = ZEN_SPACE;
-            else if (ch == L'#' || ch == L'.')
+            else if (ch == L'#' || ch == L'.' || ch == ZEN_BLACK)
                 ch = ZEN_BLACK;
         }
         line = XgNormalizeString(line);
@@ -5429,7 +5429,9 @@ std::wstring XgNormalizeStringEx(const std::wstring& str, BOOL bUppercase, BOOL 
     std::wstring ret;
     for (auto& ch : str) {
         WCHAR newch;
-        if (XgIsCharKanaW(ch) || XgIsCharKanjiW(ch) || ch == ZEN_PROLONG) {
+        if (XgIsCharKanaW(ch) || XgIsCharKanjiW(ch) || ch == ZEN_PROLONG || XgIsCharHangulW(ch) ||
+            ch == ZEN_UNDERLINE)
+        {
             if (bKatakana) {
                 LCMapStringW(JPN_LOCALE, LCMAP_FULLWIDTH | LCMAP_KATAKANA, &ch, 1, &newch, 1);
             } else {
@@ -5479,17 +5481,40 @@ bool __fastcall XgDoSaveXdFile(LPCWSTR pszFile)
         }
         fprintf(fout, "\n\n");
 
+        BOOL bAsian = FALSE;
+        for (int i = 0; i < xg_nRows; ++i) {
+            for (int j = 0; j < xg_nCols; ++j) {
+                WCHAR ch = xw->GetAt(i, j);
+                if (XgIsCharKanaW(ch) || XgIsCharKanjiW(ch) ||
+                    ch == ZEN_PROLONG || XgIsCharHangulW(ch))
+                {
+                    bAsian = TRUE;
+                    j = xg_nCols;
+                    i = xg_nRows;
+                }
+            }
+        }
+
         // マス。
         for (int i = 0; i < xg_nRows; ++i) {
             std::wstring row;
             for (int j = 0; j < xg_nCols; ++j) {
                 WCHAR ch = xw->GetAt(i, j);
-                if (ch == ZEN_SPACE)
-                    row += L'_';
-                else if (ch == ZEN_BLACK)
-                    row += L'#';
-                else
-                    row += ch;
+                if (bAsian) {
+                    if (ch == ZEN_SPACE)
+                        row += ZEN_UNDERLINE;
+                    else if (ch == ZEN_BLACK)
+                        row += ZEN_BLACK;
+                    else
+                        row += ch;
+                } else {
+                    if (ch == ZEN_SPACE)
+                        row += L'_';
+                    else if (ch == ZEN_BLACK)
+                        row += L'#';
+                    else
+                        row += ch;
+                }
             }
             row = XgNormalizeStringEx(row);
             fprintf(fout, "%s\n", XgUnicodeToUtf8(row).c_str());
