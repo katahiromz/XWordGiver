@@ -82,6 +82,8 @@
     - "View" → "Zoom" → "Fit the whole" added.
     - Improved the "Dictionary" menu display.
     - Saving the current view mode to XWJ files.
+    - Saving the current file type.
+    - Made saving XD Files default for non-Japanese users.
 
 # 開発履歴 (Japanese)
 
@@ -476,4 +478,6 @@
     - 英語ユーザーの場合はスケルトンビューをデフォルトに。
     - 「表示」→「ズーム」→「全体に合わせる」を追加。
     - 「辞書」メニューの表示を改良。
-    - XWJファイルに現在のビューモードを保存する。
+    - XWJファイルに現在のビューモードを保存するようにした。
+    - 現在のファイルの種類を保存するようにした。
+    - 英語ユーザーの場合はXDファイルをデフォルトにした。

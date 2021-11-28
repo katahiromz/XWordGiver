@@ -135,6 +135,9 @@ INT xg_nNumberToGenerate = 16;
 BOOL xg_bMButtonDragging = FALSE;
 POINT xg_ptMButtonDragging;
 
+// ファイルの種類。
+XG_FILETYPE xg_nFileType = XG_FILETYPE_XWJ;
+
 //////////////////////////////////////////////////////////////////////////////
 // static variables
 
@@ -501,18 +504,17 @@ bool __fastcall XgLoadSettings(void)
         xg_nRules = DEFAULT_RULES_JAPANESE;
         xg_imode = xg_im_KANA;
         xg_bSkeletonMode = FALSE;
+        xg_nViewMode = XG_VIEW_NORMAL;
+        xg_nFileType = XG_FILETYPE_XWJ;
     } else {
         xg_nRules = DEFAULT_RULES_ENGLISH;
         xg_imode = xg_im_ABC;
         xg_bSkeletonMode = TRUE;
+        xg_nViewMode = XG_VIEW_SKELETON;
+        xg_nFileType = XG_FILETYPE_XD;
     }
 
     xg_nNumberToGenerate = 16;
-
-    if (XgIsUserJapanese())
-        xg_nViewMode = XG_VIEW_NORMAL;
-    else
-        xg_nViewMode = XG_VIEW_SKELETON;
 
     xg_strDoubleFrameLetters = XgLoadStringDx1(IDS_DBLFRAME_LETTERS_1);
 
@@ -563,6 +565,27 @@ bool __fastcall XgLoadSettings(void)
             }
             if (!app_key.QueryDword(L"CandsCY", dwValue)) {
                 XG_CandsWnd::s_nCandsWndCY = dwValue;
+            }
+            if (!app_key.QueryDword(L"FileType", dwValue)) {
+                switch ((XG_FILETYPE)dwValue)
+                {
+                case XG_FILETYPE_XWD:
+                case XG_FILETYPE_XWJ:
+                    xg_nFileType = XG_FILETYPE_XWJ;
+                    break;
+                case XG_FILETYPE_CRP:
+                    xg_nFileType = XG_FILETYPE_CRP;
+                    break;
+                case XG_FILETYPE_XD:
+                    xg_nFileType = XG_FILETYPE_XD;
+                    break;
+                default:
+                    if (XgIsUserJapanese())
+                        xg_nFileType = XG_FILETYPE_XWJ;
+                    else
+                        xg_nFileType = XG_FILETYPE_XD;
+                    break;
+                }
             }
 
             if (!app_key.QueryDword(L"IPaletteX", dwValue)) {
@@ -852,6 +875,8 @@ bool __fastcall XgSaveSettings(void)
             app_key.SetDword(L"WindowCY", s_nMainWndCY);
 
             app_key.SetDword(L"TateInput", xg_bTateInput);
+
+            app_key.SetDword(L"FileType", (DWORD)xg_nFileType);
         }
     }
 
@@ -4713,8 +4738,9 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
         ofn.lpstrTitle = XgLoadStringDx1(IDS_SAVECROSSDATA);
         ofn.Flags = OFN_EXPLORER | OFN_ENABLESIZING | OFN_OVERWRITEPROMPT |
             OFN_PATHMUSTEXIST | OFN_HIDEREADONLY;
-        // JSON only
         ofn.lpstrDefExt = L"xwj";
+
+        // ファイルの種類を決定する。
         if (lstrcmpiW(PathFindExtensionW(sz), L".xwj") == 0 ||
             lstrcmpiW(PathFindExtensionW(sz), L".json") == 0 ||
             lstrcmpiW(PathFindExtensionW(sz), L".jso") == 0)
@@ -4734,8 +4760,23 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
         }
         else
         {
-            ofn.nFilterIndex = 0;
+            switch (xg_nFileType) {
+            case XG_FILETYPE_XWD:
+            case XG_FILETYPE_XWJ:
+                ofn.nFilterIndex = 1;
+                break;
+            case XG_FILETYPE_CRP:
+                ofn.nFilterIndex = 2;
+                break;
+            case XG_FILETYPE_XD:
+                ofn.nFilterIndex = 3;
+                break;
+            default:
+                ofn.nFilterIndex = 0;
+                break;
+            }
         }
+
         // ユーザーにファイルの場所を問い合わせる。
         if (::GetSaveFileNameW(&ofn)) {
             // 保存する。

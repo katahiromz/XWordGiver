@@ -2493,6 +2493,14 @@ bool __fastcall XgSetXDString(HWND hwnd, const std::wstring& str)
                 XgSetMark(XG_Pos(y, x));
             }
         }
+    } else {
+        // 成功。
+        xg_xword = xword;
+        xg_solution.ResetAndSetSize(xg_nRows, xg_nCols);
+        xg_bSolved = false;
+        xg_bShowAnswer = false;
+        xg_vecTateHints.clear();
+        xg_vecYokoHints.clear();
     }
 
     return true;
