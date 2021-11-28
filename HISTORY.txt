@@ -81,6 +81,7 @@
     - Set the skeleton view as the default for non-Japanese users.
     - "View" → "Zoom" → "Fit the whole" added.
     - Improved the "Dictionary" menu display.
+    - Saving the current view mode to XWJ files.
 
 # 開発履歴 (Japanese)
 
@@ -475,3 +476,4 @@
     - 英語ユーザーの場合はスケルトンビューをデフォルトに。
     - 「表示」→「ズーム」→「全体に合わせる」を追加。
     - 「辞書」メニューの表示を改良。
+    - XWJファイルに現在のビューモードを保存する。

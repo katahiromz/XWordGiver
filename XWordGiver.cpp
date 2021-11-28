@@ -1994,6 +1994,19 @@ bool __fastcall XgSetJsonString(HWND hwnd, const std::wstring& str)
         if (j["dictionary"].is_string()) {
             dictionary = XgUtf8ToUnicode(j["dictionary"].get<std::string>());
         }
+        if (j["view_mode"].is_number_integer()) {
+            switch (int(j["view_mode"])) {
+            case XG_VIEW_NORMAL:
+                xg_nViewMode = XG_VIEW_NORMAL;
+                break;
+            case XG_VIEW_SKELETON:
+                xg_nViewMode = XG_VIEW_SKELETON;
+                break;
+            default:
+                xg_nViewMode = XG_VIEW_NORMAL;
+                break;
+            }
+        }
 
         if (row_count <= 0 || column_count <= 0) {
             return false;
@@ -5201,6 +5214,8 @@ bool __fastcall XgDoSaveJson(LPCWSTR pszFile)
         j["rules"] = XgUnicodeToUtf8(XgGetRulesString(xg_nRules));
         // 辞書名。
         j["dictionary"] = XgUnicodeToUtf8(PathFindFileNameW(xg_dict_name.c_str()));
+        // ビューモード。
+        j["view_mode"] = (int)xg_nViewMode;
 
         // 盤の切り替え。
         XG_Board *xw = (xg_bSolved ? &xg_solution : &xg_xword);
