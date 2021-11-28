@@ -479,7 +479,6 @@ bool __fastcall XgLoadSettings(void)
     xg_bDrawFrameForMarkedCell = TRUE;
     xg_bSmartResolution = TRUE;
     xg_nZoomRate = 100;
-    xg_bSkeletonMode = FALSE;
     xg_bShowNumbering = TRUE;
     xg_bShowCaret = TRUE;
     xg_bShowDoubleFrameLetters = TRUE;
@@ -501,9 +500,11 @@ bool __fastcall XgLoadSettings(void)
     if (XgIsUserJapanese()) {
         xg_nRules = DEFAULT_RULES_JAPANESE;
         xg_imode = xg_im_KANA;
+        xg_bSkeletonMode = FALSE;
     } else {
         xg_nRules = DEFAULT_RULES_ENGLISH;
         xg_imode = xg_im_ABC;
+        xg_bSkeletonMode = TRUE;
     }
 
     xg_nNumberToGenerate = 16;
