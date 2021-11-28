@@ -478,7 +478,6 @@ bool __fastcall XgLoadSettings(void)
     xg_rgbMarkedCellColor = RGB(255, 255, 255);
     xg_bDrawFrameForMarkedCell = TRUE;
     xg_bSmartResolution = TRUE;
-    xg_imode = xg_im_KANA;
     xg_nZoomRate = 100;
     xg_bSkeletonMode = FALSE;
     xg_bShowNumbering = TRUE;
@@ -499,10 +498,13 @@ bool __fastcall XgLoadSettings(void)
     XG_PatternDialog::xg_nPatWndCY = CW_USEDEFAULT;
     XG_PatternDialog::xg_bShowAnswerOnPattern = TRUE;
 
-    if (XgIsUserJapanese())
+    if (XgIsUserJapanese()) {
         xg_nRules = DEFAULT_RULES_JAPANESE;
-    else
+        xg_imode = xg_im_KANA;
+    } else {
         xg_nRules = DEFAULT_RULES_ENGLISH;
+        xg_imode = xg_im_ABC;
+    }
 
     xg_nNumberToGenerate = 16;
 
