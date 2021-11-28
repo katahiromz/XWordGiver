@@ -2135,7 +2135,7 @@ bool __fastcall XgSetJsonString(HWND hwnd, const std::wstring& str)
             xg_bHintsAdded = false;
 
             // ルールを設定する。
-            xg_nRules = rules;
+            xg_nRules = rules | RULE_DONTDIVIDE;
 
             // 辞書名の辞書を読み込む。
             if (dictionary.size()) {
@@ -6751,41 +6751,29 @@ unsigned __stdcall XgGenerateBlacksSmart(void *param)
     if (xg_nRules & RULE_POINTSYMMETRY) {
         // 再帰求解関数に突入する。
         do {
-            if (xg_bCancelled)
+            if (xg_bCancelled || xg_bBlacksGenerated)
                 break;
-            if (xg_bBlacksGenerated) {
-                break;
-            }
             xword.clear();
         } while (!XgGenerateBlacksPointSymRecurse(xword, 0));
     } else if (xg_nRules & RULE_LINESYMMETRYV) {
         // 再帰求解関数に突入する。
         do {
-            if (xg_bCancelled)
+            if (xg_bCancelled || xg_bBlacksGenerated)
                 break;
-            if (xg_bBlacksGenerated) {
-                break;
-            }
             xword.clear();
         } while (!XgGenerateBlacksLineSymVRecurse(xword, 0));
     } else if (xg_nRules & RULE_LINESYMMETRYH) {
         // 再帰求解関数に突入する。
         do {
-            if (xg_bCancelled)
+            if (xg_bCancelled || xg_bBlacksGenerated)
                 break;
-            if (xg_bBlacksGenerated) {
-                break;
-            }
             xword.clear();
         } while (!XgGenerateBlacksLineSymHRecurse(xword, 0));
     } else {
         // 再帰求解関数に突入する。
         do {
-            if (xg_bCancelled)
+            if (xg_bCancelled || xg_bBlacksGenerated)
                 break;
-            if (xg_bBlacksGenerated) {
-                break;
-            }
             xword.clear();
         } while (!XgGenerateBlacksRecurse(xword, 0));
     }

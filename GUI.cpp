@@ -705,7 +705,7 @@ bool __fastcall XgLoadSettings(void)
                 XG_PatternDialog::xg_bShowAnswerOnPattern = dwValue;
             }
             if (!app_key.QueryDword(L"Rules", dwValue)) {
-                xg_nRules = dwValue;
+                xg_nRules = dwValue | RULE_DONTDIVIDE;
             }
             if (!app_key.QueryDword(L"ShowDoubleFrameLetters", dwValue)) {
                 xg_bShowDoubleFrameLetters = !!dwValue;
@@ -4268,6 +4268,7 @@ void XgGenerateFromWordList(HWND hwnd)
     xg_nRules &= ~(RULE_POINTSYMMETRY | RULE_LINESYMMETRYV | RULE_LINESYMMETRYH);
     xg_nRules &= ~(RULE_DONTCORNERBLACK | RULE_DONTDOUBLEBLACK | RULE_DONTTRIDIRECTIONS);
     xg_nRules &= ~(RULE_DONTFOURDIAGONALS | RULE_DONTTHREEDIAGONALS);
+    xg_nRules |= RULE_DONTDIVIDE;
     xg_bSkeletonMode = TRUE;
     XgUpdateRules(xg_hMainWnd);
     // 解をセットする。
@@ -5578,11 +5579,11 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
         XgUpdateRules(hwnd);
         break;
     case ID_RULE_DONTDIVIDE:
-        if (xg_nRules & RULE_DONTDIVIDE) {
-            xg_nRules &= ~RULE_DONTDIVIDE;
-        } else {
-            xg_nRules |= RULE_DONTDIVIDE;
-        }
+        //if (xg_nRules & RULE_DONTDIVIDE) {
+        //    xg_nRules &= ~RULE_DONTDIVIDE;
+        //} else {
+        //    xg_nRules |= RULE_DONTDIVIDE;
+        //}
         XgUpdateRules(hwnd);
         break;
     case ID_RULE_DONTTHREEDIAGONALS:
