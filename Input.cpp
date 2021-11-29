@@ -772,7 +772,7 @@ katakana:;
         WCHAR sz[2] = { ch, 0 };
         auto str = XgNormalizeString(sz);
         ch = str[0];
-        if (ch >= 0x0020 && ch != 0x007F) {
+        if (ch >= 0x0020 && ch != 0x007F) { // 制御文字はダメだ。
             // 候補ウィンドウを破棄する。
             XgDestroyCandsWnd();
 
@@ -1092,7 +1092,7 @@ katakana:;
         WCHAR sz[2] = { ch, 0 };
         auto str = XgNormalizeString(sz);
         ch = str[0];
-        if (ch >= 0x0020 && ch != 0x007F) {
+        if (ch >= 0x0020 && ch != 0x007F) { // 制御文字はダメだ。
             // 候補ウィンドウを破棄する。
             XgDestroyCandsWnd();
             // 文字を設定する。
