@@ -4106,7 +4106,7 @@ void __fastcall XgDrawXWord_NormalView(XG_Board& xw, HDC hdc, LPSIZE psiz, bool 
     SelectObject(hdcMem, xg_hbmBlackCell);
     SetStretchBltMode(hdcMem, STRETCH_HALFTONE);
 
-    // セルを描画する。
+    // セルの背景を描画する。
     for (int i = 0; i < xg_nRows; i++) {
         for (int j = 0; j < xg_nCols; j++) {
             // セルの座標をセットする。
@@ -4147,55 +4147,8 @@ void __fastcall XgDrawXWord_NormalView(XG_Board& xw, HDC hdc, LPSIZE psiz, bool 
                 // その他のマス。
                 ::FillRect(hdc, &rc, hbrWhite);
             }
-
-            // 文字の背景は透明。塗りつぶさない。
-            ::SetBkMode(hdc, TRANSPARENT);
-
-            // 文字を変換する。
-            if (xg_bHiragana) {
-                WCHAR new_ch;
-                LCMapStringW(JPN_LOCALE, LCMAP_FULLWIDTH | LCMAP_HIRAGANA, &ch, 1, &new_ch, 1);
-                ch = new_ch;
-            } else {
-                WCHAR new_ch;
-                LCMapStringW(JPN_LOCALE, LCMAP_FULLWIDTH | LCMAP_KATAKANA, &ch, 1, &new_ch, 1);
-                ch = new_ch;
-            }
-
-            if (XgIsCharKanaW(ch) || ch == ZEN_PROLONG ||
-                xg_imode == xg_im_KANA || xg_imode == xg_im_KANJI)
-            {
-                WCHAR new_ch;
-                if (xg_bLowercase) {
-                    LCMapStringW(JPN_LOCALE, LCMAP_FULLWIDTH | LCMAP_LOWERCASE, &ch, 1, &new_ch, 1);
-                    ch = new_ch;
-                } else {
-                    LCMapStringW(JPN_LOCALE, LCMAP_FULLWIDTH | LCMAP_UPPERCASE, &ch, 1, &new_ch, 1);
-                    ch = new_ch;
-                }
-            } else {
-                WCHAR new_ch;
-                if (xg_bLowercase) {
-                    LCMapStringW(JPN_LOCALE, LCMAP_HALFWIDTH | LCMAP_LOWERCASE, &ch, 1, &new_ch, 1);
-                    ch = new_ch;
-                } else {
-                    LCMapStringW(JPN_LOCALE, LCMAP_HALFWIDTH | LCMAP_UPPERCASE, &ch, 1, &new_ch, 1);
-                    ch = new_ch;
-                }
-            }
-
-            if (ch != ZEN_BLACK)
-            {
-                // 文字を書く。
-                hFontOld = ::SelectObject(hdc, hFont);
-                ::SetTextColor(hdc, xg_rgbBlackCellColor);
-                ::DrawTextW(hdc, &ch, 1, &rc, DT_CENTER | DT_SINGLELINE | DT_VCENTER);
-                ::SelectObject(hdc, hFontOld);
-            }
         }
     }
-
-    ::DeleteDC(hdcMem);
 
     // 小さい文字のフォントを選択する。
     hFontOld = ::SelectObject(hdc, hFontSmall);
@@ -4311,6 +4264,64 @@ void __fastcall XgDrawXWord_NormalView(XG_Board& xw, HDC hdc, LPSIZE psiz, bool 
     // フォントの選択を解除する。
     ::SelectObject(hdc, hFontOld);
 
+    // 文字の背景は透明。塗りつぶさない。
+    ::SetBkMode(hdc, TRANSPARENT);
+
+    // セルの文字を描画する。
+    for (int i = 0; i < xg_nRows; i++) {
+        for (int j = 0; j < xg_nCols; j++) {
+            // セルの座標をセットする。
+            ::SetRect(&rc,
+                static_cast<int>(xg_nMargin + j * nCellSize), 
+                static_cast<int>(xg_nMargin + i * nCellSize),
+                static_cast<int>(xg_nMargin + (j + 1) * nCellSize), 
+                static_cast<int>(xg_nMargin + (i + 1) * nCellSize));
+
+            WCHAR ch = xw.GetAt(i, j);
+            if (ch == ZEN_BLACK)
+                continue;
+
+            // 文字を変換する。
+            if (xg_bHiragana) {
+                WCHAR new_ch;
+                LCMapStringW(JPN_LOCALE, LCMAP_FULLWIDTH | LCMAP_HIRAGANA, &ch, 1, &new_ch, 1);
+                ch = new_ch;
+            } else {
+                WCHAR new_ch;
+                LCMapStringW(JPN_LOCALE, LCMAP_FULLWIDTH | LCMAP_KATAKANA, &ch, 1, &new_ch, 1);
+                ch = new_ch;
+            }
+
+            if (XgIsCharKanaW(ch) || ch == ZEN_PROLONG ||
+                xg_imode == xg_im_KANA || xg_imode == xg_im_KANJI)
+            {
+                WCHAR new_ch;
+                if (xg_bLowercase) {
+                    LCMapStringW(JPN_LOCALE, LCMAP_FULLWIDTH | LCMAP_LOWERCASE, &ch, 1, &new_ch, 1);
+                    ch = new_ch;
+                } else {
+                    LCMapStringW(JPN_LOCALE, LCMAP_FULLWIDTH | LCMAP_UPPERCASE, &ch, 1, &new_ch, 1);
+                    ch = new_ch;
+                }
+            } else {
+                WCHAR new_ch;
+                if (xg_bLowercase) {
+                    LCMapStringW(JPN_LOCALE, LCMAP_HALFWIDTH | LCMAP_LOWERCASE, &ch, 1, &new_ch, 1);
+                    ch = new_ch;
+                } else {
+                    LCMapStringW(JPN_LOCALE, LCMAP_HALFWIDTH | LCMAP_UPPERCASE, &ch, 1, &new_ch, 1);
+                    ch = new_ch;
+                }
+            }
+
+            // 文字を書く。
+            hFontOld = ::SelectObject(hdc, hFont);
+            ::SetTextColor(hdc, xg_rgbBlackCellColor);
+            ::DrawTextW(hdc, &ch, 1, &rc, DT_CENTER | DT_SINGLELINE | DT_VCENTER);
+            ::SelectObject(hdc, hFontOld);
+        }
+    }
+
     // キャレットを描画する。
     if (bCaret && xg_bShowCaret) {
         const int i = xg_caret_pos.m_i;
@@ -4375,6 +4386,7 @@ void __fastcall XgDrawXWord_NormalView(XG_Board& xw, HDC hdc, LPSIZE psiz, bool 
     ::SelectObject(hdc, hPenOld);
 
     // 破棄する。
+    ::DeleteDC(hdcMem);
     ::DeleteObject(hFont);
     ::DeleteObject(hFontSmall);
     ::DeleteObject(hThinPen);
@@ -4480,6 +4492,7 @@ void __fastcall XgDrawXWord_SkeletonView(XG_Board& xw, HDC hdc, LPSIZE psiz, boo
         }
     }
 
+    // 文字の背景を描画する。
     for (int i = 0; i < xg_nRows; i++) {
         for (int j = 0; j < xg_nCols; j++) {
             // セルの座標をセットする。
@@ -4505,51 +4518,7 @@ void __fastcall XgDrawXWord_SkeletonView(XG_Board& xw, HDC hdc, LPSIZE psiz, boo
                 ::FillRect(hdc, &rc, hbrWhite);
             }
 
-            // 文字の背景は透明。塗りつぶさない。
-            ::SetBkMode(hdc, TRANSPARENT);
-
-            // 文字を変換する。
-            if (xg_bHiragana) {
-                WCHAR new_ch;
-                LCMapStringW(JPN_LOCALE, LCMAP_FULLWIDTH | LCMAP_HIRAGANA, &ch, 1, &new_ch, 1);
-                ch = new_ch;
-            } else {
-                WCHAR new_ch;
-                LCMapStringW(JPN_LOCALE, LCMAP_FULLWIDTH | LCMAP_KATAKANA, &ch, 1, &new_ch, 1);
-                ch = new_ch;
-            }
-
-            if (XgIsCharKanaW(ch) || ch == ZEN_PROLONG ||
-                xg_imode == xg_im_KANA || xg_imode == xg_im_KANJI)
-            {
-                if (xg_bLowercase) {
-                    WCHAR new_ch;
-                    LCMapStringW(JPN_LOCALE, LCMAP_FULLWIDTH | LCMAP_LOWERCASE, &ch, 1, &new_ch, 1);
-                    ch = new_ch;
-                } else {
-                    WCHAR new_ch;
-                    LCMapStringW(JPN_LOCALE, LCMAP_FULLWIDTH | LCMAP_UPPERCASE, &ch, 1, &new_ch, 1);
-                    ch = new_ch;
-                }
-            } else {
-                if (xg_bLowercase) {
-                    WCHAR new_ch;
-                    LCMapStringW(JPN_LOCALE, LCMAP_HALFWIDTH | LCMAP_LOWERCASE, &ch, 1, &new_ch, 1);
-                    ch = new_ch;
-                } else {
-                    WCHAR new_ch;
-                    LCMapStringW(JPN_LOCALE, LCMAP_HALFWIDTH | LCMAP_UPPERCASE, &ch, 1, &new_ch, 1);
-                    ch = new_ch;
-                }
-            }
-
             if (ch != ZEN_BLACK) {
-                // 文字を書く。
-                hFontOld = ::SelectObject(hdc, hFont);
-                ::SetTextColor(hdc, xg_rgbBlackCellColor);
-                ::DrawTextW(hdc, &ch, 1, &rc, DT_CENTER | DT_SINGLELINE | DT_VCENTER);
-                ::SelectObject(hdc, hFontOld);
-
                 // 線を引く。
                 hPenOld = ::SelectObject(hdc, hThinPen);
                 {
@@ -4567,8 +4536,6 @@ void __fastcall XgDrawXWord_SkeletonView(XG_Board& xw, HDC hdc, LPSIZE psiz, boo
             }
         }
     }
-
-    ::DeleteDC(hdcMem);
 
     // 小さい文字のフォントを選択する。
     hFontOld = ::SelectObject(hdc, hFontSmall);
@@ -4681,6 +4648,66 @@ void __fastcall XgDrawXWord_SkeletonView(XG_Board& xw, HDC hdc, LPSIZE psiz, boo
     // フォントの選択を解除する。
     ::SelectObject(hdc, hFontOld);
 
+    // 文字の背景は透明。塗りつぶさない。
+    ::SetBkMode(hdc, TRANSPARENT);
+
+    // セルの文字を描画する。
+    for (int i = 0; i < xg_nRows; i++) {
+        for (int j = 0; j < xg_nCols; j++) {
+            // セルの座標をセットする。
+            ::SetRect(&rc,
+                static_cast<int>(xg_nMargin + j * nCellSize), 
+                static_cast<int>(xg_nMargin + i * nCellSize),
+                static_cast<int>(xg_nMargin + (j + 1) * nCellSize), 
+                static_cast<int>(xg_nMargin + (i + 1) * nCellSize));
+
+            WCHAR ch = xw.GetAt(i, j);
+            if (ch == ZEN_BLACK)
+                continue;
+
+            // 文字を変換する。
+            if (xg_bHiragana) {
+                WCHAR new_ch;
+                LCMapStringW(JPN_LOCALE, LCMAP_FULLWIDTH | LCMAP_HIRAGANA, &ch, 1, &new_ch, 1);
+                ch = new_ch;
+            } else {
+                WCHAR new_ch;
+                LCMapStringW(JPN_LOCALE, LCMAP_FULLWIDTH | LCMAP_KATAKANA, &ch, 1, &new_ch, 1);
+                ch = new_ch;
+            }
+
+            if (XgIsCharKanaW(ch) || ch == ZEN_PROLONG ||
+                xg_imode == xg_im_KANA || xg_imode == xg_im_KANJI)
+            {
+                if (xg_bLowercase) {
+                    WCHAR new_ch;
+                    LCMapStringW(JPN_LOCALE, LCMAP_FULLWIDTH | LCMAP_LOWERCASE, &ch, 1, &new_ch, 1);
+                    ch = new_ch;
+                } else {
+                    WCHAR new_ch;
+                    LCMapStringW(JPN_LOCALE, LCMAP_FULLWIDTH | LCMAP_UPPERCASE, &ch, 1, &new_ch, 1);
+                    ch = new_ch;
+                }
+            } else {
+                if (xg_bLowercase) {
+                    WCHAR new_ch;
+                    LCMapStringW(JPN_LOCALE, LCMAP_HALFWIDTH | LCMAP_LOWERCASE, &ch, 1, &new_ch, 1);
+                    ch = new_ch;
+                } else {
+                    WCHAR new_ch;
+                    LCMapStringW(JPN_LOCALE, LCMAP_HALFWIDTH | LCMAP_UPPERCASE, &ch, 1, &new_ch, 1);
+                    ch = new_ch;
+                }
+            }
+
+            // 文字を書く。
+            hFontOld = ::SelectObject(hdc, hFont);
+            ::SetTextColor(hdc, xg_rgbBlackCellColor);
+            ::DrawTextW(hdc, &ch, 1, &rc, DT_CENTER | DT_SINGLELINE | DT_VCENTER);
+            ::SelectObject(hdc, hFontOld);
+        }
+    }
+
     // キャレットを描画する。
     if (bCaret && xg_bShowCaret) {
         const int i = xg_caret_pos.m_i;
@@ -4721,6 +4748,7 @@ void __fastcall XgDrawXWord_SkeletonView(XG_Board& xw, HDC hdc, LPSIZE psiz, boo
     }
 
     // 破棄する。
+    ::DeleteDC(hdcMem);
     ::DeleteObject(hFont);
     ::DeleteObject(hFontSmall);
     ::DeleteObject(hThinPen);
