@@ -88,7 +88,7 @@ LANGUAGE LANG_ENGLISH, SUBLANG_DEFAULT
         MENUITEM "&New Line\tEnter", ID_RETURN
         MENUITEM "Toggle double-frame\tCtrl+.", ID_TOGGLEMARK
         MENUITEM SEPARATOR
-        MENUITEM "&Clear all the characters", ID_CLEARNONBLOCKS
+        MENUITEM "&Clear all the letters", ID_CLEARNONBLOCKS
         MENUITEM SEPARATOR
         MENUITEM "Input &Palette\tCtrl+U", ID_PALETTE2
     }
