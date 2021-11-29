@@ -59,10 +59,12 @@ extern bool xg_bTateInput;
 
 // 入力パレットを作成する。
 BOOL XgCreateInputPalette(HWND hwndOwner);
+// 入力パレットを作成する。
+BOOL XgCreateInputPalette(HWND hwndOwner, XG_InputMode imode);
 // 入力パレットを破棄する。
 BOOL XgDestroyInputPalette(void);
 // 入力モードを切り替える。
-void __fastcall XgSetInputMode(HWND hwnd, XG_InputMode mode);
+void __fastcall XgSetInputMode(HWND hwnd, XG_InputMode mode, BOOL bForce = FALSE);
 // 文字が入力された。
 void __fastcall XgOnChar(HWND hwnd, TCHAR ch, int cRepeat);
 void __fastcall XgOnImeChar(HWND hwnd, WCHAR ch, LPARAM /*lKeyData*/);

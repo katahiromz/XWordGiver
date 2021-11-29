@@ -1334,9 +1334,15 @@ BOOL XgCreateInputPaletteByDict(HWND hwndOwner)
 // 入力パレットを作成する。
 BOOL XgCreateInputPalette(HWND hwndOwner)
 {
+    return XgCreateInputPalette(hwndOwner, xg_imode);
+}
+
+// 入力パレットを作成する。
+BOOL XgCreateInputPalette(HWND hwndOwner, XG_InputMode imode)
+{
     XgDestroyInputPalette();
 
-    switch (xg_imode) {
+    switch (imode) {
     case xg_im_ABC:
         if (xg_bLowercase) {
             CreateDialogW(xg_hInstance, MAKEINTRESOURCEW(IDD_ABCLOWER), hwndOwner,
@@ -1404,14 +1410,15 @@ BOOL XgCreateInputPalette(HWND hwndOwner)
 }
 
 // 入力モードを切り替える。
-void __fastcall XgSetInputMode(HWND hwnd, XG_InputMode mode)
+void __fastcall XgSetInputMode(HWND hwnd, XG_InputMode mode, BOOL bForce)
 {
     bool flag = (xg_imode != mode);
 
-    xg_imode = mode;
+    if (xg_imode != xg_im_ANY || bForce)
+        xg_imode = mode;
 
     if (flag && xg_hwndInputPalette) {
-        XgCreateInputPalette(hwnd);
+        XgCreateInputPalette(hwnd, mode);
     }
 
     XgUpdateStatusBar(hwnd);

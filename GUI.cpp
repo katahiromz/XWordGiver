@@ -5250,31 +5250,31 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
         break;
 
     case ID_KANAINPUT:  // カナ入力モード。
-        XgSetInputMode(hwnd, xg_im_KANA);
+        XgSetInputMode(hwnd, xg_im_KANA, TRUE);
         break;
 
     case ID_ABCINPUT:   // 英字入力モード。
-        XgSetInputMode(hwnd, xg_im_ABC);
+        XgSetInputMode(hwnd, xg_im_ABC, TRUE);
         break;
 
     case ID_KANJIINPUT: // 漢字入力モード。
-        XgSetInputMode(hwnd, xg_im_KANJI);
+        XgSetInputMode(hwnd, xg_im_KANJI, TRUE);
         break;
 
     case ID_RUSSIAINPUT: // ロシア入力モード。
-        XgSetInputMode(hwnd, xg_im_RUSSIA);
+        XgSetInputMode(hwnd, xg_im_RUSSIA, TRUE);
         break;
 
     case ID_GREEKINPUT: // ギリシャ文字入力モード。
-        XgSetInputMode(hwnd, xg_im_GREEK);
+        XgSetInputMode(hwnd, xg_im_GREEK, TRUE);
         break;
 
     case ID_DIGITINPUT: // 数字入力モード。
-        XgSetInputMode(hwnd, xg_im_DIGITS);
+        XgSetInputMode(hwnd, xg_im_DIGITS, TRUE);
         break;
 
     case ID_ANYINPUT: // 自由入力モード。
-        XgSetInputMode(hwnd, xg_im_ANY);
+        XgSetInputMode(hwnd, xg_im_ANY, TRUE);
         break;
 
     case ID_SHOWHIDEHINTS:
