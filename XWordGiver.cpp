@@ -4102,6 +4102,7 @@ void __fastcall XgDrawXWord_NormalView(XG_Board& xw, HDC hdc, LPSIZE psiz, bool 
     BITMAP bm;
     GetObject(xg_hbmBlackCell, sizeof(bm), &bm);
 
+    // 黒マスビットマップを選択する。
     HDC hdcMem = ::CreateCompatibleDC(NULL);
     SelectObject(hdcMem, xg_hbmBlackCell);
     SetStretchBltMode(hdcMem, STRETCH_HALFTONE);
@@ -4123,21 +4124,15 @@ void __fastcall XgDrawXWord_NormalView(XG_Board& xw, HDC hdc, LPSIZE psiz, bool 
             WCHAR ch = xw.GetAt(i, j);
             if (ch == ZEN_BLACK) {
                 // 黒マス。
-                if (xg_hbmBlackCell)
-                {
+                if (xg_hbmBlackCell) {
                     StretchBlt(hdc,
                                rc.left, rc.top,
                                rc.right - rc.left, rc.bottom - rc.top,
-                               hdcMem,
-                               0, 0, bm.bmWidth, bm.bmHeight,
+                               hdcMem, 0, 0, bm.bmWidth, bm.bmHeight,
                                SRCCOPY);
-                }
-                else if (xg_hBlackCellEMF)
-                {
+                } else if (xg_hBlackCellEMF) {
                     ::PlayEnhMetaFile(hdc, xg_hBlackCellEMF, &rc);
-                }
-                else
-                {
+                } else {
                     ::FillRect(hdc, &rc, hbrBlack);
                 }
             } else if (nMarked != -1) {
@@ -4149,6 +4144,9 @@ void __fastcall XgDrawXWord_NormalView(XG_Board& xw, HDC hdc, LPSIZE psiz, bool 
             }
         }
     }
+
+    // デバイスコンテキストを破棄する。
+    ::DeleteDC(hdcMem);
 
     // 小さい文字のフォントを選択する。
     hFontOld = ::SelectObject(hdc, hFontSmall);
@@ -4386,7 +4384,6 @@ void __fastcall XgDrawXWord_NormalView(XG_Board& xw, HDC hdc, LPSIZE psiz, bool 
     ::SelectObject(hdc, hPenOld);
 
     // 破棄する。
-    ::DeleteDC(hdcMem);
     ::DeleteObject(hFont);
     ::DeleteObject(hFontSmall);
     ::DeleteObject(hThinPen);
@@ -4463,13 +4460,6 @@ void __fastcall XgDrawXWord_SkeletonView(XG_Board& xw, HDC hdc, LPSIZE psiz, boo
     WCHAR sz[32];
     SIZE siz;
     HGDIOBJ hFontOld, hPenOld;
-
-    BITMAP bm;
-    GetObject(xg_hbmBlackCell, sizeof(bm), &bm);
-
-    HDC hdcMem = ::CreateCompatibleDC(NULL);
-    SelectObject(hdcMem, xg_hbmBlackCell);
-    SetStretchBltMode(hdcMem, STRETCH_HALFTONE);
 
     // セルの背景を描画する。
     for (int i = 0; i < xg_nRows; i++) {
@@ -4748,7 +4738,6 @@ void __fastcall XgDrawXWord_SkeletonView(XG_Board& xw, HDC hdc, LPSIZE psiz, boo
     }
 
     // 破棄する。
-    ::DeleteDC(hdcMem);
     ::DeleteObject(hFont);
     ::DeleteObject(hFontSmall);
     ::DeleteObject(hThinPen);
