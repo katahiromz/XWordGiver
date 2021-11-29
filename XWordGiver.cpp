@@ -5521,17 +5521,26 @@ bool XgDoSaveStandard(HWND hwnd, LPCWSTR pszFile, const XG_Board& board)
 // 文字列を標準化する。
 std::wstring XgNormalizeStringEx(const std::wstring& str, BOOL bUppercase, BOOL bKatakana) {
     std::wstring ret;
-    for (auto& ch : str) {
-        WCHAR newch;
+    for (auto ch : str) {
+        WCHAR newch = 0;
+        // 小さな字を大きな字にする。
+        for (size_t ich = 0; ich < _countof(xg_small); ++ich) {
+            if (ch == xg_small[ich][0]) {
+                ch = xg_large[ich][0];
+                break;
+            }
+        }
         if (XgIsCharKanaW(ch) || XgIsCharKanjiW(ch) || ch == ZEN_PROLONG || XgIsCharHangulW(ch) ||
             ch == ZEN_UNDERLINE)
         {
+            // カナか漢字かハングルなら全角文字。
             if (bKatakana) {
                 LCMapStringW(JPN_LOCALE, LCMAP_FULLWIDTH | LCMAP_KATAKANA, &ch, 1, &newch, 1);
             } else {
                 LCMapStringW(JPN_LOCALE, LCMAP_FULLWIDTH | LCMAP_HIRAGANA, &ch, 1, &newch, 1);
             }
         } else {
+            // それ以外は半角文字。
             if (bUppercase) {
                 LCMapStringW(JPN_LOCALE, LCMAP_HALFWIDTH | LCMAP_UPPERCASE, &ch, 1, &newch, 1);
             } else {
