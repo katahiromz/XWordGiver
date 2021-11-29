@@ -4032,6 +4032,55 @@ void __fastcall XgDrawMarkWord(HDC hdc, LPSIZE psiz)
     ::DeleteObject(hbrMarked);
 }
 
+std::unordered_set<XG_Pos> XgGetSlot(INT number, BOOL vertical)
+{
+    std::unordered_set<XG_Pos> ret;
+    if (!xg_bSolved)
+        return ret;
+
+    INT i = -1, j = -1;
+    if (vertical) {
+        for (auto& info : xg_vTateInfo) {
+            if (info.m_number == number) {
+                i = info.m_iRow;
+                j = info.m_jCol;
+                break;
+            }
+        }
+        if (i != -1) {
+            ret.emplace(i, j);
+            for (++i; i < xg_nRows; ++i) {
+                if (xg_xword.GetAt(i, j) == ZEN_BLACK) {
+                    break;
+                }
+                ret.emplace(i, j);
+            }
+        }
+    } else {
+        for (auto& info : xg_vYokoInfo) {
+            if (info.m_number == number) {
+                i = info.m_iRow;
+                j = info.m_jCol;
+                break;
+            }
+        }
+        if (i != -1) {
+            ret.emplace(i, j);
+            for (++j; j < xg_nCols; ++j) {
+                if (xg_xword.GetAt(i, j) == ZEN_BLACK) {
+                    break;
+                }
+                ret.emplace(i, j);
+            }
+        }
+    }
+
+    return ret;
+}
+
+// ハイライト色。
+const COLORREF c_rgbHighlight = RGB(255, 255, 100);
+
 // クロスワードを描画する（通常ビュー）。
 void __fastcall XgDrawXWord_NormalView(XG_Board& xw, HDC hdc, LPSIZE psiz, bool bCaret)
 {
@@ -4075,6 +4124,11 @@ void __fastcall XgDrawXWord_NormalView(XG_Board& xw, HDC hdc, LPSIZE psiz, bool 
     HBRUSH hbrBlack = ::CreateSolidBrush(xg_rgbBlackCellColor);
     HBRUSH hbrWhite = ::CreateSolidBrush(xg_rgbWhiteCellColor);
     HBRUSH hbrMarked = ::CreateSolidBrush(xg_rgbMarkedCellColor);
+    HBRUSH hbrHighlight = ::CreateSolidBrush(c_rgbHighlight);
+
+    auto slot = XgGetSlot(xg_highlight.m_number, xg_highlight.m_vertical);
+    if (xg_nForDisplay <= 0)
+        slot.clear();
 
     // 黒の細いペンを作成する。
     HPEN hThinPen = ::CreatePen(PS_SOLID, 1, xg_rgbBlackCellColor);
@@ -4135,6 +4189,9 @@ void __fastcall XgDrawXWord_NormalView(XG_Board& xw, HDC hdc, LPSIZE psiz, bool 
                 } else {
                     ::FillRect(hdc, &rc, hbrBlack);
                 }
+            } else if (slot.count(XG_Pos(i, j)) > 0) {
+                // ハイライト。
+                ::FillRect(hdc, &rc, hbrHighlight);
             } else if (nMarked != -1) {
                 // 二重マス。
                 ::FillRect(hdc, &rc, hbrMarked);
@@ -4212,7 +4269,9 @@ void __fastcall XgDrawXWord_NormalView(XG_Board& xw, HDC hdc, LPSIZE psiz, bool 
             // 文字の背景を塗りつぶす。
             ::SetBkMode(hdc, OPAQUE);
             int nMarked = XgGetMarked(i, j);
-            if (nMarked != -1) {
+            if (slot.count(XG_Pos(i, j)) > 0) {
+                ::SetBkColor(hdc, c_rgbHighlight);
+            } else if (nMarked != -1) {
                 ::SetBkColor(hdc, xg_rgbMarkedCellColor);
             } else {
                 ::SetBkColor(hdc, xg_rgbWhiteCellColor);
@@ -4240,7 +4299,9 @@ void __fastcall XgDrawXWord_NormalView(XG_Board& xw, HDC hdc, LPSIZE psiz, bool 
 
             // 文字の背景を塗りつぶす。
             int nMarked = XgGetMarked(i, j);
-            if (nMarked != -1) {
+            if (slot.count(XG_Pos(i, j)) > 0) {
+                ::SetBkColor(hdc, c_rgbHighlight);
+            } else if (nMarked != -1) {
                 ::SetBkColor(hdc, xg_rgbMarkedCellColor);
             } else {
                 ::SetBkColor(hdc, xg_rgbWhiteCellColor);
@@ -4392,6 +4453,7 @@ void __fastcall XgDrawXWord_NormalView(XG_Board& xw, HDC hdc, LPSIZE psiz, bool 
     ::DeleteObject(hbrBlack);
     ::DeleteObject(hbrWhite);
     ::DeleteObject(hbrMarked);
+    ::DeleteObject(hbrHighlight);
 }
 
 // クロスワードを描画する（スケルトンビュー）。
@@ -4437,6 +4499,11 @@ void __fastcall XgDrawXWord_SkeletonView(XG_Board& xw, HDC hdc, LPSIZE psiz, boo
     HBRUSH hbrBlack = ::CreateSolidBrush(xg_rgbBlackCellColor);
     HBRUSH hbrWhite = ::CreateSolidBrush(xg_rgbWhiteCellColor);
     HBRUSH hbrMarked = ::CreateSolidBrush(xg_rgbMarkedCellColor);
+    HBRUSH hbrHighlight = ::CreateSolidBrush(c_rgbHighlight);
+
+    auto slot = XgGetSlot(xg_highlight.m_number, xg_highlight.m_vertical);
+    if (xg_nForDisplay <= 0)
+        slot.clear();
 
     // 黒の細いペンを作成する。
     HPEN hThinPen = ::CreatePen(PS_SOLID, 1, xg_rgbBlackCellColor);
@@ -4500,7 +4567,10 @@ void __fastcall XgDrawXWord_SkeletonView(XG_Board& xw, HDC hdc, LPSIZE psiz, boo
                 continue;
 
             // 塗りつぶす。
-            if (nMarked != -1) {
+            if (slot.count(XG_Pos(i, j)) > 0) {
+                // その他のマス。
+                ::FillRect(hdc, &rc, hbrHighlight);
+            } else if (nMarked != -1) {
                 // 二重マス。
                 ::FillRect(hdc, &rc, hbrMarked);
             } else {
@@ -4588,7 +4658,9 @@ void __fastcall XgDrawXWord_SkeletonView(XG_Board& xw, HDC hdc, LPSIZE psiz, boo
             // 文字の背景を塗りつぶす。
             ::SetBkMode(hdc, OPAQUE);
             int nMarked = XgGetMarked(i, j);
-            if (nMarked != -1) {
+            if (slot.count(XG_Pos(i, j)) > 0) {
+                ::SetBkColor(hdc, c_rgbHighlight);
+            } else if (nMarked != -1) {
                 ::SetBkColor(hdc, xg_rgbMarkedCellColor);
             } else {
                 ::SetBkColor(hdc, xg_rgbWhiteCellColor);
@@ -4616,7 +4688,9 @@ void __fastcall XgDrawXWord_SkeletonView(XG_Board& xw, HDC hdc, LPSIZE psiz, boo
 
             // 文字の背景を塗りつぶす。
             int nMarked = XgGetMarked(i, j);
-            if (nMarked != -1) {
+            if (slot.count(XG_Pos(i, j)) > 0) {
+                ::SetBkColor(hdc, c_rgbHighlight);
+            } else if (nMarked != -1) {
                 ::SetBkColor(hdc, xg_rgbMarkedCellColor);
             } else {
                 ::SetBkColor(hdc, xg_rgbWhiteCellColor);
@@ -4746,6 +4820,7 @@ void __fastcall XgDrawXWord_SkeletonView(XG_Board& xw, HDC hdc, LPSIZE psiz, boo
     ::DeleteObject(hbrBlack);
     ::DeleteObject(hbrWhite);
     ::DeleteObject(hbrMarked);
+    ::DeleteObject(hbrHighlight);
 }
 
 // クロスワードを描画する。

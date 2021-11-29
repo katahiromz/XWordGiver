@@ -86,6 +86,7 @@
     - Made saving XD Files default for non-Japanese users.
     - Fixed the fatal bug on generation and policy settings.
     - Improved reading/writing XD files.
+    - Added highlight feature.
 
 # 開発履歴 (Japanese)
 
@@ -485,3 +486,4 @@
     - 英語ユーザーの場合はXDファイルをデフォルトにした。
     - 生成とルール設定における致命的な不具合を修正。
     - XDファイルの読み書きを改良。
+    - ハイライト機能を追加。

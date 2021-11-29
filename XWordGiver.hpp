@@ -1399,6 +1399,14 @@ void __fastcall XgGetHintsStr(const XG_Board& board, std::wstring& str, int hint
 // 文字マスをクリア。
 void __fastcall XgClearNonBlocks(void);
 
+// ハイライト情報。
+struct XG_HighLight
+{
+    INT m_number;
+    BOOL m_vertical;
+};
+extern XG_HighLight xg_highlight;
+
 //////////////////////////////////////////////////////////////////////////////
 
 #include "Dictionary.hpp"

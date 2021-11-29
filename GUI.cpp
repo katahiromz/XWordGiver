@@ -138,6 +138,9 @@ POINT xg_ptMButtonDragging;
 // ファイルの種類。
 XG_FILETYPE xg_nFileType = XG_FILETYPE_XWJ;
 
+// ハイライト情報。
+XG_HighLight xg_highlight = { -1, FALSE };
+
 //////////////////////////////////////////////////////////////////////////////
 // static variables
 
@@ -6410,6 +6413,14 @@ XgWindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 
     case WM_IME_CHAR:
         XgOnImeChar(hWnd, static_cast<WCHAR>(wParam), lParam);
+        break;
+
+    case XGWM_HIGHLIGHT:
+        if (wParam) {
+            xg_highlight.m_number = (SHORT)LOWORD(lParam);
+            xg_highlight.m_vertical = !!HIWORD(lParam);
+            XgUpdateImage(hWnd);
+        }
         break;
 
     default:

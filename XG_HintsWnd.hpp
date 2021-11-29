@@ -3,6 +3,8 @@
 #include "XG_Window.hpp"
 #include "XG_UndoBuffer.hpp"
 
+#define XGWM_HIGHLIGHT (WM_USER + 100)
+
 class XG_HintsWnd : public XG_Window
 {
 public:
@@ -231,6 +233,42 @@ public:
                 HWND hwndLoseFocus = reinterpret_cast<HWND>(wParam);
                 ::SendMessageW(hwndLoseFocus, EM_SETSEL, 0, 0);
             }
+            // ハイライト。
+            {
+                size_t i;
+                bool found = false, vertical = false;
+                if (!found) {
+                    i = 0;
+                    for (auto& edit : xg_ahwndTateEdits) {
+                        if (edit == hwnd) {
+                            found = true;
+                            vertical = true;
+                            break;
+                        }
+                        ++i;
+                    }
+                }
+                if (!found) {
+                    i = 0;
+                    for (auto& edit : xg_ahwndYokoEdits) {
+                        if (edit == hwnd) {
+                            found = true;
+                            vertical = false;
+                            break;
+                        }
+                        ++i;
+                    }
+                }
+                if (found) {
+                    INT number;
+                    if (vertical)
+                        number = xg_vecTateHints[i].m_number;
+                    else
+                        number = xg_vecYokoHints[i].m_number;
+                    PostMessageW(xg_hMainWnd, XGWM_HIGHLIGHT, TRUE, MAKELPARAM(number, vertical));
+                }
+            }
+
             // フォーカスのあるコントロールが見えるように移動する。
             xg_svHintsScrollView.EnsureCtrlVisible(hwnd);
             return ::CallWindowProc(data->m_fnOldWndProc, hwnd, uMsg, wParam, lParam);
@@ -250,6 +288,7 @@ public:
             }
             // レイアウトを調整する。
             ::PostMessageW(xg_hHintsWnd, WM_SIZE, 0, 0);
+            PostMessageW(xg_hMainWnd, XGWM_HIGHLIGHT, TRUE, MAKELPARAM(-1, false));
             return ::CallWindowProc(data->m_fnOldWndProc, hwnd, uMsg, wParam, lParam);
 
         case WM_KEYDOWN:
