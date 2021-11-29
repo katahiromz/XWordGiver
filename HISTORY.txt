@@ -87,6 +87,7 @@
     - Fixed the fatal bug on generation and policy settings.
     - Improved reading/writing XD files.
     - Added highlight feature.
+    - Introduced "Any Input" mode. Made it default.
 
 # 開発履歴 (Japanese)
 
@@ -487,3 +488,4 @@
     - 生成とルール設定における致命的な不具合を修正。
     - XDファイルの読み書きを改良。
     - ハイライト機能を追加。
+    - 「自由入力モード」を導入。デフォルトに。

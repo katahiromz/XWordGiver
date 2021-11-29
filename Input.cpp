@@ -765,6 +765,21 @@ katakana:;
             XgEnsureCaretVisible(hwnd);
             XgUpdateImage(hwnd);
         }
+    } else if (xg_imode == xg_im_ANY) {
+        // 自由入力の場合。
+        WCHAR sz[2] = { ch, 0 };
+        auto str = XgNormalizeString(sz);
+        ch = str[0];
+
+        // 候補ウィンドウを破棄する。
+        XgDestroyCandsWnd();
+
+        XgSetChar(hwnd, ch);
+        if (xg_bCharFeed)
+            XgCharFeed(hwnd);
+
+        XgEnsureCaretVisible(hwnd);
+        XgUpdateImage(hwnd);
     }
 }
 
@@ -1069,6 +1084,22 @@ katakana:;
 
             XgUpdateImage(hwnd);
         }
+    } else if (xg_imode == xg_im_ANY) {
+        // 自由入力の場合。
+        WCHAR sz[2] = { ch, 0 };
+        auto str = XgNormalizeString(sz);
+        ch = str[0];
+
+        // 候補ウィンドウを破棄する。
+        XgDestroyCandsWnd();
+        // 文字を設定する。
+        XgSetChar(hwnd, ch);
+        XgEnsureCaretVisible(hwnd);
+
+        if (xg_bCharFeed)
+            XgCharFeed(hwnd);
+
+        XgUpdateImage(hwnd);
     }
 }
 
@@ -1278,8 +1309,12 @@ BOOL XgCreateInputPalette(HWND hwndOwner)
         break;
     case xg_im_GREEK:
         // TODO: ギリシャ文字入力パレットを追加せよ。
+        break;
     case xg_im_DIGITS:
         // TODO: 数字入力パレットを追加せよ。
+        break;
+    case xg_im_ANY:
+        break;
     default:
         return FALSE;
     }
@@ -1326,23 +1361,26 @@ void __fastcall XgSetInputModeFromDict(HWND hwnd)
         return;
     }
 
-    if (XgIsCharHiraganaW(ch) || XgIsCharKatakanaW(ch)) {
-        XgSetInputMode(hwnd, xg_im_KANA);
-    } else if (XgIsCharKanjiW(ch)) {
-        XgSetInputMode(hwnd, xg_im_KANJI);
-    } else if (XgIsCharZenkakuCyrillicW(ch)) {
-        XgSetInputMode(hwnd, xg_im_RUSSIA);
-    } else if (XgIsCharZenkakuNumericW(ch) || XgIsCharHankakuNumericW(ch)) {
-        XgSetInputMode(hwnd, xg_im_DIGITS);
-    } else if (XgIsCharGreekW(ch)) {
-        XgSetInputMode(hwnd, xg_im_GREEK);
-    } else if (XgIsCharZenkakuUpperW(ch) || XgIsCharZenkakuLowerW(ch) ||
-               XgIsCharHankakuUpperW(ch) || XgIsCharHankakuLowerW(ch) ||
-               (0x0080 <= ch && ch <= 0x00FF) || // ラテン補助
-               (0x0100 <= ch && ch <= 0x017F) || // ラテン文字拡張A
-               (0x1E00 <= ch && ch <= 0x1EFF)) // ラテン文字拡張追加
-    {
-        XgSetInputMode(hwnd, xg_im_ABC);
+    if (xg_imode != xg_im_ANY) { // 自由入力でなければ
+        // 辞書の文字に応じて入力モードを切り替える。
+        if (XgIsCharHiraganaW(ch) || XgIsCharKatakanaW(ch)) {
+            XgSetInputMode(hwnd, xg_im_KANA);
+        } else if (XgIsCharKanjiW(ch)) {
+            XgSetInputMode(hwnd, xg_im_KANJI);
+        } else if (XgIsCharZenkakuCyrillicW(ch)) {
+            XgSetInputMode(hwnd, xg_im_RUSSIA);
+        } else if (XgIsCharZenkakuNumericW(ch) || XgIsCharHankakuNumericW(ch)) {
+            XgSetInputMode(hwnd, xg_im_DIGITS);
+        } else if (XgIsCharGreekW(ch)) {
+            XgSetInputMode(hwnd, xg_im_GREEK);
+        } else if (XgIsCharZenkakuUpperW(ch) || XgIsCharZenkakuLowerW(ch) ||
+                   XgIsCharHankakuUpperW(ch) || XgIsCharHankakuLowerW(ch) ||
+                   (0x0080 <= ch && ch <= 0x00FF) || // ラテン補助
+                   (0x0100 <= ch && ch <= 0x017F) || // ラテン文字拡張A
+                   (0x1E00 <= ch && ch <= 0x1EFF)) // ラテン文字拡張追加
+        {
+            XgSetInputMode(hwnd, xg_im_ABC);
+        }
     }
 }
 

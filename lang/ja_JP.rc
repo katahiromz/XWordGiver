@@ -73,6 +73,7 @@ LANGUAGE LANG_JAPANESE, SUBLANG_DEFAULT
         MENUITEM "ロシア入力(&R)", ID_RUSSIAINPUT
         MENUITEM "ギリシャ入力(&G)", ID_GREEKINPUT
         MENUITEM "数字入力(&D)", ID_DIGITINPUT
+        MENUITEM "自由入力(&N)", ID_ANYINPUT
         MENUITEM SEPARATOR
         MENUITEM "ヨコ入力(&H)\tCtrl+/", ID_INPUTH
         MENUITEM "タテ入力(&V)\tCtrl+/", ID_INPUTV
@@ -218,6 +219,7 @@ LANGUAGE LANG_JAPANESE, SUBLANG_DEFAULT
             MENUITEM "ロシア入力(&R)", ID_RUSSIAINPUT
             MENUITEM "ギリシャ入力(&R)", ID_GREEKINPUT
             MENUITEM "数字入力(&D)", ID_DIGITINPUT
+            MENUITEM "自由入力(&N)", ID_ANYINPUT
         }
         MENUITEM SEPARATOR
         POPUP "カナ文字"
@@ -1546,6 +1548,7 @@ STRINGTABLE
     IDS_TOOMANYWORDS, "%u語以上は多すぎます。"
     IDS_JSONSYNTAXERROR, "JSON の文法エラーが発生しました。"
     IDS_GREEK, "ギリシャ"
+    IDS_ANYINPUT, "自由入力"
     IDS_TT_NEW, "新規作成"
     IDS_TT_GENERATE, "問題を自動生成する"
     IDS_TT_OPEN, "問題を開く"

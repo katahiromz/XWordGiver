@@ -73,6 +73,7 @@ LANGUAGE LANG_ENGLISH, SUBLANG_DEFAULT
         MENUITEM "Cyrillic Input", ID_RUSSIAINPUT
         MENUITEM "Greek Input", ID_GREEKINPUT
         MENUITEM "Digit Input", ID_DIGITINPUT
+        MENUITEM "A&ny Input", ID_ANYINPUT
         MENUITEM SEPARATOR
         MENUITEM "&Horizontal Input\tCtrl+/", ID_INPUTH
         MENUITEM "&Vertical Input\tCtrl+/", ID_INPUTV
@@ -215,6 +216,7 @@ LANGUAGE LANG_ENGLISH, SUBLANG_DEFAULT
             MENUITEM "Cyrillic Input", ID_RUSSIAINPUT
             MENUITEM "Greek Input", ID_GREEKINPUT
             MENUITEM "Digit Input", ID_DIGITINPUT
+            MENUITEM "A&ny Input", ID_ANYINPUT
         }
         MENUITEM SEPARATOR
         POPUP "Kana letters"
@@ -1543,6 +1545,7 @@ STRINGTABLE
     IDS_TOOMANYWORDS, "More than %u words is too much."
     IDS_JSONSYNTAXERROR, "JSON syntax error happened."
     IDS_GREEK, "Greek"
+    IDS_ANYINPUT, "Any Input"
     IDS_TT_NEW, "New crossword"
     IDS_TT_GENERATE, "Generate crossword"
     IDS_TT_OPEN, "Open crossword"

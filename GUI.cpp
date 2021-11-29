@@ -406,7 +406,9 @@ INT __fastcall XgGetPreferredMaxLength(void)
     } else if (xg_bSkeletonMode) {
         // スケルトンモードでは長い方がいい。
         return 6;
-    } else if (xg_imode == xg_im_RUSSIA || xg_imode == xg_im_ABC || xg_imode == xg_im_GREEK) {
+    } else if (xg_imode == xg_im_RUSSIA || xg_imode == xg_im_ABC ||
+               xg_imode == xg_im_GREEK || xg_imode == xg_im_ANY)
+    {
         // ロシア語や英語は日本語の単語より長い傾向にある。
         return 5;
     } else if (xg_imode == xg_im_DIGITS) {
@@ -505,17 +507,16 @@ bool __fastcall XgLoadSettings(void)
 
     if (XgIsUserJapanese()) {
         xg_nRules = DEFAULT_RULES_JAPANESE;
-        xg_imode = xg_im_KANA;
         xg_bSkeletonMode = FALSE;
         xg_nViewMode = XG_VIEW_NORMAL;
         xg_nFileType = XG_FILETYPE_XWJ;
     } else {
         xg_nRules = DEFAULT_RULES_ENGLISH;
-        xg_imode = xg_im_ABC;
         xg_bSkeletonMode = TRUE;
         xg_nViewMode = XG_VIEW_SKELETON;
         xg_nFileType = XG_FILETYPE_XD;
     }
+    xg_imode = xg_im_ANY; // 自由入力。
 
     xg_nNumberToGenerate = 16;
 
@@ -3071,27 +3072,31 @@ void __fastcall MainWnd_OnInitMenu(HWND /*hwnd*/, HMENU hMenu)
     // 入力モード。
     switch (xg_imode) {
     case xg_im_KANA:
-        ::CheckMenuRadioItem(hMenu, ID_KANAINPUT, ID_DIGITINPUT, ID_KANAINPUT, MF_BYCOMMAND);
+        ::CheckMenuRadioItem(hMenu, ID_KANAINPUT, ID_ANYINPUT, ID_KANAINPUT, MF_BYCOMMAND);
         break;
 
     case xg_im_ABC:
-        ::CheckMenuRadioItem(hMenu, ID_KANAINPUT, ID_DIGITINPUT, ID_ABCINPUT, MF_BYCOMMAND);
+        ::CheckMenuRadioItem(hMenu, ID_KANAINPUT, ID_ANYINPUT, ID_ABCINPUT, MF_BYCOMMAND);
         break;
 
     case xg_im_KANJI:
-        ::CheckMenuRadioItem(hMenu, ID_KANAINPUT, ID_DIGITINPUT, ID_KANJIINPUT, MF_BYCOMMAND);
+        ::CheckMenuRadioItem(hMenu, ID_KANAINPUT, ID_ANYINPUT, ID_KANJIINPUT, MF_BYCOMMAND);
         break;
 
     case xg_im_RUSSIA:
-        ::CheckMenuRadioItem(hMenu, ID_KANAINPUT, ID_DIGITINPUT, ID_RUSSIAINPUT, MF_BYCOMMAND);
+        ::CheckMenuRadioItem(hMenu, ID_KANAINPUT, ID_ANYINPUT, ID_RUSSIAINPUT, MF_BYCOMMAND);
         break;
 
     case xg_im_GREEK:
-        ::CheckMenuRadioItem(hMenu, ID_KANAINPUT, ID_DIGITINPUT, ID_GREEKINPUT, MF_BYCOMMAND);
+        ::CheckMenuRadioItem(hMenu, ID_KANAINPUT, ID_ANYINPUT, ID_GREEKINPUT, MF_BYCOMMAND);
         break;
 
     case xg_im_DIGITS:
-        ::CheckMenuRadioItem(hMenu, ID_KANAINPUT, ID_DIGITINPUT, ID_DIGITINPUT, MF_BYCOMMAND);
+        ::CheckMenuRadioItem(hMenu, ID_KANAINPUT, ID_ANYINPUT, ID_DIGITINPUT, MF_BYCOMMAND);
+        break;
+
+    case xg_im_ANY:
+        ::CheckMenuRadioItem(hMenu, ID_KANAINPUT, ID_ANYINPUT, ID_ANYINPUT, MF_BYCOMMAND);
         break;
     }
 
@@ -3512,6 +3517,7 @@ void __fastcall XgUpdateStatusBar(HWND hwnd)
     case xg_im_RUSSIA: str += XgLoadStringDx1(IDS_RUSSIA); break;
     case xg_im_GREEK: str += XgLoadStringDx1(IDS_GREEK); break;
     case xg_im_DIGITS: str += XgLoadStringDx1(IDS_DIGITS); break;
+    case xg_im_ANY: str += XgLoadStringDx1(IDS_ANYINPUT); break;
     default:
         break;
     }
@@ -3919,6 +3925,10 @@ void DoWebSearch(HWND hwnd, LPCWSTR str)
     case xg_im_RUSSIA:
     case xg_im_GREEK:
     case xg_im_DIGITS:
+        break;
+    case xg_im_ANY:
+        raw += L" ";
+        raw += XgLoadStringDx2(IDS_DICTIONARY);
         break;
     default:
         break;
@@ -5215,6 +5225,10 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
         XgSetInputMode(hwnd, xg_im_DIGITS);
         break;
 
+    case ID_ANYINPUT: // 自由入力モード。
+        XgSetInputMode(hwnd, xg_im_ANY);
+        break;
+
     case ID_SHOWHIDEHINTS:
         if (IsWindow(xg_hHintsWnd)) {
             ::DestroyWindow(xg_hHintsWnd);
@@ -6280,6 +6294,8 @@ HMENU XgLoadPopupMenu(HWND hwnd, INT nPos)
         DeleteMenu(hSubMenu, 7, MF_BYPOSITION);
         DeleteMenu(hSubMenu, 6, MF_BYPOSITION);
         DeleteMenu(hSubMenu, 5, MF_BYPOSITION);
+        break;
+    case xg_im_ANY:
         break;
     default:
         break;

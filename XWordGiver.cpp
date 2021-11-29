@@ -6079,37 +6079,39 @@ bool __fastcall XG_Board::SetString(const std::wstring& strToBeSet)
     // マス情報を格納する。
     m_vCells = v;
 
-    // マスの文字の種類に応じて入力モードを切り替える。
-    for (int i = 0; i < nRows; i++) {
-        for (int j = 0; j < nCols; j++) {
-            ch = GetAt(i, j);
-            if (XgIsCharHankakuAlphaW(ch) || XgIsCharZenkakuAlphaW(ch)) {
-                xg_imode = xg_im_ABC;
-                goto break2;
-            }
-            if (XgIsCharKanaW(ch) || ch == ZEN_PROLONG) {
-                xg_imode = xg_im_KANA;
-                goto break2;
-            }
-            if (XgIsCharKanjiW(ch)) {
-                xg_imode = xg_im_KANJI;
-                goto break2;
-            }
-            if (XgIsCharZenkakuCyrillicW(ch)) {
-                xg_imode = xg_im_RUSSIA;
-                goto break2;
-            }
-            if (XgIsCharGreekW(ch)) {
-                xg_imode = xg_im_GREEK;
-                goto break2;
-            }
-            if (XgIsCharZenkakuNumericW(ch) || XgIsCharHankakuNumericW(ch)) {
-                xg_imode = xg_im_DIGITS;
-                goto break2;
+    if (xg_imode != xg_im_ANY) { // 自由入力でなければ
+        // マスの文字の種類に応じて入力モードを切り替える。
+        for (int i = 0; i < nRows; i++) {
+            for (int j = 0; j < nCols; j++) {
+                ch = GetAt(i, j);
+                if (XgIsCharHankakuAlphaW(ch) || XgIsCharZenkakuAlphaW(ch)) {
+                    xg_imode = xg_im_ABC;
+                    goto break2;
+                }
+                if (XgIsCharKanaW(ch) || ch == ZEN_PROLONG) {
+                    xg_imode = xg_im_KANA;
+                    goto break2;
+                }
+                if (XgIsCharKanjiW(ch)) {
+                    xg_imode = xg_im_KANJI;
+                    goto break2;
+                }
+                if (XgIsCharZenkakuCyrillicW(ch)) {
+                    xg_imode = xg_im_RUSSIA;
+                    goto break2;
+                }
+                if (XgIsCharGreekW(ch)) {
+                    xg_imode = xg_im_GREEK;
+                    goto break2;
+                }
+                if (XgIsCharZenkakuNumericW(ch) || XgIsCharHankakuNumericW(ch)) {
+                    xg_imode = xg_im_DIGITS;
+                    goto break2;
+                }
             }
         }
-    }
 break2:;
+    }
 
     // カギをクリアする。
     xg_vTateInfo.clear();
