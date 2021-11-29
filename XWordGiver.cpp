@@ -2301,6 +2301,7 @@ bool __fastcall XgSetXDString(HWND hwnd, const std::wstring& str)
 {
     std::wstring header, notes;
     std::vector<std::wstring> lines, rows, clues, marks;
+    XG_VIEW_MODE view_mode = xg_nViewMode;
 
     int iSection = 0;
     int cEmpty = 0;
@@ -2329,6 +2330,18 @@ bool __fastcall XgSetXDString(HWND hwnd, const std::wstring& str)
             case 3:
                 if (line.find(L"MARK") == 0 && L'0' <= line[4] && line[4] <= L'9') {
                     marks.push_back(line);
+                } else if (line.find(L"ViewMode:") == 0) {
+                    view_mode = static_cast<XG_VIEW_MODE>(_wtoi(&line[9]));
+                    switch (view_mode) {
+                    case XG_VIEW_NORMAL:
+                    case XG_VIEW_SKELETON:
+                        break;
+                    default:
+                        if (XgIsUserJapanese())
+                            view_mode = XG_VIEW_NORMAL;
+                        else
+                            view_mode = XG_VIEW_SKELETON;
+                    }
                 } else {
                     notes += line;
                     notes += L"\r\n";
@@ -2403,6 +2416,7 @@ bool __fastcall XgSetXDString(HWND hwnd, const std::wstring& str)
     xg_vecTateHints.clear();
     xg_vecYokoHints.clear();
     xg_bSolved = false;
+    xg_nViewMode = view_mode;
 
     if (xword.IsFulfilled() && clues.size()) {
         // 番号付けを行う。
@@ -5656,6 +5670,9 @@ bool __fastcall XgDoSaveXdFile(LPCWSTR pszFile)
             XgGetStringOfMarks2(strMarks);
             fprintf(fout, "%s\n\n", XgUnicodeToUtf8(strMarks).c_str());
         }
+
+        // ビューモード。
+        fprintf(fout, "ViewMode: %d\n", xg_nViewMode);
 
         // 備考欄。
         if (xg_strNotes.size()) {

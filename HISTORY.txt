@@ -84,7 +84,7 @@
     - Made the small letter size 30%.
     - Set the skeleton view as the default for non-Japanese users.
     - Improved the "Dictionary" menu display.
-    - Saving the current view mode to XWJ files.
+    - Saving the current view mode to the file.
     - Saving the current file type.
     - Made saving XD Files default for non-Japanese users.
     - Improved reading/writing XD files.
@@ -485,7 +485,7 @@
     - 小さい文字の大きさを30%に。
     - 英語ユーザーの場合はスケルトンビューをデフォルトに。
     - 「辞書」メニューの表示を改良。
-    - XWJファイルに現在のビューモードを保存するようにした。
+    - 現在のビューモードをファイルに保存するようにした。
     - 現在のファイルの種類を保存するようにした。
     - 英語ユーザーの場合はXDファイルをデフォルトにした。
     - XDファイルの読み書きを改良。
