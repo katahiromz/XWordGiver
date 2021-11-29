@@ -52,6 +52,22 @@ void __fastcall XgInputDirection(HWND hwnd, INT nDirection)
 // 文字と「元に戻す」情報をセット。
 void __fastcall XgSetChar(HWND hwnd, WCHAR ch)
 {
+    auto xw = (xg_bSolved ? &xg_solution : &xg_xword);
+
+    if (ch == 0xFF0D) { // －
+        // 一つでもカナがあれば、マイナスを長音（ー）に置き換える。
+        for (INT i = 0; i < xg_nRows; ++i) {
+            for (INT j = 0; j < xg_nCols; ++j) {
+                auto value = xw->GetAt(i, j);
+                if (XgIsCharHiraganaW(value) || XgIsCharKatakanaW(value)) {
+                    ch = ZEN_PROLONG;
+                    goto skip;
+                }
+            }
+        }
+skip:;
+    }
+
     auto sa1 = std::make_shared<XG_UndoData_SetAt>();
     sa1->pos = xg_caret_pos;
     sa1->ch = xg_xword.GetAt(xg_caret_pos);
