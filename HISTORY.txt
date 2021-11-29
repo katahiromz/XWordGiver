@@ -75,19 +75,19 @@
     - Changed to use half-width characters when drawing alphabet and digits.
     - Fixed the accelerators.
 - 20XX.YY.ZZ Ver.4.8.4
-    - Added more patterns.
+    - Introduced "Any Input" mode. Made it default.
     - Improved "Generate from words".
+    - "View" → "Zoom" → "Fit the whole" (Ctrl+F) added.
+    - Fixed the fatal bug on generation and policy settings.
+    - Added highlight feature.
+    - Added more patterns.
     - Made the small letter size 30%.
     - Set the skeleton view as the default for non-Japanese users.
-    - "View" → "Zoom" → "Fit the whole" (Ctrl+F) added.
     - Improved the "Dictionary" menu display.
     - Saving the current view mode to XWJ files.
     - Saving the current file type.
     - Made saving XD Files default for non-Japanese users.
-    - Fixed the fatal bug on generation and policy settings.
     - Improved reading/writing XD files.
-    - Added highlight feature.
-    - Introduced "Any Input" mode. Made it default.
 
 # 開発履歴 (Japanese)
 
@@ -476,16 +476,16 @@
     - 長音「ー」の処理を修正。
     - アクセスキーを修正。
 - 20XX年YY月ZZ日 ver.4.8.4
-    - さらに黒マスパターンを追加。
+    - 「自由入力モード」を導入。デフォルトに。
     - 「単語リストから自動生成」を改良して「単語群から自動生成」に。
+    - 「表示」→「ズーム」→「全体に合わせる」(Ctrl+F)を追加。
+    - 生成とルール設定における致命的な不具合を修正。
+    - ハイライト機能を追加。
+    - さらに黒マスパターンを追加。
     - 小さい文字の大きさを30%に。
     - 英語ユーザーの場合はスケルトンビューをデフォルトに。
-    - 「表示」→「ズーム」→「全体に合わせる」(Ctrl+F)を追加。
     - 「辞書」メニューの表示を改良。
     - XWJファイルに現在のビューモードを保存するようにした。
     - 現在のファイルの種類を保存するようにした。
     - 英語ユーザーの場合はXDファイルをデフォルトにした。
-    - 生成とルール設定における致命的な不具合を修正。
     - XDファイルの読み書きを改良。
-    - ハイライト機能を追加。
-    - 「自由入力モード」を導入。デフォルトに。
