@@ -79,6 +79,7 @@ LANGUAGE LANG_JAPANESE, SUBLANG_DEFAULT
         MENUITEM "タテ入力(&V)\tCtrl+/", ID_INPUTV
         MENUITEM SEPARATOR
         MENUITEM "文字送り(&F)\tCtrl+^", ID_CHARFEED
+        MENUITEM "右から左へ (&RTL)", ID_RIGHTTOLEFT, GRAYED
         MENUITEM SEPARATOR
         MENUITEM "黒マス(&B)\t#", ID_BLOCK
         MENUITEM "空白(&S)\t_", ID_SPACE

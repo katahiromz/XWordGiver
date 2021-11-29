@@ -79,6 +79,7 @@ LANGUAGE LANG_ENGLISH, SUBLANG_DEFAULT
         MENUITEM "&Vertical Input\tCtrl+/", ID_INPUTV
         MENUITEM SEPARATOR
         MENUITEM "Character &Feed\tCtrl+^", ID_CHARFEED
+        MENUITEM "Right-To-Left (&RTL)", ID_RIGHTTOLEFT, GRAYED
         MENUITEM SEPARATOR
         MENUITEM "&Block\t#", ID_BLOCK
         MENUITEM "&Space\t_", ID_SPACE

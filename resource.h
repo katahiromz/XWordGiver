@@ -422,6 +422,7 @@
 #define ID_DICTIONARY62                     562
 #define ID_DICTIONARY63                     563
 #define ID_ANYINPUT                         564
+#define ID_RIGHTTOLEFT                      565
 #define ID_TT_BASE                          10000
 
 #define ctl2                                1185
