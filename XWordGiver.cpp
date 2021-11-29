@@ -5594,6 +5594,7 @@ bool __fastcall XgDoSaveXdFile(LPCWSTR pszFile)
             fprintf(fout, "Date: %04u-%02u-%02u\n", st.wYear, st.wMonth, st.wDay);
         } else {
             xg_str_replace_all(strHeader, L"\r\n", L"\n");
+            xg_str_trim(strHeader);
             fprintf(fout, "%s\n", XgUnicodeToUtf8(strHeader).c_str());
         }
         fprintf(fout, "\n\n");
@@ -5662,6 +5663,9 @@ bool __fastcall XgDoSaveXdFile(LPCWSTR pszFile)
             }
 
             fprintf(fout, "%s\n%s\n\n", strACROSS.c_str(), strDOWN.c_str());
+        } else {
+            // ヒントなし。
+            fprintf(fout, "(No clues)\n\n\n");
         }
 
         // マーク。
@@ -5672,13 +5676,16 @@ bool __fastcall XgDoSaveXdFile(LPCWSTR pszFile)
         }
 
         // ビューモード。
-        fprintf(fout, "ViewMode: %d\n", xg_nViewMode);
+        fprintf(fout, "ViewMode: %d\n\n", xg_nViewMode);
 
         // 備考欄。
         if (xg_strNotes.size()) {
             auto str = xg_strNotes;
             xg_str_replace_all(str, L"\r\n", L"\n");
-            fprintf(fout, "%s\n", XgUnicodeToUtf8(str).c_str());
+            xg_str_trim(str);
+            if (str.size()) {
+                fprintf(fout, "%s\n", XgUnicodeToUtf8(str).c_str());
+            }
         }
 
         fclose(fout);
