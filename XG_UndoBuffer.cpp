@@ -11,6 +11,7 @@
 /*virtual*/ void XG_UndoData_SetAt::Apply() const {
     xg_xword.SetAt(pos, ch);
     xg_caret_pos = pos;
+    XgUpdateCaretPos();
 }
 
 /*virtual*/ void XG_UndoData_MarksUpdated::Get() {
@@ -77,6 +78,7 @@
     } else {
         XgDestroyHintsWnd();
     }
+    XgUpdateCaretPos();
 }
 
 //////////////////////////////////////////////////////////////////////////////

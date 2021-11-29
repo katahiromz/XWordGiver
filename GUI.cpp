@@ -290,6 +290,40 @@ void __fastcall XgGetRealClientRect(HWND hwnd, LPRECT prcClient)
     *prcClient = rcClient;
 }
 
+// キャレット位置を更新する。
+void __fastcall XgUpdateCaretPos(void)
+{
+    INT nCellSize = xg_nCellSize * xg_nZoomRate / 100;
+
+    RECT rc;
+    XgGetRealClientRect(xg_hMainWnd, &rc);
+
+    POINT pt;
+    pt.x = rc.left + xg_nMargin + xg_caret_pos.m_j * nCellSize;
+    pt.y = rc.top + xg_nMargin + xg_caret_pos.m_i * nCellSize;
+
+    pt.x -= XgGetHScrollPos();
+    pt.y -= XgGetVScrollPos();
+
+    pt.x += 4;
+    pt.y += 4;
+
+    COMPOSITIONFORM CompForm = { CFS_POINT };
+    CompForm.ptCurrentPos = pt;
+
+    HIMC hIMC = ImmGetContext(xg_hMainWnd);
+    ImmSetCompositionWindow(hIMC, &CompForm);
+    ImmReleaseContext(xg_hMainWnd, hIMC);
+}
+
+// キャレット位置をセットする。
+void __fastcall XgSetCaretPos(INT iRow, INT jCol)
+{
+    xg_caret_pos.m_i = iRow;
+    xg_caret_pos.m_j = jCol;
+    XgUpdateCaretPos();
+}
+
 // スクロール情報を設定する。
 void __fastcall XgUpdateScrollInfo(HWND hwnd, int x, int y)
 {
@@ -394,6 +428,8 @@ void __fastcall XgEnsureCaretVisible(HWND hwnd)
     if (bNeedRedraw) {
         XgUpdateImage(hwnd);
     }
+
+    XgUpdateCaretPos();
 }
 
 // 現在の状態で好ましいと思われる単語の最大長を取得する。
@@ -1144,7 +1180,7 @@ void XgNewCells(HWND hwnd, WCHAR ch, INT nRows, INT nCols)
     xg_xword.ResetAndSetSize(xg_nRows, xg_nCols);
     xg_bHintsAdded = false;
     xg_bShowAnswer = false;
-    xg_caret_pos.clear();
+    XgSetCaretPos();
     xg_vTateInfo.clear();
     xg_vYokoInfo.clear();
     xg_strHeader.clear();
@@ -1257,7 +1293,7 @@ void XgResizeCells(HWND hwnd, INT nNewRows, INT nNewCols)
     xg_bSolved = false;
     xg_bHintsAdded = false;
     xg_bShowAnswer = false;
-    xg_caret_pos.clear();
+    XgSetCaretPos();
     xg_vTateInfo.clear();
     xg_vYokoInfo.clear();
     xg_strHeader.clear();
@@ -1728,7 +1764,7 @@ bool __fastcall XgOnGenerateBlacksRepeatedly(HWND hwnd)
 
     // 初期化する。
     xg_xword.clear();
-    xg_caret_pos.clear();
+    XgSetCaretPos();
     xg_vMarks.clear();
     xg_vTateInfo.clear();
     xg_vYokoInfo.clear();
@@ -1775,7 +1811,7 @@ bool __fastcall XgOnGenerateBlacksRepeatedly(HWND hwnd)
         }
     } while (nID == IDOK && xg_nNumberGenerated < xg_nNumberToGenerate);
     ::EnableWindow(xg_hwndInputPalette, TRUE);
-    xg_caret_pos.clear();
+    XgSetCaretPos();
     XgUpdateImage(hwnd, 0, 0);
 
     WCHAR sz[MAX_PATH];
@@ -1812,7 +1848,7 @@ bool __fastcall XgOnGenerateBlacks(HWND hwnd, bool sym)
     }
 
     // 初期化する。
-    xg_caret_pos.clear();
+    XgSetCaretPos();
     xg_vMarks.clear();
     xg_vTateInfo.clear();
     xg_vYokoInfo.clear();
@@ -1839,7 +1875,7 @@ bool __fastcall XgOnGenerateBlacks(HWND hwnd, bool sym)
         dialog.DoModal(hwnd);
     }
     ::EnableWindow(xg_hwndInputPalette, TRUE);
-    xg_caret_pos.clear();
+    XgSetCaretPos();
     XgUpdateImage(hwnd, 0, 0);
 
     WCHAR sz[MAX_PATH];
@@ -1904,7 +1940,7 @@ bool __fastcall XgOnSolve_AddBlack(HWND hwnd)
         // キャンセルされた。
         // 解なし。表示を更新する。
         xg_bShowAnswer = false;
-        xg_caret_pos.clear();
+        XgSetCaretPos();
         XgMarkUpdate();
         XgUpdateImage(hwnd, 0, 0);
 
@@ -1928,7 +1964,7 @@ bool __fastcall XgOnSolve_AddBlack(HWND hwnd)
 
         // 解あり。表示を更新する。
         xg_bShowAnswer = true;
-        xg_caret_pos.clear();
+        XgSetCaretPos();
         XgMarkUpdate();
         XgUpdateImage(hwnd, 0, 0);
 
@@ -1944,7 +1980,7 @@ bool __fastcall XgOnSolve_AddBlack(HWND hwnd)
     } else {
         // 解なし。表示を更新する。
         xg_bShowAnswer = false;
-        xg_caret_pos.clear();
+        XgSetCaretPos();
         XgMarkUpdate();
         XgUpdateImage(hwnd, 0, 0);
         // 失敗メッセージを表示する。
@@ -2003,7 +2039,7 @@ bool __fastcall XgOnSolve_NoAddBlack(HWND hwnd, bool bShowAnswer/* = true*/)
         // キャンセルされた。
         // 解なし。表示を更新する。
         xg_bShowAnswer = false;
-        xg_caret_pos.clear();
+        XgSetCaretPos();
         XgMarkUpdate();
         XgUpdateImage(hwnd, 0, 0);
 
@@ -2028,7 +2064,7 @@ bool __fastcall XgOnSolve_NoAddBlack(HWND hwnd, bool bShowAnswer/* = true*/)
 
         // 解あり。表示を更新する。
         xg_bShowAnswer = bShowAnswer;
-        xg_caret_pos.clear();
+        XgSetCaretPos();
         XgMarkUpdate();
         XgUpdateImage(hwnd, 0, 0);
 
@@ -2044,7 +2080,7 @@ bool __fastcall XgOnSolve_NoAddBlack(HWND hwnd, bool bShowAnswer/* = true*/)
     } else {
         // 解なし。表示を更新する。
         xg_bShowAnswer = false;
-        xg_caret_pos.clear();
+        XgSetCaretPos();
         XgMarkUpdate();
         XgUpdateImage(hwnd, 0, 0);
         // 失敗メッセージを表示する。
@@ -2088,7 +2124,7 @@ bool __fastcall XgOnSolveRepeatedly(HWND hwnd)
     ::EnableWindow(xg_hwndInputPalette, TRUE);
     if (nID != IDOK) {
         // イメージを更新する。
-        xg_caret_pos.clear();
+        XgSetCaretPos();
         XgMarkUpdate();
         XgUpdateImage(hwnd, 0, 0);
         return false;
@@ -2149,7 +2185,7 @@ bool __fastcall XgOnSolveRepeatedly(HWND hwnd)
     // イメージを更新する。
     xg_bSolved = false;
     xg_bShowAnswer = false;
-    xg_caret_pos.clear();
+    XgSetCaretPos();
     XgMarkUpdate();
     XgUpdateImage(hwnd, 0, 0);
 
@@ -2205,7 +2241,7 @@ bool __fastcall XgOnSolveRepeatedlyNoAddBlack(HWND hwnd)
     ::EnableWindow(xg_hwndInputPalette, TRUE);
     if (nID != IDOK) {
         // イメージを更新する。
-        xg_caret_pos.clear();
+        XgSetCaretPos();
         XgMarkUpdate();
         XgUpdateImage(hwnd, 0, 0);
         return false;
@@ -2266,7 +2302,7 @@ bool __fastcall XgOnSolveRepeatedlyNoAddBlack(HWND hwnd)
     // イメージを更新する。
     xg_bSolved = false;
     xg_bShowAnswer = false;
-    xg_caret_pos.clear();
+    XgSetCaretPos();
     XgMarkUpdate();
     XgUpdateImage(hwnd, 0, 0);
 
@@ -2579,7 +2615,7 @@ void XgPasteBoard(HWND hwnd, const std::wstring& str)
 
     xg_bSolved = false;
     xg_bShowAnswer = false;
-    xg_caret_pos.clear();
+    XgSetCaretPos();
     xg_vMarks.clear();
     xg_vecTateHints.clear();
     xg_vecYokoHints.clear();
@@ -2854,6 +2890,7 @@ void __fastcall MainWnd_OnHScroll(HWND hwnd, HWND /*hwndCtl*/, UINT code, int po
     // スクロール情報を設定し、イメージを更新する。
     XgSetHScrollInfo(&si, TRUE);
     XgUpdateImage(hwnd, si.nPos, XgGetVScrollPos());
+    XgUpdateCaretPos();
 }
 
 // 縦スクロールする。
@@ -2909,6 +2946,7 @@ void __fastcall MainWnd_OnVScroll(HWND hwnd, HWND /*hwndCtl*/, UINT code, int po
     // スクロール情報を設定し、イメージを更新する。
     XgSetVScrollPos(si.nPos, TRUE);
     XgUpdateImage(hwnd, XgGetHScrollPos(), si.nPos);
+    XgUpdateCaretPos();
 }
 
 // 「辞書」メニューを取得する。
@@ -3335,8 +3373,7 @@ void __fastcall MainWnd_OnLButtonUp(HWND hwnd, int x, int y, UINT /*keyFlags*/)
             // マスの中か？
             if (::PtInRect(&rc, pt)) {
                 // キャレットを移動して、イメージを更新する。
-                xg_caret_pos.m_i = i;
-                xg_caret_pos.m_j = j;
+                XgSetCaretPos(i, j);
                 XgEnsureCaretVisible(hwnd);
                 XgUpdateStatusBar(hwnd);
 
@@ -3383,8 +3420,7 @@ void __fastcall MainWnd_OnLButtonDown(HWND hwnd, bool fDoubleClick, int x, int y
             // マスの中か？
             if (::PtInRect(&rc, pt)) {
                 // キャレットを移動して、イメージを更新する。
-                xg_caret_pos.m_i = i;
-                xg_caret_pos.m_j = j;
+                XgSetCaretPos(i, j);
                 XgEnsureCaretVisible(hwnd);
                 XgUpdateStatusBar(hwnd);
 
@@ -3634,6 +3670,9 @@ void __fastcall MainWnd_OnSize(HWND hwnd, UINT /*state*/, int /*cx*/, int /*cy*/
         s_nMainWndCX = wndpl.rcNormalPosition.right - wndpl.rcNormalPosition.left;
         s_nMainWndCY = wndpl.rcNormalPosition.bottom - wndpl.rcNormalPosition.top;
     }
+
+    // キャレット位置を更新。
+    XgUpdateCaretPos();
 }
 
 // 位置が変更された。
@@ -3788,7 +3827,7 @@ void MainWnd_OnEraseSettings(HWND hwnd)
     // 辞書ファイルの名前を読み込む。
     XgLoadDictsAll();
     // キャレット位置を初期化する。
-    xg_caret_pos.clear();
+    XgSetCaretPos();
 
     // ツールバーの表示を切り替える。
     if (xg_bShowToolBar)
@@ -3847,6 +3886,7 @@ void __fastcall MainWnd_OnFlipVH(HWND hwnd)
     for (auto& mark : xg_vMarks) {
         std::swap(mark.m_i, mark.m_j);
     }
+    XgUpdateCaretPos();
     // イメージを更新する。
     XgUpdateImage(hwnd, 0, 0);
 }
@@ -4376,6 +4416,7 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
             x = 0;
             y = XgGetVScrollPos();
             XgUpdateImage(hwnd, x, y);
+            XgUpdateCaretPos();
         }
         xg_prev_vk = 0;
         break;
@@ -4395,6 +4436,7 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
             x = siz.cx - rcClient.Width();
             y = XgGetVScrollPos();
             XgUpdateImage(hwnd, x, y);
+            XgUpdateCaretPos();
         }
         xg_prev_vk = 0;
         break;
@@ -4409,6 +4451,7 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
             x = XgGetHScrollPos();
             y = 0;
             XgUpdateImage(hwnd, x, y);
+            XgUpdateCaretPos();
         }
         xg_prev_vk = 0;
         break;
@@ -4428,6 +4471,7 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
             x = XgGetHScrollPos();
             y = siz.cy - rcClient.Height();
             XgUpdateImage(hwnd, x, y);
+            XgUpdateCaretPos();
         }
         xg_prev_vk = 0;
         break;
@@ -4443,6 +4487,7 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
             x = 0;
             y = XgGetVScrollPos();
             XgUpdateImage(hwnd, x, y);
+            XgUpdateCaretPos();
         }
         xg_prev_vk = 0;
         break;
@@ -4463,6 +4508,7 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
             x = siz.cx - rcClient.Width();
             y = XgGetVScrollPos();
             XgUpdateImage(hwnd, x, y);
+            XgUpdateCaretPos();
         }
         xg_prev_vk = 0;
         break;
@@ -4478,6 +4524,7 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
             x = XgGetHScrollPos();
             y = 0;
             XgUpdateImage(hwnd, x, y);
+            XgUpdateCaretPos();
         }
         xg_prev_vk = 0;
         break;
@@ -4498,6 +4545,7 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
             x = XgGetHScrollPos();
             y = siz.cy - rcClient.Height();
             XgUpdateImage(hwnd, x, y);
+            XgUpdateCaretPos();
         }
         xg_prev_vk = 0;
         break;
@@ -4612,7 +4660,7 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
                 sa2->Get();
                 xg_ubUndoBuffer.Commit(UC_SETALL, sa1, sa2);
                 // イメージを更新する。
-                xg_caret_pos.clear();
+                XgSetCaretPos();
                 XgMarkUpdate();
                 XgUpdateImage(hwnd, 0, 0);
                 // メッセージボックスを表示する。
@@ -4622,7 +4670,7 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
                 sa1->Apply();
             }
             // イメージを更新する。
-            xg_caret_pos.clear();
+            XgSetCaretPos();
             XgMarkUpdate();
             XgUpdateImage(hwnd, 0, 0);
         }
@@ -4646,7 +4694,7 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
                 sa2->Get();
                 xg_ubUndoBuffer.Commit(UC_SETALL, sa1, sa2);
                 // イメージを更新する。
-                xg_caret_pos.clear();
+                XgSetCaretPos();
                 XgMarkUpdate();
                 XgUpdateImage(hwnd, 0, 0);
                 // メッセージボックスを表示する。
@@ -4656,7 +4704,7 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
                 sa1->Apply();
             }
             // イメージを更新する。
-            xg_caret_pos.clear();
+            XgSetCaretPos();
             XgMarkUpdate();
             XgUpdateImage(hwnd, 0, 0);
         }
@@ -4684,14 +4732,14 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
                 sa2->Get();
                 xg_ubUndoBuffer.Commit(UC_SETALL, sa1, sa2);
                 // イメージを更新する。
-                xg_caret_pos.clear();
+                XgSetCaretPos();
                 XgMarkUpdate();
                 XgUpdateImage(hwnd, 0, 0);
                 // メッセージボックスを表示する。
                 XgShowResultsRepeatedly(hwnd);
             }
             // イメージを更新する。
-            xg_caret_pos.clear();
+            XgSetCaretPos();
             XgMarkUpdate();
             XgUpdateImage(hwnd, 0, 0);
         }
@@ -4724,7 +4772,7 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
             } else {
                 // 成功。
                 xg_ubUndoBuffer.Empty();
-                xg_caret_pos.clear();
+                XgSetCaretPos();
                 // ズームを実際のウィンドウに合わせる。
                 XgFitZoom(hwnd);
                 // イメージを更新する。
@@ -5026,7 +5074,7 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
             }
         }
         // イメージを更新する。
-        xg_caret_pos.clear();
+        XgSetCaretPos();
         XgMarkUpdate();
         XgUpdateImage(hwnd, 0, 0);
         // ツールバーのUIを更新する。
@@ -5047,7 +5095,7 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
             }
         }
         // イメージを更新する。
-        xg_caret_pos.clear();
+        XgSetCaretPos();
         XgMarkUpdate();
         XgUpdateImage(hwnd, 0, 0);
         // ツールバーのUIを更新する。
@@ -5898,7 +5946,7 @@ void __fastcall MainWnd_OnDropFiles(HWND hwnd, HDROP hDrop)
     if (!XgDoLoad(hwnd, szFile)) {
         XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_CANTLOAD), nullptr, MB_ICONERROR);
     } else {
-        xg_caret_pos.clear();
+        XgSetCaretPos();
         // ズームを実際のウィンドウに合わせる。
         XgFitZoom(hwnd);
         // テーマを更新する。
@@ -6187,7 +6235,7 @@ bool __fastcall MainWnd_OnCreate(HWND hwnd, LPCREATESTRUCT /*lpCreateStruct*/)
             if (!XgDoLoad(hwnd, szFile)) {
                 XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_CANTLOAD), nullptr, MB_ICONERROR);
             } else {
-                xg_caret_pos.clear();
+                XgSetCaretPos();
                 // ズームを実際のウィンドウに合わせる。
                 XgFitZoom(hwnd);
                 // テーマを更新する。

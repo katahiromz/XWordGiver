@@ -1408,6 +1408,11 @@ struct XG_HighLight
 };
 extern XG_HighLight xg_highlight;
 
+// キャレット位置をセットする。
+void __fastcall XgSetCaretPos(INT iRow = 0, INT jCol = 0);
+// キャレット位置を更新する。
+void __fastcall XgUpdateCaretPos(void);
+
 //////////////////////////////////////////////////////////////////////////////
 
 #include "Dictionary.hpp"

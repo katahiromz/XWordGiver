@@ -3801,7 +3801,7 @@ void __fastcall XgStartSolve_Smart(void)
 // 文字をクリア。
 void __fastcall XgClearNonBlocks(void)
 {
-    xg_caret_pos.clear();
+    XgSetCaretPos();
 
     if (xg_bSolved) {
         xg_bShowAnswer = false;

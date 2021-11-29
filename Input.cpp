@@ -341,6 +341,7 @@ void __fastcall XgCharFeed(HWND hwnd)
     }
 
     XgUpdateStatusBar(hwnd);
+    XgEnsureCaretVisible(hwnd);
     xg_prev_vk = 0;
     xg_chAccent = 0;
 }
@@ -383,6 +384,7 @@ void __fastcall XgCharBack(HWND hwnd)
     XgOnChar(hwnd, L'_', 1);
     xg_bCharFeed = true;
 
+    XgEnsureCaretVisible(hwnd);
     XgUpdateStatusBar(hwnd);
     xg_prev_vk = 0;
     xg_chAccent = 0;
