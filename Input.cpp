@@ -772,16 +772,17 @@ katakana:;
         WCHAR sz[2] = { ch, 0 };
         auto str = XgNormalizeString(sz);
         ch = str[0];
+        if (ch >= 0x0020 && ch != 0x007F) {
+            // 候補ウィンドウを破棄する。
+            XgDestroyCandsWnd();
 
-        // 候補ウィンドウを破棄する。
-        XgDestroyCandsWnd();
+            XgSetChar(hwnd, ch);
+            if (xg_bCharFeed)
+                XgCharFeed(hwnd);
 
-        XgSetChar(hwnd, ch);
-        if (xg_bCharFeed)
-            XgCharFeed(hwnd);
-
-        XgEnsureCaretVisible(hwnd);
-        XgUpdateImage(hwnd);
+            XgEnsureCaretVisible(hwnd);
+            XgUpdateImage(hwnd);
+        }
     }
 }
 
@@ -1091,17 +1092,18 @@ katakana:;
         WCHAR sz[2] = { ch, 0 };
         auto str = XgNormalizeString(sz);
         ch = str[0];
+        if (ch >= 0x0020 && ch != 0x007F) {
+            // 候補ウィンドウを破棄する。
+            XgDestroyCandsWnd();
+            // 文字を設定する。
+            XgSetChar(hwnd, ch);
+            XgEnsureCaretVisible(hwnd);
 
-        // 候補ウィンドウを破棄する。
-        XgDestroyCandsWnd();
-        // 文字を設定する。
-        XgSetChar(hwnd, ch);
-        XgEnsureCaretVisible(hwnd);
+            if (xg_bCharFeed)
+                XgCharFeed(hwnd);
 
-        if (xg_bCharFeed)
-            XgCharFeed(hwnd);
-
-        XgUpdateImage(hwnd);
+            XgUpdateImage(hwnd);
+        }
     }
 }
 
