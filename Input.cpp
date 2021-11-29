@@ -770,8 +770,19 @@ katakana:;
     } else if (xg_imode == xg_im_ANY) {
         // 自由入力の場合。
         WCHAR sz[2] = { ch, 0 };
+        ::CharUpperW(sz);
+        ch = sz[0];
+
+        if (xg_chAccent) { // アクセントがあるか？
+            // アクセント記号付きの文字にする。
+            ch = XgConvertAccent(xg_chAccent, ch);
+        }
+        xg_chAccent = 0; // アクセントを解除する。
+
+        sz[0] = ch;
         auto str = XgNormalizeString(sz);
         ch = str[0];
+
         if (ch >= 0x0020 && ch != 0x007F) { // 制御文字はダメだ。
             // 候補ウィンドウを破棄する。
             XgDestroyCandsWnd();
@@ -1090,8 +1101,19 @@ katakana:;
     } else if (xg_imode == xg_im_ANY) {
         // 自由入力の場合。
         WCHAR sz[2] = { ch, 0 };
+        ::CharUpperW(sz);
+        ch = sz[0];
+
+        if (xg_chAccent) { // アクセントがあるか？
+            // アクセント記号付きの文字にする。
+            ch = XgConvertAccent(xg_chAccent, ch);
+        }
+        xg_chAccent = 0; // アクセントを解除する。
+
+        sz[0] = ch;
         auto str = XgNormalizeString(sz);
         ch = str[0];
+
         if (ch >= 0x0020 && ch != 0x007F) { // 制御文字はダメだ。
             // 候補ウィンドウを破棄する。
             XgDestroyCandsWnd();
