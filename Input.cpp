@@ -1268,6 +1268,69 @@ BOOL XgDestroyInputPalette(void)
     return FALSE;
 }
 
+// 辞書から入力パレットを開く。
+BOOL XgCreateInputPaletteByDict(HWND hwndOwner)
+{
+    WCHAR ch;
+    if (xg_dict_1.size()) {
+        ch = xg_dict_1[0].m_word[0];
+    } else if (xg_dict_2.size()) {
+        ch = xg_dict_2[0].m_word[0];
+    } else {
+        return FALSE;
+    }
+
+    if (XgIsCharHiraganaW(ch) || XgIsCharKatakanaW(ch)) {
+        if (xg_bTateOki) {
+            if (xg_bHiragana) {
+                CreateDialogW(xg_hInstance, MAKEINTRESOURCEW(IDD_HIRATATE), hwndOwner,
+                              XgInputPaletteDlgProc);
+            } else {
+                CreateDialogW(xg_hInstance, MAKEINTRESOURCEW(IDD_KATATATE), hwndOwner,
+                              XgInputPaletteDlgProc);
+            }
+        } else {
+            if (xg_bHiragana) {
+                CreateDialogW(xg_hInstance, MAKEINTRESOURCEW(IDD_HIRAYOKO), hwndOwner,
+                              XgInputPaletteDlgProc);
+            } else {
+                CreateDialogW(xg_hInstance, MAKEINTRESOURCEW(IDD_KATAYOKO), hwndOwner,
+                              XgInputPaletteDlgProc);
+            }
+        }
+    } else if (XgIsCharKanjiW(ch)) {
+        return FALSE;
+    } else if (XgIsCharZenkakuCyrillicW(ch)) {
+        if (xg_bLowercase) {
+            CreateDialogW(xg_hInstance, MAKEINTRESOURCEW(IDD_RUSSIALOWER), hwndOwner,
+                          XgInputPaletteDlgProc);
+        } else {
+            CreateDialogW(xg_hInstance, MAKEINTRESOURCEW(IDD_RUSSIA), hwndOwner,
+                          XgInputPaletteDlgProc);
+        }
+    } else if (XgIsCharZenkakuNumericW(ch) || XgIsCharHankakuNumericW(ch)) {
+        return FALSE;
+    } else if (XgIsCharGreekW(ch)) {
+        // TODO: ギリシャ文字入力パレットを追加せよ。
+        return FALSE;
+    } else if (XgIsCharZenkakuUpperW(ch) || XgIsCharZenkakuLowerW(ch) ||
+               XgIsCharHankakuUpperW(ch) || XgIsCharHankakuLowerW(ch) ||
+               (0x0080 <= ch && ch <= 0x00FF) || // ラテン補助
+               (0x0100 <= ch && ch <= 0x017F) || // ラテン文字拡張A
+               (0x1E00 <= ch && ch <= 0x1EFF)) // ラテン文字拡張追加
+    {
+        if (xg_bLowercase) {
+            CreateDialogW(xg_hInstance, MAKEINTRESOURCEW(IDD_ABCLOWER), hwndOwner,
+                          XgInputPaletteDlgProc);
+        } else {
+            CreateDialogW(xg_hInstance, MAKEINTRESOURCEW(IDD_ABC), hwndOwner,
+                          XgInputPaletteDlgProc);
+        }
+    }
+
+    return TRUE;
+}
+
 // 入力パレットを作成する。
 BOOL XgCreateInputPalette(HWND hwndOwner)
 {
@@ -1318,6 +1381,7 @@ BOOL XgCreateInputPalette(HWND hwndOwner)
         // TODO: 数字入力パレットを追加せよ。
         break;
     case xg_im_ANY:
+        XgCreateInputPaletteByDict(hwndOwner);
         break;
     default:
         return FALSE;
