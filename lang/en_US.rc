@@ -31,8 +31,8 @@ LANGUAGE LANG_ENGLISH, SUBLANG_DEFAULT
         MENUITEM SEPARATOR
         MENUITEM "&Header and remarks...", ID_HEADERANDNOTES
         MENUITEM SEPARATOR
-        MENUITEM "Configuration\tAlt+Enter", ID_SETTINGS
-        MENUITEM "Erase the configuration", ID_ERASESETTINGS
+        MENUITEM "Settings\tAlt+Enter", ID_SETTINGS
+        MENUITEM "Erase the settings", ID_ERASESETTINGS
         MENUITEM SEPARATOR
         MENUITEM "E&xit\tAlt+F4", ID_EXIT
     }
@@ -619,7 +619,7 @@ FONT 9, "Tahoma"
 }
 
 IDD_CONFIG DIALOG 0, 0, 274, 250
-CAPTION "Configuration"
+CAPTION "Settings"
 STYLE DS_CENTER | DS_MODALFRAME | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
 FONT 9, "Tahoma"
 {
@@ -1446,9 +1446,9 @@ STRINGTABLE
     IDS_POINTSYMMETRY, "The blocks have point symmetry."
     IDS_NOTPOINTSYMMETRY, "The placement of the blocks is not point-symmetrical. This violates the policy ""Point symmetry of blocks""."
     IDS_HINTS, "Clues (Ctrl+L)"
-    IDS_ERASEDSETTINGS, "I have erased the configuration."
-    IDS_FAILERASESETTINGS, "Failed to erase configuration."
-    IDS_QUERYERASESETTINGS, "Do you want to erase the configuration?"
+    IDS_ERASEDSETTINGS, "I have erased the settings."
+    IDS_FAILERASESETTINGS, "Failed to erase the settings."
+    IDS_QUERYERASESETTINGS, "Do you want to erase the settings?"
     IDS_HEADERSEP1, "----------(FROM HERE)-----------\r\n"
     IDS_HEADERSEP2, "----------(TO HERE)-----------"
     IDS_BELOWISNOTES, "\r\n(Remarks below)"
