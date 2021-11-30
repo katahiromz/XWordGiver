@@ -3772,10 +3772,7 @@ void XgUpdateTheme(HWND hwnd)
 void XgUpdateRules(HWND hwnd)
 {
     // 必要に応じてスケルトンモードを解除する。
-    const auto non_skelton_rules =
-        RULE_DONTFOURDIAGONALS | RULE_DONTTHREEDIAGONALS |
-        RULE_DONTCORNERBLACK | RULE_DONTDOUBLEBLACK | RULE_DONTTRIDIRECTIONS;
-    if ((xg_nRules & non_skelton_rules) != 0)
+    if ((xg_nRules & NON_SKELETON_RULES) != 0)
         xg_bSkeletonMode = FALSE;
 
     HMENU hMenu = ::GetMenu(hwnd);
@@ -5765,7 +5762,7 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
             }
         } else {
             xg_bSkeletonMode = TRUE;
-            xg_nRules &= ~(RULE_DONTDOUBLEBLACK | RULE_DONTCORNERBLACK | RULE_DONTTRIDIRECTIONS | RULE_DONTFOURDIAGONALS | RULE_DONTTHREEDIAGONALS);
+            xg_nRules &= ~NON_SKELETON_RULES;
         }
         XgUpdateRules(hwnd);
         break;
