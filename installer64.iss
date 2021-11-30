@@ -84,26 +84,35 @@ Name: "{commondesktop}\{cm:AppNameBits}"; Filename: "{app}\XWordGiver64.exe"; Ta
 
 [Registry]
 Root: HKCU; Subkey: "Software\Katayama Hirofumi MZ\XWord64"; Flags: uninsdeletekey
-Root: HKCR; Subkey: ".xwj"; ValueType: string; ValueName: ""; ValueData: "XWordGiver.JsonFile"; Flags: uninsdeletevalue; Tasks: association
-Root: HKCR; Subkey: "XWordGiver.JsonFile"; ValueType: string; ValueName: ""; ValueData: "{cm:CrosswordJSONData}"; Flags: uninsdeletekey; Tasks: association
-Root: HKCR; Subkey: "XWordGiver.JsonFile\DefaultIcon"; ValueType: string; ValueName: ""; ValueData: "{app}\XWordGiver64.exe,3"; Tasks: association
-Root: HKCR; Subkey: "XWordGiver.JsonFile\shell\open\command"; ValueType: string; ValueName: ""; ValueData: """{app}\XWordGiver64.exe"" ""%1"""; Tasks: association
+Root: HKCR; Subkey: ".xwj"; ValueType: string; ValueName: ""; ValueData: "XWordGiver.XwjFile"; Flags: uninsdeletevalue; Tasks: association_xwj
+Root: HKCR; Subkey: "XWordGiver.XwjFile"; ValueType: string; ValueName: ""; ValueData: "{cm:XwjDataFile}"; Flags: uninsdeletekey; Tasks: association_xwj
+Root: HKCR; Subkey: "XWordGiver.XwjFile\DefaultIcon"; ValueType: string; ValueName: ""; ValueData: "{app}\XWordGiver64.exe,3"; Tasks: association_xwj
+Root: HKCR; Subkey: "XWordGiver.XwjFile\shell\open\command"; ValueType: string; ValueName: ""; ValueData: """{app}\XWordGiver64.exe"" ""%1"""; Tasks: association_xwj
+Root: HKCR; Subkey: ".xd"; ValueType: string; ValueName: ""; ValueData: "XWordGiver.XdFile"; Flags: uninsdeletevalue; Tasks: association_xd
+Root: HKCR; Subkey: "XWordGiver.XdFile"; ValueType: string; ValueName: ""; ValueData: "{cm:XdDataFile}"; Flags: uninsdeletekey; Tasks: association_xd
+Root: HKCR; Subkey: "XWordGiver.XdFile\DefaultIcon"; ValueType: string; ValueName: ""; ValueData: "{app}\XWordGiver64.exe,3"; Tasks: association_xd
+Root: HKCR; Subkey: "XWordGiver.XdFile\shell\open\command"; ValueType: string; ValueName: ""; ValueData: """{app}\XWordGiver64.exe"" ""%1"""; Tasks: association_xd
 
 [Tasks] 
-Name: association; Description: "{cm:AssociateXWJFiles}"
+Name: association_xwj; Description: "{cm:AssociateXWJFiles}"
+Name: association_xd; Description: "{cm:AssociateXdFiles}"
 
 [CustomMessages]
 AppName=XWordGiver
-AppNameBits=XWordGiver (x64)
+AppNameBits=XWordGiver (x86)
 Author=Katayama Hirofumi MZ
 AssociateXWJFiles=Associate *.xwj files
-CrosswordJSONData=Crossword JSON data
+AssociateXdFiles=Associate *.xd files
+XwjDataFile=XWordGiver XWJ file
+XdDataFile=XWordGiver Xd file
 AuthorsHomepage=Author's homepage
 ja.AppName=クロスワード ギバー
 ja.AppNameBits=クロスワード ギバー (64ビット)
 ja.Author=片山博文MZ
 ja.AssociateXWJFiles=*.xwjファイルを関連付ける
-ja.CrosswordJSONData=クロスワード JSON データ
+ja.AssociateXdFiles=*.xdファイルを関連付ける
+ja.XwjDataFile=XWordGiver XWJ ファイル
+ja.XdDataFile=XWordGiver XD ファイル
 ja.AuthorsHomepage=作者のホームページ
 
 [Run]
