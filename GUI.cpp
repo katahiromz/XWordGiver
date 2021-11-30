@@ -3771,6 +3771,13 @@ void XgUpdateTheme(HWND hwnd)
 // ルールが変更された。
 void XgUpdateRules(HWND hwnd)
 {
+    // 必要に応じてスケルトンモードを解除する。
+    const auto non_skelton_rules =
+        RULE_DONTFOURDIAGONALS | RULE_DONTTHREEDIAGONALS |
+        RULE_DONTCORNERBLACK | RULE_DONTDOUBLEBLACK | RULE_DONTTRIDIRECTIONS;
+    if ((xg_nRules & non_skelton_rules) != 0)
+        xg_bSkeletonMode = FALSE;
+
     HMENU hMenu = ::GetMenu(hwnd);
     INT nCount = ::GetMenuItemCount(hMenu);
     WCHAR szText[32];
