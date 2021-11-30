@@ -74,7 +74,7 @@
     - Command line "--convert input.xwj output.xd" makes file conversion automated.
     - Changed to use half-width characters when drawing alphabet and digits.
     - Fixed the accelerators.
-- 20XX.YY.ZZ Ver.4.8.4
+- 2021.12.01 Ver.4.8.4
     - Introduced "Any Input" mode. Made it default.
     - Improved "Generate from words".
     - "View" → "Zoom" → "Fit the whole" (Ctrl+F) added.
@@ -475,7 +475,7 @@
     - 英字入力と数字入力の描画時に半角を使うようにした。
     - 長音「ー」の処理を修正。
     - アクセスキーを修正。
-- 20XX年YY月ZZ日 ver.4.8.4
+- 2021年12月1日 ver.4.8.4
     - 「自由入力モード」を導入。デフォルトに。
     - 「単語リストから自動生成」を改良して「単語群から自動生成」に。
     - 「表示」→「ズーム」→「全体に合わせる」(Ctrl+F)を追加。
