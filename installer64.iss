@@ -99,7 +99,7 @@ Name: association_xd; Description: "{cm:AssociateXdFiles}"
 
 [CustomMessages]
 AppName=XWordGiver
-AppNameBits=XWordGiver (x86)
+AppNameBits=XWordGiver (x64)
 Author=Katayama Hirofumi MZ
 AssociateXWJFiles=Associate XWJ files
 AssociateXdFiles=Associate XD files
