@@ -293,21 +293,22 @@ void __fastcall XgGetRealClientRect(HWND hwnd, LPRECT prcClient)
 // キャレット位置を更新する。
 void __fastcall XgUpdateCaretPos(void)
 {
+    // 現在のセルサイズを計算する。
     INT nCellSize = xg_nCellSize * xg_nZoomRate / 100;
 
+    // 真・クライアント領域を取得する。
     RECT rc;
     XgGetRealClientRect(xg_hMainWnd, &rc);
 
+    // 未確定文字列の表示位置を計算する。
     POINT pt;
     pt.x = rc.left + xg_nMargin + xg_caret_pos.m_j * nCellSize;
     pt.y = rc.top + xg_nMargin + xg_caret_pos.m_i * nCellSize;
     pt.x -= XgGetHScrollPos();
     pt.y -= XgGetVScrollPos();
 
-    pt.y += 4;
-
-    // 未確定文字列の表示を改良する。
-    LOGFONTW lf;
+    // 未確定文字列の設定。
+    LOGFONTW lf; // 論理フォント。
     ZeroMemory(&lf, sizeof(lf));
     if (xg_bTateInput && XgIsUserCJK()) {
         lf.lfFaceName[0] = L'@';
@@ -328,10 +329,12 @@ void __fastcall XgUpdateCaretPos(void)
     lf.lfCharSet = SHIFTJIS_CHARSET;
 
     COMPOSITIONFORM CompForm = { CFS_POINT };
+    pt.y += 4;
     CompForm.ptCurrentPos = pt; // 未確定文字列の表示位置。
 
+    // IMEの制御。
     HIMC hIMC = ImmGetContext(xg_hMainWnd);
-    ImmSetCompositionWindow(hIMC, &CompForm);
+    ImmSetCompositionWindow(hIMC, &CompForm); // 未確定文字列の表示位置を設定。
     ImmSetCompositionFont(hIMC, &lf); // 未確定文字列のフォントを設定。
     ImmReleaseContext(xg_hMainWnd, hIMC);
 }
