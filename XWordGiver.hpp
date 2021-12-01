@@ -926,6 +926,20 @@ inline BOOL XgIsUserJapanese(VOID)
     // return PRIMARYLANGID(LANGIDFROMLCID(GetThreadLocale())) == LANG_JAPANESE; // これはだめ。
 }
 
+// ユーザは東アジア人（中国、日本、韓国）か？
+inline BOOL XgIsUserCJK(VOID)
+{
+    LCID lcid = GetUserDefaultLCID();
+    WORD langid = LANGIDFROMLCID(lcid);
+    switch (PRIMARYLANGID(langid)) {
+    case LANG_CHINESE:
+    case LANG_JAPANESE:
+    case LANG_KOREAN:
+        return TRUE;
+    }
+    return FALSE;
+}
+
 // 番号を表示するか？
 extern BOOL xg_bShowNumbering;
 // キャレットを表示するか？

@@ -309,14 +309,13 @@ void __fastcall XgUpdateCaretPos(void)
 
     LOGFONTW lf;
     ZeroMemory(&lf, sizeof(lf));
-    if (xg_bTateInput) {
+    if (xg_bTateInput && XgIsUserCJK()) {
         lf.lfFaceName[0] = L'@';
         lf.lfFaceName[1] = 0;
         lf.lfEscapement = 2700;
         lf.lfOrientation = 2700;
         pt.x += nCellSize - 4;
     } else {
-        lf.lfFaceName[0] = 0;
         pt.x += 4;
     }
     if (xg_szCellFont[0])
