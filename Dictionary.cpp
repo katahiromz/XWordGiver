@@ -182,11 +182,11 @@ void XgReadUnicodeLine(LPWSTR pchLine)
         std::unordered_set<std::wstring> tags;
         mstr_split_insert(tags, strTags, L"\t");
 
-        xg_word_to_tags_map[word] = tags;
-
-        for (auto& tag : tags) {
+        for (auto tag : tags) {
+            xg_str_trim(tag);
             if (tag.empty())
                 continue;
+            xg_word_to_tags_map[word].insert(tag);
             xg_tag_histgram[tag] += 1;
         }
     }
