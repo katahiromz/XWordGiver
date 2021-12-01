@@ -176,6 +176,7 @@ void XgReadUnicodeLine(LPWSTR pchLine)
     // タグがあれば、単語のタグ付けを行う。
     if (pchTags) {
         std::wstring strTags = pchTags;
+        xg_str_replace_all(strTags, L"\t", L" ");
         xg_str_replace_all(strTags, L",", L" ");
         xg_str_replace_all(strTags, L"  ", L" ");
 
