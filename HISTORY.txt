@@ -89,6 +89,7 @@
     - Saving the current file type.
     - Made saving XD Files default for non-Japanese users.
     - Improved reading/writing XD files.
+- 20XX.YY.ZZ Ver.4.8.5
 
 # 開発履歴 (Japanese)
 
@@ -491,3 +492,4 @@
     - 現在のファイルの種類を保存するようにした。
     - 英語ユーザーの場合はXDファイルをデフォルトにした。
     - XDファイルの読み書きを改良。
+- 20XX年YY月ZZ日 ver.4.8.5
