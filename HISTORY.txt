@@ -90,6 +90,7 @@
     - Made saving XD Files default for non-Japanese users.
     - Improved reading/writing XD files.
 - 20XX.YY.ZZ Ver.4.8.5
+    - Improved the display of the unspecified string of IME.
 
 # 開発履歴 (Japanese)
 
@@ -493,3 +494,4 @@
     - 英語ユーザーの場合はXDファイルをデフォルトにした。
     - XDファイルの読み書きを改良。
 - 20XX年YY月ZZ日 ver.4.8.5
+    - IMEの未確定文字列の表示を改良。

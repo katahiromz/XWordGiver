@@ -305,14 +305,35 @@ void __fastcall XgUpdateCaretPos(void)
     pt.x -= XgGetHScrollPos();
     pt.y -= XgGetVScrollPos();
 
-    pt.x += 4;
     pt.y += 4;
+
+    LOGFONTW lf;
+    ZeroMemory(&lf, sizeof(lf));
+    if (xg_bTateInput) {
+        lf.lfFaceName[0] = L'@';
+        lf.lfFaceName[1] = 0;
+        lf.lfEscapement = 2700;
+        lf.lfOrientation = 2700;
+        pt.x += nCellSize - 4;
+    } else {
+        lf.lfFaceName[0] = 0;
+        pt.x += 4;
+    }
+    if (xg_szCellFont[0])
+        StringCbCatW(lf.lfFaceName, sizeof(lf.lfFaceName), xg_szCellFont);
+    else
+        StringCbCatW(lf.lfFaceName, sizeof(lf.lfFaceName), XgLoadStringDx1(IDS_MONOFONT));
+    lf.lfHeight = -nCellSize * xg_nCellCharPercents / 100;
+    lf.lfWidth = 0;
+    lf.lfQuality = ANTIALIASED_QUALITY;
+    lf.lfCharSet = SHIFTJIS_CHARSET;
 
     COMPOSITIONFORM CompForm = { CFS_POINT };
     CompForm.ptCurrentPos = pt;
 
     HIMC hIMC = ImmGetContext(xg_hMainWnd);
     ImmSetCompositionWindow(hIMC, &CompForm);
+    ImmSetCompositionFont(hIMC, &lf);
     ImmReleaseContext(xg_hMainWnd, hIMC);
 }
 

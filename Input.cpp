@@ -45,6 +45,7 @@ void __fastcall XgInputDirection(HWND hwnd, INT nDirection)
     }
 
     XgUpdateStatusBar(hwnd);
+    XgUpdateCaretPos();
     xg_prev_vk = 0;
     xg_chAccent = 0;
 }
