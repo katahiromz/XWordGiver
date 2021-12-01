@@ -301,12 +301,12 @@ void __fastcall XgUpdateCaretPos(void)
     POINT pt;
     pt.x = rc.left + xg_nMargin + xg_caret_pos.m_j * nCellSize;
     pt.y = rc.top + xg_nMargin + xg_caret_pos.m_i * nCellSize;
-
     pt.x -= XgGetHScrollPos();
     pt.y -= XgGetVScrollPos();
 
     pt.y += 4;
 
+    // 未確定文字列の表示を改良する。
     LOGFONTW lf;
     ZeroMemory(&lf, sizeof(lf));
     if (xg_bTateInput && XgIsUserCJK()) {
@@ -328,11 +328,11 @@ void __fastcall XgUpdateCaretPos(void)
     lf.lfCharSet = SHIFTJIS_CHARSET;
 
     COMPOSITIONFORM CompForm = { CFS_POINT };
-    CompForm.ptCurrentPos = pt;
+    CompForm.ptCurrentPos = pt; // 未確定文字列の表示位置。
 
     HIMC hIMC = ImmGetContext(xg_hMainWnd);
     ImmSetCompositionWindow(hIMC, &CompForm);
-    ImmSetCompositionFont(hIMC, &lf);
+    ImmSetCompositionFont(hIMC, &lf); // 未確定文字列のフォントを設定。
     ImmReleaseContext(xg_hMainWnd, hIMC);
 }
 
