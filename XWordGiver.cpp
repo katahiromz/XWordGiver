@@ -1728,19 +1728,27 @@ XgGetHintsStr(const XG_Board& board, std::wstring& str, int hint_type, bool bSho
 
             // ヒント文章を追加する。
             bool added = false;
-            for (const auto& data : xg_dict_1) {
-                if (_wcsicmp(data.m_word.data(),
-                             info.m_word.data()) == 0)
-                {
-                    str += data.m_hint;
+            for (auto& hint : xg_vecTateHints) {
+                if (hint.m_strWord == info.m_word) {
+                    str += hint.m_strHint;
                     added = true;
-                    break;
+                }
+            }
+            if (!added) {
+                for (const auto& data : xg_dict_1) {
+                    if (_wcsicmp(data.m_word.data(),
+                        info.m_word.data()) == 0)
+                    {
+                        str += data.m_hint;
+                        added = true;
+                        break;
+                    }
                 }
             }
             if (!added) {
                 for (const auto& data : xg_dict_2) {
                     if (_wcsicmp(data.m_word.data(),
-                                 info.m_word.data()) == 0)
+                        info.m_word.data()) == 0)
                     {
                         str += data.m_hint;
                         added = true;
@@ -1770,11 +1778,19 @@ XgGetHintsStr(const XG_Board& board, std::wstring& str, int hint_type, bool bSho
 
             // ヒント文章を追加する。
             bool added = false;
-            for (const auto& data : xg_dict_1) {
-                if (_wcsicmp(data.m_word.data(), info.m_word.data()) == 0) {
-                    str += data.m_hint;
+            for (auto& hint : xg_vecYokoHints) {
+                if (hint.m_strWord == info.m_word) {
+                    str += hint.m_strHint;
                     added = true;
-                    break;
+                }
+            }
+            if (!added) {
+                for (const auto& data : xg_dict_1) {
+                    if (_wcsicmp(data.m_word.data(), info.m_word.data()) == 0) {
+                        str += data.m_hint;
+                        added = true;
+                        break;
+                    }
                 }
             }
             if (!added) {
@@ -1806,11 +1822,19 @@ XgGetHintsStr(const XG_Board& board, std::wstring& str, int hint_type, bool bSho
 
             // ヒント文章を追加する。
             bool added = false;
-            for (const auto& data : xg_dict_1) {
-                if (_wcsicmp(data.m_word.data(), info.m_word.data()) == 0) {
-                    str += data.m_hint;
+            for (auto& hint : xg_vecTateHints) {
+                if (hint.m_strWord == info.m_word) {
+                    str += hint.m_strHint;
                     added = true;
-                    break;
+                }
+            }
+            if (!added) {
+                for (const auto& data : xg_dict_1) {
+                    if (_wcsicmp(data.m_word.data(), info.m_word.data()) == 0) {
+                        str += data.m_hint;
+                        added = true;
+                        break;
+                    }
                 }
             }
             if (!added) {
@@ -1844,11 +1868,19 @@ XgGetHintsStr(const XG_Board& board, std::wstring& str, int hint_type, bool bSho
 
             // ヒント文章を追加する。
             bool added = false;
-            for (const auto& data : xg_dict_1) {
-                if (_wcsicmp(data.m_word.data(), info.m_word.data()) == 0) {
-                    str += data.m_hint;
+            for (auto& hint : xg_vecYokoHints) {
+                if (hint.m_strWord == info.m_word) {
+                    str += hint.m_strHint;
                     added = true;
-                    break;
+                }
+            }
+            if (!added) {
+                for (const auto& data : xg_dict_1) {
+                    if (_wcsicmp(data.m_word.data(), info.m_word.data()) == 0) {
+                        str += data.m_hint;
+                        added = true;
+                        break;
+                    }
                 }
             }
             if (!added) {

@@ -79,6 +79,7 @@
     - Improved "Generate from words".
     - "View" → "Zoom" → "Fit the whole" (Ctrl+F) added.
     - Fixed the fatal bug on generation and policy settings.
+    - Fixed a fatal bug regarding dictionary switching and hint copying.
     - Added highlight feature.
     - Added more patterns.
     - Made the small letter size 30%.
@@ -480,6 +481,7 @@
     - 「単語リストから自動生成」を改良して「単語群から自動生成」に。
     - 「表示」→「ズーム」→「全体に合わせる」(Ctrl+F)を追加。
     - 生成とルール設定における致命的な不具合を修正。
+    - 辞書切り替えとヒントのコピーに関する致命的な不具合を修正。
     - ハイライト機能を追加。
     - さらに黒マスパターンを追加。
     - 小さい文字の大きさを30%に。
