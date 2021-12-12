@@ -28,7 +28,7 @@
 
 ### If you want to create from specific words:
 
-1. Gather a group of relatively long words, rewrite them in Katakana or Alphabet, and save them in Excel or Notepad.
+1. Gather some relatively long words, rewrite them in Katakana or Alphabet, and save them in Excel or Notepad.
 2. Select "Generate from words..." from the "File" menu.
 3. Paste the words into the dialog and click the "Generate" button.
 
