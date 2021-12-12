@@ -44,6 +44,7 @@
 - If there are not enough or too many combinations, you may fail or not finish.
 - The larger the size, the longer it will take. Please be patient during the calculation.
 - There are machine differences in computing performance.
+- The quality of the algorithm and dictionary data is NOT GUARANTEED.
 
 ## Requirements
 
