@@ -13,7 +13,7 @@
 ### If you just want to make something:
 
 1. First, please choose the "policies" and a "dictionary".
-2. In the "File" menu, select "Generate crossword" and click the "Generate" button.
+2. In the "File" menu, select "Generate crossword..." and click the "Generate" button.
 
 ### If you want to choose a block pattern:
 
@@ -29,7 +29,7 @@
 ### If you want to create from specific words:
 
 1. Gather a group of relatively long words, rewrite them in Katakana or Alphabet, and save them in Excel or Notepad.
-2. Select "Generate from words..." from the "File" menu. Select "Generate from words..." from the "File" menu.
+2. Select "Generate from words..." from the "File" menu.
 3. Paste the words into the dialog and click the "Generate" button.
 
 ### If you want to create everything manually:
