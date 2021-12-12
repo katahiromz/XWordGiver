@@ -4126,6 +4126,7 @@ std::unordered_set<XG_Pos> XgGetSlot(INT number, BOOL vertical)
 
 // ハイライト色。
 const COLORREF c_rgbHighlight = RGB(255, 255, 100);
+const COLORREF c_rgbHighlightAndDblFrame = RGB(255, 155, 100);
 
 // クロスワードを描画する（通常ビュー）。
 void __fastcall XgDrawXWord_NormalView(XG_Board& xw, HDC hdc, LPSIZE psiz, bool bCaret)
@@ -4171,6 +4172,7 @@ void __fastcall XgDrawXWord_NormalView(XG_Board& xw, HDC hdc, LPSIZE psiz, bool 
     HBRUSH hbrWhite = ::CreateSolidBrush(xg_rgbWhiteCellColor);
     HBRUSH hbrMarked = ::CreateSolidBrush(xg_rgbMarkedCellColor);
     HBRUSH hbrHighlight = ::CreateSolidBrush(c_rgbHighlight);
+    HBRUSH hbrHighlightAndDblFrame = ::CreateSolidBrush(c_rgbHighlightAndDblFrame);
 
     auto slot = XgGetSlot(xg_highlight.m_number, xg_highlight.m_vertical);
     if (xg_nForDisplay <= 0)
@@ -4235,6 +4237,9 @@ void __fastcall XgDrawXWord_NormalView(XG_Board& xw, HDC hdc, LPSIZE psiz, bool 
                 } else {
                     ::FillRect(hdc, &rc, hbrBlack);
                 }
+            } else if (slot.count(XG_Pos(i, j)) > 0 && nMarked != -1) {
+                // ハイライトかつ二重マス。
+                ::FillRect(hdc, &rc, hbrHighlightAndDblFrame);
             } else if (slot.count(XG_Pos(i, j)) > 0) {
                 // ハイライト。
                 ::FillRect(hdc, &rc, hbrHighlight);
@@ -4500,6 +4505,7 @@ void __fastcall XgDrawXWord_NormalView(XG_Board& xw, HDC hdc, LPSIZE psiz, bool 
     ::DeleteObject(hbrWhite);
     ::DeleteObject(hbrMarked);
     ::DeleteObject(hbrHighlight);
+    ::DeleteObject(hbrHighlightAndDblFrame);
 }
 
 // クロスワードを描画する（スケルトンビュー）。
@@ -4546,6 +4552,7 @@ void __fastcall XgDrawXWord_SkeletonView(XG_Board& xw, HDC hdc, LPSIZE psiz, boo
     HBRUSH hbrWhite = ::CreateSolidBrush(xg_rgbWhiteCellColor);
     HBRUSH hbrMarked = ::CreateSolidBrush(xg_rgbMarkedCellColor);
     HBRUSH hbrHighlight = ::CreateSolidBrush(c_rgbHighlight);
+    HBRUSH hbrHighlightAndDblFrame = ::CreateSolidBrush(c_rgbHighlightAndDblFrame);
 
     auto slot = XgGetSlot(xg_highlight.m_number, xg_highlight.m_vertical);
     if (xg_nForDisplay <= 0)
@@ -4613,8 +4620,11 @@ void __fastcall XgDrawXWord_SkeletonView(XG_Board& xw, HDC hdc, LPSIZE psiz, boo
                 continue;
 
             // 塗りつぶす。
-            if (slot.count(XG_Pos(i, j)) > 0) {
-                // その他のマス。
+            if (slot.count(XG_Pos(i, j)) > 0 && nMarked != -1) {
+                // ハイライトかつ二重マス。
+                ::FillRect(hdc, &rc, hbrHighlightAndDblFrame);
+            } else if (slot.count(XG_Pos(i, j)) > 0) {
+                // ハイライト。
                 ::FillRect(hdc, &rc, hbrHighlight);
             } else if (nMarked != -1) {
                 // 二重マス。
@@ -4867,6 +4877,7 @@ void __fastcall XgDrawXWord_SkeletonView(XG_Board& xw, HDC hdc, LPSIZE psiz, boo
     ::DeleteObject(hbrWhite);
     ::DeleteObject(hbrMarked);
     ::DeleteObject(hbrHighlight);
+    ::DeleteObject(hbrHighlightAndDblFrame);
 }
 
 // クロスワードを描画する。
