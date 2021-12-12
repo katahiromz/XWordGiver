@@ -94,6 +94,7 @@
     - Improved drawing of highlight and double-frame cells.
     - Improved READMEs.
     - Simplified the display of cell position for error messages.
+    - Changed the specification of the dictionary data.
 
 # 開発履歴 (Japanese)
 
@@ -501,3 +502,4 @@
     - 二重マスのハイライト描画を改良。
     - ReadMeを改良。
     - エラーメッセージのセル位置の表示を単純化。
+    - 辞書データの仕様変更。

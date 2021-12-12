@@ -1,5 +1,9 @@
-﻿# 「基本辞書データ（英和、謹慎）.tsv」片山博文MZ
-# This file is public domain software.
+﻿# NAME: "BasicDict-ENG2JPN-Modesty.tsv", 10th Edition
+# NAME-ENG: Basic English-to-Japanese Modesty Dictionary, 10th Edition
+# NAME-JPN: 「基本辞書データ（英和、謹慎）.tsv」第十版
+# COPYRIGHT: (C) 2013-2021 katahiromz
+# LICENSE: MIT
+# NOTE: ABSOLUTELY NO WARRANTY.
 abbreviation	省略。
 ABC	アルファベット。基礎。
 ability	能力。手腕。

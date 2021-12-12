@@ -1,7 +1,9 @@
-﻿# English crossword clues (Freedom) Version 0.9
-# License: MIT
-# Copyright (c) 2021 Katayama Hirofumi MZ.
-# Copyright (c) 2021 スフィンクス.
+﻿# NAME: "BasicDict-ENG-Freedom.tsv", 10th Edition
+# NAME-ENG: Basic English Freedom Dictionary, 10th Edition
+# NAME-JPN: 「基本辞書データ（英語、自由）.tsv」第十版
+# COPYRIGHT: (C) 2021 katahiromz, スフィンクス.
+# LICENSE: MIT
+# NOTE: ABSOLUTELY NO WARRANTY.
 ABBREVIATION	A short form of a word or phrase
 ABDOMEN	The part below your chest
 ABILITY	Skill to do something
