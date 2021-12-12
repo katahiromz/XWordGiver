@@ -85,7 +85,7 @@ HIMAGELIST xg_hGrayedImageList = nullptr;
 
 // 辞書ファイルの場所（パス）。
 std::wstring xg_dict_name;
-std::deque<std::wstring>  xg_dict_files;
+std::deque<DICT_ENTRY>  xg_dict_files;
 
 // ヒントに追加があったか？
 bool xg_bHintsAdded = false;
@@ -3006,12 +3006,15 @@ void DoUpdateDictMenu(HMENU hDictMenu)
 
     INT index = 4, count = 0, id = ID_DICTIONARY00;
     WCHAR szText[MAX_PATH];
-    for (const auto& file : xg_dict_files)
+    for (const auto& entry : xg_dict_files)
     {
-        LPCWSTR pszFileTitle = PathFindFileNameW(file.c_str());
+        auto text = entry.m_friendly_name;
+        text += L" (";
+        text += PathFindFileNameW(entry.m_filename.c_str());
+        text += L")";
         StringCbPrintfW(szText, sizeof(szText), L"&%c ",
             L"0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF"[count]);
-        StringCbCatW(szText, sizeof(szText), pszFileTitle);
+        StringCbCatW(szText, sizeof(szText), text.c_str());
         AppendMenuW(hDictMenu, MF_STRING | MF_ENABLED, id, szText);
         ++index;
         ++count;
@@ -3021,8 +3024,9 @@ void DoUpdateDictMenu(HMENU hDictMenu)
     }
 
     index = 4;
-    for (const auto& file : xg_dict_files)
+    for (const auto& entry : xg_dict_files)
     {
+        auto& file = entry.m_filename;
         if (lstrcmpiW(file.c_str(), xg_dict_name.c_str()) == 0)
         {
             INT nCount = GetMenuItemCount(hDictMenu);

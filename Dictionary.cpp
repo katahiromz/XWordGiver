@@ -443,6 +443,53 @@ std::vector<XG_WordData> XgCreateMiniDict(void)
     return ret;
 }
 
+std::wstring XgLoadTitleFromDict(LPCWSTR pszPath)
+{
+    std::wstring ret = pszPath;
+
+    if (FILE *fp = _wfopen(pszPath, L"rb"))
+    {
+        char buf[256];
+        WCHAR szText[256];
+        BOOL bJapanese = XgIsUserJapanese();
+        INT nLineCount = 0;
+        auto name_jpn = L"# NAME-JPN:";
+        auto name_eng = L"# NAME-ENG:";
+        while (fgets(buf, _countof(buf), fp))
+        {
+            if (nLineCount++ >= 8)
+                break;
+
+            MultiByteToWideChar(CP_UTF8, 0, buf, -1, szText, _countof(szText));
+
+            auto len1 = lstrlenW(name_jpn);
+            if (memcmp(szText, name_jpn, len1 * sizeof(WCHAR)) == 0)
+            {
+                if (bJapanese)
+                {
+                    std::wstring str = &szText[len1];
+                    xg_str_trim(str);
+                    ret = str;
+                    break;
+                }
+            }
+
+            auto len2 = lstrlenW(name_eng);
+            if (memcmp(szText, name_eng, len2 * sizeof(WCHAR)) == 0)
+            {
+                std::wstring str = &szText[len2];
+                xg_str_trim(str);
+                ret = str;
+                if (!bJapanese)
+                    break;
+            }
+        }
+        fclose(fp);
+    }
+
+    return ret;
+}
+
 // フォルダから辞書群を読み込む。
 BOOL XgLoadDictsFromDir(LPCWSTR pszDir)
 {
@@ -460,7 +507,9 @@ BOOL XgLoadDictsFromDir(LPCWSTR pszDir)
         {
             StringCbCopy(szPath, sizeof(szPath), pszDir);
             PathAppend(szPath, find.cFileName);
-            xg_dict_files.emplace_back(szPath);
+            auto path = szPath;
+            auto title = XgLoadTitleFromDict(szPath);
+            xg_dict_files.emplace_back(path, title);
         } while (FindNextFile(hFind, &find));
         FindClose(hFind);
     }
@@ -475,7 +524,9 @@ BOOL XgLoadDictsFromDir(LPCWSTR pszDir)
         {
             StringCbCopy(szPath, sizeof(szPath), pszDir);
             PathAppend(szPath, find.cFileName);
-            xg_dict_files.emplace_back(szPath);
+            auto path = szPath;
+            auto title = XgLoadTitleFromDict(szPath);
+            xg_dict_files.emplace_back(path, title);
         } while (FindNextFile(hFind, &find));
         FindClose(hFind);
     }
@@ -510,8 +561,9 @@ BOOL XgLoadDictsAll(void)
 
     // 読み込んだ中から見つかるか？
     bool bFound = false;
-    for (auto& file : xg_dict_files)
+    for (auto& entry : xg_dict_files)
     {
+        auto& file = entry.m_filename;
         if (lstrcmpiW(file.c_str(), xg_dict_name.c_str()) == 0)
         {
             bFound = true;
@@ -523,8 +575,9 @@ BOOL XgLoadDictsAll(void)
     {
         LPCWSTR pszNormal = XgLoadStringDx1(IDS_NORMAL_DICT);
         LPCWSTR pszBasicDict = XgLoadStringDx2(IDS_BASICDICTDATA);
-        for (auto& file : xg_dict_files)
+        for (auto& entry : xg_dict_files)
         {
+            auto& file = entry.m_filename;
             if (file.find(pszBasicDict) != std::wstring::npos &&
                 file.find(pszNormal) != std::wstring::npos &&
                 PathFileExistsW(file.c_str()))
@@ -535,13 +588,14 @@ BOOL XgLoadDictsAll(void)
         }
         if (xg_dict_name.empty() && xg_dict_files.size())
         {
-            xg_dict_name = xg_dict_files[0];
+            xg_dict_name = xg_dict_files[0].m_filename;
         }
     }
 
     // ファイルが実際に存在するかチェックし、存在しない項目は消す。
     for (size_t i = 0; i < xg_dict_files.size(); ++i) {
-        auto& file = xg_dict_files[i];
+        auto& entry = xg_dict_files[i];
+        auto& file = entry.m_filename;
         if (!PathFileExistsW(file.c_str())) {
             xg_dict_files.erase(xg_dict_files.begin() + i);
             --i;
@@ -560,9 +614,18 @@ void XgSetDict(const std::wstring& strFile)
     // 辞書として追加、ソート、一意にする。
     if (xg_dict_files.size() < MAX_DICTS)
     {
-        xg_dict_files.emplace_back(strFile);
-        std::sort(xg_dict_files.begin(), xg_dict_files.end());
-        auto last = std::unique(xg_dict_files.begin(), xg_dict_files.end());
+        auto title = XgLoadTitleFromDict(strFile.c_str());
+        xg_dict_files.emplace_back(strFile, title);
+        std::sort(xg_dict_files.begin(), xg_dict_files.end(),
+            [](const DICT_ENTRY& e1, const DICT_ENTRY& e2) {
+                return e1.m_filename < e2.m_filename;
+            }
+        );
+        auto last = std::unique(xg_dict_files.begin(), xg_dict_files.end(),
+            [](const DICT_ENTRY& e1, const DICT_ENTRY& e2) {
+                return e1.m_filename == e2.m_filename;
+            }
+        );
         xg_dict_files.erase(last, xg_dict_files.end());
     }
 }
@@ -575,7 +638,8 @@ void XgSelectDict(HWND hwnd, size_t iDict)
         return;
 
     // 辞書を読み込み、セットする。
-    const auto& file = xg_dict_files[iDict];
+    auto& entry = xg_dict_files[iDict];
+    const auto& file = entry.m_filename;
     if (XgLoadDictFile(file.c_str()))
     {
         XgSetDict(file.c_str());

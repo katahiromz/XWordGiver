@@ -95,6 +95,7 @@
     - Improved READMEs.
     - Simplified the display of cell position for error messages.
     - Changed the specification of the dictionary data.
+    - Human-friendly display of dictionary names.
 
 # 開発履歴 (Japanese)
 
@@ -503,3 +504,4 @@
     - ReadMeを改良。
     - エラーメッセージのセル位置の表示を単純化。
     - 辞書データの仕様変更。
+    - 辞書名の人間にやさしい表示。

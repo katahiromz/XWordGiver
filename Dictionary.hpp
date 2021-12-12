@@ -190,14 +190,26 @@ inline bool XgTrimDict(std::vector<t_string>& words)
 
 //////////////////////////////////////////////////////////////////////////////
 
-// 辞書ファイルの場所（パス）。
-extern std::wstring xg_dict_name;
-extern std::deque<std::wstring>  xg_dict_files;
+// 辞書のエントリ。
+struct DICT_ENTRY
+{
+    std::wstring m_filename; // ファイル名。
+    std::wstring m_friendly_name; // 親切な名前。
+    DICT_ENTRY()
+    {
+    }
+    DICT_ENTRY(const std::wstring& filename,
+               const std::wstring& friendly_name)
+        : m_filename(filename)
+        , m_friendly_name(friendly_name)
+    {
+    }
+};
 
 // 現在の辞書名。
 extern std::wstring xg_dict_name;
 // すべての辞書ファイル。
-extern std::deque<std::wstring> xg_dict_files;
+extern std::deque<DICT_ENTRY> xg_dict_files;
 
 // 辞書名をセットする。
 void XgSetDict(const std::wstring& strFile);
