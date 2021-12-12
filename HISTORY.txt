@@ -92,7 +92,8 @@
 - 20XX.YY.ZZ Ver.4.8.5
     - Improved the display of the unspecified string of IME.
     - Improved drawing of highlight and double-frame cells.
-    - Improved README.
+    - Improved READMEs.
+    - Simplified the display of cell position for error messages.
 
 # 開発履歴 (Japanese)
 
@@ -499,3 +500,4 @@
     - IMEの未確定文字列の表示を改良。
     - 二重マスのハイライト描画を改良。
     - ReadMeを改良。
+    - エラーメッセージのセル位置の表示を単純化。

@@ -1033,7 +1033,7 @@ bool __fastcall XgCheckCrossWord(HWND hwnd, bool check_words = true)
         if (check_words) {
             // パターンにマッチしないマスがあった。
             WCHAR sz[128];
-            StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(IDS_NOCANDIDATE), pos.m_i + 1, pos.m_j + 1);
+            StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(IDS_NOCANDIDATE), pos.m_j + 1, pos.m_i + 1);
             XgCenterMessageBoxW(hwnd, sz, nullptr, MB_ICONERROR);
             return false;
         }
@@ -1045,7 +1045,7 @@ bool __fastcall XgCheckCrossWord(HWND hwnd, bool check_words = true)
         if (check_words) {
             // 登録されている単語と長さの一致しないスペースがあった。
             WCHAR sz[128];
-            StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(IDS_TOOLONGSPACE), pos.m_i + 1, pos.m_j + 1);
+            StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(IDS_TOOLONGSPACE), pos.m_j + 1, pos.m_i + 1);
             XgCenterMessageBoxW(hwnd, sz, nullptr, MB_ICONERROR);
             return false;
         }
