@@ -12,10 +12,10 @@ LANGUAGE LANG_ENGLISH, SUBLANG_DEFAULT
 {
     POPUP "&File"
     {
-        MENUITEM "&New board\tCtrl+N", ID_NEW
-        MENUITEM "&Generate crossword\tCtrl+G", ID_GENERATE
-        MENUITEM "G&enerate crossword and show answer\tCtrl+H", ID_GENERATEANSWER
-        MENUITEM "Continuously generate crosswords\tCtrl+W", ID_GENERATEREPEATEDLY
+        MENUITEM "&New board...\tCtrl+N", ID_NEW
+        MENUITEM "&Generate crossword...\tCtrl+G", ID_GENERATE
+        MENUITEM "G&enerate crossword and show answer...\tCtrl+H", ID_GENERATEANSWER
+        MENUITEM "Continuously generate crosswords...\tCtrl+W", ID_GENERATEREPEATEDLY
         MENUITEM SEPARATOR
         MENUITEM "Generate from block pa&ttern...\tCtrl+;", ID_OPENPATTERNS
         MENUITEM "Generate from &words...\tCtrl+:", ID_GENERATEFROMWORDLIST
