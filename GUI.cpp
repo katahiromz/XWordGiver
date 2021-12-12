@@ -3008,10 +3008,18 @@ void DoUpdateDictMenu(HMENU hDictMenu)
     WCHAR szText[MAX_PATH];
     for (const auto& entry : xg_dict_files)
     {
-        auto text = entry.m_friendly_name;
-        text += L" (";
-        text += PathFindFileNameW(entry.m_filename.c_str());
-        text += L")";
+        std::wstring text;
+        if (entry.m_friendly_name == entry.m_filename)
+        {
+            text = PathFindFileNameW(entry.m_filename.c_str());
+        }
+        else
+        {
+            text = entry.m_friendly_name;
+            text += L" (";
+            text += PathFindFileNameW(entry.m_filename.c_str());
+            text += L")";
+        }
         StringCbPrintfW(szText, sizeof(szText), L"&%c ",
             L"0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF"[count]);
         StringCbCatW(szText, sizeof(szText), text.c_str());
