@@ -3015,10 +3015,9 @@ void DoUpdateDictMenu(HMENU hDictMenu)
         }
         else
         {
-            text = entry.m_friendly_name;
-            text += L" (";
-            text += PathFindFileNameW(entry.m_filename.c_str());
-            text += L")";
+            text = PathFindFileNameW(entry.m_filename.c_str());
+            text += L"\t";
+            text += entry.m_friendly_name;
         }
         StringCbPrintfW(szText, sizeof(szText), L"&%c ",
             L"0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF"[count]);
