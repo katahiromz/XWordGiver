@@ -899,6 +899,9 @@ void __fastcall XgOnKey(HWND hwnd, UINT vk, bool fDown, int /*cRepeat*/, UINT /*
             ::ToUnicode(vk, 0, state, sz2, _countof(sz2), 0); // [Shift]あり。
             WCHAR ch1 = sz1[0], ch2 = sz2[0];
             switch (ch1) {
+            case L'/':
+                ::PostMessageW(hwnd, WM_COMMAND, ID_INPUTHV, 0);
+                return;
             case L'.':
                 ::PostMessageW(hwnd, WM_COMMAND, ID_TOGGLEMARK, 0);
                 return;
@@ -922,6 +925,9 @@ void __fastcall XgOnKey(HWND hwnd, UINT vk, bool fDown, int /*cRepeat*/, UINT /*
                 return;
             }
             switch (ch2) {
+            case L'/':
+                ::PostMessageW(hwnd, WM_COMMAND, ID_INPUTHV, 0);
+                return;
             case L'.':
                 ::PostMessageW(hwnd, WM_COMMAND, ID_TOGGLEMARK, 0);
                 return;
