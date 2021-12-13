@@ -96,6 +96,8 @@
     - Improved READMEs.
     - Simplified the display of cell position for error messages.
     - Changed the specification of the dictionary data.
+- 20XX.YY.ZZ Ver.4.8.6
+    - Improved READMEs more.
 
 # 開発履歴 (Japanese)
 
@@ -505,3 +507,5 @@
     - ReadMeを改良。
     - エラーメッセージのセル位置の表示を単純化。
     - 辞書データの仕様変更。
+- 20XX年YY月ZZ日 ver.4.8.6
+    - さらにReadMeを改良。
