@@ -96,7 +96,7 @@
     - Improved READMEs.
     - Simplified the display of cell position for error messages.
     - Changed the specification of the dictionary data.
-- 20XX.YY.ZZ Ver.4.8.6
+- 2022.01.17 Ver.4.8.6
     - Improved READMEs more.
     - Fixed a problem where Ctrl+/ could not switch the input direction.
 
@@ -508,6 +508,6 @@
     - ReadMeを改良。
     - エラーメッセージのセル位置の表示を単純化。
     - 辞書データの仕様変更。
-- 20XX年YY月ZZ日 ver.4.8.6
+- 2022年01月17日 ver.4.8.6
     - さらにReadMeを改良。
     - 「Ctrl+/」でタテ入力・ヨコ入力を切り替えられなかったのを修正。
