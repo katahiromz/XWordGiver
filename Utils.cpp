@@ -89,6 +89,17 @@ void __fastcall xg_str_trim(std::wstring& str)
         str.clear();
 }
 
+// 文字列の右側の空白を取り除く。
+void __fastcall xg_str_trim_right(std::wstring& str)
+{
+    static const LPCWSTR s_white_space = L" \t\r\n\x3000";
+    const size_t j = str.find_last_not_of(s_white_space);
+    if (j != std::wstring::npos)
+        str = str.substr(0, j);
+    else
+        str.clear();
+}
+
 // 文字列を置換する。
 void __fastcall xg_str_replace_all(
     std::wstring &s, const std::wstring& from, const std::wstring& to)

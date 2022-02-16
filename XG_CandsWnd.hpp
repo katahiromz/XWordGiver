@@ -112,10 +112,10 @@ public:
         XgGetCandidatesAddBlack<true>(cands2, pattern, nSkip, left_black, right_black);
         cands.insert(cands.end(), cands2.begin(), cands2.end());
 
-        // 正規化して前後の空白を取り除く。
+        // 正規化して右側の空白を取り除く。
         for (auto& cand : cands) {
             cand = XgNormalizeString(cand);
-            xg_str_trim(cand);
+            xg_str_trim_right(cand);
         }
 
         // ソートして一意化。短い方を優先する。
