@@ -1388,7 +1388,7 @@ FILETYPE        0x1
 
 STRINGTABLE
 {
-    IDS_VERSION, "クロスワード ギバー ver.4.8.7\nby 片山博文MZ\n\nCopyright (C) 2012-2022 片山博文MZ.\nCopyright (C) 2021-2022 スフィンクス.\nCopyright (C) 2022 yukokumar.\nAll rights reserved."
+    IDS_VERSION, "クロスワード ギバー ver.4.8.7\nby 片山博文MZ\n\nCopyright (C) 2012-2022 片山博文MZ.\nCopyright (C) 2021-2022 スフィンクス.\nCopyright (C) 2022 yukokumar.\nCopyright (C) 2022 Hiroshima.cw.\nAll rights reserved."
     IDS_APPNAME, "クロスワード ギバー"
     IDS_CANTLOAD, "ファイルが読み込めません。"
     IDS_WRONGFORMAT, "形式が間違っています。"
