@@ -20,10 +20,29 @@ LPWSTR __fastcall XgMakeFilterString(LPWSTR psz);
 // ショートカットのターゲットのパスを取得する。
 bool __fastcall XgGetPathOfShortcutW(LPCWSTR pszLnkFile, LPWSTR pszPath);
 
+// 空白文字群。
+#define XG_WHITE_SPACES  L" \t\r\n\x3000"
+
 // 文字列の前後の空白を取り除く。
-void __fastcall xg_str_trim(std::wstring& str);
+static inline void __fastcall xg_str_trim(std::wstring& str)
+{
+    const size_t i = str.find_first_not_of(XG_WHITE_SPACES);
+    const size_t j = str.find_last_not_of(XG_WHITE_SPACES);
+    if (i != std::wstring::npos)
+        str = str.substr(i, j - i + 1);
+    else
+        str.clear();
+}
+
 // 文字列の右側の空白を取り除く。
-void __fastcall xg_str_trim_right(std::wstring& str);
+static inline void __fastcall xg_str_trim_right(std::wstring& str)
+{
+    const size_t j = str.find_last_not_of(XG_WHITE_SPACES);
+    if (j != std::wstring::npos)
+        str = str.substr(0, j + 1);
+    else
+        str.clear();
+}
 
 // 文字列を置換する。
 void __fastcall xg_str_replace_all(std::wstring &s, const std::wstring& from, const std::wstring& to);

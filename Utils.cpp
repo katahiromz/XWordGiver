@@ -73,32 +73,8 @@ bool __fastcall XgGetPathOfShortcutW(LPCWSTR pszLnkFile, LPWSTR pszPath)
     return bRes;
 }
 
-// 文字列の前後の空白を取り除く。
-void __fastcall xg_str_trim(std::wstring& str)
-{
-    static const LPCWSTR s_white_space = L" \t\r\n\x3000";
-    const size_t i = str.find_first_not_of(s_white_space);
-    const size_t j = str.find_last_not_of(s_white_space);
-    if (i != std::wstring::npos)
-        str = str.substr(i, j - i + 1);
-    else
-        str.clear();
-}
-
-// 文字列の右側の空白を取り除く。
-void __fastcall xg_str_trim_right(std::wstring& str)
-{
-    static const LPCWSTR s_white_space = L" \t\r\n\x3000";
-    const size_t j = str.find_last_not_of(s_white_space);
-    if (j != std::wstring::npos)
-        str = str.substr(0, j + 1);
-    else
-        str.clear();
-}
-
 // 文字列を置換する。
-void __fastcall xg_str_replace_all(
-    std::wstring &s, const std::wstring& from, const std::wstring& to)
+void __fastcall xg_str_replace_all(std::wstring &s, const std::wstring& from, const std::wstring& to)
 {
     std::wstring t;
     size_t i = 0;
