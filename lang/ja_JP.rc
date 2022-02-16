@@ -29,7 +29,7 @@ LANGUAGE LANG_JAPANESE, SUBLANG_DEFAULT
         MENUITEM "問題のみを印刷(&M)\tCtrl+Q", ID_PRINTPROBLEM
         MENUITEM "問題と解答を印刷(&P)\tCtrl+P", ID_PRINTANSWER
         MENUITEM SEPARATOR
-        MENUITEM "ヘッダーと備考欄(&H)...", ID_HEADERANDNOTES
+        MENUITEM "ヘッダーと備考欄(&H)...\tCtrl+Enter", ID_HEADERANDNOTES
         MENUITEM "見た目の設定(&C)...\tAlt+Enter", ID_SETTINGS
         MENUITEM SEPARATOR
         MENUITEM "アプリの初期化", ID_ERASESETTINGS
@@ -696,7 +696,7 @@ FONT 9, "MS UI Gothic"
 }
 
 IDD_NOTES DIALOG 0, 0, 185, 185
-CAPTION "ヘッダーと備考欄"
+CAPTION "ヘッダーと備考欄 (Ctrl+Enter)"
 STYLE DS_CENTER | DS_MODALFRAME | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
 FONT 9, "ＭＳ ゴシック"
 {

@@ -75,6 +75,7 @@ IDB_FROMWORDS BITMAP "res/Bitmap_100.bmp"
     VK_DOWN, ID_ONLINEDICTV, ALT, VIRTKEY
     VK_LEFT, ID_ONLINEDICTH, ALT, VIRTKEY
     VK_RIGHT, ID_ONLINEDICTH, ALT, VIRTKEY
+    VK_RETURN, ID_HEADERANDNOTES, CONTROL, VIRTKEY
 }
 
 //////////////////////////////////////////////////////////////////////////////

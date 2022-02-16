@@ -106,6 +106,7 @@
     - Able to import/export settings (The LOOKS file).
     - Modified "File" menu a little.
     - Fixed the color of small labels.
+    - Able to edit "header and remarks" by Ctrl+Enter.
 
 # 開発履歴 (Japanese)
 
@@ -525,3 +526,4 @@
     - 設定のインポート・エクスポートが可能に(LOOKSファイル)。
     - 「ファイル」メニューを少し改造。
     - 小さい文字の色を修正。
+    - Ctrl+Enterでヘッダと備考欄を編集できるようにした。

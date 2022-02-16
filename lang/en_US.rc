@@ -29,7 +29,7 @@ LANGUAGE LANG_ENGLISH, SUBLANG_DEFAULT
         MENUITEM "Print crossword\tCtrl+Q", ID_PRINTPROBLEM
         MENUITEM "&Print crossword answer\tCtrl+P", ID_PRINTANSWER
         MENUITEM SEPARATOR
-        MENUITEM "&Header and remarks...", ID_HEADERANDNOTES
+        MENUITEM "&Header and remarks...\tCtrl+Enter", ID_HEADERANDNOTES
         MENUITEM "Appearan&ce...\tAlt+Enter", ID_SETTINGS
         MENUITEM SEPARATOR
         MENUITEM "Initialize application", ID_ERASESETTINGS
@@ -693,7 +693,7 @@ FONT 9, "Tahoma"
 }
 
 IDD_NOTES DIALOG 0, 0, 185, 185
-CAPTION "Header and remarks"
+CAPTION "Header and remarks (Ctrl+Enter)"
 STYLE DS_CENTER | DS_MODALFRAME | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
 FONT 9, "Courier New"
 {
