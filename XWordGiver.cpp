@@ -4684,7 +4684,10 @@ void __fastcall XgDrawXWord_SkeletonView(XG_Board& xw, HDC hdc, LPSIZE psiz, boo
             }
 
             if (xg_bShowDoubleFrameLetters) {
-                StringCbPrintf(sz, sizeof(sz), L"%c", L'A' + nMarked);
+                if (nMarked < (INT)xg_strDoubleFrameLetters.size())
+                    StringCbPrintf(sz, sizeof(sz), L"%c", xg_strDoubleFrameLetters[nMarked]);
+                else
+                    StringCbPrintf(sz, sizeof(sz), L"%c", ZEN_BLACK);
 
                 // 二重マスの右下端の文字の背景を塗りつぶす。
                 RECT rcText;

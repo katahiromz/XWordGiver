@@ -102,6 +102,7 @@
 - 2022.02.XX ver.4.8.7
     - Added tags to English dictionaries.
     - Sorted and uniqued the candidates.
+    - Fixed drawing of double-frame cell letters on Skeleton View.
 
 # 開発履歴 (Japanese)
 
@@ -517,3 +518,4 @@
 - 2022年02月XX日 ver.4.8.7
     - 英語辞書をタグ付け。
     - 候補群をソートして一意化。
+    - スケルトンビューの二重マス文字描画を修正。
