@@ -3,6 +3,7 @@
 Copyright (c) 2013-2022 Katayama Hirofumi MZ
 Copyright (c) 2013-2019 Niels Lohmann
 Copyright (c) 2021-2022 スフィンクス.
+Copyright (c) 2021-2022 catworks99.
 Copyright (c) 2022 yukokumar.
 Copyright (c) 2022 Hiroshima.cw.
 
