@@ -112,6 +112,20 @@ public:
         XgGetCandidatesAddBlack<true>(cands2, pattern, nSkip, left_black, right_black);
         cands.insert(cands.end(), cands2.begin(), cands2.end());
 
+        // 正規化して前後の空白を取り除く。
+        for (auto& cand : cands) {
+            cand = XgNormalizeString(cand);
+            xg_str_trim(cand);
+        }
+
+        // ソートして一意化。短い方を優先する。
+        std::sort(cands.begin(), cands.end(), [](const std::wstring& x, const std::wstring& y){
+            if (x.size() == y.size())
+                return x < y;
+            return x.size() < y.size();
+        });
+        cands.erase(std::unique(cands.begin(), cands.end()), cands.end());
+
         // 仮に適用して、正当かどうか確かめ、正当なものだけを
         // 最終的な候補とする。
         XG_CandsWnd::xg_vecCandidates.clear();
@@ -499,6 +513,8 @@ public:
 
             int m = 0;
             for (int k = lo; k <= hi; ++k, ++m) {
+                if (cand.size() <= size_t(m))
+                    break;
                 xword.SetAt(k, xg_jCandPos, cand[m]);
             }
         }
@@ -515,6 +531,8 @@ public:
 
             int m = 0;
             for (int k = lo; k <= hi; ++k, ++m) {
+                if (cand.size() <= size_t(m))
+                    break;
                 xword.SetAt(xg_iCandPos, k, cand[m]);
             }
         }

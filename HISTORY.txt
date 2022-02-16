@@ -101,6 +101,7 @@
     - Fixed a problem where Ctrl+/ could not switch the input direction.
 - 2022.02.XX ver.4.8.7
     - Added tags to English dictionaries.
+    - Sorted and uniqued the candidates.
 
 # 開発履歴 (Japanese)
 
@@ -515,3 +516,4 @@
     - 「Ctrl+/」でタテ入力・ヨコ入力を切り替えられなかったのを修正。
 - 2022年02月XX日 ver.4.8.7
     - 英語辞書をタグ付け。
+    - 候補群をソートして一意化。
