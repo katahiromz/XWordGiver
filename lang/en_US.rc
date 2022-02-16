@@ -534,6 +534,7 @@ LANGUAGE LANG_ENGLISH, SUBLANG_DEFAULT
     {
         MENUITEM "Import...", psh13
         MENUITEM "Export...", psh14
+        MENUITEM SEPARATOR
         MENUITEM "Reset", psh15
     }
 }

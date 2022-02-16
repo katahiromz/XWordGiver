@@ -537,6 +537,7 @@ LANGUAGE LANG_JAPANESE, SUBLANG_DEFAULT
     {
         MENUITEM "インポート...", psh13
         MENUITEM "エクスポート...", psh14
+        MENUITEM SEPARATOR
         MENUITEM "リセット", psh15
     }
 }
