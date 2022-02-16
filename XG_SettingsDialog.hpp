@@ -62,9 +62,9 @@ public:
         ::SetDlgItemTextW(hwnd, edt2, xg_szSmallFont);
         ::SetDlgItemTextW(hwnd, edt3, xg_szUIFont);
 
-        // ツールバーを表示するか？
+        // スケルトンビューか？
         ::CheckDlgButton(hwnd, chx1,
-            (xg_bShowToolBar ? BST_CHECKED : BST_UNCHECKED));
+            ((xg_nViewMode == XG_VIEW_SKELETON) ? BST_CHECKED : BST_UNCHECKED));
         // 太枠をつけるか？
         ::CheckDlgButton(hwnd, chx2,
             (xg_bAddThickFrame ? BST_CHECKED : BST_UNCHECKED));
@@ -251,23 +251,22 @@ public:
             }
         }
 
-        // ツールバーを表示するか？
-        xg_bShowToolBar = (::IsDlgButtonChecked(hwnd, chx1) == BST_CHECKED);
-        if (xg_bShowToolBar)
-            ::ShowWindow(xg_hToolBar, SW_SHOWNOACTIVATE);
+        // スケルトンビューか？
+        if (::IsDlgButtonChecked(hwnd, chx1) == BST_CHECKED)
+            xg_nViewMode = XG_VIEW_SKELETON;
         else
-            ::ShowWindow(xg_hToolBar, SW_HIDE);
+            xg_nViewMode = XG_VIEW_NORMAL;
 
         // 太枠をつけるか？
         xg_bAddThickFrame = (::IsDlgButtonChecked(hwnd, chx2) == BST_CHECKED);
+
+        // 二重マスに枠をつけるか？
+        xg_bDrawFrameForMarkedCell = (::IsDlgButtonChecked(hwnd, chx3) == BST_CHECKED);
 
         // 色を設定する。
         xg_rgbWhiteCellColor = s_rgbColors[0];
         xg_rgbBlackCellColor = s_rgbColors[1];
         xg_rgbMarkedCellColor = s_rgbColors[2];
-
-        // 二重マスに枠をつけるか？
-        xg_bDrawFrameForMarkedCell = (::IsDlgButtonChecked(hwnd, chx3) == BST_CHECKED);
 
         // レイアウトを調整する。
         ::PostMessageW(xg_hMainWnd, WM_SIZE, 0, 0);
@@ -354,6 +353,14 @@ public:
 
         GetPrivateProfileStringW(L"Looks", L"UIFont", L"", szText, _countof(szText), pszFileName);
         SetDlgItemTextW(hwnd, edt3, szText);
+
+        // スケルトンビューか？
+        if (XgIsUserJapanese())
+            GetPrivateProfileStringW(L"Looks", L"SkeletonView", L"0", szText, _countof(szText), pszFileName);
+        else
+            GetPrivateProfileStringW(L"Looks", L"SkeletonView", L"1", szText, _countof(szText), pszFileName);
+        BOOL bSkeltonView = _wtoi(szText);
+        ::CheckDlgButton(hwnd, chx1, (bSkeltonView ? BST_CHECKED : BST_UNCHECKED));
 
         // 太枠をつけるか？
         GetPrivateProfileStringW(L"Looks", L"AddThickFrame", L"1", szText, _countof(szText), pszFileName);
@@ -477,18 +484,22 @@ public:
             WritePrivateProfileStringW(L"Looks", L"BlockImage", L"", pszFileName);
         }
 
+        // スケルトンビューか？
+        BOOL bSkeltonView = (::IsDlgButtonChecked(hwnd, chx1) == BST_CHECKED);
+        WritePrivateProfileStringW(L"Looks", L"SkeletonView", DoIntToStr(bSkeltonView), pszFileName);
+
         // 太枠をつけるか？
         BOOL bAddThickFrame = (::IsDlgButtonChecked(hwnd, chx2) == BST_CHECKED);
         WritePrivateProfileStringW(L"Looks", L"AddThickFrame", DoIntToStr(bAddThickFrame), pszFileName);
+
+        // 二重マスに枠をつけるか？
+        BOOL bDrawFrameForMarkedCell = (::IsDlgButtonChecked(hwnd, chx3) == BST_CHECKED);
+        WritePrivateProfileStringW(L"Looks", L"DrawFrameForMarkedCell", DoIntToStr(bDrawFrameForMarkedCell), pszFileName);
 
         // 色を設定する。
         WritePrivateProfileStringW(L"Looks", L"WhiteCellColor", DoIntToStr(s_rgbColors[0]), pszFileName);
         WritePrivateProfileStringW(L"Looks", L"BlackCellColor", DoIntToStr(s_rgbColors[1]), pszFileName);
         WritePrivateProfileStringW(L"Looks", L"MarkedCellColor", DoIntToStr(s_rgbColors[2]), pszFileName);
-
-        // 二重マスに枠をつけるか？
-        BOOL bDrawFrameForMarkedCell = (::IsDlgButtonChecked(hwnd, chx3) == BST_CHECKED);
-        WritePrivateProfileStringW(L"Looks", L"DrawFrameForMarkedCell", DoIntToStr(bDrawFrameForMarkedCell), pszFileName);
 
         // 二重マス文字。
         WCHAR szText[MAX_PATH];
@@ -500,7 +511,7 @@ public:
     }
 
     // 設定のインポート。
-    BOOL OnImport(HWND hwnd)
+    BOOL OnImportLooks(HWND hwnd)
     {
         WCHAR szFile[MAX_PATH] = L"";
         OPENFILENAMEW ofn = { sizeof(ofn), hwnd };
@@ -519,7 +530,7 @@ public:
     }
 
     // 設定のエクスポート。
-    BOOL OnExport(HWND hwnd)
+    BOOL OnExportLooks(HWND hwnd)
     {
         WCHAR szFile[MAX_PATH] = L"";
         OPENFILENAMEW ofn = { sizeof(ofn), hwnd };
@@ -534,6 +545,56 @@ public:
             return DoExportLooks(hwnd, szFile);
         }
         return FALSE;
+    }
+
+    // 設定のリセット。
+    void OnResetLooks(HWND hwnd)
+    {
+        // 色。
+        s_rgbColors[0] = _wtoi(L"16777215");
+        InvalidateRect(GetDlgItem(hwnd, psh7), NULL, TRUE);
+
+        s_rgbColors[1] = _wtoi(L"3355443");
+        InvalidateRect(GetDlgItem(hwnd, psh8), NULL, TRUE);
+
+        s_rgbColors[2] = _wtoi(L"16777215");
+        InvalidateRect(GetDlgItem(hwnd, psh9), NULL, TRUE);
+
+        // フォント。
+        SetDlgItemTextW(hwnd, edt1, L"");
+        SetDlgItemTextW(hwnd, edt2, L"");
+        SetDlgItemTextW(hwnd, edt3, L"");
+
+        // スケルトンビューか？
+        BOOL bSkeltonView = !XgIsUserJapanese();
+        ::CheckDlgButton(hwnd, chx1, (bSkeltonView ? BST_CHECKED : BST_UNCHECKED));
+
+        // 太枠をつけるか？
+        BOOL bAddThickFrame = _wtoi(L"1");
+        ::CheckDlgButton(hwnd, chx2, (bAddThickFrame ? BST_CHECKED : BST_UNCHECKED));
+
+        // 二重マスに枠をつけるか？
+        BOOL bDrawFrameForMarkedCell = _wtoi(L"1");
+        ::CheckDlgButton(hwnd, chx3, (bDrawFrameForMarkedCell ? BST_CHECKED : BST_UNCHECKED));
+
+        // 文字の大きさ。
+        BOOL nCellCharPercents = DEF_CELL_CHAR_SIZE;
+        ::SetDlgItemInt(hwnd, edt4, nCellCharPercents, FALSE);
+
+        BOOL nSmallCharPercents = DEF_SMALL_CHAR_SIZE;
+        ::SetDlgItemInt(hwnd, edt5, nSmallCharPercents, FALSE);
+
+        // 黒マス画像。
+        HWND hCmb1 = GetDlgItem(hwnd, cmb1);
+        // 黒マス画像なし。
+        ComboBox_SetText(hCmb1, XgLoadStringDx1(IDS_NONE));
+        ComboBox_SetCurSel(hCmb1, ComboBox_FindStringExact(hCmb1, -1, XgLoadStringDx1(IDS_NONE)));
+
+        // 二重マス文字。
+        HWND hCmb2 = GetDlgItem(hwnd, cmb2);
+        ComboBox_SetText(hCmb2, XgLoadStringDx1(IDS_DBLFRAME_LETTERS_1));
+
+        UpdateBlockPreview(hwnd);
     }
 
     // UIフォントの論理オブジェクトを設定する。
@@ -802,7 +863,7 @@ public:
                                               pt.x, pt.y, hwnd, &params);
                     if (id)
                     {
-                        assert(id == psh13 || id == psh14);
+                        assert(id == psh13 || id == psh14 || id == psh15);
                         ::PostMessageW(hwnd, WM_COMMAND, id, 0);
                     }
                     ::DestroyMenu(hMenu);
@@ -810,11 +871,15 @@ public:
                 break;
 
             case psh13:
-                OnImport(hwnd);
+                OnImportLooks(hwnd);
                 break;
 
             case psh14:
-                OnExport(hwnd);
+                OnExportLooks(hwnd);
+                break;
+
+            case psh15:
+                OnResetLooks(hwnd);
                 break;
 
             case cmb1:

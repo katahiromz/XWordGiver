@@ -534,6 +534,7 @@ LANGUAGE LANG_ENGLISH, SUBLANG_DEFAULT
     {
         MENUITEM "Import...", psh13
         MENUITEM "Export...", psh14
+        MENUITEM "Reset", psh15
     }
 }
 
@@ -644,7 +645,7 @@ FONT 9, "Tahoma"
     EDITTEXT edt3, 70, 44, 85, 14, ES_READONLY
     PUSHBUTTON "Chan&ge...", psh5, 160, 44, 55, 14
     PUSHBUTTON "Rese&t", psh6, 220, 44, 50, 14
-    AUTOCHECKBOX "Show Tool&bar", chx1, 10, 70, 85, 14
+    AUTOCHECKBOX "S&keleton View", chx1, 10, 70, 85, 14
     AUTOCHECKBOX "Th&ick border", chx2, 105, 70, 70, 14
     AUTOCHECKBOX "Dr&aw double-frame", chx3, 180, 70, 90, 14
     RTEXT "Space color:", -1, 10, 96, 45, 12
