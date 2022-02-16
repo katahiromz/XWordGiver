@@ -79,12 +79,8 @@ void __fastcall xg_str_trim(std::wstring& str)
     static const LPCWSTR s_white_space = L" \t\r\n\x3000";
     const size_t i = str.find_first_not_of(s_white_space);
     const size_t j = str.find_last_not_of(s_white_space);
-    if (i != std::wstring::npos && j != std::wstring::npos)
+    if (i != std::wstring::npos)
         str = str.substr(i, j - i + 1);
-    else if (i != std::wstring::npos)
-        str = str.substr(i);
-    else if (j != std::wstring::npos)
-        str = str.substr(0, j);
     else
         str.clear();
 }

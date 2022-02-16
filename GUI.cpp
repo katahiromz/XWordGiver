@@ -6635,6 +6635,50 @@ LRESULT CALLBACK XgCtrlAMessageProc(INT nCode, WPARAM wParam, LPARAM lParam)
 }
 
 //////////////////////////////////////////////////////////////////////////////
+// テスト
+
+void XgDoTests(void)
+{
+#ifndef NDEBUG
+    std::wstring str;
+
+    // xg_str_trim
+    str = L"  \t";
+    xg_str_trim(str);
+    assert(str == L"");
+    str = L"ABC";
+    xg_str_trim(str);
+    assert(str == L"ABC");
+    str = L" ABC";
+    xg_str_trim(str);
+    assert(str == L"ABC");
+    str = L"ABC ";
+    xg_str_trim(str);
+    assert(str == L"ABC");
+    str = L"  ABC  ";
+    xg_str_trim(str);
+    assert(str == L"ABC");
+
+    // xg_str_trim_right
+    str = L"  \t";
+    xg_str_trim_right(str);
+    assert(str == L"");
+    str = L"ABC";
+    xg_str_trim_right(str);
+    assert(str == L"ABC");
+    str = L" ABC";
+    xg_str_trim_right(str);
+    assert(str == L" ABC");
+    str = L"ABC ";
+    xg_str_trim_right(str);
+    assert(str == L"ABC");
+    str = L"  ABC  ";
+    xg_str_trim_right(str);
+    assert(str == L"  ABC");
+#endif
+}
+
+//////////////////////////////////////////////////////////////////////////////
 
 // Windowsアプリのメイン関数。
 extern "C"
@@ -6644,6 +6688,9 @@ int WINAPI WinMain(
     LPSTR /*pszCmdLine*/,
     int nCmdShow)
 {
+    // テストをする。
+    XgDoTests();
+
     // アプリのインスタンスを保存する。
     xg_hInstance = hInstance;
 
