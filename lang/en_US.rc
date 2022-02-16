@@ -1558,6 +1558,8 @@ STRINGTABLE
     IDS_JSONSYNTAXERROR, "JSON syntax error happened."
     IDS_GREEK, "Greek"
     IDS_ANYINPUT, "Any Input"
+    IDS_IMPORTLOOKSFILE, "Open LOOKS file"
+    IDS_EXPORTLOOKSFILE, "Save LOOKS file"
     IDS_TT_NEW, "New crossword"
     IDS_TT_GENERATE, "Generate crossword"
     IDS_TT_OPEN, "Open crossword"

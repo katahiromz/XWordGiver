@@ -518,7 +518,7 @@ public:
         ofn.lpstrFilter = L"LOOKS File (*.looks)\0*.looks\0";
         ofn.lpstrFile = szFile;
         ofn.nMaxFile = _countof(szFile);
-        ofn.lpstrTitle = L"Import LOOKS File";
+        ofn.lpstrTitle = XgLoadStringDx1(IDS_IMPORTLOOKSFILE);
         ofn.Flags = OFN_EXPLORER | OFN_ENABLESIZING | OFN_FILEMUSTEXIST | OFN_PATHMUSTEXIST;
                     OFN_HIDEREADONLY;
         ofn.lpstrDefExt = L"LOOKS";
@@ -537,7 +537,7 @@ public:
         ofn.lpstrFilter = L"LOOKS File (*.looks)\0*.looks\0";
         ofn.lpstrFile = szFile;
         ofn.nMaxFile = _countof(szFile);
-        ofn.lpstrTitle = L"Export LOOKS File";
+        ofn.lpstrTitle = XgLoadStringDx1(IDS_EXPORTLOOKSFILE);
         ofn.Flags = OFN_EXPLORER | OFN_ENABLESIZING | OFN_PATHMUSTEXIST | OFN_OVERWRITEPROMPT;
         ofn.lpstrDefExt = L"LOOKS";
         if (::GetSaveFileNameW(&ofn))
