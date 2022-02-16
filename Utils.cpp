@@ -95,7 +95,7 @@ void __fastcall xg_str_trim_right(std::wstring& str)
     static const LPCWSTR s_white_space = L" \t\r\n\x3000";
     const size_t j = str.find_last_not_of(s_white_space);
     if (j != std::wstring::npos)
-        str = str.substr(0, j);
+        str = str.substr(0, j + 1);
     else
         str.clear();
 }
