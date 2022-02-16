@@ -104,6 +104,7 @@
     - Sorted and uniqued the candidates.
     - Fixed drawing of double-frame cell letters on Skeleton View.
     - Able to import/export settings (The LOOKS file).
+    - Modified "File" menu a little.
 
 # 開発履歴 (Japanese)
 
@@ -521,3 +522,4 @@
     - 候補群をソートして一意化。
     - スケルトンビューの二重マス文字描画を修正。
     - 設定のインポート・エクスポートが可能に(LOOKSファイル)。
+    - 「ファイル」メニューを少し改造。

@@ -30,10 +30,9 @@ LANGUAGE LANG_JAPANESE, SUBLANG_DEFAULT
         MENUITEM "問題と解答を印刷(&P)\tCtrl+P", ID_PRINTANSWER
         MENUITEM SEPARATOR
         MENUITEM "ヘッダーと備考欄(&H)...", ID_HEADERANDNOTES
+        MENUITEM "見た目の設定(&C)...\tAlt+Enter", ID_SETTINGS
         MENUITEM SEPARATOR
-        MENUITEM "設定(&T)\tAlt+Enter", ID_SETTINGS
-        MENUITEM "設定の消去(&C)", ID_ERASESETTINGS
-        MENUITEM SEPARATOR
+        MENUITEM "アプリの初期化", ID_ERASESETTINGS
         MENUITEM "終了(&X)\tAlt+F4", ID_EXIT
     }
     POPUP "編集(&E)"
@@ -633,7 +632,7 @@ FONT 9, "MS UI Gothic"
 }
 
 IDD_CONFIG DIALOG 0, 0, 274, 250
-CAPTION "クロスワード ギバーの設定"
+CAPTION "見た目の設定 (Alt+Enter)"
 STYLE DS_CENTER | DS_MODALFRAME | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
 FONT 9, "MS UI Gothic"
 {

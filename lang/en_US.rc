@@ -30,10 +30,9 @@ LANGUAGE LANG_ENGLISH, SUBLANG_DEFAULT
         MENUITEM "&Print crossword answer\tCtrl+P", ID_PRINTANSWER
         MENUITEM SEPARATOR
         MENUITEM "&Header and remarks...", ID_HEADERANDNOTES
+        MENUITEM "Appearan&ce...\tAlt+Enter", ID_SETTINGS
         MENUITEM SEPARATOR
-        MENUITEM "Settings\tAlt+Enter", ID_SETTINGS
-        MENUITEM "Erase the settings", ID_ERASESETTINGS
-        MENUITEM SEPARATOR
+        MENUITEM "Initialize application", ID_ERASESETTINGS
         MENUITEM "E&xit\tAlt+F4", ID_EXIT
     }
     POPUP "&Edit"
@@ -630,7 +629,7 @@ FONT 9, "Tahoma"
 }
 
 IDD_CONFIG DIALOG 0, 0, 274, 250
-CAPTION "Settings"
+CAPTION "Appearance (Alt+Enter)"
 STYLE DS_CENTER | DS_MODALFRAME | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
 FONT 9, "Tahoma"
 {
