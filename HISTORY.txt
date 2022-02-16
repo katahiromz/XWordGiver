@@ -105,6 +105,7 @@
     - Fixed drawing of double-frame cell letters on Skeleton View.
     - Able to import/export settings (The LOOKS file).
     - Modified "File" menu a little.
+    - Fixed the color of small labels.
 
 # 開発履歴 (Japanese)
 
@@ -523,3 +524,4 @@
     - スケルトンビューの二重マス文字描画を修正。
     - 設定のインポート・エクスポートが可能に(LOOKSファイル)。
     - 「ファイル」メニューを少し改造。
+    - 小さい文字の色を修正。

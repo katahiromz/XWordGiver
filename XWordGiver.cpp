@@ -4305,6 +4305,7 @@ void __fastcall XgDrawXWord_NormalView(XG_Board& xw, HDC hdc, LPSIZE psiz, bool 
 
                 // 二重マスの右下端の文字を描く。
                 ::SetBkMode(hdc, TRANSPARENT);
+                ::SetTextColor(hdc, xg_rgbBlackCellColor);
                 ::DrawTextW(hdc, sz, -1, &rcText, DT_CENTER | DT_SINGLELINE | DT_BOTTOM);
             }
         }
@@ -4337,6 +4338,7 @@ void __fastcall XgDrawXWord_NormalView(XG_Board& xw, HDC hdc, LPSIZE psiz, bool 
                     static_cast<int>(xg_nMargin + (j + 1) * nCellSize), 
                     static_cast<int>(xg_nMargin + (i + 1) * nCellSize));
                 ::OffsetRect(&rc, 2, 1);
+                ::SetTextColor(hdc, xg_rgbBlackCellColor);
                 ::DrawTextW(hdc, sz, -1, &rc, DT_LEFT | DT_SINGLELINE | DT_TOP);
             }
         }
@@ -4367,6 +4369,7 @@ void __fastcall XgDrawXWord_NormalView(XG_Board& xw, HDC hdc, LPSIZE psiz, bool 
                     static_cast<int>(xg_nMargin + (j + 1) * nCellSize), 
                     static_cast<int>(xg_nMargin + (i + 1) * nCellSize));
                 ::OffsetRect(&rc, 2, 1);
+                ::SetTextColor(hdc, xg_rgbBlackCellColor);
                 ::DrawTextW(hdc, sz, -1, &rc, DT_LEFT | DT_SINGLELINE | DT_TOP);
             }
         }
@@ -4702,6 +4705,7 @@ void __fastcall XgDrawXWord_SkeletonView(XG_Board& xw, HDC hdc, LPSIZE psiz, boo
 
                 // 二重マスの右下端の文字を描く。
                 ::SetBkMode(hdc, TRANSPARENT);
+                ::SetTextColor(hdc, xg_rgbBlackCellColor);
                 ::DrawTextW(hdc, sz, -1, &rcText, DT_CENTER | DT_SINGLELINE | DT_BOTTOM);
             }
         }
@@ -4734,6 +4738,7 @@ void __fastcall XgDrawXWord_SkeletonView(XG_Board& xw, HDC hdc, LPSIZE psiz, boo
                     static_cast<int>(xg_nMargin + (j + 1) * nCellSize), 
                     static_cast<int>(xg_nMargin + (i + 1) * nCellSize));
                 ::OffsetRect(&rc, 2, 1);
+                ::SetTextColor(hdc, xg_rgbBlackCellColor);
                 ::DrawTextW(hdc, sz, -1, &rc, DT_LEFT | DT_SINGLELINE | DT_TOP);
             }
         }
@@ -4764,6 +4769,7 @@ void __fastcall XgDrawXWord_SkeletonView(XG_Board& xw, HDC hdc, LPSIZE psiz, boo
                     static_cast<int>(xg_nMargin + (j + 1) * nCellSize), 
                     static_cast<int>(xg_nMargin + (i + 1) * nCellSize));
                 ::OffsetRect(&rc, 2, 1);
+                ::SetTextColor(hdc, xg_rgbBlackCellColor);
                 ::DrawTextW(hdc, sz, -1, &rc, DT_LEFT | DT_SINGLELINE | DT_TOP);
             }
         }
