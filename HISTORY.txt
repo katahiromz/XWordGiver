@@ -103,6 +103,7 @@
     - Added tags to English dictionaries.
     - Sorted and uniqued the candidates.
     - Fixed drawing of double-frame cell letters on Skeleton View.
+    - Able to import/export settings (The LOOKS file).
 
 # 開発履歴 (Japanese)
 
@@ -519,3 +520,4 @@
     - 英語辞書をタグ付け。
     - 候補群をソートして一意化。
     - スケルトンビューの二重マス文字描画を修正。
+    - 設定のインポート・エクスポートが可能に(LOOKSファイル)。

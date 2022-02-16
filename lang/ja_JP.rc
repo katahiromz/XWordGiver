@@ -531,6 +531,15 @@ LANGUAGE LANG_JAPANESE, SUBLANG_DEFAULT
     }
 }
 
+3 MENU
+{
+    POPUP "Import/Export"
+    {
+        MENUITEM "インポート...", psh13
+        MENUITEM "エクスポート...", psh14
+    }
+}
+
 //////////////////////////////////////////////////////////////////////////////
 // RT_DIALOG
 
@@ -642,11 +651,11 @@ FONT 9, "MS UI Gothic"
     AUTOCHECKBOX "太枠をつける(&I)", chx2, 105, 70, 70, 14
     AUTOCHECKBOX "二重マスの枠を描く(&A)", chx3, 180, 70, 90, 14
     RTEXT "白マスの色(&1):", -1, 10, 96, 45, 12
-    CONTROL "", psh7, "BUTTON", BS_OWNERDRAW | WS_TABSTOP, 60, 94, 15, 15
+    PUSHBUTTON "", psh7, 60, 94, 15, 15, BS_OWNERDRAW
     RTEXT "黒マスの色(&2):", -1, 90, 96, 45, 12
-    CONTROL "", psh8, "BUTTON", BS_OWNERDRAW | WS_TABSTOP, 140, 94, 15, 15
+    PUSHBUTTON "", psh8, 140, 94, 15, 15, BS_OWNERDRAW
     RTEXT "二重マスの色(&3):", -1, 172, 96, 55, 12
-    CONTROL "", psh9, "BUTTON", BS_OWNERDRAW | WS_TABSTOP, 232, 94, 15, 15
+    PUSHBUTTON "", psh9, 232, 94, 15, 15, BS_OWNERDRAW
     LTEXT "セル文字の大きさ(&P):", -1, 5, 124, 65, 12
     EDITTEXT edt4, 72, 122, 33, 14, ES_NUMBER | ES_AUTOHSCROLL
     CONTROL "", scr1, "msctls_updown32", UDS_ARROWKEYS | UDS_AUTOBUDDY | UDS_ALIGNRIGHT | UDS_SETBUDDYINT, 94, 122, 12, 20
@@ -666,6 +675,7 @@ FONT 9, "MS UI Gothic"
     COMBOBOX cmb2, 90, 210, 180, 300, CBS_HASSTRINGS | CBS_AUTOHSCROLL | CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP
     DEFPUSHBUTTON "OK", IDOK, 145, 230, 60, 14
     PUSHBUTTON "キャンセル", IDCANCEL, 210, 230, 60, 14
+    PUSHBUTTON "インポート/エクスポート(&X)...", psh12, 5, 230, 100, 15
 }
 
 IDD_SEQSOLVE DIALOG 0, 0, 310, 80

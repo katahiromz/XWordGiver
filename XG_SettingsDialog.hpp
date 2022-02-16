@@ -286,6 +286,256 @@ public:
         XgUpdateImage(xg_hMainWnd);
     }
 
+    LPCWSTR DoIntToStr(INT nValue)
+    {
+        static WCHAR s_szText[64];
+        StringCbPrintfW(s_szText, sizeof(s_szText), L"%d", nValue);
+        return s_szText;
+    }
+
+    BOOL DoFileToData(LPCWSTR pszFileName, std::vector<BYTE>& data)
+    {
+        if (FILE *fp = _wfopen(pszFileName, L"rb"))
+        {
+            BYTE buff[512];
+            for (;;)
+            {
+                size_t count = fread(buff, 1, sizeof(buff), fp);
+                if (!count)
+                    break;
+                data.insert(data.end(), &buff[0], &buff[count]);
+            }
+            fclose(fp);
+
+            return !data.empty();
+        }
+        return FALSE;
+    }
+
+    std::wstring DoDataToStr(const std::vector<BYTE>& data)
+    {
+        std::wstring ret;
+        WCHAR sz[16];
+        for (auto& byte : data)
+        {
+            StringCbPrintfW(sz, sizeof(sz), L"%02X", byte);
+            ret += sz;
+        }
+        return ret;
+    }
+
+    // LOOKSファイルのインポート。
+    BOOL DoImportLooks(HWND hwnd, LPCWSTR pszFileName)
+    {
+        if (!PathFileExistsW(pszFileName))
+            return FALSE;
+
+        WCHAR szText[1024], szText2[64];
+
+        // 色。
+        GetPrivateProfileStringW(L"Looks", L"WhiteCellColor", L"16777215", szText, _countof(szText), pszFileName);
+        s_rgbColors[0] = _wtoi(szText);
+        InvalidateRect(GetDlgItem(hwnd, psh7), NULL, TRUE);
+
+        GetPrivateProfileStringW(L"Looks", L"BlackCellColor", L"3355443", szText, _countof(szText), pszFileName);
+        s_rgbColors[1] = _wtoi(szText);
+        InvalidateRect(GetDlgItem(hwnd, psh8), NULL, TRUE);
+
+        GetPrivateProfileStringW(L"Looks", L"MarkedCellColor", L"16777215", szText, _countof(szText), pszFileName);
+        s_rgbColors[2] = _wtoi(szText);
+        InvalidateRect(GetDlgItem(hwnd, psh9), NULL, TRUE);
+
+        // フォント。
+        GetPrivateProfileStringW(L"Looks", L"CellFont", L"", szText, _countof(szText), pszFileName);
+        SetDlgItemTextW(hwnd, edt1, szText);
+
+        GetPrivateProfileStringW(L"Looks", L"SmallFont", L"", szText, _countof(szText), pszFileName);
+        SetDlgItemTextW(hwnd, edt2, szText);
+
+        GetPrivateProfileStringW(L"Looks", L"UIFont", L"", szText, _countof(szText), pszFileName);
+        SetDlgItemTextW(hwnd, edt3, szText);
+
+        // 太枠をつけるか？
+        GetPrivateProfileStringW(L"Looks", L"AddThickFrame", L"1", szText, _countof(szText), pszFileName);
+        BOOL bAddThickFrame = _wtoi(szText);
+        ::CheckDlgButton(hwnd, chx2, (bAddThickFrame ? BST_CHECKED : BST_UNCHECKED));
+
+        // 二重マスに枠をつけるか？
+        GetPrivateProfileStringW(L"Looks", L"DrawFrameForMarkedCell", L"1", szText, _countof(szText), pszFileName);
+        BOOL bDrawFrameForMarkedCell = _wtoi(szText);
+        ::CheckDlgButton(hwnd, chx3, (bDrawFrameForMarkedCell ? BST_CHECKED : BST_UNCHECKED));
+
+        // 文字の大きさ。
+        StringCbPrintfW(szText2, sizeof(szText2), L"%d", DEF_CELL_CHAR_SIZE);
+        GetPrivateProfileStringW(L"Looks", L"CellCharPercents", szText2, szText, _countof(szText), pszFileName);
+        BOOL nCellCharPercents = _wtoi(szText);
+        ::SetDlgItemInt(hwnd, edt4, nCellCharPercents, FALSE);
+
+        StringCbPrintfW(szText2, sizeof(szText2), L"%d", DEF_SMALL_CHAR_SIZE);
+        GetPrivateProfileStringW(L"Looks", L"SmallCharPercents", szText2, szText, _countof(szText), pszFileName);
+        BOOL nSmallCharPercents = _wtoi(szText);
+        ::SetDlgItemInt(hwnd, edt5, nSmallCharPercents, FALSE);
+
+        // 黒マス画像。
+        HWND hCmb1 = GetDlgItem(hwnd, cmb1);
+        GetPrivateProfileStringW(L"Looks", L"BlockImage", L"", szText, _countof(szText), pszFileName);
+        if (!szText[0])
+        {
+            // 黒マス画像なし。
+            ComboBox_SetText(hCmb1, XgLoadStringDx1(IDS_NONE));
+            ComboBox_SetCurSel(hCmb1, ComboBox_FindStringExact(hCmb1, -1, XgLoadStringDx1(IDS_NONE)));
+        }
+        else
+        {
+            // 黒マス画像あり。
+            LPCWSTR psz = szText;
+            ComboBox_SetText(hCmb1, psz);
+            ComboBox_SetCurSel(hCmb1, ComboBox_FindStringExact(hCmb1, -1, psz));
+        }
+
+        // 二重マス文字。
+        HWND hCmb2 = GetDlgItem(hwnd, cmb2);
+        GetPrivateProfileStringW(L"Looks", L"DoubleFrameLetters", XgLoadStringDx1(IDS_DBLFRAME_LETTERS_1), szText, _countof(szText), pszFileName);
+        ComboBox_SetText(hCmb2, szText);
+
+        UpdateBlockPreview(hwnd);
+
+        return TRUE;
+    }
+
+    // LOOKSファイルのエクスポート。
+    BOOL DoExportLooks(HWND hwnd, LPCWSTR pszFileName)
+    {
+        INT nValue1, nValue2;
+        BOOL bTranslated;
+
+        // セルの文字の大きさ。
+        bTranslated = FALSE;
+        nValue1 = GetDlgItemInt(hwnd, edt4, &bTranslated, FALSE);
+        if (bTranslated && 0 <= nValue1 && nValue1 <= 100)
+        {
+            ;
+        }
+        else
+        {
+            // エラー。
+            HWND hEdt4 = GetDlgItem(hwnd, edt4);
+            Edit_SetSel(hEdt4, 0, -1);
+            SetFocus(hEdt4);
+            XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_INVALIDVALUE), NULL, MB_ICONERROR);
+            return FALSE;
+        }
+
+        // 小さい文字の大きさ。
+        bTranslated = FALSE;
+        nValue2 = GetDlgItemInt(hwnd, edt5, &bTranslated, FALSE);
+        if (bTranslated && 0 <= nValue2 && nValue2 <= 100)
+        {
+            ;
+        }
+        else
+        {
+            // エラー。
+            HWND hEdt5 = GetDlgItem(hwnd, edt5);
+            Edit_SetSel(hEdt5, 0, -1);
+            SetFocus(hEdt5);
+            XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_INVALIDVALUE), NULL, MB_ICONERROR);
+            return FALSE;
+        }
+
+        // 文字の大きさの設定。
+        WritePrivateProfileStringW(L"Looks", L"CellCharPercents", DoIntToStr(nValue1), pszFileName);
+        WritePrivateProfileStringW(L"Looks", L"SmallCharPercents", DoIntToStr(nValue2), pszFileName);
+
+        // フォント名を取得する。
+        WCHAR szName[LF_FACESIZE];
+
+        // セルフォント。
+        ::GetDlgItemTextW(hwnd, edt1, szName, ARRAYSIZE(szName));
+        WritePrivateProfileStringW(L"Looks", L"CellFont", szName, pszFileName);
+
+        // 小さい文字のフォント。
+        ::GetDlgItemTextW(hwnd, edt2, szName, ARRAYSIZE(szName));
+        WritePrivateProfileStringW(L"Looks", L"SmallFont", szName, pszFileName);
+
+        // UIフォント。
+        ::GetDlgItemTextW(hwnd, edt3, szName, ARRAYSIZE(szName));
+        WritePrivateProfileStringW(L"Looks", L"UIFont", szName, pszFileName);
+
+        // 黒マス画像の名前を取得。
+        HWND hCmb1 = GetDlgItem(hwnd, cmb1);
+        ComboBox_GetText(hCmb1, szName, ARRAYSIZE(szName));
+
+        // もし黒マス画像が指定されていれば
+        std::wstring str = szName;
+        if (str.size() && str != XgLoadStringDx1(IDS_NONE))
+        {
+            WritePrivateProfileStringW(L"Looks", L"BlockImage", szName, pszFileName);
+        }
+        else
+        {
+            WritePrivateProfileStringW(L"Looks", L"BlockImage", L"", pszFileName);
+        }
+
+        // 太枠をつけるか？
+        BOOL bAddThickFrame = (::IsDlgButtonChecked(hwnd, chx2) == BST_CHECKED);
+        WritePrivateProfileStringW(L"Looks", L"AddThickFrame", DoIntToStr(bAddThickFrame), pszFileName);
+
+        // 色を設定する。
+        WritePrivateProfileStringW(L"Looks", L"WhiteCellColor", DoIntToStr(s_rgbColors[0]), pszFileName);
+        WritePrivateProfileStringW(L"Looks", L"BlackCellColor", DoIntToStr(s_rgbColors[1]), pszFileName);
+        WritePrivateProfileStringW(L"Looks", L"MarkedCellColor", DoIntToStr(s_rgbColors[2]), pszFileName);
+
+        // 二重マスに枠をつけるか？
+        BOOL bDrawFrameForMarkedCell = (::IsDlgButtonChecked(hwnd, chx3) == BST_CHECKED);
+        WritePrivateProfileStringW(L"Looks", L"DrawFrameForMarkedCell", DoIntToStr(bDrawFrameForMarkedCell), pszFileName);
+
+        // 二重マス文字。
+        WCHAR szText[MAX_PATH];
+        ComboBox_GetText(GetDlgItem(hwnd, cmb2), szText, _countof(szText));
+        WritePrivateProfileStringW(L"Looks", L"DoubleFrameLetters", szText, pszFileName);
+
+        // フラッシュ！
+        return WritePrivateProfileStringW(NULL, NULL, NULL, pszFileName);
+    }
+
+    // 設定のインポート。
+    BOOL OnImport(HWND hwnd)
+    {
+        WCHAR szFile[MAX_PATH] = L"";
+        OPENFILENAMEW ofn = { sizeof(ofn), hwnd };
+        ofn.lpstrFilter = L"LOOKS File (*.looks)\0*.looks\0";
+        ofn.lpstrFile = szFile;
+        ofn.nMaxFile = _countof(szFile);
+        ofn.lpstrTitle = L"Import LOOKS File";
+        ofn.Flags = OFN_EXPLORER | OFN_ENABLESIZING | OFN_FILEMUSTEXIST | OFN_PATHMUSTEXIST;
+                    OFN_HIDEREADONLY;
+        ofn.lpstrDefExt = L"LOOKS";
+        if (::GetOpenFileNameW(&ofn))
+        {
+            return DoImportLooks(hwnd, szFile);
+        }
+        return FALSE;
+    }
+
+    // 設定のエクスポート。
+    BOOL OnExport(HWND hwnd)
+    {
+        WCHAR szFile[MAX_PATH] = L"";
+        OPENFILENAMEW ofn = { sizeof(ofn), hwnd };
+        ofn.lpstrFilter = L"LOOKS File (*.looks)\0*.looks\0";
+        ofn.lpstrFile = szFile;
+        ofn.nMaxFile = _countof(szFile);
+        ofn.lpstrTitle = L"Export LOOKS File";
+        ofn.Flags = OFN_EXPLORER | OFN_ENABLESIZING | OFN_PATHMUSTEXIST | OFN_OVERWRITEPROMPT;
+        ofn.lpstrDefExt = L"LOOKS";
+        if (::GetSaveFileNameW(&ofn))
+        {
+            return DoExportLooks(hwnd, szFile);
+        }
+        return FALSE;
+    }
+
     // UIフォントの論理オブジェクトを設定する。
     void SetUIFont(HWND hwnd, const LOGFONTW *plf)
     {
@@ -536,6 +786,35 @@ public:
 
             case psh11:
                 SetDlgItemInt(hwnd, edt5, DEF_SMALL_CHAR_SIZE, FALSE);
+                break;
+
+            case psh12:
+                {
+                    HWND hPsh12 = GetDlgItem(hwnd, psh12);
+                    RECT rc;
+                    GetWindowRect(hPsh12, &rc);
+                    POINT pt = { rc.left, (rc.top + rc.bottom) / 2 };
+                    HMENU hMenu = LoadMenuW(xg_hInstance, MAKEINTRESOURCEW(3));
+                    HMENU hSubMenu = GetSubMenu(hMenu, 0);
+                    SetForegroundWindow(hwnd);
+                    TPMPARAMS params = { sizeof(params), rc };
+                    INT id = TrackPopupMenuEx(hSubMenu, TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_VERTICAL | TPM_RETURNCMD,
+                                              pt.x, pt.y, hwnd, &params);
+                    if (id)
+                    {
+                        assert(id == psh13 || id == psh14);
+                        ::PostMessageW(hwnd, WM_COMMAND, id, 0);
+                    }
+                    ::DestroyMenu(hMenu);
+                }
+                break;
+
+            case psh13:
+                OnImport(hwnd);
+                break;
+
+            case psh14:
+                OnExport(hwnd);
                 break;
 
             case cmb1:
