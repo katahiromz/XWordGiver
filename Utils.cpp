@@ -733,9 +733,7 @@ BOOL XgLoadImage(LPCWSTR pszFileName, HBITMAP& hbm, HENHMETAFILE& hEMF)
         }
 
         FreeLibrary(hGdiPlus);
-
-        return hbm != NULL;
     }
 
-    return FALSE;
+    return hbm != NULL;
 }
