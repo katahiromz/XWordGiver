@@ -107,6 +107,7 @@
     - Modified "File" menu a little.
     - Fixed the color of small labels.
     - Able to edit "header and remarks" by Ctrl+Enter.
+    - The supported formats for block image have been expanded.
 
 # 開発履歴 (Japanese)
 
@@ -527,3 +528,4 @@
     - 「ファイル」メニューを少し改造。
     - 小さい文字の色を修正。
     - Ctrl+Enterでヘッダと備考欄を編集できるようにした。
+    - 黒マス画像の対応形式を拡大。

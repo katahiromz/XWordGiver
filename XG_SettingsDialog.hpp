@@ -87,28 +87,21 @@ public:
         // BLOCK\*.bmp
         GetModuleFileNameW(NULL, szPath, ARRAYSIZE(szPath));
         PathRemoveFileSpec(szPath);
-        PathAppend(szPath, L"BLOCK\\*.bmp");
+        PathAppend(szPath, L"BLOCK\\*.*");
         hFind = FindFirstFile(szPath, &find);
         if (hFind != INVALID_HANDLE_VALUE)
         {
             do
             {
-                items.push_back(find.cFileName);
-            } while (FindNextFile(hFind, &find));
-
-            FindClose(hFind);
-        }
-
-        // BLOCK\*.emf
-        GetModuleFileNameW(NULL, szPath, ARRAYSIZE(szPath));
-        PathRemoveFileSpec(szPath);
-        PathAppend(szPath, L"BLOCK\\*.emf");
-        hFind = FindFirstFile(szPath, &find);
-        if (hFind != INVALID_HANDLE_VALUE)
-        {
-            do
-            {
-                items.push_back(find.cFileName);
+                LPWSTR pchDotExt = PathFindExtensionW(find.cFileName);
+                if (lstrcmpiW(pchDotExt, L".bmp") == 0 ||
+                    lstrcmpiW(pchDotExt, L".emf") == 0 ||
+                    lstrcmpiW(pchDotExt, L".png") == 0 ||
+                    lstrcmpiW(pchDotExt, L".gif") == 0 ||
+                    lstrcmpiW(pchDotExt, L".jpg") == 0)
+                {
+                    items.push_back(find.cFileName);
+                }
             } while (FindNextFile(hFind, &find));
 
             FindClose(hFind);
@@ -224,30 +217,24 @@ public:
         // もし黒マス画像が指定されていれば
         if (szName[0])
         {
-            // パス名をセット。
-            WCHAR szPath[MAX_PATH];
-            GetModuleFileNameW(NULL, szPath, ARRAYSIZE(szPath));
-            PathRemoveFileSpec(szPath);
-            PathAppend(szPath, L"BLOCK");
-            PathAppend(szPath, szName);
-
-            if (PathFileExists(szPath))
+            HBITMAP hbm = NULL;
+            HENHMETAFILE hEMF = NULL;
+            if (XgLoadImage(szName, hbm, hEMF))
             {
                 // ファイルが存在すれば、画像を読み込む。
-                xg_strBlackCellImage = szPath;
-                xg_hbmBlackCell = LoadBitmapFromFile(xg_strBlackCellImage.c_str());
-                if (!xg_hbmBlackCell)
+                xg_strBlackCellImage = szName;
+                xg_hbmBlackCell = hbm;
+                xg_hBlackCellEMF = hEMF;
+                if (xg_nViewMode == XG_VIEW_SKELETON)
                 {
-                    xg_hBlackCellEMF = GetEnhMetaFile(xg_strBlackCellImage.c_str());
+                    // 画像が有効ならスケルトンビューを通常ビューに戻す。
+                    xg_nViewMode = XG_VIEW_NORMAL;
                 }
             }
-
-            if (!xg_hbmBlackCell && !xg_hBlackCellEMF) {
+            else
+            {
                 // 画像が無効なら、パスも無効化。
                 xg_strBlackCellImage.clear();
-            } else if (xg_nViewMode == XG_VIEW_SKELETON) {
-                // 画像が有効ならスケルトンビューを通常ビューに戻す。
-                xg_nViewMode = XG_VIEW_NORMAL;
             }
         }
 
@@ -294,22 +281,22 @@ public:
         WCHAR szText[1024], szText2[MAX_PATH];
 
         HWND hCmb1 = GetDlgItem(hwnd, cmb1);
-        GetPrivateProfileStringW(L"Looks", L"BlockImage", L"", szText, _countof(szText), pszFileName);
+        GetPrivateProfileStringW(L"Looks", L"BlackCellImage", L"", szText, _countof(szText), pszFileName);
         if (szText[0])
         {
             // 黒マス画像あり。事前に存在をチェックする。
-            WCHAR szPath[MAX_PATH];
-            GetModuleFileNameW(NULL, szPath, ARRAYSIZE(szPath));
-            PathRemoveFileSpec(szPath);
-            PathAppend(szPath, L"BLOCK");
-            PathAppend(szPath, szText);
-            if (!PathFileExistsW(szPath))
+            HBITMAP hbm = NULL;
+            HENHMETAFILE hEMF = NULL;
+            if (!XgLoadImage(szText, hbm, hEMF))
             {
-                StringCbCopyW(szPath, sizeof(szPath), szText);
-                StringCbPrintfW(szText, sizeof(szText), XgLoadStringDx1(IDS_NOBLOCKIMAGE), szPath);
+                WCHAR szName[MAX_PATH];
+                StringCbCopyW(szName, sizeof(szName), szText);
+                StringCbPrintfW(szText, sizeof(szText), XgLoadStringDx1(IDS_NOBLOCKIMAGE), szName);
                 XgCenterMessageBoxW(hwnd, szText, NULL, MB_ICONERROR);
                 return FALSE;
             }
+            DeleteObject(hbm);
+            DeleteEnhMetaFile(hEMF);
         }
 
         // 色。
@@ -365,7 +352,7 @@ public:
         ::SetDlgItemInt(hwnd, edt5, nSmallCharPercents, FALSE);
 
         // 黒マス画像。
-        GetPrivateProfileStringW(L"Looks", L"BlockImage", L"", szText, _countof(szText), pszFileName);
+        GetPrivateProfileStringW(L"Looks", L"BlackCellImage", L"", szText, _countof(szText), pszFileName);
         if (!szText[0])
         {
             // 黒マス画像なし。
@@ -464,11 +451,11 @@ public:
         std::wstring str = szName;
         if (str.size() && str != XgLoadStringDx1(IDS_NONE))
         {
-            WritePrivateProfileStringW(L"Looks", L"BlockImage", szName, pszFileName);
+            WritePrivateProfileStringW(L"Looks", L"BlackCellImage", szName, pszFileName);
         }
         else
         {
-            WritePrivateProfileStringW(L"Looks", L"BlockImage", L"", pszFileName);
+            WritePrivateProfileStringW(L"Looks", L"BlackCellImage", L"", pszFileName);
         }
 
         // スケルトンビューか？
@@ -893,44 +880,33 @@ public:
         HBITMAP hbmOld = (HBITMAP)SendMessageW(hIco1, STM_GETIMAGE, IMAGE_BITMAP, 0);
         HENHMETAFILE hOldEMF = (HENHMETAFILE)SendMessageW(hIco2, STM_GETIMAGE, IMAGE_ENHMETAFILE, 0);
 
-        WCHAR szPath[MAX_PATH], szName[128];
+        WCHAR szName[128];
         HWND hCmb1 = GetDlgItem(hwnd, cmb1);
         ComboBox_GetText(hCmb1, szName, ARRAYSIZE(szName));
 
-        GetModuleFileNameW(NULL, szPath, ARRAYSIZE(szPath));
-        PathRemoveFileSpec(szPath);
-        PathAppend(szPath, L"BLOCK");
-        PathAppend(szPath, szName);
-
-        if (PathFileExistsW(szPath))
+        HBITMAP hbm1;
+        HENHMETAFILE hEMF1;
+        if (XgLoadImage(szName, hbm1, hEMF1))
         {
-            if (lstrcmpiW(PathFindExtensionW(szPath), L".bmp") == 0)
+            if (hbm1)
             {
-                HBITMAP hbm1 = LoadBitmapFromFile(szPath);
-                if (hbm1)
-                {
-                    HBITMAP hbm2 = (HBITMAP)CopyImage(hbm1, IMAGE_BITMAP, 32, 32, LR_CREATEDIBSECTION);
-                    DeleteObject(hbm1);
-                    SendMessageW(hIco1, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)hbm2);
-                    SendMessageW(hIco2, STM_SETIMAGE, IMAGE_ENHMETAFILE, (LPARAM)NULL);
-                    ShowWindow(hIco1, SW_SHOWNOACTIVATE);
-                    DeleteObject(hbmOld);
-                    DeleteEnhMetaFile(hOldEMF);
-                    return;
-                }
+                HBITMAP hbm2 = (HBITMAP)CopyImage(hbm1, IMAGE_BITMAP, 32, 32, LR_CREATEDIBSECTION);
+                DeleteObject(hbm1);
+                SendMessageW(hIco1, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)hbm2);
+                SendMessageW(hIco2, STM_SETIMAGE, IMAGE_ENHMETAFILE, (LPARAM)NULL);
+                ShowWindow(hIco1, SW_SHOWNOACTIVATE);
+                DeleteObject(hbmOld);
+                DeleteEnhMetaFile(hOldEMF);
+                return;
             }
-            else if (lstrcmpiW(PathFindExtensionW(szPath), L".emf") == 0)
+            if (hEMF1)
             {
-                HENHMETAFILE hEMF = GetEnhMetaFile(szPath);
-                if (hEMF)
-                {
-                    SendMessageW(hIco1, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)NULL);
-                    SendMessageW(hIco2, STM_SETIMAGE, IMAGE_ENHMETAFILE, (LPARAM)hEMF);
-                    ShowWindow(hIco2, SW_SHOWNOACTIVATE);
-                    DeleteObject(hbmOld);
-                    DeleteEnhMetaFile(hOldEMF);
-                    return;
-                }
+                SendMessageW(hIco1, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)NULL);
+                SendMessageW(hIco2, STM_SETIMAGE, IMAGE_ENHMETAFILE, (LPARAM)hEMF1);
+                ShowWindow(hIco2, SW_SHOWNOACTIVATE);
+                DeleteObject(hbmOld);
+                DeleteEnhMetaFile(hOldEMF);
+                return;
             }
         }
 

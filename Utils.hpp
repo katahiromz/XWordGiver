@@ -196,5 +196,9 @@ LPCWSTR XgIntToStr(INT nValue);
 std::wstring XgBinToHex(const void *ptr, size_t size);
 // 16進をバイナリにする。
 void XgHexToBin(std::vector<BYTE>& data, const std::wstring& str);
+// 画像のパスを取得する。
+BOOL XgGetLoadImagePath(LPWSTR pszFullPath, LPCWSTR pszFileName);
+// 画像を読み込む。
+BOOL XgLoadImage(LPCWSTR pszFileName, HBITMAP& hbm, HENHMETAFILE& hEMF);
 
 //////////////////////////////////////////////////////////////////////////////

@@ -789,8 +789,12 @@ bool __fastcall XgLoadSettings(void)
             }
 
             if (!app_key.QuerySz(L"BlackCellImage", sz, ARRAYSIZE(sz))) {
-                xg_strBlackCellImage = sz;
-                if (!PathFileExists(xg_strBlackCellImage.c_str()))
+                WCHAR szFullPath[MAX_PATH];
+                if (XgGetLoadImagePath(szFullPath, sz))
+                {
+                    xg_strBlackCellImage = szFullPath;
+                }
+                else
                 {
                     xg_strBlackCellImage.clear();
                 }

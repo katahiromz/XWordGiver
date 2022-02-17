@@ -4,6 +4,7 @@
 // (Japanese, UTF-8)
 
 #include "XWordGiver.hpp"
+#include <gdiplus.h>
 
 //////////////////////////////////////////////////////////////////////////////
 
@@ -644,5 +645,72 @@ void XgHexToBin(std::vector<BYTE>& data, const std::wstring& str)
             sz[0] = ch;
         }
         flag = !flag;
+    }
+}
+
+// 画像のパスを取得する。
+BOOL XgGetLoadImagePath(LPWSTR pszFullPath, LPCWSTR pszFileName)
+{
+    if (PathIsRelative(pszFileName))
+    {
+        GetModuleFileNameW(NULL, pszFullPath, MAX_PATH);
+        PathRemoveFileSpecW(pszFullPath);
+        PathAppendW(pszFullPath, L"BLOCK");
+        PathAppendW(pszFullPath, pszFileName);
+    }
+    else
+    {
+        StringCbCopyW(pszFullPath, MAX_PATH, pszFileName);
+    }
+
+    return PathFileExistsW(pszFullPath);
+}
+
+// 画像を読み込む。
+BOOL XgLoadImage(LPCWSTR pszFileName, HBITMAP& hbm, HENHMETAFILE& hEMF)
+{
+    hbm = NULL;
+    hEMF = NULL;
+
+    // パス名をセット。
+    WCHAR szFullPath[MAX_PATH];
+    if (!XgGetLoadImagePath(szFullPath, pszFileName))
+        return FALSE;
+
+    LPCWSTR pchDotExt = PathFindExtensionW(szFullPath);
+    if (lstrcmpiW(pchDotExt, L".bmp") == 0)
+    {
+        hbm = LoadBitmapFromFile(szFullPath);
+        return hbm != NULL;
+    }
+    if (lstrcmpiW(pchDotExt, L".emf") == 0)
+    {
+        hEMF = GetEnhMetaFile(szFullPath);
+        return hEMF != NULL;
+    }
+
+    // GDI+で読み込む。
+    {
+        using namespace Gdiplus;
+        GdiplusStartupInput gdiplusStartupInput;
+        ULONG_PTR gdiplusToken;
+
+        // GDI+の初期化。
+        GdiplusStartup(&gdiplusToken, &gdiplusStartupInput, NULL);
+
+        Color c;
+        c.SetFromCOLORREF(RGB(255, 255, 255));
+
+        auto pBitmap = Gdiplus::Bitmap::FromFile(szFullPath);
+        if (pBitmap)
+        {
+            pBitmap->GetHBITMAP(c, &hbm);
+            delete pBitmap;
+        }
+
+        // GDI+の後処理。
+        GdiplusShutdown(gdiplusToken);
+
+        return hbm != NULL;
     }
 }
