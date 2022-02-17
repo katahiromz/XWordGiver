@@ -42,6 +42,8 @@ public:
     // 一時的に保存する色のデータ。
     inline static COLORREF s_rgbColors[3];
 
+    LPCWSTR m_pszAutoFile = NULL;
+
     XG_SettingsDialog()
     {
     }
@@ -49,6 +51,9 @@ public:
     // [設定]ダイアログの初期化。
     BOOL OnInitDialog(HWND hwnd)
     {
+        // ドロップを受け付ける。
+        ::DragAcceptFiles(hwnd, TRUE);
+
         // 色を一時的なデータとしてセットする。
         s_rgbColors[0] = xg_rgbWhiteCellColor;
         s_rgbColors[1] = xg_rgbBlackCellColor;
@@ -90,7 +95,7 @@ public:
         WIN32_FIND_DATA find;
         HANDLE hFind;
 
-        // BLOCK\*.bmp
+        // BLOCKフォルダの画像リストを取り込む。
         GetModuleFileNameW(NULL, szPath, ARRAYSIZE(szPath));
         PathRemoveFileSpec(szPath);
         PathAppend(szPath, L"BLOCK\\*.*");
@@ -127,15 +132,18 @@ public:
         if (xg_strBlackCellImage.empty())
         {
             // 黒マス画像なし。
-            ComboBox_SetText(hCmb1, XgLoadStringDx1(IDS_NONE));
             ComboBox_SetCurSel(hCmb1, ComboBox_FindStringExact(hCmb1, -1, XgLoadStringDx1(IDS_NONE)));
+            ComboBox_SetText(hCmb1, XgLoadStringDx1(IDS_NONE));
         }
         else
         {
             // 黒マス画像あり。
             LPCWSTR psz = PathFindFileName(xg_strBlackCellImage.c_str());
-            ComboBox_SetText(hCmb1, psz);
-            ComboBox_SetCurSel(hCmb1, ComboBox_FindStringExact(hCmb1, -1, psz));
+            INT iItem = ComboBox_FindStringExact(hCmb1, -1, psz);
+            if (iItem == CB_ERR)
+                ComboBox_SetText(hCmb1, xg_strBlackCellImage.c_str());
+            else
+                ComboBox_SetCurSel(hCmb1, iItem);
         }
 
         // 二重マス文字。
@@ -146,6 +154,15 @@ public:
         ComboBox_SetText(hCmb2, xg_strDoubleFrameLetters.c_str());
 
         UpdateBlockPreview(hwnd);
+
+        // 可能ならば自動で適用。
+        if (m_pszAutoFile)
+        {
+            if (DoImportLooks(hwnd, m_pszAutoFile))
+            {
+                PostMessageW(hwnd, WM_COMMAND, IDOK, 0);
+            }
+        }
 
         return TRUE;
     }
@@ -210,8 +227,9 @@ public:
         StringCbCopy(xg_szUIFont, sizeof(xg_szUIFont), szName);
 
         // 黒マス画像の名前を取得。
+        WCHAR szText[MAX_PATH];
         HWND hCmb1 = GetDlgItem(hwnd, cmb1);
-        ComboBox_GetText(hCmb1, szName, ARRAYSIZE(szName));
+        ComboBox_GetText(hCmb1, szText, ARRAYSIZE(szText));
 
         // 黒マス画像の初期化。
         xg_strBlackCellImage.clear();
@@ -221,14 +239,14 @@ public:
         xg_hBlackCellEMF = NULL;
 
         // もし黒マス画像が指定されていれば
-        if (szName[0])
+        if (szText[0])
         {
             HBITMAP hbm = NULL;
             HENHMETAFILE hEMF = NULL;
-            if (XgLoadImage(szName, hbm, hEMF))
+            if (XgLoadImage(szText, hbm, hEMF))
             {
                 // ファイルが存在すれば、画像を読み込む。
-                xg_strBlackCellImage = szName;
+                xg_strBlackCellImage = szText;
                 xg_hbmBlackCell = hbm;
                 xg_hBlackCellEMF = hEMF;
                 if (xg_nViewMode == XG_VIEW_SKELETON)
@@ -236,11 +254,6 @@ public:
                     // 画像が有効ならスケルトンビューを通常ビューに戻す。
                     xg_nViewMode = XG_VIEW_NORMAL;
                 }
-            }
-            else
-            {
-                // 画像が無効なら、パスも無効化。
-                xg_strBlackCellImage.clear();
             }
         }
 
@@ -273,7 +286,6 @@ public:
         }
 
         // 二重マス文字。
-        WCHAR szText[MAX_PATH];
         ComboBox_GetText(GetDlgItem(hwnd, cmb2), szText, _countof(szText));
         xg_strDoubleFrameLetters = szText;
 
@@ -375,15 +387,18 @@ public:
         if (!szText[0])
         {
             // 黒マス画像なし。
-            ComboBox_SetText(hCmb1, XgLoadStringDx1(IDS_NONE));
             ComboBox_SetCurSel(hCmb1, ComboBox_FindStringExact(hCmb1, -1, XgLoadStringDx1(IDS_NONE)));
+            ComboBox_SetText(hCmb1, XgLoadStringDx1(IDS_NONE));
         }
         else
         {
             // 黒マス画像あり。
             LPCWSTR psz = szText;
-            ComboBox_SetText(hCmb1, psz);
-            ComboBox_SetCurSel(hCmb1, ComboBox_FindStringExact(hCmb1, -1, psz));
+            INT iItem = ComboBox_FindStringExact(hCmb1, -1, psz);
+            if (iItem == CB_ERR)
+                ComboBox_SetText(hCmb1, psz);
+            else
+                ComboBox_SetCurSel(hCmb1, iItem);
         }
 
         // 二重マス文字。
@@ -466,14 +481,15 @@ public:
         WritePrivateProfileStringW(L"Looks", L"UIFont", szName, pszFileName);
 
         // 黒マス画像の名前を取得。
+        WCHAR szText[MAX_PATH];
         HWND hCmb1 = GetDlgItem(hwnd, cmb1);
-        ComboBox_GetText(hCmb1, szName, ARRAYSIZE(szName));
+        ComboBox_GetText(hCmb1, szText, ARRAYSIZE(szText));
 
         // もし黒マス画像が指定されていれば
-        std::wstring str = szName;
+        std::wstring str = szText;
         if (str.size() && str != XgLoadStringDx1(IDS_NONE))
         {
-            WritePrivateProfileStringW(L"Looks", L"BlackCellImage", szName, pszFileName);
+            WritePrivateProfileStringW(L"Looks", L"BlackCellImage", szText, pszFileName);
         }
         else
         {
@@ -506,7 +522,6 @@ public:
         WritePrivateProfileStringW(L"Looks", L"MarkedCellColor", XgIntToStr(s_rgbColors[2]), pszFileName);
 
         // 二重マス文字。
-        WCHAR szText[MAX_PATH];
         ComboBox_GetText(GetDlgItem(hwnd, cmb2), szText, _countof(szText));
         {
             std::wstring str = XgBinToHex(szText, lstrlenW(szText) * sizeof(WCHAR));
@@ -602,8 +617,8 @@ public:
         // 黒マス画像。
         HWND hCmb1 = GetDlgItem(hwnd, cmb1);
         // 黒マス画像なし。
-        ComboBox_SetText(hCmb1, XgLoadStringDx1(IDS_NONE));
         ComboBox_SetCurSel(hCmb1, ComboBox_FindStringExact(hCmb1, -1, XgLoadStringDx1(IDS_NONE)));
+        ComboBox_SetText(hCmb1, XgLoadStringDx1(IDS_NONE));
 
         // 二重マス文字。
         HWND hCmb2 = GetDlgItem(hwnd, cmb2);
@@ -797,6 +812,26 @@ public:
         }
     }
 
+    // ファイルがドロップされた？
+    void OnDropFiles(HWND hwnd, HDROP hdrop)
+    {
+        WCHAR szFile[MAX_PATH];
+        DragQueryFileW(hdrop, 0, szFile, _countof(szFile));
+
+        LPWSTR pchDotExt =  PathFindExtensionW(szFile);
+        if (lstrcmpiW(pchDotExt, L".looks") == 0)
+        {
+            DoImportLooks(hwnd, szFile);
+        }
+        else
+        {
+            SetDlgItemTextW(hwnd, cmb1, szFile);
+            UpdateBlockPreview(hwnd);
+        }
+
+        DragFinish(hdrop);
+    }
+
     // [設定]ダイアログのダイアログ プロシージャー。
     virtual INT_PTR CALLBACK
     DialogProcDx(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
@@ -807,6 +842,10 @@ public:
 
         case WM_DRAWITEM:
             OnDrawItem(hwnd, wParam, lParam);
+            break;
+
+        case WM_DROPFILES:
+            OnDropFiles(hwnd, (HDROP)wParam);
             break;
 
         case WM_COMMAND:
@@ -898,7 +937,7 @@ public:
                 break;
 
             case cmb1:
-                if (HIWORD(wParam) == CBN_SELCHANGE)
+                if (HIWORD(wParam) == CBN_SELCHANGE || HIWORD(wParam) == CBN_EDITCHANGE)
                 {
                     UpdateBlockPreview(hwnd);
                 }
@@ -918,13 +957,13 @@ public:
         HBITMAP hbmOld = (HBITMAP)SendMessageW(hIco1, STM_GETIMAGE, IMAGE_BITMAP, 0);
         HENHMETAFILE hOldEMF = (HENHMETAFILE)SendMessageW(hIco2, STM_GETIMAGE, IMAGE_ENHMETAFILE, 0);
 
-        WCHAR szName[128];
+        WCHAR szText[MAX_PATH];
         HWND hCmb1 = GetDlgItem(hwnd, cmb1);
-        ComboBox_GetText(hCmb1, szName, ARRAYSIZE(szName));
+        ComboBox_GetText(hCmb1, szText, ARRAYSIZE(szText));
 
         HBITMAP hbm1;
         HENHMETAFILE hEMF1;
-        if (XgLoadImage(szName, hbm1, hEMF1))
+        if (XgLoadImage(szText, hbm1, hEMF1))
         {
             if (hbm1)
             {

@@ -5985,6 +5985,15 @@ void __fastcall MainWnd_OnDropFiles(HWND hwnd, HDROP hDrop)
     ::DragQueryFileW(hDrop, 0, szFile, ARRAYSIZE(szFile));
     ::DragFinish(hDrop);
 
+    // LOOKSファイルだった場合は自動で適用する。
+    if (lstrcmpiW(PathFindExtensionW(szFile), L".looks") == 0)
+    {
+        XG_SettingsDialog dialog;
+        dialog.m_pszAutoFile = szFile;
+        dialog.DoModal(hwnd);
+        return;
+    }
+
     // ショートカットだった場合は、ターゲットのパスを取得する。
     if (XgGetPathOfShortcutW(szFile, szTarget))
         StringCbCopy(szFile, sizeof(szFile), szTarget);
