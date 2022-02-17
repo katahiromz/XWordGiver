@@ -99,7 +99,7 @@
 - 2022.01.17 Ver.4.8.6
     - Improved READMEs more.
     - Fixed a problem where Ctrl+/ could not switch the input direction.
-- 2022.02.XX ver.4.8.7
+- 2022.02.17 ver.4.8.7
     - Added tags to English dictionaries.
     - Sorted and uniqued the candidates.
     - Fixed drawing of double-frame cell letters on Skeleton View.
@@ -521,7 +521,7 @@
 - 2022年01月17日 ver.4.8.6
     - さらにReadMeを改良。
     - 「Ctrl+/」でタテ入力・ヨコ入力を切り替えられなかったのを修正。
-- 2022年02月XX日 ver.4.8.7
+- 2022年02月17日 ver.4.8.7
     - 英語辞書をタグ付け。
     - 候補群をソートして一意化。
     - スケルトンビューの二重マス文字描画を修正。
