@@ -201,4 +201,15 @@ BOOL XgGetLoadImagePath(LPWSTR pszFullPath, LPCWSTR pszFileName);
 // 画像を読み込む。
 BOOL XgLoadImage(LPCWSTR pszFileName, HBITMAP& hbm, HENHMETAFILE& hEMF);
 
+static inline BOOL ComboBox_RealGetText(HWND hwndCombo, LPWSTR pszText, INT cchText)
+{
+    INT iItem = ComboBox_GetCurSel(hwndCombo);
+    if (iItem == CB_ERR)
+        return ComboBox_GetText(hwndCombo, pszText, cchText);
+    if (ComboBox_GetLBTextLen(hwndCombo, iItem) < cchText)
+        return ComboBox_GetLBText(hwndCombo, iItem, pszText);
+    pszText[0] = 0;
+    return FALSE;
+}
+
 //////////////////////////////////////////////////////////////////////////////

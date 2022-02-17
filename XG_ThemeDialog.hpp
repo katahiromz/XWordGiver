@@ -413,15 +413,9 @@ public:
 
     void SetPreset(HWND hwnd)
     {
-        HWND hCmb1 = GetDlgItem(hwnd, cmb1);
-        INT iItem = ComboBox_GetCurSel(hCmb1);
-
         WCHAR szText[MAX_TAGSLEN];
-        if (iItem == CB_ERR) {
-            GetDlgItemTextW(hwnd, cmb1, szText, ARRAYSIZE(szText));
-        } else {
-            ComboBox_GetLBText(hCmb1, iItem, szText);
-        }
+        HWND hCmb1 = GetDlgItem(hwnd, cmb1);
+        ComboBox_RealGetText(hCmb1, szText, _countof(szText));
 
         SetPreset(hwnd, szText);
     }

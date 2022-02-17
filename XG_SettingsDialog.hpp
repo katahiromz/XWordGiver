@@ -229,7 +229,7 @@ public:
         // 黒マス画像の名前を取得。
         WCHAR szText[MAX_PATH];
         HWND hCmb1 = GetDlgItem(hwnd, cmb1);
-        ComboBox_GetText(hCmb1, szText, ARRAYSIZE(szText));
+        ComboBox_RealGetText(hCmb1, szText, _countof(szText));
 
         // 黒マス画像の初期化。
         xg_strBlackCellImage.clear();
@@ -286,7 +286,8 @@ public:
         }
 
         // 二重マス文字。
-        ComboBox_GetText(GetDlgItem(hwnd, cmb2), szText, _countof(szText));
+        HWND hCmb2 = GetDlgItem(hwnd, cmb2);
+        ComboBox_RealGetText(hCmb2, szText, _countof(szText));
         xg_strDoubleFrameLetters = szText;
 
         // イメージを更新する。
@@ -483,7 +484,7 @@ public:
         // 黒マス画像の名前を取得。
         WCHAR szText[MAX_PATH];
         HWND hCmb1 = GetDlgItem(hwnd, cmb1);
-        ComboBox_GetText(hCmb1, szText, ARRAYSIZE(szText));
+        ComboBox_RealGetText(hCmb1, szText, _countof(szText));
 
         // もし黒マス画像が指定されていれば
         std::wstring str = szText;
@@ -522,7 +523,8 @@ public:
         WritePrivateProfileStringW(L"Looks", L"MarkedCellColor", XgIntToStr(s_rgbColors[2]), pszFileName);
 
         // 二重マス文字。
-        ComboBox_GetText(GetDlgItem(hwnd, cmb2), szText, _countof(szText));
+        HWND hCmb2 = GetDlgItem(hwnd, cmb2);
+        ComboBox_RealGetText(hCmb2, szText, _countof(szText));
         {
             std::wstring str = XgBinToHex(szText, lstrlenW(szText) * sizeof(WCHAR));
             WritePrivateProfileStringW(L"Looks", L"DoubleFrameLetters", str.c_str(), pszFileName);
@@ -959,7 +961,7 @@ public:
 
         WCHAR szText[MAX_PATH];
         HWND hCmb1 = GetDlgItem(hwnd, cmb1);
-        ComboBox_GetText(hCmb1, szText, ARRAYSIZE(szText));
+        ComboBox_RealGetText(hCmb1, szText, _countof(szText));
 
         HBITMAP hbm1;
         HENHMETAFILE hEMF1;
