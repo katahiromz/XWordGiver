@@ -71,6 +71,12 @@ public:
         // 二重マスに枠をつけるか？
         ::CheckDlgButton(hwnd, chx3,
             (xg_bDrawFrameForMarkedCell ? BST_CHECKED : BST_UNCHECKED));
+        // 英小文字か？
+        ::CheckDlgButton(hwnd, chx4,
+            (xg_bLowercase ? BST_CHECKED : BST_UNCHECKED));
+        // ひらがなか？
+        ::CheckDlgButton(hwnd, chx5,
+            (xg_bHiragana ? BST_CHECKED : BST_UNCHECKED));
 
         // 文字の大きさ。
         ::SetDlgItemInt(hwnd, edt4, xg_nCellCharPercents, FALSE);
@@ -246,9 +252,12 @@ public:
 
         // 太枠をつけるか？
         xg_bAddThickFrame = (::IsDlgButtonChecked(hwnd, chx2) == BST_CHECKED);
-
         // 二重マスに枠をつけるか？
         xg_bDrawFrameForMarkedCell = (::IsDlgButtonChecked(hwnd, chx3) == BST_CHECKED);
+        // 英小文字か？
+        xg_bLowercase = (::IsDlgButtonChecked(hwnd, chx4) == BST_CHECKED);
+        // ひらがなか？
+        xg_bHiragana = (::IsDlgButtonChecked(hwnd, chx5) == BST_CHECKED);
 
         // 色を設定する。
         xg_rgbWhiteCellColor = s_rgbColors[0];
@@ -339,6 +348,16 @@ public:
         GetPrivateProfileStringW(L"Looks", L"DrawFrameForMarkedCell", L"1", szText, _countof(szText), pszFileName);
         BOOL bDrawFrameForMarkedCell = _wtoi(szText);
         ::CheckDlgButton(hwnd, chx3, (bDrawFrameForMarkedCell ? BST_CHECKED : BST_UNCHECKED));
+
+        // 英小文字か？
+        GetPrivateProfileStringW(L"Looks", L"Lowercase", L"0", szText, _countof(szText), pszFileName);
+        BOOL bLowercase = _wtoi(szText);
+        ::CheckDlgButton(hwnd, chx4, (bLowercase ? BST_CHECKED : BST_UNCHECKED));
+
+        // ひらがなか？
+        GetPrivateProfileStringW(L"Looks", L"Hiragana", L"0", szText, _countof(szText), pszFileName);
+        BOOL bHiragana = _wtoi(szText);
+        ::CheckDlgButton(hwnd, chx5, (bHiragana ? BST_CHECKED : BST_UNCHECKED));
 
         // 文字の大きさ。
         StringCbPrintfW(szText2, sizeof(szText2), L"%d", DEF_CELL_CHAR_SIZE);
@@ -473,6 +492,14 @@ public:
         BOOL bDrawFrameForMarkedCell = (::IsDlgButtonChecked(hwnd, chx3) == BST_CHECKED);
         WritePrivateProfileStringW(L"Looks", L"DrawFrameForMarkedCell", XgIntToStr(bDrawFrameForMarkedCell), pszFileName);
 
+        // 英小文字か？
+        BOOL bLowercase = (::IsDlgButtonChecked(hwnd, chx4) == BST_CHECKED);
+        WritePrivateProfileStringW(L"Looks", L"Lowercase", XgIntToStr(bLowercase), pszFileName);
+
+        // ひらがなか？
+        BOOL bHiragana = (::IsDlgButtonChecked(hwnd, chx5) == BST_CHECKED);
+        WritePrivateProfileStringW(L"Looks", L"Hiragana", XgIntToStr(bHiragana), pszFileName);
+
         // 色を設定する。
         WritePrivateProfileStringW(L"Looks", L"WhiteCellColor", XgIntToStr(s_rgbColors[0]), pszFileName);
         WritePrivateProfileStringW(L"Looks", L"BlackCellColor", XgIntToStr(s_rgbColors[1]), pszFileName);
@@ -556,6 +583,14 @@ public:
         // 二重マスに枠をつけるか？
         BOOL bDrawFrameForMarkedCell = TRUE;
         ::CheckDlgButton(hwnd, chx3, (bDrawFrameForMarkedCell ? BST_CHECKED : BST_UNCHECKED));
+
+        // 英小文字か？
+        BOOL bLowercase = FALSE;
+        ::CheckDlgButton(hwnd, chx4, (bLowercase ? BST_CHECKED : BST_UNCHECKED));
+
+        // ひらがなか？
+        BOOL bHiragana = FALSE;
+        ::CheckDlgButton(hwnd, chx5, (bHiragana ? BST_CHECKED : BST_UNCHECKED));
 
         // 文字の大きさ。
         BOOL nCellCharPercents = DEF_CELL_CHAR_SIZE;

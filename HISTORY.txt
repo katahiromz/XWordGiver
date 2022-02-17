@@ -111,6 +111,7 @@
     - The supported formats for block image have been expanded.
 - 2022.XX.YY ver.4.8.8
     - The dictionary "BasicDict-ENG-Modesty.tsv" is added.
+    - Added "Lowercase" and "Hiragana" to Appearance.
 
 # 開発履歴 (Japanese)
 
@@ -535,3 +536,4 @@
     - 黒マス画像の対応形式を拡大。
 - 2022年XX月YY日 ver.4.8.8
     - 辞書「BasicDict-ENG-Modesty.tsv」を追加。
+    - 「見た目の設定」に「英小文字」「ひらがな」を追加。
