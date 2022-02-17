@@ -838,14 +838,24 @@ bool __fastcall XgLoadSettings(void)
 
     if (!xg_strBlackCellImage.empty())
     {
-        xg_hbmBlackCell = LoadBitmapFromFile(xg_strBlackCellImage.c_str());
-        if (!xg_hbmBlackCell)
+        HBITMAP hbm = NULL;
+        HENHMETAFILE hEMF = NULL;
+        if (XgLoadImage(xg_strBlackCellImage.c_str(), hbm, hEMF))
         {
-            xg_hBlackCellEMF = GetEnhMetaFile(xg_strBlackCellImage.c_str());
+            // ファイルが存在すれば、画像を読み込む。
+            xg_hbmBlackCell = hbm;
+            xg_hBlackCellEMF = hEMF;
+            if (xg_nViewMode == XG_VIEW_SKELETON)
+            {
+                // 画像が有効ならスケルトンビューを通常ビューに戻す。
+                xg_nViewMode = XG_VIEW_NORMAL;
+            }
         }
-
-        if (!xg_hbmBlackCell && !xg_hBlackCellEMF)
+        else
+        {
+            // 画像が無効なら、パスも無効化。
             xg_strBlackCellImage.clear();
+        }
     }
 
     return true;
