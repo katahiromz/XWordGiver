@@ -109,6 +109,8 @@
     - Fixed the color of small labels.
     - Able to edit "header and remarks" by Ctrl+Enter.
     - The supported formats for block image have been expanded.
+- 2022.XX.YY ver.4.8.8
+    - The dictionary "BasicDict-ENG-Modesty.tsv" is added.
 
 # 開発履歴 (Japanese)
 
@@ -531,3 +533,5 @@
     - 小さい文字の色を修正。
     - Ctrl+Enterでヘッダと備考欄を編集できるようにした。
     - 黒マス画像の対応形式を拡大。
+- 2022年XX月YY日 ver.4.8.8
+    - 辞書「BasicDict-ENG-Modesty.tsv」を追加。
