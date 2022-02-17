@@ -690,27 +690,52 @@ BOOL XgLoadImage(LPCWSTR pszFileName, HBITMAP& hbm, HENHMETAFILE& hEMF)
     }
 
     // GDI+で読み込む。
+    if (HINSTANCE hGdiPlus = LoadLibraryA("gdiplus"))
     {
         using namespace Gdiplus;
-        GdiplusStartupInput gdiplusStartupInput;
-        ULONG_PTR gdiplusToken;
+        typedef GpStatus (WINAPI *FN_GdiplusStartup)(ULONG_PTR*,GDIPCONST GdiplusStartupInput*,GdiplusStartupOutput*);
+        typedef VOID (WINAPI *FN_GdiplusShutdown)(ULONG_PTR);
+        typedef GpStatus (WINAPI *FN_GdipCreateBitmapFromFile)(GDIPCONST WCHAR*,GpBitmap**);
+        typedef GpStatus (WINAPI *FN_GdipCreateHBITMAPFromBitmap)(GpBitmap*,HBITMAP*,ARGB);
+        typedef GpStatus (WINAPI *FN_GdipDisposeImage)(GpImage*);
 
-        // GDI+の初期化。
-        GdiplusStartup(&gdiplusToken, &gdiplusStartupInput, NULL);
+        auto GdiplusStartup = (FN_GdiplusStartup)GetProcAddress(hGdiPlus, "GdiplusStartup");
+        auto GdiplusShutdown = (FN_GdiplusShutdown)GetProcAddress(hGdiPlus, "GdiplusShutdown");
+        auto GdipCreateBitmapFromFile = (FN_GdipCreateBitmapFromFile)GetProcAddress(hGdiPlus, "GdipCreateBitmapFromFile");
+        auto GdipCreateHBITMAPFromBitmap = (FN_GdipCreateHBITMAPFromBitmap)GetProcAddress(hGdiPlus, "GdipCreateHBITMAPFromBitmap");
+        auto GdipDisposeImage = (FN_GdipDisposeImage)GetProcAddress(hGdiPlus, "GdipDisposeImage");
 
-        Color c;
-        c.SetFromCOLORREF(RGB(255, 255, 255));
-
-        auto pBitmap = Gdiplus::Bitmap::FromFile(szFullPath);
-        if (pBitmap)
+        if (GdiplusStartup &&
+            GdiplusShutdown &&
+            GdipCreateBitmapFromFile &&
+            GdipCreateHBITMAPFromBitmap &&
+            GdipDisposeImage)
         {
-            pBitmap->GetHBITMAP(c, &hbm);
-            delete pBitmap;
+            GdiplusStartupInput gdiplusStartupInput;
+            ULONG_PTR gdiplusToken;
+
+            // GDI+の初期化。
+            GdiplusStartup(&gdiplusToken, &gdiplusStartupInput, NULL);
+
+            Color c;
+            c.SetFromCOLORREF(RGB(255, 255, 255));
+
+            GpBitmap *pBitmap = NULL;
+            GdipCreateBitmapFromFile(szFullPath, &pBitmap);
+            if (pBitmap)
+            {
+                GdipCreateHBITMAPFromBitmap(pBitmap, &hbm, c.ToCOLORREF());
+                GdipDisposeImage(pBitmap);
+            }
+
+            // GDI+の後処理。
+            GdiplusShutdown(gdiplusToken);
         }
 
-        // GDI+の後処理。
-        GdiplusShutdown(gdiplusToken);
+        FreeLibrary(hGdiPlus);
 
         return hbm != NULL;
     }
+
+    return FALSE;
 }
