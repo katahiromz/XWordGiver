@@ -132,8 +132,7 @@ public:
         if (xg_strBlackCellImage.empty())
         {
             // 黒マス画像なし。
-            ComboBox_SetCurSel(hCmb1, ComboBox_FindStringExact(hCmb1, -1, XgLoadStringDx1(IDS_NONE)));
-            ComboBox_SetText(hCmb1, XgLoadStringDx1(IDS_NONE));
+            ComboBox_RealSetText(hCmb1, XgLoadStringDx1(IDS_NONE));
         }
         else
         {
@@ -151,7 +150,7 @@ public:
         for (INT i = IDS_DBLFRAME_LETTERS_1; i <= IDS_DBLFRAME_LETTERS_10; ++i) {
             ComboBox_AddString(hCmb2, XgLoadStringDx1(i));
         }
-        ComboBox_SetText(hCmb2, xg_strDoubleFrameLetters.c_str());
+        ComboBox_RealSetText(hCmb2, xg_strDoubleFrameLetters.c_str());
 
         UpdateBlockPreview(hwnd);
 
@@ -388,18 +387,13 @@ public:
         if (!szText[0])
         {
             // 黒マス画像なし。
-            ComboBox_SetCurSel(hCmb1, ComboBox_FindStringExact(hCmb1, -1, XgLoadStringDx1(IDS_NONE)));
-            ComboBox_SetText(hCmb1, XgLoadStringDx1(IDS_NONE));
+            ComboBox_RealSetText(hCmb1, XgLoadStringDx1(IDS_NONE));
         }
         else
         {
             // 黒マス画像あり。
             LPCWSTR psz = szText;
-            INT iItem = ComboBox_FindStringExact(hCmb1, -1, psz);
-            if (iItem == CB_ERR)
-                ComboBox_SetText(hCmb1, psz);
-            else
-                ComboBox_SetCurSel(hCmb1, iItem);
+            ComboBox_RealSetText(hCmb1, psz);
         }
 
         // 二重マス文字。
@@ -411,7 +405,7 @@ public:
             std::wstring str;
             str.resize(data.size() / sizeof(WCHAR));
             memcpy(&str[0], data.data(), data.size());
-            ComboBox_SetText(hCmb2, str.c_str());
+            ComboBox_RealSetText(hCmb2, str.c_str());
         }
 
         UpdateBlockPreview(hwnd);
@@ -827,7 +821,8 @@ public:
         }
         else
         {
-            SetDlgItemTextW(hwnd, cmb1, szFile);
+            HWND hCmb1 = GetDlgItem(hwnd, cmb1);
+            ComboBox_RealSetText(hCmb1, szFile);
             UpdateBlockPreview(hwnd);
         }
 
@@ -939,7 +934,7 @@ public:
                 break;
 
             case cmb1:
-                if (HIWORD(wParam) == CBN_SELCHANGE || HIWORD(wParam) == CBN_EDITCHANGE)
+                if (HIWORD(wParam) == CBN_SELENDOK || HIWORD(wParam) == CBN_EDITCHANGE)
                 {
                     UpdateBlockPreview(hwnd);
                 }
