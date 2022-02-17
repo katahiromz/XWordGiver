@@ -190,4 +190,11 @@ mstr_join(const T_STR_CONTAINER& container,
     return result;
 }
 
+// 整数を文字列にする。
+LPCWSTR XgIntToStr(INT nValue);
+// バイナリを16進にする。
+std::wstring XgBinToHex(const void *ptr, size_t size);
+// 16進をバイナリにする。
+void XgHexToBin(std::vector<BYTE>& data, const std::wstring& str);
+
 //////////////////////////////////////////////////////////////////////////////

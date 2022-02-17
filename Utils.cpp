@@ -600,3 +600,49 @@ BOOL PackedDIB_CreateFromHandle(std::vector<BYTE>& vecData, HBITMAP hbm)
     vecData.assign(stream.begin(), stream.end());
     return TRUE;
 }
+
+// 整数を文字列にする。
+LPCWSTR XgIntToStr(INT nValue)
+{
+    static WCHAR s_szText[64];
+    StringCbPrintfW(s_szText, sizeof(s_szText), L"%d", nValue);
+    return s_szText;
+}
+
+// バイナリを16進にする。
+std::wstring XgBinToHex(const void *ptr, size_t size)
+{
+    std::wstring ret;
+    const BYTE *pb = reinterpret_cast<const BYTE *>(ptr);
+    WCHAR sz[8];
+    for (size_t i = 0; i < size; ++i)
+    {
+        StringCbPrintfW(sz, sizeof(sz), L"%02X", pb[i]);
+        ret += sz;
+    }
+    return ret;
+}
+
+// 16進をバイナリにする。
+void XgHexToBin(std::vector<BYTE>& data, const std::wstring& str)
+{
+    WCHAR sz[3];
+    data.clear();
+    bool flag = false;
+    BYTE byte;
+    sz[2] = 0;
+    for (auto& ch : str)
+    {
+        if (flag)
+        {
+            sz[1] = ch;
+            byte = BYTE(wcstol(sz, NULL, 16));
+            data.insert(data.end(), byte);
+        }
+        else
+        {
+            sz[0] = ch;
+        }
+        flag = !flag;
+    }
+}

@@ -285,51 +285,32 @@ public:
         XgUpdateImage(xg_hMainWnd);
     }
 
-    LPCWSTR DoIntToStr(INT nValue)
-    {
-        static WCHAR s_szText[64];
-        StringCbPrintfW(s_szText, sizeof(s_szText), L"%d", nValue);
-        return s_szText;
-    }
-
-    BOOL DoFileToData(LPCWSTR pszFileName, std::vector<BYTE>& data)
-    {
-        if (FILE *fp = _wfopen(pszFileName, L"rb"))
-        {
-            BYTE buff[512];
-            for (;;)
-            {
-                size_t count = fread(buff, 1, sizeof(buff), fp);
-                if (!count)
-                    break;
-                data.insert(data.end(), &buff[0], &buff[count]);
-            }
-            fclose(fp);
-
-            return !data.empty();
-        }
-        return FALSE;
-    }
-
-    std::wstring DoDataToStr(const std::vector<BYTE>& data)
-    {
-        std::wstring ret;
-        WCHAR sz[16];
-        for (auto& byte : data)
-        {
-            StringCbPrintfW(sz, sizeof(sz), L"%02X", byte);
-            ret += sz;
-        }
-        return ret;
-    }
-
     // LOOKSファイルのインポート。
     BOOL DoImportLooks(HWND hwnd, LPCWSTR pszFileName)
     {
         if (!PathFileExistsW(pszFileName))
             return FALSE;
 
-        WCHAR szText[1024], szText2[64];
+        WCHAR szText[1024], szText2[MAX_PATH];
+
+        HWND hCmb1 = GetDlgItem(hwnd, cmb1);
+        GetPrivateProfileStringW(L"Looks", L"BlockImage", L"", szText, _countof(szText), pszFileName);
+        if (szText[0])
+        {
+            // 黒マス画像あり。事前に存在をチェックする。
+            WCHAR szPath[MAX_PATH];
+            GetModuleFileNameW(NULL, szPath, ARRAYSIZE(szPath));
+            PathRemoveFileSpec(szPath);
+            PathAppend(szPath, L"BLOCK");
+            PathAppend(szPath, szText);
+            if (!PathFileExistsW(szPath))
+            {
+                StringCbCopyW(szPath, sizeof(szPath), szText);
+                StringCbPrintfW(szText, sizeof(szText), XgLoadStringDx1(IDS_NOBLOCKIMAGE), szPath);
+                XgCenterMessageBoxW(hwnd, szText, NULL, MB_ICONERROR);
+                return FALSE;
+            }
+        }
 
         // 色。
         GetPrivateProfileStringW(L"Looks", L"WhiteCellColor", L"16777215", szText, _countof(szText), pszFileName);
@@ -384,7 +365,6 @@ public:
         ::SetDlgItemInt(hwnd, edt5, nSmallCharPercents, FALSE);
 
         // 黒マス画像。
-        HWND hCmb1 = GetDlgItem(hwnd, cmb1);
         GetPrivateProfileStringW(L"Looks", L"BlockImage", L"", szText, _countof(szText), pszFileName);
         if (!szText[0])
         {
@@ -403,7 +383,14 @@ public:
         // 二重マス文字。
         HWND hCmb2 = GetDlgItem(hwnd, cmb2);
         GetPrivateProfileStringW(L"Looks", L"DoubleFrameLetters", XgLoadStringDx1(IDS_DBLFRAME_LETTERS_1), szText, _countof(szText), pszFileName);
-        ComboBox_SetText(hCmb2, szText);
+        {
+            std::vector<BYTE> data;
+            XgHexToBin(data, szText);
+            std::wstring str;
+            str.resize(data.size() / sizeof(WCHAR));
+            memcpy(&str[0], data.data(), data.size());
+            ComboBox_SetText(hCmb2, str.c_str());
+        }
 
         UpdateBlockPreview(hwnd);
 
@@ -451,8 +438,8 @@ public:
         }
 
         // 文字の大きさの設定。
-        WritePrivateProfileStringW(L"Looks", L"CellCharPercents", DoIntToStr(nValue1), pszFileName);
-        WritePrivateProfileStringW(L"Looks", L"SmallCharPercents", DoIntToStr(nValue2), pszFileName);
+        WritePrivateProfileStringW(L"Looks", L"CellCharPercents", XgIntToStr(nValue1), pszFileName);
+        WritePrivateProfileStringW(L"Looks", L"SmallCharPercents", XgIntToStr(nValue2), pszFileName);
 
         // フォント名を取得する。
         WCHAR szName[LF_FACESIZE];
@@ -486,25 +473,28 @@ public:
 
         // スケルトンビューか？
         BOOL bSkeltonView = (::IsDlgButtonChecked(hwnd, chx1) == BST_CHECKED);
-        WritePrivateProfileStringW(L"Looks", L"SkeletonView", DoIntToStr(bSkeltonView), pszFileName);
+        WritePrivateProfileStringW(L"Looks", L"SkeletonView", XgIntToStr(bSkeltonView), pszFileName);
 
         // 太枠をつけるか？
         BOOL bAddThickFrame = (::IsDlgButtonChecked(hwnd, chx2) == BST_CHECKED);
-        WritePrivateProfileStringW(L"Looks", L"AddThickFrame", DoIntToStr(bAddThickFrame), pszFileName);
+        WritePrivateProfileStringW(L"Looks", L"AddThickFrame", XgIntToStr(bAddThickFrame), pszFileName);
 
         // 二重マスに枠をつけるか？
         BOOL bDrawFrameForMarkedCell = (::IsDlgButtonChecked(hwnd, chx3) == BST_CHECKED);
-        WritePrivateProfileStringW(L"Looks", L"DrawFrameForMarkedCell", DoIntToStr(bDrawFrameForMarkedCell), pszFileName);
+        WritePrivateProfileStringW(L"Looks", L"DrawFrameForMarkedCell", XgIntToStr(bDrawFrameForMarkedCell), pszFileName);
 
         // 色を設定する。
-        WritePrivateProfileStringW(L"Looks", L"WhiteCellColor", DoIntToStr(s_rgbColors[0]), pszFileName);
-        WritePrivateProfileStringW(L"Looks", L"BlackCellColor", DoIntToStr(s_rgbColors[1]), pszFileName);
-        WritePrivateProfileStringW(L"Looks", L"MarkedCellColor", DoIntToStr(s_rgbColors[2]), pszFileName);
+        WritePrivateProfileStringW(L"Looks", L"WhiteCellColor", XgIntToStr(s_rgbColors[0]), pszFileName);
+        WritePrivateProfileStringW(L"Looks", L"BlackCellColor", XgIntToStr(s_rgbColors[1]), pszFileName);
+        WritePrivateProfileStringW(L"Looks", L"MarkedCellColor", XgIntToStr(s_rgbColors[2]), pszFileName);
 
         // 二重マス文字。
         WCHAR szText[MAX_PATH];
         ComboBox_GetText(GetDlgItem(hwnd, cmb2), szText, _countof(szText));
-        WritePrivateProfileStringW(L"Looks", L"DoubleFrameLetters", szText, pszFileName);
+        {
+            std::wstring str = XgBinToHex(szText, lstrlenW(szText) * sizeof(WCHAR));
+            WritePrivateProfileStringW(L"Looks", L"DoubleFrameLetters", str.c_str(), pszFileName);
+        }
 
         // フラッシュ！
         return WritePrivateProfileStringW(NULL, NULL, NULL, pszFileName);
@@ -570,11 +560,11 @@ public:
         ::CheckDlgButton(hwnd, chx1, (bSkeltonView ? BST_CHECKED : BST_UNCHECKED));
 
         // 太枠をつけるか？
-        BOOL bAddThickFrame = _wtoi(L"1");
+        BOOL bAddThickFrame = TRUE;
         ::CheckDlgButton(hwnd, chx2, (bAddThickFrame ? BST_CHECKED : BST_UNCHECKED));
 
         // 二重マスに枠をつけるか？
-        BOOL bDrawFrameForMarkedCell = _wtoi(L"1");
+        BOOL bDrawFrameForMarkedCell = TRUE;
         ::CheckDlgButton(hwnd, chx3, (bDrawFrameForMarkedCell ? BST_CHECKED : BST_UNCHECKED));
 
         // 文字の大きさ。

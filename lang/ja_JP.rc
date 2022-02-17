@@ -1563,6 +1563,7 @@ STRINGTABLE
     IDS_ANYINPUT, "自由入力"
     IDS_IMPORTLOOKSFILE, "LOOKS ファイルを開く"
     IDS_EXPORTLOOKSFILE, "LOOKS ファイルを保存"
+    IDS_NOBLOCKIMAGE, "BLOCKフォルダに黒マス画像 '%s' が存在しませんので、LOOKSファイル取り込みに失敗しました。"
     IDS_TT_NEW, "新規作成"
     IDS_TT_GENERATE, "問題を自動生成する"
     IDS_TT_OPEN, "問題を開く"

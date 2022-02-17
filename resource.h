@@ -194,6 +194,7 @@
 #define IDS_ANYINPUT                        283
 #define IDS_IMPORTLOOKSFILE                 284
 #define IDS_EXPORTLOOKSFILE                 285
+#define IDS_NOBLOCKIMAGE                    286
 #define IDS_TT_NEW                          10100
 #define IDS_TT_GENERATE                     10101
 #define IDS_TT_OPEN                         10102

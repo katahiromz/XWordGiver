@@ -1560,6 +1560,7 @@ STRINGTABLE
     IDS_ANYINPUT, "Any Input"
     IDS_IMPORTLOOKSFILE, "Open LOOKS file"
     IDS_EXPORTLOOKSFILE, "Save LOOKS file"
+    IDS_NOBLOCKIMAGE, "There is no image '%s' in BLOCK folder. So I have failed to import LOOKS file."
     IDS_TT_NEW, "New crossword"
     IDS_TT_GENERATE, "Generate crossword"
     IDS_TT_OPEN, "Open crossword"
