@@ -72,7 +72,7 @@ struct XG_WordData
 namespace std
 {
     template <>
-    inline void swap(XG_WordData& data1, XG_WordData& data2) {
+    inline void swap(XG_WordData& data1, XG_WordData& data2) noexcept {
         std::swap(data1.m_word, data2.m_word);
         std::swap(data1.m_hint, data2.m_hint);
     }
