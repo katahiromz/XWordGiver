@@ -390,6 +390,9 @@ public:
         INT nValue1, nValue2;
         BOOL bTranslated;
 
+        // 書く前にファイルを消す。
+        DeleteFileW(pszFileName);
+
         // セルの文字の大きさ。
         bTranslated = FALSE;
         nValue1 = GetDlgItemInt(hwnd, edt4, &bTranslated, FALSE);
