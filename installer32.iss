@@ -52,8 +52,7 @@ Source: "DICT\tags-JPN.xls"; DestDir: "{app}\DICT"; Flags: ignoreversion
 Source: "BLOCK\club.emf"; DestDir: "{app}\BLOCK"; Flags: ignoreversion
 Source: "BLOCK\diamond.emf"; DestDir: "{app}\BLOCK"; Flags: ignoreversion
 Source: "BLOCK\heart.emf"; DestDir: "{app}\BLOCK"; Flags: ignoreversion
-Source: "BLOCK\ink-save-1.gif"; DestDir: "{app}\BLOCK"; Flags: ignoreversion
-Source: "BLOCK\ink-save-2.emf"; DestDir: "{app}\BLOCK"; Flags: ignoreversion
+Source: "BLOCK\ink-save.gif"; DestDir: "{app}\BLOCK"; Flags: ignoreversion
 Source: "BLOCK\mario-block-1.emf"; DestDir: "{app}\BLOCK"; Flags: ignoreversion
 Source: "BLOCK\mario-block-2.emf"; DestDir: "{app}\BLOCK"; Flags: ignoreversion
 Source: "BLOCK\mario-block-3.emf"; DestDir: "{app}\BLOCK"; Flags: ignoreversion
