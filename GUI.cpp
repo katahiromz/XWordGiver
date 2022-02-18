@@ -1752,15 +1752,10 @@ bool __fastcall XgOnGenerate(HWND hwnd, bool show_answer, bool multiple = false)
     // 辞書を読み込む。
     XgLoadDictFile(xg_dict_name.c_str());
     XgSetInputModeFromDict(hwnd);
-
     // キャンセルダイアログを表示し、実行を開始する。
     ::EnableWindow(xg_hwndInputPalette, FALSE);
     do {
-        if (xg_imode == xg_im_KANJI) {
-            // 漢字の場合はスマート解決を使用しない。
-            XG_CancelSolveDialog dialog;
-            nID = dialog.DoModal(hwnd);
-        } else if (xg_bSmartResolution && xg_nRows >= 7 && xg_nCols >= 7) {
+        if (xg_bSmartResolution && xg_nRows >= 7 && xg_nCols >= 7) {
             XG_CancelSmartSolveDialog dialog;
             nID = dialog.DoModal(hwnd);
         } else if (xg_nRules & (RULE_POINTSYMMETRY | RULE_LINESYMMETRYV | RULE_LINESYMMETRYH)) {
