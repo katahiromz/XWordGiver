@@ -47,9 +47,6 @@ LANGUAGE LANG_ENGLISH, SUBLANG_DEFAULT
         MENUITEM "Copy the board as &image\tShift+Ctrl+C", ID_COPYASIMAGE
         MENUITEM "&Paste\tCtrl+V", ID_PASTE
         MENUITEM SEPARATOR
-        MENUITEM "Fill the board by &blocks", ID_FILLBYBLOCKS
-        MENUITEM "Fill the board by &spaces", ID_FILLBYWHITES
-        MENUITEM SEPARATOR
         MENUITEM "Copy the DOWN word", ID_COPYWORDVERT
         MENUITEM "Copy the ACROSS word", ID_COPYWORDHORZ
         MENUITEM "Copy the &set of characters", ID_COPYCHARSET
