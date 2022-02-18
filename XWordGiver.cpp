@@ -4522,10 +4522,11 @@ void __fastcall XgDrawXWord_SkeletonView(XG_Board& xw, HDC hdc, LPSIZE psiz, boo
         nCellSize = xg_nCellSize;
     }
 
-    // 全体を白で塗りつぶす。
+    // スクリーンの場合は、全体を白で塗りつぶす。
     RECT rc;
     ::SetRect(&rc, 0, 0, psiz->cx, psiz->cy);
-    ::FillRect(hdc, &rc, reinterpret_cast<HBRUSH>(::GetStockObject(WHITE_BRUSH)));
+    if (bCaret)
+        ::FillRect(hdc, &rc, reinterpret_cast<HBRUSH>(::GetStockObject(WHITE_BRUSH)));
 
     LOGFONTW lf;
 

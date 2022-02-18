@@ -2468,6 +2468,9 @@ void XgCopyBoard(HWND hwnd)
                         {
                             HBITMAP hbm = XgCreate24BppBitmap(hDC, siz.cx, siz.cy);
                             HGDIOBJ hbmOld = SelectObject(hDC, hbm);
+                            RECT rc;
+                            SetRect(&rc, 0, 0, siz.cx, siz.cy);
+                            FillRect(hDC, &rc, GetStockBrush(WHITE_BRUSH));
                             XgDrawXWord(*pxw, hDC, &siz, false);
                             SelectObject(hDC, hbmOld);
                             ::DeleteDC(hDC);
@@ -2533,6 +2536,7 @@ void XgCopyBoardAsImage(HWND hwnd)
         {
             RECT rc;
             SetRect(&rc, 0, 0, siz.cx, siz.cy);
+            FillRect(hDC, &rc, GetStockBrush(WHITE_BRUSH));
             PlayEnhMetaFile(hDC, hEMF, &rc);
             SelectObject(hDC, hbmOld);
         }
