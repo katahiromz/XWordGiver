@@ -113,6 +113,7 @@
     - The dictionary "BasicDict-ENG-Modesty.tsv" is added.
     - Added "Lowercase" and "Hiragana" to Appearance.
     - Able to drop the LOOKS file.
+    - Renamed "Policies" as "Policy".
 
 # 開発履歴 (Japanese)
 
@@ -539,3 +540,4 @@
     - 辞書「BasicDict-ENG-Modesty.tsv」を追加。
     - 「見た目の設定」に「英小文字」「ひらがな」を追加。
     - LOOKSファイルのドロップを可能に。
+    - 「Policies」を「Policy」に変更。

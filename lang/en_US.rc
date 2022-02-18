@@ -162,10 +162,10 @@ LANGUAGE LANG_ENGLISH, SUBLANG_DEFAULT
         MENUITEM "Show the &candidates (&DOWN)\tShift+Ctrl+↓", ID_OPENCANDSWNDVERT
         MENUITEM "Show the &candidates (&ACROSS)\tShift+Ctrl+→", ID_OPENCANDSWNDHORZ
     }
-    POPUP "&Policies"
+    POPUP "&Policy"
     {
-        MENUITEM "&Reset the policies", ID_RESETRULES
-        MENUITEM "What's a policy?", ID_OPENRULESTXT
+        MENUITEM "&Reset the policy", ID_RESETRULES
+        MENUITEM "What's the policy?", ID_OPENRULESTXT
         MENUITEM SEPARATOR
         MENUITEM "The policy ""Prohibit adjacent blocks""", ID_RULE_DONTDOUBLEBLACK
         MENUITEM "The policy ""Prohibit blocks at 4 corners""", ID_RULE_DONTCORNERBLACK
@@ -1407,13 +1407,13 @@ STRINGTABLE
     IDS_CANTSAVE2, "I couldn't save the file."
     IDS_SOLVED, "I found a solution. \n\nCalculation time: %u.%u[sec]"
     IDS_RESULTS, "Results"
-    IDS_CANTSOLVE, "No solutions were found.\n\nPlease confirm the dictionary, the block pattern, and the policies.\n\nCalculation time: %u.%u[sec]"
+    IDS_CANTSOLVE, "No solutions were found.\n\nPlease confirm the dictionary, the block pattern, and the policy.\n\nCalculation time: %u.%u[sec]"
     IDS_CANTACCEL, "I couldn't load the accelerators."
     IDS_CANTREGWND, "I couldn't register the window classes."
     IDS_CANTMAKEWND, "I couldn't create the window."
     IDS_APPTITLE, "XWordGiver ver.4.8.8 - %s"
     IDS_MADEPROBLEM, "I have generated a crossword.\n\nCalculation time: %u.%u[sec]"
-    IDS_CANTMAKEPROBLEM, "I couldn't create the puzzle.\n\nPlease confirm the dictionary, the block pattern, and the policies.\n\nCalculation time: %u.%u[sec]"
+    IDS_CANTMAKEPROBLEM, "I couldn't create the puzzle.\n\nPlease confirm the dictionary, the block pattern, and the policy.\n\nCalculation time: %u.%u[sec]"
     IDS_ENTERINT, "Please enter an integer between 2 and 256."
     IDS_OPENDICTDATA, "Open dictionary"
     IDS_OPENCROSSDATA, "Open crossword"
@@ -1505,12 +1505,12 @@ STRINGTABLE
     IDS_VINPUT3, "Vertical"
     IDS_RUSSIA, "Russia"
     IDS_FOURDIAGONALS, "There are four diagonally connected blocks in a line. This violates the policy ""Prohibit blocks at 4 corners""."
-    IDS_RULESPASSED, "The current board has passed the specified policies."
+    IDS_RULESPASSED, "The current board has passed the specified policy."
     IDS_PASSED, "Passed!"
     IDS_RULESTXT, "Policy-ENG.txt"
-    IDS_RULES, "Policies"
-    IDS_STANDARDRULES, "&Policies"
-    IDS_MODIFIEDRULES, "(!)&Policies"
+    IDS_RULES, "Policy"
+    IDS_STANDARDRULES, "&Policy"
+    IDS_MODIFIEDRULES, "(!)&Policy"
     IDS_CANTSOLVESYMMETRY, "The policy ""Point symmetry of blocks"" doesn't allow you to find a solution with adding blocks."
     IDS_RULE_DONTDOUBLEBLACK, "Prohibit adjacent blocks"
     IDS_RULE_DONTCORNERBLACK, "Prohibit blocks at 4 corners"
@@ -1537,8 +1537,8 @@ STRINGTABLE
     IDS_NOTLINESYMMETRYV, "The placement of the blocks is not line-symmetrical. This violates the policy ""Line symmetry (vertical) of blocks""."
     IDS_NOTLINESYMMETRYH, "The placement of the blocks is not line-symmetrical. This violates the policy ""Line symmetry (horizontal) of blocks""."
     IDS_SHALLIMIRROR, "Shall I make the block pattern symmetrical according to the specified policy?"
-    IDS_EVENROWLINESYMV, "Forcing symmetrical even rows and banning adjacent blocks is unreasonable. Please reconfirm the policies."
-    IDS_EVENCOLLINESYMH, "Forcing symmetrical even columns and banning adjacent blocks is unreasonable. Please reconfirm the policies."
+    IDS_EVENROWLINESYMV, "Forcing symmetrical even rows and banning adjacent blocks is unreasonable. Please reconfirm the policy."
+    IDS_EVENCOLLINESYMH, "Forcing symmetrical even columns and banning adjacent blocks is unreasonable. Please reconfirm the policy."
     IDS_DBLFRAME_LETTERS_1, "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
     IDS_DBLFRAME_LETTERS_2, "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
     IDS_DBLFRAME_LETTERS_3, "ΑΒΓΔΕΖΗΘΙΚΛΜΝΞΟΠΡΣΤΥΦΧΨΩαβγδεζηθικλμνξοπρστυφχψω"
