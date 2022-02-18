@@ -165,8 +165,6 @@ public:
         {
         case IDOK:
             if (OnOK(hwnd)) {
-                // スケルトンビューにする。
-                xg_nViewMode = XG_VIEW_SKELETON;
                 // ビットマップを破棄。
                 ::DeleteObject(m_hbmBitmap);
                 m_hbmBitmap = NULL;
