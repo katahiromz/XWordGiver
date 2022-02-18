@@ -4029,6 +4029,12 @@ void __fastcall MainWnd_OnCopyPattern(HWND hwnd, BOOL bTate)
         pattern = pxword->GetPatternH(xg_caret_pos);
     }
 
+    // 半角英大文字にする。
+    for (auto& ch : pattern) {
+        if (ZEN_LARGE_A <= ch && ch <= ZEN_LARGE_Z)
+            ch += L'A' - ZEN_LARGE_A;
+    }
+
     XgSetClipboardUnicodeText(hwnd, pattern);
 }
 
@@ -4062,6 +4068,7 @@ void MainWnd_OnCopyCharSet(HWND hwnd)
     for (auto ch : multiset) {
         if (str.size())
             str += L" ";
+        // 半角英大文字にする。
         if (ZEN_LARGE_A <= ch && ch <= ZEN_LARGE_Z)
             ch += L'A' - ZEN_LARGE_A;
         str += ch;
