@@ -151,8 +151,8 @@ LANGUAGE LANG_ENGLISH, SUBLANG_DEFAULT
         MENUITEM "&Hiragana", ID_HIRAGANA
         MENUITEM "&Katakana", ID_KATAKANA
         MENUITEM SEPARATOR
-        MENUITEM "&Uppercase", ID_UPPERCASE
-        MENUITEM "&Lowercase", ID_LOWERCASE
+        MENUITEM "&UPPERCASE", ID_UPPERCASE
+        MENUITEM "&lowercase", ID_LOWERCASE
         MENUITEM SEPARATOR
         MENUITEM "Search the word on the Web (DOWN)\tAlt+Down", ID_ONLINEDICTV
         MENUITEM "Search the word on the Web (ACROSS)\tAlt+Right", ID_ONLINEDICTH

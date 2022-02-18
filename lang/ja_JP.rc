@@ -151,8 +151,8 @@ LANGUAGE LANG_JAPANESE, SUBLANG_DEFAULT
         MENUITEM "ひらがな表示(&H)", ID_HIRAGANA
         MENUITEM "カタカナ表示(&K)", ID_KATAKANA
         MENUITEM SEPARATOR
-        MENUITEM "&Uppercase", ID_UPPERCASE
-        MENUITEM "&Lowercase", ID_LOWERCASE
+        MENUITEM "&UPPERCASE", ID_UPPERCASE
+        MENUITEM "&lowercase", ID_LOWERCASE
         MENUITEM SEPARATOR
         MENUITEM "単語をウェブ検索(&V) (タテ)\tAlt+↓", ID_ONLINEDICTV
         MENUITEM "単語をウェブ検索(&H) (ヨコ)\tAlt+→", ID_ONLINEDICTH
