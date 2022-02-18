@@ -43,6 +43,7 @@ public:
     inline static COLORREF s_rgbColors[3];
 
     LPCWSTR m_pszAutoFile = NULL;
+    BOOL m_bUpdating = FALSE;
 
     XG_SettingsDialog()
     {
@@ -938,6 +939,21 @@ public:
                 {
                     UpdateBlockPreview(hwnd);
                 }
+                break;
+
+            case chx1:
+                if (IsDlgButtonChecked(hwnd, chx1) == BST_CHECKED) {
+                    if (!m_bUpdating) {
+                        m_bUpdating = TRUE;
+                        {
+                            // 黒マス画像なし。
+                            HWND hCmb1 = GetDlgItem(hwnd, cmb1);
+                            ComboBox_RealSetText(hCmb1, XgLoadStringDx1(IDS_NONE));
+                            UpdateBlockPreview(hwnd);
+                        }
+                        m_bUpdating = FALSE;
+                    }
+                }
             }
             break;
         }
@@ -962,6 +978,13 @@ public:
         HENHMETAFILE hEMF1;
         if (XgLoadImage(szText, hbm1, hEMF1))
         {
+            if (!m_bUpdating)
+            {
+                m_bUpdating = TRUE;
+                CheckDlgButton(hwnd, chx1, BST_UNCHECKED);
+                m_bUpdating = FALSE;
+            }
+
             if (hbm1)
             {
                 HBITMAP hbm2 = (HBITMAP)CopyImage(hbm1, IMAGE_BITMAP, 32, 32, LR_CREATEDIBSECTION);

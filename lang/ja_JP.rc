@@ -644,7 +644,7 @@ FONT 9, "MS UI Gothic"
     EDITTEXT edt3, 70, 44, 85, 14, ES_READONLY
     PUSHBUTTON "変更(&G)...", psh5, 160, 44, 55, 14
     PUSHBUTTON "リセット(&T)", psh6, 220, 44, 50, 14
-    AUTOCHECKBOX "スケルトンビュー(&K)", chx1, 10, 70, 85, 14
+    AUTOCHECKBOX "スケルトン ビュー(&K)", chx1, 10, 70, 85, 14
     AUTOCHECKBOX "太枠をつける(&I)", chx2, 105, 70, 70, 14
     AUTOCHECKBOX "二重マスの枠を描く(&A)", chx3, 180, 70, 90, 14
     RTEXT "白マスの色(&1):", -1, 10, 96, 45, 12
