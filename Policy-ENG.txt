@@ -1,40 +1,40 @@
-﻿# XWordGiver policies
+﻿# XWordGiver policy
 
-In XWordGiver, the crossword data will be created according to the policies.
-Please choose the policies from "Policies" menu before generation.
+In XWordGiver, the crossword data will be created according to the specified policy.
+Please choose the policy from "Policy" menu before generation.
 
-## Policy "Prohibit adjacent blocks" [Cost: +10%]
+## The policy "Prohibit adjacent blocks" [Cost: +10%]
 
 This policy prohibits a block placed next to each other.
 
-## Policy "Prohibit blocks at 4 corners" [Cost: +5%]
+## The policy "Prohibit blocks at 4 corners" [Cost: +5%]
 
 This policy prohibits placing blocks at the four corners.
 
-## Policy "Prohibit three-way blocks" [Cost: +30%]
+## The policy "Prohibit three-way blocks" [Cost: +30%]
 
 This policy prohibits blocks placed next to each other in three directions of a block.
 
-## Policy "No division" [Cost: +20%] (*Cannot change)
+## The policy "No division" [Cost: +20%] (*Cannot change)
 
 This policy prohibits dividing the board by blocks.
 
-## Policy "Prohibit 3 blocks diagonally" [Cost: +35%]
+## The policy "Prohibit 3 blocks diagonally" [Cost: +35%]
 
 This policy prohibits placing blocks diagonally in three consecutive rows.
 
-## Policy "Prohibit 4 blocks diagonally" [Cost: +20%]
+## The policy "Prohibit 4 blocks diagonally" [Cost: +20%]
 
 This policy prohibits placing blocks diagonally in four consecutive rows.
 
-## Policy "Point symmetry of blocks" [Cost: -45%]
+## The policy "Point symmetry of blocks" [Cost: -45%]
 
 This policy enforces that blocks are placed point-symmetrically.
 
-## Policy "Line symmetry (vertical) of blocks" [Cost: +10%]
+## The policy "Line symmetry (vertical) of blocks" [Cost: +10%]
 
 This policy enforces that blocks are placed vertical-line-symmetrically.
 
-## Policy "Line symmetry (horizontal) of blocks" [Cost: +10%]
+## The policy "Line symmetry (horizontal) of blocks" [Cost: +10%]
 
 This policy enforces that blocks are placed horizontal-line-symmetrically.
