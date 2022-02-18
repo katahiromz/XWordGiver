@@ -1,7 +1,5 @@
 ﻿# XWordGiver by katahiromz
 
-Copyright (C) 2013-2022 katahiromz. All Rights Reserved.
-
 ## Introduction
 
 "XWordGiver" (pronouncing as "crossword giver") is a Windows freeware for auto-generation of crossword puzzles.
