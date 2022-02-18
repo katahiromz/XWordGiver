@@ -2570,9 +2570,9 @@ void __fastcall XgCopyMarkWord(HWND hwnd)
     if (XgGetMarkWord(xw, strMarkWord)) {
         for (auto& wch : strMarkWord) {
             if (ZEN_LARGE_A <= wch && wch <= ZEN_LARGE_Z)
-                wch = L'a' + (wch - ZEN_LARGE_A);
+                wch = L'A' + (wch - ZEN_LARGE_A);
             else if (ZEN_SMALL_A <= wch && wch <= ZEN_SMALL_Z)
-                wch = L'a' + (wch - ZEN_SMALL_A);
+                wch = L'A' + (wch - ZEN_SMALL_A);
         }
 
         // CF_UNICODETEXTのデータを用意。
@@ -4035,6 +4035,40 @@ void __fastcall MainWnd_OnCopyPattern(HWND hwnd, BOOL bTate)
 void __fastcall MainWnd_OnCopyPatternHorz(HWND hwnd)
 {
     MainWnd_OnCopyPattern(hwnd, FALSE);
+}
+
+// 文字集合をコピーする。
+void MainWnd_OnCopyCharSet(HWND hwnd)
+{
+    const XG_Board *pxword;
+    if (xg_bSolved) {
+        pxword = &xg_solution;
+    } else {
+        pxword = &xg_xword;
+    }
+
+    std::multiset<WCHAR> multiset;
+    for (INT i = 0; i < xg_nRows; ++i) {
+        for (INT j = 0; j < xg_nCols; ++j) {
+            WCHAR ch = pxword->GetAt(i, j);
+            if (ch == ZEN_SPACE || ch == ZEN_BLACK)
+                continue;
+
+            multiset.insert(ch);
+        }
+    }
+
+    std::wstring str;
+    for (auto ch : multiset) {
+        if (str.size())
+            str += L" ";
+        if (ZEN_LARGE_A <= ch && ch <= ZEN_LARGE_Z)
+            ch += L'A' - ZEN_LARGE_A;
+        str += ch;
+    }
+
+    // クリップボードにテキストをコピーする。
+    XgSetClipboardUnicodeText(hwnd, str);
 }
 
 void __fastcall MainWnd_OnCopyPatternVert(HWND hwnd)
@@ -5562,6 +5596,9 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
         break;
     case ID_COPYWORDVERT:
         MainWnd_OnCopyPatternVert(hwnd);
+        break;
+    case ID_COPYCHARSET:
+        MainWnd_OnCopyCharSet(hwnd);
         break;
     case ID_UPPERCASE:
         xg_bLowercase = FALSE;
