@@ -4,38 +4,38 @@ In XWordGiver, the crossword data will be created according to the specified pol
 Please choose the policy from "Policy" menu before generation.
 Applying some policy may take a long time.
 
-## The policy "Prohibit adjacent blocks" [Cost: +10%]
+## Policy: Prohibit adjacent blocks [Cost: +10%]
 
 This policy prohibits a block placed next to each other.
 
-## The policy "Prohibit blocks at 4 corners" [Cost: +5%]
+## Policy: Prohibit blocks at 4 corners [Cost: +5%]
 
 This policy prohibits placing blocks at the four corners.
 
-## The policy "Prohibit three-way blocks" [Cost: +30%]
+## Policy: Prohibit three-way blocks [Cost: +30%]
 
 This policy prohibits blocks placed next to each other in three directions of a block.
 
-## The policy "No division" [Cost: +20%] (*Cannot change)
+## Policy: No division by blocks [Cost: +20%] (*Cannot change)
 
 This policy prohibits dividing the board by blocks.
 
-## The policy "Prohibit 3 blocks diagonally" [Cost: +35%]
+## Policy: Prohibit diagonal 3 blocks [Cost: +35%]
 
 This policy prohibits placing blocks diagonally in three consecutive rows.
 
-## The policy "Prohibit 4 blocks diagonally" [Cost: +20%]
+## Policy: Prohibit diagonal 4 blocks [Cost: +20%]
 
 This policy prohibits placing blocks diagonally in four consecutive rows.
 
-## The policy "Point symmetry of blocks" [Cost: -45%]
+## Policy: Point symmetry of blocks [Cost: -45%]
 
 This policy enforces that blocks are placed point-symmetrically.
 
-## The policy "Line symmetry (vertical) of blocks" [Cost: +10%]
+## Policy: Line symmetry (vertical) of blocks [Cost: +10%]
 
 This policy enforces that blocks are placed vertical-line-symmetrically.
 
-## The policy "Line symmetry (horizontal) of blocks" [Cost: +10%]
+## Policy: Line symmetry (horizontal) of blocks [Cost: +10%]
 
 This policy enforces that blocks are placed horizontal-line-symmetrically.
