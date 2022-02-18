@@ -1684,6 +1684,42 @@ bool __fastcall XgDoSaveToLocation(HWND hwnd)
     return bOK;
 }
 
+// ズームを実際のウィンドウに合わせる。
+void __fastcall XgFitZoom(HWND hwnd)
+{
+    // クライアント領域のサイズを取得する。
+    RECT rc;
+    XgGetRealClientRect(hwnd, &rc);
+    SIZE sizClient = { rc.right - rc.left, rc.bottom - rc.top };
+
+    // イメージを更新。
+    XgUpdateImage(hwnd);
+
+    // 描画サイズを取得。
+    SIZE siz;
+    XgGetXWordExtent(&siz);
+
+    // サイズをクライアント領域にフィットさせる。
+    INT nZoomRate;
+    if (sizClient.cx * siz.cy > siz.cx * sizClient.cy) {
+        nZoomRate = sizClient.cy * 100 / siz.cy;
+    } else {
+        nZoomRate = sizClient.cx * 100 / siz.cx;
+    }
+
+    // ズーム倍率を修正。
+    if (nZoomRate == 0)
+        nZoomRate = 1;
+    if (nZoomRate > 100)
+        nZoomRate = 100;
+    xg_nZoomRate = nZoomRate;
+    XgUpdateScrollInfo(hwnd, 0, 0);
+
+    // 再描画。
+    XgUpdateImage(hwnd, 0, 0);
+    XgUpdateStatusBar(hwnd);
+}
+
 // 問題の作成。
 bool __fastcall XgOnGenerate(HWND hwnd, bool show_answer, bool multiple = false)
 {
@@ -1777,6 +1813,9 @@ bool __fastcall XgOnGenerate(HWND hwnd, bool show_answer, bool multiple = false)
         if (xg_bSmartResolution && xg_bCancelled) {
             xg_xword.clear();
         }
+
+        // ズームを全体に合わせる。
+        XgFitZoom(hwnd);
     }
 
     return true;
@@ -4322,42 +4361,6 @@ void XgOnRulePreset(HWND hwnd)
     {
         XgUpdateRules(hwnd);
     }
-}
-
-// ズームを実際のウィンドウに合わせる。
-void __fastcall XgFitZoom(HWND hwnd)
-{
-    // クライアント領域のサイズを取得する。
-    RECT rc;
-    XgGetRealClientRect(hwnd, &rc);
-    SIZE sizClient = { rc.right - rc.left, rc.bottom - rc.top };
-
-    // イメージを更新。
-    XgUpdateImage(hwnd);
-
-    // 描画サイズを取得。
-    SIZE siz;
-    XgGetXWordExtent(&siz);
-
-    // サイズをクライアント領域にフィットさせる。
-    INT nZoomRate;
-    if (sizClient.cx * siz.cy > siz.cx * sizClient.cy) {
-        nZoomRate = sizClient.cy * 100 / siz.cy;
-    } else {
-        nZoomRate = sizClient.cx * 100 / siz.cx;
-    }
-
-    // ズーム倍率を修正。
-    if (nZoomRate == 0)
-        nZoomRate = 1;
-    if (nZoomRate > 100)
-        nZoomRate = 100;
-    xg_nZoomRate = nZoomRate;
-    XgUpdateScrollInfo(hwnd, 0, 0);
-
-    // 再描画。
-    XgUpdateImage(hwnd, 0, 0);
-    XgUpdateStatusBar(hwnd);
 }
 
 // 単語リストから生成。
