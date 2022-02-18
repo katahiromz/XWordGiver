@@ -550,7 +550,6 @@ FONT 9, "Tahoma"
     EDITTEXT edt2, 205, 7, 31, 14, ES_NUMBER | ES_RIGHT
     CONTROL "", scr2, "msctls_updown32", UDS_ARROWKEYS | UDS_AUTOBUDDY | UDS_ALIGNRIGHT | UDS_SETBUDDYINT, 101, 24, 12, 20
     LTEXT "cells", -1, 248, 10, 20, 12
-    LTEXT "* If the size is 8 x 8 or more, it may take a long time to calculate.", -1, 10, 30, 290, 14
     GROUPBOX "Task", -1, 10, 50, 120, 70
     AUTORADIOBUTTON "Fill by &spaces", rad1, 20, 60, 100, 14, WS_TABSTOP
     AUTORADIOBUTTON "Fill by &blocks", rad2, 20, 80, 100, 14, WS_TABSTOP
@@ -572,7 +571,6 @@ FONT 9, "Tahoma"
     EDITTEXT edt2, 205, 7, 31, 14, ES_NUMBER | ES_RIGHT
     CONTROL "", scr2, "msctls_updown32", UDS_ARROWKEYS | UDS_AUTOBUDDY | UDS_ALIGNRIGHT | UDS_SETBUDDYINT, 101, 24, 12, 20
     LTEXT "cells", -1, 248, 10, 20, 12
-    LTEXT "* If the size is 8 x 8 or more, it may take a long time to calculate.", -1, 10, 30, 290, 14
     AUTOCHECKBOX "&SmartResolution", chx2, 10, 60, 75, 14
     AUTOCHECKBOX "Re&try regularly", chx1, 95, 60, 110, 14
     LTEXT "Max. Word &Length:", stc1, 10, 87, 65, 12
@@ -608,7 +606,6 @@ FONT 9, "Tahoma"
     EDITTEXT edt2, 205, 7, 31, 14, ES_NUMBER | ES_RIGHT
     CONTROL "", scr2, "msctls_updown32", UDS_ARROWKEYS | UDS_AUTOBUDDY | UDS_ALIGNRIGHT | UDS_SETBUDDYINT, 101, 24, 12, 20
     LTEXT "cells", -1, 248, 10, 20, 12
-    LTEXT "* If the size is 8 x 8 or more, it may take a long time to calculate.", -1, 10, 30, 290, 14
     AUTOCHECKBOX "&SmartResolution", chx2, 10, 60, 75, 14
     AUTOCHECKBOX "Re&try regularly", chx1, 95, 60, 110, 14
     LTEXT "Max. Word &Length:", stc1, 10, 87, 67, 12
