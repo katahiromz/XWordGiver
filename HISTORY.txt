@@ -118,6 +118,7 @@
     - Abolished "skeleton mode".
     - Modified the default policy.
     - Added "Copy the set of characters" feature.
+    - Added "policy preset" feature.
 
 # 開発履歴 (Japanese)
 
@@ -549,3 +550,4 @@
     - スケルトンモードの廃止。
     - 既定値のルールを変更。
     - 「文字集合をコピー」機能の追加。
+    - ルールプリセット機能を追加。

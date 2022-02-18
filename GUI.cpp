@@ -27,6 +27,7 @@
 #include "XG_SettingsDialog.hpp"
 #include "XG_ThemeDialog.hpp"
 #include "XG_WordListDialog.hpp"
+#include "XG_RulePresetDialog.hpp"
 
 #undef HANDLE_WM_MOUSEWHEEL     // might be wrong
 #define HANDLE_WM_MOUSEWHEEL(hwnd, wParam, lParam, fn) \
@@ -4311,6 +4312,16 @@ static void XgSetZoomRate(HWND hwnd, INT nZoomRate)
     XgUpdateImage(hwnd, x, y);
 }
 
+// ルール プリセット。
+void XgOnRulePreset(HWND hwnd)
+{
+    XG_RulePresetDialog dialog;
+    if (dialog.DoModal(hwnd) == IDOK)
+    {
+        XgUpdateRules(hwnd);
+    }
+}
+
 // ズームを実際のウィンドウに合わせる。
 void __fastcall XgFitZoom(HWND hwnd)
 {
@@ -5961,6 +5972,9 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
         break;
     case ID_FITZOOM:
         XgFitZoom(hwnd);
+        break;
+    case ID_RULEPRESET:
+        XgOnRulePreset(hwnd);
         break;
     default:
         if (!XgOnCommandExtra(hwnd, id)) {

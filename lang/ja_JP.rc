@@ -175,6 +175,8 @@ LANGUAGE LANG_JAPANESE, SUBLANG_DEFAULT
         MENUITEM "黒マス線対称(タテ)(&L)", ID_RULE_LINESYMMETRYV
         MENUITEM "黒マス線対称(ヨコ)(&O)", ID_RULE_LINESYMMETRYH
         MENUITEM SEPARATOR
+        MENUITEM "ルール プリセット(&P)...", ID_RULEPRESET
+        MENUITEM SEPARATOR
         MENUITEM "ルール適合性チェック(&A)", ID_RULECHECK
     }
     POPUP "ヘルプ(&H)"
@@ -1360,6 +1362,17 @@ FONT 10, "MS UI Gothic"
     AUTOCHECKBOX "すべてでなくてもよい(&N)", chx1, 5, 165, 90, 14
     DEFPUSHBUTTON "生成開始(&G)", IDOK, 105, 165, 60, 14
     PUSHBUTTON "キャンセル", IDCANCEL, 170, 165, 60, 14
+}
+
+IDD_RULEPRESET DIALOG 0, 0, 160, 60
+CAPTION "ルール プリセット"
+STYLE DS_CENTER | DS_MODALFRAME | WS_POPUPWINDOW | WS_CAPTION
+FONT 9, "MS UI Gothic"
+{
+    LTEXT "プリセット値(&V):", -1, 5, 5, 90, 10
+    COMBOBOX cmb1, 25, 20, 100, 300, CBS_HASSTRINGS | CBS_AUTOHSCROLL | CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP
+    DEFPUSHBUTTON "OK", IDOK, 50, 40, 50, 14
+    PUSHBUTTON "キャンセル", IDCANCEL, 105, 40, 50, 14
 }
 
 //////////////////////////////////////////////////////////////////////////////

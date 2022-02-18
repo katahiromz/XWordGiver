@@ -264,6 +264,19 @@ enum RULES
 // ルール群。
 extern INT xg_nRules;
 
+// 正当なルール。
+#define VALID_RULES ( \
+    RULE_DONTDOUBLEBLACK | \
+    RULE_DONTCORNERBLACK | \
+    RULE_DONTTRIDIRECTIONS | \
+    RULE_DONTDIVIDE | \
+    RULE_DONTFOURDIAGONALS | \
+    RULE_POINTSYMMETRY | \
+    RULE_DONTTHREEDIAGONALS | \
+    RULE_LINESYMMETRYV | \
+    RULE_LINESYMMETRYH)
+
+
 //////////////////////////////////////////////////////////////////////////////
 // マスの位置。
 
