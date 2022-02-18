@@ -330,7 +330,6 @@
 #define ID_THEME                            258
 #define ID_RESETTHEME                       259
 #define ID_RETRYIFTIMEOUT                   260
-#define ID_SKELETONMODE                     261
 #define ID_SEQPATGEN                        262
 #define ID_FILLBYBLOCKS                     263
 #define ID_FILLBYWHITES                     264

@@ -115,6 +115,7 @@
     - Able to drop the LOOKS file.
     - Renamed "Policies" as "Policy".
     - Renamed some policies (English only).
+    - Abolished "skeleton mode".
 
 # 開発履歴 (Japanese)
 
@@ -543,3 +544,4 @@
     - LOOKSファイルのドロップを可能に。
     - 「Policies」を「Policy」に変更。
     - いくつかのルールを改名 (英語のみ)。
+    - スケルトンモードの廃止。

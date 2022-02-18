@@ -177,8 +177,6 @@ LANGUAGE LANG_ENGLISH, SUBLANG_DEFAULT
         MENUITEM "The policy ""&Line symmetry (Vertical) of blocks""", ID_RULE_LINESYMMETRYV
         MENUITEM "The policy ""Line symmetry (H&orizontal) of blocks""", ID_RULE_LINESYMMETRYH
         MENUITEM SEPARATOR
-        MENUITEM "&Skeleton Mode", ID_SKELETONMODE
-        MENUITEM SEPARATOR
         MENUITEM "Policy &conformity check", ID_RULECHECK
     }
     POPUP "&Help"

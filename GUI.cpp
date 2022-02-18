@@ -111,9 +111,6 @@ INT xg_nForDisplay = 0;
 // ズーム比率(%)。
 INT xg_nZoomRate = 100;
 
-// スケルトンモードか？
-BOOL xg_bSkeletonMode = FALSE;
-
 // 番号を表示するか？
 BOOL xg_bShowNumbering = TRUE;
 // キャレットを表示するか？
@@ -459,30 +456,30 @@ void __fastcall XgEnsureCaretVisible(HWND hwnd)
 // 旧来のスマート解決では最大長を指定する必要があった。
 INT __fastcall XgGetPreferredMaxLength(void)
 {
-    if (xg_imode == xg_im_KANJI) {
-        // ５文字以上の熟語は少ないので避ける。
-        return 4;
-    } else if (xg_bSkeletonMode) {
-        // スケルトンモードでは長い方がいい。
-        return 6;
-    } else if (xg_imode == xg_im_RUSSIA || xg_imode == xg_im_ABC ||
-               xg_imode == xg_im_GREEK || xg_imode == xg_im_ANY)
-    {
-        // ロシア語や英語は日本語の単語より長い傾向にある。
-        return 5;
-    } else if (xg_imode == xg_im_DIGITS) {
-        // 数字の単語？　何に使うんだ？
-        return 7;
-    } else if (xg_nRules & (RULE_LINESYMMETRYH | RULE_LINESYMMETRYV)) {
-        // 線対称のときに偶数長はまずいと思われる。
-        return 5;
-    } else if (xg_imode == xg_im_KANA) {
-        // 日本語のカナと思われる。4文字の単語が一番多い。
-        return 4;
-    } else {
-        // よくわからない。とりあえず5文字。
-        return 5;
+    INT ret = 7;
+
+    if (xg_dict_1.size()) {
+        auto& word = xg_dict_1[0].m_word;
+        auto ch = word[0];
+        if (XgIsCharKanjiW(ch)) {
+            // 漢字の熟語は4文字以下が多い。
+            ret = 4;
+        } else if (XgIsCharKanaW(ch)) {
+            // 日本語の単語は4文字程度が多い。
+            ret = 5;
+        } else {
+            // ロシア語や英語は日本語の単語より長い傾向にある。
+            ret = 7;
+        }
     }
+
+    if (xg_nRules & (RULE_LINESYMMETRYH | RULE_LINESYMMETRYV)) {
+        // 線対称のときに偶数長はまずいと思われる。
+        if (ret % 2 == 0)
+            ret += 1;
+    }
+
+    return ret;
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -566,12 +563,10 @@ bool __fastcall XgLoadSettings(void)
 
     if (XgIsUserJapanese()) {
         xg_nRules = DEFAULT_RULES_JAPANESE;
-        xg_bSkeletonMode = FALSE;
         xg_nViewMode = XG_VIEW_NORMAL;
         xg_nFileType = XG_FILETYPE_XWJ;
     } else {
         xg_nRules = DEFAULT_RULES_ENGLISH;
-        xg_bSkeletonMode = TRUE;
         xg_nViewMode = XG_VIEW_SKELETON;
         xg_nFileType = XG_FILETYPE_XD;
     }
@@ -727,9 +722,6 @@ bool __fastcall XgLoadSettings(void)
             }
             if (!app_key.QueryDword(L"ZoomRate", dwValue)) {
                 xg_nZoomRate = dwValue;
-            }
-            if (!app_key.QueryDword(L"SkeletonMode", dwValue)) {
-                xg_bSkeletonMode = dwValue;
             }
             if (!app_key.QueryDword(L"ShowNumbering", dwValue)) {
                 xg_bShowNumbering = dwValue;
@@ -900,7 +892,6 @@ bool __fastcall XgSaveSettings(void)
             app_key.SetDword(L"SmartResolution", xg_bSmartResolution);
             app_key.SetDword(L"InputMode", (DWORD)xg_imode);
             app_key.SetDword(L"ZoomRate", xg_nZoomRate);
-            app_key.SetDword(L"SkeletonMode", xg_bSkeletonMode);
             app_key.SetDword(L"ShowNumbering", xg_bShowNumbering);
             app_key.SetDword(L"ShowCaret", xg_bShowCaret);
 
@@ -3067,13 +3058,6 @@ void __fastcall MainWnd_OnInitMenu(HWND /*hwnd*/, HMENU hMenu)
         DoUpdateDictMenu(hDictMenu);
     }
 
-    // スケルトンモード。
-    if (xg_bSkeletonMode) {
-        CheckMenuItem(hMenu, ID_SKELETONMODE, MF_BYCOMMAND | MF_CHECKED);
-    } else {
-        CheckMenuItem(hMenu, ID_SKELETONMODE, MF_BYCOMMAND | MF_UNCHECKED);
-    }
-
     // 数字を表示するか？
     if (xg_bShowNumbering) {
         CheckMenuItem(hMenu, ID_SHOWHIDENUMBERING, MF_BYCOMMAND | MF_CHECKED);
@@ -3819,10 +3803,6 @@ void XgUpdateTheme(HWND hwnd)
 // ルールが変更された。
 void XgUpdateRules(HWND hwnd)
 {
-    // 必要に応じてスケルトンモードを解除する。
-    if ((xg_nRules & NON_SKELETON_RULES) != 0)
-        xg_bSkeletonMode = FALSE;
-
     HMENU hMenu = ::GetMenu(hwnd);
     INT nCount = ::GetMenuItemCount(hMenu);
     WCHAR szText[32];
@@ -4380,7 +4360,6 @@ void XgGenerateFromWordList(HWND hwnd)
     xg_nRules &= ~(RULE_DONTCORNERBLACK | RULE_DONTDOUBLEBLACK | RULE_DONTTRIDIRECTIONS);
     xg_nRules &= ~(RULE_DONTFOURDIAGONALS | RULE_DONTTHREEDIAGONALS);
     xg_nRules |= RULE_DONTDIVIDE;
-    xg_bSkeletonMode = TRUE;
     XgUpdateRules(xg_hMainWnd);
     // 解をセットする。
     auto& solution = from_words_t<wchar_t, false>::s_solution;
@@ -5685,7 +5664,6 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
             xg_nRules = DEFAULT_RULES_JAPANESE;
         else
             xg_nRules = DEFAULT_RULES_ENGLISH;
-        xg_bSkeletonMode = FALSE;
         XgUpdateRules(hwnd);
         break;
     case ID_OPENRULESTXT:
@@ -5696,9 +5674,6 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
             xg_nRules &= ~RULE_DONTDOUBLEBLACK;
         } else {
             xg_nRules |= RULE_DONTDOUBLEBLACK;
-            if (xg_bSkeletonMode) {
-                xg_bSkeletonMode = FALSE;
-            }
         }
         XgUpdateRules(hwnd);
         break;
@@ -5707,9 +5682,6 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
             xg_nRules &= ~RULE_DONTCORNERBLACK;
         } else {
             xg_nRules |= RULE_DONTCORNERBLACK;
-            if (xg_bSkeletonMode) {
-                xg_bSkeletonMode = FALSE;
-            }
         }
         XgUpdateRules(hwnd);
         break;
@@ -5718,9 +5690,6 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
             xg_nRules &= ~RULE_DONTTRIDIRECTIONS;
         } else {
             xg_nRules |= RULE_DONTTRIDIRECTIONS;
-            if (xg_bSkeletonMode) {
-                xg_bSkeletonMode = FALSE;
-            }
         }
         XgUpdateRules(hwnd);
         break;
@@ -5737,12 +5706,10 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
             xg_nRules &= ~(RULE_DONTTHREEDIAGONALS | RULE_DONTFOURDIAGONALS);
         } else if (!(xg_nRules & RULE_DONTTHREEDIAGONALS) && (xg_nRules & RULE_DONTFOURDIAGONALS)) {
             xg_nRules |= RULE_DONTTHREEDIAGONALS | RULE_DONTFOURDIAGONALS;
-            xg_bSkeletonMode = FALSE;
         } else if ((xg_nRules & RULE_DONTTHREEDIAGONALS) && !(xg_nRules & RULE_DONTFOURDIAGONALS)) {
             xg_nRules &= ~RULE_DONTTHREEDIAGONALS;
         } else {
             xg_nRules |= (RULE_DONTTHREEDIAGONALS | RULE_DONTFOURDIAGONALS);
-            xg_bSkeletonMode = FALSE;
         }
         XgUpdateRules(hwnd);
         break;
@@ -5750,14 +5717,12 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
         if ((xg_nRules & RULE_DONTTHREEDIAGONALS) && (xg_nRules & RULE_DONTFOURDIAGONALS)) {
             xg_nRules &= ~RULE_DONTTHREEDIAGONALS;
             xg_nRules |= RULE_DONTFOURDIAGONALS;
-            xg_bSkeletonMode = FALSE;
         } else if (!(xg_nRules & RULE_DONTTHREEDIAGONALS) && (xg_nRules & RULE_DONTFOURDIAGONALS)) {
             xg_nRules &= ~(RULE_DONTTHREEDIAGONALS | RULE_DONTFOURDIAGONALS);
         } else if ((xg_nRules & RULE_DONTTHREEDIAGONALS) && !(xg_nRules & RULE_DONTFOURDIAGONALS)) {
             xg_nRules &= ~RULE_DONTFOURDIAGONALS;
         } else {
             xg_nRules |= RULE_DONTFOURDIAGONALS;
-            xg_bSkeletonMode = FALSE;
         }
         XgUpdateRules(hwnd);
         break;
@@ -5799,20 +5764,6 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
         break;
     case ID_RETRYIFTIMEOUT:
         xg_bAutoRetry = !xg_bAutoRetry;
-        break;
-    case ID_SKELETONMODE:
-        if (xg_bSkeletonMode) {
-            xg_bSkeletonMode = FALSE;
-            if (XgIsUserJapanese()) {
-                xg_nRules = DEFAULT_RULES_JAPANESE;
-            } else {
-                xg_nRules = DEFAULT_RULES_ENGLISH;
-            }
-        } else {
-            xg_bSkeletonMode = TRUE;
-            xg_nRules &= ~NON_SKELETON_RULES;
-        }
-        XgUpdateRules(hwnd);
         break;
     case ID_SEQPATGEN:
         // 偶数行数で黒マス線対称（タテ）の場合は連黒禁は不可。

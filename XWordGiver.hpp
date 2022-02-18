@@ -258,15 +258,9 @@ enum RULES
 };
 
 // デフォルトのルール。
-#define DEFAULT_RULES_ENGLISH (RULE_DONTDIVIDE)
+#define DEFAULT_RULES_ENGLISH (RULE_DONTDIVIDE | RULE_POINTSYMMETRY)
 #define DEFAULT_RULES_JAPANESE (RULE_DONTDOUBLEBLACK | RULE_DONTCORNERBLACK | \
                                 RULE_DONTTRIDIRECTIONS | RULE_DONTDIVIDE)
-
-// スケルトンモードではないルール。
-#define NON_SKELETON_RULES ( \
-    RULE_DONTFOURDIAGONALS | RULE_DONTTHREEDIAGONALS | \
-    RULE_DONTCORNERBLACK | RULE_DONTDOUBLEBLACK | RULE_DONTTRIDIRECTIONS \
-)
 
 // ルール群。
 extern INT xg_nRules;
@@ -1326,9 +1320,6 @@ extern INT xg_nPatWndX;
 extern INT xg_nPatWndY;
 extern INT xg_nPatWndCX;
 extern INT xg_nPatWndCY;
-
-// スケルトンモードか？
-extern BOOL xg_bSkeletonMode;
 
 //////////////////////////////////////////////////////////////////////////////
 
