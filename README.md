@@ -12,17 +12,17 @@
 
 ### If you just want to make something:
 
-1. First, please choose the "policies" and a "dictionary".
+1. First, please choose some "policy" and a "dictionary".
 2. In the "File" menu, select "Generate crossword..." and click the "Generate" button.
 
 ### If you want to choose a block pattern:
 
-1. First, please choose the "policies" and a "dictionary".
+1. First, please choose some "policy" and a "dictionary".
 2. Select "Generate from block pattern..." from the "File" menu, click on the pattern of your choice, and press the "Generate" button.
 
 ### If you want to set the block pattern by yourself:
 
-1. First, please choose the "policies" and a "dictionary".
+1. First, please choose some "policy" and a "dictionary".
 2. Use the arrow keys and space bar to create a block pattern. Alternatively, you can generate a block pattern from the "Help" menu.
 3. Select "Find a solution (without adding blocks)" from the "Solution" menu.
 
@@ -34,7 +34,7 @@
 
 ### If you want to create everything manually:
 
-1. First, please choose the "policies" and a "dictionary".
+1. First, please choose some "policy" and a "dictionary".
 2. Repeat typing the arrow keys, spacebar, and letters.
 3. Once all the cells are filled, select "Find a solution (without adding blocks)" from the "Solution" menu.
 
