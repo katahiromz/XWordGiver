@@ -52,7 +52,7 @@ LANGUAGE LANG_ENGLISH, SUBLANG_DEFAULT
         MENUITEM SEPARATOR
         MENUITEM "Copy the DOWN word", ID_COPYWORDVERT
         MENUITEM "Copy the ACROSS word", ID_COPYWORDHORZ
-        MENUITEM "Copy the set of characters", ID_COPYCHARSET
+        MENUITEM "Copy the &set of characters", ID_COPYCHARSET
         MENUITEM "Copy the list of w&ords", ID_COPY_WORD_LIST
         MENUITEM "Copy the double-frame word", ID_COPYMARKWORD
         MENUITEM SEPARATOR
