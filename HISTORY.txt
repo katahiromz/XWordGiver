@@ -114,6 +114,7 @@
     - Added "Lowercase" and "Hiragana" to Appearance.
     - Able to drop the LOOKS file.
     - Renamed "Policies" as "Policy".
+    - Renamed some policies (English only).
 
 # 開発履歴 (Japanese)
 
@@ -541,3 +542,4 @@
     - 「見た目の設定」に「英小文字」「ひらがな」を追加。
     - LOOKSファイルのドロップを可能に。
     - 「Policies」を「Policy」に変更。
+    - いくつかのルールを改名 (英語のみ)。

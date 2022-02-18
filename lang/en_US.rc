@@ -170,9 +170,9 @@ LANGUAGE LANG_ENGLISH, SUBLANG_DEFAULT
         MENUITEM "The policy ""Prohibit adjacent blocks""", ID_RULE_DONTDOUBLEBLACK
         MENUITEM "The policy ""Prohibit blocks at 4 corners""", ID_RULE_DONTCORNERBLACK
         MENUITEM "The policy ""Prohibit three-way blocks""", ID_RULE_DONTTRIDIRECTIONS
-        MENUITEM "The policy ""No division""", ID_RULE_DONTDIVIDE, GRAYED
-        MENUITEM "The policy ""Prohibit 3 blocks diagonally""", ID_RULE_DONTTHREEDIAGONALS
-        MENUITEM "The policy ""Prohibit 4 blocks diagonally""", ID_RULE_DONTFOURDIAGONALS
+        MENUITEM "The policy ""No division by blocks""", ID_RULE_DONTDIVIDE, GRAYED
+        MENUITEM "The policy ""Prohibit diagonal 3 blocks""", ID_RULE_DONTTHREEDIAGONALS
+        MENUITEM "The policy ""Prohibit diagonal 4 blocks""", ID_RULE_DONTFOURDIAGONALS
         MENUITEM "The policy ""Point symmetry of blocks""", ID_RULE_POINTSYMMETRY
         MENUITEM "The policy ""&Line symmetry (Vertical) of blocks""", ID_RULE_LINESYMMETRYV
         MENUITEM "The policy ""Line symmetry (H&orizontal) of blocks""", ID_RULE_LINESYMMETRYH
@@ -1439,7 +1439,7 @@ STRINGTABLE
     IDS_ADJACENTBLOCK, "The blocks are next to each other. This violates the policy ""Prohibit adjacent blocks""."
     IDS_DOUBLEDWORD, "Don't use a word twice."
     IDS_TRIBLOCK, "The blocks in three directions surround a cell. This violates the policy ""Prohibit three-way blocks""."
-    IDS_DIVIDED, "The blocks divide the board into some parts. This violates the policy ""No division""."
+    IDS_DIVIDED, "The blocks divide the board into some parts. This violates the policy ""No division by blocks""."
     IDS_NOCANDIDATE, "At Cell Position (%u, %u), it doesn't match any candidates."
     IDS_IMGFILTER, "Bitmap files (*.bmp)|*.bmp|EMF files (*.emf)|*.emf||"
     IDS_DICTFILTER, "Dict data (*.dic;*.tsv)|*.dic;*.tsv|All Files (*.*)|*.*||"
@@ -1515,8 +1515,8 @@ STRINGTABLE
     IDS_RULE_DONTDOUBLEBLACK, "Prohibit adjacent blocks"
     IDS_RULE_DONTCORNERBLACK, "Prohibit blocks at 4 corners"
     IDS_RULE_DONTTRIDIRECTIONS, "Prohibit three-way blocks"
-    IDS_RULE_DONTDIVIDE, "No division"
-    IDS_RULE_DONTFOURDIAGONALS, "Prohibit 4 blocks diagonally in a row"
+    IDS_RULE_DONTDIVIDE, "No division by blocks"
+    IDS_RULE_DONTFOURDIAGONALS, "Prohibit diagonal 4 blocks"
     IDS_RULE_POINTSYMMETRY, "Point symmetry of blocks"
     IDS_TAGS, "Tags"
     IDS_TAGCOUNT, "Tag count"
@@ -1526,8 +1526,8 @@ STRINGTABLE
     IDS_DEFAULTDICT, "&Dict"
     IDS_MODIFIEDDICT, "(!)&Dict"
     IDS_PATMAKING, "I have created %u block patterns."
-    IDS_THREEDIAGONALS, "Prohibit 3 blocks diagonally in a row"
-    IDS_RULE_DONTTHREEDIAGONALS, "Prohibit 3 blocks diagonally in a row"
+    IDS_THREEDIAGONALS, "Prohibit diagonal 3 blocks"
+    IDS_RULE_DONTTHREEDIAGONALS, "Prohibit diagonal 3 blocks"
     IDS_NORMAL_DICT, "ENG-Freedom"
     IDS_DIGITS, "Digits"
     IDS_MAIN_LANGUAGE, "English"
