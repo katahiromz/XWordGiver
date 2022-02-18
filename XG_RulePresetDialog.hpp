@@ -33,8 +33,13 @@ public:
                 HWND hCmb1 = GetDlgItem(hwnd, cmb1);
                 ComboBox_RealGetText(hCmb1, szText, _countof(szText));
 
-                xg_nRules = (wcstoul(szText, NULL, 0) & VALID_RULES);
-                xg_nRules |= RULE_DONTDIVIDE;
+                // 前後の空白を取り除く。
+                std::wstring str = szText;
+                xg_str_trim(str);
+
+                // ルールを適用。
+                xg_nRules = (wcstoul(str.c_str(), NULL, 0) & VALID_RULES);
+                xg_nRules |= RULE_DONTDIVIDE; // 例外。
 
                 // ダイアログを閉じる。
                 ::EndDialog(hwnd, IDOK);
