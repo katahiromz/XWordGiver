@@ -119,6 +119,7 @@
     - Modified the default policy.
     - Added "Copy the set of characters" feature.
     - Added "policy preset" feature.
+    - Improved initial position of Clues window.
 
 # 開発履歴 (Japanese)
 
@@ -551,3 +552,4 @@
     - 既定値のルールを変更。
     - 「文字集合をコピー」機能の追加。
     - ルールプリセット機能を追加。
+    - ヒントウィンドウの初期位置を改善。

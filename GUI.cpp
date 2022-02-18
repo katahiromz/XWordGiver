@@ -6573,6 +6573,7 @@ BOOL XgCreateHintsWnd(HWND hwnd)
     auto exstyle = WS_EX_TOOLWINDOW;
     auto text = XgLoadStringDx1(IDS_HINTS);
 
+    // ヒントウィンドウの初期位置を改良する。
     if (XG_HintsWnd::s_nHintsWndX == CW_USEDEFAULT) {
         RECT rcMain;
         GetWindowRect(xg_hMainWnd, &rcMain);
