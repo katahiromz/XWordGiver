@@ -1,6 +1,6 @@
 ﻿# XWordGiver by katahiromz
 
-Copyright (C) 2013-2021 katahiromz. All Rights Reserved.
+Copyright (C) 2013-2022 katahiromz. All Rights Reserved.
 
 ## Introduction
 
