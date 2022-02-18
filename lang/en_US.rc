@@ -165,15 +165,15 @@ LANGUAGE LANG_ENGLISH, SUBLANG_DEFAULT
         MENUITEM "&Reset the policy", ID_RESETRULES
         MENUITEM "What's the policy?", ID_OPENRULESTXT
         MENUITEM SEPARATOR
-        MENUITEM "The policy ""Prohibit adjacent blocks""", ID_RULE_DONTDOUBLEBLACK
-        MENUITEM "The policy ""Prohibit blocks at 4 corners""", ID_RULE_DONTCORNERBLACK
-        MENUITEM "The policy ""Prohibit three-way blocks""", ID_RULE_DONTTRIDIRECTIONS
-        MENUITEM "The policy ""No division by blocks""", ID_RULE_DONTDIVIDE, GRAYED
-        MENUITEM "The policy ""Prohibit diagonal 3 blocks""", ID_RULE_DONTTHREEDIAGONALS
-        MENUITEM "The policy ""Prohibit diagonal 4 blocks""", ID_RULE_DONTFOURDIAGONALS
-        MENUITEM "The policy ""Point symmetry of blocks""", ID_RULE_POINTSYMMETRY
-        MENUITEM "The policy ""&Line symmetry (Vertical) of blocks""", ID_RULE_LINESYMMETRYV
-        MENUITEM "The policy ""Line symmetry (H&orizontal) of blocks""", ID_RULE_LINESYMMETRYH
+        MENUITEM "Policy: Prohibit adjacent blocks", ID_RULE_DONTDOUBLEBLACK
+        MENUITEM "Policy: Prohibit blocks at 4 corners", ID_RULE_DONTCORNERBLACK
+        MENUITEM "Policy: Prohibit three-way blocks", ID_RULE_DONTTRIDIRECTIONS
+        MENUITEM "Policy: No division by blocks", ID_RULE_DONTDIVIDE, GRAYED
+        MENUITEM "Policy: Prohibit diagonal 3 blocks", ID_RULE_DONTTHREEDIAGONALS
+        MENUITEM "Policy: Prohibit diagonal 4 blocks", ID_RULE_DONTFOURDIAGONALS
+        MENUITEM "Policy: Point symmetry of blocks", ID_RULE_POINTSYMMETRY
+        MENUITEM "Policy: &Line symmetry (Vertical) of blocks", ID_RULE_LINESYMMETRYV
+        MENUITEM "Policy: Line symmetry (H&orizontal) of blocks", ID_RULE_LINESYMMETRYH
         MENUITEM SEPARATOR
         MENUITEM "Policy &Preset...\tCtrl+R", ID_RULEPRESET
         MENUITEM SEPARATOR
