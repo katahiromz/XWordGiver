@@ -6,6 +6,8 @@
 class XG_GenDialog : public XG_Dialog
 {
 public:
+    BOOL m_bShowAnswer = FALSE;
+
     XG_GenDialog()
     {
     }
@@ -28,6 +30,9 @@ public:
         // スマート解決か？
         if (xg_bSmartResolution)
             ::CheckDlgButton(hwnd, chx2, BST_CHECKED);
+        // 答えを表示するか？
+        if (m_bShowAnswer)
+            ::CheckDlgButton(hwnd, chx3, BST_CHECKED);
         // IMEをOFFにする。
         {
             HWND hwndCtrl;
@@ -86,6 +91,8 @@ public:
             xg_bAutoRetry = (::IsDlgButtonChecked(hwnd, chx1) == BST_CHECKED);
             // スマート解決か？
             xg_bSmartResolution = (::IsDlgButtonChecked(hwnd, chx2) == BST_CHECKED);
+            // 答えを表示するか？
+            m_bShowAnswer = (::IsDlgButtonChecked(hwnd, chx3) == BST_CHECKED);
             // 初期化する。
             {
                 xg_bSolved = false;

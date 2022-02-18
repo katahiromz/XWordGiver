@@ -1696,7 +1696,9 @@ bool __fastcall XgOnGenerate(HWND hwnd, bool show_answer, bool multiple = false)
     } else {
         // [問題の作成]ダイアログ。
         XG_GenDialog dialog;
+        dialog.m_bShowAnswer = show_answer;
         nID = INT(dialog.DoModal(hwnd));
+        show_answer = dialog.m_bShowAnswer;
     }
     ::EnableWindow(xg_hwndInputPalette, TRUE);
     if (nID != IDOK) {
