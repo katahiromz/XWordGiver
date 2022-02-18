@@ -6573,6 +6573,31 @@ BOOL XgCreateHintsWnd(HWND hwnd)
     auto exstyle = WS_EX_TOOLWINDOW;
     auto text = XgLoadStringDx1(IDS_HINTS);
 
+    if (XG_HintsWnd::s_nHintsWndX == CW_USEDEFAULT) {
+        RECT rcMain;
+        GetWindowRect(xg_hMainWnd, &rcMain);
+        HMONITOR hMon = ::MonitorFromWindow(xg_hMainWnd, MONITOR_DEFAULTTONEAREST);
+        MONITORINFO info = { sizeof(info) };
+        RECT rcWork;
+        if (::GetMonitorInfoW(hMon, &info))
+            rcWork = info.rcWork;
+        else
+            ::SystemParametersInfo(SPI_GETWORKAREA, 0, &rcWork, 0);
+        if (rcMain.right + XG_HintsWnd::s_nHintsWndCX < rcWork.right) {
+            XG_HintsWnd::s_nHintsWndX = rcMain.right;
+            XG_HintsWnd::s_nHintsWndY = rcMain.top;
+        } else if (rcWork.left + XG_HintsWnd::s_nHintsWndCX <= rcMain.left) {
+            XG_HintsWnd::s_nHintsWndX = rcMain.left - XG_HintsWnd::s_nHintsWndCX;
+            XG_HintsWnd::s_nHintsWndY = rcMain.top;
+        } else if (rcWork.top + XG_HintsWnd::s_nHintsWndCY < rcMain.top) {
+            XG_HintsWnd::s_nHintsWndX = rcMain.left;
+            XG_HintsWnd::s_nHintsWndY = rcMain.top - XG_HintsWnd::s_nHintsWndCY;
+        } else if (rcMain.bottom + XG_HintsWnd::s_nHintsWndCY < rcWork.bottom) {
+            XG_HintsWnd::s_nHintsWndX = rcMain.left;
+            XG_HintsWnd::s_nHintsWndY = rcMain.bottom;
+        }
+    }
+
     xg_hints_wnd.CreateWindowDx(hwnd, text, style, exstyle,
                                 XG_HintsWnd::s_nHintsWndX, XG_HintsWnd::s_nHintsWndY,
                                 XG_HintsWnd::s_nHintsWndCX, XG_HintsWnd::s_nHintsWndCY);
