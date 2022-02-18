@@ -175,7 +175,7 @@ LANGUAGE LANG_ENGLISH, SUBLANG_DEFAULT
         MENUITEM "The policy ""&Line symmetry (Vertical) of blocks""", ID_RULE_LINESYMMETRYV
         MENUITEM "The policy ""Line symmetry (H&orizontal) of blocks""", ID_RULE_LINESYMMETRYH
         MENUITEM SEPARATOR
-        MENUITEM "Policy &Preset...", ID_RULEPRESET
+        MENUITEM "Policy &Preset...\tCtrl+R", ID_RULEPRESET
         MENUITEM SEPARATOR
         MENUITEM "Policy &conformity check", ID_RULECHECK
     }
@@ -540,7 +540,7 @@ LANGUAGE LANG_ENGLISH, SUBLANG_DEFAULT
 // RT_DIALOG
 
 IDD_NEW DIALOG 0, 0, 310, 125
-CAPTION "New board"
+CAPTION "New board (Ctrl+N)"
 STYLE DS_CENTER | DS_MODALFRAME | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
 FONT 9, "Tahoma"
 {
@@ -1273,7 +1273,7 @@ FONT 9, "Tahoma"
 }
 
 IDD_BLOCKPATTERN DIALOG 0, 0, 335, 265
-CAPTION "Choose pattern"
+CAPTION "Choose pattern (Ctrl+;)"
 STYLE DS_CENTER | DS_MODALFRAME | WS_POPUPWINDOW | WS_CAPTION | WS_THICKFRAME | WS_MAXIMIZEBOX
 FONT 9, "Tahoma"
 {
@@ -1349,7 +1349,7 @@ FONT 9, "Tahoma"
 }
 
 IDD_WORDLIST DIALOG 0, 0, 235, 185
-CAPTION "Generate from words"
+CAPTION "Generate from words (Ctrl+:)"
 STYLE DS_CENTER | DS_MODALFRAME | WS_POPUPWINDOW | WS_CAPTION
 FONT 10, "MS Shell Dlg"
 {
@@ -1362,7 +1362,7 @@ FONT 10, "MS Shell Dlg"
 }
 
 IDD_RULEPRESET DIALOG 0, 0, 160, 60
-CAPTION "Policy Preset"
+CAPTION "Policy Preset (Ctrl+R)"
 STYLE DS_CENTER | DS_MODALFRAME | WS_POPUPWINDOW | WS_CAPTION
 FONT 9, "MS UI Gothic"
 {
