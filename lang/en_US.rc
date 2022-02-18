@@ -49,7 +49,7 @@ LANGUAGE LANG_ENGLISH, SUBLANG_DEFAULT
         MENUITEM SEPARATOR
         MENUITEM "Copy the DOWN word", ID_COPYWORDVERT
         MENUITEM "Copy the ACROSS word", ID_COPYWORDHORZ
-        MENUITEM "Copy the &set of characters", ID_COPYCHARSET
+        MENUITEM "Copy the multi&set of characters", ID_COPYCHARSET
         MENUITEM "Copy the list of w&ords", ID_COPY_WORD_LIST
         MENUITEM "Copy the double-frame word", ID_COPYMARKWORD
         MENUITEM SEPARATOR
@@ -1423,8 +1423,8 @@ STRINGTABLE
     IDS_CANTMAKEPROBLEM, "I couldn't create the puzzle.\n\nPlease confirm the dictionary, the block pattern, and the policy.\n\nCalculation time: %u.%u[sec]"
     IDS_ENTERINT, "Please enter an integer between 2 and 256."
     IDS_OPENDICTDATA, "Open dictionary"
-    IDS_OPENCROSSDATA, "Open crossword"
-    IDS_SAVECROSSDATA, "Save crossword"
+    IDS_OPENCROSSDATA, "Open crossword (Ctrl+O)"
+    IDS_SAVECROSSDATA, "Save crossword (Ctrl+S)"
     IDS_DOWN, "*** DOWN ***"
     IDS_ACROSS, "*** ACROSS ***"
     IDS_DOWNNUMBER, "[D%d.]"

@@ -49,7 +49,7 @@ LANGUAGE LANG_JAPANESE, SUBLANG_DEFAULT
         MENUITEM SEPARATOR
         MENUITEM "タテの単語をコピー(&V)", ID_COPYWORDVERT
         MENUITEM "ヨコの単語をコピー(&H)", ID_COPYWORDHORZ
-        MENUITEM "文字集合をコピー(&S)", ID_COPYCHARSET
+        MENUITEM "文字群をコピー(&S)", ID_COPYCHARSET
         MENUITEM "単語リストをコピー(&O)", ID_COPY_WORD_LIST
         MENUITEM "二重マス単語をコピー(&M)", ID_COPYMARKWORD
         MENUITEM SEPARATOR
@@ -1426,8 +1426,8 @@ STRINGTABLE
     IDS_CANTMAKEPROBLEM, "問題を作成できませんでした。\n\n辞書の設定や黒マスの配置やルールを確認して下さい。\n\n計算時間: %u.%u[秒]"
     IDS_ENTERINT, "2以上256以下の整数を入力して下さい。"
     IDS_OPENDICTDATA, "辞書データを開く"
-    IDS_OPENCROSSDATA, "クロスワード データを開く"
-    IDS_SAVECROSSDATA, "クロスワード データを保存する"
+    IDS_OPENCROSSDATA, "クロスワード データを開く (Ctrl+O)"
+    IDS_SAVECROSSDATA, "クロスワード データを保存する (Ctrl+S)"
     IDS_DOWN, "☆☆☆ タテのカギ ☆☆☆"
     IDS_ACROSS, "☆☆☆ ヨコのカギ ☆☆☆"
     IDS_DOWNNUMBER, "【タテ%d】"
