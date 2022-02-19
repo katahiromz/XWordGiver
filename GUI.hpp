@@ -119,4 +119,20 @@ void __fastcall XgEnsureCaretVisible(HWND hwnd);
 // 現在の状態で好ましいと思われる単語の最大長を取得する。
 INT __fastcall XgGetPreferredMaxLength(void);
 
+// マス位置を取得する。
+VOID XgGetCellPosition(RECT& rc, INT i1, INT j1, INT i2, INT j2);
+// マス位置を設定する。
+VOID XgSetCellPosition(LONG& x, LONG& y, INT& i, INT& j, BOOL bEnd);
+
+// マウスの中央ボタンの処理に使う変数。
+extern BOOL xg_bMButtonDragging;
+extern POINT xg_ptMButtonDragging;
+
+// 水平スクロールの情報を設定する。
+BOOL __fastcall XgSetHScrollInfo(LPSCROLLINFO psi, BOOL bRedraw);
+// 垂直スクロールの情報を設定する。
+BOOL __fastcall XgSetVScrollInfo(LPSCROLLINFO psi, BOOL bRedraw);
+// 本当のクライアント領域を計算する。
+void __fastcall XgGetRealClientRect(HWND hwnd, LPRECT prcClient);
+
 //////////////////////////////////////////////////////////////////////////////

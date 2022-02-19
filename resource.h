@@ -428,6 +428,7 @@
 #define ID_RIGHTTOLEFT                      565
 #define ID_COPYCHARSET                      566
 #define ID_RULEPRESET                       567
+#define ID_MOVEBOXES                        568
 #define ID_TT_BASE                          10000
 
 #define ctl2                                1185

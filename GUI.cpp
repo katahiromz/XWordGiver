@@ -28,6 +28,8 @@
 #include "XG_ThemeDialog.hpp"
 #include "XG_WordListDialog.hpp"
 #include "XG_RulePresetDialog.hpp"
+#include "XG_BoxWindow.hpp"
+#include "XG_CanvasWindow.hpp"
 
 #undef HANDLE_WM_MOUSEWHEEL     // might be wrong
 #define HANDLE_WM_MOUSEWHEEL(hwnd, wParam, lParam, fn) \
@@ -139,6 +141,12 @@ XG_FILETYPE xg_nFileType = XG_FILETYPE_XWJ;
 // ハイライト情報。
 XG_HighLight xg_highlight = { -1, FALSE };
 
+// ボックス。
+XG_BoxWindow xg_boxwnd;
+
+// キャンバスウィンドウ。
+XG_CanvasWindow xg_canvasWnd;
+
 //////////////////////////////////////////////////////////////////////////////
 // static variables
 
@@ -220,25 +228,25 @@ INT xg_nRules = DEFAULT_RULES_JAPANESE;
 // 水平スクロールの位置を取得する。
 int __fastcall XgGetHScrollPos(void)
 {
-    return ::GetScrollPos(xg_hHScrollBar, SB_CTL);
+    return ::GetScrollPos(xg_canvasWnd, SB_HORZ);
 }
 
 // 垂直スクロールの位置を取得する。
 int __fastcall XgGetVScrollPos(void)
 {
-    return ::GetScrollPos(xg_hVScrollBar, SB_CTL);
+    return ::GetScrollPos(xg_canvasWnd, SB_VERT);
 }
 
 // 水平スクロールの位置を設定する。
 int __fastcall XgSetHScrollPos(int nPos, BOOL bRedraw)
 {
-    return ::SetScrollPos(xg_hHScrollBar, SB_CTL, nPos, bRedraw);
+    return ::SetScrollPos(xg_canvasWnd, SB_HORZ, nPos, bRedraw);
 }
 
 // 垂直スクロールの位置を設定する。
 int __fastcall XgSetVScrollPos(int nPos, BOOL bRedraw)
 {
-    return ::SetScrollPos(xg_hVScrollBar, SB_CTL, nPos, bRedraw);
+    return ::SetScrollPos(xg_canvasWnd, SB_VERT, nPos, bRedraw);
 }
 
 // 水平スクロールの情報を取得する。
@@ -250,39 +258,68 @@ BOOL __fastcall XgGetHScrollInfo(LPSCROLLINFO psi)
 // 垂直スクロールの情報を取得する。
 BOOL __fastcall XgGetVScrollInfo(LPSCROLLINFO psi)
 {
-    return ::GetScrollInfo(xg_hVScrollBar, SB_CTL, psi);
+    return ::GetScrollInfo(xg_canvasWnd, SB_VERT, psi);
 }
 
 // 水平スクロールの情報を設定する。
 BOOL __fastcall XgSetHScrollInfo(LPSCROLLINFO psi, BOOL bRedraw)
 {
-    return ::SetScrollInfo(xg_hHScrollBar, SB_CTL, psi, bRedraw);
+    return ::SetScrollInfo(xg_canvasWnd, SB_HORZ, psi, bRedraw);
 }
 
 // 垂直スクロールの情報を設定する。
 BOOL __fastcall XgSetVScrollInfo(LPSCROLLINFO psi, BOOL bRedraw)
 {
-    return ::SetScrollInfo(xg_hVScrollBar, SB_CTL, psi, bRedraw);
+    return ::SetScrollInfo(xg_canvasWnd, SB_VERT, psi, bRedraw);
+}
+
+// マス位置を取得する。
+VOID XgGetCellPosition(RECT& rc, INT i1, INT j1, INT i2, INT j2)
+{
+    INT nCellSize = xg_nCellSize * xg_nZoomRate / 100;
+
+    ::SetRect(&rc,
+        static_cast<int>(xg_nMargin + j1 * nCellSize), 
+        static_cast<int>(xg_nMargin + i1 * nCellSize),
+        static_cast<int>(xg_nMargin + j2 * nCellSize), 
+        static_cast<int>(xg_nMargin + i2 * nCellSize));
+
+    ::OffsetRect(&rc, -XgGetHScrollPos(), -XgGetVScrollPos());
+}
+
+// マス位置を設定する。
+VOID XgSetCellPosition(LONG& x, LONG& y, INT& i, INT& j, BOOL bEnd)
+{
+    INT nCellSize = xg_nCellSize * xg_nZoomRate / 100;
+
+    y += XgGetVScrollPos();
+    y -= xg_nMargin;
+    i = (y + nCellSize / 2) / nCellSize;
+    if (i < 0) {
+        i = bEnd ? 1 : 0;
+    } else if (i > xg_nRows) {
+        i = bEnd ? xg_nRows : (xg_nRows - 1);
+    }
+    y = i * nCellSize;
+    y += xg_nMargin;
+
+    x += XgGetHScrollPos();
+    x -= xg_nMargin;
+    j = (x + nCellSize / 2) / nCellSize;
+    if (j < 0) {
+        j = bEnd ? 1 : 0;
+    } else if (j > xg_nCols) {
+        j = bEnd ? xg_nCols : (xg_nCols - 1);
+    }
+    x = j * nCellSize;
+    x += xg_nMargin;
 }
 
 // 本当のクライアント領域を計算する。
 void __fastcall XgGetRealClientRect(HWND hwnd, LPRECT prcClient)
 {
-    MRect rc, rcClient;
-    ::GetClientRect(hwnd, &rcClient);
-
-    if (::IsWindowVisible(xg_hToolBar)) {
-        ::GetWindowRect(xg_hToolBar, &rc);
-        rcClient.top += rc.Height();
-    }
-
-    if (::IsWindowVisible(xg_hStatusBar)) {
-        ::GetWindowRect(xg_hStatusBar, &rc);
-        rcClient.bottom -= rc.Height();
-    }
-
-    rcClient.right -= ::GetSystemMetrics(SM_CXVSCROLL);
-    rcClient.bottom -= ::GetSystemMetrics(SM_CYHSCROLL);
+    MRect rcClient;
+    ::GetClientRect(xg_canvasWnd, &rcClient);
 
     assert(prcClient);
     *prcClient = rcClient;
@@ -300,8 +337,8 @@ void __fastcall XgUpdateCaretPos(void)
 
     // 未確定文字列の表示位置を計算する。
     POINT pt;
-    pt.x = rc.left + xg_nMargin + xg_caret_pos.m_j * nCellSize;
-    pt.y = rc.top + xg_nMargin + xg_caret_pos.m_i * nCellSize;
+    pt.x = xg_nMargin + xg_caret_pos.m_j * nCellSize;
+    pt.y = xg_nMargin + xg_caret_pos.m_i * nCellSize;
     pt.x -= XgGetHScrollPos();
     pt.y -= XgGetVScrollPos();
 
@@ -328,13 +365,14 @@ void __fastcall XgUpdateCaretPos(void)
 
     COMPOSITIONFORM CompForm = { CFS_POINT };
     pt.y += 4;
+    MapWindowPoints(xg_canvasWnd, xg_hMainWnd, &pt, 1);
     CompForm.ptCurrentPos = pt; // 未確定文字列の表示位置。
 
     // IMEの制御。
-    HIMC hIMC = ImmGetContext(xg_hMainWnd);
+    HIMC hIMC = ImmGetContext(xg_canvasWnd);
     ImmSetCompositionWindow(hIMC, &CompForm); // 未確定文字列の表示位置を設定。
     ImmSetCompositionFont(hIMC, &lf); // 未確定文字列のフォントを設定。
-    ImmReleaseContext(xg_hMainWnd, hIMC);
+    ImmReleaseContext(xg_canvasWnd, hIMC);
 }
 
 // キャレット位置をセットする。
@@ -380,6 +418,9 @@ void __fastcall XgUpdateScrollInfo(HWND hwnd, int x, int y)
     si.nPage = rcClient.Height();
     si.nPos = y;
     XgSetVScrollInfo(&si, TRUE);
+
+    // ボックスの位置を更新。
+    PostMessage(hwnd, WM_COMMAND, ID_MOVEBOXES, 0);
 }
 
 // キャレットが見えるように、必要ならばスクロールする。
@@ -390,18 +431,7 @@ void __fastcall XgEnsureCaretVisible(HWND hwnd)
     bool bNeedRedraw = false;
 
     // クライアント領域を取得する。
-    ::GetClientRect(hwnd, &rcClient);
-
-    // ツールバーが見えるなら、クライアント領域を補正する。
-    if (::IsWindowVisible(xg_hToolBar)) {
-        ::GetWindowRect(xg_hToolBar, &rc);
-        rcClient.top += rc.Height();
-    }
-
-    if (::IsWindowVisible(xg_hStatusBar)) {
-        ::GetWindowRect(xg_hStatusBar, &rc);
-        rcClient.bottom -= rc.Height();
-    }
+    XgGetRealClientRect(hwnd, &rcClient);
 
     INT nCellSize = xg_nCellSize * xg_nZoomRate / 100;
 
@@ -439,11 +469,12 @@ void __fastcall XgEnsureCaretVisible(HWND hwnd)
     // 変換ウィンドウの位置を設定する。
     COMPOSITIONFORM CompForm;
     CompForm.dwStyle = CFS_POINT;
-    CompForm.ptCurrentPos.x = rcClient.left + rc.left - XgGetHScrollPos();
-    CompForm.ptCurrentPos.y = rcClient.top + rc.top - XgGetVScrollPos();
-    HIMC hIMC = ::ImmGetContext(hwnd);
+    CompForm.ptCurrentPos.x = rc.left - XgGetHScrollPos();
+    CompForm.ptCurrentPos.y = rc.top - XgGetVScrollPos();
+    MapWindowPoints(xg_canvasWnd, hwnd, &CompForm.ptCurrentPos, 1);
+    HIMC hIMC = ::ImmGetContext(xg_canvasWnd);
     ::ImmSetCompositionWindow(hIMC, &CompForm);
-    ::ImmReleaseContext(hwnd, hIMC);
+    ::ImmReleaseContext(xg_canvasWnd, hIMC);
 
     // 必要ならば再描画する。
     if (bNeedRedraw) {
@@ -2858,166 +2889,6 @@ void __fastcall MainWnd_OnDestroy(HWND /*hwnd*/)
     xg_hMainWnd = NULL;
 }
 
-// ウィンドウを描画する。
-void __fastcall MainWnd_OnPaint(HWND hwnd)
-{
-    // ツールバーがなければ、初期化の前なので、無視する。
-    if (xg_hToolBar == NULL)
-        return;
-
-    // クロスワードの描画サイズを取得する。
-    SIZE siz;
-    ForDisplay for_display;
-    XgGetXWordExtent(&siz);
-
-    // 描画を開始する。
-    PAINTSTRUCT ps;
-    HDC hdc = ::BeginPaint(hwnd, &ps);
-    assert(hdc);
-    if (hdc) {
-        // イメージがない場合は、イメージを取得する。
-        if (xg_hbmImage == nullptr) {
-            if (xg_bSolved && xg_bShowAnswer)
-                xg_hbmImage = XgCreateXWordImage(xg_solution, &siz, true);
-            else
-                xg_hbmImage = XgCreateXWordImage(xg_xword, &siz, true);
-        }
-
-        // クライアント領域を得る。
-        MRect rcClient;
-        XgGetRealClientRect(hwnd, &rcClient);
-
-        // スクロール位置を取得する。
-        int x = XgGetHScrollPos();
-        int y = XgGetVScrollPos();
-
-        // ビットマップ イメージをウィンドウに転送する。
-        HDC hdcMem = ::CreateCompatibleDC(hdc);
-        ::IntersectClipRect(hdc, rcClient.left, rcClient.top,
-            rcClient.right, rcClient.bottom);
-        HGDIOBJ hbmOld = ::SelectObject(hdcMem, xg_hbmImage);
-        ::BitBlt(hdc, rcClient.left - x, rcClient.top - y,
-            siz.cx, siz.cy, hdcMem, 0, 0, SRCCOPY);
-        ::SelectObject(hdcMem, hbmOld);
-        ::DeleteDC(hdcMem);
-
-        // 描画を終了する。
-        ::EndPaint(hwnd, &ps);
-    }
-}
-
-// 横スクロールする。
-void __fastcall MainWnd_OnHScroll(HWND hwnd, HWND /*hwndCtl*/, UINT code, int pos)
-{
-    SCROLLINFO si;
-
-    // 横スクロール情報を取得する。
-    si.cbSize = sizeof(si);
-    si.fMask = SIF_ALL;
-    XgGetHScrollInfo(&si);
-
-    // コードに応じて位置情報を設定する。
-    switch (code) {
-    case SB_LEFT:
-        si.nPos = si.nMin;
-        break;
-
-    case SB_RIGHT:
-        si.nPos = si.nMax;
-        break;
-
-    case SB_LINELEFT:
-        si.nPos -= 10;
-        if (si.nPos < si.nMin)
-            si.nPos = si.nMin;
-        break;
-
-    case SB_LINERIGHT:
-        si.nPos += 10;
-        if (si.nPos > si.nMax)
-            si.nPos = si.nMax;
-        break;
-
-    case SB_PAGELEFT:
-        si.nPos -= si.nPage;
-        if (si.nPos < si.nMin)
-            si.nPos = si.nMin;
-        break;
-
-    case SB_PAGERIGHT:
-        si.nPos += si.nPage;
-        if (si.nPos > si.nMax)
-            si.nPos = si.nMax;
-        break;
-
-    case SB_THUMBPOSITION:
-    case SB_THUMBTRACK:
-        si.nPos = pos;
-        break;
-    }
-
-    // スクロール情報を設定し、イメージを更新する。
-    XgSetHScrollInfo(&si, TRUE);
-    XgUpdateImage(hwnd, si.nPos, XgGetVScrollPos());
-    XgUpdateCaretPos();
-}
-
-// 縦スクロールする。
-void __fastcall MainWnd_OnVScroll(HWND hwnd, HWND /*hwndCtl*/, UINT code, int pos)
-{
-    SCROLLINFO si;
-
-    // 縦スクロール情報を取得する。
-    si.cbSize = sizeof(si);
-    si.fMask = SIF_ALL | SIF_DISABLENOSCROLL;
-    XgGetVScrollInfo(&si);
-
-    // コードに応じて位置情報を設定する。
-    switch (code) {
-    case SB_TOP:
-        si.nPos = si.nMin;
-        break;
-
-    case SB_BOTTOM:
-        si.nPos = si.nMax;
-        break;
-
-    case SB_LINEUP:
-        si.nPos -= 10;
-        if (si.nPos < si.nMin)
-            si.nPos = si.nMin;
-        break;
-
-    case SB_LINEDOWN:
-        si.nPos += 10;
-        if (si.nPos > si.nMax)
-            si.nPos = si.nMax;
-        break;
-
-    case SB_PAGEUP:
-        si.nPos -= si.nPage;
-        if (si.nPos < si.nMin)
-            si.nPos = si.nMin;
-        break;
-
-    case SB_PAGEDOWN:
-        si.nPos += si.nPage;
-        if (si.nPos > si.nMax)
-            si.nPos = si.nMax;
-        break;
-
-    case SB_THUMBPOSITION:
-    case SB_THUMBTRACK:
-        si.nPos = pos;
-        break;
-    }
-
-    // スクロール情報を設定し、イメージを更新する。
-    XgSetVScrollPos(si.nPos, TRUE);
-    XgUpdateImage(hwnd, XgGetHScrollPos(), si.nPos);
-    XgUpdateCaretPos();
-}
-
 // 「辞書」メニューを取得する。
 HMENU DoFindDictMenu(HMENU hMenu)
 {
@@ -3415,188 +3286,6 @@ void __fastcall MainWnd_OnInitMenu(HWND /*hwnd*/, HMENU hMenu)
     }
 }
 
-// マウスの左ボタンが離された。
-void __fastcall MainWnd_OnLButtonUp(HWND hwnd, int x, int y, UINT /*keyFlags*/)
-{
-    int i, j;
-    RECT rc;
-    POINT pt;
-    INT nCellSize = xg_nCellSize * xg_nZoomRate / 100;
-
-    // 左ボタンが離された位置を求める。
-    pt.x = x + XgGetHScrollPos();
-    pt.y = y + XgGetVScrollPos();
-
-    // ツールバーが表示されていたら、位置を補正する。
-    if (::IsWindowVisible(xg_hToolBar)) {
-        ::GetWindowRect(xg_hToolBar, &rc);
-        pt.y -= (rc.bottom - rc.top);
-    }
-
-    // それぞれのマスについて調べる。
-    for (i = 0; i < xg_nRows; i++) {
-        for (j = 0; j < xg_nCols; j++) {
-            // マスの矩形を求める。
-            ::SetRect(&rc,
-                static_cast<int>(xg_nMargin + j * nCellSize),
-                static_cast<int>(xg_nMargin + i * nCellSize),
-                static_cast<int>(xg_nMargin + (j + 1) * nCellSize),
-                static_cast<int>(xg_nMargin + (i + 1) * nCellSize));
-
-            // マスの中か？
-            if (::PtInRect(&rc, pt)) {
-                // キャレットを移動して、イメージを更新する。
-                XgSetCaretPos(i, j);
-                XgEnsureCaretVisible(hwnd);
-                XgUpdateStatusBar(hwnd);
-
-                // イメージを更新する。
-                XgUpdateImage(hwnd);
-                return;
-            }
-        }
-    }
-}
-
-// 左クリックされた。
-void __fastcall MainWnd_OnLButtonDown(HWND hwnd, bool fDoubleClick, int x, int y, UINT /*keyFlags*/)
-{
-    int i, j;
-    RECT rc;
-    POINT pt;
-    INT nCellSize = xg_nCellSize * xg_nZoomRate / 100;
-
-    // ダブルクリックは無視。
-    if (!fDoubleClick)
-        return;
-
-    // 左ボタンが離された位置を求める。
-    pt.x = x + XgGetHScrollPos();
-    pt.y = y + XgGetVScrollPos();
-
-    // ツールバーが表示されていたら、位置を補正する。
-    if (::IsWindowVisible(xg_hToolBar)) {
-        ::GetWindowRect(xg_hToolBar, &rc);
-        pt.y -= (rc.bottom - rc.top);
-    }
-
-    // それぞれのマスについて調べる。
-    for (i = 0; i < xg_nRows; i++) {
-        for (j = 0; j < xg_nCols; j++) {
-            // マスの矩形を求める。
-            ::SetRect(&rc,
-                static_cast<int>(xg_nMargin + j * nCellSize),
-                static_cast<int>(xg_nMargin + i * nCellSize),
-                static_cast<int>(xg_nMargin + (j + 1) * nCellSize),
-                static_cast<int>(xg_nMargin + (i + 1) * nCellSize));
-
-            // マスの中か？
-            if (::PtInRect(&rc, pt)) {
-                // キャレットを移動して、イメージを更新する。
-                XgSetCaretPos(i, j);
-                XgEnsureCaretVisible(hwnd);
-                XgUpdateStatusBar(hwnd);
-
-                // マークされていないか？
-                if (XgGetMarked(i, j) == -1) {
-                    // マークされていないマス。マークをセットする。
-                    XG_Board *pxw;
-
-                    if (xg_bSolved && xg_bShowAnswer)
-                        pxw = &xg_solution;
-                    else
-                        pxw = &xg_xword;
-
-                    if (pxw->GetAt(i, j) != ZEN_BLACK)
-                        XgSetMark(i, j);
-                    else
-                        ::MessageBeep(0xFFFFFFFF);
-                } else {
-                    // マークがセットされているマス。マークを解除する。
-                    XgDeleteMark(i, j);
-                }
-
-                // イメージを更新する。
-                XgUpdateImage(hwnd);
-                return;
-            }
-        }
-    }
-}
-
-// マウスの中央ボタンが押された。
-void MainWnd_OnMButtonDown(HWND hwnd, BOOL fDoubleClick, int x, int y, UINT keyFlags)
-{
-    if (!xg_bMButtonDragging)
-    {
-        xg_bMButtonDragging = TRUE;
-        xg_ptMButtonDragging = { x, y };
-        ::SetCapture(hwnd);
-        ::SetCursor(::LoadCursor(xg_hInstance, MAKEINTRESOURCEW(IDC_MYHAND)));
-    }
-}
-
-// マウスの中央ボタンでドラッグされた。
-void MainWnd_OnMouseScroll(HWND hwnd, int x, int y)
-{
-    SCROLLINFO si;
-
-    // 横スクロール情報を取得する。
-    si.cbSize = sizeof(si);
-    si.fMask = SIF_ALL;
-    XgGetHScrollInfo(&si);
-    INT x0 = si.nPos;
-    // 縦スクロール情報を取得する。
-    si.cbSize = sizeof(si);
-    si.fMask = SIF_ALL;
-    XgGetVScrollInfo(&si);
-    INT y0 = si.nPos;
-
-    x0 += xg_ptMButtonDragging.x - x;
-    y0 += xg_ptMButtonDragging.y - y;
-
-    // スクロール情報を設定し、イメージを更新する。
-    si.fMask = SIF_POS;
-    si.nPos = x0;
-    XgSetHScrollInfo(&si, FALSE);
-    si.fMask = SIF_POS;
-    si.nPos = y0;
-    XgSetVScrollInfo(&si, FALSE);
-
-    xg_ptMButtonDragging.x = x;
-    xg_ptMButtonDragging.y = y;
-
-    // 画面を更新する。
-    XgUpdateImage(hwnd, x0, y0);
-
-    RECT rcClient;
-    XgGetRealClientRect(hwnd, &rcClient);
-    InvalidateRect(hwnd, &rcClient, TRUE);
-
-    ::SetCursor(::LoadCursor(xg_hInstance, MAKEINTRESOURCEW(IDC_MYHAND)));
-}
-
-// ウィンドウ上でマウスが動いた。
-void MainWnd_OnMouseMove(HWND hwnd, int x, int y, UINT keyFlags)
-{
-    if (xg_bMButtonDragging && ::GetCapture() == hwnd)
-    {
-        MainWnd_OnMouseScroll(hwnd, x, y);
-    }
-}
-
-// マウスの中央ボタンが離された。
-void MainWnd_OnMButtonUp(HWND hwnd, int x, int y, UINT flags)
-{
-    if (xg_bMButtonDragging && ::GetCapture() == hwnd)
-    {
-        MainWnd_OnMouseScroll(hwnd, x, y);
-        xg_bMButtonDragging = FALSE;
-        ::ReleaseCapture();
-        ::SetCursor(::LoadCursor(NULL, IDC_ARROW));
-    }
-}
-
 // ステータスバーを更新する。
 void __fastcall XgUpdateStatusBar(HWND hwnd)
 {
@@ -3703,22 +3392,24 @@ void __fastcall MainWnd_OnSize(HWND hwnd, UINT /*state*/, int /*cx*/, int /*cy*/
     int cxVScrollBar = ::GetSystemMetrics(SM_CXVSCROLL);
 
     // 複数のウィンドウの位置とサイズをいっぺんに変更する。
-    HDWP hDwp = ::BeginDeferWindowPos(3);
+    HDWP hDwp = ::BeginDeferWindowPos(4);
     if (hDwp) {
-        ::DeferWindowPos(hDwp, xg_hHScrollBar, NULL,
+        hDwp = ::DeferWindowPos(hDwp, xg_hHScrollBar, NULL,
             x, y + cy - cyHScrollBar,
             cx - cxVScrollBar, cyHScrollBar,
             SWP_SHOWWINDOW | SWP_NOZORDER | SWP_NOACTIVATE | SWP_NOOWNERZORDER);
-        ::DeferWindowPos(hDwp, xg_hVScrollBar, NULL,
+        hDwp = ::DeferWindowPos(hDwp, xg_hVScrollBar, NULL,
             cx - cxVScrollBar, y,
             cxVScrollBar, cy - cyHScrollBar,
             SWP_SHOWWINDOW | SWP_NOZORDER | SWP_NOACTIVATE | SWP_NOOWNERZORDER);
         if (::IsWindowVisible(xg_hSizeGrip)) {
-            ::DeferWindowPos(hDwp, xg_hSizeGrip, NULL,
+            hDwp = ::DeferWindowPos(hDwp, xg_hSizeGrip, NULL,
                 x + cx - cxVScrollBar, y + cy - cyHScrollBar,
                 cxVScrollBar, cyHScrollBar,
                 SWP_SHOWWINDOW | SWP_NOZORDER | SWP_NOACTIVATE | SWP_NOOWNERZORDER);
         }
+        hDwp = ::DeferWindowPos(hDwp, xg_canvasWnd, NULL,
+            x, y, cx, cy, SWP_SHOWWINDOW | SWP_NOZORDER | SWP_NOACTIVATE | SWP_NOOWNERZORDER);
         ::EndDeferWindowPos(hDwp);
     }
 
@@ -3746,6 +3437,9 @@ void __fastcall MainWnd_OnSize(HWND hwnd, UINT /*state*/, int /*cx*/, int /*cy*/
 
     // キャレット位置を更新。
     XgUpdateCaretPos();
+
+    // ボックスの位置を更新。
+    PostMessage(hwnd, WM_COMMAND, ID_MOVEBOXES, 0);
 }
 
 // 位置が変更された。
@@ -3757,6 +3451,9 @@ void __fastcall MainWnd_OnMove(HWND hwnd, int /*x*/, int /*y*/)
         s_nMainWndX = rc.left;
         s_nMainWndY = rc.top;
     }
+
+    // ボックスの位置を更新。
+    PostMessage(hwnd, WM_COMMAND, ID_MOVEBOXES, 0);
 }
 
 // UIフォントの論理オブジェクトを取得する。
@@ -5980,6 +5677,10 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
     case ID_RULEPRESET:
         XgOnRulePreset(hwnd);
         break;
+    case ID_MOVEBOXES:
+        xg_boxwnd.Bound();
+        XgUpdateCaretPos();
+        break;
     default:
         if (!XgOnCommandExtra(hwnd, id)) {
             ::MessageBeep(0xFFFFFFFF);
@@ -6135,6 +5836,14 @@ BOOL xg_bNoGUI = FALSE;
 bool __fastcall MainWnd_OnCreate(HWND hwnd, LPCREATESTRUCT /*lpCreateStruct*/)
 {
     xg_hMainWnd = hwnd;
+
+    // キャンバスウィンドウを作成する。
+    if (!xg_canvasWnd.CreateWindowDx(hwnd, NULL,
+                                     WS_CHILD | WS_VISIBLE | WS_HSCROLL | WS_VSCROLL,
+                                     WS_EX_ACCEPTFILES))
+    {
+        return false;
+    }
 
     // 水平スクロールバーを作る。
     xg_hHScrollBar = ::CreateWindowW(
@@ -6326,7 +6035,8 @@ bool __fastcall MainWnd_OnCreate(HWND hwnd, LPCREATESTRUCT /*lpCreateStruct*/)
     }
     GlobalFree(wargv);
 
-    ::PostMessageW(hwnd, WM_SIZE, 0, 0);
+    // コントロールのレイアウトを更新する。
+    ::SendMessageW(hwnd, WM_SIZE, 0, 0);
     // ルールを更新する。
     XgUpdateRules(hwnd);
     // ツールバーのUIを更新する。
@@ -6334,37 +6044,10 @@ bool __fastcall MainWnd_OnCreate(HWND hwnd, LPCREATESTRUCT /*lpCreateStruct*/)
     // 辞書メニューの表示を更新。
     XgUpdateTheme(hwnd);
 
+    // ボックスを作成。
+    xg_boxwnd.CreateWindowDx(xg_canvasWnd, NULL, WS_OVERLAPPED | WS_CHILD | WS_VISIBLE);
+
     return true;
-}
-
-// マウスホイールが回転した。
-void __fastcall
-MainWnd_OnMouseWheel(HWND hwnd, int xPos, int yPos, int zDelta, UINT fwKeys)
-{
-    POINT pt = {xPos, yPos};
-
-    RECT rc;
-    if (::GetWindowRect(xg_hHintsWnd, &rc) && ::PtInRect(&rc, pt)) {
-        FORWARD_WM_MOUSEWHEEL(xg_hHintsWnd, rc.left, rc.top,
-            zDelta, fwKeys, ::SendMessageW);
-    } else {
-        if (::GetAsyncKeyState(VK_CONTROL) < 0) {
-            if (zDelta < 0)
-                ::PostMessageW(hwnd, WM_COMMAND, ID_ZOOMOUT, 0);
-            else if (zDelta > 0)
-                ::PostMessageW(hwnd, WM_COMMAND, ID_ZOOMIN, 0);
-        } else if (::GetAsyncKeyState(VK_SHIFT) < 0) {
-            if (zDelta < 0)
-                ::PostMessageW(hwnd, WM_HSCROLL, MAKEWPARAM(SB_LINEDOWN, 0), 0);
-            else if (zDelta > 0)
-                ::PostMessageW(hwnd, WM_HSCROLL, MAKEWPARAM(SB_LINEUP, 0), 0);
-        } else {
-            if (zDelta < 0)
-                ::PostMessageW(hwnd, WM_VSCROLL, MAKEWPARAM(SB_LINEDOWN, 0), 0);
-            else if (zDelta > 0)
-                ::PostMessageW(hwnd, WM_VSCROLL, MAKEWPARAM(SB_LINEUP, 0), 0);
-        }
-    }
 }
 
 // ポップアップメニューを読み込む。
@@ -6426,30 +6109,6 @@ HMENU XgLoadPopupMenu(HWND hwnd, INT nPos)
     return hMenu;
 }
 
-// 右クリックされた。
-void MainWnd_OnRButtonDown(HWND hwnd, BOOL fDoubleClick, int x, int y, UINT keyFlags)
-{
-    MainWnd_OnLButtonUp(hwnd, x, y, keyFlags);
-
-    HMENU hMenu = XgLoadPopupMenu(hwnd, 0);
-    HMENU hSubMenu = GetSubMenu(hMenu, 0);
-
-    // スクリーン座標へ変換する。
-    POINT pt;
-    pt.x = x;
-    pt.y = y;
-    ::ClientToScreen(hwnd, &pt);
-
-    // 右クリックメニューを表示する。
-    ::SetForegroundWindow(hwnd);
-    ::TrackPopupMenu(
-        hSubMenu, TPM_RIGHTBUTTON | TPM_LEFTALIGN,
-        pt.x, pt.y, 0, hwnd, NULL);
-    ::PostMessageW(hwnd, WM_NULL, 0, 0);
-
-    ::DestroyMenu(hMenu);
-}
-
 // 通知。
 void MainWnd_OnNotify(HWND hwnd, int idCtrl, LPNMHDR pnmh)
 {
@@ -6508,7 +6167,7 @@ void __fastcall XgUpdateImage(HWND hwnd, INT x, INT y)
     // 再描画する。
     MRect rcClient;
     XgGetRealClientRect(hwnd, &rcClient);
-    ::InvalidateRect(hwnd, &rcClient, TRUE);
+    ::InvalidateRect(xg_canvasWnd, &rcClient, TRUE);
 }
 
 // 描画イメージを更新する。
@@ -6525,25 +6184,14 @@ XgWindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
     switch (uMsg) {
     HANDLE_MSG(hWnd, WM_CREATE, MainWnd_OnCreate);
     HANDLE_MSG(hWnd, WM_DESTROY, MainWnd_OnDestroy);
-    HANDLE_MSG(hWnd, WM_PAINT, MainWnd_OnPaint);
-    HANDLE_MSG(hWnd, WM_HSCROLL, MainWnd_OnHScroll);
-    HANDLE_MSG(hWnd, WM_VSCROLL, MainWnd_OnVScroll);
     HANDLE_MSG(hWnd, WM_MOVE, MainWnd_OnMove);
     HANDLE_MSG(hWnd, WM_SIZE, MainWnd_OnSize);
     HANDLE_MSG(hWnd, WM_KEYDOWN, XgOnKey);
     HANDLE_MSG(hWnd, WM_KEYUP, XgOnKey);
     HANDLE_MSG(hWnd, WM_CHAR, XgOnChar);
-    HANDLE_MSG(hWnd, WM_LBUTTONDBLCLK, MainWnd_OnLButtonDown);
-    HANDLE_MSG(hWnd, WM_LBUTTONDOWN, MainWnd_OnLButtonDown);
-    HANDLE_MSG(hWnd, WM_LBUTTONUP, MainWnd_OnLButtonUp);
-    HANDLE_MSG(hWnd, WM_MBUTTONDOWN, MainWnd_OnMButtonDown);
-    HANDLE_MSG(hWnd, WM_MBUTTONUP, MainWnd_OnMButtonUp);
-    HANDLE_MSG(hWnd, WM_RBUTTONDOWN, MainWnd_OnRButtonDown);
-    HANDLE_MSG(hWnd, WM_MOUSEMOVE, MainWnd_OnMouseMove);
     HANDLE_MSG(hWnd, WM_COMMAND, MainWnd_OnCommand);
     HANDLE_MSG(hWnd, WM_INITMENU, MainWnd_OnInitMenu);
     HANDLE_MSG(hWnd, WM_DROPFILES, MainWnd_OnDropFiles);
-    HANDLE_MSG(hWnd, WM_MOUSEWHEEL, MainWnd_OnMouseWheel);
     HANDLE_MSG(hWnd, WM_GETMINMAXINFO, MainWnd_OnGetMinMaxInfo);
     case WM_NOTIFY:
         MainWnd_OnNotify(hWnd, static_cast<int>(wParam), reinterpret_cast<LPNMHDR>(lParam));
@@ -6819,6 +6467,16 @@ int WINAPI WinMain(
         return 1;
     }
     if (!xg_cands_wnd.RegisterClassDx()) {
+        // ウィンドウ登録失敗メッセージ。
+        XgCenterMessageBoxW(nullptr, XgLoadStringDx1(IDS_CANTREGWND), nullptr, MB_ICONERROR);
+        return 1;
+    }
+    if (!xg_canvasWnd.RegisterClassDx()) {
+        // ウィンドウ登録失敗メッセージ。
+        XgCenterMessageBoxW(nullptr, XgLoadStringDx1(IDS_CANTREGWND), nullptr, MB_ICONERROR);
+        return 1;
+    }
+    if (!xg_boxwnd.RegisterClassDx()) {
         // ウィンドウ登録失敗メッセージ。
         XgCenterMessageBoxW(nullptr, XgLoadStringDx1(IDS_CANTREGWND), nullptr, MB_ICONERROR);
         return 1;
