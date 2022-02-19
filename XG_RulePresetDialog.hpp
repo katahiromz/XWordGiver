@@ -37,8 +37,22 @@ public:
                 std::wstring str = szText;
                 xg_str_trim(str);
 
+                // 半角にする。
+                LCMapStringW(JPN_LOCALE, LCMAP_HALFWIDTH, str.c_str(), -1, szText, _countof(szText));
+
+                // 値にする。
+                LPWSTR pch;
+                INT value = wcstoul(szText, &pch, 0);
+
+                // 不正な値があるか？
+                if (*pch || (value & ~VALID_RULES))
+                {
+                    XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_ENTERPOSITIVE), NULL, MB_ICONERROR);
+                    return;
+                }
+
                 // ルールを適用。
-                xg_nRules = (wcstoul(str.c_str(), NULL, 0) & VALID_RULES);
+                xg_nRules = (value & VALID_RULES);
                 xg_nRules |= RULE_DONTDIVIDE; // 例外。
 
                 // ダイアログを閉じる。
