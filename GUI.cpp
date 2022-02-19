@@ -296,7 +296,7 @@ VOID XgSetCellPosition(LONG& x, LONG& y, INT& i, INT& j, BOOL bEnd)
     i = (y + nCellSize / 2) / nCellSize;
     if (i < 0) {
         i = bEnd ? 1 : 0;
-    } else if (i > xg_nRows) {
+    } else if (i >= xg_nRows) {
         i = bEnd ? xg_nRows : (xg_nRows - 1);
     }
     y = i * nCellSize;
@@ -307,7 +307,7 @@ VOID XgSetCellPosition(LONG& x, LONG& y, INT& i, INT& j, BOOL bEnd)
     j = (x + nCellSize / 2) / nCellSize;
     if (j < 0) {
         j = bEnd ? 1 : 0;
-    } else if (j > xg_nCols) {
+    } else if (j >= xg_nCols) {
         j = bEnd ? xg_nCols : (xg_nCols - 1);
     }
     x = j * nCellSize;
