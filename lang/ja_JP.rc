@@ -1460,7 +1460,7 @@ STRINGTABLE
     IDS_TOOOLDPC, "あなたのパソコンは、クロスワードギバーで使うには古すぎるので、計算が遅くなる可能性があります。"
     IDS_CROSSSTORAGE, "クロスワード データの保存先"
     IDS_STORAGEINVALID, "保存先が有効なフォルダパスではありません。"
-    IDS_ENTERPOSITIVE, "正の整数を入力して下さい。"
+    IDS_ENTERPOSITIVE, "正当な正の整数を入力して下さい。"
     IDS_PROBLEMSMAKING, "%u個の問題を作成しました。"
     IDS_PROBLEMSMADE, "%u個の問題を作成しました。\n\n計算時間: %u.%u[秒]"
     IDS_OUTOFSTORAGE, "保存先のディスクの容量が足りないので、計算をキャンセルしました。\n\n%u個の問題を作成しました。\n\n計算時間: %u.%u[秒]"

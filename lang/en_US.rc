@@ -1457,7 +1457,7 @@ STRINGTABLE
     IDS_TOOOLDPC, "Your computer is too old to be used with XWordGiver. So calculations may be slow."
     IDS_CROSSSTORAGE, "Specify the folder to save to"
     IDS_STORAGEINVALID, "The destination is not a valid folder path."
-    IDS_ENTERPOSITIVE, "Please enter a positive integer."
+    IDS_ENTERPOSITIVE, "Please enter a valid positive integer."
     IDS_PROBLEMSMAKING, "I have created %u crosswords."
     IDS_PROBLEMSMADE, "I have created %u crosswords.\n\nCalculation time: %u.%u[sec]"
     IDS_OUTOFSTORAGE, "I canceled the calculation because there was not enough space on the destination disk.\n\nCreated %u crosswords\n\nCalculation time: %u.%u[sec]"
