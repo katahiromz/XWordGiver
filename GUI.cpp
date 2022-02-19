@@ -7,6 +7,7 @@
 #include "XWordGiver.hpp"
 #include "GUI.hpp"
 #include "XG_UndoBuffer.hpp"    // 「元に戻す」情報。
+#include <algorithm>
 
 // ダイアログとウィンドウ。
 #include "XG_CancelFromWordsDialog.hpp"
@@ -72,8 +73,6 @@ WCHAR xg_szSmallFont[LF_FACESIZE] = L"";
 WCHAR xg_szUIFont[LF_FACESIZE] = L"";
 
 // スクロールバー。
-HWND xg_hVScrollBar = nullptr;
-HWND xg_hHScrollBar = nullptr;
 HWND xg_hSizeGrip = nullptr;
 
 // ツールバーのハンドル。
@@ -142,7 +141,7 @@ XG_FILETYPE xg_nFileType = XG_FILETYPE_XWJ;
 XG_HighLight xg_highlight = { -1, FALSE };
 
 // ボックス。
-XG_BoxWindow xg_boxwnd;
+std::vector<std::unique_ptr<XG_BoxWindow> > xg_boxes;
 
 // キャンバスウィンドウ。
 XG_CanvasWindow xg_canvasWnd;
@@ -252,7 +251,7 @@ int __fastcall XgSetVScrollPos(int nPos, BOOL bRedraw)
 // 水平スクロールの情報を取得する。
 BOOL __fastcall XgGetHScrollInfo(LPSCROLLINFO psi)
 {
-    return ::GetScrollInfo(xg_hHScrollBar, SB_CTL, psi);
+    return ::GetScrollInfo(xg_canvasWnd, SB_HORZ, psi);
 }
 
 // 垂直スクロールの情報を取得する。
@@ -2871,10 +2870,6 @@ void __fastcall MainWnd_OnDestroy(HWND /*hwnd*/)
     // ウィンドウを破棄する。
     ::DestroyWindow(xg_hToolBar);
     xg_hToolBar = NULL;
-    ::DestroyWindow(xg_hHScrollBar);
-    xg_hHScrollBar = NULL;
-    ::DestroyWindow(xg_hVScrollBar);
-    xg_hVScrollBar = NULL;
     ::DestroyWindow(xg_hSizeGrip);
     xg_hSizeGrip = NULL;
     ::DestroyWindow(xg_cands_wnd);
@@ -3392,16 +3387,8 @@ void __fastcall MainWnd_OnSize(HWND hwnd, UINT /*state*/, int /*cx*/, int /*cy*/
     int cxVScrollBar = ::GetSystemMetrics(SM_CXVSCROLL);
 
     // 複数のウィンドウの位置とサイズをいっぺんに変更する。
-    HDWP hDwp = ::BeginDeferWindowPos(4);
+    HDWP hDwp = ::BeginDeferWindowPos(2);
     if (hDwp) {
-        hDwp = ::DeferWindowPos(hDwp, xg_hHScrollBar, NULL,
-            x, y + cy - cyHScrollBar,
-            cx - cxVScrollBar, cyHScrollBar,
-            SWP_SHOWWINDOW | SWP_NOZORDER | SWP_NOACTIVATE | SWP_NOOWNERZORDER);
-        hDwp = ::DeferWindowPos(hDwp, xg_hVScrollBar, NULL,
-            cx - cxVScrollBar, y,
-            cxVScrollBar, cy - cyHScrollBar,
-            SWP_SHOWWINDOW | SWP_NOZORDER | SWP_NOACTIVATE | SWP_NOOWNERZORDER);
         if (::IsWindowVisible(xg_hSizeGrip)) {
             hDwp = ::DeferWindowPos(hDwp, xg_hSizeGrip, NULL,
                 x + cx - cxVScrollBar, y + cy - cyHScrollBar,
@@ -3416,8 +3403,6 @@ void __fastcall MainWnd_OnSize(HWND hwnd, UINT /*state*/, int /*cx*/, int /*cy*/
     // 再描画する。
     ::InvalidateRect(xg_hToolBar, NULL, TRUE);
     ::InvalidateRect(xg_hStatusBar, NULL, TRUE);
-    ::InvalidateRect(xg_hHScrollBar, NULL, TRUE);
-    ::InvalidateRect(xg_hVScrollBar, NULL, TRUE);
     ::InvalidateRect(xg_hSizeGrip, NULL, TRUE);
 
     // スクロール位置を取得し、スクロール情報を更新する。
@@ -5678,8 +5663,36 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
         XgOnRulePreset(hwnd);
         break;
     case ID_MOVEBOXES:
-        xg_boxwnd.Bound();
+        {
+            auto it = std::remove_if(xg_boxes.begin(), xg_boxes.end(), [](const std::unique_ptr<XG_BoxWindow>& box){
+                return !::IsWindow(*box);
+            });
+            xg_boxes.erase(it, xg_boxes.end());
+        }
+        for (auto& box : xg_boxes) {
+            box->Bound();
+        }
         XgUpdateCaretPos();
+        break;
+    case ID_ADDBOX:
+        {
+            INT i1 = xg_caret_pos.m_i, j1 = xg_caret_pos.m_j;
+            INT i2 = i1 + 2, j2 = j1 + 2;
+            if (i2 >= xg_nRows) {
+                i1 = xg_nRows - 1;
+                i2 = xg_nRows;
+            }
+            if (j2 >= xg_nCols) {
+                j1 = xg_nCols - 1;
+                j2 = xg_nCols;
+            }
+            auto ptr = new XG_BoxWindow(i1, j1, i2, j2);
+            if (ptr->CreateDx(xg_canvasWnd)) {
+                xg_boxes.emplace_back(ptr);
+            } else {
+                delete ptr;
+            }
+        }
         break;
     default:
         if (!XgOnCommandExtra(hwnd, id)) {
@@ -5838,30 +5851,11 @@ bool __fastcall MainWnd_OnCreate(HWND hwnd, LPCREATESTRUCT /*lpCreateStruct*/)
     xg_hMainWnd = hwnd;
 
     // キャンバスウィンドウを作成する。
-    if (!xg_canvasWnd.CreateWindowDx(hwnd, NULL,
-                                     WS_CHILD | WS_VISIBLE | WS_HSCROLL | WS_VSCROLL,
-                                     WS_EX_ACCEPTFILES))
+    DWORD style = WS_CHILD | WS_VISIBLE | WS_HSCROLL | WS_VSCROLL | WS_CLIPCHILDREN;
+    if (!xg_canvasWnd.CreateWindowDx(hwnd, NULL, style, WS_EX_ACCEPTFILES))
     {
         return false;
     }
-
-    // 水平スクロールバーを作る。
-    xg_hHScrollBar = ::CreateWindowW(
-        L"SCROLLBAR", NULL,
-        WS_CHILD | WS_VISIBLE | SBS_HORZ,
-        0, 0, 0, 0,
-        hwnd, NULL, xg_hInstance, NULL);
-    if (xg_hHScrollBar == NULL)
-        return false;
-
-    // 垂直スクロールバーを作る。
-    xg_hVScrollBar = ::CreateWindowW(
-        L"SCROLLBAR", NULL,
-        WS_CHILD | WS_VISIBLE | SBS_VERT,
-        0, 0, 0, 0,
-        hwnd, NULL, xg_hInstance, NULL);
-    if (xg_hVScrollBar == NULL)
-        return false;
 
     // サイズグリップを作る。
     xg_hSizeGrip = ::CreateWindowW(
@@ -6043,9 +6037,6 @@ bool __fastcall MainWnd_OnCreate(HWND hwnd, LPCREATESTRUCT /*lpCreateStruct*/)
     XgUpdateToolBarUI(hwnd);
     // 辞書メニューの表示を更新。
     XgUpdateTheme(hwnd);
-
-    // ボックスを作成。
-    xg_boxwnd.CreateWindowDx(xg_canvasWnd, NULL, WS_OVERLAPPED | WS_CHILD | WS_VISIBLE);
 
     return true;
 }
@@ -6476,17 +6467,20 @@ int WINAPI WinMain(
         XgCenterMessageBoxW(nullptr, XgLoadStringDx1(IDS_CANTREGWND), nullptr, MB_ICONERROR);
         return 1;
     }
-    if (!xg_boxwnd.RegisterClassDx()) {
-        // ウィンドウ登録失敗メッセージ。
-        XgCenterMessageBoxW(nullptr, XgLoadStringDx1(IDS_CANTREGWND), nullptr, MB_ICONERROR);
-        return 1;
+    {
+        XG_BoxWindow box;
+        if (!box.RegisterClassDx()) {
+            // ウィンドウ登録失敗メッセージ。
+            XgCenterMessageBoxW(nullptr, XgLoadStringDx1(IDS_CANTREGWND), nullptr, MB_ICONERROR);
+            return 1;
+        }
     }
 
     // クリティカルセクションを初期化する。
     ::InitializeCriticalSection(&xg_cs);
 
     // メインウィンドウを作成する。
-    DWORD style = WS_OVERLAPPEDWINDOW | WS_CLIPSIBLINGS;
+    DWORD style = WS_OVERLAPPEDWINDOW | WS_CLIPSIBLINGS | WS_CLIPCHILDREN;
     ::CreateWindowW(s_pszMainWndClass, XgLoadStringDx1(IDS_APPINFO), style,
         s_nMainWndX, s_nMainWndY, s_nMainWndCX, s_nMainWndCY,
         nullptr, nullptr, hInstance, nullptr);

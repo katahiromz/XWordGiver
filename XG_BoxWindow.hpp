@@ -25,17 +25,23 @@ class XG_BoxWindow : public XG_Window
 public:
     HWND m_hwndParent;
     HRGN m_hRgn;
+    INT m_i1;
+    INT m_j1;
+    INT m_i2;
+    INT m_j2;
     RECT m_rcOld;
-    INT m_i1 = 2;
-    INT m_j1 = 2;
-    INT m_i2 = 3;
-    INT m_j2 = 3;
 
-    XG_BoxWindow() : m_hwndParent(NULL), m_hRgn(NULL)
+    XG_BoxWindow(INT i1 = 0, INT j1 = 0, INT i2 = 1, INT j2 = 1)
+        : m_hwndParent(NULL)
+        , m_hRgn(NULL)
+        , m_i1(i1)
+        , m_j1(j1)
+        , m_i2(i2)
+        , m_j2(j2)
     {
     }
 
-    ~XG_BoxWindow()
+    virtual ~XG_BoxWindow()
     {
         DeleteObject(m_hRgn);
         m_hRgn = NULL;
@@ -157,6 +163,13 @@ public:
     {
         MRect rc;
         XgGetCellPosition(rc, m_i1, m_j1, m_i2, m_j2);
+
+        RECT rcWnd;
+        GetWindowRect(m_hWnd, &rcWnd);
+
+        if (EqualRect(&rc, &rcWnd))
+            return;
+
         InflateRect(&rc, CXY_GRIP, CXY_GRIP);
 
         ::SetWindowPos(m_hWnd, NULL, rc.left, rc.top, rc.Width(), rc.Height(),
@@ -198,6 +211,15 @@ public:
         return TRUE;
     }
 
+    void OnDraw(HWND hwnd, HDC hDC, const RECT& rc)
+    {
+        FillRect(hDC, &rc, GetStockBrush(WHITE_BRUSH));
+        MoveToEx(hDC, rc.left, rc.top, NULL);
+        LineTo(hDC, rc.right, rc.bottom);
+        MoveToEx(hDC, rc.right, rc.top, NULL);
+        LineTo(hDC, rc.left, rc.bottom);
+    }
+
     void OnPaint(HWND hwnd)
     {
         RECT rc;
@@ -205,9 +227,7 @@ public:
 
         PAINTSTRUCT ps;
         HDC hDC = BeginPaint(hwnd, &ps);
-        HBRUSH hbr = CreateHatchBrush(HS_CROSS, RGB(255, 0, 0));
-        FillRect(hDC, &rc, hbr);
-        DeleteObject(hbr);
+        OnDraw(hwnd, hDC, rc);
         EndPaint(hwnd, &ps);
     }
 
@@ -268,8 +288,16 @@ public:
         RECT rc = m_rcOld;
         MapWindowRect(NULL, m_hwndParent, &rc);
         InvalidateRect(m_hwndParent, &rc, FALSE);
+
+        DoSetRgn(hwnd);
         InvalidateRect(hwnd, NULL, FALSE);
 
+        ::KillTimer(m_hWnd, 999);
+        ::SetTimer(m_hWnd, 999, 300, NULL);
+    }
+
+    void OnMouseMove(HWND hwnd, int x, int y, UINT keyFlags)
+    {
         ::KillTimer(m_hWnd, 999);
         ::SetTimer(m_hWnd, 999, 300, NULL);
     }
@@ -312,6 +340,13 @@ public:
             SWP_NOZORDER | SWP_NOOWNERZORDER | SWP_DEFERERASE);
     }
 
+    BOOL CreateDx(HWND hwndParent)
+    {
+        DWORD style = WS_OVERLAPPED | WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS;
+        CreateWindowDx(hwndParent, NULL, style);
+        return m_hWnd != NULL;
+    }
+
     virtual LRESULT CALLBACK
     WindowProcDx(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) override
     {
@@ -322,6 +357,7 @@ public:
         HANDLE_MSG(hwnd, WM_SIZE, OnSize);
         HANDLE_MSG(hwnd, WM_ERASEBKGND, OnEraseBkgnd);
         HANDLE_MSG(hwnd, WM_PAINT, OnPaint);
+        HANDLE_MSG(hwnd, WM_MOUSEMOVE, OnMouseMove);
         HANDLE_MSG(hwnd, WM_NCPAINT, OnNCPaint);
         HANDLE_MSG(hwnd, WM_NCCALCSIZE, OnNCCalcSize);
         HANDLE_MSG(hwnd, WM_NCHITTEST, OnNCHitTest);
