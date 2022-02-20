@@ -2001,7 +2001,7 @@ BOOL XgOnLoad(HWND hwnd, LPCWSTR pszFile, LPPOINT ppt)
         lstrcmpiW(pchDotExt, L".jpg") == 0)
     {
         if (ppt)
-            ScreenToClient(hwnd, ppt);
+            ScreenToClient(xg_canvasWnd, ppt);
 
         INT i1, j1;
         if (ppt) {
@@ -2010,6 +2010,10 @@ BOOL XgOnLoad(HWND hwnd, LPCWSTR pszFile, LPPOINT ppt)
             POINT pt = { 0, 0 };
             XgSetCellPosition(pt.x, pt.y, i1, j1, FALSE);
         }
+        if (i1 < 0)
+            i1 = 0;
+        if (j1 < 0)
+            j1 = 0;
         INT i2 = i1 + 2, j2 = j1 + 2;
 
         if (i2 >= xg_nRows) {
@@ -2023,7 +2027,8 @@ BOOL XgOnLoad(HWND hwnd, LPCWSTR pszFile, LPPOINT ppt)
 
         auto ptr = new XG_PictureBoxWindow(i1, j1, i2, j2);
         ptr->SetFile(szFile);
-        if (ptr->CreateDx(hwnd)) {
+        if (ptr->CreateDx(xg_canvasWnd)) {
+            ptr->Bound();
             xg_boxes.emplace_back(ptr);
             XG_FILE_MODIFIED(TRUE);
             return TRUE;
