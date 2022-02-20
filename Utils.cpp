@@ -689,24 +689,28 @@ BOOL XgIsImageFile(LPCWSTR pszFileName)
 // 画像のパスを取得する。
 BOOL XgGetLoadImagePath(LPWSTR pszFullPath, LPCWSTR pszFileName)
 {
-    LPCWSTR pszTitle = PathFindFileNameW(pszFileName);
-
-    WCHAR szFileDir[MAX_PATH];
-    if (XgGetFileDir(szFileDir))
+    if (memcmp(pszFileName, L"$FILES\\", 7 * sizeof(WCHAR)) == 0)
     {
-        StringCchCopyW(pszFullPath, MAX_PATH, szFileDir);
-        PathAppendW(pszFullPath, pszTitle);
-        if (PathFileExistsW(pszFullPath))
-            return TRUE;
+        WCHAR szFileDir[MAX_PATH];
+        if (XgGetFileDir(szFileDir))
+        {
+            StringCchCopyW(pszFullPath, MAX_PATH, szFileDir);
+            PathAppendW(pszFullPath, &pszFileName[7]);
+            if (PathFileExistsW(pszFullPath))
+                return TRUE;
+        }
     }
 
-    WCHAR szBlockDir[MAX_PATH];
-    if (XgGetBlockDir(szBlockDir))
+    if (memcmp(pszFileName, L"$BLOCK\\", 7 * sizeof(WCHAR)) == 0)
     {
-        StringCchCopyW(pszFullPath, MAX_PATH, szBlockDir);
-        PathAppendW(pszFullPath, pszTitle);
-        if (PathFileExistsW(pszFullPath))
-            return TRUE;
+        WCHAR szBlockDir[MAX_PATH];
+        if (XgGetBlockDir(szBlockDir))
+        {
+            StringCchCopyW(pszFullPath, MAX_PATH, szBlockDir);
+            PathAppendW(pszFullPath, &pszFileName[7]);
+            if (PathFileExistsW(pszFullPath))
+                return TRUE;
+        }
     }
 
     if (PathFileExistsW(pszFileName))
@@ -741,7 +745,8 @@ BOOL XgGetCanonicalImagePath(LPWSTR pszCanonical, LPCWSTR pszFileName)
         str.resize(lstrlenW(szFileDir));
         if (lstrcmpiW(str.c_str(), szFileDir) == 0)
         {
-            StringCchCopyW(pszCanonical, MAX_PATH, PathFindFileNameW(pszFileName));
+            StringCchCopyW(pszCanonical, MAX_PATH, L"$FILES");
+            PathAppendW(pszCanonical, PathFindFileNameW(pszFileName));
             return TRUE;
         }
     }
@@ -754,7 +759,8 @@ BOOL XgGetCanonicalImagePath(LPWSTR pszCanonical, LPCWSTR pszFileName)
         str.resize(lstrlenW(szBlockDir));
         if (lstrcmpiW(str.c_str(), szBlockDir) == 0)
         {
-            StringCchCopyW(pszCanonical, MAX_PATH, PathFindFileNameW(pszFileName));
+            StringCchCopyW(pszCanonical, MAX_PATH, L"$BLOCK");
+            PathAppendW(pszCanonical, PathFindFileNameW(pszFileName));
             return TRUE;
         }
     }
