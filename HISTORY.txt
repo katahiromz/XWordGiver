@@ -125,6 +125,7 @@
     - Made the skeleton view transparent when copying and printing.
     - Boxes (text boxes, image boxes) can be added.
     - Monitoring file changes and confirming file save.
+    - Loading/saving related files in *_files folder when loading/saving the main file.
 
 # 開発履歴 (Japanese)
 
@@ -563,3 +564,4 @@
     - コピー・印刷時にスケルトンビューを透過にした。
     - ボックス（テキストボックス・画像ボックス）の追加が可能に。
     - ファイル変更を監視し、ファイルの保存を確認。
+    - メインファイルの読み込み・保存時に*_filesフォルダに関連ファイルを読み込み・保存。
