@@ -1053,6 +1053,10 @@ bool __fastcall XgLoadSettings(void)
         }
     }
 
+    if (xg_nRows <= 1)
+        xg_nRows = 2;
+    if (xg_nCols <= 1)
+        xg_nCols = 2;
     return true;
 }
 
@@ -6299,6 +6303,8 @@ bool __fastcall MainWnd_OnCreate(HWND hwnd, LPCREATESTRUCT /*lpCreateStruct*/)
 
     // イメージを更新する。
     XgUpdateImage(hwnd, 0, 0);
+    // コントロールのレイアウトを更新する。
+    ::SendMessageW(hwnd, WM_SIZE, 0, 0);
 
     int argc;
     LPWSTR *wargv = ::CommandLineToArgvW(::GetCommandLineW(), &argc);
@@ -6316,50 +6322,14 @@ bool __fastcall MainWnd_OnCreate(HWND hwnd, LPCREATESTRUCT /*lpCreateStruct*/)
             xg_bNoGUI = TRUE;
             return true;
         }
-
-        WCHAR szFile[MAX_PATH], szTarget[MAX_PATH];
-        StringCbCopy(szFile, sizeof(szFile), wargv[1]);
-
-        // コマンドライン引数があれば、それを開く。
-        bool bSuccess = true;
-        if (::lstrcmpiW(PathFindExtensionW(szFile), L".LNK") == 0)
+        else
         {
-            // ショートカットだった場合は、ターゲットのパスを取得する。
-            if (XgGetPathOfShortcutW(szFile, szTarget)) {
-                StringCbCopy(szFile, sizeof(szFile), szTarget);
-            } else {
-                bSuccess = false;
-                MessageBeep(0xFFFFFFFF);
-            }
-        }
-        if (bSuccess) {
-            // 候補ウィンドウを破棄する。
-            XgDestroyCandsWnd();
-            // ヒントウィンドウを破棄する。
-            XgDestroyHintsWnd();
-            // ファイルを開く。
-            if (!XgDoLoad(hwnd, szFile)) {
-                XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_CANTLOAD), nullptr, MB_ICONERROR);
-            } else {
-                XgSetCaretPos();
-                // ズームを実際のウィンドウに合わせる。
-                XgFitZoom(hwnd);
-                // テーマを更新する。
-                XgSetThemeString(xg_strTheme);
-                XgUpdateTheme(hwnd);
-                // イメージを更新する。
-                XgUpdateImage(hwnd, 0, 0);
-                // ヒントを表示する。
-                XgShowHints(hwnd);
-            }
-            // ルールを更新する。
-            XgUpdateRules(hwnd);
+            // コマンドライン引数があれば、それを開く。
+            XgOnLoad(hwnd, wargv[1]);
         }
     }
     GlobalFree(wargv);
 
-    // コントロールのレイアウトを更新する。
-    ::SendMessageW(hwnd, WM_SIZE, 0, 0);
     // ルールを更新する。
     XgUpdateRules(hwnd);
     // ツールバーのUIを更新する。
