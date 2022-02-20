@@ -680,6 +680,7 @@ public:
             break;
         case 1:
             strText = str;
+            SetText(strText);
             InvalidateRect(m_hWnd, NULL, TRUE);
             return TRUE;
         default:
@@ -693,6 +694,7 @@ public:
         m_j1 = j1;
         m_i2 = i2;
         m_j2 = j2;
+        SetText(strText);
         Bound();
         return TRUE;
     }
