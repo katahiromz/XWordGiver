@@ -334,6 +334,80 @@ VOID XgSetCellPosition(LONG& x, LONG& y, INT& i, INT& j, BOOL bEnd)
     x += xg_nMargin;
 }
 
+void XgConvertBlockPath(std::wstring& str)
+{
+    WCHAR szPath[MAX_PATH];
+    XgGetCanonicalImagePath(szPath, str.c_str());
+    str = szPath;
+    if (str.find(L"$BLOCK\\") == 0) {
+        std::wstring path = L"$FILES\\";
+        path += str.substr(7);
+        str = path;
+    }
+}
+
+void XgConvertBox(XG_BoxWindow *pbox)
+{
+    if (auto pic = dynamic_cast<XG_PictureBoxWindow *>(pbox)) {
+        auto& str = pic->m_strFile;
+        XgConvertBlockPath(str);
+    }
+}
+
+void XgGetImageMap(std::map<std::wstring, std::string>& mapping)
+{
+    mapping.clear();
+
+    std::string strBinary;
+    WCHAR szPath[MAX_PATH];
+    if (XgReadImageFileAll(xg_strBlackCellImage.c_str(), strBinary))
+    {
+        XgGetCanonicalImagePath(szPath, xg_strBlackCellImage.c_str());
+        mapping[szPath] = strBinary;
+        xg_strBlackCellImage = szPath;
+    }
+
+    for (auto& box : xg_boxes) {
+        if (box->m_type == L"pic") {
+            if (auto pic = dynamic_cast<XG_PictureBoxWindow*>(&*box)) {
+                if (XgReadImageFileAll(pic->m_strFile.c_str(), strBinary)) {
+                    XgGetCanonicalImagePath(szPath, xg_strBlackCellImage.c_str());
+                    mapping[szPath] = strBinary;
+                }
+            }
+        }
+    }
+}
+
+BOOL XgSaveImageMap(LPCWSTR pszFile, std::map<std::wstring, std::string>& mapping)
+{
+    BOOL ret = FALSE;
+    for (auto& pair : mapping) {
+        WCHAR szPath[MAX_PATH];
+        if (!ret) {
+            XgGetFileDir(szPath, pszFile);
+            CreateDirectoryW(szPath, NULL);
+        }
+        XgGetImagePath(szPath, pair.first.c_str(), TRUE);
+        std::wstring str = szPath;
+        XgConvertBlockPath(str);
+        XgGetImagePath(szPath, str.c_str(), TRUE);
+        if (!XgWriteImageFileAll(szPath, pair.second))
+            return FALSE;
+        ret = TRUE;
+    }
+    if (ret) {
+        XgConvertBlockPath(xg_strBlackCellImage);
+        for (size_t i = 0; i < xg_boxes.size(); ++i) {
+            auto& box = xg_boxes[i];
+            if (box->m_type == L"pic") {
+                XgConvertBox(&*box);
+            }
+        }
+    }
+    return ret;
+}
+
 // ボックスをすべて削除する。
 void XgDeleteBoxes(void)
 {
@@ -1121,7 +1195,10 @@ bool __fastcall XgSaveSettings(void)
             app_key.SetDword(L"ViewMode", xg_nViewMode);
 
             app_key.SetSz(L"Recent", xg_dict_name.c_str());
-            app_key.SetSz(L"BlackCellImage", xg_strBlackCellImage.c_str());
+
+            if (xg_strBlackCellImage.find(L"$FILE\\") != 0)
+                app_key.SetSz(L"BlackCellImage", xg_strBlackCellImage.c_str());
+
             app_key.SetSz(L"DoubleFrameLetters", xg_strDoubleFrameLetters.c_str());
 
             // 保存先のリストを設定する。
@@ -1831,6 +1908,14 @@ void __fastcall XgOnAbout(HWND hwnd)
 // 保存する。
 BOOL XgOnSave(HWND hwnd, LPCWSTR pszFile)
 {
+    std::map<std::wstring, std::string> mapping;
+    try
+    {
+        XgGetImageMap(mapping);
+    } catch (...) {
+        assert(0);
+    }
+
     // 保存する。
     if (!XgDoSave(hwnd, pszFile)) {
         // 保存に失敗。
@@ -1838,24 +1923,15 @@ BOOL XgOnSave(HWND hwnd, LPCWSTR pszFile)
         return FALSE;
     }
 
-    WCHAR szPath[MAX_PATH];
-
-    // 黒マス画像もエクスポートする。
-    XgGetFileDir(szPath, pszFile);
-    CreateDirectoryW(szPath, NULL);
-    XgGetCanonicalImagePath(szPath, xg_strBlackCellImage.c_str());
-    std::wstring strPath = szPath;
-    if (strPath.find(L"$BLOCK\\") == 0) {
-        strPath = L"$FILES\\";
-        strPath += xg_strBlackCellImage.substr(7);
-        WCHAR szSrc[MAX_PATH], szDest[MAX_PATH];
-        XgGetImagePath(szSrc, xg_strBlackCellImage.c_str(), TRUE);
-        XgGetImagePath(szDest, strPath.c_str(), TRUE);
-        CopyFileW(szSrc, szDest, FALSE);
-        xg_strBlackCellImage = strPath.c_str();
+    try
+    {
+        XgSaveImageMap(pszFile, mapping);
+    } catch (...) {
+        assert(0);
     }
 
     // LOOKSファイルも自動でエクスポートする。
+    WCHAR szPath[MAX_PATH];
     XgGetFileDir(szPath, pszFile);
     CreateDirectoryW(szPath, NULL);
     PathAppendW(szPath, PathFindFileNameW(pszFile));
@@ -2045,11 +2121,7 @@ BOOL XgOnLoad(HWND hwnd, LPCWSTR pszFile, LPPOINT ppt)
     }
 
     // 画像ファイルだったら画像ボックスを作成する。
-    if (lstrcmpiW(pchDotExt, L".bmp") == 0 ||
-        lstrcmpiW(pchDotExt, L".emf") == 0 ||
-        lstrcmpiW(pchDotExt, L".png") == 0 ||
-        lstrcmpiW(pchDotExt, L".gif") == 0 ||
-        lstrcmpiW(pchDotExt, L".jpg") == 0)
+    if (XgIsImageFile(szFile))
     {
         if (ppt)
             ScreenToClient(xg_canvasWnd, ppt);

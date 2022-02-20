@@ -1454,6 +1454,8 @@ void XgSetModified(BOOL bModified, LPCSTR file, INT line);
 BOOL XgDoConfirmSave(HWND hwnd);
 // ファイルを読み込む。
 BOOL XgOnLoad(HWND hwnd, LPCWSTR pszFile, LPPOINT ppt = NULL);
+// イメージマッピングを取得する。
+void XgGetImageMap(std::map<std::wstring, std::string>& mapping);
 
 //////////////////////////////////////////////////////////////////////////////
 

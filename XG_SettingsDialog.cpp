@@ -213,6 +213,8 @@ void XG_SettingsDialog::OnOK(HWND hwnd)
 
     // イメージを更新する。
     XgUpdateImage(xg_hMainWnd);
+
+    XG_FILE_MODIFIED(TRUE);
 }
 
 // LOOKSファイルのインポート。

@@ -206,6 +206,12 @@ BOOL XgLoadImage(LPCWSTR pszFileName, HBITMAP& hbm, HENHMETAFILE& hEMF);
 BOOL XgIsImageFile(LPCWSTR pszFileName);
 // 画像ファイルの一覧を取得。
 BOOL XgGetImageList(std::vector<std::wstring>& paths);
+// ファイルを読み込む。
+BOOL XgReadFileAll(LPCWSTR file, std::string& strBinary);
+BOOL XgReadImageFileAll(LPCWSTR file, std::string& strBinary, BOOL bNoCheck = FALSE);
+// ファイルを読み込む。
+BOOL XgWriteFileAll(LPCWSTR file, const std::string& strBinary);
+BOOL XgWriteImageFileAll(LPCWSTR file, const std::string& strBinary);
 
 BOOL XgGetFileDir(LPWSTR pszPath, LPCWSTR pszFile = NULL);
 BOOL XgGetBlockDir(LPWSTR pszPath);

@@ -673,6 +673,52 @@ BOOL XgGetBlockDir(LPWSTR pszPath)
     return PathFileExistsW(pszPath);
 }
 
+BOOL XgReadFileAll(LPCWSTR file, std::string& strBinary)
+{
+    strBinary.clear();
+    if (FILE *fin = _wfopen(file, L"rb")) {
+        CHAR buf[1024];
+        for (;;) {
+            size_t count = fread(buf, 1, 1024, fin);
+            if (!count)
+                break;
+            strBinary.insert(strBinary.end(), &buf[0], &buf[count]);
+        }
+
+        fclose(fin);
+        return TRUE;
+    }
+    return FALSE;
+}
+
+// ファイルを読み込む。
+BOOL XgWriteFileAll(LPCWSTR file, const std::string& strBinary)
+{
+    if (FILE *fout = _wfopen(file, L"wb")) {
+        bool ret = fwrite(strBinary.c_str(), 1, strBinary.size(), fout);
+        fclose(fout);
+        return !!ret;
+    }
+    return FALSE;
+}
+
+BOOL XgReadImageFileAll(LPCWSTR file, std::string& strBinary, BOOL bNoCheck)
+{
+    WCHAR szPath[MAX_PATH];
+    if (XgGetImagePath(szPath, file, bNoCheck))
+        return XgReadFileAll(szPath, strBinary);
+
+    return FALSE;
+}
+
+BOOL XgWriteImageFileAll(LPCWSTR file, const std::string& strBinary)
+{
+    WCHAR szPath[MAX_PATH];
+    if (XgGetImagePath(szPath, file, FALSE))
+        return XgWriteFileAll(szPath, strBinary);
+    return FALSE;
+}
+
 // 画像ファイルか？
 BOOL XgIsImageFile(LPCWSTR pszFileName)
 {
@@ -691,6 +737,12 @@ BOOL XgIsImageFile(LPCWSTR pszFileName)
 // 画像のパスを取得する。
 BOOL XgGetImagePath(LPWSTR pszFullPath, LPCWSTR pszFileName, BOOL bNoCheck)
 {
+    if (!PathIsRelativeW(pszFileName))
+    {
+        GetFullPathNameW(pszFileName, MAX_PATH, pszFullPath, NULL);
+        return TRUE;
+    }
+
     if (memcmp(pszFileName, L"$FILES\\", 7 * sizeof(WCHAR)) == 0)
     {
         WCHAR szFileDir[MAX_PATH];
@@ -722,13 +774,10 @@ BOOL XgGetImagePath(LPWSTR pszFullPath, LPCWSTR pszFileName, BOOL bNoCheck)
         }
     }
 
-    if (PathFileExistsW(pszFileName) || bNoCheck)
-    {
-        GetFullPathNameW(pszFileName, MAX_PATH, pszFullPath, NULL);
-        return TRUE;
-    }
+    GetFullPathNameW(pszFileName, MAX_PATH, pszFullPath, NULL);
 
-    pszFullPath[0] = 0;
+    if (PathFileExistsW(pszFileName) || bNoCheck)
+        return TRUE;
     return FALSE;
 }
 
