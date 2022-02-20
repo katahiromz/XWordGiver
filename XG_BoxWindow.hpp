@@ -569,6 +569,7 @@ public:
             break;
         case 0:
             swscanf(str.c_str(), L"(%d, %d) - (%d, %d)", &j1, &i1, &j2, &i2);
+            SetPos(i1, j1, i2, j2);
             break;
         case 1:
             strFile = str;
@@ -578,8 +579,6 @@ public:
         default:
             return FALSE;
         }
-        SetPos(i1, j1, i2, j2);
-        SetFile(strFile);
         Bound();
         return TRUE;
     }

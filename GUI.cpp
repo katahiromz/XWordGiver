@@ -334,7 +334,7 @@ VOID XgSetCellPosition(LONG& x, LONG& y, INT& i, INT& j, BOOL bEnd)
     x += xg_nMargin;
 }
 
-void XgConvertBlockPath(std::wstring& str)
+void XgConvertBlockPath(std::wstring& str, BOOL bSave)
 {
     if (str.empty())
         return;
@@ -342,7 +342,7 @@ void XgConvertBlockPath(std::wstring& str)
     WCHAR szPath[MAX_PATH];
     XgGetCanonicalImagePath(szPath, str.c_str());
     std::wstring path = L"$FILES\\";
-    if (!PathIsRelativeW(szPath)) {
+    if (!PathIsRelativeW(szPath) && bSave) {
         path += PathFindFileNameW(szPath);
         str = path;
         return;
@@ -355,13 +355,12 @@ void XgConvertBlockPath(std::wstring& str)
     }
 }
 
-void XgConvertBox(XG_BoxWindow *pbox)
+void XgConvertBox(XG_BoxWindow *pbox, BOOL bSave)
 {
     if (auto pic = dynamic_cast<XG_PictureBoxWindow *>(pbox)) {
-        auto& str = pic->m_strFile;
-        XgConvertBlockPath(str);
-        pic->SetFile();
-        InvalidateRect(*pic, NULL, TRUE);
+        auto str = pic->m_strFile;
+        XgConvertBlockPath(str, bSave);
+        pic->SetFile(str);
     }
 }
 
@@ -391,13 +390,13 @@ void XgGetImageMap(std::map<std::wstring, std::string>& mapping)
     }
 }
 
-void XgConvertPaths(void)
+void XgConvertPaths(BOOL bSave = FALSE)
 {
-    XgConvertBlockPath(xg_strBlackCellImage);
+    XgConvertBlockPath(xg_strBlackCellImage, bSave);
     for (size_t i = 0; i < xg_boxes.size(); ++i) {
         auto& box = xg_boxes[i];
         if (box->m_type == L"pic") {
-            XgConvertBox(&*box);
+            XgConvertBox(&*box, bSave);
         }
     }
 }
@@ -413,7 +412,7 @@ BOOL XgSaveImageMap(LPCWSTR pszFile, std::map<std::wstring, std::string>& mappin
         }
         XgGetImagePath(szPath, pair.first.c_str(), TRUE);
         std::wstring str = szPath;
-        XgConvertBlockPath(str);
+        XgConvertBlockPath(str, TRUE);
         XgGetImagePath(szPath, str.c_str(), TRUE);
         if (!XgWriteImageFileAll(szPath, pair.second))
             return FALSE;
@@ -443,8 +442,10 @@ BOOL XgDoLoadBoxJson(const json& boxes)
             auto& box = boxes[i];
             if (box["type"] == "pic") {
                 auto ptr = new XG_PictureBoxWindow();
-                ptr->SetData(0, XgUtf8ToUnicode(box["data0"]));
-                ptr->SetData(1, XgUtf8ToUnicode(box["data1"]));
+                auto data0 = XgUtf8ToUnicode(box["data0"]);
+                auto data1 = XgUtf8ToUnicode(box["data1"]);
+                ptr->SetData(0, data0);
+                ptr->SetData(1, data1);
                 if (ptr->CreateDx(xg_canvasWnd)) {
                     xg_boxes.emplace_back(ptr);
                     continue;
@@ -2109,7 +2110,7 @@ bool __fastcall XgOnNew(HWND hwnd)
     if (!XgDoConfirmSave(hwnd))
         return false;
 
-    INT nID;
+    INT_PTR nID;
     ::EnableWindow(xg_hwndInputPalette, FALSE);
     XG_NewDialog dialog;
     nID = dialog.DoModal(hwnd);
@@ -2194,14 +2195,17 @@ BOOL XgOnLoad(HWND hwnd, LPCWSTR pszFile, LPPOINT ppt)
     XgDeleteBoxes();
 
     // 開く。
+    std::wstring old_file = xg_strFileName;
+    xg_strFileName = pszFile;
     if (!XgDoLoad(hwnd, pszFile)) {
         // 失敗。
+        xg_strFileName = old_file;
         XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_CANTLOAD), nullptr, MB_ICONERROR);
         return FALSE;
     }
 
     // パスを変換する。
-    XgConvertPaths();
+    XgConvertPaths(FALSE);
 
     // LOOKSファイルも自動でインポートする。
     WCHAR szPath[MAX_PATH];
@@ -2366,7 +2370,7 @@ void __fastcall XgFitZoom(HWND hwnd)
 // 問題の作成。
 bool __fastcall XgOnGenerate(HWND hwnd, bool show_answer, bool multiple = false)
 {
-    INT nID;
+    INT_PTR nID;
     ::EnableWindow(xg_hwndInputPalette, FALSE);
     if (multiple) {
         // [問題の連続作成]ダイアログ。
@@ -2464,7 +2468,7 @@ bool __fastcall XgOnGenerateBlacksRepeatedly(HWND hwnd)
 {
     ::EnableWindow(xg_hwndInputPalette, FALSE);
     XG_SeqPatGenDialog dialog;
-    INT nID = INT(dialog.DoModal(hwnd));
+    INT_PTR nID = INT(dialog.DoModal(hwnd));
     ::EnableWindow(xg_hwndInputPalette, TRUE);
     if (nID != IDOK) {
         return false;
@@ -2549,7 +2553,7 @@ bool __fastcall XgOnGenerateBlacks(HWND hwnd, bool sym)
 {
     ::EnableWindow(xg_hwndInputPalette, FALSE);
     XG_PatGenDialog dialog;
-    INT nID = dialog.DoModal(hwnd);
+    INT_PTR nID = dialog.DoModal(hwnd);
     ::EnableWindow(xg_hwndInputPalette, TRUE);
     if (nID != IDOK) {
         return false;
@@ -2825,7 +2829,7 @@ bool __fastcall XgOnSolveRepeatedly(HWND hwnd)
     XG_Board xword_save(xg_xword);
 
     // [解の連続作成]ダイアログ。
-    INT nID;
+    INT_PTR nID;
     ::EnableWindow(xg_hwndInputPalette, FALSE);
     XG_SeqSolveDialog dialog;
     nID = INT(dialog.DoModal(hwnd));
@@ -2942,7 +2946,7 @@ bool __fastcall XgOnSolveRepeatedlyNoAddBlack(HWND hwnd)
     XG_Board xword_save(xg_xword);
 
     // [解の連続作成]ダイアログ。
-    INT nID;
+    INT_PTR nID;
     ::EnableWindow(xg_hwndInputPalette, FALSE);
     XG_SeqSolveDialog dialog;
     nID = INT(dialog.DoModal(hwnd));
@@ -3260,7 +3264,7 @@ void __fastcall XgCopyMarkWord(HWND hwnd)
         }
 
         // CF_UNICODETEXTのデータを用意。
-        DWORD cbGlobal = (strMarkWord.size() + 1) * sizeof(WCHAR);
+        SIZE_T cbGlobal = (strMarkWord.size() + 1) * sizeof(WCHAR);
         hGlobal = GlobalAlloc(GHND | GMEM_SHARE, cbGlobal);
         if (LPWSTR psz = (LPWSTR)GlobalLock(hGlobal)) {
             StringCbCopyW(psz, cbGlobal, strMarkWord.c_str());
@@ -4757,7 +4761,7 @@ void XgGenerateFromWordList(HWND hwnd)
             else if (ZEN_SMALL_A <= wch && wch <= ZEN_SMALL_Z)
                 wch = L'a' + (wch - ZEN_SMALL_A);
         }
-        CharLowerBuffW(&word[0], word.size());
+        CharLowerBuffW(&word[0], (DWORD)word.size());
     }
     XG_WordListDialog::s_str_word_list = mstr_join(XG_WordListDialog::s_words, L" ");
     // 「元に戻す」情報を設定する。

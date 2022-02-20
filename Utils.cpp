@@ -4,6 +4,8 @@
 // (Japanese, UTF-8)
 
 #include "XWordGiver.hpp"
+#define min std::min
+#define max std::max
 #include <gdiplus.h>
 
 //////////////////////////////////////////////////////////////////////////////
@@ -739,7 +741,8 @@ BOOL XgGetImagePath(LPWSTR pszPath, LPCWSTR pszFileName, BOOL bNoCheck)
 {
     if (!PathIsRelativeW(pszFileName))
     {
-        GetFullPathNameW(pszFileName, MAX_PATH, pszPath, NULL);
+        if (pszPath != pszFileName)
+            GetFullPathNameW(pszFileName, MAX_PATH, pszPath, NULL);
         return TRUE;
     }
 
