@@ -6,7 +6,7 @@
 
 #define XGWM_REDRAW (WM_USER + 101)
 
-#define CXY_GRIP 8
+#define CXY_GRIP 5
 #define X0 rc.left
 #define X1 ((rc.left + rc.right - CXY_GRIP) / 2)
 #define X2 (rc.right - CXY_GRIP)
