@@ -150,6 +150,21 @@ std::vector<std::unique_ptr<XG_BoxWindow> > xg_boxes;
 // キャンバスウィンドウ。
 XG_CanvasWindow xg_canvasWnd;
 
+// ファイル変更フラグ。
+BOOL xg_bFileModified = FALSE;
+
+// ファイル変更フラグ。
+void XgSetModified(BOOL bModified, LPCSTR file, INT line)
+{
+    xg_bFileModified = bModified;
+
+    if (bModified) {
+        CHAR szText[MAX_PATH];
+        StringCbPrintfA(szText, sizeof(szText), "%s: %d", file, line);
+        //MessageBoxA(NULL, szText, NULL, 0);
+    }
+}
+
 //////////////////////////////////////////////////////////////////////////////
 // static variables
 
@@ -1807,15 +1822,289 @@ void __fastcall XgOnAbout(HWND hwnd)
     XgCenterMessageBoxIndirectW(&params);
 }
 
+// 保存する。
+BOOL XgOnSave(HWND hwnd, LPCWSTR pszFile)
+{
+    // 保存する。
+    if (!XgDoSave(hwnd, pszFile)) {
+        // 保存に失敗。
+        XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_CANTSAVE2), nullptr, MB_ICONERROR);
+        return FALSE;
+    }
+
+    // ファイルの種類を保存する。
+    LPCWSTR pchDotExt = PathFindExtensionW(pszFile);
+    if (lstrcmpiW(pchDotExt, L".xwj") == 0 ||
+        lstrcmpiW(pchDotExt, L".json") == 0 ||
+        lstrcmpiW(pchDotExt, L".jso") == 0)
+    {
+        xg_nFileType = XG_FILETYPE_XWJ;
+    }
+    else if (lstrcmpiW(pchDotExt, L".crp") == 0)
+    {
+        xg_nFileType = XG_FILETYPE_CRP;
+    }
+    else if (lstrcmpiW(pchDotExt, L".xd") == 0)
+    {
+        xg_nFileType = XG_FILETYPE_XD;
+    }
+    else
+    {
+        if (XgIsUserJapanese())
+            xg_nFileType = XG_FILETYPE_XWJ;
+        else
+            xg_nFileType = XG_FILETYPE_XD;
+    }
+
+    // ファイル変更フラグ。
+    XG_FILE_MODIFIED(FALSE);
+
+    return TRUE;
+}
+
+// 保存ダイアログ。
+BOOL __fastcall XgOnSaveAs(HWND hwnd)
+{
+    if (xg_dict_files.empty()) {
+        // 辞書ファイルの名前を読み込む。
+        XgLoadDictsAll();
+    }
+
+    // ユーザーにファイルの場所を問い合わせる準備。
+    OPENFILENAMEW ofn;
+    WCHAR sz[MAX_PATH] = L"";
+    ZeroMemory(&ofn, sizeof(ofn));
+    ofn.lStructSize = OPENFILENAME_SIZE_VERSION_400W;
+    ofn.hwndOwner = hwnd;
+    ofn.lpstrFilter = XgMakeFilterString(XgLoadStringDx2(IDS_SAVEFILTER));
+    StringCbCopy(sz, sizeof(sz), xg_strFileName.data());
+    ofn.lpstrFile = sz;
+    ofn.nMaxFile = static_cast<DWORD>(ARRAYSIZE(sz));
+    ofn.lpstrTitle = XgLoadStringDx1(IDS_SAVECROSSDATA);
+    ofn.Flags = OFN_EXPLORER | OFN_ENABLESIZING | OFN_OVERWRITEPROMPT |
+        OFN_PATHMUSTEXIST | OFN_HIDEREADONLY;
+    ofn.lpstrDefExt = L"xwj";
+
+    // ファイルの種類を決定する。
+    if (lstrcmpiW(PathFindExtensionW(sz), L".xwj") == 0 ||
+        lstrcmpiW(PathFindExtensionW(sz), L".json") == 0 ||
+        lstrcmpiW(PathFindExtensionW(sz), L".jso") == 0)
+    {
+        PathRemoveExtensionW(sz);
+        ofn.nFilterIndex = 1;
+    }
+    else if (lstrcmpiW(PathFindExtensionW(sz), L".crp") == 0)
+    {
+        PathRemoveExtensionW(sz);
+        ofn.nFilterIndex = 2;
+    }
+    else if (lstrcmpiW(PathFindExtensionW(sz), L".xd") == 0)
+    {
+        PathRemoveExtensionW(sz);
+        ofn.nFilterIndex = 3;
+    }
+    else
+    {
+        switch (xg_nFileType) {
+        case XG_FILETYPE_XWD:
+        case XG_FILETYPE_XWJ:
+            ofn.nFilterIndex = 1;
+            break;
+        case XG_FILETYPE_CRP:
+            ofn.nFilterIndex = 2;
+            break;
+        case XG_FILETYPE_XD:
+            ofn.nFilterIndex = 3;
+            break;
+        default:
+            ofn.nFilterIndex = 0;
+            break;
+        }
+    }
+
+    // ユーザーにファイルの場所を問い合わせる。
+    if (::GetSaveFileNameW(&ofn)) {
+        // 保存する。
+        XgOnSave(hwnd, sz);
+
+        // ツールバーのUIを更新する。
+        XgUpdateToolBarUI(hwnd);
+        return TRUE;
+    }
+
+    return FALSE;
+}
+
+// 保存を確認し、必要なら保存する。
+BOOL XgDoConfirmSave(HWND hwnd)
+{
+    if (!xg_bFileModified)
+        return TRUE;
+
+    INT id = XgCenterMessageBoxW(hwnd,
+        XgLoadStringDx1(IDS_QUERYSAVE),
+        XgLoadStringDx2(IDS_APPNAME),
+        MB_ICONINFORMATION | MB_YESNOCANCEL);
+    switch (id) {
+    case IDYES:
+        return XgOnSaveAs(hwnd);
+    case IDCANCEL:
+        return FALSE;
+    case IDNO:
+        return TRUE;
+    default:
+        return TRUE;
+    }
+}
+
 // 新規作成ダイアログ。
 bool __fastcall XgOnNew(HWND hwnd)
 {
+    if (!XgDoConfirmSave(hwnd))
+        return false;
+
     INT nID;
     ::EnableWindow(xg_hwndInputPalette, FALSE);
     XG_NewDialog dialog;
     nID = dialog.DoModal(hwnd);
     ::EnableWindow(xg_hwndInputPalette, TRUE);
     return (nID == IDOK);
+}
+
+// ファイルを読み込む。
+BOOL XgOnLoad(HWND hwnd, LPCWSTR pszFile, LPPOINT ppt)
+{
+    // 最初のファイルのパス名を取得する。
+    WCHAR szFile[MAX_PATH], szTarget[MAX_PATH];
+    StringCbCopyW(szFile, sizeof(szFile), pszFile);
+
+    // ショートカットだった場合は、ターゲットのパスを取得する。
+    if (XgGetPathOfShortcutW(szFile, szTarget))
+        StringCbCopy(szFile, sizeof(szFile), szTarget);
+
+    // LOOKSファイルだった場合は自動で適用する。
+    LPWSTR pchDotExt = PathFindExtensionW(szFile);
+    if (lstrcmpiW(pchDotExt, L".looks") == 0)
+    {
+        XG_SettingsDialog dialog;
+        dialog.m_pszAutoFile = szFile;
+        dialog.DoModal(hwnd);
+        XG_FILE_MODIFIED(TRUE);
+        return TRUE;
+    }
+
+    // 画像ファイルだったら画像ボックスを作成する。
+    if (lstrcmpiW(pchDotExt, L".bmp") == 0 ||
+        lstrcmpiW(pchDotExt, L".emf") == 0 ||
+        lstrcmpiW(pchDotExt, L".png") == 0 ||
+        lstrcmpiW(pchDotExt, L".gif") == 0 ||
+        lstrcmpiW(pchDotExt, L".jpg") == 0)
+    {
+        if (ppt)
+            ScreenToClient(hwnd, ppt);
+
+        INT i1, j1;
+        if (ppt) {
+            XgSetCellPosition(ppt->x, ppt->y, i1, j1, FALSE);
+        } else {
+            POINT pt = { 0, 0 };
+            XgSetCellPosition(pt.x, pt.y, i1, j1, FALSE);
+        }
+        INT i2 = i1 + 2, j2 = j1 + 2;
+
+        if (i2 >= xg_nRows) {
+            i2 = xg_nRows;
+            i1 = i2 - 2;
+        }
+        if (j2 >= xg_nCols) {
+            j2 = xg_nCols;
+            j1 = j2 - 2;
+        }
+
+        auto ptr = new XG_PictureBoxWindow(i1, j1, i2, j2);
+        ptr->SetFile(szFile);
+        if (ptr->CreateDx(hwnd)) {
+            xg_boxes.emplace_back(ptr);
+            XG_FILE_MODIFIED(TRUE);
+            return TRUE;
+        } else {
+            delete ptr;
+        }
+
+        return FALSE;
+    }
+
+    // 保存を確認し、必要なら保存する。
+    if (!XgDoConfirmSave(xg_hMainWnd))
+        return FALSE;
+
+    // 候補ウィンドウを破棄する。
+    XgDestroyCandsWnd();
+    // ヒントウィンドウを破棄する。
+    XgDestroyHintsWnd();
+    // ボックスをすべて削除する。
+    XgDeleteBoxes();
+
+    // 開く。
+    if (!XgDoLoad(hwnd, pszFile))
+    {
+        // 失敗。
+        XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_CANTLOAD), nullptr, MB_ICONERROR);
+        return FALSE;
+    }
+
+    // キャレット位置を更新。
+    XgSetCaretPos();
+    // テーマを更新する。
+    XgSetThemeString(xg_strTheme);
+    XgUpdateTheme(hwnd);
+    // イメージを更新する。
+    XgMarkUpdate();
+    XgUpdateImage(hwnd, 0, 0);
+    // ヒントを表示する。
+    XgShowHints(hwnd);
+    // ツールバーのUIを更新する。
+    XgUpdateToolBarUI(hwnd);
+    // ルールを更新する。
+    XgUpdateRules(hwnd);
+    // 「元に戻す」情報をクリアする。
+    xg_ubUndoBuffer.Empty();
+    // ズームを実際のウィンドウに合わせる。
+    XgFitZoom(hwnd);
+    // イメージを更新する。
+    XgUpdateImage(hwnd, 0, 0);
+    // フォーカスを移動。
+    SetFocus(hwnd);
+    // ファイル変更フラグ。
+    XG_FILE_MODIFIED(FALSE);
+
+    return TRUE;
+}
+
+// ファイルを開く。
+BOOL __fastcall XgOnOpen(HWND hwnd)
+{
+    if (!XgDoConfirmSave(hwnd))
+        return FALSE;
+
+    // ユーザーにファイルの場所を問い合わせる。
+    WCHAR sz[MAX_PATH] = L"";
+    OPENFILENAMEW ofn;
+    ZeroMemory(&ofn, sizeof(ofn));
+    ofn.lStructSize = OPENFILENAME_SIZE_VERSION_400W;
+    ofn.hwndOwner = hwnd;
+    ofn.lpstrFilter = XgMakeFilterString(XgLoadStringDx2(IDS_CROSSFILTER));
+    sz[0] = 0;
+    ofn.lpstrFile = sz;
+    ofn.nMaxFile = static_cast<DWORD>(ARRAYSIZE(sz));
+    ofn.lpstrTitle = XgLoadStringDx1(IDS_OPENCROSSDATA);
+    ofn.Flags = OFN_EXPLORER | OFN_ENABLESIZING | OFN_FILEMUSTEXIST |
+        OFN_PATHMUSTEXIST | OFN_HIDEREADONLY;
+    ofn.lpstrDefExt = L"xwd";
+    if (::GetOpenFileNameW(&ofn)) {
+        return XgOnLoad(hwnd, sz, NULL);
+    }
+    return FALSE;
 }
 
 // 特定の場所にファイルを保存する。
@@ -4373,8 +4662,6 @@ BOOL XgAddBox(HWND hwnd, UINT id)
 // コマンドを実行する。
 void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT /*codeNotify*/)
 {
-    WCHAR sz[MAX_PATH];
-    OPENFILENAMEW ofn;
     int x, y;
 
     switch (id) {
@@ -4612,6 +4899,7 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT /*codeNo
             } else {
                 sa1->Apply();
             }
+            XG_FILE_MODIFIED(FALSE);
         }
         // ボックスをすべて削除する。
         XgDeleteBoxes();
@@ -4723,140 +5011,11 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT /*codeNo
         break;
 
     case ID_OPEN:   // ファイルを開く。
-        // ユーザーにファイルの場所を問い合わせる。
-        ZeroMemory(&ofn, sizeof(ofn));
-        ofn.lStructSize = OPENFILENAME_SIZE_VERSION_400W;
-        ofn.hwndOwner = hwnd;
-        ofn.lpstrFilter = XgMakeFilterString(XgLoadStringDx2(IDS_CROSSFILTER));
-        sz[0] = 0;
-        ofn.lpstrFile = sz;
-        ofn.nMaxFile = static_cast<DWORD>(ARRAYSIZE(sz));
-        ofn.lpstrTitle = XgLoadStringDx1(IDS_OPENCROSSDATA);
-        ofn.Flags = OFN_EXPLORER | OFN_ENABLESIZING | OFN_FILEMUSTEXIST |
-            OFN_PATHMUSTEXIST | OFN_HIDEREADONLY;
-        ofn.lpstrDefExt = L"xwd";
-        if (::GetOpenFileNameW(&ofn)) {
-            // 候補ウィンドウを破棄する。
-            XgDestroyCandsWnd();
-            // ヒントウィンドウを破棄する。
-            XgDestroyHintsWnd();
-            // ボックスをすべて削除する。
-            XgDeleteBoxes();
-            // 開く。
-            if (!XgDoLoad(hwnd, sz)) {
-                // 失敗。
-                XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_CANTLOAD), nullptr, MB_ICONERROR);
-            } else {
-                // 成功。
-                xg_ubUndoBuffer.Empty();
-                XgSetCaretPos();
-                // ズームを実際のウィンドウに合わせる。
-                XgFitZoom(hwnd);
-                // イメージを更新する。
-                XgUpdateImage(hwnd, 0, 0);
-                // テーマを更新する。
-                XgSetThemeString(xg_strTheme);
-                XgUpdateTheme(hwnd);
-                // ヒントを表示する。
-                XgShowHints(hwnd);
-                // フォーカスを移動。
-                SetFocus(hwnd);
-            }
-        }
-        // ツールバーのUIを更新する。
-        XgUpdateToolBarUI(hwnd);
-        // ルールを更新する。
-        XgUpdateRules(hwnd);
+        XgOnOpen(hwnd);
         break;
 
     case ID_SAVEAS: // ファイルを保存する。
-        if (xg_dict_files.empty()) {
-            // 辞書ファイルの名前を読み込む。
-            XgLoadDictsAll();
-        }
-        // ユーザーにファイルの場所を問い合わせる準備。
-        ZeroMemory(&ofn, sizeof(ofn));
-        ofn.lStructSize = OPENFILENAME_SIZE_VERSION_400W;
-        ofn.hwndOwner = hwnd;
-        ofn.lpstrFilter = XgMakeFilterString(XgLoadStringDx2(IDS_SAVEFILTER));
-        StringCbCopy(sz, sizeof(sz), xg_strFileName.data());
-        ofn.lpstrFile = sz;
-        ofn.nMaxFile = static_cast<DWORD>(ARRAYSIZE(sz));
-        ofn.lpstrTitle = XgLoadStringDx1(IDS_SAVECROSSDATA);
-        ofn.Flags = OFN_EXPLORER | OFN_ENABLESIZING | OFN_OVERWRITEPROMPT |
-            OFN_PATHMUSTEXIST | OFN_HIDEREADONLY;
-        ofn.lpstrDefExt = L"xwj";
-
-        // ファイルの種類を決定する。
-        if (lstrcmpiW(PathFindExtensionW(sz), L".xwj") == 0 ||
-            lstrcmpiW(PathFindExtensionW(sz), L".json") == 0 ||
-            lstrcmpiW(PathFindExtensionW(sz), L".jso") == 0)
-        {
-            PathRemoveExtensionW(sz);
-            ofn.nFilterIndex = 1;
-        }
-        else if (lstrcmpiW(PathFindExtensionW(sz), L".crp") == 0)
-        {
-            PathRemoveExtensionW(sz);
-            ofn.nFilterIndex = 2;
-        }
-        else if (lstrcmpiW(PathFindExtensionW(sz), L".xd") == 0)
-        {
-            PathRemoveExtensionW(sz);
-            ofn.nFilterIndex = 3;
-        }
-        else
-        {
-            switch (xg_nFileType) {
-            case XG_FILETYPE_XWD:
-            case XG_FILETYPE_XWJ:
-                ofn.nFilterIndex = 1;
-                break;
-            case XG_FILETYPE_CRP:
-                ofn.nFilterIndex = 2;
-                break;
-            case XG_FILETYPE_XD:
-                ofn.nFilterIndex = 3;
-                break;
-            default:
-                ofn.nFilterIndex = 0;
-                break;
-            }
-        }
-
-        // ユーザーにファイルの場所を問い合わせる。
-        if (::GetSaveFileNameW(&ofn)) {
-            // 保存する。
-            if (!XgDoSave(hwnd, sz)) {
-                // 保存に失敗。
-                XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_CANTSAVE2), nullptr, MB_ICONERROR);
-            } else {
-                // ファイルの種類を保存する。
-                if (lstrcmpiW(PathFindExtensionW(sz), L".xwj") == 0 ||
-                    lstrcmpiW(PathFindExtensionW(sz), L".json") == 0 ||
-                    lstrcmpiW(PathFindExtensionW(sz), L".jso") == 0)
-                {
-                    xg_nFileType = XG_FILETYPE_XWJ;
-                }
-                else if (lstrcmpiW(PathFindExtensionW(sz), L".crp") == 0)
-                {
-                    xg_nFileType = XG_FILETYPE_CRP;
-                }
-                else if (lstrcmpiW(PathFindExtensionW(sz), L".xd") == 0)
-                {
-                    xg_nFileType = XG_FILETYPE_XD;
-                }
-                else
-                {
-                    if (XgIsUserJapanese())
-                        xg_nFileType = XG_FILETYPE_XWJ;
-                    else
-                        xg_nFileType = XG_FILETYPE_XD;
-                }
-            }
-        }
-        // ツールバーのUIを更新する。
-        XgUpdateToolBarUI(hwnd);
+        XgOnSaveAs(hwnd);
         break;
 
     case ID_SAVEPROBASIMAGE:    // 問題を画像ファイルとして保存する。
@@ -5893,6 +6052,7 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT /*codeNo
             if ((*it)->m_hWnd == hwndCtl) {
                 DestroyWindow(hwndCtl);
                 xg_boxes.erase(it);
+                XG_FILE_MODIFIED(TRUE);
                 break;
             }
         }
@@ -5900,7 +6060,9 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT /*codeNo
     case ID_BOXPROP:
         for (auto it = xg_boxes.begin(); it != xg_boxes.end(); ++it) {
             if ((*it)->m_hWnd == hwndCtl) {
-                (*it)->Prop(hwndCtl);
+                if ((*it)->Prop(hwndCtl)) {
+                    XG_FILE_MODIFIED(TRUE);
+                }
                 break;
             }
         }
@@ -6339,6 +6501,15 @@ void MainWnd_OnDropFiles(HWND hwnd, HDROP hdrop)
     xg_canvasWnd.DoDropFile(xg_canvasWnd, hdrop, pt);
 }
 
+// ウィンドウを閉じようとした。
+void MainWnd_OnClose(HWND hwnd)
+{
+    if (XgDoConfirmSave(hwnd))
+    {
+        DestroyWindow(hwnd);
+    }
+}
+
 // ウィンドウプロシージャ。
 extern "C"
 LRESULT CALLBACK
@@ -6346,6 +6517,7 @@ XgWindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
     switch (uMsg) {
     HANDLE_MSG(hWnd, WM_CREATE, MainWnd_OnCreate);
+    HANDLE_MSG(hWnd, WM_CLOSE, MainWnd_OnClose);
     HANDLE_MSG(hWnd, WM_DESTROY, MainWnd_OnDestroy);
     HANDLE_MSG(hWnd, WM_MOVE, MainWnd_OnMove);
     HANDLE_MSG(hWnd, WM_SIZE, MainWnd_OnSize);

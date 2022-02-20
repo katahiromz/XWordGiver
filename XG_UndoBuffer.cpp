@@ -12,6 +12,7 @@
     xg_xword.SetAt(pos, ch);
     xg_caret_pos = pos;
     XgUpdateCaretPos();
+    XG_FILE_MODIFIED(TRUE);
 }
 
 /*virtual*/ void XG_UndoData_MarksUpdated::Get() {
@@ -20,6 +21,7 @@
 
 /*virtual*/ void XG_UndoData_MarksUpdated::Apply() const {
     xg_vMarks = vMarks;
+    XG_FILE_MODIFIED(TRUE);
 }
 
 /*virtual*/ void XG_UndoData_HintsUpdated::Get() {
@@ -34,6 +36,7 @@
     xg_vYokoInfo = vYokoInfo;
     xg_vecTateHints = vecTateHints;
     xg_vecYokoHints = vecYokoHints;
+    XG_FILE_MODIFIED(TRUE);
 }
 
 /*virtual*/ void XG_UndoData_SetAll::Get() {
@@ -79,6 +82,7 @@
         XgDestroyHintsWnd();
     }
     XgUpdateCaretPos();
+    XG_FILE_MODIFIED(TRUE);
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -99,6 +103,7 @@ bool XG_UndoBuffer::Undo() {
     if (CanUndo()) {
         --m_i;
         operator[](m_i).Execute(false);
+        XG_FILE_MODIFIED(TRUE);
         return true;
     }
     return false;
@@ -108,6 +113,7 @@ bool XG_UndoBuffer::Redo() {
     if (CanRedo()) {
         operator[](m_i).Execute(true);
         ++m_i;
+        XG_FILE_MODIFIED(TRUE);
         return true;
     }
     return false;
@@ -121,6 +127,7 @@ void XG_UndoBuffer::Commit(const XG_UndoInfo& ui) {
 
     emplace_back(ui);
     ++m_i;
+    XG_FILE_MODIFIED(TRUE);
 }
 
 static const int c_max_size = 25;
@@ -140,6 +147,7 @@ void XG_UndoBuffer::Commit(UINT id,
         pop_front();
         --m_i;
     }
+    XG_FILE_MODIFIED(TRUE);
 }
 
 //////////////////////////////////////////////////////////////////////////////

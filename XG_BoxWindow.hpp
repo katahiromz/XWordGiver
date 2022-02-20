@@ -28,10 +28,7 @@ public:
     std::wstring m_type;
     HWND m_hwndParent;
     HRGN m_hRgn;
-    INT m_i1;
-    INT m_j1;
-    INT m_i2;
-    INT m_j2;
+    INT m_i1, m_j1, m_i2, m_j2;
     RECT m_rcOld;
 
     XG_BoxWindow(const std::wstring& type, INT i1 = 0, INT j1 = 0, INT i2 = 1, INT j2 = 1)
@@ -163,9 +160,30 @@ public:
         DeleteObject(hRgnOld);
     }
 
+    BOOL SetPos(INT i1, INT j1, INT i2, INT j2)
+    {
+        if (i1 == -1 || j1 == -1 || i2 == -1 || j2 == -1) {
+            return FALSE;
+        }
+        if (i1 >= i2)
+            i2 = i1 + 1;
+        if (j1 >= j2)
+            j2 = j1 + 1;
+        if (i1 != m_i1 || j1 != m_j1 || i2 != m_i2 || j2 != m_j2) {
+            m_i1 = i1;
+            m_j1 = j1;
+            m_i2 = i2;
+            m_j2 = j2;
+            XG_FILE_MODIFIED(TRUE);
+            return TRUE;
+        }
+        return FALSE;
+    }
+
     void Bound()
     {
         MRect rc;
+
         XgGetCellPosition(rc, m_i1, m_j1, m_i2, m_j2);
 
         RECT rcWnd;
@@ -403,12 +421,10 @@ public:
                 GetWindowRect(hwnd, &rc);
                 InflateRect(&rc, -CXY_GRIP, -CXY_GRIP);
                 MapWindowRect(NULL, m_hwndParent, &rc);
-                XgSetCellPosition(rc.left, rc.top, m_i1, m_j1, FALSE);
-                XgSetCellPosition(rc.right, rc.bottom, m_i2, m_j2, TRUE);
-                if (m_i1 >= m_i2)
-                    m_i2 = m_i1 + 1;
-                if (m_j1 >= m_j2)
-                    m_j2 = m_j1 + 1;
+                INT i1, j1, i2, j2;
+                XgSetCellPosition(rc.left, rc.top, i1, j1, FALSE);
+                XgSetCellPosition(rc.right, rc.bottom, i2, j2, TRUE);
+                SetPos(i1, j1, i2, j2);
                 // ボックスの位置を更新。
                 PostMessage(m_hwndParent, WM_COMMAND, ID_MOVEBOXES, 0);
                 // 表示を更新。
@@ -551,14 +567,7 @@ public:
         default:
             return FALSE;
         }
-        if (i1 == -1 || j1 == -1 || i2 == -1 || j2 == -1)
-            return FALSE;
-        if (i1 >= i2 || j1 >= j2)
-            return FALSE;
-        m_i1 = i1;
-        m_j1 = j1;
-        m_i2 = i2;
-        m_j2 = j2;
+        SetPos(i1, j1, i2, j2);
         SetFile(strFile);
         Bound();
         return TRUE;
@@ -687,14 +696,7 @@ public:
         default:
             return FALSE;
         }
-        if (i1 == -1 || j1 == -1 || i2 == -1 || j2 == -1)
-            return FALSE;
-        if (i1 >= i2 || j1 >= j2)
-            return FALSE;
-        m_i1 = i1;
-        m_j1 = j1;
-        m_i2 = i2;
-        m_j2 = j2;
+        SetPos(i1, j1, i2, j2);
         SetText(strText);
         Bound();
         return TRUE;

@@ -1447,6 +1447,13 @@ void XgDrawBoxes(XG_Board& xw, HDC hdc, LPSIZE psiz);
 BOOL XgLoadXdBox(const std::wstring& line);
 // XDファイルからボックスを読み込む。
 BOOL XgWriteXdBoxes(FILE *fout);
+// ファイル変更フラグ。
+void XgSetModified(BOOL bModified, LPCSTR file, INT line);
+#define XG_FILE_MODIFIED(bModified) XgSetModified((bModified), __FILE__, __LINE__)
+// 保存を確認し、必要なら保存する。
+BOOL XgDoConfirmSave(HWND hwnd);
+// ファイルを読み込む。
+BOOL XgOnLoad(HWND hwnd, LPCWSTR pszFile, LPPOINT ppt = NULL);
 
 //////////////////////////////////////////////////////////////////////////////
 

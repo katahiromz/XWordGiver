@@ -124,6 +124,7 @@
 - 2022.XX.YY ver.4.8.9
     - Made the skeleton view transparent when copying and printing.
     - Boxes (text boxes, image boxes) can be added.
+    - Monitoring file changes and confirming file save.
 
 # 開発履歴 (Japanese)
 
@@ -561,3 +562,4 @@
 - 2022年XX月YY日 ver.4.8.9
     - コピー・印刷時にスケルトンビューを透過にした。
     - ボックス（テキストボックス・画像ボックス）の追加が可能に。
+    - ファイル変更を監視し、ファイルの保存を確認。
