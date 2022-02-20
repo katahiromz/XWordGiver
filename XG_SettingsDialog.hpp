@@ -17,7 +17,7 @@ extern WCHAR xg_szSmallFont[LF_FACESIZE];
 // UIフォント。
 extern WCHAR xg_szUIFont[LF_FACESIZE];
 
-// 「単語リストから生成」ダイアログ。
+// 「見た目の設定」ダイアログ。
 class XG_SettingsDialog : public XG_Dialog
 {
 public:
