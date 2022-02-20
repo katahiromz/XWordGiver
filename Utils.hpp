@@ -198,8 +198,14 @@ std::wstring XgBinToHex(const void *ptr, size_t size);
 void XgHexToBin(std::vector<BYTE>& data, const std::wstring& str);
 // 画像のパスを取得する。
 BOOL XgGetLoadImagePath(LPWSTR pszFullPath, LPCWSTR pszFileName);
+// 画像のパスをきれいにする。
+BOOL XgGetCanonicalImagePath(LPWSTR pszCanonical, LPCWSTR pszFileName);
 // 画像を読み込む。
 BOOL XgLoadImage(LPCWSTR pszFileName, HBITMAP& hbm, HENHMETAFILE& hEMF);
+// 画像ファイルか？
+BOOL XgIsImageFile(LPCWSTR pszFileName);
+// 画像ファイルの一覧を取得。
+BOOL XgGetImageList(std::vector<std::wstring>& paths);
 
 static inline BOOL ComboBox_RealGetText(HWND hwndCombo, LPWSTR pszText, INT cchText)
 {

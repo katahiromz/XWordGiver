@@ -648,22 +648,179 @@ void XgHexToBin(std::vector<BYTE>& data, const std::wstring& str)
     }
 }
 
+BOOL XgGetFileDir(LPWSTR pszPath)
+{
+    pszPath[0] = 0;
+    if (xg_strFileName.empty())
+        return FALSE;
+
+    LPCWSTR pszTitle = PathFindFileNameW(xg_strFileName.c_str());
+    StringCchCopyW(pszPath, MAX_PATH, xg_strFileName.c_str());
+    PathRemoveFileSpecW(pszPath);
+    PathAppendW(pszPath, pszTitle);
+    PathRemoveExtensionW(pszPath);
+    StringCchCatW(pszPath, MAX_PATH, L"_files");
+    return TRUE;
+}
+
+BOOL XgGetBlockDir(LPWSTR pszPath)
+{
+    GetModuleFileNameW(NULL, pszPath, MAX_PATH);
+    PathRemoveFileSpecW(pszPath);
+    PathAppendW(pszPath, L"BLOCK");
+    return PathFileExistsW(pszPath);
+}
+
+// 画像ファイルか？
+BOOL XgIsImageFile(LPCWSTR pszFileName)
+{
+    LPCWSTR pchDotExt = PathFindExtensionW(pszFileName);
+    if (lstrcmpiW(pchDotExt, L".bmp") == 0 ||
+        lstrcmpiW(pchDotExt, L".emf") == 0 ||
+        lstrcmpiW(pchDotExt, L".gif") == 0 ||
+        lstrcmpiW(pchDotExt, L".png") == 0 ||
+        lstrcmpiW(pchDotExt, L".jpg") == 0)
+    {
+        return TRUE;
+    }
+    return FALSE;
+}
+
 // 画像のパスを取得する。
 BOOL XgGetLoadImagePath(LPWSTR pszFullPath, LPCWSTR pszFileName)
 {
-    if (PathIsRelative(pszFileName))
+    LPCWSTR pszTitle = PathFindFileNameW(pszFileName);
+
+    WCHAR szFileDir[MAX_PATH];
+    if (XgGetFileDir(szFileDir))
     {
-        GetModuleFileNameW(NULL, pszFullPath, MAX_PATH);
-        PathRemoveFileSpecW(pszFullPath);
-        PathAppendW(pszFullPath, L"BLOCK");
-        PathAppendW(pszFullPath, pszFileName);
-    }
-    else
-    {
-        StringCbCopyW(pszFullPath, MAX_PATH, pszFileName);
+        StringCchCopyW(pszFullPath, MAX_PATH, szFileDir);
+        PathAppendW(pszFullPath, pszTitle);
+        if (PathFileExistsW(pszFullPath))
+            return TRUE;
     }
 
-    return PathFileExistsW(pszFullPath);
+    WCHAR szBlockDir[MAX_PATH];
+    if (XgGetBlockDir(szBlockDir))
+    {
+        StringCchCopyW(pszFullPath, MAX_PATH, szBlockDir);
+        PathAppendW(pszFullPath, pszTitle);
+        if (PathFileExistsW(pszFullPath))
+            return TRUE;
+    }
+
+    if (PathFileExistsW(pszFileName))
+    {
+        GetFullPathNameW(pszFileName, MAX_PATH, pszFullPath, NULL);
+        return TRUE;
+    }
+
+    pszFullPath[0] = 0;
+    return FALSE;
+}
+
+// 画像のパスをきれいにする。
+BOOL XgGetCanonicalImagePath(LPWSTR pszCanonical, LPCWSTR pszFileName)
+{
+    WCHAR szPath[MAX_PATH];
+    if (!XgGetLoadImagePath(szPath, pszFileName))
+        return FALSE;
+
+    for (auto& ch : szPath) {
+        if (ch == 0)
+            break;
+        if (ch == L'/')
+            ch = L'\\';
+    }
+
+    WCHAR szFileDir[MAX_PATH];
+    if (XgGetFileDir(szFileDir))
+    {
+        PathAddBackslashW(szFileDir);
+        std::wstring str = pszFileName;
+        str.resize(lstrlenW(szFileDir));
+        if (lstrcmpiW(str.c_str(), szFileDir) == 0)
+        {
+            StringCchCopyW(pszCanonical, MAX_PATH, PathFindFileNameW(pszFileName));
+            return TRUE;
+        }
+    }
+
+    WCHAR szBlockDir[MAX_PATH];
+    if (XgGetBlockDir(szBlockDir))
+    {
+        PathAddBackslashW(szBlockDir);
+        std::wstring str = pszFileName;
+        str.resize(lstrlenW(szBlockDir));
+        if (lstrcmpiW(str.c_str(), szBlockDir) == 0)
+        {
+            StringCchCopyW(pszCanonical, MAX_PATH, PathFindFileNameW(pszFileName));
+            return TRUE;
+        }
+    }
+
+    if (!PathIsRelative(pszFileName)) {
+        StringCchCopyW(pszCanonical, MAX_PATH, pszFileName);
+        return TRUE;
+    }
+
+    return FALSE;
+}
+
+// 画像ファイルの一覧を取得。
+BOOL XgGetImageList(std::vector<std::wstring>& paths)
+{
+    paths.clear();
+
+    WIN32_FIND_DATAW find;
+    WCHAR szPath[MAX_PATH], szCanonical[MAX_PATH];
+
+    WCHAR szFileDir[MAX_PATH];
+    if (XgGetFileDir(szFileDir))
+    {
+        PathAppendW(szFileDir, L"*");
+        HANDLE hFind = FindFirstFileW(szFileDir, &find);
+        PathRemoveFileSpecW(szFileDir);
+        if (hFind != INVALID_HANDLE_VALUE) {
+            do
+            {
+                if (find.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
+                    continue;
+                StringCchCopyW(szPath, _countof(szPath), szFileDir);
+                PathAppendW(szPath, find.cFileName);
+                if (XgIsImageFile(szPath) && XgGetCanonicalImagePath(szCanonical, szPath))
+                {
+                    paths.push_back(szCanonical);
+                }
+            } while (FindNextFile(hFind, &find));
+            FindClose(hFind);
+        }
+    }
+
+    WCHAR szBlockDir[MAX_PATH];
+    if (XgGetBlockDir(szBlockDir))
+    {
+        PathAddBackslashW(szBlockDir);
+        PathAppendW(szBlockDir, L"*");
+        HANDLE hFind = FindFirstFileW(szBlockDir, &find);
+        PathRemoveFileSpecW(szBlockDir);
+        if (hFind != INVALID_HANDLE_VALUE) {
+            do
+            {
+                if (find.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
+                    continue;
+                StringCchCopyW(szPath, _countof(szPath), szBlockDir);
+                PathAppendW(szPath, find.cFileName);
+                if (XgIsImageFile(szPath) && XgGetCanonicalImagePath(szCanonical, szPath))
+                {
+                    paths.push_back(szCanonical);
+                }
+            } while (FindNextFile(hFind, &find));
+            FindClose(hFind);
+        }
+    }
+
+    return !paths.empty();
 }
 
 // 画像を読み込む。

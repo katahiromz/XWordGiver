@@ -91,36 +91,9 @@ public:
         ::SendDlgItemMessage(hwnd, scr1, UDM_SETRANGE, 0, MAKELPARAM(100, 3));
         ::SendDlgItemMessage(hwnd, scr2, UDM_SETRANGE, 0, MAKELPARAM(100, 3));
 
-        WCHAR szPath[MAX_PATH];
+        // 画像ファイルリストを取得する。
         std::vector<std::wstring> items;
-        WIN32_FIND_DATA find;
-        HANDLE hFind;
-
-        // BLOCKフォルダの画像リストを取り込む。
-        GetModuleFileNameW(NULL, szPath, ARRAYSIZE(szPath));
-        PathRemoveFileSpec(szPath);
-        PathAppend(szPath, L"BLOCK\\*.*");
-        hFind = FindFirstFile(szPath, &find);
-        if (hFind != INVALID_HANDLE_VALUE)
-        {
-            do
-            {
-                LPWSTR pchDotExt = PathFindExtensionW(find.cFileName);
-                if (lstrcmpiW(pchDotExt, L".bmp") == 0 ||
-                    lstrcmpiW(pchDotExt, L".emf") == 0 ||
-                    lstrcmpiW(pchDotExt, L".png") == 0 ||
-                    lstrcmpiW(pchDotExt, L".gif") == 0 ||
-                    lstrcmpiW(pchDotExt, L".jpg") == 0)
-                {
-                    items.push_back(find.cFileName);
-                }
-            } while (FindNextFile(hFind, &find));
-
-            FindClose(hFind);
-        }
-
-        // ソートする。
-        std::sort(items.begin(), items.end());
+        XgGetImageList(items);
 
         // コンボボックスに項目を追加する。
         HWND hCmb1 = GetDlgItem(hwnd, cmb1);

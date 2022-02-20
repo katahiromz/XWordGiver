@@ -16,6 +16,14 @@ public:
         XgCenterDialog(hwnd);
 
         HWND hCmb1 = GetDlgItem(hwnd, cmb1);
+
+        // 画像ファイルリストを取得する。
+        std::vector<std::wstring> items;
+        XgGetImageList(items);
+        for (auto& item : items) {
+            ComboBox_AddString(hCmb1, item.c_str());
+        }
+
         ComboBox_RealSetText(hCmb1, m_strFile.c_str());
 
         DragAcceptFiles(hwnd, TRUE);
