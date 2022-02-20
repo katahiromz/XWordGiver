@@ -450,7 +450,9 @@ public:
         std::wstring str = szText;
         if (str.size() && str != XgLoadStringDx1(IDS_NONE))
         {
-            WritePrivateProfileStringW(L"Looks", L"BlackCellImage", szText, pszFileName);
+            WCHAR szPath[MAX_PATH];
+            XgGetCanonicalImagePath(szPath, szText);
+            WritePrivateProfileStringW(L"Looks", L"BlackCellImage", szPath, pszFileName);
         }
         else
         {
