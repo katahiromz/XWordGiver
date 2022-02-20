@@ -735,11 +735,11 @@ BOOL XgIsImageFile(LPCWSTR pszFileName)
 }
 
 // 画像のパスを取得する。
-BOOL XgGetImagePath(LPWSTR pszFullPath, LPCWSTR pszFileName, BOOL bNoCheck)
+BOOL XgGetImagePath(LPWSTR pszPath, LPCWSTR pszFileName, BOOL bNoCheck)
 {
     if (!PathIsRelativeW(pszFileName))
     {
-        GetFullPathNameW(pszFileName, MAX_PATH, pszFullPath, NULL);
+        GetFullPathNameW(pszFileName, MAX_PATH, pszPath, NULL);
         return TRUE;
     }
 
@@ -748,9 +748,9 @@ BOOL XgGetImagePath(LPWSTR pszFullPath, LPCWSTR pszFileName, BOOL bNoCheck)
         WCHAR szFileDir[MAX_PATH];
         if (XgGetFileDir(szFileDir))
         {
-            StringCchCopyW(pszFullPath, MAX_PATH, szFileDir);
-            PathAppendW(pszFullPath, &pszFileName[7]);
-            if (PathFileExistsW(pszFullPath) || bNoCheck)
+            StringCchCopyW(pszPath, MAX_PATH, szFileDir);
+            PathAppendW(pszPath, &pszFileName[7]);
+            if (PathFileExistsW(pszPath) || bNoCheck)
                 return TRUE;
         }
     }
@@ -760,25 +760,22 @@ BOOL XgGetImagePath(LPWSTR pszFullPath, LPCWSTR pszFileName, BOOL bNoCheck)
     {
         if (memcmp(pszFileName, L"$BLOCK\\", 7 * sizeof(WCHAR)) == 0)
         {
-            StringCchCopyW(pszFullPath, MAX_PATH, szBlockDir);
-            PathAppendW(pszFullPath, &pszFileName[7]);
-            if (PathFileExistsW(pszFullPath) || bNoCheck)
+            StringCchCopyW(pszPath, MAX_PATH, szBlockDir);
+            PathAppendW(pszPath, &pszFileName[7]);
+            if (PathFileExistsW(pszPath) || bNoCheck)
                 return TRUE;
         }
         else if (PathIsRelativeW(pszFileName))
         {
-            StringCchCopyW(pszFullPath, MAX_PATH, szBlockDir);
-            PathAppendW(pszFullPath, pszFileName);
-            if (PathFileExistsW(pszFullPath) || bNoCheck)
+            StringCchCopyW(pszPath, MAX_PATH, szBlockDir);
+            PathAppendW(pszPath, pszFileName);
+            if (PathFileExistsW(pszPath) || bNoCheck)
                 return TRUE;
         }
     }
 
-    GetFullPathNameW(pszFileName, MAX_PATH, pszFullPath, NULL);
-
-    if (PathFileExistsW(pszFileName) || bNoCheck)
-        return TRUE;
-    return FALSE;
+    StringCchCopyW(pszPath, MAX_PATH, pszFileName);
+    return TRUE;
 }
 
 // 画像のパスをきれいにする。

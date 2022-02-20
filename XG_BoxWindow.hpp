@@ -472,6 +472,10 @@ public:
 
     virtual void OnDraw(HWND hwnd, HDC hDC, const RECT& rc) override
     {
+        if (!m_hbm && !m_hEMF) {
+            SetFile(m_strFile);
+        }
+
         if (m_hbm) {
             BITMAP bm;
             GetObject(m_hbm, sizeof(bm), &bm);
@@ -493,12 +497,19 @@ public:
         XG_BoxWindow::OnDraw(hwnd, hDC, rc);
     }
 
+    BOOL SetFile()
+    {
+        return SetFile(m_strFile);
+    }
+
     BOOL SetFile(const std::wstring& strFile)
     {
         DoDelete();
 
-        if (XgLoadImage(strFile.c_str(), m_hbm, m_hEMF)) {
-            m_strFile = strFile;
+        WCHAR szPath[MAX_PATH];
+        XgGetImagePath(szPath, strFile.c_str());
+        if (XgLoadImage(szPath, m_hbm, m_hEMF)) {
+            m_strFile = szPath;
             return TRUE;
         }
 

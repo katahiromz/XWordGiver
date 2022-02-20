@@ -336,13 +336,22 @@ VOID XgSetCellPosition(LONG& x, LONG& y, INT& i, INT& j, BOOL bEnd)
 
 void XgConvertBlockPath(std::wstring& str)
 {
+    if (str.empty())
+        return;
+
     WCHAR szPath[MAX_PATH];
     XgGetCanonicalImagePath(szPath, str.c_str());
+    std::wstring path = L"$FILES\\";
+    if (!PathIsRelativeW(szPath)) {
+        path += PathFindFileNameW(szPath);
+        str = path;
+        return;
+    }
     str = szPath;
     if (str.find(L"$BLOCK\\") == 0) {
-        std::wstring path = L"$FILES\\";
         path += str.substr(7);
         str = path;
+        return;
     }
 }
 
@@ -351,6 +360,8 @@ void XgConvertBox(XG_BoxWindow *pbox)
     if (auto pic = dynamic_cast<XG_PictureBoxWindow *>(pbox)) {
         auto& str = pic->m_strFile;
         XgConvertBlockPath(str);
+        pic->SetFile();
+        InvalidateRect(*pic, NULL, TRUE);
     }
 }
 
@@ -370,11 +381,23 @@ void XgGetImageMap(std::map<std::wstring, std::string>& mapping)
     for (auto& box : xg_boxes) {
         if (box->m_type == L"pic") {
             if (auto pic = dynamic_cast<XG_PictureBoxWindow*>(&*box)) {
-                if (XgReadImageFileAll(pic->m_strFile.c_str(), strBinary)) {
-                    XgGetCanonicalImagePath(szPath, xg_strBlackCellImage.c_str());
+                auto& strFile = pic->m_strFile;
+                if (XgReadImageFileAll(strFile.c_str(), strBinary)) {
+                    XgGetCanonicalImagePath(szPath, strFile.c_str());
                     mapping[szPath] = strBinary;
                 }
             }
+        }
+    }
+}
+
+void XgConvertPaths(void)
+{
+    XgConvertBlockPath(xg_strBlackCellImage);
+    for (size_t i = 0; i < xg_boxes.size(); ++i) {
+        auto& box = xg_boxes[i];
+        if (box->m_type == L"pic") {
+            XgConvertBox(&*box);
         }
     }
 }
@@ -397,13 +420,7 @@ BOOL XgSaveImageMap(LPCWSTR pszFile, std::map<std::wstring, std::string>& mappin
         ret = TRUE;
     }
     if (ret) {
-        XgConvertBlockPath(xg_strBlackCellImage);
-        for (size_t i = 0; i < xg_boxes.size(); ++i) {
-            auto& box = xg_boxes[i];
-            if (box->m_type == L"pic") {
-                XgConvertBox(&*box);
-            }
-        }
+        XgConvertPaths();
     }
     return ret;
 }
@@ -1916,6 +1933,9 @@ BOOL XgOnSave(HWND hwnd, LPCWSTR pszFile)
         assert(0);
     }
 
+    // パスを変換する。
+    XgConvertPaths();
+
     // 保存する。
     if (!XgDoSave(hwnd, pszFile)) {
         // 保存に失敗。
@@ -2174,12 +2194,14 @@ BOOL XgOnLoad(HWND hwnd, LPCWSTR pszFile, LPPOINT ppt)
     XgDeleteBoxes();
 
     // 開く。
-    if (!XgDoLoad(hwnd, pszFile))
-    {
+    if (!XgDoLoad(hwnd, pszFile)) {
         // 失敗。
         XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_CANTLOAD), nullptr, MB_ICONERROR);
         return FALSE;
     }
+
+    // パスを変換する。
+    XgConvertPaths();
 
     // LOOKSファイルも自動でインポートする。
     WCHAR szPath[MAX_PATH];
