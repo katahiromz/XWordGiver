@@ -391,6 +391,68 @@ BOOL XgDoSaveBoxJson(json& j)
     return TRUE;
 }
 
+// ボックスJSONを読み込む。
+BOOL XgLoadXdBox(const std::wstring& line)
+{
+    if (line.find(L"Box: ") != 0)
+        return FALSE;
+
+    std::wstring str;
+    str = line.substr(5);
+    size_t index0 = str.find(L":");
+
+    std::wstring type = str.substr(0, index0);
+    xg_str_trim(type);
+
+    INT i1, j1, i2, j2;
+    str = str.substr(index0 + 2);
+    if (swscanf(str.c_str(), L"(%d, %d) - (%d, %d)", &j1, &i1, &j2, &i2) != 4)
+        return FALSE;
+
+    size_t index1 = str.find(L":");
+    std::wstring text = str.substr(index1 + 2);
+    xg_str_trim(text);
+
+    if (type == L"pic") {
+        auto ptr = new XG_PictureBoxWindow(i1, j1, i2, j2);
+        ptr->SetData(1, text);
+        if (ptr->CreateDx(xg_canvasWnd)) {
+            xg_boxes.emplace_back(ptr);
+            return TRUE;
+        } else {
+            delete ptr;
+        }
+    } else if (type == L"text") {
+        auto ptr = new XG_TextBoxWindow(i1, j1, i2, j2);
+        ptr->SetData(1, text);
+        if (ptr->CreateDx(xg_canvasWnd)) {
+            xg_boxes.emplace_back(ptr);
+            return TRUE;
+        } else {
+            delete ptr;
+        }
+    }
+
+    return FALSE;
+}
+
+// XDファイルからボックスを読み込む。
+BOOL XgWriteXdBoxes(FILE *fout)
+{
+    for (size_t i = 0; i < xg_boxes.size(); ++i) {
+        auto& box = *xg_boxes[i];
+        std::wstring type, data0, data1;
+        type = box.m_type;
+        box.GetData(0, data0);
+        box.GetData(1, data1);
+        fprintf(fout, "Box: %s: %s: %s\n",
+            XgUnicodeToUtf8(type).c_str(),
+            XgUnicodeToUtf8(data0).c_str(),
+            XgUnicodeToUtf8(data1).c_str());
+    }
+    return TRUE;
+}
+
 // ボックスを描画する。
 void XgDrawBoxes(XG_Board& xw, HDC hdc, LPSIZE psiz)
 {

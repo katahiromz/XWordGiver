@@ -1443,6 +1443,10 @@ BOOL XgDoLoadBoxJson(const json& boxes);
 BOOL XgDoSaveBoxJson(json& j);
 // ボックスを描画する。
 void XgDrawBoxes(XG_Board& xw, HDC hdc, LPSIZE psiz);
+// ボックスJSONを読み込む。
+BOOL XgLoadXdBox(const std::wstring& line);
+// XDファイルからボックスを読み込む。
+BOOL XgWriteXdBoxes(FILE *fout);
 
 //////////////////////////////////////////////////////////////////////////////
 

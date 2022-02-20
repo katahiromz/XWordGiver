@@ -2369,6 +2369,8 @@ bool __fastcall XgSetXDString(HWND hwnd, const std::wstring& str)
             case 3:
                 if (line.find(L"MARK") == 0 && L'0' <= line[4] && line[4] <= L'9') {
                     marks.push_back(line);
+                } else if (line.find(L"Box: ") == 0) {
+                    XgLoadXdBox(line);
                 } else if (line.find(L"ViewMode:") == 0) {
                     view_mode = static_cast<XG_VIEW_MODE>(_wtoi(&line[9]));
                     switch (view_mode) {
@@ -2564,6 +2566,9 @@ bool __fastcall XgSetXDString(HWND hwnd, const std::wstring& str)
 // 文字列を設定する。
 bool __fastcall XgSetString(HWND hwnd, const std::wstring& str, XG_FILETYPE type)
 {
+    // ボックスを削除する。
+    XgDeleteBoxes();
+
     switch (type) {
     case XG_FILETYPE_XWD:
         return XgSetStdString(hwnd, str);
@@ -5753,6 +5758,9 @@ bool __fastcall XgDoSaveXdFile(LPCWSTR pszFile)
                 fprintf(fout, "%s\n", XgUnicodeToUtf8(str).c_str());
             }
         }
+
+        // ボックス。
+        XgWriteXdBoxes(fout);
 
         fclose(fout);
 
