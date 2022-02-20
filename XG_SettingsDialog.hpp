@@ -111,12 +111,9 @@ public:
         else
         {
             // 黒マス画像あり。
-            LPCWSTR psz = PathFindFileName(xg_strBlackCellImage.c_str());
-            INT iItem = ComboBox_FindStringExact(hCmb1, -1, psz);
-            if (iItem == CB_ERR)
-                ComboBox_SetText(hCmb1, xg_strBlackCellImage.c_str());
-            else
-                ComboBox_SetCurSel(hCmb1, iItem);
+            WCHAR szPath[MAX_PATH];
+            XgGetCanonicalImagePath(szPath, xg_strBlackCellImage.c_str());
+            ComboBox_RealSetText(hCmb1, szPath);
         }
 
         // 二重マス文字。
@@ -277,19 +274,13 @@ public:
 
         HWND hCmb1 = GetDlgItem(hwnd, cmb1);
         GetPrivateProfileStringW(L"Looks", L"BlackCellImage", L"", szText, _countof(szText), pszFileName);
+        BOOL bHasImage = FALSE;
         if (szText[0])
         {
             // 黒マス画像あり。事前に存在をチェックする。
             HBITMAP hbm = NULL;
             HENHMETAFILE hEMF = NULL;
-            if (!XgLoadImage(szText, hbm, hEMF))
-            {
-                WCHAR szName[MAX_PATH];
-                StringCbCopyW(szName, sizeof(szName), szText);
-                StringCbPrintfW(szText, sizeof(szText), XgLoadStringDx1(IDS_NOBLOCKIMAGE), szName);
-                XgCenterMessageBoxW(hwnd, szText, NULL, MB_ICONERROR);
-                return FALSE;
-            }
+            bHasImage = XgLoadImage(szText, hbm, hEMF);
             DeleteObject(hbm);
             DeleteEnhMetaFile(hEMF);
         }
@@ -358,7 +349,7 @@ public:
 
         // 黒マス画像。
         GetPrivateProfileStringW(L"Looks", L"BlackCellImage", L"", szText, _countof(szText), pszFileName);
-        if (!szText[0])
+        if (!szText[0] || !bHasImage)
         {
             // 黒マス画像なし。
             ComboBox_RealSetText(hCmb1, XgLoadStringDx1(IDS_NONE));
@@ -366,8 +357,9 @@ public:
         else
         {
             // 黒マス画像あり。
-            LPCWSTR psz = szText;
-            ComboBox_RealSetText(hCmb1, psz);
+            WCHAR szPath[MAX_PATH];
+            XgGetCanonicalImagePath(szPath, szText);
+            ComboBox_RealSetText(hCmb1, szPath);
         }
 
         // 二重マス文字。

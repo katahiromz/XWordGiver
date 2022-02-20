@@ -765,12 +765,9 @@ BOOL XgGetCanonicalImagePath(LPWSTR pszCanonical, LPCWSTR pszFileName)
         }
     }
 
-    if (!PathIsRelative(pszFileName)) {
-        StringCchCopyW(pszCanonical, MAX_PATH, pszFileName);
-        return TRUE;
-    }
+    StringCchCopyW(pszCanonical, MAX_PATH, pszFileName);
 
-    return FALSE;
+    return !PathIsRelative(pszFileName);
 }
 
 // 画像ファイルの一覧を取得。
