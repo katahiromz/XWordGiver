@@ -985,10 +985,11 @@ bool __fastcall XgLoadSettings(void)
             }
 
             if (!app_key.QuerySz(L"BlackCellImage", sz, ARRAYSIZE(sz))) {
-                WCHAR szFullPath[MAX_PATH];
+                WCHAR szFullPath[MAX_PATH], szCanonical[MAX_PATH];
                 if (XgGetImagePath(szFullPath, sz))
                 {
-                    xg_strBlackCellImage = szFullPath;
+                    XgGetCanonicalImagePath(szCanonical, szFullPath);
+                    xg_strBlackCellImage = szCanonical;
                 }
                 else
                 {
@@ -1837,8 +1838,24 @@ BOOL XgOnSave(HWND hwnd, LPCWSTR pszFile)
         return FALSE;
     }
 
-    // LOOKSファイルも自動でエクスポートする。
     WCHAR szPath[MAX_PATH];
+
+    // 黒マス画像もエクスポートする。
+    XgGetFileDir(szPath, pszFile);
+    CreateDirectoryW(szPath, NULL);
+    XgGetCanonicalImagePath(szPath, xg_strBlackCellImage.c_str());
+    std::wstring strPath = szPath;
+    if (strPath.find(L"$BLOCK\\") == 0) {
+        strPath = L"$FILES\\";
+        strPath += xg_strBlackCellImage.substr(7);
+        WCHAR szSrc[MAX_PATH], szDest[MAX_PATH];
+        XgGetImagePath(szSrc, xg_strBlackCellImage.c_str(), TRUE);
+        XgGetImagePath(szDest, strPath.c_str(), TRUE);
+        CopyFileW(szSrc, szDest, FALSE);
+        xg_strBlackCellImage = strPath.c_str();
+    }
+
+    // LOOKSファイルも自動でエクスポートする。
     XgGetFileDir(szPath, pszFile);
     CreateDirectoryW(szPath, NULL);
     PathAppendW(szPath, PathFindFileNameW(pszFile));
@@ -1976,6 +1993,20 @@ BOOL XgDoConfirmSave(HWND hwnd)
     }
 }
 
+// 画像を再読み込み。
+void XgReloadImage(HWND hwnd)
+{
+    WCHAR szPath[MAX_PATH];
+    if (!XgGetImagePath(szPath, xg_strBlackCellImage.c_str()))
+    {
+        xg_strBlackCellImage.clear();
+        ::DeleteObject(xg_hbmImage);
+        ::DeleteEnhMetaFile(xg_hBlackCellEMF);
+        xg_hbmImage = NULL;
+        xg_hBlackCellEMF = NULL;
+    }
+}
+
 // 新規作成ダイアログ。
 bool __fastcall XgOnNew(HWND hwnd)
 {
@@ -2078,6 +2109,22 @@ BOOL XgOnLoad(HWND hwnd, LPCWSTR pszFile, LPPOINT ppt)
         return FALSE;
     }
 
+    // LOOKSファイルも自動でインポートする。
+    WCHAR szPath[MAX_PATH];
+    if (XgGetFileDir(szPath, pszFile)) {
+        PathAppendW(szPath, PathFindFileNameW(pszFile));
+        PathRemoveExtensionW(szPath);
+        PathAddExtensionW(szPath, L".looks");
+        {
+            XG_SettingsDialog dialog;
+            dialog.m_pszAutoFile = szPath;
+            dialog.m_bImport = TRUE;
+            dialog.DoModal(hwnd);
+        }
+    }
+
+    // 画像を再読み込み。
+    XgReloadImage(hwnd);
     // キャレット位置を更新。
     XgSetCaretPos();
     // テーマを更新する。
@@ -2098,20 +2145,6 @@ BOOL XgOnLoad(HWND hwnd, LPCWSTR pszFile, LPPOINT ppt)
     XgFitZoom(hwnd);
     // イメージを更新する。
     XgUpdateImage(hwnd, 0, 0);
-
-    // LOOKSファイルも自動でインポートする。
-    WCHAR szPath[MAX_PATH];
-    if (XgGetFileDir(szPath, pszFile)) {
-        PathAppendW(szPath, PathFindFileNameW(pszFile));
-        PathRemoveExtensionW(szPath);
-        PathAddExtensionW(szPath, L".looks");
-        {
-            XG_SettingsDialog dialog;
-            dialog.m_pszAutoFile = szPath;
-            dialog.m_bImport = TRUE;
-            dialog.DoModal(hwnd);
-        }
-    }
 
     // フォーカスを移動。
     SetFocus(hwnd);
@@ -4941,6 +4974,8 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT /*codeNo
             }
             XG_FILE_MODIFIED(FALSE);
         }
+        // 画像を再読み込み。
+        XgReloadImage(hwnd);
         // ボックスをすべて削除する。
         XgDeleteBoxes();
         // ツールバーのUIを更新する。

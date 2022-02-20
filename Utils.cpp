@@ -689,7 +689,7 @@ BOOL XgIsImageFile(LPCWSTR pszFileName)
 }
 
 // 画像のパスを取得する。
-BOOL XgGetImagePath(LPWSTR pszFullPath, LPCWSTR pszFileName)
+BOOL XgGetImagePath(LPWSTR pszFullPath, LPCWSTR pszFileName, BOOL bNoCheck)
 {
     if (memcmp(pszFileName, L"$FILES\\", 7 * sizeof(WCHAR)) == 0)
     {
@@ -698,24 +698,31 @@ BOOL XgGetImagePath(LPWSTR pszFullPath, LPCWSTR pszFileName)
         {
             StringCchCopyW(pszFullPath, MAX_PATH, szFileDir);
             PathAppendW(pszFullPath, &pszFileName[7]);
-            if (PathFileExistsW(pszFullPath))
+            if (PathFileExistsW(pszFullPath) || bNoCheck)
                 return TRUE;
         }
     }
 
-    if (memcmp(pszFileName, L"$BLOCK\\", 7 * sizeof(WCHAR)) == 0)
+    WCHAR szBlockDir[MAX_PATH];
+    if (XgGetBlockDir(szBlockDir))
     {
-        WCHAR szBlockDir[MAX_PATH];
-        if (XgGetBlockDir(szBlockDir))
+        if (memcmp(pszFileName, L"$BLOCK\\", 7 * sizeof(WCHAR)) == 0)
         {
             StringCchCopyW(pszFullPath, MAX_PATH, szBlockDir);
             PathAppendW(pszFullPath, &pszFileName[7]);
-            if (PathFileExistsW(pszFullPath))
+            if (PathFileExistsW(pszFullPath) || bNoCheck)
+                return TRUE;
+        }
+        else if (PathIsRelativeW(pszFileName))
+        {
+            StringCchCopyW(pszFullPath, MAX_PATH, szBlockDir);
+            PathAppendW(pszFullPath, pszFileName);
+            if (PathFileExistsW(pszFullPath) || bNoCheck)
                 return TRUE;
         }
     }
 
-    if (PathFileExistsW(pszFileName))
+    if (PathFileExistsW(pszFileName) || bNoCheck)
     {
         GetFullPathNameW(pszFileName, MAX_PATH, pszFullPath, NULL);
         return TRUE;

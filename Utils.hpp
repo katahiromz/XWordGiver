@@ -197,7 +197,7 @@ std::wstring XgBinToHex(const void *ptr, size_t size);
 // 16進をバイナリにする。
 void XgHexToBin(std::vector<BYTE>& data, const std::wstring& str);
 // 画像のパスを取得する。
-BOOL XgGetImagePath(LPWSTR pszFullPath, LPCWSTR pszFileName);
+BOOL XgGetImagePath(LPWSTR pszFullPath, LPCWSTR pszFileName, BOOL bNoCheck = FALSE);
 // 画像のパスをきれいにする。
 BOOL XgGetCanonicalImagePath(LPWSTR pszCanonical, LPCWSTR pszFileName);
 // 画像を読み込む。
