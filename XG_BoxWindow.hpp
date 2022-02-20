@@ -601,6 +601,7 @@ public:
             HGDIOBJ hFontOld = SelectObject(hDC, hFont);
             UINT uFormat = DT_LEFT | DT_TOP | DT_NOPREFIX | DT_WORDBREAK;
             MRect rcCalc = rcText;
+            InflateRect(&rcCalc, -2, -2);
             DrawTextW(hDC, m_strText.c_str(), -1, &rcCalc, uFormat | DT_CALCRECT);
             if (rcCalc.Height() > rcText.Height()) {
                 SelectObject(hDC, hFontOld);
