@@ -122,7 +122,8 @@
     - Improved initial position of Clues window.
     - Zooming on the entire board after generating the puzzle.
 - 2022.XX.YY ver.4.8.9
-    - The skeleton view should show through when copying and printing.
+    - Made the skeleton view transparent when copying and printing.
+    - Boxes (text boxes, image boxes) can be added.
 
 # 開発履歴 (Japanese)
 
@@ -558,4 +559,5 @@
     - ヒントウィンドウの初期位置を改善。
     - 問題を作成したときにズームを全体に合わせる。
 - 2022年XX月YY日 ver.4.8.9
-    - スケルトンビューは、コピー・印刷時には透過にしなくてはいけない。
+    - コピー・印刷時にスケルトンビューを透過にした。
+    - ボックス（テキストボックス・画像ボックス）の追加が可能に。
