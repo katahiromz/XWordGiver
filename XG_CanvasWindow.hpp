@@ -455,6 +455,14 @@ public:
     // ファイルがドロップされた。
     BOOL DoDropFile(HWND hwnd, HDROP hDrop, POINT pt)
     {
+        BOOL ret = DoDropFileEx(hwnd, hDrop, pt);
+        SetForegroundWindow(m_hwndParent);
+        return ret;
+    }
+
+    // ファイルがドロップされた。
+    BOOL DoDropFileEx(HWND hwnd, HDROP hDrop, POINT pt)
+    {
         // 最初のファイルのパス名を取得する。
         WCHAR szFile[MAX_PATH], szTarget[MAX_PATH];
         ::DragQueryFileW(hDrop, 0, szFile, ARRAYSIZE(szFile));

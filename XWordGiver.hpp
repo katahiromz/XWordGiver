@@ -1441,6 +1441,8 @@ void XgDeleteBoxes(void);
 BOOL XgDoLoadBoxJson(const json& boxes);
 // ボックスJSONを保存。
 BOOL XgDoSaveBoxJson(json& j);
+// ボックスを描画する。
+void XgDrawBoxes(XG_Board& xw, HDC hdc, LPSIZE psiz);
 
 //////////////////////////////////////////////////////////////////////////////
 

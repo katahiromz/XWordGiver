@@ -36,79 +36,6 @@
 #include "XG_BoxWindow.hpp"
 #include "XG_CanvasWindow.hpp"
 
-// ボックスをすべて削除する。
-void XgDeleteBoxes(void)
-{
-    for (auto& box : xg_boxes) {
-        DestroyWindow(*box);
-    }
-    xg_boxes.clear();
-}
-
-// ボックスJSONを読み込む。
-BOOL XgDoLoadBoxJson(const json& boxes)
-{
-    try
-    {
-        for (size_t i = 0; i < boxes.size(); ++i) {
-            auto& box = boxes[i];
-            if (box["type"] == "pic") {
-                auto ptr = new XG_PictureBoxWindow();
-                ptr->SetData(0, XgUtf8ToUnicode(box["data0"]));
-                ptr->SetData(1, XgUtf8ToUnicode(box["data1"]));
-                if (ptr->CreateDx(xg_canvasWnd)) {
-                    xg_boxes.emplace_back(ptr);
-                    continue;
-                } else {
-                    delete ptr;
-                }
-            } else if (box["type"] == "text") {
-                auto ptr = new XG_TextBoxWindow();
-                ptr->SetData(0, XgUtf8ToUnicode(box["data0"]));
-                ptr->SetData(1, XgUtf8ToUnicode(box["data1"]));
-                if (ptr->CreateDx(xg_canvasWnd)) {
-                    xg_boxes.emplace_back(ptr);
-                    continue;
-                } else {
-                    delete ptr;
-                }
-            }
-        }
-    }
-    catch(...)
-    {
-        return FALSE;
-    }
-
-    return TRUE;
-}
-
-// ボックスJSONを保存。
-BOOL XgDoSaveBoxJson(json& j)
-{
-    try
-    {
-        for (size_t i = 0; i < xg_boxes.size(); ++i) {
-            auto& box = *xg_boxes[i];
-            std::wstring type, data0, data1;
-            type = box.m_type;
-            box.GetData(0, data0);
-            box.GetData(1, data1);
-            json info;
-            info["type"] = XgUnicodeToUtf8(type);
-            info["data0"] = XgUnicodeToUtf8(data0);
-            info["data1"] = XgUnicodeToUtf8(data1);
-            j["boxes"].push_back(info);
-        }
-    }
-    catch(...)
-    {
-        return FALSE;
-    }
-
-    return TRUE;
-}
-
 #undef HANDLE_WM_MOUSEWHEEL     // might be wrong
 #define HANDLE_WM_MOUSEWHEEL(hwnd, wParam, lParam, fn) \
     ((fn)((hwnd), (int)(short)LOWORD(lParam), (int)(short)HIWORD(lParam), \
@@ -389,6 +316,97 @@ VOID XgSetCellPosition(LONG& x, LONG& y, INT& i, INT& j, BOOL bEnd)
     }
     x = j * nCellSize;
     x += xg_nMargin;
+}
+
+// ボックスをすべて削除する。
+void XgDeleteBoxes(void)
+{
+    for (auto& box : xg_boxes) {
+        DestroyWindow(*box);
+    }
+    xg_boxes.clear();
+}
+
+// ボックスJSONを読み込む。
+BOOL XgDoLoadBoxJson(const json& boxes)
+{
+    try
+    {
+        for (size_t i = 0; i < boxes.size(); ++i) {
+            auto& box = boxes[i];
+            if (box["type"] == "pic") {
+                auto ptr = new XG_PictureBoxWindow();
+                ptr->SetData(0, XgUtf8ToUnicode(box["data0"]));
+                ptr->SetData(1, XgUtf8ToUnicode(box["data1"]));
+                if (ptr->CreateDx(xg_canvasWnd)) {
+                    xg_boxes.emplace_back(ptr);
+                    continue;
+                } else {
+                    delete ptr;
+                }
+            } else if (box["type"] == "text") {
+                auto ptr = new XG_TextBoxWindow();
+                ptr->SetData(0, XgUtf8ToUnicode(box["data0"]));
+                ptr->SetData(1, XgUtf8ToUnicode(box["data1"]));
+                if (ptr->CreateDx(xg_canvasWnd)) {
+                    xg_boxes.emplace_back(ptr);
+                    continue;
+                } else {
+                    delete ptr;
+                }
+            }
+        }
+    }
+    catch(...)
+    {
+        return FALSE;
+    }
+
+    return TRUE;
+}
+
+// ボックスJSONを保存。
+BOOL XgDoSaveBoxJson(json& j)
+{
+    try
+    {
+        for (size_t i = 0; i < xg_boxes.size(); ++i) {
+            auto& box = *xg_boxes[i];
+            std::wstring type, data0, data1;
+            type = box.m_type;
+            box.GetData(0, data0);
+            box.GetData(1, data1);
+            json info;
+            info["type"] = XgUnicodeToUtf8(type);
+            info["data0"] = XgUnicodeToUtf8(data0);
+            info["data1"] = XgUnicodeToUtf8(data1);
+            j["boxes"].push_back(info);
+        }
+    }
+    catch(...)
+    {
+        return FALSE;
+    }
+
+    return TRUE;
+}
+
+// ボックスを描画する。
+void XgDrawBoxes(XG_Board& xw, HDC hdc, LPSIZE psiz)
+{
+    INT nZoomRate = xg_nZoomRate;
+    xg_nZoomRate = 100;
+    for (size_t i = 0; i < xg_boxes.size(); ++i) {
+        auto& box = *xg_boxes[i];
+        INT i1 = box.m_i1;
+        INT j1 = box.m_j1;
+        INT i2 = box.m_i2;
+        INT j2 = box.m_j2;
+        RECT rc;
+        XgGetCellPosition(rc, i1, j1, i2, j2);
+        box.OnDraw(box, hdc, rc);
+    }
+    xg_nZoomRate = nZoomRate;
 }
 
 // 本当のクライアント領域を計算する。
@@ -4679,6 +4697,8 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT /*codeNo
                 XgUpdateTheme(hwnd);
                 // ヒントを表示する。
                 XgShowHints(hwnd);
+                // フォーカスを移動。
+                SetFocus(hwnd);
             }
         }
         // ツールバーのUIを更新する。

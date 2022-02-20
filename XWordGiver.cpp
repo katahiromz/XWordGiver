@@ -4136,7 +4136,7 @@ const COLORREF c_rgbHighlight = RGB(255, 255, 100);
 const COLORREF c_rgbHighlightAndDblFrame = RGB(255, 155, 100);
 
 // クロスワードを描画する（通常ビュー）。
-void __fastcall XgDrawXWord_NormalView(XG_Board& xw, HDC hdc, LPSIZE psiz, bool bCaret)
+void __fastcall XgDrawXWord_NormalView(XG_Board& xw, HDC hdc, LPSIZE psiz, bool bScreen)
 {
     INT nCellSize;
     if (xg_nForDisplay > 0) {
@@ -4443,7 +4443,7 @@ void __fastcall XgDrawXWord_NormalView(XG_Board& xw, HDC hdc, LPSIZE psiz, bool 
     }
 
     // キャレットを描画する。
-    if (bCaret && xg_bShowCaret) {
+    if (bScreen && xg_bShowCaret) {
         const int i = xg_caret_pos.m_i;
         const int j = xg_caret_pos.m_j;
         ::SetRect(&rc,
@@ -4519,7 +4519,7 @@ void __fastcall XgDrawXWord_NormalView(XG_Board& xw, HDC hdc, LPSIZE psiz, bool 
 }
 
 // クロスワードを描画する（スケルトンビュー）。
-void __fastcall XgDrawXWord_SkeletonView(XG_Board& xw, HDC hdc, LPSIZE psiz, bool bCaret)
+void __fastcall XgDrawXWord_SkeletonView(XG_Board& xw, HDC hdc, LPSIZE psiz, bool bScreen)
 {
     INT nCellSize;
     if (xg_nForDisplay > 0) {
@@ -4531,7 +4531,7 @@ void __fastcall XgDrawXWord_SkeletonView(XG_Board& xw, HDC hdc, LPSIZE psiz, boo
     // スクリーンの場合は、全体を白で塗りつぶす。
     RECT rc;
     ::SetRect(&rc, 0, 0, psiz->cx, psiz->cy);
-    if (bCaret)
+    if (bScreen)
         ::FillRect(hdc, &rc, reinterpret_cast<HBRUSH>(::GetStockObject(WHITE_BRUSH)));
 
     LOGFONTW lf;
@@ -4846,7 +4846,7 @@ void __fastcall XgDrawXWord_SkeletonView(XG_Board& xw, HDC hdc, LPSIZE psiz, boo
     }
 
     // キャレットを描画する。
-    if (bCaret && xg_bShowCaret) {
+    if (bScreen && xg_bShowCaret) {
         const int i = xg_caret_pos.m_i;
         const int j = xg_caret_pos.m_j;
         ::SetRect(&rc,
@@ -4898,22 +4898,25 @@ void __fastcall XgDrawXWord_SkeletonView(XG_Board& xw, HDC hdc, LPSIZE psiz, boo
 }
 
 // クロスワードを描画する。
-void __fastcall XgDrawXWord(XG_Board& xw, HDC hdc, LPSIZE psiz, bool bCaret)
+void __fastcall XgDrawXWord(XG_Board& xw, HDC hdc, LPSIZE psiz, bool bScreen)
 {
     switch (xg_nViewMode)
     {
     case XG_VIEW_NORMAL:
     default:
-        XgDrawXWord_NormalView(xw, hdc, psiz, bCaret);
+        XgDrawXWord_NormalView(xw, hdc, psiz, bScreen);
         break;
     case XG_VIEW_SKELETON:
-        XgDrawXWord_SkeletonView(xw, hdc, psiz, bCaret);
+        XgDrawXWord_SkeletonView(xw, hdc, psiz, bScreen);
         break;
     }
+    // ボックスを描画する。
+    if (!bScreen)
+        XgDrawBoxes(xw, hdc, psiz);
 }
 
 // クロスワードのイメージを作成する。
-HBITMAP __fastcall XgCreateXWordImage(XG_Board& xw, LPSIZE psiz, bool bCaret)
+HBITMAP __fastcall XgCreateXWordImage(XG_Board& xw, LPSIZE psiz, bool bScreen)
 {
     // 互換DCを作成する。
     HDC hdc = ::CreateCompatibleDC(nullptr);
@@ -4939,7 +4942,7 @@ HBITMAP __fastcall XgCreateXWordImage(XG_Board& xw, LPSIZE psiz, bool bCaret)
 
     // 描画する。
     HGDIOBJ hbmOld = ::SelectObject(hdc, hbm);
-    XgDrawXWord(xw, hdc, psiz, bCaret);
+    XgDrawXWord(xw, hdc, psiz, bScreen);
     ::SelectObject(hdc, hbmOld);
 
     // 互換DCを破棄する。
