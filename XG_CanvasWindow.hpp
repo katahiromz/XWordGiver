@@ -1,6 +1,9 @@
 ﻿#pragma once
 
-#include "XG_Window.hpp"
+#include "XG_BoxWindow.hpp"
+
+// ボックス。
+extern std::vector<std::unique_ptr<XG_BoxWindow> > xg_boxes;
 
 class XG_CanvasWindow : public XG_Window
 {
@@ -440,6 +443,99 @@ public:
         FORWARD_WM_COMMAND(m_hwndParent, id, hwndCtl, codeNotify, PostMessageW);
     }
 
+    void OnDropFiles(HWND hwnd, HDROP hdrop)
+    {
+        POINT pt;
+        DragQueryPoint(hdrop, &pt);
+        ClientToScreen(hwnd, &pt);
+
+        DoDropFile(hwnd, hdrop, pt);
+    }
+
+    // ファイルがドロップされた。
+    BOOL DoDropFile(HWND hwnd, HDROP hDrop, POINT pt)
+    {
+        // 最初のファイルのパス名を取得する。
+        WCHAR szFile[MAX_PATH], szTarget[MAX_PATH];
+        ::DragQueryFileW(hDrop, 0, szFile, ARRAYSIZE(szFile));
+        ::DragFinish(hDrop);
+
+        // LOOKSファイルだった場合は自動で適用する。
+        LPWSTR pchDotExt = PathFindExtensionW(szFile);
+        if (lstrcmpiW(pchDotExt, L".looks") == 0)
+        {
+            XG_SettingsDialog dialog;
+            dialog.m_pszAutoFile = szFile;
+            dialog.DoModal(hwnd);
+            return TRUE;
+        }
+
+        // 画像ファイルだったら画像ボックスを作成する。
+        if (lstrcmpiW(pchDotExt, L".bmp") == 0 ||
+            lstrcmpiW(pchDotExt, L".emf") == 0 ||
+            lstrcmpiW(pchDotExt, L".png") == 0 ||
+            lstrcmpiW(pchDotExt, L".gif") == 0 ||
+            lstrcmpiW(pchDotExt, L".jpg") == 0)
+        {
+            ScreenToClient(hwnd, &pt);
+
+            INT i1, j1;
+            XgSetCellPosition(pt.x, pt.y, i1, j1, FALSE);
+            INT i2 = i1 + 2, j2 = j1 + 2;
+
+            if (i2 >= xg_nRows) {
+                i2 = xg_nRows;
+                i1 = i2 - 2;
+            }
+            if (j2 >= xg_nCols) {
+                j2 = xg_nCols;
+                j1 = j2 - 2;
+            }
+
+            auto ptr = new XG_PictureBoxWindow(szFile, i1, j1, i2, j2);
+            if (ptr->CreateDx(hwnd)) {
+                xg_boxes.emplace_back(ptr);
+                return TRUE;
+            } else {
+                delete ptr;
+            }
+
+            return FALSE;
+        }
+
+        // ショートカットだった場合は、ターゲットのパスを取得する。
+        if (XgGetPathOfShortcutW(szFile, szTarget))
+            StringCbCopy(szFile, sizeof(szFile), szTarget);
+
+        // ファイルを開く。
+        if (!XgDoLoad(hwnd, szFile)) {
+            XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_CANTLOAD), nullptr, MB_ICONERROR);
+            return FALSE;
+        }
+
+        // 候補ウィンドウを破棄する。
+        XgDestroyCandsWnd();
+        // ヒントウィンドウを破棄する。
+        XgDestroyHintsWnd();
+        // キャレット位置を更新。
+        XgSetCaretPos();
+        // ズームを実際のウィンドウに合わせる。
+        XgFitZoom(hwnd);
+        // テーマを更新する。
+        XgSetThemeString(xg_strTheme);
+        XgUpdateTheme(hwnd);
+        // イメージを更新する。
+        XgMarkUpdate();
+        XgUpdateImage(hwnd, 0, 0);
+        // ヒントを表示する。
+        XgShowHints(hwnd);
+        // ツールバーのUIを更新する。
+        XgUpdateToolBarUI(hwnd);
+        // ルールを更新する。
+        XgUpdateRules(hwnd);
+        return TRUE;
+    }
+
     virtual LRESULT CALLBACK
     WindowProcDx(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) override
     {
@@ -458,8 +554,7 @@ public:
             HANDLE_MSG(hwnd, WM_ERASEBKGND, OnEraseBkgnd);
             HANDLE_MSG(hwnd, WM_PAINT, OnPaint);
             HANDLE_MSG(hwnd, WM_COMMAND, OnCommand);
-        case WM_DROPFILES:
-            return ::SendMessageW(m_hwndParent, uMsg, wParam, lParam);
+            HANDLE_MSG(hwnd, WM_DROPFILES, OnDropFiles);
         default:
             return DefProcDx(hwnd, uMsg, wParam, lParam);
         }

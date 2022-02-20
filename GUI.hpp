@@ -134,5 +134,11 @@ BOOL __fastcall XgSetHScrollInfo(LPSCROLLINFO psi, BOOL bRedraw);
 BOOL __fastcall XgSetVScrollInfo(LPSCROLLINFO psi, BOOL bRedraw);
 // 本当のクライアント領域を計算する。
 void __fastcall XgGetRealClientRect(HWND hwnd, LPRECT prcClient);
+// ズームを実際のウィンドウに合わせる。
+void __fastcall XgFitZoom(HWND hwnd);
+// テーマが変更された。
+void XgUpdateTheme(HWND hwnd);
+// ルールが変更された。
+void XgUpdateRules(HWND hwnd);
 
 //////////////////////////////////////////////////////////////////////////////

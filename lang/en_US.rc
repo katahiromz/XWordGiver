@@ -503,7 +503,11 @@ LANGUAGE LANG_ENGLISH, SUBLANG_DEFAULT
         MENUITEM SEPARATOR
         MENUITEM "&Toggle double-frame\tCtrl+.", ID_TOGGLEMARK
         MENUITEM SEPARATOR
-        MENUITEM "Add Bo&x...", ID_ADDBOX, MENUBREAK
+        POPUP "Add Bo&x", MENUBREAK
+        {
+            MENUITEM "Add &Text Box...", ID_ADDTEXTBOX
+            MENUITEM "Add &Picture Box...", ID_ADDPICTUREBOX
+        }
         MENUITEM SEPARATOR
         MENUITEM "Show candidates (DOWN)\tShift+Ctrl+↓", ID_OPENCANDSWNDVERT
         MENUITEM "Show candidates (ACROSS)\tShift+Ctrl+→", ID_OPENCANDSWNDHORZ
@@ -1367,12 +1371,35 @@ FONT 10, "MS Shell Dlg"
 IDD_RULEPRESET DIALOG 0, 0, 160, 60
 CAPTION "Policy Preset (Ctrl+R)"
 STYLE DS_CENTER | DS_MODALFRAME | WS_POPUPWINDOW | WS_CAPTION
-FONT 9, "MS UI Gothic"
+FONT 9, "Tahoma"
 {
     LTEXT "Preset &Value:", -1, 5, 5, 90, 10
     COMBOBOX cmb1, 25, 20, 100, 300, CBS_HASSTRINGS | CBS_AUTOHSCROLL | CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP
     DEFPUSHBUTTON "OK", IDOK, 50, 40, 50, 14
     PUSHBUTTON "Cancel", IDCANCEL, 105, 40, 50, 14
+}
+
+IDD_PICTUREBOX DIALOG 0, 0, 235, 73
+CAPTION "The properties for Picture Box"
+STYLE DS_CENTER | DS_MODALFRAME | WS_POPUPWINDOW | WS_CAPTION
+FONT 9, "Tahoma"
+{
+    LTEXT "Image &File:", -1, 5, 5, 70, 11
+    COMBOBOX cmb1, 5, 20, 225, 300, CBS_HASSTRINGS | CBS_AUTOHSCROLL | CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP
+    PUSHBUTTON "&Browse...", psh1, 170, 35, 60, 14
+    DEFPUSHBUTTON "OK", IDOK, 55, 55, 60, 14
+    PUSHBUTTON "Cancel", IDCANCEL, 125, 55, 60, 14
+}
+
+IDD_TEXTBOX DIALOG 0, 0, 190, 105
+CAPTION "The properties for Text Box"
+STYLE DS_CENTER | DS_MODALFRAME | WS_POPUPWINDOW | WS_CAPTION
+FONT 9, "Tahoma"
+{
+    LTEXT "&Text:", -1, 5, 5, 70, 10
+    EDITTEXT edt1, 5, 20, 180, 60, ES_MULTILINE | WS_VSCROLL | WS_HSCROLL | ES_MULTILINE | ES_WANTRETURN
+    DEFPUSHBUTTON "OK", IDOK, 60, 85, 60, 14
+    PUSHBUTTON "Cancel", IDCANCEL, 125, 85, 60, 14
 }
 
 //////////////////////////////////////////////////////////////////////////////

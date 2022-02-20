@@ -31,6 +31,8 @@
 #include "XG_RulePresetDialog.hpp"
 #include "XG_BoxWindow.hpp"
 #include "XG_CanvasWindow.hpp"
+#include "XG_PictureBoxDialog.hpp"
+#include "XG_TextBoxDialog.hpp"
 
 #undef HANDLE_WM_MOUSEWHEEL     // might be wrong
 #define HANDLE_WM_MOUSEWHEEL(hwnd, wParam, lParam, fn) \
@@ -4166,6 +4168,51 @@ void XgGenerateFromWordList(HWND hwnd)
     XG_WordListDialog::s_wordset.clear();
 }
 
+// ボックスを追加する。
+BOOL XgAddBox(HWND hwnd, UINT id)
+{
+    INT i1 = xg_caret_pos.m_i, j1 = xg_caret_pos.m_j;
+    INT i2 = i1 + 2, j2 = j1 + 2;
+    if (i2 >= xg_nRows) {
+        i1 = xg_nRows - 1;
+        i2 = xg_nRows;
+    }
+    if (j2 >= xg_nCols) {
+        j1 = xg_nCols - 1;
+        j2 = xg_nCols;
+    }
+
+    XG_TextBoxDialog dialog1;
+    XG_PictureBoxDialog dialog2;
+    switch (id)
+    {
+    case ID_ADDTEXTBOX:
+        if (dialog1.DoModal(hwnd) == IDOK) {
+            auto ptr = new XG_TextBoxWindow(dialog1.m_strText, i1, j1, i2, j2);
+            if (ptr->CreateDx(xg_canvasWnd)) {
+                xg_boxes.emplace_back(ptr);
+                return TRUE;
+            } else {
+                delete ptr;
+            }
+        }
+        break;
+    case ID_ADDPICTUREBOX:
+        if (dialog2.DoModal(hwnd) == IDOK) {
+            auto ptr = new XG_PictureBoxWindow(dialog2.m_strFile, i1, j1, i2, j2);
+            if (ptr->CreateDx(xg_canvasWnd)) {
+                xg_boxes.emplace_back(ptr);
+                return TRUE;
+            } else {
+                delete ptr;
+            }
+        }
+        break;
+    }
+
+    return FALSE;
+}
+
 // コマンドを実行する。
 void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*codeNotify*/)
 {
@@ -5674,25 +5721,9 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
         }
         XgUpdateCaretPos();
         break;
-    case ID_ADDBOX:
-        {
-            INT i1 = xg_caret_pos.m_i, j1 = xg_caret_pos.m_j;
-            INT i2 = i1 + 2, j2 = j1 + 2;
-            if (i2 >= xg_nRows) {
-                i1 = xg_nRows - 1;
-                i2 = xg_nRows;
-            }
-            if (j2 >= xg_nCols) {
-                j1 = xg_nCols - 1;
-                j2 = xg_nCols;
-            }
-            auto ptr = new XG_BoxWindow(i1, j1, i2, j2);
-            if (ptr->CreateDx(xg_canvasWnd)) {
-                xg_boxes.emplace_back(ptr);
-            } else {
-                delete ptr;
-            }
-        }
+    case ID_ADDTEXTBOX:
+    case ID_ADDPICTUREBOX:
+        XgAddBox(hwnd, id);
         break;
     default:
         if (!XgOnCommandExtra(hwnd, id)) {
@@ -5702,55 +5733,6 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
     }
 
     XgUpdateStatusBar(hwnd);
-}
-
-// ファイルがドロップされた。
-void __fastcall MainWnd_OnDropFiles(HWND hwnd, HDROP hDrop)
-{
-    // 最初のファイルのパス名を取得する。
-    WCHAR szFile[MAX_PATH], szTarget[MAX_PATH];
-    ::DragQueryFileW(hDrop, 0, szFile, ARRAYSIZE(szFile));
-    ::DragFinish(hDrop);
-
-    // LOOKSファイルだった場合は自動で適用する。
-    if (lstrcmpiW(PathFindExtensionW(szFile), L".looks") == 0)
-    {
-        XG_SettingsDialog dialog;
-        dialog.m_pszAutoFile = szFile;
-        dialog.DoModal(hwnd);
-        return;
-    }
-
-    // ショートカットだった場合は、ターゲットのパスを取得する。
-    if (XgGetPathOfShortcutW(szFile, szTarget))
-        StringCbCopy(szFile, sizeof(szFile), szTarget);
-
-    // 候補ウィンドウを破棄する。
-    XgDestroyCandsWnd();
-    // ヒントウィンドウを破棄する。
-    XgDestroyHintsWnd();
-
-    // ファイルを開く。
-    if (!XgDoLoad(hwnd, szFile)) {
-        XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_CANTLOAD), nullptr, MB_ICONERROR);
-    } else {
-        XgSetCaretPos();
-        // ズームを実際のウィンドウに合わせる。
-        XgFitZoom(hwnd);
-        // テーマを更新する。
-        XgSetThemeString(xg_strTheme);
-        XgUpdateTheme(hwnd);
-        // イメージを更新する。
-        XgMarkUpdate();
-        XgUpdateImage(hwnd, 0, 0);
-        // ヒントを表示する。
-        XgShowHints(hwnd);
-    }
-
-    // ツールバーのUIを更新する。
-    XgUpdateToolBarUI(hwnd);
-    // ルールを更新する。
-    XgUpdateRules(hwnd);
 }
 
 // 無効状態のビットマップを作成する。
@@ -6165,6 +6147,15 @@ void __fastcall XgUpdateImage(HWND hwnd, INT x, INT y)
 void __fastcall XgUpdateImage(HWND hwnd)
 {
     XgUpdateImage(hwnd, XgGetHScrollPos(), XgGetVScrollPos());
+}
+
+void MainWnd_OnDropFiles(HWND hwnd, HDROP hdrop)
+{
+    POINT pt;
+    DragQueryPoint(hdrop, &pt);
+    ClientToScreen(hwnd, &pt);
+
+    xg_canvasWnd.DoDropFile(xg_canvasWnd, hdrop, pt);
 }
 
 // ウィンドウプロシージャ。

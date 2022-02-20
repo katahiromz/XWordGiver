@@ -29,6 +29,8 @@
 #define IDD_PATGEN                          125
 #define IDD_WORDLIST                        126
 #define IDD_RULEPRESET                      127
+#define IDD_PICTUREBOX                      128
+#define IDD_TEXTBOX                         129
 
 #define IDS_VERSION                         101
 #define IDS_APPNAME                         102
@@ -429,7 +431,8 @@
 #define ID_COPYCHARSET                      566
 #define ID_RULEPRESET                       567
 #define ID_MOVEBOXES                        568
-#define ID_ADDBOX                           569
+#define ID_ADDPICTUREBOX                    569
+#define ID_ADDTEXTBOX                       570
 #define ID_TT_BASE                          10000
 
 #define ctl2                                1185

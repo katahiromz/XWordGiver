@@ -211,7 +211,7 @@ public:
         return TRUE;
     }
 
-    void OnDraw(HWND hwnd, HDC hDC, const RECT& rc)
+    virtual void OnDraw(HWND hwnd, HDC hDC, const RECT& rc)
     {
         FillRect(hDC, &rc, GetStockBrush(WHITE_BRUSH));
         MoveToEx(hDC, rc.left, rc.top, NULL);
@@ -392,5 +392,130 @@ public:
             return DefProcDx(hwnd, uMsg, wParam, lParam);
         }
         return 0;
+    }
+};
+
+class XG_PictureBoxWindow : public XG_BoxWindow
+{
+public:
+    HBITMAP m_hbm;
+    HENHMETAFILE m_hEMF;
+    std::wstring m_strFile;
+
+    XG_PictureBoxWindow(const std::wstring& str, INT i1 = 0, INT j1 = 0, INT i2 = 1, INT j2 = 1)
+        : XG_BoxWindow(i1, j1, i2, j2)
+        , m_hbm(NULL)
+        , m_hEMF(NULL)
+    {
+        SetFile(str.c_str());
+    }
+
+    void DoDelete()
+    {
+        ::DeleteObject(m_hbm);
+        ::DeleteEnhMetaFile(m_hEMF);
+        m_hbm = NULL;
+        m_hEMF = NULL;
+        m_strFile.clear();
+    }
+
+    ~XG_PictureBoxWindow()
+    {
+        DoDelete();
+    }
+
+    virtual void OnDraw(HWND hwnd, HDC hDC, const RECT& rc) override
+    {
+        if (m_hbm) {
+            BITMAP bm;
+            GetObject(m_hbm, sizeof(bm), &bm);
+            if (HDC hMemDC = CreateCompatibleDC(NULL)) {
+                HGDIOBJ hbmOld = SelectObject(hMemDC, m_hbm);
+                StretchBlt(hDC, rc.left, rc.top, rc.right - rc.left, rc.bottom - rc.top,
+                    hMemDC, 0, 0, bm.bmWidth, bm.bmHeight, SRCCOPY);
+                SelectObject(hMemDC, hbmOld);
+                DeleteDC(hMemDC);
+            }
+            return;
+        }
+
+        if (m_hEMF) {
+            PlayEnhMetaFile(hDC, m_hEMF, &rc);
+            return;
+        }
+
+        XG_BoxWindow::OnDraw(hwnd, hDC, rc);
+    }
+
+    BOOL SetFile(LPCWSTR pszFile)
+    {
+        DoDelete();
+
+        if (XgLoadImage(pszFile, m_hbm, m_hEMF)) {
+            m_strFile = pszFile;
+            return TRUE;
+        }
+
+        return FALSE;
+    }
+};
+
+class XG_TextBoxWindow : public XG_BoxWindow
+{
+public:
+    std::wstring m_strText;
+
+    XG_TextBoxWindow(const std::wstring& str, INT i1 = 0, INT j1 = 0, INT i2 = 1, INT j2 = 1)
+        : XG_BoxWindow(i1, j1, i2, j2)
+    {
+        SetText(str.c_str());
+    }
+
+    ~XG_TextBoxWindow()
+    {
+    }
+
+    virtual void OnDraw(HWND hwnd, HDC hDC, const RECT& rc) override
+    {
+        MRect rcText = rc;
+        FillRect(hDC, &rcText, GetStockBrush(WHITE_BRUSH));
+
+        MoveToEx(hDC, rc.left, rc.top, NULL);
+        LineTo(hDC, rc.left, rc.bottom - 1);
+        LineTo(hDC, rc.right - 1, rc.bottom - 1);
+        LineTo(hDC, rc.right - 1, rc.top);
+        LineTo(hDC, rc.left, rc.top);
+
+        SetBkMode(hDC, TRANSPARENT);
+        SetTextColor(hDC, RGB(0, 0, 0));
+
+        LOGFONTW lf = *XgGetUIFont();
+
+        for (INT height = 20; height >= 4; --height) {
+            lf.lfHeight = -height * xg_nZoomRate / 100;
+            HFONT hFont = CreateFontIndirectW(&lf);
+            HGDIOBJ hFontOld = SelectObject(hDC, hFont);
+            UINT uFormat = DT_LEFT | DT_TOP | DT_NOPREFIX | DT_WORDBREAK;
+            MRect rcCalc = rcText;
+            DrawTextW(hDC, m_strText.c_str(), -1, &rcCalc, uFormat | DT_CALCRECT);
+            if (rcCalc.Height() > rcText.Height()) {
+                SelectObject(hDC, hFontOld);
+                DeleteObject(hFont);
+                continue;
+            }
+            rcText.top = rc.top + (rcText.Height() - rcCalc.Height()) / 2;
+            rcText.bottom = rcText.top + rcCalc.Height();
+            uFormat = DT_CENTER | DT_TOP | DT_NOPREFIX | DT_WORDBREAK;
+            DrawTextW(hDC, m_strText.c_str(), -1, &rcText, uFormat);
+            SelectObject(hDC, hFontOld);
+            DeleteObject(hFont);
+            break;
+        }
+    }
+
+    BOOL SetText(LPCWSTR pszText)
+    {
+        m_strText = pszText;
+        return TRUE;
     }
 };
