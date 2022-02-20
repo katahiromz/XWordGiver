@@ -26,6 +26,7 @@
 #include "XG_SeqPatGenDialog.hpp"
 #include "XG_SeqSolveDialog.hpp"
 #include "XG_SettingsDialog.hpp"
+#include "XG_SettingsDialog.cpp"
 #include "XG_ThemeDialog.hpp"
 #include "XG_WordListDialog.hpp"
 #include "XG_RulePresetDialog.hpp"
@@ -985,7 +986,7 @@ bool __fastcall XgLoadSettings(void)
 
             if (!app_key.QuerySz(L"BlackCellImage", sz, ARRAYSIZE(sz))) {
                 WCHAR szFullPath[MAX_PATH];
-                if (XgGetLoadImagePath(szFullPath, sz))
+                if (XgGetImagePath(szFullPath, sz))
                 {
                     xg_strBlackCellImage = szFullPath;
                 }
@@ -1836,6 +1837,20 @@ BOOL XgOnSave(HWND hwnd, LPCWSTR pszFile)
         return FALSE;
     }
 
+    // LOOKSファイルも自動でエクスポートする。
+    WCHAR szPath[MAX_PATH];
+    XgGetFileDir(szPath, pszFile);
+    CreateDirectoryW(szPath, NULL);
+    PathAppendW(szPath, PathFindFileNameW(pszFile));
+    PathRemoveExtensionW(szPath);
+    PathAddExtensionW(szPath, L".looks");
+    {
+        XG_SettingsDialog dialog;
+        dialog.m_pszAutoFile = szPath;
+        dialog.m_bImport = FALSE;
+        dialog.DoModal(hwnd);
+    }
+
     // ファイルの種類を保存する。
     LPCWSTR pchDotExt = PathFindExtensionW(pszFile);
     if (lstrcmpiW(pchDotExt, L".xwj") == 0 ||
@@ -1992,6 +2007,7 @@ BOOL XgOnLoad(HWND hwnd, LPCWSTR pszFile, LPPOINT ppt)
     {
         XG_SettingsDialog dialog;
         dialog.m_pszAutoFile = szFile;
+        dialog.m_bImport = TRUE;
         dialog.DoModal(hwnd);
         XG_FILE_MODIFIED(TRUE);
         return TRUE;
@@ -2082,6 +2098,21 @@ BOOL XgOnLoad(HWND hwnd, LPCWSTR pszFile, LPPOINT ppt)
     XgFitZoom(hwnd);
     // イメージを更新する。
     XgUpdateImage(hwnd, 0, 0);
+
+    // LOOKSファイルも自動でインポートする。
+    WCHAR szPath[MAX_PATH];
+    if (XgGetFileDir(szPath, pszFile)) {
+        PathAppendW(szPath, PathFindFileNameW(pszFile));
+        PathRemoveExtensionW(szPath);
+        PathAddExtensionW(szPath, L".looks");
+        {
+            XG_SettingsDialog dialog;
+            dialog.m_pszAutoFile = szPath;
+            dialog.m_bImport = TRUE;
+            dialog.DoModal(hwnd);
+        }
+    }
+
     // フォーカスを移動。
     SetFocus(hwnd);
     // ファイル変更フラグ。

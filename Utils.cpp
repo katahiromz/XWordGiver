@@ -648,14 +648,16 @@ void XgHexToBin(std::vector<BYTE>& data, const std::wstring& str)
     }
 }
 
-BOOL XgGetFileDir(LPWSTR pszPath)
+BOOL XgGetFileDir(LPWSTR pszPath, LPCWSTR pszFile)
 {
     pszPath[0] = 0;
-    if (xg_strFileName.empty())
+    if (!pszFile)
+        pszFile = xg_strFileName.c_str();
+    if (!pszFile[0])
         return FALSE;
 
-    LPCWSTR pszTitle = PathFindFileNameW(xg_strFileName.c_str());
-    StringCchCopyW(pszPath, MAX_PATH, xg_strFileName.c_str());
+    LPCWSTR pszTitle = PathFindFileNameW(pszFile);
+    StringCchCopyW(pszPath, MAX_PATH, pszFile);
     PathRemoveFileSpecW(pszPath);
     PathAppendW(pszPath, pszTitle);
     PathRemoveExtensionW(pszPath);
@@ -687,7 +689,7 @@ BOOL XgIsImageFile(LPCWSTR pszFileName)
 }
 
 // 画像のパスを取得する。
-BOOL XgGetLoadImagePath(LPWSTR pszFullPath, LPCWSTR pszFileName)
+BOOL XgGetImagePath(LPWSTR pszFullPath, LPCWSTR pszFileName)
 {
     if (memcmp(pszFileName, L"$FILES\\", 7 * sizeof(WCHAR)) == 0)
     {
@@ -727,7 +729,7 @@ BOOL XgGetLoadImagePath(LPWSTR pszFullPath, LPCWSTR pszFileName)
 BOOL XgGetCanonicalImagePath(LPWSTR pszCanonical, LPCWSTR pszFileName)
 {
     WCHAR szPath[MAX_PATH];
-    if (!XgGetLoadImagePath(szPath, pszFileName))
+    if (!XgGetImagePath(szPath, pszFileName))
         return FALSE;
 
     for (auto& ch : szPath) {
@@ -834,7 +836,7 @@ BOOL XgLoadImage(LPCWSTR pszFileName, HBITMAP& hbm, HENHMETAFILE& hEMF)
 
     // パス名をセット。
     WCHAR szFullPath[MAX_PATH];
-    if (!XgGetLoadImagePath(szFullPath, pszFileName))
+    if (!XgGetImagePath(szFullPath, pszFileName))
         return FALSE;
 
     LPCWSTR pchDotExt = PathFindExtensionW(szFullPath);
