@@ -4214,7 +4214,7 @@ BOOL XgAddBox(HWND hwnd, UINT id)
 }
 
 // コマンドを実行する。
-void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*codeNotify*/)
+void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT /*codeNotify*/)
 {
     WCHAR sz[MAX_PATH];
     OPENFILENAMEW ofn;
@@ -5725,6 +5725,23 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND /*hwndCtl*/, UINT /*co
     case ID_ADDPICTUREBOX:
         XgAddBox(hwnd, id);
         break;
+    case ID_DELETEBOX:
+        for (auto it = xg_boxes.begin(); it != xg_boxes.end(); ++it) {
+            if ((*it)->m_hWnd == hwndCtl) {
+                DestroyWindow(hwndCtl);
+                xg_boxes.erase(it);
+                break;
+            }
+        }
+        break;
+    case ID_BOXPROP:
+        for (auto it = xg_boxes.begin(); it != xg_boxes.end(); ++it) {
+            if ((*it)->m_hWnd == hwndCtl) {
+                (*it)->Prop(hwndCtl);
+                break;
+            }
+        }
+        break;
     default:
         if (!XgOnCommandExtra(hwnd, id)) {
             ::MessageBeep(0xFFFFFFFF);
@@ -6149,6 +6166,7 @@ void __fastcall XgUpdateImage(HWND hwnd)
     XgUpdateImage(hwnd, XgGetHScrollPos(), XgGetVScrollPos());
 }
 
+// ファイルがドロップされた。
 void MainWnd_OnDropFiles(HWND hwnd, HDROP hdrop)
 {
     POINT pt;

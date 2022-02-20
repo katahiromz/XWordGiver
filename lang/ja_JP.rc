@@ -543,6 +543,12 @@ LANGUAGE LANG_JAPANESE, SUBLANG_DEFAULT
         MENUITEM SEPARATOR
         MENUITEM "リセット", psh15
     }
+    POPUP "Box"
+    {
+        MENUITEM "削除(&D)", ID_DELETEBOX
+        MENUITEM SEPARATOR
+        MENUITEM "プロパティ(&P)...", ID_BOXPROP
+    }
 }
 
 //////////////////////////////////////////////////////////////////////////////

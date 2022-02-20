@@ -540,6 +540,12 @@ LANGUAGE LANG_ENGLISH, SUBLANG_DEFAULT
         MENUITEM SEPARATOR
         MENUITEM "Reset", psh15
     }
+    POPUP "Box"
+    {
+        MENUITEM "&Delete", ID_DELETEBOX
+        MENUITEM SEPARATOR
+        MENUITEM "&Properties...", ID_BOXPROP
+    }
 }
 
 //////////////////////////////////////////////////////////////////////////////

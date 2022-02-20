@@ -1,6 +1,8 @@
 ﻿#pragma once
 
 #include "XG_Window.hpp"
+#include "XG_TextBoxDialog.hpp"
+#include "XG_PictureBoxDialog.hpp"
 
 #define XGWM_REDRAW (WM_USER + 101)
 
@@ -296,12 +298,6 @@ public:
         ::SetTimer(m_hWnd, 999, 300, NULL);
     }
 
-    void OnMouseMove(HWND hwnd, int x, int y, UINT keyFlags)
-    {
-        ::KillTimer(m_hWnd, 999);
-        ::SetTimer(m_hWnd, 999, 300, NULL);
-    }
-
     void OnSize(HWND hwnd, UINT state, int cx, int cy)
     {
         RECT rc = m_rcOld;
@@ -347,6 +343,26 @@ public:
         return m_hWnd != NULL;
     }
 
+    void OnNCRButtonDown(HWND hwnd, BOOL fDoubleClick, int x, int y, UINT codeHitTest)
+    {
+        HMENU hMenu = LoadMenu(xg_hInstance, MAKEINTRESOURCEW(3));
+        HMENU hSubMenu = GetSubMenu(hMenu, 1);
+
+        POINT pt = { x, y };
+        SetForegroundWindow(hwnd);
+        UINT id = (UINT)TrackPopupMenu(hSubMenu,
+            TPM_LEFTALIGN | TPM_RIGHTBUTTON | TPM_RETURNCMD,
+            pt.x, pt.y, 0, hwnd, NULL);
+        DestroyMenu(hMenu);
+        if (id)
+            PostMessage(m_hwndParent, WM_COMMAND, id, (LPARAM)hwnd);
+    }
+
+    virtual BOOL Prop(HWND hwnd)
+    {
+        return TRUE;
+    }
+
     virtual LRESULT CALLBACK
     WindowProcDx(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) override
     {
@@ -357,7 +373,7 @@ public:
         HANDLE_MSG(hwnd, WM_SIZE, OnSize);
         HANDLE_MSG(hwnd, WM_ERASEBKGND, OnEraseBkgnd);
         HANDLE_MSG(hwnd, WM_PAINT, OnPaint);
-        HANDLE_MSG(hwnd, WM_MOUSEMOVE, OnMouseMove);
+        HANDLE_MSG(hwnd, WM_NCRBUTTONDOWN, OnNCRButtonDown);
         HANDLE_MSG(hwnd, WM_NCPAINT, OnNCPaint);
         HANDLE_MSG(hwnd, WM_NCCALCSIZE, OnNCCalcSize);
         HANDLE_MSG(hwnd, WM_NCHITTEST, OnNCHitTest);
@@ -447,15 +463,27 @@ public:
         XG_BoxWindow::OnDraw(hwnd, hDC, rc);
     }
 
-    BOOL SetFile(LPCWSTR pszFile)
+    BOOL SetFile(const std::wstring& strFile)
     {
         DoDelete();
 
-        if (XgLoadImage(pszFile, m_hbm, m_hEMF)) {
-            m_strFile = pszFile;
+        if (XgLoadImage(strFile.c_str(), m_hbm, m_hEMF)) {
+            m_strFile = strFile;
             return TRUE;
         }
 
+        return FALSE;
+    }
+
+    virtual BOOL Prop(HWND hwnd) override
+    {
+        XG_PictureBoxDialog dialog;
+        dialog.m_strFile = m_strFile;
+        if (dialog.DoModal(m_hwndParent) == IDOK) {
+            SetFile(dialog.m_strFile);
+            InvalidateRect(hwnd, NULL, TRUE);
+            return TRUE;
+        }
         return FALSE;
     }
 };
@@ -491,7 +519,7 @@ public:
 
         LOGFONTW lf = *XgGetUIFont();
 
-        for (INT height = 20; height >= 4; --height) {
+        for (INT height = 20; height >= 2; --height) {
             lf.lfHeight = -height * xg_nZoomRate / 100;
             HFONT hFont = CreateFontIndirectW(&lf);
             HGDIOBJ hFontOld = SelectObject(hDC, hFont);
@@ -513,9 +541,21 @@ public:
         }
     }
 
-    BOOL SetText(LPCWSTR pszText)
+    BOOL SetText(const std::wstring& strText)
     {
-        m_strText = pszText;
+        m_strText = strText;
         return TRUE;
+    }
+
+    virtual BOOL Prop(HWND hwnd) override
+    {
+        XG_TextBoxDialog dialog;
+        dialog.m_strText = m_strText;
+        if (dialog.DoModal(m_hwndParent) == IDOK) {
+            SetText(dialog.m_strText);
+            InvalidateRect(hwnd, NULL, TRUE);
+            return TRUE;
+        }
+        return FALSE;
     }
 };
