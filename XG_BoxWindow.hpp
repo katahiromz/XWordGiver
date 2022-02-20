@@ -25,6 +25,7 @@
 class XG_BoxWindow : public XG_Window
 {
 public:
+    std::wstring m_type;
     HWND m_hwndParent;
     HRGN m_hRgn;
     INT m_i1;
@@ -33,8 +34,9 @@ public:
     INT m_j2;
     RECT m_rcOld;
 
-    XG_BoxWindow(INT i1 = 0, INT j1 = 0, INT i2 = 1, INT j2 = 1)
-        : m_hwndParent(NULL)
+    XG_BoxWindow(const std::wstring& type, INT i1 = 0, INT j1 = 0, INT i2 = 1, INT j2 = 1)
+        : m_type(type)
+        , m_hwndParent(NULL)
         , m_hRgn(NULL)
         , m_i1(i1)
         , m_j1(j1)
@@ -363,6 +365,16 @@ public:
         return TRUE;
     }
 
+    virtual BOOL GetData(INT nKey, std::wstring& str) const
+    {
+        str.clear();
+        return FALSE;
+    }
+    virtual BOOL SetData(INT nKey, const std::wstring& str)
+    {
+        return FALSE;
+    }
+
     virtual LRESULT CALLBACK
     WindowProcDx(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) override
     {
@@ -414,14 +426,6 @@ public:
 // ボックス。
 extern std::vector<std::unique_ptr<XG_BoxWindow> > xg_boxes;
 
-// ボックスをすべて削除する。
-static inline void XgDeleteBoxes(void) {
-    for (auto& box : xg_boxes) {
-        DestroyWindow(*box);
-    }
-    xg_boxes.clear();
-}
-
 class XG_PictureBoxWindow : public XG_BoxWindow
 {
 public:
@@ -429,12 +433,11 @@ public:
     HENHMETAFILE m_hEMF;
     std::wstring m_strFile;
 
-    XG_PictureBoxWindow(const std::wstring& str, INT i1 = 0, INT j1 = 0, INT i2 = 1, INT j2 = 1)
-        : XG_BoxWindow(i1, j1, i2, j2)
+    XG_PictureBoxWindow(INT i1 = 0, INT j1 = 0, INT i2 = 1, INT j2 = 1)
+        : XG_BoxWindow(L"pic", i1, j1, i2, j2)
         , m_hbm(NULL)
         , m_hEMF(NULL)
     {
-        SetFile(str.c_str());
     }
 
     void DoDelete()
@@ -497,6 +500,69 @@ public:
         }
         return FALSE;
     }
+
+    virtual BOOL GetData(INT nKey, std::wstring& str) const override
+    {
+        WCHAR szText[MAX_PATH];
+        switch (nKey)
+        {
+        case -1:
+            StringCbPrintfW(szText, sizeof(szText), L"(%d, %d) - (%d, %d): %s",
+                m_j1, m_i1, m_j2, m_i2, m_strFile.c_str());
+            str = szText;
+            return TRUE;
+        case 0:
+            StringCbPrintfW(szText, sizeof(szText), L"(%d, %d) - (%d, %d)",
+                m_j1, m_i1, m_j2, m_i2);
+            str = szText;
+            return TRUE;
+        case 1:
+            StringCbPrintfW(szText, sizeof(szText), L"%s", m_strFile.c_str());
+            str = szText;
+            return TRUE;
+        default:
+            str.clear();
+            return FALSE;
+        }
+    }
+    virtual BOOL SetData(INT nKey, const std::wstring& str) override
+    {
+        INT i1, j1, i2, j2;
+        i1 = j1 = i2 = j2 = -1;
+        std::wstring strFile;
+        size_t index;
+        switch (nKey)
+        {
+        case -1:
+            swscanf(str.c_str(), L"(%d, %d) - (%d, %d)", &j1, &i1, &j2, &i2);
+            index = str.find(L": ");
+            if (index == str.npos)
+                return FALSE;
+            strFile = str.substr(index + 2);
+            break;
+        case 0:
+            swscanf(str.c_str(), L"(%d, %d) - (%d, %d)", &j1, &i1, &j2, &i2);
+            break;
+        case 1:
+            strFile = str;
+            SetFile(strFile);
+            InvalidateRect(m_hWnd, NULL, TRUE);
+            return TRUE;
+        default:
+            return FALSE;
+        }
+        if (i1 == -1 || j1 == -1 || i2 == -1 || j2 == -1)
+            return FALSE;
+        if (i1 >= i2 || j1 >= j2)
+            return FALSE;
+        m_i1 = i1;
+        m_j1 = j1;
+        m_i2 = i2;
+        m_j2 = j2;
+        SetFile(strFile);
+        Bound();
+        return TRUE;
+    }
 };
 
 class XG_TextBoxWindow : public XG_BoxWindow
@@ -504,10 +570,9 @@ class XG_TextBoxWindow : public XG_BoxWindow
 public:
     std::wstring m_strText;
 
-    XG_TextBoxWindow(const std::wstring& str, INT i1 = 0, INT j1 = 0, INT i2 = 1, INT j2 = 1)
-        : XG_BoxWindow(i1, j1, i2, j2)
+    XG_TextBoxWindow(INT i1 = 0, INT j1 = 0, INT i2 = 1, INT j2 = 1)
+        : XG_BoxWindow(L"text", i1, j1, i2, j2)
     {
-        SetText(str.c_str());
     }
 
     ~XG_TextBoxWindow()
@@ -568,5 +633,67 @@ public:
             return TRUE;
         }
         return FALSE;
+    }
+
+    virtual BOOL GetData(INT nKey, std::wstring& str) const override
+    {
+        WCHAR szText[MAX_PATH];
+        switch (nKey)
+        {
+        case -1:
+            StringCbPrintfW(szText, sizeof(szText), L"(%d, %d) - (%d, %d): %s",
+                m_j1, m_i1, m_j2, m_i2, m_strText.c_str());
+            str = szText;
+            return TRUE;
+        case 0:
+            StringCbPrintfW(szText, sizeof(szText), L"(%d, %d) - (%d, %d)",
+                m_j1, m_i1, m_j2, m_i2);
+            str = szText;
+            return TRUE;
+        case 1:
+            StringCbPrintfW(szText, sizeof(szText), L"%s", m_strText.c_str());
+            str = szText;
+            return TRUE;
+        default:
+            str.clear();
+            return FALSE;
+        }
+    }
+
+    virtual BOOL SetData(INT nKey, const std::wstring& str) override
+    {
+        INT i1, j1, i2, j2;
+        i1 = j1 = i2 = j2 = -1;
+        std::wstring strText;
+        size_t index;
+        switch (nKey)
+        {
+        case -1:
+            swscanf(str.c_str(), L"(%d, %d) - (%d, %d)", &j1, &i1, &j2, &i2);
+            index = str.find(L": ");
+            if (index == str.npos)
+                return FALSE;
+            strText = str.substr(index + 2);
+            break;
+        case 0:
+            swscanf(str.c_str(), L"(%d, %d) - (%d, %d)", &j1, &i1, &j2, &i2);
+            break;
+        case 1:
+            strText = str;
+            InvalidateRect(m_hWnd, NULL, TRUE);
+            return TRUE;
+        default:
+            return FALSE;
+        }
+        if (i1 == -1 || j1 == -1 || i2 == -1 || j2 == -1)
+            return FALSE;
+        if (i1 >= i2 || j1 >= j2)
+            return FALSE;
+        m_i1 = i1;
+        m_j1 = j1;
+        m_i2 = i2;
+        m_j2 = j2;
+        Bound();
+        return TRUE;
     }
 };

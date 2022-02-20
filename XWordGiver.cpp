@@ -2054,6 +2054,12 @@ bool __fastcall XgSetJsonString(HWND hwnd, const std::wstring& str)
         xg_nCols = column_count;
         xw.ResetAndSetSize(row_count, column_count);
 
+        // ボックス。
+        XgDeleteBoxes();
+        if (j["boxes"].is_array()) {
+            XgDoLoadBoxJson(j["boxes"]);
+        }
+
         bool success = true;
 
         for (int i = 0; i < row_count; ++i) {
@@ -5400,6 +5406,9 @@ bool __fastcall XgDoSaveJson(LPCWSTR pszFile)
             }
             j["cell_data"].push_back(XgUnicodeToUtf8(row));
         }
+
+        // ボックス。
+        XgDoSaveBoxJson(j);
 
         // 二重マス。
         if (xg_vMarks.size()) {

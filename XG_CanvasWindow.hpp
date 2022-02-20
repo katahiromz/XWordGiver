@@ -492,7 +492,8 @@ public:
                 j1 = j2 - 2;
             }
 
-            auto ptr = new XG_PictureBoxWindow(szFile, i1, j1, i2, j2);
+            auto ptr = new XG_PictureBoxWindow(i1, j1, i2, j2);
+            ptr->SetFile(szFile);
             if (ptr->CreateDx(hwnd)) {
                 xg_boxes.emplace_back(ptr);
                 return TRUE;
@@ -561,3 +562,6 @@ public:
         return 0;
     }
 };
+
+// キャンバスウィンドウ。
+extern XG_CanvasWindow xg_canvasWnd;

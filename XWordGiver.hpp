@@ -1435,6 +1435,12 @@ extern XG_HighLight xg_highlight;
 void __fastcall XgSetCaretPos(INT iRow = 0, INT jCol = 0);
 // キャレット位置を更新する。
 void __fastcall XgUpdateCaretPos(void);
+// ボックスをすべて削除する。
+void XgDeleteBoxes(void);
+// ボックスJSONを読み込む。
+BOOL XgDoLoadBoxJson(const json& boxes);
+// ボックスJSONを保存。
+BOOL XgDoSaveBoxJson(json& j);
 
 //////////////////////////////////////////////////////////////////////////////
 

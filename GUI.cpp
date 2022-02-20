@@ -33,6 +33,81 @@
 #include "XG_CanvasWindow.hpp"
 #include "XG_PictureBoxDialog.hpp"
 #include "XG_TextBoxDialog.hpp"
+#include "XG_BoxWindow.hpp"
+#include "XG_CanvasWindow.hpp"
+
+// ボックスをすべて削除する。
+void XgDeleteBoxes(void)
+{
+    for (auto& box : xg_boxes) {
+        DestroyWindow(*box);
+    }
+    xg_boxes.clear();
+}
+
+// ボックスJSONを読み込む。
+BOOL XgDoLoadBoxJson(const json& boxes)
+{
+    try
+    {
+        for (size_t i = 0; i < boxes.size(); ++i) {
+            auto& box = boxes[i];
+            if (box["type"] == "pic") {
+                auto ptr = new XG_PictureBoxWindow();
+                ptr->SetData(0, XgUtf8ToUnicode(box["data0"]));
+                ptr->SetData(1, XgUtf8ToUnicode(box["data1"]));
+                if (ptr->CreateDx(xg_canvasWnd)) {
+                    xg_boxes.emplace_back(ptr);
+                    continue;
+                } else {
+                    delete ptr;
+                }
+            } else if (box["type"] == "text") {
+                auto ptr = new XG_TextBoxWindow();
+                ptr->SetData(0, XgUtf8ToUnicode(box["data0"]));
+                ptr->SetData(1, XgUtf8ToUnicode(box["data1"]));
+                if (ptr->CreateDx(xg_canvasWnd)) {
+                    xg_boxes.emplace_back(ptr);
+                    continue;
+                } else {
+                    delete ptr;
+                }
+            }
+        }
+    }
+    catch(...)
+    {
+        return FALSE;
+    }
+
+    return TRUE;
+}
+
+// ボックスJSONを保存。
+BOOL XgDoSaveBoxJson(json& j)
+{
+    try
+    {
+        for (size_t i = 0; i < xg_boxes.size(); ++i) {
+            auto& box = *xg_boxes[i];
+            std::wstring type, data0, data1;
+            type = box.m_type;
+            box.GetData(0, data0);
+            box.GetData(1, data1);
+            json info;
+            info["type"] = XgUnicodeToUtf8(type);
+            info["data0"] = XgUnicodeToUtf8(data0);
+            info["data1"] = XgUnicodeToUtf8(data1);
+            j["boxes"].push_back(info);
+        }
+    }
+    catch(...)
+    {
+        return FALSE;
+    }
+
+    return TRUE;
+}
 
 #undef HANDLE_WM_MOUSEWHEEL     // might be wrong
 #define HANDLE_WM_MOUSEWHEEL(hwnd, wParam, lParam, fn) \
@@ -4188,7 +4263,8 @@ BOOL XgAddBox(HWND hwnd, UINT id)
     {
     case ID_ADDTEXTBOX:
         if (dialog1.DoModal(hwnd) == IDOK) {
-            auto ptr = new XG_TextBoxWindow(dialog1.m_strText, i1, j1, i2, j2);
+            auto ptr = new XG_TextBoxWindow(i1, j1, i2, j2);
+            ptr->SetText(dialog1.m_strText);
             if (ptr->CreateDx(xg_canvasWnd)) {
                 xg_boxes.emplace_back(ptr);
                 return TRUE;
@@ -4199,7 +4275,8 @@ BOOL XgAddBox(HWND hwnd, UINT id)
         break;
     case ID_ADDPICTUREBOX:
         if (dialog2.DoModal(hwnd) == IDOK) {
-            auto ptr = new XG_PictureBoxWindow(dialog2.m_strFile, i1, j1, i2, j2);
+            auto ptr = new XG_PictureBoxWindow(i1, j1, i2, j2);
+            ptr->SetFile(dialog2.m_strFile);
             if (ptr->CreateDx(xg_canvasWnd)) {
                 xg_boxes.emplace_back(ptr);
                 return TRUE;
@@ -6481,7 +6558,7 @@ int WINAPI WinMain(
         return 1;
     }
     {
-        XG_BoxWindow box;
+        XG_BoxWindow box(L"");
         if (!box.RegisterClassDx()) {
             // ウィンドウ登録失敗メッセージ。
             XgCenterMessageBoxW(nullptr, XgLoadStringDx1(IDS_CANTREGWND), nullptr, MB_ICONERROR);
