@@ -4456,6 +4456,8 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT /*codeNo
                 sa1->Apply();
             }
         }
+        // ボックスをすべて削除する。
+        XgDeleteBoxes();
         // ツールバーのUIを更新する。
         XgUpdateToolBarUI(hwnd);
         break;
@@ -4581,6 +4583,8 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT /*codeNo
             XgDestroyCandsWnd();
             // ヒントウィンドウを破棄する。
             XgDestroyHintsWnd();
+            // ボックスをすべて削除する。
+            XgDeleteBoxes();
             // 開く。
             if (!XgDoLoad(hwnd, sz)) {
                 // 失敗。

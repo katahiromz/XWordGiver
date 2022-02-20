@@ -411,6 +411,17 @@ public:
     }
 };
 
+// ボックス。
+extern std::vector<std::unique_ptr<XG_BoxWindow> > xg_boxes;
+
+// ボックスをすべて削除する。
+static inline void XgDeleteBoxes(void) {
+    for (auto& box : xg_boxes) {
+        DestroyWindow(*box);
+    }
+    xg_boxes.clear();
+}
+
 class XG_PictureBoxWindow : public XG_BoxWindow
 {
 public:
