@@ -384,6 +384,17 @@ public:
         return TRUE;
     }
 
+    void OnNCLButtonDown(HWND hwnd, BOOL fDoubleClick, int x, int y, UINT codeHitTest)
+    {
+        if (fDoubleClick)
+        {
+            PostMessageW(m_hwndParent, WM_COMMAND, ID_BOXPROP, (LPARAM)hwnd);
+            return;
+        }
+
+        FORWARD_WM_NCLBUTTONDOWN(hwnd, fDoubleClick, x, y, codeHitTest, DefProcDx);
+    }
+
     virtual LRESULT CALLBACK
     WindowProcDx(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) override
     {
@@ -394,6 +405,7 @@ public:
         HANDLE_MSG(hwnd, WM_SIZE, OnSize);
         HANDLE_MSG(hwnd, WM_ERASEBKGND, OnEraseBkgnd);
         HANDLE_MSG(hwnd, WM_PAINT, OnPaint);
+        HANDLE_MSG(hwnd, WM_NCLBUTTONDBLCLK, OnNCLButtonDown);
         HANDLE_MSG(hwnd, WM_NCRBUTTONDOWN, OnNCRButtonDown);
         HANDLE_MSG(hwnd, WM_NCPAINT, OnNCPaint);
         HANDLE_MSG(hwnd, WM_NCCALCSIZE, OnNCCalcSize);
