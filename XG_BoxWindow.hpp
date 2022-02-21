@@ -432,14 +432,14 @@ public:
     std::wstring GetPosText() const {
         WCHAR szText[MAX_PATH];
         StringCchPrintfW(szText, _countof(szText),
-                         L"(%d, %d) - (%d, %d)", m_j1, m_i1, m_j2, m_i2);
+                         L"(%d, %d) - (%d, %d)", m_j1 + 1, m_i1 + 1, m_j2, m_i2);
         return szText;
     }
     BOOL SetPosText(const std::wstring& str) {
         INT i1, j1, i2, j2;
         if (swscanf(str.c_str(), L"(%d, %d) - (%d, %d)", &j1, &i1, &j2, &i2) != 4)
             return FALSE;
-        SetPos(i1, j1, i2, j2);
+        SetPos(i1 - 1, j1 - 1, i2, j2);
         return TRUE;
     }
     virtual std::wstring GetText() const {
