@@ -1159,7 +1159,7 @@ std::wstring xg_str_unescape(const std::wstring& str)
                     octal += ch - L'0';
                 }
                 ret += wchar_t(octal);
-                i += k;
+                i += k - 1;
             }
             if (ch == L'x' || ch == L'X') {
                 ++i;
@@ -1177,7 +1177,7 @@ std::wstring xg_str_unescape(const std::wstring& str)
                         hexi += ch - L'A' + 10;
                 }
                 ret += wchar_t(hexi);
-                i += k;
+                i += k - 1;
             }
         }
     }

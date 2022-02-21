@@ -6893,8 +6893,8 @@ void XgDoTests(void)
     assert(xg_str_unescape(L"\\fabc") == L"\fabc");
     assert(xg_str_unescape(L"\\vabc") == L"\vabc");
     assert(xg_str_unescape(L"\\\\abc") == L"\\abc");
-    assert(xg_str_unescape(L"\\x11") == L"\021");
-    assert(xg_str_unescape(L"\\021") == L"\021");
+    assert(xg_str_unescape(L"\\x11T") == L"\021T");
+    assert(xg_str_unescape(L"\\021T") == L"\021T");
 #endif
 }
 
