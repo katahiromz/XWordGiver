@@ -2065,17 +2065,41 @@ void XgReloadImage(HWND hwnd)
 }
 
 // 新規作成ダイアログ。
-bool __fastcall XgOnNew(HWND hwnd)
+BOOL __fastcall XgOnNew(HWND hwnd)
 {
     if (!XgDoConfirmSave(hwnd))
-        return false;
+        return FALSE;
 
-    INT_PTR nID;
+    auto sa1 = std::make_shared<XG_UndoData_SetAll>();
+    auto sa2 = std::make_shared<XG_UndoData_SetAll>();
+    sa1->Get();
+
+    // 候補ウィンドウを破棄する。
+    XgDestroyCandsWnd();
+    // ヒントウィンドウを破棄する。
+    XgDestroyHintsWnd();
+
+    // 新規作成ダイアログ。
     ::EnableWindow(xg_hwndInputPalette, FALSE);
     XG_NewDialog dialog;
-    nID = dialog.DoModal(hwnd);
+    INT_PTR nID = dialog.DoModal(hwnd);
     ::EnableWindow(xg_hwndInputPalette, TRUE);
-    return (nID == IDOK);
+    if (nID != IDOK)
+        return FALSE;
+
+    // 元に戻す情報を確定する。
+    sa2->Get();
+    xg_ubUndoBuffer.Commit(UC_SETALL, sa1, sa2);
+
+    // 画像を再読み込み。
+    XgReloadImage(hwnd);
+    // ボックスをすべて削除する。
+    XgDeleteBoxes();
+    // ツールバーのUIを更新する。
+    XgUpdateToolBarUI(hwnd);
+    // 更新フラグ。
+    XG_FILE_MODIFIED(FALSE);
+    return TRUE;
 }
 
 // ファイルを読み込む。
@@ -2352,6 +2376,11 @@ bool __fastcall XgOnGenerate(HWND hwnd, bool show_answer, bool multiple = false)
     xg_strHeader.clear();
     xg_strNotes.clear();
     xg_strFileName.clear();
+
+    // ズームを実際のウィンドウに合わせる。
+    XgFitZoom(hwnd);
+    // ステータスバーを更新する。
+    XgUpdateStatusBar(hwnd);
 
     // 辞書を読み込む。
     XgLoadDictFile(xg_dict_name.c_str());
@@ -5010,35 +5039,7 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT /*codeNo
         break;
 
     case ID_NEW:    // 新規作成。
-        {
-            bool flag = false;
-            auto sa1 = std::make_shared<XG_UndoData_SetAll>();
-            auto sa2 = std::make_shared<XG_UndoData_SetAll>();
-            sa1->Get();
-            // 候補ウィンドウを破棄する。
-            XgDestroyCandsWnd();
-            // ヒントウィンドウを破棄する。
-            XgDestroyHintsWnd();
-            // 新規作成ダイアログ。
-            if (XgOnNew(hwnd)) {
-                flag = true;
-                sa2->Get();
-            } else {
-                break;
-            }
-            if (flag) {
-                xg_ubUndoBuffer.Commit(UC_SETALL, sa1, sa2);
-            } else {
-                sa1->Apply();
-            }
-            XG_FILE_MODIFIED(FALSE);
-        }
-        // 画像を再読み込み。
-        XgReloadImage(hwnd);
-        // ボックスをすべて削除する。
-        XgDeleteBoxes();
-        // ツールバーのUIを更新する。
-        XgUpdateToolBarUI(hwnd);
+        XgOnNew(hwnd);
         break;
 
     case ID_GENERATE:   // 問題を自動生成する。

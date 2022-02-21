@@ -484,6 +484,10 @@ public:
         // 答えを表示するか？
         xg_bShowAnswerOnPattern = (IsDlgButtonChecked(hwnd, chx1) == BST_CHECKED);
 
+        // ズームを実際のウィンドウに合わせる。
+        XgFitZoom(GetParent(hwnd));
+        // ステータスバーを更新する。
+        XgUpdateStatusBar(GetParent(hwnd));
         {
             auto sa1 = std::make_shared<XG_UndoData_SetAll>();
             auto sa2 = std::make_shared<XG_UndoData_SetAll>();
