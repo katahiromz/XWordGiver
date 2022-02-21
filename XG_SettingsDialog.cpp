@@ -4,13 +4,13 @@ BOOL XG_SettingsDialog::OnInitDialog(HWND hwnd)
     // ドロップを受け付ける。
     ::DragAcceptFiles(hwnd, TRUE);
 
-    // 色を一時的なデータとしてセットする。
-    s_rgbColors[0] = xg_rgbWhiteCellColor;
-    s_rgbColors[1] = xg_rgbBlackCellColor;
-    s_rgbColors[2] = xg_rgbMarkedCellColor;
-
     // 画面の中央に寄せる。
     XgCenterDialog(hwnd);
+
+    // ハンドルをセットする。
+    m_hwndWhite.m_hWnd = GetDlgItem(hwnd, psh7);
+    m_hwndBlack.m_hWnd = GetDlgItem(hwnd, psh8);
+    m_hwndMarked.m_hWnd = GetDlgItem(hwnd, psh9);
 
     // フォント名を格納する。
     ::SetDlgItemTextW(hwnd, edt1, xg_szCellFont);
@@ -194,9 +194,9 @@ void XG_SettingsDialog::OnOK(HWND hwnd)
     xg_bHiragana = (::IsDlgButtonChecked(hwnd, chx5) == BST_CHECKED);
 
     // 色を設定する。
-    xg_rgbWhiteCellColor = s_rgbColors[0];
-    xg_rgbBlackCellColor = s_rgbColors[1];
-    xg_rgbMarkedCellColor = s_rgbColors[2];
+    xg_rgbWhiteCellColor = m_hwndWhite.GetColor();
+    xg_rgbBlackCellColor = m_hwndBlack.GetColor();
+    xg_rgbMarkedCellColor = m_hwndMarked.GetColor();
 
     // レイアウトを調整する。
     ::PostMessageW(xg_hMainWnd, WM_SIZE, 0, 0);
@@ -242,16 +242,16 @@ BOOL XG_SettingsDialog::DoImportLooks(HWND hwnd, LPCWSTR pszFileName)
 
     // 色。
     GetPrivateProfileStringW(L"Looks", L"WhiteCellColor", L"16777215", szText, _countof(szText), pszFileName);
-    s_rgbColors[0] = _wtoi(szText);
-    InvalidateRect(GetDlgItem(hwnd, psh7), NULL, TRUE);
+    m_hwndWhite.SetColor(_wtoi(szText));
+    InvalidateRect(m_hwndWhite, NULL, TRUE);
 
     GetPrivateProfileStringW(L"Looks", L"BlackCellColor", L"3355443", szText, _countof(szText), pszFileName);
-    s_rgbColors[1] = _wtoi(szText);
-    InvalidateRect(GetDlgItem(hwnd, psh8), NULL, TRUE);
+    m_hwndBlack.SetColor(_wtoi(szText));
+    InvalidateRect(m_hwndBlack, NULL, TRUE);
 
     GetPrivateProfileStringW(L"Looks", L"MarkedCellColor", L"16777215", szText, _countof(szText), pszFileName);
-    s_rgbColors[2] = _wtoi(szText);
-    InvalidateRect(GetDlgItem(hwnd, psh9), NULL, TRUE);
+    m_hwndMarked.SetColor(_wtoi(szText));
+    InvalidateRect(m_hwndMarked, NULL, TRUE);
 
     // フォント。
     GetPrivateProfileStringW(L"Looks", L"CellFont", L"", szText, _countof(szText), pszFileName);
@@ -434,9 +434,12 @@ BOOL XG_SettingsDialog::DoExportLooks(HWND hwnd, LPCWSTR pszFileName)
     WritePrivateProfileStringW(L"Looks", L"Hiragana", XgIntToStr(bHiragana), pszFileName);
 
     // 色を設定する。
-    WritePrivateProfileStringW(L"Looks", L"WhiteCellColor", XgIntToStr(s_rgbColors[0]), pszFileName);
-    WritePrivateProfileStringW(L"Looks", L"BlackCellColor", XgIntToStr(s_rgbColors[1]), pszFileName);
-    WritePrivateProfileStringW(L"Looks", L"MarkedCellColor", XgIntToStr(s_rgbColors[2]), pszFileName);
+    COLORREF rgb1 = m_hwndWhite.GetColor();
+    COLORREF rgb2 = m_hwndBlack.GetColor();
+    COLORREF rgb3 = m_hwndMarked.GetColor();
+    WritePrivateProfileStringW(L"Looks", L"WhiteCellColor", XgIntToStr(rgb1), pszFileName);
+    WritePrivateProfileStringW(L"Looks", L"BlackCellColor", XgIntToStr(rgb2), pszFileName);
+    WritePrivateProfileStringW(L"Looks", L"MarkedCellColor", XgIntToStr(rgb3), pszFileName);
 
     // 二重マス文字。
     HWND hCmb2 = GetDlgItem(hwnd, cmb2);
@@ -491,14 +494,14 @@ BOOL XG_SettingsDialog::OnExportLooks(HWND hwnd)
 void XG_SettingsDialog::OnResetLooks(HWND hwnd)
 {
     // 色。
-    s_rgbColors[0] = _wtoi(L"16777215");
-    InvalidateRect(GetDlgItem(hwnd, psh7), NULL, TRUE);
+    m_hwndWhite.SetColor(_wtoi(L"16777215"));
+    InvalidateRect(m_hwndWhite, NULL, TRUE);
 
-    s_rgbColors[1] = _wtoi(L"3355443");
-    InvalidateRect(GetDlgItem(hwnd, psh8), NULL, TRUE);
+    m_hwndBlack.SetColor(_wtoi(L"3355443"));
+    InvalidateRect(m_hwndBlack, NULL, TRUE);
 
-    s_rgbColors[2] = _wtoi(L"16777215");
-    InvalidateRect(GetDlgItem(hwnd, psh9), NULL, TRUE);
+    m_hwndMarked.SetColor(_wtoi(L"16777215"));
+    InvalidateRect(m_hwndMarked, NULL, TRUE);
 
     // フォント。
     SetDlgItemTextW(hwnd, edt1, L"");
@@ -617,98 +620,17 @@ void XG_SettingsDialog::OnChange(HWND hwnd, int i)
 void XG_SettingsDialog::OnDrawItem(HWND hwnd, WPARAM wParam, LPARAM lParam)
 {
     LPDRAWITEMSTRUCT pdis = reinterpret_cast<LPDRAWITEMSTRUCT>(lParam);
-    HDC hdc = pdis->hDC;
-
-    if (pdis->CtlType != ODT_BUTTON) {
+    if (pdis->hwndItem == m_hwndWhite) {
+        m_hwndWhite.OnOwnerDrawItem(wParam, lParam);
         return;
     }
-
-    BOOL bSelected = !!(pdis->itemState & ODS_SELECTED);
-    BOOL bFocus = !!(pdis->itemState & ODS_FOCUS);
-    RECT& rcItem = pdis->rcItem;
-
-    ::DrawFrameControl(hdc, &rcItem, DFC_BUTTON,
-        DFCS_BUTTONPUSH |
-        (bSelected ? DFCS_PUSHED : 0)
-    );
-
-    HBRUSH hbr = NULL;
-    switch (pdis->CtlID) {
-    case psh7:
-        hbr = ::CreateSolidBrush(s_rgbColors[0]);
-        break;
-
-    case psh8:
-        hbr = ::CreateSolidBrush(s_rgbColors[1]);
-        break;
-
-    case psh9:
-        hbr = ::CreateSolidBrush(s_rgbColors[2]);
-        break;
-
-    default:
+    if (pdis->hwndItem == m_hwndBlack) {
+        m_hwndBlack.OnOwnerDrawItem(wParam, lParam);
         return;
     }
-
-    ::InflateRect(&rcItem, -4, -4);
-    ::FillRect(hdc, &rcItem, hbr);
-    ::DeleteObject(hbr);
-
-    if (bFocus) {
-        ::InflateRect(&rcItem, 2, 2);
-        ::DrawFocusRect(hdc, &rcItem);
-    }
-}
-
-// 色を指定する。
-void XG_SettingsDialog::OnSetColor(HWND hwnd, int nIndex)
-{
-    COLORREF clr;
-    switch (nIndex) {
-    case 0:
-        clr = s_rgbColors[0];
-        break;
-
-    case 1:
-        clr = s_rgbColors[1];
-        break;
-
-    case 2:
-        clr = s_rgbColors[2];
-        break;
-
-    default:
+    if (pdis->hwndItem == m_hwndMarked) {
+        m_hwndMarked.OnOwnerDrawItem(wParam, lParam);
         return;
-    }
-
-    CHOOSECOLORW cc;
-    ZeroMemory(&cc, sizeof(cc));
-    cc.lStructSize = sizeof(cc);
-    cc.hwndOwner = hwnd;
-    cc.rgbResult = clr;
-    cc.lpCustColors = s_rgbColorTable;
-    cc.Flags = CC_FULLOPEN | CC_RGBINIT;
-    if (ChooseColorW(&cc)) {
-        switch (nIndex) {
-        case 0:
-            s_rgbColors[0] = cc.rgbResult;
-            ::InvalidateRect(::GetDlgItem(hwnd, psh7), NULL, TRUE);
-            break;
-
-        case 1:
-            s_rgbColors[1] = cc.rgbResult;
-            ::InvalidateRect(::GetDlgItem(hwnd, psh8), NULL, TRUE);
-            break;
-
-        case 2:
-            s_rgbColors[2] = cc.rgbResult;
-            ::InvalidateRect(::GetDlgItem(hwnd, psh9), NULL, TRUE);
-            break;
-
-        default:
-            return;
-        }
-
     }
 }
 
@@ -769,11 +691,11 @@ XG_SettingsDialog::DialogProcDx(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPar
             break;
 
         case psh3:
-            OnReset(hwnd, 0);
+            ::SetDlgItemTextW(hwnd, edt1, L"");
             break;
 
         case psh4:
-            OnReset(hwnd, 1);
+            ::SetDlgItemTextW(hwnd, edt2, L"");
             break;
 
         case psh5:
@@ -781,19 +703,19 @@ XG_SettingsDialog::DialogProcDx(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPar
             break;
 
         case psh6:
-            OnReset(hwnd, 2);
+            ::SetDlgItemTextW(hwnd, edt3, L"");
             break;
 
         case psh7:
-            OnSetColor(hwnd, 0);
+            m_hwndWhite.DoChooseColor();
             break;
 
         case psh8:
-            OnSetColor(hwnd, 1);
+            m_hwndBlack.DoChooseColor();
             break;
 
         case psh9:
-            OnSetColor(hwnd, 2);
+            m_hwndMarked.DoChooseColor();
             break;
 
         case psh10:

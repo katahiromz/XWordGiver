@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include "XG_Dialog.hpp"
+#include "XG_ColorBox.hpp"
 
 // UIフォント。
 extern WCHAR xg_szUIFont[LF_FACESIZE];
@@ -21,26 +22,9 @@ extern WCHAR xg_szUIFont[LF_FACESIZE];
 class XG_SettingsDialog : public XG_Dialog
 {
 public:
-    inline static COLORREF s_rgbColorTable[] = {
-        RGB(0, 0, 0),
-        RGB(0x33, 0x33, 0x33),
-        RGB(0x66, 0x66, 0x66),
-        RGB(0x99, 0x99, 0x99),
-        RGB(0xCC, 0xCC, 0xCC),
-        RGB(0xFF, 0xFF, 0xFF),
-        RGB(0xFF, 0xFF, 0xCC),
-        RGB(0xFF, 0xCC, 0xFF),
-        RGB(0xFF, 0xCC, 0xCC),
-        RGB(0xCC, 0xFF, 0xFF),
-        RGB(0xCC, 0xFF, 0xCC),
-        RGB(0xCC, 0xCC, 0xFF),
-        RGB(0xCC, 0xCC, 0xCC),
-        RGB(0, 0, 0xCC),
-        RGB(0, 0xCC, 0),
-        RGB(0xCC, 0, 0),
-    };
-    // 一時的に保存する色のデータ。
-    inline static COLORREF s_rgbColors[3];
+    XG_ColorBox m_hwndWhite;
+    XG_ColorBox m_hwndBlack;
+    XG_ColorBox m_hwndMarked;
 
     LPCWSTR m_pszAutoFile = NULL;
     BOOL m_bImport = FALSE;
@@ -48,6 +32,9 @@ public:
 
     XG_SettingsDialog()
     {
+        m_hwndWhite.SetColor(xg_rgbWhiteCellColor);
+        m_hwndBlack.SetColor(xg_rgbBlackCellColor);
+        m_hwndMarked.SetColor(xg_rgbMarkedCellColor);
     }
 
     // [設定]ダイアログの初期化。
@@ -77,29 +64,8 @@ public:
     // [設定]ダイアログで[変更...]ボタンを押された。
     void OnChange(HWND hwnd, int i);
 
-    // [設定]ダイアログで[リセット]ボタンを押された。
-    void OnReset(HWND hwnd, int i)
-    {
-        switch (i) {
-        case 0:
-            ::SetDlgItemTextW(hwnd, edt1, L"");
-            break;
-
-        case 1:
-            ::SetDlgItemTextW(hwnd, edt2, L"");
-            break;
-
-        case 2:
-            ::SetDlgItemTextW(hwnd, edt3, L"");
-            break;
-        }
-    }
-
     // [設定]ダイアログのオーナードロー。
     void OnDrawItem(HWND hwnd, WPARAM wParam, LPARAM lParam);
-
-    // 色を指定する。
-    void OnSetColor(HWND hwnd, int nIndex);
 
     // ファイルがドロップされた？
     void OnDropFiles(HWND hwnd, HDROP hdrop);
