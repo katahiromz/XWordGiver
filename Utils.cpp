@@ -756,6 +756,14 @@ BOOL XgGetImagePath(LPWSTR pszPath, LPCWSTR pszFileName, BOOL bNoCheck)
             if (PathFileExistsW(pszPath) || bNoCheck)
                 return TRUE;
         }
+        if (xg_strLooksFile.size())
+        {
+            StringCchCopyW(pszPath, MAX_PATH, xg_strLooksFile.c_str());
+            PathRemoveFileSpecW(pszPath);
+            PathAppendW(pszPath, &pszFileName[7]);
+            if (PathFileExistsW(pszPath) || bNoCheck)
+                return TRUE;
+        }
     }
 
     WCHAR szBlockDir[MAX_PATH];
@@ -798,6 +806,21 @@ BOOL XgGetCanonicalImagePath(LPWSTR pszCanonical, LPCWSTR pszFileName)
     WCHAR szFileDir[MAX_PATH];
     if (XgGetFileDir(szFileDir))
     {
+        PathAddBackslashW(szFileDir);
+        std::wstring str = pszFileName;
+        str.resize(lstrlenW(szFileDir));
+        if (lstrcmpiW(str.c_str(), szFileDir) == 0)
+        {
+            StringCchCopyW(pszCanonical, MAX_PATH, L"$FILES");
+            PathAppendW(pszCanonical, PathFindFileNameW(pszFileName));
+            return TRUE;
+        }
+    }
+
+    if (xg_strLooksFile.size())
+    {
+        StringCchCopyW(szFileDir, _countof(szFileDir), xg_strLooksFile.c_str());
+        PathRemoveFileSpecW(szFileDir);
         PathAddBackslashW(szFileDir);
         std::wstring str = pszFileName;
         str.resize(lstrlenW(szFileDir));

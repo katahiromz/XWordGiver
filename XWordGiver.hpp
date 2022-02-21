@@ -1287,6 +1287,8 @@ extern bool xg_bAddThickFrame;
 
 // 直前に開いたクロスワードデータファイルのパスファイル名。
 extern std::wstring xg_strFileName;
+// 直前に開いたLOOKSファイルのパスファイル名。
+extern std::wstring xg_strLooksFile;
 
 // ヒント追加フラグ。
 extern bool xg_bHintsAdded;

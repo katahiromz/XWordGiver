@@ -11,6 +11,8 @@
 
 // 直前に開いたクロスワードデータファイルのパスファイル名。
 std::wstring xg_strFileName;
+// 直前に開いたLOOKSファイルのパスファイル名。
+std::wstring xg_strLooksFile;
 
 // 空のクロスワードの解を解く場合か？
 bool xg_bSolvingEmpty = false;

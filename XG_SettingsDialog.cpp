@@ -223,6 +223,8 @@ BOOL XG_SettingsDialog::DoImportLooks(HWND hwnd, LPCWSTR pszFileName)
     if (!PathFileExistsW(pszFileName))
         return FALSE;
 
+    xg_strLooksFile = pszFileName;
+
     WCHAR szText[1024], szText2[MAX_PATH];
 
     HWND hCmb1 = GetDlgItem(hwnd, cmb1);
@@ -328,7 +330,6 @@ BOOL XG_SettingsDialog::DoImportLooks(HWND hwnd, LPCWSTR pszFileName)
     }
 
     UpdateBlockPreview(hwnd);
-
     return TRUE;
 }
 

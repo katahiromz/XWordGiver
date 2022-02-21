@@ -2053,14 +2053,15 @@ BOOL XgDoConfirmSave(HWND hwnd)
 void XgReloadImage(HWND hwnd)
 {
     WCHAR szPath[MAX_PATH];
-    if (!XgGetImagePath(szPath, xg_strBlackCellImage.c_str()))
-    {
-        xg_strBlackCellImage.clear();
-        ::DeleteObject(xg_hbmImage);
-        ::DeleteEnhMetaFile(xg_hBlackCellEMF);
-        xg_hbmImage = NULL;
-        xg_hBlackCellEMF = NULL;
-    }
+    if (XgGetImagePath(szPath, xg_strBlackCellImage.c_str()))
+        return;
+    if (XgGetImagePath(szPath, xg_strLooksFile.c_str()))
+        return;
+    xg_strBlackCellImage.clear();
+    ::DeleteObject(xg_hbmImage);
+    ::DeleteEnhMetaFile(xg_hBlackCellEMF);
+    xg_hbmImage = NULL;
+    xg_hBlackCellEMF = NULL;
 }
 
 // 新規作成ダイアログ。
