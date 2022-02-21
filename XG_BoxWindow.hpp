@@ -66,9 +66,9 @@ public:
         OffsetRect(&rc, -rc.left, -rc.top);
 
         rcInner1 = rc;
-        InflateRect(&rcInner1, -CXY_GRIP / 2 + 1, -CXY_GRIP / 2 + 1);
+        InflateRect(&rcInner1, -CXY_GRIP / 2, -CXY_GRIP / 2);
         rcInner2 = rcInner1;
-        InflateRect(&rcInner2, -3, -3);
+        InflateRect(&rcInner2, -1, -1);
 
         HRGN hRgn = CreateRectRgn(0, 0, 0, 0);
 
@@ -649,7 +649,7 @@ public:
         }
     }
 
-    BOOL SetText(const std::wstring& str)
+    BOOL SetText(const std::wstring& str) override
     {
         m_strText = str;
         return TRUE;
