@@ -1491,7 +1491,7 @@ STRINGTABLE
     IDS_SAVEFILTER, "XWJ Files (*.xwj;*.json;*.jso)|*.xwj;*.json;*.jso|CRP Files (*.crp)|*.crp|XD Files (*.xd)|*.xd||"
     IDS_README, "ReadMe-ENG.txt"
     IDS_TOOLONGSPACE, "The space at Cell Position (%u, %u) does not match the length of the registered word."
-    IDS_TOOOLDPC, "Your computer is too old to be used with XWordGiver. So calculations may be slow."
+    IDS_TOOOLDPC, "Your computer is too old to be used with XWordGiver."
     IDS_CROSSSTORAGE, "Specify the folder to save to"
     IDS_STORAGEINVALID, "The destination is not a valid folder path."
     IDS_ENTERPOSITIVE, "Please enter a valid positive integer."

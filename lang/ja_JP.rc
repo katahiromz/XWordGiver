@@ -1494,7 +1494,7 @@ STRINGTABLE
     IDS_SAVEFILTER, "XWJ ファイル (*.xwj;*.json;*.jso)|*.xwj;*.json;*.jso|CRP ファイル (*.crp)|*.crp|XD ファイル (*.xd)|*.xd||"
     IDS_README, "ReadMe-JPN.txt"
     IDS_TOOLONGSPACE, "マス位置 (%u, %u) に登録されている単語と長さの一致しないスペースがあります。"
-    IDS_TOOOLDPC, "あなたのパソコンは、クロスワードギバーで使うには古すぎるので、計算が遅くなる可能性があります。"
+    IDS_TOOOLDPC, "あなたのパソコンは、クロスワードギバーで使うには古すぎます。"
     IDS_CROSSSTORAGE, "クロスワード データの保存先"
     IDS_STORAGEINVALID, "保存先が有効なフォルダパスではありません。"
     IDS_ENTERPOSITIVE, "正当な正の整数を入力して下さい。"
