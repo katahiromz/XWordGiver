@@ -463,6 +463,56 @@ public:
             m_strText.resize(XG_MAX_TEXT);
         return TRUE;
     }
+    virtual BOOL ReadLineEx(const std::wstring& line) {
+        if (line.find(L"Box:") != 0)
+            return FALSE;
+
+        std::wstring str;
+        str = line.substr(4);
+        xg_str_trim(str);
+        if (str.find(L"{{") != 0) {
+            return FALSE;
+        }
+
+        std::map<std::wstring, std::wstring> map;
+        while (str.size())
+        {
+            size_t index1 = str.find(L"{{");
+            size_t index2 = str.find(L"}}", index1);
+            if (index1 == str.npos || index2 == str.npos)
+                break;
+
+            auto contents = str.substr(index1 + 2, index2 - index1 - 2);
+            size_t index3 = contents.find(L':');
+            if (index3 == contents.npos)
+                break;
+
+            auto tag = contents.substr(0, index3);
+            auto value = contents.substr(index3 + 1);
+            xg_str_trim(tag);
+            xg_str_trim(value);
+            map[tag] = xg_str_unquote(value);
+
+            str = str.substr(index2 + 2);
+            xg_str_trim(str);
+        }
+
+        if (m_type != map[L"type"]) {
+            return FALSE;
+        }
+
+        std::wstring pos = map[L"pos"];
+        xg_str_trim(pos);
+        if (!SetPosText(pos)) {
+            return FALSE;
+        }
+
+        std::wstring text = map[L"text"];
+        xg_str_trim(text);
+        SetText(text);
+
+        return TRUE;
+    }
     virtual BOOL ReadLine(const std::wstring& line) {
         if (line.find(L"Box:") != 0)
             return FALSE;
@@ -470,6 +520,9 @@ public:
         std::wstring str;
         str = line.substr(4);
         xg_str_trim(str);
+        if (str.find(L"{{") == 0)
+            return ReadLineEx(line);
+
         size_t index1 = str.find(L":");
         size_t index2 = str.find(L":", index1 + 1);
         if (index1 == str.npos || index2 == str.npos)
@@ -491,14 +544,38 @@ public:
     }
     virtual BOOL WriteLine(FILE *fout)
     {
-        auto text = GetText();
-        if (m_type == L"pic") {
-            XgConvertBlockPath(text, TRUE);
-            SetText(text);
+        if (0)
+        {
+            auto text = GetText();
+            if (m_type == L"pic") {
+                XgConvertBlockPath(text, TRUE);
+                SetText(text);
+            }
+            fprintf(fout, 
+                "Box: %ls: %ls: %ls\n",
+                m_type.c_str(), GetPosText().c_str(), text.c_str());
+            return TRUE;
         }
-        fprintf(fout, 
-            "Box: %ls: %ls: %ls\n",
-            m_type.c_str(), GetPosText().c_str(), text.c_str());
+
+        std::map<std::wstring, std::wstring> map;
+        map[L"type"] = m_type;
+        if (m_type == L"pic") {
+            XgConvertBlockPath(m_strText, TRUE);
+        }
+        map[L"text"] = m_strText;
+        map[L"pos"] = GetPosText();
+
+        fprintf(fout, "Box: ");
+        bool first = true;
+        for (auto& pair : map)
+        {
+            if (!first)
+                fprintf(fout, ", ");
+            auto quoted = xg_str_quote(pair.second);
+            fprintf(fout, "{{%ls: %ls}}", pair.first.c_str(), quoted.c_str());
+            first = false;
+        }
+        fprintf(fout, "\n");
         return TRUE;
     }
     virtual BOOL ReadJson(const json& box)

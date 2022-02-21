@@ -477,10 +477,27 @@ BOOL XgLoadXdBox(const std::wstring& line)
 
     std::wstring str;
     str = line.substr(4);
-    size_t index0 = str.find(L":");
+    xg_str_trim(str);
 
-    std::wstring type = str.substr(0, index0);
-    xg_str_trim(type);
+    std::wstring type;
+    if (str.find(L"{{") != str.npos && str.find(L"}}") != str.npos)
+    {
+        size_t index0 = str.find(L"{{type:");
+        size_t index1 = str.find(L"}}", index0 + 7);
+        if (index0 != str.npos && index1 != str.npos)
+        {
+            type = str.substr(index0 + 7, index1 - index0 - 7);
+            xg_str_trim(type);
+            type = xg_str_unquote(type);
+        }
+    }
+    else
+    {
+        size_t index0 = str.find(L":");
+        type = str.substr(0, index0);
+        xg_str_trim(type);
+    }
+
 
     if (type == L"pic") {
         auto ptr = new XG_PictureBoxWindow();

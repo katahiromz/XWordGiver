@@ -49,6 +49,29 @@ std::wstring xg_str_escape(const std::wstring& str);
 // 文字列をアンエスケープする。
 std::wstring xg_str_unescape(const std::wstring& str);
 
+// 文字列を引用する。
+static inline std::wstring xg_str_quote(const std::wstring& str)
+{
+    std::wstring ret = L"\"";
+    ret += xg_str_escape(str);
+    ret += L"\"";
+    return ret;
+}
+// 文字列を逆引用する。
+static inline std::wstring xg_str_unquote(const std::wstring& str)
+{
+    std::wstring ret;
+    ret = str;
+    xg_str_trim(ret);
+    if (ret.empty())
+        return L"";
+    if (ret[0] == L'"')
+        ret = ret.substr(1);
+    if (ret.size() && ret[ret.size() - 1] == L'"')
+        ret = ret.substr(0, ret.size() - 1);
+    return xg_str_unescape(ret);
+}
+
 // 文字列を置換する。
 void __fastcall xg_str_replace_all(std::wstring &s, const std::wstring& from, const std::wstring& to);
 
