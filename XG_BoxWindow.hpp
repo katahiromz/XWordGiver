@@ -492,8 +492,7 @@ public:
         if (line.find(L"Box:") != 0)
             return FALSE;
 
-        std::wstring str;
-        str = line.substr(4);
+        auto str = line.substr(4);
         xg_str_trim(str);
         if (str.find(L"{{") != 0)
             return FALSE;
@@ -527,44 +526,37 @@ public:
         if (line.find(L"Box:") != 0)
             return FALSE;
 
-        std::wstring str;
-        str = line.substr(4);
+        auto str = line.substr(4);
         xg_str_trim(str);
         if (str.find(L"{{") == 0)
             return ReadLineEx(line);
 
-        size_t index1 = str.find(L":");
-        size_t index2 = str.find(L":", index1 + 1);
+        auto index1 = str.find(L":");
+        auto index2 = str.find(L":", index1 + 1);
         if (index1 == str.npos || index2 == str.npos)
             return FALSE;
 
-        std::wstring type = str.substr(0, index1);
+        auto type = str.substr(0, index1);
         xg_str_trim(type);
         assert(m_type == type);
 
-        std::wstring pos = str.substr(index1 + 1, index2 - index1 - 1);
+        auto pos = str.substr(index1 + 1, index2 - index1 - 1);
         xg_str_trim(pos);
         if (!SetPosText(pos))
             return FALSE;
 
-        std::wstring text = str.substr(index2 + 1);
+        auto text = str.substr(index2 + 1);
         xg_str_trim(text);
         return SetText(text);
     }
     BOOL WriteLine(FILE *fout)
     {
         map_t map;
-        map[L"type"] = m_type;
-        if (m_type == L"pic") {
-            XgConvertBlockPath(m_strText, TRUE);
-        }
-        map[L"text"] = m_strText;
-        map[L"pos"] = GetPosText();
+        WriteMap(map);
 
         fprintf(fout, "Box: ");
         bool first = true;
-        for (auto& pair : map)
-        {
+        for (auto& pair : map) {
             if (!first)
                 fprintf(fout, ", ");
             auto quoted = xg_str_quote(pair.second);
