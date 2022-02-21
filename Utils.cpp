@@ -456,10 +456,10 @@ BOOL XgMakePathW(LPCWSTR pszPath)
 //////////////////////////////////////////////////////////////////////////////
 
 // エンディアン変換。
-void XgSwab(LPBYTE pbFile, DWORD cbFile)
+void XgSwab(LPBYTE pbFile, size_t cbFile)
 {
     LPWORD pw = reinterpret_cast<LPWORD>(pbFile);
-    DWORD cw = (cbFile >> 1);
+    size_t cw = (cbFile >> 1);
     while (cw--) {
         WORD w = *pw;
         BYTE lo = LOBYTE(w);
@@ -815,11 +815,11 @@ BOOL XgReadTextFileAll(LPCWSTR file, std::wstring& strText)
 
     auto ptr = reinterpret_cast<LPSTR>(&strBinary[0]);
     size_t len = strBinary.size();
-    if (!MultiByteToWideChar(CP_ACP, MB_ERR_INVALID_CHARS, ptr, len, NULL, 0))
+    if (!MultiByteToWideChar(CP_ACP, MB_ERR_INVALID_CHARS, ptr, int(len), NULL, 0))
     {
         // UTF-8
         std::string str(ptr, len);
-        strText = XgUtf8ToUnicode(str);
+        strText = XgUtf8ToUnicode(str.c_str());
         return TRUE;
     }
     else

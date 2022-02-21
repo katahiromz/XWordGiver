@@ -147,8 +147,8 @@ mstr_join(const T_STR_CONTAINER& container,
 
 inline LPWSTR LoadStringDx(INT nID)
 {
-    static UINT s_index = 0;
-    const UINT cchBuffMax = 1024;
+    static size_t s_index = 0;
+    const size_t cchBuffMax = 1024;
     static WCHAR s_sz[4][cchBuffMax];
 
     WCHAR *pszBuff = s_sz[s_index];
@@ -649,7 +649,7 @@ void OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT codeNotify)
         EndDialog(hwnd, id);
         break;
     case psh1:
-        SetDlgItemTextW(hwnd, edt1, NULL);
+        SetDlgItemTextW(hwnd, edt1, L"");
         EnableWindow(GetDlgItem(hwnd, psh1), FALSE);
         break;
     }

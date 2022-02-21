@@ -5160,86 +5160,18 @@ bool __fastcall XgDoLoadCrpFile(HWND hwnd, LPCWSTR pszFile)
 // ファイルを開く。
 bool __fastcall XgDoLoadFile(HWND hwnd, LPCWSTR pszFile, XG_FILETYPE type)
 {
-    DWORD i, cbFile, cbRead;
-    bool bOK = false;
-
     if (type == XG_FILETYPE_CRP)
         return XgDoLoadCrpFile(hwnd, pszFile);
 
     // 二重マス単語を空にする。
     XgSetMarkedWord();
 
-    // ファイルを開く。
-    AutoCloseHandle hFile(::CreateFileW(pszFile, GENERIC_READ, FILE_SHARE_READ,
-                                        nullptr, OPEN_EXISTING, 0, nullptr));
-    if (hFile == INVALID_HANDLE_VALUE)
-        return false;
-
-    // ファイルサイズを取得。
-    cbFile = ::GetFileSize(hFile, nullptr);
-    if (cbFile == 0xFFFFFFFF)
-        return false;
-
     try {
-        // メモリを確保してファイルから読み込む。
-        std::vector<BYTE> pbFile(cbFile + 4, 0);
-        i = cbFile;
-        if (!::ReadFile(hFile, &pbFile[0], cbFile, &cbRead, nullptr))
+        std::wstring strText;
+        if (!XgReadTextFileAll(pszFile, strText))
             return false;
 
-        // BOMチェック。
-        if (pbFile[0] == 0xFF && pbFile[1] == 0xFE) {
-            // Unicode
-            std::wstring str = reinterpret_cast<LPWSTR>(&pbFile[2]);
-            bOK = XgSetString(hwnd, str, type);
-            i = 0;
-        } else if (pbFile[0] == 0xFE && pbFile[1] == 0xFF) {
-            // Unicode BigEndian
-            XgSwab(&pbFile[0], cbFile);
-            std::wstring str = reinterpret_cast<LPWSTR>(&pbFile[2]);
-            bOK = XgSetString(hwnd, str, type);
-            i = 0;
-        } else if (pbFile[0] == 0xEF && pbFile[1] == 0xBB && pbFile[2] == 0xBF) {
-            // UTF-8
-            std::wstring str = XgUtf8ToUnicode(reinterpret_cast<LPCSTR>(&pbFile[3]));
-            bOK = XgSetString(hwnd, str, type);
-            i = 0;
-        } else {
-            for (i = 0; i < cbFile; i++) {
-                // ナル文字があればUnicodeと判断する。
-                if (pbFile[i] == 0) {
-                    // エンディアンの判定。
-                    if (i & 1) {
-                        // Unicode
-                        std::wstring str = reinterpret_cast<LPWSTR>(&pbFile[0]);
-                        bOK = XgSetString(hwnd, str, type);
-                    } else {
-                        // Unicode BE
-                        XgSwab(&pbFile[0], cbFile);
-                        std::wstring str = reinterpret_cast<LPWSTR>(&pbFile[0]);
-                        bOK = XgSetString(hwnd, str, type);
-                    }
-                    break;
-                }
-            }
-        }
-
-        if (i == cbFile) {
-            if (MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS,
-                                    reinterpret_cast<LPCSTR>(&pbFile[0]),
-                                    static_cast<int>(cbFile), nullptr, 0))
-            {
-                // UTF-8
-                std::wstring str = XgUtf8ToUnicode(reinterpret_cast<LPCSTR>(&pbFile[0]));
-                bOK = XgSetString(hwnd, str, type);
-            } else {
-                // ANSI
-                std::wstring str = XgAnsiToUnicode(reinterpret_cast<LPCSTR>(&pbFile[0]));
-                bOK = XgSetString(hwnd, str, type);
-            }
-        }
-
-        if (bOK) {
+        if (XgSetString(hwnd, strText, type)) {
             // ファイルパスをセットする。
             WCHAR szFileName[MAX_PATH];
             ::GetFullPathNameW(pszFile, MAX_PATH, szFileName, NULL);

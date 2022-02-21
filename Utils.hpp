@@ -215,9 +215,11 @@ BOOL XgReadTextFileAll(LPCWSTR file, std::wstring& strText);
 // ファイルを読み込む。
 BOOL XgWriteFileAll(LPCWSTR file, const std::string& strBinary);
 BOOL XgWriteImageFileAll(LPCWSTR file, const std::string& strBinary);
-
+// フォルダの位置を取得する。
 BOOL XgGetFileDir(LPWSTR pszPath, LPCWSTR pszFile = NULL);
 BOOL XgGetBlockDir(LPWSTR pszPath);
+// エンディアン変換。
+void XgSwab(LPBYTE pbFile, size_t cbFile);
 
 static inline BOOL ComboBox_RealGetText(HWND hwndCombo, LPWSTR pszText, INT cchText)
 {
