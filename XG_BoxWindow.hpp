@@ -463,6 +463,27 @@ public:
             m_strText.resize(XG_MAX_TEXT);
         return TRUE;
     }
+    BOOL ReadMap(const std::map<std::wstring, std::wstring>& map) {
+        auto type_it = map.find(L"type");
+        auto pos_it = map.find(L"pos");
+        auto text_it = map.find(L"text");
+        if (type_it == map.end() || pos_it == map.end() || text_it == map.end())
+            return FALSE;
+
+        if (m_type != type_it->second)
+            return FALSE;
+
+        auto pos = pos_it->second;
+        xg_str_trim(pos);
+        if (!SetPosText(pos))
+            return FALSE;
+
+        auto text = text_it->second;
+        xg_str_trim(text);
+        SetText(text);
+
+        return TRUE;
+    }
     virtual BOOL ReadLineEx(const std::wstring& line) {
         if (line.find(L"Box:") != 0)
             return FALSE;
@@ -497,21 +518,7 @@ public:
             xg_str_trim(str);
         }
 
-        if (m_type != map[L"type"]) {
-            return FALSE;
-        }
-
-        std::wstring pos = map[L"pos"];
-        xg_str_trim(pos);
-        if (!SetPosText(pos)) {
-            return FALSE;
-        }
-
-        std::wstring text = map[L"text"];
-        xg_str_trim(text);
-        SetText(text);
-
-        return TRUE;
+        return ReadMap(map);
     }
     virtual BOOL ReadLine(const std::wstring& line) {
         if (line.find(L"Box:") != 0)
