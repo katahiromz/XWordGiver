@@ -172,8 +172,8 @@ LANGUAGE LANG_JAPANESE, SUBLANG_DEFAULT
         MENUITEM "黒斜三連禁(&E)", ID_RULE_DONTTHREEDIAGONALS
         MENUITEM "黒斜四連禁(&F)", ID_RULE_DONTFOURDIAGONALS
         MENUITEM "黒マス点対称(&I)", ID_RULE_POINTSYMMETRY
-        MENUITEM "黒マス線対称(タテ)(&L)", ID_RULE_LINESYMMETRYV
-        MENUITEM "黒マス線対称(ヨコ)(&O)", ID_RULE_LINESYMMETRYH
+        MENUITEM "黒マス左右対称(&L)", ID_RULE_LINESYMMETRYV
+        MENUITEM "黒マス上下対称(&O)", ID_RULE_LINESYMMETRYH
         MENUITEM SEPARATOR
         MENUITEM "ルール プリセット(&P)...\tCtrl+R", ID_RULEPRESET
         MENUITEM SEPARATOR
@@ -1578,14 +1578,14 @@ STRINGTABLE
     IDS_NORMAL_DICT, "JPN-Kana-Modesty"
     IDS_DIGITS, "数字"
     IDS_MAIN_LANGUAGE, "Japanese"
-    IDS_RULE_LINESYMMETRYV, "黒マス線対称（タテ）"
-    IDS_RULE_LINESYMMETRYH, "黒マス線対称（ヨコ）"
+    IDS_RULE_LINESYMMETRYV, "黒マス上下対称"
+    IDS_RULE_LINESYMMETRYH, "黒マス左右対称"
     IDS_CANTSOLVELINESYMMETRY, "ルール「黒マス線対称」では黒マス追加ありの解を求めることはできません。"
-    IDS_NOTLINESYMMETRYV, "黒マスの配置が線対称ではありません。ルール「黒マス線対称（タテ）」に反します。"
-    IDS_NOTLINESYMMETRYH, "黒マスの配置が線対称ではありません。ルール「黒マス線対称（ヨコ）」に反します。"
+    IDS_NOTLINESYMMETRYV, "黒マスの配置が線対称ではありません。ルール「黒マス上下対称」に反します。"
+    IDS_NOTLINESYMMETRYH, "黒マスの配置が線対称ではありません。ルール「黒マス左右対称」に反します。"
     IDS_SHALLIMIRROR, "指定されたルールに従って黒マスパターンを対称にしますか？"
-    IDS_EVENROWLINESYMV, "偶数行数でタテ線対称で連黒禁は不可です。ルールを再確認して下さい。"
-    IDS_EVENCOLLINESYMH, "偶数列数でヨコ線対称で連黒禁は不可です。ルールを再確認して下さい。"
+    IDS_EVENROWLINESYMV, "偶数行数かつ上下対称で連黒禁は不可です。ルールを再確認して下さい。"
+    IDS_EVENCOLLINESYMH, "偶数列数かつ左右対称で連黒禁は不可です。ルールを再確認して下さい。"
     IDS_DBLFRAME_LETTERS_1, "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
     IDS_DBLFRAME_LETTERS_2, "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
     IDS_DBLFRAME_LETTERS_3, "ΑΒΓΔΕΖΗΘΙΚΛΜΝΞΟΠΡΣΤΥΦΧΨΩαβγδεζηθικλμνξοπρστυφχψω"

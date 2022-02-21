@@ -172,8 +172,8 @@ LANGUAGE LANG_ENGLISH, SUBLANG_DEFAULT
         MENUITEM "Policy: Prohibit diagonal 3 blocks", ID_RULE_DONTTHREEDIAGONALS
         MENUITEM "Policy: Prohibit diagonal 4 blocks", ID_RULE_DONTFOURDIAGONALS
         MENUITEM "Policy: Point symmetry of blocks", ID_RULE_POINTSYMMETRY
-        MENUITEM "Policy: &Line symmetry (Vertical) of blocks", ID_RULE_LINESYMMETRYV
-        MENUITEM "Policy: Line symmetry (H&orizontal) of blocks", ID_RULE_LINESYMMETRYH
+        MENUITEM "Policy: Vertica&l symmetry of blocks", ID_RULE_LINESYMMETRYV
+        MENUITEM "Policy: H&orizontal symmetry of blocks", ID_RULE_LINESYMMETRYH
         MENUITEM SEPARATOR
         MENUITEM "Policy &Preset...\tCtrl+R", ID_RULEPRESET
         MENUITEM SEPARATOR
@@ -1575,11 +1575,11 @@ STRINGTABLE
     IDS_NORMAL_DICT, "ENG-Freedom"
     IDS_DIGITS, "Digits"
     IDS_MAIN_LANGUAGE, "English"
-    IDS_RULE_LINESYMMETRYV, "Line symmetry (vertical) of blocks"
-    IDS_RULE_LINESYMMETRYH, "Line symmetry (horizontal) of blocks"
+    IDS_RULE_LINESYMMETRYV, "Vertical symmetry of blocks"
+    IDS_RULE_LINESYMMETRYH, "Horizontal symmetry of blocks"
     IDS_CANTSOLVELINESYMMETRY, "The policy ""Line symmetry of blocks"" doesn't allow you to find a solution with adding blocks."
-    IDS_NOTLINESYMMETRYV, "The placement of the blocks is not line-symmetrical. This violates the policy ""Line symmetry (vertical) of blocks""."
-    IDS_NOTLINESYMMETRYH, "The placement of the blocks is not line-symmetrical. This violates the policy ""Line symmetry (horizontal) of blocks""."
+    IDS_NOTLINESYMMETRYV, "The placement of the blocks is not line-symmetrical. This violates the policy ""Vertical symmetry of blocks""."
+    IDS_NOTLINESYMMETRYH, "The placement of the blocks is not line-symmetrical. This violates the policy ""Horizontal symmetry of blocks""."
     IDS_SHALLIMIRROR, "Shall I make the block pattern symmetrical according to the specified policy?"
     IDS_EVENROWLINESYMV, "Forcing symmetrical even rows and banning adjacent blocks is unreasonable. Please reconfirm the policy."
     IDS_EVENCOLLINESYMH, "Forcing symmetrical even columns and banning adjacent blocks is unreasonable. Please reconfirm the policy."

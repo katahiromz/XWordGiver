@@ -30,12 +30,12 @@ This policy prohibits placing blocks diagonally in four consecutive rows.
 
 ## Policy: Point symmetry of blocks [Cost: -45%]
 
-This policy enforces that blocks are placed point-symmetrically.
+This policy enforces that blocks are placed in point symmetry.
 
-## Policy: Line symmetry (vertical) of blocks [Cost: +10%]
+## Policy: Vertical symmetry of blocks [Cost: +10%]
 
-This policy enforces that blocks are placed vertical-line-symmetrically.
+This policy enforces that blocks are placed in vertical symmetry.
 
-## Policy: Line symmetry (horizontal) of blocks [Cost: +10%]
+## Policy: Horizontal symmetry of blocks [Cost: +10%]
 
-This policy enforces that blocks are placed horizontal-line-symmetrically.
+This policy enforces that blocks are placed in horizontal symmetry.
