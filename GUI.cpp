@@ -471,11 +471,11 @@ BOOL XgDoSaveBoxJson(json& j)
 // ボックスXDを読み込む。
 BOOL XgLoadXdBox(const std::wstring& line)
 {
-    if (line.find(L"Box: ") != 0)
+    if (line.find(L"Box:") != 0)
         return FALSE;
 
     std::wstring str;
-    str = line.substr(5);
+    str = line.substr(4);
     size_t index0 = str.find(L":");
 
     std::wstring type = str.substr(0, index0);

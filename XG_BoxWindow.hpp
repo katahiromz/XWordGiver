@@ -450,32 +450,41 @@ public:
         return TRUE;
     }
     virtual BOOL ReadLine(const std::wstring& line) {
-        if (line.find(L"Box: ") != 0)
+        if (line.find(L"Box:") != 0)
             return FALSE;
 
         std::wstring str;
-        str = line.substr(5);
-        size_t index0 = str.find(L":");
+        str = line.substr(4);
+        xg_str_trim(str);
+        size_t index1 = str.find(L":");
+        size_t index2 = str.find(L":", index1 + 1);
+        if (index1 == str.npos || index2 == str.npos)
+            return FALSE;
 
-        std::wstring type = str.substr(0, index0);
+        std::wstring type = str.substr(0, index1);
         xg_str_trim(type);
         assert(m_type == type);
 
-        std::wstring pos = str.substr(index0 + 2);
+        std::wstring pos = str.substr(index1 + 1, index2 - index1 - 1);
+        xg_str_trim(pos);
         if (!SetPosText(pos))
             return FALSE;
 
-        size_t index1 = str.find(L":");
-        std::wstring text = str.substr(index1 + 2);
+        std::wstring text = str.substr(index2 + 1);
         xg_str_trim(text);
         SetText(text);
         return TRUE;
     }
-    virtual BOOL WriteLine(FILE *fout) const
+    virtual BOOL WriteLine(FILE *fout)
     {
+        auto text = GetText();
+        if (m_type == L"pic") {
+            XgConvertBlockPath(text, TRUE);
+            SetText(text);
+        }
         fprintf(fout, 
             "Box: %ls: %ls: %ls\n",
-            m_type.c_str(), GetPosText().c_str(), m_strText.c_str());
+            m_type.c_str(), GetPosText().c_str(), text.c_str());
         return TRUE;
     }
     virtual BOOL ReadJson(const json& box)
@@ -568,6 +577,7 @@ public:
         WCHAR szPath[MAX_PATH];
         XgGetImagePath(szPath, str.c_str());
         if (XgLoadImage(szPath, m_hbm, m_hEMF)) {
+            XgGetCanonicalImagePath(szPath, str.c_str());
             m_strText = szPath;
             return TRUE;
         }
