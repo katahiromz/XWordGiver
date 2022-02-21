@@ -27,7 +27,7 @@ public:
         WCHAR szText[MAX_PATH] = L"";
         GetWindowText(hEdt1, szText, _countof(szText));
         m_strText = szText;
-
+        xg_str_trim_right(m_strText);
         return TRUE;
     }
 

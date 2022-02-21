@@ -4,9 +4,9 @@
 #include "XG_TextBoxDialog.hpp"
 #include "XG_PictureBoxDialog.hpp"
 
-#define XGWM_REDRAW (WM_USER + 101)
-
-#define CXY_GRIP 5
+#define XGWM_REDRAW (WM_USER + 101) // 再描画メッセージ。
+#define XG_MAX_TEXT 400 // テキストボックスに入るテキストの最大長。
+#define CXY_GRIP 5 // グリップのサイズ。
 #define X0 rc.left
 #define X1 ((rc.left + rc.right - CXY_GRIP) / 2)
 #define X2 (rc.right - CXY_GRIP)
@@ -459,6 +459,8 @@ public:
     }
     virtual BOOL SetText(const std::wstring& str) {
         m_strText = str;
+        if (m_strText.size() > XG_MAX_TEXT)
+            m_strText.resize(XG_MAX_TEXT);
         return TRUE;
     }
     virtual BOOL ReadLine(const std::wstring& line) {
@@ -659,12 +661,6 @@ public:
             DeleteObject(hFont);
             break;
         }
-    }
-
-    BOOL SetText(const std::wstring& str) override
-    {
-        m_strText = str;
-        return TRUE;
     }
 
     virtual BOOL Prop(HWND hwnd) override
