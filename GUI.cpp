@@ -6411,7 +6411,7 @@ bool __fastcall MainWnd_OnCreate(HWND hwnd, LPCREATESTRUCT /*lpCreateStruct*/)
         XgCreateInputPalette(hwnd);
 
     // パソコンが古い場合、警告を表示する。
-    if (s_dwNumberOfProcessors <= 1 && !s_bOldNotice) {
+    if (s_dwNumberOfProcessors <= 2 && !s_bOldNotice) {
         XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_TOOOLDPC), XgLoadStringDx2(IDS_APPNAME),
                           MB_ICONWARNING | MB_OK);
         s_bOldNotice = true;
