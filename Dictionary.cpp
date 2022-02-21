@@ -208,34 +208,6 @@ bool XgReadUnicodeFile(LPWSTR pszData, size_t cchData)
     return true;
 }
 
-// ANSI (Shift_JIS) のファイルの中身を読み込む。
-bool __fastcall XgReadAnsiFile(LPCSTR pszData, DWORD /*cchData*/)
-{
-    // Unicodeに変換できないときは失敗。
-    int cchWide = MultiByteToWideChar(SJIS_CODEPAGE, 0, pszData, -1, nullptr, 0);
-    if (cchWide == 0)
-        return false;
-
-    // Unicodeに変換して処理する。
-    std::wstring strWide(cchWide - 1, 0);
-    MultiByteToWideChar(SJIS_CODEPAGE, 0, pszData, -1, &strWide[0], cchWide);
-    return XgReadUnicodeFile(&strWide[0], cchWide - 1);
-}
-
-// UTF-8のファイルの中身を読み込む。
-bool __fastcall XgReadUtf8File(LPCSTR pszData, DWORD /*cchData*/)
-{
-    // Unicodeに変換できないときは失敗。
-    int cchWide = MultiByteToWideChar(CP_UTF8, 0, pszData, -1, nullptr, 0);
-    if (cchWide == 0)
-        return false;
-
-    // Unicodeに変換して処理する。
-    std::wstring strWide(cchWide - 1, 0);
-    MultiByteToWideChar(CP_UTF8, 0, pszData, -1, &strWide[0], cchWide);
-    return XgReadUnicodeFile(&strWide[0], cchWide - 1);
-}
-
 // 辞書ファイルを読み込む。
 bool __fastcall XgLoadDictFile(LPCWSTR pszFile)
 {
