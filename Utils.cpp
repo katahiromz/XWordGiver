@@ -672,7 +672,19 @@ BOOL XgGetBlockDir(LPWSTR pszPath)
     GetModuleFileNameW(NULL, pszPath, MAX_PATH);
     PathRemoveFileSpecW(pszPath);
     PathAppendW(pszPath, L"BLOCK");
-    return PathFileExistsW(pszPath);
+    if (PathFileExistsW(pszPath))
+        return TRUE;
+    GetModuleFileNameW(NULL, pszPath, MAX_PATH);
+    PathRemoveFileSpecW(pszPath);
+    PathAppendW(pszPath, L"..\\BLOCK");
+    if (PathFileExistsW(pszPath))
+        return TRUE;
+    GetModuleFileNameW(NULL, pszPath, MAX_PATH);
+    PathRemoveFileSpecW(pszPath);
+    PathAppendW(pszPath, L"..\\..\\BLOCK");
+    if (PathFileExistsW(pszPath))
+        return TRUE;
+    return FALSE;
 }
 
 BOOL XgReadFileAll(LPCWSTR file, std::string& strBinary)
