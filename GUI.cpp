@@ -4046,12 +4046,14 @@ LOGFONTW *XgGetUIFont(void)
     return &s_lf;
 }
 
-// 設定。
+// 見た目の設定。
 void MainWnd_OnSettings(HWND hwnd)
 {
     XgDestroyCandsWnd();
     XG_SettingsDialog dialog;
-    dialog.DoModal(hwnd);
+    if (dialog.DoModal(hwnd) == IDOK) {
+        XG_FILE_MODIFIED(TRUE);
+    }
 }
 
 // テーマが変更された。
