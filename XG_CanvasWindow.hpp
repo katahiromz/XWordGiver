@@ -239,21 +239,27 @@ public:
             FORWARD_WM_MOUSEWHEEL(xg_hHintsWnd, rc.left, rc.top,
                 zDelta, fwKeys, ::SendMessageW);
         } else {
-            if (::GetAsyncKeyState(VK_CONTROL) < 0) {
-                if (zDelta < 0)
-                    ::PostMessageW(hwnd, WM_COMMAND, ID_ZOOMOUT, 0);
-                else if (zDelta > 0)
-                    ::PostMessageW(hwnd, WM_COMMAND, ID_ZOOMIN, 0);
-            } else if (::GetAsyncKeyState(VK_SHIFT) < 0) {
-                if (zDelta < 0)
-                    ::PostMessageW(hwnd, WM_HSCROLL, MAKEWPARAM(SB_LINEDOWN, 0), 0);
-                else if (zDelta > 0)
-                    ::PostMessageW(hwnd, WM_HSCROLL, MAKEWPARAM(SB_LINEUP, 0), 0);
-            } else {
-                if (zDelta < 0)
-                    ::PostMessageW(hwnd, WM_VSCROLL, MAKEWPARAM(SB_LINEDOWN, 0), 0);
-                else if (zDelta > 0)
-                    ::PostMessageW(hwnd, WM_VSCROLL, MAKEWPARAM(SB_LINEUP, 0), 0);
+            UINT uLines = 3;
+            ::SystemParametersInfo(SPI_GETWHEELSCROLLLINES, 0, &uLines, 0);
+            if (uLines == 0)
+                uLines = 3;
+            for (UINT i = 0; i < uLines; ++i) {
+                if (::GetAsyncKeyState(VK_CONTROL) < 0) {
+                    if (zDelta < 0)
+                        ::SendMessageW(hwnd, WM_COMMAND, ID_ZOOMOUT, 0);
+                    else if (zDelta > 0)
+                        ::SendMessageW(hwnd, WM_COMMAND, ID_ZOOMIN, 0);
+                } else if (::GetAsyncKeyState(VK_SHIFT) < 0) {
+                    if (zDelta < 0)
+                        ::SendMessageW(hwnd, WM_HSCROLL, MAKEWPARAM(SB_LINEDOWN, 0), 0);
+                    else if (zDelta > 0)
+                        ::SendMessageW(hwnd, WM_HSCROLL, MAKEWPARAM(SB_LINEUP, 0), 0);
+                } else {
+                    if (zDelta < 0)
+                        ::SendMessageW(hwnd, WM_VSCROLL, MAKEWPARAM(SB_LINEDOWN, 0), 0);
+                    else if (zDelta > 0)
+                        ::SendMessageW(hwnd, WM_VSCROLL, MAKEWPARAM(SB_LINEUP, 0), 0);
+                }
             }
         }
     }
