@@ -358,9 +358,9 @@ void XgConvertBlockPath(std::wstring& str, BOOL bSave)
 void XgConvertBox(XG_BoxWindow *pbox, BOOL bSave)
 {
     if (auto pic = dynamic_cast<XG_PictureBoxWindow *>(pbox)) {
-        auto str = pic->m_strFile;
+        auto str = pic->m_strText;
         XgConvertBlockPath(str, bSave);
-        pic->SetFile(str);
+        pic->SetText(str);
     }
 }
 
@@ -380,7 +380,7 @@ void XgGetImageMap(std::map<std::wstring, std::string>& mapping)
     for (auto& box : xg_boxes) {
         if (box->m_type == L"pic") {
             if (auto pic = dynamic_cast<XG_PictureBoxWindow*>(&*box)) {
-                auto& strFile = pic->m_strFile;
+                auto& strFile = pic->m_strText;
                 if (XgReadImageFileAll(strFile.c_str(), strBinary)) {
                     XgGetCanonicalImagePath(szPath, strFile.c_str());
                     mapping[szPath] = strBinary;
@@ -442,10 +442,7 @@ BOOL XgDoLoadBoxJson(const json& boxes)
             auto& box = boxes[i];
             if (box["type"] == "pic") {
                 auto ptr = new XG_PictureBoxWindow();
-                auto data0 = XgUtf8ToUnicode(box["data0"]);
-                auto data1 = XgUtf8ToUnicode(box["data1"]);
-                ptr->SetData(0, data0);
-                ptr->SetData(1, data1);
+                ptr->ReadJson(box);
                 if (ptr->CreateDx(xg_canvasWnd)) {
                     xg_boxes.emplace_back(ptr);
                     continue;
@@ -454,8 +451,7 @@ BOOL XgDoLoadBoxJson(const json& boxes)
                 }
             } else if (box["type"] == "text") {
                 auto ptr = new XG_TextBoxWindow();
-                ptr->SetData(0, XgUtf8ToUnicode(box["data0"]));
-                ptr->SetData(1, XgUtf8ToUnicode(box["data1"]));
+                ptr->ReadJson(box);
                 if (ptr->CreateDx(xg_canvasWnd)) {
                     xg_boxes.emplace_back(ptr);
                     continue;
@@ -480,15 +476,7 @@ BOOL XgDoSaveBoxJson(json& j)
     {
         for (size_t i = 0; i < xg_boxes.size(); ++i) {
             auto& box = *xg_boxes[i];
-            std::wstring type, data0, data1;
-            type = box.m_type;
-            box.GetData(0, data0);
-            box.GetData(1, data1);
-            json info;
-            info["type"] = XgUnicodeToUtf8(type);
-            info["data0"] = XgUnicodeToUtf8(data0);
-            info["data1"] = XgUnicodeToUtf8(data1);
-            j["boxes"].push_back(info);
+            box.WriteJson(j);
         }
     }
     catch(...)
@@ -499,7 +487,7 @@ BOOL XgDoSaveBoxJson(json& j)
     return TRUE;
 }
 
-// ボックスJSONを読み込む。
+// ボックスXDを読み込む。
 BOOL XgLoadXdBox(const std::wstring& line)
 {
     if (line.find(L"Box: ") != 0)
@@ -512,18 +500,9 @@ BOOL XgLoadXdBox(const std::wstring& line)
     std::wstring type = str.substr(0, index0);
     xg_str_trim(type);
 
-    INT i1, j1, i2, j2;
-    str = str.substr(index0 + 2);
-    if (swscanf(str.c_str(), L"(%d, %d) - (%d, %d)", &j1, &i1, &j2, &i2) != 4)
-        return FALSE;
-
-    size_t index1 = str.find(L":");
-    std::wstring text = str.substr(index1 + 2);
-    xg_str_trim(text);
-
     if (type == L"pic") {
-        auto ptr = new XG_PictureBoxWindow(i1, j1, i2, j2);
-        ptr->SetData(1, text);
+        auto ptr = new XG_PictureBoxWindow();
+        ptr->ReadLine(line);
         if (ptr->CreateDx(xg_canvasWnd)) {
             xg_boxes.emplace_back(ptr);
             return TRUE;
@@ -531,8 +510,8 @@ BOOL XgLoadXdBox(const std::wstring& line)
             delete ptr;
         }
     } else if (type == L"text") {
-        auto ptr = new XG_TextBoxWindow(i1, j1, i2, j2);
-        ptr->SetData(1, text);
+        auto ptr = new XG_TextBoxWindow();
+        ptr->ReadLine(line);
         if (ptr->CreateDx(xg_canvasWnd)) {
             xg_boxes.emplace_back(ptr);
             return TRUE;
@@ -548,15 +527,7 @@ BOOL XgLoadXdBox(const std::wstring& line)
 BOOL XgWriteXdBoxes(FILE *fout)
 {
     for (size_t i = 0; i < xg_boxes.size(); ++i) {
-        auto& box = *xg_boxes[i];
-        std::wstring type, data0, data1;
-        type = box.m_type;
-        box.GetData(0, data0);
-        box.GetData(1, data1);
-        fprintf(fout, "Box: %s: %s: %s\n",
-            XgUnicodeToUtf8(type).c_str(),
-            XgUnicodeToUtf8(data0).c_str(),
-            XgUnicodeToUtf8(data1).c_str());
+        xg_boxes[i]->WriteLine(fout);
     }
     return TRUE;
 }
@@ -1944,6 +1915,12 @@ BOOL XgOnSave(HWND hwnd, LPCWSTR pszFile)
         return FALSE;
     }
 
+    // 画像があれば*_filesフォルダを作成する。
+    WCHAR szPath[MAX_PATH];
+    XgGetFileDir(szPath, pszFile);
+    if (mapping.size())
+        CreateDirectoryW(szPath, NULL);
+
     try
     {
         XgSaveImageMap(pszFile, mapping);
@@ -1951,10 +1928,18 @@ BOOL XgOnSave(HWND hwnd, LPCWSTR pszFile)
         assert(0);
     }
 
+    // パスを変換する。
+    xg_strFileName = pszFile;
+    XgConvertPaths(TRUE);
+
+    // もう一度保存する。
+    if (!XgDoSave(hwnd, pszFile)) {
+        // 保存に失敗。
+        XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_CANTSAVE2), nullptr, MB_ICONERROR);
+        return FALSE;
+    }
+
     // LOOKSファイルも自動でエクスポートする。
-    WCHAR szPath[MAX_PATH];
-    XgGetFileDir(szPath, pszFile);
-    CreateDirectoryW(szPath, NULL);
     PathAppendW(szPath, PathFindFileNameW(pszFile));
     PathRemoveExtensionW(szPath);
     PathAddExtensionW(szPath, L".looks");
@@ -2170,7 +2155,7 @@ BOOL XgOnLoad(HWND hwnd, LPCWSTR pszFile, LPPOINT ppt)
         }
 
         auto ptr = new XG_PictureBoxWindow(i1, j1, i2, j2);
-        ptr->SetFile(szFile);
+        ptr->SetText(szFile);
         if (ptr->CreateDx(xg_canvasWnd)) {
             ptr->Bound();
             xg_boxes.emplace_back(ptr);
@@ -4816,7 +4801,7 @@ BOOL XgAddBox(HWND hwnd, UINT id)
     case ID_ADDPICTUREBOX:
         if (dialog2.DoModal(hwnd) == IDOK) {
             auto ptr = new XG_PictureBoxWindow(i1, j1, i2, j2);
-            ptr->SetFile(dialog2.m_strFile);
+            ptr->SetText(dialog2.m_strFile);
             if (ptr->CreateDx(xg_canvasWnd)) {
                 xg_boxes.emplace_back(ptr);
                 return TRUE;
