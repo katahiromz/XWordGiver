@@ -127,7 +127,7 @@
     - Monitoring file changes and confirming file save.
     - Loading/saving related files in *_files folder when loading/saving the main file.
     - Renamed some rules.
-- 2022-XX-YY日 ver.4.9.0
+- 2022-XX-YY ver.4.9.0
     - Fixed the copying position of boxes.
 
 # 開発履歴 (Japanese)
@@ -570,4 +570,5 @@
     - メインファイルの読み込み・保存時に*_filesフォルダに関連ファイルを読み込み・保存。
     - 「ヨコ線対称」を「左右対称」に。「タテ線対称」を「上下対称」に。
 - 2022年XX月YY日 ver.4.9.0
+    - 「ルール」メニューの「上下対称」と「左右対称」が入れ替わっていたのを修正（日本語のみ）。
     - ボックスのコピー位置を修正。
