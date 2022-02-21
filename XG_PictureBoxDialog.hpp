@@ -6,9 +6,59 @@ class XG_PictureBoxDialog : public XG_Dialog
 {
 public:
     std::wstring m_strFile;
+    HBITMAP m_hbm = NULL;
+    HENHMETAFILE m_hEMF = NULL;
 
     XG_PictureBoxDialog()
     {
+    }
+
+    ~XG_PictureBoxDialog()
+    {
+        DoDelete();
+    }
+
+    void DoDelete()
+    {
+        DeleteObject(m_hbm);
+        m_hbm = NULL;
+        DeleteEnhMetaFile(m_hEMF);
+        m_hEMF = NULL;
+    }
+
+    void RefreshImage(HWND hwnd)
+    {
+        HWND hCmb1 = GetDlgItem(hwnd, cmb1);
+        WCHAR szText[MAX_PATH];
+        ComboBox_RealGetText(hCmb1, szText, _countof(szText));
+
+        HWND hIco1 = GetDlgItem(hwnd, ico1);
+        HWND hIco2 = GetDlgItem(hwnd, ico2);
+
+        SendMessageW(hIco1, STM_SETIMAGE, IMAGE_ENHMETAFILE, (LPARAM)NULL);
+        SendMessageW(hIco2, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)NULL);
+
+        DoDelete();
+
+        SetWindowPos(hIco1, NULL, 0, 0, 32, 32, SWP_NOMOVE | SWP_NOZORDER | SWP_HIDEWINDOW);
+        SetWindowPos(hIco2, NULL, 0, 0, 32, 32, SWP_NOMOVE | SWP_NOZORDER | SWP_HIDEWINDOW);
+
+        if (XgLoadImage(szText, m_hbm, m_hEMF))
+        {
+            if (m_hbm) {
+                HBITMAP hbm2 = (HBITMAP)CopyImage(m_hbm, IMAGE_BITMAP, 32, 32, LR_CREATEDIBSECTION);
+                DeleteObject(m_hbm);
+                m_hbm = hbm2;
+                ShowWindow(hIco2, SW_SHOWNOACTIVATE);
+                SendMessageW(hIco2, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)m_hbm);
+                return;
+            }
+            if (m_hEMF) {
+                ShowWindow(hIco1, SW_SHOWNOACTIVATE);
+                SendMessageW(hIco1, STM_SETIMAGE, IMAGE_ENHMETAFILE, (LPARAM)m_hEMF);
+                return;
+            }
+        }
     }
 
     BOOL OnInitDialog(HWND hwnd, HWND hwndFocus, LPARAM lParam)
@@ -25,6 +75,7 @@ public:
         }
 
         ComboBox_RealSetText(hCmb1, m_strFile.c_str());
+        RefreshImage(hwnd);
 
         DragAcceptFiles(hwnd, TRUE);
         return TRUE;
@@ -58,6 +109,12 @@ public:
         case psh1:
             OnPsh1(hwnd);
             break;
+        case cmb1:
+            if (codeNotify == CBN_SELCHANGE || codeNotify == CBN_EDITCHANGE)
+            {
+                RefreshImage(hwnd);
+            }
+            break;
         }
     }
 
@@ -70,6 +127,7 @@ public:
 
         HWND hCmb1 = GetDlgItem(hwnd, cmb1);
         ComboBox_RealSetText(hCmb1, m_strFile.c_str());
+        RefreshImage(hwnd);
 
         DragFinish(hdrop);
     }
@@ -89,6 +147,7 @@ public:
 
             HWND hCmb1 = GetDlgItem(hwnd, cmb1);
             ComboBox_RealSetText(hCmb1, m_strFile.c_str());
+            RefreshImage(hwnd);
         }
     }
 
