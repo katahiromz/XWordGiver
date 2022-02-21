@@ -6857,6 +6857,44 @@ void XgDoTests(void)
     str = L"  ABC  ";
     xg_str_trim_right(str);
     assert(str == L"  ABC");
+
+    // xg_str_escape
+    assert(xg_str_escape(L"\a") == L"\\a");
+    assert(xg_str_escape(L"\b") == L"\\b");
+    assert(xg_str_escape(L"\t") == L"\\t");
+    assert(xg_str_escape(L"\n") == L"\\n");
+    assert(xg_str_escape(L"\r") == L"\\r");
+    assert(xg_str_escape(L"\f") == L"\\f");
+    assert(xg_str_escape(L"\v") == L"\\v");
+    assert(xg_str_escape(L"\\") == L"\\\\");
+    assert(xg_str_escape(L"\aabc") == L"\\aabc");
+    assert(xg_str_escape(L"\babc") == L"\\babc");
+    assert(xg_str_escape(L"\tabc") == L"\\tabc");
+    assert(xg_str_escape(L"\nabc") == L"\\nabc");
+    assert(xg_str_escape(L"\rabc") == L"\\rabc");
+    assert(xg_str_escape(L"\fabc") == L"\\fabc");
+    assert(xg_str_escape(L"\vabc") == L"\\vabc");
+    assert(xg_str_escape(L"\\abc") == L"\\\\abc");
+
+    // xg_str_unescape
+    assert(xg_str_unescape(L"\\a") == L"\a");
+    assert(xg_str_unescape(L"\\b") == L"\b");
+    assert(xg_str_unescape(L"\\t") == L"\t");
+    assert(xg_str_unescape(L"\\n") == L"\n");
+    assert(xg_str_unescape(L"\\r") == L"\r");
+    assert(xg_str_unescape(L"\\f") == L"\f");
+    assert(xg_str_unescape(L"\\v") == L"\v");
+    assert(xg_str_unescape(L"\\\\") == L"\\");
+    assert(xg_str_unescape(L"\\aabc") == L"\aabc");
+    assert(xg_str_unescape(L"\\babc") == L"\babc");
+    assert(xg_str_unescape(L"\\tabc") == L"\tabc");
+    assert(xg_str_unescape(L"\\nabc") == L"\nabc");
+    assert(xg_str_unescape(L"\\rabc") == L"\rabc");
+    assert(xg_str_unescape(L"\\fabc") == L"\fabc");
+    assert(xg_str_unescape(L"\\vabc") == L"\vabc");
+    assert(xg_str_unescape(L"\\\\abc") == L"\\abc");
+    assert(xg_str_unescape(L"\\x11") == L"\021");
+    assert(xg_str_unescape(L"\\021") == L"\021");
 #endif
 }
 

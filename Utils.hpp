@@ -44,6 +44,11 @@ static inline void __fastcall xg_str_trim_right(std::wstring& str)
         str.clear();
 }
 
+// 文字列をエスケープする。
+std::wstring xg_str_escape(const std::wstring& str);
+// 文字列をアンエスケープする。
+std::wstring xg_str_unescape(const std::wstring& str);
+
 // 文字列を置換する。
 void __fastcall xg_str_replace_all(std::wstring &s, const std::wstring& from, const std::wstring& to);
 

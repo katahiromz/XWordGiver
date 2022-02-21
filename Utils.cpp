@@ -1094,3 +1094,92 @@ BOOL XgLoadImage(LPCWSTR pszFileName, HBITMAP& hbm, HENHMETAFILE& hEMF)
 
     return hbm != NULL;
 }
+
+// 文字列をエスケープする。
+std::wstring xg_str_escape(const std::wstring& str)
+{
+    std::wstring ret;
+    ret.reserve(str.size());
+    for (auto ch : str)
+    {
+        switch (ch)
+        {
+        case L'\a': ret += L"\\a"; break;
+        case L'\b': ret += L"\\b"; break;
+        case L'\t': ret += L"\\t"; break;
+        case L'\n': ret += L"\\n"; break;
+        case L'\r': ret += L"\\r"; break;
+        case L'\f': ret += L"\\f"; break;
+        case L'\v': ret += L"\\v"; break;
+        case L'\\': ret += L"\\\\"; break;
+        default:
+            if (ch < 0x20 || ch == 0x7F) {
+                WCHAR sz[8];
+                StringCchPrintf(sz, 8, L"\\%03o", ch);
+                ret += sz;
+            } else {
+                ret += ch;
+            }
+        }
+    }
+    return ret;
+}
+
+// 文字列をアンエスケープする。
+std::wstring xg_str_unescape(const std::wstring& str)
+{
+    std::wstring ret;
+    ret.reserve(str.size());
+    for (size_t i = 0; i < str.size(); ++i)
+    {
+        auto ch = str[i];
+        if (ch != L'\\') {
+            ret += ch;
+            continue;
+        }
+        ch = str[++i];
+        switch (ch)
+        {
+        case L'a': ret += L"\a"; break;
+        case L'b': ret += L"\b"; break;
+        case L't': ret += L"\t"; break;
+        case L'n': ret += L"\n"; break;
+        case L'r': ret += L"\r"; break;
+        case L'f': ret += L"\f"; break;
+        case L'v': ret += L"\v"; break;
+        case L'\\': ret += L"\\"; break;
+        default:
+            if (L'0' <= ch && ch <= L'7') { // octal
+                int k, octal = 0;
+                for (k = 0; k < 3; ++k) {
+                    ch = str[i + k];
+                    if (!(L'0' <= ch && ch <= L'7'))
+                        break;
+                    octal *= 8;
+                    octal += ch - L'0';
+                }
+                ret += wchar_t(octal);
+                i += k;
+            }
+            if (ch == L'x' || ch == L'X') {
+                ++i;
+                int k, hexi = 0;
+                for (k = 0; k < 4; ++k) {
+                    ch = str[i + k];
+                    if (!iswxdigit(ch))
+                        break;
+                    hexi *= 16;
+                    if (iswdigit(ch))
+                        hexi += ch - L'0';
+                    else if (iswlower(ch))
+                        hexi += ch - L'a' + 10;
+                    else if (iswupper(ch))
+                        hexi += ch - L'A' + 10;
+                }
+                ret += wchar_t(hexi);
+                i += k;
+            }
+        }
+    }
+    return ret;
+}
