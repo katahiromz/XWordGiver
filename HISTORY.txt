@@ -1,25 +1,25 @@
 ﻿# History of XWordGiver (English)
 
-- 2021.08.22 Ver.4.7.4
+- 2021-08-22 Ver.4.7.4
     - Made character feed default.
     - Restarted English support.
-- 2021.08.23 Ver.4.7.5
+- 2021-08-23 Ver.4.7.5
     - Improved English support.
     - Excluded Japanese filenames.
     - Improved English Input Palette.
     - Simplified LICENSE.
     - Don't feed when input is not a character.
     - Simplify installers.
-- 2021.08.25 Ver.4.7.6
+- 2021-08-25 Ver.4.7.6
     - Accepted digits input.
     - Able to hide numbering.
     - Able to hide caret.
     - Added menu item "Delete solution and &unlock edit" to "Solution" menu.
     - Added more block patterns.
-- 2021.08.26 Ver.4.7.7
+- 2021-08-26 Ver.4.7.7
     - Strengthened English dictionary.
     - Changed "Delete solution and unlock board" to "Delete clues and unlock board".
-- 2021.10.27 Ver.4.7.8
+- 2021-10-27 Ver.4.7.8
     - Dramatically improved the quality of the English dictionary.
     - Improved English dialogs.
     - Added more block patterns.
@@ -27,13 +27,13 @@
     - Improved around policies.
     - Fixed dictionary loading.
     - Renamed the EXE file.
-- 2021.10.29 Ver.4.7.9
+- 2021-10-29 Ver.4.7.9
     - Added "Skeleton View" menu item.
     - Improved the English dictionary by using the web service Grammarly.
     - Improved drawing the letter of the double-frame cell.
     - Fixed "Copy the double-frame word image".
     - Relaxed the size limit of crosswords to 30x30 (for high end).
-- 2021.11.03 Ver.4.8.0
+- 2021-11-03 Ver.4.8.0
     - Supported "Line symmetry of blocks".
     - Enabled the "double-frame letters" settings.
     - Changed "Copy the double-frame word image" to "Copy the double-frame word".
@@ -45,7 +45,7 @@
     - When the policy is symmetrical, "Finding solution (without adding blocks)" forces the board symmetrical.
     - Fixed around Max Word Length.
     - Fixed typo of skeleton.
-- 2021.11.11 Ver.4.8.1
+- 2021-11-11 Ver.4.8.1
     - Added "Generate from a word list" feature.
     - Relaxed the limit on the size of the board.
     - Able to toggle whether the double-frame letters are visible or not.
@@ -59,13 +59,13 @@
     - If there are no empty cells, "Find a solution" is not restricted.
     - Fixed a bug when the number of dictionaries is large.
     - The zoom is now aligned with the window when a file is opened.
-- 2021.11.18 Ver.4.8.2
+- 2021-11-18 Ver.4.8.2
     - Fixed the bugs around "Generate from a word list".
     - Dragging with the middle mouse button is now possible.
     - Fine-tuned the max word length when linear symmetry.
     - Fixed and improved the block patterns.
     - Properly handled the parse error when loading "data.json".
-- 2021.11.25 Ver.4.8.3
+- 2021-11-25 Ver.4.8.3
     - Supported French input (Ctrl+Shift+^ A for Â etc.).
     - Added a French dictionary.
     - Supported Greek and Turkish input.
@@ -74,7 +74,7 @@
     - Command line "--convert input.xwj output.xd" makes file conversion automated.
     - Changed to use half-width characters when drawing alphabet and digits.
     - Fixed the accelerators.
-- 2021.12.01 Ver.4.8.4
+- 2021-12-01 Ver.4.8.4
     - Introduced "Any Input" mode. Made it default.
     - Improved "Generate from words".
     - "View" → "Zoom" → "Fit the whole" (Ctrl+F) added.
@@ -89,17 +89,17 @@
     - Saving the current file type.
     - Made saving XD Files default for non-Japanese users.
     - Improved reading/writing XD files.
-- 2021.12.13 Ver.4.8.5
+- 2021-12-13 Ver.4.8.5
     - Human-friendly display of dictionary names.
     - Improved the display of the unspecified string of IME.
     - Improved drawing of highlight and double-frame cells.
     - Improved READMEs.
     - Simplified the display of cell position for error messages.
     - Changed the specification of the dictionary data.
-- 2022.01.17 Ver.4.8.6
+- 2022-01-17 Ver.4.8.6
     - Improved READMEs more.
     - Fixed a problem where Ctrl+/ could not switch the input direction.
-- 2022.02.17 ver.4.8.7
+- 2022-02-17 ver.4.8.7
     - Added tags to English dictionaries.
     - Sorted and uniqued the candidates.
     - Fixed drawing of double-frame cell letters on Skeleton View.
@@ -109,7 +109,7 @@
     - Fixed the color of small labels.
     - Able to edit "header and remarks" by Ctrl+Enter.
     - The supported formats for block image have been expanded.
-- 2022.02.18 ver.4.8.8
+- 2022-02-18 ver.4.8.8
     - The dictionary "BasicDict-ENG-Modesty.tsv" is added.
     - Added "Lowercase" and "Hiragana" to Appearance.
     - Able to drop the LOOKS file.
@@ -121,7 +121,7 @@
     - Added "policy preset" feature.
     - Improved initial position of Clues window.
     - Zooming on the entire board after generating the puzzle.
-- 2022.02.21 ver.4.8.9
+- 2022-02-21 ver.4.8.9
     - Made the skeleton view transparent when copying and printing.
     - Boxes (text boxes, image boxes) can be added.
     - Monitoring file changes and confirming file save.
