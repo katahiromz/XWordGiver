@@ -334,6 +334,7 @@ VOID XgSetCellPosition(LONG& x, LONG& y, INT& i, INT& j, BOOL bEnd)
     x += xg_nMargin;
 }
 
+// BLOCKパスを変換する。
 void XgConvertBlockPath(std::wstring& str, BOOL bSave)
 {
     if (str.empty())
@@ -352,15 +353,6 @@ void XgConvertBlockPath(std::wstring& str, BOOL bSave)
         path += str.substr(7);
         str = path;
         return;
-    }
-}
-
-void XgConvertBox(XG_BoxWindow *pbox, BOOL bSave)
-{
-    if (auto pic = dynamic_cast<XG_PictureBoxWindow *>(pbox)) {
-        auto str = pic->m_strText;
-        XgConvertBlockPath(str, bSave);
-        pic->SetText(str);
     }
 }
 
@@ -390,17 +382,6 @@ void XgGetImageMap(std::map<std::wstring, std::string>& mapping)
     }
 }
 
-void XgConvertPaths(BOOL bSave = FALSE)
-{
-    XgConvertBlockPath(xg_strBlackCellImage, bSave);
-    for (size_t i = 0; i < xg_boxes.size(); ++i) {
-        auto& box = xg_boxes[i];
-        if (box->m_type == L"pic") {
-            XgConvertBox(&*box, bSave);
-        }
-    }
-}
-
 BOOL XgSaveImageMap(LPCWSTR pszFile, std::map<std::wstring, std::string>& mapping)
 {
     BOOL ret = FALSE;
@@ -419,7 +400,7 @@ BOOL XgSaveImageMap(LPCWSTR pszFile, std::map<std::wstring, std::string>& mappin
         ret = TRUE;
     }
     if (ret) {
-        XgConvertPaths();
+        XgConvertBlockPath(xg_strBlackCellImage, TRUE);
     }
     return ret;
 }
@@ -1905,9 +1886,6 @@ BOOL XgOnSave(HWND hwnd, LPCWSTR pszFile)
         assert(0);
     }
 
-    // パスを変換する。
-    XgConvertPaths();
-
     // 保存する。
     if (!XgDoSave(hwnd, pszFile)) {
         // 保存に失敗。
@@ -1927,10 +1905,6 @@ BOOL XgOnSave(HWND hwnd, LPCWSTR pszFile)
     } catch (...) {
         assert(0);
     }
-
-    // パスを変換する。
-    xg_strFileName = pszFile;
-    XgConvertPaths(TRUE);
 
     // もう一度保存する。
     if (!XgDoSave(hwnd, pszFile)) {
@@ -2188,9 +2162,6 @@ BOOL XgOnLoad(HWND hwnd, LPCWSTR pszFile, LPPOINT ppt)
         XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_CANTLOAD), nullptr, MB_ICONERROR);
         return FALSE;
     }
-
-    // パスを変換する。
-    XgConvertPaths(FALSE);
 
     // LOOKSファイルも自動でインポートする。
     WCHAR szPath[MAX_PATH];

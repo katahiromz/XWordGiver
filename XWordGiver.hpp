@@ -1456,6 +1456,8 @@ BOOL XgDoConfirmSave(HWND hwnd);
 BOOL XgOnLoad(HWND hwnd, LPCWSTR pszFile, LPPOINT ppt = NULL);
 // イメージマッピングを取得する。
 void XgGetImageMap(std::map<std::wstring, std::string>& mapping);
+// BLOCKパスを変換する。
+void XgConvertBlockPath(std::wstring& str, BOOL bSave);
 
 //////////////////////////////////////////////////////////////////////////////
 

@@ -488,12 +488,17 @@ public:
         SetText(text);
         return TRUE;
     }
-    virtual BOOL WriteJson(json& j) const
+    virtual BOOL WriteJson(json& j)
     {
         json info;
         info["type"] = XgUnicodeToUtf8(m_type);
         info["pos"] = XgUnicodeToUtf8(GetPosText());
-        info["text"] = XgUnicodeToUtf8(GetText());
+        auto text = GetText();
+        if (m_type == L"pic") {
+            XgConvertBlockPath(text, TRUE);
+            SetText(text);
+        }
+        info["text"] = XgUnicodeToUtf8(text);
         j["boxes"].push_back(info);
         return TRUE;
     }
