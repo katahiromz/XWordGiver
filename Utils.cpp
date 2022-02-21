@@ -733,6 +733,104 @@ BOOL XgWriteImageFileAll(LPCWSTR file, const std::string& strBinary)
     return FALSE;
 }
 
+// テキストファイルを読み込む。
+BOOL XgReadTextFileAll(LPCWSTR file, std::wstring& strText)
+{
+    strText.clear();
+
+    std::string strBinary;
+    if (!XgReadFileAll(file, strBinary))
+        return FALSE;
+
+    if (strBinary.empty())
+        return TRUE;
+
+    if (strBinary.size() >= 3)
+    {
+        if (memcmp(&strBinary[0], "\xEF\xBB\xBF", 3) == 0)
+        {
+            // UTF-8 BOM
+            strText = XgUtf8ToUnicode(&strBinary[3]);
+            return TRUE;
+        }
+        if (memcmp(&strBinary[0], "\xFF\xFE", 2) == 0)
+        {
+            // UTF-16 LE
+            auto ptr = reinterpret_cast<LPWSTR>(&strBinary[2]);
+            size_t len = (strBinary.size() - 1) / sizeof(WCHAR);
+            strText.assign(ptr, len);
+            return TRUE;
+        }
+        if (memcmp(&strBinary[0], "\xFE\xFF", 2) == 0)
+        {
+            // UTF-16 BE
+            auto ptr = reinterpret_cast<LPWSTR>(&strBinary[2]);
+            size_t len = (strBinary.size() - 1) / sizeof(WCHAR);
+            strText.assign(ptr, len);
+            XgSwab(reinterpret_cast<LPBYTE>(&strText[0]), len * sizeof(WCHAR));
+            return TRUE;
+        }
+    }
+
+    size_t index = 0;
+    BOOL bUTF16LE = FALSE, bUTF16BE = FALSE;
+    for (auto ch : strBinary)
+    {
+        if (ch == 0)
+        {
+            if (index & 1)
+            {
+                bUTF16LE = TRUE;
+                if (bUTF16BE)
+                    break;
+            }
+            else
+            {
+                bUTF16BE = TRUE;
+                if (bUTF16LE)
+                    break;
+            }
+        }
+
+        ++index;
+    }
+
+    if (bUTF16BE && bUTF16LE)
+    {
+        // binary
+        strText = XgUtf8ToUnicode(strBinary);
+        return TRUE;
+    }
+
+    if (bUTF16BE || bUTF16LE)
+    {
+        // UTF-16 BE/LE
+        auto ptr = reinterpret_cast<LPWSTR>(&strBinary[0]);
+        size_t len = strBinary.size() / sizeof(WCHAR);
+        strText.assign(ptr, len);
+        if (bUTF16BE)
+            XgSwab(reinterpret_cast<LPBYTE>(&strText[0]), len * sizeof(WCHAR));
+        return TRUE;
+    }
+
+    auto ptr = reinterpret_cast<LPSTR>(&strBinary[0]);
+    size_t len = strBinary.size();
+    if (!MultiByteToWideChar(CP_ACP, MB_ERR_INVALID_CHARS, ptr, len, NULL, 0))
+    {
+        // UTF-8
+        std::string str(ptr, len);
+        strText = XgUtf8ToUnicode(str);
+        return TRUE;
+    }
+    else
+    {
+        // ANSI
+        std::string str(ptr, len);
+        strText = XgAnsiToUnicode(str.c_str());
+        return TRUE;
+    }
+}
+
 // 画像ファイルか？
 BOOL XgIsImageFile(LPCWSTR pszFileName)
 {
@@ -746,6 +844,13 @@ BOOL XgIsImageFile(LPCWSTR pszFileName)
         return TRUE;
     }
     return FALSE;
+}
+
+// テキストファイルか？
+BOOL XgIsTextFile(LPCWSTR pszFileName)
+{
+    LPCWSTR pchDotExt = PathFindExtensionW(pszFileName);
+    return lstrcmpiW(pchDotExt, L".txt") == 0;
 }
 
 // 画像のパスを取得する。

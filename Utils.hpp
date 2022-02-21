@@ -204,11 +204,14 @@ BOOL XgGetCanonicalImagePath(LPWSTR pszCanonical, LPCWSTR pszFileName);
 BOOL XgLoadImage(LPCWSTR pszFileName, HBITMAP& hbm, HENHMETAFILE& hEMF);
 // 画像ファイルか？
 BOOL XgIsImageFile(LPCWSTR pszFileName);
+// テキストファイルか？
+BOOL XgIsTextFile(LPCWSTR pszFileName);
 // 画像ファイルの一覧を取得。
 BOOL XgGetImageList(std::vector<std::wstring>& paths);
 // ファイルを読み込む。
 BOOL XgReadFileAll(LPCWSTR file, std::string& strBinary);
 BOOL XgReadImageFileAll(LPCWSTR file, std::string& strBinary, BOOL bNoCheck = FALSE);
+BOOL XgReadTextFileAll(LPCWSTR file, std::wstring& strText);
 // ファイルを読み込む。
 BOOL XgWriteFileAll(LPCWSTR file, const std::string& strBinary);
 BOOL XgWriteImageFileAll(LPCWSTR file, const std::string& strBinary);

@@ -2127,7 +2127,9 @@ BOOL XgOnLoad(HWND hwnd, LPCWSTR pszFile, LPPOINT ppt)
     }
 
     // 画像ファイルだったら画像ボックスを作成する。
-    if (XgIsImageFile(szFile))
+    BOOL bImage = XgIsImageFile(szFile);
+    BOOL bText = XgIsTextFile(szFile);
+    if (bImage || bText)
     {
         if (ppt)
             ScreenToClient(xg_canvasWnd, ppt);
@@ -2154,15 +2156,34 @@ BOOL XgOnLoad(HWND hwnd, LPCWSTR pszFile, LPPOINT ppt)
             j1 = j2 - 2;
         }
 
-        auto ptr = new XG_PictureBoxWindow(i1, j1, i2, j2);
-        ptr->SetText(szFile);
-        if (ptr->CreateDx(xg_canvasWnd)) {
-            ptr->Bound();
-            xg_boxes.emplace_back(ptr);
-            XG_FILE_MODIFIED(TRUE);
-            return TRUE;
-        } else {
-            delete ptr;
+        if (bText) {
+            // テキストボックス。
+            std::wstring strText;
+            if (XgReadTextFileAll(szFile, strText)) {
+                xg_str_trim_right(strText);
+                auto ptr = new XG_TextBoxWindow(i1, j1, i2, j2);
+                ptr->SetText(strText);
+                if (ptr->CreateDx(xg_canvasWnd)) {
+                    ptr->Bound();
+                    xg_boxes.emplace_back(ptr);
+                    XG_FILE_MODIFIED(TRUE);
+                    return TRUE;
+                } else {
+                    delete ptr;
+                }
+            }
+        } else if (bImage) {
+            // 画像ボックス。
+            auto ptr = new XG_PictureBoxWindow(i1, j1, i2, j2);
+            ptr->SetText(szFile);
+            if (ptr->CreateDx(xg_canvasWnd)) {
+                ptr->Bound();
+                xg_boxes.emplace_back(ptr);
+                XG_FILE_MODIFIED(TRUE);
+                return TRUE;
+            } else {
+                delete ptr;
+            }
         }
 
         return FALSE;
