@@ -126,6 +126,7 @@
     - Boxes (text boxes, image boxes) can be added.
     - Monitoring file changes and confirming file save.
     - Loading/saving related files in *_files folder when loading/saving the main file.
+    - Renamed some rules.
 
 # 開発履歴 (Japanese)
 
