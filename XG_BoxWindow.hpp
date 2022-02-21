@@ -463,7 +463,10 @@ public:
             m_strText.resize(XG_MAX_TEXT);
         return TRUE;
     }
-    BOOL ReadMap(const std::map<std::wstring, std::wstring>& map) {
+
+    typedef std::map<std::wstring, std::wstring> map_t;
+
+    virtual BOOL ReadMap(const map_t& map) {
         auto type_it = map.find(L"type");
         auto pos_it = map.find(L"pos");
         auto text_it = map.find(L"text");
@@ -474,28 +477,28 @@ public:
             return FALSE;
 
         auto pos = pos_it->second;
-        xg_str_trim(pos);
-        if (!SetPosText(pos))
-            return FALSE;
-
         auto text = text_it->second;
+        xg_str_trim(pos);
         xg_str_trim(text);
-        SetText(text);
-
+        return SetPosText(pos) && SetText(text);
+    }
+    virtual BOOL WriteMap(map_t& map) {
+        map[L"type"] = m_type;
+        map[L"pos"] = GetPosText();
+        map[L"text"] = GetText();
         return TRUE;
     }
-    virtual BOOL ReadLineEx(const std::wstring& line) {
+    BOOL ReadLineEx(const std::wstring& line) {
         if (line.find(L"Box:") != 0)
             return FALSE;
 
         std::wstring str;
         str = line.substr(4);
         xg_str_trim(str);
-        if (str.find(L"{{") != 0) {
+        if (str.find(L"{{") != 0)
             return FALSE;
-        }
 
-        std::map<std::wstring, std::wstring> map;
+        map_t map;
         while (str.size())
         {
             size_t index1 = str.find(L"{{");
@@ -520,7 +523,7 @@ public:
 
         return ReadMap(map);
     }
-    virtual BOOL ReadLine(const std::wstring& line) {
+    BOOL ReadLine(const std::wstring& line) {
         if (line.find(L"Box:") != 0)
             return FALSE;
 
@@ -546,25 +549,11 @@ public:
 
         std::wstring text = str.substr(index2 + 1);
         xg_str_trim(text);
-        SetText(text);
-        return TRUE;
+        return SetText(text);
     }
-    virtual BOOL WriteLine(FILE *fout)
+    BOOL WriteLine(FILE *fout)
     {
-        if (0)
-        {
-            auto text = GetText();
-            if (m_type == L"pic") {
-                XgConvertBlockPath(text, TRUE);
-                SetText(text);
-            }
-            fprintf(fout, 
-                "Box: %ls: %ls: %ls\n",
-                m_type.c_str(), GetPosText().c_str(), text.c_str());
-            return TRUE;
-        }
-
-        std::map<std::wstring, std::wstring> map;
+        map_t map;
         map[L"type"] = m_type;
         if (m_type == L"pic") {
             XgConvertBlockPath(m_strText, TRUE);
@@ -585,27 +574,23 @@ public:
         fprintf(fout, "\n");
         return TRUE;
     }
-    virtual BOOL ReadJson(const json& box)
+    BOOL ReadJson(const json& box)
     {
-        if (box["type"] != XgUnicodeToUtf8(m_type))
-            return FALSE;
-        std::wstring pos = XgUtf8ToUnicode(box["pos"]);
-        SetPosText(pos);
-        std::wstring text = XgUtf8ToUnicode(box["text"]);
-        SetText(text);
-        return TRUE;
-    }
-    virtual BOOL WriteJson(json& j)
-    {
-        json info;
-        info["type"] = XgUnicodeToUtf8(m_type);
-        info["pos"] = XgUnicodeToUtf8(GetPosText());
-        auto text = GetText();
-        if (m_type == L"pic") {
-            XgConvertBlockPath(text, TRUE);
-            SetText(text);
+        map_t map;
+        for (auto& pair : box.items()) {
+            map[XgUtf8ToUnicode(pair.key())] = XgUtf8ToUnicode(pair.value());
         }
-        info["text"] = XgUnicodeToUtf8(text);
+        return ReadMap(map);
+    }
+    BOOL WriteJson(json& j)
+    {
+        map_t map;
+        if (!WriteMap(map))
+            return FALSE;
+        json info;
+        for (auto& pair : map) {
+            info[XgUnicodeToUtf8(pair.first)] = XgUnicodeToUtf8(pair.second);
+        }
         j["boxes"].push_back(info);
         return TRUE;
     }
