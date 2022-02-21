@@ -293,7 +293,7 @@ BOOL __fastcall XgSetVScrollInfo(LPSCROLLINFO psi, BOOL bRedraw)
 }
 
 // マス位置を取得する。
-VOID XgGetCellPosition(RECT& rc, INT i1, INT j1, INT i2, INT j2)
+VOID XgGetCellPosition(RECT& rc, INT i1, INT j1, INT i2, INT j2, BOOL bScroll)
 {
     INT nCellSize = xg_nCellSize * xg_nZoomRate / 100;
 
@@ -303,7 +303,8 @@ VOID XgGetCellPosition(RECT& rc, INT i1, INT j1, INT i2, INT j2)
         static_cast<int>(xg_nMargin + j2 * nCellSize), 
         static_cast<int>(xg_nMargin + i2 * nCellSize));
 
-    ::OffsetRect(&rc, -XgGetHScrollPos(), -XgGetVScrollPos());
+    if (bScroll)
+        ::OffsetRect(&rc, -XgGetHScrollPos(), -XgGetVScrollPos());
 }
 
 // マス位置を設定する。
@@ -525,7 +526,7 @@ void XgDrawBoxes(XG_Board& xw, HDC hdc, LPSIZE psiz)
         INT i2 = box.m_i2;
         INT j2 = box.m_j2;
         RECT rc;
-        XgGetCellPosition(rc, i1, j1, i2, j2);
+        XgGetCellPosition(rc, i1, j1, i2, j2, FALSE);
         box.OnDraw(box, hdc, rc);
     }
     xg_nZoomRate = nZoomRate;

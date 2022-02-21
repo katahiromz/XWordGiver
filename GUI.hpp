@@ -120,7 +120,7 @@ void __fastcall XgEnsureCaretVisible(HWND hwnd);
 INT __fastcall XgGetPreferredMaxLength(void);
 
 // マス位置を取得する。
-VOID XgGetCellPosition(RECT& rc, INT i1, INT j1, INT i2, INT j2);
+VOID XgGetCellPosition(RECT& rc, INT i1, INT j1, INT i2, INT j2, BOOL bScroll);
 // マス位置を設定する。
 VOID XgSetCellPosition(LONG& x, LONG& y, INT& i, INT& j, BOOL bEnd);
 

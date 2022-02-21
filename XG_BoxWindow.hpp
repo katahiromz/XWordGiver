@@ -185,7 +185,7 @@ public:
     {
         MRect rc;
 
-        XgGetCellPosition(rc, m_i1, m_j1, m_i2, m_j2);
+        XgGetCellPosition(rc, m_i1, m_j1, m_i2, m_j2, TRUE);
 
         RECT rcWnd;
         GetWindowRect(m_hWnd, &rcWnd);
