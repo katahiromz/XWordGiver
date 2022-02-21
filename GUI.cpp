@@ -2040,10 +2040,10 @@ BOOL XgDoConfirmSave(HWND hwnd)
     switch (id) {
     case IDYES:
         return XgOnSaveAs(hwnd);
-    case IDCANCEL:
-        return FALSE;
     case IDNO:
         return TRUE;
+    case IDCANCEL:
+        return FALSE;
     default:
         return TRUE;
     }
@@ -5023,6 +5023,8 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT /*codeNo
             if (XgOnNew(hwnd)) {
                 flag = true;
                 sa2->Get();
+            } else {
+                break;
             }
             if (flag) {
                 xg_ubUndoBuffer.Commit(UC_SETALL, sa1, sa2);
