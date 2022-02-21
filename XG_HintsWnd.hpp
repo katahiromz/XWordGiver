@@ -86,6 +86,8 @@ public:
                 }
             }
         }
+        if (updated)
+            XG_FILE_MODIFIED(TRUE);
         return updated;
     }
 
@@ -97,7 +99,6 @@ public:
     {
         return TEXT("XG_HintsWnd");
     }
-
 
     virtual void ModifyWndClassDx(WNDCLASSEX& wcx)
     {
