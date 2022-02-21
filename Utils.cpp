@@ -747,13 +747,13 @@ BOOL XgReadTextFileAll(LPCWSTR file, std::wstring& strText)
 
     if (strBinary.size() >= 3)
     {
-        if (memcmp(&strBinary[0], "\xEF\xBB\xBF", 3) == 0)
+        if (memcmp(strBinary.c_str(), "\xEF\xBB\xBF", 3) == 0)
         {
             // UTF-8 BOM
             strText = XgUtf8ToUnicode(&strBinary[3]);
             return TRUE;
         }
-        if (memcmp(&strBinary[0], "\xFF\xFE", 2) == 0)
+        if (memcmp(strBinary.c_str(), "\xFF\xFE", 2) == 0)
         {
             // UTF-16 LE
             auto ptr = reinterpret_cast<LPWSTR>(&strBinary[2]);
@@ -761,7 +761,7 @@ BOOL XgReadTextFileAll(LPCWSTR file, std::wstring& strText)
             strText.assign(ptr, len);
             return TRUE;
         }
-        if (memcmp(&strBinary[0], "\xFE\xFF", 2) == 0)
+        if (memcmp(strBinary.c_str(), "\xFE\xFF", 2) == 0)
         {
             // UTF-16 BE
             auto ptr = reinterpret_cast<LPWSTR>(&strBinary[2]);
@@ -793,6 +793,8 @@ BOOL XgReadTextFileAll(LPCWSTR file, std::wstring& strText)
         }
 
         ++index;
+        if (index >= 256)
+            break;
     }
 
     if (bUTF16BE && bUTF16LE)
@@ -805,7 +807,7 @@ BOOL XgReadTextFileAll(LPCWSTR file, std::wstring& strText)
     if (bUTF16BE || bUTF16LE)
     {
         // UTF-16 BE/LE
-        auto ptr = reinterpret_cast<LPWSTR>(&strBinary[0]);
+        auto ptr = reinterpret_cast<LPCWSTR>(strBinary.c_str());
         size_t len = strBinary.size() / sizeof(WCHAR);
         strText.assign(ptr, len);
         if (bUTF16BE)
@@ -813,7 +815,7 @@ BOOL XgReadTextFileAll(LPCWSTR file, std::wstring& strText)
         return TRUE;
     }
 
-    auto ptr = reinterpret_cast<LPSTR>(&strBinary[0]);
+    auto ptr = reinterpret_cast<LPCSTR>(strBinary.c_str());
     size_t len = strBinary.size();
     if (!MultiByteToWideChar(CP_ACP, MB_ERR_INVALID_CHARS, ptr, int(len), NULL, 0))
     {
