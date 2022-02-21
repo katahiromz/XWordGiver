@@ -130,6 +130,7 @@
 - 2022-XX-YY ver.4.9.0
     - Fixed the copying position of boxes.
     - Text files can be dropped as text boxes.
+    - Adjusting the zoom to the entire area when maximized and the display area is small.
 
 # 開発履歴 (Japanese)
 
@@ -574,3 +575,4 @@
     - 「ルール」メニューの「上下対称」と「左右対称」が入れ替わっていたのを修正（日本語のみ）。
     - ボックスのコピー位置を修正。
     - テキストファイルをテキストボックスとしてドロップ可能に。
+    - 最大化され、表示領域が小さいとき、ズームを全体に合わせる。

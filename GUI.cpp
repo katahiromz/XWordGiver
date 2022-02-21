@@ -3959,7 +3959,7 @@ void __fastcall XgUpdateStatusBar(HWND hwnd)
 }
 
 // サイズが変更された。
-void __fastcall MainWnd_OnSize(HWND hwnd, UINT /*state*/, int /*cx*/, int /*cy*/)
+void __fastcall MainWnd_OnSize(HWND hwnd, UINT state, int /*cx*/, int /*cy*/)
 {
     int x, y;
 
@@ -4023,6 +4023,20 @@ void __fastcall MainWnd_OnSize(HWND hwnd, UINT /*state*/, int /*cx*/, int /*cy*/
         hDwp = ::DeferWindowPos(hDwp, xg_canvasWnd, NULL,
             x, y, cx, cy, SWP_SHOWWINDOW | SWP_NOZORDER | SWP_NOACTIVATE | SWP_NOOWNERZORDER);
         ::EndDeferWindowPos(hDwp);
+    }
+
+    if (state == SIZE_MAXIMIZED) // 最大化されたか？
+    {
+        // 表示領域が小さいとき、ズームを全体に合わせる。
+        SIZE siz;
+        {
+            ForDisplay for_display;
+            XgGetXWordExtent(&siz);
+        }
+        MRect rcReal;
+        XgGetRealClientRect(hwnd, &rcReal);
+        if (siz.cx < rcReal.Width() && siz.cy < rcReal.Height())
+            XgFitZoom(hwnd);
     }
 
     // 再描画する。
