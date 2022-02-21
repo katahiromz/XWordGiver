@@ -485,7 +485,9 @@ public:
     virtual BOOL WriteMap(map_t& map) {
         map[L"type"] = m_type;
         map[L"pos"] = GetPosText();
-        map[L"text"] = GetText();
+        auto text = GetText();
+        XgConvertBlockPath(text, TRUE);
+        map[L"text"] = text;
         return TRUE;
     }
     BOOL ReadLineEx(const std::wstring& line) {
