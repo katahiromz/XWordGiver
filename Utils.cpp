@@ -815,20 +815,17 @@ BOOL XgReadTextFileAll(LPCWSTR file, std::wstring& strText)
         return TRUE;
     }
 
-    auto ptr = reinterpret_cast<LPCSTR>(strBinary.c_str());
-    size_t len = strBinary.size();
-    if (!MultiByteToWideChar(CP_ACP, MB_ERR_INVALID_CHARS, ptr, int(len), NULL, 0))
+    if (!MultiByteToWideChar(CP_ACP, MB_ERR_INVALID_CHARS,
+                             strBinary.c_str(), int(strBinary.size()), NULL, 0))
     {
         // UTF-8
-        std::string str(ptr, len);
-        strText = XgUtf8ToUnicode(str.c_str());
+        strText = XgUtf8ToUnicode(strBinary);
         return TRUE;
     }
     else
     {
         // ANSI
-        std::string str(ptr, len);
-        strText = XgAnsiToUnicode(str.c_str());
+        strText = XgAnsiToUnicode(strBinary);
         return TRUE;
     }
 }
