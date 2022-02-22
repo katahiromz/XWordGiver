@@ -1894,7 +1894,7 @@ void __fastcall XgOnAbout(HWND hwnd)
 }
 
 // 保存する。
-BOOL XgOnSave(HWND hwnd, LPCWSTR pszFile)
+bool __fastcall XgDoSave(HWND hwnd, LPCWSTR pszFile)
 {
     std::map<std::wstring, std::string> mapping;
     try
@@ -1905,10 +1905,10 @@ BOOL XgOnSave(HWND hwnd, LPCWSTR pszFile)
     }
 
     // 保存する。
-    if (!XgDoSave(hwnd, pszFile)) {
+    if (!XgDoSaveFile(hwnd, pszFile)) {
         // 保存に失敗。
         XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_CANTSAVE2), nullptr, MB_ICONERROR);
-        return FALSE;
+        return false;
     }
 
     // *_filesフォルダを作成する。
@@ -1961,7 +1961,7 @@ BOOL XgOnSave(HWND hwnd, LPCWSTR pszFile)
     // ファイル変更フラグ。
     XG_FILE_MODIFIED(FALSE);
 
-    return TRUE;
+    return true;
 }
 
 // 保存ダイアログ。
@@ -2027,7 +2027,7 @@ BOOL __fastcall XgOnSaveAs(HWND hwnd)
     // ユーザーにファイルの場所を問い合わせる。
     if (::GetSaveFileNameW(&ofn)) {
         // 保存する。
-        XgOnSave(hwnd, sz);
+        XgDoSave(hwnd, sz);
 
         // ツールバーのUIを更新する。
         XgUpdateToolBarUI(hwnd);
@@ -2035,6 +2035,17 @@ BOOL __fastcall XgOnSaveAs(HWND hwnd)
     }
 
     return FALSE;
+}
+
+// 保存。
+BOOL __fastcall XgOnSave(HWND hwnd)
+{
+    // ファイル名がセットされてなければ保存場所を聞く。
+    if (xg_strFileName.empty())
+        return XgOnSaveAs(hwnd);
+
+    // 上書き保存。
+    return XgDoSave(hwnd, xg_strFileName.c_str());
 }
 
 // 保存を確認し、必要なら保存する。
@@ -2049,7 +2060,7 @@ BOOL XgDoConfirmSave(HWND hwnd)
         MB_ICONINFORMATION | MB_YESNOCANCEL);
     switch (id) {
     case IDYES:
-        return XgOnSaveAs(hwnd);
+        return XgOnSave(hwnd);
     case IDNO:
         return TRUE;
     case IDCANCEL:
@@ -5196,6 +5207,10 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT /*codeNo
 
     case ID_OPEN:   // ファイルを開く。
         XgOnOpen(hwnd);
+        break;
+
+    case ID_SAVE: // ファイルを保存する。
+        XgOnSave(hwnd);
         break;
 
     case ID_SAVEAS: // ファイルを保存する。

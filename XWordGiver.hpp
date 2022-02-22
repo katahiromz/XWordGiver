@@ -1389,9 +1389,9 @@ bool __fastcall XgDoLoadFile(HWND hwnd, LPCWSTR pszFile, XG_FILETYPE type);
 bool __fastcall XgDoLoadCrpFile(HWND hwnd, LPCWSTR pszFile);
 
 // ファイルを保存する。
-bool __fastcall XgDoSave(HWND /*hwnd*/, LPCWSTR pszFile);
+bool __fastcall XgDoSaveFile(HWND hwnd, LPCWSTR pszFile);
 // ファイルを保存する。
-bool __fastcall XgDoSaveFile(HWND /*hwnd*/, LPCWSTR pszFile, XG_FILETYPE type);
+bool __fastcall XgDoSaveFileType(HWND hwnd, LPCWSTR pszFile, XG_FILETYPE type);
 
 // ヒント文字列を解析する。
 bool __fastcall XgParseHintsStr(const std::wstring& strHints);

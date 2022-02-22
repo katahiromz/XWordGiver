@@ -135,6 +135,7 @@
     - Improved mouse wheel handling.
     - Improved boxes.
 - 2022-XX-YY ver.4.9.1
+    - Added "Save Overwrite" for application standardization.
 
 # 開発履歴 (Japanese)
 
@@ -585,3 +586,4 @@
     - ボックスの改良。
 - 2022年XX月YY日 ver.4.9.1
     - 用語統一のため、「盤」を「盤面」に修正（日本語のみ）。
+    - ソフト標準化のため、「上書き保存」を追加。

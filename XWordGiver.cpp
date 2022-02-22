@@ -5716,7 +5716,7 @@ bool __fastcall XgDoSaveXdFile(LPCWSTR pszFile)
 }
 
 // ファイルを保存する。
-bool __fastcall XgDoSaveFile(HWND hwnd, LPCWSTR pszFile, XG_FILETYPE type)
+bool __fastcall XgDoSaveFileType(HWND hwnd, LPCWSTR pszFile, XG_FILETYPE type)
 {
     bool ret;
     switch (type)
@@ -5772,25 +5772,25 @@ bool __fastcall XgDoLoad(HWND hwnd, LPCWSTR pszFile)
     }
 }
 
-bool __fastcall XgDoSave(HWND hwnd, LPCWSTR pszFile)
+bool __fastcall XgDoSaveFile(HWND hwnd, LPCWSTR pszFile)
 {
     LPCWSTR pchDotExt = PathFindExtensionW(pszFile);
     if (lstrcmpiW(pchDotExt, L".xwj") == 0 ||
         lstrcmpiW(pchDotExt, L".json") == 0 ||
         lstrcmpiW(pchDotExt, L".jso") == 0)
     {
-        return XgDoSaveFile(hwnd, pszFile, XG_FILETYPE_XWJ);
+        return XgDoSaveFileType(hwnd, pszFile, XG_FILETYPE_XWJ);
     } else if (lstrcmpiW(pchDotExt, L".crp") == 0) {
-        return XgDoSaveFile(hwnd, pszFile, XG_FILETYPE_CRP);
+        return XgDoSaveFileType(hwnd, pszFile, XG_FILETYPE_CRP);
     } else if (lstrcmpiW(pchDotExt, L".xd") == 0) {
-        return XgDoSaveFile(hwnd, pszFile, XG_FILETYPE_XD);
+        return XgDoSaveFileType(hwnd, pszFile, XG_FILETYPE_XD);
     } else if (lstrcmpiW(pchDotExt, L".xwd") == 0) {
-        return XgDoSaveFile(hwnd, pszFile, XG_FILETYPE_XWD);
+        return XgDoSaveFileType(hwnd, pszFile, XG_FILETYPE_XWD);
     } else {
         WCHAR szPath[MAX_PATH];
         StringCchCopyW(szPath, _countof(szPath), pszFile);
         PathAddExtensionW(szPath, L".xwj");
-        return XgDoSaveFile(hwnd, szPath, XG_FILETYPE_XWJ);
+        return XgDoSaveFileType(hwnd, szPath, XG_FILETYPE_XWJ);
     }
 }
 

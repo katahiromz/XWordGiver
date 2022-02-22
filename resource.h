@@ -436,6 +436,7 @@
 #define ID_ADDTEXTBOX                       570
 #define ID_DELETEBOX                        571
 #define ID_BOXPROP                          572
+#define ID_SAVE                             573
 #define ID_TT_BASE                          10000
 
 #define ctl2                                1185

@@ -21,7 +21,8 @@ LANGUAGE LANG_ENGLISH, SUBLANG_DEFAULT
         MENUITEM "Generate from &words...\tCtrl+:", ID_GENERATEFROMWORDLIST
         MENUITEM SEPARATOR
         MENUITEM "&Open crossword...\tCtrl+O", ID_OPEN
-        MENUITEM "Save crossword &as...\tCtrl+S", ID_SAVEAS
+        MENUITEM "Save crossword\tCtrl+S", ID_SAVE
+        MENUITEM "Save crossword &as...\tCtrl+Shift+S", ID_SAVEAS
         MENUITEM SEPARATOR
         MENUITEM "Save crossword as &image...\tCtrl+I", ID_SAVEPROBASIMAGE
         MENUITEM "Save crossword answer &as image...\tCtrl+B", ID_SAVEANSASIMAGE
