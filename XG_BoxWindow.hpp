@@ -793,25 +793,35 @@ public:
         return FALSE;
     }
 
+    DWORD SwapRandB(DWORD value) const
+    {
+        BYTE r = GetRValue(value);
+        BYTE g = GetGValue(value);
+        BYTE b = GetBValue(value);
+        return RGB(b, g, r);
+    }
+
     virtual BOOL ReadMap(const map_t& map) override {
         auto color_it = map.find(L"color");
         if (color_it != map.end()) {
-            m_rgbText = wcstoul(color_it->second.c_str(), NULL, 16);
+            auto value = wcstoul(color_it->second.c_str(), NULL, 16);
+            m_rgbText = SwapRandB(value);
         }
         auto bgcolor_it = map.find(L"bgcolor");
         if (bgcolor_it != map.end()) {
-            m_rgbBg = wcstoul(bgcolor_it->second.c_str(), NULL, 16);
+            auto value = wcstoul(bgcolor_it->second.c_str(), NULL, 16);
+            m_rgbBg = SwapRandB(value);
         }
         return XG_BoxWindow::ReadMap(map);
     }
     virtual BOOL WriteMap(map_t& map) {
         WCHAR szText[64];
         if (m_rgbText != CLR_INVALID) {
-            StringCchPrintfW(szText, _countof(szText), L"%06X", m_rgbText);
+            StringCchPrintfW(szText, _countof(szText), L"%06X", SwapRandB(m_rgbText));
             map[L"color"] = szText;
         }
         if (m_rgbBg != CLR_INVALID) {
-            StringCchPrintfW(szText, _countof(szText), L"%06X", m_rgbBg);
+            StringCchPrintfW(szText, _countof(szText), L"%06X", SwapRandB(m_rgbBg));
             map[L"bgcolor"] = szText;
         }
         return XG_BoxWindow::WriteMap(map);
