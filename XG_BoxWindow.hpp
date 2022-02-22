@@ -293,6 +293,13 @@ public:
         if (PtInRect(&rcGrip, pt))
             return HTBOTTOMRIGHT;
 
+        RECT rcInner1 = rc;
+        InflateRect(&rcInner1, -CXY_GRIP / 2 + 1, -CXY_GRIP / 2 + 1);
+        RECT rcInner2 = rcInner1;
+        InflateRect(&rcInner2, -3, -3);
+        if (PtInRect(&rcInner1, pt) && !PtInRect(&rcInner2, pt))
+            return HTCAPTION;
+
         InflateRect(&rc, -CXY_GRIP, -CXY_GRIP);
         if (PtInRect(&rc, pt))
             return HTCAPTION;
