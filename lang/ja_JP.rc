@@ -506,6 +506,7 @@ LANGUAGE LANG_JAPANESE, SUBLANG_DEFAULT
         MENUITEM SEPARATOR
         MENUITEM "二重マス切り替え(&T)\tCtrl+.", ID_TOGGLEMARK
         MENUITEM SEPARATOR
+        MENUITEM "見た目の設定(&C)...\tAlt+Enter", ID_SETTINGS
         POPUP "ボックスを追加(&X)", MENUBREAK
         {
             MENUITEM "テキストボックスを追加(&X)...", ID_ADDTEXTBOX

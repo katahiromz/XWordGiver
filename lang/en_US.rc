@@ -503,6 +503,7 @@ LANGUAGE LANG_ENGLISH, SUBLANG_DEFAULT
         MENUITEM SEPARATOR
         MENUITEM "&Toggle double-frame\tCtrl+.", ID_TOGGLEMARK
         MENUITEM SEPARATOR
+        MENUITEM "Appearan&ce...\tAlt+Enter", ID_SETTINGS
         POPUP "Add Bo&x", MENUBREAK
         {
             MENUITEM "Add &Text Box...", ID_ADDTEXTBOX

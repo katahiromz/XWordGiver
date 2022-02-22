@@ -721,17 +721,19 @@ public:
             DeleteObject(hbr);
         }
 
+        SetBkMode(hDC, TRANSPARENT);
+        COLORREF rgbText = (m_rgbText != CLR_INVALID) ? m_rgbText : xg_rgbBlackCellColor;
+        ::SetTextColor(hDC, rgbText);
+
+        HPEN hPen = CreatePen(PS_SOLID, 1, rgbText);
+        HGDIOBJ hPenOld = SelectObject(hDC, hPen);
         MoveToEx(hDC, rc.left, rc.top, NULL);
         LineTo(hDC, rc.left, rc.bottom - 1);
         LineTo(hDC, rc.right - 1, rc.bottom - 1);
         LineTo(hDC, rc.right - 1, rc.top);
         LineTo(hDC, rc.left, rc.top);
-
-        SetBkMode(hDC, TRANSPARENT);
-        if (m_rgbText != CLR_INVALID)
-            ::SetTextColor(hDC, m_rgbText);
-        else
-            ::SetTextColor(hDC, xg_rgbBlackCellColor);
+        SelectObject(hDC, hPenOld);
+        DeleteObject(hPen);
 
         LOGFONTW lf = *XgGetUIFont();
 
