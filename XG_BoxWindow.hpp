@@ -816,7 +816,7 @@ public:
         }
         return XG_BoxWindow::ReadMap(map);
     }
-    virtual BOOL WriteMap(map_t& map) {
+    virtual BOOL WriteMap(map_t& map) override {
         WCHAR szText[64];
         if (m_rgbText != CLR_INVALID) {
             StringCchPrintfW(szText, _countof(szText), L"%06X", SwapRandB(m_rgbText));
