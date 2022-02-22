@@ -1399,15 +1399,19 @@ FONT 9, "Tahoma"
     CONTROL "", ico2, "STATIC", SS_BITMAP, 7, 35, 32, 32
 }
 
-IDD_TEXTBOX DIALOG 0, 0, 190, 105
+IDD_TEXTBOX DIALOG 0, 0, 190, 140
 CAPTION "The properties for Text Box"
 STYLE DS_CENTER | DS_MODALFRAME | WS_POPUPWINDOW | WS_CAPTION
 FONT 9, "Tahoma"
 {
     LTEXT "&Text:", -1, 5, 5, 70, 10
     EDITTEXT edt1, 5, 20, 180, 60, ES_WANTRETURN | ES_MULTILINE | WS_VSCROLL | WS_HSCROLL
-    DEFPUSHBUTTON "OK", IDOK, 60, 85, 60, 14
-    PUSHBUTTON "Cancel", IDCANCEL, 125, 85, 60, 14
+    AUTOCHECKBOX "Text &Color:", chx1, 5, 85, 60, 20, BS_LEFT
+    PUSHBUTTON "", psh1, 67, 85, 20, 20, BS_OWNERDRAW
+    AUTOCHECKBOX "&BG Color:", chx2, 100, 85, 60, 20, BS_LEFT
+    PUSHBUTTON "", psh2, 165, 85, 20, 20, BS_OWNERDRAW
+    DEFPUSHBUTTON "OK", IDOK, 60, 120, 60, 14
+    PUSHBUTTON "Cancel", IDCANCEL, 125, 120, 60, 14
 }
 
 //////////////////////////////////////////////////////////////////////////////

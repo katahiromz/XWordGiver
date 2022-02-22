@@ -678,6 +678,9 @@ public:
 class XG_TextBoxWindow : public XG_BoxWindow
 {
 public:
+    COLORREF m_rgbText = CLR_INVALID;
+    COLORREF m_rgbBg = CLR_INVALID;
+
     XG_TextBoxWindow(INT i1 = 0, INT j1 = 0, INT i2 = 1, INT j2 = 1)
         : XG_BoxWindow(L"text", i1, j1, i2, j2)
     {
@@ -687,10 +690,29 @@ public:
     {
     }
 
+    void SetTextColor(COLORREF clr)
+    {
+        m_rgbText = clr;
+        InvalidateRect(m_hWnd, NULL, TRUE);
+    }
+    void SetBgColor(COLORREF clr)
+    {
+        m_rgbBg = clr;
+        InvalidateRect(m_hWnd, NULL, TRUE);
+    }
+
     virtual void OnDraw(HWND hwnd, HDC hDC, const RECT& rc) override
     {
         MRect rcText = rc;
-        FillRect(hDC, &rcText, GetStockBrush(WHITE_BRUSH));
+        {
+            HBRUSH hbr;
+            if (m_rgbBg != CLR_INVALID)
+                hbr = CreateSolidBrush(m_rgbBg);
+            else
+                hbr = CreateSolidBrush(xg_rgbWhiteCellColor);
+            FillRect(hDC, &rcText, hbr);
+            DeleteObject(hbr);
+        }
 
         MoveToEx(hDC, rc.left, rc.top, NULL);
         LineTo(hDC, rc.left, rc.bottom - 1);
@@ -699,7 +721,10 @@ public:
         LineTo(hDC, rc.left, rc.top);
 
         SetBkMode(hDC, TRANSPARENT);
-        SetTextColor(hDC, RGB(0, 0, 0));
+        if (m_rgbText != CLR_INVALID)
+            ::SetTextColor(hDC, m_rgbText);
+        else
+            ::SetTextColor(hDC, xg_rgbBlackCellColor);
 
         LOGFONTW lf = *XgGetUIFont();
 
@@ -729,12 +754,59 @@ public:
     virtual BOOL Prop(HWND hwnd) override
     {
         XG_TextBoxDialog dialog;
+
         dialog.m_strText = m_strText;
+
+        if (m_rgbText != CLR_INVALID)
+            dialog.SetTextColor(m_rgbText, TRUE);
+        else
+            dialog.SetTextColor(xg_rgbBlackCellColor, FALSE);
+
+        if (m_rgbBg != CLR_INVALID)
+            dialog.SetBgColor(m_rgbBg, TRUE);
+        else
+            dialog.SetBgColor(xg_rgbWhiteCellColor, FALSE);
+
         if (dialog.DoModal(m_hwndParent) == IDOK) {
             SetText(dialog.m_strText);
+
+            if (dialog.m_bTextColor)
+                m_rgbText = dialog.GetTextColor();
+            else
+                m_rgbText = CLR_INVALID;
+
+            if (dialog.m_bBgColor)
+                m_rgbBg = dialog.GetBgColor();
+            else
+                m_rgbBg = CLR_INVALID;
+
             InvalidateRect(hwnd, NULL, TRUE);
             return TRUE;
         }
         return FALSE;
+    }
+
+    virtual BOOL ReadMap(const map_t& map) override {
+        auto color_it = map.find(L"color");
+        if (color_it != map.end()) {
+            m_rgbText = wcstoul(color_it->second.c_str(), NULL, 16);
+        }
+        auto bgcolor_it = map.find(L"bgcolor");
+        if (bgcolor_it != map.end()) {
+            m_rgbBg = wcstoul(bgcolor_it->second.c_str(), NULL, 16);
+        }
+        return XG_BoxWindow::ReadMap(map);
+    }
+    virtual BOOL WriteMap(map_t& map) {
+        WCHAR szText[64];
+        if (m_rgbText != CLR_INVALID) {
+            StringCchPrintfW(szText, _countof(szText), L"%06X", m_rgbText);
+            map[L"color"] = szText;
+        }
+        if (m_rgbBg != CLR_INVALID) {
+            StringCchPrintfW(szText, _countof(szText), L"%06X", m_rgbBg);
+            map[L"bgcolor"] = szText;
+        }
+        return XG_BoxWindow::WriteMap(map);
     }
 };

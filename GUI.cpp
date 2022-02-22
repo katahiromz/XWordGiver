@@ -4843,9 +4843,13 @@ BOOL XgAddBox(HWND hwnd, UINT id)
     switch (id)
     {
     case ID_ADDTEXTBOX:
+        dialog1.SetTextColor(xg_rgbBlackCellColor, FALSE);
+        dialog1.SetBgColor(xg_rgbWhiteCellColor, FALSE);
         if (dialog1.DoModal(hwnd) == IDOK) {
             auto ptr = new XG_TextBoxWindow(i1, j1, i2, j2);
             ptr->SetText(dialog1.m_strText);
+            ptr->SetTextColor(dialog1.GetTextColor());
+            ptr->SetBgColor(dialog1.GetBgColor());
             if (ptr->CreateDx(xg_canvasWnd)) {
                 xg_boxes.emplace_back(ptr);
                 return TRUE;

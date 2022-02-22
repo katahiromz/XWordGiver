@@ -53,15 +53,14 @@ public:
         }
     }
 
-    virtual void OnOwnerDrawItem(WPARAM wParam, LPARAM lParam)
+    virtual void OnOwnerDrawItem(const DRAWITEMSTRUCT *pdis)
     {
-        LPDRAWITEMSTRUCT pdis = reinterpret_cast<LPDRAWITEMSTRUCT>(lParam);
         if (pdis->hwndItem != m_hWnd || pdis->CtlType != ODT_BUTTON)
             return;
 
         BOOL bSelected = !!(pdis->itemState & ODS_SELECTED);
         BOOL bFocus = !!(pdis->itemState & ODS_FOCUS);
-        RECT& rcItem = pdis->rcItem;
+        RECT rcItem = pdis->rcItem;
 
         HDC hdc = pdis->hDC;
         ::DrawFrameControl(hdc, &rcItem, DFC_BUTTON,

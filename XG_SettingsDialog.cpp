@@ -621,15 +621,15 @@ void XG_SettingsDialog::OnDrawItem(HWND hwnd, WPARAM wParam, LPARAM lParam)
 {
     LPDRAWITEMSTRUCT pdis = reinterpret_cast<LPDRAWITEMSTRUCT>(lParam);
     if (pdis->hwndItem == m_hwndWhite) {
-        m_hwndWhite.OnOwnerDrawItem(wParam, lParam);
+        m_hwndWhite.OnOwnerDrawItem(pdis);
         return;
     }
     if (pdis->hwndItem == m_hwndBlack) {
-        m_hwndBlack.OnOwnerDrawItem(wParam, lParam);
+        m_hwndBlack.OnOwnerDrawItem(pdis);
         return;
     }
     if (pdis->hwndItem == m_hwndMarked) {
-        m_hwndMarked.OnOwnerDrawItem(wParam, lParam);
+        m_hwndMarked.OnOwnerDrawItem(pdis);
         return;
     }
 }
