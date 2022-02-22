@@ -20,15 +20,15 @@ LANGUAGE LANG_ENGLISH, SUBLANG_DEFAULT
         MENUITEM "Generate from block pa&ttern...\tCtrl+;", ID_OPENPATTERNS
         MENUITEM "Generate from &words...\tCtrl+:", ID_GENERATEFROMWORDLIST
         MENUITEM SEPARATOR
-        MENUITEM "&Open crossword...\tCtrl+O", ID_OPEN
-        MENUITEM "Save crossword\tCtrl+S", ID_SAVE
-        MENUITEM "Save crossword &as...\tCtrl+Shift+S", ID_SAVEAS
+        MENUITEM "&Open...\tCtrl+O", ID_OPEN
+        MENUITEM "Save\tCtrl+S", ID_SAVE
+        MENUITEM "Save &as...\tCtrl+Shift+S", ID_SAVEAS
         MENUITEM SEPARATOR
-        MENUITEM "Save crossword as &image...\tCtrl+I", ID_SAVEPROBASIMAGE
-        MENUITEM "Save crossword answer &as image...\tCtrl+B", ID_SAVEANSASIMAGE
+        MENUITEM "Save as &image...\tCtrl+I", ID_SAVEPROBASIMAGE
+        MENUITEM "Save answer &as image...\tCtrl+B", ID_SAVEANSASIMAGE
         MENUITEM SEPARATOR
-        MENUITEM "Print crossword\tCtrl+Q", ID_PRINTPROBLEM
-        MENUITEM "&Print crossword answer\tCtrl+P", ID_PRINTANSWER
+        MENUITEM "Print problem\tCtrl+Q", ID_PRINTPROBLEM
+        MENUITEM "&Print answer\tCtrl+P", ID_PRINTANSWER
         MENUITEM SEPARATOR
         MENUITEM "&Header and remarks...\tCtrl+Enter", ID_HEADERANDNOTES
         MENUITEM "Appearan&ce...\tAlt+Enter", ID_SETTINGS

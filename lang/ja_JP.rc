@@ -20,9 +20,9 @@ LANGUAGE LANG_JAPANESE, SUBLANG_DEFAULT
         MENUITEM "黒マスパターンから自動生成(&T)...\tCtrl+;", ID_OPENPATTERNS
         MENUITEM "単語群から自動生成(&L)...\tCtrl+:", ID_GENERATEFROMWORDLIST
         MENUITEM SEPARATOR
-        MENUITEM "問題を開く(&O)...\tCtrl+O", ID_OPEN
-        MENUITEM "問題を上書き保存(&S)\tCtrl+S", ID_SAVE
-        MENUITEM "問題に名前を付けて保存(&A)...\tCtrl+Shift+S", ID_SAVEAS
+        MENUITEM "開く(&O)...\tCtrl+O", ID_OPEN
+        MENUITEM "上書き保存(&S)\tCtrl+S", ID_SAVE
+        MENUITEM "名前を付けて保存(&A)...\tCtrl+Shift+S", ID_SAVEAS
         MENUITEM SEPARATOR
         MENUITEM "問題を画像ファイルとして保存(&I)...\tCtrl+I", ID_SAVEPROBASIMAGE
         MENUITEM "解答を画像ファイルとして保存(&A)...\tCtrl+B", ID_SAVEANSASIMAGE
