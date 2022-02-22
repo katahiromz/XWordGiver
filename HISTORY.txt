@@ -131,8 +131,9 @@
     - Fixed the copying position of boxes.
     - Text files can be dropped as text boxes.
     - Adjusting the zoom when maximized and the display area is small.
-    - Added line feed processing in reading/writing XD files.
+    - Improved reading/writing XD files.
     - Improved mouse wheel handling.
+    - Improved boxes.
 
 # 開発履歴 (Japanese)
 
@@ -578,5 +579,6 @@
     - ボックスのコピー位置を修正。
     - テキストファイルをテキストボックスとしてドロップ可能に。
     - 最大化され、表示領域が小さいとき、ズームを合わせる。
-    - XDファイル読み書きで改行処理を追加。
+    - XDファイル読み書きを改良。
     - マウスホイールの処理を改善。
+    - ボックスの改良。
