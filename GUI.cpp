@@ -2054,10 +2054,21 @@ BOOL XgDoConfirmSave(HWND hwnd)
     if (!xg_bFileModified)
         return TRUE;
 
-    INT id = XgCenterMessageBoxW(hwnd,
-        XgLoadStringDx1(IDS_QUERYSAVE),
-        XgLoadStringDx2(IDS_APPNAME),
-        MB_ICONINFORMATION | MB_YESNOCANCEL);
+    // アプリ名。
+    std::wstring strAppName = XgLoadStringDx2(IDS_APPNAME);
+    // ファイルタイトル。
+    std::wstring strFileName;
+    if (xg_strFileName.empty())
+        strFileName = XgLoadStringDx1(IDS_UNTITLED);
+    else
+        strFileName = PathFindFileNameW(xg_strFileName.c_str());
+
+    // 保存するか確認。
+    WCHAR szText[MAX_PATH];
+    StringCchPrintfW(szText, _countof(szText), XgLoadStringDx1(IDS_QUERYSAVE),
+                     strFileName.c_str());
+    INT id = XgCenterMessageBoxW(hwnd, szText, strAppName.c_str(),
+                                 MB_ICONINFORMATION | MB_YESNOCANCEL);
     switch (id) {
     case IDYES:
         return XgOnSave(hwnd);
