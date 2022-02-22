@@ -98,6 +98,18 @@ public:
             m_hwndBgColor.DoChooseColor();
             CheckDlgButton(hwnd, chx2, BST_CHECKED);
             break;
+        case chx1:
+            if (IsDlgButtonChecked(hwnd, chx1) != BST_CHECKED)
+            {
+                m_hwndTextColor.SetColor(xg_rgbBlackCellColor);
+            }
+            break;
+        case chx2:
+            if (IsDlgButtonChecked(hwnd, chx2) != BST_CHECKED)
+            {
+                m_hwndBgColor.SetColor(xg_rgbWhiteCellColor);
+            }
+            break;
         }
     }
 
