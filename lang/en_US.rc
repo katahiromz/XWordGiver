@@ -1419,8 +1419,8 @@ FONT 9, "Tahoma"
 // RT_VERSION
 
 1 VERSIONINFO
-FILEVERSION     4, 9, 0, 0
-PRODUCTVERSION  4, 9, 0, 0
+FILEVERSION     4, 9, 1, 0
+PRODUCTVERSION  4, 9, 1, 0
 FILEOS          0x40004
 FILETYPE        0x1
 {
@@ -1430,10 +1430,10 @@ FILETYPE        0x1
         {
             VALUE "CompanyName", "Katayama Hirofumi MZ\0"
             VALUE "FileDescription", "XWordGiver\0"
-            VALUE "FileVersion", "4.9.0\0"
+            VALUE "FileVersion", "4.9.1\0"
             VALUE "LegalCopyright", "Copyright (C) 2012-2020 katahiromz. All rights reserved.\0"
             VALUE "ProductName", "XWordGiver\0"
-            VALUE "ProductVersion", "4.9.0\0"
+            VALUE "ProductVersion", "4.9.1\0"
         }
     }
     BLOCK "VarFileInfo"
@@ -1447,7 +1447,7 @@ FILETYPE        0x1
 
 STRINGTABLE
 {
-    IDS_VERSION, "XWordGiver ver.4.9.0\nby katahiromz\n\nCopyright (C) 2012-2022 katahiromz.\nCopyright (C) 2021-2022 スフィンクス.\nCopyright (C) 2021-2022 catworks99.\nCopyright (C) 2022 yukokumar.\nCopyright (C) 2022 Hiroshima.cw.\nAll rights reserved."
+    IDS_VERSION, "XWordGiver ver.4.9.1\nby katahiromz\n\nCopyright (C) 2012-2022 katahiromz.\nCopyright (C) 2021-2022 スフィンクス.\nCopyright (C) 2021-2022 catworks99.\nCopyright (C) 2022 yukokumar.\nCopyright (C) 2022 Hiroshima.cw.\nAll rights reserved."
     IDS_APPNAME, "XWordGiver"
     IDS_CANTLOAD, "I couldn't load the file."
     IDS_WRONGFORMAT, "This format is wrong."
@@ -1460,7 +1460,7 @@ STRINGTABLE
     IDS_CANTACCEL, "I couldn't load the accelerators."
     IDS_CANTREGWND, "I couldn't register the window classes."
     IDS_CANTMAKEWND, "I couldn't create the window."
-    IDS_APPTITLE, "XWordGiver ver.4.9.0 - %s"
+    IDS_APPTITLE, "XWordGiver ver.4.9.1 - %s"
     IDS_MADEPROBLEM, "I have generated a crossword.\n\nCalculation time: %u.%u[sec]"
     IDS_CANTMAKEPROBLEM, "I couldn't create the puzzle.\n\nPlease confirm the dictionary, the block pattern, and the policy.\n\nCalculation time: %u.%u[sec]"
     IDS_ENTERINT, "Please enter an integer between 2 and 256."
@@ -1479,7 +1479,7 @@ STRINGTABLE
     IDS_NOWSOLVING, "Calculating...(%u.%u sec) Retry x %u"
     IDS_HLINE, "----------------------------"
     IDS_MONOFONT, "ＭＳ ゴシック"
-    IDS_APPTITLE2, "XWordGiver ver.4.9.0 (%s) - %s"
+    IDS_APPTITLE2, "XWordGiver ver.4.9.1 (%s) - %s"
     IDS_CROSSWORD, "Crossword"
     IDS_ANSWER, "Answer: "
     IDS_SETPORTRAIT, "Please use the portrait paper to print."
@@ -1543,8 +1543,8 @@ STRINGTABLE
     IDS_VINPUT, "Vert"
     IDS_ABC, "ABC"
     IDS_DICTIONARY, "Dict"
-    IDS_APPINFO, "XWordGiver ver.4.9.0"
-    IDS_APPINFO2, "XWordGiver ver.4.9.0 (%s)"
+    IDS_APPINFO, "XWordGiver ver.4.9.1"
+    IDS_APPINFO2, "XWordGiver ver.4.9.1 (%s)"
     IDS_HINPUT2, "H\no\nr\nz"
     IDS_VINPUT2, "V\ne\nr\nt"
     IDS_KANA, "Kana"
