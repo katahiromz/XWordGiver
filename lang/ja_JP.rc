@@ -43,8 +43,8 @@ LANGUAGE LANG_JAPANESE, SUBLANG_DEFAULT
         MENUITEM "タテの候補(&D)...", ID_OPENCANDSWNDVERT
         MENUITEM "ヨコの候補(&A)...", ID_OPENCANDSWNDHORZ
         MENUITEM SEPARATOR
-        MENUITEM "盤のコピー(&C)\tCtrl+C", ID_COPY
-        MENUITEM "盤を画像としてコピー(&I)\tShift+Ctrl+C", ID_COPYASIMAGE
+        MENUITEM "盤面のコピー(&C)\tCtrl+C", ID_COPY
+        MENUITEM "盤面を画像としてコピー(&I)\tShift+Ctrl+C", ID_COPYASIMAGE
         MENUITEM "貼り付け(&P)\tCtrl+V", ID_PASTE
         MENUITEM SEPARATOR
         MENUITEM "タテの単語をコピー(&V)", ID_COPYWORDVERT
@@ -114,7 +114,7 @@ LANGUAGE LANG_JAPANESE, SUBLANG_DEFAULT
         MENUITEM "前の二重マス単語(&P)\tCtrl+K", ID_MARKSPREV
         MENUITEM SEPARATOR
         MENUITEM "二重マスをすべて解除する(&K)\tCtrl+R", ID_KILLMARKS
-        MENUITEM "ヒントを削除して盤のロックを解除(&U)", ID_ERASESOLUTIONANDUNLOCKEDIT
+        MENUITEM "ヒントを削除して盤面のロックを解除(&U)", ID_ERASESOLUTIONANDUNLOCKEDIT
     }
     POPUP "表示(&V)"
     {
@@ -1491,7 +1491,7 @@ STRINGTABLE
     IDS_ADJACENTBLOCK, "黒マスは隣り合っています。ルール「連黒禁」に反します。"
     IDS_DOUBLEDWORD, "単語は二度使えません。"
     IDS_TRIBLOCK, "三方向が黒マスで囲まれたマスがあります。ルール「三方黒禁」に反します。"
-    IDS_DIVIDED, "盤が黒マスで分断されています。ルール「分断禁」に反します。"
+    IDS_DIVIDED, "盤面が黒マスで分断されています。ルール「分断禁」に反します。"
     IDS_NOCANDIDATE, "マス位置 (%u, %u) に単語の候補がないマスがあります。"
     IDS_IMGFILTER, "ビットマップ画像 (*.bmp)|*.bmp|EMF画像 (*.emf)|*.emf||"
     IDS_DICTFILTER, "辞書データ (*.dic;*.tsv)|*.dic;*.tsv|すべてのファイル (*.*)|*.*||"
@@ -1557,7 +1557,7 @@ STRINGTABLE
     IDS_VINPUT3, "タテ入力"
     IDS_RUSSIA, "ロシア"
     IDS_FOURDIAGONALS, "黒マスが斜めに４つ連なっています。ルール「黒斜四連禁」に反します。"
-    IDS_RULESPASSED, "現在の盤は、指定されたルールに合格しました。"
+    IDS_RULESPASSED, "現在の盤面は、指定されたルールに合格しました。"
     IDS_PASSED, "合格！"
     IDS_RULESTXT, "Policy-JPN.txt"
     IDS_RULES, "ルール"
@@ -1621,7 +1621,7 @@ STRINGTABLE
     IDS_TT_OPEN, "問題を開く"
     IDS_TT_SAVEAS, "問題を保存する"
     IDS_TT_SOLVE, "解を求める"
-    IDS_TT_COPY, "盤をコピー"
+    IDS_TT_COPY, "盤面をコピー"
     IDS_TT_PASTE, "貼り付け"
     IDS_TT_GENERATEANSWER, "問題を自動生成して答えを表示する"
     IDS_TT_PRINTPROBLEM, "問題のみを印刷"

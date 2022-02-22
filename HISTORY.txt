@@ -134,6 +134,7 @@
     - Improved reading/writing XD files.
     - Improved mouse wheel handling.
     - Improved boxes.
+- 2022-XX-YY ver.4.9.1
 
 # 開発履歴 (Japanese)
 
@@ -582,3 +583,5 @@
     - XDファイル読み書きを改良。
     - マウスホイールの処理を改善。
     - ボックスの改良。
+- 2022年XX月YY日 ver.4.9.1
+    - 用語統一のため、「盤」を「盤面」に修正（日本語のみ）。
