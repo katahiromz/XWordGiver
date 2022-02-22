@@ -1911,24 +1911,16 @@ BOOL XgOnSave(HWND hwnd, LPCWSTR pszFile)
         return FALSE;
     }
 
-    // 画像があれば*_filesフォルダを作成する。
+    // *_filesフォルダを作成する。
     WCHAR szPath[MAX_PATH];
     XgGetFileDir(szPath, pszFile);
-    if (mapping.size())
-        CreateDirectoryW(szPath, NULL);
+    CreateDirectoryW(szPath, NULL);
 
     try
     {
         XgSaveImageMap(pszFile, mapping);
     } catch (...) {
         assert(0);
-    }
-
-    // もう一度保存する。
-    if (!XgDoSave(hwnd, pszFile)) {
-        // 保存に失敗。
-        XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_CANTSAVE2), nullptr, MB_ICONERROR);
-        return FALSE;
     }
 
     // LOOKSファイルも自動でエクスポートする。
