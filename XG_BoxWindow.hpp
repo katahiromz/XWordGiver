@@ -258,7 +258,7 @@ public:
     {
         lpcsp->rgrc[0] = lpcsp->rgrc[1];
         InflateRect(&lpcsp->rgrc[0], -CXY_GRIP, -CXY_GRIP);
-        return WVR_REDRAW;
+        return WVR_REDRAW | WVR_VALIDRECTS;
     }
 
     UINT OnNCHitTest(HWND hwnd, int x, int y)
