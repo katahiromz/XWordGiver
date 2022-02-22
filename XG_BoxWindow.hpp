@@ -294,9 +294,9 @@ public:
             return HTBOTTOMRIGHT;
 
         RECT rcInner1 = rc;
-        InflateRect(&rcInner1, -CXY_GRIP / 2 + 1, -CXY_GRIP / 2 + 1);
+        InflateRect(&rcInner1, -CXY_GRIP / 2, -CXY_GRIP / 2);
         RECT rcInner2 = rcInner1;
-        InflateRect(&rcInner2, -3, -3);
+        InflateRect(&rcInner2, -1, -1);
         if (PtInRect(&rcInner1, pt) && !PtInRect(&rcInner2, pt))
             return HTCAPTION;
 
