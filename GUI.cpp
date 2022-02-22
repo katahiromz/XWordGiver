@@ -3856,16 +3856,16 @@ void __fastcall MainWnd_OnInitMenu(HWND /*hwnd*/, HMENU hMenu)
 
     // ひらがなウィンドウのメニュー更新。
     if (xg_bHiragana) {
-        ::CheckMenuRadioItem(hMenu, ID_HIRAGANA, ID_KATAKANA, ID_HIRAGANA, MF_BYCOMMAND);
+        ::CheckMenuItem(hMenu, ID_HIRAGANA, MF_CHECKED);
     } else {
-        ::CheckMenuRadioItem(hMenu, ID_HIRAGANA, ID_KATAKANA, ID_KATAKANA, MF_BYCOMMAND);
+        ::CheckMenuItem(hMenu, ID_HIRAGANA, MF_UNCHECKED);
     }
 
     // Lowercaseウィンドウのメニュー更新。
     if (xg_bLowercase) {
-        ::CheckMenuRadioItem(hMenu, ID_UPPERCASE, ID_LOWERCASE, ID_LOWERCASE, MF_BYCOMMAND);
+        ::CheckMenuItem(hMenu, ID_LOWERCASE, MF_CHECKED);
     } else {
-        ::CheckMenuRadioItem(hMenu, ID_UPPERCASE, ID_LOWERCASE, ID_UPPERCASE, MF_BYCOMMAND);
+        ::CheckMenuItem(hMenu, ID_LOWERCASE, MF_UNCHECKED);
     }
 
     // タテヨコ入力のメニュー更新。
@@ -3894,13 +3894,11 @@ void __fastcall MainWnd_OnInitMenu(HWND /*hwnd*/, HMENU hMenu)
     case XG_VIEW_NORMAL:
     default:
         // 通常ビュー。
-        ::CheckMenuRadioItem(hMenu, ID_VIEW_NORMAL_VIEW, ID_VIEW_SKELETON_VIEW,
-                             ID_VIEW_NORMAL_VIEW, MF_BYCOMMAND);
+        ::CheckMenuItem(hMenu, ID_VIEW_SKELETON_VIEW, MF_UNCHECKED);
         break;
     case XG_VIEW_SKELETON:
         // スケルトンビュー。
-        ::CheckMenuRadioItem(hMenu, ID_VIEW_NORMAL_VIEW, ID_VIEW_SKELETON_VIEW,
-                             ID_VIEW_SKELETON_VIEW, MF_BYCOMMAND);
+        ::CheckMenuItem(hMenu, ID_VIEW_SKELETON_VIEW, MF_CHECKED);
         break;
     }
 
@@ -5872,29 +5870,15 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT /*codeNo
     case ID_COPYCHARSET:
         MainWnd_OnCopyCharSet(hwnd);
         break;
-    case ID_UPPERCASE:
-        xg_bLowercase = FALSE;
-        XgUpdateImage(hwnd);
-        if (xg_hwndInputPalette) {
-            XgCreateInputPalette(hwnd);
-        }
-        break;
     case ID_LOWERCASE:
-        xg_bLowercase = TRUE;
+        xg_bLowercase = !xg_bLowercase;
         XgUpdateImage(hwnd);
         if (xg_hwndInputPalette) {
             XgCreateInputPalette(hwnd);
         }
         break;
     case ID_HIRAGANA:
-        xg_bHiragana = TRUE;
-        XgUpdateImage(hwnd);
-        if (xg_hwndInputPalette) {
-            XgCreateInputPalette(hwnd);
-        }
-        break;
-    case ID_KATAKANA:
-        xg_bHiragana = FALSE;
+        xg_bHiragana = !xg_bHiragana;
         XgUpdateImage(hwnd);
         if (xg_hwndInputPalette) {
             XgCreateInputPalette(hwnd);
@@ -6120,24 +6104,24 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT /*codeNo
     case ID_RELOADDICTS:
         XgLoadDictsAll();
         break;
-    case ID_VIEW_NORMAL_VIEW:
-        // 通常ビューを設定。
-        xg_nViewMode = XG_VIEW_NORMAL;
-        XgUpdateImage(hwnd);
-        break;
     case ID_VIEW_SKELETON_VIEW:
-        // 黒マス画像をクリアする。
-        xg_strBlackCellImage.clear();
-        if (xg_hbmBlackCell) {
-            ::DeleteObject(xg_hbmBlackCell);
-            xg_hbmBlackCell = NULL;
+        if (xg_nViewMode == XG_VIEW_NORMAL) {
+            // 黒マス画像をクリアする。
+            xg_strBlackCellImage.clear();
+            if (xg_hbmBlackCell) {
+                ::DeleteObject(xg_hbmBlackCell);
+                xg_hbmBlackCell = NULL;
+            }
+            if (xg_hBlackCellEMF) {
+                DeleteEnhMetaFile(xg_hBlackCellEMF);
+                xg_hBlackCellEMF = NULL;
+            }
+            // スケルトンビューを設定。
+            xg_nViewMode = XG_VIEW_SKELETON;
+        } else {
+            // 通常ビューを設定。
+            xg_nViewMode = XG_VIEW_NORMAL;
         }
-        if (xg_hBlackCellEMF) {
-            DeleteEnhMetaFile(xg_hBlackCellEMF);
-            xg_hBlackCellEMF = NULL;
-        }
-        // スケルトンビューを設定。
-        xg_nViewMode = XG_VIEW_SKELETON;
         XgUpdateImage(hwnd);
         break;
     case ID_COPY_WORD_LIST:

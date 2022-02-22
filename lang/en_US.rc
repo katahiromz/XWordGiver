@@ -129,8 +129,10 @@ LANGUAGE LANG_ENGLISH, SUBLANG_DEFAULT
         MENUITEM "&Caret", ID_SHOWHIDECARET
         MENUITEM "Double-frame l&etters", ID_VIEW_DOUBLEFRAME_LETTERS
         MENUITEM SEPARATOR
-        MENUITEM "Nor&mal View", ID_VIEW_NORMAL_VIEW
         MENUITEM "Skelt&on View", ID_VIEW_SKELETON_VIEW
+        MENUITEM SEPARATOR
+        MENUITEM "&lowercase", ID_LOWERCASE
+        MENUITEM "&Hiragana", ID_HIRAGANA
         MENUITEM SEPARATOR
         MENUITEM "&Next Pane\tF6", ID_PANENEXT
         MENUITEM "&Previous Pane\tShift+F6", ID_PANEPREV
@@ -148,12 +150,6 @@ LANGUAGE LANG_ENGLISH, SUBLANG_DEFAULT
             MENUITEM "Zoom 80%", ID_ZOOM80
             MENUITEM "Zoom 90%", ID_ZOOM90
         }
-        MENUITEM SEPARATOR
-        MENUITEM "&Hiragana", ID_HIRAGANA
-        MENUITEM "&Katakana", ID_KATAKANA
-        MENUITEM SEPARATOR
-        MENUITEM "&UPPERCASE", ID_UPPERCASE
-        MENUITEM "&lowercase", ID_LOWERCASE
         MENUITEM SEPARATOR
         MENUITEM "Search the word on the Web (DOWN)\tAlt+Down", ID_ONLINEDICTV
         MENUITEM "Search the word on the Web (ACROSS)\tAlt+Right", ID_ONLINEDICTH

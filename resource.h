@@ -318,10 +318,8 @@
 #define ID_RUSSIAINPUT                      226
 #define ID_COPYWORDHORZ                     227
 #define ID_COPYWORDVERT                     228
-#define ID_UPPERCASE                        229
 #define ID_LOWERCASE                        230
 #define ID_HIRAGANA                         231
-#define ID_KATAKANA                         232
 #define ID_RESETRULES                       249
 #define ID_OPENRULESTXT                     250
 #define ID_RULE_DONTDOUBLEBLACK             251
@@ -350,7 +348,6 @@
 #define ID_RELOADDICTS                      275
 #define ID_RULE_LINESYMMETRYV               276
 #define ID_RULE_LINESYMMETRYH               277
-#define ID_VIEW_NORMAL_VIEW                 278
 #define ID_VIEW_SKELETON_VIEW               279
 #define ID_COPY_WORD_LIST                   280
 #define ID_VIEW_DOUBLEFRAME_LETTERS         281

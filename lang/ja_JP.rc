@@ -129,8 +129,10 @@ LANGUAGE LANG_JAPANESE, SUBLANG_DEFAULT
         MENUITEM "キャレット(&C)", ID_SHOWHIDECARET
         MENUITEM "二重マス文字(&E)", ID_VIEW_DOUBLEFRAME_LETTERS
         MENUITEM SEPARATOR
-        MENUITEM "通常ビュー(&M)", ID_VIEW_NORMAL_VIEW
         MENUITEM "スケルトン ビュー(&O)", ID_VIEW_SKELETON_VIEW
+        MENUITEM SEPARATOR
+        MENUITEM "&lowercase", ID_LOWERCASE
+        MENUITEM "ひらがな表示(&H)", ID_HIRAGANA
         MENUITEM SEPARATOR
         MENUITEM "次のペイン(&N)\tF6", ID_PANENEXT
         MENUITEM "前のペイン(&P)\tShift+F6", ID_PANEPREV
@@ -148,12 +150,6 @@ LANGUAGE LANG_JAPANESE, SUBLANG_DEFAULT
             MENUITEM "ズーム 80%", ID_ZOOM80
             MENUITEM "ズーム 90%", ID_ZOOM90
         }
-        MENUITEM SEPARATOR
-        MENUITEM "ひらがな表示(&H)", ID_HIRAGANA
-        MENUITEM "カタカナ表示(&K)", ID_KATAKANA
-        MENUITEM SEPARATOR
-        MENUITEM "&UPPERCASE", ID_UPPERCASE
-        MENUITEM "&lowercase", ID_LOWERCASE
         MENUITEM SEPARATOR
         MENUITEM "単語をウェブ検索(&V) (タテ)\tAlt+↓", ID_ONLINEDICTV
         MENUITEM "単語をウェブ検索(&H) (ヨコ)\tAlt+→", ID_ONLINEDICTH
