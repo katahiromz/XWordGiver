@@ -124,33 +124,33 @@ public:
 
     void DoDrawGrips(HWND hwnd, HDC hDC, RECT& rc)
     {
-        FillRect(hDC, &rc, GetStockBrush(WHITE_BRUSH));
-
         RECT rcInner1 = rc;
         InflateRect(&rcInner1, -CXY_GRIP / 2, -CXY_GRIP / 2);
 
         HGDIOBJ hPenOld = SelectObject(hDC, CreatePen(PS_DOT, 1, GetSysColor(COLOR_HIGHLIGHT)));
+        SelectObject(hDC, GetStockBrush(NULL_BRUSH));
         Rectangle(hDC, rcInner1.left, rcInner1.top, rcInner1.right, rcInner1.bottom);
         DeleteObject(SelectObject(hDC, hPenOld));
 
         RECT rcGrip;
 
+        HBRUSH hbr = GetSysColorBrush(COLOR_HIGHLIGHT);
         SetRect(&rcGrip, RECT0);
-        FillRect(hDC, &rcGrip, GetSysColorBrush(COLOR_HIGHLIGHT));
+        FillRect(hDC, &rcGrip, hbr);
         SetRect(&rcGrip, RECT1);
-        FillRect(hDC, &rcGrip, GetSysColorBrush(COLOR_HIGHLIGHT));
+        FillRect(hDC, &rcGrip, hbr);
         SetRect(&rcGrip, RECT2);
-        FillRect(hDC, &rcGrip, GetSysColorBrush(COLOR_HIGHLIGHT));
+        FillRect(hDC, &rcGrip, hbr);
         SetRect(&rcGrip, RECT3);
-        FillRect(hDC, &rcGrip, GetSysColorBrush(COLOR_HIGHLIGHT));
+        FillRect(hDC, &rcGrip, hbr);
         SetRect(&rcGrip, RECT4);
-        FillRect(hDC, &rcGrip, GetSysColorBrush(COLOR_HIGHLIGHT));
+        FillRect(hDC, &rcGrip, hbr);
         SetRect(&rcGrip, RECT5);
-        FillRect(hDC, &rcGrip, GetSysColorBrush(COLOR_HIGHLIGHT));
+        FillRect(hDC, &rcGrip, hbr);
         SetRect(&rcGrip, RECT6);
-        FillRect(hDC, &rcGrip, GetSysColorBrush(COLOR_HIGHLIGHT));
+        FillRect(hDC, &rcGrip, hbr);
         SetRect(&rcGrip, RECT7);
-        FillRect(hDC, &rcGrip, GetSysColorBrush(COLOR_HIGHLIGHT));
+        FillRect(hDC, &rcGrip, hbr);
     }
 
     void DoSetRgn(HWND hwnd)
