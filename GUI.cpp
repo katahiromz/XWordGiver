@@ -1018,6 +1018,7 @@ bool __fastcall XgLoadSettings(void)
 
             if (!app_key.QuerySz(L"BlackCellImage", sz, ARRAYSIZE(sz))) {
                 xg_strBlackCellImage = sz;
+                XgGetFileManager()->load_block_image(sz);
             }
 
             if (!app_key.QuerySz(L"DoubleFrameLetters", sz, ARRAYSIZE(sz))) {
@@ -1048,34 +1049,6 @@ bool __fastcall XgLoadSettings(void)
         ::SHGetPathFromIDListW(pidl, szPath);
         ::CoTaskMemFree(pidl);
         xg_dirs_save_to.emplace_back(szPath);
-    }
-
-    ::DeleteObject(xg_hbmBlackCell);
-    xg_hbmBlackCell = NULL;
-
-    DeleteEnhMetaFile(xg_hBlackCellEMF);
-    xg_hBlackCellEMF = NULL;
-
-    if (!xg_strBlackCellImage.empty())
-    {
-        HBITMAP hbm = NULL;
-        HENHMETAFILE hEMF = NULL;
-        if (XgLoadImage(xg_strBlackCellImage.c_str(), hbm, hEMF))
-        {
-            // ファイルが存在すれば、画像を読み込む。
-            xg_hbmBlackCell = hbm;
-            xg_hBlackCellEMF = hEMF;
-            if (xg_nViewMode == XG_VIEW_SKELETON)
-            {
-                // 画像が有効ならスケルトンビューを通常ビューに戻す。
-                xg_nViewMode = XG_VIEW_NORMAL;
-            }
-        }
-        else
-        {
-            // 画像が無効なら、パスも無効化。
-            xg_strBlackCellImage.clear();
-        }
     }
 
     if (xg_nRows <= 1)
@@ -1145,7 +1118,7 @@ bool __fastcall XgSaveSettings(void)
 
             app_key.SetSz(L"Recent", xg_dict_name.c_str());
 
-            if (xg_strBlackCellImage.find(L"$FILE\\") != 0)
+            if (xg_strBlackCellImage.find(L"$FILES\\") != 0)
                 app_key.SetSz(L"BlackCellImage", xg_strBlackCellImage.c_str());
 
             app_key.SetSz(L"DoubleFrameLetters", xg_strDoubleFrameLetters.c_str());
@@ -2306,10 +2279,7 @@ BOOL XgOnLoad(HWND hwnd, LPCWSTR pszFile, LPPOINT ppt)
     LPWSTR pchDotExt = PathFindExtensionW(szFile);
     if (lstrcmpiW(pchDotExt, L".looks") == 0)
     {
-        XG_SettingsDialog dialog;
-        dialog.m_strAutoFile = szFile;
-        dialog.m_bImport = TRUE;
-        dialog.DoModal(hwnd);
+        XgImportLooks(hwnd, szFile);
         XG_FILE_MODIFIED(TRUE);
         return TRUE;
     }
