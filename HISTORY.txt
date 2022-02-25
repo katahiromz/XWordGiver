@@ -134,7 +134,7 @@
     - Improved reading/writing XD files.
     - Improved mouse wheel handling.
     - Improved boxes.
-- 2022-XX-YY ver.4.9.1
+- 2022-02-25 ver.4.9.1
     - Added "Save Overwrite" for application standardization.
     - The "View" menu became more compact.
     - Improved the way files are loaded and saved.
@@ -586,7 +586,7 @@
     - XDファイル読み書きを改良。
     - マウスホイールの処理を改善。
     - ボックスの改良。
-- 2022年XX月YY日 ver.4.9.1
+- 2022年02月25日 ver.4.9.1
     - 用語統一のため、「盤」を「盤面」に修正（日本語のみ）。
     - ソフト標準化のため、「上書き保存」を追加。
     - 「表示」メニューをコンパクトに。
