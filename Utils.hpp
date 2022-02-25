@@ -224,28 +224,17 @@ LPCWSTR XgIntToStr(INT nValue);
 std::wstring XgBinToHex(const void *ptr, size_t size);
 // 16進をバイナリにする。
 void XgHexToBin(std::vector<BYTE>& data, const std::wstring& str);
-// 画像のパスを取得する。
-BOOL XgGetImagePath(LPWSTR pszPath, LPCWSTR pszFileName, BOOL bNoCheck = FALSE);
-// 画像のパスをきれいにする。
-BOOL XgGetCanonicalImagePath(LPWSTR pszCanonical, LPCWSTR pszFileName);
 // 画像を読み込む。
-BOOL XgLoadImage(LPCWSTR pszFileName, HBITMAP& hbm, HENHMETAFILE& hEMF);
+BOOL XgLoadImage(const std::wstring& filename, HBITMAP& hbm, HENHMETAFILE& hEMF);
 // 画像ファイルか？
 BOOL XgIsImageFile(LPCWSTR pszFileName);
 // テキストファイルか？
 BOOL XgIsTextFile(LPCWSTR pszFileName);
-// 画像ファイルの一覧を取得。
-BOOL XgGetImageList(std::vector<std::wstring>& paths);
 // ファイルを読み込む。
 BOOL XgReadFileAll(LPCWSTR file, std::string& strBinary);
-BOOL XgReadImageFileAll(LPCWSTR file, std::string& strBinary, BOOL bNoCheck = FALSE);
 BOOL XgReadTextFileAll(LPCWSTR file, std::wstring& strText);
 // ファイルを読み込む。
 BOOL XgWriteFileAll(LPCWSTR file, const std::string& strBinary);
-BOOL XgWriteImageFileAll(LPCWSTR file, const std::string& strBinary);
-// フォルダの位置を取得する。
-BOOL XgGetFileDir(LPWSTR pszPath, LPCWSTR pszFile = NULL);
-BOOL XgGetBlockDir(LPWSTR pszPath);
 // エンディアン変換。
 void XgSwab(LPBYTE pbFile, size_t cbFile);
 
@@ -270,5 +259,69 @@ static inline BOOL ComboBox_RealSetText(HWND hwndCombo, LPCWSTR pszText)
     }
     return ComboBox_SetCurSel(hwndCombo, iItem);
 }
+
+struct XG_FileManager
+{
+    std::wstring m_filename;
+    std::wstring m_looks;
+    std::wstring m_block_dir;
+    std::unordered_map<std::wstring, std::string> m_path2contents;
+    std::unordered_map<std::wstring, HBITMAP> m_path2hbm;
+    std::unordered_map<std::wstring, HENHMETAFILE> m_path2hemf;
+
+    XG_FileManager()
+    {
+    }
+    ~XG_FileManager()
+    {
+    }
+
+    void set_file(LPCWSTR filename);
+    std::wstring get_looks_file();
+    void set_looks(LPCWSTR looks);
+    void delete_handles();
+    bool load_image(LPCWSTR filename);
+    bool save_image(const std::wstring& path);
+    bool save_images();
+    bool save_images(std::unordered_set<std::wstring>& files);
+    void convert();
+    void clear();
+    std::wstring get_file_title(const std::wstring& str) const;
+    std::wstring get_full_path(const std::wstring& str) const;
+    std::wstring get_block_dir();
+    std::wstring get_block_dir_worker() const;
+    bool get_files_dir(std::wstring& dir) const;
+    std::wstring get_canonical(const std::wstring& path);
+    std::wstring get_real_path(const std::wstring& path);
+    bool get_list(std::vector<std::wstring>& paths);
+    bool load_block_image(const std::wstring& path);
+    bool load_block_image(const std::wstring& path, HBITMAP& hbm, HENHMETAFILE& hEMF);
+
+    void convert(std::wstring& path)
+    {
+        if (path.empty())
+            return;
+        std::wstring canonical = L"$FILES\\";
+        canonical += get_file_title(path);
+        path = std::move(canonical);
+    }
+
+    template <typename T_TYPE>
+    void convert(std::unordered_map<std::wstring, T_TYPE>& map)
+    {
+        std::unordered_map<std::wstring, T_TYPE> new_map;
+        for (auto& pair : map)
+        {
+            if (pair.first.empty())
+                continue;
+            std::wstring path = L"$FILES\\";
+            path += get_file_title(pair.first);
+            new_map[path] = pair.second;
+        }
+        map = std::move(new_map);
+    }
+};
+
+std::shared_ptr<XG_FileManager>& XgGetFileManager(void);
 
 //////////////////////////////////////////////////////////////////////////////

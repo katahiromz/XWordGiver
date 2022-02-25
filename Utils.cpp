@@ -8,6 +8,15 @@
 #define max std::max
 #include <gdiplus.h>
 
+std::shared_ptr<XG_FileManager> xg_pFileManager;
+
+std::shared_ptr<XG_FileManager>& XgGetFileManager(void)
+{
+    if (!xg_pFileManager)
+        xg_pFileManager = std::make_shared<XG_FileManager>();
+    return xg_pFileManager;
+}
+
 //////////////////////////////////////////////////////////////////////////////
 
 // リソース文字列を読み込む。
@@ -650,43 +659,6 @@ void XgHexToBin(std::vector<BYTE>& data, const std::wstring& str)
     }
 }
 
-BOOL XgGetFileDir(LPWSTR pszPath, LPCWSTR pszFile)
-{
-    pszPath[0] = 0;
-    if (!pszFile)
-        pszFile = xg_strFileName.c_str();
-    if (!pszFile[0])
-        return FALSE;
-
-    LPCWSTR pszTitle = PathFindFileNameW(pszFile);
-    StringCchCopyW(pszPath, MAX_PATH, pszFile);
-    PathRemoveFileSpecW(pszPath);
-    PathAppendW(pszPath, pszTitle);
-    PathRemoveExtensionW(pszPath);
-    StringCchCatW(pszPath, MAX_PATH, L"_files");
-    return TRUE;
-}
-
-BOOL XgGetBlockDir(LPWSTR pszPath)
-{
-    GetModuleFileNameW(NULL, pszPath, MAX_PATH);
-    PathRemoveFileSpecW(pszPath);
-    PathAppendW(pszPath, L"BLOCK");
-    if (PathFileExistsW(pszPath))
-        return TRUE;
-    GetModuleFileNameW(NULL, pszPath, MAX_PATH);
-    PathRemoveFileSpecW(pszPath);
-    PathAppendW(pszPath, L"..\\BLOCK");
-    if (PathFileExistsW(pszPath))
-        return TRUE;
-    GetModuleFileNameW(NULL, pszPath, MAX_PATH);
-    PathRemoveFileSpecW(pszPath);
-    PathAppendW(pszPath, L"..\\..\\BLOCK");
-    if (PathFileExistsW(pszPath))
-        return TRUE;
-    return FALSE;
-}
-
 BOOL XgReadFileAll(LPCWSTR file, std::string& strBinary)
 {
     strBinary.clear();
@@ -713,23 +685,6 @@ BOOL XgWriteFileAll(LPCWSTR file, const std::string& strBinary)
         fclose(fout);
         return !!ret;
     }
-    return FALSE;
-}
-
-BOOL XgReadImageFileAll(LPCWSTR file, std::string& strBinary, BOOL bNoCheck)
-{
-    WCHAR szPath[MAX_PATH];
-    if (XgGetImagePath(szPath, file, bNoCheck))
-        return XgReadFileAll(szPath, strBinary);
-
-    return FALSE;
-}
-
-BOOL XgWriteImageFileAll(LPCWSTR file, const std::string& strBinary)
-{
-    WCHAR szPath[MAX_PATH];
-    if (XgGetImagePath(szPath, file, FALSE))
-        return XgWriteFileAll(szPath, strBinary);
     return FALSE;
 }
 
@@ -852,186 +807,15 @@ BOOL XgIsTextFile(LPCWSTR pszFileName)
     return lstrcmpiW(pchDotExt, L".txt") == 0;
 }
 
-// 画像のパスを取得する。
-BOOL XgGetImagePath(LPWSTR pszPath, LPCWSTR pszFileName, BOOL bNoCheck)
-{
-    if (!PathIsRelativeW(pszFileName))
-    {
-        if (pszPath != pszFileName)
-            GetFullPathNameW(pszFileName, MAX_PATH, pszPath, NULL);
-        return TRUE;
-    }
-
-    if (memcmp(pszFileName, L"$FILES\\", 7 * sizeof(WCHAR)) == 0)
-    {
-        WCHAR szFileDir[MAX_PATH];
-        if (XgGetFileDir(szFileDir))
-        {
-            StringCchCopyW(pszPath, MAX_PATH, szFileDir);
-            PathAppendW(pszPath, &pszFileName[7]);
-            if (PathFileExistsW(pszPath) || bNoCheck)
-                return TRUE;
-        }
-        if (xg_strLooksFile.size())
-        {
-            StringCchCopyW(pszPath, MAX_PATH, xg_strLooksFile.c_str());
-            PathRemoveFileSpecW(pszPath);
-            PathAppendW(pszPath, &pszFileName[7]);
-            if (PathFileExistsW(pszPath) || bNoCheck)
-                return TRUE;
-        }
-    }
-
-    WCHAR szBlockDir[MAX_PATH];
-    if (XgGetBlockDir(szBlockDir))
-    {
-        if (memcmp(pszFileName, L"$BLOCK\\", 7 * sizeof(WCHAR)) == 0)
-        {
-            StringCchCopyW(pszPath, MAX_PATH, szBlockDir);
-            PathAppendW(pszPath, &pszFileName[7]);
-            if (PathFileExistsW(pszPath) || bNoCheck)
-                return TRUE;
-        }
-        else if (PathIsRelativeW(pszFileName))
-        {
-            StringCchCopyW(pszPath, MAX_PATH, szBlockDir);
-            PathAppendW(pszPath, pszFileName);
-            if (PathFileExistsW(pszPath) || bNoCheck)
-                return TRUE;
-        }
-    }
-
-    StringCchCopyW(pszPath, MAX_PATH, pszFileName);
-    return TRUE;
-}
-
-// 画像のパスをきれいにする。
-BOOL XgGetCanonicalImagePath(LPWSTR pszCanonical, LPCWSTR pszFileName)
-{
-    WCHAR szPath[MAX_PATH];
-    if (!XgGetImagePath(szPath, pszFileName))
-        return FALSE;
-
-    for (auto& ch : szPath) {
-        if (ch == 0)
-            break;
-        if (ch == L'/')
-            ch = L'\\';
-    }
-
-    WCHAR szFileDir[MAX_PATH];
-    if (XgGetFileDir(szFileDir))
-    {
-        PathAddBackslashW(szFileDir);
-        std::wstring str = pszFileName;
-        str.resize(lstrlenW(szFileDir));
-        if (lstrcmpiW(str.c_str(), szFileDir) == 0)
-        {
-            StringCchCopyW(pszCanonical, MAX_PATH, L"$FILES");
-            PathAppendW(pszCanonical, PathFindFileNameW(pszFileName));
-            return TRUE;
-        }
-    }
-
-    if (xg_strLooksFile.size())
-    {
-        StringCchCopyW(szFileDir, _countof(szFileDir), xg_strLooksFile.c_str());
-        PathRemoveFileSpecW(szFileDir);
-        PathAddBackslashW(szFileDir);
-        std::wstring str = pszFileName;
-        str.resize(lstrlenW(szFileDir));
-        if (lstrcmpiW(str.c_str(), szFileDir) == 0)
-        {
-            StringCchCopyW(pszCanonical, MAX_PATH, L"$FILES");
-            PathAppendW(pszCanonical, PathFindFileNameW(pszFileName));
-            return TRUE;
-        }
-    }
-
-    WCHAR szBlockDir[MAX_PATH];
-    if (XgGetBlockDir(szBlockDir))
-    {
-        PathAddBackslashW(szBlockDir);
-        std::wstring str = pszFileName;
-        str.resize(lstrlenW(szBlockDir));
-        if (lstrcmpiW(str.c_str(), szBlockDir) == 0)
-        {
-            StringCchCopyW(pszCanonical, MAX_PATH, L"$BLOCK");
-            PathAppendW(pszCanonical, PathFindFileNameW(pszFileName));
-            return TRUE;
-        }
-    }
-
-    StringCchCopyW(pszCanonical, MAX_PATH, pszFileName);
-
-    return !PathIsRelative(pszFileName);
-}
-
-// 画像ファイルの一覧を取得。
-BOOL XgGetImageList(std::vector<std::wstring>& paths)
-{
-    paths.clear();
-
-    WIN32_FIND_DATAW find;
-    WCHAR szPath[MAX_PATH], szCanonical[MAX_PATH];
-
-    WCHAR szFileDir[MAX_PATH];
-    if (XgGetFileDir(szFileDir))
-    {
-        PathAppendW(szFileDir, L"*");
-        HANDLE hFind = FindFirstFileW(szFileDir, &find);
-        PathRemoveFileSpecW(szFileDir);
-        if (hFind != INVALID_HANDLE_VALUE) {
-            do
-            {
-                if (find.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
-                    continue;
-                StringCchCopyW(szPath, _countof(szPath), szFileDir);
-                PathAppendW(szPath, find.cFileName);
-                if (XgIsImageFile(szPath) && XgGetCanonicalImagePath(szCanonical, szPath))
-                {
-                    paths.push_back(szCanonical);
-                }
-            } while (FindNextFile(hFind, &find));
-            FindClose(hFind);
-        }
-    }
-
-    WCHAR szBlockDir[MAX_PATH];
-    if (XgGetBlockDir(szBlockDir))
-    {
-        PathAddBackslashW(szBlockDir);
-        PathAppendW(szBlockDir, L"*");
-        HANDLE hFind = FindFirstFileW(szBlockDir, &find);
-        PathRemoveFileSpecW(szBlockDir);
-        if (hFind != INVALID_HANDLE_VALUE) {
-            do
-            {
-                if (find.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
-                    continue;
-                StringCchCopyW(szPath, _countof(szPath), szBlockDir);
-                PathAppendW(szPath, find.cFileName);
-                if (XgIsImageFile(szPath) && XgGetCanonicalImagePath(szCanonical, szPath))
-                {
-                    paths.push_back(szCanonical);
-                }
-            } while (FindNextFile(hFind, &find));
-            FindClose(hFind);
-        }
-    }
-
-    return !paths.empty();
-}
-
 // 画像を読み込む。
-BOOL XgLoadImage(LPCWSTR pszFileName, HBITMAP& hbm, HENHMETAFILE& hEMF)
+BOOL XgLoadImage(const std::wstring& filename, HBITMAP& hbm, HENHMETAFILE& hEMF)
 {
     hbm = NULL;
     hEMF = NULL;
 
     // パス名をセット。
     WCHAR szFullPath[MAX_PATH];
-    if (!XgGetImagePath(szFullPath, pszFileName))
+    if (!GetFullPathNameW(filename.c_str(), _countof(szFullPath), szFullPath, NULL))
         return FALSE;
 
     LPCWSTR pchDotExt = PathFindExtensionW(szFullPath);
@@ -1042,7 +826,10 @@ BOOL XgLoadImage(LPCWSTR pszFileName, HBITMAP& hbm, HENHMETAFILE& hEMF)
     }
     if (lstrcmpiW(pchDotExt, L".emf") == 0)
     {
-        hEMF = GetEnhMetaFile(szFullPath);
+        // ロックを防ぐためにメモリーに読み込む。
+        HENHMETAFILE hGotEMF = ::GetEnhMetaFile(szFullPath);
+        hEMF = ::CopyEnhMetaFile(hGotEMF, NULL);
+        ::DeleteEnhMetaFile(hGotEMF);
         return hEMF != NULL;
     }
 
@@ -1182,4 +969,351 @@ std::wstring xg_str_unescape(const std::wstring& str)
         }
     }
     return ret;
+}
+
+void XG_FileManager::set_file(LPCWSTR filename)
+{
+    m_filename = get_full_path(filename);
+}
+
+void XG_FileManager::set_looks(LPCWSTR looks)
+{
+    m_looks = get_full_path(looks);
+}
+
+bool XG_FileManager::load_image(LPCWSTR filename)
+{
+    std::string binary;
+    if (!XgReadFileAll(get_real_path(filename).c_str(), binary))
+        return false;
+
+    auto canonical = get_canonical(filename);
+    m_path2contents[canonical] = binary;
+
+    ::DeleteObject(m_path2hbm[canonical]);
+    ::DeleteEnhMetaFile(m_path2hemf[canonical]);
+
+    return XgLoadImage(get_real_path(filename), m_path2hbm[canonical], m_path2hemf[canonical]);
+}
+
+bool XG_FileManager::save_image(const std::wstring& path)
+{
+    auto it = m_path2contents.find(path);
+    if (it == m_path2contents.end()) {
+        load_image(path.c_str());
+        it = m_path2contents.find(path);
+        if (it == m_path2contents.end())
+            return false;
+    }
+
+    std::wstring converted = path;
+    convert(converted);
+    auto real = get_real_path(converted);
+    return XgWriteFileAll(real.c_str(), it->second);
+}
+
+bool XG_FileManager::save_images()
+{
+    for (auto& pair : m_path2contents)
+    {
+        auto real = get_real_path(pair.first);
+        XgWriteFileAll(real.c_str(), pair.second);
+    }
+    return true;
+}
+
+bool XG_FileManager::save_images(std::unordered_set<std::wstring>& files)
+{
+    std::unordered_set<std::wstring> erase_targets;
+
+    for (auto& pair : m_path2contents)
+    {
+        if (files.count(pair.first) == 0)
+        {
+            erase_targets.insert(pair.first);
+            continue;
+        }
+        auto real = get_real_path(pair.first);
+        XgWriteFileAll(real.c_str(), pair.second);
+    }
+
+    for (auto& target : erase_targets)
+    {
+        m_path2contents.erase(target);
+        DeleteObject(m_path2hbm[target]);
+        m_path2hbm[target] = NULL;
+        DeleteEnhMetaFile(m_path2hemf[target]);
+        m_path2hemf[target] = NULL;
+    }
+
+    return true;
+}
+
+void XG_FileManager::convert()
+{
+    convert(m_path2contents);
+    convert(m_path2hbm);
+    convert(m_path2hemf);
+    convert(xg_strBlackCellImage);
+}
+
+void XG_FileManager::clear()
+{
+    *this = XG_FileManager();
+}
+
+std::wstring XG_FileManager::get_file_title(const std::wstring& str) const
+{
+    return PathFindFileNameW(str.c_str());
+}
+
+std::wstring XG_FileManager::get_full_path(const std::wstring& str) const
+{
+    if (str.empty())
+        return str;
+    WCHAR szPath[MAX_PATH];
+    GetFullPathNameW(str.c_str(), _countof(szPath), szPath, NULL);
+    return szPath;
+}
+
+std::wstring XG_FileManager::get_block_dir()
+{
+    if (m_block_dir.empty())
+        m_block_dir = get_block_dir_worker();
+    return m_block_dir;
+}
+
+std::wstring XG_FileManager::get_block_dir_worker() const
+{
+    WCHAR szPath[MAX_PATH];
+    GetModuleFileNameW(NULL, szPath, _countof(szPath));
+    PathRemoveFileSpecW(szPath);
+    PathAppendW(szPath, L"BLOCK");
+    if (PathFileExistsW(szPath))
+        return get_full_path(szPath);
+    GetModuleFileNameW(NULL, szPath, _countof(szPath));
+    PathRemoveFileSpecW(szPath);
+    PathAppendW(szPath, L"..\\BLOCK");
+    if (PathFileExistsW(szPath))
+        return get_full_path(szPath);
+    GetModuleFileNameW(NULL, szPath, _countof(szPath));
+    PathRemoveFileSpecW(szPath);
+    PathAppendW(szPath, L"..\\..\\BLOCK");
+    if (PathFileExistsW(szPath))
+        return get_full_path(szPath);
+    return L"";
+}
+
+bool XG_FileManager::get_files_dir(std::wstring& dir) const
+{
+    dir.clear();
+
+    WCHAR szPath[MAX_PATH];
+    if (m_looks.size())
+    {
+        StringCchCopyW(szPath, _countof(szPath), m_looks.c_str());
+        PathRemoveFileSpecW(szPath);
+        dir = szPath;
+        return true;
+    }
+
+    StringCchCopyW(szPath, _countof(szPath), m_filename.c_str());
+    PathRemoveFileSpecW(szPath);
+    PathAppendW(szPath, PathFindFileNameW(m_filename.c_str()));
+    PathRemoveExtensionW(szPath);
+    StringCchCatW(szPath, MAX_PATH, L"_files");
+    dir = szPath;
+    return PathIsDirectoryW(szPath);
+}
+
+std::wstring XG_FileManager::get_canonical(const std::wstring& path)
+{
+    if (path.find(L"$FILES\\") == 0 || path.find(L"$BLOCK\\") == 0)
+        return path;
+
+    auto full = get_full_path(path);
+
+    std::wstring files_dir;
+    if (get_files_dir(files_dir))
+    {
+        files_dir += L"\\";
+        auto dir = full;
+        dir.resize(files_dir.size());
+        if (lstrcmpiW(dir.c_str(), files_dir.c_str()) == 0)
+            return L"$FILES\\" + full.substr(dir.size());
+    }
+
+    auto block_dir = get_block_dir();
+    if (block_dir.size())
+    {
+        block_dir += L"\\";
+        auto dir = full;
+        dir.resize(block_dir.size());
+        if (lstrcmpiW(dir.c_str(), block_dir.c_str()) == 0)
+            return L"$BLOCK\\" + full.substr(dir.size());
+    }
+
+    return full;
+}
+
+std::wstring XG_FileManager::get_real_path(const std::wstring& path)
+{
+    if (path.find(L"$FILES\\") == 0)
+    {
+        std::wstring files_dir;
+        if (get_files_dir(files_dir))
+        {
+            return files_dir + L"\\" + path.substr(7);
+        }
+    }
+
+    if (path.find(L"$BLOCK\\") == 0)
+    {
+        auto block_dir = get_block_dir();
+        return block_dir + L"\\" + path.substr(7);
+    }
+
+    if (PathIsRelativeW(path.c_str()))
+        return get_full_path(path);
+
+    return path;
+}
+
+bool XG_FileManager::get_list(std::vector<std::wstring>& paths)
+{
+    paths.clear();
+
+    WIN32_FIND_DATAW find;
+
+    std::wstring files_dir;
+    if (get_files_dir(files_dir))
+    {
+        auto spec = files_dir;
+        spec += L"\\*";
+
+        HANDLE hFind = FindFirstFileW(spec.c_str(), &find);
+        if (hFind != INVALID_HANDLE_VALUE)
+        {
+            do
+            {
+                if (find.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
+                    continue;
+                auto path = files_dir;
+                path += L"\\";
+                path += find.cFileName;
+                if (XgIsImageFile(path.c_str()))
+                {
+                    paths.push_back(get_canonical(path));
+                }
+            } while (FindNextFile(hFind, &find));
+            FindClose(hFind);
+        }
+    }
+
+    {
+        auto block_dir = get_block_dir();
+        auto spec = block_dir;
+        spec += L"\\*";
+        HANDLE hFind = FindFirstFileW(spec.c_str(), &find);
+        if (hFind != INVALID_HANDLE_VALUE)
+        {
+            do
+            {
+                if (find.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
+                    continue;
+                auto path = block_dir;
+                path += L"\\";
+                path += find.cFileName;
+                if (XgIsImageFile(path.c_str()))
+                {
+                    paths.push_back(get_canonical(path));
+                }
+            } while (FindNextFile(hFind, &find));
+            FindClose(hFind);
+        }
+    }
+
+    return !paths.empty();
+}
+
+std::wstring XG_FileManager::get_looks_file()
+{
+    if (m_looks.size())
+        return m_looks;
+
+    std::wstring path;
+    get_files_dir(path);
+    if (m_filename.size())
+    {
+        path += L"\\";
+        path += PathFindFileNameW(m_filename.c_str());
+        auto idotext = path.rfind(L'.');
+        if (idotext != path.npos)
+            path.resize(idotext);
+        path += L".looks";
+        return path;
+    }
+
+    return L"";
+}
+
+void XG_FileManager::delete_handles()
+{
+    for (auto& pair : m_path2hbm)
+    {
+        DeleteObject(pair.second);
+    }
+    m_path2hbm.clear();
+
+    for (auto& pair : m_path2hemf)
+    {
+        DeleteEnhMetaFile(pair.second);
+    }
+    m_path2hemf.clear();
+}
+
+bool XG_FileManager::load_block_image(const std::wstring& path, HBITMAP& hbm, HENHMETAFILE& hEMF)
+{
+    ::DeleteObject(hbm);
+    hbm = NULL;
+
+    ::DeleteEnhMetaFile(hEMF);
+    hEMF = NULL;
+
+    if (path.empty())
+        return true;
+
+    auto real = get_real_path(path);
+    return XgLoadImage(real, hbm, hEMF);
+}
+
+bool XG_FileManager::load_block_image(const std::wstring& path)
+{
+    DeleteObject(xg_hbmBlackCell);
+    xg_hbmBlackCell = NULL;
+    DeleteEnhMetaFile(xg_hBlackCellEMF);
+    xg_hBlackCellEMF = NULL;
+
+    if (path.empty())
+        return true;
+
+    std::string binary;
+    if (!XgReadFileAll(get_real_path(path).c_str(), binary))
+        return false;
+
+    if (!load_block_image(path, xg_hbmBlackCell, xg_hBlackCellEMF))
+        return false;
+
+    auto canonical = get_canonical(path);
+    m_path2hbm[canonical] = xg_hbmBlackCell;
+    m_path2hemf[canonical] = xg_hBlackCellEMF;
+    m_path2contents[canonical] = std::move(binary);
+
+    if (xg_nViewMode == XG_VIEW_SKELETON)
+    {
+        // 画像が有効ならスケルトンビューを通常ビューに戻す。
+        xg_nViewMode = XG_VIEW_NORMAL;
+    }
+
+    return true;
 }

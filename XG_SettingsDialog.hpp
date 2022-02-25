@@ -26,7 +26,7 @@ public:
     XG_ColorBox m_hwndBlack;
     XG_ColorBox m_hwndMarked;
 
-    LPCWSTR m_pszAutoFile = NULL;
+    std::wstring m_strAutoFile;
     BOOL m_bImport = FALSE;
     BOOL m_bUpdating = FALSE;
 

@@ -335,77 +335,6 @@ VOID XgSetCellPosition(LONG& x, LONG& y, INT& i, INT& j, BOOL bEnd)
     x += xg_nMargin;
 }
 
-// BLOCKパスを変換する。
-void XgConvertBlockPath(std::wstring& str, BOOL bSave)
-{
-    if (str.empty())
-        return;
-
-    WCHAR szPath[MAX_PATH];
-    XgGetCanonicalImagePath(szPath, str.c_str());
-    std::wstring path = L"$FILES\\";
-    if (!PathIsRelativeW(szPath) && bSave) {
-        path += PathFindFileNameW(szPath);
-        str = path;
-        return;
-    }
-    str = szPath;
-    if (str.find(L"$BLOCK\\") == 0) {
-        path += str.substr(7);
-        str = path;
-        return;
-    }
-}
-
-void XgGetImageMap(std::map<std::wstring, std::string>& mapping)
-{
-    mapping.clear();
-
-    std::string strBinary;
-    WCHAR szPath[MAX_PATH];
-    if (XgReadImageFileAll(xg_strBlackCellImage.c_str(), strBinary))
-    {
-        XgGetCanonicalImagePath(szPath, xg_strBlackCellImage.c_str());
-        mapping[szPath] = strBinary;
-        xg_strBlackCellImage = szPath;
-    }
-
-    for (auto& box : xg_boxes) {
-        if (box->m_type == L"pic") {
-            if (auto pic = dynamic_cast<XG_PictureBoxWindow*>(&*box)) {
-                auto& strFile = pic->m_strText;
-                if (XgReadImageFileAll(strFile.c_str(), strBinary)) {
-                    XgGetCanonicalImagePath(szPath, strFile.c_str());
-                    mapping[szPath] = strBinary;
-                }
-            }
-        }
-    }
-}
-
-BOOL XgSaveImageMap(LPCWSTR pszFile, std::map<std::wstring, std::string>& mapping)
-{
-    BOOL ret = FALSE;
-    for (auto& pair : mapping) {
-        WCHAR szPath[MAX_PATH];
-        if (!ret) {
-            XgGetFileDir(szPath, pszFile);
-            CreateDirectoryW(szPath, NULL);
-        }
-        XgGetImagePath(szPath, pair.first.c_str(), TRUE);
-        std::wstring str = szPath;
-        XgConvertBlockPath(str, TRUE);
-        XgGetImagePath(szPath, str.c_str(), TRUE);
-        if (!XgWriteImageFileAll(szPath, pair.second))
-            return FALSE;
-        ret = TRUE;
-    }
-    if (ret) {
-        XgConvertBlockPath(xg_strBlackCellImage, TRUE);
-    }
-    return ret;
-}
-
 // ボックスをすべて削除する。
 void XgDeleteBoxes(void)
 {
@@ -413,6 +342,47 @@ void XgDeleteBoxes(void)
         DestroyWindow(*box);
     }
     xg_boxes.clear();
+}
+
+// 画像群を読み込む。
+bool XgLoadImageFiles(void)
+{
+    for (auto& box : xg_boxes) {
+        if (box->m_type == L"pic")
+        {
+            auto pic = dynamic_cast<XG_PictureBoxWindow*>(&*box);
+            XgGetFileManager()->load_image(pic->GetText().c_str());
+        }
+    }
+    return true;
+}
+
+// パス情報を変換する。
+bool XgConvertBoxes(void)
+{
+    for (auto& box : xg_boxes) {
+        if (box->m_type == L"pic")
+        {
+            auto pic = dynamic_cast<XG_PictureBoxWindow*>(&*box);
+            XgGetFileManager()->convert(pic->m_strText);
+        }
+    }
+    return true;
+}
+
+// 使われている画像を取得する。
+std::unordered_set<std::wstring> XgGetUsedImages(void)
+{
+    std::unordered_set<std::wstring> ret;
+    for (auto& box : xg_boxes) {
+        if (box->m_type == L"pic")
+        {
+            auto pic = dynamic_cast<XG_PictureBoxWindow*>(&*box);
+            ret.insert(pic->GetText());
+        }
+    }
+    ret.insert(xg_strBlackCellImage);
+    return ret;
 }
 
 // ボックスJSONを読み込む。
@@ -1047,16 +1017,7 @@ bool __fastcall XgLoadSettings(void)
             }
 
             if (!app_key.QuerySz(L"BlackCellImage", sz, ARRAYSIZE(sz))) {
-                WCHAR szFullPath[MAX_PATH], szCanonical[MAX_PATH];
-                if (XgGetImagePath(szFullPath, sz))
-                {
-                    XgGetCanonicalImagePath(szCanonical, szFullPath);
-                    xg_strBlackCellImage = szCanonical;
-                }
-                else
-                {
-                    xg_strBlackCellImage.clear();
-                }
+                xg_strBlackCellImage = sz;
             }
 
             if (!app_key.QuerySz(L"DoubleFrameLetters", sz, ARRAYSIZE(sz))) {
@@ -1495,6 +1456,7 @@ void XgNewCells(HWND hwnd, WCHAR ch, INT nRows, INT nCols)
             xg_xword.SetAt(iRow, jCol, ch);
         }
     }
+    XgGetFileManager() = std::make_shared<XG_FileManager>();
     // イメージを更新する。
     XgMarkUpdate();
     XgUpdateImage(hwnd, 0, 0);
@@ -1876,6 +1838,161 @@ static void XgPrintAnswer(void)
     }
 }
 
+// LOOKSファイルのインポート。
+BOOL XgImportLooks(HWND hwnd, LPCWSTR pszFileName)
+{
+    if (!PathFileExistsW(pszFileName))
+        return FALSE;
+
+    XgGetFileManager()->set_looks(pszFileName);
+
+    WCHAR szText[1024], szText2[MAX_PATH];
+
+    // 色。
+    GetPrivateProfileStringW(L"Looks", L"WhiteCellColor", L"16777215", szText, _countof(szText), pszFileName);
+    xg_rgbWhiteCellColor = _wtoi(szText);
+
+    GetPrivateProfileStringW(L"Looks", L"BlackCellColor", L"3355443", szText, _countof(szText), pszFileName);
+    xg_rgbBlackCellColor = _wtoi(szText);
+
+    GetPrivateProfileStringW(L"Looks", L"MarkedCellColor", L"16777215", szText, _countof(szText), pszFileName);
+    xg_rgbMarkedCellColor = _wtoi(szText);
+
+    // フォント。
+    GetPrivateProfileStringW(L"Looks", L"CellFont", L"", szText, _countof(szText), pszFileName);
+    StringCchCopyW(xg_szCellFont, _countof(xg_szCellFont), szText);
+
+    GetPrivateProfileStringW(L"Looks", L"SmallFont", L"", szText, _countof(szText), pszFileName);
+    StringCchCopyW(xg_szSmallFont, _countof(xg_szSmallFont), szText);
+
+    GetPrivateProfileStringW(L"Looks", L"UIFont", L"", szText, _countof(szText), pszFileName);
+    StringCchCopyW(xg_szUIFont, _countof(xg_szUIFont), szText);
+
+    // スケルトンビューか？
+    if (XgIsUserJapanese())
+        GetPrivateProfileStringW(L"Looks", L"SkeletonView", L"0", szText, _countof(szText), pszFileName);
+    else
+        GetPrivateProfileStringW(L"Looks", L"SkeletonView", L"1", szText, _countof(szText), pszFileName);
+    BOOL bSkeltonView = _wtoi(szText);
+    xg_nViewMode = bSkeltonView ? XG_VIEW_SKELETON : XG_VIEW_NORMAL;
+
+    // 太枠をつけるか？
+    GetPrivateProfileStringW(L"Looks", L"AddThickFrame", L"1", szText, _countof(szText), pszFileName);
+    xg_bAddThickFrame = !!_wtoi(szText);
+
+    // 二重マスに枠をつけるか？
+    GetPrivateProfileStringW(L"Looks", L"DrawFrameForMarkedCell", L"1", szText, _countof(szText), pszFileName);
+    xg_bDrawFrameForMarkedCell = !!_wtoi(szText);
+
+    // 英小文字か？
+    GetPrivateProfileStringW(L"Looks", L"Lowercase", L"0", szText, _countof(szText), pszFileName);
+    xg_bLowercase = !!_wtoi(szText);
+
+    // ひらがなか？
+    GetPrivateProfileStringW(L"Looks", L"Hiragana", L"0", szText, _countof(szText), pszFileName);
+    xg_bHiragana = !!_wtoi(szText);
+
+    // 文字の大きさ。
+    StringCbPrintfW(szText2, sizeof(szText2), L"%d", DEF_CELL_CHAR_SIZE);
+    GetPrivateProfileStringW(L"Looks", L"CellCharPercents", szText2, szText, _countof(szText), pszFileName);
+    xg_nCellCharPercents = _wtoi(szText);
+
+    StringCbPrintfW(szText2, sizeof(szText2), L"%d", DEF_SMALL_CHAR_SIZE);
+    GetPrivateProfileStringW(L"Looks", L"SmallCharPercents", szText2, szText, _countof(szText), pszFileName);
+    xg_nSmallCharPercents = _wtoi(szText);
+
+    // 黒マス画像。
+    GetPrivateProfileStringW(L"Looks", L"BlackCellImage", L"", szText, _countof(szText), pszFileName);
+    xg_strBlackCellImage = szText;
+
+    ::DeleteObject(xg_hbmBlackCell);
+    xg_hbmBlackCell = NULL;
+    ::DeleteEnhMetaFile(xg_hBlackCellEMF);
+    xg_hBlackCellEMF = NULL;
+    XgGetFileManager()->load_block_image(xg_strBlackCellImage, xg_hbmBlackCell, xg_hBlackCellEMF);
+
+    // 二重マス文字。
+    GetPrivateProfileStringW(L"Looks", L"DoubleFrameLetters", XgLoadStringDx1(IDS_DBLFRAME_LETTERS_1), szText, _countof(szText), pszFileName);
+    {
+        std::vector<BYTE> data;
+        XgHexToBin(data, szText);
+        std::wstring str;
+        str.resize(data.size() / sizeof(WCHAR));
+        memcpy(&str[0], data.data(), data.size());
+        xg_strDoubleFrameLetters = str;
+    }
+
+    return TRUE;
+}
+
+// LOOKSファイルのエクスポート。
+BOOL XgExportLooks(HWND hwnd, LPCWSTR pszFileName)
+{
+    // 書く前にファイルを消す。
+    DeleteFileW(pszFileName);
+    // LOOKSファイル名をセットする。
+    XgGetFileManager()->set_looks(pszFileName);
+
+    // 文字の大きさの設定。
+    WritePrivateProfileStringW(L"Looks", L"CellCharPercents", XgIntToStr(xg_nCellCharPercents), pszFileName);
+    WritePrivateProfileStringW(L"Looks", L"SmallCharPercents", XgIntToStr(xg_nSmallCharPercents), pszFileName);
+
+    // セルフォント。
+    WritePrivateProfileStringW(L"Looks", L"CellFont", xg_szCellFont, pszFileName);
+
+    // 小さい文字のフォント。
+    WritePrivateProfileStringW(L"Looks", L"SmallFont", xg_szSmallFont, pszFileName);
+
+    // UIフォント。
+    WritePrivateProfileStringW(L"Looks", L"UIFont", xg_szUIFont, pszFileName);
+
+    // もし黒マス画像が指定されていれば
+    if (xg_strBlackCellImage.size() && xg_strBlackCellImage != XgLoadStringDx1(IDS_NONE))
+    {
+        std::wstring converted = xg_strBlackCellImage;
+        XgGetFileManager()->convert(converted);
+        WritePrivateProfileStringW(L"Looks", L"BlackCellImage", converted.c_str(), pszFileName);
+
+        // さらに画像ファイルをエクスポートする。
+        XgGetFileManager()->save_image(converted);
+    }
+    else
+    {
+        WritePrivateProfileStringW(L"Looks", L"BlackCellImage", L"", pszFileName);
+    }
+
+    // スケルトンビューか？
+    BOOL bSkeltonView = (xg_nViewMode == XG_VIEW_SKELETON);
+    WritePrivateProfileStringW(L"Looks", L"SkeletonView", XgIntToStr(bSkeltonView), pszFileName);
+
+    // 太枠をつけるか？
+    WritePrivateProfileStringW(L"Looks", L"AddThickFrame", XgIntToStr(xg_bAddThickFrame), pszFileName);
+
+    // 二重マスに枠をつけるか？
+    WritePrivateProfileStringW(L"Looks", L"DrawFrameForMarkedCell", XgIntToStr(xg_bDrawFrameForMarkedCell), pszFileName);
+
+    // 英小文字か？
+    WritePrivateProfileStringW(L"Looks", L"Lowercase", XgIntToStr(xg_bLowercase), pszFileName);
+
+    // ひらがなか？
+    WritePrivateProfileStringW(L"Looks", L"Hiragana", XgIntToStr(xg_bHiragana), pszFileName);
+
+    // 色を設定する。
+    WritePrivateProfileStringW(L"Looks", L"WhiteCellColor", XgIntToStr(xg_rgbWhiteCellColor), pszFileName);
+    WritePrivateProfileStringW(L"Looks", L"BlackCellColor", XgIntToStr(xg_rgbBlackCellColor), pszFileName);
+    WritePrivateProfileStringW(L"Looks", L"MarkedCellColor", XgIntToStr(xg_rgbMarkedCellColor), pszFileName);
+
+    // 二重マス文字。
+    {
+        std::wstring str = xg_strDoubleFrameLetters;
+        str = XgBinToHex(str.c_str(), str.size() * sizeof(WCHAR));
+        WritePrivateProfileStringW(L"Looks", L"DoubleFrameLetters", str.c_str(), pszFileName);
+    }
+
+    // フラッシュ！
+    return WritePrivateProfileStringW(NULL, NULL, NULL, pszFileName);
+}
+
 //////////////////////////////////////////////////////////////////////////////
 
 // バージョン情報を表示する。
@@ -1894,45 +2011,37 @@ void __fastcall XgOnAbout(HWND hwnd)
 }
 
 // 保存する。
-bool __fastcall XgDoSave(HWND hwnd, LPCWSTR pszFile)
+bool __fastcall XgDoSaveFiles(HWND hwnd, LPCWSTR pszFile)
 {
-    std::map<std::wstring, std::string> mapping;
-    try
-    {
-        XgGetImageMap(mapping);
-    } catch (...) {
-        assert(0);
-    }
+    auto old_mgr = std::make_shared<XG_FileManager>(*XgGetFileManager());
+
+    // パス情報を格納・変換する。
+    XgGetFileManager()->set_file(pszFile);
+    XgGetFileManager()->set_looks(L"");
+    XgGetFileManager()->convert();
+    XgConvertBoxes();
 
     // 保存する。
-    if (!XgDoSaveFile(hwnd, pszFile)) {
+    if (!XgDoSaveFile(hwnd, pszFile))
+    {
         // 保存に失敗。
-        XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_CANTSAVE2), nullptr, MB_ICONERROR);
+        XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_CANTSAVE2), NULL, MB_ICONERROR);
+        XgGetFileManager() = old_mgr;
         return false;
     }
 
     // *_filesフォルダを作成する。
-    WCHAR szPath[MAX_PATH];
-    XgGetFileDir(szPath, pszFile);
-    CreateDirectoryW(szPath, NULL);
+    std::wstring files_dir;
+    XgGetFileManager()->get_files_dir(files_dir);
+    CreateDirectoryW(files_dir.c_str(), NULL);
 
-    try
-    {
-        XgSaveImageMap(pszFile, mapping);
-    } catch (...) {
-        assert(0);
-    }
+    // 使われている画像を取得して保存する。
+    auto used = XgGetUsedImages();
+    XgGetFileManager()->save_images(used);
 
-    // LOOKSファイルも自動でエクスポートする。
-    PathAppendW(szPath, PathFindFileNameW(pszFile));
-    PathRemoveExtensionW(szPath);
-    PathAddExtensionW(szPath, L".looks");
-    {
-        XG_SettingsDialog dialog;
-        dialog.m_pszAutoFile = szPath;
-        dialog.m_bImport = FALSE;
-        dialog.DoModal(hwnd);
-    }
+    // 関連ファイルをエクスポートする。
+    auto looks_file = XgGetFileManager()->get_looks_file();
+    XgExportLooks(hwnd, looks_file.c_str());
 
     // ファイルの種類を保存する。
     LPCWSTR pchDotExt = PathFindExtensionW(pszFile);
@@ -2027,7 +2136,7 @@ BOOL __fastcall XgOnSaveAs(HWND hwnd)
     // ユーザーにファイルの場所を問い合わせる。
     if (::GetSaveFileNameW(&ofn)) {
         // 保存する。
-        XgDoSave(hwnd, sz);
+        XgDoSaveFiles(hwnd, sz);
 
         // ツールバーのUIを更新する。
         XgUpdateToolBarUI(hwnd);
@@ -2045,7 +2154,7 @@ BOOL __fastcall XgOnSave(HWND hwnd)
         return XgOnSaveAs(hwnd);
 
     // 上書き保存。
-    return XgDoSave(hwnd, xg_strFileName.c_str());
+    return XgDoSaveFiles(hwnd, xg_strFileName.c_str());
 }
 
 // 保存を確認し、必要なら保存する。
@@ -2073,27 +2182,13 @@ BOOL XgDoConfirmSave(HWND hwnd)
     case IDYES:
         return XgOnSave(hwnd);
     case IDNO:
+        XG_FILE_MODIFIED(FALSE);
         return TRUE;
     case IDCANCEL:
         return FALSE;
     default:
         return TRUE;
     }
-}
-
-// 画像を再読み込み。
-void XgReloadImage(HWND hwnd)
-{
-    WCHAR szPath[MAX_PATH];
-    if (XgGetImagePath(szPath, xg_strBlackCellImage.c_str()))
-        return;
-    if (XgGetImagePath(szPath, xg_strLooksFile.c_str()))
-        return;
-    xg_strBlackCellImage.clear();
-    ::DeleteObject(xg_hbmImage);
-    ::DeleteEnhMetaFile(xg_hBlackCellEMF);
-    xg_hbmImage = NULL;
-    xg_hBlackCellEMF = NULL;
 }
 
 // 新規作成ダイアログ。
@@ -2123,8 +2218,6 @@ BOOL __fastcall XgOnNew(HWND hwnd)
     sa2->Get();
     xg_ubUndoBuffer.Commit(UC_SETALL, sa1, sa2);
 
-    // 画像を再読み込み。
-    XgReloadImage(hwnd);
     // ボックスをすべて削除する。
     XgDeleteBoxes();
     // ツールバーのUIを更新する。
@@ -2132,6 +2225,70 @@ BOOL __fastcall XgOnNew(HWND hwnd)
     // 更新フラグ。
     XG_FILE_MODIFIED(FALSE);
     return TRUE;
+}
+
+// ファイルを読み込む。
+bool __fastcall XgDoLoadFiles(HWND hwnd, LPCWSTR pszFile)
+{
+    // 候補ウィンドウを破棄する。
+    XgDestroyCandsWnd();
+    // ヒントウィンドウを破棄する。
+    XgDestroyHintsWnd();
+    // ボックスをすべて削除する。
+    XgDeleteBoxes();
+
+    // マネージャー入れ替え。
+    auto old_mgr = XgGetFileManager();
+    XgGetFileManager()->set_file(pszFile);
+    XgGetFileManager()->set_looks(L"");
+
+    // 開く。
+    if (!XgDoLoadMainFile(hwnd, pszFile))
+    {
+        // 失敗。
+        XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_CANTLOAD), nullptr, MB_ICONERROR);
+        XgGetFileManager() = old_mgr;
+        return false;
+    }
+
+    // 画像を破棄する。
+    if (old_mgr)
+        old_mgr->delete_handles();
+
+    // 画像群を読み込む。
+    XgLoadImageFiles();
+
+    // LOOKSファイルも自動でインポートする。
+    auto looks_file = XgGetFileManager()->get_looks_file();
+    XgImportLooks(hwnd, looks_file.c_str());
+
+    // キャレット位置を更新。
+    XgSetCaretPos();
+    // テーマを更新する。
+    XgSetThemeString(xg_strTheme);
+    XgUpdateTheme(hwnd);
+    // イメージを更新する。
+    XgMarkUpdate();
+    XgUpdateImage(hwnd, 0, 0);
+    // ヒントを表示する。
+    XgShowHints(hwnd);
+    // ツールバーのUIを更新する。
+    XgUpdateToolBarUI(hwnd);
+    // ルールを更新する。
+    XgUpdateRules(hwnd);
+    // 「元に戻す」情報をクリアする。
+    xg_ubUndoBuffer.Empty();
+    // ズームを実際のウィンドウに合わせる。
+    XgFitZoom(hwnd);
+    // イメージを更新する。
+    XgUpdateImage(hwnd, 0, 0);
+
+    // フォーカスを移動。
+    SetFocus(hwnd);
+    // ファイル変更フラグ。
+    XG_FILE_MODIFIED(FALSE);
+
+    return true;
 }
 
 // ファイルを読み込む。
@@ -2150,7 +2307,7 @@ BOOL XgOnLoad(HWND hwnd, LPCWSTR pszFile, LPPOINT ppt)
     if (lstrcmpiW(pchDotExt, L".looks") == 0)
     {
         XG_SettingsDialog dialog;
-        dialog.m_pszAutoFile = szFile;
+        dialog.m_strAutoFile = szFile;
         dialog.m_bImport = TRUE;
         dialog.DoModal(hwnd);
         XG_FILE_MODIFIED(TRUE);
@@ -2224,66 +2381,7 @@ BOOL XgOnLoad(HWND hwnd, LPCWSTR pszFile, LPPOINT ppt)
     if (!XgDoConfirmSave(xg_hMainWnd))
         return FALSE;
 
-    // 候補ウィンドウを破棄する。
-    XgDestroyCandsWnd();
-    // ヒントウィンドウを破棄する。
-    XgDestroyHintsWnd();
-    // ボックスをすべて削除する。
-    XgDeleteBoxes();
-
-    // 開く。
-    std::wstring old_file = xg_strFileName;
-    xg_strFileName = pszFile;
-    if (!XgDoLoad(hwnd, pszFile)) {
-        // 失敗。
-        xg_strFileName = old_file;
-        XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_CANTLOAD), nullptr, MB_ICONERROR);
-        return FALSE;
-    }
-
-    // LOOKSファイルも自動でインポートする。
-    WCHAR szPath[MAX_PATH];
-    if (XgGetFileDir(szPath, pszFile)) {
-        PathAppendW(szPath, PathFindFileNameW(pszFile));
-        PathRemoveExtensionW(szPath);
-        PathAddExtensionW(szPath, L".looks");
-        {
-            XG_SettingsDialog dialog;
-            dialog.m_pszAutoFile = szPath;
-            dialog.m_bImport = TRUE;
-            dialog.DoModal(hwnd);
-        }
-    }
-
-    // 画像を再読み込み。
-    XgReloadImage(hwnd);
-    // キャレット位置を更新。
-    XgSetCaretPos();
-    // テーマを更新する。
-    XgSetThemeString(xg_strTheme);
-    XgUpdateTheme(hwnd);
-    // イメージを更新する。
-    XgMarkUpdate();
-    XgUpdateImage(hwnd, 0, 0);
-    // ヒントを表示する。
-    XgShowHints(hwnd);
-    // ツールバーのUIを更新する。
-    XgUpdateToolBarUI(hwnd);
-    // ルールを更新する。
-    XgUpdateRules(hwnd);
-    // 「元に戻す」情報をクリアする。
-    xg_ubUndoBuffer.Empty();
-    // ズームを実際のウィンドウに合わせる。
-    XgFitZoom(hwnd);
-    // イメージを更新する。
-    XgUpdateImage(hwnd, 0, 0);
-
-    // フォーカスを移動。
-    SetFocus(hwnd);
-    // ファイル変更フラグ。
-    XG_FILE_MODIFIED(FALSE);
-
-    return TRUE;
+    return XgDoLoadFiles(hwnd, pszFile);
 }
 
 // ファイルを開く。
@@ -2348,7 +2446,7 @@ bool __fastcall XgDoSaveToLocation(HWND hwnd)
             }
 
             // ファイルに保存する。
-            bOK = XgDoSave(hwnd, szPath);
+            bOK = XgDoSaveFiles(hwnd, szPath);
         }
         ::LeaveCriticalSection(&xg_cs);
     }
@@ -6499,7 +6597,7 @@ bool __fastcall MainWnd_OnCreate(HWND hwnd, LPCREATESTRUCT /*lpCreateStruct*/)
             // 読み込んで名前を付けて保存する。
             auto input = wargv[2];
             auto output = wargv[3];
-            if (XgDoLoad(hwnd, input) && XgDoSave(hwnd, output)) {
+            if (XgDoLoadFiles(hwnd, input) && XgDoSaveFiles(hwnd, output)) {
                 PostQuitMessage(0);
             } else {
                 PostQuitMessage(-1);

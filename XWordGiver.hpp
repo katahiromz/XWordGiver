@@ -1287,8 +1287,6 @@ extern bool xg_bAddThickFrame;
 
 // 直前に開いたクロスワードデータファイルのパスファイル名。
 extern std::wstring xg_strFileName;
-// 直前に開いたLOOKSファイルのパスファイル名。
-extern std::wstring xg_strLooksFile;
 
 // ヒント追加フラグ。
 extern bool xg_bHintsAdded;
@@ -1381,10 +1379,12 @@ typedef enum XG_FILETYPE {
     XG_FILETYPE_XD, // XD形式。
 } XG_FILETYPE;
 
-// ファイルを開く。
-bool __fastcall XgDoLoad(HWND hwnd, LPCWSTR pszFile);
-// ファイルを開く。
-bool __fastcall XgDoLoadFile(HWND hwnd, LPCWSTR pszFile, XG_FILETYPE type);
+// メインファイルと関連ファイルを読み込む。
+bool __fastcall XgDoLoadFiles(HWND hwnd, LPCWSTR pszFile);
+// メインファイルを読み込む。
+bool __fastcall XgDoLoadMainFile(HWND hwnd, LPCWSTR pszFile);
+// メインファイルを読み込む。
+bool __fastcall XgDoLoadFileType(HWND hwnd, LPCWSTR pszFile, XG_FILETYPE type);
 // CRPファイルを開く。
 bool __fastcall XgDoLoadCrpFile(HWND hwnd, LPCWSTR pszFile);
 
@@ -1456,10 +1456,6 @@ void XgSetModified(BOOL bModified, LPCSTR file, INT line);
 BOOL XgDoConfirmSave(HWND hwnd);
 // ファイルを読み込む。
 BOOL XgOnLoad(HWND hwnd, LPCWSTR pszFile, LPPOINT ppt = NULL);
-// イメージマッピングを取得する。
-void XgGetImageMap(std::map<std::wstring, std::string>& mapping);
-// BLOCKパスを変換する。
-void XgConvertBlockPath(std::wstring& str, BOOL bSave);
 
 //////////////////////////////////////////////////////////////////////////////
 

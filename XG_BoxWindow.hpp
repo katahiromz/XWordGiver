@@ -492,9 +492,7 @@ public:
     virtual BOOL WriteMap(map_t& map) {
         map[L"type"] = m_type;
         map[L"pos"] = GetPosText();
-        auto text = GetText();
-        XgConvertBlockPath(text, TRUE);
-        map[L"text"] = text;
+        map[L"text"] = GetText();
         return TRUE;
     }
     BOOL ReadLineEx(const std::wstring& line) {
@@ -603,41 +601,28 @@ extern std::vector<std::unique_ptr<XG_BoxWindow> > xg_boxes;
 class XG_PictureBoxWindow : public XG_BoxWindow
 {
 public:
-    HBITMAP m_hbm;
-    HENHMETAFILE m_hEMF;
-
     XG_PictureBoxWindow(INT i1 = 0, INT j1 = 0, INT i2 = 1, INT j2 = 1)
         : XG_BoxWindow(L"pic", i1, j1, i2, j2)
-        , m_hbm(NULL)
-        , m_hEMF(NULL)
     {
-    }
-
-    void DoDelete()
-    {
-        ::DeleteObject(m_hbm);
-        ::DeleteEnhMetaFile(m_hEMF);
-        m_hbm = NULL;
-        m_hEMF = NULL;
     }
 
     ~XG_PictureBoxWindow()
     {
-        DoDelete();
     }
 
     virtual void OnDraw(HWND hwnd, HDC hDC, const RECT& rc) override
     {
-        if (!m_hbm && !m_hEMF) {
-            std::wstring str = m_strText;
-            SetText(str);
-        }
+        if (XgGetFileManager()->m_path2contents[m_strText].empty())
+            XgGetFileManager()->load_image(m_strText.c_str());
 
-        if (m_hbm) {
+        auto hbm = XgGetFileManager()->m_path2hbm[m_strText];
+        auto hEMF = XgGetFileManager()->m_path2hemf[m_strText];
+
+        if (hbm) {
             BITMAP bm;
-            GetObject(m_hbm, sizeof(bm), &bm);
+            GetObject(hbm, sizeof(bm), &bm);
             if (HDC hMemDC = CreateCompatibleDC(NULL)) {
-                HGDIOBJ hbmOld = SelectObject(hMemDC, m_hbm);
+                HGDIOBJ hbmOld = SelectObject(hMemDC, hbm);
                 StretchBlt(hDC, rc.left, rc.top, rc.right - rc.left, rc.bottom - rc.top,
                     hMemDC, 0, 0, bm.bmWidth, bm.bmHeight, SRCCOPY);
                 SelectObject(hMemDC, hbmOld);
@@ -646,27 +631,12 @@ public:
             return;
         }
 
-        if (m_hEMF) {
-            PlayEnhMetaFile(hDC, m_hEMF, &rc);
+        if (hEMF) {
+            PlayEnhMetaFile(hDC, hEMF, &rc);
             return;
         }
 
         XG_BoxWindow::OnDraw(hwnd, hDC, rc);
-    }
-
-    BOOL SetText(const std::wstring& str) override
-    {
-        DoDelete();
-
-        WCHAR szPath[MAX_PATH];
-        XgGetImagePath(szPath, str.c_str());
-        if (XgLoadImage(szPath, m_hbm, m_hEMF)) {
-            XgGetCanonicalImagePath(szPath, str.c_str());
-            m_strText = szPath;
-            return TRUE;
-        }
-
-        return FALSE;
     }
 
     virtual BOOL Prop(HWND hwnd) override

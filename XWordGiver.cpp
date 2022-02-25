@@ -11,8 +11,6 @@
 
 // 直前に開いたクロスワードデータファイルのパスファイル名。
 std::wstring xg_strFileName;
-// 直前に開いたLOOKSファイルのパスファイル名。
-std::wstring xg_strLooksFile;
 
 // 空のクロスワードの解を解く場合か？
 bool xg_bSolvingEmpty = false;
@@ -5158,7 +5156,7 @@ bool __fastcall XgDoLoadCrpFile(HWND hwnd, LPCWSTR pszFile)
 }
 
 // ファイルを開く。
-bool __fastcall XgDoLoadFile(HWND hwnd, LPCWSTR pszFile, XG_FILETYPE type)
+bool __fastcall XgDoLoadFileType(HWND hwnd, LPCWSTR pszFile, XG_FILETYPE type)
 {
     if (type == XG_FILETYPE_CRP)
         return XgDoLoadCrpFile(hwnd, pszFile);
@@ -5753,22 +5751,23 @@ bool __fastcall XgDoSaveFileType(HWND hwnd, LPCWSTR pszFile, XG_FILETYPE type)
     return ret;
 }
 
-bool __fastcall XgDoLoad(HWND hwnd, LPCWSTR pszFile)
+// ファイルを読み込む。
+bool __fastcall XgDoLoadMainFile(HWND hwnd, LPCWSTR pszFile)
 {
     LPCWSTR pchDotExt = PathFindExtensionW(pszFile);
     if (lstrcmpiW(pchDotExt, L".xwj") == 0 ||
         lstrcmpiW(pchDotExt, L".json") == 0 ||
         lstrcmpiW(pchDotExt, L".jso") == 0)
     {
-        return XgDoLoadFile(hwnd, pszFile, XG_FILETYPE_XWJ);
+        return XgDoLoadFileType(hwnd, pszFile, XG_FILETYPE_XWJ);
     } else if (lstrcmpiW(pchDotExt, L".crp") == 0) {
-        return XgDoLoadFile(hwnd, pszFile, XG_FILETYPE_CRP);
+        return XgDoLoadFileType(hwnd, pszFile, XG_FILETYPE_CRP);
     } else if (lstrcmpiW(pchDotExt, L".xd") == 0) {
-        return XgDoLoadFile(hwnd, pszFile, XG_FILETYPE_XD);
+        return XgDoLoadFileType(hwnd, pszFile, XG_FILETYPE_XD);
     } else if (lstrcmpiW(pchDotExt, L".xwd") == 0) {
-        return XgDoLoadFile(hwnd, pszFile, XG_FILETYPE_XWD);
+        return XgDoLoadFileType(hwnd, pszFile, XG_FILETYPE_XWD);
     } else {
-        return XgDoLoadFile(hwnd, pszFile, XG_FILETYPE_XWJ);
+        return XgDoLoadFileType(hwnd, pszFile, XG_FILETYPE_XWJ);
     }
 }
 

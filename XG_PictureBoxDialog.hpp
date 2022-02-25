@@ -69,7 +69,7 @@ public:
 
         // 画像ファイルリストを取得する。
         std::vector<std::wstring> items;
-        XgGetImageList(items);
+        XgGetFileManager()->get_list(items);
         for (auto& item : items) {
             ComboBox_AddString(hCmb1, item.c_str());
         }
