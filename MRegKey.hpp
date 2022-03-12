@@ -3,7 +3,7 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #ifndef MZC4_MREGKEY_HPP_
-#define MZC4_MREGKEY_HPP_       8   /* Version 8 */
+#define MZC4_MREGKEY_HPP_       10   /* Version 10 */
 
 #ifndef HKCR
     #define HKCR    HKEY_CLASSES_ROOT
@@ -146,7 +146,7 @@ public:
     static LONG RegReplaceKey(HKEY hKey, LPCTSTR pszSubKey,
                               LPCTSTR pszNewFile, LPCTSTR pszOldFile);
     static LONG RegDeleteTreeDx(HKEY hKey, LPCTSTR pszSubKey);
-    static DWORD MultiSzSizeDx(LPCTSTR pszz);
+    static size_t MultiSzSizeDx(LPCTSTR pszz);
 
     static HKEY CloneHandleDx(HKEY hKey);
 
@@ -269,7 +269,7 @@ LONG MRegKey::QuerySz(LPCTSTR pszValueName, T_STRING& strValue)
     {
         result = RegQueryValueEx(pszValueName, NULL, NULL,
                                  reinterpret_cast<LPBYTE>(psz), &cbData);
-        if (result != ERROR_SUCCESS)
+        if (result == ERROR_SUCCESS)
         {
             strValue = psz;
         }
@@ -302,7 +302,7 @@ LONG MRegKey::QueryExpandSz(LPCTSTR pszValueName, T_STRING& strValue)
     {
         result = RegQueryValueEx(pszValueName, NULL, NULL,
                                  reinterpret_cast<LPBYTE>(psz), &cbData);
-        if (result != ERROR_SUCCESS)
+        if (result == ERROR_SUCCESS)
         {
             strValue = psz;
         }
@@ -403,7 +403,7 @@ inline LONG MRegKey::RegCreateKeyEx(HKEY hBaseKey, LPCTSTR pszSubKey,
     LPDWORD lpdwDisposition/* = NULL*/)
 {
     assert(m_hKey == NULL);
-    return ::RegCreateKeyEx(hBaseKey, pszSubKey, dwReserved,
+    return ::RegCreateKeyEx(hBaseKey, pszSubKey, 0,
         lpClass, dwOptions, samDesired, lpsa, &m_hKey, lpdwDisposition);
 }
 
@@ -547,7 +547,7 @@ inline LONG MRegKey::RegSetValueEx(LPCTSTR pszValueName, DWORD dwReserved,
     DWORD dwType, CONST BYTE *lpData, DWORD cbData)
 {
     assert(m_hKey);
-    return ::RegSetValueEx(m_hKey, pszValueName, dwReserved, dwType,
+    return ::RegSetValueEx(m_hKey, pszValueName, 0, dwType,
         lpData, cbData);
 }
 
@@ -597,7 +597,7 @@ MRegKey::SetMultiSz(LPCTSTR pszValueName, LPCTSTR pszzValues)
 {
     return RegSetValueEx(pszValueName, 0, REG_MULTI_SZ,
         reinterpret_cast<const BYTE *>(pszzValues),
-        MRegKey::MultiSzSizeDx(pszzValues));
+        DWORD(MRegKey::MultiSzSizeDx(pszzValues)));
 }
 
 inline LONG
@@ -824,14 +824,14 @@ cleanup:
     return ret;
 }
 
-inline /*static*/ DWORD MRegKey::MultiSzSizeDx(LPCTSTR pszz)
+inline /*static*/ size_t MRegKey::MultiSzSizeDx(LPCTSTR pszz)
 {
-    DWORD siz = 0;
+    size_t siz = 0;
     if (*pszz)
     {
         do
         {
-            INT len = lstrlen(pszz);
+            size_t len = lstrlen(pszz);
             siz += len + 1;
             pszz += len + 1;
         }
@@ -842,7 +842,7 @@ inline /*static*/ DWORD MRegKey::MultiSzSizeDx(LPCTSTR pszz)
         ++siz;
     }
     ++siz;
-    siz *= static_cast<DWORD>(sizeof(TCHAR));
+    siz *= sizeof(TCHAR);
     return siz;
 }
 
