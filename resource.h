@@ -31,6 +31,7 @@
 #define IDD_RULEPRESET                      127
 #define IDD_PICTUREBOX                      128
 #define IDD_TEXTBOX                         129
+#define IDD_UILANGID                        130
 
 #define IDS_VERSION                         101
 #define IDS_APPNAME                         102
@@ -435,6 +436,7 @@
 #define ID_DELETEBOX                        571
 #define ID_BOXPROP                          572
 #define ID_SAVE                             573
+#define ID_UILANGID                         574
 #define ID_TT_BASE                          10000
 
 #define ctl2                                1185

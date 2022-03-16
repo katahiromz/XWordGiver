@@ -8,6 +8,7 @@
 #include "GUI.hpp"
 #include "XG_UndoBuffer.hpp"    // 「元に戻す」情報。
 #include <algorithm>
+#include "WonSetThreadUILanguage/WonSetThreadUILanguage.h"
 
 // ダイアログとウィンドウ。
 #include "XG_CancelFromWordsDialog.hpp"
@@ -36,6 +37,7 @@
 #include "XG_TextBoxDialog.hpp"
 #include "XG_BoxWindow.hpp"
 #include "XG_CanvasWindow.hpp"
+#include "XG_UILanguageDialog.hpp"
 
 #undef HANDLE_WM_MOUSEWHEEL     // might be wrong
 #define HANDLE_WM_MOUSEWHEEL(hwnd, wParam, lParam, fn) \
@@ -165,6 +167,9 @@ void XgSetModified(BOOL bModified, LPCSTR file, INT line)
         //MessageBoxA(NULL, szText, NULL, 0);
     }
 }
+
+// UI言語。
+LANGID xg_UILangID = 0;
 
 //////////////////////////////////////////////////////////////////////////////
 // static variables
@@ -810,6 +815,8 @@ bool __fastcall XgLoadSettings(void)
 
     xg_nNumberToGenerate = 16;
 
+    xg_UILangID = 0;
+
     xg_strDoubleFrameLetters = XgLoadStringDx1(IDS_DBLFRAME_LETTERS_1);
 
     // 会社名キーを開く。
@@ -900,6 +907,9 @@ bool __fastcall XgLoadSettings(void)
             }
             if (!app_key.QueryDword(L"Cols", dwValue)) {
                 xg_nCols = dwValue;
+            }
+            if (!app_key.QueryDword(L"UILangID", dwValue)) {
+                xg_UILangID = dwValue;
             }
 
             if (!app_key.QuerySz(L"CellFont", sz, ARRAYSIZE(sz))) {
@@ -1074,6 +1084,7 @@ bool __fastcall XgSaveSettings(void)
             app_key.SetDword(L"AutoRetry", xg_bAutoRetry);
             app_key.SetDword(L"Rows", xg_nRows);
             app_key.SetDword(L"Cols", xg_nCols);
+            app_key.SetDword(L"UILangID", xg_UILangID);
 
             app_key.SetSz(L"CellFont", xg_szCellFont, ARRAYSIZE(xg_szCellFont));
             app_key.SetSz(L"SmallFont", xg_szSmallFont, ARRAYSIZE(xg_szSmallFont));
@@ -4782,6 +4793,19 @@ void XgOnRulePreset(HWND hwnd)
     }
 }
 
+// UI言語の設定。
+void XgSelectUILanguage(HWND hwnd)
+{
+    XG_UILanguageDialog dialog;
+    dialog.m_ids.push_back(MAKELANGID(LANG_JAPANESE, SUBLANG_DEFAULT));
+    dialog.m_ids.push_back(MAKELANGID(LANG_ENGLISH, SUBLANG_ENGLISH_US));
+    dialog.m_LangID = xg_UILangID;
+    if (dialog.DoModal(hwnd) == IDOK)
+    {
+        xg_UILangID = dialog.m_LangID;
+    }
+}
+
 // 単語リストから生成。
 void XgGenerateFromWordList(HWND hwnd)
 {
@@ -6329,6 +6353,9 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT /*codeNo
             }
         }
         break;
+    case ID_UILANGID:
+        XgSelectUILanguage(hwnd);
+        break;
     default:
         if (!XgOnCommandExtra(hwnd, id)) {
             ::MessageBeep(0xFFFFFFFF);
@@ -7007,6 +7034,12 @@ int WINAPI WinMain(
 
     // 設定を読み込む。
     XgLoadSettings();
+
+    // UI言語の設定。
+    if (xg_UILangID)
+        SetThreadUILanguage(xg_UILangID);
+    else
+        xg_UILangID = GetThreadUILanguage();
 
     // 辞書ファイルの名前を読み込む。
     XgLoadDictsAll();

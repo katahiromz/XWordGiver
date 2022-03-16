@@ -138,6 +138,8 @@
     - Added "Save Overwrite" for application standardization.
     - The "View" menu became more compact.
     - Improved the way files are loaded and saved.
+- 2022-XX-YY ver.4.9.2
+    - Added "UI Language Select" to the [Edit] menu.
 
 # 開発履歴 (Japanese)
 
@@ -591,3 +593,5 @@
     - ソフト標準化のため、「上書き保存」を追加。
     - 「表示」メニューをコンパクトに。
     - ファイルの読み込み・保存の方法を改良。
+- 2022年XX月YY日 ver.4.9.2
+    - 「編集」メニューに「UI Language Select」を追加。
