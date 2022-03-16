@@ -1423,7 +1423,7 @@ FONT 12, "MS Shell Dlg"
     PUSHBUTTON "Cancel", IDCANCEL, 90, 50, 60, 14
     LTEXT "UI &Language:", -1, 5, 5, 75, 10
     COMBOBOX cmb1, 5, 20, 144, 300, CBS_HASSTRINGS | CBS_AUTOHSCROLL | CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
-    LTEXT "* After reboot, the setting will take effect.", -1, 5, 35, 145, 12
+    LTEXT "* After rebooting, this setting will take effect.", -1, 5, 35, 145, 12
 }
 
 //////////////////////////////////////////////////////////////////////////////
