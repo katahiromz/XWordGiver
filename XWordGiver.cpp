@@ -2013,11 +2013,7 @@ bool __fastcall XgSetJsonString(HWND hwnd, const std::wstring& str)
         bool is_solved = j["is_solved"];
         bool has_mark = j["has_mark"];
         bool has_hints = j["has_hints"];
-        INT rules;
-        if (XgIsUserJapanese())
-            rules = DEFAULT_RULES_JAPANESE;
-        else
-            rules = DEFAULT_RULES_ENGLISH;
+        INT rules = DEFAULT_RULES;
         if (j["rules"].is_string()) {
             auto str = XgUtf8ToUnicode(j["rules"].get<std::string>());
             rules = XgParseRules(str);

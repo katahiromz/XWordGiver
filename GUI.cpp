@@ -244,7 +244,7 @@ bool xg_bShowToolBar = true;
 static bool s_bShowStatusBar = true;
 
 // ルール群。
-INT xg_nRules = DEFAULT_RULES_JAPANESE;
+INT xg_nRules = DEFAULT_RULES;
 
 //////////////////////////////////////////////////////////////////////////////
 // スクロール関連。
@@ -802,15 +802,10 @@ bool __fastcall XgLoadSettings(void)
     XG_PatternDialog::xg_nPatWndCY = CW_USEDEFAULT;
     XG_PatternDialog::xg_bShowAnswerOnPattern = TRUE;
 
-    if (XgIsUserJapanese()) {
-        xg_nRules = DEFAULT_RULES_JAPANESE;
-        xg_nViewMode = XG_VIEW_NORMAL;
-        xg_nFileType = XG_FILETYPE_XWJ;
-    } else {
-        xg_nRules = DEFAULT_RULES_ENGLISH;
-        xg_nViewMode = XG_VIEW_SKELETON;
-        xg_nFileType = XG_FILETYPE_XD;
-    }
+    xg_nRules = DEFAULT_RULES;
+    xg_nViewMode = XG_VIEW_NORMAL;
+    xg_nFileType = XG_FILETYPE_XWJ;
+
     xg_imode = xg_im_ANY; // 自由入力。
 
     xg_nNumberToGenerate = 16;
@@ -4285,18 +4280,10 @@ void XgUpdateRules(HWND hwnd)
         szText[0] = 0;
         ::GetMenuStringW(hMenu, i, szText, ARRAYSIZE(szText), MF_BYPOSITION);
         if (wcsstr(szText, XgLoadStringDx1(IDS_RULES)) != NULL) {
-            if (XgIsUserJapanese()) {
-                if (xg_nRules == DEFAULT_RULES_JAPANESE) {
-                    StringCbCopyW(szText, sizeof(szText), XgLoadStringDx1(IDS_STANDARDRULES));
-                } else {
-                    StringCbCopyW(szText, sizeof(szText), XgLoadStringDx1(IDS_MODIFIEDRULES));
-                }
+            if (xg_nRules == DEFAULT_RULES) {
+                StringCbCopyW(szText, sizeof(szText), XgLoadStringDx1(IDS_STANDARDRULES));
             } else {
-                if (xg_nRules == DEFAULT_RULES_ENGLISH) {
-                    StringCbCopyW(szText, sizeof(szText), XgLoadStringDx1(IDS_STANDARDRULES));
-                } else {
-                    StringCbCopyW(szText, sizeof(szText), XgLoadStringDx1(IDS_MODIFIEDRULES));
-                }
+                StringCbCopyW(szText, sizeof(szText), XgLoadStringDx1(IDS_MODIFIEDRULES));
             }
             info.dwTypeData = szText;
             SetMenuItemInfoW(hMenu, i, TRUE, &info);
@@ -6056,10 +6043,7 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT /*codeNo
         XgUpdateTheme(hwnd);
         break;
     case ID_RESETRULES:
-        if (XgIsUserJapanese())
-            xg_nRules = DEFAULT_RULES_JAPANESE;
-        else
-            xg_nRules = DEFAULT_RULES_ENGLISH;
+        xg_nRules = DEFAULT_RULES;
         XgUpdateRules(hwnd);
         break;
     case ID_OPENRULESTXT:
