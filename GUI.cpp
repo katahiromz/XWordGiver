@@ -804,7 +804,7 @@ bool __fastcall XgLoadSettings(void)
 
     xg_nRules = DEFAULT_RULES;
     xg_nViewMode = XG_VIEW_NORMAL;
-    xg_nFileType = XG_FILETYPE_XWJ;
+    xg_nFileType = XG_FILETYPE_XD;
 
     xg_imode = xg_im_ANY; // 自由入力。
 
