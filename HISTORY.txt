@@ -143,6 +143,7 @@
 - 2022-XX-YY ver.4.9.3
     - The dictionary title is translated by the UI language.
     - Also imports dictionaries with the extension ".dic".
+    - Improved "Policy Preset" dialog.
 
 # 開発履歴 (Japanese)
 
@@ -602,3 +603,4 @@
     - 辞書のタイトル表示をUI言語に合わせた。
     - XD形式を標準に（日本語のみ）。
     - 拡張子.dicの辞書も取り込む。
+    - 「ルール プリセット」ダイアログを改良。
