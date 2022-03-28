@@ -142,6 +142,7 @@
     - Added "UI Language Select" to the [Edit] menu.
 - 2022-XX-YY ver.4.9.3
     - The dictionary title is translated by the UI language.
+    - Also imports dictionaries with the extension ".dic".
 
 # 開発履歴 (Japanese)
 
@@ -600,3 +601,4 @@
 - 2022年XX月YY日 ver.4.9.3
     - 辞書のタイトル表示をUI言語に合わせた。
     - XD形式を標準に（日本語のみ）。
+    - 拡張子.dicの辞書も取り込む。
