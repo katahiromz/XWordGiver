@@ -142,8 +142,9 @@
     - Added "UI Language Select" to the [Edit] menu.
 - 2022-XX-YY ver.4.9.3
     - The dictionary title is translated by the UI language.
-    - Also imports dictionaries with the extension ".dic".
+    - Also importing dictionaries with the extension ".dic".
     - Improved "Policy Preset" dialog.
+    - Strengthened the Kotowaza dictionary.
 
 # 開発履歴 (Japanese)
 
@@ -604,3 +605,4 @@
     - XD形式を標準に（日本語のみ）。
     - 拡張子.dicの辞書も取り込む。
     - 「ルール プリセット」ダイアログを改良。
+    - ことわざ辞書の増強。
