@@ -145,6 +145,7 @@
     - Also importing dictionaries with the extension ".dic".
     - Improved "Policy Preset" dialog.
     - Strengthened the Kotowaza dictionary.
+    - Strengthened the Kana dictionary.
 
 # 開発履歴 (Japanese)
 
@@ -606,3 +607,4 @@
     - 拡張子.dicの辞書も取り込む。
     - 「ルール プリセット」ダイアログを改良。
     - ことわざ辞書の増強。
+    - カナ辞書の増強。
