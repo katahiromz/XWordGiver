@@ -117,8 +117,19 @@ public:
                 CheckDlgButton(hwnd, chx2, (value & RULE_2) ? BST_CHECKED : BST_UNCHECKED);
                 CheckDlgButton(hwnd, chx3, (value & RULE_3) ? BST_CHECKED : BST_UNCHECKED);
                 CheckDlgButton(hwnd, chx4, (value & RULE_4) ? BST_CHECKED : BST_UNCHECKED);
-                CheckDlgButton(hwnd, chx5, (value & RULE_5) ? BST_CHECKED : BST_UNCHECKED);
-                CheckDlgButton(hwnd, chx6, (value & RULE_6) ? BST_CHECKED : BST_UNCHECKED);
+                if (value & RULE_5)
+                {
+                    CheckDlgButton(hwnd, chx5, BST_CHECKED);
+                    CheckDlgButton(hwnd, chx6, BST_UNCHECKED);
+                }
+                else
+                {
+                    CheckDlgButton(hwnd, chx5, BST_UNCHECKED);
+                    if (value & RULE_6)
+                        CheckDlgButton(hwnd, chx6, BST_CHECKED);
+                    else
+                        CheckDlgButton(hwnd, chx6, BST_UNCHECKED);
+                }
                 CheckDlgButton(hwnd, chx7, (value & RULE_7) ? BST_CHECKED : BST_UNCHECKED);
                 CheckDlgButton(hwnd, chx8, (value & RULE_8) ? BST_CHECKED : BST_UNCHECKED);
                 CheckDlgButton(hwnd, chx9, (value & RULE_9) ? BST_CHECKED : BST_UNCHECKED);
