@@ -84,7 +84,7 @@ public:
         if (value & RULE_3) CheckDlgButton(hwnd, chx3, BST_CHECKED);
         if (value & RULE_4) CheckDlgButton(hwnd, chx4, BST_CHECKED);
         if (value & RULE_5) CheckDlgButton(hwnd, chx5, BST_CHECKED);
-        if (value & RULE_6) CheckDlgButton(hwnd, chx6, BST_CHECKED);
+        else if (value & RULE_6) CheckDlgButton(hwnd, chx6, BST_CHECKED);
         if (value & RULE_7) CheckDlgButton(hwnd, chx7, BST_CHECKED);
         if (value & RULE_8) CheckDlgButton(hwnd, chx8, BST_CHECKED);
         if (value & RULE_9) CheckDlgButton(hwnd, chx9, BST_CHECKED);
@@ -129,6 +129,33 @@ public:
 
     void OnCheckBox(HWND hwnd, INT rule, INT id)
     {
+        m_bUpdating = TRUE;
+        if (IsDlgButtonChecked(hwnd, id) == BST_CHECKED)
+        {
+            switch (id)
+            {
+            case chx5:
+                CheckDlgButton(hwnd, chx6, BST_UNCHECKED);
+                break;
+            case chx6:
+                CheckDlgButton(hwnd, chx5, BST_UNCHECKED);
+                break;
+            case chx7:
+                CheckDlgButton(hwnd, chx8, BST_UNCHECKED);
+                CheckDlgButton(hwnd, chx9, BST_UNCHECKED);
+                break;
+            case chx8:
+                CheckDlgButton(hwnd, chx7, BST_UNCHECKED);
+                CheckDlgButton(hwnd, chx9, BST_UNCHECKED);
+                break;
+            case chx9:
+                CheckDlgButton(hwnd, chx7, BST_UNCHECKED);
+                CheckDlgButton(hwnd, chx8, BST_UNCHECKED);
+                break;
+            }
+        }
+        m_bUpdating = FALSE;
+
         INT value;
         if (!GetCheckValue(hwnd, value))
             return;
