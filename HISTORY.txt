@@ -146,6 +146,8 @@
     - Improved "Policy Preset" dialog.
     - Strengthened the Kotowaza dictionary.
     - Strengthened the Kana dictionary.
+- 2022-XX-YY ver.4.9.4
+    - Strengthened the Kanji dictionary.
 
 # 開発履歴 (Japanese)
 
@@ -608,3 +610,5 @@
     - 「ルール プリセット」ダイアログを改良。
     - ことわざ辞書の増強。
     - カナ辞書の増強。
+- 2022年XX月YY日 ver.4.9.4
+    - 漢字辞書の増強。
