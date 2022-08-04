@@ -430,9 +430,8 @@ BOOL XgDoSaveBoxJson(json& j)
 {
     try
     {
-        for (size_t i = 0; i < xg_boxes.size(); ++i) {
-            auto& box = *xg_boxes[i];
-            box.WriteJson(j);
+        for (auto& box : xg_boxes) {
+            box->WriteJson(j);
         }
     }
     catch(...)
