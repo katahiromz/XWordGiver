@@ -5789,108 +5789,6 @@ bool __fastcall XgDoSaveFile(HWND hwnd, LPCWSTR pszFile)
     }
 }
 
-// BITMAPINFOEX構造体。
-typedef struct tagBITMAPINFOEX
-{
-    BITMAPINFOHEADER bmiHeader;
-    RGBQUAD          bmiColors[256];
-} BITMAPINFOEX, FAR * LPBITMAPINFOEX;
-
-// ビットマップをファイルに保存する。
-bool __fastcall XgSaveBitmapToFile(LPCWSTR pszFileName, HBITMAP hbm)
-{
-    bool f;
-    BITMAPFILEHEADER bf;
-    BITMAPINFOEX bi;
-    BITMAPINFOHEADER *pbmih;
-    DWORD cb;
-    DWORD cColors, cbColors;
-    HDC hDC;
-    HANDLE hFile;
-    LPVOID pBits;
-    BITMAP bm;
-    DWORD dwError = 0;
-
-    // ビットマップの情報を取得する。
-    if (!::GetObject(hbm, sizeof(BITMAP), &bm))
-        return false;
-
-    // BITMAPINFO構造体を設定する。
-    pbmih = &bi.bmiHeader;
-    ZeroMemory(pbmih, sizeof(BITMAPINFOHEADER));
-    pbmih->biSize             = sizeof(BITMAPINFOHEADER);
-    pbmih->biWidth            = bm.bmWidth;
-    pbmih->biHeight           = bm.bmHeight;
-    pbmih->biPlanes           = 1;
-    pbmih->biBitCount         = bm.bmBitsPixel;
-    pbmih->biCompression      = BI_RGB;
-    pbmih->biSizeImage        = bm.bmWidthBytes * bm.bmHeight;
-
-    if (bm.bmBitsPixel < 16)
-        cColors = 1 << bm.bmBitsPixel;
-    else
-        cColors = 0;
-    cbColors = cColors * sizeof(RGBQUAD);
-
-    // BITMAPFILEHEADER構造体を設定する。
-    bf.bfType = 0x4d42;
-    bf.bfReserved1 = 0;
-    bf.bfReserved2 = 0;
-    cb = sizeof(BITMAPFILEHEADER) + pbmih->biSize + cbColors;
-    bf.bfOffBits = cb;
-    bf.bfSize = cb + pbmih->biSizeImage;
-
-    // ビット格納用のメモリを確保する。
-    pBits = ::HeapAlloc(::GetProcessHeap(), 0, pbmih->biSizeImage);
-    if (pBits == nullptr)
-        return false;
-
-    // DCを取得する。
-    f = false;
-    hDC = ::GetDC(nullptr);
-    if (hDC != nullptr) {
-        // ビットを取得する。
-        if (::GetDIBits(hDC, hbm, 0, bm.bmHeight, pBits,
-                      reinterpret_cast<BITMAPINFO*>(&bi),
-                      DIB_RGB_COLORS))
-        {
-            // ファイルを作成する。
-            hFile = ::CreateFileW(pszFileName, GENERIC_WRITE, FILE_SHARE_READ, nullptr,
-                                CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL |
-                                FILE_FLAG_WRITE_THROUGH, nullptr);
-            if (hFile != INVALID_HANDLE_VALUE) {
-                // ファイルに書き込む。
-                f = ::WriteFile(hFile, &bf, sizeof(BITMAPFILEHEADER), &cb, nullptr) &&
-                    ::WriteFile(hFile, &bi, sizeof(BITMAPINFOHEADER), &cb, nullptr) &&
-                    ::WriteFile(hFile, bi.bmiColors, cbColors, &cb, nullptr) &&
-                    ::WriteFile(hFile, pBits, pbmih->biSizeImage, &cb, nullptr);
-                if (!f)
-                    dwError = ::GetLastError();
-                // ファイルを閉じる。
-                ::CloseHandle(hFile);
-
-                if (!f)
-                    ::DeleteFileW(pszFileName);
-            } else {
-                dwError = ::GetLastError();
-            }
-        } else {
-            dwError = ::GetLastError();
-        }
-
-        // DCを解放する。
-        ::ReleaseDC(nullptr, hDC);
-    } else {
-        dwError = ::GetLastError();
-    }
-
-    // 確保したメモリを解放する。
-    ::HeapFree(::GetProcessHeap(), 0, pBits);
-    // エラーコードを設定する。
-    ::SetLastError(dwError);
-    return f;
-}
-
 #ifndef CDSIZEOF_STRUCT
     #define CDSIZEOF_STRUCT(structname,member) \
         (((INT_PTR)((LPBYTE)(&((structname*)0)->member) - ((LPBYTE)((structname*)0)))) + sizeof(((structname*)0)->member))
@@ -5924,8 +5822,7 @@ void __fastcall XgSaveProbAsImage(HWND hwnd)
             // ビットマップを保存する。
             HBITMAP hbm = XgCreateXWordImage(xg_xword, &siz, false);
             if (hbm != nullptr) {
-                if (!XgSaveBitmapToFile(szFileName, hbm))
-                {
+                if (!SaveBitmapToFile(szFileName, hbm)) {
                     XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_CANTSAVE2), nullptr, MB_ICONERROR);
                 }
                 ::DeleteObject(hbm);
@@ -5977,7 +5874,7 @@ void __fastcall XgSaveAnsAsImage(HWND hwnd)
             // ビットマップを保存する。
             HBITMAP hbm = XgCreateXWordImage(xg_solution, &siz, false);
             if (hbm != nullptr) {
-                if (!XgSaveBitmapToFile(szFileName, hbm)) {
+                if (!SaveBitmapToFile(szFileName, hbm)) {
                     XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_CANTSAVE2), nullptr, MB_ICONERROR);
                 }
                 ::DeleteObject(hbm);
