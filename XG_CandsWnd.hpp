@@ -307,21 +307,21 @@ public:
 
         HWND hwndCtrl;
         XG_CandsButtonData *data;
-        for (size_t i = 0; i < xg_vecCandidates.size(); ++i) {
+        for (auto& cand : xg_vecCandidates) {
             WCHAR szText[64];
             if (xg_bHiragana) {
                 LCMapStringW(JPN_LOCALE, LCMAP_FULLWIDTH | LCMAP_HIRAGANA,
-                             xg_vecCandidates[i].data(), -1, szText, ARRAYSIZE(szText));
-                xg_vecCandidates[i] = szText;
+                             cand.data(), -1, szText, ARRAYSIZE(szText));
+                cand = szText;
             }
             if (xg_bLowercase) {
                 LCMapStringW(JPN_LOCALE, LCMAP_FULLWIDTH | LCMAP_LOWERCASE,
-                             xg_vecCandidates[i].data(), -1, szText, ARRAYSIZE(szText));
-                xg_vecCandidates[i] = szText;
+                             cand.data(), -1, szText, ARRAYSIZE(szText));
+                cand = szText;
             }
 
             hwndCtrl = ::CreateWindowW(
-                TEXT("BUTTON"), xg_vecCandidates[i].data(),
+                TEXT("BUTTON"), cand.data(),
                 WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | WS_TABSTOP,
                 0, 0, 0, 0, hwnd, NULL, xg_hInstance, NULL);
             assert(hwndCtrl);
