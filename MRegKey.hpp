@@ -3,7 +3,7 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #ifndef MZC4_MREGKEY_HPP_
-#define MZC4_MREGKEY_HPP_       10   /* Version 10 */
+#define MZC4_MREGKEY_HPP_       99   /* Version 99 */
 
 #ifndef HKCR
     #define HKCR    HKEY_CLASSES_ROOT
@@ -186,8 +186,8 @@ LONG MRegKey::QueryMultiSz(LPCTSTR pszValueName, T_CONTAINER& container)
     #ifndef NDEBUG
         DWORD dwType;
         result = RegQueryValueEx(pszValueName, NULL, &dwType, NULL, NULL);
-        assert(result == ERROR_SUCCESS);
-        assert(dwType == REG_MULTI_SZ);
+        if (result == ERROR_SUCCESS)
+            assert(dwType == REG_MULTI_SZ);
     #endif
 
     DWORD cbData;
@@ -254,8 +254,8 @@ LONG MRegKey::QuerySz(LPCTSTR pszValueName, T_STRING& strValue)
     #ifndef NDEBUG
         DWORD dwType;
         result = RegQueryValueEx(pszValueName, NULL, &dwType, NULL, NULL);
-        assert(result == ERROR_SUCCESS);
-        assert(dwType == REG_SZ);
+        if (result == ERROR_SUCCESS)
+            assert(dwType == REG_SZ);
     #endif
 
     DWORD cbData;
@@ -287,8 +287,8 @@ LONG MRegKey::QueryExpandSz(LPCTSTR pszValueName, T_STRING& strValue)
     #ifndef NDEBUG
         DWORD dwType;
         result = RegQueryValueEx(pszValueName, NULL, &dwType, NULL, NULL);
-        assert(result == ERROR_SUCCESS);
-        assert(dwType == REG_EXPAND_SZ);
+        if (result == ERROR_SUCCESS)
+            assert(dwType == REG_EXPAND_SZ);
     #endif
 
     DWORD cbData;
@@ -449,8 +449,8 @@ inline LONG MRegKey::QueryBinary(
         DWORD dwType;
         LONG result = RegQueryValueEx(pszValueName, NULL, &dwType,
                                       NULL, NULL);
-        assert(result == ERROR_SUCCESS);
-        assert(dwType == REG_BINARY);
+        if (result == ERROR_SUCCESS)
+            assert(dwType == REG_BINARY);
     #endif
     DWORD cbData = cb;
     return RegQueryValueEx(pszValueName, NULL, NULL,
@@ -464,8 +464,8 @@ inline LONG MRegKey::QueryDword(LPCTSTR pszValueName, DWORD& dw)
         DWORD dwType;
         LONG result = RegQueryValueEx(pszValueName, NULL, &dwType,
                                       NULL, NULL);
-        assert(result == ERROR_SUCCESS);
-        assert(dwType == REG_DWORD);
+        if (result == ERROR_SUCCESS)
+            assert(dwType == REG_DWORD);
     #endif
     DWORD cbData = sizeof(DWORD);
     return RegQueryValueEx(pszValueName, NULL, NULL,
@@ -478,8 +478,8 @@ inline LONG MRegKey::QueryDwordLE(LPCTSTR pszValueName, DWORD& dw)
         DWORD dwType;
         LONG result = RegQueryValueEx(pszValueName, NULL, &dwType,
                                       NULL, NULL);
-        assert(result == ERROR_SUCCESS);
-        assert(dwType == REG_DWORD_LITTLE_ENDIAN);
+        if (result == ERROR_SUCCESS)
+            assert(dwType == REG_DWORD_LITTLE_ENDIAN);
     #endif
     DWORD cbData = sizeof(DWORD);
     return RegQueryValueEx(pszValueName, NULL, NULL,
@@ -492,8 +492,8 @@ inline LONG MRegKey::QueryDwordBE(LPCTSTR pszValueName, DWORD& dw)
         DWORD dwType;
         LONG result = RegQueryValueEx(pszValueName, NULL, &dwType,
                                       NULL, NULL);
-        assert(result == ERROR_SUCCESS);
-        assert(dwType == REG_DWORD_BIG_ENDIAN);
+        if (result == ERROR_SUCCESS)
+            assert(dwType == REG_DWORD_BIG_ENDIAN);
     #endif
     DWORD cbData = sizeof(DWORD);
     return RegQueryValueEx(pszValueName, NULL, NULL,
@@ -507,8 +507,8 @@ MRegKey::QuerySz(LPCTSTR pszValueName, LPTSTR pszValue, DWORD cchValue)
         DWORD dwType;
         LONG result = RegQueryValueEx(pszValueName, NULL, &dwType,
                                       NULL, NULL);
-        assert(result == ERROR_SUCCESS);
-        assert(dwType == REG_SZ);
+        if (result == ERROR_SUCCESS)
+            assert(dwType == REG_SZ);
     #endif
     DWORD cbData = cchValue * sizeof(TCHAR);
     return RegQueryValueEx(pszValueName, NULL, NULL,
@@ -521,8 +521,8 @@ inline LONG MRegKey::QueryExpandSz(
 #ifndef NDEBUG
     DWORD dwType;
     LONG result = RegQueryValueEx(pszValueName, NULL, &dwType, NULL, NULL);
-    assert(result == ERROR_SUCCESS);
-    assert(dwType == REG_EXPAND_SZ);
+    if (result == ERROR_SUCCESS)
+        assert(dwType == REG_EXPAND_SZ);
 #endif
     DWORD cbData = cchValue * sizeof(TCHAR);
     return RegQueryValueEx(pszValueName, NULL, NULL,
@@ -535,8 +535,8 @@ inline LONG MRegKey::QueryMultiSz(
 #ifndef NDEBUG
     DWORD dwType;
     LONG result = RegQueryValueEx(pszValueName, NULL, &dwType, NULL, NULL);
-    assert(result == ERROR_SUCCESS);
-    assert(dwType == REG_MULTI_SZ);
+    if (result == ERROR_SUCCESS)
+        assert(dwType == REG_MULTI_SZ);
 #endif
     DWORD cbData = sizeof(TCHAR) * cchValues;
     return RegQueryValueEx(pszValueName, NULL, NULL,
