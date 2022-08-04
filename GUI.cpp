@@ -498,8 +498,8 @@ BOOL XgLoadXdBox(const std::wstring& line)
 // XDファイルからボックスを読み込む。
 BOOL XgWriteXdBoxes(FILE *fout)
 {
-    for (size_t i = 0; i < xg_boxes.size(); ++i) {
-        xg_boxes[i]->WriteLine(fout);
+    for (auto& box : xg_boxes) {
+        box->WriteLine(fout);
     }
     return TRUE;
 }
