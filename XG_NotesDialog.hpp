@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-#include "XG_Dialog.hpp"
+#include "XG_Window.hpp"
 
 // [ヘッダーと備考欄]ダイアログ。
 class XG_NotesDialog : public XG_Dialog

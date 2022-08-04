@@ -1,4 +1,5 @@
 #include "XG_Window.hpp"
+#include <cassert>
 
 /*static*/ LRESULT CALLBACK
 XG_Window::WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
@@ -43,4 +44,37 @@ BOOL XG_Window::RegisterClassDx(HINSTANCE hInstance/* = ::GetModuleHandle(NULL)*
     wcx.lpszClassName = GetWndClassName();
     ModifyWndClassDx(wcx);
     return ::RegisterClassEx(&wcx);
+}
+
+/*static*/ INT_PTR CALLBACK
+XG_Dialog::DialogProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+{
+    XG_Dialog *pDialog;
+    if (uMsg == WM_INITDIALOG)
+    {
+        assert(s_pTrapping != NULL);
+        pDialog = s_pTrapping;
+        SetWindowLongPtr(hwnd, GWLP_USERDATA, reinterpret_cast<LPARAM>(pDialog));
+        pDialog->m_hWnd = hwnd;
+    }
+    else
+    {
+        pDialog = reinterpret_cast<XG_Dialog *>(GetWindowLongPtr(hwnd, GWLP_USERDATA));
+        if (!pDialog)
+        {
+            if (uMsg == WM_MEASUREITEM || uMsg == WM_SIZE)
+            {
+                assert(s_pTrapping != NULL);
+                pDialog = s_pTrapping;
+                pDialog->m_hWnd = hwnd;
+                return pDialog->DialogProcDx(hwnd, uMsg, wParam, lParam);
+            }
+            return 0;
+        }
+        if (uMsg == WM_NCDESTROY)
+        {
+            pDialog->m_hWnd = NULL;
+        }
+    }
+    return pDialog->DialogProcDx(hwnd, uMsg, wParam, lParam);
 }

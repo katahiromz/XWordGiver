@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-#include "XG_Dialog.hpp"
+#include "XG_Window.hpp"
 
 class XG_PictureBoxDialog : public XG_Dialog
 {

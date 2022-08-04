@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-#include "XG_Dialog.hpp"
+#include "XG_Window.hpp"
 #include "crossword_generation.hpp"
 
 // 「単語リストから生成」ダイアログ。

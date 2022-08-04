@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-#include "XG_Dialog.hpp"
+#include "XG_Window.hpp"
 
 #define RULE_1 RULE_DONTDOUBLEBLACK
 #define RULE_2 RULE_DONTCORNERBLACK

@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-#include "XG_Dialog.hpp"
+#include "XG_Window.hpp"
 
 // キャンセルダイアログ（スマート解決）。
 class XG_CancelSmartSolveDialog : public XG_Dialog

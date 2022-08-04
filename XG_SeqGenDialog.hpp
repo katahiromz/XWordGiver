@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-#include "XG_Dialog.hpp"
+#include "XG_Window.hpp"
 
 // 保存先のパスのリスト。
 extern std::deque<std::wstring> xg_dirs_save_to;

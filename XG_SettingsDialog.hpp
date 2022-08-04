@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-#include "XG_Dialog.hpp"
+#include "XG_Window.hpp"
 #include "XG_ColorBox.hpp"
 
 // UIフォント。

@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-#include "XG_Dialog.hpp"
+#include "XG_Window.hpp"
 
 // 盤を特定の文字で埋め尽くす。
 void XgNewCells(HWND hwnd, WCHAR ch, INT nRows, INT nCols);

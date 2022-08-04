@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-#include "XG_Dialog.hpp"
+#include "XG_Window.hpp"
 
 // [黒マスパターンの連続作成]ダイアログ。
 class XG_SeqPatGenDialog : public XG_Dialog

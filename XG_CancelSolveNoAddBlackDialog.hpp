@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-#include "XG_Dialog.hpp"
+#include "XG_Window.hpp"
 
 // キャンセルダイアログ（黒マス追加なし）。
 class XG_CancelSolveNoAddBlackDialog : public XG_Dialog

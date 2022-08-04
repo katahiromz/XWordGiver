@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-#include "XG_Dialog.hpp"
+#include "XG_Window.hpp"
 
 // [解の連続作成]ダイアログ。
 class XG_SeqSolveDialog : public XG_Dialog

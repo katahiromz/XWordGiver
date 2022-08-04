@@ -79,3 +79,41 @@ public:
 
     BOOL RegisterClassDx(HINSTANCE hInstance = ::GetModuleHandle(NULL));
 };
+
+class XG_Dialog
+{
+public:
+    HWND m_hWnd;
+    inline static XG_Dialog *s_pTrapping = NULL;
+
+    operator HWND() const
+    {
+        return m_hWnd;
+    }
+
+    XG_Dialog() : m_hWnd(NULL)
+    {
+    }
+
+    virtual INT_PTR CALLBACK
+    DialogProcDx(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+    {
+        return 0;
+    }
+
+    static INT_PTR CALLBACK
+    DialogProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
+
+    INT_PTR DialogBoxDx(HWND hwnd, LPCTSTR pszName)
+    {
+        s_pTrapping = this;
+        auto ret = ::DialogBox(::GetModuleHandle(NULL), pszName, hwnd, DialogProc);
+        s_pTrapping = NULL;
+        return ret;
+    }
+
+    INT_PTR DialogBoxDx(HWND hwnd, INT nID)
+    {
+        return DialogBoxDx(hwnd, MAKEINTRESOURCE(nID));
+    }
+};
