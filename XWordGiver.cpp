@@ -5378,9 +5378,8 @@ bool __fastcall XgDoSaveJson(LPCWSTR pszFile)
 
             // タテのカギ。
             json v;
-            for (size_t i = 0; i < xg_vecTateHints.size(); ++i) {
+            for (auto& tate_hint : xg_vecTateHints) {
                 json hint;
-                auto& tate_hint = xg_vecTateHints[i];
                 hint.push_back(tate_hint.m_number);
                 hint.push_back(XgUnicodeToUtf8(tate_hint.m_strWord));
                 hint.push_back(XgUnicodeToUtf8(tate_hint.m_strHint));
