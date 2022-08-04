@@ -4133,7 +4133,7 @@ std::unordered_set<XG_Pos> XgGetSlot(INT number, BOOL vertical)
 }
 
 // ハイライト色。
-const COLORREF c_rgbHighlight = RGB(255, 255, 100);
+const COLORREF c_rgbHighlight = RGB(255, 255, 140);
 const COLORREF c_rgbHighlightAndDblFrame = RGB(255, 155, 100);
 
 // クロスワードを描画する（通常ビュー）。

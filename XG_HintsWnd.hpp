@@ -74,9 +74,16 @@ public:
     {
         if (hwndChild == s_hwndHighlightTateEdit || hwndChild == s_hwndHighlightYokoEdit)
         {
-            const COLORREF rgbYellow = RGB(255, 255, 120);
-            SetBkColor(hdc, rgbYellow);
-            SetDCBrushColor(hdc, rgbYellow);
+            const COLORREF rgbColor = RGB(140, 255, 255);
+            SetBkColor(hdc, rgbColor);
+            SetDCBrushColor(hdc, rgbColor);
+            return GetStockBrush(DC_BRUSH);
+        }
+        else if (hwndChild == GetFocus())
+        {
+            const COLORREF rgbColor = RGB(255, 255, 140);
+            SetBkColor(hdc, rgbColor);
+            SetDCBrushColor(hdc, rgbColor);
             return GetStockBrush(DC_BRUSH);
         }
         else
@@ -329,6 +336,11 @@ public:
 
             // フォーカスのあるコントロールが見えるように移動する。
             xg_svHintsScrollView.EnsureCtrlVisible(hwnd);
+
+            // フォーカスを失うコントロールを再描画する。
+            if (wParam)
+                InvalidateRect((HWND)wParam, NULL, TRUE);
+
             return ::CallWindowProc(data->m_fnOldWndProc, hwnd, uMsg, wParam, lParam);
 
         case WM_KILLFOCUS:  // フォーカスを失った。
@@ -344,9 +356,15 @@ public:
                 hu2->Get();
                 xg_ubUndoBuffer.Commit(UC_HINTS_UPDATED, hu1, hu2);
             }
+
             // レイアウトを調整する。
             ::PostMessageW(xg_hHintsWnd, WM_SIZE, 0, 0);
             PostMessageW(xg_hMainWnd, XGWM_HIGHLIGHT, TRUE, MAKELPARAM(-1, false));
+
+            // フォーカスを失うコントロールを再描画する。
+            if (wParam)
+                InvalidateRect((HWND)wParam, NULL, TRUE);
+
             return ::CallWindowProc(data->m_fnOldWndProc, hwnd, uMsg, wParam, lParam);
 
         case WM_KEYDOWN:
