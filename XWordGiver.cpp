@@ -2071,9 +2071,8 @@ bool __fastcall XgSetJsonString(HWND hwnd, const std::wstring& str)
 
         std::vector<XG_Pos> mark_positions;
         if (has_mark) {
-            auto marks = j["marks"];
-            for (size_t k = 0; k < marks.size(); ++k) {
-                auto mark = marks[k];
+            auto& marks = j["marks"];
+            for (auto& mark : marks) {
                 int i = int(mark[0]) - 1;
                 int j = int(mark[1]) - 1;
                 if (i < 0 || row_count < i) {
