@@ -395,8 +395,7 @@ BOOL XgDoLoadBoxJson(const json& boxes)
 {
     try
     {
-        for (size_t i = 0; i < boxes.size(); ++i) {
-            auto& box = boxes[i];
+        for (auto& box : boxes) {
             if (box["type"] == "pic") {
                 auto ptr = new XG_PictureBoxWindow();
                 ptr->ReadJson(box);
