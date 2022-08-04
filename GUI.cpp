@@ -509,13 +509,13 @@ void XgDrawBoxes(XG_Board& xw, HDC hdc, LPSIZE psiz)
 {
     INT nZoomRate = xg_nZoomRate;
     xg_nZoomRate = 100;
-    for (size_t i = 0; i < xg_boxes.size(); ++i) {
-        auto& box = *xg_boxes[i];
+    RECT rc;
+    for (auto& pbox : xg_boxes) {
+        auto& box = *pbox;
         INT i1 = box.m_i1;
         INT j1 = box.m_j1;
         INT i2 = box.m_i2;
         INT j2 = box.m_j2;
-        RECT rc;
         XgGetCellPosition(rc, i1, j1, i2, j2, FALSE);
         box.OnDraw(box, hdc, rc);
     }
