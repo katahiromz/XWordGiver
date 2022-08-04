@@ -4411,31 +4411,31 @@ std::wstring URL_encode(const std::wstring& url)
     std::wstring ret;
     WCHAR buf[4];
     static const WCHAR s_hex[] = L"0123456789ABCDEF";
-    for (size_t i = 0; i < str.size(); ++i)
+    for (auto ch : str)
     {
         using namespace std;
-        if (str[i] == ' ')
+        if (ch == ' ')
         {
             ret += L'+';
         }
-        else if (isalnum(str[i]))
+        else if (isalnum(ch))
         {
-            ret += (char)str[i];
+            ret += (char)ch;
         }
         else
         {
-            switch (str[i])
+            switch (ch)
             {
             case L'.':
             case L'-':
             case L'_':
             case L'*':
-                ret += (char)str[i];
+                ret += (char)ch;
                 break;
             default:
                 buf[0] = L'%';
-                buf[1] = s_hex[(str[i] >> 4) & 0xF];
-                buf[2] = s_hex[str[i] & 0xF];
+                buf[1] = s_hex[(ch >> 4) & 0xF];
+                buf[2] = s_hex[ch & 0xF];
                 buf[3] = 0;
                 ret += buf;
                 break;
