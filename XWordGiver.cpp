@@ -342,7 +342,7 @@ void XG_BoardEx::DeleteColumn(INT jCol) {
 }
 
 // 候補があるか？（黒マス追加なし、すべて空白）
-bool __fastcall XgAnyCandidateWholeSpace(int patlen)
+bool __fastcall XgAnyCandidateWholeSpace(int patlen) noexcept
 {
     // すべての単語について調べる。
     for (const auto& data : xg_dict_1) {
@@ -361,7 +361,7 @@ bool __fastcall XgAnyCandidateWholeSpace(int patlen)
 }
 
 // 四隅に黒マスがあるかどうか。
-bool __fastcall XG_Board::CornerBlack() const
+bool __fastcall XG_Board::CornerBlack() const noexcept
 {
     return (GetAt(0, 0) == ZEN_BLACK ||
             GetAt(xg_nRows - 1, 0) == ZEN_BLACK ||
@@ -370,7 +370,7 @@ bool __fastcall XG_Board::CornerBlack() const
 }
 
 // 黒マスが隣り合っているか？
-bool __fastcall XG_Board::DoubleBlack() const
+bool __fastcall XG_Board::DoubleBlack() const noexcept
 {
     const int n1 = xg_nCols - 1;
     const int n2 = xg_nRows - 1;
@@ -392,7 +392,7 @@ bool __fastcall XG_Board::DoubleBlack() const
 }
 
 // 三方向が黒マスで囲まれたマスがあるかどうか？
-bool __fastcall XG_Board::TriBlackAround() const
+bool __fastcall XG_Board::TriBlackAround() const noexcept
 {
     for (int i = xg_nRows - 2; i >= 1; --i) {
         for (int j = xg_nCols - 2; j >= 1; --j) {
@@ -407,7 +407,7 @@ bool __fastcall XG_Board::TriBlackAround() const
 }
 
 // 黒マスで分断されているかどうか？
-bool __fastcall XG_Board::DividedByBlack() const
+bool __fastcall XG_Board::DividedByBlack() const noexcept
 {
     const INT nRows = xg_nRows, nCols = xg_nCols;
     INT nCount = nRows * nCols;
@@ -472,7 +472,7 @@ bool __fastcall XG_Board::DividedByBlack() const
 // すべてのパターンが正当かどうか調べる。
 XG_EpvCode __fastcall XG_Board::EveryPatternValid1(
     std::vector<std::wstring>& vNotFoundWords,
-    XG_Pos& pos, bool bNonBlackCheckSpace) const
+    XG_Pos& pos, bool bNonBlackCheckSpace) const noexcept
 {
     const int nRows = xg_nRows, nCols = xg_nCols;
 
@@ -722,7 +722,7 @@ XG_EpvCode __fastcall XG_Board::EveryPatternValid1(
 // すべてのパターンが正当かどうか調べる。
 XG_EpvCode __fastcall XG_Board::EveryPatternValid2(
     std::vector<std::wstring>& vNotFoundWords,
-    XG_Pos& pos, bool bNonBlackCheckSpace) const
+    XG_Pos& pos, bool bNonBlackCheckSpace) const noexcept
 {
     const int nRows = xg_nRows;
     const int nCols = xg_nCols;
@@ -998,7 +998,7 @@ XG_EpvCode __fastcall XG_Board::EveryPatternValid2(
 }
 
 // 正当かどうか？
-inline bool __fastcall XG_Board::IsValid() const
+inline bool __fastcall XG_Board::IsValid() const noexcept
 {
     if ((xg_nRules & RULE_DONTCORNERBLACK) && CornerBlack())
         return false;
@@ -1033,7 +1033,7 @@ inline bool __fastcall XG_Board::IsValid() const
 }
 
 // 正当かどうか？（簡略版、黒マス追加なし）
-bool __fastcall XG_Board::IsNoAddBlackOK() const
+bool __fastcall XG_Board::IsNoAddBlackOK() const noexcept
 {
     // クロスワードに含まれる単語のチェック。
     XG_Pos pos;
@@ -1049,7 +1049,7 @@ bool __fastcall XG_Board::IsNoAddBlackOK() const
 }
 
 // 番号をつける。
-bool __fastcall XG_Board::DoNumbering()
+bool __fastcall XG_Board::DoNumbering() noexcept
 {
     const int nRows = xg_nRows;
     const int nCols = xg_nCols;
@@ -1218,7 +1218,7 @@ space_found_2:;
 }
 
 // 番号をつける（チェックなし）。
-void __fastcall XG_Board::DoNumberingNoCheck()
+void __fastcall XG_Board::DoNumberingNoCheck() noexcept
 {
     // 単語データ。
     XG_WordData wd;
@@ -1362,7 +1362,7 @@ void __fastcall XG_Board::DoNumberingNoCheck()
 template <bool t_alternative> bool __fastcall
 XgGetCandidatesAddBlack(
     std::vector<std::wstring>& cands, const std::wstring& pattern, int& nSkip,
-    bool left_black_check, bool right_black_check)
+    bool left_black_check, bool right_black_check) noexcept
 {
     // パターンの長さ。
     const int patlen = static_cast<int>(pattern.size());
@@ -1507,7 +1507,7 @@ XgGetCandidatesAddBlack(
 
 // 候補を取得する（黒マス追加なし）。
 template <bool t_alternative> bool __fastcall
-XgGetCandidatesNoAddBlack(std::vector<std::wstring>& cands, const std::wstring& pattern)
+XgGetCandidatesNoAddBlack(std::vector<std::wstring>& cands, const std::wstring& pattern) noexcept
 {
     // 単語の長さ。
     const int patlen = static_cast<int>(pattern.size());
@@ -1561,7 +1561,7 @@ XgGetCandidatesNoAddBlack(std::vector<std::wstring>& cands, const std::wstring& 
 }
 
 // 解か？
-bool __fastcall XG_Board::IsSolution() const
+bool __fastcall XG_Board::IsSolution() const noexcept
 {
     const int nRows = xg_nRows;
     const int nCols = xg_nCols;
@@ -1583,7 +1583,7 @@ bool __fastcall XG_Board::IsSolution() const
 }
 
 // ヒント文字列を解析する。
-bool __fastcall XgParseHints(std::vector<XG_Hint>& hints, const std::wstring& str)
+bool __fastcall XgParseHints(std::vector<XG_Hint>& hints, const std::wstring& str) noexcept
 {
     // ヒントをクリアする。
     hints.clear();
@@ -2581,7 +2581,7 @@ bool __fastcall XgSetString(HWND hwnd, const std::wstring& str, XG_FILETYPE type
 }
 
 // スレッド情報を取得する。
-XG_ThreadInfo *__fastcall XgGetThreadInfo(void)
+XG_ThreadInfo *__fastcall XgGetThreadInfo(void) noexcept
 {
     const DWORD threadid = ::GetCurrentThreadId();
     for (DWORD i = 0; i < xg_dwThreadCount; i++) {
@@ -2592,7 +2592,7 @@ XG_ThreadInfo *__fastcall XgGetThreadInfo(void)
 }
 
 // 再帰する。
-void __fastcall XgSolveXWord_AddBlackRecurse(const XG_Board& xw)
+void __fastcall XgSolveXWord_AddBlackRecurse(const XG_Board& xw) noexcept
 {
     // すでに解かれているなら、終了。
     if (xg_bSolved)
@@ -2941,7 +2941,7 @@ void __fastcall XgSolveXWord_AddBlackRecurse(const XG_Board& xw)
 }
 
 // 再帰する（黒マス追加なし）。
-void __fastcall XgSolveXWord_NoAddBlackRecurse(const XG_Board& xw)
+void __fastcall XgSolveXWord_NoAddBlackRecurse(const XG_Board& xw) noexcept
 {
     // すでに解かれているなら、終了。
     if (xg_bSolved)
@@ -3182,7 +3182,7 @@ void __fastcall XgSolveXWord_NoAddBlackRecurse(const XG_Board& xw)
 }
 
 // 縦と横を入れ替える。
-void XG_Board::SwapXandY()
+void XG_Board::SwapXandY() noexcept
 {
     const int nRows = xg_nRows;
     const int nCols = xg_nCols;
@@ -3200,7 +3200,7 @@ void XG_Board::SwapXandY()
 }
 
 // 解く。
-void __fastcall XgSolveXWord_AddBlack(const XG_Board& xw)
+void __fastcall XgSolveXWord_AddBlack(const XG_Board& xw) noexcept
 {
     const int nRows = xg_nRows, nCols = xg_nCols;
 
@@ -3539,7 +3539,7 @@ retry_2:;
 }
 
 // 解く（黒マス追加なし）。
-void __fastcall XgSolveXWord_NoAddBlack(const XG_Board& xw)
+void __fastcall XgSolveXWord_NoAddBlack(const XG_Board& xw) noexcept
 {
     const int nRows = xg_nRows, nCols = xg_nCols;
 
@@ -3688,7 +3688,7 @@ retry_2:;
 #endif
 
 // マルチスレッド用の関数。
-unsigned __stdcall XgSolveProc_AddBlack(void *param)
+unsigned __stdcall XgSolveProc_AddBlack(void *param) noexcept
 {
     // スレッド情報を取得する。
     XG_ThreadInfo *info = reinterpret_cast<XG_ThreadInfo *>(param);
@@ -3712,7 +3712,7 @@ unsigned __stdcall XgSolveProc_AddBlack(void *param)
 }
 
 // マルチスレッド用の関数（黒マス追加なし）。
-unsigned __stdcall XgSolveProc_NoAddBlack(void *param)
+unsigned __stdcall XgSolveProc_NoAddBlack(void *param) noexcept
 {
     // スレッド情報を取得する。
     XG_ThreadInfo *info = reinterpret_cast<XG_ThreadInfo *>(param);
@@ -3736,7 +3736,7 @@ unsigned __stdcall XgSolveProc_NoAddBlack(void *param)
 }
 
 // マルチスレッド用の関数（スマート解決）。
-unsigned __stdcall XgSolveProcSmart(void *param)
+unsigned __stdcall XgSolveProcSmart(void *param) noexcept
 {
     // スレッド情報を取得する。
     XG_ThreadInfo *info = reinterpret_cast<XG_ThreadInfo *>(param);
@@ -3768,7 +3768,7 @@ unsigned __stdcall XgSolveProcSmart(void *param)
 //#define SINGLE_THREAD_MODE
 
 // 解を求めるのを開始。
-void __fastcall XgStartSolve_AddBlack(void)
+void __fastcall XgStartSolve_AddBlack(void) noexcept
 {
     // フラグを初期化する。
     xg_bSolved = xg_bCancelled = false;
@@ -3804,7 +3804,7 @@ void __fastcall XgStartSolve_AddBlack(void)
 }
 
 // 解を求めるのを開始（黒マス追加なし）。
-void __fastcall XgStartSolve_NoAddBlack(void)
+void __fastcall XgStartSolve_NoAddBlack(void) noexcept
 {
     // フラグを初期化する。
     xg_bSolved = xg_bCancelled = false;
@@ -3824,7 +3824,7 @@ void __fastcall XgStartSolve_NoAddBlack(void)
 }
 
 // 解を求めるのを開始（スマート解決）。
-void __fastcall XgStartSolve_Smart(void)
+void __fastcall XgStartSolve_Smart(void) noexcept
 {
     // フラグを初期化する。
     xg_bSolved = xg_bCancelled = false;
@@ -3873,7 +3873,7 @@ void __fastcall XgClearNonBlocks(void)
 }
 
 // 解を求めようとした後の後処理。
-void __fastcall XgEndSolve(void)
+void __fastcall XgEndSolve(void) noexcept
 {
     if (s_bSwapped) {
         xg_xword.SwapXandY();
@@ -6054,7 +6054,7 @@ break2:;
 //////////////////////////////////////////////////////////////////////////////
 
 // 黒マスが線対称か？
-bool XG_Board::IsLineSymmetry() const
+bool XG_Board::IsLineSymmetry() const noexcept
 {
     const int nRows = xg_nRows;
     const int nCols = xg_nCols;
@@ -6114,7 +6114,7 @@ skip04:;
 }
 
 // 黒マスが点対称か？
-bool XG_Board::IsPointSymmetry() const
+bool XG_Board::IsPointSymmetry() const noexcept
 {
     const int nRows = xg_nRows;
     const int nCols = xg_nCols;
@@ -6131,7 +6131,7 @@ bool XG_Board::IsPointSymmetry() const
 }
 
 // 黒マスが線対称（タテ）か？
-bool XG_Board::IsLineSymmetryV() const
+bool XG_Board::IsLineSymmetryV() const noexcept
 {
     const int nRows = xg_nRows;
     const int nHalfRows = nRows / 2;
@@ -6146,7 +6146,7 @@ bool XG_Board::IsLineSymmetryV() const
 }
 
 // 黒マスが線対称（ヨコ）か？
-bool XG_Board::IsLineSymmetryH() const
+bool XG_Board::IsLineSymmetryH() const noexcept
 {
     const int nRows = xg_nRows;
     const int nCols = xg_nCols;
@@ -6190,7 +6190,7 @@ void XG_Board::Mirror()
 }
 
 // 黒斜三連か？
-bool XG_Board::ThreeDiagonals() const
+bool XG_Board::ThreeDiagonals() const noexcept
 {
     const int nRows = xg_nRows;
     const int nCols = xg_nCols;
@@ -6220,7 +6220,7 @@ bool XG_Board::ThreeDiagonals() const
 }
 
 // 黒斜四連か？
-bool XG_Board::FourDiagonals() const
+bool XG_Board::FourDiagonals() const noexcept
 {
     const int nRows = xg_nRows;
     const int nCols = xg_nCols;
@@ -6262,7 +6262,7 @@ bool xg_bBlacksGenerated = false;
 INT xg_nMaxWordLen = 4;
 
 // 黒マスパターンを生成する。
-bool __fastcall XgGenerateBlacksRecurse(const XG_Board& xword, LONG iRowjCol)
+bool __fastcall XgGenerateBlacksRecurse(const XG_Board& xword, LONG iRowjCol) noexcept
 {
     // ルールの適合性をチェックする。
     if ((xg_nRules & RULE_DONTCORNERBLACK) && xword.CornerBlack())
@@ -6376,7 +6376,7 @@ bool __fastcall XgGenerateBlacksRecurse(const XG_Board& xword, LONG iRowjCol)
 }
 
 // 黒マスパターンを生成する（点対称）。
-bool __fastcall XgGenerateBlacksPointSymRecurse(const XG_Board& xword, LONG iRowjCol)
+bool __fastcall XgGenerateBlacksPointSymRecurse(const XG_Board& xword, LONG iRowjCol) noexcept
 {
     // ルールの適合性をチェックする。
     if ((xg_nRules & RULE_DONTCORNERBLACK) && xword.CornerBlack())
@@ -6499,7 +6499,7 @@ bool __fastcall XgGenerateBlacksPointSymRecurse(const XG_Board& xword, LONG iRow
 }
 
 // 黒マスパターンを生成する（タテ線対称）。
-bool __fastcall XgGenerateBlacksLineSymVRecurse(const XG_Board& xword, LONG iRowjCol)
+bool __fastcall XgGenerateBlacksLineSymVRecurse(const XG_Board& xword, LONG iRowjCol) noexcept
 {
     // ルールの適合性をチェックする。
     if ((xg_nRules & RULE_DONTCORNERBLACK) && xword.CornerBlack())
@@ -6635,7 +6635,7 @@ bool __fastcall XgGenerateBlacksLineSymVRecurse(const XG_Board& xword, LONG iRow
 }
 
 // 黒マスパターンを生成する（ヨコ線対称）。
-bool __fastcall XgGenerateBlacksLineSymHRecurse(const XG_Board& xword, LONG iRowjCol)
+bool __fastcall XgGenerateBlacksLineSymHRecurse(const XG_Board& xword, LONG iRowjCol) noexcept
 {
     // ルールの適合性をチェックする。
     if ((xg_nRules & RULE_DONTCORNERBLACK) && xword.CornerBlack())
@@ -6771,7 +6771,7 @@ bool __fastcall XgGenerateBlacksLineSymHRecurse(const XG_Board& xword, LONG iRow
 }
 
 // マルチスレッド用の関数。
-unsigned __stdcall XgGenerateBlacks(void *param)
+unsigned __stdcall XgGenerateBlacks(void *param) noexcept
 {
     XG_Board xword;
     xg_solution.clear();
@@ -6789,7 +6789,7 @@ unsigned __stdcall XgGenerateBlacks(void *param)
 }
 
 // マルチスレッド用の関数。
-unsigned __stdcall XgGenerateBlacksSmart(void *param)
+unsigned __stdcall XgGenerateBlacksSmart(void *param) noexcept
 {
     if (xg_bBlacksGenerated)
         return 1;
@@ -6832,7 +6832,7 @@ unsigned __stdcall XgGenerateBlacksSmart(void *param)
 }
 
 // マルチスレッド用の関数。
-unsigned __stdcall XgGenerateBlacksPointSym(void *param)
+unsigned __stdcall XgGenerateBlacksPointSym(void *param) noexcept
 {
     srand(DWORD(::GetTickCount64()) ^ ::GetCurrentThreadId());
     xg_solution.clear();
@@ -6846,7 +6846,7 @@ unsigned __stdcall XgGenerateBlacksPointSym(void *param)
 }
 
 // マルチスレッド用の関数。
-unsigned __stdcall XgGenerateBlacksLineSymV(void *param)
+unsigned __stdcall XgGenerateBlacksLineSymV(void *param) noexcept
 {
     srand(DWORD(::GetTickCount64()) ^ ::GetCurrentThreadId());
     xg_solution.clear();
@@ -6860,7 +6860,7 @@ unsigned __stdcall XgGenerateBlacksLineSymV(void *param)
 }
 
 // マルチスレッド用の関数。
-unsigned __stdcall XgGenerateBlacksLineSymH(void *param)
+unsigned __stdcall XgGenerateBlacksLineSymH(void *param) noexcept
 {
     srand(DWORD(::GetTickCount64()) ^ ::GetCurrentThreadId());
     xg_solution.clear();
@@ -6873,7 +6873,7 @@ unsigned __stdcall XgGenerateBlacksLineSymH(void *param)
     return 1;
 }
 
-void __fastcall XgStartGenerateBlacks(void)
+void __fastcall XgStartGenerateBlacks(void) noexcept
 {
     xg_bBlacksGenerated = false;
     xg_bCancelled = false;
@@ -6950,7 +6950,7 @@ std::wstring __fastcall XgNormalizeString(const std::wstring& text) {
 }
 
 // タテ向きにパターンを読み取る。
-std::wstring __fastcall XG_Board::GetPatternV(const XG_Pos& pos) const
+std::wstring __fastcall XG_Board::GetPatternV(const XG_Pos& pos) const noexcept
 {
     int lo, hi;
     std::wstring pattern;
@@ -6979,7 +6979,7 @@ std::wstring __fastcall XG_Board::GetPatternV(const XG_Pos& pos) const
 }
 
 // ヨコ向きにパターンを読み取る。
-std::wstring __fastcall XG_Board::GetPatternH(const XG_Pos& pos) const
+std::wstring __fastcall XG_Board::GetPatternH(const XG_Pos& pos) const noexcept
 {
     int lo, hi;
     std::wstring pattern;
@@ -7008,7 +7008,7 @@ std::wstring __fastcall XG_Board::GetPatternH(const XG_Pos& pos) const
 }
 
 // スレッドを閉じる。
-void __fastcall XgCloseThreads(void)
+void __fastcall XgCloseThreads(void) noexcept
 {
     for (DWORD i = 0; i < xg_dwThreadCount; i++) {
         ::CloseHandle(xg_ahThreads[i]);
@@ -7017,13 +7017,13 @@ void __fastcall XgCloseThreads(void)
 }
 
 // スレッドを待つ。
-void __fastcall XgWaitForThreads(void)
+void __fastcall XgWaitForThreads(void) noexcept
 {
     ::WaitForMultipleObjects(xg_dwThreadCount, xg_ahThreads.data(), true, 1000);
 }
 
 // スレッドが終了したか？
-bool __fastcall XgIsAnyThreadTerminated(void)
+bool __fastcall XgIsAnyThreadTerminated(void) noexcept
 {
     DWORD dwExitCode;
     for (DWORD i = 0; i < xg_dwThreadCount; i++) {

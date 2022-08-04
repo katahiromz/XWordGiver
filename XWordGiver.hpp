@@ -414,110 +414,110 @@ class XG_Board
 {
 public:
     // コンストラクタ。
-    XG_Board();
-    XG_Board(const XG_Board& xw);
-    XG_Board(XG_Board&& xw);
+    XG_Board() noexcept;
+    XG_Board(const XG_Board& xw) noexcept;
+    XG_Board(XG_Board&& xw) noexcept;
 
     // 代入。
-    void __fastcall operator=(const XG_Board& xw);
-    void __fastcall operator=(XG_Board&& xw);
+    void __fastcall operator=(const XG_Board& xw) noexcept;
+    void __fastcall operator=(XG_Board&& xw) noexcept;
 
     // マスの内容を取得する。
-    WCHAR __fastcall GetAt(int i) const;
-    WCHAR __fastcall GetAt(int iRow, int jCol) const {
+    WCHAR __fastcall GetAt(int i) const noexcept;
+    WCHAR __fastcall GetAt(int iRow, int jCol) const noexcept {
         assert(0 <= iRow && iRow < xg_nRows);
         assert(0 <= jCol && jCol < xg_nCols);
         return GetAt(iRow * xg_nCols + jCol);
     }
-    WCHAR __fastcall GetAt(const XG_Pos& pos) const {
+    WCHAR __fastcall GetAt(const XG_Pos& pos) const noexcept {
         return GetAt(pos.m_i, pos.m_j);
     }
     // マスの内容を設定する。
-    void __fastcall SetAt(int i, WCHAR ch);
-    void __fastcall SetAt(int iRow, int jCol, WCHAR ch) {
+    void __fastcall SetAt(int i, WCHAR ch) noexcept;
+    void __fastcall SetAt(int iRow, int jCol, WCHAR ch) noexcept {
         assert(0 <= iRow && iRow < xg_nRows);
         assert(0 <= jCol && jCol < xg_nCols);
         SetAt(iRow * xg_nCols + jCol, ch);
     }
-    void __fastcall SetAt(const XG_Pos& pos, WCHAR ch) {
+    void __fastcall SetAt(const XG_Pos& pos, WCHAR ch) noexcept {
         return SetAt(pos.m_i, pos.m_j, ch);
     }
-    void __fastcall SetAt2(int i, int j, int nRows, int nCols, WCHAR ch) {
+    void __fastcall SetAt2(int i, int j, int nRows, int nCols, WCHAR ch) noexcept {
         m_vCells[i * nCols + j] = ch;
     }
     // 空ではないマスの個数を返す。
-    WCHAR& __fastcall Count();
-    WCHAR __fastcall Count() const;
+    WCHAR& __fastcall Count() noexcept;
+    WCHAR __fastcall Count() const noexcept;
     VOID ReCount();
     // クリアする。
-    void __fastcall clear();
+    void __fastcall clear() noexcept;
     // リセットしてサイズを設定する。
-    void __fastcall ResetAndSetSize(int nRows, int nCols);
+    void __fastcall ResetAndSetSize(int nRows, int nCols) noexcept;
     // 解か？
-    bool __fastcall IsSolution() const;
+    bool __fastcall IsSolution() const noexcept;
     // 正当かどうか？
-    bool __fastcall IsValid() const;
+    bool __fastcall IsValid() const noexcept;
     // 正当かどうか？（簡略版、黒マス追加なし）
-    bool __fastcall IsNoAddBlackOK() const;
+    bool __fastcall IsNoAddBlackOK() const noexcept;
     // 番号をつける。
-    bool __fastcall DoNumbering();
+    bool __fastcall DoNumbering() noexcept;
     // 番号をつける（チェックなし）。
-    void __fastcall DoNumberingNoCheck();
+    void __fastcall DoNumberingNoCheck() noexcept;
 
     // クロスワードの文字列を取得する。
     void __fastcall GetString(std::wstring& str) const;
     bool __fastcall SetString(const std::wstring& strToBeSet);
 
     // クロスワードが空かどうか。
-    bool __fastcall IsEmpty() const;
+    bool __fastcall IsEmpty() const noexcept;
     // クロスワードがすべて埋め尽くされているかどうか。
-    bool __fastcall IsFulfilled() const;
+    bool __fastcall IsFulfilled() const noexcept;
     // 四隅に黒マスがあるかどうか。
-    bool __fastcall CornerBlack() const;
+    bool __fastcall CornerBlack() const noexcept;
     // 黒マスが隣り合っているか？
-    bool __fastcall DoubleBlack() const;
+    bool __fastcall DoubleBlack() const noexcept;
     // 三方向が黒マスで囲まれたマスがあるかどうか？
-    bool __fastcall TriBlackAround() const;
+    bool __fastcall TriBlackAround() const noexcept;
     // 黒マスで分断されているかどうか？
-    bool __fastcall DividedByBlack() const;
+    bool __fastcall DividedByBlack() const noexcept;
     // すべてのパターンが正当かどうか調べる。
     XG_EpvCode __fastcall EveryPatternValid1(
         std::vector<std::wstring>& vNotFoundWords,
-        XG_Pos& pos, bool bNonBlackCheckSpace) const;
+        XG_Pos& pos, bool bNonBlackCheckSpace) const noexcept;
     // すべてのパターンが正当かどうか調べる。
     XG_EpvCode __fastcall EveryPatternValid2(
         std::vector<std::wstring>& vNotFoundWords,
-        XG_Pos& pos, bool bNonBlackCheckSpace) const;
+        XG_Pos& pos, bool bNonBlackCheckSpace) const noexcept;
 
     // 黒マスを置けるか？
-    bool __fastcall CanPutBlack(int iRow, int jCol) const;
+    bool __fastcall CanPutBlack(int iRow, int jCol) const noexcept;
 
     // マスの三方向が黒マスで囲まれているか？
-    int __fastcall BlacksAround(int iRow, int jCol) const;
+    int __fastcall BlacksAround(int iRow, int jCol) const noexcept;
 
     // 黒マスが点対称か？
-    bool IsPointSymmetry() const;
+    bool IsPointSymmetry() const noexcept;
     // 黒マスが線対称か？
-    bool IsLineSymmetry() const;
+    bool IsLineSymmetry() const noexcept;
     // 黒マスが線対称（タテ）か？
-    bool IsLineSymmetryV() const;
+    bool IsLineSymmetryV() const noexcept;
     // 黒マスが線対称（ヨコ）か？
-    bool IsLineSymmetryH() const;
+    bool IsLineSymmetryH() const noexcept;
     // 必要ならルールに従って対称にする。
     void Mirror();
 
     // 黒斜三連か？
-    bool ThreeDiagonals() const;
+    bool ThreeDiagonals() const noexcept;
     // 黒斜四連か？
-    bool FourDiagonals() const;
+    bool FourDiagonals() const noexcept;
 
     // 縦と横を入れ替える。
-    void SwapXandY();
+    void SwapXandY() noexcept;
 
     // タテ向きにパターンを読み取る。
-    std::wstring __fastcall GetPatternV(const XG_Pos& pos) const;
+    std::wstring __fastcall GetPatternV(const XG_Pos& pos) const noexcept;
     // ヨコ向きにパターンを読み取る。
-    std::wstring __fastcall GetPatternH(const XG_Pos& pos) const;
+    std::wstring __fastcall GetPatternH(const XG_Pos& pos) const noexcept;
 
 public:
     // マス情報。
@@ -565,27 +565,27 @@ public:
     // 列を削除する。
     void DeleteColumn(INT jCol);
     // マスの内容を取得する。
-    WCHAR __fastcall GetAt(int ij) const;
+    WCHAR __fastcall GetAt(int ij) const noexcept;
     // マスの内容を取得する。
-    WCHAR __fastcall GetAt(int iRow, int jCol) const {
+    WCHAR __fastcall GetAt(int iRow, int jCol) const noexcept {
         assert(0 <= iRow && iRow < m_nRows);
         assert(0 <= jCol && jCol < m_nCols);
         return GetAt(iRow * m_nCols + jCol);
     }
     // マスの内容を取得する。
-    WCHAR __fastcall GetAt(const XG_Pos& pos) const {
+    WCHAR __fastcall GetAt(const XG_Pos& pos) const noexcept {
         return GetAt(pos.m_i, pos.m_j);
     }
     // マスの内容を設定する。
-    void __fastcall SetAt(int ij, WCHAR ch);
+    void __fastcall SetAt(int ij, WCHAR ch) noexcept;
     // マスの内容を設定する。
-    void __fastcall SetAt(int iRow, int jCol, WCHAR ch) {
+    void __fastcall SetAt(int iRow, int jCol, WCHAR ch) noexcept {
         assert(0 <= iRow && iRow < m_nRows);
         assert(0 <= jCol && jCol < m_nCols);
         SetAt(iRow * m_nCols + jCol, ch);
     }
     // マスの内容を設定する。
-    void __fastcall SetAt(const XG_Pos& pos, WCHAR ch) {
+    void __fastcall SetAt(const XG_Pos& pos, WCHAR ch) noexcept {
         SetAt(pos.m_i, pos.m_j, ch);
     }
 };
@@ -649,19 +649,19 @@ void __fastcall XgDrawMarkWord(HDC hdc, LPSIZE psiz);
 void __fastcall XgDrawXWord(XG_Board& xw, HDC hdc, LPSIZE psiz, bool bCaret);
 
 // 解を求めるのを開始。
-void __fastcall XgStartSolve_AddBlack(void);
+void __fastcall XgStartSolve_AddBlack(void) noexcept;
 
 // 解を求めるのを開始（黒マス追加なし）。
-void __fastcall XgStartSolve_NoAddBlack(void);
+void __fastcall XgStartSolve_NoAddBlack(void) noexcept;
 
 // 解を求めるのを開始（スマート解決）。
-void __fastcall XgStartSolve_Smart(void);
+void __fastcall XgStartSolve_Smart(void) noexcept;
 
 // 解を求めようとした後の後処理。
-void __fastcall XgEndSolve(void);
+void __fastcall XgEndSolve(void) noexcept;
 
 // 黒マスパターンを生成する。
-void __fastcall XgStartGenerateBlacks(void);
+void __fastcall XgStartGenerateBlacks(void) noexcept;
 
 // ステータスバーを更新する。
 void __fastcall XgUpdateStatusBar(HWND hwnd);
@@ -702,58 +702,58 @@ extern XG_VIEW_MODE xg_nViewMode;
 // inline functions
 
 // コンストラクタ。
-inline XG_Board::XG_Board()
+inline XG_Board::XG_Board() noexcept
 {
 }
 
 // コピーコンストラクタ。
-inline XG_Board::XG_Board(const XG_Board& xw) : m_vCells(xw.m_vCells)
+inline XG_Board::XG_Board(const XG_Board& xw) noexcept : m_vCells(xw.m_vCells)
 {
 }
 
 // 代入。
-inline void __fastcall XG_Board::operator=(const XG_Board& xw)
+inline void __fastcall XG_Board::operator=(const XG_Board& xw) noexcept
 {
     m_vCells = xw.m_vCells;
 }
 
 // コンストラクタ。
-inline XG_Board::XG_Board(XG_Board&& xw) : m_vCells(xw.m_vCells)
+inline XG_Board::XG_Board(XG_Board&& xw) noexcept : m_vCells(xw.m_vCells)
 {
 }
 
 // 代入。
-inline void __fastcall XG_Board::operator=(XG_Board&& xw)
+inline void __fastcall XG_Board::operator=(XG_Board&& xw) noexcept
 {
     m_vCells = std::move(xw.m_vCells);
 }
 
 // マスの内容を取得する。
-inline WCHAR __fastcall XG_Board::GetAt(int i) const
+inline WCHAR __fastcall XG_Board::GetAt(int i) const noexcept
 {
     assert(0 <= i && i < xg_nRows * xg_nCols);
     return m_vCells[i];
 }
 
 // マスの内容を取得する。
-inline WCHAR __fastcall XG_BoardEx::GetAt(int ij) const {
+inline WCHAR __fastcall XG_BoardEx::GetAt(int ij) const noexcept {
     return m_vCells[ij];
 }
 
 // 空マスじゃないマスの個数を返す。
-inline WCHAR& __fastcall XG_Board::Count()
+inline WCHAR& __fastcall XG_Board::Count() noexcept
 {
     return m_vCells[xg_nRows * xg_nCols];
 }
 
 // 空マスじゃないマスの個数を返す。
-inline WCHAR __fastcall XG_Board::Count() const
+inline WCHAR __fastcall XG_Board::Count() const noexcept
 {
     return m_vCells[xg_nRows * xg_nCols];
 }
 
 // クロスワードが空かどうか。
-inline bool __fastcall XG_Board::IsEmpty() const
+inline bool __fastcall XG_Board::IsEmpty() const noexcept
 {
 #if 1
     return Count() == 0;
@@ -771,7 +771,7 @@ inline bool __fastcall XG_Board::IsEmpty() const
 }
 
 // クロスワードがすべて埋め尽くされているかどうか。
-inline bool __fastcall XG_Board::IsFulfilled() const
+inline bool __fastcall XG_Board::IsFulfilled() const noexcept
 {
 #if 1
     return Count() == xg_nRows * xg_nCols;
@@ -789,20 +789,20 @@ inline bool __fastcall XG_Board::IsFulfilled() const
 }
 
 // リセットしてサイズを設定する。
-inline void __fastcall XG_Board::ResetAndSetSize(int nRows, int nCols)
+inline void __fastcall XG_Board::ResetAndSetSize(int nRows, int nCols) noexcept
 {
     m_vCells.assign(nRows * nCols + 1, ZEN_SPACE);
     m_vCells[nRows * nCols] = 0;
 }
 
 // クリアする。
-inline void __fastcall XG_Board::clear()
+inline void __fastcall XG_Board::clear() noexcept
 {
     ResetAndSetSize(xg_nRows, xg_nCols);
 }
 
 // マスの内容を設定する。
-inline void __fastcall XG_Board::SetAt(int i, WCHAR ch)
+inline void __fastcall XG_Board::SetAt(int i, WCHAR ch) noexcept
 {
     assert(0 <= i && i < xg_nRows * xg_nCols);
     WCHAR& ch2 = m_vCells[i];
@@ -823,7 +823,7 @@ inline void __fastcall XG_Board::SetAt(int i, WCHAR ch)
 }
 
 // マスの内容を設定する。
-inline void __fastcall XG_BoardEx::SetAt(int ij, WCHAR ch)
+inline void __fastcall XG_BoardEx::SetAt(int ij, WCHAR ch) noexcept
 {
     WCHAR& ch2 = m_vCells[ij];
     if (ch2 != ZEN_SPACE)
@@ -843,7 +843,7 @@ inline void __fastcall XG_BoardEx::SetAt(int ij, WCHAR ch)
 }
 
 // マスの三方向が黒マスで囲まれているか？
-inline int __fastcall XG_Board::BlacksAround(int iRow, int jCol) const
+inline int __fastcall XG_Board::BlacksAround(int iRow, int jCol) const noexcept
 {
     assert(0 <= iRow && iRow < xg_nRows);
     assert(0 <= jCol && jCol < xg_nCols);
@@ -869,7 +869,7 @@ inline int __fastcall XG_Board::BlacksAround(int iRow, int jCol) const
 }
 
 // 黒マスを置けるか？
-inline bool __fastcall XG_Board::CanPutBlack(int iRow, int jCol) const
+inline bool __fastcall XG_Board::CanPutBlack(int iRow, int jCol) const noexcept
 {
     assert(0 <= iRow && iRow < xg_nRows);
     assert(0 <= jCol && jCol < xg_nCols);
@@ -1356,11 +1356,11 @@ extern INT xg_nNumberGenerated;
 #define xg_dwTimerInterval 300
 
 // スレッドを閉じる。
-void __fastcall XgCloseThreads(void);
+void __fastcall XgCloseThreads(void) noexcept;
 // スレッドを待つ。
-void __fastcall XgWaitForThreads(void);
+void __fastcall XgWaitForThreads(void) noexcept;
 // スレッドが終了したか？
-bool __fastcall XgIsAnyThreadTerminated(void);
+bool __fastcall XgIsAnyThreadTerminated(void) noexcept;
 
 // 再計算までの時間を概算する。
 inline DWORD XgGetRetryInterval(void)
@@ -1404,12 +1404,12 @@ void __fastcall XgSaveAnsAsImage(HWND hwnd);
 template <bool t_alternative>
 bool __fastcall XgGetCandidatesAddBlack(
     std::vector<std::wstring>& cands, const std::wstring& pattern, int& nSkip,
-    bool left_black_check, bool right_black_check);
+    bool left_black_check, bool right_black_check) noexcept;
 
 // マルチスレッド用の関数。
-unsigned __stdcall XgGenerateBlacks(void *param);
+unsigned __stdcall XgGenerateBlacks(void *param) noexcept;
 // マルチスレッド用の関数。
-unsigned __stdcall XgGenerateBlacksSmart(void *param);
+unsigned __stdcall XgGenerateBlacksSmart(void *param) noexcept;
 
 // ヒント文字列を取得する。
 // hint_type 0: タテ。
