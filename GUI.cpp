@@ -582,6 +582,22 @@ void __fastcall XgUpdateCaretPos(void)
     ImmSetCompositionWindow(hIMC, &CompForm); // 未確定文字列の表示位置を設定。
     ImmSetCompositionFont(hIMC, &lf); // 未確定文字列のフォントを設定。
     ImmReleaseContext(xg_canvasWnd, hIMC);
+
+    // ヒントウィンドウのハイライトを設定する。
+    INT nYoko = -1, nTate = -1;
+    for (auto& info : xg_vTateInfo) {
+        if (info.m_iRow == xg_caret_pos.m_i && info.m_jCol == xg_caret_pos.m_j) {
+            nTate = info.m_number;
+            break;
+        }
+    }
+    for (auto& info : xg_vYokoInfo) {
+        if (info.m_iRow == xg_caret_pos.m_i && info.m_jCol == xg_caret_pos.m_j) {
+            nYoko = info.m_number;
+            break;
+        }
+    }
+    xg_hints_wnd.setHighlight(nYoko, nTate);
 }
 
 // キャレット位置をセットする。

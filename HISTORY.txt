@@ -148,6 +148,8 @@
     - Strengthened the Kana dictionary.
 - 2022-08-01 ver.4.9.4
     - Strengthened the Kanji dictionary.
+- 2022-XX-YY ver.4.9.5
+    - Added the ability to highlight textbox in the hint window when clicking on a numbered cell.
 
 # 開発履歴 (Japanese)
 
@@ -612,3 +614,5 @@
     - カナ辞書の増強。
 - 2022年08月01日 ver.4.9.4
     - 漢字辞書の増強。
+- 2022年XX月YY日 ver.4.9.5
+    - 番号付きのマスをクリックしたときのヒントウィンドウのテキストボックスのハイライト機能を追加。

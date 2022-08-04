@@ -28,6 +28,63 @@ public:
     inline static int s_nHintsWndX = CW_USEDEFAULT, s_nHintsWndY = CW_USEDEFAULT;
     inline static int s_nHintsWndCX = CW_USEDEFAULT, s_nHintsWndCY = CW_USEDEFAULT;
 
+    // ハイライト。
+    inline static HWND s_hwndHighlightTateEdit = NULL;
+    inline static HWND s_hwndHighlightYokoEdit = NULL;
+
+    // ハイライトを更新する。
+    void setHighlight(INT nYoko, INT nTate)
+    {
+        HWND hwndTateOld = s_hwndHighlightTateEdit;
+        HWND hwndYokoOld = s_hwndHighlightYokoEdit;
+        HWND hwndTate = NULL, hwndYoko = NULL;
+
+        if (nTate != -1) {
+            for (size_t i = 0; i < xg_vecTateHints.size(); ++i) {
+                if (xg_vecTateHints[i].m_number == nTate) {
+                    hwndTate = xg_ahwndTateEdits[i];
+                    break;
+                }
+            }
+        }
+        if (nYoko != -1) {
+            for (size_t i = 0; i < xg_vecYokoHints.size(); ++i) {
+                if (xg_vecYokoHints[i].m_number == nYoko) {
+                    hwndYoko = xg_ahwndYokoEdits[i];
+                    break;
+                }
+            }
+        }
+
+        s_hwndHighlightTateEdit = hwndTate;
+        s_hwndHighlightYokoEdit = hwndYoko;
+
+        if (hwndTate)
+            InvalidateRect(hwndTate, NULL, TRUE);
+        if (hwndYoko)
+            InvalidateRect(hwndYoko, NULL, TRUE);
+        if (hwndTateOld)
+            InvalidateRect(hwndTateOld, NULL, TRUE);
+        if (hwndYokoOld)
+            InvalidateRect(hwndYokoOld, NULL, TRUE);
+    }
+
+    // ハイライトに背景色を付ける。
+    HBRUSH OnCtlColor(HWND hwnd, HDC hdc, HWND hwndChild, int type)
+    {
+        if (hwndChild == s_hwndHighlightTateEdit || hwndChild == s_hwndHighlightYokoEdit)
+        {
+            const COLORREF rgbYellow = RGB(255, 255, 191);
+            SetBkColor(hdc, rgbYellow);
+            SetDCBrushColor(hdc, rgbYellow);
+            return GetStockBrush(DC_BRUSH);
+        }
+        else
+        {
+            return FORWARD_WM_CTLCOLOREDIT(hwnd, hdc, hwndChild, ::DefWindowProcW);
+        }
+    }
+
     // ヒントが変更されたか？
     static bool AreHintsModified(void)
     {
@@ -355,9 +412,9 @@ public:
         xg_ahwndTateEdits.clear();
         xg_ahwndYokoStatics.clear();
         xg_ahwndYokoEdits.clear();
-
         xg_svHintsScrollView.SetParent(hwnd);
         xg_svHintsScrollView.ShowScrollBars(FALSE, TRUE);
+        s_hwndHighlightTateEdit = s_hwndHighlightYokoEdit = NULL;
 
         if (xg_hHintsUIFont) {
             ::DeleteObject(xg_hHintsUIFont);
@@ -507,6 +564,7 @@ public:
         xg_ahwndYokoStatics.clear();
         xg_ahwndYokoEdits.clear();
         xg_svHintsScrollView.clear();
+        s_hwndHighlightTateEdit = s_hwndHighlightYokoEdit = NULL;
 
         ::DeleteObject(xg_hHintsUIFont);
         xg_hHintsUIFont = NULL;
@@ -626,6 +684,7 @@ public:
         HANDLE_MSG(hWnd, WM_MOUSEWHEEL, OnMouseWheel);
         HANDLE_MSG(hWnd, WM_GETMINMAXINFO, OnGetMinMaxInfo);
         HANDLE_MSG(hWnd, WM_CONTEXTMENU, OnContextMenu);
+        HANDLE_MSG(hWnd, WM_CTLCOLOREDIT, OnCtlColor);
         default:
             return ::DefWindowProcW(hWnd, uMsg, wParam, lParam);
         }
