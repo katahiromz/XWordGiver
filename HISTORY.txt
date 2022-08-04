@@ -153,6 +153,7 @@
 - 2022-XX-YY ver.4.9.6
     - Deleted XWordGiver.py.
     - Faster by specifying noexcept keyword.
+    - Added "Reflect black cells" to the "Help" menu.
 
 # 開発履歴 (Japanese)
 
@@ -622,3 +623,4 @@
 - 2022年XX月YY日 ver.4.9.6
     - XWordGiver.pyを削除。
     - noexceptキーワードの指定により、高速化。
+    - 「ヘルプ」メニューに「黒マスを反射する」を追加。

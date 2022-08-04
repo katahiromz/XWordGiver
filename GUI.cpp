@@ -3907,6 +3907,17 @@ void __fastcall MainWnd_OnInitMenu(HWND /*hwnd*/, HMENU hMenu)
         ::EnableMenuItem(hMenu, ID_DOWN, MF_BYCOMMAND | MF_ENABLED);
     }
 
+    // 黒マスパターンを反射する。
+    if (xg_bSolved) {
+        ::EnableMenuItem(hMenu, ID_REFLECTBLOCKS, MF_BYCOMMAND | MF_GRAYED);
+    } else {
+        if (xg_nRules & (RULE_LINESYMMETRYH | RULE_LINESYMMETRYV | RULE_POINTSYMMETRY)) {
+            ::EnableMenuItem(hMenu, ID_REFLECTBLOCKS, MF_BYCOMMAND | MF_ENABLED);
+        } else {
+            ::EnableMenuItem(hMenu, ID_REFLECTBLOCKS, MF_BYCOMMAND | MF_GRAYED);
+        }
+    }
+
     // 二重マスメニュー更新。
     if (xg_vMarks.empty()) {
         ::EnableMenuItem(hMenu, ID_KILLMARKS, MF_BYCOMMAND | MF_GRAYED);
@@ -6353,6 +6364,12 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT /*codeNo
         break;
     case ID_UILANGID:
         XgSelectUILanguage(hwnd);
+        break;
+    case ID_REFLECTBLOCKS:
+        if (!xg_bSolved) {
+            xg_xword.Mirror();
+            XgUpdateImage(hwnd);
+        }
         break;
     default:
         if (!XgOnCommandExtra(hwnd, id)) {

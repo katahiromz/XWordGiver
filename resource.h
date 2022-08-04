@@ -437,6 +437,7 @@
 #define ID_BOXPROP                          572
 #define ID_SAVE                             573
 #define ID_UILANGID                         574
+#define ID_REFLECTBLOCKS                    575
 #define ID_TT_BASE                          10000
 
 #define ctl2                                1185

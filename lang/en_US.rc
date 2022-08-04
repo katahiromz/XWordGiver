@@ -191,6 +191,7 @@ LANGUAGE LANG_ENGLISH, SUBLANG_DEFAULT
         MENUITEM SEPARATOR
         MENUITEM "Blocks line symmetry check\tCtrl+E", ID_LINESYMMETRYCHECK
         MENUITEM "Blocks point symmetry check\tCtrl+T", ID_POINTSYMMETRYCHECK
+        MENUITEM "R&eflect block pattern", ID_REFLECTBLOCKS
         MENUITEM SEPARATOR
         MENUITEM "Swap DOWN and ACROSS", ID_FLIPVH
         MENUITEM SEPARATOR
