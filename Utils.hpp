@@ -238,27 +238,10 @@ BOOL XgWriteFileAll(LPCWSTR file, const std::string& strBinary);
 // エンディアン変換。
 void XgSwab(LPBYTE pbFile, size_t cbFile);
 
-static inline BOOL ComboBox_RealGetText(HWND hwndCombo, LPWSTR pszText, INT cchText)
-{
-    INT iItem = ComboBox_GetCurSel(hwndCombo);
-    if (iItem == CB_ERR)
-        return ComboBox_GetText(hwndCombo, pszText, cchText);
-    if (ComboBox_GetLBTextLen(hwndCombo, iItem) < cchText)
-        return ComboBox_GetLBText(hwndCombo, iItem, pszText);
-    pszText[0] = 0;
-    return FALSE;
-}
-
-static inline BOOL ComboBox_RealSetText(HWND hwndCombo, LPCWSTR pszText)
-{
-    INT iItem = ComboBox_FindStringExact(hwndCombo, -1, pszText);
-    if (iItem == CB_ERR)
-    {
-        ComboBox_SetCurSel(hwndCombo, -1);
-        return ComboBox_SetText(hwndCombo, pszText);
-    }
-    return ComboBox_SetCurSel(hwndCombo, iItem);
-}
+// コンボボックスからテキストを取得。
+BOOL ComboBox_RealGetText(HWND hwndCombo, LPWSTR pszText, INT cchText);
+// コンボボックスにテキストを設定。
+BOOL ComboBox_RealSetText(HWND hwndCombo, LPCWSTR pszText);
 
 struct XG_FileManager
 {
