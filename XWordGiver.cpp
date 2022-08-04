@@ -5350,8 +5350,8 @@ bool __fastcall XgDoSaveJson(LPCWSTR pszFile)
             j["has_mark"] = true;
 
             std::wstring mark_word;
-            for (size_t i = 0; i < xg_vMarks.size(); ++i) {
-                WCHAR ch = xw->GetAt(xg_vMarks[i].m_i, xg_vMarks[i].m_j);
+            for (auto& mark : xg_vMarks) {
+                WCHAR ch = xw->GetAt(mark.m_i, mark.m_j);
                 mark_word += ch;
             }
 
