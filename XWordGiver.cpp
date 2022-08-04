@@ -5389,9 +5389,8 @@ bool __fastcall XgDoSaveJson(LPCWSTR pszFile)
 
             // ヨコのカギ。
             json h;
-            for (size_t i = 0; i < xg_vecYokoHints.size(); ++i) {
+            for (auto& yoko_hint : xg_vecYokoHints) {
                 json hint;
-                auto& yoko_hint = xg_vecYokoHints[i];
                 hint.push_back(yoko_hint.m_number);
                 hint.push_back(XgUnicodeToUtf8(yoko_hint.m_strWord));
                 hint.push_back(XgUnicodeToUtf8(yoko_hint.m_strHint));
