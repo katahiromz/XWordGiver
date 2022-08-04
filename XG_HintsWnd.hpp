@@ -74,7 +74,7 @@ public:
     {
         if (hwndChild == s_hwndHighlightTateEdit || hwndChild == s_hwndHighlightYokoEdit)
         {
-            const COLORREF rgbYellow = RGB(255, 255, 191);
+            const COLORREF rgbYellow = RGB(255, 255, 120);
             SetBkColor(hdc, rgbYellow);
             SetDCBrushColor(hdc, rgbYellow);
             return GetStockBrush(DC_BRUSH);
