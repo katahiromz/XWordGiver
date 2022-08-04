@@ -327,10 +327,10 @@ failed:;
         if (xg_submultiseteq(ms, msCells)) {
             // 配置を調べる。
             std::vector<XG_Pos> vPos;
-            for (size_t k = 0; k < word.size(); k++) {
+            for (auto wch : word) {
                 for (int i = 0; i < xg_nRows; ++i) {
                     for (int j = 0; j < xg_nCols; ++j) {
-                        if (word[k] == xg_solution.GetAt(i, j) &&
+                        if (wch == xg_solution.GetAt(i, j) &&
                             XgGetMarked(vPos, i, j) == -1)
                         {
                             vPos.emplace_back(i, j);
