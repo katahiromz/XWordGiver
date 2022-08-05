@@ -172,6 +172,8 @@ void XgSetModified(BOOL bModified, LPCSTR file, INT line)
         StringCbPrintfA(szText, sizeof(szText), "%s: %d", file, line);
         //MessageBoxA(NULL, szText, NULL, 0);
     }
+
+    XgMarkUpdate();
 }
 
 // UI言語。
