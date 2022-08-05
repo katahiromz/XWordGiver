@@ -1443,9 +1443,9 @@ CAPTION "About XWordGiver"
 STYLE DS_CENTER | DS_MODALFRAME | WS_POPUPWINDOW | WS_CAPTION
 FONT 9, "Tahoma"
 {
-    ICON 1, ico1, 10, 10, 0, 0
+    CONTROL 3, ico1, "STATIC", SS_REALSIZEIMAGE | SS_BITMAP | WS_GROUP, 10, 10, 0, 0
     LTEXT "", stc1, 40, 10, 125, 25
-    CONTROL 2, ico1, "STATIC", SS_REALSIZEIMAGE | SS_BITMAP | WS_GROUP, 175, 10, 0, 0
+    CONTROL 2, ico2, "STATIC", SS_REALSIZEIMAGE | SS_BITMAP | WS_GROUP, 175, 10, 0, 0
     LTEXT "Copyright:", -1, 10, 50, 100, 15
     LTEXT "", stc2, 135, 50, 70, 15
     EDITTEXT edt1, 10, 65, 195, 50, ES_READONLY | ES_MULTILINE | WS_VSCROLL | WS_HSCROLL | NOT WS_TABSTOP
@@ -1654,7 +1654,7 @@ STRINGTABLE
     IDS_QUERYSAVE, "Do you want to save file '%s'?"
     IDS_UNTITLED, "Untitled"
     IDS_COPYRIGHTINFO, "License: MIT\r\n\r\nCopyright (C) 2012-2022 katahiromz.\r\nCopyright (C) 2021-2022 スフィンクス.\r\nCopyright (C) 2021-2022 catworks99.\r\nCopyright (C) 2022 yukokumar.\r\nCopyright (C) 2022 Hiroshima.cw.\r\nAll rights reserved."
-    IDS_HOWMANYCORES, "Detected %u processors."
+    IDS_HOWMANYCORES, "Found %u processors."
     IDS_TT_NEW, "New crossword"
     IDS_TT_GENERATE, "Generate crossword"
     IDS_TT_OPEN, "Open crossword"
