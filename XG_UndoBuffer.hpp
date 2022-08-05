@@ -15,6 +15,7 @@ enum UNDOABLE_COMMAND_ID : UINT {
     UC_SETAT,
     UC_MARKS_UPDATED,
     UC_HINTS_UPDATED,
+    UC_NUMCRO,
     UC_SETALL
 };
 
@@ -73,6 +74,18 @@ struct XG_UndoData_HintsUpdated : XG_UndoData {
 
 //////////////////////////////////////////////////////////////////////////////
 
+struct XG_UndoData_NumCro : XG_UndoData {
+    bool bNumCro;
+
+    virtual ~XG_UndoData_NumCro()
+    {
+    }
+    virtual void Get();
+    virtual void Apply() const;
+};
+
+//////////////////////////////////////////////////////////////////////////////
+
 struct XG_UndoData_SetAll : XG_UndoData {
     int                         nRows;
     int                         nCols;
@@ -91,6 +104,7 @@ struct XG_UndoData_SetAll : XG_UndoData {
     std::wstring                strNotes;
     std::wstring                strFileName;
     bool                        bShowHints;
+    bool                        bNumCro;
 
     virtual ~XG_UndoData_SetAll()
     {

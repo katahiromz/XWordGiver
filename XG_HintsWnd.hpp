@@ -41,6 +41,8 @@ public:
 
         if (nTate != -1) {
             for (size_t i = 0; i < xg_vecTateHints.size(); ++i) {
+                if (xg_vecTateHints.size() <= i || xg_ahwndTateEdits.size() <= i)
+                    break;
                 if (xg_vecTateHints[i].m_number == nTate) {
                     hwndTate = xg_ahwndTateEdits[i];
                     break;
@@ -49,6 +51,8 @@ public:
         }
         if (nYoko != -1) {
             for (size_t i = 0; i < xg_vecYokoHints.size(); ++i) {
+                if (xg_vecYokoHints.size() <= i || xg_ahwndYokoEdits.size() <= i)
+                    break;
                 if (xg_vecYokoHints[i].m_number == nYoko) {
                     hwndYoko = xg_ahwndYokoEdits[i];
                     break;

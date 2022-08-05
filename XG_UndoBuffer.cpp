@@ -39,6 +39,16 @@
     XG_FILE_MODIFIED(TRUE);
 }
 
+/*virtual*/ void XG_UndoData_NumCro::Get() {
+    bNumCro = xg_bNumCroMode;
+}
+/*virtual*/ void XG_UndoData_NumCro::Apply() const {
+    xg_bNumCroMode = bNumCro;
+    if (xg_bNumCroMode) {
+        XgMakeItNumCro(xg_hMainWnd);
+    }
+}
+
 /*virtual*/ void XG_UndoData_SetAll::Get() {
     nRows = xg_nRows;
     nCols = xg_nCols;
@@ -57,6 +67,7 @@
     strNotes = xg_strNotes;
     strFileName = xg_strFileName;
     bShowHints = !!::IsWindow(xg_hHintsWnd);
+    bNumCro = xg_bNumCroMode;
 }
 
 /*virtual*/ void XG_UndoData_SetAll::Apply() const {
@@ -82,6 +93,10 @@
         XgDestroyHintsWnd();
     }
     XgUpdateCaretPos();
+    xg_bNumCroMode = bNumCro;
+    if (xg_bNumCroMode) {
+        XgMakeItNumCro(xg_hMainWnd);
+    }
     XG_FILE_MODIFIED(TRUE);
 }
 

@@ -2170,6 +2170,36 @@ bool __fastcall XgSetJsonString(HWND hwnd, const std::wstring& str)
             // ルールを設定する。
             xg_nRules = rules | RULE_DONTDIVIDE;
 
+            // ナンクロモード。
+            xg_bNumCroMode = false;
+            xg_mapNumCro1.clear();
+            xg_mapNumCro2.clear();
+            do {
+                if (is_solved &&
+                    j["is_numcro"].is_boolean() && j["is_numcro"] &&
+                    j["num_cro"].is_object())
+                {
+                    for (auto& pair : j["num_cro"].items()) {
+                        int number = strtoul(pair.key().c_str(), NULL, 10);
+                        auto value = XgUtf8ToUnicode(pair.value());
+                        if (value.size() != 1)
+                            break;
+
+                        WCHAR ch = value[0];
+                        xg_mapNumCro1[ch] = number;
+                        xg_mapNumCro2[number] = ch;
+                    }
+
+                    if (XgValidateNumCro(xg_hMainWnd)) {
+                        xg_bNumCroMode = true;
+                    } else {
+                        xg_mapNumCro1.clear();
+                        xg_mapNumCro2.clear();
+                        break;
+                    }
+                }
+            } while (0);
+
             // 辞書名の辞書を読み込む。
             if (dictionary.size()) {
                 for (auto& entry : xg_dict_files) {
@@ -2362,11 +2392,21 @@ bool __fastcall XgSetXDString(HWND hwnd, const std::wstring& str)
                 clues.push_back(line);
                 break;
             case 3:
+                // 二重マス単語。
                 if (line.find(L"MARK") == 0 && L'0' <= line[4] && line[4] <= L'9') {
                     marks.push_back(line);
+                } else if (line.find(L"NUMCRO-") == 0 && L'0' <= line[7] && line[7] <= L'9') {
+                    // ナンクロモード。
+                    size_t ich = line.find(L": ");
+                    int number = wcstoul(&line.c_str()[7], NULL, 10);
+                    WCHAR ch = line.c_str()[ich + 2];
+                    xg_mapNumCro1[ch] = number;
+                    xg_mapNumCro2[number] = ch;
                 } else if (line.find(L"Box: ") == 0) {
+                    // ボックス。
                     XgLoadXdBox(line);
                 } else if (line.find(L"ViewMode:") == 0) {
+                    // ビューモード。
                     view_mode = static_cast<XG_VIEW_MODE>(_wtoi(&line[9]));
                     switch (view_mode) {
                     case XG_VIEW_NORMAL:
@@ -2544,6 +2584,16 @@ bool __fastcall XgSetXDString(HWND hwnd, const std::wstring& str)
                     XgSetMark(XG_Pos(y, x));
                 }
             }
+
+            // ナンクロモード。
+            if (XgValidateNumCro(xg_hMainWnd)) {
+                xg_bNumCroMode = true;
+            } else {
+                xg_bNumCroMode = false;
+                xg_mapNumCro1.clear();
+                xg_mapNumCro2.clear();
+            }
+
             return true;
         }
     }
@@ -2563,6 +2613,11 @@ bool __fastcall XgSetString(HWND hwnd, const std::wstring& str, XG_FILETYPE type
 {
     // ボックスを削除する。
     XgDeleteBoxes();
+
+    // ナンクロモード。
+    xg_bNumCroMode = false;
+    xg_mapNumCro1.clear();
+    xg_mapNumCro2.clear();
 
     switch (type) {
     case XG_FILETYPE_XWD:
@@ -3968,7 +4023,7 @@ void __fastcall XgDrawMarkWord(HDC hdc, LPSIZE psiz)
             static_cast<int>(xg_nNarrowMargin + 1 * xg_nCellSize));
         ::FillRect(hdc, &rc, hbrMarked);
         ::InflateRect(&rc, -4, -4);
-        if (xg_bDrawFrameForMarkedCell) {
+        if (!xg_bNumCroMode && xg_bDrawFrameForMarkedCell) {
             ::MoveToEx(hdc, rc.left, rc.top, NULL);
             ::LineTo(hdc, rc.right + 1, rc.top);
             ::LineTo(hdc, rc.right + 1, rc.bottom + 1);
@@ -3977,19 +4032,34 @@ void __fastcall XgDrawMarkWord(HDC hdc, LPSIZE psiz)
         }
         ::InflateRect(&rc, 4, 4);
 
-        if (i < (INT)xg_strDoubleFrameLetters.size())
-            StringCbPrintf(sz, sizeof(sz), L"%c", xg_strDoubleFrameLetters[i]);
-        else
-            StringCbPrintf(sz, sizeof(sz), L"%c", ZEN_BLACK);
+        WCHAR ch;
+        if (xg_bNumCroMode && xg_bSolved) {
+            XG_Pos& pos = xg_vMarks[i];
+            ch = xg_solution.GetAt(pos.m_i, pos.m_j);
+            StringCbPrintf(sz, sizeof(sz), L"%u", xg_mapNumCro1[ch]);
+        } else {
+            if (i < (INT)xg_strDoubleFrameLetters.size())
+                ch = xg_strDoubleFrameLetters[i];
+            else
+                ch = ZEN_BLACK;
+            StringCbPrintf(sz, sizeof(sz), L"%c", ch);
+        }
         ::GetTextExtentPoint32W(hdc, sz, int(wcslen(sz)), &siz);
 
         RECT rcText = rc;
-        rcText.left = rc.right - std::max(siz.cx, siz.cy);
-        rcText.top = rc.bottom - std::max(siz.cx, siz.cy);
+        INT x, y;
+        if (xg_bNumCroMode && xg_bSolved) {
+            rcText.left += 2;
+            rcText.right = rcText.left + std::max(siz.cx, siz.cy);
+            rcText.bottom = rcText.top + std::max(siz.cx, siz.cy);
+            x = rcText.left;
+        } else {
+            rcText.left = rcText.right - std::max(siz.cx, siz.cy);
+            rcText.top = rcText.bottom - std::max(siz.cx, siz.cy);
+            x = (rcText.left + rcText.right - siz.cx) / 2;
+        }
+        y = rcText.top;
         ::FillRect(hdc, &rcText, hbrMarked);
-
-        INT x = (rcText.left + rcText.right - siz.cx) / 2;
-        INT y = rcText.top;
 
         // 二重マスの文字を描く。
         ::SetTextColor(hdc, xg_rgbBlackCellColor);
@@ -4267,58 +4337,60 @@ void __fastcall XgDrawXWord_NormalView(XG_Board& xw, HDC hdc, LPSIZE psiz, bool 
     hFontOld = ::SelectObject(hdc, hFontSmall);
 
     // 二重マスを描画する。
-    for (int i = 0; i < xg_nRows; i++) {
-        for (int j = 0; j < xg_nCols; j++) {
-            // セルの座標をセットする。
-            ::SetRect(&rc,
-                static_cast<int>(xg_nMargin + j * nCellSize),
-                static_cast<int>(xg_nMargin + i * nCellSize),
-                static_cast<int>(xg_nMargin + (j + 1) * nCellSize) - 1,
-                static_cast<int>(xg_nMargin + (i + 1) * nCellSize));
+    if (!xg_bNumCroMode) {
+        for (int i = 0; i < xg_nRows; i++) {
+            for (int j = 0; j < xg_nCols; j++) {
+                // セルの座標をセットする。
+                ::SetRect(&rc,
+                    static_cast<int>(xg_nMargin + j * nCellSize),
+                    static_cast<int>(xg_nMargin + i * nCellSize),
+                    static_cast<int>(xg_nMargin + (j + 1) * nCellSize) - 1,
+                    static_cast<int>(xg_nMargin + (i + 1) * nCellSize));
 
-            // 二重マスか？
-            int nMarked = XgGetMarked(i, j);
-            if (nMarked == -1) {
-                continue;
-            }
+                // 二重マスか？
+                int nMarked = XgGetMarked(i, j);
+                if (nMarked == -1) {
+                    continue;
+                }
 
-            // 二重マスの内側の枠を描く。
-            if (xg_bDrawFrameForMarkedCell) {
-                ::InflateRect(&rc, -4, -4);
-                ::SelectObject(hdc, ::GetStockObject(NULL_BRUSH));
-                hPenOld = ::SelectObject(hdc, hThinPen);
-                ::Rectangle(hdc, rc.left, rc.top, rc.right + 1, rc.bottom + 1);
-                ::SelectObject(hdc, hPenOld);
-                ::InflateRect(&rc, 4, 4);
-            }
+                // 二重マスの内側の枠を描く。
+                if (xg_bDrawFrameForMarkedCell) {
+                    ::InflateRect(&rc, -4, -4);
+                    ::SelectObject(hdc, ::GetStockObject(NULL_BRUSH));
+                    hPenOld = ::SelectObject(hdc, hThinPen);
+                    ::Rectangle(hdc, rc.left, rc.top, rc.right + 1, rc.bottom + 1);
+                    ::SelectObject(hdc, hPenOld);
+                    ::InflateRect(&rc, 4, 4);
+                }
 
-            if (xg_bShowDoubleFrameLetters) {
-                if (nMarked < (INT)xg_strDoubleFrameLetters.size())
-                    StringCbPrintf(sz, sizeof(sz), L"%c", xg_strDoubleFrameLetters[nMarked]);
-                else
-                    StringCbPrintf(sz, sizeof(sz), L"%c", ZEN_BLACK);
+                if (xg_bShowDoubleFrameLetters) {
+                    if (nMarked < (INT)xg_strDoubleFrameLetters.size())
+                        StringCbPrintf(sz, sizeof(sz), L"%c", xg_strDoubleFrameLetters[nMarked]);
+                    else
+                        StringCbPrintf(sz, sizeof(sz), L"%c", ZEN_BLACK);
 
-                // 二重マスの右下端の文字の背景を塗りつぶす。
-                RECT rcText;
-                GetTextExtentPoint32(hdc, sz, lstrlen(sz), &siz);
-                rcText = rc;
-                rcText.left = rc.right - std::max(siz.cx, siz.cy);
-                rcText.top = rc.bottom - std::max(siz.cx, siz.cy);
+                    // 二重マスの右下端の文字の背景を塗りつぶす。
+                    RECT rcText;
+                    GetTextExtentPoint32(hdc, sz, lstrlen(sz), &siz);
+                    rcText = rc;
+                    rcText.left = rc.right - std::max(siz.cx, siz.cy);
+                    rcText.top = rc.bottom - std::max(siz.cx, siz.cy);
 
-                HBRUSH hbr = CreateSolidBrush(xg_rgbMarkedCellColor);
-                FillRect(hdc, &rcText, hbr);
-                DeleteObject(hbr);
+                    HBRUSH hbr = CreateSolidBrush(xg_rgbMarkedCellColor);
+                    FillRect(hdc, &rcText, hbr);
+                    DeleteObject(hbr);
 
-                // 二重マスの右下端の文字を描く。
-                ::SetBkMode(hdc, TRANSPARENT);
-                ::SetTextColor(hdc, xg_rgbBlackCellColor);
-                ::DrawTextW(hdc, sz, -1, &rcText, DT_CENTER | DT_SINGLELINE | DT_BOTTOM);
+                    // 二重マスの右下端の文字を描く。
+                    ::SetBkMode(hdc, TRANSPARENT);
+                    ::SetTextColor(hdc, xg_rgbBlackCellColor);
+                    ::DrawTextW(hdc, sz, -1, &rcText, DT_CENTER | DT_SINGLELINE | DT_BOTTOM);
+                }
             }
         }
     }
 
     // タテのカギの先頭マス。
-    {
+    if (!xg_bNumCroMode) {
         const int size = static_cast<int>(xg_vTateInfo.size());
         for (int k = 0; k < size; k++) {
             const int i = xg_vTateInfo[k].m_iRow;
@@ -4330,7 +4402,7 @@ void __fastcall XgDrawXWord_NormalView(XG_Board& xw, HDC hdc, LPSIZE psiz, bool 
             int nMarked = XgGetMarked(i, j);
             if (slot.count(XG_Pos(i, j)) > 0) {
                 ::SetBkColor(hdc, c_rgbHighlight);
-            } else if (nMarked != -1) {
+            } else if (nMarked != -1 && !xg_bNumCroMode) {
                 ::SetBkColor(hdc, xg_rgbMarkedCellColor);
             } else {
                 ::SetBkColor(hdc, xg_rgbWhiteCellColor);
@@ -4349,8 +4421,9 @@ void __fastcall XgDrawXWord_NormalView(XG_Board& xw, HDC hdc, LPSIZE psiz, bool 
             }
         }
     }
+
     // ヨコのカギの先頭マス。
-    {
+    if (!xg_bNumCroMode) {
         const int size = static_cast<int>(xg_vYokoInfo.size());
         for (int k = 0; k < size; k++) {
             const int i = xg_vYokoInfo[k].m_iRow;
@@ -4361,7 +4434,7 @@ void __fastcall XgDrawXWord_NormalView(XG_Board& xw, HDC hdc, LPSIZE psiz, bool 
             int nMarked = XgGetMarked(i, j);
             if (slot.count(XG_Pos(i, j)) > 0) {
                 ::SetBkColor(hdc, c_rgbHighlight);
-            } else if (nMarked != -1) {
+            } else if (nMarked != -1 && !xg_bNumCroMode) {
                 ::SetBkColor(hdc, xg_rgbMarkedCellColor);
             } else {
                 ::SetBkColor(hdc, xg_rgbWhiteCellColor);
@@ -4377,6 +4450,38 @@ void __fastcall XgDrawXWord_NormalView(XG_Board& xw, HDC hdc, LPSIZE psiz, bool 
                 ::OffsetRect(&rc, 2, 1);
                 ::SetTextColor(hdc, xg_rgbBlackCellColor);
                 ::DrawTextW(hdc, sz, -1, &rc, DT_LEFT | DT_SINGLELINE | DT_TOP);
+            }
+        }
+    }
+
+    // ナンクロモードの小さい数字。
+    if (xg_bSolved && xg_bNumCroMode) {
+        for (int i = 0; i < xg_nRows; i++) {
+            for (int j = 0; j < xg_nCols; j++) {
+                WCHAR ch = xg_solution.GetAt(i, j);
+                if (ch == ZEN_BLACK || ch == ZEN_SPACE)
+                    continue;
+
+                StringCbPrintf(sz, sizeof(sz), L"%u", xg_mapNumCro1[ch]);
+
+                // 文字の背景を塗りつぶす。
+                if (slot.count(XG_Pos(i, j)) > 0) {
+                    ::SetBkColor(hdc, c_rgbHighlight);
+                } else {
+                    ::SetBkColor(hdc, xg_rgbWhiteCellColor);
+                }
+
+                if (xg_bShowNumbering) {
+                    // 数字を描く。
+                    ::SetRect(&rc,
+                        static_cast<int>(xg_nMargin + j * nCellSize), 
+                        static_cast<int>(xg_nMargin + i * nCellSize),
+                        static_cast<int>(xg_nMargin + (j + 1) * nCellSize), 
+                        static_cast<int>(xg_nMargin + (i + 1) * nCellSize));
+                    ::OffsetRect(&rc, 2, 1);
+                    ::SetTextColor(hdc, xg_rgbBlackCellColor);
+                    ::DrawTextW(hdc, sz, -1, &rc, DT_LEFT | DT_SINGLELINE | DT_TOP);
+                }
             }
         }
     }
@@ -4637,7 +4742,7 @@ void __fastcall XgDrawXWord_SkeletonView(XG_Board& xw, HDC hdc, LPSIZE psiz, boo
             } else if (slot.count(XG_Pos(i, j)) > 0) {
                 // ハイライト。
                 ::FillRect(hdc, &rc, hbrHighlight);
-            } else if (nMarked != -1) {
+            } else if (nMarked != -1 && !xg_bNumCroMode) {
                 // 二重マス。
                 ::FillRect(hdc, &rc, hbrMarked);
             } else {
@@ -4668,58 +4773,60 @@ void __fastcall XgDrawXWord_SkeletonView(XG_Board& xw, HDC hdc, LPSIZE psiz, boo
     hFontOld = ::SelectObject(hdc, hFontSmall);
 
     // 二重マスを描画する。
-    for (int i = 0; i < xg_nRows; i++) {
-        for (int j = 0; j < xg_nCols; j++) {
-            // セルの座標をセットする。
-            ::SetRect(&rc,
-                static_cast<int>(xg_nMargin + j * nCellSize),
-                static_cast<int>(xg_nMargin + i * nCellSize),
-                static_cast<int>(xg_nMargin + (j + 1) * nCellSize) - 1,
-                static_cast<int>(xg_nMargin + (i + 1) * nCellSize));
+    if (!xg_bNumCroMode) {
+        for (int i = 0; i < xg_nRows; i++) {
+            for (int j = 0; j < xg_nCols; j++) {
+                // セルの座標をセットする。
+                ::SetRect(&rc,
+                    static_cast<int>(xg_nMargin + j * nCellSize),
+                    static_cast<int>(xg_nMargin + i * nCellSize),
+                    static_cast<int>(xg_nMargin + (j + 1) * nCellSize) - 1,
+                    static_cast<int>(xg_nMargin + (i + 1) * nCellSize));
 
-            // 二重マスか？
-            int nMarked = XgGetMarked(i, j);
-            if (nMarked == -1) {
-                continue;
-            }
+                // 二重マスか？
+                int nMarked = XgGetMarked(i, j);
+                if (nMarked == -1) {
+                    continue;
+                }
 
-            // 二重マスの内側の枠を描く。
-            if (xg_bDrawFrameForMarkedCell) {
-                ::InflateRect(&rc, -4, -4);
-                ::SelectObject(hdc, ::GetStockObject(NULL_BRUSH));
-                hPenOld = ::SelectObject(hdc, hThinPen);
-                ::Rectangle(hdc, rc.left, rc.top, rc.right + 1, rc.bottom + 1);
-                ::SelectObject(hdc, hPenOld);
-                ::InflateRect(&rc, 4, 4);
-            }
+                // 二重マスの内側の枠を描く。
+                if (xg_bDrawFrameForMarkedCell) {
+                    ::InflateRect(&rc, -4, -4);
+                    ::SelectObject(hdc, ::GetStockObject(NULL_BRUSH));
+                    hPenOld = ::SelectObject(hdc, hThinPen);
+                    ::Rectangle(hdc, rc.left, rc.top, rc.right + 1, rc.bottom + 1);
+                    ::SelectObject(hdc, hPenOld);
+                    ::InflateRect(&rc, 4, 4);
+                }
 
-            if (xg_bShowDoubleFrameLetters) {
-                if (nMarked < (INT)xg_strDoubleFrameLetters.size())
-                    StringCbPrintf(sz, sizeof(sz), L"%c", xg_strDoubleFrameLetters[nMarked]);
-                else
-                    StringCbPrintf(sz, sizeof(sz), L"%c", ZEN_BLACK);
+                if (xg_bShowDoubleFrameLetters) {
+                    if (nMarked < (INT)xg_strDoubleFrameLetters.size())
+                        StringCbPrintf(sz, sizeof(sz), L"%c", xg_strDoubleFrameLetters[nMarked]);
+                    else
+                        StringCbPrintf(sz, sizeof(sz), L"%c", ZEN_BLACK);
 
-                // 二重マスの右下端の文字の背景を塗りつぶす。
-                RECT rcText;
-                GetTextExtentPoint32(hdc, sz, lstrlen(sz), &siz);
-                rcText = rc;
-                rcText.left = rc.right - std::max(siz.cx, siz.cy);
-                rcText.top = rc.bottom - std::max(siz.cx, siz.cy);
+                    // 二重マスの右下端の文字の背景を塗りつぶす。
+                    RECT rcText;
+                    GetTextExtentPoint32(hdc, sz, lstrlen(sz), &siz);
+                    rcText = rc;
+                    rcText.left = rc.right - std::max(siz.cx, siz.cy);
+                    rcText.top = rc.bottom - std::max(siz.cx, siz.cy);
 
-                HBRUSH hbr = CreateSolidBrush(xg_rgbMarkedCellColor);
-                FillRect(hdc, &rcText, hbr);
-                DeleteObject(hbr);
+                    HBRUSH hbr = CreateSolidBrush(xg_rgbMarkedCellColor);
+                    FillRect(hdc, &rcText, hbr);
+                    DeleteObject(hbr);
 
-                // 二重マスの右下端の文字を描く。
-                ::SetBkMode(hdc, TRANSPARENT);
-                ::SetTextColor(hdc, xg_rgbBlackCellColor);
-                ::DrawTextW(hdc, sz, -1, &rcText, DT_CENTER | DT_SINGLELINE | DT_BOTTOM);
+                    // 二重マスの右下端の文字を描く。
+                    ::SetBkMode(hdc, TRANSPARENT);
+                    ::SetTextColor(hdc, xg_rgbBlackCellColor);
+                    ::DrawTextW(hdc, sz, -1, &rcText, DT_CENTER | DT_SINGLELINE | DT_BOTTOM);
+                }
             }
         }
     }
 
     // タテのカギの先頭マス。
-    {
+    if (!xg_bNumCroMode) {
         const int size = static_cast<int>(xg_vTateInfo.size());
         for (int k = 0; k < size; k++) {
             const int i = xg_vTateInfo[k].m_iRow;
@@ -4750,8 +4857,9 @@ void __fastcall XgDrawXWord_SkeletonView(XG_Board& xw, HDC hdc, LPSIZE psiz, boo
             }
         }
     }
+
     // ヨコのカギの先頭マス。
-    {
+    if (!xg_bNumCroMode) {
         const int size = static_cast<int>(xg_vYokoInfo.size());
         for (int k = 0; k < size; k++) {
             const int i = xg_vYokoInfo[k].m_iRow;
@@ -4778,6 +4886,38 @@ void __fastcall XgDrawXWord_SkeletonView(XG_Board& xw, HDC hdc, LPSIZE psiz, boo
                 ::OffsetRect(&rc, 2, 1);
                 ::SetTextColor(hdc, xg_rgbBlackCellColor);
                 ::DrawTextW(hdc, sz, -1, &rc, DT_LEFT | DT_SINGLELINE | DT_TOP);
+            }
+        }
+    }
+
+    // ナンクロモードの小さい数字。
+    if (xg_bSolved && xg_bNumCroMode) {
+        for (int i = 0; i < xg_nRows; i++) {
+            for (int j = 0; j < xg_nCols; j++) {
+                WCHAR ch = xg_solution.GetAt(i, j);
+                if (ch == ZEN_BLACK || ch == ZEN_SPACE)
+                    continue;
+
+                StringCbPrintf(sz, sizeof(sz), L"%u", xg_mapNumCro1[ch]);
+
+                // 文字の背景を塗りつぶす。
+                if (slot.count(XG_Pos(i, j)) > 0) {
+                    ::SetBkColor(hdc, c_rgbHighlight);
+                } else {
+                    ::SetBkColor(hdc, xg_rgbWhiteCellColor);
+                }
+
+                if (xg_bShowNumbering) {
+                    // 数字を描く。
+                    ::SetRect(&rc,
+                        static_cast<int>(xg_nMargin + j * nCellSize), 
+                        static_cast<int>(xg_nMargin + i * nCellSize),
+                        static_cast<int>(xg_nMargin + (j + 1) * nCellSize), 
+                        static_cast<int>(xg_nMargin + (i + 1) * nCellSize));
+                    ::OffsetRect(&rc, 2, 1);
+                    ::SetTextColor(hdc, xg_rgbBlackCellColor);
+                    ::DrawTextW(hdc, sz, -1, &rc, DT_LEFT | DT_SINGLELINE | DT_TOP);
+                }
             }
         }
     }
@@ -5332,6 +5472,19 @@ bool __fastcall XgDoSaveJson(LPCWSTR pszFile)
         XG_Board *xw = (xg_bSolved ? &xg_solution : &xg_xword);
         j["is_solved"] = !!xg_bSolved;
 
+        // ナンクロモード。
+        if (xg_bNumCroMode) {
+            j["is_numcro"] = true;
+            for (auto& pair : xg_mapNumCro1) {
+                auto ch = pair.first;
+                auto number = pair.second;
+                WCHAR szNum[64];
+                StringCbPrintfW(szNum, sizeof(szNum), L"%04u", number);
+                WCHAR szChar[2] = { ch, 0 };
+                j["num_cro"][XgUnicodeToUtf8(szNum)] = XgUnicodeToUtf8(szChar);
+            }
+        }
+
         // マス。
         for (int i = 0; i < xg_nRows; ++i) {
             std::wstring row;
@@ -5673,6 +5826,19 @@ bool __fastcall XgDoSaveXdFile(LPCWSTR pszFile)
 
         // ビューモード。
         fprintf(fout, "ViewMode: %d\n\n", xg_nViewMode);
+
+        // ナンクロモード。
+        if (xg_bNumCroMode) {
+            std::map<INT, WCHAR> mapping;
+            for (auto& pair : xg_mapNumCro2) {
+                mapping[pair.first] = pair.second;
+            }
+            for (auto& pair : mapping) {
+                WCHAR sz[2] = { pair.second, 0 };
+                fprintf(fout, "NUMCRO-%04u: %s\n", pair.first, XgUnicodeToUtf8(sz).c_str());
+            }
+            fprintf(fout, "\n");
+        }
 
         // 備考欄。
         if (xg_strNotes.size()) {

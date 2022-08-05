@@ -151,6 +151,7 @@
 - 2022-08-04 ver.4.9.5
     - Added the ability to highlight textbox in the hint window when clicking on a numbered cell.
 - 2022-XX-YY ver.4.9.6
+    - Added "NumCro Mode" to the "View" menu. It is possible to make a NumCro after creating a problem. You can save the NumCro puzzles to XD or XWJ/JSON files.
     - Deleted XWordGiver.py.
     - Faster by specifying noexcept keyword.
     - Added "Reflect black cells" to the "Help" menu.
@@ -621,6 +622,7 @@
 - 2022年08月04日 ver.4.9.5
     - 番号付きのマスをクリックしたときのヒントウィンドウのテキストボックスのハイライト機能を追加。
 - 2022年XX月YY日 ver.4.9.6
+    - 「表示」メニューに「ナンクロモード」を追加。問題を作成した後でナンバークロスにすることが可能。ナンクロはXDファイルとXWJ/JSONファイルに保存可能です。
     - XWordGiver.pyを削除。
     - noexceptキーワードの指定により、高速化。
     - 「ヘルプ」メニューに「黒マスを反射する」を追加。

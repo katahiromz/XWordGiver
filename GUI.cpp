@@ -153,6 +153,12 @@ std::vector<std::unique_ptr<XG_BoxWindow> > xg_boxes;
 // キャンバスウィンドウ。
 XG_CanvasWindow xg_canvasWnd;
 
+// ナンクロモードか？
+bool xg_bNumCroMode = false;
+// ナンクロモードの場合、写像を保存する。
+std::unordered_map<WCHAR, INT> xg_mapNumCro1;
+std::unordered_map<INT, WCHAR> xg_mapNumCro2;
+
 // ファイル変更フラグ。
 BOOL xg_bFileModified = FALSE;
 
@@ -918,7 +924,7 @@ bool __fastcall XgLoadSettings(void)
                 xg_nCols = dwValue;
             }
             if (!app_key.QueryDword(L"UILangID", dwValue)) {
-                xg_UILangID = dwValue;
+                xg_UILangID = (LANGID)dwValue;
             }
 
             if (!app_key.QuerySz(L"CellFont", sz, ARRAYSIZE(sz))) {
@@ -2207,6 +2213,11 @@ BOOL __fastcall XgOnNew(HWND hwnd)
     if (nID != IDOK)
         return FALSE;
 
+    // ナンクロモードをリセットする。
+    xg_bNumCroMode = false;
+    xg_mapNumCro1.clear();
+    xg_mapNumCro2.clear();
+
     // 元に戻す情報を確定する。
     sa2->Get();
     xg_ubUndoBuffer.Commit(UC_SETALL, sa1, sa2);
@@ -2517,6 +2528,10 @@ bool __fastcall XgOnGenerate(HWND hwnd, bool show_answer, bool multiple = false)
     xg_strHeader.clear();
     xg_strNotes.clear();
     xg_strFileName.clear();
+    // ナンクロモードをリセットする。
+    xg_bNumCroMode = false;
+    xg_mapNumCro1.clear();
+    xg_mapNumCro2.clear();
 
     // ズームを実際のウィンドウに合わせる。
     XgFitZoom(hwnd);
@@ -2617,6 +2632,10 @@ bool __fastcall XgOnGenerateBlacksRepeatedly(HWND hwnd)
     xg_strFileName.clear();
     xg_bBlacksGenerated = false;
     xg_nNumberGenerated = 0;
+    // ナンクロモードをリセットする。
+    xg_bNumCroMode = false;
+    xg_mapNumCro1.clear();
+    xg_mapNumCro2.clear();
 
     // 候補ウィンドウを破棄する。
     XgDestroyCandsWnd();
@@ -2701,6 +2720,10 @@ bool __fastcall XgOnGenerateBlacks(HWND hwnd, bool sym)
     xg_strFileName.clear();
     xg_bBlacksGenerated = false;
     xg_nNumberGenerated = 0;
+    // ナンクロモードをリセットする。
+    xg_bNumCroMode = false;
+    xg_mapNumCro1.clear();
+    xg_mapNumCro2.clear();
 
     // 候補ウィンドウを破棄する。
     XgDestroyCandsWnd();
@@ -2760,6 +2783,10 @@ bool __fastcall XgOnSolve_AddBlack(HWND hwnd)
     xg_strFileName.clear();
     // 生成した数と生成する数。
     xg_nNumberGenerated = 0;
+    // ナンクロモードをリセットする。
+    xg_bNumCroMode = false;
+    xg_mapNumCro1.clear();
+    xg_mapNumCro2.clear();
 
     // 候補ウィンドウを破棄する。
     XgDestroyCandsWnd();
@@ -2860,6 +2887,10 @@ bool __fastcall XgOnSolve_NoAddBlack(HWND hwnd, bool bShowAnswer/* = true*/)
     xg_strFileName.clear();
     // 生成した数と生成する数。
     xg_nNumberGenerated = 0;
+    // ナンクロモードをリセットする。
+    xg_bNumCroMode = false;
+    xg_mapNumCro1.clear();
+    xg_mapNumCro2.clear();
 
     // 候補ウィンドウを破棄する。
     XgDestroyCandsWnd();
@@ -2975,13 +3006,16 @@ bool __fastcall XgOnSolveRepeatedly(HWND hwnd)
     xg_strNotes.clear();
     xg_nNumberGenerated = 0;
     s_bOutOfDiskSpace = false;
-
     xg_bSolvingEmpty = xg_xword.IsEmpty();
     xg_bNoAddBlack = false;
     xg_vTateInfo.clear();
     xg_vYokoInfo.clear();
     xg_vecTateHints.clear();
     xg_vecYokoHints.clear();
+    // ナンクロモードをリセットする。
+    xg_bNumCroMode = false;
+    xg_mapNumCro1.clear();
+    xg_mapNumCro2.clear();
 
     // キャンセルダイアログを表示し、実行を開始する。
     ::EnableWindow(xg_hwndInputPalette, FALSE);
@@ -3092,13 +3126,16 @@ bool __fastcall XgOnSolveRepeatedlyNoAddBlack(HWND hwnd)
     xg_strNotes.clear();
     xg_nNumberGenerated = 0;
     s_bOutOfDiskSpace = false;
-
     xg_bSolvingEmpty = xg_xword.IsEmpty();
     xg_bNoAddBlack = true;
     xg_vTateInfo.clear();
     xg_vYokoInfo.clear();
     xg_vecTateHints.clear();
     xg_vecYokoHints.clear();
+    // ナンクロモードをリセットする。
+    xg_bNumCroMode = false;
+    xg_mapNumCro1.clear();
+    xg_mapNumCro2.clear();
 
     // キャンセルダイアログを表示し、実行を開始する。
     ::EnableWindow(xg_hwndInputPalette, FALSE);
@@ -4012,6 +4049,19 @@ void __fastcall MainWnd_OnInitMenu(HWND /*hwnd*/, HMENU hMenu)
         break;
     }
 
+    // ナンクロモード。
+    if (!xg_bSolved) {
+        ::EnableMenuItem(hMenu, ID_NUMCROMODE, MF_BYCOMMAND | MF_GRAYED);
+    } else {
+        ::EnableMenuItem(hMenu, ID_NUMCROMODE, MF_BYCOMMAND | MF_ENABLED);
+        if (xg_bNumCroMode) {
+            ::CheckMenuItem(hMenu, ID_NUMCROMODE, MF_CHECKED);
+        } else {
+            ::CheckMenuItem(hMenu, ID_NUMCROMODE, MF_UNCHECKED);
+        }
+    }
+    
+
     // 行と列の削除と追加。
     if (xg_bSolved || xg_nRows - 1 < XG_MIN_SIZE) {
         ::DeleteMenu(hMenu, ID_DELETE_ROW, MF_BYCOMMAND);
@@ -4910,6 +4960,10 @@ void XgGenerateFromWordList(HWND hwnd)
     xg_vMarks.clear();
     xg_vMarkedCands.clear();
     XgMarkUpdate();
+    // ナンクロモードをリセットする。
+    xg_bNumCroMode = false;
+    xg_mapNumCro1.clear();
+    xg_mapNumCro2.clear();
     // 単語リストを保存して後で使う。
     for (auto& word : XG_WordListDialog::s_words) {
         for (auto& wch : word) {
@@ -4989,6 +5043,75 @@ BOOL XgAddBox(HWND hwnd, UINT id)
     }
 
     return FALSE;
+}
+
+// ナンクロの写像が正当か確認する。
+BOOL __fastcall XgValidateNumCro(HWND hwnd)
+{
+    if (!xg_bSolved)
+        return FALSE;
+
+    for (INT i = 0; i < xg_nRows; ++i) {
+        for (INT j = 0; j < xg_nCols; ++j) {
+            WCHAR ch = xg_solution.GetAt(i, j);
+            if (ch == ZEN_SPACE || ch == ZEN_BLACK)
+                continue;
+
+            auto it = xg_mapNumCro1.find(ch);
+            if (it == xg_mapNumCro1.end()) {
+                assert(0);
+                return FALSE;
+            }
+        }
+    }
+
+    for (auto& pair : xg_mapNumCro1) {
+        auto it = xg_mapNumCro2.find(pair.second);
+        if (it == xg_mapNumCro2.end()) {
+            assert(0);
+            return FALSE;
+        }
+    }
+
+    return TRUE;
+}
+
+// ナンクロの写像を生成する。
+void __fastcall XgMakeItNumCro(HWND hwnd)
+{
+    xg_mapNumCro1.clear();
+    xg_mapNumCro2.clear();
+
+    if (!xg_bSolved)
+        return;
+
+    INT next_number = 1;
+    for (INT i = 0; i < xg_nRows; ++i) {
+        for (INT j = 0; j < xg_nCols; ++j) {
+            WCHAR ch = xg_solution.GetAt(i, j);
+            if (ch == ZEN_SPACE || ch == ZEN_BLACK)
+                continue;
+
+            auto it = xg_mapNumCro1.find(ch);
+            if (it == xg_mapNumCro1.end()) {
+                xg_mapNumCro2[next_number] = ch;
+                xg_mapNumCro1[ch] = next_number;
+                ++next_number;
+            } else {
+                INT number = it->second;
+                xg_mapNumCro2[number] = ch;
+                xg_mapNumCro1[ch] = number;
+            }
+        }
+    }
+
+    if (!XgValidateNumCro(hwnd)) {
+        xg_mapNumCro1.clear();
+        xg_mapNumCro2.clear();
+        xg_bNumCroMode = false;
+    }
+
+    XgUpdateImage(hwnd);
 }
 
 // コマンドを実行する。
@@ -6369,6 +6492,23 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT /*codeNo
         if (!xg_bSolved) {
             xg_xword.Mirror();
             XgUpdateImage(hwnd);
+        }
+        break;
+    case ID_NUMCROMODE:
+        if (xg_bSolved) {
+            auto sa1 = std::make_shared<XG_UndoData_NumCro>();
+            auto sa2 = std::make_shared<XG_UndoData_NumCro>();
+            sa1->Get();
+            xg_bNumCroMode = !xg_bNumCroMode;
+            if (xg_bNumCroMode) {
+                XgMakeItNumCro(hwnd);
+            } else {
+                xg_mapNumCro1.clear();
+                xg_mapNumCro2.clear();
+                XgUpdateImage(hwnd);
+            }
+            sa2->Get();
+            xg_ubUndoBuffer.Commit(UC_NUMCRO, sa1, sa2);
         }
         break;
     default:

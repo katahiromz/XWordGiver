@@ -146,6 +146,16 @@ extern bool xg_bCharFeed;
 // スマート解決のとき、配置できる最大単語長。
 extern INT xg_nMaxWordLen;
 
+// ナンクロモードか？
+extern bool xg_bNumCroMode;
+// ナンクロモードの場合、写像を保存する。
+extern std::unordered_map<WCHAR, INT> xg_mapNumCro1;
+extern std::unordered_map<INT, WCHAR> xg_mapNumCro2;
+// ナンクロの写像を生成する。
+void __fastcall XgMakeItNumCro(HWND hwnd);
+// ナンクロの写像が正当か確認する。
+BOOL __fastcall XgValidateNumCro(HWND hwnd);
+
 // 全角文字。
 #define ZEN_SPACE       WCHAR(0x3000)  // L'　'
 #define ZEN_BLACK       WCHAR(0x25A0)  // L'■'
