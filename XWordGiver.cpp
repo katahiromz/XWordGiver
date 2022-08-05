@@ -5783,13 +5783,16 @@ bool __fastcall XgDoSaveXdFile(LPCWSTR pszFile)
                         row += ch;
                 }
             }
-            row = XgNormalizeStringEx(row);
+            if (bAsian)
+                row = XgNormalizeString(row);
+            else
+                row = XgNormalizeStringEx(row);
             fprintf(fout, "%s\n", XgUnicodeToUtf8(row).c_str());
         }
         fprintf(fout, "\n\n");
 
         // ヒント。
-        if (xg_vecTateHints.size() && xg_vecYokoHints.size()) {
+        if (xg_bSolved && xg_vecTateHints.size() && xg_vecYokoHints.size()) {
             char line[512];
             std::string strACROSS, strDOWN;
             // タテのカギ。
