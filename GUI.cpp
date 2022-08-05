@@ -2001,6 +2001,14 @@ static inline BOOL About_OnInitDialog(HWND hwnd, HWND hwndFocus, LPARAM lParam)
     XgCenterDialog(hwnd);
     SetDlgItemTextW(hwnd, stc1, XgLoadStringDx1(IDS_VERSION));
     SetDlgItemTextW(hwnd, edt1, XgLoadStringDx1(IDS_COPYRIGHTINFO));
+
+    SYSTEM_INFO sys_info;
+    GetSystemInfo(&sys_info);
+
+    WCHAR szText[128];
+    StringCbPrintfW(szText, sizeof(szText),
+                    XgLoadStringDx1(IDS_HOWMANYCORES), sys_info.dwNumberOfProcessors);
+    SetDlgItemTextW(hwnd, stc2, szText);
     return TRUE;
 }
 

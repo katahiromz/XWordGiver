@@ -203,6 +203,7 @@
 #define IDS_QUERYSAVE                       287
 #define IDS_UNTITLED                        288
 #define IDS_COPYRIGHTINFO                   289
+#define IDS_HOWMANYCORES                    290
 #define IDS_TT_NEW                          10100
 #define IDS_TT_GENERATE                     10101
 #define IDS_TT_OPEN                         10102

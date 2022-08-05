@@ -1446,10 +1446,11 @@ FONT 9, "Tahoma"
     ICON 1, ico1, 10, 10, 0, 0
     LTEXT "", stc1, 40, 10, 165, 25
     LTEXT "Copyright:", -1, 10, 50, 100, 15
+    LTEXT "", stc2, 135, 50, 70, 15
     EDITTEXT edt1, 10, 65, 195, 50, ES_READONLY | ES_MULTILINE | WS_VSCROLL | WS_HSCROLL | NOT WS_TABSTOP
     CONTROL "Official: <a>https://katahiromz.web.fc2.com/xword/</a>", ctl1, "SysLink", WS_TABSTOP, 10, 125, 195, 15
-    DEFPUSHBUTTON "OK", IDOK, 145, 145, 60, 20
     PUSHBUTTON "&Change Log...", IDYES, 10, 145, 91, 20
+    DEFPUSHBUTTON "OK", IDOK, 145, 145, 60, 20
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -1652,6 +1653,7 @@ STRINGTABLE
     IDS_QUERYSAVE, "Do you want to save file '%s'?"
     IDS_UNTITLED, "Untitled"
     IDS_COPYRIGHTINFO, "License: MIT\r\n\r\nCopyright (C) 2012-2022 katahiromz.\r\nCopyright (C) 2021-2022 スフィンクス.\r\nCopyright (C) 2021-2022 catworks99.\r\nCopyright (C) 2022 yukokumar.\r\nCopyright (C) 2022 Hiroshima.cw.\r\nAll rights reserved."
+    IDS_HOWMANYCORES, "Detected %u processors."
     IDS_TT_NEW, "New crossword"
     IDS_TT_GENERATE, "Generate crossword"
     IDS_TT_OPEN, "Open crossword"
