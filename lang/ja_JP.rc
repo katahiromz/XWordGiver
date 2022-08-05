@@ -183,13 +183,13 @@ LANGUAGE LANG_JAPANESE, SUBLANG_DEFAULT
     {
         MENUITEM "ReadMe-JPN.txtを開く(&R)\tF1", ID_OPENREADME
         MENUITEM "LICENSE.txtを開く(&C)", ID_OPENLICENSE
-        MENUITEM "黒マスパターン(&T)...", ID_OPENPATTERNS
         MENUITEM SEPARATOR
         MENUITEM "ホームページを開く(&H)", ID_OPENHOMEPAGE
         MENUITEM "掲示板を開く(&B)", ID_OPENBBS
         MENUITEM SEPARATOR
         MENUITEM "「クロスワード辞典」を開く(&D)", ID_HELPDICTSITE
         MENUITEM SEPARATOR
+        MENUITEM "黒マスパターンを選ぶ(&T)...", ID_OPENPATTERNS
         MENUITEM "黒マスパターンを生成する(&G)...", ID_GENERATEBLACKS
         MENUITEM "黒マスパターンを連続生成する(&S)...", ID_SEQPATGEN
         MENUITEM SEPARATOR

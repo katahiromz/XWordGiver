@@ -162,6 +162,7 @@
     - Able to undo the view mode.
     - Fixed the display of the title bar.
     - Improved the "About" dialog.
+    - Reordered of items in the Help menu.
 
 # 開発履歴 (Japanese)
 
@@ -640,3 +641,4 @@
     - ビューモードを元に戻せるように。
     - タイトルバーの表示を修正。
     - バージョン情報ダイアログを改良。
+    - ヘルプメニューの項目の順序を変更する。

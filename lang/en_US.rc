@@ -183,10 +183,10 @@ LANGUAGE LANG_ENGLISH, SUBLANG_DEFAULT
     {
         MENUITEM "Open ReadMe-ENG.txt\tF1", ID_OPENREADME
         MENUITEM "Open LICENSE.txt", ID_OPENLICENSE
-        MENUITEM "Block pa&tterns...", ID_OPENPATTERNS
         MENUITEM SEPARATOR
         MENUITEM "Official &homepage", ID_OPENHOMEPAGE
         MENUITEM SEPARATOR
+        MENUITEM "Choose block pa&ttern...", ID_OPENPATTERNS
         MENUITEM "&Generate block pattern...", ID_GENERATEBLACKS
         MENUITEM "Continuou&sly generate block patterns...", ID_SEQPATGEN
         MENUITEM SEPARATOR
