@@ -6353,24 +6353,35 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT /*codeNo
         XgLoadDictsAll();
         break;
     case ID_VIEW_SKELETON_VIEW:
-        if (xg_nViewMode == XG_VIEW_NORMAL) {
-            // 黒マス画像をクリアする。
-            xg_strBlackCellImage.clear();
-            if (xg_hbmBlackCell) {
-                ::DeleteObject(xg_hbmBlackCell);
-                xg_hbmBlackCell = NULL;
+        {
+            auto sa1 = std::make_shared<XG_UndoData_ViewMode>();
+            auto sa2 = std::make_shared<XG_UndoData_ViewMode>();
+            sa1->Get();
+
+            if (xg_nViewMode == XG_VIEW_NORMAL) {
+                // 黒マス画像をクリアする。
+                xg_strBlackCellImage.clear();
+                if (xg_hbmBlackCell) {
+                    ::DeleteObject(xg_hbmBlackCell);
+                    xg_hbmBlackCell = NULL;
+                }
+                if (xg_hBlackCellEMF) {
+                    DeleteEnhMetaFile(xg_hBlackCellEMF);
+                    xg_hBlackCellEMF = NULL;
+                }
+                // スケルトンビューを設定。
+                xg_nViewMode = XG_VIEW_SKELETON;
+            } else {
+                // 通常ビューを設定。
+                xg_nViewMode = XG_VIEW_NORMAL;
             }
-            if (xg_hBlackCellEMF) {
-                DeleteEnhMetaFile(xg_hBlackCellEMF);
-                xg_hBlackCellEMF = NULL;
-            }
-            // スケルトンビューを設定。
-            xg_nViewMode = XG_VIEW_SKELETON;
-        } else {
-            // 通常ビューを設定。
-            xg_nViewMode = XG_VIEW_NORMAL;
+            sa2->Get();
+
+            // 元に戻す情報を設定する。
+            xg_ubUndoBuffer.Commit(UC_VIEWMODE, sa1, sa2);
+
+            XgUpdateImage(hwnd);
         }
-        XgUpdateImage(hwnd);
         break;
     case ID_COPY_WORD_LIST:
         // 単語リストのコピー。

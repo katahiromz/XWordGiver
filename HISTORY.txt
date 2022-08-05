@@ -159,6 +159,7 @@
 - 2022年XX月YY日 ver.4.9.7
     - Improved XD file saving.
     - Fixed a bug about NumCro.
+    - Able to undo the view mode.
 
 # 開発履歴 (Japanese)
 
@@ -634,3 +635,4 @@
 - 2022年XX月YY日 ver.4.9.7
     - XDファイルの保存を改良。
     - ナンクロに関する不具合を修正。
+    - ビューモードを元に戻せるように。

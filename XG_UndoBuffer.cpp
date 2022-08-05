@@ -49,6 +49,13 @@
     }
 }
 
+/*virtual*/ void XG_UndoData_ViewMode::Get() {
+    nViewMode = xg_nViewMode;
+}
+/*virtual*/ void XG_UndoData_ViewMode::Apply() const {
+    xg_nViewMode = nViewMode;
+}
+
 /*virtual*/ void XG_UndoData_SetAll::Get() {
     nRows = xg_nRows;
     nCols = xg_nCols;
@@ -68,6 +75,7 @@
     strFileName = xg_strFileName;
     bShowHints = !!::IsWindow(xg_hHintsWnd);
     bNumCro = xg_bNumCroMode;
+    nViewMode = xg_nViewMode;
 }
 
 /*virtual*/ void XG_UndoData_SetAll::Apply() const {
@@ -97,6 +105,7 @@
     if (xg_bNumCroMode) {
         XgMakeItNumCro(xg_hMainWnd);
     }
+    xg_nViewMode = nViewMode;
     XG_FILE_MODIFIED(TRUE);
 }
 
