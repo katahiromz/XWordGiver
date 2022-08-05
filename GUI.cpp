@@ -1994,6 +1994,40 @@ BOOL XgExportLooks(HWND hwnd, LPCWSTR pszFileName)
     return WritePrivateProfileStringW(NULL, NULL, NULL, pszFileName);
 }
 
+// クリップボードにテキストをコピーする。
+BOOL XgSetClipboardUnicodeText(HWND hwnd, const std::wstring& str)
+{
+    // ヒープからメモリを確保する。
+    DWORD cb = static_cast<DWORD>((str.size() + 1) * sizeof(WCHAR));
+    HGLOBAL hGlobal = ::GlobalAlloc(GMEM_MOVEABLE | GMEM_DDESHARE, cb);
+    if (hGlobal) {
+        // メモリをロックする。
+        LPWSTR psz = reinterpret_cast<LPWSTR>(::GlobalLock(hGlobal));
+        if (psz) {
+            // メモリに文字列をコピーする。
+            ::CopyMemory(psz, str.data(), cb);
+            // メモリのロックを解除する。
+            ::GlobalUnlock(hGlobal);
+
+            // クリップボードを開く。
+            if (::OpenClipboard(hwnd)) {
+                // クリップボードを空にする。
+                if (::EmptyClipboard()) {
+                    // Unicodeテキストを設定。
+                    ::SetClipboardData(CF_UNICODETEXT, hGlobal);
+                }
+                // クリップボードを閉じる。
+                ::CloseClipboard();
+                return TRUE;
+            }
+        }
+        // 確保したメモリを解放する。
+        ::GlobalFree(hGlobal);
+    }
+
+    return FALSE;
+}
+
 //////////////////////////////////////////////////////////////////////////////
 
 static inline BOOL About_OnInitDialog(HWND hwnd, HWND hwndFocus, LPARAM lParam)
@@ -2042,13 +2076,48 @@ static inline LRESULT About_OnNotify(HWND hwnd, int idFrom, LPNMHDR pnmhdr)
     case NM_CLICK:
     case NM_RETURN:
         if (idFrom == ctl1) {
+            // The user clicked URL
             ShellExecuteW(hwnd, NULL, XgLoadStringDx1(IDS_HOMEPAGE), NULL, NULL, SW_SHOWNORMAL);
         }
+        break;
+    case NM_RCLICK:
         break;
     default:
         break;
     }
     return 0;
+}
+
+static inline void About_OnContextMenu(HWND hwnd, HWND hwndContext, UINT xPos, UINT yPos)
+{
+    HWND hwndCtl1 = GetDlgItem(hwnd, ctl1);
+    if (hwndContext != hwndCtl1)
+        return;
+
+    if (xPos == MAXWORD && yPos == MAXWORD) {
+        RECT rc;
+        GetWindowRect(hwndCtl1, &rc);
+        xPos = (rc.left + rc.right) / 2;
+        yPos = (rc.top + rc.bottom) / 2;
+    }
+
+    // The user right-clicked URL
+    HMENU hMenu = LoadMenuW(xg_hInstance, MAKEINTRESOURCEW(3));
+    HMENU hSubMenu = GetSubMenu(hMenu, 2);
+    SetForegroundWindow(hwnd);
+    INT id = (INT)TrackPopupMenu(hSubMenu,
+                                 TPM_LEFTALIGN | TPM_RIGHTBUTTON | TPM_RETURNCMD,
+                                 xPos, yPos, 0, hwnd, NULL);
+    DestroyMenu(hMenu);
+    PostMessage(hwnd, WM_NULL, 0, 0);
+    switch (id)
+    {
+    case ID_COPYURL:
+        XgSetClipboardUnicodeText(hwnd, XgLoadStringDx1(IDS_HOMEPAGE));
+        break;
+    default:
+        break;
+    }
 }
 
 static INT_PTR CALLBACK
@@ -2059,6 +2128,7 @@ AboutDialogProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
         HANDLE_MSG(hwnd, WM_INITDIALOG, About_OnInitDialog);
         HANDLE_MSG(hwnd, WM_COMMAND, About_OnCommand);
         HANDLE_MSG(hwnd, WM_NOTIFY, About_OnNotify);
+        HANDLE_MSG(hwnd, WM_CONTEXTMENU, About_OnContextMenu);
     }
     return 0;
 }
@@ -3570,40 +3640,6 @@ void XgPasteBoard(HWND hwnd, const std::wstring& str)
     xg_mapNumCro2.clear();
     // 再描画。
     XgUpdateImage(hwnd, 0, 0);
-}
-
-// クリップボードにテキストをコピーする。
-BOOL XgSetClipboardUnicodeText(HWND hwnd, const std::wstring& str)
-{
-    // ヒープからメモリを確保する。
-    DWORD cb = static_cast<DWORD>((str.size() + 1) * sizeof(WCHAR));
-    HGLOBAL hGlobal = ::GlobalAlloc(GMEM_MOVEABLE | GMEM_DDESHARE, cb);
-    if (hGlobal) {
-        // メモリをロックする。
-        LPWSTR psz = reinterpret_cast<LPWSTR>(::GlobalLock(hGlobal));
-        if (psz) {
-            // メモリに文字列をコピーする。
-            ::CopyMemory(psz, str.data(), cb);
-            // メモリのロックを解除する。
-            ::GlobalUnlock(hGlobal);
-
-            // クリップボードを開く。
-            if (::OpenClipboard(hwnd)) {
-                // クリップボードを空にする。
-                if (::EmptyClipboard()) {
-                    // Unicodeテキストを設定。
-                    ::SetClipboardData(CF_UNICODETEXT, hGlobal);
-                }
-                // クリップボードを閉じる。
-                ::CloseClipboard();
-                return TRUE;
-            }
-        }
-        // 確保したメモリを解放する。
-        ::GlobalFree(hGlobal);
-    }
-
-    return FALSE;
 }
 
 // クリップボードにヒントをコピー（スタイルゼロ）。

@@ -442,6 +442,7 @@
 #define ID_UILANGID                         574
 #define ID_REFLECTBLOCKS                    575
 #define ID_NUMCROMODE                       576
+#define ID_COPYURL                          577
 #define ID_TT_BASE                          10000
 
 #define ctl2                                1185
