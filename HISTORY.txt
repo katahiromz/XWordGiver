@@ -150,7 +150,7 @@
     - Strengthened the Kanji dictionary.
 - 2022-08-04 ver.4.9.5
     - Added the ability to highlight textbox in the hint window when clicking on a numbered cell.
-- 2022-XX-YY ver.4.9.6
+- 2022-08-05 ver.4.9.6
     - Fixed the critical bug on ver.4.9.5 that it cannot open the files.
     - Added "NumCro Mode" to the "View" menu. It is possible to make a NumCro after creating a problem. You can save the NumCro puzzles to XD or XWJ/JSON files.
     - Deleted XWordGiver.py.
@@ -622,7 +622,7 @@
     - 漢字辞書の増強。
 - 2022年08月04日 ver.4.9.5
     - 番号付きのマスをクリックしたときのヒントウィンドウのテキストボックスのハイライト機能を追加。
-- 2022年XX月YY日 ver.4.9.6
+- 2022年08月05日 ver.4.9.6
     - ver.4.9.5においてファイルが開けなかった致命的な不具合を修正。
     - 「表示」メニューに「ナンクロモード」を追加。問題を作成した後でナンバークロスにすることが可能。ナンクロはXDファイルとXWJ/JSONファイルに保存可能です。
     - XWordGiver.pyを削除。
