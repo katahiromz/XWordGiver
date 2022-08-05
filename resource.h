@@ -32,6 +32,7 @@
 #define IDD_PICTUREBOX                      128
 #define IDD_TEXTBOX                         129
 #define IDD_UILANGID                        130
+#define IDD_ABOUT                           131
 
 #define IDS_VERSION                         101
 #define IDS_APPNAME                         102

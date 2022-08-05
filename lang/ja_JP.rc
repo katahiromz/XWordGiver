@@ -1441,6 +1441,19 @@ FONT 12, "MS Shell Dlg"
     PUSHBUTTON "Cancel", IDCANCEL, 90, 50, 60, 14
 }
 
+IDD_ABOUT DIALOG 0, 0, 212, 172
+CAPTION "クロスワード ギバーのバージョン情報"
+STYLE DS_CENTER | DS_MODALFRAME | WS_POPUPWINDOW | WS_CAPTION
+FONT 9, "MS UI Gothic"
+{
+    ICON 1, ico1, 10, 10, 0, 0
+    LTEXT "", stc1, 40, 10, 165, 25
+    LTEXT "著作権表示:", -1, 10, 50, 100, 15
+    EDITTEXT edt1, 10, 65, 195, 50, ES_READONLY | ES_MULTILINE | WS_VSCROLL | WS_HSCROLL
+    CONTROL "公式情報: <a>https://katahiromz.web.fc2.com/xword/</a>", ctl1, "SysLink", 0, 10, 120, 195, 15
+    DEFPUSHBUTTON "OK", IDOK, 70, 145, 60, 20
+}
+
 //////////////////////////////////////////////////////////////////////////////
 // RT_VERSION
 
