@@ -1445,7 +1445,7 @@ FONT 9, "Tahoma"
 {
     ICON 1, ico1, 10, 10, 0, 0
     LTEXT "", stc1, 40, 10, 125, 25
-    ICON 4, ico1, 180, 10, 0, 0
+    CONTROL 2, ico1, "STATIC", SS_REALSIZEIMAGE | SS_BITMAP | WS_GROUP, 180, 10, 0, 0
     LTEXT "Copyright:", -1, 10, 50, 100, 15
     LTEXT "", stc2, 135, 50, 70, 15
     EDITTEXT edt1, 10, 65, 195, 50, ES_READONLY | ES_MULTILINE | WS_VSCROLL | WS_HSCROLL | NOT WS_TABSTOP

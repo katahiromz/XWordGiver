@@ -16,6 +16,8 @@ LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
 
 1 BITMAP "res/Bitmap_1.bmp"
 
+2 BITMAP "res/Bitmap_2.bmp"
+
 IDB_FROMWORDS BITMAP "res/Bitmap_100.bmp"
 
 //////////////////////////////////////////////////////////////////////////////
@@ -95,8 +97,6 @@ IDC_MYHAND CURSOR "res/Cursor_100.cur"
 2 ICON "res/Icon_2.ico"
 
 3 ICON "res/Icon_3.ico"
-
-4 ICON "res/Icon_4.ico"
 
 100 ICON "res/Icon_100.ico"
 
