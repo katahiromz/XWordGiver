@@ -163,6 +163,7 @@
     - Fixed the display of the title bar.
     - Improved the "About" dialog.
     - Reordered of items in the Help menu.
+    - Improved the icons.
 
 # 開発履歴 (Japanese)
 
@@ -642,3 +643,4 @@
     - タイトルバーの表示を修正。
     - バージョン情報ダイアログを改良。
     - ヘルプメニューの項目の順序を変更する。
+    - アイコンを改良。
