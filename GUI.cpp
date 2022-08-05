@@ -3502,6 +3502,11 @@ void XgPasteBoard(HWND hwnd, const std::wstring& str)
     xg_vTateInfo.clear();
     xg_vYokoInfo.clear();
     XgMarkUpdate();
+    // ナンクロモードを解除。
+    xg_bNumCroMode = false;
+    xg_mapNumCro1.clear();
+    xg_mapNumCro2.clear();
+    // 再描画。
     XgUpdateImage(hwnd, 0, 0);
 }
 
@@ -6330,10 +6335,18 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT /*codeNo
         break;
     case ID_ERASESOLUTIONANDUNLOCKEDIT:
         {
-            std::wstring str;
-            XG_Board *pxw = (xg_bSolved && xg_bShowAnswer) ? &xg_solution : &xg_xword;
-            pxw->GetString(str);
-            XgPasteBoard(hwnd, str);
+            auto sa1 = std::make_shared<XG_UndoData_SetAll>();
+            auto sa2 = std::make_shared<XG_UndoData_SetAll>();
+            sa1->Get();
+            {
+                std::wstring str;
+                XG_Board *pxw = (xg_bSolved && xg_bShowAnswer) ? &xg_solution : &xg_xword;
+                pxw->GetString(str);
+                XgPasteBoard(hwnd, str);
+            }
+            sa2->Get();
+            // 元に戻す情報を設定する。
+            xg_ubUndoBuffer.Commit(UC_SETALL, sa1, sa2);
         }
         break;
     case ID_RELOADDICTS:
