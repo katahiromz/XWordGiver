@@ -185,7 +185,7 @@ LANGUAGE LANG_JAPANESE, SUBLANG_DEFAULT
         MENUITEM "LICENSE.txtを開く(&C)", ID_OPENLICENSE
         MENUITEM "黒マスパターン(&T)...", ID_OPENPATTERNS
         MENUITEM SEPARATOR
-        MENUITEM "作者のホームページを開く(&H)", ID_OPENHOMEPAGE
+        MENUITEM "ホームページを開く(&H)", ID_OPENHOMEPAGE
         MENUITEM "掲示板を開く(&B)", ID_OPENBBS
         MENUITEM SEPARATOR
         MENUITEM "「クロスワード辞典」を開く(&D)", ID_HELPDICTSITE
@@ -1449,7 +1449,7 @@ FONT 9, "MS UI Gothic"
     ICON 1, ico1, 10, 10, 0, 0
     LTEXT "", stc1, 40, 10, 165, 25
     LTEXT "著作権表示:", -1, 10, 50, 100, 15
-    EDITTEXT edt1, 10, 65, 195, 50, ES_READONLY | ES_MULTILINE | WS_VSCROLL | WS_HSCROLL
+    EDITTEXT edt1, 10, 65, 195, 50, ES_READONLY | ES_MULTILINE | WS_VSCROLL | WS_HSCROLL | NOT WS_TABSTOP
     CONTROL "公式情報: <a>https://katahiromz.web.fc2.com/xword/</a>", ctl1, "SysLink", 0, 10, 120, 195, 15
     DEFPUSHBUTTON "OK", IDOK, 70, 145, 60, 20
 }
@@ -1486,7 +1486,7 @@ FILETYPE        0x1
 
 STRINGTABLE
 {
-    IDS_VERSION, "クロスワード ギバー ver.4.9.7\nby 片山博文MZ\n\nCopyright (C) 2012-2022 片山博文MZ.\nCopyright (C) 2021-2022 スフィンクス.\nCopyright (C) 2021-2022 catworks99.\nCopyright (C) 2022 yukokumar.\nCopyright (C) 2022 Hiroshima.cw.\nAll rights reserved."
+    IDS_VERSION, "クロスワード ギバー ver.4.9.7\nby 片山博文MZ"
     IDS_APPNAME, "クロスワード ギバー"
     IDS_CANTLOAD, "ファイルが読み込めません。"
     IDS_WRONGFORMAT, "形式が間違っています。"
@@ -1639,7 +1639,7 @@ STRINGTABLE
     IDS_DBLFRAME_LETTERS_10, "абвгдеёжзийклмнопрстуфхцчшщъыьэюяАБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ"
     IDS_NOTREGDWORD, "辞書に未登録の単語があります。\n\n%s\n\n続行しますか？"
     IDS_WARNING, "警告"
-    IDS_HOMEPAGE, "https://katahiromz.web.fc2.com/"
+    IDS_HOMEPAGE, "https://katahiromz.web.fc2.com/xword/"
     IDS_NOTCONNECTABLE, "単語「%ls」は連結できませんでした。"
     IDS_GENERATED, "生成しました。"
     IDS_CANTGENERATE, "生成できませんでした。"
@@ -1653,6 +1653,7 @@ STRINGTABLE
     IDS_NOBLOCKIMAGE, "BLOCKフォルダに黒マス画像 '%s' が存在しませんので、LOOKSファイル取り込みに失敗しました。"
     IDS_QUERYSAVE, "ファイル「%s」を保存しますか？"
     IDS_UNTITLED, "無題"
+    IDS_COPYRIGHTINFO, "License: MIT\r\n\r\nCopyright (C) 2012-2022 片山博文MZ.\r\nCopyright (C) 2021-2022 スフィンクス.\r\nCopyright (C) 2021-2022 catworks99.\r\nCopyright (C) 2022 yukokumar.\r\nCopyright (C) 2022 Hiroshima.cw.\r\nAll rights reserved."
     IDS_TT_NEW, "新規作成"
     IDS_TT_GENERATE, "問題を自動生成する"
     IDS_TT_OPEN, "問題を開く"

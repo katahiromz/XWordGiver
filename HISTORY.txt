@@ -161,6 +161,7 @@
     - Fixed a bug about NumCro.
     - Able to undo the view mode.
     - Fixed the display of the title bar.
+    - Improved the "About" dialog.
 
 # 開発履歴 (Japanese)
 
@@ -638,3 +639,4 @@
     - ナンクロに関する不具合を修正。
     - ビューモードを元に戻せるように。
     - タイトルバーの表示を修正。
+    - バージョン情報ダイアログを改良。

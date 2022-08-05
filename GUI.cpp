@@ -1996,20 +1996,59 @@ BOOL XgExportLooks(HWND hwnd, LPCWSTR pszFileName)
 
 //////////////////////////////////////////////////////////////////////////////
 
+static BOOL About_OnInitDialog(HWND hwnd, HWND hwndFocus, LPARAM lParam)
+{
+    XgCenterDialog(hwnd);
+    SetDlgItemTextW(hwnd, stc1, XgLoadStringDx1(IDS_VERSION));
+    SetDlgItemTextW(hwnd, edt1, XgLoadStringDx1(IDS_COPYRIGHTINFO));
+    return TRUE;
+}
+
+static void About_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT codeNotify)
+{
+    switch (id)
+    {
+    case IDOK:
+    case IDCANCEL:
+        EndDialog(hwnd, id);
+        break;
+    }
+}
+
+static LRESULT About_OnNotify(HWND hwnd, int idFrom, LPNMHDR pnmhdr)
+{
+    switch (pnmhdr->code) {
+    case NM_CLICK:
+    case NM_RETURN:
+        if (idFrom == ctl1) {
+            ShellExecuteW(hwnd, NULL, XgLoadStringDx1(IDS_HOMEPAGE), NULL, NULL, SW_SHOWNORMAL);
+        }
+        break;
+    default:
+        break;
+    }
+    return 0;
+}
+
+INT_PTR CALLBACK
+AboutDialogProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+{
+    switch (uMsg)
+    {
+        HANDLE_MSG(hwnd, WM_INITDIALOG, About_OnInitDialog);
+        HANDLE_MSG(hwnd, WM_COMMAND, About_OnCommand);
+        HANDLE_MSG(hwnd, WM_NOTIFY, About_OnNotify);
+    }
+    return 0;
+}
+
 // バージョン情報を表示する。
 void __fastcall XgOnAbout(HWND hwnd)
 {
-    MSGBOXPARAMS params;
-    memset(&params, 0, sizeof(params));
-    params.cbSize = sizeof(params);
-    params.hwndOwner = hwnd;
-    params.hInstance = xg_hInstance;
-    params.lpszText = XgLoadStringDx1(IDS_VERSION);
-    params.lpszCaption = XgLoadStringDx2(IDS_APPNAME);
-    params.dwStyle = MB_USERICON;
-    params.lpszIcon = MAKEINTRESOURCE(1);
-    XgCenterMessageBoxIndirectW(&params);
+    DialogBoxW(xg_hInstance, MAKEINTRESOURCEW(IDD_ABOUT), hwnd, AboutDialogProc);
 }
+
+//////////////////////////////////////////////////////////////////////////////
 
 // 保存する。
 bool __fastcall XgDoSaveFiles(HWND hwnd, LPCWSTR pszFile)
