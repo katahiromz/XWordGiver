@@ -1996,7 +1996,7 @@ BOOL XgExportLooks(HWND hwnd, LPCWSTR pszFileName)
 
 //////////////////////////////////////////////////////////////////////////////
 
-static BOOL About_OnInitDialog(HWND hwnd, HWND hwndFocus, LPARAM lParam)
+static inline BOOL About_OnInitDialog(HWND hwnd, HWND hwndFocus, LPARAM lParam)
 {
     XgCenterDialog(hwnd);
     SetDlgItemTextW(hwnd, stc1, XgLoadStringDx1(IDS_VERSION));
@@ -2004,7 +2004,17 @@ static BOOL About_OnInitDialog(HWND hwnd, HWND hwndFocus, LPARAM lParam)
     return TRUE;
 }
 
-static void About_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT codeNotify)
+static inline void About_OnChangeLog(HWND hwnd)
+{
+    // Show HISTORY.txt
+    WCHAR szPath[MAX_PATH];
+    GetModuleFileNameW(NULL, szPath, _countof(szPath));
+    PathRemoveFileSpecW(szPath);
+    PathAppendW(szPath, L"HISTORY.txt");
+    ShellExecuteW(hwnd, NULL, szPath, NULL, NULL, SW_SHOWNORMAL);
+}
+
+static inline void About_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT codeNotify)
 {
     switch (id)
     {
@@ -2012,10 +2022,13 @@ static void About_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT codeNotify)
     case IDCANCEL:
         EndDialog(hwnd, id);
         break;
+    case IDYES:
+        About_OnChangeLog(hwnd);
+        break;
     }
 }
 
-static LRESULT About_OnNotify(HWND hwnd, int idFrom, LPNMHDR pnmhdr)
+static inline LRESULT About_OnNotify(HWND hwnd, int idFrom, LPNMHDR pnmhdr)
 {
     switch (pnmhdr->code) {
     case NM_CLICK:
@@ -2030,7 +2043,7 @@ static LRESULT About_OnNotify(HWND hwnd, int idFrom, LPNMHDR pnmhdr)
     return 0;
 }
 
-INT_PTR CALLBACK
+static INT_PTR CALLBACK
 AboutDialogProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
     switch (uMsg)
