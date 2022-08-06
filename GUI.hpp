@@ -30,8 +30,8 @@ void __fastcall XgUpdateImage(HWND hwnd);
 // UIフォントの論理オブジェクトを取得する。
 LOGFONTW *XgGetUIFont(void);
 
-// PAT.txtを見つける。
-BOOL __fastcall XgFindPatTxt(LPWSTR pszPath, UINT cchPath);
+// ローカルファイルを見つける。
+BOOL __fastcall XgFindLocalFile(LPWSTR pszPath, UINT cchPath, LPCWSTR pszFileName);
 
 // 計算時間測定用。
 extern DWORDLONG xg_dwlTick0;    // 開始時間。

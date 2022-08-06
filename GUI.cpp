@@ -5224,22 +5224,24 @@ void __fastcall XgMakeItNumCro(HWND hwnd)
     XgUpdateImage(hwnd);
 }
 
-// PAT.txtを見つける。
-BOOL __fastcall XgFindPatTxt(LPWSTR pszPath, UINT cchPath)
+// ローカルファイルを見つける。
+BOOL __fastcall XgFindLocalFile(LPWSTR pszPath, UINT cchPath, LPCWSTR pszFileName)
 {
     GetModuleFileNameW(NULL, pszPath, MAX_PATH);
 
     PathRemoveFileSpecW(pszPath);
-    PathAppendW(pszPath, L"PAT.txt");
+    PathAppendW(pszPath, pszFileName);
 
     if (!PathFileExistsW(pszPath))
     {
-        StringCchCopyW(pszPath, cchPath, pszPath);
-        PathAppendW(pszPath, L"..\\PAT.txt");
+        PathRemoveFileSpecW(pszPath);
+        PathAppendW(pszPath, L"..");
+        PathAppendW(pszPath, pszFileName);
         if (!PathFileExistsW(pszPath))
         {
-            StringCchCopyW(pszPath, cchPath, pszPath);
-            PathAppendW(pszPath, L"..\\..\\PAT.txt");
+            PathRemoveFileSpecW(pszPath);
+            PathAppendW(pszPath, L"..");
+            PathAppendW(pszPath, pszFileName);
         }
     }
 
@@ -6666,7 +6668,7 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT /*codeNo
         {
             // PAT.txtを開く。
             WCHAR szPath[MAX_PATH];
-            if (XgFindPatTxt(szPath, _countof(szPath)))
+            if (XgFindLocalFile(szPath, _countof(szPath), L"PAT.txt"))
                 ShellExecuteW(hwnd, NULL, szPath, NULL, NULL, SW_SHOWNORMAL);
         }
         break;

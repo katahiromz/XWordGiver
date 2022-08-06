@@ -1,0 +1,16 @@
+﻿; THEME.txt
+;
+; Themes: You can edit this file as you like.
+;
+; テーマ: このファイルを自由に編集できます。
+;
+-[不幸],-[不道徳],-[不快],-[犯罪],-[成人向け]
++[春],-[夏],-[秋],-[冬],-[不幸],-[不道徳],-[不快],-[犯罪],-[成人向け]
+-[春],+[夏],-[秋],-[冬],-[不幸],-[不道徳],-[不快],-[犯罪],-[成人向け]
+-[春],-[夏],+[秋],-[冬],-[不幸],-[不道徳],-[不快],-[犯罪],-[成人向け]
+-[春],-[夏],-[秋],+[冬],-[不幸],-[不道徳],-[不快],-[犯罪],-[成人向け]
+-[Unhappy],-[Immoral],-[Unpleasant],-[Illegal],-[R18],-[Religion]
++[SpringSeason],-[SummerSeason],-[AutumnSeason],-[WinterSeason],-[Unhappy],-[Immoral],-[Unpleasant],-[Illegal],-[R18],-[Religion]
+-[SpringSeason],+[SummerSeason],-[AutumnSeason],-[WinterSeason],-[Unhappy],-[Immoral],-[Unpleasant],-[Illegal],-[R18],-[Religion]
+-[SpringSeason],-[SummerSeason],+[AutumnSeason],-[WinterSeason],-[Unhappy],-[Immoral],-[Unpleasant],-[Illegal],-[R18],-[Religion]
+-[SpringSeason],-[SummerSeason],-[AutumnSeason],+[WinterSeason],-[Unhappy],-[Immoral],-[Unpleasant],-[Illegal],-[R18],-[Religion]

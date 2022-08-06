@@ -253,7 +253,7 @@ public:
 
         // パターンデータを読み込む。
         WCHAR szPath[MAX_PATH];
-        XgFindPatTxt(szPath, _countof(szPath));
+        XgFindLocalFile(szPath, _countof(szPath), L"PAT.txt");
 
         // read all
         std::string utf8;

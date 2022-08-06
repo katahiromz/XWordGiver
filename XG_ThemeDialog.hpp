@@ -97,6 +97,24 @@ public:
         item.state = item.stateMask = LVIS_SELECTED | LVIS_FOCUSED;
         ListView_SetItem(hLst1, &item);
 
+        // THEME.txt ファイルを読み込む。
+        WCHAR szPath[MAX_PATH];
+        HWND hCmb1 = GetDlgItem(hwnd, cmb1);
+        if (XgFindLocalFile(szPath, _countof(szPath), L"THEME.txt")) {
+            if (FILE *fp = _wfopen(szPath, L"rb")) {
+                char buf[256];
+                while (fgets(buf, 256, fp)) {
+                    std::wstring str = XgUtf8ToUnicode(buf);
+                    xg_str_trim(str);
+                    if (str.empty())
+                        continue;
+                    if (str[0] == 0xFEFF || str[0] == L';')
+                        continue;
+                    ComboBox_AddString(hCmb1, str.c_str());
+                }
+            }
+        }
+
         return TRUE;
     }
 
@@ -301,9 +319,17 @@ public:
             }
             break;
         case cmb1:
-            if (codeNotify == CBN_EDITCHANGE && !xg_bUpdatingPreset) {
-                SetPreset(hwnd);
+            if (!xg_bUpdatingPreset) {
+                if (codeNotify == CBN_EDITCHANGE) {
+                    SetPreset(hwnd);
+                }
+                if (codeNotify == CBN_SELCHANGE) {
+                    ::PostMessageW(hwnd, WM_COMMAND, IDYES, 0);
+                }
             }
+            break;
+        case IDYES:
+            SetPreset(hwnd);
             break;
         }
     }
@@ -405,24 +431,19 @@ public:
             }
 
             LV_ITEM item = { LVIF_TEXT };
-            INT iItem = ListView_GetItemCount(hLst3);
+            INT iItem = ListView_GetItemCount(minus ? hLst3 : hLst2);
             StringCbCopyW(szText, sizeof(szText), str.c_str());
             item.iItem = iItem;
             item.pszText = szText;
             item.iSubItem = 0;
-            if (minus)
-                ListView_InsertItem(hLst3, &item);
-            else
-                ListView_InsertItem(hLst2, &item);
+            ListView_InsertItem((minus ? hLst3 : hLst2), &item);
 
-            StringCbCopyW(szText, sizeof(szText), std::to_wstring(xg_tag_histgram[str]).c_str());
+            int count = (int)xg_tag_histgram[str];
+            StringCbPrintfW(szText, sizeof(szText), L"%u", count);
             item.iItem = iItem;
             item.pszText = szText;
             item.iSubItem = 1;
-            if (minus)
-                ListView_SetItem(hLst3, &item);
-            else
-                ListView_SetItem(hLst2, &item);
+            ListView_SetItem((minus ? hLst3 : hLst2), &item);
         }
 
         // 最初の項目を選択する。
@@ -445,7 +466,6 @@ public:
         WCHAR szText[MAX_TAGSLEN];
         HWND hCmb1 = GetDlgItem(hwnd, cmb1);
         ComboBox_RealGetText(hCmb1, szText, _countof(szText));
-
         SetPreset(hwnd, szText);
     }
 
