@@ -285,71 +285,66 @@ public:
             return FALSE;
         }
 
-        try
-        {
-            // split as UTF-16 lines
-            auto utf16 = XgUtf8ToUnicode(utf8);
-            std::vector<std::wstring> lines;
-            mstr_split(lines, utf16, L"\n");
+        // split as UTF-16 lines
+        auto utf16 = XgUtf8ToUnicode(utf8);
+        std::vector<std::wstring> lines;
+        mstr_split(lines, utf16, L"\n");
 
-            PATDATA pat;
-            std::wstring text;
+        utf8.clear();
 
-            // parse each line
-            for (auto& line : lines) {
-                xg_str_trim(line);
-                if (line.empty())
+        PATDATA pat;
+        std::wstring text;
+
+        // parse each line
+        for (auto& line : lines) {
+            xg_str_trim(line);
+            if (line.empty())
+                continue;
+
+            switch (line[0]) {
+            case 0x250F: // ┏
+                text.clear();
+                text += line;
+                text += L"\r\n";
+                pat.num_columns = pat.num_rows = 0;
+                break;
+            case 0x2517: // ┗
+                if (!FilterPatBySize(pat, type))
                     continue;
 
-                switch (line[0]) {
-                case 0x250F: // ┏
-                    text.clear();
-                    text += line;
-                    text += L"\r\n";
-                    pat.num_columns = pat.num_rows = 0;
-                    break;
-                case 0x2517: // ┗
-                    if (!FilterPatBySize(pat, type))
-                        continue;
+                text += line;
+                text += L"\r\n";
+                pat.data = text;
+                {
+                    // パターンのテキストデータを扱いやすいよう、加工する。
+                    std::vector<WCHAR> data;
+                    XgConvertPatternData(data, pat.data, pat.num_columns, pat.num_rows);
 
-                    text += line;
-                    text += L"\r\n";
-                    pat.data = text;
-                    {
-                        // パターンのテキストデータを扱いやすいよう、加工する。
-                        std::vector<WCHAR> data;
-                        XgConvertPatternData(data, pat.data, pat.num_columns, pat.num_rows);
-
-                        // ルールに適合するか？
-                        if (RuleIsOK(pat, data)) {
-                            s_patterns.push_back(pat);
-                        }
+                    // ルールに適合するか？
+                    if (RuleIsOK(pat, data)) {
+                        s_patterns.push_back(pat);
                     }
-                    break;
-                case 0x2503: // ┃
-                    pat.num_columns = INT(line.size() - 2);
-                    text += line;
-                    text += L"\r\n";
-                    pat.num_rows += 1;
-                    break;
                 }
+                break;
+            case 0x2503: // ┃
+                pat.num_columns = INT(line.size() - 2);
+                text += line;
+                text += L"\r\n";
+                pat.num_rows += 1;
+                break;
             }
-
-            // かき混ぜる。
-            xg_random_shuffle(s_patterns.begin(), s_patterns.end());
-
-            // インデックスとして追加する。
-            for (size_t i = 0; i < s_patterns.size(); ++i)
-            {
-                SendDlgItemMessageW(hwnd, lst1, LB_ADDSTRING, 0, i);
-            }
-
-            return TRUE;
-        } catch (...) {
-            MessageBoxW(hwnd, XgLoadStringDx1(IDS_JSONSYNTAXERROR), NULL, MB_ICONERROR);
         }
 
-        return FALSE;
+        // かき混ぜる。
+        xg_random_shuffle(s_patterns.begin(), s_patterns.end());
+
+        // インデックスとして追加する。
+        for (size_t i = 0; i < s_patterns.size(); ++i)
+        {
+            SendDlgItemMessageW(hwnd, lst1, LB_ADDSTRING, 0, i);
+        }
+
+        return TRUE;
     }
 
     // WM_INITDIALOG
