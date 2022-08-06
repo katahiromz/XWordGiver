@@ -2043,6 +2043,13 @@ static inline BOOL About_OnInitDialog(HWND hwnd, HWND hwndFocus, LPARAM lParam)
     StringCbPrintfW(szText, sizeof(szText),
                     XgLoadStringDx1(IDS_HOWMANYCORES), sys_info.dwNumberOfProcessors);
     SetDlgItemTextW(hwnd, stc2, szText);
+
+#ifdef _WIN64
+    SetDlgItemTextW(hwnd, stc3, L"Win64");
+#else
+    SetDlgItemTextW(hwnd, stc3, L"Win32");
+#endif
+
     return TRUE;
 }
 

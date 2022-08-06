@@ -1454,7 +1454,8 @@ FONT 9, "MS UI Gothic"
     CONTROL 3, ico1, "STATIC", SS_REALSIZEIMAGE | SS_BITMAP | WS_GROUP, 10, 10, 0, 0
     LTEXT "", stc1, 40, 10, 125, 25
     CONTROL 2, ico2, "STATIC", SS_REALSIZEIMAGE | SS_BITMAP | WS_GROUP, 175, 10, 0, 0
-    LTEXT "著作権表示:", -1, 10, 50, 100, 15
+    LTEXT "著作権表示:", -1, 10, 50, 75, 15
+    LTEXT "", stc3, 95, 50, 30, 15
     LTEXT "", stc2, 135, 50, 70, 15
     EDITTEXT edt1, 10, 65, 195, 50, ES_READONLY | ES_MULTILINE | WS_VSCROLL | WS_HSCROLL | NOT WS_TABSTOP
     CONTROL "公式サイト: <a>https://katahiromz.web.fc2.com/xword/</a>", ctl1, "SysLink", WS_TABSTOP, 10, 125, 195, 15
