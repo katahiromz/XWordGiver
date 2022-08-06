@@ -167,6 +167,7 @@
 - 2022-XX-YY ver.4.9.8
     - Migration of block pattern data from "data.json" to "PAT.txt".
     - In the skeleton view, draw small white dots at the four corners so that the margins are not omitted.
+    - Added "Open PAT.txt" to the Help menu.
 
 # 開発履歴 (Japanese)
 
@@ -650,3 +651,4 @@
 - 2022年XX月YY日 ver.4.9.8
     - 黒マスパターンのデータを「data.json」から「PAT.txt」に移行。黒マスパターンを編集しやすくなりました。
     - スケルトンビューでは、余白が省略されないように四隅に小さな白い点を描画する。
+    - ヘルプメニューに「PAT.txtを開く」を追加。

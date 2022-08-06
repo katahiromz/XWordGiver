@@ -5217,6 +5217,28 @@ void __fastcall XgMakeItNumCro(HWND hwnd)
     XgUpdateImage(hwnd);
 }
 
+// PAT.txtを見つける。
+BOOL __fastcall XgFindPatTxt(LPWSTR pszPath, UINT cchPath)
+{
+    GetModuleFileNameW(NULL, pszPath, MAX_PATH);
+
+    PathRemoveFileSpecW(pszPath);
+    PathAppendW(pszPath, L"PAT.txt");
+
+    if (!PathFileExistsW(pszPath))
+    {
+        StringCchCopyW(pszPath, cchPath, pszPath);
+        PathAppendW(pszPath, L"..\\PAT.txt");
+        if (!PathFileExistsW(pszPath))
+        {
+            StringCchCopyW(pszPath, cchPath, pszPath);
+            PathAppendW(pszPath, L"..\\..\\PAT.txt");
+        }
+    }
+
+    return PathFileExistsW(pszPath);
+}
+
 // コマンドを実行する。
 void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT /*codeNotify*/)
 {
@@ -6631,6 +6653,14 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT /*codeNo
             }
             sa2->Get();
             xg_ubUndoBuffer.Commit(UC_NUMCRO, sa1, sa2);
+        }
+        break;
+    case ID_OPENPATTXT:
+        {
+            // PAT.txtを開く。
+            WCHAR szPath[MAX_PATH];
+            if (XgFindPatTxt(szPath, _countof(szPath)))
+                ShellExecuteW(hwnd, NULL, szPath, NULL, NULL, SW_SHOWNORMAL);
         }
         break;
     default:

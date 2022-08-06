@@ -253,26 +253,12 @@ public:
 
         // パターンデータを読み込む。
         WCHAR szPath[MAX_PATH];
-        GetModuleFileNameW(NULL, szPath, MAX_PATH);
-        PathRemoveFileSpecW(szPath);
-        WCHAR szFile[MAX_PATH];
-        StringCbCopyW(szFile, sizeof(szFile), szPath);
-        PathAppendW(szFile, L"PAT.txt");
-        if (!PathFileExistsW(szFile))
-        {
-            StringCbCopyW(szFile, sizeof(szFile), szPath);
-            PathAppendW(szFile, L"..\\PAT.txt");
-            if (!PathFileExistsW(szFile))
-            {
-                StringCbCopyW(szFile, sizeof(szFile), szPath);
-                PathAppendW(szFile, L"..\\..\\PAT.txt");
-            }
-        }
+        XgFindPatTxt(szPath, _countof(szPath));
 
         // read all
         std::string utf8;
         CHAR buf[256];
-        if (FILE *fp = _wfopen(szFile, L"rb"))
+        if (FILE *fp = _wfopen(szPath, L"rb"))
         {
             while (fgets(buf, 256, fp))
             {
