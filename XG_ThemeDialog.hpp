@@ -114,6 +114,8 @@ public:
                 }
             }
         }
+        // コンボボックスの横幅。
+        SendMessageW(hCmb1, CB_SETHORIZONTALEXTENT, 1000, 0);
 
         return TRUE;
     }
