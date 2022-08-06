@@ -6672,6 +6672,14 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT /*codeNo
                 ShellExecuteW(hwnd, NULL, szPath, NULL, NULL, SW_SHOWNORMAL);
         }
         break;
+    case ID_OPENTHEMETXT:
+        {
+            // THEME.txtを開く。
+            WCHAR szPath[MAX_PATH];
+            if (XgFindLocalFile(szPath, _countof(szPath), L"THEME.txt"))
+                ShellExecuteW(hwnd, NULL, szPath, NULL, NULL, SW_SHOWNORMAL);
+        }
+        break;
     default:
         if (!XgOnCommandExtra(hwnd, id)) {
             ::MessageBeep(0xFFFFFFFF);
