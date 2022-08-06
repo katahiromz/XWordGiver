@@ -169,6 +169,7 @@
     - In the skeleton view, draw small white dots at the four corners so that the margins are not omitted.
     - Added "Open PAT.txt" to the Help menu.
     - Displayed Win32/Win64 on the "About" dialog.
+    - Clearly displayed the selection status in the Theme dialog.
 
 # 開発履歴 (Japanese)
 
@@ -654,3 +655,4 @@
     - スケルトンビューでは、余白が省略されないように四隅に小さな白い点を描画する。
     - ヘルプメニューに「PAT.txtを開く」を追加。
     - バージョン情報ダイアログにWin32/Win64を表示。
+    - テーマダイアログで選択状態をはっきり表示。

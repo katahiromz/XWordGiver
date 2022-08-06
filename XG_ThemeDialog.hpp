@@ -253,12 +253,17 @@ public:
 
         HWND hLst1 = GetDlgItem(hwnd, lst1);
 
-        LV_FINDINFO find = { LVFI_STRING | LVFI_PARTIAL };
-        find.psz = szText;
-        INT iItem = ListView_FindItem(hLst1, -1, &find);
-        UINT state = LVIS_FOCUSED | LVIS_SELECTED;
-        ListView_SetItemState(hLst1, iItem, state, state);
-        ListView_EnsureVisible(hLst1, iItem, FALSE);
+        INT iItem, nCount = ListView_GetItemCount(hLst1);
+        WCHAR szItem[MAX_TAGSLEN];
+        for (iItem = 0; iItem < nCount; ++iItem) {
+            ListView_GetItemText(hLst1, iItem, 0, szItem, _countof(szItem));
+            if (StrStr(szItem, szText)) {
+                UINT state = LVIS_FOCUSED | LVIS_SELECTED;
+                ListView_SetItemState(hLst1, iItem, state, state);
+                ListView_EnsureVisible(hLst1, iItem, FALSE);
+                break;
+            }
+        }
     }
 
     // 「テーマ」ダイアログのコマンド処理。
@@ -303,8 +308,32 @@ public:
         }
     }
 
+    // リストビューの選択状態をはっきりさせる。
+    LRESULT OnCustomDraw(HWND hwnd, LPNMLVCUSTOMDRAW pCustomDraw)
+    {
+        UINT uState;
+        HWND hwndLV = pCustomDraw->nmcd.hdr.hwndFrom;
+        switch (pCustomDraw->nmcd.dwDrawStage) {
+        case CDDS_PREPAINT:
+            return CDRF_NOTIFYITEMDRAW;
+        case CDDS_ITEMPREPAINT:
+            uState = ListView_GetItemState(hwndLV, pCustomDraw->nmcd.dwItemSpec, LVIS_SELECTED);
+            if (uState & LVIS_SELECTED) {
+                pCustomDraw->clrText = GetSysColor(COLOR_HIGHLIGHTTEXT);
+                pCustomDraw->clrTextBk = GetSysColor(COLOR_HIGHLIGHT);
+                return CDRF_NEWFONT;
+            }
+            break;
+        }
+        return CDRF_DODEFAULT;
+    }
+
     LRESULT OnNotify(HWND hwnd, int idFrom, LPNMHDR pnmhdr)
     {
+        if (pnmhdr->code == NM_CUSTOMDRAW) {
+            LRESULT ret = OnCustomDraw(hwnd, (LPNMLVCUSTOMDRAW)pnmhdr);
+            return SetDlgMsgResult(hwnd, NM_CUSTOMDRAW, ret);
+        }
         LV_KEYDOWN *pKeyDown;
         switch (idFrom) {
         case lst1:
