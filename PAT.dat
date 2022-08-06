@@ -1,11 +1,11 @@
 ﻿; PAT.txt
 ;
-; 黒マスパターンを記録したテキストファイルです。自由に編集しても構いません。
-; 全角空白が見えるテキストエディタで編集して下さい。
-;
 ; This file is a text file that records the block patterns.
 ; You can edit this file as you like.
 ; The text editor that can see ideographic spaces (U+3000) is recommended.
+;
+; 黒マスパターンを記録したテキストファイルです。自由に編集しても構いません。
+; 全角空白が見えるテキストエディタをオススメします。
 ;
 ; Copyright (C) 2022 katahiromz. License: MIT
 

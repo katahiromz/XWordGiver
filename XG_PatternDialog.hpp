@@ -68,9 +68,8 @@ public:
     }
 
     // タイプによりフィルターを行う。
-    BOOL FilterPatBySize(PATDATA& pat, INT type) {
-        switch (type)
-        {
+    BOOL FilterPatBySize(const PATDATA& pat, INT type) {
+        switch (type) {
         case rad1:
             if (pat.num_columns != pat.num_rows)
                 return FALSE;
@@ -110,7 +109,7 @@ public:
     }
 
     // 黒マスルールに適合するか？
-    BOOL RuleIsOK(PATDATA& pat, std::vector<WCHAR>& data) {
+    BOOL RuleIsOK(const PATDATA& pat, const std::vector<WCHAR>& data) {
 #define GET_DATA(x, y) data[(y) * pat.num_columns + (x)]
         if (xg_nRules & RULE_DONTDOUBLEBLACK) {
             for (INT y = 0; y < pat.num_rows; ++y) {
@@ -269,6 +268,8 @@ public:
                 PathAppendW(szFile, L"..\\..\\PAT.dat");
             }
         }
+
+        // read all
         std::string utf8;
         CHAR buf[256];
         if (FILE *fp = _wfopen(szFile, L"rb"))
@@ -286,6 +287,7 @@ public:
 
         try
         {
+            // split as UTF-16 lines
             auto utf16 = XgUtf8ToUnicode(utf8);
             std::vector<std::wstring> lines;
             mstr_split(lines, utf16, L"\n");
@@ -293,6 +295,7 @@ public:
             PATDATA pat;
             std::wstring text;
 
+            // parse each line
             for (auto& line : lines) {
                 xg_str_trim(line);
                 if (line.empty())
