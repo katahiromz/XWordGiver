@@ -257,15 +257,15 @@ public:
         PathRemoveFileSpecW(szPath);
         WCHAR szFile[MAX_PATH];
         StringCbCopyW(szFile, sizeof(szFile), szPath);
-        PathAppendW(szFile, L"PAT.dat");
+        PathAppendW(szFile, L"PAT.txt");
         if (!PathFileExistsW(szFile))
         {
             StringCbCopyW(szFile, sizeof(szFile), szPath);
-            PathAppendW(szFile, L"..\\PAT.dat");
+            PathAppendW(szFile, L"..\\PAT.txt");
             if (!PathFileExistsW(szFile))
             {
                 StringCbCopyW(szFile, sizeof(szFile), szPath);
-                PathAppendW(szFile, L"..\\..\\PAT.dat");
+                PathAppendW(szFile, L"..\\..\\PAT.txt");
             }
         }
 

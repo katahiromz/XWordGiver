@@ -63,7 +63,7 @@ Source: "BLOCK\spade.emf"; DestDir: "{app}\BLOCK"; Flags: ignoreversion
 Source: "BLOCK\star.emf"; DestDir: "{app}\BLOCK"; Flags: ignoreversion
 Source: "BLOCK\ant.png"; DestDir: "{app}\BLOCK"; Flags: ignoreversion
 Source: "LICENSE.txt"; DestDir: "{app}"; Flags: ignoreversion
-Source: "PAT.dat"; DestDir: "{app}"; Flags: ignoreversion
+Source: "PAT.txt"; DestDir: "{app}"; Flags: ignoreversion
 Source: "dict_analyze\dict_analyze.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "Policy-ENG.txt"; DestDir: "{app}"; Flags: ignoreversion
 Source: "Policy-JPN.txt"; DestDir: "{app}"; Flags: ignoreversion
