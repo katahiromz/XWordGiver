@@ -4634,10 +4634,18 @@ void __fastcall XgDrawXWord_SkeletonView(XG_Board& xw, HDC hdc, LPSIZE psiz, boo
     }
 
     // スクリーンの場合は、全体を白で塗りつぶす。
+    // それ以外は、四隅に白い点を描く（EMFで余白が省略されないように）。
     RECT rc;
     ::SetRect(&rc, 0, 0, psiz->cx, psiz->cy);
-    if (bScreen)
+    if (bScreen) {
         ::FillRect(hdc, &rc, reinterpret_cast<HBRUSH>(::GetStockObject(WHITE_BRUSH)));
+    } else {
+        COLORREF rgbWhite = RGB(255, 255, 255);
+        ::SetPixelV(hdc, rc.left, rc.top, rgbWhite);
+        ::SetPixelV(hdc, rc.right - 1, rc.top, rgbWhite);
+        ::SetPixelV(hdc, rc.right - 1, rc.bottom - 1, rgbWhite);
+        ::SetPixelV(hdc, rc.left, rc.bottom - 1, rgbWhite);
+    }
 
     LOGFONTW lf;
 
