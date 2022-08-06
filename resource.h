@@ -445,6 +445,7 @@
 #define ID_COPYURL                          577
 #define ID_OPENPATTXT                       578
 #define ID_OPENTHEMETXT                     579
+#define ID_CLEARUNDOBUFFER                  580
 #define ID_TT_BASE                          10000
 
 #define ctl2                                1185

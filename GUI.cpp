@@ -6680,6 +6680,13 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT /*codeNo
                 ShellExecuteW(hwnd, NULL, szPath, NULL, NULL, SW_SHOWNORMAL);
         }
         break;
+    case ID_CLEARUNDOBUFFER:
+        // Undoバッファをクリアする。
+        xg_ubUndoBuffer.clear();
+        // 音を鳴らす。
+        Beep(0x1000, 50);
+        Beep(0x800, 450);
+        break;
     default:
         if (!XgOnCommandExtra(hwnd, id)) {
             ::MessageBeep(0xFFFFFFFF);
