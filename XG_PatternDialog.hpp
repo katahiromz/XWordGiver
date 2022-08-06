@@ -67,6 +67,185 @@ public:
         }
     }
 
+    // タイプによりフィルターを行う。
+    BOOL FilterPatBySize(PATDATA& pat, INT type) {
+        switch (type)
+        {
+        case rad1:
+            if (pat.num_columns != pat.num_rows)
+                return FALSE;
+            if (!(pat.num_columns >= 13 && pat.num_rows >= 13))
+                return FALSE;
+            break;
+        case rad2:
+            if (pat.num_columns != pat.num_rows)
+                return FALSE;
+            if (!(8 <= pat.num_columns && pat.num_columns <= 12 &&
+                8 <= pat.num_rows && pat.num_rows <= 12))
+            {
+                return FALSE;
+            }
+            break;
+        case rad3:
+            if (pat.num_columns != pat.num_rows)
+                return FALSE;
+            if (!(pat.num_columns <= 8 && pat.num_rows <= 8))
+                return FALSE;
+            break;
+        case rad4:
+            if (pat.num_columns <= pat.num_rows)
+                return FALSE;
+            break;
+        case rad5:
+            if (pat.num_columns >= pat.num_rows)
+                return FALSE;
+            break;
+        case rad6:
+            if (pat.num_columns != pat.num_rows)
+                return FALSE;
+            break;
+        }
+
+        return TRUE;
+    }
+
+    // 黒マスルールに適合するか？
+    BOOL RuleIsOK(PATDATA& pat, std::vector<WCHAR>& data) {
+#define GET_DATA(x, y) data[(y) * pat.num_columns + (x)]
+        if (xg_nRules & RULE_DONTDOUBLEBLACK) {
+            for (INT y = 0; y < pat.num_rows; ++y) {
+                for (INT x = 0; x < pat.num_columns - 1; ++x) {
+                    if (GET_DATA(x, y) == ZEN_BLACK && GET_DATA(x + 1, y) == ZEN_BLACK) {
+                        return FALSE;
+                    }
+                }
+            }
+            for (INT x = 0; x < pat.num_columns; ++x) {
+                for (INT y = 0; y < pat.num_rows - 1; ++y) {
+                    if (GET_DATA(x, y) == ZEN_BLACK && GET_DATA(x, y + 1) == ZEN_BLACK) {
+                        return FALSE;
+                    }
+                }
+            }
+        }
+        if (xg_nRules & RULE_DONTCORNERBLACK) {
+            if (GET_DATA(0, 0) == ZEN_BLACK)
+                return FALSE;
+            if (GET_DATA(pat.num_columns - 1, 0) == ZEN_BLACK)
+                return FALSE;
+            if (GET_DATA(pat.num_columns - 1, pat.num_rows - 1) == ZEN_BLACK)
+                return FALSE;
+            if (GET_DATA(0, pat.num_rows - 1) == ZEN_BLACK)
+                return FALSE;
+        }
+        //if (xg_nRules & RULE_DONTDIVIDE) // 分断禁はチェックしない。
+        if (xg_nRules & RULE_DONTTHREEDIAGONALS) {
+            for (INT y = 0; y < pat.num_rows - 2; ++y) {
+                for (INT x = 0; x < pat.num_columns - 2; ++x) {
+                    if (GET_DATA(x, y) != ZEN_BLACK)
+                        continue;
+                    if (GET_DATA(x + 1, y + 1) != ZEN_BLACK)
+                        continue;
+                    if (GET_DATA(x + 2, y + 2) != ZEN_BLACK)
+                        continue;
+                    return FALSE;
+                }
+            }
+            for (INT y = 0; y < pat.num_rows - 2; ++y) {
+                for (INT x = 2; x < pat.num_columns; ++x) {
+                    if (GET_DATA(x, y) != ZEN_BLACK)
+                        continue;
+                    if (GET_DATA(x - 1, y + 1) != ZEN_BLACK)
+                        continue;
+                    if (GET_DATA(x - 2, y + 2) != ZEN_BLACK)
+                        continue;
+                    return FALSE;
+                }
+            }
+        }
+        else if (xg_nRules & RULE_DONTFOURDIAGONALS) {
+            for (INT y = 0; y < pat.num_rows - 3; ++y) {
+                for (INT x = 0; x < pat.num_columns - 3; ++x) {
+                    if (GET_DATA(x, y) != ZEN_BLACK)
+                        continue;
+                    if (GET_DATA(x + 1, y + 1) != ZEN_BLACK)
+                        continue;
+                    if (GET_DATA(x + 2, y + 2) != ZEN_BLACK)
+                        continue;
+                    if (GET_DATA(x + 3, y + 3) != ZEN_BLACK)
+                        continue;
+                    return FALSE;
+                }
+            }
+            for (INT y = 0; y < pat.num_rows - 3; ++y) {
+                for (INT x = 3; x < pat.num_columns; ++x) {
+                    if (GET_DATA(x, y) != ZEN_BLACK)
+                        continue;
+                    if (GET_DATA(x - 1, y + 1) != ZEN_BLACK)
+                        continue;
+                    if (GET_DATA(x - 2, y + 2) != ZEN_BLACK)
+                        continue;
+                    if (GET_DATA(x - 3, y + 3) != ZEN_BLACK)
+                        continue;
+                    return FALSE;
+                }
+            }
+        }
+        if (xg_nRules & RULE_DONTTRIDIRECTIONS) {
+            for (INT y = 0; y < pat.num_rows; ++y) {
+                for (INT x = 0; x < pat.num_columns; ++x) {
+                    INT nCount = 0;
+                    if (x > 0 && GET_DATA(x - 1, y) == ZEN_BLACK)
+                        ++nCount;
+                    if (y > 0 && GET_DATA(x, y - 1) == ZEN_BLACK)
+                        ++nCount;
+                    if (x + 1 < pat.num_columns && GET_DATA(x + 1, y) == ZEN_BLACK)
+                        ++nCount;
+                    if (y + 1 < pat.num_rows && GET_DATA(x, y + 1) == ZEN_BLACK)
+                        ++nCount;
+                    if (nCount >= 3) {
+                        return FALSE;
+                    }
+                }
+            }
+        }
+        if (xg_nRules & RULE_POINTSYMMETRY) {
+            for (INT y = 0; y < pat.num_rows; ++y) {
+                for (INT x = 0; x < pat.num_columns; ++x) {
+                    if ((GET_DATA(x, y) == ZEN_BLACK) !=
+                        (GET_DATA(pat.num_columns - (x + 1), pat.num_rows - (y + 1)) == ZEN_BLACK))
+                    {
+                        return FALSE;
+                    }
+                }
+            }
+        }
+        if (xg_nRules & RULE_LINESYMMETRYV) {
+            for (INT y = 0; y < pat.num_rows; ++y) {
+                for (INT x = 0; x < pat.num_columns; ++x) {
+                    if ((GET_DATA(x, y) == ZEN_BLACK) !=
+                        (GET_DATA(x, pat.num_rows - (y + 1)) == ZEN_BLACK))
+                    {
+                        return FALSE;
+                    }
+                }
+            }
+        }
+        if (xg_nRules & RULE_LINESYMMETRYH) {
+            for (INT y = 0; y < pat.num_rows; ++y) {
+                for (INT x = 0; x < pat.num_columns; ++x) {
+                    if ((GET_DATA(x, y) == ZEN_BLACK) !=
+                        (GET_DATA(pat.num_columns - (x + 1), y) == ZEN_BLACK))
+                    {
+                        return FALSE;
+                    }
+                }
+            }
+        }
+#undef GET_DATA
+        return TRUE;
+    }
+
     BOOL RefreshContents(HWND hwnd, INT type)
     {
         // パターンデータをクリアする。
@@ -79,15 +258,15 @@ public:
         PathRemoveFileSpecW(szPath);
         WCHAR szFile[MAX_PATH];
         StringCbCopyW(szFile, sizeof(szFile), szPath);
-        PathAppendW(szFile, L"pat\\data.json");
+        PathAppendW(szFile, L"PAT.dat");
         if (!PathFileExistsW(szFile))
         {
             StringCbCopyW(szFile, sizeof(szFile), szPath);
-            PathAppendW(szFile, L"..\\pat\\data.json");
+            PathAppendW(szFile, L"..\\PAT.dat");
             if (!PathFileExistsW(szFile))
             {
                 StringCbCopyW(szFile, sizeof(szFile), szPath);
-                PathAppendW(szFile, L"..\\..\\pat\\data.json");
+                PathAppendW(szFile, L"..\\..\\PAT.dat");
             }
         }
         std::string utf8;
@@ -107,249 +286,50 @@ public:
 
         try
         {
-            json j = json::parse(utf8);
-            for (auto& item : j)
-            {
-                PATDATA pat;
-                pat.num_columns = item["num_columns"];
-                pat.num_rows = item["num_rows"];
+            auto utf16 = XgUtf8ToUnicode(utf8);
+            std::vector<std::wstring> lines;
+            mstr_split(lines, utf16, L"\n");
 
-                // タイプによりフィルターを行う。
-                switch (type)
-                {
-                case rad1:
-                    if (pat.num_columns != pat.num_rows)
-                        continue;
-                    if (!(pat.num_columns >= 13 && pat.num_rows >= 13))
-                        continue;
+            PATDATA pat;
+            std::wstring text;
+
+            for (auto& line : lines) {
+                xg_str_trim(line);
+                if (line.empty())
+                    continue;
+
+                switch (line[0]) {
+                case 0x250F: // ┏
+                    text.clear();
+                    text += line;
+                    text += L"\r\n";
+                    pat.num_columns = pat.num_rows = 0;
                     break;
-                case rad2:
-                    if (pat.num_columns != pat.num_rows)
+                case 0x2517: // ┗
+                    if (!FilterPatBySize(pat, type))
                         continue;
-                    if (!(8 <= pat.num_columns && pat.num_columns <= 12 &&
-                        8 <= pat.num_rows && pat.num_rows <= 12))
+
+                    text += line;
+                    text += L"\r\n";
+                    pat.data = text;
                     {
-                        continue;
-                    }
-                    break;
-                case rad3:
-                    if (pat.num_columns != pat.num_rows)
-                        continue;
-                    if (!(pat.num_columns <= 8 && pat.num_rows <= 8))
-                        continue;
-                    break;
-                case rad4:
-                    if (pat.num_columns <= pat.num_rows)
-                        continue;
-                    break;
-                case rad5:
-                    if (pat.num_columns >= pat.num_rows)
-                        continue;
-                    break;
-                case rad6:
-                    if (pat.num_columns != pat.num_rows)
-                        continue;
-                    break;
-                }
+                        // パターンのテキストデータを扱いやすいよう、加工する。
+                        std::vector<WCHAR> data;
+                        XgConvertPatternData(data, pat.data, pat.num_columns, pat.num_rows);
 
-                // dataをテキストデータにする。
-                std::string str;
-                for (auto& subitem : item["data"])
-                {
-                    str += subitem;
-                    str += "\r\n";
+                        // ルールに適合するか？
+                        if (RuleIsOK(pat, data)) {
+                            s_patterns.push_back(pat);
+                        }
+                    }
+                    break;
+                case 0x2503: // ┃
+                    pat.num_columns = INT(line.size() - 2);
+                    text += line;
+                    text += L"\r\n";
+                    pat.num_rows += 1;
+                    break;
                 }
-                pat.data = XgUtf8ToUnicode(str);
-
-                // パターンのテキストデータを扱いやすいよう、加工する。
-                std::vector<WCHAR> data;
-                XgConvertPatternData(data, pat.data, pat.num_columns, pat.num_rows);
-
-                // 黒マスルールを適合する。
-#define GET_DATA(x, y) data[(y) * pat.num_columns + (x)]
-                if (xg_nRules & RULE_DONTDOUBLEBLACK) {
-                    BOOL bFound = FALSE;
-                    for (INT y = 0; y < pat.num_rows; ++y) {
-                        for (INT x = 0; x < pat.num_columns - 1; ++x) {
-                            if (GET_DATA(x, y) == ZEN_BLACK && GET_DATA(x + 1, y) == ZEN_BLACK) {
-                                x = pat.num_columns;
-                                y = pat.num_rows;
-                                bFound = TRUE;
-                            }
-                        }
-                    }
-                    if (bFound)
-                        continue;
-                    bFound = FALSE;
-                    for (INT x = 0; x < pat.num_columns; ++x) {
-                        for (INT y = 0; y < pat.num_rows - 1; ++y) {
-                            if (GET_DATA(x, y) == ZEN_BLACK && GET_DATA(x, y + 1) == ZEN_BLACK) {
-                                x = pat.num_columns;
-                                y = pat.num_rows;
-                                bFound = TRUE;
-                            }
-                        }
-                    }
-                    if (bFound)
-                        continue;
-                }
-                if (xg_nRules & RULE_DONTCORNERBLACK) {
-                    if (GET_DATA(0, 0) == ZEN_BLACK)
-                        continue;
-                    if (GET_DATA(pat.num_columns - 1, 0) == ZEN_BLACK)
-                        continue;
-                    if (GET_DATA(pat.num_columns - 1, pat.num_rows - 1) == ZEN_BLACK)
-                        continue;
-                    if (GET_DATA(0, pat.num_rows - 1) == ZEN_BLACK)
-                        continue;
-                }
-                //if (xg_nRules & RULE_DONTDIVIDE)
-                if (xg_nRules & RULE_DONTTHREEDIAGONALS) {
-                    BOOL bFound = FALSE;
-                    for (INT y = 0; y < pat.num_rows - 2; ++y) {
-                        for (INT x = 0; x < pat.num_columns - 2; ++x) {
-                            if (GET_DATA(x, y) != ZEN_BLACK)
-                                continue;
-                            if (GET_DATA(x + 1, y + 1) != ZEN_BLACK)
-                                continue;
-                            if (GET_DATA(x + 2, y + 2) != ZEN_BLACK)
-                                continue;
-                            x = pat.num_columns;
-                            y = pat.num_rows;
-                            bFound = TRUE;
-                        }
-                    }
-                    if (bFound)
-                        continue;
-                    bFound = FALSE;
-                    for (INT y = 0; y < pat.num_rows - 2; ++y) {
-                        for (INT x = 2; x < pat.num_columns; ++x) {
-                            if (GET_DATA(x, y) != ZEN_BLACK)
-                                continue;
-                            if (GET_DATA(x - 1, y + 1) != ZEN_BLACK)
-                                continue;
-                            if (GET_DATA(x - 2, y + 2) != ZEN_BLACK)
-                                continue;
-                            x = pat.num_columns;
-                            y = pat.num_rows;
-                            bFound = TRUE;
-                        }
-                    }
-                    if (bFound)
-                        continue;
-                }
-                else if (xg_nRules & RULE_DONTFOURDIAGONALS) {
-                    BOOL bFound = FALSE;
-                    for (INT y = 0; y < pat.num_rows - 3; ++y) {
-                        for (INT x = 0; x < pat.num_columns - 3; ++x) {
-                            if (GET_DATA(x, y) != ZEN_BLACK)
-                                continue;
-                            if (GET_DATA(x + 1, y + 1) != ZEN_BLACK)
-                                continue;
-                            if (GET_DATA(x + 2, y + 2) != ZEN_BLACK)
-                                continue;
-                            if (GET_DATA(x + 3, y + 3) != ZEN_BLACK)
-                                continue;
-                            x = pat.num_columns;
-                            y = pat.num_rows;
-                            bFound = TRUE;
-                        }
-                    }
-                    if (bFound)
-                        continue;
-                    bFound = FALSE;
-                    for (INT y = 0; y < pat.num_rows - 3; ++y) {
-                        for (INT x = 3; x < pat.num_columns; ++x) {
-                            if (GET_DATA(x, y) != ZEN_BLACK)
-                                continue;
-                            if (GET_DATA(x - 1, y + 1) != ZEN_BLACK)
-                                continue;
-                            if (GET_DATA(x - 2, y + 2) != ZEN_BLACK)
-                                continue;
-                            if (GET_DATA(x - 3, y + 3) != ZEN_BLACK)
-                                continue;
-                            x = pat.num_columns;
-                            y = pat.num_rows;
-                            bFound = TRUE;
-                        }
-                    }
-                    if (bFound)
-                        continue;
-                }
-                if (xg_nRules & RULE_DONTTRIDIRECTIONS) {
-                    BOOL bFound = FALSE;
-                    for (INT y = 0; y < pat.num_rows; ++y) {
-                        for (INT x = 0; x < pat.num_columns; ++x) {
-                            INT nCount = 0;
-                            if (x > 0 && GET_DATA(x - 1, y) == ZEN_BLACK)
-                                ++nCount;
-                            if (y > 0 && GET_DATA(x, y - 1) == ZEN_BLACK)
-                                ++nCount;
-                            if (x + 1 < pat.num_columns && GET_DATA(x + 1, y) == ZEN_BLACK)
-                                ++nCount;
-                            if (y + 1 < pat.num_rows && GET_DATA(x, y + 1) == ZEN_BLACK)
-                                ++nCount;
-                            if (nCount >= 3) {
-                                x = pat.num_columns;
-                                y = pat.num_rows;
-                                bFound = TRUE;
-                            }
-                        }
-                    }
-                    if (bFound)
-                        continue;
-                }
-                if (xg_nRules & RULE_POINTSYMMETRY) {
-                    BOOL bFound = FALSE;
-                    for (INT y = 0; y < pat.num_rows; ++y) {
-                        for (INT x = 0; x < pat.num_columns; ++x) {
-                            if ((GET_DATA(x, y) == ZEN_BLACK) !=
-                                (GET_DATA(pat.num_columns - (x + 1), pat.num_rows - (y + 1)) == ZEN_BLACK))
-                            {
-                                x = pat.num_columns;
-                                y = pat.num_rows;
-                                bFound = TRUE;
-                            }
-                        }
-                    }
-                    if (bFound)
-                        continue;
-                }
-                if (xg_nRules & RULE_LINESYMMETRYV) {
-                    BOOL bOK = TRUE;
-                    for (INT y = 0; y < pat.num_rows; ++y) {
-                        for (INT x = 0; x < pat.num_columns; ++x) {
-                            if ((GET_DATA(x, y) == ZEN_BLACK) !=
-                                (GET_DATA(x, pat.num_rows - (y + 1)) == ZEN_BLACK))
-                            {
-                                bOK = FALSE;
-                                x = pat.num_columns;
-                                y = pat.num_rows;
-                            }
-                        }
-                    }
-                    if (!bOK)
-                        continue;
-                }
-                if (xg_nRules & RULE_LINESYMMETRYH) {
-                    BOOL bOK = TRUE;
-                    for (INT y = 0; y < pat.num_rows; ++y) {
-                        for (INT x = 0; x < pat.num_columns; ++x) {
-                            if ((GET_DATA(x, y) == ZEN_BLACK) !=
-                                (GET_DATA(pat.num_columns - (x + 1), y) == ZEN_BLACK))
-                            {
-                                bOK = FALSE;
-                                x = pat.num_columns;
-                                y = pat.num_rows;
-                            }
-                        }
-                    }
-                    if (!bOK)
-                        continue;
-                }
-#undef GET_DATA
-
-                s_patterns.push_back(pat);
             }
 
             // かき混ぜる。
