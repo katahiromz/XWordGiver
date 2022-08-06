@@ -112,6 +112,7 @@ public:
                         continue;
                     ComboBox_AddString(hCmb1, str.c_str());
                 }
+                fclose(fp);
             }
         }
         // コンボボックスの横幅。
