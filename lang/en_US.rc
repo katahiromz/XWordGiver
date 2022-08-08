@@ -1464,8 +1464,8 @@ FONT 9, "Tahoma"
 // RT_VERSION
 
 1 VERSIONINFO
-FILEVERSION     4, 9, 8, 0
-PRODUCTVERSION  4, 9, 8, 0
+FILEVERSION     4, 9, 9, 0
+PRODUCTVERSION  4, 9, 9, 0
 FILEOS          0x40004
 FILETYPE        0x1
 {
@@ -1475,10 +1475,10 @@ FILETYPE        0x1
         {
             VALUE "CompanyName", "Katayama Hirofumi MZ\0"
             VALUE "FileDescription", "XWordGiver\0"
-            VALUE "FileVersion", "4.9.8\0"
+            VALUE "FileVersion", "4.9.9\0"
             VALUE "LegalCopyright", "Copyright (C) 2012-2020 katahiromz. All rights reserved.\0"
             VALUE "ProductName", "XWordGiver\0"
-            VALUE "ProductVersion", "4.9.8\0"
+            VALUE "ProductVersion", "4.9.9\0"
         }
     }
     BLOCK "VarFileInfo"
@@ -1492,7 +1492,7 @@ FILETYPE        0x1
 
 STRINGTABLE
 {
-    IDS_VERSION, "XWordGiver ver.4.9.8\nby katahiromz"
+    IDS_VERSION, "XWordGiver ver.4.9.9\nby katahiromz"
     IDS_APPNAME, "XWordGiver"
     IDS_CANTLOAD, "I couldn't load the file."
     IDS_WRONGFORMAT, "This format is wrong."
@@ -1505,7 +1505,7 @@ STRINGTABLE
     IDS_CANTACCEL, "I couldn't load the accelerators."
     IDS_CANTREGWND, "I couldn't register the window classes."
     IDS_CANTMAKEWND, "I couldn't create the window."
-    IDS_APPTITLE, "XWordGiver ver.4.9.8 - %s"
+    IDS_APPTITLE, "XWordGiver ver.4.9.9 - %s"
     IDS_MADEPROBLEM, "I have generated a crossword.\n\nCalculation time: %u.%u[sec]"
     IDS_CANTMAKEPROBLEM, "I couldn't create the puzzle.\n\nPlease confirm the dictionary, the block pattern, and the policy.\n\nCalculation time: %u.%u[sec]"
     IDS_ENTERINT, "Please enter an integer between 2 and 256."
@@ -1524,7 +1524,7 @@ STRINGTABLE
     IDS_NOWSOLVING, "Calculating...(%u.%u sec) Retry x %u"
     IDS_HLINE, "----------------------------"
     IDS_MONOFONT, "ＭＳ ゴシック"
-    IDS_APPTITLE2, "XWordGiver ver.4.9.8 (%s) - %s"
+    IDS_APPTITLE2, "XWordGiver ver.4.9.9 (%s) - %s"
     IDS_CROSSWORD, "Crossword"
     IDS_ANSWER, "Answer: "
     IDS_SETPORTRAIT, "Please use the portrait paper to print."
@@ -1588,8 +1588,8 @@ STRINGTABLE
     IDS_VINPUT, "Vert"
     IDS_ABC, "ABC"
     IDS_DICTIONARY, "Dict"
-    IDS_APPINFO, "XWordGiver ver.4.9.8"
-    IDS_APPINFO2, "XWordGiver ver.4.9.8 (%s)"
+    IDS_APPINFO, "XWordGiver ver.4.9.9"
+    IDS_APPINFO2, "XWordGiver ver.4.9.9 (%s)"
     IDS_HINPUT2, "H\no\nr\nz"
     IDS_VINPUT2, "V\ne\nr\nt"
     IDS_KANA, "Kana"
