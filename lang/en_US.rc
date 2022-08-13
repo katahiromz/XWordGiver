@@ -162,8 +162,8 @@ LANGUAGE LANG_ENGLISH, SUBLANG_DEFAULT
     }
     POPUP "&Policy"
     {
+        MENUITEM "Policy &Preset...\tCtrl+R", ID_RULEPRESET
         MENUITEM "&Reset the policy", ID_RESETRULES
-        MENUITEM "What's the policy?", ID_OPENRULESTXT
         MENUITEM SEPARATOR
         MENUITEM "Policy: Prohibit adjacent blocks", ID_RULE_DONTDOUBLEBLACK
         MENUITEM "Policy: Prohibit blocks at 4 corners", ID_RULE_DONTCORNERBLACK
@@ -175,8 +175,7 @@ LANGUAGE LANG_ENGLISH, SUBLANG_DEFAULT
         MENUITEM "Policy: Vertica&l symmetry of blocks", ID_RULE_LINESYMMETRYV
         MENUITEM "Policy: H&orizontal symmetry of blocks", ID_RULE_LINESYMMETRYH
         MENUITEM SEPARATOR
-        MENUITEM "Policy &Preset...\tCtrl+R", ID_RULEPRESET
-        MENUITEM SEPARATOR
+        MENUITEM "What's the policy?", ID_OPENRULESTXT
         MENUITEM "Policy &conformity check", ID_RULECHECK
     }
     POPUP "&Help"

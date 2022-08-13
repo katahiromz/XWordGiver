@@ -162,8 +162,8 @@ LANGUAGE LANG_JAPANESE, SUBLANG_DEFAULT
     }
     POPUP "ルール(&R)"
     {
+        MENUITEM "ルール プリセット(&P)...\tCtrl+R", ID_RULEPRESET
         MENUITEM "ルールを既定値にリセット(&R)", ID_RESETRULES
-        MENUITEM "黒マスルールの説明(&H)", ID_OPENRULESTXT
         MENUITEM SEPARATOR
         MENUITEM "連黒禁(&D)", ID_RULE_DONTDOUBLEBLACK
         MENUITEM "四隅黒禁(&C)", ID_RULE_DONTCORNERBLACK
@@ -175,8 +175,7 @@ LANGUAGE LANG_JAPANESE, SUBLANG_DEFAULT
         MENUITEM "黒マス上下対称(&L)", ID_RULE_LINESYMMETRYV
         MENUITEM "黒マス左右対称(&O)", ID_RULE_LINESYMMETRYH
         MENUITEM SEPARATOR
-        MENUITEM "ルール プリセット(&P)...\tCtrl+R", ID_RULEPRESET
-        MENUITEM SEPARATOR
+        MENUITEM "黒マスルールの説明(&H)", ID_OPENRULESTXT
         MENUITEM "ルール適合性チェック(&A)", ID_RULECHECK
     }
     POPUP "ヘルプ(&H)"
