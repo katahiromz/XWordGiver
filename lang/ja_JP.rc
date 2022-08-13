@@ -1669,7 +1669,7 @@ STRINGTABLE
     IDS_POLICYPRESET_SKELTON_3, "264: スケルトン ルール: 左右対称"
     IDS_POLICYPRESET_JPN_STRICT_0, "79: 日本の出版社ルール (厳格): 対称なし"
     IDS_POLICYPRESET_JPN_LOOSE_0, "11: 日本の出版社ルール (緩い): 対称なし"
-    IDS_POLICYPRESET_JPN_STRICT_1, "111: 日本の出版社ルール (厳格): 点対称"
+    IDS_POLICYPRESET_JPN_STRICT_1, "111: 日本の出版社ルール (厳格): 点対称 (※推奨)"
     IDS_POLICYPRESET_JPN_LOOSE_1, "43: 日本の出版社ルール (緩い): 点対称"
     IDS_POLICYPRESET_JPN_STRICT_2, "207: 日本の出版社ルール (厳格): 上下対称"
     IDS_POLICYPRESET_JPN_LOOSE_2, "139: 日本の出版社ルール (緩い): 上下対称"
