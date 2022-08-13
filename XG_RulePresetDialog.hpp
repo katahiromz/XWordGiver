@@ -41,8 +41,7 @@ public:
         value = wcstoul(szText, &pch, 0);
 
         // 不正な値があるか？
-        if (*pch || (value & ~VALID_RULES))
-        {
+        if (value & ~VALID_RULES) {
             return FALSE;
         }
 
@@ -101,6 +100,11 @@ public:
             SetCheckValue(hwnd, xg_nRules);
         }
         m_bUpdating = FALSE;
+
+        HWND hCmb1 = GetDlgItem(hwnd, cmb1);
+        for (INT id = IDS_POLICYPRESET_SKELTON_0; id <= IDS_POLICYPRESET_JPN_LOOSE_3; ++id) {
+            ComboBox_AddString(hCmb1, XgLoadStringDx1(id));
+        }
 
         EnableWindow(GetDlgItem(hwnd, chx4), FALSE);
         return TRUE;
