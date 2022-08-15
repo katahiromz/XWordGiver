@@ -175,6 +175,7 @@
 - 2022-XX-YY ver.4.9.9
     - Improved the "Policy" menu.
     - Improved the "Policy Preset" dialog.
+    - Saved the latest maximized status of the main window.
 
 # 開発履歴 (Japanese)
 
@@ -666,3 +667,4 @@
 - 2022月XX月YY日 ver.4.9.9
     - 「ルール」メニューを改良。
     - 「ルール プリセット」ダイアログを改良。
+    - メインウィンドウの前回の最大化状態を保存。

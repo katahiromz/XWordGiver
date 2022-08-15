@@ -124,6 +124,8 @@ INT xg_nZoomRate = 100;
 BOOL xg_bShowNumbering = TRUE;
 // キャレットを表示するか？
 BOOL xg_bShowCaret = TRUE;
+// 最大化するか？
+BOOL xg_bMainWndMaximized = FALSE;
 
 // 二重マス文字。
 std::wstring xg_strDoubleFrameLetters;
@@ -854,6 +856,9 @@ bool __fastcall XgLoadSettings(void)
             if (!app_key.QueryDword(L"WindowCY", dwValue)) {
                 s_nMainWndCY = dwValue;
             }
+            if (!app_key.QueryDword(L"MainWndMaximized", dwValue)) {
+                xg_bMainWndMaximized = !!dwValue;
+            }
 
             if (!app_key.QueryDword(L"TateInput", dwValue)) {
                 xg_bTateInput = !!dwValue;
@@ -1177,6 +1182,7 @@ bool __fastcall XgSaveSettings(void)
             app_key.SetDword(L"WindowY", s_nMainWndY);
             app_key.SetDword(L"WindowCX", s_nMainWndCX);
             app_key.SetDword(L"WindowCY", s_nMainWndCY);
+            app_key.SetDword(L"MainWndMaximized", !!xg_bMainWndMaximized);
 
             app_key.SetDword(L"TateInput", xg_bTateInput);
 
@@ -7096,6 +7102,19 @@ void MainWnd_OnClose(HWND hwnd)
     }
 }
 
+// 最大化状態を保存するために使用。
+void MainWnd_OnWindowPosChanged(HWND hwnd, const LPWINDOWPOS lpwpos)
+{
+    if (xg_hMainWnd)
+    {
+        // 最大化状態を保存する。
+        xg_bMainWndMaximized = ::IsZoomed(hwnd);
+    }
+
+    // デフォルトの処理。
+    FORWARD_WM_WINDOWPOSCHANGED(hwnd, lpwpos, DefWindowProcW);
+}
+
 // ウィンドウプロシージャ。
 extern "C"
 LRESULT CALLBACK
@@ -7107,6 +7126,7 @@ XgWindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
     HANDLE_MSG(hWnd, WM_DESTROY, MainWnd_OnDestroy);
     HANDLE_MSG(hWnd, WM_MOVE, MainWnd_OnMove);
     HANDLE_MSG(hWnd, WM_SIZE, MainWnd_OnSize);
+    HANDLE_MSG(hWnd, WM_WINDOWPOSCHANGED, MainWnd_OnWindowPosChanged);
     HANDLE_MSG(hWnd, WM_KEYDOWN, XgOnKey);
     HANDLE_MSG(hWnd, WM_KEYUP, XgOnKey);
     HANDLE_MSG(hWnd, WM_CHAR, XgOnChar);
@@ -7453,6 +7473,9 @@ int WINAPI WinMain(
     // クリティカルセクションを初期化する。
     ::InitializeCriticalSection(&xg_cs);
 
+    // 前回最大化されたか？
+    BOOL bZoomed = xg_bMainWndMaximized;
+
     // メインウィンドウを作成する。
     DWORD style = WS_OVERLAPPEDWINDOW | WS_CLIPSIBLINGS | WS_CLIPCHILDREN;
     ::CreateWindowW(s_pszMainWndClass, XgLoadStringDx1(IDS_APPINFO), style,
@@ -7466,7 +7489,7 @@ int WINAPI WinMain(
 
     if (!xg_bNoGUI) {
         // 表示する。
-        ::ShowWindow(xg_hMainWnd, nCmdShow);
+        ::ShowWindowAsync(xg_hMainWnd, (bZoomed ? SW_SHOWMAXIMIZED : nCmdShow));
         ::UpdateWindow(xg_hMainWnd);
     }
 
