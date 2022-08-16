@@ -683,6 +683,8 @@ public:
     virtual void OnDraw(HWND hwnd, HDC hDC, const RECT& rc) override
     {
         MRect rcText = rc;
+
+        // 背景を塗りつぶす。
         {
             HBRUSH hbr;
             if (m_rgbBg != CLR_INVALID)
@@ -697,16 +699,18 @@ public:
         COLORREF rgbText = (m_rgbText != CLR_INVALID) ? m_rgbText : xg_rgbBlackCellColor;
         ::SetTextColor(hDC, rgbText);
 
+        // 枠線を描く。
         HPEN hPen = CreatePen(PS_SOLID, 1, rgbText);
         HGDIOBJ hPenOld = SelectObject(hDC, hPen);
         MoveToEx(hDC, rc.left, rc.top, NULL);
-        LineTo(hDC, rc.left, rc.bottom - 1);
-        LineTo(hDC, rc.right - 1, rc.bottom - 1);
-        LineTo(hDC, rc.right - 1, rc.top);
+        LineTo(hDC, rc.left, rc.bottom);
+        LineTo(hDC, rc.right, rc.bottom);
+        LineTo(hDC, rc.right, rc.top);
         LineTo(hDC, rc.left, rc.top);
         SelectObject(hDC, hPenOld);
         DeleteObject(hPen);
 
+        // フォント名をセット。
         LOGFONTW lf;
         ZeroMemory(&lf, sizeof(lf));
         lf.lfCharSet = DEFAULT_CHARSET;
@@ -730,7 +734,8 @@ public:
 
         // 文字列の高さを計算する。
         MRect rcCalc = rcText;
-        InflateRect(&rcCalc, -2, -2);
+        INT cxyMargin = 2 * xg_nZoomRate / 100;
+        InflateRect(&rcCalc, -cxyMargin, -cxyMargin);
         UINT uFormat = DT_CENTER | DT_TOP | DT_NOPREFIX | DT_WORDBREAK;
         DrawTextW(hDC, m_strText.c_str(), -1, &rcCalc, uFormat | DT_CALCRECT);
 
