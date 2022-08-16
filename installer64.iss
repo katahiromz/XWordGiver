@@ -7,8 +7,8 @@
 ; (To generate a new GUID, click Tools | Generate GUID inside the IDE.)
 AppId={{CDECA641-CFBB-43E0-A075-13802703E7EC}
 AppName={cm:AppNameBits}
-AppVersion=4.9.9
-AppVerName={cm:AppNameBits} ver.4.9.9
+AppVersion=5.0.0
+AppVerName={cm:AppNameBits} ver.5.0.0
 AppPublisher={cm:Author}
 AppPublisherURL=http://katahiromz.web.fc2.com/
 AppSupportURL=http://katahiromz.web.fc2.com/
@@ -16,7 +16,7 @@ AppUpdatesURL=http://katahiromz.web.fc2.com/
 DefaultDirName={pf}\XWordGiver64
 DefaultGroupName={cm:AppNameBits}
 OutputDir=.
-OutputBaseFilename=XWordGiver-x64-4.9.9-setup
+OutputBaseFilename=XWordGiver-x64-5.0.0-setup
 Compression=lzma
 SolidCompression=yes
 UninstallDisplayIcon={app}\XWordGiver64.exe
