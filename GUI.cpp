@@ -5152,6 +5152,8 @@ BOOL XgAddBox(HWND hwnd, UINT id)
             ptr->SetBgColor(dialog1.GetBgColor());
             if (ptr->CreateDx(xg_canvasWnd)) {
                 xg_boxes.emplace_back(ptr);
+                // ファイルが変更された。
+                xg_bFileModified = TRUE;
                 return TRUE;
             } else {
                 delete ptr;
@@ -5164,6 +5166,8 @@ BOOL XgAddBox(HWND hwnd, UINT id)
             ptr->SetText(dialog2.m_strFile);
             if (ptr->CreateDx(xg_canvasWnd)) {
                 xg_boxes.emplace_back(ptr);
+                // ファイルが変更された。
+                xg_bFileModified = TRUE;
                 return TRUE;
             } else {
                 delete ptr;

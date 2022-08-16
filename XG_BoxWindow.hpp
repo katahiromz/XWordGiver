@@ -22,6 +22,9 @@
 #define RECT6 X1, Y2, X1 + CXY_GRIP, Y2 + CXY_GRIP // Bottom
 #define RECT7 X2, Y2, X2 + CXY_GRIP, Y2 + CXY_GRIP // Lower Right
 
+// ファイル変更フラグ。
+extern BOOL xg_bFileModified;
+
 class XG_BoxWindow : public XG_Window
 {
 public:
@@ -645,6 +648,10 @@ public:
         dialog.m_strFile = m_strText;
         if (dialog.DoModal(m_hwndParent) == IDOK) {
             SetText(dialog.m_strFile);
+
+            // ファイルが変更された。
+            xg_bFileModified = TRUE;
+            // 再描画。
             InvalidateRect(hwnd, NULL, TRUE);
             return TRUE;
         }
@@ -785,6 +792,9 @@ public:
             m_strFontName = dialog.m_strFontName;
             m_nFontSizeInPoints = dialog.m_nFontSizeInPoints;
 
+            // ファイルが変更された。
+            xg_bFileModified = TRUE;
+            // 再描画。
             InvalidateRect(hwnd, NULL, TRUE);
             return TRUE;
         }
