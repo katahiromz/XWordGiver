@@ -677,7 +677,7 @@ void __fastcall XgStartGenerateBlacks(void) noexcept;
 void __fastcall XgUpdateStatusBar(HWND hwnd);
 
 // 黒マスルールをチェックする。
-void __fastcall XgRuleCheck(HWND hwnd);
+BOOL __fastcall XgRuleCheck(HWND hwnd, BOOL bMessageOnSuccess);
 
 //////////////////////////////////////////////////////////////////////////////
 

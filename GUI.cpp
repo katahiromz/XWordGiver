@@ -1350,6 +1350,11 @@ bool XgOpenCandsWnd(HWND hwnd, bool vertical)
         DestroyWindow(xg_cands_wnd);
     }
 
+    // ルールをチェックする。
+    if (!XgRuleCheck(hwnd, FALSE))
+        return false;
+
+    // 候補ウィンドウを開く。
     return xg_cands_wnd.Open(hwnd, vertical);
 }
 
@@ -4800,49 +4805,49 @@ static void OnOpenRulesTxt(HWND hwnd)
 }
 
 // 黒マスルールをチェックする。
-void __fastcall XgRuleCheck(HWND hwnd)
+BOOL __fastcall XgRuleCheck(HWND hwnd, BOOL bMessageOnSuccess)
 {
     XG_Board& board = (xg_bShowAnswer ? xg_solution : xg_xword);
     // 連黒禁。
     if (xg_nRules & RULE_DONTDOUBLEBLACK) {
         if (board.DoubleBlack()) {
             XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_ADJACENTBLOCK), nullptr, MB_ICONERROR);
-            return;
+            return FALSE;
         }
     }
     // 四隅黒禁。
     if (xg_nRules & RULE_DONTCORNERBLACK) {
         if (board.CornerBlack()) {
             XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_CORNERBLOCK), nullptr, MB_ICONERROR);
-            return;
+            return FALSE;
         }
     }
     // 三方黒禁。
     if (xg_nRules & RULE_DONTTRIDIRECTIONS) {
         if (board.TriBlackAround()) {
             XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_TRIBLOCK), nullptr, MB_ICONERROR);
-            return;
+            return FALSE;
         }
     }
     // 分断禁。
     if (xg_nRules & RULE_DONTDIVIDE) {
         if (board.DividedByBlack()) {
             XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_DIVIDED), nullptr, MB_ICONERROR);
-            return;
+            return FALSE;
         }
     }
     // 黒斜三連禁。
     if (xg_nRules & RULE_DONTTHREEDIAGONALS) {
         if (board.ThreeDiagonals()) {
             XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_THREEDIAGONALS), nullptr, MB_ICONERROR);
-            return;
+            return FALSE;
         }
     } else {
         // 黒斜四連禁。
         if (xg_nRules & RULE_DONTFOURDIAGONALS) {
             if (board.FourDiagonals()) {
                 XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_FOURDIAGONALS), nullptr, MB_ICONERROR);
-                return;
+                return FALSE;
             }
         }
     }
@@ -4850,26 +4855,29 @@ void __fastcall XgRuleCheck(HWND hwnd)
     if (xg_nRules & RULE_POINTSYMMETRY) {
         if (!board.IsPointSymmetry()) {
             XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_NOTPOINTSYMMETRY), nullptr, MB_ICONERROR);
-            return;
+            return FALSE;
         }
     }
     // 黒マス線対称。
     if (xg_nRules & RULE_LINESYMMETRYV) {
         if (!board.IsLineSymmetryV()) {
             XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_NOTLINESYMMETRYV), nullptr, MB_ICONERROR);
-            return;
+            return FALSE;
         }
     }
     if (xg_nRules & RULE_LINESYMMETRYH) {
         if (!board.IsLineSymmetryH()) {
             XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_NOTLINESYMMETRYH), nullptr, MB_ICONERROR);
-            return;
+            return FALSE;
         }
     }
 
     // 合格。
-    XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_RULESPASSED),
-                        XgLoadStringDx2(IDS_PASSED), MB_ICONINFORMATION);
+    if (bMessageOnSuccess) {
+        XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_RULESPASSED),
+                            XgLoadStringDx2(IDS_PASSED), MB_ICONINFORMATION);
+    }
+    return TRUE;
 }
 
 // 「テーマ」ダイアログを表示する。
@@ -6428,7 +6436,7 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT /*codeNo
         XgUpdateRules(hwnd);
         break;
     case ID_RULECHECK:
-        XgRuleCheck(hwnd);
+        XgRuleCheck(hwnd, TRUE);
         break;
     case ID_THEME:
         XgTheme(hwnd);
