@@ -570,7 +570,9 @@ public:
             if (!first)
                 fprintf(fout, ", ");
             auto quoted = xg_str_quote(pair.second);
-            fprintf(fout, "{{%ls: %ls}}", pair.first.c_str(), quoted.c_str());
+            fprintf(fout, "{{%s: %s}}",
+                XgUnicodeToUtf8(pair.first.c_str()).c_str(),
+                XgUnicodeToUtf8(quoted.c_str()).c_str());
             first = false;
         }
         fprintf(fout, "\n");
