@@ -56,8 +56,9 @@ public:
     {
         if (dwType != TRUETYPE_FONTTYPE)
             return TRUE;
-        HWND hwnd = (HWND)lParam;
-        HWND hCmb1 = GetDlgItem(hwnd, cmb1);
+        if (lplf->lfFaceName[0] == L'@')
+            return TRUE;
+        HWND hCmb1 = (HWND)lParam;
         ComboBox_AddString(hCmb1, lplf->lfFaceName);
         return TRUE;
     }
@@ -77,7 +78,8 @@ public:
             CheckDlgButton(hwnd, chx2, BST_CHECKED);
 
         HDC hDC = CreateCompatibleDC(NULL);
-        EnumFontsW(hDC, NULL, EnumFontsProc, (LPARAM)hwnd);
+        HWND hCmb1 = GetDlgItem(hwnd, cmb1);
+        EnumFontsW(hDC, NULL, EnumFontsProc, (LPARAM)hCmb1);
         DeleteDC(hDC);
 
         if (m_strFontName.size())
