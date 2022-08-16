@@ -3802,18 +3802,22 @@ HMENU DoFindDictMenu(HMENU hMenu)
 // 「辞書」メニューを更新する。
 void DoUpdateDictMenu(HMENU hDictMenu)
 {
-    INT index = 7; // メニュー項目「(なし)」の位置。
+#define I_NONE_ITEM 6 // メニュー項目「(なし)」の位置。
+    INT index = I_NONE_ITEM;
+
+    // 辞書項目をすべて削除する。
     while (RemoveMenu(hDictMenu, index, MF_BYPOSITION))
     {
         ;
     }
 
-    if (xg_dict_files.empty())
+    if (xg_dict_files.empty()) // 辞書リストが空？
     {
         AppendMenuW(hDictMenu, MF_STRING | MF_GRAYED, -1, XgLoadStringDx1(IDS_NONE));
         return;
     }
 
+    // 辞書項目を追加する。
     INT count = 0, id = ID_DICTIONARY00;
     WCHAR szText[MAX_PATH];
     for (const auto& entry : xg_dict_files)
@@ -3840,14 +3844,15 @@ void DoUpdateDictMenu(HMENU hDictMenu)
             break;
     }
 
-    index = 4;
+    // ラジオボタンを付ける。
+    index = I_NONE_ITEM;
     for (const auto& entry : xg_dict_files)
     {
         auto& file = entry.m_filename;
         if (lstrcmpiW(file.c_str(), xg_dict_name.c_str()) == 0)
         {
             INT nCount = GetMenuItemCount(hDictMenu);
-            CheckMenuRadioItem(hDictMenu, 2, nCount - 1, index, MF_BYPOSITION);
+            CheckMenuRadioItem(hDictMenu, index, nCount - 1, index, MF_BYPOSITION);
             break;
         }
         ++index;
@@ -4444,7 +4449,7 @@ void XgUpdateTheme(HWND hwnd)
     assert(iMenu != nCount);
     // 辞書の状態に対して文字列を指定。
     if (xg_bThemeModified || xg_dict_name.empty() ||
-        xg_dict_name.find(L"\\SubDict") != xg_dict_name.npos)
+        xg_dict_name.find(L"SubDict") != xg_dict_name.npos)
     {
         StringCbCopyW(szText, sizeof(szText), XgLoadStringDx1(IDS_MODIFIEDDICT));
     } else {
