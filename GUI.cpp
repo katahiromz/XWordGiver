@@ -6720,6 +6720,8 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT /*codeNo
         // 音を鳴らす。
         Beep(0x1000, 50);
         Beep(0x800, 450);
+        // ツールバーを更新。
+        XgUpdateToolBarUI(hwnd);
         break;
     case ID_DOWNLOADDICT:
         ShellExecuteW(hwnd, NULL, L"https://katahiromz.web.fc2.com/xword/dict", NULL, NULL, SW_SHOWNORMAL);
