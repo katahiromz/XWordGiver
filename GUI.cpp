@@ -5632,7 +5632,7 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT /*codeNo
         break;
 
     case ID_UNDO:   // 元に戻す。
-        if (::GetForegroundWindow() != xg_hMainWnd) {
+        if (::GetFocus() != xg_hMainWnd) {
             HWND hwnd = ::GetFocus();
             ::SendMessageW(hwnd, WM_UNDO, 0, 0);
         } else {
@@ -5650,7 +5650,7 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT /*codeNo
         break;
 
     case ID_REDO:   // やり直す。
-        if (::GetForegroundWindow() != xg_hMainWnd) {
+        if (::GetFocus() != xg_hMainWnd) {
             ;
         } else {
             if (xg_ubUndoBuffer.CanRedo()) {
