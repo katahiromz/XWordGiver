@@ -143,6 +143,23 @@ public:
         return TRUE;
     }
 
+    void OnSetFont(HWND hwnd)
+    {
+        LOGFONTW lf;
+        ZeroMemory(&lf, sizeof(lf));
+        lf.lfHeight = 12;
+        StringCchCopyW(lf.lfFaceName, _countof(lf.lfFaceName), m_strFontName.c_str());
+        CHOOSEFONTW cf = { sizeof(cf), hwnd };
+        cf.lpLogFont = &lf;
+        cf.Flags = CF_TTONLY | CF_INITTOLOGFONTSTRUCT | CF_NOSIZESEL | CF_NOSTYLESEL |
+                   CF_NOSCRIPTSEL | CF_SCALABLEONLY | CF_NOVERTFONTS;
+        if (ChooseFontW(&cf)) {
+            CheckDlgButton(hwnd, chx3, BST_CHECKED);
+            EnableWindow(GetDlgItem(hwnd, cmb1), TRUE);
+            ComboBox_RealSetText(GetDlgItem(hwnd, cmb1), lf.lfFaceName);
+        }
+    }
+
     void OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT codeNotify)
     {
         switch (id)
@@ -164,6 +181,9 @@ public:
         case psh2:
             m_hwndBgColor.DoChooseColor();
             CheckDlgButton(hwnd, chx2, BST_CHECKED);
+            break;
+        case psh3:
+            OnSetFont(hwnd);
             break;
         case chx1:
             if (IsDlgButtonChecked(hwnd, chx1) != BST_CHECKED)
