@@ -3852,7 +3852,7 @@ void DoUpdateDictMenu(HMENU hDictMenu)
         if (lstrcmpiW(file.c_str(), xg_dict_name.c_str()) == 0)
         {
             INT nCount = GetMenuItemCount(hDictMenu);
-            CheckMenuRadioItem(hDictMenu, index, nCount - 1, index, MF_BYPOSITION);
+            CheckMenuRadioItem(hDictMenu, I_NONE_ITEM, nCount - 1, index, MF_BYPOSITION);
             break;
         }
         ++index;
