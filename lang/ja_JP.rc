@@ -88,7 +88,7 @@ LANGUAGE LANG_JAPANESE, SUBLANG_DEFAULT
         MENUITEM "改行(&N)\tEnter", ID_RETURN
         MENUITEM "二重マス切り替え(&T)\tCtrl+.", ID_TOGGLEMARK
         MENUITEM SEPARATOR
-        MENUITEM "文字をクリア(&C)", ID_CLEARNONBLOCKS
+        MENUITEM "文字をすべてクリア(&C)", ID_CLEARNONBLOCKS
         MENUITEM SEPARATOR
         MENUITEM "入力パレット(&P)\tCtrl+U", ID_PALETTE2
     }
@@ -512,6 +512,9 @@ LANGUAGE LANG_JAPANESE, SUBLANG_DEFAULT
         MENUITEM "二重マス切り替え(&T)\tCtrl+.", ID_TOGGLEMARK
         MENUITEM SEPARATOR
         MENUITEM "見た目の設定(&C)...\tAlt+Enter", ID_SETTINGS
+        MENUITEM SEPARATOR
+        MENUITEM "ヒントを削除して盤面のロックを解除(&U)", ID_ERASESOLUTIONANDUNLOCKEDIT
+        MENUITEM "文字をすべてクリア(&C)", ID_CLEARNONBLOCKS
         POPUP "ボックスを追加(&X)", MENUBREAK
         {
             MENUITEM "テキストボックスを追加(&X)...", ID_ADDTEXTBOX

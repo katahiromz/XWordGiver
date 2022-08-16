@@ -509,6 +509,9 @@ LANGUAGE LANG_ENGLISH, SUBLANG_DEFAULT
         MENUITEM "&Toggle double-frame\tCtrl+.", ID_TOGGLEMARK
         MENUITEM SEPARATOR
         MENUITEM "Appearan&ce...\tAlt+Enter", ID_SETTINGS
+        MENUITEM SEPARATOR
+        MENUITEM "Delete clues and &unlock board", ID_ERASESOLUTIONANDUNLOCKEDIT
+        MENUITEM "&Clear all the letters", ID_CLEARNONBLOCKS
         POPUP "Add Bo&x", MENUBREAK
         {
             MENUITEM "Add &Text Box...", ID_ADDTEXTBOX
