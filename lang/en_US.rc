@@ -513,6 +513,9 @@ LANGUAGE LANG_ENGLISH, SUBLANG_DEFAULT
             MENUITEM "Add &Picture Box...", ID_ADDPICTUREBOX
         }
         MENUITEM SEPARATOR
+        MENUITEM "Copy the DOWN word", ID_COPYWORDVERT
+        MENUITEM "Copy the ACROSS word", ID_COPYWORDHORZ
+        MENUITEM SEPARATOR
         MENUITEM "Show candidates (DOWN)\tShift+Ctrl+↓", ID_OPENCANDSWNDVERT
         MENUITEM "Show candidates (ACROSS)\tShift+Ctrl+→", ID_OPENCANDSWNDHORZ
         MENUITEM SEPARATOR

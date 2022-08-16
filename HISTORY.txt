@@ -176,6 +176,7 @@
     - Improved the "Policy" menu.
     - Improved the "Policy Preset" dialog.
     - Saved the latest maximized status of the main window.
+    - Improved the context menu of board.
 
 # 開発履歴 (Japanese)
 
@@ -668,3 +669,4 @@
     - 「ルール」メニューを改良。
     - 「ルール プリセット」ダイアログを改良。
     - メインウィンドウの前回の最大化状態を保存。
+    - 盤面のコンテキストメニューを改良。
