@@ -727,12 +727,13 @@ public:
             StringCchCopyW(lf.lfFaceName, _countof(lf.lfFaceName), m_strFontName.c_str());
 
         // 高さを計算する。
-        INT nPixelSize;
+        INT nPointSize;
         if (m_nFontSizeInPoints) {
-            nPixelSize = MulDiv(m_nFontSizeInPoints, GetDeviceCaps(hDC, LOGPIXELSY), 72);
+            nPointSize = m_nFontSizeInPoints;
         } else {
-            nPixelSize = DEFAULT_TEXTBOX_POINTSIZE;
+            nPointSize = DEFAULT_TEXTBOX_POINTSIZE;
         }
+        INT nPixelSize = MulDiv(nPointSize, GetDeviceCaps(hDC, LOGPIXELSY), 72);
         lf.lfHeight = -nPixelSize * xg_nZoomRate / 100;
 
         // フォント作成・選択。

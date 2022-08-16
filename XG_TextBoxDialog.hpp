@@ -3,7 +3,7 @@
 #include "XG_Window.hpp"
 #include "XG_ColorBox.hpp"
 
-#define DEFAULT_TEXTBOX_POINTSIZE 14
+#define DEFAULT_TEXTBOX_POINTSIZE 10
 
 class XG_TextBoxDialog : public XG_Dialog
 {
