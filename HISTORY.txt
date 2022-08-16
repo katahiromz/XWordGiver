@@ -172,7 +172,7 @@
     - Added file "THEME.txt" to define the theme preset values.
     - Clearly displayed the selection status in the Theme dialog.
     - Fixed a bug about handling items on the Theme dialog.
-- 2022-XX-YY ver.4.9.9
+- 2022-08-16 ver.4.9.9
     - Improved the "Policy" menu.
     - Improved the "Policy Preset" dialog.
     - Saved the latest maximized status of the main window.
@@ -671,7 +671,7 @@
     - テーマのプリセット値を定義するファイルTHEME.txtを追加。
     - テーマダイアログで選択状態をはっきり表示。
     - テーマダイアログの項目の扱いに関する不具合を修正。
-- 2022月XX月YY日 ver.4.9.9
+- 2022月08月16日 ver.4.9.9
     - 「ルール」メニューを改良。
     - 「ルール プリセット」ダイアログを改良。
     - メインウィンドウの前回の最大化状態を保存。

@@ -515,13 +515,12 @@ LANGUAGE LANG_JAPANESE, SUBLANG_DEFAULT
         MENUITEM SEPARATOR
         MENUITEM "ヒントを削除して盤面のロックを解除(&U)", ID_ERASESOLUTIONANDUNLOCKEDIT
         MENUITEM "文字をすべてクリア(&C)", ID_CLEARNONBLOCKS
-        POPUP "ボックスを追加(&X)", MENUBREAK
+        POPUP "ボックスを追加(&X)"
         {
             MENUITEM "テキストボックスを追加(&X)...", ID_ADDTEXTBOX
             MENUITEM "画像ボックスを追加(&X)...", ID_ADDPICTUREBOX
         }
-        MENUITEM SEPARATOR
-        MENUITEM "タテの単語をコピー(&V)", ID_COPYWORDVERT
+        MENUITEM "タテの単語をコピー(&V)", ID_COPYWORDVERT, MENUBREAK
         MENUITEM "ヨコの単語をコピー(&H)", ID_COPYWORDHORZ
         MENUITEM SEPARATOR
         MENUITEM "候補を表示(&C) (タテ)\tShift+Ctrl+↓", ID_OPENCANDSWNDVERT

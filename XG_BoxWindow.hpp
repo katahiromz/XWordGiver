@@ -34,6 +34,7 @@ public:
     INT m_i1, m_j1, m_i2, m_j2;
     std::wstring m_strText;
     RECT m_rcOld;
+    static inline HWND s_hwndSelected = NULL;
 
     XG_BoxWindow(const std::wstring& type, INT i1 = 0, INT j1 = 0, INT i2 = 1, INT j2 = 1)
         : m_type(type)
@@ -385,6 +386,7 @@ public:
             TPM_LEFTALIGN | TPM_RIGHTBUTTON | TPM_RETURNCMD,
             pt.x, pt.y, 0, hwnd, NULL);
         DestroyMenu(hMenu);
+        s_hwndSelected = hwnd;
         if (id)
             PostMessage(m_hwndParent, WM_COMMAND, id, (LPARAM)hwnd);
     }
@@ -398,7 +400,8 @@ public:
     {
         if (fDoubleClick)
         {
-            PostMessageW(m_hwndParent, WM_COMMAND, ID_BOXPROP, (LPARAM)hwnd);
+            s_hwndSelected = hwnd;
+            PostMessageW(m_hwndParent, WM_COMMAND, ID_BOXPROP, 0);
             return;
         }
 
@@ -650,7 +653,6 @@ public:
         dialog.m_strFile = m_strText;
         if (dialog.DoModal(m_hwndParent) == IDOK) {
             SetText(dialog.m_strFile);
-
             // ファイルが変更された。
             xg_bFileModified = TRUE;
             // 再描画。

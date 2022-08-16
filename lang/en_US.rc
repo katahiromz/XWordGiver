@@ -512,13 +512,12 @@ LANGUAGE LANG_ENGLISH, SUBLANG_DEFAULT
         MENUITEM SEPARATOR
         MENUITEM "Delete clues and &unlock board", ID_ERASESOLUTIONANDUNLOCKEDIT
         MENUITEM "&Clear all the letters", ID_CLEARNONBLOCKS
-        POPUP "Add Bo&x", MENUBREAK
+        POPUP "Add Bo&x"
         {
             MENUITEM "Add &Text Box...", ID_ADDTEXTBOX
             MENUITEM "Add &Picture Box...", ID_ADDPICTUREBOX
         }
-        MENUITEM SEPARATOR
-        MENUITEM "Copy the DOWN word", ID_COPYWORDVERT
+        MENUITEM "Copy the DOWN word", ID_COPYWORDVERT, MENUBREAK
         MENUITEM "Copy the ACROSS word", ID_COPYWORDHORZ
         MENUITEM SEPARATOR
         MENUITEM "Show candidates (DOWN)\tShift+Ctrl+↓", ID_OPENCANDSWNDVERT

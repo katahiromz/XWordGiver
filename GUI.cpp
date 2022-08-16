@@ -5150,6 +5150,8 @@ BOOL XgAddBox(HWND hwnd, UINT id)
             ptr->SetText(dialog1.m_strText);
             ptr->SetTextColor(dialog1.GetTextColor());
             ptr->SetBgColor(dialog1.GetBgColor());
+            ptr->m_strFontName = dialog1.m_strFontName;
+            ptr->m_nFontSizeInPoints = dialog1.m_nFontSizeInPoints;
             if (ptr->CreateDx(xg_canvasWnd)) {
                 xg_boxes.emplace_back(ptr);
                 // ファイルが変更された。
@@ -6643,9 +6645,12 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT /*codeNo
         XgAddBox(hwnd, id);
         break;
     case ID_DELETEBOX:
-        for (auto it = xg_boxes.begin(); it != xg_boxes.end(); ++it) {
-            if ((*it)->m_hWnd == hwndCtl) {
-                DestroyWindow(hwndCtl);
+        {
+            HWND hwndTarget = XG_BoxWindow::s_hwndSelected;
+            for (auto it = xg_boxes.begin(); it != xg_boxes.end(); ++it) {
+                if ((*it)->m_hWnd != hwndTarget)
+                    continue;
+                DestroyWindow(hwndTarget);
                 xg_boxes.erase(it);
                 XG_FILE_MODIFIED(TRUE);
                 break;
@@ -6653,9 +6658,12 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT /*codeNo
         }
         break;
     case ID_BOXPROP:
-        for (auto it = xg_boxes.begin(); it != xg_boxes.end(); ++it) {
-            if ((*it)->m_hWnd == hwndCtl) {
-                if ((*it)->Prop(hwndCtl)) {
+        {
+            HWND hwndTarget = XG_BoxWindow::s_hwndSelected;
+            for (auto it = xg_boxes.begin(); it != xg_boxes.end(); ++it) {
+                if ((*it)->m_hWnd != hwndTarget)
+                    continue;
+                if ((*it)->Prop(hwndTarget)) {
                     XG_FILE_MODIFIED(TRUE);
                 }
                 break;
