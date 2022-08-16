@@ -1535,7 +1535,7 @@ STRINGTABLE
     IDS_SAVEANSASIMG, "Save crossword answer as image"
     IDS_SAVEPROBASIMG, "Save crossword as image"
     IDS_CANCELLED, "The calculation is cancelled.\n\nCalculation time: %u.%u[sec]"
-    IDS_NOWSOLVING, "Calculating...(%u.%u sec) %u Retrials"
+    IDS_NOWSOLVING, "Calculating...(%u.%u sec) - %u Retrials"
     IDS_HLINE, "----------------------------"
     IDS_MONOFONT, "ＭＳ ゴシック"
     IDS_APPTITLE2, "XWordGiver ver.5.0.0 (%s) - %s"
