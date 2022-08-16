@@ -150,7 +150,7 @@ XG_FILETYPE xg_nFileType = XG_FILETYPE_XWJ;
 XG_HighLight xg_highlight = { -1, FALSE };
 
 // ボックス。
-std::vector<std::unique_ptr<XG_BoxWindow> > xg_boxes;
+std::vector<std::shared_ptr<XG_BoxWindow> > xg_boxes;
 
 // キャンバスウィンドウ。
 XG_CanvasWindow xg_canvasWnd;
@@ -407,22 +407,18 @@ BOOL XgDoLoadBoxJson(const json& boxes)
     {
         for (auto& box : boxes) {
             if (box["type"] == "pic") {
-                auto ptr = new XG_PictureBoxWindow();
+                auto ptr = std::make_shared<XG_PictureBoxWindow>();
                 ptr->ReadJson(box);
                 if (ptr->CreateDx(xg_canvasWnd)) {
-                    xg_boxes.emplace_back(ptr);
+                    xg_boxes.push_back(ptr);
                     continue;
-                } else {
-                    delete ptr;
                 }
             } else if (box["type"] == "text") {
-                auto ptr = new XG_TextBoxWindow();
+                auto ptr = std::make_shared<XG_TextBoxWindow>();
                 ptr->ReadJson(box);
                 if (ptr->CreateDx(xg_canvasWnd)) {
-                    xg_boxes.emplace_back(ptr);
+                    xg_boxes.push_back(ptr);
                     continue;
-                } else {
-                    delete ptr;
                 }
             }
         }
@@ -483,22 +479,18 @@ BOOL XgLoadXdBox(const std::wstring& line)
 
 
     if (type == L"pic") {
-        auto ptr = new XG_PictureBoxWindow();
+        auto ptr = std::make_shared<XG_PictureBoxWindow>();
         ptr->ReadLine(line);
         if (ptr->CreateDx(xg_canvasWnd)) {
             xg_boxes.emplace_back(ptr);
             return TRUE;
-        } else {
-            delete ptr;
         }
     } else if (type == L"text") {
-        auto ptr = new XG_TextBoxWindow();
+        auto ptr = std::make_shared<XG_TextBoxWindow>();
         ptr->ReadLine(line);
         if (ptr->CreateDx(xg_canvasWnd)) {
             xg_boxes.emplace_back(ptr);
             return TRUE;
-        } else {
-            delete ptr;
         }
     }
 
@@ -2502,28 +2494,24 @@ BOOL XgOnLoad(HWND hwnd, LPCWSTR pszFile, LPPOINT ppt)
             std::wstring strText;
             if (XgReadTextFileAll(szFile, strText)) {
                 xg_str_trim_right(strText);
-                auto ptr = new XG_TextBoxWindow(i1, j1, i2, j2);
+                auto ptr = std::make_shared<XG_TextBoxWindow>(i1, j1, i2, j2);
                 ptr->SetText(strText);
                 if (ptr->CreateDx(xg_canvasWnd)) {
                     ptr->Bound();
                     xg_boxes.emplace_back(ptr);
                     XG_FILE_MODIFIED(TRUE);
                     return TRUE;
-                } else {
-                    delete ptr;
                 }
             }
         } else if (bImage) {
             // 画像ボックス。
-            auto ptr = new XG_PictureBoxWindow(i1, j1, i2, j2);
+            auto ptr = std::make_shared<XG_PictureBoxWindow>(i1, j1, i2, j2);
             ptr->SetText(szFile);
             if (ptr->CreateDx(xg_canvasWnd)) {
                 ptr->Bound();
                 xg_boxes.emplace_back(ptr);
                 XG_FILE_MODIFIED(TRUE);
                 return TRUE;
-            } else {
-                delete ptr;
             }
         }
 
@@ -4617,10 +4605,7 @@ std::wstring URL_encode(const std::wstring& url)
         {
             switch (ch)
             {
-            case L'.':
-            case L'-':
-            case L'_':
-            case L'*':
+            case L'.': case L'-': case L'_': case L'*':
                 ret += (char)ch;
                 break;
             default:
@@ -5149,7 +5134,7 @@ BOOL XgAddBox(HWND hwnd, UINT id)
         dialog1.SetTextColor(xg_rgbBlackCellColor, FALSE);
         dialog1.SetBgColor(xg_rgbWhiteCellColor, FALSE);
         if (dialog1.DoModal(hwnd) == IDOK) {
-            auto ptr = new XG_TextBoxWindow(i1, j1, i2, j2);
+            auto ptr = std::make_shared<XG_TextBoxWindow>(i1, j1, i2, j2);
             ptr->SetText(dialog1.m_strText);
             ptr->SetTextColor(dialog1.GetTextColor());
             ptr->SetBgColor(dialog1.GetBgColor());
@@ -5160,22 +5145,18 @@ BOOL XgAddBox(HWND hwnd, UINT id)
                 // ファイルが変更された。
                 xg_bFileModified = TRUE;
                 return TRUE;
-            } else {
-                delete ptr;
             }
         }
         break;
     case ID_ADDPICTUREBOX:
         if (dialog2.DoModal(hwnd) == IDOK) {
-            auto ptr = new XG_PictureBoxWindow(i1, j1, i2, j2);
+            auto ptr = std::make_shared<XG_PictureBoxWindow>(i1, j1, i2, j2);
             ptr->SetText(dialog2.m_strFile);
             if (ptr->CreateDx(xg_canvasWnd)) {
                 xg_boxes.emplace_back(ptr);
                 // ファイルが変更された。
                 xg_bFileModified = TRUE;
                 return TRUE;
-            } else {
-                delete ptr;
             }
         }
         break;
@@ -6553,7 +6534,7 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT /*codeNo
         break;
     case ID_MOVEBOXES:
         {
-            auto it = std::remove_if(xg_boxes.begin(), xg_boxes.end(), [](const std::unique_ptr<XG_BoxWindow>& box){
+            auto it = std::remove_if(xg_boxes.begin(), xg_boxes.end(), [](const std::shared_ptr<XG_BoxWindow>& box){
                 return !::IsWindow(*box);
             });
             xg_boxes.erase(it, xg_boxes.end());

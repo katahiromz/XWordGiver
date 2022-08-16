@@ -604,7 +604,7 @@ public:
 };
 
 // ボックス。
-extern std::vector<std::unique_ptr<XG_BoxWindow> > xg_boxes;
+extern std::vector<std::shared_ptr<XG_BoxWindow> > xg_boxes;
 
 class XG_PictureBoxWindow : public XG_BoxWindow
 {
