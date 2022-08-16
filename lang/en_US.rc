@@ -1701,6 +1701,8 @@ STRINGTABLE
     IDS_TT_GENERATEREPEATEDLY, "Continuously generate crosswords"
     IDS_TT_SOLVEREPEATEDLY, "Continuously find solutions"
     IDS_TT_SOLVEREPEATEDLYNOADDBLACK, "Continuously find solutions (without adding blocks)"
+    IDS_TT_UNDO, "Undo"
+    IDS_TT_REDO, "Redo"
 }
 
 //////////////////////////////////////////////////////////////////////////////

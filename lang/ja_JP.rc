@@ -1704,6 +1704,8 @@ STRINGTABLE
     IDS_TT_GENERATEREPEATEDLY, "問題を連続自動生成する"
     IDS_TT_SOLVEREPEATEDLY, "連続で解を求める"
     IDS_TT_SOLVEREPEATEDLYNOADDBLACK, "連続で解を求める(黒マス追加なし)"
+    IDS_TT_UNDO, "元に戻す"
+    IDS_TT_REDO, "やり直す"
 }
 
 //////////////////////////////////////////////////////////////////////////////

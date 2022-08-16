@@ -230,6 +230,8 @@
 #define IDS_TT_GENERATEREPEATEDLY           10154
 #define IDS_TT_SOLVEREPEATEDLY              10167
 #define IDS_TT_SOLVEREPEATEDLYNOADDBLACK    10168
+#define IDS_TT_UNDO                         10106
+#define IDS_TT_REDO                         10107
 
 #define ID_NEW                              100
 #define ID_GENERATE                         101
