@@ -178,6 +178,7 @@
     - Saved the latest maximized status of the main window.
     - Improved the context menu of board.
     - Block patterns available for download (in preparation).
+    - Dictionaries available for download (in preparation).
 
 # 開発履歴 (Japanese)
 
@@ -672,3 +673,4 @@
     - メインウィンドウの前回の最大化状態を保存。
     - 盤面のコンテキストメニューを改良。
     - 黒マスパターンをダウンロードできるように(準備中)。
+    - 辞書ファイルをダウンロードできるように(準備中)。

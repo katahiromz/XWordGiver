@@ -96,6 +96,8 @@ LANGUAGE LANG_JAPANESE, SUBLANG_DEFAULT
     {
         MENUITEM "テーマ(&T)...", ID_THEME
         MENUITEM "テーマのリセット(&R)...", ID_RESETTHEME
+        MENUITEM SEPARATOR
+        MENUITEM "辞書のダウンロード(&O)...", ID_DOWNLOADDICT
         MENUITEM "辞書リストを再読み込み(&D)", ID_RELOADDICTS
         MENUITEM SEPARATOR
         MENUITEM "(なし)", -1

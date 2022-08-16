@@ -3802,7 +3802,8 @@ HMENU DoFindDictMenu(HMENU hMenu)
 // 「辞書」メニューを更新する。
 void DoUpdateDictMenu(HMENU hDictMenu)
 {
-    while (RemoveMenu(hDictMenu, 4, MF_BYPOSITION))
+    INT index = 7; // メニュー項目「(なし)」の位置。
+    while (RemoveMenu(hDictMenu, index, MF_BYPOSITION))
     {
         ;
     }
@@ -3813,7 +3814,7 @@ void DoUpdateDictMenu(HMENU hDictMenu)
         return;
     }
 
-    INT index = 4, count = 0, id = ID_DICTIONARY00;
+    INT count = 0, id = ID_DICTIONARY00;
     WCHAR szText[MAX_PATH];
     for (const auto& entry : xg_dict_files)
     {
@@ -6692,6 +6693,9 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT /*codeNo
         // 音を鳴らす。
         Beep(0x1000, 50);
         Beep(0x800, 450);
+        break;
+    case ID_DOWNLOADDICT:
+        ShellExecuteW(hwnd, NULL, L"https://katahiromz.web.fc2.com/xword/dict", NULL, NULL, SW_SHOWNORMAL);
         break;
     default:
         if (!XgOnCommandExtra(hwnd, id)) {

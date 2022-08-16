@@ -96,6 +96,8 @@ LANGUAGE LANG_ENGLISH, SUBLANG_DEFAULT
     {
         MENUITEM "&Theme...", ID_THEME
         MENUITEM "&Reset the theme...", ID_RESETTHEME
+        MENUITEM SEPARATOR
+        MENUITEM "D&ownload dictionaries...", ID_DOWNLOADDICT
         MENUITEM "Reload the &dict list", ID_RELOADDICTS
         MENUITEM SEPARATOR
         MENUITEM "(None)", -1
@@ -1621,8 +1623,8 @@ STRINGTABLE
     IDS_RESETTHEME, "Do you want to reset the theme?"
     IDS_NOTAGS, "There are no tags in this dictionary."
     IDS_DICT, "Dict"
-    IDS_DEFAULTDICT, "&Dict"
-    IDS_MODIFIEDDICT, "(!)&Dict"
+    IDS_DEFAULTDICT, "&Dictionary"
+    IDS_MODIFIEDDICT, "(!)&Dictionary"
     IDS_PATMAKING, "I have created %u block patterns."
     IDS_THREEDIAGONALS, "Prohibit diagonal 3 blocks"
     IDS_RULE_DONTTHREEDIAGONALS, "Prohibit diagonal 3 blocks"
