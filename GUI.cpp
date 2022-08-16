@@ -757,6 +757,8 @@ void XgUpdateToolBarUI(HWND hwnd)
     ::SendMessageW(xg_hToolBar, TB_ENABLEBUTTON, ID_SOLVEREPEATEDLY, !xg_bSolved);
     ::SendMessageW(xg_hToolBar, TB_ENABLEBUTTON, ID_SOLVEREPEATEDLYNOADDBLACK, !xg_bSolved);
     ::SendMessageW(xg_hToolBar, TB_ENABLEBUTTON, ID_PRINTANSWER, xg_bSolved);
+    ::SendMessageW(xg_hToolBar, TB_ENABLEBUTTON, ID_UNDO, xg_ubUndoBuffer.CanUndo());
+    ::SendMessageW(xg_hToolBar, TB_ENABLEBUTTON, ID_REDO, xg_ubUndoBuffer.CanRedo());
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -6873,6 +6875,9 @@ bool __fastcall MainWnd_OnCreate(HWND hwnd, LPCREATESTRUCT /*lpCreateStruct*/)
         {1, ID_OPEN, TBSTATE_ENABLED, TBSTYLE_BUTTON},
         {2, ID_SAVEAS, TBSTATE_ENABLED, TBSTYLE_BUTTON},
         {0, 0, TBSTATE_ENABLED, TBSTYLE_SEP},
+        {14, ID_UNDO, TBSTATE_ENABLED, TBSTYLE_BUTTON},
+        {15, ID_REDO, TBSTATE_ENABLED, TBSTYLE_BUTTON},
+        {0, 0, TBSTATE_ENABLED, TBSTYLE_SEP},
         {3, ID_GENERATE, TBSTATE_ENABLED, TBSTYLE_BUTTON},
         {4, ID_GENERATEANSWER, TBSTATE_ENABLED, TBSTYLE_BUTTON},
         {5, ID_GENERATEREPEATEDLY, TBSTATE_ENABLED, TBSTYLE_BUTTON},
@@ -7104,6 +7109,9 @@ void __fastcall XgUpdateImage(HWND hwnd, INT x, INT y)
     MRect rcClient;
     XgGetRealClientRect(hwnd, &rcClient);
     ::InvalidateRect(xg_canvasWnd, &rcClient, TRUE);
+
+    // ツールバーを更新する。
+    XgUpdateToolBarUI(hwnd);
 }
 
 // 描画イメージを更新する。

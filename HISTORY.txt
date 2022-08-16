@@ -184,6 +184,7 @@
     - Able to set the font name and size to the Text Box.
     - Fixed XD file boxes writing.
 - 2022-XX-YY ver.5.0.0
+    - Added "Undo" and "Redo" on Toolbar.
 
 # 開発履歴 (Japanese)
 
@@ -684,3 +685,4 @@
     - テキストボックスのフォント名とフォントサイズを指定できるように。
     - XDファイルのボックスの書き込みの不具合を修正。
 - 2022月XX月YY日 ver.5.0.0
+    - ツールバーに「元に戻す」「やり直す」ボタンを追加。

@@ -79,6 +79,9 @@ skip:;
 
     xg_ubUndoBuffer.Commit(UC_SETAT, sa1, sa2);
     xg_xword.SetAt(xg_caret_pos, ch);
+
+    // ツールバーを更新する。
+    XgUpdateToolBarUI(xg_hMainWnd);
 }
 
 // アクセント記号付きの文字にする。
