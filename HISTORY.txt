@@ -180,6 +180,7 @@
     - Block patterns available for download (in preparation).
     - Dictionaries available for download (in preparation).
     - Abolished installer version.
+    - Fixed display of the candidates.
 
 # 開発履歴 (Japanese)
 
@@ -676,3 +677,4 @@
     - 黒マスパターンをダウンロードできるように(準備中)。
     - 辞書ファイルをダウンロードできるように(準備中)。
     - インストーラ版の廃止。
+    - 候補の表示の不具合を修正。

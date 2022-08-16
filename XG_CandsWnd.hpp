@@ -132,11 +132,8 @@ public:
         for (const auto& cand : cands) {
             XG_Board xword(xg_xword);
             XgApplyCandidate(xword, cand);
-            if (xword.CornerBlack() || xword.DoubleBlack() ||
-                xword.TriBlackAround() || xword.DividedByBlack())
+            if (xword.IsValid())
             {
-                ;
-            } else {
                 XG_CandsWnd::xg_vecCandidates.emplace_back(cand);
             }
         }
