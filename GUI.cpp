@@ -4608,7 +4608,8 @@ std::wstring URL_encode(const std::wstring& url)
         {
             ret += L'+';
         }
-        else if (isalnum(ch))
+        else if (('A' <= ch && ch <= 'Z') || ('a' <= ch && ch <= 'z') || 
+                 ('0' <= ch && ch <= '9'))
         {
             ret += (char)ch;
         }
