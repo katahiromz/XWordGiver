@@ -515,6 +515,7 @@ LANGUAGE LANG_JAPANESE, SUBLANG_DEFAULT
         MENUITEM SEPARATOR
         MENUITEM "ヒントを削除して盤面のロックを解除(&U)", ID_ERASESOLUTIONANDUNLOCKEDIT
         MENUITEM "文字をすべてクリア(&C)", ID_CLEARNONBLOCKS
+        MENUITEM SEPARATOR
         POPUP "ボックスを追加(&X)"
         {
             MENUITEM "テキストボックスを追加(&X)...", ID_ADDTEXTBOX

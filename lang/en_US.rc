@@ -512,6 +512,7 @@ LANGUAGE LANG_ENGLISH, SUBLANG_DEFAULT
         MENUITEM SEPARATOR
         MENUITEM "Delete clues and &unlock board", ID_ERASESOLUTIONANDUNLOCKEDIT
         MENUITEM "&Clear all the letters", ID_CLEARNONBLOCKS
+        MENUITEM SEPARATOR
         POPUP "Add Bo&x"
         {
             MENUITEM "Add &Text Box...", ID_ADDTEXTBOX
