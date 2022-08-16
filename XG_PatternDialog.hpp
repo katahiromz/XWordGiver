@@ -472,6 +472,12 @@ public:
         XgUpdateToolBarUI(xg_hMainWnd);
     }
 
+    // ダウンロードする。
+    void OnDownload(HWND hwnd)
+    {
+        ShellExecuteW(hwnd, NULL, L"https://katahiromz.web.fc2.com/xword/patterns", NULL, NULL, SW_SHOWNORMAL);
+    }
+
     // WM_COMMAND
     void OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT codeNotify)
     {
@@ -485,6 +491,9 @@ public:
             break;
         case psh1:
             OnCopy(hwnd);
+            break;
+        case psh2:
+            OnDownload(hwnd);
             break;
         case lst1:
             if (codeNotify == LBN_DBLCLK)

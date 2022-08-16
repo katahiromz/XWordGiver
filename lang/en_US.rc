@@ -1314,6 +1314,7 @@ FONT 9, "Tahoma"
     AUTOCHECKBOX "Show &Answer", chx1, 75, 245, 80, 15
     DEFPUSHBUTTON "Find Solution", IDOK, 185, 245, 80, 15
     PUSHBUTTON "E&xit", IDCANCEL, 270, 245, 60, 15
+    PUSHBUTTON "&Download...", psh2, 240, 35, 90, 14
 }
 
 IDD_THEME DIALOG 0, 0, 310, 250
@@ -1323,7 +1324,7 @@ FONT 9, "Tahoma"
 {
     LTEXT "The theme can specify preferred and excluded tags. A tag is a keyword attached to a word in the dictionary. Specifying preferred tags is computationally intensive.", -1, 5, 5, 183, 30
     LTEXT "Pre&set:", -1, 205, 5, 65, 12
-    COMBOBOX cmb1, 205, 20, 100, 300, CBS_DISABLENOSCROLL | CBS_HASSTRINGS | CBS_AUTOHSCROLL | CBS_DROPDOWN | WS_HSCROLL | WS_VSCROLL | WS_TABSTOP
+    COMBOBOX cmb1, 205, 20, 100, 300, CBS_DISABLENOSCROLL | CBS_HASSTRINGS | CBS_AUTOHSCROLL | CBS_DROPDOWN | WS_VSCROLL | WS_HSCROLL | WS_TABSTOP
     LTEXT "All the &tags:", -1, 5, 40, 75, 12
     EDITTEXT edt1, 85, 40, 40, 14, ES_AUTOHSCROLL
     CONTROL "", lst1, "SysListView32", LVS_SINGLESEL | LVS_REPORT | WS_BORDER | WS_TABSTOP, 5, 55, 120, 160
