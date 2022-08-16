@@ -3,6 +3,8 @@
 #include "XG_Window.hpp"
 #include "XG_ColorBox.hpp"
 
+#define DEFAULT_TEXTBOX_POINTSIZE 14
+
 class XG_TextBoxDialog : public XG_Dialog
 {
 public:
@@ -11,6 +13,8 @@ public:
     XG_ColorBox m_hwndBgColor;
     BOOL m_bTextColor = FALSE;
     BOOL m_bBgColor = FALSE;
+    std::wstring m_strFontName;
+    INT m_nFontSizeInPoints = 0;
 
     BOOL GetTextColor()
     {
@@ -44,12 +48,25 @@ public:
         m_hwndBgColor.SetColor(CLR_INVALID);
     }
 
+    static INT CALLBACK EnumFontsProc(
+        const LOGFONTW *lplf,
+        const TEXTMETRICW *lptm,
+        DWORD dwType,
+        LPARAM lParam)
+    {
+        if (dwType != TRUETYPE_FONTTYPE)
+            return TRUE;
+        HWND hwnd = (HWND)lParam;
+        HWND hCmb1 = GetDlgItem(hwnd, cmb1);
+        ComboBox_AddString(hCmb1, lplf->lfFaceName);
+        return TRUE;
+    }
+
     BOOL OnInitDialog(HWND hwnd, HWND hwndFocus, LPARAM lParam)
     {
         XgCenterDialog(hwnd);
 
-        HWND hEdt1 = GetDlgItem(hwnd, edt1);
-        SetWindowText(hEdt1, m_strText.c_str());
+        SetDlgItemTextW(hwnd, edt1, m_strText.c_str());
 
         m_hwndTextColor.m_hWnd = GetDlgItem(hwnd, psh1);
         m_hwndBgColor.m_hWnd = GetDlgItem(hwnd, psh2);
@@ -58,6 +75,35 @@ public:
             CheckDlgButton(hwnd, chx1, BST_CHECKED);
         if (m_bBgColor)
             CheckDlgButton(hwnd, chx2, BST_CHECKED);
+
+        HDC hDC = CreateCompatibleDC(NULL);
+        EnumFontsW(hDC, NULL, EnumFontsProc, (LPARAM)hwnd);
+        DeleteDC(hDC);
+
+        if (m_strFontName.size())
+        {
+            CheckDlgButton(hwnd, chx3, BST_CHECKED);
+            ComboBox_RealSetText(GetDlgItem(hwnd, cmb1), m_strFontName.c_str());
+        }
+        else
+        {
+            SetDlgItemTextW(hwnd, cmb1, xg_szCellFont);
+            EnableWindow(GetDlgItem(hwnd, cmb1), FALSE);
+        }
+
+        if (m_nFontSizeInPoints)
+        {
+            CheckDlgButton(hwnd, chx4, BST_CHECKED);
+            SetDlgItemInt(hwnd, edt2, m_nFontSizeInPoints, FALSE);
+        }
+        else
+        {
+            SetDlgItemInt(hwnd, edt2, DEFAULT_TEXTBOX_POINTSIZE, FALSE);
+            EnableWindow(GetDlgItem(hwnd, edt2), FALSE);
+        }
+
+        SendDlgItemMessageW(hwnd, scr1, UDM_SETRANGE, 0, MAKELPARAM(64, 8));
+
         return TRUE;
     }
 
@@ -72,6 +118,27 @@ public:
 
         m_bTextColor = (IsDlgButtonChecked(hwnd, chx1) == BST_CHECKED);
         m_bBgColor = (IsDlgButtonChecked(hwnd, chx2) == BST_CHECKED);
+
+        if (IsDlgButtonChecked(hwnd, chx3) == BST_CHECKED)
+        {
+            HWND hCmb1 = GetDlgItem(hwnd, cmb1);
+            ComboBox_RealGetText(hCmb1, szText, _countof(szText));
+            m_strFontName = szText;
+            xg_str_trim(m_strFontName);
+        }
+        else
+        {
+            m_strFontName.clear();
+        }
+
+        if (IsDlgButtonChecked(hwnd, chx4) == BST_CHECKED)
+        {
+            m_nFontSizeInPoints = GetDlgItemInt(hwnd, edt2, NULL, FALSE);
+        }
+        else
+        {
+            m_nFontSizeInPoints = 0;
+        }
 
         return TRUE;
     }
@@ -108,6 +175,26 @@ public:
             if (IsDlgButtonChecked(hwnd, chx2) != BST_CHECKED)
             {
                 m_hwndBgColor.SetColor(xg_rgbWhiteCellColor);
+            }
+            break;
+        case chx3:
+            if (IsDlgButtonChecked(hwnd, chx3) == BST_CHECKED)
+            {
+                EnableWindow(GetDlgItem(hwnd, cmb1), TRUE);
+            }
+            else
+            {
+                EnableWindow(GetDlgItem(hwnd, cmb1), FALSE);
+            }
+            break;
+        case chx4:
+            if (IsDlgButtonChecked(hwnd, chx4) == BST_CHECKED)
+            {
+                EnableWindow(GetDlgItem(hwnd, edt2), TRUE);
+            }
+            else
+            {
+                EnableWindow(GetDlgItem(hwnd, edt2), FALSE);
             }
             break;
         }

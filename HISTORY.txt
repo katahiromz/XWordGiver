@@ -181,6 +181,7 @@
     - Dictionaries available for download (in preparation).
     - Abolished installer version.
     - Fixed display of the candidates.
+    - Able to set the font name and size to the Text Box.
 
 # 開発履歴 (Japanese)
 
@@ -678,3 +679,4 @@
     - 辞書ファイルをダウンロードできるように(準備中)。
     - インストーラ版の廃止。
     - 候補の表示の不具合を修正。
+    - テキストボックスのフォント名とフォントサイズを指定できるように。

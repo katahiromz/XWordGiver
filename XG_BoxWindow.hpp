@@ -657,6 +657,8 @@ class XG_TextBoxWindow : public XG_BoxWindow
 public:
     COLORREF m_rgbText = CLR_INVALID;
     COLORREF m_rgbBg = CLR_INVALID;
+    std::wstring m_strFontName;
+    INT m_nFontSizeInPoints = 0;
 
     XG_TextBoxWindow(INT i1 = 0, INT j1 = 0, INT i2 = 1, INT j2 = 1)
         : XG_BoxWindow(L"text", i1, j1, i2, j2)
@@ -705,29 +707,42 @@ public:
         SelectObject(hDC, hPenOld);
         DeleteObject(hPen);
 
-        LOGFONTW lf = *XgGetUIFont();
+        LOGFONTW lf;
+        ZeroMemory(&lf, sizeof(lf));
+        lf.lfCharSet = DEFAULT_CHARSET;
+        if (m_strFontName.empty())
+            m_strFontName = xg_szCellFont;
+        else
+            StringCchCopyW(lf.lfFaceName, _countof(lf.lfFaceName), m_strFontName.c_str());
 
-        for (INT height = 20; height >= 2; --height) {
-            lf.lfHeight = -height * xg_nZoomRate / 100;
-            HFONT hFont = CreateFontIndirectW(&lf);
-            HGDIOBJ hFontOld = SelectObject(hDC, hFont);
-            UINT uFormat = DT_LEFT | DT_TOP | DT_NOPREFIX | DT_WORDBREAK;
-            MRect rcCalc = rcText;
-            InflateRect(&rcCalc, -2, -2);
-            DrawTextW(hDC, m_strText.c_str(), -1, &rcCalc, uFormat | DT_CALCRECT);
-            if (rcCalc.Height() > rcText.Height()) {
-                SelectObject(hDC, hFontOld);
-                DeleteObject(hFont);
-                continue;
-            }
-            rcText.top = rc.top + (rcText.Height() - rcCalc.Height()) / 2;
-            rcText.bottom = rcText.top + rcCalc.Height();
-            uFormat = DT_CENTER | DT_TOP | DT_NOPREFIX | DT_WORDBREAK;
-            DrawTextW(hDC, m_strText.c_str(), -1, &rcText, uFormat);
-            SelectObject(hDC, hFontOld);
-            DeleteObject(hFont);
-            break;
+        // 高さを計算する。
+        INT nPixelSize;
+        if (m_nFontSizeInPoints) {
+            nPixelSize = MulDiv(m_nFontSizeInPoints, GetDeviceCaps(hDC, LOGPIXELSY), 72);
+        } else {
+            nPixelSize = DEFAULT_TEXTBOX_POINTSIZE;
         }
+        lf.lfHeight = -nPixelSize * xg_nZoomRate / 100;
+
+        // フォント作成・選択。
+        HFONT hFont = CreateFontIndirectW(&lf);
+        HGDIOBJ hFontOld = SelectObject(hDC, hFont);
+
+        // 文字列の高さを計算する。
+        MRect rcCalc = rcText;
+        InflateRect(&rcCalc, -2, -2);
+        UINT uFormat = DT_CENTER | DT_TOP | DT_NOPREFIX | DT_WORDBREAK;
+        DrawTextW(hDC, m_strText.c_str(), -1, &rcCalc, uFormat | DT_CALCRECT);
+
+        // 領域の中央に描画する。
+        rcText.top = rc.top + (rcText.Height() - rcCalc.Height()) / 2;
+        rcText.bottom = rcText.top + rcCalc.Height();
+        uFormat = DT_CENTER | DT_TOP | DT_NOPREFIX | DT_WORDBREAK;
+        DrawTextW(hDC, m_strText.c_str(), -1, &rcText, uFormat);
+
+        // フォントの選択を解除、破棄。
+        SelectObject(hDC, hFontOld);
+        DeleteObject(hFont);
     }
 
     virtual BOOL Prop(HWND hwnd) override
@@ -746,6 +761,9 @@ public:
         else
             dialog.SetBgColor(xg_rgbWhiteCellColor, FALSE);
 
+        dialog.m_strFontName = m_strFontName;
+        dialog.m_nFontSizeInPoints = m_nFontSizeInPoints;
+
         if (dialog.DoModal(m_hwndParent) == IDOK) {
             SetText(dialog.m_strText);
 
@@ -758,6 +776,9 @@ public:
                 m_rgbBg = dialog.GetBgColor();
             else
                 m_rgbBg = CLR_INVALID;
+
+            m_strFontName = dialog.m_strFontName;
+            m_nFontSizeInPoints = dialog.m_nFontSizeInPoints;
 
             InvalidateRect(hwnd, NULL, TRUE);
             return TRUE;
@@ -784,6 +805,18 @@ public:
             auto value = wcstoul(bgcolor_it->second.c_str(), NULL, 16);
             m_rgbBg = SwapRandB(value);
         }
+        auto fontname_it = map.find(L"font_name");
+        if (fontname_it != map.end()) {
+            m_strFontName = fontname_it->second;
+        } else {
+            m_strFontName.clear();
+        }
+        auto fontsize_it = map.find(L"font_size");
+        if (fontsize_it != map.end()) {
+            m_nFontSizeInPoints = wcstoul(fontsize_it->second.c_str(), NULL, 0);
+        } else {
+            m_nFontSizeInPoints = 0;
+        }
         return XG_BoxWindow::ReadMap(map);
     }
     virtual BOOL WriteMap(map_t& map) override {
@@ -795,6 +828,16 @@ public:
         if (m_rgbBg != CLR_INVALID) {
             StringCchPrintfW(szText, _countof(szText), L"%06X", SwapRandB(m_rgbBg));
             map[L"bgcolor"] = szText;
+        }
+        if (m_strFontName.size()) {
+            map[L"font_name"] = m_strFontName;
+        } else {
+            map.erase(L"font_name");
+        }
+        if (m_nFontSizeInPoints) {
+            map[L"font_size"] = std::to_wstring(m_nFontSizeInPoints);
+        } else {
+            map.erase(L"font_size");
         }
         return XG_BoxWindow::WriteMap(map);
     }
