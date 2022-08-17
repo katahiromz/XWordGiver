@@ -185,6 +185,7 @@
     - Fixed XD file boxes writing.
 - 2022-XX-YY ver.5.0.0
     - Added "Undo" and "Redo" on Toolbar.
+    - Able to specify the "save to" location by folder drop.
 
 # 開発履歴 (Japanese)
 
@@ -686,3 +687,4 @@
     - XDファイルのボックスの書き込みの不具合を修正。
 - 2022月XX月YY日 ver.5.0.0
     - ツールバーに「元に戻す」「やり直す」ボタンを追加。
+    - フォルダドロップで保存先を指定可能に。

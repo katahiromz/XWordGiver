@@ -26,6 +26,8 @@ public:
     {
         // ダイアログを中央へ移動する。
         XgCenterDialog(hwnd);
+        // ドロップを有効にする。
+        DragAcceptFiles(hwnd, TRUE);
         // サイズの欄を設定する。
         ::SetDlgItemInt(hwnd, edt1, xg_nRows, FALSE);
         ::SetDlgItemInt(hwnd, edt2, xg_nCols, FALSE);
@@ -227,6 +229,18 @@ public:
         }
     }
 
+    // 何かがドロップされた。
+    void OnDropFiles(HWND hwnd, HDROP hdrop)
+    {
+        WCHAR szDir[MAX_PATH];
+        DragQueryFile(hdrop, 0, szDir, _countof(szDir));
+        if (PathIsDirectoryW(szDir)) // フォルダだった。
+        {
+            ::SetDlgItemTextW(hwnd, cmb2, szDir);
+        }
+        DragFinish(hdrop);
+    }
+
     virtual INT_PTR CALLBACK
     DialogProcDx(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
     {
@@ -234,6 +248,7 @@ public:
         {
             HANDLE_MSG(hwnd, WM_INITDIALOG, OnInitDialog);
             HANDLE_MSG(hwnd, WM_COMMAND, OnCommand);
+            HANDLE_MSG(hwnd, WM_DROPFILES, OnDropFiles);
         }
         return 0;
     }
