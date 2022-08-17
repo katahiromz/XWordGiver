@@ -89,6 +89,67 @@ public:
         if (value & RULE_9) CheckDlgButton(hwnd, chx9, BST_CHECKED);
     }
 
+    // コンボボックスの項目の高さ。
+    void OnMeasureItem(HWND hwnd, MEASUREITEMSTRUCT * lpMeasureItem)
+    {
+        if (lpMeasureItem->CtlType != ODT_COMBOBOX)
+            return;
+
+        HDC hDC = CreateCompatibleDC(NULL);
+        SelectObject(hDC, GetWindowFont(hwnd));
+        TEXTMETRIC tm;
+        GetTextMetrics(hDC, &tm);
+        DeleteDC(hDC);
+
+        lpMeasureItem->itemHeight = tm.tmHeight + 6;
+    }
+
+    // コンボボックスの項目を描画する。
+    void OnDrawItem(HWND hwnd, const DRAWITEMSTRUCT * lpDrawItem)
+    {
+        if (lpDrawItem->CtlType != ODT_COMBOBOX)
+            return;
+
+        HDC hDC = lpDrawItem->hDC;
+        RECT rcItem = lpDrawItem->rcItem;
+        INT iItem = lpDrawItem->itemID;
+
+        // 選択状態に応じて色の取得。背景を塗りつぶす。
+        INT iBackColor;
+        BOOL bSelected = (lpDrawItem->itemState & ODS_SELECTED);
+        if (bSelected)
+        {
+            iBackColor = COLOR_HIGHLIGHT;
+            SetTextColor(hDC, GetSysColor(COLOR_HIGHLIGHTTEXT));
+        }
+        else
+        {
+            iBackColor = COLOR_WINDOW;
+            SetTextColor(hDC, GetSysColor(COLOR_WINDOWTEXT));
+        }
+        FillRect(hDC, &rcItem, GetSysColorBrush(iBackColor));
+
+        // テキストを取得。
+        WCHAR szText[MAX_PATH];
+        szText[0] = 0;
+        if (iItem >= 0)
+            ComboBox_GetLBText(lpDrawItem->hwndItem, iItem, szText);
+
+        InflateRect(&rcItem, -3, -3); // 項目を小さくする。
+
+        // テキスト描画。
+        UINT uFormat = DT_SINGLELINE | DT_LEFT | DT_VCENTER | DT_NOPREFIX;
+        SetBkMode(hDC, TRANSPARENT);
+        DrawTextW(hDC, szText, -1, &rcItem, uFormat);
+
+        // フォーカスを描画。
+        if (lpDrawItem->itemState & ODS_FOCUS)
+        {
+            InflateRect(&rcItem, 2, 2);
+            DrawFocusRect(hDC, &rcItem);
+        }
+    }
+
     BOOL OnInitDialog(HWND hwnd, HWND hwndFocus, LPARAM lParam)
     {
         // ダイアログを中央へ移動する。
@@ -251,6 +312,8 @@ public:
         {
             HANDLE_MSG(hwnd, WM_INITDIALOG, OnInitDialog);
             HANDLE_MSG(hwnd, WM_COMMAND, OnCommand);
+            HANDLE_MSG(hwnd, WM_MEASUREITEM, OnMeasureItem);
+            HANDLE_MSG(hwnd, WM_DRAWITEM, OnDrawItem);
         }
         return 0;
     }
