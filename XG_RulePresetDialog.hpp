@@ -101,7 +101,7 @@ public:
         GetTextMetrics(hDC, &tm);
         DeleteDC(hDC);
 
-        lpMeasureItem->itemHeight = tm.tmHeight + 6;
+        lpMeasureItem->itemHeight = tm.tmHeight + 8;
     }
 
     // コンボボックスの項目を描画する。
