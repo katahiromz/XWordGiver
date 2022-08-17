@@ -89,7 +89,10 @@ public:
         }
         else
         {
-            SetDlgItemTextW(hwnd, cmb1, xg_szCellFont);
+            if (xg_szCellFont[0])
+                SetDlgItemTextW(hwnd, cmb1, xg_szCellFont);
+            else
+                SetDlgItemTextW(hwnd, cmb1, XgLoadStringDx1(IDS_MONOFONT));
             EnableWindow(GetDlgItem(hwnd, cmb1), FALSE);
         }
 
