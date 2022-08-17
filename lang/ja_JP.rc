@@ -110,7 +110,7 @@ LANGUAGE LANG_JAPANESE, SUBLANG_DEFAULT
         MENUITEM "連続で解を求める(&E)", ID_SOLVEREPEATEDLY
         MENUITEM "連続で解を求める(黒マス追加なし) (&L)", ID_SOLVEREPEATEDLYNOADDBLACK
         MENUITEM SEPARATOR
-        MENUITEM "一定時間が過ぎたらリトライ(&T)", ID_RETRYIFTIMEOUT
+        MENUITEM "一定時間が過ぎたら再試行(&T)", ID_RETRYIFTIMEOUT
         MENUITEM SEPARATOR
         MENUITEM "解を表示する(&S)\tCtrl+M", ID_SHOWSOLUTION
         MENUITEM "解を表示しない(&D)\tCtrl+M", ID_NOSOLUTION
@@ -606,7 +606,7 @@ FONT 9, "MS UI Gothic"
     LTEXT "マス", -1, 248, 10, 20, 12
     AUTOCHECKBOX "答えを表示する(&A)", chx3, 10, 35, 85, 14
     AUTOCHECKBOX "スマート解決(&S)", chx2, 10, 60, 75, 14
-    AUTOCHECKBOX "一定時間が過ぎたらリトライ(&T)", chx1, 95, 60, 110, 14
+    AUTOCHECKBOX "一定時間が過ぎたら再試行(&T)", chx1, 95, 60, 110, 14
     LTEXT "最大単語長(&L):", stc1, 10, 87, 60, 12
     EDITTEXT edt3, 80, 85, 30, 14, ES_NUMBER | ES_RIGHT
     CONTROL "", scr3, "msctls_updown32", UDS_ARROWKEYS | UDS_AUTOBUDDY | UDS_ALIGNRIGHT | UDS_SETBUDDYINT, 103, 90, 12, 20
@@ -623,7 +623,7 @@ FONT 9, "MS UI Gothic"
     CONTROL "", ctl1, "msctls_progress32", 0, 5, 25, 155, 10
     CONTROL "", 1185, "msctls_progress32", 0, 5, 40, 155, 10
     LTEXT "", stc2, 5, 55, 155, 12
-    PUSHBUTTON "リトライ(&R)", psh2, 5, 70, 75, 14
+    PUSHBUTTON "再試行(&R)", psh2, 5, 70, 75, 14
     PUSHBUTTON "キャンセル", psh1, 85, 70, 75, 14
 }
 
@@ -641,7 +641,7 @@ FONT 9, "MS UI Gothic"
     CONTROL "", scr2, "msctls_updown32", UDS_ARROWKEYS | UDS_AUTOBUDDY | UDS_ALIGNRIGHT | UDS_SETBUDDYINT, 101, 24, 12, 20
     LTEXT "マス", -1, 248, 10, 20, 12
     AUTOCHECKBOX "スマート解決(&S)", chx2, 10, 60, 75, 14
-    AUTOCHECKBOX "一定時間が過ぎたらリトライ(&T)", chx1, 95, 60, 110, 14
+    AUTOCHECKBOX "一定時間が過ぎたら再試行(&T)", chx1, 95, 60, 110, 14
     LTEXT "最大単語長(&L):", stc1, 10, 87, 60, 12
     EDITTEXT edt3, 80, 85, 30, 14, ES_NUMBER | ES_RIGHT
     CONTROL "", scr3, "msctls_updown32", UDS_ARROWKEYS | UDS_AUTOBUDDY | UDS_ALIGNRIGHT | UDS_SETBUDDYINT, 103, 90, 12, 20
@@ -716,7 +716,7 @@ FONT 9, "MS UI Gothic"
     CONTROL "100", edt1, "EDIT", ES_NUMBER | ES_RIGHT | WS_BORDER | WS_TABSTOP, 90, 25, 65, 14
     CONTROL "", scr1, "msctls_updown32", UDS_ARROWKEYS | UDS_AUTOBUDDY | UDS_ALIGNRIGHT | UDS_SETBUDDYINT, 101, 24, 12, 20
     PUSHBUTTON "参照(&O)...", psh1, 250, 5, 50, 14
-    AUTOCHECKBOX "一定時間が過ぎたらリトライ(&T)", chx1, 10, 45, 155, 14
+    AUTOCHECKBOX "一定時間が過ぎたら再試行(&T)", chx1, 10, 45, 155, 14
     DEFPUSHBUTTON "計算開始(&S)", IDOK, 175, 60, 60, 14
     PUSHBUTTON "キャンセル", IDCANCEL, 240, 60, 60, 14
 }
@@ -1539,7 +1539,7 @@ STRINGTABLE
     IDS_SAVEANSASIMG, "解答を画像ファイルとして保存"
     IDS_SAVEPROBASIMG, "問題を画像ファイルとして保存"
     IDS_CANCELLED, "計算がキャンセルされました。\n\n計算時間: %u.%u[秒]"
-    IDS_NOWSOLVING, "計算しています...（%u.%u秒経過） やり直し %u 回目"
+    IDS_NOWSOLVING, "計算しています...（%u.%u秒経過）- %u 回目の再試行"
     IDS_HLINE, "――――――――――――――"
     IDS_MONOFONT, "ＭＳ ゴシック"
     IDS_APPTITLE2, "クロスワード ギバー ver.5.0.0 (%s) - %s"
