@@ -1480,7 +1480,4 @@ struct PATDATA
     std::wstring data;
 };
 
-// 黒マスルールに適合するか？
-BOOL __fastcall XgRuleIsOK(const PATDATA& pat, const std::vector<WCHAR>& data);
-
 #endif  // ndef XWORDGIVER

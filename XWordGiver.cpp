@@ -153,77 +153,8 @@ void XgConvertPatternData(std::vector<WCHAR>& data, std::wstring text, INT cx, I
     }
 }
 
-// パターンデータを読み込む。
-BOOL XgLoadPatterns(LPCWSTR pszFileName, std::vector<PATDATA>& patterns)
-{
-    // パターンデータをクリアする。
-    patterns.clear();
-
-    // read all
-    std::string utf8;
-    CHAR buf[256];
-    FILE *fp = _wfopen(pszFileName, L"rb")
-    if (!fp)
-        return FALSE;
-
-    while (fgets(buf, 256, fp))
-    {
-        utf8 += buf;
-    }
-    fclose(fp);
-
-    // split as UTF-16 lines
-    auto utf16 = XgUtf8ToUnicode(utf8);
-    std::vector<std::wstring> lines;
-    mstr_split(lines, utf16, L"\n");
-
-    utf8.clear();
-
-    PATDATA pat;
-    std::wstring text;
-
-    // parse each line
-    for (auto& line : lines) {
-        xg_str_trim(line);
-        if (line.empty())
-            continue;
-
-        switch (line[0]) {
-        case 0x250F: // ┏
-            text.clear();
-            text += line;
-            text += L"\r\n";
-            pat.num_columns = pat.num_rows = 0;
-            break;
-        case 0x2517: // ┗
-            text += line;
-            text += L"\r\n";
-            pat.data = text;
-            {
-                // パターンのテキストデータを扱いやすいよう、加工する。
-                std::vector<WCHAR> data;
-                XgConvertPatternData(data, pat.data, pat.num_columns, pat.num_rows);
-
-                // ルールに適合するか？
-                if (XgRuleIsOK(pat, data)) {
-                    patterns.push_back(pat);
-                }
-            }
-            break;
-        case 0x2503: // ┃
-            pat.num_columns = INT(line.size() - 2);
-            text += line;
-            text += L"\r\n";
-            pat.num_rows += 1;
-            break;
-        }
-    }
-
-    return TRUE;
-}
-
 // パターンが黒マスルールに適合するか？
-BOOL __fastcall XgRuleIsOK(const PATDATA& pat, const std::vector<WCHAR>& data)
+BOOL __fastcall XgPatternRuleIsOK(const PATDATA& pat, const std::vector<WCHAR>& data)
 {
 #define GET_DATA(x, y) data[(y) * pat.num_columns + (x)]
     if (xg_nRules & RULE_DONTDOUBLEBLACK) {
@@ -359,6 +290,77 @@ BOOL __fastcall XgRuleIsOK(const PATDATA& pat, const std::vector<WCHAR>& data)
 #undef GET_DATA
     return TRUE;
 }
+
+// パターンデータを読み込む。
+BOOL XgLoadPatterns(LPCWSTR pszFileName, std::vector<PATDATA>& patterns)
+{
+    // パターンデータをクリアする。
+    patterns.clear();
+
+    // read all
+    std::string utf8;
+    CHAR buf[256];
+    FILE *fp = _wfopen(pszFileName, L"rb");
+    if (!fp)
+        return FALSE;
+
+    while (fgets(buf, 256, fp))
+    {
+        utf8 += buf;
+    }
+    fclose(fp);
+
+    // split as UTF-16 lines
+    auto utf16 = XgUtf8ToUnicode(utf8);
+    std::vector<std::wstring> lines;
+    mstr_split(lines, utf16, L"\n");
+
+    utf8.clear();
+
+    PATDATA pat;
+    std::wstring text;
+
+    // parse each line
+    for (auto& line : lines) {
+        xg_str_trim(line);
+        if (line.empty())
+            continue;
+
+        switch (line[0]) {
+        case 0x250F: // ┏
+            text.clear();
+            text += line;
+            text += L"\r\n";
+            pat.num_columns = pat.num_rows = 0;
+            break;
+        case 0x2517: // ┗
+            text += line;
+            text += L"\r\n";
+            pat.data = text;
+            {
+                // パターンのテキストデータを扱いやすいよう、加工する。
+                std::vector<WCHAR> data;
+                XgConvertPatternData(data, pat.data, pat.num_columns, pat.num_rows);
+
+                // ルールに適合するか？
+                if (XgPatternRuleIsOK(pat, data)) {
+                    patterns.push_back(pat);
+                }
+            }
+            break;
+        case 0x2503: // ┃
+            pat.num_columns = INT(line.size() - 2);
+            text += line;
+            text += L"\r\n";
+            pat.num_rows += 1;
+            break;
+        }
+    }
+
+    return TRUE;
+}
+
+//////////////////////////////////////////////////////////////////////////////
 
 // 候補があるか？
 template <bool t_alternative>

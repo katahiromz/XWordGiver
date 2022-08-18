@@ -14,7 +14,7 @@ void XgConvertPatternData(std::vector<WCHAR>& data, std::wstring text, INT cx, I
 // パターンデータを読み込む。
 BOOL XgLoadPatterns(LPCWSTR pszFileName, std::vector<PATDATA>& patterns);
 // 黒マスルールに適合するか？
-BOOL __fastcall XgRuleIsOK(const PATDATA& pat, const std::vector<WCHAR>& data);
+BOOL __fastcall XgPatternRuleIsOK(const PATDATA& pat, const std::vector<WCHAR>& data);
 
 class XG_PatternDialog : public XG_Dialog
 {
@@ -227,6 +227,7 @@ public:
         XgFitZoom(GetParent(hwnd));
         // ステータスバーを更新する。
         XgUpdateStatusBar(GetParent(hwnd));
+
         {
             auto sa1 = std::make_shared<XG_UndoData_SetAll>();
             auto sa2 = std::make_shared<XG_UndoData_SetAll>();
