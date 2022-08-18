@@ -1219,7 +1219,7 @@ FARMER	A person who takes care of a farm	[Jobs]	[Animals]	[Foods]	[Fishes]	[Frui
 FARMHOUSE	A house on a farm	[Agriculture]	[Architecture]	[Family]
 FARMING	Growing crops and keeping animals	[Agriculture]	[Animals]	[Fishes]	[Fruits]	[Foods]
 FASHION	A popular trend	[Lovely]	[Beauty]	[Shopping]	[Female]	[Male]
-FAT	Gaining weight	[HumanBody]	[Animals]	[Foods]
+FAT	You will get this and weight if you eat much	[HumanBody]	[Animals]	[Foods]
 FATHER	Your male parent	[Family]	[ChildRearing]	[Male]
 FAUCET	A tap to get water etc.	[Tools]
 FAVOUR	A kind or helpful act	[Communication]	[Happy]	[Lovely]	[Feelings]
