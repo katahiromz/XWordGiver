@@ -1,11 +1,11 @@
 ﻿# FILENAME: BasicDict-ENG-Modesty.tsv
-# NAME-ENG: Basic English Modesty Dictionary, 11th Edition
-# NAME-JPN: 基本辞書データ（英語、謹慎）第十一版
+# NAME-ENG: Basic English Modesty Dictionary, 12th Edition
+# NAME-JPN: 基本辞書データ（英語、謹慎）第十二版
 # COPYRIGHT: (C) 2021-2022 katahiromz, スフィンクス, catworks99, yukokumar, Hiroshima.cw.
 # LICENSE: MIT
 # NOTE: ABSOLUTELY NO WARRANTY.
 # DEFAULT: 
-# DATE: 2022-02-16
+# DATE: 2022-08-18
 ABBREVIATION	A short form of a word or phrase	[Communication]	[English]	[Industry]	[Publishing]	[Science]	[Words]
 ABDOMEN	The part below your chest	[Biology]	[Healthy]	[Medical]
 ABILITY	Skill to do something	[Business]	[Healthy]	[Jobs]	[Logic]	[Sports]	[Management]
@@ -64,7 +64,6 @@ AGENDA	A set of schedule	[Business]	[Calendar]	[Communication]	[Government]	[Soc
 AGENT	A person who provides a particular service	[Government]	[Services]	[Society]
 AGREEMENT	Accordance in opinion	[Business]	[Jobs]	[Law]
 AGRICULTURE	Taking care of crops and farm animals	[Fruits]	[Gardening]	[Machine]	[Resources]	[Weather]	[Vegetable]
-AIDS	A disease that destroys the immune system	[Biology]	[HumanBody]	[Medical]	[Medicine]
 AIM	The purpose or target of something	[Business]	[Government]	[Sports]
 AIR	The gases around us	[Science]	[Sky]	[Weather]	[PostalService]
 AIRCRAFT	A plane or helicopter	[Military]	[Sky]	[Travel]
