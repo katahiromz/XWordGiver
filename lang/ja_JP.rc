@@ -1380,17 +1380,17 @@ FONT 9, "MS UI Gothic"
     PUSHBUTTON "キャンセル", IDCANCEL, 240, 5, 60, 14
 }
 
-IDD_WORDLIST DIALOG 0, 0, 235, 185
+IDD_WORDLIST DIALOG 0, 0, 235, 195
 CAPTION "単語群から生成 (Ctrl+:)"
 STYLE DS_CENTER | DS_MODALFRAME | WS_POPUPWINDOW | WS_CAPTION
 FONT 10, "MS UI Gothic"
 {
     LTEXT "", stc1, 0, 0, 235, 80
-    LTEXT "複数の単語をスペースまたは改行区切りで入力して下さい:", -1, 5, 83, 224, 12
-    EDITTEXT edt1, 5, 100, 225, 60, ES_WANTRETURN | ES_AUTOVSCROLL | ES_MULTILINE | WS_VSCROLL
-    AUTOCHECKBOX "すべてでなくてもよい(&N)", chx1, 5, 165, 90, 14
-    DEFPUSHBUTTON "生成開始(&G)", IDOK, 105, 165, 60, 14
-    PUSHBUTTON "キャンセル", IDCANCEL, 170, 165, 60, 14
+    LTEXT "複数の単語をスペースまたは改行区切りで入力して下さい:\r\n\r\n※ 現在のルールが変更されるかもしれません。", -1, 5, 83, 224, 30
+    EDITTEXT edt1, 5, 115, 225, 55, ES_WANTRETURN | ES_AUTOVSCROLL | ES_MULTILINE | WS_VSCROLL
+    AUTOCHECKBOX "すべてでなくてもよい(&N)", chx1, 5, 175, 85, 14
+    DEFPUSHBUTTON "生成開始(&G)", IDOK, 105, 175, 60, 14
+    PUSHBUTTON "キャンセル", IDCANCEL, 170, 175, 60, 14
 }
 
 IDD_RULEPRESET DIALOG 0, 0, 270, 150
@@ -1399,7 +1399,7 @@ STYLE DS_CENTER | DS_MODALFRAME | WS_POPUPWINDOW | WS_CAPTION
 FONT 9, "MS UI Gothic"
 {
     LTEXT "プリセット値(&V):", -1, 5, 5, 90, 10
-    COMBOBOX cmb1, 25, 20, 240, 300, CBS_HASSTRINGS | CBS_AUTOHSCROLL | CBS_DROPDOWN | CBS_OWNERDRAWFIXED | WS_VSCROLL | WS_TABSTOP
+    COMBOBOX cmb1, 25, 20, 240, 300, CBS_HASSTRINGS | CBS_AUTOHSCROLL | CBS_OWNERDRAWFIXED | CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP
     AUTOCHECKBOX "連黒禁(&D)", chx1, 17, 50, 75, 14
     AUTOCHECKBOX "四隅黒禁(&C)", chx2, 98, 50, 75, 14
     AUTOCHECKBOX "三方黒禁(&T)", chx3, 179, 50, 75, 14
@@ -1440,7 +1440,7 @@ FONT 9, "MS UI Gothic"
     AUTOCHECKBOX "背景色(&B):", chx2, 100, 85, 60, 20, BS_LEFT
     PUSHBUTTON "", psh2, 165, 85, 20, 20, BS_OWNERDRAW
     AUTOCHECKBOX "フォント名(&N):", chx3, 5, 110, 60, 14
-    COMBOBOX cmb1, 5, 130, 180, 300, CBS_HASSTRINGS | CBS_AUTOHSCROLL | CBS_DROPDOWN | CBS_SORT | WS_VSCROLL | WS_TABSTOP
+    COMBOBOX cmb1, 5, 130, 180, 300, CBS_HASSTRINGS | CBS_SORT | CBS_AUTOHSCROLL | CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP
     PUSHBUTTON "&...", psh3, 157, 145, 30, 14
     AUTOCHECKBOX "フォント サイズ(&S):", chx4, 5, 150, 65, 14
     EDITTEXT edt2, 80, 150, 37, 14, ES_NUMBER
@@ -1694,6 +1694,8 @@ STRINGTABLE
     IDS_TT_GENERATE, "問題を自動生成する"
     IDS_TT_OPEN, "問題を開く"
     IDS_TT_SAVEAS, "問題を保存する"
+    IDS_TT_UNDO, "元に戻す"
+    IDS_TT_REDO, "やり直す"
     IDS_TT_SOLVE, "解を求める"
     IDS_TT_COPY, "盤面をコピー"
     IDS_TT_PASTE, "貼り付け"
@@ -1704,8 +1706,6 @@ STRINGTABLE
     IDS_TT_GENERATEREPEATEDLY, "問題を連続自動生成する"
     IDS_TT_SOLVEREPEATEDLY, "連続で解を求める"
     IDS_TT_SOLVEREPEATEDLYNOADDBLACK, "連続で解を求める(黒マス追加なし)"
-    IDS_TT_UNDO, "元に戻す"
-    IDS_TT_REDO, "やり直す"
 }
 
 //////////////////////////////////////////////////////////////////////////////

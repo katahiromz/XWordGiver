@@ -1377,17 +1377,17 @@ FONT 9, "Tahoma"
     PUSHBUTTON "Cancel", IDCANCEL, 240, 5, 60, 14
 }
 
-IDD_WORDLIST DIALOG 0, 0, 235, 185
+IDD_WORDLIST DIALOG 0, 0, 235, 195
 CAPTION "Generate from words (Ctrl+:)"
 STYLE DS_CENTER | DS_MODALFRAME | WS_POPUPWINDOW | WS_CAPTION
 FONT 10, "MS Shell Dlg"
 {
     LTEXT "", stc1, 0, 0, 235, 80
-    LTEXT "Please enter your multiple words (separated by space or newline):", -1, 5, 83, 224, 12
-    EDITTEXT edt1, 5, 100, 225, 60, ES_WANTRETURN | ES_AUTOVSCROLL | ES_MULTILINE | WS_VSCROLL
-    AUTOCHECKBOX "&Non-all can be OK", chx1, 5, 165, 85, 14
-    DEFPUSHBUTTON "&Generate", IDOK, 105, 165, 60, 14
-    PUSHBUTTON "Cancel", IDCANCEL, 170, 165, 60, 14
+    LTEXT "Please enter your multiple words (separated by space or newline):\r\n\r\n* The current Policy might be modified by this command.", -1, 5, 83, 224, 30
+    EDITTEXT edt1, 5, 115, 225, 55, ES_WANTRETURN | ES_AUTOVSCROLL | ES_MULTILINE | WS_VSCROLL
+    AUTOCHECKBOX "&Non-all can be OK", chx1, 5, 175, 85, 14
+    DEFPUSHBUTTON "&Generate", IDOK, 105, 175, 60, 14
+    PUSHBUTTON "Cancel", IDCANCEL, 170, 175, 60, 14
 }
 
 IDD_RULEPRESET DIALOG 0, 0, 270, 150
@@ -1396,7 +1396,7 @@ STYLE DS_CENTER | DS_MODALFRAME | WS_POPUPWINDOW | WS_CAPTION
 FONT 9, "Tahoma"
 {
     LTEXT "Preset &Value:", -1, 5, 5, 90, 10
-    COMBOBOX cmb1, 25, 20, 240, 300, CBS_HASSTRINGS | CBS_AUTOHSCROLL | CBS_DROPDOWN | CBS_OWNERDRAWFIXED | WS_VSCROLL | WS_TABSTOP
+    COMBOBOX cmb1, 25, 20, 240, 300, CBS_HASSTRINGS | CBS_AUTOHSCROLL | CBS_OWNERDRAWFIXED | CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP
     AUTOCHECKBOX "No adj. blocks", chx1, 17, 50, 75, 14
     AUTOCHECKBOX "No corner blocks", chx2, 98, 50, 75, 14
     AUTOCHECKBOX "No 3-way blocks", chx3, 179, 50, 75, 14
@@ -1437,7 +1437,7 @@ FONT 9, "Tahoma"
     AUTOCHECKBOX "&BG Color:", chx2, 100, 85, 60, 20, BS_LEFT
     PUSHBUTTON "", psh2, 165, 85, 20, 20, BS_OWNERDRAW
     AUTOCHECKBOX "Font &Name:", chx3, 5, 110, 60, 14
-    COMBOBOX cmb1, 5, 130, 180, 300, CBS_HASSTRINGS | CBS_AUTOHSCROLL | CBS_DROPDOWN | CBS_SORT | WS_VSCROLL | WS_TABSTOP
+    COMBOBOX cmb1, 5, 130, 180, 300, CBS_HASSTRINGS | CBS_SORT | CBS_AUTOHSCROLL | CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP
     PUSHBUTTON "&...", psh3, 157, 145, 30, 14
     AUTOCHECKBOX "Font &Size:", chx4, 5, 150, 65, 14
     EDITTEXT edt2, 80, 150, 37, 14, ES_NUMBER
@@ -1691,6 +1691,8 @@ STRINGTABLE
     IDS_TT_GENERATE, "Generate crossword"
     IDS_TT_OPEN, "Open crossword"
     IDS_TT_SAVEAS, "Save crossword"
+    IDS_TT_UNDO, "Undo"
+    IDS_TT_REDO, "Redo"
     IDS_TT_SOLVE, "Find a solution"
     IDS_TT_COPY, "Copy board"
     IDS_TT_PASTE, "Paste"
@@ -1701,8 +1703,6 @@ STRINGTABLE
     IDS_TT_GENERATEREPEATEDLY, "Continuously generate crosswords"
     IDS_TT_SOLVEREPEATEDLY, "Continuously find solutions"
     IDS_TT_SOLVEREPEATEDLYNOADDBLACK, "Continuously find solutions (without adding blocks)"
-    IDS_TT_UNDO, "Undo"
-    IDS_TT_REDO, "Redo"
 }
 
 //////////////////////////////////////////////////////////////////////////////
