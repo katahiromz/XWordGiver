@@ -991,7 +991,7 @@ DISCOUNT	A special sales price	[Shopping]	[Jewelry]	[Happy]	[Time]	[SummerSeason
 DISCOVERY	A new finding	[Travel]	[History]	[Geography]
 DISCUSSION	A detailed talk	[Business]	[Communication]	[Politics]	[SchoolLife]
 DISGUISE	Change in appearance	[HumanLife]	[Festival]	[SchoolLife]	[Tools]	[Calendar]
-DISH	A plate	[Cooking]	[Foods]
+DISH	A plate for foods	[Cooking]	[Foods]
 DISHWASHER	A device machine to wash the dishes	[Cooking]	[Foods]	[HomeAppliances]	[Happy]
 DISK	A flat and round object	[Technology]	[IT]
 DISPENSER	An utensil that releases something	[Beauty]	[HumanLife]	[Tools]	[Alcohol]
