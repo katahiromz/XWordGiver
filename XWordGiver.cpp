@@ -189,7 +189,64 @@ BOOL __fastcall XgPatternRuleIsOK(const PATDATA& pat)
         if (GET_DATA(0, pat.num_rows - 1) == ZEN_BLACK)
             return FALSE;
     }
-    //if (xg_nRules & RULE_DONTDIVIDE) // 分断禁はチェックしない。
+    if (xg_nRules & RULE_DONTDIVIDE) {
+        INT nCount = pat.num_rows * pat.num_columns;
+
+        // 各マスに対応するフラグ群。
+        std::vector<BYTE> pb(nCount, 0);
+
+        // 位置のキュー。
+        // 黒マスではないマスを探し、positionsに追加する。
+        std::queue<XG_Pos> positions;
+        if (GET_DATA(0, 0) != ZEN_BLACK) {
+            positions.emplace(0, 0);
+        } else {
+            for (INT i = 0; i < pat.num_rows; ++i) {
+                for (INT j = 0; j < pat.num_columns; ++j) {
+                    if (GET_DATA(i, j) != ZEN_BLACK) {
+                        positions.emplace(i, j);
+                        i = pat.num_rows;
+                        j = pat.num_columns;
+                        break;
+                    }
+                }
+            }
+        }
+
+        // 連続領域の塗りつぶし。
+        while (!positions.empty()) {
+            // 位置をキューの一番上から取り出す。
+            XG_Pos pos = positions.front();
+            positions.pop();
+            // フラグが立っていないか？
+            if (!pb[pos.m_i * pat.num_columns + pos.m_j]) {
+                // フラグを立てる。
+                pb[pos.m_i * pat.num_columns + pos.m_j] = 1;
+                // 上。
+                if (pos.m_i > 0 && GET_DATA(pos.m_i - 1, pos.m_j) != ZEN_BLACK)
+                    positions.emplace(pos.m_i - 1, pos.m_j);
+                // 下。
+                if (pos.m_i < pat.num_rows - 1 && GET_DATA(pos.m_i + 1, pos.m_j) != ZEN_BLACK)
+                    positions.emplace(pos.m_i + 1, pos.m_j);
+                // 左。
+                if (pos.m_j > 0 && GET_DATA(pos.m_i, pos.m_j - 1) != ZEN_BLACK)
+                    positions.emplace(pos.m_i, pos.m_j - 1);
+                // 右。
+                if (pos.m_j < pat.num_columns - 1 && GET_DATA(pos.m_i, pos.m_j + 1) != ZEN_BLACK)
+                    positions.emplace(pos.m_i, pos.m_j + 1);
+            }
+        }
+
+        // すべてのマスについて。
+        while (nCount-- > 0) {
+            // フラグが立っていないのに、黒マスではないマスがあったら、失敗。
+            if (pb[nCount] == 0 &&
+                GET_DATA(nCount / pat.num_columns, nCount % pat.num_columns) != ZEN_BLACK)
+            {
+                return FALSE;    // 分断されている。
+            }
+        }
+    }
     if (xg_nRules & RULE_DONTTHREEDIAGONALS) {
         for (INT y = 0; y < pat.num_rows - 2; ++y) {
             for (INT x = 0; x < pat.num_columns - 2; ++x) {
