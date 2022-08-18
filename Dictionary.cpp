@@ -478,6 +478,7 @@ BOOL XgLoadDictsAll(void)
         if (!XgLoadDictsFromDir(sz))
         {
             PathRemoveFileSpec(sz);
+            PathRemoveFileSpec(sz);
             PathAppend(sz, L"DICT");
             XgLoadDictsFromDir(sz);
         }
