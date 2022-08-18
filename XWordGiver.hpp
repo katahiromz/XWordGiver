@@ -1477,7 +1477,8 @@ struct PATDATA
 {
     int num_columns;
     int num_rows;
-    std::wstring data;
+    std::wstring text;
+    std::vector<WCHAR> data;
 };
 
 #endif  // ndef XWORDGIVER

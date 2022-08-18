@@ -121,10 +121,15 @@ XG_VIEW_MODE xg_nViewMode = XG_VIEW_NORMAL;
 static bool s_bSwapped = false;
 
 //////////////////////////////////////////////////////////////////////////////
+// パターン。
 
 // パターンのテキストデータを扱いやすいよう、加工する。
-void XgConvertPatternData(std::vector<WCHAR>& data, std::wstring text, INT cx, INT cy)
+void XgConvertPatternData(PATDATA& pat)
 {
+    auto& data = pat.data;
+    auto& text = pat.text;
+    INT& cx = pat.num_columns;
+    INT& cy = pat.num_rows;
     xg_str_replace_all(text, L"\r\n", L"\n");
     xg_str_replace_all(text, L"\u2501", L"");
     xg_str_replace_all(text, L"\u250F\u2513\n", L"");
@@ -154,8 +159,9 @@ void XgConvertPatternData(std::vector<WCHAR>& data, std::wstring text, INT cx, I
 }
 
 // パターンが黒マスルールに適合するか？
-BOOL __fastcall XgPatternRuleIsOK(const PATDATA& pat, const std::vector<WCHAR>& data)
+BOOL __fastcall XgPatternRuleIsOK(const PATDATA& pat)
 {
+    const auto& data = pat.data;
 #define GET_DATA(x, y) data[(y) * pat.num_columns + (x)]
     if (xg_nRules & RULE_DONTDOUBLEBLACK) {
         for (INT y = 0; y < pat.num_rows; ++y) {
@@ -336,16 +342,12 @@ BOOL XgLoadPatterns(LPCWSTR pszFileName, std::vector<PATDATA>& patterns)
         case 0x2517: // ┗
             text += line;
             text += L"\r\n";
-            pat.data = text;
-            {
-                // パターンのテキストデータを扱いやすいよう、加工する。
-                std::vector<WCHAR> data;
-                XgConvertPatternData(data, pat.data, pat.num_columns, pat.num_rows);
-
-                // ルールに適合するか？
-                if (XgPatternRuleIsOK(pat, data)) {
-                    patterns.push_back(pat);
-                }
+            pat.text = text;
+            // パターンのテキストデータを扱いやすいよう、加工する。
+            XgConvertPatternData(pat);
+            // ルールに適合するか？
+            if (XgPatternRuleIsOK(pat)) {
+                patterns.push_back(pat);
             }
             break;
         case 0x2503: // ┃

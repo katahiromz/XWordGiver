@@ -9,12 +9,8 @@ extern BOOL xg_bShowAnswerOnPattern;
 // 解を求める（黒マス追加なし）。
 bool __fastcall XgOnSolve_NoAddBlack(HWND hwnd, bool bShowAnswer = true);
 
-// パターンのテキストデータを扱いやすいよう、加工する。
-void XgConvertPatternData(std::vector<WCHAR>& data, std::wstring text, INT cx, INT cy);
 // パターンデータを読み込む。
 BOOL XgLoadPatterns(LPCWSTR pszFileName, std::vector<PATDATA>& patterns);
-// 黒マスルールに適合するか？
-BOOL __fastcall XgPatternRuleIsOK(const PATDATA& pat, const std::vector<WCHAR>& data);
 
 class XG_PatternDialog : public XG_Dialog
 {
@@ -179,7 +175,7 @@ public:
             auto sa2 = std::make_shared<XG_UndoData_SetAll>();
             sa1->Get();
             {
-                XgPasteBoard(xg_hMainWnd, pat.data);
+                XgPasteBoard(xg_hMainWnd, pat.text);
                 XgCopyBoard(xg_hMainWnd);
             }
             sa2->Get();
@@ -209,7 +205,7 @@ public:
             sa1->Get();
             {
                 // コピー＆貼り付け。
-                XgPasteBoard(xg_hMainWnd, pat.data);
+                XgPasteBoard(xg_hMainWnd, pat.text);
                 XgCopyBoard(xg_hMainWnd);
             }
             sa2->Get();
@@ -360,9 +356,8 @@ public:
             DrawFocusRect(hDC, &rcItem);
         }
 
-        // パターンのテキストデータを扱いやすいよう、加工する。
-        std::vector<WCHAR> data;
-        XgConvertPatternData(data, pat.data, pat.num_columns, pat.num_rows);
+        // パターンデータ。
+        std::vector<WCHAR> data = pat.data;
 
         // 描画項目のサイズ。
         INT cxItem = rcItem.right - rcItem.left;
