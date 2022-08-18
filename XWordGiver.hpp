@@ -1472,4 +1472,15 @@ BOOL XgOnLoad(HWND hwnd, LPCWSTR pszFile, LPPOINT ppt = NULL);
 #include "Marks.hpp"
 #include "SaveBitmapToFile.h"
 
+// 黒マスパターンの構造体。
+struct PATDATA
+{
+    int num_columns;
+    int num_rows;
+    std::wstring data;
+};
+
+// 黒マスルールに適合するか？
+BOOL __fastcall XgRuleIsOK(const PATDATA& pat, const std::vector<WCHAR>& data);
+
 #endif  // ndef XWORDGIVER

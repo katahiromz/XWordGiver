@@ -5238,19 +5238,17 @@ void __fastcall XgMakeItNumCro(HWND hwnd)
 BOOL __fastcall XgFindLocalFile(LPWSTR pszPath, UINT cchPath, LPCWSTR pszFileName)
 {
     GetModuleFileNameW(NULL, pszPath, MAX_PATH);
-
     PathRemoveFileSpecW(pszPath);
     PathAppendW(pszPath, pszFileName);
-
     if (!PathFileExistsW(pszPath))
     {
         PathRemoveFileSpecW(pszPath);
-        PathAppendW(pszPath, L"..");
+        PathRemoveFileSpecW(pszPath);
         PathAppendW(pszPath, pszFileName);
         if (!PathFileExistsW(pszPath))
         {
             PathRemoveFileSpecW(pszPath);
-            PathAppendW(pszPath, L"..");
+            PathRemoveFileSpecW(pszPath);
             PathAppendW(pszPath, pszFileName);
         }
     }
