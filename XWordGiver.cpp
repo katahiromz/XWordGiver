@@ -123,11 +123,11 @@ static bool s_bSwapped = false;
 //////////////////////////////////////////////////////////////////////////////
 // パターン。
 
-// パターンのテキストデータを扱いやすいよう、加工する。
-void XgConvertPatternData(PATDATA& pat)
+// パターンのデータを扱いやすいよう、加工する。
+void XgGetPatternData(PATDATA& pat)
 {
+    std::wstring text = pat.text;
     auto& data = pat.data;
-    auto& text = pat.text;
     INT& cx = pat.num_columns;
     INT& cy = pat.num_rows;
     xg_str_replace_all(text, L"\r\n", L"\n");
@@ -303,7 +303,7 @@ BOOL XgLoadPatterns(LPCWSTR pszFileName, std::vector<PATDATA>& patterns)
     // パターンデータをクリアする。
     patterns.clear();
 
-    // read all
+    // read all as UTF-8
     std::string utf8;
     CHAR buf[256];
     FILE *fp = _wfopen(pszFileName, L"rb");
@@ -343,8 +343,8 @@ BOOL XgLoadPatterns(LPCWSTR pszFileName, std::vector<PATDATA>& patterns)
             text += line;
             text += L"\r\n";
             pat.text = text;
-            // パターンのテキストデータを扱いやすいよう、加工する。
-            XgConvertPatternData(pat);
+            // パターンのデータを扱いやすいよう、加工する。
+            XgGetPatternData(pat);
             // ルールに適合するか？
             if (XgPatternRuleIsOK(pat)) {
                 patterns.push_back(pat);

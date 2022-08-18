@@ -357,7 +357,7 @@ public:
         }
 
         // パターンデータ。
-        std::vector<WCHAR> data = pat.data;
+        const auto& data = pat.data;
 
         // 描画項目のサイズ。
         INT cxItem = rcItem.right - rcItem.left;
