@@ -162,6 +162,12 @@ void XgGetPatternData(PATDATA& pat)
 BOOL __fastcall XgPatternRuleIsOK(const PATDATA& pat)
 {
     const auto& data = pat.data;
+
+    // データサイズを確認。
+    assert(data.size() == pat.num_rows * pat.num_columns);
+    if (data.size() != pat.num_rows * pat.num_columns)
+        return FALSE;
+
 #define GET_DATA(x, y) data[(y) * pat.num_columns + (x)]
     if (xg_nRules & RULE_DONTDOUBLEBLACK) {
         for (INT y = 0; y < pat.num_rows; ++y) {
@@ -203,7 +209,7 @@ BOOL __fastcall XgPatternRuleIsOK(const PATDATA& pat)
         } else {
             for (INT i = 0; i < pat.num_rows; ++i) {
                 for (INT j = 0; j < pat.num_columns; ++j) {
-                    if (GET_DATA(i, j) != ZEN_BLACK) {
+                    if (GET_DATA(j, i) != ZEN_BLACK) {
                         positions.emplace(i, j);
                         i = pat.num_rows;
                         j = pat.num_columns;
@@ -223,16 +229,16 @@ BOOL __fastcall XgPatternRuleIsOK(const PATDATA& pat)
                 // フラグを立てる。
                 pb[pos.m_i * pat.num_columns + pos.m_j] = 1;
                 // 上。
-                if (pos.m_i > 0 && GET_DATA(pos.m_i - 1, pos.m_j) != ZEN_BLACK)
+                if (pos.m_i > 0 && GET_DATA(pos.m_j, pos.m_i - 1) != ZEN_BLACK)
                     positions.emplace(pos.m_i - 1, pos.m_j);
                 // 下。
-                if (pos.m_i < pat.num_rows - 1 && GET_DATA(pos.m_i + 1, pos.m_j) != ZEN_BLACK)
+                if (pos.m_i < pat.num_rows - 1 && GET_DATA(pos.m_j, pos.m_i + 1) != ZEN_BLACK)
                     positions.emplace(pos.m_i + 1, pos.m_j);
                 // 左。
-                if (pos.m_j > 0 && GET_DATA(pos.m_i, pos.m_j - 1) != ZEN_BLACK)
+                if (pos.m_j > 0 && GET_DATA(pos.m_j - 1, pos.m_i) != ZEN_BLACK)
                     positions.emplace(pos.m_i, pos.m_j - 1);
                 // 右。
-                if (pos.m_j < pat.num_columns - 1 && GET_DATA(pos.m_i, pos.m_j + 1) != ZEN_BLACK)
+                if (pos.m_j < pat.num_columns - 1 && GET_DATA(pos.m_j + 1, pos.m_i) != ZEN_BLACK)
                     positions.emplace(pos.m_i, pos.m_j + 1);
             }
         }
@@ -241,7 +247,7 @@ BOOL __fastcall XgPatternRuleIsOK(const PATDATA& pat)
         while (nCount-- > 0) {
             // フラグが立っていないのに、黒マスではないマスがあったら、失敗。
             if (pb[nCount] == 0 &&
-                GET_DATA(nCount / pat.num_columns, nCount % pat.num_columns) != ZEN_BLACK)
+                GET_DATA(nCount % pat.num_columns, nCount / pat.num_columns) != ZEN_BLACK)
             {
                 return FALSE;    // 分断されている。
             }
