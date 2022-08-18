@@ -164,8 +164,8 @@ BOOL __fastcall XgPatternRuleIsOK(const PATDATA& pat)
     const auto& data = pat.data;
 
     // データサイズを確認。
-    assert(data.size() == pat.num_rows * pat.num_columns);
-    if (data.size() != pat.num_rows * pat.num_columns)
+    assert(INT(data.size()) == pat.num_rows * pat.num_columns);
+    if (INT(data.size()) != pat.num_rows * pat.num_columns)
         return FALSE;
 
 #define GET_DATA(x, y) data[(y) * pat.num_columns + (x)]
