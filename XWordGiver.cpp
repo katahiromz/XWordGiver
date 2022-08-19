@@ -495,9 +495,11 @@ BOOL XgPatternsUnitTest(LPCWSTR input, LPCWSTR output)
 #ifdef NDEBUG
     return TRUE;
 #else
+    // パターンを読み込む。
     std::vector<PATDATA> patterns;
     XgLoadPatterns(input, patterns);
 
+    // 転置したパターンも追加する。
     std::vector<PATDATA> temp_pats;
     for (auto& pat : patterns) {
         temp_pats.push_back(pat);
@@ -506,6 +508,7 @@ BOOL XgPatternsUnitTest(LPCWSTR input, LPCWSTR output)
     }
     patterns = std::move(temp_pats);
 
+    // ソートする。
     std::sort(patterns.begin(), patterns.end(), [](const PATDATA& a, const PATDATA& b) {
         if (a.num_columns < b.num_columns)
             return true;
@@ -518,11 +521,13 @@ BOOL XgPatternsUnitTest(LPCWSTR input, LPCWSTR output)
         return (a.text < b.text);
     });
 
+    // 一意化する。
     auto last = std::unique(patterns.begin(), patterns.end(), [](const PATDATA& a, const PATDATA& b) {
         return a.text == b.text;
     });
     patterns.erase(last, patterns.end());
 
+    // パターンを書き込む。
     return XgSavePatterns(output, patterns);
 #endif
 }
