@@ -2920,7 +2920,6 @@ bool __fastcall XgOnSolve_AddBlack(HWND hwnd)
     xg_vYokoInfo.clear();
     xg_vMarks.clear();
     xg_vMarkedCands.clear();
-    xg_strFileName.clear();
     // 生成した数と生成する数。
     xg_nNumberGenerated = 0;
     // ナンクロモードをリセットする。
@@ -3024,7 +3023,6 @@ bool __fastcall XgOnSolve_NoAddBlack(HWND hwnd, bool bShowAnswer/* = true*/)
     xg_vYokoInfo.clear();
     xg_vMarks.clear();
     xg_vMarkedCands.clear();
-    xg_strFileName.clear();
     // 生成した数と生成する数。
     xg_nNumberGenerated = 0;
     // ナンクロモードをリセットする。
