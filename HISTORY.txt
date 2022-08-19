@@ -187,6 +187,7 @@
     - Added "Undo" and "Redo" on Toolbar.
     - Able to specify the "save to" location by folder drop.
     - Don't clear the opening filename when finding a solution.
+    - Fixed display of the Policy menu.
 
 # 開発履歴 (Japanese)
 
@@ -690,3 +691,4 @@
     - ツールバーに「元に戻す」「やり直す」ボタンを追加。
     - フォルダドロップで保存先を指定可能に。
     - 「解を求める」ときに開いているファイル名をクリアしないようにした。
+    - ルールメニューの黒斜三連禁と黒斜四連禁がおかしかったのを修正。

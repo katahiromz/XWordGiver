@@ -6303,9 +6303,10 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT /*codeNo
             xg_nRules &= ~RULE_DONTTHREEDIAGONALS;
             xg_nRules |= RULE_DONTFOURDIAGONALS;
         } else if (!(xg_nRules & RULE_DONTTHREEDIAGONALS) && (xg_nRules & RULE_DONTFOURDIAGONALS)) {
-            xg_nRules &= ~(RULE_DONTTHREEDIAGONALS | RULE_DONTFOURDIAGONALS);
-        } else if ((xg_nRules & RULE_DONTTHREEDIAGONALS) && !(xg_nRules & RULE_DONTFOURDIAGONALS)) {
             xg_nRules &= ~RULE_DONTFOURDIAGONALS;
+        } else if ((xg_nRules & RULE_DONTTHREEDIAGONALS) && !(xg_nRules & RULE_DONTFOURDIAGONALS)) {
+            xg_nRules &= ~RULE_DONTTHREEDIAGONALS;
+            xg_nRules |= RULE_DONTFOURDIAGONALS;
         } else {
             xg_nRules |= RULE_DONTFOURDIAGONALS;
         }
