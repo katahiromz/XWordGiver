@@ -158,6 +158,51 @@ void XgGetPatternData(PATDATA& pat)
     }
 }
 
+// パターンのデータを扱いやすいよう、加工する。
+void XgSetPatternData(PATDATA& pat)
+{
+    std::wstring text;
+    const auto& data = pat.data;
+    INT& cx = pat.num_columns;
+    INT& cy = pat.num_rows;
+
+    text += 0x250F; // ┏
+    for (INT x = 0; x < cx; ++x) {
+        text += 0x2501; // ━
+    }
+    text += 0x2513; // ┓
+    text += L"\r\n";
+
+    for (INT y = 0; y < cy; ++y) {
+        text += 0x2503; // ┃
+        for (INT x = 0; x < cx; ++x) {
+            text += data[x + cx * y];
+        }
+        text += 0x2503; // ┃
+        text += L"\r\n";
+    }
+
+    text += 0x2517; // ┗
+    for (INT x = 0; x < cx; ++x) {
+        text += 0x2501; // ━
+    }
+    text += 0x251B; // ┛
+    text += L"\r\n";
+
+    pat.text = std::move(text);
+}
+
+// パターンを転置する。
+PATDATA XgTransposePattern(const PATDATA& pat)
+{
+    PATDATA ret;
+    ret.num_columns = pat.num_rows;
+    ret.num_rows = pat.num_columns;
+    ret.data = pat.data;
+    XgSetPatternData(ret);
+    return ret;
+}
+
 // パターンが黒マスルールに適合するか？
 BOOL __fastcall XgPatternRuleIsOK(const PATDATA& pat)
 {
@@ -423,6 +468,63 @@ BOOL XgLoadPatterns(LPCWSTR pszFileName, std::vector<PATDATA>& patterns)
     }
 
     return TRUE;
+}
+
+// パターンデータを書き込む。
+BOOL XgSavePatterns(LPCWSTR pszFileName, const std::vector<PATDATA>& patterns)
+{
+    std::wstring text;
+    for (auto& pat : patterns) {
+        text += pat.text;
+        text += L"\r\n";
+    }
+
+    FILE *fp = _wfopen(pszFileName, L"wb");
+    if (!fp)
+        return FALSE;
+
+    auto utf8 = XgUnicodeToUtf8(text);
+    fputs(utf8.c_str(), fp);
+    fclose(fp);
+    return TRUE;
+}
+
+// パターンの単体テスト。
+BOOL XgPatternsUnitTest(LPCWSTR input, LPCWSTR output)
+{
+#ifdef NDEBUG
+    return TRUE;
+#else
+    std::vector<PATDATA> patterns;
+    XgLoadPatterns(input, patterns);
+
+    std::vector<PATDATA> temp_pats;
+    for (auto& pat : patterns) {
+        temp_pats.push_back(pat);
+        auto transposed = XgTransposePattern(pat);
+        temp_pats.push_back(transposed);
+    }
+    patterns = std::move(temp_pats);
+
+    std::sort(patterns.begin(), patterns.end(), [](const PATDATA& a, const PATDATA& b) {
+        if (a.num_columns < b.num_columns)
+            return true;
+        if (a.num_columns > b.num_columns)
+            return false;
+        if (a.num_rows < b.num_rows)
+            return true;
+        if (a.num_rows > b.num_rows)
+            return false;
+        return (a.text < b.text);
+    });
+
+    auto last = std::unique(patterns.begin(), patterns.end(), [](const PATDATA& a, const PATDATA& b) {
+        return a.text == b.text;
+    });
+    patterns.erase(last, patterns.end());
+
+    return XgSavePatterns(output, patterns);
+#endif
 }
 
 //////////////////////////////////////////////////////////////////////////////

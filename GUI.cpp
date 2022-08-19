@@ -7316,6 +7316,10 @@ void XgDoTests(void)
     assert(xg_str_unescape(L"\\\\abc") == L"\\abc");
     assert(xg_str_unescape(L"\\x11T") == L"\021T");
     assert(xg_str_unescape(L"\\021T") == L"\021T");
+
+    // // パターンの単体テスト。
+    // BOOL XgPatternsUnitTest(LPCWSTR input, LPCWSTR output);
+    // XgPatternsUnitTest(L"PAT.txt", L"PAT2.txt");
 #endif
 }
 
