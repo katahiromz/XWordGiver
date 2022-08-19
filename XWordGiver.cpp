@@ -554,7 +554,7 @@ BOOL XgPatternsUnitTest(LPCWSTR input, LPCWSTR output)
     std::vector<PATDATA> patterns;
     XgLoadPatterns(input, patterns);
 
-    // 転置したパターンも追加する。
+    // 回転・転置したパターンも追加する。
     std::vector<PATDATA> temp_pats;
     for (auto& pat : patterns) {
         if (XgIsPatternDividedByBlocks(pat))
@@ -566,6 +566,8 @@ BOOL XgPatternsUnitTest(LPCWSTR input, LPCWSTR output)
         temp_pats.push_back(flip_h);
         auto flip_v = XgFlipPatternV(pat);
         temp_pats.push_back(flip_v);
+        auto flip_hv = XgFlipPatternH(flip_v);
+        temp_pats.push_back(flip_hv);
     }
     patterns = std::move(temp_pats);
 
