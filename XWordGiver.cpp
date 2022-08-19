@@ -2489,7 +2489,9 @@ bool __fastcall XgSetJsonString(HWND hwnd, const std::wstring& str)
         bool has_mark = j["has_mark"];
         bool has_hints = j["has_hints"];
         INT rules = DEFAULT_RULES;
-        if (j["rules"].is_string()) {
+        if (j["policy"].is_number_integer()) {
+            rules = int(j["policy"]);
+        } else if (j["rules"].is_string()) {
             auto str = XgUtf8ToUnicode(j["rules"].get<std::string>());
             rules = XgParseRules(str);
         }
@@ -2893,6 +2895,8 @@ bool __fastcall XgSetXDString(HWND hwnd, const std::wstring& str)
                         else
                             view_mode = XG_VIEW_SKELETON;
                     }
+                } else if (line.find(L"Policy:") == 0) {
+                    xg_nRules = (_wtoi(&line[7]) | RULE_DONTDIVIDE);
                 } else {
                     notes += line;
                     notes += L"\r\n";
@@ -5946,6 +5950,8 @@ bool __fastcall XgDoSaveJson(LPCWSTR pszFile)
         j["column_count"] = xg_nCols;
         // ルール。
         j["rules"] = XgUnicodeToUtf8(XgGetRulesString(xg_nRules));
+        // ルール（整数値）。
+        j["policy"] = xg_nRules;
         // 辞書名。
         j["dictionary"] = XgUnicodeToUtf8(PathFindFileNameW(xg_dict_name.c_str()));
         // ビューモード。
@@ -6335,6 +6341,9 @@ bool __fastcall XgDoSaveXdFile(LPCWSTR pszFile)
                 fprintf(fout, "%s\n", XgUnicodeToUtf8(str).c_str());
             }
         }
+
+        // ルール。
+        fprintf(fout, "\nPolicy: %u\n", xg_nRules);
 
         // ボックス。
         XgWriteXdBoxes(fout);
