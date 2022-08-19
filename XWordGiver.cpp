@@ -214,6 +214,40 @@ PATDATA XgTransposePattern(const PATDATA& pat)
     return ret;
 }
 
+// パターンを水平に反転する。
+PATDATA XgFlipPatternH(const PATDATA& pat)
+{
+    PATDATA ret = pat;
+    ret.data = pat.data;
+    auto& data = pat.data;
+    for (INT y = 0; y < pat.num_rows; ++y) {
+        for (INT x = 0; x < pat.num_columns; ++x) {
+            ret.data[y * ret.num_columns + x] = GET_DATA((ret.num_columns - x - 1), y);
+        }
+    }
+
+    XgSetPatternData(ret);
+
+    return ret;
+}
+
+// パターンを垂直に反転する。
+PATDATA XgFlipPatternV(const PATDATA& pat)
+{
+    PATDATA ret = pat;
+    ret.data = pat.data;
+    auto& data = pat.data;
+    for (INT y = 0; y < pat.num_rows; ++y) {
+        for (INT x = 0; x < pat.num_columns; ++x) {
+            ret.data[y * ret.num_columns + x] = GET_DATA(x, pat.num_rows - y - 1);
+        }
+    }
+
+    XgSetPatternData(ret);
+
+    return ret;
+}
+
 // パターンが黒マスで分断されているか？
 BOOL XgIsPatternDividedByBlocks(const PATDATA& pat)
 {
@@ -528,6 +562,10 @@ BOOL XgPatternsUnitTest(LPCWSTR input, LPCWSTR output)
         temp_pats.push_back(pat);
         auto transposed = XgTransposePattern(pat);
         temp_pats.push_back(transposed);
+        auto flip_h = XgFlipPatternH(pat);
+        temp_pats.push_back(flip_h);
+        auto flip_v = XgFlipPatternV(pat);
+        temp_pats.push_back(flip_v);
     }
     patterns = std::move(temp_pats);
 
