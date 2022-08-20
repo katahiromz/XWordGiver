@@ -378,24 +378,24 @@ std::string XgUnicodeToUtf8(const std::wstring& wide)
 // ANSI -> Unicode
 std::wstring XgAnsiToUnicode(const std::string& ansi)
 {
-    const INT len = ::MultiByteToWideChar(SJIS_CODEPAGE, 0, ansi.data(), -1, NULL, 0);
+    const INT len = ::MultiByteToWideChar(XG_SJIS_CODEPAGE, 0, ansi.data(), -1, NULL, 0);
     if (len == 0)
         return L"";
 
     std::wstring uni(len - 1, 0);
-    ::MultiByteToWideChar(SJIS_CODEPAGE, 0, ansi.data(), -1, &uni[0], len);
+    ::MultiByteToWideChar(XG_SJIS_CODEPAGE, 0, ansi.data(), -1, &uni[0], len);
     return uni;
 }
 
 // Unicode -> ANSI
 std::string XgUnicodeToAnsi(const std::wstring& wide)
 {
-    int len = ::WideCharToMultiByte(SJIS_CODEPAGE, 0, wide.data(), -1, NULL, 0, NULL, NULL);
+    int len = ::WideCharToMultiByte(XG_SJIS_CODEPAGE, 0, wide.data(), -1, NULL, 0, NULL, NULL);
     if (len == 0)
         return "";
 
     std::string ansi(len - 1, 0);
-    ::WideCharToMultiByte(SJIS_CODEPAGE, 0, wide.data(), -1, &ansi[0], len, NULL, NULL);
+    ::WideCharToMultiByte(XG_SJIS_CODEPAGE, 0, wide.data(), -1, &ansi[0], len, NULL, NULL);
     return ansi;
 }
 
