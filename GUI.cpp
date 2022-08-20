@@ -4886,7 +4886,7 @@ void __fastcall XgOpenPatterns(HWND hwnd)
 }
 
 // 「黒マスルールの説明.txt」を開く。
-static void OnOpenRulesTxt(HWND hwnd)
+void __fastcall XgOnOpenRulesTxt(HWND hwnd)
 {
     WCHAR szPath[MAX_PATH], szDir[MAX_PATH];
     GetModuleFileNameW(NULL, szPath, MAX_PATH);
@@ -6388,7 +6388,7 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT /*codeNo
         XgUpdateRules(hwnd);
         break;
     case ID_OPENRULESTXT:
-        OnOpenRulesTxt(hwnd);
+        XgOnOpenRulesTxt(hwnd);
         break;
     case ID_RULE_DONTDOUBLEBLACK:
         if (xg_nRules & RULE_DONTDOUBLEBLACK) {
