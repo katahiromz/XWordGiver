@@ -12,6 +12,8 @@ bool __fastcall XgOnSolve_NoAddBlack(HWND hwnd, bool bShowAnswer = true);
 // パターンデータを読み込む。
 BOOL XgLoadPatterns(LPCWSTR pszFileName, patterns_t& patterns);
 
+#define XG_MAX_PAT_SIZE 18
+
 class XG_PatternDialog : public XG_Dialog
 {
 public:
@@ -91,8 +93,12 @@ public:
         patterns_t pats;
         for (auto& pat : s_patterns)
         {
-            if (FilterPatBySize(pat, type))
+            if (pat.num_columns <= XG_MAX_PAT_SIZE &&
+                pat.num_rows <= XG_MAX_PAT_SIZE &&
+                FilterPatBySize(pat, type))
+            {
                 pats.push_back(pat);
+            }
         }
         s_patterns = std::move(pats);
 
