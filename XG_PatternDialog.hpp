@@ -35,6 +35,8 @@ public:
     // タイプによりフィルターを行う。
     BOOL FilterPatBySize(const PATDATA& pat, INT type) {
         switch (type) {
+        case -1:
+            break;
         case rad1:
             if (pat.num_columns != pat.num_rows)
                 return FALSE;
@@ -68,6 +70,8 @@ public:
             if (pat.num_columns != pat.num_rows)
                 return FALSE;
             break;
+        default:
+            assert(0);
         }
 
         return TRUE;
