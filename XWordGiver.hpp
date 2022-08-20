@@ -62,9 +62,9 @@
 
 ////////////////////////////////////////////////////////////////////////////
 
-#include "MPointSizeRect.hpp"
-#include "MRegKey.hpp"
-#include "MScrollView.hpp"
+#include "MPointSizeRect.hpp"   // MPoint, MSize, and MRect
+#include "MRegKey.hpp"          // MRegKey for registry key
+#include "MScrollView.hpp"      // MScrollView
 
 //////////////////////////////////////////////////////////////////////////////
 // クロスワード。
@@ -1454,14 +1454,14 @@ BOOL XgOnLoad(HWND hwnd, LPCWSTR pszFile, LPPOINT ppt = NULL);
 #include "SaveBitmapToFile.h"
 
 // 黒マスパターンの構造体。
-struct PATDATA
+struct XG_PATDATA
 {
     int num_columns;
     int num_rows;
     std::wstring text;
     std::vector<WCHAR> data;
 };
-typedef std::vector<PATDATA> patterns_t;
+typedef std::vector<XG_PATDATA> patterns_t;
 
 //////////////////////////////////////////////////////////////////////////////
 // ボックス。

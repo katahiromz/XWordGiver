@@ -33,7 +33,7 @@ public:
     }
 
     // タイプによりフィルターを行う。
-    BOOL FilterPatBySize(const PATDATA& pat, INT type) {
+    BOOL FilterPatBySize(const XG_PATDATA& pat, INT type) {
         switch (type) {
         case -1:
             break;

@@ -124,7 +124,7 @@ static bool s_bSwapped = false;
 // パターン。
 
 // パターンのデータを扱いやすいよう、加工する。
-void XgGetPatternData(PATDATA& pat)
+void XgGetPatternData(XG_PATDATA& pat)
 {
     std::wstring text = pat.text;
     auto& data = pat.data;
@@ -159,7 +159,7 @@ void XgGetPatternData(PATDATA& pat)
 }
 
 // パターンのデータを扱いやすいよう、加工する。
-void XgSetPatternData(PATDATA& pat)
+void XgSetPatternData(XG_PATDATA& pat)
 {
     std::wstring text;
     const auto& data = pat.data;
@@ -195,9 +195,9 @@ void XgSetPatternData(PATDATA& pat)
 #define XG_GET_DATA(x, y) data[(y) * pat.num_columns + (x)]
 
 // パターンを転置する。
-PATDATA XgTransposePattern(const PATDATA& pat)
+XG_PATDATA XgTransposePattern(const XG_PATDATA& pat)
 {
-    PATDATA ret;
+    XG_PATDATA ret;
     ret.num_columns = pat.num_rows;
     ret.num_rows = pat.num_columns;
 
@@ -215,9 +215,9 @@ PATDATA XgTransposePattern(const PATDATA& pat)
 }
 
 // パターンを水平に反転する。
-PATDATA XgFlipPatternH(const PATDATA& pat)
+XG_PATDATA XgFlipPatternH(const XG_PATDATA& pat)
 {
-    PATDATA ret = pat;
+    XG_PATDATA ret = pat;
     ret.data = pat.data;
     auto& data = pat.data;
     for (INT y = 0; y < pat.num_rows; ++y) {
@@ -232,9 +232,9 @@ PATDATA XgFlipPatternH(const PATDATA& pat)
 }
 
 // パターンを垂直に反転する。
-PATDATA XgFlipPatternV(const PATDATA& pat)
+XG_PATDATA XgFlipPatternV(const XG_PATDATA& pat)
 {
-    PATDATA ret = pat;
+    XG_PATDATA ret = pat;
     ret.data = pat.data;
     auto& data = pat.data;
     for (INT y = 0; y < pat.num_rows; ++y) {
@@ -249,7 +249,7 @@ PATDATA XgFlipPatternV(const PATDATA& pat)
 }
 
 // パターンが黒マスで分断されているか？
-BOOL XgIsPatternDividedByBlocks(const PATDATA& pat)
+BOOL XgIsPatternDividedByBlocks(const XG_PATDATA& pat)
 {
     INT nCount = pat.num_rows * pat.num_columns;
     auto& data = pat.data;
@@ -313,7 +313,7 @@ BOOL XgIsPatternDividedByBlocks(const PATDATA& pat)
 }
 
 // パターンが黒マスルールに適合するか？
-BOOL __fastcall XgPatternRuleIsOK(const PATDATA& pat)
+BOOL __fastcall XgPatternRuleIsOK(const XG_PATDATA& pat)
 {
     const auto& data = pat.data;
 
@@ -486,7 +486,7 @@ BOOL XgLoadPatterns(LPCWSTR pszFileName, patterns_t& patterns)
 
     utf8.clear();
 
-    PATDATA pat;
+    XG_PATDATA pat;
     std::wstring text;
 
     // parse each line
@@ -572,7 +572,7 @@ BOOL XgPatternsUnitTest(LPCWSTR input, LPCWSTR output)
     patterns = std::move(temp_pats);
 
     // ソートする。
-    std::sort(patterns.begin(), patterns.end(), [](const PATDATA& a, const PATDATA& b) {
+    std::sort(patterns.begin(), patterns.end(), [](const XG_PATDATA& a, const XG_PATDATA& b) {
         if (a.num_columns < b.num_columns)
             return true;
         if (a.num_columns > b.num_columns)
@@ -585,7 +585,7 @@ BOOL XgPatternsUnitTest(LPCWSTR input, LPCWSTR output)
     });
 
     // 一意化する。
-    auto last = std::unique(patterns.begin(), patterns.end(), [](const PATDATA& a, const PATDATA& b) {
+    auto last = std::unique(patterns.begin(), patterns.end(), [](const XG_PATDATA& a, const XG_PATDATA& b) {
         return a.text == b.text;
     });
     patterns.erase(last, patterns.end());
