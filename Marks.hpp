@@ -1,14 +1,12 @@
 ﻿//////////////////////////////////////////////////////////////////////////////
-// Marks.hpp --- XWord Giver (Japanese Crossword Generator)
+// Marks.hpp --- XWordGiver (Japanese Crossword Generator)
 // Copyright (C) 2012-2020 Katayama Hirofumi MZ. All Rights Reserved.
 // (Japanese, UTF-8)
 
-#ifndef __XWORDGIVER_MARKS_HPP__
-#define __XWORDGIVER_MARKS_HPP__
+#pragma once
 
+// 二重マスの位置。
 extern std::vector<XG_Pos> xg_vMarks;
-
-//////////////////////////////////////////////////////////////////////////////
 
 // 二重マス単語候補。
 extern std::vector<std::wstring>  xg_vMarkedCands;
@@ -45,7 +43,3 @@ void __fastcall XgSetMarkedWord(void);
 void __fastcall XgGetNextMarkedWord(void);
 // 前の二重マス単語を取得する。
 void __fastcall XgGetPrevMarkedWord(void);
-
-//////////////////////////////////////////////////////////////////////////////
-
-#endif  // ndef __XWORDGIVER_MARKS_HPP__

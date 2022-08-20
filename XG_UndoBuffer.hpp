@@ -2,14 +2,11 @@
 // XG_UndoBuffer.hpp
 // Copyright (C) 2012-2020 Katayama Hirofumi MZ. All Rights Reserved.
 
-#ifndef UNDOBUFFER_HPP_
-#define UNDOBUFFER_HPP_
+#pragma once
 
 #include <memory>   // for std::shared_ptr
 
 using std::shared_ptr;
-
-//////////////////////////////////////////////////////////////////////////////
 
 enum UNDOABLE_COMMAND_ID : UINT {
     UC_SETAT,
@@ -229,9 +226,5 @@ protected:
     bool    m_enabled;
 };
 
-//////////////////////////////////////////////////////////////////////////////
-
 // 「元に戻す」ためのバッファ。
 extern XG_UndoBuffer xg_ubUndoBuffer;
-
-#endif  // ndef UNDOBUFFER_HPP_
