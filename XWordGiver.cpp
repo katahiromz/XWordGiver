@@ -461,7 +461,7 @@ BOOL __fastcall XgPatternRuleIsOK(const PATDATA& pat)
 #undef GET_DATA
 
 // パターンデータを読み込む。
-BOOL XgLoadPatterns(LPCWSTR pszFileName, std::vector<PATDATA>& patterns)
+BOOL XgLoadPatterns(LPCWSTR pszFileName, patterns_t& patterns)
 {
     // パターンデータをクリアする。
     patterns.clear();
@@ -526,7 +526,7 @@ BOOL XgLoadPatterns(LPCWSTR pszFileName, std::vector<PATDATA>& patterns)
 }
 
 // パターンデータを書き込む。
-BOOL XgSavePatterns(LPCWSTR pszFileName, const std::vector<PATDATA>& patterns)
+BOOL XgSavePatterns(LPCWSTR pszFileName, const patterns_t& patterns)
 {
     std::wstring text;
     for (auto& pat : patterns) {
@@ -551,11 +551,11 @@ BOOL XgPatternsUnitTest(LPCWSTR input, LPCWSTR output)
     return TRUE;
 #else
     // パターンを読み込む。
-    std::vector<PATDATA> patterns;
+    patterns_t patterns;
     XgLoadPatterns(input, patterns);
 
     // 回転・転置したパターンも追加する。
-    std::vector<PATDATA> temp_pats;
+    patterns_t temp_pats;
     for (auto& pat : patterns) {
         if (XgIsPatternDividedByBlocks(pat))
             continue;

@@ -10,13 +10,13 @@ extern BOOL xg_bShowAnswerOnPattern;
 bool __fastcall XgOnSolve_NoAddBlack(HWND hwnd, bool bShowAnswer = true);
 
 // パターンデータを読み込む。
-BOOL XgLoadPatterns(LPCWSTR pszFileName, std::vector<PATDATA>& patterns);
+BOOL XgLoadPatterns(LPCWSTR pszFileName, patterns_t& patterns);
 
 class XG_PatternDialog : public XG_Dialog
 {
 public:
     // 黒マスパターンのデータ。
-    inline static std::vector<PATDATA> s_patterns;
+    inline static patterns_t s_patterns;
     inline static LAYOUT_DATA *s_pLayout = NULL;
 
     // 「黒マスパターン」ダイアログの位置とサイズ。
@@ -84,7 +84,7 @@ public:
         XgLoadPatterns(szPath, s_patterns);
 
         // 抽出する。
-        std::vector<PATDATA> pats;
+        patterns_t pats;
         for (auto& pat : s_patterns)
         {
             if (FilterPatBySize(pat, type))

@@ -1480,5 +1480,6 @@ struct PATDATA
     std::wstring text;
     std::vector<WCHAR> data;
 };
+typedef std::vector<PATDATA> patterns_t;
 
 #endif  // ndef XWORDGIVER
