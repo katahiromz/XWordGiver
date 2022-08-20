@@ -5314,7 +5314,6 @@ BOOL __fastcall XgValidateNumCro(HWND hwnd)
 
             auto it = xg_mapNumCro1.find(ch);
             if (it == xg_mapNumCro1.end()) {
-                assert(0);
                 return FALSE;
             }
         }
@@ -5323,7 +5322,6 @@ BOOL __fastcall XgValidateNumCro(HWND hwnd)
     for (auto& pair : xg_mapNumCro1) {
         auto it = xg_mapNumCro2.find(pair.second);
         if (it == xg_mapNumCro2.end()) {
-            assert(0);
             return FALSE;
         }
     }
