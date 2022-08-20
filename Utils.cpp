@@ -19,10 +19,23 @@ std::shared_ptr<XG_FileManager>& XgGetFileManager(void)
 
 //////////////////////////////////////////////////////////////////////////////
 
+#ifndef NDEBUG
+    // デバッグ出力。
+    void __cdecl DebugPrintfW(LPCWSTR pszFormat, ...)
+    {
+        va_list va;
+        static WCHAR s_szText[1024];
+        va_start(va, pszFormat);
+        StringCchVPrintfW(s_szText, _countof(s_szText), pszFormat, va);
+        OutputDebugStringW(s_szText);
+        va_end(va);
+    }
+#endif
+
 // リソース文字列を読み込む。
 LPWSTR __fastcall XgLoadStringDx1(int id)
 {
-    static WCHAR sz[256];
+    static WCHAR sz[512];
     INT ret = LoadStringW(xg_hInstance, id, sz, ARRAYSIZE(sz));
     assert(ret != 0);
     UNREFERENCED_PARAMETER(ret);
@@ -32,7 +45,7 @@ LPWSTR __fastcall XgLoadStringDx1(int id)
 // リソース文字列を読み込む。
 LPWSTR __fastcall XgLoadStringDx2(int id)
 {
-    static WCHAR sz[256];
+    static WCHAR sz[512];
     INT ret = LoadStringW(xg_hInstance, id, sz, ARRAYSIZE(sz));
     assert(ret != 0);
     UNREFERENCED_PARAMETER(ret);

@@ -589,6 +589,11 @@ BOOL XgPatternsUnitTest(LPCWSTR input, LPCWSTR output)
     });
     patterns.erase(last, patterns.end());
 
+    // 概要を出力。
+    for (auto& pat : patterns) {
+        DebugPrintfW(L"%u x %u", pat.num_columns, pat.num_rows);
+    }
+
     // パターンを書き込む。
     return XgSavePatterns(output, patterns);
 #endif

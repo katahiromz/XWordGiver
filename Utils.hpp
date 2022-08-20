@@ -8,6 +8,13 @@
 
 //////////////////////////////////////////////////////////////////////////////
 
+// デバッグ出力。
+#ifdef NDEBUG
+    #define DebugPrintfW(pszFormat, ...)
+#else
+    void __cdecl DebugPrintfW(LPCWSTR pszFormat, ...);
+#endif
+
 // リソース文字列を読み込む。
 LPWSTR __fastcall XgLoadStringDx1(int id);
 
