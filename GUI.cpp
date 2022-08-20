@@ -2305,6 +2305,8 @@ bool __fastcall XgDoSaveFiles(HWND hwnd, LPCWSTR pszFile)
     // ファイル変更フラグ。
     XG_FILE_MODIFIED(FALSE);
 
+    // 元に戻す情報をクリアする。
+    xg_ubUndoBuffer.clear();
     return true;
 }
 
@@ -2389,7 +2391,12 @@ BOOL __fastcall XgOnSave(HWND hwnd)
         return XgOnSaveAs(hwnd);
 
     // 上書き保存。
-    return XgDoSaveFiles(hwnd, xg_strFileName.c_str());
+    if (XgDoSaveFiles(hwnd, xg_strFileName.c_str()))
+    {
+        xg_ubUndoBuffer.clear();
+        return TRUE;
+    }
+    return FALSE;
 }
 
 // 保存を確認し、必要なら保存する。
@@ -2632,7 +2639,11 @@ BOOL XgOnLoad(HWND hwnd, LPCWSTR pszFile, LPPOINT ppt)
     if (!XgDoConfirmSave(xg_hMainWnd))
         return FALSE;
 
-    return XgDoLoadFiles(hwnd, pszFile);
+    if (XgDoLoadFiles(hwnd, pszFile)) {
+        // 元に戻す情報をクリアする。
+        xg_ubUndoBuffer.clear();
+    }
+    return FALSE;
 }
 
 // ファイルを開く。
