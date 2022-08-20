@@ -3954,7 +3954,7 @@ void DoUpdateDictMenu(HMENU hDictMenu)
         ++index;
         ++count;
         ++id;
-        if (count >= MAX_DICTS)
+        if (count >= XG_MAX_DICTS)
             break;
     }
 

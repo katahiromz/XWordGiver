@@ -3,11 +3,10 @@
 // Copyright (C) 2012-2020 Katayama Hirofumi MZ. All Rights Reserved.
 // (Japanese, UTF-8)
 
-#ifndef __XG_DICTIONARY_HPP__
-#define __XG_DICTIONARY_HPP__
+#pragma once
 
 // 辞書の最大数。
-#define MAX_DICTS 64
+#define XG_MAX_DICTS 64
 
 //////////////////////////////////////////////////////////////////////////////
 // 単語データ。
@@ -219,5 +218,3 @@ BOOL XgLoadDictsFromDir(LPCWSTR pszDir);
 BOOL XgLoadDictsAll(void);
 // 辞書を切り替える。
 void XgSelectDict(HWND hwnd, size_t iDict);
-
-#endif  // ndef __XG_DICTIONARY_HPP__

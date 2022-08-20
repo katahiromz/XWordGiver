@@ -536,7 +536,7 @@ void XgSetDict(const std::wstring& strFile)
     xg_dict_name = strFile;
 
     // 辞書として追加、ソート、一意にする。
-    if (xg_dict_files.size() < MAX_DICTS)
+    if (xg_dict_files.size() < XG_MAX_DICTS)
     {
         auto title = XgLoadTitleFromDict(strFile.c_str());
         xg_dict_files.emplace_back(strFile, title);
