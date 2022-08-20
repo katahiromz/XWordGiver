@@ -4742,7 +4742,7 @@ std::wstring URL_encode(const std::wstring& url)
 }
 
 // ウェブ検索。
-void DoWebSearch(HWND hwnd, LPCWSTR str)
+void XgDoWebSearch(HWND hwnd, LPCWSTR str)
 {
     std::wstring query = XgLoadStringDx1(IDS_GOOGLESEARCH);
     std::wstring raw = str;
@@ -4874,7 +4874,8 @@ void __fastcall XgOnlineDict(HWND hwnd, BOOL bTate)
         return;
     }
 
-    DoWebSearch(hwnd, pattern.c_str());
+    // ウェブ検索。
+    XgDoWebSearch(hwnd, pattern.c_str());
 }
 
 // 「黒マスパターン」を開く。
