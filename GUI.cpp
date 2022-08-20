@@ -7481,6 +7481,21 @@ int WINAPI WinMain(
     LPSTR /*pszCmdLine*/,
     int nCmdShow)
 {
+    // クリティカルセクションを初期化する。
+    ::InitializeCriticalSection(&xg_cs);
+
+    // クリティカルセクションを自動的に破棄する。
+    struct AutoDeleteCriticalSection
+    {
+        AutoDeleteCriticalSection() = default;
+        ~AutoDeleteCriticalSection()
+        {
+            // クリティカルセクションを破棄する。
+            ::DeleteCriticalSection(&xg_cs);
+        }
+    };
+    AutoDeleteCriticalSection xg_auto_cs;
+
     // テストをする。
     XgDoTests();
 
@@ -7574,9 +7589,6 @@ int WINAPI WinMain(
         }
     }
 
-    // クリティカルセクションを初期化する。
-    ::InitializeCriticalSection(&xg_cs);
-
     // 前回最大化されたか？
     BOOL bZoomed = xg_bMainWndMaximized;
 
@@ -7654,9 +7666,6 @@ int WINAPI WinMain(
     // Ctrl+Aの機能を解除する。
     ::UnhookWindowsHookEx(xg_hCtrlAHook);
     xg_hCtrlAHook = NULL;
-
-    // クリティカルセクションを破棄する。
-    ::DeleteCriticalSection(&xg_cs);
 
     // 設定を保存。
     XgSaveSettings();

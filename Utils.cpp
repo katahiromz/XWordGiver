@@ -24,12 +24,23 @@ std::shared_ptr<XG_FileManager>& XgGetFileManager(void)
     void __cdecl DebugPrintfW(const char *file, int lineno, LPCWSTR pszFormat, ...)
     {
         va_list va;
+        INT cch;
         static WCHAR s_szText[1024];
         va_start(va, pszFormat);
-        StringCchPrintfW(s_szText, _countof(s_szText), L"%hs (%u): ", file, lineno);
-        INT cch = lstrlenW(s_szText);
-        StringCchVPrintfW(&s_szText[cch], _countof(s_szText) - cch, pszFormat, va);
-        OutputDebugStringW(s_szText);
+        ::EnterCriticalSection(&xg_cs);
+        if (file)
+        {
+            StringCchPrintfW(s_szText, _countof(s_szText), L"%hs (%u): ", file, lineno);
+            cch = lstrlenW(s_szText);
+            StringCchVPrintfW(&s_szText[cch], _countof(s_szText) - cch, pszFormat, va);
+            OutputDebugStringW(s_szText);
+        }
+        else
+        {
+            StringCchVPrintfW(s_szText, _countof(s_szText), pszFormat, va);
+            OutputDebugStringW(s_szText);
+        }
+        ::LeaveCriticalSection(&xg_cs);
         va_end(va);
     }
 #endif
