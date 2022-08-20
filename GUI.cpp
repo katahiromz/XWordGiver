@@ -389,7 +389,6 @@ bool XgConvertBoxes(void)
 std::wstring XgStringifyBoxes(const boxes_t& boxes)
 {
     std::wstring ret;
-    WCHAR szText[MAX_PATH];
 
     for (auto& box : xg_boxes) {
         // ボックスの内部データを取り出す。
@@ -402,9 +401,11 @@ std::wstring XgStringifyBoxes(const boxes_t& boxes)
             if (!first)
                 ret += L", ";
             auto quoted = xg_str_quote(pair.second);
-            StringCchPrintfW(szText, _countof(szText), L"{{%s: %s}}",
-                             pair.first.c_str(), quoted.c_str());
-            ret += szText;
+            ret += L"{{";
+            ret += pair.first.c_str();
+            ret += L": ";
+            ret += quoted.c_str();
+            ret += L"}}";
             first = false;
         }
         ret += L"\n";
