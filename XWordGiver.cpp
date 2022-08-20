@@ -591,7 +591,7 @@ BOOL XgPatternsUnitTest(LPCWSTR input, LPCWSTR output)
 
     // 概要を出力。
     for (auto& pat : patterns) {
-        DebugPrintfW(L"%u x %u", pat.num_columns, pat.num_rows);
+        DebugPrintfW(L"%u x %u\n", pat.num_columns, pat.num_rows);
     }
 
     // パターンを書き込む。
