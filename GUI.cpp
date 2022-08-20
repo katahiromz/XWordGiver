@@ -3896,7 +3896,7 @@ void __fastcall MainWnd_OnDestroy(HWND /*hwnd*/)
 }
 
 // 「辞書」メニューを取得する。
-HMENU DoFindDictMenu(HMENU hMenu)
+HMENU XgDoFindDictMenu(HMENU hMenu)
 {
     WCHAR szText[128];
     LPCWSTR pszDict = XgLoadStringDx1(IDS_DICTIONARY);
@@ -3914,8 +3914,9 @@ HMENU DoFindDictMenu(HMENU hMenu)
 }
 
 // 「辞書」メニューを更新する。
-void DoUpdateDictMenu(HMENU hDictMenu)
+void XgDoUpdateDictMenu(HMENU hDictMenu)
 {
+    // TODO: 「辞書」メニュー項目を更新したら、次の I_NONE_ITEM を修正すること。
 #define I_NONE_ITEM 6 // メニュー項目「(なし)」の位置。
     INT index = I_NONE_ITEM;
 
@@ -3976,10 +3977,10 @@ void DoUpdateDictMenu(HMENU hDictMenu)
 // メニューを初期化する。
 void __fastcall MainWnd_OnInitMenu(HWND /*hwnd*/, HMENU hMenu)
 {
-    if (HMENU hDictMenu = DoFindDictMenu(hMenu))
+    if (HMENU hDictMenu = XgDoFindDictMenu(hMenu))
     {
         // 辞書メニューを更新。
-        DoUpdateDictMenu(hDictMenu);
+        XgDoUpdateDictMenu(hDictMenu);
     }
 
     // 数字を表示するか？
