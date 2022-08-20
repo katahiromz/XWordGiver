@@ -21,12 +21,14 @@ std::shared_ptr<XG_FileManager>& XgGetFileManager(void)
 
 #ifndef NDEBUG
     // デバッグ出力。
-    void __cdecl DebugPrintfW(LPCWSTR pszFormat, ...)
+    void __cdecl DebugPrintfW(const char *file, int lineno, LPCWSTR pszFormat, ...)
     {
         va_list va;
         static WCHAR s_szText[1024];
         va_start(va, pszFormat);
-        StringCchVPrintfW(s_szText, _countof(s_szText), pszFormat, va);
+        StringCchPrintfW(s_szText, _countof(s_szText), L"%hs (%u): ", file, lineno);
+        INT cch = lstrlenW(s_szText);
+        StringCchVPrintfW(&s_szText[cch], _countof(s_szText) - cch, pszFormat, va);
         OutputDebugStringW(s_szText);
         va_end(va);
     }

@@ -10,9 +10,11 @@
 
 // デバッグ出力。
 #ifdef NDEBUG
-    #define DebugPrintfW(pszFormat, ...)
+    #define DebugPrintfW(const char *file, int lineno, pszFormat, ...)
+    #define DOUTW(fmt, ...)
 #else
-    void __cdecl DebugPrintfW(LPCWSTR pszFormat, ...);
+    void __cdecl DebugPrintfW(const char *file, int lineno, LPCWSTR pszFormat, ...);
+    #define DOUTW(fmt, ...) DebugPrintfW(__FILE__, __LINE__, (fmt), ##__VA_ARGS__)
 #endif
 
 // リソース文字列を読み込む。
