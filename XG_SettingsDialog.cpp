@@ -263,12 +263,12 @@ BOOL XG_SettingsDialog::DoImportLooks(HWND hwnd, LPCWSTR pszFileName)
     ::CheckDlgButton(hwnd, chx5, (bHiragana ? BST_CHECKED : BST_UNCHECKED));
 
     // 文字の大きさ。
-    StringCbPrintfW(szText2, sizeof(szText2), L"%d", DEF_CELL_CHAR_SIZE);
+    StringCbPrintfW(szText2, sizeof(szText2), L"%d", XG_DEF_CELL_CHAR_SIZE);
     GetPrivateProfileStringW(L"Looks", L"CellCharPercents", szText2, szText, _countof(szText), pszFileName);
     BOOL nCellCharPercents = _wtoi(szText);
     ::SetDlgItemInt(hwnd, edt4, nCellCharPercents, FALSE);
 
-    StringCbPrintfW(szText2, sizeof(szText2), L"%d", DEF_SMALL_CHAR_SIZE);
+    StringCbPrintfW(szText2, sizeof(szText2), L"%d", XG_DEF_SMALL_CHAR_SIZE);
     GetPrivateProfileStringW(L"Looks", L"SmallCharPercents", szText2, szText, _countof(szText), pszFileName);
     BOOL nSmallCharPercents = _wtoi(szText);
     ::SetDlgItemInt(hwnd, edt5, nSmallCharPercents, FALSE);
@@ -504,10 +504,10 @@ void XG_SettingsDialog::OnResetLooks(HWND hwnd)
     ::CheckDlgButton(hwnd, chx5, (bHiragana ? BST_CHECKED : BST_UNCHECKED));
 
     // 文字の大きさ。
-    BOOL nCellCharPercents = DEF_CELL_CHAR_SIZE;
+    BOOL nCellCharPercents = XG_DEF_CELL_CHAR_SIZE;
     ::SetDlgItemInt(hwnd, edt4, nCellCharPercents, FALSE);
 
-    BOOL nSmallCharPercents = DEF_SMALL_CHAR_SIZE;
+    BOOL nSmallCharPercents = XG_DEF_SMALL_CHAR_SIZE;
     ::SetDlgItemInt(hwnd, edt5, nSmallCharPercents, FALSE);
 
     // 黒マス画像。
@@ -694,11 +694,11 @@ XG_SettingsDialog::DialogProcDx(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPar
             break;
 
         case psh10:
-            SetDlgItemInt(hwnd, edt4, DEF_CELL_CHAR_SIZE, FALSE);
+            SetDlgItemInt(hwnd, edt4, XG_DEF_CELL_CHAR_SIZE, FALSE);
             break;
 
         case psh11:
-            SetDlgItemInt(hwnd, edt5, DEF_SMALL_CHAR_SIZE, FALSE);
+            SetDlgItemInt(hwnd, edt5, XG_DEF_SMALL_CHAR_SIZE, FALSE);
             break;
 
         case psh12:

@@ -101,10 +101,10 @@ bool xg_bCharFeed = true;
 bool xg_bTateInput = false;
 
 // 文字の大きさ（％）。
-INT xg_nCellCharPercents = DEF_SMALL_CHAR_SIZE;
+INT xg_nCellCharPercents = XG_DEF_CELL_CHAR_SIZE;
 
 // 小さい文字の大きさ（％）。
-INT xg_nSmallCharPercents = DEF_SMALL_CHAR_SIZE;
+INT xg_nSmallCharPercents = XG_DEF_SMALL_CHAR_SIZE;
 
 // 黒マス画像。
 HBITMAP xg_hbmBlackCell = NULL;

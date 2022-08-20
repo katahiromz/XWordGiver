@@ -901,8 +901,8 @@ bool __fastcall XgLoadSettings(void)
     xg_bHiragana = FALSE;
     xg_bLowercase = FALSE;
 
-    xg_nCellCharPercents = DEF_CELL_CHAR_SIZE;
-    xg_nSmallCharPercents = DEF_SMALL_CHAR_SIZE;
+    xg_nCellCharPercents = XG_DEF_CELL_CHAR_SIZE;
+    xg_nSmallCharPercents = XG_DEF_SMALL_CHAR_SIZE;
 
     xg_strBlackCellImage.clear();
 
@@ -1991,11 +1991,11 @@ BOOL XgImportLooks(HWND hwnd, LPCWSTR pszFileName)
     xg_bHiragana = !!_wtoi(szText);
 
     // 文字の大きさ。
-    StringCbPrintfW(szText2, sizeof(szText2), L"%d", DEF_CELL_CHAR_SIZE);
+    StringCbPrintfW(szText2, sizeof(szText2), L"%d", XG_DEF_CELL_CHAR_SIZE);
     GetPrivateProfileStringW(L"Looks", L"CellCharPercents", szText2, szText, _countof(szText), pszFileName);
     xg_nCellCharPercents = _wtoi(szText);
 
-    StringCbPrintfW(szText2, sizeof(szText2), L"%d", DEF_SMALL_CHAR_SIZE);
+    StringCbPrintfW(szText2, sizeof(szText2), L"%d", XG_DEF_SMALL_CHAR_SIZE);
     GetPrivateProfileStringW(L"Looks", L"SmallCharPercents", szText2, szText, _countof(szText), pszFileName);
     xg_nSmallCharPercents = _wtoi(szText);
 
