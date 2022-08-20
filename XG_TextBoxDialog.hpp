@@ -3,7 +3,7 @@
 #include "XG_Window.hpp"
 #include "XG_ColorBox.hpp"
 
-#define DEFAULT_TEXTBOX_POINTSIZE 10
+#define XG_DEF_TEXTBOX_POINTSIZE 10
 
 class XG_TextBoxDialog : public XG_Dialog
 {
@@ -103,7 +103,7 @@ public:
         }
         else
         {
-            SetDlgItemInt(hwnd, edt2, DEFAULT_TEXTBOX_POINTSIZE, FALSE);
+            SetDlgItemInt(hwnd, edt2, XG_DEF_TEXTBOX_POINTSIZE, FALSE);
             EnableWindow(GetDlgItem(hwnd, edt2), FALSE);
         }
 

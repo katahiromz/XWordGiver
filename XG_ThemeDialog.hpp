@@ -3,7 +3,7 @@
 #include "XG_Window.hpp"
 
 // タグ群の最大長。
-#define MAX_TAGSLEN 256
+#define XG_MAX_TAGSLEN 256
 
 // 「テーマ」ダイアログ。
 class XG_ThemeDialog : public XG_Dialog
@@ -43,7 +43,7 @@ public:
         XgCenterDialog(hwnd);
 
         // 長さを制限する。
-        SendDlgItemMessageW(hwnd, cmb1, CB_LIMITTEXT, MAX_TAGSLEN - 1, 0);
+        SendDlgItemMessageW(hwnd, cmb1, CB_LIMITTEXT, XG_MAX_TAGSLEN - 1, 0);
 
         // リストビューを初期化。
         HWND hLst1 = GetDlgItem(hwnd, lst1);
@@ -238,7 +238,7 @@ public:
         xg_forbidden_tags.clear();
 
         std::wstring strTheme;
-        WCHAR szText[MAX_TAGSLEN];
+        WCHAR szText[XG_MAX_TAGSLEN];
         INT cItems;
 
         cItems = ListView_GetItemCount(hLst2);
@@ -275,7 +275,7 @@ public:
         HWND hLst1 = GetDlgItem(hwnd, lst1);
 
         INT iItem, nCount = ListView_GetItemCount(hLst1);
-        WCHAR szItem[MAX_TAGSLEN];
+        WCHAR szItem[XG_MAX_TAGSLEN];
         for (iItem = 0; iItem < nCount; ++iItem) {
             ListView_GetItemText(hLst1, iItem, 0, szItem, _countof(szItem));
             if (StrStr(szItem, szText)) {
@@ -466,7 +466,7 @@ public:
 
     void SetPreset(HWND hwnd)
     {
-        WCHAR szText[MAX_TAGSLEN];
+        WCHAR szText[XG_MAX_TAGSLEN];
         HWND hCmb1 = GetDlgItem(hwnd, cmb1);
         ComboBox_RealGetText(hCmb1, szText, _countof(szText));
         SetPreset(hwnd, szText);
@@ -499,8 +499,8 @@ public:
         }
 
         // 長さ制限。
-        if (str.size() > MAX_TAGSLEN - 1)
-            str.resize(MAX_TAGSLEN - 1);
+        if (str.size() > XG_MAX_TAGSLEN - 1)
+            str.resize(XG_MAX_TAGSLEN - 1);
 
         xg_bUpdatingPreset = TRUE;
         SetDlgItemTextW(hwnd, cmb1, str.c_str());

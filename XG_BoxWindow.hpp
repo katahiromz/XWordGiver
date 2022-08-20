@@ -746,7 +746,7 @@ public:
         if (m_nFontSizeInPoints) {
             nPointSize = m_nFontSizeInPoints;
         } else {
-            nPointSize = DEFAULT_TEXTBOX_POINTSIZE;
+            nPointSize = XG_DEF_TEXTBOX_POINTSIZE;
         }
         INT nPixelSize = MulDiv(nPointSize, GetDeviceCaps(hDC, LOGPIXELSY), 72);
         lf.lfHeight = -nPixelSize * xg_nZoomRate / 100;
