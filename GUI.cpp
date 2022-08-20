@@ -4870,7 +4870,7 @@ void __fastcall XgOnlineDict(HWND hwnd, BOOL bTate)
     }
 
     // 空白を含んでいたら、無視。
-    if (pattern.find(ZEN_SPACE) != std::wstring::npos) {
+    if (pattern.find(ZEN_SPACE) != pattern.npos) {
         return;
     }
 

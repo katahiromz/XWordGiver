@@ -192,7 +192,7 @@ void XgSetPatternData(PATDATA& pat)
     pat.text = std::move(text);
 }
 
-#define GET_DATA(x, y) data[(y) * pat.num_columns + (x)]
+#define XG_GET_DATA(x, y) data[(y) * pat.num_columns + (x)]
 
 // パターンを転置する。
 PATDATA XgTransposePattern(const PATDATA& pat)
@@ -205,7 +205,7 @@ PATDATA XgTransposePattern(const PATDATA& pat)
     auto& data = pat.data;
     for (INT y = 0; y < pat.num_rows; ++y) {
         for (INT x = 0; x < pat.num_columns; ++x) {
-            ret.data[x * ret.num_columns + y] = GET_DATA(x, y);
+            ret.data[x * ret.num_columns + y] = XG_GET_DATA(x, y);
         }
     }
 
@@ -222,7 +222,7 @@ PATDATA XgFlipPatternH(const PATDATA& pat)
     auto& data = pat.data;
     for (INT y = 0; y < pat.num_rows; ++y) {
         for (INT x = 0; x < pat.num_columns; ++x) {
-            ret.data[y * ret.num_columns + x] = GET_DATA((ret.num_columns - x - 1), y);
+            ret.data[y * ret.num_columns + x] = XG_GET_DATA((ret.num_columns - x - 1), y);
         }
     }
 
@@ -239,7 +239,7 @@ PATDATA XgFlipPatternV(const PATDATA& pat)
     auto& data = pat.data;
     for (INT y = 0; y < pat.num_rows; ++y) {
         for (INT x = 0; x < pat.num_columns; ++x) {
-            ret.data[y * ret.num_columns + x] = GET_DATA(x, pat.num_rows - y - 1);
+            ret.data[y * ret.num_columns + x] = XG_GET_DATA(x, pat.num_rows - y - 1);
         }
     }
 
@@ -260,12 +260,12 @@ BOOL XgIsPatternDividedByBlocks(const PATDATA& pat)
     // 位置のキュー。
     // 黒マスではないマスを探し、positionsに追加する。
     std::queue<XG_Pos> positions;
-    if (GET_DATA(0, 0) != ZEN_BLACK) {
+    if (XG_GET_DATA(0, 0) != ZEN_BLACK) {
         positions.emplace(0, 0);
     } else {
         for (INT i = 0; i < pat.num_rows; ++i) {
             for (INT j = 0; j < pat.num_columns; ++j) {
-                if (GET_DATA(j, i) != ZEN_BLACK) {
+                if (XG_GET_DATA(j, i) != ZEN_BLACK) {
                     positions.emplace(i, j);
                     i = pat.num_rows;
                     j = pat.num_columns;
@@ -285,16 +285,16 @@ BOOL XgIsPatternDividedByBlocks(const PATDATA& pat)
             // フラグを立てる。
             pb[pos.m_i * pat.num_columns + pos.m_j] = 1;
             // 上。
-            if (pos.m_i > 0 && GET_DATA(pos.m_j, pos.m_i - 1) != ZEN_BLACK)
+            if (pos.m_i > 0 && XG_GET_DATA(pos.m_j, pos.m_i - 1) != ZEN_BLACK)
                 positions.emplace(pos.m_i - 1, pos.m_j);
             // 下。
-            if (pos.m_i < pat.num_rows - 1 && GET_DATA(pos.m_j, pos.m_i + 1) != ZEN_BLACK)
+            if (pos.m_i < pat.num_rows - 1 && XG_GET_DATA(pos.m_j, pos.m_i + 1) != ZEN_BLACK)
                 positions.emplace(pos.m_i + 1, pos.m_j);
             // 左。
-            if (pos.m_j > 0 && GET_DATA(pos.m_j - 1, pos.m_i) != ZEN_BLACK)
+            if (pos.m_j > 0 && XG_GET_DATA(pos.m_j - 1, pos.m_i) != ZEN_BLACK)
                 positions.emplace(pos.m_i, pos.m_j - 1);
             // 右。
-            if (pos.m_j < pat.num_columns - 1 && GET_DATA(pos.m_j + 1, pos.m_i) != ZEN_BLACK)
+            if (pos.m_j < pat.num_columns - 1 && XG_GET_DATA(pos.m_j + 1, pos.m_i) != ZEN_BLACK)
                 positions.emplace(pos.m_i, pos.m_j + 1);
         }
     }
@@ -303,7 +303,7 @@ BOOL XgIsPatternDividedByBlocks(const PATDATA& pat)
     while (nCount-- > 0) {
         // フラグが立っていないのに、黒マスではないマスがあったら、失敗。
         if (pb[nCount] == 0 &&
-            GET_DATA(nCount % pat.num_columns, nCount / pat.num_columns) != ZEN_BLACK)
+            XG_GET_DATA(nCount % pat.num_columns, nCount / pat.num_columns) != ZEN_BLACK)
         {
             return TRUE;    // 分断されている。
         }
@@ -325,27 +325,27 @@ BOOL __fastcall XgPatternRuleIsOK(const PATDATA& pat)
     if (xg_nRules & RULE_DONTDOUBLEBLACK) {
         for (INT y = 0; y < pat.num_rows; ++y) {
             for (INT x = 0; x < pat.num_columns - 1; ++x) {
-                if (GET_DATA(x, y) == ZEN_BLACK && GET_DATA(x + 1, y) == ZEN_BLACK) {
+                if (XG_GET_DATA(x, y) == ZEN_BLACK && XG_GET_DATA(x + 1, y) == ZEN_BLACK) {
                     return FALSE;
                 }
             }
         }
         for (INT x = 0; x < pat.num_columns; ++x) {
             for (INT y = 0; y < pat.num_rows - 1; ++y) {
-                if (GET_DATA(x, y) == ZEN_BLACK && GET_DATA(x, y + 1) == ZEN_BLACK) {
+                if (XG_GET_DATA(x, y) == ZEN_BLACK && XG_GET_DATA(x, y + 1) == ZEN_BLACK) {
                     return FALSE;
                 }
             }
         }
     }
     if (xg_nRules & RULE_DONTCORNERBLACK) {
-        if (GET_DATA(0, 0) == ZEN_BLACK)
+        if (XG_GET_DATA(0, 0) == ZEN_BLACK)
             return FALSE;
-        if (GET_DATA(pat.num_columns - 1, 0) == ZEN_BLACK)
+        if (XG_GET_DATA(pat.num_columns - 1, 0) == ZEN_BLACK)
             return FALSE;
-        if (GET_DATA(pat.num_columns - 1, pat.num_rows - 1) == ZEN_BLACK)
+        if (XG_GET_DATA(pat.num_columns - 1, pat.num_rows - 1) == ZEN_BLACK)
             return FALSE;
-        if (GET_DATA(0, pat.num_rows - 1) == ZEN_BLACK)
+        if (XG_GET_DATA(0, pat.num_rows - 1) == ZEN_BLACK)
             return FALSE;
     }
     if (xg_nRules & RULE_DONTDIVIDE) {
@@ -355,22 +355,22 @@ BOOL __fastcall XgPatternRuleIsOK(const PATDATA& pat)
     if (xg_nRules & RULE_DONTTHREEDIAGONALS) {
         for (INT y = 0; y < pat.num_rows - 2; ++y) {
             for (INT x = 0; x < pat.num_columns - 2; ++x) {
-                if (GET_DATA(x, y) != ZEN_BLACK)
+                if (XG_GET_DATA(x, y) != ZEN_BLACK)
                     continue;
-                if (GET_DATA(x + 1, y + 1) != ZEN_BLACK)
+                if (XG_GET_DATA(x + 1, y + 1) != ZEN_BLACK)
                     continue;
-                if (GET_DATA(x + 2, y + 2) != ZEN_BLACK)
+                if (XG_GET_DATA(x + 2, y + 2) != ZEN_BLACK)
                     continue;
                 return FALSE;
             }
         }
         for (INT y = 0; y < pat.num_rows - 2; ++y) {
             for (INT x = 2; x < pat.num_columns; ++x) {
-                if (GET_DATA(x, y) != ZEN_BLACK)
+                if (XG_GET_DATA(x, y) != ZEN_BLACK)
                     continue;
-                if (GET_DATA(x - 1, y + 1) != ZEN_BLACK)
+                if (XG_GET_DATA(x - 1, y + 1) != ZEN_BLACK)
                     continue;
-                if (GET_DATA(x - 2, y + 2) != ZEN_BLACK)
+                if (XG_GET_DATA(x - 2, y + 2) != ZEN_BLACK)
                     continue;
                 return FALSE;
             }
@@ -379,26 +379,26 @@ BOOL __fastcall XgPatternRuleIsOK(const PATDATA& pat)
     else if (xg_nRules & RULE_DONTFOURDIAGONALS) {
         for (INT y = 0; y < pat.num_rows - 3; ++y) {
             for (INT x = 0; x < pat.num_columns - 3; ++x) {
-                if (GET_DATA(x, y) != ZEN_BLACK)
+                if (XG_GET_DATA(x, y) != ZEN_BLACK)
                     continue;
-                if (GET_DATA(x + 1, y + 1) != ZEN_BLACK)
+                if (XG_GET_DATA(x + 1, y + 1) != ZEN_BLACK)
                     continue;
-                if (GET_DATA(x + 2, y + 2) != ZEN_BLACK)
+                if (XG_GET_DATA(x + 2, y + 2) != ZEN_BLACK)
                     continue;
-                if (GET_DATA(x + 3, y + 3) != ZEN_BLACK)
+                if (XG_GET_DATA(x + 3, y + 3) != ZEN_BLACK)
                     continue;
                 return FALSE;
             }
         }
         for (INT y = 0; y < pat.num_rows - 3; ++y) {
             for (INT x = 3; x < pat.num_columns; ++x) {
-                if (GET_DATA(x, y) != ZEN_BLACK)
+                if (XG_GET_DATA(x, y) != ZEN_BLACK)
                     continue;
-                if (GET_DATA(x - 1, y + 1) != ZEN_BLACK)
+                if (XG_GET_DATA(x - 1, y + 1) != ZEN_BLACK)
                     continue;
-                if (GET_DATA(x - 2, y + 2) != ZEN_BLACK)
+                if (XG_GET_DATA(x - 2, y + 2) != ZEN_BLACK)
                     continue;
-                if (GET_DATA(x - 3, y + 3) != ZEN_BLACK)
+                if (XG_GET_DATA(x - 3, y + 3) != ZEN_BLACK)
                     continue;
                 return FALSE;
             }
@@ -408,13 +408,13 @@ BOOL __fastcall XgPatternRuleIsOK(const PATDATA& pat)
         for (INT y = 0; y < pat.num_rows; ++y) {
             for (INT x = 0; x < pat.num_columns; ++x) {
                 INT nCount = 0;
-                if (x > 0 && GET_DATA(x - 1, y) == ZEN_BLACK)
+                if (x > 0 && XG_GET_DATA(x - 1, y) == ZEN_BLACK)
                     ++nCount;
-                if (y > 0 && GET_DATA(x, y - 1) == ZEN_BLACK)
+                if (y > 0 && XG_GET_DATA(x, y - 1) == ZEN_BLACK)
                     ++nCount;
-                if (x + 1 < pat.num_columns && GET_DATA(x + 1, y) == ZEN_BLACK)
+                if (x + 1 < pat.num_columns && XG_GET_DATA(x + 1, y) == ZEN_BLACK)
                     ++nCount;
-                if (y + 1 < pat.num_rows && GET_DATA(x, y + 1) == ZEN_BLACK)
+                if (y + 1 < pat.num_rows && XG_GET_DATA(x, y + 1) == ZEN_BLACK)
                     ++nCount;
                 if (nCount >= 3) {
                     return FALSE;
@@ -425,8 +425,8 @@ BOOL __fastcall XgPatternRuleIsOK(const PATDATA& pat)
     if (xg_nRules & RULE_POINTSYMMETRY) {
         for (INT y = 0; y < pat.num_rows; ++y) {
             for (INT x = 0; x < pat.num_columns; ++x) {
-                if ((GET_DATA(x, y) == ZEN_BLACK) !=
-                    (GET_DATA(pat.num_columns - (x + 1), pat.num_rows - (y + 1)) == ZEN_BLACK))
+                if ((XG_GET_DATA(x, y) == ZEN_BLACK) !=
+                    (XG_GET_DATA(pat.num_columns - (x + 1), pat.num_rows - (y + 1)) == ZEN_BLACK))
                 {
                     return FALSE;
                 }
@@ -436,8 +436,8 @@ BOOL __fastcall XgPatternRuleIsOK(const PATDATA& pat)
     if (xg_nRules & RULE_LINESYMMETRYV) {
         for (INT y = 0; y < pat.num_rows; ++y) {
             for (INT x = 0; x < pat.num_columns; ++x) {
-                if ((GET_DATA(x, y) == ZEN_BLACK) !=
-                    (GET_DATA(x, pat.num_rows - (y + 1)) == ZEN_BLACK))
+                if ((XG_GET_DATA(x, y) == ZEN_BLACK) !=
+                    (XG_GET_DATA(x, pat.num_rows - (y + 1)) == ZEN_BLACK))
                 {
                     return FALSE;
                 }
@@ -447,8 +447,8 @@ BOOL __fastcall XgPatternRuleIsOK(const PATDATA& pat)
     if (xg_nRules & RULE_LINESYMMETRYH) {
         for (INT y = 0; y < pat.num_rows; ++y) {
             for (INT x = 0; x < pat.num_columns; ++x) {
-                if ((GET_DATA(x, y) == ZEN_BLACK) !=
-                    (GET_DATA(pat.num_columns - (x + 1), y) == ZEN_BLACK))
+                if ((XG_GET_DATA(x, y) == ZEN_BLACK) !=
+                    (XG_GET_DATA(pat.num_columns - (x + 1), y) == ZEN_BLACK))
                 {
                     return FALSE;
                 }
@@ -458,7 +458,7 @@ BOOL __fastcall XgPatternRuleIsOK(const PATDATA& pat)
     return TRUE;
 }
 
-#undef GET_DATA
+#undef XG_GET_DATA
 
 // パターンデータを読み込む。
 BOOL XgLoadPatterns(LPCWSTR pszFileName, patterns_t& patterns)
