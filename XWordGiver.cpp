@@ -2488,7 +2488,7 @@ bool __fastcall XgSetJsonString(HWND hwnd, const std::wstring& str)
         bool is_solved = j["is_solved"];
         bool has_mark = j["has_mark"];
         bool has_hints = j["has_hints"];
-        INT rules = DEFAULT_RULES;
+        INT rules = XG_DEFAULT_RULES;
         if (j["policy"].is_number_integer()) {
             rules = int(j["policy"]);
         } else if (j["rules"].is_string()) {

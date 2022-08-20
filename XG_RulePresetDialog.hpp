@@ -41,7 +41,7 @@ public:
         value = wcstoul(szText, &pch, 0);
 
         // 不正な値があるか？
-        if (value & ~VALID_RULES) {
+        if (value & ~XG_VALID_RULES) {
             return FALSE;
         }
 
@@ -260,7 +260,7 @@ public:
                 }
 
                 // ルールを適用。
-                xg_nRules = (value & VALID_RULES);
+                xg_nRules = (value & XG_VALID_RULES);
                 xg_nRules |= RULE_DONTDIVIDE; // 例外。
 
                 // ダイアログを閉じる。

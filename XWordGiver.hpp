@@ -261,13 +261,13 @@ enum RULES
 };
 
 // デフォルトのルール。
-#define DEFAULT_RULES (RULE_DONTDIVIDE | RULE_POINTSYMMETRY)
+#define XG_DEFAULT_RULES (RULE_DONTDIVIDE | RULE_POINTSYMMETRY)
 
 // ルール群。
 extern INT xg_nRules;
 
 // 正当なルール。
-#define VALID_RULES ( \
+#define XG_VALID_RULES ( \
     RULE_DONTDOUBLEBLACK | \
     RULE_DONTCORNERBLACK | \
     RULE_DONTTRIDIRECTIONS | \
@@ -277,7 +277,6 @@ extern INT xg_nRules;
     RULE_DONTTHREEDIAGONALS | \
     RULE_LINESYMMETRYV | \
     RULE_LINESYMMETRYH)
-
 
 //////////////////////////////////////////////////////////////////////////////
 // マスの位置。

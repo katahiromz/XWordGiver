@@ -254,7 +254,7 @@ bool xg_bShowToolBar = true;
 static bool s_bShowStatusBar = true;
 
 // ルール群。
-INT xg_nRules = DEFAULT_RULES;
+INT xg_nRules = XG_DEFAULT_RULES;
 
 //////////////////////////////////////////////////////////////////////////////
 // スクロール関連。
@@ -912,7 +912,7 @@ bool __fastcall XgLoadSettings(void)
     XG_PatternDialog::xg_nPatWndCY = CW_USEDEFAULT;
     XG_PatternDialog::xg_bShowAnswerOnPattern = TRUE;
 
-    xg_nRules = DEFAULT_RULES;
+    xg_nRules = XG_DEFAULT_RULES;
     xg_nViewMode = XG_VIEW_NORMAL;
     xg_nFileType = XG_FILETYPE_XD;
 
@@ -4591,7 +4591,7 @@ void XgUpdateRules(HWND hwnd)
         szText[0] = 0;
         ::GetMenuStringW(hMenu, i, szText, ARRAYSIZE(szText), MF_BYPOSITION);
         if (wcsstr(szText, XgLoadStringDx1(IDS_RULES)) != NULL) {
-            if (xg_nRules == DEFAULT_RULES) {
+            if (xg_nRules == XG_DEFAULT_RULES) {
                 StringCbCopyW(szText, sizeof(szText), XgLoadStringDx1(IDS_STANDARDRULES));
             } else {
                 StringCbCopyW(szText, sizeof(szText), XgLoadStringDx1(IDS_MODIFIEDRULES));
@@ -6383,7 +6383,7 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT /*codeNo
         XgUpdateTheme(hwnd);
         break;
     case ID_RESETRULES:
-        xg_nRules = DEFAULT_RULES;
+        xg_nRules = XG_DEFAULT_RULES;
         XgUpdateRules(hwnd);
         break;
     case ID_OPENRULESTXT:
