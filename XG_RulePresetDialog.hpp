@@ -34,7 +34,7 @@ public:
         xg_str_trim(str);
 
         // 半角にする。
-        LCMapStringW(JPN_LOCALE, LCMAP_HALFWIDTH, str.c_str(), -1, szText, _countof(szText));
+        LCMapStringW(XG_JPN_LOCALE, LCMAP_HALFWIDTH, str.c_str(), -1, szText, _countof(szText));
 
         // 値にする。
         LPWSTR pch;

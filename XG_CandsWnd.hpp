@@ -307,12 +307,12 @@ public:
         for (auto& cand : xg_vecCandidates) {
             WCHAR szText[64];
             if (xg_bHiragana) {
-                LCMapStringW(JPN_LOCALE, LCMAP_FULLWIDTH | LCMAP_HIRAGANA,
+                LCMapStringW(XG_JPN_LOCALE, LCMAP_FULLWIDTH | LCMAP_HIRAGANA,
                              cand.data(), -1, szText, ARRAYSIZE(szText));
                 cand = szText;
             }
             if (xg_bLowercase) {
-                LCMapStringW(JPN_LOCALE, LCMAP_FULLWIDTH | LCMAP_LOWERCASE,
+                LCMapStringW(XG_JPN_LOCALE, LCMAP_FULLWIDTH | LCMAP_LOWERCASE,
                              cand.data(), -1, szText, ARRAYSIZE(szText));
                 cand = szText;
             }

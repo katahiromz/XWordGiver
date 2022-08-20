@@ -4568,11 +4568,11 @@ void __fastcall XgDrawMarkWord(HDC hdc, LPSIZE psiz)
         // 文字を変換する。
         if (xg_bHiragana) {
             WCHAR new_ch;
-            LCMapStringW(JPN_LOCALE, LCMAP_FULLWIDTH | LCMAP_HIRAGANA, &ch, 1, &new_ch, 1);
+            LCMapStringW(XG_JPN_LOCALE, LCMAP_FULLWIDTH | LCMAP_HIRAGANA, &ch, 1, &new_ch, 1);
             ch = new_ch;
         } else {
             WCHAR new_ch;
-            LCMapStringW(JPN_LOCALE, LCMAP_FULLWIDTH | LCMAP_KATAKANA, &ch, 1, &new_ch, 1);
+            LCMapStringW(XG_JPN_LOCALE, LCMAP_FULLWIDTH | LCMAP_KATAKANA, &ch, 1, &new_ch, 1);
             ch = new_ch;
         }
 
@@ -4581,19 +4581,19 @@ void __fastcall XgDrawMarkWord(HDC hdc, LPSIZE psiz)
         {
             WCHAR new_ch;
             if (xg_bLowercase) {
-                LCMapStringW(JPN_LOCALE, LCMAP_FULLWIDTH | LCMAP_LOWERCASE, &ch, 1, &new_ch, 1);
+                LCMapStringW(XG_JPN_LOCALE, LCMAP_FULLWIDTH | LCMAP_LOWERCASE, &ch, 1, &new_ch, 1);
                 ch = new_ch;
             } else {
-                LCMapStringW(JPN_LOCALE, LCMAP_FULLWIDTH | LCMAP_UPPERCASE, &ch, 1, &new_ch, 1);
+                LCMapStringW(XG_JPN_LOCALE, LCMAP_FULLWIDTH | LCMAP_UPPERCASE, &ch, 1, &new_ch, 1);
                 ch = new_ch;
             }
         } else {
             WCHAR new_ch;
             if (xg_bLowercase) {
-                LCMapStringW(JPN_LOCALE, LCMAP_HALFWIDTH | LCMAP_LOWERCASE, &ch, 1, &new_ch, 1);
+                LCMapStringW(XG_JPN_LOCALE, LCMAP_HALFWIDTH | LCMAP_LOWERCASE, &ch, 1, &new_ch, 1);
                 ch = new_ch;
             } else {
-                LCMapStringW(JPN_LOCALE, LCMAP_HALFWIDTH | LCMAP_UPPERCASE, &ch, 1, &new_ch, 1);
+                LCMapStringW(XG_JPN_LOCALE, LCMAP_HALFWIDTH | LCMAP_UPPERCASE, &ch, 1, &new_ch, 1);
                 ch = new_ch;
             }
         }
@@ -4988,11 +4988,11 @@ void __fastcall XgDrawXWord_NormalView(XG_Board& xw, HDC hdc, LPSIZE psiz, bool 
             // 文字を変換する。
             if (xg_bHiragana) {
                 WCHAR new_ch;
-                LCMapStringW(JPN_LOCALE, LCMAP_FULLWIDTH | LCMAP_HIRAGANA, &ch, 1, &new_ch, 1);
+                LCMapStringW(XG_JPN_LOCALE, LCMAP_FULLWIDTH | LCMAP_HIRAGANA, &ch, 1, &new_ch, 1);
                 ch = new_ch;
             } else {
                 WCHAR new_ch;
-                LCMapStringW(JPN_LOCALE, LCMAP_FULLWIDTH | LCMAP_KATAKANA, &ch, 1, &new_ch, 1);
+                LCMapStringW(XG_JPN_LOCALE, LCMAP_FULLWIDTH | LCMAP_KATAKANA, &ch, 1, &new_ch, 1);
                 ch = new_ch;
             }
 
@@ -5001,19 +5001,19 @@ void __fastcall XgDrawXWord_NormalView(XG_Board& xw, HDC hdc, LPSIZE psiz, bool 
             {
                 WCHAR new_ch;
                 if (xg_bLowercase) {
-                    LCMapStringW(JPN_LOCALE, LCMAP_FULLWIDTH | LCMAP_LOWERCASE, &ch, 1, &new_ch, 1);
+                    LCMapStringW(XG_JPN_LOCALE, LCMAP_FULLWIDTH | LCMAP_LOWERCASE, &ch, 1, &new_ch, 1);
                     ch = new_ch;
                 } else {
-                    LCMapStringW(JPN_LOCALE, LCMAP_FULLWIDTH | LCMAP_UPPERCASE, &ch, 1, &new_ch, 1);
+                    LCMapStringW(XG_JPN_LOCALE, LCMAP_FULLWIDTH | LCMAP_UPPERCASE, &ch, 1, &new_ch, 1);
                     ch = new_ch;
                 }
             } else {
                 WCHAR new_ch;
                 if (xg_bLowercase) {
-                    LCMapStringW(JPN_LOCALE, LCMAP_HALFWIDTH | LCMAP_LOWERCASE, &ch, 1, &new_ch, 1);
+                    LCMapStringW(XG_JPN_LOCALE, LCMAP_HALFWIDTH | LCMAP_LOWERCASE, &ch, 1, &new_ch, 1);
                     ch = new_ch;
                 } else {
-                    LCMapStringW(JPN_LOCALE, LCMAP_HALFWIDTH | LCMAP_UPPERCASE, &ch, 1, &new_ch, 1);
+                    LCMapStringW(XG_JPN_LOCALE, LCMAP_HALFWIDTH | LCMAP_UPPERCASE, &ch, 1, &new_ch, 1);
                     ch = new_ch;
                 }
             }
@@ -5432,11 +5432,11 @@ void __fastcall XgDrawXWord_SkeletonView(XG_Board& xw, HDC hdc, LPSIZE psiz, boo
             // 文字を変換する。
             if (xg_bHiragana) {
                 WCHAR new_ch;
-                LCMapStringW(JPN_LOCALE, LCMAP_FULLWIDTH | LCMAP_HIRAGANA, &ch, 1, &new_ch, 1);
+                LCMapStringW(XG_JPN_LOCALE, LCMAP_FULLWIDTH | LCMAP_HIRAGANA, &ch, 1, &new_ch, 1);
                 ch = new_ch;
             } else {
                 WCHAR new_ch;
-                LCMapStringW(JPN_LOCALE, LCMAP_FULLWIDTH | LCMAP_KATAKANA, &ch, 1, &new_ch, 1);
+                LCMapStringW(XG_JPN_LOCALE, LCMAP_FULLWIDTH | LCMAP_KATAKANA, &ch, 1, &new_ch, 1);
                 ch = new_ch;
             }
 
@@ -5445,21 +5445,21 @@ void __fastcall XgDrawXWord_SkeletonView(XG_Board& xw, HDC hdc, LPSIZE psiz, boo
             {
                 if (xg_bLowercase) {
                     WCHAR new_ch;
-                    LCMapStringW(JPN_LOCALE, LCMAP_FULLWIDTH | LCMAP_LOWERCASE, &ch, 1, &new_ch, 1);
+                    LCMapStringW(XG_JPN_LOCALE, LCMAP_FULLWIDTH | LCMAP_LOWERCASE, &ch, 1, &new_ch, 1);
                     ch = new_ch;
                 } else {
                     WCHAR new_ch;
-                    LCMapStringW(JPN_LOCALE, LCMAP_FULLWIDTH | LCMAP_UPPERCASE, &ch, 1, &new_ch, 1);
+                    LCMapStringW(XG_JPN_LOCALE, LCMAP_FULLWIDTH | LCMAP_UPPERCASE, &ch, 1, &new_ch, 1);
                     ch = new_ch;
                 }
             } else {
                 if (xg_bLowercase) {
                     WCHAR new_ch;
-                    LCMapStringW(JPN_LOCALE, LCMAP_HALFWIDTH | LCMAP_LOWERCASE, &ch, 1, &new_ch, 1);
+                    LCMapStringW(XG_JPN_LOCALE, LCMAP_HALFWIDTH | LCMAP_LOWERCASE, &ch, 1, &new_ch, 1);
                     ch = new_ch;
                 } else {
                     WCHAR new_ch;
-                    LCMapStringW(JPN_LOCALE, LCMAP_HALFWIDTH | LCMAP_UPPERCASE, &ch, 1, &new_ch, 1);
+                    LCMapStringW(XG_JPN_LOCALE, LCMAP_HALFWIDTH | LCMAP_UPPERCASE, &ch, 1, &new_ch, 1);
                     ch = new_ch;
                 }
             }
@@ -6187,16 +6187,16 @@ std::wstring XgNormalizeStringEx(const std::wstring& str, BOOL bUppercase, BOOL 
         {
             // カナか漢字かハングルなら全角文字。
             if (bKatakana) {
-                LCMapStringW(JPN_LOCALE, LCMAP_FULLWIDTH | LCMAP_KATAKANA, &ch, 1, &newch, 1);
+                LCMapStringW(XG_JPN_LOCALE, LCMAP_FULLWIDTH | LCMAP_KATAKANA, &ch, 1, &newch, 1);
             } else {
-                LCMapStringW(JPN_LOCALE, LCMAP_FULLWIDTH | LCMAP_HIRAGANA, &ch, 1, &newch, 1);
+                LCMapStringW(XG_JPN_LOCALE, LCMAP_FULLWIDTH | LCMAP_HIRAGANA, &ch, 1, &newch, 1);
             }
         } else {
             // それ以外は半角文字。
             if (bUppercase) {
-                LCMapStringW(JPN_LOCALE, LCMAP_HALFWIDTH | LCMAP_UPPERCASE, &ch, 1, &newch, 1);
+                LCMapStringW(XG_JPN_LOCALE, LCMAP_HALFWIDTH | LCMAP_UPPERCASE, &ch, 1, &newch, 1);
             } else {
-                LCMapStringW(JPN_LOCALE, LCMAP_HALFWIDTH | LCMAP_LOWERCASE, &ch, 1, &newch, 1);
+                LCMapStringW(XG_JPN_LOCALE, LCMAP_HALFWIDTH | LCMAP_LOWERCASE, &ch, 1, &newch, 1);
             }
         }
         ret += newch;
@@ -7595,7 +7595,7 @@ void __fastcall XgStartGenerateBlacks(void) noexcept
 // クロスワードで使う文字に変換する。
 std::wstring __fastcall XgNormalizeString(const std::wstring& text) {
     WCHAR szText[512];
-    LCMapStringW(JPN_LOCALE, LCMAP_FULLWIDTH | LCMAP_KATAKANA | LCMAP_UPPERCASE,
+    LCMapStringW(XG_JPN_LOCALE, LCMAP_FULLWIDTH | LCMAP_KATAKANA | LCMAP_UPPERCASE,
         text.c_str(), -1, szText, 512);
     std::wstring ret = szText;
     for (auto& ch : ret) {

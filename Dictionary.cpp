@@ -132,7 +132,7 @@ void XgReadUnicodeLine(LPWSTR pchLine)
     }
 
     // 単語文字列を全角・カタカナ・大文字にする。
-    LCMapStringW(JPN_LOCALE,
+    LCMapStringW(XG_JPN_LOCALE,
         LCMAP_FULLWIDTH | LCMAP_KATAKANA | LCMAP_UPPERCASE,
         pchLine, static_cast<int>(wcslen(pchLine) + 1), szWord, 64);
 

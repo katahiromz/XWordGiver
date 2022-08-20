@@ -515,7 +515,7 @@ void __fastcall XgOnChar(HWND hwnd, TCHAR ch, int cRepeat)
             XgDestroyCandsWnd();
 
             WCHAR sz[2];
-            LCMapStringW(JPN_LOCALE,
+            LCMapStringW(XG_JPN_LOCALE,
                 LCMAP_FULLWIDTH | LCMAP_KATAKANA | LCMAP_UPPERCASE,
                 &ch, 1, sz, ARRAYSIZE(sz));
             CharUpperW(sz);
@@ -703,7 +703,7 @@ void __fastcall XgOnChar(HWND hwnd, TCHAR ch, int cRepeat)
         } else if (XgIsCharHiraganaW(ch)) {
             // ひらがな直接入力。
             WCHAR sz[2];
-            ::LCMapStringW(JPN_LOCALE,
+            ::LCMapStringW(XG_JPN_LOCALE,
                 LCMAP_FULLWIDTH | LCMAP_KATAKANA | LCMAP_UPPERCASE,
                 &ch, 1, sz, ARRAYSIZE(sz));
             newch = sz[0];
@@ -1041,7 +1041,7 @@ void __fastcall XgOnImeChar(HWND hwnd, WCHAR ch, LPARAM /*lKeyData*/)
         if (XgIsCharHiraganaW(ch)) {
             // ひらがな入力。
             WCHAR sz[2];
-            LCMapStringW(JPN_LOCALE,
+            LCMapStringW(XG_JPN_LOCALE,
                 LCMAP_FULLWIDTH | LCMAP_KATAKANA | LCMAP_UPPERCASE,
                 &ch, 1, sz, ARRAYSIZE(sz));
             ch = sz[0];
@@ -1075,7 +1075,7 @@ katakana:;
             (0x1E00 <= ch && ch <= 0x1EFF)) // ラテン文字拡張追加
         {
             WCHAR sz[2];
-            LCMapStringW(JPN_LOCALE,
+            LCMapStringW(XG_JPN_LOCALE,
                 LCMAP_FULLWIDTH | LCMAP_KATAKANA | LCMAP_UPPERCASE,
                 &ch, 1, sz, ARRAYSIZE(sz));
             CharUpperW(sz);

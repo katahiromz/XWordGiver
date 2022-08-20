@@ -78,7 +78,7 @@
 #define XG_MAX_WORD_LEN 100
 
 // 日本語ロケール。
-#define JPN_LOCALE \
+#define XG_JPN_LOCALE \
     MAKELCID(MAKELANGID(LANG_JAPANESE, SUBLANG_DEFAULT), SORT_DEFAULT)
 
 // ロシア語ロケール。
