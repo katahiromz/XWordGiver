@@ -10,7 +10,7 @@
 
 // デバッグ出力。
 #ifdef NDEBUG
-    #define DebugPrintfW(const char *file, int lineno, pszFormat, ...)
+    #define DebugPrintfW(file, lineno, pszFormat, ...)
     #define DOUTW(fmt, ...)
 #else
     void __cdecl DebugPrintfW(const char *file, int lineno, LPCWSTR pszFormat, ...);
