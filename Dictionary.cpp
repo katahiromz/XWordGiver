@@ -4,7 +4,6 @@
 // (Japanese, UTF-8)
 
 #include "XWordGiver.hpp"
-#include "Auto.hpp"
 
 // 辞書データ。
 std::vector<XG_WordData>     xg_dict_1, xg_dict_2;
