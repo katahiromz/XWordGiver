@@ -94,7 +94,7 @@ HIMAGELIST xg_hGrayedImageList = nullptr;
 
 // 辞書ファイルの場所（パス）。
 std::wstring xg_dict_name;
-std::deque<DICT_ENTRY>  xg_dict_files;
+dicts_t xg_dicts;
 
 // ヒントに追加があったか？
 bool xg_bHintsAdded = false;
@@ -2313,7 +2313,7 @@ bool __fastcall XgDoSaveFiles(HWND hwnd, LPCWSTR pszFile)
 // 保存ダイアログ。
 BOOL __fastcall XgOnSaveAs(HWND hwnd)
 {
-    if (xg_dict_files.empty()) {
+    if (xg_dicts.empty()) {
         // 辞書ファイルの名前を読み込む。
         XgLoadDictsAll();
     }
@@ -3926,7 +3926,7 @@ void XgDoUpdateDictMenu(HMENU hDictMenu)
         ;
     }
 
-    if (xg_dict_files.empty()) // 辞書リストが空？
+    if (xg_dicts.empty()) // 辞書リストが空？
     {
         AppendMenuW(hDictMenu, MF_STRING | MF_GRAYED, -1, XgLoadStringDx1(IDS_NONE));
         return;
@@ -3935,7 +3935,7 @@ void XgDoUpdateDictMenu(HMENU hDictMenu)
     // 辞書項目を追加する。
     INT count = 0, id = ID_DICTIONARY00;
     WCHAR szText[MAX_PATH];
-    for (const auto& entry : xg_dict_files)
+    for (const auto& entry : xg_dicts)
     {
         std::wstring text;
         if (entry.m_friendly_name == entry.m_filename)
@@ -3961,7 +3961,7 @@ void XgDoUpdateDictMenu(HMENU hDictMenu)
 
     // ラジオボタンを付ける。
     index = I_NONE_ITEM;
-    for (const auto& entry : xg_dict_files)
+    for (const auto& entry : xg_dicts)
     {
         auto& file = entry.m_filename;
         if (lstrcmpiW(file.c_str(), xg_dict_name.c_str()) == 0)

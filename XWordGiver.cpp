@@ -2678,7 +2678,7 @@ bool __fastcall XgSetJsonString(HWND hwnd, const std::wstring& str)
 
             // 辞書名の辞書を読み込む。
             if (dictionary.size()) {
-                for (auto& entry : xg_dict_files) {
+                for (auto& entry : xg_dicts) {
                     auto& file = entry.m_filename;
                     if (file.find(dictionary) != std::wstring::npos) {
                         if (XgLoadDictFile(file.c_str())) {
