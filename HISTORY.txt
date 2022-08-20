@@ -191,6 +191,7 @@
     - Made the XWJ/JSON/XD files to store an integer value under the name "Policy".
     - Enabled undoing "Boxes".
     - Fixed Undo/Redo.
+    - Uniformed all the positions and sizes in the forms of (x, y) and (columns x rows).
 
 # 開発履歴 (Japanese)
 
@@ -698,3 +699,4 @@
     - XWJ/JSON/XDファイルにPolicyと言う名前で整数値を保存するようにした。
     - ボックスを「元に戻す」ことが可能に。
     - 「元に戻す」「やり直す」の修正。
+    - 位置指定・サイズ指定を (x, y) と (ヨコ x タテ) の形に統一。
