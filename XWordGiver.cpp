@@ -553,7 +553,7 @@ BOOL XgPatternsUnitTest(LPCWSTR input, LPCWSTR output)
     patterns_t patterns;
     XgLoadPatterns(input, patterns);
 
-    // 回転・転置したパターンも追加する。
+    // 反転・転置したパターンも追加する。
     patterns_t temp_pats;
     for (auto& pat : patterns) {
         if (XgIsPatternDividedByBlocks(pat))
