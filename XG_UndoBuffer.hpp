@@ -63,6 +63,7 @@ struct XG_UndoData_HintsUpdated : XG_UndoData {
     std::vector<XG_PlaceInfo>   vYokoInfo;
     std::vector<XG_Hint>        vecTateHints;
     std::vector<XG_Hint>        vecYokoHints;
+    BOOL bShowHints;
 
     virtual ~XG_UndoData_HintsUpdated()
     {
@@ -120,13 +121,13 @@ struct XG_UndoData_SetAll : XG_UndoData {
     std::vector<XG_PlaceInfo>   vYokoInfo;
     std::vector<XG_Hint>        vecTateHints;
     std::vector<XG_Hint>        vecYokoHints;
+    BOOL                        bShowHints;
     bool                        bSolved;
     bool                        bHintsAdded;
     bool                        bShowAnswer;
     std::wstring                strHeader;
     std::wstring                strNotes;
     std::wstring                strFileName;
-    bool                        bShowHints;
     bool                        bNumCro;
     XG_VIEW_MODE                nViewMode;
     std::wstring                boxes;

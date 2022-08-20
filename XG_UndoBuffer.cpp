@@ -29,6 +29,7 @@
     vYokoInfo = xg_vYokoInfo;
     vecTateHints = xg_vecTateHints;
     vecYokoHints = xg_vecYokoHints;
+    bShowHints = xg_bShowClues;
 }
 
 /*virtual*/ void XG_UndoData_HintsUpdated::Apply() const {
@@ -36,6 +37,14 @@
     xg_vYokoInfo = vYokoInfo;
     xg_vecTateHints = vecTateHints;
     xg_vecYokoHints = vecYokoHints;
+    XgUpdateHints();
+    if (bShowHints) {
+        XgShowHints(xg_hMainWnd);
+        xg_bShowClues = TRUE;
+    } else {
+        XgDestroyHintsWnd();
+        xg_bShowClues = FALSE;
+    }
     XG_FILE_MODIFIED(TRUE);
 }
 
@@ -74,13 +83,13 @@
     vYokoInfo = xg_vYokoInfo;
     vecTateHints = xg_vecTateHints;
     vecYokoHints = xg_vecYokoHints;
+    bShowHints = xg_bShowClues;
     bSolved = xg_bSolved;
     bHintsAdded = xg_bHintsAdded;
     bShowAnswer = xg_bShowAnswer;
     strHeader = xg_strHeader;
     strNotes = xg_strNotes;
     strFileName = xg_strFileName;
-    bShowHints = !!::IsWindow(xg_hHintsWnd);
     bNumCro = xg_bNumCroMode;
     nViewMode = xg_nViewMode;
     boxes = XgStringifyBoxes(xg_boxes);
@@ -103,10 +112,13 @@
     xg_strHeader = strHeader;
     xg_strNotes = strNotes;
     xg_strFileName = strFileName;
+    XgUpdateHints();
     if (bShowHints) {
         XgShowHints(xg_hMainWnd);
+        xg_bShowClues = TRUE;
     } else {
         XgDestroyHintsWnd();
+        xg_bShowClues = FALSE;
     }
     XgUpdateCaretPos();
     xg_bNumCroMode = bNumCro;

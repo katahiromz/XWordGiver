@@ -190,6 +190,7 @@
     - Fixed display of the Policy menu.
     - Made the XWJ/JSON/XD files to store an integer value under the name "Policy".
     - Enabled undoing "Boxes".
+    - Fixed Undo/Redo.
 
 # 開発履歴 (Japanese)
 
@@ -696,3 +697,4 @@
     - ルールメニューの黒斜三連禁と黒斜四連禁がおかしかったのを修正。
     - XWJ/JSON/XDファイルにPolicyと言う名前で整数値を保存するようにした。
     - ボックスを「元に戻す」ことが可能に。
+    - 「元に戻す」「やり直す」の修正。

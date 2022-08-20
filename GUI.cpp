@@ -64,6 +64,9 @@ HWND xg_hMainWnd = nullptr;
 HWND xg_hHintsWnd = nullptr;
 XG_HintsWnd xg_hints_wnd;
 
+// ヒントを表示するかどうか。
+BOOL xg_bShowClues = TRUE;
+
 // 候補ウィンドウ。
 XG_CandsWnd xg_cands_wnd;
 
@@ -6049,8 +6052,10 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT /*codeNo
         if (IsWindow(xg_hHintsWnd)) {
             ::DestroyWindow(xg_hHintsWnd);
             xg_hHintsWnd = NULL;
+            xg_bShowClues = FALSE;
         } else {
             XgShowHints(hwnd);
+            xg_bShowClues = TRUE;
             ::SetForegroundWindow(xg_hHintsWnd);
         }
         break;
