@@ -56,6 +56,13 @@
     xg_nViewMode = nViewMode;
 }
 
+/*virtual*/ void XG_UndoData_Boxes::Get() {
+    boxes = XgStringifyBoxes(xg_boxes);
+}
+/*virtual*/ void XG_UndoData_Boxes::Apply() const {
+    XgDeStringifyBoxes(boxes);
+}
+
 /*virtual*/ void XG_UndoData_SetAll::Get() {
     nRows = xg_nRows;
     nCols = xg_nCols;
@@ -76,6 +83,7 @@
     bShowHints = !!::IsWindow(xg_hHintsWnd);
     bNumCro = xg_bNumCroMode;
     nViewMode = xg_nViewMode;
+    boxes = XgStringifyBoxes(xg_boxes);
 }
 
 /*virtual*/ void XG_UndoData_SetAll::Apply() const {
@@ -106,6 +114,7 @@
         XgMakeItNumCro(xg_hMainWnd);
     }
     xg_nViewMode = nViewMode;
+    XgDeStringifyBoxes(boxes);
     XG_FILE_MODIFIED(TRUE);
 }
 

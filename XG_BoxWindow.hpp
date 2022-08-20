@@ -3,6 +3,7 @@
 #include "XG_Window.hpp"
 #include "XG_TextBoxDialog.hpp"
 #include "XG_PictureBoxDialog.hpp"
+#include "XG_UndoBuffer.hpp"
 
 #define XGWM_REDRAW (WM_USER + 101) // 再描画メッセージ。
 #define XG_MAX_TEXT 400 // テキストボックスに入るテキストの最大長。
@@ -24,6 +25,11 @@
 
 // ファイル変更フラグ。
 extern BOOL xg_bFileModified;
+
+// マス位置を取得する。
+VOID XgGetCellPosition(RECT& rc, INT i1, INT j1, INT i2, INT j2, BOOL bScroll);
+// マス位置を設定する。
+VOID XgSetCellPosition(LONG& x, LONG& y, INT& i, INT& j, BOOL bEnd);
 
 class XG_BoxWindow : public XG_Window
 {
@@ -185,7 +191,7 @@ public:
         return FALSE;
     }
 
-    void Bound()
+    BOOL Bound()
     {
         MRect rc;
 
@@ -195,7 +201,7 @@ public:
         GetWindowRect(m_hWnd, &rcWnd);
 
         if (EqualRect(&rc, &rcWnd))
-            return;
+            return FALSE;
 
         InflateRect(&rc, CXY_GRIP, CXY_GRIP);
 
@@ -205,6 +211,7 @@ public:
 
         ::KillTimer(m_hWnd, 999);
         ::SetTimer(m_hWnd, 999, 300, NULL);
+        return TRUE;
     }
 
     BOOL OnCreate(HWND hwnd, LPCREATESTRUCT lpCreateStruct)
@@ -437,10 +444,16 @@ public:
                 GetWindowRect(hwnd, &rc);
                 InflateRect(&rc, -CXY_GRIP, -CXY_GRIP);
                 MapWindowRect(NULL, m_hwndParent, &rc);
+                auto sa1 = std::make_shared<XG_UndoData_Boxes>();
+                sa1->Get();
                 INT i1, j1, i2, j2;
                 XgSetCellPosition(rc.left, rc.top, i1, j1, FALSE);
                 XgSetCellPosition(rc.right, rc.bottom, i2, j2, TRUE);
-                SetPos(i1, j1, i2, j2);
+                if (SetPos(i1, j1, i2, j2)) {
+                    auto sa2 = std::make_shared<XG_UndoData_Boxes>();
+                    sa2->Get();
+                    xg_ubUndoBuffer.Commit(UC_BOXES, sa1, sa2); // 元に戻す情報を設定。
+                }
                 // ボックスの位置を更新。
                 PostMessage(m_hwndParent, WM_COMMAND, ID_MOVEBOXES, 0);
                 // 表示を更新。
@@ -604,7 +617,8 @@ public:
 };
 
 // ボックス。
-extern std::vector<std::shared_ptr<XG_BoxWindow> > xg_boxes;
+typedef std::vector<std::shared_ptr<XG_BoxWindow> > boxes_t;
+extern boxes_t xg_boxes;
 
 class XG_PictureBoxWindow : public XG_BoxWindow
 {

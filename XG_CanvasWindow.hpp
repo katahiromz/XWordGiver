@@ -3,7 +3,7 @@
 #include "XG_BoxWindow.hpp"
 
 // ボックス。
-extern std::vector<std::shared_ptr<XG_BoxWindow> > xg_boxes;
+extern boxes_t xg_boxes;
 
 class XG_CanvasWindow : public XG_Window
 {

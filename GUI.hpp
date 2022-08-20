@@ -143,7 +143,5 @@ void __fastcall XgFitZoom(HWND hwnd);
 void XgUpdateTheme(HWND hwnd);
 // ルールが変更された。
 void XgUpdateRules(HWND hwnd);
-// ボックスを描画する。
-void XgDrawBoxes(XG_Board& xw, HDC hdc, LPSIZE psiz);
 
 //////////////////////////////////////////////////////////////////////////////

@@ -189,6 +189,7 @@
     - Don't clear the opening filename when finding a solution.
     - Fixed display of the Policy menu.
     - Made the XWJ/JSON/XD files to store an integer value under the name "Policy".
+    - Enabled undoing "Boxes".
 
 # 開発履歴 (Japanese)
 
@@ -694,3 +695,4 @@
     - 「解を求める」ときに開いているファイル名をクリアしないようにした。
     - ルールメニューの黒斜三連禁と黒斜四連禁がおかしかったのを修正。
     - XWJ/JSON/XDファイルにPolicyと言う名前で整数値を保存するようにした。
+    - ボックスを「元に戻す」ことが可能に。

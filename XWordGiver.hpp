@@ -1446,18 +1446,7 @@ extern XG_HighLight xg_highlight;
 void __fastcall XgSetCaretPos(INT iRow = 0, INT jCol = 0);
 // キャレット位置を更新する。
 void __fastcall XgUpdateCaretPos(void);
-// ボックスをすべて削除する。
-void XgDeleteBoxes(void);
-// ボックスJSONを読み込む。
-BOOL XgDoLoadBoxJson(const json& boxes);
-// ボックスJSONを保存。
-BOOL XgDoSaveBoxJson(json& j);
-// ボックスを描画する。
-void XgDrawBoxes(XG_Board& xw, HDC hdc, LPSIZE psiz);
-// ボックスJSONを読み込む。
-BOOL XgLoadXdBox(const std::wstring& line);
-// XDファイルからボックスを読み込む。
-BOOL XgWriteXdBoxes(FILE *fout);
+
 // ファイル変更フラグ。
 void XgSetModified(BOOL bModified, LPCSTR file, INT line);
 #define XG_FILE_MODIFIED(bModified) XgSetModified((bModified), __FILE__, __LINE__)
@@ -1481,5 +1470,29 @@ struct PATDATA
     std::vector<WCHAR> data;
 };
 typedef std::vector<PATDATA> patterns_t;
+
+//////////////////////////////////////////////////////////////////////////////
+// ボックス。
+
+#include "XG_BoxWindow.hpp"
+
+// ボックスを描画する。
+void XgDrawBoxes(XG_Board& xw, HDC hdc, LPSIZE psiz);
+// ボックスをすべて削除する。
+void XgDeleteBoxes(void);
+// ボックスJSONを読み込む。
+BOOL XgDoLoadBoxJson(const json& boxes);
+// ボックスJSONを保存。
+BOOL XgDoSaveBoxJson(json& j);
+// ボックスを描画する。
+void XgDrawBoxes(XG_Board& xw, HDC hdc, LPSIZE psiz);
+// ボックスJSONを読み込む。
+BOOL XgLoadXdBox(const std::wstring& line);
+// XDファイルからボックスを読み込む。
+BOOL XgWriteXdBoxes(FILE *fout);
+// ボックス群を文字列化する。
+std::wstring XgStringifyBoxes(const boxes_t& boxes);
+// ボックス群を逆文字列化する。
+void XgDeStringifyBoxes(const std::wstring& boxes);
 
 #endif  // ndef XWORDGIVER

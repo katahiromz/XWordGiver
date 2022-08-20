@@ -150,7 +150,7 @@ XG_FILETYPE xg_nFileType = XG_FILETYPE_XWJ;
 XG_HighLight xg_highlight = { -1, FALSE };
 
 // ボックス。
-std::vector<std::shared_ptr<XG_BoxWindow> > xg_boxes;
+boxes_t xg_boxes;
 
 // キャンバスウィンドウ。
 XG_CanvasWindow xg_canvasWnd;
@@ -385,6 +385,97 @@ bool XgConvertBoxes(void)
     return true;
 }
 
+// ボックス群を文字列化する。
+std::wstring XgStringifyBoxes(const boxes_t& boxes)
+{
+    std::wstring ret;
+    WCHAR szText[MAX_PATH];
+
+    for (auto& box : xg_boxes) {
+        // ボックスの内部データを取り出す。
+        XG_BoxWindow::map_t map;
+        box->WriteMap(map);
+
+        // 読み書きする。
+        bool first = true;
+        for (auto& pair : map) {
+            if (!first)
+                ret += L", ";
+            auto quoted = xg_str_quote(pair.second);
+            StringCchPrintfW(szText, _countof(szText), L"{{%s: %s}}",
+                             pair.first.c_str(), quoted.c_str());
+            ret += szText;
+            first = false;
+        }
+        ret += L"\n";
+    }
+    return ret;
+}
+
+// ボックス群を逆文字列化する。
+void XgDeStringifyBoxes(const std::wstring& boxes)
+{
+    // ボックスをいったん破棄する。
+    XgDeleteBoxes();
+
+    // "\n"で文字列を分割する。
+    std::vector<std::wstring> strs;
+    mstr_split(strs, boxes, L"\n");
+
+    for (auto& str : strs) {
+        if (str.empty())
+            continue;
+
+        XG_BoxWindow::map_t map;
+
+        while (str.size())
+        {
+            mstr_trim(str, L" \t\r\n");
+
+            size_t index1 = str.find(L"{{");
+            size_t index2 = str.find(L"}}", index1);
+            if (index1 == str.npos || index2 == str.npos)
+                break;
+
+            auto contents = str.substr(index1 + 2, index2 - index1 - 2);
+            size_t index3 = contents.find(L':');
+            if (index3 == contents.npos)
+                break;
+
+            auto tag = contents.substr(0, index3);
+            auto value = contents.substr(index3 + 1);
+            xg_str_trim(tag);
+            xg_str_trim(value);
+            map[tag] = xg_str_unquote(value);
+
+            str = str.substr(index2 + 2);
+            xg_str_trim(str);
+        }
+
+        auto type_it = map.find(L"type");
+        if (type_it == map.end())
+            continue;
+
+        auto type = type_it->second;
+        if (type == L"pic") {
+            auto ptr = std::make_shared<XG_PictureBoxWindow>();
+            ptr->ReadMap(map);
+            if (ptr->CreateDx(xg_canvasWnd)) {
+                xg_boxes.emplace_back(ptr);
+            }
+        } else if (type == L"text") {
+            auto ptr = std::make_shared<XG_TextBoxWindow>();
+            ptr->ReadMap(map);
+            if (ptr->CreateDx(xg_canvasWnd)) {
+                xg_boxes.emplace_back(ptr);
+            }
+        }
+    }
+
+    // ボックスの位置を更新。
+    PostMessageW(xg_hMainWnd, WM_COMMAND, ID_MOVEBOXES, 0);
+}
+
 // 使われている画像を取得する。
 std::unordered_set<std::wstring> XgGetUsedImages(void)
 {
@@ -497,7 +588,7 @@ BOOL XgLoadXdBox(const std::wstring& line)
     return FALSE;
 }
 
-// XDファイルからボックスを読み込む。
+// XDファイルへボックスを書き込む。
 BOOL XgWriteXdBoxes(FILE *fout)
 {
     for (auto& box : xg_boxes) {
@@ -2497,8 +2588,17 @@ BOOL XgOnLoad(HWND hwnd, LPCWSTR pszFile, LPPOINT ppt)
                 auto ptr = std::make_shared<XG_TextBoxWindow>(i1, j1, i2, j2);
                 ptr->SetText(strText);
                 if (ptr->CreateDx(xg_canvasWnd)) {
-                    ptr->Bound();
-                    xg_boxes.emplace_back(ptr);
+                    auto sa1 = std::make_shared<XG_UndoData_Boxes>();
+                    sa1->Get();
+                    {
+                        ptr->Bound();
+                        xg_boxes.emplace_back(ptr);
+                    }
+                    auto sa2 = std::make_shared<XG_UndoData_Boxes>();
+                    sa2->Get();
+                    xg_ubUndoBuffer.Commit(UC_BOXES, sa1, sa2); // 元に戻す情報を設定。
+
+                    // ファイルが変更された。
                     XG_FILE_MODIFIED(TRUE);
                     return TRUE;
                 }
@@ -2508,8 +2608,17 @@ BOOL XgOnLoad(HWND hwnd, LPCWSTR pszFile, LPPOINT ppt)
             auto ptr = std::make_shared<XG_PictureBoxWindow>(i1, j1, i2, j2);
             ptr->SetText(szFile);
             if (ptr->CreateDx(xg_canvasWnd)) {
-                ptr->Bound();
-                xg_boxes.emplace_back(ptr);
+                auto sa1 = std::make_shared<XG_UndoData_Boxes>();
+                sa1->Get();
+                {
+                    ptr->Bound();
+                    xg_boxes.emplace_back(ptr);
+                }
+                auto sa2 = std::make_shared<XG_UndoData_Boxes>();
+                sa2->Get();
+                xg_ubUndoBuffer.Commit(UC_BOXES, sa1, sa2); // 元に戻す情報を設定。
+
+                // ファイルが変更された。
                 XG_FILE_MODIFIED(TRUE);
                 return TRUE;
             }
@@ -5139,7 +5248,14 @@ BOOL XgAddBox(HWND hwnd, UINT id)
             ptr->m_strFontName = dialog1.m_strFontName;
             ptr->m_nFontSizeInPoints = dialog1.m_nFontSizeInPoints;
             if (ptr->CreateDx(xg_canvasWnd)) {
-                xg_boxes.emplace_back(ptr);
+                auto sa1 = std::make_shared<XG_UndoData_Boxes>();
+                sa1->Get();
+                {
+                    xg_boxes.emplace_back(ptr);
+                }
+                auto sa2 = std::make_shared<XG_UndoData_Boxes>();
+                sa2->Get();
+                xg_ubUndoBuffer.Commit(UC_BOXES, sa1, sa2); // 元に戻す情報を設定する。
                 // ファイルが変更された。
                 xg_bFileModified = TRUE;
                 return TRUE;
@@ -5151,7 +5267,14 @@ BOOL XgAddBox(HWND hwnd, UINT id)
             auto ptr = std::make_shared<XG_PictureBoxWindow>(i1, j1, i2, j2);
             ptr->SetText(dialog2.m_strFile);
             if (ptr->CreateDx(xg_canvasWnd)) {
-                xg_boxes.emplace_back(ptr);
+                auto sa1 = std::make_shared<XG_UndoData_Boxes>();
+                sa1->Get();
+                {
+                    xg_boxes.emplace_back(ptr);
+                }
+                auto sa2 = std::make_shared<XG_UndoData_Boxes>();
+                sa2->Get();
+                xg_ubUndoBuffer.Commit(UC_BOXES, sa1, sa2); // 元に戻す情報を設定する。
                 // ファイルが変更された。
                 xg_bFileModified = TRUE;
                 return TRUE;
@@ -6530,12 +6653,6 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT /*codeNo
         XgOnRulePreset(hwnd);
         break;
     case ID_MOVEBOXES:
-        {
-            auto it = std::remove_if(xg_boxes.begin(), xg_boxes.end(), [](const std::shared_ptr<XG_BoxWindow>& box){
-                return !::IsWindow(*box);
-            });
-            xg_boxes.erase(it, xg_boxes.end());
-        }
         for (auto& box : xg_boxes) {
             box->Bound();
         }
@@ -6551,8 +6668,19 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT /*codeNo
             for (auto it = xg_boxes.begin(); it != xg_boxes.end(); ++it) {
                 if ((*it)->m_hWnd != hwndTarget)
                     continue;
+
                 DestroyWindow(hwndTarget);
-                xg_boxes.erase(it);
+
+                auto sa1 = std::make_shared<XG_UndoData_Boxes>();
+                sa1->Get();
+                {
+                    xg_boxes.erase(it);
+                }
+                auto sa2 = std::make_shared<XG_UndoData_Boxes>();
+                sa2->Get();
+                xg_ubUndoBuffer.Commit(UC_BOXES, sa1, sa2); // 元に戻す情報を設定する。
+
+                // ファイルが変更された。
                 XG_FILE_MODIFIED(TRUE);
                 break;
             }
@@ -6565,7 +6693,14 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT /*codeNo
             for (auto it = xg_boxes.begin(); it != xg_boxes.end(); ++it) {
                 if ((*it)->m_hWnd != hwndTarget)
                     continue;
+
+                auto sa1 = std::make_shared<XG_UndoData_Boxes>();
+                sa1->Get();
                 if ((*it)->Prop(hwndTarget)) {
+                    auto sa2 = std::make_shared<XG_UndoData_Boxes>();
+                    sa2->Get();
+                    xg_ubUndoBuffer.Commit(UC_BOXES, sa1, sa2); // 元に戻す情報を設定する。
+
                     XG_FILE_MODIFIED(TRUE);
                 }
                 break;
