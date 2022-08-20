@@ -33,13 +33,12 @@ std::shared_ptr<XG_FileManager>& XgGetFileManager(void)
             StringCchPrintfW(s_szText, _countof(s_szText), L"%hs (%u): ", file, lineno);
             cch = lstrlenW(s_szText);
             StringCchVPrintfW(&s_szText[cch], _countof(s_szText) - cch, pszFormat, va);
-            OutputDebugStringW(s_szText);
         }
         else
         {
             StringCchVPrintfW(s_szText, _countof(s_szText), pszFormat, va);
-            OutputDebugStringW(s_szText);
         }
+        OutputDebugStringW(s_szText);
         ::LeaveCriticalSection(&xg_cs);
         va_end(va);
     }
