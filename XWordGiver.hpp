@@ -309,6 +309,7 @@ struct XG_Pos
         m_i = 0; m_j = 0;
     }
 };
+typedef XG_Pos XG_Size;
 
 namespace std
 {

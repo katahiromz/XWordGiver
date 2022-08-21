@@ -543,33 +543,9 @@ BOOL XgSavePatterns(LPCWSTR pszFileName, const patterns_t& patterns)
     return TRUE;
 }
 
-// パターンの単体テスト。
-BOOL XgPatternsUnitTest(LPCWSTR input, LPCWSTR output)
+// ソートして一意化する。
+void XgSortAndUniquePatterns(patterns_t& patterns)
 {
-#ifdef NDEBUG
-    return TRUE;
-#else
-    // パターンを読み込む。
-    patterns_t patterns;
-    XgLoadPatterns(input, patterns);
-
-    // 反転・転置したパターンも追加する。
-    patterns_t temp_pats;
-    for (auto& pat : patterns) {
-        if (XgIsPatternDividedByBlocks(pat))
-            continue;
-        temp_pats.push_back(pat);
-        auto transposed = XgTransposePattern(pat);
-        temp_pats.push_back(transposed);
-        auto flip_h = XgFlipPatternH(pat);
-        temp_pats.push_back(flip_h);
-        auto flip_v = XgFlipPatternV(pat);
-        temp_pats.push_back(flip_v);
-        auto flip_hv = XgFlipPatternH(flip_v);
-        temp_pats.push_back(flip_hv);
-    }
-    patterns = std::move(temp_pats);
-
     // ソートする。
     std::sort(patterns.begin(), patterns.end(), [](const XG_PATDATA& a, const XG_PATDATA& b) {
         if (a.num_columns < b.num_columns)
@@ -588,10 +564,79 @@ BOOL XgPatternsUnitTest(LPCWSTR input, LPCWSTR output)
         return a.text == b.text;
     });
     patterns.erase(last, patterns.end());
+}
+
+// パターンの単体テスト。
+BOOL XgPatternsUnitTest(void)
+{
+#ifdef NDEBUG
+    return TRUE;
+#else
+    auto input = L"PAT1.txt";
+    auto output = L"PAT2.txt";
+
+    // パターンを読み込む。
+    patterns_t patterns;
+    if (!XgLoadPatterns(input, patterns)) {
+        //assert(0);
+        return FALSE;
+    }
+
+    // ソートして一意化する。
+    XgSortAndUniquePatterns(patterns);
+
+    patterns_t temp_pats;
+    if (1) {
+        for (size_t i = 0; i < patterns.size(); ++i) {
+            auto& pat = patterns[i];
+            if (XgIsPatternDividedByBlocks(pat))
+                continue;
+            temp_pats.push_back(pat);
+            auto transposed = XgTransposePattern(pat);
+            auto flip_h = XgFlipPatternH(pat);
+            auto flip_v = XgFlipPatternV(pat);
+            auto flip_hv = XgFlipPatternH(flip_v);
+            temp_pats.erase(
+                std::remove_if(temp_pats.begin(), temp_pats.end(), [&](const XG_PATDATA& pat) {
+                    return pat.text == transposed.text ||
+                           pat.text == flip_h.text ||
+                           pat.text == flip_v.text ||
+                           pat.text == flip_hv.text;
+                }),
+                temp_pats.end()
+            );
+            temp_pats.push_back(pat);
+        }
+    } else {
+        // 反転・転置したパターンも追加する。
+        for (auto& pat : patterns) {
+            if (XgIsPatternDividedByBlocks(pat))
+                continue;
+            temp_pats.push_back(pat);
+            auto transposed = XgTransposePattern(pat);
+            auto flip_h = XgFlipPatternH(pat);
+            auto flip_v = XgFlipPatternV(pat);
+            auto flip_hv = XgFlipPatternH(flip_v);
+            temp_pats.push_back(transposed);
+            temp_pats.push_back(flip_h);
+            temp_pats.push_back(flip_v);
+            temp_pats.push_back(flip_hv);
+        }
+    }
+    patterns = std::move(temp_pats);
+
+    // ソートして一意化する。
+    XgSortAndUniquePatterns(patterns);
 
     // 概要を出力。
+    std::unordered_map<XG_Size, INT> histogram;
     for (auto& pat : patterns) {
-        DOUTW(L"%u x %u\n", pat.num_columns, pat.num_rows);
+        XG_Size siz = { pat.num_rows, pat.num_columns };
+        histogram[siz]++;
+    }
+    for (auto& pair : histogram) {
+        auto& siz = pair.first;
+        DOUTW(L"%u x %u: %d\n", siz.m_j, siz.m_i, pair.second);
     }
 
     // パターンを書き込む。
