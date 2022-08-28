@@ -52,10 +52,19 @@ public:
 
     void SetComboValue(HWND hwnd, INT value)
     {
-        WCHAR szText[64];
-        StringCbPrintfW(szText, sizeof(szText), L"%u", value);
+        WCHAR szText[256];
+        StringCbPrintfW(szText, sizeof(szText), L"0x%04X:", value);
 
         HWND hCmb1 = GetDlgItem(hwnd, cmb1);
+        INT iItem = ComboBox_FindString(hCmb1, -1, szText);
+        if (iItem != CB_ERR)
+        {
+            ComboBox_GetLBText(hCmb1, iItem, szText);
+        }
+        else
+        {
+            StringCbPrintfW(szText, sizeof(szText), L"0x%04X", value);
+        }
         ComboBox_RealSetText(hCmb1, szText);
     }
 
@@ -155,17 +164,19 @@ public:
         // ダイアログを中央へ移動する。
         XgCenterDialog(hwnd);
 
+        // 項目を追加する。
+        HWND hCmb1 = GetDlgItem(hwnd, cmb1);
+        for (INT id = IDS_POLICYPRESET_SKELTON_0; id <= IDS_POLICYPRESET_JPN_LOOSE_3; ++id) {
+            ComboBox_AddString(hCmb1, XgLoadStringDx1(id));
+        }
+
+        // 値をセットする。
         m_bUpdating = TRUE;
         {
             SetComboValue(hwnd, xg_nRules);
             SetCheckValue(hwnd, xg_nRules);
         }
         m_bUpdating = FALSE;
-
-        HWND hCmb1 = GetDlgItem(hwnd, cmb1);
-        for (INT id = IDS_POLICYPRESET_SKELTON_0; id <= IDS_POLICYPRESET_JPN_LOOSE_3; ++id) {
-            ComboBox_AddString(hCmb1, XgLoadStringDx1(id));
-        }
 
         EnableWindow(GetDlgItem(hwnd, chx4), FALSE);
         return TRUE;
