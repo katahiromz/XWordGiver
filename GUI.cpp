@@ -2256,8 +2256,6 @@ bool __fastcall XgDoSaveFiles(HWND hwnd, LPCWSTR pszFile)
     // パス情報を格納・変換する。
     XgGetFileManager()->set_file(pszFile);
     XgGetFileManager()->set_looks(L"");
-    //XgGetFileManager()->convert();
-    //XgConvertBoxes();
 
     // 関連画像ファイルをパス名を変換して保存する。
     std::wstring files_dir;
@@ -2269,6 +2267,7 @@ bool __fastcall XgDoSaveFiles(HWND hwnd, LPCWSTR pszFile)
             XgGetFileManager()->save_image2(pic->m_strText);
         }
     }
+    XgGetFileManager()->save_image2(xg_strBlackCellImage);
 
     // 保存する。
     if (!XgDoSaveFile(hwnd, pszFile)) {
