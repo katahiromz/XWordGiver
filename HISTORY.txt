@@ -192,7 +192,7 @@
     - Enabled undoing "Boxes".
     - Fixed Undo/Redo.
     - Uniformed all the positions and sizes in the forms of (x, y) and (columns x rows).
-    - Made the default codepage UTF-8.
+    - Made the default codepage UTF-8 of file reading.
     - Modified the values of "Japanese publisher policy (Loose)".
 
 # 開発履歴 (Japanese)
@@ -702,5 +702,5 @@
     - ボックスを「元に戻す」ことが可能に。
     - 「元に戻す」「やり直す」の修正。
     - 位置指定・サイズ指定を (x, y) と (ヨコ x タテ) の形に統一。
-    - デフォルトのコードページをUTF-8にした。
+    - ファイル読み込みのデフォルトのコードページをUTF-8にした。
     - 「日本の出版社ルール (ゆるい)」の値を改変。
