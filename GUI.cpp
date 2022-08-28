@@ -2256,26 +2256,27 @@ bool __fastcall XgDoSaveFiles(HWND hwnd, LPCWSTR pszFile)
     // パス情報を格納・変換する。
     XgGetFileManager()->set_file(pszFile);
     XgGetFileManager()->set_looks(L"");
-    XgGetFileManager()->convert();
-    XgConvertBoxes();
+    //XgGetFileManager()->convert();
+    //XgConvertBoxes();
+
+    // 関連画像ファイルをパス名を変換して保存する。
+    std::wstring files_dir;
+    XgGetFileManager()->get_files_dir(files_dir);
+    CreateDirectoryW(files_dir.c_str(), NULL);
+    for (auto& box : xg_boxes) {
+        if (box->m_type == L"pic") {
+            auto pic = dynamic_cast<XG_PictureBoxWindow*>(&*box);
+            XgGetFileManager()->save_image2(pic->m_strText);
+        }
+    }
 
     // 保存する。
-    if (!XgDoSaveFile(hwnd, pszFile))
-    {
+    if (!XgDoSaveFile(hwnd, pszFile)) {
         // 保存に失敗。
         XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_CANTSAVE2), NULL, MB_ICONERROR);
         XgGetFileManager() = old_mgr;
         return false;
     }
-
-    // *_filesフォルダを作成する。
-    std::wstring files_dir;
-    XgGetFileManager()->get_files_dir(files_dir);
-    CreateDirectoryW(files_dir.c_str(), NULL);
-
-    // 使われている画像を取得して保存する。
-    auto used = XgGetUsedImages();
-    XgGetFileManager()->save_images(used);
 
     // 関連ファイルをエクスポートする。
     auto looks_file = XgGetFileManager()->get_looks_file();
@@ -2493,8 +2494,7 @@ bool __fastcall XgDoLoadFiles(HWND hwnd, LPCWSTR pszFile)
     XgGetFileManager()->set_looks(L"");
 
     // 開く。
-    if (!XgDoLoadMainFile(hwnd, pszFile))
-    {
+    if (!XgDoLoadMainFile(hwnd, pszFile)) {
         // 失敗。
         XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_CANTLOAD), nullptr, MB_ICONERROR);
         XgGetFileManager() = old_mgr;

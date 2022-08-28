@@ -4,6 +4,7 @@
 // (Japanese, UTF-8)
 
 #include "XWordGiver.hpp"
+#include <clocale>
 
 //////////////////////////////////////////////////////////////////////////////
 // global variables
@@ -2529,6 +2530,7 @@ bool __fastcall XgSetJsonString(HWND hwnd, const std::wstring& str)
 {
     std::string utf8 = XgUnicodeToUtf8(str);
 
+    bool success = true;
     try {
         json j = json::parse(utf8);
         int row_count = j["row_count"];
@@ -2563,11 +2565,11 @@ bool __fastcall XgSetJsonString(HWND hwnd, const std::wstring& str)
         }
 
         if (row_count <= 0 || column_count <= 0) {
-            return false;
+            throw 1;
         }
 
         if (row_count != int(cell_data.size())) {
-            return false;
+            throw 2;
         }
 
         XG_Board xw;
@@ -2582,10 +2584,18 @@ bool __fastcall XgSetJsonString(HWND hwnd, const std::wstring& str)
             XgDoLoadBoxJson(j["boxes"]);
         }
 
-        bool success = true;
+        if (!cell_data.is_array()) {
+            success = false;
+        }
 
         for (int i = 0; i < row_count; ++i) {
-            std::wstring row = XgUtf8ToUnicode(cell_data[i]);
+            if (!cell_data[i].is_string()) {
+                success = false;
+                break;
+            }
+            
+            std::string str = cell_data[i];
+            std::wstring row = XgUtf8ToUnicode(str).c_str();
             if (int(row.size()) != column_count) {
                 success = false;
                 break;
@@ -2744,13 +2754,13 @@ bool __fastcall XgSetJsonString(HWND hwnd, const std::wstring& str)
             xg_nCols = nColsSave;
         }
 
-        return success;
     }
     catch (json::exception&)
     {
+        success = false;
     }
 
-    return false;
+    return success;
 }
 
 // 文字列を設定する。

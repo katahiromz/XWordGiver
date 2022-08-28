@@ -773,7 +773,7 @@ BOOL XgReadTextFileAll(LPCWSTR file, std::wstring& strText)
         }
 
         ++index;
-        if (index >= 256)
+        if (index >= strBinary.size())
             break;
     }
 
@@ -795,19 +795,9 @@ BOOL XgReadTextFileAll(LPCWSTR file, std::wstring& strText)
         return TRUE;
     }
 
-    if (!MultiByteToWideChar(CP_ACP, MB_ERR_INVALID_CHARS,
-                             strBinary.c_str(), int(strBinary.size()), NULL, 0))
-    {
-        // UTF-8
-        strText = XgUtf8ToUnicode(strBinary);
-        return TRUE;
-    }
-    else
-    {
-        // ANSI
-        strText = XgAnsiToUnicode(strBinary);
-        return TRUE;
-    }
+    // Assume UTF-8 not ANSI
+    strText = XgUtf8ToUnicode(strBinary);
+    return TRUE;
 }
 
 // 画像ファイルか？
@@ -1035,6 +1025,43 @@ bool XG_FileManager::save_image(const std::wstring& path)
     convert(converted);
     auto real = get_real_path(converted);
     return XgWriteFileAll(real.c_str(), it->second);
+}
+
+bool XG_FileManager::save_image2(std::wstring& path)
+{
+    if (path.empty() || path.find(L"$FILES\\") == 0)
+        return true;
+
+    auto it = m_path2contents.find(path);
+    if (it == m_path2contents.end()) {
+        load_image(path.c_str());
+        it = m_path2contents.find(path);
+        if (it == m_path2contents.end())
+            return false;
+    }
+
+    ////////////////////////////////////////
+    std::wstring title = get_file_title(path);
+    std::wstring canonical = L"$FILES\\" + title;
+    std::wstring name = PathFindFileNameW(it->first.c_str());
+    std::wstring ext = PathFindExtensionW(it->first.c_str());
+    name = name.substr(0, name.size() - ext.size());
+    int i = 1;
+    auto real = get_real_path(canonical);
+    while (PathFileExistsW(real.c_str())) {
+        i++;
+        std::wstring fileNum = L"(" + std::to_wstring(i) + L")";
+
+        canonical = L"$FILES\\" + name + fileNum + ext;
+        real = get_real_path(canonical);
+    }
+    /////////////////////////////////////////////////////////////////////////
+
+    bool result = XgWriteFileAll(real.c_str(), it->second);
+    if (result) {
+        path = std::move(canonical);
+    }
+    return result;
 }
 
 bool XG_FileManager::save_images()

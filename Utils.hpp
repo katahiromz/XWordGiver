@@ -274,6 +274,7 @@ struct XG_FileManager
     void delete_handles();
     bool load_image(LPCWSTR filename);
     bool save_image(const std::wstring& path);
+    bool save_image2(std::wstring& path);
     bool save_images();
     bool save_images(std::unordered_set<std::wstring>& files);
     void convert();
