@@ -282,7 +282,6 @@
 #define ID_PANEPREV                         166
 #define ID_SOLVEREPEATEDLY                  167
 #define ID_SOLVEREPEATEDLYNOADDBLACK        168
-#define ID_STARTSHAREWARE                   169
 #define ID_REGISTERKEY                      170
 #define ID_COPYASIMAGE                      171
 #define ID_OPENPATTERNS                     172

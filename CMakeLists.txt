@@ -73,7 +73,7 @@ set(CMAKE_CXX_STANDARD 17)
 
 include_directories(. json/include SaveBitmapToFile)
 
-add_definitions(-DMZC_NO_SHAREWARE -DUNICODE -D_UNICODE)
+add_definitions(-DUNICODE -D_UNICODE)
 
 # SINGLE_THREAD_MODE option
 option(SINGLE_THREAD_MODE "Single thread mode" OFF)
