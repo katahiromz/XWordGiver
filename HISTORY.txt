@@ -198,6 +198,7 @@
     - Revived the installer.
 - 2022-XX-YY ver.5.0.1
     - Added POLICY.txt. The Policy Presets can now be customized.
+    - Do not misspell 'skeleton'.
 
 # 開発履歴 (Japanese)
 
