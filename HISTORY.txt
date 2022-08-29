@@ -1,4 +1,4 @@
-﻿# History of XWordGiver (English)
+﻿# History (ChangeLog) of XWordGiver (English)
 
 - 2021-08-22 Ver.4.7.4
     - Made character feed default.
@@ -196,6 +196,7 @@
     - Modified the values of "Japanese publisher policy (Loose)".
     - Added digital signatures as trial.
     - Revived the installer.
+- 2022-XX-YY ver.5.0.1
 
 # 開発履歴 (Japanese)
 
@@ -708,3 +709,4 @@
     - 「日本の出版社ルール (ゆるい)」の値を改変。
     - 試験的にデジタル署名を追加。
     - インストーラを復活。
+- 2022月XX月YY日 ver.5.0.1
