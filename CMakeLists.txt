@@ -75,7 +75,7 @@ include_directories(. json/include SaveBitmapToFile)
 
 add_definitions(-DMZC_NO_SHAREWARE -DUNICODE -D_UNICODE)
 
-subdirs(SaveBitmapToFile tests dict_analyze)
+subdirs(SaveBitmapToFile dict_analyze)
 
 if (CMAKE_SIZEOF_VOID_P EQUAL 8)
     set(BITS 64)
