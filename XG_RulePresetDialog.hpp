@@ -159,6 +159,13 @@ public:
         }
     }
 
+    struct ENTRY
+    {
+        std::wstring language;
+        DWORD value;
+        std::wstring name;
+    };
+
     BOOL OnInitDialog(HWND hwnd, HWND hwndFocus, LPARAM lParam)
     {
         // ダイアログを中央へ移動する。
@@ -166,8 +173,79 @@ public:
 
         // 項目を追加する。
         HWND hCmb1 = GetDlgItem(hwnd, cmb1);
-        for (INT id = IDS_POLICYPRESET_SKELETON_0; id <= IDS_POLICYPRESET_JPN_LOOSE_3; ++id) {
-            ComboBox_AddString(hCmb1, XgLoadStringDx1(id));
+
+        // POLICY.txtを開いて全部読む。
+        WCHAR szPath[MAX_PATH];
+        std::wstring strText;
+        std::vector<ENTRY> entries;
+        if (XgFindLocalFile(szPath, _countof(szPath), L"POLICY.txt") &&
+            XgReadTextFileAll(szPath, strText))
+        {
+            // 行に分割する。
+            std::vector<std::wstring> lines;
+            mstr_split(lines, strText, L"\n");
+
+            for (auto& line : lines)
+            {
+                // 各行の前後の空白を除去する。
+                mstr_trim(line, L" \t\r\n");
+
+                // コメントは除去する。
+                size_t ich = line.find(L';');
+                if (ich != line.npos)
+                {
+                    line = line.substr(0, ich);
+                }
+
+                // コロンのある場所を探す。
+                size_t ich0 = line.find(L':');
+                if (ich0 == line.npos)
+                    continue;
+                size_t ich1 = line.find(L':', ich0 + 1);
+                if (ich1 == line.npos)
+                    continue;
+
+                // コロンで分割。
+                auto str0 = line.substr(0, ich0);
+                auto str1 = line.substr(ich0 + 1, ich1 - ich0 - 1);
+                auto str2 = line.substr(ich1 + 1);
+                mstr_trim(str0, L" \t");
+                mstr_trim(str1, L" \t");
+                mstr_trim(str2, L" \t");
+
+                // エントリを追加する。
+                ENTRY entry;
+                entry.language = str0;
+                entry.value = wcstoul(str1.c_str(), NULL, 0);
+                entry.name = str2;
+                entries.push_back(entry);
+            }
+        }
+
+        if (entries.empty()) { // エントリがなければ
+            // リソースからコンボボックス項目を追加。
+            for (INT id = IDS_POLICYPRESET_SKELETON_0; id <= IDS_POLICYPRESET_JPN_LOOSE_3; ++id) {
+                ComboBox_AddString(hCmb1, XgLoadStringDx1(id));
+            }
+        } else {
+            // エントリをコンボボックスに追加。
+            for (auto& entry : entries) {
+                // 僕らは分かち合えない。
+                if (XgIsUserJapanese()) {
+                    if (entry.language != L"JP")
+                        continue;
+                } else {
+                    if (entry.language == L"JP")
+                        continue;
+                }
+
+                WCHAR sz[32];
+                StringCchPrintfW(sz, _countof(sz), L"0x%04X", entry.value);
+                std::wstring str = sz;
+                str += L": ";
+                str += entry.name;
+                ComboBox_AddString(hCmb1, str.c_str());
+            }
         }
 
         // 値をセットする。

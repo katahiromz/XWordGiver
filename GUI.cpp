@@ -6777,6 +6777,14 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT /*codeNo
     case ID_DOWNLOADDICT:
         ShellExecuteW(hwnd, NULL, L"https://katahiromz.web.fc2.com/xword/dict", NULL, NULL, SW_SHOWNORMAL);
         break;
+    case ID_OPENPOLICYTXT:
+        {
+            // POLICY.txtを開く。
+            WCHAR szPath[MAX_PATH];
+            if (XgFindLocalFile(szPath, _countof(szPath), L"POLICY.txt"))
+                ShellExecuteW(hwnd, NULL, szPath, NULL, NULL, SW_SHOWNORMAL);
+        }
+        break;
     default:
         if (!XgOnCommandExtra(hwnd, id)) {
             ::MessageBeep(0xFFFFFFFF);

@@ -461,6 +461,7 @@
 #define ID_OPENTHEMETXT                     579
 #define ID_CLEARUNDOBUFFER                  580
 #define ID_DOWNLOADDICT                     581
+#define ID_OPENPOLICYTXT                    582
 #define ID_TT_BASE                          10000
 
 #define ctl2                                1185

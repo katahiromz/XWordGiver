@@ -197,6 +197,7 @@
     - Added digital signatures as trial.
     - Revived the installer.
 - 2022-XX-YY ver.5.0.1
+    - Added POLICY.txt. The Policy Presets can now be customized.
 
 # 開発履歴 (Japanese)
 
@@ -710,3 +711,4 @@
     - 試験的にデジタル署名を追加。
     - インストーラを復活。
 - 2022月XX月YY日 ver.5.0.1
+    - POLICY.txtを追加。ルールのプリセットがカスタマイズ可能に。
