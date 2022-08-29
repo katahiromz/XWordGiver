@@ -192,20 +192,19 @@ public:
 
                 // コメントは除去する。
                 size_t ich = line.find(L';');
-                if (ich != line.npos)
-                {
+                if (ich != line.npos) {
                     line = line.substr(0, ich);
                 }
 
-                // コロンのある場所を探す。
-                size_t ich0 = line.find(L':');
+                // タブのある場所を探す。
+                size_t ich0 = line.find(L'\t');
                 if (ich0 == line.npos)
                     continue;
-                size_t ich1 = line.find(L':', ich0 + 1);
+                size_t ich1 = line.find(L'\t', ich0 + 1);
                 if (ich1 == line.npos)
                     continue;
 
-                // コロンで分割。
+                // タブで分割。
                 auto str0 = line.substr(0, ich0);
                 auto str1 = line.substr(ich0 + 1, ich1 - ich0 - 1);
                 auto str2 = line.substr(ich1 + 1);

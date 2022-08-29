@@ -6,27 +6,27 @@
 ; Advanced setting.
 ; - Only those who understand hexadecimal numbers and bit flags should edit.
 ;
-EN: 0x0008: Skeleton policy: No symmetry
-EN: 0x0028: Skeleton policy: Point symmetry (Recommended)
-EN: 0x0088: Skeleton policy: Vertical symmetry
-EN: 0x0108: Skeleton policy: Horizontal symmetry
-EN: 0x004F: Japanese publisher policy (Strict): No symmetry
-EN: 0x006F: Japanese publisher policy (Strict): Point symmetry
-EN: 0x00CF: Japanese publisher policy (Strict): Vertical symmetry
-EN: 0x014F: Japanese publisher policy (Strict): Horizontal symmetry
-EN: 0x001B: Japanese publisher policy (Loose): No symmetry
-EN: 0x003B: Japanese publisher policy (Loose): Point symmetry
-EN: 0x009B: Japanese publisher policy (Loose): Vertical symmetry
-EN: 0x011B: Japanese publisher policy (Loose): Horizontal symmetry
-JP: 0x0008: スケルトン ルール: 対称なし
-JP: 0x0028: スケルトン ルール: 点対称
-JP: 0x0088: スケルトン ルール: 上下対称
-JP: 0x0108: スケルトン ルール: 左右対称
-JP: 0x004F: 日本の出版社ルール (厳格): 対称なし
-JP: 0x006F: 日本の出版社ルール (厳格): 点対称 (※推奨)
-JP: 0x00CF: 日本の出版社ルール (厳格): 上下対称
-JP: 0x014F: 日本の出版社ルール (厳格): 左右対称
-JP: 0x001B: 日本の出版社ルール (ゆるい): 対称なし
-JP: 0x003B: 日本の出版社ルール (ゆるい): 点対称
-JP: 0x009B: 日本の出版社ルール (ゆるい): 上下対称
-JP: 0x011B: 日本の出版社ルール (ゆるい): 左右対称
+EN	0x0008	Skeleton policy: No symmetry
+EN	0x0028	Skeleton policy: Point symmetry (Recommended)
+EN	0x0088	Skeleton policy: Vertical symmetry
+EN	0x0108	Skeleton policy: Horizontal symmetry
+EN	0x004F	Japanese publisher policy (Strict): No symmetry
+EN	0x006F	Japanese publisher policy (Strict): Point symmetry
+EN	0x00CF	Japanese publisher policy (Strict): Vertical symmetry
+EN	0x014F	Japanese publisher policy (Strict): Horizontal symmetry
+EN	0x001B	Japanese publisher policy (Loose): No symmetry
+EN	0x003B	Japanese publisher policy (Loose): Point symmetry
+EN	0x009B	Japanese publisher policy (Loose): Vertical symmetry
+EN	0x011B	Japanese publisher policy (Loose): Horizontal symmetry
+JP	0x0008	スケルトン ルール: 対称なし
+JP	0x0028	スケルトン ルール: 点対称
+JP	0x0088	スケルトン ルール: 上下対称
+JP	0x0108	スケルトン ルール: 左右対称
+JP	0x004F	日本の出版社ルール (厳格): 対称なし
+JP	0x006F	日本の出版社ルール (厳格): 点対称 (※推奨)
+JP	0x00CF	日本の出版社ルール (厳格): 上下対称
+JP	0x014F	日本の出版社ルール (厳格): 左右対称
+JP	0x001B	日本の出版社ルール (ゆるい): 対称なし
+JP	0x003B	日本の出版社ルール (ゆるい): 点対称
+JP	0x009B	日本の出版社ルール (ゆるい): 上下対称
+JP	0x011B	日本の出版社ルール (ゆるい): 左右対称
