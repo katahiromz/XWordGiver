@@ -1,4 +1,11 @@
 ; POLICY.txt
+;
+; 上級者向け設定。
+; - 16進数とビットフラグの分かる人だけが編集して下さい。
+;
+; Advanced setting.
+; - Only those who understand hexadecimal numbers and bit flags should edit.
+;
 EN: 0x0008: Skeleton policy: No symmetry
 EN: 0x0028: Skeleton policy: Point symmetry (Recommended)
 EN: 0x0088: Skeleton policy: Vertical symmetry
