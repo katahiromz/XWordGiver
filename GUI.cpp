@@ -5397,6 +5397,10 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT /*codeNo
     INT x = -1, y = -1;
     BOOL bUpdateImage = FALSE;
 
+#ifdef NO_RANDOM
+    xg_random_seed = 0;
+#endif
+
     switch (id) {
     case ID_LEFT:
         // キャレットを左へ移動。

@@ -4277,7 +4277,7 @@ retry_2:;
 }
 
 #ifdef NO_RANDOM
-    int xg_random_seed = 0;
+    INT xg_random_seed = 0;
 #endif
 
 // マルチスレッド用の関数。
@@ -7497,7 +7497,11 @@ unsigned __stdcall XgGenerateBlacks(void *param) noexcept
     xg_solution.clear();
 
     // 乱数をかく乱する。
+#ifndef NO_RANDOM
     srand(DWORD(::GetTickCount64()) ^ ::GetCurrentThreadId());
+#else
+    srand(xg_random_seed++);
+#endif
 
     // 再帰求解関数に突入する。
     do {
@@ -7517,7 +7521,11 @@ unsigned __stdcall XgGenerateBlacksSmart(void *param) noexcept
     XG_Board xword;
 
     // 乱数をかく乱する。
+#ifndef NO_RANDOM
     srand(DWORD(::GetTickCount64()) ^ ::GetCurrentThreadId());
+#else
+    srand(xg_random_seed++);
+#endif
 
     if (xg_nRules & RULE_POINTSYMMETRY) {
         // 再帰求解関数に突入する。
@@ -7554,7 +7562,11 @@ unsigned __stdcall XgGenerateBlacksSmart(void *param) noexcept
 // マルチスレッド用の関数。
 unsigned __stdcall XgGenerateBlacksPointSym(void *param) noexcept
 {
+#ifndef NO_RANDOM
     srand(DWORD(::GetTickCount64()) ^ ::GetCurrentThreadId());
+#else
+    srand(xg_random_seed++);
+#endif
     xg_solution.clear();
     XG_Board xword;
     do {
@@ -7568,7 +7580,11 @@ unsigned __stdcall XgGenerateBlacksPointSym(void *param) noexcept
 // マルチスレッド用の関数。
 unsigned __stdcall XgGenerateBlacksLineSymV(void *param) noexcept
 {
+#ifndef NO_RANDOM
     srand(DWORD(::GetTickCount64()) ^ ::GetCurrentThreadId());
+#else
+    srand(xg_random_seed++);
+#endif
     xg_solution.clear();
     XG_Board xword;
     do {
@@ -7582,7 +7598,11 @@ unsigned __stdcall XgGenerateBlacksLineSymV(void *param) noexcept
 // マルチスレッド用の関数。
 unsigned __stdcall XgGenerateBlacksLineSymH(void *param) noexcept
 {
+#ifndef NO_RANDOM
     srand(DWORD(::GetTickCount64()) ^ ::GetCurrentThreadId());
+#else
+    srand(xg_random_seed++);
+#endif
     xg_solution.clear();
     XG_Board xword;
     do {

@@ -50,12 +50,6 @@ public:
 
     BOOL OnInitDialog(HWND hwnd, HWND hwndFocus, LPARAM lParam)
     {
-        #ifdef NO_RANDOM
-        {
-            extern int xg_random_seed;
-            xg_random_seed = 100;
-        }
-        #endif
         // ダイアログを中央へ移動する。
         XgCenterDialog(hwnd);
         // 再試行カウントをクリアする。

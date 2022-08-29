@@ -1448,6 +1448,10 @@ BOOL XgDoConfirmSave(HWND hwnd);
 // ファイルを読み込む。
 BOOL XgOnLoad(HWND hwnd, LPCWSTR pszFile, LPPOINT ppt = NULL);
 
+#ifdef NO_RANDOM
+    extern INT xg_random_seed;
+#endif
+
 //////////////////////////////////////////////////////////////////////////////
 
 #include "Dictionary.hpp"
