@@ -75,6 +75,18 @@ include_directories(. json/include SaveBitmapToFile)
 
 add_definitions(-DMZC_NO_SHAREWARE -DUNICODE -D_UNICODE)
 
+# SINGLE_THREAD_MODE option
+option(SINGLE_THREAD_MODE "Single thread mode" OFF)
+if(SINGLE_THREAD_MODE)
+    add_definitions(-DSINGLE_THREAD_MODE)
+endif()
+
+# NO_RANDOM option
+option(NO_RANDOM "Non-random mode" OFF)
+if(NO_RANDOM)
+    add_definitions(-DNO_RANDOM)
+endif()
+
 subdirs(SaveBitmapToFile dict_analyze)
 
 if (CMAKE_SIZEOF_VOID_P EQUAL 8)
