@@ -5822,6 +5822,9 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT /*codeNo
                 }
             }
 
+            // イメージを更新する。
+            XgUpdateImage(hwnd, x, y);
+
             auto sa2 = std::make_shared<XG_UndoData_SetAll>();
             {
                 // 解を求める（黒マス追加なし）。
