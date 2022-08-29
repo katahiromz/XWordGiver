@@ -194,6 +194,8 @@
     - Uniformed all the positions and sizes in the forms of (x, y) and (columns x rows).
     - Made the default codepage UTF-8 of file reading.
     - Modified the values of "Japanese publisher policy (Loose)".
+    - Added digital signatures as trial.
+    - Revived the installer.
 
 # 開発履歴 (Japanese)
 
@@ -704,3 +706,5 @@
     - 位置指定・サイズ指定を (x, y) と (ヨコ x タテ) の形に統一。
     - ファイル読み込みのデフォルトのコードページをUTF-8にした。
     - 「日本の出版社ルール (ゆるい)」の値を改変。
+    - 試験的にデジタル署名を追加。
+    - インストーラを復活。
