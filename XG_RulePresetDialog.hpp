@@ -166,7 +166,7 @@ public:
 
         // 項目を追加する。
         HWND hCmb1 = GetDlgItem(hwnd, cmb1);
-        for (INT id = IDS_POLICYPRESET_SKELTON_0; id <= IDS_POLICYPRESET_JPN_LOOSE_3; ++id) {
+        for (INT id = IDS_POLICYPRESET_SKELETON_0; id <= IDS_POLICYPRESET_JPN_LOOSE_3; ++id) {
             ComboBox_AddString(hCmb1, XgLoadStringDx1(id));
         }
 
