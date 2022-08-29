@@ -961,9 +961,11 @@ extern BOOL xg_bShowDoubleFrameLetters;
 #include <random>
 template <typename t_elem>
 inline void xg_random_shuffle(const t_elem& begin, const t_elem& end) {
+#ifndef NO_RANDOM
     std::random_device rd;
     std::mt19937 g(rd());
     std::shuffle(begin, end, g);
+#endif
 }
 
 ////////////////////////////////////////////////////////////////////////////

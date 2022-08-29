@@ -114,8 +114,9 @@ public:
     void OnTimer(HWND hwnd, UINT id)
     {
         // プログレスバーを更新する。
-        //for (DWORD i = 0; i < xg_dwThreadCount; i++)
-        for (DWORD i = 0; i < 2; i++) {
+        for (DWORD i = 0; i < xg_dwThreadCount; i++) {
+            if (i > 2)
+                break;
             ::SendDlgItemMessageW(hwnd, ctl1 + i, PBM_SETPOS,
                 static_cast<WPARAM>(xg_aThreadInfo[i].m_count), 0);
         }
