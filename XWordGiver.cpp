@@ -3176,11 +3176,15 @@ bool __fastcall XgSetString(HWND hwnd, const std::wstring& str, XG_FILETYPE type
 // スレッド情報を取得する。
 XG_ThreadInfo *__fastcall XgGetThreadInfo(void) noexcept
 {
+#ifdef SINGLE_THREAD_MODE
+    return &xg_aThreadInfo[0];
+#else
     const DWORD threadid = ::GetCurrentThreadId();
     for (DWORD i = 0; i < xg_dwThreadCount; i++) {
         if (xg_aThreadInfo[i].m_threadid == threadid)
             return &xg_aThreadInfo[i];
     }
+#endif
     return nullptr;
 }
 

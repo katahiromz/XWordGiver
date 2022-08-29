@@ -7539,11 +7539,15 @@ int WINAPI WinMain(
     ::GetSystemInfo(&si);
     s_dwNumberOfProcessors = si.dwNumberOfProcessors;
 
+#ifdef SINGLE_THREAD_MODE
+    xg_dwThreadCount = 1;
+#else
     // プロセッサの数に合わせてスレッドの数を決める。
     if (s_dwNumberOfProcessors <= 3)
         xg_dwThreadCount = 2;
     else
         xg_dwThreadCount = s_dwNumberOfProcessors - 1;
+#endif
 
     xg_aThreadInfo.resize(xg_dwThreadCount);
     xg_ahThreads.resize(xg_dwThreadCount);

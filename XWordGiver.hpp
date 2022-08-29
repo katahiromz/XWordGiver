@@ -1349,9 +1349,6 @@ extern DWORD xg_dwThreadCount;
 // 計算がキャンセルされたか？
 extern bool xg_bCancelled;
 
-// スレッドの数。
-extern DWORD xg_dwThreadCount;
-
 // 連続生成の場合、問題を生成した数。
 extern INT xg_nNumberGenerated;
 
