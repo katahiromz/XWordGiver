@@ -185,10 +185,10 @@ public:
             std::vector<std::wstring> lines;
             mstr_split(lines, strText, L"\n");
 
-            for (auto& line : lines)
-            {
+            // 各行について。
+            for (auto& line : lines) {
                 // 各行の前後の空白を除去する。
-                mstr_trim(line, L" \t\r\n");
+                mstr_trim(line, L" \r\n");
 
                 // コメントは除去する。
                 size_t ich = line.find(L';');
@@ -196,28 +196,26 @@ public:
                     line = line.substr(0, ich);
                 }
 
-                // タブのある場所を探す。
-                size_t ich0 = line.find(L'\t');
-                if (ich0 == line.npos)
-                    continue;
-                size_t ich1 = line.find(L'\t', ich0 + 1);
-                if (ich1 == line.npos)
-                    continue;
-
                 // タブで分割。
-                auto str0 = line.substr(0, ich0);
-                auto str1 = line.substr(ich0 + 1, ich1 - ich0 - 1);
-                auto str2 = line.substr(ich1 + 1);
-                mstr_trim(str0, L" \t");
-                mstr_trim(str1, L" \t");
-                mstr_trim(str2, L" \t");
+                std::vector<std::wstring> fields;
+                mstr_split(fields, line, L"\t");
+                for (auto& field : fields) {
+                    mstr_trim(field, L" ");
+                }
 
                 // エントリを追加する。
-                ENTRY entry;
-                entry.language = str0;
-                entry.value = wcstoul(str1.c_str(), NULL, 0);
-                entry.name = str2;
-                entries.push_back(entry);
+                if (fields.size() == 2) {
+                    ENTRY entry;
+                    entry.value = wcstoul(fields[0].c_str(), NULL, 0);
+                    entry.name = fields[1];
+                    entries.push_back(entry);
+                } else if (fields.size() == 3) {
+                    ENTRY entry;
+                    entry.language = fields[0];
+                    entry.value = wcstoul(fields[1].c_str(), NULL, 0);
+                    entry.name = fields[2];
+                    entries.push_back(entry);
+                }
             }
         }
 
@@ -229,13 +227,15 @@ public:
         } else {
             // エントリをコンボボックスに追加。
             for (auto& entry : entries) {
-                // 僕らは分かち合えない。
-                if (XgIsUserJapanese()) {
-                    if (entry.language != L"JP")
-                        continue;
-                } else {
-                    if (entry.language == L"JP")
-                        continue;
+                if (entry.language.size()) {
+                    // 僕らは分かち合えない。
+                    if (XgIsUserJapanese()) {
+                        if (entry.language != L"JPN")
+                            continue;
+                    } else {
+                        if (entry.language == L"JPN")
+                            continue;
+                    }
                 }
 
                 WCHAR sz[32];
