@@ -814,14 +814,14 @@ BOOL XgReadTextFileAll(LPCWSTR file, std::wstring& strText)
     std::wstring strFromUtf8 = XgUtf8ToUnicode(strBinary);
     if (XgUnicodeToUtf8(strFromUtf8) == strBinary)
     {
-        strText = strFromUtf8;
+        strText = std::move(strFromUtf8);
         return TRUE;
     }
 
     std::wstring strFromAnsi = XgAnsiToUnicode(strBinary);
     if (XgUnicodeToAnsi(strFromAnsi) == strBinary)
     {
-        strText = strFromAnsi;
+        strText = std::move(strFromAnsi);
         return TRUE;
     }
 
