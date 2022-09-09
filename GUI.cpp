@@ -19,6 +19,7 @@
 #include "XG_CandsWnd.hpp"
 #include "XG_GenDialog.hpp"
 #include "XG_HintsWnd.hpp"
+#include "XG_MarkingDialog.hpp"
 #include "XG_NewDialog.hpp"
 #include "XG_NotesDialog.hpp"
 #include "XG_PatGenDialog.hpp"
@@ -69,6 +70,9 @@ BOOL xg_bShowClues = TRUE;
 
 // 候補ウィンドウ。
 XG_CandsWnd xg_cands_wnd;
+
+// [二重マス単語の候補と配置]ダイアログ。
+XG_MarkingDialog xg_hMarkingDlg;
 
 // 入力パレット。
 HWND xg_hwndInputPalette = nullptr;
@@ -258,6 +262,10 @@ static bool s_bShowStatusBar = true;
 
 // ルール群。
 INT xg_nRules = XG_DEFAULT_RULES;
+
+// [二重マス単語の候補と配置]ダイアログの位置。
+INT xg_nMarkingX = CW_USEDEFAULT;
+INT xg_nMarkingY = CW_USEDEFAULT;
 
 //////////////////////////////////////////////////////////////////////////////
 // スクロール関連。
@@ -919,6 +927,8 @@ bool __fastcall XgLoadSettings(void)
     xg_nViewMode = XG_VIEW_NORMAL;
     xg_nFileType = XG_FILETYPE_XD;
 
+    xg_nMarkingX = xg_nMarkingY = CW_USEDEFAULT;
+
     xg_imode = xg_im_ANY; // 自由入力。
 
     xg_nNumberToGenerate = 16;
@@ -1119,6 +1129,12 @@ bool __fastcall XgLoadSettings(void)
             if (!app_key.QueryDword(L"Rules", dwValue)) {
                 xg_nRules = dwValue | RULE_DONTDIVIDE;
             }
+            if (!app_key.QueryDword(L"MarkingX", dwValue)) {
+                xg_nMarkingX = dwValue;
+            }
+            if (!app_key.QueryDword(L"MarkingY", dwValue)) {
+                xg_nMarkingY = dwValue;
+            }
             if (!app_key.QueryDword(L"ShowDoubleFrameLetters", dwValue)) {
                 xg_bShowDoubleFrameLetters = !!dwValue;
             }
@@ -1235,6 +1251,9 @@ bool __fastcall XgSaveSettings(void)
             app_key.SetDword(L"ShowAnsOnPat", XG_PatternDialog::xg_bShowAnswerOnPattern);
 
             app_key.SetDword(L"Rules", xg_nRules);
+            app_key.SetDword(L"MarkingX", xg_nMarkingX);
+            app_key.SetDword(L"MarkingY", xg_nMarkingY);
+
             app_key.SetDword(L"ShowDoubleFrameLetters", xg_bShowDoubleFrameLetters);
             app_key.SetDword(L"ViewMode", xg_nViewMode);
 
@@ -1537,6 +1556,8 @@ void XgNewCells(HWND hwnd, WCHAR ch, INT nRows, INT nCols)
     XgDestroyCandsWnd();
     // ヒントウィンドウを破棄する。
     XgDestroyHintsWnd();
+    // 二重マス単語の候補と配置を破棄する。
+    ::DestroyWindow(xg_hMarkingDlg);
     // 初期化する。
     xg_bSolved = false;
     xg_nRows = nRows;
@@ -1634,6 +1655,8 @@ void XgResizeCells(HWND hwnd, INT nNewRows, INT nNewCols)
     XgDestroyCandsWnd();
     // ヒントウィンドウを破棄する。
     XgDestroyHintsWnd();
+    // 二重マス単語の候補と配置を破棄する。
+    ::DestroyWindow(xg_hMarkingDlg);
     // マークの更新を通知する。
     XgMarkUpdate();
     // サイズを変更する。
@@ -2450,6 +2473,8 @@ BOOL __fastcall XgOnNew(HWND hwnd)
     XgDestroyCandsWnd();
     // ヒントウィンドウを破棄する。
     XgDestroyHintsWnd();
+    // 二重マス単語の候補と配置を破棄する。
+    ::DestroyWindow(xg_hMarkingDlg);
 
     // 新規作成ダイアログ。
     ::EnableWindow(xg_hwndInputPalette, FALSE);
@@ -2484,6 +2509,8 @@ bool __fastcall XgDoLoadFiles(HWND hwnd, LPCWSTR pszFile)
     XgDestroyCandsWnd();
     // ヒントウィンドウを破棄する。
     XgDestroyHintsWnd();
+    // 二重マス単語の候補と配置を破棄する。
+    ::DestroyWindow(xg_hMarkingDlg);
     // ボックスをすべて削除する。
     XgDeleteBoxes();
 
@@ -2904,6 +2931,8 @@ bool __fastcall XgOnGenerateBlacksRepeatedly(HWND hwnd)
     XgDestroyCandsWnd();
     // ヒントウィンドウを破棄する。
     XgDestroyHintsWnd();
+    // 二重マス単語の候補と配置を破棄する。
+    ::DestroyWindow(xg_hMarkingDlg);
 
     // キャンセルダイアログを表示し、生成を開始する。
     ::EnableWindow(xg_hwndInputPalette, FALSE);
@@ -2992,6 +3021,8 @@ bool __fastcall XgOnGenerateBlacks(HWND hwnd, bool sym)
     XgDestroyCandsWnd();
     // ヒントウィンドウを破棄する。
     XgDestroyHintsWnd();
+    // 二重マス単語の候補と配置を破棄する。
+    ::DestroyWindow(xg_hMarkingDlg);
 
     // キャンセルダイアログを表示し、生成を開始する。
     ::EnableWindow(xg_hwndInputPalette, FALSE);
@@ -3054,6 +3085,8 @@ bool __fastcall XgOnSolve_AddBlack(HWND hwnd)
     XgDestroyCandsWnd();
     // ヒントウィンドウを破棄する。
     XgDestroyHintsWnd();
+    // 二重マス単語の候補と配置を破棄する。
+    ::DestroyWindow(xg_hMarkingDlg);
 
     // キャンセルダイアログを表示し、実行を開始する。
     ::EnableWindow(xg_hwndInputPalette, FALSE);
@@ -3157,6 +3190,8 @@ bool __fastcall XgOnSolve_NoAddBlack(HWND hwnd, bool bShowAnswer/* = true*/)
     XgDestroyCandsWnd();
     // ヒントウィンドウを破棄する。
     XgDestroyHintsWnd();
+    // 二重マス単語の候補と配置を破棄する。
+    ::DestroyWindow(xg_hMarkingDlg);
     // キャンセルダイアログを表示し、実行を開始する。
     ::EnableWindow(xg_hwndInputPalette, FALSE);
     {
@@ -3753,6 +3788,8 @@ void XgPasteBoard(HWND hwnd, const std::wstring& str)
     XgDestroyCandsWnd();
     // ヒントウィンドウを破棄する。
     XgDestroyHintsWnd();
+    // 二重マス単語の候補と配置を破棄する。
+    ::DestroyWindow(xg_hMarkingDlg);
 
     xg_bSolved = false;
     xg_bShowAnswer = false;
@@ -3890,6 +3927,7 @@ void __fastcall MainWnd_OnDestroy(HWND /*hwnd*/)
     xg_hHintsWnd = NULL;
     ::DestroyWindow(xg_hwndInputPalette);
     xg_hwndInputPalette = NULL;
+    ::DestroyWindow(xg_hMarkingDlg);
 
     // アプリを終了する。
     ::PostQuitMessage(0);
@@ -4127,7 +4165,6 @@ void __fastcall MainWnd_OnInitMenu(HWND /*hwnd*/, HMENU hMenu)
         }
         ::EnableMenuItem(hMenu, ID_SHOWHIDEHINTS, MF_BYCOMMAND | MF_ENABLED);
         ::EnableMenuItem(hMenu, ID_MARKSNEXT, MF_BYCOMMAND | MF_ENABLED);
-        ::EnableMenuItem(hMenu, ID_MARKSPREV, MF_BYCOMMAND | MF_ENABLED);
         ::EnableMenuItem(hMenu, ID_SAVEANSASIMAGE, MF_BYCOMMAND | MF_ENABLED);
         ::EnableMenuItem(hMenu, ID_PRINTANSWER, MF_BYCOMMAND | MF_ENABLED);
 
@@ -4159,7 +4196,6 @@ void __fastcall MainWnd_OnInitMenu(HWND /*hwnd*/, HMENU hMenu)
         ::CheckMenuRadioItem(hMenu, ID_SHOWSOLUTION, ID_NOSOLUTION, ID_NOSOLUTION, MF_BYCOMMAND);
         ::EnableMenuItem(hMenu, ID_SHOWHIDEHINTS, MF_BYCOMMAND | MF_GRAYED);
         ::EnableMenuItem(hMenu, ID_MARKSNEXT, MF_BYCOMMAND | MF_GRAYED);
-        ::EnableMenuItem(hMenu, ID_MARKSPREV, MF_BYCOMMAND | MF_GRAYED);
         ::EnableMenuItem(hMenu, ID_SAVEANSASIMAGE, MF_BYCOMMAND | MF_GRAYED);
         ::EnableMenuItem(hMenu, ID_PRINTANSWER, MF_BYCOMMAND | MF_GRAYED);
 
@@ -4615,6 +4651,8 @@ void MainWnd_OnEraseSettings(HWND hwnd)
     XgDestroyCandsWnd();
     // ヒントウィンドウを破棄する。
     XgDestroyHintsWnd();
+    // 二重マス単語の候補と配置を破棄する。
+    ::DestroyWindow(xg_hMarkingDlg);
 
     // 消去するのか確認。
     if (XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_QUERYERASESETTINGS), XgLoadStringDx2(IDS_APPNAME),
@@ -5118,6 +5156,8 @@ void XgGenerateFromWordList(HWND hwnd)
     XgDestroyCandsWnd();
     // ヒントウィンドウを破棄する。
     XgDestroyHintsWnd();
+    // 二重マス単語の候補と配置を破棄する。
+    ::DestroyWindow(xg_hMarkingDlg);
 
     // ダイアログを表示。
     INT nID;
@@ -5586,6 +5626,8 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT /*codeNo
             XgDestroyCandsWnd();
             // ヒントウィンドウを破棄する。
             XgDestroyHintsWnd();
+            // 二重マス単語の候補と配置を破棄する。
+            ::DestroyWindow(xg_hMarkingDlg);
             // 縦と横を入れ替える。
             MainWnd_OnFlipVH(hwnd);
             if (flag) {
@@ -5611,6 +5653,8 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT /*codeNo
             XgDestroyCandsWnd();
             // ヒントウィンドウを破棄する。
             XgDestroyHintsWnd();
+            // 二重マス単語の候補と配置を破棄する。
+            ::DestroyWindow(xg_hMarkingDlg);
             // 問題の作成。
             if (XgOnGenerate(hwnd, false, false)) {
                 flag = true;
@@ -5641,6 +5685,8 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT /*codeNo
             XgDestroyCandsWnd();
             // ヒントウィンドウを破棄する。
             XgDestroyHintsWnd();
+            // 二重マス単語の候補と配置を破棄する。
+            ::DestroyWindow(xg_hMarkingDlg);
             // 問題の作成。
             if (XgOnGenerate(hwnd, true, false)) {
                 flag = true;
@@ -5670,6 +5716,8 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT /*codeNo
             XgDestroyCandsWnd();
             // ヒントウィンドウを破棄する。
             XgDestroyHintsWnd();
+            // 二重マス単語の候補と配置を破棄する。
+            ::DestroyWindow(xg_hMarkingDlg);
             // 連続生成ダイアログ。
             if (XgOnGenerate(hwnd, false, true)) {
                 // クリアする。
@@ -5732,6 +5780,8 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT /*codeNo
                 ::MessageBeep(0xFFFFFFFF);
             }
         }
+        if (xg_hMarkingDlg)
+            xg_hMarkingDlg.RefreshCandidates(xg_hMarkingDlg);
         bUpdateImage = TRUE;
         break;
     case ID_REDO:   // やり直す。
@@ -5747,6 +5797,8 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT /*codeNo
                 ::MessageBeep(0xFFFFFFFF);
             }
         }
+        if (xg_hMarkingDlg)
+            xg_hMarkingDlg.RefreshCandidates(xg_hMarkingDlg);
         bUpdateImage = TRUE;
         break;
     case ID_GENERATEBLACKS: // 黒マスパターンを生成。
@@ -5877,6 +5929,8 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT /*codeNo
             XgDestroyCandsWnd();
             // ヒントウィンドウを破棄する。
             XgDestroyHintsWnd();
+            // 二重マス単語の候補と配置を破棄する。
+            ::DestroyWindow(xg_hMarkingDlg);
             // 連続で解を求める。
             if (XgOnSolveRepeatedly(hwnd)) {
                 sa1->Apply();
@@ -5895,6 +5949,8 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT /*codeNo
             XgDestroyCandsWnd();
             // ヒントウィンドウを破棄する。
             XgDestroyHintsWnd();
+            // 二重マス単語の候補と配置を破棄する。
+            ::DestroyWindow(xg_hMarkingDlg);
             // 連続で解を求める。
             if (XgOnSolveRepeatedlyNoAddBlack(hwnd)) {
                 sa1->Apply();
@@ -5939,6 +5995,7 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT /*codeNo
                 xg_hHintsWnd,
                 xg_cands_wnd,
                 xg_hwndInputPalette,
+                xg_hMarkingDlg,
             };
 
             size_t i = 0, k, m, count = ARRAYSIZE(ahwnd);
@@ -5959,6 +6016,7 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT /*codeNo
     case ID_PANEPREV:   // 前のペーン。
         {
             HWND ahwnd[] = {
+                xg_hMarkingDlg,
                 xg_hwndInputPalette,
                 xg_cands_wnd,
                 xg_hHintsWnd,
@@ -6066,32 +6124,11 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT /*codeNo
         }
         break;
     case ID_MARKSNEXT:  // 次の二重マス単語
-        {
-            auto mu1 = std::make_shared<XG_UndoData_MarksUpdated>();
-            auto mu2 = std::make_shared<XG_UndoData_MarksUpdated>();
-            mu1->Get();
-            {
-                XgGetNextMarkedWord();
-            }
-            mu2->Get();
-            // 元に戻す情報を設定する。
-            xg_ubUndoBuffer.Commit(UC_MARKS_UPDATED, mu1, mu2);
+        if (xg_hMarkingDlg) {
+            ::BringWindowToTop(xg_hMarkingDlg);
+        } else {
+            xg_hMarkingDlg.CreateDialogDx(hwnd);
         }
-        bUpdateImage = TRUE;
-        break;
-    case ID_MARKSPREV:  // 前の二重マス単語
-        {
-            auto mu1 = std::make_shared<XG_UndoData_MarksUpdated>();
-            auto mu2 = std::make_shared<XG_UndoData_MarksUpdated>();
-            mu1->Get();
-            {
-                XgGetPrevMarkedWord();
-            }
-            mu2->Get();
-            // 元に戻す情報を設定する。
-            xg_ubUndoBuffer.Commit(UC_MARKS_UPDATED, mu1, mu2);
-        }
-        bUpdateImage = TRUE;
         break;
     case ID_KILLMARKS:  // 二重マスをすべて解除する
         {
@@ -6102,6 +6139,7 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT /*codeNo
                 xg_vMarks.clear();
                 xg_vMarkedCands.clear();
                 XgMarkUpdate();
+                ::DestroyWindow(xg_hMarkingDlg);
             }
             mu2->Get();
             // 元に戻す情報を設定する。
@@ -6392,6 +6430,8 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT /*codeNo
         XgSelectDict(hwnd, id - ID_DICTIONARY00);
         XgResetTheme(hwnd, FALSE);
         XgUpdateTheme(hwnd);
+        if (xg_hMarkingDlg)
+            xg_hMarkingDlg.RefreshCandidates(xg_hMarkingDlg);
         break;
     case ID_RESETRULES:
         xg_nRules = XG_DEFAULT_RULES;
@@ -7675,6 +7715,11 @@ int WINAPI WinMain(
 
         if (xg_hwndInputPalette) {
             if (::IsDialogMessageW(xg_hwndInputPalette, &msg))
+                continue;
+        }
+
+        if (xg_hMarkingDlg) {
+            if (::IsDialogMessageW(xg_hMarkingDlg, &msg))
                 continue;
         }
 

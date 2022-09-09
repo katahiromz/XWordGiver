@@ -33,6 +33,7 @@
 #define IDD_TEXTBOX                         129
 #define IDD_UILANGID                        130
 #define IDD_ABOUT                           131
+#define IDD_MARKING                         132
 
 #define IDS_VERSION                         101
 #define IDS_APPNAME                         102
@@ -216,6 +217,8 @@
 #define IDS_POLICYPRESET_JPN_LOOSE_1        300
 #define IDS_POLICYPRESET_JPN_LOOSE_2        301
 #define IDS_POLICYPRESET_JPN_LOOSE_3        302
+#define IDS_MARKINGTYPE                     303
+#define IDS_MARKINGEMPTY                    304
 #define IDS_TT_NEW                          10100
 #define IDS_TT_GENERATE                     10101
 #define IDS_TT_OPEN                         10102

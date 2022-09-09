@@ -116,4 +116,12 @@ public:
     {
         return DialogBoxDx(hwnd, MAKEINTRESOURCE(nID));
     }
+
+    BOOL CreateDialogDx(HWND hwnd, INT nID)
+    {
+        s_pTrapping = this;
+        ::CreateDialog(::GetModuleHandle(NULL), MAKEINTRESOURCE(nID), hwnd, DialogProc);
+        s_pTrapping = NULL;
+        return m_hWnd != NULL;
+    }
 };

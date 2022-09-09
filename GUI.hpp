@@ -45,6 +45,10 @@ extern DWORDLONG xg_dwlWait;     // 待ち時間。
 // 再計算の回数。
 extern LONG xg_nRetryCount;
 
+// [二重マス単語の候補と配置]ダイアログの位置。
+extern INT xg_nMarkingX;
+extern INT xg_nMarkingY;
+
 //////////////////////////////////////////////////////////////////////////////
 
 // 入力パレットを表示するか？

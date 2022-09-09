@@ -11,6 +11,12 @@ extern std::vector<XG_Pos> xg_vMarks;
 // 二重マス単語候補。
 extern std::vector<std::wstring>  xg_vMarkedCands;
 
+// 二重マス単語。
+extern std::wstring xg_strMarked;
+
+// 選択中の二重マス単語の候補のインデックス。
+extern INT xg_iMarkedCand;
+
 //////////////////////////////////////////////////////////////////////////////
 
 // マーク文字列を取得する。
@@ -36,10 +42,8 @@ void __fastcall XgSetStringOfMarks(LPCWSTR psz);
 // 二重マス単語を取得する。
 bool __fastcall XgGetMarkWord(const XG_Board *xw, std::wstring& str);
 // 二重マス単語を設定する。
-void __fastcall XgSetMarkedWord(const std::wstring& str);
+BOOL __fastcall XgSetMarkedWord(const std::wstring& str);
 // 二重マス単語を空にする。
 void __fastcall XgSetMarkedWord(void);
-// 次の二重マス単語を取得する。
-void __fastcall XgGetNextMarkedWord(void);
-// 前の二重マス単語を取得する。
-void __fastcall XgGetPrevMarkedWord(void);
+// 二重マス単語候補を取得する。
+bool __fastcall XgGetMarkedCandidates(void);

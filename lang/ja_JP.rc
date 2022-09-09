@@ -115,10 +115,9 @@ LANGUAGE LANG_JAPANESE, SUBLANG_DEFAULT
         MENUITEM "解を表示する(&S)\tCtrl+M", ID_SHOWSOLUTION
         MENUITEM "解を表示しない(&D)\tCtrl+M", ID_NOSOLUTION
         MENUITEM SEPARATOR
-        MENUITEM "次の二重マス単語(&N)\tCtrl+J", ID_MARKSNEXT
-        MENUITEM "前の二重マス単語(&P)\tCtrl+K", ID_MARKSPREV
-        MENUITEM SEPARATOR
+        MENUITEM "二重マス単語の候補と配置(&N)...\tCtrl+J", ID_MARKSNEXT
         MENUITEM "二重マスをすべて解除する(&K)\tCtrl+R", ID_KILLMARKS
+        MENUITEM SEPARATOR
         MENUITEM "ヒントを削除して盤面のロックを解除(&U)", ID_ERASESOLUTIONANDUNLOCKEDIT
     }
     POPUP "表示(&V)"
@@ -1479,6 +1478,21 @@ FONT 9, "MS UI Gothic"
     DEFPUSHBUTTON "OK", IDOK, 145, 145, 60, 20
 }
 
+IDD_MARKING DIALOG 0, 0, 215, 105
+CAPTION "二重マス単語の候補と配置"
+STYLE DS_CENTER | DS_MODALFRAME | WS_POPUPWINDOW | WS_CAPTION
+EXSTYLE WS_EX_TOOLWINDOW
+FONT 9, "MS UI Gothic"
+{
+    LTEXT "二重マス単語(&W):", -1, 5, 5, 128, 12
+    COMBOBOX cmb1, 5, 20, 205, 300, CBS_HASSTRINGS | CBS_AUTOHSCROLL | CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP
+    LTEXT "二重マス単語を選択または入力して下さい。", stc1, 5, 40, 205, 14
+    PUSHBUTTON "←前の単語(&P)", psh1, 5, 60, 100, 17
+    PUSHBUTTON "次の単語(&N)→", psh2, 110, 60, 100, 17
+    PUSHBUTTON "別の配置(&A)", psh3, 110, 80, 100, 17
+    PUSHBUTTON "二重マス単語をクリア(&C)", psh5, 5, 80, 80, 17
+}
+
 //////////////////////////////////////////////////////////////////////////////
 // RT_VERSION
 
@@ -1692,6 +1706,8 @@ STRINGTABLE
     IDS_POLICYPRESET_JPN_LOOSE_1, "0x003B: 日本の出版社ルール (ゆるい): 点対称"
     IDS_POLICYPRESET_JPN_LOOSE_2, "0x009B: 日本の出版社ルール (ゆるい): 上下対称"
     IDS_POLICYPRESET_JPN_LOOSE_3, "0x011B: 日本の出版社ルール (ゆるい): 左右対称"
+    IDS_MARKINGTYPE, "エラー: 盤面に足りない文字があります。"
+    IDS_MARKINGEMPTY, "二重マス単語を選択または入力して下さい。"
     IDS_TT_NEW, "新規作成"
     IDS_TT_GENERATE, "問題を自動生成する"
     IDS_TT_OPEN, "問題を開く"

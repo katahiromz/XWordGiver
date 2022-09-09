@@ -115,10 +115,9 @@ LANGUAGE LANG_ENGLISH, SUBLANG_DEFAULT
         MENUITEM "Show &solution\tCtrl+M", ID_SHOWSOLUTION
         MENUITEM "Hi&de solution\tCtrl+M", ID_NOSOLUTION
         MENUITEM SEPARATOR
-        MENUITEM "&Next double-frame word\tCtrl+J", ID_MARKSNEXT
-        MENUITEM "&Previous double-frame word\tCtrl+K", ID_MARKSPREV
-        MENUITEM SEPARATOR
+        MENUITEM "&Marking double-frame word...\tCtrl+J", ID_MARKSNEXT
         MENUITEM "Reset all the double-frames\tCtrl+R", ID_KILLMARKS
+        MENUITEM SEPARATOR
         MENUITEM "Delete clues and &unlock board", ID_ERASESOLUTIONANDUNLOCKEDIT
     }
     POPUP "&View"
@@ -1476,6 +1475,21 @@ FONT 9, "Tahoma"
     DEFPUSHBUTTON "OK", IDOK, 145, 145, 60, 20
 }
 
+IDD_MARKING DIALOG 0, 0, 215, 105
+CAPTION "Marking"
+STYLE DS_CENTER | DS_MODALFRAME | WS_POPUPWINDOW | WS_CAPTION
+EXSTYLE WS_EX_TOOLWINDOW
+FONT 9, "Tahoma"
+{
+    LTEXT "The double-frame &word:", -1, 5, 5, 128, 12
+    COMBOBOX cmb1, 5, 20, 205, 300, CBS_HASSTRINGS | CBS_AUTOHSCROLL | CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP
+    LTEXT "Please select or type a double-frame word.", stc1, 5, 40, 205, 14
+    PUSHBUTTON "<< &previous word", psh1, 5, 60, 100, 17
+    PUSHBUTTON "&next word >>", psh2, 110, 60, 100, 17
+    PUSHBUTTON "&another layout", psh3, 110, 80, 100, 17
+    PUSHBUTTON "&Clear double-frame", psh5, 5, 80, 80, 17
+}
+
 //////////////////////////////////////////////////////////////////////////////
 // RT_VERSION
 
@@ -1689,6 +1703,8 @@ STRINGTABLE
     IDS_POLICYPRESET_JPN_LOOSE_1, "0x003B: Japanese publisher policy (Loose): Point symmetry"
     IDS_POLICYPRESET_JPN_LOOSE_2, "0x009B: Japanese publisher policy (Loose): Vertical symmetry"
     IDS_POLICYPRESET_JPN_LOOSE_3, "0x011B: Japanese publisher policy (Loose): Horizontal symmetry"
+    IDS_MARKINGTYPE, "Error: There are missing characters on the board."
+    IDS_MARKINGEMPTY, "Please select or type a double-frame word."
     IDS_TT_NEW, "New crossword"
     IDS_TT_GENERATE, "Generate crossword"
     IDS_TT_OPEN, "Open crossword"

@@ -199,6 +199,7 @@
 - 2022-XX-YY ver.5.0.1
     - Added POLICY.txt. The Policy Presets can now be customized.
     - Do not misspell 'skeleton'.
+    - Added "Marking double-frame word" to "Solution" menu. Improved handling of double-frame.
 
 # 開発履歴 (Japanese)
 
@@ -713,3 +714,4 @@
     - インストーラを復活。
 - 2022月XX月YY日 ver.5.0.1
     - POLICY.txtを追加。ルールのプリセットがカスタマイズ可能に。
+    - 「解」メニューに「二重マス単語の候補と配置」を追加。二重マスの扱いを改善。

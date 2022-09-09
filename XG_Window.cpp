@@ -50,7 +50,7 @@ BOOL XG_Window::RegisterClassDx(HINSTANCE hInstance/* = ::GetModuleHandle(NULL)*
 XG_Dialog::DialogProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
     XG_Dialog *pDialog;
-    if (uMsg == WM_INITDIALOG)
+    if (uMsg == WM_INITDIALOG || uMsg == WM_CREATE)
     {
         assert(s_pTrapping != NULL);
         pDialog = s_pTrapping;

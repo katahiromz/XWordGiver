@@ -572,4 +572,5 @@ void XgSelectDict(HWND hwnd, size_t iDict)
 
     // 二重マス単語の候補をクリアする。
     xg_vMarkedCands.clear();
+    xg_iMarkedCand = -1;
 }

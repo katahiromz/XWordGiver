@@ -14,11 +14,11 @@ std::vector<XG_Pos>      xg_vMarks;
 // 二重マス単語候補。
 std::vector<std::wstring>     xg_vMarkedCands;
 
-//////////////////////////////////////////////////////////////////////////////
-// static variables
+// 二重マス単語。
+std::wstring xg_strMarked;
 
-// 選択している二重マス単語候補のインデックス。
-static int  s_iMarkedCands = -1;
+// 選択中の二重マス単語の候補のインデックス。
+INT xg_iMarkedCand = -1;
 
 //////////////////////////////////////////////////////////////////////////////
 
@@ -246,7 +246,6 @@ bool __fastcall XgGetMarkWord(const XG_Board *xw, std::wstring& str)
 bool __fastcall XgGetMarkedCandidates(void)
 {
     // 初期化する。
-    s_iMarkedCands = -1;
     xg_vMarkedCands.clear();
 
     // 解がなければ失敗。
@@ -367,17 +366,34 @@ failed_2:;
         }
     }
 
-    sort(xg_vMarkedCands.begin(), xg_vMarkedCands.end(), xg_wstring_size_greater());
+    // ソート・一意化する。
+    std::sort(xg_vMarkedCands.begin(), xg_vMarkedCands.end(),
+        [](const std::wstring& x, const std::wstring& y) {
+            if (x.size() > y.size())
+                return true;
+            if (x.size() < y.size())
+                return false;
+            return (x < y);
+        }
+    );
+    xg_vMarkedCands.erase(
+        std::unique(xg_vMarkedCands.begin(), xg_vMarkedCands.end()),
+        xg_vMarkedCands.end());
+
+    xg_iMarkedCand = -1;
     return !xg_vMarkedCands.empty();
 }
 
 // 二重マス単語を設定する。
-void __fastcall XgSetMarkedWord(const std::wstring& str)
+BOOL __fastcall XgSetMarkedWord(const std::wstring& str)
 {
+    auto marks = xg_vMarks;
+    auto marked = xg_strMarked;
     // 初期化する。
     xg_vMarks.clear();
 
     // 二重マス単語と文字マスの情報に従って二重マスを設定する。
+    std::wstring word;
     for (const auto ch : str) {
         int m = rand() % xg_nRows;
         int n = rand() % xg_nCols;
@@ -388,6 +404,7 @@ void __fastcall XgSetMarkedWord(const std::wstring& str)
                 if (ch == xg_solution.GetAt(i0, j0) &&
                     XgGetMarked(i0, j0) == -1)
                 {
+                    word.push_back(ch);
                     XgSetMark(i0, j0);
                     goto break2;
                 }
@@ -395,62 +412,22 @@ void __fastcall XgSetMarkedWord(const std::wstring& str)
         }
 break2:;
     }
+
+    if (str != word) {
+        xg_vMarks = std::move(marks);
+        xg_strMarked = std::move(marked);
+        return FALSE;
+    }
+
+    xg_strMarked = std::move(word);
+    return TRUE;
 }
 
 // 二重マス単語を空にする。
 void __fastcall XgSetMarkedWord(void)
 {
     // 空文字列を設定する。
-    std::wstring str;
-    XgSetMarkedWord(str);
-}
-
-// 次の二重マス単語を取得する。
-void __fastcall XgGetNextMarkedWord(void)
-{
-    if (xg_vMarkedCands.empty()) {
-        // 二重マス単語候補がない場合、候補を取得する。
-        if (!XgGetMarkedCandidates()) {
-            // 候補が無かった。
-            XgCenterMessageBoxW(xg_hMainWnd, XgLoadStringDx1(IDS_NOMARKCANDIDATES), NULL,
-                                MB_ICONERROR);
-            return;     // 失敗。
-        }
-
-        // 二重マス単語の候補を取得した。最初の候補を設定する。
-        s_iMarkedCands = 0;
-    }
-    else if (s_iMarkedCands + 1 < static_cast<int>(xg_vMarkedCands.size()))
-    {
-        // 次の候補を設定する。
-        s_iMarkedCands++;
-    }
-
-    // 二重マス単語を設定する。
-    XgSetMarkedWord(xg_vMarkedCands[s_iMarkedCands]);
-}
-
-// 前の二重マス単語を取得する。
-void __fastcall XgGetPrevMarkedWord(void)
-{
-    if (xg_vMarkedCands.empty()) {
-        // 二重マス単語候補がない場合、候補を取得する。
-        if (!XgGetMarkedCandidates()) {
-            // 候補が無かった。
-            XgCenterMessageBoxW(xg_hMainWnd, XgLoadStringDx1(IDS_NOMARKCANDIDATES), NULL,
-                                MB_ICONERROR);
-            return;
-        }
-
-        // 二重マス単語の候補を取得した。最初の候補を設定する。
-        s_iMarkedCands = 0;
-    } else if (s_iMarkedCands > 0) {
-        // 一つ前の候補を設定する。
-        s_iMarkedCands--;
-    }
-
-    // 二重マス単語を設定する。
-    XgSetMarkedWord(xg_vMarkedCands[s_iMarkedCands]);
+    XgSetMarkedWord(L"");
 }
 
 //////////////////////////////////////////////////////////////////////////////

@@ -989,17 +989,6 @@ public:
     }
 };
 
-// 長さでstd::wstringを比較するファンクタ。
-class xg_wstring_size_greater
-{
-public:
-    bool __fastcall operator()(
-        const std::wstring& s1, const std::wstring& s2) const
-    {
-        return s1.size() > s2.size();
-    }
-};
-
 //////////////////////////////////////////////////////////////////////////////
 // 入力モード。
 
