@@ -795,7 +795,36 @@ BOOL XgReadTextFileAll(LPCWSTR file, std::wstring& strText)
         return TRUE;
     }
 
-    // Assume UTF-8 not ANSI
+    BOOL bNotUTF8 = MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, strBinary.c_str(), -1,
+                                        NULL, 0) == 0;
+    BOOL bNotAnsi = MultiByteToWideChar(CP_ACP, MB_ERR_INVALID_CHARS, strBinary.c_str(), -1,
+                                        NULL, 0) == 0;
+    if (!bNotUTF8 && bNotAnsi)
+    {
+        strText = XgUtf8ToUnicode(strBinary);
+        return TRUE;
+    }
+
+    if (bNotUTF8 && !bNotAnsi)
+    {
+        strText = XgAnsiToUnicode(strBinary);
+        return TRUE;
+    }
+
+    std::wstring strFromUtf8 = XgUtf8ToUnicode(strBinary);
+    if (XgUnicodeToUtf8(strFromUtf8) == strBinary)
+    {
+        strText = strFromUtf8;
+        return TRUE;
+    }
+
+    std::wstring strFromAnsi = XgAnsiToUnicode(strBinary);
+    if (XgUnicodeToAnsi(strFromAnsi) == strBinary)
+    {
+        strText = strFromAnsi;
+        return TRUE;
+    }
+
     strText = XgUtf8ToUnicode(strBinary);
     return TRUE;
 }
