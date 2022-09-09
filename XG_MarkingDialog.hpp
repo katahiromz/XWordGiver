@@ -40,6 +40,21 @@ public:
         return TRUE;
     }
 
+    INT GetCurSel(HWND hwnd)
+    {
+        HWND hCmb1 = GetDlgItem(hwnd, cmb1);
+
+        // コンボボックスのテキストを取得する。
+        WCHAR szText[256];
+        szText[0] = 0;
+        ComboBox_RealGetText(hCmb1, szText, _countof(szText));
+        std::wstring str = szText;
+        xg_str_trim(str);
+        str = XgNormalizeString(str);
+
+        return ComboBox_FindStringExact(hCmb1, -1, szText);
+    }
+
     BOOL OnInitDialog(HWND hwnd, HWND hwndFocus, LPARAM lParam)
     {
         // ダイアログを中央へ移動する。
@@ -128,10 +143,11 @@ public:
                 mu1->Get();
                 {
                     // 前の候補。
-                    if (xg_iMarkedCand == -1) {
+                    INT iItem = GetCurSel(hwnd);
+                    if (iItem == CB_ERR) {
                         xg_iMarkedCand = INT(xg_vMarkedCands.size()) - 1;
                     } else {
-                        --xg_iMarkedCand;
+                        xg_iMarkedCand = iItem - 1;
                         if (xg_iMarkedCand < 0)
                             xg_iMarkedCand = INT(xg_vMarkedCands.size()) - 1;
                     }
@@ -155,10 +171,11 @@ public:
                 mu1->Get();
                 {
                     // 次の候補。
-                    if (xg_iMarkedCand == -1) {
+                    INT iItem = GetCurSel(hwnd);
+                    if (iItem == CB_ERR) {
                         xg_iMarkedCand = 0;
                     } else {
-                        xg_iMarkedCand = (xg_iMarkedCand + 1) % xg_vMarkedCands.size();
+                        xg_iMarkedCand = (iItem + 1) % xg_vMarkedCands.size();
                     }
                     XgSetMarkedWord(xg_vMarkedCands[xg_iMarkedCand]);
                     XgMarkUpdate();
