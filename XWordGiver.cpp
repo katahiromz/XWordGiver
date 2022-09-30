@@ -545,7 +545,7 @@ BOOL XgSavePatterns(LPCWSTR pszFileName, const patterns_t& patterns)
 }
 
 // ソートして一意化する。
-void XgSortAndUniquePatterns(patterns_t& patterns)
+VOID XgSortAndUniquePatterns(patterns_t& patterns)
 {
     // ソートする。
     std::sort(patterns.begin(), patterns.end(), [](const XG_PATDATA& a, const XG_PATDATA& b) {

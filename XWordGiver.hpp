@@ -1456,6 +1456,17 @@ struct XG_PATDATA
 };
 typedef std::vector<XG_PATDATA> patterns_t;
 
+// パターンが黒マスで分断されているか？
+BOOL XgIsPatternDividedByBlocks(const XG_PATDATA& pat);
+// パターンを転置する。
+XG_PATDATA XgTransposePattern(const XG_PATDATA& pat);
+// パターンを水平に反転する。
+XG_PATDATA XgFlipPatternH(const XG_PATDATA& pat);
+// パターンを垂直に反転する。
+XG_PATDATA XgFlipPatternV(const XG_PATDATA& pat);
+// ソートして一意化する。
+VOID XgSortAndUniquePatterns(patterns_t& patterns);
+
 //////////////////////////////////////////////////////////////////////////////
 // ボックス。
 
