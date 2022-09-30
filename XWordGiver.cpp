@@ -508,10 +508,8 @@ BOOL XgLoadPatterns(LPCWSTR pszFileName, patterns_t& patterns)
             pat.text = text;
             // パターンのデータを扱いやすいよう、加工する。
             XgGetPatternData(pat);
-            // ルールに適合するか？
-            if (XgPatternRuleIsOK(pat)) {
-                patterns.push_back(pat);
-            }
+            // 追加する。
+            patterns.push_back(pat);
             break;
         case 0x2503: // ┃
             pat.num_columns = INT(line.size() - 2);
@@ -588,21 +586,19 @@ BOOL XgPatternsUnitTest(void)
 
     patterns_t temp_pats;
     if (1) {
-        for (size_t i = 0; i < patterns.size(); ++i) {
-            auto& pat = patterns[i];
+        for (const auto& pat : patterns) {
             if (XgIsPatternDividedByBlocks(pat))
                 continue;
-            temp_pats.push_back(pat);
             auto transposed = XgTransposePattern(pat);
             auto flip_h = XgFlipPatternH(pat);
             auto flip_v = XgFlipPatternV(pat);
             auto flip_hv = XgFlipPatternH(flip_v);
             temp_pats.erase(
-                std::remove_if(temp_pats.begin(), temp_pats.end(), [&](const XG_PATDATA& pat) {
-                    return pat.text == transposed.text ||
-                           pat.text == flip_h.text ||
-                           pat.text == flip_v.text ||
-                           pat.text == flip_hv.text;
+                std::remove_if(temp_pats.begin(), temp_pats.end(), [&](const XG_PATDATA& pat2) {
+                    return transposed.text == pat2.text ||
+                           flip_h.text == pat2.text ||
+                           flip_v.text == pat2.text ||
+                           flip_hv.text == pat2.text;
                 }),
                 temp_pats.end()
             );
@@ -610,14 +606,14 @@ BOOL XgPatternsUnitTest(void)
         }
     } else {
         // 反転・転置したパターンも追加する。
-        for (auto& pat : patterns) {
+        for (const auto& pat : patterns) {
             if (XgIsPatternDividedByBlocks(pat))
                 continue;
-            temp_pats.push_back(pat);
             auto transposed = XgTransposePattern(pat);
             auto flip_h = XgFlipPatternH(pat);
             auto flip_v = XgFlipPatternV(pat);
             auto flip_hv = XgFlipPatternH(flip_v);
+            temp_pats.push_back(pat);
             temp_pats.push_back(transposed);
             temp_pats.push_back(flip_h);
             temp_pats.push_back(flip_v);

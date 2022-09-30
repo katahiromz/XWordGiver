@@ -36,6 +36,9 @@ public:
 
     // タイプによりフィルターを行う。
     BOOL FilterPatBySize(const XG_PATDATA& pat, INT type) {
+        if (pat.num_columns > XG_MAX_PAT_SIZE || pat.num_rows > XG_MAX_PAT_SIZE)
+            return FALSE;
+
         switch (type) {
         case -1:
             break;
@@ -112,11 +115,13 @@ public:
 
         // 抽出する。
         patterns_t pats;
-        for (auto& pat : s_patterns)
-        {
-            if (pat.num_columns <= XG_MAX_PAT_SIZE &&
-                pat.num_rows <= XG_MAX_PAT_SIZE &&
-                FilterPatBySize(pat, type))
+        for (auto& pat : s_patterns) {
+            // ルールに適合するか？
+            if (!XgPatternRuleIsOK(pat)) {
+                continue;
+            }
+
+            if (FilterPatBySize(pat, type))
             {
                 pats.push_back(pat);
             }

@@ -1466,6 +1466,8 @@ XG_PATDATA XgFlipPatternH(const XG_PATDATA& pat);
 XG_PATDATA XgFlipPatternV(const XG_PATDATA& pat);
 // ソートして一意化する。
 VOID XgSortAndUniquePatterns(patterns_t& patterns);
+// パターンが黒マスルールに適合するか？
+BOOL __fastcall XgPatternRuleIsOK(const XG_PATDATA& pat);
 
 //////////////////////////////////////////////////////////////////////////////
 // ボックス。
