@@ -196,7 +196,7 @@
     - Modified the values of "Japanese publisher policy (Loose)".
     - Added digital signatures as trial.
     - Revived the installer.
-- 2022-XX-YY ver.5.0.1
+- 2022-10-01 ver.5.0.1
     - Strengthened the block patterns.
     - Added POLICY.txt. The Policy Presets can now be customized.
     - Do not misspell 'skeleton'.
@@ -713,7 +713,7 @@
     - 「日本の出版社ルール (ゆるい)」の値を改変。
     - 試験的にデジタル署名を追加。
     - インストーラを復活。
-- 2022月XX月YY日 ver.5.0.1
+- 2022月10月01日 ver.5.0.1
     - 黒マスパターンを増強。
     - POLICY.txtを追加。ルールのプリセットがカスタマイズ可能に。
     - 「解」メニューに「二重マス単語の候補と配置」を追加。二重マスの扱いを改善。
