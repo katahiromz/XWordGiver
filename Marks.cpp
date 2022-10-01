@@ -385,7 +385,7 @@ failed_2:;
 }
 
 // 二重マス単語を設定する。
-BOOL __fastcall XgSetMarkedWord(const std::wstring& str)
+BOOL __fastcall XgSetMarkedWord(const std::wstring& str, WCHAR *pchNotFound)
 {
     auto marks = xg_vMarks;
     auto marked = xg_strMarked;
@@ -409,6 +409,10 @@ BOOL __fastcall XgSetMarkedWord(const std::wstring& str)
                     goto break2;
                 }
             }
+        }
+        if (pchNotFound) {
+            *pchNotFound = ch;
+            break;
         }
 break2:;
     }

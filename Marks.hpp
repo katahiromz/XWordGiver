@@ -42,7 +42,7 @@ void __fastcall XgSetStringOfMarks(LPCWSTR psz);
 // 二重マス単語を取得する。
 bool __fastcall XgGetMarkWord(const XG_Board *xw, std::wstring& str);
 // 二重マス単語を設定する。
-BOOL __fastcall XgSetMarkedWord(const std::wstring& str);
+BOOL __fastcall XgSetMarkedWord(const std::wstring& str, WCHAR *pchNotFound = NULL);
 // 二重マス単語を空にする。
 void __fastcall XgSetMarkedWord(void);
 // 二重マス単語候補を取得する。

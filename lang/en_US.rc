@@ -1476,7 +1476,7 @@ FONT 9, "Tahoma"
 }
 
 IDD_MARKING DIALOG 0, 0, 215, 105
-CAPTION "Marking"
+CAPTION "Marking (Ctrl+J)"
 STYLE DS_CENTER | DS_MODALFRAME | WS_POPUPWINDOW | WS_CAPTION
 EXSTYLE WS_EX_TOOLWINDOW
 FONT 9, "Tahoma"
@@ -1703,7 +1703,7 @@ STRINGTABLE
     IDS_POLICYPRESET_JPN_LOOSE_1, "0x003B: Japanese publisher policy (Loose): Point symmetry"
     IDS_POLICYPRESET_JPN_LOOSE_2, "0x009B: Japanese publisher policy (Loose): Vertical symmetry"
     IDS_POLICYPRESET_JPN_LOOSE_3, "0x011B: Japanese publisher policy (Loose): Horizontal symmetry"
-    IDS_MARKINGTYPE, "Error: There are missing character(s) on the board."
+    IDS_MARKINGTYPE, "Error: There is a missing character '%c' on the board."
     IDS_MARKINGEMPTY, "Please select or type a double-frame word."
     IDS_TT_NEW, "New crossword"
     IDS_TT_GENERATE, "Generate crossword"

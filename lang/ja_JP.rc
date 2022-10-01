@@ -1479,7 +1479,7 @@ FONT 9, "MS UI Gothic"
 }
 
 IDD_MARKING DIALOG 0, 0, 215, 105
-CAPTION "二重マス単語の候補と配置"
+CAPTION "二重マス単語の候補と配置 (Ctrl+J)"
 STYLE DS_CENTER | DS_MODALFRAME | WS_POPUPWINDOW | WS_CAPTION
 EXSTYLE WS_EX_TOOLWINDOW
 FONT 9, "MS UI Gothic"
@@ -1706,7 +1706,7 @@ STRINGTABLE
     IDS_POLICYPRESET_JPN_LOOSE_1, "0x003B: 日本の出版社ルール (ゆるい): 点対称"
     IDS_POLICYPRESET_JPN_LOOSE_2, "0x009B: 日本の出版社ルール (ゆるい): 上下対称"
     IDS_POLICYPRESET_JPN_LOOSE_3, "0x011B: 日本の出版社ルール (ゆるい): 左右対称"
-    IDS_MARKINGTYPE, "エラー: 盤面に足りない文字があります。"
+    IDS_MARKINGTYPE, "エラー: 盤面に足りない文字「%c」があります。"
     IDS_MARKINGEMPTY, "二重マス単語を選択または入力して下さい。"
     IDS_TT_NEW, "新規作成"
     IDS_TT_GENERATE, "問題を自動生成する"

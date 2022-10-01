@@ -80,8 +80,9 @@ public:
         auto mu1 = std::make_shared<XG_UndoData_MarksUpdated>();
         auto mu2 = std::make_shared<XG_UndoData_MarksUpdated>();
         mu1->Get();
+        WCHAR chNotFound = 0;
         {
-            bDone = XgSetMarkedWord(str);
+            bDone = XgSetMarkedWord(str, &chNotFound);
         }
         mu2->Get();
 
@@ -92,10 +93,17 @@ public:
             }
             SetDlgItemTextW(hwnd, stc1, NULL);
         } else {
-            if (str.size())
-                SetDlgItemTextW(hwnd, stc1, XgLoadStringDx1(IDS_MARKINGTYPE));
+            if (str.size() && chNotFound != 0)
+            {
+                WCHAR szText[256];
+                StringCchPrintfW(szText, _countof(szText),
+                                 XgLoadStringDx1(IDS_MARKINGTYPE), chNotFound);
+                SetDlgItemTextW(hwnd, stc1, szText);
+            }
             else
+            {
                 SetDlgItemTextW(hwnd, stc1, XgLoadStringDx1(IDS_MARKINGEMPTY));
+            }
         }
 
         return bDone;

@@ -6124,10 +6124,12 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT /*codeNo
         }
         break;
     case ID_MARKSNEXT:  // 次の二重マス単語
-        if (xg_hMarkingDlg) {
-            ::BringWindowToTop(xg_hMarkingDlg);
-        } else {
-            xg_hMarkingDlg.CreateDialogDx(hwnd);
+        if (xg_bSolved) {
+            if (::IsWindowVisible(xg_hMarkingDlg)) {
+                ::DestroyWindow(xg_hMarkingDlg);
+            } else {
+                xg_hMarkingDlg.CreateDialogDx(hwnd);
+            }
         }
         break;
     case ID_KILLMARKS:  // 二重マスをすべて解除する
