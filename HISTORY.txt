@@ -204,6 +204,7 @@
 - 2022月XX月YY日 ver.5.0.2
     - Improved "Marking" dialog.
     - Correctly undoing "setting a double-frame word".
+    - Added labels to THEME.txt.
 
 # 開発履歴 (Japanese)
 
@@ -723,3 +724,4 @@
 - 2022月XX月YY日 ver.5.0.2
     - 「二重マス単語の候補と配置」ダイアログを改良。
     - 二重マス単語を正しく「元に戻す」。
+    - THEME.txtの各項目にラベルを追加。

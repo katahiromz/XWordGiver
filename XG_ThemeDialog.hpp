@@ -413,7 +413,13 @@ public:
         ListView_DeleteAllItems(hLst3);
 
         std::vector<std::wstring> strs;
-        std::wstring strText = pszText;
+        LPCWSTR pch = wcschr(pszText, L':');
+        if (pch)
+            ++pch;
+        else
+            pch = pszText;
+        std::wstring strText = pch;
+        xg_str_trim(strText);
 
         xg_str_replace_all(strText, L" ", L"");
         mstr_split(strs, strText, L",");
