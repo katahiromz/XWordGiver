@@ -15,13 +15,15 @@ public:
     {
     }
 
-    BOOL RefreshCandidates(HWND hwnd, BOOL bUndoRedo = FALSE)
+    BOOL RefreshCandidates(HWND hwnd)
     {
         // 二重マス単語の候補を取得する。
         XgGetMarkedCandidates();
 
         // リストのクリアする。
+        m_bUpdating = TRUE;
         ::SendDlgItemMessageW(hwnd, lst1, LB_RESETCONTENT, 0, 0);
+        m_bUpdating = FALSE;
 
         // リストに候補を追加する。
         for (auto& item : xg_vMarkedCands) {
@@ -37,12 +39,10 @@ public:
         const XG_Board *xw = (xg_bSolved ? &xg_solution : &xg_xword);
         XgGetMarkWord(xw, xg_strMarked);
 
-        if (bUndoRedo)
-            m_bUpdating = TRUE;
         // テキストを設定する。
+        m_bUpdating = TRUE;
         ::SetDlgItemTextW(hwnd, edt1, xg_strMarked.c_str());
-        if (bUndoRedo)
-            m_bUpdating = FALSE;
+        m_bUpdating = FALSE;
         return TRUE;
     }
 
