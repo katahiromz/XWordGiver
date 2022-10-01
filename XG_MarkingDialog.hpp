@@ -20,12 +20,15 @@ public:
         // 二重マス単語の候補を取得する。
         XgGetMarkedCandidates();
 
-        // コンボボックスのクリアする。
-        ::SendDlgItemMessageW(hwnd, cmb1, CB_RESETCONTENT, 0, 0);
+        // リストのクリアする。
+        ::SendDlgItemMessageW(hwnd, lst1, LB_RESETCONTENT, 0, 0);
 
-        // コンボボックスに候補を追加する。
+        // リストに候補を追加する。
         for (auto& item : xg_vMarkedCands) {
-            ::SendDlgItemMessageW(hwnd, cmb1, CB_ADDSTRING, 0, (LPARAM)item.c_str());
+            INT i = ::SendDlgItemMessageW(hwnd, lst1, LB_ADDSTRING, 0, (LPARAM)item.c_str());
+            if (item == xg_strMarked) {
+                ::SendDlgItemMessageW(hwnd, lst1, LB_SETCURSEL, i, 0);
+            }
         }
 
         // すでに解があるかどうかによって切り替え。
@@ -33,26 +36,8 @@ public:
         XgGetMarkWord(xw, xg_strMarked);
 
         // テキストを設定する。
-        HWND hCmb1 = ::GetDlgItem(hwnd, cmb1);
-        DWORD dwSel = ComboBox_GetEditSel(hCmb1);
-        ComboBox_RealSetText(hCmb1, xg_strMarked.c_str());
-        ComboBox_SetEditSel(hCmb1, LOWORD(dwSel), HIWORD(dwSel));
+        ::SetDlgItemTextW(hwnd, edt1, xg_strMarked.c_str());
         return TRUE;
-    }
-
-    INT GetCurSel(HWND hwnd)
-    {
-        HWND hCmb1 = GetDlgItem(hwnd, cmb1);
-
-        // コンボボックスのテキストを取得する。
-        WCHAR szText[256];
-        szText[0] = 0;
-        ComboBox_RealGetText(hCmb1, szText, _countof(szText));
-        std::wstring str = szText;
-        xg_str_trim(str);
-        str = XgNormalizeString(str);
-
-        return ComboBox_FindStringExact(hCmb1, -1, szText);
     }
 
     BOOL OnInitDialog(HWND hwnd, HWND hwndFocus, LPARAM lParam)
@@ -73,8 +58,36 @@ public:
         return TRUE;
     }
 
-    BOOL OnCmb1(HWND hwnd, const std::wstring& str)
+    // テキストの取得。
+    std::wstring GetText(HWND hwnd, BOOL bEdit)
     {
+        WCHAR szText[256];
+        szText[0] = 0;
+        if (bEdit) {
+            ::GetDlgItemTextW(hwnd, edt1, szText, _countof(szText));
+        } else {
+            INT i = GetCurSel(hwnd);
+            if (i != LB_ERR)
+                ::SendDlgItemMessageW(hwnd, lst1, LB_GETTEXT, i, (LPARAM)szText);
+        }
+        std::wstring str = szText;
+        xg_str_trim(str);
+        str = XgNormalizeString(str);
+        return str;
+    }
+
+    // テキストの設定。
+    BOOL SetText(HWND hwnd, const std::wstring& str, BOOL bFromEdit)
+    {
+        if (!bFromEdit) {
+            m_bUpdating = TRUE;
+            INT iStart, iEnd;
+            ::SendDlgItemMessageW(hwnd, edt1, EM_GETSEL, (WPARAM)&iStart, (LPARAM)&iEnd);
+            ::SetDlgItemTextW(hwnd, edt1, str.c_str());
+            ::SendDlgItemMessageW(hwnd, edt1, EM_SETSEL, iStart, iEnd);
+            m_bUpdating = FALSE;
+        }
+
         BOOL bDone = FALSE;
         auto marked = xg_strMarked;
         auto mu1 = std::make_shared<XG_UndoData_MarksUpdated>();
@@ -91,38 +104,58 @@ public:
                 // 元に戻す情報を設定する。
                 xg_ubUndoBuffer.Commit(UC_MARKS_UPDATED, mu1, mu2);
             }
-            SetDlgItemTextW(hwnd, stc1, NULL);
+            ::SetDlgItemTextW(hwnd, stc1, XgLoadStringDx1(IDS_MARKINGEMPTY));
         } else {
-            if (str.size() && chNotFound != 0)
-            {
+            if (str.size() && chNotFound != 0) {
                 WCHAR szText[256];
                 StringCchPrintfW(szText, _countof(szText),
                                  XgLoadStringDx1(IDS_MARKINGTYPE), chNotFound);
-                SetDlgItemTextW(hwnd, stc1, szText);
+                ::SetDlgItemTextW(hwnd, stc1, szText);
             }
             else
             {
-                SetDlgItemTextW(hwnd, stc1, XgLoadStringDx1(IDS_MARKINGEMPTY));
+                ::SetDlgItemTextW(hwnd, stc1, XgLoadStringDx1(IDS_MARKINGEMPTY));
             }
+        }
+
+        if (bFromEdit) {
+            INT i = (INT)::SendDlgItemMessageW(hwnd, lst1, LB_FINDSTRINGEXACT, -1, (LPARAM)str.c_str());
+            m_bUpdating = TRUE;
+            if (i != LB_ERR) {
+                ::SendDlgItemMessageW(hwnd, lst1, LB_SETCURSEL, i, 0);
+            } else {
+                ::SendDlgItemMessageW(hwnd, lst1, LB_SETCURSEL, -1, 0);
+            }
+            m_bUpdating = FALSE;
         }
 
         return bDone;
     }
 
-    VOID OnCmb1(HWND hwnd)
+    VOID OnLst1(HWND hwnd)
     {
-        HWND hCmb1 = GetDlgItem(hwnd, cmb1);
+        INT i = GetCurSel(hwnd);
+        if (i == LB_ERR)
+            return;
 
-        // コンボボックスのテキストを取得する。
-        WCHAR szText[256];
-        szText[0] = 0;
-        ComboBox_RealGetText(hCmb1, szText, _countof(szText));
-        std::wstring str = szText;
-        xg_str_trim(str);
-        str = XgNormalizeString(str);
-
-        OnCmb1(hwnd, str);
+        // テキストを取得する。
+        auto str = GetText(hwnd, FALSE);
+        SetText(hwnd, str, FALSE);
         ::SetTimer(hwnd, 999, MARKED_INTERVAL, NULL);
+    }
+
+    VOID OnEdt1(HWND hwnd)
+    {
+        // テキストを取得する。
+        auto str = GetText(hwnd, TRUE);
+        SetText(hwnd, str, TRUE);
+        ::SetTimer(hwnd, 999, MARKED_INTERVAL, NULL);
+    }
+
+    INT GetCurSel(HWND hwnd)
+    {
+        INT i = (INT)::SendDlgItemMessageW(hwnd, lst1, LB_GETCURSEL, 0, 0);
+        return i;
     }
 
     void OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT codeNotify)
@@ -132,16 +165,18 @@ public:
         case IDOK:
         case IDCANCEL:
             // ダイアログを閉じる。
-            DestroyWindow(hwnd);
+            ::DestroyWindow(hwnd);
             break;
-        case cmb1:
-            switch (codeNotify)
-            {
-            case CBN_EDITCHANGE:
-            case CBN_SELENDOK:
+        case edt1:
+            if (codeNotify == EN_CHANGE) {
                 if (!m_bUpdating)
-                    OnCmb1(hwnd);
-                break;
+                    OnEdt1(hwnd);
+            }
+            break;
+        case lst1:
+            if (codeNotify == LBN_SELCHANGE) {
+                if (!m_bUpdating)
+                    OnLst1(hwnd);
             }
             break;
         case psh1:
@@ -152,19 +187,18 @@ public:
                 {
                     // 前の候補。
                     INT iItem = GetCurSel(hwnd);
-                    if (iItem == CB_ERR) {
+                    if (iItem == LB_ERR) {
                         xg_iMarkedCand = INT(xg_vMarkedCands.size()) - 1;
                     } else {
                         xg_iMarkedCand = iItem - 1;
                         if (xg_iMarkedCand < 0)
                             xg_iMarkedCand = INT(xg_vMarkedCands.size()) - 1;
                     }
-                    XgSetMarkedWord(xg_vMarkedCands[xg_iMarkedCand]);
+                    auto str = xg_vMarkedCands[xg_iMarkedCand];
+                    XgSetMarkedWord(str);
                     XgMarkUpdate();
-                    // コンボボックスの更新。
-                    m_bUpdating = TRUE;
-                    ComboBox_RealSetText(::GetDlgItem(hwnd, cmb1), xg_vMarkedCands[xg_iMarkedCand].c_str());
-                    m_bUpdating = FALSE;
+                    // テキストの更新。
+                    SetDlgItemTextW(hwnd, edt1, str.c_str());
                 }
                 mu2->Get();
                 // 元に戻す情報を設定する。
@@ -180,17 +214,16 @@ public:
                 {
                     // 次の候補。
                     INT iItem = GetCurSel(hwnd);
-                    if (iItem == CB_ERR) {
+                    if (iItem == LB_ERR) {
                         xg_iMarkedCand = 0;
                     } else {
                         xg_iMarkedCand = (iItem + 1) % xg_vMarkedCands.size();
                     }
-                    XgSetMarkedWord(xg_vMarkedCands[xg_iMarkedCand]);
+                    auto str = xg_vMarkedCands[xg_iMarkedCand];
+                    XgSetMarkedWord(str);
                     XgMarkUpdate();
-                    // コンボボックスの更新。
-                    m_bUpdating = TRUE;
-                    ComboBox_RealSetText(::GetDlgItem(hwnd, cmb1), xg_vMarkedCands[xg_iMarkedCand].c_str());
-                    m_bUpdating = FALSE;
+                    // テキストの更新。
+                    SetDlgItemTextW(hwnd, edt1, str.c_str());
                 }
                 mu2->Get();
                 // 元に戻す情報を設定する。
@@ -222,10 +255,8 @@ public:
                     xg_vMarks.clear();
                     xg_iMarkedCand = -1;
                     XgMarkUpdate();
-                    // コンボボックスの更新。
-                    m_bUpdating = TRUE;
-                    ComboBox_RealSetText(::GetDlgItem(hwnd, cmb1), L"");
-                    m_bUpdating = FALSE;
+                    // テキストの更新。
+                    SetDlgItemTextW(hwnd, edt1, L"");
                 }
                 mu2->Get();
                 // 元に戻す情報を設定する。
@@ -239,18 +270,21 @@ public:
 
     void OnTimer(HWND hwnd, UINT id)
     {
-        if (id == 999) {
-            ::KillTimer(hwnd, 999);
+        if (id != 999)
+            return;
 
-            // コンボボックスの更新。
-            WCHAR szText[256];
-            szText[0] = 0;
-            ComboBox_RealGetText(::GetDlgItem(hwnd, cmb1), szText, _countof(szText));
-            std::wstring str = szText;
-            xg_str_trim(str);
-            std::wstring strNormalized = XgNormalizeString(str);
+        ::KillTimer(hwnd, 999);
 
-            ComboBox_RealSetText(::GetDlgItem(hwnd, cmb1), strNormalized.c_str());
+        // テキストの更新。
+        WCHAR szText[256];
+        szText[0] = 0;
+        ::GetDlgItemTextW(hwnd, edt1, szText, _countof(szText));
+        std::wstring str = szText;
+        auto strText = str;
+        xg_str_trim(strText);
+        auto strNormalized = XgNormalizeString(strText);
+        if (str != strNormalized) {
+            ::SetDlgItemTextW(hwnd, edt1, str.c_str());
 
             // 盤面を更新する。
             XgUpdateImage(xg_hMainWnd);
@@ -259,10 +293,9 @@ public:
 
     void OnMove(HWND hwnd, int x, int y)
     {
-        if (m_bInitted)
-        {
+        if (m_bInitted) {
             RECT rc;
-            GetWindowRect(hwnd, &rc);
+            ::GetWindowRect(hwnd, &rc);
             xg_nMarkingX = rc.left;
             xg_nMarkingY = rc.top;
         }
@@ -295,8 +328,7 @@ public:
 
     BOOL CreateDialogDx(HWND hwnd)
     {
-        if (XG_Dialog::CreateDialogDx(hwnd, IDD_MARKING))
-        {
+        if (XG_Dialog::CreateDialogDx(hwnd, IDD_MARKING)) {
             ::ShowWindow(*this, SW_SHOWNORMAL);
             ::UpdateWindow(*this);
             return TRUE;

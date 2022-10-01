@@ -1475,19 +1475,20 @@ FONT 9, "Tahoma"
     DEFPUSHBUTTON "OK", IDOK, 145, 145, 60, 20
 }
 
-IDD_MARKING DIALOG 0, 0, 215, 105
+IDD_MARKING DIALOG 0, 0, 215, 209
 CAPTION "Marking (Ctrl+J)"
 STYLE DS_CENTER | DS_MODALFRAME | WS_POPUPWINDOW | WS_CAPTION
 EXSTYLE WS_EX_TOOLWINDOW
 FONT 9, "Tahoma"
 {
     LTEXT "The double-frame &word:", -1, 5, 5, 128, 12
-    COMBOBOX cmb1, 5, 20, 205, 300, CBS_HASSTRINGS | CBS_AUTOHSCROLL | CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP
-    LTEXT "Please select or type a double-frame word.", stc1, 5, 40, 205, 14
-    PUSHBUTTON "<< &previous word", psh1, 5, 60, 100, 17
-    PUSHBUTTON "&next word >>", psh2, 110, 60, 100, 17
-    PUSHBUTTON "&another layout", psh3, 110, 80, 100, 17
-    PUSHBUTTON "&Clear double-frame", psh5, 5, 80, 80, 17
+    EDITTEXT edt1, 5, 20, 205, 14
+    LTEXT "Enter a word or choose from the suggestions below:", stc1, 5, 40, 205, 14
+    LISTBOX lst1, 5, 60, 205, 100, LBS_MULTICOLUMN | LBS_NOINTEGRALHEIGHT | LBS_HASSTRINGS | WS_HSCROLL | WS_VSCROLL | WS_TABSTOP
+    PUSHBUTTON "< &previous word", psh1, 5, 165, 100, 17
+    PUSHBUTTON "&next word >", psh2, 110, 165, 100, 17
+    PUSHBUTTON "&another layout", psh3, 110, 185, 100, 17
+    PUSHBUTTON "&Clear double-frame", psh5, 5, 185, 80, 17
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -1704,7 +1705,7 @@ STRINGTABLE
     IDS_POLICYPRESET_JPN_LOOSE_2, "0x009B: Japanese publisher policy (Loose): Vertical symmetry"
     IDS_POLICYPRESET_JPN_LOOSE_3, "0x011B: Japanese publisher policy (Loose): Horizontal symmetry"
     IDS_MARKINGTYPE, "Error: There is a missing character '%c' on the board."
-    IDS_MARKINGEMPTY, "Please select or type a double-frame word."
+    IDS_MARKINGEMPTY, "Enter a word or choose from the suggestions below:"
     IDS_TT_NEW, "New crossword"
     IDS_TT_GENERATE, "Generate crossword"
     IDS_TT_OPEN, "Open crossword"
