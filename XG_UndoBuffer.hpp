@@ -48,6 +48,7 @@ struct XG_UndoData_SetAt : XG_UndoData {
 
 struct XG_UndoData_MarksUpdated : XG_UndoData {
     std::vector<XG_Pos> vMarks;
+    std::wstring strMarked;
 
     virtual ~XG_UndoData_MarksUpdated()
     {

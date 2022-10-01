@@ -203,6 +203,7 @@
     - Added "Marking double-frame word" to "Solution" menu. Improved handling of double-frame.
 - 2022月XX月YY日 ver.5.0.2
     - Improved "Marking" dialog.
+    - Correctly undoing "setting a double-frame word".
 
 # 開発履歴 (Japanese)
 
@@ -721,3 +722,4 @@
     - 「解」メニューに「二重マス単語の候補と配置」を追加。二重マスの扱いを改善。
 - 2022月XX月YY日 ver.5.0.2
     - 「二重マス単語の候補と配置」ダイアログを改良。
+    - 二重マス単語を正しく「元に戻す」。

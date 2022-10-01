@@ -17,10 +17,12 @@
 
 /*virtual*/ void XG_UndoData_MarksUpdated::Get() {
     vMarks = xg_vMarks;
+    strMarked = xg_strMarked;
 }
 
 /*virtual*/ void XG_UndoData_MarksUpdated::Apply() const {
     xg_vMarks = vMarks;
+    xg_strMarked = strMarked;
     XG_FILE_MODIFIED(TRUE);
 }
 

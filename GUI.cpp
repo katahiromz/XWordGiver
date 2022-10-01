@@ -5781,7 +5781,7 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT /*codeNo
             }
         }
         if (xg_hMarkingDlg)
-            xg_hMarkingDlg.RefreshCandidates(xg_hMarkingDlg);
+            xg_hMarkingDlg.RefreshCandidates(xg_hMarkingDlg, TRUE);
         bUpdateImage = TRUE;
         break;
     case ID_REDO:   // やり直す。
@@ -5798,7 +5798,7 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT /*codeNo
             }
         }
         if (xg_hMarkingDlg)
-            xg_hMarkingDlg.RefreshCandidates(xg_hMarkingDlg);
+            xg_hMarkingDlg.RefreshCandidates(xg_hMarkingDlg, TRUE);
         bUpdateImage = TRUE;
         break;
     case ID_GENERATEBLACKS: // 黒マスパターンを生成。

@@ -15,7 +15,7 @@ public:
     {
     }
 
-    BOOL RefreshCandidates(HWND hwnd)
+    BOOL RefreshCandidates(HWND hwnd, BOOL bUndoRedo = FALSE)
     {
         // 二重マス単語の候補を取得する。
         XgGetMarkedCandidates();
@@ -27,7 +27,9 @@ public:
         for (auto& item : xg_vMarkedCands) {
             INT i = ::SendDlgItemMessageW(hwnd, lst1, LB_ADDSTRING, 0, (LPARAM)item.c_str());
             if (item == xg_strMarked) {
+                m_bUpdating = TRUE;
                 ::SendDlgItemMessageW(hwnd, lst1, LB_SETCURSEL, i, 0);
+                m_bUpdating = FALSE;
             }
         }
 
@@ -35,8 +37,12 @@ public:
         const XG_Board *xw = (xg_bSolved ? &xg_solution : &xg_xword);
         XgGetMarkWord(xw, xg_strMarked);
 
+        if (bUndoRedo)
+            m_bUpdating = TRUE;
         // テキストを設定する。
         ::SetDlgItemTextW(hwnd, edt1, xg_strMarked.c_str());
+        if (bUndoRedo)
+            m_bUpdating = FALSE;
         return TRUE;
     }
 
