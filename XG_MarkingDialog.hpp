@@ -65,7 +65,7 @@ public:
     }
 
     // テキストの取得。
-    std::wstring GetText(HWND hwnd, BOOL bEdit)
+    std::wstring GetText(HWND hwnd, BOOL bEdit, BOOL bNormalize = TRUE)
     {
         WCHAR szText[256];
         szText[0] = 0;
@@ -77,8 +77,10 @@ public:
                 ::SendDlgItemMessageW(hwnd, lst1, LB_GETTEXT, i, (LPARAM)szText);
         }
         std::wstring str = szText;
-        xg_str_trim(str);
-        str = XgNormalizeString(str);
+        if (bNormalize) {
+            xg_str_trim(str);
+            str = XgNormalizeString(str);
+        }
         return str;
     }
 
@@ -147,6 +149,8 @@ public:
         // テキストを取得する。
         auto str = GetText(hwnd, FALSE);
         SetText(hwnd, str, FALSE);
+
+        ::KillTimer(hwnd, 999);
         ::SetTimer(hwnd, 999, MARKED_INTERVAL, NULL);
     }
 
@@ -155,6 +159,8 @@ public:
         // テキストを取得する。
         auto str = GetText(hwnd, TRUE);
         SetText(hwnd, str, TRUE);
+
+        ::KillTimer(hwnd, 999);
         ::SetTimer(hwnd, 999, MARKED_INTERVAL, NULL);
     }
 
@@ -274,29 +280,6 @@ public:
         XgUpdateImage(xg_hMainWnd);
     }
 
-    void OnTimer(HWND hwnd, UINT id)
-    {
-        if (id != 999)
-            return;
-
-        ::KillTimer(hwnd, 999);
-
-        // テキストの更新。
-        WCHAR szText[256];
-        szText[0] = 0;
-        ::GetDlgItemTextW(hwnd, edt1, szText, _countof(szText));
-        std::wstring str = szText;
-        auto strText = str;
-        xg_str_trim(strText);
-        auto strNormalized = XgNormalizeString(strText);
-        if (str != strNormalized) {
-            ::SetDlgItemTextW(hwnd, edt1, str.c_str());
-
-            // 盤面を更新する。
-            XgUpdateImage(xg_hMainWnd);
-        }
-    }
-
     void OnMove(HWND hwnd, int x, int y)
     {
         if (m_bInitted) {
@@ -307,8 +290,29 @@ public:
         }
     }
 
+    void OnTimer(HWND hwnd, UINT id)
+    {
+        if (id != 999)
+            return;
+
+        ::KillTimer(hwnd, 999);
+
+        auto str1 = GetText(hwnd, TRUE, FALSE);
+        auto str2 = GetText(hwnd, TRUE, TRUE);
+        if (str1 != str2)
+        {
+            m_bUpdating = TRUE;
+            INT iStart, iEnd;
+            ::SendDlgItemMessageW(hwnd, edt1, EM_GETSEL, (WPARAM)&iStart, (LPARAM)&iEnd);
+            ::SetDlgItemTextW(hwnd, edt1, str2.c_str());
+            ::SendDlgItemMessageW(hwnd, edt1, EM_SETSEL, iStart, iEnd);
+            m_bUpdating = FALSE;
+        }
+    }
+
     void OnDestroy(HWND hwnd)
     {
+        ::KillTimer(hwnd, 999);
         m_hWnd = NULL;
         m_bInitted = FALSE;
     }
@@ -316,17 +320,12 @@ public:
     virtual INT_PTR CALLBACK
     DialogProcDx(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
     {
-        if (uMsg != WM_TIMER)
-        {
-            if (::KillTimer(hwnd, 999))
-                ::SetTimer(hwnd, 999, MARKED_INTERVAL, NULL);
-        }
         switch (uMsg)
         {
             HANDLE_MSG(hwnd, WM_INITDIALOG, OnInitDialog);
             HANDLE_MSG(hwnd, WM_COMMAND, OnCommand);
-            HANDLE_MSG(hwnd, WM_TIMER, OnTimer);
             HANDLE_MSG(hwnd, WM_MOVE, OnMove);
+            HANDLE_MSG(hwnd, WM_TIMER, OnTimer);
             HANDLE_MSG(hwnd, WM_DESTROY, OnDestroy);
         }
         return 0;
