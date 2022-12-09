@@ -585,7 +585,7 @@ BOOL XgPatternsUnitTest(void)
     XgSortAndUniquePatterns(patterns);
 
     patterns_t temp_pats;
-    if (0) {
+    if (1) {
         for (const auto& pat : patterns) {
             if (XgIsPatternDividedByBlocks(pat))
                 continue;
