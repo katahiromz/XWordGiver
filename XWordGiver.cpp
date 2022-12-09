@@ -585,7 +585,7 @@ BOOL XgPatternsUnitTest(void)
     XgSortAndUniquePatterns(patterns);
 
     patterns_t temp_pats;
-    if (1) {
+    if (0) {
         for (const auto& pat : patterns) {
             if (XgIsPatternDividedByBlocks(pat))
                 continue;
@@ -604,6 +604,7 @@ BOOL XgPatternsUnitTest(void)
             );
             temp_pats.push_back(pat);
         }
+        patterns = std::move(temp_pats);
     } else {
         // 反転・転置したパターンも追加する。
         for (const auto& pat : patterns) {
@@ -619,8 +620,21 @@ BOOL XgPatternsUnitTest(void)
             temp_pats.push_back(flip_v);
             temp_pats.push_back(flip_hv);
         }
+        patterns = std::move(temp_pats);
+
+        std::map<LONG, LONG> map;
+        for (const auto& pat : patterns) {
+            map[MAKELONG(pat.num_columns, pat.num_rows)]++;
+        }
+
+        if (FILE *fp = fopen("a.txt", "w"))
+        {
+            for (auto& pair : map) {
+                fprintf(fp, "%d\t%d\t%ld\n", LOWORD(pair.first), HIWORD(pair.first), pair.second);
+            }
+            fclose(fp);
+        }
     }
-    patterns = std::move(temp_pats);
 
     // ソートして一意化する。
     XgSortAndUniquePatterns(patterns);
