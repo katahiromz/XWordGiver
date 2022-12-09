@@ -12,7 +12,7 @@ bool __fastcall XgOnSolve_NoAddBlack(HWND hwnd, bool bShowAnswer = true);
 // パターンデータを読み込む。
 BOOL XgLoadPatterns(LPCWSTR pszFileName, patterns_t& patterns);
 
-#define XG_MAX_PAT_SIZE 18
+#define XG_MAX_PAT_SIZE 19
 
 class XG_PatternDialog : public XG_Dialog
 {
@@ -334,8 +334,8 @@ public:
         TEXTMETRIC tm;
         GetTextMetrics(hDC, &tm);
         DeleteDC(hDC);
-        lpMeasureItem->itemWidth = cxCell * 19 + 3;
-        lpMeasureItem->itemHeight = cyCell * 18 + 3 + tm.tmHeight;
+        lpMeasureItem->itemWidth = cxCell * (XG_MAX_PAT_SIZE + 1) + 3;
+        lpMeasureItem->itemHeight = cyCell * XG_MAX_PAT_SIZE + 3 + tm.tmHeight;
     }
 
     // WM_DRAWITEM
