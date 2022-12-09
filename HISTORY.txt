@@ -206,7 +206,7 @@
     - Correctly undoing "setting a double-frame word".
     - Added labels to THEME.txt.
 - 20XX-YY-ZZ ver.5.0.3
-    - Made the maximum size of the block patterns 19x19.
+    - Made the maximum size of the block patterns 20x20.
 
 # 開発履歴 (Japanese)
 
@@ -728,4 +728,4 @@
     - 二重マス単語を正しく「元に戻す」。
     - THEME.txtの各項目にラベルを追加。
 - 20XX年YY月ZZ日 ver.5.0.3
-    - 黒マスパターンの最大サイズを19x19に。
+    - 黒マスパターンの最大サイズを20x20に。

@@ -12,7 +12,7 @@ bool __fastcall XgOnSolve_NoAddBlack(HWND hwnd, bool bShowAnswer = true);
 // パターンデータを読み込む。
 BOOL XgLoadPatterns(LPCWSTR pszFileName, patterns_t& patterns);
 
-#define XG_MAX_PAT_SIZE 19
+#define XG_MAX_PAT_SIZE 20
 
 class XG_PatternDialog : public XG_Dialog
 {
@@ -320,7 +320,7 @@ public:
         }
     }
 
-    const INT cxCell = 6, cyCell = 6; // 小さなセルのサイズ。
+    const INT cxCell = 5, cyCell = 5; // 小さなセルのサイズ。
 
     // WM_MEASUREITEM
     void OnMeasureItem(HWND hwnd, MEASUREITEMSTRUCT * lpMeasureItem)
