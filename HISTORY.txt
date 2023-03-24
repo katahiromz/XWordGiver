@@ -208,7 +208,7 @@
 - 20XX-YY-ZZ ver.5.0.3
     - Made the maximum size of the block patterns 20x20.
     - Improved block patterns (PAT.txt).
-    - Big picture optimization.
+    - Global optimization that focuses on the fact that there are fewer candidates for longer words.
 
 # 開発履歴 (Japanese)
 
@@ -732,4 +732,4 @@
 - 20XX年YY月ZZ日 ver.5.0.3
     - 黒マスパターンの最大サイズを20x20に。
     - 黒マスパターン(PAT.txt)を改良。
-    - 大局的な最適化。
+    - 長い単語には候補が少ないことに着目した大局的な最適化。
