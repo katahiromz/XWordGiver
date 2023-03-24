@@ -35,34 +35,32 @@ public:
     }
 
     // タイプによりフィルターを行う。
-    BOOL FilterPatBySize(const XG_PATDATA& pat, INT type) {
+    XG_NOINLINE
+    BOOL FilterPatBySize(const XG_PATDATA& pat, INT type0, INT type1) {
         if (pat.num_columns > XG_MAX_PAT_SIZE || pat.num_rows > XG_MAX_PAT_SIZE)
             return FALSE;
 
-        switch (type) {
-        case -1:
-            break;
+        switch (type0) {
         case rad1:
-            if (pat.num_columns != pat.num_rows)
-                return FALSE;
-            if (!(pat.num_columns >= 13 && pat.num_rows >= 13))
+            if (!(pat.num_columns + pat.num_rows >= 28))
                 return FALSE;
             break;
         case rad2:
-            if (pat.num_columns != pat.num_rows)
-                return FALSE;
-            if (!(8 <= pat.num_columns && pat.num_columns <= 12 &&
-                8 <= pat.num_rows && pat.num_rows <= 12))
+            if (!(pat.num_columns + pat.num_rows < 28 &&
+                  pat.num_columns + pat.num_rows > 16))
             {
                 return FALSE;
             }
             break;
         case rad3:
-            if (pat.num_columns != pat.num_rows)
-                return FALSE;
-            if (!(pat.num_columns <= 8 && pat.num_rows <= 8))
+            if (!(pat.num_columns + pat.num_rows <= 16))
                 return FALSE;
             break;
+        default:
+            assert(0);
+        }
+
+        switch (type1) {
         case rad4:
             if (pat.num_columns <= pat.num_rows)
                 return FALSE;
@@ -82,7 +80,8 @@ public:
         return TRUE;
     }
 
-    BOOL RefreshContents(HWND hwnd, INT type)
+    XG_NOINLINE
+    BOOL RefreshContents(HWND hwnd, INT type0, INT type1)
     {
         // リストボックスをクリアする。
         ListBox_ResetContent(GetDlgItem(hwnd, lst1));
@@ -121,7 +120,7 @@ public:
                 continue;
             }
 
-            if (FilterPatBySize(pat, type))
+            if (FilterPatBySize(pat, type0, type1))
             {
                 pats.push_back(pat);
             }
@@ -141,6 +140,7 @@ public:
     }
 
     // WM_INITDIALOG
+    XG_NOINLINE
     BOOL OnInitDialog(HWND hwnd, HWND hwndFocus, LPARAM lParam)
     {
         XgCenterDialog(hwnd);
@@ -156,8 +156,9 @@ public:
         else
             CheckDlgButton(hwnd, chx1, BST_UNCHECKED);
 
-        CheckRadioButton(hwnd, rad1, rad6, rad6);
-        RefreshContents(hwnd, rad6);
+        CheckRadioButton(hwnd, rad1, rad3, rad2);
+        CheckRadioButton(hwnd, rad4, rad6, rad6);
+        RefreshContents(hwnd, rad2, rad6);
 
         static const LAYOUT_INFO layouts[] =
         {
@@ -198,6 +199,7 @@ public:
     }
 
     // 黒マスパターンのコピー。
+    XG_NOINLINE
     void OnCopy(HWND hwnd)
     {
         HWND hLst1 = GetDlgItem(hwnd, lst1);
@@ -227,6 +229,7 @@ public:
     }
 
     // 黒マスパターンで「OK」ボタンを押した。
+    XG_NOINLINE
     void OnOK(HWND hwnd)
     {
         HWND hLst1 = GetDlgItem(hwnd, lst1);
@@ -286,7 +289,30 @@ public:
         ShellExecuteW(hwnd, NULL, L"https://katahiromz.web.fc2.com/xword/patterns", NULL, NULL, SW_SHOWNORMAL);
     }
 
+    INT GetType0()
+    {
+        if (IsDlgButtonChecked(m_hWnd, rad1) == BST_CHECKED)
+            return rad1;
+        if (IsDlgButtonChecked(m_hWnd, rad2) == BST_CHECKED)
+            return rad2;
+        if (IsDlgButtonChecked(m_hWnd, rad3) == BST_CHECKED)
+            return rad3;
+        return -1;
+    }
+
+    INT GetType1()
+    {
+        if (IsDlgButtonChecked(m_hWnd, rad4) == BST_CHECKED)
+            return rad4;
+        if (IsDlgButtonChecked(m_hWnd, rad5) == BST_CHECKED)
+            return rad5;
+        if (IsDlgButtonChecked(m_hWnd, rad6) == BST_CHECKED)
+            return rad6;
+        return -1;
+    }
+
     // WM_COMMAND
+    XG_NOINLINE
     void OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT codeNotify)
     {
         switch (id)
@@ -315,7 +341,7 @@ public:
         case rad4:
         case rad5:
         case rad6:
-            RefreshContents(hwnd, id);
+            RefreshContents(hwnd, GetType0(), GetType1());
             break;
         }
     }
@@ -323,6 +349,7 @@ public:
     const INT cxCell = 5, cyCell = 5; // 小さなセルのサイズ。
 
     // WM_MEASUREITEM
+    XG_NOINLINE
     void OnMeasureItem(HWND hwnd, MEASUREITEMSTRUCT * lpMeasureItem)
     {
         // リストボックスの lst1 か？
@@ -339,6 +366,7 @@ public:
     }
 
     // WM_DRAWITEM
+    XG_NOINLINE
     void OnDrawItem(HWND hwnd, const DRAWITEMSTRUCT * lpDrawItem)
     {
         // リストボックスの lst1 か？
@@ -492,6 +520,7 @@ public:
     }
 
     // 「黒マスパターン」ダイアログプロシージャ。
+    XG_NOINLINE
     virtual INT_PTR CALLBACK
     DialogProcDx(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
     {

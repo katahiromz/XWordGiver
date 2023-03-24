@@ -1,5 +1,11 @@
 ﻿#pragma once
 
+#ifdef _MSC_VER
+    #define XG_NOINLINE __declspec(noinline)
+#else
+    #define XG_NOINLINE __attribute__((noinline))
+#endif
+
 // ヒントウィンドウを作成する。
 BOOL XgCreateHintsWnd(HWND hwnd);
 // ヒントウィンドウを破棄する。

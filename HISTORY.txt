@@ -205,10 +205,11 @@
     - Improved "Marking" dialog.
     - Correctly undoing "setting a double-frame word".
     - Added labels to THEME.txt.
-- 20XX-YY-ZZ ver.5.0.3
+- 2023-03-25 ver.5.0.3
     - Made the maximum size of the block patterns 20x20.
     - Improved block patterns (PAT.txt).
     - Global optimization that focuses on the fact that there are fewer candidates for longer words.
+    - Improved block patterns dialog.
 
 # 開発履歴 (Japanese)
 
@@ -729,7 +730,8 @@
     - 「二重マス単語の候補と配置」ダイアログを改良。
     - 二重マス単語を正しく「元に戻す」。
     - THEME.txtの各項目にラベルを追加。
-- 20XX年YY月ZZ日 ver.5.0.3
+- 2023年03月25日 ver.5.0.3
     - 黒マスパターンの最大サイズを20x20に。
     - 黒マスパターン(PAT.txt)を改良。
     - 長い単語には候補が少ないことに着目した大局的な最適化。
+    - 黒マスパターンダイアログの改良。
