@@ -207,6 +207,8 @@
     - Added labels to THEME.txt.
 - 20XX-YY-ZZ ver.5.0.3
     - Made the maximum size of the block patterns 20x20.
+    - Improved block patterns (PAT.txt).
+    - Big picture optimization.
 
 # 開発履歴 (Japanese)
 
@@ -729,3 +731,5 @@
     - THEME.txtの各項目にラベルを追加。
 - 20XX年YY月ZZ日 ver.5.0.3
     - 黒マスパターンの最大サイズを20x20に。
+    - 黒マスパターン(PAT.txt)を改良。
+    - 大局的な最適化。

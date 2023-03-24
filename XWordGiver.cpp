@@ -4173,6 +4173,7 @@ void __fastcall XgSolveXWord_NoAddBlack(const XG_Board& xw) noexcept
     xg_random_shuffle(words.begin(), words.end());
 
     // 文字マスがなかった場合。
+    int max_patlen = 0, max_i = -1, max_lo = -1;
     for (int i = 0; i < nRows; i++) {
         for (int j = 0; j < nCols - 1; j++) {
             // すでに解かれているなら、終了。
@@ -4198,96 +4199,40 @@ void __fastcall XgSolveXWord_NoAddBlack(const XG_Board& xw) noexcept
                 }
                 const int hi = j;
 
-                // パターンの長さを求める。
                 const int patlen = hi - lo + 1;
-                for (const auto& word_data : words) {
-                    // すでに解かれているなら、終了。
-                    // キャンセルされているなら、終了。
-                    // 再計算すべきなら、終了する。
-                    if (xg_bSolved || xg_bCancelled)
-                        return;
-
-                    // 単語とパターンの長さが等しいか？
-                    const std::wstring& word = word_data.m_word;
-                    const int wordlen = static_cast<int>(word.size());
-                    if (wordlen != patlen)
-                        continue;
-
-                    // 単語をセットする。
-                    XG_Board copy(xw);
-                    for (int k = 0; k < wordlen; k++) {
-                        copy.SetAt(i, lo + k, word[k]);
-                    }
-
-                    // 再帰する。
-                    XgSolveXWord_NoAddBlackRecurse(copy);
+                if (patlen > max_patlen) {
+                    max_patlen = patlen;
+                    max_lo = lo;
+                    max_i = i;
                 }
-                goto retry_1;
             }
         }
     }
 
-    // ランダムな順序の単語ベクターを作成する。
-retry_1:;
-    words = xg_dict_2;
-    xg_random_shuffle(words.begin(), words.end());
+    // パターンの長さを求める。
+    const int patlen = max_patlen, lo = max_lo, i = max_i;
+    for (const auto& word_data : words) {
+        // すでに解かれているなら、終了。
+        // キャンセルされているなら、終了。
+        // 再計算すべきなら、終了する。
+        if (xg_bSolved || xg_bCancelled)
+            return;
 
-    // 文字マスがなかった場合。
-    for (int i = 0; i < nRows; i++) {
-        for (int j = 0; j < nCols - 1; j++) {
-            // すでに解かれているなら、終了。
-            // キャンセルされているなら、終了。
-            // 再計算すべきなら、終了する。
-            if (xg_bSolved || xg_bCancelled)
-                return;
+        // 単語とパターンの長さが等しいか？
+        const std::wstring& word = word_data.m_word;
+        const int wordlen = static_cast<int>(word.size());
+        if (wordlen != patlen)
+            continue;
 
-            // 空白の連続があるか？
-            const WCHAR ch1 = xw.GetAt(i, j), ch2 = xw.GetAt(i, j + 1);
-            if (ch1 == ZEN_SPACE && ch2 == ZEN_SPACE) {
-                // 文字が置ける区間[lo, hi]を求める。
-                int lo = j;
-                while (lo > 0) {
-                    if (xw.GetAt(i, lo - 1) == ZEN_BLACK)
-                        break;
-                    lo--;
-                }
-                while (j + 1 < nCols) {
-                    if (xw.GetAt(i, j + 1) == ZEN_BLACK)
-                        break;
-                    j++;
-                }
-                const int hi = j;
-
-                // パターンの長さを求める。
-                const int patlen = hi - lo + 1;
-                for (const auto& word_data : words) {
-                    // すでに解かれているなら、終了。
-                    // キャンセルされているなら、終了。
-                    // 再計算すべきなら、終了する。
-                    if (xg_bSolved || xg_bCancelled)
-                        return;
-
-                    // 単語とパターンの長さが等しいか？
-                    const std::wstring& word = word_data.m_word;
-                    const int wordlen = static_cast<int>(word.size());
-                    if (wordlen != patlen)
-                        continue;
-
-                    // 単語をセットする。
-                    XG_Board copy(xw);
-                    for (int k = 0; k < wordlen; k++) {
-                        copy.SetAt(i, lo + k, word[k]);
-                    }
-
-                    // 再帰する。
-                    XgSolveXWord_NoAddBlackRecurse(copy);
-                }
-                goto retry_2;
-            }
+        // 単語をセットする。
+        XG_Board copy(xw);
+        for (int k = 0; k < wordlen; k++) {
+            copy.SetAt(i, lo + k, word[k]);
         }
-    }
 
-retry_2:;
+        // 再帰する。
+        XgSolveXWord_NoAddBlackRecurse(copy);
+    }
 }
 
 #ifdef NO_RANDOM
