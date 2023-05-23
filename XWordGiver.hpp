@@ -648,8 +648,16 @@ HBITMAP __fastcall XgCreateXWordImage(XG_Board& xw, LPSIZE psiz, bool bCaret);
 // 二重マス単語を描画する。
 void __fastcall XgDrawMarkWord(HDC hdc, LPSIZE psiz);
 
+// 描画モード。
+enum DRAW_MODE
+{
+    DRAW_MODE_SCREEN,
+    DRAW_MODE_PRINT,
+    DRAW_MODE_EMF,
+};
+
 // クロスワードを描画する。
-void __fastcall XgDrawXWord(XG_Board& xw, HDC hdc, LPSIZE psiz, bool bCaret);
+void __fastcall XgDrawXWord(XG_Board& xw, HDC hdc, LPSIZE psiz, DRAW_MODE mode);
 
 // 解を求めるのを開始。
 void __fastcall XgStartSolve_AddBlack(void) noexcept;
@@ -700,6 +708,9 @@ typedef enum XG_VIEW_MODE
     XG_VIEW_SKELETON // スケルトンビュー。
 } XG_VIEW_MODE;
 extern XG_VIEW_MODE xg_nViewMode;
+
+// EMFの寸法をセットする。
+void XgSetSizeOfEMF(HDC hdcEMF, const SIZE *psiz);
 
 //////////////////////////////////////////////////////////////////////////////
 // inline functions
@@ -1325,6 +1336,14 @@ extern INT xg_nPatWndX;
 extern INT xg_nPatWndY;
 extern INT xg_nPatWndCX;
 extern INT xg_nPatWndCY;
+
+// 線の太さ（pt）。
+extern float xg_nLineWidthInPt;
+#define XG_MIN_LINEWIDTH 0.05f
+#define XG_MAX_LINEWIDTH 5.0f
+#define XG_LINE_WIDTH_DEFAULT 1.0f
+#define XG_LINE_WIDTH_DELTA 0.5f
+#define XG_LINE_WIDTH_FORMAT L"%.1f"
 
 //////////////////////////////////////////////////////////////////////////////
 

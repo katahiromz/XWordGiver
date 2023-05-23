@@ -114,6 +114,9 @@ std::wstring xg_strBlackCellImage;
 // ビューモード。
 XG_VIEW_MODE xg_nViewMode = XG_VIEW_NORMAL;
 
+// 線の太さ（pt）。
+float xg_nLineWidthInPt = XG_LINE_WIDTH_DEFAULT;
+
 //////////////////////////////////////////////////////////////////////////////
 // static variables
 
@@ -4443,6 +4446,18 @@ void __fastcall XgEndSolve(void) noexcept
     }
 }
 
+// ポイント単位をピクセル単位に変換する（X座標）。
+INT XPixelsFromPoints(HDC hDC, INT points)
+{
+    return MulDiv(points, GetDeviceCaps(hDC, LOGPIXELSX), 72);
+}
+
+// ポイント単位をピクセル単位に変換する（Y座標）。
+INT YPixelsFromPoints(HDC hDC, INT points)
+{
+    return MulDiv(points, GetDeviceCaps(hDC, LOGPIXELSY), 72);
+}
+
 // 二重マス単語を描画する。
 void __fastcall XgDrawMarkWord(HDC hdc, LPSIZE psiz)
 {
@@ -4457,16 +4472,28 @@ void __fastcall XgDrawMarkWord(HDC hdc, LPSIZE psiz)
     HBRUSH hbrWhite = ::CreateSolidBrush(xg_rgbWhiteCellColor);
     HBRUSH hbrMarked = ::CreateSolidBrush(xg_rgbMarkedCellColor);
 
-    // 細いペンを作成し、選択する。
-    HPEN hThinPen = ::CreatePen(PS_SOLID, 1, xg_rgbBlackCellColor);
+    // 線の太さ。
+    INT c_nThin = YPixelsFromPoints(hdc, xg_nLineWidthInPt);
+    INT c_nWide = YPixelsFromPoints(hdc, xg_nLineWidthInPt * 4);
+    if (c_nThin < 2)
+        c_nThin = 2;
+    if (c_nWide < 2)
+        c_nWide = 2;
+    if (c_nWide > xg_nNarrowMargin)
+        c_nWide = xg_nNarrowMargin;
 
-    // 太い線と黒いブラシを作成する。
+    // セルの幅。
+    INT nCellSize = xg_nCellSize;
+
+    // 黒いブラシ。
     LOGBRUSH lbBlack;
-    ::GetObject(hbrBlack, sizeof(lbBlack), &lbBlack);
-    int c_nWide = 4;
-    HPEN hWidePen = ::ExtCreatePen(
+    lbBlack.lbStyle = BS_SOLID;
+    lbBlack.lbColor = xg_rgbBlackCellColor;
+
+    // 細いペンを作成し、選択する。
+    HPEN hThinPen = ::ExtCreatePen(
         PS_GEOMETRIC | PS_SOLID | PS_ENDCAP_SQUARE | PS_JOIN_BEVEL,
-        c_nWide, &lbBlack, 0, NULL);
+        c_nThin, &lbBlack, 0, NULL);
 
     LOGFONTW lf;
 
@@ -4511,7 +4538,6 @@ void __fastcall XgDrawMarkWord(HDC hdc, LPSIZE psiz)
     WCHAR sz[32];
     SIZE siz;
     HGDIOBJ hFontOld = ::SelectObject(hdc, hFontSmall);
-    HGDIOBJ hPenOld = ::SelectObject(hdc, hThinPen);
     for (int i = 0; i < nCount; i++) {
         ::SetRect(&rc,
             static_cast<int>(xg_nNarrowMargin + i * xg_nCellSize), 
@@ -4519,15 +4545,17 @@ void __fastcall XgDrawMarkWord(HDC hdc, LPSIZE psiz)
             static_cast<int>(xg_nNarrowMargin + (i + 1) * xg_nCellSize - 1), 
             static_cast<int>(xg_nNarrowMargin + 1 * xg_nCellSize));
         ::FillRect(hdc, &rc, hbrMarked);
-        ::InflateRect(&rc, -4, -4);
+        ::InflateRect(&rc, -nCellSize / 9, -nCellSize / 9);
         if (!xg_bNumCroMode && xg_bDrawFrameForMarkedCell) {
+            HGDIOBJ hPenOld = ::SelectObject(hdc, hThinPen);
             ::MoveToEx(hdc, rc.left, rc.top, NULL);
             ::LineTo(hdc, rc.right + 1, rc.top);
             ::LineTo(hdc, rc.right + 1, rc.bottom + 1);
             ::LineTo(hdc, rc.left, rc.bottom + 1);
             ::LineTo(hdc, rc.left, rc.top);
+            ::SelectObject(hdc, hPenOld);
         }
-        ::InflateRect(&rc, 4, 4);
+        ::InflateRect(&rc, nCellSize / 9, nCellSize / 9);
 
         WCHAR ch;
         if (xg_bNumCroMode && xg_bSolved) {
@@ -4544,27 +4572,28 @@ void __fastcall XgDrawMarkWord(HDC hdc, LPSIZE psiz)
         ::GetTextExtentPoint32W(hdc, sz, int(wcslen(sz)), &siz);
 
         RECT rcText = rc;
-        INT x, y;
         if (xg_bNumCroMode && xg_bSolved) {
             rcText.left += 2;
-            rcText.right = rcText.left + std::max(siz.cx, siz.cy);
-            rcText.bottom = rcText.top + std::max(siz.cx, siz.cy);
-            x = rcText.left;
+            rcText.right = rcText.left + (siz.cx + siz.cy) / 2;
+            rcText.bottom = rcText.top + siz.cy;
         } else {
-            rcText.left = rcText.right - std::max(siz.cx, siz.cy);
-            rcText.top = rcText.bottom - std::max(siz.cx, siz.cy);
-            x = (rcText.left + rcText.right - siz.cx) / 2;
+            rcText.left = rcText.right - (siz.cx + siz.cy) / 2;
+            rcText.top = rcText.bottom - siz.cy;
         }
-        y = rcText.top;
-        ::FillRect(hdc, &rcText, hbrMarked);
+
+        // EMFで枠線が余分に描画されてしまう不具合の回避のため、FillRectの前にNULL_PENを選択する。
+        HGDIOBJ hPen2Old = ::SelectObject(hdc, ::GetStockObject(NULL_PEN));
+        {
+            ::FillRect(hdc, &rcText, hbrMarked);
+        }
+        ::SelectObject(hdc, hPen2Old);
 
         // 二重マスの文字を描く。
         ::SetTextColor(hdc, xg_rgbBlackCellColor);
         ::SetBkMode(hdc, TRANSPARENT);
-        ::TextOutW(hdc, x, y, sz, lstrlenW(sz));
+        ::TextOutW(hdc, rcText.left, rcText.top - 1, sz, lstrlenW(sz));
     }
     ::SelectObject(hdc, hFontOld);
-    ::SelectObject(hdc, hPenOld);
 
     // マスの文字を描画する。
     hFontOld = ::SelectObject(hdc, hFont);
@@ -4632,7 +4661,7 @@ void __fastcall XgDrawMarkWord(HDC hdc, LPSIZE psiz)
 
     // 線を引く。塗りつぶさない。
     ::SelectObject(hdc, ::GetStockObject(NULL_BRUSH));
-    hPenOld = ::SelectObject(hdc, hThinPen);
+    HGDIOBJ hPenOld = ::SelectObject(hdc, hThinPen);
     for (int i = 0; i < nCount; i++) {
         ::Rectangle(hdc,
                 static_cast<int>(xg_nNarrowMargin + i * xg_nCellSize),
@@ -4643,7 +4672,6 @@ void __fastcall XgDrawMarkWord(HDC hdc, LPSIZE psiz)
     ::SelectObject(hdc, hPenOld);
 
     // 破棄する。
-    ::DeleteObject(hWidePen);
     ::DeleteObject(hThinPen);
     ::DeleteObject(hFont);
     ::DeleteObject(hFontSmall);
@@ -4702,8 +4730,59 @@ std::unordered_set<XG_Pos> XgGetSlot(INT number, BOOL vertical)
 const COLORREF c_rgbHighlight = RGB(255, 255, 140);
 const COLORREF c_rgbHighlightAndDblFrame = RGB(255, 155, 100);
 
+// マスの数字を描画する。
+void __fastcall
+XgDrawCellNumber(HDC hdc, const RECT& rcCell, INT i, INT j, INT number, std::unordered_set<XG_Pos>& slot)
+{
+    WCHAR sz[8];
+    StringCbPrintf(sz, sizeof(sz), L"%u", number);
+
+    RECT rcText;
+    SIZE siz;
+    GetTextExtentPoint32(hdc, sz, lstrlen(sz), &siz);
+    rcText = rcCell;
+    rcText.right = rcCell.left + siz.cx;
+    rcText.bottom = rcCell.top + siz.cy;
+
+    ::SetBkMode(hdc, TRANSPARENT);
+
+    // 文字の背景を塗りつぶす。
+    INT nMarked = XgGetMarked(i, j);
+    COLORREF rgbBack;
+    if (xg_bSolved && xg_bNumCroMode) {
+        // 文字の背景を塗りつぶす。
+        if (slot.count(XG_Pos(i, j)) > 0) {
+            rgbBack = c_rgbHighlight;
+        } else {
+            rgbBack = xg_rgbWhiteCellColor;
+        }
+    } else {
+        if (slot.count(XG_Pos(i, j)) > 0) {
+            rgbBack = c_rgbHighlight;
+        } else if (nMarked != -1 && !xg_bNumCroMode) {
+            rgbBack = xg_rgbMarkedCellColor;
+        } else {
+            rgbBack = xg_rgbWhiteCellColor;
+        }
+    }
+    // EMFにおいてFillRectが余分な枠線を描画する不具合の回避のため、NULL_PENを選択する。
+    HGDIOBJ hPen2Old = ::SelectObject(hdc, ::GetStockObject(NULL_PEN));
+    {
+        HBRUSH hbr = ::CreateSolidBrush(rgbBack);
+        ::FillRect(hdc, &rcText, hbr);
+        ::DeleteObject(hbr);
+    }
+    ::SelectObject(hdc, hPen2Old);
+
+    if (xg_bShowNumbering) {
+        // 数字を描く。
+        ::SetTextColor(hdc, xg_rgbBlackCellColor);
+        ::TextOutW(hdc, rcText.left, rcText.top, sz, lstrlenW(sz));
+    }
+}
+
 // クロスワードを描画する（通常ビュー）。
-void __fastcall XgDrawXWord_NormalView(XG_Board& xw, HDC hdc, LPSIZE psiz, bool bScreen)
+void __fastcall XgDrawXWord_NormalView(XG_Board& xw, HDC hdc, LPSIZE psiz, DRAW_MODE mode)
 {
     INT nCellSize;
     if (xg_nForDisplay > 0) {
@@ -4715,6 +4794,7 @@ void __fastcall XgDrawXWord_NormalView(XG_Board& xw, HDC hdc, LPSIZE psiz, bool 
     // 全体を白で塗りつぶす。
     RECT rc;
     ::SetRect(&rc, 0, 0, psiz->cx, psiz->cy);
+    ::SelectObject(hdc, ::GetStockObject(NULL_PEN));
     ::FillRect(hdc, &rc, reinterpret_cast<HBRUSH>(::GetStockObject(WHITE_BRUSH)));
 
     LOGFONTW lf;
@@ -4752,8 +4832,34 @@ void __fastcall XgDrawXWord_NormalView(XG_Board& xw, HDC hdc, LPSIZE psiz, bool 
     if (xg_nForDisplay <= 0)
         slot.clear();
 
+    // 線の太さ。
+    INT c_nThin = 1;
+    INT c_nWide = 4;
+    switch (mode)
+    {
+    case DRAW_MODE_SCREEN:
+    case DRAW_MODE_PRINT:
+        c_nThin = YPixelsFromPoints(hdc, xg_nLineWidthInPt);
+        c_nWide = YPixelsFromPoints(hdc, xg_nLineWidthInPt * 4);
+        break;
+    case DRAW_MODE_EMF:
+        break;
+    }
+    if (c_nThin < 2)
+        c_nThin = 2;
+    if (c_nWide < 2)
+        c_nWide = 2;
+    if (c_nWide > xg_nMargin)
+        c_nWide = xg_nMargin;
+
+    LOGBRUSH lbBlack;
+    lbBlack.lbStyle = BS_SOLID;
+    lbBlack.lbColor = xg_rgbBlackCellColor;
+
     // 黒の細いペンを作成する。
-    HPEN hThinPen = ::CreatePen(PS_SOLID, 1, xg_rgbBlackCellColor);
+    HPEN hThinPen = ::ExtCreatePen(
+        PS_GEOMETRIC | PS_SOLID | PS_ENDCAP_SQUARE | PS_JOIN_BEVEL,
+        c_nThin, &lbBlack, 0, NULL);
 
     // 赤いキャレットペンを作成する。
     LOGBRUSH lbRed;
@@ -4762,14 +4868,6 @@ void __fastcall XgDrawXWord_NormalView(XG_Board& xw, HDC hdc, LPSIZE psiz, bool 
     HPEN hCaretPen = ::ExtCreatePen(
         PS_GEOMETRIC | PS_SOLID | PS_ENDCAP_ROUND | PS_JOIN_BEVEL,
         1, &lbRed, 0, NULL);
-
-    // 黒い太いペンを作成する。
-    LOGBRUSH lbBlack;
-    ::GetObject(hbrBlack, sizeof(lbBlack), &lbBlack);
-    int c_nWide = 4;
-    HPEN hWidePen = ::ExtCreatePen(
-        PS_GEOMETRIC | PS_SOLID | PS_ENDCAP_SQUARE | PS_JOIN_BEVEL,
-        c_nWide, &lbBlack, 0, NULL);
 
     WCHAR sz[32];
     SIZE siz;
@@ -4852,12 +4950,12 @@ void __fastcall XgDrawXWord_NormalView(XG_Board& xw, HDC hdc, LPSIZE psiz, bool 
 
                 // 二重マスの内側の枠を描く。
                 if (xg_bDrawFrameForMarkedCell) {
-                    ::InflateRect(&rc, -4, -4);
+                    ::InflateRect(&rc, -nCellSize / 9, -nCellSize / 9);
                     ::SelectObject(hdc, ::GetStockObject(NULL_BRUSH));
                     hPenOld = ::SelectObject(hdc, hThinPen);
                     ::Rectangle(hdc, rc.left, rc.top, rc.right + 1, rc.bottom + 1);
                     ::SelectObject(hdc, hPenOld);
-                    ::InflateRect(&rc, 4, 4);
+                    ::InflateRect(&rc, nCellSize / 9, nCellSize / 9);
                 }
 
                 if (xg_bShowDoubleFrameLetters) {
@@ -4870,17 +4968,22 @@ void __fastcall XgDrawXWord_NormalView(XG_Board& xw, HDC hdc, LPSIZE psiz, bool 
                     RECT rcText;
                     GetTextExtentPoint32(hdc, sz, lstrlen(sz), &siz);
                     rcText = rc;
-                    rcText.left = rc.right - std::max(siz.cx, siz.cy);
-                    rcText.top = rc.bottom - std::max(siz.cx, siz.cy);
+                    rcText.left = rc.right - (siz.cx + siz.cy) / 2;
+                    rcText.top = rc.bottom - siz.cy;
 
-                    HBRUSH hbr = CreateSolidBrush(xg_rgbMarkedCellColor);
-                    FillRect(hdc, &rcText, hbr);
-                    DeleteObject(hbr);
+                    // EMFで枠線が余分に描画されてしまう不具合の回避のため、FillRectの前にNULL_PENを選択する。
+                    HGDIOBJ hPen2Old = ::SelectObject(hdc, ::GetStockObject(NULL_PEN));
+                    {
+                        HBRUSH hbr = ::CreateSolidBrush(xg_rgbMarkedCellColor);
+                        ::FillRect(hdc, &rcText, hbr);
+                        ::DeleteObject(hbr);
+                    }
+                    ::SelectObject(hdc, hPen2Old);
 
                     // 二重マスの右下端の文字を描く。
                     ::SetBkMode(hdc, TRANSPARENT);
                     ::SetTextColor(hdc, xg_rgbBlackCellColor);
-                    ::DrawTextW(hdc, sz, -1, &rcText, DT_CENTER | DT_SINGLELINE | DT_BOTTOM);
+                    ::TextOutW(hdc, rcText.left, rcText.top - 1, sz, lstrlenW(sz));
                 }
             }
         }
@@ -4892,30 +4995,15 @@ void __fastcall XgDrawXWord_NormalView(XG_Board& xw, HDC hdc, LPSIZE psiz, bool 
         for (int k = 0; k < size; k++) {
             const int i = xg_vTateInfo[k].m_iRow;
             const int j = xg_vTateInfo[k].m_jCol;
-            StringCbPrintf(sz, sizeof(sz), L"%u", xg_vTateInfo[k].m_number);
 
-            // 文字の背景を塗りつぶす。
-            ::SetBkMode(hdc, OPAQUE);
-            int nMarked = XgGetMarked(i, j);
-            if (slot.count(XG_Pos(i, j)) > 0) {
-                ::SetBkColor(hdc, c_rgbHighlight);
-            } else if (nMarked != -1 && !xg_bNumCroMode) {
-                ::SetBkColor(hdc, xg_rgbMarkedCellColor);
-            } else {
-                ::SetBkColor(hdc, xg_rgbWhiteCellColor);
-            }
+            ::SetRect(&rc,
+                static_cast<int>(xg_nMargin + j * nCellSize), 
+                static_cast<int>(xg_nMargin + i * nCellSize),
+                static_cast<int>(xg_nMargin + (j + 1) * nCellSize), 
+                static_cast<int>(xg_nMargin + (i + 1) * nCellSize));
+            ::OffsetRect(&rc, c_nThin, c_nThin * 2 / 3);
 
-            if (xg_bShowNumbering) {
-                // 数字を描く。
-                ::SetRect(&rc,
-                    static_cast<int>(xg_nMargin + j * nCellSize), 
-                    static_cast<int>(xg_nMargin + i * nCellSize),
-                    static_cast<int>(xg_nMargin + (j + 1) * nCellSize), 
-                    static_cast<int>(xg_nMargin + (i + 1) * nCellSize));
-                ::OffsetRect(&rc, 2, 1);
-                ::SetTextColor(hdc, xg_rgbBlackCellColor);
-                ::DrawTextW(hdc, sz, -1, &rc, DT_LEFT | DT_SINGLELINE | DT_TOP);
-            }
+            XgDrawCellNumber(hdc, rc, i, j, xg_vTateInfo[k].m_number, slot);
         }
     }
 
@@ -4925,29 +5013,15 @@ void __fastcall XgDrawXWord_NormalView(XG_Board& xw, HDC hdc, LPSIZE psiz, bool 
         for (int k = 0; k < size; k++) {
             const int i = xg_vYokoInfo[k].m_iRow;
             const int j = xg_vYokoInfo[k].m_jCol;
-            StringCbPrintf(sz, sizeof(sz), L"%u", xg_vYokoInfo[k].m_number);
 
-            // 文字の背景を塗りつぶす。
-            int nMarked = XgGetMarked(i, j);
-            if (slot.count(XG_Pos(i, j)) > 0) {
-                ::SetBkColor(hdc, c_rgbHighlight);
-            } else if (nMarked != -1 && !xg_bNumCroMode) {
-                ::SetBkColor(hdc, xg_rgbMarkedCellColor);
-            } else {
-                ::SetBkColor(hdc, xg_rgbWhiteCellColor);
-            }
+            ::SetRect(&rc,
+                static_cast<int>(xg_nMargin + j * nCellSize), 
+                static_cast<int>(xg_nMargin + i * nCellSize),
+                static_cast<int>(xg_nMargin + (j + 1) * nCellSize), 
+                static_cast<int>(xg_nMargin + (i + 1) * nCellSize));
+            ::OffsetRect(&rc, c_nThin, c_nThin * 2 / 3);
 
-            if (xg_bShowNumbering) {
-                // 数字を描く。
-                ::SetRect(&rc,
-                    static_cast<int>(xg_nMargin + j * nCellSize), 
-                    static_cast<int>(xg_nMargin + i * nCellSize),
-                    static_cast<int>(xg_nMargin + (j + 1) * nCellSize), 
-                    static_cast<int>(xg_nMargin + (i + 1) * nCellSize));
-                ::OffsetRect(&rc, 2, 1);
-                ::SetTextColor(hdc, xg_rgbBlackCellColor);
-                ::DrawTextW(hdc, sz, -1, &rc, DT_LEFT | DT_SINGLELINE | DT_TOP);
-            }
+            XgDrawCellNumber(hdc, rc, i, j, xg_vYokoInfo[k].m_number, slot);
         }
     }
 
@@ -4959,26 +5033,14 @@ void __fastcall XgDrawXWord_NormalView(XG_Board& xw, HDC hdc, LPSIZE psiz, bool 
                 if (ch == ZEN_BLACK || ch == ZEN_SPACE)
                     continue;
 
-                StringCbPrintf(sz, sizeof(sz), L"%u", xg_mapNumCro1[ch]);
+                ::SetRect(&rc,
+                    static_cast<int>(xg_nMargin + j * nCellSize), 
+                    static_cast<int>(xg_nMargin + i * nCellSize),
+                    static_cast<int>(xg_nMargin + (j + 1) * nCellSize), 
+                    static_cast<int>(xg_nMargin + (i + 1) * nCellSize));
+                ::OffsetRect(&rc, c_nThin, c_nThin * 2 / 3);
 
-                // 文字の背景を塗りつぶす。
-                if (slot.count(XG_Pos(i, j)) > 0) {
-                    ::SetBkColor(hdc, c_rgbHighlight);
-                } else {
-                    ::SetBkColor(hdc, xg_rgbWhiteCellColor);
-                }
-
-                if (xg_bShowNumbering) {
-                    // 数字を描く。
-                    ::SetRect(&rc,
-                        static_cast<int>(xg_nMargin + j * nCellSize), 
-                        static_cast<int>(xg_nMargin + i * nCellSize),
-                        static_cast<int>(xg_nMargin + (j + 1) * nCellSize), 
-                        static_cast<int>(xg_nMargin + (i + 1) * nCellSize));
-                    ::OffsetRect(&rc, 2, 1);
-                    ::SetTextColor(hdc, xg_rgbBlackCellColor);
-                    ::DrawTextW(hdc, sz, -1, &rc, DT_LEFT | DT_SINGLELINE | DT_TOP);
-                }
+                XgDrawCellNumber(hdc, rc, i, j, xg_mapNumCro1[ch], slot);
             }
         }
     }
@@ -5045,7 +5107,7 @@ void __fastcall XgDrawXWord_NormalView(XG_Board& xw, HDC hdc, LPSIZE psiz, bool 
     }
 
     // キャレットを描画する。
-    if (bScreen && xg_bShowCaret) {
+    if (mode == DRAW_MODE_SCREEN && xg_bShowCaret) {
         const int i = xg_caret_pos.m_i;
         const int j = xg_caret_pos.m_j;
         ::SetRect(&rc,
@@ -5095,15 +5157,29 @@ void __fastcall XgDrawXWord_NormalView(XG_Board& xw, HDC hdc, LPSIZE psiz, bool 
     }
     ::SelectObject(hdc, hPenOld);
 
-    // 周りに太い線を描く。
-    hPenOld = ::SelectObject(hdc, hWidePen);
+    // 周りに太い線を描く。線を引こうと思ったが、コーナーがうまく描画できないので、
+    // 塗りつぶしで対処する。
+    hPenOld = ::SelectObject(hdc, GetStockBrush(NULL_PEN));
     if (xg_bAddThickFrame) {
-        c_nWide /= 2;
-        ::MoveToEx(hdc, xg_nMargin - c_nWide, xg_nMargin - c_nWide, nullptr);
-        ::LineTo(hdc, psiz->cx - xg_nMargin + c_nWide, xg_nMargin - c_nWide);
-        ::LineTo(hdc, psiz->cx - xg_nMargin + c_nWide, psiz->cy - xg_nMargin + c_nWide);
-        ::LineTo(hdc, xg_nMargin - c_nWide, psiz->cy - xg_nMargin + c_nWide);
-        ::LineTo(hdc, xg_nMargin - c_nWide, xg_nMargin - c_nWide);
+        RECT rc = { xg_nMargin, xg_nMargin, psiz->cx - xg_nMargin, psiz->cy - xg_nMargin };
+        ::InflateRect(&rc, c_nWide, c_nWide);
+        RECT rc2;
+
+        rc2 = rc;
+        rc2.right = rc.left + c_nWide;
+        ::FillRect(hdc, &rc2, hbrBlack);
+
+        rc2 = rc;
+        rc2.left = rc.right - c_nWide;
+        ::FillRect(hdc, &rc2, hbrBlack);
+
+        rc2 = rc;
+        rc2.bottom = rc.top + c_nWide;
+        ::FillRect(hdc, &rc2, hbrBlack);
+
+        rc2 = rc;
+        rc2.top = rc.bottom - c_nWide;
+        ::FillRect(hdc, &rc2, hbrBlack);
     }
     ::SelectObject(hdc, hPenOld);
 
@@ -5111,7 +5187,6 @@ void __fastcall XgDrawXWord_NormalView(XG_Board& xw, HDC hdc, LPSIZE psiz, bool 
     ::DeleteObject(hFont);
     ::DeleteObject(hFontSmall);
     ::DeleteObject(hThinPen);
-    ::DeleteObject(hWidePen);
     ::DeleteObject(hCaretPen);
     ::DeleteObject(hbrBlack);
     ::DeleteObject(hbrWhite);
@@ -5121,7 +5196,7 @@ void __fastcall XgDrawXWord_NormalView(XG_Board& xw, HDC hdc, LPSIZE psiz, bool 
 }
 
 // クロスワードを描画する（スケルトンビュー）。
-void __fastcall XgDrawXWord_SkeletonView(XG_Board& xw, HDC hdc, LPSIZE psiz, bool bScreen)
+void __fastcall XgDrawXWord_SkeletonView(XG_Board& xw, HDC hdc, LPSIZE psiz, DRAW_MODE mode)
 {
     INT nCellSize;
     if (xg_nForDisplay > 0) {
@@ -5134,7 +5209,7 @@ void __fastcall XgDrawXWord_SkeletonView(XG_Board& xw, HDC hdc, LPSIZE psiz, boo
     // それ以外は、四隅に白い点を描く（EMFで余白が省略されないように）。
     RECT rc;
     ::SetRect(&rc, 0, 0, psiz->cx, psiz->cy);
-    if (bScreen) {
+    if (mode == DRAW_MODE_SCREEN) {
         ::FillRect(hdc, &rc, reinterpret_cast<HBRUSH>(::GetStockObject(WHITE_BRUSH)));
     } else {
         COLORREF rgbWhite = RGB(255, 255, 255);
@@ -5179,8 +5254,23 @@ void __fastcall XgDrawXWord_SkeletonView(XG_Board& xw, HDC hdc, LPSIZE psiz, boo
     if (xg_nForDisplay <= 0)
         slot.clear();
 
+    // 線の太さ。
+    INT c_nThin = YPixelsFromPoints(hdc, xg_nLineWidthInPt);
+    INT c_nWide = 4;
+    if (c_nThin < 2)
+        c_nThin = 2;
+    if (c_nWide < 2)
+        c_nWide = 2;
+
+    // 黒いブラシ。
+    LOGBRUSH lbBlack;
+    lbBlack.lbStyle = BS_SOLID;
+    lbBlack.lbColor = xg_rgbBlackCellColor;
+
     // 黒の細いペンを作成する。
-    HPEN hThinPen = ::CreatePen(PS_SOLID, 1, xg_rgbBlackCellColor);
+    HPEN hThinPen = ::ExtCreatePen(
+        PS_GEOMETRIC | PS_SOLID | PS_ENDCAP_SQUARE | PS_JOIN_BEVEL,
+        c_nThin, &lbBlack, 0, NULL);
 
     // 赤いキャレットペンを作成する。
     LOGBRUSH lbRed;
@@ -5189,14 +5279,6 @@ void __fastcall XgDrawXWord_SkeletonView(XG_Board& xw, HDC hdc, LPSIZE psiz, boo
     HPEN hCaretPen = ::ExtCreatePen(
         PS_GEOMETRIC | PS_SOLID | PS_ENDCAP_ROUND | PS_JOIN_BEVEL,
         1, &lbRed, 0, NULL);
-
-    // 黒い太いペンを作成する。
-    LOGBRUSH lbBlack;
-    ::GetObject(hbrBlack, sizeof(lbBlack), &lbBlack);
-    int c_nWide = 4;
-    HPEN hWidePen = ::ExtCreatePen(
-        PS_GEOMETRIC | PS_SOLID | PS_ENDCAP_SQUARE | PS_JOIN_BEVEL,
-        c_nWide, &lbBlack, 0, NULL);
 
     WCHAR sz[32];
     SIZE siz;
@@ -5254,23 +5336,6 @@ void __fastcall XgDrawXWord_SkeletonView(XG_Board& xw, HDC hdc, LPSIZE psiz, boo
                 // その他のマス。
                 ::FillRect(hdc, &rc, hbrWhite);
             }
-
-            if (ch != ZEN_BLACK) {
-                // 線を引く。
-                hPenOld = ::SelectObject(hdc, hThinPen);
-                {
-                    ::MoveToEx(hdc, static_cast<int>(xg_nMargin + j * nCellSize), static_cast<int>(xg_nMargin + i * nCellSize), nullptr);
-                    ++i;
-                    ::LineTo(hdc, static_cast<int>(xg_nMargin + j * nCellSize), static_cast<int>(xg_nMargin + i * nCellSize));
-                    --i;
-
-                    ::MoveToEx(hdc, static_cast<int>(xg_nMargin + j * nCellSize), static_cast<int>(xg_nMargin + i * nCellSize), nullptr);
-                    ++j;
-                    ::LineTo(hdc, static_cast<int>(xg_nMargin + j * nCellSize), static_cast<int>(xg_nMargin + i * nCellSize));
-                    --j;
-                }
-                ::SelectObject(hdc, hPenOld);
-            }
         }
     }
 
@@ -5296,12 +5361,12 @@ void __fastcall XgDrawXWord_SkeletonView(XG_Board& xw, HDC hdc, LPSIZE psiz, boo
 
                 // 二重マスの内側の枠を描く。
                 if (xg_bDrawFrameForMarkedCell) {
-                    ::InflateRect(&rc, -4, -4);
+                    ::InflateRect(&rc, -nCellSize / 9, -nCellSize / 9);
                     ::SelectObject(hdc, ::GetStockObject(NULL_BRUSH));
                     hPenOld = ::SelectObject(hdc, hThinPen);
                     ::Rectangle(hdc, rc.left, rc.top, rc.right + 1, rc.bottom + 1);
                     ::SelectObject(hdc, hPenOld);
-                    ::InflateRect(&rc, 4, 4);
+                    ::InflateRect(&rc, nCellSize / 9, nCellSize / 9);
                 }
 
                 if (xg_bShowDoubleFrameLetters) {
@@ -5314,17 +5379,22 @@ void __fastcall XgDrawXWord_SkeletonView(XG_Board& xw, HDC hdc, LPSIZE psiz, boo
                     RECT rcText;
                     GetTextExtentPoint32(hdc, sz, lstrlen(sz), &siz);
                     rcText = rc;
-                    rcText.left = rc.right - std::max(siz.cx, siz.cy);
-                    rcText.top = rc.bottom - std::max(siz.cx, siz.cy);
+                    rcText.left = rc.right - (siz.cx + siz.cy) / 2;
+                    rcText.top = rc.bottom - siz.cy;
 
-                    HBRUSH hbr = CreateSolidBrush(xg_rgbMarkedCellColor);
-                    FillRect(hdc, &rcText, hbr);
-                    DeleteObject(hbr);
+                    // EMFで枠線が余分に描画されてしまう不具合の回避のため、FillRectの前にNULL_PENを選択する。
+                    HGDIOBJ hPen2Old = ::SelectObject(hdc, GetStockObject(NULL_PEN));
+                    {
+                        HBRUSH hbr = ::CreateSolidBrush(xg_rgbMarkedCellColor);
+                        ::FillRect(hdc, &rcText, hbr);
+                        ::DeleteObject(hbr);
+                    }
+                    ::SelectObject(hdc, hPen2Old);
 
                     // 二重マスの右下端の文字を描く。
                     ::SetBkMode(hdc, TRANSPARENT);
                     ::SetTextColor(hdc, xg_rgbBlackCellColor);
-                    ::DrawTextW(hdc, sz, -1, &rcText, DT_CENTER | DT_SINGLELINE | DT_BOTTOM);
+                    ::TextOutW(hdc, rcText.left, rcText.top - 1, sz, lstrlenW(sz));
                 }
             }
         }
@@ -5336,30 +5406,15 @@ void __fastcall XgDrawXWord_SkeletonView(XG_Board& xw, HDC hdc, LPSIZE psiz, boo
         for (int k = 0; k < size; k++) {
             const int i = xg_vTateInfo[k].m_iRow;
             const int j = xg_vTateInfo[k].m_jCol;
-            StringCbPrintf(sz, sizeof(sz), L"%u", xg_vTateInfo[k].m_number);
 
-            // 文字の背景を塗りつぶす。
-            ::SetBkMode(hdc, OPAQUE);
-            int nMarked = XgGetMarked(i, j);
-            if (slot.count(XG_Pos(i, j)) > 0) {
-                ::SetBkColor(hdc, c_rgbHighlight);
-            } else if (nMarked != -1) {
-                ::SetBkColor(hdc, xg_rgbMarkedCellColor);
-            } else {
-                ::SetBkColor(hdc, xg_rgbWhiteCellColor);
-            }
+            ::SetRect(&rc,
+                static_cast<int>(xg_nMargin + j * nCellSize), 
+                static_cast<int>(xg_nMargin + i * nCellSize),
+                static_cast<int>(xg_nMargin + (j + 1) * nCellSize), 
+                static_cast<int>(xg_nMargin + (i + 1) * nCellSize));
+            ::OffsetRect(&rc, c_nThin, c_nThin * 2 / 3);
 
-            if (xg_bShowNumbering) {
-                // 数字を描く。
-                ::SetRect(&rc,
-                    static_cast<int>(xg_nMargin + j * nCellSize), 
-                    static_cast<int>(xg_nMargin + i * nCellSize),
-                    static_cast<int>(xg_nMargin + (j + 1) * nCellSize), 
-                    static_cast<int>(xg_nMargin + (i + 1) * nCellSize));
-                ::OffsetRect(&rc, 2, 1);
-                ::SetTextColor(hdc, xg_rgbBlackCellColor);
-                ::DrawTextW(hdc, sz, -1, &rc, DT_LEFT | DT_SINGLELINE | DT_TOP);
-            }
+            XgDrawCellNumber(hdc, rc, i, j, xg_vTateInfo[k].m_number, slot);
         }
     }
 
@@ -5369,29 +5424,15 @@ void __fastcall XgDrawXWord_SkeletonView(XG_Board& xw, HDC hdc, LPSIZE psiz, boo
         for (int k = 0; k < size; k++) {
             const int i = xg_vYokoInfo[k].m_iRow;
             const int j = xg_vYokoInfo[k].m_jCol;
-            StringCbPrintf(sz, sizeof(sz), L"%u", xg_vYokoInfo[k].m_number);
 
-            // 文字の背景を塗りつぶす。
-            int nMarked = XgGetMarked(i, j);
-            if (slot.count(XG_Pos(i, j)) > 0) {
-                ::SetBkColor(hdc, c_rgbHighlight);
-            } else if (nMarked != -1) {
-                ::SetBkColor(hdc, xg_rgbMarkedCellColor);
-            } else {
-                ::SetBkColor(hdc, xg_rgbWhiteCellColor);
-            }
+            ::SetRect(&rc,
+                static_cast<int>(xg_nMargin + j * nCellSize), 
+                static_cast<int>(xg_nMargin + i * nCellSize),
+                static_cast<int>(xg_nMargin + (j + 1) * nCellSize), 
+                static_cast<int>(xg_nMargin + (i + 1) * nCellSize));
+            ::OffsetRect(&rc, c_nThin, c_nThin * 2 / 3);
 
-            if (xg_bShowNumbering) {
-                // 数字を描く。
-                ::SetRect(&rc,
-                    static_cast<int>(xg_nMargin + j * nCellSize), 
-                    static_cast<int>(xg_nMargin + i * nCellSize),
-                    static_cast<int>(xg_nMargin + (j + 1) * nCellSize), 
-                    static_cast<int>(xg_nMargin + (i + 1) * nCellSize));
-                ::OffsetRect(&rc, 2, 1);
-                ::SetTextColor(hdc, xg_rgbBlackCellColor);
-                ::DrawTextW(hdc, sz, -1, &rc, DT_LEFT | DT_SINGLELINE | DT_TOP);
-            }
+            XgDrawCellNumber(hdc, rc, i, j, xg_vYokoInfo[k].m_number, slot);
         }
     }
 
@@ -5403,26 +5444,14 @@ void __fastcall XgDrawXWord_SkeletonView(XG_Board& xw, HDC hdc, LPSIZE psiz, boo
                 if (ch == ZEN_BLACK || ch == ZEN_SPACE)
                     continue;
 
-                StringCbPrintf(sz, sizeof(sz), L"%u", xg_mapNumCro1[ch]);
+                ::SetRect(&rc,
+                    static_cast<int>(xg_nMargin + j * nCellSize), 
+                    static_cast<int>(xg_nMargin + i * nCellSize),
+                    static_cast<int>(xg_nMargin + (j + 1) * nCellSize), 
+                    static_cast<int>(xg_nMargin + (i + 1) * nCellSize));
+                ::OffsetRect(&rc, c_nThin, c_nThin * 2 / 3);
 
-                // 文字の背景を塗りつぶす。
-                if (slot.count(XG_Pos(i, j)) > 0) {
-                    ::SetBkColor(hdc, c_rgbHighlight);
-                } else {
-                    ::SetBkColor(hdc, xg_rgbWhiteCellColor);
-                }
-
-                if (xg_bShowNumbering) {
-                    // 数字を描く。
-                    ::SetRect(&rc,
-                        static_cast<int>(xg_nMargin + j * nCellSize), 
-                        static_cast<int>(xg_nMargin + i * nCellSize),
-                        static_cast<int>(xg_nMargin + (j + 1) * nCellSize), 
-                        static_cast<int>(xg_nMargin + (i + 1) * nCellSize));
-                    ::OffsetRect(&rc, 2, 1);
-                    ::SetTextColor(hdc, xg_rgbBlackCellColor);
-                    ::DrawTextW(hdc, sz, -1, &rc, DT_LEFT | DT_SINGLELINE | DT_TOP);
-                }
+                XgDrawCellNumber(hdc, rc, i, j, xg_mapNumCro1[ch], slot);
             }
         }
     }
@@ -5490,8 +5519,29 @@ void __fastcall XgDrawXWord_SkeletonView(XG_Board& xw, HDC hdc, LPSIZE psiz, boo
         }
     }
 
+    // セルの枠を描画する。
+    for (int i = 0; i < xg_nRows; i++) {
+        for (int j = 0; j < xg_nCols; j++) {
+            // セルの座標をセットする。
+            ::SetRect(&rc,
+                static_cast<int>(xg_nMargin + j * nCellSize), 
+                static_cast<int>(xg_nMargin + i * nCellSize),
+                static_cast<int>(xg_nMargin + (j + 1) * nCellSize), 
+                static_cast<int>(xg_nMargin + (i + 1) * nCellSize));
+            WCHAR ch = xw.GetAt(i, j);
+            if (ch == ZEN_BLACK)
+                continue;
+
+            ::SelectObject(hdc, GetStockObject(NULL_BRUSH));
+
+            HGDIOBJ hPen2Old = ::SelectObject(hdc, hThinPen);
+            Rectangle(hdc, rc.left, rc.top, rc.right, rc.bottom);
+            ::SelectObject(hdc, hPen2Old);
+        }
+    }
+
     // キャレットを描画する。
-    if (bScreen && xg_bShowCaret) {
+    if (mode == DRAW_MODE_SCREEN && xg_bShowCaret) {
         const int i = xg_caret_pos.m_i;
         const int j = xg_caret_pos.m_j;
         ::SetRect(&rc,
@@ -5533,7 +5583,6 @@ void __fastcall XgDrawXWord_SkeletonView(XG_Board& xw, HDC hdc, LPSIZE psiz, boo
     ::DeleteObject(hFont);
     ::DeleteObject(hFontSmall);
     ::DeleteObject(hThinPen);
-    ::DeleteObject(hWidePen);
     ::DeleteObject(hCaretPen);
     ::DeleteObject(hbrBlack);
     ::DeleteObject(hbrWhite);
@@ -5543,20 +5592,20 @@ void __fastcall XgDrawXWord_SkeletonView(XG_Board& xw, HDC hdc, LPSIZE psiz, boo
 }
 
 // クロスワードを描画する。
-void __fastcall XgDrawXWord(XG_Board& xw, HDC hdc, LPSIZE psiz, bool bScreen)
+void __fastcall XgDrawXWord(XG_Board& xw, HDC hdc, LPSIZE psiz, DRAW_MODE mode)
 {
     switch (xg_nViewMode)
     {
     case XG_VIEW_NORMAL:
     default:
-        XgDrawXWord_NormalView(xw, hdc, psiz, bScreen);
+        XgDrawXWord_NormalView(xw, hdc, psiz, mode);
         break;
     case XG_VIEW_SKELETON:
-        XgDrawXWord_SkeletonView(xw, hdc, psiz, bScreen);
+        XgDrawXWord_SkeletonView(xw, hdc, psiz, mode);
         break;
     }
     // ボックスを描画する。
-    if (!bScreen)
+    if (mode != DRAW_MODE_SCREEN)
         XgDrawBoxes(xw, hdc, psiz);
 }
 
@@ -5587,7 +5636,7 @@ HBITMAP __fastcall XgCreateXWordImage(XG_Board& xw, LPSIZE psiz, bool bScreen)
 
     // 描画する。
     HGDIOBJ hbmOld = ::SelectObject(hdc, hbm);
-    XgDrawXWord(xw, hdc, psiz, bScreen);
+    XgDrawXWord(xw, hdc, psiz, bScreen ? DRAW_MODE_SCREEN : DRAW_MODE_PRINT);
     ::SelectObject(hdc, hbmOld);
 
     // 互換DCを破棄する。
@@ -6510,7 +6559,8 @@ void __fastcall XgSaveProbAsImage(HWND hwnd)
             HDC hdcRef = ::GetDC(hwnd);
             HDC hdc = ::CreateEnhMetaFileW(hdcRef, szFileName, nullptr, XgLoadStringDx1(IDS_APPNAME));
             if (hdc) {
-                XgDrawXWord(xg_xword, hdc, &siz, false);
+                XgSetSizeOfEMF(hdc, &siz);
+                XgDrawXWord(xg_xword, hdc, &siz, DRAW_MODE_EMF);
                 ::CloseEnhMetaFile(hdc);
             } else {
                 XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_CANTSAVE2), nullptr, MB_ICONERROR);
@@ -6562,7 +6612,8 @@ void __fastcall XgSaveAnsAsImage(HWND hwnd)
             HDC hdcRef = ::GetDC(hwnd);
             HDC hdc = ::CreateEnhMetaFileW(hdcRef, szFileName, nullptr, XgLoadStringDx1(IDS_APPNAME));
             if (hdc) {
-                XgDrawXWord(xg_solution, hdc, &siz, false);
+                XgSetSizeOfEMF(hdc, &siz);
+                XgDrawXWord(xg_solution, hdc, &siz, DRAW_MODE_EMF);
                 ::CloseEnhMetaFile(hdc);
             } else {
                 XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_CANTSAVE2), nullptr, MB_ICONERROR);
@@ -6570,6 +6621,14 @@ void __fastcall XgSaveAnsAsImage(HWND hwnd)
             ::ReleaseDC(hwnd, hdcRef);
         }
     }
+}
+
+// EMFの寸法をセットする。
+void XgSetSizeOfEMF(HDC hdcEMF, const SIZE *psiz)
+{
+    //SetMapMode(hdcEMF, MM_ANISOTROPIC);
+    //SetWindowExtEx(hdcEMF, psiz->cx, psiz->cy, NULL);
+    //SetViewportExtEx(hdcEMF, psiz->cx, psiz->cy, NULL);
 }
 
 // クロスワードの文字列を取得する。

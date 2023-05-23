@@ -210,6 +210,11 @@
     - Improved block patterns (PAT.txt).
     - Global optimization that focuses on the fact that there are fewer candidates for longer words.
     - Improved block patterns dialog.
+- 2023-05-23 ver.5.0.4
+    - Allowed line widths to be specified. Default line width to 1.0.
+    - Properly calculating the width of the line.
+    - Improved drawing of the board.
+    - Avoided EMF drawing defects for external softwares with incomplete EMF support.
 
 # 開発履歴 (Japanese)
 
@@ -735,3 +740,8 @@
     - 黒マスパターン(PAT.txt)を改良。
     - 長い単語には候補が少ないことに着目した大局的な最適化。
     - 黒マスパターンダイアログの改良。
+- 2023年05月23日 ver.5.0.4
+    - 線の幅を指定できるようにする。線の幅のデフォルトを1.0に。
+    - 線の幅をちゃんと計算。
+    - 盤面の描画を改良。
+    - 不完全なEMFサポートの外部ソフトウェアに対してEMF描画の不具合を回避。

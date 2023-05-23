@@ -926,6 +926,7 @@ bool __fastcall XgLoadSettings(void)
     xg_nRules = XG_DEFAULT_RULES;
     xg_nViewMode = XG_VIEW_NORMAL;
     xg_nFileType = XG_FILETYPE_XD;
+    xg_nLineWidthInPt = XG_LINE_WIDTH_DEFAULT;
 
     xg_nMarkingX = xg_nMarkingY = CW_USEDEFAULT;
 
@@ -1144,6 +1145,14 @@ bool __fastcall XgLoadSettings(void)
                     xg_nViewMode = XG_VIEW_NORMAL;
                 }
             }
+            if (!app_key.QueryDword(L"LineWidth", dwValue)) {
+                float value = dwValue * 0.01;
+                if (value < XG_MIN_LINEWIDTH)
+                    value = XG_MIN_LINEWIDTH;
+                if (value > XG_MAX_LINEWIDTH)
+                    value = XG_MAX_LINEWIDTH;
+                xg_nLineWidthInPt = value;
+            }
 
             if (!app_key.QuerySz(L"Recent", sz, ARRAYSIZE(sz))) {
                 xg_dict_name = sz;
@@ -1256,6 +1265,7 @@ bool __fastcall XgSaveSettings(void)
 
             app_key.SetDword(L"ShowDoubleFrameLetters", xg_bShowDoubleFrameLetters);
             app_key.SetDword(L"ViewMode", xg_nViewMode);
+            app_key.SetDword(L"LineWidth", INT(xg_nLineWidthInPt * 100));
 
             app_key.SetSz(L"Recent", xg_dict_name.c_str());
 
@@ -1792,16 +1802,19 @@ static void XgPrintIt(HDC hdc, PRINTDLGW* ppd, bool bPrintAnswer)
                 ::DeleteFont(hFont);
             }
 
+            // サイズを取得する。
+            SIZE siz;
+            XgGetXWordExtent(&siz);
+
             // EMFオブジェクトを作成する。
             HDC hdcEMF = ::CreateEnhMetaFileW(hdc, nullptr, nullptr, XgLoadStringDx1(IDS_APPNAME));
             if (hdcEMF != nullptr) {
                 // EMFオブジェクトにクロスワードを描画する。
-                SIZE siz;
-                XgGetXWordExtent(&siz);
+                XgSetSizeOfEMF(hdcEMF, &siz);
                 if (bPrintAnswer)
-                    XgDrawXWord(xg_solution, hdcEMF, &siz, false);
+                    XgDrawXWord(xg_solution, hdcEMF, &siz, DRAW_MODE_EMF);
                 else
-                    XgDrawXWord(xg_xword, hdcEMF, &siz, false);
+                    XgDrawXWord(xg_xword, hdcEMF, &siz, DRAW_MODE_EMF);
 
                 // EMFオブジェクトを閉じる。
                 HENHMETAFILE hEMF = ::CloseEnhMetaFile(hdcEMF);
@@ -3564,7 +3577,8 @@ void XgCopyBoard(HWND hwnd)
                     HDC hdc = ::CreateEnhMetaFileW(hdcRef, nullptr, nullptr, XgLoadStringDx1(IDS_APPNAME));
                     if (hdc) {
                         // EMFに描画する。
-                        XgDrawXWord(*pxw, hdc, &siz, false);
+                        XgSetSizeOfEMF(hdc, &siz);
+                        XgDrawXWord(*pxw, hdc, &siz, DRAW_MODE_PRINT);
 
                         // EMFを設定。
                         HENHMETAFILE hEMF = ::CloseEnhMetaFile(hdc);
@@ -3578,7 +3592,7 @@ void XgCopyBoard(HWND hwnd)
                             RECT rc;
                             SetRect(&rc, 0, 0, siz.cx, siz.cy);
                             FillRect(hDC, &rc, GetStockBrush(WHITE_BRUSH));
-                            XgDrawXWord(*pxw, hDC, &siz, false);
+                            XgDrawXWord(*pxw, hDC, &siz, DRAW_MODE_PRINT);
                             SelectObject(hDC, hbmOld);
                             ::DeleteDC(hDC);
 
@@ -3621,7 +3635,8 @@ void XgCopyBoardAsImage(HWND hwnd)
     HDC hdc = ::CreateEnhMetaFileW(hdcRef, nullptr, nullptr, XgLoadStringDx1(IDS_APPNAME));
     if (hdc) {
         // EMFに描画する。
-        XgDrawXWord(*pxw, hdc, &siz, false);
+        XgSetSizeOfEMF(hdc, &siz);
+        XgDrawXWord(*pxw, hdc, &siz, DRAW_MODE_PRINT);
         hEMF = ::CloseEnhMetaFile(hdc);
     }
 
@@ -3704,6 +3719,7 @@ void __fastcall XgCopyMarkWord(HWND hwnd)
     HDC hdc = ::CreateEnhMetaFileW(hdcRef, nullptr, nullptr, XgLoadStringDx1(IDS_APPNAME));
     if (hdc) {
         // EMFに描画する。
+        XgSetSizeOfEMF(hdc, &siz);
         XgDrawMarkWord(hdc, &siz);
         hEMF = ::CloseEnhMetaFile(hdc);
     }

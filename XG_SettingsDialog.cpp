@@ -83,6 +83,11 @@ BOOL XG_SettingsDialog::OnInitDialog(HWND hwnd)
         SendMessageW(hwnd, WM_COMMAND, IDOK, 0);
     }
 
+    // 線の太さ。
+    WCHAR szText[MAX_PATH];
+    StringCchPrintfW(szText, _countof(szText), XG_LINE_WIDTH_FORMAT, xg_nLineWidthInPt);
+    SetDlgItemTextW(hwnd, edt6, szText);
+
     return TRUE;
 }
 
@@ -192,6 +197,17 @@ void XG_SettingsDialog::OnOK(HWND hwnd)
     HWND hCmb2 = GetDlgItem(hwnd, cmb2);
     ComboBox_RealGetText(hCmb2, szText, _countof(szText));
     xg_strDoubleFrameLetters = szText;
+
+    // 線の太さ。
+    GetDlgItemTextW(hwnd, edt6, szText, _countof(szText));
+    std::wstring str = szText;
+    xg_str_trim(str);
+    float value = wcstof(str.c_str(), NULL);
+    if (value > XG_MAX_LINEWIDTH)
+        value = XG_MAX_LINEWIDTH;
+    if (value < XG_MIN_LINEWIDTH)
+        value = XG_MIN_LINEWIDTH;
+    xg_nLineWidthInPt = value;
 
     // イメージを更新する。
     XgUpdateImage(xg_hMainWnd);
@@ -644,6 +660,31 @@ XG_SettingsDialog::DialogProcDx(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPar
 
     case WM_DROPFILES:
         OnDropFiles(hwnd, (HDROP)wParam);
+        break;
+
+    case WM_NOTIFY:
+        {
+            NM_UPDOWN *pUpDown = (NM_UPDOWN *)lParam;
+            if (pUpDown->hdr.code == UDN_DELTAPOS)
+            {
+                WCHAR szText[MAX_PATH];
+                GetDlgItemTextW(hwnd, edt6, szText, _countof(szText));
+                std::wstring str = szText;
+                xg_str_trim(str);
+                float value = wcstof(str.c_str(), NULL);
+                if (pUpDown->iDelta < 0)
+                    value += XG_LINE_WIDTH_DELTA;
+                if (pUpDown->iDelta > 0)
+                    value -= XG_LINE_WIDTH_DELTA;
+                if (value > XG_MAX_LINEWIDTH)
+                    value = XG_MAX_LINEWIDTH;
+                if (value < XG_MIN_LINEWIDTH)
+                    value = XG_MIN_LINEWIDTH;
+                StringCchPrintfW(szText, _countof(szText), XG_LINE_WIDTH_FORMAT, value);
+                SetDlgItemTextW(hwnd, edt6, szText);
+                return TRUE;
+            }
+        }
         break;
 
     case WM_COMMAND:

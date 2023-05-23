@@ -289,6 +289,7 @@ public:
         ShellExecuteW(hwnd, NULL, L"https://katahiromz.web.fc2.com/xword/patterns", NULL, NULL, SW_SHOWNORMAL);
     }
 
+    XG_NOINLINE
     INT GetType0()
     {
         if (IsDlgButtonChecked(m_hWnd, rad1) == BST_CHECKED)
@@ -300,6 +301,7 @@ public:
         return -1;
     }
 
+    XG_NOINLINE
     INT GetType1()
     {
         if (IsDlgButtonChecked(m_hWnd, rad4) == BST_CHECKED)
