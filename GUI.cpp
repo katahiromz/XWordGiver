@@ -1995,6 +1995,14 @@ BOOL XgImportLooks(HWND hwnd, LPCWSTR pszFileName)
     GetPrivateProfileStringW(L"Looks", L"MarkedCellColor", L"16777215", szText, _countof(szText), pszFileName);
     xg_rgbMarkedCellColor = _wtoi(szText);
 
+    // 線の幅（pt）。
+    GetPrivateProfileStringW(L"Looks", L"LineWidthInPt", L"1.0", szText, _countof(szText), pszFileName);
+    xg_nLineWidthInPt = wcstof(szText, nullptr);
+    if (xg_nLineWidthInPt < XG_MIN_LINEWIDTH)
+        xg_nLineWidthInPt = XG_MIN_LINEWIDTH;
+    if (xg_nLineWidthInPt > XG_MAX_LINEWIDTH)
+        xg_nLineWidthInPt = XG_MAX_LINEWIDTH;
+
     // フォント。
     GetPrivateProfileStringW(L"Looks", L"CellFont", L"", szText, _countof(szText), pszFileName);
     StringCchCopyW(xg_szCellFont, _countof(xg_szCellFont), szText);
@@ -2119,6 +2127,13 @@ BOOL XgExportLooks(HWND hwnd, LPCWSTR pszFileName)
     WritePrivateProfileStringW(L"Looks", L"BlackCellColor", XgIntToStr(xg_rgbBlackCellColor), pszFileName);
     WritePrivateProfileStringW(L"Looks", L"MarkedCellColor", XgIntToStr(xg_rgbMarkedCellColor), pszFileName);
 
+    // 線の幅（pt）を設定する。
+    {
+        WCHAR sz[64];
+        StringCchPrintfW(sz, _countof(sz), L"%.1f", xg_nLineWidthInPt);
+        WritePrivateProfileStringW(L"Looks", L"LineWidthInPt", sz, pszFileName);
+    }
+
     // 二重マス文字。
     {
         std::wstring str = xg_strDoubleFrameLetters;
@@ -2126,7 +2141,7 @@ BOOL XgExportLooks(HWND hwnd, LPCWSTR pszFileName)
         WritePrivateProfileStringW(L"Looks", L"DoubleFrameLetters", str.c_str(), pszFileName);
     }
 
-    // フラッシュ！
+    // フラッシュ！ すべてを完了させるための儀式。
     return WritePrivateProfileStringW(nullptr, nullptr, nullptr, pszFileName);
 }
 

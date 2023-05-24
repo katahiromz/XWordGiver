@@ -17,8 +17,9 @@
 #include <utility>
 #include <random>
 #ifdef _WIN32
-    #include <windows.h>
+    #include <windows.h>        // Windowsヘッダ。
 #else
+    // Linux/Mac用の定義。
     #include <unistd.h>
     #include <sys/types.h>
     inline uint64_t GetTickCount64(void) {
