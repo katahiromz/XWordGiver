@@ -1,6 +1,6 @@
 #pragma once
 
-#define CROSSWORD_GENERATION 23 // crossword_generation version
+#define CROSSWORD_GENERATION 24 // crossword_generation version
 
 #define _GNU_SOURCE
 #include <cstdio>               // 標準入出力。
@@ -10,12 +10,12 @@
 #include <vector>               // std::vector
 #include <unordered_set>        // std::unordered_set
 #include <unordered_map>        // std::unordered_map
-#include <queue>                // 待ち行列（std::queue）。
+#include <queue>                // 待ち行列（std::queue）
 #include <thread>               // std::thread
 #include <mutex>                // std::mutex
 #include <algorithm>            // std::shuffle
-#include <utility>
-#include <random>
+#include <utility>              // ????
+#include <random>               // 新しい乱数生成。
 #ifdef _WIN32
     #include <windows.h>        // Windowsヘッダ。
 #else
@@ -66,19 +66,19 @@ inline static std::mutex s_mutex;           // ミューテックス（排他処理用）。
 // ルールを表すフラグ群。
 struct RULES {
     enum {
-        DONTDOUBLEBLACK = (1 << 0),
-        DONTCORNERBLACK = (1 << 1),
-        DONTTRIDIRECTIONS = (1 << 2),
-        DONTDIVIDE = (1 << 3),
-        DONTFOURDIAGONALS = (1 << 4),
-        POINTSYMMETRY = (1 << 5),
-        DONTTHREEDIAGONALS = (1 << 6),
-        LINESYMMETRYV = (1 << 7),
-        LINESYMMETRYH = (1 << 8),
+        DONTDOUBLEBLACK = (1 << 0),     // 連黒禁。
+        DONTCORNERBLACK = (1 << 1),     // 四隅黒禁。
+        DONTTRIDIRECTIONS = (1 << 2),   // 三方黒禁。
+        DONTDIVIDE = (1 << 3),          // 分断禁。
+        DONTFOURDIAGONALS = (1 << 4),   // 黒斜四連禁。
+        POINTSYMMETRY = (1 << 5),       // 黒マス点対称。
+        DONTTHREEDIAGONALS = (1 << 6),  // 黒斜三連禁。
+        LINESYMMETRYV = (1 << 7),       // 黒マス上下対称。
+        LINESYMMETRYH = (1 << 8),       // 黒マス左右対称。
     };
 };
 
-// 文字ではないか？
+// 文字マスか？
 template <typename t_char>
 inline bool is_letter(t_char ch) {
     return (ch != '#' && ch != '?');
@@ -108,6 +108,7 @@ inline void random_shuffle(const t_elem& begin, const t_elem& end) {
 #endif
 }
 
+// 生成前に初期化。
 inline void reset() {
     s_generated = s_canceled = false;
 #ifdef XWORDGIVER
@@ -187,6 +188,7 @@ struct candidate_t {
     bool m_vertical;
 };
 
+// 交差候補。
 template <typename t_char>
 struct cross_candidate_t {
     candidate_t<t_char> m_cand_x, m_cand_y;
@@ -642,6 +644,8 @@ skip:;
         return true;
     }
 
+    // 盤面が固定サイズならサイズに収まるかどうか判定し、
+    // 盤面が固定サイズでなければ、収まるように拡張する。
     // x: relative coordinate
     bool ensure_x(int x) {
         if (t_fixed) {
@@ -655,6 +659,8 @@ skip:;
             return true;
         }
     }
+    // 盤面が固定サイズならサイズに収まるかどうか判定し、
+    // 盤面が固定サイズでなければ、収まるように拡張する。
     // y: relative coordinate
     bool ensure_y(int y) {
         if (t_fixed) {
@@ -668,6 +674,8 @@ skip:;
             return true;
         }
     }
+    // 盤面が固定サイズならサイズに収まるかどうか判定し、
+    // 盤面が固定サイズでなければ、収まるように拡張する。
     // x, y: relative coordinate
     bool ensure(int x, int y) {
         if (t_fixed) {
@@ -679,12 +687,14 @@ skip:;
         }
     }
 
+    // マス(x, y)の文字を取得する。リリース時の範囲チェックなし。
     // x, y: relative coordinate
     t_char get_on(int x, int y) const {
         assert(m_x0 <= 0);
         assert(m_y0 <= 0);
         return get_at(x - m_x0, y - m_y0);
     }
+    // マス(x, y)の文字をセットする。リリース時の範囲チェックなし。
     // x, y: relative coordinate
     void set_on(int x, int y, t_char ch) {
         assert(m_x0 <= 0);
@@ -692,6 +702,7 @@ skip:;
         set_at(x - m_x0, y - m_y0, ch);
     }
 
+    // 列を挿入する。指定された文字と幅で。
     // x0: absolute coordinate
     void insert_x(int x0, int cx = 1, t_char ch = ' ') {
         assert(0 <= x0 && x0 <= m_cx);
@@ -712,6 +723,7 @@ skip:;
         m_cx += cx;
     }
 
+    // 行を挿入する。指定された文字と高さで。
     // y0: absolute coordinate
     void insert_y(int y0, int cy = 1, t_char ch = ' ') {
         assert(0 <= y0 && y0 <= m_cy);
@@ -732,6 +744,7 @@ skip:;
         m_cy += cy;
     }
 
+    // 列を削除する。
     // x0: absolute coordinate
     void delete_x(int x0) {
         assert(0 <= x0 && x0 < m_cx);
@@ -751,6 +764,7 @@ skip:;
         --m_cx;
     }
 
+    // 行を削除する。
     // y0: absolute coordinate
     void delete_y(int y0) {
         assert(0 <= y0 && y0 < m_cy);
