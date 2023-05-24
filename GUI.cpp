@@ -1218,7 +1218,8 @@ bool __fastcall XgLoadSettings(void)
                 for (i = 0; i < (INT)dwValue; i++) {
                     StringCbPrintf(szFormat, sizeof(szFormat), L"Recent %d", i);
                     if (!app_key.QuerySz(szFormat, sz, _countof(sz))) {
-                        xg_recently_used_files.emplace_back(sz);
+                        if (PathFileExistsW(sz))
+                            xg_recently_used_files.emplace_back(sz);
                     } else {
                         break;
                     }
