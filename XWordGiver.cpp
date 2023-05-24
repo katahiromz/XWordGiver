@@ -7693,7 +7693,7 @@ void __fastcall XgStartGenerateBlacks(void) noexcept
 std::wstring __fastcall XgNormalizeString(const std::wstring& text) {
     WCHAR szText[512];
     LCMapStringW(XG_JPN_LOCALE, LCMAP_FULLWIDTH | LCMAP_KATAKANA | LCMAP_UPPERCASE,
-        text.c_str(), -1, szText, 512);
+        text.c_str(), -1, szText, _countof(szText));
     std::wstring ret = szText;
     for (auto& ch : ret) {
         // 小さな字を大きな字にする。
