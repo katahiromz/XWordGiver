@@ -7376,8 +7376,8 @@ void MainWnd_OnDropFiles(HWND hwnd, HDROP hdrop)
     POINT pt;
     DragQueryPoint(hdrop, &pt);
     ClientToScreen(hwnd, &pt);
-
     xg_canvasWnd.DoDropFile(xg_canvasWnd, hdrop, pt);
+    XgUpdateImage(hwnd);
 }
 
 // ウィンドウを閉じようとした。
