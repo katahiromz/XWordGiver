@@ -48,7 +48,7 @@ public:
         {
         case IDOK:
             // 保存先のパス名を取得する。
-            ::GetDlgItemTextW(hwnd, cmb1, szFile, ARRAYSIZE(szFile));
+            ::GetDlgItemTextW(hwnd, cmb1, szFile, _countof(szFile));
             {
                 DWORD attrs = ::GetFileAttributesW(szFile);
                 if (attrs == 0xFFFFFFFF || !(attrs & FILE_ATTRIBUTE_DIRECTORY)) {
@@ -117,7 +117,7 @@ public:
                 bi.lpszTitle = XgLoadStringDx1(IDS_CROSSSTORAGE);
                 bi.ulFlags = BIF_RETURNONLYFSDIRS;
                 bi.lpfn = XgBrowseCallbackProc;
-                ::GetDlgItemTextW(hwnd, cmb1, xg_szDir, ARRAYSIZE(xg_szDir));
+                ::GetDlgItemTextW(hwnd, cmb1, xg_szDir, _countof(xg_szDir));
                 {
                     LPITEMIDLIST pidl = ::SHBrowseForFolderW(&bi);
                     if (pidl) {
@@ -136,7 +136,7 @@ public:
     {
         // ドロップされたファイルのパス名を取得する。
         WCHAR szFile[MAX_PATH];
-        ::DragQueryFileW(hDrop, 0, szFile, ARRAYSIZE(szFile));
+        ::DragQueryFileW(hDrop, 0, szFile, _countof(szFile));
         ::DragFinish(hDrop);
 
         // ショートカットだった場合は、ターゲットのパスを取得する。

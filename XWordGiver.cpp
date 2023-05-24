@@ -5663,7 +5663,7 @@ bool __fastcall XgDoLoadCrpFile(HWND hwnd, LPCWSTR pszFile)
     if (nWidth > 0 && nHeight > 0) {
         for (i = 0; i < nHeight; ++i) {
             StringCbPrintf(szName, sizeof(szName), L"Line%u", i + 1);
-            GetPrivateProfileStringW(L"Cross", szName, L"", szText, ARRAYSIZE(szText), pszFile);
+            GetPrivateProfileStringW(L"Cross", szName, L"", szText, _countof(szText), pszFile);
 
             std::wstring str = szText;
             xg_str_trim(str);
@@ -5722,7 +5722,7 @@ bool __fastcall XgDoLoadCrpFile(HWND hwnd, LPCWSTR pszFile)
             if (nClueCount) {
                 for (i = 0; i < nClueCount; ++i) {
                     StringCbPrintf(szName, sizeof(szName), L"Clue%u", i + 1);
-                    GetPrivateProfileStringW(L"Clue", szName, L"", szText, ARRAYSIZE(szText), pszFile);
+                    GetPrivateProfileStringW(L"Clue", szName, L"", szText, _countof(szText), pszFile);
 
                     std::wstring str = szText;
                     xg_str_trim(str);
@@ -5750,7 +5750,7 @@ bool __fastcall XgDoLoadCrpFile(HWND hwnd, LPCWSTR pszFile)
             } else {
                 for (i = 0; i < 256; ++i) {
                     StringCbPrintf(szName, sizeof(szName), L"Down%u", i + 1);
-                    GetPrivateProfileStringW(L"Clue", szName, L"", szText, ARRAYSIZE(szText), pszFile);
+                    GetPrivateProfileStringW(L"Clue", szName, L"", szText, _countof(szText), pszFile);
 
                     std::wstring str = szText;
                     xg_str_trim(str);
@@ -5768,7 +5768,7 @@ bool __fastcall XgDoLoadCrpFile(HWND hwnd, LPCWSTR pszFile)
 
                 for (i = 0; i < 256; ++i) {
                     StringCbPrintf(szName, sizeof(szName), L"Across%u", i + 1);
-                    GetPrivateProfileStringW(L"Clue", szName, L"", szText, ARRAYSIZE(szText), pszFile);
+                    GetPrivateProfileStringW(L"Clue", szName, L"", szText, _countof(szText), pszFile);
 
                     std::wstring str = szText;
                     xg_str_trim(str);
@@ -6534,7 +6534,7 @@ void __fastcall XgSaveProbAsImage(HWND hwnd)
     ofn.hwndOwner = hwnd;
     ofn.lpstrFilter = XgMakeFilterString(XgLoadStringDx2(IDS_IMGFILTER));
     ofn.lpstrFile = szFileName;
-    ofn.nMaxFile = ARRAYSIZE(szFileName);
+    ofn.nMaxFile = _countof(szFileName);
     ofn.lpstrTitle = XgLoadStringDx1(IDS_SAVEPROBASIMG);
     ofn.Flags = OFN_EXPLORER | OFN_PATHMUSTEXIST | OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT;
     ofn.lpstrDefExt = L"bmp";
@@ -6587,7 +6587,7 @@ void __fastcall XgSaveAnsAsImage(HWND hwnd)
     ofn.hwndOwner = hwnd;
     ofn.lpstrFilter = XgMakeFilterString(XgLoadStringDx2(IDS_IMGFILTER));
     ofn.lpstrFile = szFileName;
-    ofn.nMaxFile = ARRAYSIZE(szFileName);
+    ofn.nMaxFile = _countof(szFileName);
     ofn.lpstrTitle = XgLoadStringDx1(IDS_SAVEANSASIMG);
     ofn.Flags = OFN_EXPLORER | OFN_PATHMUSTEXIST | OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT;
     ofn.lpstrDefExt = L"bmp";
@@ -7697,7 +7697,7 @@ std::wstring __fastcall XgNormalizeString(const std::wstring& text) {
     std::wstring ret = szText;
     for (auto& ch : ret) {
         // 小さな字を大きな字にする。
-        for (size_t i = 0; i < ARRAYSIZE(xg_small); i++) {
+        for (size_t i = 0; i < _countof(xg_small); i++) {
             if (ch == xg_small[i][0]) {
                 ch = xg_large[i][0];
                 break;

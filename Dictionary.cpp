@@ -141,7 +141,7 @@ void XgReadUnicodeLine(LPWSTR pchLine)
     auto word = entry.m_word;
 
     // 小さな字を大きな字にする。
-    for (size_t i = 0; i < ARRAYSIZE(xg_large); i++)
+    for (size_t i = 0; i < _countof(xg_large); i++)
         xg_str_replace_all(entry.m_word,
             std::wstring(xg_small[i]), std::wstring(xg_large[i]));
 

@@ -139,15 +139,15 @@ void XG_SettingsDialog::OnOK(HWND hwnd)
     WCHAR szName[LF_FACESIZE];
 
     // セルフォント。
-    ::GetDlgItemTextW(hwnd, edt1, szName, ARRAYSIZE(szName));
+    ::GetDlgItemTextW(hwnd, edt1, szName, _countof(szName));
     StringCbCopy(xg_szCellFont, sizeof(xg_szCellFont), szName);
 
     // 小さい文字のフォント。
-    ::GetDlgItemTextW(hwnd, edt2, szName, ARRAYSIZE(szName));
+    ::GetDlgItemTextW(hwnd, edt2, szName, _countof(szName));
     StringCbCopy(xg_szSmallFont, sizeof(xg_szSmallFont), szName);
 
     // UIフォント。
-    ::GetDlgItemTextW(hwnd, edt3, szName, ARRAYSIZE(szName));
+    ::GetDlgItemTextW(hwnd, edt3, szName, _countof(szName));
     StringCbCopy(xg_szUIFont, sizeof(xg_szUIFont), szName);
 
     // 黒マス画像を取得。
@@ -371,15 +371,15 @@ BOOL XG_SettingsDialog::DoExportLooks(HWND hwnd, LPCWSTR pszFileName)
     WCHAR szName[LF_FACESIZE];
 
     // セルフォント。
-    ::GetDlgItemTextW(hwnd, edt1, szName, ARRAYSIZE(szName));
+    ::GetDlgItemTextW(hwnd, edt1, szName, _countof(szName));
     WritePrivateProfileStringW(L"Looks", L"CellFont", szName, pszFileName);
 
     // 小さい文字のフォント。
-    ::GetDlgItemTextW(hwnd, edt2, szName, ARRAYSIZE(szName));
+    ::GetDlgItemTextW(hwnd, edt2, szName, _countof(szName));
     WritePrivateProfileStringW(L"Looks", L"SmallFont", szName, pszFileName);
 
     // UIフォント。
-    ::GetDlgItemTextW(hwnd, edt3, szName, ARRAYSIZE(szName));
+    ::GetDlgItemTextW(hwnd, edt3, szName, _countof(szName));
     WritePrivateProfileStringW(L"Looks", L"UIFont", szName, pszFileName);
 
     // 黒マス画像の名前を取得。

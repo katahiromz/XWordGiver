@@ -121,7 +121,7 @@ public:
             xg_bSmartResolution = (::IsDlgButtonChecked(hwnd, chx2) == BST_CHECKED);
             // 保存先のパス名を取得する。
             WCHAR szFile[MAX_PATH];
-            ::GetDlgItemTextW(hwnd, cmb2, szFile, ARRAYSIZE(szFile));
+            ::GetDlgItemTextW(hwnd, cmb2, szFile, _countof(szFile));
             {
                 DWORD attrs = ::GetFileAttributesW(szFile);
                 if (attrs == 0xFFFFFFFF || !(attrs & FILE_ATTRIBUTE_DIRECTORY)) {
@@ -216,7 +216,7 @@ public:
                 bi.lpszTitle = XgLoadStringDx1(IDS_CROSSSTORAGE);
                 bi.ulFlags = BIF_RETURNONLYFSDIRS;
                 bi.lpfn = XgBrowseCallbackProc;
-                ::GetDlgItemTextW(hwnd, cmb2, xg_szDir, ARRAYSIZE(xg_szDir));
+                ::GetDlgItemTextW(hwnd, cmb2, xg_szDir, _countof(xg_szDir));
                 LPITEMIDLIST pidl = ::SHBrowseForFolderW(&bi);
                 if (pidl) {
                     // パスをコンボボックスに設定。

@@ -139,7 +139,7 @@ public:
                 if (::SendMessageW(xg_ahwndTateEdits[i], EM_GETMODIFY, 0, 0)) {
                     updated = true;
                     ::GetWindowTextW(xg_ahwndTateEdits[i], sz, 
-                                     static_cast<int>(ARRAYSIZE(sz)));
+                                     static_cast<int>(_countof(sz)));
                     xg_vecTateHints[i].m_strHint = sz;
                     ::SendMessageW(xg_ahwndTateEdits[i], EM_SETMODIFY, FALSE, 0);
                 }
@@ -148,7 +148,7 @@ public:
                 if (::SendMessageW(xg_ahwndYokoEdits[i], EM_GETMODIFY, 0, 0)) {
                     updated = true;
                     ::GetWindowTextW(xg_ahwndYokoEdits[i], sz, 
-                                     static_cast<int>(ARRAYSIZE(sz)));
+                                     static_cast<int>(_countof(sz)));
                     xg_vecYokoHints[i].m_strHint = sz;
                     ::SendMessageW(xg_ahwndTateEdits[i], EM_SETMODIFY, FALSE, 0);
                 }
@@ -212,7 +212,7 @@ public:
         if (rcClient.Width() - size2.cx - 8 > 0) {
             for (size_t i = 0; i < xg_vecTateHints.size(); ++i) {
                 ::GetWindowTextW(xg_ahwndTateEdits[i], szText,
-                                 ARRAYSIZE(szText));
+                                 _countof(szText));
                 MRect rcCtrl(MPoint(size2.cx, y),
                              MSize(rcClient.Width() - size2.cx - 8, 0));
                 if (szText[0] == 0) {
@@ -239,7 +239,7 @@ public:
         }
         if (rcClient.Width() - size2.cx - 8 > 0) {
             for (size_t i = 0; i < xg_vecYokoHints.size(); ++i) {
-                ::GetWindowTextW(xg_ahwndYokoEdits[i], szText, ARRAYSIZE(szText));
+                ::GetWindowTextW(xg_ahwndYokoEdits[i], szText, _countof(szText));
                 MRect rcCtrl(MPoint(size2.cx, y),
                              MSize(rcClient.Width() - size2.cx - 8, 0));
                 if (szText[0] == 0) {
@@ -671,7 +671,7 @@ public:
     {
         WCHAR szClass[8];
         szClass[0] = 0;
-        GetClassNameW(hwndContext, szClass, ARRAYSIZE(szClass));
+        GetClassNameW(hwndContext, szClass, _countof(szClass));
         if (lstrcmpiW(szClass, L"EDIT") == 0)
             return;
 

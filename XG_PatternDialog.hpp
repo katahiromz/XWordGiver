@@ -176,7 +176,7 @@ public:
             { IDOK, BF_RIGHT | BF_BOTTOM },
             { IDCANCEL, BF_RIGHT | BF_BOTTOM },
         };
-        s_pLayout = LayoutInit(hwnd, layouts, ARRAYSIZE(layouts));
+        s_pLayout = LayoutInit(hwnd, layouts, _countof(layouts));
         LayoutEnableResize(s_pLayout, TRUE);
 
         if (xg_nPatWndX != CW_USEDEFAULT && xg_nPatWndCX != CW_USEDEFAULT)

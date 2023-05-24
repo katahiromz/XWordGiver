@@ -308,12 +308,12 @@ public:
             WCHAR szText[64];
             if (xg_bHiragana) {
                 LCMapStringW(XG_JPN_LOCALE, LCMAP_FULLWIDTH | LCMAP_HIRAGANA,
-                             cand.data(), -1, szText, ARRAYSIZE(szText));
+                             cand.data(), -1, szText, _countof(szText));
                 cand = szText;
             }
             if (xg_bLowercase) {
                 LCMapStringW(XG_JPN_LOCALE, LCMAP_FULLWIDTH | LCMAP_LOWERCASE,
-                             cand.data(), -1, szText, ARRAYSIZE(szText));
+                             cand.data(), -1, szText, _countof(szText));
                 cand = szText;
             }
 

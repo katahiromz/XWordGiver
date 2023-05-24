@@ -130,8 +130,8 @@ public:
         if (iItem < 0)
             return; // 選択なし。
         WCHAR szText1[64], szText2[64];
-        ListView_GetItemText(hLst1, iItem, 0, szText1, ARRAYSIZE(szText1));
-        ListView_GetItemText(hLst1, iItem, 1, szText2, ARRAYSIZE(szText2));
+        ListView_GetItemText(hLst1, iItem, 0, szText1, _countof(szText1));
+        ListView_GetItemText(hLst1, iItem, 1, szText2, _countof(szText2));
 
         LV_FINDINFO find = { LVFI_STRING, szText1 };
         if (bPriority) {
@@ -156,7 +156,7 @@ public:
             size_t count = 0;
             cItems = ListView_GetItemCount(hLst2);
             for (iItem = 0; iItem < cItems; ++iItem) {
-                ListView_GetItemText(hLst2, iItem, 1, szText2, ARRAYSIZE(szText2));
+                ListView_GetItemText(hLst2, iItem, 1, szText2, _countof(szText2));
                 count += _wtoi(szText2);
             }
             SetDlgItemInt(hwnd, stc1, INT(count), FALSE);
@@ -182,7 +182,7 @@ public:
             size_t count = 0;
             cItems = ListView_GetItemCount(hLst3);
             for (iItem = 0; iItem < cItems; ++iItem) {
-                ListView_GetItemText(hLst3, iItem, 1, szText2, ARRAYSIZE(szText2));
+                ListView_GetItemText(hLst3, iItem, 1, szText2, _countof(szText2));
                 count += _wtoi(szText2);
             }
             SetDlgItemInt(hwnd, stc2, INT(count), FALSE);
@@ -205,7 +205,7 @@ public:
             INT cItems = ListView_GetItemCount(hLst2);
             size_t count = 0;
             for (iItem = 0; iItem < cItems; ++iItem) {
-                ListView_GetItemText(hLst2, iItem, 1, szText, ARRAYSIZE(szText));
+                ListView_GetItemText(hLst2, iItem, 1, szText, _countof(szText));
                 count += _wtoi(szText);
             }
             SetDlgItemInt(hwnd, stc1, INT(count), FALSE);
@@ -218,7 +218,7 @@ public:
             INT cItems = ListView_GetItemCount(hLst3);
             size_t count = 0;
             for (iItem = 0; iItem < cItems; ++iItem) {
-                ListView_GetItemText(hLst3, iItem, 1, szText, ARRAYSIZE(szText));
+                ListView_GetItemText(hLst3, iItem, 1, szText, _countof(szText));
                 count += _wtoi(szText);
             }
             SetDlgItemInt(hwnd, stc2, INT(count), FALSE);
@@ -243,7 +243,7 @@ public:
 
         cItems = ListView_GetItemCount(hLst2);
         for (INT iItem = 0; iItem < cItems; ++iItem) {
-            ListView_GetItemText(hLst2, iItem, 0, szText, ARRAYSIZE(szText));
+            ListView_GetItemText(hLst2, iItem, 0, szText, _countof(szText));
             xg_priority_tags.emplace(szText);
             if (strTheme.size())
                 strTheme += L',';
@@ -253,7 +253,7 @@ public:
 
         cItems = ListView_GetItemCount(hLst3);
         for (INT iItem = 0; iItem < cItems; ++iItem) {
-            ListView_GetItemText(hLst3, iItem, 0, szText, ARRAYSIZE(szText));
+            ListView_GetItemText(hLst3, iItem, 0, szText, _countof(szText));
             xg_forbidden_tags.emplace(szText);
             if (strTheme.size())
                 strTheme += L',';
@@ -270,7 +270,7 @@ public:
     void OnEdt1(HWND hwnd)
     {
         WCHAR szText[64];
-        GetDlgItemTextW(hwnd, edt1, szText, ARRAYSIZE(szText));
+        GetDlgItemTextW(hwnd, edt1, szText, _countof(szText));
 
         HWND hLst1 = GetDlgItem(hwnd, lst1);
 
@@ -491,7 +491,7 @@ public:
             if (str.size()) {
                 str += L",";
             }
-            ListView_GetItemText(hLst2, i, 0, szText, ARRAYSIZE(szText));
+            ListView_GetItemText(hLst2, i, 0, szText, _countof(szText));
             str += L"+";
             str += szText;
         }
@@ -499,7 +499,7 @@ public:
             if (str.size()) {
                 str += L",";
             }
-            ListView_GetItemText(hLst3, i, 0, szText, ARRAYSIZE(szText));
+            ListView_GetItemText(hLst3, i, 0, szText, _countof(szText));
             str += L"-";
             str += szText;
         }

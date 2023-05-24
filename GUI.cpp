@@ -1034,13 +1034,13 @@ bool __fastcall XgLoadSettings(void)
                 xg_UILangID = (LANGID)dwValue;
             }
 
-            if (!app_key.QuerySz(L"CellFont", sz, ARRAYSIZE(sz))) {
+            if (!app_key.QuerySz(L"CellFont", sz, _countof(sz))) {
                 StringCbCopy(xg_szCellFont, sizeof(xg_szCellFont), sz);
             }
-            if (!app_key.QuerySz(L"SmallFont", sz, ARRAYSIZE(sz))) {
+            if (!app_key.QuerySz(L"SmallFont", sz, _countof(sz))) {
                 StringCbCopy(xg_szSmallFont, sizeof(xg_szSmallFont), sz);
             }
-            if (!app_key.QuerySz(L"UIFont", sz, ARRAYSIZE(sz))) {
+            if (!app_key.QuerySz(L"UIFont", sz, _countof(sz))) {
                 StringCbCopy(xg_szUIFont, sizeof(xg_szUIFont), sz);
             }
 
@@ -1154,7 +1154,7 @@ bool __fastcall XgLoadSettings(void)
                 xg_nLineWidthInPt = value;
             }
 
-            if (!app_key.QuerySz(L"Recent", sz, ARRAYSIZE(sz))) {
+            if (!app_key.QuerySz(L"Recent", sz, _countof(sz))) {
                 xg_dict_name = sz;
                 if (!PathFileExists(xg_dict_name.c_str()))
                 {
@@ -1162,12 +1162,12 @@ bool __fastcall XgLoadSettings(void)
                 }
             }
 
-            if (!app_key.QuerySz(L"BlackCellImage", sz, ARRAYSIZE(sz))) {
+            if (!app_key.QuerySz(L"BlackCellImage", sz, _countof(sz))) {
                 xg_strBlackCellImage = sz;
                 XgGetFileManager()->load_block_image(sz);
             }
 
-            if (!app_key.QuerySz(L"DoubleFrameLetters", sz, ARRAYSIZE(sz))) {
+            if (!app_key.QuerySz(L"DoubleFrameLetters", sz, _countof(sz))) {
                 xg_strDoubleFrameLetters = sz;
             }
 
@@ -1176,7 +1176,7 @@ bool __fastcall XgLoadSettings(void)
                 nDirCount = dwValue;
                 for (i = 0; i < nDirCount; i++) {
                     StringCbPrintf(szFormat, sizeof(szFormat), L"SaveTo %d", i + 1);
-                    if (!app_key.QuerySz(szFormat, sz, ARRAYSIZE(sz))) {
+                    if (!app_key.QuerySz(szFormat, sz, _countof(sz))) {
                         xg_dirs_save_to.emplace_back(sz);
                     } else {
                         nDirCount = i;
@@ -1222,9 +1222,9 @@ bool __fastcall XgSaveSettings(void)
             app_key.SetDword(L"Cols", xg_nCols);
             app_key.SetDword(L"UILangID", xg_UILangID);
 
-            app_key.SetSz(L"CellFont", xg_szCellFont, ARRAYSIZE(xg_szCellFont));
-            app_key.SetSz(L"SmallFont", xg_szSmallFont, ARRAYSIZE(xg_szSmallFont));
-            app_key.SetSz(L"UIFont", xg_szUIFont, ARRAYSIZE(xg_szUIFont));
+            app_key.SetSz(L"CellFont", xg_szCellFont, _countof(xg_szCellFont));
+            app_key.SetSz(L"SmallFont", xg_szSmallFont, _countof(xg_szSmallFont));
+            app_key.SetSz(L"UIFont", xg_szUIFont, _countof(xg_szUIFont));
 
             app_key.SetDword(L"ShowToolBar", xg_bShowToolBar);
             app_key.SetDword(L"ShowStatusBar", s_bShowStatusBar);
@@ -2366,7 +2366,7 @@ BOOL __fastcall XgOnSaveAs(HWND hwnd)
     ofn.lpstrFilter = XgMakeFilterString(XgLoadStringDx2(IDS_SAVEFILTER));
     StringCbCopy(sz, sizeof(sz), xg_strFileName.data());
     ofn.lpstrFile = sz;
-    ofn.nMaxFile = static_cast<DWORD>(ARRAYSIZE(sz));
+    ofn.nMaxFile = static_cast<DWORD>(_countof(sz));
     ofn.lpstrTitle = XgLoadStringDx1(IDS_SAVECROSSDATA);
     ofn.Flags = OFN_EXPLORER | OFN_ENABLESIZING | OFN_OVERWRITEPROMPT |
         OFN_PATHMUSTEXIST | OFN_HIDEREADONLY;
@@ -2703,7 +2703,7 @@ BOOL __fastcall XgOnOpen(HWND hwnd)
     ofn.lpstrFilter = XgMakeFilterString(XgLoadStringDx2(IDS_CROSSFILTER));
     sz[0] = 0;
     ofn.lpstrFile = sz;
-    ofn.nMaxFile = static_cast<DWORD>(ARRAYSIZE(sz));
+    ofn.nMaxFile = static_cast<DWORD>(_countof(sz));
     ofn.lpstrTitle = XgLoadStringDx1(IDS_OPENCROSSDATA);
     ofn.Flags = OFN_EXPLORER | OFN_ENABLESIZING | OFN_FILEMUSTEXIST |
         OFN_PATHMUSTEXIST | OFN_HIDEREADONLY;
@@ -3958,7 +3958,7 @@ HMENU XgDoFindDictMenu(HMENU hMenu)
     LPCWSTR pszDict = XgLoadStringDx1(IDS_DICTIONARY);
     for (INT i = 0; i < 16; ++i)
     {
-        if (GetMenuStringW(hMenu, i, szText, ARRAYSIZE(szText), MF_BYPOSITION))
+        if (GetMenuStringW(hMenu, i, szText, _countof(szText), MF_BYPOSITION))
         {
             if (wcsstr(szText, pszDict) != NULL)
             {
@@ -4610,7 +4610,7 @@ void XgUpdateTheme(HWND hwnd)
     info.fType = MFT_STRING;
     for (iMenu = 0; iMenu < nCount; ++iMenu) {
         szText[0] = 0;
-        ::GetMenuStringW(hMenu, iMenu, szText, ARRAYSIZE(szText), MF_BYPOSITION);
+        ::GetMenuStringW(hMenu, iMenu, szText, _countof(szText), MF_BYPOSITION);
         if (wcsstr(szText, XgLoadStringDx1(IDS_DICT)) != NULL) {
             break;
         }
@@ -4644,7 +4644,7 @@ void XgUpdateRules(HWND hwnd)
     info.fType = MFT_STRING;
     for (INT i = nCount - 1; i >= 0; --i) {
         szText[0] = 0;
-        ::GetMenuStringW(hMenu, i, szText, ARRAYSIZE(szText), MF_BYPOSITION);
+        ::GetMenuStringW(hMenu, i, szText, _countof(szText), MF_BYPOSITION);
         if (wcsstr(szText, XgLoadStringDx1(IDS_RULES)) != NULL) {
             if (xg_nRules == XG_DEFAULT_RULES) {
                 StringCbCopyW(szText, sizeof(szText), XgLoadStringDx1(IDS_STANDARDRULES));
@@ -6014,7 +6014,7 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT /*codeNo
                 xg_hMarkingDlg,
             };
 
-            size_t i = 0, k, m, count = ARRAYSIZE(ahwnd);
+            size_t i = 0, k, m, count = _countof(ahwnd);
             for (i = 0; i < count; ++i) {
                 if (ahwnd[i] == ::GetForegroundWindow()) {
                     for (k = 1; k < count; ++k) {
@@ -6039,7 +6039,7 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT /*codeNo
                 xg_hMainWnd,
             };
 
-            size_t i = 0, k, m, count = ARRAYSIZE(ahwnd);
+            size_t i = 0, k, m, count = _countof(ahwnd);
             for (i = 0; i < count; ++i) {
                 if (ahwnd[i] == ::GetForegroundWindow()) {
                     for (k = 1; k < count; ++k) {
@@ -7055,7 +7055,7 @@ bool __fastcall MainWnd_OnCreate(HWND hwnd, LPCREATESTRUCT /*lpCreateStruct*/)
     ::SendMessageW(xg_hToolBar, TB_SETBITMAPSIZE, 0, MAKELPARAM(32, 32));
     ::SendMessageW(xg_hToolBar, TB_SETIMAGELIST, 0, (LPARAM)xg_hImageList);
     ::SendMessageW(xg_hToolBar, TB_SETDISABLEDIMAGELIST, 0, (LPARAM)xg_hGrayedImageList);
-    ::SendMessageW(xg_hToolBar, TB_ADDBUTTONS, ARRAYSIZE(atbb), (LPARAM)atbb);
+    ::SendMessageW(xg_hToolBar, TB_ADDBUTTONS, _countof(atbb), (LPARAM)atbb);
     ::SendMessageW(xg_hToolBar, WM_SIZE, 0, 0);
 
     if (xg_bShowToolBar)

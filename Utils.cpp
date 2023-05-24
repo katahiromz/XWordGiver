@@ -48,7 +48,7 @@ std::shared_ptr<XG_FileManager>& XgGetFileManager(void)
 LPWSTR __fastcall XgLoadStringDx1(int id)
 {
     static WCHAR sz[512];
-    INT ret = LoadStringW(xg_hInstance, id, sz, ARRAYSIZE(sz));
+    INT ret = LoadStringW(xg_hInstance, id, sz, _countof(sz));
     assert(ret != 0);
     UNREFERENCED_PARAMETER(ret);
     return sz;
@@ -58,7 +58,7 @@ LPWSTR __fastcall XgLoadStringDx1(int id)
 LPWSTR __fastcall XgLoadStringDx2(int id)
 {
     static WCHAR sz[512];
-    INT ret = LoadStringW(xg_hInstance, id, sz, ARRAYSIZE(sz));
+    INT ret = LoadStringW(xg_hInstance, id, sz, _countof(sz));
     assert(ret != 0);
     UNREFERENCED_PARAMETER(ret);
     return sz;
@@ -252,7 +252,7 @@ XgMsgBoxCbtProc(int nCode, WPARAM wParam, LPARAM /*lParam*/)
 
         // ウィンドウクラスの確認。
         WCHAR szClassName[MAX_PATH];
-        ::GetClassNameW(hwnd, szClassName, ARRAYSIZE(szClassName));
+        ::GetClassNameW(hwnd, szClassName, _countof(szClassName));
         if (::lstrcmpiW(szClassName, L"#32770") == 0) {
             // ダイアログだった。おそらくメッセージボックス。
             // 中央寄せする。
@@ -325,7 +325,7 @@ void __fastcall XgOpenReadMe(HWND hwnd)
 {
     // 実行ファイルのパスを取得。
     WCHAR szPath[MAX_PATH];
-    ::GetModuleFileNameW(nullptr, szPath, ARRAYSIZE(szPath));
+    ::GetModuleFileNameW(nullptr, szPath, _countof(szPath));
 
     // ReadMeへのパスを作成。
     PathRemoveFileSpec(szPath);
@@ -340,7 +340,7 @@ void __fastcall XgOpenLicense(HWND hwnd)
 {
     // 実行ファイルのパスを取得。
     WCHAR szPath[MAX_PATH];
-    ::GetModuleFileNameW(nullptr, szPath, ARRAYSIZE(szPath));
+    ::GetModuleFileNameW(nullptr, szPath, _countof(szPath));
 
     // Licenseへのパスを作成。
     PathRemoveFileSpec(szPath);
@@ -367,7 +367,7 @@ bool __fastcall XgCanWriteFile(const WCHAR *pszFile)
     // 与えられたパスファイル名。
     std::wstring str(pszFile);
 
-    for (size_t i = 0; i < ARRAYSIZE(s_anFolders); ++i) {
+    for (size_t i = 0; i < _countof(s_anFolders); ++i) {
         // 特殊フォルダの位置の取得。
         LPITEMIDLIST pidl = NULL;
         if (SUCCEEDED(::SHGetSpecialFolderLocation(

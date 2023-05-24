@@ -39,13 +39,13 @@ public:
         {
         case IDOK:
             // ヘッダーを取得する。
-            ::GetDlgItemTextW(hwnd, edt1, sz, static_cast<int>(ARRAYSIZE(sz)));
+            ::GetDlgItemTextW(hwnd, edt1, sz, static_cast<int>(_countof(sz)));
             str = sz;
             xg_str_trim(str);
             xg_strHeader = str;
 
             // 備考欄を取得する。
-            ::GetDlgItemTextW(hwnd, edt2, sz, static_cast<int>(ARRAYSIZE(sz)));
+            ::GetDlgItemTextW(hwnd, edt2, sz, static_cast<int>(_countof(sz)));
             str = sz;
             xg_str_trim(str);
             xg_strNotes = str;

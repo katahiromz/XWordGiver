@@ -471,7 +471,7 @@ public:
     {
         // 最初のファイルのパス名を取得する。
         WCHAR szFile[MAX_PATH];
-        ::DragQueryFileW(hDrop, 0, szFile, ARRAYSIZE(szFile));
+        ::DragQueryFileW(hDrop, 0, szFile, _countof(szFile));
         ::DragFinish(hDrop);
 
         return XgOnLoad(xg_hMainWnd, szFile, &pt);
