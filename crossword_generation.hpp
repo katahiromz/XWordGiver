@@ -447,6 +447,7 @@ skip:;
         return ret;
     }
 
+    // マス(x, y)に黒マスがあるとき、黒斜三連禁に抵触するか？
     bool can_make_three_diagonals(int x, int y) const {
         // center (right down)
         if (real_get_at(x - 1, y - 1) == '#' || real_get_at(x + 1, y + 1) == '#') {
@@ -475,9 +476,10 @@ skip:;
         return false;
     }
 
+    // マス(x, y)に黒マスがあるとき、黒斜四連禁に抵触するか？
     bool can_make_four_diagonals(int x, int y) {
         auto ch = get_at(x, y);
-        set_at(x, y, '#');
+        set_at(x, y, '#'); // 一時的にセット。後で戻す。
         bool ret = false;
         for (int i = y - 3; i <= y + 3; ++y) {
             for (int j = x - 3; i <= x + 3; ++i) {
@@ -508,10 +510,11 @@ skip:;
             }
         }
 skip:;
-        set_at(x, y, ch);
+        set_at(x, y, ch); // 元に戻す。
         return ret;
     }
 
+    // マス(x, y)に黒マスをセットできるかどうか？
     // NOTE: This method doesn't check divided_by_black.
     bool can_set_black_at(int x, int y) {
         if (get_at(x, y) == '#')
@@ -784,26 +787,31 @@ skip:;
         --m_cy;
     }
 
+    // 左側に列を挿入する。
     void grow_x0(int cx, t_char ch = ' ') {
         assert(cx > 0);
         insert_x(0, cx, ch);
         m_x0 -= cx;
     }
+    // 右側に列を挿入する。
     void grow_x1(int cx, t_char ch = ' ') {
         assert(cx > 0);
         insert_x(m_cx, cx, ch);
     }
 
+    // 上側に行を挿入する。
     void grow_y0(int cy, t_char ch = ' ') {
         assert(cy > 0);
         insert_y(0, cy, ch);
         m_y0 -= cy;
     }
+    // 下側に行を挿入する。
     void grow_y1(int cy, t_char ch = ' ') {
         assert(cy > 0);
         insert_y(m_cy, cy, ch);
     }
 
+    // 文字マスが見つからない列を左右端からカットする。
     void trim_x() {
         bool found;
         int x, y;
@@ -846,6 +854,7 @@ skip:;
         m_x0 = 0;
     }
 
+    // 文字マスが見つからない行を上下端からカットする。
     void trim_y() {
         bool found;
         int x, y;
@@ -887,6 +896,7 @@ skip:;
         m_y0 = 0;
     }
 
+    // 文字マスが見つからない行と列を端からカットする。
     void trim() {
         trim_y();
         trim_x();
