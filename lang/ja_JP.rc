@@ -57,7 +57,7 @@ LANGUAGE LANG_JAPANESE, SUBLANG_DEFAULT
         MENUITEM "ヨコの単語をコピー(&H)", ID_COPYWORDHORZ
         MENUITEM "文字群をコピー(&S)", ID_COPYCHARSET
         MENUITEM "単語リストをコピー(&O)", ID_COPY_WORD_LIST
-        MENUITEM "二重マス単語をコピー(&M)", ID_COPYMARKWORD
+        MENUITEM "二重マス単語をコピー(&M)\tCtrl+D", ID_COPYMARKWORD
         MENUITEM SEPARATOR
         MENUITEM "タテのカギをコピー (スタイル0) (&T)", ID_COPYVHINTSSTYLE0
         MENUITEM "ヨコのカギをコピー (スタイル0) (&Y)", ID_COPYHHINTSSTYLE0

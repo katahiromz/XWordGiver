@@ -57,7 +57,7 @@ LANGUAGE LANG_ENGLISH, SUBLANG_DEFAULT
         MENUITEM "Copy the ACROSS word", ID_COPYWORDHORZ
         MENUITEM "Copy the multi&set of letters", ID_COPYCHARSET
         MENUITEM "Copy the list of w&ords", ID_COPY_WORD_LIST
-        MENUITEM "Copy the double-frame word", ID_COPYMARKWORD
+        MENUITEM "Copy the double-frame word\tCtrl+D", ID_COPYMARKWORD
         MENUITEM SEPARATOR
         MENUITEM "Copy the DOWN clues (Style 0) (&T)", ID_COPYVHINTSSTYLE0
         MENUITEM "Copy the ACROSS clues (Style 0) (&Y)", ID_COPYHHINTSSTYLE0

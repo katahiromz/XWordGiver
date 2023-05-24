@@ -218,6 +218,7 @@
 - 2023-XX-YY ver.5.0.5
     - Line widths are now saved in the LOOKS file.
     - Implemented "Recently Used Files".
+    - Assign Ctrl+D to "Copy the double-frame word".
 
 # 開発履歴 (Japanese)
 
@@ -751,3 +752,4 @@
 - 2023年XX年YY日 ver.5.0.5
     - LOOKSファイルに線の幅を保存するようにした。
     - 「最近使ったファイル」を実装。
+    - Ctrl+Dを「二重マス単語をコピー」に割り付け。
