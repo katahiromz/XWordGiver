@@ -464,6 +464,16 @@
 #define ID_CLEARUNDOBUFFER                  580
 #define ID_DOWNLOADDICT                     581
 #define ID_OPENPOLICYTXT                    582
+#define ID_RECENT_00                        590
+#define ID_RECENT_01                        591
+#define ID_RECENT_02                        592
+#define ID_RECENT_03                        593
+#define ID_RECENT_04                        594
+#define ID_RECENT_05                        595
+#define ID_RECENT_06                        596
+#define ID_RECENT_07                        597
+#define ID_RECENT_08                        598
+#define ID_RECENT_09                        599
 #define ID_TT_BASE                          10000
 
 #define ctl2                                1185

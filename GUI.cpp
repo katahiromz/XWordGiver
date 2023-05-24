@@ -188,6 +188,32 @@ void XgSetModified(BOOL bModified, LPCSTR file, INT line)
 // UI言語。
 LANGID xg_UILangID = 0;
 
+// 最近使ったファイルのリスト。
+std::vector<std::wstring> xg_recently_used_files;
+
+#define XG_MAX_RECENT 10 // 最近使ったファイルは10個まで。
+
+// 最近使ったファイルを更新する。
+void XgUpdateRecentlyUsed(LPCWSTR pszFile)
+{
+    // 安全に操作するため、いったん格納。
+    std::wstring file = pszFile;
+    // 重複は許さない。
+    for (size_t i = 0; i < xg_recently_used_files.size(); ++i)
+    {
+        // 大文字小文字の違いを無視。
+        if (lstrcmpiW(xg_recently_used_files[i].c_str(), file.c_str()) == 0)
+        {
+            xg_recently_used_files.erase(std::cbegin(xg_recently_used_files) + i);
+            break;
+        }
+    }
+    if (xg_recently_used_files.size() > XG_MAX_RECENT)
+        xg_recently_used_files.resize(XG_MAX_RECENT);
+    // 先頭に追加。
+    xg_recently_used_files.emplace(xg_recently_used_files.begin(), file.c_str());
+}
+
 //////////////////////////////////////////////////////////////////////////////
 // static variables
 
@@ -324,10 +350,10 @@ VOID XgGetCellPosition(RECT& rc, INT i1, INT j1, INT i2, INT j2, BOOL bScroll)
     INT nCellSize = xg_nCellSize * xg_nZoomRate / 100;
 
     ::SetRect(&rc,
-        static_cast<int>(xg_nMargin + j1 * nCellSize), 
-        static_cast<int>(xg_nMargin + i1 * nCellSize),
-        static_cast<int>(xg_nMargin + j2 * nCellSize), 
-        static_cast<int>(xg_nMargin + i2 * nCellSize));
+        INT(xg_nMargin + j1 * nCellSize), 
+        INT(xg_nMargin + i1 * nCellSize),
+        INT(xg_nMargin + j2 * nCellSize), 
+        INT(xg_nMargin + i2 * nCellSize));
 
     if (bScroll)
         ::OffsetRect(&rc, -XgGetHScrollPos(), -XgGetVScrollPos());
@@ -765,10 +791,10 @@ void __fastcall XgEnsureCaretVisible(HWND hwnd)
 
     // キャレットの矩形を設定する。
     ::SetRect(&rc,
-        static_cast<int>(xg_nMargin + xg_caret_pos.m_j * nCellSize), 
-        static_cast<int>(xg_nMargin + xg_caret_pos.m_i * nCellSize), 
-        static_cast<int>(xg_nMargin + (xg_caret_pos.m_j + 1) * nCellSize), 
-        static_cast<int>(xg_nMargin + (xg_caret_pos.m_i + 1) * nCellSize));
+        INT(xg_nMargin + xg_caret_pos.m_j * nCellSize), 
+        INT(xg_nMargin + xg_caret_pos.m_i * nCellSize), 
+        INT(xg_nMargin + (xg_caret_pos.m_j + 1) * nCellSize), 
+        INT(xg_nMargin + (xg_caret_pos.m_i + 1) * nCellSize));
 
     // 横スクロール情報を修正する。
     si.cbSize = sizeof(si);
@@ -777,7 +803,7 @@ void __fastcall XgEnsureCaretVisible(HWND hwnd)
     if (rc.left < si.nPos) {
         XgSetHScrollPos(rc.left, TRUE);
         bNeedRedraw = true;
-    } else if (rc.right > static_cast<int>(si.nPos + si.nPage)) {
+    } else if (rc.right > INT(si.nPos + si.nPage)) {
         XgSetHScrollPos(rc.right - si.nPage, TRUE);
         bNeedRedraw = true;
     }
@@ -789,7 +815,7 @@ void __fastcall XgEnsureCaretVisible(HWND hwnd)
     if (rc.top < si.nPos) {
         XgSetVScrollPos(rc.top, TRUE);
         bNeedRedraw = true;
-    } else if (rc.bottom > static_cast<int>(si.nPos + si.nPage)) {
+    } else if (rc.bottom > INT(si.nPos + si.nPage)) {
         XgSetVScrollPos(rc.bottom - si.nPage, TRUE);
         bNeedRedraw = true;
     }
@@ -937,6 +963,8 @@ bool __fastcall XgLoadSettings(void)
     xg_UILangID = 0;
 
     xg_strDoubleFrameLetters = XgLoadStringDx1(IDS_DBLFRAME_LETTERS_1);
+
+    xg_recently_used_files.clear();
 
     // 会社名キーを開く。
     MRegKey company_key(HKEY_CURRENT_USER, s_pszSoftwareCompanyName, FALSE);
@@ -1184,6 +1212,20 @@ bool __fastcall XgLoadSettings(void)
                     }
                 }
             }
+
+            // 最近使ったファイルのリストを取得する。
+            if (!app_key.QueryDword(L"Recents", dwValue)) {
+                for (i = 0; i < (INT)dwValue; i++) {
+                    StringCbPrintf(szFormat, sizeof(szFormat), L"Recent %d", i);
+                    if (!app_key.QuerySz(szFormat, sz, _countof(sz))) {
+                        xg_recently_used_files.emplace_back(sz);
+                    } else {
+                        break;
+                    }
+                }
+                if (xg_recently_used_files.size() > XG_MAX_RECENT)
+                    xg_recently_used_files.resize(XG_MAX_RECENT);
+            }
         }
     }
 
@@ -1275,7 +1317,7 @@ bool __fastcall XgSaveSettings(void)
             app_key.SetSz(L"DoubleFrameLetters", xg_strDoubleFrameLetters.c_str());
 
             // 保存先のリストを設定する。
-            nCount = static_cast<int>(xg_dirs_save_to.size());
+            nCount = INT(xg_dirs_save_to.size());
             app_key.SetDword(L"SaveToCount", nCount);
             for (i = 0; i < nCount; i++)
             {
@@ -1305,6 +1347,14 @@ bool __fastcall XgSaveSettings(void)
             app_key.SetDword(L"TateInput", xg_bTateInput);
 
             app_key.SetDword(L"FileType", (DWORD)xg_nFileType);
+
+            // 最近使ったファイルのリストを設定する。
+            nCount = INT(xg_recently_used_files.size());
+            app_key.SetDword(L"Recents", nCount);
+            for (i = 0; i < nCount; i++) {
+                StringCbPrintf(szFormat, sizeof(szFormat), L"Recent %d", i);
+                app_key.SetSz(szFormat, xg_recently_used_files[i].c_str());
+            }
         }
     }
 
@@ -1796,7 +1846,7 @@ static void XgPrintIt(HDC hdc, PRINTDLGW* ppd, bool bPrintAnswer)
                     cxPaper * 7 / 8, cyPaper / 8);
                 str = XgLoadStringDx1(IDS_ANSWER);
                 str += strMarkWord;
-                ::DrawTextW(hdc, str.data(), static_cast<int>(str.size()), &rc,
+                ::DrawTextW(hdc, str.data(), INT(str.size()), &rc,
                     DT_LEFT | DT_TOP | DT_NOCLIP | DT_NOPREFIX);
                 ::SelectObject(hdc, hFontOld);
                 ::DeleteFont(hFont);
@@ -1880,7 +1930,7 @@ static void XgPrintIt(HDC hdc, PRINTDLGW* ppd, bool bPrintAnswer)
                 str = strHints.substr(0, ich);  // 一行取り出す。
                 ::SetRect(&rc, cxPaper / 8, yLast,
                     cxPaper * 7 / 8, cyPaper * 8 / 9);
-                ::DrawTextW(hdc, str.data(), static_cast<int>(str.size()), &rc,
+                ::DrawTextW(hdc, str.data(), INT(str.size()), &rc,
                     DT_LEFT | DT_TOP | DT_CALCRECT | DT_NOPREFIX | DT_WORDBREAK);
             }
             // 最後の行を描画する。
@@ -1888,12 +1938,12 @@ static void XgPrintIt(HDC hdc, PRINTDLGW* ppd, bool bPrintAnswer)
                 cxPaper * 7 / 8, cyPaper * 8 / 9);
             if (ich == std::wstring::npos) {
                 str = strHints;
-                ::DrawTextW(hdc, str.data(), static_cast<int>(str.size()), &rc,
+                ::DrawTextW(hdc, str.data(), INT(str.size()), &rc,
                     DT_LEFT | DT_TOP | DT_NOCLIP | DT_NOPREFIX | DT_WORDBREAK);
                 strHints.clear();
             } else {
                 str = strHints.substr(0, ichOld);
-                ::DrawTextW(hdc, str.data(), static_cast<int>(str.size()), &rc,
+                ::DrawTextW(hdc, str.data(), INT(str.size()), &rc,
                     DT_LEFT | DT_TOP | DT_NOCLIP | DT_NOPREFIX | DT_WORDBREAK);
                 strHints = strHints.substr(ichOld);
             }
@@ -1925,7 +1975,7 @@ static void XgPrintIt(HDC hdc, PRINTDLGW* ppd, bool bPrintAnswer)
                 str = strHints;
                 ::SetRect(&rc, cxPaper / 8, cyPaper / 9,
                     cxPaper * 7 / 8, cyPaper * 8 / 9);
-                ::DrawTextW(hdc, str.data(), static_cast<int>(str.size()), &rc,
+                ::DrawTextW(hdc, str.data(), INT(str.size()), &rc,
                     DT_LEFT | DT_TOP | DT_NOCLIP | DT_NOPREFIX | DT_WORDBREAK);
                 ::SelectObject(hdc, hFontOld);
                 ::DeleteFont(hFont);
@@ -2359,6 +2409,9 @@ bool __fastcall XgDoSaveFiles(HWND hwnd, LPCWSTR pszFile)
     // ファイル変更フラグ。
     XG_FILE_MODIFIED(FALSE);
 
+    // 最近使ったファイルを更新する。
+    XgUpdateRecentlyUsed(pszFile);
+
     // 元に戻す情報をクリアする。
     xg_ubUndoBuffer.clear();
     return true;
@@ -2591,6 +2644,8 @@ bool __fastcall XgDoLoadFiles(HWND hwnd, LPCWSTR pszFile)
     SetFocus(hwnd);
     // ファイル変更フラグ。
     XG_FILE_MODIFIED(FALSE);
+    // 最近使ったファイルを更新する。
+    XgUpdateRecentlyUsed(pszFile);
 
     return true;
 }
@@ -3725,7 +3780,7 @@ void __fastcall XgCopyMarkWord(HWND hwnd)
 
     // 描画サイズを取得する。
     SIZE siz;
-    int nCount = static_cast<int>(xg_vMarks.size());
+    int nCount = INT(xg_vMarks.size());
     XgGetMarkWordExtent(nCount, &siz);
 
     // EMFを作成する。
@@ -4366,7 +4421,6 @@ void __fastcall MainWnd_OnInitMenu(HWND /*hwnd*/, HMENU hMenu)
             ::CheckMenuItem(hMenu, ID_NUMCROMODE, MF_UNCHECKED);
         }
     }
-    
 
     // 行と列の削除と追加。
     if (xg_bSolved || xg_nRows - 1 < XG_MIN_SIZE) {
@@ -4387,6 +4441,29 @@ void __fastcall MainWnd_OnInitMenu(HWND /*hwnd*/, HMENU hMenu)
     if (xg_bSolved && bDeleteSepOK) {
         INT cItems = ::GetMenuItemCount(hMenu);
         ::DeleteMenu(hMenu, cItems - 1, MF_BYPOSITION);
+    }
+
+    // 最近使ったファイルを取得。
+    HMENU hFileMenu = ::GetSubMenu(hMenu, 0);
+    INT cFileItems = ::GetMenuItemCount(hFileMenu);
+    HMENU hRecentMenu = ::GetSubMenu(hFileMenu, cFileItems - 7); // TODO: ファイルメニュー項目を追加したらここも変更。
+    // 最近使ったファイルのメニュー項目をすべて削除。
+    while (::DeleteMenu(hRecentMenu, 0, MF_BYPOSITION))
+        ;
+    // 最近使ったファイルのメニュー項目を新しく追加。
+    INT id = ID_RECENT_00, iItem = 0;
+    for (auto& item : xg_recently_used_files) {
+        std::wstring str;
+        str += L'&';
+        str += WCHAR(L'0' + iItem);
+        str += L'\t';
+        str += item;
+        ::AppendMenuW(hRecentMenu, MF_STRING, id++, str.c_str());
+        ++iItem;
+    }
+    // 最近使ったファイルが空の場合。
+    if (xg_recently_used_files.empty()) {
+        ::AppendMenuW(hRecentMenu, MF_STRING | MF_GRAYED, 0, XgLoadStringDx1(IDS_NONE));
     }
 }
 
@@ -6865,6 +6942,25 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT /*codeNo
                 ShellExecuteW(hwnd, nullptr, szPath, nullptr, nullptr, SW_SHOWNORMAL);
         }
         break;
+
+    case ID_RECENT_00:
+    case ID_RECENT_01:
+    case ID_RECENT_02:
+    case ID_RECENT_03:
+    case ID_RECENT_04:
+    case ID_RECENT_05:
+    case ID_RECENT_06:
+    case ID_RECENT_07:
+    case ID_RECENT_08:
+    case ID_RECENT_09:
+        {
+            // 最近使ったファイルを開く。
+            size_t i = id - ID_RECENT_00;
+            if (i < xg_recently_used_files.size())
+                XgOnLoad(hwnd, xg_recently_used_files[i].c_str());
+        }
+        break;
+
     default:
         if (!XgOnCommandExtra(hwnd, id)) {
             ::MessageBeep(0xFFFFFFFF);
@@ -7325,7 +7421,7 @@ XgWindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
     HANDLE_MSG(hWnd, WM_DROPFILES, MainWnd_OnDropFiles);
     HANDLE_MSG(hWnd, WM_GETMINMAXINFO, MainWnd_OnGetMinMaxInfo);
     case WM_NOTIFY:
-        MainWnd_OnNotify(hWnd, static_cast<int>(wParam), reinterpret_cast<LPNMHDR>(lParam));
+        MainWnd_OnNotify(hWnd, INT(wParam), reinterpret_cast<LPNMHDR>(lParam));
         break;
 
     case WM_IME_CHAR:
@@ -7455,7 +7551,7 @@ LRESULT CALLBACK XgCtrlAMessageProc(INT nCode, WPARAM wParam, LPARAM lParam)
 
     HWND hWnd;
     if (pMsg->message == WM_KEYDOWN) {
-        if (static_cast<int>(pMsg->wParam) == 'A' &&
+        if (INT(pMsg->wParam) == 'A' &&
             ::GetAsyncKeyState(VK_CONTROL) < 0 &&
             ::GetAsyncKeyState(VK_SHIFT) >= 0 &&
             ::GetAsyncKeyState(VK_MENU) >= 0)
@@ -7769,7 +7865,7 @@ int WINAPI WinMain(
     // 設定を保存。
     XgSaveSettings();
 
-    return static_cast<int>(msg.wParam);
+    return INT(msg.wParam);
 }
 
 //////////////////////////////////////////////////////////////////////////////

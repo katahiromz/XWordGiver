@@ -30,6 +30,11 @@ LANGUAGE LANG_JAPANESE, SUBLANG_DEFAULT
         MENUITEM "問題のみを印刷(&M)\tCtrl+Q", ID_PRINTPROBLEM
         MENUITEM "問題と解答を印刷(&P)\tCtrl+P", ID_PRINTANSWER
         MENUITEM SEPARATOR
+        POPUP "最近使ったファイル(&U)"
+        {
+            MENUITEM "(なし)", 0, GRAYED
+        }
+        MENUITEM SEPARATOR
         MENUITEM "ヘッダーと備考欄(&H)...\tCtrl+Enter", ID_HEADERANDNOTES
         MENUITEM "見た目の設定(&C)...\tAlt+Enter", ID_SETTINGS
         MENUITEM SEPARATOR

@@ -217,6 +217,7 @@
     - Avoided EMF drawing defects for external softwares with incomplete EMF support.
 - 2023-XX-YY ver.5.0.5
     - Line widths are now saved in the LOOKS file.
+    - Implemented "Recently Used Files".
 
 # 開発履歴 (Japanese)
 
@@ -749,3 +750,4 @@
     - 不完全なEMFサポートの外部ソフトウェアに対してEMF描画の不具合を回避。
 - 2023年XX年YY日 ver.5.0.5
     - LOOKSファイルに線の幅を保存するようにした。
+    - 「最近使ったファイル」を実装。

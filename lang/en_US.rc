@@ -30,6 +30,11 @@ LANGUAGE LANG_ENGLISH, SUBLANG_DEFAULT
         MENUITEM "Print problem\tCtrl+Q", ID_PRINTPROBLEM
         MENUITEM "&Print answer\tCtrl+P", ID_PRINTANSWER
         MENUITEM SEPARATOR
+        POPUP "Recently &Used"
+        {
+            MENUITEM "(None)", 0, GRAYED
+        }
+        MENUITEM SEPARATOR
         MENUITEM "&Header and remarks...\tCtrl+Enter", ID_HEADERANDNOTES
         MENUITEM "Appearan&ce...\tAlt+Enter", ID_SETTINGS
         MENUITEM SEPARATOR
