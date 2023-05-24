@@ -216,9 +216,11 @@
     - Improved drawing of the board.
     - Avoided EMF drawing defects for external softwares with incomplete EMF support.
 - 2023-XX-YY ver.5.0.5
-    - Line widths are now saved in the LOOKS file.
+    - Line width are now saved in the LOOKS file.
     - Implemented "Recently Used Files".
     - Assign Ctrl+D to "Copy the double-frame word".
+    - Fixed image not updating when dropped.
+    - Line width can now be reset as well.
 
 # 開発履歴 (Japanese)
 
@@ -753,3 +755,5 @@
     - LOOKSファイルに線の幅を保存するようにした。
     - 「最近使ったファイル」を実装。
     - Ctrl+Dを「二重マス単語をコピー」に割り付け。
+    - ドロップしたときにイメージが更新されてなかったのを修正。
+    - 線の幅もリセットできるようにした。

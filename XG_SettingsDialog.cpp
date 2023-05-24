@@ -536,6 +536,9 @@ void XG_SettingsDialog::OnResetLooks(HWND hwnd)
     HWND hCmb2 = GetDlgItem(hwnd, cmb2);
     ComboBox_SetText(hCmb2, XgLoadStringDx1(IDS_DBLFRAME_LETTERS_1));
 
+    // 線の幅。
+    ::SetDlgItemTextW(hwnd, edt6, L"1.0");
+
     UpdateBlockPreview(hwnd);
 }
 
