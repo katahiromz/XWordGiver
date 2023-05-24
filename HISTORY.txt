@@ -215,7 +215,7 @@
     - Properly calculating the width of the line.
     - Improved drawing of the board.
     - Avoided EMF drawing defects for external softwares with incomplete EMF support.
-- 2023-XX-YY ver.5.0.5
+- 2023-05-24 ver.5.0.5
     - Line width are now saved in the LOOKS file.
     - Implemented "Recently Used Files".
     - Assign Ctrl+D to "Copy the double-frame word".
@@ -751,7 +751,7 @@
     - 線の幅をちゃんと計算。
     - 盤面の描画を改良。
     - 不完全なEMFサポートの外部ソフトウェアに対してEMF描画の不具合を回避。
-- 2023年XX年YY日 ver.5.0.5
+- 2023年05年24日 ver.5.0.5
     - LOOKSファイルに線の幅を保存するようにした。
     - 「最近使ったファイル」を実装。
     - Ctrl+Dを「二重マス単語をコピー」に割り付け。
