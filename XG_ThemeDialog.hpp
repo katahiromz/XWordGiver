@@ -103,7 +103,7 @@ public:
         if (XgFindLocalFile(szPath, _countof(szPath), L"THEME.txt")) {
             if (FILE *fp = _wfopen(szPath, L"rb")) {
                 char buf[256];
-                while (fgets(buf, 256, fp)) {
+                while (fgets(buf, _countof(buf), fp)) {
                     std::wstring str = XgUtf8ToUnicode(buf);
                     xg_str_trim(str);
                     if (str.empty())

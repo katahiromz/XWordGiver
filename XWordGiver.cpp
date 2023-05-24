@@ -476,7 +476,7 @@ BOOL XgLoadPatterns(LPCWSTR pszFileName, patterns_t& patterns)
     if (!fp)
         return FALSE;
 
-    while (fgets(buf, 256, fp))
+    while (fgets(buf, _countof(buf), fp))
     {
         utf8 += buf;
     }
