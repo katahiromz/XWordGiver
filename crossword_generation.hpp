@@ -1359,36 +1359,39 @@ struct from_words_t {
                 return cands;
             }
 
+            // 単語中の各位置について、、、
             for (size_t ich = 0; ich < word.size(); ++ich) {
-                if (word[ich] != ch0)
+                if (word[ich] != ch0) // 文字が一致しなければスキップ。
                     continue;
 
+                // 境界のヨコ位置を取得。
                 int x0 = x - int(ich);
                 int x1 = x0 + int(word.size());
-                bool matched = true;
+                bool matched = true; // 一致していると仮定。
                 if (matched) {
+                    // ヨコ向きの単語について、境界の２マスについて
                     t_char ch1 = m_board.get_on(x0 - 1, y);
                     t_char ch2 = m_board.get_on(x1, y);
-                    if (is_letter(ch1) || is_letter(ch2)) {
-                        matched = false;
+                    if (is_letter(ch1) || is_letter(ch2)) { // 文字マスなら
+                        matched = false; // 一致していない！
                     }
                 }
                 if (matched) {
-                    for (size_t k = 0; k < word.size(); ++k) {
+                    for (size_t k = 0; k < word.size(); ++k) { // 各マスについて
                         t_char ch3 = m_board.get_on(x0 + int(k), y);
-                        if (ch3 != '?' && word[k] != ch3) {
-                            matched = false;
+                        if (ch3 != '?' && word[k] != ch3) { // 未知のマスでなく一致しなければ
+                            matched = false; // 一致していない！
                             break;
                         }
                     }
                 }
                 if (matched) {
-                    cands.push_back({x0, y, word, false});
+                    cands.push_back({x0, y, word, false}); // 一致していれば候補を追加。
                 }
             }
         }
 
-        return cands;
+        return cands; // 候補群を返す。
     }
 
     // タテ方向の候補群を取得する。
@@ -1408,21 +1411,24 @@ struct from_words_t {
             cands.push_back({ x, y, sz, true }); // 1マスの候補 { ch0 } を追加。
         }
 
-        // 各単語について。
+        // 各単語について、、、
         for (auto& word : m_words) {
             if (s_canceled || s_generated) { // キャンセル済みか生成済みなら終了。
                 cands.clear();
                 return cands;
             }
 
+            // 単語中の各位置について、、、
             for (size_t ich = 0; ich < word.size(); ++ich) {
                 if (word[ich] != ch0) // 文字が一致しなければスキップ。
                     continue;
 
+                // 境界のタテ位置を取得。
                 int y0 = y - int(ich);
                 int y1 = y0 + int(word.size());
                 bool matched = true; // 一致していると仮定。
                 if (matched) {
+                    // 縦向きの単語について、境界の２マスについて
                     t_char ch1 = m_board.get_on(x, y0 - 1);
                     t_char ch2 = m_board.get_on(x, y1);
                     if (is_letter(ch1) || is_letter(ch2)) { // 両方とも文字マスなら
@@ -1430,46 +1436,54 @@ struct from_words_t {
                     }
                 }
                 if (matched) {
-                    for (size_t k = 0; k < word.size(); ++k) {
-                        t_char ch3 = m_board.get_on(x, y0 + int(k));
-                        if (ch3 != '?' && word[k] != ch3) {
-                            matched = false;
+                    for (size_t k = 0; k < word.size(); ++k) { // 対応する各マスについて
+                        t_char ch3 = m_board.get_on(x, y0 + int(k)); // 文字を取得し、
+                        if (ch3 != '?' && word[k] != ch3) { // 未知マスでなく、一致していないなら
+                            matched = false; // 一致していない！
                             break;
                         }
                     }
                 }
-                if (matched) {
-                    cands.push_back({x, y0, word, true});
+                if (matched) { // 一致している。
+                    cands.push_back({x, y0, word, true}); // 候補を追加。
                 }
             }
         }
 
-        return cands;
+        return cands; // 候補群を返す。
     }
 
     bool fixup_candidates(std::vector<candidate_t<t_char> >& candidates) {
-        std::vector<candidate_t<t_char> > cands;
-        std::unordered_set<pos_t> positions;
+        std::vector<candidate_t<t_char> > cands; // 適用すべき候補。
+        std::unordered_set<pos_t> positions; // 使用した位置。
+
+        // 各候補について、、、
         for (auto& cand : candidates) {
-            if (s_canceled || s_generated)
+            if (s_canceled || s_generated) // キャンセル済みか生成済みなら終了。
                 return s_generated;
+            // 候補が１マスであれば
             if (cand.m_word.size() == 1) {
-                cands.push_back(cand);
-                positions.insert( {cand.m_x, cand.m_y} );
+                cands.push_back(cand); // 適用すべき候補を追加。
+                positions.insert( {cand.m_x, cand.m_y} ); // この位置は使用済みとする。
             }
         }
+
+        // 各候補について、、、
         for (auto& cand : candidates) {
-            if (s_canceled || s_generated)
+            if (s_canceled || s_generated) // キャンセル済みか生成済みなら終了。
                 return s_generated;
+            // 候補が１マスでなければ、未使用のマスがあるか確認し、
             if (cand.m_word.size() != 1) {
                 if (positions.count(pos_t(cand.m_x, cand.m_y)) == 0)
-                    return false;
+                    return false; // 未使用のマスがなければ失敗。
             }
         }
+
+        // 適用すべき各候補について、、、
         for (auto& cand : cands) {
-            if (s_canceled || s_generated)
+            if (s_canceled || s_generated) // キャンセル済みか生成済みなら終了。
                 return s_generated;
-            apply_candidate(cand);
+            apply_candidate(cand); // 適用すべき候補を適用する。
         }
         return true;
     }
@@ -1563,7 +1577,7 @@ struct from_words_t {
 
         // 各候補について、、、
         for (auto& cand : candidates) {
-            if (s_canceled || s_generated)
+            if (s_canceled || s_generated) // キャンセル済みか生成済みなら終了。
                 return s_generated;
             // 複製して候補を適用して再帰・分岐。
             from_words_t<t_char, t_fixed> copy(*this);
@@ -1572,6 +1586,7 @@ struct from_words_t {
             }
         }
 
+        // すべての候補を適用したが、失敗した。
         return false;
     }
 
@@ -1696,6 +1711,7 @@ struct from_words_t {
             // スレッドに所有権を譲渡したいので汚いがnewを使わせていただきたい。
             auto clone = new std::unordered_set<t_string>(words);
             try {
+                // スレッドを生成。切り離す。
                 std::thread t(generate_proc, clone, i);
                 t.detach();
             } catch (std::system_error&) {
@@ -1751,47 +1767,50 @@ struct non_add_block_t {
         for (int y = 0; y < m_board.m_cy; ++y) {
             for (int x = 0; x < m_board.m_cx; ++x) {
                 if (m_checked_x.count(pos_t(x, y)) > 0)
-                    continue;
+                    continue; // チェック済みならスキップ。
 
                 int x0;
-                auto pat = m_board.get_pat_x(x, y, &x0);
-                if (pat.find('?') != pat.npos)
+                auto pat = m_board.get_pat_x(x, y, &x0); // 横向きのパターンを取得。
+                if (pat.find('?') != pat.npos) // 未知のマスがあればスキップ。
                     continue;
 
-                if (pat.size() <= 1) {
-                    m_checked_x.emplace(x, y);
+                if (pat.size() <= 1) { // パターンが１マスであれば、
+                    m_checked_x.emplace(x, y); // チェック済みと見なす。
                     continue;
                 }
 
-                if (m_dict.count(pat) == 0)
+                if (m_dict.count(pat) == 0) // 単語が登録されていなければ失敗。
                     return false;
 
+                // パターンの各マス位置について
                 for (size_t i = 0; i < pat.size(); ++i, ++x0) {
-                    m_checked_x.emplace(x0, y);
+                    m_checked_x.emplace(x0, y); // チェック済みとする。
                 }
             }
         }
 
+        // 各列の各マスについて、、、
         for (int x = 0; x < m_board.m_cx; ++x) {
             for (int y = 0; y < m_board.m_cy; ++y) {
                 if (m_checked_y.count(pos_t(x, y)) > 0)
-                    continue;
+                    continue; // チェック済みならスキップ。
 
                 int y0;
-                auto pat = m_board.get_pat_y(x, y, &y0);
-                if (pat.find('?') != pat.npos)
+                auto pat = m_board.get_pat_y(x, y, &y0); // 縦向きのパターンを取得。
+                if (pat.find('?') != pat.npos) // 未知のマスがあればスキップ。
                     continue;
 
-                if (pat.size() <= 1) {
-                    m_checked_y.emplace(x, y);
+                if (pat.size() <= 1) { // パターンが１マスであれば、
+                    m_checked_y.emplace(x, y); // チェック済みと見なす。
                     continue;
                 }
 
-                if (m_dict.count(pat) == 0)
+                if (m_dict.count(pat) == 0) // 単語が登録されていなければ失敗。
                     return false;
 
+                // パターンの各マス位置について
                 for (size_t i = 0; i < pat.size(); ++i, ++y0) {
-                    m_checked_y.emplace(x, y0);
+                    m_checked_y.emplace(x, y0); // チェック済みとする。
                 }
             }
         }
@@ -1805,7 +1824,7 @@ struct non_add_block_t {
         m_words.erase(word); // 単語群から単語を取り除く。
         int x = cand.m_x, y = cand.m_y;
         for (size_t ich = 0; ich < word.size(); ++ich, ++x) {
-            m_checked_x.emplace(x, y);
+            m_checked_x.emplace(x, y); // チェック済みとする。
             m_board.set_at(x, y, word[ich]); // マス(x, y)に適用する。
         }
         return true;
@@ -1816,7 +1835,7 @@ struct non_add_block_t {
         m_words.erase(word); // 単語群から単語を取り除く。
         int x = cand.m_x, y = cand.m_y;
         for (size_t ich = 0; ich < word.size(); ++ich, ++y) {
-            m_checked_y.emplace(x, y);
+            m_checked_y.emplace(x, y); // チェック済みとする。
             m_board.set_at(x, y, word[ich]); // マス(x, y)に適用する。
         }
         return true;
@@ -1999,6 +2018,7 @@ struct non_add_block_t {
             pboard = new board_t<t_char, t_fixed>(board);
             pwords = new std::unordered_set<t_string>(words);
             try {
+                // スレッドを生成。切り離す。
                 std::thread t(generate_proc, pboard, pwords, i);
                 t.detach();
             } catch (std::system_error&) {
