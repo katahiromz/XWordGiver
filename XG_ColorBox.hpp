@@ -38,7 +38,7 @@ public:
     void SetColor(COLORREF rgb)
     {
         m_rgbColor = rgb;
-        InvalidateRect(m_hWnd, NULL, TRUE);
+        InvalidateRect(m_hWnd, nullptr, TRUE);
     }
 
     void DoChooseColor()

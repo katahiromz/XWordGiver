@@ -857,7 +857,7 @@ void __fastcall XgOnKey(HWND hwnd, UINT vk, bool fDown, int /*cRepeat*/, UINT /*
             ::SetForegroundWindow(hwnd);
             ::TrackPopupMenu(
                 hSubMenu, TPM_RIGHTBUTTON | TPM_LEFTALIGN,
-                pt.x, pt.y, 0, hwnd, NULL);
+                pt.x, pt.y, 0, hwnd, nullptr);
             ::PostMessageW(hwnd, WM_NULL, 0, 0);
 
             ::DestroyMenu(hMenu);
@@ -969,9 +969,9 @@ void __fastcall XgOnKey(HWND hwnd, UINT vk, bool fDown, int /*cRepeat*/, UINT /*
             ::ToUnicode(vk, 0, state, sz2, _countof(sz2), 0); // [Shift]ありの場合。
             // アクセント記号か？
             WCHAR ch1 = sz1[0], ch2 = sz2[0];
-            if (wcschr(L"^`':,&.", ch1) != NULL) {
+            if (wcschr(L"^`':,&.", ch1) != nullptr) {
                 xg_chAccent = ch1;
-            } else if (wcschr(L"^`':,&.", ch2) != NULL) {
+            } else if (wcschr(L"^`':,&.", ch2) != nullptr) {
                 xg_chAccent = ch2;
             } else {
                 xg_chAccent = 0;
@@ -1258,7 +1258,7 @@ void InputPal_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT codeNotify)
 
 void InputPal_OnDestroy(HWND hwnd)
 {
-    xg_hwndInputPalette = NULL;
+    xg_hwndInputPalette = nullptr;
 }
 
 // キーが押された。
@@ -1310,7 +1310,7 @@ BOOL XgDestroyInputPalette(void)
     xg_bShowInputPalette = false;
     if (xg_hwndInputPalette) {
         ::DestroyWindow(xg_hwndInputPalette);
-        xg_hwndInputPalette = NULL;
+        xg_hwndInputPalette = nullptr;
         return TRUE;
     }
     return FALSE;
@@ -1454,7 +1454,7 @@ BOOL XgCreateInputPalette(HWND hwndOwner, XG_InputMode imode)
     UpdateWindow(xg_hwndInputPalette);
     xg_bShowInputPalette = true;
 
-    return xg_hwndInputPalette != NULL;
+    return xg_hwndInputPalette != nullptr;
 }
 
 // 入力モードを切り替える。

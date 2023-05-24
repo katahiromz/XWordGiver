@@ -10,7 +10,7 @@ class XG_CanvasWindow : public XG_Window
 public:
     HWND m_hwndParent;
 
-    XG_CanvasWindow() : m_hwndParent(NULL)
+    XG_CanvasWindow() : m_hwndParent(nullptr)
     {
     }
 
@@ -200,7 +200,7 @@ public:
             OnMouseScroll(hwnd, x, y);
             xg_bMButtonDragging = FALSE;
             ::ReleaseCapture();
-            ::SetCursor(::LoadCursor(NULL, IDC_ARROW));
+            ::SetCursor(::LoadCursor(nullptr, IDC_ARROW));
         }
     }
 
@@ -222,7 +222,7 @@ public:
         ::SetForegroundWindow(hwnd);
         ::TrackPopupMenu(
             hSubMenu, TPM_RIGHTBUTTON | TPM_LEFTALIGN,
-            pt.x, pt.y, 0, hwnd, NULL);
+            pt.x, pt.y, 0, hwnd, nullptr);
         ::PostMessageW(hwnd, WM_NULL, 0, 0);
 
         ::DestroyMenu(hMenu);
@@ -274,7 +274,7 @@ public:
     void OnPaint(HWND hwnd)
     {
         // ツールバーがなければ、初期化の前なので、無視する。
-        if (xg_hToolBar == NULL)
+        if (xg_hToolBar == nullptr)
             return;
 
         // クロスワードの描画サイズを取得する。

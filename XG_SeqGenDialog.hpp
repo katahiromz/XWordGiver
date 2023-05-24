@@ -62,13 +62,13 @@ public:
         // IMEをOFFにする。
         {
             HWND hwndCtrl = ::GetDlgItem(hwnd, edt1);
-            ::ImmAssociateContext(hwndCtrl, NULL);
+            ::ImmAssociateContext(hwndCtrl, nullptr);
             hwndCtrl = ::GetDlgItem(hwnd, edt2);
-            ::ImmAssociateContext(hwndCtrl, NULL);
+            ::ImmAssociateContext(hwndCtrl, nullptr);
             hwndCtrl = ::GetDlgItem(hwnd, edt3);
-            ::ImmAssociateContext(hwndCtrl, NULL);
+            ::ImmAssociateContext(hwndCtrl, nullptr);
             hwndCtrl = ::GetDlgItem(hwnd, edt4);
-            ::ImmAssociateContext(hwndCtrl, NULL);
+            ::ImmAssociateContext(hwndCtrl, nullptr);
         }
         SendDlgItemMessageW(hwnd, scr1, UDM_SETRANGE, 0, MAKELPARAM(XG_MAX_SIZE, XG_MIN_SIZE));
         SendDlgItemMessageW(hwnd, scr2, UDM_SETRANGE, 0, MAKELPARAM(XG_MAX_SIZE, XG_MIN_SIZE));

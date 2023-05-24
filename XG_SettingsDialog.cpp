@@ -110,7 +110,7 @@ void XG_SettingsDialog::OnOK(HWND hwnd)
         HWND hEdt4 = GetDlgItem(hwnd, edt4);
         Edit_SetSel(hEdt4, 0, -1);
         SetFocus(hEdt4);
-        XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_INVALIDVALUE), NULL, MB_ICONERROR);
+        XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_INVALIDVALUE), nullptr, MB_ICONERROR);
         return;
     }
 
@@ -127,7 +127,7 @@ void XG_SettingsDialog::OnOK(HWND hwnd)
         HWND hEdt5 = GetDlgItem(hwnd, edt5);
         Edit_SetSel(hEdt5, 0, -1);
         SetFocus(hEdt5);
-        XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_INVALIDVALUE), NULL, MB_ICONERROR);
+        XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_INVALIDVALUE), nullptr, MB_ICONERROR);
         return;
     }
 
@@ -202,7 +202,7 @@ void XG_SettingsDialog::OnOK(HWND hwnd)
     GetDlgItemTextW(hwnd, edt6, szText, _countof(szText));
     std::wstring str = szText;
     xg_str_trim(str);
-    float value = wcstof(str.c_str(), NULL);
+    float value = wcstof(str.c_str(), nullptr);
     if (value > XG_MAX_LINEWIDTH)
         value = XG_MAX_LINEWIDTH;
     if (value < XG_MIN_LINEWIDTH)
@@ -230,15 +230,15 @@ BOOL XG_SettingsDialog::DoImportLooks(HWND hwnd, LPCWSTR pszFileName)
     // 色。
     GetPrivateProfileStringW(L"Looks", L"WhiteCellColor", L"16777215", szText, _countof(szText), pszFileName);
     m_hwndWhite.SetColor(_wtoi(szText));
-    InvalidateRect(m_hwndWhite, NULL, TRUE);
+    InvalidateRect(m_hwndWhite, nullptr, TRUE);
 
     GetPrivateProfileStringW(L"Looks", L"BlackCellColor", L"3355443", szText, _countof(szText), pszFileName);
     m_hwndBlack.SetColor(_wtoi(szText));
-    InvalidateRect(m_hwndBlack, NULL, TRUE);
+    InvalidateRect(m_hwndBlack, nullptr, TRUE);
 
     GetPrivateProfileStringW(L"Looks", L"MarkedCellColor", L"16777215", szText, _countof(szText), pszFileName);
     m_hwndMarked.SetColor(_wtoi(szText));
-    InvalidateRect(m_hwndMarked, NULL, TRUE);
+    InvalidateRect(m_hwndMarked, nullptr, TRUE);
 
     // フォント。
     GetPrivateProfileStringW(L"Looks", L"CellFont", L"", szText, _countof(szText), pszFileName);
@@ -342,7 +342,7 @@ BOOL XG_SettingsDialog::DoExportLooks(HWND hwnd, LPCWSTR pszFileName)
         HWND hEdt4 = GetDlgItem(hwnd, edt4);
         Edit_SetSel(hEdt4, 0, -1);
         SetFocus(hEdt4);
-        XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_INVALIDVALUE), NULL, MB_ICONERROR);
+        XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_INVALIDVALUE), nullptr, MB_ICONERROR);
         return FALSE;
     }
 
@@ -359,7 +359,7 @@ BOOL XG_SettingsDialog::DoExportLooks(HWND hwnd, LPCWSTR pszFileName)
         HWND hEdt5 = GetDlgItem(hwnd, edt5);
         Edit_SetSel(hEdt5, 0, -1);
         SetFocus(hEdt5);
-        XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_INVALIDVALUE), NULL, MB_ICONERROR);
+        XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_INVALIDVALUE), nullptr, MB_ICONERROR);
         return FALSE;
     }
 
@@ -441,7 +441,7 @@ BOOL XG_SettingsDialog::DoExportLooks(HWND hwnd, LPCWSTR pszFileName)
     }
 
     // フラッシュ！
-    return WritePrivateProfileStringW(NULL, NULL, NULL, pszFileName);
+    return WritePrivateProfileStringW(nullptr, nullptr, nullptr, pszFileName);
 }
 
 // 設定のインポート。
@@ -486,13 +486,13 @@ void XG_SettingsDialog::OnResetLooks(HWND hwnd)
 {
     // 色。
     m_hwndWhite.SetColor(_wtoi(L"16777215"));
-    InvalidateRect(m_hwndWhite, NULL, TRUE);
+    InvalidateRect(m_hwndWhite, nullptr, TRUE);
 
     m_hwndBlack.SetColor(_wtoi(L"3355443"));
-    InvalidateRect(m_hwndBlack, NULL, TRUE);
+    InvalidateRect(m_hwndBlack, nullptr, TRUE);
 
     m_hwndMarked.SetColor(_wtoi(L"16777215"));
-    InvalidateRect(m_hwndMarked, NULL, TRUE);
+    InvalidateRect(m_hwndMarked, nullptr, TRUE);
 
     // フォント。
     SetDlgItemTextW(hwnd, edt1, L"");
@@ -542,12 +542,12 @@ void XG_SettingsDialog::OnResetLooks(HWND hwnd)
 // UIフォントの論理オブジェクトを設定する。
 void XG_SettingsDialog::SetUIFont(HWND hwnd, const LOGFONTW *plf)
 {
-    if (plf == NULL) {
-        SetDlgItemTextW(hwnd, edt3, NULL);
+    if (plf == nullptr) {
+        SetDlgItemTextW(hwnd, edt3, nullptr);
         return;
     }
 
-    HDC hdc = ::CreateCompatibleDC(NULL);
+    HDC hdc = ::CreateCompatibleDC(nullptr);
     int point_size = -MulDiv(plf->lfHeight, 72, ::GetDeviceCaps(hdc, LOGPIXELSY));
     ::DeleteDC(hdc);
 
@@ -671,7 +671,7 @@ XG_SettingsDialog::DialogProcDx(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPar
                 GetDlgItemTextW(hwnd, edt6, szText, _countof(szText));
                 std::wstring str = szText;
                 xg_str_trim(str);
-                float value = wcstof(str.c_str(), NULL);
+                float value = wcstof(str.c_str(), nullptr);
                 if (pUpDown->iDelta < 0)
                     value += XG_LINE_WIDTH_DELTA;
                 if (pUpDown->iDelta > 0)
@@ -806,8 +806,8 @@ void XG_SettingsDialog::UpdateBlockPreview(HWND hwnd)
 {
     HWND hIco1 = GetDlgItem(hwnd, ico1);
     HWND hIco2 = GetDlgItem(hwnd, ico2);
-    SetWindowPos(hIco1, NULL, 0, 0, 32, 32, SWP_NOMOVE | SWP_NOZORDER | SWP_HIDEWINDOW);
-    SetWindowPos(hIco2, NULL, 0, 0, 32, 32, SWP_NOMOVE | SWP_NOZORDER | SWP_HIDEWINDOW);
+    SetWindowPos(hIco1, nullptr, 0, 0, 32, 32, SWP_NOMOVE | SWP_NOZORDER | SWP_HIDEWINDOW);
+    SetWindowPos(hIco2, nullptr, 0, 0, 32, 32, SWP_NOMOVE | SWP_NOZORDER | SWP_HIDEWINDOW);
     HBITMAP hbmOld = (HBITMAP)SendMessageW(hIco1, STM_GETIMAGE, IMAGE_BITMAP, 0);
     HENHMETAFILE hOldEMF = (HENHMETAFILE)SendMessageW(hIco2, STM_GETIMAGE, IMAGE_ENHMETAFILE, 0);
 
@@ -817,8 +817,8 @@ void XG_SettingsDialog::UpdateBlockPreview(HWND hwnd)
     std::wstring path = szText;
     xg_str_trim(path);
 
-    HBITMAP hbm1 = NULL;
-    HENHMETAFILE hEMF1 = NULL;
+    HBITMAP hbm1 = nullptr;
+    HENHMETAFILE hEMF1 = nullptr;
     if (XgGetFileManager()->load_block_image(szText, hbm1, hEMF1))
     {
         if (!m_bUpdating)
@@ -833,7 +833,7 @@ void XG_SettingsDialog::UpdateBlockPreview(HWND hwnd)
             HBITMAP hbm2 = (HBITMAP)CopyImage(hbm1, IMAGE_BITMAP, 32, 32, LR_CREATEDIBSECTION);
             DeleteObject(hbm1);
             SendMessageW(hIco1, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)hbm2);
-            SendMessageW(hIco2, STM_SETIMAGE, IMAGE_ENHMETAFILE, (LPARAM)NULL);
+            SendMessageW(hIco2, STM_SETIMAGE, IMAGE_ENHMETAFILE, (LPARAM)nullptr);
             ShowWindow(hIco1, SW_SHOWNOACTIVATE);
             DeleteObject(hbmOld);
             DeleteEnhMetaFile(hOldEMF);
@@ -841,7 +841,7 @@ void XG_SettingsDialog::UpdateBlockPreview(HWND hwnd)
         }
         if (hEMF1)
         {
-            SendMessageW(hIco1, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)NULL);
+            SendMessageW(hIco1, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)nullptr);
             SendMessageW(hIco2, STM_SETIMAGE, IMAGE_ENHMETAFILE, (LPARAM)hEMF1);
             ShowWindow(hIco2, SW_SHOWNOACTIVATE);
             DeleteObject(hbmOld);

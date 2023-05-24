@@ -19,7 +19,7 @@ class XG_PatternDialog : public XG_Dialog
 public:
     // 黒マスパターンのデータ。
     inline static patterns_t s_patterns;
-    inline static LAYOUT_DATA *s_pLayout = NULL;
+    inline static LAYOUT_DATA *s_pLayout = nullptr;
 
     // 「黒マスパターン」ダイアログの位置とサイズ。
     inline static INT xg_nPatWndX = CW_USEDEFAULT;
@@ -148,7 +148,7 @@ public:
         if (s_pLayout)
         {
             LayoutDestroy(s_pLayout);
-            s_pLayout = NULL;
+            s_pLayout = nullptr;
         }
 
         if (xg_bShowAnswerOnPattern)
@@ -286,7 +286,7 @@ public:
     // ダウンロードする。
     void OnDownload(HWND hwnd)
     {
-        ShellExecuteW(hwnd, NULL, L"https://katahiromz.web.fc2.com/xword/patterns", NULL, NULL, SW_SHOWNORMAL);
+        ShellExecuteW(hwnd, nullptr, L"https://katahiromz.web.fc2.com/xword/patterns", nullptr, nullptr, SW_SHOWNORMAL);
     }
 
     XG_NOINLINE
@@ -358,7 +358,7 @@ public:
         if (lpMeasureItem->CtlType != ODT_LISTBOX || lpMeasureItem->CtlID != lst1)
             return;
 
-        HDC hDC = CreateCompatibleDC(NULL);
+        HDC hDC = CreateCompatibleDC(nullptr);
         SelectObject(hDC, GetStockFont(DEFAULT_GUI_FONT));
         TEXTMETRIC tm;
         GetTextMetrics(hDC, &tm);
@@ -458,12 +458,12 @@ public:
                 // 境界線を描画する。
                 for (INT y = 0; y < pat.num_rows + 1; ++y)
                 {
-                    MoveToEx(hdcMem, 1, 1 + y * cyCell, NULL);
+                    MoveToEx(hdcMem, 1, 1 + y * cyCell, nullptr);
                     LineTo(hdcMem, 1 + pat.num_columns * cxCell, 1 + y * cyCell);
                 }
                 for (INT x = 0; x < pat.num_columns + 1; ++x)
                 {
-                    MoveToEx(hdcMem, 1 + x * cxCell, 1, NULL);
+                    MoveToEx(hdcMem, 1 + x * cxCell, 1, nullptr);
                     LineTo(hdcMem, 1 + x * cxCell, 1 + pat.num_rows * cyCell);
                 }
                 // ビットマップイメージをhDCに転送する。
@@ -486,7 +486,7 @@ public:
         if (s_pLayout)
         {
             LayoutDestroy(s_pLayout);
-            s_pLayout = NULL;
+            s_pLayout = nullptr;
         }
     }
 
@@ -505,7 +505,7 @@ public:
     {
         RECT rc;
 
-        LayoutUpdate(hwnd, s_pLayout, NULL, 0);
+        LayoutUpdate(hwnd, s_pLayout, nullptr, 0);
 
         if (!IsMinimized(hwnd) && !IsMaximized(hwnd))
         {

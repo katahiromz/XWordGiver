@@ -121,7 +121,7 @@ void XgReadUnicodeLine(LPWSTR pchLine)
     }
 
     // 第３フィールドはタグ群。
-    LPWSTR pchTags = NULL;
+    LPWSTR pchTags = nullptr;
     if (pchHint) {
         pchTags = wcschr(pchHint, L'\t');
         if (pchTags) {

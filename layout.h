@@ -51,13 +51,13 @@ _layout_MoveGrip(LAYOUT_DATA *pData, HDWP hDwp OPTIONAL)
 
     if (hDwp)
     {
-        hDwp = DeferWindowPos(hDwp, pData->m_hwndGrip, NULL,
+        hDwp = DeferWindowPos(hDwp, pData->m_hwndGrip, nullptr,
                               rcClient.right - size.cx, rcClient.bottom - size.cy,
                               size.cx, size.cy, uFlags);
     }
     else
     {
-        SetWindowPos(pData->m_hwndGrip, NULL,
+        SetWindowPos(pData->m_hwndGrip, nullptr,
                      rcClient.right - size.cx, rcClient.bottom - size.cy,
                      size.cx, size.cy, uFlags);
     }
@@ -73,14 +73,14 @@ LayoutShowGrip(LAYOUT_DATA *pData, BOOL bShow)
         return;
     }
 
-    if (pData->m_hwndGrip == NULL)
+    if (pData->m_hwndGrip == nullptr)
     {
         DWORD style = WS_CHILD | WS_CLIPSIBLINGS | SBS_SIZEGRIP;
-        pData->m_hwndGrip = CreateWindowExW(0, L"SCROLLBAR", NULL, style,
+        pData->m_hwndGrip = CreateWindowExW(0, L"SCROLLBAR", nullptr, style,
                                             0, 0, 0, 0, pData->m_hwndParent,
-                                            NULL, GetModuleHandleW(NULL), NULL);
+                                            nullptr, GetModuleHandleW(nullptr), nullptr);
     }
-    _layout_MoveGrip(pData, NULL);
+    _layout_MoveGrip(pData, nullptr);
     ShowWindow(pData->m_hwndGrip, SW_SHOWNOACTIVATE);
 }
 
@@ -102,7 +102,7 @@ _layout_DoMoveItem(LAYOUT_DATA *pData, HDWP hDwp, const LAYOUT_INFO *pLayout,
 
     if (!GetWindowRect(pLayout->m_hwndCtrl, &rcChild))
         return hDwp;
-    MapWindowPoints(NULL, pData->m_hwndParent, (LPPOINT)&rcChild, 2);
+    MapWindowPoints(nullptr, pData->m_hwndParent, (LPPOINT)&rcChild, 2);
 
     nWidth = rcClient->right - rcClient->left;
     nHeight = rcClient->bottom - rcClient->top;
@@ -115,7 +115,7 @@ _layout_DoMoveItem(LAYOUT_DATA *pData, HDWP hDwp, const LAYOUT_INFO *pLayout,
 
     if (!EqualRect(&NewRect, &rcChild))
     {
-        hDwp = DeferWindowPos(hDwp, pLayout->m_hwndCtrl, NULL, NewRect.left, NewRect.top,
+        hDwp = DeferWindowPos(hDwp, pLayout->m_hwndCtrl, nullptr, NewRect.left, NewRect.top,
                               NewRect.right - NewRect.left, NewRect.bottom - NewRect.top,
                               SWP_NOZORDER | SWP_NOACTIVATE | SWP_NOREPOSITION);
     }
@@ -128,7 +128,7 @@ _layout_ArrangeLayout(LAYOUT_DATA *pData)
     RECT rcClient;
     UINT iItem;
     HDWP hDwp = BeginDeferWindowPos(pData->m_cLayouts + 1);
-    if (hDwp == NULL)
+    if (hDwp == nullptr)
         return;
 
     GetClientRect(pData->m_hwndParent, &rcClient);
@@ -147,7 +147,7 @@ _layout_ArrangeLayout(LAYOUT_DATA *pData)
         GetClassNameW(hwndCtrl, szClass, _countof(szClass));
         if (lstrcmpiW(szClass, L"STATIC") == 0)
         {
-            InvalidateRect(hwndCtrl, NULL, TRUE);
+            InvalidateRect(hwndCtrl, nullptr, TRUE);
         }
     }
 }
@@ -166,15 +166,15 @@ _layout_InitLayouts(LAYOUT_DATA *pData)
     for (iItem = 0; iItem < pData->m_cLayouts; ++iItem)
     {
         LAYOUT_INFO *pInfo = &pData->m_pLayouts[iItem];
-        if (pInfo->m_hwndCtrl == NULL)
+        if (pInfo->m_hwndCtrl == nullptr)
         {
             pInfo->m_hwndCtrl = GetDlgItem(pData->m_hwndParent, pInfo->m_nCtrlID);
-            if (pInfo->m_hwndCtrl == NULL)
+            if (pInfo->m_hwndCtrl == nullptr)
                 continue;
         }
 
         GetWindowRect(pInfo->m_hwndCtrl, &rcChild);
-        MapWindowPoints(NULL, pData->m_hwndParent, (LPPOINT)&rcChild, 2);
+        MapWindowPoints(nullptr, pData->m_hwndParent, (LPPOINT)&rcChild, 2);
 
         _layout_GetPercents(&rcPercents, pInfo->m_uEdges);
         pInfo->m_margin1.cx = rcChild.left - nWidth * rcPercents.left / 100;
@@ -191,7 +191,7 @@ LayoutUpdate(HWND ignored1, LAYOUT_DATA *pData, LPCVOID ignored2, UINT ignored3)
     UNREFERENCED_PARAMETER(ignored1);
     UNREFERENCED_PARAMETER(ignored2);
     UNREFERENCED_PARAMETER(ignored3);
-    if (pData == NULL)
+    if (pData == nullptr)
         return;
     assert(IsWindow(pData->m_hwndParent));
     _layout_ArrangeLayout(pData);
@@ -210,10 +210,10 @@ LayoutInit(HWND hwndParent, const LAYOUT_INFO *pLayouts, INT cLayouts)
     BOOL bShowGrip;
     SIZE_T cb;
     LAYOUT_DATA *pData = (LAYOUT_DATA *)HeapAlloc(GetProcessHeap(), 0, sizeof(LAYOUT_DATA));
-    if (pData == NULL)
+    if (pData == nullptr)
     {
         assert(0);
-        return NULL;
+        return nullptr;
     }
 
     if (cLayouts < 0) /* NOTE: If cLayouts was negative, then don't show size grip */
@@ -229,11 +229,11 @@ LayoutInit(HWND hwndParent, const LAYOUT_INFO *pLayouts, INT cLayouts)
     cb = cLayouts * sizeof(LAYOUT_INFO);
     pData->m_cLayouts = cLayouts;
     pData->m_pLayouts = (LAYOUT_INFO *)HeapAlloc(GetProcessHeap(), 0, cb);
-    if (pData->m_pLayouts == NULL)
+    if (pData->m_pLayouts == nullptr)
     {
         assert(0);
         HeapFree(GetProcessHeap(), 0, pData);
-        return NULL;
+        return nullptr;
     }
     memcpy(pData->m_pLayouts, pLayouts, cb);
 
@@ -243,7 +243,7 @@ LayoutInit(HWND hwndParent, const LAYOUT_INFO *pLayouts, INT cLayouts)
 
     pData->m_hwndParent = hwndParent;
 
-    pData->m_hwndGrip = NULL;
+    pData->m_hwndGrip = nullptr;
     if (bShowGrip)
         LayoutShowGrip(pData, bShowGrip);
 

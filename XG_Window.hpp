@@ -18,7 +18,7 @@ public:
         return m_hWnd;
     }
 
-    XG_Window() : m_hWnd(NULL), m_fnOldWndProc(NULL)
+    XG_Window() : m_hWnd(nullptr), m_fnOldWndProc(nullptr)
     {
     }
 
@@ -32,7 +32,7 @@ public:
         m_fnOldWndProc =
             reinterpret_cast<WNDPROC>(SetWindowLongPtr(hwnd,
                 GWLP_WNDPROC, reinterpret_cast<LONG_PTR>(WindowProc)));
-        return m_fnOldWndProc != NULL;
+        return m_fnOldWndProc != nullptr;
     }
 
     void UnsubclassDx(HWND hwnd)
@@ -40,7 +40,7 @@ public:
         if (m_fnOldWndProc)
         {
             SetWindowLongPtr(hwnd, GWLP_WNDPROC, reinterpret_cast<LONG_PTR>(m_fnOldWndProc));
-            m_fnOldWndProc = NULL;
+            m_fnOldWndProc = nullptr;
         }
     }
 
@@ -65,33 +65,33 @@ public:
     BOOL CreateWindowDx(HWND hwnd, LPCTSTR text, DWORD style, DWORD exstyle = 0,
                         INT x = CW_USEDEFAULT, INT y = CW_USEDEFAULT,
                         INT cx = CW_USEDEFAULT, INT cy = CW_USEDEFAULT,
-                        HMENU hMenu = NULL)
+                        HMENU hMenu = nullptr)
     {
         auto cls = GetWndClassName();
         ::CreateWindowEx(exstyle, cls, text, style, x, y, cx, cy, hwnd, hMenu,
-                         ::GetModuleHandle(NULL), this);
-        return m_hWnd != NULL;
+                         ::GetModuleHandle(nullptr), this);
+        return m_hWnd != nullptr;
     }
 
     virtual void ModifyWndClassDx(WNDCLASSEX& wcx)
     {
     }
 
-    BOOL RegisterClassDx(HINSTANCE hInstance = ::GetModuleHandle(NULL));
+    BOOL RegisterClassDx(HINSTANCE hInstance = ::GetModuleHandle(nullptr));
 };
 
 class XG_Dialog
 {
 public:
     HWND m_hWnd;
-    inline static XG_Dialog *s_pTrapping = NULL;
+    inline static XG_Dialog *s_pTrapping = nullptr;
 
     operator HWND() const
     {
         return m_hWnd;
     }
 
-    XG_Dialog() : m_hWnd(NULL)
+    XG_Dialog() : m_hWnd(nullptr)
     {
     }
 
@@ -107,8 +107,8 @@ public:
     INT_PTR DialogBoxDx(HWND hwnd, LPCTSTR pszName)
     {
         s_pTrapping = this;
-        auto ret = ::DialogBox(::GetModuleHandle(NULL), pszName, hwnd, DialogProc);
-        s_pTrapping = NULL;
+        auto ret = ::DialogBox(::GetModuleHandle(nullptr), pszName, hwnd, DialogProc);
+        s_pTrapping = nullptr;
         return ret;
     }
 
@@ -120,8 +120,8 @@ public:
     BOOL CreateDialogDx(HWND hwnd, INT nID)
     {
         s_pTrapping = this;
-        ::CreateDialog(::GetModuleHandle(NULL), MAKEINTRESOURCE(nID), hwnd, DialogProc);
-        s_pTrapping = NULL;
-        return m_hWnd != NULL;
+        ::CreateDialog(::GetModuleHandle(nullptr), MAKEINTRESOURCE(nID), hwnd, DialogProc);
+        s_pTrapping = nullptr;
+        return m_hWnd != nullptr;
     }
 };

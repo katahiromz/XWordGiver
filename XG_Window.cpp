@@ -25,13 +25,13 @@ XG_Window::WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
             return ::DefWindowProc(hwnd, uMsg, wParam, lParam);
         if (uMsg == WM_NCDESTROY)
         {
-            pWindow->m_hWnd = NULL;
+            pWindow->m_hWnd = nullptr;
         }
     }
     return pWindow->WindowProcDx(hwnd, uMsg, wParam, lParam);
 }
 
-BOOL XG_Window::RegisterClassDx(HINSTANCE hInstance/* = ::GetModuleHandle(NULL)*/)
+BOOL XG_Window::RegisterClassDx(HINSTANCE hInstance/* = ::GetModuleHandle(nullptr)*/)
 {
     WNDCLASSEX wcx = { sizeof(wcx) };
     wcx.style = CS_HREDRAW | CS_VREDRAW | CS_DBLCLKS;
@@ -52,7 +52,7 @@ XG_Dialog::DialogProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
     XG_Dialog *pDialog;
     if (uMsg == WM_INITDIALOG || uMsg == WM_CREATE)
     {
-        assert(s_pTrapping != NULL);
+        assert(s_pTrapping != nullptr);
         pDialog = s_pTrapping;
         SetWindowLongPtr(hwnd, GWLP_USERDATA, reinterpret_cast<LPARAM>(pDialog));
         pDialog->m_hWnd = hwnd;
@@ -64,7 +64,7 @@ XG_Dialog::DialogProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
         {
             if (uMsg == WM_MEASUREITEM || uMsg == WM_SIZE)
             {
-                assert(s_pTrapping != NULL);
+                assert(s_pTrapping != nullptr);
                 pDialog = s_pTrapping;
                 pDialog->m_hWnd = hwnd;
                 return pDialog->DialogProcDx(hwnd, uMsg, wParam, lParam);
@@ -73,7 +73,7 @@ XG_Dialog::DialogProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
         }
         if (uMsg == WM_NCDESTROY)
         {
-            pDialog->m_hWnd = NULL;
+            pDialog->m_hWnd = nullptr;
         }
     }
     return pDialog->DialogProcDx(hwnd, uMsg, wParam, lParam);

@@ -51,7 +51,7 @@ MScrollCtrlInfo* MScrollView::FindCtrlInfo(HWND hwndCtrl)
         if (m_vecInfo[i].m_hwndCtrl == hwndCtrl)
             return &m_vecInfo[i];
     }
-    return NULL;
+    return nullptr;
 }
 
 const MScrollCtrlInfo* MScrollView::FindCtrlInfo(HWND hwndCtrl) const
@@ -64,7 +64,7 @@ const MScrollCtrlInfo* MScrollView::FindCtrlInfo(HWND hwndCtrl) const
         if (m_vecInfo[i].m_hwndCtrl == hwndCtrl)
             return &m_vecInfo[i];
     }
-    return NULL;
+    return nullptr;
 }
 
 void MScrollView::RemoveCtrlInfo(HWND hwndCtrl)
@@ -145,7 +145,7 @@ void MScrollView::SetExtentForAllCtrls()
     si.nPage = rc.Height();
     ::SetScrollInfo(m_hwndParent, SB_VERT, &si, FALSE);
 
-    ::InvalidateRect(m_hwndParent, NULL, TRUE);
+    ::InvalidateRect(m_hwndParent, nullptr, TRUE);
 }
 
 void MScrollView::UpdateCtrlsPos()
@@ -160,7 +160,7 @@ void MScrollView::UpdateCtrlsPos()
         {
             MRect& rcCtrl = m_vecInfo[i].m_rcCtrl;
             hDWP = ::DeferWindowPos(hDWP, m_vecInfo[i].m_hwndCtrl,
-                NULL,
+                nullptr,
                 rcCtrl.left - xScroll, rcCtrl.top - yScroll,
                 rcCtrl.Width(), rcCtrl.Height(),
                 SWP_NOACTIVATE | SWP_NOZORDER | SWP_NOCOPYBITS);
@@ -221,21 +221,21 @@ void MScrollView::Scroll(INT bar, INT nSB_, INT pos)
     {
         INT dx = nNextPos - nOldPos;
         ::SetScrollPos(m_hwndParent, bar, nNextPos, TRUE);
-        ::ScrollWindow(m_hwndParent, -dx, 0, NULL, NULL);
+        ::ScrollWindow(m_hwndParent, -dx, 0, nullptr, nullptr);
     }
     else if (bar == SB_VERT)
     {
         INT dy = nNextPos - nOldPos;
         ::SetScrollPos(m_hwndParent, bar, nNextPos, TRUE);
-        ::ScrollWindow(m_hwndParent, 0, -dy, NULL, NULL);
+        ::ScrollWindow(m_hwndParent, 0, -dy, nullptr, nullptr);
     }
 }
 
 ////////////////////////////////////////////////////////////////////////////
 
 #ifdef SCROLLVIEW_UNITTEST
-    HINSTANCE g_hInstance = NULL;
-    HWND g_hMainWnd = NULL;
+    HINSTANCE g_hInstance = nullptr;
+    HWND g_hMainWnd = nullptr;
     MScrollView g_sv;
     std::vector<HWND> g_ahwndCtrls;
     const int c_nCtrls = 100;
@@ -282,16 +282,16 @@ void MScrollView::Scroll(INT bar, INT nSB_, INT pos)
                     WS_EX_CLIENTEDGE,
                     TEXT("EDIT"), sz,
                     WS_CHILD | WS_VISIBLE | WS_BORDER | ES_AUTOHSCROLL,
-                    0, 0, 0, 0, hWnd, NULL, g_hInstance, NULL);
+                    0, 0, 0, 0, hWnd, nullptr, g_hInstance, nullptr);
             #else
                 // button
                 hwndCtrl = ::CreateWindowEx(
                     0,
                     TEXT("BUTTON"), sz,
                     WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_TEXT | BS_CENTER | BS_VCENTER,
-                    0, 0, 0, 0, hWnd, NULL, g_hInstance, NULL);
+                    0, 0, 0, 0, hWnd, nullptr, g_hInstance, nullptr);
             #endif
-            if (hwndCtrl == NULL)
+            if (hwndCtrl == nullptr)
                 return FALSE;
 
             ::SendMessage(hwndCtrl, WM_SETFONT,
@@ -359,8 +359,8 @@ void MScrollView::Scroll(INT bar, INT nSB_, INT pos)
         wc.style = 0;
         wc.lpfnWndProc = WindowProc;
         wc.hInstance = hInstance;
-        wc.hIcon = ::LoadIcon(NULL, IDI_APPLICATION);
-        wc.hCursor = ::LoadCursor(NULL, IDC_ARROW);
+        wc.hIcon = ::LoadIcon(nullptr, IDI_APPLICATION);
+        wc.hCursor = ::LoadCursor(nullptr, IDC_ARROW);
         wc.hbrBackground = reinterpret_cast<HBRUSH>(
             static_cast<LONG_PTR>(COLOR_3DFACE + 1));
         wc.lpszClassName = s_pszName;
@@ -372,8 +372,8 @@ void MScrollView::Scroll(INT bar, INT nSB_, INT pos)
         g_hMainWnd = ::CreateWindow(s_pszName, s_pszName,
             WS_OVERLAPPEDWINDOW,
             CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT,
-            NULL, NULL, hInstance, NULL);
-        if (g_hMainWnd == NULL)
+            nullptr, nullptr, hInstance, nullptr);
+        if (g_hMainWnd == nullptr)
         {
             return 2;
         }
@@ -382,7 +382,7 @@ void MScrollView::Scroll(INT bar, INT nSB_, INT pos)
         ::UpdateWindow(g_hMainWnd);
 
         MSG msg;
-        while (::GetMessage(&msg, NULL, 0, 0))
+        while (::GetMessage(&msg, nullptr, 0, 0))
         {
             ::TranslateMessage(&msg);
             ::DispatchMessage(&msg);

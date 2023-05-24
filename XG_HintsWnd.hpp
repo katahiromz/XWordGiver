@@ -12,15 +12,15 @@ public:
     inline static MScrollView         xg_svHintsScrollView;
 
     // ヒントウィンドウのUIフォント。
-    inline static HFONT               xg_hHintsUIFont = NULL;
+    inline static HFONT               xg_hHintsUIFont = nullptr;
 
     // 縦のカギのコントロール群。
-    inline static HWND                xg_hwndTateCaptionStatic = NULL;
+    inline static HWND                xg_hwndTateCaptionStatic = nullptr;
     inline static std::vector<HWND>   xg_ahwndTateStatics;
     inline static std::vector<HWND>   xg_ahwndTateEdits;
 
     // 横のカギのコントロール群。
-    inline static HWND                xg_hwndYokoCaptionStatic = NULL;
+    inline static HWND                xg_hwndYokoCaptionStatic = nullptr;
     inline static std::vector<HWND>   xg_ahwndYokoStatics;
     inline static std::vector<HWND>   xg_ahwndYokoEdits;
 
@@ -29,15 +29,15 @@ public:
     inline static int s_nHintsWndCX = CW_USEDEFAULT, s_nHintsWndCY = CW_USEDEFAULT;
 
     // ハイライト。
-    inline static HWND s_hwndHighlightTateEdit = NULL;
-    inline static HWND s_hwndHighlightYokoEdit = NULL;
+    inline static HWND s_hwndHighlightTateEdit = nullptr;
+    inline static HWND s_hwndHighlightYokoEdit = nullptr;
 
     // ハイライトを更新する。
     void setHighlight(INT nYoko, INT nTate)
     {
         HWND hwndTateOld = s_hwndHighlightTateEdit;
         HWND hwndYokoOld = s_hwndHighlightYokoEdit;
-        HWND hwndTate = NULL, hwndYoko = NULL;
+        HWND hwndTate = nullptr, hwndYoko = nullptr;
 
         if (nTate != -1) {
             for (size_t i = 0; i < xg_vecTateHints.size(); ++i) {
@@ -64,13 +64,13 @@ public:
         s_hwndHighlightYokoEdit = hwndYoko;
 
         if (hwndTate)
-            InvalidateRect(hwndTate, NULL, TRUE);
+            InvalidateRect(hwndTate, nullptr, TRUE);
         if (hwndYoko)
-            InvalidateRect(hwndYoko, NULL, TRUE);
+            InvalidateRect(hwndYoko, nullptr, TRUE);
         if (hwndTateOld)
-            InvalidateRect(hwndTateOld, NULL, TRUE);
+            InvalidateRect(hwndTateOld, nullptr, TRUE);
         if (hwndYokoOld)
-            InvalidateRect(hwndYokoOld, NULL, TRUE);
+            InvalidateRect(hwndYokoOld, nullptr, TRUE);
     }
 
     // ハイライトに背景色を付ける。
@@ -176,7 +176,7 @@ public:
     // ヒントウィンドウのサイズが変わった。
     void OnSize(HWND hwnd, UINT /*state*/, int /*cx*/, int /*cy*/)
     {
-        if (xg_hwndTateCaptionStatic == NULL)
+        if (xg_hwndTateCaptionStatic == nullptr)
             return;
 
         xg_svHintsScrollView.clear();
@@ -186,7 +186,7 @@ public:
 
         MSize size1, size2;
         {
-            HDC hdc = ::CreateCompatibleDC(NULL);
+            HDC hdc = ::CreateCompatibleDC(nullptr);
             WCHAR label[64];
             StringCbPrintf(label, sizeof(label), XgLoadStringDx1(IDS_DOWNNUMBER), 100);
             std::wstring strLabel = label;
@@ -198,7 +198,7 @@ public:
         }
 
         WCHAR szText[512];
-        HDC hdc = ::CreateCompatibleDC(NULL);
+        HDC hdc = ::CreateCompatibleDC(nullptr);
         HGDIOBJ hFontOld = ::SelectObject(hdc, xg_hHintsUIFont);
         int y = 0;
 
@@ -343,7 +343,7 @@ public:
 
             // フォーカスを失うコントロールを再描画する。
             if (wParam)
-                InvalidateRect((HWND)wParam, NULL, TRUE);
+                InvalidateRect((HWND)wParam, nullptr, TRUE);
 
             return ::CallWindowProc(data->m_fnOldWndProc, hwnd, uMsg, wParam, lParam);
 
@@ -367,14 +367,14 @@ public:
 
             // フォーカスを失うコントロールを再描画する。
             if (wParam)
-                InvalidateRect((HWND)wParam, NULL, TRUE);
+                InvalidateRect((HWND)wParam, nullptr, TRUE);
 
             return ::CallWindowProc(data->m_fnOldWndProc, hwnd, uMsg, wParam, lParam);
 
         case WM_KEYDOWN:
             if (wParam == VK_RETURN) {
                 ::PostMessageW(xg_hHintsWnd, WM_SIZE, 0, 0);
-                ::SetFocus(NULL);
+                ::SetFocus(nullptr);
                 break;
             }
 
@@ -436,13 +436,13 @@ public:
         xg_ahwndYokoEdits.clear();
         xg_svHintsScrollView.SetParent(hwnd);
         xg_svHintsScrollView.ShowScrollBars(FALSE, TRUE);
-        s_hwndHighlightTateEdit = s_hwndHighlightYokoEdit = NULL;
+        s_hwndHighlightTateEdit = s_hwndHighlightYokoEdit = nullptr;
 
         if (xg_hHintsUIFont) {
             ::DeleteObject(xg_hHintsUIFont);
         }
         xg_hHintsUIFont = ::CreateFontIndirectW(XgGetUIFont());
-        if (xg_hHintsUIFont == NULL) {
+        if (xg_hHintsUIFont == nullptr) {
             xg_hHintsUIFont =
                 reinterpret_cast<HFONT>(::GetStockObject(DEFAULT_GUI_FONT));
         }
@@ -453,8 +453,8 @@ public:
             TEXT("STATIC"), XgLoadStringDx1(IDS_DOWN),
             WS_CHILD | WS_VISIBLE | SS_LEFT | SS_NOPREFIX | SS_NOTIFY |
             SS_CENTER | SS_CENTERIMAGE,
-            0, 0, 0, 0, hwnd, NULL, xg_hInstance, NULL);
-        if (hwndCtrl == NULL)
+            0, 0, 0, 0, hwnd, nullptr, xg_hInstance, nullptr);
+        if (hwndCtrl == nullptr)
             return FALSE;
         xg_hwndTateCaptionStatic = hwndCtrl;
         ::SendMessageW(hwndCtrl, WM_SETFONT,
@@ -465,8 +465,8 @@ public:
             TEXT("STATIC"), XgLoadStringDx1(IDS_ACROSS),
             WS_CHILD | WS_VISIBLE | SS_LEFT | SS_NOPREFIX | SS_NOTIFY |
             SS_CENTER | SS_CENTERIMAGE,
-            0, 0, 0, 0, hwnd, NULL, xg_hInstance, NULL);
-        if (hwndCtrl == NULL)
+            0, 0, 0, 0, hwnd, nullptr, xg_hInstance, nullptr);
+        if (hwndCtrl == nullptr)
             return FALSE;
         xg_hwndYokoCaptionStatic = hwndCtrl;
         ::SendMessageW(hwndCtrl, WM_SETFONT,
@@ -479,12 +479,12 @@ public:
             StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(IDS_DOWNNUMBER), hint.m_number);
             hwndCtrl = ::CreateWindowW(TEXT("STATIC"), sz,
                 WS_CHILD | WS_VISIBLE | SS_RIGHT | SS_NOPREFIX | SS_NOTIFY | SS_CENTERIMAGE,
-                0, 0, 0, 0, hwnd, NULL, xg_hInstance, NULL);
+                0, 0, 0, 0, hwnd, nullptr, xg_hInstance, nullptr);
             assert(hwndCtrl);
             ::SendMessageW(hwndCtrl, WM_SETFONT,
                 reinterpret_cast<WPARAM>(xg_hHintsUIFont),
                 TRUE);
-            if (hwndCtrl == NULL)
+            if (hwndCtrl == nullptr)
                 return FALSE;
 
             xg_ahwndTateStatics.emplace_back(hwndCtrl);
@@ -493,12 +493,12 @@ public:
                 WS_EX_CLIENTEDGE,
                 TEXT("EDIT"), hint.m_strHint.data(),
                 WS_CHILD | WS_VISIBLE | WS_TABSTOP | WS_BORDER | ES_AUTOVSCROLL | ES_MULTILINE,
-                0, 0, 0, 0, hwnd, NULL, xg_hInstance, NULL);
+                0, 0, 0, 0, hwnd, nullptr, xg_hInstance, nullptr);
             assert(hwndCtrl);
             ::SendMessageW(hwndCtrl, WM_SETFONT,
                 reinterpret_cast<WPARAM>(xg_hHintsUIFont),
                 TRUE);
-            if (hwndCtrl == NULL)
+            if (hwndCtrl == nullptr)
                 return FALSE;
 
             data = reinterpret_cast<XG_HintEditData *>(
@@ -515,12 +515,12 @@ public:
             StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(IDS_ACROSSNUMBER), hint.m_number);
             hwndCtrl = ::CreateWindowW(TEXT("STATIC"), sz,
                 WS_CHILD | WS_VISIBLE | SS_RIGHT | SS_NOPREFIX | SS_NOTIFY | SS_CENTERIMAGE,
-                0, 0, 0, 0, hwnd, NULL, xg_hInstance, NULL);
+                0, 0, 0, 0, hwnd, nullptr, xg_hInstance, nullptr);
             assert(hwndCtrl);
             ::SendMessageW(hwndCtrl, WM_SETFONT,
                 reinterpret_cast<WPARAM>(xg_hHintsUIFont),
                 TRUE);
-            if (hwndCtrl == NULL)
+            if (hwndCtrl == nullptr)
                 return FALSE;
 
             xg_ahwndYokoStatics.emplace_back(hwndCtrl);
@@ -529,12 +529,12 @@ public:
                 WS_EX_CLIENTEDGE,
                 TEXT("EDIT"), hint.m_strHint.data(),
                 WS_CHILD | WS_VISIBLE | WS_TABSTOP | WS_BORDER | ES_AUTOVSCROLL | ES_MULTILINE,
-                0, 0, 0, 0, hwnd, NULL, xg_hInstance, NULL);
+                0, 0, 0, 0, hwnd, nullptr, xg_hInstance, nullptr);
             assert(hwndCtrl);
             ::SendMessageW(hwndCtrl, WM_SETFONT,
                 reinterpret_cast<WPARAM>(xg_hHintsUIFont),
                 TRUE);
-            if (hwndCtrl == NULL)
+            if (hwndCtrl == nullptr)
                 return FALSE;
 
             data = reinterpret_cast<XG_HintEditData *>(
@@ -578,18 +578,18 @@ public:
         XG_HintsWnd::s_nHintsWndCX = rc.Width();
         XG_HintsWnd::s_nHintsWndCY = rc.Height();
 
-        xg_hHintsWnd = NULL;
-        xg_hwndTateCaptionStatic = NULL;
-        xg_hwndYokoCaptionStatic = NULL;
+        xg_hHintsWnd = nullptr;
+        xg_hwndTateCaptionStatic = nullptr;
+        xg_hwndYokoCaptionStatic = nullptr;
         xg_ahwndTateStatics.clear();
         xg_ahwndTateEdits.clear();
         xg_ahwndYokoStatics.clear();
         xg_ahwndYokoEdits.clear();
         xg_svHintsScrollView.clear();
-        s_hwndHighlightTateEdit = s_hwndHighlightYokoEdit = NULL;
+        s_hwndHighlightTateEdit = s_hwndHighlightYokoEdit = nullptr;
 
         ::DeleteObject(xg_hHintsUIFont);
-        xg_hHintsUIFont = NULL;
+        xg_hHintsUIFont = nullptr;
     }
 
     void OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT codeNotify)
@@ -682,7 +682,7 @@ public:
         ::SetForegroundWindow(hwnd);
         INT nCmd = ::TrackPopupMenu(
             hSubMenu, TPM_RIGHTBUTTON | TPM_LEFTALIGN | TPM_RETURNCMD,
-            xPos, yPos, 0, hwnd, NULL);
+            xPos, yPos, 0, hwnd, nullptr);
         ::PostMessageW(hwnd, WM_NULL, 0, 0);
         if (nCmd)
             ::PostMessageW(xg_hMainWnd, WM_COMMAND, nCmd, 0);

@@ -179,7 +179,7 @@ void XgSetModified(BOOL bModified, LPCSTR file, INT line)
     if (bModified) {
         CHAR szText[MAX_PATH];
         StringCbPrintfA(szText, sizeof(szText), "%s: %d", file, line);
-        //MessageBoxA(NULL, szText, NULL, 0);
+        //MessageBoxA(nullptr, szText, nullptr, 0);
     }
 
     XgMarkUpdate();
@@ -2043,9 +2043,9 @@ BOOL XgImportLooks(HWND hwnd, LPCWSTR pszFileName)
     xg_strBlackCellImage = szText;
 
     ::DeleteObject(xg_hbmBlackCell);
-    xg_hbmBlackCell = NULL;
+    xg_hbmBlackCell = nullptr;
     ::DeleteEnhMetaFile(xg_hBlackCellEMF);
-    xg_hBlackCellEMF = NULL;
+    xg_hBlackCellEMF = nullptr;
     XgGetFileManager()->load_block_image(xg_strBlackCellImage, xg_hbmBlackCell, xg_hBlackCellEMF);
 
     // 二重マス文字。
@@ -2127,7 +2127,7 @@ BOOL XgExportLooks(HWND hwnd, LPCWSTR pszFileName)
     }
 
     // フラッシュ！
-    return WritePrivateProfileStringW(NULL, NULL, NULL, pszFileName);
+    return WritePrivateProfileStringW(nullptr, nullptr, nullptr, pszFileName);
 }
 
 // クリップボードにテキストをコピーする。
@@ -2193,10 +2193,10 @@ static inline void About_OnChangeLog(HWND hwnd)
 {
     // Show HISTORY.txt
     WCHAR szPath[MAX_PATH];
-    GetModuleFileNameW(NULL, szPath, _countof(szPath));
+    GetModuleFileNameW(nullptr, szPath, _countof(szPath));
     PathRemoveFileSpecW(szPath);
     PathAppendW(szPath, L"HISTORY.txt");
-    ShellExecuteW(hwnd, NULL, szPath, NULL, NULL, SW_SHOWNORMAL);
+    ShellExecuteW(hwnd, nullptr, szPath, nullptr, nullptr, SW_SHOWNORMAL);
 }
 
 static inline void About_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT codeNotify)
@@ -2220,7 +2220,7 @@ static inline LRESULT About_OnNotify(HWND hwnd, int idFrom, LPNMHDR pnmhdr)
     case NM_RETURN:
         if (idFrom == ctl1) {
             // The user clicked URL
-            ShellExecuteW(hwnd, NULL, XgLoadStringDx1(IDS_HOMEPAGE), NULL, NULL, SW_SHOWNORMAL);
+            ShellExecuteW(hwnd, nullptr, XgLoadStringDx1(IDS_HOMEPAGE), nullptr, nullptr, SW_SHOWNORMAL);
         }
         break;
     case NM_RCLICK:
@@ -2250,7 +2250,7 @@ static inline void About_OnContextMenu(HWND hwnd, HWND hwndContext, UINT xPos, U
     SetForegroundWindow(hwnd);
     INT id = (INT)TrackPopupMenu(hSubMenu,
                                  TPM_LEFTALIGN | TPM_RIGHTBUTTON | TPM_RETURNCMD,
-                                 xPos, yPos, 0, hwnd, NULL);
+                                 xPos, yPos, 0, hwnd, nullptr);
     DestroyMenu(hMenu);
     PostMessage(hwnd, WM_NULL, 0, 0);
     switch (id)
@@ -2296,7 +2296,7 @@ bool __fastcall XgDoSaveFiles(HWND hwnd, LPCWSTR pszFile)
     // 関連画像ファイルをパス名を変換して保存する。
     std::wstring files_dir;
     XgGetFileManager()->get_files_dir(files_dir);
-    CreateDirectoryW(files_dir.c_str(), NULL);
+    CreateDirectoryW(files_dir.c_str(), nullptr);
     for (auto& box : xg_boxes) {
         if (box->m_type == L"pic") {
             auto pic = dynamic_cast<XG_PictureBoxWindow*>(&*box);
@@ -2308,7 +2308,7 @@ bool __fastcall XgDoSaveFiles(HWND hwnd, LPCWSTR pszFile)
     // 保存する。
     if (!XgDoSaveFile(hwnd, pszFile)) {
         // 保存に失敗。
-        XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_CANTSAVE2), NULL, MB_ICONERROR);
+        XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_CANTSAVE2), nullptr, MB_ICONERROR);
         XgGetFileManager() = old_mgr;
         return false;
     }
@@ -2709,7 +2709,7 @@ BOOL __fastcall XgOnOpen(HWND hwnd)
         OFN_PATHMUSTEXIST | OFN_HIDEREADONLY;
     ofn.lpstrDefExt = L"xwd";
     if (::GetOpenFileNameW(&ofn)) {
-        return XgOnLoad(hwnd, sz, NULL);
+        return XgOnLoad(hwnd, sz, nullptr);
     }
     return FALSE;
 }
@@ -3585,7 +3585,7 @@ void XgCopyBoard(HWND hwnd)
                         ::SetClipboardData(CF_ENHMETAFILE, hEMF);
 
                         // DIBを設定。
-                        if (HDC hDC = CreateCompatibleDC(NULL))
+                        if (HDC hDC = CreateCompatibleDC(nullptr))
                         {
                             HBITMAP hbm = XgCreate24BppBitmap(hDC, siz.cx, siz.cy);
                             HGDIOBJ hbmOld = SelectObject(hDC, hbm);
@@ -3630,7 +3630,7 @@ void XgCopyBoardAsImage(HWND hwnd)
     XgGetXWordExtent(&siz);
 
     // EMFを作成する。
-    HENHMETAFILE hEMF = NULL;
+    HENHMETAFILE hEMF = nullptr;
     HDC hdcRef = ::GetDC(hwnd);
     HDC hdc = ::CreateEnhMetaFileW(hdcRef, nullptr, nullptr, XgLoadStringDx1(IDS_APPNAME));
     if (hdc) {
@@ -3641,8 +3641,8 @@ void XgCopyBoardAsImage(HWND hwnd)
     }
 
     // BMPを作成する。
-    HBITMAP hbm = NULL;
-    if (HDC hDC = CreateCompatibleDC(NULL))
+    HBITMAP hbm = nullptr;
+    if (HDC hDC = CreateCompatibleDC(nullptr))
     {
         BITMAPINFO bi;
         ZeroMemory(&bi, sizeof(bi));
@@ -3653,7 +3653,7 @@ void XgCopyBoardAsImage(HWND hwnd)
         bi.bmiHeader.biBitCount = 24;
         bi.bmiHeader.biCompression = BI_RGB;
         LPVOID pvBits;
-        hbm = CreateDIBSection(hDC, &bi, DIB_RGB_COLORS, &pvBits, NULL, 0);
+        hbm = CreateDIBSection(hDC, &bi, DIB_RGB_COLORS, &pvBits, nullptr, 0);
         if (HGDIOBJ hbmOld = SelectObject(hDC, hbm))
         {
             RECT rc;
@@ -3664,7 +3664,7 @@ void XgCopyBoardAsImage(HWND hwnd)
         }
         DeleteDC(hDC);
     }
-    HGLOBAL hGlobal = NULL;
+    HGLOBAL hGlobal = nullptr;
     if (hbm)
     {
         std::vector<BYTE> data;
@@ -3680,7 +3680,7 @@ void XgCopyBoardAsImage(HWND hwnd)
             }
         }
         DeleteObject(hbm);
-        hbm = NULL;
+        hbm = nullptr;
     }
 
     // クリップボードを開く。
@@ -3714,7 +3714,7 @@ void __fastcall XgCopyMarkWord(HWND hwnd)
     XgGetMarkWordExtent(nCount, &siz);
 
     // EMFを作成する。
-    HENHMETAFILE hEMF = NULL;
+    HENHMETAFILE hEMF = nullptr;
     HDC hdcRef = ::GetDC(hwnd);
     HDC hdc = ::CreateEnhMetaFileW(hdcRef, nullptr, nullptr, XgLoadStringDx1(IDS_APPNAME));
     if (hdc) {
@@ -3729,7 +3729,7 @@ void __fastcall XgCopyMarkWord(HWND hwnd)
     const XG_Board *xw = (xg_bSolved ? &xg_solution : &xg_xword);
 
     // 二重マス単語のテキストを取得。
-    HGLOBAL hGlobal = NULL;
+    HGLOBAL hGlobal = nullptr;
     std::wstring strMarkWord;
     if (XgGetMarkWord(xw, strMarkWord)) {
         for (auto& wch : strMarkWord) {
@@ -3747,7 +3747,7 @@ void __fastcall XgCopyMarkWord(HWND hwnd)
             GlobalUnlock(hGlobal);
         } else {
             GlobalFree(hGlobal);
-            hGlobal = NULL;
+            hGlobal = nullptr;
         }
     }
 
@@ -3929,26 +3929,26 @@ void __fastcall MainWnd_OnDestroy(HWND /*hwnd*/)
 {
     // イメージリストを破棄する。
     ::ImageList_Destroy(xg_hImageList);
-    xg_hImageList = NULL;
+    xg_hImageList = nullptr;
     ::ImageList_Destroy(xg_hGrayedImageList);
-    xg_hGrayedImageList = NULL;
+    xg_hGrayedImageList = nullptr;
 
     // ウィンドウを破棄する。
     ::DestroyWindow(xg_hToolBar);
-    xg_hToolBar = NULL;
+    xg_hToolBar = nullptr;
     ::DestroyWindow(xg_hSizeGrip);
-    xg_hSizeGrip = NULL;
+    xg_hSizeGrip = nullptr;
     ::DestroyWindow(xg_cands_wnd);
     ::DestroyWindow(xg_hHintsWnd);
-    xg_hHintsWnd = NULL;
+    xg_hHintsWnd = nullptr;
     ::DestroyWindow(xg_hwndInputPalette);
-    xg_hwndInputPalette = NULL;
+    xg_hwndInputPalette = nullptr;
     ::DestroyWindow(xg_hMarkingDlg);
 
     // アプリを終了する。
     ::PostQuitMessage(0);
 
-    xg_hMainWnd = NULL;
+    xg_hMainWnd = nullptr;
 }
 
 // 「辞書」メニューを取得する。
@@ -3960,13 +3960,13 @@ HMENU XgDoFindDictMenu(HMENU hMenu)
     {
         if (GetMenuStringW(hMenu, i, szText, _countof(szText), MF_BYPOSITION))
         {
-            if (wcsstr(szText, pszDict) != NULL)
+            if (wcsstr(szText, pszDict) != nullptr)
             {
                 return GetSubMenu(hMenu, i);
             }
         }
     }
-    return NULL;
+    return nullptr;
 }
 
 // 「辞書」メニューを更新する。
@@ -4433,7 +4433,7 @@ void __fastcall MainWnd_OnSize(HWND hwnd, UINT state, int /*cx*/, int /*cy*/)
     int x, y;
 
     // ツールバーが作成されていなければ、初期化前なので、無視。
-    if (xg_hToolBar == NULL)
+    if (xg_hToolBar == nullptr)
         return;
 
     // ステータスバーの高さを取得。
@@ -4484,12 +4484,12 @@ void __fastcall MainWnd_OnSize(HWND hwnd, UINT state, int /*cx*/, int /*cy*/)
     HDWP hDwp = ::BeginDeferWindowPos(2);
     if (hDwp) {
         if (::IsWindowVisible(xg_hSizeGrip)) {
-            hDwp = ::DeferWindowPos(hDwp, xg_hSizeGrip, NULL,
+            hDwp = ::DeferWindowPos(hDwp, xg_hSizeGrip, nullptr,
                 x + cx - cxVScrollBar, y + cy - cyHScrollBar,
                 cxVScrollBar, cyHScrollBar,
                 SWP_SHOWWINDOW | SWP_NOZORDER | SWP_NOACTIVATE | SWP_NOOWNERZORDER);
         }
-        hDwp = ::DeferWindowPos(hDwp, xg_canvasWnd, NULL,
+        hDwp = ::DeferWindowPos(hDwp, xg_canvasWnd, nullptr,
             x, y, cx, cy, SWP_SHOWWINDOW | SWP_NOZORDER | SWP_NOACTIVATE | SWP_NOOWNERZORDER);
         ::EndDeferWindowPos(hDwp);
     }
@@ -4509,9 +4509,9 @@ void __fastcall MainWnd_OnSize(HWND hwnd, UINT state, int /*cx*/, int /*cy*/)
     }
 
     // 再描画する。
-    ::InvalidateRect(xg_hToolBar, NULL, TRUE);
-    ::InvalidateRect(xg_hStatusBar, NULL, TRUE);
-    ::InvalidateRect(xg_hSizeGrip, NULL, TRUE);
+    ::InvalidateRect(xg_hToolBar, nullptr, TRUE);
+    ::InvalidateRect(xg_hStatusBar, nullptr, TRUE);
+    ::InvalidateRect(xg_hSizeGrip, nullptr, TRUE);
 
     // スクロール位置を取得し、スクロール情報を更新する。
     x = XgGetHScrollPos();
@@ -4567,7 +4567,7 @@ LOGFONTW *XgGetUIFont(void)
 
             StringCbCopy(s_lf.lfFaceName, sizeof(s_lf.lfFaceName), name.data());
 
-            HDC hdc = ::CreateCompatibleDC(NULL);
+            HDC hdc = ::CreateCompatibleDC(nullptr);
             int point_size = _wtoi(size.data());
             s_lf.lfHeight = -MulDiv(point_size, ::GetDeviceCaps(hdc, LOGPIXELSY), 72);
             ::DeleteDC(hdc);
@@ -4611,7 +4611,7 @@ void XgUpdateTheme(HWND hwnd)
     for (iMenu = 0; iMenu < nCount; ++iMenu) {
         szText[0] = 0;
         ::GetMenuStringW(hMenu, iMenu, szText, _countof(szText), MF_BYPOSITION);
-        if (wcsstr(szText, XgLoadStringDx1(IDS_DICT)) != NULL) {
+        if (wcsstr(szText, XgLoadStringDx1(IDS_DICT)) != nullptr) {
             break;
         }
     }
@@ -4645,7 +4645,7 @@ void XgUpdateRules(HWND hwnd)
     for (INT i = nCount - 1; i >= 0; --i) {
         szText[0] = 0;
         ::GetMenuStringW(hMenu, i, szText, _countof(szText), MF_BYPOSITION);
-        if (wcsstr(szText, XgLoadStringDx1(IDS_RULES)) != NULL) {
+        if (wcsstr(szText, XgLoadStringDx1(IDS_RULES)) != nullptr) {
             if (xg_nRules == XG_DEFAULT_RULES) {
                 StringCbCopyW(szText, sizeof(szText), XgLoadStringDx1(IDS_STANDARDRULES));
             } else {
@@ -4757,7 +4757,7 @@ std::wstring URL_encode(const std::wstring& url)
     size_t len = url.size() * 4;
     str.resize(len);
     if (len > 0)
-        WideCharToMultiByte(CP_UTF8, 0, url.c_str(), -1, &str[0], (INT)len, NULL, NULL);
+        WideCharToMultiByte(CP_UTF8, 0, url.c_str(), -1, &str[0], (INT)len, nullptr, nullptr);
 
     len = strlen(str.c_str());
     str.resize(len);
@@ -4834,7 +4834,7 @@ void XgDoWebSearch(HWND hwnd, LPCWSTR str)
     std::wstring encoded = URL_encode(raw.c_str());
     query += encoded;
 
-    ::ShellExecuteW(hwnd, NULL, query.c_str(), NULL, NULL, SW_SHOWNORMAL);
+    ::ShellExecuteW(hwnd, nullptr, query.c_str(), nullptr, nullptr, SW_SHOWNORMAL);
 }
 
 void __fastcall MainWnd_OnCopyPattern(HWND hwnd, BOOL bTate)
@@ -4946,7 +4946,7 @@ void __fastcall XgOpenPatterns(HWND hwnd)
 void __fastcall XgOnOpenRulesTxt(HWND hwnd)
 {
     WCHAR szPath[MAX_PATH], szDir[MAX_PATH];
-    GetModuleFileNameW(NULL, szPath, MAX_PATH);
+    GetModuleFileNameW(nullptr, szPath, MAX_PATH);
     PathRemoveFileSpecW(szPath);
     StringCbCopyW(szDir, sizeof(szDir), szPath);
     StringCbCopyW(szPath, sizeof(szPath), szDir);
@@ -4966,7 +4966,7 @@ void __fastcall XgOnOpenRulesTxt(HWND hwnd)
             }
         }
     }
-    ShellExecuteW(hwnd, NULL, szPath, NULL, NULL, SW_SHOWNORMAL);
+    ShellExecuteW(hwnd, nullptr, szPath, nullptr, nullptr, SW_SHOWNORMAL);
 }
 
 // 黒マスルールをチェックする。
@@ -5050,7 +5050,7 @@ void __fastcall XgTheme(HWND hwnd)
 {
     if (xg_tag_histgram.empty()) {
         // タグがありません。
-        XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_NOTAGS), NULL, MB_ICONERROR);
+        XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_NOTAGS), nullptr, MB_ICONERROR);
         return;
     }
 
@@ -5207,7 +5207,7 @@ void XgGenerateFromWordList(HWND hwnd)
 
     if (!s_generated) {
         // 生成できなかった。
-        XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_CANTGENERATE), NULL, MB_ICONERROR);
+        XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_CANTGENERATE), nullptr, MB_ICONERROR);
         return;
     }
 
@@ -5428,7 +5428,7 @@ void __fastcall XgMakeItNumCro(HWND hwnd)
 // ローカルファイルを見つける。
 BOOL __fastcall XgFindLocalFile(LPWSTR pszPath, UINT cchPath, LPCWSTR pszFileName)
 {
-    GetModuleFileNameW(NULL, pszPath, MAX_PATH);
+    GetModuleFileNameW(nullptr, pszPath, MAX_PATH);
     PathRemoveFileSpecW(pszPath);
     PathAppendW(pszPath, pszFileName);
     if (!PathFileExistsW(pszPath))
@@ -5849,16 +5849,16 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT /*codeNo
         {
             // ルール「黒マス点対称」では黒マス追加ありの解を求めることはできません。
             if (xg_nRules & RULE_POINTSYMMETRY) {
-                XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_CANTSOLVESYMMETRY), NULL, MB_ICONERROR);
+                XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_CANTSOLVESYMMETRY), nullptr, MB_ICONERROR);
                 break;
             }
             // ルール「黒マス線対称」では黒マス追加ありの解を求めることはできません。
             if (xg_nRules & RULE_LINESYMMETRYV) {
-                XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_CANTSOLVELINESYMMETRY), NULL, MB_ICONERROR);
+                XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_CANTSOLVELINESYMMETRY), nullptr, MB_ICONERROR);
                 break;
             }
             if (xg_nRules & RULE_LINESYMMETRYH) {
-                XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_CANTSOLVELINESYMMETRY), NULL, MB_ICONERROR);
+                XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_CANTSOLVELINESYMMETRY), nullptr, MB_ICONERROR);
                 break;
             }
         }
@@ -5887,7 +5887,7 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT /*codeNo
             if (!std::equal(xg_xword.m_vCells.cbegin(), xg_xword.m_vCells.cend(),
                             copy.m_vCells.cbegin()))
             {
-                if (XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_SHALLIMIRROR), NULL,
+                if (XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_SHALLIMIRROR), nullptr,
                                         MB_ICONINFORMATION | MB_YESNO) == IDYES)
                 {
                     xg_xword.m_vCells = copy.m_vCells;
@@ -5912,16 +5912,16 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT /*codeNo
     case ID_SOLVEREPEATEDLY:    // 連続で解を求める
         // ルール「黒マス点対称」では黒マス追加ありの解を求めることはできません。
         if (xg_nRules & RULE_POINTSYMMETRY) {
-            XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_CANTSOLVESYMMETRY), NULL, MB_ICONERROR);
+            XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_CANTSOLVESYMMETRY), nullptr, MB_ICONERROR);
             break;
         }
         // ルール「黒マス線対称」では黒マス追加ありの解を求めることはできません。
         if (xg_nRules & RULE_LINESYMMETRYV) {
-            XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_CANTSOLVELINESYMMETRY), NULL, MB_ICONERROR);
+            XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_CANTSOLVELINESYMMETRY), nullptr, MB_ICONERROR);
             break;
         }
         if (xg_nRules & RULE_LINESYMMETRYH) {
-            XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_CANTSOLVELINESYMMETRY), NULL, MB_ICONERROR);
+            XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_CANTSOLVELINESYMMETRY), nullptr, MB_ICONERROR);
             break;
         }
         {
@@ -5934,7 +5934,7 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT /*codeNo
             if (!std::equal(xg_xword.m_vCells.cbegin(), xg_xword.m_vCells.cend(),
                             copy.m_vCells.cbegin()))
             {
-                if (XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_SHALLIMIRROR), NULL,
+                if (XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_SHALLIMIRROR), nullptr,
                                         MB_ICONINFORMATION | MB_YESNO) == IDYES)
                 {
                     xg_xword.m_vCells = copy.m_vCells;
@@ -6131,7 +6131,7 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT /*codeNo
     case ID_SHOWHIDEHINTS:
         if (IsWindow(xg_hHintsWnd)) {
             ::DestroyWindow(xg_hHintsWnd);
-            xg_hHintsWnd = NULL;
+            xg_hHintsWnd = nullptr;
             xg_bShowClues = FALSE;
         } else {
             XgShowHints(hwnd);
@@ -6175,12 +6175,12 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT /*codeNo
             ::MessageBeep(0xFFFFFFFF);
         break;
     case ID_OPENHOMEPAGE:   // ホームページを開く。
-        ::ShellExecuteW(hwnd, NULL, XgLoadStringDx1(IDS_HOMEPAGE), NULL, NULL, SW_SHOWNORMAL);
+        ::ShellExecuteW(hwnd, nullptr, XgLoadStringDx1(IDS_HOMEPAGE), nullptr, nullptr, SW_SHOWNORMAL);
         break;
     case ID_OPENBBS:        // 掲示板を開く。
         {
             static LPCWSTR s_pszBBS = L"http://katahiromz.bbs.fc2.com/";
-            ::ShellExecuteW(hwnd, NULL, s_pszBBS, NULL, NULL, SW_SHOWNORMAL);
+            ::ShellExecuteW(hwnd, nullptr, s_pszBBS, nullptr, nullptr, SW_SHOWNORMAL);
         }
         break;
     case ID_CHARFEED:
@@ -6278,7 +6278,7 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT /*codeNo
         PostMessageW(hwnd, WM_SIZE, 0, 0);
         break;
     case ID_HELPDICTSITE:
-        ShellExecuteW(hwnd, NULL, XgLoadStringDx1(IDS_MATRIXSEARCH), NULL, NULL, SW_SHOWNORMAL);
+        ShellExecuteW(hwnd, nullptr, XgLoadStringDx1(IDS_MATRIXSEARCH), nullptr, nullptr, SW_SHOWNORMAL);
         break;
     case ID_BLOCKNOFEED:
         {
@@ -6622,11 +6622,11 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT /*codeNo
                 xg_strBlackCellImage.clear();
                 if (xg_hbmBlackCell) {
                     ::DeleteObject(xg_hbmBlackCell);
-                    xg_hbmBlackCell = NULL;
+                    xg_hbmBlackCell = nullptr;
                 }
                 if (xg_hBlackCellEMF) {
                     DeleteEnhMetaFile(xg_hBlackCellEMF);
-                    xg_hBlackCellEMF = NULL;
+                    xg_hBlackCellEMF = nullptr;
                 }
                 // スケルトンビューを設定。
                 xg_nViewMode = XG_VIEW_SKELETON;
@@ -6820,7 +6820,7 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT /*codeNo
             // PAT.txtを開く。
             WCHAR szPath[MAX_PATH];
             if (XgFindLocalFile(szPath, _countof(szPath), L"PAT.txt"))
-                ShellExecuteW(hwnd, NULL, szPath, NULL, NULL, SW_SHOWNORMAL);
+                ShellExecuteW(hwnd, nullptr, szPath, nullptr, nullptr, SW_SHOWNORMAL);
         }
         break;
     case ID_OPENTHEMETXT:
@@ -6828,7 +6828,7 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT /*codeNo
             // THEME.txtを開く。
             WCHAR szPath[MAX_PATH];
             if (XgFindLocalFile(szPath, _countof(szPath), L"THEME.txt"))
-                ShellExecuteW(hwnd, NULL, szPath, NULL, NULL, SW_SHOWNORMAL);
+                ShellExecuteW(hwnd, nullptr, szPath, nullptr, nullptr, SW_SHOWNORMAL);
         }
         break;
     case ID_CLEARUNDOBUFFER:
@@ -6840,14 +6840,14 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT /*codeNo
         bUpdateImage = TRUE;
         break;
     case ID_DOWNLOADDICT:
-        ShellExecuteW(hwnd, NULL, L"https://katahiromz.web.fc2.com/xword/dict", NULL, NULL, SW_SHOWNORMAL);
+        ShellExecuteW(hwnd, nullptr, L"https://katahiromz.web.fc2.com/xword/dict", nullptr, nullptr, SW_SHOWNORMAL);
         break;
     case ID_OPENPOLICYTXT:
         {
             // POLICY.txtを開く。
             WCHAR szPath[MAX_PATH];
             if (XgFindLocalFile(szPath, _countof(szPath), L"POLICY.txt"))
-                ShellExecuteW(hwnd, NULL, szPath, NULL, NULL, SW_SHOWNORMAL);
+                ShellExecuteW(hwnd, nullptr, szPath, nullptr, nullptr, SW_SHOWNORMAL);
         }
         break;
     default:
@@ -6873,14 +6873,14 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT /*codeNo
 // 無効状態のビットマップを作成する。
 HBITMAP XgCreateGrayedBitmap(HBITMAP hbm, COLORREF crMask = CLR_INVALID)
 {
-    HDC hdc = ::GetDC(NULL);
+    HDC hdc = ::GetDC(nullptr);
     if (::GetDeviceCaps(hdc, BITSPIXEL) < 24) {
         HPALETTE hPal = reinterpret_cast<HPALETTE>(::GetCurrentObject(hdc, OBJ_PAL));
         UINT index = ::GetNearestPaletteIndex(hPal, crMask);
         if (index != CLR_INVALID)
             crMask = PALETTEINDEX(index);
     }
-    ::ReleaseDC(NULL, hdc);
+    ::ReleaseDC(nullptr, hdc);
 
     BITMAP bm;
     ::GetObject(hbm, sizeof(bm), &bm);
@@ -6900,12 +6900,12 @@ HBITMAP XgCreateGrayedBitmap(HBITMAP hbm, COLORREF crMask = CLR_INVALID)
     rc.right = bm.bmWidth;
     rc.bottom = bm.bmHeight;
 
-    HDC hdc1 = ::CreateCompatibleDC(NULL);
-    HDC hdc2 = ::CreateCompatibleDC(NULL);
+    HDC hdc1 = ::CreateCompatibleDC(nullptr);
+    HDC hdc2 = ::CreateCompatibleDC(nullptr);
 
     LPVOID pvBits;
     HBITMAP hbmNew = ::CreateDIBSection(
-        NULL, &bi, DIB_RGB_COLORS, &pvBits, NULL, 0);
+        nullptr, &bi, DIB_RGB_COLORS, &pvBits, nullptr, 0);
     assert(hbmNew);
     if (hbmNew) {
         HGDIOBJ hbm1Old = ::SelectObject(hdc1, hbm);
@@ -6969,26 +6969,26 @@ bool __fastcall MainWnd_OnCreate(HWND hwnd, LPCREATESTRUCT /*lpCreateStruct*/)
 
     // キャンバスウィンドウを作成する。
     DWORD style = WS_CHILD | WS_VISIBLE | WS_HSCROLL | WS_VSCROLL | WS_CLIPCHILDREN;
-    if (!xg_canvasWnd.CreateWindowDx(hwnd, NULL, style, WS_EX_ACCEPTFILES))
+    if (!xg_canvasWnd.CreateWindowDx(hwnd, nullptr, style, WS_EX_ACCEPTFILES))
     {
         return false;
     }
 
     // サイズグリップを作る。
     xg_hSizeGrip = ::CreateWindowW(
-        L"SCROLLBAR", NULL,
+        L"SCROLLBAR", nullptr,
         WS_CHILD | WS_VISIBLE | SBS_SIZEGRIP,
         0, 0, 0, 0,
-        hwnd, NULL, xg_hInstance, NULL);
-    if (xg_hSizeGrip == NULL)
+        hwnd, nullptr, xg_hInstance, nullptr);
+    if (xg_hSizeGrip == nullptr)
         return false;
 
     // イメージリストの準備をする。
     xg_hImageList = ::ImageList_Create(32, 32, ILC_COLOR24, 0, 0);
-    if (xg_hImageList == NULL)
+    if (xg_hImageList == nullptr)
         return FALSE;
     xg_hGrayedImageList = ::ImageList_Create(32, 32, ILC_COLOR24, 0, 0);
-    if (xg_hGrayedImageList == NULL)
+    if (xg_hGrayedImageList == nullptr)
         return FALSE;
 
     ::ImageList_SetBkColor(xg_hImageList, CLR_NONE);
@@ -6999,9 +6999,9 @@ bool __fastcall MainWnd_OnCreate(HWND hwnd, LPCREATESTRUCT /*lpCreateStruct*/)
         IMAGE_BITMAP,
         0, 0,
         LR_COLOR));
-    ::ImageList_Add(xg_hImageList, hbm, NULL);
+    ::ImageList_Add(xg_hImageList, hbm, nullptr);
     HBITMAP hbmGrayed = XgCreateGrayedBitmap(hbm);
-    ::ImageList_Add(xg_hGrayedImageList, hbmGrayed, NULL);
+    ::ImageList_Add(xg_hGrayedImageList, hbmGrayed, nullptr);
     ::DeleteObject(hbm);
     ::DeleteObject(hbmGrayed);
 
@@ -7032,7 +7032,7 @@ bool __fastcall MainWnd_OnCreate(HWND hwnd, LPCREATESTRUCT /*lpCreateStruct*/)
     };
 
     xg_hStatusBar = ::CreateStatusWindow(WS_CHILD | WS_VISIBLE, L"", hwnd, 256);
-    if (xg_hStatusBar == NULL)
+    if (xg_hStatusBar == nullptr)
         return FALSE;
 
     XgUpdateStatusBar(hwnd);
@@ -7040,14 +7040,14 @@ bool __fastcall MainWnd_OnCreate(HWND hwnd, LPCREATESTRUCT /*lpCreateStruct*/)
     // ツールバーを作成する。
     const int c_IDW_TOOLBAR = 1;
     xg_hToolBar = ::CreateWindowW(
-        TOOLBARCLASSNAMEW, NULL, 
+        TOOLBARCLASSNAMEW, nullptr, 
         WS_CHILD | CCS_TOP | TBSTYLE_TOOLTIPS,
         0, 0, 0, 0,
         hwnd,
         reinterpret_cast<HMENU>(UINT_PTR(c_IDW_TOOLBAR)),
         xg_hInstance,
-        NULL);
-    if (xg_hToolBar == NULL)
+        nullptr);
+    if (xg_hToolBar == nullptr)
         return FALSE;
 
     // ツールバーを初期化する。
@@ -7386,7 +7386,7 @@ void XgDestroyHintsWnd(void)
     if (xg_hHintsWnd && ::IsWindow(xg_hHintsWnd)) {
         // 更新を無視・破棄する。
         HWND hwnd = xg_hHintsWnd;
-        xg_hHintsWnd = NULL;
+        xg_hHintsWnd = nullptr;
         ::DestroyWindow(hwnd);
     }
 }
@@ -7397,7 +7397,7 @@ bool XgOpenHintsByWindow(HWND hwnd)
     // もしヒントウィンドウが存在すれば破棄する。
     if (xg_hHintsWnd) {
         HWND hwnd = xg_hHintsWnd;
-        xg_hHintsWnd = NULL;
+        xg_hHintsWnd = nullptr;
         ::DestroyWindow(hwnd);
     }
 
@@ -7427,7 +7427,7 @@ void XgShowHints(HWND hwnd)
 //////////////////////////////////////////////////////////////////////////////
 
 // hook for Ctrl+A
-HHOOK xg_hCtrlAHook = NULL;
+HHOOK xg_hCtrlAHook = nullptr;
 
 // hook proc for Ctrl+A
 LRESULT CALLBACK XgCtrlAMessageProc(INT nCode, WPARAM wParam, LPARAM lParam)
@@ -7690,7 +7690,7 @@ int WINAPI WinMain(
 
     // Ctrl+Aの機能を有効にする。
     xg_hCtrlAHook = ::SetWindowsHookEx(WH_MSGFILTER,
-        XgCtrlAMessageProc, NULL, ::GetCurrentThreadId());
+        XgCtrlAMessageProc, nullptr, ::GetCurrentThreadId());
 
     // メッセージループ。
     MSG msg;
@@ -7749,7 +7749,7 @@ int WINAPI WinMain(
 
     // Ctrl+Aの機能を解除する。
     ::UnhookWindowsHookEx(xg_hCtrlAHook);
-    xg_hCtrlAHook = NULL;
+    xg_hCtrlAHook = nullptr;
 
     // 設定を保存。
     XgSaveSettings();

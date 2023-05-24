@@ -22,7 +22,7 @@ public:
     inline static MScrollView                 xg_svCandsScrollView;
 
     // 候補ウィンドウのUIフォント。
-    inline static HFONT                       xg_hCandsUIFont = NULL;
+    inline static HFONT                       xg_hCandsUIFont = nullptr;
 
     // 候補。
     inline static std::vector<std::wstring>   xg_vecCandidates;
@@ -182,7 +182,7 @@ public:
 
         case WM_KEYDOWN:
             if (wParam == VK_RETURN) {
-                ::SetFocus(NULL);
+                ::SetFocus(nullptr);
                 break;
             }
 
@@ -237,7 +237,7 @@ public:
 
     virtual void ModifyWndClassDx(WNDCLASSEX& wcx)
     {
-        wcx.hIcon = NULL;
+        wcx.hIcon = nullptr;
         wcx.hbrBackground = ::CreateSolidBrush(RGB(255, 255, 192));
     }
 
@@ -252,7 +252,7 @@ public:
         MRect rcClient;
         ::GetClientRect(hwnd, &rcClient);
 
-        HDC hdc = ::CreateCompatibleDC(NULL);
+        HDC hdc = ::CreateCompatibleDC(nullptr);
         HGDIOBJ hFontOld = ::SelectObject(hdc, xg_hCandsUIFont);
         {
             MPoint pt;
@@ -290,7 +290,7 @@ public:
             ::DeleteObject(xg_hCandsUIFont);
         }
         xg_hCandsUIFont = ::CreateFontIndirectW(XgGetUIFont());
-        if (xg_hCandsUIFont == NULL) {
+        if (xg_hCandsUIFont == nullptr) {
             xg_hCandsUIFont = reinterpret_cast<HFONT>(
                 ::GetStockObject(DEFAULT_GUI_FONT));
         }
@@ -320,9 +320,9 @@ public:
             hwndCtrl = ::CreateWindowW(
                 TEXT("BUTTON"), cand.data(),
                 WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | WS_TABSTOP,
-                0, 0, 0, 0, hwnd, NULL, xg_hInstance, NULL);
+                0, 0, 0, 0, hwnd, nullptr, xg_hInstance, nullptr);
             assert(hwndCtrl);
-            if (hwndCtrl == NULL)
+            if (hwndCtrl == nullptr)
                 return FALSE;
 
             ::SendMessageW(hwndCtrl, WM_SETFONT,
@@ -402,7 +402,7 @@ public:
         xg_svCandsScrollView.clear();
 
         ::DeleteObject(xg_hCandsUIFont);
-        xg_hCandsUIFont = NULL;
+        xg_hCandsUIFont = nullptr;
 
         SetForegroundWindow(xg_hMainWnd);
     }

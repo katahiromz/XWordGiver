@@ -13,7 +13,7 @@ public:
 
     RECT m_rcBitmap;
     SIZE m_sizBitmap;
-    HBITMAP m_hbmBitmap = NULL;
+    HBITMAP m_hbmBitmap = nullptr;
 
     XG_WordListDialog()
     {
@@ -27,14 +27,14 @@ public:
 
         // コントロールstc1の位置とサイズを取得。
         HWND hStc1 = GetDlgItem(hwnd, stc1);
-        assert(hStc1 != NULL);
+        assert(hStc1 != nullptr);
         GetWindowRect(hStc1, &m_rcBitmap);
-        MapWindowRect(NULL, hwnd, &m_rcBitmap);
+        MapWindowRect(nullptr, hwnd, &m_rcBitmap);
         DestroyWindow(hStc1);
 
         // ビットマップをリソースから読み込む。
-        m_hbmBitmap = LoadBitmapW(GetModuleHandleW(NULL), MAKEINTRESOURCEW(IDB_FROMWORDS));
-        assert(m_hbmBitmap != NULL);
+        m_hbmBitmap = LoadBitmapW(GetModuleHandleW(nullptr), MAKEINTRESOURCEW(IDB_FROMWORDS));
+        assert(m_hbmBitmap != nullptr);
 
         // ビットマップのサイズを取得。
         BITMAP bm;
@@ -63,14 +63,14 @@ public:
         HWND hEdt1 = GetDlgItem(hwnd, edt1);
         INT cch = GetWindowTextLengthW(hEdt1);
         if (cch == 0) {
-            XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_ADDMOREWORDS), NULL, MB_ICONERROR);
+            XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_ADDMOREWORDS), nullptr, MB_ICONERROR);
             return FALSE;
         }
         LPWSTR psz = new WCHAR[cch + 1];
         if (!GetWindowTextW(hEdt1, psz, cch + 1))
         {
             delete[] psz;
-            XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_OUTOFMEMORY), NULL, MB_ICONERROR);
+            XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_OUTOFMEMORY), nullptr, MB_ICONERROR);
             return FALSE;
         }
         std::wstring str = psz;
@@ -114,7 +114,7 @@ public:
 
         // 単語が少ない？
         if (s_words.size() < 2) {
-            XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_ADDMOREWORDS), NULL, MB_ICONERROR);
+            XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_ADDMOREWORDS), nullptr, MB_ICONERROR);
             return FALSE;
         }
         // 多すぎる？
@@ -122,7 +122,7 @@ public:
         if (s_words.size() > max_num) {
             WCHAR szText[128];
             StringCchPrintfW(szText, _countof(szText), XgLoadStringDx1(IDS_TOOMANYWORDS), (int)max_num);
-            XgCenterMessageBoxW(hwnd, szText, NULL, MB_ICONERROR);
+            XgCenterMessageBoxW(hwnd, szText, nullptr, MB_ICONERROR);
             return FALSE;
         }
 
@@ -140,7 +140,7 @@ public:
 
                 // 単語が少ない？
                 if (s_words.size() < 2) {
-                    XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_ADDMOREWORDS), NULL, MB_ICONERROR);
+                    XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_ADDMOREWORDS), nullptr, MB_ICONERROR);
                     return FALSE;
                 }
             }
@@ -151,7 +151,7 @@ public:
             WCHAR szText[256];
             StringCchPrintfW(szText, _countof(szText), XgLoadStringDx1(IDS_NOTCONNECTABLE),
                              nonconnected.c_str());
-            XgCenterMessageBoxW(hwnd, szText, NULL, MB_ICONERROR);
+            XgCenterMessageBoxW(hwnd, szText, nullptr, MB_ICONERROR);
         } else {
             return TRUE;
         }
@@ -167,7 +167,7 @@ public:
             if (OnOK(hwnd)) {
                 // ビットマップを破棄。
                 ::DeleteObject(m_hbmBitmap);
-                m_hbmBitmap = NULL;
+                m_hbmBitmap = nullptr;
                 // ダイアログを終了。
                 ::EndDialog(hwnd, id);
             }
@@ -175,7 +175,7 @@ public:
         case IDCANCEL:
             // ビットマップを破棄。
             ::DeleteObject(m_hbmBitmap);
-            m_hbmBitmap = NULL;
+            m_hbmBitmap = nullptr;
             // ダイアログを終了。
             ::EndDialog(hwnd, id);
             break;

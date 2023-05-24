@@ -6,8 +6,8 @@ class XG_PictureBoxDialog : public XG_Dialog
 {
 public:
     std::wstring m_strFile;
-    HBITMAP m_hbm = NULL;
-    HENHMETAFILE m_hEMF = NULL;
+    HBITMAP m_hbm = nullptr;
+    HENHMETAFILE m_hEMF = nullptr;
 
     XG_PictureBoxDialog()
     {
@@ -21,9 +21,9 @@ public:
     void DoDelete()
     {
         DeleteObject(m_hbm);
-        m_hbm = NULL;
+        m_hbm = nullptr;
         DeleteEnhMetaFile(m_hEMF);
-        m_hEMF = NULL;
+        m_hEMF = nullptr;
     }
 
     void RefreshImage(HWND hwnd)
@@ -35,13 +35,13 @@ public:
         HWND hIco1 = GetDlgItem(hwnd, ico1);
         HWND hIco2 = GetDlgItem(hwnd, ico2);
 
-        SendMessageW(hIco1, STM_SETIMAGE, IMAGE_ENHMETAFILE, (LPARAM)NULL);
-        SendMessageW(hIco2, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)NULL);
+        SendMessageW(hIco1, STM_SETIMAGE, IMAGE_ENHMETAFILE, (LPARAM)nullptr);
+        SendMessageW(hIco2, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)nullptr);
 
         DoDelete();
 
-        SetWindowPos(hIco1, NULL, 0, 0, 32, 32, SWP_NOMOVE | SWP_NOZORDER | SWP_HIDEWINDOW);
-        SetWindowPos(hIco2, NULL, 0, 0, 32, 32, SWP_NOMOVE | SWP_NOZORDER | SWP_HIDEWINDOW);
+        SetWindowPos(hIco1, nullptr, 0, 0, 32, 32, SWP_NOMOVE | SWP_NOZORDER | SWP_HIDEWINDOW);
+        SetWindowPos(hIco2, nullptr, 0, 0, 32, 32, SWP_NOMOVE | SWP_NOZORDER | SWP_HIDEWINDOW);
 
         if (XgLoadImage(szText, m_hbm, m_hEMF))
         {

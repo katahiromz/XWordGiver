@@ -151,7 +151,7 @@ public:
         SetText(hwnd, str, FALSE);
 
         ::KillTimer(hwnd, 999);
-        ::SetTimer(hwnd, 999, MARKED_INTERVAL, NULL);
+        ::SetTimer(hwnd, 999, MARKED_INTERVAL, nullptr);
     }
 
     VOID OnEdt1(HWND hwnd)
@@ -161,7 +161,7 @@ public:
         SetText(hwnd, str, TRUE);
 
         ::KillTimer(hwnd, 999);
-        ::SetTimer(hwnd, 999, MARKED_INTERVAL, NULL);
+        ::SetTimer(hwnd, 999, MARKED_INTERVAL, nullptr);
     }
 
     INT GetCurSel(HWND hwnd)
@@ -313,7 +313,7 @@ public:
     void OnDestroy(HWND hwnd)
     {
         ::KillTimer(hwnd, 999);
-        m_hWnd = NULL;
+        m_hWnd = nullptr;
         m_bInitted = FALSE;
     }
 

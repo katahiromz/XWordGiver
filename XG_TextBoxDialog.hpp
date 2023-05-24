@@ -77,9 +77,9 @@ public:
         if (m_bBgColor)
             CheckDlgButton(hwnd, chx2, BST_CHECKED);
 
-        HDC hDC = CreateCompatibleDC(NULL);
+        HDC hDC = CreateCompatibleDC(nullptr);
         HWND hCmb1 = GetDlgItem(hwnd, cmb1);
-        EnumFontsW(hDC, NULL, EnumFontsProc, (LPARAM)hCmb1);
+        EnumFontsW(hDC, nullptr, EnumFontsProc, (LPARAM)hCmb1);
         DeleteDC(hDC);
 
         if (m_strFontName.size())
@@ -138,7 +138,7 @@ public:
 
         if (IsDlgButtonChecked(hwnd, chx4) == BST_CHECKED)
         {
-            m_nFontSizeInPoints = GetDlgItemInt(hwnd, edt2, NULL, FALSE);
+            m_nFontSizeInPoints = GetDlgItemInt(hwnd, edt2, nullptr, FALSE);
         }
         else
         {

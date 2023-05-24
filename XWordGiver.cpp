@@ -107,8 +107,8 @@ INT xg_nCellCharPercents = XG_DEF_CELL_CHAR_SIZE;
 INT xg_nSmallCharPercents = XG_DEF_SMALL_CHAR_SIZE;
 
 // 黒マス画像。
-HBITMAP xg_hbmBlackCell = NULL;
-HENHMETAFILE xg_hBlackCellEMF = NULL;
+HBITMAP xg_hbmBlackCell = nullptr;
+HENHMETAFILE xg_hBlackCellEMF = nullptr;
 std::wstring xg_strBlackCellImage;
 
 // ビューモード。
@@ -2729,7 +2729,7 @@ bool __fastcall XgSetJsonString(HWND hwnd, const std::wstring& str)
                     j["num_cro"].is_object())
                 {
                     for (auto& pair : j["num_cro"].items()) {
-                        int number = strtoul(pair.key().c_str(), NULL, 10);
+                        int number = strtoul(pair.key().c_str(), nullptr, 10);
                         auto value = XgUtf8ToUnicode(pair.value());
                         if (value.size() != 1)
                             break;
@@ -2947,7 +2947,7 @@ bool __fastcall XgSetXDString(HWND hwnd, const std::wstring& str)
                 } else if (line.find(L"NUMCRO-") == 0 && L'0' <= line[7] && line[7] <= L'9') {
                     // ナンクロモード。
                     size_t ich = line.find(L": ");
-                    int number = wcstoul(&line.c_str()[7], NULL, 10);
+                    int number = wcstoul(&line.c_str()[7], nullptr, 10);
                     WCHAR ch = line.c_str()[ich + 2];
                     xg_mapNumCro1[ch] = number;
                     xg_mapNumCro2[number] = ch;
@@ -4310,7 +4310,7 @@ unsigned __stdcall XgSolveProcSmart(void *param) noexcept
     #endif
 
     // 黒マスを生成する。
-    XgGenerateBlacksSmart(NULL);
+    XgGenerateBlacksSmart(nullptr);
 
     // 空ではないマスの個数をセットする。
     info->m_count = xg_xword.Count();
@@ -4493,7 +4493,7 @@ void __fastcall XgDrawMarkWord(HDC hdc, LPSIZE psiz)
     // 細いペンを作成し、選択する。
     HPEN hThinPen = ::ExtCreatePen(
         PS_GEOMETRIC | PS_SOLID | PS_ENDCAP_SQUARE | PS_JOIN_BEVEL,
-        c_nThin, &lbBlack, 0, NULL);
+        c_nThin, &lbBlack, 0, nullptr);
 
     LOGFONTW lf;
 
@@ -4548,7 +4548,7 @@ void __fastcall XgDrawMarkWord(HDC hdc, LPSIZE psiz)
         ::InflateRect(&rc, -nCellSize / 9, -nCellSize / 9);
         if (!xg_bNumCroMode && xg_bDrawFrameForMarkedCell) {
             HGDIOBJ hPenOld = ::SelectObject(hdc, hThinPen);
-            ::MoveToEx(hdc, rc.left, rc.top, NULL);
+            ::MoveToEx(hdc, rc.left, rc.top, nullptr);
             ::LineTo(hdc, rc.right + 1, rc.top);
             ::LineTo(hdc, rc.right + 1, rc.bottom + 1);
             ::LineTo(hdc, rc.left, rc.bottom + 1);
@@ -4859,7 +4859,7 @@ void __fastcall XgDrawXWord_NormalView(XG_Board& xw, HDC hdc, LPSIZE psiz, DRAW_
     // 黒の細いペンを作成する。
     HPEN hThinPen = ::ExtCreatePen(
         PS_GEOMETRIC | PS_SOLID | PS_ENDCAP_SQUARE | PS_JOIN_BEVEL,
-        c_nThin, &lbBlack, 0, NULL);
+        c_nThin, &lbBlack, 0, nullptr);
 
     // 赤いキャレットペンを作成する。
     LOGBRUSH lbRed;
@@ -4867,7 +4867,7 @@ void __fastcall XgDrawXWord_NormalView(XG_Board& xw, HDC hdc, LPSIZE psiz, DRAW_
     lbRed.lbColor = RGB(255, 0, 0);
     HPEN hCaretPen = ::ExtCreatePen(
         PS_GEOMETRIC | PS_SOLID | PS_ENDCAP_ROUND | PS_JOIN_BEVEL,
-        1, &lbRed, 0, NULL);
+        1, &lbRed, 0, nullptr);
 
     WCHAR sz[32];
     SIZE siz;
@@ -4877,7 +4877,7 @@ void __fastcall XgDrawXWord_NormalView(XG_Board& xw, HDC hdc, LPSIZE psiz, DRAW_
     GetObject(xg_hbmBlackCell, sizeof(bm), &bm);
 
     // 黒マスビットマップを選択する。
-    HDC hdcMem = ::CreateCompatibleDC(NULL);
+    HDC hdcMem = ::CreateCompatibleDC(nullptr);
     SelectObject(hdcMem, xg_hbmBlackCell);
     SetStretchBltMode(hdcMem, STRETCH_HALFTONE);
 
@@ -5270,7 +5270,7 @@ void __fastcall XgDrawXWord_SkeletonView(XG_Board& xw, HDC hdc, LPSIZE psiz, DRA
     // 黒の細いペンを作成する。
     HPEN hThinPen = ::ExtCreatePen(
         PS_GEOMETRIC | PS_SOLID | PS_ENDCAP_SQUARE | PS_JOIN_BEVEL,
-        c_nThin, &lbBlack, 0, NULL);
+        c_nThin, &lbBlack, 0, nullptr);
 
     // 赤いキャレットペンを作成する。
     LOGBRUSH lbRed;
@@ -5278,7 +5278,7 @@ void __fastcall XgDrawXWord_SkeletonView(XG_Board& xw, HDC hdc, LPSIZE psiz, DRA
     lbRed.lbColor = RGB(255, 0, 0);
     HPEN hCaretPen = ::ExtCreatePen(
         PS_GEOMETRIC | PS_SOLID | PS_ENDCAP_ROUND | PS_JOIN_BEVEL,
-        1, &lbRed, 0, NULL);
+        1, &lbRed, 0, nullptr);
 
     WCHAR sz[32];
     SIZE siz;
@@ -5837,7 +5837,7 @@ bool __fastcall XgDoLoadCrpFile(HWND hwnd, LPCWSTR pszFile)
 
         // ファイルパスをセットする。
         WCHAR szFileName[MAX_PATH];
-        ::GetFullPathNameW(pszFile, MAX_PATH, szFileName, NULL);
+        ::GetFullPathNameW(pszFile, MAX_PATH, szFileName, nullptr);
         xg_strFileName = szFileName;
     }
 
@@ -5861,7 +5861,7 @@ bool __fastcall XgDoLoadFileType(HWND hwnd, LPCWSTR pszFile, XG_FILETYPE type)
         if (XgSetString(hwnd, strText, type)) {
             // ファイルパスをセットする。
             WCHAR szFileName[MAX_PATH];
-            ::GetFullPathNameW(pszFile, MAX_PATH, szFileName, NULL);
+            ::GetFullPathNameW(pszFile, MAX_PATH, szFileName, nullptr);
             xg_strFileName = szFileName;
             return true;
         }
@@ -5878,7 +5878,7 @@ bool __fastcall XgDoSaveCrpFile(LPCWSTR pszFile)
 {
     // ファイルを作成する。
     FILE *fout = _wfopen(pszFile, L"w");
-    if (fout == NULL)
+    if (fout == nullptr)
         return false;
 
     XG_Board *xw = (xg_bSolved ? &xg_solution : &xg_xword);
@@ -5978,7 +5978,7 @@ bool __fastcall XgDoSaveCrpFile(LPCWSTR pszFile)
 
         // ファイルパスをセットする。
         WCHAR szFileName[MAX_PATH];
-        ::GetFullPathNameW(pszFile, MAX_PATH, szFileName, NULL);
+        ::GetFullPathNameW(pszFile, MAX_PATH, szFileName, nullptr);
         xg_strFileName = szFileName;
         XgMarkUpdate();
         return true;
@@ -6147,7 +6147,7 @@ bool __fastcall XgDoSaveJson(LPCWSTR pszFile)
 
             // ファイルパスをセットする。
             WCHAR szFileName[MAX_PATH];
-            ::GetFullPathNameW(pszFile, MAX_PATH, szFileName, NULL);
+            ::GetFullPathNameW(pszFile, MAX_PATH, szFileName, nullptr);
             xg_strFileName = szFileName;
             XgMarkUpdate();
             return true;
@@ -6276,7 +6276,7 @@ bool __fastcall XgDoSaveXdFile(LPCWSTR pszFile)
 {
     // ファイルを作成する。
     FILE *fout = _wfopen(pszFile, L"wb");
-    if (fout == NULL)
+    if (fout == nullptr)
         return false;
 
     XG_Board *xw = (xg_bSolved ? &xg_solution : &xg_xword);
@@ -6419,7 +6419,7 @@ bool __fastcall XgDoSaveXdFile(LPCWSTR pszFile)
 
         // ファイルパスをセットする。
         WCHAR szFileName[MAX_PATH];
-        ::GetFullPathNameW(pszFile, MAX_PATH, szFileName, NULL);
+        ::GetFullPathNameW(pszFile, MAX_PATH, szFileName, nullptr);
         xg_strFileName = szFileName;
         XgMarkUpdate();
         return true;
@@ -6465,7 +6465,7 @@ bool __fastcall XgDoSaveFileType(HWND hwnd, LPCWSTR pszFile, XG_FILETYPE type)
     if (ret) {
         // ファイルパスをセットする。
         WCHAR szFileName[MAX_PATH];
-        ::GetFullPathNameW(pszFile, MAX_PATH, szFileName, NULL);
+        ::GetFullPathNameW(pszFile, MAX_PATH, szFileName, nullptr);
         xg_strFileName = szFileName;
         XgMarkUpdate();
     }
@@ -6627,8 +6627,8 @@ void __fastcall XgSaveAnsAsImage(HWND hwnd)
 void XgSetSizeOfEMF(HDC hdcEMF, const SIZE *psiz)
 {
     //SetMapMode(hdcEMF, MM_ANISOTROPIC);
-    //SetWindowExtEx(hdcEMF, psiz->cx, psiz->cy, NULL);
-    //SetViewportExtEx(hdcEMF, psiz->cx, psiz->cy, NULL);
+    //SetWindowExtEx(hdcEMF, psiz->cx, psiz->cy, nullptr);
+    //SetViewportExtEx(hdcEMF, psiz->cx, psiz->cy, nullptr);
 }
 
 // クロスワードの文字列を取得する。

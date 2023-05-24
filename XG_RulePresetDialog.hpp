@@ -104,7 +104,7 @@ public:
         if (lpMeasureItem->CtlType != ODT_COMBOBOX)
             return;
 
-        HDC hDC = CreateCompatibleDC(NULL);
+        HDC hDC = CreateCompatibleDC(nullptr);
         SelectObject(hDC, GetWindowFont(hwnd));
         TEXTMETRIC tm;
         GetTextMetrics(hDC, &tm);
@@ -206,13 +206,13 @@ public:
                 // エントリを追加する。
                 if (fields.size() == 2) {
                     ENTRY entry;
-                    entry.value = wcstoul(fields[0].c_str(), NULL, 0);
+                    entry.value = wcstoul(fields[0].c_str(), nullptr, 0);
                     entry.name = fields[1];
                     entries.push_back(entry);
                 } else if (fields.size() == 3) {
                     ENTRY entry;
                     entry.language = fields[0];
-                    entry.value = wcstoul(fields[1].c_str(), NULL, 0);
+                    entry.value = wcstoul(fields[1].c_str(), nullptr, 0);
                     entry.name = fields[2];
                     entries.push_back(entry);
                 }
@@ -343,7 +343,7 @@ public:
                 INT value;
                 if (!GetComboValue(hwnd, value))
                 {
-                    XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_ENTERPOSITIVE), NULL, MB_ICONERROR);
+                    XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_ENTERPOSITIVE), nullptr, MB_ICONERROR);
                     return;
                 }
 

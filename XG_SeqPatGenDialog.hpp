@@ -38,9 +38,9 @@ public:
         // IMEをOFFにする。
         {
             HWND hwndCtrl = ::GetDlgItem(hwnd, edt3);
-            ::ImmAssociateContext(hwndCtrl, NULL);
+            ::ImmAssociateContext(hwndCtrl, nullptr);
             hwndCtrl = ::GetDlgItem(hwnd, edt4);
-            ::ImmAssociateContext(hwndCtrl, NULL);
+            ::ImmAssociateContext(hwndCtrl, nullptr);
         }
         SendDlgItemMessageW(hwnd, scr3, UDM_SETRANGE, 0, MAKELPARAM(XG_MAX_WORD_LEN, XG_MIN_WORD_LEN));
         SendDlgItemMessageW(hwnd, scr4, UDM_SETRANGE, 0, MAKELPARAM(100, 1));

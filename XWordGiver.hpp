@@ -937,7 +937,7 @@ inline BOOL XgIsUserJapanese(VOID)
     if (!s_bInit) {
         // IDS_MAIN_LANGUAGEの値が"Japanese"だったら日本語と見なす。
         WCHAR szText[64];
-        LoadStringW(NULL, IDS_MAIN_LANGUAGE, szText, _countof(szText));
+        LoadStringW(nullptr, IDS_MAIN_LANGUAGE, szText, _countof(szText));
         s_bIsJapanese = (lstrcmpiW(szText, L"Japanese") == 0);
         s_bInit = TRUE;
     }
@@ -1453,7 +1453,7 @@ void XgSetModified(BOOL bModified, LPCSTR file, INT line);
 // 保存を確認し、必要なら保存する。
 BOOL XgDoConfirmSave(HWND hwnd);
 // ファイルを読み込む。
-BOOL XgOnLoad(HWND hwnd, LPCWSTR pszFile, LPPOINT ppt = NULL);
+BOOL XgOnLoad(HWND hwnd, LPCWSTR pszFile, LPPOINT ppt = nullptr);
 
 #ifdef NO_RANDOM
     extern INT xg_random_seed;

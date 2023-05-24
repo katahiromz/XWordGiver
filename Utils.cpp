@@ -369,7 +369,7 @@ bool __fastcall XgCanWriteFile(const WCHAR *pszFile)
 
     for (size_t i = 0; i < _countof(s_anFolders); ++i) {
         // 特殊フォルダの位置の取得。
-        LPITEMIDLIST pidl = NULL;
+        LPITEMIDLIST pidl = nullptr;
         if (SUCCEEDED(::SHGetSpecialFolderLocation(
             xg_hMainWnd, s_anFolders[i], &pidl)))
         {
@@ -391,19 +391,19 @@ bool __fastcall XgCanWriteFile(const WCHAR *pszFile)
 // Unicode -> UTF8
 std::string XgUnicodeToUtf8(const std::wstring& wide)
 {
-    const INT len = ::WideCharToMultiByte(CP_UTF8, 0, wide.data(), -1, NULL, 0, NULL, NULL);
+    const INT len = ::WideCharToMultiByte(CP_UTF8, 0, wide.data(), -1, nullptr, 0, nullptr, nullptr);
     if (len == 0)
         return "";
 
     std::string utf8(len - 1, 0);
-    ::WideCharToMultiByte(CP_UTF8, 0, wide.data(), -1, &utf8[0], len, NULL, NULL);
+    ::WideCharToMultiByte(CP_UTF8, 0, wide.data(), -1, &utf8[0], len, nullptr, nullptr);
     return utf8;
 }
 
 // ANSI -> Unicode
 std::wstring XgAnsiToUnicode(const std::string& ansi)
 {
-    const INT len = ::MultiByteToWideChar(XG_SJIS_CODEPAGE, 0, ansi.data(), -1, NULL, 0);
+    const INT len = ::MultiByteToWideChar(XG_SJIS_CODEPAGE, 0, ansi.data(), -1, nullptr, 0);
     if (len == 0)
         return L"";
 
@@ -415,12 +415,12 @@ std::wstring XgAnsiToUnicode(const std::string& ansi)
 // Unicode -> ANSI
 std::string XgUnicodeToAnsi(const std::wstring& wide)
 {
-    int len = ::WideCharToMultiByte(XG_SJIS_CODEPAGE, 0, wide.data(), -1, NULL, 0, NULL, NULL);
+    int len = ::WideCharToMultiByte(XG_SJIS_CODEPAGE, 0, wide.data(), -1, nullptr, 0, nullptr, nullptr);
     if (len == 0)
         return "";
 
     std::string ansi(len - 1, 0);
-    ::WideCharToMultiByte(XG_SJIS_CODEPAGE, 0, wide.data(), -1, &ansi[0], len, NULL, NULL);
+    ::WideCharToMultiByte(XG_SJIS_CODEPAGE, 0, wide.data(), -1, &ansi[0], len, nullptr, nullptr);
     return ansi;
 }
 
@@ -476,13 +476,13 @@ BOOL XgMakePathW(LPCWSTR pszPath)
     }
 
     LPWSTR pch = wcsrchr(szPath, L'\\');
-    if (pch == NULL) {
+    if (pch == nullptr) {
         return TRUE;
     }
     *pch = 0;
 
     if (XgMakePathW(szPath)) {
-        return CreateDirectoryW(pszPath, NULL);
+        return CreateDirectoryW(pszPath, nullptr);
     }
     return FALSE;
 }
@@ -578,7 +578,7 @@ HBITMAP XgCreate24BppBitmap(HDC hDC, LONG width, LONG height)
     bmi.bmiHeader.biHeight = height;
     bmi.bmiHeader.biPlanes = 1;
     bmi.bmiHeader.biBitCount = 24;
-    return CreateDIBSection(hDC, &bmi, DIB_RGB_COLORS, NULL, NULL, 0);
+    return CreateDIBSection(hDC, &bmi, DIB_RGB_COLORS, nullptr, nullptr, 0);
 }
 
 // BITMAPINFOEX構造体。
@@ -617,8 +617,8 @@ BOOL PackedDIB_CreateFromHandle(std::vector<BYTE>& vecData, HBITMAP hbm)
     cbColors = cColors * sizeof(RGBQUAD);
 
     std::vector<BYTE> Bits(pbmih->biSizeImage);
-    HDC hDC = CreateCompatibleDC(NULL);
-    if (hDC == NULL)
+    HDC hDC = CreateCompatibleDC(nullptr);
+    if (hDC == nullptr)
         return FALSE;
 
     LPBITMAPINFO pbi = LPBITMAPINFO(&bi);
@@ -673,7 +673,7 @@ void XgHexToBin(std::vector<BYTE>& data, const std::wstring& str)
         if (flag)
         {
             sz[1] = ch;
-            byte = BYTE(wcstol(sz, NULL, 16));
+            byte = BYTE(wcstol(sz, nullptr, 16));
             data.insert(data.end(), byte);
         }
         else
@@ -796,9 +796,9 @@ BOOL XgReadTextFileAll(LPCWSTR file, std::wstring& strText)
     }
 
     BOOL bNotUTF8 = MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, strBinary.c_str(), -1,
-                                        NULL, 0) == 0;
+                                        nullptr, 0) == 0;
     BOOL bNotAnsi = MultiByteToWideChar(CP_ACP, MB_ERR_INVALID_CHARS, strBinary.c_str(), -1,
-                                        NULL, 0) == 0;
+                                        nullptr, 0) == 0;
     if (!bNotUTF8 && bNotAnsi)
     {
         strText = XgUtf8ToUnicode(strBinary);
@@ -854,27 +854,27 @@ BOOL XgIsTextFile(LPCWSTR pszFileName)
 // 画像を読み込む。
 BOOL XgLoadImage(const std::wstring& filename, HBITMAP& hbm, HENHMETAFILE& hEMF)
 {
-    hbm = NULL;
-    hEMF = NULL;
+    hbm = nullptr;
+    hEMF = nullptr;
 
     // パス名をセット。
     WCHAR szFullPath[MAX_PATH];
-    if (!GetFullPathNameW(filename.c_str(), _countof(szFullPath), szFullPath, NULL))
+    if (!GetFullPathNameW(filename.c_str(), _countof(szFullPath), szFullPath, nullptr))
         return FALSE;
 
     LPCWSTR pchDotExt = PathFindExtensionW(szFullPath);
     if (lstrcmpiW(pchDotExt, L".bmp") == 0)
     {
         hbm = LoadBitmapFromFile(szFullPath);
-        return hbm != NULL;
+        return hbm != nullptr;
     }
     if (lstrcmpiW(pchDotExt, L".emf") == 0)
     {
         // ロックを防ぐためにメモリーに読み込む。
         HENHMETAFILE hGotEMF = ::GetEnhMetaFile(szFullPath);
-        hEMF = ::CopyEnhMetaFile(hGotEMF, NULL);
+        hEMF = ::CopyEnhMetaFile(hGotEMF, nullptr);
         ::DeleteEnhMetaFile(hGotEMF);
-        return hEMF != NULL;
+        return hEMF != nullptr;
     }
 
     // GDI+で読み込む。
@@ -903,12 +903,12 @@ BOOL XgLoadImage(const std::wstring& filename, HBITMAP& hbm, HENHMETAFILE& hEMF)
             ULONG_PTR gdiplusToken;
 
             // GDI+の初期化。
-            GdiplusStartup(&gdiplusToken, &gdiplusStartupInput, NULL);
+            GdiplusStartup(&gdiplusToken, &gdiplusStartupInput, nullptr);
 
             Color c;
             c.SetFromCOLORREF(RGB(255, 255, 255));
 
-            GpBitmap *pBitmap = NULL;
+            GpBitmap *pBitmap = nullptr;
             GdipCreateBitmapFromFile(szFullPath, &pBitmap);
             if (pBitmap)
             {
@@ -923,7 +923,7 @@ BOOL XgLoadImage(const std::wstring& filename, HBITMAP& hbm, HENHMETAFILE& hEMF)
         FreeLibrary(hGdiPlus);
     }
 
-    return hbm != NULL;
+    return hbm != nullptr;
 }
 
 // 文字列をエスケープする。
@@ -1122,9 +1122,9 @@ bool XG_FileManager::save_images(std::unordered_set<std::wstring>& files)
     {
         m_path2contents.erase(target);
         DeleteObject(m_path2hbm[target]);
-        m_path2hbm[target] = NULL;
+        m_path2hbm[target] = nullptr;
         DeleteEnhMetaFile(m_path2hemf[target]);
-        m_path2hemf[target] = NULL;
+        m_path2hemf[target] = nullptr;
     }
 
     return true;
@@ -1153,7 +1153,7 @@ std::wstring XG_FileManager::get_full_path(const std::wstring& str) const
     if (str.empty())
         return str;
     WCHAR szPath[MAX_PATH];
-    GetFullPathNameW(str.c_str(), _countof(szPath), szPath, NULL);
+    GetFullPathNameW(str.c_str(), _countof(szPath), szPath, nullptr);
     return szPath;
 }
 
@@ -1167,17 +1167,17 @@ std::wstring XG_FileManager::get_block_dir()
 std::wstring XG_FileManager::get_block_dir_worker() const
 {
     WCHAR szPath[MAX_PATH];
-    GetModuleFileNameW(NULL, szPath, _countof(szPath));
+    GetModuleFileNameW(nullptr, szPath, _countof(szPath));
     PathRemoveFileSpecW(szPath);
     PathAppendW(szPath, L"BLOCK");
     if (PathFileExistsW(szPath))
         return get_full_path(szPath);
-    GetModuleFileNameW(NULL, szPath, _countof(szPath));
+    GetModuleFileNameW(nullptr, szPath, _countof(szPath));
     PathRemoveFileSpecW(szPath);
     PathAppendW(szPath, L"..\\BLOCK");
     if (PathFileExistsW(szPath))
         return get_full_path(szPath);
-    GetModuleFileNameW(NULL, szPath, _countof(szPath));
+    GetModuleFileNameW(nullptr, szPath, _countof(szPath));
     PathRemoveFileSpecW(szPath);
     PathAppendW(szPath, L"..\\..\\BLOCK");
     if (PathFileExistsW(szPath))
@@ -1356,10 +1356,10 @@ void XG_FileManager::delete_handles()
 bool XG_FileManager::load_block_image(const std::wstring& path, HBITMAP& hbm, HENHMETAFILE& hEMF)
 {
     ::DeleteObject(hbm);
-    hbm = NULL;
+    hbm = nullptr;
 
     ::DeleteEnhMetaFile(hEMF);
-    hEMF = NULL;
+    hEMF = nullptr;
 
     if (path.empty())
         return true;
@@ -1371,9 +1371,9 @@ bool XG_FileManager::load_block_image(const std::wstring& path, HBITMAP& hbm, HE
 bool XG_FileManager::load_block_image(const std::wstring& path)
 {
     DeleteObject(xg_hbmBlackCell);
-    xg_hbmBlackCell = NULL;
+    xg_hbmBlackCell = nullptr;
     DeleteEnhMetaFile(xg_hBlackCellEMF);
-    xg_hBlackCellEMF = NULL;
+    xg_hBlackCellEMF = nullptr;
 
     if (path.empty())
         return true;

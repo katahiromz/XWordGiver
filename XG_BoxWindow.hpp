@@ -39,12 +39,12 @@ public:
     INT m_i1, m_j1, m_i2, m_j2;
     std::wstring m_strText;
     RECT m_rcOld;
-    static inline HWND s_hwndSelected = NULL;
+    static inline HWND s_hwndSelected = nullptr;
 
     XG_BoxWindow(const std::wstring& type, INT i1 = 0, INT j1 = 0, INT i2 = 1, INT j2 = 1)
         : m_type(type)
-        , m_hwndParent(NULL)
-        , m_hRgn(NULL)
+        , m_hwndParent(nullptr)
+        , m_hRgn(nullptr)
         , m_i1(i1)
         , m_j1(j1)
         , m_i2(i2)
@@ -55,7 +55,7 @@ public:
     virtual ~XG_BoxWindow()
     {
         DeleteObject(m_hRgn);
-        m_hRgn = NULL;
+        m_hRgn = nullptr;
     }
 
     virtual LPCTSTR GetWndClassName() const override
@@ -204,12 +204,12 @@ public:
 
         InflateRect(&rc, CXY_GRIP, CXY_GRIP);
 
-        ::SetWindowPos(m_hWnd, NULL, rc.left, rc.top, rc.Width(), rc.Height(),
+        ::SetWindowPos(m_hWnd, nullptr, rc.left, rc.top, rc.Width(), rc.Height(),
                        SWP_DRAWFRAME | SWP_NOACTIVATE | SWP_NOCOPYBITS |
                        SWP_NOOWNERZORDER | SWP_NOREPOSITION | SWP_NOZORDER);
 
         ::KillTimer(m_hWnd, 999);
-        ::SetTimer(m_hWnd, 999, 300, NULL);
+        ::SetTimer(m_hWnd, 999, 300, nullptr);
         return TRUE;
     }
 
@@ -247,9 +247,9 @@ public:
     virtual void OnDraw(HWND hwnd, HDC hDC, const RECT& rc)
     {
         FillRect(hDC, &rc, GetStockBrush(WHITE_BRUSH));
-        MoveToEx(hDC, rc.left, rc.top, NULL);
+        MoveToEx(hDC, rc.left, rc.top, nullptr);
         LineTo(hDC, rc.right, rc.bottom);
-        MoveToEx(hDC, rc.right, rc.top, NULL);
+        MoveToEx(hDC, rc.right, rc.top, nullptr);
         LineTo(hDC, rc.left, rc.bottom);
     }
 
@@ -326,27 +326,27 @@ public:
     void OnMove(HWND hwnd, int x, int y)
     {
         RECT rc = m_rcOld;
-        MapWindowRect(NULL, m_hwndParent, &rc);
+        MapWindowRect(nullptr, m_hwndParent, &rc);
         InvalidateRect(m_hwndParent, &rc, FALSE);
 
         DoSetRgn(hwnd);
-        InvalidateRect(hwnd, NULL, FALSE);
+        InvalidateRect(hwnd, nullptr, FALSE);
 
         ::KillTimer(m_hWnd, 999);
-        ::SetTimer(m_hWnd, 999, 300, NULL);
+        ::SetTimer(m_hWnd, 999, 300, nullptr);
     }
 
     void OnSize(HWND hwnd, UINT state, int cx, int cy)
     {
         RECT rc = m_rcOld;
-        MapWindowRect(NULL, m_hwndParent, &rc);
+        MapWindowRect(nullptr, m_hwndParent, &rc);
         InvalidateRect(m_hwndParent, &rc, FALSE);
 
         DoSetRgn(hwnd);
-        InvalidateRect(hwnd, NULL, FALSE);
+        InvalidateRect(hwnd, nullptr, FALSE);
 
         ::KillTimer(m_hWnd, 999);
-        ::SetTimer(m_hWnd, 999, 300, NULL);
+        ::SetTimer(m_hWnd, 999, 300, nullptr);
     }
 
     void OnTimer(HWND hwnd, UINT id)
@@ -362,14 +362,14 @@ public:
     void DoRedraw(HWND hwnd)
     {
         MRect rc = m_rcOld;
-        MapWindowRect(NULL, m_hwndParent, &rc);
+        MapWindowRect(nullptr, m_hwndParent, &rc);
         InvalidateRect(m_hwndParent, &rc, TRUE);
-        InvalidateRect(hwnd, NULL, TRUE);
+        InvalidateRect(hwnd, nullptr, TRUE);
 
         GetWindowRect(hwnd, &m_rcOld);
         rc = m_rcOld;
-        MapWindowRect(NULL, m_hwndParent, &rc);
-        SetWindowPos(hwnd, NULL, rc.left, rc.top, rc.Width(), rc.Height(),
+        MapWindowRect(nullptr, m_hwndParent, &rc);
+        SetWindowPos(hwnd, nullptr, rc.left, rc.top, rc.Width(), rc.Height(),
             SWP_NOCOPYBITS | SWP_NOACTIVATE | SWP_NOREPOSITION |
             SWP_NOZORDER | SWP_NOOWNERZORDER | SWP_DEFERERASE);
     }
@@ -377,8 +377,8 @@ public:
     BOOL CreateDx(HWND hwndParent)
     {
         DWORD style = WS_OVERLAPPED | WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS;
-        CreateWindowDx(hwndParent, NULL, style);
-        return m_hWnd != NULL;
+        CreateWindowDx(hwndParent, nullptr, style);
+        return m_hWnd != nullptr;
     }
 
     void OnNCRButtonDown(HWND hwnd, BOOL fDoubleClick, int x, int y, UINT codeHitTest)
@@ -390,7 +390,7 @@ public:
         SetForegroundWindow(hwnd);
         UINT id = (UINT)TrackPopupMenu(hSubMenu,
             TPM_LEFTALIGN | TPM_RIGHTBUTTON | TPM_RETURNCMD,
-            pt.x, pt.y, 0, hwnd, NULL);
+            pt.x, pt.y, 0, hwnd, nullptr);
         DestroyMenu(hMenu);
         s_hwndSelected = hwnd;
         if (id)
@@ -442,7 +442,7 @@ public:
                 RECT rc;
                 GetWindowRect(hwnd, &rc);
                 InflateRect(&rc, -CXY_GRIP, -CXY_GRIP);
-                MapWindowRect(NULL, m_hwndParent, &rc);
+                MapWindowRect(nullptr, m_hwndParent, &rc);
                 auto sa1 = std::make_shared<XG_UndoData_Boxes>();
                 sa1->Get();
                 INT i1, j1, i2, j2;
@@ -457,7 +457,7 @@ public:
                 PostMessage(m_hwndParent, WM_COMMAND, ID_MOVEBOXES, 0);
                 // 表示を更新。
                 ::KillTimer(m_hWnd, 999);
-                ::SetTimer(m_hWnd, 999, 300, NULL);
+                ::SetTimer(m_hWnd, 999, 300, nullptr);
             }
             break;
         default:
@@ -640,7 +640,7 @@ public:
         if (hbm) {
             BITMAP bm;
             GetObject(hbm, sizeof(bm), &bm);
-            if (HDC hMemDC = CreateCompatibleDC(NULL)) {
+            if (HDC hMemDC = CreateCompatibleDC(nullptr)) {
                 HGDIOBJ hbmOld = SelectObject(hMemDC, hbm);
                 StretchBlt(hDC, rc.left, rc.top, rc.right - rc.left, rc.bottom - rc.top,
                     hMemDC, 0, 0, bm.bmWidth, bm.bmHeight, SRCCOPY);
@@ -667,7 +667,7 @@ public:
             // ファイルが変更された。
             xg_bFileModified = TRUE;
             // 再描画。
-            InvalidateRect(hwnd, NULL, TRUE);
+            InvalidateRect(hwnd, nullptr, TRUE);
             return TRUE;
         }
         return FALSE;
@@ -694,12 +694,12 @@ public:
     void SetTextColor(COLORREF clr)
     {
         m_rgbText = clr;
-        InvalidateRect(m_hWnd, NULL, TRUE);
+        InvalidateRect(m_hWnd, nullptr, TRUE);
     }
     void SetBgColor(COLORREF clr)
     {
         m_rgbBg = clr;
-        InvalidateRect(m_hWnd, NULL, TRUE);
+        InvalidateRect(m_hWnd, nullptr, TRUE);
     }
 
     virtual void OnDraw(HWND hwnd, HDC hDC, const RECT& rc) override
@@ -724,7 +724,7 @@ public:
         // 枠線を描く。
         HPEN hPen = CreatePen(PS_SOLID, 1, rgbText);
         HGDIOBJ hPenOld = SelectObject(hDC, hPen);
-        MoveToEx(hDC, rc.left, rc.top, NULL);
+        MoveToEx(hDC, rc.left, rc.top, nullptr);
         LineTo(hDC, rc.left, rc.bottom);
         LineTo(hDC, rc.right, rc.bottom);
         LineTo(hDC, rc.right, rc.top);
@@ -811,7 +811,7 @@ public:
             // ファイルが変更された。
             xg_bFileModified = TRUE;
             // 再描画。
-            InvalidateRect(hwnd, NULL, TRUE);
+            InvalidateRect(hwnd, nullptr, TRUE);
             return TRUE;
         }
         return FALSE;
@@ -828,12 +828,12 @@ public:
     virtual BOOL ReadMap(const map_t& map) override {
         auto color_it = map.find(L"color");
         if (color_it != map.end()) {
-            auto value = wcstoul(color_it->second.c_str(), NULL, 16);
+            auto value = wcstoul(color_it->second.c_str(), nullptr, 16);
             m_rgbText = SwapRandB(value);
         }
         auto bgcolor_it = map.find(L"bgcolor");
         if (bgcolor_it != map.end()) {
-            auto value = wcstoul(bgcolor_it->second.c_str(), NULL, 16);
+            auto value = wcstoul(bgcolor_it->second.c_str(), nullptr, 16);
             m_rgbBg = SwapRandB(value);
         }
         auto fontname_it = map.find(L"font_name");
@@ -844,7 +844,7 @@ public:
         }
         auto fontsize_it = map.find(L"font_size");
         if (fontsize_it != map.end()) {
-            m_nFontSizeInPoints = wcstoul(fontsize_it->second.c_str(), NULL, 0);
+            m_nFontSizeInPoints = wcstoul(fontsize_it->second.c_str(), nullptr, 0);
         } else {
             m_nFontSizeInPoints = 0;
         }

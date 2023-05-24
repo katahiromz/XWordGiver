@@ -31,19 +31,19 @@ MZC_INLINE MScrollCtrlInfo::MScrollCtrlInfo(
 // MScrollView
 
 MZC_INLINE MScrollView::MScrollView() :
-    m_hwndParent(NULL)
+    m_hwndParent(nullptr)
 {
 }
 
 MZC_INLINE MScrollView::MScrollView(HWND hwndParent) :
-    m_hwndParent(NULL)
+    m_hwndParent(nullptr)
 {
     MScrollView::SetParent(hwndParent);
 }
 
 MZC_INLINE MScrollView::MScrollView(
     HWND hwndParent, HWND hHScrollBar, HWND hVScrollBar) :
-    m_hwndParent(NULL)
+    m_hwndParent(nullptr)
 {
     MScrollView::SetParent(hwndParent);
 }
