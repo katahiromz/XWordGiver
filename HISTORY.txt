@@ -215,6 +215,7 @@
     - Properly calculating the width of the line.
     - Improved drawing of the board.
     - Avoided EMF drawing defects for external softwares with incomplete EMF support.
+- 2023-XX-YY ver.5.0.5
 
 # 開発履歴 (Japanese)
 
@@ -745,3 +746,4 @@
     - 線の幅をちゃんと計算。
     - 盤面の描画を改良。
     - 不完全なEMFサポートの外部ソフトウェアに対してEMF描画の不具合を回避。
+- 2023年XX年YY日 ver.5.0.5
