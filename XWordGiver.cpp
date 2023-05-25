@@ -4813,6 +4813,50 @@ XgDrawCellNumber(HDC hdc, const RECT& rcCell, INT i, INT j, INT number, std::uno
     }
 }
 
+// 二重マスを描画する。
+void XgDrawDoubleFrameCell(HDC hdc, INT nMarked, const RECT& rc, INT nCellSize, HPEN hThinPen)
+{
+    // 二重マスの内側の枠を描く。
+    if (xg_bDrawFrameForMarkedCell) {
+        RECT rcFrame = rc;
+        ::InflateRect(&rcFrame, -nCellSize / 9, -nCellSize / 9);
+        ::SelectObject(hdc, ::GetStockObject(NULL_BRUSH));
+        HGDIOBJ hPenOld = ::SelectObject(hdc, hThinPen);
+        ::Rectangle(hdc, rcFrame.left, rcFrame.top, rcFrame.right + 1, rcFrame.bottom + 1);
+        ::SelectObject(hdc, hPenOld);
+    }
+
+    // 二重マスの文字を描画するか？
+    if (xg_bShowDoubleFrameLetters) {
+        WCHAR sz[2];
+        if (nMarked < (INT)xg_strDoubleFrameLetters.size())
+            StringCbPrintf(sz, sizeof(sz), L"%c", xg_strDoubleFrameLetters[nMarked]);
+        else
+            StringCbPrintf(sz, sizeof(sz), L"%c", ZEN_BLACK);
+
+        // 二重マスの右下端の文字の背景を塗りつぶす。
+        SIZE siz;
+        GetTextExtentPoint32(hdc, sz, lstrlen(sz), &siz);
+        RECT rcText = rc;
+        rcText.left = rc.right - (siz.cx + siz.cy) / 2;
+        rcText.top = rc.bottom - siz.cy;
+
+        // EMFで枠線が余分に描画されてしまう不具合の回避のため、FillRectの前にNULL_PENを選択する。
+        HGDIOBJ hPen2Old = ::SelectObject(hdc, ::GetStockObject(NULL_PEN));
+        {
+            HBRUSH hbr = ::CreateSolidBrush(xg_rgbMarkedCellColor);
+            ::FillRect(hdc, &rcText, hbr);
+            ::DeleteObject(hbr);
+        }
+        ::SelectObject(hdc, hPen2Old);
+
+        // 二重マスの右下端の文字を描く。
+        ::SetBkMode(hdc, TRANSPARENT);
+        ::SetTextColor(hdc, xg_rgbBlackCellColor);
+        ::TextOutW(hdc, rcText.left, rcText.top - 1, sz, lstrlenW(sz));
+    }
+}
+
 // クロスワードを描画する（通常ビュー）。
 void __fastcall XgDrawXWord_NormalView(XG_Board& xw, HDC hdc, const SIZE *psiz, DRAW_MODE mode)
 {
@@ -4886,8 +4930,6 @@ void __fastcall XgDrawXWord_NormalView(XG_Board& xw, HDC hdc, const SIZE *psiz, 
         PS_GEOMETRIC | PS_SOLID | PS_ENDCAP_ROUND | PS_JOIN_BEVEL,
         1, &lbRed, 0, nullptr);
 
-    WCHAR sz[32];
-    SIZE siz;
     HGDIOBJ hFontOld, hPenOld;
 
     BITMAP bm;
@@ -4965,43 +5007,7 @@ void __fastcall XgDrawXWord_NormalView(XG_Board& xw, HDC hdc, const SIZE *psiz, 
                     continue;
                 }
 
-                // 二重マスの内側の枠を描く。
-                if (xg_bDrawFrameForMarkedCell) {
-                    ::InflateRect(&rc, -nCellSize / 9, -nCellSize / 9);
-                    ::SelectObject(hdc, ::GetStockObject(NULL_BRUSH));
-                    hPenOld = ::SelectObject(hdc, hThinPen);
-                    ::Rectangle(hdc, rc.left, rc.top, rc.right + 1, rc.bottom + 1);
-                    ::SelectObject(hdc, hPenOld);
-                    ::InflateRect(&rc, nCellSize / 9, nCellSize / 9);
-                }
-
-                if (xg_bShowDoubleFrameLetters) {
-                    if (nMarked < (INT)xg_strDoubleFrameLetters.size())
-                        StringCbPrintf(sz, sizeof(sz), L"%c", xg_strDoubleFrameLetters[nMarked]);
-                    else
-                        StringCbPrintf(sz, sizeof(sz), L"%c", ZEN_BLACK);
-
-                    // 二重マスの右下端の文字の背景を塗りつぶす。
-                    RECT rcText;
-                    GetTextExtentPoint32(hdc, sz, lstrlen(sz), &siz);
-                    rcText = rc;
-                    rcText.left = rc.right - (siz.cx + siz.cy) / 2;
-                    rcText.top = rc.bottom - siz.cy;
-
-                    // EMFで枠線が余分に描画されてしまう不具合の回避のため、FillRectの前にNULL_PENを選択する。
-                    HGDIOBJ hPen2Old = ::SelectObject(hdc, ::GetStockObject(NULL_PEN));
-                    {
-                        HBRUSH hbr = ::CreateSolidBrush(xg_rgbMarkedCellColor);
-                        ::FillRect(hdc, &rcText, hbr);
-                        ::DeleteObject(hbr);
-                    }
-                    ::SelectObject(hdc, hPen2Old);
-
-                    // 二重マスの右下端の文字を描く。
-                    ::SetBkMode(hdc, TRANSPARENT);
-                    ::SetTextColor(hdc, xg_rgbBlackCellColor);
-                    ::TextOutW(hdc, rcText.left, rcText.top - 1, sz, lstrlenW(sz));
-                }
+                XgDrawDoubleFrameCell(hdc, nMarked, rc, nCellSize, hThinPen);
             }
         }
     }
@@ -5220,9 +5226,7 @@ void __fastcall XgDrawXWord_SkeletonView(XG_Board& xw, HDC hdc, const SIZE *psiz
         PS_GEOMETRIC | PS_SOLID | PS_ENDCAP_ROUND | PS_JOIN_BEVEL,
         1, &lbRed, 0, nullptr);
 
-    WCHAR sz[32];
-    SIZE siz;
-    HGDIOBJ hFontOld, hPenOld;
+    HGDIOBJ hFontOld;
 
     // 外枠と背景を描画する。
     if (xg_bAddThickFrame) {
@@ -5301,43 +5305,7 @@ void __fastcall XgDrawXWord_SkeletonView(XG_Board& xw, HDC hdc, const SIZE *psiz
                     continue;
                 }
 
-                // 二重マスの内側の枠を描く。
-                if (xg_bDrawFrameForMarkedCell) {
-                    ::InflateRect(&rc, -nCellSize / 9, -nCellSize / 9);
-                    ::SelectObject(hdc, ::GetStockObject(NULL_BRUSH));
-                    hPenOld = ::SelectObject(hdc, hThinPen);
-                    ::Rectangle(hdc, rc.left, rc.top, rc.right + 1, rc.bottom + 1);
-                    ::SelectObject(hdc, hPenOld);
-                    ::InflateRect(&rc, nCellSize / 9, nCellSize / 9);
-                }
-
-                if (xg_bShowDoubleFrameLetters) {
-                    if (nMarked < (INT)xg_strDoubleFrameLetters.size())
-                        StringCbPrintf(sz, sizeof(sz), L"%c", xg_strDoubleFrameLetters[nMarked]);
-                    else
-                        StringCbPrintf(sz, sizeof(sz), L"%c", ZEN_BLACK);
-
-                    // 二重マスの右下端の文字の背景を塗りつぶす。
-                    RECT rcText;
-                    GetTextExtentPoint32(hdc, sz, lstrlen(sz), &siz);
-                    rcText = rc;
-                    rcText.left = rc.right - (siz.cx + siz.cy) / 2;
-                    rcText.top = rc.bottom - siz.cy;
-
-                    // EMFで枠線が余分に描画されてしまう不具合の回避のため、FillRectの前にNULL_PENを選択する。
-                    HGDIOBJ hPen2Old = ::SelectObject(hdc, GetStockObject(NULL_PEN));
-                    {
-                        HBRUSH hbr = ::CreateSolidBrush(xg_rgbMarkedCellColor);
-                        ::FillRect(hdc, &rcText, hbr);
-                        ::DeleteObject(hbr);
-                    }
-                    ::SelectObject(hdc, hPen2Old);
-
-                    // 二重マスの右下端の文字を描く。
-                    ::SetBkMode(hdc, TRANSPARENT);
-                    ::SetTextColor(hdc, xg_rgbBlackCellColor);
-                    ::TextOutW(hdc, rcText.left, rcText.top - 1, sz, lstrlenW(sz));
-                }
+                XgDrawDoubleFrameCell(hdc, nMarked, rc, nCellSize, hThinPen);
             }
         }
     }
