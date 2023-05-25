@@ -4523,6 +4523,37 @@ void __fastcall XgDrawLetterCell(HDC hdc, WCHAR ch, RECT& rc, HFONT hFont)
     ::SelectObject(hdc, hFontOld);
 }
 
+// 通常の文字のフォントを作成する。
+HFONT XgCreateNormalFont(VOID)
+{
+    LOGFONTW lf;
+    ZeroMemory(&lf, sizeof(lf));
+    StringCbCopy(lf.lfFaceName, sizeof(lf.lfFaceName), XgLoadStringDx1(IDS_MONOFONT));
+    if (xg_szCellFont[0])
+        StringCbCopy(lf.lfFaceName, sizeof(lf.lfFaceName), xg_szCellFont);
+    lf.lfHeight = -xg_nCellSize * xg_nCellCharPercents / 100;
+    lf.lfWidth = 0;
+    lf.lfWeight = FW_NORMAL;
+    lf.lfQuality = ANTIALIASED_QUALITY;
+    lf.lfCharSet = SHIFTJIS_CHARSET;
+    return ::CreateFontIndirectW(&lf);
+}
+
+// 小さい文字のフォントを作成する。
+HFONT XgCreateSmallFont(VOID)
+{
+    LOGFONTW lf;
+    ZeroMemory(&lf, sizeof(lf));
+    if (xg_szSmallFont[0])
+        StringCbCopy(lf.lfFaceName, sizeof(lf.lfFaceName), xg_szSmallFont);
+    lf.lfHeight = -xg_nCellSize * xg_nSmallCharPercents / 100;
+    lf.lfWidth = 0;
+    lf.lfWeight = FW_NORMAL;
+    lf.lfQuality = ANTIALIASED_QUALITY;
+    lf.lfCharSet = SHIFTJIS_CHARSET;
+    return ::CreateFontIndirectW(&lf);
+}
+
 // 二重マス単語を描画する。
 void __fastcall XgDrawMarkWord(HDC hdc, LPSIZE psiz)
 {
@@ -4560,30 +4591,11 @@ void __fastcall XgDrawMarkWord(HDC hdc, LPSIZE psiz)
         PS_GEOMETRIC | PS_SOLID | PS_ENDCAP_SQUARE | PS_JOIN_BEVEL,
         c_nThin, &lbBlack, 0, nullptr);
 
-    LOGFONTW lf;
-
     // 文字マスのフォントを作成する。
-    ZeroMemory(&lf, sizeof(lf));
-    StringCbCopy(lf.lfFaceName, sizeof(lf.lfFaceName), XgLoadStringDx1(IDS_MONOFONT));
-    if (xg_szCellFont[0])
-        StringCbCopy(lf.lfFaceName, sizeof(lf.lfFaceName), xg_szCellFont);
-    lf.lfHeight = -xg_nCellSize * xg_nCellCharPercents / 100;
-    lf.lfWidth = 0;
-    lf.lfWeight = FW_NORMAL;
-    lf.lfQuality = ANTIALIASED_QUALITY;
-    lf.lfCharSet = SHIFTJIS_CHARSET;
-    HFONT hFont = ::CreateFontIndirectW(&lf);
+    HFONT hFont = XgCreateNormalFont();
 
     // 小さい文字のフォントを作成する。
-    ZeroMemory(&lf, sizeof(lf));
-    if (xg_szSmallFont[0])
-        StringCbCopy(lf.lfFaceName, sizeof(lf.lfFaceName), xg_szSmallFont);
-    lf.lfHeight = -xg_nCellSize * xg_nSmallCharPercents / 100;
-    lf.lfWidth = 0;
-    lf.lfWeight = FW_NORMAL;
-    lf.lfQuality = ANTIALIASED_QUALITY;
-    lf.lfCharSet = SHIFTJIS_CHARSET;
-    HFONT hFontSmall = ::CreateFontIndirectW(&lf);
+    HFONT hFontSmall = XgCreateSmallFont();
 
     // 全体を白で塗りつぶす。
     RECT rc;
@@ -4817,29 +4829,11 @@ void __fastcall XgDrawXWord_NormalView(XG_Board& xw, HDC hdc, const SIZE *psiz, 
     ::SelectObject(hdc, ::GetStockObject(NULL_PEN));
     ::FillRect(hdc, &rc, reinterpret_cast<HBRUSH>(::GetStockObject(WHITE_BRUSH)));
 
-    LOGFONTW lf;
-
     // 文字マスのフォントを作成する。
-    ZeroMemory(&lf, sizeof(lf));
-    // その他。
-    StringCbCopy(lf.lfFaceName, sizeof(lf.lfFaceName), XgLoadStringDx1(IDS_MONOFONT));
-    if (xg_szCellFont[0])
-        StringCbCopy(lf.lfFaceName, sizeof(lf.lfFaceName), xg_szCellFont);
-    lf.lfHeight = -nCellSize * xg_nCellCharPercents / 100;
-    lf.lfWidth = 0;
-    lf.lfQuality = ANTIALIASED_QUALITY;
-    lf.lfCharSet = SHIFTJIS_CHARSET;
-    HFONT hFont = ::CreateFontIndirectW(&lf);
+    HFONT hFont = XgCreateNormalFont();
 
     // 小さい文字のフォントを作成する。
-    ZeroMemory(&lf, sizeof(lf));
-    if (xg_szSmallFont[0])
-        StringCbCopy(lf.lfFaceName, sizeof(lf.lfFaceName), xg_szSmallFont);
-    lf.lfHeight = -nCellSize * xg_nSmallCharPercents / 100;
-    lf.lfWidth = 0;
-    lf.lfQuality = ANTIALIASED_QUALITY;
-    lf.lfCharSet = SHIFTJIS_CHARSET;
-    HFONT hFontSmall = ::CreateFontIndirectW(&lf);
+    HFONT hFontSmall = XgCreateSmallFont();
 
     // ブラシを作成する。
     HBRUSH hbrBlack = ::CreateSolidBrush(xg_rgbBlackCellColor);
@@ -5170,29 +5164,11 @@ void __fastcall XgDrawXWord_SkeletonView(XG_Board& xw, HDC hdc, const SIZE *psiz
         ::SetPixelV(hdc, rc.left, rc.bottom - 1, rgbWhite);
     }
 
-    LOGFONTW lf;
-
     // 文字マスのフォントを作成する。
-    ZeroMemory(&lf, sizeof(lf));
-    // その他。
-    StringCbCopy(lf.lfFaceName, sizeof(lf.lfFaceName), XgLoadStringDx1(IDS_MONOFONT));
-    if (xg_szCellFont[0])
-        StringCbCopy(lf.lfFaceName, sizeof(lf.lfFaceName), xg_szCellFont);
-    lf.lfHeight = -nCellSize * xg_nCellCharPercents / 100;
-    lf.lfWidth = 0;
-    lf.lfQuality = ANTIALIASED_QUALITY;
-    lf.lfCharSet = SHIFTJIS_CHARSET;
-    HFONT hFont = ::CreateFontIndirectW(&lf);
+    HFONT hFont = XgCreateNormalFont();
 
     // 小さい文字のフォントを作成する。
-    ZeroMemory(&lf, sizeof(lf));
-    if (xg_szSmallFont[0])
-        StringCbCopy(lf.lfFaceName, sizeof(lf.lfFaceName), xg_szSmallFont);
-    lf.lfHeight = -nCellSize * xg_nSmallCharPercents / 100;
-    lf.lfWidth = 0;
-    lf.lfQuality = ANTIALIASED_QUALITY;
-    lf.lfCharSet = SHIFTJIS_CHARSET;
-    HFONT hFontSmall = ::CreateFontIndirectW(&lf);
+    HFONT hFontSmall = XgCreateSmallFont();
 
     // ブラシを作成する。
     HBRUSH hbrBlack = ::CreateSolidBrush(xg_rgbBlackCellColor);
