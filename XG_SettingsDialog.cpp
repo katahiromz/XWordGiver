@@ -1,6 +1,13 @@
 #include "XWordGiver.hpp"
 #include "XG_SettingsDialog.hpp"
 
+// マスのフォント。
+WCHAR xg_szCellFont[LF_FACESIZE] = L"";
+// 小さな文字のフォント。
+WCHAR xg_szSmallFont[LF_FACESIZE] = L"";
+// UIフォント。
+WCHAR xg_szUIFont[LF_FACESIZE] = L"";
+
 // 文字の大きさ（％）。
 INT xg_nCellCharPercents = XG_DEF_CELL_CHAR_SIZE;
 
@@ -29,6 +36,16 @@ BOOL xg_bLowercase = FALSE;
 
 // ツールバーを表示するか？
 bool xg_bShowToolBar = true;
+
+// 色。
+COLORREF xg_rgbWhiteCellColor = RGB(255, 255, 255);
+COLORREF xg_rgbBlackCellColor = RGB(0x33, 0x33, 0x33);
+COLORREF xg_rgbMarkedCellColor = RGB(255, 255, 255);
+
+// 二重マス文字。
+std::wstring xg_strDoubleFrameLetters;
+
+//////////////////////////////////////////////////////////////////////////////
 
 // [設定]ダイアログの初期化。
 BOOL XG_SettingsDialog::OnInitDialog(HWND hwnd)

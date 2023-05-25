@@ -127,11 +127,6 @@ enum XG_EpvCode
     xg_epv_NOTFOUNDWORD    // 単語にマッチしなかったマスがある。
 };
 
-// セルの色。
-extern COLORREF xg_rgbWhiteCellColor;
-extern COLORREF xg_rgbBlackCellColor;
-extern COLORREF xg_rgbMarkedCellColor;
-
 // 二重マスに枠を描くか？
 extern bool xg_bDrawFrameForMarkedCell;
 

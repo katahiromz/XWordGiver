@@ -87,11 +87,6 @@ HBITMAP     xg_hbmImage = nullptr;
 // ヒントデータ。
 std::vector<XG_Hint> xg_vecTateHints, xg_vecYokoHints;
 
-// セルの色。
-COLORREF xg_rgbWhiteCellColor = RGB(255, 255, 255);
-COLORREF xg_rgbBlackCellColor = RGB(0x33, 0x33, 0x33);
-COLORREF xg_rgbMarkedCellColor = RGB(255, 255, 255);
-
 // 二重マスに枠を描くか？
 bool xg_bDrawFrameForMarkedCell = true;
 

@@ -84,15 +84,6 @@ XG_MarkingDialog xg_hMarkingDlg;
 // 入力パレット。
 HWND xg_hwndInputPalette = nullptr;
 
-// マスのフォント。
-WCHAR xg_szCellFont[LF_FACESIZE] = L"";
-
-// 小さな文字のフォント。
-WCHAR xg_szSmallFont[LF_FACESIZE] = L"";
-
-// UIフォント。
-WCHAR xg_szUIFont[LF_FACESIZE] = L"";
-
 // スクロールバー。
 HWND xg_hSizeGrip = nullptr;
 
@@ -140,9 +131,6 @@ BOOL xg_bShowNumbering = TRUE;
 BOOL xg_bShowCaret = TRUE;
 // 最大化するか？
 BOOL xg_bMainWndMaximized = FALSE;
-
-// 二重マス文字。
-std::wstring xg_strDoubleFrameLetters;
 
 // 二重マス文字を表示するか？
 BOOL xg_bShowDoubleFrameLetters = TRUE;

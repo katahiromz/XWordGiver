@@ -39,6 +39,9 @@ extern float xg_nOuterFrameInPt;
 #define XG_OUTERFRAME_FORMAT L"%.1f"
 
 // 色。
+extern COLORREF xg_rgbWhiteCellColor;
+extern COLORREF xg_rgbBlackCellColor;
+extern COLORREF xg_rgbMarkedCellColor;
 #define XG_WHITE_COLOR_DEFAULT L"16777215"
 #define XG_BLACK_COLOR_DEFAULT L"3355443"
 #define XG_MARKED_COLOR_DEFAULT L"16777215"
