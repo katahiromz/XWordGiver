@@ -65,6 +65,9 @@ HINSTANCE xg_hInstance = nullptr;
 // メインウィンドウのハンドル。
 HWND xg_hMainWnd = nullptr;
 
+// キャンバスウィンドウ。
+HWND xg_hCanvasWnd = nullptr;
+
 // ヒントウィンドウのハンドル。
 HWND xg_hHintsWnd = nullptr;
 XG_HintsWnd xg_hints_wnd;
@@ -291,54 +294,6 @@ INT xg_nMarkingY = CW_USEDEFAULT;
 
 //////////////////////////////////////////////////////////////////////////////
 // スクロール関連。
-
-// 水平スクロールの位置を取得する。
-int __fastcall XgGetHScrollPos(void)
-{
-    return ::GetScrollPos(xg_canvasWnd, SB_HORZ);
-}
-
-// 垂直スクロールの位置を取得する。
-int __fastcall XgGetVScrollPos(void)
-{
-    return ::GetScrollPos(xg_canvasWnd, SB_VERT);
-}
-
-// 水平スクロールの位置を設定する。
-int __fastcall XgSetHScrollPos(int nPos, BOOL bRedraw)
-{
-    return ::SetScrollPos(xg_canvasWnd, SB_HORZ, nPos, bRedraw);
-}
-
-// 垂直スクロールの位置を設定する。
-int __fastcall XgSetVScrollPos(int nPos, BOOL bRedraw)
-{
-    return ::SetScrollPos(xg_canvasWnd, SB_VERT, nPos, bRedraw);
-}
-
-// 水平スクロールの情報を取得する。
-BOOL __fastcall XgGetHScrollInfo(LPSCROLLINFO psi)
-{
-    return ::GetScrollInfo(xg_canvasWnd, SB_HORZ, psi);
-}
-
-// 垂直スクロールの情報を取得する。
-BOOL __fastcall XgGetVScrollInfo(LPSCROLLINFO psi)
-{
-    return ::GetScrollInfo(xg_canvasWnd, SB_VERT, psi);
-}
-
-// 水平スクロールの情報を設定する。
-BOOL __fastcall XgSetHScrollInfo(LPSCROLLINFO psi, BOOL bRedraw)
-{
-    return ::SetScrollInfo(xg_canvasWnd, SB_HORZ, psi, bRedraw);
-}
-
-// 垂直スクロールの情報を設定する。
-BOOL __fastcall XgSetVScrollInfo(LPSCROLLINFO psi, BOOL bRedraw)
-{
-    return ::SetScrollInfo(xg_canvasWnd, SB_VERT, psi, bRedraw);
-}
 
 // マス位置を取得する。
 VOID XgGetCellPosition(RECT& rc, INT i1, INT j1, INT i2, INT j2, BOOL bScroll)
@@ -1370,7 +1325,7 @@ bool __fastcall XgSaveSettings(void)
 // 設定を消去する。
 bool __fastcall XgEraseSettings(void)
 {
-    // 会社名キーを開く。
+    // レジストリのアプリキーを削除する。
     RegDeleteTreeDx(HKEY_CURRENT_USER, s_pszSoftwareCompanyAndApp);
 
     return true;

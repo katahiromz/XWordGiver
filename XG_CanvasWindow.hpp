@@ -5,6 +5,9 @@
 // ボックス。
 extern boxes_t xg_boxes;
 
+// キャンバスウィンドウ。
+extern HWND xg_hCanvasWnd;
+
 class XG_CanvasWindow : public XG_Window
 {
 public:
@@ -30,8 +33,14 @@ public:
 
     BOOL OnCreate(HWND hwnd, LPCREATESTRUCT lpCreateStruct)
     {
+        xg_hCanvasWnd = hwnd;
         m_hwndParent = GetParent(hwnd);
         return TRUE;
+    }
+
+    void OnDestroy(HWND hwnd)
+    {
+        xg_hCanvasWnd = nullptr;
     }
 
     // 左クリックされた。
@@ -483,6 +492,7 @@ public:
         switch (uMsg)
         {
             HANDLE_MSG(hwnd, WM_CREATE, OnCreate);
+            HANDLE_MSG(hwnd, WM_DESTROY, OnDestroy);
             HANDLE_MSG(hwnd, WM_LBUTTONDOWN, OnLButtonDown);
             HANDLE_MSG(hwnd, WM_LBUTTONUP, OnLButtonUp);
             HANDLE_MSG(hwnd, WM_MOUSEMOVE, OnMouseMove);

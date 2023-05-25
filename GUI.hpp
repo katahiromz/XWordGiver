@@ -113,18 +113,56 @@ void XgCopyBoardAsImage(HWND hwnd);
 //////////////////////////////////////////////////////////////////////////////
 // スクロール。
 
+extern HWND xg_hCanvasWnd;
+
 // 水平スクロールの位置を取得する。
-int __fastcall XgGetHScrollPos(void);
+inline INT __fastcall XgGetHScrollPos(void)
+{
+    return ::GetScrollPos(xg_hCanvasWnd, SB_HORZ);
+}
+
 // 垂直スクロールの位置を取得する。
-int __fastcall XgGetVScrollPos(void);
+inline INT __fastcall XgGetVScrollPos(void)
+{
+    return ::GetScrollPos(xg_hCanvasWnd, SB_VERT);
+}
+
 // 水平スクロールの情報を取得する。
-BOOL __fastcall XgGetHScrollInfo(LPSCROLLINFO psi);
+inline BOOL __fastcall XgGetHScrollInfo(LPSCROLLINFO psi)
+{
+    return ::GetScrollInfo(xg_hCanvasWnd, SB_HORZ, psi);
+}
+
 // 垂直スクロールの情報を取得する。
-BOOL __fastcall XgGetVScrollInfo(LPSCROLLINFO psi);
+inline BOOL __fastcall XgGetVScrollInfo(LPSCROLLINFO psi)
+{
+    return ::GetScrollInfo(xg_hCanvasWnd, SB_VERT, psi);
+}
+
 // 水平スクロールの位置を設定する。
-int __fastcall XgSetHScrollPos(int nPos, BOOL bRedraw);
+inline INT __fastcall XgSetHScrollPos(int nPos, BOOL bRedraw)
+{
+    return ::SetScrollPos(xg_hCanvasWnd, SB_HORZ, nPos, bRedraw);
+}
+
 // 垂直スクロールの位置を設定する。
-int __fastcall XgSetVScrollPos(int nPos, BOOL bRedraw);
+inline INT __fastcall XgSetVScrollPos(int nPos, BOOL bRedraw)
+{
+    return ::SetScrollPos(xg_hCanvasWnd, SB_VERT, nPos, bRedraw);
+}
+
+// 水平スクロールの情報を設定する。
+inline BOOL __fastcall XgSetHScrollInfo(LPSCROLLINFO psi, BOOL bRedraw)
+{
+    return ::SetScrollInfo(xg_hCanvasWnd, SB_HORZ, psi, bRedraw);
+}
+
+// 垂直スクロールの情報を設定する。
+inline BOOL __fastcall XgSetVScrollInfo(LPSCROLLINFO psi, BOOL bRedraw)
+{
+    return ::SetScrollInfo(xg_hCanvasWnd, SB_VERT, psi, bRedraw);
+}
+
 // スクロール情報を設定する。
 void __fastcall XgUpdateScrollInfo(HWND hwnd, int x, int y);
 // キャレットが見えるように、必要ならばスクロールする。
@@ -144,10 +182,6 @@ VOID XgSetCellPosition(LONG& x, LONG& y, INT& i, INT& j, BOOL bEnd);
 extern BOOL xg_bMButtonDragging;
 extern POINT xg_ptMButtonDragging;
 
-// 水平スクロールの情報を設定する。
-BOOL __fastcall XgSetHScrollInfo(LPSCROLLINFO psi, BOOL bRedraw);
-// 垂直スクロールの情報を設定する。
-BOOL __fastcall XgSetVScrollInfo(LPSCROLLINFO psi, BOOL bRedraw);
 // 本当のクライアント領域を計算する。
 void __fastcall XgGetRealClientRect(HWND hwnd, LPRECT prcClient);
 // ズームを実際のウィンドウに合わせる。
