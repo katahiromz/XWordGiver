@@ -632,7 +632,7 @@ BOOL XgWriteXdBoxes(FILE *fout)
 }
 
 // ボックスを描画する。
-void XgDrawBoxes(XG_Board& xw, HDC hdc, LPSIZE psiz)
+void XgDrawBoxes(XG_Board& xw, HDC hdc, const SIZE *psiz)
 {
     INT nZoomRate = xg_nZoomRate;
     xg_nZoomRate = 100;

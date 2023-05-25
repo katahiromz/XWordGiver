@@ -645,7 +645,7 @@ inline void __fastcall XgGetMarkWordExtent(int count, LPSIZE psiz)
 }
 
 // クロスワードのイメージを作成する。
-HBITMAP __fastcall XgCreateXWordImage(XG_Board& xw, LPSIZE psiz, bool bCaret);
+HBITMAP __fastcall XgCreateXWordImage(XG_Board& xw, const SIZE *psiz, bool bCaret);
 
 // 二重マス単語を描画する。
 void __fastcall XgDrawMarkWord(HDC hdc, LPSIZE psiz);
@@ -659,7 +659,7 @@ enum DRAW_MODE
 };
 
 // クロスワードを描画する。
-void __fastcall XgDrawXWord(XG_Board& xw, HDC hdc, LPSIZE psiz, DRAW_MODE mode);
+void __fastcall XgDrawXWord(XG_Board& xw, HDC hdc, const SIZE *psiz, DRAW_MODE mode);
 
 // 解を求めるのを開始。
 void __fastcall XgStartSolve_AddBlack(void) noexcept;
@@ -1471,15 +1471,13 @@ BOOL __fastcall XgPatternRuleIsOK(const XG_PATDATA& pat);
 #include "XG_BoxWindow.hpp"
 
 // ボックスを描画する。
-void XgDrawBoxes(XG_Board& xw, HDC hdc, LPSIZE psiz);
+void XgDrawBoxes(XG_Board& xw, HDC hdc, const SIZE *psiz);
 // ボックスをすべて削除する。
 void XgDeleteBoxes(void);
 // ボックスJSONを読み込む。
 BOOL XgDoLoadBoxJson(const json& boxes);
 // ボックスJSONを保存。
 BOOL XgDoSaveBoxJson(json& j);
-// ボックスを描画する。
-void XgDrawBoxes(XG_Board& xw, HDC hdc, LPSIZE psiz);
 // ボックスJSONを読み込む。
 BOOL XgLoadXdBox(const std::wstring& line);
 // XDファイルからボックスを読み込む。

@@ -4766,7 +4766,7 @@ XgDrawCellNumber(HDC hdc, const RECT& rcCell, INT i, INT j, INT number, std::uno
 }
 
 // クロスワードを描画する（通常ビュー）。
-void __fastcall XgDrawXWord_NormalView(XG_Board& xw, HDC hdc, LPSIZE psiz, DRAW_MODE mode)
+void __fastcall XgDrawXWord_NormalView(XG_Board& xw, HDC hdc, const SIZE *psiz, DRAW_MODE mode)
 {
     INT nCellSize;
     if (xg_nForDisplay > 0) {
@@ -4817,8 +4817,7 @@ void __fastcall XgDrawXWord_NormalView(XG_Board& xw, HDC hdc, LPSIZE psiz, DRAW_
         slot.clear();
 
     // 線の太さ。
-    INT c_nThin = 1;
-    INT c_nWide = 4;
+    INT c_nThin = 1, c_nWide = 4;
     switch (mode)
     {
     case DRAW_MODE_SCREEN:
@@ -4827,6 +4826,10 @@ void __fastcall XgDrawXWord_NormalView(XG_Board& xw, HDC hdc, LPSIZE psiz, DRAW_
         c_nWide = YPixelsFromPoints(hdc, xg_nOuterFrameInPt);
         break;
     case DRAW_MODE_EMF:
+        // FIXME: "Microsoft Print to PDF" で印刷すると線の幅がおかしくなる。
+        // よくわからないので、1pt == 1pxで近似する。
+        c_nThin = xg_nLineWidthInPt;
+        c_nWide = xg_nOuterFrameInPt;
         break;
     }
     if (c_nThin < 2)
@@ -5180,7 +5183,7 @@ void __fastcall XgDrawXWord_NormalView(XG_Board& xw, HDC hdc, LPSIZE psiz, DRAW_
 }
 
 // クロスワードを描画する（スケルトンビュー）。
-void __fastcall XgDrawXWord_SkeletonView(XG_Board& xw, HDC hdc, LPSIZE psiz, DRAW_MODE mode)
+void __fastcall XgDrawXWord_SkeletonView(XG_Board& xw, HDC hdc, const SIZE *psiz, DRAW_MODE mode)
 {
     INT nCellSize;
     if (xg_nForDisplay > 0) {
@@ -5239,8 +5242,21 @@ void __fastcall XgDrawXWord_SkeletonView(XG_Board& xw, HDC hdc, LPSIZE psiz, DRA
         slot.clear();
 
     // 線の太さ。
-    INT c_nThin = YPixelsFromPoints(hdc, xg_nLineWidthInPt);
-    INT c_nWide = YPixelsFromPoints(hdc, xg_nOuterFrameInPt);
+    INT c_nThin = 1, c_nWide = 4;
+    switch (mode)
+    {
+    case DRAW_MODE_SCREEN:
+    case DRAW_MODE_PRINT:
+        c_nThin = YPixelsFromPoints(hdc, xg_nLineWidthInPt);
+        c_nWide = YPixelsFromPoints(hdc, xg_nOuterFrameInPt);
+        break;
+    case DRAW_MODE_EMF:
+        // FIXME: "Microsoft Print to PDF" で印刷すると線の幅がおかしくなる。
+        // よくわからないので、1pt == 1pxで近似する。
+        c_nThin = xg_nLineWidthInPt;
+        c_nWide = xg_nOuterFrameInPt;
+        break;
+    }
     if (c_nThin < 2)
         c_nThin = 2;
     if (c_nWide < 2)
@@ -5578,7 +5594,7 @@ void __fastcall XgDrawXWord_SkeletonView(XG_Board& xw, HDC hdc, LPSIZE psiz, DRA
 }
 
 // クロスワードを描画する。
-void __fastcall XgDrawXWord(XG_Board& xw, HDC hdc, LPSIZE psiz, DRAW_MODE mode)
+void __fastcall XgDrawXWord(XG_Board& xw, HDC hdc, const SIZE *psiz, DRAW_MODE mode)
 {
     switch (xg_nViewMode)
     {
@@ -5596,7 +5612,7 @@ void __fastcall XgDrawXWord(XG_Board& xw, HDC hdc, LPSIZE psiz, DRAW_MODE mode)
 }
 
 // クロスワードのイメージを作成する。
-HBITMAP __fastcall XgCreateXWordImage(XG_Board& xw, LPSIZE psiz, bool bScreen)
+HBITMAP __fastcall XgCreateXWordImage(XG_Board& xw, const SIZE *psiz, bool bScreen)
 {
     // 互換DCを作成する。
     HDC hdc = ::CreateCompatibleDC(nullptr);
@@ -6612,7 +6628,7 @@ void __fastcall XgSaveAnsAsImage(HWND hwnd)
 // EMFの寸法をセットする。
 void XgSetSizeOfEMF(HDC hdcEMF, const SIZE *psiz)
 {
-    //SetMapMode(hdcEMF, MM_ANISOTROPIC);
+    //SetMapMode(hdcEMF, MM_ISOTROPIC);
     //SetWindowExtEx(hdcEMF, psiz->cx, psiz->cy, nullptr);
     //SetViewportExtEx(hdcEMF, psiz->cx, psiz->cy, nullptr);
 }
