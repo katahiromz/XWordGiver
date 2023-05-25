@@ -696,6 +696,10 @@ FONT 9, "Tahoma"
     EDITTEXT edt6, 218, 122, 36, 14, ES_AUTOHSCROLL
     CONTROL "", scr3, "msctls_updown32", UDS_ARROWKEYS | UDS_AUTOBUDDY | UDS_ALIGNRIGHT, 246, 127, 12, 20
     LTEXT "pt", -1, 259, 124, 11, 12
+    AUTOCHECKBOX "&Out frame:", chx2, 170, 143, 44, 14, BS_LEFT
+    EDITTEXT edt7, 218, 143, 36, 14, ES_AUTOHSCROLL
+    CONTROL "", scr4, "msctls_updown32", UDS_ARROWKEYS | UDS_AUTOBUDDY | UDS_ALIGNRIGHT, 251, 132, 12, 20
+    LTEXT "pt", -1, 259, 145, 11, 12
     RTEXT "Block i&mage:", -1, 5, 166, 52, 11
     COMBOBOX cmb1, 60, 165, 102, 300, CBS_HASSTRINGS | CBS_AUTOHSCROLL | CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP
     LTEXT "Please drop your favorite image into the BLOCK folder.", -1, 5, 182, 150, 21

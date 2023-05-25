@@ -18,6 +18,9 @@ XG_VIEW_MODE xg_nViewMode = XG_VIEW_NORMAL;
 // 線の太さ（pt）。
 float xg_nLineWidthInPt = XG_LINE_WIDTH_DEFAULT;
 
+// 外枠の幅（pt）。
+float xg_nOuterFrameInPt = XG_OUTERFRAME_DEFAULT;
+
 // ひらがな表示か？
 BOOL xg_bHiragana = FALSE;
 
@@ -49,9 +52,11 @@ BOOL XG_SettingsDialog::OnInitDialog(HWND hwnd)
     // スケルトンビューか？
     ::CheckDlgButton(hwnd, chx1,
         ((xg_nViewMode == XG_VIEW_SKELETON) ? BST_CHECKED : BST_UNCHECKED));
-    // 太枠をつけるか？
-    ::CheckDlgButton(hwnd, chx2,
-        (xg_bAddThickFrame ? BST_CHECKED : BST_UNCHECKED));
+
+    // 外枠をつけるか？
+    ::CheckDlgButton(hwnd, chx2, (xg_bAddThickFrame ? BST_CHECKED : BST_UNCHECKED));
+    ::EnableWindow(GetDlgItem(hwnd, edt7), xg_bAddThickFrame);
+
     // 二重マスに枠をつけるか？
     ::CheckDlgButton(hwnd, chx3,
         (xg_bDrawFrameForMarkedCell ? BST_CHECKED : BST_UNCHECKED));
@@ -112,10 +117,15 @@ BOOL XG_SettingsDialog::OnInitDialog(HWND hwnd)
         SendMessageW(hwnd, WM_COMMAND, IDOK, 0);
     }
 
-    // 線の太さ。
     WCHAR szText[MAX_PATH];
+
+    // 線の太さ。
     StringCchPrintfW(szText, _countof(szText), XG_LINE_WIDTH_FORMAT, xg_nLineWidthInPt);
     SetDlgItemTextW(hwnd, edt6, szText);
+
+    // 外枠の幅。
+    StringCchPrintfW(szText, _countof(szText), XG_OUTERFRAME_FORMAT, xg_nOuterFrameInPt);
+    SetDlgItemTextW(hwnd, edt7, szText);
 
     return TRUE;
 }
@@ -238,6 +248,17 @@ void XG_SettingsDialog::OnOK(HWND hwnd)
         value = XG_MIN_LINEWIDTH;
     xg_nLineWidthInPt = value;
 
+    // 外枠の幅。
+    GetDlgItemTextW(hwnd, edt7, szText, _countof(szText));
+    str = szText;
+    xg_str_trim(str);
+    value = wcstof(str.c_str(), nullptr);
+    if (value > XG_MAX_OUTERFRAME)
+        value = XG_MAX_OUTERFRAME;
+    if (value < XG_MIN_OUTERFRAME)
+        value = XG_MIN_OUTERFRAME;
+    xg_nOuterFrameInPt = value;
+
     // イメージを更新する。
     XgUpdateImage(xg_hMainWnd);
 
@@ -287,10 +308,11 @@ BOOL XG_SettingsDialog::DoImportLooks(HWND hwnd, LPCWSTR pszFileName)
     BOOL bSkeltonView = _wtoi(szText);
     ::CheckDlgButton(hwnd, chx1, (bSkeltonView ? BST_CHECKED : BST_UNCHECKED));
 
-    // 太枠をつけるか？
+    // 外枠をつけるか？
     GetPrivateProfileStringW(L"Looks", L"AddThickFrame", L"1", szText, _countof(szText), pszFileName);
     BOOL bAddThickFrame = _wtoi(szText);
     ::CheckDlgButton(hwnd, chx2, (bAddThickFrame ? BST_CHECKED : BST_UNCHECKED));
+    ::EnableWindow(GetDlgItem(hwnd, edt7), bAddThickFrame);
 
     // 二重マスに枠をつけるか？
     GetPrivateProfileStringW(L"Looks", L"DrawFrameForMarkedCell", L"1", szText, _countof(szText), pszFileName);
@@ -342,6 +364,14 @@ BOOL XG_SettingsDialog::DoImportLooks(HWND hwnd, LPCWSTR pszFileName)
         memcpy(&str[0], data.data(), data.size());
         ComboBox_RealSetText(hCmb2, str.c_str());
     }
+
+    // 線の幅。
+    GetPrivateProfileStringW(L"Looks", L"LineWidthInPt", XG_LINE_WIDTH_DEFAULT2, szText, _countof(szText), pszFileName);
+    ::SetDlgItemTextW(hwnd, edt6, szText);
+
+    // 外枠の幅。
+    GetPrivateProfileStringW(L"Looks", L"OuterFrameInPt", XG_OUTERFRAME_DEFAULT2, szText, _countof(szText), pszFileName);
+    ::SetDlgItemTextW(hwnd, edt7, szText);
 
     UpdateBlockPreview(hwnd);
     return TRUE;
@@ -437,7 +467,7 @@ BOOL XG_SettingsDialog::DoExportLooks(HWND hwnd, LPCWSTR pszFileName)
     BOOL bSkeltonView = (::IsDlgButtonChecked(hwnd, chx1) == BST_CHECKED);
     WritePrivateProfileStringW(L"Looks", L"SkeletonView", XgIntToStr(bSkeltonView), pszFileName);
 
-    // 太枠をつけるか？
+    // 外枠をつけるか？
     BOOL bAddThickFrame = (::IsDlgButtonChecked(hwnd, chx2) == BST_CHECKED);
     WritePrivateProfileStringW(L"Looks", L"AddThickFrame", XgIntToStr(bAddThickFrame), pszFileName);
 
@@ -468,6 +498,14 @@ BOOL XG_SettingsDialog::DoExportLooks(HWND hwnd, LPCWSTR pszFileName)
         std::wstring str = XgBinToHex(szText, lstrlenW(szText) * sizeof(WCHAR));
         WritePrivateProfileStringW(L"Looks", L"DoubleFrameLetters", str.c_str(), pszFileName);
     }
+
+    // 線の幅。
+    ::GetDlgItemTextW(hwnd, edt6, szText, _countof(szText));
+    WritePrivateProfileStringW(L"Looks", L"LineWidthInPt", szText, pszFileName);
+
+    // 外枠の幅。
+    ::GetDlgItemTextW(hwnd, edt7, szText, _countof(szText));
+    WritePrivateProfileStringW(L"Looks", L"OuterFrameInPt", szText, pszFileName);
 
     // フラッシュ！
     return WritePrivateProfileStringW(nullptr, nullptr, nullptr, pszFileName);
@@ -567,6 +605,10 @@ void XG_SettingsDialog::OnResetLooks(HWND hwnd)
 
     // 線の幅。
     ::SetDlgItemTextW(hwnd, edt6, XG_LINE_WIDTH_DEFAULT2);
+
+    // 外枠の幅。
+    ::SetDlgItemTextW(hwnd, edt7, XG_OUTERFRAME_DEFAULT2);
+    ::EnableWindow(GetDlgItem(hwnd, edt7), TRUE);
 
     UpdateBlockPreview(hwnd);
 }
@@ -697,24 +739,45 @@ XG_SettingsDialog::DialogProcDx(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPar
     case WM_NOTIFY:
         {
             NM_UPDOWN *pUpDown = (NM_UPDOWN *)lParam;
+            WCHAR szText[MAX_PATH];
             if (pUpDown->hdr.code == UDN_DELTAPOS)
             {
-                WCHAR szText[MAX_PATH];
-                GetDlgItemTextW(hwnd, edt6, szText, _countof(szText));
-                std::wstring str = szText;
-                xg_str_trim(str);
-                float value = wcstof(str.c_str(), nullptr);
-                if (pUpDown->iDelta < 0)
-                    value += XG_LINE_WIDTH_DELTA;
-                if (pUpDown->iDelta > 0)
-                    value -= XG_LINE_WIDTH_DELTA;
-                if (value > XG_MAX_LINEWIDTH)
-                    value = XG_MAX_LINEWIDTH;
-                if (value < XG_MIN_LINEWIDTH)
-                    value = XG_MIN_LINEWIDTH;
-                StringCchPrintfW(szText, _countof(szText), XG_LINE_WIDTH_FORMAT, value);
-                SetDlgItemTextW(hwnd, edt6, szText);
-                return TRUE;
+                if (pUpDown->hdr.idFrom == scr3)
+                {
+                    GetDlgItemTextW(hwnd, edt6, szText, _countof(szText));
+                    std::wstring str = szText;
+                    xg_str_trim(str);
+                    float value = wcstof(str.c_str(), nullptr);
+                    if (pUpDown->iDelta < 0)
+                        value += XG_LINE_WIDTH_DELTA;
+                    if (pUpDown->iDelta > 0)
+                        value -= XG_LINE_WIDTH_DELTA;
+                    if (value > XG_MAX_LINEWIDTH)
+                        value = XG_MAX_LINEWIDTH;
+                    if (value < XG_MIN_LINEWIDTH)
+                        value = XG_MIN_LINEWIDTH;
+                    StringCchPrintfW(szText, _countof(szText), XG_LINE_WIDTH_FORMAT, value);
+                    SetDlgItemTextW(hwnd, edt6, szText);
+                    return TRUE;
+                }
+                if (pUpDown->hdr.idFrom == scr4)
+                {
+                    GetDlgItemTextW(hwnd, edt7, szText, _countof(szText));
+                    std::wstring str = szText;
+                    xg_str_trim(str);
+                    float value = wcstof(str.c_str(), nullptr);
+                    if (pUpDown->iDelta < 0)
+                        value += XG_OUTERFRAME_DELTA;
+                    if (pUpDown->iDelta > 0)
+                        value -= XG_OUTERFRAME_DELTA;
+                    if (value > XG_MAX_OUTERFRAME)
+                        value = XG_MAX_OUTERFRAME;
+                    if (value < XG_MIN_OUTERFRAME)
+                        value = XG_MIN_OUTERFRAME;
+                    StringCchPrintfW(szText, _countof(szText), XG_OUTERFRAME_FORMAT, value);
+                    SetDlgItemTextW(hwnd, edt7, szText);
+                    return TRUE;
+                }
             }
         }
         break;
@@ -826,6 +889,13 @@ XG_SettingsDialog::DialogProcDx(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPar
                     }
                     m_bUpdating = FALSE;
                 }
+            }
+
+        case chx2:
+            if (IsDlgButtonChecked(hwnd, chx2) == BST_CHECKED) {
+                ::EnableWindow(::GetDlgItem(hwnd, edt7), TRUE);
+            } else {
+                ::EnableWindow(::GetDlgItem(hwnd, edt7), FALSE);
             }
         }
         break;

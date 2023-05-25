@@ -29,6 +29,15 @@ extern float xg_nLineWidthInPt;
 #define XG_LINE_WIDTH_DELTA 0.5f
 #define XG_LINE_WIDTH_FORMAT L"%.1f"
 
+// 外枠の幅（pt）。
+extern float xg_nOuterFrameInPt;
+#define XG_MIN_OUTERFRAME 0.05f
+#define XG_MAX_OUTERFRAME 8.00f
+#define XG_OUTERFRAME_DEFAULT 4.0f
+#define XG_OUTERFRAME_DEFAULT2 L"4.0"
+#define XG_OUTERFRAME_DELTA 0.5f
+#define XG_OUTERFRAME_FORMAT L"%.1f"
+
 // 色。
 #define XG_WHITE_COLOR_DEFAULT L"16777215"
 #define XG_BLACK_COLOR_DEFAULT L"3355443"

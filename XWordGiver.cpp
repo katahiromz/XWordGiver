@@ -4458,7 +4458,7 @@ void __fastcall XgDrawMarkWord(HDC hdc, LPSIZE psiz)
 
     // 線の太さ。
     INT c_nThin = YPixelsFromPoints(hdc, xg_nLineWidthInPt);
-    INT c_nWide = YPixelsFromPoints(hdc, xg_nLineWidthInPt * 4);
+    INT c_nWide = YPixelsFromPoints(hdc, xg_nOuterFrameInPt);
     if (c_nThin < 2)
         c_nThin = 2;
     if (c_nWide < 2)
@@ -4824,7 +4824,7 @@ void __fastcall XgDrawXWord_NormalView(XG_Board& xw, HDC hdc, LPSIZE psiz, DRAW_
     case DRAW_MODE_SCREEN:
     case DRAW_MODE_PRINT:
         c_nThin = YPixelsFromPoints(hdc, xg_nLineWidthInPt);
-        c_nWide = YPixelsFromPoints(hdc, xg_nLineWidthInPt * 4);
+        c_nWide = YPixelsFromPoints(hdc, xg_nOuterFrameInPt);
         break;
     case DRAW_MODE_EMF:
         break;
@@ -5240,7 +5240,7 @@ void __fastcall XgDrawXWord_SkeletonView(XG_Board& xw, HDC hdc, LPSIZE psiz, DRA
 
     // 線の太さ。
     INT c_nThin = YPixelsFromPoints(hdc, xg_nLineWidthInPt);
-    INT c_nWide = 4;
+    INT c_nWide = YPixelsFromPoints(hdc, xg_nOuterFrameInPt);
     if (c_nThin < 2)
         c_nThin = 2;
     if (c_nWide < 2)
@@ -5268,23 +5268,25 @@ void __fastcall XgDrawXWord_SkeletonView(XG_Board& xw, HDC hdc, LPSIZE psiz, DRA
     SIZE siz;
     HGDIOBJ hFontOld, hPenOld;
 
-    // セルの背景を描画する。
-    for (int i = 0; i < xg_nRows; i++) {
-        for (int j = 0; j < xg_nCols; j++) {
-            // セルの座標をセットする。
-            ::SetRect(&rc,
-                static_cast<int>(xg_nMargin + j * nCellSize), 
-                static_cast<int>(xg_nMargin + i * nCellSize),
-                static_cast<int>(xg_nMargin + (j + 1) * nCellSize), 
-                static_cast<int>(xg_nMargin + (i + 1) * nCellSize));
+    // 外枠と背景を描画する。
+    if (xg_bAddThickFrame) {
+        for (int i = 0; i < xg_nRows; i++) {
+            for (int j = 0; j < xg_nCols; j++) {
+                WCHAR ch = xw.GetAt(i, j);
+                if (ch != ZEN_BLACK) {
+                    // セルの座標をセットする。
+                    ::SetRect(&rc,
+                        static_cast<int>(xg_nMargin + j * nCellSize), 
+                        static_cast<int>(xg_nMargin + i * nCellSize),
+                        static_cast<int>(xg_nMargin + (j + 1) * nCellSize), 
+                        static_cast<int>(xg_nMargin + (i + 1) * nCellSize));
 
-            RECT rcExtended = rc;
-            InflateRect(&rcExtended, c_nWide, c_nWide);
+                    RECT rcExtended = rc;
+                    ::InflateRect(&rcExtended, c_nWide, c_nWide);
 
-            WCHAR ch = xw.GetAt(i, j);
-            if (ch != ZEN_BLACK) {
-                // 背景を塗りつぶす。
-                ::FillRect(hdc, &rcExtended, hbrBlack);
+                    // 背景を塗りつぶす。
+                    ::FillRect(hdc, &rcExtended, hbrBlack);
+                }
             }
         }
     }

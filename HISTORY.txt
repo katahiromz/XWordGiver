@@ -223,6 +223,9 @@
     - Line width can now be reset as well.
 - 2023-XX-YY ver.5.0.6
     - Ctrl+Wheel can be used to zoom in on Clues.
+    - Line widths can now be imported/exported properly.
+    - Added a setting for the width of the outer frame.
+    - Fixed drawing of the outer frame.
 
 # 開発履歴 (Japanese)
 
@@ -761,3 +764,6 @@
     - 線の幅もリセットできるようにした。
 - 2023年XX年YY日 ver.5.0.6
     - Ctrl+ホイールでヒントをズーム可能に。
+    - 線の幅をちゃんとインポート／エクスポートできるように。
+    - 外枠の幅の設定を追加。
+    - 外枠の描画を修正。

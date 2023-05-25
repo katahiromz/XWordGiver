@@ -1177,6 +1177,14 @@ bool __fastcall XgLoadSettings(void)
                     value = XG_MAX_LINEWIDTH;
                 xg_nLineWidthInPt = value;
             }
+            if (!app_key.QueryDword(L"OuterFrame", dwValue)) {
+                float value = dwValue * 0.01;
+                if (value < XG_MIN_OUTERFRAME)
+                    value = XG_MIN_OUTERFRAME;
+                if (value > XG_MAX_OUTERFRAME)
+                    value = XG_MAX_OUTERFRAME;
+                xg_nOuterFrameInPt = value;
+            }
 
             if (!app_key.QuerySz(L"Recent", sz, _countof(sz))) {
                 xg_dict_name = sz;
@@ -1305,6 +1313,7 @@ bool __fastcall XgSaveSettings(void)
             app_key.SetDword(L"ShowDoubleFrameLetters", xg_bShowDoubleFrameLetters);
             app_key.SetDword(L"ViewMode", xg_nViewMode);
             app_key.SetDword(L"LineWidth", INT(xg_nLineWidthInPt * 100));
+            app_key.SetDword(L"OuterFrame", INT(xg_nOuterFrameInPt * 100));
 
             app_key.SetSz(L"Recent", xg_dict_name.c_str());
 
@@ -2043,7 +2052,7 @@ BOOL XgImportLooks(HWND hwnd, LPCWSTR pszFileName)
     xg_rgbMarkedCellColor = _wtoi(szText);
 
     // 線の幅（pt）。
-    GetPrivateProfileStringW(L"Looks", L"LineWidthInPt", L"1.0", szText, _countof(szText), pszFileName);
+    GetPrivateProfileStringW(L"Looks", L"LineWidthInPt", XG_LINE_WIDTH_DEFAULT2, szText, _countof(szText), pszFileName);
     xg_nLineWidthInPt = wcstof(szText, nullptr);
     if (xg_nLineWidthInPt < XG_MIN_LINEWIDTH)
         xg_nLineWidthInPt = XG_MIN_LINEWIDTH;
