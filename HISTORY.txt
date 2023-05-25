@@ -227,7 +227,7 @@
     - Added a setting for the width of the outer frame.
     - Fixed drawing of the outer frame.
 - 2023-XX-YY ver.5.0.7
-    - Fixed printing of the outer frame.
+    - Improved printing of the outer frame.
 
 # 開発履歴 (Japanese)
 
@@ -770,4 +770,4 @@
     - 外枠の幅の設定を追加。
     - 外枠の描画を修正。
 - 2023年XX年YY日 ver.5.0.7
-    - 外枠の印刷を修正。
+    - 外枠の印刷を改良。
