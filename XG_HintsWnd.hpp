@@ -641,12 +641,63 @@ public:
         }
     }
 
+    void OnZoom(HWND hwnd, BOOL bZoomIn)
+    {
+        // フォント情報を取得。
+        LOGFONTW *plf = XgGetUIFont();
+        INT height = labs(plf->lfHeight);
+        if (height == 0)
+            height = 12;
+        HDC hdc = ::CreateCompatibleDC(nullptr);
+        INT pointsize = MulDiv(height, 72, ::GetDeviceCaps(hdc, LOGPIXELSY));
+        ::DeleteDC(hdc);
+
+        // ズームに応じて、フォントサイズを増減。
+        if (bZoomIn)
+            pointsize += 1;
+        else
+            pointsize -= 1;
+
+        // 大きすぎない。小さすぎない。
+        if (pointsize > 30)
+            pointsize = 30;
+        if (pointsize < 6)
+            pointsize = 6;
+
+        // フォント設定を更新。
+        StringCchPrintfW(xg_szUIFont, _countof(xg_szUIFont), L"%s, %d", plf->lfFaceName, pointsize);
+
+        // フォントを再作成。
+        if (xg_hHintsUIFont)
+            ::DeleteObject(xg_hHintsUIFont);
+        xg_hHintsUIFont = ::CreateFontIndirectW(XgGetUIFont());
+
+        // フォントをセット。
+        for (auto hwndCtrl : xg_ahwndTateStatics)
+            SetWindowFont(hwndCtrl, xg_hHintsUIFont, TRUE);
+        for (auto hwndCtrl : xg_ahwndTateEdits)
+            SetWindowFont(hwndCtrl, xg_hHintsUIFont, TRUE);
+        for (auto hwndCtrl : xg_ahwndYokoStatics)
+            SetWindowFont(hwndCtrl, xg_hHintsUIFont, TRUE);
+        for (auto hwndCtrl : xg_ahwndYokoEdits)
+            SetWindowFont(hwndCtrl, xg_hHintsUIFont, TRUE);
+
+        // 再配置。
+        ::PostMessageW(hwnd, WM_SIZE, 0, 0);
+    }
 
     // マウスホイールが回転した。
     void __fastcall
     OnMouseWheel(HWND hwnd, int xPos, int yPos, int zDelta, UINT fwKeys)
     {
-        if (::GetAsyncKeyState(VK_SHIFT) < 0) {
+        if (::GetAsyncKeyState(VK_CONTROL) < 0) {
+            if (zDelta < 0) {
+                OnZoom(hwnd, FALSE);
+            } else if (zDelta > 0) {
+                OnZoom(hwnd, TRUE);
+            }
+        }
+        else if (::GetAsyncKeyState(VK_SHIFT) < 0) {
             if (zDelta < 0)
                 ::PostMessageW(hwnd, WM_HSCROLL, MAKEWPARAM(SB_LINEDOWN, 0), 0);
             else if (zDelta > 0)

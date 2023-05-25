@@ -222,6 +222,7 @@
     - Fixed image not updating when dropped.
     - Line width can now be reset as well.
 - 2023-XX-YY ver.5.0.6
+    - Ctrl+Wheel can be used to zoom in on Clues.
 
 # 開発履歴 (Japanese)
 
@@ -759,3 +760,4 @@
     - ドロップしたときにイメージが更新されてなかったのを修正。
     - 線の幅もリセットできるようにした。
 - 2023年XX年YY日 ver.5.0.6
+    - Ctrl+ホイールでヒントをズーム可能に。

@@ -138,12 +138,12 @@ void MScrollView::SetExtentForAllCtrls()
     si.nMin = 0;
     si.nMax = Extent().cx;
     si.nPage = rc.Width();
-    ::SetScrollInfo(m_hwndParent, SB_HORZ, &si, FALSE);
+    ::SetScrollInfo(m_hwndParent, SB_HORZ, &si, TRUE);
     si.fMask = SIF_PAGE | SIF_RANGE | SIF_DISABLENOSCROLL;
     si.nMin = 0;
     si.nMax = Extent().cy;
     si.nPage = rc.Height();
-    ::SetScrollInfo(m_hwndParent, SB_VERT, &si, FALSE);
+    ::SetScrollInfo(m_hwndParent, SB_VERT, &si, TRUE);
 
     ::InvalidateRect(m_hwndParent, nullptr, TRUE);
 }
