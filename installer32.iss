@@ -61,7 +61,6 @@ Source: "BLOCK\perfect-black.bmp"; DestDir: "{app}\BLOCK"; Flags: ignoreversion
 Source: "BLOCK\sakura.jpg"; DestDir: "{app}\BLOCK"; Flags: ignoreversion
 Source: "BLOCK\spade.emf"; DestDir: "{app}\BLOCK"; Flags: ignoreversion
 Source: "BLOCK\star.emf"; DestDir: "{app}\BLOCK"; Flags: ignoreversion
-Source: "BLOCK\ant.png"; DestDir: "{app}\BLOCK"; Flags: ignoreversion
 Source: "LICENSE.txt"; DestDir: "{app}"; Flags: ignoreversion
 Source: "PAT.txt"; DestDir: "{app}"; Flags: ignoreversion
 Source: "POLICY.txt"; DestDir: "{app}"; Flags: ignoreversion
