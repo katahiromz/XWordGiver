@@ -4431,15 +4431,15 @@ void __fastcall XgEndSolve(void) noexcept
 }
 
 // ポイント単位をピクセル単位に変換する（X座標）。
-INT XPixelsFromPoints(HDC hDC, INT points)
+float XPixelsFromPoints(HDC hDC, float points)
 {
-    return MulDiv(points, GetDeviceCaps(hDC, LOGPIXELSX), 72);
+    return points * GetDeviceCaps(hDC, LOGPIXELSX) / 72;
 }
 
 // ポイント単位をピクセル単位に変換する（Y座標）。
-INT YPixelsFromPoints(HDC hDC, INT points)
+float YPixelsFromPoints(HDC hDC, float points)
 {
-    return MulDiv(points, GetDeviceCaps(hDC, LOGPIXELSY), 72);
+    return points * GetDeviceCaps(hDC, LOGPIXELSY) / 72;
 }
 
 // 二重マス単語を描画する。
