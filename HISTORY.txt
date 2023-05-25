@@ -228,6 +228,7 @@
     - Fixed drawing of the outer frame.
 - 2023-XX-YY ver.5.0.7
     - Improved printing of the outer frame.
+    - Improved the drawing routine.
 
 # 開発履歴 (Japanese)
 
@@ -771,3 +772,4 @@
     - 外枠の描画を修正。
 - 2023年XX年YY日 ver.5.0.7
     - 外枠の印刷を改良。
+    - 描画ルーチンを改良。
