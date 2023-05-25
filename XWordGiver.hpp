@@ -6,6 +6,8 @@
 #ifndef XWORDGIVER
 #define XWORDGIVER
 
+#pragma once
+
 #ifndef __cplusplus
     #error You lose.    // not C++ compiler
 #endif

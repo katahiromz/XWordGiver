@@ -1,3 +1,6 @@
+#include "XWordGiver.hpp"
+#include "XG_SettingsDialog.hpp"
+
 // 文字の大きさ（％）。
 INT xg_nCellCharPercents = XG_DEF_CELL_CHAR_SIZE;
 

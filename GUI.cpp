@@ -6,11 +6,15 @@
 #define NOMINMAX
 #include "XWordGiver.hpp"
 #include "GUI.hpp"
-#include "XG_UndoBuffer.hpp"    // 「元に戻す」情報。
 #include <algorithm>
 #include "WonSetThreadUILanguage/WonSetThreadUILanguage.h"
 
+// 「元に戻す」情報。
+#include "XG_UndoBuffer.hpp"
+#include "XG_UndoBuffer.cpp"
+
 // ダイアログとウィンドウ。
+#include "XG_Window.cpp"
 #include "XG_CancelFromWordsDialog.hpp"
 #include "XG_CancelGenBlacksDialog.hpp"
 #include "XG_CancelSmartSolveDialog.hpp"

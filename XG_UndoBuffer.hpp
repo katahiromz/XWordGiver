@@ -1,9 +1,10 @@
 ﻿//////////////////////////////////////////////////////////////////////////////
 // XG_UndoBuffer.hpp
-// Copyright (C) 2012-2020 Katayama Hirofumi MZ. All Rights Reserved.
+// Copyright (C) 2012-2023 Katayama Hirofumi MZ. All Rights Reserved.
 
 #pragma once
 
+#include "XWordGiver.hpp"
 #include <memory>   // for std::shared_ptr
 
 using std::shared_ptr;
