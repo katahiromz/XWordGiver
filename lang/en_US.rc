@@ -692,11 +692,11 @@ FONT 9, "Tahoma"
     CONTROL "", scr2, "msctls_updown32", UDS_ARROWKEYS | UDS_AUTOBUDDY | UDS_ALIGNRIGHT | UDS_SETBUDDYINT, 98, 143, 12, 20
     LTEXT "%", -1, 114, 145, 10, 12
     PUSHBUTTON "Reset", psh11, 129, 143, 35, 14
-    RTEXT "Line width:", -1, 170, 127, 44, 12
-    EDITTEXT edt6, 218, 125, 36, 14, ES_AUTOHSCROLL
+    RTEXT "Line width:", -1, 170, 124, 44, 12
+    EDITTEXT edt6, 218, 122, 36, 14, ES_AUTOHSCROLL
     CONTROL "", scr3, "msctls_updown32", UDS_ARROWKEYS | UDS_AUTOBUDDY | UDS_ALIGNRIGHT, 246, 127, 12, 20
-    LTEXT "pt", -1, 259, 127, 11, 12
-    LTEXT "Block i&mage:", -1, 5, 166, 52, 11
+    LTEXT "pt", -1, 259, 124, 11, 12
+    RTEXT "Block i&mage:", -1, 5, 166, 52, 11
     COMBOBOX cmb1, 60, 165, 102, 300, CBS_HASSTRINGS | CBS_AUTOHSCROLL | CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP
     LTEXT "Please drop your favorite image into the BLOCK folder.", -1, 5, 182, 150, 21
     CONTROL "", ico1, "STATIC", SS_BITMAP, 165, 165, 20, 20
