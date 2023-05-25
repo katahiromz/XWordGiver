@@ -4,6 +4,7 @@
 // (Japanese, UTF-8)
 
 #include "XWordGiver.hpp"
+#include "XG_Settings.hpp"
 #include <clocale>
 
 //////////////////////////////////////////////////////////////////////////////
@@ -99,23 +100,6 @@ bool xg_bCharFeed = true;
 
 // タテ入力？
 bool xg_bTateInput = false;
-
-// 文字の大きさ（％）。
-INT xg_nCellCharPercents = XG_DEF_CELL_CHAR_SIZE;
-
-// 小さい文字の大きさ（％）。
-INT xg_nSmallCharPercents = XG_DEF_SMALL_CHAR_SIZE;
-
-// 黒マス画像。
-HBITMAP xg_hbmBlackCell = nullptr;
-HENHMETAFILE xg_hBlackCellEMF = nullptr;
-std::wstring xg_strBlackCellImage;
-
-// ビューモード。
-XG_VIEW_MODE xg_nViewMode = XG_VIEW_NORMAL;
-
-// 線の太さ（pt）。
-float xg_nLineWidthInPt = XG_LINE_WIDTH_DEFAULT;
 
 //////////////////////////////////////////////////////////////////////////////
 // static variables

@@ -225,11 +225,6 @@ static int s_nMainWndCX = CW_USEDEFAULT, s_nMainWndCY = CW_USEDEFAULT;
 INT xg_nInputPaletteWndX = CW_USEDEFAULT;
 INT xg_nInputPaletteWndY = CW_USEDEFAULT;
 
-// ひらがな表示か？
-BOOL xg_bHiragana = FALSE;
-// Lowercase表示か？
-BOOL xg_bLowercase = FALSE;
-
 // 会社名。
 static const LPCWSTR
     s_pszSoftwareCompanyName = L"Software\\Katayama Hirofumi MZ";
@@ -279,9 +274,6 @@ INT xg_nNumberGenerated = 0;
 
 // 再計算の回数。
 LONG xg_nRetryCount;
-
-// ツールバーを表示するか？
-bool xg_bShowToolBar = true;
 
 // ステータスバーを表示するか？
 static bool s_bShowStatusBar = true;
@@ -2037,13 +2029,13 @@ BOOL XgImportLooks(HWND hwnd, LPCWSTR pszFileName)
     WCHAR szText[1024], szText2[MAX_PATH];
 
     // 色。
-    GetPrivateProfileStringW(L"Looks", L"WhiteCellColor", L"16777215", szText, _countof(szText), pszFileName);
+    GetPrivateProfileStringW(L"Looks", L"WhiteCellColor", XG_WHITE_COLOR_DEFAULT, szText, _countof(szText), pszFileName);
     xg_rgbWhiteCellColor = _wtoi(szText);
 
-    GetPrivateProfileStringW(L"Looks", L"BlackCellColor", L"3355443", szText, _countof(szText), pszFileName);
+    GetPrivateProfileStringW(L"Looks", L"BlackCellColor", XG_BLACK_COLOR_DEFAULT, szText, _countof(szText), pszFileName);
     xg_rgbBlackCellColor = _wtoi(szText);
 
-    GetPrivateProfileStringW(L"Looks", L"MarkedCellColor", L"16777215", szText, _countof(szText), pszFileName);
+    GetPrivateProfileStringW(L"Looks", L"MarkedCellColor", XG_MARKED_COLOR_DEFAULT, szText, _countof(szText), pszFileName);
     xg_rgbMarkedCellColor = _wtoi(szText);
 
     // 線の幅（pt）。

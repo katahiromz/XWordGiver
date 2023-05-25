@@ -2,6 +2,7 @@
 
 #include "XG_Window.hpp"
 #include "XG_ColorBox.hpp"
+#include "XG_Settings.hpp"
 
 #define XG_DEF_TEXTBOX_POINTSIZE 10
 

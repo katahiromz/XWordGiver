@@ -2,21 +2,7 @@
 
 #include "XG_Window.hpp"
 #include "XG_ColorBox.hpp"
-
-// UIフォント。
-extern WCHAR xg_szUIFont[LF_FACESIZE];
-
-// ツールバーを表示するか？
-extern bool xg_bShowToolBar;
-
-// マスのフォント。
-extern WCHAR xg_szCellFont[LF_FACESIZE];
-
-// 小さな文字のフォント。
-extern WCHAR xg_szSmallFont[LF_FACESIZE];
-
-// UIフォント。
-extern WCHAR xg_szUIFont[LF_FACESIZE];
+#include "XG_Settings.hpp"
 
 // 「見た目の設定」ダイアログ。
 class XG_SettingsDialog : public XG_Dialog

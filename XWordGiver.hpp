@@ -1311,39 +1311,14 @@ extern std::wstring xg_strHints;
 // スレッドのハンドル。
 extern std::vector<HANDLE> xg_ahThreads;
 
-// マスのフォント。
-extern WCHAR xg_szCellFont[];
-
-// 番号のフォント。
-extern WCHAR xg_szSmallFont[];
-
 // 直前に押したキーを覚えておく。
 extern WCHAR xg_prev_vk;
-
-// ひらがな表示か？
-extern BOOL xg_bHiragana;
-// Lowercase表示か？
-extern BOOL xg_bLowercase;
-
-// 文字の大きさ（％）。
-extern INT xg_nCellCharPercents;
-
-// 小さい文字の大きさ（％）。
-extern INT xg_nSmallCharPercents;
 
 // 「黒マスパターン」ダイアログの位置とサイズ。
 extern INT xg_nPatWndX;
 extern INT xg_nPatWndY;
 extern INT xg_nPatWndCX;
 extern INT xg_nPatWndCY;
-
-// 線の太さ（pt）。
-extern float xg_nLineWidthInPt;
-#define XG_MIN_LINEWIDTH 0.05f
-#define XG_MAX_LINEWIDTH 5.0f
-#define XG_LINE_WIDTH_DEFAULT 1.0f
-#define XG_LINE_WIDTH_DELTA 0.5f
-#define XG_LINE_WIDTH_FORMAT L"%.1f"
 
 //////////////////////////////////////////////////////////////////////////////
 

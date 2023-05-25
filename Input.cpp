@@ -5,6 +5,7 @@
 
 #include "XWordGiver.hpp"
 #include "GUI.hpp"
+#include "XG_Settings.hpp"
 #include "XG_UndoBuffer.hpp"
 
 // 入力パレットを表示するか？

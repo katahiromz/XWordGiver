@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include "XG_Window.hpp"
+#include "XG_Settings.hpp"
 
 struct XG_CandsButtonData
 {

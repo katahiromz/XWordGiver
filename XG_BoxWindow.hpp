@@ -4,6 +4,7 @@
 #include "XG_TextBoxDialog.hpp"
 #include "XG_PictureBoxDialog.hpp"
 #include "XG_UndoBuffer.hpp"
+#include "XG_Settings.hpp"
 
 #define XGWM_REDRAW (WM_USER + 101) // 再描画メッセージ。
 #define CXY_GRIP 5 // グリップのサイズ。

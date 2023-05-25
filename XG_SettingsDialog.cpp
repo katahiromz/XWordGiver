@@ -1,3 +1,29 @@
+// 文字の大きさ（％）。
+INT xg_nCellCharPercents = XG_DEF_CELL_CHAR_SIZE;
+
+// 小さい文字の大きさ（％）。
+INT xg_nSmallCharPercents = XG_DEF_SMALL_CHAR_SIZE;
+
+// 黒マス画像。
+HBITMAP xg_hbmBlackCell = nullptr;
+HENHMETAFILE xg_hBlackCellEMF = nullptr;
+std::wstring xg_strBlackCellImage;
+
+// ビューモード。
+XG_VIEW_MODE xg_nViewMode = XG_VIEW_NORMAL;
+
+// 線の太さ（pt）。
+float xg_nLineWidthInPt = XG_LINE_WIDTH_DEFAULT;
+
+// ひらがな表示か？
+BOOL xg_bHiragana = FALSE;
+
+// Lowercase表示か？
+BOOL xg_bLowercase = FALSE;
+
+// ツールバーを表示するか？
+bool xg_bShowToolBar = true;
+
 // [設定]ダイアログの初期化。
 BOOL XG_SettingsDialog::OnInitDialog(HWND hwnd)
 {
@@ -228,15 +254,15 @@ BOOL XG_SettingsDialog::DoImportLooks(HWND hwnd, LPCWSTR pszFileName)
     HWND hCmb1 = GetDlgItem(hwnd, cmb1);
 
     // 色。
-    GetPrivateProfileStringW(L"Looks", L"WhiteCellColor", L"16777215", szText, _countof(szText), pszFileName);
+    GetPrivateProfileStringW(L"Looks", L"WhiteCellColor", XG_WHITE_COLOR_DEFAULT, szText, _countof(szText), pszFileName);
     m_hwndWhite.SetColor(_wtoi(szText));
     InvalidateRect(m_hwndWhite, nullptr, TRUE);
 
-    GetPrivateProfileStringW(L"Looks", L"BlackCellColor", L"3355443", szText, _countof(szText), pszFileName);
+    GetPrivateProfileStringW(L"Looks", L"BlackCellColor", XG_BLACK_COLOR_DEFAULT, szText, _countof(szText), pszFileName);
     m_hwndBlack.SetColor(_wtoi(szText));
     InvalidateRect(m_hwndBlack, nullptr, TRUE);
 
-    GetPrivateProfileStringW(L"Looks", L"MarkedCellColor", L"16777215", szText, _countof(szText), pszFileName);
+    GetPrivateProfileStringW(L"Looks", L"MarkedCellColor", XG_MARKED_COLOR_DEFAULT, szText, _countof(szText), pszFileName);
     m_hwndMarked.SetColor(_wtoi(szText));
     InvalidateRect(m_hwndMarked, nullptr, TRUE);
 
@@ -485,13 +511,13 @@ BOOL XG_SettingsDialog::OnExportLooks(HWND hwnd)
 void XG_SettingsDialog::OnResetLooks(HWND hwnd)
 {
     // 色。
-    m_hwndWhite.SetColor(_wtoi(L"16777215"));
+    m_hwndWhite.SetColor(_wtoi(XG_WHITE_COLOR_DEFAULT));
     InvalidateRect(m_hwndWhite, nullptr, TRUE);
 
-    m_hwndBlack.SetColor(_wtoi(L"3355443"));
+    m_hwndBlack.SetColor(_wtoi(XG_BLACK_COLOR_DEFAULT));
     InvalidateRect(m_hwndBlack, nullptr, TRUE);
 
-    m_hwndMarked.SetColor(_wtoi(L"16777215"));
+    m_hwndMarked.SetColor(_wtoi(XG_MARKED_COLOR_DEFAULT));
     InvalidateRect(m_hwndMarked, nullptr, TRUE);
 
     // フォント。
@@ -537,7 +563,7 @@ void XG_SettingsDialog::OnResetLooks(HWND hwnd)
     ComboBox_SetText(hCmb2, XgLoadStringDx1(IDS_DBLFRAME_LETTERS_1));
 
     // 線の幅。
-    ::SetDlgItemTextW(hwnd, edt6, L"1.0");
+    ::SetDlgItemTextW(hwnd, edt6, XG_LINE_WIDTH_DEFAULT2);
 
     UpdateBlockPreview(hwnd);
 }
