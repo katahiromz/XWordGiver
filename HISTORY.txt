@@ -221,7 +221,7 @@
     - Assign Ctrl+D to "Copy the double-frame word".
     - Fixed image not updating when dropped.
     - Line width can now be reset as well.
-- 2023-XX-YY ver.5.0.6
+- 2023-05-25 ver.5.0.6
     - Ctrl+Wheel can be used to zoom in on Clues.
     - Line widths can now be imported/exported properly.
     - Added a setting for the width of the outer frame.
@@ -762,7 +762,7 @@
     - Ctrl+Dを「二重マス単語をコピー」に割り付け。
     - ドロップしたときにイメージが更新されてなかったのを修正。
     - 線の幅もリセットできるようにした。
-- 2023年XX年YY日 ver.5.0.6
+- 2023年05年25日 ver.5.0.6
     - Ctrl+ホイールでヒントをズーム可能に。
     - 線の幅をちゃんとインポート／エクスポートできるように。
     - 外枠の幅の設定を追加。
