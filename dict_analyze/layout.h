@@ -19,7 +19,7 @@ typedef struct LAYOUT_DATA {
     HWND m_hwndParent;
     HWND m_hwndGrip;
     LAYOUT_INFO *m_pLayouts;
-    UINT m_cLayouts;
+    INT m_cLayouts;
 } LAYOUT_DATA;
 
 static __inline void
@@ -123,7 +123,7 @@ static __inline void
 _layout_ArrangeLayout(LAYOUT_DATA *pData)
 {
     RECT rcClient;
-    UINT iItem;
+    INT iItem;
     HDWP hDwp = BeginDeferWindowPos(pData->m_cLayouts + 1);
     if (hDwp == NULL)
         return;
@@ -142,7 +142,7 @@ _layout_InitLayouts(LAYOUT_DATA *pData)
 {
     RECT rcClient, rcChild, rcPercents;
     LONG nWidth, nHeight;
-    UINT iItem;
+    INT iItem;
 
     GetClientRect(pData->m_hwndParent, &rcClient);
     nWidth = rcClient.right - rcClient.left;
@@ -190,7 +190,7 @@ LayoutEnableResize(LAYOUT_DATA *pData, BOOL bEnable)
 }
 
 static __inline LAYOUT_DATA *
-LayoutInit(HWND hwndParent, const LAYOUT_INFO *pLayouts, UINT cLayouts)
+LayoutInit(HWND hwndParent, const LAYOUT_INFO *pLayouts, INT cLayouts)
 {
     SIZE_T cb;
     LAYOUT_DATA *pData = (LAYOUT_DATA *)HeapAlloc(GetProcessHeap(), 0, sizeof(LAYOUT_DATA));

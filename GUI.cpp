@@ -1170,7 +1170,7 @@ bool __fastcall XgLoadSettings(void)
                 }
             }
             if (!app_key.QueryDword(L"LineWidth", dwValue)) {
-                float value = dwValue * 0.01;
+                float value = float(dwValue * 0.01f);
                 if (value < XG_MIN_LINEWIDTH)
                     value = XG_MIN_LINEWIDTH;
                 if (value > XG_MAX_LINEWIDTH)
@@ -1178,7 +1178,7 @@ bool __fastcall XgLoadSettings(void)
                 xg_nLineWidthInPt = value;
             }
             if (!app_key.QueryDword(L"OuterFrame", dwValue)) {
-                float value = dwValue * 0.01;
+                float value = float(dwValue * 0.01f);
                 if (value < XG_MIN_OUTERFRAME)
                     value = XG_MIN_OUTERFRAME;
                 if (value > XG_MAX_OUTERFRAME)

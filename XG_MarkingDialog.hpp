@@ -27,7 +27,7 @@ public:
 
         // リストに候補を追加する。
         for (auto& item : xg_vMarkedCands) {
-            INT i = ::SendDlgItemMessageW(hwnd, lst1, LB_ADDSTRING, 0, (LPARAM)item.c_str());
+            INT i = (INT)::SendDlgItemMessageW(hwnd, lst1, LB_ADDSTRING, 0, (LPARAM)item.c_str());
             if (item == xg_strMarked) {
                 m_bUpdating = TRUE;
                 ::SendDlgItemMessageW(hwnd, lst1, LB_SETCURSEL, i, 0);

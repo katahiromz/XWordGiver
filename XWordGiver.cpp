@@ -4457,8 +4457,8 @@ void __fastcall XgDrawMarkWord(HDC hdc, LPSIZE psiz)
     HBRUSH hbrMarked = ::CreateSolidBrush(xg_rgbMarkedCellColor);
 
     // 線の太さ。
-    INT c_nThin = YPixelsFromPoints(hdc, xg_nLineWidthInPt);
-    INT c_nWide = YPixelsFromPoints(hdc, xg_nOuterFrameInPt);
+    INT c_nThin = INT(YPixelsFromPoints(hdc, xg_nLineWidthInPt));
+    INT c_nWide = INT(YPixelsFromPoints(hdc, xg_nOuterFrameInPt));
     if (c_nThin < 2)
         c_nThin = 2;
     if (c_nWide < 2)
@@ -4822,14 +4822,14 @@ void __fastcall XgDrawXWord_NormalView(XG_Board& xw, HDC hdc, const SIZE *psiz, 
     {
     case DRAW_MODE_SCREEN:
     case DRAW_MODE_PRINT:
-        c_nThin = YPixelsFromPoints(hdc, xg_nLineWidthInPt);
-        c_nWide = YPixelsFromPoints(hdc, xg_nOuterFrameInPt);
+        c_nThin = INT(YPixelsFromPoints(hdc, xg_nLineWidthInPt));
+        c_nWide = INT(YPixelsFromPoints(hdc, xg_nOuterFrameInPt));
         break;
     case DRAW_MODE_EMF:
         // FIXME: "Microsoft Print to PDF" で印刷すると線の幅がおかしくなる。
         // よくわからないので、1pt == 1pxで近似する。
-        c_nThin = xg_nLineWidthInPt;
-        c_nWide = xg_nOuterFrameInPt;
+        c_nThin = INT(xg_nLineWidthInPt);
+        c_nWide = INT(xg_nOuterFrameInPt);
         break;
     }
     if (c_nThin < 2)
@@ -5247,14 +5247,14 @@ void __fastcall XgDrawXWord_SkeletonView(XG_Board& xw, HDC hdc, const SIZE *psiz
     {
     case DRAW_MODE_SCREEN:
     case DRAW_MODE_PRINT:
-        c_nThin = YPixelsFromPoints(hdc, xg_nLineWidthInPt);
-        c_nWide = YPixelsFromPoints(hdc, xg_nOuterFrameInPt);
+        c_nThin = INT(YPixelsFromPoints(hdc, xg_nLineWidthInPt));
+        c_nWide = INT(YPixelsFromPoints(hdc, xg_nOuterFrameInPt));
         break;
     case DRAW_MODE_EMF:
         // FIXME: "Microsoft Print to PDF" で印刷すると線の幅がおかしくなる。
         // よくわからないので、1pt == 1pxで近似する。
-        c_nThin = xg_nLineWidthInPt;
-        c_nWide = xg_nOuterFrameInPt;
+        c_nThin = INT(xg_nLineWidthInPt);
+        c_nWide = INT(xg_nOuterFrameInPt);
         break;
     }
     if (c_nThin < 2)

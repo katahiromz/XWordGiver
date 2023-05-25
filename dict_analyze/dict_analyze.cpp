@@ -1,4 +1,6 @@
 #define NOMINMAX
+#define WIN32_LEAN_AND_MEAN
+#define _CRT_SECURE_NO_WARNINGS
 #include <windows.h>
 #include <windowsx.h>
 #include <commctrl.h>
@@ -154,7 +156,7 @@ inline LPWSTR LoadStringDx(INT nID)
     WCHAR *pszBuff = s_sz[s_index];
     s_index = (s_index + 1) % _countof(s_sz);
     pszBuff[0] = 0;
-    if (!::LoadStringW(NULL, nID, pszBuff, cchBuffMax))
+    if (!::LoadStringW(NULL, nID, pszBuff, INT(cchBuffMax)))
         assert(0);
     return pszBuff;
 }
@@ -191,17 +193,17 @@ void DoAddText(HWND hwnd, LPCWSTR pszText) {
     EnableWindow(GetDlgItem(hwnd, psh1), TRUE);
 }
 
-void DoAddText(HWND hwnd, INT nIDS_) {
+inline void DoAddText(HWND hwnd, INT nIDS_) {
     DoAddText(hwnd, LoadStringDx(nIDS_));
 }
 
-void DoVPrintf(HWND hwnd, INT nIDS_, va_list va) {
+inline void DoVPrintf(HWND hwnd, INT nIDS_, va_list va) {
     static WCHAR s_szText[1024];
     StringCbVPrintfW(s_szText, sizeof(s_szText), LoadStringDx(nIDS_), va);
     DoAddText(hwnd, s_szText);
 }
 
-void DoPrintf(HWND hwnd, INT nIDS_, ...) {
+inline void DoPrintf(HWND hwnd, INT nIDS_, ...) {
     va_list va;
     va_start(va, nIDS_);
     DoVPrintf(hwnd, nIDS_, va);
@@ -542,7 +544,7 @@ bool DoLoadDict(HWND hwnd, const WCHAR *fname, word_list_t& list, tag_info_t& ta
             }
             if (str.empty() || str[0] == L'#')
                 continue;
-            ::MultiByteToWideChar(CP_UTF8, 0, str.c_str(), -1, s_wsz, ARRAYSIZE(s_wsz));
+            ::MultiByteToWideChar(CP_UTF8, 0, str.c_str(), -1, s_wsz, _countof(s_wsz));
             std::wstring wstr = s_wsz;
             auto ich1 = wstr.find(L'\t');
             if (ich1 != wstr.npos) {
@@ -563,7 +565,7 @@ bool DoLoadDict(HWND hwnd, const WCHAR *fname, word_list_t& list, tag_info_t& ta
             LCMapStringW(MAKELANGID(LANG_JAPANESE, SUBLANG_DEFAULT),
                          LCMAP_FULLWIDTH | LCMAP_KATAKANA | LCMAP_UPPERCASE,
                          wstr.c_str(), -1,
-                         szText, ARRAYSIZE(szText));
+                         szText, _countof(szText));
             wstr = szText;
             std::wstring from = LoadStringDx(IDS_SMALL);
             std::wstring to = LoadStringDx(IDS_LARGE);
@@ -613,8 +615,11 @@ void JustDoIt(HWND hwnd, LPCWSTR pszFileName)
     }
 }
 
-BOOL OnInitDialog(HWND hwnd, HWND hwndFocus, LPARAM lParam)
+inline BOOL OnInitDialog(HWND hwnd, HWND hwndFocus, LPARAM lParam)
 {
+    UNREFERENCED_PARAMETER(hwndFocus);
+    UNREFERENCED_PARAMETER(lParam);
+
     DragAcceptFiles(hwnd, TRUE);
     static const LAYOUT_INFO info[] = {
         { stc1, BF_LEFT | BF_RIGHT | BF_TOP, },
@@ -624,7 +629,7 @@ BOOL OnInitDialog(HWND hwnd, HWND hwndFocus, LPARAM lParam)
         { IDOK, BF_RIGHT | BF_BOTTOM },
         { psh1, BF_RIGHT | BF_TOP },
     };
-    s_layout = LayoutInit(hwnd, info, ARRAYSIZE(info));
+    s_layout = LayoutInit(hwnd, info, _countof(info));
     LayoutEnableResize(s_layout, TRUE);
 
     EnableWindow(GetDlgItem(hwnd, psh1), FALSE);
@@ -640,8 +645,11 @@ BOOL OnInitDialog(HWND hwnd, HWND hwndFocus, LPARAM lParam)
     return TRUE;
 }
 
-void OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT codeNotify)
+inline void OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT codeNotify)
 {
+    UNREFERENCED_PARAMETER(hwndCtl);
+    UNREFERENCED_PARAMETER(codeNotify);
+
     switch (id) {
     case IDOK:
     case IDCANCEL:
@@ -655,7 +663,7 @@ void OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT codeNotify)
     }
 }
 
-void OnDropFiles(HWND hwnd, HDROP hdrop)
+inline void OnDropFiles(HWND hwnd, HDROP hdrop)
 {
     WCHAR szFile[MAX_PATH];
     DragQueryFileW(hdrop, 0, szFile, MAX_PATH);
@@ -663,8 +671,11 @@ void OnDropFiles(HWND hwnd, HDROP hdrop)
     DragFinish(hdrop);
 }
 
-void OnSize(HWND hwnd, UINT state, int cx, int cy)
+inline void OnSize(HWND hwnd, UINT state, int cx, int cy)
 {
+    UNREFERENCED_PARAMETER(state);
+    UNREFERENCED_PARAMETER(cx);
+    UNREFERENCED_PARAMETER(cy);
     LayoutUpdate(hwnd, s_layout, NULL, 0);
 }
 
@@ -686,6 +697,9 @@ WinMain(HINSTANCE   hInstance,
         LPSTR       lpCmdLine,
         INT         nCmdShow)
 {
+    UNREFERENCED_PARAMETER(hPrevInstance);
+    UNREFERENCED_PARAMETER(lpCmdLine);
+    UNREFERENCED_PARAMETER(nCmdShow);
     InitCommonControls();
     DialogBoxW(hInstance, MAKEINTRESOURCEW(IDD_MAIN), NULL, DialogProc);
     return 0;
