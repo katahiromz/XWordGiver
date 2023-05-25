@@ -4437,6 +4437,44 @@ float YPixelsFromPoints(HDC hDC, float points)
     return points * GetDeviceCaps(hDC, LOGPIXELSY) / 72;
 }
 
+// キャレットを描画する。
+void XgDrawCaret(HDC hdc, INT i, INT j, INT nCellSize, HPEN hCaretPen)
+{
+    RECT rc;
+    ::SetRect(&rc,
+              INT(xg_nMargin + j * nCellSize),
+              INT(xg_nMargin + i * nCellSize),
+              INT(xg_nMargin + (j + 1) * nCellSize),
+              INT(xg_nMargin + (i + 1) * nCellSize));
+
+    const INT cxyMargin = nCellSize / 10;
+    const INT cxyLine = nCellSize / 3, cxyCross = nCellSize / 10;
+
+    HGDIOBJ hPenOld = ::SelectObject(hdc, hCaretPen);
+    ::MoveToEx(hdc, rc.left + cxyMargin, rc.top + cxyMargin, nullptr);
+    ::LineTo(hdc, rc.left + cxyMargin, rc.top + cxyLine);
+    ::MoveToEx(hdc, rc.left + cxyMargin, rc.top + cxyMargin, nullptr);
+    ::LineTo(hdc, rc.left + cxyLine, rc.top + cxyMargin);
+    ::MoveToEx(hdc, rc.right - cxyMargin, rc.top + cxyMargin, nullptr);
+    ::LineTo(hdc, rc.right - cxyMargin, rc.top + cxyLine);
+    ::MoveToEx(hdc, rc.right - cxyMargin, rc.top + cxyMargin, nullptr);
+    ::LineTo(hdc, rc.right - cxyLine, rc.top + cxyMargin);
+    ::MoveToEx(hdc, rc.right - cxyMargin, rc.bottom - cxyMargin, nullptr);
+    ::LineTo(hdc, rc.right - cxyMargin, rc.bottom - cxyLine);
+    ::MoveToEx(hdc, rc.right - cxyMargin, rc.bottom - cxyMargin, nullptr);
+    ::LineTo(hdc, rc.right - cxyLine, rc.bottom - cxyMargin);
+    ::MoveToEx(hdc, rc.left + cxyMargin, rc.bottom - cxyMargin, nullptr);
+    ::LineTo(hdc, rc.left + cxyMargin, rc.bottom - cxyLine);
+    ::MoveToEx(hdc, rc.left + cxyMargin, rc.bottom - cxyMargin, nullptr);
+    ::LineTo(hdc, rc.left + cxyLine, rc.bottom - cxyMargin);
+
+    ::MoveToEx(hdc, (rc.left + rc.right) / 2, (rc.top + rc.bottom) / 2 - cxyCross, nullptr);
+    ::LineTo(hdc, (rc.left + rc.right) / 2, (rc.top + rc.bottom) / 2 + cxyCross);
+    ::MoveToEx(hdc, (rc.left + rc.right) / 2 - cxyCross, (rc.top + rc.bottom) / 2, nullptr);
+    ::LineTo(hdc, (rc.left + rc.right) / 2 + cxyCross, (rc.top + rc.bottom) / 2);
+    ::SelectObject(hdc, hPenOld);
+}
+
 // 文字マスを描画する。
 void __fastcall XgDrawLetterCell(HDC hdc, WCHAR ch, RECT& rc, HFONT hFont)
 {
@@ -5051,41 +5089,9 @@ void __fastcall XgDrawXWord_NormalView(XG_Board& xw, HDC hdc, const SIZE *psiz, 
 
     // キャレットを描画する。
     if (mode == DRAW_MODE_SCREEN && xg_bShowCaret) {
-        const int i = xg_caret_pos.m_i;
-        const int j = xg_caret_pos.m_j;
-        ::SetRect(&rc,
-            INT(xg_nMargin + j * nCellSize), 
-            INT(xg_nMargin + i * nCellSize),
-            INT(xg_nMargin + (j + 1) * nCellSize), 
-            INT(xg_nMargin + (i + 1) * nCellSize));
-
-        const int cxyMargin = nCellSize / 10;
-        const int cxyLine = nCellSize / 3;
-        const int cxyCross = nCellSize / 10;
-
-        hPenOld = ::SelectObject(hdc, hCaretPen);
-        ::MoveToEx(hdc, rc.left + cxyMargin, rc.top + cxyMargin, nullptr);
-        ::LineTo(hdc, rc.left + cxyMargin, rc.top + cxyLine);
-        ::MoveToEx(hdc, rc.left + cxyMargin, rc.top + cxyMargin, nullptr);
-        ::LineTo(hdc, rc.left + cxyLine, rc.top + cxyMargin);
-        ::MoveToEx(hdc, rc.right - cxyMargin, rc.top + cxyMargin, nullptr);
-        ::LineTo(hdc, rc.right - cxyMargin, rc.top + cxyLine);
-        ::MoveToEx(hdc, rc.right - cxyMargin, rc.top + cxyMargin, nullptr);
-        ::LineTo(hdc, rc.right - cxyLine, rc.top + cxyMargin);
-        ::MoveToEx(hdc, rc.right - cxyMargin, rc.bottom - cxyMargin, nullptr);
-        ::LineTo(hdc, rc.right - cxyMargin, rc.bottom - cxyLine);
-        ::MoveToEx(hdc, rc.right - cxyMargin, rc.bottom - cxyMargin, nullptr);
-        ::LineTo(hdc, rc.right - cxyLine, rc.bottom - cxyMargin);
-        ::MoveToEx(hdc, rc.left + cxyMargin, rc.bottom - cxyMargin, nullptr);
-        ::LineTo(hdc, rc.left + cxyMargin, rc.bottom - cxyLine);
-        ::MoveToEx(hdc, rc.left + cxyMargin, rc.bottom - cxyMargin, nullptr);
-        ::LineTo(hdc, rc.left + cxyLine, rc.bottom - cxyMargin);
-
-        ::MoveToEx(hdc, (rc.left + rc.right) / 2, (rc.top + rc.bottom) / 2 - cxyCross, nullptr);
-        ::LineTo(hdc, (rc.left + rc.right) / 2, (rc.top + rc.bottom) / 2 + cxyCross);
-        ::MoveToEx(hdc, (rc.left + rc.right) / 2 - cxyCross, (rc.top + rc.bottom) / 2, nullptr);
-        ::LineTo(hdc, (rc.left + rc.right) / 2 + cxyCross, (rc.top + rc.bottom) / 2);
-        ::SelectObject(hdc, hPenOld);
+        auto i = xg_caret_pos.m_i;
+        auto j = xg_caret_pos.m_j;
+        XgDrawCaret(hdc, i, j, nCellSize, hCaretPen);
     }
 
     // 線を引く。
@@ -5458,41 +5464,9 @@ void __fastcall XgDrawXWord_SkeletonView(XG_Board& xw, HDC hdc, const SIZE *psiz
 
     // キャレットを描画する。
     if (mode == DRAW_MODE_SCREEN && xg_bShowCaret) {
-        const int i = xg_caret_pos.m_i;
-        const int j = xg_caret_pos.m_j;
-        ::SetRect(&rc,
-            INT(xg_nMargin + j * nCellSize), 
-            INT(xg_nMargin + i * nCellSize),
-            INT(xg_nMargin + (j + 1) * nCellSize), 
-            INT(xg_nMargin + (i + 1) * nCellSize));
-
-        const int cxyMargin = nCellSize / 10;
-        const int cxyLine = nCellSize / 3;
-        const int cxyCross = nCellSize / 10;
-
-        hPenOld = ::SelectObject(hdc, hCaretPen);
-        ::MoveToEx(hdc, rc.left + cxyMargin, rc.top + cxyMargin, nullptr);
-        ::LineTo(hdc, rc.left + cxyMargin, rc.top + cxyLine);
-        ::MoveToEx(hdc, rc.left + cxyMargin, rc.top + cxyMargin, nullptr);
-        ::LineTo(hdc, rc.left + cxyLine, rc.top + cxyMargin);
-        ::MoveToEx(hdc, rc.right - cxyMargin, rc.top + cxyMargin, nullptr);
-        ::LineTo(hdc, rc.right - cxyMargin, rc.top + cxyLine);
-        ::MoveToEx(hdc, rc.right - cxyMargin, rc.top + cxyMargin, nullptr);
-        ::LineTo(hdc, rc.right - cxyLine, rc.top + cxyMargin);
-        ::MoveToEx(hdc, rc.right - cxyMargin, rc.bottom - cxyMargin, nullptr);
-        ::LineTo(hdc, rc.right - cxyMargin, rc.bottom - cxyLine);
-        ::MoveToEx(hdc, rc.right - cxyMargin, rc.bottom - cxyMargin, nullptr);
-        ::LineTo(hdc, rc.right - cxyLine, rc.bottom - cxyMargin);
-        ::MoveToEx(hdc, rc.left + cxyMargin, rc.bottom - cxyMargin, nullptr);
-        ::LineTo(hdc, rc.left + cxyMargin, rc.bottom - cxyLine);
-        ::MoveToEx(hdc, rc.left + cxyMargin, rc.bottom - cxyMargin, nullptr);
-        ::LineTo(hdc, rc.left + cxyLine, rc.bottom - cxyMargin);
-
-        ::MoveToEx(hdc, (rc.left + rc.right) / 2, (rc.top + rc.bottom) / 2 - cxyCross, nullptr);
-        ::LineTo(hdc, (rc.left + rc.right) / 2, (rc.top + rc.bottom) / 2 + cxyCross);
-        ::MoveToEx(hdc, (rc.left + rc.right) / 2 - cxyCross, (rc.top + rc.bottom) / 2, nullptr);
-        ::LineTo(hdc, (rc.left + rc.right) / 2 + cxyCross, (rc.top + rc.bottom) / 2);
-        ::SelectObject(hdc, hPenOld);
+        auto i = xg_caret_pos.m_i;
+        auto j = xg_caret_pos.m_j;
+        XgDrawCaret(hdc, i, j, nCellSize, hCaretPen);
     }
 
     // 破棄する。
