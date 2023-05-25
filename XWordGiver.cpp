@@ -4447,9 +4447,9 @@ void XgDrawCaret(HDC hdc, INT i, INT j, INT nCellSize, HPEN hCaretPen)
               INT(xg_nMargin + (j + 1) * nCellSize),
               INT(xg_nMargin + (i + 1) * nCellSize));
 
-    const INT cxyMargin = nCellSize / 10;
-    const INT cxyLine = nCellSize / 3, cxyCross = nCellSize / 10;
-
+    // カギカッコみたいなもの、コーナーに四つ。
+    auto cxyMargin = nCellSize / 10; // 余白。
+    auto cxyLine = nCellSize / 3; // 線の位置。
     HGDIOBJ hPenOld = ::SelectObject(hdc, hCaretPen);
     ::MoveToEx(hdc, rc.left + cxyMargin, rc.top + cxyMargin, nullptr);
     ::LineTo(hdc, rc.left + cxyMargin, rc.top + cxyLine);
@@ -4468,6 +4468,8 @@ void XgDrawCaret(HDC hdc, INT i, INT j, INT nCellSize, HPEN hCaretPen)
     ::MoveToEx(hdc, rc.left + cxyMargin, rc.bottom - cxyMargin, nullptr);
     ::LineTo(hdc, rc.left + cxyLine, rc.bottom - cxyMargin);
 
+    // 十字。
+    auto cxyCross = nCellSize / 10; // 十字の半径。
     ::MoveToEx(hdc, (rc.left + rc.right) / 2, (rc.top + rc.bottom) / 2 - cxyCross, nullptr);
     ::LineTo(hdc, (rc.left + rc.right) / 2, (rc.top + rc.bottom) / 2 + cxyCross);
     ::MoveToEx(hdc, (rc.left + rc.right) / 2 - cxyCross, (rc.top + rc.bottom) / 2, nullptr);
