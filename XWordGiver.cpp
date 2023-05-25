@@ -644,7 +644,7 @@ template <bool t_alternative>
 bool __fastcall XgAnyCandidateAddBlack(const std::wstring& pattern)
 {
     // パターンの長さ。
-    const int patlen = static_cast<int>(pattern.size());
+    const int patlen = INT(pattern.size());
     assert(patlen >= 2);
 
 #ifndef NDEBUG
@@ -691,7 +691,7 @@ bool __fastcall XgAnyCandidateAddBlack(const std::wstring& pattern)
     // すべての単語について調べる。
     for (const auto& data : (t_alternative ? xg_dict_2 : xg_dict_1)) {
         const std::wstring& word = data.m_word;
-        const int wordlen = static_cast<int>(word.size());
+        const int wordlen = INT(word.size());
 
         // パターンより単語の方が長い場合、スキップする。
         if (wordlen > patlen)
@@ -733,7 +733,7 @@ template <bool t_alternative>
 bool __fastcall XgAnyCandidateNoAddBlack(const std::wstring& pattern)
 {
     // パターンの長さ。
-    const int patlen = static_cast<int>(pattern.size());
+    const int patlen = INT(pattern.size());
     assert(patlen >= 2);
 
 #ifndef NDEBUG
@@ -752,7 +752,7 @@ bool __fastcall XgAnyCandidateNoAddBlack(const std::wstring& pattern)
     for (const auto& data : (t_alternative ? xg_dict_2 : xg_dict_1)) {
         // 単語の長さ。
         const std::wstring& word = data.m_word;
-        const int wordlen = static_cast<int>(word.size());
+        const int wordlen = INT(word.size());
 
         // パターンと単語の長さが異なるとき、スキップする。
         if (wordlen != patlen)
@@ -864,13 +864,13 @@ bool __fastcall XgAnyCandidateWholeSpace(int patlen) noexcept
     // すべての単語について調べる。
     for (const auto& data : xg_dict_1) {
         const std::wstring& word = data.m_word;
-        const int wordlen = static_cast<int>(word.size());
+        const int wordlen = INT(word.size());
         if (wordlen == patlen)
             return true;    // あった。
     }
     for (const auto& data : xg_dict_2) {
         const std::wstring& word = data.m_word;
-        const int wordlen = static_cast<int>(word.size());
+        const int wordlen = INT(word.size());
         if (wordlen == patlen)
             return true;    // あった。
     }
@@ -1694,8 +1694,8 @@ space_found_2:;
 
     // カギの格納情報に順序をつける。
     std::vector<XG_PlaceInfo *> data;
-    const int size1 = static_cast<int>(xg_vTateInfo.size());
-    const int size2 = static_cast<int>(xg_vYokoInfo.size());
+    const int size1 = INT(xg_vTateInfo.size());
+    const int size2 = INT(xg_vYokoInfo.size());
     data.reserve(size1 + size2);
     for (int k = 0; k < size1; k++) {
         data.emplace_back(&xg_vTateInfo[k]);
@@ -1708,7 +1708,7 @@ space_found_2:;
     // 順序付けられたカギの格納情報に番号を設定する。
     int number = 1;
     {
-        const int size = static_cast<int>(data.size());
+        const int size = INT(data.size());
         for (int k = 0; k < size; k++) {
             // 番号を設定する。
             data[k]->m_number = number;
@@ -1835,13 +1835,13 @@ void __fastcall XG_Board::DoNumberingNoCheck() noexcept
     // カギの格納情報に順序をつける。
     std::vector<XG_PlaceInfo *> data;
     {
-        const int size = static_cast<int>(xg_vTateInfo.size());
+        const int size = INT(xg_vTateInfo.size());
         for (int k = 0; k < size; k++) {
             data.emplace_back(&xg_vTateInfo[k]);
         }
     }
     {
-        const int size = static_cast<int>(xg_vYokoInfo.size());
+        const int size = INT(xg_vYokoInfo.size());
         for (int k = 0; k < size; k++) {
             data.emplace_back(&xg_vYokoInfo[k]);
         }
@@ -1851,7 +1851,7 @@ void __fastcall XG_Board::DoNumberingNoCheck() noexcept
     // 順序付けられたカギの格納情報に番号を設定する。
     int number = 1;
     {
-        const int size = static_cast<int>(data.size());
+        const int size = INT(data.size());
         for (int k = 0; k < size; k++) {
             // 番号を設定する。
             data[k]->m_number = number;
@@ -1882,7 +1882,7 @@ XgGetCandidatesAddBlack(
     bool left_black_check, bool right_black_check) noexcept
 {
     // パターンの長さ。
-    const int patlen = static_cast<int>(pattern.size());
+    const int patlen = INT(pattern.size());
     assert(patlen >= 2);
 
 #ifndef NDEBUG
@@ -1957,7 +1957,7 @@ XgGetCandidatesAddBlack(
     for (const auto& data : (t_alternative ? xg_dict_2 : xg_dict_1)) {
         // パターンより単語の方が長い場合、スキップする。
         const std::wstring& word = data.m_word;
-        const int wordlen = static_cast<int>(word.size());
+        const int wordlen = INT(word.size());
         if (wordlen > patlen)
             continue;
 
@@ -2027,7 +2027,7 @@ template <bool t_alternative> bool __fastcall
 XgGetCandidatesNoAddBlack(std::vector<std::wstring>& cands, const std::wstring& pattern) noexcept
 {
     // 単語の長さ。
-    const int patlen = static_cast<int>(pattern.size());
+    const int patlen = INT(pattern.size());
     assert(patlen >= 2);
 
     // 候補をクリアする。
@@ -2042,7 +2042,7 @@ XgGetCandidatesNoAddBlack(std::vector<std::wstring>& cands, const std::wstring& 
     for (const auto& data : (t_alternative ? xg_dict_2 : xg_dict_1)) {
         // パターンと単語の長さが等しくなければ、スキップする。
         const std::wstring& word = data.m_word;
-        const int wordlen = static_cast<int>(word.size());
+        const int wordlen = INT(word.size());
         if (wordlen != patlen)
             continue;
 
@@ -3852,7 +3852,7 @@ void __fastcall XgSolveXWord_AddBlack(const XG_Board& xw) noexcept
 
                     // 単語の長さがパターンの長さ以下か？
                     const std::wstring& word = word_data.m_word;
-                    const int wordlen = static_cast<int>(word.size());
+                    const int wordlen = INT(word.size());
                     if (wordlen > patlen)
                         continue;
 
@@ -3928,7 +3928,7 @@ void __fastcall XgSolveXWord_AddBlack(const XG_Board& xw) noexcept
 
                     // 単語の長さがパターンの長さ以下か？
                     const std::wstring& word = word_data.m_word;
-                    const int wordlen = static_cast<int>(word.size());
+                    const int wordlen = INT(word.size());
                     if (wordlen > patlen)
                         continue;
 
@@ -4009,7 +4009,7 @@ retry_1:;
 
                     // 単語の長さがパターンの長さ以下か？
                     const std::wstring& word = word_data.m_word;
-                    const int wordlen = static_cast<int>(word.size());
+                    const int wordlen = INT(word.size());
                     if (wordlen > patlen)
                         continue;
 
@@ -4085,7 +4085,7 @@ retry_1:;
 
                     // 単語の長さがパターンの長さ以下か？
                     const std::wstring& word = word_data.m_word;
-                    const int wordlen = static_cast<int>(word.size());
+                    const int wordlen = INT(word.size());
                     if (wordlen > patlen)
                         continue;
 
@@ -4202,7 +4202,7 @@ void __fastcall XgSolveXWord_NoAddBlack(const XG_Board& xw) noexcept
 
         // 単語とパターンの長さが等しいか？
         const std::wstring& word = word_data.m_word;
-        const int wordlen = static_cast<int>(word.size());
+        const int wordlen = INT(word.size());
         if (wordlen != patlen)
             continue;
 
@@ -4437,10 +4437,56 @@ float YPixelsFromPoints(HDC hDC, float points)
     return points * GetDeviceCaps(hDC, LOGPIXELSY) / 72;
 }
 
+// 文字マスを描画する。
+void __fastcall XgDrawLetterCell(HDC hdc, WCHAR ch, RECT& rc, HFONT hFont)
+{
+    // 文字を変換する。
+    if (xg_bHiragana) {
+        WCHAR new_ch;
+        LCMapStringW(XG_JPN_LOCALE, LCMAP_FULLWIDTH | LCMAP_HIRAGANA, &ch, 1, &new_ch, 1);
+        ch = new_ch;
+    } else {
+        WCHAR new_ch;
+        LCMapStringW(XG_JPN_LOCALE, LCMAP_FULLWIDTH | LCMAP_KATAKANA, &ch, 1, &new_ch, 1);
+        ch = new_ch;
+    }
+
+    if (XgIsCharKanaW(ch) || ch == ZEN_PROLONG ||
+        xg_imode == xg_im_KANA || xg_imode == xg_im_KANJI)
+    {
+        WCHAR new_ch;
+        if (xg_bLowercase) {
+            LCMapStringW(XG_JPN_LOCALE, LCMAP_FULLWIDTH | LCMAP_LOWERCASE, &ch, 1, &new_ch, 1);
+            ch = new_ch;
+        } else {
+            LCMapStringW(XG_JPN_LOCALE, LCMAP_FULLWIDTH | LCMAP_UPPERCASE, &ch, 1, &new_ch, 1);
+            ch = new_ch;
+        }
+    } else {
+        WCHAR new_ch;
+        if (xg_bLowercase) {
+            LCMapStringW(XG_JPN_LOCALE, LCMAP_HALFWIDTH | LCMAP_LOWERCASE, &ch, 1, &new_ch, 1);
+            ch = new_ch;
+        } else {
+            LCMapStringW(XG_JPN_LOCALE, LCMAP_HALFWIDTH | LCMAP_UPPERCASE, &ch, 1, &new_ch, 1);
+            ch = new_ch;
+        }
+    }
+
+    // 文字の背景は透明。塗りつぶさない。
+    ::SetBkMode(hdc, TRANSPARENT);
+
+    // 文字を書く。
+    HGDIOBJ hFontOld = ::SelectObject(hdc, hFont);
+    ::SetTextColor(hdc, xg_rgbBlackCellColor);
+    ::DrawTextW(hdc, &ch, 1, &rc, DT_CENTER | DT_SINGLELINE | DT_VCENTER);
+    ::SelectObject(hdc, hFontOld);
+}
+
 // 二重マス単語を描画する。
 void __fastcall XgDrawMarkWord(HDC hdc, LPSIZE psiz)
 {
-    int nCount = static_cast<int>(xg_vMarks.size());
+    int nCount = INT(xg_vMarks.size());
     if (nCount == 0) {
         ::MessageBeep(0xFFFFFFFF);
         return;
@@ -4519,10 +4565,10 @@ void __fastcall XgDrawMarkWord(HDC hdc, LPSIZE psiz)
     HGDIOBJ hFontOld = ::SelectObject(hdc, hFontSmall);
     for (int i = 0; i < nCount; i++) {
         ::SetRect(&rc,
-            static_cast<int>(xg_nNarrowMargin + i * xg_nCellSize), 
-            static_cast<int>(xg_nNarrowMargin + 0 * xg_nCellSize),
-            static_cast<int>(xg_nNarrowMargin + (i + 1) * xg_nCellSize - 1), 
-            static_cast<int>(xg_nNarrowMargin + 1 * xg_nCellSize));
+            INT(xg_nNarrowMargin + i * xg_nCellSize), 
+            INT(xg_nNarrowMargin + 0 * xg_nCellSize),
+            INT(xg_nNarrowMargin + (i + 1) * xg_nCellSize - 1), 
+            INT(xg_nNarrowMargin + 1 * xg_nCellSize));
         ::FillRect(hdc, &rc, hbrMarked);
         ::InflateRect(&rc, -nCellSize / 9, -nCellSize / 9);
         if (!xg_bNumCroMode && xg_bDrawFrameForMarkedCell) {
@@ -4575,13 +4621,12 @@ void __fastcall XgDrawMarkWord(HDC hdc, LPSIZE psiz)
     ::SelectObject(hdc, hFontOld);
 
     // マスの文字を描画する。
-    hFontOld = ::SelectObject(hdc, hFont);
     for (int i = 0; i < nCount; i++) {
         ::SetRect(&rc,
-            static_cast<int>(xg_nNarrowMargin + i * xg_nCellSize), 
-            static_cast<int>(xg_nNarrowMargin + 0 * xg_nCellSize),
-            static_cast<int>(xg_nNarrowMargin + (i + 1) * xg_nCellSize), 
-            static_cast<int>(xg_nNarrowMargin + 1 * xg_nCellSize));
+            INT(xg_nNarrowMargin + i * xg_nCellSize), 
+            INT(xg_nNarrowMargin + 0 * xg_nCellSize),
+            INT(xg_nNarrowMargin + (i + 1) * xg_nCellSize), 
+            INT(xg_nNarrowMargin + 1 * xg_nCellSize));
 
         WCHAR ch;
         XG_Pos& pos = xg_vMarks[i];
@@ -4591,62 +4636,18 @@ void __fastcall XgDrawMarkWord(HDC hdc, LPSIZE psiz)
             ch = xg_xword.GetAt(pos.m_i, pos.m_j);
         }
 
-        // 文字を変換する。
-        if (xg_bHiragana) {
-            WCHAR new_ch;
-            LCMapStringW(XG_JPN_LOCALE, LCMAP_FULLWIDTH | LCMAP_HIRAGANA, &ch, 1, &new_ch, 1);
-            ch = new_ch;
-        } else {
-            WCHAR new_ch;
-            LCMapStringW(XG_JPN_LOCALE, LCMAP_FULLWIDTH | LCMAP_KATAKANA, &ch, 1, &new_ch, 1);
-            ch = new_ch;
-        }
-
-        if (XgIsCharKanaW(ch) || ch == ZEN_PROLONG ||
-            xg_imode == xg_im_KANA || xg_imode == xg_im_KANJI)
-        {
-            WCHAR new_ch;
-            if (xg_bLowercase) {
-                LCMapStringW(XG_JPN_LOCALE, LCMAP_FULLWIDTH | LCMAP_LOWERCASE, &ch, 1, &new_ch, 1);
-                ch = new_ch;
-            } else {
-                LCMapStringW(XG_JPN_LOCALE, LCMAP_FULLWIDTH | LCMAP_UPPERCASE, &ch, 1, &new_ch, 1);
-                ch = new_ch;
-            }
-        } else {
-            WCHAR new_ch;
-            if (xg_bLowercase) {
-                LCMapStringW(XG_JPN_LOCALE, LCMAP_HALFWIDTH | LCMAP_LOWERCASE, &ch, 1, &new_ch, 1);
-                ch = new_ch;
-            } else {
-                LCMapStringW(XG_JPN_LOCALE, LCMAP_HALFWIDTH | LCMAP_UPPERCASE, &ch, 1, &new_ch, 1);
-                ch = new_ch;
-            }
-        }
-
-        StringCbPrintf(sz, sizeof(sz), L"%c", ch);
-
-        ::GetTextExtentPoint32W(hdc, sz, int(wcslen(sz)), &siz);
-        INT x = (rc.left + rc.right) / 2 - siz.cx / 2;
-        INT y = (rc.top + rc.bottom) / 2 - siz.cy / 2;
-
-        // マスの文字を描画する。
-        ::SetTextColor(hdc, xg_rgbBlackCellColor);
-        ::SetBkMode(hdc, TRANSPARENT);
-        ::SetBkColor(hdc, xg_rgbMarkedCellColor);
-        ::TextOutW(hdc, x, y, sz, lstrlenW(sz));
+        XgDrawLetterCell(hdc, ch, rc, hFont);
     }
-    ::SelectObject(hdc, hFontOld);
 
     // 線を引く。塗りつぶさない。
     ::SelectObject(hdc, ::GetStockObject(NULL_BRUSH));
     HGDIOBJ hPenOld = ::SelectObject(hdc, hThinPen);
     for (int i = 0; i < nCount; i++) {
         ::Rectangle(hdc,
-                static_cast<int>(xg_nNarrowMargin + i * xg_nCellSize),
-                static_cast<int>(xg_nNarrowMargin + 0 * xg_nCellSize),
-                static_cast<int>(xg_nNarrowMargin + (i + 1) * xg_nCellSize + 1),
-                static_cast<int>(xg_nNarrowMargin + 1 * xg_nCellSize) + 1);
+                INT(xg_nNarrowMargin + i * xg_nCellSize),
+                INT(xg_nNarrowMargin + 0 * xg_nCellSize),
+                INT(xg_nNarrowMargin + (i + 1) * xg_nCellSize + 1),
+                INT(xg_nNarrowMargin + 1 * xg_nCellSize) + 1);
     }
     ::SelectObject(hdc, hPenOld);
 
@@ -4868,10 +4869,10 @@ void __fastcall XgDrawXWord_NormalView(XG_Board& xw, HDC hdc, const SIZE *psiz, 
         for (int j = 0; j < xg_nCols; j++) {
             // セルの座標をセットする。
             ::SetRect(&rc,
-                static_cast<int>(xg_nMargin + j * nCellSize), 
-                static_cast<int>(xg_nMargin + i * nCellSize),
-                static_cast<int>(xg_nMargin + (j + 1) * nCellSize), 
-                static_cast<int>(xg_nMargin + (i + 1) * nCellSize));
+                INT(xg_nMargin + j * nCellSize), 
+                INT(xg_nMargin + i * nCellSize),
+                INT(xg_nMargin + (j + 1) * nCellSize), 
+                INT(xg_nMargin + (i + 1) * nCellSize));
 
             // 二重マスか？
             int nMarked = XgGetMarked(i, j);
@@ -4919,10 +4920,10 @@ void __fastcall XgDrawXWord_NormalView(XG_Board& xw, HDC hdc, const SIZE *psiz, 
             for (int j = 0; j < xg_nCols; j++) {
                 // セルの座標をセットする。
                 ::SetRect(&rc,
-                    static_cast<int>(xg_nMargin + j * nCellSize),
-                    static_cast<int>(xg_nMargin + i * nCellSize),
-                    static_cast<int>(xg_nMargin + (j + 1) * nCellSize) - 1,
-                    static_cast<int>(xg_nMargin + (i + 1) * nCellSize));
+                    INT(xg_nMargin + j * nCellSize),
+                    INT(xg_nMargin + i * nCellSize),
+                    INT(xg_nMargin + (j + 1) * nCellSize) - 1,
+                    INT(xg_nMargin + (i + 1) * nCellSize));
 
                 // 二重マスか？
                 int nMarked = XgGetMarked(i, j);
@@ -4973,16 +4974,16 @@ void __fastcall XgDrawXWord_NormalView(XG_Board& xw, HDC hdc, const SIZE *psiz, 
 
     // タテのカギの先頭マス。
     if (!xg_bNumCroMode) {
-        const int size = static_cast<int>(xg_vTateInfo.size());
+        const int size = INT(xg_vTateInfo.size());
         for (int k = 0; k < size; k++) {
             const int i = xg_vTateInfo[k].m_iRow;
             const int j = xg_vTateInfo[k].m_jCol;
 
             ::SetRect(&rc,
-                static_cast<int>(xg_nMargin + j * nCellSize), 
-                static_cast<int>(xg_nMargin + i * nCellSize),
-                static_cast<int>(xg_nMargin + (j + 1) * nCellSize), 
-                static_cast<int>(xg_nMargin + (i + 1) * nCellSize));
+                INT(xg_nMargin + j * nCellSize), 
+                INT(xg_nMargin + i * nCellSize),
+                INT(xg_nMargin + (j + 1) * nCellSize), 
+                INT(xg_nMargin + (i + 1) * nCellSize));
             ::OffsetRect(&rc, c_nThin, c_nThin * 2 / 3);
 
             XgDrawCellNumber(hdc, rc, i, j, xg_vTateInfo[k].m_number, slot);
@@ -4991,16 +4992,16 @@ void __fastcall XgDrawXWord_NormalView(XG_Board& xw, HDC hdc, const SIZE *psiz, 
 
     // ヨコのカギの先頭マス。
     if (!xg_bNumCroMode) {
-        const int size = static_cast<int>(xg_vYokoInfo.size());
+        const int size = INT(xg_vYokoInfo.size());
         for (int k = 0; k < size; k++) {
             const int i = xg_vYokoInfo[k].m_iRow;
             const int j = xg_vYokoInfo[k].m_jCol;
 
             ::SetRect(&rc,
-                static_cast<int>(xg_nMargin + j * nCellSize), 
-                static_cast<int>(xg_nMargin + i * nCellSize),
-                static_cast<int>(xg_nMargin + (j + 1) * nCellSize), 
-                static_cast<int>(xg_nMargin + (i + 1) * nCellSize));
+                INT(xg_nMargin + j * nCellSize), 
+                INT(xg_nMargin + i * nCellSize),
+                INT(xg_nMargin + (j + 1) * nCellSize), 
+                INT(xg_nMargin + (i + 1) * nCellSize));
             ::OffsetRect(&rc, c_nThin, c_nThin * 2 / 3);
 
             XgDrawCellNumber(hdc, rc, i, j, xg_vYokoInfo[k].m_number, slot);
@@ -5016,10 +5017,10 @@ void __fastcall XgDrawXWord_NormalView(XG_Board& xw, HDC hdc, const SIZE *psiz, 
                     continue;
 
                 ::SetRect(&rc,
-                    static_cast<int>(xg_nMargin + j * nCellSize), 
-                    static_cast<int>(xg_nMargin + i * nCellSize),
-                    static_cast<int>(xg_nMargin + (j + 1) * nCellSize), 
-                    static_cast<int>(xg_nMargin + (i + 1) * nCellSize));
+                    INT(xg_nMargin + j * nCellSize), 
+                    INT(xg_nMargin + i * nCellSize),
+                    INT(xg_nMargin + (j + 1) * nCellSize), 
+                    INT(xg_nMargin + (i + 1) * nCellSize));
                 ::OffsetRect(&rc, c_nThin, c_nThin * 2 / 3);
 
                 XgDrawCellNumber(hdc, rc, i, j, xg_mapNumCro1[ch], slot);
@@ -5030,61 +5031,21 @@ void __fastcall XgDrawXWord_NormalView(XG_Board& xw, HDC hdc, const SIZE *psiz, 
     // フォントの選択を解除する。
     ::SelectObject(hdc, hFontOld);
 
-    // 文字の背景は透明。塗りつぶさない。
-    ::SetBkMode(hdc, TRANSPARENT);
-
     // セルの文字を描画する。
     for (int i = 0; i < xg_nRows; i++) {
         for (int j = 0; j < xg_nCols; j++) {
             // セルの座標をセットする。
             ::SetRect(&rc,
-                static_cast<int>(xg_nMargin + j * nCellSize), 
-                static_cast<int>(xg_nMargin + i * nCellSize),
-                static_cast<int>(xg_nMargin + (j + 1) * nCellSize), 
-                static_cast<int>(xg_nMargin + (i + 1) * nCellSize));
+                INT(xg_nMargin + j * nCellSize), 
+                INT(xg_nMargin + i * nCellSize),
+                INT(xg_nMargin + (j + 1) * nCellSize), 
+                INT(xg_nMargin + (i + 1) * nCellSize));
 
             WCHAR ch = xw.GetAt(i, j);
             if (ch == ZEN_BLACK)
                 continue;
 
-            // 文字を変換する。
-            if (xg_bHiragana) {
-                WCHAR new_ch;
-                LCMapStringW(XG_JPN_LOCALE, LCMAP_FULLWIDTH | LCMAP_HIRAGANA, &ch, 1, &new_ch, 1);
-                ch = new_ch;
-            } else {
-                WCHAR new_ch;
-                LCMapStringW(XG_JPN_LOCALE, LCMAP_FULLWIDTH | LCMAP_KATAKANA, &ch, 1, &new_ch, 1);
-                ch = new_ch;
-            }
-
-            if (XgIsCharKanaW(ch) || ch == ZEN_PROLONG ||
-                xg_imode == xg_im_KANA || xg_imode == xg_im_KANJI)
-            {
-                WCHAR new_ch;
-                if (xg_bLowercase) {
-                    LCMapStringW(XG_JPN_LOCALE, LCMAP_FULLWIDTH | LCMAP_LOWERCASE, &ch, 1, &new_ch, 1);
-                    ch = new_ch;
-                } else {
-                    LCMapStringW(XG_JPN_LOCALE, LCMAP_FULLWIDTH | LCMAP_UPPERCASE, &ch, 1, &new_ch, 1);
-                    ch = new_ch;
-                }
-            } else {
-                WCHAR new_ch;
-                if (xg_bLowercase) {
-                    LCMapStringW(XG_JPN_LOCALE, LCMAP_HALFWIDTH | LCMAP_LOWERCASE, &ch, 1, &new_ch, 1);
-                    ch = new_ch;
-                } else {
-                    LCMapStringW(XG_JPN_LOCALE, LCMAP_HALFWIDTH | LCMAP_UPPERCASE, &ch, 1, &new_ch, 1);
-                    ch = new_ch;
-                }
-            }
-
-            // 文字を書く。
-            hFontOld = ::SelectObject(hdc, hFont);
-            ::SetTextColor(hdc, xg_rgbBlackCellColor);
-            ::DrawTextW(hdc, &ch, 1, &rc, DT_CENTER | DT_SINGLELINE | DT_VCENTER);
-            ::SelectObject(hdc, hFontOld);
+            XgDrawLetterCell(hdc, ch, rc, hFont);
         }
     }
 
@@ -5093,10 +5054,10 @@ void __fastcall XgDrawXWord_NormalView(XG_Board& xw, HDC hdc, const SIZE *psiz, 
         const int i = xg_caret_pos.m_i;
         const int j = xg_caret_pos.m_j;
         ::SetRect(&rc,
-            static_cast<int>(xg_nMargin + j * nCellSize), 
-            static_cast<int>(xg_nMargin + i * nCellSize),
-            static_cast<int>(xg_nMargin + (j + 1) * nCellSize), 
-            static_cast<int>(xg_nMargin + (i + 1) * nCellSize));
+            INT(xg_nMargin + j * nCellSize), 
+            INT(xg_nMargin + i * nCellSize),
+            INT(xg_nMargin + (j + 1) * nCellSize), 
+            INT(xg_nMargin + (i + 1) * nCellSize));
 
         const int cxyMargin = nCellSize / 10;
         const int cxyLine = nCellSize / 3;
@@ -5130,12 +5091,12 @@ void __fastcall XgDrawXWord_NormalView(XG_Board& xw, HDC hdc, const SIZE *psiz, 
     // 線を引く。
     hPenOld = ::SelectObject(hdc, hThinPen);
     for (int i = 0; i <= xg_nRows; i++) {
-        ::MoveToEx(hdc, xg_nMargin, static_cast<int>(xg_nMargin + i * nCellSize), nullptr);
-        ::LineTo(hdc, psiz->cx - xg_nMargin, static_cast<int>(xg_nMargin + i * nCellSize));
+        ::MoveToEx(hdc, xg_nMargin, INT(xg_nMargin + i * nCellSize), nullptr);
+        ::LineTo(hdc, psiz->cx - xg_nMargin, INT(xg_nMargin + i * nCellSize));
     }
     for (int j = 0; j <= xg_nCols; j++) {
-        ::MoveToEx(hdc, static_cast<int>(xg_nMargin + j * nCellSize), xg_nMargin, nullptr);
-        ::LineTo(hdc, static_cast<int>(xg_nMargin + j * nCellSize), psiz->cy - xg_nMargin);
+        ::MoveToEx(hdc, INT(xg_nMargin + j * nCellSize), xg_nMargin, nullptr);
+        ::LineTo(hdc, INT(xg_nMargin + j * nCellSize), psiz->cy - xg_nMargin);
     }
     ::SelectObject(hdc, hPenOld);
 
@@ -5287,10 +5248,10 @@ void __fastcall XgDrawXWord_SkeletonView(XG_Board& xw, HDC hdc, const SIZE *psiz
                 if (ch != ZEN_BLACK) {
                     // セルの座標をセットする。
                     ::SetRect(&rc,
-                        static_cast<int>(xg_nMargin + j * nCellSize), 
-                        static_cast<int>(xg_nMargin + i * nCellSize),
-                        static_cast<int>(xg_nMargin + (j + 1) * nCellSize), 
-                        static_cast<int>(xg_nMargin + (i + 1) * nCellSize));
+                        INT(xg_nMargin + j * nCellSize), 
+                        INT(xg_nMargin + i * nCellSize),
+                        INT(xg_nMargin + (j + 1) * nCellSize), 
+                        INT(xg_nMargin + (i + 1) * nCellSize));
 
                     RECT rcExtended = rc;
                     ::InflateRect(&rcExtended, c_nWide, c_nWide);
@@ -5307,10 +5268,10 @@ void __fastcall XgDrawXWord_SkeletonView(XG_Board& xw, HDC hdc, const SIZE *psiz
         for (int j = 0; j < xg_nCols; j++) {
             // セルの座標をセットする。
             ::SetRect(&rc,
-                static_cast<int>(xg_nMargin + j * nCellSize), 
-                static_cast<int>(xg_nMargin + i * nCellSize),
-                static_cast<int>(xg_nMargin + (j + 1) * nCellSize), 
-                static_cast<int>(xg_nMargin + (i + 1) * nCellSize));
+                INT(xg_nMargin + j * nCellSize), 
+                INT(xg_nMargin + i * nCellSize),
+                INT(xg_nMargin + (j + 1) * nCellSize), 
+                INT(xg_nMargin + (i + 1) * nCellSize));
 
             // 二重マスか？
             int nMarked = XgGetMarked(i, j);
@@ -5345,10 +5306,10 @@ void __fastcall XgDrawXWord_SkeletonView(XG_Board& xw, HDC hdc, const SIZE *psiz
             for (int j = 0; j < xg_nCols; j++) {
                 // セルの座標をセットする。
                 ::SetRect(&rc,
-                    static_cast<int>(xg_nMargin + j * nCellSize),
-                    static_cast<int>(xg_nMargin + i * nCellSize),
-                    static_cast<int>(xg_nMargin + (j + 1) * nCellSize) - 1,
-                    static_cast<int>(xg_nMargin + (i + 1) * nCellSize));
+                    INT(xg_nMargin + j * nCellSize),
+                    INT(xg_nMargin + i * nCellSize),
+                    INT(xg_nMargin + (j + 1) * nCellSize) - 1,
+                    INT(xg_nMargin + (i + 1) * nCellSize));
 
                 // 二重マスか？
                 int nMarked = XgGetMarked(i, j);
@@ -5399,16 +5360,16 @@ void __fastcall XgDrawXWord_SkeletonView(XG_Board& xw, HDC hdc, const SIZE *psiz
 
     // タテのカギの先頭マス。
     if (!xg_bNumCroMode) {
-        const int size = static_cast<int>(xg_vTateInfo.size());
+        const int size = INT(xg_vTateInfo.size());
         for (int k = 0; k < size; k++) {
             const int i = xg_vTateInfo[k].m_iRow;
             const int j = xg_vTateInfo[k].m_jCol;
 
             ::SetRect(&rc,
-                static_cast<int>(xg_nMargin + j * nCellSize), 
-                static_cast<int>(xg_nMargin + i * nCellSize),
-                static_cast<int>(xg_nMargin + (j + 1) * nCellSize), 
-                static_cast<int>(xg_nMargin + (i + 1) * nCellSize));
+                INT(xg_nMargin + j * nCellSize), 
+                INT(xg_nMargin + i * nCellSize),
+                INT(xg_nMargin + (j + 1) * nCellSize), 
+                INT(xg_nMargin + (i + 1) * nCellSize));
             ::OffsetRect(&rc, c_nThin, c_nThin * 2 / 3);
 
             XgDrawCellNumber(hdc, rc, i, j, xg_vTateInfo[k].m_number, slot);
@@ -5417,16 +5378,16 @@ void __fastcall XgDrawXWord_SkeletonView(XG_Board& xw, HDC hdc, const SIZE *psiz
 
     // ヨコのカギの先頭マス。
     if (!xg_bNumCroMode) {
-        const int size = static_cast<int>(xg_vYokoInfo.size());
+        const int size = INT(xg_vYokoInfo.size());
         for (int k = 0; k < size; k++) {
             const int i = xg_vYokoInfo[k].m_iRow;
             const int j = xg_vYokoInfo[k].m_jCol;
 
             ::SetRect(&rc,
-                static_cast<int>(xg_nMargin + j * nCellSize), 
-                static_cast<int>(xg_nMargin + i * nCellSize),
-                static_cast<int>(xg_nMargin + (j + 1) * nCellSize), 
-                static_cast<int>(xg_nMargin + (i + 1) * nCellSize));
+                INT(xg_nMargin + j * nCellSize), 
+                INT(xg_nMargin + i * nCellSize),
+                INT(xg_nMargin + (j + 1) * nCellSize), 
+                INT(xg_nMargin + (i + 1) * nCellSize));
             ::OffsetRect(&rc, c_nThin, c_nThin * 2 / 3);
 
             XgDrawCellNumber(hdc, rc, i, j, xg_vYokoInfo[k].m_number, slot);
@@ -5442,10 +5403,10 @@ void __fastcall XgDrawXWord_SkeletonView(XG_Board& xw, HDC hdc, const SIZE *psiz
                     continue;
 
                 ::SetRect(&rc,
-                    static_cast<int>(xg_nMargin + j * nCellSize), 
-                    static_cast<int>(xg_nMargin + i * nCellSize),
-                    static_cast<int>(xg_nMargin + (j + 1) * nCellSize), 
-                    static_cast<int>(xg_nMargin + (i + 1) * nCellSize));
+                    INT(xg_nMargin + j * nCellSize), 
+                    INT(xg_nMargin + i * nCellSize),
+                    INT(xg_nMargin + (j + 1) * nCellSize), 
+                    INT(xg_nMargin + (i + 1) * nCellSize));
                 ::OffsetRect(&rc, c_nThin, c_nThin * 2 / 3);
 
                 XgDrawCellNumber(hdc, rc, i, j, xg_mapNumCro1[ch], slot);
@@ -5456,63 +5417,21 @@ void __fastcall XgDrawXWord_SkeletonView(XG_Board& xw, HDC hdc, const SIZE *psiz
     // フォントの選択を解除する。
     ::SelectObject(hdc, hFontOld);
 
-    // 文字の背景は透明。塗りつぶさない。
-    ::SetBkMode(hdc, TRANSPARENT);
-
     // セルの文字を描画する。
     for (int i = 0; i < xg_nRows; i++) {
         for (int j = 0; j < xg_nCols; j++) {
             // セルの座標をセットする。
             ::SetRect(&rc,
-                static_cast<int>(xg_nMargin + j * nCellSize), 
-                static_cast<int>(xg_nMargin + i * nCellSize),
-                static_cast<int>(xg_nMargin + (j + 1) * nCellSize), 
-                static_cast<int>(xg_nMargin + (i + 1) * nCellSize));
+                INT(xg_nMargin + j * nCellSize), 
+                INT(xg_nMargin + i * nCellSize),
+                INT(xg_nMargin + (j + 1) * nCellSize), 
+                INT(xg_nMargin + (i + 1) * nCellSize));
 
             WCHAR ch = xw.GetAt(i, j);
             if (ch == ZEN_BLACK)
                 continue;
 
-            // 文字を変換する。
-            if (xg_bHiragana) {
-                WCHAR new_ch;
-                LCMapStringW(XG_JPN_LOCALE, LCMAP_FULLWIDTH | LCMAP_HIRAGANA, &ch, 1, &new_ch, 1);
-                ch = new_ch;
-            } else {
-                WCHAR new_ch;
-                LCMapStringW(XG_JPN_LOCALE, LCMAP_FULLWIDTH | LCMAP_KATAKANA, &ch, 1, &new_ch, 1);
-                ch = new_ch;
-            }
-
-            if (XgIsCharKanaW(ch) || ch == ZEN_PROLONG ||
-                xg_imode == xg_im_KANA || xg_imode == xg_im_KANJI)
-            {
-                if (xg_bLowercase) {
-                    WCHAR new_ch;
-                    LCMapStringW(XG_JPN_LOCALE, LCMAP_FULLWIDTH | LCMAP_LOWERCASE, &ch, 1, &new_ch, 1);
-                    ch = new_ch;
-                } else {
-                    WCHAR new_ch;
-                    LCMapStringW(XG_JPN_LOCALE, LCMAP_FULLWIDTH | LCMAP_UPPERCASE, &ch, 1, &new_ch, 1);
-                    ch = new_ch;
-                }
-            } else {
-                if (xg_bLowercase) {
-                    WCHAR new_ch;
-                    LCMapStringW(XG_JPN_LOCALE, LCMAP_HALFWIDTH | LCMAP_LOWERCASE, &ch, 1, &new_ch, 1);
-                    ch = new_ch;
-                } else {
-                    WCHAR new_ch;
-                    LCMapStringW(XG_JPN_LOCALE, LCMAP_HALFWIDTH | LCMAP_UPPERCASE, &ch, 1, &new_ch, 1);
-                    ch = new_ch;
-                }
-            }
-
-            // 文字を書く。
-            hFontOld = ::SelectObject(hdc, hFont);
-            ::SetTextColor(hdc, xg_rgbBlackCellColor);
-            ::DrawTextW(hdc, &ch, 1, &rc, DT_CENTER | DT_SINGLELINE | DT_VCENTER);
-            ::SelectObject(hdc, hFontOld);
+            XgDrawLetterCell(hdc, ch, rc, hFont);
         }
     }
 
@@ -5521,10 +5440,10 @@ void __fastcall XgDrawXWord_SkeletonView(XG_Board& xw, HDC hdc, const SIZE *psiz
         for (int j = 0; j < xg_nCols; j++) {
             // セルの座標をセットする。
             ::SetRect(&rc,
-                static_cast<int>(xg_nMargin + j * nCellSize), 
-                static_cast<int>(xg_nMargin + i * nCellSize),
-                static_cast<int>(xg_nMargin + (j + 1) * nCellSize), 
-                static_cast<int>(xg_nMargin + (i + 1) * nCellSize));
+                INT(xg_nMargin + j * nCellSize), 
+                INT(xg_nMargin + i * nCellSize),
+                INT(xg_nMargin + (j + 1) * nCellSize), 
+                INT(xg_nMargin + (i + 1) * nCellSize));
             WCHAR ch = xw.GetAt(i, j);
             if (ch == ZEN_BLACK)
                 continue;
@@ -5532,7 +5451,7 @@ void __fastcall XgDrawXWord_SkeletonView(XG_Board& xw, HDC hdc, const SIZE *psiz
             ::SelectObject(hdc, GetStockObject(NULL_BRUSH));
 
             HGDIOBJ hPen2Old = ::SelectObject(hdc, hThinPen);
-            Rectangle(hdc, rc.left, rc.top, rc.right, rc.bottom);
+            ::Rectangle(hdc, rc.left, rc.top, rc.right, rc.bottom);
             ::SelectObject(hdc, hPen2Old);
         }
     }
@@ -5542,10 +5461,10 @@ void __fastcall XgDrawXWord_SkeletonView(XG_Board& xw, HDC hdc, const SIZE *psiz
         const int i = xg_caret_pos.m_i;
         const int j = xg_caret_pos.m_j;
         ::SetRect(&rc,
-            static_cast<int>(xg_nMargin + j * nCellSize), 
-            static_cast<int>(xg_nMargin + i * nCellSize),
-            static_cast<int>(xg_nMargin + (j + 1) * nCellSize), 
-            static_cast<int>(xg_nMargin + (i + 1) * nCellSize));
+            INT(xg_nMargin + j * nCellSize), 
+            INT(xg_nMargin + i * nCellSize),
+            INT(xg_nMargin + (j + 1) * nCellSize), 
+            INT(xg_nMargin + (i + 1) * nCellSize));
 
         const int cxyMargin = nCellSize / 10;
         const int cxyLine = nCellSize / 3;
@@ -6674,7 +6593,7 @@ bool __fastcall XG_Board::SetString(const std::wstring& strToBeSet)
     xg_str_trim(xg_strHeader);
 
     // 初期化する。
-    const int size = static_cast<int>(str.size());
+    const int size = INT(str.size());
     nRows = nCols = 0;
 
     // 左上の角があるか？
@@ -6706,7 +6625,7 @@ bool __fastcall XG_Board::SetString(const std::wstring& strToBeSet)
 
             // 右の境界線が見つかった。列数が未格納なら、格納する。
             if (nCols == 0)
-                nCols = static_cast<int>(v.size());
+                nCols = INT(v.size());
 
             nRows++;    // 次の行へ。
             i++;    // 次の文字へ。
