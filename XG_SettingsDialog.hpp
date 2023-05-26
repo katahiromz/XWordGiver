@@ -57,7 +57,7 @@ public:
     void OnDropFiles(HWND hwnd, HDROP hdrop);
 
     // [設定]ダイアログのダイアログ プロシージャー。
-    virtual INT_PTR CALLBACK
+    INT_PTR CALLBACK
     DialogProcDx(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) override;
 
     // BLOCKのプレビュー。

@@ -59,12 +59,12 @@ public:
         m_hRgn = nullptr;
     }
 
-    virtual LPCTSTR GetWndClassName() const noexcept override
+    LPCTSTR GetWndClassName() const noexcept override
     {
         return TEXT("XG_BoxWindow");
     }
 
-    virtual void ModifyWndClassDx(WNDCLASSEX& wcx) override
+    void ModifyWndClassDx(WNDCLASSEX& wcx) override
     {
         wcx.style = CS_DBLCLKS;
     }
@@ -414,7 +414,7 @@ public:
         FORWARD_WM_NCLBUTTONDOWN(hwnd, fDoubleClick, x, y, codeHitTest, DefProcDx);
     }
 
-    virtual LRESULT CALLBACK
+    LRESULT CALLBACK
     WindowProcDx(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) override
     {
         switch (uMsg)
@@ -625,7 +625,7 @@ public:
     {
     }
 
-    virtual void OnDraw(HWND hwnd, HDC hDC, const RECT& rc) override
+    void OnDraw(HWND hwnd, HDC hDC, const RECT& rc) override
     {
         if (XgGetFileManager()->m_path2contents[m_strText].empty())
             XgGetFileManager()->load_image(m_strText.c_str());
@@ -654,7 +654,7 @@ public:
         XG_BoxWindow::OnDraw(hwnd, hDC, rc);
     }
 
-    virtual BOOL Prop(HWND hwnd) override
+    BOOL Prop(HWND hwnd) override
     {
         XG_PictureBoxDialog dialog;
         dialog.m_strFile = m_strText;
@@ -694,7 +694,7 @@ public:
         InvalidateRect(m_hWnd, nullptr, TRUE);
     }
 
-    virtual void OnDraw(HWND hwnd, HDC hDC, const RECT& rc) override
+    void OnDraw(HWND hwnd, HDC hDC, const RECT& rc) override
     {
         MRect rcText = rc;
 
@@ -760,7 +760,7 @@ public:
         DeleteObject(hFont);
     }
 
-    virtual BOOL Prop(HWND hwnd) override
+    BOOL Prop(HWND hwnd) override
     {
         XG_TextBoxDialog dialog;
 
@@ -812,7 +812,7 @@ public:
         return RGB(b, g, r);
     }
 
-    virtual BOOL ReadMap(const map_t& map) override {
+    BOOL ReadMap(const map_t& map) override {
         auto color_it = map.find(L"color");
         if (color_it != map.end()) {
             const auto value = wcstoul(color_it->second.c_str(), nullptr, 16);
@@ -837,7 +837,7 @@ public:
         }
         return XG_BoxWindow::ReadMap(map);
     }
-    virtual BOOL WriteMap(map_t& map) override {
+    BOOL WriteMap(map_t& map) override {
         WCHAR szText[64];
         if (m_rgbText != CLR_INVALID) {
             StringCchPrintfW(szText, _countof(szText), L"%06X", SwapRandB(m_rgbText));

@@ -399,7 +399,7 @@ public:
     }
 
     // 「テーマ」ダイアログプロシージャ。
-    virtual INT_PTR CALLBACK
+    INT_PTR CALLBACK
     DialogProcDx(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) override
     {
         switch (uMsg)
