@@ -6,7 +6,7 @@
 class XG_PatGenDialog : public XG_Dialog
 {
 public:
-    XG_PatGenDialog()
+    XG_PatGenDialog() noexcept
     {
     }
 
@@ -18,7 +18,7 @@ public:
         INT n3 = XgGetPreferredMaxLength();
         ::SetDlgItemInt(hwnd, edt3, n3, FALSE);
         // 単語長の範囲を指定する。
-        SendDlgItemMessageW(hwnd, scr3, UDM_SETRANGE, 0, MAKELPARAM(XG_MAX_WORD_LEN, XG_MIN_WORD_LEN));
+        ::SendDlgItemMessageW(hwnd, scr3, UDM_SETRANGE, 0, MAKELPARAM(XG_MAX_WORD_LEN, XG_MIN_WORD_LEN));
         return TRUE;
     }
 
@@ -53,6 +53,9 @@ public:
         case IDCANCEL:
             // ダイアログを閉じる。
             ::EndDialog(hwnd, IDCANCEL);
+            break;
+
+        default:
             break;
         }
     }

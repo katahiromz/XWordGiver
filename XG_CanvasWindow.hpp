@@ -13,11 +13,7 @@ class XG_CanvasWindow : public XG_Window
 public:
     HWND m_hwndParent;
 
-    XG_CanvasWindow() : m_hwndParent(nullptr)
-    {
-    }
-
-    ~XG_CanvasWindow()
+    XG_CanvasWindow() noexcept : m_hwndParent(nullptr)
     {
     }
 
@@ -31,14 +27,14 @@ public:
         wcx.hbrBackground = ::GetSysColorBrush(COLOR_3DFACE);
     }
 
-    BOOL OnCreate(HWND hwnd, LPCREATESTRUCT lpCreateStruct)
+    BOOL OnCreate(HWND hwnd, LPCREATESTRUCT lpCreateStruct) noexcept
     {
         xg_hCanvasWnd = hwnd;
         m_hwndParent = GetParent(hwnd);
         return TRUE;
     }
 
-    void OnDestroy(HWND hwnd)
+    void OnDestroy(HWND hwnd) noexcept
     {
         xg_hCanvasWnd = nullptr;
     }
@@ -141,7 +137,7 @@ public:
     }
 
     // マウスの中央ボタンが押された。
-    void OnMButtonDown(HWND hwnd, BOOL fDoubleClick, int x, int y, UINT keyFlags)
+    void OnMButtonDown(HWND hwnd, BOOL fDoubleClick, int x, int y, UINT keyFlags) noexcept
     {
         if (!xg_bMButtonDragging)
         {
@@ -238,15 +234,13 @@ public:
     }
 
     // マウスホイールが回転した。
-    void OnMouseWheel(HWND hwnd, int xPos, int yPos, int zDelta, UINT fwKeys)
+    void OnMouseWheel(HWND hwnd, int xPos, int yPos, int zDelta, UINT fwKeys) noexcept
     {
         POINT pt = {xPos, yPos};
 
         RECT rc;
         if (::GetWindowRect(xg_hHintsWnd, &rc) && ::PtInRect(&rc, pt)) {
-            INT x = xPos, y = yPos;
-            FORWARD_WM_MOUSEWHEEL(xg_hHintsWnd, rc.left, rc.top,
-                zDelta, fwKeys, ::SendMessageW);
+            FORWARD_WM_MOUSEWHEEL(xg_hHintsWnd, rc.left, rc.top, zDelta, fwKeys, ::SendMessageW);
         } else {
             UINT uLines = 3;
             ::SystemParametersInfo(SPI_GETWHEELSCROLLLINES, 0, &uLines, 0);
@@ -274,13 +268,13 @@ public:
     }
 
     // 背景を描画する。
-    BOOL OnEraseBkgnd(HWND hwnd, HDC hdc)
+    BOOL OnEraseBkgnd(HWND hwnd, HDC hdc) noexcept
     {
         return TRUE; // 描画しない。
     }
 
     // ウィンドウを描画する。
-    void OnPaint(HWND hwnd)
+    void OnPaint(HWND hwnd) noexcept
     {
         // ツールバーがなければ、初期化の前なので、無視する。
         if (xg_hToolBar == nullptr)
@@ -458,7 +452,7 @@ public:
         FORWARD_WM_COMMAND(m_hwndParent, id, hwndCtl, codeNotify, PostMessageW);
     }
 
-    void OnDropFiles(HWND hwnd, HDROP hdrop)
+    void OnDropFiles(HWND hwnd, HDROP hdrop) noexcept
     {
         POINT pt;
         DragQueryPoint(hdrop, &pt);

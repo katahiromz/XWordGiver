@@ -9,7 +9,7 @@
 // ヒントウィンドウを作成する。
 BOOL XgCreateHintsWnd(HWND hwnd);
 // ヒントウィンドウを破棄する。
-void XgDestroyHintsWnd(void);
+void XgDestroyHintsWnd(void) noexcept;
 // ヒントの内容をヒントウィンドウで開く。
 bool XgOpenHintsByWindow(HWND /*hwnd*/);
 // ヒントを表示する。
@@ -23,13 +23,13 @@ extern BOOL xg_bShowClues;
 //////////////////////////////////////////////////////////////////////////////
 
 // ポップアップメニューを読み込む。
-HMENU XgLoadPopupMenu(HWND hwnd, INT nPos);
+HMENU XgLoadPopupMenu(HWND hwnd, INT nPos) noexcept;
 
 // ツールバーのUIを更新する。
 void XgUpdateToolBarUI(HWND hwnd);
 
 // 候補ウィンドウを破棄する。
-void XgDestroyCandsWnd(void);
+void XgDestroyCandsWnd(void) noexcept;
 
 // 描画イメージを更新する。
 void __fastcall XgUpdateImage(HWND hwnd, INT x, INT y);
@@ -40,7 +40,7 @@ void __fastcall XgUpdateImage(HWND hwnd);
 LOGFONTW *XgGetUIFont(void);
 
 // ローカルファイルを見つける。
-BOOL __fastcall XgFindLocalFile(LPWSTR pszPath, UINT cchPath, LPCWSTR pszFileName);
+BOOL __fastcall XgFindLocalFile(LPWSTR pszPath, UINT cchPath, LPCWSTR pszFileName) noexcept;
 
 // 計算時間測定用。
 extern DWORDLONG xg_dwlTick0;    // 開始時間。
@@ -116,49 +116,49 @@ void XgCopyBoardAsImage(HWND hwnd);
 extern HWND xg_hCanvasWnd;
 
 // 水平スクロールの位置を取得する。
-inline INT __fastcall XgGetHScrollPos(void)
+inline INT __fastcall XgGetHScrollPos(void) noexcept
 {
     return ::GetScrollPos(xg_hCanvasWnd, SB_HORZ);
 }
 
 // 垂直スクロールの位置を取得する。
-inline INT __fastcall XgGetVScrollPos(void)
+inline INT __fastcall XgGetVScrollPos(void) noexcept
 {
     return ::GetScrollPos(xg_hCanvasWnd, SB_VERT);
 }
 
 // 水平スクロールの情報を取得する。
-inline BOOL __fastcall XgGetHScrollInfo(LPSCROLLINFO psi)
+inline BOOL __fastcall XgGetHScrollInfo(LPSCROLLINFO psi) noexcept
 {
     return ::GetScrollInfo(xg_hCanvasWnd, SB_HORZ, psi);
 }
 
 // 垂直スクロールの情報を取得する。
-inline BOOL __fastcall XgGetVScrollInfo(LPSCROLLINFO psi)
+inline BOOL __fastcall XgGetVScrollInfo(LPSCROLLINFO psi) noexcept
 {
     return ::GetScrollInfo(xg_hCanvasWnd, SB_VERT, psi);
 }
 
 // 水平スクロールの位置を設定する。
-inline INT __fastcall XgSetHScrollPos(int nPos, BOOL bRedraw)
+inline INT __fastcall XgSetHScrollPos(int nPos, BOOL bRedraw) noexcept
 {
     return ::SetScrollPos(xg_hCanvasWnd, SB_HORZ, nPos, bRedraw);
 }
 
 // 垂直スクロールの位置を設定する。
-inline INT __fastcall XgSetVScrollPos(int nPos, BOOL bRedraw)
+inline INT __fastcall XgSetVScrollPos(int nPos, BOOL bRedraw) noexcept
 {
     return ::SetScrollPos(xg_hCanvasWnd, SB_VERT, nPos, bRedraw);
 }
 
 // 水平スクロールの情報を設定する。
-inline BOOL __fastcall XgSetHScrollInfo(LPSCROLLINFO psi, BOOL bRedraw)
+inline BOOL __fastcall XgSetHScrollInfo(LPSCROLLINFO psi, BOOL bRedraw) noexcept
 {
     return ::SetScrollInfo(xg_hCanvasWnd, SB_HORZ, psi, bRedraw);
 }
 
 // 垂直スクロールの情報を設定する。
-inline BOOL __fastcall XgSetVScrollInfo(LPSCROLLINFO psi, BOOL bRedraw)
+inline BOOL __fastcall XgSetVScrollInfo(LPSCROLLINFO psi, BOOL bRedraw) noexcept
 {
     return ::SetScrollInfo(xg_hCanvasWnd, SB_VERT, psi, bRedraw);
 }
@@ -171,7 +171,7 @@ void __fastcall XgEnsureCaretVisible(HWND hwnd);
 //////////////////////////////////////////////////////////////////////////////
 
 // 現在の状態で好ましいと思われる単語の最大長を取得する。
-INT __fastcall XgGetPreferredMaxLength(void);
+INT __fastcall XgGetPreferredMaxLength(void) noexcept;
 
 // マス位置を取得する。
 VOID XgGetCellPosition(RECT& rc, INT i1, INT j1, INT i2, INT j2, BOOL bScroll);
@@ -183,7 +183,7 @@ extern BOOL xg_bMButtonDragging;
 extern POINT xg_ptMButtonDragging;
 
 // 本当のクライアント領域を計算する。
-void __fastcall XgGetRealClientRect(HWND hwnd, LPRECT prcClient);
+void __fastcall XgGetRealClientRect(HWND hwnd, LPRECT prcClient) noexcept;
 // ズームを実際のウィンドウに合わせる。
 void __fastcall XgFitZoom(HWND hwnd);
 // テーマが変更された。

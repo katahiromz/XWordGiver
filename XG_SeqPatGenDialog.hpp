@@ -6,7 +6,7 @@
 class XG_SeqPatGenDialog : public XG_Dialog
 {
 public:
-    XG_SeqPatGenDialog()
+    XG_SeqPatGenDialog() noexcept
     {
     }
 
@@ -150,7 +150,7 @@ public:
     }
 
     // 何かがドロップされた。
-    void OnDropFiles(HWND hwnd, HDROP hdrop)
+    void OnDropFiles(HWND hwnd, HDROP hdrop) noexcept
     {
         WCHAR szDir[MAX_PATH];
         DragQueryFile(hdrop, 0, szDir, _countof(szDir));

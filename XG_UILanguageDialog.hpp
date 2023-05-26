@@ -8,7 +8,7 @@ public:
     LANGID m_LangID;
     std::vector<LANGID> m_ids;
 
-    XG_UILanguageDialog()
+    XG_UILanguageDialog() noexcept
     {
     }
 
@@ -38,7 +38,7 @@ public:
         return TRUE;
     }
 
-    void OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT codeNotify)
+    void OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT codeNotify) noexcept
     {
         switch(id)
         {
@@ -55,6 +55,9 @@ public:
 
         case IDCANCEL:
             ::EndDialog(hwnd, id);
+            break;
+
+        default:
             break;
         }
     }

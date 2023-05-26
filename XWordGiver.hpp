@@ -412,11 +412,11 @@ class XG_Board
 public:
     // コンストラクタ。
     XG_Board() noexcept;
-    XG_Board(const XG_Board& xw) noexcept;
+    XG_Board(const XG_Board& xw);
     XG_Board(XG_Board&& xw) noexcept;
 
     // 代入。
-    void __fastcall operator=(const XG_Board& xw) noexcept;
+    void __fastcall operator=(const XG_Board& xw);
     void __fastcall operator=(XG_Board&& xw) noexcept;
 
     // マスの内容を取得する。
@@ -513,9 +513,9 @@ public:
     void SwapXandY() noexcept;
 
     // タテ向きにパターンを読み取る。
-    std::wstring __fastcall GetPatternV(const XG_Pos& pos) const noexcept;
+    std::wstring __fastcall GetPatternV(const XG_Pos& pos) const;
     // ヨコ向きにパターンを読み取る。
-    std::wstring __fastcall GetPatternH(const XG_Pos& pos) const noexcept;
+    std::wstring __fastcall GetPatternH(const XG_Pos& pos) const;
 
 public:
     // マス情報。
@@ -716,12 +716,12 @@ inline XG_Board::XG_Board() noexcept
 }
 
 // コピーコンストラクタ。
-inline XG_Board::XG_Board(const XG_Board& xw) noexcept : m_vCells(xw.m_vCells)
+inline XG_Board::XG_Board(const XG_Board& xw) : m_vCells(xw.m_vCells)
 {
 }
 
 // 代入。
-inline void __fastcall XG_Board::operator=(const XG_Board& xw) noexcept
+inline void __fastcall XG_Board::operator=(const XG_Board& xw)
 {
     m_vCells = xw.m_vCells;
 }
@@ -1140,7 +1140,7 @@ struct XG_PlaceInfo
     }
 
     // コンストラクタ。
-    XG_PlaceInfo(int iRow_, int jCol_, const std::wstring& word_) noexcept :
+    XG_PlaceInfo(int iRow_, int jCol_, const std::wstring& word_) :
         m_iRow(iRow_), m_jCol(jCol_), m_word(word_)
     {
     }
@@ -1152,7 +1152,7 @@ struct XG_PlaceInfo
     }
 
     // コンストラクタ。
-    XG_PlaceInfo(int iRow_, int jCol_, const std::wstring& word_, int number_) noexcept :
+    XG_PlaceInfo(int iRow_, int jCol_, const std::wstring& word_, int number_) :
         m_iRow(iRow_), m_jCol(jCol_), m_word(word_), m_number(number_)
     {
     }
@@ -1164,7 +1164,7 @@ struct XG_PlaceInfo
     }
 
     // コピーコンストラクタ。
-    XG_PlaceInfo(const XG_PlaceInfo& pi) noexcept
+    XG_PlaceInfo(const XG_PlaceInfo& pi)
     {
         m_iRow = pi.m_iRow;
         m_jCol = pi.m_jCol;
@@ -1182,7 +1182,7 @@ struct XG_PlaceInfo
     }
 
     // 代入。
-    void __fastcall operator=(const XG_PlaceInfo& pi) noexcept
+    void __fastcall operator=(const XG_PlaceInfo& pi)
     {
         m_iRow = pi.m_iRow;
         m_jCol = pi.m_jCol;
@@ -1468,7 +1468,7 @@ BOOL __fastcall XgPatternRuleIsOK(const XG_PATDATA& pat);
 // ボックスを描画する。
 void XgDrawBoxes(XG_Board& xw, HDC hdc, const SIZE *psiz);
 // ボックスをすべて削除する。
-void XgDeleteBoxes(void);
+void XgDeleteBoxes(void) noexcept;
 // ボックスJSONを読み込む。
 BOOL XgDoLoadBoxJson(const json& boxes);
 // ボックスJSONを保存。

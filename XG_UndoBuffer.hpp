@@ -39,7 +39,7 @@ struct XG_UndoData_SetAt : XG_UndoData {
     XG_Pos  pos;
     WCHAR   ch;
 
-    virtual ~XG_UndoData_SetAt()
+    virtual ~XG_UndoData_SetAt() override
     {
     }
     virtual void Apply() const;
@@ -51,11 +51,11 @@ struct XG_UndoData_MarksUpdated : XG_UndoData {
     std::vector<XG_Pos> vMarks;
     std::wstring strMarked;
 
-    virtual ~XG_UndoData_MarksUpdated()
+    virtual ~XG_UndoData_MarksUpdated() override
     {
     }
-    virtual void Get();
-    virtual void Apply() const;
+    virtual void Get() override;
+    virtual void Apply() const override;
 };
 
 //////////////////////////////////////////////////////////////////////////////
@@ -67,11 +67,11 @@ struct XG_UndoData_HintsUpdated : XG_UndoData {
     std::vector<XG_Hint>        vecYokoHints;
     BOOL bShowHints;
 
-    virtual ~XG_UndoData_HintsUpdated()
+    virtual ~XG_UndoData_HintsUpdated() override
     {
     }
-    virtual void Get();
-    virtual void Apply() const;
+    virtual void Get() override;
+    virtual void Apply() const override;
 };
 
 //////////////////////////////////////////////////////////////////////////////
@@ -79,11 +79,11 @@ struct XG_UndoData_HintsUpdated : XG_UndoData {
 struct XG_UndoData_NumCro : XG_UndoData {
     bool bNumCro;
 
-    virtual ~XG_UndoData_NumCro()
+    virtual ~XG_UndoData_NumCro() override
     {
     }
-    virtual void Get();
-    virtual void Apply() const;
+    virtual void Get() override;
+    virtual void Apply() const override;
 };
 
 //////////////////////////////////////////////////////////////////////////////
@@ -91,11 +91,11 @@ struct XG_UndoData_NumCro : XG_UndoData {
 struct XG_UndoData_ViewMode : XG_UndoData {
     XG_VIEW_MODE nViewMode;
 
-    virtual ~XG_UndoData_ViewMode()
+    virtual ~XG_UndoData_ViewMode() override
     {
     }
-    virtual void Get();
-    virtual void Apply() const;
+    virtual void Get() override;
+    virtual void Apply() const override;
 };
 
 //////////////////////////////////////////////////////////////////////////////
@@ -103,11 +103,11 @@ struct XG_UndoData_ViewMode : XG_UndoData {
 struct XG_UndoData_Boxes : XG_UndoData {
     std::wstring boxes;
 
-    virtual ~XG_UndoData_Boxes()
+    virtual ~XG_UndoData_Boxes() override
     {
     }
-    virtual void Get();
-    virtual void Apply() const;
+    virtual void Get() override;
+    virtual void Apply() const override;
 };
 
 //////////////////////////////////////////////////////////////////////////////
@@ -134,11 +134,11 @@ struct XG_UndoData_SetAll : XG_UndoData {
     XG_VIEW_MODE                nViewMode;
     std::wstring                boxes;
 
-    virtual ~XG_UndoData_SetAll()
+    virtual ~XG_UndoData_SetAll() override
     {
     }
-    virtual void Get();
-    virtual void Apply() const;
+    virtual void Get() override;
+    virtual void Apply() const override;
 };
 
 //////////////////////////////////////////////////////////////////////////////

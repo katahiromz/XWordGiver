@@ -16,7 +16,7 @@ public:
     BOOL m_bImport = FALSE;
     BOOL m_bUpdating = FALSE;
 
-    XG_SettingsDialog()
+    XG_SettingsDialog() noexcept
     {
         m_hwndWhite.SetColor(xg_rgbWhiteCellColor);
         m_hwndBlack.SetColor(xg_rgbBlackCellColor);

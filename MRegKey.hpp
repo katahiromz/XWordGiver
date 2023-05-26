@@ -757,7 +757,7 @@ inline LONG RegDeleteTreeDx(HKEY hKey, LPCTSTR pszSubKey/* = nullptr*/) noexcept
 
     if (pszSubKey != nullptr)
     {
-        LONG ret = ::RegOpenKeyEx(hKey, pszSubKey, 0, KEY_READ, &hSubKey);
+        const LONG ret = ::RegOpenKeyEx(hKey, pszSubKey, 0, KEY_READ, &hSubKey);
         if (ret)
             return ret;
     }
@@ -831,7 +831,7 @@ inline /*static*/ size_t MRegKey::MultiSzSizeDx(LPCTSTR pszz) noexcept
     {
         do
         {
-            size_t len = lstrlen(pszz);
+            const size_t len = lstrlen(pszz);
             siz += len + 1;
             pszz += len + 1;
         }

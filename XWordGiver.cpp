@@ -670,7 +670,7 @@ bool __fastcall XgAnyCandidateAddBlack(const std::wstring& pattern)
             // 孤立した文字マスが中にあるかを調べる。
             // ついでに文字マスが途中にあるか調べる。
             for (INT j = 1; j < patlen - 1; j++) {
-                if (pattern[j] != ZEN_SPACE) {
+                if (pattern.at(j) != ZEN_SPACE) {
                     if (pattern.at(j - 1) == ZEN_SPACE && pattern.at(j + 1) == ZEN_SPACE) {
                         return true;    // 孤立した文字マスがあった。
                     }
@@ -710,9 +710,9 @@ bool __fastcall XgAnyCandidateAddBlack(const std::wstring& pattern)
             // 単語がにマッチするか？
             bool bCharFound = false;
             for (INT k = 0; k < wordlen; k++) {
-                if (pattern[j + k] != ZEN_SPACE) {
+                if (pattern.at(j + k) != ZEN_SPACE) {
                     bCharFound = true;
-                    if (pattern[j + k] != word.at(k)) {
+                    if (pattern.at(j + k) != word.at(k)) {
                         // マッチしなかった。
                         goto break_continue;
                     }
@@ -4636,7 +4636,7 @@ void __fastcall XgDrawMarkWord(HDC hdc, LPSIZE psiz)
 
         WCHAR ch;
         if (xg_bNumCroMode && xg_bSolved) {
-            XG_Pos& pos = xg_vMarks[i];
+            XG_Pos& pos = xg_vMarks.at(i);
             ch = xg_solution.GetAt(pos.m_i, pos.m_j);
             StringCbPrintf(sz, sizeof(sz), L"%u", xg_mapNumCro1[ch]);
         } else {
@@ -4681,7 +4681,7 @@ void __fastcall XgDrawMarkWord(HDC hdc, LPSIZE psiz)
             static_cast<int>(xg_nNarrowMargin + 1 * xg_nCellSize));
 
         WCHAR ch;
-        XG_Pos& pos = xg_vMarks[i];
+        XG_Pos& pos = xg_vMarks.at(i);
         if (xg_bSolved && xg_bShowAnswer) {
             ch = xg_solution.GetAt(pos.m_i, pos.m_j);
         } else {
@@ -5757,8 +5757,8 @@ bool __fastcall XgDoSaveCrpFile(LPCWSTR pszFile)
         std::wstring answer;
         if (xg_vMarks.size()) {
             for (size_t i = 0; i < xg_vMarks.size(); ++i) {
-                answer += xw->GetAt(xg_vMarks[i].m_i, xg_vMarks[i].m_j);
-                marks[xg_vMarks[i].m_i][xg_vMarks[i].m_j] = static_cast<int>(i) + 1;
+                answer += xw->GetAt(xg_vMarks.at(i).m_i, xg_vMarks.at(i).m_j);
+                marks.at(xg_vMarks.at(i).m_i).at(xg_vMarks.at(i).m_j) = static_cast<int>(i) + 1;
             }
         }
 
@@ -5767,7 +5767,7 @@ bool __fastcall XgDoSaveCrpFile(LPCWSTR pszFile)
             for (INT j = 0; j < xg_nCols; ++j) {
                 if (row.size())
                     row += ",";
-                row += std::to_string(marks[i][j]);
+                row += std::to_string(marks.at(i).at(j));
             }
             fprintf(fout, "MarkUpLine%u=%s\n", i + 1, row.c_str());
         }
@@ -5872,7 +5872,7 @@ bool __fastcall XgDoSaveJson(LPCWSTR pszFile)
                 auto number = pair.second;
                 WCHAR szNum[64];
                 StringCbPrintfW(szNum, sizeof(szNum), L"%04u", number);
-                WCHAR szChar[2] = { ch, 0 };
+                const WCHAR szChar[2] = { ch, 0 };
                 j0["num_cro"][XgUnicodeToUtf8(szNum)] = XgUnicodeToUtf8(szChar);
             }
         }
@@ -5881,8 +5881,7 @@ bool __fastcall XgDoSaveJson(LPCWSTR pszFile)
         for (INT i = 0; i < xg_nRows; ++i) {
             std::wstring row;
             for (INT j = 0; j < xg_nCols; ++j) {
-                WCHAR ch = xw->GetAt(i, j);
-                row += ch;
+                row += xw->GetAt(i, j);
             }
             j0["cell_data"].push_back(XgUnicodeToUtf8(row));
         }
@@ -5896,7 +5895,7 @@ bool __fastcall XgDoSaveJson(LPCWSTR pszFile)
 
             std::wstring mark_word;
             for (auto& mark : xg_vMarks) {
-                WCHAR ch = xw->GetAt(mark.m_i, mark.m_j);
+                const WCHAR ch = xw->GetAt(mark.m_i, mark.m_j);
                 mark_word += ch;
             }
 
@@ -5905,9 +5904,9 @@ bool __fastcall XgDoSaveJson(LPCWSTR pszFile)
             str += L"\t\"marks\": [\r\n";
             for (size_t i = 0; i < xg_vMarks.size(); ++i) {
                 json mark;
-                mark.push_back(xg_vMarks[i].m_i + 1);
-                mark.push_back(xg_vMarks[i].m_j + 1);
-                WCHAR sz[2] = { mark_word[i] , 0 };
+                mark.push_back(xg_vMarks.at(i).m_i + 1);
+                mark.push_back(xg_vMarks.at(i).m_j + 1);
+                const WCHAR sz[2] = { mark_word.at(i) , 0 };
                 mark.push_back(XgUnicodeToUtf8(sz));
                 j0["marks"].push_back(mark);
             }
@@ -6143,7 +6142,7 @@ bool __fastcall XgDoSaveXdFile(LPCWSTR pszFile)
         BOOL bAsian = FALSE;
         for (INT i = 0; i < xg_nRows; ++i) {
             for (INT j = 0; j < xg_nCols; ++j) {
-                WCHAR ch = xw->GetAt(i, j);
+                const WCHAR ch = xw->GetAt(i, j);
                 if (XgIsCharKanaW(ch) || XgIsCharKanjiW(ch) ||
                     ch == ZEN_PROLONG || XgIsCharHangulW(ch))
                 {
@@ -6158,7 +6157,7 @@ bool __fastcall XgDoSaveXdFile(LPCWSTR pszFile)
         for (INT i = 0; i < xg_nRows; ++i) {
             std::wstring row;
             for (INT j = 0; j < xg_nCols; ++j) {
-                WCHAR ch = xw->GetAt(i, j);
+                const WCHAR ch = xw->GetAt(i, j);
                 if (bAsian) {
                     if (ch == ZEN_SPACE)
                         row += ZEN_UNDERLINE;
@@ -6229,7 +6228,7 @@ bool __fastcall XgDoSaveXdFile(LPCWSTR pszFile)
                 mapping[pair.first] = pair.second;
             }
             for (auto& pair : mapping) {
-                WCHAR sz[2] = { pair.second, 0 };
+                const WCHAR sz[2] = { pair.second, 0 };
                 fprintf(fout, "NUMCRO-%04u: %s\n", pair.first, XgUnicodeToUtf8(sz).c_str());
             }
             fprintf(fout, "\n");
@@ -6273,7 +6272,7 @@ bool __fastcall XgDoSaveXdFile(LPCWSTR pszFile)
 // ファイルを保存する。
 bool __fastcall XgDoSaveFileType(HWND hwnd, LPCWSTR pszFile, XG_FILETYPE type)
 {
-    bool ret;
+    bool ret = false;
     switch (type)
     {
     case XG_FILETYPE_XWD:
@@ -6295,7 +6294,7 @@ bool __fastcall XgDoSaveFileType(HWND hwnd, LPCWSTR pszFile, XG_FILETYPE type)
         break;
     default:
         assert(0);
-        ret = false;
+        break;
     }
 
     if (ret) {
@@ -6361,13 +6360,9 @@ bool __fastcall XgDoSaveFile(HWND hwnd, LPCWSTR pszFile)
 // 問題を画像ファイルとして保存する。
 void __fastcall XgSaveProbAsImage(HWND hwnd)
 {
-    OPENFILENAMEW ofn;
-    WCHAR szFileName[MAX_PATH] = L"";
-
     // 「問題を画像ファイルとして保存」ダイアログを表示。
-    ZeroMemory(&ofn, sizeof(ofn));
-    ofn.lStructSize = OPENFILENAME_SIZE_VERSION_400W;
-    ofn.hwndOwner = hwnd;
+    WCHAR szFileName[MAX_PATH] = L"";
+    OPENFILENAMEW ofn = { OPENFILENAME_SIZE_VERSION_400W, hwnd };
     ofn.lpstrFilter = XgMakeFilterString(XgLoadStringDx2(IDS_IMGFILTER));
     ofn.lpstrFile = szFileName;
     ofn.nMaxFile = _countof(szFileName);
@@ -6409,18 +6404,14 @@ void __fastcall XgSaveProbAsImage(HWND hwnd)
 // 解答を画像ファイルとして保存する。
 void __fastcall XgSaveAnsAsImage(HWND hwnd)
 {
-    OPENFILENAMEW ofn;
-    WCHAR szFileName[MAX_PATH] = L"";
-
     if (!xg_bSolved) {
         ::MessageBeep(0xFFFFFFFF);
         return;
     }
 
     // 「解答を画像ファイルとして保存」ダイアログを表示。
-    ZeroMemory(&ofn, sizeof(ofn));
-    ofn.lStructSize = OPENFILENAME_SIZE_VERSION_400W;
-    ofn.hwndOwner = hwnd;
+    WCHAR szFileName[MAX_PATH] = L"";
+    OPENFILENAMEW ofn = { OPENFILENAME_SIZE_VERSION_400W, hwnd };
     ofn.lpstrFilter = XgMakeFilterString(XgLoadStringDx2(IDS_IMGFILTER));
     ofn.lpstrFile = szFileName;
     ofn.nMaxFile = _countof(szFileName);
@@ -6498,7 +6489,6 @@ void __fastcall XG_Board::GetString(std::wstring& str) const
 // クロスワードに文字列を設定する。
 bool __fastcall XG_Board::SetString(const std::wstring& strToBeSet)
 {
-    int i1, nRows, nCols;
     std::vector<WCHAR> v;
     std::wstring str(strToBeSet);
 
@@ -6514,10 +6504,11 @@ bool __fastcall XG_Board::SetString(const std::wstring& strToBeSet)
 
     // 初期化する。
     const int size = static_cast<int>(str.size());
-    nRows = nCols = 0;
+    INT nRows = 0, nCols = 0;
 
     // 左上の角があるか？
-    for (i1 = 0; i1 < size; i1++) {
+    INT i1 = 0;
+    for (; i1 < size; i1++) {
         if (str[i1] == ZEN_ULEFT)
             break;
     }
@@ -6836,7 +6827,7 @@ bool xg_bBlacksGenerated = false;
 INT xg_nMaxWordLen = 4;
 
 // 黒マスパターンを生成する。
-bool __fastcall XgGenerateBlacksRecurse(const XG_Board& xword, LONG iRowjCol) noexcept
+bool __fastcall XgGenerateBlacksRecurse(const XG_Board& xword, LONG iRowjCol)
 {
     // ルールの適合性をチェックする。
     if ((xg_nRules & RULE_DONTCORNERBLACK) && xword.CornerBlack())
@@ -6950,7 +6941,7 @@ bool __fastcall XgGenerateBlacksRecurse(const XG_Board& xword, LONG iRowjCol) no
 }
 
 // 黒マスパターンを生成する（点対称）。
-bool __fastcall XgGenerateBlacksPointSymRecurse(const XG_Board& xword, LONG iRowjCol) noexcept
+bool __fastcall XgGenerateBlacksPointSymRecurse(const XG_Board& xword, LONG iRowjCol)
 {
     // ルールの適合性をチェックする。
     if ((xg_nRules & RULE_DONTCORNERBLACK) && xword.CornerBlack())
@@ -7073,7 +7064,7 @@ bool __fastcall XgGenerateBlacksPointSymRecurse(const XG_Board& xword, LONG iRow
 }
 
 // 黒マスパターンを生成する（タテ線対称）。
-bool __fastcall XgGenerateBlacksLineSymVRecurse(const XG_Board& xword, LONG iRowjCol) noexcept
+bool __fastcall XgGenerateBlacksLineSymVRecurse(const XG_Board& xword, LONG iRowjCol)
 {
     // ルールの適合性をチェックする。
     if ((xg_nRules & RULE_DONTCORNERBLACK) && xword.CornerBlack())
@@ -7209,7 +7200,7 @@ bool __fastcall XgGenerateBlacksLineSymVRecurse(const XG_Board& xword, LONG iRow
 }
 
 // 黒マスパターンを生成する（ヨコ線対称）。
-bool __fastcall XgGenerateBlacksLineSymHRecurse(const XG_Board& xword, LONG iRowjCol) noexcept
+bool __fastcall XgGenerateBlacksLineSymHRecurse(const XG_Board& xword, LONG iRowjCol)
 {
     // ルールの適合性をチェックする。
     if ((xg_nRules & RULE_DONTCORNERBLACK) && xword.CornerBlack())
@@ -7534,7 +7525,7 @@ std::wstring __fastcall XgNormalizeString(const std::wstring& text) {
     WCHAR szText[512];
     LCMapStringW(XG_JPN_LOCALE, LCMAP_FULLWIDTH | LCMAP_KATAKANA | LCMAP_UPPERCASE,
         text.c_str(), -1, szText, _countof(szText));
-    std::wstring ret = szText;
+    std::wstring ret(szText);
     for (auto& ch : ret) {
         // 小さな字を大きな字にする。
         for (size_t i = 0; i < _countof(xg_small); i++) {
@@ -7548,7 +7539,7 @@ std::wstring __fastcall XgNormalizeString(const std::wstring& text) {
 }
 
 // タテ向きにパターンを読み取る。
-std::wstring __fastcall XG_Board::GetPatternV(const XG_Pos& pos) const noexcept
+std::wstring __fastcall XG_Board::GetPatternV(const XG_Pos& pos) const
 {
     std::wstring pattern;
     if (GetAt(pos.m_i, pos.m_j) == ZEN_BLACK)
@@ -7576,7 +7567,7 @@ std::wstring __fastcall XG_Board::GetPatternV(const XG_Pos& pos) const noexcept
 }
 
 // ヨコ向きにパターンを読み取る。
-std::wstring __fastcall XG_Board::GetPatternH(const XG_Pos& pos) const noexcept
+std::wstring __fastcall XG_Board::GetPatternH(const XG_Pos& pos) const
 {
     std::wstring pattern;
     if (GetAt(pos.m_i, pos.m_j) == ZEN_BLACK)

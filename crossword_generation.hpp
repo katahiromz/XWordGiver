@@ -52,7 +52,7 @@ namespace std {
     template <>
     struct hash<crossword_generation::pos_t> {
         size_t operator()(const crossword_generation::pos_t& pos) const {
-            return uint16_t(pos.m_x) | (uint16_t(pos.m_y) << 16);
+            return static_cast<uint16_t>(pos.m_x) | (static_cast<uint16_t>(pos.m_y) << 16);
         }
     };
 } // namespace std
@@ -268,7 +268,7 @@ struct board_t : board_data_t<t_char> {
     int m_x0, m_y0;
 
     // board_tのコンストラクタ。
-    board_t(int cx = 1, int cy = 1, t_char ch = ' ', int rules = 0, int x0 = 0, int y0 = 0)
+    board_t(int cx = 1, int cy = 1, t_char ch = ' ', int rules = 0, int x0 = 0, int y0 = 0) noexcept
         : board_data_t<t_char>(cx, cy, ch), m_cx(cx), m_cy(cy)
         , m_rules(rules), m_x0(x0), m_y0(y0)
     {
@@ -290,7 +290,7 @@ struct board_t : board_data_t<t_char> {
 
     // マス(x, y)は盤面の範囲内か？
     // x, y: absolute coordinate
-    bool in_range(int x, int y) const {
+    bool in_range(int x, int y) const noexcept {
         return (0 <= x && x < m_cx && 0 <= y && y < m_cy);
     }
 

@@ -155,7 +155,6 @@ public:
     BOOL UnionRect(LPCRECT prc1, LPCRECT prc2) noexcept;
     BOOL SubtractRect(LPCRECT prcSrc1, LPCRECT prcSrc2) noexcept;
 
-    VOID operator=(const RECT& rcSrc) noexcept;
     BOOL operator==(const RECT& rc) const noexcept;
     BOOL operator!=(const RECT& rc) const noexcept;
     VOID operator+=(POINT pt) noexcept;
@@ -566,9 +565,6 @@ inline BOOL MRect::UnionRect(LPCRECT prc1, LPCRECT prc2) noexcept
 
 inline BOOL MRect::SubtractRect(LPCRECT prcSrc1, LPCRECT prcSrc2) noexcept
     { return ::SubtractRect(this, prcSrc1, prcSrc2); }
-
-inline VOID MRect::operator=(const RECT& rcSrc) noexcept
-    { ::CopyRect(this, &rcSrc); }
 
 inline BOOL MRect::operator==(const RECT& rc) const noexcept
     { return ::EqualRect(this, &rc); }

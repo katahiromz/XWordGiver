@@ -74,7 +74,7 @@ public:
         } else {
             INT i = GetCurSel(hwnd);
             if (i != LB_ERR)
-                ::SendDlgItemMessageW(hwnd, lst1, LB_GETTEXT, i, (LPARAM)szText);
+                ::SendDlgItemMessageW(hwnd, lst1, LB_GETTEXT, i, reinterpret_cast<LPARAM>(szText));
         }
         std::wstring str = szText;
         if (bNormalize) {
@@ -90,7 +90,7 @@ public:
         if (!bFromEdit) {
             m_bUpdating = TRUE;
             INT iStart, iEnd;
-            ::SendDlgItemMessageW(hwnd, edt1, EM_GETSEL, (WPARAM)&iStart, (LPARAM)&iEnd);
+            ::SendDlgItemMessageW(hwnd, edt1, EM_GETSEL, reinterpret_cast<WPARAM>(&iStart), reinterpret_cast<LPARAM>(&iEnd));
             ::SetDlgItemTextW(hwnd, edt1, str.c_str());
             ::SendDlgItemMessageW(hwnd, edt1, EM_SETSEL, iStart, iEnd);
             m_bUpdating = FALSE;
@@ -127,7 +127,7 @@ public:
         }
 
         if (bFromEdit) {
-            INT i = (INT)::SendDlgItemMessageW(hwnd, lst1, LB_FINDSTRINGEXACT, -1, (LPARAM)str.c_str());
+            const INT i = static_cast<INT>(::SendDlgItemMessageW(hwnd, lst1, LB_FINDSTRINGEXACT, -1, reinterpret_cast<LPARAM>(str.c_str())));
             m_bUpdating = TRUE;
             if (i != LB_ERR) {
                 ::SendDlgItemMessageW(hwnd, lst1, LB_SETCURSEL, i, 0);
@@ -280,7 +280,7 @@ public:
         XgUpdateImage(xg_hMainWnd);
     }
 
-    void OnMove(HWND hwnd, int x, int y)
+    void OnMove(HWND hwnd, int x, int y) noexcept
     {
         if (m_bInitted) {
             RECT rc;
@@ -303,14 +303,14 @@ public:
         {
             m_bUpdating = TRUE;
             INT iStart, iEnd;
-            ::SendDlgItemMessageW(hwnd, edt1, EM_GETSEL, (WPARAM)&iStart, (LPARAM)&iEnd);
+            ::SendDlgItemMessageW(hwnd, edt1, EM_GETSEL, reinterpret_cast<WPARAM>(&iStart), reinterpret_cast<LPARAM>(&iEnd));
             ::SetDlgItemTextW(hwnd, edt1, str2.c_str());
             ::SendDlgItemMessageW(hwnd, edt1, EM_SETSEL, iStart, iEnd);
             m_bUpdating = FALSE;
         }
     }
 
-    void OnDestroy(HWND hwnd)
+    void OnDestroy(HWND hwnd) noexcept
     {
         ::KillTimer(hwnd, 999);
         m_hWnd = nullptr;

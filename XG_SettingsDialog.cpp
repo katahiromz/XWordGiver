@@ -532,7 +532,7 @@ BOOL XG_SettingsDialog::DoExportLooks(HWND hwnd, LPCWSTR pszFileName)
 BOOL XG_SettingsDialog::OnImportLooks(HWND hwnd)
 {
     WCHAR szFile[MAX_PATH] = L"";
-    OPENFILENAMEW ofn = { sizeof(ofn), hwnd };
+    OPENFILENAMEW ofn = { OPENFILENAME_SIZE_VERSION_400W, hwnd };
     ofn.lpstrFilter = L"LOOKS File (*.looks)\0*.looks\0";
     ofn.lpstrFile = szFile;
     ofn.nMaxFile = _countof(szFile);
@@ -551,7 +551,7 @@ BOOL XG_SettingsDialog::OnImportLooks(HWND hwnd)
 BOOL XG_SettingsDialog::OnExportLooks(HWND hwnd)
 {
     WCHAR szFile[MAX_PATH] = L"";
-    OPENFILENAMEW ofn = { sizeof(ofn), hwnd };
+    OPENFILENAMEW ofn = { OPENFILENAME_SIZE_VERSION_400W, hwnd };
     ofn.lpstrFilter = L"LOOKS File (*.looks)\0*.looks\0";
     ofn.lpstrFile = szFile;
     ofn.nMaxFile = _countof(szFile);
@@ -750,12 +750,12 @@ XG_SettingsDialog::DialogProcDx(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPar
         break;
 
     case WM_DROPFILES:
-        OnDropFiles(hwnd, (HDROP)wParam);
+        OnDropFiles(hwnd, reinterpret_cast<HDROP>(wParam));
         break;
 
     case WM_NOTIFY:
         {
-            NM_UPDOWN *pUpDown = (NM_UPDOWN *)lParam;
+            auto pUpDown = reinterpret_cast<NM_UPDOWN *>(lParam);
             WCHAR szText[MAX_PATH];
             if (pUpDown->hdr.code == UDN_DELTAPOS)
             {
@@ -928,8 +928,8 @@ void XG_SettingsDialog::UpdateBlockPreview(HWND hwnd)
     HWND hIco2 = GetDlgItem(hwnd, ico2);
     SetWindowPos(hIco1, nullptr, 0, 0, 32, 32, SWP_NOMOVE | SWP_NOZORDER | SWP_HIDEWINDOW);
     SetWindowPos(hIco2, nullptr, 0, 0, 32, 32, SWP_NOMOVE | SWP_NOZORDER | SWP_HIDEWINDOW);
-    HBITMAP hbmOld = (HBITMAP)SendMessageW(hIco1, STM_GETIMAGE, IMAGE_BITMAP, 0);
-    HENHMETAFILE hOldEMF = (HENHMETAFILE)SendMessageW(hIco2, STM_GETIMAGE, IMAGE_ENHMETAFILE, 0);
+    auto hbmOld = reinterpret_cast<HBITMAP>(::SendMessageW(hIco1, STM_GETIMAGE, IMAGE_BITMAP, 0));
+    auto hOldEMF = reinterpret_cast<HENHMETAFILE>(SendMessageW(hIco2, STM_GETIMAGE, IMAGE_ENHMETAFILE, 0));
 
     WCHAR szText[MAX_PATH];
     HWND hCmb1 = GetDlgItem(hwnd, cmb1);
@@ -952,8 +952,8 @@ void XG_SettingsDialog::UpdateBlockPreview(HWND hwnd)
         {
             HBITMAP hbm2 = (HBITMAP)CopyImage(hbm1, IMAGE_BITMAP, 32, 32, LR_CREATEDIBSECTION);
             DeleteObject(hbm1);
-            SendMessageW(hIco1, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)hbm2);
-            SendMessageW(hIco2, STM_SETIMAGE, IMAGE_ENHMETAFILE, (LPARAM)nullptr);
+            SendMessageW(hIco1, STM_SETIMAGE, IMAGE_BITMAP, reinterpret_cast<LPARAM>(hbm2));
+            SendMessageW(hIco2, STM_SETIMAGE, IMAGE_ENHMETAFILE, 0);
             ShowWindow(hIco1, SW_SHOWNOACTIVATE);
             DeleteObject(hbmOld);
             DeleteEnhMetaFile(hOldEMF);
@@ -961,8 +961,8 @@ void XG_SettingsDialog::UpdateBlockPreview(HWND hwnd)
         }
         if (hEMF1)
         {
-            SendMessageW(hIco1, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)nullptr);
-            SendMessageW(hIco2, STM_SETIMAGE, IMAGE_ENHMETAFILE, (LPARAM)hEMF1);
+            SendMessageW(hIco1, STM_SETIMAGE, IMAGE_BITMAP, 0);
+            SendMessageW(hIco2, STM_SETIMAGE, IMAGE_ENHMETAFILE, reinterpret_cast<LPARAM>(hEMF1));
             ShowWindow(hIco2, SW_SHOWNOACTIVATE);
             DeleteObject(hbmOld);
             DeleteEnhMetaFile(hOldEMF);
@@ -970,8 +970,8 @@ void XG_SettingsDialog::UpdateBlockPreview(HWND hwnd)
         }
     }
 
-    SendDlgItemMessageW(hwnd, ico1, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)0);
-    SendDlgItemMessageW(hwnd, ico2, STM_SETIMAGE, IMAGE_ENHMETAFILE, (LPARAM)0);
+    SendDlgItemMessageW(hwnd, ico1, STM_SETIMAGE, IMAGE_BITMAP, 0);
+    SendDlgItemMessageW(hwnd, ico2, STM_SETIMAGE, IMAGE_ENHMETAFILE, 0);
     DeleteObject(hbmOld);
     DeleteEnhMetaFile(hOldEMF);
 }

@@ -19,7 +19,7 @@ protected:
     BOOL m_bUpdating;
 
 public:
-    XG_RulePresetDialog() : m_bUpdating(FALSE)
+    XG_RulePresetDialog() noexcept : m_bUpdating(FALSE)
     {
     }
 
@@ -68,7 +68,7 @@ public:
         ComboBox_RealSetText(hCmb1, szText);
     }
 
-    BOOL GetCheckValue(HWND hwnd, INT& value)
+    BOOL GetCheckValue(HWND hwnd, INT& value) noexcept
     {
         value = 0;
         if (IsDlgButtonChecked(hwnd, chx1) == BST_CHECKED) value |= RULE_1;
@@ -84,7 +84,7 @@ public:
         return TRUE;
     }
 
-    void SetCheckValue(HWND hwnd, INT value)
+    void SetCheckValue(HWND hwnd, INT value) noexcept
     {
         value |= RULE_DONTDIVIDE; // 例外。
         if (value & RULE_1) CheckDlgButton(hwnd, chx1, BST_CHECKED);
@@ -99,7 +99,7 @@ public:
     }
 
     // コンボボックスの項目の高さ。
-    void OnMeasureItem(HWND hwnd, MEASUREITEMSTRUCT * lpMeasureItem)
+    void OnMeasureItem(HWND hwnd, MEASUREITEMSTRUCT * lpMeasureItem) noexcept
     {
         if (lpMeasureItem->CtlType != ODT_COMBOBOX)
             return;
@@ -114,7 +114,7 @@ public:
     }
 
     // コンボボックスの項目を描画する。
-    void OnDrawItem(HWND hwnd, const DRAWITEMSTRUCT * lpDrawItem)
+    void OnDrawItem(HWND hwnd, const DRAWITEMSTRUCT * lpDrawItem) noexcept
     {
         if (lpDrawItem->CtlType != ODT_COMBOBOX)
             return;

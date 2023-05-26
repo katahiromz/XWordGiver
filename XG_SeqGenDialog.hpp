@@ -9,7 +9,7 @@ extern std::deque<std::wstring> xg_dirs_save_to;
 extern INT xg_nNumberToGenerate;
 
 // 「保存先」参照。
-INT CALLBACK XgBrowseCallbackProc(HWND hwnd, UINT uMsg, LPARAM /*lParam*/, LPARAM /*lpData*/);
+INT CALLBACK XgBrowseCallbackProc(HWND hwnd, UINT uMsg, LPARAM /*lParam*/, LPARAM /*lpData*/) noexcept;
 
 // 保存先。
 extern WCHAR xg_szDir[MAX_PATH];
@@ -18,7 +18,7 @@ extern WCHAR xg_szDir[MAX_PATH];
 class XG_SeqGenDialog : public XG_Dialog
 {
 public:
-    XG_SeqGenDialog()
+    XG_SeqGenDialog() noexcept
     {
     }
 
@@ -230,7 +230,7 @@ public:
     }
 
     // 何かがドロップされた。
-    void OnDropFiles(HWND hwnd, HDROP hdrop)
+    void OnDropFiles(HWND hwnd, HDROP hdrop) noexcept
     {
         WCHAR szDir[MAX_PATH];
         DragQueryFile(hdrop, 0, szDir, _countof(szDir));

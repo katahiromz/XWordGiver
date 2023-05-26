@@ -59,12 +59,12 @@ public:
         m_hRgn = nullptr;
     }
 
-    virtual LPCTSTR GetWndClassName() const noexcept
+    virtual LPCTSTR GetWndClassName() const noexcept override
     {
         return TEXT("XG_BoxWindow");
     }
 
-    virtual void ModifyWndClassDx(WNDCLASSEX& wcx)
+    virtual void ModifyWndClassDx(WNDCLASSEX& wcx) override
     {
         wcx.style = CS_DBLCLKS;
     }
@@ -389,13 +389,13 @@ public:
 
         POINT pt = { x, y };
         SetForegroundWindow(hwnd);
-        UINT id = (UINT)TrackPopupMenu(hSubMenu,
+        UINT id = static_cast<UINT>(TrackPopupMenu(hSubMenu,
             TPM_LEFTALIGN | TPM_RIGHTBUTTON | TPM_RETURNCMD,
-            pt.x, pt.y, 0, hwnd, nullptr);
+            pt.x, pt.y, 0, hwnd, nullptr));
         DestroyMenu(hMenu);
         s_hwndSelected = hwnd;
         if (id)
-            PostMessage(m_hwndParent, WM_COMMAND, id, (LPARAM)hwnd);
+            PostMessage(m_hwndParent, WM_COMMAND, id, reinterpret_cast<LPARAM>(hwnd));
     }
 
     virtual BOOL Prop(HWND hwnd)

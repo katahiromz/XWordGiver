@@ -511,7 +511,7 @@ public:
 
             int m = 0;
             for (int k = lo; k <= hi; ++k, ++m) {
-                if (cand.size() <= size_t(m))
+                if (cand.size() <= static_cast<size_t>(m))
                     break;
                 xword.SetAt(k, xg_jCandPos, cand[m]);
             }
@@ -529,7 +529,7 @@ public:
 
             int m = 0;
             for (int k = lo; k <= hi; ++k, ++m) {
-                if (cand.size() <= size_t(m))
+                if (cand.size() <= static_cast<size_t>(m))
                     break;
                 xword.SetAt(xg_iCandPos, k, cand[m]);
             }

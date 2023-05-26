@@ -6,7 +6,7 @@
 class XG_SeqSolveDialog : public XG_Dialog
 {
 public:
-    XG_SeqSolveDialog()
+    XG_SeqSolveDialog() noexcept
     {
     }
 

@@ -11,7 +11,7 @@ class XG_ThemeDialog : public XG_Dialog
 public:
     inline static BOOL xg_bUpdatingPreset = FALSE;
 
-    XG_ThemeDialog()
+    XG_ThemeDialog() noexcept
     {
     }
 
@@ -108,7 +108,7 @@ public:
                     xg_str_trim(str);
                     if (str.empty())
                         continue;
-                    if (str[0] == 0xFEFF || str[0] == L';')
+                    if (str.at(0) == 0xFEFF || str.at(0) == L';')
                         continue;
                     ComboBox_AddString(hCmb1, str.c_str());
                 }
@@ -159,7 +159,7 @@ public:
                 ListView_GetItemText(hLst2, iItem, 1, szText2, _countof(szText2));
                 count += _wtoi(szText2);
             }
-            SetDlgItemInt(hwnd, stc1, INT(count), FALSE);
+            SetDlgItemInt(hwnd, stc1, static_cast<int>(count), FALSE);
         } else {
             HWND hLst3 = GetDlgItem(hwnd, lst3);
             iItem = ListView_FindItem(hLst3, -1, &find);
@@ -185,7 +185,7 @@ public:
                 ListView_GetItemText(hLst3, iItem, 1, szText2, _countof(szText2));
                 count += _wtoi(szText2);
             }
-            SetDlgItemInt(hwnd, stc2, INT(count), FALSE);
+            SetDlgItemInt(hwnd, stc2, static_cast<int>(count), FALSE);
         }
 
         // プリセットを更新。
@@ -208,7 +208,7 @@ public:
                 ListView_GetItemText(hLst2, iItem, 1, szText, _countof(szText));
                 count += _wtoi(szText);
             }
-            SetDlgItemInt(hwnd, stc1, INT(count), FALSE);
+            SetDlgItemInt(hwnd, stc1, static_cast<int>(count), FALSE);
         } else {
             HWND hLst3 = GetDlgItem(hwnd, lst3);
             INT iItem = ListView_GetNextItem(hLst3, -1, LVNI_ALL | LVNI_SELECTED);
@@ -221,7 +221,7 @@ public:
                 ListView_GetItemText(hLst3, iItem, 1, szText, _countof(szText));
                 count += _wtoi(szText);
             }
-            SetDlgItemInt(hwnd, stc2, INT(count), FALSE);
+            SetDlgItemInt(hwnd, stc2, static_cast<int>(count), FALSE);
         }
 
         // プリセットを更新。
@@ -267,14 +267,15 @@ public:
     }
 
     // タグの検索。
-    void OnEdt1(HWND hwnd)
+    void OnEdt1(HWND hwnd) noexcept
     {
         WCHAR szText[64];
         GetDlgItemTextW(hwnd, edt1, szText, _countof(szText));
 
         HWND hLst1 = GetDlgItem(hwnd, lst1);
 
-        INT iItem, nCount = ListView_GetItemCount(hLst1);
+        INT iItem;
+        const INT nCount = ListView_GetItemCount(hLst1);
         WCHAR szItem[XG_MAX_TAGSLEN];
         for (iItem = 0; iItem < nCount; ++iItem) {
             ListView_GetItemText(hLst1, iItem, 0, szItem, _countof(szItem));
@@ -334,11 +335,13 @@ public:
         case IDYES:
             SetPreset(hwnd);
             break;
+        default:
+            break;
         }
     }
 
     // リストビューの選択状態をはっきりさせる。
-    LRESULT OnCustomDraw(HWND hwnd, LPNMLVCUSTOMDRAW pCustomDraw)
+    LRESULT OnCustomDraw(HWND hwnd, LPNMLVCUSTOMDRAW pCustomDraw) noexcept
     {
         UINT uState;
         HWND hwndLV = pCustomDraw->nmcd.hdr.hwndFrom;
@@ -353,6 +356,8 @@ public:
                 return CDRF_NEWFONT;
             }
             break;
+        default:
+            break;
         }
         return CDRF_DODEFAULT;
     }
@@ -360,10 +365,9 @@ public:
     LRESULT OnNotify(HWND hwnd, int idFrom, LPNMHDR pnmhdr)
     {
         if (pnmhdr->code == NM_CUSTOMDRAW) {
-            LRESULT ret = OnCustomDraw(hwnd, (LPNMLVCUSTOMDRAW)pnmhdr);
+            LRESULT ret = OnCustomDraw(hwnd, reinterpret_cast<LPNMLVCUSTOMDRAW>(pnmhdr));
             return SetDlgMsgResult(hwnd, NM_CUSTOMDRAW, ret);
         }
-        LV_KEYDOWN *pKeyDown;
         switch (idFrom) {
         case lst1:
             if (pnmhdr->code == NM_DBLCLK) {
@@ -374,7 +378,7 @@ public:
             if (pnmhdr->code == NM_DBLCLK) {
                 RemoveTag(hwnd, TRUE);
             } else if (pnmhdr->code == LVN_KEYDOWN) {
-                pKeyDown = reinterpret_cast<LV_KEYDOWN *>(pnmhdr);
+                LV_KEYDOWN *pKeyDown = reinterpret_cast<LV_KEYDOWN *>(pnmhdr);
                 if (pKeyDown->wVKey == VK_DELETE)
                     RemoveTag(hwnd, TRUE);
             }
@@ -383,10 +387,12 @@ public:
             if (pnmhdr->code == NM_DBLCLK) {
                 RemoveTag(hwnd, FALSE);
             } else if (pnmhdr->code == LVN_KEYDOWN) {
-                pKeyDown = reinterpret_cast<LV_KEYDOWN *>(pnmhdr);
+                LV_KEYDOWN *pKeyDown = reinterpret_cast<LV_KEYDOWN *>(pnmhdr);
                 if (pKeyDown->wVKey == VK_DELETE)
                     RemoveTag(hwnd, FALSE);
             }
+            break;
+        default:
             break;
         }
         return 0;
@@ -394,7 +400,7 @@ public:
 
     // 「テーマ」ダイアログプロシージャ。
     virtual INT_PTR CALLBACK
-    DialogProcDx(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+    DialogProcDx(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) override
     {
         switch (uMsg)
         {
@@ -431,11 +437,11 @@ public:
                 continue;
 
             bool minus = false;
-            if (str[0] == L'-') {
+            if (str.at(0) == L'-') {
                 minus = true;
                 str = str.substr(1);
             }
-            if (str[0] == L'+') {
+            if (str.at(0) == L'+') {
                 str = str.substr(1);
             }
 

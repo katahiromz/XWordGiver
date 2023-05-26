@@ -68,6 +68,8 @@ public:
         {
             HANDLE_MSG(hwnd, WM_INITDIALOG, OnInitDialog);
             HANDLE_MSG(hwnd, WM_COMMAND, OnCommand);
+        default:
+            break;
         }
         return 0;
     }

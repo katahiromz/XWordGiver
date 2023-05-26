@@ -204,7 +204,7 @@ public:
     {
         HWND hLst1 = GetDlgItem(hwnd, lst1);
         INT i = ListBox_GetCurSel(hLst1);
-        if (i == LB_ERR || i >= INT(s_patterns.size()))
+        if (i == LB_ERR || i >= static_cast<int>(s_patterns.size()))
             return;
 
         auto& pat = s_patterns[i];
@@ -234,7 +234,7 @@ public:
     {
         HWND hLst1 = GetDlgItem(hwnd, lst1);
         INT i = ListBox_GetCurSel(hLst1);
-        if (i == LB_ERR || i >= INT(s_patterns.size()))
+        if (i == LB_ERR || i >= static_cast<int>(s_patterns.size()))
             return;
 
         auto& pat = s_patterns[i];
@@ -284,13 +284,13 @@ public:
     }
 
     // ダウンロードする。
-    void OnDownload(HWND hwnd)
+    void OnDownload(HWND hwnd) noexcept
     {
         ShellExecuteW(hwnd, nullptr, L"https://katahiromz.web.fc2.com/xword/patterns", nullptr, nullptr, SW_SHOWNORMAL);
     }
 
     XG_NOINLINE
-    INT GetType0()
+    INT GetType0() noexcept
     {
         if (IsDlgButtonChecked(m_hWnd, rad1) == BST_CHECKED)
             return rad1;
@@ -302,7 +302,7 @@ public:
     }
 
     XG_NOINLINE
-    INT GetType1()
+    INT GetType1() noexcept
     {
         if (IsDlgButtonChecked(m_hWnd, rad4) == BST_CHECKED)
             return rad4;
@@ -352,7 +352,7 @@ public:
 
     // WM_MEASUREITEM
     XG_NOINLINE
-    void OnMeasureItem(HWND hwnd, MEASUREITEMSTRUCT * lpMeasureItem)
+    void OnMeasureItem(HWND hwnd, MEASUREITEMSTRUCT * lpMeasureItem) noexcept
     {
         // リストボックスの lst1 か？
         if (lpMeasureItem->CtlType != ODT_LISTBOX || lpMeasureItem->CtlID != lst1)
@@ -377,11 +377,11 @@ public:
 
         // データがパターンのインデックスか？
         LPARAM lParam = lpDrawItem->itemData;
-        if ((int)lParam >= (int)s_patterns.size())
+        if (static_cast<int>(lParam) >= static_cast<int>(s_patterns.size()))
             return;
 
         // インデックスに対応するパターンを取得。
-        const auto& pat = s_patterns[(int)lParam];
+        const auto& pat = s_patterns[lParam];
         HDC hDC = lpDrawItem->hDC;
         RECT rcItem = lpDrawItem->rcItem;
 
@@ -397,7 +397,7 @@ public:
 
         // サイズを表すテキスト。
         WCHAR szText[64];
-        StringCbPrintfW(szText, sizeof(szText), L"%u x %u", int(pat.num_columns), int(pat.num_rows));
+        StringCbPrintfW(szText, sizeof(szText), L"%u x %u", static_cast<int>(pat.num_columns), static_cast<int>(pat.num_rows));
 
         // 背景とテキストを描画する。
         SelectObject(hDC, GetStockFont(DEFAULT_GUI_FONT));
@@ -490,7 +490,7 @@ public:
         }
     }
 
-    void OnMove(HWND hwnd, int x, int y)
+    void OnMove(HWND hwnd, int x, int y) noexcept
     {
         RECT rc;
         if (!IsMinimized(hwnd) && !IsMaximized(hwnd))
@@ -515,7 +515,7 @@ public:
         }
     }
 
-    void OnGetMinMaxInfo(HWND hwnd, LPMINMAXINFO lpMinMaxInfo)
+    void OnGetMinMaxInfo(HWND hwnd, LPMINMAXINFO lpMinMaxInfo) noexcept
     {
         lpMinMaxInfo->ptMinTrackSize.x = 600;
         lpMinMaxInfo->ptMinTrackSize.y = 300;

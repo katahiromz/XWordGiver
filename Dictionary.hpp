@@ -39,10 +39,7 @@ struct XG_WordData
     }
 
     // コピーコンストラクタ。
-    XG_WordData(const XG_WordData& wd) :
-        m_word(wd.m_word), m_hint(wd.m_hint)
-    {
-    }
+    XG_WordData(const XG_WordData& wd) = default;
 
     // コピーコンストラクタ。
     XG_WordData(XG_WordData&& wd) noexcept :
@@ -62,7 +59,7 @@ struct XG_WordData
         m_hint = std::move(wd.m_hint);
     }
 
-    void clear() {
+    void clear() noexcept {
         m_word.clear();
         m_hint.clear();
     }

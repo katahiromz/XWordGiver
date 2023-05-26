@@ -305,10 +305,10 @@ bool __fastcall XgLoadDictFile(LPCWSTR pszFile)
             xg_nDictMaxWordLen = 2;
             xg_nDictMinWordLen = 255;
             for (auto& pair : xg_word_length_histgram) {
-                if (xg_nDictMaxWordLen < (INT)pair.first)
-                    xg_nDictMaxWordLen = (INT)pair.first;
-                if (xg_nDictMinWordLen > (INT)pair.first)
-                    xg_nDictMinWordLen = (INT)pair.first;
+                if (xg_nDictMaxWordLen < static_cast<int>(pair.first))
+                    xg_nDictMaxWordLen = static_cast<int>(pair.first);
+                if (xg_nDictMinWordLen > static_cast<int>(pair.first))
+                    xg_nDictMinWordLen = static_cast<int>(pair.first);
             }
         }
 

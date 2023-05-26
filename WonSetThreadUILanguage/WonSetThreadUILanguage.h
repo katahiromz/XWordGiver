@@ -15,8 +15,8 @@ static inline LANGID WonGetThreadUILanguage()
     if (IsWindowsVistaOrGreater())
     {
         if (!s_fn)
-            s_fn = (FN_GetThreadUILanguage)
-                GetProcAddress(GetModuleHandleA("kernel32"), "GetThreadUILanguage");
+            s_fn = reinterpret_cast<FN_GetThreadUILanguage>(
+                GetProcAddress(GetModuleHandleA("kernel32"), "GetThreadUILanguage"));
         if (s_fn)
             return (*s_fn)();
     }
@@ -31,8 +31,8 @@ static inline LANGID WonSetThreadUILanguage(LANGID LangID)
     if (IsWindowsVistaOrGreater())
     {
         if (!s_fn)
-            s_fn = (FN_SetThreadUILanguage)
-                GetProcAddress(GetModuleHandleA("kernel32"), "SetThreadUILanguage");
+            s_fn = reinterpret_cast<FN_SetThreadUILanguage>(
+                GetProcAddress(GetModuleHandleA("kernel32"), "SetThreadUILanguage"));
         if (s_fn)
             return (*s_fn)(LangID);
     }

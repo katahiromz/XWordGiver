@@ -43,8 +43,8 @@ public:
             for (size_t i = 0; i < xg_vecTateHints.size(); ++i) {
                 if (xg_vecTateHints.size() <= i || xg_ahwndTateEdits.size() <= i)
                     break;
-                if (xg_vecTateHints[i].m_number == nTate) {
-                    hwndTate = xg_ahwndTateEdits[i];
+                if (xg_vecTateHints.at(i).m_number == nTate) {
+                    hwndTate = xg_ahwndTateEdits.at(i);
                     break;
                 }
             }
@@ -53,8 +53,8 @@ public:
             for (size_t i = 0; i < xg_vecYokoHints.size(); ++i) {
                 if (xg_vecYokoHints.size() <= i || xg_ahwndYokoEdits.size() <= i)
                     break;
-                if (xg_vecYokoHints[i].m_number == nYoko) {
-                    hwndYoko = xg_ahwndYokoEdits[i];
+                if (xg_vecYokoHints.at(i).m_number == nYoko) {
+                    hwndYoko = xg_ahwndYokoEdits.at(i);
                     break;
                 }
             }
@@ -105,12 +105,12 @@ public:
 
         if (::IsWindow(xg_hHintsWnd)) {
             for (size_t i = 0; i < xg_vecTateHints.size(); ++i) {
-                if (::SendMessageW(xg_ahwndTateEdits[i], EM_GETMODIFY, 0, 0)) {
+                if (::SendMessageW(xg_ahwndTateEdits.at(i), EM_GETMODIFY, 0, 0)) {
                     return true;
                 }
             }
             for (size_t i = 0; i < xg_vecYokoHints.size(); ++i) {
-                if (::SendMessageW(xg_ahwndYokoEdits[i], EM_GETMODIFY, 0, 0)) {
+                if (::SendMessageW(xg_ahwndYokoEdits.at(i), EM_GETMODIFY, 0, 0)) {
                     return true;
                 }
             }
@@ -122,10 +122,10 @@ public:
     static void SetHintsData(void)
     {
         for (size_t i = 0; i < xg_vecTateHints.size(); ++i) {
-            ::SetWindowTextW(xg_ahwndTateEdits[i], xg_vecTateHints[i].m_strHint.data());
+            ::SetWindowTextW(xg_ahwndTateEdits.at(i), xg_vecTateHints.at(i).m_strHint.data());
         }
         for (size_t i = 0; i < xg_vecYokoHints.size(); ++i) {
-            ::SetWindowTextW(xg_ahwndYokoEdits[i], xg_vecYokoHints[i].m_strHint.data());
+            ::SetWindowTextW(xg_ahwndYokoEdits.at(i), xg_vecYokoHints.at(i).m_strHint.data());
         }
     }
 
@@ -136,21 +136,21 @@ public:
         if (::IsWindow(xg_hHintsWnd)) {
             WCHAR sz[512];
             for (size_t i = 0; i < xg_vecTateHints.size(); ++i) {
-                if (::SendMessageW(xg_ahwndTateEdits[i], EM_GETMODIFY, 0, 0)) {
+                if (::SendMessageW(xg_ahwndTateEdits.at(i), EM_GETMODIFY, 0, 0)) {
                     updated = true;
-                    ::GetWindowTextW(xg_ahwndTateEdits[i], sz, 
+                    ::GetWindowTextW(xg_ahwndTateEdits.at(i), sz, 
                                      static_cast<int>(_countof(sz)));
-                    xg_vecTateHints[i].m_strHint = sz;
-                    ::SendMessageW(xg_ahwndTateEdits[i], EM_SETMODIFY, FALSE, 0);
+                    xg_vecTateHints.at(i).m_strHint = sz;
+                    ::SendMessageW(xg_ahwndTateEdits.at(i), EM_SETMODIFY, FALSE, 0);
                 }
             }
             for (size_t i = 0; i < xg_vecYokoHints.size(); ++i) {
-                if (::SendMessageW(xg_ahwndYokoEdits[i], EM_GETMODIFY, 0, 0)) {
+                if (::SendMessageW(xg_ahwndYokoEdits.at(i), EM_GETMODIFY, 0, 0)) {
                     updated = true;
-                    ::GetWindowTextW(xg_ahwndYokoEdits[i], sz, 
+                    ::GetWindowTextW(xg_ahwndYokoEdits.at(i), sz, 
                                      static_cast<int>(_countof(sz)));
-                    xg_vecYokoHints[i].m_strHint = sz;
-                    ::SendMessageW(xg_ahwndTateEdits[i], EM_SETMODIFY, FALSE, 0);
+                    xg_vecYokoHints.at(i).m_strHint = sz;
+                    ::SendMessageW(xg_ahwndTateEdits.at(i), EM_SETMODIFY, FALSE, 0);
                 }
             }
         }
@@ -191,9 +191,9 @@ public:
             StringCbPrintf(label, sizeof(label), XgLoadStringDx1(IDS_DOWNNUMBER), 100);
             std::wstring strLabel = label;
             ::SelectObject(hdc, ::GetStockObject(SYSTEM_FIXED_FONT));
-            ::GetTextExtentPoint32W(hdc, strLabel.data(), int(strLabel.size()), &size1);
+            ::GetTextExtentPoint32W(hdc, strLabel.data(), static_cast<int>(strLabel.size()), &size1);
             ::SelectObject(hdc, xg_hHintsUIFont);
-            ::GetTextExtentPoint32W(hdc, strLabel.data(), int(strLabel.size()), &size2);
+            ::GetTextExtentPoint32W(hdc, strLabel.data(), static_cast<int>(strLabel.size()), &size2);
             ::DeleteDC(hdc);
         }
 
@@ -211,7 +211,7 @@ public:
         }
         if (rcClient.Width() - size2.cx - 8 > 0) {
             for (size_t i = 0; i < xg_vecTateHints.size(); ++i) {
-                ::GetWindowTextW(xg_ahwndTateEdits[i], szText,
+                ::GetWindowTextW(xg_ahwndTateEdits.at(i), szText,
                                  _countof(szText));
                 MRect rcCtrl(MPoint(size2.cx, y),
                              MSize(rcClient.Width() - size2.cx - 8, 0));
@@ -223,7 +223,7 @@ public:
                     DT_LEFT | DT_EDITCONTROL | DT_CALCRECT | DT_WORDBREAK);
                 rcCtrl.right = rcClient.right;
                 rcCtrl.bottom += 8;
-                xg_svHintsScrollView.AddCtrlInfo(xg_ahwndTateEdits[i], rcCtrl);
+                xg_svHintsScrollView.AddCtrlInfo(xg_ahwndTateEdits.at(i), rcCtrl);
                 rcCtrl.left = 0;
                 rcCtrl.right = size2.cx;
                 xg_svHintsScrollView.AddCtrlInfo(xg_ahwndTateStatics[i], rcCtrl);
@@ -239,7 +239,7 @@ public:
         }
         if (rcClient.Width() - size2.cx - 8 > 0) {
             for (size_t i = 0; i < xg_vecYokoHints.size(); ++i) {
-                ::GetWindowTextW(xg_ahwndYokoEdits[i], szText, _countof(szText));
+                ::GetWindowTextW(xg_ahwndYokoEdits.at(i), szText, _countof(szText));
                 MRect rcCtrl(MPoint(size2.cx, y),
                              MSize(rcClient.Width() - size2.cx - 8, 0));
                 if (szText[0] == 0) {
@@ -250,10 +250,10 @@ public:
                     DT_LEFT | DT_EDITCONTROL | DT_CALCRECT | DT_WORDBREAK);
                 rcCtrl.right = rcClient.right;
                 rcCtrl.bottom += 8;
-                xg_svHintsScrollView.AddCtrlInfo(xg_ahwndYokoEdits[i], rcCtrl);
+                xg_svHintsScrollView.AddCtrlInfo(xg_ahwndYokoEdits.at(i), rcCtrl);
                 rcCtrl.left = 0;
                 rcCtrl.right = size2.cx;
-                xg_svHintsScrollView.AddCtrlInfo(xg_ahwndYokoStatics[i], rcCtrl);
+                xg_svHintsScrollView.AddCtrlInfo(xg_ahwndYokoStatics.at(i), rcCtrl);
                 y += rcCtrl.Height();
             }
         }
@@ -304,10 +304,9 @@ public:
             }
             // ハイライト。
             {
-                size_t i;
                 bool found = false, vertical = false;
+                size_t i = 0;
                 if (!found) {
-                    i = 0;
                     for (auto& edit : xg_ahwndTateEdits) {
                         if (edit == hwnd) {
                             found = true;
@@ -329,11 +328,7 @@ public:
                     }
                 }
                 if (found) {
-                    INT number;
-                    if (vertical)
-                        number = xg_vecTateHints[i].m_number;
-                    else
-                        number = xg_vecYokoHints[i].m_number;
+                    INT number = (vertical ? xg_vecTateHints.at(i).m_number : xg_vecYokoHints.at(i).m_number);
                     PostMessageW(xg_hMainWnd, XGWM_HIGHLIGHT, TRUE, MAKELPARAM(number, vertical));
                 }
             }
@@ -343,7 +338,7 @@ public:
 
             // フォーカスを失うコントロールを再描画する。
             if (wParam)
-                InvalidateRect((HWND)wParam, nullptr, TRUE);
+                InvalidateRect(reinterpret_cast<HWND>(wParam), nullptr, TRUE);
 
             return ::CallWindowProc(data->m_fnOldWndProc, hwnd, uMsg, wParam, lParam);
 
@@ -367,7 +362,7 @@ public:
 
             // フォーカスを失うコントロールを再描画する。
             if (wParam)
-                InvalidateRect((HWND)wParam, nullptr, TRUE);
+                InvalidateRect(reinterpret_cast<HWND>(wParam), nullptr, TRUE);
 
             return ::CallWindowProc(data->m_fnOldWndProc, hwnd, uMsg, wParam, lParam);
 
@@ -597,15 +592,15 @@ public:
         if (codeNotify == STN_CLICKED) {
             for (size_t i = 0; i < xg_vecTateHints.size(); ++i) {
                 if (xg_ahwndTateStatics[i] == hwndCtl) {
-                    ::SendMessageW(xg_ahwndTateEdits[i], EM_SETSEL, 0, -1);
-                    ::SetFocus(xg_ahwndTateEdits[i]);
+                    ::SendMessageW(xg_ahwndTateEdits.at(i), EM_SETSEL, 0, -1);
+                    ::SetFocus(xg_ahwndTateEdits.at(i));
                     return;
                 }
             }
             for (size_t i = 0; i < xg_vecYokoHints.size(); ++i) {
-                if (xg_ahwndYokoStatics[i] == hwndCtl) {
-                    ::SendMessageW(xg_ahwndYokoEdits[i], EM_SETSEL, 0, -1);
-                    ::SetFocus(xg_ahwndYokoEdits[i]);
+                if (xg_ahwndYokoStatics.at(i) == hwndCtl) {
+                    ::SendMessageW(xg_ahwndYokoEdits.at(i), EM_SETSEL, 0, -1);
+                    ::SetFocus(xg_ahwndYokoEdits.at(i));
                     return;
                 }
             }
