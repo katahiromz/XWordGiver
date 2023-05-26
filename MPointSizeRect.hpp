@@ -32,8 +32,8 @@ inline VOID GetScreenRectDx(LPRECT prc) noexcept
 #endif
     const INT x = GetSystemMetrics(SM_XVIRTUALSCREEN);
     const INT y = GetSystemMetrics(SM_YVIRTUALSCREEN);
-    const INT cx = GetSystemMetrics(SM_CXVIRTUALSCREEN);
-    const INT cy = GetSystemMetrics(SM_CYVIRTUALSCREEN);
+    INT cx = GetSystemMetrics(SM_CXVIRTUALSCREEN);
+    INT cy = GetSystemMetrics(SM_CYVIRTUALSCREEN);
     if (cx)
     {
         SetRect(prc, x, y, x + cx, y + cy);
@@ -70,7 +70,7 @@ public:
     VOID    SetPoint(INT x_, INT y_) noexcept;
     MPoint  operator+(SIZE siz) const noexcept;
     MPoint  operator-(SIZE siz) const noexcept;
-    MPoint  operator-() const;
+    MPoint  operator-() const noexcept;
     MPoint  operator+(POINT pt) const noexcept;
     MSize   operator-(POINT pt) const noexcept;
     MRect   operator+(LPCRECT prc) const noexcept;
@@ -188,10 +188,10 @@ inline MPoint::MPoint(INT x_, INT y_) noexcept
     { x = x_; y = y_; }
 
 inline MPoint::MPoint(POINT pt) noexcept
-    { *reinterpret_cast<POINT&>(*this) = pt; }
+    { reinterpret_cast<POINT&>(*this) = pt; }
 
 inline MPoint::MPoint(SIZE siz) noexcept
-    { *reinterpret_cast<SIZE&>(*this) = siz; }
+    { reinterpret_cast<SIZE&>(*this) = siz; }
 
 inline MPoint::MPoint(DWORD dwPoint) noexcept
     { x = GET_X_LPARAM(dwPoint); y = GET_Y_LPARAM(dwPoint); }
@@ -262,10 +262,10 @@ inline MSize::MSize(INT cx_, INT cy_) noexcept
     { cx = cx_; cy = cy_; }
 
 inline MSize::MSize(SIZE siz) noexcept
-    { *reinterpret_cast<SIZE&>(*this) = siz; }
+    { reinterpret_cast<SIZE&>(*this) = siz; }
 
 inline MSize::MSize(POINT pt) noexcept
-    { *reinterpret_cast<POINT&>(*this) = pt; }
+    { reinterpret_cast<POINT&>(*this) = pt; }
 
 inline MSize::MSize(DWORD dwSize) noexcept
     { cx = GET_X_LPARAM(dwSize); cy = GET_Y_LPARAM(dwSize); }

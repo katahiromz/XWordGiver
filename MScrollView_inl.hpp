@@ -22,8 +22,8 @@ MScrollCtrlInfo::MScrollCtrlInfo(HWND hwndCtrl, const MRect& rcCtrl) noexcept :
 }
 
 MZC_INLINE MScrollCtrlInfo::MScrollCtrlInfo(
-    HWND hwndCtrl, const MPoint& ptCtrl, const MSize& sizCtrl) :
-    m_hwndCtrl(hwndCtrl), m_rcCtrl(ptCtrl, sizCtrl) noexcept
+    HWND hwndCtrl, const MPoint& ptCtrl, const MSize& sizCtrl) noexcept :
+    m_hwndCtrl(hwndCtrl), m_rcCtrl(ptCtrl, sizCtrl)
 {
 }
 

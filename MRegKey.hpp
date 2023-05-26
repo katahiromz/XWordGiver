@@ -169,7 +169,7 @@ inline LONG MRegKey::QueryStruct(LPCTSTR pszValueName, T_STRUCT& data)
 }
 
 template <typename T_STRUCT>
-inline LONG MRegKey::SetStruct(LPCTSTR pszValueName, const T_STRUCT& data)
+inline LONG MRegKey::SetStruct(LPCTSTR pszValueName, const T_STRUCT& data) noexcept
 {
     assert(m_hKey);
     const DWORD cbData = static_cast<DWORD>(sizeof(data));
@@ -178,7 +178,7 @@ inline LONG MRegKey::SetStruct(LPCTSTR pszValueName, const T_STRUCT& data)
 }
 
 template <typename T_CONTAINER>
-LONG MRegKey::QueryMultiSz(LPCTSTR pszValueName, T_CONTAINER& container)
+LONG MRegKey::QueryMultiSz(LPCTSTR pszValueName, T_CONTAINER& container) noexcept
 {
     container.clear();
 
@@ -221,7 +221,7 @@ LONG MRegKey::QueryMultiSz(LPCTSTR pszValueName, T_CONTAINER& container)
 
 template <typename T_CONTAINER>
 inline LONG MRegKey::SetMultiSz(
-    LPCTSTR pszValueName, const T_CONTAINER& container)
+    LPCTSTR pszValueName, const T_CONTAINER& container) noexcept
 {
     typename T_CONTAINER::value_type         str;
     typename T_CONTAINER::const_iterator     it, end;
@@ -246,7 +246,7 @@ inline LONG MRegKey::SetMultiSz(
 }
 
 template <typename T_STRING>
-LONG MRegKey::QuerySz(LPCTSTR pszValueName, T_STRING& strValue)
+LONG MRegKey::QuerySz(LPCTSTR pszValueName, T_STRING& strValue) noexcept
 {
     LONG result;
     strValue.clear();
@@ -279,7 +279,7 @@ LONG MRegKey::QuerySz(LPCTSTR pszValueName, T_STRING& strValue)
 }
 
 template <typename T_STRING>
-LONG MRegKey::QueryExpandSz(LPCTSTR pszValueName, T_STRING& strValue)
+LONG MRegKey::QueryExpandSz(LPCTSTR pszValueName, T_STRING& strValue) noexcept
 {
     LONG result;
     strValue.clear();
