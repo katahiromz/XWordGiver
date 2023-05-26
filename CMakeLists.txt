@@ -68,12 +68,13 @@ endif()
 
 ##############################################################################
 
-if (uppercase_CMAKE_BUILD_TYPE MATCHES "DEBUG")
-    if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D_GLIBCXX_DEBUG -Wall -Wextra -Wshadow -Wconversion -Wfloat-equal -ftrapv -fstack-protector-all -fno-omit-frame-pointer -Wno-missing-field-initializers -Wno-unused-parameter -Wno-cast-function-type")
-    endif()
-    if (MSVC)
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /Zi /fsanitize=address")
+option(DETAILED_CHECK "Enable detailed check" OFF)
+
+if (DETAILED_CHECK)
+    if (uppercase_CMAKE_BUILD_TYPE MATCHES "DEBUG")
+        if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+            set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D_GLIBCXX_DEBUG -Wall -Wextra -Wshadow -Wconversion -Wfloat-equal -ftrapv -fstack-protector-all -fno-omit-frame-pointer -Wno-missing-field-initializers -Wno-unused-parameter -Wno-cast-function-type")
+        endif()
     endif()
 endif()
 
