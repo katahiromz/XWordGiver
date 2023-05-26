@@ -2068,10 +2068,9 @@ XgGetCandidatesNoAddBlack(std::vector<std::wstring>& cands, const std::wstring& 
 }
 
 // 解か？
-bool __fastcall XG_Board::IsSolution() const noexcept
+bool __fastcall XG_Board::IsSolution() const
 {
-    const int nRows = xg_nRows;
-    const int nCols = xg_nCols;
+    const auto nRows = xg_nRows, nCols = xg_nCols;
 
     // 空きマスがあれば解ではない。
 #if 1
@@ -3171,7 +3170,7 @@ XG_ThreadInfo *__fastcall XgGetThreadInfo(void) noexcept
 }
 
 // 再帰する。
-void __fastcall XgSolveXWord_AddBlackRecurse(const XG_Board& xw) noexcept
+void __fastcall XgSolveXWord_AddBlackRecurse(const XG_Board& xw)
 {
     // すでに解かれているなら、終了。
     if (xg_bSolved)
@@ -3520,7 +3519,7 @@ void __fastcall XgSolveXWord_AddBlackRecurse(const XG_Board& xw) noexcept
 }
 
 // 再帰する（黒マス追加なし）。
-void __fastcall XgSolveXWord_NoAddBlackRecurse(const XG_Board& xw) noexcept
+void __fastcall XgSolveXWord_NoAddBlackRecurse(const XG_Board& xw)
 {
     // すでに解かれているなら、終了。
     if (xg_bSolved)
@@ -4749,8 +4748,8 @@ std::unordered_set<XG_Pos> XgGetSlot(int number, BOOL vertical)
 }
 
 // ハイライト色。
-const COLORREF c_rgbHighlight = RGB(255, 255, 140);
-const COLORREF c_rgbHighlightAndDblFrame = RGB(255, 155, 100);
+constexpr COLORREF c_rgbHighlight = RGB(255, 255, 140);
+constexpr COLORREF c_rgbHighlightAndDblFrame = RGB(255, 155, 100);
 
 // マスの数字を描画する。
 void __fastcall
@@ -7340,7 +7339,7 @@ unsigned __stdcall XgGenerateBlacks(void *param) noexcept
 }
 
 // マルチスレッド用の関数。
-unsigned __stdcall XgGenerateBlacksSmart(void *param) noexcept
+unsigned __stdcall XgGenerateBlacksSmart(void *param)
 {
     if (xg_bBlacksGenerated)
         return 1;

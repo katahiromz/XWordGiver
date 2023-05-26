@@ -118,7 +118,7 @@ public:
             return FALSE;
         }
         // 多すぎる？
-        const size_t max_num = 300;
+        constexpr size_t max_num = 300;
         if (s_words.size() > max_num) {
             WCHAR szText[128];
             StringCchPrintfW(szText, _countof(szText), XgLoadStringDx1(IDS_TOOMANYWORDS), static_cast<int>(max_num));

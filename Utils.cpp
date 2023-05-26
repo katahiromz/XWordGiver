@@ -321,7 +321,7 @@ XgCenterMessageBoxIndirectW(LPMSGBOXPARAMS lpMsgBoxParams) noexcept
 }
 
 // ReadMeを開く。
-void __fastcall XgOpenReadMe(HWND hwnd)
+void __fastcall XgOpenReadMe(HWND hwnd) noexcept
 {
     // 実行ファイルのパスを取得。
     WCHAR szPath[MAX_PATH];
@@ -336,7 +336,7 @@ void __fastcall XgOpenReadMe(HWND hwnd)
 }
 
 // Licenseを開く。
-void __fastcall XgOpenLicense(HWND hwnd)
+void __fastcall XgOpenLicense(HWND hwnd) noexcept
 {
     // 実行ファイルのパスを取得。
     WCHAR szPath[MAX_PATH];

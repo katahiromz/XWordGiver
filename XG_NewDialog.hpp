@@ -3,9 +3,9 @@
 #include "XG_Window.hpp"
 
 // 盤を特定の文字で埋め尽くす。
-void XgNewCells(HWND hwnd, WCHAR ch, INT nRows, INT nCols);
+void XgNewCells(HWND hwnd, WCHAR ch, int nRows, int nCols);
 // 盤のサイズを変更する。
-void XgResizeCells(HWND hwnd, INT nNewRows, INT nNewCols);
+void XgResizeCells(HWND hwnd, int nNewRows, int nNewCols);
 
 // [新規作成]ダイアログ。
 class XG_NewDialog : public XG_Dialog
@@ -40,7 +40,7 @@ public:
 
     void OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT codeNotify)
     {
-        INT n1, n2;
+        int n1, n2;
         switch (id)
         {
         case IDOK:

@@ -15,7 +15,7 @@ public:
     BOOL m_bTextColor = FALSE;
     BOOL m_bBgColor = FALSE;
     std::wstring m_strFontName;
-    INT m_nFontSizeInPoints = 0;
+    int m_nFontSizeInPoints = 0;
 
     BOOL GetTextColor() noexcept
     {
@@ -49,7 +49,7 @@ public:
         m_hwndBgColor.SetColor(CLR_INVALID);
     }
 
-    static INT CALLBACK EnumFontsProc(
+    static int CALLBACK EnumFontsProc(
         const LOGFONTW *lplf,
         const TEXTMETRICW *lptm,
         DWORD dwType,

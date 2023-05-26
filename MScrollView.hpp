@@ -80,8 +80,8 @@ public:
     void UpdateAll() noexcept;
 
     // NOTE: Call MScrollView::Scroll on parent's WM_HSCROLL/WM_VSCROLL.
-    void Scroll(INT bar, INT nSB_, INT pos) noexcept;
-    INT GetNextPos(INT bar, INT nSB_, INT pos) const noexcept;
+    void Scroll(int bar, int nSB_, int pos) noexcept;
+    int GetNextPos(int bar, int nSB_, int pos) const noexcept;
 
           MScrollCtrlInfo& operator[](size_t index) noexcept;
     const MScrollCtrlInfo& operator[](size_t index) const noexcept;

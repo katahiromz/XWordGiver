@@ -6,10 +6,10 @@
 extern std::deque<std::wstring> xg_dirs_save_to;
 
 // 連続生成の場合、問題を生成する数。
-extern INT xg_nNumberToGenerate;
+extern int xg_nNumberToGenerate;
 
 // 「保存先」参照。
-INT CALLBACK XgBrowseCallbackProc(HWND hwnd, UINT uMsg, LPARAM /*lParam*/, LPARAM /*lpData*/) noexcept;
+int CALLBACK XgBrowseCallbackProc(HWND hwnd, UINT uMsg, LPARAM /*lParam*/, LPARAM /*lpData*/) noexcept;
 
 // 保存先。
 extern WCHAR xg_szDir[MAX_PATH];
@@ -88,7 +88,7 @@ public:
 
     void OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT codeNotify)
     {
-        INT n1, n2, n3;
+        int n1, n2, n3;
         switch (id)
         {
         case IDOK:

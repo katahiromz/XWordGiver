@@ -45,7 +45,7 @@ _layout_MoveGrip(LAYOUT_DATA *pData, HDWP hDwp OPTIONAL)
         return hDwp;
 
     SIZE size = { GetSystemMetrics(SM_CXVSCROLL), GetSystemMetrics(SM_CYHSCROLL) };
-    const UINT uFlags = SWP_NOACTIVATE | SWP_NOOWNERZORDER | SWP_NOZORDER;
+    constexpr auto uFlags = SWP_NOACTIVATE | SWP_NOOWNERZORDER | SWP_NOZORDER;
     RECT rcClient;
     GetClientRect(pData->m_hwndParent, &rcClient);
 
@@ -75,7 +75,7 @@ LayoutShowGrip(LAYOUT_DATA *pData, BOOL bShow)
 
     if (pData->m_hwndGrip == nullptr)
     {
-        const auto style = WS_CHILD | WS_CLIPSIBLINGS | SBS_SIZEGRIP;
+        constexpr auto style = WS_CHILD | WS_CLIPSIBLINGS | SBS_SIZEGRIP;
         pData->m_hwndGrip = CreateWindowExW(0, L"SCROLLBAR", nullptr, style,
                                             0, 0, 0, 0, pData->m_hwndParent,
                                             nullptr, GetModuleHandleW(nullptr), nullptr);
@@ -205,7 +205,7 @@ LayoutEnableResize(LAYOUT_DATA *pData, BOOL bEnable)
 }
 
 static __inline LAYOUT_DATA *
-LayoutInit(HWND hwndParent, const LAYOUT_INFO *pLayouts, INT cLayouts)
+LayoutInit(HWND hwndParent, const LAYOUT_INFO *pLayouts, int cLayouts)
 {
     BOOL bShowGrip;
     SIZE_T cb;

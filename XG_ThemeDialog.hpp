@@ -18,7 +18,7 @@ public:
     // タグリストボックスを初期化。
     void XgInitTagListView(HWND hwndLV)
     {
-        const DWORD exstyle = LVS_EX_FULLROWSELECT | LVS_EX_INFOTIP | LVS_EX_LABELTIP | LVS_EX_GRIDLINES;
+        constexpr auto exstyle = LVS_EX_FULLROWSELECT | LVS_EX_INFOTIP | LVS_EX_LABELTIP | LVS_EX_GRIDLINES;
         ListView_SetExtendedListViewStyleEx(hwndLV, exstyle, exstyle);
 
         LV_COLUMN column = { LVCF_TEXT | LVCF_WIDTH | LVCF_SUBITEM | LVCF_FMT };
@@ -280,7 +280,7 @@ public:
         for (iItem = 0; iItem < nCount; ++iItem) {
             ListView_GetItemText(hLst1, iItem, 0, szItem, _countof(szItem));
             if (StrStr(szItem, szText)) {
-                const UINT state = LVIS_FOCUSED | LVIS_SELECTED;
+                constexpr auto state = LVIS_FOCUSED | LVIS_SELECTED;
                 ListView_SetItemState(hLst1, iItem, state, state);
                 ListView_EnsureVisible(hLst1, iItem, FALSE);
                 break;

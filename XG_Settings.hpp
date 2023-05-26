@@ -15,10 +15,10 @@ extern BOOL xg_bHiragana;
 extern BOOL xg_bLowercase;
 
 // 文字の大きさ（％）。
-extern INT xg_nCellCharPercents;
+extern int xg_nCellCharPercents;
 
 // 小さい文字の大きさ（％）。
-extern INT xg_nSmallCharPercents;
+extern int xg_nSmallCharPercents;
 
 // 線の太さ（pt）。
 extern float xg_nLineWidthInPt;

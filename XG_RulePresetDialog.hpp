@@ -147,8 +147,8 @@ public:
         InflateRect(&rcItem, -3, -3); // 項目を小さくする。
 
         // テキスト描画。
-        const UINT uFormat = DT_SINGLELINE | DT_LEFT | DT_VCENTER | DT_NOPREFIX;
         SetBkMode(hDC, TRANSPARENT);
+        constexpr auto uFormat = DT_SINGLELINE | DT_LEFT | DT_VCENTER | DT_NOPREFIX;
         DrawTextW(hDC, szText, -1, &rcItem, uFormat);
 
         // フォーカスを描画。

@@ -92,7 +92,7 @@ constexpr std::array<T, sizeof...(Args)> make_array(Args&&... args)
 #define XG_DEF_SMALL_CHAR_SIZE 30
 
 // 表示用に描画するか？（XgGetXWordExtentとXgDrawXWordとXgCreateXWordImageで使う）。
-extern INT xg_nForDisplay;
+extern int xg_nForDisplay;
 struct ForDisplay {
     ForDisplay() noexcept {
         ++xg_nForDisplay;
@@ -103,7 +103,7 @@ struct ForDisplay {
 };
 
 // ズーム比率(%)。
-extern INT xg_nZoomRate;
+extern int xg_nZoomRate;
 // セルの大きさ。
 #define xg_nCellSize        48
 // 上下左右のマージン。
@@ -135,13 +135,13 @@ extern bool xg_bDrawFrameForMarkedCell;
 extern bool xg_bCharFeed;
 
 // スマート解決のとき、配置できる最大単語長。
-extern INT xg_nMaxWordLen;
+extern int xg_nMaxWordLen;
 
 // ナンクロモードか？
 extern bool xg_bNumCroMode;
 // ナンクロモードの場合、写像を保存する。
-extern std::unordered_map<WCHAR, INT> xg_mapNumCro1;
-extern std::unordered_map<INT, WCHAR> xg_mapNumCro2;
+extern std::unordered_map<WCHAR, int> xg_mapNumCro1;
+extern std::unordered_map<int, WCHAR> xg_mapNumCro2;
 // ナンクロの写像を生成する。
 void __fastcall XgMakeItNumCro(HWND hwnd);
 // ナンクロの写像が正当か確認する。
@@ -262,7 +262,7 @@ enum RULES
 #define XG_DEFAULT_RULES (RULE_DONTDIVIDE | RULE_POINTSYMMETRY)
 
 // ルール群。
-extern INT xg_nRules;
+extern int xg_nRules;
 
 // 正当なルール。
 #define XG_VALID_RULES ( \
@@ -405,8 +405,8 @@ void __fastcall XgUpdateHints(void);
 // クロスワード データ。
 
 // クロスワードのサイズ。
-extern volatile INT& xg_nRows;
-extern volatile INT& xg_nCols;
+extern volatile int& xg_nRows;
+extern volatile int& xg_nCols;
 
 class XG_Board
 {
@@ -453,7 +453,7 @@ public:
     // リセットしてサイズを設定する。
     void __fastcall ResetAndSetSize(int nRows, int nCols);
     // 解か？
-    bool __fastcall IsSolution() const noexcept;
+    bool __fastcall IsSolution() const;
     // 正当かどうか？
     bool __fastcall IsValid() const;
     // 正当かどうか？（簡略版、黒マス追加なし）
@@ -527,8 +527,8 @@ public:
 class XG_BoardEx : public XG_Board
 {
 public:
-    volatile INT m_nRows;
-    volatile INT m_nCols;
+    volatile int m_nRows;
+    volatile int m_nCols;
 
     XG_BoardEx() noexcept : XG_Board(), m_nRows(7), m_nCols(7) {
     }
@@ -564,13 +564,13 @@ public:
     void ReCount() noexcept;
 
     // 行を挿入する。
-    void InsertRow(INT iRow);
+    void InsertRow(int iRow);
     // 列を挿入する。
-    void InsertColumn(INT jCol);
+    void InsertColumn(int jCol);
     // 行を削除する。
-    void DeleteRow(INT iRow);
+    void DeleteRow(int iRow);
     // 列を削除する。
-    void DeleteColumn(INT jCol);
+    void DeleteColumn(int jCol);
     // マスの内容を取得する。
     WCHAR __fastcall GetAt(int ij) const noexcept;
     // マスの内容を取得する。
@@ -625,7 +625,7 @@ inline bool operator!=(const XG_Board& xw1, const XG_Board& xw2) noexcept {
 // クロスワードの描画サイズを計算する。
 inline void __fastcall XgGetXWordExtent(LPSIZE psiz) noexcept
 {
-    const INT nCellSize = (xg_nForDisplay > 0) ? (xg_nCellSize * xg_nZoomRate / 100) : xg_nCellSize;
+    const int nCellSize = (xg_nForDisplay > 0) ? (xg_nCellSize * xg_nZoomRate / 100) : xg_nCellSize;
     psiz->cx = static_cast<int>(xg_nMargin * 2 + xg_nCols * nCellSize);
     psiz->cy = static_cast<int>(xg_nMargin * 2 + xg_nRows * nCellSize);
 }
@@ -633,7 +633,7 @@ inline void __fastcall XgGetXWordExtent(LPSIZE psiz) noexcept
 // クロスワードの描画サイズを計算する。
 inline void __fastcall XgGetMarkWordExtent(int count, LPSIZE psiz) noexcept
 {
-    const INT nCellSize = (xg_nForDisplay > 0) ? (xg_nCellSize * xg_nZoomRate / 100) : xg_nCellSize;
+    const int nCellSize = (xg_nForDisplay > 0) ? (xg_nCellSize * xg_nZoomRate / 100) : xg_nCellSize;
     psiz->cx = static_cast<int>(xg_nNarrowMargin * 2 + count * nCellSize);
     psiz->cy = static_cast<int>(xg_nNarrowMargin * 2 + 1 * nCellSize);
 }
@@ -1319,10 +1319,10 @@ extern std::vector<HANDLE> xg_ahThreads;
 extern WCHAR xg_prev_vk;
 
 // 「黒マスパターン」ダイアログの位置とサイズ。
-extern INT xg_nPatWndX;
-extern INT xg_nPatWndY;
-extern INT xg_nPatWndCX;
-extern INT xg_nPatWndCY;
+extern int xg_nPatWndX;
+extern int xg_nPatWndY;
+extern int xg_nPatWndCX;
+extern int xg_nPatWndCY;
 
 //////////////////////////////////////////////////////////////////////////////
 
@@ -1339,7 +1339,7 @@ extern DWORD xg_dwThreadCount;
 extern bool xg_bCancelled;
 
 // 連続生成の場合、問題を生成した数。
-extern INT xg_nNumberGenerated;
+extern int xg_nNumberGenerated;
 
 // プログレスバーの更新頻度。
 #define xg_dwTimerInterval 300
@@ -1398,7 +1398,7 @@ bool __fastcall XgGetCandidatesAddBlack(
 // マルチスレッド用の関数。
 unsigned __stdcall XgGenerateBlacks(void *param) noexcept;
 // マルチスレッド用の関数。
-unsigned __stdcall XgGenerateBlacksSmart(void *param) noexcept;
+unsigned __stdcall XgGenerateBlacksSmart(void *param);
 
 // ヒント文字列を取得する。
 // hint_type 0: タテ。
@@ -1416,18 +1416,18 @@ void __fastcall XgClearNonBlocks(void);
 // ハイライト情報。
 struct XG_HighLight
 {
-    INT m_number;
+    int m_number;
     BOOL m_vertical;
 };
 extern XG_HighLight xg_highlight;
 
 // キャレット位置をセットする。
-void __fastcall XgSetCaretPos(INT iRow = 0, INT jCol = 0);
+void __fastcall XgSetCaretPos(int iRow = 0, int jCol = 0);
 // キャレット位置を更新する。
 void __fastcall XgUpdateCaretPos(void);
 
 // ファイル変更フラグ。
-void XgSetModified(BOOL bModified, LPCSTR file, INT line);
+void XgSetModified(BOOL bModified, LPCSTR file, int line);
 #define XG_FILE_MODIFIED(bModified) XgSetModified((bModified), __FILE__, __LINE__)
 // 保存を確認し、必要なら保存する。
 BOOL XgDoConfirmSave(HWND hwnd);
@@ -1435,7 +1435,7 @@ BOOL XgDoConfirmSave(HWND hwnd);
 BOOL XgOnLoad(HWND hwnd, LPCWSTR pszFile, LPPOINT ppt = nullptr);
 
 #ifdef NO_RANDOM
-    extern INT xg_random_seed;
+    extern int xg_random_seed;
 #endif
 
 //////////////////////////////////////////////////////////////////////////////

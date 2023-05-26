@@ -109,10 +109,10 @@ int __fastcall
 XgCenterMessageBoxIndirectW(LPMSGBOXPARAMS lpMsgBoxParams) noexcept;
 
 // ReadMeを開く。
-void __fastcall XgOpenReadMe(HWND hwnd);
+void __fastcall XgOpenReadMe(HWND hwnd) noexcept;
 
 // Licenseを開く。
-void __fastcall XgOpenLicense(HWND hwnd);
+void __fastcall XgOpenLicense(HWND hwnd) noexcept;
 
 // ファイルが書き込み可能か？
 bool __fastcall XgCanWriteFile(const WCHAR *pszFile);
@@ -223,7 +223,7 @@ mstr_join(const T_STR_CONTAINER& container,
 }
 
 // 整数を文字列にする。
-LPCWSTR XgIntToStr(INT nValue);
+LPCWSTR XgIntToStr(int nValue);
 // バイナリを16進にする。
 std::wstring XgBinToHex(const void *ptr, size_t size);
 // 16進をバイナリにする。
@@ -243,7 +243,7 @@ BOOL XgWriteFileAll(LPCWSTR file, const std::string& strBinary) noexcept;
 void XgSwab(LPBYTE pbFile, size_t cbFile) noexcept;
 
 // コンボボックスからテキストを取得。
-BOOL ComboBox_RealGetText(HWND hwndCombo, LPWSTR pszText, INT cchText) noexcept;
+BOOL ComboBox_RealGetText(HWND hwndCombo, LPWSTR pszText, int cchText) noexcept;
 // コンボボックスにテキストを設定。
 BOOL ComboBox_RealSetText(HWND hwndCombo, LPCWSTR pszText) noexcept;
 

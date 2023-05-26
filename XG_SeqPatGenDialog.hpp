@@ -49,7 +49,7 @@ public:
 
     void OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT codeNotify)
     {
-        INT n3;
+        int n3;
         WCHAR szFile[MAX_PATH];
         switch (id)
         {

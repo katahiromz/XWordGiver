@@ -40,7 +40,7 @@ BOOL XG_Window::RegisterClassDx(HINSTANCE hInstance/* = ::GetModuleHandle(nullpt
     wcx.hInstance = hInstance;
     wcx.hIcon = ::LoadIcon(nullptr, IDI_APPLICATION);
     wcx.hCursor = ::LoadCursor(nullptr, IDC_ARROW);
-    wcx.hbrBackground = reinterpret_cast<HBRUSH>(INT_PTR(COLOR_3DFACE + 1));
+    wcx.hbrBackground = reinterpret_cast<HBRUSH>(static_cast<INT_PTR>(COLOR_3DFACE + 1));
     wcx.lpszClassName = GetWndClassName();
     ModifyWndClassDx(wcx);
     return ::RegisterClassEx(&wcx);

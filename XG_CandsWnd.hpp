@@ -32,7 +32,7 @@ public:
     inline static std::vector<HWND>           xg_ahwndCandButtons;
 
     // 候補を求める位置。
-    inline static INT xg_jCandPos, xg_iCandPos;
+    inline static int xg_jCandPos, xg_iCandPos;
 
     // 候補はタテかヨコか。
     inline static bool xg_bCandVertical;
@@ -40,8 +40,8 @@ public:
     // 候補ウィンドウを作成する。
     BOOL Create(HWND hwnd)
     {
-        const auto style = WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME | WS_HSCROLL | WS_VSCROLL;
-        const auto exstyle = WS_EX_TOOLWINDOW;
+        constexpr auto style = WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME | WS_HSCROLL | WS_VSCROLL;
+        constexpr auto exstyle = WS_EX_TOOLWINDOW;
         auto text = XgLoadStringDx1(IDS_CANDIDATES);
         return CreateWindowDx(hwnd, text, style, exstyle,
                               s_nCandsWndX, s_nCandsWndY,

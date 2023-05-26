@@ -122,7 +122,7 @@ inline void reset() noexcept {
 // 生成済みかキャンセル済みかを待つ。このような待ち方はモダンではない。
 // ここのコードはモダンな方法に置き換えられるべき。
 inline void wait_for_threads(int num_threads = get_num_processors(), int retry_count = 3) {
-    const int INTERVAL = 100;
+    constexpr int INTERVAL = 100;
     for (int i = 0; i < retry_count; ++i) {
         if (s_generated || s_canceled)
             break;
@@ -296,7 +296,7 @@ struct board_t : board_data_t<t_char> {
 
     // マス(x, y)を取得する。範囲チェックあり。
     // x, y: absolute coordinate
-    t_char real_get_at(int x, int y) const {
+    t_char real_get_at(int x, int y) const noexcept {
         if (in_range(x, y))
             return board_data_t<t_char>::m_data[y * m_cx + x];
         return ' ';
@@ -693,14 +693,14 @@ skip:;
 
     // マス(x, y)の文字を取得する。リリース時の範囲チェックなし。
     // x, y: relative coordinate
-    t_char get_on(int x, int y) const {
+    t_char get_on(int x, int y) const noexcept {
         assert(m_x0 <= 0);
         assert(m_y0 <= 0);
         return get_at(x - m_x0, y - m_y0);
     }
     // マス(x, y)の文字をセットする。リリース時の範囲チェックなし。
     // x, y: relative coordinate
-    void set_on(int x, int y, t_char ch) {
+    void set_on(int x, int y, t_char ch) noexcept {
         assert(m_x0 <= 0);
         assert(m_y0 <= 0);
         set_at(x - m_x0, y - m_y0, ch);
@@ -988,7 +988,7 @@ skip:;
     }
 
     // 四隅黒禁。
-    bool corner_black() const {
+    bool corner_black() const noexcept {
         return get_at(0, 0) == '#' ||
                get_at(m_cx - 1, 0) == '#' ||
                get_at(m_cx - 1, m_cy - 1) == '#' ||
@@ -996,7 +996,7 @@ skip:;
     }
 
     // 連黒禁。
-    bool double_black() const {
+    bool double_black() const noexcept {
         const int n1 = m_cx - 1;
         const int n2 = m_cy - 1;
         int i = m_cy;
@@ -1017,7 +1017,7 @@ skip:;
     }
 
     // 三方黒禁。
-    bool tri_black_around() const {
+    bool tri_black_around() const noexcept {
         for (int i = m_cy - 2; i >= 1; --i) {
             for (int j = m_cx - 2; j >= 1; --j) {
                 if ((get_at(j, i - 1) == '#') + (get_at(j, i + 1) == '#') + 
@@ -1085,7 +1085,7 @@ skip:;
     }
 
     // 黒斜四連禁。
-    bool four_diagonals() const {
+    bool four_diagonals() const noexcept {
         // 斜め四つ黒マスがあればtrueを返す。
         for (int i = 0; i < m_cy - 3; i++) {
             for (int j = 0; j < m_cx - 3; j++) {
@@ -1117,7 +1117,7 @@ skip:;
     }
 
     // 黒斜三連禁。
-    bool three_diagonals() const {
+    bool three_diagonals() const noexcept {
         // 斜め三つ黒マスがあればtrueを返す。
         for (int i = 0; i < m_cy - 2; i++) {
             for (int j = 0; j < m_cx - 2; j++) {
@@ -1145,7 +1145,7 @@ skip:;
     }
 
     // 黒マス点対称か？
-    bool is_point_symmetry() const {
+    bool is_point_symmetry() const noexcept {
         for (int i = 0; i < m_cy; i++) {
             for (int j = 0; j < m_cx; j++) {
                 if (get_at(j, i) == '#') {
@@ -1159,7 +1159,7 @@ skip:;
     }
 
     // 黒マス左右対称か？
-    bool is_line_symmetry_h() const {
+    bool is_line_symmetry_h() const noexcept {
         for (int j = 0; j < m_cx; j++) {
             for (int i = 0; i < m_cy; i++) {
                 if (get_at(j, i) == '#') {
@@ -1173,7 +1173,7 @@ skip:;
     }
 
     // 黒マス上下対称か？
-    bool is_line_symmetry_v() const {
+    bool is_line_symmetry_v() const noexcept {
         for (int i = 0; i < m_cy; i++) {
             for (int j = 0; j < m_cx; j++) {
                 if (get_at(j, i) == '#') {

@@ -377,7 +377,7 @@ public:
 
     BOOL CreateDx(HWND hwndParent)
     {
-        const auto style = WS_OVERLAPPED | WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS;
+        constexpr auto style = WS_OVERLAPPED | WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS;
         CreateWindowDx(hwndParent, nullptr, style);
         return m_hWnd != nullptr;
     }
@@ -389,7 +389,7 @@ public:
 
         POINT pt = { x, y };
         SetForegroundWindow(hwnd);
-        const auto flags = TPM_LEFTALIGN | TPM_RIGHTBUTTON | TPM_RETURNCMD;
+        constexpr auto flags = TPM_LEFTALIGN | TPM_RIGHTBUTTON | TPM_RETURNCMD;
         const auto id = static_cast<UINT>(TrackPopupMenu(hSubMenu, flags, pt.x, pt.y, 0, hwnd, nullptr));
         DestroyMenu(hMenu);
         s_hwndSelected = hwnd;

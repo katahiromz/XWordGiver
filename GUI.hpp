@@ -23,7 +23,7 @@ extern BOOL xg_bShowClues;
 //////////////////////////////////////////////////////////////////////////////
 
 // ポップアップメニューを読み込む。
-HMENU XgLoadPopupMenu(HWND hwnd, INT nPos) noexcept;
+HMENU XgLoadPopupMenu(HWND hwnd, int nPos) noexcept;
 
 // ツールバーのUIを更新する。
 void XgUpdateToolBarUI(HWND hwnd);
@@ -32,7 +32,7 @@ void XgUpdateToolBarUI(HWND hwnd);
 void XgDestroyCandsWnd(void) noexcept;
 
 // 描画イメージを更新する。
-void __fastcall XgUpdateImage(HWND hwnd, INT x, INT y);
+void __fastcall XgUpdateImage(HWND hwnd, int x, int y);
 // 描画イメージを更新する。
 void __fastcall XgUpdateImage(HWND hwnd);
 
@@ -52,8 +52,8 @@ extern DWORDLONG xg_dwlWait;     // 待ち時間。
 extern LONG xg_nRetryCount;
 
 // [二重マス単語の候補と配置]ダイアログの位置。
-extern INT xg_nMarkingX;
-extern INT xg_nMarkingY;
+extern int xg_nMarkingX;
+extern int xg_nMarkingY;
 
 //////////////////////////////////////////////////////////////////////////////
 
@@ -61,8 +61,8 @@ extern INT xg_nMarkingY;
 extern bool xg_bShowInputPalette;
 
 // 入力パレットの位置。
-extern INT xg_nInputPaletteWndX;
-extern INT xg_nInputPaletteWndY;
+extern int xg_nInputPaletteWndX;
+extern int xg_nInputPaletteWndY;
 
 // 「入力パレット」縦置き？
 extern bool xg_bTateOki;
@@ -87,9 +87,9 @@ void __fastcall XgOnImeChar(HWND hwnd, WCHAR ch, LPARAM /*lKeyData*/);
 // BackSpaceを実行する。
 void __fastcall XgCharBack(HWND hwnd);
 // 入力方向を切り替える。
-void __fastcall XgInputDirection(HWND hwnd, INT nDirection);
+void __fastcall XgInputDirection(HWND hwnd, int nDirection);
 // 文字送りを切り替える。
-void __fastcall XgSetCharFeed(HWND hwnd, INT nMode) noexcept;
+void __fastcall XgSetCharFeed(HWND hwnd, int nMode) noexcept;
 // 改行する。
 void __fastcall XgReturn(HWND hwnd);
 // 二重マス切り替え。
@@ -99,7 +99,7 @@ void __fastcall XgOnChar(HWND hwnd, TCHAR ch, int cRepeat);
 void __fastcall XgOnKey(HWND hwnd, UINT vk, bool fDown, int /*cRepeat*/, UINT /*flags*/);
 void __fastcall XgOnImeChar(HWND hwnd, WCHAR ch, LPARAM /*lKeyData*/);
 // その他のコマンド。
-bool __fastcall XgOnCommandExtra(HWND hwnd, INT id);
+bool __fastcall XgOnCommandExtra(HWND hwnd, int id);
 
 //////////////////////////////////////////////////////////////////////////////
 
@@ -116,13 +116,13 @@ void XgCopyBoardAsImage(HWND hwnd);
 extern HWND xg_hCanvasWnd;
 
 // 水平スクロールの位置を取得する。
-inline INT __fastcall XgGetHScrollPos(void) noexcept
+inline int __fastcall XgGetHScrollPos(void) noexcept
 {
     return ::GetScrollPos(xg_hCanvasWnd, SB_HORZ);
 }
 
 // 垂直スクロールの位置を取得する。
-inline INT __fastcall XgGetVScrollPos(void) noexcept
+inline int __fastcall XgGetVScrollPos(void) noexcept
 {
     return ::GetScrollPos(xg_hCanvasWnd, SB_VERT);
 }
@@ -140,13 +140,13 @@ inline BOOL __fastcall XgGetVScrollInfo(LPSCROLLINFO psi) noexcept
 }
 
 // 水平スクロールの位置を設定する。
-inline INT __fastcall XgSetHScrollPos(int nPos, BOOL bRedraw) noexcept
+inline int __fastcall XgSetHScrollPos(int nPos, BOOL bRedraw) noexcept
 {
     return ::SetScrollPos(xg_hCanvasWnd, SB_HORZ, nPos, bRedraw);
 }
 
 // 垂直スクロールの位置を設定する。
-inline INT __fastcall XgSetVScrollPos(int nPos, BOOL bRedraw) noexcept
+inline int __fastcall XgSetVScrollPos(int nPos, BOOL bRedraw) noexcept
 {
     return ::SetScrollPos(xg_hCanvasWnd, SB_VERT, nPos, bRedraw);
 }
@@ -171,12 +171,12 @@ void __fastcall XgEnsureCaretVisible(HWND hwnd);
 //////////////////////////////////////////////////////////////////////////////
 
 // 現在の状態で好ましいと思われる単語の最大長を取得する。
-INT __fastcall XgGetPreferredMaxLength(void) noexcept;
+int __fastcall XgGetPreferredMaxLength(void) noexcept;
 
 // マス位置を取得する。
-VOID XgGetCellPosition(RECT& rc, INT i1, INT j1, INT i2, INT j2, BOOL bScroll) noexcept;
+VOID XgGetCellPosition(RECT& rc, int i1, int j1, int i2, int j2, BOOL bScroll) noexcept;
 // マス位置を設定する。
-VOID XgSetCellPosition(LONG& x, LONG& y, INT& i, INT& j, BOOL bEnd) noexcept;
+VOID XgSetCellPosition(LONG& x, LONG& y, int& i, int& j, BOOL bEnd) noexcept;
 
 // マウスの中央ボタンの処理に使う変数。
 extern BOOL xg_bMButtonDragging;

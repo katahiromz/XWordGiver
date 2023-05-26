@@ -146,7 +146,7 @@ mstr_join(const T_STR_CONTAINER& container,
     return result;
 }
 
-inline LPWSTR LoadStringDx(INT nID)
+inline LPWSTR LoadStringDx(int nID)
 {
     static size_t s_index = 0;
     const size_t cchBuffMax = 1024;
@@ -155,18 +155,18 @@ inline LPWSTR LoadStringDx(INT nID)
     WCHAR *pszBuff = s_sz[s_index];
     s_index = (s_index + 1) % _countof(s_sz);
     pszBuff[0] = 0;
-    if (!::LoadStringW(NULL, nID, pszBuff, INT(cchBuffMax)))
+    if (!::LoadStringW(NULL, nID, pszBuff, int(cchBuffMax)))
         assert(0);
     return pszBuff;
 }
 
-inline LPWSTR LoadVPrintfDx(INT nID, va_list va) {
+inline LPWSTR LoadVPrintfDx(int nID, va_list va) {
     static WCHAR s_szText[1024];
     StringCbVPrintfW(s_szText, sizeof(s_szText), LoadStringDx(nID), va);
     return s_szText;
 }
 
-inline LPWSTR LoadPrintfDx(INT nID, ...) {
+inline LPWSTR LoadPrintfDx(int nID, ...) {
     va_list va;
     va_start(va, nID);
     LPWSTR psz = LoadVPrintfDx(nID, va);
@@ -178,7 +178,7 @@ void DoAddText(HWND hwnd, LPCWSTR pszText) {
     std::wstring strText = pszText;
     strText += L"\r\n";
     HWND hEdt1 = GetDlgItem(hwnd, edt1);
-    INT cch = Edit_GetTextLength(hEdt1);
+    int cch = Edit_GetTextLength(hEdt1);
     if (cch > 1 * 1024 * 1024) {
         Edit_SetSel(hEdt1, 0, 1024);
         Edit_ReplaceSel(hEdt1, L"");
@@ -192,17 +192,17 @@ void DoAddText(HWND hwnd, LPCWSTR pszText) {
     EnableWindow(GetDlgItem(hwnd, psh1), TRUE);
 }
 
-inline void DoAddText(HWND hwnd, INT nIDS_) {
+inline void DoAddText(HWND hwnd, int nIDS_) {
     DoAddText(hwnd, LoadStringDx(nIDS_));
 }
 
-inline void DoVPrintf(HWND hwnd, INT nIDS_, va_list va) {
+inline void DoVPrintf(HWND hwnd, int nIDS_, va_list va) {
     static WCHAR s_szText[1024];
     StringCbVPrintfW(s_szText, sizeof(s_szText), LoadStringDx(nIDS_), va);
     DoAddText(hwnd, s_szText);
 }
 
-inline void DoPrintf(HWND hwnd, INT nIDS_, ...) {
+inline void DoPrintf(HWND hwnd, int nIDS_, ...) {
     va_list va;
     va_start(va, nIDS_);
     DoVPrintf(hwnd, nIDS_, va);
@@ -633,7 +633,7 @@ inline BOOL OnInitDialog(HWND hwnd, HWND hwndFocus, LPARAM lParam)
 
     EnableWindow(GetDlgItem(hwnd, psh1), FALSE);
 
-    INT argc;
+    int argc;
     if (LPWSTR *wargv = CommandLineToArgvW(GetCommandLineW(), &argc)) {
         if (argc >= 2) {
             JustDoIt(hwnd, wargv[1]);
@@ -690,11 +690,11 @@ DialogProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
     return 0;
 }
 
-INT WINAPI
+int WINAPI
 WinMain(HINSTANCE   hInstance,
         HINSTANCE   hPrevInstance,
         LPSTR       lpCmdLine,
-        INT         nCmdShow)
+        int         nCmdShow)
 {
     UNREFERENCED_PARAMETER(hPrevInstance);
     UNREFERENCED_PARAMETER(lpCmdLine);

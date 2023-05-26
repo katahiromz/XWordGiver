@@ -588,26 +588,26 @@ void XG_SettingsDialog::OnResetLooks(HWND hwnd)
     ::CheckDlgButton(hwnd, chx1, (bSkeltonView ? BST_CHECKED : BST_UNCHECKED));
 
     // 太枠をつけるか？
-    const BOOL bAddThickFrame = TRUE;
+    constexpr  BOOL bAddThickFrame = TRUE;
     ::CheckDlgButton(hwnd, chx2, (bAddThickFrame ? BST_CHECKED : BST_UNCHECKED));
 
     // 二重マスに枠をつけるか？
-    const BOOL bDrawFrameForMarkedCell = TRUE;
+    constexpr  BOOL bDrawFrameForMarkedCell = TRUE;
     ::CheckDlgButton(hwnd, chx3, (bDrawFrameForMarkedCell ? BST_CHECKED : BST_UNCHECKED));
 
     // 英小文字か？
-    const BOOL bLowercase = FALSE;
+    constexpr  BOOL bLowercase = FALSE;
     ::CheckDlgButton(hwnd, chx4, (bLowercase ? BST_CHECKED : BST_UNCHECKED));
 
     // ひらがなか？
-    const BOOL bHiragana = FALSE;
+    constexpr  BOOL bHiragana = FALSE;
     ::CheckDlgButton(hwnd, chx5, (bHiragana ? BST_CHECKED : BST_UNCHECKED));
 
     // 文字の大きさ。
-    const int nCellCharPercents = XG_DEF_CELL_CHAR_SIZE;
+    constexpr  int nCellCharPercents = XG_DEF_CELL_CHAR_SIZE;
     ::SetDlgItemInt(hwnd, edt4, nCellCharPercents, FALSE);
 
-    const int nSmallCharPercents = XG_DEF_SMALL_CHAR_SIZE;
+    constexpr  int nSmallCharPercents = XG_DEF_SMALL_CHAR_SIZE;
     ::SetDlgItemInt(hwnd, edt5, nSmallCharPercents, FALSE);
 
     // 黒マス画像。
@@ -867,7 +867,7 @@ XG_SettingsDialog::DialogProcDx(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPar
                 HMENU hSubMenu = GetSubMenu(hMenu, 0);
                 SetForegroundWindow(hwnd);
                 TPMPARAMS params = { sizeof(params), rc };
-                const auto flags = TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_VERTICAL | TPM_RETURNCMD;
+                constexpr auto flags = TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_VERTICAL | TPM_RETURNCMD;
                 const auto id = TrackPopupMenuEx(hSubMenu, flags, pt.x, pt.y, hwnd, &params);
                 if (id)
                 {

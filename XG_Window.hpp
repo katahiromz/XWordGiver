@@ -63,8 +63,8 @@ public:
     WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
     BOOL CreateWindowDx(HWND hwnd, LPCTSTR text, DWORD style, DWORD exstyle = 0,
-                        INT x = CW_USEDEFAULT, INT y = CW_USEDEFAULT,
-                        INT cx = CW_USEDEFAULT, INT cy = CW_USEDEFAULT,
+                        int x = CW_USEDEFAULT, int y = CW_USEDEFAULT,
+                        int cx = CW_USEDEFAULT, int cy = CW_USEDEFAULT,
                         HMENU hMenu = nullptr)
     {
         auto cls = GetWndClassName();
@@ -117,12 +117,12 @@ public:
         return ret;
     }
 
-    INT_PTR DialogBoxDx(HWND hwnd, INT nID) noexcept
+    INT_PTR DialogBoxDx(HWND hwnd, int nID) noexcept
     {
         return DialogBoxDx(hwnd, MAKEINTRESOURCE(nID));
     }
 
-    BOOL CreateDialogDx(HWND hwnd, INT nID) noexcept
+    BOOL CreateDialogDx(HWND hwnd, int nID) noexcept
     {
         s_pTrapping = this;
         ::CreateDialog(::GetModuleHandle(nullptr), MAKEINTRESOURCE(nID), hwnd, DialogProc);

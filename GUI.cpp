@@ -7691,7 +7691,7 @@ int WINAPI WinMain(
     wcx.hInstance = hInstance;
     wcx.hIcon = LoadIconW(hInstance, MAKEINTRESOURCE(1));
     wcx.hCursor = LoadCursorW(nullptr, IDC_ARROW);
-    wcx.hbrBackground = reinterpret_cast<HBRUSH>(INT_PTR(COLOR_3DFACE + 1));
+    wcx.hbrBackground = reinterpret_cast<HBRUSH>(static_cast<INT_PTR>(COLOR_3DFACE + 1));
     wcx.lpszMenuName = MAKEINTRESOURCE(1);
     wcx.lpszClassName = s_pszMainWndClass;
     wcx.hIconSm = nullptr;

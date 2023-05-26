@@ -33,9 +33,9 @@ bool xg_bThemeModified = false;
 std::unordered_map<size_t, size_t> xg_word_length_histgram;
 
 // 配置できる最大単語長。
-INT xg_nDictMaxWordLen = 7;
+int xg_nDictMaxWordLen = 7;
 // 配置できる最小単語長。
-INT xg_nDictMinWordLen = 2;
+int xg_nDictMinWordLen = 2;
 
 //////////////////////////////////////////////////////////////////////////////
 // 辞書データのファイル処理。
@@ -358,7 +358,7 @@ std::wstring XgLoadTitleFromDict(LPCWSTR pszPath)
         char buf[256];
         WCHAR szText[256];
         const BOOL bJapanese = XgIsUserJapanese();
-        INT nLineCount = 0;
+        int nLineCount = 0;
         auto name_jpn = L"# NAME-JPN:";
         auto name_eng = L"# NAME-ENG:";
         while (fgets(buf, _countof(buf), fp))

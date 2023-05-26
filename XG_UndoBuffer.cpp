@@ -171,7 +171,7 @@ void XG_UndoBuffer::Commit(const XG_UndoInfo& ui) {
     XG_FILE_MODIFIED(TRUE);
 }
 
-static const int c_max_size = 25;
+static constexpr int c_max_size = 25;
 
 void XG_UndoBuffer::Commit(UINT id,
     shared_ptr<XG_UndoData> before, shared_ptr<XG_UndoData> after)

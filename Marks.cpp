@@ -18,7 +18,7 @@ std::vector<std::wstring>     xg_vMarkedCands;
 std::wstring xg_strMarked;
 
 // 選択中の二重マス単語の候補のインデックス。
-INT xg_iMarkedCand = -1;
+int xg_iMarkedCand = -1;
 
 //////////////////////////////////////////////////////////////////////////////
 
@@ -71,7 +71,7 @@ int __fastcall XgGetMarked(const std::vector<XG_Pos>& vMarks, const XG_Pos& pos)
 }
 
 // マークされているか（二重マス）？
-int __fastcall XgGetMarked(const std::vector<XG_Pos>& vMarks, int i, int j)
+int __fastcall XgGetMarked(const std::vector<XG_Pos>& vMarks, int i, int j) noexcept
 {
     return XgGetMarked(vMarks, XG_Pos(i, j));
 }

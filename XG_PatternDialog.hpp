@@ -22,10 +22,10 @@ public:
     inline static LAYOUT_DATA *s_pLayout = nullptr;
 
     // 「黒マスパターン」ダイアログの位置とサイズ。
-    inline static INT xg_nPatWndX = CW_USEDEFAULT;
-    inline static INT xg_nPatWndY = CW_USEDEFAULT;
-    inline static INT xg_nPatWndCX = CW_USEDEFAULT;
-    inline static INT xg_nPatWndCY = CW_USEDEFAULT;
+    inline static int xg_nPatWndX = CW_USEDEFAULT;
+    inline static int xg_nPatWndY = CW_USEDEFAULT;
+    inline static int xg_nPatWndCX = CW_USEDEFAULT;
+    inline static int xg_nPatWndCY = CW_USEDEFAULT;
 
     // 黒マスパターンで答えを表示する。
     inline static BOOL xg_bShowAnswerOnPattern = TRUE;
@@ -36,7 +36,7 @@ public:
 
     // タイプによりフィルターを行う。
     XG_NOINLINE
-    BOOL FilterPatBySize(const XG_PATDATA& pat, INT type0, INT type1) noexcept {
+    BOOL FilterPatBySize(const XG_PATDATA& pat, int type0, int type1) noexcept {
         if (pat.num_columns > XG_MAX_PAT_SIZE || pat.num_rows > XG_MAX_PAT_SIZE)
             return FALSE;
 
@@ -81,7 +81,7 @@ public:
     }
 
     XG_NOINLINE
-    BOOL RefreshContents(HWND hwnd, INT type0, INT type1)
+    BOOL RefreshContents(HWND hwnd, int type0, int type1)
     {
         // リストボックスをクリアする。
         ListBox_ResetContent(GetDlgItem(hwnd, lst1));
@@ -290,7 +290,7 @@ public:
     }
 
     XG_NOINLINE
-    INT GetType0() noexcept
+    int GetType0() noexcept
     {
         if (IsDlgButtonChecked(m_hWnd, rad1) == BST_CHECKED)
             return rad1;
@@ -302,7 +302,7 @@ public:
     }
 
     XG_NOINLINE
-    INT GetType1() noexcept
+    int GetType1() noexcept
     {
         if (IsDlgButtonChecked(m_hWnd, rad4) == BST_CHECKED)
             return rad4;
@@ -350,7 +350,7 @@ public:
         }
     }
 
-    const INT cxCell = 5, cyCell = 5; // 小さなセルのサイズ。
+    const int cxCell = 5, cyCell = 5; // 小さなセルのサイズ。
 
     // WM_MEASUREITEM
     XG_NOINLINE
@@ -444,10 +444,10 @@ public:
                 SelectObject(hdcMem, GetStockBrush(WHITE_BRUSH)); // 白いブラシ
                 Rectangle(hdcMem, 0, 0, cx + 2, cy + 2);
                 // 黒マスを描画する。
-                for (INT y = 0; y < pat.num_rows; ++y)
+                for (int y = 0; y < pat.num_rows; ++y)
                 {
                     RECT rc;
-                    for (INT x = 0; x < pat.num_columns; ++x)
+                    for (int x = 0; x < pat.num_columns; ++x)
                     {
                         rc.left = 1 + x * cxCell;
                         rc.top = 1 + y * cyCell;
@@ -458,12 +458,12 @@ public:
                     }
                 }
                 // 境界線を描画する。
-                for (INT y = 0; y < pat.num_rows + 1; ++y)
+                for (int y = 0; y < pat.num_rows + 1; ++y)
                 {
                     MoveToEx(hdcMem, 1, 1 + y * cyCell, nullptr);
                     LineTo(hdcMem, 1 + pat.num_columns * cxCell, 1 + y * cyCell);
                 }
-                for (INT x = 0; x < pat.num_columns + 1; ++x)
+                for (int x = 0; x < pat.num_columns + 1; ++x)
                 {
                     MoveToEx(hdcMem, 1 + x * cxCell, 1, nullptr);
                     LineTo(hdcMem, 1 + x * cxCell, 1 + pat.num_rows * cyCell);

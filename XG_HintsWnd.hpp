@@ -78,14 +78,14 @@ public:
     {
         if (hwndChild == s_hwndHighlightTateEdit || hwndChild == s_hwndHighlightYokoEdit)
         {
-            const COLORREF rgbColor = RGB(140, 255, 255);
+            constexpr COLORREF rgbColor = RGB(140, 255, 255);
             SetBkColor(hdc, rgbColor);
             SetDCBrushColor(hdc, rgbColor);
             return GetStockBrush(DC_BRUSH);
         }
         else if (hwndChild == GetFocus())
         {
-            const COLORREF rgbColor = RGB(255, 255, 140);
+            constexpr COLORREF rgbColor = RGB(255, 255, 140);
             SetBkColor(hdc, rgbColor);
             SetDCBrushColor(hdc, rgbColor);
             return GetStockBrush(DC_BRUSH);
@@ -727,7 +727,7 @@ public:
 
         // 右クリックメニューを表示する。
         ::SetForegroundWindow(hwnd);
-        const auto flags = TPM_RIGHTBUTTON | TPM_LEFTALIGN | TPM_RETURNCMD;
+        constexpr auto flags = TPM_RIGHTBUTTON | TPM_LEFTALIGN | TPM_RETURNCMD;
         const auto nCmd = ::TrackPopupMenu(hSubMenu, flags, xPos, yPos, 0, hwnd, nullptr);
         ::PostMessageW(hwnd, WM_NULL, 0, 0);
         if (nCmd)
