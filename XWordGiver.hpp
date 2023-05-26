@@ -1297,14 +1297,20 @@ extern bool xg_bHintsAdded;
 extern bool xg_bSaveAsJsonFile;
 
 // 拗音変換用データ。
-inline static const auto xg_small = make_array<LPCWSTR>(
-    L"\x30A1", L"\x30A3", L"\x30A5", L"\x30A7", L"\x30A9", L"\x30C3",
-    L"\x30E3", L"\x30E5", L"\x30E7", L"\x30F5", L"\x30F6"
-);
-inline static const auto xg_large = make_array<LPCWSTR>(
-    L"\x30A2", L"\x30A4", L"\x30A6", L"\x30A8", L"\x30AA", L"\x30C4",
-    L"\x30E4", L"\x30E6", L"\x30E8", L"\x30AB", L"\x30B1"
-);
+inline static const std::unordered_map<WCHAR, WCHAR> xg_small2large =
+{
+    { L'\x30A1', L'\x30A2' }, // ァ --> ア
+    { L'\x30A3', L'\x30A4' }, // ィ --> イ
+    { L'\x30A5', L'\x30A6' }, // ゥ --> ウ
+    { L'\x30A7', L'\x30A8' }, // ェ --> エ
+    { L'\x30A9', L'\x30AA' }, // ォ --> オ
+    { L'\x30C3', L'\x30C4' }, // ッ --> ツ
+    { L'\x30E3', L'\x30E4' }, // ャ --> ヤ
+    { L'\x30E5', L'\x30E6' }, // ュ --> ユ
+    { L'\x30E7', L'\x30E8' }, // ョ --> ヨ
+    { L'\x30F5', L'\x30AB' }, // ヵ --> カ
+    { L'\x30F6', L'\x30B1' }, // ヶ --> ケ
+};
 
 // ビットマップのハンドル。
 extern HBITMAP xg_hbmImage;

@@ -141,9 +141,11 @@ void XgReadUnicodeLine(LPWSTR pchLine)
     auto word = entry.m_word;
 
     // 小さな字を大きな字にする。
-    for (size_t i = 0; i < std::size(xg_large); i++)
-        xg_str_replace_all(entry.m_word,
-            std::wstring(xg_small[i]), std::wstring(xg_large[i]));
+    for (auto& ch : entry.m_word) {
+        auto it = xg_small2large.find(ch);
+        if (it != xg_small2large.end())
+            ch = it->second;
+    }
 
     // ハイフン、アポストロフィ、ピリオド、カンマを取り除く。
     std::wstring tmp;

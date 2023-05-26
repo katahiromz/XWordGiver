@@ -6058,12 +6058,9 @@ std::wstring XgNormalizeStringEx(const std::wstring& str, BOOL bUppercase, BOOL 
     for (auto ch : str) {
         WCHAR newch = 0;
         // 小さな字を大きな字にする。
-        for (size_t ich = 0; ich < std::size(xg_small); ++ich) {
-            if (ch == xg_small[ich][0]) {
-                ch = xg_large[ich][0];
-                break;
-            }
-        }
+        auto it = xg_small2large.find(ch);
+        if (it != xg_small2large.end())
+            ch = it->second;
         if (XgIsCharKanaW(ch) || XgIsCharKanjiW(ch) || ch == ZEN_PROLONG || XgIsCharHangulW(ch) ||
             ch == ZEN_UNDERLINE)
         {
@@ -7508,12 +7505,9 @@ std::wstring __fastcall XgNormalizeString(const std::wstring& text) {
     std::wstring ret(szText);
     for (auto& ch : ret) {
         // 小さな字を大きな字にする。
-        for (size_t i = 0; i < std::size(xg_small); i++) {
-            if (ch == xg_small[i][0]) {
-                ch = xg_large[i][0];
-                break;
-            }
-        }
+        auto it = xg_small2large.find(ch);
+        if (it != xg_small2large.end())
+            ch = it->second;
     }
     return ret;
 }
