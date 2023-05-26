@@ -3027,7 +3027,7 @@ bool __fastcall XgOnGenerateBlacks(HWND hwnd, bool sym)
     ::EnableWindow(xg_hwndInputPalette, FALSE);
     {
         XG_PatGenDialog dialog;
-        INT_PTR nID = dialog.DoModal(hwnd);
+        const INT_PTR nID = dialog.DoModal(hwnd);
         ::EnableWindow(xg_hwndInputPalette, TRUE);
         if (nID != IDOK) {
             return false;

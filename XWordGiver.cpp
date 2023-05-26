@@ -4329,7 +4329,7 @@ void __fastcall XgStartSolve_AddBlack(void) noexcept
     // スレッドを開始する。
     for (DWORD i = 0; i < xg_dwThreadCount; i++) {
         xg_aThreadInfo[i].m_count = static_cast<DWORD>(xg_xword.Count());
-        xg_ahThreads[i] = reinterpret_cast<HANDLE>(
+        xg_ahThreads[i] = static_cast<HANDLE>(
             _beginthreadex(nullptr, 0, XgSolveProc_AddBlack, &xg_aThreadInfo[i], 0,
                 &xg_aThreadInfo[i].m_threadid));
         assert(xg_ahThreads[i] != nullptr);
@@ -7483,11 +7483,11 @@ void __fastcall XgStartGenerateBlacks(void) noexcept
         XgGenerateBlacksPointSym(&xg_aThreadInfo[0]);
 #else
         for (DWORD i = 0; i < xg_dwThreadCount; i++) {
-            auto& thread = xg_ahThreads.at(i);
-            thread = static_cast<HANDLE>(
-                _beginthreadex(nullptr, 0, XgGenerateBlacksPointSym, &thread, 0,
-                    &thread.m_threadid));
-            assert(xg_ahThreads.at(i) != nullptr);
+            auto& hThread = xg_ahThreads.at(i);
+            auto& info = xg_aThreadInfo.at(i);
+            hThread = static_cast<HANDLE>(
+                _beginthreadex(nullptr, 0, XgGenerateBlacksPointSym, &info, 0, &info.m_threadid));
+            assert(hThread != nullptr);
         }
 #endif
     } else if (xg_nRules & RULE_LINESYMMETRYV) {
@@ -7495,11 +7495,11 @@ void __fastcall XgStartGenerateBlacks(void) noexcept
         XgGenerateBlacksLineSymV(&xg_aThreadInfo[0]);
 #else
         for (DWORD i = 0; i < xg_dwThreadCount; i++) {
-            auto& thread = xg_ahThreads.at(i);
-            thread = static_cast<HANDLE>(
-                _beginthreadex(nullptr, 0, XgGenerateBlacksLineSymV, &thread, 0,
-                    &thread.m_threadid));
-            assert(thread != nullptr);
+            auto& hThread = xg_ahThreads.at(i);
+            auto& info = xg_aThreadInfo.at(i);
+            hThread = static_cast<HANDLE>(
+                _beginthreadex(nullptr, 0, XgGenerateBlacksLineSymV, &info, 0, &info.m_threadid));
+            assert(hThread != nullptr);
         }
 #endif
     } else if (xg_nRules & RULE_LINESYMMETRYH) {
@@ -7507,11 +7507,11 @@ void __fastcall XgStartGenerateBlacks(void) noexcept
         XgGenerateBlacksLineSymH(&xg_aThreadInfo[0]);
 #else
         for (DWORD i = 0; i < xg_dwThreadCount; i++) {
-            auto& thread = xg_ahThreads.at(i);
-            thread = static_cast<HANDLE>(
-                _beginthreadex(nullptr, 0, XgGenerateBlacksLineSymH, &thread, 0,
-                    &thread.m_threadid));
-            assert(thread != nullptr);
+            auto& hThread = xg_ahThreads.at(i);
+            auto& info = xg_aThreadInfo.at(i);
+            hThread = static_cast<HANDLE>(
+                _beginthreadex(nullptr, 0, XgGenerateBlacksLineSymH, &info, 0, &info.m_threadid));
+            assert(hThread != nullptr);
         }
 #endif
     } else {
@@ -7519,11 +7519,11 @@ void __fastcall XgStartGenerateBlacks(void) noexcept
         XgGenerateBlacks(&xg_aThreadInfo[0]);
 #else
         for (DWORD i = 0; i < xg_dwThreadCount; i++) {
-            auto& thread = xg_ahThreads.at(i);
-            thread = static_cast<HANDLE>(
-                _beginthreadex(nullptr, 0, XgGenerateBlacks, &thread, 0,
-                    &thread.m_threadid));
-            assert(thread != nullptr);
+            auto& hThread = xg_ahThreads.at(i);
+            auto& info = xg_aThreadInfo.at(i);
+            hThread = static_cast<HANDLE>(
+                _beginthreadex(nullptr, 0, XgGenerateBlacks, &info, 0, &info.m_threadid));
+            assert(hThread != nullptr);
         }
 #endif
     }
