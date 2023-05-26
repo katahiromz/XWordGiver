@@ -342,7 +342,7 @@ std::vector<XG_WordData> XgCreateMiniDict(void)
         ret.emplace_back(hint.m_strWord, hint.m_strHint);
     }
     std::sort(ret.begin(), ret.end(),
-        [](const XG_WordData& a, const XG_WordData& b) {
+        [](const XG_WordData& a, const XG_WordData& b) noexcept {
             return a.m_word < b.m_word;
         }
     );
@@ -541,12 +541,12 @@ void XgSetDict(const std::wstring& strFile)
         auto title = XgLoadTitleFromDict(strFile.c_str());
         xg_dicts.emplace_back(strFile, title);
         std::sort(xg_dicts.begin(), xg_dicts.end(),
-            [](const XG_DICT& e1, const XG_DICT& e2) {
+            [](const XG_DICT& e1, const XG_DICT& e2) noexcept {
                 return e1.m_filename < e2.m_filename;
             }
         );
         auto last = std::unique(xg_dicts.begin(), xg_dicts.end(),
-            [](const XG_DICT& e1, const XG_DICT& e2) {
+            [](const XG_DICT& e1, const XG_DICT& e2) noexcept {
                 return e1.m_filename == e2.m_filename;
             }
         );

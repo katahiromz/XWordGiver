@@ -60,7 +60,7 @@ void __fastcall XgGetStringOfMarks2(std::wstring& str)
 }
 
 // マークされているか（二重マス）？
-int __fastcall XgGetMarked(const std::vector<XG_Pos>& vMarks, const XG_Pos& pos)
+int __fastcall XgGetMarked(const std::vector<XG_Pos>& vMarks, const XG_Pos& pos) noexcept
 {
     const int size = static_cast<int>(vMarks.size());
     for (int i = 0; i < size; i++) {
@@ -368,7 +368,7 @@ failed_2:;
 
     // ソート・一意化する。
     std::sort(xg_vMarkedCands.begin(), xg_vMarkedCands.end(),
-        [](const std::wstring& x, const std::wstring& y) {
+        [](const std::wstring& x, const std::wstring& y) noexcept {
             if (x.size() > y.size())
                 return true;
             if (x.size() < y.size())

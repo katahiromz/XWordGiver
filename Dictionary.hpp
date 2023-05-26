@@ -177,7 +177,7 @@ inline bool XgTrimDict(std::unordered_set<t_string>& words)
 template <typename t_string>
 inline bool XgTrimDict(std::vector<t_string>& words)
 {
-    auto it = std::remove_if(words.begin(), words.end(), [](const t_string& word){
+    auto it = std::remove_if(words.begin(), words.end(), [](const t_string& word) noexcept {
         return (word.size() <= 1);
     });
     words.erase(it, words.end());

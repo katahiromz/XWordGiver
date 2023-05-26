@@ -45,7 +45,7 @@ std::shared_ptr<XG_FileManager>& XgGetFileManager(void)
 #endif
 
 // リソース文字列を読み込む。
-LPWSTR __fastcall XgLoadStringDx1(int id)
+LPWSTR __fastcall XgLoadStringDx1(int id) noexcept
 {
     static WCHAR sz[512];
     INT ret = LoadStringW(xg_hInstance, id, sz, _countof(sz));
@@ -55,7 +55,7 @@ LPWSTR __fastcall XgLoadStringDx1(int id)
 }
 
 // リソース文字列を読み込む。
-LPWSTR __fastcall XgLoadStringDx2(int id)
+LPWSTR __fastcall XgLoadStringDx2(int id) noexcept
 {
     static WCHAR sz[512];
     INT ret = LoadStringW(xg_hInstance, id, sz, _countof(sz));
@@ -65,7 +65,7 @@ LPWSTR __fastcall XgLoadStringDx2(int id)
 }
 
 // フィルター文字列を作る。
-LPWSTR __fastcall XgMakeFilterString(LPWSTR psz)
+LPWSTR __fastcall XgMakeFilterString(LPWSTR psz) noexcept
 {
     // 文字列中の '|' を '\0' に変換する。
     LPWSTR pch = psz;
@@ -196,7 +196,7 @@ std::wstring __fastcall XgUtf8ToUnicode(const std::string& ansi)
 }
 
 // ダイアログを中央によせる関数。
-void __fastcall XgCenterDialog(HWND hwnd)
+void __fastcall XgCenterDialog(HWND hwnd) noexcept
 {
     // 子ウィンドウか？
     bool bChild = !!(::GetWindowLong(hwnd, GWL_STYLE) & WS_CHILD);
@@ -269,7 +269,7 @@ XgMsgBoxCbtProc(int nCode, WPARAM wParam, LPARAM /*lParam*/)
 
 // 中央寄せメッセージボックスを表示する。
 int __fastcall
-XgCenterMessageBoxW(HWND hwnd, LPCWSTR pszText, LPCWSTR pszCaption, UINT uType)
+XgCenterMessageBoxW(HWND hwnd, LPCWSTR pszText, LPCWSTR pszCaption, UINT uType) noexcept
 {
     // フックされていたらフックを解除する。
     if (s_hMsgBoxHook != nullptr && UnhookWindowsHookEx(s_hMsgBoxHook))
@@ -295,7 +295,7 @@ XgCenterMessageBoxW(HWND hwnd, LPCWSTR pszText, LPCWSTR pszCaption, UINT uType)
 
 // 中央寄せメッセージボックスを表示する。
 int __fastcall
-XgCenterMessageBoxIndirectW(LPMSGBOXPARAMS lpMsgBoxParams)
+XgCenterMessageBoxIndirectW(LPMSGBOXPARAMS lpMsgBoxParams) noexcept
 {
     // フックされていたらフックを解除する。
     if (s_hMsgBoxHook != nullptr && UnhookWindowsHookEx(s_hMsgBoxHook))
@@ -454,7 +454,7 @@ std::wstring XgJsonEncodeString(const std::wstring& str)
 }
 
 // 16進で表す。
-char XgToHex(char code)
+char XgToHex(char code) noexcept
 {
     static const char s_hex[] = "0123456789abcdef";
     assert(0 <= code && code < 16);
@@ -489,7 +489,7 @@ BOOL XgMakePathW(LPCWSTR pszPath)
 //////////////////////////////////////////////////////////////////////////////
 
 // エンディアン変換。
-void XgSwab(LPBYTE pbFile, size_t cbFile)
+void XgSwab(LPBYTE pbFile, size_t cbFile) noexcept
 {
     LPWORD pw = reinterpret_cast<LPWORD>(pbFile);
     size_t cw = (cbFile >> 1);
@@ -568,7 +568,7 @@ std::string XgMakeClipHtmlData(const std::wstring& html_wide,
 //////////////////////////////////////////////////////////////////////////////
 
 // 24BPPビットマップを作成。
-HBITMAP XgCreate24BppBitmap(HDC hDC, LONG width, LONG height)
+HBITMAP XgCreate24BppBitmap(HDC hDC, LONG width, LONG height) noexcept
 {
     BITMAPINFO bmi;
     ZeroMemory(&bmi, sizeof(bmi));
@@ -701,7 +701,7 @@ BOOL XgReadFileAll(LPCWSTR file, std::string& strBinary)
 }
 
 // ファイルを読み込む。
-BOOL XgWriteFileAll(LPCWSTR file, const std::string& strBinary)
+BOOL XgWriteFileAll(LPCWSTR file, const std::string& strBinary) noexcept
 {
     if (FILE *fout = _wfopen(file, L"wb")) {
         bool ret = fwrite(strBinary.c_str(), 1, strBinary.size(), fout);
@@ -828,7 +828,7 @@ BOOL XgReadTextFileAll(LPCWSTR file, std::wstring& strText)
 }
 
 // 画像ファイルか？
-BOOL XgIsImageFile(LPCWSTR pszFileName)
+BOOL XgIsImageFile(LPCWSTR pszFileName) noexcept
 {
     LPCWSTR pchDotExt = PathFindExtensionW(pszFileName);
     if (lstrcmpiW(pchDotExt, L".bmp") == 0 ||
@@ -843,7 +843,7 @@ BOOL XgIsImageFile(LPCWSTR pszFileName)
 }
 
 // テキストファイルか？
-BOOL XgIsTextFile(LPCWSTR pszFileName)
+BOOL XgIsTextFile(LPCWSTR pszFileName) noexcept
 {
     LPCWSTR pchDotExt = PathFindExtensionW(pszFileName);
     return lstrcmpiW(pchDotExt, L".txt") == 0;
@@ -1336,7 +1336,7 @@ std::wstring XG_FileManager::get_looks_file()
     return L"";
 }
 
-void XG_FileManager::delete_handles()
+void XG_FileManager::delete_handles() noexcept
 {
     for (auto& pair : m_path2hbm)
     {
@@ -1398,7 +1398,7 @@ bool XG_FileManager::load_block_image(const std::wstring& path)
 }
 
 // コンボボックスからテキストを取得。
-BOOL ComboBox_RealGetText(HWND hwndCombo, LPWSTR pszText, INT cchText)
+BOOL ComboBox_RealGetText(HWND hwndCombo, LPWSTR pszText, INT cchText) noexcept
 {
     INT iItem = ComboBox_GetCurSel(hwndCombo);
     if (iItem == CB_ERR)
@@ -1410,7 +1410,7 @@ BOOL ComboBox_RealGetText(HWND hwndCombo, LPWSTR pszText, INT cchText)
 }
 
 // コンボボックスにテキストを設定。
-BOOL ComboBox_RealSetText(HWND hwndCombo, LPCWSTR pszText)
+BOOL ComboBox_RealSetText(HWND hwndCombo, LPCWSTR pszText) noexcept
 {
     INT iItem = ComboBox_FindStringExact(hwndCombo, -1, pszText);
     if (iItem == CB_ERR)

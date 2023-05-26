@@ -164,7 +164,7 @@ public:
         ::SetTimer(hwnd, 999, MARKED_INTERVAL, nullptr);
     }
 
-    INT GetCurSel(HWND hwnd)
+    INT GetCurSel(HWND hwnd) noexcept
     {
         INT i = static_cast<INT>(::SendDlgItemMessageW(hwnd, lst1, LB_GETCURSEL, 0, 0));
         return i;

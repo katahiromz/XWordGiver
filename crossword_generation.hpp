@@ -41,8 +41,8 @@
 namespace crossword_generation {
     struct pos_t {
         int m_x, m_y;
-        pos_t(int x, int y) : m_x(x), m_y(y) { }
-        bool operator==(const pos_t& pos) const {
+        constexpr pos_t(int x, int y) noexcept : m_x(x), m_y(y) { }
+        constexpr bool operator==(const pos_t& pos) const noexcept {
             return m_x == pos.m_x && m_y == pos.m_y;
         }
     };
@@ -51,7 +51,7 @@ namespace crossword_generation {
 namespace std {
     template <>
     struct hash<crossword_generation::pos_t> {
-        size_t operator()(const crossword_generation::pos_t& pos) const {
+        size_t operator()(const crossword_generation::pos_t& pos) const noexcept {
             return static_cast<uint16_t>(pos.m_x) | (static_cast<uint16_t>(pos.m_y) << 16);
         }
     };
@@ -81,12 +81,12 @@ struct RULES {
 
 // 文字マスか？
 template <typename t_char>
-inline bool is_letter(t_char ch) {
+inline bool is_letter(t_char ch) noexcept {
     return (ch != '#' && ch != '?');
 }
 
 // プロセッサの数を返す関数。
-inline uint32_t get_num_processors(void) {
+inline uint32_t get_num_processors(void) noexcept {
 #ifdef XWORDGIVER
     return xg_dwThreadCount;
 #elif defined(_WIN32)
@@ -110,7 +110,7 @@ inline void random_shuffle(const t_elem& begin, const t_elem& end) {
 }
 
 // 生成前に初期化。
-inline void reset() {
+inline void reset() noexcept {
     s_generated = s_canceled = false;
 #ifdef XWORDGIVER
     for (auto& info : xg_aThreadInfo) {
@@ -211,7 +211,7 @@ struct board_data_t {
     }
 
     // マス数。
-    int size() const {
+    int size() const noexcept {
         return static_cast<int>(m_data.size());
     }
 
@@ -303,14 +303,14 @@ struct board_t : board_data_t<t_char> {
     }
     // マス(x, y)を取得する。範囲チェックあり。範囲外なら'#'か'?'を返す。
     // x, y: absolute coordinate
-    t_char get_at(int x, int y) const {
+    t_char get_at(int x, int y) const noexcept {
         if (in_range(x, y))
             return board_data_t<t_char>::m_data[y * m_cx + x];
         return t_fixed ? '#' : '?';
     }
     // マス(x, y)をセットする。範囲チェックあり。範囲外なら無視。
     // x, y: absolute coordinate
-    void set_at(int x, int y, t_char ch) {
+    void set_at(int x, int y, t_char ch) noexcept {
         if (in_range(x, y))
             board_data_t<t_char>::m_data[y * m_cx + x] = ch;
     }

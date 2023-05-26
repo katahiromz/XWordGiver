@@ -17,27 +17,27 @@ public:
     std::wstring m_strFontName;
     INT m_nFontSizeInPoints = 0;
 
-    BOOL GetTextColor()
+    BOOL GetTextColor() noexcept
     {
         if (m_bTextColor)
             return m_hwndTextColor.GetColor();
         else
             return CLR_INVALID;
     }
-    void SetTextColor(COLORREF rgbText, BOOL bEnable)
+    void SetTextColor(COLORREF rgbText, BOOL bEnable) noexcept
     {
         m_hwndTextColor.SetColor(rgbText);
         m_bTextColor = bEnable;
     }
 
-    BOOL GetBgColor()
+    BOOL GetBgColor() noexcept
     {
         if (m_bBgColor)
             return m_hwndBgColor.GetColor();
         else
             return CLR_INVALID;
     }
-    void SetBgColor(COLORREF rgbBg, BOOL bEnable)
+    void SetBgColor(COLORREF rgbBg, BOOL bEnable) noexcept
     {
         m_hwndBgColor.SetColor(rgbBg);
         m_bBgColor = bEnable;
@@ -53,7 +53,7 @@ public:
         const LOGFONTW *lplf,
         const TEXTMETRICW *lptm,
         DWORD dwType,
-        LPARAM lParam)
+        LPARAM lParam) noexcept
     {
         if (dwType != TRUETYPE_FONTTYPE)
             return TRUE;

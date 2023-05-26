@@ -33,7 +33,7 @@ public:
     inline static HWND s_hwndHighlightYokoEdit = nullptr;
 
     // ハイライトを更新する。
-    void setHighlight(INT nYoko, INT nTate)
+    void setHighlight(INT nYoko, INT nTate) noexcept
     {
         HWND hwndTateOld = s_hwndHighlightTateEdit;
         HWND hwndYokoOld = s_hwndHighlightYokoEdit;
@@ -74,7 +74,7 @@ public:
     }
 
     // ハイライトに背景色を付ける。
-    HBRUSH OnCtlColor(HWND hwnd, HDC hdc, HWND hwndChild, int type)
+    HBRUSH OnCtlColor(HWND hwnd, HDC hdc, HWND hwndChild, int type) noexcept
     {
         if (hwndChild == s_hwndHighlightTateEdit || hwndChild == s_hwndHighlightYokoEdit)
         {
@@ -97,7 +97,7 @@ public:
     }
 
     // ヒントが変更されたか？
-    static bool AreHintsModified(void)
+    static bool AreHintsModified(void) noexcept
     {
         if (xg_bHintsAdded) {
             return true;
@@ -119,7 +119,7 @@ public:
     }
 
     // ヒントデータを設定する。
-    static void SetHintsData(void)
+    static void SetHintsData(void) noexcept
     {
         for (size_t i = 0; i < xg_vecTateHints.size(); ++i) {
             ::SetWindowTextW(xg_ahwndTateEdits[i], xg_vecTateHints[i].m_strHint.data());
@@ -552,7 +552,7 @@ public:
     }
 
     // ヒントウィンドウが縦にスクロールされた。
-    void OnVScroll(HWND /*hwnd*/, HWND /*hwndCtl*/, UINT code, int pos)
+    void OnVScroll(HWND /*hwnd*/, HWND /*hwndCtl*/, UINT code, int pos) noexcept
     {
         xg_svHintsScrollView.Scroll(SB_VERT, code, pos);
     }
@@ -587,7 +587,7 @@ public:
         xg_hHintsUIFont = nullptr;
     }
 
-    void OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT codeNotify)
+    void OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT codeNotify) noexcept
     {
         if (codeNotify == STN_CLICKED) {
             for (size_t i = 0; i < xg_vecTateHints.size(); ++i) {
@@ -608,7 +608,7 @@ public:
     }
 
     // キーが押された。
-    void OnKey(HWND hwnd, UINT vk, BOOL fDown, int cRepeat, UINT flags)
+    void OnKey(HWND hwnd, UINT vk, BOOL fDown, int cRepeat, UINT flags) noexcept
     {
         if (!fDown)
             return;
@@ -709,14 +709,14 @@ public:
     }
 
     // ヒント ウィンドウのサイズを制限する。
-    void OnGetMinMaxInfo(HWND hwnd, LPMINMAXINFO lpMinMaxInfo)
+    void OnGetMinMaxInfo(HWND hwnd, LPMINMAXINFO lpMinMaxInfo) noexcept
     {
         lpMinMaxInfo->ptMinTrackSize.x = 256;
         lpMinMaxInfo->ptMinTrackSize.y = 128;
     }
 
     // 「ヒント」ウィンドウのコンテキストメニュー。
-    void OnContextMenu(HWND hwnd, HWND hwndContext, UINT xPos, UINT yPos)
+    void OnContextMenu(HWND hwnd, HWND hwndContext, UINT xPos, UINT yPos) noexcept
     {
         WCHAR szClass[8];
         szClass[0] = 0;

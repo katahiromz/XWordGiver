@@ -184,7 +184,7 @@ public:
         }
     }
 
-    void OnPaint(HWND hwnd)
+    void OnPaint(HWND hwnd) noexcept
     {
         // ここでビットマップを使って、イメージを描画する。
         PAINTSTRUCT ps;

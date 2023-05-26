@@ -83,8 +83,8 @@ public:
     void Scroll(INT bar, INT nSB_, INT pos) noexcept;
     INT GetNextPos(INT bar, INT nSB_, INT pos) const noexcept;
 
-          MScrollCtrlInfo& operator[](size_t index);
-    const MScrollCtrlInfo& operator[](size_t index) const;
+          MScrollCtrlInfo& operator[](size_t index) noexcept;
+    const MScrollCtrlInfo& operator[](size_t index) const noexcept;
 
 protected:
     HWND        m_hwndParent;

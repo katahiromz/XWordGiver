@@ -120,7 +120,7 @@ public:
         }
 
         // ソートして一意化。短い方を優先する。
-        std::sort(cands.begin(), cands.end(), [](const std::wstring& x, const std::wstring& y){
+        std::sort(cands.begin(), cands.end(), [](const std::wstring& x, const std::wstring& y) noexcept {
             if (x.size() == y.size())
                 return x < y;
             return x.size() < y.size();
@@ -350,13 +350,13 @@ public:
     }
 
     // 候補ウィンドウが縦にスクロールされた。
-    void OnVScroll(HWND /*hwnd*/, HWND /*hwndCtl*/, UINT code, int pos)
+    void OnVScroll(HWND /*hwnd*/, HWND /*hwndCtl*/, UINT code, int pos) noexcept
     {
         xg_svCandsScrollView.Scroll(SB_VERT, code, pos);
     }
 
     // キーが押された。
-    void OnKey(HWND hwnd, UINT vk, BOOL fDown, int cRepeat, UINT flags)
+    void OnKey(HWND hwnd, UINT vk, BOOL fDown, int cRepeat, UINT flags) noexcept
     {
         if (!fDown)
             return;
@@ -392,7 +392,7 @@ public:
     }
 
     // 候補ウィンドウが破棄された。
-    void OnDestroy(HWND hwnd)
+    void OnDestroy(HWND hwnd) noexcept
     {
         // 現在の位置とサイズを保存する。
         MRect rc;
@@ -434,7 +434,7 @@ public:
     }
 
     // マウスホイールが回転した。
-    void OnMouseWheel(HWND hwnd, int xPos, int yPos, int zDelta, UINT fwKeys)
+    void OnMouseWheel(HWND hwnd, int xPos, int yPos, int zDelta, UINT fwKeys) noexcept
     {
         if (::GetAsyncKeyState(VK_SHIFT) < 0) {
             if (zDelta < 0)
@@ -450,7 +450,7 @@ public:
     }
 
     // 候補ウィンドウのサイズを制限する。
-    void OnGetMinMaxInfo(HWND hwnd, LPMINMAXINFO lpMinMaxInfo)
+    void OnGetMinMaxInfo(HWND hwnd, LPMINMAXINFO lpMinMaxInfo) noexcept
     {
         lpMinMaxInfo->ptMinTrackSize.x = 256;
         lpMinMaxInfo->ptMinTrackSize.y = 128;

@@ -128,13 +128,13 @@
 
 //////////////////////////////////////////////////////////////////////////////
 
-bool XG_UndoBuffer::CanUndo() const {
+bool XG_UndoBuffer::CanUndo() const noexcept {
     if (!m_enabled)
         return false;
     return m_i > 0;
 }
 
-bool XG_UndoBuffer::CanRedo() const {
+bool XG_UndoBuffer::CanRedo() const noexcept {
     if (!m_enabled)
         return false;
     return m_i < size();

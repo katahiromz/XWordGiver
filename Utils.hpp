@@ -18,13 +18,13 @@
 #endif
 
 // リソース文字列を読み込む。
-LPWSTR __fastcall XgLoadStringDx1(int id);
+LPWSTR __fastcall XgLoadStringDx1(int id) noexcept;
 
 // リソース文字列を読み込む。
-LPWSTR __fastcall XgLoadStringDx2(int id);
+LPWSTR __fastcall XgLoadStringDx2(int id) noexcept;
 
 // フィルター文字列を作る。
-LPWSTR __fastcall XgMakeFilterString(LPWSTR psz);
+LPWSTR __fastcall XgMakeFilterString(LPWSTR psz) noexcept;
 
 // ショートカットのターゲットのパスを取得する。
 bool __fastcall XgGetPathOfShortcutW(LPCWSTR pszLnkFile, LPWSTR pszPath);
@@ -98,15 +98,15 @@ bool __fastcall xg_submultiseteq(const std::unordered_multiset<WCHAR>& ms1,
 std::wstring __fastcall XgUtf8ToUnicode(const std::string& ansi);
 
 // ダイアログを中央によせる関数。
-void __fastcall XgCenterDialog(HWND hwnd);
+void __fastcall XgCenterDialog(HWND hwnd) noexcept;
 
 // 中央寄せメッセージボックスを表示する。
 int __fastcall
-XgCenterMessageBoxW(HWND hwnd, LPCWSTR pszText, LPCWSTR pszCaption, UINT uType);
+XgCenterMessageBoxW(HWND hwnd, LPCWSTR pszText, LPCWSTR pszCaption, UINT uType) noexcept;
 
 // 中央寄せメッセージボックスを表示する。
 int __fastcall
-XgCenterMessageBoxIndirectW(LPMSGBOXPARAMS lpMsgBoxParams);
+XgCenterMessageBoxIndirectW(LPMSGBOXPARAMS lpMsgBoxParams) noexcept;
 
 // ReadMeを開く。
 void __fastcall XgOpenReadMe(HWND hwnd);
@@ -130,10 +130,10 @@ std::string XgUnicodeToAnsi(const std::wstring& wide);
 std::wstring XgJsonEncodeString(const std::wstring& str);
 
 // 16進で表す。
-char XgToHex(char code);
+char XgToHex(char code) noexcept;
 
 // 24BPPビットマップを作成。
-HBITMAP XgCreate24BppBitmap(HDC hDC, LONG width, LONG height);
+HBITMAP XgCreate24BppBitmap(HDC hDC, LONG width, LONG height) noexcept;
 
 BOOL PackedDIB_CreateFromHandle(std::vector<BYTE>& vecData, HBITMAP hbm);
 
@@ -141,11 +141,6 @@ BOOL PackedDIB_CreateFromHandle(std::vector<BYTE>& vecData, HBITMAP hbm);
 // パスを作る。
 
 BOOL XgMakePathW(LPCWSTR pszPath);
-
-//////////////////////////////////////////////////////////////////////////////
-
-// エンディアン変換。
-void XgSwab(LPBYTE pbFile, DWORD cbFile);
 
 //////////////////////////////////////////////////////////////////////////////
 
@@ -236,21 +231,21 @@ void XgHexToBin(std::vector<BYTE>& data, const std::wstring& str);
 // 画像を読み込む。
 BOOL XgLoadImage(const std::wstring& filename, HBITMAP& hbm, HENHMETAFILE& hEMF);
 // 画像ファイルか？
-BOOL XgIsImageFile(LPCWSTR pszFileName);
+BOOL XgIsImageFile(LPCWSTR pszFileName) noexcept;
 // テキストファイルか？
-BOOL XgIsTextFile(LPCWSTR pszFileName);
+BOOL XgIsTextFile(LPCWSTR pszFileName) noexcept;
 // ファイルを読み込む。
 BOOL XgReadFileAll(LPCWSTR file, std::string& strBinary);
 BOOL XgReadTextFileAll(LPCWSTR file, std::wstring& strText);
 // ファイルを読み込む。
-BOOL XgWriteFileAll(LPCWSTR file, const std::string& strBinary);
+BOOL XgWriteFileAll(LPCWSTR file, const std::string& strBinary) noexcept;
 // エンディアン変換。
-void XgSwab(LPBYTE pbFile, size_t cbFile);
+void XgSwab(LPBYTE pbFile, size_t cbFile) noexcept;
 
 // コンボボックスからテキストを取得。
-BOOL ComboBox_RealGetText(HWND hwndCombo, LPWSTR pszText, INT cchText);
+BOOL ComboBox_RealGetText(HWND hwndCombo, LPWSTR pszText, INT cchText) noexcept;
 // コンボボックスにテキストを設定。
-BOOL ComboBox_RealSetText(HWND hwndCombo, LPCWSTR pszText);
+BOOL ComboBox_RealSetText(HWND hwndCombo, LPCWSTR pszText) noexcept;
 
 struct XG_FileManager
 {
@@ -271,7 +266,7 @@ struct XG_FileManager
     void set_file(LPCWSTR filename);
     std::wstring get_looks_file();
     void set_looks(LPCWSTR looks);
-    void delete_handles();
+    void delete_handles() noexcept;
     bool load_image(LPCWSTR filename);
     bool save_image(const std::wstring& path);
     bool save_image2(std::wstring& path);

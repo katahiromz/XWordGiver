@@ -78,7 +78,7 @@ BOOL XgCreateInputPalette(HWND hwndOwner);
 // 入力パレットを作成する。
 BOOL XgCreateInputPalette(HWND hwndOwner, XG_InputMode imode);
 // 入力パレットを破棄する。
-BOOL XgDestroyInputPalette(void);
+BOOL XgDestroyInputPalette(void) noexcept;
 // 入力モードを切り替える。
 void __fastcall XgSetInputMode(HWND hwnd, XG_InputMode mode, BOOL bForce = FALSE);
 // 文字が入力された。
@@ -89,7 +89,7 @@ void __fastcall XgCharBack(HWND hwnd);
 // 入力方向を切り替える。
 void __fastcall XgInputDirection(HWND hwnd, INT nDirection);
 // 文字送りを切り替える。
-void __fastcall XgSetCharFeed(HWND hwnd, INT nMode);
+void __fastcall XgSetCharFeed(HWND hwnd, INT nMode) noexcept;
 // 改行する。
 void __fastcall XgReturn(HWND hwnd);
 // 二重マス切り替え。
@@ -164,7 +164,7 @@ inline BOOL __fastcall XgSetVScrollInfo(LPSCROLLINFO psi, BOOL bRedraw) noexcept
 }
 
 // スクロール情報を設定する。
-void __fastcall XgUpdateScrollInfo(HWND hwnd, int x, int y);
+void __fastcall XgUpdateScrollInfo(HWND hwnd, int x, int y) noexcept;
 // キャレットが見えるように、必要ならばスクロールする。
 void __fastcall XgEnsureCaretVisible(HWND hwnd);
 
@@ -174,9 +174,9 @@ void __fastcall XgEnsureCaretVisible(HWND hwnd);
 INT __fastcall XgGetPreferredMaxLength(void) noexcept;
 
 // マス位置を取得する。
-VOID XgGetCellPosition(RECT& rc, INT i1, INT j1, INT i2, INT j2, BOOL bScroll);
+VOID XgGetCellPosition(RECT& rc, INT i1, INT j1, INT i2, INT j2, BOOL bScroll) noexcept;
 // マス位置を設定する。
-VOID XgSetCellPosition(LONG& x, LONG& y, INT& i, INT& j, BOOL bEnd);
+VOID XgSetCellPosition(LONG& x, LONG& y, INT& i, INT& j, BOOL bEnd) noexcept;
 
 // マウスの中央ボタンの処理に使う変数。
 extern BOOL xg_bMButtonDragging;

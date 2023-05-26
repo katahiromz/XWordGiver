@@ -529,7 +529,7 @@ VOID XgSortAndUniquePatterns(patterns_t& patterns)
     });
 
     // 一意化する。
-    auto last = std::unique(patterns.begin(), patterns.end(), [](const XG_PATDATA& a, const XG_PATDATA& b) {
+    auto last = std::unique(patterns.begin(), patterns.end(), [](const XG_PATDATA& a, const XG_PATDATA& b) noexcept {
         return a.text == b.text;
     });
     patterns.erase(last, patterns.end());
@@ -564,7 +564,7 @@ BOOL XgPatternsUnitTest(void)
             auto flip_v = XgFlipPatternV(pat);
             auto flip_hv = XgFlipPatternH(flip_v);
             temp_pats.erase(
-                std::remove_if(temp_pats.begin(), temp_pats.end(), [&](const XG_PATDATA& pat2) {
+                std::remove_if(temp_pats.begin(), temp_pats.end(), [&](const XG_PATDATA& pat2) noexcept {
                     return transposed.text == pat2.text ||
                            flip_h.text == pat2.text ||
                            flip_v.text == pat2.text ||
@@ -629,7 +629,7 @@ BOOL XgPatternsUnitTest(void)
 
 // 候補があるか？
 template <bool t_alternative>
-bool __fastcall XgAnyCandidateAddBlack(const std::wstring& pattern)
+bool __fastcall XgAnyCandidateAddBlack(const std::wstring& pattern) noexcept
 {
     // パターンの長さ。
     const int patlen = static_cast<int>(pattern.size());
@@ -718,7 +718,7 @@ break_continue:;
 
 // 候補があるか？（黒マス追加なし）
 template <bool t_alternative>
-bool __fastcall XgAnyCandidateNoAddBlack(const std::wstring& pattern)
+bool __fastcall XgAnyCandidateNoAddBlack(const std::wstring& pattern) noexcept
 {
     // パターンの長さ。
     const int patlen = static_cast<int>(pattern.size());
@@ -4414,19 +4414,19 @@ void __fastcall XgEndSolve(void) noexcept
 }
 
 // ポイント単位をピクセル単位に変換する（X座標）。
-float XPixelsFromPoints(HDC hDC, float points)
+float XPixelsFromPoints(HDC hDC, float points) noexcept
 {
     return points * static_cast<float>(::GetDeviceCaps(hDC, LOGPIXELSX)) / 72;
 }
 
 // ポイント単位をピクセル単位に変換する（Y座標）。
-float YPixelsFromPoints(HDC hDC, float points)
+float YPixelsFromPoints(HDC hDC, float points) noexcept
 {
     return points * static_cast<float>(::GetDeviceCaps(hDC, LOGPIXELSY)) / 72;
 }
 
 // キャレットを描画する。
-void XgDrawCaret(HDC hdc, INT i, INT j, INT nCellSize, HPEN hCaretPen)
+void XgDrawCaret(HDC hdc, INT i, INT j, INT nCellSize, HPEN hCaretPen) noexcept
 {
     RECT rc;
     ::SetRect(&rc,
@@ -4466,7 +4466,7 @@ void XgDrawCaret(HDC hdc, INT i, INT j, INT nCellSize, HPEN hCaretPen)
 }
 
 // 文字マスを描画する。
-void __fastcall XgDrawLetterCell(HDC hdc, WCHAR ch, RECT& rc, HFONT hFont)
+void __fastcall XgDrawLetterCell(HDC hdc, WCHAR ch, RECT& rc, HFONT hFont) noexcept
 {
     // 文字を変換する。
     if (xg_bHiragana) {
@@ -6439,7 +6439,7 @@ void __fastcall XgSaveAnsAsImage(HWND hwnd)
 }
 
 // EMFの寸法をセットする。
-void XgSetSizeOfEMF(HDC hdcEMF, const SIZE *psiz)
+void XgSetSizeOfEMF(HDC hdcEMF, const SIZE *psiz) noexcept
 {
     //SetMapMode(hdcEMF, MM_ISOTROPIC);
     //SetWindowExtEx(hdcEMF, psiz->cx, psiz->cy, nullptr);
@@ -6714,7 +6714,7 @@ bool XG_Board::IsLineSymmetryH() const noexcept
 }
 
 // 必要ならルールに従って対称にする。
-void XG_Board::Mirror()
+void XG_Board::Mirror() noexcept
 {
     const int nRows = xg_nRows;
     const int nCols = xg_nCols;
@@ -7446,7 +7446,7 @@ unsigned __stdcall XgGenerateBlacksLineSymH(void *param) noexcept
     return 1;
 }
 
-void __fastcall XgStartGenerateBlacks(void)
+void __fastcall XgStartGenerateBlacks(void) noexcept
 {
     xg_bBlacksGenerated = false;
     xg_bCancelled = false;

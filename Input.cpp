@@ -88,7 +88,7 @@ skip:;
 }
 
 // アクセント記号付きの文字にする。
-WCHAR XgConvertAccent(WCHAR chAccent, WCHAR ch)
+WCHAR XgConvertAccent(WCHAR chAccent, WCHAR ch) noexcept
 {
     switch (chAccent) {
     case L'^':
@@ -265,7 +265,7 @@ WCHAR XgConvertAccent(WCHAR chAccent, WCHAR ch)
 }
 
 // 文字送りを切り替える。
-void __fastcall XgSetCharFeed(HWND hwnd, INT nMode)
+void __fastcall XgSetCharFeed(HWND hwnd, INT nMode) noexcept
 {
     switch (nMode) {
     case 1:
@@ -1299,13 +1299,13 @@ void InputPal_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT codeNotify)
     ::SetForegroundWindow(xg_hMainWnd);
 }
 
-void InputPal_OnDestroy(HWND hwnd)
+void InputPal_OnDestroy(HWND hwnd) noexcept
 {
     xg_hwndInputPalette = nullptr;
 }
 
 // キーが押された。
-void InputPal_OnKey(HWND hwnd, UINT vk, BOOL fDown, int cRepeat, UINT flags)
+void InputPal_OnKey(HWND hwnd, UINT vk, BOOL fDown, int cRepeat, UINT flags) noexcept
 {
     if (!fDown)
         return;
@@ -1327,7 +1327,7 @@ void InputPal_OnKey(HWND hwnd, UINT vk, BOOL fDown, int cRepeat, UINT flags)
     }
 }
 
-void InputPal_OnMove(HWND hwnd, int x, int y)
+void InputPal_OnMove(HWND hwnd, int x, int y) noexcept
 {
     MRect rc;
     ::GetWindowRect(hwnd, &rc);
@@ -1352,7 +1352,7 @@ XgInputPaletteDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 }
 
 // 入力パレットを破棄する。
-BOOL XgDestroyInputPalette(void)
+BOOL XgDestroyInputPalette(void) noexcept
 {
     xg_bShowInputPalette = false;
     if (xg_hwndInputPalette) {
@@ -1364,7 +1364,7 @@ BOOL XgDestroyInputPalette(void)
 }
 
 // 辞書から入力パレットを開く。
-BOOL XgCreateInputPaletteByDict(HWND hwndOwner)
+BOOL XgCreateInputPaletteByDict(HWND hwndOwner) noexcept
 {
     WCHAR ch;
     if (xg_dict_1.size()) {

@@ -36,7 +36,7 @@ public:
 
     // タイプによりフィルターを行う。
     XG_NOINLINE
-    BOOL FilterPatBySize(const XG_PATDATA& pat, INT type0, INT type1) {
+    BOOL FilterPatBySize(const XG_PATDATA& pat, INT type0, INT type1) noexcept {
         if (pat.num_columns > XG_MAX_PAT_SIZE || pat.num_rows > XG_MAX_PAT_SIZE)
             return FALSE;
 

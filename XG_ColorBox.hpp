@@ -41,7 +41,7 @@ public:
         InvalidateRect(m_hWnd, nullptr, TRUE);
     }
 
-    void DoChooseColor()
+    void DoChooseColor() noexcept
     {
         CHOOSECOLORW cc = { sizeof(cc), GetParent(m_hWnd) };
         cc.rgbResult = GetColor();
@@ -53,7 +53,7 @@ public:
         }
     }
 
-    virtual void OnOwnerDrawItem(const DRAWITEMSTRUCT *pdis)
+    virtual void OnOwnerDrawItem(const DRAWITEMSTRUCT *pdis) noexcept
     {
         if (pdis->hwndItem != m_hWnd || pdis->CtlType != ODT_BUTTON)
             return;

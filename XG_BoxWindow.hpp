@@ -27,9 +27,9 @@
 extern BOOL xg_bFileModified;
 
 // マス位置を取得する。
-VOID XgGetCellPosition(RECT& rc, INT i1, INT j1, INT i2, INT j2, BOOL bScroll);
+VOID XgGetCellPosition(RECT& rc, INT i1, INT j1, INT i2, INT j2, BOOL bScroll) noexcept;
 // マス位置を設定する。
-VOID XgSetCellPosition(LONG& x, LONG& y, INT& i, INT& j, BOOL bEnd);
+VOID XgSetCellPosition(LONG& x, LONG& y, INT& i, INT& j, BOOL bEnd) noexcept;
 
 class XG_BoxWindow : public XG_Window
 {
@@ -69,7 +69,7 @@ public:
         wcx.style = CS_DBLCLKS;
     }
 
-    HRGN DoGetRgn(HWND hwnd)
+    HRGN DoGetRgn(HWND hwnd) noexcept
     {
         RECT rc, rcInner1, rcInner2;
         GetWindowRect(hwnd, &rc);
@@ -132,7 +132,7 @@ public:
         return hRgn;
     }
 
-    void DoDrawGrips(HWND hwnd, HDC hDC, RECT& rc)
+    void DoDrawGrips(HWND hwnd, HDC hDC, RECT& rc) noexcept
     {
         RECT rcInner1 = rc;
         InflateRect(&rcInner1, -CXY_GRIP / 2, -CXY_GRIP / 2);
@@ -224,7 +224,7 @@ public:
         return TRUE;
     }
 
-    BOOL OnNCActivate(HWND hwnd, BOOL fActive, HWND hwndActDeact, BOOL fMinimized)
+    BOOL OnNCActivate(HWND hwnd, BOOL fActive, HWND hwndActDeact, BOOL fMinimized) noexcept
     {
         return FALSE;
     }
@@ -240,7 +240,7 @@ public:
         ReleaseDC(hwnd, hDC);
     }
 
-    BOOL OnEraseBkgnd(HWND hwnd, HDC hdc)
+    BOOL OnEraseBkgnd(HWND hwnd, HDC hdc) noexcept
     {
         return TRUE;
     }
@@ -265,14 +265,14 @@ public:
         EndPaint(hwnd, &ps);
     }
 
-    UINT OnNCCalcSize(HWND hwnd, BOOL fCalcValidRects, NCCALCSIZE_PARAMS * lpcsp)
+    UINT OnNCCalcSize(HWND hwnd, BOOL fCalcValidRects, NCCALCSIZE_PARAMS * lpcsp) noexcept
     {
         lpcsp->rgrc[0] = lpcsp->rgrc[1];
         InflateRect(&lpcsp->rgrc[0], -CXY_GRIP, -CXY_GRIP);
         return WVR_REDRAW | WVR_VALIDRECTS;
     }
 
-    UINT OnNCHitTest(HWND hwnd, int x, int y)
+    UINT OnNCHitTest(HWND hwnd, int x, int y) noexcept
     {
         RECT rc, rcGrip;
         GetWindowRect(hwnd, &rc);
@@ -318,7 +318,7 @@ public:
         return HTTRANSPARENT;
     }
 
-    void OnGetMinMaxInfo(HWND hwnd, LPMINMAXINFO lpMinMaxInfo)
+    void OnGetMinMaxInfo(HWND hwnd, LPMINMAXINFO lpMinMaxInfo) noexcept
     {
         lpMinMaxInfo->ptMinTrackSize.x = CXY_GRIP * 2;
         lpMinMaxInfo->ptMinTrackSize.y = CXY_GRIP * 2;
@@ -350,7 +350,7 @@ public:
         ::SetTimer(m_hWnd, 999, 300, nullptr);
     }
 
-    void OnTimer(HWND hwnd, UINT id)
+    void OnTimer(HWND hwnd, UINT id) noexcept
     {
         if (id == 999)
         {
@@ -360,7 +360,7 @@ public:
         }
     }
 
-    void DoRedraw(HWND hwnd)
+    void DoRedraw(HWND hwnd) noexcept
     {
         MRect rc = m_rcOld;
         MapWindowRect(nullptr, m_hwndParent, &rc);
@@ -382,7 +382,7 @@ public:
         return m_hWnd != nullptr;
     }
 
-    void OnNCRButtonDown(HWND hwnd, BOOL fDoubleClick, int x, int y, UINT codeHitTest)
+    void OnNCRButtonDown(HWND hwnd, BOOL fDoubleClick, int x, int y, UINT codeHitTest) noexcept
     {
         HMENU hMenu = LoadMenu(xg_hInstance, MAKEINTRESOURCEW(3));
         HMENU hSubMenu = GetSubMenu(hMenu, 1);
@@ -692,12 +692,12 @@ public:
     {
     }
 
-    void SetTextColor(COLORREF clr)
+    void SetTextColor(COLORREF clr) noexcept
     {
         m_rgbText = clr;
         InvalidateRect(m_hWnd, nullptr, TRUE);
     }
-    void SetBgColor(COLORREF clr)
+    void SetBgColor(COLORREF clr) noexcept
     {
         m_rgbBg = clr;
         InvalidateRect(m_hWnd, nullptr, TRUE);
@@ -818,7 +818,7 @@ public:
         return FALSE;
     }
 
-    DWORD SwapRandB(DWORD value) const
+    DWORD SwapRandB(DWORD value) const noexcept
     {
         BYTE r = GetRValue(value);
         BYTE g = GetGValue(value);

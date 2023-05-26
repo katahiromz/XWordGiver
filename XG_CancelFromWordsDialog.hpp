@@ -23,7 +23,7 @@ public:
         ::SetTimer(hwnd, uTimerID, INTERVAL, nullptr);
     }
 
-    void DoCancel(HWND hwnd)
+    void DoCancel(HWND hwnd) noexcept
     {
         // タイマーを解除する。
         ::KillTimer(hwnd, uTimerID);

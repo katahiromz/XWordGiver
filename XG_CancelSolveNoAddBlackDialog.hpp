@@ -14,7 +14,7 @@ public:
     {
     }
 
-    void Restart(HWND hwnd)
+    void Restart(HWND hwnd) noexcept
     {
         xg_dwlTick1 = ::GetTickCount64();
         // スマート解決なら、黒マスを生成する。
@@ -23,7 +23,7 @@ public:
         ::SetTimer(hwnd, uTimerID, INTERVAL, nullptr);
     }
 
-    void DoCancel(HWND hwnd)
+    void DoCancel(HWND hwnd) noexcept
     {
         // タイマーを解除する。
         ::KillTimer(hwnd, uTimerID);
@@ -34,7 +34,7 @@ public:
         XgCloseThreads();
     }
 
-    void DoRetry(HWND hwnd)
+    void DoRetry(HWND hwnd) noexcept
     {
     }
 

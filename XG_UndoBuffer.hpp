@@ -157,18 +157,18 @@ struct XG_UndoInfo {
     }
 
     XG_UndoInfo(UINT id, shared_ptr<XG_UndoData> before,
-                         shared_ptr<XG_UndoData> after) :
+                         shared_ptr<XG_UndoData> after) noexcept :
         nCommandID(id), pBefore(before), pAfter(after)
     {
     }
 
-    XG_UndoInfo(const XG_UndoInfo& info) :
+    XG_UndoInfo(const XG_UndoInfo& info) noexcept :
         nCommandID(info.nCommandID), pBefore(info.pBefore),
         pAfter(info.pAfter)
     {
     }
 
-    XG_UndoInfo& operator=(const XG_UndoInfo& info) {
+    XG_UndoInfo& operator=(const XG_UndoInfo& info) noexcept {
         nCommandID = info.nCommandID;
         pBefore = info.pBefore;
         pAfter = info.pAfter;
@@ -198,8 +198,8 @@ public:
         std::deque<XG_UndoInfo>(ub), m_i(ub.m_i),
         m_enabled(ub.m_enabled) { }
 
-    bool CanUndo() const;
-    bool CanRedo() const;
+    bool CanUndo() const noexcept;
+    bool CanRedo() const noexcept;
     bool Undo();
     bool Redo();
 
@@ -219,7 +219,7 @@ public:
         m_enabled = enabled;
     }
 
-    void clear() {
+    void clear() noexcept {
         super_type::clear();
         m_i = 0;
     }

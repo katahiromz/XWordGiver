@@ -446,7 +446,7 @@ public:
     void __fastcall SetAt(const XG_Pos& pos, WCHAR ch) noexcept {
         return SetAt(pos.m_i, pos.m_j, ch);
     }
-    void __fastcall SetAt2(int i, int j, int nRows, int nCols, WCHAR ch) {
+    void __fastcall SetAt2(int i, int j, int nRows, int nCols, WCHAR ch) noexcept {
         UNREFERENCED_PARAMETER(nRows);
         m_vCells[i * nCols + j] = ch;
     }
@@ -509,7 +509,7 @@ public:
     // 黒マスが線対称（ヨコ）か？
     bool IsLineSymmetryH() const noexcept;
     // 必要ならルールに従って対称にする。
-    void Mirror();
+    void Mirror() noexcept;
 
     // 黒斜三連か？
     bool ThreeDiagonals() const noexcept;
@@ -674,7 +674,7 @@ void __fastcall XgStartSolve_Smart(void) noexcept;
 void __fastcall XgEndSolve(void) noexcept;
 
 // 黒マスパターンを生成する。
-void __fastcall XgStartGenerateBlacks(void);
+void __fastcall XgStartGenerateBlacks(void) noexcept;
 
 // ステータスバーを更新する。
 void __fastcall XgUpdateStatusBar(HWND hwnd);
@@ -712,7 +712,7 @@ typedef enum XG_VIEW_MODE
 extern XG_VIEW_MODE xg_nViewMode;
 
 // EMFの寸法をセットする。
-void XgSetSizeOfEMF(HDC hdcEMF, const SIZE *psiz);
+void XgSetSizeOfEMF(HDC hdcEMF, const SIZE *psiz) noexcept;
 
 //////////////////////////////////////////////////////////////////////////////
 // inline functions

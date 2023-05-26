@@ -284,22 +284,23 @@ INT xg_nMarkingY = CW_USEDEFAULT;
 // スクロール関連。
 
 // マス位置を取得する。
-VOID XgGetCellPosition(RECT& rc, INT i1, INT j1, INT i2, INT j2, BOOL bScroll)
+VOID XgGetCellPosition(RECT& rc, INT i1, INT j1, INT i2, INT j2, BOOL bScroll) noexcept
 {
     INT nCellSize = xg_nCellSize * xg_nZoomRate / 100;
 
-    ::SetRect(&rc,
-        static_cast<int>(xg_nMargin + j1 * nCellSize), 
-        static_cast<int>(xg_nMargin + i1 * nCellSize),
-        static_cast<int>(xg_nMargin + j2 * nCellSize), 
-        static_cast<int>(xg_nMargin + i2 * nCellSize));
+    rc = {
+        xg_nMargin + j1 * nCellSize,
+        xg_nMargin + i1 * nCellSize,
+        xg_nMargin + j2 * nCellSize,
+        xg_nMargin + i2 * nCellSize
+    };
 
     if (bScroll)
         ::OffsetRect(&rc, -XgGetHScrollPos(), -XgGetVScrollPos());
 }
 
 // マス位置を設定する。
-VOID XgSetCellPosition(LONG& x, LONG& y, INT& i, INT& j, BOOL bEnd)
+VOID XgSetCellPosition(LONG& x, LONG& y, INT& i, INT& j, BOOL bEnd) noexcept
 {
     INT nCellSize = xg_nCellSize * xg_nZoomRate / 100;
 
@@ -677,7 +678,7 @@ void __fastcall XgSetCaretPos(INT iRow, INT jCol)
 }
 
 // スクロール情報を設定する。
-void __fastcall XgUpdateScrollInfo(HWND hwnd, int x, int y)
+void __fastcall XgUpdateScrollInfo(HWND hwnd, int x, int y) noexcept
 {
     SIZE siz;
     MRect rcClient;
