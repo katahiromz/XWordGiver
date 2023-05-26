@@ -108,7 +108,7 @@ public:
                     xg_str_trim(str);
                     if (str.empty())
                         continue;
-                    if (str.at(0) == 0xFEFF || str.at(0) == L';')
+                    if (str[0] == 0xFEFF || str[0] == L';')
                         continue;
                     ComboBox_AddString(hCmb1, str.c_str());
                 }
@@ -437,11 +437,11 @@ public:
                 continue;
 
             bool minus = false;
-            if (str.at(0) == L'-') {
+            if (str[0] == L'-') {
                 minus = true;
                 str = str.substr(1);
             }
-            if (str.at(0) == L'+') {
+            if (str[0] == L'+') {
                 str = str.substr(1);
             }
 

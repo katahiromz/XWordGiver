@@ -652,8 +652,8 @@ bool __fastcall XgAnyCandidateAddBlack(const std::wstring& pattern)
     // パターンに空白があることを仮定する。
     bool bSpaceFound = false;
     for (INT i = 0; i < patlen; i++) {
-        assert(pattern.at(i) != ZEN_BLACK);
-        if (pattern.at(i) != ZEN_SPACE)
+        assert(pattern[i] != ZEN_BLACK);
+        if (pattern[i] != ZEN_SPACE)
             bSpaceFound = true;
     }
     assert(bSpaceFound);
@@ -662,7 +662,7 @@ bool __fastcall XgAnyCandidateAddBlack(const std::wstring& pattern)
     // パターンが３字以上か？
     if (patlen > 2) {
         // 孤立した文字マスが左端か？
-        if (pattern.at(0) != ZEN_SPACE && pattern.at(1) == ZEN_SPACE) {
+        if (pattern[0] != ZEN_SPACE && pattern[1] == ZEN_SPACE) {
             return true;    // 孤立した文字マスがあった。
         } else {
             bool bCharNotFound = true;  // 文字マスがなかったか？
@@ -670,8 +670,8 @@ bool __fastcall XgAnyCandidateAddBlack(const std::wstring& pattern)
             // 孤立した文字マスが中にあるかを調べる。
             // ついでに文字マスが途中にあるか調べる。
             for (INT j = 1; j < patlen - 1; j++) {
-                if (pattern.at(j) != ZEN_SPACE) {
-                    if (pattern.at(j - 1) == ZEN_SPACE && pattern.at(j + 1) == ZEN_SPACE) {
+                if (pattern[j] != ZEN_SPACE) {
+                    if (pattern[j - 1] == ZEN_SPACE && pattern[j + 1] == ZEN_SPACE) {
                         return true;    // 孤立した文字マスがあった。
                     }
                     bCharNotFound = false;
@@ -681,7 +681,7 @@ bool __fastcall XgAnyCandidateAddBlack(const std::wstring& pattern)
 
             if (bCharNotFound) {
                 // 孤立した文字マスが右端か？
-                if (pattern.at(patlen - 1) != ZEN_SPACE && pattern.at(patlen - 2) == ZEN_SPACE) {
+                if (pattern[patlen - 1] != ZEN_SPACE && pattern[patlen - 2] == ZEN_SPACE) {
                     return true;    // 孤立した文字マスがあった。
                 }
             }
@@ -701,18 +701,18 @@ bool __fastcall XgAnyCandidateAddBlack(const std::wstring& pattern)
         const int patlen_minus_wordlen = patlen - wordlen;
         for (INT j = 0; j <= patlen_minus_wordlen; j++) {
             // もし単語の位置の前後に文字があったらスキップする。
-            if (j > 0 && pattern.at(j - 1) != ZEN_SPACE)
+            if (j > 0 && pattern[j - 1] != ZEN_SPACE)
                 continue;
-            if (j < patlen_minus_wordlen && pattern.at(j + wordlen) != ZEN_SPACE)
+            if (j < patlen_minus_wordlen && pattern[j + wordlen] != ZEN_SPACE)
                 continue;
 
             // 区間[j, j + wordlen - 1]に文字マスがあるか？
             // 単語がにマッチするか？
             bool bCharFound = false;
             for (INT k = 0; k < wordlen; k++) {
-                if (pattern.at(j + k) != ZEN_SPACE) {
+                if (pattern[j + k] != ZEN_SPACE) {
                     bCharFound = true;
-                    if (pattern.at(j + k) != word.at(k)) {
+                    if (pattern[j + k] != word[k]) {
                         // マッチしなかった。
                         goto break_continue;
                     }
@@ -741,8 +741,8 @@ bool __fastcall XgAnyCandidateNoAddBlack(const std::wstring& pattern)
     // パターンに空白があることを仮定する。
     bool bSpaceFound = false;
     for (INT i = 0; i < patlen; i++) {
-        assert(pattern.at(i) != ZEN_BLACK);
-        if (pattern.at(i) != ZEN_SPACE)
+        assert(pattern[i] != ZEN_BLACK);
+        if (pattern[i] != ZEN_SPACE)
             bSpaceFound = true;
     }
     assert(bSpaceFound);
@@ -762,9 +762,9 @@ bool __fastcall XgAnyCandidateNoAddBlack(const std::wstring& pattern)
         // 区間[0, wordlen - 1]に文字マスがあるか？
         bool bCharFound = false;
         for (INT k = 0; k < wordlen; k++) {
-            if (pattern.at(k) != ZEN_SPACE) {
+            if (pattern[k] != ZEN_SPACE) {
                 bCharFound = true;
-                if (pattern.at(k) != word.at(k)) {
+                if (pattern[k] != word[k]) {
                     // マッチしなかった。
                     goto break_continue;
                 }
@@ -1890,8 +1890,8 @@ XgGetCandidatesAddBlack(
     // パターンに空白があることを仮定する。
     bool bSpaceFound = false;
     for (INT i = 0; i < patlen; i++) {
-        assert(pattern.at(i) != ZEN_BLACK);
-        if (pattern.at(i) == ZEN_SPACE)
+        assert(pattern[i] != ZEN_BLACK);
+        if (pattern[i] == ZEN_SPACE)
             bSpaceFound = true;
     }
     assert(bSpaceFound);
@@ -1912,9 +1912,9 @@ XgGetCandidatesAddBlack(
     // パターンが3字以上か？
     if (patlen > 2) {
         // 孤立した文字マスが左端か？
-        if (result.at(0) != ZEN_SPACE && result.at(1) == ZEN_SPACE) {
+        if (result[0] != ZEN_SPACE && result[1] == ZEN_SPACE) {
             // その右にブロックを置いたものを候補にする。
-            result.at(1) = ZEN_BLACK;
+            result[1] = ZEN_BLACK;
             cands.emplace_back(result);
             result = pattern;
             // これは先に処理されるべきなので、ランダム化から除外する。
@@ -1924,11 +1924,11 @@ XgGetCandidatesAddBlack(
 
             // 孤立した文字マスが中にあるか？
             for (INT j = 1; j < patlen - 1; j++) {
-                if (result.at(j) != ZEN_SPACE) {
-                    if (result.at(j - 1) == ZEN_SPACE && result.at(j + 1) == ZEN_SPACE) {
+                if (result[j] != ZEN_SPACE) {
+                    if (result[j - 1] == ZEN_SPACE && result[j + 1] == ZEN_SPACE) {
                         // 孤立した文字マスがあった。
                         // その両端にブロックを置く。
-                        result.at(j - 1) = result.at(j + 1) = ZEN_BLACK;
+                        result[j - 1] = result[j + 1] = ZEN_BLACK;
                         cands.emplace_back(result);
                         result = pattern;
                         // これは先に処理されるべきなので、ランダム化から除外する。
@@ -1941,9 +1941,9 @@ XgGetCandidatesAddBlack(
 
             if (bCharNotFound) {
                 // 孤立した文字マスが右端か？
-                if (result.at(patlen - 1) != ZEN_SPACE && result.at(patlen - 2) == ZEN_SPACE) {
+                if (result[patlen - 1] != ZEN_SPACE && result[patlen - 2] == ZEN_SPACE) {
                     // その左にブロックを置く。
-                    result.at(patlen - 2) = ZEN_BLACK;
+                    result[patlen - 2] = ZEN_BLACK;
                     cands.emplace_back(result);
                     result = pattern;
                     // これは先に処理されるべきなので、ランダム化から除外する。
@@ -1965,17 +1965,17 @@ XgGetCandidatesAddBlack(
         const int patlen_minus_wordlen = patlen - wordlen;
         for (INT j = 0; j <= patlen_minus_wordlen; j++) {
             // 区間[j, j + wordlen - 1]の前後に文字があったらスキップする。
-            if (j > 0 && pattern.at(j - 1) != ZEN_SPACE)
+            if (j > 0 && pattern[j - 1] != ZEN_SPACE)
                 continue;
-            if (j < patlen_minus_wordlen && pattern.at(j + wordlen) != ZEN_SPACE)
+            if (j < patlen_minus_wordlen && pattern[j + wordlen] != ZEN_SPACE)
                 continue;
 
             // 区間[j, j + wordlen - 1]に文字マスがあるか？
             bool bCharFound = false;
             const int j_plus_wordlen = j + wordlen;
             for (int m = j; m < j_plus_wordlen; m++) {
-                assert(pattern.at(m) != ZEN_BLACK);
-                if (pattern.at(m) != ZEN_SPACE) {
+                assert(pattern[m] != ZEN_BLACK);
+                if (pattern[m] != ZEN_SPACE) {
                     bCharFound = true;
                     break;
                 }
@@ -1986,7 +1986,7 @@ XgGetCandidatesAddBlack(
             // パターンが単語にマッチするか？
             bool bMatched = true;
             for (int m = j, n = 0; n < wordlen; m++, n++) {
-                if (pattern.at(m) != ZEN_SPACE && pattern.at(m) != word.at(n)) {
+                if (pattern[m] != ZEN_SPACE && pattern[m] != word[n]) {
                     bMatched = false;
                     break;
                 }
@@ -1999,18 +1999,18 @@ XgGetCandidatesAddBlack(
 
             // 区間[j, j + wordlen - 1]の前後に■をおく。
             if (j > 0)
-                result.at(j - 1) = ZEN_BLACK;
+                result[j - 1] = ZEN_BLACK;
             if (j < patlen_minus_wordlen)
-                result.at(j + wordlen) = ZEN_BLACK;
+                result[j + wordlen] = ZEN_BLACK;
 
             // 区間[j, j + wordlen - 1]に単語を適用する。
             for (INT k = 0, m = j; k < wordlen; k++, m++)
-                result[m] = word.at(k);
+                result[m] = word[k];
 
             // 黒マスの連続を除外する。
-            if (left_black_check && result.at(0) == ZEN_BLACK)
+            if (left_black_check && result[0] == ZEN_BLACK)
                 continue;
-            if (right_black_check && result.at(patlen - 1) == ZEN_BLACK)
+            if (right_black_check && result[patlen - 1] == ZEN_BLACK)
                 continue;
 
             // 追加する。
@@ -2049,8 +2049,8 @@ XgGetCandidatesNoAddBlack(std::vector<std::wstring>& cands, const std::wstring& 
         // 区間[0, wordlen - 1]に文字マスがあるか？
         bool bCharFound = false;
         for (INT k = 0; k < wordlen; k++) {
-            assert(pattern.at(k) != ZEN_BLACK);
-            if (pattern.at(k) != ZEN_SPACE) {
+            assert(pattern[k] != ZEN_BLACK);
+            if (pattern[k] != ZEN_SPACE) {
                 bCharFound = true;
                 break;
             }
@@ -2061,7 +2061,7 @@ XgGetCandidatesNoAddBlack(std::vector<std::wstring>& cands, const std::wstring& 
         // パターンが単語にマッチするか？
         bool bMatched = true;
         for (INT k = 0; k < wordlen; k++) {
-            if (pattern.at(k) != ZEN_SPACE && pattern.at(k) != word.at(k)) {
+            if (pattern[k] != ZEN_SPACE && pattern[k] != word[k]) {
                 bMatched = false;
                 break;
             }
@@ -3863,7 +3863,7 @@ void __fastcall XgSolveXWord_AddBlack(const XG_Board& xw) noexcept
                         // 単語とその両端の外側の黒マスをセットして再帰する。
                         XG_Board copy(xw);
                         for (INT k = 0; k < wordlen; k++) {
-                            copy.SetAt(i, lo + k, word.at(k));
+                            copy.SetAt(i, lo + k, word[k]);
                         }
 
                         if (lo > 0 && copy.GetAt(i, lo - 1) != ZEN_BLACK) {
@@ -3939,7 +3939,7 @@ void __fastcall XgSolveXWord_AddBlack(const XG_Board& xw) noexcept
                         // 単語とその両端の外側の黒マスをセットして再帰する。
                         XG_Board copy(xw);
                         for (INT k = 0; k < wordlen; k++) {
-                            copy.SetAt(lo + k, j, word.at(k));
+                            copy.SetAt(lo + k, j, word[k]);
                         }
 
                         if (lo > 0 && copy.GetAt(lo - 1, j) != ZEN_BLACK) {
@@ -4020,7 +4020,7 @@ retry_1:;
                         // 単語とその両端の外側の黒マスをセットして再帰する。
                         XG_Board copy(xw);
                         for (INT k = 0; k < wordlen; k++) {
-                            copy.SetAt(i, lo + k, word.at(k));
+                            copy.SetAt(i, lo + k, word[k]);
                         }
 
                         if (lo > 0 && copy.GetAt(i, lo - 1) != ZEN_BLACK) {
@@ -4096,7 +4096,7 @@ retry_1:;
                         // 単語とその両端の外側の黒マスをセットして再帰する。
                         XG_Board copy(xw);
                         for (INT k = 0; k < wordlen; k++) {
-                            copy.SetAt(lo + k, j, word.at(k));
+                            copy.SetAt(lo + k, j, word[k]);
                         }
 
                         if (lo > 0 && copy.GetAt(lo - 1, j) != ZEN_BLACK) {
@@ -4209,7 +4209,7 @@ void __fastcall XgSolveXWord_NoAddBlack(const XG_Board& xw) noexcept
         // 単語をセットする。
         XG_Board copy(xw);
         for (INT k = 0; k < wordlen; k++) {
-            copy.SetAt(i, lo + k, word.at(k));
+            copy.SetAt(i, lo + k, word[k]);
         }
 
         // 再帰する。
@@ -4636,7 +4636,7 @@ void __fastcall XgDrawMarkWord(HDC hdc, LPSIZE psiz)
 
         WCHAR ch;
         if (xg_bNumCroMode && xg_bSolved) {
-            XG_Pos& pos = xg_vMarks.at(i);
+            XG_Pos& pos = xg_vMarks[i];
             ch = xg_solution.GetAt(pos.m_i, pos.m_j);
             StringCbPrintf(sz, sizeof(sz), L"%u", xg_mapNumCro1[ch]);
         } else {
@@ -4681,7 +4681,7 @@ void __fastcall XgDrawMarkWord(HDC hdc, LPSIZE psiz)
             static_cast<int>(xg_nNarrowMargin + 1 * xg_nCellSize));
 
         WCHAR ch;
-        XG_Pos& pos = xg_vMarks.at(i);
+        XG_Pos& pos = xg_vMarks[i];
         if (xg_bSolved && xg_bShowAnswer) {
             ch = xg_solution.GetAt(pos.m_i, pos.m_j);
         } else {
@@ -5757,8 +5757,8 @@ bool __fastcall XgDoSaveCrpFile(LPCWSTR pszFile)
         std::wstring answer;
         if (xg_vMarks.size()) {
             for (size_t i = 0; i < xg_vMarks.size(); ++i) {
-                answer += xw->GetAt(xg_vMarks.at(i).m_i, xg_vMarks.at(i).m_j);
-                marks.at(xg_vMarks.at(i).m_i).at(xg_vMarks.at(i).m_j) = static_cast<int>(i) + 1;
+                answer += xw->GetAt(xg_vMarks[i].m_i, xg_vMarks[i].m_j);
+                marks.at(xg_vMarks[i].m_i).at(xg_vMarks[i].m_j) = static_cast<int>(i) + 1;
             }
         }
 
@@ -5767,7 +5767,7 @@ bool __fastcall XgDoSaveCrpFile(LPCWSTR pszFile)
             for (INT j = 0; j < xg_nCols; ++j) {
                 if (row.size())
                     row += ",";
-                row += std::to_string(marks.at(i).at(j));
+                row += std::to_string(marks[i][j]);
             }
             fprintf(fout, "MarkUpLine%u=%s\n", i + 1, row.c_str());
         }
@@ -5904,9 +5904,9 @@ bool __fastcall XgDoSaveJson(LPCWSTR pszFile)
             str += L"\t\"marks\": [\r\n";
             for (size_t i = 0; i < xg_vMarks.size(); ++i) {
                 json mark;
-                mark.push_back(xg_vMarks.at(i).m_i + 1);
-                mark.push_back(xg_vMarks.at(i).m_j + 1);
-                const WCHAR sz[2] = { mark_word.at(i) , 0 };
+                mark.push_back(xg_vMarks[i].m_i + 1);
+                mark.push_back(xg_vMarks[i].m_j + 1);
+                const WCHAR sz[2] = { mark_word[i] , 0 };
                 mark.push_back(XgUnicodeToUtf8(sz));
                 j0["marks"].push_back(mark);
             }
@@ -7474,8 +7474,8 @@ void __fastcall XgStartGenerateBlacks(void)
         XgGenerateBlacksPointSym(&xg_aThreadInfo[0]);
 #else
         for (DWORD i = 0; i < xg_dwThreadCount; i++) {
-            auto& hThread = xg_ahThreads.at(i);
-            auto& info = xg_aThreadInfo.at(i);
+            auto& hThread = xg_ahThreads[i];
+            auto& info = xg_aThreadInfo[i];
             hThread = reinterpret_cast<HANDLE>(
                 _beginthreadex(nullptr, 0, XgGenerateBlacksPointSym, &info, 0, &info.m_threadid));
             assert(hThread != nullptr);
@@ -7486,8 +7486,8 @@ void __fastcall XgStartGenerateBlacks(void)
         XgGenerateBlacksLineSymV(&xg_aThreadInfo[0]);
 #else
         for (DWORD i = 0; i < xg_dwThreadCount; i++) {
-            auto& hThread = xg_ahThreads.at(i);
-            auto& info = xg_aThreadInfo.at(i);
+            auto& hThread = xg_ahThreads[i];
+            auto& info = xg_aThreadInfo[i];
             hThread = reinterpret_cast<HANDLE>(
                 _beginthreadex(nullptr, 0, XgGenerateBlacksLineSymV, &info, 0, &info.m_threadid));
             assert(hThread != nullptr);
@@ -7498,8 +7498,8 @@ void __fastcall XgStartGenerateBlacks(void)
         XgGenerateBlacksLineSymH(&xg_aThreadInfo[0]);
 #else
         for (DWORD i = 0; i < xg_dwThreadCount; i++) {
-            auto& hThread = xg_ahThreads.at(i);
-            auto& info = xg_aThreadInfo.at(i);
+            auto& hThread = xg_ahThreads[i];
+            auto& info = xg_aThreadInfo[i];
             hThread = reinterpret_cast<HANDLE>(
                 _beginthreadex(nullptr, 0, XgGenerateBlacksLineSymH, &info, 0, &info.m_threadid));
             assert(hThread != nullptr);
@@ -7510,8 +7510,8 @@ void __fastcall XgStartGenerateBlacks(void)
         XgGenerateBlacks(&xg_aThreadInfo[0]);
 #else
         for (DWORD i = 0; i < xg_dwThreadCount; i++) {
-            auto& hThread = xg_ahThreads.at(i);
-            auto& info = xg_aThreadInfo.at(i);
+            auto& hThread = xg_ahThreads[i];
+            auto& info = xg_aThreadInfo[i];
             hThread = reinterpret_cast<HANDLE>(
                 _beginthreadex(nullptr, 0, XgGenerateBlacks, &info, 0, &info.m_threadid));
             assert(hThread != nullptr);

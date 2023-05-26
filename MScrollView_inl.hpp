@@ -171,13 +171,13 @@ MZC_INLINE void MScrollView::RemoveCtrlInfo(UINT idCtrl) noexcept
 MZC_INLINE MScrollCtrlInfo& MScrollView::operator[](size_t index)
 {
     assert(index < size());
-    return m_vecInfo.at(index);
+    return m_vecInfo[index];
 }
 
 MZC_INLINE const MScrollCtrlInfo& MScrollView::operator[](size_t index) const
 {
     assert(index < size());
-    return m_vecInfo.at(index);
+    return m_vecInfo[index];
 }
 
 ////////////////////////////////////////////////////////////////////////////

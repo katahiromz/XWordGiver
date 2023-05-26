@@ -441,7 +441,7 @@ public:
     }
     void __fastcall SetAt2(int i, int j, int nRows, int nCols, WCHAR ch) {
         UNREFERENCED_PARAMETER(nRows);
-        m_vCells.at(i * nCols + j) = ch;
+        m_vCells[i * nCols + j] = ch;
     }
     // 空ではないマスの個数を返す。
     WCHAR& __fastcall Count() noexcept;

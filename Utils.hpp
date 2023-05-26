@@ -74,7 +74,7 @@ static inline std::wstring xg_str_unquote(const std::wstring& str)
     xg_str_trim(ret);
     if (ret.empty())
         return L"";
-    if (ret.at(0) == L'"')
+    if (ret[0] == L'"')
         ret = ret.substr(1);
     if (ret.size() && ret.at(ret.size() - 1) == L'"')
         ret = ret.substr(0, ret.size() - 1);

@@ -3405,7 +3405,7 @@ bool __fastcall XgOnSolveRepeatedly(HWND hwnd)
 
     // 保存先フォルダを開く。
     if (xg_nNumberGenerated && !xg_dirs_save_to.empty()) {
-        ::ShellExecuteW(hwnd, nullptr, xg_dirs_save_to.at(0).data(),
+        ::ShellExecuteW(hwnd, nullptr, xg_dirs_save_to[0].data(),
                       nullptr, nullptr, SW_SHOWNORMAL);
     }
 
@@ -3527,7 +3527,7 @@ bool __fastcall XgOnSolveRepeatedlyNoAddBlack(HWND hwnd)
 
     // 保存先フォルダを開く。
     if (xg_nNumberGenerated && !xg_dirs_save_to.empty()) {
-        ::ShellExecuteW(hwnd, nullptr, xg_dirs_save_to.at(0).data(),
+        ::ShellExecuteW(hwnd, nullptr, xg_dirs_save_to[0].data(),
                       nullptr, nullptr, SW_SHOWNORMAL);
     }
     return true;
@@ -3623,7 +3623,7 @@ void XgCopyBoard(HWND hwnd)
                                 HGLOBAL hGlobal2 = GlobalAlloc(GHND | GMEM_SHARE, data.size());
                                 LPVOID pv = GlobalLock(hGlobal2);
                                 if (pv && data.size())
-                                    memcpy(pv, &data.at(0), data.size());
+                                    memcpy(pv, &data[0], data.size());
                                 GlobalUnlock(hGlobal2);
                                 ::SetClipboardData(CF_DIB, hGlobal2);
                             }
