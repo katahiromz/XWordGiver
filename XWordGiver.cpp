@@ -780,7 +780,7 @@ break_continue:;
 }
 
 // カウントを更新する。
-void XG_BoardEx::ReCount() {
+void XG_BoardEx::ReCount() noexcept {
     INT nCount = 0;
     for (INT i = 0; i < m_nRows; ++i) {
         for (INT j = 0; j < m_nCols; ++j) {
@@ -791,7 +791,7 @@ void XG_BoardEx::ReCount() {
 }
 
 // 行を挿入する。
-void XG_BoardEx::InsertRow(INT iRow) {
+void XG_BoardEx::InsertRow(INT iRow) noexcept {
     XG_Board copy;
     copy.ResetAndSetSize(m_nRows + 1, m_nCols);
     for (INT i = 0; i < m_nRows; ++i) {
@@ -808,7 +808,7 @@ void XG_BoardEx::InsertRow(INT iRow) {
 }
 
 // 列を挿入する。
-void XG_BoardEx::InsertColumn(INT jCol) {
+void XG_BoardEx::InsertColumn(INT jCol) noexcept {
     XG_Board copy;
     copy.ResetAndSetSize(m_nRows, m_nCols + 1);
     for (INT i = 0; i < m_nRows; ++i) {
@@ -825,7 +825,7 @@ void XG_BoardEx::InsertColumn(INT jCol) {
 }
 
 // 行を削除する。
-void XG_BoardEx::DeleteRow(INT iRow) {
+void XG_BoardEx::DeleteRow(INT iRow) noexcept {
     XG_Board copy;
     copy.ResetAndSetSize(m_nRows - 1, m_nCols);
     for (INT i = 0; i < m_nRows - 1; ++i) {
@@ -842,7 +842,7 @@ void XG_BoardEx::DeleteRow(INT iRow) {
 }
 
 // 列を削除する。
-void XG_BoardEx::DeleteColumn(INT jCol) {
+void XG_BoardEx::DeleteColumn(INT jCol) noexcept {
     XG_Board copy;
     copy.ResetAndSetSize(m_nRows, m_nCols - 1);
     for (INT i = 0; i < m_nRows; ++i) {

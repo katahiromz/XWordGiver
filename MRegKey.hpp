@@ -157,7 +157,7 @@ protected:
 ////////////////////////////////////////////////////////////////////////////
 
 template <typename T_STRUCT>
-inline LONG MRegKey::QueryStruct(LPCTSTR pszValueName, T_STRUCT& data)
+inline LONG MRegKey::QueryStruct(LPCTSTR pszValueName, T_STRUCT& data) noexcept
 {
     assert(m_hKey);
     DWORD cbData = static_cast<DWORD>(sizeof(data));
