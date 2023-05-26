@@ -4329,7 +4329,7 @@ void __fastcall XgStartSolve_AddBlack(void) noexcept
     // スレッドを開始する。
     for (DWORD i = 0; i < xg_dwThreadCount; i++) {
         xg_aThreadInfo[i].m_count = static_cast<DWORD>(xg_xword.Count());
-        xg_ahThreads[i] = static_cast<HANDLE>(
+        xg_ahThreads[i] = reinterpret_cast<HANDLE>(
             _beginthreadex(nullptr, 0, XgSolveProc_AddBlack, &xg_aThreadInfo[i], 0,
                 &xg_aThreadInfo[i].m_threadid));
         assert(xg_ahThreads[i] != nullptr);
@@ -7485,7 +7485,7 @@ void __fastcall XgStartGenerateBlacks(void) noexcept
         for (DWORD i = 0; i < xg_dwThreadCount; i++) {
             auto& hThread = xg_ahThreads.at(i);
             auto& info = xg_aThreadInfo.at(i);
-            hThread = static_cast<HANDLE>(
+            hThread = reinterpret_cast<HANDLE>(
                 _beginthreadex(nullptr, 0, XgGenerateBlacksPointSym, &info, 0, &info.m_threadid));
             assert(hThread != nullptr);
         }
@@ -7497,7 +7497,7 @@ void __fastcall XgStartGenerateBlacks(void) noexcept
         for (DWORD i = 0; i < xg_dwThreadCount; i++) {
             auto& hThread = xg_ahThreads.at(i);
             auto& info = xg_aThreadInfo.at(i);
-            hThread = static_cast<HANDLE>(
+            hThread = reinterpret_cast<HANDLE>(
                 _beginthreadex(nullptr, 0, XgGenerateBlacksLineSymV, &info, 0, &info.m_threadid));
             assert(hThread != nullptr);
         }
@@ -7509,7 +7509,7 @@ void __fastcall XgStartGenerateBlacks(void) noexcept
         for (DWORD i = 0; i < xg_dwThreadCount; i++) {
             auto& hThread = xg_ahThreads.at(i);
             auto& info = xg_aThreadInfo.at(i);
-            hThread = static_cast<HANDLE>(
+            hThread = reinterpret_cast<HANDLE>(
                 _beginthreadex(nullptr, 0, XgGenerateBlacksLineSymH, &info, 0, &info.m_threadid));
             assert(hThread != nullptr);
         }
@@ -7521,7 +7521,7 @@ void __fastcall XgStartGenerateBlacks(void) noexcept
         for (DWORD i = 0; i < xg_dwThreadCount; i++) {
             auto& hThread = xg_ahThreads.at(i);
             auto& info = xg_aThreadInfo.at(i);
-            hThread = static_cast<HANDLE>(
+            hThread = reinterpret_cast<HANDLE>(
                 _beginthreadex(nullptr, 0, XgGenerateBlacks, &info, 0, &info.m_threadid));
             assert(hThread != nullptr);
         }
