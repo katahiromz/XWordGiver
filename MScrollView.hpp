@@ -21,10 +21,10 @@ struct MScrollCtrlInfo
     HWND    m_hwndCtrl;
     MRect   m_rcCtrl;
 
-    MScrollCtrlInfo();
-    MScrollCtrlInfo(HWND hwndCtrl);
-    MScrollCtrlInfo(HWND hwndCtrl, const MRect& rcCtrl);
-    MScrollCtrlInfo(HWND hwndCtrl, const MPoint& ptCtrl, const MSize& sizCtrl);
+    MScrollCtrlInfo() noexcept;
+    MScrollCtrlInfo(HWND hwndCtrl) noexcept;
+    MScrollCtrlInfo(HWND hwndCtrl, const MRect& rcCtrl) noexcept;
+    MScrollCtrlInfo(HWND hwndCtrl, const MPoint& ptCtrl, const MSize& sizCtrl) noexcept;
 };
 
 ////////////////////////////////////////////////////////////////////////////
@@ -33,70 +33,70 @@ struct MScrollCtrlInfo
 class MScrollView
 {
 public:
-    MScrollView();
-    MScrollView(HWND hwndParent);
-    MScrollView(HWND hwndParent, HWND hHScrollBar, HWND hVScrollBar);
-    virtual ~MScrollView();
+    MScrollView() noexcept;
+    MScrollView(HWND hwndParent) noexcept;
+    MScrollView(HWND hwndParent, HWND hHScrollBar, HWND hVScrollBar) noexcept;
+    virtual ~MScrollView() noexcept;
 
     // parent
-    HWND GetParent() const;
-    void SetParent(HWND hwndParent);
+    HWND GetParent() const noexcept;
+    void SetParent(HWND hwndParent) noexcept;
 
     // parent scroll bars
-    void ShowScrollBars(BOOL fHScroll, BOOL fVScroll);
+    void ShowScrollBars(BOOL fHScroll, BOOL fVScroll) noexcept;
 
     // add/set control info
-    void AddCtrlInfo(HWND hwndCtrl);
-    void AddCtrlInfo(HWND hwndCtrl, const MRect& rcCtrl);
-    void AddCtrlInfo(HWND hwndCtrl, const MPoint& ptCtrl, const MSize& sizCtrl);
-    void SetCtrlInfo(HWND hwndCtrl, const MRect& rcCtrl);
-    void SetCtrlInfo(HWND hwndCtrl, const MPoint& ptCtrl, const MSize& sizCtrl);
-    void RemoveCtrlInfo(HWND hwndCtrl);
-    void AddCtrlInfo(UINT idCtrl);
-    void AddCtrlInfo(UINT idCtrl, const MRect& rcCtrl);
-    void AddCtrlInfo(UINT idCtrl, const MPoint& ptCtrl, const MSize& sizCtrl);
-    void SetCtrlInfo(UINT idCtrl, const MRect& rcCtrl);
-    void SetCtrlInfo(UINT idCtrl, const MPoint& ptCtrl, const MSize& sizCtrl);
-    void RemoveCtrlInfo(UINT idCtrl);
+    void AddCtrlInfo(HWND hwndCtrl) noexcept;
+    void AddCtrlInfo(HWND hwndCtrl, const MRect& rcCtrl) noexcept;
+    void AddCtrlInfo(HWND hwndCtrl, const MPoint& ptCtrl, const MSize& sizCtrl) noexcept;
+    void SetCtrlInfo(HWND hwndCtrl, const MRect& rcCtrl) noexcept;
+    void SetCtrlInfo(HWND hwndCtrl, const MPoint& ptCtrl, const MSize& sizCtrl) noexcept;
+    void RemoveCtrlInfo(HWND hwndCtrl) noexcept;
+    void AddCtrlInfo(UINT idCtrl) noexcept;
+    void AddCtrlInfo(UINT idCtrl, const MRect& rcCtrl) noexcept;
+    void AddCtrlInfo(UINT idCtrl, const MPoint& ptCtrl, const MSize& sizCtrl) noexcept;
+    void SetCtrlInfo(UINT idCtrl, const MRect& rcCtrl) noexcept;
+    void SetCtrlInfo(UINT idCtrl, const MPoint& ptCtrl, const MSize& sizCtrl) noexcept;
+    void RemoveCtrlInfo(UINT idCtrl) noexcept;
 
-    bool empty() const;
-    void clear();
-    size_t size() const;
+    bool empty() const noexcept;
+    void clear() noexcept;
+    size_t size() const noexcept;
 
     // find control info
-          MScrollCtrlInfo* FindCtrlInfo(HWND hwndCtrl);
-    const MScrollCtrlInfo* FindCtrlInfo(HWND hwndCtrl) const;
+          MScrollCtrlInfo* FindCtrlInfo(HWND hwndCtrl) noexcept;
+    const MScrollCtrlInfo* FindCtrlInfo(HWND hwndCtrl) const noexcept;
 
     // extent
-          MSize& Extent();
-    const MSize& Extent() const;
-    void SetExtentForAllCtrls();
+          MSize& Extent() noexcept;
+    const MSize& Extent() const noexcept;
+    void SetExtentForAllCtrls() noexcept;
 
     // ensure visible
-    void EnsureCtrlVisible(HWND hwndCtrl, bool update_all = true);
+    void EnsureCtrlVisible(HWND hwndCtrl, bool update_all = true) noexcept;
 
     // update
-    void UpdateCtrlsPos();
-    void UpdateAll();
+    void UpdateCtrlsPos() noexcept;
+    void UpdateAll() noexcept;
 
     // NOTE: Call MScrollView::Scroll on parent's WM_HSCROLL/WM_VSCROLL.
-    void Scroll(INT bar, INT nSB_, INT pos);
-    INT GetNextPos(INT bar, INT nSB_, INT pos) const;
+    void Scroll(INT bar, INT nSB_, INT pos) noexcept;
+    INT GetNextPos(INT bar, INT nSB_, INT pos) const noexcept;
 
-          MScrollCtrlInfo& operator[](size_t index);
-    const MScrollCtrlInfo& operator[](size_t index) const;
+          MScrollCtrlInfo& operator[](size_t index) noexcept;
+    const MScrollCtrlInfo& operator[](size_t index) const noexcept;
 
 protected:
     HWND        m_hwndParent;
     MSize       m_sizExtent;
     std::vector<MScrollCtrlInfo> m_vecInfo;
 
-    BOOL HasChildStyle(HWND hwnd) const;
+    BOOL HasChildStyle(HWND hwnd) const noexcept;
 
 private:
     // NOTE: MScrollView is not copyable.
-    MScrollView(const MScrollView&);
-    MScrollView& operator=(const MScrollView&);
+    MScrollView(const MScrollView&) = delete;
+    MScrollView& operator=(const MScrollView&) = delete;
 };
 
 ////////////////////////////////////////////////////////////////////////////

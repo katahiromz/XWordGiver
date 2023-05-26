@@ -14,7 +14,7 @@
 
 ////////////////////////////////////////////////////////////////////////////
 
-void MScrollView::SetCtrlInfo(HWND hwndCtrl, const MRect& rcCtrl)
+void MScrollView::SetCtrlInfo(HWND hwndCtrl, const MRect& rcCtrl) noexcept
 {
     assert(::IsWindow(hwndCtrl));
     assert(HasChildStyle(hwndCtrl));
@@ -28,7 +28,7 @@ void MScrollView::SetCtrlInfo(HWND hwndCtrl, const MRect& rcCtrl)
 }
 
 void MScrollView::SetCtrlInfo(
-    HWND hwndCtrl, const MPoint& ptCtrl, const MSize& sizCtrl)
+    HWND hwndCtrl, const MPoint& ptCtrl, const MSize& sizCtrl) noexcept
 {
     assert(::IsWindow(hwndCtrl));
     assert(HasChildStyle(hwndCtrl));
@@ -41,7 +41,7 @@ void MScrollView::SetCtrlInfo(
         AddCtrlInfo(hwndCtrl, ptCtrl, sizCtrl);
 }
 
-MScrollCtrlInfo* MScrollView::FindCtrlInfo(HWND hwndCtrl)
+MScrollCtrlInfo* MScrollView::FindCtrlInfo(HWND hwndCtrl) noexcept
 {
     assert(::IsWindow(hwndCtrl));
     assert(HasChildStyle(hwndCtrl));
@@ -54,7 +54,7 @@ MScrollCtrlInfo* MScrollView::FindCtrlInfo(HWND hwndCtrl)
     return nullptr;
 }
 
-const MScrollCtrlInfo* MScrollView::FindCtrlInfo(HWND hwndCtrl) const
+const MScrollCtrlInfo* MScrollView::FindCtrlInfo(HWND hwndCtrl) const noexcept
 {
     assert(::IsWindow(hwndCtrl));
     assert(HasChildStyle(hwndCtrl));
@@ -67,7 +67,7 @@ const MScrollCtrlInfo* MScrollView::FindCtrlInfo(HWND hwndCtrl) const
     return nullptr;
 }
 
-void MScrollView::RemoveCtrlInfo(HWND hwndCtrl)
+void MScrollView::RemoveCtrlInfo(HWND hwndCtrl) noexcept
 {
     assert(::IsWindow(hwndCtrl));
     assert(HasChildStyle(hwndCtrl));
@@ -83,7 +83,7 @@ void MScrollView::RemoveCtrlInfo(HWND hwndCtrl)
 }
 
 // ensure visible
-void MScrollView::EnsureCtrlVisible(HWND hwndCtrl, bool update_all/* = true*/)
+void MScrollView::EnsureCtrlVisible(HWND hwndCtrl, bool update_all/* = true*/) noexcept
 {
     MRect rcClient;
     GetClientRect(m_hwndParent, &rcClient);
@@ -114,7 +114,7 @@ void MScrollView::EnsureCtrlVisible(HWND hwndCtrl, bool update_all/* = true*/)
         UpdateAll();
 }
 
-void MScrollView::SetExtentForAllCtrls()
+void MScrollView::SetExtentForAllCtrls() noexcept
 {
     Extent().cx = Extent().cy = 0;
     const int siz = static_cast<int>(size());
@@ -148,7 +148,7 @@ void MScrollView::SetExtentForAllCtrls()
     ::InvalidateRect(m_hwndParent, nullptr, TRUE);
 }
 
-void MScrollView::UpdateCtrlsPos()
+void MScrollView::UpdateCtrlsPos() noexcept
 {
     INT xScroll = ::GetScrollPos(m_hwndParent, SB_HORZ);
     INT yScroll = ::GetScrollPos(m_hwndParent, SB_VERT);
@@ -169,7 +169,7 @@ void MScrollView::UpdateCtrlsPos()
     }
 }
 
-INT MScrollView::GetNextPos(INT bar, INT nSB_, INT pos) const
+INT MScrollView::GetNextPos(INT bar, INT nSB_, INT pos) const noexcept
 {
     SCROLLINFO si;
     si.cbSize = sizeof(si);
@@ -210,7 +210,7 @@ INT MScrollView::GetNextPos(INT bar, INT nSB_, INT pos) const
     return -1;
 }
 
-void MScrollView::Scroll(INT bar, INT nSB_, INT pos)
+void MScrollView::Scroll(INT bar, INT nSB_, INT pos) noexcept
 {
     INT nNextPos = GetNextPos(bar, nSB_, pos);
     if (nNextPos == -1)
