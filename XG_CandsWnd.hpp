@@ -456,7 +456,7 @@ public:
     }
 
     // 候補ウィンドウを描画する。
-    void OnPaint(HWND hwnd)
+    void OnPaint(HWND hwnd) noexcept
     {
         if (xg_vecCandidates.empty()) {
             PAINTSTRUCT ps;

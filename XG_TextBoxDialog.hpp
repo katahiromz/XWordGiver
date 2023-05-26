@@ -64,7 +64,7 @@ public:
         return TRUE;
     }
 
-    BOOL OnInitDialog(HWND hwnd, HWND hwndFocus, LPARAM lParam)
+    BOOL OnInitDialog(HWND hwnd, HWND hwndFocus, LPARAM lParam) noexcept
     {
         UNREFERENCED_PARAMETER(hwndFocus);
         UNREFERENCED_PARAMETER(lParam);
@@ -230,7 +230,7 @@ public:
         }
     }
 
-    void OnDrawItem(HWND hwnd, const DRAWITEMSTRUCT * lpDrawItem)
+    void OnDrawItem(HWND hwnd, const DRAWITEMSTRUCT * lpDrawItem) noexcept
     {
         if (lpDrawItem->hwndItem == m_hwndTextColor) {
             m_hwndTextColor.OnOwnerDrawItem(lpDrawItem);

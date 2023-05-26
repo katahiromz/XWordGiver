@@ -3534,7 +3534,7 @@ bool __fastcall XgOnSolveRepeatedlyNoAddBlack(HWND hwnd)
 }
 
 // 黒マス線対称チェック。
-void XgOnLineSymmetryCheck(HWND hwnd)
+static void XgOnLineSymmetryCheck(HWND hwnd) noexcept
 {
     if (xg_xword.IsLineSymmetry()) {
         XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_LINESYMMETRY), XgLoadStringDx2(IDS_APPNAME),
@@ -3546,7 +3546,7 @@ void XgOnLineSymmetryCheck(HWND hwnd)
 }
 
 // 黒マス点対称チェック。
-void XgOnPointSymmetryCheck(HWND hwnd)
+static void XgOnPointSymmetryCheck(HWND hwnd)
 {
     if (xg_xword.IsPointSymmetry()) {
         XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_POINTSYMMETRY), XgLoadStringDx2(IDS_APPNAME),
@@ -7025,7 +7025,7 @@ bool __fastcall MainWnd_OnCreate(HWND hwnd, LPCREATESTRUCT /*lpCreateStruct*/)
     xg_hMainWnd = hwnd;
 
     // キャンバスウィンドウを作成する。
-    const DWORD style = WS_CHILD | WS_VISIBLE | WS_HSCROLL | WS_VSCROLL | WS_CLIPCHILDREN;
+    constexpr auto style = WS_CHILD | WS_VISIBLE | WS_HSCROLL | WS_VSCROLL | WS_CLIPCHILDREN;
     if (!xg_canvasWnd.CreateWindowDx(hwnd, nullptr, style, WS_EX_ACCEPTFILES))
     {
         return false;
@@ -7095,7 +7095,7 @@ bool __fastcall MainWnd_OnCreate(HWND hwnd, LPCREATESTRUCT /*lpCreateStruct*/)
     XgUpdateStatusBar(hwnd);
 
     // ツールバーを作成する。
-    const int c_IDW_TOOLBAR = 1;
+    constexpr int c_IDW_TOOLBAR = 1;
     xg_hToolBar = ::CreateWindowW(
         TOOLBARCLASSNAMEW, nullptr, 
         WS_CHILD | CCS_TOP | TBSTYLE_TOOLTIPS,
@@ -7394,8 +7394,8 @@ XgWindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 // ヒントウィンドウを作成する。
 BOOL XgCreateHintsWnd(HWND hwnd)
 {
-    const auto style = WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME | WS_HSCROLL | WS_VSCROLL;
-    const auto exstyle = WS_EX_TOOLWINDOW;
+    constexpr auto style = WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME | WS_HSCROLL | WS_VSCROLL;
+    constexpr auto exstyle = WS_EX_TOOLWINDOW;
     auto text = XgLoadStringDx1(IDS_HINTS);
 
     // ヒントウィンドウの初期位置を改良する。

@@ -75,7 +75,7 @@ public:
         }
     }
 
-    void OnSysCommand(HWND hwnd, UINT cmd, int x, int y)
+    void OnSysCommand(HWND hwnd, UINT cmd, int x, int y) noexcept
     {
         if (cmd == SC_CLOSE) {
             // キャンセルする。

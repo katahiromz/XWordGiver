@@ -5985,7 +5985,6 @@ bool XgDoSaveStandard(HWND hwnd, LPCWSTR pszFile, const XG_Board& board)
 {
     HANDLE hFile;
     std::wstring str, strTable, strMarks, hints;
-    DWORD size;
 
     // ファイルを作成する。
     hFile = ::CreateFileW(pszFile, GENERIC_WRITE, FILE_SHARE_READ, nullptr,
@@ -6038,7 +6037,7 @@ bool XgDoSaveStandard(HWND hwnd, LPCWSTR pszFile, const XG_Board& board)
     str += xg_pszNewLine;
 
     // ファイルに書き込んで、ファイルを閉じる。
-    size = 2;
+    DWORD size = 2;
     if (::WriteFile(hFile, "\xFF\xFE", size, &size, nullptr)) {
         size = static_cast<DWORD>(str.size()) * sizeof(WCHAR);
         if (::WriteFile(hFile, str.data(), size, &size, nullptr)) {
@@ -6476,7 +6475,7 @@ bool __fastcall XG_Board::SetString(const std::wstring& strToBeSet)
     // ヘッダーを取得する。
     xg_strHeader.clear();
     std::wstring strHeaderSep = XgLoadStringDx1(IDS_HEADERSEP1);
-    size_t i0 = str.find(strHeaderSep);
+    const auto i0 = str.find(strHeaderSep);
     if (i0 != std::wstring::npos) {
         xg_strHeader = str.substr(0, i0);
         str = str.substr(i0 + strHeaderSep.size());
@@ -7386,7 +7385,7 @@ unsigned __stdcall XgGenerateBlacksSmart(void *param)
 }
 
 // マルチスレッド用の関数。
-unsigned __stdcall XgGenerateBlacksPointSym(void *param) noexcept
+static unsigned __stdcall XgGenerateBlacksPointSym(void *param)
 {
 #ifndef NO_RANDOM
     srand(static_cast<DWORD>(::GetTickCount64()) ^ ::GetCurrentThreadId());
@@ -7404,7 +7403,7 @@ unsigned __stdcall XgGenerateBlacksPointSym(void *param) noexcept
 }
 
 // マルチスレッド用の関数。
-unsigned __stdcall XgGenerateBlacksLineSymV(void *param) noexcept
+static unsigned __stdcall XgGenerateBlacksLineSymV(void *param)
 {
 #ifndef NO_RANDOM
     srand(static_cast<DWORD>(::GetTickCount64()) ^ ::GetCurrentThreadId());
@@ -7422,7 +7421,7 @@ unsigned __stdcall XgGenerateBlacksLineSymV(void *param) noexcept
 }
 
 // マルチスレッド用の関数。
-unsigned __stdcall XgGenerateBlacksLineSymH(void *param) noexcept
+static unsigned __stdcall XgGenerateBlacksLineSymH(void *param)
 {
 #ifndef NO_RANDOM
     srand(static_cast<DWORD>(::GetTickCount64()) ^ ::GetCurrentThreadId());

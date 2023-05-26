@@ -28,7 +28,7 @@ int __fastcall XgGetMarked(const std::vector<XG_Pos>& vMarks, const XG_Pos& pos)
 // マークされているか（二重マス）？
 int __fastcall XgGetMarked(const std::vector<XG_Pos>& vMarks, int i, int j) noexcept;
 // マークされているか（二重マス）？
-int __fastcall XgGetMarked(int i, int j);
+int __fastcall XgGetMarked(int i, int j) noexcept;
 // 二重マスが更新された。
 void __fastcall XgMarkUpdate(void);
 // 指定のマスにマークする（二重マス）。

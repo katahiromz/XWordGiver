@@ -77,7 +77,7 @@ int __fastcall XgGetMarked(const std::vector<XG_Pos>& vMarks, int i, int j) noex
 }
 
 // マークされているか（二重マス）？
-int __fastcall XgGetMarked(int i, int j)
+int __fastcall XgGetMarked(int i, int j) noexcept
 {
     return XgGetMarked(xg_vMarks, XG_Pos(i, j));
 }

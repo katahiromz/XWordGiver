@@ -452,7 +452,7 @@ public:
         PostMessage(hwnd, WM_COMMAND, ID_MOVEBOXES, 0);
     }
 
-    void OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT codeNotify)
+    void OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT codeNotify) noexcept
     {
         FORWARD_WM_COMMAND(m_hwndParent, id, hwndCtl, codeNotify, PostMessageW);
     }

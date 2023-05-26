@@ -48,7 +48,7 @@ public:
         return FALSE;
     }
 
-    void OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT codeNotify)
+    void OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT codeNotify) noexcept
     {
         switch (id)
         {
@@ -65,7 +65,7 @@ public:
         }
     }
 
-    void OnSysCommand(HWND hwnd, UINT cmd, int x, int y)
+    void OnSysCommand(HWND hwnd, UINT cmd, int x, int y) noexcept
     {
         if (cmd == SC_CLOSE)
         {

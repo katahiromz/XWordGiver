@@ -51,7 +51,7 @@ public:
     void OnChange(HWND hwnd, int i);
 
     // [設定]ダイアログのオーナードロー。
-    void OnDrawItem(HWND hwnd, WPARAM wParam, LPARAM lParam);
+    void OnDrawItem(HWND hwnd, WPARAM wParam, LPARAM lParam) noexcept;
 
     // ファイルがドロップされた？
     void OnDropFiles(HWND hwnd, HDROP hdrop);

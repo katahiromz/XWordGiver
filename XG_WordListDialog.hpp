@@ -19,7 +19,7 @@ public:
     {
     }
 
-    BOOL OnInitDialog(HWND hwnd, HWND hwndFocus, LPARAM lParam)
+    BOOL OnInitDialog(HWND hwnd, HWND hwndFocus, LPARAM lParam) noexcept
     {
         XgCenterDialog(hwnd);
         // 文字数の限界を増やす。

@@ -231,7 +231,7 @@ struct board_data_t {
     }
 
     // 特定の文字の個数を数える。
-    int count(t_char ch) const {
+    int count(t_char ch) const noexcept {
         int ret = 0;
         for (int xy = 0; xy < size(); ++xy) {
             if (m_data[xy] == ch)
@@ -241,15 +241,15 @@ struct board_data_t {
     }
 
     // 空か？
-    bool is_empty() const {
+    bool is_empty() const noexcept {
         return count('?') == size();
     }
     // 未知のマスがないか？
-    bool is_full() const {
+    bool is_full() const noexcept {
         return count('?') == 0;
     }
     // 文字マスがあるか。
-    bool has_letter() const {
+    bool has_letter() const noexcept {
         for (int xy = 0; xy < size(); ++xy) {
             if (is_letter(m_data[xy]))
                 return true;
@@ -918,7 +918,7 @@ skip:;
     }
 
     // マス(x, y)は横向き交差可能か？
-    bool is_crossable_x(int x, int y) const {
+    bool is_crossable_x(int x, int y) const noexcept {
         assert(is_letter(get_on(x, y)));
         t_char ch1, ch2;
         ch1 = get_on(x - 1, y);
@@ -926,7 +926,7 @@ skip:;
         return (ch1 == '?' || ch2 == '?');
     }
     // マス(x, y)は縦向き交差可能か？
-    bool is_crossable_y(int x, int y) const {
+    bool is_crossable_y(int x, int y) const noexcept {
         assert(is_letter(get_on(x, y)));
         t_char ch1, ch2;
         ch1 = get_on(x, y - 1);
@@ -934,7 +934,7 @@ skip:;
         return (ch1 == '?' || ch2 == '?');
     }
 
-    bool must_be_cross(int x, int y) const {
+    bool must_be_cross(int x, int y) const noexcept {
         assert(is_letter(get_on(x, y)));
         t_char ch1, ch2;
         ch1 = get_on(x - 1, y);

@@ -229,7 +229,7 @@ public:
         return FALSE;
     }
 
-    void OnNCPaint(HWND hwnd, HRGN hrgn)
+    void OnNCPaint(HWND hwnd, HRGN hrgn) noexcept
     {
         RECT rc;
         GetWindowRect(hwnd, &rc);

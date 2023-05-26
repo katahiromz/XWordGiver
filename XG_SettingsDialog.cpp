@@ -702,7 +702,7 @@ void XG_SettingsDialog::OnChange(HWND hwnd, int i)
 }
 
 // [設定]ダイアログのオーナードロー。
-void XG_SettingsDialog::OnDrawItem(HWND hwnd, WPARAM wParam, LPARAM lParam)
+void XG_SettingsDialog::OnDrawItem(HWND hwnd, WPARAM wParam, LPARAM lParam) noexcept
 {
     LPDRAWITEMSTRUCT pdis = reinterpret_cast<LPDRAWITEMSTRUCT>(lParam);
     if (pdis->hwndItem == m_hwndWhite) {

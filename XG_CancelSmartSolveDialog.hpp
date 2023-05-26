@@ -44,7 +44,7 @@ public:
         Restart(hwnd);
     }
 
-    BOOL OnInitDialog(HWND hwnd, HWND hwndFocus, LPARAM lParam)
+    BOOL OnInitDialog(HWND hwnd, HWND hwndFocus, LPARAM lParam) noexcept
     {
         // ダイアログを中央へ移動する。
         XgCenterDialog(hwnd);
