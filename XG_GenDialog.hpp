@@ -8,7 +8,7 @@ class XG_GenDialog : public XG_Dialog
 public:
     BOOL m_bShowAnswer = FALSE;
 
-    XG_GenDialog()
+    XG_GenDialog() noexcept
     {
     }
 
@@ -135,6 +135,9 @@ public:
                 EnableWindow(GetDlgItem(hwnd, scr3), FALSE);
             }
             break;
+
+        default:
+            break;
         }
     }
 
@@ -145,6 +148,8 @@ public:
         {
             HANDLE_MSG(hwnd, WM_INITDIALOG, OnInitDialog);
             HANDLE_MSG(hwnd, WM_COMMAND, OnCommand);
+        default:
+            break;
         }
         return 0;
     }

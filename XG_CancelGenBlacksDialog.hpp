@@ -10,7 +10,7 @@ public:
     const DWORD INTERVAL = 300;
     const UINT uTimerID = 999;
 
-    XG_CancelGenBlacksDialog()
+    XG_CancelGenBlacksDialog() noexcept
     {
     }
 
@@ -59,6 +59,8 @@ public:
             xg_dwlTick2 = ::GetTickCount64();
             // ダイアログを終了する。
             ::EndDialog(hwnd, IDCANCEL);
+            break;
+        default:
             break;
         }
     }
@@ -110,6 +112,8 @@ public:
             HANDLE_MSG(hwnd, WM_COMMAND, OnCommand);
             HANDLE_MSG(hwnd, WM_SYSCOMMAND, OnSysCommand);
             HANDLE_MSG(hwnd, WM_TIMER, OnTimer);
+        default:
+            break;
         }
         return 0;
     }

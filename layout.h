@@ -102,7 +102,7 @@ _layout_DoMoveItem(LAYOUT_DATA *pData, HDWP hDwp, const LAYOUT_INFO *pLayout,
 
     if (!GetWindowRect(pLayout->m_hwndCtrl, &rcChild))
         return hDwp;
-    MapWindowPoints(nullptr, pData->m_hwndParent, (LPPOINT)&rcChild, 2);
+    MapWindowPoints(nullptr, pData->m_hwndParent, reinterpret_cast<LPPOINT>(&rcChild), 2);
 
     nWidth = rcClient->right - rcClient->left;
     nHeight = rcClient->bottom - rcClient->top;
@@ -173,8 +173,8 @@ _layout_InitLayouts(LAYOUT_DATA *pData)
                 continue;
         }
 
-        GetWindowRect(pInfo->m_hwndCtrl, &rcChild);
-        MapWindowPoints(nullptr, pData->m_hwndParent, (LPPOINT)&rcChild, 2);
+        ::GetWindowRect(pInfo->m_hwndCtrl, &rcChild);
+        ::MapWindowPoints(nullptr, pData->m_hwndParent, reinterpret_cast<LPPOINT>(&rcChild), 2);
 
         _layout_GetPercents(&rcPercents, pInfo->m_uEdges);
         pInfo->m_margin1.cx = rcChild.left - nWidth * rcPercents.left / 100;

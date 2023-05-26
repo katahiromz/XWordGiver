@@ -11,7 +11,7 @@ void XgResizeCells(HWND hwnd, INT nNewRows, INT nNewCols);
 class XG_NewDialog : public XG_Dialog
 {
 public:
-    XG_NewDialog()
+    XG_NewDialog() noexcept
     {
     }
 
@@ -78,6 +78,9 @@ public:
             // ダイアログを閉じる。
             ::EndDialog(hwnd, IDCANCEL);
             break;
+
+        default:
+            break;
         }
     }
 
@@ -88,6 +91,8 @@ public:
         {
             HANDLE_MSG(hwnd, WM_INITDIALOG, OnInitDialog);
             HANDLE_MSG(hwnd, WM_COMMAND, OnCommand);
+        default:
+            break;
         }
         return 0;
     }

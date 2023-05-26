@@ -159,7 +159,7 @@ public:
         return updated;
     }
 
-    XG_HintsWnd()
+    XG_HintsWnd() noexcept
     {
     }
 
@@ -632,6 +632,9 @@ public:
                 ::SendMessageW(xg_hMainWnd, WM_COMMAND, ID_PANEPREV, 0);
             else
                 ::SendMessageW(xg_hMainWnd, WM_COMMAND, ID_PANENEXT, 0);
+            break;
+
+        default:
             break;
         }
     }

@@ -620,7 +620,7 @@ BOOL PackedDIB_CreateFromHandle(std::vector<BYTE>& vecData, HBITMAP hbm)
     if (hDC == nullptr)
         return FALSE;
 
-    LPBITMAPINFO pbi = LPBITMAPINFO(&bi);
+    auto pbi = reinterpret_cast<LPBITMAPINFO>(&bi);
     if (!GetDIBits(hDC, hbm, 0, bm.bmHeight, &Bits[0], pbi, DIB_RGB_COLORS))
     {
         DeleteDC(hDC);
@@ -630,9 +630,9 @@ BOOL PackedDIB_CreateFromHandle(std::vector<BYTE>& vecData, HBITMAP hbm)
     DeleteDC(hDC);
 
     std::string stream;
-    stream.append((const char *)pbmih, sizeof(*pbmih));
-    stream.append((const char *)bi.bmiColors, cbColors);
-    stream.append((const char *)&Bits[0], Bits.size());
+    stream.append(reinterpret_cast<const char *>(pbmih), sizeof(*pbmih));
+    stream.append(reinterpret_cast<const char *>(bi.bmiColors), cbColors);
+    stream.append(reinterpret_cast<const char *>(&Bits[0]), Bits.size());
     vecData.assign(stream.begin(), stream.end());
     return TRUE;
 }
@@ -671,7 +671,7 @@ void XgHexToBin(std::vector<BYTE>& data, const std::wstring& str)
         if (flag)
         {
             sz[1] = ch;
-            auto b = BYTE(wcstol(sz, nullptr, 16));
+            auto b = static_cast<BYTE>(wcstol(sz, nullptr, 16));
             data.insert(data.end(), b);
         }
         else
@@ -885,11 +885,11 @@ BOOL XgLoadImage(const std::wstring& filename, HBITMAP& hbm, HENHMETAFILE& hEMF)
         typedef GpStatus (WINAPI *FN_GdipCreateHBITMAPFromBitmap)(GpBitmap*,HBITMAP*,ARGB);
         typedef GpStatus (WINAPI *FN_GdipDisposeImage)(GpImage*);
 
-        auto GdiplusStartup = (FN_GdiplusStartup)GetProcAddress(hGdiPlus, "GdiplusStartup");
-        auto GdiplusShutdown = (FN_GdiplusShutdown)GetProcAddress(hGdiPlus, "GdiplusShutdown");
-        auto GdipCreateBitmapFromFile = (FN_GdipCreateBitmapFromFile)GetProcAddress(hGdiPlus, "GdipCreateBitmapFromFile");
-        auto GdipCreateHBITMAPFromBitmap = (FN_GdipCreateHBITMAPFromBitmap)GetProcAddress(hGdiPlus, "GdipCreateHBITMAPFromBitmap");
-        auto GdipDisposeImage = (FN_GdipDisposeImage)GetProcAddress(hGdiPlus, "GdipDisposeImage");
+        auto GdiplusStartup = reinterpret_cast<FN_GdiplusStartup>(::GetProcAddress(hGdiPlus, "GdiplusStartup"));
+        auto GdiplusShutdown = reinterpret_cast<FN_GdiplusShutdown>(::GetProcAddress(hGdiPlus, "GdiplusShutdown"));
+        auto GdipCreateBitmapFromFile = reinterpret_cast<FN_GdipCreateBitmapFromFile>(::GetProcAddress(hGdiPlus, "GdipCreateBitmapFromFile"));
+        auto GdipCreateHBITMAPFromBitmap = reinterpret_cast<FN_GdipCreateHBITMAPFromBitmap>(::GetProcAddress(hGdiPlus, "GdipCreateHBITMAPFromBitmap"));
+        auto GdipDisposeImage = reinterpret_cast<FN_GdipDisposeImage>(::GetProcAddress(hGdiPlus, "GdipDisposeImage"));
 
         if (GdiplusStartup &&
             GdiplusShutdown &&
@@ -987,7 +987,7 @@ std::wstring xg_str_unescape(const std::wstring& str)
                     octal *= 8;
                     octal += ch - L'0';
                 }
-                ret += wchar_t(octal);
+                ret += static_cast<wchar_t>(octal);
                 i += k - 1;
             }
             if (ch == L'x' || ch == L'X') {
@@ -1005,7 +1005,7 @@ std::wstring xg_str_unescape(const std::wstring& str)
                     else if (iswupper(ch))
                         hexi += ch - L'A' + 10;
                 }
-                ret += wchar_t(hexi);
+                ret += static_cast<wchar_t>(hexi);
                 i += k - 1;
             }
         }

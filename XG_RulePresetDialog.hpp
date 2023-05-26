@@ -316,6 +316,8 @@ public:
                 CheckDlgButton(hwnd, chx7, BST_UNCHECKED);
                 CheckDlgButton(hwnd, chx8, BST_UNCHECKED);
                 break;
+            default:
+                break;
             }
         }
         m_bUpdating = FALSE;
@@ -390,6 +392,8 @@ public:
         case chx9:
             OnCheckBox(hwnd, RULE_LINESYMMETRYH, id);
             break;
+        default:
+            break;
         }
     }
 
@@ -402,6 +406,8 @@ public:
             HANDLE_MSG(hwnd, WM_COMMAND, OnCommand);
             HANDLE_MSG(hwnd, WM_MEASUREITEM, OnMeasureItem);
             HANDLE_MSG(hwnd, WM_DRAWITEM, OnDrawItem);
+        default:
+            break;
         }
         return 0;
     }

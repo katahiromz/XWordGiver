@@ -695,6 +695,9 @@ void XG_SettingsDialog::OnChange(HWND hwnd, int i)
             SetUIFont(hwnd, cf.lpLogFont);
         }
         break;
+
+    default:
+        break;
     }
 }
 
@@ -915,7 +918,13 @@ XG_SettingsDialog::DialogProcDx(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPar
             } else {
                 ::EnableWindow(::GetDlgItem(hwnd, edt7), FALSE);
             }
+
+        default:
+            break;
         }
+        break;
+
+    default:
         break;
     }
     return 0;
@@ -950,7 +959,7 @@ void XG_SettingsDialog::UpdateBlockPreview(HWND hwnd)
 
         if (hbm1)
         {
-            HBITMAP hbm2 = (HBITMAP)CopyImage(hbm1, IMAGE_BITMAP, 32, 32, LR_CREATEDIBSECTION);
+            HBITMAP hbm2 = reinterpret_cast<HBITMAP>(::CopyImage(hbm1, IMAGE_BITMAP, 32, 32, LR_CREATEDIBSECTION));
             DeleteObject(hbm1);
             SendMessageW(hIco1, STM_SETIMAGE, IMAGE_BITMAP, reinterpret_cast<LPARAM>(hbm2));
             SendMessageW(hIco2, STM_SETIMAGE, IMAGE_ENHMETAFILE, 0);

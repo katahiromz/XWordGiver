@@ -22,7 +22,7 @@ enum UNDOABLE_COMMAND_ID : UINT {
 //////////////////////////////////////////////////////////////////////////////
 
 struct XG_UndoData {
-    XG_UndoData()
+    XG_UndoData() noexcept
     {
     }
     virtual ~XG_UndoData()
@@ -149,7 +149,7 @@ struct XG_UndoInfo {
     shared_ptr<XG_UndoData> pBefore;
     shared_ptr<XG_UndoData> pAfter;
 
-    XG_UndoInfo() { }
+    XG_UndoInfo() noexcept { }
 
     XG_UndoInfo(UINT id, XG_UndoData *before, XG_UndoData *after) :
         nCommandID(id), pBefore(before), pAfter(after)
@@ -192,7 +192,7 @@ class XG_UndoBuffer : public std::deque<XG_UndoInfo>
 public:
     typedef std::deque<XG_UndoInfo> super_type;
 
-    XG_UndoBuffer() : m_i(0), m_enabled(true) { }
+    XG_UndoBuffer() noexcept : m_i(0), m_enabled(true) { }
 
     XG_UndoBuffer(const XG_UndoBuffer& ub) :
         std::deque<XG_UndoInfo>(ub), m_i(ub.m_i),

@@ -27,6 +27,8 @@ void __fastcall XgInputDirection(HWND hwnd, INT nDirection)
     case -1:
         xg_bTateInput = !xg_bTateInput;
         break;
+    default:
+        break;
     }
 
     if (xg_hwndInputPalette) {
@@ -168,8 +170,9 @@ WCHAR XgConvertAccent(WCHAR chAccent, WCHAR ch)
         case L'Y': case L'y':
             ch = 0x0178; // Ÿ
             break;
+        default:
+            break;
         }
-        break;
         break;
     case L'\'':
         switch (ch) {
@@ -199,6 +202,8 @@ WCHAR XgConvertAccent(WCHAR chAccent, WCHAR ch)
             break;
         case L'W': case L'w':
             ch = 0x1E82; // LATIN CAPITAL LETTER W WITH ACUTE
+            break;
+        default:
             break;
         }
         break;
@@ -231,12 +236,16 @@ WCHAR XgConvertAccent(WCHAR chAccent, WCHAR ch)
         case L'T': case L't':
             ch = 0x0162; // LATIN CAPITAL LETTER T CEDILLA
             break;
+        default:
+            break;
         }
         break;
     case L'&':
         switch (ch) {
         case L'O': case L'o':
             ch = 0x0152; // Œ
+            break;
+        default:
             break;
         }
         break;
@@ -245,7 +254,11 @@ WCHAR XgConvertAccent(WCHAR chAccent, WCHAR ch)
         case L'I': case L'i':
             ch = 0x0130; // İ
             break;
+        default:
+            break;
         }
+        break;
+    default:
         break;
     }
     return ch;
@@ -263,6 +276,8 @@ void __fastcall XgSetCharFeed(HWND hwnd, INT nMode)
         break;
     case -1:
         xg_bCharFeed = !xg_bCharFeed;
+        break;
+    default:
         break;
     }
 
@@ -475,7 +490,7 @@ void __fastcall XgOnChar(HWND hwnd, TCHAR ch, int cRepeat)
                 ch = XgConvertAccent(xg_chAccent, ch);
             } else {
                 // 半角英字を全角英字に変換。
-                ch = WCHAR(ZEN_LARGE_A + (ch - L'A'));
+                ch = static_cast<WCHAR>(ZEN_LARGE_A + (ch - L'A'));
             }
             xg_chAccent = 0; // アクセントを解除する。
 
@@ -535,7 +550,7 @@ void __fastcall XgOnChar(HWND hwnd, TCHAR ch, int cRepeat)
         if (::GetAsyncKeyState(VK_CONTROL) < 0) {
             // [Ctrl]キーが押されている。
         } else if (XgIsCharHankakuUpperW(ch) || XgIsCharHankakuLowerW(ch)) {
-            ch = (WCHAR)(UINT_PTR)CharUpperW((LPWSTR)(UINT_PTR)ch);
+            ch = static_cast<WCHAR>(reinterpret_cast<UINT_PTR>(CharUpperW(reinterpret_cast<LPWSTR>(static_cast<UINT_PTR>(ch)))));
 
             // ローマ字入力。
             if (ch == L'A' || ch == L'I' || ch == L'U' ||
@@ -550,6 +565,7 @@ void __fastcall XgOnChar(HWND hwnd, TCHAR ch, int cRepeat)
                     case L'E': newch = ZEN_E; break;
                     case L'O': newch = ZEN_O; break;
                     case L'N': xg_prev_vk = ch; break;
+                    default: break;
                     }
                     break;
                 case L'K':
@@ -559,6 +575,7 @@ void __fastcall XgOnChar(HWND hwnd, TCHAR ch, int cRepeat)
                     case L'U': newch = ZEN_KU; break;
                     case L'E': newch = ZEN_KE; break;
                     case L'O': newch = ZEN_KO; break;
+                    default: break;
                     }
                     break;
                 case L'S':
@@ -568,6 +585,7 @@ void __fastcall XgOnChar(HWND hwnd, TCHAR ch, int cRepeat)
                     case L'U': newch = ZEN_SU; break;
                     case L'E': newch = ZEN_SE; break;
                     case L'O': newch = ZEN_SO; break;
+                    default: break;
                     }
                     break;
                 case L'T':
@@ -577,6 +595,7 @@ void __fastcall XgOnChar(HWND hwnd, TCHAR ch, int cRepeat)
                     case L'U': newch = ZEN_TSU; break;
                     case L'E': newch = ZEN_TE; break;
                     case L'O': newch = ZEN_TO; break;
+                    default: break;
                     }
                     break;
                 case L'N':
@@ -587,6 +606,7 @@ void __fastcall XgOnChar(HWND hwnd, TCHAR ch, int cRepeat)
                     case L'E': newch = ZEN_NE; break;
                     case L'O': newch = ZEN_NO; break;
                     case L'N': newch = ZEN_NN; break;
+                    default: break;
                     }
                     break;
                 case L'H':
@@ -596,12 +616,14 @@ void __fastcall XgOnChar(HWND hwnd, TCHAR ch, int cRepeat)
                     case L'U': newch = ZEN_FU; break;
                     case L'E': newch = ZEN_HE; break;
                     case L'O': newch = ZEN_HO; break;
+                    default: break;
                     }
                     break;
                 case L'F':
                     switch (ch) {
                     case L'U': newch = ZEN_FU; break;
                     case L'O': newch = ZEN_HO; break;
+                    default: break;
                     }
                     break;
                 case L'M':
@@ -611,6 +633,7 @@ void __fastcall XgOnChar(HWND hwnd, TCHAR ch, int cRepeat)
                     case L'U': newch = ZEN_MU; break;
                     case L'E': newch = ZEN_ME; break;
                     case L'O': newch = ZEN_MO; break;
+                    default: break;
                     }
                     break;
                 case L'Y':
@@ -620,6 +643,7 @@ void __fastcall XgOnChar(HWND hwnd, TCHAR ch, int cRepeat)
                     case L'U': newch = ZEN_YU; break;
                     case L'E': newch = ZEN_E; break;
                     case L'O': newch = ZEN_YO; break;
+                    default: break;
                     }
                     break;
                 case L'R':
@@ -629,6 +653,7 @@ void __fastcall XgOnChar(HWND hwnd, TCHAR ch, int cRepeat)
                     case L'U': newch = ZEN_RU; break;
                     case L'E': newch = ZEN_RE; break;
                     case L'O': newch = ZEN_RO; break;
+                    default: break;
                     }
                     break;
                 case L'W':
@@ -638,6 +663,7 @@ void __fastcall XgOnChar(HWND hwnd, TCHAR ch, int cRepeat)
                     case L'U': newch = ZEN_U; break;
                     case L'E': newch = ZEN_WE; break;
                     case L'O': newch = ZEN_WO; break;
+                    default: break;
                     }
                     break;
                 case L'G':
@@ -647,6 +673,7 @@ void __fastcall XgOnChar(HWND hwnd, TCHAR ch, int cRepeat)
                     case L'U': newch = ZEN_GU; break;
                     case L'E': newch = ZEN_GE; break;
                     case L'O': newch = ZEN_GO; break;
+                    default: break;
                     }
                     break;
                 case L'Z':
@@ -656,12 +683,14 @@ void __fastcall XgOnChar(HWND hwnd, TCHAR ch, int cRepeat)
                     case L'U': newch = ZEN_ZU; break;
                     case L'E': newch = ZEN_ZE; break;
                     case L'O': newch = ZEN_ZO; break;
+                    default: break;
                     }
                     break;
                 case L'J':
                     switch (ch) {
                     case L'I': newch = ZEN_JI; break;
                     case L'E': newch = ZEN_ZE; break;
+                    default: break;
                     }
                     break;
                 case L'D':
@@ -671,6 +700,7 @@ void __fastcall XgOnChar(HWND hwnd, TCHAR ch, int cRepeat)
                     case L'U': newch = ZEN_DU; break;
                     case L'E': newch = ZEN_DE; break;
                     case L'O': newch = ZEN_DO; break;
+                    default: break;
                     }
                     break;
                 case L'B':
@@ -680,6 +710,7 @@ void __fastcall XgOnChar(HWND hwnd, TCHAR ch, int cRepeat)
                     case L'U': newch = ZEN_BU; break;
                     case L'E': newch = ZEN_BE; break;
                     case L'O': newch = ZEN_BO; break;
+                    default: break;
                     }
                     break;
                 case L'P':
@@ -689,7 +720,10 @@ void __fastcall XgOnChar(HWND hwnd, TCHAR ch, int cRepeat)
                     case L'U': newch = ZEN_PU; break;
                     case L'E': newch = ZEN_PE; break;
                     case L'O': newch = ZEN_PO; break;
+                    default: break;
                     }
+                    break;
+                default:
                     break;
                 }
                 if (newch) {
@@ -927,6 +961,8 @@ void __fastcall XgOnKey(HWND hwnd, UINT vk, bool fDown, int /*cRepeat*/, UINT /*
             case L';':
                 ::PostMessageW(hwnd, WM_COMMAND, ID_OPENPATTERNS, 0);
                 return;
+            default:
+                break;
             }
             switch (ch2) {
             case L'/':
@@ -953,6 +989,8 @@ void __fastcall XgOnKey(HWND hwnd, UINT vk, bool fDown, int /*cRepeat*/, UINT /*
             case L';':
                 ::PostMessageW(hwnd, WM_COMMAND, ID_OPENPATTERNS, 0);
                 return;
+            default:
+                break;
             }
             return;
         }
@@ -1175,6 +1213,8 @@ void InputPal_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT codeNotify)
         xg_bShowInputPalette = false;
         DestroyWindow(hwnd);
         return;
+    default:
+        break;
     }
 
     HWND hButton = GetDlgItem(hwnd, id);
@@ -1251,6 +1291,8 @@ void InputPal_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT codeNotify)
         case 20073: // ロシアに
             XgSetInputMode(xg_hMainWnd, xg_im_RUSSIA);
             break;
+        default:
+            break;
         }
     }
 
@@ -1279,6 +1321,9 @@ void InputPal_OnKey(HWND hwnd, UINT vk, BOOL fDown, int cRepeat, UINT flags)
     case VK_ESCAPE:
         DestroyWindow(hwnd);
         break;
+
+    default:
+        break;
     }
 }
 
@@ -1294,13 +1339,14 @@ void InputPal_OnMove(HWND hwnd, int x, int y)
 INT_PTR CALLBACK
 XgInputPaletteDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
-    switch (uMsg)
-    {
+    switch (uMsg) {
         HANDLE_MSG(hwnd, WM_INITDIALOG, InputPal_OnInitDialog);
         HANDLE_MSG(hwnd, WM_COMMAND, InputPal_OnCommand);
         HANDLE_MSG(hwnd, WM_DESTROY, InputPal_OnDestroy);
         HANDLE_MSG(hwnd, WM_KEYDOWN, InputPal_OnKey);
         HANDLE_MSG(hwnd, WM_MOVE, InputPal_OnMove);
+    default:
+        break;
     }
     return 0;
 }

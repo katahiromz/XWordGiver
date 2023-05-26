@@ -129,6 +129,9 @@ public:
                 }
             }
             break;
+
+        default:
+            break;
         }
     }
 
@@ -184,6 +187,8 @@ public:
             HANDLE_MSG(hwnd, WM_INITDIALOG, OnInitDialog);
             HANDLE_MSG(hwnd, WM_COMMAND, OnCommand);
             HANDLE_MSG(hwnd, WM_DROPFILES, OnDropFiles);
+        default:
+            break;
         }
         return 0;
     }

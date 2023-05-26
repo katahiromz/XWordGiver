@@ -621,7 +621,7 @@ extern boxes_t xg_boxes;
 class XG_PictureBoxWindow : public XG_BoxWindow
 {
 public:
-    XG_PictureBoxWindow(INT i1 = 0, INT j1 = 0, INT i2 = 1, INT j2 = 1)
+    XG_PictureBoxWindow(INT i1 = 0, INT j1 = 0, INT i2 = 1, INT j2 = 1) noexcept
         : XG_BoxWindow(L"pic", i1, j1, i2, j2)
     {
     }
@@ -683,7 +683,7 @@ public:
     std::wstring m_strFontName;
     INT m_nFontSizeInPoints = 0;
 
-    XG_TextBoxWindow(INT i1 = 0, INT j1 = 0, INT i2 = 1, INT j2 = 1)
+    XG_TextBoxWindow(INT i1 = 0, INT j1 = 0, INT i2 = 1, INT j2 = 1) noexcept
         : XG_BoxWindow(L"text", i1, j1, i2, j2)
     {
     }

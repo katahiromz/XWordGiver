@@ -11,7 +11,7 @@ public:
     BOOL m_bUpdating = FALSE;
     BOOL m_bInitted = FALSE;
 
-    XG_MarkingDialog()
+    XG_MarkingDialog() noexcept
     {
     }
 
@@ -27,7 +27,7 @@ public:
 
         // リストに候補を追加する。
         for (auto& item : xg_vMarkedCands) {
-            INT i = (INT)::SendDlgItemMessageW(hwnd, lst1, LB_ADDSTRING, 0, (LPARAM)item.c_str());
+            int i = static_cast<int>(::SendDlgItemMessageW(hwnd, lst1, LB_ADDSTRING, 0, (LPARAM)item.c_str()));
             if (item == xg_strMarked) {
                 m_bUpdating = TRUE;
                 ::SendDlgItemMessageW(hwnd, lst1, LB_SETCURSEL, i, 0);
@@ -166,7 +166,7 @@ public:
 
     INT GetCurSel(HWND hwnd)
     {
-        INT i = (INT)::SendDlgItemMessageW(hwnd, lst1, LB_GETCURSEL, 0, 0);
+        INT i = static_cast<INT>(::SendDlgItemMessageW(hwnd, lst1, LB_GETCURSEL, 0, 0));
         return i;
     }
 
@@ -200,11 +200,11 @@ public:
                     // 前の候補。
                     INT iItem = GetCurSel(hwnd);
                     if (iItem == LB_ERR) {
-                        xg_iMarkedCand = INT(xg_vMarkedCands.size()) - 1;
+                        xg_iMarkedCand = static_cast<int>(xg_vMarkedCands.size()) - 1;
                     } else {
                         xg_iMarkedCand = iItem - 1;
                         if (xg_iMarkedCand < 0)
-                            xg_iMarkedCand = INT(xg_vMarkedCands.size()) - 1;
+                            xg_iMarkedCand = static_cast<int>(xg_vMarkedCands.size()) - 1;
                     }
                     auto str = xg_vMarkedCands[xg_iMarkedCand];
                     XgSetMarkedWord(str);
@@ -275,6 +275,8 @@ public:
                 xg_ubUndoBuffer.Commit(UC_MARKS_UPDATED, mu1, mu2);
             }
             break;
+        default:
+            break;
         }
         // 盤面を更新する。
         XgUpdateImage(xg_hMainWnd);
@@ -327,6 +329,8 @@ public:
             HANDLE_MSG(hwnd, WM_MOVE, OnMove);
             HANDLE_MSG(hwnd, WM_TIMER, OnTimer);
             HANDLE_MSG(hwnd, WM_DESTROY, OnDestroy);
+        default:
+            break;
         }
         return 0;
     }

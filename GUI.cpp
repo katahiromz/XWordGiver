@@ -998,7 +998,7 @@ bool __fastcall XgLoadSettings(void)
                 xg_nCols = dwValue;
             }
             if (!app_key.QueryDword(L"UILangID", dwValue)) {
-                xg_UILangID = (LANGID)dwValue;
+                xg_UILangID = static_cast<LANGID>(dwValue);
             }
 
             if (!app_key.QuerySz(L"CellFont", sz, _countof(sz))) {
@@ -1053,7 +1053,7 @@ bool __fastcall XgLoadSettings(void)
                 xg_bSmartResolution = dwValue;
             }
             if (!app_key.QueryDword(L"InputMode", dwValue)) {
-                xg_imode = (XG_InputMode)dwValue;
+                xg_imode = static_cast<XG_InputMode>(dwValue);
             }
             if (!app_key.QueryDword(L"ZoomRate", dwValue)) {
                 xg_nZoomRate = dwValue;
@@ -1232,7 +1232,7 @@ bool __fastcall XgSaveSettings(void)
 
             app_key.SetDword(L"DrawFrameForMarkedCell", xg_bDrawFrameForMarkedCell);
             app_key.SetDword(L"SmartResolution", xg_bSmartResolution);
-            app_key.SetDword(L"InputMode", (DWORD)xg_imode);
+            app_key.SetDword(L"InputMode", static_cast<DWORD>(xg_imode));
             app_key.SetDword(L"ZoomRate", xg_nZoomRate);
             app_key.SetDword(L"ShowNumbering", xg_bShowNumbering);
             app_key.SetDword(L"ShowCaret", xg_bShowCaret);
@@ -1295,7 +1295,7 @@ bool __fastcall XgSaveSettings(void)
 
             app_key.SetDword(L"TateInput", xg_bTateInput);
 
-            app_key.SetDword(L"FileType", (DWORD)xg_nFileType);
+            app_key.SetDword(L"FileType", static_cast<DWORD>(xg_nFileType));
 
             // 最近使ったファイルのリストを設定する。
             nCount = static_cast<int>(xg_recently_used_files.size());
@@ -2215,14 +2215,15 @@ static inline void About_OnChangeLog(HWND hwnd) noexcept
 
 static inline void About_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT codeNotify) noexcept
 {
-    switch (id)
-    {
+    switch (id) {
     case IDOK:
     case IDCANCEL:
         EndDialog(hwnd, id);
         break;
     case IDYES:
         About_OnChangeLog(hwnd);
+        break;
+    default:
         break;
     }
 }
@@ -2262,9 +2263,9 @@ static inline void About_OnContextMenu(HWND hwnd, HWND hwndContext, UINT xPos, U
     HMENU hMenu = LoadMenuW(xg_hInstance, MAKEINTRESOURCEW(3));
     HMENU hSubMenu = GetSubMenu(hMenu, 2);
     SetForegroundWindow(hwnd);
-    INT id = (INT)TrackPopupMenu(hSubMenu,
-                                 TPM_LEFTALIGN | TPM_RIGHTBUTTON | TPM_RETURNCMD,
-                                 xPos, yPos, 0, hwnd, nullptr);
+    int id = static_cast<int>(::TrackPopupMenu(hSubMenu,
+        TPM_LEFTALIGN | TPM_RIGHTBUTTON | TPM_RETURNCMD,
+        xPos, yPos, 0, hwnd, nullptr));
     DestroyMenu(hMenu);
     PostMessage(hwnd, WM_NULL, 0, 0);
     switch (id)
@@ -2286,6 +2287,8 @@ AboutDialogProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
         HANDLE_MSG(hwnd, WM_COMMAND, About_OnCommand);
         HANDLE_MSG(hwnd, WM_NOTIFY, About_OnNotify);
         HANDLE_MSG(hwnd, WM_CONTEXTMENU, About_OnContextMenu);
+    default:
+        break;
     }
     return 0;
 }
@@ -3692,7 +3695,7 @@ void XgCopyBoardAsImage(HWND hwnd)
         std::vector<BYTE> data;
         PackedDIB_CreateFromHandle(data, hbm);
 
-        hGlobal = GlobalAlloc(GHND | GMEM_SHARE, DWORD(data.size()));
+        hGlobal = GlobalAlloc(GHND | GMEM_SHARE, static_cast<DWORD>(data.size()));
         if (hGlobal)
         {
             if (LPVOID pv = GlobalLock(hGlobal))
@@ -3764,7 +3767,7 @@ void __fastcall XgCopyMarkWord(HWND hwnd)
         // CF_UNICODETEXTのデータを用意。
         SIZE_T cbGlobal = (strMarkWord.size() + 1) * sizeof(WCHAR);
         hGlobal = GlobalAlloc(GHND | GMEM_SHARE, cbGlobal);
-        if (LPWSTR psz = (LPWSTR)GlobalLock(hGlobal)) {
+        if (LPWSTR psz = reinterpret_cast<LPWSTR>(GlobalLock(hGlobal))) {
             StringCbCopyW(psz, cbGlobal, strMarkWord.c_str());
             GlobalUnlock(hGlobal);
         } else {
@@ -4407,7 +4410,7 @@ void __fastcall MainWnd_OnInitMenu(HWND /*hwnd*/, HMENU hMenu)
     for (auto& item : xg_recently_used_files) {
         std::wstring str;
         str += L'&';
-        str += WCHAR(L'0' + iItem);
+        str += static_cast<WCHAR>(L'0' + iItem);
         str += L'\t';
         str += item;
         ::AppendMenuW(hRecentMenu, MF_STRING, id++, str.c_str());
@@ -4801,7 +4804,7 @@ std::wstring URL_encode(const std::wstring& url)
     size_t len = url.size() * 4;
     str.resize(len);
     if (len > 0)
-        WideCharToMultiByte(CP_UTF8, 0, url.c_str(), -1, &str[0], (INT)len, nullptr, nullptr);
+        WideCharToMultiByte(CP_UTF8, 0, url.c_str(), -1, &str[0], static_cast<int>(len), nullptr, nullptr);
 
     len = strlen(str.c_str());
     str.resize(len);
@@ -4819,14 +4822,14 @@ std::wstring URL_encode(const std::wstring& url)
         else if (('A' <= ch && ch <= 'Z') || ('a' <= ch && ch <= 'z') || 
                  ('0' <= ch && ch <= '9'))
         {
-            ret += (char)ch;
+            ret += static_cast<char>(ch);
         }
         else
         {
             switch (ch)
             {
             case L'.': case L'-': case L'_': case L'*':
-                ret += (char)ch;
+                ret += static_cast<char>(ch);
                 break;
             default:
                 buf[0] = L'%';
@@ -5396,6 +5399,8 @@ BOOL XgAddBox(HWND hwnd, UINT id)
                 return TRUE;
             }
         }
+        break;
+    default:
         break;
     }
 
@@ -6977,7 +6982,7 @@ HBITMAP XgCreateGrayedBitmap(HBITMAP hbm, COLORREF crMask = CLR_INVALID) noexcep
             for (int y = 0; y < bm.bmHeight; ++y) {
                 for (int x = 0; x < bm.bmWidth; ++x) {
                     cr = ::GetPixel(hdc1, x, y);
-                    by = BYTE(
+                    by = static_cast<BYTE>(
                         95 + (
                             GetRValue(cr) * 3 +
                             GetGValue(cr) * 6 +
@@ -6993,7 +6998,7 @@ HBITMAP XgCreateGrayedBitmap(HBITMAP hbm, COLORREF crMask = CLR_INVALID) noexcep
                     cr = ::GetPixel(hdc1, x, y);
                     if (cr != crMask)
                     {
-                        by = BYTE(
+                        by = static_cast<BYTE>(
                             95 + (
                                 GetRValue(cr) * 3 +
                                 GetGValue(cr) * 6 +
@@ -7099,7 +7104,7 @@ bool __fastcall MainWnd_OnCreate(HWND hwnd, LPCREATESTRUCT /*lpCreateStruct*/)
         WS_CHILD | CCS_TOP | TBSTYLE_TOOLTIPS,
         0, 0, 0, 0,
         hwnd,
-        reinterpret_cast<HMENU>(UINT_PTR(c_IDW_TOOLBAR)),
+        reinterpret_cast<HMENU>(static_cast<UINT_PTR>(c_IDW_TOOLBAR)),
         xg_hInstance,
         nullptr);
     if (xg_hToolBar == nullptr)
@@ -7108,9 +7113,9 @@ bool __fastcall MainWnd_OnCreate(HWND hwnd, LPCREATESTRUCT /*lpCreateStruct*/)
     // ツールバーを初期化する。
     ::SendMessageW(xg_hToolBar, TB_BUTTONSTRUCTSIZE, sizeof(TBBUTTON), 0);
     ::SendMessageW(xg_hToolBar, TB_SETBITMAPSIZE, 0, MAKELPARAM(32, 32));
-    ::SendMessageW(xg_hToolBar, TB_SETIMAGELIST, 0, (LPARAM)xg_hImageList);
+    ::SendMessageW(xg_hToolBar, TB_SETIMAGELIST, 0, reinterpret_cast<LPARAM>(xg_hImageList));
     ::SendMessageW(xg_hToolBar, TB_SETDISABLEDIMAGELIST, 0, (LPARAM)xg_hGrayedImageList);
-    ::SendMessageW(xg_hToolBar, TB_ADDBUTTONS, std::size(atbb), (LPARAM)&atbb);
+    ::SendMessageW(xg_hToolBar, TB_ADDBUTTONS, std::size(atbb), reinterpret_cast<LPARAM>(&atbb));
     ::SendMessageW(xg_hToolBar, WM_SIZE, 0, 0);
 
     if (xg_bShowToolBar)
@@ -7495,7 +7500,7 @@ LRESULT CALLBACK XgCtrlAMessageProc(INT nCode, WPARAM wParam, LPARAM lParam) noe
 
     HWND hWnd;
     if (pMsg->message == WM_KEYDOWN) {
-        if (INT(pMsg->wParam) == 'A' &&
+        if (static_cast<int>(pMsg->wParam) == 'A' &&
             ::GetAsyncKeyState(VK_CONTROL) < 0 &&
             ::GetAsyncKeyState(VK_SHIFT) >= 0 &&
             ::GetAsyncKeyState(VK_MENU) >= 0)

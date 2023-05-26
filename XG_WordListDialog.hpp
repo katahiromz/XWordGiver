@@ -15,7 +15,7 @@ public:
     SIZE m_sizBitmap;
     HBITMAP m_hbmBitmap = nullptr;
 
-    XG_WordListDialog()
+    XG_WordListDialog() noexcept
     {
     }
 
@@ -179,6 +179,8 @@ public:
             // ダイアログを終了。
             ::EndDialog(hwnd, id);
             break;
+        default:
+            break;
         }
     }
 
@@ -217,6 +219,8 @@ public:
             HANDLE_MSG(hwnd, WM_INITDIALOG, OnInitDialog);
             HANDLE_MSG(hwnd, WM_COMMAND, OnCommand);
             HANDLE_MSG(hwnd, WM_PAINT, OnPaint);
+        default:
+            break;
         }
         return 0;
     }

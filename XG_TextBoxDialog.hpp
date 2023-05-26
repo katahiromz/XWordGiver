@@ -43,7 +43,7 @@ public:
         m_bBgColor = bEnable;
     }
 
-    XG_TextBoxDialog()
+    XG_TextBoxDialog() noexcept
     {
         m_hwndTextColor.SetColor(CLR_INVALID);
         m_hwndBgColor.SetColor(CLR_INVALID);
@@ -59,7 +59,7 @@ public:
             return TRUE;
         if (lplf->lfFaceName[0] == L'@')
             return TRUE;
-        HWND hCmb1 = (HWND)lParam;
+        HWND hCmb1 = reinterpret_cast<HWND>(lParam);
         ComboBox_AddString(hCmb1, lplf->lfFaceName);
         return TRUE;
     }
@@ -82,7 +82,7 @@ public:
 
         HDC hDC = CreateCompatibleDC(nullptr);
         HWND hCmb1 = GetDlgItem(hwnd, cmb1);
-        EnumFontsW(hDC, nullptr, EnumFontsProc, (LPARAM)hCmb1);
+        EnumFontsW(hDC, nullptr, EnumFontsProc, reinterpret_cast<LPARAM>(hCmb1));
         DeleteDC(hDC);
 
         if (m_strFontName.size())
@@ -225,6 +225,8 @@ public:
                 EnableWindow(GetDlgItem(hwnd, edt2), FALSE);
             }
             break;
+        default:
+            break;
         }
     }
 
@@ -248,6 +250,8 @@ public:
             HANDLE_MSG(hwnd, WM_INITDIALOG, OnInitDialog);
             HANDLE_MSG(hwnd, WM_COMMAND, OnCommand);
             HANDLE_MSG(hwnd, WM_DRAWITEM, OnDrawItem);
+        default:
+            break;
         }
         return 0;
     }

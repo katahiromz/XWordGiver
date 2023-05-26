@@ -6,7 +6,7 @@
 class XG_NotesDialog : public XG_Dialog
 {
 public:
-    XG_NotesDialog()
+    XG_NotesDialog() noexcept
     {
     }
 
@@ -53,10 +53,11 @@ public:
             // ダイアログを閉じる。
             ::EndDialog(hwnd, IDOK);
             break;
-
         case IDCANCEL:
             // ダイアログを閉じる。
             ::EndDialog(hwnd, IDCANCEL);
+            break;
+        default:
             break;
         }
     }

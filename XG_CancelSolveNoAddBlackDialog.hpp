@@ -10,7 +10,7 @@ public:
     const DWORD INTERVAL = 300;
     const UINT uTimerID = 999;
 
-    XG_CancelSolveNoAddBlackDialog()
+    XG_CancelSolveNoAddBlackDialog() noexcept
     {
     }
 
@@ -81,7 +81,6 @@ public:
             // ダイアログを終了する。
             ::EndDialog(hwnd, IDCANCEL);
             break;
-
         case psh2:
             // キャンセルする。
             DoCancel(hwnd);
@@ -89,6 +88,8 @@ public:
             ::InterlockedIncrement(&xg_nRetryCount);
             // 再計算する。
             Restart(hwnd);
+            break;
+        default:
             break;
         }
     }
@@ -158,6 +159,8 @@ public:
             HANDLE_MSG(hwnd, WM_COMMAND, OnCommand);
             HANDLE_MSG(hwnd, WM_SYSCOMMAND, OnSysCommand);
             HANDLE_MSG(hwnd, WM_TIMER, OnTimer);
+        default:
+            break;
         }
         return 0;
     }

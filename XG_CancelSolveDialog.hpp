@@ -10,7 +10,7 @@ public:
     const DWORD INTERVAL = 300;
     const UINT uTimerID = 999;
 
-    XG_CancelSolveDialog()
+    XG_CancelSolveDialog() noexcept
     {
     }
 
@@ -88,10 +88,11 @@ public:
             // ダイアログを終了する。
             ::EndDialog(hwnd, IDCANCEL);
             break;
-
         case psh2:
             // 再計算しなおす。
             DoRetry(hwnd);
+            break;
+        default:
             break;
         }
     }
@@ -161,6 +162,8 @@ public:
             HANDLE_MSG(hwnd, WM_COMMAND, OnCommand);
             HANDLE_MSG(hwnd, WM_SYSCOMMAND, OnSysCommand);
             HANDLE_MSG(hwnd, WM_TIMER, OnTimer);
+        default:
+            break;
         }
         return 0;
     }

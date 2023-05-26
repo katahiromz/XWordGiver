@@ -191,7 +191,7 @@ struct XG_DICT
 {
     std::wstring m_filename; // ファイル名。
     std::wstring m_friendly_name; // 親切な名前。
-    XG_DICT()
+    XG_DICT() noexcept
     {
     }
     XG_DICT(const std::wstring& filename, const std::wstring& friendly_name)

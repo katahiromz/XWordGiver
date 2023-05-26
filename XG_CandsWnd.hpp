@@ -227,7 +227,7 @@ public:
         return 0;
     }
 
-    XG_CandsWnd()
+    XG_CandsWnd() noexcept
     {
     }
 
@@ -384,6 +384,9 @@ public:
 
         case VK_ESCAPE:
             DestroyWindow(hwnd);
+            break;
+
+        default:
             break;
         }
     }

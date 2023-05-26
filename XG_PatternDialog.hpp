@@ -30,7 +30,7 @@ public:
     // 黒マスパターンで答えを表示する。
     inline static BOOL xg_bShowAnswerOnPattern = TRUE;
 
-    XG_PatternDialog()
+    XG_PatternDialog() noexcept
     {
     }
 
@@ -345,6 +345,8 @@ public:
         case rad6:
             RefreshContents(hwnd, GetType0(), GetType1());
             break;
+        default:
+            break;
         }
     }
 
@@ -536,6 +538,8 @@ public:
             HANDLE_MSG(hwnd, WM_SIZE, OnSize);
             HANDLE_MSG(hwnd, WM_GETMINMAXINFO, OnGetMinMaxInfo);
             HANDLE_MSG(hwnd, WM_DESTROY, OnDestroy);
+        default:
+            break;
         }
         return 0;
     }

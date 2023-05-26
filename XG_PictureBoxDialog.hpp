@@ -9,16 +9,16 @@ public:
     HBITMAP m_hbm = nullptr;
     HENHMETAFILE m_hEMF = nullptr;
 
-    XG_PictureBoxDialog()
+    XG_PictureBoxDialog() noexcept
     {
     }
 
-    ~XG_PictureBoxDialog()
+    ~XG_PictureBoxDialog() noexcept
     {
         DoDelete();
     }
 
-    void DoDelete()
+    void DoDelete() noexcept
     {
         DeleteObject(m_hbm);
         m_hbm = nullptr;
@@ -35,8 +35,8 @@ public:
         HWND hIco1 = GetDlgItem(hwnd, ico1);
         HWND hIco2 = GetDlgItem(hwnd, ico2);
 
-        SendMessageW(hIco1, STM_SETIMAGE, IMAGE_ENHMETAFILE, (LPARAM)nullptr);
-        SendMessageW(hIco2, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)nullptr);
+        SendMessageW(hIco1, STM_SETIMAGE, IMAGE_ENHMETAFILE, 0);
+        SendMessageW(hIco2, STM_SETIMAGE, IMAGE_BITMAP, 0);
 
         DoDelete();
 
@@ -46,7 +46,7 @@ public:
         if (XgLoadImage(szText, m_hbm, m_hEMF))
         {
             if (m_hbm) {
-                HBITMAP hbm2 = (HBITMAP)CopyImage(m_hbm, IMAGE_BITMAP, 32, 32, LR_CREATEDIBSECTION);
+                HBITMAP hbm2 = reinterpret_cast<HBITMAP>(::CopyImage(m_hbm, IMAGE_BITMAP, 32, 32, LR_CREATEDIBSECTION));
                 DeleteObject(m_hbm);
                 m_hbm = hbm2;
                 ShowWindow(hIco2, SW_SHOWNOACTIVATE);
@@ -115,6 +115,8 @@ public:
                 RefreshImage(hwnd);
             }
             break;
+        default:
+            break;
         }
     }
 
@@ -159,6 +161,8 @@ public:
             HANDLE_MSG(hwnd, WM_INITDIALOG, OnInitDialog);
             HANDLE_MSG(hwnd, WM_COMMAND, OnCommand);
             HANDLE_MSG(hwnd, WM_DROPFILES, OnDropFiles);
+        default:
+            break;
         }
         return 0;
     }

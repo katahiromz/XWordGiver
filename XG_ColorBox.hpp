@@ -26,16 +26,16 @@ public:
 
     COLORREF m_rgbColor = RGB(255, 255, 255);
 
-    XG_ColorBox()
+    XG_ColorBox() noexcept
     {
     }
 
-    COLORREF GetColor() const
+    COLORREF GetColor() const noexcept
     {
         return m_rgbColor;
     }
 
-    void SetColor(COLORREF rgb)
+    void SetColor(COLORREF rgb) noexcept
     {
         m_rgbColor = rgb;
         InvalidateRect(m_hWnd, nullptr, TRUE);

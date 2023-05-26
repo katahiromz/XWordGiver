@@ -206,7 +206,7 @@ struct board_data_t {
     t_string m_data;
 
     // コンストラクタによる初期化。文字で埋める。
-    board_data_t(int cx = 1, int cy = 1, t_char ch = ' ') {
+    board_data_t(int cx = 1, int cy = 1, t_char ch = ' ') noexcept {
         resize(cx, cy, ch);
     }
 
@@ -1694,7 +1694,7 @@ struct from_words_t {
     // 生成スレッドのプロシージャ。
     static bool generate_proc(const std::unordered_set<t_string> *words, int iThread) {
         // 乱数の種をセットする。
-        std::srand(uint32_t(::GetTickCount64()) ^ ::GetCurrentThreadId());
+        std::srand(static_cast<uint32_t>(::GetTickCount64()) ^ ::GetCurrentThreadId());
 #ifdef _WIN32
         // 性能を重視してスレッドの優先度を指定する。
         ::SetThreadPriority(::GetCurrentThread(), THREAD_PRIORITY_ABOVE_NORMAL);
@@ -1703,7 +1703,7 @@ struct from_words_t {
         from_words_t<t_char, t_fixed> data;
         data.m_iThread = iThread;
         data.m_words = *words;
-        data.m_dict = std::move(*words);
+        data.m_dict = *words;
         delete words; // 単語の所有権はスレッドのプロシージャに渡されているのでここで破棄する。
         return data.generate(); // 生成を開始する。
     }

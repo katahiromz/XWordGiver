@@ -377,6 +377,9 @@ public:
         case SB_THUMBTRACK:
             si.nPos = pos;
             break;
+
+        default:
+            break;
         }
 
         // スクロール情報を設定し、イメージを更新する。
@@ -435,6 +438,9 @@ public:
         case SB_THUMBPOSITION:
         case SB_THUMBTRACK:
             si.nPos = pos;
+            break;
+
+        default:
             break;
         }
 

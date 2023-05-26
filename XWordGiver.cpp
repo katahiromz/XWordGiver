@@ -289,7 +289,7 @@ BOOL __fastcall XgPatternRuleIsOK(const XG_PATDATA& pat)
 
     // データサイズを確認。
     assert(INT(data.size()) == pat.num_rows * pat.num_columns);
-    if (INT(data.size()) != pat.num_rows * pat.num_columns)
+    if (static_cast<int>(data.size()) != pat.num_rows * pat.num_columns)
         return FALSE;
 
     if (xg_nRules & RULE_DONTDOUBLEBLACK) {
@@ -2521,7 +2521,7 @@ bool __fastcall XgSetJsonString(HWND hwnd, const std::wstring& str)
         bool has_hints = j0["has_hints"];
         INT rules = XG_DEFAULT_RULES;
         if (j0["policy"].is_number_integer()) {
-            rules = int(j0["policy"]);
+            rules = static_cast<int>(j0["policy"]);
         } else if (j0["rules"].is_string()) {
             auto str0 = XgUtf8ToUnicode(j0["rules"].get<std::string>());
             rules = XgParseRules(str0);
@@ -2548,7 +2548,7 @@ bool __fastcall XgSetJsonString(HWND hwnd, const std::wstring& str)
             throw 1;
         }
 
-        if (row_count != int(cell_data.size())) {
+        if (row_count != static_cast<int>(cell_data.size())) {
             throw 2;
         }
 
@@ -2589,8 +2589,8 @@ bool __fastcall XgSetJsonString(HWND hwnd, const std::wstring& str)
         if (has_mark) {
             auto& marks = j0["marks"];
             for (auto& mark : marks) {
-                int i = int(mark[0]) - 1;
-                int j = int(mark[1]) - 1;
+                int i = static_cast<int>(mark[0]) - 1;
+                int j = static_cast<int>(mark[1]) - 1;
                 if (i < 0 || row_count < i) {
                     success = false;
                     break;
@@ -2610,7 +2610,7 @@ bool __fastcall XgSetJsonString(HWND hwnd, const std::wstring& str)
             auto h = hints["h"];
             for (size_t i = 0; i < v.size(); ++i) {
                 auto data = v[i];
-                int number = int(data[0]);
+                int number = static_cast<int>(data[0]);
                 if (number <= 0) {
                     success = false;
                     break;
@@ -2621,7 +2621,7 @@ bool __fastcall XgSetJsonString(HWND hwnd, const std::wstring& str)
             }
             for (size_t i = 0; i < h.size(); ++i) {
                 auto data = h[i];
-                int number = int(data[0]);
+                int number = static_cast<int>(data[0]);
                 if (number <= 0) {
                     success = false;
                     break;
@@ -4416,13 +4416,13 @@ void __fastcall XgEndSolve(void) noexcept
 // ポイント単位をピクセル単位に変換する（X座標）。
 float XPixelsFromPoints(HDC hDC, float points)
 {
-    return points * float(::GetDeviceCaps(hDC, LOGPIXELSX)) / 72;
+    return points * static_cast<float>(::GetDeviceCaps(hDC, LOGPIXELSX)) / 72;
 }
 
 // ポイント単位をピクセル単位に変換する（Y座標）。
 float YPixelsFromPoints(HDC hDC, float points)
 {
-    return points * float(::GetDeviceCaps(hDC, LOGPIXELSY)) / 72;
+    return points * static_cast<float>(::GetDeviceCaps(hDC, LOGPIXELSY)) / 72;
 }
 
 // キャレットを描画する。
@@ -4628,13 +4628,13 @@ void __fastcall XgDrawMarkWord(HDC hdc, LPSIZE psiz)
             ch = xg_solution.GetAt(pos.m_i, pos.m_j);
             StringCbPrintf(sz, sizeof(sz), L"%u", xg_mapNumCro1[ch]);
         } else {
-            if (i < (INT)xg_strDoubleFrameLetters.size())
+            if (i < static_cast<int>(xg_strDoubleFrameLetters.size()))
                 ch = xg_strDoubleFrameLetters[i];
             else
                 ch = ZEN_BLACK;
             StringCbPrintf(sz, sizeof(sz), L"%c", ch);
         }
-        ::GetTextExtentPoint32W(hdc, sz, int(wcslen(sz)), &siz);
+        ::GetTextExtentPoint32W(hdc, sz, static_cast<int>(wcslen(sz)), &siz);
 
         RECT rcText = rc;
         if (xg_bNumCroMode && xg_bSolved) {
@@ -4817,7 +4817,7 @@ void XgDrawDoubleFrameCell(HDC hdc, INT nMarked, const RECT& rc, INT nCellSize, 
     // 二重マスの文字を描画するか？
     if (xg_bShowDoubleFrameLetters) {
         WCHAR sz[2];
-        if (nMarked < (INT)xg_strDoubleFrameLetters.size())
+        if (nMarked < static_cast<int>(xg_strDoubleFrameLetters.size()))
             StringCbPrintf(sz, sizeof(sz), L"%c", xg_strDoubleFrameLetters[nMarked]);
         else
             StringCbPrintf(sz, sizeof(sz), L"%c", ZEN_BLACK);
@@ -5495,7 +5495,7 @@ bool __fastcall XgDoLoadCrpFile(HWND hwnd, LPCWSTR pszFile)
             xg_str_replace_all(str, sz1, sz2);
             str = XgNormalizeString(str);
 
-            if (INT(str.size()) != nWidth)
+            if (static_cast<int>(str.size()) != nWidth)
                 break;
 
             rows.push_back(str);
@@ -5768,7 +5768,7 @@ bool __fastcall XgDoSaveCrpFile(LPCWSTR pszFile)
 
         // ヒント。
         if (xg_vecTateHints.size() && xg_vecYokoHints.size()) {
-            fprintf(fout, "Count=%u\n", int(xg_vecTateHints.size() + xg_vecYokoHints.size()));
+            fprintf(fout, "Count=%u\n", static_cast<int>(xg_vecTateHints.size() + xg_vecYokoHints.size()));
             int iHint = 1;
             // タテのカギ。
             for (size_t i = 0; i < xg_vecTateHints.size(); ++i) {
@@ -7137,7 +7137,7 @@ bool __fastcall XgGenerateBlacksLineSymVRecurse(const XG_Board& xword, LONG iRow
     // 盤の真ん中か？
     if (iRow >= nHalfRows) {
         std::wstring strPattern = xword.GetPatternV(XG_Pos(iRow, jCol));
-        if ((INT)strPattern.size() > xg_nMaxWordLen) {
+        if (static_cast<int>(strPattern.size()) > xg_nMaxWordLen) {
             // 空白が最大長よりも長い。黒マスをセットして再帰。
             XG_Board copy(xword);
             copy.SetAt(iRow, jCol, ZEN_BLACK);
