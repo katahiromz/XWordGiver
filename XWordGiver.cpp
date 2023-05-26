@@ -641,7 +641,7 @@ BOOL XgPatternsUnitTest(void)
 
 // 候補があるか？
 template <bool t_alternative>
-bool __fastcall XgAnyCandidateAddBlack(const std::wstring& pattern) noexcept
+bool __fastcall XgAnyCandidateAddBlack(const std::wstring& pattern)
 {
     // パターンの長さ。
     const int patlen = static_cast<int>(pattern.size());
@@ -5667,8 +5667,8 @@ bool __fastcall XgDoLoadCrpFile(HWND hwnd, LPCWSTR pszFile)
             xg_bSolved = true;
             xg_bShowAnswer = false;
             XgClearNonBlocks();
-            xg_vecTateHints = tate;
-            xg_vecYokoHints = yoko;
+            xg_vecTateHints = std::move(tate);
+            xg_vecYokoHints = std::move(yoko);
         }
 
         // ファイルパスをセットする。
@@ -7467,7 +7467,7 @@ unsigned __stdcall XgGenerateBlacksLineSymH(void *param) noexcept
     return 1;
 }
 
-void __fastcall XgStartGenerateBlacks(void) noexcept
+void __fastcall XgStartGenerateBlacks(void)
 {
     xg_bBlacksGenerated = false;
     xg_bCancelled = false;

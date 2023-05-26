@@ -59,12 +59,12 @@ public:
         m_hRgn = nullptr;
     }
 
-    virtual LPCTSTR GetWndClassName() const override
+    virtual LPCTSTR GetWndClassName() const noexcept
     {
         return TEXT("XG_BoxWindow");
     }
 
-    virtual void ModifyWndClassDx(WNDCLASSEX& wcx) override
+    virtual void ModifyWndClassDx(WNDCLASSEX& wcx)
     {
         wcx.style = CS_DBLCLKS;
     }

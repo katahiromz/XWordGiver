@@ -74,9 +74,9 @@ static inline std::wstring xg_str_unquote(const std::wstring& str)
     xg_str_trim(ret);
     if (ret.empty())
         return L"";
-    if (ret[0] == L'"')
+    if (ret.at(0) == L'"')
         ret = ret.substr(1);
-    if (ret.size() && ret[ret.size() - 1] == L'"')
+    if (ret.size() && ret.at(ret.size() - 1) == L'"')
         ret = ret.substr(0, ret.size() - 1);
     return xg_str_unescape(ret);
 }
@@ -261,10 +261,10 @@ struct XG_FileManager
     std::unordered_map<std::wstring, HBITMAP> m_path2hbm;
     std::unordered_map<std::wstring, HENHMETAFILE> m_path2hemf;
 
-    XG_FileManager()
+    XG_FileManager() noexcept
     {
     }
-    ~XG_FileManager()
+    ~XG_FileManager() noexcept
     {
     }
 

@@ -13,12 +13,12 @@ public:
     HWND m_hWnd;
     WNDPROC m_fnOldWndProc;
 
-    operator HWND() const
+    operator HWND() const noexcept
     {
         return m_hWnd;
     }
 
-    XG_Window() : m_hWnd(nullptr), m_fnOldWndProc(nullptr)
+    XG_Window() noexcept : m_hWnd(nullptr), m_fnOldWndProc(nullptr)
     {
     }
 
@@ -27,7 +27,7 @@ public:
         return TEXT("XG_Window");
     }
 
-    BOOL SubclassDx(HWND hwnd)
+    BOOL SubclassDx(HWND hwnd) noexcept
     {
         m_fnOldWndProc =
             reinterpret_cast<WNDPROC>(SetWindowLongPtr(hwnd,
@@ -35,7 +35,7 @@ public:
         return m_fnOldWndProc != nullptr;
     }
 
-    void UnsubclassDx(HWND hwnd)
+    void UnsubclassDx(HWND hwnd) noexcept
     {
         if (m_fnOldWndProc)
         {
@@ -87,12 +87,12 @@ public:
     HWND m_hWnd;
     inline static XG_Dialog *s_pTrapping = nullptr;
 
-    operator HWND() const
+    operator HWND() const noexcept
     {
         return m_hWnd;
     }
 
-    XG_Dialog() : m_hWnd(nullptr)
+    XG_Dialog() noexcept : m_hWnd(nullptr)
     {
     }
 
@@ -109,7 +109,7 @@ public:
     static INT_PTR CALLBACK
     DialogProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
-    INT_PTR DialogBoxDx(HWND hwnd, LPCTSTR pszName)
+    INT_PTR DialogBoxDx(HWND hwnd, LPCTSTR pszName) noexcept
     {
         s_pTrapping = this;
         auto ret = ::DialogBox(::GetModuleHandle(nullptr), pszName, hwnd, DialogProc);
@@ -117,12 +117,12 @@ public:
         return ret;
     }
 
-    INT_PTR DialogBoxDx(HWND hwnd, INT nID)
+    INT_PTR DialogBoxDx(HWND hwnd, INT nID) noexcept
     {
         return DialogBoxDx(hwnd, MAKEINTRESOURCE(nID));
     }
 
-    BOOL CreateDialogDx(HWND hwnd, INT nID)
+    BOOL CreateDialogDx(HWND hwnd, INT nID) noexcept
     {
         s_pTrapping = this;
         ::CreateDialog(::GetModuleHandle(nullptr), MAKEINTRESOURCE(nID), hwnd, DialogProc);

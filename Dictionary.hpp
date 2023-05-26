@@ -27,7 +27,7 @@ struct XG_WordData
     }
 
     // コンストラクタ。
-    XG_WordData(const std::wstring& word_, const std::wstring& hint_) noexcept :
+    XG_WordData(const std::wstring& word_, const std::wstring& hint_) :
         m_word(word_), m_hint(hint_)
     {
     }
@@ -39,7 +39,7 @@ struct XG_WordData
     }
 
     // コピーコンストラクタ。
-    XG_WordData(const XG_WordData& wd) noexcept :
+    XG_WordData(const XG_WordData& wd) :
         m_word(wd.m_word), m_hint(wd.m_hint)
     {
     }
@@ -51,7 +51,7 @@ struct XG_WordData
     }
 
     // 代入。
-    void __fastcall operator=(const XG_WordData& wd) noexcept {
+    void __fastcall operator=(const XG_WordData& wd) {
         m_word = wd.m_word;
         m_hint = wd.m_hint;
     }
@@ -120,7 +120,7 @@ std::vector<XG_WordData> XgCreateMiniDict(void);
 class xg_word_less
 {
 public:
-    bool __fastcall operator()(const XG_WordData& wd1, const XG_WordData& wd2)
+    bool __fastcall operator()(const XG_WordData& wd1, const XG_WordData& wd2) noexcept
     {
         return wd1.m_word < wd2.m_word;
     }
@@ -134,7 +134,7 @@ inline bool XgWordDataExists(const std::vector<XG_WordData>& data, const XG_Word
 
 struct XG_WordData_Equal
 {
-    bool operator()(const XG_WordData wd1, const XG_WordData wd2)
+    bool operator()(const XG_WordData wd1, const XG_WordData wd2) noexcept
     {
         return wd1.m_word == wd2.m_word;
     }
@@ -149,12 +149,12 @@ void __fastcall XgSortAndUniqueDictData(std::vector<XG_WordData>& data);
 class xg_word_toolong
 {
 public:
-    xg_word_toolong(int n)
+    xg_word_toolong(int n) noexcept
     {
         m_n = n;
     }
 
-    bool __fastcall operator()(const XG_WordData& wd) const
+    bool __fastcall operator()(const XG_WordData& wd) const noexcept
     {
         return static_cast<int>(wd.m_word.size()) > m_n;
     }

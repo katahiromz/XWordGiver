@@ -338,7 +338,7 @@ struct XG_Hint
 
     // コンストラクタ。
     inline
-    XG_Hint(int number, const std::wstring& word, const std::wstring& hint) noexcept :
+    XG_Hint(int number, const std::wstring& word, const std::wstring& hint) :
         m_number(number), m_strWord(word), m_strHint(hint)
     {
     }
@@ -354,7 +354,7 @@ struct XG_Hint
 
     // コピーコンストラクタ。
     inline
-    XG_Hint(const XG_Hint& info) noexcept :
+    XG_Hint(const XG_Hint& info) :
         m_number(info.m_number),
         m_strWord(info.m_strWord),
         m_strHint(info.m_strHint)
@@ -370,7 +370,7 @@ struct XG_Hint
     {
     }
 
-    inline void operator=(const XG_Hint& info) noexcept
+    inline void operator=(const XG_Hint& info)
     {
         m_number = info.m_number;
         m_strWord = info.m_strWord;
@@ -624,7 +624,7 @@ inline bool operator!=(const XG_Board& xw1, const XG_Board& xw2) noexcept {
 // クロスワードの描画サイズを計算する。
 inline void __fastcall XgGetXWordExtent(LPSIZE psiz) noexcept
 {
-    INT nCellSize = (xg_nForDisplay > 0) ? (xg_nCellSize * xg_nZoomRate / 100) : xg_nCellSize;
+    const INT nCellSize = (xg_nForDisplay > 0) ? (xg_nCellSize * xg_nZoomRate / 100) : xg_nCellSize;
     psiz->cx = static_cast<int>(xg_nMargin * 2 + xg_nCols * nCellSize);
     psiz->cy = static_cast<int>(xg_nMargin * 2 + xg_nRows * nCellSize);
 }
@@ -632,7 +632,7 @@ inline void __fastcall XgGetXWordExtent(LPSIZE psiz) noexcept
 // クロスワードの描画サイズを計算する。
 inline void __fastcall XgGetMarkWordExtent(int count, LPSIZE psiz) noexcept
 {
-    INT nCellSize = (xg_nForDisplay > 0) ? (xg_nCellSize * xg_nZoomRate / 100) : xg_nCellSize;
+    const INT nCellSize = (xg_nForDisplay > 0) ? (xg_nCellSize * xg_nZoomRate / 100) : xg_nCellSize;
     psiz->cx = static_cast<int>(xg_nNarrowMargin * 2 + count * nCellSize);
     psiz->cy = static_cast<int>(xg_nNarrowMargin * 2 + 1 * nCellSize);
 }
@@ -667,7 +667,7 @@ void __fastcall XgStartSolve_Smart(void) noexcept;
 void __fastcall XgEndSolve(void) noexcept;
 
 // 黒マスパターンを生成する。
-void __fastcall XgStartGenerateBlacks(void) noexcept;
+void __fastcall XgStartGenerateBlacks(void);
 
 // ステータスバーを更新する。
 void __fastcall XgUpdateStatusBar(HWND hwnd);
@@ -834,6 +834,7 @@ inline void __fastcall XG_Board::SetAt(int i, WCHAR ch) noexcept
 // マスの内容を設定する。
 inline void __fastcall XG_BoardEx::SetAt(int ij, WCHAR ch) noexcept
 {
+    assert(ij < static_cast<int>(m_vCells.size()));
     WCHAR& ch2 = m_vCells[ij];
     if (ch2 != ZEN_SPACE)
     {
@@ -906,19 +907,19 @@ inline bool __fastcall XG_Board::CanPutBlack(int iRow, int jCol) const noexcept
     // 三方向が黒マスで囲まれたマスができるかどうか？
     BOOL bBlack = (GetAt(iRow, jCol) == ZEN_BLACK);
     if (0 <= iRow - 1) {
-        if (BlacksAround(iRow - 1, jCol) >= 2 + bBlack)
+        if (BlacksAround(iRow - 1, jCol) >= 2 + static_cast<int>(bBlack))
             return false;
     }
     if (iRow + 1 < xg_nRows) {
-        if (BlacksAround(iRow + 1, jCol) >= 2 + bBlack)
+        if (BlacksAround(iRow + 1, jCol) >= 2 + static_cast<int>(bBlack))
             return false;
     }
     if (0 <= jCol - 1) {
-        if (BlacksAround(iRow, jCol - 1) >= 2 + bBlack)
+        if (BlacksAround(iRow, jCol - 1) >= 2 + static_cast<int>(bBlack))
             return false;
     }
     if (jCol + 1 < xg_nCols) {
-        if (BlacksAround(iRow, jCol + 1) >= 2 + bBlack)
+        if (BlacksAround(iRow, jCol + 1) >= 2 + static_cast<int>(bBlack))
             return false;
     }
 
@@ -943,15 +944,16 @@ inline BOOL XgIsUserJapanese(VOID) noexcept
 // ユーザは東アジア人（中国、日本、韓国）か？
 inline BOOL XgIsUserCJK(VOID) noexcept
 {
-    LCID lcid = GetUserDefaultLCID();
-    WORD langid = LANGIDFROMLCID(lcid);
+    const LCID lcid = GetUserDefaultLCID();
+    const WORD langid = LANGIDFROMLCID(lcid);
     switch (PRIMARYLANGID(langid)) {
     case LANG_CHINESE:
     case LANG_JAPANESE:
     case LANG_KOREAN:
         return TRUE;
+    default:
+        return FALSE;
     }
-    return FALSE;
 }
 
 // 番号を表示するか？
