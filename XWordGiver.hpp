@@ -93,10 +93,10 @@
 // 表示用に描画するか？（XgGetXWordExtentとXgDrawXWordとXgCreateXWordImageで使う）。
 extern INT xg_nForDisplay;
 struct ForDisplay {
-    ForDisplay() {
+    ForDisplay() noexcept {
         ++xg_nForDisplay;
     }
-    ~ForDisplay() {
+    ~ForDisplay() noexcept {
         --xg_nForDisplay;
     }
 };
@@ -284,22 +284,22 @@ struct XG_Pos
     int m_j;    // 列のインデックス。
 
     // コンストラクタ。
-    XG_Pos() { }
-    xg_constexpr XG_Pos(int i, int j) : m_i(i), m_j(j) { }
-    xg_constexpr XG_Pos(const XG_Pos&) = default;
-    xg_constexpr XG_Pos& operator=(const XG_Pos&) = default;
+    XG_Pos() noexcept { }
+    xg_constexpr XG_Pos(int i, int j) noexcept : m_i(i), m_j(j) { }
+    xg_constexpr XG_Pos(const XG_Pos&) noexcept = default;
+    xg_constexpr XG_Pos& operator=(const XG_Pos&) noexcept = default;
 
     // 比較。
-    xg_constexpr bool __fastcall operator==(const XG_Pos& pos) const {
+    xg_constexpr bool __fastcall operator==(const XG_Pos& pos) const noexcept {
         return m_i == pos.m_i && m_j == pos.m_j;
     }
 
     // 比較。
-    xg_constexpr bool __fastcall operator!=(const XG_Pos& pos) const {
+    xg_constexpr bool __fastcall operator!=(const XG_Pos& pos) const noexcept {
         return m_i != pos.m_i || m_j != pos.m_j;
     }
 
-    void clear() {
+    void clear() noexcept {
         m_i = 0; m_j = 0;
     }
 };
@@ -308,14 +308,14 @@ typedef XG_Pos XG_Size;
 namespace std
 {
     template <>
-    inline void swap(XG_Pos& pos1, XG_Pos& pos2) {
+    inline void swap(XG_Pos& pos1, XG_Pos& pos2) noexcept {
         std::swap(pos1.m_i, pos2.m_i);
         std::swap(pos1.m_j, pos2.m_j);
     }
 
     template <>
     struct hash<XG_Pos> {
-        size_t operator()(const XG_Pos& pos) const {
+        size_t operator()(const XG_Pos& pos) const noexcept {
             return MAKELONG(pos.m_i, pos.m_j);
         }
     };
@@ -334,18 +334,18 @@ struct XG_Hint
     std::wstring    m_strHint;
 
     // コンストラクタ。
-    XG_Hint() { }
+    XG_Hint() noexcept { }
 
     // コンストラクタ。
     inline
-    XG_Hint(int number, const std::wstring& word, const std::wstring& hint) :
+    XG_Hint(int number, const std::wstring& word, const std::wstring& hint) noexcept :
         m_number(number), m_strWord(word), m_strHint(hint)
     {
     }
 
     // コンストラクタ。
     inline
-    XG_Hint(int number, std::wstring&& word, std::wstring&& hint) :
+    XG_Hint(int number, std::wstring&& word, std::wstring&& hint) noexcept :
         m_number(number),
         m_strWord(std::move(word)),
         m_strHint(std::move(hint))
@@ -354,7 +354,7 @@ struct XG_Hint
 
     // コピーコンストラクタ。
     inline
-    XG_Hint(const XG_Hint& info) :
+    XG_Hint(const XG_Hint& info) noexcept :
         m_number(info.m_number),
         m_strWord(info.m_strWord),
         m_strHint(info.m_strHint)
@@ -363,21 +363,21 @@ struct XG_Hint
 
     // コピーコンストラクタ。
     inline
-    XG_Hint(XG_Hint&& info) :
+    XG_Hint(XG_Hint&& info) noexcept :
         m_number(info.m_number),
         m_strWord(std::move(info.m_strWord)),
         m_strHint(std::move(info.m_strHint))
     {
     }
 
-    inline void operator=(const XG_Hint& info)
+    inline void operator=(const XG_Hint& info) noexcept
     {
         m_number = info.m_number;
         m_strWord = info.m_strWord;
         m_strHint = info.m_strHint;
     }
 
-    inline void operator=(XG_Hint&& info)
+    inline void operator=(XG_Hint&& info) noexcept
     {
         m_number = info.m_number;
         m_strWord = std::move(info.m_strWord);
@@ -387,7 +387,7 @@ struct XG_Hint
 
 namespace std
 {
-    inline void swap(XG_Hint& hint1, XG_Hint& hint2)
+    inline void swap(XG_Hint& hint1, XG_Hint& hint2) noexcept
     {
         std::swap(hint1.m_number, hint2.m_number);
         std::swap(hint1.m_strWord, hint2.m_strWord);
@@ -529,20 +529,20 @@ public:
     volatile INT m_nRows;
     volatile INT m_nCols;
 
-    XG_BoardEx() : XG_Board(), m_nRows(7), m_nCols(7) {
+    XG_BoardEx() noexcept : XG_Board(), m_nRows(7), m_nCols(7) {
     }
-    XG_BoardEx(const XG_Board& src) : XG_Board(src) {
+    XG_BoardEx(const XG_Board& src) noexcept : XG_Board(src) {
     }
-    XG_BoardEx(const XG_BoardEx& src) : XG_Board(src) {
+    XG_BoardEx(const XG_BoardEx& src) noexcept : XG_Board(src) {
         m_nRows = src.m_nRows;
         m_nCols = src.m_nCols;
     }
 
-    XG_BoardEx& operator=(const XG_Board& src) {
+    XG_BoardEx& operator=(const XG_Board& src) noexcept {
         m_vCells = src.m_vCells;
         return *this;
     }
-    XG_BoardEx& operator=(const XG_BoardEx& src) {
+    XG_BoardEx& operator=(const XG_BoardEx& src) noexcept {
         m_vCells = src.m_vCells;
         m_nRows = src.m_nRows;
         m_nCols = src.m_nCols;
@@ -550,16 +550,16 @@ public:
     }
 
     // カウントを更新する。
-    void ReCount();
+    void ReCount() noexcept;
 
     // 行を挿入する。
-    void InsertRow(INT iRow);
+    void InsertRow(INT iRow) noexcept;
     // 列を挿入する。
-    void InsertColumn(INT jCol);
+    void InsertColumn(INT jCol) noexcept;
     // 行を削除する。
-    void DeleteRow(INT iRow);
+    void DeleteRow(INT iRow) noexcept;
     // 列を削除する。
-    void DeleteColumn(INT jCol);
+    void DeleteColumn(INT jCol) noexcept;
     // マスの内容を取得する。
     WCHAR __fastcall GetAt(int ij) const noexcept;
     // マスの内容を取得する。
@@ -592,12 +592,12 @@ bool __fastcall XgDoSaveXdFile(LPCWSTR pszFile);
 
 namespace std
 {
-    inline void swap(XG_Board& xw1, XG_Board& xw2) {
+    inline void swap(XG_Board& xw1, XG_Board& xw2) noexcept {
         std::swap(xw1.m_vCells, xw2.m_vCells);
     }
 }
 
-inline bool operator==(const XG_Board& xw1, const XG_Board& xw2) {
+inline bool operator==(const XG_Board& xw1, const XG_Board& xw2) noexcept {
     for (int i = 0; i < xg_nRows; ++i) {
         for (int j = 0; j < xg_nCols; ++j) {
             if (xw1.GetAt(i, j) != xw2.GetAt(i, j))
@@ -607,12 +607,12 @@ inline bool operator==(const XG_Board& xw1, const XG_Board& xw2) {
     return true;
 }
 
-inline bool operator!=(const XG_Board& xw1, const XG_Board& xw2) {
+inline bool operator!=(const XG_Board& xw1, const XG_Board& xw2) noexcept {
     return !(xw1 == xw2);
 }
 
 // クロスワードの描画サイズを計算する。
-inline void __fastcall XgGetXWordExtent(LPSIZE psiz)
+inline void __fastcall XgGetXWordExtent(LPSIZE psiz) noexcept
 {
     INT nCellSize;
     if (xg_nForDisplay > 0)
@@ -624,7 +624,7 @@ inline void __fastcall XgGetXWordExtent(LPSIZE psiz)
 }
 
 // クロスワードの描画サイズを計算する。
-inline void __fastcall XgGetMarkWordExtent(int count, LPSIZE psiz)
+inline void __fastcall XgGetMarkWordExtent(int count, LPSIZE psiz) noexcept
 {
     INT nCellSize;
     if (xg_nForDisplay > 0)
@@ -924,7 +924,7 @@ inline bool __fastcall XG_Board::CanPutBlack(int iRow, int jCol) const noexcept
 }
 
 // ユーザは日本人か？
-inline BOOL XgIsUserJapanese(VOID)
+inline BOOL XgIsUserJapanese(VOID) noexcept
 {
     static BOOL s_bInit = FALSE, s_bIsJapanese = FALSE; // 高速化のためキャッシュを使う。
     if (!s_bInit) {
@@ -939,7 +939,7 @@ inline BOOL XgIsUserJapanese(VOID)
 }
 
 // ユーザは東アジア人（中国、日本、韓国）か？
-inline BOOL XgIsUserCJK(VOID)
+inline BOOL XgIsUserCJK(VOID) noexcept
 {
     LCID lcid = GetUserDefaultLCID();
     WORD langid = LANGIDFROMLCID(lcid);
@@ -964,7 +964,7 @@ extern BOOL xg_bShowDoubleFrameLetters;
 // std::random_shuffleの代わり。
 #include <random>
 template <typename t_elem>
-inline void xg_random_shuffle(const t_elem& begin, const t_elem& end) {
+inline void xg_random_shuffle(const t_elem& begin, const t_elem& end) noexcept {
 #ifndef NO_RANDOM
     std::random_device rd;
     std::mt19937 g(rd());
@@ -987,7 +987,7 @@ class xg_wstrinxg_less
 {
 public:
     bool __fastcall operator()(
-        const std::wstring& s1, const std::wstring& s2) const
+        const std::wstring& s1, const std::wstring& s2) const noexcept
     {
         return s1 < s2;
     }
@@ -1014,68 +1014,68 @@ void __fastcall XgSetInputModeFromDict(HWND hwnd);
 // 文字の判定。
 
 // 半角大文字英字か？
-inline bool XgIsCharHankakuUpperW(WCHAR ch)
+inline bool XgIsCharHankakuUpperW(WCHAR ch) noexcept
 {
     return (L'A' <= ch && ch <= L'Z');
 }
 
 // 半角小文字英字か？
-inline bool XgIsCharHankakuLowerW(WCHAR ch)
+inline bool XgIsCharHankakuLowerW(WCHAR ch) noexcept
 {
     return (L'a' <= ch && ch <= L'z');
 }
 
 // 半角英字か？
-inline bool XgIsCharHankakuAlphaW(WCHAR ch)
+inline bool XgIsCharHankakuAlphaW(WCHAR ch) noexcept
 {
     return XgIsCharHankakuUpperW(ch) || XgIsCharHankakuLowerW(ch);
 }
 
 // 全角大文字英字か？
-inline bool XgIsCharZenkakuUpperW(WCHAR ch)
+inline bool XgIsCharZenkakuUpperW(WCHAR ch) noexcept
 {
     return (L'\xFF21' <= ch && ch <= L'\xFF3A');
 }
 
 // 全角小文字英字か？
-inline bool XgIsCharZenkakuLowerW(WCHAR ch)
+inline bool XgIsCharZenkakuLowerW(WCHAR ch) noexcept
 {
     return (L'\xFF41' <= ch && ch <= L'\xFF5A');
 }
 
 // 全角英字か？
-inline bool XgIsCharZenkakuAlphaW(WCHAR ch)
+inline bool XgIsCharZenkakuAlphaW(WCHAR ch) noexcept
 {
     return XgIsCharZenkakuUpperW(ch) || XgIsCharZenkakuLowerW(ch);
 }
 
 // ひらがなか？
-inline bool XgIsCharHiraganaW(WCHAR ch)
+inline bool XgIsCharHiraganaW(WCHAR ch) noexcept
 {
     return ((L'\x3041' <= ch && ch <= L'\x3093') || ch == L'\x30FC' || ch == L'\x3094');
 }
 
 // カタカナか？
-inline bool XgIsCharKatakanaW(WCHAR ch)
+inline bool XgIsCharKatakanaW(WCHAR ch) noexcept
 {
     return ((L'\x30A1' <= ch && ch <= L'\x30F3') || ch == L'\x30FC' || ch == L'\x30F4');
 }
 
 // かなか？
-inline bool XgIsCharKanaW(WCHAR ch)
+inline bool XgIsCharKanaW(WCHAR ch) noexcept
 {
     return XgIsCharHiraganaW(ch) || XgIsCharKatakanaW(ch);
 }
 
 // 漢字か？
-inline bool XgIsCharKanjiW(WCHAR ch)
+inline bool XgIsCharKanjiW(WCHAR ch) noexcept
 {
     return ((0x3400 <= ch && ch <= 0x9FFF) ||
             (0xF900 <= ch && ch <= 0xFAFF) || ch == L'\x3007');
 }
 
 // ハングルか？
-inline bool XgIsCharHangulW(WCHAR ch)
+inline bool XgIsCharHangulW(WCHAR ch) noexcept
 {
     return ((0x1100 <= ch && ch <= 0x11FF) ||
             (0xAC00 <= ch && ch <= 0xD7A3) ||
@@ -1083,24 +1083,24 @@ inline bool XgIsCharHangulW(WCHAR ch)
 }
 
 // キリル文字か？
-inline bool XgIsCharZenkakuCyrillicW(WCHAR ch)
+inline bool XgIsCharZenkakuCyrillicW(WCHAR ch) noexcept
 {
     return 0x0400 <= ch && ch <= 0x04FF;
 }
 
 // 全角数字か？
-inline bool XgIsCharZenkakuNumericW(WCHAR ch)
+inline bool XgIsCharZenkakuNumericW(WCHAR ch) noexcept
 {
     return 0xFF10 <= ch && ch <= 0xFF19;
 }
 // 半角数字か？
-inline bool XgIsCharHankakuNumericW(WCHAR ch)
+inline bool XgIsCharHankakuNumericW(WCHAR ch) noexcept
 {
     return L'0' <= ch && ch <= L'9';
 }
 
 // ギリシャ文字か？
-inline bool XgIsCharGreekW(WCHAR ch)
+inline bool XgIsCharGreekW(WCHAR ch) noexcept
 {
     return 0x0370 <= ch && ch <= 0x03FF;
 }
@@ -1131,36 +1131,36 @@ struct XG_PlaceInfo
     int             m_number;       // 番号。
 
     // コンストラクタ。
-    XG_PlaceInfo()
+    XG_PlaceInfo() noexcept
     {
     }
 
     // コンストラクタ。
-    XG_PlaceInfo(int iRow_, int jCol_, const std::wstring& word_) :
+    XG_PlaceInfo(int iRow_, int jCol_, const std::wstring& word_) noexcept :
         m_iRow(iRow_), m_jCol(jCol_), m_word(word_)
     {
     }
 
     // コンストラクタ。
-    XG_PlaceInfo(int iRow_, int jCol_, std::wstring&& word_) :
+    XG_PlaceInfo(int iRow_, int jCol_, std::wstring&& word_) noexcept :
         m_iRow(iRow_), m_jCol(jCol_), m_word(std::move(word_))
     {
     }
 
     // コンストラクタ。
-    XG_PlaceInfo(int iRow_, int jCol_, const std::wstring& word_, int number_) :
+    XG_PlaceInfo(int iRow_, int jCol_, const std::wstring& word_, int number_) noexcept :
         m_iRow(iRow_), m_jCol(jCol_), m_word(word_), m_number(number_)
     {
     }
 
     // コンストラクタ。
-    XG_PlaceInfo(int iRow_, int jCol_, std::wstring&& word_, int number_) :
+    XG_PlaceInfo(int iRow_, int jCol_, std::wstring&& word_, int number_) noexcept :
         m_iRow(iRow_), m_jCol(jCol_), m_word(std::move(word_)), m_number(number_)
     {
     }
 
     // コピーコンストラクタ。
-    XG_PlaceInfo(const XG_PlaceInfo& pi)
+    XG_PlaceInfo(const XG_PlaceInfo& pi) noexcept
     {
         m_iRow = pi.m_iRow;
         m_jCol = pi.m_jCol;
@@ -1169,7 +1169,7 @@ struct XG_PlaceInfo
     }
 
     // コピーコンストラクタ。
-    XG_PlaceInfo(XG_PlaceInfo&& pi)
+    XG_PlaceInfo(XG_PlaceInfo&& pi) noexcept
     {
         m_iRow = pi.m_iRow;
         m_jCol = pi.m_jCol;
@@ -1178,7 +1178,7 @@ struct XG_PlaceInfo
     }
 
     // 代入。
-    void __fastcall operator=(const XG_PlaceInfo& pi)
+    void __fastcall operator=(const XG_PlaceInfo& pi) noexcept
     {
         m_iRow = pi.m_iRow;
         m_jCol = pi.m_jCol;
@@ -1187,7 +1187,7 @@ struct XG_PlaceInfo
     }
 
     // 代入。
-    void __fastcall operator=(XG_PlaceInfo&& pi)
+    void __fastcall operator=(XG_PlaceInfo&& pi) noexcept
     {
         m_iRow = pi.m_iRow;
         m_jCol = pi.m_jCol;
@@ -1198,7 +1198,7 @@ struct XG_PlaceInfo
 
 namespace std
 {
-    inline void swap(XG_PlaceInfo& info1, XG_PlaceInfo& info2)
+    inline void swap(XG_PlaceInfo& info1, XG_PlaceInfo& info2) noexcept
     {
         std::swap(info1.m_iRow, info2.m_iRow);
         std::swap(info1.m_jCol, info2.m_jCol);
@@ -1217,7 +1217,7 @@ class xg_placeinfo_compare_number
 {
 public:
     xg_constexpr bool __fastcall operator()
-        (const XG_PlaceInfo& pi1, const XG_PlaceInfo& pi2) const
+        (const XG_PlaceInfo& pi1, const XG_PlaceInfo& pi2) const noexcept
     {
         return pi1.m_number < pi2.m_number;
     }
@@ -1228,7 +1228,7 @@ class xg_placeinfo_compare_position
 {
 public:
     bool __fastcall operator()
-        (const XG_PlaceInfo *ppi1, const XG_PlaceInfo *ppi2) const
+        (const XG_PlaceInfo *ppi1, const XG_PlaceInfo *ppi2) const noexcept
     {
         if (ppi1->m_iRow < ppi2->m_iRow)
             return true;
@@ -1341,7 +1341,7 @@ void __fastcall XgWaitForThreads(void) noexcept;
 bool __fastcall XgIsAnyThreadTerminated(void) noexcept;
 
 // 再計算までの時間を概算する。
-inline DWORD XgGetRetryInterval(void)
+inline DWORD XgGetRetryInterval(void) noexcept
 {
     return 8 * (xg_nRows + xg_nCols) * (xg_nRows + xg_nCols) + 1000;
 }
