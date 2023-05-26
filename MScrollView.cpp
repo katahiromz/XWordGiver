@@ -14,7 +14,7 @@
 
 ////////////////////////////////////////////////////////////////////////////
 
-void MScrollView::SetCtrlInfo(HWND hwndCtrl, const MRect& rcCtrl) noexcept
+void MScrollView::SetCtrlInfo(HWND hwndCtrl, const MRect& rcCtrl)
 {
     assert(::IsWindow(hwndCtrl));
     assert(HasChildStyle(hwndCtrl));
@@ -28,7 +28,7 @@ void MScrollView::SetCtrlInfo(HWND hwndCtrl, const MRect& rcCtrl) noexcept
 }
 
 void MScrollView::SetCtrlInfo(
-    HWND hwndCtrl, const MPoint& ptCtrl, const MSize& sizCtrl) noexcept
+    HWND hwndCtrl, const MPoint& ptCtrl, const MSize& sizCtrl)
 {
     assert(::IsWindow(hwndCtrl));
     assert(HasChildStyle(hwndCtrl));

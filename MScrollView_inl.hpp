@@ -152,13 +152,13 @@ MZC_INLINE void MScrollView::AddCtrlInfo(
     AddCtrlInfo(::GetDlgItem(m_hwndParent, idCtrl), ptCtrl, sizCtrl);
 }
 
-MZC_INLINE void MScrollView::SetCtrlInfo(UINT idCtrl, const MRect& rcCtrl) noexcept
+MZC_INLINE void MScrollView::SetCtrlInfo(UINT idCtrl, const MRect& rcCtrl)
 {
     SetCtrlInfo(::GetDlgItem(m_hwndParent, idCtrl), rcCtrl);
 }
 
 MZC_INLINE void MScrollView::SetCtrlInfo(
-    UINT idCtrl, const MPoint& ptCtrl, const MSize& sizCtrl) noexcept
+    UINT idCtrl, const MPoint& ptCtrl, const MSize& sizCtrl)
 {
     SetCtrlInfo(::GetDlgItem(m_hwndParent, idCtrl), ptCtrl, sizCtrl);
 }

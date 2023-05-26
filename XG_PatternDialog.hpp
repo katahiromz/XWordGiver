@@ -399,7 +399,7 @@ public:
 
         // サイズを表すテキスト。
         WCHAR szText[64];
-        StringCbPrintfW(szText, sizeof(szText), L"%u x %u", static_cast<int>(pat.num_columns), static_cast<int>(pat.num_rows));
+        StringCbPrintfW(szText, sizeof(szText), L"%d x %d", static_cast<int>(pat.num_columns), static_cast<int>(pat.num_rows));
 
         // 背景とテキストを描画する。
         SelectObject(hDC, GetStockFont(DEFAULT_GUI_FONT));

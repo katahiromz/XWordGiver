@@ -16,12 +16,6 @@
     #error Modern C++ required. You lose.
 #endif
 
-#if __cplusplus < 201103L
-    #define xg_constexpr   /*empty*/
-#else
-    #define xg_constexpr   constexpr
-#endif
-
 #if !defined(NDEBUG) && !defined(_DEBUG)
     #define _DEBUG
 #endif
@@ -292,17 +286,17 @@ struct XG_Pos
 
     // コンストラクタ。
     XG_Pos() noexcept { }
-    xg_constexpr XG_Pos(int i, int j) noexcept : m_i(i), m_j(j) { }
-    xg_constexpr XG_Pos(const XG_Pos&) noexcept = default;
-    xg_constexpr XG_Pos& operator=(const XG_Pos&) noexcept = default;
+    constexpr XG_Pos(int i, int j) noexcept : m_i(i), m_j(j) { }
+    constexpr XG_Pos(const XG_Pos&) noexcept = default;
+    constexpr XG_Pos& operator=(const XG_Pos&) noexcept = default;
 
     // 比較。
-    xg_constexpr bool __fastcall operator==(const XG_Pos& pos) const noexcept {
+    constexpr bool __fastcall operator==(const XG_Pos& pos) const noexcept {
         return m_i == pos.m_i && m_j == pos.m_j;
     }
 
     // 比較。
-    xg_constexpr bool __fastcall operator!=(const XG_Pos& pos) const noexcept {
+    constexpr bool __fastcall operator!=(const XG_Pos& pos) const noexcept {
         return m_i != pos.m_i || m_j != pos.m_j;
     }
 
@@ -457,7 +451,7 @@ public:
     // クリアする。
     void __fastcall clear() noexcept;
     // リセットしてサイズを設定する。
-    void __fastcall ResetAndSetSize(int nRows, int nCols) noexcept;
+    void __fastcall ResetAndSetSize(int nRows, int nCols);
     // 解か？
     bool __fastcall IsSolution() const noexcept;
     // 正当かどうか？
@@ -484,15 +478,15 @@ public:
     // 三方向が黒マスで囲まれたマスがあるかどうか？
     bool __fastcall TriBlackAround() const noexcept;
     // 黒マスで分断されているかどうか？
-    bool __fastcall DividedByBlack() const noexcept;
+    bool __fastcall DividedByBlack() const;
     // すべてのパターンが正当かどうか調べる。
     XG_EpvCode __fastcall EveryPatternValid1(
         std::vector<std::wstring>& vNotFoundWords,
-        XG_Pos& pos, bool bNonBlackCheckSpace) const noexcept;
+        XG_Pos& pos, bool bNonBlackCheckSpace) const;
     // すべてのパターンが正当かどうか調べる。
     XG_EpvCode __fastcall EveryPatternValid2(
         std::vector<std::wstring>& vNotFoundWords,
-        XG_Pos& pos, bool bNonBlackCheckSpace) const noexcept;
+        XG_Pos& pos, bool bNonBlackCheckSpace) const;
 
     // 黒マスを置けるか？
     bool __fastcall CanPutBlack(int iRow, int jCol) const noexcept;
@@ -538,9 +532,9 @@ public:
 
     XG_BoardEx() noexcept : XG_Board(), m_nRows(7), m_nCols(7) {
     }
-    XG_BoardEx(const XG_Board& src) noexcept : XG_Board(src) {
+    explicit XG_BoardEx(const XG_Board& src) : XG_Board(src) {
     }
-    explicit XG_BoardEx(const XG_BoardEx& src) noexcept : XG_Board(src) {
+    explicit XG_BoardEx(const XG_BoardEx& src) : XG_Board(src) {
         m_nRows = src.m_nRows;
         m_nCols = src.m_nCols;
     }
@@ -570,13 +564,13 @@ public:
     void ReCount() noexcept;
 
     // 行を挿入する。
-    void InsertRow(INT iRow) noexcept;
+    void InsertRow(INT iRow);
     // 列を挿入する。
-    void InsertColumn(INT jCol) noexcept;
+    void InsertColumn(INT jCol);
     // 行を削除する。
-    void DeleteRow(INT iRow) noexcept;
+    void DeleteRow(INT iRow);
     // 列を削除する。
-    void DeleteColumn(INT jCol) noexcept;
+    void DeleteColumn(INT jCol);
     // マスの内容を取得する。
     WCHAR __fastcall GetAt(int ij) const noexcept;
     // マスの内容を取得する。
@@ -805,7 +799,7 @@ inline bool __fastcall XG_Board::IsFulfilled() const noexcept
 }
 
 // リセットしてサイズを設定する。
-inline void __fastcall XG_Board::ResetAndSetSize(int nRows, int nCols) noexcept
+inline void __fastcall XG_Board::ResetAndSetSize(int nRows, int nCols)
 {
     m_vCells.assign(nRows * nCols + 1, ZEN_SPACE);
     m_vCells[nRows * nCols] = 0;
@@ -975,7 +969,7 @@ extern BOOL xg_bShowDoubleFrameLetters;
 // std::random_shuffleの代わり。
 #include <random>
 template <typename t_elem>
-inline void xg_random_shuffle(const t_elem& begin, const t_elem& end) noexcept {
+inline void xg_random_shuffle(const t_elem& begin, const t_elem& end) {
 #ifndef NO_RANDOM
     std::random_device rd;
     std::mt19937 g(rd());
@@ -1227,7 +1221,7 @@ extern std::vector<XG_PlaceInfo> xg_vTateInfo, xg_vYokoInfo;
 class xg_placeinfo_compare_number
 {
 public:
-    xg_constexpr bool __fastcall operator()
+    constexpr bool __fastcall operator()
         (const XG_PlaceInfo& pi1, const XG_PlaceInfo& pi2) const noexcept
     {
         return pi1.m_number < pi2.m_number;

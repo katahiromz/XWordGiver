@@ -30,7 +30,7 @@ std::shared_ptr<XG_FileManager>& XgGetFileManager(void)
         ::EnterCriticalSection(&xg_cs);
         if (file)
         {
-            StringCchPrintfW(s_szText, _countof(s_szText), L"%hs (%u): ", file, lineno);
+            StringCchPrintfW(s_szText, _countof(s_szText), L"%hs (%d): ", file, lineno);
             cch = lstrlenW(s_szText);
             StringCchVPrintfW(&s_szText[cch], _countof(s_szText) - cch, pszFormat, va);
         }

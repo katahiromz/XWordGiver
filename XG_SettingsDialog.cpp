@@ -643,7 +643,7 @@ void XG_SettingsDialog::SetUIFont(HWND hwnd, const LOGFONTW *plf)
     ::DeleteDC(hdc);
 
     WCHAR szData[128];
-    StringCbPrintf(szData, sizeof(szData), L"%s, %upt", plf->lfFaceName, point_size);
+    StringCbPrintf(szData, sizeof(szData), L"%s, %dpt", plf->lfFaceName, point_size);
     ::SetDlgItemTextW(hwnd, edt3, szData);
 }
 

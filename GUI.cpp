@@ -4467,11 +4467,11 @@ void __fastcall XgUpdateStatusBar(HWND hwnd)
 
     // キャレット位置。
     WCHAR szText[64];
-    StringCbPrintf(szText, sizeof(szText), L"(%u, %u)", xg_caret_pos.m_j + 1, xg_caret_pos.m_i + 1);
+    StringCbPrintf(szText, sizeof(szText), L"(%d, %d)", xg_caret_pos.m_j + 1, xg_caret_pos.m_i + 1);
     SendMessageW(xg_hStatusBar, SB_SETTEXT, 1, reinterpret_cast<LPARAM>(szText));
 
     // 盤のサイズ。
-    StringCbPrintf(szText, sizeof(szText), L"%u x %u", xg_nCols, xg_nRows);
+    StringCbPrintf(szText, sizeof(szText), L"%d x %d", xg_nCols, xg_nRows);
     SendMessageW(xg_hStatusBar, SB_SETTEXT, 2, reinterpret_cast<LPARAM>(szText));
 }
 

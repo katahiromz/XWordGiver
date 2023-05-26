@@ -206,7 +206,7 @@ struct board_data_t {
     t_string m_data;
 
     // コンストラクタによる初期化。文字で埋める。
-    board_data_t(int cx = 1, int cy = 1, t_char ch = ' ') noexcept {
+    board_data_t(int cx = 1, int cy = 1, t_char ch = ' ') {
         resize(cx, cy, ch);
     }
 

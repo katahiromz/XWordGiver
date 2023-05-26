@@ -455,8 +455,8 @@ public:
             item.iSubItem = 0;
             ListView_InsertItem((minus ? hLst3 : hLst2), &item);
 
-            int count = (int)xg_tag_histgram[str];
-            StringCbPrintfW(szText, sizeof(szText), L"%u", count);
+            int count = static_cast<int>(xg_tag_histgram[str]);
+            StringCbPrintfW(szText, sizeof(szText), L"%d", count);
             item.iItem = iItem;
             item.pszText = szText;
             item.iSubItem = 1;

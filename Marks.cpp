@@ -31,11 +31,11 @@ void __fastcall XgGetStringOfMarks(std::wstring& str)
     str += xg_pszNewLine;
     for (const auto& mark : xg_vMarks) {
         if (xg_bSolved)
-            StringCbPrintf(sz, sizeof(sz), L"(%u, %u)%c\r\n",
+            StringCbPrintf(sz, sizeof(sz), L"(%d, %d)%c\r\n",
                 mark.m_i + 1, mark.m_j + 1,
                 xg_solution.GetAt(mark.m_i, mark.m_j));
         else
-            StringCbPrintf(sz, sizeof(sz), L"(%u, %u)%c\r\n",
+            StringCbPrintf(sz, sizeof(sz), L"(%d, %d)%c\r\n",
                 mark.m_i + 1, mark.m_j + 1,
                 xg_xword.GetAt(mark.m_i, mark.m_j));
         str += sz;
@@ -52,7 +52,7 @@ void __fastcall XgGetStringOfMarks2(std::wstring& str)
     for (const auto& mark : xg_vMarks) {
         WCHAR szLetter[2] = { xg->GetAt(mark.m_i, mark.m_j), 0 };
         auto letter = XgNormalizeStringEx(szLetter);
-        StringCbPrintf(sz, sizeof(sz), L"MARK%u. (%u, %u): %s\n",
+        StringCbPrintf(sz, sizeof(sz), L"MARK%d. (%u, %u): %s\n",
                        i + 1, mark.m_j + 1, mark.m_i + 1, letter.c_str());
         str += sz;
         ++i;

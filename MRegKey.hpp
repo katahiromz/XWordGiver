@@ -23,7 +23,7 @@ class MRegKey;
     #include <windows.h>    // Win32API
 #endif
 #include <cassert>          // assert
-#include <new>              // std::nothrow
+#include <malloc.h>         // _malloca/_freea
 
 ////////////////////////////////////////////////////////////////////////////
 
@@ -775,7 +775,7 @@ inline LONG RegDeleteTreeDx(HKEY hKey, LPCTSTR pszSubKey/* = nullptr*/) noexcept
         cchMax = cchSubKeyMax;
     if (cchMax > sizeof(szNameBuf) / sizeof(TCHAR))
     {
-        pszName = new(std::nothrow) TCHAR[cchMax * sizeof(TCHAR)];
+        pszName = (TCHAR *)_malloca(cchMax * sizeof(TCHAR));
         if (pszName == nullptr)
             goto cleanup;
     }
@@ -820,7 +820,7 @@ cleanup:
     if (pszSubKey != nullptr)
         ::RegCloseKey(hSubKey);
     if (pszName != szNameBuf)
-        delete[] pszName;
+        _freea(pszName);
     return ret;
 }
 

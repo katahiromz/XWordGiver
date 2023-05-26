@@ -600,7 +600,7 @@ BOOL XgPatternsUnitTest(void)
         if (FILE *fp = fopen("a.txt", "w"))
         {
             for (auto& pair : map) {
-                fprintf(fp, "%d\t%d\t%ld\n", LOWORD(pair.first), HIWORD(pair.first), pair.second);
+                fprintf(fp, "%u\t%u\t%ld\n", LOWORD(pair.first), HIWORD(pair.first), pair.second);
             }
             fclose(fp);
         }
@@ -617,7 +617,7 @@ BOOL XgPatternsUnitTest(void)
     }
     for (auto& pair : histogram) {
         auto& siz = pair.first;
-        DOUTW(L"%u x %u: %d\n", siz.m_j, siz.m_i, pair.second);
+        DOUTW(L"%d x %d: %d\n", siz.m_j, siz.m_i, pair.second);
     }
 
     // パターンを書き込む。
@@ -779,7 +779,7 @@ void XG_BoardEx::ReCount() noexcept {
 }
 
 // 行を挿入する。
-void XG_BoardEx::InsertRow(INT iRow) noexcept {
+void XG_BoardEx::InsertRow(INT iRow) {
     XG_Board copy;
     copy.ResetAndSetSize(m_nRows + 1, m_nCols);
     for (INT i = 0; i < m_nRows; ++i) {
@@ -796,7 +796,7 @@ void XG_BoardEx::InsertRow(INT iRow) noexcept {
 }
 
 // 列を挿入する。
-void XG_BoardEx::InsertColumn(INT jCol) noexcept {
+void XG_BoardEx::InsertColumn(INT jCol) {
     XG_Board copy;
     copy.ResetAndSetSize(m_nRows, m_nCols + 1);
     for (INT i = 0; i < m_nRows; ++i) {
@@ -813,7 +813,7 @@ void XG_BoardEx::InsertColumn(INT jCol) noexcept {
 }
 
 // 行を削除する。
-void XG_BoardEx::DeleteRow(INT iRow) noexcept {
+void XG_BoardEx::DeleteRow(INT iRow) {
     XG_Board copy;
     copy.ResetAndSetSize(m_nRows - 1, m_nCols);
     for (INT i = 0; i < m_nRows - 1; ++i) {
@@ -830,7 +830,7 @@ void XG_BoardEx::DeleteRow(INT iRow) noexcept {
 }
 
 // 列を削除する。
-void XG_BoardEx::DeleteColumn(INT jCol) noexcept {
+void XG_BoardEx::DeleteColumn(INT jCol) {
     XG_Board copy;
     copy.ResetAndSetSize(m_nRows, m_nCols - 1);
     for (INT i = 0; i < m_nRows; ++i) {
@@ -912,7 +912,7 @@ bool __fastcall XG_Board::TriBlackAround() const noexcept
 }
 
 // 黒マスで分断されているかどうか？
-bool __fastcall XG_Board::DividedByBlack() const noexcept
+bool __fastcall XG_Board::DividedByBlack() const
 {
     const INT nRows = xg_nRows, nCols = xg_nCols;
     INT nCount = nRows * nCols;
@@ -977,7 +977,7 @@ bool __fastcall XG_Board::DividedByBlack() const noexcept
 // すべてのパターンが正当かどうか調べる。
 XG_EpvCode __fastcall XG_Board::EveryPatternValid1(
     std::vector<std::wstring>& vNotFoundWords,
-    XG_Pos& pos, bool bNonBlackCheckSpace) const noexcept
+    XG_Pos& pos, bool bNonBlackCheckSpace) const
 {
     const int nRows = xg_nRows, nCols = xg_nCols;
 
@@ -1227,7 +1227,7 @@ XG_EpvCode __fastcall XG_Board::EveryPatternValid1(
 // すべてのパターンが正当かどうか調べる。
 XG_EpvCode __fastcall XG_Board::EveryPatternValid2(
     std::vector<std::wstring>& vNotFoundWords,
-    XG_Pos& pos, bool bNonBlackCheckSpace) const noexcept
+    XG_Pos& pos, bool bNonBlackCheckSpace) const
 {
     const int nRows = xg_nRows;
     const int nCols = xg_nCols;
@@ -4626,7 +4626,7 @@ void __fastcall XgDrawMarkWord(HDC hdc, LPSIZE psiz)
         if (xg_bNumCroMode && xg_bSolved) {
             XG_Pos& pos = xg_vMarks[i];
             ch = xg_solution.GetAt(pos.m_i, pos.m_j);
-            StringCbPrintf(sz, sizeof(sz), L"%u", xg_mapNumCro1[ch]);
+            StringCbPrintf(sz, sizeof(sz), L"%d", xg_mapNumCro1[ch]);
         } else {
             if (i < static_cast<int>(xg_strDoubleFrameLetters.size()))
                 ch = xg_strDoubleFrameLetters[i];
@@ -4755,7 +4755,7 @@ void __fastcall
 XgDrawCellNumber(HDC hdc, const RECT& rcCell, INT i, INT j, INT number, std::unordered_set<XG_Pos>& slot)
 {
     WCHAR sz[8];
-    StringCbPrintf(sz, sizeof(sz), L"%u", number);
+    StringCbPrintf(sz, sizeof(sz), L"%d", number);
 
     RECT rcText;
     SIZE siz;
@@ -5486,7 +5486,7 @@ bool __fastcall XgDoLoadCrpFile(HWND hwnd, LPCWSTR pszFile)
 
     if (nWidth > 0 && nHeight > 0) {
         for (i = 0; i < nHeight; ++i) {
-            StringCbPrintf(szName, sizeof(szName), L"Line%u", i + 1);
+            StringCbPrintf(szName, sizeof(szName), L"Line%d", i + 1);
             GetPrivateProfileStringW(L"Cross", szName, L"", szText, _countof(szText), pszFile);
 
             std::wstring str = szText;
@@ -5545,7 +5545,7 @@ bool __fastcall XgDoLoadCrpFile(HWND hwnd, LPCWSTR pszFile)
             INT nClueCount = GetPrivateProfileIntW(L"Clue", L"Count", 0, pszFile);
             if (nClueCount) {
                 for (i = 0; i < nClueCount; ++i) {
-                    StringCbPrintf(szName, sizeof(szName), L"Clue%u", i + 1);
+                    StringCbPrintf(szName, sizeof(szName), L"Clue%d", i + 1);
                     GetPrivateProfileStringW(L"Clue", szName, L"", szText, _countof(szText), pszFile);
 
                     std::wstring str = szText;
@@ -5573,7 +5573,7 @@ bool __fastcall XgDoLoadCrpFile(HWND hwnd, LPCWSTR pszFile)
                 }
             } else {
                 for (i = 0; i < 256; ++i) {
-                    StringCbPrintf(szName, sizeof(szName), L"Down%u", i + 1);
+                    StringCbPrintf(szName, sizeof(szName), L"Down%d", i + 1);
                     GetPrivateProfileStringW(L"Clue", szName, L"", szText, _countof(szText), pszFile);
 
                     std::wstring str = szText;
@@ -5591,7 +5591,7 @@ bool __fastcall XgDoLoadCrpFile(HWND hwnd, LPCWSTR pszFile)
                 }
 
                 for (i = 0; i < 256; ++i) {
-                    StringCbPrintf(szName, sizeof(szName), L"Across%u", i + 1);
+                    StringCbPrintf(szName, sizeof(szName), L"Across%d", i + 1);
                     GetPrivateProfileStringW(L"Clue", szName, L"", szText, _countof(szText), pszFile);
 
                     std::wstring str = szText;
@@ -5717,8 +5717,8 @@ bool __fastcall XgDoSaveCrpFile(LPCWSTR pszFile)
             "Puzzle=0\n"
             "\n"
             "[Cross]\n"
-            "Width=%u\n"
-            "Height=%u\n", xg_nCols, xg_nRows);
+            "Width=%d\n"
+            "Height=%d\n", xg_nCols, xg_nRows);
 
         // マス。
         for (INT i = 0; i < xg_nRows; ++i) {
@@ -5732,7 +5732,7 @@ bool __fastcall XgDoSaveCrpFile(LPCWSTR pszFile)
                 else
                     row += ch;
             }
-            fprintf(fout, "Line%u=%s\n", i + 1, XgUnicodeToAnsi(row).c_str());
+            fprintf(fout, "Line%d=%s\n", i + 1, XgUnicodeToAnsi(row).c_str());
         }
 
         // 二重マス。
@@ -5757,7 +5757,7 @@ bool __fastcall XgDoSaveCrpFile(LPCWSTR pszFile)
                     row += ",";
                 row += std::to_string(marks[i][j]);
             }
-            fprintf(fout, "MarkUpLine%u=%s\n", i + 1, row.c_str());
+            fprintf(fout, "MarkUpLine%d=%s\n", i + 1, row.c_str());
         }
         fprintf(fout,
             "\n"
@@ -5768,19 +5768,19 @@ bool __fastcall XgDoSaveCrpFile(LPCWSTR pszFile)
 
         // ヒント。
         if (xg_vecTateHints.size() && xg_vecYokoHints.size()) {
-            fprintf(fout, "Count=%u\n", static_cast<int>(xg_vecTateHints.size() + xg_vecYokoHints.size()));
+            fprintf(fout, "Count=%d\n", static_cast<int>(xg_vecTateHints.size() + xg_vecYokoHints.size()));
             int iHint = 1;
             // タテのカギ。
             for (size_t i = 0; i < xg_vecTateHints.size(); ++i) {
                 auto& tate_hint = xg_vecTateHints[i];
-                fprintf(fout, "Clue%u=%s:%s\n", iHint++,
+                fprintf(fout, "Clue%d=%s:%s\n", iHint++,
                     XgUnicodeToAnsi(tate_hint.m_strWord).c_str(),
                     XgUnicodeToAnsi(tate_hint.m_strHint).c_str());
             }
             // ヨコのカギ。
             for (size_t i = 0; i < xg_vecYokoHints.size(); ++i) {
                 auto& yoko_hint = xg_vecYokoHints[i];
-                fprintf(fout, "Clue%u=%s:%s\n", iHint++,
+                fprintf(fout, "Clue%d=%s:%s\n", iHint++,
                     XgUnicodeToAnsi(yoko_hint.m_strWord).c_str(),
                     XgUnicodeToAnsi(yoko_hint.m_strHint).c_str());
             }
@@ -5859,7 +5859,7 @@ bool __fastcall XgDoSaveJson(LPCWSTR pszFile)
                 auto ch = pair.first;
                 auto number = pair.second;
                 WCHAR szNum[64];
-                StringCbPrintfW(szNum, sizeof(szNum), L"%04u", number);
+                StringCbPrintfW(szNum, sizeof(szNum), L"%04d", number);
                 const WCHAR szChar[2] = { ch, 0 };
                 j0["num_cro"][XgUnicodeToUtf8(szNum)] = XgUnicodeToUtf8(szChar);
             }
@@ -6177,7 +6177,7 @@ bool __fastcall XgDoSaveXdFile(LPCWSTR pszFile)
             // タテのカギ。
             for (auto& tate_hint : xg_vecTateHints) {
                 auto word = XgNormalizeStringEx(tate_hint.m_strWord);
-                StringCchPrintfA(line, _countof(line), "D%u. %s ~ %s\n",
+                StringCchPrintfA(line, _countof(line), "D%d. %s ~ %s\n",
                                  tate_hint.m_number,
                                  XgUnicodeToUtf8(tate_hint.m_strHint).c_str(),
                                  XgUnicodeToUtf8(word).c_str());
@@ -6186,7 +6186,7 @@ bool __fastcall XgDoSaveXdFile(LPCWSTR pszFile)
             // ヨコのカギ。
             for (auto& yoko_hint : xg_vecYokoHints) {
                 auto word = XgNormalizeStringEx(yoko_hint.m_strWord);
-                StringCchPrintfA(line, _countof(line), "A%u. %s ~ %s\n",
+                StringCchPrintfA(line, _countof(line), "A%d. %s ~ %s\n",
                                  yoko_hint.m_number,
                                  XgUnicodeToUtf8(yoko_hint.m_strHint).c_str(),
                                  XgUnicodeToUtf8(word).c_str());
@@ -6217,7 +6217,7 @@ bool __fastcall XgDoSaveXdFile(LPCWSTR pszFile)
             }
             for (auto& pair : mapping) {
                 const WCHAR sz[2] = { pair.second, 0 };
-                fprintf(fout, "NUMCRO-%04u: %s\n", pair.first, XgUnicodeToUtf8(sz).c_str());
+                fprintf(fout, "NUMCRO-%04d: %s\n", pair.first, XgUnicodeToUtf8(sz).c_str());
             }
             fprintf(fout, "\n");
         }
@@ -6233,7 +6233,7 @@ bool __fastcall XgDoSaveXdFile(LPCWSTR pszFile)
         }
 
         // ルール。
-        fprintf(fout, "\nPolicy: %u\n", xg_nRules);
+        fprintf(fout, "\nPolicy: %d\n", xg_nRules);
 
         // ボックス。
         XgWriteXdBoxes(fout);
@@ -6835,7 +6835,7 @@ bool __fastcall XgGenerateBlacksRecurse(const XG_Board& xword, LONG iRowjCol)
     }
 
     const int nRows = xg_nRows, nCols = xg_nCols;
-    INT iRow = LOWORD(iRowjCol), jCol = HIWORD(iRowjCol);
+    const int iRow = LOWORD(iRowjCol), jCol = HIWORD(iRowjCol);
     // 終了条件。
     if (iRow == nRows && jCol == 0) {
         EnterCriticalSection(&xg_cs);
@@ -6852,7 +6852,7 @@ bool __fastcall XgGenerateBlacksRecurse(const XG_Board& xword, LONG iRowjCol)
         return true;
 
     // マスの左側を見る。
-    INT jLeft;
+    int jLeft;
     for (jLeft = jCol; jLeft > 0; --jLeft) {
         if (xword.GetAt(iRow, jLeft - 1) == ZEN_BLACK) {
             break;
@@ -6952,7 +6952,7 @@ bool __fastcall XgGenerateBlacksPointSymRecurse(const XG_Board& xword, LONG iRow
     }
 
     const int nRows = xg_nRows, nCols = xg_nCols;
-    INT iRow = LOWORD(iRowjCol), jCol = HIWORD(iRowjCol);
+    const int iRow = LOWORD(iRowjCol), jCol = HIWORD(iRowjCol);
 
     // 終了条件。
     if (iRow == nRows && jCol == 0) {
@@ -7071,9 +7071,9 @@ bool __fastcall XgGenerateBlacksLineSymVRecurse(const XG_Board& xword, LONG iRow
             return false;
     }
 
-    const INT nRows = xg_nRows, nCols = xg_nCols;
-    const INT nHalfRows = nRows / 2;
-    INT iRow = LOWORD(iRowjCol), jCol = HIWORD(iRowjCol);
+    const int nRows = xg_nRows, nCols = xg_nCols;
+    const int nHalfRows = nRows / 2;
+    const int iRow = LOWORD(iRowjCol), jCol = HIWORD(iRowjCol);
 
     // 終了条件。
     if (iRow == 0 && jCol >= nCols) {

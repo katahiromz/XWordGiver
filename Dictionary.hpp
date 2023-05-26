@@ -22,7 +22,7 @@ struct XG_WordData
     XG_WordData() noexcept { }
 
     // コンストラクタ。
-    XG_WordData(const std::wstring& word_) noexcept : m_word(word_)
+    XG_WordData(const std::wstring& word_) : m_word(word_)
     {
     }
 

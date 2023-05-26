@@ -49,14 +49,14 @@ public:
     void AddCtrlInfo(HWND hwndCtrl);
     void AddCtrlInfo(HWND hwndCtrl, const MRect& rcCtrl);
     void AddCtrlInfo(HWND hwndCtrl, const MPoint& ptCtrl, const MSize& sizCtrl);
-    void SetCtrlInfo(HWND hwndCtrl, const MRect& rcCtrl) noexcept;
-    void SetCtrlInfo(HWND hwndCtrl, const MPoint& ptCtrl, const MSize& sizCtrl) noexcept;
+    void SetCtrlInfo(HWND hwndCtrl, const MRect& rcCtrl);
+    void SetCtrlInfo(HWND hwndCtrl, const MPoint& ptCtrl, const MSize& sizCtrl);
     void RemoveCtrlInfo(HWND hwndCtrl) noexcept;
     void AddCtrlInfo(UINT idCtrl);
     void AddCtrlInfo(UINT idCtrl, const MRect& rcCtrl);
     void AddCtrlInfo(UINT idCtrl, const MPoint& ptCtrl, const MSize& sizCtrl);
-    void SetCtrlInfo(UINT idCtrl, const MRect& rcCtrl) noexcept;
-    void SetCtrlInfo(UINT idCtrl, const MPoint& ptCtrl, const MSize& sizCtrl) noexcept;
+    void SetCtrlInfo(UINT idCtrl, const MRect& rcCtrl);
+    void SetCtrlInfo(UINT idCtrl, const MPoint& ptCtrl, const MSize& sizCtrl);
     void RemoveCtrlInfo(UINT idCtrl) noexcept;
 
     bool empty() const noexcept;
