@@ -900,8 +900,8 @@ bool __fastcall XG_Board::DoubleBlack() const noexcept
     }
     int j = xg_nCols;
     for (--j; j >= 0; --j) {
-        for (INT i = 0; i < n2; i++) {
-            if (GetAt(i, j) == ZEN_BLACK && GetAt(i + 1, j) == ZEN_BLACK)
+        for (INT i0 = 0; i0 < n2; i0++) {
+            if (GetAt(i0, j) == ZEN_BLACK && GetAt(i0 + 1, j) == ZEN_BLACK)
                 return true;    // 隣り合っていた。
         }
     }
@@ -2524,26 +2524,26 @@ bool __fastcall XgSetJsonString(HWND hwnd, const std::wstring& str)
 
     bool success = true;
     try {
-        json j = json::parse(utf8);
-        int row_count = j["row_count"];
-        int column_count = j["column_count"];
-        auto cell_data = j["cell_data"];
-        bool is_solved = j["is_solved"];
-        bool has_mark = j["has_mark"];
-        bool has_hints = j["has_hints"];
+        json j0 = json::parse(utf8);
+        int row_count = j0["row_count"];
+        int column_count = j0["column_count"];
+        auto cell_data = j0["cell_data"];
+        bool is_solved = j0["is_solved"];
+        bool has_mark = j0["has_mark"];
+        bool has_hints = j0["has_hints"];
         INT rules = XG_DEFAULT_RULES;
-        if (j["policy"].is_number_integer()) {
-            rules = int(j["policy"]);
-        } else if (j["rules"].is_string()) {
-            auto str = XgUtf8ToUnicode(j["rules"].get<std::string>());
-            rules = XgParseRules(str);
+        if (j0["policy"].is_number_integer()) {
+            rules = int(j0["policy"]);
+        } else if (j0["rules"].is_string()) {
+            auto str0 = XgUtf8ToUnicode(j0["rules"].get<std::string>());
+            rules = XgParseRules(str0);
         }
         std::wstring dictionary;
-        if (j["dictionary"].is_string()) {
-            dictionary = XgUtf8ToUnicode(j["dictionary"].get<std::string>());
+        if (j0["dictionary"].is_string()) {
+            dictionary = XgUtf8ToUnicode(j0["dictionary"].get<std::string>());
         }
-        if (j["view_mode"].is_number_integer()) {
-            switch (int(j["view_mode"])) {
+        if (j0["view_mode"].is_number_integer()) {
+            switch (int(j0["view_mode"])) {
             case XG_VIEW_NORMAL:
                 xg_nViewMode = XG_VIEW_NORMAL;
                 break;
@@ -2572,8 +2572,8 @@ bool __fastcall XgSetJsonString(HWND hwnd, const std::wstring& str)
 
         // ボックス。
         XgDeleteBoxes();
-        if (j["boxes"].is_array()) {
-            XgDoLoadBoxJson(j["boxes"]);
+        if (j0["boxes"].is_array()) {
+            XgDoLoadBoxJson(j0["boxes"]);
         }
 
         if (!cell_data.is_array()) {
@@ -2586,8 +2586,8 @@ bool __fastcall XgSetJsonString(HWND hwnd, const std::wstring& str)
                 break;
             }
             
-            std::string str = cell_data[i];
-            std::wstring row = XgUtf8ToUnicode(str).c_str();
+            std::string str1 = cell_data[i];
+            std::wstring row = XgUtf8ToUnicode(str1).c_str();
             if (int(row.size()) != column_count) {
                 success = false;
                 break;
@@ -2599,7 +2599,7 @@ bool __fastcall XgSetJsonString(HWND hwnd, const std::wstring& str)
 
         std::vector<XG_Pos> mark_positions;
         if (has_mark) {
-            auto& marks = j["marks"];
+            auto& marks = j0["marks"];
             for (auto& mark : marks) {
                 int i = int(mark[0]) - 1;
                 int j = int(mark[1]) - 1;
@@ -2617,7 +2617,7 @@ bool __fastcall XgSetJsonString(HWND hwnd, const std::wstring& str)
 
         std::vector<XG_Hint> tate, yoko;
         if (has_hints) {
-            auto hints = j["hints"];
+            auto hints = j0["hints"];
             auto v = hints["v"];
             auto h = hints["h"];
             for (size_t i = 0; i < v.size(); ++i) {
@@ -2644,10 +2644,10 @@ bool __fastcall XgSetJsonString(HWND hwnd, const std::wstring& str)
             }
         }
 
-        auto header = XgUtf8ToUnicode(j["header"]);
-        auto notes = XgUtf8ToUnicode(j["notes"]);
-        if (j["theme"].is_string()) {
-            xg_strTheme = XgUtf8ToUnicode(j["theme"]);
+        auto header = XgUtf8ToUnicode(j0["header"]);
+        auto notes = XgUtf8ToUnicode(j0["notes"]);
+        if (j0["theme"].is_string()) {
+            xg_strTheme = XgUtf8ToUnicode(j0["theme"]);
         } else {
             xg_strTheme = xg_strDefaultTheme;
         }
@@ -2704,10 +2704,10 @@ bool __fastcall XgSetJsonString(HWND hwnd, const std::wstring& str)
             xg_mapNumCro2.clear();
             do {
                 if (is_solved &&
-                    j["is_numcro"].is_boolean() && j["is_numcro"] &&
-                    j["num_cro"].is_object())
+                    j0["is_numcro"].is_boolean() && j0["is_numcro"] &&
+                    j0["num_cro"].is_object())
                 {
-                    for (auto& pair : j["num_cro"].items()) {
+                    for (auto& pair : j0["num_cro"].items()) {
                         int number = strtoul(pair.key().c_str(), nullptr, 10);
                         auto value = XgUtf8ToUnicode(pair.value());
                         if (value.size() != 1)
@@ -2771,10 +2771,10 @@ bool __fastcall XgSetStdString(HWND hwnd, const std::wstring& str)
         // 空きマスがなかった。
 
         // ヒントを設定する。
-        size_t i = str.find(ZEN_LRIGHT, 0);
-        if (i != std::wstring::npos) {
+        size_t i0 = str.find(ZEN_LRIGHT, 0);
+        if (i0 != std::wstring::npos) {
             // フッターを取得する。
-            std::wstring s = str.substr(i + 1);
+            std::wstring s = str.substr(i0 + 1);
 
             // フッターの備考欄を取得して、取り除く。
             std::wstring strFooterSep = XgLoadStringDx1(IDS_HEADERSEP2);
@@ -2980,34 +2980,34 @@ bool __fastcall XgSetXDString(HWND hwnd, const std::wstring& str)
     XG_Board xword;
     std::vector<XG_Hint> tate, yoko;
     {
-        std::wstring str;
+        std::wstring str0;
         int i, nWidth = INT(rows[0].size());
 
-        str += ZEN_ULEFT;
+        str0 += ZEN_ULEFT;
         for (i = 0; i < nWidth; ++i) {
-            str += ZEN_HLINE;
+            str0 += ZEN_HLINE;
         }
-        str += ZEN_URIGHT;
-        str += L"\r\n";
+        str0 += ZEN_URIGHT;
+        str0 += L"\r\n";
 
         for (auto& item : rows) {
-            str += ZEN_VLINE;
+            str0 += ZEN_VLINE;
             for (i = 0; i < nWidth; ++i) {
-                str += item[i];
+                str0 += item[i];
             }
-            str += ZEN_VLINE;
-            str += L"\r\n";
+            str0 += ZEN_VLINE;
+            str0 += L"\r\n";
         }
 
-        str += ZEN_LLEFT;
+        str0 += ZEN_LLEFT;
         for (i = 0; i < nWidth; ++i) {
-            str += ZEN_HLINE;
+            str0 += ZEN_HLINE;
         }
-        str += ZEN_LRIGHT;
-        str += L"\r\n";
+        str0 += ZEN_LRIGHT;
+        str0 += L"\r\n";
 
         // 文字列を読み込む。
-        bOK = xword.SetString(str);
+        bOK = xword.SetString(str0);
     }
 
     if (!bOK)
@@ -3028,16 +3028,16 @@ bool __fastcall XgSetXDString(HWND hwnd, const std::wstring& str)
         // 番号付けを行う。
         xword.DoNumberingNoCheck();
 
-        for (auto& str : clues) {
-            xg_str_trim(str);
-            if (str.empty() || (str[0] != L'A' && str[0] != L'D'))
+        for (auto& str0 : clues) {
+            xg_str_trim(str0);
+            if (str0.empty() || (str0[0] != L'A' && str0[0] != L'D'))
                 break;
-            size_t iDot = str.find(L'.');
-            size_t iTilda = str.rfind(L'~');
-            if (iDot != str.npos && iTilda != str.npos) {
-                auto word = str.substr(iTilda + 1);
+            size_t iDot = str0.find(L'.');
+            size_t iTilda = str0.rfind(L'~');
+            if (iDot != str0.npos && iTilda != str0.npos) {
+                auto word = str0.substr(iTilda + 1);
                 xg_str_trim(word);
-                auto hint = str.substr(iDot + 1, iTilda - (iDot + 1));
+                auto hint = str0.substr(iDot + 1, iTilda - (iDot + 1));
                 xg_str_trim(hint);
                 word = XgNormalizeString(word);
                 for (XG_PlaceInfo& item : xg_vTateInfo) {
@@ -4428,13 +4428,13 @@ void __fastcall XgEndSolve(void) noexcept
 // ポイント単位をピクセル単位に変換する（X座標）。
 float XPixelsFromPoints(HDC hDC, float points)
 {
-    return points * GetDeviceCaps(hDC, LOGPIXELSX) / 72;
+    return points * float(::GetDeviceCaps(hDC, LOGPIXELSX)) / 72;
 }
 
 // ポイント単位をピクセル単位に変換する（Y座標）。
 float YPixelsFromPoints(HDC hDC, float points)
 {
-    return points * GetDeviceCaps(hDC, LOGPIXELSY) / 72;
+    return points * float(::GetDeviceCaps(hDC, LOGPIXELSY)) / 72;
 }
 
 // キャレットを描画する。
@@ -4868,10 +4868,10 @@ void __fastcall XgDrawXWord_NormalView(XG_Board& xw, HDC hdc, const SIZE *psiz, 
     }
 
     // 全体を白で塗りつぶす。
-    RECT rc;
-    ::SetRect(&rc, 0, 0, psiz->cx, psiz->cy);
+    RECT rc0;
+    ::SetRect(&rc0, 0, 0, psiz->cx, psiz->cy);
     ::SelectObject(hdc, ::GetStockObject(NULL_PEN));
-    ::FillRect(hdc, &rc, reinterpret_cast<HBRUSH>(::GetStockObject(WHITE_BRUSH)));
+    ::FillRect(hdc, &rc0, reinterpret_cast<HBRUSH>(::GetStockObject(WHITE_BRUSH)));
 
     // 文字マスのフォントを作成する。
     HFONT hFont = XgCreateNormalFont();
@@ -4944,11 +4944,11 @@ void __fastcall XgDrawXWord_NormalView(XG_Board& xw, HDC hdc, const SIZE *psiz, 
     for (INT i = 0; i < xg_nRows; i++) {
         for (INT j = 0; j < xg_nCols; j++) {
             // セルの座標をセットする。
-            ::SetRect(&rc,
-                INT(xg_nMargin + j * nCellSize), 
-                INT(xg_nMargin + i * nCellSize),
-                INT(xg_nMargin + (j + 1) * nCellSize), 
-                INT(xg_nMargin + (i + 1) * nCellSize));
+            RECT rc = {
+                xg_nMargin + j * nCellSize,
+                xg_nMargin + i * nCellSize,
+                xg_nMargin + (j + 1) * nCellSize, 
+                xg_nMargin + (i + 1) * nCellSize };
 
             // 二重マスか？
             INT nMarked = XgGetMarked(i, j);
@@ -4995,11 +4995,12 @@ void __fastcall XgDrawXWord_NormalView(XG_Board& xw, HDC hdc, const SIZE *psiz, 
         for (INT i = 0; i < xg_nRows; i++) {
             for (INT j = 0; j < xg_nCols; j++) {
                 // セルの座標をセットする。
-                ::SetRect(&rc,
-                    INT(xg_nMargin + j * nCellSize),
-                    INT(xg_nMargin + i * nCellSize),
-                    INT(xg_nMargin + (j + 1) * nCellSize) - 1,
-                    INT(xg_nMargin + (i + 1) * nCellSize));
+                RECT rc = {
+                    xg_nMargin + j * nCellSize,
+                    xg_nMargin + i * nCellSize,
+                    xg_nMargin + (j + 1) * nCellSize,
+                    xg_nMargin + (i + 1) * nCellSize
+                };
 
                 // 二重マスか？
                 INT nMarked = XgGetMarked(i, j);
@@ -5019,11 +5020,11 @@ void __fastcall XgDrawXWord_NormalView(XG_Board& xw, HDC hdc, const SIZE *psiz, 
             auto i = xg_vTateInfo[k].m_iRow;
             auto j = xg_vTateInfo[k].m_jCol;
 
-            ::SetRect(&rc,
-                INT(xg_nMargin + j * nCellSize), 
-                INT(xg_nMargin + i * nCellSize),
-                INT(xg_nMargin + (j + 1) * nCellSize), 
-                INT(xg_nMargin + (i + 1) * nCellSize));
+            RECT rc = {
+                xg_nMargin + j * nCellSize,
+                xg_nMargin + i * nCellSize,
+                xg_nMargin + (j + 1) * nCellSize,
+                xg_nMargin + (i + 1) * nCellSize };
             ::OffsetRect(&rc, c_nThin, c_nThin * 2 / 3);
 
             XgDrawCellNumber(hdc, rc, i, j, xg_vTateInfo[k].m_number, slot);
@@ -5037,11 +5038,11 @@ void __fastcall XgDrawXWord_NormalView(XG_Board& xw, HDC hdc, const SIZE *psiz, 
             auto i = xg_vYokoInfo[k].m_iRow;
             auto j = xg_vYokoInfo[k].m_jCol;
 
-            ::SetRect(&rc,
-                INT(xg_nMargin + j * nCellSize), 
-                INT(xg_nMargin + i * nCellSize),
-                INT(xg_nMargin + (j + 1) * nCellSize), 
-                INT(xg_nMargin + (i + 1) * nCellSize));
+            RECT rc = {
+                xg_nMargin + j * nCellSize,
+                xg_nMargin + i * nCellSize,
+                xg_nMargin + (j + 1) * nCellSize,
+                xg_nMargin + (i + 1) * nCellSize };
             ::OffsetRect(&rc, c_nThin, c_nThin * 2 / 3);
 
             XgDrawCellNumber(hdc, rc, i, j, xg_vYokoInfo[k].m_number, slot);
@@ -5056,11 +5057,11 @@ void __fastcall XgDrawXWord_NormalView(XG_Board& xw, HDC hdc, const SIZE *psiz, 
                 if (ch == ZEN_BLACK || ch == ZEN_SPACE)
                     continue;
 
-                ::SetRect(&rc,
-                    INT(xg_nMargin + j * nCellSize), 
-                    INT(xg_nMargin + i * nCellSize),
-                    INT(xg_nMargin + (j + 1) * nCellSize), 
-                    INT(xg_nMargin + (i + 1) * nCellSize));
+                RECT rc = {
+                    xg_nMargin + j * nCellSize,
+                    xg_nMargin + i * nCellSize,
+                    xg_nMargin + (j + 1) * nCellSize,
+                    xg_nMargin + (i + 1) * nCellSize };
                 ::OffsetRect(&rc, c_nThin, c_nThin * 2 / 3);
 
                 XgDrawCellNumber(hdc, rc, i, j, xg_mapNumCro1[ch], slot);
@@ -5075,11 +5076,11 @@ void __fastcall XgDrawXWord_NormalView(XG_Board& xw, HDC hdc, const SIZE *psiz, 
     for (INT i = 0; i < xg_nRows; i++) {
         for (INT j = 0; j < xg_nCols; j++) {
             // セルの座標をセットする。
-            ::SetRect(&rc,
-                INT(xg_nMargin + j * nCellSize), 
-                INT(xg_nMargin + i * nCellSize),
-                INT(xg_nMargin + (j + 1) * nCellSize), 
-                INT(xg_nMargin + (i + 1) * nCellSize));
+            RECT rc = {
+                xg_nMargin + j * nCellSize,
+                xg_nMargin + i * nCellSize,
+                xg_nMargin + (j + 1) * nCellSize,
+                xg_nMargin + (i + 1) * nCellSize };
 
             WCHAR ch = xw.GetAt(i, j);
             if (ch == ZEN_BLACK)
@@ -5832,7 +5833,7 @@ bool __fastcall XgDoSaveCrpFile(LPCWSTR pszFile)
 bool __fastcall XgDoSaveJson(LPCWSTR pszFile)
 {
     HANDLE hFile;
-    std::wstring str, strTable, strMarks, hints;
+    std::wstring str, strTable, strMarks;
     DWORD size;
 
     // ファイルを作成する。
@@ -5843,36 +5844,36 @@ bool __fastcall XgDoSaveJson(LPCWSTR pszFile)
 
     try
     {
-        json j;
+        json j0;
         // 作成者情報。
-        j["creator_info"] = XgUnicodeToUtf8(XgLoadStringDx1(IDS_APPINFO));
+        j0["creator_info"] = XgUnicodeToUtf8(XgLoadStringDx1(IDS_APPINFO));
         // 行の数。
-        j["row_count"] = xg_nRows;
+        j0["row_count"] = xg_nRows;
         // 列の数。
-        j["column_count"] = xg_nCols;
+        j0["column_count"] = xg_nCols;
         // ルール。
-        j["rules"] = XgUnicodeToUtf8(XgGetRulesString(xg_nRules));
+        j0["rules"] = XgUnicodeToUtf8(XgGetRulesString(xg_nRules));
         // ルール（整数値）。
-        j["policy"] = xg_nRules;
+        j0["policy"] = xg_nRules;
         // 辞書名。
-        j["dictionary"] = XgUnicodeToUtf8(PathFindFileNameW(xg_dict_name.c_str()));
+        j0["dictionary"] = XgUnicodeToUtf8(PathFindFileNameW(xg_dict_name.c_str()));
         // ビューモード。
-        j["view_mode"] = (int)xg_nViewMode;
+        j0["view_mode"] = (int)xg_nViewMode;
 
         // 盤の切り替え。
         XG_Board *xw = (xg_bSolved ? &xg_solution : &xg_xword);
-        j["is_solved"] = !!xg_bSolved;
+        j0["is_solved"] = !!xg_bSolved;
 
         // ナンクロモード。
         if (xg_bNumCroMode) {
-            j["is_numcro"] = true;
+            j0["is_numcro"] = true;
             for (auto& pair : xg_mapNumCro1) {
                 auto ch = pair.first;
                 auto number = pair.second;
                 WCHAR szNum[64];
                 StringCbPrintfW(szNum, sizeof(szNum), L"%04u", number);
                 WCHAR szChar[2] = { ch, 0 };
-                j["num_cro"][XgUnicodeToUtf8(szNum)] = XgUnicodeToUtf8(szChar);
+                j0["num_cro"][XgUnicodeToUtf8(szNum)] = XgUnicodeToUtf8(szChar);
             }
         }
 
@@ -5883,15 +5884,15 @@ bool __fastcall XgDoSaveJson(LPCWSTR pszFile)
                 WCHAR ch = xw->GetAt(i, j);
                 row += ch;
             }
-            j["cell_data"].push_back(XgUnicodeToUtf8(row));
+            j0["cell_data"].push_back(XgUnicodeToUtf8(row));
         }
 
         // ボックス。
-        XgDoSaveBoxJson(j);
+        XgDoSaveBoxJson(j0);
 
         // 二重マス。
         if (xg_vMarks.size()) {
-            j["has_mark"] = true;
+            j0["has_mark"] = true;
 
             std::wstring mark_word;
             for (auto& mark : xg_vMarks) {
@@ -5899,7 +5900,7 @@ bool __fastcall XgDoSaveJson(LPCWSTR pszFile)
                 mark_word += ch;
             }
 
-            j["mark_word"] = XgUnicodeToUtf8(mark_word);
+            j0["mark_word"] = XgUnicodeToUtf8(mark_word);
 
             str += L"\t\"marks\": [\r\n";
             for (size_t i = 0; i < xg_vMarks.size(); ++i) {
@@ -5908,15 +5909,15 @@ bool __fastcall XgDoSaveJson(LPCWSTR pszFile)
                 mark.push_back(xg_vMarks[i].m_j + 1);
                 WCHAR sz[2] = { mark_word[i] , 0 };
                 mark.push_back(XgUnicodeToUtf8(sz));
-                j["marks"].push_back(mark);
+                j0["marks"].push_back(mark);
             }
         } else {
-            j["has_mark"] = false;
+            j0["has_mark"] = false;
         }
 
         // ヒント。
         if (xg_vecTateHints.size() && xg_vecYokoHints.size()) {
-            j["has_hints"] = true;
+            j0["has_hints"] = true;
 
             json hints;
 
@@ -5942,14 +5943,14 @@ bool __fastcall XgDoSaveJson(LPCWSTR pszFile)
             }
             hints["h"] = h;
 
-            j["hints"] = hints;
+            j0["hints"] = hints;
         } else {
-            j["has_hints"] = false;
+            j0["has_hints"] = false;
         }
 
         // ヘッダー。
         xg_str_trim(xg_strHeader);
-        j["header"] = XgUnicodeToUtf8(xg_strHeader);
+        j0["header"] = XgUnicodeToUtf8(xg_strHeader);
 
         // 備考欄。
         xg_str_trim(xg_strNotes);
@@ -5957,13 +5958,13 @@ bool __fastcall XgDoSaveJson(LPCWSTR pszFile)
         if (xg_strNotes.find(psz) == 0) {
             xg_strNotes = xg_strNotes.substr(std::wstring(psz).size());
         }
-        j["notes"] = XgUnicodeToUtf8(xg_strNotes);
+        j0["notes"] = XgUnicodeToUtf8(xg_strNotes);
 
         // テーマ。
-        j["theme"] = XgUnicodeToUtf8(xg_strTheme);
+        j0["theme"] = XgUnicodeToUtf8(xg_strTheme);
 
         // UTF-8へ変換する。
-        std::string utf8 = j.dump(1, '\t');
+        std::string utf8 = j0.dump(1, '\t');
         utf8 += '\n';
 
         std::string replaced;
@@ -6497,7 +6498,7 @@ void __fastcall XG_Board::GetString(std::wstring& str) const
 // クロスワードに文字列を設定する。
 bool __fastcall XG_Board::SetString(const std::wstring& strToBeSet)
 {
-    int i, nRows, nCols;
+    int i1, nRows, nCols;
     std::vector<WCHAR> v;
     std::wstring str(strToBeSet);
 
@@ -6516,30 +6517,30 @@ bool __fastcall XG_Board::SetString(const std::wstring& strToBeSet)
     nRows = nCols = 0;
 
     // 左上の角があるか？
-    for (i = 0; i < size; i++) {
-        if (str[i] == ZEN_ULEFT)
+    for (i1 = 0; i1 < size; i1++) {
+        if (str[i1] == ZEN_ULEFT)
             break;
     }
-    if (i == size) {
+    if (i1 == size) {
         // 見つからなかった。失敗。
         return false;
     }
 
     // 文字列を読み込む。
     bool bFoundLastCorner = false;
-    for (; i < size; i++) {
-        if (str[i] == ZEN_VLINE) {
+    for (; i1 < size; i1++) {
+        if (str[i1] == ZEN_VLINE) {
             // 左の境界線が見つかった。
-            i++;    // 次の文字へ。
+            i1++;    // 次の文字へ。
 
             // 横線以外の文字を格納する。
-            while (i < size && str[i] != ZEN_VLINE) {
-                v.emplace_back(str[i]);
-                i++;    // 次の文字へ。
+            while (i1 < size && str[i1] != ZEN_VLINE) {
+                v.emplace_back(str[i1]);
+                i1++;    // 次の文字へ。
             }
 
             // 文字列の長さを超えたら、中断する。
-            if (i >= size)
+            if (i1 >= size)
                 break;
 
             // 右の境界線が見つかった。列数が未格納なら、格納する。
@@ -6547,8 +6548,8 @@ bool __fastcall XG_Board::SetString(const std::wstring& strToBeSet)
                 nCols = INT(v.size());
 
             nRows++;    // 次の行へ。
-            i++;    // 次の文字へ。
-        } else if (str[i] == ZEN_LRIGHT) {
+            i1++;    // 次の文字へ。
+        } else if (str[i1] == ZEN_LRIGHT) {
             // 右下の角が見つかった。
             bFoundLastCorner = true;
             break;
