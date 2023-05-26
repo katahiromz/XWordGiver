@@ -285,12 +285,9 @@ struct XG_Pos
 
     // コンストラクタ。
     XG_Pos() { }
-
-    // コンストラクタ。
     xg_constexpr XG_Pos(int i, int j) : m_i(i), m_j(j) { }
-
-    // コンストラクタ。
-    xg_constexpr XG_Pos(const XG_Pos& pos) : m_i(pos.m_i), m_j(pos.m_j) { }
+    xg_constexpr XG_Pos(const XG_Pos&) = default;
+    xg_constexpr XG_Pos& operator=(const XG_Pos&) = default;
 
     // 比較。
     xg_constexpr bool __fastcall operator==(const XG_Pos& pos) const {
@@ -443,6 +440,7 @@ public:
         return SetAt(pos.m_i, pos.m_j, ch);
     }
     void __fastcall SetAt2(int i, int j, int nRows, int nCols, WCHAR ch) noexcept {
+        UNREFERENCED_PARAMETER(nRows);
         m_vCells[i * nCols + j] = ch;
     }
     // 空ではないマスの個数を返す。
@@ -533,11 +531,9 @@ public:
 
     XG_BoardEx() : XG_Board(), m_nRows(7), m_nCols(7) {
     }
-    XG_BoardEx(const XG_Board& src) {
-        m_vCells = src.m_vCells;
+    XG_BoardEx(const XG_Board& src) : XG_Board(src) {
     }
-    XG_BoardEx(const XG_BoardEx& src) {
-        m_vCells = src.m_vCells;
+    XG_BoardEx(const XG_BoardEx& src) : XG_Board(src) {
         m_nRows = src.m_nRows;
         m_nCols = src.m_nCols;
     }

@@ -45,6 +45,8 @@ MZC_INLINE MScrollView::MScrollView(
     HWND hwndParent, HWND hHScrollBar, HWND hVScrollBar) :
     m_hwndParent(nullptr)
 {
+    UNREFERENCED_PARAMETER(hHScrollBar);
+    UNREFERENCED_PARAMETER(hVScrollBar);
     MScrollView::SetParent(hwndParent);
 }
 

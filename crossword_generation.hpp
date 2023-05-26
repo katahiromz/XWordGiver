@@ -714,11 +714,11 @@ skip:;
 
         for (int y = 0; y < m_cy; ++y) {
             for (int x = 0; x < m_cx; ++x) {
-                auto ch = get_at(x, y);
+                auto ch0 = get_at(x, y);
                 if (x < x0)
-                    data.set_at(x, y, ch);
+                    data.set_at(x, y, ch0);
                 else
-                    data.set_at(x + cx, y, ch);
+                    data.set_at(x + cx, y, ch0);
             }
         }
 
@@ -735,11 +735,11 @@ skip:;
 
         for (int y = 0; y < m_cy; ++y) {
             for (int x = 0; x < m_cx; ++x) {
-                auto ch = get_at(x, y);
+                auto ch0 = get_at(x, y);
                 if (y < y0)
-                    data.set_at(x, y, ch);
+                    data.set_at(x, y, ch0);
                 else
-                    data.set_at(x, y + cy, ch);
+                    data.set_at(x, y + cy, ch0);
             }
         }
 
@@ -1007,8 +1007,8 @@ skip:;
         }
         int j = m_cx;
         for (--j; j >= 0; --j) {
-            for (int i = 0; i < n2; i++) {
-                if (get_at(j, i) == '#' && get_at(j, i + 1) == '#')
+            for (int i0 = 0; i0 < n2; i0++) {
+                if (get_at(j, i0) == '#' && get_at(j, i0 + 1) == '#')
                     return true;
             }
         }
@@ -1380,9 +1380,9 @@ struct from_words_t {
                 bool matched = true; // 一致していると仮定。
                 if (matched) {
                     // ヨコ向きの単語について、境界の２マスについて
-                    t_char ch1 = m_board.get_on(x0 - 1, y);
-                    t_char ch2 = m_board.get_on(x1, y);
-                    if (is_letter(ch1) || is_letter(ch2)) { // 文字マスなら
+                    t_char tch1 = m_board.get_on(x0 - 1, y);
+                    t_char tch2 = m_board.get_on(x1, y);
+                    if (is_letter(tch1) || is_letter(tch2)) { // 文字マスなら
                         matched = false; // 一致していない！
                     }
                 }
@@ -1439,9 +1439,9 @@ struct from_words_t {
                 bool matched = true; // 一致していると仮定。
                 if (matched) {
                     // 縦向きの単語について、境界の２マスについて
-                    t_char ch1 = m_board.get_on(x, y0 - 1);
-                    t_char ch2 = m_board.get_on(x, y1);
-                    if (is_letter(ch1) || is_letter(ch2)) { // 両方とも文字マスなら
+                    t_char tch1 = m_board.get_on(x, y0 - 1);
+                    t_char tch2 = m_board.get_on(x, y1);
+                    if (is_letter(tch1) || is_letter(tch2)) { // 両方とも文字マスなら
                         matched = false; // 一致していない！
                     }
                 }

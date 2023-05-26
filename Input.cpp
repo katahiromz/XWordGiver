@@ -475,7 +475,7 @@ void __fastcall XgOnChar(HWND hwnd, TCHAR ch, int cRepeat)
                 ch = XgConvertAccent(xg_chAccent, ch);
             } else {
                 // 半角英字を全角英字に変換。
-                ch = ZEN_LARGE_A + (ch - L'A');
+                ch = WCHAR(ZEN_LARGE_A + (ch - L'A'));
             }
             xg_chAccent = 0; // アクセントを解除する。
 

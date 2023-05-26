@@ -66,6 +66,8 @@ public:
 
     BOOL OnInitDialog(HWND hwnd, HWND hwndFocus, LPARAM lParam)
     {
+        UNREFERENCED_PARAMETER(hwndFocus);
+        UNREFERENCED_PARAMETER(lParam);
         XgCenterDialog(hwnd);
 
         SetDlgItemTextW(hwnd, edt1, m_strText.c_str());

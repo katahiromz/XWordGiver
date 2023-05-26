@@ -443,7 +443,7 @@ std::wstring XgJsonEncodeString(const std::wstring& str)
         case L'\r': encoded += L"\\r"; break;
         case L'\t': encoded += L"\\t"; break;
         default:
-            if (0 <= str[i] && str[i] <= L'\x1F') {
+            if (0 < str[i] && str[i] <= L'\x1F') {
                 StringCbPrintf(buf, sizeof(buf), L"\\u%04X", str[i]);
                 encoded += buf;
             } else {
@@ -666,15 +666,14 @@ void XgHexToBin(std::vector<BYTE>& data, const std::wstring& str)
     WCHAR sz[3];
     data.clear();
     bool flag = false;
-    BYTE byte;
     sz[2] = 0;
     for (auto& ch : str)
     {
         if (flag)
         {
             sz[1] = ch;
-            byte = BYTE(wcstol(sz, nullptr, 16));
-            data.insert(data.end(), byte);
+            auto b = BYTE(wcstol(sz, nullptr, 16));
+            data.insert(data.end(), b);
         }
         else
         {

@@ -258,11 +258,11 @@ bool __fastcall XgLoadDictFile(LPCWSTR pszFile)
         // xg_priority_tagsのタグのついてない単語をxg_dict_2に振り分ける。
         std::vector<XG_WordData> tmp;
         for (auto& data : xg_dict_1) {
-            auto found = xg_word_to_tags_map.find(data.m_word);
-            if (found == xg_word_to_tags_map.end()) {
+            auto it2 = xg_word_to_tags_map.find(data.m_word);
+            if (it2 == xg_word_to_tags_map.end()) {
                 xg_dict_2.push_back(data);
             } else {
-                auto& tags2 = found->second;
+                auto& tags2 = it2->second;
                 for (auto& tag2 : tags2) {
                     bool found = false;
                     for (auto& tag1 : xg_priority_tags) {

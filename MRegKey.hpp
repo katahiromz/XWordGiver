@@ -3,7 +3,7 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #ifndef MZC4_MREGKEY_HPP_
-#define MZC4_MREGKEY_HPP_       99   /* Version 99 */
+#define MZC4_MREGKEY_HPP_       100 /* Version 100 */
 
 #ifndef HKCR
     #define HKCR    HKEY_CLASSES_ROOT
@@ -402,6 +402,7 @@ inline LONG MRegKey::RegCreateKeyEx(HKEY hBaseKey, LPCTSTR pszSubKey,
     LPSECURITY_ATTRIBUTES lpsa/* = nullptr*/,
     LPDWORD lpdwDisposition/* = nullptr*/)
 {
+    UNREFERENCED_PARAMETER(dwReserved);
     assert(m_hKey == nullptr);
     return ::RegCreateKeyEx(hBaseKey, pszSubKey, 0,
         lpClass, dwOptions, samDesired, lpsa, &m_hKey, lpdwDisposition);
@@ -546,6 +547,7 @@ inline LONG MRegKey::QueryMultiSz(
 inline LONG MRegKey::RegSetValueEx(LPCTSTR pszValueName, DWORD dwReserved,
     DWORD dwType, CONST BYTE *lpData, DWORD cbData)
 {
+    UNREFERENCED_PARAMETER(dwReserved);
     assert(m_hKey);
     return ::RegSetValueEx(m_hKey, pszValueName, 0, dwType,
         lpData, cbData);

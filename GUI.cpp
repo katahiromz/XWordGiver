@@ -1113,7 +1113,7 @@ bool __fastcall XgLoadSettings(void)
                 }
             }
             if (!app_key.QueryDword(L"LineWidth", dwValue)) {
-                float value = float(dwValue * 0.01f);
+                float value = float(float(dwValue) * 0.01f);
                 if (value < XG_MIN_LINEWIDTH)
                     value = XG_MIN_LINEWIDTH;
                 if (value > XG_MAX_LINEWIDTH)
@@ -1121,7 +1121,7 @@ bool __fastcall XgLoadSettings(void)
                 xg_nLineWidthInPt = value;
             }
             if (!app_key.QueryDword(L"OuterFrame", dwValue)) {
-                float value = float(dwValue * 0.01f);
+                float value = float(float(dwValue) * 0.01f);
                 if (value < XG_MIN_OUTERFRAME)
                     value = XG_MIN_OUTERFRAME;
                 if (value > XG_MAX_OUTERFRAME)
@@ -2931,11 +2931,13 @@ bool __fastcall XgOnGenerate(HWND hwnd, bool show_answer, bool multiple = false)
 bool __fastcall XgOnGenerateBlacksRepeatedly(HWND hwnd)
 {
     ::EnableWindow(xg_hwndInputPalette, FALSE);
-    XG_SeqPatGenDialog dialog;
-    INT_PTR nID = INT(dialog.DoModal(hwnd));
-    ::EnableWindow(xg_hwndInputPalette, TRUE);
-    if (nID != IDOK) {
-        return false;
+    {
+        XG_SeqPatGenDialog dialog;
+        auto nID = INT(dialog.DoModal(hwnd));
+        ::EnableWindow(xg_hwndInputPalette, TRUE);
+        if (nID != IDOK) {
+            return false;
+        }
     }
 
     // 初期化する。
@@ -2968,6 +2970,7 @@ bool __fastcall XgOnGenerateBlacksRepeatedly(HWND hwnd)
 
     // キャンセルダイアログを表示し、生成を開始する。
     ::EnableWindow(xg_hwndInputPalette, FALSE);
+    INT_PTR nID;
     do
     {
         XG_CancelGenBlacksDialog dialog;
@@ -3022,11 +3025,13 @@ bool __fastcall XgOnGenerateBlacksRepeatedly(HWND hwnd)
 bool __fastcall XgOnGenerateBlacks(HWND hwnd, bool sym)
 {
     ::EnableWindow(xg_hwndInputPalette, FALSE);
-    XG_PatGenDialog dialog;
-    INT_PTR nID = dialog.DoModal(hwnd);
-    ::EnableWindow(xg_hwndInputPalette, TRUE);
-    if (nID != IDOK) {
-        return false;
+    {
+        XG_PatGenDialog dialog;
+        INT_PTR nID = dialog.DoModal(hwnd);
+        ::EnableWindow(xg_hwndInputPalette, TRUE);
+        if (nID != IDOK) {
+            return false;
+        }
     }
 
     // 初期化する。
@@ -3317,15 +3322,17 @@ bool __fastcall XgOnSolveRepeatedly(HWND hwnd)
     // [解の連続作成]ダイアログ。
     INT_PTR nID;
     ::EnableWindow(xg_hwndInputPalette, FALSE);
-    XG_SeqSolveDialog dialog;
-    nID = INT(dialog.DoModal(hwnd));
-    ::EnableWindow(xg_hwndInputPalette, TRUE);
-    if (nID != IDOK) {
-        // イメージを更新する。
-        XgSetCaretPos();
-        XgMarkUpdate();
-        XgUpdateImage(hwnd, 0, 0);
-        return false;
+    {
+        XG_SeqSolveDialog dialog;
+        nID = INT(dialog.DoModal(hwnd));
+        ::EnableWindow(xg_hwndInputPalette, TRUE);
+        if (nID != IDOK) {
+            // イメージを更新する。
+            XgSetCaretPos();
+            XgMarkUpdate();
+            XgUpdateImage(hwnd, 0, 0);
+            return false;
+        }
     }
 
     // 初期化する。
@@ -3437,15 +3444,17 @@ bool __fastcall XgOnSolveRepeatedlyNoAddBlack(HWND hwnd)
     // [解の連続作成]ダイアログ。
     INT_PTR nID;
     ::EnableWindow(xg_hwndInputPalette, FALSE);
-    XG_SeqSolveDialog dialog;
-    nID = INT(dialog.DoModal(hwnd));
-    ::EnableWindow(xg_hwndInputPalette, TRUE);
-    if (nID != IDOK) {
-        // イメージを更新する。
-        XgSetCaretPos();
-        XgMarkUpdate();
-        XgUpdateImage(hwnd, 0, 0);
-        return false;
+    {
+        XG_SeqSolveDialog dialog;
+        nID = INT(dialog.DoModal(hwnd));
+        ::EnableWindow(xg_hwndInputPalette, TRUE);
+        if (nID != IDOK) {
+            // イメージを更新する。
+            XgSetCaretPos();
+            XgMarkUpdate();
+            XgUpdateImage(hwnd, 0, 0);
+            return false;
+        }
     }
 
     // 初期化する。
@@ -5825,8 +5834,7 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT /*codeNo
         break;
     case ID_UNDO:   // 元に戻す。
         if (::GetFocus() != xg_hMainWnd) {
-            HWND hwnd = ::GetFocus();
-            ::SendMessageW(hwnd, WM_UNDO, 0, 0);
+            ::SendMessageW(::GetFocus(), WM_UNDO, 0, 0);
         } else {
             if (xg_ubUndoBuffer.CanUndo()) {
                 xg_ubUndoBuffer.Undo();
@@ -6099,8 +6107,7 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT /*codeNo
         if (::GetForegroundWindow() == xg_hMainWnd) {
             ;
         } else {
-            HWND hwnd = ::GetFocus();
-            ::SendMessageW(hwnd, WM_CUT, 0, 0);
+            ::SendMessageW(::GetFocus(), WM_CUT, 0, 0);
         }
         bUpdateImage = TRUE;
         break;
@@ -6108,8 +6115,7 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT /*codeNo
         if (::GetForegroundWindow() == xg_hMainWnd) {
             XgCopyBoard(hwnd);
         } else {
-            HWND hwnd = ::GetFocus();
-            ::SendMessageW(hwnd, WM_COPY, 0, 0);
+            ::SendMessageW(::GetFocus(), WM_COPY, 0, 0);
         }
         break;
     case ID_COPYASIMAGE:    // 画像をコピー。
@@ -6143,8 +6149,7 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT /*codeNo
                 }
             }
         } else {
-            HWND hwnd = ::GetFocus();
-            ::SendMessageW(hwnd, WM_PASTE, 0, 0);
+            ::SendMessageW(::GetFocus(), WM_PASTE, 0, 0);
         }
         bUpdateImage = TRUE;
         break;
@@ -6239,11 +6244,7 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT /*codeNo
             ShowWindow(xg_hStatusBar, SW_SHOWNOACTIVATE);
         else
             ShowWindow(xg_hStatusBar, SW_HIDE);
-        {
-            int x = XgGetHScrollPos();
-            int y = XgGetVScrollPos();
-            XgUpdateScrollInfo(hwnd, x, y);
-        }
+        XgUpdateScrollInfo(hwnd, XgGetHScrollPos(), XgGetVScrollPos());
         PostMessageW(hwnd, WM_SIZE, 0, 0);
         break;
     case ID_PALETTE:
@@ -7456,9 +7457,9 @@ bool XgOpenHintsByWindow(HWND hwnd)
 {
     // もしヒントウィンドウが存在すれば破棄する。
     if (xg_hHintsWnd) {
-        HWND hwnd = xg_hHintsWnd;
+        HWND hwndSave = xg_hHintsWnd;
         xg_hHintsWnd = nullptr;
-        ::DestroyWindow(hwnd);
+        ::DestroyWindow(hwndSave);
     }
 
     // ヒントが空なら開かない。

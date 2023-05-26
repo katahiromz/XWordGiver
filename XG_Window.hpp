@@ -75,6 +75,7 @@ public:
 
     virtual void ModifyWndClassDx(WNDCLASSEX& wcx)
     {
+        UNREFERENCED_PARAMETER(wcx);
     }
 
     BOOL RegisterClassDx(HINSTANCE hInstance = ::GetModuleHandle(nullptr));
@@ -98,6 +99,10 @@ public:
     virtual INT_PTR CALLBACK
     DialogProcDx(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
     {
+        UNREFERENCED_PARAMETER(hwnd);
+        UNREFERENCED_PARAMETER(uMsg);
+        UNREFERENCED_PARAMETER(wParam);
+        UNREFERENCED_PARAMETER(lParam);
         return 0;
     }
 

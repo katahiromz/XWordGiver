@@ -512,7 +512,7 @@ BOOL XG_SettingsDialog::DoExportLooks(HWND hwnd, LPCWSTR pszFileName)
     HWND hCmb2 = GetDlgItem(hwnd, cmb2);
     ComboBox_RealGetText(hCmb2, szText, _countof(szText));
     {
-        std::wstring str = XgBinToHex(szText, lstrlenW(szText) * sizeof(WCHAR));
+        str = XgBinToHex(szText, lstrlenW(szText) * sizeof(WCHAR));
         WritePrivateProfileStringW(L"Looks", L"DoubleFrameLetters", str.c_str(), pszFileName);
     }
 
@@ -907,6 +907,7 @@ XG_SettingsDialog::DialogProcDx(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPar
                     m_bUpdating = FALSE;
                 }
             }
+            break;
 
         case chx2:
             if (IsDlgButtonChecked(hwnd, chx2) == BST_CHECKED) {
