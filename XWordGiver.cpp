@@ -4968,14 +4968,14 @@ void __fastcall XgDrawXWord_NormalView(XG_Board& xw, HDC hdc, const SIZE *psiz, 
                 } else {
                     ::FillRect(hdc, &rc, hbrBlack);
                 }
-            } else if (slot.count(XG_Pos(i, j)) > 0 && nMarked != -1) {
-                // ハイライトかつ二重マス。
+            } else if (slot.count(XG_Pos(i, j)) > 0 && nMarked != -1 && !xg_bNumCroMode) {
+                // ハイライトかつ二重マスかつ非ナンクロ。
                 ::FillRect(hdc, &rc, hbrHighlightAndDblFrame);
             } else if (slot.count(XG_Pos(i, j)) > 0) {
                 // ハイライト。
                 ::FillRect(hdc, &rc, hbrHighlight);
-            } else if (nMarked != -1) {
-                // 二重マス。
+            } else if (nMarked != -1 && !xg_bNumCroMode) {
+                // 二重マスかつ非ナンクロ。
                 ::FillRect(hdc, &rc, hbrMarked);
             } else {
                 // その他のマス。
@@ -5270,14 +5270,14 @@ void __fastcall XgDrawXWord_SkeletonView(XG_Board& xw, HDC hdc, const SIZE *psiz
             INT nMarked = XgGetMarked(i, j);
 
             // 塗りつぶす。
-            if (slot.count(XG_Pos(i, j)) > 0 && nMarked != -1) {
-                // ハイライトかつ二重マス。
+            if (slot.count(XG_Pos(i, j)) > 0 && nMarked != -1 && !xg_bNumCroMode) {
+                // ハイライトかつ二重マスかつ非ナンクロ。
                 ::FillRect(hdc, &rc, hbrHighlightAndDblFrame);
             } else if (slot.count(XG_Pos(i, j)) > 0) {
                 // ハイライト。
                 ::FillRect(hdc, &rc, hbrHighlight);
             } else if (nMarked != -1 && !xg_bNumCroMode) {
-                // 二重マス。
+                // 二重マスかつ非ナンクロ。
                 ::FillRect(hdc, &rc, hbrMarked);
             } else {
                 // その他のマス。
