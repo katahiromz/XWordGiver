@@ -1014,68 +1014,68 @@ void __fastcall XgSetInputModeFromDict(HWND hwnd);
 // 文字の判定。
 
 // 半角大文字英字か？
-inline bool XgIsCharHankakuUpperW(WCHAR ch) noexcept
+constexpr inline bool XgIsCharHankakuUpperW(WCHAR ch) noexcept
 {
     return (L'A' <= ch && ch <= L'Z');
 }
 
 // 半角小文字英字か？
-inline bool XgIsCharHankakuLowerW(WCHAR ch) noexcept
+constexpr inline bool XgIsCharHankakuLowerW(WCHAR ch) noexcept
 {
     return (L'a' <= ch && ch <= L'z');
 }
 
 // 半角英字か？
-inline bool XgIsCharHankakuAlphaW(WCHAR ch) noexcept
+constexpr inline bool XgIsCharHankakuAlphaW(WCHAR ch) noexcept
 {
     return XgIsCharHankakuUpperW(ch) || XgIsCharHankakuLowerW(ch);
 }
 
 // 全角大文字英字か？
-inline bool XgIsCharZenkakuUpperW(WCHAR ch) noexcept
+constexpr inline bool XgIsCharZenkakuUpperW(WCHAR ch) noexcept
 {
     return (L'\xFF21' <= ch && ch <= L'\xFF3A');
 }
 
 // 全角小文字英字か？
-inline bool XgIsCharZenkakuLowerW(WCHAR ch) noexcept
+constexpr inline bool XgIsCharZenkakuLowerW(WCHAR ch) noexcept
 {
     return (L'\xFF41' <= ch && ch <= L'\xFF5A');
 }
 
 // 全角英字か？
-inline bool XgIsCharZenkakuAlphaW(WCHAR ch) noexcept
+constexpr inline bool XgIsCharZenkakuAlphaW(WCHAR ch) noexcept
 {
     return XgIsCharZenkakuUpperW(ch) || XgIsCharZenkakuLowerW(ch);
 }
 
 // ひらがなか？
-inline bool XgIsCharHiraganaW(WCHAR ch) noexcept
+constexpr inline bool XgIsCharHiraganaW(WCHAR ch) noexcept
 {
     return ((L'\x3041' <= ch && ch <= L'\x3093') || ch == L'\x30FC' || ch == L'\x3094');
 }
 
 // カタカナか？
-inline bool XgIsCharKatakanaW(WCHAR ch) noexcept
+constexpr inline bool XgIsCharKatakanaW(WCHAR ch) noexcept
 {
     return ((L'\x30A1' <= ch && ch <= L'\x30F3') || ch == L'\x30FC' || ch == L'\x30F4');
 }
 
 // かなか？
-inline bool XgIsCharKanaW(WCHAR ch) noexcept
+constexpr inline bool XgIsCharKanaW(WCHAR ch) noexcept
 {
     return XgIsCharHiraganaW(ch) || XgIsCharKatakanaW(ch);
 }
 
 // 漢字か？
-inline bool XgIsCharKanjiW(WCHAR ch) noexcept
+constexpr inline bool XgIsCharKanjiW(WCHAR ch) noexcept
 {
     return ((0x3400 <= ch && ch <= 0x9FFF) ||
             (0xF900 <= ch && ch <= 0xFAFF) || ch == L'\x3007');
 }
 
 // ハングルか？
-inline bool XgIsCharHangulW(WCHAR ch) noexcept
+constexpr inline bool XgIsCharHangulW(WCHAR ch) noexcept
 {
     return ((0x1100 <= ch && ch <= 0x11FF) ||
             (0xAC00 <= ch && ch <= 0xD7A3) ||
@@ -1083,24 +1083,24 @@ inline bool XgIsCharHangulW(WCHAR ch) noexcept
 }
 
 // キリル文字か？
-inline bool XgIsCharZenkakuCyrillicW(WCHAR ch) noexcept
+constexpr inline bool XgIsCharZenkakuCyrillicW(WCHAR ch) noexcept
 {
     return 0x0400 <= ch && ch <= 0x04FF;
 }
 
 // 全角数字か？
-inline bool XgIsCharZenkakuNumericW(WCHAR ch) noexcept
+constexpr inline bool XgIsCharZenkakuNumericW(WCHAR ch) noexcept
 {
     return 0xFF10 <= ch && ch <= 0xFF19;
 }
 // 半角数字か？
-inline bool XgIsCharHankakuNumericW(WCHAR ch) noexcept
+constexpr inline bool XgIsCharHankakuNumericW(WCHAR ch) noexcept
 {
     return L'0' <= ch && ch <= L'9';
 }
 
 // ギリシャ文字か？
-inline bool XgIsCharGreekW(WCHAR ch) noexcept
+constexpr inline bool XgIsCharGreekW(WCHAR ch) noexcept
 {
     return 0x0370 <= ch && ch <= 0x03FF;
 }
