@@ -43,6 +43,7 @@
 #include <cstdlib>      // for std::memcpy, std::memset
 #include <cassert>      // for assert
 #include <vector>       // for std::vector
+#include <array>        // for std::array
 #include <set>          // for std::set, std::multiset
 #include <map>          // for std::map
 
@@ -61,6 +62,12 @@
 #include <strsafe.h>    // for String... functions
 
 #include "resource.h"   // resource-related macros
+
+template<typename T, typename ...Args>
+constexpr std::array<T, sizeof...(Args)> make_array(Args&&... args)
+{
+    return std::array<T, sizeof...(Args)>{ static_cast<Args&&>(args)... };
+}
 
 ////////////////////////////////////////////////////////////////////////////
 
@@ -1296,8 +1303,14 @@ extern bool xg_bHintsAdded;
 extern bool xg_bSaveAsJsonFile;
 
 // 拗音変換用データ。
-extern const LPCWSTR xg_small[11];
-extern const LPCWSTR xg_large[11];
+inline static const auto xg_small = make_array<LPCWSTR>(
+    L"\x30A1", L"\x30A3", L"\x30A5", L"\x30A7", L"\x30A9", L"\x30C3",
+    L"\x30E3", L"\x30E5", L"\x30E7", L"\x30F5", L"\x30F6"
+);
+inline static const auto xg_large = make_array<LPCWSTR>(
+    L"\x30A2", L"\x30A4", L"\x30A6", L"\x30A8", L"\x30AA", L"\x30C4",
+    L"\x30E4", L"\x30E6", L"\x30E8", L"\x30AB", L"\x30B1"
+);
 
 // ビットマップのハンドル。
 extern HBITMAP xg_hbmImage;

@@ -4427,10 +4427,10 @@ void __fastcall XgUpdateStatusBar(HWND hwnd)
     GetClientRect(hwnd, &rc);
 
     // パーツのサイズを決定する。
-    INT anWidth[] = { rc.right - 200, rc.right - 100, rc.right };
+    auto anWidth = make_array<INT>(rc.right - 200, rc.right - 100, rc.right);
 
     // ステータスバーをパーツに分ける。
-    SendMessageW(xg_hStatusBar, SB_SETPARTS, 3, reinterpret_cast<LPARAM>(anWidth));
+    SendMessageW(xg_hStatusBar, SB_SETPARTS, 3, reinterpret_cast<LPARAM>(anWidth.data()));
 
     // 状態文字列を設定。
     std::wstring str;
@@ -6049,15 +6049,15 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT /*codeNo
         break;
     case ID_PANENEXT:   // 次のペーン。
         {
-            HWND ahwnd[] = {
+            auto ahwnd = make_array<HWND>(
                 xg_hMainWnd,
                 xg_hHintsWnd,
                 xg_cands_wnd,
                 xg_hwndInputPalette,
-                xg_hMarkingDlg,
-            };
+                xg_hMarkingDlg
+            );
 
-            size_t i = 0, k, m, count = _countof(ahwnd);
+            size_t i = 0, k, m, count = ahwnd.size();
             for (i = 0; i < count; ++i) {
                 if (ahwnd[i] == ::GetForegroundWindow()) {
                     for (k = 1; k < count; ++k) {
@@ -6074,15 +6074,15 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT /*codeNo
         break;
     case ID_PANEPREV:   // 前のペーン。
         {
-            HWND ahwnd[] = {
+            auto ahwnd = make_array<HWND>(
                 xg_hMarkingDlg,
                 xg_hwndInputPalette,
                 xg_cands_wnd,
                 xg_hHintsWnd,
-                xg_hMainWnd,
-            };
+                xg_hMainWnd
+            );
 
-            size_t i = 0, k, m, count = _countof(ahwnd);
+            size_t i = 0, k, m, count = ahwnd.size();
             for (i = 0; i < count; ++i) {
                 if (ahwnd[i] == ::GetForegroundWindow()) {
                     for (k = 1; k < count; ++k) {
@@ -7110,7 +7110,7 @@ bool __fastcall MainWnd_OnCreate(HWND hwnd, LPCREATESTRUCT /*lpCreateStruct*/)
     ::SendMessageW(xg_hToolBar, TB_SETBITMAPSIZE, 0, MAKELPARAM(32, 32));
     ::SendMessageW(xg_hToolBar, TB_SETIMAGELIST, 0, (LPARAM)xg_hImageList);
     ::SendMessageW(xg_hToolBar, TB_SETDISABLEDIMAGELIST, 0, (LPARAM)xg_hGrayedImageList);
-    ::SendMessageW(xg_hToolBar, TB_ADDBUTTONS, _countof(atbb), (LPARAM)atbb);
+    ::SendMessageW(xg_hToolBar, TB_ADDBUTTONS, std::size(atbb), (LPARAM)&atbb);
     ::SendMessageW(xg_hToolBar, WM_SIZE, 0, 0);
 
     if (xg_bShowToolBar)

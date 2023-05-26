@@ -69,18 +69,6 @@ volatile INT& xg_nCols = xg_xword.m_nCols;
 // タテとヨコのかぎ。
 std::vector<XG_PlaceInfo> xg_vTateInfo, xg_vYokoInfo;
 
-// 拗音変換用データ。
-const LPCWSTR xg_small[11] = 
-{
-    L"\x30A1", L"\x30A3", L"\x30A5", L"\x30A7", L"\x30A9", L"\x30C3",
-    L"\x30E3", L"\x30E5", L"\x30E7", L"\x30F5", L"\x30F6"
-};
-const LPCWSTR xg_large[11] = 
-{
-    L"\x30A2", L"\x30A4", L"\x30A6", L"\x30A8", L"\x30AA", L"\x30C4",
-    L"\x30E4", L"\x30E6", L"\x30E8", L"\x30AB", L"\x30B1",
-};
-
 // ビットマップのハンドル。
 HBITMAP     xg_hbmImage = nullptr;
 
@@ -5758,7 +5746,7 @@ bool __fastcall XgDoSaveCrpFile(LPCWSTR pszFile)
         if (xg_vMarks.size()) {
             for (size_t i = 0; i < xg_vMarks.size(); ++i) {
                 answer += xw->GetAt(xg_vMarks[i].m_i, xg_vMarks[i].m_j);
-                marks.at(xg_vMarks[i].m_i).at(xg_vMarks[i].m_j) = static_cast<int>(i) + 1;
+                marks[xg_vMarks[i].m_i][xg_vMarks[i].m_j] = static_cast<int>(i) + 1;
             }
         }
 
@@ -6078,7 +6066,7 @@ std::wstring XgNormalizeStringEx(const std::wstring& str, BOOL bUppercase, BOOL 
     for (auto ch : str) {
         WCHAR newch = 0;
         // 小さな字を大きな字にする。
-        for (size_t ich = 0; ich < _countof(xg_small); ++ich) {
+        for (size_t ich = 0; ich < std::size(xg_small); ++ich) {
             if (ch == xg_small[ich][0]) {
                 ch = xg_large[ich][0];
                 break;
@@ -7528,7 +7516,7 @@ std::wstring __fastcall XgNormalizeString(const std::wstring& text) {
     std::wstring ret(szText);
     for (auto& ch : ret) {
         // 小さな字を大きな字にする。
-        for (size_t i = 0; i < _countof(xg_small); i++) {
+        for (size_t i = 0; i < std::size(xg_small); i++) {
             if (ch == xg_small[i][0]) {
                 ch = xg_large[i][0];
                 break;

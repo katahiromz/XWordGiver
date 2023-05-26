@@ -713,7 +713,7 @@ void __fastcall XgOnChar(HWND hwnd, TCHAR ch, int cRepeat)
 katakana:;
             // カタカナ直接入力。
             // 小さな字を大きな字にする。
-            for (size_t i = 0; i < _countof(xg_small); i++) {
+            for (size_t i = 0; i < std::size(xg_small); i++) {
                 if (static_cast<WCHAR>(ch) == xg_small[i][0]) {
                     newch = xg_large[i][0];
                     break;
@@ -1051,7 +1051,7 @@ void __fastcall XgOnImeChar(HWND hwnd, WCHAR ch, LPARAM /*lKeyData*/)
 katakana:;
             // カタカナ入力。
             // 小さな字を大きな字にする。
-            for (size_t i = 0; i < _countof(xg_small); i++) {
+            for (size_t i = 0; i < std::size(xg_small); i++) {
                 if (ch == xg_small[i][0]) {
                     ch = xg_large[i][0];
                     break;

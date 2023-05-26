@@ -354,7 +354,7 @@ void __fastcall XgOpenLicense(HWND hwnd)
 bool __fastcall XgCanWriteFile(const WCHAR *pszFile)
 {
     // 書き込みをすべきでない特殊フォルダのID。
-    static const int s_anFolders[] = {
+    static const auto s_anFolders = make_array<INT>(
         CSIDL_PROGRAM_FILES,
         CSIDL_PROGRAM_FILES_COMMON,
         CSIDL_PROGRAM_FILES_COMMONX86,
@@ -362,16 +362,15 @@ bool __fastcall XgCanWriteFile(const WCHAR *pszFile)
         CSIDL_SYSTEM,
         CSIDL_SYSTEMX86,
         CSIDL_WINDOWS
-    };
+    );
 
     // 与えられたパスファイル名。
     std::wstring str(pszFile);
 
-    for (size_t i = 0; i < _countof(s_anFolders); ++i) {
+    for (auto folder : s_anFolders) {
         // 特殊フォルダの位置の取得。
         LPITEMIDLIST pidl = nullptr;
-        if (SUCCEEDED(::SHGetSpecialFolderLocation(
-            xg_hMainWnd, s_anFolders[i], &pidl)))
+        if (SUCCEEDED(::SHGetSpecialFolderLocation(xg_hMainWnd, folder, &pidl)))
         {
             // 特殊フォルダのパスを得る。
             WCHAR szPath[MAX_PATH];

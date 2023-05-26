@@ -5,7 +5,7 @@
 class XG_ColorBox : public XG_Window
 {
 public:
-    inline static COLORREF s_rgbColorTable[] = {
+    inline static auto s_rgbColorTable = make_array<COLORREF>(
         RGB(0, 0, 0),
         RGB(0x33, 0x33, 0x33),
         RGB(0x66, 0x66, 0x66),
@@ -21,8 +21,8 @@ public:
         RGB(0xCC, 0xCC, 0xCC),
         RGB(0, 0, 0xCC),
         RGB(0, 0xCC, 0),
-        RGB(0xCC, 0, 0),
-    };
+        RGB(0xCC, 0, 0)
+    );
 
     COLORREF m_rgbColor = RGB(255, 255, 255);
 
@@ -45,7 +45,7 @@ public:
     {
         CHOOSECOLORW cc = { sizeof(cc), GetParent(m_hWnd) };
         cc.rgbResult = GetColor();
-        cc.lpCustColors = s_rgbColorTable;
+        cc.lpCustColors = s_rgbColorTable.data();
         cc.Flags = CC_FULLOPEN | CC_RGBINIT;
         if (::ChooseColorW(&cc))
         {
