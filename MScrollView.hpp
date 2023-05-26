@@ -46,15 +46,15 @@ public:
     void ShowScrollBars(BOOL fHScroll, BOOL fVScroll) noexcept;
 
     // add/set control info
-    void AddCtrlInfo(HWND hwndCtrl) noexcept;
-    void AddCtrlInfo(HWND hwndCtrl, const MRect& rcCtrl) noexcept;
-    void AddCtrlInfo(HWND hwndCtrl, const MPoint& ptCtrl, const MSize& sizCtrl) noexcept;
+    void AddCtrlInfo(HWND hwndCtrl);
+    void AddCtrlInfo(HWND hwndCtrl, const MRect& rcCtrl);
+    void AddCtrlInfo(HWND hwndCtrl, const MPoint& ptCtrl, const MSize& sizCtrl);
     void SetCtrlInfo(HWND hwndCtrl, const MRect& rcCtrl) noexcept;
     void SetCtrlInfo(HWND hwndCtrl, const MPoint& ptCtrl, const MSize& sizCtrl) noexcept;
     void RemoveCtrlInfo(HWND hwndCtrl) noexcept;
-    void AddCtrlInfo(UINT idCtrl) noexcept;
-    void AddCtrlInfo(UINT idCtrl, const MRect& rcCtrl) noexcept;
-    void AddCtrlInfo(UINT idCtrl, const MPoint& ptCtrl, const MSize& sizCtrl) noexcept;
+    void AddCtrlInfo(UINT idCtrl);
+    void AddCtrlInfo(UINT idCtrl, const MRect& rcCtrl);
+    void AddCtrlInfo(UINT idCtrl, const MPoint& ptCtrl, const MSize& sizCtrl);
     void SetCtrlInfo(UINT idCtrl, const MRect& rcCtrl) noexcept;
     void SetCtrlInfo(UINT idCtrl, const MPoint& ptCtrl, const MSize& sizCtrl) noexcept;
     void RemoveCtrlInfo(UINT idCtrl) noexcept;
@@ -83,8 +83,8 @@ public:
     void Scroll(INT bar, INT nSB_, INT pos) noexcept;
     INT GetNextPos(INT bar, INT nSB_, INT pos) const noexcept;
 
-          MScrollCtrlInfo& operator[](size_t index) noexcept;
-    const MScrollCtrlInfo& operator[](size_t index) const noexcept;
+          MScrollCtrlInfo& operator[](size_t index);
+    const MScrollCtrlInfo& operator[](size_t index) const;
 
 protected:
     HWND        m_hwndParent;

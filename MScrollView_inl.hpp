@@ -75,14 +75,14 @@ void MScrollView::ShowScrollBars(BOOL fHScroll, BOOL fVScroll) noexcept
     ::ShowScrollBar(m_hwndParent, SB_VERT, fVScroll);
 }
 
-MZC_INLINE void MScrollView::AddCtrlInfo(HWND hwndCtrl) noexcept
+MZC_INLINE void MScrollView::AddCtrlInfo(HWND hwndCtrl)
 {
     assert(::IsWindow(hwndCtrl));
     assert(HasChildStyle(hwndCtrl));
     m_vecInfo.emplace_back(hwndCtrl);
 }
 
-MZC_INLINE void MScrollView::AddCtrlInfo(HWND hwndCtrl, const MRect& rcCtrl) noexcept
+MZC_INLINE void MScrollView::AddCtrlInfo(HWND hwndCtrl, const MRect& rcCtrl)
 {
     assert(::IsWindow(hwndCtrl));
     assert(HasChildStyle(hwndCtrl));
@@ -92,7 +92,7 @@ MZC_INLINE void MScrollView::AddCtrlInfo(HWND hwndCtrl, const MRect& rcCtrl) noe
 }
 
 MZC_INLINE void MScrollView::AddCtrlInfo(
-    HWND hwndCtrl, const MPoint& ptCtrl, const MSize& sizCtrl) noexcept
+    HWND hwndCtrl, const MPoint& ptCtrl, const MSize& sizCtrl)
 {
     assert(::IsWindow(hwndCtrl));
     assert(HasChildStyle(hwndCtrl));
@@ -136,18 +136,18 @@ MZC_INLINE void MScrollView::UpdateAll() noexcept
     UpdateCtrlsPos();
 }
 
-MZC_INLINE void MScrollView::AddCtrlInfo(UINT idCtrl) noexcept
+MZC_INLINE void MScrollView::AddCtrlInfo(UINT idCtrl)
 {
     AddCtrlInfo(::GetDlgItem(m_hwndParent, idCtrl));
 }
 
-MZC_INLINE void MScrollView::AddCtrlInfo(UINT idCtrl, const MRect& rcCtrl) noexcept
+MZC_INLINE void MScrollView::AddCtrlInfo(UINT idCtrl, const MRect& rcCtrl)
 {
     AddCtrlInfo(::GetDlgItem(m_hwndParent, idCtrl), rcCtrl);
 }
 
 MZC_INLINE void MScrollView::AddCtrlInfo(
-    UINT idCtrl, const MPoint& ptCtrl, const MSize& sizCtrl) noexcept
+    UINT idCtrl, const MPoint& ptCtrl, const MSize& sizCtrl)
 {
     AddCtrlInfo(::GetDlgItem(m_hwndParent, idCtrl), ptCtrl, sizCtrl);
 }
@@ -168,16 +168,16 @@ MZC_INLINE void MScrollView::RemoveCtrlInfo(UINT idCtrl) noexcept
     RemoveCtrlInfo(::GetDlgItem(m_hwndParent, idCtrl));
 }
 
-MZC_INLINE MScrollCtrlInfo& MScrollView::operator[](size_t index) noexcept
+MZC_INLINE MScrollCtrlInfo& MScrollView::operator[](size_t index)
 {
     assert(index < size());
-    return m_vecInfo[index];
+    return m_vecInfo.at(index);
 }
 
-MZC_INLINE const MScrollCtrlInfo& MScrollView::operator[](size_t index) const noexcept
+MZC_INLINE const MScrollCtrlInfo& MScrollView::operator[](size_t index) const
 {
     assert(index < size());
-    return m_vecInfo[index];
+    return m_vecInfo.at(index);
 }
 
 ////////////////////////////////////////////////////////////////////////////

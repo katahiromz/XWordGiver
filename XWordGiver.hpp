@@ -439,9 +439,9 @@ public:
     void __fastcall SetAt(const XG_Pos& pos, WCHAR ch) noexcept {
         return SetAt(pos.m_i, pos.m_j, ch);
     }
-    void __fastcall SetAt2(int i, int j, int nRows, int nCols, WCHAR ch) noexcept {
+    void __fastcall SetAt2(int i, int j, int nRows, int nCols, WCHAR ch) {
         UNREFERENCED_PARAMETER(nRows);
-        m_vCells[i * nCols + j] = ch;
+        m_vCells.at(i * nCols + j) = ch;
     }
     // 空ではないマスの個数を返す。
     WCHAR& __fastcall Count() noexcept;
@@ -533,17 +533,27 @@ public:
     }
     XG_BoardEx(const XG_Board& src) noexcept : XG_Board(src) {
     }
-    XG_BoardEx(const XG_BoardEx& src) noexcept : XG_Board(src) {
+    explicit XG_BoardEx(const XG_BoardEx& src) noexcept : XG_Board(src) {
         m_nRows = src.m_nRows;
         m_nCols = src.m_nCols;
     }
 
-    XG_BoardEx& operator=(const XG_Board& src) noexcept {
+    XG_BoardEx& operator=(const XG_Board& src) {
         m_vCells = src.m_vCells;
         return *this;
     }
-    XG_BoardEx& operator=(const XG_BoardEx& src) noexcept {
+    XG_BoardEx& operator=(const XG_BoardEx& src) {
         m_vCells = src.m_vCells;
+        m_nRows = src.m_nRows;
+        m_nCols = src.m_nCols;
+        return *this;
+    }
+    XG_BoardEx& operator=(XG_Board&& src) noexcept {
+        m_vCells = std::move(src.m_vCells);
+        return *this;
+    }
+    XG_BoardEx& operator=(XG_BoardEx&& src) noexcept {
+        m_vCells = std::move(src.m_vCells);
         m_nRows = src.m_nRows;
         m_nCols = src.m_nCols;
         return *this;
@@ -614,11 +624,7 @@ inline bool operator!=(const XG_Board& xw1, const XG_Board& xw2) noexcept {
 // クロスワードの描画サイズを計算する。
 inline void __fastcall XgGetXWordExtent(LPSIZE psiz) noexcept
 {
-    INT nCellSize;
-    if (xg_nForDisplay > 0)
-        nCellSize = xg_nCellSize * xg_nZoomRate / 100;
-    else
-        nCellSize = xg_nCellSize;
+    INT nCellSize = (xg_nForDisplay > 0) ? (xg_nCellSize * xg_nZoomRate / 100) : xg_nCellSize;
     psiz->cx = static_cast<int>(xg_nMargin * 2 + xg_nCols * nCellSize);
     psiz->cy = static_cast<int>(xg_nMargin * 2 + xg_nRows * nCellSize);
 }
@@ -626,11 +632,7 @@ inline void __fastcall XgGetXWordExtent(LPSIZE psiz) noexcept
 // クロスワードの描画サイズを計算する。
 inline void __fastcall XgGetMarkWordExtent(int count, LPSIZE psiz) noexcept
 {
-    INT nCellSize;
-    if (xg_nForDisplay > 0)
-        nCellSize = xg_nCellSize * xg_nZoomRate / 100;
-    else
-        nCellSize = xg_nCellSize;
+    INT nCellSize = (xg_nForDisplay > 0) ? (xg_nCellSize * xg_nZoomRate / 100) : xg_nCellSize;
     psiz->cx = static_cast<int>(xg_nNarrowMargin * 2 + count * nCellSize);
     psiz->cy = static_cast<int>(xg_nNarrowMargin * 2 + 1 * nCellSize);
 }
@@ -1382,7 +1384,7 @@ void __fastcall XgSaveAnsAsImage(HWND hwnd);
 template <bool t_alternative>
 bool __fastcall XgGetCandidatesAddBlack(
     std::vector<std::wstring>& cands, const std::wstring& pattern, int& nSkip,
-    bool left_black_check, bool right_black_check) noexcept;
+    bool left_black_check, bool right_black_check);
 
 // マルチスレッド用の関数。
 unsigned __stdcall XgGenerateBlacks(void *param) noexcept;

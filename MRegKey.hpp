@@ -38,7 +38,7 @@ class MRegKey
 public:
     MRegKey() noexcept;
     MRegKey(HKEY hKey) noexcept;
-    MRegKey(MRegKey& key) noexcept;
+    explicit MRegKey(MRegKey& key) noexcept;
     MRegKey(HKEY hBaseKey, LPCTSTR pszSubKey, BOOL bCreate = FALSE) noexcept;
     virtual ~MRegKey() noexcept;
 
@@ -427,8 +427,7 @@ inline LONG MRegKey::RegCloseKey() noexcept
 {
     if (Handle())
     {
-        LONG result = ::RegCloseKey(Detach());
-        return result;
+        return ::RegCloseKey(Detach());
     }
     return ERROR_INVALID_HANDLE;
 }
@@ -448,14 +447,14 @@ inline LONG MRegKey::QueryBinary(
 {
     #ifndef NDEBUG
         DWORD dwType;
-        LONG result = RegQueryValueEx(pszValueName, nullptr, &dwType,
-                                      nullptr, nullptr);
+        const LONG result = RegQueryValueEx(pszValueName, nullptr, &dwType,
+                                            nullptr, nullptr);
         if (result == ERROR_SUCCESS)
             assert(dwType == REG_BINARY);
     #endif
     DWORD cbData = cb;
     return RegQueryValueEx(pszValueName, nullptr, nullptr,
-                           reinterpret_cast<LPBYTE>(pvValue),
+                           static_cast<LPBYTE>(pvValue),
                            &cbData);
 }
 
@@ -463,8 +462,8 @@ inline LONG MRegKey::QueryDword(LPCTSTR pszValueName, DWORD& dw) noexcept
 {
     #ifndef NDEBUG
         DWORD dwType;
-        LONG result = RegQueryValueEx(pszValueName, nullptr, &dwType,
-                                      nullptr, nullptr);
+        const LONG result = RegQueryValueEx(pszValueName, nullptr, &dwType,
+                                            nullptr, nullptr);
         if (result == ERROR_SUCCESS)
             assert(dwType == REG_DWORD);
     #endif
@@ -477,8 +476,8 @@ inline LONG MRegKey::QueryDwordLE(LPCTSTR pszValueName, DWORD& dw) noexcept
 {
     #ifndef NDEBUG
         DWORD dwType;
-        LONG result = RegQueryValueEx(pszValueName, nullptr, &dwType,
-                                      nullptr, nullptr);
+        const LONG result = RegQueryValueEx(pszValueName, nullptr, &dwType,
+                                            nullptr, nullptr);
         if (result == ERROR_SUCCESS)
             assert(dwType == REG_DWORD_LITTLE_ENDIAN);
     #endif
@@ -491,8 +490,8 @@ inline LONG MRegKey::QueryDwordBE(LPCTSTR pszValueName, DWORD& dw) noexcept
 {
     #ifndef NDEBUG
         DWORD dwType;
-        LONG result = RegQueryValueEx(pszValueName, nullptr, &dwType,
-                                      nullptr, nullptr);
+        const LONG result = RegQueryValueEx(pszValueName, nullptr, &dwType,
+                                            nullptr, nullptr);
         if (result == ERROR_SUCCESS)
             assert(dwType == REG_DWORD_BIG_ENDIAN);
     #endif
@@ -506,8 +505,8 @@ MRegKey::QuerySz(LPCTSTR pszValueName, LPTSTR pszValue, DWORD cchValue) noexcept
 {
     #ifndef NDEBUG
         DWORD dwType;
-        LONG result = RegQueryValueEx(pszValueName, nullptr, &dwType,
-                                      nullptr, nullptr);
+        const LONG result = RegQueryValueEx(pszValueName, nullptr, &dwType,
+                                            nullptr, nullptr);
         if (result == ERROR_SUCCESS)
             assert(dwType == REG_SZ);
     #endif
@@ -521,7 +520,7 @@ inline LONG MRegKey::QueryExpandSz(
 {
 #ifndef NDEBUG
     DWORD dwType;
-    LONG result = RegQueryValueEx(pszValueName, nullptr, &dwType, nullptr, nullptr);
+    const LONG result = RegQueryValueEx(pszValueName, nullptr, &dwType, nullptr, nullptr);
     if (result == ERROR_SUCCESS)
         assert(dwType == REG_EXPAND_SZ);
 #endif
@@ -535,7 +534,7 @@ inline LONG MRegKey::QueryMultiSz(
 {
 #ifndef NDEBUG
     DWORD dwType;
-    LONG result = RegQueryValueEx(pszValueName, nullptr, &dwType, nullptr, nullptr);
+    const LONG result = RegQueryValueEx(pszValueName, nullptr, &dwType, nullptr, nullptr);
     if (result == ERROR_SUCCESS)
         assert(dwType == REG_MULTI_SZ);
 #endif
@@ -561,21 +560,21 @@ inline LONG MRegKey::SetBinary(LPCTSTR pszValueName, LPCVOID pvValue, DWORD cb) 
 
 inline LONG MRegKey::SetDword(LPCTSTR pszValueName, DWORD dw) noexcept
 {
-    DWORD dwValue = dw;
+    const DWORD dwValue = dw;
     return RegSetValueEx(pszValueName, 0, REG_DWORD,
         reinterpret_cast<const BYTE *>(&dwValue), sizeof(DWORD));
 }
 
 inline LONG MRegKey::SetDwordLE(LPCTSTR pszValueName, DWORD dw) noexcept
 {
-    DWORD dwValue = dw;
+    const DWORD dwValue = dw;
     return RegSetValueEx(pszValueName, 0, REG_DWORD_LITTLE_ENDIAN,
         reinterpret_cast<const BYTE *>(&dwValue), sizeof(DWORD));
 }
 
 inline LONG MRegKey::SetDwordBE(LPCTSTR pszValueName, DWORD dw) noexcept
 {
-    DWORD dwValue = dw;
+    const DWORD dwValue = dw;
     return RegSetValueEx(pszValueName, 0, REG_DWORD_BIG_ENDIAN,
         reinterpret_cast<const BYTE *>(&dwValue), sizeof(DWORD));
 }
@@ -599,15 +598,15 @@ MRegKey::SetMultiSz(LPCTSTR pszValueName, LPCTSTR pszzValues) noexcept
 {
     return RegSetValueEx(pszValueName, 0, REG_MULTI_SZ,
         reinterpret_cast<const BYTE *>(pszzValues),
-        DWORD(MRegKey::MultiSzSizeDx(pszzValues)));
+        static_cast<DWORD>(MRegKey::MultiSzSizeDx(pszzValues)));
 }
 
 inline LONG
 MRegKey::SetMultiSz(LPCTSTR pszValueName, LPCTSTR pszzValues, DWORD cchValues) noexcept
 {
-    DWORD cb = static_cast<DWORD>(sizeof(TCHAR) * cchValues);
     return RegSetValueEx(pszValueName, 0, REG_MULTI_SZ,
-        reinterpret_cast<const BYTE *>(pszzValues), cb);
+        reinterpret_cast<const BYTE *>(pszzValues),
+        static_cast<DWORD>(sizeof(TCHAR) * cchValues));
 }
 
 inline LONG MRegKey::RegDeleteValue(LPCTSTR pszValueName) noexcept
@@ -751,7 +750,6 @@ inline LONG MRegKey::RegDeleteTreeDx(LPCTSTR pszSubKey) noexcept
 
 inline LONG RegDeleteTreeDx(HKEY hKey, LPCTSTR pszSubKey/* = nullptr*/) noexcept
 {
-    LONG ret;
     DWORD cchSubKeyMax, cchValueMax;
     DWORD cchMax, cch;
     TCHAR szNameBuf[MAX_PATH], *pszName = szNameBuf;
@@ -759,12 +757,12 @@ inline LONG RegDeleteTreeDx(HKEY hKey, LPCTSTR pszSubKey/* = nullptr*/) noexcept
 
     if (pszSubKey != nullptr)
     {
-        ret = ::RegOpenKeyEx(hKey, pszSubKey, 0, KEY_READ, &hSubKey);
+        LONG ret = ::RegOpenKeyEx(hKey, pszSubKey, 0, KEY_READ, &hSubKey);
         if (ret)
             return ret;
     }
 
-    ret = ::RegQueryInfoKey(hSubKey, nullptr, nullptr, nullptr, nullptr,
+    LONG ret = ::RegQueryInfoKey(hSubKey, nullptr, nullptr, nullptr, nullptr,
         &cchSubKeyMax, nullptr, nullptr, &cchValueMax, nullptr, nullptr, nullptr);
     if (ret)
         goto cleanup;

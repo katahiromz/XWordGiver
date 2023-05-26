@@ -494,7 +494,7 @@ BOOL XgLoadPatterns(LPCWSTR pszFileName, patterns_t& patterns)
             patterns.push_back(pat);
             break;
         case 0x2503: // ┃
-            pat.num_columns = INT(line.size() - 2);
+            pat.num_columns = static_cast<int>(line.size() - 2);
             text += line;
             text += L"\r\n";
             pat.num_rows += 1;
@@ -644,7 +644,7 @@ template <bool t_alternative>
 bool __fastcall XgAnyCandidateAddBlack(const std::wstring& pattern) noexcept
 {
     // パターンの長さ。
-    const int patlen = INT(pattern.size());
+    const int patlen = static_cast<int>(pattern.size());
     assert(patlen >= 2);
 
 #ifndef NDEBUG
@@ -652,8 +652,8 @@ bool __fastcall XgAnyCandidateAddBlack(const std::wstring& pattern) noexcept
     // パターンに空白があることを仮定する。
     bool bSpaceFound = false;
     for (INT i = 0; i < patlen; i++) {
-        assert(pattern[i] != ZEN_BLACK);
-        if (pattern[i] != ZEN_SPACE)
+        assert(pattern.at(i) != ZEN_BLACK);
+        if (pattern.at(i) != ZEN_SPACE)
             bSpaceFound = true;
     }
     assert(bSpaceFound);
@@ -662,7 +662,7 @@ bool __fastcall XgAnyCandidateAddBlack(const std::wstring& pattern) noexcept
     // パターンが３字以上か？
     if (patlen > 2) {
         // 孤立した文字マスが左端か？
-        if (pattern[0] != ZEN_SPACE && pattern[1] == ZEN_SPACE) {
+        if (pattern.at(0) != ZEN_SPACE && pattern.at(1) == ZEN_SPACE) {
             return true;    // 孤立した文字マスがあった。
         } else {
             bool bCharNotFound = true;  // 文字マスがなかったか？
@@ -671,7 +671,7 @@ bool __fastcall XgAnyCandidateAddBlack(const std::wstring& pattern) noexcept
             // ついでに文字マスが途中にあるか調べる。
             for (INT j = 1; j < patlen - 1; j++) {
                 if (pattern[j] != ZEN_SPACE) {
-                    if (pattern[j - 1] == ZEN_SPACE && pattern[j + 1] == ZEN_SPACE) {
+                    if (pattern.at(j - 1) == ZEN_SPACE && pattern.at(j + 1) == ZEN_SPACE) {
                         return true;    // 孤立した文字マスがあった。
                     }
                     bCharNotFound = false;
@@ -681,7 +681,7 @@ bool __fastcall XgAnyCandidateAddBlack(const std::wstring& pattern) noexcept
 
             if (bCharNotFound) {
                 // 孤立した文字マスが右端か？
-                if (pattern[patlen - 1] != ZEN_SPACE && pattern[patlen - 2] == ZEN_SPACE) {
+                if (pattern.at(patlen - 1) != ZEN_SPACE && pattern.at(patlen - 2) == ZEN_SPACE) {
                     return true;    // 孤立した文字マスがあった。
                 }
             }
@@ -691,7 +691,7 @@ bool __fastcall XgAnyCandidateAddBlack(const std::wstring& pattern) noexcept
     // すべての単語について調べる。
     for (const auto& data : (t_alternative ? xg_dict_2 : xg_dict_1)) {
         const std::wstring& word = data.m_word;
-        const int wordlen = INT(word.size());
+        const int wordlen = static_cast<int>(word.size());
 
         // パターンより単語の方が長い場合、スキップする。
         if (wordlen > patlen)
@@ -701,9 +701,9 @@ bool __fastcall XgAnyCandidateAddBlack(const std::wstring& pattern) noexcept
         const int patlen_minus_wordlen = patlen - wordlen;
         for (INT j = 0; j <= patlen_minus_wordlen; j++) {
             // もし単語の位置の前後に文字があったらスキップする。
-            if (j > 0 && pattern[j - 1] != ZEN_SPACE)
+            if (j > 0 && pattern.at(j - 1) != ZEN_SPACE)
                 continue;
-            if (j < patlen_minus_wordlen && pattern[j + wordlen] != ZEN_SPACE)
+            if (j < patlen_minus_wordlen && pattern.at(j + wordlen) != ZEN_SPACE)
                 continue;
 
             // 区間[j, j + wordlen - 1]に文字マスがあるか？
@@ -712,7 +712,7 @@ bool __fastcall XgAnyCandidateAddBlack(const std::wstring& pattern) noexcept
             for (INT k = 0; k < wordlen; k++) {
                 if (pattern[j + k] != ZEN_SPACE) {
                     bCharFound = true;
-                    if (pattern[j + k] != word[k]) {
+                    if (pattern[j + k] != word.at(k)) {
                         // マッチしなかった。
                         goto break_continue;
                     }
@@ -733,7 +733,7 @@ template <bool t_alternative>
 bool __fastcall XgAnyCandidateNoAddBlack(const std::wstring& pattern)
 {
     // パターンの長さ。
-    const int patlen = INT(pattern.size());
+    const int patlen = static_cast<int>(pattern.size());
     assert(patlen >= 2);
 
 #ifndef NDEBUG
@@ -741,8 +741,8 @@ bool __fastcall XgAnyCandidateNoAddBlack(const std::wstring& pattern)
     // パターンに空白があることを仮定する。
     bool bSpaceFound = false;
     for (INT i = 0; i < patlen; i++) {
-        assert(pattern[i] != ZEN_BLACK);
-        if (pattern[i] != ZEN_SPACE)
+        assert(pattern.at(i) != ZEN_BLACK);
+        if (pattern.at(i) != ZEN_SPACE)
             bSpaceFound = true;
     }
     assert(bSpaceFound);
@@ -752,7 +752,7 @@ bool __fastcall XgAnyCandidateNoAddBlack(const std::wstring& pattern)
     for (const auto& data : (t_alternative ? xg_dict_2 : xg_dict_1)) {
         // 単語の長さ。
         const std::wstring& word = data.m_word;
-        const int wordlen = INT(word.size());
+        const int wordlen = static_cast<int>(word.size());
 
         // パターンと単語の長さが異なるとき、スキップする。
         if (wordlen != patlen)
@@ -762,9 +762,9 @@ bool __fastcall XgAnyCandidateNoAddBlack(const std::wstring& pattern)
         // 区間[0, wordlen - 1]に文字マスがあるか？
         bool bCharFound = false;
         for (INT k = 0; k < wordlen; k++) {
-            if (pattern[k] != ZEN_SPACE) {
+            if (pattern.at(k) != ZEN_SPACE) {
                 bCharFound = true;
-                if (pattern[k] != word[k]) {
+                if (pattern.at(k) != word.at(k)) {
                     // マッチしなかった。
                     goto break_continue;
                 }
@@ -864,13 +864,13 @@ bool __fastcall XgAnyCandidateWholeSpace(int patlen) noexcept
     // すべての単語について調べる。
     for (const auto& data : xg_dict_1) {
         const std::wstring& word = data.m_word;
-        const int wordlen = INT(word.size());
+        const int wordlen = static_cast<int>(word.size());
         if (wordlen == patlen)
             return true;    // あった。
     }
     for (const auto& data : xg_dict_2) {
         const std::wstring& word = data.m_word;
-        const int wordlen = INT(word.size());
+        const int wordlen = static_cast<int>(word.size());
         if (wordlen == patlen)
             return true;    // あった。
     }
@@ -1694,8 +1694,8 @@ space_found_2:;
 
     // カギの格納情報に順序をつける。
     std::vector<XG_PlaceInfo *> data;
-    const int size1 = INT(xg_vTateInfo.size());
-    const int size2 = INT(xg_vYokoInfo.size());
+    const int size1 = static_cast<int>(xg_vTateInfo.size());
+    const int size2 = static_cast<int>(xg_vYokoInfo.size());
     data.reserve(size1 + size2);
     for (INT k = 0; k < size1; k++) {
         data.emplace_back(&xg_vTateInfo[k]);
@@ -1708,7 +1708,7 @@ space_found_2:;
     // 順序付けられたカギの格納情報に番号を設定する。
     int number = 1;
     {
-        const INT size = INT(data.size());
+        const INT size = static_cast<int>(data.size());
         for (INT k = 0; k < size; k++) {
             // 番号を設定する。
             data[k]->m_number = number;
@@ -1835,13 +1835,13 @@ void __fastcall XG_Board::DoNumberingNoCheck() noexcept
     // カギの格納情報に順序をつける。
     std::vector<XG_PlaceInfo *> data;
     {
-        const INT size = INT(xg_vTateInfo.size());
+        const INT size = static_cast<int>(xg_vTateInfo.size());
         for (INT k = 0; k < size; k++) {
             data.emplace_back(&xg_vTateInfo[k]);
         }
     }
     {
-        const INT size = INT(xg_vYokoInfo.size());
+        const INT size = static_cast<int>(xg_vYokoInfo.size());
         for (INT k = 0; k < size; k++) {
             data.emplace_back(&xg_vYokoInfo[k]);
         }
@@ -1851,7 +1851,7 @@ void __fastcall XG_Board::DoNumberingNoCheck() noexcept
     // 順序付けられたカギの格納情報に番号を設定する。
     int number = 1;
     {
-        const INT size = INT(data.size());
+        const INT size = static_cast<int>(data.size());
         for (INT k = 0; k < size; k++) {
             // 番号を設定する。
             data[k]->m_number = number;
@@ -1879,10 +1879,10 @@ void __fastcall XG_Board::DoNumberingNoCheck() noexcept
 template <bool t_alternative> bool __fastcall
 XgGetCandidatesAddBlack(
     std::vector<std::wstring>& cands, const std::wstring& pattern, int& nSkip,
-    bool left_black_check, bool right_black_check) noexcept
+    bool left_black_check, bool right_black_check)
 {
     // パターンの長さ。
-    const int patlen = INT(pattern.size());
+    const int patlen = static_cast<int>(pattern.size());
     assert(patlen >= 2);
 
 #ifndef NDEBUG
@@ -1890,8 +1890,8 @@ XgGetCandidatesAddBlack(
     // パターンに空白があることを仮定する。
     bool bSpaceFound = false;
     for (INT i = 0; i < patlen; i++) {
-        assert(pattern[i] != ZEN_BLACK);
-        if (pattern[i] == ZEN_SPACE)
+        assert(pattern.at(i) != ZEN_BLACK);
+        if (pattern.at(i) == ZEN_SPACE)
             bSpaceFound = true;
     }
     assert(bSpaceFound);
@@ -1912,9 +1912,9 @@ XgGetCandidatesAddBlack(
     // パターンが3字以上か？
     if (patlen > 2) {
         // 孤立した文字マスが左端か？
-        if (result[0] != ZEN_SPACE && result[1] == ZEN_SPACE) {
+        if (result.at(0) != ZEN_SPACE && result.at(1) == ZEN_SPACE) {
             // その右にブロックを置いたものを候補にする。
-            result[1] = ZEN_BLACK;
+            result.at(1) = ZEN_BLACK;
             cands.emplace_back(result);
             result = pattern;
             // これは先に処理されるべきなので、ランダム化から除外する。
@@ -1924,11 +1924,11 @@ XgGetCandidatesAddBlack(
 
             // 孤立した文字マスが中にあるか？
             for (INT j = 1; j < patlen - 1; j++) {
-                if (result[j] != ZEN_SPACE) {
-                    if (result[j - 1] == ZEN_SPACE && result[j + 1] == ZEN_SPACE) {
+                if (result.at(j) != ZEN_SPACE) {
+                    if (result.at(j - 1) == ZEN_SPACE && result.at(j + 1) == ZEN_SPACE) {
                         // 孤立した文字マスがあった。
                         // その両端にブロックを置く。
-                        result[j - 1] = result[j + 1] = ZEN_BLACK;
+                        result.at(j - 1) = result.at(j + 1) = ZEN_BLACK;
                         cands.emplace_back(result);
                         result = pattern;
                         // これは先に処理されるべきなので、ランダム化から除外する。
@@ -1941,9 +1941,9 @@ XgGetCandidatesAddBlack(
 
             if (bCharNotFound) {
                 // 孤立した文字マスが右端か？
-                if (result[patlen - 1] != ZEN_SPACE && result[patlen - 2] == ZEN_SPACE) {
+                if (result.at(patlen - 1) != ZEN_SPACE && result.at(patlen - 2) == ZEN_SPACE) {
                     // その左にブロックを置く。
-                    result[patlen - 2] = ZEN_BLACK;
+                    result.at(patlen - 2) = ZEN_BLACK;
                     cands.emplace_back(result);
                     result = pattern;
                     // これは先に処理されるべきなので、ランダム化から除外する。
@@ -1957,7 +1957,7 @@ XgGetCandidatesAddBlack(
     for (const auto& data : (t_alternative ? xg_dict_2 : xg_dict_1)) {
         // パターンより単語の方が長い場合、スキップする。
         const std::wstring& word = data.m_word;
-        const int wordlen = INT(word.size());
+        const int wordlen = static_cast<int>(word.size());
         if (wordlen > patlen)
             continue;
 
@@ -1965,17 +1965,17 @@ XgGetCandidatesAddBlack(
         const int patlen_minus_wordlen = patlen - wordlen;
         for (INT j = 0; j <= patlen_minus_wordlen; j++) {
             // 区間[j, j + wordlen - 1]の前後に文字があったらスキップする。
-            if (j > 0 && pattern[j - 1] != ZEN_SPACE)
+            if (j > 0 && pattern.at(j - 1) != ZEN_SPACE)
                 continue;
-            if (j < patlen_minus_wordlen && pattern[j + wordlen] != ZEN_SPACE)
+            if (j < patlen_minus_wordlen && pattern.at(j + wordlen) != ZEN_SPACE)
                 continue;
 
             // 区間[j, j + wordlen - 1]に文字マスがあるか？
             bool bCharFound = false;
             const int j_plus_wordlen = j + wordlen;
             for (int m = j; m < j_plus_wordlen; m++) {
-                assert(pattern[m] != ZEN_BLACK);
-                if (pattern[m] != ZEN_SPACE) {
+                assert(pattern.at(m) != ZEN_BLACK);
+                if (pattern.at(m) != ZEN_SPACE) {
                     bCharFound = true;
                     break;
                 }
@@ -1986,7 +1986,7 @@ XgGetCandidatesAddBlack(
             // パターンが単語にマッチするか？
             bool bMatched = true;
             for (int m = j, n = 0; n < wordlen; m++, n++) {
-                if (pattern[m] != ZEN_SPACE && pattern[m] != word[n]) {
+                if (pattern.at(m) != ZEN_SPACE && pattern.at(m) != word.at(n)) {
                     bMatched = false;
                     break;
                 }
@@ -1999,18 +1999,18 @@ XgGetCandidatesAddBlack(
 
             // 区間[j, j + wordlen - 1]の前後に■をおく。
             if (j > 0)
-                result[j - 1] = ZEN_BLACK;
+                result.at(j - 1) = ZEN_BLACK;
             if (j < patlen_minus_wordlen)
-                result[j + wordlen] = ZEN_BLACK;
+                result.at(j + wordlen) = ZEN_BLACK;
 
             // 区間[j, j + wordlen - 1]に単語を適用する。
             for (INT k = 0, m = j; k < wordlen; k++, m++)
-                result[m] = word[k];
+                result[m] = word.at(k);
 
             // 黒マスの連続を除外する。
-            if (left_black_check && result[0] == ZEN_BLACK)
+            if (left_black_check && result.at(0) == ZEN_BLACK)
                 continue;
-            if (right_black_check && result[patlen - 1] == ZEN_BLACK)
+            if (right_black_check && result.at(patlen - 1) == ZEN_BLACK)
                 continue;
 
             // 追加する。
@@ -2024,10 +2024,10 @@ XgGetCandidatesAddBlack(
 
 // 候補を取得する（黒マス追加なし）。
 template <bool t_alternative> bool __fastcall
-XgGetCandidatesNoAddBlack(std::vector<std::wstring>& cands, const std::wstring& pattern) noexcept
+XgGetCandidatesNoAddBlack(std::vector<std::wstring>& cands, const std::wstring& pattern)
 {
     // 単語の長さ。
-    const int patlen = INT(pattern.size());
+    const int patlen = static_cast<int>(pattern.size());
     assert(patlen >= 2);
 
     // 候補をクリアする。
@@ -2042,15 +2042,15 @@ XgGetCandidatesNoAddBlack(std::vector<std::wstring>& cands, const std::wstring& 
     for (const auto& data : (t_alternative ? xg_dict_2 : xg_dict_1)) {
         // パターンと単語の長さが等しくなければ、スキップする。
         const std::wstring& word = data.m_word;
-        const int wordlen = INT(word.size());
+        const int wordlen = static_cast<int>(word.size());
         if (wordlen != patlen)
             continue;
 
         // 区間[0, wordlen - 1]に文字マスがあるか？
         bool bCharFound = false;
         for (INT k = 0; k < wordlen; k++) {
-            assert(pattern[k] != ZEN_BLACK);
-            if (pattern[k] != ZEN_SPACE) {
+            assert(pattern.at(k) != ZEN_BLACK);
+            if (pattern.at(k) != ZEN_SPACE) {
                 bCharFound = true;
                 break;
             }
@@ -2061,7 +2061,7 @@ XgGetCandidatesNoAddBlack(std::vector<std::wstring>& cands, const std::wstring& 
         // パターンが単語にマッチするか？
         bool bMatched = true;
         for (INT k = 0; k < wordlen; k++) {
-            if (pattern[k] != ZEN_SPACE && pattern[k] != word[k]) {
+            if (pattern.at(k) != ZEN_SPACE && pattern.at(k) != word.at(k)) {
                 bMatched = false;
                 break;
             }
@@ -2100,7 +2100,7 @@ bool __fastcall XG_Board::IsSolution() const noexcept
 }
 
 // ヒント文字列を解析する。
-bool __fastcall XgParseHints(std::vector<XG_Hint>& hints, const std::wstring& str) noexcept
+bool __fastcall XgParseHints(std::vector<XG_Hint>& hints, const std::wstring& str)
 {
     // ヒントをクリアする。
     hints.clear();
@@ -2981,7 +2981,7 @@ bool __fastcall XgSetXDString(HWND hwnd, const std::wstring& str)
     std::vector<XG_Hint> tate, yoko;
     {
         std::wstring str0;
-        int i, nWidth = INT(rows[0].size());
+        int i, nWidth = static_cast<int>(rows[0].size());
 
         str0 += ZEN_ULEFT;
         for (i = 0; i < nWidth; ++i) {
@@ -3017,8 +3017,8 @@ bool __fastcall XgSetXDString(HWND hwnd, const std::wstring& str)
     xg_strHeader = header;
     xg_str_trim(notes);
     xg_strNotes = notes;
-    xg_nCols = INT(rows[0].size());
-    xg_nRows = INT(rows.size());
+    xg_nCols = static_cast<int>(rows[0].size());
+    xg_nRows = static_cast<int>(rows.size());
     xg_vecTateHints.clear();
     xg_vecYokoHints.clear();
     xg_bSolved = false;
@@ -3852,7 +3852,7 @@ void __fastcall XgSolveXWord_AddBlack(const XG_Board& xw) noexcept
 
                     // 単語の長さがパターンの長さ以下か？
                     const std::wstring& word = word_data.m_word;
-                    const int wordlen = INT(word.size());
+                    const int wordlen = static_cast<int>(word.size());
                     if (wordlen > patlen)
                         continue;
 
@@ -3863,7 +3863,7 @@ void __fastcall XgSolveXWord_AddBlack(const XG_Board& xw) noexcept
                         // 単語とその両端の外側の黒マスをセットして再帰する。
                         XG_Board copy(xw);
                         for (INT k = 0; k < wordlen; k++) {
-                            copy.SetAt(i, lo + k, word[k]);
+                            copy.SetAt(i, lo + k, word.at(k));
                         }
 
                         if (lo > 0 && copy.GetAt(i, lo - 1) != ZEN_BLACK) {
@@ -3928,7 +3928,7 @@ void __fastcall XgSolveXWord_AddBlack(const XG_Board& xw) noexcept
 
                     // 単語の長さがパターンの長さ以下か？
                     const std::wstring& word = word_data.m_word;
-                    const int wordlen = INT(word.size());
+                    const int wordlen = static_cast<int>(word.size());
                     if (wordlen > patlen)
                         continue;
 
@@ -3939,7 +3939,7 @@ void __fastcall XgSolveXWord_AddBlack(const XG_Board& xw) noexcept
                         // 単語とその両端の外側の黒マスをセットして再帰する。
                         XG_Board copy(xw);
                         for (INT k = 0; k < wordlen; k++) {
-                            copy.SetAt(lo + k, j, word[k]);
+                            copy.SetAt(lo + k, j, word.at(k));
                         }
 
                         if (lo > 0 && copy.GetAt(lo - 1, j) != ZEN_BLACK) {
@@ -4009,7 +4009,7 @@ retry_1:;
 
                     // 単語の長さがパターンの長さ以下か？
                     const std::wstring& word = word_data.m_word;
-                    const int wordlen = INT(word.size());
+                    const int wordlen = static_cast<int>(word.size());
                     if (wordlen > patlen)
                         continue;
 
@@ -4020,7 +4020,7 @@ retry_1:;
                         // 単語とその両端の外側の黒マスをセットして再帰する。
                         XG_Board copy(xw);
                         for (INT k = 0; k < wordlen; k++) {
-                            copy.SetAt(i, lo + k, word[k]);
+                            copy.SetAt(i, lo + k, word.at(k));
                         }
 
                         if (lo > 0 && copy.GetAt(i, lo - 1) != ZEN_BLACK) {
@@ -4085,7 +4085,7 @@ retry_1:;
 
                     // 単語の長さがパターンの長さ以下か？
                     const std::wstring& word = word_data.m_word;
-                    const int wordlen = INT(word.size());
+                    const int wordlen = static_cast<int>(word.size());
                     if (wordlen > patlen)
                         continue;
 
@@ -4096,7 +4096,7 @@ retry_1:;
                         // 単語とその両端の外側の黒マスをセットして再帰する。
                         XG_Board copy(xw);
                         for (INT k = 0; k < wordlen; k++) {
-                            copy.SetAt(lo + k, j, word[k]);
+                            copy.SetAt(lo + k, j, word.at(k));
                         }
 
                         if (lo > 0 && copy.GetAt(lo - 1, j) != ZEN_BLACK) {
@@ -4202,14 +4202,14 @@ void __fastcall XgSolveXWord_NoAddBlack(const XG_Board& xw) noexcept
 
         // 単語とパターンの長さが等しいか？
         const std::wstring& word = word_data.m_word;
-        const int wordlen = INT(word.size());
+        const int wordlen = static_cast<int>(word.size());
         if (wordlen != patlen)
             continue;
 
         // 単語をセットする。
         XG_Board copy(xw);
         for (INT k = 0; k < wordlen; k++) {
-            copy.SetAt(i, lo + k, word[k]);
+            copy.SetAt(i, lo + k, word.at(k));
         }
 
         // 再帰する。
@@ -4442,10 +4442,10 @@ void XgDrawCaret(HDC hdc, INT i, INT j, INT nCellSize, HPEN hCaretPen)
 {
     RECT rc;
     ::SetRect(&rc,
-              INT(xg_nMargin + j * nCellSize),
-              INT(xg_nMargin + i * nCellSize),
-              INT(xg_nMargin + (j + 1) * nCellSize),
-              INT(xg_nMargin + (i + 1) * nCellSize));
+              static_cast<int>(xg_nMargin + j * nCellSize),
+              static_cast<int>(xg_nMargin + i * nCellSize),
+              static_cast<int>(xg_nMargin + (j + 1) * nCellSize),
+              static_cast<int>(xg_nMargin + (i + 1) * nCellSize));
 
     // カギカッコみたいなもの、コーナーに四つ。
     auto cxyMargin = nCellSize / 10; // 余白。
@@ -4557,7 +4557,7 @@ HFONT XgCreateSmallFont(VOID)
 // 二重マス単語を描画する。
 void __fastcall XgDrawMarkWord(HDC hdc, LPSIZE psiz)
 {
-    int nCount = INT(xg_vMarks.size());
+    int nCount = static_cast<int>(xg_vMarks.size());
     if (nCount == 0) {
         ::MessageBeep(0xFFFFFFFF);
         return;
@@ -4569,8 +4569,8 @@ void __fastcall XgDrawMarkWord(HDC hdc, LPSIZE psiz)
     HBRUSH hbrMarked = ::CreateSolidBrush(xg_rgbMarkedCellColor);
 
     // 線の太さ。
-    INT c_nThin = INT(YPixelsFromPoints(hdc, xg_nLineWidthInPt));
-    INT c_nWide = INT(YPixelsFromPoints(hdc, xg_nOuterFrameInPt));
+    INT c_nThin = static_cast<int>(YPixelsFromPoints(hdc, xg_nLineWidthInPt));
+    INT c_nWide = static_cast<int>(YPixelsFromPoints(hdc, xg_nOuterFrameInPt));
     if (c_nThin < 2)
         c_nThin = 2;
     if (c_nWide < 2)
@@ -4617,10 +4617,10 @@ void __fastcall XgDrawMarkWord(HDC hdc, LPSIZE psiz)
     HGDIOBJ hFontOld = ::SelectObject(hdc, hFontSmall);
     for (INT i = 0; i < nCount; i++) {
         ::SetRect(&rc,
-            INT(xg_nNarrowMargin + i * xg_nCellSize), 
-            INT(xg_nNarrowMargin + 0 * xg_nCellSize),
-            INT(xg_nNarrowMargin + (i + 1) * xg_nCellSize - 1), 
-            INT(xg_nNarrowMargin + 1 * xg_nCellSize));
+            static_cast<int>(xg_nNarrowMargin + i * xg_nCellSize), 
+            static_cast<int>(xg_nNarrowMargin + 0 * xg_nCellSize),
+            static_cast<int>(xg_nNarrowMargin + (i + 1) * xg_nCellSize - 1), 
+            static_cast<int>(xg_nNarrowMargin + 1 * xg_nCellSize));
         ::FillRect(hdc, &rc, hbrMarked);
         ::InflateRect(&rc, -nCellSize / 9, -nCellSize / 9);
         if (!xg_bNumCroMode && xg_bDrawFrameForMarkedCell) {
@@ -4675,10 +4675,10 @@ void __fastcall XgDrawMarkWord(HDC hdc, LPSIZE psiz)
     // マスの文字を描画する。
     for (INT i = 0; i < nCount; i++) {
         ::SetRect(&rc,
-            INT(xg_nNarrowMargin + i * xg_nCellSize), 
-            INT(xg_nNarrowMargin + 0 * xg_nCellSize),
-            INT(xg_nNarrowMargin + (i + 1) * xg_nCellSize), 
-            INT(xg_nNarrowMargin + 1 * xg_nCellSize));
+            static_cast<int>(xg_nNarrowMargin + i * xg_nCellSize), 
+            static_cast<int>(xg_nNarrowMargin + 0 * xg_nCellSize),
+            static_cast<int>(xg_nNarrowMargin + (i + 1) * xg_nCellSize), 
+            static_cast<int>(xg_nNarrowMargin + 1 * xg_nCellSize));
 
         WCHAR ch;
         XG_Pos& pos = xg_vMarks[i];
@@ -4696,10 +4696,10 @@ void __fastcall XgDrawMarkWord(HDC hdc, LPSIZE psiz)
     HGDIOBJ hPenOld = ::SelectObject(hdc, hThinPen);
     for (INT i = 0; i < nCount; i++) {
         ::Rectangle(hdc,
-                INT(xg_nNarrowMargin + i * xg_nCellSize),
-                INT(xg_nNarrowMargin + 0 * xg_nCellSize),
-                INT(xg_nNarrowMargin + (i + 1) * xg_nCellSize + 1),
-                INT(xg_nNarrowMargin + 1 * xg_nCellSize) + 1);
+                static_cast<int>(xg_nNarrowMargin + i * xg_nCellSize),
+                static_cast<int>(xg_nNarrowMargin + 0 * xg_nCellSize),
+                static_cast<int>(xg_nNarrowMargin + (i + 1) * xg_nCellSize + 1),
+                static_cast<int>(xg_nNarrowMargin + 1 * xg_nCellSize) + 1);
     }
     ::SelectObject(hdc, hPenOld);
 
@@ -4896,14 +4896,14 @@ void __fastcall XgDrawXWord_NormalView(XG_Board& xw, HDC hdc, const SIZE *psiz, 
     {
     case DRAW_MODE_SCREEN:
     case DRAW_MODE_PRINT:
-        c_nThin = INT(YPixelsFromPoints(hdc, xg_nLineWidthInPt));
-        c_nWide = INT(YPixelsFromPoints(hdc, xg_nOuterFrameInPt));
+        c_nThin = static_cast<int>(YPixelsFromPoints(hdc, xg_nLineWidthInPt));
+        c_nWide = static_cast<int>(YPixelsFromPoints(hdc, xg_nOuterFrameInPt));
         break;
     case DRAW_MODE_EMF:
         // FIXME: "Microsoft Print to PDF" で印刷すると線の幅がおかしくなる。
         // よくわからないので、1pt == 1pxで近似する。
-        c_nThin = INT(xg_nLineWidthInPt);
-        c_nWide = INT(xg_nOuterFrameInPt);
+        c_nThin = static_cast<int>(xg_nLineWidthInPt);
+        c_nWide = static_cast<int>(xg_nOuterFrameInPt);
         break;
     }
     if (c_nThin < 2)
@@ -5015,7 +5015,7 @@ void __fastcall XgDrawXWord_NormalView(XG_Board& xw, HDC hdc, const SIZE *psiz, 
 
     // タテのカギの先頭マス。
     if (!xg_bNumCroMode) {
-        const INT size = INT(xg_vTateInfo.size());
+        const INT size = static_cast<int>(xg_vTateInfo.size());
         for (INT k = 0; k < size; k++) {
             auto i = xg_vTateInfo[k].m_iRow;
             auto j = xg_vTateInfo[k].m_jCol;
@@ -5033,7 +5033,7 @@ void __fastcall XgDrawXWord_NormalView(XG_Board& xw, HDC hdc, const SIZE *psiz, 
 
     // ヨコのカギの先頭マス。
     if (!xg_bNumCroMode) {
-        const INT size = INT(xg_vYokoInfo.size());
+        const INT size = static_cast<int>(xg_vYokoInfo.size());
         for (INT k = 0; k < size; k++) {
             auto i = xg_vYokoInfo[k].m_iRow;
             auto j = xg_vYokoInfo[k].m_jCol;
@@ -5100,12 +5100,12 @@ void __fastcall XgDrawXWord_NormalView(XG_Board& xw, HDC hdc, const SIZE *psiz, 
     // 線を引く。
     hPenOld = ::SelectObject(hdc, hThinPen);
     for (INT i = 0; i <= xg_nRows; i++) {
-        ::MoveToEx(hdc, xg_nMargin, INT(xg_nMargin + i * nCellSize), nullptr);
-        ::LineTo(hdc, psiz->cx - xg_nMargin, INT(xg_nMargin + i * nCellSize));
+        ::MoveToEx(hdc, xg_nMargin, static_cast<int>(xg_nMargin + i * nCellSize), nullptr);
+        ::LineTo(hdc, psiz->cx - xg_nMargin, static_cast<int>(xg_nMargin + i * nCellSize));
     }
     for (INT j = 0; j <= xg_nCols; j++) {
-        ::MoveToEx(hdc, INT(xg_nMargin + j * nCellSize), xg_nMargin, nullptr);
-        ::LineTo(hdc, INT(xg_nMargin + j * nCellSize), psiz->cy - xg_nMargin);
+        ::MoveToEx(hdc, static_cast<int>(xg_nMargin + j * nCellSize), xg_nMargin, nullptr);
+        ::LineTo(hdc, static_cast<int>(xg_nMargin + j * nCellSize), psiz->cy - xg_nMargin);
     }
     ::SelectObject(hdc, hPenOld);
 
@@ -5194,14 +5194,14 @@ void __fastcall XgDrawXWord_SkeletonView(XG_Board& xw, HDC hdc, const SIZE *psiz
     {
     case DRAW_MODE_SCREEN:
     case DRAW_MODE_PRINT:
-        c_nThin = INT(YPixelsFromPoints(hdc, xg_nLineWidthInPt));
-        c_nWide = INT(YPixelsFromPoints(hdc, xg_nOuterFrameInPt));
+        c_nThin = static_cast<int>(YPixelsFromPoints(hdc, xg_nLineWidthInPt));
+        c_nWide = static_cast<int>(YPixelsFromPoints(hdc, xg_nOuterFrameInPt));
         break;
     case DRAW_MODE_EMF:
         // FIXME: "Microsoft Print to PDF" で印刷すると線の幅がおかしくなる。
         // よくわからないので、1pt == 1pxで近似する。
-        c_nThin = INT(xg_nLineWidthInPt);
-        c_nWide = INT(xg_nOuterFrameInPt);
+        c_nThin = static_cast<int>(xg_nLineWidthInPt);
+        c_nWide = static_cast<int>(xg_nOuterFrameInPt);
         break;
     }
     if (c_nThin < 2)
@@ -5237,10 +5237,10 @@ void __fastcall XgDrawXWord_SkeletonView(XG_Board& xw, HDC hdc, const SIZE *psiz
                 if (ch != ZEN_BLACK) {
                     // セルの座標をセットする。
                     ::SetRect(&rc,
-                        INT(xg_nMargin + j * nCellSize), 
-                        INT(xg_nMargin + i * nCellSize),
-                        INT(xg_nMargin + (j + 1) * nCellSize), 
-                        INT(xg_nMargin + (i + 1) * nCellSize));
+                        static_cast<int>(xg_nMargin + j * nCellSize), 
+                        static_cast<int>(xg_nMargin + i * nCellSize),
+                        static_cast<int>(xg_nMargin + (j + 1) * nCellSize), 
+                        static_cast<int>(xg_nMargin + (i + 1) * nCellSize));
 
                     RECT rcExtended = rc;
                     ::InflateRect(&rcExtended, c_nWide, c_nWide);
@@ -5261,10 +5261,10 @@ void __fastcall XgDrawXWord_SkeletonView(XG_Board& xw, HDC hdc, const SIZE *psiz
 
             // セルの座標をセットする。
             ::SetRect(&rc,
-                INT(xg_nMargin + j * nCellSize), 
-                INT(xg_nMargin + i * nCellSize),
-                INT(xg_nMargin + (j + 1) * nCellSize), 
-                INT(xg_nMargin + (i + 1) * nCellSize));
+                static_cast<int>(xg_nMargin + j * nCellSize), 
+                static_cast<int>(xg_nMargin + i * nCellSize),
+                static_cast<int>(xg_nMargin + (j + 1) * nCellSize), 
+                static_cast<int>(xg_nMargin + (i + 1) * nCellSize));
 
             // 二重マスか？
             INT nMarked = XgGetMarked(i, j);
@@ -5300,10 +5300,10 @@ void __fastcall XgDrawXWord_SkeletonView(XG_Board& xw, HDC hdc, const SIZE *psiz
 
                 // セルの座標をセットする。
                 ::SetRect(&rc,
-                    INT(xg_nMargin + j * nCellSize),
-                    INT(xg_nMargin + i * nCellSize),
-                    INT(xg_nMargin + (j + 1) * nCellSize) - 1,
-                    INT(xg_nMargin + (i + 1) * nCellSize));
+                    static_cast<int>(xg_nMargin + j * nCellSize),
+                    static_cast<int>(xg_nMargin + i * nCellSize),
+                    static_cast<int>(xg_nMargin + (j + 1) * nCellSize) - 1,
+                    static_cast<int>(xg_nMargin + (i + 1) * nCellSize));
 
                 XgDrawDoubleFrameCell(hdc, nMarked, rc, nCellSize, hThinPen);
             }
@@ -5312,16 +5312,16 @@ void __fastcall XgDrawXWord_SkeletonView(XG_Board& xw, HDC hdc, const SIZE *psiz
 
     // タテのカギの先頭マス。
     if (!xg_bNumCroMode) {
-        const INT size = INT(xg_vTateInfo.size());
+        const INT size = static_cast<int>(xg_vTateInfo.size());
         for (INT k = 0; k < size; k++) {
             auto i = xg_vTateInfo[k].m_iRow;
             auto j = xg_vTateInfo[k].m_jCol;
 
             ::SetRect(&rc,
-                INT(xg_nMargin + j * nCellSize), 
-                INT(xg_nMargin + i * nCellSize),
-                INT(xg_nMargin + (j + 1) * nCellSize), 
-                INT(xg_nMargin + (i + 1) * nCellSize));
+                static_cast<int>(xg_nMargin + j * nCellSize), 
+                static_cast<int>(xg_nMargin + i * nCellSize),
+                static_cast<int>(xg_nMargin + (j + 1) * nCellSize), 
+                static_cast<int>(xg_nMargin + (i + 1) * nCellSize));
             ::OffsetRect(&rc, c_nThin, c_nThin * 2 / 3);
 
             XgDrawCellNumber(hdc, rc, i, j, xg_vTateInfo[k].m_number, slot);
@@ -5330,16 +5330,16 @@ void __fastcall XgDrawXWord_SkeletonView(XG_Board& xw, HDC hdc, const SIZE *psiz
 
     // ヨコのカギの先頭マス。
     if (!xg_bNumCroMode) {
-        const INT size = INT(xg_vYokoInfo.size());
+        const INT size = static_cast<int>(xg_vYokoInfo.size());
         for (INT k = 0; k < size; k++) {
             auto i = xg_vYokoInfo[k].m_iRow;
             auto j = xg_vYokoInfo[k].m_jCol;
 
             ::SetRect(&rc,
-                INT(xg_nMargin + j * nCellSize), 
-                INT(xg_nMargin + i * nCellSize),
-                INT(xg_nMargin + (j + 1) * nCellSize), 
-                INT(xg_nMargin + (i + 1) * nCellSize));
+                static_cast<int>(xg_nMargin + j * nCellSize), 
+                static_cast<int>(xg_nMargin + i * nCellSize),
+                static_cast<int>(xg_nMargin + (j + 1) * nCellSize), 
+                static_cast<int>(xg_nMargin + (i + 1) * nCellSize));
             ::OffsetRect(&rc, c_nThin, c_nThin * 2 / 3);
 
             XgDrawCellNumber(hdc, rc, i, j, xg_vYokoInfo[k].m_number, slot);
@@ -5355,10 +5355,10 @@ void __fastcall XgDrawXWord_SkeletonView(XG_Board& xw, HDC hdc, const SIZE *psiz
                     continue;
 
                 ::SetRect(&rc,
-                    INT(xg_nMargin + j * nCellSize), 
-                    INT(xg_nMargin + i * nCellSize),
-                    INT(xg_nMargin + (j + 1) * nCellSize), 
-                    INT(xg_nMargin + (i + 1) * nCellSize));
+                    static_cast<int>(xg_nMargin + j * nCellSize), 
+                    static_cast<int>(xg_nMargin + i * nCellSize),
+                    static_cast<int>(xg_nMargin + (j + 1) * nCellSize), 
+                    static_cast<int>(xg_nMargin + (i + 1) * nCellSize));
                 ::OffsetRect(&rc, c_nThin, c_nThin * 2 / 3);
 
                 XgDrawCellNumber(hdc, rc, i, j, xg_mapNumCro1[ch], slot);
@@ -5378,10 +5378,10 @@ void __fastcall XgDrawXWord_SkeletonView(XG_Board& xw, HDC hdc, const SIZE *psiz
 
             // セルの座標をセットする。
             ::SetRect(&rc,
-                INT(xg_nMargin + j * nCellSize), 
-                INT(xg_nMargin + i * nCellSize),
-                INT(xg_nMargin + (j + 1) * nCellSize), 
-                INT(xg_nMargin + (i + 1) * nCellSize));
+                static_cast<int>(xg_nMargin + j * nCellSize), 
+                static_cast<int>(xg_nMargin + i * nCellSize),
+                static_cast<int>(xg_nMargin + (j + 1) * nCellSize), 
+                static_cast<int>(xg_nMargin + (i + 1) * nCellSize));
 
             XgDrawLetterCell(hdc, ch, rc, hFont);
         }
@@ -5392,10 +5392,10 @@ void __fastcall XgDrawXWord_SkeletonView(XG_Board& xw, HDC hdc, const SIZE *psiz
         for (INT j = 0; j < xg_nCols; j++) {
             // セルの座標をセットする。
             ::SetRect(&rc,
-                INT(xg_nMargin + j * nCellSize), 
-                INT(xg_nMargin + i * nCellSize),
-                INT(xg_nMargin + (j + 1) * nCellSize), 
-                INT(xg_nMargin + (i + 1) * nCellSize));
+                static_cast<int>(xg_nMargin + j * nCellSize), 
+                static_cast<int>(xg_nMargin + i * nCellSize),
+                static_cast<int>(xg_nMargin + (j + 1) * nCellSize), 
+                static_cast<int>(xg_nMargin + (i + 1) * nCellSize));
             WCHAR ch = xw.GetAt(i, j);
             if (ch == ZEN_BLACK)
                 continue;
@@ -5758,7 +5758,7 @@ bool __fastcall XgDoSaveCrpFile(LPCWSTR pszFile)
         if (xg_vMarks.size()) {
             for (size_t i = 0; i < xg_vMarks.size(); ++i) {
                 answer += xw->GetAt(xg_vMarks[i].m_i, xg_vMarks[i].m_j);
-                marks[xg_vMarks[i].m_i][xg_vMarks[i].m_j] = INT(i) + 1;
+                marks[xg_vMarks[i].m_i][xg_vMarks[i].m_j] = static_cast<int>(i) + 1;
             }
         }
 
@@ -6513,7 +6513,7 @@ bool __fastcall XG_Board::SetString(const std::wstring& strToBeSet)
     xg_str_trim(xg_strHeader);
 
     // 初期化する。
-    const int size = INT(str.size());
+    const int size = static_cast<int>(str.size());
     nRows = nCols = 0;
 
     // 左上の角があるか？
@@ -6545,7 +6545,7 @@ bool __fastcall XG_Board::SetString(const std::wstring& strToBeSet)
 
             // 右の境界線が見つかった。列数が未格納なら、格納する。
             if (nCols == 0)
-                nCols = INT(v.size());
+                nCols = static_cast<int>(v.size());
 
             nRows++;    // 次の行へ。
             i1++;    // 次の文字へ。

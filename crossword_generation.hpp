@@ -212,7 +212,7 @@ struct board_data_t {
 
     // マス数。
     int size() const {
-        return int(m_data.size());
+        return static_cast<int>(m_data.size());
     }
 
     // マス数の増減。
@@ -952,11 +952,11 @@ skip:;
         int x = cand.m_x, y = cand.m_y;
         if (cand.m_vertical) {
             ensure(x, y - 1);
-            ensure(x, y + int(word.size()));
+            ensure(x, y + static_cast<int>(word.size()));
         }
         else {
             ensure(x - 1, y);
-            ensure(x + int(word.size()), y);
+            ensure(x + static_cast<int>(word.size()), y);
         }
     }
 
@@ -1305,18 +1305,18 @@ struct from_words_t {
         if (cand.m_vertical) { // 候補が縦方向か？
             // 盤面が固定サイズならサイズを確認する。固定サイズでなければ、サイズを拡張する。
             if (t_fixed) {
-                if (!m_board.ensure_y(y) || !m_board.ensure_y(y + int(word.size()) - 1))
+                if (!m_board.ensure_y(y) || !m_board.ensure_y(y + static_cast<int>(word.size()) - 1))
                     return false;
             } else {
                 m_board.ensure(x, y - 1);
-                m_board.ensure(x, y + int(word.size()));
+                m_board.ensure(x, y + static_cast<int>(word.size()));
             }
             // 単語の上下に可能ならば黒マスを配置。
             m_board.set_on(x, y - 1, '#');
-            m_board.set_on(x, y + int(word.size()), '#');
+            m_board.set_on(x, y + static_cast<int>(word.size()), '#');
             // 単語を適用しながら交差可能性を更新する。
             for (size_t ich = 0; ich < word.size(); ++ich) {
-                int y0 = y + int(ich);
+                int y0 = y + static_cast<int>(ich);
                 m_board.set_on(x, y0, word[ich]);
                 m_crossable_y.erase({x, y0});
                 if (m_board.is_crossable_x(x, y0))
@@ -1325,18 +1325,18 @@ struct from_words_t {
         } else { // 候補がヨコ方向か？
             // 盤面が固定サイズならサイズを確認する。固定サイズでなければ、サイズを拡張する。
             if (t_fixed) {
-                if (!m_board.ensure_x(x) || !m_board.ensure_x(x + int(word.size()) - 1))
+                if (!m_board.ensure_x(x) || !m_board.ensure_x(x + static_cast<int>(word.size()) - 1))
                     return false;
             } else {
                 m_board.ensure(x - 1, y);
-                m_board.ensure(x + int(word.size()), y);
+                m_board.ensure(x + static_cast<int>(word.size()), y);
             }
             // 単語の左右に可能ならば黒マスを配置。
             m_board.set_on(x - 1, y, '#');
-            m_board.set_on(x + int(word.size()), y, '#');
+            m_board.set_on(x + static_cast<int>(word.size()), y, '#');
             // 単語を適用しながら交差可能性を更新する。
             for (size_t ich = 0; ich < word.size(); ++ich) {
-                int x0 = x + int(ich);
+                int x0 = x + static_cast<int>(ich);
                 m_board.set_on(x0, y, word[ich]);
                 m_crossable_x.erase({x0, y});
                 if (m_board.is_crossable_y(x0, y))
@@ -1376,8 +1376,8 @@ struct from_words_t {
                     continue;
 
                 // 境界のヨコ位置を取得。
-                int x0 = x - int(ich);
-                int x1 = x0 + int(word.size());
+                int x0 = x - static_cast<int>(ich);
+                int x1 = x0 + static_cast<int>(word.size());
                 bool matched = true; // 一致していると仮定。
                 if (matched) {
                     // ヨコ向きの単語について、境界の２マスについて
@@ -1389,7 +1389,7 @@ struct from_words_t {
                 }
                 if (matched) {
                     for (size_t k = 0; k < word.size(); ++k) { // 各マスについて
-                        t_char ch3 = m_board.get_on(x0 + int(k), y);
+                        t_char ch3 = m_board.get_on(x0 + static_cast<int>(k), y);
                         if (ch3 != '?' && word[k] != ch3) { // 未知のマスでなく一致しなければ
                             matched = false; // 一致していない！
                             break;
@@ -1435,8 +1435,8 @@ struct from_words_t {
                     continue;
 
                 // 境界のタテ位置を取得。
-                int y0 = y - int(ich);
-                int y1 = y0 + int(word.size());
+                int y0 = y - static_cast<int>(ich);
+                int y1 = y0 + static_cast<int>(word.size());
                 bool matched = true; // 一致していると仮定。
                 if (matched) {
                     // 縦向きの単語について、境界の２マスについて
@@ -1448,7 +1448,7 @@ struct from_words_t {
                 }
                 if (matched) {
                     for (size_t k = 0; k < word.size(); ++k) { // 対応する各マスについて
-                        t_char ch3 = m_board.get_on(x, y0 + int(k)); // 文字を取得し、
+                        t_char ch3 = m_board.get_on(x, y0 + static_cast<int>(k)); // 文字を取得し、
                         if (ch3 != '?' && word[k] != ch3) { // 未知マスでなく、一致していないなら
                             matched = false; // 一致していない！
                             break;
@@ -1509,7 +1509,7 @@ struct from_words_t {
             return false;
 
 #ifdef XWORDGIVER
-        xg_aThreadInfo[m_iThread].m_count = int(m_dict.size() - m_words.size());
+        xg_aThreadInfo[m_iThread].m_count = static_cast<int>(m_dict.size() - m_words.size());
 #endif
 
         std::vector<candidate_t<t_char> > candidates; // 候補群。
@@ -1984,7 +1984,7 @@ struct non_add_block_t {
                             return true; // 生成に成功。
                     }
                     // パターンの長さだけx方向にスキップ。
-                    x += int(pat.size());
+                    x += static_cast<int>(pat.size());
                 }
             }
         }

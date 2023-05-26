@@ -206,10 +206,10 @@ inline VOID MPoint::Offset(SIZE siz) noexcept
     { x += siz.cx; y += siz.cy; }
 
 inline MPoint::operator LPPOINT() noexcept
-    { return reinterpret_cast<LPPOINT>(this); }
+    { return this; }
 
 inline MPoint::operator const POINT *() const noexcept
-    { return reinterpret_cast<const POINT *>(this); }
+    { return this; }
 
 inline BOOL MPoint::operator==(POINT pt) const noexcept
     { return (x == pt.x && y == pt.y); }
@@ -271,10 +271,10 @@ inline MSize::MSize(DWORD dwSize) noexcept
     { cx = GET_X_LPARAM(dwSize); cy = GET_Y_LPARAM(dwSize); }
 
 inline MSize::operator LPSIZE() noexcept
-    { return reinterpret_cast<LPSIZE>(this); }
+    { return this; }
 
 inline MSize::operator const SIZE *() const noexcept
-    { return reinterpret_cast<const SIZE *>(this); }
+    { return this; }
 
 inline BOOL MSize::operator==(SIZE siz) const noexcept
     { return (cx == siz.cx && cy == siz.cy); }
@@ -390,16 +390,15 @@ inline VOID MRect::DeflateRect(INT l, INT t, INT r, INT b) noexcept
 
 inline VOID MRect::NormalizeRect() noexcept
 {
-    INT nTemp;
     if (left > right)
     {
-        nTemp = left;
+        const INT nTemp = left;
         left = right;
         right = nTemp;
     }
     if (top > bottom)
     {
-        nTemp = top;
+        const INT nTemp = top;
         top = bottom;
         bottom = nTemp;
     }
@@ -480,16 +479,16 @@ inline MSize MRect::Size() const noexcept
     { return MSize(right - left, bottom - top); }
 
 inline MPoint& MRect::TopLeft() noexcept
-    { return *((MPoint*) this); }
+    { return *(reinterpret_cast<MPoint*>(this)); }
 
 inline MPoint& MRect::BottomRight() noexcept
-    { return *((MPoint*) this + 1); }
+    { return *(reinterpret_cast<MPoint*>(this) + 1); }
 
 inline const MPoint& MRect::TopLeft() const noexcept
-    { return *((MPoint*) this); }
+    { return *(reinterpret_cast<const MPoint*>(this)); }
 
 inline const MPoint& MRect::BottomRight() const noexcept
-    { return *((MPoint*) this + 1); }
+    { return *(reinterpret_cast<const MPoint*>(this) + 1); }
 
 inline MPoint MRect::CenterPoint() const noexcept
     { return MPoint((left + right) / 2, (top + bottom) / 2); }
@@ -603,16 +602,15 @@ inline VOID MRect::operator|=(const RECT& rc) noexcept
 
 inline VOID NormalizeRectDx(LPRECT prc) noexcept
 {
-    INT nTemp;
     if (prc->left > prc->right)
     {
-        nTemp = prc->left;
+        const INT nTemp = prc->left;
         prc->left = prc->right;
         prc->right = nTemp;
     }
     if (prc->top > prc->bottom)
     {
-        nTemp = prc->top;
+        const INT nTemp = prc->top;
         prc->top = prc->bottom;
         prc->bottom = nTemp;
     }
