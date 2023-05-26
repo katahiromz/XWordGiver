@@ -68,9 +68,12 @@ endif()
 
 ##############################################################################
 
-if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-    if (uppercase_CMAKE_BUILD_TYPE MATCHES "DEBUG")
+if (uppercase_CMAKE_BUILD_TYPE MATCHES "DEBUG")
+    if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D_GLIBCXX_DEBUG -Wall -Wextra -Wshadow -Wconversion -Wfloat-equal -ftrapv -fstack-protector-all -fno-omit-frame-pointer -Wno-missing-field-initializers -Wno-unused-parameter -Wno-cast-function-type")
+    endif()
+    if (MSVC)
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /Zi /fsanitize=address")
     endif()
 endif()
 
@@ -78,6 +81,11 @@ endif()
 
 # C++17
 set(CMAKE_CXX_STANDARD 17)
+
+# UTF-8
+if (MSVC)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /utf-8")
+endif()
 
 include_directories(. json/include SaveBitmapToFile)
 

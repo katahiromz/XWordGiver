@@ -1,25 +1,26 @@
+// (Japanese, UTF-8)
 #pragma once
 
-#define CROSSWORD_GENERATION 24 // crossword_generation version
+#define CROSSWORD_GENERATION 25 // crossword_generation version
 
 #define _GNU_SOURCE
-#include <cstdio>               // •W€“üo—ÍB
-#include <cstdint>              // •W€®”B
-#include <ctime>                // ŠÔB
-#include <cassert>              // assertionB
+#include <cstdio>               // æ¨™æº–å…¥å‡ºåŠ›ã€‚
+#include <cstdint>              // æ¨™æº–æ•´æ•°ã€‚
+#include <ctime>                // æ™‚é–“ã€‚
+#include <cassert>              // assertionã€‚
 #include <vector>               // std::vector
 #include <unordered_set>        // std::unordered_set
 #include <unordered_map>        // std::unordered_map
-#include <queue>                // ‘Ò‚¿s—ñistd::queuej
+#include <queue>                // å¾…ã¡è¡Œåˆ—ï¼ˆstd::queueï¼‰
 #include <thread>               // std::thread
 #include <mutex>                // std::mutex
 #include <algorithm>            // std::shuffle
 #include <utility>              // ????
-#include <random>               // V‚µ‚¢—”¶¬B
+#include <random>               // æ–°ã—ã„ä¹±æ•°ç”Ÿæˆã€‚
 #ifdef _WIN32
-    #include <windows.h>        // Windowsƒwƒbƒ_B
+    #include <windows.h>        // Windowsãƒ˜ãƒƒãƒ€ã€‚
 #else
-    // Linux/Mac—p‚Ì’è‹`B
+    // Linux/Macç”¨ã®å®šç¾©ã€‚
     #include <unistd.h>
     #include <sys/types.h>
     inline uint64_t GetTickCount64(void) {
@@ -36,7 +37,7 @@
     }
 #endif
 
-// ƒ}ƒX‚ÌˆÊ’u‚ğ’è‹`‚·‚éB
+// ãƒã‚¹ã®ä½ç½®ã‚’å®šç¾©ã™ã‚‹ã€‚
 namespace crossword_generation {
     struct pos_t {
         int m_x, m_y;
@@ -56,35 +57,35 @@ namespace std {
     };
 } // namespace std
 
-// ƒNƒƒXƒ[ƒh¶¬—p‚Ì–¼‘O‹óŠÔBŒ»ó‚Íu’PŒêŒQ‚©‚ç©“®¶¬v‚Ì‚İÀ‘•B
-// «—ˆ“I‚É‚Í‚»‚Ì‘¼‚Ì¶¬•û–@‚à‚±‚Ì‚æ‚¤‚Èƒ‚ƒ_ƒ“‚È•ûŒü‚ÉˆÚs‚·‚éB
+// ã‚¯ãƒ­ã‚¹ãƒ¯ãƒ¼ãƒ‰ç”Ÿæˆç”¨ã®åå‰ç©ºé–“ã€‚ç¾çŠ¶ã¯ã€Œå˜èªç¾¤ã‹ã‚‰è‡ªå‹•ç”Ÿæˆã€ã®ã¿å®Ÿè£…ã€‚
+// å°†æ¥çš„ã«ã¯ãã®ä»–ã®ç”Ÿæˆæ–¹æ³•ã‚‚ã“ã®ã‚ˆã†ãªãƒ¢ãƒ€ãƒ³ãªæ–¹å‘ã«ç§»è¡Œã™ã‚‹ã€‚
 namespace crossword_generation {
-inline static bool s_generated = false;     // ¶¬Ï‚İ‚©H
-inline static bool s_canceled = false;      // ƒLƒƒƒ“ƒZƒ‹‚³‚ê‚½‚©H
-inline static std::mutex s_mutex;           // ƒ~ƒ…[ƒeƒbƒNƒXi”r‘¼ˆ——pjB
+inline static bool s_generated = false;     // ç”Ÿæˆæ¸ˆã¿ã‹ï¼Ÿ
+inline static bool s_canceled = false;      // ã‚­ãƒ£ãƒ³ã‚»ãƒ«ã•ã‚ŒãŸã‹ï¼Ÿ
+inline static std::mutex s_mutex;           // ãƒŸãƒ¥ãƒ¼ãƒ†ãƒƒã‚¯ã‚¹ï¼ˆæ’ä»–å‡¦ç†ç”¨ï¼‰ã€‚
 
-// ƒ‹[ƒ‹‚ğ•\‚·ƒtƒ‰ƒOŒQB
+// ãƒ«ãƒ¼ãƒ«ã‚’è¡¨ã™ãƒ•ãƒ©ã‚°ç¾¤ã€‚
 struct RULES {
     enum {
-        DONTDOUBLEBLACK = (1 << 0),     // ˜A•‹ÖB
-        DONTCORNERBLACK = (1 << 1),     // l‹÷•‹ÖB
-        DONTTRIDIRECTIONS = (1 << 2),   // O•û•‹ÖB
-        DONTDIVIDE = (1 << 3),          // •ª’f‹ÖB
-        DONTFOURDIAGONALS = (1 << 4),   // •Îl˜A‹ÖB
-        POINTSYMMETRY = (1 << 5),       // •ƒ}ƒX“_‘ÎÌB
-        DONTTHREEDIAGONALS = (1 << 6),  // •ÎO˜A‹ÖB
-        LINESYMMETRYV = (1 << 7),       // •ƒ}ƒXã‰º‘ÎÌB
-        LINESYMMETRYH = (1 << 8),       // •ƒ}ƒX¶‰E‘ÎÌB
+        DONTDOUBLEBLACK = (1 << 0),     // é€£é»’ç¦ã€‚
+        DONTCORNERBLACK = (1 << 1),     // å››éš…é»’ç¦ã€‚
+        DONTTRIDIRECTIONS = (1 << 2),   // ä¸‰æ–¹é»’ç¦ã€‚
+        DONTDIVIDE = (1 << 3),          // åˆ†æ–­ç¦ã€‚
+        DONTFOURDIAGONALS = (1 << 4),   // é»’æ–œå››é€£ç¦ã€‚
+        POINTSYMMETRY = (1 << 5),       // é»’ãƒã‚¹ç‚¹å¯¾ç§°ã€‚
+        DONTTHREEDIAGONALS = (1 << 6),  // é»’æ–œä¸‰é€£ç¦ã€‚
+        LINESYMMETRYV = (1 << 7),       // é»’ãƒã‚¹ä¸Šä¸‹å¯¾ç§°ã€‚
+        LINESYMMETRYH = (1 << 8),       // é»’ãƒã‚¹å·¦å³å¯¾ç§°ã€‚
     };
 };
 
-// •¶šƒ}ƒX‚©H
+// æ–‡å­—ãƒã‚¹ã‹ï¼Ÿ
 template <typename t_char>
 inline bool is_letter(t_char ch) {
     return (ch != '#' && ch != '?');
 }
 
-// ƒvƒƒZƒbƒT‚Ì”‚ğ•Ô‚·ŠÖ”B
+// ãƒ—ãƒ­ã‚»ãƒƒã‚µã®æ•°ã‚’è¿”ã™é–¢æ•°ã€‚
 inline uint32_t get_num_processors(void) {
 #ifdef XWORDGIVER
     return xg_dwThreadCount;
@@ -98,7 +99,7 @@ inline uint32_t get_num_processors(void) {
 }
 
 // replacement of std::random_shuffle
-// ]—ˆŒ^‚Ì—”¶¬istd::randAstd::random_shufflej‚Í„§‚³‚ê‚È‚¢B
+// å¾“æ¥å‹ã®ä¹±æ•°ç”Ÿæˆï¼ˆstd::randã€std::random_shuffleï¼‰ã¯æ¨å¥¨ã•ã‚Œãªã„ã€‚
 template <typename t_elem>
 inline void random_shuffle(const t_elem& begin, const t_elem& end) {
 #ifndef NO_RANDOM
@@ -108,7 +109,7 @@ inline void random_shuffle(const t_elem& begin, const t_elem& end) {
 #endif
 }
 
-// ¶¬‘O‚É‰Šú‰»B
+// ç”Ÿæˆå‰ã«åˆæœŸåŒ–ã€‚
 inline void reset() {
     s_generated = s_canceled = false;
 #ifdef XWORDGIVER
@@ -118,8 +119,8 @@ inline void reset() {
 #endif
 }
 
-// ¶¬Ï‚İ‚©ƒLƒƒƒ“ƒZƒ‹Ï‚İ‚©‚ğ‘Ò‚ÂB‚±‚Ì‚æ‚¤‚È‘Ò‚¿•û‚Íƒ‚ƒ_ƒ“‚Å‚Í‚È‚¢B
-// ‚±‚±‚ÌƒR[ƒh‚Íƒ‚ƒ_ƒ“‚È•û–@‚É’u‚«Š·‚¦‚ç‚ê‚é‚×‚«B
+// ç”Ÿæˆæ¸ˆã¿ã‹ã‚­ãƒ£ãƒ³ã‚»ãƒ«æ¸ˆã¿ã‹ã‚’å¾…ã¤ã€‚ã“ã®ã‚ˆã†ãªå¾…ã¡æ–¹ã¯ãƒ¢ãƒ€ãƒ³ã§ã¯ãªã„ã€‚
+// ã“ã“ã®ã‚³ãƒ¼ãƒ‰ã¯ãƒ¢ãƒ€ãƒ³ãªæ–¹æ³•ã«ç½®ãæ›ãˆã‚‰ã‚Œã‚‹ã¹ãã€‚
 inline void wait_for_threads(int num_threads = get_num_processors(), int retry_count = 3) {
     const int INTERVAL = 100;
     for (int i = 0; i < retry_count; ++i) {
@@ -129,7 +130,7 @@ inline void wait_for_threads(int num_threads = get_num_processors(), int retry_c
     }
 }
 
-// ˜AŒ‹«‚ğ”»’èB
+// é€£çµæ€§ã‚’åˆ¤å®šã€‚
 template <typename t_char>
 inline bool
 check_connectivity(const std::unordered_set<std::basic_string<t_char> >& words,
@@ -139,15 +140,15 @@ check_connectivity(const std::unordered_set<std::basic_string<t_char> >& words,
     if (words.size() <= 1)
         return true;
 
-    std::vector<t_string> vec_words(words.begin(), words.end()); // ’PŒêŒQB
-    std::queue<size_t> queue; // ‘Ò‚¿s—ñB
+    std::vector<t_string> vec_words(words.begin(), words.end()); // å˜èªç¾¤ã€‚
+    std::queue<size_t> queue; // å¾…ã¡è¡Œåˆ—ã€‚
     std::unordered_set<size_t> indexes;
-    queue.emplace(0); // ‘Ò‚¿s—ñ‚É‰Šú‚Ìí‚ğ“Y‚¦‚éBB
+    queue.emplace(0); // å¾…ã¡è¡Œåˆ—ã«åˆæœŸã®ç¨®ã‚’æ·»ãˆã‚‹ã€‚ã€‚
 
     while (!queue.empty()) {
         size_t index0 = queue.front();
         indexes.insert(index0);
-        queue.pop(); // í‚ğæ‚èœ‚­B
+        queue.pop(); // ç¨®ã‚’å–ã‚Šé™¤ãã€‚
 
         auto& w0 = vec_words[index0];
         for (size_t index1 = 0; index1 < vec_words.size(); ++index1) {
@@ -179,7 +180,7 @@ skip:;
     return true;
 }
 
-// Œó•âBˆÊ’uî•ñ‚Æ’PŒê‚Æc‰¡‚ÌŒü‚«‚Ìî•ñ‚ğ‚ÂB
+// å€™è£œã€‚ä½ç½®æƒ…å ±ã¨å˜èªã¨ç¸¦æ¨ªã®å‘ãã®æƒ…å ±ã‚’æŒã¤ã€‚
 template <typename t_char>
 struct candidate_t {
     typedef std::basic_string<t_char> t_string;
@@ -188,7 +189,7 @@ struct candidate_t {
     bool m_vertical;
 };
 
-// Œğ·Œó•âB
+// äº¤å·®å€™è£œã€‚
 template <typename t_char>
 struct cross_candidate_t {
     candidate_t<t_char> m_cand_x, m_cand_y;
@@ -198,38 +199,38 @@ struct cross_candidate_t {
     }
 };
 
-// ”Õ–Êƒf[ƒ^B’†g‚Í•¶š—ñB”z’u•û–@‚ÍƒTƒuƒNƒ‰ƒX board_t ‚É‚æ‚Á‚ÄŒˆ‚Ü‚éB
+// ç›¤é¢ãƒ‡ãƒ¼ã‚¿ã€‚ä¸­èº«ã¯æ–‡å­—åˆ—ã€‚é…ç½®æ–¹æ³•ã¯ã‚µãƒ–ã‚¯ãƒ©ã‚¹ board_t ã«ã‚ˆã£ã¦æ±ºã¾ã‚‹ã€‚
 template <typename t_char>
 struct board_data_t {
     typedef std::basic_string<t_char> t_string;
     t_string m_data;
 
-    // ƒRƒ“ƒXƒgƒ‰ƒNƒ^‚É‚æ‚é‰Šú‰»B•¶š‚Å–„‚ß‚éB
+    // ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ã«ã‚ˆã‚‹åˆæœŸåŒ–ã€‚æ–‡å­—ã§åŸ‹ã‚ã‚‹ã€‚
     board_data_t(int cx = 1, int cy = 1, t_char ch = ' ') {
         resize(cx, cy, ch);
     }
 
-    // ƒ}ƒX”B
+    // ãƒã‚¹æ•°ã€‚
     int size() const {
         return int(m_data.size());
     }
 
-    // ƒ}ƒX”‚Ì‘Œ¸B
+    // ãƒã‚¹æ•°ã®å¢—æ¸›ã€‚
     void resize(int cx, int cy, t_char ch = ' ') {
         m_data.assign(cx * cy, ch);
     }
 
-    // “Á’è‚Ì•¶š‚Å–„‚ß‚éB
+    // ç‰¹å®šã®æ–‡å­—ã§åŸ‹ã‚ã‚‹ã€‚
     void fill(t_char ch = ' ') {
         std::fill(m_data.begin(), m_data.end(), ch);
     }
 
-    // •¶š‚ğ’uŠ·‚É‚æ‚è’u‚«Š·‚¦‚éB
+    // æ–‡å­—ã‚’ç½®æ›ã«ã‚ˆã‚Šç½®ãæ›ãˆã‚‹ã€‚
     void replace(t_char chOld, t_char chNew) {
         std::replace(m_data.begin(), m_data.end(), chOld, chNew);
     }
 
-    // “Á’è‚Ì•¶š‚ÌŒÂ”‚ğ”‚¦‚éB
+    // ç‰¹å®šã®æ–‡å­—ã®å€‹æ•°ã‚’æ•°ãˆã‚‹ã€‚
     int count(t_char ch) const {
         int ret = 0;
         for (int xy = 0; xy < size(); ++xy) {
@@ -239,15 +240,15 @@ struct board_data_t {
         return ret;
     }
 
-    // ‹ó‚©H
+    // ç©ºã‹ï¼Ÿ
     bool is_empty() const {
         return count('?') == size();
     }
-    // –¢’m‚Ìƒ}ƒX‚ª‚È‚¢‚©H
+    // æœªçŸ¥ã®ãƒã‚¹ãŒãªã„ã‹ï¼Ÿ
     bool is_full() const {
         return count('?') == 0;
     }
-    // •¶šƒ}ƒX‚ª‚ ‚é‚©B
+    // æ–‡å­—ãƒã‚¹ãŒã‚ã‚‹ã‹ã€‚
     bool has_letter() const {
         for (int xy = 0; xy < size(); ++xy) {
             if (is_letter(m_data[xy]))
@@ -257,16 +258,16 @@ struct board_data_t {
     }
 };
 
-// board_data_t ‚ÌƒTƒuƒNƒ‰ƒXB”Õ–Êƒf[ƒ^BŒp³‚³‚ê‚Ä•¶š‚Ì”z’u‚ª‹K’è‚³‚ê‚Ä‚¢‚éB
+// board_data_t ã®ã‚µãƒ–ã‚¯ãƒ©ã‚¹ã€‚ç›¤é¢ãƒ‡ãƒ¼ã‚¿ã€‚ç¶™æ‰¿ã•ã‚Œã¦æ–‡å­—ã®é…ç½®ãŒè¦å®šã•ã‚Œã¦ã„ã‚‹ã€‚
 template <typename t_char, bool t_fixed>
 struct board_t : board_data_t<t_char> {
-    typedef std::basic_string<t_char> t_string; // •¶š—ñŒ^B
+    typedef std::basic_string<t_char> t_string; // æ–‡å­—åˆ—å‹ã€‚
 
-    int m_cx, m_cy; // ƒTƒCƒYB
-    int m_rules; // ƒ‹[ƒ‹ŒQB
+    int m_cx, m_cy; // ã‚µã‚¤ã‚ºã€‚
+    int m_rules; // ãƒ«ãƒ¼ãƒ«ç¾¤ã€‚
     int m_x0, m_y0;
 
-    // board_t‚ÌƒRƒ“ƒXƒgƒ‰ƒNƒ^B
+    // board_tã®ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ã€‚
     board_t(int cx = 1, int cy = 1, t_char ch = ' ', int rules = 0, int x0 = 0, int y0 = 0)
         : board_data_t<t_char>(cx, cy, ch), m_cx(cx), m_cy(cy)
         , m_rules(rules), m_x0(x0), m_y0(y0)
@@ -275,45 +276,45 @@ struct board_t : board_data_t<t_char> {
     board_t(const board_t<t_char, t_fixed>& b) = default;
     board_t<t_char, t_fixed>& operator=(const board_t<t_char, t_fixed>& b) = default;
 
-    // ƒCƒ“ƒfƒbƒNƒXˆÊ’u‚Ì•¶š‚ğ•Ô‚·B
+    // ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ä½ç½®ã®æ–‡å­—ã‚’è¿”ã™ã€‚
     t_char get(int xy) const {
         if (0 <= xy && xy < this->size())
             return board_data_t<t_char>::m_data[xy];
         return t_fixed ? '#' : '?';
     }
-    // ƒCƒ“ƒfƒbƒNƒXˆÊ’u‚É•¶š‚ğƒZƒbƒgB
+    // ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ä½ç½®ã«æ–‡å­—ã‚’ã‚»ãƒƒãƒˆã€‚
     void set(int xy, t_char ch) {
         if (0 <= xy && xy < this->size())
             board_data_t<t_char>::m_data[xy] = ch;
     }
 
-    // ƒ}ƒX(x, y)‚Í”Õ–Ê‚Ì”ÍˆÍ“à‚©H
+    // ãƒã‚¹(x, y)ã¯ç›¤é¢ã®ç¯„å›²å†…ã‹ï¼Ÿ
     // x, y: absolute coordinate
     bool in_range(int x, int y) const {
         return (0 <= x && x < m_cx && 0 <= y && y < m_cy);
     }
 
-    // ƒ}ƒX(x, y)‚ğæ“¾‚·‚éB”ÍˆÍƒ`ƒFƒbƒN‚ ‚èB
+    // ãƒã‚¹(x, y)ã‚’å–å¾—ã™ã‚‹ã€‚ç¯„å›²ãƒã‚§ãƒƒã‚¯ã‚ã‚Šã€‚
     // x, y: absolute coordinate
     t_char real_get_at(int x, int y) const {
         if (in_range(x, y))
             return board_data_t<t_char>::m_data[y * m_cx + x];
         return ' ';
     }
-    // ƒ}ƒX(x, y)‚ğæ“¾‚·‚éB”ÍˆÍƒ`ƒFƒbƒN‚ ‚èB”ÍˆÍŠO‚È‚ç'#'‚©'?'‚ğ•Ô‚·B
+    // ãƒã‚¹(x, y)ã‚’å–å¾—ã™ã‚‹ã€‚ç¯„å›²ãƒã‚§ãƒƒã‚¯ã‚ã‚Šã€‚ç¯„å›²å¤–ãªã‚‰'#'ã‹'?'ã‚’è¿”ã™ã€‚
     // x, y: absolute coordinate
     t_char get_at(int x, int y) const {
         if (in_range(x, y))
             return board_data_t<t_char>::m_data[y * m_cx + x];
         return t_fixed ? '#' : '?';
     }
-    // ƒ}ƒX(x, y)‚ğƒZƒbƒg‚·‚éB”ÍˆÍƒ`ƒFƒbƒN‚ ‚èB”ÍˆÍŠO‚È‚ç–³‹B
+    // ãƒã‚¹(x, y)ã‚’ã‚»ãƒƒãƒˆã™ã‚‹ã€‚ç¯„å›²ãƒã‚§ãƒƒã‚¯ã‚ã‚Šã€‚ç¯„å›²å¤–ãªã‚‰ç„¡è¦–ã€‚
     // x, y: absolute coordinate
     void set_at(int x, int y, t_char ch) {
         if (in_range(x, y))
             board_data_t<t_char>::m_data[y * m_cx + x] = ch;
     }
-    // ƒ}ƒX(x, y)‚ğƒZƒbƒg‚·‚éB‚½‚¾‚µƒ‹[ƒ‹‚É‚æ‚è”½Ë‚·‚éB”ÍˆÍƒ`ƒFƒbƒN‚ ‚èB”ÍˆÍŠO‚È‚ç–³‹B
+    // ãƒã‚¹(x, y)ã‚’ã‚»ãƒƒãƒˆã™ã‚‹ã€‚ãŸã ã—ãƒ«ãƒ¼ãƒ«ã«ã‚ˆã‚Šåå°„ã™ã‚‹ã€‚ç¯„å›²ãƒã‚§ãƒƒã‚¯ã‚ã‚Šã€‚ç¯„å›²å¤–ãªã‚‰ç„¡è¦–ã€‚
     // x, y: absolute coordinate
     void mirror_set_black_at(int x, int y) {
         if (!in_range(x, y))
@@ -331,7 +332,7 @@ struct board_t : board_data_t<t_char> {
         }
     }
 
-    // ƒ‹[ƒ‹‚É‚æ‚è•ƒ}ƒX‚ğ”½Ë‚·‚éB
+    // ãƒ«ãƒ¼ãƒ«ã«ã‚ˆã‚Šé»’ãƒã‚¹ã‚’åå°„ã™ã‚‹ã€‚
     void do_mirror() {
         if (m_rules == 0)
             return;
@@ -362,7 +363,7 @@ struct board_t : board_data_t<t_char> {
         }
     }
 
-    // ƒ}ƒX(x, y)‚©‚ç‰¡Œü‚«ƒpƒ^[ƒ“‚ğæ“¾‚·‚éB
+    // ãƒã‚¹(x, y)ã‹ã‚‰æ¨ªå‘ããƒ‘ã‚¿ãƒ¼ãƒ³ã‚’å–å¾—ã™ã‚‹ã€‚
     // x, y: absolute coordinate
     t_string get_pat_x(int x, int y, int *px0 = nullptr) const {
         t_string pat;
@@ -386,7 +387,7 @@ struct board_t : board_data_t<t_char> {
         return pat;
     }
 
-    // ƒ}ƒX(x, y)‚©‚çcŒü‚«ƒpƒ^[ƒ“‚ğæ“¾‚·‚éB
+    // ãƒã‚¹(x, y)ã‹ã‚‰ç¸¦å‘ããƒ‘ã‚¿ãƒ¼ãƒ³ã‚’å–å¾—ã™ã‚‹ã€‚
     // x, y: absolute coordinate
     t_string get_pat_y(int x, int y, int *py0 = nullptr) const {
         t_string pat;
@@ -410,7 +411,7 @@ struct board_t : board_data_t<t_char> {
         return pat;
     }
 
-    // ƒ}ƒX(x, y)‚ÍAƒR[ƒi[il‹÷j‚©H
+    // ãƒã‚¹(x, y)ã¯ã€ã‚³ãƒ¼ãƒŠãƒ¼ï¼ˆå››éš…ï¼‰ã‹ï¼Ÿ
     bool is_corner(int x, int y) const {
         if (y == 0 || y == m_cy - 1) {
             if (x == 0 || x == m_cx - 1)
@@ -419,7 +420,7 @@ struct board_t : board_data_t<t_char> {
         return false;
     }
 
-    // ƒ}ƒX(x, y)‚É•ƒ}ƒX‚ğ’u‚­‚ÆA˜A•‹Ö‚É’ïG‚·‚é‚©H
+    // ãƒã‚¹(x, y)ã«é»’ãƒã‚¹ã‚’ç½®ãã¨ã€é€£é»’ç¦ã«æŠµè§¦ã™ã‚‹ã‹ï¼Ÿ
     bool can_make_double_black(int x, int y) const {
         return (real_get_at(x - 1, y) == '#' || real_get_at(x + 1, y) == '#' ||
                 real_get_at(x, y - 1) == '#' || real_get_at(x, y + 1) == '#');
@@ -447,7 +448,7 @@ skip:;
         return ret;
     }
 
-    // ƒ}ƒX(x, y)‚É•ƒ}ƒX‚ª‚ ‚é‚Æ‚«A•ÎO˜A‹Ö‚É’ïG‚·‚é‚©H
+    // ãƒã‚¹(x, y)ã«é»’ãƒã‚¹ãŒã‚ã‚‹ã¨ãã€é»’æ–œä¸‰é€£ç¦ã«æŠµè§¦ã™ã‚‹ã‹ï¼Ÿ
     bool can_make_three_diagonals(int x, int y) const {
         // center (right down)
         if (real_get_at(x - 1, y - 1) == '#' || real_get_at(x + 1, y + 1) == '#') {
@@ -476,10 +477,10 @@ skip:;
         return false;
     }
 
-    // ƒ}ƒX(x, y)‚É•ƒ}ƒX‚ª‚ ‚é‚Æ‚«A•Îl˜A‹Ö‚É’ïG‚·‚é‚©H
+    // ãƒã‚¹(x, y)ã«é»’ãƒã‚¹ãŒã‚ã‚‹ã¨ãã€é»’æ–œå››é€£ç¦ã«æŠµè§¦ã™ã‚‹ã‹ï¼Ÿ
     bool can_make_four_diagonals(int x, int y) {
         auto ch = get_at(x, y);
-        set_at(x, y, '#'); // ˆê“I‚ÉƒZƒbƒgBŒã‚Å–ß‚·B
+        set_at(x, y, '#'); // ä¸€æ™‚çš„ã«ã‚»ãƒƒãƒˆã€‚å¾Œã§æˆ»ã™ã€‚
         bool ret = false;
         for (int i = y - 3; i <= y + 3; ++y) {
             for (int j = x - 3; i <= x + 3; ++i) {
@@ -510,11 +511,11 @@ skip:;
             }
         }
 skip:;
-        set_at(x, y, ch); // Œ³‚É–ß‚·B
+        set_at(x, y, ch); // å…ƒã«æˆ»ã™ã€‚
         return ret;
     }
 
-    // ƒ}ƒX(x, y)‚É•ƒ}ƒX‚ğƒZƒbƒg‚Å‚«‚é‚©‚Ç‚¤‚©H
+    // ãƒã‚¹(x, y)ã«é»’ãƒã‚¹ã‚’ã‚»ãƒƒãƒˆã§ãã‚‹ã‹ã©ã†ã‹ï¼Ÿ
     // NOTE: This method doesn't check divided_by_black.
     bool can_set_black_at(int x, int y) {
         if (get_at(x, y) == '#')
@@ -647,8 +648,8 @@ skip:;
         return true;
     }
 
-    // ”Õ–Ê‚ªŒÅ’èƒTƒCƒY‚È‚çƒTƒCƒY‚Éû‚Ü‚é‚©‚Ç‚¤‚©”»’è‚µA
-    // ”Õ–Ê‚ªŒÅ’èƒTƒCƒY‚Å‚È‚¯‚ê‚ÎAû‚Ü‚é‚æ‚¤‚ÉŠg’£‚·‚éB
+    // ç›¤é¢ãŒå›ºå®šã‚µã‚¤ã‚ºãªã‚‰ã‚µã‚¤ã‚ºã«åã¾ã‚‹ã‹ã©ã†ã‹åˆ¤å®šã—ã€
+    // ç›¤é¢ãŒå›ºå®šã‚µã‚¤ã‚ºã§ãªã‘ã‚Œã°ã€åã¾ã‚‹ã‚ˆã†ã«æ‹¡å¼µã™ã‚‹ã€‚
     // x: relative coordinate
     bool ensure_x(int x) {
         if (t_fixed) {
@@ -662,8 +663,8 @@ skip:;
             return true;
         }
     }
-    // ”Õ–Ê‚ªŒÅ’èƒTƒCƒY‚È‚çƒTƒCƒY‚Éû‚Ü‚é‚©‚Ç‚¤‚©”»’è‚µA
-    // ”Õ–Ê‚ªŒÅ’èƒTƒCƒY‚Å‚È‚¯‚ê‚ÎAû‚Ü‚é‚æ‚¤‚ÉŠg’£‚·‚éB
+    // ç›¤é¢ãŒå›ºå®šã‚µã‚¤ã‚ºãªã‚‰ã‚µã‚¤ã‚ºã«åã¾ã‚‹ã‹ã©ã†ã‹åˆ¤å®šã—ã€
+    // ç›¤é¢ãŒå›ºå®šã‚µã‚¤ã‚ºã§ãªã‘ã‚Œã°ã€åã¾ã‚‹ã‚ˆã†ã«æ‹¡å¼µã™ã‚‹ã€‚
     // y: relative coordinate
     bool ensure_y(int y) {
         if (t_fixed) {
@@ -677,8 +678,8 @@ skip:;
             return true;
         }
     }
-    // ”Õ–Ê‚ªŒÅ’èƒTƒCƒY‚È‚çƒTƒCƒY‚Éû‚Ü‚é‚©‚Ç‚¤‚©”»’è‚µA
-    // ”Õ–Ê‚ªŒÅ’èƒTƒCƒY‚Å‚È‚¯‚ê‚ÎAû‚Ü‚é‚æ‚¤‚ÉŠg’£‚·‚éB
+    // ç›¤é¢ãŒå›ºå®šã‚µã‚¤ã‚ºãªã‚‰ã‚µã‚¤ã‚ºã«åã¾ã‚‹ã‹ã©ã†ã‹åˆ¤å®šã—ã€
+    // ç›¤é¢ãŒå›ºå®šã‚µã‚¤ã‚ºã§ãªã‘ã‚Œã°ã€åã¾ã‚‹ã‚ˆã†ã«æ‹¡å¼µã™ã‚‹ã€‚
     // x, y: relative coordinate
     bool ensure(int x, int y) {
         if (t_fixed) {
@@ -690,14 +691,14 @@ skip:;
         }
     }
 
-    // ƒ}ƒX(x, y)‚Ì•¶š‚ğæ“¾‚·‚éBƒŠƒŠ[ƒX‚Ì”ÍˆÍƒ`ƒFƒbƒN‚È‚µB
+    // ãƒã‚¹(x, y)ã®æ–‡å­—ã‚’å–å¾—ã™ã‚‹ã€‚ãƒªãƒªãƒ¼ã‚¹æ™‚ã®ç¯„å›²ãƒã‚§ãƒƒã‚¯ãªã—ã€‚
     // x, y: relative coordinate
     t_char get_on(int x, int y) const {
         assert(m_x0 <= 0);
         assert(m_y0 <= 0);
         return get_at(x - m_x0, y - m_y0);
     }
-    // ƒ}ƒX(x, y)‚Ì•¶š‚ğƒZƒbƒg‚·‚éBƒŠƒŠ[ƒX‚Ì”ÍˆÍƒ`ƒFƒbƒN‚È‚µB
+    // ãƒã‚¹(x, y)ã®æ–‡å­—ã‚’ã‚»ãƒƒãƒˆã™ã‚‹ã€‚ãƒªãƒªãƒ¼ã‚¹æ™‚ã®ç¯„å›²ãƒã‚§ãƒƒã‚¯ãªã—ã€‚
     // x, y: relative coordinate
     void set_on(int x, int y, t_char ch) {
         assert(m_x0 <= 0);
@@ -705,7 +706,7 @@ skip:;
         set_at(x - m_x0, y - m_y0, ch);
     }
 
-    // —ñ‚ğ‘}“ü‚·‚éBw’è‚³‚ê‚½•¶š‚Æ•‚ÅB
+    // åˆ—ã‚’æŒ¿å…¥ã™ã‚‹ã€‚æŒ‡å®šã•ã‚ŒãŸæ–‡å­—ã¨å¹…ã§ã€‚
     // x0: absolute coordinate
     void insert_x(int x0, int cx = 1, t_char ch = ' ') {
         assert(0 <= x0 && x0 <= m_cx);
@@ -726,7 +727,7 @@ skip:;
         m_cx += cx;
     }
 
-    // s‚ğ‘}“ü‚·‚éBw’è‚³‚ê‚½•¶š‚Æ‚‚³‚ÅB
+    // è¡Œã‚’æŒ¿å…¥ã™ã‚‹ã€‚æŒ‡å®šã•ã‚ŒãŸæ–‡å­—ã¨é«˜ã•ã§ã€‚
     // y0: absolute coordinate
     void insert_y(int y0, int cy = 1, t_char ch = ' ') {
         assert(0 <= y0 && y0 <= m_cy);
@@ -747,7 +748,7 @@ skip:;
         m_cy += cy;
     }
 
-    // —ñ‚ğíœ‚·‚éB
+    // åˆ—ã‚’å‰Šé™¤ã™ã‚‹ã€‚
     // x0: absolute coordinate
     void delete_x(int x0) {
         assert(0 <= x0 && x0 < m_cx);
@@ -767,7 +768,7 @@ skip:;
         --m_cx;
     }
 
-    // s‚ğíœ‚·‚éB
+    // è¡Œã‚’å‰Šé™¤ã™ã‚‹ã€‚
     // y0: absolute coordinate
     void delete_y(int y0) {
         assert(0 <= y0 && y0 < m_cy);
@@ -787,31 +788,31 @@ skip:;
         --m_cy;
     }
 
-    // ¶‘¤‚É—ñ‚ğ‘}“ü‚·‚éB
+    // å·¦å´ã«åˆ—ã‚’æŒ¿å…¥ã™ã‚‹ã€‚
     void grow_x0(int cx, t_char ch = ' ') {
         assert(cx > 0);
         insert_x(0, cx, ch);
         m_x0 -= cx;
     }
-    // ‰E‘¤‚É—ñ‚ğ‘}“ü‚·‚éB
+    // å³å´ã«åˆ—ã‚’æŒ¿å…¥ã™ã‚‹ã€‚
     void grow_x1(int cx, t_char ch = ' ') {
         assert(cx > 0);
         insert_x(m_cx, cx, ch);
     }
 
-    // ã‘¤‚És‚ğ‘}“ü‚·‚éB
+    // ä¸Šå´ã«è¡Œã‚’æŒ¿å…¥ã™ã‚‹ã€‚
     void grow_y0(int cy, t_char ch = ' ') {
         assert(cy > 0);
         insert_y(0, cy, ch);
         m_y0 -= cy;
     }
-    // ‰º‘¤‚És‚ğ‘}“ü‚·‚éB
+    // ä¸‹å´ã«è¡Œã‚’æŒ¿å…¥ã™ã‚‹ã€‚
     void grow_y1(int cy, t_char ch = ' ') {
         assert(cy > 0);
         insert_y(m_cy, cy, ch);
     }
 
-    // •¶šƒ}ƒX‚ªŒ©‚Â‚©‚ç‚È‚¢—ñ‚ğ¶‰E’[‚©‚çƒJƒbƒg‚·‚éB
+    // æ–‡å­—ãƒã‚¹ãŒè¦‹ã¤ã‹ã‚‰ãªã„åˆ—ã‚’å·¦å³ç«¯ã‹ã‚‰ã‚«ãƒƒãƒˆã™ã‚‹ã€‚
     void trim_x() {
         bool found;
         int x, y;
@@ -854,7 +855,7 @@ skip:;
         m_x0 = 0;
     }
 
-    // •¶šƒ}ƒX‚ªŒ©‚Â‚©‚ç‚È‚¢s‚ğã‰º’[‚©‚çƒJƒbƒg‚·‚éB
+    // æ–‡å­—ãƒã‚¹ãŒè¦‹ã¤ã‹ã‚‰ãªã„è¡Œã‚’ä¸Šä¸‹ç«¯ã‹ã‚‰ã‚«ãƒƒãƒˆã™ã‚‹ã€‚
     void trim_y() {
         bool found;
         int x, y;
@@ -896,13 +897,13 @@ skip:;
         m_y0 = 0;
     }
 
-    // •¶šƒ}ƒX‚ªŒ©‚Â‚©‚ç‚È‚¢s‚Æ—ñ‚ğ’[‚©‚çƒJƒbƒg‚·‚éB
+    // æ–‡å­—ãƒã‚¹ãŒè¦‹ã¤ã‹ã‚‰ãªã„è¡Œã¨åˆ—ã‚’ç«¯ã‹ã‚‰ã‚«ãƒƒãƒˆã™ã‚‹ã€‚
     void trim() {
         trim_y();
         trim_x();
     }
 
-    // •¶š—ñ‚Æ‚µ‚Ä•W€o—ÍBƒfƒoƒbƒO—pB
+    // æ–‡å­—åˆ—ã¨ã—ã¦æ¨™æº–å‡ºåŠ›ã€‚ãƒ‡ãƒãƒƒã‚°ç”¨ã€‚
     void print() const {
         std::printf("dx:%d, dy:%d, cx:%d, cy:%d\n", m_x0, m_y0, m_cx, m_cy);
         for (int y = m_y0; y < m_y0 + m_cy; ++y) {
@@ -916,7 +917,7 @@ skip:;
         std::fflush(stdout);
     }
 
-    // ƒ}ƒX(x, y)‚Í‰¡Œü‚«Œğ·‰Â”\‚©H
+    // ãƒã‚¹(x, y)ã¯æ¨ªå‘ãäº¤å·®å¯èƒ½ã‹ï¼Ÿ
     bool is_crossable_x(int x, int y) const {
         assert(is_letter(get_on(x, y)));
         t_char ch1, ch2;
@@ -924,7 +925,7 @@ skip:;
         ch2 = get_on(x + 1, y);
         return (ch1 == '?' || ch2 == '?');
     }
-    // ƒ}ƒX(x, y)‚ÍcŒü‚«Œğ·‰Â”\‚©H
+    // ãƒã‚¹(x, y)ã¯ç¸¦å‘ãäº¤å·®å¯èƒ½ã‹ï¼Ÿ
     bool is_crossable_y(int x, int y) const {
         assert(is_letter(get_on(x, y)));
         t_char ch1, ch2;
@@ -945,7 +946,7 @@ skip:;
         return flag1 && flag2;
     }
 
-    // Œó•â‚É‘Î‚µ‚Ä\•ª‚ÈƒTƒCƒY‚ğŠm•Û‚·‚éB
+    // å€™è£œã«å¯¾ã—ã¦ååˆ†ãªã‚µã‚¤ã‚ºã‚’ç¢ºä¿ã™ã‚‹ã€‚
     void apply_size(const candidate_t<t_char>& cand) {
         auto& word = cand.m_word;
         int x = cand.m_x, y = cand.m_y;
@@ -959,7 +960,7 @@ skip:;
         }
     }
 
-    // ƒ‹[ƒ‹‚É“K‡‚µ‚Ä‚¢‚é‚©H
+    // ãƒ«ãƒ¼ãƒ«ã«é©åˆã—ã¦ã„ã‚‹ã‹ï¼Ÿ
     bool rules_ok() const {
         if (m_rules == 0)
             return true;
@@ -986,7 +987,7 @@ skip:;
         return true;
     }
 
-    // l‹÷•‹ÖB
+    // å››éš…é»’ç¦ã€‚
     bool corner_black() const {
         return get_at(0, 0) == '#' ||
                get_at(m_cx - 1, 0) == '#' ||
@@ -994,7 +995,7 @@ skip:;
                get_at(0, m_cy - 1) == '#';
     }
 
-    // ˜A•‹ÖB
+    // é€£é»’ç¦ã€‚
     bool double_black() const {
         const int n1 = m_cx - 1;
         const int n2 = m_cy - 1;
@@ -1015,7 +1016,7 @@ skip:;
         return false;
     }
 
-    // O•û•‹ÖB
+    // ä¸‰æ–¹é»’ç¦ã€‚
     bool tri_black_around() const {
         for (int i = m_cy - 2; i >= 1; --i) {
             for (int j = m_cx - 2; j >= 1; --j) {
@@ -1029,13 +1030,13 @@ skip:;
         return false;
     }
 
-    // •ª’f‹ÖB
+    // åˆ†æ–­ç¦ã€‚
     bool divided_by_black() const {
-        int count = m_cx * m_cy; // ƒ}ƒX‚ÌŒÂ”B
-        std::vector<uint8_t> pb(count, 0); // ŠeˆÊ’u‚É‘Î‰‚·‚éƒtƒ‰ƒOŒQB
-        std::queue<pos_t> positions; // ˆÊ’uî•ñŒQ‚Ì‘Ò‚¿s—ñB
+        int count = m_cx * m_cy; // ãƒã‚¹ã®å€‹æ•°ã€‚
+        std::vector<uint8_t> pb(count, 0); // å„ä½ç½®ã«å¯¾å¿œã™ã‚‹ãƒ•ãƒ©ã‚°ç¾¤ã€‚
+        std::queue<pos_t> positions; // ä½ç½®æƒ…å ±ç¾¤ã®å¾…ã¡è¡Œåˆ—ã€‚
 
-        // ‘Ò‚¿s—ñ‚Éí‚ğ’u‚­B
+        // å¾…ã¡è¡Œåˆ—ã«ç¨®ã‚’ç½®ãã€‚
         if (get_at(0, 0) != '#') {
             positions.emplace(0, 0);
         } else {
@@ -1050,12 +1051,12 @@ skip:;
 skip:;
         }
 
-        // ‘Ò‚¿s—ñ‚ª‹ó‚É‚È‚é‚Ü‚ÅAAA
+        // å¾…ã¡è¡Œåˆ—ãŒç©ºã«ãªã‚‹ã¾ã§ã€ã€ã€
         while (!positions.empty()) {
-            pos_t pos = positions.front(); // ‘Ò‚¿s—ñ‚Ìæ“ª‚ğæ“¾B
-            positions.pop(); // æ“ª‚ğ‘Ò‚¿s—ñ‚©‚çæ‚èœ‚­B
+            pos_t pos = positions.front(); // å¾…ã¡è¡Œåˆ—ã®å…ˆé ­ã‚’å–å¾—ã€‚
+            positions.pop(); // å…ˆé ­ã‚’å¾…ã¡è¡Œåˆ—ã‹ã‚‰å–ã‚Šé™¤ãã€‚
             if (!pb[pos.m_y * m_cx + pos.m_x]) {
-                // í‚©‚çŸX‚ÆL‚ª‚Á‚Ä‚¢‚­B
+                // ç¨®ã‹ã‚‰æ¬¡ã€…ã¨åºƒãŒã£ã¦ã„ãã€‚
                 pb[pos.m_y * m_cx + pos.m_x] = 1;
                 // above
                 if (pos.m_y > 0 && get_at(pos.m_x, pos.m_y - 1) != '#')
@@ -1072,20 +1073,20 @@ skip:;
             }
         }
 
-        // –¢“’B‚ÌêŠ‚ª‚ ‚ê‚Î•ª’f‹Ö‚É’ïG‚·‚éB
+        // æœªåˆ°é”ã®å ´æ‰€ãŒã‚ã‚Œã°åˆ†æ–­ç¦ã«æŠµè§¦ã™ã‚‹ã€‚
         while (count-- > 0) {
             if (pb[count] == 0 && get(count) != '#') {
                 return true;
             }
         }
 
-        // ‚³‚à‚È‚¯‚ê‚Î•ª’f‹Ö‚É’ïG‚µ‚È‚¢B
+        // ã•ã‚‚ãªã‘ã‚Œã°åˆ†æ–­ç¦ã«æŠµè§¦ã—ãªã„ã€‚
         return false;
     }
 
-    // •Îl˜A‹ÖB
+    // é»’æ–œå››é€£ç¦ã€‚
     bool four_diagonals() const {
-        // Î‚ßl‚Â•ƒ}ƒX‚ª‚ ‚ê‚Îtrue‚ğ•Ô‚·B
+        // æ–œã‚å››ã¤é»’ãƒã‚¹ãŒã‚ã‚Œã°trueã‚’è¿”ã™ã€‚
         for (int i = 0; i < m_cy - 3; i++) {
             for (int j = 0; j < m_cx - 3; j++) {
                 if (get_at(j, i) != '#')
@@ -1115,9 +1116,9 @@ skip:;
         return false;
     }
 
-    // •ÎO˜A‹ÖB
+    // é»’æ–œä¸‰é€£ç¦ã€‚
     bool three_diagonals() const {
-        // Î‚ßO‚Â•ƒ}ƒX‚ª‚ ‚ê‚Îtrue‚ğ•Ô‚·B
+        // æ–œã‚ä¸‰ã¤é»’ãƒã‚¹ãŒã‚ã‚Œã°trueã‚’è¿”ã™ã€‚
         for (int i = 0; i < m_cy - 2; i++) {
             for (int j = 0; j < m_cx - 2; j++) {
                 if (get_at(j, i) != '#')
@@ -1143,7 +1144,7 @@ skip:;
         return false;
     }
 
-    // •ƒ}ƒX“_‘ÎÌ‚©H
+    // é»’ãƒã‚¹ç‚¹å¯¾ç§°ã‹ï¼Ÿ
     bool is_point_symmetry() const {
         for (int i = 0; i < m_cy; i++) {
             for (int j = 0; j < m_cx; j++) {
@@ -1157,7 +1158,7 @@ skip:;
         return true;
     }
 
-    // •ƒ}ƒX¶‰E‘ÎÌ‚©H
+    // é»’ãƒã‚¹å·¦å³å¯¾ç§°ã‹ï¼Ÿ
     bool is_line_symmetry_h() const {
         for (int j = 0; j < m_cx; j++) {
             for (int i = 0; i < m_cy; i++) {
@@ -1171,7 +1172,7 @@ skip:;
         return true;
     }
 
-    // •ƒ}ƒXã‰º‘ÎÌ‚©H
+    // é»’ãƒã‚¹ä¸Šä¸‹å¯¾ç§°ã‹ï¼Ÿ
     bool is_line_symmetry_v() const {
         for (int i = 0; i < m_cy; i++) {
             for (int j = 0; j < m_cx; j++) {
@@ -1185,11 +1186,11 @@ skip:;
         return true;
     }
 
-    // ’P‘ÌƒeƒXƒgB
+    // å˜ä½“ãƒ†ã‚¹ãƒˆã€‚
     static void unittest() {
 #ifndef NDEBUG
         board_t<t_char, t_fixed> b(3, 3, '#');
-        // ‘}“üƒeƒXƒgB
+        // æŒ¿å…¥ãƒ†ã‚¹ãƒˆã€‚
         b.insert_x(1, 1, '|');
         assert(b.get_at(0, 0) == '#');
         assert(b.get_at(1, 0) == '|');
@@ -1200,7 +1201,7 @@ skip:;
         assert(b.get_at(0, 1) == '-');
         assert(b.get_at(0, 2) == '#');
         assert(b.get_at(0, 3) == '#');
-        // íœƒeƒXƒgB
+        // å‰Šé™¤ãƒ†ã‚¹ãƒˆã€‚
         b.delete_y(1);
         assert(b.get_at(0, 0) == '#');
         assert(b.get_at(0, 1) == '#');
@@ -1209,7 +1210,7 @@ skip:;
         assert(b.get_at(0, 0) == '#');
         assert(b.get_at(1, 0) == '#');
         assert(b.get_at(2, 0) == '#');
-        // ¬’·ƒeƒXƒgB
+        // æˆé•·ãƒ†ã‚¹ãƒˆã€‚
         b.grow_x0(1, '|');
         assert(b.get_on(-1, 1) == '|');
         assert(b.get_on(0, 1) == '#');
@@ -1219,7 +1220,7 @@ skip:;
         assert(b.get_at(1, 1) == '#');
         assert(b.get_at(2, 1) == '#');
         assert(b.get_at(3, 1) == '#');
-        // íœ‚Æ¶¬ƒeƒXƒgB
+        // å‰Šé™¤ã¨ç”Ÿæˆãƒ†ã‚¹ãƒˆã€‚
         b.delete_x(0);
         b.m_x0 = 0;
         b.grow_y0(1, '-');
@@ -1231,7 +1232,7 @@ skip:;
         assert(b.get_at(1, 1) == '#');
         assert(b.get_at(1, 2) == '#');
         assert(b.get_at(1, 3) == '#');
-        // íœ‚Æ¶¬ƒeƒXƒgB
+        // å‰Šé™¤ã¨ç”Ÿæˆãƒ†ã‚¹ãƒˆã€‚
         b.delete_y(0);
         b.m_y0 = 0;
         b.grow_x1(1, '|');
@@ -1245,7 +1246,7 @@ skip:;
         assert(b.get_on(1, 1) == '#');
         assert(b.get_on(1, 2) == '#');
         assert(b.get_on(1, 3) == '-');
-        // ‚¢‚ë‚¢‚ëƒeƒXƒgB
+        // ã„ã‚ã„ã‚ãƒ†ã‚¹ãƒˆã€‚
         b.delete_y(3);
         b.resize(3, 3, '?');
         b.grow_x0(1, '?');
@@ -1285,24 +1286,24 @@ skip:;
     }
 };
 
-// u’PŒêŒQ‚©‚ç©“®¶¬v‚ğÀ‘•‚·‚éƒNƒ‰ƒXB
+// ã€Œå˜èªç¾¤ã‹ã‚‰è‡ªå‹•ç”Ÿæˆã€ã‚’å®Ÿè£…ã™ã‚‹ã‚¯ãƒ©ã‚¹ã€‚
 template <typename t_char, bool t_fixed>
 struct from_words_t {
-    typedef std::basic_string<t_char> t_string; // •¶š—ñƒNƒ‰ƒXB
+    typedef std::basic_string<t_char> t_string; // æ–‡å­—åˆ—ã‚¯ãƒ©ã‚¹ã€‚
 
-    inline static board_t<t_char, t_fixed> s_solution; // ‰ğ‚Ì”Õ–Êƒf[ƒ^B
-    board_t<t_char, t_fixed> m_board; // ”Õ–Êƒf[ƒ^B
-    std::unordered_set<t_string> m_words, m_dict; // ’PŒêŒQ‚Æ«‘ƒf[ƒ^B
+    inline static board_t<t_char, t_fixed> s_solution; // è§£ã®ç›¤é¢ãƒ‡ãƒ¼ã‚¿ã€‚
+    board_t<t_char, t_fixed> m_board; // ç›¤é¢ãƒ‡ãƒ¼ã‚¿ã€‚
+    std::unordered_set<t_string> m_words, m_dict; // å˜èªç¾¤ã¨è¾æ›¸ãƒ‡ãƒ¼ã‚¿ã€‚
     std::unordered_set<pos_t> m_crossable_x, m_crossable_y;
-    int m_iThread; // ƒXƒŒƒbƒh‚ÌƒCƒ“ƒfƒbƒNƒXB
+    int m_iThread; // ã‚¹ãƒ¬ãƒƒãƒ‰ã®ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã€‚
 
-    // Œó•â‚ğ“K—p‚·‚éB
+    // å€™è£œã‚’é©ç”¨ã™ã‚‹ã€‚
     bool apply_candidate(const candidate_t<t_char>& cand) {
-        auto& word = cand.m_word; // Œó•â‚©‚ç’PŒê‚ğæ“¾B
-        m_words.erase(word); // g—pÏ‚İ‚Æ‚µ‚Ä’PŒêŒQ‚©‚çœ‹‚·‚éB
-        int x = cand.m_x, y = cand.m_y; // Œó•â‚Ìƒ}ƒXˆÊ’uB
-        if (cand.m_vertical) { // Œó•â‚ªc•ûŒü‚©H
-            // ”Õ–Ê‚ªŒÅ’èƒTƒCƒY‚È‚çƒTƒCƒY‚ğŠm”F‚·‚éBŒÅ’èƒTƒCƒY‚Å‚È‚¯‚ê‚ÎAƒTƒCƒY‚ğŠg’£‚·‚éB
+        auto& word = cand.m_word; // å€™è£œã‹ã‚‰å˜èªã‚’å–å¾—ã€‚
+        m_words.erase(word); // ä½¿ç”¨æ¸ˆã¿ã¨ã—ã¦å˜èªç¾¤ã‹ã‚‰é™¤å»ã™ã‚‹ã€‚
+        int x = cand.m_x, y = cand.m_y; // å€™è£œã®ãƒã‚¹ä½ç½®ã€‚
+        if (cand.m_vertical) { // å€™è£œãŒç¸¦æ–¹å‘ã‹ï¼Ÿ
+            // ç›¤é¢ãŒå›ºå®šã‚µã‚¤ã‚ºãªã‚‰ã‚µã‚¤ã‚ºã‚’ç¢ºèªã™ã‚‹ã€‚å›ºå®šã‚µã‚¤ã‚ºã§ãªã‘ã‚Œã°ã€ã‚µã‚¤ã‚ºã‚’æ‹¡å¼µã™ã‚‹ã€‚
             if (t_fixed) {
                 if (!m_board.ensure_y(y) || !m_board.ensure_y(y + int(word.size()) - 1))
                     return false;
@@ -1310,10 +1311,10 @@ struct from_words_t {
                 m_board.ensure(x, y - 1);
                 m_board.ensure(x, y + int(word.size()));
             }
-            // ’PŒê‚Ìã‰º‚É‰Â”\‚È‚ç‚Î•ƒ}ƒX‚ğ”z’uB
+            // å˜èªã®ä¸Šä¸‹ã«å¯èƒ½ãªã‚‰ã°é»’ãƒã‚¹ã‚’é…ç½®ã€‚
             m_board.set_on(x, y - 1, '#');
             m_board.set_on(x, y + int(word.size()), '#');
-            // ’PŒê‚ğ“K—p‚µ‚È‚ª‚çŒğ·‰Â”\«‚ğXV‚·‚éB
+            // å˜èªã‚’é©ç”¨ã—ãªãŒã‚‰äº¤å·®å¯èƒ½æ€§ã‚’æ›´æ–°ã™ã‚‹ã€‚
             for (size_t ich = 0; ich < word.size(); ++ich) {
                 int y0 = y + int(ich);
                 m_board.set_on(x, y0, word[ich]);
@@ -1321,8 +1322,8 @@ struct from_words_t {
                 if (m_board.is_crossable_x(x, y0))
                     m_crossable_x.insert({ x, y0 });
             }
-        } else { // Œó•â‚ªƒˆƒR•ûŒü‚©H
-            // ”Õ–Ê‚ªŒÅ’èƒTƒCƒY‚È‚çƒTƒCƒY‚ğŠm”F‚·‚éBŒÅ’èƒTƒCƒY‚Å‚È‚¯‚ê‚ÎAƒTƒCƒY‚ğŠg’£‚·‚éB
+        } else { // å€™è£œãŒãƒ¨ã‚³æ–¹å‘ã‹ï¼Ÿ
+            // ç›¤é¢ãŒå›ºå®šã‚µã‚¤ã‚ºãªã‚‰ã‚µã‚¤ã‚ºã‚’ç¢ºèªã™ã‚‹ã€‚å›ºå®šã‚µã‚¤ã‚ºã§ãªã‘ã‚Œã°ã€ã‚µã‚¤ã‚ºã‚’æ‹¡å¼µã™ã‚‹ã€‚
             if (t_fixed) {
                 if (!m_board.ensure_x(x) || !m_board.ensure_x(x + int(word.size()) - 1))
                     return false;
@@ -1330,10 +1331,10 @@ struct from_words_t {
                 m_board.ensure(x - 1, y);
                 m_board.ensure(x + int(word.size()), y);
             }
-            // ’PŒê‚Ì¶‰E‚É‰Â”\‚È‚ç‚Î•ƒ}ƒX‚ğ”z’uB
+            // å˜èªã®å·¦å³ã«å¯èƒ½ãªã‚‰ã°é»’ãƒã‚¹ã‚’é…ç½®ã€‚
             m_board.set_on(x - 1, y, '#');
             m_board.set_on(x + int(word.size()), y, '#');
-            // ’PŒê‚ğ“K—p‚µ‚È‚ª‚çŒğ·‰Â”\«‚ğXV‚·‚éB
+            // å˜èªã‚’é©ç”¨ã—ãªãŒã‚‰äº¤å·®å¯èƒ½æ€§ã‚’æ›´æ–°ã™ã‚‹ã€‚
             for (size_t ich = 0; ich < word.size(); ++ich) {
                 int x0 = x + int(ich);
                 m_board.set_on(x0, y, word[ich]);
@@ -1345,16 +1346,16 @@ struct from_words_t {
         return true;
     }
 
-    // ƒˆƒR•ûŒü‚ÌŒó•âŒQ‚ğæ“¾‚·‚éB
+    // ãƒ¨ã‚³æ–¹å‘ã®å€™è£œç¾¤ã‚’å–å¾—ã™ã‚‹ã€‚
     std::vector<candidate_t<t_char> >
     get_candidates_x(int x, int y) const {
-        std::vector<candidate_t<t_char> > cands; // Œó•âŒQB
+        std::vector<candidate_t<t_char> > cands; // å€™è£œç¾¤ã€‚
 
-        // ƒ}ƒX(x, y)‚É’…–Ú‚·‚éB
-        t_char ch0 = m_board.get_on(x, y); // (x, y)‚Ì•¶š‚ğæ“¾B
+        // ãƒã‚¹(x, y)ã«ç€ç›®ã™ã‚‹ã€‚
+        t_char ch0 = m_board.get_on(x, y); // (x, y)ã®æ–‡å­—ã‚’å–å¾—ã€‚
         assert(is_letter(ch0));
 
-        // ‚»‚Ì¶‰E‚Ìƒ}ƒX‚ğæ“¾‚·‚éB
+        // ãã®å·¦å³ã®ãƒã‚¹ã‚’å–å¾—ã™ã‚‹ã€‚
         t_char ch1 = m_board.get_on(x - 1, y);
         t_char ch2 = m_board.get_on(x + 1, y);
         if (!is_letter(ch1) && !is_letter(ch2)) {
@@ -1362,148 +1363,148 @@ struct from_words_t {
             cands.push_back({ x, y, sz, false });
         }
 
-        // Še’PŒê‚É‚Â‚¢‚ÄB
+        // å„å˜èªã«ã¤ã„ã¦ã€‚
         for (auto& word : m_words) {
-            if (s_canceled || s_generated) { // ƒLƒƒƒ“ƒZƒ‹Ï‚İ‚©¶¬Ï‚İ‚È‚çI—¹B
+            if (s_canceled || s_generated) { // ã‚­ãƒ£ãƒ³ã‚»ãƒ«æ¸ˆã¿ã‹ç”Ÿæˆæ¸ˆã¿ãªã‚‰çµ‚äº†ã€‚
                 cands.clear();
                 return cands;
             }
 
-            // ’PŒê’†‚ÌŠeˆÊ’u‚É‚Â‚¢‚ÄAAA
+            // å˜èªä¸­ã®å„ä½ç½®ã«ã¤ã„ã¦ã€ã€ã€
             for (size_t ich = 0; ich < word.size(); ++ich) {
-                if (word[ich] != ch0) // •¶š‚ªˆê’v‚µ‚È‚¯‚ê‚ÎƒXƒLƒbƒvB
+                if (word[ich] != ch0) // æ–‡å­—ãŒä¸€è‡´ã—ãªã‘ã‚Œã°ã‚¹ã‚­ãƒƒãƒ—ã€‚
                     continue;
 
-                // ‹«ŠE‚ÌƒˆƒRˆÊ’u‚ğæ“¾B
+                // å¢ƒç•Œã®ãƒ¨ã‚³ä½ç½®ã‚’å–å¾—ã€‚
                 int x0 = x - int(ich);
                 int x1 = x0 + int(word.size());
-                bool matched = true; // ˆê’v‚µ‚Ä‚¢‚é‚Æ‰¼’èB
+                bool matched = true; // ä¸€è‡´ã—ã¦ã„ã‚‹ã¨ä»®å®šã€‚
                 if (matched) {
-                    // ƒˆƒRŒü‚«‚Ì’PŒê‚É‚Â‚¢‚ÄA‹«ŠE‚Ì‚Qƒ}ƒX‚É‚Â‚¢‚Ä
+                    // ãƒ¨ã‚³å‘ãã®å˜èªã«ã¤ã„ã¦ã€å¢ƒç•Œã®ï¼’ãƒã‚¹ã«ã¤ã„ã¦
                     t_char tch1 = m_board.get_on(x0 - 1, y);
                     t_char tch2 = m_board.get_on(x1, y);
-                    if (is_letter(tch1) || is_letter(tch2)) { // •¶šƒ}ƒX‚È‚ç
-                        matched = false; // ˆê’v‚µ‚Ä‚¢‚È‚¢I
+                    if (is_letter(tch1) || is_letter(tch2)) { // æ–‡å­—ãƒã‚¹ãªã‚‰
+                        matched = false; // ä¸€è‡´ã—ã¦ã„ãªã„ï¼
                     }
                 }
                 if (matched) {
-                    for (size_t k = 0; k < word.size(); ++k) { // Šeƒ}ƒX‚É‚Â‚¢‚Ä
+                    for (size_t k = 0; k < word.size(); ++k) { // å„ãƒã‚¹ã«ã¤ã„ã¦
                         t_char ch3 = m_board.get_on(x0 + int(k), y);
-                        if (ch3 != '?' && word[k] != ch3) { // –¢’m‚Ìƒ}ƒX‚Å‚È‚­ˆê’v‚µ‚È‚¯‚ê‚Î
-                            matched = false; // ˆê’v‚µ‚Ä‚¢‚È‚¢I
+                        if (ch3 != '?' && word[k] != ch3) { // æœªçŸ¥ã®ãƒã‚¹ã§ãªãä¸€è‡´ã—ãªã‘ã‚Œã°
+                            matched = false; // ä¸€è‡´ã—ã¦ã„ãªã„ï¼
                             break;
                         }
                     }
                 }
                 if (matched) {
-                    cands.push_back({x0, y, word, false}); // ˆê’v‚µ‚Ä‚¢‚ê‚ÎŒó•â‚ğ’Ç‰ÁB
+                    cands.push_back({x0, y, word, false}); // ä¸€è‡´ã—ã¦ã„ã‚Œã°å€™è£œã‚’è¿½åŠ ã€‚
                 }
             }
         }
 
-        return cands; // Œó•âŒQ‚ğ•Ô‚·B
+        return cands; // å€™è£œç¾¤ã‚’è¿”ã™ã€‚
     }
 
-    // ƒ^ƒe•ûŒü‚ÌŒó•âŒQ‚ğæ“¾‚·‚éB
+    // ã‚¿ãƒ†æ–¹å‘ã®å€™è£œç¾¤ã‚’å–å¾—ã™ã‚‹ã€‚
     std::vector<candidate_t<t_char> >
     get_candidates_y(int x, int y) const {
         std::vector<candidate_t<t_char> > cands;
 
-        // ƒ}ƒX(x, y)‚É’…–Ú‚·‚éB
-        t_char ch0 = m_board.get_on(x, y); // (x, y)‚Ì•¶š‚ğæ“¾B
+        // ãƒã‚¹(x, y)ã«ç€ç›®ã™ã‚‹ã€‚
+        t_char ch0 = m_board.get_on(x, y); // (x, y)ã®æ–‡å­—ã‚’å–å¾—ã€‚
         assert(is_letter(ch0));
 
-        // ‚»‚Ìã‰º‚Ìƒ}ƒX‚ğæ“¾‚·‚éB
+        // ãã®ä¸Šä¸‹ã®ãƒã‚¹ã‚’å–å¾—ã™ã‚‹ã€‚
         t_char ch1 = m_board.get_on(x, y - 1);
         t_char ch2 = m_board.get_on(x, y + 1);
-        if (!is_letter(ch1) && !is_letter(ch2)) { // —¼•û‚Æ‚à•¶šƒ}ƒX‚Å‚È‚¯‚ê‚Î
+        if (!is_letter(ch1) && !is_letter(ch2)) { // ä¸¡æ–¹ã¨ã‚‚æ–‡å­—ãƒã‚¹ã§ãªã‘ã‚Œã°
             t_char sz[2] = { ch0, 0 };
-            cands.push_back({ x, y, sz, true }); // 1ƒ}ƒX‚ÌŒó•â { ch0 } ‚ğ’Ç‰ÁB
+            cands.push_back({ x, y, sz, true }); // 1ãƒã‚¹ã®å€™è£œ { ch0 } ã‚’è¿½åŠ ã€‚
         }
 
-        // Še’PŒê‚É‚Â‚¢‚ÄAAA
+        // å„å˜èªã«ã¤ã„ã¦ã€ã€ã€
         for (auto& word : m_words) {
-            if (s_canceled || s_generated) { // ƒLƒƒƒ“ƒZƒ‹Ï‚İ‚©¶¬Ï‚İ‚È‚çI—¹B
+            if (s_canceled || s_generated) { // ã‚­ãƒ£ãƒ³ã‚»ãƒ«æ¸ˆã¿ã‹ç”Ÿæˆæ¸ˆã¿ãªã‚‰çµ‚äº†ã€‚
                 cands.clear();
                 return cands;
             }
 
-            // ’PŒê’†‚ÌŠeˆÊ’u‚É‚Â‚¢‚ÄAAA
+            // å˜èªä¸­ã®å„ä½ç½®ã«ã¤ã„ã¦ã€ã€ã€
             for (size_t ich = 0; ich < word.size(); ++ich) {
-                if (word[ich] != ch0) // •¶š‚ªˆê’v‚µ‚È‚¯‚ê‚ÎƒXƒLƒbƒvB
+                if (word[ich] != ch0) // æ–‡å­—ãŒä¸€è‡´ã—ãªã‘ã‚Œã°ã‚¹ã‚­ãƒƒãƒ—ã€‚
                     continue;
 
-                // ‹«ŠE‚Ìƒ^ƒeˆÊ’u‚ğæ“¾B
+                // å¢ƒç•Œã®ã‚¿ãƒ†ä½ç½®ã‚’å–å¾—ã€‚
                 int y0 = y - int(ich);
                 int y1 = y0 + int(word.size());
-                bool matched = true; // ˆê’v‚µ‚Ä‚¢‚é‚Æ‰¼’èB
+                bool matched = true; // ä¸€è‡´ã—ã¦ã„ã‚‹ã¨ä»®å®šã€‚
                 if (matched) {
-                    // cŒü‚«‚Ì’PŒê‚É‚Â‚¢‚ÄA‹«ŠE‚Ì‚Qƒ}ƒX‚É‚Â‚¢‚Ä
+                    // ç¸¦å‘ãã®å˜èªã«ã¤ã„ã¦ã€å¢ƒç•Œã®ï¼’ãƒã‚¹ã«ã¤ã„ã¦
                     t_char tch1 = m_board.get_on(x, y0 - 1);
                     t_char tch2 = m_board.get_on(x, y1);
-                    if (is_letter(tch1) || is_letter(tch2)) { // —¼•û‚Æ‚à•¶šƒ}ƒX‚È‚ç
-                        matched = false; // ˆê’v‚µ‚Ä‚¢‚È‚¢I
+                    if (is_letter(tch1) || is_letter(tch2)) { // ä¸¡æ–¹ã¨ã‚‚æ–‡å­—ãƒã‚¹ãªã‚‰
+                        matched = false; // ä¸€è‡´ã—ã¦ã„ãªã„ï¼
                     }
                 }
                 if (matched) {
-                    for (size_t k = 0; k < word.size(); ++k) { // ‘Î‰‚·‚éŠeƒ}ƒX‚É‚Â‚¢‚Ä
-                        t_char ch3 = m_board.get_on(x, y0 + int(k)); // •¶š‚ğæ“¾‚µA
-                        if (ch3 != '?' && word[k] != ch3) { // –¢’mƒ}ƒX‚Å‚È‚­Aˆê’v‚µ‚Ä‚¢‚È‚¢‚È‚ç
-                            matched = false; // ˆê’v‚µ‚Ä‚¢‚È‚¢I
+                    for (size_t k = 0; k < word.size(); ++k) { // å¯¾å¿œã™ã‚‹å„ãƒã‚¹ã«ã¤ã„ã¦
+                        t_char ch3 = m_board.get_on(x, y0 + int(k)); // æ–‡å­—ã‚’å–å¾—ã—ã€
+                        if (ch3 != '?' && word[k] != ch3) { // æœªçŸ¥ãƒã‚¹ã§ãªãã€ä¸€è‡´ã—ã¦ã„ãªã„ãªã‚‰
+                            matched = false; // ä¸€è‡´ã—ã¦ã„ãªã„ï¼
                             break;
                         }
                     }
                 }
-                if (matched) { // ˆê’v‚µ‚Ä‚¢‚éB
-                    cands.push_back({x, y0, word, true}); // Œó•â‚ğ’Ç‰ÁB
+                if (matched) { // ä¸€è‡´ã—ã¦ã„ã‚‹ã€‚
+                    cands.push_back({x, y0, word, true}); // å€™è£œã‚’è¿½åŠ ã€‚
                 }
             }
         }
 
-        return cands; // Œó•âŒQ‚ğ•Ô‚·B
+        return cands; // å€™è£œç¾¤ã‚’è¿”ã™ã€‚
     }
 
     bool fixup_candidates(std::vector<candidate_t<t_char> >& candidates) {
-        std::vector<candidate_t<t_char> > cands; // “K—p‚·‚×‚«Œó•âB
-        std::unordered_set<pos_t> positions; // g—p‚µ‚½ˆÊ’uB
+        std::vector<candidate_t<t_char> > cands; // é©ç”¨ã™ã¹ãå€™è£œã€‚
+        std::unordered_set<pos_t> positions; // ä½¿ç”¨ã—ãŸä½ç½®ã€‚
 
-        // ŠeŒó•â‚É‚Â‚¢‚ÄAAA
+        // å„å€™è£œã«ã¤ã„ã¦ã€ã€ã€
         for (auto& cand : candidates) {
-            if (s_canceled || s_generated) // ƒLƒƒƒ“ƒZƒ‹Ï‚İ‚©¶¬Ï‚İ‚È‚çI—¹B
+            if (s_canceled || s_generated) // ã‚­ãƒ£ãƒ³ã‚»ãƒ«æ¸ˆã¿ã‹ç”Ÿæˆæ¸ˆã¿ãªã‚‰çµ‚äº†ã€‚
                 return s_generated;
-            // Œó•â‚ª‚Pƒ}ƒX‚Å‚ ‚ê‚Î
+            // å€™è£œãŒï¼‘ãƒã‚¹ã§ã‚ã‚Œã°
             if (cand.m_word.size() == 1) {
-                cands.push_back(cand); // “K—p‚·‚×‚«Œó•â‚ğ’Ç‰ÁB
-                positions.insert( {cand.m_x, cand.m_y} ); // ‚±‚ÌˆÊ’u‚Íg—pÏ‚İ‚Æ‚·‚éB
+                cands.push_back(cand); // é©ç”¨ã™ã¹ãå€™è£œã‚’è¿½åŠ ã€‚
+                positions.insert( {cand.m_x, cand.m_y} ); // ã“ã®ä½ç½®ã¯ä½¿ç”¨æ¸ˆã¿ã¨ã™ã‚‹ã€‚
             }
         }
 
-        // ŠeŒó•â‚É‚Â‚¢‚ÄAAA
+        // å„å€™è£œã«ã¤ã„ã¦ã€ã€ã€
         for (auto& cand : candidates) {
-            if (s_canceled || s_generated) // ƒLƒƒƒ“ƒZƒ‹Ï‚İ‚©¶¬Ï‚İ‚È‚çI—¹B
+            if (s_canceled || s_generated) // ã‚­ãƒ£ãƒ³ã‚»ãƒ«æ¸ˆã¿ã‹ç”Ÿæˆæ¸ˆã¿ãªã‚‰çµ‚äº†ã€‚
                 return s_generated;
-            // Œó•â‚ª‚Pƒ}ƒX‚Å‚È‚¯‚ê‚ÎA–¢g—p‚Ìƒ}ƒX‚ª‚ ‚é‚©Šm”F‚µA
+            // å€™è£œãŒï¼‘ãƒã‚¹ã§ãªã‘ã‚Œã°ã€æœªä½¿ç”¨ã®ãƒã‚¹ãŒã‚ã‚‹ã‹ç¢ºèªã—ã€
             if (cand.m_word.size() != 1) {
                 if (positions.count(pos_t(cand.m_x, cand.m_y)) == 0)
-                    return false; // –¢g—p‚Ìƒ}ƒX‚ª‚È‚¯‚ê‚Î¸”sB
+                    return false; // æœªä½¿ç”¨ã®ãƒã‚¹ãŒãªã‘ã‚Œã°å¤±æ•—ã€‚
             }
         }
 
-        // “K—p‚·‚×‚«ŠeŒó•â‚É‚Â‚¢‚ÄAAA
+        // é©ç”¨ã™ã¹ãå„å€™è£œã«ã¤ã„ã¦ã€ã€ã€
         for (auto& cand : cands) {
-            if (s_canceled || s_generated) // ƒLƒƒƒ“ƒZƒ‹Ï‚İ‚©¶¬Ï‚İ‚È‚çI—¹B
+            if (s_canceled || s_generated) // ã‚­ãƒ£ãƒ³ã‚»ãƒ«æ¸ˆã¿ã‹ç”Ÿæˆæ¸ˆã¿ãªã‚‰çµ‚äº†ã€‚
                 return s_generated;
-            apply_candidate(cand); // “K—p‚·‚×‚«Œó•â‚ğ“K—p‚·‚éB
+            apply_candidate(cand); // é©ç”¨ã™ã¹ãå€™è£œã‚’é©ç”¨ã™ã‚‹ã€‚
         }
         return true;
     }
 
-    // ¶¬‚ÌÄ‹AŠÖ”B
+    // ç”Ÿæˆã®å†å¸°é–¢æ•°ã€‚
     bool generate_recurse() {
-        if (s_canceled || s_generated) // ƒLƒƒƒ“ƒZƒ‹Ï‚İ‚©¶¬Ï‚İ‚È‚çI—¹B
-            return s_generated; // ¶¬Ï‚İ‚È‚ç¬Œ÷B
+        if (s_canceled || s_generated) // ã‚­ãƒ£ãƒ³ã‚»ãƒ«æ¸ˆã¿ã‹ç”Ÿæˆæ¸ˆã¿ãªã‚‰çµ‚äº†ã€‚
+            return s_generated; // ç”Ÿæˆæ¸ˆã¿ãªã‚‰æˆåŠŸã€‚
 
-        // Œğ·‰Â”\«‚ª‚È‚¯‚ê‚Î¸”sB
+        // äº¤å·®å¯èƒ½æ€§ãŒãªã‘ã‚Œã°å¤±æ•—ã€‚
         if (m_crossable_x.empty() && m_crossable_y.empty())
             return false;
 
@@ -1511,13 +1512,13 @@ struct from_words_t {
         xg_aThreadInfo[m_iThread].m_count = int(m_dict.size() - m_words.size());
 #endif
 
-        std::vector<candidate_t<t_char> > candidates; // Œó•âŒQB
+        std::vector<candidate_t<t_char> > candidates; // å€™è£œç¾¤ã€‚
 
-        // ‰¡Œü‚«‚ÌŒğ·‰Â”\«‚É‚Â‚¢‚ÄAAA
+        // æ¨ªå‘ãã®äº¤å·®å¯èƒ½æ€§ã«ã¤ã„ã¦ã€ã€ã€
         for (auto& cross : m_crossable_x) {
-            if (s_canceled || s_generated) // ƒLƒƒƒ“ƒZƒ‹Ï‚İ‚©¶¬Ï‚İ‚È‚çI—¹B
+            if (s_canceled || s_generated) // ã‚­ãƒ£ãƒ³ã‚»ãƒ«æ¸ˆã¿ã‹ç”Ÿæˆæ¸ˆã¿ãªã‚‰çµ‚äº†ã€‚
                 return s_generated;
-            // ‰¡Œü‚«‚ÌŒó•âŒQ‚ğæ“¾B
+            // æ¨ªå‘ãã®å€™è£œç¾¤ã‚’å–å¾—ã€‚
             auto cands = get_candidates_x(cross.m_x, cross.m_y);
             if (cands.empty()) {
                 if (m_board.must_be_cross(cross.m_x, cross.m_y))
@@ -1526,16 +1527,16 @@ struct from_words_t {
                 if (m_board.must_be_cross(cross.m_x, cross.m_y))
                     return false;
             } else {
-                // Œó•âŒQ‚ğ’Ç‰ÁB
+                // å€™è£œç¾¤ã‚’è¿½åŠ ã€‚
                 candidates.insert(candidates.end(), cands.begin(), cands.end());
             }
         }
 
-        // ƒ^ƒeŒü‚«‚ÌŒğ·‰Â”\«‚É‚Â‚¢‚ÄAAA
+        // ã‚¿ãƒ†å‘ãã®äº¤å·®å¯èƒ½æ€§ã«ã¤ã„ã¦ã€ã€ã€
         for (auto& cross : m_crossable_y) {
-            if (s_canceled || s_generated) // ƒLƒƒƒ“ƒZƒ‹Ï‚İ‚©¶¬Ï‚İ‚È‚çI—¹B
+            if (s_canceled || s_generated) // ã‚­ãƒ£ãƒ³ã‚»ãƒ«æ¸ˆã¿ã‹ç”Ÿæˆæ¸ˆã¿ãªã‚‰çµ‚äº†ã€‚
                 return s_generated;
-            // ƒ^ƒeŒü‚«‚ÌŒó•âŒQ‚ğæ“¾B
+            // ã‚¿ãƒ†å‘ãã®å€™è£œç¾¤ã‚’å–å¾—ã€‚
             auto cands = get_candidates_y(cross.m_x, cross.m_y);
             if (cands.empty()) {
                 if (m_board.must_be_cross(cross.m_x, cross.m_y))
@@ -1544,25 +1545,25 @@ struct from_words_t {
                 if (m_board.must_be_cross(cross.m_x, cross.m_y))
                     return false;
             } else {
-                // Œó•âŒQ‚ğ’Ç‰ÁB
+                // å€™è£œç¾¤ã‚’è¿½åŠ ã€‚
                 candidates.insert(candidates.end(), cands.begin(), cands.end());
             }
         }
 
-        if (m_words.empty()) { // c‚è‚Ì’PŒê‚ª‚È‚¯‚ê‚Î
+        if (m_words.empty()) { // æ®‹ã‚Šã®å˜èªãŒãªã‘ã‚Œã°
             if (fixup_candidates(candidates)) {
                 board_t<t_char, t_fixed> board0 = m_board;
                 board0.trim();
                 board0.replace('?', '#');
-                if (is_solution(board0)) { // ”Õ–Ê‚ª‰ğ‚È‚ç‚Î
-                    std::lock_guard<std::mutex> lock(s_mutex); // ”r‘¼§Œä‚µ‚È‚ª‚ç
-                    // ‰ğ‚ğƒZƒbƒg‚µ‚Ä
+                if (is_solution(board0)) { // ç›¤é¢ãŒè§£ãªã‚‰ã°
+                    std::lock_guard<std::mutex> lock(s_mutex); // æ’ä»–åˆ¶å¾¡ã—ãªãŒã‚‰
+                    // è§£ã‚’ã‚»ãƒƒãƒˆã—ã¦
                     s_generated = true;
                     s_solution = board0;
-                    return true; // ¬Œ÷B
+                    return true; // æˆåŠŸã€‚
                 }
             }
-            return s_generated; // ¶¬Ï‚İ‚È‚ç¬Œ÷B
+            return s_generated; // ç”Ÿæˆæ¸ˆã¿ãªã‚‰æˆåŠŸã€‚
         }
 
 #ifdef XWORDGIVER
@@ -1585,38 +1586,38 @@ struct from_words_t {
         crossword_generation::random_shuffle(candidates.begin(), candidates.end());
 #endif
 
-        // ŠeŒó•â‚É‚Â‚¢‚ÄAAA
+        // å„å€™è£œã«ã¤ã„ã¦ã€ã€ã€
         for (auto& cand : candidates) {
-            if (s_canceled || s_generated) // ƒLƒƒƒ“ƒZƒ‹Ï‚İ‚©¶¬Ï‚İ‚È‚çI—¹B
+            if (s_canceled || s_generated) // ã‚­ãƒ£ãƒ³ã‚»ãƒ«æ¸ˆã¿ã‹ç”Ÿæˆæ¸ˆã¿ãªã‚‰çµ‚äº†ã€‚
                 return s_generated;
-            // •¡»‚µ‚ÄŒó•â‚ğ“K—p‚µ‚ÄÄ‹AE•ªŠòB
+            // è¤‡è£½ã—ã¦å€™è£œã‚’é©ç”¨ã—ã¦å†å¸°ãƒ»åˆ†å²ã€‚
             from_words_t<t_char, t_fixed> copy(*this);
             if (copy.apply_candidate(cand) && copy.generate_recurse()) {
                 return true;
             }
         }
 
-        // ‚·‚×‚Ä‚ÌŒó•â‚ğ“K—p‚µ‚½‚ªA¸”s‚µ‚½B
+        // ã™ã¹ã¦ã®å€™è£œã‚’é©ç”¨ã—ãŸãŒã€å¤±æ•—ã—ãŸã€‚
         return false;
     }
 
-    // g—pÏ‚İ’PŒê‚ğƒ`ƒFƒbƒN‚·‚éB
+    // ä½¿ç”¨æ¸ˆã¿å˜èªã‚’ãƒã‚§ãƒƒã‚¯ã™ã‚‹ã€‚
     bool check_used_words(const board_t<t_char, t_fixed>& board) const
     {
-        std::unordered_set<t_string> used; // g—pÏ‚İ’PŒê‚ğ•ÛB
+        std::unordered_set<t_string> used; // ä½¿ç”¨æ¸ˆã¿å˜èªã‚’ä¿æŒã€‚
 
-        // Šes‚ÌŠeƒ}ƒX‚Ì•À‚Ñ‚É‚Â‚¢‚ÄAAA
+        // å„è¡Œã®å„ãƒã‚¹ã®ä¸¦ã³ã«ã¤ã„ã¦ã€ã€ã€
         for (int y = board.m_y0; y < board.m_y0 + board.m_cy; ++y) {
             for (int x = board.m_x0; x < board.m_x0 + board.m_cx - 1; ++x) {
-                // —×‚è‡‚¤‚Qƒ}ƒX‚ğæ“¾B
+                // éš£ã‚Šåˆã†ï¼’ãƒã‚¹ã‚’å–å¾—ã€‚
                 auto ch0 = board.get_on(x, y);
                 auto ch1 = board.get_on(x + 1, y);
                 t_string word;
                 word += ch0;
                 word += ch1;
-                // —¼•û‚Æ‚à•¶šƒ}ƒX‚È‚ç‚ÎAAA
+                // ä¸¡æ–¹ã¨ã‚‚æ–‡å­—ãƒã‚¹ãªã‚‰ã°ã€ã€ã€
                 if (is_letter(ch0) && is_letter(ch1)) {
-                    // ’PŒê‚ğ\’z‚·‚éB
+                    // å˜èªã‚’æ§‹ç¯‰ã™ã‚‹ã€‚
                     ++x;
                     for (;;) {
                         ++x;
@@ -1625,28 +1626,28 @@ struct from_words_t {
                             break;
                         word += ch1;
                     }
-                    // g—pÏ‚İ‚ª‚ ‚é‚©A«‘‚É‚È‚¢’PŒê‚ª‚ ‚ê‚ÎA¸”sB
+                    // ä½¿ç”¨æ¸ˆã¿ãŒã‚ã‚‹ã‹ã€è¾æ›¸ã«ãªã„å˜èªãŒã‚ã‚Œã°ã€å¤±æ•—ã€‚
                     if (used.count(word) > 0 || m_dict.count(word) == 0) {
                         return false;
                     }
-                    // \’z‚µ‚½’PŒê‚ğg—pÏ‚İ‚ÆŒ©‚È‚·B
+                    // æ§‹ç¯‰ã—ãŸå˜èªã‚’ä½¿ç”¨æ¸ˆã¿ã¨è¦‹ãªã™ã€‚
                     used.insert(word);
                 }
             }
         }
 
-        // Še—ñ‚ÌŠeƒ}ƒX‚Ì•À‚Ñ‚É‚Â‚¢‚ÄAAA
+        // å„åˆ—ã®å„ãƒã‚¹ã®ä¸¦ã³ã«ã¤ã„ã¦ã€ã€ã€
         for (int x = board.m_x0; x < board.m_x0 + board.m_cx; ++x) {
             for (int y = board.m_y0; y < board.m_y0 + board.m_cy - 1; ++y) {
-                // ã‰º‚É•À‚ñ‚¾‚Qƒ}ƒX‚ğæ“¾B
+                // ä¸Šä¸‹ã«ä¸¦ã‚“ã ï¼’ãƒã‚¹ã‚’å–å¾—ã€‚
                 auto ch0 = board.get_on(x, y);
                 auto ch1 = board.get_on(x, y + 1);
                 t_string word;
                 word += ch0;
                 word += ch1;
-                // —¼•û•¶šƒ}ƒX‚È‚ç‚ÎAAA
+                // ä¸¡æ–¹æ–‡å­—ãƒã‚¹ãªã‚‰ã°ã€ã€ã€
                 if (is_letter(ch0) && is_letter(ch1)) {
-                    // ’PŒê‚ğ\’zB
+                    // å˜èªã‚’æ§‹ç¯‰ã€‚
                     ++y;
                     for (;;) {
                         ++y;
@@ -1655,73 +1656,73 @@ struct from_words_t {
                             break;
                         word += ch1;
                     }
-                    // g—pÏ‚İ‚ª‚ ‚é‚©A«‘‚É‚È‚¢’PŒê‚ª‚ ‚ê‚ÎA¸”sB
+                    // ä½¿ç”¨æ¸ˆã¿ãŒã‚ã‚‹ã‹ã€è¾æ›¸ã«ãªã„å˜èªãŒã‚ã‚Œã°ã€å¤±æ•—ã€‚
                     if (used.count(word) > 0 || m_dict.count(word) == 0) {
                         return false;
                     }
-                    // \’z‚µ‚½’PŒê‚ğg—pÏ‚İ‚ÆŒ©‚È‚·B
+                    // æ§‹ç¯‰ã—ãŸå˜èªã‚’ä½¿ç”¨æ¸ˆã¿ã¨è¦‹ãªã™ã€‚
                     used.insert(word);
                 }
             }
         }
 
-        return used.size() == m_dict.size(); // g—pÏ‚İ‚Æ«‘’PŒê”‚ªˆê’v‚·‚ê‚Î¬Œ÷B
+        return used.size() == m_dict.size(); // ä½¿ç”¨æ¸ˆã¿ã¨è¾æ›¸å˜èªæ•°ãŒä¸€è‡´ã™ã‚Œã°æˆåŠŸã€‚
     }
 
-    // ”Õ–Êƒf[ƒ^‚Í‰ğ‚©H
+    // ç›¤é¢ãƒ‡ãƒ¼ã‚¿ã¯è§£ã‹ï¼Ÿ
     bool is_solution(const board_t<t_char, t_fixed>& board) const {
         if (board.count('?') > 0)
-            return false; // –¢’mƒ}ƒX‚ª‚ ‚ê‚Î¸”sB
+            return false; // æœªçŸ¥ãƒã‚¹ãŒã‚ã‚Œã°å¤±æ•—ã€‚
         if (!board.rules_ok())
-            return false; // ƒ‹[ƒ‹‚É”½‚µ‚Ä‚¢‚ê‚Î¸”sB
-        return check_used_words(board); // g—pÏ‚İ’PŒê‚ğƒ`ƒFƒbƒN‚·‚éB
+            return false; // ãƒ«ãƒ¼ãƒ«ã«åã—ã¦ã„ã‚Œã°å¤±æ•—ã€‚
+        return check_used_words(board); // ä½¿ç”¨æ¸ˆã¿å˜èªã‚’ãƒã‚§ãƒƒã‚¯ã™ã‚‹ã€‚
     }
 
-    // ¶¬‚·‚éB
+    // ç”Ÿæˆã™ã‚‹ã€‚
     bool generate() {
         if (m_words.empty())
-            return false; // ’PŒêŒQ‚ª‹ó‚Å‚ ‚ê‚Î¸”sB
+            return false; // å˜èªç¾¤ãŒç©ºã§ã‚ã‚Œã°å¤±æ•—ã€‚
 
-        // Å‰‚Ì’PŒê‚ğŒó•â‚Æ‚µ‚Ä“K—p‚·‚éB‚±‚ê‚ª¶¬‚Ìí‚Æ‚È‚éB
+        // æœ€åˆã®å˜èªã‚’å€™è£œã¨ã—ã¦é©ç”¨ã™ã‚‹ã€‚ã“ã‚ŒãŒç”Ÿæˆã®ç¨®ã¨ãªã‚‹ã€‚
         auto word = *m_words.begin();
         candidate_t<t_char> cand = { 0, 0, word, false };
         apply_candidate(cand);
-        // ¶¬‚ÌÄ‹A‚ğŠJnB
+        // ç”Ÿæˆã®å†å¸°ã‚’é–‹å§‹ã€‚
         return generate_recurse();
     }
 
-    // ¶¬ƒXƒŒƒbƒh‚ÌƒvƒƒV[ƒWƒƒB
+    // ç”Ÿæˆã‚¹ãƒ¬ãƒƒãƒ‰ã®ãƒ—ãƒ­ã‚·ãƒ¼ã‚¸ãƒ£ã€‚
     static bool generate_proc(const std::unordered_set<t_string> *words, int iThread) {
-        // —”‚Ìí‚ğƒZƒbƒg‚·‚éB
+        // ä¹±æ•°ã®ç¨®ã‚’ã‚»ãƒƒãƒˆã™ã‚‹ã€‚
         std::srand(uint32_t(::GetTickCount64()) ^ ::GetCurrentThreadId());
 #ifdef _WIN32
-        // «”\‚ğd‹‚µ‚ÄƒXƒŒƒbƒh‚Ì—Dæ“x‚ğw’è‚·‚éB
+        // æ€§èƒ½ã‚’é‡è¦–ã—ã¦ã‚¹ãƒ¬ãƒƒãƒ‰ã®å„ªå…ˆåº¦ã‚’æŒ‡å®šã™ã‚‹ã€‚
         ::SetThreadPriority(::GetCurrentThread(), THREAD_PRIORITY_ABOVE_NORMAL);
 #endif
-        // ¶¬—p‚Ìƒf[ƒ^‚ğ‰Šú‰»B
+        // ç”Ÿæˆç”¨ã®ãƒ‡ãƒ¼ã‚¿ã‚’åˆæœŸåŒ–ã€‚
         from_words_t<t_char, t_fixed> data;
         data.m_iThread = iThread;
         data.m_words = *words;
         data.m_dict = std::move(*words);
-        delete words; // ’PŒê‚ÌŠ—LŒ ‚ÍƒXƒŒƒbƒh‚ÌƒvƒƒV[ƒWƒƒ‚É“n‚³‚ê‚Ä‚¢‚é‚Ì‚Å‚±‚±‚Å”jŠü‚·‚éB
-        return data.generate(); // ¶¬‚ğŠJn‚·‚éB
+        delete words; // å˜èªã®æ‰€æœ‰æ¨©ã¯ã‚¹ãƒ¬ãƒƒãƒ‰ã®ãƒ—ãƒ­ã‚·ãƒ¼ã‚¸ãƒ£ã«æ¸¡ã•ã‚Œã¦ã„ã‚‹ã®ã§ã“ã“ã§ç ´æ£„ã™ã‚‹ã€‚
+        return data.generate(); // ç”Ÿæˆã‚’é–‹å§‹ã™ã‚‹ã€‚
     }
 
-    // ¶¬—p‚Ìƒwƒ‹ƒp[ŠÖ”B
+    // ç”Ÿæˆç”¨ã®ãƒ˜ãƒ«ãƒ‘ãƒ¼é–¢æ•°ã€‚
     static bool
     do_generate(const std::unordered_set<t_string>& words,
                 int num_threads = get_num_processors())
     {
-#ifdef SINGLETHREADDEBUG // ƒVƒ“ƒOƒ‹ƒXƒŒƒbƒhƒeƒXƒg—pB
+#ifdef SINGLETHREADDEBUG // ã‚·ãƒ³ã‚°ãƒ«ã‚¹ãƒ¬ãƒƒãƒ‰ãƒ†ã‚¹ãƒˆç”¨ã€‚
         auto clone = new std::unordered_set<t_string>(words);
         generate_proc(clone, 0);
-#else // •¡”ƒXƒŒƒbƒhB
-        // ŠeƒXƒŒƒbƒh‚É‚Â‚¢‚ÄAAA
+#else // è¤‡æ•°ã‚¹ãƒ¬ãƒƒãƒ‰ã€‚
+        // å„ã‚¹ãƒ¬ãƒƒãƒ‰ã«ã¤ã„ã¦ã€ã€ã€
         for (int i = 0; i < num_threads; ++i) {
-            // ƒXƒŒƒbƒh‚ÉŠ—LŒ ‚ğ÷“n‚µ‚½‚¢‚Ì‚Å‰˜‚¢‚ªnew‚ğg‚í‚¹‚Ä‚¢‚½‚¾‚«‚½‚¢B
+            // ã‚¹ãƒ¬ãƒƒãƒ‰ã«æ‰€æœ‰æ¨©ã‚’è­²æ¸¡ã—ãŸã„ã®ã§æ±šã„ãŒnewã‚’ä½¿ã‚ã›ã¦ã„ãŸã ããŸã„ã€‚
             auto clone = new std::unordered_set<t_string>(words);
             try {
-                // ƒXƒŒƒbƒh‚ğ¶¬BØ‚è—£‚·B
+                // ã‚¹ãƒ¬ãƒƒãƒ‰ã‚’ç”Ÿæˆã€‚åˆ‡ã‚Šé›¢ã™ã€‚
                 std::thread t(generate_proc, clone, i);
                 t.detach();
             } catch (std::system_error&) {
@@ -1735,92 +1736,92 @@ struct from_words_t {
 
 template <typename t_char>
 struct non_add_block_t {
-    typedef std::basic_string<t_char> t_string; // •¶š—ñB
-    enum { t_fixed = 1 }; // ŒÅ’è‚©H
+    typedef std::basic_string<t_char> t_string; // æ–‡å­—åˆ—ã€‚
+    enum { t_fixed = 1 }; // å›ºå®šã‹ï¼Ÿ
 
-    inline static board_t<t_char, t_fixed> s_solution; // ‰ğ‚Ì”Õ–Êƒf[ƒ^B
-    board_t<t_char, t_fixed> m_board; // ”Õ–Êƒf[ƒ^B
-    std::unordered_set<t_string> m_words, m_dict; // ’PŒêŒQ‚Æ«‘ƒf[ƒ^B
+    inline static board_t<t_char, t_fixed> s_solution; // è§£ã®ç›¤é¢ãƒ‡ãƒ¼ã‚¿ã€‚
+    board_t<t_char, t_fixed> m_board; // ç›¤é¢ãƒ‡ãƒ¼ã‚¿ã€‚
+    std::unordered_set<t_string> m_words, m_dict; // å˜èªç¾¤ã¨è¾æ›¸ãƒ‡ãƒ¼ã‚¿ã€‚
     std::unordered_set<pos_t> m_checked_x, m_checked_y;
     int m_iThread;
 
-    // ƒpƒ^[ƒ“‚©‚çŒó•âŒQ‚ğæ“¾‚·‚éB
+    // ãƒ‘ã‚¿ãƒ¼ãƒ³ã‹ã‚‰å€™è£œç¾¤ã‚’å–å¾—ã™ã‚‹ã€‚
     std::vector<candidate_t<t_char>>
     get_candidates_from_pat(int x, int y, const t_string& pat, bool vertical) const {
-        std::vector<candidate_t<t_char>> ret; // Œó•âŒQ‚ª–ß‚è’lB
-        assert(pat.size() > 0); // Œó•â‚ª‚ ‚é‚Æ‰¼’èB
-        if (pat.find('?') == pat.npos) { // –¢’m‚Ìƒ}ƒX‚ª‚È‚¯‚ê‚Î
+        std::vector<candidate_t<t_char>> ret; // å€™è£œç¾¤ãŒæˆ»ã‚Šå€¤ã€‚
+        assert(pat.size() > 0); // å€™è£œãŒã‚ã‚‹ã¨ä»®å®šã€‚
+        if (pat.find('?') == pat.npos) { // æœªçŸ¥ã®ãƒã‚¹ãŒãªã‘ã‚Œã°
             if (m_words.count(pat) > 0)
-                ret.push_back({ x, y, pat, vertical }); // ‚»‚ÌŒó•â‚ª–ß‚è’l‚Ìˆê‚ÂB
+                ret.push_back({ x, y, pat, vertical }); // ãã®å€™è£œãŒæˆ»ã‚Šå€¤ã®ä¸€ã¤ã€‚
             return ret;
         }
-        ret.reserve(m_words.size() >> 4); // ‘¬“x‚Ì‚½‚ß‚É‘O‚à‚Á‚Ä—\–ñ‚µ‚ÄŠm•ÛB
-        for (auto& word : m_words) { // Še’PŒê‚É‚Â‚¢‚ÄAAA
-            if (word.size() != pat.size()) // ’PŒê‚Æƒpƒ^[ƒ“‚Ì’·‚³‚ª•sˆê’v‚È‚ç‚ÎƒXƒLƒbƒvB
+        ret.reserve(m_words.size() >> 4); // é€Ÿåº¦ã®ãŸã‚ã«å‰ã‚‚ã£ã¦äºˆç´„ã—ã¦ç¢ºä¿ã€‚
+        for (auto& word : m_words) { // å„å˜èªã«ã¤ã„ã¦ã€ã€ã€
+            if (word.size() != pat.size()) // å˜èªã¨ãƒ‘ã‚¿ãƒ¼ãƒ³ã®é•·ã•ãŒä¸ä¸€è‡´ãªã‚‰ã°ã‚¹ã‚­ãƒƒãƒ—ã€‚
                 continue;
-            bool matched = true; // ˆê’v‚µ‚Ä‚¢‚é‚Æ‰¼’èB
+            bool matched = true; // ä¸€è‡´ã—ã¦ã„ã‚‹ã¨ä»®å®šã€‚
             for (size_t ich = 0; ich < word.size(); ++ich) {
-                if (pat[ich] != '?' && pat[ich] != word[ich]) { // –¢’m‚Ìƒ}ƒX‚©“¯ˆê‚©H
-                    matched = false; // ˆê’v‚µ‚Ä‚¢‚È‚¢I
+                if (pat[ich] != '?' && pat[ich] != word[ich]) { // æœªçŸ¥ã®ãƒã‚¹ã‹åŒä¸€ã‹ï¼Ÿ
+                    matched = false; // ä¸€è‡´ã—ã¦ã„ãªã„ï¼
                     break;
                 }
             }
             if (matched)
-                ret.push_back({ x, y, word, vertical}); // ˆê’v‚·‚ê‚Î‚»‚ÌŒó•â‚ª–ß‚è’l‚Ìˆê‚ÂB
+                ret.push_back({ x, y, word, vertical}); // ä¸€è‡´ã™ã‚Œã°ãã®å€™è£œãŒæˆ»ã‚Šå€¤ã®ä¸€ã¤ã€‚
         }
-        return ret; // Œó•âŒQ‚ğ•Ô‚·B
+        return ret; // å€™è£œç¾¤ã‚’è¿”ã™ã€‚
     }
 
-    // ’PŒêŒQ‚ğƒ`ƒFƒbƒN‚·‚éB
+    // å˜èªç¾¤ã‚’ãƒã‚§ãƒƒã‚¯ã™ã‚‹ã€‚
     bool check_words() {
-        // Šes‚ÌŠeƒ}ƒX‚É‚Â‚¢‚ÄAAA
+        // å„è¡Œã®å„ãƒã‚¹ã«ã¤ã„ã¦ã€ã€ã€
         for (int y = 0; y < m_board.m_cy; ++y) {
             for (int x = 0; x < m_board.m_cx; ++x) {
                 if (m_checked_x.count(pos_t(x, y)) > 0)
-                    continue; // ƒ`ƒFƒbƒNÏ‚İ‚È‚çƒXƒLƒbƒvB
+                    continue; // ãƒã‚§ãƒƒã‚¯æ¸ˆã¿ãªã‚‰ã‚¹ã‚­ãƒƒãƒ—ã€‚
 
                 int x0;
-                auto pat = m_board.get_pat_x(x, y, &x0); // ‰¡Œü‚«‚Ìƒpƒ^[ƒ“‚ğæ“¾B
-                if (pat.find('?') != pat.npos) // –¢’m‚Ìƒ}ƒX‚ª‚ ‚ê‚ÎƒXƒLƒbƒvB
+                auto pat = m_board.get_pat_x(x, y, &x0); // æ¨ªå‘ãã®ãƒ‘ã‚¿ãƒ¼ãƒ³ã‚’å–å¾—ã€‚
+                if (pat.find('?') != pat.npos) // æœªçŸ¥ã®ãƒã‚¹ãŒã‚ã‚Œã°ã‚¹ã‚­ãƒƒãƒ—ã€‚
                     continue;
 
-                if (pat.size() <= 1) { // ƒpƒ^[ƒ“‚ª‚Pƒ}ƒX‚Å‚ ‚ê‚ÎA
-                    m_checked_x.emplace(x, y); // ƒ`ƒFƒbƒNÏ‚İ‚ÆŒ©‚È‚·B
+                if (pat.size() <= 1) { // ãƒ‘ã‚¿ãƒ¼ãƒ³ãŒï¼‘ãƒã‚¹ã§ã‚ã‚Œã°ã€
+                    m_checked_x.emplace(x, y); // ãƒã‚§ãƒƒã‚¯æ¸ˆã¿ã¨è¦‹ãªã™ã€‚
                     continue;
                 }
 
-                if (m_dict.count(pat) == 0) // ’PŒê‚ª“o˜^‚³‚ê‚Ä‚¢‚È‚¯‚ê‚Î¸”sB
+                if (m_dict.count(pat) == 0) // å˜èªãŒç™»éŒ²ã•ã‚Œã¦ã„ãªã‘ã‚Œã°å¤±æ•—ã€‚
                     return false;
 
-                // ƒpƒ^[ƒ“‚ÌŠeƒ}ƒXˆÊ’u‚É‚Â‚¢‚Ä
+                // ãƒ‘ã‚¿ãƒ¼ãƒ³ã®å„ãƒã‚¹ä½ç½®ã«ã¤ã„ã¦
                 for (size_t i = 0; i < pat.size(); ++i, ++x0) {
-                    m_checked_x.emplace(x0, y); // ƒ`ƒFƒbƒNÏ‚İ‚Æ‚·‚éB
+                    m_checked_x.emplace(x0, y); // ãƒã‚§ãƒƒã‚¯æ¸ˆã¿ã¨ã™ã‚‹ã€‚
                 }
             }
         }
 
-        // Še—ñ‚ÌŠeƒ}ƒX‚É‚Â‚¢‚ÄAAA
+        // å„åˆ—ã®å„ãƒã‚¹ã«ã¤ã„ã¦ã€ã€ã€
         for (int x = 0; x < m_board.m_cx; ++x) {
             for (int y = 0; y < m_board.m_cy; ++y) {
                 if (m_checked_y.count(pos_t(x, y)) > 0)
-                    continue; // ƒ`ƒFƒbƒNÏ‚İ‚È‚çƒXƒLƒbƒvB
+                    continue; // ãƒã‚§ãƒƒã‚¯æ¸ˆã¿ãªã‚‰ã‚¹ã‚­ãƒƒãƒ—ã€‚
 
                 int y0;
-                auto pat = m_board.get_pat_y(x, y, &y0); // cŒü‚«‚Ìƒpƒ^[ƒ“‚ğæ“¾B
-                if (pat.find('?') != pat.npos) // –¢’m‚Ìƒ}ƒX‚ª‚ ‚ê‚ÎƒXƒLƒbƒvB
+                auto pat = m_board.get_pat_y(x, y, &y0); // ç¸¦å‘ãã®ãƒ‘ã‚¿ãƒ¼ãƒ³ã‚’å–å¾—ã€‚
+                if (pat.find('?') != pat.npos) // æœªçŸ¥ã®ãƒã‚¹ãŒã‚ã‚Œã°ã‚¹ã‚­ãƒƒãƒ—ã€‚
                     continue;
 
-                if (pat.size() <= 1) { // ƒpƒ^[ƒ“‚ª‚Pƒ}ƒX‚Å‚ ‚ê‚ÎA
-                    m_checked_y.emplace(x, y); // ƒ`ƒFƒbƒNÏ‚İ‚ÆŒ©‚È‚·B
+                if (pat.size() <= 1) { // ãƒ‘ã‚¿ãƒ¼ãƒ³ãŒï¼‘ãƒã‚¹ã§ã‚ã‚Œã°ã€
+                    m_checked_y.emplace(x, y); // ãƒã‚§ãƒƒã‚¯æ¸ˆã¿ã¨è¦‹ãªã™ã€‚
                     continue;
                 }
 
-                if (m_dict.count(pat) == 0) // ’PŒê‚ª“o˜^‚³‚ê‚Ä‚¢‚È‚¯‚ê‚Î¸”sB
+                if (m_dict.count(pat) == 0) // å˜èªãŒç™»éŒ²ã•ã‚Œã¦ã„ãªã‘ã‚Œã°å¤±æ•—ã€‚
                     return false;
 
-                // ƒpƒ^[ƒ“‚ÌŠeƒ}ƒXˆÊ’u‚É‚Â‚¢‚Ä
+                // ãƒ‘ã‚¿ãƒ¼ãƒ³ã®å„ãƒã‚¹ä½ç½®ã«ã¤ã„ã¦
                 for (size_t i = 0; i < pat.size(); ++i, ++y0) {
-                    m_checked_y.emplace(x, y0); // ƒ`ƒFƒbƒNÏ‚İ‚Æ‚·‚éB
+                    m_checked_y.emplace(x, y0); // ãƒã‚§ãƒƒã‚¯æ¸ˆã¿ã¨ã™ã‚‹ã€‚
                 }
             }
         }
@@ -1828,106 +1829,106 @@ struct non_add_block_t {
         return true;
     }
 
-    // xŒü‚«‚ÉŒó•â‚ğ“K—p‚·‚éB
+    // xå‘ãã«å€™è£œã‚’é©ç”¨ã™ã‚‹ã€‚
     bool apply_candidate_x(const candidate_t<t_char>& cand) {
         auto& word = cand.m_word;
-        m_words.erase(word); // ’PŒêŒQ‚©‚ç’PŒê‚ğæ‚èœ‚­B
+        m_words.erase(word); // å˜èªç¾¤ã‹ã‚‰å˜èªã‚’å–ã‚Šé™¤ãã€‚
         int x = cand.m_x, y = cand.m_y;
         for (size_t ich = 0; ich < word.size(); ++ich, ++x) {
-            m_checked_x.emplace(x, y); // ƒ`ƒFƒbƒNÏ‚İ‚Æ‚·‚éB
-            m_board.set_at(x, y, word[ich]); // ƒ}ƒX(x, y)‚É“K—p‚·‚éB
+            m_checked_x.emplace(x, y); // ãƒã‚§ãƒƒã‚¯æ¸ˆã¿ã¨ã™ã‚‹ã€‚
+            m_board.set_at(x, y, word[ich]); // ãƒã‚¹(x, y)ã«é©ç”¨ã™ã‚‹ã€‚
         }
         return true;
     }
-    // yŒü‚«‚ÉŒó•â‚ğ“K—p‚·‚éB
+    // yå‘ãã«å€™è£œã‚’é©ç”¨ã™ã‚‹ã€‚
     bool apply_candidate_y(const candidate_t<t_char>& cand) {
         auto& word = cand.m_word;
-        m_words.erase(word); // ’PŒêŒQ‚©‚ç’PŒê‚ğæ‚èœ‚­B
+        m_words.erase(word); // å˜èªç¾¤ã‹ã‚‰å˜èªã‚’å–ã‚Šé™¤ãã€‚
         int x = cand.m_x, y = cand.m_y;
         for (size_t ich = 0; ich < word.size(); ++ich, ++y) {
-            m_checked_y.emplace(x, y); // ƒ`ƒFƒbƒNÏ‚İ‚Æ‚·‚éB
-            m_board.set_at(x, y, word[ich]); // ƒ}ƒX(x, y)‚É“K—p‚·‚éB
+            m_checked_y.emplace(x, y); // ãƒã‚§ãƒƒã‚¯æ¸ˆã¿ã¨ã™ã‚‹ã€‚
+            m_board.set_at(x, y, word[ich]); // ãƒã‚¹(x, y)ã«é©ç”¨ã™ã‚‹ã€‚
         }
         return true;
     }
 
-    // ¶¬Ä‹A—p‚ÌŠÖ”B
+    // ç”Ÿæˆå†å¸°ç”¨ã®é–¢æ•°ã€‚
     bool generate_recurse() {
-        // ƒLƒƒƒ“ƒZƒ‹Ï‚İA¶¬Ï‚İA‚à‚µ‚­‚Í’PŒêƒ`ƒFƒbƒN‚É¸”s‚È‚ç‚ÎI—¹B
+        // ã‚­ãƒ£ãƒ³ã‚»ãƒ«æ¸ˆã¿ã€ç”Ÿæˆæ¸ˆã¿ã€ã‚‚ã—ãã¯å˜èªãƒã‚§ãƒƒã‚¯ã«å¤±æ•—ãªã‚‰ã°çµ‚äº†ã€‚
         if (s_canceled || s_generated || !check_words())
-            return s_generated; // ¶¬Ï‚İ‚È‚ç¬Œ÷B
+            return s_generated; // ç”Ÿæˆæ¸ˆã¿ãªã‚‰æˆåŠŸã€‚
 
-        // Šes‚Ìƒ}ƒX‚Ì•À‚Ñ‚É‚Â‚¢‚ÄB
+        // å„è¡Œã®ãƒã‚¹ã®ä¸¦ã³ã«ã¤ã„ã¦ã€‚
         for (int y = 0; y < m_board.m_cy; ++y) {
             for (int x = 0; x < m_board.m_cx - 1; ++x) {
-                // ƒLƒƒƒ“ƒZƒ‹Ï‚İ‚©¶¬Ï‚İ‚È‚çI—¹B
+                // ã‚­ãƒ£ãƒ³ã‚»ãƒ«æ¸ˆã¿ã‹ç”Ÿæˆæ¸ˆã¿ãªã‚‰çµ‚äº†ã€‚
                 if (s_canceled || s_generated)
-                    return s_generated; // ¶¬Ï‚İ‚È‚ç¬Œ÷B
+                    return s_generated; // ç”Ÿæˆæ¸ˆã¿ãªã‚‰æˆåŠŸã€‚
 
-                // ‰¡Œü‚«‚Ì‚Qƒ}ƒX‚Ì•À‚Ñ‚ğŒ©‚éB
+                // æ¨ªå‘ãã®ï¼’ãƒã‚¹ã®ä¸¦ã³ã‚’è¦‹ã‚‹ã€‚
                 t_char ch0 = m_board.get_at(x, y);
                 t_char ch1 = m_board.get_at(x + 1, y);
-                // •¶šƒ}ƒX‚Æ–¢’m‚Ìƒ}ƒXA‚à‚µ‚­‚ÍA–¢’m‚Ìƒ}ƒX‚Æ•¶šƒ}ƒX‚ª•À‚ñ‚Å‚¢‚ê‚ÎAAA
+                // æ–‡å­—ãƒã‚¹ã¨æœªçŸ¥ã®ãƒã‚¹ã€ã‚‚ã—ãã¯ã€æœªçŸ¥ã®ãƒã‚¹ã¨æ–‡å­—ãƒã‚¹ãŒä¸¦ã‚“ã§ã„ã‚Œã°ã€ã€ã€
                 if ((is_letter(ch0) && ch1 == '?') || (ch0 == '?' && is_letter(ch1))) {
                     int x0;
-                    auto pat = m_board.get_pat_x(x, y, &x0); // x•ûŒü‚Éƒpƒ^[ƒ“‚ğæ“¾B
-                    auto cands = get_candidates_from_pat(x0, y, pat, false); // ƒpƒ^[ƒ“‚©‚çŒó•âŒQ‚ğæ“¾B
+                    auto pat = m_board.get_pat_x(x, y, &x0); // xæ–¹å‘ã«ãƒ‘ã‚¿ãƒ¼ãƒ³ã‚’å–å¾—ã€‚
+                    auto cands = get_candidates_from_pat(x0, y, pat, false); // ãƒ‘ã‚¿ãƒ¼ãƒ³ã‹ã‚‰å€™è£œç¾¤ã‚’å–å¾—ã€‚
                     if (cands.empty())
-                        return false; // Œó•â‚ª‚È‚¯‚ê‚Î¸”sB
-                    // Œó•âŒQ‚ğƒ‰ƒ“ƒ_ƒ€ƒVƒƒƒbƒtƒ‹B
+                        return false; // å€™è£œãŒãªã‘ã‚Œã°å¤±æ•—ã€‚
+                    // å€™è£œç¾¤ã‚’ãƒ©ãƒ³ãƒ€ãƒ ã‚·ãƒ£ãƒƒãƒ•ãƒ«ã€‚
                     crossword_generation::random_shuffle(cands.begin(), cands.end());
-                    // ŠeŒó•â‚É‚Â‚¢‚ÄAAA
+                    // å„å€™è£œã«ã¤ã„ã¦ã€ã€ã€
                     for (auto& cand : cands) {
-                        if (s_canceled || s_generated) // ƒLƒƒƒ“ƒZƒ‹Ï‚İ‚©¶¬Ï‚İ‚È‚çI—¹B
-                            return s_generated; // ¶¬Ï‚İ‚È‚ç¬Œ÷B
+                        if (s_canceled || s_generated) // ã‚­ãƒ£ãƒ³ã‚»ãƒ«æ¸ˆã¿ã‹ç”Ÿæˆæ¸ˆã¿ãªã‚‰çµ‚äº†ã€‚
+                            return s_generated; // ç”Ÿæˆæ¸ˆã¿ãªã‚‰æˆåŠŸã€‚
 
-                        // •¡»‚µ‚ÄŒó•â‚ğ“K—p‚µ‚ÄÄ‹AE•ªŠò‚·‚éB
+                        // è¤‡è£½ã—ã¦å€™è£œã‚’é©ç”¨ã—ã¦å†å¸°ãƒ»åˆ†å²ã™ã‚‹ã€‚
                         non_add_block_t<t_char> copy(*this);
                         copy.apply_candidate_x(cand);
                         if (copy.generate_recurse())
                             break;
                     }
-                    return s_generated; // ¶¬Ï‚İ‚È‚ç¬Œ÷B
+                    return s_generated; // ç”Ÿæˆæ¸ˆã¿ãªã‚‰æˆåŠŸã€‚
                 }
             }
         }
 
-        // Še—ñ‚Ìƒ}ƒX‚Ì•À‚Ñ‚É‚Â‚¢‚ÄAAA
+        // å„åˆ—ã®ãƒã‚¹ã®ä¸¦ã³ã«ã¤ã„ã¦ã€ã€ã€
         for (int x = 0; x < m_board.m_cx; ++x) {
             for (int y = 0; y < m_board.m_cy - 1; ++y) {
-                // ƒLƒƒƒ“ƒZƒ‹Ï‚İ‚©¶¬Ï‚İ‚È‚çI—¹B
+                // ã‚­ãƒ£ãƒ³ã‚»ãƒ«æ¸ˆã¿ã‹ç”Ÿæˆæ¸ˆã¿ãªã‚‰çµ‚äº†ã€‚
                 if (s_canceled || s_generated)
-                    return s_generated; // ¶¬Ï‚İ‚È‚ç¬Œ÷B
+                    return s_generated; // ç”Ÿæˆæ¸ˆã¿ãªã‚‰æˆåŠŸã€‚
 
-                // ƒ^ƒeŒü‚«‚Ì‚Qƒ}ƒX‚Ì•À‚Ñ‚ğŒ©‚éB
+                // ã‚¿ãƒ†å‘ãã®ï¼’ãƒã‚¹ã®ä¸¦ã³ã‚’è¦‹ã‚‹ã€‚
                 t_char ch0 = m_board.get_at(x, y);
                 t_char ch1 = m_board.get_at(x, y + 1);
-                // •¶šƒ}ƒX‚Æ–¢’m‚Ìƒ}ƒXA‚à‚µ‚­‚ÍA–¢’m‚Ìƒ}ƒX‚Æ•¶šƒ}ƒX‚ª•À‚ñ‚Å‚¢‚ê‚ÎAAA
+                // æ–‡å­—ãƒã‚¹ã¨æœªçŸ¥ã®ãƒã‚¹ã€ã‚‚ã—ãã¯ã€æœªçŸ¥ã®ãƒã‚¹ã¨æ–‡å­—ãƒã‚¹ãŒä¸¦ã‚“ã§ã„ã‚Œã°ã€ã€ã€
                 if ((is_letter(ch0) && ch1 == '?') || (ch0 == '?' && is_letter(ch1))) {
                     int y0;
-                    auto pat = m_board.get_pat_y(x, y, &y0); // y•ûŒü‚Éƒpƒ^[ƒ“‚ğæ“¾B
-                    auto cands = get_candidates_from_pat(x, y0, pat, true); // ƒpƒ^[ƒ“‚©‚çŒó•âŒQ‚ğæ“¾B
+                    auto pat = m_board.get_pat_y(x, y, &y0); // yæ–¹å‘ã«ãƒ‘ã‚¿ãƒ¼ãƒ³ã‚’å–å¾—ã€‚
+                    auto cands = get_candidates_from_pat(x, y0, pat, true); // ãƒ‘ã‚¿ãƒ¼ãƒ³ã‹ã‚‰å€™è£œç¾¤ã‚’å–å¾—ã€‚
                     if (cands.empty())
-                        return false; // Œó•â‚ª‚È‚¯‚ê‚Î¸”sB
-                    // Œó•âŒQ‚ğƒ‰ƒ“ƒ_ƒ€ƒVƒƒƒbƒtƒ‹B
+                        return false; // å€™è£œãŒãªã‘ã‚Œã°å¤±æ•—ã€‚
+                    // å€™è£œç¾¤ã‚’ãƒ©ãƒ³ãƒ€ãƒ ã‚·ãƒ£ãƒƒãƒ•ãƒ«ã€‚
                     crossword_generation::random_shuffle(cands.begin(), cands.end());
-                    // ŠeŒó•â‚É‚Â‚¢‚ÄAAA
+                    // å„å€™è£œã«ã¤ã„ã¦ã€ã€ã€
                     for (auto& cand : cands) {
-                        if (s_canceled || s_generated) // ƒLƒƒƒ“ƒZƒ‹Ï‚İ‚©¶¬Ï‚İ‚È‚çI—¹B
-                            return s_generated; // ¶¬Ï‚İ‚È‚ç¬Œ÷B
+                        if (s_canceled || s_generated) // ã‚­ãƒ£ãƒ³ã‚»ãƒ«æ¸ˆã¿ã‹ç”Ÿæˆæ¸ˆã¿ãªã‚‰çµ‚äº†ã€‚
+                            return s_generated; // ç”Ÿæˆæ¸ˆã¿ãªã‚‰æˆåŠŸã€‚
 
-                        // •¡»‚µ‚ÄŒó•â‚ğ“K—p‚µ‚ÄÄ‹AE•ªŠòB
+                        // è¤‡è£½ã—ã¦å€™è£œã‚’é©ç”¨ã—ã¦å†å¸°ãƒ»åˆ†å²ã€‚
                         non_add_block_t<t_char> copy(*this);
                         copy.apply_candidate_y(cand);
                         if (copy.generate_recurse())
                             break;
                     }
-                    return s_generated; // ¶¬Ï‚İ‚È‚ç¬Œ÷B
+                    return s_generated; // ç”Ÿæˆæ¸ˆã¿ãªã‚‰æˆåŠŸã€‚
                 }
             }
         }
 
-        // ”Õ–Ê‚ª‰ğ‚È‚ç‚Î¬Œ÷B
+        // ç›¤é¢ãŒè§£ãªã‚‰ã°æˆåŠŸã€‚
         if (is_solution(m_board)) {
             std::lock_guard<std::mutex> lock(s_mutex);
             s_generated = true;
@@ -1935,54 +1936,54 @@ struct non_add_block_t {
             return true;
         }
 
-        return s_generated; // ¶¬Ï‚İ‚È‚ç¬Œ÷B
+        return s_generated; // ç”Ÿæˆæ¸ˆã¿ãªã‚‰æˆåŠŸã€‚
     }
 
-    // ”Õ–Ê‚Í‰ğ‚©H
+    // ç›¤é¢ã¯è§£ã‹ï¼Ÿ
     bool is_solution(const board_t<t_char, t_fixed>& board) {
         return (board.count('?') == 0);
     }
 
-    // ¶¬‚ğs‚¤ŠÖ”B
+    // ç”Ÿæˆã‚’è¡Œã†é–¢æ•°ã€‚
     bool generate() {
-        // ’PŒê‚ª‚È‚¯‚ê‚Î¶¬‚Å‚«‚È‚¢B
+        // å˜èªãŒãªã‘ã‚Œã°ç”Ÿæˆã§ããªã„ã€‚
         if (m_words.empty())
             return false;
 
-        // ¶¬’†‚Íƒ‹[ƒ‹‚É“K‡‚µ‚Ä‚¢‚é‚Æ‰¼’è‚·‚éB
+        // ç”Ÿæˆä¸­ã¯ãƒ«ãƒ¼ãƒ«ã«é©åˆã—ã¦ã„ã‚‹ã¨ä»®å®šã™ã‚‹ã€‚
         assert(m_board.rules_ok());
 
-        // •¶šƒ}ƒX‚ª‚ ‚ê‚ÎAÄ‹A—p‚ÌŠÖ”‚ğŒÄ‚Ño‚·B
+        // æ–‡å­—ãƒã‚¹ãŒã‚ã‚Œã°ã€å†å¸°ç”¨ã®é–¢æ•°ã‚’å‘¼ã³å‡ºã™ã€‚
         if (m_board.has_letter())
             return generate_recurse();
 
-        // ’PŒêŒQ‚ğƒ‰ƒ“ƒ_ƒ€ƒVƒƒƒbƒtƒ‹B
+        // å˜èªç¾¤ã‚’ãƒ©ãƒ³ãƒ€ãƒ ã‚·ãƒ£ãƒƒãƒ•ãƒ«ã€‚
         std::vector<t_string> words(m_words.begin(), m_words.end());
         crossword_generation::random_shuffle(words.begin(), words.end());
 
-        // ”Õ–Ê‚ÌŠeƒ}ƒX‚É‚Â‚¢‚ÄB
+        // ç›¤é¢ã®å„ãƒã‚¹ã«ã¤ã„ã¦ã€‚
         for (int y = 0; y < m_board.m_cy; ++y) {
             for (int x = 0; x < m_board.m_cx - 1; ++x) {
-                // ¶¬Ï‚İ‚à‚µ‚­‚ÍƒLƒƒƒ“ƒZƒ‹Ï‚İ‚È‚ç‚ÎI—¹B
+                // ç”Ÿæˆæ¸ˆã¿ã‚‚ã—ãã¯ã‚­ãƒ£ãƒ³ã‚»ãƒ«æ¸ˆã¿ãªã‚‰ã°çµ‚äº†ã€‚
                 if (s_canceled || s_generated)
                     return s_generated;
-                // –¢’m‚Ìƒ}ƒX‚ª‚ ‚ê‚ÎAAA
+                // æœªçŸ¥ã®ãƒã‚¹ãŒã‚ã‚Œã°ã€ã€ã€
                 if (m_board.get_at(x, y) == '?' && m_board.get_at(x + 1, y) == '?') {
                     int x0;
-                    auto pat = m_board.get_pat_x(x, y, &x0); // x•ûŒü‚Ìƒpƒ^[ƒ“‚ğæ“¾‚µA
-                    auto cands = get_candidates_from_pat(x0, y, pat, false); // ƒpƒ^[ƒ“‚©‚çŒó•â‚ğæ“¾B
-                    for (auto& cand : cands) { // ŠeŒó•â‚É‚Â‚¢‚Ä
-                        // ƒLƒƒƒ“ƒZƒ‹Ï‚İ‚à‚µ‚­‚Í¶¬Ï‚İ‚È‚çI—¹B
+                    auto pat = m_board.get_pat_x(x, y, &x0); // xæ–¹å‘ã®ãƒ‘ã‚¿ãƒ¼ãƒ³ã‚’å–å¾—ã—ã€
+                    auto cands = get_candidates_from_pat(x0, y, pat, false); // ãƒ‘ã‚¿ãƒ¼ãƒ³ã‹ã‚‰å€™è£œã‚’å–å¾—ã€‚
+                    for (auto& cand : cands) { // å„å€™è£œã«ã¤ã„ã¦
+                        // ã‚­ãƒ£ãƒ³ã‚»ãƒ«æ¸ˆã¿ã‚‚ã—ãã¯ç”Ÿæˆæ¸ˆã¿ãªã‚‰çµ‚äº†ã€‚
                         if (s_canceled || s_generated)
-                            return s_generated; // ¶¬Ï‚İ‚È‚ç¬Œ÷B
+                            return s_generated; // ç”Ÿæˆæ¸ˆã¿ãªã‚‰æˆåŠŸã€‚
 
-                        // •¡»‚µ‚ÄŒó•â‚ğ“K—p‚µ‚ÄÄ‹AB
+                        // è¤‡è£½ã—ã¦å€™è£œã‚’é©ç”¨ã—ã¦å†å¸°ã€‚
                         non_add_block_t<t_char> copy(*this);
                         copy.apply_candidate_x(cand);
                         if (copy.generate_recurse())
-                            return true; // ¶¬‚É¬Œ÷B
+                            return true; // ç”Ÿæˆã«æˆåŠŸã€‚
                     }
-                    // ƒpƒ^[ƒ“‚Ì’·‚³‚¾‚¯x•ûŒü‚ÉƒXƒLƒbƒvB
+                    // ãƒ‘ã‚¿ãƒ¼ãƒ³ã®é•·ã•ã ã‘xæ–¹å‘ã«ã‚¹ã‚­ãƒƒãƒ—ã€‚
                     x += int(pat.size());
                 }
             }
@@ -1991,7 +1992,7 @@ struct non_add_block_t {
         return false;
     }
 
-    // ¶¬ƒXƒŒƒbƒh‚ÌƒvƒƒV[ƒWƒƒB
+    // ç”Ÿæˆã‚¹ãƒ¬ãƒƒãƒ‰ã®ãƒ—ãƒ­ã‚·ãƒ¼ã‚¸ãƒ£ã€‚
     static bool
     generate_proc(board_t<t_char, t_fixed> *pboard,
                   std::unordered_set<t_string> *pwords, int iThread)
@@ -2010,7 +2011,7 @@ struct non_add_block_t {
         return data.generate();
     }
 
-    // ¶¬‚ğs‚¤ƒwƒ‹ƒp[ŠÖ”B
+    // ç”Ÿæˆã‚’è¡Œã†ãƒ˜ãƒ«ãƒ‘ãƒ¼é–¢æ•°ã€‚
     static bool
     do_generate(const board_t<t_char, t_fixed>& board,
                 const std::unordered_set<t_string>& words,
@@ -2018,17 +2019,17 @@ struct non_add_block_t {
     {
         board_t<t_char, t_fixed> *pboard = nullptr;
         std::unordered_set<t_string> *pwords = nullptr;
-#ifdef SINGLETHREADDEBUG // ƒVƒ“ƒOƒ‹ƒXƒŒƒbƒhƒeƒXƒg—pB
+#ifdef SINGLETHREADDEBUG // ã‚·ãƒ³ã‚°ãƒ«ã‚¹ãƒ¬ãƒƒãƒ‰ãƒ†ã‚¹ãƒˆç”¨ã€‚
         pboard = new board_t<t_char, t_fixed>(board);
         pwords = new std::unordered_set<t_string>(words);
         generate_proc(pboard, pwords, 0);
-#else // •¡”ƒXƒŒƒbƒhB
+#else // è¤‡æ•°ã‚¹ãƒ¬ãƒƒãƒ‰ã€‚
         for (int i = 0; i < num_threads; ++i) {
-            // ƒXƒŒƒbƒh‚ÉŠ—LŒ ‚ğ÷“n‚µ‚½‚¢‚Ì‚Å‰˜‚¢‚ªnew‚ğg‚í‚¹‚Ä‚¢‚½‚¾‚«‚½‚¢B
+            // ã‚¹ãƒ¬ãƒƒãƒ‰ã«æ‰€æœ‰æ¨©ã‚’è­²æ¸¡ã—ãŸã„ã®ã§æ±šã„ãŒnewã‚’ä½¿ã‚ã›ã¦ã„ãŸã ããŸã„ã€‚
             pboard = new board_t<t_char, t_fixed>(board);
             pwords = new std::unordered_set<t_string>(words);
             try {
-                // ƒXƒŒƒbƒh‚ğ¶¬BØ‚è—£‚·B
+                // ã‚¹ãƒ¬ãƒƒãƒ‰ã‚’ç”Ÿæˆã€‚åˆ‡ã‚Šé›¢ã™ã€‚
                 std::thread t(generate_proc, pboard, pwords, i);
                 t.detach();
             } catch (std::system_error&) {
