@@ -3,7 +3,7 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #ifndef MZC4_MPOINTSIZERECT_HPP_
-#define MZC4_MPOINTSIZERECT_HPP_    4   /* Version 4 */
+#define MZC4_MPOINTSIZERECT_HPP_    5   /* Version 5 */
 
 class MPoint;
 class MSize;
@@ -22,7 +22,7 @@ class MRect;
 
 ////////////////////////////////////////////////////////////////////////////
 
-inline VOID GetScreenRectDx(LPRECT prc)
+inline VOID GetScreenRectDx(LPRECT prc) noexcept
 {
 #ifndef SM_XVIRTUALSCREEN
     #define SM_XVIRTUALSCREEN   76
@@ -30,10 +30,10 @@ inline VOID GetScreenRectDx(LPRECT prc)
     #define SM_CXVIRTUALSCREEN  78
     #define SM_CYVIRTUALSCREEN  79
 #endif
-    INT x = GetSystemMetrics(SM_XVIRTUALSCREEN);
-    INT y = GetSystemMetrics(SM_YVIRTUALSCREEN);
-    INT cx = GetSystemMetrics(SM_CXVIRTUALSCREEN);
-    INT cy = GetSystemMetrics(SM_CYVIRTUALSCREEN);
+    const INT x = GetSystemMetrics(SM_XVIRTUALSCREEN);
+    const INT y = GetSystemMetrics(SM_YVIRTUALSCREEN);
+    const INT cx = GetSystemMetrics(SM_CXVIRTUALSCREEN);
+    const INT cy = GetSystemMetrics(SM_CYVIRTUALSCREEN);
     if (cx)
     {
         SetRect(prc, x, y, x + cx, y + cy);
@@ -51,30 +51,30 @@ inline VOID GetScreenRectDx(LPRECT prc)
 class MPoint : public POINT
 {
 public:
-    MPoint();
-    MPoint(INT x_, INT y_);
-    MPoint(POINT pt);
-    MPoint(SIZE siz);
-    MPoint(DWORD dwPoint);
-    VOID    Offset(INT dx, INT dy);
-    VOID    Offset(POINT pt);
-    VOID    Offset(SIZE siz);
-    operator LPPOINT();
-    operator const POINT *() const;
-    BOOL    operator==(POINT pt) const;
-    BOOL    operator!=(POINT pt) const;
-    VOID    operator+=(SIZE siz);
-    VOID    operator-=(SIZE siz);
-    VOID    operator+=(POINT pt);
-    VOID    operator-=(POINT pt);
-    VOID    SetPoint(INT x_, INT y_);
-    MPoint  operator+(SIZE siz) const;
-    MPoint  operator-(SIZE siz) const;
+    MPoint() noexcept;
+    MPoint(INT x_, INT y_) noexcept;
+    MPoint(POINT pt) noexcept;
+    MPoint(SIZE siz) noexcept;
+    MPoint(DWORD dwPoint) noexcept;
+    VOID    Offset(INT dx, INT dy) noexcept;
+    VOID    Offset(POINT pt) noexcept;
+    VOID    Offset(SIZE siz) noexcept;
+    operator LPPOINT() noexcept;
+    operator const POINT *() const noexcept;
+    BOOL    operator==(POINT pt) const noexcept;
+    BOOL    operator!=(POINT pt) const noexcept;
+    VOID    operator+=(SIZE siz) noexcept;
+    VOID    operator-=(SIZE siz) noexcept;
+    VOID    operator+=(POINT pt) noexcept;
+    VOID    operator-=(POINT pt) noexcept;
+    VOID    SetPoint(INT x_, INT y_) noexcept;
+    MPoint  operator+(SIZE siz) const noexcept;
+    MPoint  operator-(SIZE siz) const noexcept;
     MPoint  operator-() const;
-    MPoint  operator+(POINT pt) const;
-    MSize   operator-(POINT pt) const;
-    MRect   operator+(LPCRECT prc) const;
-    MRect   operator-(LPCRECT prc) const;
+    MPoint  operator+(POINT pt) const noexcept;
+    MSize   operator-(POINT pt) const noexcept;
+    MRect   operator+(LPCRECT prc) const noexcept;
+    MRect   operator-(LPCRECT prc) const noexcept;
 };
 
 ////////////////////////////////////////////////////////////////////////////
@@ -82,25 +82,25 @@ public:
 class MSize : public SIZE
 {
 public:
-    MSize();
-    MSize(INT cx_, INT cy_);
-    MSize(SIZE siz);
-    MSize(POINT pt);
-    MSize(DWORD dwSize);
-    operator LPSIZE();
-    operator const SIZE *() const;
-    BOOL    operator==(SIZE siz) const;
-    BOOL    operator!=(SIZE siz) const;
-    VOID    operator+=(SIZE siz);
-    VOID    operator-=(SIZE siz);
-    VOID    SetSize(INT cx_, INT cy_);
-    MSize   operator+(SIZE siz) const;
-    MSize   operator-(SIZE siz) const;
-    MSize   operator-() const;
-    MPoint  operator+(POINT pt) const;
-    MPoint  operator-(POINT pt) const;
-    MRect   operator+(LPCRECT prc) const;
-    MRect   operator-(LPCRECT prc) const;
+    MSize() noexcept;
+    MSize(INT cx_, INT cy_) noexcept;
+    MSize(SIZE siz) noexcept;
+    MSize(POINT pt) noexcept;
+    MSize(DWORD dwSize) noexcept;
+    operator LPSIZE() noexcept;
+    operator const SIZE *() const noexcept;
+    BOOL    operator==(SIZE siz) const noexcept;
+    BOOL    operator!=(SIZE siz) const noexcept;
+    VOID    operator+=(SIZE siz) noexcept;
+    VOID    operator-=(SIZE siz) noexcept;
+    VOID    SetSize(INT cx_, INT cy_) noexcept;
+    MSize   operator+(SIZE siz) const noexcept;
+    MSize   operator-(SIZE siz) const noexcept;
+    MSize   operator-() const noexcept;
+    MPoint  operator+(POINT pt) const noexcept;
+    MPoint  operator-(POINT pt) const noexcept;
+    MRect   operator+(LPCRECT prc) const noexcept;
+    MRect   operator-(LPCRECT prc) const noexcept;
 };
 
 ////////////////////////////////////////////////////////////////////////////
@@ -108,247 +108,247 @@ public:
 class MRect : public RECT
 {
 public:
-    MRect();
-    MRect(INT l, INT t, INT r, INT b);
-    MRect(const RECT& rcSrc);
-    MRect(LPCRECT lpSrcRect);
-    MRect(POINT pt, SIZE siz);
-    MRect(POINT topLeft, POINT bottomRight);
-    operator LPRECT();
-    operator LPCRECT() const;
+    MRect() noexcept;
+    MRect(INT l, INT t, INT r, INT b) noexcept;
+    MRect(const RECT& rcSrc) noexcept;
+    MRect(LPCRECT lpSrcRect) noexcept;
+    MRect(POINT pt, SIZE siz) noexcept;
+    MRect(POINT topLeft, POINT bottomRight) noexcept;
+    operator LPRECT() noexcept;
+    operator LPCRECT() const noexcept;
 
-    INT   Width() const;
-    INT   Height() const;
-    MSize Size() const;
+    INT   Width() const noexcept;
+    INT   Height() const noexcept;
+    MSize Size() const noexcept;
 
-    MPoint&       TopLeft();
-    const MPoint& TopLeft() const;
-    MPoint&       BottomRight();
-    const MPoint& BottomRight() const;
-    MPoint        CenterPoint() const;
+    MPoint&       TopLeft() noexcept;
+    const MPoint& TopLeft() const noexcept;
+    MPoint&       BottomRight() noexcept;
+    const MPoint& BottomRight() const noexcept;
+    MPoint        CenterPoint() const noexcept;
 
-    BOOL IsRectEmpty() const;
-    BOOL IsRectNull() const;
-    BOOL PtInRect(POINT pt) const;
-    VOID SetRect(INT x1, INT y1, INT x2, INT y2);
-    VOID SetRect(POINT topLeft, POINT bottomRight);
-    VOID SetRectEmpty();
-    VOID CopyRect(LPCRECT lpSrcRect);
-    BOOL EqualRect(LPCRECT prc) const;
-    VOID InflateRect(INT x, INT y);
-    VOID InflateRect(SIZE siz);
-    VOID InflateRect(LPCRECT prc);
-    VOID InflateRect(INT l, INT t, INT r, INT b);
-    VOID DeflateRect(INT x, INT y);
-    VOID DeflateRect(SIZE siz);
-    VOID DeflateRect(LPCRECT prc);
-    VOID DeflateRect(INT l, INT t, INT r, INT b);
-    VOID OffsetRect(INT x, INT y);
-    VOID OffsetRect(SIZE siz);
-    VOID OffsetRect(POINT pt);
-    VOID NormalizeRect();
-    VOID MoveToX(INT x);
-    VOID MoveToY(INT y);
-    VOID MoveToXY(INT x, INT y);
-    VOID MoveToXY(POINT pt);
-    BOOL IntersectRect(LPCRECT prc1, LPCRECT prc2);
-    BOOL UnionRect(LPCRECT prc1, LPCRECT prc2);
-    BOOL SubtractRect(LPCRECT prcSrc1, LPCRECT prcSrc2);
+    BOOL IsRectEmpty() const noexcept;
+    BOOL IsRectNull() const noexcept;
+    BOOL PtInRect(POINT pt) const noexcept;
+    VOID SetRect(INT x1, INT y1, INT x2, INT y2) noexcept;
+    VOID SetRect(POINT topLeft, POINT bottomRight) noexcept;
+    VOID SetRectEmpty() noexcept;
+    VOID CopyRect(LPCRECT lpSrcRect) noexcept;
+    BOOL EqualRect(LPCRECT prc) const noexcept;
+    VOID InflateRect(INT x, INT y) noexcept;
+    VOID InflateRect(SIZE siz) noexcept;
+    VOID InflateRect(LPCRECT prc) noexcept;
+    VOID InflateRect(INT l, INT t, INT r, INT b) noexcept;
+    VOID DeflateRect(INT x, INT y) noexcept;
+    VOID DeflateRect(SIZE siz) noexcept;
+    VOID DeflateRect(LPCRECT prc) noexcept;
+    VOID DeflateRect(INT l, INT t, INT r, INT b) noexcept;
+    VOID OffsetRect(INT x, INT y) noexcept;
+    VOID OffsetRect(SIZE siz) noexcept;
+    VOID OffsetRect(POINT pt) noexcept;
+    VOID NormalizeRect() noexcept;
+    VOID MoveToX(INT x) noexcept;
+    VOID MoveToY(INT y) noexcept;
+    VOID MoveToXY(INT x, INT y) noexcept;
+    VOID MoveToXY(POINT pt) noexcept;
+    BOOL IntersectRect(LPCRECT prc1, LPCRECT prc2) noexcept;
+    BOOL UnionRect(LPCRECT prc1, LPCRECT prc2) noexcept;
+    BOOL SubtractRect(LPCRECT prcSrc1, LPCRECT prcSrc2) noexcept;
 
-    VOID operator=(const RECT& rcSrc);
-    BOOL operator==(const RECT& rc) const;
-    BOOL operator!=(const RECT& rc) const;
-    VOID operator+=(POINT pt);
-    VOID operator+=(SIZE siz);
-    VOID operator+=(LPCRECT prc);
-    VOID operator-=(POINT pt);
-    VOID operator-=(SIZE siz);
-    VOID operator-=(LPCRECT prc);
-    VOID operator&=(const RECT& rc);
-    VOID operator|=(const RECT& rc);
-    MRect operator+(POINT pt) const;
-    MRect operator-(POINT pt) const;
-    MRect operator+(LPCRECT prc) const;
-    MRect operator+(SIZE siz) const;
-    MRect operator-(SIZE siz) const;
-    MRect operator-(LPCRECT prc) const;
-    MRect operator&(const RECT& rc2) const;
-    MRect operator|(const RECT& rc2) const;
-    MRect MulDiv(INT nMultiplier, INT nDivisor) const;
+    VOID operator=(const RECT& rcSrc) noexcept;
+    BOOL operator==(const RECT& rc) const noexcept;
+    BOOL operator!=(const RECT& rc) const noexcept;
+    VOID operator+=(POINT pt) noexcept;
+    VOID operator+=(SIZE siz) noexcept;
+    VOID operator+=(LPCRECT prc) noexcept;
+    VOID operator-=(POINT pt) noexcept;
+    VOID operator-=(SIZE siz) noexcept;
+    VOID operator-=(LPCRECT prc) noexcept;
+    VOID operator&=(const RECT& rc) noexcept;
+    VOID operator|=(const RECT& rc) noexcept;
+    MRect operator+(POINT pt) const noexcept;
+    MRect operator-(POINT pt) const noexcept;
+    MRect operator+(LPCRECT prc) const noexcept;
+    MRect operator+(SIZE siz) const noexcept;
+    MRect operator-(SIZE siz) const noexcept;
+    MRect operator-(LPCRECT prc) const noexcept;
+    MRect operator&(const RECT& rc2) const noexcept;
+    MRect operator|(const RECT& rc2) const noexcept;
+    MRect MulDiv(INT nMultiplier, INT nDivisor) const noexcept;
 };
 
-VOID NormalizeRectDx(LPRECT prc);
+VOID NormalizeRectDx(LPRECT prc) noexcept;
 
 ////////////////////////////////////////////////////////////////////////////
 
-inline MPoint::MPoint()
+inline MPoint::MPoint() noexcept
     { x = y = 0; }
 
-inline MPoint::MPoint(INT x_, INT y_)
+inline MPoint::MPoint(INT x_, INT y_) noexcept
     { x = x_; y = y_; }
 
-inline MPoint::MPoint(POINT pt)
-    { *reinterpret_cast<POINT *>(this) = pt; }
+inline MPoint::MPoint(POINT pt) noexcept
+    { *reinterpret_cast<POINT&>(*this) = pt; }
 
-inline MPoint::MPoint(SIZE siz)
-    { *reinterpret_cast<SIZE *>(this) = siz; }
+inline MPoint::MPoint(SIZE siz) noexcept
+    { *reinterpret_cast<SIZE&>(*this) = siz; }
 
-inline MPoint::MPoint(DWORD dwPoint)
+inline MPoint::MPoint(DWORD dwPoint) noexcept
     { x = GET_X_LPARAM(dwPoint); y = GET_Y_LPARAM(dwPoint); }
 
-inline VOID MPoint::Offset(INT dx, INT dy)
+inline VOID MPoint::Offset(INT dx, INT dy) noexcept
     { x += dx; y += dy; }
 
-inline VOID MPoint::Offset(POINT pt)
+inline VOID MPoint::Offset(POINT pt) noexcept
     { x += pt.x; y += pt.y; }
 
-inline VOID MPoint::Offset(SIZE siz)
+inline VOID MPoint::Offset(SIZE siz) noexcept
     { x += siz.cx; y += siz.cy; }
 
-inline MPoint::operator LPPOINT()
+inline MPoint::operator LPPOINT() noexcept
     { return reinterpret_cast<LPPOINT>(this); }
 
-inline MPoint::operator const POINT *() const
+inline MPoint::operator const POINT *() const noexcept
     { return reinterpret_cast<const POINT *>(this); }
 
-inline BOOL MPoint::operator==(POINT pt) const
+inline BOOL MPoint::operator==(POINT pt) const noexcept
     { return (x == pt.x && y == pt.y); }
 
-inline BOOL MPoint::operator!=(POINT pt) const
+inline BOOL MPoint::operator!=(POINT pt) const noexcept
     { return (x != pt.x || y != pt.y); }
 
-inline VOID MPoint::operator+=(SIZE siz)
+inline VOID MPoint::operator+=(SIZE siz) noexcept
     { x += siz.cx; y += siz.cy; }
 
-inline VOID MPoint::operator-=(SIZE siz)
+inline VOID MPoint::operator-=(SIZE siz) noexcept
     { x -= siz.cx; y -= siz.cy; }
 
-inline VOID MPoint::operator+=(POINT pt)
+inline VOID MPoint::operator+=(POINT pt) noexcept
     { x += pt.x; y += pt.y; }
 
-inline VOID MPoint::operator-=(POINT pt)
+inline VOID MPoint::operator-=(POINT pt) noexcept
     { x -= pt.x; y -= pt.y; }
 
-inline VOID MPoint::SetPoint(INT x_, INT y_)
+inline VOID MPoint::SetPoint(INT x_, INT y_) noexcept
     { x = x_; y = y_; }
 
-inline MPoint MPoint::operator+(SIZE siz) const
+inline MPoint MPoint::operator+(SIZE siz) const noexcept
     { return MPoint(x + siz.cx, y + siz.cy); }
 
-inline MPoint MPoint::operator-(SIZE siz) const
+inline MPoint MPoint::operator-(SIZE siz) const noexcept
     { return MPoint(x - siz.cx, y - siz.cy); }
 
-inline MPoint MPoint::operator-() const
+inline MPoint MPoint::operator-() const noexcept
     { return MPoint(-x, -y); }
 
-inline MPoint MPoint::operator+(POINT pt) const
+inline MPoint MPoint::operator+(POINT pt) const noexcept
     { return MPoint(x + pt.x, y + pt.y); }
 
-inline MSize MPoint::operator-(POINT pt) const
+inline MSize MPoint::operator-(POINT pt) const noexcept
     { return MSize(x - pt.x, y - pt.y); }
 
-inline MRect MPoint::operator+(LPCRECT prc) const
+inline MRect MPoint::operator+(LPCRECT prc) const noexcept
     { return MRect(prc) + *this; }
 
-inline MRect MPoint::operator-(LPCRECT prc) const
+inline MRect MPoint::operator-(LPCRECT prc) const noexcept
     { return MRect(prc) - *this; }
 
 ////////////////////////////////////////////////////////////////////////////
 
-inline MSize::MSize()
+inline MSize::MSize() noexcept
     { cx = cy = 0; }
 
-inline MSize::MSize(INT cx_, INT cy_)
+inline MSize::MSize(INT cx_, INT cy_) noexcept
     { cx = cx_; cy = cy_; }
 
-inline MSize::MSize(SIZE siz)
-    { *reinterpret_cast<SIZE *>(this) = siz; }
+inline MSize::MSize(SIZE siz) noexcept
+    { *reinterpret_cast<SIZE&>(*this) = siz; }
 
-inline MSize::MSize(POINT pt)
-    { *reinterpret_cast<POINT *>(this) = pt; }
+inline MSize::MSize(POINT pt) noexcept
+    { *reinterpret_cast<POINT&>(*this) = pt; }
 
-inline MSize::MSize(DWORD dwSize)
+inline MSize::MSize(DWORD dwSize) noexcept
     { cx = GET_X_LPARAM(dwSize); cy = GET_Y_LPARAM(dwSize); }
 
-inline MSize::operator LPSIZE()
+inline MSize::operator LPSIZE() noexcept
     { return reinterpret_cast<LPSIZE>(this); }
 
-inline MSize::operator const SIZE *() const
+inline MSize::operator const SIZE *() const noexcept
     { return reinterpret_cast<const SIZE *>(this); }
 
-inline BOOL MSize::operator==(SIZE siz) const
+inline BOOL MSize::operator==(SIZE siz) const noexcept
     { return (cx == siz.cx && cy == siz.cy); }
 
-inline BOOL MSize::operator!=(SIZE siz) const
+inline BOOL MSize::operator!=(SIZE siz) const noexcept
     { return (cx != siz.cx || cy != siz.cy); }
 
-inline VOID MSize::operator+=(SIZE siz)
+inline VOID MSize::operator+=(SIZE siz) noexcept
     { cx += siz.cx; cy += siz.cy; }
 
-inline VOID MSize::operator-=(SIZE siz)
+inline VOID MSize::operator-=(SIZE siz) noexcept
     { cx -= siz.cx; cy -= siz.cy; }
 
-inline VOID MSize::SetSize(INT cx_, INT cy_)
+inline VOID MSize::SetSize(INT cx_, INT cy_) noexcept
     { cx = cx_; cy = cy_; }
 
-inline MSize MSize::operator+(SIZE siz) const
+inline MSize MSize::operator+(SIZE siz) const noexcept
     { return MSize(cx + siz.cx, cy + siz.cy); }
 
-inline MSize MSize::operator-(SIZE siz) const
+inline MSize MSize::operator-(SIZE siz) const noexcept
     { return MSize(cx - siz.cx, cy - siz.cy); }
 
-inline MSize MSize::operator-() const
+inline MSize MSize::operator-() const noexcept
     { return MSize(-cx, -cy); }
 
-inline MPoint MSize::operator+(POINT pt) const
+inline MPoint MSize::operator+(POINT pt) const noexcept
     { return MPoint(cx + pt.x, cy + pt.y); }
 
-inline MPoint MSize::operator-(POINT pt) const
+inline MPoint MSize::operator-(POINT pt) const noexcept
     { return MPoint(cx - pt.x, cy - pt.y); }
 
-inline MRect MSize::operator+(LPCRECT prc) const
+inline MRect MSize::operator+(LPCRECT prc) const noexcept
     { return MRect(prc) + *this; }
 
-inline MRect MSize::operator-(LPCRECT prc) const
+inline MRect MSize::operator-(LPCRECT prc) const noexcept
     { return MRect(prc) - *this; }
 
 template <class Number>
-inline MSize operator*(SIZE s, Number n)
+inline MSize operator*(SIZE s, Number n) noexcept
     { return MSize((INT)(s.cx * n), (INT)(s.cy * n)); }
 
 template <class Number>
-inline VOID operator*=(SIZE & s, Number n)
+inline VOID operator*=(SIZE & s, Number n) noexcept
     { s = s * n; }
 
 template <class Number>
-inline MSize operator/(SIZE s, Number n) 
+inline MSize operator/(SIZE s, Number n) noexcept
     { return MSize((INT)(s.cx / n), (INT)(s.cy / n)); }
 
 template <class Number>
-inline VOID operator/=(SIZE & s, Number n)
+inline VOID operator/=(SIZE & s, Number n) noexcept
     { s = s / n; }
 
 ////////////////////////////////////////////////////////////////////////////
 
-inline MRect::MRect()
+inline MRect::MRect() noexcept
     { left = top = right = bottom = 0; }
 
-inline MRect::MRect(INT l, INT t, INT r, INT b)
+inline MRect::MRect(INT l, INT t, INT r, INT b) noexcept
     { left = l; top = t; right = r; bottom = b; }
 
-inline MRect::MRect(const RECT& rcSrc)
+inline MRect::MRect(const RECT& rcSrc) noexcept
     { ::CopyRect(this, &rcSrc); }
 
-inline MRect::MRect(LPCRECT lpSrcRect)
+inline MRect::MRect(LPCRECT lpSrcRect) noexcept
     { ::CopyRect(this, lpSrcRect); }
 
-inline MRect::MRect(POINT pt, SIZE siz)
+inline MRect::MRect(POINT pt, SIZE siz) noexcept
 {
     right = (left = pt.x) + siz.cx;
     bottom = (top = pt.y) + siz.cy;
 }
 
-inline MRect::MRect(POINT topLeft, POINT bottomRight)
+inline MRect::MRect(POINT topLeft, POINT bottomRight) noexcept
 {
     left = topLeft.x;
     top = topLeft.y;
@@ -356,7 +356,7 @@ inline MRect::MRect(POINT topLeft, POINT bottomRight)
     bottom = bottomRight.y;
 }
 
-inline VOID MRect::InflateRect(LPCRECT prc)
+inline VOID MRect::InflateRect(LPCRECT prc) noexcept
 {
     left -= prc->left;
     top -= prc->top;
@@ -364,7 +364,7 @@ inline VOID MRect::InflateRect(LPCRECT prc)
     bottom += prc->bottom;
 }
 
-inline VOID MRect::InflateRect(INT l, INT t, INT r, INT b)
+inline VOID MRect::InflateRect(INT l, INT t, INT r, INT b) noexcept
 {
     left -= l;
     top -= t;
@@ -372,7 +372,7 @@ inline VOID MRect::InflateRect(INT l, INT t, INT r, INT b)
     bottom += b;
 }
 
-inline VOID MRect::DeflateRect(LPCRECT prc)
+inline VOID MRect::DeflateRect(LPCRECT prc) noexcept
 {
     left += prc->left;
     top += prc->top;
@@ -380,7 +380,7 @@ inline VOID MRect::DeflateRect(LPCRECT prc)
     bottom -= prc->bottom;
 }
 
-inline VOID MRect::DeflateRect(INT l, INT t, INT r, INT b)
+inline VOID MRect::DeflateRect(INT l, INT t, INT r, INT b) noexcept
 {
     left += l;
     top += t;
@@ -388,7 +388,7 @@ inline VOID MRect::DeflateRect(INT l, INT t, INT r, INT b)
     bottom -= b;
 }
 
-inline VOID MRect::NormalizeRect()
+inline VOID MRect::NormalizeRect() noexcept
 {
     INT nTemp;
     if (left > right)
@@ -405,63 +405,63 @@ inline VOID MRect::NormalizeRect()
     }
 }
 
-inline MRect MRect::operator+(POINT pt) const
+inline MRect MRect::operator+(POINT pt) const noexcept
 {
     MRect rc(*this);
     ::OffsetRect(&rc, pt.x, pt.y);
     return rc;
 }
 
-inline MRect MRect::operator-(POINT pt) const
+inline MRect MRect::operator-(POINT pt) const noexcept
 {
     MRect rc(*this);
     ::OffsetRect(&rc, -pt.x, -pt.y);
     return rc;
 }
 
-inline MRect MRect::operator+(LPCRECT prc) const
+inline MRect MRect::operator+(LPCRECT prc) const noexcept
 {
     MRect rc(this);
     rc.InflateRect(prc);
     return rc;
 }
 
-inline MRect MRect::operator+(SIZE siz) const
+inline MRect MRect::operator+(SIZE siz) const noexcept
 {
     MRect rc(*this);
     ::OffsetRect(&rc, siz.cx, siz.cy);
     return rc;
 }
 
-inline MRect MRect::operator-(SIZE siz) const
+inline MRect MRect::operator-(SIZE siz) const noexcept
 {
     MRect rc(*this);
     ::OffsetRect(&rc, -siz.cx, -siz.cy);
     return rc;
 }
 
-inline MRect MRect::operator-(LPCRECT prc) const
+inline MRect MRect::operator-(LPCRECT prc) const noexcept
 {
     MRect rc(this);
     rc.DeflateRect(prc);
     return rc;
 }
 
-inline MRect MRect::operator&(const RECT& rc2) const
+inline MRect MRect::operator&(const RECT& rc2) const noexcept
 {
     MRect rc;
     ::IntersectRect(&rc, this, &rc2);
     return rc;
 }
 
-inline MRect MRect::operator|(const RECT& rc2) const
+inline MRect MRect::operator|(const RECT& rc2) const noexcept
 {
     MRect rc;
     ::UnionRect(&rc, this, &rc2);
     return rc;
 }
 
-inline MRect MRect::MulDiv(INT nMultiplier, INT nDivisor) const
+inline MRect MRect::MulDiv(INT nMultiplier, INT nDivisor) const noexcept
 {
     return MRect(
         ::MulDiv(left, nMultiplier, nDivisor),
@@ -470,138 +470,138 @@ inline MRect MRect::MulDiv(INT nMultiplier, INT nDivisor) const
         ::MulDiv(bottom, nMultiplier, nDivisor));
 }
 
-inline INT MRect::Width() const
+inline INT MRect::Width() const noexcept
     { return right - left; }
 
-inline INT MRect::Height() const
+inline INT MRect::Height() const noexcept
     { return bottom - top; }
 
-inline MSize MRect::Size() const
+inline MSize MRect::Size() const noexcept
     { return MSize(right - left, bottom - top); }
 
-inline MPoint& MRect::TopLeft()
+inline MPoint& MRect::TopLeft() noexcept
     { return *((MPoint*) this); }
 
-inline MPoint& MRect::BottomRight()
+inline MPoint& MRect::BottomRight() noexcept
     { return *((MPoint*) this + 1); }
 
-inline const MPoint& MRect::TopLeft() const
+inline const MPoint& MRect::TopLeft() const noexcept
     { return *((MPoint*) this); }
 
-inline const MPoint& MRect::BottomRight() const
+inline const MPoint& MRect::BottomRight() const noexcept
     { return *((MPoint*) this + 1); }
 
-inline MPoint MRect::CenterPoint() const
+inline MPoint MRect::CenterPoint() const noexcept
     { return MPoint((left + right) / 2, (top + bottom) / 2); }
 
-inline MRect::operator LPRECT()
+inline MRect::operator LPRECT() noexcept
     { return this; }
 
-inline MRect::operator LPCRECT() const
+inline MRect::operator LPCRECT() const noexcept
     { return this; }
 
-inline BOOL MRect::IsRectEmpty() const
+inline BOOL MRect::IsRectEmpty() const noexcept
     { return ::IsRectEmpty(this); }
 
-inline BOOL MRect::IsRectNull() const
+inline BOOL MRect::IsRectNull() const noexcept
     { return (left == 0 && right == 0 && top == 0 && bottom == 0); }
 
-inline BOOL MRect::PtInRect(POINT pt) const
+inline BOOL MRect::PtInRect(POINT pt) const noexcept
     { return ::PtInRect(this, pt); }
 
-inline VOID MRect::SetRect(INT x1, INT y1, INT x2, INT y2)
+inline VOID MRect::SetRect(INT x1, INT y1, INT x2, INT y2) noexcept
     { ::SetRect(this, x1, y1, x2, y2); }
 
-inline VOID MRect::SetRect(POINT topLeft, POINT bottomRight)
+inline VOID MRect::SetRect(POINT topLeft, POINT bottomRight) noexcept
 {
     ::SetRect(this, topLeft.x, topLeft.y, bottomRight.x, bottomRight.y);
 }
 
-inline VOID MRect::SetRectEmpty()
+inline VOID MRect::SetRectEmpty() noexcept
     { ::SetRectEmpty(this); }
 
-inline VOID MRect::CopyRect(LPCRECT lpSrcRect)
+inline VOID MRect::CopyRect(LPCRECT lpSrcRect) noexcept
     { ::CopyRect(this, lpSrcRect); }
 
-inline BOOL MRect::EqualRect(LPCRECT prc) const
+inline BOOL MRect::EqualRect(LPCRECT prc) const noexcept
     { return ::EqualRect(this, prc); }
 
-inline VOID MRect::InflateRect(INT x, INT y)
+inline VOID MRect::InflateRect(INT x, INT y) noexcept
     { ::InflateRect(this, x, y); }
 
-inline VOID MRect::InflateRect(SIZE siz)
+inline VOID MRect::InflateRect(SIZE siz) noexcept
     { ::InflateRect(this, siz.cx, siz.cy); }
 
-inline VOID MRect::DeflateRect(INT x, INT y)
+inline VOID MRect::DeflateRect(INT x, INT y) noexcept
     { ::InflateRect(this, -x, -y); }
 
-inline VOID MRect::DeflateRect(SIZE siz)
+inline VOID MRect::DeflateRect(SIZE siz) noexcept
     { ::InflateRect(this, -siz.cx, -siz.cy); }
 
-inline VOID MRect::OffsetRect(INT x, INT y)
+inline VOID MRect::OffsetRect(INT x, INT y) noexcept
     { ::OffsetRect(this, x, y); }
 
-inline VOID MRect::OffsetRect(SIZE siz)
+inline VOID MRect::OffsetRect(SIZE siz) noexcept
     { ::OffsetRect(this, siz.cx, siz.cy); }
 
-inline VOID MRect::OffsetRect(POINT pt)
+inline VOID MRect::OffsetRect(POINT pt) noexcept
     { ::OffsetRect(this, pt.x, pt.y); }
 
-inline VOID MRect::MoveToX(INT x)
+inline VOID MRect::MoveToX(INT x) noexcept
     { right = Width() + x; left = x; }
 
-inline VOID MRect::MoveToY(INT y)
+inline VOID MRect::MoveToY(INT y) noexcept
     { bottom = Height() + y; top = y; }
 
-inline VOID MRect::MoveToXY(INT x, INT y)
+inline VOID MRect::MoveToXY(INT x, INT y) noexcept
     { MoveToX(x); MoveToY(y); }
 
-inline VOID MRect::MoveToXY(POINT pt)
+inline VOID MRect::MoveToXY(POINT pt) noexcept
     { MoveToX(pt.x); MoveToY(pt.y); }
 
-inline BOOL MRect::IntersectRect(LPCRECT prc1, LPCRECT prc2)
+inline BOOL MRect::IntersectRect(LPCRECT prc1, LPCRECT prc2) noexcept
     { return ::IntersectRect(this, prc1, prc2); }
 
-inline BOOL MRect::UnionRect(LPCRECT prc1, LPCRECT prc2)
+inline BOOL MRect::UnionRect(LPCRECT prc1, LPCRECT prc2) noexcept
     { return ::UnionRect(this, prc1, prc2); }
 
-inline BOOL MRect::SubtractRect(LPCRECT prcSrc1, LPCRECT prcSrc2)
+inline BOOL MRect::SubtractRect(LPCRECT prcSrc1, LPCRECT prcSrc2) noexcept
     { return ::SubtractRect(this, prcSrc1, prcSrc2); }
 
-inline VOID MRect::operator=(const RECT& rcSrc)
+inline VOID MRect::operator=(const RECT& rcSrc) noexcept
     { ::CopyRect(this, &rcSrc); }
 
-inline BOOL MRect::operator==(const RECT& rc) const
+inline BOOL MRect::operator==(const RECT& rc) const noexcept
     { return ::EqualRect(this, &rc); }
 
-inline BOOL MRect::operator!=(const RECT& rc) const
+inline BOOL MRect::operator!=(const RECT& rc) const noexcept
     { return !::EqualRect(this, &rc); }
 
-inline VOID MRect::operator+=(POINT pt)
+inline VOID MRect::operator+=(POINT pt) noexcept
     { ::OffsetRect(this, pt.x, pt.y); }
 
-inline VOID MRect::operator+=(SIZE siz)
+inline VOID MRect::operator+=(SIZE siz) noexcept
     { ::OffsetRect(this, siz.cx, siz.cy); }
 
-inline VOID MRect::operator+=(LPCRECT prc)
+inline VOID MRect::operator+=(LPCRECT prc) noexcept
     { InflateRect(prc); }
 
-inline VOID MRect::operator-=(POINT pt)
+inline VOID MRect::operator-=(POINT pt) noexcept
     { ::OffsetRect(this, -pt.x, -pt.y); }
 
-inline VOID MRect::operator-=(SIZE siz)
+inline VOID MRect::operator-=(SIZE siz) noexcept
     { ::OffsetRect(this, -siz.cx, -siz.cy); }
 
-inline VOID MRect::operator-=(LPCRECT prc)
+inline VOID MRect::operator-=(LPCRECT prc) noexcept
     { DeflateRect(prc); }
 
-inline VOID MRect::operator&=(const RECT& rc)
+inline VOID MRect::operator&=(const RECT& rc) noexcept
     { ::IntersectRect(this, this, &rc); }
 
-inline VOID MRect::operator|=(const RECT& rc)
+inline VOID MRect::operator|=(const RECT& rc) noexcept
     { ::UnionRect(this, this, &rc); }
 
-inline VOID NormalizeRectDx(LPRECT prc)
+inline VOID NormalizeRectDx(LPRECT prc) noexcept
 {
     INT nTemp;
     if (prc->left > prc->right)
