@@ -3,15 +3,7 @@
 #ifndef _INC_WINDOWS
     #include <windows.h>
 #endif
-
-#ifndef WonIsWindowsVistaOrLater
-    static inline BOOL WonIsWindowsVistaOrLater(VOID)
-    {
-        OSVERSIONINFOW osver = { sizeof(osver) };
-        return (GetVersionExW(&osver) && osver.dwMajorVersion >= 6);
-    }
-    #define WonIsWindowsVistaOrLater WonIsWindowsVistaOrLater
-#endif
+#include <versionhelpers.h>
 
 typedef LANGID (WINAPI *FN_GetThreadUILanguage)(VOID);
 typedef LANGID (WINAPI *FN_SetThreadUILanguage)(LANGID);
@@ -20,7 +12,7 @@ static inline LANGID WonGetThreadUILanguage()
 {
     static FN_GetThreadUILanguage s_fn = NULL;
 
-    if (WonIsWindowsVistaOrLater())
+    if (IsWindowsVistaOrGreater())
     {
         if (!s_fn)
             s_fn = (FN_GetThreadUILanguage)
@@ -36,7 +28,7 @@ static inline LANGID WonSetThreadUILanguage(LANGID LangID)
 {
     static FN_SetThreadUILanguage s_fn = NULL;
 
-    if (WonIsWindowsVistaOrLater())
+    if (IsWindowsVistaOrGreater())
     {
         if (!s_fn)
             s_fn = (FN_SetThreadUILanguage)
