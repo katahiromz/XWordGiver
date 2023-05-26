@@ -641,7 +641,7 @@ BOOL XgPatternsUnitTest(void)
 
 // 候補があるか？
 template <bool t_alternative>
-bool __fastcall XgAnyCandidateAddBlack(const std::wstring& pattern)
+bool __fastcall XgAnyCandidateAddBlack(const std::wstring& pattern) noexcept
 {
     // パターンの長さ。
     const int patlen = INT(pattern.size());
@@ -7294,7 +7294,7 @@ bool __fastcall XgGenerateBlacksLineSymHRecurse(const XG_Board& xword, LONG iRow
     // 盤の真ん中か？
     if (jCol >= nHalfCols) {
         std::wstring strPattern = xword.GetPatternH(XG_Pos(iRow, jCol));
-        if ((INT)strPattern.size() > xg_nMaxWordLen) {
+        if (static_cast<INT>(strPattern.size()) > xg_nMaxWordLen) {
             // 空白が最大長よりも長い。黒マスをセットして再帰。
             XG_Board copy(xword);
             copy.SetAt(iRow, jCol, ZEN_BLACK);
@@ -7352,7 +7352,7 @@ unsigned __stdcall XgGenerateBlacks(void *param) noexcept
 
     // 乱数をかく乱する。
 #ifndef NO_RANDOM
-    srand(DWORD(::GetTickCount64()) ^ ::GetCurrentThreadId());
+    srand(static_cast<DWORD>(::GetTickCount64()) ^ ::GetCurrentThreadId());
 #else
     srand(xg_random_seed++);
 #endif
@@ -7376,7 +7376,7 @@ unsigned __stdcall XgGenerateBlacksSmart(void *param) noexcept
 
     // 乱数をかく乱する。
 #ifndef NO_RANDOM
-    srand(DWORD(::GetTickCount64()) ^ ::GetCurrentThreadId());
+    srand(static_cast<DWORD>(::GetTickCount64()) ^ ::GetCurrentThreadId());
 #else
     srand(xg_random_seed++);
 #endif
@@ -7417,7 +7417,7 @@ unsigned __stdcall XgGenerateBlacksSmart(void *param) noexcept
 unsigned __stdcall XgGenerateBlacksPointSym(void *param) noexcept
 {
 #ifndef NO_RANDOM
-    srand(DWORD(::GetTickCount64()) ^ ::GetCurrentThreadId());
+    srand(static_cast<DWORD>(::GetTickCount64()) ^ ::GetCurrentThreadId());
 #else
     srand(xg_random_seed++);
 #endif
@@ -7435,7 +7435,7 @@ unsigned __stdcall XgGenerateBlacksPointSym(void *param) noexcept
 unsigned __stdcall XgGenerateBlacksLineSymV(void *param) noexcept
 {
 #ifndef NO_RANDOM
-    srand(DWORD(::GetTickCount64()) ^ ::GetCurrentThreadId());
+    srand(static_cast<DWORD>(::GetTickCount64()) ^ ::GetCurrentThreadId());
 #else
     srand(xg_random_seed++);
 #endif
@@ -7453,7 +7453,7 @@ unsigned __stdcall XgGenerateBlacksLineSymV(void *param) noexcept
 unsigned __stdcall XgGenerateBlacksLineSymH(void *param) noexcept
 {
 #ifndef NO_RANDOM
-    srand(DWORD(::GetTickCount64()) ^ ::GetCurrentThreadId());
+    srand(static_cast<DWORD>(::GetTickCount64()) ^ ::GetCurrentThreadId());
 #else
     srand(xg_random_seed++);
 #endif
@@ -7483,10 +7483,11 @@ void __fastcall XgStartGenerateBlacks(void) noexcept
         XgGenerateBlacksPointSym(&xg_aThreadInfo[0]);
 #else
         for (DWORD i = 0; i < xg_dwThreadCount; i++) {
-            xg_ahThreads[i] = reinterpret_cast<HANDLE>(
-                _beginthreadex(nullptr, 0, XgGenerateBlacksPointSym, &xg_aThreadInfo[i], 0,
-                    &xg_aThreadInfo[i].m_threadid));
-            assert(xg_ahThreads[i] != nullptr);
+            auto& thread = xg_ahThreads.at(i);
+            thread = static_cast<HANDLE>(
+                _beginthreadex(nullptr, 0, XgGenerateBlacksPointSym, &thread, 0,
+                    &thread.m_threadid));
+            assert(xg_ahThreads.at(i) != nullptr);
         }
 #endif
     } else if (xg_nRules & RULE_LINESYMMETRYV) {
@@ -7494,10 +7495,11 @@ void __fastcall XgStartGenerateBlacks(void) noexcept
         XgGenerateBlacksLineSymV(&xg_aThreadInfo[0]);
 #else
         for (DWORD i = 0; i < xg_dwThreadCount; i++) {
-            xg_ahThreads[i] = reinterpret_cast<HANDLE>(
-                _beginthreadex(nullptr, 0, XgGenerateBlacksLineSymV, &xg_aThreadInfo[i], 0,
-                    &xg_aThreadInfo[i].m_threadid));
-            assert(xg_ahThreads[i] != nullptr);
+            auto& thread = xg_ahThreads.at(i);
+            thread = static_cast<HANDLE>(
+                _beginthreadex(nullptr, 0, XgGenerateBlacksLineSymV, &thread, 0,
+                    &thread.m_threadid));
+            assert(thread != nullptr);
         }
 #endif
     } else if (xg_nRules & RULE_LINESYMMETRYH) {
@@ -7505,10 +7507,11 @@ void __fastcall XgStartGenerateBlacks(void) noexcept
         XgGenerateBlacksLineSymH(&xg_aThreadInfo[0]);
 #else
         for (DWORD i = 0; i < xg_dwThreadCount; i++) {
-            xg_ahThreads[i] = reinterpret_cast<HANDLE>(
-                _beginthreadex(nullptr, 0, XgGenerateBlacksLineSymH, &xg_aThreadInfo[i], 0,
-                    &xg_aThreadInfo[i].m_threadid));
-            assert(xg_ahThreads[i] != nullptr);
+            auto& thread = xg_ahThreads.at(i);
+            thread = static_cast<HANDLE>(
+                _beginthreadex(nullptr, 0, XgGenerateBlacksLineSymH, &thread, 0,
+                    &thread.m_threadid));
+            assert(thread != nullptr);
         }
 #endif
     } else {
@@ -7516,10 +7519,11 @@ void __fastcall XgStartGenerateBlacks(void) noexcept
         XgGenerateBlacks(&xg_aThreadInfo[0]);
 #else
         for (DWORD i = 0; i < xg_dwThreadCount; i++) {
-            xg_ahThreads[i] = reinterpret_cast<HANDLE>(
-                _beginthreadex(nullptr, 0, XgGenerateBlacks, &xg_aThreadInfo[i], 0,
-                    &xg_aThreadInfo[i].m_threadid));
-            assert(xg_ahThreads[i] != nullptr);
+            auto& thread = xg_ahThreads.at(i);
+            thread = static_cast<HANDLE>(
+                _beginthreadex(nullptr, 0, XgGenerateBlacks, &thread, 0,
+                    &thread.m_threadid));
+            assert(thread != nullptr);
         }
 #endif
     }
@@ -7546,12 +7550,11 @@ std::wstring __fastcall XgNormalizeString(const std::wstring& text) {
 // タテ向きにパターンを読み取る。
 std::wstring __fastcall XG_Board::GetPatternV(const XG_Pos& pos) const noexcept
 {
-    int lo, hi;
     std::wstring pattern;
     if (GetAt(pos.m_i, pos.m_j) == ZEN_BLACK)
         return pattern;
 
-    lo = hi = pos.m_i;
+    INT lo = pos.m_i, hi = pos.m_i;
     while (lo > 0) {
         if (GetAt(lo - 1, pos.m_j) != ZEN_BLACK)
             --lo;
@@ -7575,12 +7578,11 @@ std::wstring __fastcall XG_Board::GetPatternV(const XG_Pos& pos) const noexcept
 // ヨコ向きにパターンを読み取る。
 std::wstring __fastcall XG_Board::GetPatternH(const XG_Pos& pos) const noexcept
 {
-    int lo, hi;
     std::wstring pattern;
     if (GetAt(pos.m_i, pos.m_j) == ZEN_BLACK)
         return pattern;
 
-    lo = hi = pos.m_j;
+    INT lo = pos.m_j, hi = pos.m_j;
     while (lo > 0) {
         if (GetAt(pos.m_i, lo - 1) != ZEN_BLACK)
             --lo;
