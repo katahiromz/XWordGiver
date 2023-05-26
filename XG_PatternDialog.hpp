@@ -203,7 +203,7 @@ public:
     void OnCopy(HWND hwnd)
     {
         HWND hLst1 = GetDlgItem(hwnd, lst1);
-        INT i = ListBox_GetCurSel(hLst1);
+        const auto i = ListBox_GetCurSel(hLst1);
         if (i == LB_ERR || i >= static_cast<int>(s_patterns.size()))
             return;
 
@@ -233,7 +233,7 @@ public:
     void OnOK(HWND hwnd)
     {
         HWND hLst1 = GetDlgItem(hwnd, lst1);
-        INT i = ListBox_GetCurSel(hLst1);
+        const auto i = ListBox_GetCurSel(hLst1);
         if (i == LB_ERR || i >= static_cast<int>(s_patterns.size()))
             return;
 
@@ -378,7 +378,7 @@ public:
             return;
 
         // データがパターンのインデックスか？
-        LPARAM lParam = lpDrawItem->itemData;
+        auto lParam = lpDrawItem->itemData;
         if (static_cast<int>(lParam) >= static_cast<int>(s_patterns.size()))
             return;
 
@@ -428,12 +428,12 @@ public:
         const auto& data = pat.data;
 
         // 描画項目のサイズ。
-        INT cxItem = rcItem.right - rcItem.left;
+        const int cxItem = rcItem.right - rcItem.left;
 
         // メモリーデバイスコンテキストを作成。
         if (HDC hdcMem = CreateCompatibleDC(hDC))
         {
-            INT cx = cxCell * pat.num_columns, cy = cyCell * pat.num_rows; // 全体のサイズ。
+            const int cx = cxCell * pat.num_columns, cy = cyCell * pat.num_rows; // 全体のサイズ。
             // ビットマップを作成する。
             if (HBITMAP hbm = XgCreate24BppBitmap(hdcMem, cx + 3, cy + 3))
             {

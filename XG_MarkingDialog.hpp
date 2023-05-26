@@ -27,7 +27,7 @@ public:
 
         // リストに候補を追加する。
         for (auto& item : xg_vMarkedCands) {
-            int i = static_cast<int>(::SendDlgItemMessageW(hwnd, lst1, LB_ADDSTRING, 0, (LPARAM)item.c_str()));
+            const auto i = static_cast<int>(::SendDlgItemMessageW(hwnd, lst1, LB_ADDSTRING, 0, (LPARAM)item.c_str()));
             if (item == xg_strMarked) {
                 m_bUpdating = TRUE;
                 ::SendDlgItemMessageW(hwnd, lst1, LB_SETCURSEL, i, 0);
@@ -72,7 +72,7 @@ public:
         if (bEdit) {
             ::GetDlgItemTextW(hwnd, edt1, szText, _countof(szText));
         } else {
-            INT i = GetCurSel(hwnd);
+            const auto i = GetCurSel(hwnd);
             if (i != LB_ERR)
                 ::SendDlgItemMessageW(hwnd, lst1, LB_GETTEXT, i, reinterpret_cast<LPARAM>(szText));
         }
@@ -89,7 +89,7 @@ public:
     {
         if (!bFromEdit) {
             m_bUpdating = TRUE;
-            INT iStart, iEnd;
+            int iStart, iEnd;
             ::SendDlgItemMessageW(hwnd, edt1, EM_GETSEL, reinterpret_cast<WPARAM>(&iStart), reinterpret_cast<LPARAM>(&iEnd));
             ::SetDlgItemTextW(hwnd, edt1, str.c_str());
             ::SendDlgItemMessageW(hwnd, edt1, EM_SETSEL, iStart, iEnd);
@@ -127,7 +127,7 @@ public:
         }
 
         if (bFromEdit) {
-            const INT i = static_cast<INT>(::SendDlgItemMessageW(hwnd, lst1, LB_FINDSTRINGEXACT, -1, reinterpret_cast<LPARAM>(str.c_str())));
+            const int i = static_cast<int>(::SendDlgItemMessageW(hwnd, lst1, LB_FINDSTRINGEXACT, -1, reinterpret_cast<LPARAM>(str.c_str())));
             m_bUpdating = TRUE;
             if (i != LB_ERR) {
                 ::SendDlgItemMessageW(hwnd, lst1, LB_SETCURSEL, i, 0);
@@ -142,7 +142,7 @@ public:
 
     VOID OnLst1(HWND hwnd)
     {
-        INT i = GetCurSel(hwnd);
+        const auto i = GetCurSel(hwnd);
         if (i == LB_ERR)
             return;
 
@@ -164,10 +164,9 @@ public:
         ::SetTimer(hwnd, 999, MARKED_INTERVAL, nullptr);
     }
 
-    INT GetCurSel(HWND hwnd) noexcept
+    int GetCurSel(HWND hwnd) noexcept
     {
-        INT i = static_cast<INT>(::SendDlgItemMessageW(hwnd, lst1, LB_GETCURSEL, 0, 0));
-        return i;
+        return static_cast<int>(::SendDlgItemMessageW(hwnd, lst1, LB_GETCURSEL, 0, 0));
     }
 
     void OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT codeNotify)
@@ -198,7 +197,7 @@ public:
                 mu1->Get();
                 {
                     // 前の候補。
-                    INT iItem = GetCurSel(hwnd);
+                    int iItem = GetCurSel(hwnd);
                     if (iItem == LB_ERR) {
                         xg_iMarkedCand = static_cast<int>(xg_vMarkedCands.size()) - 1;
                     } else {
@@ -225,7 +224,7 @@ public:
                 mu1->Get();
                 {
                     // 次の候補。
-                    INT iItem = GetCurSel(hwnd);
+                    const auto iItem = GetCurSel(hwnd);
                     if (iItem == LB_ERR) {
                         xg_iMarkedCand = 0;
                     } else {
@@ -304,7 +303,7 @@ public:
         if (str1 != str2)
         {
             m_bUpdating = TRUE;
-            INT iStart, iEnd;
+            int iStart, iEnd;
             ::SendDlgItemMessageW(hwnd, edt1, EM_GETSEL, reinterpret_cast<WPARAM>(&iStart), reinterpret_cast<LPARAM>(&iEnd));
             ::SetDlgItemTextW(hwnd, edt1, str2.c_str());
             ::SendDlgItemMessageW(hwnd, edt1, EM_SETSEL, iStart, iEnd);

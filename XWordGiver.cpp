@@ -63,8 +63,8 @@ XG_BoardEx xg_xword;
 XG_Board xg_solution;
 
 // クロスワードのサイズ。
-volatile INT& xg_nRows = xg_xword.m_nRows;
-volatile INT& xg_nCols = xg_xword.m_nCols;
+volatile int& xg_nRows = xg_xword.m_nRows;
+volatile int& xg_nCols = xg_xword.m_nCols;
 
 // タテとヨコのかぎ。
 std::vector<XG_PlaceInfo> xg_vTateInfo, xg_vYokoInfo;
@@ -98,8 +98,8 @@ void XgGetPatternData(XG_PATDATA& pat)
 {
     std::wstring text = pat.text;
     auto& data = pat.data;
-    INT& cx = pat.num_columns;
-    INT& cy = pat.num_rows;
+    const int cx = pat.num_columns;
+    const int cy = pat.num_rows;
     xg_str_replace_all(text, L"\r\n", L"\n");
     xg_str_replace_all(text, L"\u2501", L"");
     xg_str_replace_all(text, L"\u250F\u2513\n", L"");
@@ -133,19 +133,19 @@ void XgSetPatternData(XG_PATDATA& pat)
 {
     std::wstring text;
     const auto& data = pat.data;
-    INT& cx = pat.num_columns;
-    INT& cy = pat.num_rows;
+    const int cx = pat.num_columns;
+    const int cy = pat.num_rows;
 
     text += 0x250F; // ┏
-    for (INT x = 0; x < cx; ++x) {
+    for (int x = 0; x < cx; ++x) {
         text += 0x2501; // ━
     }
     text += 0x2513; // ┓
     text += L"\r\n";
 
-    for (INT y = 0; y < cy; ++y) {
+    for (int y = 0; y < cy; ++y) {
         text += 0x2503; // ┃
-        for (INT x = 0; x < cx; ++x) {
+        for (int x = 0; x < cx; ++x) {
             text += data[x + cx * y];
         }
         text += 0x2503; // ┃
@@ -153,7 +153,7 @@ void XgSetPatternData(XG_PATDATA& pat)
     }
 
     text += 0x2517; // ┗
-    for (INT x = 0; x < cx; ++x) {
+    for (int x = 0; x < cx; ++x) {
         text += 0x2501; // ━
     }
     text += 0x251B; // ┛
@@ -173,8 +173,8 @@ XG_PATDATA XgTransposePattern(const XG_PATDATA& pat)
 
     ret.data = pat.data;
     auto& data = pat.data;
-    for (INT y = 0; y < pat.num_rows; ++y) {
-        for (INT x = 0; x < pat.num_columns; ++x) {
+    for (int y = 0; y < pat.num_rows; ++y) {
+        for (int x = 0; x < pat.num_columns; ++x) {
             ret.data[x * ret.num_columns + y] = XG_GET_DATA(x, y);
         }
     }
@@ -190,8 +190,8 @@ XG_PATDATA XgFlipPatternH(const XG_PATDATA& pat)
     XG_PATDATA ret = pat;
     ret.data = pat.data;
     auto& data = pat.data;
-    for (INT y = 0; y < pat.num_rows; ++y) {
-        for (INT x = 0; x < pat.num_columns; ++x) {
+    for (int y = 0; y < pat.num_rows; ++y) {
+        for (int x = 0; x < pat.num_columns; ++x) {
             ret.data[y * ret.num_columns + x] = XG_GET_DATA((ret.num_columns - x - 1), y);
         }
     }
@@ -207,8 +207,8 @@ XG_PATDATA XgFlipPatternV(const XG_PATDATA& pat)
     XG_PATDATA ret = pat;
     ret.data = pat.data;
     auto& data = pat.data;
-    for (INT y = 0; y < pat.num_rows; ++y) {
-        for (INT x = 0; x < pat.num_columns; ++x) {
+    for (int y = 0; y < pat.num_rows; ++y) {
+        for (int x = 0; x < pat.num_columns; ++x) {
             ret.data[y * ret.num_columns + x] = XG_GET_DATA(x, pat.num_rows - y - 1);
         }
     }
@@ -221,7 +221,7 @@ XG_PATDATA XgFlipPatternV(const XG_PATDATA& pat)
 // パターンが黒マスで分断されているか？
 BOOL XgIsPatternDividedByBlocks(const XG_PATDATA& pat)
 {
-    INT nCount = pat.num_rows * pat.num_columns;
+    int nCount = pat.num_rows * pat.num_columns;
     auto& data = pat.data;
 
     // 各マスに対応するフラグ群。
@@ -233,8 +233,8 @@ BOOL XgIsPatternDividedByBlocks(const XG_PATDATA& pat)
     if (XG_GET_DATA(0, 0) != ZEN_BLACK) {
         positions.emplace(0, 0);
     } else {
-        for (INT i = 0; i < pat.num_rows; ++i) {
-            for (INT j = 0; j < pat.num_columns; ++j) {
+        for (int i = 0; i < pat.num_rows; ++i) {
+            for (int j = 0; j < pat.num_columns; ++j) {
                 if (XG_GET_DATA(j, i) != ZEN_BLACK) {
                     positions.emplace(i, j);
                     i = pat.num_rows;
@@ -288,20 +288,20 @@ BOOL __fastcall XgPatternRuleIsOK(const XG_PATDATA& pat)
     const auto& data = pat.data;
 
     // データサイズを確認。
-    assert(INT(data.size()) == pat.num_rows * pat.num_columns);
+    assert(int(data.size()) == pat.num_rows * pat.num_columns);
     if (static_cast<int>(data.size()) != pat.num_rows * pat.num_columns)
         return FALSE;
 
     if (xg_nRules & RULE_DONTDOUBLEBLACK) {
-        for (INT y = 0; y < pat.num_rows; ++y) {
-            for (INT x = 0; x < pat.num_columns - 1; ++x) {
+        for (int y = 0; y < pat.num_rows; ++y) {
+            for (int x = 0; x < pat.num_columns - 1; ++x) {
                 if (XG_GET_DATA(x, y) == ZEN_BLACK && XG_GET_DATA(x + 1, y) == ZEN_BLACK) {
                     return FALSE;
                 }
             }
         }
-        for (INT x = 0; x < pat.num_columns; ++x) {
-            for (INT y = 0; y < pat.num_rows - 1; ++y) {
+        for (int x = 0; x < pat.num_columns; ++x) {
+            for (int y = 0; y < pat.num_rows - 1; ++y) {
                 if (XG_GET_DATA(x, y) == ZEN_BLACK && XG_GET_DATA(x, y + 1) == ZEN_BLACK) {
                     return FALSE;
                 }
@@ -323,8 +323,8 @@ BOOL __fastcall XgPatternRuleIsOK(const XG_PATDATA& pat)
             return FALSE;
     }
     if (xg_nRules & RULE_DONTTHREEDIAGONALS) {
-        for (INT y = 0; y < pat.num_rows - 2; ++y) {
-            for (INT x = 0; x < pat.num_columns - 2; ++x) {
+        for (int y = 0; y < pat.num_rows - 2; ++y) {
+            for (int x = 0; x < pat.num_columns - 2; ++x) {
                 if (XG_GET_DATA(x, y) != ZEN_BLACK)
                     continue;
                 if (XG_GET_DATA(x + 1, y + 1) != ZEN_BLACK)
@@ -334,8 +334,8 @@ BOOL __fastcall XgPatternRuleIsOK(const XG_PATDATA& pat)
                 return FALSE;
             }
         }
-        for (INT y = 0; y < pat.num_rows - 2; ++y) {
-            for (INT x = 2; x < pat.num_columns; ++x) {
+        for (int y = 0; y < pat.num_rows - 2; ++y) {
+            for (int x = 2; x < pat.num_columns; ++x) {
                 if (XG_GET_DATA(x, y) != ZEN_BLACK)
                     continue;
                 if (XG_GET_DATA(x - 1, y + 1) != ZEN_BLACK)
@@ -347,8 +347,8 @@ BOOL __fastcall XgPatternRuleIsOK(const XG_PATDATA& pat)
         }
     }
     else if (xg_nRules & RULE_DONTFOURDIAGONALS) {
-        for (INT y = 0; y < pat.num_rows - 3; ++y) {
-            for (INT x = 0; x < pat.num_columns - 3; ++x) {
+        for (int y = 0; y < pat.num_rows - 3; ++y) {
+            for (int x = 0; x < pat.num_columns - 3; ++x) {
                 if (XG_GET_DATA(x, y) != ZEN_BLACK)
                     continue;
                 if (XG_GET_DATA(x + 1, y + 1) != ZEN_BLACK)
@@ -360,8 +360,8 @@ BOOL __fastcall XgPatternRuleIsOK(const XG_PATDATA& pat)
                 return FALSE;
             }
         }
-        for (INT y = 0; y < pat.num_rows - 3; ++y) {
-            for (INT x = 3; x < pat.num_columns; ++x) {
+        for (int y = 0; y < pat.num_rows - 3; ++y) {
+            for (int x = 3; x < pat.num_columns; ++x) {
                 if (XG_GET_DATA(x, y) != ZEN_BLACK)
                     continue;
                 if (XG_GET_DATA(x - 1, y + 1) != ZEN_BLACK)
@@ -375,9 +375,9 @@ BOOL __fastcall XgPatternRuleIsOK(const XG_PATDATA& pat)
         }
     }
     if (xg_nRules & RULE_DONTTRIDIRECTIONS) {
-        for (INT y = 0; y < pat.num_rows; ++y) {
-            for (INT x = 0; x < pat.num_columns; ++x) {
-                INT nCount = 0;
+        for (int y = 0; y < pat.num_rows; ++y) {
+            for (int x = 0; x < pat.num_columns; ++x) {
+                int nCount = 0;
                 if (x > 0 && XG_GET_DATA(x - 1, y) == ZEN_BLACK)
                     ++nCount;
                 if (y > 0 && XG_GET_DATA(x, y - 1) == ZEN_BLACK)
@@ -393,8 +393,8 @@ BOOL __fastcall XgPatternRuleIsOK(const XG_PATDATA& pat)
         }
     }
     if (xg_nRules & RULE_POINTSYMMETRY) {
-        for (INT y = 0; y < pat.num_rows; ++y) {
-            for (INT x = 0; x < pat.num_columns; ++x) {
+        for (int y = 0; y < pat.num_rows; ++y) {
+            for (int x = 0; x < pat.num_columns; ++x) {
                 if ((XG_GET_DATA(x, y) == ZEN_BLACK) !=
                     (XG_GET_DATA(pat.num_columns - (x + 1), pat.num_rows - (y + 1)) == ZEN_BLACK))
                 {
@@ -404,8 +404,8 @@ BOOL __fastcall XgPatternRuleIsOK(const XG_PATDATA& pat)
         }
     }
     if (xg_nRules & RULE_LINESYMMETRYV) {
-        for (INT y = 0; y < pat.num_rows; ++y) {
-            for (INT x = 0; x < pat.num_columns; ++x) {
+        for (int y = 0; y < pat.num_rows; ++y) {
+            for (int x = 0; x < pat.num_columns; ++x) {
                 if ((XG_GET_DATA(x, y) == ZEN_BLACK) !=
                     (XG_GET_DATA(x, pat.num_rows - (y + 1)) == ZEN_BLACK))
                 {
@@ -415,8 +415,8 @@ BOOL __fastcall XgPatternRuleIsOK(const XG_PATDATA& pat)
         }
     }
     if (xg_nRules & RULE_LINESYMMETRYH) {
-        for (INT y = 0; y < pat.num_rows; ++y) {
-            for (INT x = 0; x < pat.num_columns; ++x) {
+        for (int y = 0; y < pat.num_rows; ++y) {
+            for (int x = 0; x < pat.num_columns; ++x) {
                 if ((XG_GET_DATA(x, y) == ZEN_BLACK) !=
                     (XG_GET_DATA(pat.num_columns - (x + 1), y) == ZEN_BLACK))
                 {
@@ -486,6 +486,8 @@ BOOL XgLoadPatterns(LPCWSTR pszFileName, patterns_t& patterns)
             text += line;
             text += L"\r\n";
             pat.num_rows += 1;
+            break;
+        default:
             break;
         }
     }
@@ -610,9 +612,9 @@ BOOL XgPatternsUnitTest(void)
     XgSortAndUniquePatterns(patterns);
 
     // 概要を出力。
-    std::unordered_map<XG_Size, INT> histogram;
+    std::unordered_map<XG_Size, int> histogram;
     for (auto& pat : patterns) {
-        XG_Size siz = { pat.num_rows, pat.num_columns };
+        const XG_Size siz = { pat.num_rows, pat.num_columns };
         histogram[siz]++;
     }
     for (auto& pair : histogram) {
@@ -639,7 +641,7 @@ bool __fastcall XgAnyCandidateAddBlack(const std::wstring& pattern) noexcept
     // パターンに黒マスがないことを仮定する。
     // パターンに空白があることを仮定する。
     bool bSpaceFound = false;
-    for (INT i = 0; i < patlen; i++) {
+    for (int i = 0; i < patlen; i++) {
         assert(pattern[i] != ZEN_BLACK);
         if (pattern[i] != ZEN_SPACE)
             bSpaceFound = true;
@@ -657,7 +659,7 @@ bool __fastcall XgAnyCandidateAddBlack(const std::wstring& pattern) noexcept
 
             // 孤立した文字マスが中にあるかを調べる。
             // ついでに文字マスが途中にあるか調べる。
-            for (INT j = 1; j < patlen - 1; j++) {
+            for (int j = 1; j < patlen - 1; j++) {
                 if (pattern[j] != ZEN_SPACE) {
                     if (pattern[j - 1] == ZEN_SPACE && pattern[j + 1] == ZEN_SPACE) {
                         return true;    // 孤立した文字マスがあった。
@@ -687,7 +689,7 @@ bool __fastcall XgAnyCandidateAddBlack(const std::wstring& pattern) noexcept
 
         // 単語の置ける区間について調べる。
         const int patlen_minus_wordlen = patlen - wordlen;
-        for (INT j = 0; j <= patlen_minus_wordlen; j++) {
+        for (int j = 0; j <= patlen_minus_wordlen; j++) {
             // もし単語の位置の前後に文字があったらスキップする。
             if (j > 0 && pattern[j - 1] != ZEN_SPACE)
                 continue;
@@ -697,7 +699,7 @@ bool __fastcall XgAnyCandidateAddBlack(const std::wstring& pattern) noexcept
             // 区間[j, j + wordlen - 1]に文字マスがあるか？
             // 単語がにマッチするか？
             bool bCharFound = false;
-            for (INT k = 0; k < wordlen; k++) {
+            for (int k = 0; k < wordlen; k++) {
                 if (pattern[j + k] != ZEN_SPACE) {
                     bCharFound = true;
                     if (pattern[j + k] != word[k]) {
@@ -728,7 +730,7 @@ bool __fastcall XgAnyCandidateNoAddBlack(const std::wstring& pattern) noexcept
     // パターンに黒マスがないことを仮定する。
     // パターンに空白があることを仮定する。
     bool bSpaceFound = false;
-    for (INT i = 0; i < patlen; i++) {
+    for (int i = 0; i < patlen; i++) {
         assert(pattern[i] != ZEN_BLACK);
         if (pattern[i] != ZEN_SPACE)
             bSpaceFound = true;
@@ -749,7 +751,7 @@ bool __fastcall XgAnyCandidateNoAddBlack(const std::wstring& pattern) noexcept
         // 単語がマッチするか？
         // 区間[0, wordlen - 1]に文字マスがあるか？
         bool bCharFound = false;
-        for (INT k = 0; k < wordlen; k++) {
+        for (int k = 0; k < wordlen; k++) {
             if (pattern[k] != ZEN_SPACE) {
                 bCharFound = true;
                 if (pattern[k] != word[k]) {
@@ -769,9 +771,9 @@ break_continue:;
 
 // カウントを更新する。
 void XG_BoardEx::ReCount() noexcept {
-    INT nCount = 0;
-    for (INT i = 0; i < m_nRows; ++i) {
-        for (INT j = 0; j < m_nCols; ++j) {
+    int nCount = 0;
+    for (int i = 0; i < m_nRows; ++i) {
+        for (int j = 0; j < m_nCols; ++j) {
             nCount += (GetAt(i, j) != ZEN_SPACE);
         }
     }
@@ -779,11 +781,11 @@ void XG_BoardEx::ReCount() noexcept {
 }
 
 // 行を挿入する。
-void XG_BoardEx::InsertRow(INT iRow) {
+void XG_BoardEx::InsertRow(int iRow) {
     XG_Board copy;
     copy.ResetAndSetSize(m_nRows + 1, m_nCols);
-    for (INT i = 0; i < m_nRows; ++i) {
-        for (INT j = 0; j < m_nCols; ++j) {
+    for (int i = 0; i < m_nRows; ++i) {
+        for (int j = 0; j < m_nCols; ++j) {
             if (i < iRow)
                 copy.SetAt2(i, j, m_nRows + 1, m_nCols, GetAt(i, j));
             else
@@ -796,11 +798,11 @@ void XG_BoardEx::InsertRow(INT iRow) {
 }
 
 // 列を挿入する。
-void XG_BoardEx::InsertColumn(INT jCol) {
+void XG_BoardEx::InsertColumn(int jCol) {
     XG_Board copy;
     copy.ResetAndSetSize(m_nRows, m_nCols + 1);
-    for (INT i = 0; i < m_nRows; ++i) {
-        for (INT j = 0; j < m_nCols; ++j) {
+    for (int i = 0; i < m_nRows; ++i) {
+        for (int j = 0; j < m_nCols; ++j) {
             if (j < jCol)
                 copy.SetAt2(i, j, m_nRows, m_nCols + 1, GetAt(i, j));
             else
@@ -813,11 +815,11 @@ void XG_BoardEx::InsertColumn(INT jCol) {
 }
 
 // 行を削除する。
-void XG_BoardEx::DeleteRow(INT iRow) {
+void XG_BoardEx::DeleteRow(int iRow) {
     XG_Board copy;
     copy.ResetAndSetSize(m_nRows - 1, m_nCols);
-    for (INT i = 0; i < m_nRows - 1; ++i) {
-        for (INT j = 0; j < m_nCols; ++j) {
+    for (int i = 0; i < m_nRows - 1; ++i) {
+        for (int j = 0; j < m_nCols; ++j) {
             if (i < iRow)
                 copy.SetAt2(i, j, m_nRows - 1, m_nCols, GetAt(i, j));
             else
@@ -830,11 +832,11 @@ void XG_BoardEx::DeleteRow(INT iRow) {
 }
 
 // 列を削除する。
-void XG_BoardEx::DeleteColumn(INT jCol) {
+void XG_BoardEx::DeleteColumn(int jCol) {
     XG_Board copy;
     copy.ResetAndSetSize(m_nRows, m_nCols - 1);
-    for (INT i = 0; i < m_nRows; ++i) {
-        for (INT j = 0; j < m_nCols - 1; ++j) {
+    for (int i = 0; i < m_nRows; ++i) {
+        for (int j = 0; j < m_nCols - 1; ++j) {
             if (j < jCol)
                 copy.SetAt2(i, j, m_nRows, m_nCols - 1, GetAt(i, j));
             else
@@ -881,14 +883,14 @@ bool __fastcall XG_Board::DoubleBlack() const noexcept
     const int n2 = xg_nRows - 1;
     int i = xg_nRows;
     for (--i; i >= 0; --i) {
-        for (INT j = 0; j < n1; j++) {
+        for (int j = 0; j < n1; j++) {
             if (GetAt(i, j) == ZEN_BLACK && GetAt(i, j + 1) == ZEN_BLACK)
                 return true;    // 隣り合っていた。
         }
     }
     int j = xg_nCols;
     for (--j; j >= 0; --j) {
-        for (INT i0 = 0; i0 < n2; i0++) {
+        for (int i0 = 0; i0 < n2; i0++) {
             if (GetAt(i0, j) == ZEN_BLACK && GetAt(i0 + 1, j) == ZEN_BLACK)
                 return true;    // 隣り合っていた。
         }
@@ -899,8 +901,8 @@ bool __fastcall XG_Board::DoubleBlack() const noexcept
 // 三方向が黒マスで囲まれたマスがあるかどうか？
 bool __fastcall XG_Board::TriBlackAround() const noexcept
 {
-    for (INT i = xg_nRows - 2; i >= 1; --i) {
-        for (INT j = xg_nCols - 2; j >= 1; --j) {
+    for (int i = xg_nRows - 2; i >= 1; --i) {
+        for (int j = xg_nCols - 2; j >= 1; --j) {
             if ((GetAt(i - 1, j) == ZEN_BLACK) + (GetAt(i + 1, j) == ZEN_BLACK) + 
                 (GetAt(i, j - 1) == ZEN_BLACK) + (GetAt(i, j + 1) == ZEN_BLACK) >= 3)
             {
@@ -914,8 +916,8 @@ bool __fastcall XG_Board::TriBlackAround() const noexcept
 // 黒マスで分断されているかどうか？
 bool __fastcall XG_Board::DividedByBlack() const
 {
-    const INT nRows = xg_nRows, nCols = xg_nCols;
-    INT nCount = nRows * nCols;
+    const int nRows = xg_nRows, nCols = xg_nCols;
+    int nCount = nRows * nCols;
 
     // 各マスに対応するフラグ群。
     std::vector<BYTE> pb(nCount, 0);
@@ -926,8 +928,8 @@ bool __fastcall XG_Board::DividedByBlack() const
     if (GetAt(0, 0) != ZEN_BLACK) {
         positions.emplace(0, 0);
     } else {
-        for (INT i = 0; i < nRows; ++i) {
-            for (INT j = 0; j < nCols; ++j) {
+        for (int i = 0; i < nRows; ++i) {
+            for (int j = 0; j < nCols; ++j) {
                 if (GetAt(i, j) != ZEN_BLACK) {
                     positions.emplace(i, j);
                     i = nRows;
@@ -991,8 +993,8 @@ XG_EpvCode __fastcall XG_Board::EveryPatternValid1(
     //vNotFoundWords.clear();
 
     // 各行について、横向きにスキャンする。
-    for (INT i = 0; i < nRows; i++) {
-        for (INT j = 0; j < nCols - 1; j++) {
+    for (int i = 0; i < nRows; i++) {
+        for (int j = 0; j < nCols - 1; j++) {
             // 黒マスではない、文字が含まれている連続した２マスか？
             const WCHAR ch1 = GetAt(i, j), ch2 = GetAt(i, j + 1);
             if (ch1 != ZEN_BLACK && ch2 != ZEN_BLACK &&
@@ -1016,8 +1018,8 @@ XG_EpvCode __fastcall XG_Board::EveryPatternValid1(
                 // パターンを生成する。
                 bool bSpaceFound = false;
                 std::wstring pattern;
-                for (INT k = lo; k <= hi; k++) {
-                    WCHAR ch = GetAt(i, k);
+                for (int k = lo; k <= hi; k++) {
+                    const WCHAR ch = GetAt(i, k);
                     if (ch == ZEN_SPACE) {
                         bSpaceFound = true;
                         for (; k <= hi; k++)
@@ -1083,8 +1085,8 @@ XG_EpvCode __fastcall XG_Board::EveryPatternValid1(
                 // 非空白があるか？
                 bool bNonSpaceFound = false;
                 int patlen = 0;
-                for (INT k = lo; k <= hi; k++) {
-                    WCHAR ch = GetAt(i, k);
+                for (int k = lo; k <= hi; k++) {
+                    const WCHAR ch = GetAt(i, k);
                     if (ch != ZEN_SPACE) {
                         bNonSpaceFound = true;
                         break;
@@ -1106,8 +1108,8 @@ XG_EpvCode __fastcall XG_Board::EveryPatternValid1(
     }
 
     // 各列について、縦向きにスキャンする。
-    for (INT j = 0; j < nCols; j++) {
-        for (INT i = 0; i < nRows - 1; i++) {
+    for (int j = 0; j < nCols; j++) {
+        for (int i = 0; i < nRows - 1; i++) {
             // 黒マスではない、文字が含まれている連続した２マスか？
             const WCHAR ch1 = GetAt(i, j), ch2 = GetAt(i + 1, j);
             if (ch1 != ZEN_BLACK && ch2 != ZEN_BLACK &&
@@ -1131,8 +1133,8 @@ XG_EpvCode __fastcall XG_Board::EveryPatternValid1(
                 // パターンを生成する。
                 bool bSpaceFound = false;
                 std::wstring pattern;
-                for (INT k = lo; k <= hi; k++) {
-                    WCHAR ch = GetAt(k, j);
+                for (int k = lo; k <= hi; k++) {
+                    const WCHAR ch = GetAt(k, j);
                     if (ch == ZEN_SPACE) {
                         bSpaceFound = true;
                         for (; k <= hi; k++)
@@ -1199,8 +1201,8 @@ XG_EpvCode __fastcall XG_Board::EveryPatternValid1(
                 // 非空白があるか？
                 bool bNonSpaceFound = false;
                 int patlen = 0;
-                for (INT k = lo; k <= hi; k++) {
-                    WCHAR ch = GetAt(k, j);
+                for (int k = lo; k <= hi; k++) {
+                    const WCHAR ch = GetAt(k, j);
                     if (ch != ZEN_SPACE) {
                         bNonSpaceFound = true;
                         break;
@@ -1273,8 +1275,8 @@ XG_EpvCode __fastcall XG_Board::EveryPatternValid2(
                 // パターンを生成する。
                 bool bSpaceFound = false;
                 std::wstring pattern;
-                for (INT k = lo; k <= hi; k++) {
-                    WCHAR ch = GetAt(i, k);
+                for (int k = lo; k <= hi; k++) {
+                    const WCHAR ch = GetAt(i, k);
                     if (ch == ZEN_SPACE) {
                         bSpaceFound = true;
                         for (; k <= hi; k++)
@@ -1349,8 +1351,8 @@ XG_EpvCode __fastcall XG_Board::EveryPatternValid2(
                 // 非空白があるか？
                 bool bNonSpaceFound = false;
                 int patlen = 0;
-                for (INT k = lo; k <= hi; k++) {
-                    WCHAR ch = GetAt(i, k);
+                for (int k = lo; k <= hi; k++) {
+                    const WCHAR ch = GetAt(i, k);
                     if (ch != ZEN_SPACE) {
                         bNonSpaceFound = true;
                         break;
@@ -1401,8 +1403,8 @@ XG_EpvCode __fastcall XG_Board::EveryPatternValid2(
                 // パターンを生成する。
                 bool bSpaceFound = false;
                 std::wstring pattern;
-                for (INT k = lo; k <= hi; k++) {
-                    WCHAR ch = GetAt(k, j);
+                for (int k = lo; k <= hi; k++) {
+                    const WCHAR ch = GetAt(k, j);
                     if (ch == ZEN_SPACE) {
                         bSpaceFound = true;
                         for (; k <= hi; k++)
@@ -1476,8 +1478,8 @@ XG_EpvCode __fastcall XG_Board::EveryPatternValid2(
                 // 非空白があるか？
                 bool bNonSpaceFound = false;
                 int patlen = 0;
-                for (INT k = lo; k <= hi; k++) {
-                    WCHAR ch = GetAt(k, j);
+                for (int k = lo; k <= hi; k++) {
+                    const WCHAR ch = GetAt(k, j);
                     if (ch != ZEN_SPACE) {
                         bNonSpaceFound = true;
                         break;
@@ -1503,7 +1505,7 @@ XG_EpvCode __fastcall XG_Board::EveryPatternValid2(
 }
 
 // 正当かどうか？
-inline bool __fastcall XG_Board::IsValid() const noexcept
+inline bool __fastcall XG_Board::IsValid() const
 {
     if ((xg_nRules & RULE_DONTCORNERBLACK) && CornerBlack())
         return false;
@@ -1525,7 +1527,7 @@ inline bool __fastcall XG_Board::IsValid() const noexcept
     XG_Pos pos;
     std::vector<std::wstring> vNotFoundWords;
     vNotFoundWords.reserve(xg_nRows * xg_nCols / 4);
-    XG_EpvCode code = EveryPatternValid2(vNotFoundWords, pos, false);
+    const XG_EpvCode code = EveryPatternValid2(vNotFoundWords, pos, false);
     if (code != xg_epv_SUCCESS || !vNotFoundWords.empty())
         return false;
 
@@ -1538,7 +1540,7 @@ inline bool __fastcall XG_Board::IsValid() const noexcept
 }
 
 // 正当かどうか？（簡略版、黒マス追加なし）
-bool __fastcall XG_Board::IsNoAddBlackOK() const noexcept
+bool __fastcall XG_Board::IsNoAddBlackOK() const
 {
     // クロスワードに含まれる単語のチェック。
     XG_Pos pos;
@@ -1554,7 +1556,7 @@ bool __fastcall XG_Board::IsNoAddBlackOK() const noexcept
 }
 
 // 番号をつける。
-bool __fastcall XG_Board::DoNumbering() noexcept
+bool __fastcall XG_Board::DoNumbering()
 {
     const int nRows = xg_nRows;
     const int nCols = xg_nCols;
@@ -1569,8 +1571,8 @@ bool __fastcall XG_Board::DoNumbering() noexcept
 
 #ifndef NDEBUG
     // 空マスがないことを仮定する。
-    for (INT i = 0; i < nRows; i++) {
-        for (INT j = 0; j < nCols; j++) {
+    for (int i = 0; i < nRows; i++) {
+        for (int j = 0; j < nCols; j++) {
             assert(GetAt(i, j) != ZEN_SPACE);
         }
     }
@@ -1581,8 +1583,8 @@ bool __fastcall XG_Board::DoNumbering() noexcept
     xg_vYokoInfo.clear();
 
     // 各列について、縦向きにスキャンする。
-    for (INT j = 0; j < nCols; j++) {
-        for (INT i = 0; i < nRows - 1; i++) {
+    for (int j = 0; j < nCols; j++) {
+        for (int i = 0; i < nRows - 1; i++) {
             // 文字マスの連続が見つかったか？
             if (GetAt(i, j) != ZEN_BLACK && GetAt(i + 1, j) != ZEN_BLACK) {
                 int lo, hi;
@@ -1601,7 +1603,7 @@ bool __fastcall XG_Board::DoNumbering() noexcept
 
                 // 空白があるかを調べると同時に、その区間にある単語を取得する。
                 std::wstring word;
-                for (INT k = lo; k <= hi; k++) {
+                for (int k = lo; k <= hi; k++) {
                     if (GetAt(k, j) == ZEN_SPACE)
                         goto space_found_1;
 
@@ -1631,8 +1633,8 @@ space_found_1:;
     }
 
     // 各行について横向きにスキャンする。
-    for (INT i = 0; i < nRows; i++) {
-        for (INT j = 0; j < nCols - 1; j++) {
+    for (int i = 0; i < nRows; i++) {
+        for (int j = 0; j < nCols - 1; j++) {
             // 文字マスの連続が見つかったか？
             if (GetAt(i, j) != ZEN_BLACK && GetAt(i, j + 1) != ZEN_BLACK) {
                 int lo, hi;
@@ -1651,7 +1653,7 @@ space_found_1:;
 
                 // 空白があるかを調べると同時に、その区間にある単語を取得する。
                 std::wstring word;
-                for (INT k = lo; k <= hi; k++) {
+                for (int k = lo; k <= hi; k++) {
                     if (GetAt(i, k) == ZEN_SPACE)
                         goto space_found_2;
 
@@ -1685,10 +1687,10 @@ space_found_2:;
     const int size1 = static_cast<int>(xg_vTateInfo.size());
     const int size2 = static_cast<int>(xg_vYokoInfo.size());
     data.reserve(size1 + size2);
-    for (INT k = 0; k < size1; k++) {
+    for (int k = 0; k < size1; k++) {
         data.emplace_back(&xg_vTateInfo[k]);
     }
-    for (INT k = 0; k < size2; k++) {
+    for (int k = 0; k < size2; k++) {
         data.emplace_back(&xg_vYokoInfo[k]);
     }
     sort(data.begin(), data.end(), xg_placeinfo_compare_position());
@@ -1696,8 +1698,8 @@ space_found_2:;
     // 順序付けられたカギの格納情報に番号を設定する。
     int number = 1;
     {
-        const INT size = static_cast<int>(data.size());
-        for (INT k = 0; k < size; k++) {
+        const int size = static_cast<int>(data.size());
+        for (int k = 0; k < size; k++) {
             // 番号を設定する。
             data[k]->m_number = number;
             if (k + 1 < size) {
@@ -1723,7 +1725,7 @@ space_found_2:;
 }
 
 // 番号をつける（チェックなし）。
-void __fastcall XG_Board::DoNumberingNoCheck() noexcept
+void __fastcall XG_Board::DoNumberingNoCheck()
 {
     // 単語データ。
     XG_WordData wd;
@@ -1733,7 +1735,7 @@ void __fastcall XG_Board::DoNumberingNoCheck() noexcept
 
 #ifndef NDEBUG
     // 空マスがないと仮定する。
-    for (INT i = 0; i < nRows * nCols; i++) {
+    for (int i = 0; i < nRows * nCols; i++) {
         assert(GetAt(i) != ZEN_SPACE);
     }
 #endif
@@ -1743,8 +1745,8 @@ void __fastcall XG_Board::DoNumberingNoCheck() noexcept
     xg_vYokoInfo.clear();
 
     // 各列について、縦向きにスキャンする。
-    for (INT j = 0; j < nCols; j++) {
-        for (INT i = 0; i < nRows - 1; i++) {
+    for (int j = 0; j < nCols; j++) {
+        for (int i = 0; i < nRows - 1; i++) {
             // 文字マスの連続が見つかったか？
             if (GetAt(i, j) != ZEN_BLACK && GetAt(i + 1, j) != ZEN_BLACK) {
                 int lo, hi;
@@ -1764,7 +1766,7 @@ void __fastcall XG_Board::DoNumberingNoCheck() noexcept
                 // 空白があるかを調べると同時に、その区間にある単語を取得する。
                 bool bFound = false;
                 std::wstring word;
-                for (INT k = lo; k <= hi; k++) {
+                for (int k = lo; k <= hi; k++) {
                     if (GetAt(k, j) == ZEN_SPACE) {
                         bFound = true;
                         break;
@@ -1782,8 +1784,8 @@ void __fastcall XG_Board::DoNumberingNoCheck() noexcept
     }
 
     // 各行について、横向きにスキャンする。
-    for (INT i = 0; i < nRows; i++) {
-        for (INT j = 0; j < nCols - 1; j++) {
+    for (int i = 0; i < nRows; i++) {
+        for (int j = 0; j < nCols - 1; j++) {
             // 文字マスの連続が見つかったか？
             if (GetAt(i, j) != ZEN_BLACK && GetAt(i, j + 1) != ZEN_BLACK) {
                 int lo, hi;
@@ -1803,7 +1805,7 @@ void __fastcall XG_Board::DoNumberingNoCheck() noexcept
                 // 空白があるかを調べると同時に、その区間にある単語を取得する。
                 std::wstring word;
                 bool bFound = false;
-                for (INT k = lo; k <= hi; k++) {
+                for (int k = lo; k <= hi; k++) {
                     if (GetAt(i, k) == ZEN_SPACE) {
                         bFound = true;
                         break;
@@ -1823,14 +1825,14 @@ void __fastcall XG_Board::DoNumberingNoCheck() noexcept
     // カギの格納情報に順序をつける。
     std::vector<XG_PlaceInfo *> data;
     {
-        const INT size = static_cast<int>(xg_vTateInfo.size());
-        for (INT k = 0; k < size; k++) {
+        const int size = static_cast<int>(xg_vTateInfo.size());
+        for (int k = 0; k < size; k++) {
             data.emplace_back(&xg_vTateInfo[k]);
         }
     }
     {
-        const INT size = static_cast<int>(xg_vYokoInfo.size());
-        for (INT k = 0; k < size; k++) {
+        const int size = static_cast<int>(xg_vYokoInfo.size());
+        for (int k = 0; k < size; k++) {
             data.emplace_back(&xg_vYokoInfo[k]);
         }
     }
@@ -1839,8 +1841,8 @@ void __fastcall XG_Board::DoNumberingNoCheck() noexcept
     // 順序付けられたカギの格納情報に番号を設定する。
     int number = 1;
     {
-        const INT size = static_cast<int>(data.size());
-        for (INT k = 0; k < size; k++) {
+        const int size = static_cast<int>(data.size());
+        for (int k = 0; k < size; k++) {
             // 番号を設定する。
             data[k]->m_number = number;
             if (k + 1 < size) {
@@ -1877,7 +1879,7 @@ XgGetCandidatesAddBlack(
     // パターンに黒マスがないことを仮定する。
     // パターンに空白があることを仮定する。
     bool bSpaceFound = false;
-    for (INT i = 0; i < patlen; i++) {
+    for (int i = 0; i < patlen; i++) {
         assert(pattern[i] != ZEN_BLACK);
         if (pattern[i] == ZEN_SPACE)
             bSpaceFound = true;
@@ -1911,7 +1913,7 @@ XgGetCandidatesAddBlack(
             bool bCharNotFound = true;  // 文字マスがなかったか？
 
             // 孤立した文字マスが中にあるか？
-            for (INT j = 1; j < patlen - 1; j++) {
+            for (int j = 1; j < patlen - 1; j++) {
                 if (result[j] != ZEN_SPACE) {
                     if (result[j - 1] == ZEN_SPACE && result[j + 1] == ZEN_SPACE) {
                         // 孤立した文字マスがあった。
@@ -1951,7 +1953,7 @@ XgGetCandidatesAddBlack(
 
         // 単語の置ける区間について調べる。
         const int patlen_minus_wordlen = patlen - wordlen;
-        for (INT j = 0; j <= patlen_minus_wordlen; j++) {
+        for (int j = 0; j <= patlen_minus_wordlen; j++) {
             // 区間[j, j + wordlen - 1]の前後に文字があったらスキップする。
             if (j > 0 && pattern[j - 1] != ZEN_SPACE)
                 continue;
@@ -1992,7 +1994,7 @@ XgGetCandidatesAddBlack(
                 result[j + wordlen] = ZEN_BLACK;
 
             // 区間[j, j + wordlen - 1]に単語を適用する。
-            for (INT k = 0, m = j; k < wordlen; k++, m++)
+            for (int k = 0, m = j; k < wordlen; k++, m++)
                 result[m] = word[k];
 
             // 黒マスの連続を除外する。
@@ -2036,7 +2038,7 @@ XgGetCandidatesNoAddBlack(std::vector<std::wstring>& cands, const std::wstring& 
 
         // 区間[0, wordlen - 1]に文字マスがあるか？
         bool bCharFound = false;
-        for (INT k = 0; k < wordlen; k++) {
+        for (int k = 0; k < wordlen; k++) {
             assert(pattern[k] != ZEN_BLACK);
             if (pattern[k] != ZEN_SPACE) {
                 bCharFound = true;
@@ -2048,7 +2050,7 @@ XgGetCandidatesNoAddBlack(std::vector<std::wstring>& cands, const std::wstring& 
 
         // パターンが単語にマッチするか？
         bool bMatched = true;
-        for (INT k = 0; k < wordlen; k++) {
+        for (int k = 0; k < wordlen; k++) {
             if (pattern[k] != ZEN_SPACE && pattern[k] != word[k]) {
                 bMatched = false;
                 break;
@@ -2076,8 +2078,8 @@ bool __fastcall XG_Board::IsSolution() const noexcept
     if (Count() != nRows * nCols)
         return false;
 #else
-    for (INT i = 0; i < nRows; i++) {
-        for (INT j = 0; j < nCols; j++) {
+    for (int i = 0; i < nRows; i++) {
+        for (int j = 0; j < nCols; j++) {
             if (GetAt(i, j) == ZEN_SPACE)
                 return false;
         }
@@ -2406,9 +2408,9 @@ XgGetHintsStr(const XG_Board& board, std::wstring& str, int hint_type, bool bSho
 }
 
 // 文字列のルールを解析する。
-INT __fastcall XgParseRules(const std::wstring& str)
+int __fastcall XgParseRules(const std::wstring& str)
 {
-    INT nRules = 0;
+    int nRules = 0;
     std::vector<std::wstring> rules;
     if (str.find(L" / ") != str.npos) { // もし" / "が含まれていたら
         mstr_split(rules, str, L"/"); // "/"で分割する。
@@ -2443,7 +2445,7 @@ INT __fastcall XgParseRules(const std::wstring& str)
 }
 
 // ルールを文字列にする。
-std::wstring __fastcall XgGetRulesString(INT rules)
+std::wstring __fastcall XgGetRulesString(int rules)
 {
     // メモ：英語対応のため、空白区切りから" / "区切りに変更しました。
     std::wstring ret;
@@ -2519,7 +2521,7 @@ bool __fastcall XgSetJsonString(HWND hwnd, const std::wstring& str)
         bool is_solved = j0["is_solved"];
         bool has_mark = j0["has_mark"];
         bool has_hints = j0["has_hints"];
-        INT rules = XG_DEFAULT_RULES;
+        int rules = XG_DEFAULT_RULES;
         if (j0["policy"].is_number_integer()) {
             rules = static_cast<int>(j0["policy"]);
         } else if (j0["rules"].is_string()) {
@@ -2568,7 +2570,7 @@ bool __fastcall XgSetJsonString(HWND hwnd, const std::wstring& str)
             success = false;
         }
 
-        for (INT i = 0; i < row_count; ++i) {
+        for (int i = 0; i < row_count; ++i) {
             if (!cell_data[i].is_string()) {
                 success = false;
                 break;
@@ -2580,7 +2582,7 @@ bool __fastcall XgSetJsonString(HWND hwnd, const std::wstring& str)
                 success = false;
                 break;
             }
-            for (INT j = 0; j < column_count; ++j) {
+            for (int j = 0; j < column_count; ++j) {
                 xw.SetAt(i, j, row[j]);
             }
         }
@@ -2649,8 +2651,8 @@ bool __fastcall XgSetJsonString(HWND hwnd, const std::wstring& str)
                 xg_bSolved = true;
                 xg_solution = xw;
                 xg_xword.ResetAndSetSize(row_count, column_count);
-                for (INT i = 0; i < xg_nRows; i++) {
-                    for (INT j = 0; j < xg_nCols; j++) {
+                for (int i = 0; i < xg_nRows; i++) {
+                    for (int j = 0; j < xg_nCols; j++) {
                         // 解に合わせて、問題に黒マスを置く。
                         if (xg_solution.GetAt(i, j) == ZEN_BLACK)
                             xg_xword.SetAt(i, j, ZEN_BLACK);
@@ -2806,7 +2808,7 @@ bool __fastcall XgSetStdString(HWND hwnd, const std::wstring& str)
                 for (const auto& info : xg_vTateInfo) {
                     if (info.m_number == hint.m_number) {
                         std::wstring word;
-                        for (INT k = info.m_iRow; k < xg_nRows; ++k) {
+                        for (int k = info.m_iRow; k < xg_nRows; ++k) {
                             WCHAR ch = xword.GetAt(k, info.m_jCol);
                             if (ch == ZEN_BLACK)
                                 break;
@@ -2824,7 +2826,7 @@ bool __fastcall XgSetStdString(HWND hwnd, const std::wstring& str)
                 for (const auto& info : xg_vYokoInfo) {
                     if (info.m_number == hint.m_number) {
                         std::wstring word;
-                        for (INT k = info.m_jCol; k < xg_nCols; ++k) {
+                        for (int k = info.m_jCol; k < xg_nCols; ++k) {
                             WCHAR ch = xword.GetAt(info.m_iRow, k);
                             if (ch == ZEN_BLACK)
                                 break;
@@ -2850,8 +2852,8 @@ bool __fastcall XgSetStdString(HWND hwnd, const std::wstring& str)
             xg_bShowAnswer = false;
 
             xg_xword.clear();
-            for (INT i = 0; i < xg_nRows; i++) {
-                for (INT j = 0; j < xg_nCols; j++) {
+            for (int i = 0; i < xg_nRows; i++) {
+                for (int j = 0; j < xg_nCols; j++) {
                     // 解に合わせて、問題に黒マスを置く。
                     if (xword.GetAt(i, j) == ZEN_BLACK)
                         xg_xword.SetAt(i, j, ZEN_BLACK);
@@ -3196,8 +3198,8 @@ void __fastcall XgSolveXWord_AddBlackRecurse(const XG_Board& xw) noexcept
 
     // 各行について、横向きにスキャンする。
     const int nColsMinusOne = nCols - 1;
-    for (INT i = 0; i < nRows; i++) {
-        for (INT j = 0; j < nColsMinusOne; j++) {
+    for (int i = 0; i < nRows; i++) {
+        for (int j = 0; j < nColsMinusOne; j++) {
             // すでに解かれているなら、終了。
             // キャンセルされているなら、終了。
             // 再計算すべきなら、終了する。
@@ -3226,7 +3228,7 @@ void __fastcall XgSolveXWord_AddBlackRecurse(const XG_Board& xw) noexcept
 
                 // パターンを生成する。
                 std::wstring pattern;
-                for (INT k = lo; k <= hi; k++) {
+                for (int k = lo; k <= hi; k++) {
                     pattern += xw.GetAt(i, k);
                 }
 
@@ -3252,7 +3254,7 @@ void __fastcall XgSolveXWord_AddBlackRecurse(const XG_Board& xw) noexcept
                             return;
 
                         bool bCanPutBlack = true;
-                        for (INT k = lo; k <= hi; k++) {
+                        for (int k = lo; k <= hi; k++) {
                             if (cand[k - lo] == ZEN_BLACK && !xw.CanPutBlack(i, k)) {
                                 bCanPutBlack = false;
                                 break;
@@ -3264,7 +3266,7 @@ void __fastcall XgSolveXWord_AddBlackRecurse(const XG_Board& xw) noexcept
 
                             assert(cand.size() == pattern.size());
 
-                            for (INT k = lo; k <= hi; k++) {
+                            for (int k = lo; k <= hi; k++) {
                                 assert(copy.GetAt(i, k) == ZEN_SPACE ||
                                        copy.GetAt(i, k) == cand[k - lo]);
 
@@ -3304,7 +3306,7 @@ void __fastcall XgSolveXWord_AddBlackRecurse(const XG_Board& xw) noexcept
                             return;
 
                         bool bCanPutBlack = true;
-                        for (INT k = lo; k <= hi; k++) {
+                        for (int k = lo; k <= hi; k++) {
                             if (cand[k - lo] == ZEN_BLACK && !xw.CanPutBlack(i, k)) {
                                 bCanPutBlack = false;
                                 break;
@@ -3316,7 +3318,7 @@ void __fastcall XgSolveXWord_AddBlackRecurse(const XG_Board& xw) noexcept
 
                             assert(cand.size() == pattern.size());
 
-                            for (INT k = lo; k <= hi; k++) {
+                            for (int k = lo; k <= hi; k++) {
                                 assert(copy.GetAt(i, k) == ZEN_SPACE ||
                                        copy.GetAt(i, k) == cand[k - lo]);
 
@@ -3347,8 +3349,8 @@ void __fastcall XgSolveXWord_AddBlackRecurse(const XG_Board& xw) noexcept
 
     // 各列について、縦向きにスキャンする。
     const int nRowsMinusOne = nRows - 1;
-    for (INT j = 0; j < nCols; j++) {
-        for (INT i = 0; i < nRowsMinusOne; i++) {
+    for (int j = 0; j < nCols; j++) {
+        for (int i = 0; i < nRowsMinusOne; i++) {
             // すでに解かれているなら、終了。
             // キャンセルされているなら、終了。
             // 再計算すべきなら、終了する。
@@ -3377,7 +3379,7 @@ void __fastcall XgSolveXWord_AddBlackRecurse(const XG_Board& xw) noexcept
 
                 // パターンを生成する。
                 std::wstring pattern;
-                for (INT k = lo; k <= hi; k++) {
+                for (int k = lo; k <= hi; k++) {
                     pattern += xw.GetAt(k, j);
                 }
 
@@ -3403,7 +3405,7 @@ void __fastcall XgSolveXWord_AddBlackRecurse(const XG_Board& xw) noexcept
                             return;
 
                         bool bCanPutBlack = true;
-                        for (INT k = lo; k <= hi; k++) {
+                        for (int k = lo; k <= hi; k++) {
                             if (cand[k - lo] == ZEN_BLACK && !xw.CanPutBlack(k, j)) {
                                 bCanPutBlack = false;
                                 break;
@@ -3415,7 +3417,7 @@ void __fastcall XgSolveXWord_AddBlackRecurse(const XG_Board& xw) noexcept
 
                             assert(cand.size() == pattern.size());
 
-                            for (INT k = lo; k <= hi; k++) {
+                            for (int k = lo; k <= hi; k++) {
                                 assert(copy.GetAt(k, j) == ZEN_SPACE ||
                                        copy.GetAt(k, j) == cand[k - lo]);
 
@@ -3455,7 +3457,7 @@ void __fastcall XgSolveXWord_AddBlackRecurse(const XG_Board& xw) noexcept
                             return;
 
                         bool bCanPutBlack = true;
-                        for (INT k = lo; k <= hi; k++) {
+                        for (int k = lo; k <= hi; k++) {
                             if (cand[k - lo] == ZEN_BLACK && !xw.CanPutBlack(k, j)) {
                                 bCanPutBlack = false;
                                 break;
@@ -3467,7 +3469,7 @@ void __fastcall XgSolveXWord_AddBlackRecurse(const XG_Board& xw) noexcept
 
                             assert(cand.size() == pattern.size());
 
-                            for (INT k = lo; k <= hi; k++) {
+                            for (int k = lo; k <= hi; k++) {
                                 assert(copy.GetAt(k, j) == ZEN_SPACE ||
                                        copy.GetAt(k, j) == cand[k - lo]);
 
@@ -3509,7 +3511,7 @@ void __fastcall XgSolveXWord_AddBlackRecurse(const XG_Board& xw) noexcept
 
         // 解に合わせて、問題に黒マスを置く。
         const int nCount = nRows * nCols;
-        for (INT i = 0; i < nCount; i++) {
+        for (int i = 0; i < nCount; i++) {
             if (xw.GetAt(i) == ZEN_BLACK)
                 xg_xword.SetAt(i, ZEN_BLACK);
         }
@@ -3545,8 +3547,8 @@ void __fastcall XgSolveXWord_NoAddBlackRecurse(const XG_Board& xw) noexcept
 
     // 各行について、横向きにスキャンする。
     const int nColsMinusOne = nCols - 1;
-    for (INT i = 0; i < nRows; i++) {
-        for (INT j = 0; j < nColsMinusOne; j++) {
+    for (int i = 0; i < nRows; i++) {
+        for (int j = 0; j < nColsMinusOne; j++) {
             // すでに解かれているなら、終了。
             // キャンセルされているなら、終了。
             // 再計算すべきなら、終了する。
@@ -3575,7 +3577,7 @@ void __fastcall XgSolveXWord_NoAddBlackRecurse(const XG_Board& xw) noexcept
 
                 // パターンを生成する。
                 std::wstring pattern;
-                for (INT k = lo; k <= hi; k++) {
+                for (int k = lo; k <= hi; k++) {
                     pattern += xw.GetAt(i, k);
                 }
 
@@ -3595,7 +3597,7 @@ void __fastcall XgSolveXWord_NoAddBlackRecurse(const XG_Board& xw) noexcept
                         // 候補を適用して再帰する。
                         XG_Board copy(xw);
                         assert(cand.size() == pattern.size());
-                        for (INT k = lo; k <= hi; k++) {
+                        for (int k = lo; k <= hi; k++) {
                             assert(copy.GetAt(i, k) == ZEN_SPACE ||
                                    copy.GetAt(i, k) == cand[k - lo]);
                             copy.SetAt(i, k, cand[k - lo]);
@@ -3622,7 +3624,7 @@ void __fastcall XgSolveXWord_NoAddBlackRecurse(const XG_Board& xw) noexcept
                         // 候補を適用して再帰する。
                         XG_Board copy(xw);
                         assert(cand.size() == pattern.size());
-                        for (INT k = lo; k <= hi; k++) {
+                        for (int k = lo; k <= hi; k++) {
                             assert(copy.GetAt(i, k) == ZEN_SPACE ||
                                    copy.GetAt(i, k) == cand[k - lo]);
                             copy.SetAt(i, k, cand[k - lo]);
@@ -3642,8 +3644,8 @@ void __fastcall XgSolveXWord_NoAddBlackRecurse(const XG_Board& xw) noexcept
 
     // 各列について、縦向きにスキャンする。
     const int nRowsMinusOne = nRows - 1;
-    for (INT j = 0; j < nCols; j++) {
-        for (INT i = 0; i < nRowsMinusOne; i++) {
+    for (int j = 0; j < nCols; j++) {
+        for (int i = 0; i < nRowsMinusOne; i++) {
             // すでに解かれているなら、終了。
             // キャンセルされているなら、終了。
             // 再計算すべきなら、終了する。
@@ -3672,7 +3674,7 @@ void __fastcall XgSolveXWord_NoAddBlackRecurse(const XG_Board& xw) noexcept
 
                 // パターンを生成する。
                 std::wstring pattern;
-                for (INT k = lo; k <= hi; k++) {
+                for (int k = lo; k <= hi; k++) {
                     pattern += xw.GetAt(k, j);
                 }
 
@@ -3692,7 +3694,7 @@ void __fastcall XgSolveXWord_NoAddBlackRecurse(const XG_Board& xw) noexcept
                         // 候補を適用して再帰する。
                         XG_Board copy(xw);
                         assert(cand.size() == pattern.size());
-                        for (INT k = lo; k <= hi; k++) {
+                        for (int k = lo; k <= hi; k++) {
                             assert(copy.GetAt(k, j) == ZEN_SPACE ||
                                    copy.GetAt(k, j) == cand[k - lo]);
                             copy.SetAt(k, j, cand[k - lo]);
@@ -3719,7 +3721,7 @@ void __fastcall XgSolveXWord_NoAddBlackRecurse(const XG_Board& xw) noexcept
                         // 候補を適用して再帰する。
                         XG_Board copy(xw);
                         assert(cand.size() == pattern.size());
-                        for (INT k = lo; k <= hi; k++) {
+                        for (int k = lo; k <= hi; k++) {
                             assert(copy.GetAt(k, j) == ZEN_SPACE ||
                                    copy.GetAt(k, j) == cand[k - lo]);
                             copy.SetAt(k, j, cand[k - lo]);
@@ -3750,7 +3752,7 @@ void __fastcall XgSolveXWord_NoAddBlackRecurse(const XG_Board& xw) noexcept
 
         // 解に合わせて、問題に黒マスを置く。
         const int nCount = nRows * nCols;
-        for (INT i = 0; i < nCount; i++) {
+        for (int i = 0; i < nCount; i++) {
             if (xw.GetAt(i) == ZEN_BLACK)
                 xg_xword.SetAt(i, ZEN_BLACK);
         }
@@ -3767,8 +3769,8 @@ void XG_Board::SwapXandY() noexcept
     std::vector<WCHAR> vCells;
     vCells.assign(nRows * nCols + 1, ZEN_SPACE);
 
-    for (INT i = 0; i < nRows; ++i) {
-        for (INT j = 0; j < nCols; ++j) {
+    for (int i = 0; i < nRows; ++i) {
+        for (int j = 0; j < nCols; ++j) {
             vCells[j * nRows + i] = m_vCells[i * nCols + j];
         }
     }
@@ -3783,7 +3785,7 @@ void __fastcall XgSolveXWord_AddBlack(const XG_Board& xw) noexcept
 
     // 文字マスがあるか？
     bool bCharFound = false;
-    for (INT i = 0; i < nRows * nCols; i++) {
+    for (int i = 0; i < nRows * nCols; i++) {
         const WCHAR ch1 = xw.GetAt(i);
         if (ch1 != ZEN_SPACE && ch1 != ZEN_BLACK)
         {
@@ -3804,8 +3806,8 @@ void __fastcall XgSolveXWord_AddBlack(const XG_Board& xw) noexcept
     std::vector<XG_WordData> words(xg_dict_1);
     xg_random_shuffle(words.begin(), words.end());
 
-    for (INT i = 0; i < nRows; i++) {
-        for (INT j = 0; j < nCols - 1; j++) {
+    for (int i = 0; i < nRows; i++) {
+        for (int j = 0; j < nCols - 1; j++) {
             // すでに解かれているなら、終了。
             // キャンセルされているなら、終了。
             // 再計算すべきなら、終了する。
@@ -3850,7 +3852,7 @@ void __fastcall XgSolveXWord_AddBlack(const XG_Board& xw) noexcept
                     {
                         // 単語とその両端の外側の黒マスをセットして再帰する。
                         XG_Board copy(xw);
-                        for (INT k = 0; k < wordlen; k++) {
+                        for (int k = 0; k < wordlen; k++) {
                             copy.SetAt(i, lo + k, word[k]);
                         }
 
@@ -3880,8 +3882,8 @@ void __fastcall XgSolveXWord_AddBlack(const XG_Board& xw) noexcept
         }
     }
 
-    for (INT j = 0; j < nCols; j++) {
-        for (INT i = 0; i < nRows - 1; i++) {
+    for (int j = 0; j < nCols; j++) {
+        for (int i = 0; i < nRows - 1; i++) {
             // すでに解かれているなら、終了。
             // キャンセルされているなら、終了。
             // 再計算すべきなら、終了する。
@@ -3926,7 +3928,7 @@ void __fastcall XgSolveXWord_AddBlack(const XG_Board& xw) noexcept
                     {
                         // 単語とその両端の外側の黒マスをセットして再帰する。
                         XG_Board copy(xw);
-                        for (INT k = 0; k < wordlen; k++) {
+                        for (int k = 0; k < wordlen; k++) {
                             copy.SetAt(lo + k, j, word[k]);
                         }
 
@@ -3961,8 +3963,8 @@ retry_1:;
     words = xg_dict_2;
     xg_random_shuffle(words.begin(), words.end());
 
-    for (INT i = 0; i < nRows; i++) {
-        for (INT j = 0; j < nCols - 1; j++) {
+    for (int i = 0; i < nRows; i++) {
+        for (int j = 0; j < nCols - 1; j++) {
             // すでに解かれているなら、終了。
             // キャンセルされているなら、終了。
             // 再計算すべきなら、終了する。
@@ -4007,7 +4009,7 @@ retry_1:;
                     {
                         // 単語とその両端の外側の黒マスをセットして再帰する。
                         XG_Board copy(xw);
-                        for (INT k = 0; k < wordlen; k++) {
+                        for (int k = 0; k < wordlen; k++) {
                             copy.SetAt(i, lo + k, word[k]);
                         }
 
@@ -4037,8 +4039,8 @@ retry_1:;
         }
     }
 
-    for (INT j = 0; j < nCols; j++) {
-        for (INT i = 0; i < nRows - 1; i++) {
+    for (int j = 0; j < nCols; j++) {
+        for (int i = 0; i < nRows - 1; i++) {
             // すでに解かれているなら、終了。
             // キャンセルされているなら、終了。
             // 再計算すべきなら、終了する。
@@ -4083,7 +4085,7 @@ retry_1:;
                     {
                         // 単語とその両端の外側の黒マスをセットして再帰する。
                         XG_Board copy(xw);
-                        for (INT k = 0; k < wordlen; k++) {
+                        for (int k = 0; k < wordlen; k++) {
                             copy.SetAt(lo + k, j, word[k]);
                         }
 
@@ -4122,7 +4124,7 @@ void __fastcall XgSolveXWord_NoAddBlack(const XG_Board& xw) noexcept
 
     // 文字マスがあるか？
     bool bCharFound = false;
-    for (INT i = 0; i < nRows * nCols; i++) {
+    for (int i = 0; i < nRows * nCols; i++) {
         const WCHAR ch1 = xw.GetAt(i);
         if (ch1 != ZEN_SPACE && ch1 != ZEN_BLACK) {
             bCharFound = true;
@@ -4144,8 +4146,8 @@ void __fastcall XgSolveXWord_NoAddBlack(const XG_Board& xw) noexcept
 
     // 文字マスがなかった場合。
     int max_patlen = 0, max_i = -1, max_lo = -1;
-    for (INT i = 0; i < nRows; i++) {
-        for (INT j = 0; j < nCols - 1; j++) {
+    for (int i = 0; i < nRows; i++) {
+        for (int j = 0; j < nCols - 1; j++) {
             // すでに解かれているなら、終了。
             // キャンセルされているなら、終了。
             // 再計算すべきなら、終了する。
@@ -4196,7 +4198,7 @@ void __fastcall XgSolveXWord_NoAddBlack(const XG_Board& xw) noexcept
 
         // 単語をセットする。
         XG_Board copy(xw);
-        for (INT k = 0; k < wordlen; k++) {
+        for (int k = 0; k < wordlen; k++) {
             copy.SetAt(i, lo + k, word[k]);
         }
 
@@ -4206,7 +4208,7 @@ void __fastcall XgSolveXWord_NoAddBlack(const XG_Board& xw) noexcept
 }
 
 #ifdef NO_RANDOM
-    INT xg_random_seed = 0;
+    int xg_random_seed = 0;
 #endif
 
 // マルチスレッド用の関数。
@@ -4382,8 +4384,8 @@ void __fastcall XgClearNonBlocks(void)
         xg_bShowAnswer = false;
     }
 
-    for (INT i = 0; i < xg_nRows; ++i) {
-        for (INT j = 0; j < xg_nCols; ++j) {
+    for (int i = 0; i < xg_nRows; ++i) {
+        for (int j = 0; j < xg_nCols; ++j) {
             WCHAR oldch = xg_xword.GetAt(i, j);
             if (oldch != ZEN_BLACK && oldch != ZEN_SPACE) {
                 xg_xword.SetAt(i, j, ZEN_SPACE);
@@ -4395,7 +4397,7 @@ void __fastcall XgClearNonBlocks(void)
 }
 
 // 解を求めようとした後の後処理。
-void __fastcall XgEndSolve(void) noexcept
+void __fastcall XgEndSolve(void)
 {
     if (s_bSwapped) {
         xg_xword.SwapXandY();
@@ -4426,7 +4428,7 @@ float YPixelsFromPoints(HDC hDC, float points) noexcept
 }
 
 // キャレットを描画する。
-void XgDrawCaret(HDC hdc, INT i, INT j, INT nCellSize, HPEN hCaretPen) noexcept
+void XgDrawCaret(HDC hdc, int i, int j, int nCellSize, HPEN hCaretPen) noexcept
 {
     RECT rc;
     ::SetRect(&rc,
@@ -4436,8 +4438,8 @@ void XgDrawCaret(HDC hdc, INT i, INT j, INT nCellSize, HPEN hCaretPen) noexcept
               static_cast<int>(xg_nMargin + (i + 1) * nCellSize));
 
     // カギカッコみたいなもの、コーナーに四つ。
-    auto cxyMargin = nCellSize / 10; // 余白。
-    auto cxyLine = nCellSize / 3; // 線の位置。
+    const auto cxyMargin = nCellSize / 10; // 余白。
+    const auto cxyLine = nCellSize / 3; // 線の位置。
     HGDIOBJ hPenOld = ::SelectObject(hdc, hCaretPen);
     ::MoveToEx(hdc, rc.left + cxyMargin, rc.top + cxyMargin, nullptr);
     ::LineTo(hdc, rc.left + cxyMargin, rc.top + cxyLine);
@@ -4457,7 +4459,7 @@ void XgDrawCaret(HDC hdc, INT i, INT j, INT nCellSize, HPEN hCaretPen) noexcept
     ::LineTo(hdc, rc.left + cxyLine, rc.bottom - cxyMargin);
 
     // 十字。
-    auto cxyCross = nCellSize / 10; // 十字の半径。
+    const auto cxyCross = nCellSize / 10; // 十字の半径。
     ::MoveToEx(hdc, (rc.left + rc.right) / 2, (rc.top + rc.bottom) / 2 - cxyCross, nullptr);
     ::LineTo(hdc, (rc.left + rc.right) / 2, (rc.top + rc.bottom) / 2 + cxyCross);
     ::MoveToEx(hdc, (rc.left + rc.right) / 2 - cxyCross, (rc.top + rc.bottom) / 2, nullptr);
@@ -4545,7 +4547,7 @@ HFONT XgCreateSmallFont(VOID)
 // 二重マス単語を描画する。
 void __fastcall XgDrawMarkWord(HDC hdc, LPSIZE psiz)
 {
-    int nCount = static_cast<int>(xg_vMarks.size());
+    const auto nCount = static_cast<int>(xg_vMarks.size());
     if (nCount == 0) {
         ::MessageBeep(0xFFFFFFFF);
         return;
@@ -4557,8 +4559,8 @@ void __fastcall XgDrawMarkWord(HDC hdc, LPSIZE psiz)
     HBRUSH hbrMarked = ::CreateSolidBrush(xg_rgbMarkedCellColor);
 
     // 線の太さ。
-    INT c_nThin = static_cast<int>(YPixelsFromPoints(hdc, xg_nLineWidthInPt));
-    INT c_nWide = static_cast<int>(YPixelsFromPoints(hdc, xg_nOuterFrameInPt));
+    int c_nThin = static_cast<int>(YPixelsFromPoints(hdc, xg_nLineWidthInPt));
+    int c_nWide = static_cast<int>(YPixelsFromPoints(hdc, xg_nOuterFrameInPt));
     if (c_nThin < 2)
         c_nThin = 2;
     if (c_nWide < 2)
@@ -4567,7 +4569,7 @@ void __fastcall XgDrawMarkWord(HDC hdc, LPSIZE psiz)
         c_nWide = xg_nNarrowMargin;
 
     // セルの幅。
-    INT nCellSize = xg_nCellSize;
+    int nCellSize = xg_nCellSize;
 
     // 黒いブラシ。
     LOGBRUSH lbBlack;
@@ -4603,7 +4605,7 @@ void __fastcall XgDrawMarkWord(HDC hdc, LPSIZE psiz)
     WCHAR sz[32];
     SIZE siz;
     HGDIOBJ hFontOld = ::SelectObject(hdc, hFontSmall);
-    for (INT i = 0; i < nCount; i++) {
+    for (int i = 0; i < nCount; i++) {
         ::SetRect(&rc,
             static_cast<int>(xg_nNarrowMargin + i * xg_nCellSize), 
             static_cast<int>(xg_nNarrowMargin + 0 * xg_nCellSize),
@@ -4624,7 +4626,7 @@ void __fastcall XgDrawMarkWord(HDC hdc, LPSIZE psiz)
 
         WCHAR ch;
         if (xg_bNumCroMode && xg_bSolved) {
-            XG_Pos& pos = xg_vMarks[i];
+            const XG_Pos& pos = xg_vMarks[i];
             ch = xg_solution.GetAt(pos.m_i, pos.m_j);
             StringCbPrintf(sz, sizeof(sz), L"%d", xg_mapNumCro1[ch]);
         } else {
@@ -4661,7 +4663,7 @@ void __fastcall XgDrawMarkWord(HDC hdc, LPSIZE psiz)
     ::SelectObject(hdc, hFontOld);
 
     // マスの文字を描画する。
-    for (INT i = 0; i < nCount; i++) {
+    for (int i = 0; i < nCount; i++) {
         ::SetRect(&rc,
             static_cast<int>(xg_nNarrowMargin + i * xg_nCellSize), 
             static_cast<int>(xg_nNarrowMargin + 0 * xg_nCellSize),
@@ -4669,7 +4671,7 @@ void __fastcall XgDrawMarkWord(HDC hdc, LPSIZE psiz)
             static_cast<int>(xg_nNarrowMargin + 1 * xg_nCellSize));
 
         WCHAR ch;
-        XG_Pos& pos = xg_vMarks[i];
+        const XG_Pos& pos = xg_vMarks[i];
         if (xg_bSolved && xg_bShowAnswer) {
             ch = xg_solution.GetAt(pos.m_i, pos.m_j);
         } else {
@@ -4682,7 +4684,7 @@ void __fastcall XgDrawMarkWord(HDC hdc, LPSIZE psiz)
     // 線を引く。塗りつぶさない。
     ::SelectObject(hdc, ::GetStockObject(NULL_BRUSH));
     HGDIOBJ hPenOld = ::SelectObject(hdc, hThinPen);
-    for (INT i = 0; i < nCount; i++) {
+    for (int i = 0; i < nCount; i++) {
         ::Rectangle(hdc,
                 static_cast<int>(xg_nNarrowMargin + i * xg_nCellSize),
                 static_cast<int>(xg_nNarrowMargin + 0 * xg_nCellSize),
@@ -4700,13 +4702,13 @@ void __fastcall XgDrawMarkWord(HDC hdc, LPSIZE psiz)
     ::DeleteObject(hbrMarked);
 }
 
-std::unordered_set<XG_Pos> XgGetSlot(INT number, BOOL vertical)
+std::unordered_set<XG_Pos> XgGetSlot(int number, BOOL vertical)
 {
     std::unordered_set<XG_Pos> ret;
     if (!xg_bSolved)
         return ret;
 
-    INT i = -1, j = -1;
+    int i = -1, j = -1;
     if (vertical) {
         for (auto& info : xg_vTateInfo) {
             if (info.m_number == number) {
@@ -4752,7 +4754,7 @@ const COLORREF c_rgbHighlightAndDblFrame = RGB(255, 155, 100);
 
 // マスの数字を描画する。
 void __fastcall
-XgDrawCellNumber(HDC hdc, const RECT& rcCell, INT i, INT j, INT number, std::unordered_set<XG_Pos>& slot)
+XgDrawCellNumber(HDC hdc, const RECT& rcCell, int i, int j, int number, std::unordered_set<XG_Pos>& slot)
 {
     WCHAR sz[8];
     StringCbPrintf(sz, sizeof(sz), L"%d", number);
@@ -4767,7 +4769,7 @@ XgDrawCellNumber(HDC hdc, const RECT& rcCell, INT i, INT j, INT number, std::uno
     ::SetBkMode(hdc, TRANSPARENT);
 
     // 文字の背景を塗りつぶす。
-    INT nMarked = XgGetMarked(i, j);
+    int nMarked = XgGetMarked(i, j);
     COLORREF rgbBack;
     if (xg_bSolved && xg_bNumCroMode) {
         // 文字の背景を塗りつぶす。
@@ -4802,7 +4804,7 @@ XgDrawCellNumber(HDC hdc, const RECT& rcCell, INT i, INT j, INT number, std::uno
 }
 
 // 二重マスを描画する。
-void XgDrawDoubleFrameCell(HDC hdc, INT nMarked, const RECT& rc, INT nCellSize, HPEN hThinPen)
+void XgDrawDoubleFrameCell(HDC hdc, int nMarked, const RECT& rc, int nCellSize, HPEN hThinPen)
 {
     // 二重マスの内側の枠を描く。
     if (xg_bDrawFrameForMarkedCell) {
@@ -4848,7 +4850,7 @@ void XgDrawDoubleFrameCell(HDC hdc, INT nMarked, const RECT& rc, INT nCellSize, 
 // クロスワードを描画する（通常ビュー）。
 void __fastcall XgDrawXWord_NormalView(XG_Board& xw, HDC hdc, const SIZE *psiz, DRAW_MODE mode)
 {
-    INT nCellSize;
+    int nCellSize;
     if (xg_nForDisplay > 0) {
         nCellSize = xg_nCellSize * xg_nZoomRate / 100;
     } else {
@@ -4879,7 +4881,7 @@ void __fastcall XgDrawXWord_NormalView(XG_Board& xw, HDC hdc, const SIZE *psiz, 
         slot.clear();
 
     // 線の太さ。
-    INT c_nThin = 1, c_nWide = 4;
+    int c_nThin = 1, c_nWide = 4;
     switch (mode)
     {
     case DRAW_MODE_SCREEN:
@@ -4918,8 +4920,6 @@ void __fastcall XgDrawXWord_NormalView(XG_Board& xw, HDC hdc, const SIZE *psiz, 
         PS_GEOMETRIC | PS_SOLID | PS_ENDCAP_ROUND | PS_JOIN_BEVEL,
         1, &lbRed, 0, nullptr);
 
-    HGDIOBJ hFontOld, hPenOld;
-
     BITMAP bm;
     GetObject(xg_hbmBlackCell, sizeof(bm), &bm);
 
@@ -4929,8 +4929,8 @@ void __fastcall XgDrawXWord_NormalView(XG_Board& xw, HDC hdc, const SIZE *psiz, 
     SetStretchBltMode(hdcMem, STRETCH_HALFTONE);
 
     // セルの背景を描画する。
-    for (INT i = 0; i < xg_nRows; i++) {
-        for (INT j = 0; j < xg_nCols; j++) {
+    for (int i = 0; i < xg_nRows; i++) {
+        for (int j = 0; j < xg_nCols; j++) {
             // セルの座標をセットする。
             RECT rc = {
                 xg_nMargin + j * nCellSize,
@@ -4939,7 +4939,7 @@ void __fastcall XgDrawXWord_NormalView(XG_Board& xw, HDC hdc, const SIZE *psiz, 
                 xg_nMargin + (i + 1) * nCellSize };
 
             // 二重マスか？
-            INT nMarked = XgGetMarked(i, j);
+            int nMarked = XgGetMarked(i, j);
 
             // 塗りつぶす。
             WCHAR ch = xw.GetAt(i, j);
@@ -4976,12 +4976,12 @@ void __fastcall XgDrawXWord_NormalView(XG_Board& xw, HDC hdc, const SIZE *psiz, 
     ::DeleteDC(hdcMem);
 
     // 小さい文字のフォントを選択する。
-    hFontOld = ::SelectObject(hdc, hFontSmall);
+    HGDIOBJ hFontOld = ::SelectObject(hdc, hFontSmall);
 
     // 二重マスを描画する。
     if (!xg_bNumCroMode) {
-        for (INT i = 0; i < xg_nRows; i++) {
-            for (INT j = 0; j < xg_nCols; j++) {
+        for (int i = 0; i < xg_nRows; i++) {
+            for (int j = 0; j < xg_nCols; j++) {
                 // セルの座標をセットする。
                 RECT rc = {
                     xg_nMargin + j * nCellSize,
@@ -4991,10 +4991,9 @@ void __fastcall XgDrawXWord_NormalView(XG_Board& xw, HDC hdc, const SIZE *psiz, 
                 };
 
                 // 二重マスか？
-                INT nMarked = XgGetMarked(i, j);
-                if (nMarked == -1) {
+                const auto nMarked = XgGetMarked(i, j);
+                if (nMarked == -1)
                     continue;
-                }
 
                 XgDrawDoubleFrameCell(hdc, nMarked, rc, nCellSize, hThinPen);
             }
@@ -5003,10 +5002,9 @@ void __fastcall XgDrawXWord_NormalView(XG_Board& xw, HDC hdc, const SIZE *psiz, 
 
     // タテのカギの先頭マス。
     if (!xg_bNumCroMode) {
-        const INT size = static_cast<int>(xg_vTateInfo.size());
-        for (INT k = 0; k < size; k++) {
-            auto i = xg_vTateInfo[k].m_iRow;
-            auto j = xg_vTateInfo[k].m_jCol;
+        const int size = static_cast<int>(xg_vTateInfo.size());
+        for (int k = 0; k < size; k++) {
+            const auto i = xg_vTateInfo[k].m_iRow, j = xg_vTateInfo[k].m_jCol;
 
             RECT rc = {
                 xg_nMargin + j * nCellSize,
@@ -5021,10 +5019,9 @@ void __fastcall XgDrawXWord_NormalView(XG_Board& xw, HDC hdc, const SIZE *psiz, 
 
     // ヨコのカギの先頭マス。
     if (!xg_bNumCroMode) {
-        const INT size = static_cast<int>(xg_vYokoInfo.size());
-        for (INT k = 0; k < size; k++) {
-            auto i = xg_vYokoInfo[k].m_iRow;
-            auto j = xg_vYokoInfo[k].m_jCol;
+        const int size = static_cast<int>(xg_vYokoInfo.size());
+        for (int k = 0; k < size; k++) {
+            const auto i = xg_vYokoInfo[k].m_iRow, j = xg_vYokoInfo[k].m_jCol;
 
             RECT rc = {
                 xg_nMargin + j * nCellSize,
@@ -5039,9 +5036,9 @@ void __fastcall XgDrawXWord_NormalView(XG_Board& xw, HDC hdc, const SIZE *psiz, 
 
     // ナンクロモードの小さい数字。
     if (xg_bSolved && xg_bNumCroMode) {
-        for (INT i = 0; i < xg_nRows; i++) {
-            for (INT j = 0; j < xg_nCols; j++) {
-                WCHAR ch = xg_solution.GetAt(i, j);
+        for (int i = 0; i < xg_nRows; i++) {
+            for (int j = 0; j < xg_nCols; j++) {
+                const auto ch = xg_solution.GetAt(i, j);
                 if (ch == ZEN_BLACK || ch == ZEN_SPACE)
                     continue;
 
@@ -5061,8 +5058,8 @@ void __fastcall XgDrawXWord_NormalView(XG_Board& xw, HDC hdc, const SIZE *psiz, 
     ::SelectObject(hdc, hFontOld);
 
     // セルの文字を描画する。
-    for (INT i = 0; i < xg_nRows; i++) {
-        for (INT j = 0; j < xg_nCols; j++) {
+    for (int i = 0; i < xg_nRows; i++) {
+        for (int j = 0; j < xg_nCols; j++) {
             // セルの座標をセットする。
             RECT rc = {
                 xg_nMargin + j * nCellSize,
@@ -5070,7 +5067,7 @@ void __fastcall XgDrawXWord_NormalView(XG_Board& xw, HDC hdc, const SIZE *psiz, 
                 xg_nMargin + (j + 1) * nCellSize,
                 xg_nMargin + (i + 1) * nCellSize };
 
-            WCHAR ch = xw.GetAt(i, j);
+            const auto ch = xw.GetAt(i, j);
             if (ch == ZEN_BLACK)
                 continue;
 
@@ -5080,18 +5077,17 @@ void __fastcall XgDrawXWord_NormalView(XG_Board& xw, HDC hdc, const SIZE *psiz, 
 
     // キャレットを描画する。
     if (mode == DRAW_MODE_SCREEN && xg_bShowCaret) {
-        auto i = xg_caret_pos.m_i;
-        auto j = xg_caret_pos.m_j;
+        const auto i = xg_caret_pos.m_i, j = xg_caret_pos.m_j;
         XgDrawCaret(hdc, i, j, nCellSize, hCaretPen);
     }
 
     // 線を引く。
-    hPenOld = ::SelectObject(hdc, hThinPen);
-    for (INT i = 0; i <= xg_nRows; i++) {
+    HGDIOBJ hPenOld = ::SelectObject(hdc, hThinPen);
+    for (int i = 0; i <= xg_nRows; i++) {
         ::MoveToEx(hdc, xg_nMargin, static_cast<int>(xg_nMargin + i * nCellSize), nullptr);
         ::LineTo(hdc, psiz->cx - xg_nMargin, static_cast<int>(xg_nMargin + i * nCellSize));
     }
-    for (INT j = 0; j <= xg_nCols; j++) {
+    for (int j = 0; j <= xg_nCols; j++) {
         ::MoveToEx(hdc, static_cast<int>(xg_nMargin + j * nCellSize), xg_nMargin, nullptr);
         ::LineTo(hdc, static_cast<int>(xg_nMargin + j * nCellSize), psiz->cy - xg_nMargin);
     }
@@ -5138,7 +5134,7 @@ void __fastcall XgDrawXWord_NormalView(XG_Board& xw, HDC hdc, const SIZE *psiz, 
 // クロスワードを描画する（スケルトンビュー）。
 void __fastcall XgDrawXWord_SkeletonView(XG_Board& xw, HDC hdc, const SIZE *psiz, DRAW_MODE mode)
 {
-    INT nCellSize;
+    int nCellSize;
     if (xg_nForDisplay > 0) {
         nCellSize = xg_nCellSize * xg_nZoomRate / 100;
     } else {
@@ -5177,7 +5173,7 @@ void __fastcall XgDrawXWord_SkeletonView(XG_Board& xw, HDC hdc, const SIZE *psiz
         slot.clear();
 
     // 線の太さ。
-    INT c_nThin = 1, c_nWide = 4;
+    int c_nThin = 1, c_nWide = 4;
     switch (mode)
     {
     case DRAW_MODE_SCREEN:
@@ -5215,12 +5211,10 @@ void __fastcall XgDrawXWord_SkeletonView(XG_Board& xw, HDC hdc, const SIZE *psiz
         PS_GEOMETRIC | PS_SOLID | PS_ENDCAP_ROUND | PS_JOIN_BEVEL,
         1, &lbRed, 0, nullptr);
 
-    HGDIOBJ hFontOld;
-
     // 外枠と背景を描画する。
     if (xg_bAddThickFrame) {
-        for (INT i = 0; i < xg_nRows; i++) {
-            for (INT j = 0; j < xg_nCols; j++) {
+        for (int i = 0; i < xg_nRows; i++) {
+            for (int j = 0; j < xg_nCols; j++) {
                 WCHAR ch = xw.GetAt(i, j);
                 if (ch != ZEN_BLACK) {
                     // セルの座標をセットする。
@@ -5241,8 +5235,8 @@ void __fastcall XgDrawXWord_SkeletonView(XG_Board& xw, HDC hdc, const SIZE *psiz
     }
 
     // 文字の背景を描画する。
-    for (INT i = 0; i < xg_nRows; i++) {
-        for (INT j = 0; j < xg_nCols; j++) {
+    for (int i = 0; i < xg_nRows; i++) {
+        for (int j = 0; j < xg_nCols; j++) {
             WCHAR ch = xw.GetAt(i, j);
             if (ch == ZEN_BLACK)
                 continue;
@@ -5255,7 +5249,7 @@ void __fastcall XgDrawXWord_SkeletonView(XG_Board& xw, HDC hdc, const SIZE *psiz
                 static_cast<int>(xg_nMargin + (i + 1) * nCellSize));
 
             // 二重マスか？
-            INT nMarked = XgGetMarked(i, j);
+            int nMarked = XgGetMarked(i, j);
 
             // 塗りつぶす。
             if (slot.count(XG_Pos(i, j)) > 0 && nMarked != -1 && !xg_bNumCroMode) {
@@ -5275,14 +5269,14 @@ void __fastcall XgDrawXWord_SkeletonView(XG_Board& xw, HDC hdc, const SIZE *psiz
     }
 
     // 小さい文字のフォントを選択する。
-    hFontOld = ::SelectObject(hdc, hFontSmall);
+    HGDIOBJ hFontOld = ::SelectObject(hdc, hFontSmall);
 
     // 二重マスを描画する。
     if (!xg_bNumCroMode) {
-        for (INT i = 0; i < xg_nRows; i++) {
-            for (INT j = 0; j < xg_nCols; j++) {
+        for (int i = 0; i < xg_nRows; i++) {
+            for (int j = 0; j < xg_nCols; j++) {
                 // 二重マスか？
-                INT nMarked = XgGetMarked(i, j);
+                int nMarked = XgGetMarked(i, j);
                 if (nMarked == -1)
                     continue;
 
@@ -5300,8 +5294,8 @@ void __fastcall XgDrawXWord_SkeletonView(XG_Board& xw, HDC hdc, const SIZE *psiz
 
     // タテのカギの先頭マス。
     if (!xg_bNumCroMode) {
-        const INT size = static_cast<int>(xg_vTateInfo.size());
-        for (INT k = 0; k < size; k++) {
+        const int size = static_cast<int>(xg_vTateInfo.size());
+        for (int k = 0; k < size; k++) {
             auto i = xg_vTateInfo[k].m_iRow;
             auto j = xg_vTateInfo[k].m_jCol;
 
@@ -5318,8 +5312,8 @@ void __fastcall XgDrawXWord_SkeletonView(XG_Board& xw, HDC hdc, const SIZE *psiz
 
     // ヨコのカギの先頭マス。
     if (!xg_bNumCroMode) {
-        const INT size = static_cast<int>(xg_vYokoInfo.size());
-        for (INT k = 0; k < size; k++) {
+        const int size = static_cast<int>(xg_vYokoInfo.size());
+        for (int k = 0; k < size; k++) {
             auto i = xg_vYokoInfo[k].m_iRow;
             auto j = xg_vYokoInfo[k].m_jCol;
 
@@ -5336,8 +5330,8 @@ void __fastcall XgDrawXWord_SkeletonView(XG_Board& xw, HDC hdc, const SIZE *psiz
 
     // ナンクロモードの小さい数字。
     if (xg_bSolved && xg_bNumCroMode) {
-        for (INT i = 0; i < xg_nRows; i++) {
-            for (INT j = 0; j < xg_nCols; j++) {
+        for (int i = 0; i < xg_nRows; i++) {
+            for (int j = 0; j < xg_nCols; j++) {
                 WCHAR ch = xg_solution.GetAt(i, j);
                 if (ch == ZEN_BLACK || ch == ZEN_SPACE)
                     continue;
@@ -5358,8 +5352,8 @@ void __fastcall XgDrawXWord_SkeletonView(XG_Board& xw, HDC hdc, const SIZE *psiz
     ::SelectObject(hdc, hFontOld);
 
     // セルの文字を描画する。
-    for (INT i = 0; i < xg_nRows; i++) {
-        for (INT j = 0; j < xg_nCols; j++) {
+    for (int i = 0; i < xg_nRows; i++) {
+        for (int j = 0; j < xg_nCols; j++) {
             WCHAR ch = xw.GetAt(i, j);
             if (ch == ZEN_BLACK)
                 continue;
@@ -5376,8 +5370,8 @@ void __fastcall XgDrawXWord_SkeletonView(XG_Board& xw, HDC hdc, const SIZE *psiz
     }
 
     // セルの枠を描画する。
-    for (INT i = 0; i < xg_nRows; i++) {
-        for (INT j = 0; j < xg_nCols; j++) {
+    for (int i = 0; i < xg_nRows; i++) {
+        for (int j = 0; j < xg_nCols; j++) {
             // セルの座標をセットする。
             ::SetRect(&rc,
                 static_cast<int>(xg_nMargin + j * nCellSize), 
@@ -5471,7 +5465,7 @@ HBITMAP __fastcall XgCreateXWordImage(XG_Board& xw, const SIZE *psiz, bool bScre
 // CRPファイルを開く。
 bool __fastcall XgDoLoadCrpFile(HWND hwnd, LPCWSTR pszFile)
 {
-    INT i, nWidth, nHeight;
+    int i, nWidth, nHeight;
     std::vector<std::wstring> rows;
     WCHAR szName[32], szText[128];
     XG_Board xword;
@@ -5542,7 +5536,7 @@ bool __fastcall XgDoLoadCrpFile(HWND hwnd, LPCWSTR pszFile)
             // 番号付けを行う。
             xword.DoNumberingNoCheck();
 
-            INT nClueCount = GetPrivateProfileIntW(L"Clue", L"Count", 0, pszFile);
+            int nClueCount = GetPrivateProfileIntW(L"Clue", L"Count", 0, pszFile);
             if (nClueCount) {
                 for (i = 0; i < nClueCount; ++i) {
                     StringCbPrintf(szName, sizeof(szName), L"Clue%d", i + 1);
@@ -5721,9 +5715,9 @@ bool __fastcall XgDoSaveCrpFile(LPCWSTR pszFile)
             "Height=%d\n", xg_nCols, xg_nRows);
 
         // マス。
-        for (INT i = 0; i < xg_nRows; ++i) {
+        for (int i = 0; i < xg_nRows; ++i) {
             std::wstring row;
-            for (INT j = 0; j < xg_nCols; ++j) {
+            for (int j = 0; j < xg_nCols; ++j) {
                 if (row.size())
                     row += L",";
                 WCHAR ch = xw->GetAt(i, j);
@@ -5736,7 +5730,7 @@ bool __fastcall XgDoSaveCrpFile(LPCWSTR pszFile)
         }
 
         // 二重マス。
-        std::vector<std::vector<INT> > marks;
+        std::vector<std::vector<int> > marks;
         marks.resize(xg_nRows);
         for (auto& mark : marks) {
             mark.resize(xg_nCols);
@@ -5750,9 +5744,9 @@ bool __fastcall XgDoSaveCrpFile(LPCWSTR pszFile)
             }
         }
 
-        for (INT i = 0; i < xg_nRows; ++i) {
+        for (int i = 0; i < xg_nRows; ++i) {
             std::string row;
-            for (INT j = 0; j < xg_nCols; ++j) {
+            for (int j = 0; j < xg_nCols; ++j) {
                 if (row.size())
                     row += ",";
                 row += std::to_string(marks[i][j]);
@@ -5866,9 +5860,9 @@ bool __fastcall XgDoSaveJson(LPCWSTR pszFile)
         }
 
         // マス。
-        for (INT i = 0; i < xg_nRows; ++i) {
+        for (int i = 0; i < xg_nRows; ++i) {
             std::wstring row;
-            for (INT j = 0; j < xg_nCols; ++j) {
+            for (int j = 0; j < xg_nCols; ++j) {
                 row += xw->GetAt(i, j);
             }
             j0["cell_data"].push_back(XgUnicodeToUtf8(row));
@@ -6128,8 +6122,8 @@ bool __fastcall XgDoSaveXdFile(LPCWSTR pszFile)
         fprintf(fout, "\n\n");
 
         BOOL bAsian = FALSE;
-        for (INT i = 0; i < xg_nRows; ++i) {
-            for (INT j = 0; j < xg_nCols; ++j) {
+        for (int i = 0; i < xg_nRows; ++i) {
+            for (int j = 0; j < xg_nCols; ++j) {
                 const WCHAR ch = xw->GetAt(i, j);
                 if (XgIsCharKanaW(ch) || XgIsCharKanjiW(ch) ||
                     ch == ZEN_PROLONG || XgIsCharHangulW(ch))
@@ -6142,9 +6136,9 @@ bool __fastcall XgDoSaveXdFile(LPCWSTR pszFile)
         }
 
         // マス。
-        for (INT i = 0; i < xg_nRows; ++i) {
+        for (int i = 0; i < xg_nRows; ++i) {
             std::wstring row;
-            for (INT j = 0; j < xg_nCols; ++j) {
+            for (int j = 0; j < xg_nCols; ++j) {
                 const WCHAR ch = xw->GetAt(i, j);
                 if (bAsian) {
                     if (ch == ZEN_SPACE)
@@ -6211,7 +6205,7 @@ bool __fastcall XgDoSaveXdFile(LPCWSTR pszFile)
 
         // ナンクロモード。
         if (xg_bNumCroMode) {
-            std::map<INT, WCHAR> mapping;
+            std::map<int, WCHAR> mapping;
             for (auto& pair : xg_mapNumCro2) {
                 mapping[pair.first] = pair.second;
             }
@@ -6452,14 +6446,14 @@ void __fastcall XG_Board::GetString(std::wstring& str) const
     str.clear();
 
     str += ZEN_ULEFT;
-    for (INT j = 0; j < xg_nCols; j++)
+    for (int j = 0; j < xg_nCols; j++)
         str += ZEN_HLINE;
     str += ZEN_URIGHT;
     str += L"\r\n";
 
-    for (INT i = 0; i < xg_nRows; i++) {
+    for (int i = 0; i < xg_nRows; i++) {
         str += ZEN_VLINE;
-        for (INT j = 0; j < xg_nCols; j++)
+        for (int j = 0; j < xg_nCols; j++)
         {
             str += GetAt(i, j);
         }
@@ -6468,7 +6462,7 @@ void __fastcall XG_Board::GetString(std::wstring& str) const
     }
 
     str += ZEN_LLEFT;
-    for (INT j = 0; j < xg_nCols; j++)
+    for (int j = 0; j < xg_nCols; j++)
         str += ZEN_HLINE;
     str += ZEN_LRIGHT;
     str += L"\r\n";
@@ -6492,10 +6486,10 @@ bool __fastcall XG_Board::SetString(const std::wstring& strToBeSet)
 
     // 初期化する。
     const int size = static_cast<int>(str.size());
-    INT nRows = 0, nCols = 0;
+    int nRows = 0, nCols = 0;
 
     // 左上の角があるか？
-    INT i1 = 0;
+    int i1 = 0;
     for (; i1 < size; i1++) {
         if (str[i1] == ZEN_ULEFT)
             break;
@@ -6551,8 +6545,8 @@ bool __fastcall XG_Board::SetString(const std::wstring& strToBeSet)
 
     // 空白じゃないマスの個数を数える。
     WCHAR ch = 0;
-    for (INT i = 0; i < nRows; i++) {
-        for (INT j = 0; j < nCols; j++) {
+    for (int i = 0; i < nRows; i++) {
+        for (int j = 0; j < nCols; j++) {
             if (v[i * xg_nCols + j] != ZEN_SPACE)
                 ch++;
         }
@@ -6564,8 +6558,8 @@ bool __fastcall XG_Board::SetString(const std::wstring& strToBeSet)
 
     if (xg_imode != xg_im_ANY) { // 自由入力でなければ
         // マスの文字の種類に応じて入力モードを切り替える。
-        for (INT i = 0; i < nRows; i++) {
-            for (INT j = 0; j < nCols; j++) {
+        for (int i = 0; i < nRows; i++) {
+            for (int j = 0; j < nCols; j++) {
                 ch = GetAt(i, j);
                 if (XgIsCharHankakuAlphaW(ch) || XgIsCharZenkakuAlphaW(ch)) {
                     xg_imode = xg_im_ABC;
@@ -6612,8 +6606,8 @@ bool XG_Board::IsLineSymmetry() const noexcept
     const int nRows = xg_nRows;
     const int nCols = xg_nCols;
 
-    for (INT i = 0; i < nRows; i++) {
-        for (INT j = 0; j < nCols; j++) {
+    for (int i = 0; i < nRows; i++) {
+        for (int j = 0; j < nCols; j++) {
             if ((GetAt(i, j) == ZEN_BLACK) !=
                 (GetAt(nRows - i - 1, j) == ZEN_BLACK))
             {
@@ -6624,8 +6618,8 @@ bool XG_Board::IsLineSymmetry() const noexcept
     return true;
 skip01:;
 
-    for (INT i = 0; i < nRows; i++) {
-        for (INT j = 0; j < nCols; j++) {
+    for (int i = 0; i < nRows; i++) {
+        for (int j = 0; j < nCols; j++) {
             if ((GetAt(i, j) == ZEN_BLACK) !=
                 (GetAt(i, xg_nCols - j - 1) == ZEN_BLACK))
             {
@@ -6639,8 +6633,8 @@ skip02:;
     if (nRows != nCols)
         return false;
 
-    for (INT i = 0; i < nRows; i++) {
-        for (INT j = 0; j < nCols; j++) {
+    for (int i = 0; i < nRows; i++) {
+        for (int j = 0; j < nCols; j++) {
             if ((GetAt(i, j) == ZEN_BLACK) !=
                 (GetAt(j, i) == ZEN_BLACK))
             {
@@ -6651,8 +6645,8 @@ skip02:;
     return true;
 skip03:;
 
-    for (INT i = 0; i < nRows; i++) {
-        for (INT j = 0; j < nCols; j++) {
+    for (int i = 0; i < nRows; i++) {
+        for (int j = 0; j < nCols; j++) {
             if ((GetAt(i, j) == ZEN_BLACK) !=
                 (GetAt(nRows - j - 1, nCols - i - 1) == ZEN_BLACK))
             {
@@ -6671,8 +6665,8 @@ bool XG_Board::IsPointSymmetry() const noexcept
 {
     const int nRows = xg_nRows;
     const int nCols = xg_nCols;
-    for (INT i = 0; i < nRows; i++) {
-        for (INT j = 0; j < nCols; j++) {
+    for (int i = 0; i < nRows; i++) {
+        for (int j = 0; j < nCols; j++) {
             if ((GetAt(i, j) == ZEN_BLACK) !=
                 (GetAt(nRows - (i + 1), nCols - (j + 1)) == ZEN_BLACK))
             {
@@ -6689,8 +6683,8 @@ bool XG_Board::IsLineSymmetryV() const noexcept
     const int nRows = xg_nRows;
     const int nHalfRows = nRows / 2;
     const int nCols = xg_nCols;
-    for (INT i = 0; i < nHalfRows; i++) {
-        for (INT j = 0; j < nCols; j++) {
+    for (int i = 0; i < nHalfRows; i++) {
+        for (int j = 0; j < nCols; j++) {
             if ((GetAt(i, j) == ZEN_BLACK) != (GetAt(nRows - (i + 1), j) == ZEN_BLACK))
                 return false;
         }
@@ -6704,8 +6698,8 @@ bool XG_Board::IsLineSymmetryH() const noexcept
     const int nRows = xg_nRows;
     const int nCols = xg_nCols;
     const int nHalfCols = nCols / 2;
-    for (INT j = 0; j < nHalfCols; j++) {
-        for (INT i = 0; i < nRows; i++) {
+    for (int j = 0; j < nHalfCols; j++) {
+        for (int i = 0; i < nRows; i++) {
             if ((GetAt(i, j) == ZEN_BLACK) != (GetAt(i, nCols - (j + 1)) == ZEN_BLACK))
                 return false;
         }
@@ -6719,22 +6713,22 @@ void XG_Board::Mirror() noexcept
     const int nRows = xg_nRows;
     const int nCols = xg_nCols;
     if (xg_nRules & RULE_POINTSYMMETRY) {
-        for (INT i = 0; i < nRows; i++) {
-            for (INT j = 0; j < nCols; j++) {
+        for (int i = 0; i < nRows; i++) {
+            for (int j = 0; j < nCols; j++) {
                 if (GetAt(i, j) == ZEN_BLACK)
                     SetAt(nRows - (i + 1), nCols - (j + 1), ZEN_BLACK);
             }
         }
     } else if (xg_nRules & RULE_LINESYMMETRYV) {
-        for (INT i = 0; i < nRows; i++) {
-            for (INT j = 0; j < nCols; j++) {
+        for (int i = 0; i < nRows; i++) {
+            for (int j = 0; j < nCols; j++) {
                 if (GetAt(i, j) == ZEN_BLACK)
                     SetAt(nRows - (i + 1), j, ZEN_BLACK);
             }
         }
     } else if (xg_nRules & RULE_LINESYMMETRYH) {
-        for (INT j = 0; j < nCols; j++) {
-            for (INT i = 0; i < nRows; i++) {
+        for (int j = 0; j < nCols; j++) {
+            for (int i = 0; i < nRows; i++) {
                 if (GetAt(i, j) == ZEN_BLACK)
                     SetAt(i, nCols - (j + 1), ZEN_BLACK);
             }
@@ -6747,8 +6741,8 @@ bool XG_Board::ThreeDiagonals() const noexcept
 {
     const int nRows = xg_nRows;
     const int nCols = xg_nCols;
-    for (INT i = 0; i < nRows - 2; i++) {
-        for (INT j = 0; j < nCols - 2; j++) {
+    for (int i = 0; i < nRows - 2; i++) {
+        for (int j = 0; j < nCols - 2; j++) {
             if (GetAt(i, j) != ZEN_BLACK)
                 continue;
             if (GetAt(i + 1, j + 1) != ZEN_BLACK)
@@ -6758,8 +6752,8 @@ bool XG_Board::ThreeDiagonals() const noexcept
             return true;
         }
     }
-    for (INT i = 0; i < nRows - 2; i++) {
-        for (INT j = 2; j < nCols; j++) {
+    for (int i = 0; i < nRows - 2; i++) {
+        for (int j = 2; j < nCols; j++) {
             if (GetAt(i, j) != ZEN_BLACK)
                 continue;
             if (GetAt(i + 1, j - 1) != ZEN_BLACK)
@@ -6777,8 +6771,8 @@ bool XG_Board::FourDiagonals() const noexcept
 {
     const int nRows = xg_nRows;
     const int nCols = xg_nCols;
-    for (INT i = 0; i < nRows - 3; i++) {
-        for (INT j = 0; j < nCols - 3; j++) {
+    for (int i = 0; i < nRows - 3; i++) {
+        for (int j = 0; j < nCols - 3; j++) {
             if (GetAt(i, j) != ZEN_BLACK)
                 continue;
             if (GetAt(i + 1, j + 1) != ZEN_BLACK)
@@ -6790,8 +6784,8 @@ bool XG_Board::FourDiagonals() const noexcept
             return true;
         }
     }
-    for (INT i = 0; i < nRows - 3; i++) {
-        for (INT j = 3; j < nCols; j++) {
+    for (int i = 0; i < nRows - 3; i++) {
+        for (int j = 3; j < nCols; j++) {
             if (GetAt(i, j) != ZEN_BLACK)
                 continue;
             if (GetAt(i + 1, j - 1) != ZEN_BLACK)
@@ -6812,7 +6806,7 @@ bool XG_Board::FourDiagonals() const noexcept
 // 黒マスパターンが生成されたか？
 bool xg_bBlacksGenerated = false;
 // 配置できる最大単語長。
-INT xg_nMaxWordLen = 4;
+int xg_nMaxWordLen = 4;
 
 // 黒マスパターンを生成する。
 bool __fastcall XgGenerateBlacksRecurse(const XG_Board& xword, LONG iRowjCol)
@@ -6872,7 +6866,7 @@ bool __fastcall XgGenerateBlacksRecurse(const XG_Board& xword, LONG iRowjCol)
         return false;
     }
     // マスの上側を見る。
-    INT iTop;
+    int iTop;
     for (iTop = iRow; iTop > 0; --iTop) {
         if (xword.GetAt(iTop - 1, jCol) == ZEN_BLACK) {
             break;
@@ -6970,7 +6964,7 @@ bool __fastcall XgGenerateBlacksPointSymRecurse(const XG_Board& xword, LONG iRow
         return true;
 
     // マスの左側を見る。
-    INT jLeft;
+    int jLeft;
     for (jLeft = jCol; jLeft > 0; --jLeft) {
         if (xword.GetAt(iRow, jLeft - 1) == ZEN_BLACK) {
             break;
@@ -6991,7 +6985,7 @@ bool __fastcall XgGenerateBlacksPointSymRecurse(const XG_Board& xword, LONG iRow
         return false;
     }
     // マスの上側を見る。
-    INT iTop;
+    int iTop;
     for (iTop = iRow; iTop > 0; --iTop) {
         if (xword.GetAt(iTop - 1, jCol) == ZEN_BLACK) {
             break;
@@ -7091,7 +7085,7 @@ bool __fastcall XgGenerateBlacksLineSymVRecurse(const XG_Board& xword, LONG iRow
         return true;
 
     // マスの上側を見る。
-    INT iTop;
+    int iTop;
     for (iTop = iRow; iTop > 0; --iTop) {
         if (xword.GetAt(iTop - 1, jCol) == ZEN_BLACK) {
             break;
@@ -7113,7 +7107,7 @@ bool __fastcall XgGenerateBlacksLineSymVRecurse(const XG_Board& xword, LONG iRow
     }
 
     // マスの左側を見る。
-    INT jLeft;
+    int jLeft;
     for (jLeft = jCol; jLeft > 0; --jLeft) {
         if (xword.GetAt(iRow, jLeft - 1) == ZEN_BLACK) {
             break;
@@ -7207,9 +7201,9 @@ bool __fastcall XgGenerateBlacksLineSymHRecurse(const XG_Board& xword, LONG iRow
             return false;
     }
 
-    const INT nRows = xg_nRows, nCols = xg_nCols;
-    const INT nHalfCols = nCols / 2;
-    INT iRow = LOWORD(iRowjCol), jCol = HIWORD(iRowjCol);
+    const int nRows = xg_nRows, nCols = xg_nCols;
+    const int nHalfCols = nCols / 2;
+    const int iRow = LOWORD(iRowjCol), jCol = HIWORD(iRowjCol);
 
     // 終了条件。
     if (iRow >= nRows && jCol == 0) {
@@ -7227,7 +7221,7 @@ bool __fastcall XgGenerateBlacksLineSymHRecurse(const XG_Board& xword, LONG iRow
         return true;
 
     // マスの左側を見る。
-    INT jLeft;
+    int jLeft;
     for (jLeft = jCol; jLeft > 0; --jLeft) {
         if (xword.GetAt(iRow, jLeft - 1) == ZEN_BLACK) {
             break;
@@ -7249,7 +7243,7 @@ bool __fastcall XgGenerateBlacksLineSymHRecurse(const XG_Board& xword, LONG iRow
     }
 
     // マスの上側を見る。
-    INT iTop;
+    int iTop;
     for (iTop = iRow; iTop > 0; --iTop) {
         if (xword.GetAt(iTop - 1, jCol) == ZEN_BLACK) {
             break;
@@ -7273,7 +7267,7 @@ bool __fastcall XgGenerateBlacksLineSymHRecurse(const XG_Board& xword, LONG iRow
     // 盤の真ん中か？
     if (jCol >= nHalfCols) {
         std::wstring strPattern = xword.GetPatternH(XG_Pos(iRow, jCol));
-        if (static_cast<INT>(strPattern.size()) > xg_nMaxWordLen) {
+        if (static_cast<int>(strPattern.size()) > xg_nMaxWordLen) {
             // 空白が最大長よりも長い。黒マスをセットして再帰。
             XG_Board copy(xword);
             copy.SetAt(iRow, jCol, ZEN_BLACK);
@@ -7533,7 +7527,7 @@ std::wstring __fastcall XG_Board::GetPatternV(const XG_Pos& pos) const
     if (GetAt(pos.m_i, pos.m_j) == ZEN_BLACK)
         return pattern;
 
-    INT lo = pos.m_i, hi = pos.m_i;
+    int lo = pos.m_i, hi = pos.m_i;
     while (lo > 0) {
         if (GetAt(lo - 1, pos.m_j) != ZEN_BLACK)
             --lo;
@@ -7547,7 +7541,7 @@ std::wstring __fastcall XG_Board::GetPatternV(const XG_Pos& pos) const
             break;
     }
 
-    for (INT i = lo; i <= hi; ++i) {
+    for (int i = lo; i <= hi; ++i) {
         pattern += GetAt(i, pos.m_j);
     }
 
@@ -7561,7 +7555,7 @@ std::wstring __fastcall XG_Board::GetPatternH(const XG_Pos& pos) const
     if (GetAt(pos.m_i, pos.m_j) == ZEN_BLACK)
         return pattern;
 
-    INT lo = pos.m_j, hi = pos.m_j;
+    int lo = pos.m_j, hi = pos.m_j;
     while (lo > 0) {
         if (GetAt(pos.m_i, lo - 1) != ZEN_BLACK)
             --lo;
@@ -7575,7 +7569,7 @@ std::wstring __fastcall XG_Board::GetPatternH(const XG_Pos& pos) const
             break;
     }
 
-    for (INT j = lo; j <= hi; ++j) {
+    for (int j = lo; j <= hi; ++j) {
         pattern += GetAt(pos.m_i, j);
     }
 

@@ -9,10 +9,10 @@ WCHAR xg_szSmallFont[LF_FACESIZE] = L"";
 WCHAR xg_szUIFont[LF_FACESIZE] = L"";
 
 // 文字の大きさ（％）。
-INT xg_nCellCharPercents = XG_DEF_CELL_CHAR_SIZE;
+int xg_nCellCharPercents = XG_DEF_CELL_CHAR_SIZE;
 
 // 小さい文字の大きさ（％）。
-INT xg_nSmallCharPercents = XG_DEF_SMALL_CHAR_SIZE;
+int xg_nSmallCharPercents = XG_DEF_SMALL_CHAR_SIZE;
 
 // 黒マス画像。
 HBITMAP xg_hbmBlackCell = nullptr;
@@ -116,7 +116,7 @@ BOOL XG_SettingsDialog::OnInitDialog(HWND hwnd)
 
     // 二重マス文字。
     HWND hCmb2 = GetDlgItem(hwnd, cmb2);
-    for (INT i = IDS_DBLFRAME_LETTERS_1; i <= IDS_DBLFRAME_LETTERS_10; ++i) {
+    for (int i = IDS_DBLFRAME_LETTERS_1; i <= IDS_DBLFRAME_LETTERS_10; ++i) {
         ComboBox_AddString(hCmb2, XgLoadStringDx1(i));
     }
     ComboBox_RealSetText(hCmb2, xg_strDoubleFrameLetters.c_str());
@@ -150,7 +150,7 @@ BOOL XG_SettingsDialog::OnInitDialog(HWND hwnd)
 // [設定]ダイアログで[OK]ボタンを押された。
 void XG_SettingsDialog::OnOK(HWND hwnd)
 {
-    INT nValue1, nValue2;
+    int nValue1, nValue2;
     BOOL bTranslated;
 
     // セルの文字の大きさ。
@@ -322,39 +322,39 @@ BOOL XG_SettingsDialog::DoImportLooks(HWND hwnd, LPCWSTR pszFileName)
         GetPrivateProfileStringW(L"Looks", L"SkeletonView", L"0", szText, _countof(szText), pszFileName);
     else
         GetPrivateProfileStringW(L"Looks", L"SkeletonView", L"1", szText, _countof(szText), pszFileName);
-    BOOL bSkeltonView = _wtoi(szText);
+    const BOOL bSkeltonView = _wtoi(szText);
     ::CheckDlgButton(hwnd, chx1, (bSkeltonView ? BST_CHECKED : BST_UNCHECKED));
 
     // 外枠をつけるか？
     GetPrivateProfileStringW(L"Looks", L"AddThickFrame", L"1", szText, _countof(szText), pszFileName);
-    BOOL bAddThickFrame = _wtoi(szText);
+    const BOOL bAddThickFrame = _wtoi(szText);
     ::CheckDlgButton(hwnd, chx2, (bAddThickFrame ? BST_CHECKED : BST_UNCHECKED));
     ::EnableWindow(GetDlgItem(hwnd, edt7), bAddThickFrame);
 
     // 二重マスに枠をつけるか？
     GetPrivateProfileStringW(L"Looks", L"DrawFrameForMarkedCell", L"1", szText, _countof(szText), pszFileName);
-    BOOL bDrawFrameForMarkedCell = _wtoi(szText);
+    const BOOL bDrawFrameForMarkedCell = _wtoi(szText);
     ::CheckDlgButton(hwnd, chx3, (bDrawFrameForMarkedCell ? BST_CHECKED : BST_UNCHECKED));
 
     // 英小文字か？
     GetPrivateProfileStringW(L"Looks", L"Lowercase", L"0", szText, _countof(szText), pszFileName);
-    BOOL bLowercase = _wtoi(szText);
+    const BOOL bLowercase = _wtoi(szText);
     ::CheckDlgButton(hwnd, chx4, (bLowercase ? BST_CHECKED : BST_UNCHECKED));
 
     // ひらがなか？
     GetPrivateProfileStringW(L"Looks", L"Hiragana", L"0", szText, _countof(szText), pszFileName);
-    BOOL bHiragana = _wtoi(szText);
+    const BOOL bHiragana = _wtoi(szText);
     ::CheckDlgButton(hwnd, chx5, (bHiragana ? BST_CHECKED : BST_UNCHECKED));
 
     // 文字の大きさ。
     StringCbPrintfW(szText2, sizeof(szText2), L"%d", XG_DEF_CELL_CHAR_SIZE);
     GetPrivateProfileStringW(L"Looks", L"CellCharPercents", szText2, szText, _countof(szText), pszFileName);
-    BOOL nCellCharPercents = _wtoi(szText);
+    const int nCellCharPercents = _wtoi(szText);
     ::SetDlgItemInt(hwnd, edt4, nCellCharPercents, FALSE);
 
     StringCbPrintfW(szText2, sizeof(szText2), L"%d", XG_DEF_SMALL_CHAR_SIZE);
     GetPrivateProfileStringW(L"Looks", L"SmallCharPercents", szText2, szText, _countof(szText), pszFileName);
-    BOOL nSmallCharPercents = _wtoi(szText);
+    const int nSmallCharPercents = _wtoi(szText);
     ::SetDlgItemInt(hwnd, edt5, nSmallCharPercents, FALSE);
 
     // 黒マス画像。
@@ -397,7 +397,7 @@ BOOL XG_SettingsDialog::DoImportLooks(HWND hwnd, LPCWSTR pszFileName)
 // LOOKSファイルのエクスポート。
 BOOL XG_SettingsDialog::DoExportLooks(HWND hwnd, LPCWSTR pszFileName)
 {
-    INT nValue1, nValue2;
+    int nValue1, nValue2;
     BOOL bTranslated;
 
     // 書く前にファイルを消す。
@@ -481,29 +481,29 @@ BOOL XG_SettingsDialog::DoExportLooks(HWND hwnd, LPCWSTR pszFileName)
     }
 
     // スケルトンビューか？
-    BOOL bSkeltonView = (::IsDlgButtonChecked(hwnd, chx1) == BST_CHECKED);
+    const BOOL bSkeltonView = (::IsDlgButtonChecked(hwnd, chx1) == BST_CHECKED);
     WritePrivateProfileStringW(L"Looks", L"SkeletonView", XgIntToStr(bSkeltonView), pszFileName);
 
     // 外枠をつけるか？
-    BOOL bAddThickFrame = (::IsDlgButtonChecked(hwnd, chx2) == BST_CHECKED);
+    const BOOL bAddThickFrame = (::IsDlgButtonChecked(hwnd, chx2) == BST_CHECKED);
     WritePrivateProfileStringW(L"Looks", L"AddThickFrame", XgIntToStr(bAddThickFrame), pszFileName);
 
     // 二重マスに枠をつけるか？
-    BOOL bDrawFrameForMarkedCell = (::IsDlgButtonChecked(hwnd, chx3) == BST_CHECKED);
+    const BOOL bDrawFrameForMarkedCell = (::IsDlgButtonChecked(hwnd, chx3) == BST_CHECKED);
     WritePrivateProfileStringW(L"Looks", L"DrawFrameForMarkedCell", XgIntToStr(bDrawFrameForMarkedCell), pszFileName);
 
     // 英小文字か？
-    BOOL bLowercase = (::IsDlgButtonChecked(hwnd, chx4) == BST_CHECKED);
+    const BOOL bLowercase = (::IsDlgButtonChecked(hwnd, chx4) == BST_CHECKED);
     WritePrivateProfileStringW(L"Looks", L"Lowercase", XgIntToStr(bLowercase), pszFileName);
 
     // ひらがなか？
-    BOOL bHiragana = (::IsDlgButtonChecked(hwnd, chx5) == BST_CHECKED);
+    const BOOL bHiragana = (::IsDlgButtonChecked(hwnd, chx5) == BST_CHECKED);
     WritePrivateProfileStringW(L"Looks", L"Hiragana", XgIntToStr(bHiragana), pszFileName);
 
     // 色を設定する。
-    COLORREF rgb1 = m_hwndWhite.GetColor();
-    COLORREF rgb2 = m_hwndBlack.GetColor();
-    COLORREF rgb3 = m_hwndMarked.GetColor();
+    const COLORREF rgb1 = m_hwndWhite.GetColor();
+    const COLORREF rgb2 = m_hwndBlack.GetColor();
+    const COLORREF rgb3 = m_hwndMarked.GetColor();
     WritePrivateProfileStringW(L"Looks", L"WhiteCellColor", XgIntToStr(rgb1), pszFileName);
     WritePrivateProfileStringW(L"Looks", L"BlackCellColor", XgIntToStr(rgb2), pszFileName);
     WritePrivateProfileStringW(L"Looks", L"MarkedCellColor", XgIntToStr(rgb3), pszFileName);
@@ -584,30 +584,30 @@ void XG_SettingsDialog::OnResetLooks(HWND hwnd)
     SetDlgItemTextW(hwnd, edt3, L"");
 
     // スケルトンビューか？
-    BOOL bSkeltonView = !XgIsUserJapanese();
+    const BOOL bSkeltonView = !XgIsUserJapanese();
     ::CheckDlgButton(hwnd, chx1, (bSkeltonView ? BST_CHECKED : BST_UNCHECKED));
 
     // 太枠をつけるか？
-    BOOL bAddThickFrame = TRUE;
+    const BOOL bAddThickFrame = TRUE;
     ::CheckDlgButton(hwnd, chx2, (bAddThickFrame ? BST_CHECKED : BST_UNCHECKED));
 
     // 二重マスに枠をつけるか？
-    BOOL bDrawFrameForMarkedCell = TRUE;
+    const BOOL bDrawFrameForMarkedCell = TRUE;
     ::CheckDlgButton(hwnd, chx3, (bDrawFrameForMarkedCell ? BST_CHECKED : BST_UNCHECKED));
 
     // 英小文字か？
-    BOOL bLowercase = FALSE;
+    const BOOL bLowercase = FALSE;
     ::CheckDlgButton(hwnd, chx4, (bLowercase ? BST_CHECKED : BST_UNCHECKED));
 
     // ひらがなか？
-    BOOL bHiragana = FALSE;
+    const BOOL bHiragana = FALSE;
     ::CheckDlgButton(hwnd, chx5, (bHiragana ? BST_CHECKED : BST_UNCHECKED));
 
     // 文字の大きさ。
-    BOOL nCellCharPercents = XG_DEF_CELL_CHAR_SIZE;
+    const int nCellCharPercents = XG_DEF_CELL_CHAR_SIZE;
     ::SetDlgItemInt(hwnd, edt4, nCellCharPercents, FALSE);
 
-    BOOL nSmallCharPercents = XG_DEF_SMALL_CHAR_SIZE;
+    const int nSmallCharPercents = XG_DEF_SMALL_CHAR_SIZE;
     ::SetDlgItemInt(hwnd, edt5, nSmallCharPercents, FALSE);
 
     // 黒マス画像。
@@ -639,7 +639,7 @@ void XG_SettingsDialog::SetUIFont(HWND hwnd, const LOGFONTW *plf)
     }
 
     HDC hdc = ::CreateCompatibleDC(nullptr);
-    int point_size = -MulDiv(plf->lfHeight, 72, ::GetDeviceCaps(hdc, LOGPIXELSY));
+    const int point_size = -MulDiv(plf->lfHeight, 72, ::GetDeviceCaps(hdc, LOGPIXELSY));
     ::DeleteDC(hdc);
 
     WCHAR szData[128];
@@ -867,8 +867,8 @@ XG_SettingsDialog::DialogProcDx(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPar
                 HMENU hSubMenu = GetSubMenu(hMenu, 0);
                 SetForegroundWindow(hwnd);
                 TPMPARAMS params = { sizeof(params), rc };
-                INT id = TrackPopupMenuEx(hSubMenu, TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_VERTICAL | TPM_RETURNCMD,
-                                          pt.x, pt.y, hwnd, &params);
+                const auto flags = TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_VERTICAL | TPM_RETURNCMD;
+                const auto id = TrackPopupMenuEx(hSubMenu, flags, pt.x, pt.y, hwnd, &params);
                 if (id)
                 {
                     assert(id == psh13 || id == psh14 || id == psh15);

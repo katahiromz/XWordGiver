@@ -23,7 +23,7 @@ public:
     {
     }
 
-    BOOL GetComboValue(HWND hwnd, INT& value)
+    BOOL GetComboValue(HWND hwnd, int& value)
     {
         WCHAR szText[64];
         HWND hCmb1 = GetDlgItem(hwnd, cmb1);
@@ -50,13 +50,13 @@ public:
         return TRUE;
     }
 
-    void SetComboValue(HWND hwnd, INT value)
+    void SetComboValue(HWND hwnd, int value)
     {
         WCHAR szText[256];
         StringCbPrintfW(szText, sizeof(szText), L"0x%04X:", value);
 
         HWND hCmb1 = GetDlgItem(hwnd, cmb1);
-        INT iItem = ComboBox_FindString(hCmb1, -1, szText);
+        const int iItem = ComboBox_FindString(hCmb1, -1, szText);
         if (iItem != CB_ERR)
         {
             ComboBox_GetLBText(hCmb1, iItem, szText);
@@ -68,7 +68,7 @@ public:
         ComboBox_RealSetText(hCmb1, szText);
     }
 
-    BOOL GetCheckValue(HWND hwnd, INT& value) noexcept
+    BOOL GetCheckValue(HWND hwnd, int& value) noexcept
     {
         value = 0;
         if (IsDlgButtonChecked(hwnd, chx1) == BST_CHECKED) value |= RULE_1;
@@ -84,7 +84,7 @@ public:
         return TRUE;
     }
 
-    void SetCheckValue(HWND hwnd, INT value) noexcept
+    void SetCheckValue(HWND hwnd, int value) noexcept
     {
         value |= RULE_DONTDIVIDE; // 例外。
         if (value & RULE_1) CheckDlgButton(hwnd, chx1, BST_CHECKED);
@@ -121,11 +121,11 @@ public:
 
         HDC hDC = lpDrawItem->hDC;
         RECT rcItem = lpDrawItem->rcItem;
-        INT iItem = lpDrawItem->itemID;
+        const int iItem = lpDrawItem->itemID;
 
         // 選択状態に応じて色の取得。背景を塗りつぶす。
-        INT iBackColor;
-        BOOL bSelected = (lpDrawItem->itemState & ODS_SELECTED);
+        int iBackColor;
+        const BOOL bSelected = (lpDrawItem->itemState & ODS_SELECTED);
         if (bSelected)
         {
             iBackColor = COLOR_HIGHLIGHT;
@@ -147,7 +147,7 @@ public:
         InflateRect(&rcItem, -3, -3); // 項目を小さくする。
 
         // テキスト描画。
-        UINT uFormat = DT_SINGLELINE | DT_LEFT | DT_VCENTER | DT_NOPREFIX;
+        const UINT uFormat = DT_SINGLELINE | DT_LEFT | DT_VCENTER | DT_NOPREFIX;
         SetBkMode(hDC, TRANSPARENT);
         DrawTextW(hDC, szText, -1, &rcItem, uFormat);
 
@@ -191,7 +191,7 @@ public:
                 mstr_trim(line, L" \r\n");
 
                 // コメントは除去する。
-                size_t ich = line.find(L';');
+                const size_t ich = line.find(L';');
                 if (ich != line.npos) {
                     line = line.substr(0, ich);
                 }
@@ -221,7 +221,7 @@ public:
 
         if (entries.empty()) { // エントリがなければ
             // リソースからコンボボックス項目を追加。
-            for (INT id = IDS_POLICYPRESET_SKELETON_0; id <= IDS_POLICYPRESET_JPN_LOOSE_3; ++id) {
+            for (int id = IDS_POLICYPRESET_SKELETON_0; id <= IDS_POLICYPRESET_JPN_LOOSE_3; ++id) {
                 ComboBox_AddString(hCmb1, XgLoadStringDx1(id));
             }
         } else {
@@ -261,7 +261,7 @@ public:
 
     void OnCmb1(HWND hwnd)
     {
-        INT value;
+        int value;
         if (GetComboValue(hwnd, value))
         {
             m_bUpdating = TRUE;
@@ -291,7 +291,7 @@ public:
         }
     }
 
-    void OnCheckBox(HWND hwnd, INT rule, INT id)
+    void OnCheckBox(HWND hwnd, int rule, int id)
     {
         m_bUpdating = TRUE;
         if (IsDlgButtonChecked(hwnd, id) == BST_CHECKED)
@@ -322,7 +322,7 @@ public:
         }
         m_bUpdating = FALSE;
 
-        INT value;
+        int value;
         if (!GetCheckValue(hwnd, value))
             return;
 
@@ -342,7 +342,7 @@ public:
         {
         case IDOK:
             {
-                INT value;
+                int value;
                 if (!GetComboValue(hwnd, value))
                 {
                     XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_ENTERPOSITIVE), nullptr, MB_ICONERROR);

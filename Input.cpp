@@ -15,7 +15,7 @@ bool xg_bShowInputPalette = false;
 WCHAR xg_chAccent = 0;
 
 // 入力方向を切り替える。
-void __fastcall XgInputDirection(HWND hwnd, INT nDirection)
+void __fastcall XgInputDirection(HWND hwnd, int nDirection)
 {
     switch (nDirection) {
     case 1:
@@ -60,9 +60,9 @@ void __fastcall XgSetChar(HWND hwnd, WCHAR ch)
 
     if (ch == 0xFF0D) { // －
         // 一つでもカナがあれば、マイナスを長音（ー）に置き換える。
-        for (INT i = 0; i < xg_nRows; ++i) {
-            for (INT j = 0; j < xg_nCols; ++j) {
-                auto value = xw->GetAt(i, j);
+        for (int i = 0; i < xg_nRows; ++i) {
+            for (int j = 0; j < xg_nCols; ++j) {
+                const auto value = xw->GetAt(i, j);
                 if (XgIsCharHiraganaW(value) || XgIsCharKatakanaW(value)) {
                     ch = ZEN_PROLONG;
                     goto skip;
@@ -265,7 +265,7 @@ WCHAR XgConvertAccent(WCHAR chAccent, WCHAR ch) noexcept
 }
 
 // 文字送りを切り替える。
-void __fastcall XgSetCharFeed(HWND hwnd, INT nMode) noexcept
+void __fastcall XgSetCharFeed(HWND hwnd, int nMode) noexcept
 {
     switch (nMode) {
     case 1:
@@ -321,8 +321,7 @@ void __fastcall XgReturn(HWND hwnd)
 // 二重マス切り替え。
 void __fastcall XgToggleMark(HWND hwnd)
 {
-    INT i = xg_caret_pos.m_i;
-    INT j = xg_caret_pos.m_j;
+    const int i = xg_caret_pos.m_i, j = xg_caret_pos.m_j;
 
     // マークされていないか？
     if (XgGetMarked(i, j) == -1) {
@@ -344,8 +343,7 @@ void __fastcall XgToggleMark(HWND hwnd)
     }
 
     // イメージを更新する。
-    INT x = XgGetHScrollPos();
-    INT y = XgGetVScrollPos();
+    const int x = XgGetHScrollPos(), y = XgGetVScrollPos();
     XgMarkUpdate();
     XgUpdateImage(hwnd, x, y);
 }
@@ -429,7 +427,7 @@ void __fastcall XgCharBack(HWND hwnd)
 // 文字が入力された。
 void __fastcall XgOnChar(HWND hwnd, TCHAR ch, int cRepeat)
 {
-    WCHAR oldch = xg_xword.GetAt(xg_caret_pos);
+    const WCHAR oldch = xg_xword.GetAt(xg_caret_pos);
     if (oldch == ZEN_BLACK && xg_bSolved)
         return;
 
@@ -867,7 +865,7 @@ void __fastcall XgOnKey(HWND hwnd, UINT vk, bool fDown, int /*cRepeat*/, UINT /*
             HMENU hMenu = XgLoadPopupMenu(hwnd, 0);
             HMENU hSubMenu = GetSubMenu(hMenu, 0);
 
-            INT nCellSize = xg_nCellSize * xg_nZoomRate / 100;
+            const int nCellSize = xg_nCellSize * xg_nZoomRate / 100;
 
             // 現在のキャレット位置。
             POINT pt;
@@ -935,7 +933,7 @@ void __fastcall XgOnKey(HWND hwnd, UINT vk, bool fDown, int /*cRepeat*/, UINT /*
             ::ToUnicode(vk, 0, state, sz1, _countof(sz1), 0); // [Shift]なし。
             state[VK_SHIFT] = state[VK_LSHIFT] = state[VK_RSHIFT] = 0x80;
             ::ToUnicode(vk, 0, state, sz2, _countof(sz2), 0); // [Shift]あり。
-            WCHAR ch1 = sz1[0], ch2 = sz2[0];
+            const WCHAR ch1 = sz1[0], ch2 = sz2[0];
             switch (ch1) {
             case L'/':
                 ::PostMessageW(hwnd, WM_COMMAND, ID_INPUTHV, 0);
@@ -1007,7 +1005,7 @@ void __fastcall XgOnKey(HWND hwnd, UINT vk, bool fDown, int /*cRepeat*/, UINT /*
             state[VK_SHIFT] = state[VK_LSHIFT] = state[VK_RSHIFT] = 0x80;
             ::ToUnicode(vk, 0, state, sz2, _countof(sz2), 0); // [Shift]ありの場合。
             // アクセント記号か？
-            WCHAR ch1 = sz1[0], ch2 = sz2[0];
+            const WCHAR ch1 = sz1[0], ch2 = sz2[0];
             if (wcschr(L"^`':,&.", ch1) != nullptr) {
                 xg_chAccent = ch1;
             } else if (wcschr(L"^`':,&.", ch2) != nullptr) {
@@ -1039,7 +1037,7 @@ void __fastcall XgOnImeChar(HWND hwnd, WCHAR ch, LPARAM /*lKeyData*/)
     }
 
     // 解があるとき、黒は上書きできない。
-    WCHAR oldch = xg_xword.GetAt(xg_caret_pos);
+    const WCHAR oldch = xg_xword.GetAt(xg_caret_pos);
     if (xg_bSolved && oldch == ZEN_BLACK) {
         return;
     }
@@ -1507,7 +1505,7 @@ BOOL XgCreateInputPalette(HWND hwndOwner, XG_InputMode imode)
 // 入力モードを切り替える。
 void __fastcall XgSetInputMode(HWND hwnd, XG_InputMode mode, BOOL bForce)
 {
-    bool flag = (xg_imode != mode);
+    const bool flag = (xg_imode != mode);
 
     if (xg_imode != xg_im_ANY || bForce)
         xg_imode = mode;
@@ -1554,11 +1552,11 @@ void __fastcall XgSetInputModeFromDict(HWND hwnd)
     }
 }
 
-bool __fastcall XgOnCommandExtra(HWND hwnd, INT id)
+bool __fastcall XgOnCommandExtra(HWND hwnd, int id)
 {
     bool bOK = false;
 
-    bool bOldFeed = xg_bCharFeed;
+    const bool bOldFeed = xg_bCharFeed;
     xg_bCharFeed = false;
 
     switch (id)

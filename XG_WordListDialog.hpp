@@ -61,7 +61,7 @@ public:
 
         // edt1からテキストを取得する。
         HWND hEdt1 = GetDlgItem(hwnd, edt1);
-        INT cch = GetWindowTextLengthW(hEdt1);
+        const auto cch = GetWindowTextLengthW(hEdt1);
         if (cch == 0) {
             XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_ADDMOREWORDS), nullptr, MB_ICONERROR);
             return FALSE;

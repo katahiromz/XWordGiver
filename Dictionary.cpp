@@ -292,11 +292,11 @@ bool __fastcall XgLoadDictFile(LPCWSTR pszFile)
 
         // 単語の長さのヒストグラムを構築する。
         for (auto& worddata : xg_dict_1) {
-            auto len = worddata.m_word.size();
+            const auto len = worddata.m_word.size();
             xg_word_length_histgram[len]++;
         }
         for (auto& worddata : xg_dict_2) {
-            auto len = worddata.m_word.size();
+            const auto len = worddata.m_word.size();
             xg_word_length_histgram[len]++;
         }
 
@@ -357,7 +357,7 @@ std::wstring XgLoadTitleFromDict(LPCWSTR pszPath)
     {
         char buf[256];
         WCHAR szText[256];
-        BOOL bJapanese = XgIsUserJapanese();
+        const BOOL bJapanese = XgIsUserJapanese();
         INT nLineCount = 0;
         auto name_jpn = L"# NAME-JPN:";
         auto name_eng = L"# NAME-ENG:";
@@ -368,7 +368,7 @@ std::wstring XgLoadTitleFromDict(LPCWSTR pszPath)
 
             MultiByteToWideChar(CP_UTF8, 0, buf, -1, szText, _countof(szText));
 
-            auto len1 = lstrlenW(name_jpn);
+            const auto len1 = lstrlenW(name_jpn);
             if (memcmp(szText, name_jpn, len1 * sizeof(WCHAR)) == 0)
             {
                 if (bJapanese)
@@ -380,7 +380,7 @@ std::wstring XgLoadTitleFromDict(LPCWSTR pszPath)
                 }
             }
 
-            auto len2 = lstrlenW(name_eng);
+            const auto len2 = lstrlenW(name_eng);
             if (memcmp(szText, name_eng, len2 * sizeof(WCHAR)) == 0)
             {
                 std::wstring str = &szText[len2];
@@ -487,7 +487,7 @@ BOOL XgLoadDictsAll(void)
     bool bFound = false;
     for (auto& entry : xg_dicts)
     {
-        auto& file = entry.m_filename;
+        const auto& file = entry.m_filename;
         if (lstrcmpiW(file.c_str(), xg_dict_name.c_str()) == 0)
         {
             bFound = true;
@@ -501,7 +501,7 @@ BOOL XgLoadDictsAll(void)
         LPCWSTR pszBasicDict = XgLoadStringDx2(IDS_BASICDICTDATA);
         for (auto& entry : xg_dicts)
         {
-            auto& file = entry.m_filename;
+            const auto& file = entry.m_filename;
             if (file.find(pszBasicDict) != std::wstring::npos &&
                 file.find(pszNormal) != std::wstring::npos &&
                 PathFileExistsW(file.c_str()))
@@ -519,7 +519,7 @@ BOOL XgLoadDictsAll(void)
     // ファイルが実際に存在するかチェックし、存在しない項目は消す。
     for (size_t i = 0; i < xg_dicts.size(); ++i) {
         auto& entry = xg_dicts[i];
-        auto& file = entry.m_filename;
+        const auto& file = entry.m_filename;
         if (!PathFileExistsW(file.c_str())) {
             xg_dicts.erase(xg_dicts.begin() + i);
             --i;

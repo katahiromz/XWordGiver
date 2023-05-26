@@ -45,7 +45,7 @@ MScrollCtrlInfo* MScrollView::FindCtrlInfo(HWND hwndCtrl) noexcept
 {
     assert(::IsWindow(hwndCtrl));
     assert(HasChildStyle(hwndCtrl));
-    size_t siz = size();
+    const size_t siz = size();
     for (size_t i = 0; i < siz; ++i)
     {
         if (m_vecInfo[i].m_hwndCtrl == hwndCtrl)
@@ -58,7 +58,7 @@ const MScrollCtrlInfo* MScrollView::FindCtrlInfo(HWND hwndCtrl) const noexcept
 {
     assert(::IsWindow(hwndCtrl));
     assert(HasChildStyle(hwndCtrl));
-    size_t siz = size();
+    const size_t siz = size();
     for (size_t i = 0; i < siz; ++i)
     {
         if (m_vecInfo[i].m_hwndCtrl == hwndCtrl)
@@ -88,7 +88,7 @@ void MScrollView::EnsureCtrlVisible(HWND hwndCtrl, bool update_all/* = true*/) n
     MRect rcClient;
     GetClientRect(m_hwndParent, &rcClient);
 
-    INT yScroll = ::GetScrollPos(m_hwndParent, SB_VERT);
+    const int yScroll = ::GetScrollPos(m_hwndParent, SB_VERT);
     const int siz = static_cast<int>(size());
     for (int i = 0; i < siz; ++i)
     {
@@ -98,7 +98,7 @@ void MScrollView::EnsureCtrlVisible(HWND hwndCtrl, bool update_all/* = true*/) n
         if (!::IsWindow(hwndCtrl))
             break;
 
-        MRect& rcCtrl = m_vecInfo[i].m_rcCtrl;
+        const MRect& rcCtrl = m_vecInfo[i].m_rcCtrl;
         if (rcCtrl.bottom > yScroll + rcClient.Height())
         {
             Scroll(SB_VERT, SB_THUMBPOSITION, rcCtrl.bottom - rcClient.Height());
@@ -123,7 +123,7 @@ void MScrollView::SetExtentForAllCtrls() noexcept
         if (!::IsWindowVisible(m_vecInfo[i].m_hwndCtrl))
             continue;
 
-        MRect& rcCtrl = m_vecInfo[i].m_rcCtrl;
+        const MRect& rcCtrl = m_vecInfo[i].m_rcCtrl;
         if (Extent().cx < rcCtrl.right - 1)
             Extent().cx = rcCtrl.right - 1;
         if (Extent().cy < rcCtrl.bottom - 1)
@@ -150,15 +150,15 @@ void MScrollView::SetExtentForAllCtrls() noexcept
 
 void MScrollView::UpdateCtrlsPos() noexcept
 {
-    INT xScroll = ::GetScrollPos(m_hwndParent, SB_HORZ);
-    INT yScroll = ::GetScrollPos(m_hwndParent, SB_VERT);
+    const int xScroll = ::GetScrollPos(m_hwndParent, SB_HORZ);
+    const int yScroll = ::GetScrollPos(m_hwndParent, SB_VERT);
     const int siz = static_cast<int>(size());
     HDWP hDWP = ::BeginDeferWindowPos(siz);
     if (hDWP)
     {
         for (int i = 0; i < siz; ++i)
         {
-            MRect& rcCtrl = m_vecInfo[i].m_rcCtrl;
+            const MRect& rcCtrl = m_vecInfo[i].m_rcCtrl;
             hDWP = ::DeferWindowPos(hDWP, m_vecInfo[i].m_hwndCtrl,
                 nullptr,
                 rcCtrl.left - xScroll, rcCtrl.top - yScroll,
@@ -169,7 +169,7 @@ void MScrollView::UpdateCtrlsPos() noexcept
     }
 }
 
-INT MScrollView::GetNextPos(INT bar, INT nSB_, INT pos) const noexcept
+int MScrollView::GetNextPos(int bar, int nSB_, int pos) const noexcept
 {
     SCROLLINFO si;
     si.cbSize = sizeof(si);
@@ -185,47 +185,47 @@ INT MScrollView::GetNextPos(INT bar, INT nSB_, INT pos) const noexcept
         return si.nMax - si.nPage;
 
     case SB_LINELEFT:
-        return std::max(0, INT(si.nPos - 16));
+        return std::max(0, int(si.nPos - 16));
 
     case SB_LINERIGHT:
-        return std::min(INT(si.nMax - si.nPage), INT(si.nPos + 16));
+        return std::min(int(si.nMax - si.nPage), int(si.nPos + 16));
 
     case SB_PAGELEFT:
-        return std::max(0, INT(si.nPos - si.nPage));
+        return std::max(0, int(si.nPos - si.nPage));
 
     case SB_PAGERIGHT:
-        return std::min(INT(si.nMax - si.nPage), INT(si.nPos + si.nPage));
+        return std::min(int(si.nMax - si.nPage), int(si.nPos + si.nPage));
 
     case SB_THUMBPOSITION:
-        pos = std::max(0, INT(pos));
-        pos = std::min(INT(si.nMax - si.nPage), INT(pos));
+        pos = std::max(0, int(pos));
+        pos = std::min(int(si.nMax - si.nPage), int(pos));
         return pos;
 
     case SB_THUMBTRACK:
-        pos = std::max(0, INT(si.nTrackPos));
-        pos = std::min(INT(si.nMax - si.nPage), INT(pos));
+        pos = std::max(0, int(si.nTrackPos));
+        pos = std::min(int(si.nMax - si.nPage), int(pos));
         return pos;
     }
 
     return -1;
 }
 
-void MScrollView::Scroll(INT bar, INT nSB_, INT pos) noexcept
+void MScrollView::Scroll(int bar, int nSB_, int pos) noexcept
 {
-    INT nNextPos = GetNextPos(bar, nSB_, pos);
+    const int nNextPos = GetNextPos(bar, nSB_, pos);
     if (nNextPos == -1)
         return;
 
-    INT nOldPos = ::GetScrollPos(m_hwndParent, bar);
+    const int nOldPos = ::GetScrollPos(m_hwndParent, bar);
     if (bar == SB_HORZ)
     {
-        INT dx = nNextPos - nOldPos;
+        const int dx = nNextPos - nOldPos;
         ::SetScrollPos(m_hwndParent, bar, nNextPos, TRUE);
         ::ScrollWindow(m_hwndParent, -dx, 0, nullptr, nullptr);
     }
     else if (bar == SB_VERT)
     {
-        INT dy = nNextPos - nOldPos;
+        const int dy = nNextPos - nOldPos;
         ::SetScrollPos(m_hwndParent, bar, nNextPos, TRUE);
         ::ScrollWindow(m_hwndParent, 0, -dy, nullptr, nullptr);
     }

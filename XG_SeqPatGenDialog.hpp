@@ -17,7 +17,7 @@ public:
         // ドラッグ＆ドロップを有効にする。
         DragAcceptFiles(hwnd, TRUE);
         // 現在の状態で好ましいと思われる単語の最大長を取得する。
-        INT n3 = XgGetPreferredMaxLength();
+        const auto n3 = XgGetPreferredMaxLength();
         ::SetDlgItemInt(hwnd, edt3, n3, FALSE);
         // 保存先を設定する。
         COMBOBOXEXITEMW item;
@@ -65,7 +65,7 @@ public:
             // 保存先のパス名を取得する。
             ::GetDlgItemTextW(hwnd, cmb2, szFile, _countof(szFile));
             {
-                DWORD attrs = ::GetFileAttributesW(szFile);
+                const auto attrs = ::GetFileAttributesW(szFile);
                 if (attrs == 0xFFFFFFFF || !(attrs & FILE_ATTRIBUTE_DIRECTORY)) {
                     // パスがなければ作成する。
                     if (!XgMakePathW(szFile)) {

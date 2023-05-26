@@ -75,7 +75,7 @@ LayoutShowGrip(LAYOUT_DATA *pData, BOOL bShow)
 
     if (pData->m_hwndGrip == nullptr)
     {
-        DWORD style = WS_CHILD | WS_CLIPSIBLINGS | SBS_SIZEGRIP;
+        const auto style = WS_CHILD | WS_CLIPSIBLINGS | SBS_SIZEGRIP;
         pData->m_hwndGrip = CreateWindowExW(0, L"SCROLLBAR", nullptr, style,
                                             0, 0, 0, 0, pData->m_hwndParent,
                                             nullptr, GetModuleHandleW(nullptr), nullptr);

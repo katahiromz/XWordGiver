@@ -50,7 +50,7 @@ public:
             // 保存先のパス名を取得する。
             ::GetDlgItemTextW(hwnd, cmb1, szFile, _countof(szFile));
             {
-                DWORD attrs = ::GetFileAttributesW(szFile);
+                const auto attrs = ::GetFileAttributesW(szFile);
                 if (attrs == 0xFFFFFFFF || !(attrs & FILE_ATTRIBUTE_DIRECTORY)) {
                     // パスがなければ作成する。
                     if (!XgMakePathW(szFile)) {
@@ -153,11 +153,11 @@ public:
         }
 
         // ファイルの属性を確認する。
-        DWORD attrs = ::GetFileAttributesW(szFile);
+        const auto attrs = ::GetFileAttributesW(szFile);
         if (attrs & FILE_ATTRIBUTE_DIRECTORY) {
             // ディレクトリーだった。
             // 同じ項目がすでにあれば、削除する。
-            INT i = static_cast<int>(::SendDlgItemMessageW(
+            const int i = static_cast<int>(::SendDlgItemMessageW(
                 hwnd, cmb1, CB_FINDSTRINGEXACT, 0,
                 reinterpret_cast<LPARAM>(szFile)));
             if (i != CB_ERR) {

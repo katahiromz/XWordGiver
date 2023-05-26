@@ -189,8 +189,8 @@ template <typename T_CHAR>
 inline void mstr_trim(std::basic_string<T_CHAR>& str, const T_CHAR *spaces)
 {
     typedef std::basic_string<T_CHAR> string_type;
-    size_t i = str.find_first_not_of(spaces);
-    size_t j = str.find_last_not_of(spaces);
+    const auto i = str.find_first_not_of(spaces);
+    const auto j = str.find_last_not_of(spaces);
     if ((i == string_type::npos) || (j == string_type::npos))
     {
         str.clear();

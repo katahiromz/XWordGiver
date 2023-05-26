@@ -32,7 +32,7 @@ public:
         ::SetDlgItemInt(hwnd, edt1, xg_nRows, FALSE);
         ::SetDlgItemInt(hwnd, edt2, xg_nCols, FALSE);
         // 現在の状態で好ましいと思われる単語の最大長を取得する。
-        INT n3 = XgGetPreferredMaxLength();
+        const auto n3 = XgGetPreferredMaxLength();
         ::SetDlgItemInt(hwnd, edt3, n3, FALSE);
         // スマート解決か？
         if (xg_bSmartResolution) {
@@ -123,7 +123,7 @@ public:
             WCHAR szFile[MAX_PATH];
             ::GetDlgItemTextW(hwnd, cmb2, szFile, _countof(szFile));
             {
-                DWORD attrs = ::GetFileAttributesW(szFile);
+                const auto attrs = ::GetFileAttributesW(szFile);
                 if (attrs == 0xFFFFFFFF || !(attrs & FILE_ATTRIBUTE_DIRECTORY)) {
                     // パスがなければ作成する。
                     if (!XgMakePathW(szFile)) {

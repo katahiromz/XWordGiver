@@ -24,7 +24,7 @@ std::shared_ptr<XG_FileManager>& XgGetFileManager(void)
     void __cdecl DebugPrintfW(const char *file, int lineno, LPCWSTR pszFormat, ...)
     {
         va_list va;
-        INT cch;
+        int cch;
         static WCHAR s_szText[1024];
         va_start(va, pszFormat);
         ::EnterCriticalSection(&xg_cs);
@@ -48,7 +48,7 @@ std::shared_ptr<XG_FileManager>& XgGetFileManager(void)
 LPWSTR __fastcall XgLoadStringDx1(int id) noexcept
 {
     static WCHAR sz[512];
-    INT ret = LoadStringW(xg_hInstance, id, sz, _countof(sz));
+    const int ret = LoadStringW(xg_hInstance, id, sz, _countof(sz));
     assert(ret != 0);
     UNREFERENCED_PARAMETER(ret);
     return sz;
@@ -58,7 +58,7 @@ LPWSTR __fastcall XgLoadStringDx1(int id) noexcept
 LPWSTR __fastcall XgLoadStringDx2(int id) noexcept
 {
     static WCHAR sz[512];
-    INT ret = LoadStringW(xg_hInstance, id, sz, _countof(sz));
+    const int ret = LoadStringW(xg_hInstance, id, sz, _countof(sz));
     assert(ret != 0);
     UNREFERENCED_PARAMETER(ret);
     return sz;
@@ -183,7 +183,7 @@ bool __fastcall xg_submultiseteq(const std::unordered_multiset<WCHAR>& ms1,
 std::wstring __fastcall XgUtf8ToUnicode(const std::string& ansi)
 {
     // 変換先の文字数を取得する。
-    const INT cch = MultiByteToWideChar(CP_UTF8, 0, ansi.data(), -1, nullptr, 0);
+    const int cch = MultiByteToWideChar(CP_UTF8, 0, ansi.data(), -1, nullptr, 0);
     if (cch == 0)
         return L"";
 
@@ -199,7 +199,7 @@ std::wstring __fastcall XgUtf8ToUnicode(const std::string& ansi)
 void __fastcall XgCenterDialog(HWND hwnd) noexcept
 {
     // 子ウィンドウか？
-    bool bChild = !!(::GetWindowLong(hwnd, GWL_STYLE) & WS_CHILD);
+    const bool bChild = !!(::GetWindowLong(hwnd, GWL_STYLE) & WS_CHILD);
 
     // オーナーウィンドウ（親ウィンドウ）を取得する。
     HWND hwndOwner;
@@ -280,11 +280,11 @@ XgCenterMessageBoxW(HWND hwnd, LPCWSTR pszText, LPCWSTR pszCaption, UINT uType) 
         reinterpret_cast<HINSTANCE>(::GetWindowLongPtr(hwnd, GWLP_HINSTANCE));
 
     // フックを開始。
-    DWORD dwThreadID = ::GetCurrentThreadId();
+    const auto dwThreadID = ::GetCurrentThreadId();
     s_hMsgBoxHook = ::SetWindowsHookEx(WH_CBT, XgMsgBoxCbtProc, hInst, dwThreadID);
 
     // メッセージボックスを表示する。
-    int nID = MessageBoxW(hwnd, pszText, pszCaption, uType);
+    const int nID = MessageBoxW(hwnd, pszText, pszCaption, uType);
 
     // フックされていたらフックを解除する。
     if (s_hMsgBoxHook != nullptr && UnhookWindowsHookEx(s_hMsgBoxHook))
@@ -307,11 +307,11 @@ XgCenterMessageBoxIndirectW(LPMSGBOXPARAMS lpMsgBoxParams) noexcept
             ::GetWindowLongPtr(lpMsgBoxParams->hwndOwner, GWLP_HINSTANCE));
 
     // フックを開始。
-    DWORD dwThreadID = ::GetCurrentThreadId();
+    const auto dwThreadID = ::GetCurrentThreadId();
     s_hMsgBoxHook = ::SetWindowsHookEx(WH_CBT, XgMsgBoxCbtProc, hInst, dwThreadID);
 
     // メッセージボックスを表示する。
-    int nID = MessageBoxIndirectW(lpMsgBoxParams);
+    const int nID = MessageBoxIndirectW(lpMsgBoxParams);
 
     // フックされていたらフックを解除する。
     if (s_hMsgBoxHook != nullptr && UnhookWindowsHookEx(s_hMsgBoxHook))
@@ -354,7 +354,7 @@ void __fastcall XgOpenLicense(HWND hwnd)
 bool __fastcall XgCanWriteFile(const WCHAR *pszFile)
 {
     // 書き込みをすべきでない特殊フォルダのID。
-    static const auto s_anFolders = make_array<INT>(
+    static const auto s_anFolders = make_array<int>(
         CSIDL_PROGRAM_FILES,
         CSIDL_PROGRAM_FILES_COMMON,
         CSIDL_PROGRAM_FILES_COMMONX86,
@@ -390,7 +390,7 @@ bool __fastcall XgCanWriteFile(const WCHAR *pszFile)
 // Unicode -> UTF8
 std::string XgUnicodeToUtf8(const std::wstring& wide)
 {
-    const INT len = ::WideCharToMultiByte(CP_UTF8, 0, wide.data(), -1, nullptr, 0, nullptr, nullptr);
+    const int len = ::WideCharToMultiByte(CP_UTF8, 0, wide.data(), -1, nullptr, 0, nullptr, nullptr);
     if (len == 0)
         return "";
 
@@ -402,7 +402,7 @@ std::string XgUnicodeToUtf8(const std::wstring& wide)
 // ANSI -> Unicode
 std::wstring XgAnsiToUnicode(const std::string& ansi)
 {
-    const INT len = ::MultiByteToWideChar(XG_SJIS_CODEPAGE, 0, ansi.data(), -1, nullptr, 0);
+    const int len = ::MultiByteToWideChar(XG_SJIS_CODEPAGE, 0, ansi.data(), -1, nullptr, 0);
     if (len == 0)
         return L"";
 
@@ -414,7 +414,7 @@ std::wstring XgAnsiToUnicode(const std::string& ansi)
 // Unicode -> ANSI
 std::string XgUnicodeToAnsi(const std::wstring& wide)
 {
-    int len = ::WideCharToMultiByte(XG_SJIS_CODEPAGE, 0, wide.data(), -1, nullptr, 0, nullptr, nullptr);
+    const int len = ::WideCharToMultiByte(XG_SJIS_CODEPAGE, 0, wide.data(), -1, nullptr, 0, nullptr, nullptr);
     if (len == 0)
         return "";
 
@@ -428,7 +428,8 @@ std::wstring XgJsonEncodeString(const std::wstring& str)
 {
     std::wstring encoded;
     wchar_t buf[16];
-    size_t i, siz = str.size();
+    size_t i;
+    const auto siz = str.size();
 
     encoded.clear();
     for (i = 0; i < siz; ++i) {
@@ -469,7 +470,7 @@ BOOL XgMakePathW(LPCWSTR pszPath)
     WCHAR szPath[MAX_PATH];
     StringCbCopy(szPath, sizeof(szPath), pszPath);
 
-    DWORD attrs = ::GetFileAttributesW(szPath);
+    const DWORD attrs = ::GetFileAttributesW(szPath);
     if (attrs != 0xFFFFFFFF) {
         return (attrs & FILE_ATTRIBUTE_DIRECTORY) != 0;
     }
@@ -494,9 +495,9 @@ void XgSwab(LPBYTE pbFile, size_t cbFile) noexcept
     LPWORD pw = reinterpret_cast<LPWORD>(pbFile);
     size_t cw = (cbFile >> 1);
     while (cw--) {
-        WORD w = *pw;
-        BYTE lo = LOBYTE(w);
-        BYTE hi = HIBYTE(w);
+        const WORD w = *pw;
+        const BYTE lo = LOBYTE(w);
+        const BYTE hi = HIBYTE(w);
         *pw = MAKEWORD(hi, lo);
         ++pw;
     }
@@ -527,10 +528,10 @@ std::string XgMakeClipHtmlData(const std::string& html_utf8,
     str += "\r\n<!-- EndFragment -->\r\n";
     str += "</body></html>\r\n";
 
-    size_t iHtmlStart = str.find("<html>");
-    size_t iHtmlEnd = str.size();
-    size_t iFragmentStart = str.find("<!-- StartFragment -->");
-    size_t iFragmentEnd = str.find("<!-- EndFragment -->");
+    const size_t iHtmlStart = str.find("<html>");
+    const size_t iHtmlEnd = str.size();
+    const size_t iFragmentStart = str.find("<!-- StartFragment -->");
+    const size_t iFragmentEnd = str.find("<!-- EndFragment -->");
 
     char buf[9];
     size_t i;
@@ -638,7 +639,7 @@ BOOL PackedDIB_CreateFromHandle(std::vector<BYTE>& vecData, HBITMAP hbm)
 }
 
 // 整数を文字列にする。
-LPCWSTR XgIntToStr(INT nValue)
+LPCWSTR XgIntToStr(int nValue)
 {
     static WCHAR s_szText[64];
     StringCbPrintfW(s_szText, sizeof(s_szText), L"%d", nValue);
@@ -671,7 +672,7 @@ void XgHexToBin(std::vector<BYTE>& data, const std::wstring& str)
         if (flag)
         {
             sz[1] = ch;
-            auto b = static_cast<BYTE>(wcstol(sz, nullptr, 16));
+            const auto b = static_cast<BYTE>(wcstol(sz, nullptr, 16));
             data.insert(data.end(), b);
         }
         else
@@ -704,7 +705,7 @@ BOOL XgReadFileAll(LPCWSTR file, std::string& strBinary)
 BOOL XgWriteFileAll(LPCWSTR file, const std::string& strBinary) noexcept
 {
     if (FILE *fout = _wfopen(file, L"wb")) {
-        bool ret = fwrite(strBinary.c_str(), 1, strBinary.size(), fout);
+        const bool ret = fwrite(strBinary.c_str(), 1, strBinary.size(), fout);
         fclose(fout);
         return !!ret;
     }
@@ -735,7 +736,7 @@ BOOL XgReadTextFileAll(LPCWSTR file, std::wstring& strText)
         {
             // UTF-16 LE
             auto ptr = reinterpret_cast<LPWSTR>(&strBinary[2]);
-            size_t len = (strBinary.size() - 1) / sizeof(WCHAR);
+            const size_t len = (strBinary.size() - 1) / sizeof(WCHAR);
             strText.assign(ptr, len);
             return TRUE;
         }
@@ -743,7 +744,7 @@ BOOL XgReadTextFileAll(LPCWSTR file, std::wstring& strText)
         {
             // UTF-16 BE
             auto ptr = reinterpret_cast<LPWSTR>(&strBinary[2]);
-            size_t len = (strBinary.size() - 1) / sizeof(WCHAR);
+            const size_t len = (strBinary.size() - 1) / sizeof(WCHAR);
             strText.assign(ptr, len);
             XgSwab(reinterpret_cast<LPBYTE>(&strText[0]), len * sizeof(WCHAR));
             return TRUE;
@@ -786,17 +787,17 @@ BOOL XgReadTextFileAll(LPCWSTR file, std::wstring& strText)
     {
         // UTF-16 BE/LE
         auto ptr = reinterpret_cast<LPCWSTR>(strBinary.c_str());
-        size_t len = strBinary.size() / sizeof(WCHAR);
+        const size_t len = strBinary.size() / sizeof(WCHAR);
         strText.assign(ptr, len);
         if (bUTF16BE)
             XgSwab(reinterpret_cast<LPBYTE>(&strText[0]), len * sizeof(WCHAR));
         return TRUE;
     }
 
-    BOOL bNotUTF8 = MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, strBinary.c_str(), -1,
-                                        nullptr, 0) == 0;
-    BOOL bNotAnsi = MultiByteToWideChar(CP_ACP, MB_ERR_INVALID_CHARS, strBinary.c_str(), -1,
-                                        nullptr, 0) == 0;
+    const BOOL bNotUTF8 = MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, strBinary.c_str(), -1,
+                                              nullptr, 0) == 0;
+    const BOOL bNotAnsi = MultiByteToWideChar(CP_ACP, MB_ERR_INVALID_CHARS, strBinary.c_str(), -1,
+                                              nullptr, 0) == 0;
     if (!bNotUTF8 && bNotAnsi)
     {
         strText = XgUtf8ToUnicode(strBinary);
@@ -1084,7 +1085,7 @@ bool XG_FileManager::save_image2(std::wstring& path)
     }
     /////////////////////////////////////////////////////////////////////////
 
-    bool result = XgWriteFileAll(real.c_str(), it->second);
+    const bool result = XgWriteFileAll(real.c_str(), it->second);
     if (result) {
         path = std::move(canonical);
     }
@@ -1326,7 +1327,7 @@ std::wstring XG_FileManager::get_looks_file()
     {
         path += L"\\";
         path += PathFindFileNameW(m_filename.c_str());
-        auto idotext = path.rfind(L'.');
+        const auto idotext = path.rfind(L'.');
         if (idotext != path.npos)
             path.resize(idotext);
         path += L".looks";
@@ -1398,9 +1399,9 @@ bool XG_FileManager::load_block_image(const std::wstring& path)
 }
 
 // コンボボックスからテキストを取得。
-BOOL ComboBox_RealGetText(HWND hwndCombo, LPWSTR pszText, INT cchText) noexcept
+BOOL ComboBox_RealGetText(HWND hwndCombo, LPWSTR pszText, int cchText) noexcept
 {
-    INT iItem = ComboBox_GetCurSel(hwndCombo);
+    const int iItem = ComboBox_GetCurSel(hwndCombo);
     if (iItem == CB_ERR)
         return ComboBox_GetText(hwndCombo, pszText, cchText);
     if (ComboBox_GetLBTextLen(hwndCombo, iItem) < cchText)
@@ -1412,7 +1413,7 @@ BOOL ComboBox_RealGetText(HWND hwndCombo, LPWSTR pszText, INT cchText) noexcept
 // コンボボックスにテキストを設定。
 BOOL ComboBox_RealSetText(HWND hwndCombo, LPCWSTR pszText) noexcept
 {
-    INT iItem = ComboBox_FindStringExact(hwndCombo, -1, pszText);
+    int iItem = ComboBox_FindStringExact(hwndCombo, -1, pszText);
     if (iItem == CB_ERR)
     {
         ComboBox_SetCurSel(hwndCombo, -1);

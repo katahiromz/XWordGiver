@@ -15,7 +15,7 @@ public:
         // ダイアログを中央へ移動する。
         XgCenterDialog(hwnd);
         // 現在の状態で好ましいと思われる単語の最大長を取得する。
-        INT n3 = XgGetPreferredMaxLength();
+        const auto n3 = XgGetPreferredMaxLength();
         ::SetDlgItemInt(hwnd, edt3, n3, FALSE);
         // 単語長の範囲を指定する。
         ::SendDlgItemMessageW(hwnd, scr3, UDM_SETRANGE, 0, MAKELPARAM(XG_MAX_WORD_LEN, XG_MIN_WORD_LEN));
@@ -24,7 +24,7 @@ public:
 
     void OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT codeNotify)
     {
-        INT n3;
+        int n3;
         switch (id)
         {
         case IDOK:

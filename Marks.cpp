@@ -50,7 +50,7 @@ void __fastcall XgGetStringOfMarks2(std::wstring& str)
     int i = 0;
     auto xg = (xg_bSolved ? &xg_solution : &xg_xword);
     for (const auto& mark : xg_vMarks) {
-        WCHAR szLetter[2] = { xg->GetAt(mark.m_i, mark.m_j), 0 };
+        const WCHAR szLetter[2] = { xg->GetAt(mark.m_i, mark.m_j), 0 };
         auto letter = XgNormalizeStringEx(szLetter);
         StringCbPrintf(sz, sizeof(sz), L"MARK%d. (%u, %u): %s\n",
                        i + 1, mark.m_j + 1, mark.m_i + 1, letter.c_str());
@@ -137,7 +137,7 @@ void __fastcall XgSetMark(int i, int j)
 void __fastcall XgDeleteMark(int i, int j)
 {
     // (i, j)がマークされていなければ無視。
-    int nMarked = XgGetMarked(i, j);
+    const int nMarked = XgGetMarked(i, j);
     if (nMarked == -1)
         return;
 
@@ -182,7 +182,7 @@ void __fastcall XgSetStringOfMarks(LPCWSTR psz)
             break;
 
         // 行のインデックスを読み込む。
-        int i = _wtoi(psz) - 1;
+        const int i = _wtoi(psz) - 1;
         while (L'0' <= *psz && *psz <= L'9')
             psz++;
         if (*psz == L'\0' || *psz == ZEN_ULEFT)
@@ -197,7 +197,7 @@ void __fastcall XgSetStringOfMarks(LPCWSTR psz)
             break;
 
         // 列のインデックスを読み込む。
-        int j = _wtoi(psz) - 1;
+        const int j = _wtoi(psz) - 1;
 
         // 読み飛ばし。
         while ((L'0' <= *psz && *psz <= L'9') || *psz == L')')
@@ -395,12 +395,12 @@ BOOL __fastcall XgSetMarkedWord(const std::wstring& str, WCHAR *pchNotFound)
     // 二重マス単語と文字マスの情報に従って二重マスを設定する。
     std::wstring word;
     for (const auto ch : str) {
-        int m = rand() % xg_nRows;
-        int n = rand() % xg_nCols;
+        const int m = rand() % xg_nRows;
+        const int n = rand() % xg_nCols;
         for (int i = 0; i < xg_nRows; i++) {
             for (int j = 0; j < xg_nCols; j++) {
-                int i0 = (i + m) % xg_nRows;
-                int j0 = (j + n) % xg_nCols;
+                const int i0 = (i + m) % xg_nRows;
+                const int j0 = (j + n) % xg_nCols;
                 if (ch == xg_solution.GetAt(i0, j0) &&
                     XgGetMarked(i0, j0) == -1)
                 {

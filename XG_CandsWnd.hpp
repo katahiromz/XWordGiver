@@ -40,8 +40,8 @@ public:
     // 候補ウィンドウを作成する。
     BOOL Create(HWND hwnd)
     {
-        auto style = WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME | WS_HSCROLL | WS_VSCROLL;
-        auto exstyle = WS_EX_TOOLWINDOW;
+        const auto style = WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME | WS_HSCROLL | WS_VSCROLL;
+        const auto exstyle = WS_EX_TOOLWINDOW;
         auto text = XgLoadStringDx1(IDS_CANDIDATES);
         return CreateWindowDx(hwnd, text, style, exstyle,
                               s_nCandsWndX, s_nCandsWndY,
@@ -269,7 +269,7 @@ public:
                     pt.y += siz.cy + 16;
                 }
 
-                MRect rcCtrl(MPoint(pt.x + 4, pt.y + 4), MSize(siz.cx + 8, siz.cy + 8));
+                const MRect rcCtrl(MPoint(pt.x + 4, pt.y + 4), MSize(siz.cx + 8, siz.cy + 8));
                 xg_svCandsScrollView.AddCtrlInfo(xg_ahwndCandButtons[i], rcCtrl);
 
                 pt.x += siz.cx + 16;
@@ -424,8 +424,7 @@ public:
                     XgDestroyCandsWnd();
 
                     // イメージを更新する。
-                    int x = XgGetHScrollPos();
-                    int y = XgGetVScrollPos();
+                    const int x = XgGetHScrollPos(), y = XgGetVScrollPos();
                     XgUpdateImage(xg_hMainWnd, x, y);
                     return;
                 }

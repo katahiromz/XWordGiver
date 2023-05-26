@@ -58,8 +58,8 @@ public:
         if (pdis->hwndItem != m_hWnd || pdis->CtlType != ODT_BUTTON)
             return;
 
-        BOOL bSelected = !!(pdis->itemState & ODS_SELECTED);
-        BOOL bFocus = !!(pdis->itemState & ODS_FOCUS);
+        const BOOL bSelected = !!(pdis->itemState & ODS_SELECTED);
+        const BOOL bFocus = !!(pdis->itemState & ODS_FOCUS);
         RECT rcItem = pdis->rcItem;
 
         HDC hdc = pdis->hDC;

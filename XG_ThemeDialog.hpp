@@ -18,7 +18,7 @@ public:
     // タグリストボックスを初期化。
     void XgInitTagListView(HWND hwndLV)
     {
-        DWORD exstyle = LVS_EX_FULLROWSELECT | LVS_EX_INFOTIP | LVS_EX_LABELTIP | LVS_EX_GRIDLINES;
+        const DWORD exstyle = LVS_EX_FULLROWSELECT | LVS_EX_INFOTIP | LVS_EX_LABELTIP | LVS_EX_GRIDLINES;
         ListView_SetExtendedListViewStyleEx(hwndLV, exstyle, exstyle);
 
         LV_COLUMN column = { LVCF_TEXT | LVCF_WIDTH | LVCF_SUBITEM | LVCF_FMT };
@@ -66,7 +66,7 @@ public:
         );
 
         // リストビューを逆順のヒストグラムで埋める。
-        INT iItem = 0;
+        int iItem = 0;
         LV_ITEM item = { LVIF_TEXT };
         WCHAR szText[64];
         for (auto& pair : histgram) {
@@ -126,7 +126,7 @@ public:
     {
         // 選択中のテキストを取得する。
         HWND hLst1 = GetDlgItem(hwnd, lst1);
-        INT iItem = ListView_GetNextItem(hLst1, -1, LVNI_ALL | LVNI_SELECTED);
+        int iItem = ListView_GetNextItem(hLst1, -1, LVNI_ALL | LVNI_SELECTED);
         if (iItem < 0)
             return; // 選択なし。
         WCHAR szText1[64], szText2[64];
@@ -141,7 +141,7 @@ public:
                 return; // すでにあった。
 
             // タグ項目を追加。
-            INT cItems = ListView_GetItemCount(hLst2);
+            int cItems = ListView_GetItemCount(hLst2);
             LV_ITEM item = { LVIF_TEXT };
             item.iItem = cItems;
             item.iSubItem = 0;
@@ -167,7 +167,7 @@ public:
                 return; // すでにあった。
 
             // タグ項目を追加。
-            INT cItems = ListView_GetItemCount(hLst3);
+            int cItems = ListView_GetItemCount(hLst3);
             LV_ITEM item = { LVIF_TEXT };
             item.iItem = cItems;
             item.iSubItem = 0;
@@ -198,11 +198,11 @@ public:
         WCHAR szText[64];
         if (bPriority) {
             HWND hLst2 = GetDlgItem(hwnd, lst2);
-            INT iItem = ListView_GetNextItem(hLst2, -1, LVNI_ALL | LVNI_SELECTED);
+            int iItem = ListView_GetNextItem(hLst2, -1, LVNI_ALL | LVNI_SELECTED);
             ListView_DeleteItem(hLst2, iItem);
 
             // カウンターを更新。
-            INT cItems = ListView_GetItemCount(hLst2);
+            const int cItems = ListView_GetItemCount(hLst2);
             size_t count = 0;
             for (iItem = 0; iItem < cItems; ++iItem) {
                 ListView_GetItemText(hLst2, iItem, 1, szText, _countof(szText));
@@ -211,11 +211,11 @@ public:
             SetDlgItemInt(hwnd, stc1, static_cast<int>(count), FALSE);
         } else {
             HWND hLst3 = GetDlgItem(hwnd, lst3);
-            INT iItem = ListView_GetNextItem(hLst3, -1, LVNI_ALL | LVNI_SELECTED);
+            int iItem = ListView_GetNextItem(hLst3, -1, LVNI_ALL | LVNI_SELECTED);
             ListView_DeleteItem(hLst3, iItem);
 
             // カウンターを更新。
-            INT cItems = ListView_GetItemCount(hLst3);
+            const int cItems = ListView_GetItemCount(hLst3);
             size_t count = 0;
             for (iItem = 0; iItem < cItems; ++iItem) {
                 ListView_GetItemText(hLst3, iItem, 1, szText, _countof(szText));
@@ -239,10 +239,10 @@ public:
 
         std::wstring strTheme;
         WCHAR szText[XG_MAX_TAGSLEN];
-        INT cItems;
+        int cItems;
 
         cItems = ListView_GetItemCount(hLst2);
-        for (INT iItem = 0; iItem < cItems; ++iItem) {
+        for (int iItem = 0; iItem < cItems; ++iItem) {
             ListView_GetItemText(hLst2, iItem, 0, szText, _countof(szText));
             xg_priority_tags.emplace(szText);
             if (strTheme.size())
@@ -252,7 +252,7 @@ public:
         }
 
         cItems = ListView_GetItemCount(hLst3);
-        for (INT iItem = 0; iItem < cItems; ++iItem) {
+        for (int iItem = 0; iItem < cItems; ++iItem) {
             ListView_GetItemText(hLst3, iItem, 0, szText, _countof(szText));
             xg_forbidden_tags.emplace(szText);
             if (strTheme.size())
@@ -274,13 +274,13 @@ public:
 
         HWND hLst1 = GetDlgItem(hwnd, lst1);
 
-        INT iItem;
-        const INT nCount = ListView_GetItemCount(hLst1);
+        int iItem;
+        const int nCount = ListView_GetItemCount(hLst1);
         WCHAR szItem[XG_MAX_TAGSLEN];
         for (iItem = 0; iItem < nCount; ++iItem) {
             ListView_GetItemText(hLst1, iItem, 0, szItem, _countof(szItem));
             if (StrStr(szItem, szText)) {
-                UINT state = LVIS_FOCUSED | LVIS_SELECTED;
+                const UINT state = LVIS_FOCUSED | LVIS_SELECTED;
                 ListView_SetItemState(hLst1, iItem, state, state);
                 ListView_EnsureVisible(hLst1, iItem, FALSE);
                 break;
@@ -365,7 +365,7 @@ public:
     LRESULT OnNotify(HWND hwnd, int idFrom, LPNMHDR pnmhdr)
     {
         if (pnmhdr->code == NM_CUSTOMDRAW) {
-            LRESULT ret = OnCustomDraw(hwnd, reinterpret_cast<LPNMLVCUSTOMDRAW>(pnmhdr));
+            const auto ret = OnCustomDraw(hwnd, reinterpret_cast<LPNMLVCUSTOMDRAW>(pnmhdr));
             return SetDlgMsgResult(hwnd, NM_CUSTOMDRAW, ret);
         }
         switch (idFrom) {
@@ -448,14 +448,14 @@ public:
             }
 
             LV_ITEM item = { LVIF_TEXT };
-            INT iItem = ListView_GetItemCount(minus ? hLst3 : hLst2);
+            const int iItem = ListView_GetItemCount(minus ? hLst3 : hLst2);
             StringCbCopyW(szText, sizeof(szText), str.c_str());
             item.iItem = iItem;
             item.pszText = szText;
             item.iSubItem = 0;
             ListView_InsertItem((minus ? hLst3 : hLst2), &item);
 
-            int count = static_cast<int>(xg_tag_histgram[str]);
+            const int count = static_cast<int>(xg_tag_histgram[str]);
             StringCbPrintfW(szText, sizeof(szText), L"%d", count);
             item.iItem = iItem;
             item.pszText = szText;
@@ -493,9 +493,9 @@ public:
 
         std::wstring str;
         WCHAR szText[64];
-        INT nCount2 = ListView_GetItemCount(hLst2);
-        INT nCount3 = ListView_GetItemCount(hLst3);
-        for (INT i = 0; i < nCount2; ++i) {
+        const int nCount2 = ListView_GetItemCount(hLst2);
+        const int nCount3 = ListView_GetItemCount(hLst3);
+        for (int i = 0; i < nCount2; ++i) {
             if (str.size()) {
                 str += L",";
             }
@@ -503,7 +503,7 @@ public:
             str += L"+";
             str += szText;
         }
-        for (INT i = 0; i < nCount3; ++i) {
+        for (int i = 0; i < nCount3; ++i) {
             if (str.size()) {
                 str += L",";
             }

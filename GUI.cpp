@@ -120,10 +120,10 @@ WCHAR xg_prev_vk = 0;
 bool xg_bTateOki = true;
 
 // 表示用に描画するか？（XgGetXWordExtentとXgDrawXWordとXgCreateXWordImageで使う）。
-INT xg_nForDisplay = 0;
+int xg_nForDisplay = 0;
 
 // ズーム比率(%)。
-INT xg_nZoomRate = 100;
+int xg_nZoomRate = 100;
 
 // 番号を表示するか？
 BOOL xg_bShowNumbering = TRUE;
@@ -139,7 +139,7 @@ BOOL xg_bShowDoubleFrameLetters = TRUE;
 std::deque<std::wstring> xg_dirs_save_to;
 
 // 連続生成の場合、問題を生成する数。
-INT xg_nNumberToGenerate = 16;
+int xg_nNumberToGenerate = 16;
 
 // マウスの中央ボタンの処理に使う変数。
 BOOL xg_bMButtonDragging = FALSE;
@@ -160,14 +160,14 @@ XG_CanvasWindow xg_canvasWnd;
 // ナンクロモードか？
 bool xg_bNumCroMode = false;
 // ナンクロモードの場合、写像を保存する。
-std::unordered_map<WCHAR, INT> xg_mapNumCro1;
-std::unordered_map<INT, WCHAR> xg_mapNumCro2;
+std::unordered_map<WCHAR, int> xg_mapNumCro1;
+std::unordered_map<int, WCHAR> xg_mapNumCro2;
 
 // ファイル変更フラグ。
 BOOL xg_bFileModified = FALSE;
 
 // ファイル変更フラグ。
-void XgSetModified(BOOL bModified, LPCSTR file, INT line)
+void XgSetModified(BOOL bModified, LPCSTR file, int line)
 {
     xg_bFileModified = bModified;
 
@@ -217,8 +217,8 @@ static int s_nMainWndX = CW_USEDEFAULT, s_nMainWndY = CW_USEDEFAULT;
 static int s_nMainWndCX = CW_USEDEFAULT, s_nMainWndCY = CW_USEDEFAULT;
 
 // 入力パレットの位置。
-INT xg_nInputPaletteWndX = CW_USEDEFAULT;
-INT xg_nInputPaletteWndY = CW_USEDEFAULT;
+int xg_nInputPaletteWndX = CW_USEDEFAULT;
+int xg_nInputPaletteWndY = CW_USEDEFAULT;
 
 // 会社名。
 static const LPCWSTR
@@ -265,7 +265,7 @@ DWORDLONG xg_dwlWait;     // 待ち時間。
 static bool s_bOutOfDiskSpace = false;
 
 // 連続生成の場合、問題を生成した数。
-INT xg_nNumberGenerated = 0;
+int xg_nNumberGenerated = 0;
 
 // 再計算の回数。
 LONG xg_nRetryCount;
@@ -274,19 +274,19 @@ LONG xg_nRetryCount;
 static bool s_bShowStatusBar = true;
 
 // ルール群。
-INT xg_nRules = XG_DEFAULT_RULES;
+int xg_nRules = XG_DEFAULT_RULES;
 
 // [二重マス単語の候補と配置]ダイアログの位置。
-INT xg_nMarkingX = CW_USEDEFAULT;
-INT xg_nMarkingY = CW_USEDEFAULT;
+int xg_nMarkingX = CW_USEDEFAULT;
+int xg_nMarkingY = CW_USEDEFAULT;
 
 //////////////////////////////////////////////////////////////////////////////
 // スクロール関連。
 
 // マス位置を取得する。
-VOID XgGetCellPosition(RECT& rc, INT i1, INT j1, INT i2, INT j2, BOOL bScroll) noexcept
+VOID XgGetCellPosition(RECT& rc, int i1, int j1, int i2, int j2, BOOL bScroll) noexcept
 {
-    INT nCellSize = xg_nCellSize * xg_nZoomRate / 100;
+    const int nCellSize = xg_nCellSize * xg_nZoomRate / 100;
 
     rc = {
         xg_nMargin + j1 * nCellSize,
@@ -300,9 +300,9 @@ VOID XgGetCellPosition(RECT& rc, INT i1, INT j1, INT i2, INT j2, BOOL bScroll) n
 }
 
 // マス位置を設定する。
-VOID XgSetCellPosition(LONG& x, LONG& y, INT& i, INT& j, BOOL bEnd) noexcept
+VOID XgSetCellPosition(LONG& x, LONG& y, int& i, int& j, BOOL bEnd) noexcept
 {
-    INT nCellSize = xg_nCellSize * xg_nZoomRate / 100;
+    int nCellSize = xg_nCellSize * xg_nZoomRate / 100;
 
     y += XgGetVScrollPos();
     y -= xg_nMargin;
@@ -410,13 +410,13 @@ void XgDeStringifyBoxes(const std::wstring& boxes)
         {
             mstr_trim(str, L" \t\r\n");
 
-            size_t index1 = str.find(L"{{");
-            size_t index2 = str.find(L"}}", index1);
+            const size_t index1 = str.find(L"{{");
+            const size_t index2 = str.find(L"}}", index1);
             if (index1 == str.npos || index2 == str.npos)
                 break;
 
             auto contents = str.substr(index1 + 2, index2 - index1 - 2);
-            size_t index3 = contents.find(L':');
+            const size_t index3 = contents.find(L':');
             if (index3 == contents.npos)
                 break;
 
@@ -530,8 +530,8 @@ BOOL XgLoadXdBox(const std::wstring& line)
     std::wstring type;
     if (str.find(L"{{") != str.npos && str.find(L"}}") != str.npos)
     {
-        size_t index0 = str.find(L"{{type:");
-        size_t index1 = str.find(L"}}", index0 + 7);
+        const size_t index0 = str.find(L"{{type:");
+        const size_t index1 = str.find(L"}}", index0 + 7);
         if (index0 != str.npos && index1 != str.npos)
         {
             type = str.substr(index0 + 7, index1 - index0 - 7);
@@ -541,7 +541,7 @@ BOOL XgLoadXdBox(const std::wstring& line)
     }
     else
     {
-        size_t index0 = str.find(L":");
+        const size_t index0 = str.find(L":");
         type = str.substr(0, index0);
         xg_str_trim(type);
     }
@@ -578,16 +578,12 @@ BOOL XgWriteXdBoxes(FILE *fout)
 // ボックスを描画する。
 void XgDrawBoxes(XG_Board& xw, HDC hdc, const SIZE *psiz)
 {
-    INT nZoomRate = xg_nZoomRate;
+    const int nZoomRate = xg_nZoomRate;
     xg_nZoomRate = 100;
     RECT rc;
     for (auto& pbox : xg_boxes) {
         auto& box = *pbox;
-        INT i1 = box.m_i1;
-        INT j1 = box.m_j1;
-        INT i2 = box.m_i2;
-        INT j2 = box.m_j2;
-        XgGetCellPosition(rc, i1, j1, i2, j2, FALSE);
+        XgGetCellPosition(rc, box.m_i1, box.m_j1, box.m_i2, box.m_j2, FALSE);
         box.OnDraw(box, hdc, rc);
     }
     xg_nZoomRate = nZoomRate;
@@ -607,7 +603,7 @@ void __fastcall XgGetRealClientRect(HWND hwnd, LPRECT prcClient) noexcept
 void __fastcall XgUpdateCaretPos(void)
 {
     // 現在のセルサイズを計算する。
-    INT nCellSize = xg_nCellSize * xg_nZoomRate / 100;
+    const int nCellSize = xg_nCellSize * xg_nZoomRate / 100;
 
     // 真・クライアント領域を取得する。
     RECT rc;
@@ -653,7 +649,7 @@ void __fastcall XgUpdateCaretPos(void)
     ImmReleaseContext(xg_canvasWnd, hIMC);
 
     // ヒントウィンドウのハイライトを設定する。
-    INT nYoko = -1, nTate = -1;
+    int nYoko = -1, nTate = -1;
     for (auto& info : xg_vTateInfo) {
         if (info.m_iRow == xg_caret_pos.m_i && info.m_jCol == xg_caret_pos.m_j) {
             nTate = info.m_number;
@@ -670,7 +666,7 @@ void __fastcall XgUpdateCaretPos(void)
 }
 
 // キャレット位置をセットする。
-void __fastcall XgSetCaretPos(INT iRow, INT jCol)
+void __fastcall XgSetCaretPos(int iRow, int jCol)
 {
     xg_caret_pos.m_i = iRow;
     xg_caret_pos.m_j = jCol;
@@ -727,7 +723,7 @@ void __fastcall XgEnsureCaretVisible(HWND hwnd)
     // クライアント領域を取得する。
     XgGetRealClientRect(hwnd, &rcClient);
 
-    INT nCellSize = xg_nCellSize * xg_nZoomRate / 100;
+    const int nCellSize = xg_nCellSize * xg_nZoomRate / 100;
 
     // キャレットの矩形を設定する。
     ::SetRect(&rc,
@@ -780,9 +776,9 @@ void __fastcall XgEnsureCaretVisible(HWND hwnd)
 
 // 現在の状態で好ましいと思われる単語の最大長を取得する。
 // 旧来のスマート解決では最大長を指定する必要があった。
-INT __fastcall XgGetPreferredMaxLength(void) noexcept
+int __fastcall XgGetPreferredMaxLength(void) noexcept
 {
-    INT ret = 7;
+    int ret = 7;
 
     if (xg_dict_1.size()) {
         auto& word = xg_dict_1[0].m_word;
@@ -1393,7 +1389,7 @@ bool __fastcall XgCheckCrossWord(HWND hwnd, bool check_words = true)
     // クロスワードに含まれる単語のチェック。
     XG_Pos pos;
     std::vector<std::wstring> vNotFoundWords;
-    XG_EpvCode code = xg_xword.EveryPatternValid1(vNotFoundWords, pos, xg_bNoAddBlack);
+    const XG_EpvCode code = xg_xword.EveryPatternValid1(vNotFoundWords, pos, xg_bNoAddBlack);
     if (code == xg_epv_PATNOTMATCH) {
         if (check_words) {
             // パターンにマッチしないマスがあった。
@@ -1557,7 +1553,7 @@ bool XgOpenHintsByNotepad(HWND /*hwnd*/, bool bShowAnswer)
 //////////////////////////////////////////////////////////////////////////////
 
 // 盤を特定の文字で埋め尽くす。
-void XgNewCells(HWND hwnd, WCHAR ch, INT nRows, INT nCols)
+void XgNewCells(HWND hwnd, WCHAR ch, int nRows, int nCols)
 {
     auto sa1 = std::make_shared<XG_UndoData_SetAll>();
     auto sa2 = std::make_shared<XG_UndoData_SetAll>();
@@ -1583,8 +1579,8 @@ void XgNewCells(HWND hwnd, WCHAR ch, INT nRows, INT nCols)
     xg_strFileName.clear();
     xg_vMarks.clear();
     xg_vMarkedCands.clear();
-    for (INT iRow = 0; iRow < xg_nRows; ++iRow) {
-        for (INT jCol = 0; jCol < xg_nCols; ++jCol) {
+    for (int iRow = 0; iRow < xg_nRows; ++iRow) {
+        for (int jCol = 0; jCol < xg_nCols; ++jCol) {
             xg_xword.SetAt(iRow, jCol, ch);
         }
     }
@@ -1606,8 +1602,8 @@ void XgCopyWordList(HWND hwnd)
 
     // 全単語を取得。空白を含む単語は無視。
     std::vector<std::wstring> words;
-    for (INT iRow = 0; iRow < xg_nRows; ++iRow) {
-        for (INT jCol = 0; jCol < xg_nCols; ++jCol) {
+    for (int iRow = 0; iRow < xg_nRows; ++iRow) {
+        for (int jCol = 0; jCol < xg_nCols; ++jCol) {
             std::wstring str;
             str = xw->GetPatternV(XG_Pos(iRow, jCol));
             if (str.size() >= 2 && str.find(ZEN_SPACE) == str.npos) {
@@ -1638,7 +1634,7 @@ void XgCopyWordList(HWND hwnd)
     }
 
     // クリップボードにコピー。
-    size_t cb = (str.size() + 1) * sizeof(WCHAR);
+    auto cb = (str.size() + 1) * sizeof(WCHAR);
     if (HGLOBAL hGlobal = ::GlobalAlloc(GHND | GMEM_SHARE, cb)) {
         if (LPWSTR psz = reinterpret_cast<LPWSTR>(::GlobalLock(hGlobal))) {
             StringCbCopyW(psz, cb, str.c_str());
@@ -1656,7 +1652,7 @@ void XgCopyWordList(HWND hwnd)
 }
 
 // 盤のサイズを変更する。
-void XgResizeCells(HWND hwnd, INT nNewRows, INT nNewCols)
+void XgResizeCells(HWND hwnd, int nNewRows, int nNewCols)
 {
     auto sa1 = std::make_shared<XG_UndoData_SetAll>();
     auto sa2 = std::make_shared<XG_UndoData_SetAll>();
@@ -1670,16 +1666,16 @@ void XgResizeCells(HWND hwnd, INT nNewRows, INT nNewCols)
     // マークの更新を通知する。
     XgMarkUpdate();
     // サイズを変更する。
-    INT nOldRows = xg_nRows, nOldCols = xg_nCols;
-    INT iMin = std::min((INT)xg_nRows, (INT)nNewRows);
-    INT jMin = std::min((INT)xg_nCols, (INT)nNewCols);
+    const int nOldRows = xg_nRows, nOldCols = xg_nCols;
+    const int iMin = std::min((int)xg_nRows, (int)nNewRows);
+    const int jMin = std::min((int)xg_nCols, (int)nNewCols);
     XG_Board copy;
     copy.ResetAndSetSize(nNewRows, nNewCols);
-    for (INT i = 0; i < iMin; ++i) {
-        for (INT j = 0; j < jMin; ++j) {
+    for (int i = 0; i < iMin; ++i) {
+        for (int j = 0; j < jMin; ++j) {
             xg_nRows = nOldRows;
             xg_nCols = nOldCols;
-            WCHAR ch = xg_xword.GetAt(i, j);
+            const WCHAR ch = xg_xword.GetAt(i, j);
             xg_nRows = nNewRows;
             xg_nCols = nNewCols;
             copy.SetAt(i, j, ch);
@@ -1715,7 +1711,7 @@ void XgResizeCells(HWND hwnd, INT nNewRows, INT nNewCols)
 WCHAR xg_szDir[MAX_PATH] = L"";
 
 // 「保存先」参照。
-INT CALLBACK XgBrowseCallbackProc(HWND hwnd, UINT uMsg, LPARAM /*lParam*/, LPARAM /*lpData*/) noexcept
+int CALLBACK XgBrowseCallbackProc(HWND hwnd, UINT uMsg, LPARAM /*lParam*/, LPARAM /*lpData*/) noexcept
 {
     if (uMsg == BFFM_INITIALIZED) {
         // 初期化の際に、フォルダーの場所を指定する。
@@ -1767,8 +1763,8 @@ static void XgPrintIt(HDC hdc, PRINTDLGW* ppd, bool bPrintAnswer)
         const int nLogPixelY = ::GetDeviceCaps(hdc, LOGPIXELSY);
 
         // 用紙のピクセルサイズを取得する。
-        int cxPaper = ::GetDeviceCaps(hdc, HORZRES);
-        int cyPaper = ::GetDeviceCaps(hdc, VERTRES);
+        const int cxPaper = ::GetDeviceCaps(hdc, HORZRES);
+        const int cyPaper = ::GetDeviceCaps(hdc, VERTRES);
 
         // ページ開始。
         if (::StartPage(hdc) > 0) {
@@ -2149,7 +2145,7 @@ BOOL XgExportLooks(HWND hwnd, LPCWSTR pszFileName)
 BOOL XgSetClipboardUnicodeText(HWND hwnd, const std::wstring& str) noexcept
 {
     // ヒープからメモリを確保する。
-    DWORD cb = static_cast<DWORD>((str.size() + 1) * sizeof(WCHAR));
+    auto cb = (str.size() + 1) * sizeof(WCHAR);
     HGLOBAL hGlobal = ::GlobalAlloc(GMEM_MOVEABLE | GMEM_DDESHARE, cb);
     if (hGlobal) {
         // メモリをロックする。
@@ -2264,9 +2260,9 @@ static inline void About_OnContextMenu(HWND hwnd, HWND hwndContext, UINT xPos, U
     HMENU hMenu = LoadMenuW(xg_hInstance, MAKEINTRESOURCEW(3));
     HMENU hSubMenu = GetSubMenu(hMenu, 2);
     SetForegroundWindow(hwnd);
-    int id = static_cast<int>(::TrackPopupMenu(hSubMenu,
-        TPM_LEFTALIGN | TPM_RIGHTBUTTON | TPM_RETURNCMD,
-        xPos, yPos, 0, hwnd, nullptr));
+    const auto id = ::TrackPopupMenu(hSubMenu,
+                                     TPM_LEFTALIGN | TPM_RIGHTBUTTON | TPM_RETURNCMD,
+                                     xPos, yPos, 0, hwnd, nullptr);
     DestroyMenu(hMenu);
     PostMessage(hwnd, WM_NULL, 0, 0);
     switch (id)
@@ -2475,8 +2471,8 @@ BOOL XgDoConfirmSave(HWND hwnd)
     WCHAR szText[MAX_PATH];
     StringCchPrintfW(szText, _countof(szText), XgLoadStringDx1(IDS_QUERYSAVE),
                      strFileName.c_str());
-    INT id = XgCenterMessageBoxW(hwnd, szText, strAppName.c_str(),
-                                 MB_ICONINFORMATION | MB_YESNOCANCEL);
+    const auto id = XgCenterMessageBoxW(hwnd, szText, strAppName.c_str(),
+                                        MB_ICONINFORMATION | MB_YESNOCANCEL);
     switch (id) {
     case IDYES:
         return XgOnSave(hwnd);
@@ -2510,7 +2506,7 @@ BOOL __fastcall XgOnNew(HWND hwnd)
     // 新規作成ダイアログ。
     ::EnableWindow(xg_hwndInputPalette, FALSE);
     XG_NewDialog dialog;
-    INT_PTR nID = dialog.DoModal(hwnd);
+    const auto nID = dialog.DoModal(hwnd);
     ::EnableWindow(xg_hwndInputPalette, TRUE);
     if (nID != IDOK)
         return FALSE;
@@ -2628,7 +2624,7 @@ BOOL XgOnLoad(HWND hwnd, LPCWSTR pszFile, LPPOINT ppt)
         if (ppt)
             ScreenToClient(xg_canvasWnd, ppt);
 
-        INT i1, j1;
+        int i1, j1;
         if (ppt) {
             XgSetCellPosition(ppt->x, ppt->y, i1, j1, FALSE);
         } else {
@@ -2639,7 +2635,7 @@ BOOL XgOnLoad(HWND hwnd, LPCWSTR pszFile, LPPOINT ppt)
             i1 = 0;
         if (j1 < 0)
             j1 = 0;
-        INT i2 = i1 + 2, j2 = j1 + 2;
+        int i2 = i1 + 2, j2 = j1 + 2;
 
         if (i2 >= xg_nRows) {
             i2 = xg_nRows;
@@ -2799,7 +2795,7 @@ void __fastcall XgFitZoom(HWND hwnd)
     XgGetXWordExtent(&siz);
 
     // サイズをクライアント領域にフィットさせる。
-    INT nZoomRate;
+    int nZoomRate;
     if (sizClient.cx * siz.cy > siz.cx * sizClient.cy) {
         nZoomRate = sizClient.cy * 100 / siz.cy;
     } else {
@@ -2930,7 +2926,7 @@ bool __fastcall XgOnGenerateBlacksRepeatedly(HWND hwnd)
     ::EnableWindow(xg_hwndInputPalette, FALSE);
     {
         XG_SeqPatGenDialog dialog;
-        auto nID = static_cast<int>(dialog.DoModal(hwnd));
+        const auto nID = static_cast<int>(dialog.DoModal(hwnd));
         ::EnableWindow(xg_hwndInputPalette, TRUE);
         if (nID != IDOK) {
             return false;
@@ -3736,7 +3732,7 @@ void __fastcall XgCopyMarkWord(HWND hwnd)
 
     // 描画サイズを取得する。
     SIZE siz;
-    int nCount = static_cast<int>(xg_vMarks.size());
+    const auto nCount = static_cast<int>(xg_vMarks.size());
     XgGetMarkWordExtent(nCount, &siz);
 
     // EMFを作成する。
@@ -3766,7 +3762,7 @@ void __fastcall XgCopyMarkWord(HWND hwnd)
         }
 
         // CF_UNICODETEXTのデータを用意。
-        SIZE_T cbGlobal = (strMarkWord.size() + 1) * sizeof(WCHAR);
+        const auto cbGlobal = (strMarkWord.size() + 1) * sizeof(WCHAR);
         hGlobal = GlobalAlloc(GHND | GMEM_SHARE, cbGlobal);
         if (LPWSTR psz = reinterpret_cast<LPWSTR>(GlobalLock(hGlobal))) {
             StringCbCopyW(psz, cbGlobal, strMarkWord.c_str());
@@ -3897,7 +3893,7 @@ void __fastcall XgCopyHintsStyle1(HWND hwnd, int hint_type)
         L"p, ol, li { margin-top: 0px; margin-bottom: 0px; }\r\n");
 
     // クリップボードのHTML形式を登録する。
-    UINT CF_HTML = ::RegisterClipboardFormatW(L"HTML Format");
+    const auto CF_HTML = ::RegisterClipboardFormatW(L"HTML Format");
 
     // ヒープからメモリを確保する。
     DWORD cb = static_cast<DWORD>((str.size() + 1) * sizeof(WCHAR));
@@ -3982,7 +3978,7 @@ HMENU XgDoFindDictMenu(HMENU hMenu)
 {
     WCHAR szText[128];
     LPCWSTR pszDict = XgLoadStringDx1(IDS_DICTIONARY);
-    for (INT i = 0; i < 16; ++i)
+    for (int i = 0; i < 16; ++i)
     {
         if (GetMenuStringW(hMenu, i, szText, _countof(szText), MF_BYPOSITION))
         {
@@ -4000,7 +3996,7 @@ void XgDoUpdateDictMenu(HMENU hDictMenu)
 {
     // TODO: 「辞書」メニュー項目を更新したら、次の I_NONE_ITEM を修正すること。
 #define I_NONE_ITEM 6 // メニュー項目「(なし)」の位置。
-    INT index = I_NONE_ITEM;
+    int index = I_NONE_ITEM;
 
     // 辞書項目をすべて削除する。
     while (RemoveMenu(hDictMenu, index, MF_BYPOSITION))
@@ -4015,7 +4011,7 @@ void XgDoUpdateDictMenu(HMENU hDictMenu)
     }
 
     // 辞書項目を追加する。
-    INT count = 0, id = ID_DICTIONARY00;
+    int count = 0, id = ID_DICTIONARY00;
     WCHAR szText[MAX_PATH];
     for (const auto& entry : xg_dicts)
     {
@@ -4048,7 +4044,7 @@ void XgDoUpdateDictMenu(HMENU hDictMenu)
         auto& file = entry.m_filename;
         if (lstrcmpiW(file.c_str(), xg_dict_name.c_str()) == 0)
         {
-            INT nCount = GetMenuItemCount(hDictMenu);
+            const int nCount = GetMenuItemCount(hDictMenu);
             CheckMenuRadioItem(hDictMenu, I_NONE_ITEM, nCount - 1, index, MF_BYPOSITION);
             break;
         }
@@ -4395,19 +4391,19 @@ void __fastcall MainWnd_OnInitMenu(HWND /*hwnd*/, HMENU hMenu)
         bDeleteSepOK = ::DeleteMenu(hMenu, ID_RIGHT_INSERT_COLUMN, MF_BYCOMMAND);
     }
     if (xg_bSolved && bDeleteSepOK) {
-        INT cItems = ::GetMenuItemCount(hMenu);
+        const int cItems = ::GetMenuItemCount(hMenu);
         ::DeleteMenu(hMenu, cItems - 1, MF_BYPOSITION);
     }
 
     // 最近使ったファイルを取得。
     HMENU hFileMenu = ::GetSubMenu(hMenu, 0);
-    INT cFileItems = ::GetMenuItemCount(hFileMenu);
+    const int cFileItems = ::GetMenuItemCount(hFileMenu);
     HMENU hRecentMenu = ::GetSubMenu(hFileMenu, cFileItems - 7); // TODO: ファイルメニュー項目を追加したらここも変更。
     // 最近使ったファイルのメニュー項目をすべて削除。
     while (::DeleteMenu(hRecentMenu, 0, MF_BYPOSITION))
         ;
     // 最近使ったファイルのメニュー項目を新しく追加。
-    INT id = ID_RECENT_00, iItem = 0;
+    int id = ID_RECENT_00, iItem = 0;
     for (auto& item : xg_recently_used_files) {
         std::wstring str;
         str += L'&';
@@ -4431,7 +4427,7 @@ void __fastcall XgUpdateStatusBar(HWND hwnd)
     GetClientRect(hwnd, &rc);
 
     // パーツのサイズを決定する。
-    auto anWidth = make_array<INT>(rc.right - 200, rc.right - 100, rc.right);
+    auto anWidth = make_array<int>(rc.right - 200, rc.right - 100, rc.right);
 
     // ステータスバーをパーツに分ける。
     SendMessageW(xg_hStatusBar, SB_SETPARTS, 3, reinterpret_cast<LPARAM>(anWidth.data()));
@@ -4485,7 +4481,7 @@ void __fastcall MainWnd_OnSize(HWND hwnd, UINT state, int /*cx*/, int /*cy*/)
         return;
 
     // ステータスバーの高さを取得。
-    INT cyStatus = 0;
+    int cyStatus = 0;
     if (s_bShowStatusBar) {
         // ステータスバーの位置を自動で修正。
         ::SendMessageW(xg_hStatusBar, WM_SIZE, 0, 0);
@@ -4507,10 +4503,10 @@ void __fastcall MainWnd_OnSize(HWND hwnd, UINT state, int /*cx*/, int /*cy*/)
     ::GetClientRect(hwnd, &rcClient);
     x = rcClient.left;
     y = rcClient.top;
-    INT cx = rcClient.Width(), cy = rcClient.Height();
+    auto cx = rcClient.Width(), cy = rcClient.Height();
 
     // ツールバーの高さを取得。
-    INT cyToolBar = 0;
+    int cyToolBar = 0;
     if (xg_bShowToolBar) {
         // ツールバーの位置を自動で修正。
         ::SendMessageW(xg_hToolBar, WM_SIZE, 0, 0);
@@ -4616,7 +4612,7 @@ LOGFONTW *XgGetUIFont(void)
             StringCbCopy(s_lf.lfFaceName, sizeof(s_lf.lfFaceName), name.data());
 
             HDC hdc = ::CreateCompatibleDC(nullptr);
-            int point_size = _wtoi(size.data());
+            const int point_size = _wtoi(size.data());
             s_lf.lfHeight = -MulDiv(point_size, ::GetDeviceCaps(hdc, LOGPIXELSY), 72);
             ::DeleteDC(hdc);
         } else {
@@ -4648,10 +4644,10 @@ void XgUpdateTheme(HWND hwnd)
 
     // メニュー項目の個数を取得。
     HMENU hMenu = ::GetMenu(hwnd);
-    INT nCount = ::GetMenuItemCount(hMenu);
+    const int nCount = ::GetMenuItemCount(hMenu);
     assert(nCount > 0);
     // 辞書の文字列から「辞書」メニューのインデックスiMenuを取得。
-    INT iMenu;
+    int iMenu;
     WCHAR szText[32];
     MENUITEMINFOW info = { sizeof(info) };
     info.fMask = MIIM_TYPE;
@@ -4685,12 +4681,12 @@ void XgUpdateTheme(HWND hwnd)
 void XgUpdateRules(HWND hwnd)
 {
     HMENU hMenu = ::GetMenu(hwnd);
-    INT nCount = ::GetMenuItemCount(hMenu);
+    const int nCount = ::GetMenuItemCount(hMenu);
     WCHAR szText[32];
     MENUITEMINFOW info = { sizeof(info) };
     info.fMask = MIIM_TYPE;
     info.fType = MFT_STRING;
-    for (INT i = nCount - 1; i >= 0; --i) {
+    for (int i = nCount - 1; i >= 0; --i) {
         szText[0] = 0;
         ::GetMenuStringW(hMenu, i, szText, _countof(szText), MF_BYPOSITION);
         if (wcsstr(szText, XgLoadStringDx1(IDS_RULES)) != nullptr) {
@@ -4726,7 +4722,7 @@ void MainWnd_OnEraseSettings(HWND hwnd)
     }
 
     // 設定を消去する。
-    bool bSuccess = XgEraseSettings();
+    const bool bSuccess = XgEraseSettings();
 
     // 初期化する。
     XgLoadSettings();
@@ -4927,9 +4923,9 @@ void MainWnd_OnCopyCharSet(HWND hwnd)
     }
 
     std::multiset<WCHAR> multiset;
-    for (INT i = 0; i < xg_nRows; ++i) {
-        for (INT j = 0; j < xg_nCols; ++j) {
-            WCHAR ch = pxword->GetAt(i, j);
+    for (int i = 0; i < xg_nRows; ++i) {
+        for (int j = 0; j < xg_nCols; ++j) {
+            const WCHAR ch = pxword->GetAt(i, j);
             if (ch == ZEN_SPACE || ch == ZEN_BLACK)
                 continue;
 
@@ -5020,7 +5016,7 @@ void __fastcall XgOnOpenRulesTxt(HWND hwnd)
 // 黒マスルールをチェックする。
 BOOL __fastcall XgRuleCheck(HWND hwnd, BOOL bMessageOnSuccess)
 {
-    XG_Board& board = (xg_bShowAnswer ? xg_solution : xg_xword);
+    const XG_Board& board = (xg_bShowAnswer ? xg_solution : xg_xword);
     // 連黒禁。
     if (xg_nRules & RULE_DONTDOUBLEBLACK) {
         if (board.DoubleBlack()) {
@@ -5103,7 +5099,7 @@ void __fastcall XgTheme(HWND hwnd)
     }
 
     XG_ThemeDialog dialog;
-    INT_PTR id = dialog.DoModal(hwnd);
+    const auto id = dialog.DoModal(hwnd);
     if (id == IDOK) {
         XgUpdateTheme(hwnd);
     }
@@ -5113,9 +5109,9 @@ void __fastcall XgTheme(HWND hwnd)
 void __fastcall XgResetTheme(HWND hwnd, BOOL bQuery)
 {
     if (bQuery) {
-        INT id = XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_RESETTHEME),
-                                     XgLoadStringDx2(IDS_APPNAME),
-                                     MB_ICONINFORMATION | MB_YESNOCANCEL);
+        const auto id = XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_RESETTHEME),
+                                            XgLoadStringDx2(IDS_APPNAME),
+                                            MB_ICONINFORMATION | MB_YESNOCANCEL);
         if (id != IDYES)
             return;
     }
@@ -5179,11 +5175,10 @@ void __fastcall XgShowResultsRepeatedly(HWND hwnd)
 }
 
 // ズーム倍率を設定する。
-static void XgSetZoomRate(HWND hwnd, INT nZoomRate)
+static void XgSetZoomRate(HWND hwnd, int nZoomRate)
 {
     xg_nZoomRate = nZoomRate;
-    INT x = XgGetHScrollPos();
-    INT y = XgGetVScrollPos();
+    const int x = XgGetHScrollPos(), y = XgGetVScrollPos();
     XgUpdateScrollInfo(hwnd, x, y);
     XgUpdateImage(hwnd, x, y);
 }
@@ -5224,7 +5219,7 @@ void XgGenerateFromWordList(HWND hwnd)
     ::DestroyWindow(xg_hMarkingDlg);
 
     // ダイアログを表示。
-    INT nID;
+    int nID;
     {
         XG_WordListDialog dialog;
         nID = static_cast<int>(dialog.DoModal(hwnd));
@@ -5235,7 +5230,7 @@ void XgGenerateFromWordList(HWND hwnd)
     // 計算時間を求めるために、開始時間を取得する。
     xg_dwlTick0 = xg_dwlTick1 = ::GetTickCount64();
     // 再計算までの時間を概算する。
-    auto size = XG_WordListDialog::s_wordset.size();
+    const auto size = XG_WordListDialog::s_wordset.size();
     xg_dwlWait = size * size / 3 + 100; // ミリ秒。
 
     // 単語リストから生成する。
@@ -5342,8 +5337,8 @@ void XgGenerateFromWordList(HWND hwnd)
 // ボックスを追加する。
 BOOL XgAddBox(HWND hwnd, UINT id)
 {
-    INT i1 = xg_caret_pos.m_i, j1 = xg_caret_pos.m_j;
-    INT i2 = i1 + 2, j2 = j1 + 2;
+    int i1 = xg_caret_pos.m_i, j1 = xg_caret_pos.m_j;
+    int i2 = i1 + 2, j2 = j1 + 2;
     if (i2 >= xg_nRows) {
         i1 = xg_nRows - 1;
         i2 = xg_nRows;
@@ -5414,9 +5409,9 @@ BOOL __fastcall XgValidateNumCro(HWND hwnd)
     if (!xg_bSolved)
         return FALSE;
 
-    for (INT i = 0; i < xg_nRows; ++i) {
-        for (INT j = 0; j < xg_nCols; ++j) {
-            WCHAR ch = xg_solution.GetAt(i, j);
+    for (int i = 0; i < xg_nRows; ++i) {
+        for (int j = 0; j < xg_nCols; ++j) {
+            const WCHAR ch = xg_solution.GetAt(i, j);
             if (ch == ZEN_SPACE || ch == ZEN_BLACK)
                 continue;
 
@@ -5446,9 +5441,9 @@ void __fastcall XgMakeItNumCro(HWND hwnd)
     if (!xg_bSolved)
         return;
 
-    INT next_number = 1;
-    for (INT i = 0; i < xg_nRows; ++i) {
-        for (INT j = 0; j < xg_nCols; ++j) {
+    int next_number = 1;
+    for (int i = 0; i < xg_nRows; ++i) {
+        for (int j = 0; j < xg_nCols; ++j) {
             WCHAR ch = xg_solution.GetAt(i, j);
             if (ch == ZEN_SPACE || ch == ZEN_BLACK)
                 continue;
@@ -5459,7 +5454,7 @@ void __fastcall XgMakeItNumCro(HWND hwnd)
                 xg_mapNumCro1[ch] = next_number;
                 ++next_number;
             } else {
-                INT number = it->second;
+                int number = it->second;
                 xg_mapNumCro2[number] = ch;
                 xg_mapNumCro1[ch] = number;
             }
@@ -5500,7 +5495,7 @@ BOOL __fastcall XgFindLocalFile(LPWSTR pszPath, UINT cchPath, LPCWSTR pszFileNam
 // コマンドを実行する。
 void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT /*codeNotify*/)
 {
-    INT x = -1, y = -1;
+    int x = -1, y = -1;
     BOOL bUpdateImage = FALSE;
 
 #ifdef NO_RANDOM
@@ -5684,7 +5679,7 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT /*codeNo
         break;
     case ID_FLIPVH: // 縦と横を入れ替える。
         {
-            bool flag = !!::IsWindow(xg_hHintsWnd);
+            const bool flag = !!::IsWindow(xg_hHintsWnd);
             auto sa1 = std::make_shared<XG_UndoData_SetAll>();
             auto sa2 = std::make_shared<XG_UndoData_SetAll>();
             sa1->Get();
@@ -6063,7 +6058,8 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT /*codeNo
                 xg_hMarkingDlg
             );
 
-            size_t i = 0, k, m, count = ahwnd.size();
+            size_t i = 0, k, m;
+            const auto count = ahwnd.size();
             for (i = 0; i < count; ++i) {
                 if (ahwnd[i] == ::GetForegroundWindow()) {
                     for (k = 1; k < count; ++k) {
@@ -6324,7 +6320,7 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT /*codeNo
         break;
     case ID_BLOCKNOFEED:
         {
-            bool bOldFeed = xg_bCharFeed;
+            const bool bOldFeed = xg_bCharFeed;
             xg_bCharFeed = false;
             SendMessageW(hwnd, WM_CHAR, L'#', 0);
             xg_bCharFeed = bOldFeed;
@@ -6333,7 +6329,7 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT /*codeNo
         break;
     case ID_SPACENOFEED:
         {
-            bool bOldFeed = xg_bCharFeed;
+            const bool bOldFeed = xg_bCharFeed;
             xg_bCharFeed = false;
             SendMessageW(hwnd, WM_CHAR, L'_', 0);
             xg_bCharFeed = bOldFeed;
@@ -6905,7 +6901,7 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT /*codeNo
     case ID_RECENT_09:
         {
             // 最近使ったファイルを開く。
-            size_t i = id - ID_RECENT_00;
+            const size_t i = id - ID_RECENT_00;
             if (i < xg_recently_used_files.size())
                 XgOnLoad(hwnd, xg_recently_used_files[i].c_str());
         }
@@ -6937,7 +6933,7 @@ HBITMAP XgCreateGrayedBitmap(HBITMAP hbm, COLORREF crMask = CLR_INVALID) noexcep
     HDC hdc = ::GetDC(nullptr);
     if (::GetDeviceCaps(hdc, BITSPIXEL) < 24) {
         HPALETTE hPal = reinterpret_cast<HPALETTE>(::GetCurrentObject(hdc, OBJ_PAL));
-        UINT index = ::GetNearestPaletteIndex(hPal, crMask);
+        const UINT index = ::GetNearestPaletteIndex(hPal, crMask);
         if (index != CLR_INVALID)
             crMask = PALETTEINDEX(index);
     }
@@ -7029,7 +7025,7 @@ bool __fastcall MainWnd_OnCreate(HWND hwnd, LPCREATESTRUCT /*lpCreateStruct*/)
     xg_hMainWnd = hwnd;
 
     // キャンバスウィンドウを作成する。
-    DWORD style = WS_CHILD | WS_VISIBLE | WS_HSCROLL | WS_VSCROLL | WS_CLIPCHILDREN;
+    const DWORD style = WS_CHILD | WS_VISIBLE | WS_HSCROLL | WS_VSCROLL | WS_CLIPCHILDREN;
     if (!xg_canvasWnd.CreateWindowDx(hwnd, nullptr, style, WS_EX_ACCEPTFILES))
     {
         return false;
@@ -7189,7 +7185,7 @@ bool __fastcall MainWnd_OnCreate(HWND hwnd, LPCREATESTRUCT /*lpCreateStruct*/)
 }
 
 // ポップアップメニューを読み込む。
-HMENU XgLoadPopupMenu(HWND hwnd, INT nPos) noexcept
+HMENU XgLoadPopupMenu(HWND hwnd, int nPos) noexcept
 {
     HMENU hMenu = LoadMenuW(xg_hInstance, MAKEINTRESOURCE(2));
     HMENU hSubMenu = GetSubMenu(hMenu, nPos);
@@ -7285,7 +7281,7 @@ void MainWnd_OnGetMinMaxInfo(HWND hwnd, LPMINMAXINFO lpMinMaxInfo) noexcept
 //////////////////////////////////////////////////////////////////////////////
 
 // 描画イメージを更新する。
-void __fastcall XgUpdateImage(HWND hwnd, INT x, INT y)
+void __fastcall XgUpdateImage(HWND hwnd, int x, int y)
 {
     ForDisplay for_display;
 
@@ -7398,8 +7394,8 @@ XgWindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 // ヒントウィンドウを作成する。
 BOOL XgCreateHintsWnd(HWND hwnd)
 {
-    auto style = WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME | WS_HSCROLL | WS_VSCROLL;
-    auto exstyle = WS_EX_TOOLWINDOW;
+    const auto style = WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME | WS_HSCROLL | WS_VSCROLL;
+    const auto exstyle = WS_EX_TOOLWINDOW;
     auto text = XgLoadStringDx1(IDS_HINTS);
 
     // ヒントウィンドウの初期位置を改良する。
@@ -7491,7 +7487,7 @@ void XgShowHints(HWND hwnd)
 HHOOK xg_hCtrlAHook = nullptr;
 
 // hook proc for Ctrl+A
-LRESULT CALLBACK XgCtrlAMessageProc(INT nCode, WPARAM wParam, LPARAM lParam) noexcept
+LRESULT CALLBACK XgCtrlAMessageProc(int nCode, WPARAM wParam, LPARAM lParam) noexcept
 {
     if (nCode < 0)
         return ::CallNextHookEx(xg_hCtrlAHook, nCode, wParam, lParam);
@@ -7730,10 +7726,10 @@ int WINAPI WinMain(
     }
 
     // 前回最大化されたか？
-    BOOL bZoomed = xg_bMainWndMaximized;
+    const BOOL bZoomed = xg_bMainWndMaximized;
 
     // メインウィンドウを作成する。
-    DWORD style = WS_OVERLAPPEDWINDOW | WS_CLIPSIBLINGS | WS_CLIPCHILDREN;
+    const DWORD style = WS_OVERLAPPEDWINDOW | WS_CLIPSIBLINGS | WS_CLIPCHILDREN;
     ::CreateWindowW(s_pszMainWndClass, XgLoadStringDx1(IDS_APPINFO), style,
         s_nMainWndX, s_nMainWndY, s_nMainWndCX, s_nMainWndCY,
         nullptr, nullptr, hInstance, nullptr);

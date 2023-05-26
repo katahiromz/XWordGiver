@@ -125,7 +125,7 @@ public:
         {
             // 経過時間を表示する。
             WCHAR sz[MAX_PATH];
-            DWORDLONG dwTick = ::GetTickCount64();
+            const auto dwTick = ::GetTickCount64();
             StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(IDS_NOWSOLVING),
                 static_cast<DWORD>(dwTick - xg_dwlTick0) / 1000,
                 static_cast<DWORD>(dwTick - xg_dwlTick0) / 100 % 10, xg_nRetryCount);

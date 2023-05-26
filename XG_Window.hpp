@@ -112,7 +112,7 @@ public:
     INT_PTR DialogBoxDx(HWND hwnd, LPCTSTR pszName) noexcept
     {
         s_pTrapping = this;
-        auto ret = ::DialogBox(::GetModuleHandle(nullptr), pszName, hwnd, DialogProc);
+        const auto ret = ::DialogBox(::GetModuleHandle(nullptr), pszName, hwnd, DialogProc);
         s_pTrapping = nullptr;
         return ret;
     }

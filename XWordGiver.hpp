@@ -449,19 +449,19 @@ public:
     WCHAR __fastcall Count() const noexcept;
     VOID ReCount();
     // クリアする。
-    void __fastcall clear() noexcept;
+    void __fastcall clear();
     // リセットしてサイズを設定する。
     void __fastcall ResetAndSetSize(int nRows, int nCols);
     // 解か？
     bool __fastcall IsSolution() const noexcept;
     // 正当かどうか？
-    bool __fastcall IsValid() const noexcept;
+    bool __fastcall IsValid() const;
     // 正当かどうか？（簡略版、黒マス追加なし）
-    bool __fastcall IsNoAddBlackOK() const noexcept;
+    bool __fastcall IsNoAddBlackOK() const;
     // 番号をつける。
-    bool __fastcall DoNumbering() noexcept;
+    bool __fastcall DoNumbering();
     // 番号をつける（チェックなし）。
-    void __fastcall DoNumberingNoCheck() noexcept;
+    void __fastcall DoNumberingNoCheck();
 
     // クロスワードの文字列を取得する。
     void __fastcall GetString(std::wstring& str) const;
@@ -665,7 +665,7 @@ void __fastcall XgStartSolve_NoAddBlack(void) noexcept;
 void __fastcall XgStartSolve_Smart(void) noexcept;
 
 // 解を求めようとした後の後処理。
-void __fastcall XgEndSolve(void) noexcept;
+void __fastcall XgEndSolve(void);
 
 // 黒マスパターンを生成する。
 void __fastcall XgStartGenerateBlacks(void) noexcept;
@@ -728,7 +728,7 @@ inline void __fastcall XG_Board::operator=(const XG_Board& xw)
 }
 
 // コンストラクタ。
-inline XG_Board::XG_Board(XG_Board&& xw) noexcept : m_vCells(xw.m_vCells)
+inline XG_Board::XG_Board(XG_Board&& xw) noexcept : m_vCells(std::move(xw.m_vCells))
 {
 }
 
@@ -806,7 +806,7 @@ inline void __fastcall XG_Board::ResetAndSetSize(int nRows, int nCols)
 }
 
 // クリアする。
-inline void __fastcall XG_Board::clear() noexcept
+inline void __fastcall XG_Board::clear()
 {
     ResetAndSetSize(xg_nRows, xg_nCols);
 }
@@ -906,7 +906,7 @@ inline bool __fastcall XG_Board::CanPutBlack(int iRow, int jCol) const noexcept
         return false;
 
     // 三方向が黒マスで囲まれたマスができるかどうか？
-    BOOL bBlack = (GetAt(iRow, jCol) == ZEN_BLACK);
+    const BOOL bBlack = (GetAt(iRow, jCol) == ZEN_BLACK);
     if (0 <= iRow - 1) {
         if (BlacksAround(iRow - 1, jCol) >= 2 + static_cast<int>(bBlack))
             return false;

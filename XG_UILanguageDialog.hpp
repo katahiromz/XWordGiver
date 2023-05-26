@@ -31,7 +31,7 @@ public:
             GetLocaleInfoW(MAKELCID(id, SORT_DEFAULT), LOCALE_SENGCOUNTRY, szText, _countof(szText));
             str += szText;
             str += L")";
-            INT i = ComboBox_AddString(hCmb1, str.c_str());
+            const auto i = ComboBox_AddString(hCmb1, str.c_str());
             if (id == m_LangID)
                 ComboBox_SetCurSel(hCmb1, i);
         }
@@ -45,7 +45,7 @@ public:
         case IDOK:
             {
                 HWND hCmb1 = GetDlgItem(hwnd, cmb1);
-                INT i = ComboBox_GetCurSel(hCmb1);
+                const auto i = ComboBox_GetCurSel(hCmb1);
                 if (i == CB_ERR)
                     return;
                 m_LangID = m_ids[i];

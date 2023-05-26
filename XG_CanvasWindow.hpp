@@ -45,7 +45,7 @@ public:
         int i, j;
         RECT rc;
         POINT pt;
-        INT nCellSize = xg_nCellSize * xg_nZoomRate / 100;
+        const int nCellSize = xg_nCellSize * xg_nZoomRate / 100;
 
         // ダブルクリックは無視。
         if (!fDoubleClick)
@@ -105,7 +105,7 @@ public:
         int i, j;
         RECT rc;
         POINT pt;
-        INT nCellSize = xg_nCellSize * xg_nZoomRate / 100;
+        const int nCellSize = xg_nCellSize * xg_nZoomRate / 100;
 
         // 左ボタンが離された位置を求める。
         pt.x = x + XgGetHScrollPos();
@@ -157,12 +157,12 @@ public:
         si.cbSize = sizeof(si);
         si.fMask = SIF_ALL;
         XgGetHScrollInfo(&si);
-        INT x0 = si.nPos;
+        int x0 = si.nPos;
         // 縦スクロール情報を取得する。
         si.cbSize = sizeof(si);
         si.fMask = SIF_ALL;
         XgGetVScrollInfo(&si);
-        INT y0 = si.nPos;
+        int y0 = si.nPos;
 
         x0 += xg_ptMButtonDragging.x - x;
         y0 += xg_ptMButtonDragging.y - y;
@@ -274,7 +274,7 @@ public:
     }
 
     // ウィンドウを描画する。
-    void OnPaint(HWND hwnd) noexcept
+    void OnPaint(HWND hwnd)
     {
         // ツールバーがなければ、初期化の前なので、無視する。
         if (xg_hToolBar == nullptr)
@@ -295,11 +295,10 @@ public:
             XgGetRealClientRect(hwnd, &rcClient);
 
             // スクロール位置を取得する。
-            int x = XgGetHScrollPos();
-            int y = XgGetVScrollPos();
+            const int x = XgGetHScrollPos(), y = XgGetVScrollPos();
 
             // 背景を描画する。
-            INT iSaveDC = SaveDC(hdc);
+            const int iSaveDC = SaveDC(hdc);
             ::ExcludeClipRect(hdc, rcClient.left - x, rcClient.top - y,
                               rcClient.left - x + siz.cx,
                               rcClient.top - y + siz.cy);
@@ -470,7 +469,7 @@ public:
     // ファイルがドロップされた。
     BOOL DoDropFile(HWND hwnd, HDROP hDrop, POINT pt)
     {
-        BOOL ret = DoDropFileEx(hwnd, hDrop, pt);
+        const auto ret = DoDropFileEx(hwnd, hDrop, pt);
         SetForegroundWindow(m_hwndParent);
         return ret;
     }

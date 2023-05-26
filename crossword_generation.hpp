@@ -146,7 +146,7 @@ check_connectivity(const std::unordered_set<std::basic_string<t_char> >& words,
     queue.emplace(0); // 待ち行列に初期の種を添える。。
 
     while (!queue.empty()) {
-        size_t index0 = queue.front();
+        const size_t index0 = queue.front();
         indexes.insert(index0);
         queue.pop(); // 種を取り除く。
 
@@ -939,17 +939,17 @@ skip:;
         t_char ch1, ch2;
         ch1 = get_on(x - 1, y);
         ch2 = get_on(x + 1, y);
-        bool flag1 = (is_letter(ch1) || is_letter(ch2));
+        const bool flag1 = (is_letter(ch1) || is_letter(ch2));
         ch1 = get_on(x, y - 1);
         ch2 = get_on(x, y + 1);
-        bool flag2 = (is_letter(ch1) || is_letter(ch2));
+        const bool flag2 = (is_letter(ch1) || is_letter(ch2));
         return flag1 && flag2;
     }
 
     // 候補に対して十分なサイズを確保する。
     void apply_size(const candidate_t<t_char>& cand) {
         auto& word = cand.m_word;
-        int x = cand.m_x, y = cand.m_y;
+        const int x = cand.m_x, y = cand.m_y;
         if (cand.m_vertical) {
             ensure(x, y - 1);
             ensure(x, y + static_cast<int>(word.size()));
@@ -1301,7 +1301,7 @@ struct from_words_t {
     bool apply_candidate(const candidate_t<t_char>& cand) {
         auto& word = cand.m_word; // 候補から単語を取得。
         m_words.erase(word); // 使用済みとして単語群から除去する。
-        int x = cand.m_x, y = cand.m_y; // 候補のマス位置。
+        const int x = cand.m_x, y = cand.m_y; // 候補のマス位置。
         if (cand.m_vertical) { // 候補が縦方向か？
             // 盤面が固定サイズならサイズを確認する。固定サイズでなければ、サイズを拡張する。
             if (t_fixed) {
@@ -1316,7 +1316,7 @@ struct from_words_t {
             m_board.set_on(x, y + static_cast<int>(word.size()), '#');
             // 単語を適用しながら交差可能性を更新する。
             for (size_t ich = 0; ich < word.size(); ++ich) {
-                int y0 = y + static_cast<int>(ich);
+                const int y0 = y + static_cast<int>(ich);
                 m_board.set_on(x, y0, word[ich]);
                 m_crossable_y.erase({x, y0});
                 if (m_board.is_crossable_x(x, y0))
@@ -1336,7 +1336,7 @@ struct from_words_t {
             m_board.set_on(x + static_cast<int>(word.size()), y, '#');
             // 単語を適用しながら交差可能性を更新する。
             for (size_t ich = 0; ich < word.size(); ++ich) {
-                int x0 = x + static_cast<int>(ich);
+                const int x0 = x + static_cast<int>(ich);
                 m_board.set_on(x0, y, word[ich]);
                 m_crossable_x.erase({x0, y});
                 if (m_board.is_crossable_y(x0, y))
@@ -1376,8 +1376,8 @@ struct from_words_t {
                     continue;
 
                 // 境界のヨコ位置を取得。
-                int x0 = x - static_cast<int>(ich);
-                int x1 = x0 + static_cast<int>(word.size());
+                const int x0 = x - static_cast<int>(ich);
+                const int x1 = x0 + static_cast<int>(word.size());
                 bool matched = true; // 一致していると仮定。
                 if (matched) {
                     // ヨコ向きの単語について、境界の２マスについて
@@ -1435,8 +1435,8 @@ struct from_words_t {
                     continue;
 
                 // 境界のタテ位置を取得。
-                int y0 = y - static_cast<int>(ich);
-                int y1 = y0 + static_cast<int>(word.size());
+                const int y0 = y - static_cast<int>(ich);
+                const int y1 = y0 + static_cast<int>(word.size());
                 bool matched = true; // 一致していると仮定。
                 if (matched) {
                     // 縦向きの単語について、境界の２マスについて
@@ -1574,8 +1574,8 @@ struct from_words_t {
                     board0.apply_size(cand0);
                     board_t<t_char, false> board1 = m_board;
                     board1.apply_size(cand1);
-                    int cxy0 = (board0.m_cx + board0.m_cy) + std::abs(board0.m_cy - board0.m_cx) / 4;
-                    int cxy1 = (board1.m_cx + board1.m_cy) + std::abs(board1.m_cy - board1.m_cx) / 4;
+                    const int cxy0 = (board0.m_cx + board0.m_cy) + std::abs(board0.m_cy - board0.m_cx) / 4;
+                    const int cxy1 = (board1.m_cx + board1.m_cy) + std::abs(board1.m_cy - board1.m_cx) / 4;
                     return cxy0 < cxy1;
                 }
             );

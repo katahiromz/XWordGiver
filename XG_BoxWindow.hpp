@@ -27,9 +27,9 @@
 extern BOOL xg_bFileModified;
 
 // マス位置を取得する。
-VOID XgGetCellPosition(RECT& rc, INT i1, INT j1, INT i2, INT j2, BOOL bScroll) noexcept;
+VOID XgGetCellPosition(RECT& rc, int i1, int j1, int i2, int j2, BOOL bScroll) noexcept;
 // マス位置を設定する。
-VOID XgSetCellPosition(LONG& x, LONG& y, INT& i, INT& j, BOOL bEnd) noexcept;
+VOID XgSetCellPosition(LONG& x, LONG& y, int& i, int& j, BOOL bEnd) noexcept;
 
 class XG_BoxWindow : public XG_Window
 {
@@ -37,12 +37,12 @@ public:
     std::wstring m_type;
     HWND m_hwndParent;
     HRGN m_hRgn;
-    INT m_i1, m_j1, m_i2, m_j2;
+    int m_i1, m_j1, m_i2, m_j2;
     std::wstring m_strText;
     RECT m_rcOld;
     static inline HWND s_hwndSelected = nullptr;
 
-    XG_BoxWindow(const std::wstring& type, INT i1 = 0, INT j1 = 0, INT i2 = 1, INT j2 = 1)
+    XG_BoxWindow(const std::wstring& type, int i1 = 0, int j1 = 0, int i2 = 1, int j2 = 1)
         : m_type(type)
         , m_hwndParent(nullptr)
         , m_hRgn(nullptr)
@@ -171,7 +171,7 @@ public:
         DeleteObject(hRgnOld);
     }
 
-    BOOL SetPos(INT i1, INT j1, INT i2, INT j2)
+    BOOL SetPos(int i1, int j1, int i2, int j2)
     {
         if (i1 == -1 || j1 == -1 || i2 == -1 || j2 == -1) {
             return FALSE;
@@ -377,7 +377,7 @@ public:
 
     BOOL CreateDx(HWND hwndParent)
     {
-        DWORD style = WS_OVERLAPPED | WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS;
+        const auto style = WS_OVERLAPPED | WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS;
         CreateWindowDx(hwndParent, nullptr, style);
         return m_hWnd != nullptr;
     }
@@ -389,9 +389,8 @@ public:
 
         POINT pt = { x, y };
         SetForegroundWindow(hwnd);
-        UINT id = static_cast<UINT>(TrackPopupMenu(hSubMenu,
-            TPM_LEFTALIGN | TPM_RIGHTBUTTON | TPM_RETURNCMD,
-            pt.x, pt.y, 0, hwnd, nullptr));
+        const auto flags = TPM_LEFTALIGN | TPM_RIGHTBUTTON | TPM_RETURNCMD;
+        const auto id = static_cast<UINT>(TrackPopupMenu(hSubMenu, flags, pt.x, pt.y, 0, hwnd, nullptr));
         DestroyMenu(hMenu);
         s_hwndSelected = hwnd;
         if (id)
@@ -446,7 +445,7 @@ public:
                 MapWindowRect(nullptr, m_hwndParent, &rc);
                 auto sa1 = std::make_shared<XG_UndoData_Boxes>();
                 sa1->Get();
-                INT i1, j1, i2, j2;
+                int i1, j1, i2, j2;
                 XgSetCellPosition(rc.left, rc.top, i1, j1, FALSE);
                 XgSetCellPosition(rc.right, rc.bottom, i2, j2, TRUE);
                 if (SetPos(i1, j1, i2, j2)) {
@@ -474,7 +473,7 @@ public:
         return szText;
     }
     BOOL SetPosText(const std::wstring& str) {
-        INT i1, j1, i2, j2;
+        int i1, j1, i2, j2;
         if (swscanf(str.c_str(), L"(%d, %d) - (%d, %d)", &j1, &i1, &j2, &i2) != 4)
             return FALSE;
         SetPos(i1 - 1, j1 - 1, i2, j2);
@@ -524,13 +523,13 @@ public:
         map_t map;
         while (str.size())
         {
-            size_t index1 = str.find(L"{{");
-            size_t index2 = str.find(L"}}", index1);
+            const auto index1 = str.find(L"{{");
+            const auto index2 = str.find(L"}}", index1);
             if (index1 == str.npos || index2 == str.npos)
                 break;
 
             auto contents = str.substr(index1 + 2, index2 - index1 - 2);
-            size_t index3 = contents.find(L':');
+            const size_t index3 = contents.find(L':');
             if (index3 == contents.npos)
                 break;
 
@@ -555,8 +554,8 @@ public:
         if (str.find(L"{{") == 0)
             return ReadLineEx(line);
 
-        auto index1 = str.find(L":");
-        auto index2 = str.find(L":", index1 + 1);
+        const auto index1 = str.find(L":");
+        const auto index2 = str.find(L":", index1 + 1);
         if (index1 == str.npos || index2 == str.npos)
             return FALSE;
 
@@ -621,7 +620,7 @@ extern boxes_t xg_boxes;
 class XG_PictureBoxWindow : public XG_BoxWindow
 {
 public:
-    XG_PictureBoxWindow(INT i1 = 0, INT j1 = 0, INT i2 = 1, INT j2 = 1)
+    XG_PictureBoxWindow(int i1 = 0, int j1 = 0, int i2 = 1, int j2 = 1)
         : XG_BoxWindow(L"pic", i1, j1, i2, j2)
     {
     }
@@ -677,9 +676,9 @@ public:
     COLORREF m_rgbText = CLR_INVALID;
     COLORREF m_rgbBg = CLR_INVALID;
     std::wstring m_strFontName;
-    INT m_nFontSizeInPoints = 0;
+    int m_nFontSizeInPoints = 0;
 
-    XG_TextBoxWindow(INT i1 = 0, INT j1 = 0, INT i2 = 1, INT j2 = 1)
+    XG_TextBoxWindow(int i1 = 0, int j1 = 0, int i2 = 1, int j2 = 1)
         : XG_BoxWindow(L"text", i1, j1, i2, j2)
     {
     }
@@ -711,7 +710,7 @@ public:
         }
 
         SetBkMode(hDC, TRANSPARENT);
-        COLORREF rgbText = (m_rgbText != CLR_INVALID) ? m_rgbText : xg_rgbBlackCellColor;
+        const COLORREF rgbText = (m_rgbText != CLR_INVALID) ? m_rgbText : xg_rgbBlackCellColor;
         ::SetTextColor(hDC, rgbText);
 
         // 枠線を描く。
@@ -735,13 +734,8 @@ public:
             StringCchCopyW(lf.lfFaceName, _countof(lf.lfFaceName), m_strFontName.c_str());
 
         // 高さを計算する。
-        INT nPointSize;
-        if (m_nFontSizeInPoints) {
-            nPointSize = m_nFontSizeInPoints;
-        } else {
-            nPointSize = XG_DEF_TEXTBOX_POINTSIZE;
-        }
-        INT nPixelSize = MulDiv(nPointSize, GetDeviceCaps(hDC, LOGPIXELSY), 72);
+        const int nPointSize = (m_nFontSizeInPoints ? m_nFontSizeInPoints : XG_DEF_TEXTBOX_POINTSIZE);
+        const int nPixelSize = MulDiv(nPointSize, GetDeviceCaps(hDC, LOGPIXELSY), 72);
         lf.lfHeight = -nPixelSize * xg_nZoomRate / 100;
 
         // フォント作成・選択。
@@ -750,7 +744,7 @@ public:
 
         // 文字列の高さを計算する。
         MRect rcCalc = rcText;
-        INT cxyMargin = 2 * xg_nZoomRate / 100;
+        const int cxyMargin = 2 * xg_nZoomRate / 100;
         InflateRect(&rcCalc, -cxyMargin, -cxyMargin);
         UINT uFormat = DT_CENTER | DT_TOP | DT_NOPREFIX | DT_WORDBREAK;
         DrawTextW(hDC, m_strText.c_str(), -1, &rcCalc, uFormat | DT_CALCRECT);
@@ -812,21 +806,21 @@ public:
 
     DWORD SwapRandB(DWORD value) const noexcept
     {
-        BYTE r = GetRValue(value);
-        BYTE g = GetGValue(value);
-        BYTE b = GetBValue(value);
+        const BYTE r = GetRValue(value);
+        const BYTE g = GetGValue(value);
+        const BYTE b = GetBValue(value);
         return RGB(b, g, r);
     }
 
     virtual BOOL ReadMap(const map_t& map) override {
         auto color_it = map.find(L"color");
         if (color_it != map.end()) {
-            auto value = wcstoul(color_it->second.c_str(), nullptr, 16);
+            const auto value = wcstoul(color_it->second.c_str(), nullptr, 16);
             m_rgbText = SwapRandB(value);
         }
         auto bgcolor_it = map.find(L"bgcolor");
         if (bgcolor_it != map.end()) {
-            auto value = wcstoul(bgcolor_it->second.c_str(), nullptr, 16);
+            const auto value = wcstoul(bgcolor_it->second.c_str(), nullptr, 16);
             m_rgbBg = SwapRandB(value);
         }
         auto fontname_it = map.find(L"font_name");

@@ -21,7 +21,7 @@ public:
         ::SetDlgItemInt(hwnd, edt2, xg_nCols, FALSE);
 
         // 現在の状態で好ましいと思われる単語の最大長を取得する。
-        INT n3 = XgGetPreferredMaxLength();
+        const int n3 = XgGetPreferredMaxLength();
         ::SetDlgItemInt(hwnd, edt3, n3, FALSE);
 
         // 自動で再計算をするか？
@@ -60,7 +60,7 @@ public:
 
     void OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT codeNotify)
     {
-        INT n1, n2, n3;
+        int n1, n2, n3;
         switch (id)
         {
         case IDOK:

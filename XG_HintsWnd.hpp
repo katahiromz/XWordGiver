@@ -33,7 +33,7 @@ public:
     inline static HWND s_hwndHighlightYokoEdit = nullptr;
 
     // ハイライトを更新する。
-    void setHighlight(INT nYoko, INT nTate) noexcept
+    void setHighlight(int nYoko, int nTate) noexcept
     {
         HWND hwndTateOld = s_hwndHighlightTateEdit;
         HWND hwndYokoOld = s_hwndHighlightYokoEdit;
@@ -204,8 +204,7 @@ public:
 
         // タテのカギ。
         {
-            MRect rcCtrl(MPoint(0, y + 4), 
-                         MSize(rcClient.Width(), size1.cy + 4));
+            const MRect rcCtrl(MPoint(0, y + 4), MSize(rcClient.Width(), size1.cy + 4));
             xg_svHintsScrollView.AddCtrlInfo(xg_hwndTateCaptionStatic, rcCtrl);
             y += size1.cy + 8;
         }
@@ -232,8 +231,7 @@ public:
         }
         // ヨコのカギ。
         {
-            MRect rcCtrl(MPoint(0, y + 4),
-                         MSize(rcClient.Width(), size1.cy + 4));
+            const MRect rcCtrl(MPoint(0, y + 4), MSize(rcClient.Width(), size1.cy + 4));
             xg_svHintsScrollView.AddCtrlInfo(xg_hwndYokoCaptionStatic, rcCtrl);
             y += size1.cy + 8;
         }
@@ -328,7 +326,7 @@ public:
                     }
                 }
                 if (found) {
-                    INT number = (vertical ? xg_vecTateHints[i].m_number : xg_vecYokoHints[i].m_number);
+                    const auto number = (vertical ? xg_vecTateHints[i].m_number : xg_vecYokoHints[i].m_number);
                     PostMessageW(xg_hMainWnd, XGWM_HIGHLIGHT, TRUE, MAKELPARAM(number, vertical));
                 }
             }
@@ -643,11 +641,11 @@ public:
     {
         // フォント情報を取得。
         LOGFONTW *plf = XgGetUIFont();
-        INT height = labs(plf->lfHeight);
+        int height = labs(plf->lfHeight);
         if (height == 0)
             height = 12;
         HDC hdc = ::CreateCompatibleDC(nullptr);
-        INT pointsize = MulDiv(height, 72, ::GetDeviceCaps(hdc, LOGPIXELSY));
+        int pointsize = MulDiv(height, 72, ::GetDeviceCaps(hdc, LOGPIXELSY));
         ::DeleteDC(hdc);
 
         // ズームに応じて、フォントサイズを増減。
@@ -729,9 +727,8 @@ public:
 
         // 右クリックメニューを表示する。
         ::SetForegroundWindow(hwnd);
-        INT nCmd = ::TrackPopupMenu(
-            hSubMenu, TPM_RIGHTBUTTON | TPM_LEFTALIGN | TPM_RETURNCMD,
-            xPos, yPos, 0, hwnd, nullptr);
+        const auto flags = TPM_RIGHTBUTTON | TPM_LEFTALIGN | TPM_RETURNCMD;
+        const auto nCmd = ::TrackPopupMenu(hSubMenu, flags, xPos, yPos, 0, hwnd, nullptr);
         ::PostMessageW(hwnd, WM_NULL, 0, 0);
         if (nCmd)
             ::PostMessageW(xg_hMainWnd, WM_COMMAND, nCmd, 0);
