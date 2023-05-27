@@ -70,13 +70,13 @@ public:
         LV_ITEM item = { LVIF_TEXT };
         WCHAR szText[64];
         for (auto& pair : histgram) {
-            StringCbCopyW(szText, sizeof(szText), pair.second.c_str());
+            StringCchCopyW(szText, _countof(szText), pair.second.c_str());
             item.iItem = iItem;
             item.pszText = szText;
             item.iSubItem = 0;
             ListView_InsertItem(hLst1, &item);
 
-            StringCbCopyW(szText, sizeof(szText), std::to_wstring(pair.first).c_str());
+            StringCchCopyW(szText, _countof(szText), std::to_wstring(pair.first).c_str());
             item.iItem = iItem;
             item.pszText = szText;
             item.iSubItem = 1;
@@ -449,7 +449,7 @@ public:
 
             LV_ITEM item = { LVIF_TEXT };
             const int iItem = ListView_GetItemCount(minus ? hLst3 : hLst2);
-            StringCbCopyW(szText, sizeof(szText), str.c_str());
+            StringCchCopyW(szText, _countof(szText), str.c_str());
             item.iItem = iItem;
             item.pszText = szText;
             item.iSubItem = 0;

@@ -20,7 +20,7 @@ public:
         for (const auto& dir : xg_dirs_save_to) {
             item.mask = CBEIF_TEXT;
             item.iItem = -1;
-            StringCbCopy(szFile, sizeof(szFile), dir.data());
+            StringCchCopy(szFile, _countof(szFile), dir.data());
             item.pszText = szFile;
             item.cchTextMax = -1;
             ::SendDlgItemMessageW(hwnd, cmb1, CBEM_INSERTITEMW, 0,
@@ -149,7 +149,7 @@ public:
                 ::MessageBeep(0xFFFFFFFF);
                 return;
             }
-            StringCbCopy(szFile, sizeof(szFile), szTarget);
+            StringCchCopy(szFile, _countof(szFile), szTarget);
         }
 
         // ファイルの属性を確認する。

@@ -406,14 +406,14 @@ BOOL XgLoadDictsFromDir(LPCWSTR pszDir)
     HANDLE hFind;
 
     // ファイル *.dic を列挙する。
-    StringCbCopy(szPath, sizeof(szPath), pszDir);
+    StringCchCopy(szPath, _countof(szPath), pszDir);
     PathAppend(szPath, L"*.dic");
     hFind = FindFirstFileW(szPath, &find);
     if (hFind != INVALID_HANDLE_VALUE)
     {
         do
         {
-            StringCbCopy(szPath, sizeof(szPath), pszDir);
+            StringCchCopy(szPath, _countof(szPath), pszDir);
             PathAppend(szPath, find.cFileName);
             auto path = szPath;
             auto title = XgLoadTitleFromDict(szPath);
@@ -423,14 +423,14 @@ BOOL XgLoadDictsFromDir(LPCWSTR pszDir)
     }
 
     // ファイル *.tsv を列挙する。
-    StringCbCopy(szPath, sizeof(szPath), pszDir);
+    StringCchCopy(szPath, _countof(szPath), pszDir);
     PathAppend(szPath, L"*.tsv");
     hFind = FindFirstFileW(szPath, &find);
     if (hFind != INVALID_HANDLE_VALUE)
     {
         do
         {
-            StringCbCopy(szPath, sizeof(szPath), pszDir);
+            StringCchCopy(szPath, _countof(szPath), pszDir);
             PathAppend(szPath, find.cFileName);
             auto path = szPath;
             auto title = XgLoadTitleFromDict(szPath);
@@ -440,14 +440,14 @@ BOOL XgLoadDictsFromDir(LPCWSTR pszDir)
     }
 
     // ファイル *.dic も列挙する。
-    StringCbCopy(szPath, sizeof(szPath), pszDir);
+    StringCchCopy(szPath, _countof(szPath), pszDir);
     PathAppend(szPath, L"*.dic");
     hFind = FindFirstFileW(szPath, &find);
     if (hFind != INVALID_HANDLE_VALUE)
     {
         do
         {
-            StringCbCopy(szPath, sizeof(szPath), pszDir);
+            StringCchCopy(szPath, _countof(szPath), pszDir);
             PathAppend(szPath, find.cFileName);
             auto path = szPath;
             auto title = XgLoadTitleFromDict(szPath);

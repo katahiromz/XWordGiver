@@ -991,13 +991,13 @@ bool __fastcall XgLoadSettings(void)
             }
 
             if (!app_key.QuerySz(L"CellFont", sz, _countof(sz))) {
-                StringCbCopy(xg_szCellFont, sizeof(xg_szCellFont), sz);
+                StringCchCopy(xg_szCellFont, _countof(xg_szCellFont), sz);
             }
             if (!app_key.QuerySz(L"SmallFont", sz, _countof(sz))) {
-                StringCbCopy(xg_szSmallFont, sizeof(xg_szSmallFont), sz);
+                StringCchCopy(xg_szSmallFont, _countof(xg_szSmallFont), sz);
             }
             if (!app_key.QuerySz(L"UIFont", sz, _countof(sz))) {
-                StringCbCopy(xg_szUIFont, sizeof(xg_szUIFont), sz);
+                StringCchCopy(xg_szUIFont, _countof(xg_szUIFont), sz);
             }
 
             if (!app_key.QueryDword(L"ShowToolBar", dwValue)) {
@@ -1628,7 +1628,7 @@ void XgCopyWordList(HWND hwnd)
     const auto cb = (str.size() + 1) * sizeof(WCHAR);
     if (HGLOBAL hGlobal = ::GlobalAlloc(GHND | GMEM_SHARE, cb)) {
         if (auto psz = static_cast<LPWSTR>(::GlobalLock(hGlobal))) {
-            StringCbCopyW(psz, cb, str.c_str());
+            StringCchCopyW(psz, cb / sizeof(WCHAR), str.c_str());
             ::GlobalUnlock(hGlobal);
 
             if (::OpenClipboard(hwnd)) {
@@ -1766,9 +1766,9 @@ static void XgPrintIt(HDC hdc, PRINTDLGW* ppd, bool bPrintAnswer)
                 ::GetObjectW(hFont, sizeof(LOGFONTW), &lf);
 
                 // フォント名を取得する。
-                StringCbCopy(lf.lfFaceName, sizeof(lf.lfFaceName), XgLoadStringDx1(IDS_MONOFONT));
+                StringCchCopy(lf.lfFaceName, _countof(lf.lfFaceName), XgLoadStringDx1(IDS_MONOFONT));
                 if (xg_szCellFont[0])
-                    StringCbCopy(lf.lfFaceName, sizeof(lf.lfFaceName), xg_szCellFont);
+                    StringCchCopy(lf.lfFaceName, _countof(lf.lfFaceName), xg_szCellFont);
 
                 // フォント情報を設定する。
                 lf.lfHeight = cyPaper / 2 / 15;
@@ -1844,9 +1844,9 @@ static void XgPrintIt(HDC hdc, PRINTDLGW* ppd, bool bPrintAnswer)
             ::GetObjectW(hFont, sizeof(LOGFONTW), &lf);
 
             // フォント名を取得する。
-            StringCbCopy(lf.lfFaceName, sizeof(lf.lfFaceName), XgLoadStringDx1(IDS_MONOFONT));
+            StringCchCopy(lf.lfFaceName, _countof(lf.lfFaceName), XgLoadStringDx1(IDS_MONOFONT));
             if (xg_szCellFont[0])
-                StringCbCopy(lf.lfFaceName, sizeof(lf.lfFaceName), xg_szCellFont);
+                StringCchCopy(lf.lfFaceName, _countof(lf.lfFaceName), xg_szCellFont);
 
             // フォント情報を設定する。
             lf.lfHeight = cyPaper / 2 / 45;
@@ -1896,7 +1896,7 @@ static void XgPrintIt(HDC hdc, PRINTDLGW* ppd, bool bPrintAnswer)
                 // 文字のフォントを作成する。
                 hFont = static_cast<HFONT>(::GetStockObject(DEFAULT_GUI_FONT));
                 ::GetObjectW(hFont, sizeof(LOGFONTW), &lf);
-                StringCbCopy(lf.lfFaceName, sizeof(lf.lfFaceName), XgLoadStringDx1(IDS_MONOFONT));
+                StringCchCopy(lf.lfFaceName, _countof(lf.lfFaceName), XgLoadStringDx1(IDS_MONOFONT));
                 lf.lfHeight = cyPaper / 2 / 45;
                 lf.lfWidth = 0;
                 lf.lfWeight = FW_NORMAL;
@@ -2363,7 +2363,7 @@ BOOL __fastcall XgOnSaveAs(HWND hwnd)
     OPENFILENAMEW ofn = { OPENFILENAME_SIZE_VERSION_400W, hwnd };
     WCHAR sz[MAX_PATH] = L"";
     ofn.lpstrFilter = XgMakeFilterString(XgLoadStringDx2(IDS_SAVEFILTER));
-    StringCbCopy(sz, sizeof(sz), xg_strFileName.data());
+    StringCchCopy(sz, _countof(sz), xg_strFileName.data());
     ofn.lpstrFile = sz;
     ofn.nMaxFile = static_cast<DWORD>(_countof(sz));
     ofn.lpstrTitle = XgLoadStringDx1(IDS_SAVECROSSDATA);
@@ -2586,11 +2586,11 @@ BOOL XgOnLoad(HWND hwnd, LPCWSTR pszFile, LPPOINT ppt)
 {
     // 最初のファイルのパス名を取得する。
     WCHAR szFile[MAX_PATH], szTarget[MAX_PATH];
-    StringCbCopyW(szFile, sizeof(szFile), pszFile);
+    StringCchCopyW(szFile, _countof(szFile), pszFile);
 
     // ショートカットだった場合は、ターゲットのパスを取得する。
     if (XgGetPathOfShortcutW(szFile, szTarget))
-        StringCbCopy(szFile, sizeof(szFile), szTarget);
+        StringCchCopy(szFile, _countof(szFile), szTarget);
 
     // LOOKSファイルだった場合は自動で適用する。
     LPWSTR pchDotExt = PathFindExtensionW(szFile);
@@ -2718,14 +2718,14 @@ bool __fastcall XgDoSaveToLocation(HWND hwnd)
     WCHAR szName[32];
 
     // パスを生成する。
-    StringCbCopy(szDir, sizeof(szDir), xg_dirs_save_to[0].data());
+    StringCchCopy(szDir, _countof(szDir), xg_dirs_save_to[0].data());
     PathAddBackslashW(szDir);
 
     // ファイル名を生成する。
     UINT u;
     for (u = 1; u <= 0xFFFF; u++) {
         StringCchPrintf(szName, _countof(szName), L"%dx%d-%04u.xwj", xg_nRows, xg_nCols, u);
-        StringCbCopy(szPath, sizeof(szPath), szDir);
+        StringCchCopy(szPath, _countof(szPath), szDir);
         StringCbCat(szPath, sizeof(szPath), szName);
         if (::GetFileAttributesW(szPath) == 0xFFFFFFFF)
             break;
@@ -3746,7 +3746,7 @@ void __fastcall XgCopyMarkWord(HWND hwnd)
         const auto cbGlobal = (strMarkWord.size() + 1) * sizeof(WCHAR);
         hGlobal = GlobalAlloc(GHND | GMEM_SHARE, cbGlobal);
         if (auto psz = static_cast<LPWSTR>(GlobalLock(hGlobal))) {
-            StringCbCopyW(psz, cbGlobal, strMarkWord.c_str());
+            StringCchCopyW(psz, cbGlobal / sizeof(WCHAR), strMarkWord.c_str());
             GlobalUnlock(hGlobal);
         } else {
             GlobalFree(hGlobal);
@@ -4581,7 +4581,7 @@ LOGFONTW *XgGetUIFont(void)
     ::GetObjectW(::GetStockObject(DEFAULT_GUI_FONT), sizeof(s_lf), &s_lf);
     if (xg_szUIFont[0]) {
         WCHAR szData[LF_FACESIZE];
-        StringCbCopy(szData, sizeof(szData), xg_szUIFont);
+        StringCchCopy(szData, _countof(szData), xg_szUIFont);
         LPWSTR pch = wcsrchr(szData, L',');
         if (pch) {
             *pch++ = 0;
@@ -4590,7 +4590,7 @@ LOGFONTW *XgGetUIFont(void)
             xg_str_trim(name);
             xg_str_trim(size);
 
-            StringCbCopy(s_lf.lfFaceName, sizeof(s_lf.lfFaceName), name.data());
+            StringCchCopy(s_lf.lfFaceName, _countof(s_lf.lfFaceName), name.data());
 
             HDC hdc = ::CreateCompatibleDC(nullptr);
             const int point_size = _wtoi(size.data());
@@ -4600,7 +4600,7 @@ LOGFONTW *XgGetUIFont(void)
             std::wstring name(szData);
             xg_str_trim(name);
 
-            StringCbCopy(s_lf.lfFaceName, sizeof(s_lf.lfFaceName), name.data());
+            StringCchCopy(s_lf.lfFaceName, _countof(s_lf.lfFaceName), name.data());
         }
     }
     return &s_lf;
@@ -4645,9 +4645,9 @@ void XgUpdateTheme(HWND hwnd)
     if (xg_bThemeModified || xg_dict_name.empty() ||
         xg_dict_name.find(L"SubDict") != xg_dict_name.npos)
     {
-        StringCbCopyW(szText, sizeof(szText), XgLoadStringDx1(IDS_MODIFIEDDICT));
+        StringCchCopyW(szText, _countof(szText), XgLoadStringDx1(IDS_MODIFIEDDICT));
     } else {
-        StringCbCopyW(szText, sizeof(szText), XgLoadStringDx1(IDS_DEFAULTDICT));
+        StringCchCopyW(szText, _countof(szText), XgLoadStringDx1(IDS_DEFAULTDICT));
     }
     // メニュー文字列を変更。
     info.fMask = MIIM_TYPE;
@@ -4672,9 +4672,9 @@ void XgUpdateRules(HWND hwnd)
         ::GetMenuStringW(hMenu, i, szText, _countof(szText), MF_BYPOSITION);
         if (wcsstr(szText, XgLoadStringDx1(IDS_RULES)) != nullptr) {
             if (xg_nRules == XG_DEFAULT_RULES) {
-                StringCbCopyW(szText, sizeof(szText), XgLoadStringDx1(IDS_STANDARDRULES));
+                StringCchCopyW(szText, _countof(szText), XgLoadStringDx1(IDS_STANDARDRULES));
             } else {
-                StringCbCopyW(szText, sizeof(szText), XgLoadStringDx1(IDS_MODIFIEDRULES));
+                StringCchCopyW(szText, _countof(szText), XgLoadStringDx1(IDS_MODIFIEDRULES));
             }
             info.dwTypeData = szText;
             SetMenuItemInfoW(hMenu, i, TRUE, &info);
@@ -4973,19 +4973,19 @@ void __fastcall XgOnOpenRulesTxt(HWND hwnd)
     WCHAR szPath[MAX_PATH], szDir[MAX_PATH];
     GetModuleFileNameW(nullptr, szPath, MAX_PATH);
     PathRemoveFileSpecW(szPath);
-    StringCbCopyW(szDir, sizeof(szDir), szPath);
-    StringCbCopyW(szPath, sizeof(szPath), szDir);
+    StringCchCopyW(szDir, _countof(szDir), szPath);
+    StringCchCopyW(szPath, _countof(szPath), szDir);
     PathAppendW(szPath, XgLoadStringDx1(IDS_RULESTXT));
     if (!PathFileExistsW(szPath)) {
-        StringCbCopyW(szPath, sizeof(szPath), szDir);
+        StringCchCopyW(szPath, _countof(szPath), szDir);
         PathAppendW(szPath, L"..");
         PathAppendW(szPath, XgLoadStringDx1(IDS_RULESTXT));
         if (!PathFileExistsW(szPath)) {
-            StringCbCopyW(szPath, sizeof(szPath), szDir);
+            StringCchCopyW(szPath, _countof(szPath), szDir);
             PathAppendW(szPath, L"..\\..");
             PathAppendW(szPath, XgLoadStringDx1(IDS_RULESTXT));
             if (!PathFileExistsW(szPath)) {
-                StringCbCopyW(szPath, sizeof(szPath), szDir);
+                StringCchCopyW(szPath, _countof(szPath), szDir);
                 PathAppendW(szPath, L"..\\..\\..");
                 PathAppendW(szPath, XgLoadStringDx1(IDS_RULESTXT));
             }

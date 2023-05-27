@@ -4521,9 +4521,9 @@ HFONT XgCreateNormalFont(INT nCellSize)
 {
     LOGFONTW lf;
     ZeroMemory(&lf, sizeof(lf));
-    StringCbCopy(lf.lfFaceName, sizeof(lf.lfFaceName), XgLoadStringDx1(IDS_MONOFONT));
+    StringCchCopy(lf.lfFaceName, _countof(lf.lfFaceName), XgLoadStringDx1(IDS_MONOFONT));
     if (xg_szCellFont[0])
-        StringCbCopy(lf.lfFaceName, sizeof(lf.lfFaceName), xg_szCellFont);
+        StringCchCopy(lf.lfFaceName, _countof(lf.lfFaceName), xg_szCellFont);
     lf.lfHeight = -nCellSize * xg_nCellCharPercents / 100;
     lf.lfWidth = 0;
     lf.lfWeight = FW_NORMAL;
@@ -4538,7 +4538,7 @@ HFONT XgCreateSmallFont(INT nCellSize)
     LOGFONTW lf;
     ZeroMemory(&lf, sizeof(lf));
     if (xg_szSmallFont[0])
-        StringCbCopy(lf.lfFaceName, sizeof(lf.lfFaceName), xg_szSmallFont);
+        StringCchCopy(lf.lfFaceName, _countof(lf.lfFaceName), xg_szSmallFont);
     lf.lfHeight = -nCellSize * xg_nSmallCharPercents / 100;
     lf.lfWidth = 0;
     lf.lfWeight = FW_NORMAL;

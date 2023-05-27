@@ -25,7 +25,7 @@ public:
         for (const auto& dir : xg_dirs_save_to) {
             item.mask = CBEIF_TEXT;
             item.iItem = -1;
-            StringCbCopy(szFile, sizeof(szFile), dir.data());
+            StringCchCopy(szFile, _countof(szFile), dir.data());
             item.pszText = szFile;
             item.cchTextMax = -1;
             ::SendDlgItemMessageW(hwnd, cmb2, CBEM_INSERTITEMW, 0,

@@ -463,7 +463,7 @@ char XgToHex(char code) noexcept
 BOOL XgMakePathW(LPCWSTR pszPath)
 {
     WCHAR szPath[MAX_PATH];
-    StringCbCopy(szPath, sizeof(szPath), pszPath);
+    StringCchCopy(szPath, _countof(szPath), pszPath);
 
     const DWORD attrs = ::GetFileAttributesW(szPath);
     if (attrs != 0xFFFFFFFF) {

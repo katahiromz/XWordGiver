@@ -193,15 +193,15 @@ void XG_SettingsDialog::OnOK(HWND hwnd)
 
     // セルフォント。
     ::GetDlgItemTextW(hwnd, edt1, szName, _countof(szName));
-    StringCbCopy(xg_szCellFont, sizeof(xg_szCellFont), szName);
+    StringCchCopy(xg_szCellFont, _countof(xg_szCellFont), szName);
 
     // 小さい文字のフォント。
     ::GetDlgItemTextW(hwnd, edt2, szName, _countof(szName));
-    StringCbCopy(xg_szSmallFont, sizeof(xg_szSmallFont), szName);
+    StringCchCopy(xg_szSmallFont, _countof(xg_szSmallFont), szName);
 
     // UIフォント。
     ::GetDlgItemTextW(hwnd, edt3, szName, _countof(szName));
-    StringCbCopy(xg_szUIFont, sizeof(xg_szUIFont), szName);
+    StringCchCopy(xg_szUIFont, _countof(xg_szUIFont), szName);
 
     // 黒マス画像を取得。
     WCHAR szText[MAX_PATH];
@@ -661,7 +661,7 @@ void XG_SettingsDialog::OnChange(HWND hwnd, int i)
     case 0:
         cf.Flags = CF_NOSCRIPTSEL | CF_NOVERTFONTS | CF_SCALABLEONLY |
                    CF_INITTOLOGFONTSTRUCT | CF_SCREENFONTS;
-        StringCbCopy(lf.lfFaceName, sizeof(lf.lfFaceName), xg_szCellFont);
+        StringCchCopy(lf.lfFaceName, _countof(lf.lfFaceName), xg_szCellFont);
         if (::ChooseFontW(&cf)) {
             // 取得したフォントをダイアログへ格納する。
             ::SetDlgItemTextW(hwnd, edt1, lf.lfFaceName);
@@ -671,7 +671,7 @@ void XG_SettingsDialog::OnChange(HWND hwnd, int i)
     case 1:
         cf.Flags = CF_NOSCRIPTSEL | CF_NOVERTFONTS | CF_SCALABLEONLY |
                    CF_INITTOLOGFONTSTRUCT | CF_SCREENFONTS;
-        StringCbCopy(lf.lfFaceName, sizeof(lf.lfFaceName), xg_szSmallFont);
+        StringCchCopy(lf.lfFaceName, _countof(lf.lfFaceName), xg_szSmallFont);
         if (::ChooseFontW(&cf)) {
             // 取得したフォントをダイアログへ格納する。
             ::SetDlgItemTextW(hwnd, edt2, lf.lfFaceName);
