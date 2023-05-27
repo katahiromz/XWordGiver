@@ -656,7 +656,7 @@ enum DRAW_MODE
 void __fastcall XgDrawXWord(const XG_Board& xw, HDC hdc, const SIZE *psiz, DRAW_MODE mode);
 
 // 解を求めるのを開始。
-void __fastcall XgStartSolve_AddBlack(void) noexcept;
+void __fastcall XgStartSolve_AddBlack(void);
 
 // 解を求めるのを開始（黒マス追加なし）。
 void __fastcall XgStartSolve_NoAddBlack(void) noexcept;
@@ -1402,7 +1402,7 @@ bool __fastcall XgGetCandidatesAddBlack(
     bool left_black_check, bool right_black_check);
 
 // マルチスレッド用の関数。
-unsigned __stdcall XgGenerateBlacks(void *param) noexcept;
+unsigned __stdcall XgGenerateBlacks(void *param);
 // マルチスレッド用の関数。
 unsigned __stdcall XgGenerateBlacksSmart(void *param);
 

@@ -3781,7 +3781,7 @@ void XG_Board::SwapXandY() noexcept
 }
 
 // 解く。
-void __fastcall XgSolveXWord_AddBlack(const XG_Board& xw) noexcept
+static void __fastcall XgSolveXWord_AddBlack(const XG_Board& xw)
 {
     const int nRows = xg_nRows, nCols = xg_nCols;
 
@@ -4120,7 +4120,7 @@ retry_2:;
 }
 
 // 解く（黒マス追加なし）。
-void __fastcall XgSolveXWord_NoAddBlack(const XG_Board& xw) noexcept
+static void __fastcall XgSolveXWord_NoAddBlack(const XG_Board& xw)
 {
     const int nRows = xg_nRows, nCols = xg_nCols;
 
@@ -4294,7 +4294,7 @@ unsigned __stdcall XgSolveProcSmart(void *param) noexcept
 //#define SINGLE_THREAD_MODE
 
 // 解を求めるのを開始。
-void __fastcall XgStartSolve_AddBlack(void) noexcept
+void __fastcall XgStartSolve_AddBlack(void)
 {
     // フラグを初期化する。
     xg_bSolved = xg_bCancelled = false;
@@ -7282,7 +7282,7 @@ bool __fastcall XgGenerateBlacksLineSymHRecurse(const XG_Board& xword, LONG iRow
 }
 
 // マルチスレッド用の関数。
-unsigned __stdcall XgGenerateBlacks(void *param) noexcept
+unsigned __stdcall XgGenerateBlacks(void *param)
 {
     XG_Board xword;
     xg_solution.clear();
