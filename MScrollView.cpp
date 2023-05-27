@@ -6,12 +6,6 @@
 #define NOMINMAX
 #include "MScrollView.hpp"
 
-#ifdef MZC_NO_INLINING
-    #undef MZC_INLINE
-    #define MZC_INLINE  /*empty*/
-    #include "MScrollView_inl.hpp"
-#endif
-
 ////////////////////////////////////////////////////////////////////////////
 
 void MScrollView::SetCtrlInfo(HWND hwndCtrl, const MRect& rcCtrl)

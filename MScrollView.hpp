@@ -101,10 +101,175 @@ private:
 
 ////////////////////////////////////////////////////////////////////////////
 
-#ifndef MZC_NO_INLINING
-    #undef MZC_INLINE
-    #define MZC_INLINE inline
-    #include "MScrollView_inl.hpp"
-#endif
+inline MScrollCtrlInfo::MScrollCtrlInfo() noexcept
+{
+}
+
+inline MScrollCtrlInfo::MScrollCtrlInfo(HWND hwndCtrl) noexcept :
+    m_hwndCtrl(hwndCtrl)
+{
+}
+
+inline
+MScrollCtrlInfo::MScrollCtrlInfo(HWND hwndCtrl, const MRect& rcCtrl) noexcept :
+    m_hwndCtrl(hwndCtrl), m_rcCtrl(rcCtrl)
+{
+}
+
+inline MScrollCtrlInfo::MScrollCtrlInfo(
+    HWND hwndCtrl, const MPoint& ptCtrl, const MSize& sizCtrl) noexcept :
+    m_hwndCtrl(hwndCtrl), m_rcCtrl(ptCtrl, sizCtrl)
+{
+}
+
+inline MScrollView::MScrollView() noexcept :
+    m_hwndParent(nullptr)
+{
+}
+
+inline MScrollView::MScrollView(HWND hwndParent) noexcept :
+    m_hwndParent(nullptr)
+{
+    MScrollView::SetParent(hwndParent);
+}
+
+inline MScrollView::MScrollView(
+    HWND hwndParent, HWND hHScrollBar, HWND hVScrollBar) noexcept :
+    m_hwndParent(nullptr)
+{
+    UNREFERENCED_PARAMETER(hHScrollBar);
+    UNREFERENCED_PARAMETER(hVScrollBar);
+    MScrollView::SetParent(hwndParent);
+}
+
+inline /*virtual*/ MScrollView::~MScrollView() noexcept
+{
+}
+
+inline HWND MScrollView::GetParent() const noexcept
+{
+    return m_hwndParent;
+}
+
+inline void MScrollView::SetParent(HWND hwndParent) noexcept
+{
+    assert(::IsWindow(hwndParent));
+    m_hwndParent = hwndParent;
+    DWORD style = ::GetWindowLong(m_hwndParent, GWL_STYLE);
+    style |= WS_CLIPCHILDREN;
+    ::SetWindowLong(m_hwndParent, GWL_STYLE, style);
+}
+
+inline
+void MScrollView::ShowScrollBars(BOOL fHScroll, BOOL fVScroll) noexcept
+{
+    ::ShowScrollBar(m_hwndParent, SB_HORZ, fHScroll);
+    ::ShowScrollBar(m_hwndParent, SB_VERT, fVScroll);
+}
+
+inline void MScrollView::AddCtrlInfo(HWND hwndCtrl)
+{
+    assert(::IsWindow(hwndCtrl));
+    assert(HasChildStyle(hwndCtrl));
+    m_vecInfo.emplace_back(hwndCtrl);
+}
+
+inline void MScrollView::AddCtrlInfo(HWND hwndCtrl, const MRect& rcCtrl)
+{
+    assert(::IsWindow(hwndCtrl));
+    assert(HasChildStyle(hwndCtrl));
+    assert(rcCtrl.left >= 0);
+    assert(rcCtrl.top >= 0);
+    m_vecInfo.emplace_back(hwndCtrl, rcCtrl);
+}
+
+inline void MScrollView::AddCtrlInfo(
+    HWND hwndCtrl, const MPoint& ptCtrl, const MSize& sizCtrl)
+{
+    assert(::IsWindow(hwndCtrl));
+    assert(HasChildStyle(hwndCtrl));
+    assert(ptCtrl.x >= 0);
+    assert(ptCtrl.y >= 0);
+    m_vecInfo.emplace_back(hwndCtrl, ptCtrl, sizCtrl);
+}
+
+inline MSize& MScrollView::Extent() noexcept
+{
+    return m_sizExtent;
+}
+
+inline const MSize& MScrollView::Extent() const noexcept
+{
+    return m_sizExtent;
+}
+
+inline BOOL MScrollView::HasChildStyle(HWND hwnd) const noexcept
+{
+    return (::GetWindowLong(hwnd, GWL_STYLE) & WS_CHILD);
+}
+
+inline bool MScrollView::empty() const noexcept
+{
+    return m_vecInfo.empty();
+}
+
+inline void MScrollView::clear() noexcept
+{
+    m_vecInfo.clear();
+}
+
+inline size_t MScrollView::size() const noexcept
+{
+    return m_vecInfo.size();
+}
+
+inline void MScrollView::UpdateAll() noexcept
+{
+    UpdateCtrlsPos();
+}
+
+inline void MScrollView::AddCtrlInfo(UINT idCtrl)
+{
+    AddCtrlInfo(::GetDlgItem(m_hwndParent, idCtrl));
+}
+
+inline void MScrollView::AddCtrlInfo(UINT idCtrl, const MRect& rcCtrl)
+{
+    AddCtrlInfo(::GetDlgItem(m_hwndParent, idCtrl), rcCtrl);
+}
+
+inline void MScrollView::AddCtrlInfo(
+    UINT idCtrl, const MPoint& ptCtrl, const MSize& sizCtrl)
+{
+    AddCtrlInfo(::GetDlgItem(m_hwndParent, idCtrl), ptCtrl, sizCtrl);
+}
+
+inline void MScrollView::SetCtrlInfo(UINT idCtrl, const MRect& rcCtrl)
+{
+    SetCtrlInfo(::GetDlgItem(m_hwndParent, idCtrl), rcCtrl);
+}
+
+inline void MScrollView::SetCtrlInfo(
+    UINT idCtrl, const MPoint& ptCtrl, const MSize& sizCtrl)
+{
+    SetCtrlInfo(::GetDlgItem(m_hwndParent, idCtrl), ptCtrl, sizCtrl);
+}
+
+inline void MScrollView::RemoveCtrlInfo(UINT idCtrl) noexcept
+{
+    RemoveCtrlInfo(::GetDlgItem(m_hwndParent, idCtrl));
+}
+
+inline MScrollCtrlInfo& MScrollView::operator[](size_t index) noexcept
+{
+    assert(index < size());
+    return m_vecInfo[index];
+}
+
+inline const MScrollCtrlInfo& MScrollView::operator[](size_t index) const noexcept
+{
+    assert(index < size());
+    return m_vecInfo[index];
+}
 
 #endif  // ndef __MZC3_SCROLLVIEW__
