@@ -5371,20 +5371,24 @@ void __fastcall XgDrawXWord_SkeletonView(XG_Board& xw, HDC hdc, const SIZE *psiz
     // セルの枠を描画する。
     for (int i = 0; i < xg_nRows; i++) {
         for (int j = 0; j < xg_nCols; j++) {
-            // セルの座標をセットする。
-            ::SetRect(&rc,
-                static_cast<int>(xg_nMargin + j * nCellSize), 
-                static_cast<int>(xg_nMargin + i * nCellSize),
-                static_cast<int>(xg_nMargin + (j + 1) * nCellSize), 
-                static_cast<int>(xg_nMargin + (i + 1) * nCellSize));
             WCHAR ch = xw.GetAt(i, j);
             if (ch == ZEN_BLACK)
                 continue;
 
-            ::SelectObject(hdc, GetStockObject(NULL_BRUSH));
+            // セルの座標をセットする。
+            rc = {
+                xg_nMargin + j * nCellSize,
+                xg_nMargin + i * nCellSize,
+                xg_nMargin + (j + 1) * nCellSize,
+                xg_nMargin + (i + 1) * nCellSize };
 
+            // Rectangle関数ではうまくいかないので直接線を描画する。
             HGDIOBJ hPen2Old = ::SelectObject(hdc, hThinPen);
-            ::Rectangle(hdc, rc.left, rc.top, rc.right, rc.bottom);
+            ::MoveToEx(hdc, rc.left, rc.top, NULL);
+            ::LineTo(hdc, rc.right, rc.top);
+            ::LineTo(hdc, rc.right, rc.bottom);
+            ::LineTo(hdc, rc.right, rc.top);
+            ::LineTo(hdc, rc.left, rc.top);
             ::SelectObject(hdc, hPen2Old);
         }
     }

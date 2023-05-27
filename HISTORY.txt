@@ -230,6 +230,7 @@
     - Improved printing of the outer frame.
     - Improved the drawing routine.
     - Fixed NumCro drawing.
+    - Fixed Skeleton View drawing.
 
 # 開発履歴 (Japanese)
 
@@ -775,3 +776,4 @@
     - 外枠の印刷を改良。
     - 描画ルーチンを改良。
     - ナンクロの描画を修正。
+    - スケルトンビューの描画を修正。
