@@ -6284,20 +6284,12 @@ bool __fastcall XgDoSaveFile(HWND hwnd, LPCWSTR pszFile)
     }
 }
 
-#ifndef CDSIZEOF_STRUCT
-    #define CDSIZEOF_STRUCT(structname,member) \
-        (((INT_PTR)((LPBYTE)(&((structname*)0)->member) - ((LPBYTE)((structname*)0)))) + sizeof(((structname*)0)->member))
-#endif
-#ifndef OPENFILENAME_SIZE_VERSION_400W
-    #define OPENFILENAME_SIZE_VERSION_400W CDSIZEOF_STRUCT(OPENFILENAMEW,lpTemplateName)
-#endif
-
 // 問題を画像ファイルとして保存する。
 void __fastcall XgSaveProbAsImage(HWND hwnd)
 {
     // 「問題を画像ファイルとして保存」ダイアログを表示。
     WCHAR szFileName[MAX_PATH] = L"";
-    OPENFILENAMEW ofn = { OPENFILENAME_SIZE_VERSION_400W, hwnd };
+    OPENFILENAMEW ofn = { sizeof(ofn), hwnd };
     ofn.lpstrFilter = XgMakeFilterString(XgLoadStringDx2(IDS_IMGFILTER));
     ofn.lpstrFile = szFileName;
     ofn.nMaxFile = _countof(szFileName);
@@ -6346,7 +6338,7 @@ void __fastcall XgSaveAnsAsImage(HWND hwnd)
 
     // 「解答を画像ファイルとして保存」ダイアログを表示。
     WCHAR szFileName[MAX_PATH] = L"";
-    OPENFILENAMEW ofn = { OPENFILENAME_SIZE_VERSION_400W, hwnd };
+    OPENFILENAMEW ofn = { sizeof(ofn), hwnd };
     ofn.lpstrFilter = XgMakeFilterString(XgLoadStringDx2(IDS_IMGFILTER));
     ofn.lpstrFile = szFileName;
     ofn.nMaxFile = _countof(szFileName);

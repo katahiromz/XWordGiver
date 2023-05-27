@@ -526,7 +526,7 @@ BOOL XG_SettingsDialog::DoExportLooks(HWND hwnd, LPCWSTR pszFileName)
 BOOL XG_SettingsDialog::OnImportLooks(HWND hwnd)
 {
     WCHAR szFile[MAX_PATH] = L"";
-    OPENFILENAMEW ofn = { OPENFILENAME_SIZE_VERSION_400W, hwnd };
+    OPENFILENAMEW ofn = { sizeof(ofn), hwnd };
     ofn.lpstrFilter = L"LOOKS File (*.looks)\0*.looks\0";
     ofn.lpstrFile = szFile;
     ofn.nMaxFile = _countof(szFile);
@@ -545,7 +545,7 @@ BOOL XG_SettingsDialog::OnImportLooks(HWND hwnd)
 BOOL XG_SettingsDialog::OnExportLooks(HWND hwnd)
 {
     WCHAR szFile[MAX_PATH] = L"";
-    OPENFILENAMEW ofn = { OPENFILENAME_SIZE_VERSION_400W, hwnd };
+    OPENFILENAMEW ofn = { sizeof(ofn), hwnd };
     ofn.lpstrFilter = L"LOOKS File (*.looks)\0*.looks\0";
     ofn.lpstrFile = szFile;
     ofn.nMaxFile = _countof(szFile);

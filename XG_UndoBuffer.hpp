@@ -42,7 +42,7 @@ struct XG_UndoData_SetAt : XG_UndoData {
     ~XG_UndoData_SetAt() override
     {
     }
-    virtual void Apply() const;
+    void Apply() const override;
 };
 
 //////////////////////////////////////////////////////////////////////////////

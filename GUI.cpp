@@ -2360,7 +2360,7 @@ BOOL __fastcall XgOnSaveAs(HWND hwnd)
     }
 
     // ユーザーにファイルの場所を問い合わせる準備。
-    OPENFILENAMEW ofn = { OPENFILENAME_SIZE_VERSION_400W, hwnd };
+    OPENFILENAMEW ofn = { sizeof(ofn), hwnd };
     WCHAR sz[MAX_PATH] = L"";
     ofn.lpstrFilter = XgMakeFilterString(XgLoadStringDx2(IDS_SAVEFILTER));
     StringCchCopy(sz, _countof(sz), xg_strFileName.data());
@@ -2697,7 +2697,7 @@ BOOL __fastcall XgOnOpen(HWND hwnd)
 
     // ユーザーにファイルの場所を問い合わせる。
     WCHAR sz[MAX_PATH] = L"";
-    OPENFILENAMEW ofn = { OPENFILENAME_SIZE_VERSION_400W, hwnd };
+    OPENFILENAMEW ofn = { sizeof(ofn), hwnd };
     ofn.lpstrFilter = XgMakeFilterString(XgLoadStringDx2(IDS_CROSSFILTER));
     ofn.lpstrFile = sz;
     ofn.nMaxFile = static_cast<DWORD>(_countof(sz));
