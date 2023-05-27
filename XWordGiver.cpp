@@ -106,7 +106,7 @@ void XgGetPatternData(XG_PATDATA& pat)
     xg_str_replace_all(text, L"\u2517\u251B\n", L"");
     data.resize(cx * cy);
     int x = 0, y = 0;
-    for (auto& ch : text)
+    for (auto ch : text)
     {
         switch (ch)
         {
@@ -2972,11 +2972,10 @@ bool __fastcall XgSetXDString(HWND hwnd, const std::wstring& str)
     std::vector<XG_Hint> tate, yoko;
     {
         std::wstring str0;
-        int i;
         const auto nWidth = static_cast<int>(rows[0].size());
 
         str0 += ZEN_ULEFT;
-        for (i = 0; i < nWidth; ++i) {
+        for (int i = 0; i < nWidth; ++i) {
             str0 += ZEN_HLINE;
         }
         str0 += ZEN_URIGHT;
@@ -2984,7 +2983,7 @@ bool __fastcall XgSetXDString(HWND hwnd, const std::wstring& str)
 
         for (auto& item : rows) {
             str0 += ZEN_VLINE;
-            for (i = 0; i < nWidth; ++i) {
+            for (int i = 0; i < nWidth; ++i) {
                 str0 += item[i];
             }
             str0 += ZEN_VLINE;
@@ -2992,7 +2991,7 @@ bool __fastcall XgSetXDString(HWND hwnd, const std::wstring& str)
         }
 
         str0 += ZEN_LLEFT;
-        for (i = 0; i < nWidth; ++i) {
+        for (int i = 0; i < nWidth; ++i) {
             str0 += ZEN_HLINE;
         }
         str0 += ZEN_LRIGHT;
@@ -3213,10 +3212,8 @@ void __fastcall XgSolveXWord_AddBlackRecurse(const XG_Board& xw)
             if ((ch1 == ZEN_SPACE && ch2 != ZEN_BLACK && ch2 != ZEN_SPACE) ||
                 (ch1 != ZEN_SPACE && ch1 != ZEN_BLACK && ch2 == ZEN_SPACE))
             {
-                int lo, hi;
-
                 // 文字が置ける区間[lo, hi]を求める。
-                lo = hi = j;
+                int lo = j, hi = j;
                 while (lo > 0) {
                     if (xw.GetAt(i, lo - 1) == ZEN_BLACK)
                         break;
@@ -3364,10 +3361,8 @@ void __fastcall XgSolveXWord_AddBlackRecurse(const XG_Board& xw)
             if ((ch1 == ZEN_SPACE && ch2 != ZEN_BLACK && ch2 != ZEN_SPACE) ||
                 (ch1 != ZEN_SPACE && ch1 != ZEN_BLACK && ch2 == ZEN_SPACE))
             {
-                int lo, hi;
-
                 // 文字が置ける区間[lo, hi]を求める。
-                lo = hi = i;
+                int lo = i, hi = i;
                 while (lo > 0) {
                     if (xw.GetAt(lo - 1, j) == ZEN_BLACK)
                         break;
@@ -3562,10 +3557,8 @@ void __fastcall XgSolveXWord_NoAddBlackRecurse(const XG_Board& xw)
             if ((ch1 == ZEN_SPACE && ch2 != ZEN_BLACK && ch2 != ZEN_SPACE) ||
                 (ch1 != ZEN_SPACE && ch1 != ZEN_BLACK && ch2 == ZEN_SPACE))
             {
-                int lo, hi;
-
                 // 文字が置ける区間[lo, hi]を求める。
-                lo = hi = j;
+                int lo = j, hi = j;
                 while (lo > 0) {
                     if (xw.GetAt(i, lo - 1) == ZEN_BLACK)
                         break;
@@ -3659,10 +3652,8 @@ void __fastcall XgSolveXWord_NoAddBlackRecurse(const XG_Board& xw)
             if ((ch1 == ZEN_SPACE && ch2 != ZEN_BLACK && ch2 != ZEN_SPACE) ||
                 (ch1 != ZEN_SPACE && ch1 != ZEN_BLACK && ch2 == ZEN_SPACE))
             {
-                int lo, hi;
-
                 // 文字が置ける区間[lo, hi]を求める。
-                lo = hi = i;
+                int lo = i, hi = i;
                 while (lo > 0) {
                     if (xw.GetAt(lo - 1, j) == ZEN_BLACK)
                         break;
@@ -3763,7 +3754,7 @@ void __fastcall XgSolveXWord_NoAddBlackRecurse(const XG_Board& xw)
 }
 
 // 縦と横を入れ替える。
-void XG_Board::SwapXandY() noexcept
+void XG_Board::SwapXandY()
 {
     const int nRows = xg_nRows;
     const int nCols = xg_nCols;
@@ -4217,7 +4208,7 @@ static void __fastcall XgSolveXWord_NoAddBlack(const XG_Board& xw)
 static unsigned __stdcall XgSolveProc_AddBlack(void *param)
 {
     // スレッド情報を取得する。
-    XG_ThreadInfo *info = reinterpret_cast<XG_ThreadInfo *>(param);
+    auto info = static_cast<XG_ThreadInfo *>(param);
 
     // 空ではないマスの個数をセットする。
     info->m_count = xg_xword.Count();
@@ -4241,7 +4232,7 @@ static unsigned __stdcall XgSolveProc_AddBlack(void *param)
 static unsigned __stdcall XgSolveProc_NoAddBlack(void *param)
 {
     // スレッド情報を取得する。
-    XG_ThreadInfo *info = reinterpret_cast<XG_ThreadInfo *>(param);
+    auto info = static_cast<XG_ThreadInfo *>(param);
 
     // 空ではないマスの個数をセットする。
     info->m_count = xg_xword.Count();
@@ -4265,7 +4256,7 @@ static unsigned __stdcall XgSolveProc_NoAddBlack(void *param)
 static unsigned __stdcall XgSolveProcSmart(void *param)
 {
     // スレッド情報を取得する。
-    XG_ThreadInfo *info = reinterpret_cast<XG_ThreadInfo *>(param);
+    auto info = static_cast<XG_ThreadInfo *>(param);
 
     // 空ではないマスの個数をセットする。
     info->m_count = xg_xword.Count();
@@ -4598,7 +4589,8 @@ constexpr COLORREF c_rgbHighlightAndDblFrame = RGB(255, 155, 100);
 
 // マスの数字を描画する。
 void __fastcall
-XgDrawCellNumber(HDC hdc, const RECT& rcCell, int i, int j, int number, std::unordered_set<XG_Pos>& slot)
+XgDrawCellNumber(HDC hdc, const RECT& rcCell, int i, int j, int number,
+                 const std::unordered_set<XG_Pos>& slot)
 {
     WCHAR sz[8];
     StringCbPrintf(sz, sizeof(sz), L"%d", number);
@@ -4692,7 +4684,7 @@ void XgDrawDoubleFrameCell(HDC hdc, int nMarked, const RECT& rc, int nCellSize, 
 }
 
 // 二重マス単語を描画する。
-void __fastcall XgDrawMarkWord(HDC hdc, LPSIZE psiz)
+void __fastcall XgDrawMarkWord(HDC hdc, const SIZE *psiz)
 {
     const auto nCount = static_cast<int>(xg_vMarks.size());
     if (nCount == 0) {
@@ -4772,7 +4764,7 @@ void __fastcall XgDrawMarkWord(HDC hdc, LPSIZE psiz)
         };
 
         const XG_Pos& pos = xg_vMarks[i];
-        WCHAR ch = xw.GetAt(pos.m_i, pos.m_j);
+        const WCHAR ch = xw.GetAt(pos.m_i, pos.m_j);
 
         XgDrawLetterCell(hdc, ch, rc, hFontNormal);
     }
@@ -5093,12 +5085,7 @@ void __fastcall XgDrawXWord_NormalView(const XG_Board& xw, HDC hdc, const SIZE *
 // クロスワードを描画する（スケルトンビュー）。
 void __fastcall XgDrawXWord_SkeletonView(const XG_Board& xw, HDC hdc, const SIZE *psiz, DRAW_MODE mode)
 {
-    int nCellSize;
-    if (xg_nForDisplay > 0) {
-        nCellSize = xg_nCellSize * xg_nZoomRate / 100;
-    } else {
-        nCellSize = xg_nCellSize;
-    }
+    const int nCellSize = (xg_nForDisplay > 0) ? (xg_nCellSize * xg_nZoomRate / 100) : xg_nCellSize;
 
     // スクリーンの場合は、全体を白で塗りつぶす。
     // それ以外は、四隅に白い点を描く（EMFで余白が省略されないように）。
@@ -5106,7 +5093,7 @@ void __fastcall XgDrawXWord_SkeletonView(const XG_Board& xw, HDC hdc, const SIZE
     if (mode == DRAW_MODE_SCREEN) {
         ::FillRect(hdc, &rc, reinterpret_cast<HBRUSH>(::GetStockObject(WHITE_BRUSH)));
     } else {
-        const COLORREF rgbWhite = RGB(255, 255, 255);
+        constexpr COLORREF rgbWhite = RGB(255, 255, 255);
         ::SetPixelV(hdc, rc.left, rc.top, rgbWhite);
         ::SetPixelV(hdc, rc.right - 1, rc.top, rgbWhite);
         ::SetPixelV(hdc, rc.right - 1, rc.bottom - 1, rgbWhite);
@@ -5396,7 +5383,7 @@ void __fastcall XgDrawXWord(const XG_Board& xw, HDC hdc, const SIZE *psiz, DRAW_
 }
 
 // クロスワードのイメージを作成する。
-HBITMAP __fastcall XgCreateXWordImage(XG_Board& xw, const SIZE *psiz, bool bScreen)
+HBITMAP __fastcall XgCreateXWordImage(const XG_Board& xw, const SIZE *psiz, bool bScreen)
 {
     // 互換DCを作成する。
     HDC hdc = ::CreateCompatibleDC(nullptr);
@@ -5433,15 +5420,15 @@ HBITMAP __fastcall XgCreateXWordImage(XG_Board& xw, const SIZE *psiz, bool bScre
 // CRPファイルを開く。
 bool __fastcall XgDoLoadCrpFile(HWND hwnd, LPCWSTR pszFile)
 {
-    int i, nWidth, nHeight;
+    int i;
     std::vector<std::wstring> rows;
     WCHAR szName[32], szText[128];
     XG_Board xword;
     std::vector<XG_Hint> tate, yoko;
     bool bOK = false;
 
-    nWidth = GetPrivateProfileIntW(L"Cross", L"Width", -1, pszFile);
-    nHeight = GetPrivateProfileIntW(L"Cross", L"Height", -1, pszFile);
+    const int nWidth = GetPrivateProfileIntW(L"Cross", L"Width", -1, pszFile);
+    const int nHeight = GetPrivateProfileIntW(L"Cross", L"Height", -1, pszFile);
 
     static const WCHAR sz1[] = { ZEN_UNDERLINE, 0 };
     static const WCHAR sz2[] = { ZEN_SPACE, 0 };
@@ -5784,7 +5771,6 @@ bool __fastcall XgDoSaveJson(LPCWSTR pszFile)
 {
     HANDLE hFile;
     std::wstring str, strTable, strMarks;
-    DWORD size;
 
     // ファイルを作成する。
     hFile = ::CreateFileW(pszFile, GENERIC_WRITE, FILE_SHARE_READ, nullptr,
@@ -5926,7 +5912,7 @@ bool __fastcall XgDoSaveJson(LPCWSTR pszFile)
         utf8 = std::move(replaced);
 
         // ファイルに書き込んで、ファイルを閉じる。
-        size = static_cast<DWORD>(utf8.size()) * sizeof(CHAR);
+        auto size = static_cast<DWORD>(utf8.size()) * sizeof(CHAR);
         if (::WriteFile(hFile, utf8.data(), size, &size, nullptr)) {
             ::CloseHandle(hFile);
 

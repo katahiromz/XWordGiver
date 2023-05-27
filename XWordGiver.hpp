@@ -511,7 +511,7 @@ public:
     bool FourDiagonals() const noexcept;
 
     // 縦と横を入れ替える。
-    void SwapXandY() noexcept;
+    void SwapXandY();
 
     // タテ向きにパターンを読み取る。
     std::wstring __fastcall GetPatternV(const XG_Pos& pos) const;
@@ -639,10 +639,10 @@ inline void __fastcall XgGetMarkWordExtent(int count, LPSIZE psiz) noexcept
 }
 
 // クロスワードのイメージを作成する。
-HBITMAP __fastcall XgCreateXWordImage(XG_Board& xw, const SIZE *psiz, bool bCaret);
+HBITMAP __fastcall XgCreateXWordImage(const XG_Board& xw, const SIZE *psiz, bool bCaret);
 
 // 二重マス単語を描画する。
-void __fastcall XgDrawMarkWord(HDC hdc, LPSIZE psiz);
+void __fastcall XgDrawMarkWord(HDC hdc, const SIZE *psiz);
 
 // 描画モード。
 enum DRAW_MODE
