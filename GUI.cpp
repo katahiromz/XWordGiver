@@ -620,9 +620,9 @@ void __fastcall XgUpdateCaretPos(void)
         pt.x += 4;
     }
     if (xg_szCellFont[0])
-        StringCbCatW(lf.lfFaceName, sizeof(lf.lfFaceName), xg_szCellFont);
+        StringCchCatW(lf.lfFaceName, _countof(lf.lfFaceName), xg_szCellFont);
     else
-        StringCbCatW(lf.lfFaceName, sizeof(lf.lfFaceName), XgLoadStringDx1(IDS_MONOFONT));
+        StringCchCatW(lf.lfFaceName, _countof(lf.lfFaceName), XgLoadStringDx1(IDS_MONOFONT));
     lf.lfHeight = -nCellSize * xg_nCellCharPercents / 100;
     lf.lfWidth = 0;
     lf.lfQuality = ANTIALIASED_QUALITY;
@@ -1497,7 +1497,7 @@ bool XgOpenHintsByNotepad(HWND /*hwnd*/, bool bShowAnswer)
 
     // 一時ファイルを作成する。
     ::GetTempPathW(MAX_PATH, szPath);
-    StringCbCat(szPath, sizeof(szPath), XgLoadStringDx1(IDS_HINTSTXT));
+    StringCchCat(szPath, _countof(szPath), XgLoadStringDx1(IDS_HINTSTXT));
     HANDLE hFile = ::CreateFileW(szPath, GENERIC_WRITE, FILE_SHARE_READ,
         nullptr, CREATE_ALWAYS, 0, nullptr);
     if (hFile == INVALID_HANDLE_VALUE)
@@ -2726,7 +2726,7 @@ bool __fastcall XgDoSaveToLocation(HWND hwnd)
     for (u = 1; u <= 0xFFFF; u++) {
         StringCchPrintf(szName, _countof(szName), L"%dx%d-%04u.xwj", xg_nRows, xg_nCols, u);
         StringCchCopy(szPath, _countof(szPath), szDir);
-        StringCbCat(szPath, sizeof(szPath), szName);
+        StringCchCat(szPath, _countof(szPath), szName);
         if (::GetFileAttributesW(szPath) == 0xFFFFFFFF)
             break;
     }
@@ -4008,7 +4008,7 @@ void XgDoUpdateDictMenu(HMENU hDictMenu)
             text += entry.m_friendly_name;
         }
         StringCchPrintfW(szText, _countof(szText), L"&%c ", L"0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF"[count]);
-        StringCbCatW(szText, sizeof(szText), text.c_str());
+        StringCchCatW(szText, _countof(szText), text.c_str());
         AppendMenuW(hDictMenu, MF_STRING | MF_ENABLED, id, szText);
         ++index;
         ++count;
