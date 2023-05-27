@@ -5387,7 +5387,7 @@ void __fastcall XgDrawXWord_SkeletonView(XG_Board& xw, HDC hdc, const SIZE *psiz
             ::MoveToEx(hdc, rc.left, rc.top, NULL);
             ::LineTo(hdc, rc.right, rc.top);
             ::LineTo(hdc, rc.right, rc.bottom);
-            ::LineTo(hdc, rc.right, rc.top);
+            ::LineTo(hdc, rc.left, rc.bottom);
             ::LineTo(hdc, rc.left, rc.top);
             ::SelectObject(hdc, hPen2Old);
         }
