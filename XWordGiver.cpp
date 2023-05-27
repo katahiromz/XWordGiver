@@ -4740,21 +4740,19 @@ void __fastcall XgDrawMarkWord(HDC hdc, LPSIZE psiz)
 
     // 周りに太い線を描く。
     if (xg_bAddThickFrame) {
-        InflateRect(&rc, -xg_nNarrowMargin, -xg_nNarrowMargin);
-        InflateRect(&rc, +c_nWide, +c_nWide);
-        FillRect(hdc, &rc, hbrBlack);
-        InflateRect(&rc, -c_nWide, -c_nWide);
         InflateRect(&rc, +xg_nNarrowMargin, +xg_nNarrowMargin);
+        FillRect(hdc, &rc, hbrBlack);
+        InflateRect(&rc, -xg_nNarrowMargin, -xg_nNarrowMargin);
     }
 
     // 二重マスを描画する。
     HGDIOBJ hFontOld = ::SelectObject(hdc, hFontSmall);
     for (int i = 0; i < nCount; i++) {
         rc = {
-            xg_nNarrowMargin + i * xg_nCellSize,
+            xg_nNarrowMargin + i * nCellSize,
             xg_nNarrowMargin,
-            xg_nNarrowMargin + (i + 1) * xg_nCellSize,
-            xg_nNarrowMargin + xg_nCellSize
+            xg_nNarrowMargin + (i + 1) * nCellSize,
+            xg_nNarrowMargin + nCellSize
         };
         ::FillRect(hdc, &rc, hbrMarked);
 
@@ -4767,10 +4765,10 @@ void __fastcall XgDrawMarkWord(HDC hdc, LPSIZE psiz)
     // マスの文字を描画する。
     for (int i = 0; i < nCount; i++) {
         rc = {
-            xg_nNarrowMargin + i * xg_nCellSize,
+            xg_nNarrowMargin + i * nCellSize,
             xg_nNarrowMargin,
-            xg_nNarrowMargin + (i + 1) * xg_nCellSize,
-            xg_nNarrowMargin + xg_nCellSize
+            xg_nNarrowMargin + (i + 1) * nCellSize,
+            xg_nNarrowMargin + nCellSize
         };
 
         const XG_Pos& pos = xg_vMarks[i];
@@ -4784,10 +4782,10 @@ void __fastcall XgDrawMarkWord(HDC hdc, LPSIZE psiz)
     HGDIOBJ hPenOld = ::SelectObject(hdc, hThinPen);
     for (int i = 0; i < nCount; i++) {
         rc = {
-            xg_nNarrowMargin + i * xg_nCellSize,
+            xg_nNarrowMargin + i * nCellSize,
             xg_nNarrowMargin,
-            xg_nNarrowMargin + (i + 1) * xg_nCellSize,
-            xg_nNarrowMargin + xg_nCellSize
+            xg_nNarrowMargin + (i + 1) * nCellSize,
+            xg_nNarrowMargin + nCellSize
         };
 
         // Rectangle関数ではうまくいかないので直接線を描画する。
