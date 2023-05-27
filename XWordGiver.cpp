@@ -4462,49 +4462,57 @@ void XgDrawCaret(HDC hdc, int i, int j, int nCellSize, HPEN hCaretPen) noexcept
     ::SelectObject(hdc, hPenOld);
 }
 
-// 文字マスを描画する。
-void __fastcall XgDrawLetterCell(HDC hdc, WCHAR ch, RECT& rc, HFONT hFont) noexcept
+// 文字を置き換える。
+WCHAR XgReplaceChar(WCHAR ch)
 {
+    WCHAR new_ch, ch0 = ch;
+
     // 文字を変換する。
     if (xg_bHiragana) {
-        WCHAR new_ch;
-        LCMapStringW(XG_JPN_LOCALE, LCMAP_FULLWIDTH | LCMAP_HIRAGANA, &ch, 1, &new_ch, 1);
-        ch = new_ch;
+        LCMapStringW(XG_JPN_LOCALE, LCMAP_FULLWIDTH | LCMAP_HIRAGANA, &ch0, 1, &new_ch, 1);
+        ch0 = new_ch;
     } else {
-        WCHAR new_ch;
-        LCMapStringW(XG_JPN_LOCALE, LCMAP_FULLWIDTH | LCMAP_KATAKANA, &ch, 1, &new_ch, 1);
-        ch = new_ch;
+        LCMapStringW(XG_JPN_LOCALE, LCMAP_FULLWIDTH | LCMAP_KATAKANA, &ch0, 1, &new_ch, 1);
+        ch0 = new_ch;
     }
 
-    if (XgIsCharKanaW(ch) || ch == ZEN_PROLONG ||
-        xg_imode == xg_im_KANA || xg_imode == xg_im_KANJI)
-    {
-        WCHAR new_ch;
+    if (XgIsCharKanaW(ch0) || ch == ZEN_PROLONG || xg_imode == xg_im_KANA || xg_imode == xg_im_KANJI) {
         if (xg_bLowercase) {
-            LCMapStringW(XG_JPN_LOCALE, LCMAP_FULLWIDTH | LCMAP_LOWERCASE, &ch, 1, &new_ch, 1);
-            ch = new_ch;
+            LCMapStringW(XG_JPN_LOCALE, LCMAP_FULLWIDTH | LCMAP_LOWERCASE, &ch0, 1, &new_ch, 1);
+            ch0 = new_ch;
         } else {
-            LCMapStringW(XG_JPN_LOCALE, LCMAP_FULLWIDTH | LCMAP_UPPERCASE, &ch, 1, &new_ch, 1);
-            ch = new_ch;
+            LCMapStringW(XG_JPN_LOCALE, LCMAP_FULLWIDTH | LCMAP_UPPERCASE, &ch0, 1, &new_ch, 1);
+            ch0 = new_ch;
         }
     } else {
-        WCHAR new_ch;
         if (xg_bLowercase) {
-            LCMapStringW(XG_JPN_LOCALE, LCMAP_HALFWIDTH | LCMAP_LOWERCASE, &ch, 1, &new_ch, 1);
-            ch = new_ch;
+            LCMapStringW(XG_JPN_LOCALE, LCMAP_HALFWIDTH | LCMAP_LOWERCASE, &ch0, 1, &new_ch, 1);
+            ch0 = new_ch;
         } else {
-            LCMapStringW(XG_JPN_LOCALE, LCMAP_HALFWIDTH | LCMAP_UPPERCASE, &ch, 1, &new_ch, 1);
-            ch = new_ch;
+            LCMapStringW(XG_JPN_LOCALE, LCMAP_HALFWIDTH | LCMAP_UPPERCASE, &ch0, 1, &new_ch, 1);
+            ch0 = new_ch;
         }
     }
 
+    return ch0;
+}
+
+// 文字マスを描画する。
+void XgDrawLetterCell(HDC hdc, WCHAR ch, RECT& rc, HFONT hFont)
+{
     // 文字の背景は透明。塗りつぶさない。
     ::SetBkMode(hdc, TRANSPARENT);
 
-    // 文字を書く。
-    HGDIOBJ hFontOld = ::SelectObject(hdc, hFont);
+    // 文字を書く。DrawTextだとなぜか失敗する。
     ::SetTextColor(hdc, xg_rgbBlackCellColor);
-    ::DrawTextW(hdc, &ch, 1, &rc, DT_CENTER | DT_SINGLELINE | DT_VCENTER);
+    HGDIOBJ hFontOld = ::SelectObject(hdc, hFont);
+    {
+        SIZE siz;
+        ::GetTextExtentPoint32W(hdc, &ch, 1, &siz);
+        MRect rect = rc;
+        MPoint pt = rect.CenterPoint();
+        ::TextOutW(hdc, pt.x - siz.cx / 2, pt.y - siz.cy / 2, &ch, 1);
+    }
     ::SelectObject(hdc, hFontOld);
 }
 
@@ -4731,22 +4739,22 @@ void __fastcall XgDrawMarkWord(HDC hdc, const SIZE *psiz)
     HFONT hFontSmall = XgCreateSmallFont(nCellSize);
 
     // 全体を白で塗りつぶす。
-    RECT rc = { 0, 0, psiz->cx, psiz->cy };
-    ::FillRect(hdc, &rc, static_cast<HBRUSH>(::GetStockObject(WHITE_BRUSH)));
+    RECT rc0 = { 0, 0, psiz->cx, psiz->cy };
+    ::FillRect(hdc, &rc0, static_cast<HBRUSH>(::GetStockObject(WHITE_BRUSH)));
 
     // 周りに太い線を描く。
     if (xg_bAddThickFrame) {
-        ::InflateRect(&rc, -c_nWide, -c_nWide);
-        ::FillRect(hdc, &rc, hbrBlack);
-        ::InflateRect(&rc, +c_nWide, +c_nWide);
+        ::InflateRect(&rc0, -c_nWide, -c_nWide);
+        ::FillRect(hdc, &rc0, hbrBlack);
+        ::InflateRect(&rc0, +c_nWide, +c_nWide);
     }
 
     const auto& xw = (xg_bSolved && xg_bShowAnswer) ? xg_solution : xg_xword;
 
     // 二重マスを描画する。
     HGDIOBJ hFontOld = ::SelectObject(hdc, hFontSmall);
-    for (int i = 0; i < nCount; i++) {
-        rc = {
+    for (int i = 0; i < nCount; ++i) {
+        RECT rc = {
             xg_nNarrowMargin + i * nCellSize,
             xg_nNarrowMargin,
             xg_nNarrowMargin + (i + 1) * nCellSize,
@@ -4761,13 +4769,14 @@ void __fastcall XgDrawMarkWord(HDC hdc, const SIZE *psiz)
         }
 
         const XG_Pos& pos = xg_vMarks[i];
-        const WCHAR ch = xw.GetAt(pos.m_i, pos.m_j);
 
         // ナンクロなら数字、さもなければ二重マスの文字を描画する。
-        if (xg_bNumCroMode) {
+        if (xg_bSolved && xg_bNumCroMode) {
+            const WCHAR ch = xg_solution.GetAt(pos.m_i, pos.m_j);
             ::OffsetRect(&rc, c_nThin, c_nThin * 2 / 3);
             XgDrawCellNumber(hdc, rc, pos.m_i, pos.m_j, xg_mapNumCro1[ch], slot);
         } else {
+            const WCHAR ch = xw.GetAt(pos.m_i, pos.m_j);
             XgDrawDoubleFrameCell(hdc, i, rc, nCellSize, hThinPen);
         }
     }
@@ -4776,8 +4785,10 @@ void __fastcall XgDrawMarkWord(HDC hdc, const SIZE *psiz)
     // 塗りつぶさない。
     ::SelectObject(hdc, ::GetStockObject(NULL_BRUSH));
 
-    for (int i = 0; i < nCount; i++) {
-        rc = {
+    // マスの文字とセルの枠を描画する。
+    HGDIOBJ hPenOld = ::SelectObject(hdc, hThinPen);
+    for (int i = 0; i < nCount; ++i) {
+        RECT rc = {
             xg_nNarrowMargin + i * nCellSize,
             xg_nNarrowMargin,
             xg_nNarrowMargin + (i + 1) * nCellSize,
@@ -4785,7 +4796,7 @@ void __fastcall XgDrawMarkWord(HDC hdc, const SIZE *psiz)
         };
 
         const XG_Pos& pos = xg_vMarks[i];
-        const WCHAR ch = xw.GetAt(pos.m_i, pos.m_j);
+        const WCHAR ch = XgReplaceChar(xw.GetAt(pos.m_i, pos.m_j));
 
         // マスの文字を描画する。
         XgDrawLetterCell(hdc, ch, rc, hFontNormal);
@@ -4797,6 +4808,7 @@ void __fastcall XgDrawMarkWord(HDC hdc, const SIZE *psiz)
         ::LineTo(hdc, rc.left, rc.bottom);
         ::LineTo(hdc, rc.left, rc.top);
     }
+    ::SelectObject(hdc, hPenOld);
 
     // 破棄する。
     ::DeleteObject(hThinPen);
@@ -5027,7 +5039,7 @@ void __fastcall XgDrawXWord_NormalView(const XG_Board& xw, HDC hdc, const SIZE *
                 xg_nMargin + (i + 1) * nCellSize
             };
 
-            const auto ch = xw.GetAt(i, j);
+            const auto ch = XgReplaceChar(xw.GetAt(i, j));
             if (ch == ZEN_BLACK)
                 continue;
 
@@ -5313,7 +5325,7 @@ void __fastcall XgDrawXWord_SkeletonView(const XG_Board& xw, HDC hdc, const SIZE
     // セルの文字を描画する。
     for (int i = 0; i < xg_nRows; i++) {
         for (int j = 0; j < xg_nCols; j++) {
-            const WCHAR ch = xw.GetAt(i, j);
+            const auto ch = XgReplaceChar(xw.GetAt(i, j));
             if (ch == ZEN_BLACK)
                 continue;
 

@@ -231,6 +231,7 @@
     - Improved the drawing routine.
     - Fixed NumCro drawing.
     - Fixed Skeleton View line drawing.
+    - Improved marked word drawing.
 
 # 開発履歴 (Japanese)
 
@@ -777,3 +778,4 @@
     - 描画ルーチンを改良。
     - ナンクロの描画を修正。
     - スケルトンビューの線の描画を修正。
+    - 二重マス単語の描画を改善。
