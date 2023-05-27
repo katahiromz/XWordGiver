@@ -1479,7 +1479,7 @@ BOOL __fastcall XgPatternRuleIsOK(const XG_PATDATA& pat);
 #include "XG_BoxWindow.hpp"
 
 // ボックスを描画する。
-void XgDrawBoxes(const XG_Board& xw, HDC hdc, const SIZE *psiz);
+void XgDrawBoxes(HDC hdc, const SIZE *psiz);
 // ボックスをすべて削除する。
 void XgDeleteBoxes(void) noexcept;
 // ボックスJSONを読み込む。

@@ -5384,7 +5384,7 @@ void __fastcall XgDrawXWord(const XG_Board& xw, HDC hdc, const SIZE *psiz, DRAW_
     }
     // ボックスを描画する。
     if (mode != DRAW_MODE_SCREEN)
-        XgDrawBoxes(xw, hdc, psiz);
+        XgDrawBoxes(hdc, psiz);
 }
 
 // クロスワードのイメージを作成する。
