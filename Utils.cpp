@@ -1102,7 +1102,7 @@ bool XG_FileManager::save_images()
     return true;
 }
 
-bool XG_FileManager::save_images(std::unordered_set<std::wstring>& files)
+bool XG_FileManager::save_images(const std::unordered_set<std::wstring>& files)
 {
     std::unordered_set<std::wstring> erase_targets;
 

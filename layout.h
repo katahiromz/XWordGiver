@@ -1,9 +1,3 @@
-/*
- * PROJECT:     ReactOS headers
- * LICENSE:     LGPL-2.0-or-later (https://spdx.org/licenses/LGPL-2.0-or-later)
- * PURPOSE:     The layout engine of resizable dialog boxes / windows
- * COPYRIGHT:   Copyright 2020-2021 Katayama Hirofumi MZ (katayama.hirofumi.mz@gmail.com)
- */
 #pragma once
 #include <assert.h>
 
@@ -22,8 +16,8 @@ typedef struct LAYOUT_DATA {
     UINT m_cLayouts;
 } LAYOUT_DATA;
 
-static __inline void
-_layout_ModifySystemMenu(LAYOUT_DATA *pData, BOOL bEnableResize)
+inline void
+_layout_ModifySystemMenu(LAYOUT_DATA *pData, BOOL bEnableResize) noexcept
 {
     if (bEnableResize)
     {
@@ -38,8 +32,8 @@ _layout_ModifySystemMenu(LAYOUT_DATA *pData, BOOL bEnableResize)
     }
 }
 
-static __inline HDWP
-_layout_MoveGrip(LAYOUT_DATA *pData, HDWP hDwp OPTIONAL)
+inline HDWP
+_layout_MoveGrip(LAYOUT_DATA *pData, HDWP hDwp OPTIONAL) noexcept
 {
     if (!IsWindowVisible(pData->m_hwndGrip))
         return hDwp;
@@ -64,7 +58,7 @@ _layout_MoveGrip(LAYOUT_DATA *pData, HDWP hDwp OPTIONAL)
     return hDwp;
 }
 
-static __inline void
+inline void
 LayoutShowGrip(LAYOUT_DATA *pData, BOOL bShow)
 {
     if (!bShow)
@@ -84,8 +78,8 @@ LayoutShowGrip(LAYOUT_DATA *pData, BOOL bShow)
     ShowWindow(pData->m_hwndGrip, SW_SHOWNOACTIVATE);
 }
 
-static __inline void
-_layout_GetPercents(LPRECT prcPercents, UINT uEdges)
+inline void
+_layout_GetPercents(LPRECT prcPercents, UINT uEdges) noexcept
 {
     prcPercents->left = (uEdges & BF_LEFT) ? 0 : 100;
     prcPercents->right = (uEdges & BF_RIGHT) ? 100 : 0;
@@ -93,19 +87,18 @@ _layout_GetPercents(LPRECT prcPercents, UINT uEdges)
     prcPercents->bottom = (uEdges & BF_BOTTOM) ? 100 : 0;
 }
 
-static __inline HDWP
+inline HDWP
 _layout_DoMoveItem(LAYOUT_DATA *pData, HDWP hDwp, const LAYOUT_INFO *pLayout,
                    const RECT *rcClient)
 {
     RECT rcChild, NewRect, rcPercents;
-    LONG nWidth, nHeight;
 
     if (!GetWindowRect(pLayout->m_hwndCtrl, &rcChild))
         return hDwp;
     MapWindowPoints(nullptr, pData->m_hwndParent, reinterpret_cast<LPPOINT>(&rcChild), 2);
 
-    nWidth = rcClient->right - rcClient->left;
-    nHeight = rcClient->bottom - rcClient->top;
+    LONG nWidth = rcClient->right - rcClient->left;
+    LONG nHeight = rcClient->bottom - rcClient->top;
 
     _layout_GetPercents(&rcPercents, pLayout->m_uEdges);
     NewRect.left = pLayout->m_margin1.cx + nWidth * rcPercents.left / 100;
@@ -122,25 +115,24 @@ _layout_DoMoveItem(LAYOUT_DATA *pData, HDWP hDwp, const LAYOUT_INFO *pLayout,
     return hDwp;
 }
 
-static __inline void
+inline void
 _layout_ArrangeLayout(LAYOUT_DATA *pData)
 {
     RECT rcClient;
-    UINT iItem;
     HDWP hDwp = BeginDeferWindowPos(pData->m_cLayouts + 1);
     if (hDwp == nullptr)
         return;
 
     GetClientRect(pData->m_hwndParent, &rcClient);
 
-    for (iItem = 0; iItem < pData->m_cLayouts; ++iItem)
+    for (UINT iItem = 0; iItem < pData->m_cLayouts; ++iItem)
         hDwp = _layout_DoMoveItem(pData, hDwp, &pData->m_pLayouts[iItem], &rcClient);
 
     hDwp = _layout_MoveGrip(pData, hDwp);
     EndDeferWindowPos(hDwp);
 
     /* STATIC controls need refreshing. */
-    for (iItem = 0; iItem < pData->m_cLayouts; ++iItem)
+    for (UINT iItem = 0; iItem < pData->m_cLayouts; ++iItem)
     {
         HWND hwndCtrl = pData->m_pLayouts[iItem].m_hwndCtrl;
         WCHAR szClass[8];
@@ -152,18 +144,16 @@ _layout_ArrangeLayout(LAYOUT_DATA *pData)
     }
 }
 
-static __inline void
+inline void
 _layout_InitLayouts(LAYOUT_DATA *pData)
 {
     RECT rcClient, rcChild, rcPercents;
-    LONG nWidth, nHeight;
-    UINT iItem;
 
     GetClientRect(pData->m_hwndParent, &rcClient);
-    nWidth = rcClient.right - rcClient.left;
-    nHeight = rcClient.bottom - rcClient.top;
+    LONG nWidth = rcClient.right - rcClient.left;
+    LONG nHeight = rcClient.bottom - rcClient.top;
 
-    for (iItem = 0; iItem < pData->m_cLayouts; ++iItem)
+    for (UINT iItem = 0; iItem < pData->m_cLayouts; ++iItem)
     {
         LAYOUT_INFO *pInfo = &pData->m_pLayouts[iItem];
         if (pInfo->m_hwndCtrl == nullptr)
@@ -185,7 +175,7 @@ _layout_InitLayouts(LAYOUT_DATA *pData)
 }
 
 /* NOTE: Please call LayoutUpdate on parent's WM_SIZE. */
-static __inline void
+inline void
 LayoutUpdate(HWND ignored1, LAYOUT_DATA *pData, LPCVOID ignored2, UINT ignored3)
 {
     UNREFERENCED_PARAMETER(ignored1);
@@ -197,19 +187,19 @@ LayoutUpdate(HWND ignored1, LAYOUT_DATA *pData, LPCVOID ignored2, UINT ignored3)
     _layout_ArrangeLayout(pData);
 }
 
-static __inline void
+inline void
 LayoutEnableResize(LAYOUT_DATA *pData, BOOL bEnable)
 {
     LayoutShowGrip(pData, bEnable);
     _layout_ModifySystemMenu(pData, bEnable);
 }
 
-static __inline LAYOUT_DATA *
+inline LAYOUT_DATA *
 LayoutInit(HWND hwndParent, const LAYOUT_INFO *pLayouts, int cLayouts)
 {
     BOOL bShowGrip;
     SIZE_T cb;
-    LAYOUT_DATA *pData = (LAYOUT_DATA *)HeapAlloc(GetProcessHeap(), 0, sizeof(LAYOUT_DATA));
+    auto pData = static_cast<LAYOUT_DATA*>(HeapAlloc(GetProcessHeap(), 0, sizeof(LAYOUT_DATA)));
     if (pData == nullptr)
     {
         assert(0);
@@ -228,7 +218,7 @@ LayoutInit(HWND hwndParent, const LAYOUT_INFO *pLayouts, int cLayouts)
 
     cb = cLayouts * sizeof(LAYOUT_INFO);
     pData->m_cLayouts = cLayouts;
-    pData->m_pLayouts = (LAYOUT_INFO *)HeapAlloc(GetProcessHeap(), 0, cb);
+    pData->m_pLayouts = static_cast<LAYOUT_INFO*>(HeapAlloc(GetProcessHeap(), 0, cb));
     if (pData->m_pLayouts == nullptr)
     {
         assert(0);
@@ -251,8 +241,8 @@ LayoutInit(HWND hwndParent, const LAYOUT_INFO *pLayouts, int cLayouts)
     return pData;
 }
 
-static __inline void
-LayoutDestroy(LAYOUT_DATA *pData)
+inline void
+LayoutDestroy(LAYOUT_DATA *pData) noexcept
 {
     if (!pData)
         return;

@@ -101,7 +101,7 @@ private:
 
 ////////////////////////////////////////////////////////////////////////////
 
-inline MScrollCtrlInfo::MScrollCtrlInfo() noexcept
+inline MScrollCtrlInfo::MScrollCtrlInfo() noexcept : m_hwndCtrl(nullptr)
 {
 }
 

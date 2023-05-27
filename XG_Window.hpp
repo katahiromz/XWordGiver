@@ -22,6 +22,10 @@ public:
     {
     }
 
+    virtual ~XG_Window()
+    {
+    }
+
     virtual LPCTSTR GetWndClassName() const
     {
         return TEXT("XG_Window");
@@ -93,6 +97,10 @@ public:
     }
 
     XG_Dialog() noexcept : m_hWnd(nullptr)
+    {
+    }
+
+    virtual ~XG_Dialog()
     {
     }
 

@@ -132,7 +132,7 @@ public:
         return hRgn;
     }
 
-    void DoDrawGrips(HWND hwnd, HDC hDC, RECT& rc) noexcept
+    void DoDrawGrips(HWND hwnd, HDC hDC, const RECT& rc) noexcept
     {
         RECT rcInner1 = rc;
         InflateRect(&rcInner1, -CXY_GRIP / 2, -CXY_GRIP / 2);

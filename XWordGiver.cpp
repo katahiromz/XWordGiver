@@ -2944,6 +2944,8 @@ bool __fastcall XgSetXDString(HWND hwnd, const std::wstring& str)
                     notes += L"\r\n";
                 }
                 break;
+            default:
+                break;
             }
         }
     }
@@ -4781,7 +4783,7 @@ void __fastcall XgDrawMarkWord(HDC hdc, const SIZE *psiz)
         };
 
         // Rectangle関数ではうまくいかないので直接線を描画する。
-        ::MoveToEx(hdc, rc.left, rc.top, NULL);
+        ::MoveToEx(hdc, rc.left, rc.top, nullptr);
         ::LineTo(hdc, rc.right, rc.top);
         ::LineTo(hdc, rc.right, rc.bottom);
         ::LineTo(hdc, rc.left, rc.bottom);
@@ -5337,7 +5339,7 @@ void __fastcall XgDrawXWord_SkeletonView(const XG_Board& xw, HDC hdc, const SIZE
 
             // Rectangle関数ではうまくいかないので直接線を描画する。
             HGDIOBJ hPen2Old = ::SelectObject(hdc, hThinPen);
-            ::MoveToEx(hdc, rc.left, rc.top, NULL);
+            ::MoveToEx(hdc, rc.left, rc.top, nullptr);
             ::LineTo(hdc, rc.right, rc.top);
             ::LineTo(hdc, rc.right, rc.bottom);
             ::LineTo(hdc, rc.left, rc.bottom);

@@ -271,7 +271,7 @@ struct XG_FileManager
     bool save_image(const std::wstring& path);
     bool save_image2(std::wstring& path);
     bool save_images();
-    bool save_images(std::unordered_set<std::wstring>& files);
+    bool save_images(const std::unordered_set<std::wstring>& files);
     void convert();
     void clear();
     std::wstring get_file_title(const std::wstring& str) const;
