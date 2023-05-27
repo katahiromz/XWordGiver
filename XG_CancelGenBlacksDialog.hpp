@@ -40,7 +40,7 @@ public:
         // 生成したパターンの個数を表示する。
         if (xg_nNumberGenerated > 0) {
             WCHAR sz[MAX_PATH];
-            StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(IDS_PATMAKING), xg_nNumberGenerated);
+            StringCchPrintf(sz, _countof(sz), XgLoadStringDx1(IDS_PATMAKING), xg_nNumberGenerated);
             ::SetDlgItemTextW(hwnd, stc2, sz);
         }
         // フォーカスをセットする。
@@ -84,7 +84,7 @@ public:
             // 経過時間を表示する。
             WCHAR sz[MAX_PATH];
             const auto dwTick = ::GetTickCount64();
-            StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(IDS_CALCULATING),
+            StringCchPrintf(sz, _countof(sz), XgLoadStringDx1(IDS_CALCULATING),
                 static_cast<DWORD>(dwTick - xg_dwlTick0) / 1000,
                 static_cast<DWORD>(dwTick - xg_dwlTick0) / 100 % 10);
             ::SetDlgItemTextW(hwnd, stc1, sz);

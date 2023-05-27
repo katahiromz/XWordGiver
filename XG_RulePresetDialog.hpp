@@ -53,7 +53,7 @@ public:
     void SetComboValue(HWND hwnd, int value)
     {
         WCHAR szText[256];
-        StringCbPrintfW(szText, sizeof(szText), L"0x%04X:", value);
+        StringCchPrintfW(szText, _countof(szText), L"0x%04X:", value);
 
         HWND hCmb1 = GetDlgItem(hwnd, cmb1);
         const int iItem = ComboBox_FindString(hCmb1, -1, szText);
@@ -63,7 +63,7 @@ public:
         }
         else
         {
-            StringCbPrintfW(szText, sizeof(szText), L"0x%04X", value);
+            StringCchPrintfW(szText, _countof(szText), L"0x%04X", value);
         }
         ComboBox_RealSetText(hCmb1, szText);
     }

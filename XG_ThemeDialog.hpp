@@ -456,7 +456,7 @@ public:
             ListView_InsertItem((minus ? hLst3 : hLst2), &item);
 
             const int count = static_cast<int>(xg_tag_histgram[str]);
-            StringCbPrintfW(szText, sizeof(szText), L"%d", count);
+            StringCchPrintfW(szText, _countof(szText), L"%d", count);
             item.iItem = iItem;
             item.pszText = szText;
             item.iSubItem = 1;

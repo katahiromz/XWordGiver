@@ -2224,7 +2224,7 @@ XgGetHintsStr(const XG_Board& board, std::wstring& str, int hint_type, bool bSho
 
         for (const auto& info : xg_vTateInfo) {
             // 番号を格納する。
-            StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(IDS_DOWNNUMBER), info.m_number);
+            StringCchPrintf(sz, _countof(sz), XgLoadStringDx1(IDS_DOWNNUMBER), info.m_number);
             str += sz;
 
             // 答えを見せるかどうか？
@@ -2274,7 +2274,7 @@ XgGetHintsStr(const XG_Board& board, std::wstring& str, int hint_type, bool bSho
         str += xg_pszNewLine;
         for (const auto& info : xg_vYokoInfo) {
             // 番号を格納する。
-            StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(IDS_ACROSSNUMBER), info.m_number);
+            StringCchPrintf(sz, _countof(sz), XgLoadStringDx1(IDS_ACROSSNUMBER), info.m_number);
             str += sz;
 
             // 答えを見せるかどうか？
@@ -2325,7 +2325,7 @@ XgGetHintsStr(const XG_Board& board, std::wstring& str, int hint_type, bool bSho
 
         for (const auto& info : xg_vTateInfo) {
             // <li>
-            StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(IDS_LI), info.m_number);
+            StringCchPrintf(sz, _countof(sz), XgLoadStringDx1(IDS_LI), info.m_number);
             str += sz;
 
             // ヒント文章を追加する。
@@ -2371,7 +2371,7 @@ XgGetHintsStr(const XG_Board& board, std::wstring& str, int hint_type, bool bSho
 
         for (const auto& info : xg_vYokoInfo) {
             // <li>
-            StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(IDS_LI), info.m_number);
+            StringCchPrintf(sz, _countof(sz), XgLoadStringDx1(IDS_LI), info.m_number);
             str += sz;
 
             // ヒント文章を追加する。
@@ -4603,7 +4603,7 @@ XgDrawCellNumber(HDC hdc, const RECT& rcCell, int i, int j, int number,
                  const std::unordered_set<XG_Pos>& slot)
 {
     WCHAR sz[8];
-    StringCbPrintf(sz, sizeof(sz), L"%d", number);
+    StringCchPrintf(sz, _countof(sz), L"%d", number);
 
     RECT rcText;
     SIZE siz;
@@ -4666,9 +4666,9 @@ void XgDrawDoubleFrameCell(HDC hdc, int nMarked, const RECT& rc, int nCellSize, 
     if (xg_bShowDoubleFrameLetters) {
         WCHAR sz[2];
         if (nMarked < static_cast<int>(xg_strDoubleFrameLetters.size()))
-            StringCbPrintf(sz, sizeof(sz), L"%c", xg_strDoubleFrameLetters[nMarked]);
+            StringCchPrintf(sz, _countof(sz), L"%c", xg_strDoubleFrameLetters[nMarked]);
         else
-            StringCbPrintf(sz, sizeof(sz), L"%c", ZEN_BLACK);
+            StringCchPrintf(sz, _countof(sz), L"%c", ZEN_BLACK);
 
         // 二重マスの右下端の文字の背景を塗りつぶす。
         SIZE siz;
@@ -5438,7 +5438,7 @@ bool __fastcall XgDoLoadCrpFile(HWND hwnd, LPCWSTR pszFile)
 
     if (nWidth > 0 && nHeight > 0) {
         for (i = 0; i < nHeight; ++i) {
-            StringCbPrintf(szName, sizeof(szName), L"Line%d", i + 1);
+            StringCchPrintf(szName, _countof(szName), L"Line%d", i + 1);
             GetPrivateProfileStringW(L"Cross", szName, L"", szText, _countof(szText), pszFile);
 
             std::wstring str = szText;
@@ -5497,7 +5497,7 @@ bool __fastcall XgDoLoadCrpFile(HWND hwnd, LPCWSTR pszFile)
             const int nClueCount = GetPrivateProfileIntW(L"Clue", L"Count", 0, pszFile);
             if (nClueCount) {
                 for (i = 0; i < nClueCount; ++i) {
-                    StringCbPrintf(szName, sizeof(szName), L"Clue%d", i + 1);
+                    StringCchPrintf(szName, _countof(szName), L"Clue%d", i + 1);
                     GetPrivateProfileStringW(L"Clue", szName, L"", szText, _countof(szText), pszFile);
 
                     std::wstring str = szText;
@@ -5525,7 +5525,7 @@ bool __fastcall XgDoLoadCrpFile(HWND hwnd, LPCWSTR pszFile)
                 }
             } else {
                 for (i = 0; i < 256; ++i) {
-                    StringCbPrintf(szName, sizeof(szName), L"Down%d", i + 1);
+                    StringCchPrintf(szName, _countof(szName), L"Down%d", i + 1);
                     GetPrivateProfileStringW(L"Clue", szName, L"", szText, _countof(szText), pszFile);
 
                     std::wstring str = szText;
@@ -5543,7 +5543,7 @@ bool __fastcall XgDoLoadCrpFile(HWND hwnd, LPCWSTR pszFile)
                 }
 
                 for (i = 0; i < 256; ++i) {
-                    StringCbPrintf(szName, sizeof(szName), L"Across%d", i + 1);
+                    StringCchPrintf(szName, _countof(szName), L"Across%d", i + 1);
                     GetPrivateProfileStringW(L"Clue", szName, L"", szText, _countof(szText), pszFile);
 
                     std::wstring str = szText;
@@ -5810,7 +5810,7 @@ bool __fastcall XgDoSaveJson(LPCWSTR pszFile)
                 auto ch = pair.first;
                 auto number = pair.second;
                 WCHAR szNum[64];
-                StringCbPrintfW(szNum, sizeof(szNum), L"%04d", number);
+                StringCchPrintfW(szNum, _countof(szNum), L"%04d", number);
                 const WCHAR szChar[2] = { ch, 0 };
                 j0["num_cro"][XgUnicodeToUtf8(szNum)] = XgUnicodeToUtf8(szChar);
             }

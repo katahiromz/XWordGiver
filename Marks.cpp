@@ -31,11 +31,11 @@ void __fastcall XgGetStringOfMarks(std::wstring& str)
     str += xg_pszNewLine;
     for (const auto& mark : xg_vMarks) {
         if (xg_bSolved)
-            StringCbPrintf(sz, sizeof(sz), L"(%d, %d)%c\r\n",
+            StringCchPrintf(sz, _countof(sz), L"(%d, %d)%c\r\n",
                 mark.m_i + 1, mark.m_j + 1,
                 xg_solution.GetAt(mark.m_i, mark.m_j));
         else
-            StringCbPrintf(sz, sizeof(sz), L"(%d, %d)%c\r\n",
+            StringCchPrintf(sz, _countof(sz), L"(%d, %d)%c\r\n",
                 mark.m_i + 1, mark.m_j + 1,
                 xg_xword.GetAt(mark.m_i, mark.m_j));
         str += sz;
@@ -52,7 +52,7 @@ void __fastcall XgGetStringOfMarks2(std::wstring& str)
     for (const auto& mark : xg_vMarks) {
         const WCHAR szLetter[2] = { xg->GetAt(mark.m_i, mark.m_j), 0 };
         auto letter = XgNormalizeStringEx(szLetter);
-        StringCbPrintf(sz, sizeof(sz), L"MARK%d. (%u, %u): %s\n",
+        StringCchPrintf(sz, _countof(sz), L"MARK%d. (%u, %u): %s\n",
                        i + 1, mark.m_j + 1, mark.m_i + 1, letter.c_str());
         str += sz;
         ++i;
@@ -96,19 +96,19 @@ void __fastcall XgMarkUpdate(void)
         // マークされているか？ 答えを表示するか？
         LPWSTR pchFileTitle = PathFindFileNameW(xg_strFileName.c_str());
         if (XgGetMarkWord(xw, str) && xg_bShowAnswer) {
-            StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(IDS_APPTITLE2), str.data(), pchFileTitle);
+            StringCchPrintf(sz, _countof(sz), XgLoadStringDx1(IDS_APPTITLE2), str.data(), pchFileTitle);
             ::SetWindowTextW(xg_hMainWnd, sz);
         } else {
-            StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(IDS_APPTITLE), pchFileTitle);
+            StringCchPrintf(sz, _countof(sz), XgLoadStringDx1(IDS_APPTITLE), pchFileTitle);
             ::SetWindowTextW(xg_hMainWnd, sz);
         }
     } else {
         // マークされているか？ 答えを表示するか？
         if (XgGetMarkWord(xw, str) && xg_bShowAnswer) {
-            StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(IDS_APPINFO2), str.data());
+            StringCchPrintf(sz, _countof(sz), XgLoadStringDx1(IDS_APPINFO2), str.data());
             ::SetWindowTextW(xg_hMainWnd, sz);
         } else {
-            StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(IDS_APPINFO));
+            StringCchPrintf(sz, _countof(sz), XgLoadStringDx1(IDS_APPINFO));
             ::SetWindowTextW(xg_hMainWnd, sz);
         }
     }

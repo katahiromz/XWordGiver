@@ -98,7 +98,7 @@ public:
         {
             WCHAR sz[MAX_PATH];
             const auto dwlTick = ::GetTickCount64();
-            StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(IDS_NOWSOLVING),
+            StringCchPrintf(sz, _countof(sz), XgLoadStringDx1(IDS_NOWSOLVING),
                 static_cast<DWORD>(dwlTick - xg_dwlTick0) / 1000,
                 static_cast<DWORD>(dwlTick - xg_dwlTick0) / 100 % 10, xg_nRetryCount);
             ::SetDlgItemTextW(hwnd, stc1, sz);

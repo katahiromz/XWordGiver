@@ -173,7 +173,7 @@ void XgSetModified(BOOL bModified, LPCSTR file, int line)
 
     if (bModified) {
         CHAR szText[MAX_PATH];
-        StringCbPrintfA(szText, sizeof(szText), "%s: %d", file, line);
+        StringCchPrintfA(szText, _countof(szText), "%s: %d", file, line);
         //MessageBoxA(nullptr, szText, nullptr, 0);
     }
 
@@ -1139,7 +1139,7 @@ bool __fastcall XgLoadSettings(void)
             if (!app_key.QueryDword(L"SaveToCount", dwValue)) {
                 nDirCount = dwValue;
                 for (i = 0; i < nDirCount; i++) {
-                    StringCbPrintf(szFormat, sizeof(szFormat), L"SaveTo %d", i + 1);
+                    StringCchPrintf(szFormat, _countof(szFormat), L"SaveTo %d", i + 1);
                     if (!app_key.QuerySz(szFormat, sz, _countof(sz))) {
                         xg_dirs_save_to.emplace_back(sz);
                     } else {
@@ -1152,7 +1152,7 @@ bool __fastcall XgLoadSettings(void)
             // 最近使ったファイルのリストを取得する。
             if (!app_key.QueryDword(L"Recents", dwValue)) {
                 for (i = 0; i < static_cast<int>(dwValue); i++) {
-                    StringCbPrintf(szFormat, sizeof(szFormat), L"Recent %d", i);
+                    StringCchPrintf(szFormat, _countof(szFormat), L"Recent %d", i);
                     if (!app_key.QuerySz(szFormat, sz, _countof(sz))) {
                         if (PathFileExistsW(sz))
                             xg_recently_used_files.emplace_back(sz);
@@ -1259,7 +1259,7 @@ bool __fastcall XgSaveSettings(void)
             app_key.SetDword(L"SaveToCount", nCount);
             for (i = 0; i < nCount; i++)
             {
-                StringCbPrintf(szFormat, sizeof(szFormat), L"SaveTo %d", i + 1);
+                StringCchPrintf(szFormat, _countof(szFormat), L"SaveTo %d", i + 1);
                 app_key.SetSz(szFormat, xg_dirs_save_to[i].c_str());
             }
 
@@ -1290,7 +1290,7 @@ bool __fastcall XgSaveSettings(void)
             nCount = static_cast<int>(xg_recently_used_files.size());
             app_key.SetDword(L"Recents", nCount);
             for (i = 0; i < nCount; i++) {
-                StringCbPrintf(szFormat, sizeof(szFormat), L"Recent %d", i);
+                StringCchPrintf(szFormat, _countof(szFormat), L"Recent %d", i);
                 app_key.SetSz(szFormat, xg_recently_used_files[i].c_str());
             }
         }
@@ -1386,7 +1386,7 @@ bool __fastcall XgCheckCrossWord(HWND hwnd, bool check_words = true)
         if (check_words) {
             // パターンにマッチしないマスがあった。
             WCHAR sz[128];
-            StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(IDS_NOCANDIDATE), pos.m_j + 1, pos.m_i + 1);
+            StringCchPrintf(sz, _countof(sz), XgLoadStringDx1(IDS_NOCANDIDATE), pos.m_j + 1, pos.m_i + 1);
             XgCenterMessageBoxW(hwnd, sz, nullptr, MB_ICONERROR);
             return false;
         }
@@ -1398,7 +1398,7 @@ bool __fastcall XgCheckCrossWord(HWND hwnd, bool check_words = true)
         if (check_words) {
             // 登録されている単語と長さの一致しないスペースがあった。
             WCHAR sz[128];
-            StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(IDS_TOOLONGSPACE), pos.m_j + 1, pos.m_i + 1);
+            StringCchPrintf(sz, _countof(sz), XgLoadStringDx1(IDS_TOOLONGSPACE), pos.m_j + 1, pos.m_i + 1);
             XgCenterMessageBoxW(hwnd, sz, nullptr, MB_ICONERROR);
             return false;
         }
@@ -1515,8 +1515,7 @@ bool XgOpenHintsByNotepad(HWND /*hwnd*/, bool bShowAnswer)
         ::CloseHandle(hFile);
 
         // メモ帳でファイルを開く。
-        StringCbPrintf(szCmdLine, sizeof(szCmdLine),
-                       XgLoadStringDx1(IDS_NOTEPAD), szPath);
+        StringCchPrintf(szCmdLine, _countof(szCmdLine), XgLoadStringDx1(IDS_NOTEPAD), szPath);
         ZeroMemory(&si, sizeof(si));
         si.cb = sizeof(si);
         si.dwFlags = STARTF_USESHOWWINDOW;
@@ -2021,11 +2020,11 @@ BOOL XgImportLooks(HWND hwnd, LPCWSTR pszFileName)
     xg_bHiragana = !!_wtoi(szText);
 
     // 文字の大きさ。
-    StringCbPrintfW(szText2, sizeof(szText2), L"%d", XG_DEF_CELL_CHAR_SIZE);
+    StringCchPrintfW(szText2, _countof(szText2), L"%d", XG_DEF_CELL_CHAR_SIZE);
     GetPrivateProfileStringW(L"Looks", L"CellCharPercents", szText2, szText, _countof(szText), pszFileName);
     xg_nCellCharPercents = _wtoi(szText);
 
-    StringCbPrintfW(szText2, sizeof(szText2), L"%d", XG_DEF_SMALL_CHAR_SIZE);
+    StringCchPrintfW(szText2, _countof(szText2), L"%d", XG_DEF_SMALL_CHAR_SIZE);
     GetPrivateProfileStringW(L"Looks", L"SmallCharPercents", szText2, szText, _countof(szText), pszFileName);
     xg_nSmallCharPercents = _wtoi(szText);
 
@@ -2174,8 +2173,7 @@ static inline BOOL About_OnInitDialog(HWND hwnd, HWND hwndFocus, LPARAM lParam)
     GetSystemInfo(&sys_info);
 
     WCHAR szText[128];
-    StringCbPrintfW(szText, sizeof(szText),
-                    XgLoadStringDx1(IDS_HOWMANYCORES), sys_info.dwNumberOfProcessors);
+    StringCchPrintfW(szText, _countof(szText), XgLoadStringDx1(IDS_HOWMANYCORES), sys_info.dwNumberOfProcessors);
     SetDlgItemTextW(hwnd, stc2, szText);
 
 #ifdef _WIN64
@@ -2726,8 +2724,7 @@ bool __fastcall XgDoSaveToLocation(HWND hwnd)
     // ファイル名を生成する。
     UINT u;
     for (u = 1; u <= 0xFFFF; u++) {
-        StringCbPrintf(szName, sizeof(szName), L"%dx%d-%04u.xwj",
-                  xg_nRows, xg_nCols, u);
+        StringCchPrintf(szName, _countof(szName), L"%dx%d-%04u.xwj", xg_nRows, xg_nCols, u);
         StringCbCopy(szPath, sizeof(szPath), szDir);
         StringCbCat(szPath, sizeof(szPath), szName);
         if (::GetFileAttributesW(szPath) == 0xFFFFFFFF)
@@ -2981,12 +2978,12 @@ bool __fastcall XgOnGenerateBlacksRepeatedly(HWND hwnd)
 
     WCHAR sz[MAX_PATH];
     if (xg_bCancelled) {
-        StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(IDS_CANCELLED),
+        StringCchPrintf(sz, _countof(sz), XgLoadStringDx1(IDS_CANCELLED),
                        (xg_dwlTick2 - xg_dwlTick0) / 1000,
                        (xg_dwlTick2 - xg_dwlTick0) / 100 % 10);
         XgCenterMessageBoxW(hwnd, sz, XgLoadStringDx2(IDS_RESULTS), MB_ICONINFORMATION);
     } else {
-        StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(IDS_BLOCKSGENERATED),
+        StringCchPrintf(sz, _countof(sz), XgLoadStringDx1(IDS_BLOCKSGENERATED),
                        xg_nNumberGenerated,
                        (xg_dwlTick2 - xg_dwlTick0) / 1000,
                        (xg_dwlTick2 - xg_dwlTick0) / 100 % 10);
@@ -3053,12 +3050,12 @@ bool __fastcall XgOnGenerateBlacks(HWND hwnd, bool sym)
 
     WCHAR sz[MAX_PATH];
     if (xg_bCancelled) {
-        StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(IDS_CANCELLED),
+        StringCchPrintf(sz, _countof(sz), XgLoadStringDx1(IDS_CANCELLED),
                        (xg_dwlTick2 - xg_dwlTick0) / 1000,
                        (xg_dwlTick2 - xg_dwlTick0) / 100 % 10);
         XgCenterMessageBoxW(hwnd, sz, XgLoadStringDx2(IDS_RESULTS), MB_ICONINFORMATION);
     } else {
-        StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(IDS_BLOCKSGENERATED), 1,
+        StringCchPrintf(sz, _countof(sz), XgLoadStringDx1(IDS_BLOCKSGENERATED), 1,
                        (xg_dwlTick2 - xg_dwlTick0) / 1000,
                        (xg_dwlTick2 - xg_dwlTick0) / 100 % 10);
         XgCenterMessageBoxW(hwnd, sz, XgLoadStringDx2(IDS_RESULTS), MB_ICONINFORMATION);
@@ -3122,7 +3119,7 @@ bool __fastcall XgOnSolve_AddBlack(HWND hwnd)
         XgMarkUpdate();
         XgUpdateImage(hwnd, 0, 0);
 
-        StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(IDS_CANCELLED),
+        StringCchPrintf(sz, _countof(sz), XgLoadStringDx1(IDS_CANCELLED),
                        (xg_dwlTick2 - xg_dwlTick0) / 1000,
                        (xg_dwlTick2 - xg_dwlTick0) / 100 % 10);
         XgCenterMessageBoxW(hwnd, sz, XgLoadStringDx2(IDS_RESULTS), MB_ICONINFORMATION);
@@ -3147,7 +3144,7 @@ bool __fastcall XgOnSolve_AddBlack(HWND hwnd)
         XgUpdateImage(hwnd, 0, 0);
 
         // 成功メッセージを表示する。
-        StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(IDS_SOLVED),
+        StringCchPrintf(sz, _countof(sz), XgLoadStringDx1(IDS_SOLVED),
                        (xg_dwlTick2 - xg_dwlTick0) / 1000,
                        (xg_dwlTick2 - xg_dwlTick0) / 100 % 10);
         XgCenterMessageBoxW(hwnd, sz, XgLoadStringDx2(IDS_RESULTS), MB_ICONINFORMATION);
@@ -3162,7 +3159,7 @@ bool __fastcall XgOnSolve_AddBlack(HWND hwnd)
         XgMarkUpdate();
         XgUpdateImage(hwnd, 0, 0);
         // 失敗メッセージを表示する。
-        StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(IDS_CANTSOLVE),
+        StringCchPrintf(sz, _countof(sz), XgLoadStringDx1(IDS_CANTSOLVE),
                        (xg_dwlTick2 - xg_dwlTick0) / 1000,
                        (xg_dwlTick2 - xg_dwlTick0) / 100 % 10);
         ::InvalidateRect(hwnd, nullptr, FALSE);
@@ -3227,7 +3224,7 @@ bool __fastcall XgOnSolve_NoAddBlack(HWND hwnd, bool bShowAnswer/* = true*/)
         XgUpdateImage(hwnd, 0, 0);
 
         // 終了メッセージを表示する。
-        StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(IDS_CANCELLED),
+        StringCchPrintf(sz, _countof(sz), XgLoadStringDx1(IDS_CANCELLED),
                        (xg_dwlTick2 - xg_dwlTick0) / 1000,
                        (xg_dwlTick2 - xg_dwlTick0) / 100 % 10);
         XgCenterMessageBoxW(hwnd, sz, XgLoadStringDx2(IDS_RESULTS), MB_ICONINFORMATION);
@@ -3252,7 +3249,7 @@ bool __fastcall XgOnSolve_NoAddBlack(HWND hwnd, bool bShowAnswer/* = true*/)
         XgUpdateImage(hwnd, 0, 0);
 
         // 成功メッセージを表示する。
-        StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(IDS_SOLVED),
+        StringCchPrintf(sz, _countof(sz), XgLoadStringDx1(IDS_SOLVED),
                        (xg_dwlTick2 - xg_dwlTick0) / 1000,
                        (xg_dwlTick2 - xg_dwlTick0) / 100 % 10);
         XgCenterMessageBoxW(hwnd, sz, XgLoadStringDx2(IDS_RESULTS), MB_ICONINFORMATION);
@@ -3267,7 +3264,7 @@ bool __fastcall XgOnSolve_NoAddBlack(HWND hwnd, bool bShowAnswer/* = true*/)
         XgMarkUpdate();
         XgUpdateImage(hwnd, 0, 0);
         // 失敗メッセージを表示する。
-        StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(IDS_CANTSOLVE),
+        StringCchPrintf(sz, _countof(sz), XgLoadStringDx1(IDS_CANTSOLVE),
                        (xg_dwlTick2 - xg_dwlTick0) / 1000,
                        (xg_dwlTick2 - xg_dwlTick0) / 100 % 10);
         ::InvalidateRect(hwnd, nullptr, FALSE);
@@ -3380,11 +3377,11 @@ bool __fastcall XgOnSolveRepeatedly(HWND hwnd)
     // 終了メッセージを表示する。
     WCHAR sz[MAX_PATH];
     if (s_bOutOfDiskSpace) {
-        StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(IDS_OUTOFSTORAGE), xg_nNumberGenerated,
+        StringCchPrintf(sz, _countof(sz), XgLoadStringDx1(IDS_OUTOFSTORAGE), xg_nNumberGenerated,
                        (xg_dwlTick2 - xg_dwlTick0) / 1000,
                        (xg_dwlTick2 - xg_dwlTick0) / 100 % 10);
     } else {
-        StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(IDS_PROBLEMSMADE), xg_nNumberGenerated,
+        StringCchPrintf(sz, _countof(sz), XgLoadStringDx1(IDS_PROBLEMSMADE), xg_nNumberGenerated,
                        (xg_dwlTick2 - xg_dwlTick0) / 1000,
                        (xg_dwlTick2 - xg_dwlTick0) / 100 % 10);
     }
@@ -3502,11 +3499,11 @@ bool __fastcall XgOnSolveRepeatedlyNoAddBlack(HWND hwnd)
     // 終了メッセージを表示する。
     WCHAR sz[MAX_PATH];
     if (s_bOutOfDiskSpace) {
-        StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(IDS_OUTOFSTORAGE), xg_nNumberGenerated,
+        StringCchPrintf(sz, _countof(sz), XgLoadStringDx1(IDS_OUTOFSTORAGE), xg_nNumberGenerated,
                        (xg_dwlTick2 - xg_dwlTick0) / 1000,
                        (xg_dwlTick2 - xg_dwlTick0) / 100 % 10);
     } else {
-        StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(IDS_PROBLEMSMADE), xg_nNumberGenerated,
+        StringCchPrintf(sz, _countof(sz), XgLoadStringDx1(IDS_PROBLEMSMADE), xg_nNumberGenerated,
                        (xg_dwlTick2 - xg_dwlTick0) / 1000,
                        (xg_dwlTick2 - xg_dwlTick0) / 100 % 10);
     }
@@ -4010,8 +4007,7 @@ void XgDoUpdateDictMenu(HMENU hDictMenu)
             text += L"\t";
             text += entry.m_friendly_name;
         }
-        StringCbPrintfW(szText, sizeof(szText), L"&%c ",
-            L"0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF"[count]);
+        StringCchPrintfW(szText, _countof(szText), L"&%c ", L"0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF"[count]);
         StringCbCatW(szText, sizeof(szText), text.c_str());
         AppendMenuW(hDictMenu, MF_STRING | MF_ENABLED, id, szText);
         ++index;
@@ -4447,11 +4443,11 @@ void __fastcall XgUpdateStatusBar(HWND hwnd)
 
     // キャレット位置。
     WCHAR szText[64];
-    StringCbPrintf(szText, sizeof(szText), L"(%d, %d)", xg_caret_pos.m_j + 1, xg_caret_pos.m_i + 1);
+    StringCchPrintf(szText, _countof(szText), L"(%d, %d)", xg_caret_pos.m_j + 1, xg_caret_pos.m_i + 1);
     SendMessageW(xg_hStatusBar, SB_SETTEXT, 1, reinterpret_cast<LPARAM>(szText));
 
     // 盤のサイズ。
-    StringCbPrintf(szText, sizeof(szText), L"%d x %d", xg_nCols, xg_nRows);
+    StringCchPrintf(szText, _countof(szText), L"%d x %d", xg_nCols, xg_nRows);
     SendMessageW(xg_hStatusBar, SB_SETTEXT, 2, reinterpret_cast<LPARAM>(szText));
 }
 
@@ -5109,13 +5105,13 @@ void __fastcall XgShowResults(HWND hwnd)
     WCHAR sz[MAX_PATH];
     if (xg_bCancelled) {
         // キャンセルされた。
-        StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(IDS_CANCELLED),
+        StringCchPrintf(sz, _countof(sz), XgLoadStringDx1(IDS_CANCELLED),
                        (xg_dwlTick2 - xg_dwlTick0) / 1000,
                        (xg_dwlTick2 - xg_dwlTick0) / 100 % 10);
         XgCenterMessageBoxW(hwnd, sz, XgLoadStringDx2(IDS_RESULTS), MB_ICONINFORMATION);
     } else if (xg_bSolved) {
         // 成功メッセージを表示する。
-        StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(IDS_MADEPROBLEM),
+        StringCchPrintf(sz, _countof(sz), XgLoadStringDx1(IDS_MADEPROBLEM),
                        (xg_dwlTick2 - xg_dwlTick0) / 1000,
                        (xg_dwlTick2 - xg_dwlTick0) / 100 % 10);
         XgCenterMessageBoxW(hwnd, sz, XgLoadStringDx2(IDS_RESULTS), MB_ICONINFORMATION);
@@ -5125,7 +5121,7 @@ void __fastcall XgShowResults(HWND hwnd)
         XgShowHints(hwnd);
     } else {
         // 失敗メッセージを表示する。
-        StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(IDS_CANTMAKEPROBLEM),
+        StringCchPrintf(sz, _countof(sz), XgLoadStringDx1(IDS_CANTMAKEPROBLEM),
                        (xg_dwlTick2 - xg_dwlTick0) / 1000,
                        (xg_dwlTick2 - xg_dwlTick0) / 100 % 10);
         XgCenterMessageBoxW(hwnd, sz, XgLoadStringDx2(IDS_RESULTS), MB_ICONERROR);
@@ -5140,12 +5136,12 @@ void __fastcall XgShowResultsRepeatedly(HWND hwnd)
     // ディスクに空きがあるか？
     if (s_bOutOfDiskSpace) {
         // なかった。
-        StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(IDS_OUTOFSTORAGE), xg_nNumberGenerated,
+        StringCchPrintf(sz, _countof(sz), XgLoadStringDx1(IDS_OUTOFSTORAGE), xg_nNumberGenerated,
                        (xg_dwlTick2 - xg_dwlTick0) / 1000,
                        (xg_dwlTick2 - xg_dwlTick0) / 100 % 10);
     } else {
         // あった。
-        StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(IDS_PROBLEMSMADE), xg_nNumberGenerated,
+        StringCchPrintf(sz, _countof(sz), XgLoadStringDx1(IDS_PROBLEMSMADE), xg_nNumberGenerated,
                        (xg_dwlTick2 - xg_dwlTick0) / 1000,
                        (xg_dwlTick2 - xg_dwlTick0) / 100 % 10);
     }
@@ -5226,7 +5222,7 @@ void XgGenerateFromWordList(HWND hwnd)
     if (nID == IDCANCEL) {
         // キャンセルされた。
         WCHAR sz[256];
-        StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(IDS_CANCELLED),
+        StringCchPrintf(sz, _countof(sz), XgLoadStringDx1(IDS_CANCELLED),
                        (xg_dwlTick2 - xg_dwlTick0) / 1000,
                        (xg_dwlTick2 - xg_dwlTick0) / 100 % 10);
         XgCenterMessageBoxW(hwnd, sz, XgLoadStringDx2(IDS_RESULTS), MB_ICONINFORMATION);

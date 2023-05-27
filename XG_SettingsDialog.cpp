@@ -344,12 +344,12 @@ BOOL XG_SettingsDialog::DoImportLooks(HWND hwnd, LPCWSTR pszFileName)
     ::CheckDlgButton(hwnd, chx5, (bHiragana ? BST_CHECKED : BST_UNCHECKED));
 
     // 文字の大きさ。
-    StringCbPrintfW(szText2, sizeof(szText2), L"%d", XG_DEF_CELL_CHAR_SIZE);
+    StringCchPrintfW(szText2, _countof(szText2), L"%d", XG_DEF_CELL_CHAR_SIZE);
     GetPrivateProfileStringW(L"Looks", L"CellCharPercents", szText2, szText, _countof(szText), pszFileName);
     const int nCellCharPercents = _wtoi(szText);
     ::SetDlgItemInt(hwnd, edt4, nCellCharPercents, FALSE);
 
-    StringCbPrintfW(szText2, sizeof(szText2), L"%d", XG_DEF_SMALL_CHAR_SIZE);
+    StringCchPrintfW(szText2, _countof(szText2), L"%d", XG_DEF_SMALL_CHAR_SIZE);
     GetPrivateProfileStringW(L"Looks", L"SmallCharPercents", szText2, szText, _countof(szText), pszFileName);
     const int nSmallCharPercents = _wtoi(szText);
     ::SetDlgItemInt(hwnd, edt5, nSmallCharPercents, FALSE);
@@ -637,7 +637,7 @@ void XG_SettingsDialog::SetUIFont(HWND hwnd, const LOGFONTW *plf)
     ::DeleteDC(hdc);
 
     WCHAR szData[128];
-    StringCbPrintf(szData, sizeof(szData), L"%s, %dpt", plf->lfFaceName, point_size);
+    StringCchPrintf(szData, _countof(szData), L"%s, %dpt", plf->lfFaceName, point_size);
     ::SetDlgItemTextW(hwnd, edt3, szData);
 }
 

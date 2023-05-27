@@ -188,7 +188,7 @@ public:
         {
             HDC hdc = ::CreateCompatibleDC(nullptr);
             WCHAR label[64];
-            StringCbPrintf(label, sizeof(label), XgLoadStringDx1(IDS_DOWNNUMBER), 100);
+            StringCchPrintf(label, _countof(label), XgLoadStringDx1(IDS_DOWNNUMBER), 100);
             std::wstring strLabel = label;
             ::SelectObject(hdc, ::GetStockObject(SYSTEM_FIXED_FONT));
             ::GetTextExtentPoint32W(hdc, strLabel.data(), static_cast<int>(strLabel.size()), &size1);
@@ -468,7 +468,7 @@ public:
         XG_HintEditData *data;
         WCHAR sz[256];
         for (const auto& hint : xg_vecTateHints) {
-            StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(IDS_DOWNNUMBER), hint.m_number);
+            StringCchPrintf(sz, _countof(sz), XgLoadStringDx1(IDS_DOWNNUMBER), hint.m_number);
             hwndCtrl = ::CreateWindowW(TEXT("STATIC"), sz,
                 WS_CHILD | WS_VISIBLE | SS_RIGHT | SS_NOPREFIX | SS_NOTIFY | SS_CENTERIMAGE,
                 0, 0, 0, 0, hwnd, nullptr, xg_hInstance, nullptr);
@@ -503,7 +503,7 @@ public:
             xg_ahwndTateEdits.emplace_back(hwndCtrl);
         }
         for (const auto& hint : xg_vecYokoHints) {
-            StringCbPrintf(sz, sizeof(sz), XgLoadStringDx1(IDS_ACROSSNUMBER), hint.m_number);
+            StringCchPrintf(sz, _countof(sz), XgLoadStringDx1(IDS_ACROSSNUMBER), hint.m_number);
             hwndCtrl = ::CreateWindowW(TEXT("STATIC"), sz,
                 WS_CHILD | WS_VISIBLE | SS_RIGHT | SS_NOPREFIX | SS_NOTIFY | SS_CENTERIMAGE,
                 0, 0, 0, 0, hwnd, nullptr, xg_hInstance, nullptr);

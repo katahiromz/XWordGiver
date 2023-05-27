@@ -439,7 +439,7 @@ std::wstring XgJsonEncodeString(const std::wstring& str)
         case L'\t': encoded += L"\\t"; break;
         default:
             if (0 < str[i] && str[i] <= L'\x1F') {
-                StringCbPrintf(buf, sizeof(buf), L"\\u%04X", str[i]);
+                StringCchPrintf(buf, _countof(buf), L"\\u%04X", str[i]);
                 encoded += buf;
             } else {
                 encoded += str[i];
@@ -532,22 +532,22 @@ std::string XgMakeClipHtmlData(const std::string& html_utf8,
     size_t i;
     i = str.find("StartHTML:");
     i += 10;
-    StringCbPrintfA(buf, sizeof(buf), "%08u", static_cast<UINT>(iHtmlStart));
+    StringCchPrintfA(buf, _countof(buf), "%08u", static_cast<UINT>(iHtmlStart));
     str.replace(i, 8, buf);
 
     i = str.find("EndHTML:");
     i += 8;
-    StringCbPrintfA(buf, sizeof(buf), "%08u", static_cast<UINT>(iHtmlEnd));
+    StringCchPrintfA(buf, _countof(buf), "%08u", static_cast<UINT>(iHtmlEnd));
     str.replace(i, 8, buf);
 
     i = str.find("StartFragment:");
     i += 14;
-    StringCbPrintfA(buf, sizeof(buf), "%08u", static_cast<UINT>(iFragmentStart));
+    StringCchPrintfA(buf, _countof(buf), "%08u", static_cast<UINT>(iFragmentStart));
     str.replace(i, 8, buf);
 
     i = str.find("EndFragment:");
     i += 12;
-    StringCbPrintfA(buf, sizeof(buf), "%08u", static_cast<UINT>(iFragmentEnd));
+    StringCchPrintfA(buf, _countof(buf), "%08u", static_cast<UINT>(iFragmentEnd));
     str.replace(i, 8, buf);
 
     return str;
@@ -636,7 +636,7 @@ BOOL PackedDIB_CreateFromHandle(std::vector<BYTE>& vecData, HBITMAP hbm)
 LPCWSTR XgIntToStr(int nValue)
 {
     static WCHAR s_szText[64];
-    StringCbPrintfW(s_szText, sizeof(s_szText), L"%d", nValue);
+    StringCchPrintfW(s_szText, _countof(s_szText), L"%d", nValue);
     return s_szText;
 }
 
@@ -648,7 +648,7 @@ std::wstring XgBinToHex(const void *ptr, size_t size)
     WCHAR sz[8];
     for (size_t i = 0; i < size; ++i)
     {
-        StringCbPrintfW(sz, sizeof(sz), L"%02X", pb[i]);
+        StringCchPrintfW(sz, _countof(sz), L"%02X", pb[i]);
         ret += sz;
     }
     return ret;
