@@ -4214,7 +4214,7 @@ static void __fastcall XgSolveXWord_NoAddBlack(const XG_Board& xw)
 #endif
 
 // マルチスレッド用の関数。
-unsigned __stdcall XgSolveProc_AddBlack(void *param) noexcept
+static unsigned __stdcall XgSolveProc_AddBlack(void *param)
 {
     // スレッド情報を取得する。
     XG_ThreadInfo *info = reinterpret_cast<XG_ThreadInfo *>(param);
@@ -4238,7 +4238,7 @@ unsigned __stdcall XgSolveProc_AddBlack(void *param) noexcept
 }
 
 // マルチスレッド用の関数（黒マス追加なし）。
-unsigned __stdcall XgSolveProc_NoAddBlack(void *param) noexcept
+static unsigned __stdcall XgSolveProc_NoAddBlack(void *param)
 {
     // スレッド情報を取得する。
     XG_ThreadInfo *info = reinterpret_cast<XG_ThreadInfo *>(param);
@@ -4262,7 +4262,7 @@ unsigned __stdcall XgSolveProc_NoAddBlack(void *param) noexcept
 }
 
 // マルチスレッド用の関数（スマート解決）。
-unsigned __stdcall XgSolveProcSmart(void *param) noexcept
+static unsigned __stdcall XgSolveProcSmart(void *param)
 {
     // スレッド情報を取得する。
     XG_ThreadInfo *info = reinterpret_cast<XG_ThreadInfo *>(param);
