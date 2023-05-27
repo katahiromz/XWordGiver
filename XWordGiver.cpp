@@ -5915,7 +5915,7 @@ bool __fastcall XgDoSaveJson(LPCWSTR pszFile)
         utf8 = std::move(replaced);
 
         // ファイルに書き込んで、ファイルを閉じる。
-        auto size = static_cast<DWORD>(utf8.size()) * sizeof(CHAR);
+        auto size = static_cast<DWORD>(utf8.size() * sizeof(CHAR));
         if (::WriteFile(hFile, utf8.data(), size, &size, nullptr)) {
             ::CloseHandle(hFile);
 
