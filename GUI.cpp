@@ -1634,7 +1634,7 @@ void XgCopyWordList(HWND hwnd)
     }
 
     // クリップボードにコピー。
-    auto cb = (str.size() + 1) * sizeof(WCHAR);
+    const auto cb = (str.size() + 1) * sizeof(WCHAR);
     if (HGLOBAL hGlobal = ::GlobalAlloc(GHND | GMEM_SHARE, cb)) {
         if (LPWSTR psz = reinterpret_cast<LPWSTR>(::GlobalLock(hGlobal))) {
             StringCbCopyW(psz, cb, str.c_str());
@@ -2145,7 +2145,7 @@ BOOL XgExportLooks(HWND hwnd, LPCWSTR pszFileName)
 BOOL XgSetClipboardUnicodeText(HWND hwnd, const std::wstring& str) noexcept
 {
     // ヒープからメモリを確保する。
-    auto cb = (str.size() + 1) * sizeof(WCHAR);
+    const auto cb = (str.size() + 1) * sizeof(WCHAR);
     HGLOBAL hGlobal = ::GlobalAlloc(GMEM_MOVEABLE | GMEM_DDESHARE, cb);
     if (hGlobal) {
         // メモリをロックする。
@@ -4503,7 +4503,8 @@ void __fastcall MainWnd_OnSize(HWND hwnd, UINT state, int /*cx*/, int /*cy*/)
     ::GetClientRect(hwnd, &rcClient);
     x = rcClient.left;
     y = rcClient.top;
-    auto cx = rcClient.Width(), cy = rcClient.Height();
+    const auto cx = rcClient.Width();
+    auto cy = rcClient.Height();
 
     // ツールバーの高さを取得。
     int cyToolBar = 0;
@@ -6084,7 +6085,8 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT /*codeNo
                 xg_hMainWnd
             );
 
-            size_t i = 0, k, m, count = ahwnd.size();
+            size_t i = 0, k, m;
+            const auto count = ahwnd.size();
             for (i = 0; i < count; ++i) {
                 if (ahwnd[i] == ::GetForegroundWindow()) {
                     for (k = 1; k < count; ++k) {

@@ -2102,12 +2102,12 @@ bool __fastcall XgParseHints(std::vector<XG_Hint>& hints, const std::wstring& st
             return false;
         }
 
-        size_t i0 = str.find(XgLoadStringDx1(IDS_KEYLEFT), i);
+        const auto i0 = str.find(XgLoadStringDx1(IDS_KEYLEFT), i);
         if (i0 == std::wstring::npos) {
             break;
         }
 
-        size_t i1 = str.find_first_of(L"0123456789", i0);
+        const auto i1 = str.find_first_of(L"0123456789", i0);
         if (i1 == std::wstring::npos) {
             return false;
         }
@@ -2117,7 +2117,7 @@ bool __fastcall XgParseHints(std::vector<XG_Hint>& hints, const std::wstring& st
             return false;
         }
 
-        size_t i2 = str.find(XgLoadStringDx1(IDS_KEYRIGHT), i0);
+        const auto i2 = str.find(XgLoadStringDx1(IDS_KEYRIGHT), i0);
         if (i2 == std::wstring::npos) {
             return false;
         }
@@ -2138,7 +2138,7 @@ bool __fastcall XgParseHints(std::vector<XG_Hint>& hints, const std::wstring& st
             i4 = i2 + wcslen(XgLoadStringDx1(IDS_KEYRIGHT));
         }
 
-        size_t i5 = str.find(XgLoadStringDx1(IDS_KEYLEFT), i4);
+        const auto i5 = str.find(XgLoadStringDx1(IDS_KEYLEFT), i4);
         if (i5 == std::wstring::npos) {
             std::wstring hint = str.substr(i4);
             xg_str_replace_all(hint, L"\r", L"");
@@ -2187,7 +2187,7 @@ bool __fastcall XgParseHintsStr(const std::wstring& strHints)
     std::wstring yoko = str.substr(i2);
 
     // 備考欄を取り除く。
-    size_t i3 = yoko.find(XgLoadStringDx1(IDS_HEADERSEP2));
+    const auto i3 = yoko.find(XgLoadStringDx1(IDS_HEADERSEP2));
     if (i3 != std::wstring::npos) {
         yoko = yoko.substr(0, i3);
     }
@@ -2519,9 +2519,9 @@ bool __fastcall XgSetJsonString(HWND hwnd, const std::wstring& str)
         int row_count = j0["row_count"];
         int column_count = j0["column_count"];
         auto cell_data = j0["cell_data"];
-        bool is_solved = j0["is_solved"];
-        bool has_mark = j0["has_mark"];
-        bool has_hints = j0["has_hints"];
+        const bool is_solved = j0["is_solved"];
+        const bool has_mark = j0["has_mark"];
+        const bool has_hints = j0["has_hints"];
         int rules = XG_DEFAULT_RULES;
         if (j0["policy"].is_number_integer()) {
             rules = static_cast<int>(j0["policy"]);
@@ -2722,7 +2722,7 @@ bool __fastcall XgSetJsonString(HWND hwnd, const std::wstring& str)
             // 辞書名の辞書を読み込む。
             if (dictionary.size()) {
                 for (auto& entry : xg_dicts) {
-                    auto& file = entry.m_filename;
+                    const auto& file = entry.m_filename;
                     if (file.find(dictionary) != std::wstring::npos) {
                         if (XgLoadDictFile(file.c_str())) {
                             XgSetDict(file.c_str());
@@ -2757,19 +2757,19 @@ bool __fastcall XgSetStdString(HWND hwnd, const std::wstring& str)
         return false;
 
     // 空きマスが存在しないか？
-    bool bFulfilled = xword.IsFulfilled();
+    const bool bFulfilled = xword.IsFulfilled();
     if (bFulfilled) {
         // 空きマスがなかった。
 
         // ヒントを設定する。
-        size_t i0 = str.find(ZEN_LRIGHT, 0);
+        const auto i0 = str.find(ZEN_LRIGHT, 0);
         if (i0 != std::wstring::npos) {
             // フッターを取得する。
             std::wstring s = str.substr(i0 + 1);
 
             // フッターの備考欄を取得して、取り除く。
             std::wstring strFooterSep = XgLoadStringDx1(IDS_HEADERSEP2);
-            size_t i3 = s.find(strFooterSep);
+            const auto i3 = s.find(strFooterSep);
             if (i3 != std::wstring::npos) {
                 xg_strNotes = s.substr(i3 + strFooterSep.size());
                 s = s.substr(0, i3);
@@ -2810,7 +2810,7 @@ bool __fastcall XgSetStdString(HWND hwnd, const std::wstring& str)
                     if (info.m_number == hint.m_number) {
                         std::wstring word;
                         for (int k = info.m_iRow; k < xg_nRows; ++k) {
-                            WCHAR ch = xword.GetAt(k, info.m_jCol);
+                            const WCHAR ch = xword.GetAt(k, info.m_jCol);
                             if (ch == ZEN_BLACK)
                                 break;
                             word += ch;
@@ -2828,7 +2828,7 @@ bool __fastcall XgSetStdString(HWND hwnd, const std::wstring& str)
                     if (info.m_number == hint.m_number) {
                         std::wstring word;
                         for (int k = info.m_jCol; k < xg_nCols; ++k) {
-                            WCHAR ch = xword.GetAt(info.m_iRow, k);
+                            const auto ch = xword.GetAt(info.m_iRow, k);
                             if (ch == ZEN_BLACK)
                                 break;
                             word += ch;
@@ -2916,7 +2916,7 @@ bool __fastcall XgSetXDString(HWND hwnd, const std::wstring& str)
                     marks.push_back(line);
                 } else if (line.find(L"NUMCRO-") == 0 && L'0' <= line[7] && line[7] <= L'9') {
                     // ナンクロモード。
-                    size_t ich = line.find(L": ");
+                    const auto ich = line.find(L": ");
                     int number = wcstoul(&line.c_str()[7], nullptr, 10);
                     WCHAR ch = line.c_str()[ich + 2];
                     xg_mapNumCro1[ch] = number;
@@ -2972,7 +2972,8 @@ bool __fastcall XgSetXDString(HWND hwnd, const std::wstring& str)
     std::vector<XG_Hint> tate, yoko;
     {
         std::wstring str0;
-        int i, nWidth = static_cast<int>(rows[0].size());
+        int i;
+        const auto nWidth = static_cast<int>(rows[0].size());
 
         str0 += ZEN_ULEFT;
         for (i = 0; i < nWidth; ++i) {
@@ -3023,8 +3024,8 @@ bool __fastcall XgSetXDString(HWND hwnd, const std::wstring& str)
             xg_str_trim(str0);
             if (str0.empty() || (str0[0] != L'A' && str0[0] != L'D'))
                 break;
-            size_t iDot = str0.find(L'.');
-            size_t iTilda = str0.rfind(L'~');
+            const auto iDot = str0.find(L'.');
+            const auto iTilda = str0.rfind(L'~');
             if (iDot != str0.npos && iTilda != str0.npos) {
                 auto word = str0.substr(iTilda + 1);
                 xg_str_trim(word);
@@ -3098,10 +3099,10 @@ bool __fastcall XgSetXDString(HWND hwnd, const std::wstring& str)
 
             for (auto& mark : marks) {
                 if (mark.substr(0, 4) == L"MARK" && L'0' <= mark[4] && mark[4] <= L'9') {
-                    size_t i0 = mark.find(L'(');
-                    size_t i1 = mark.find(L", ");
-                    int x = _wtoi(&mark[i0 + 1]) - 1;
-                    int y = _wtoi(&mark[i1 + 2]) - 1;
+                    const auto i0 = mark.find(L'(');
+                    const auto i1 = mark.find(L", ");
+                    const int x = _wtoi(&mark[i0 + 1]) - 1;
+                    const int y = _wtoi(&mark[i1 + 2]) - 1;
                     XgSetMark(XG_Pos(y, x));
                 }
             }
@@ -3208,7 +3209,7 @@ void __fastcall XgSolveXWord_AddBlackRecurse(const XG_Board& xw)
                 return;
 
             // 空白と文字が隣り合っているか？
-            WCHAR ch1 = xw.GetAt(i, j), ch2 = xw.GetAt(i, j + 1);
+            const WCHAR ch1 = xw.GetAt(i, j), ch2 = xw.GetAt(i, j + 1);
             if ((ch1 == ZEN_SPACE && ch2 != ZEN_BLACK && ch2 != ZEN_SPACE) ||
                 (ch1 != ZEN_SPACE && ch1 != ZEN_BLACK && ch2 == ZEN_SPACE))
             {
@@ -3359,7 +3360,7 @@ void __fastcall XgSolveXWord_AddBlackRecurse(const XG_Board& xw)
                 return;
 
             // 空白と文字が隣り合っているか？
-            WCHAR ch1 = xw.GetAt(i, j), ch2 = xw.GetAt(i + 1, j);
+            const WCHAR ch1 = xw.GetAt(i, j), ch2 = xw.GetAt(i + 1, j);
             if ((ch1 == ZEN_SPACE && ch2 != ZEN_BLACK && ch2 != ZEN_SPACE) ||
                 (ch1 != ZEN_SPACE && ch1 != ZEN_BLACK && ch2 == ZEN_SPACE))
             {
@@ -3501,7 +3502,7 @@ void __fastcall XgSolveXWord_AddBlackRecurse(const XG_Board& xw)
 
     // 解かどうか？
     EnterCriticalSection(&xg_cs);
-    bool ok = xw.IsSolution();
+    const bool ok = xw.IsSolution();
     ::LeaveCriticalSection(&xg_cs);
     if (ok) {
         // 解だった。
@@ -3557,7 +3558,7 @@ void __fastcall XgSolveXWord_NoAddBlackRecurse(const XG_Board& xw)
                 return;
 
             // 空白と文字が隣り合っているか？
-            WCHAR ch1 = xw.GetAt(i, j), ch2 = xw.GetAt(i, j + 1);
+            const WCHAR ch1 = xw.GetAt(i, j), ch2 = xw.GetAt(i, j + 1);
             if ((ch1 == ZEN_SPACE && ch2 != ZEN_BLACK && ch2 != ZEN_SPACE) ||
                 (ch1 != ZEN_SPACE && ch1 != ZEN_BLACK && ch2 == ZEN_SPACE))
             {
@@ -3654,7 +3655,7 @@ void __fastcall XgSolveXWord_NoAddBlackRecurse(const XG_Board& xw)
                 return;
 
             // 空白と文字が隣り合っているか？
-            WCHAR ch1 = xw.GetAt(i, j), ch2 = xw.GetAt(i + 1, j);
+            const WCHAR ch1 = xw.GetAt(i, j), ch2 = xw.GetAt(i + 1, j);
             if ((ch1 == ZEN_SPACE && ch2 != ZEN_BLACK && ch2 != ZEN_SPACE) ||
                 (ch1 != ZEN_SPACE && ch1 != ZEN_BLACK && ch2 == ZEN_SPACE))
             {
@@ -3742,7 +3743,7 @@ void __fastcall XgSolveXWord_NoAddBlackRecurse(const XG_Board& xw)
 
     // 解かどうか？
     ::EnterCriticalSection(&xg_cs);
-    bool ok = xw.IsSolution();
+    const bool ok = xw.IsSolution();
     ::LeaveCriticalSection(&xg_cs);
     if (ok) {
         // 解だった。
@@ -4387,7 +4388,7 @@ void __fastcall XgClearNonBlocks(void)
 
     for (int i = 0; i < xg_nRows; ++i) {
         for (int j = 0; j < xg_nCols; ++j) {
-            WCHAR oldch = xg_xword.GetAt(i, j);
+            const WCHAR oldch = xg_xword.GetAt(i, j);
             if (oldch != ZEN_BLACK && oldch != ZEN_SPACE) {
                 xg_xword.SetAt(i, j, ZEN_SPACE);
             }
@@ -4569,7 +4570,7 @@ void __fastcall XgDrawMarkWord(HDC hdc, LPSIZE psiz)
         c_nWide = xg_nNarrowMargin;
 
     // セルの幅。
-    int nCellSize = xg_nCellSize;
+    const int nCellSize = xg_nCellSize;
 
     // 黒いブラシ。
     LOGBRUSH lbBlack;
@@ -4768,7 +4769,7 @@ XgDrawCellNumber(HDC hdc, const RECT& rcCell, int i, int j, int number, std::uno
     ::SetBkMode(hdc, TRANSPARENT);
 
     // 文字の背景を塗りつぶす。
-    int nMarked = XgGetMarked(i, j);
+    const int nMarked = XgGetMarked(i, j);
     COLORREF rgbBack;
     if (xg_bSolved && xg_bNumCroMode) {
         // 文字の背景を塗りつぶす。
@@ -4850,7 +4851,7 @@ void XgDrawDoubleFrameCell(HDC hdc, int nMarked, const RECT& rc, int nCellSize, 
 void __fastcall XgDrawXWord_NormalView(const XG_Board& xw, HDC hdc, const SIZE *psiz, DRAW_MODE mode)
 {
     // セルの大きさ。
-    int nCellSize = (xg_nForDisplay > 0) ? (xg_nCellSize * xg_nZoomRate / 100) : xg_nCellSize;
+    const int nCellSize = (xg_nForDisplay > 0) ? (xg_nCellSize * xg_nZoomRate / 100) : xg_nCellSize;
 
     // 全体を白で塗りつぶす。
     RECT rc0 = { 0, 0, psiz->cx, psiz->cy };
@@ -5141,7 +5142,7 @@ void __fastcall XgDrawXWord_SkeletonView(const XG_Board& xw, HDC hdc, const SIZE
     if (mode == DRAW_MODE_SCREEN) {
         ::FillRect(hdc, &rc, reinterpret_cast<HBRUSH>(::GetStockObject(WHITE_BRUSH)));
     } else {
-        COLORREF rgbWhite = RGB(255, 255, 255);
+        const COLORREF rgbWhite = RGB(255, 255, 255);
         ::SetPixelV(hdc, rc.left, rc.top, rgbWhite);
         ::SetPixelV(hdc, rc.right - 1, rc.top, rgbWhite);
         ::SetPixelV(hdc, rc.right - 1, rc.bottom - 1, rgbWhite);
@@ -5208,7 +5209,7 @@ void __fastcall XgDrawXWord_SkeletonView(const XG_Board& xw, HDC hdc, const SIZE
     if (xg_bAddThickFrame) {
         for (int i = 0; i < xg_nRows; i++) {
             for (int j = 0; j < xg_nCols; j++) {
-                WCHAR ch = xw.GetAt(i, j);
+                const WCHAR ch = xw.GetAt(i, j);
                 if (ch == ZEN_BLACK)
                     continue;
 
@@ -5231,7 +5232,7 @@ void __fastcall XgDrawXWord_SkeletonView(const XG_Board& xw, HDC hdc, const SIZE
     // 文字の背景を描画する。
     for (int i = 0; i < xg_nRows; i++) {
         for (int j = 0; j < xg_nCols; j++) {
-            WCHAR ch = xw.GetAt(i, j);
+            const WCHAR ch = xw.GetAt(i, j);
             if (ch == ZEN_BLACK)
                 continue;
 
@@ -5270,7 +5271,7 @@ void __fastcall XgDrawXWord_SkeletonView(const XG_Board& xw, HDC hdc, const SIZE
         for (int i = 0; i < xg_nRows; i++) {
             for (int j = 0; j < xg_nCols; j++) {
                 // 二重マスか？
-                int nMarked = XgGetMarked(i, j);
+                const int nMarked = XgGetMarked(i, j);
                 if (nMarked == -1)
                     continue;
 
@@ -5290,8 +5291,7 @@ void __fastcall XgDrawXWord_SkeletonView(const XG_Board& xw, HDC hdc, const SIZE
     if (!xg_bNumCroMode) {
         const int size = static_cast<int>(xg_vTateInfo.size());
         for (int k = 0; k < size; k++) {
-            auto i = xg_vTateInfo[k].m_iRow;
-            auto j = xg_vTateInfo[k].m_jCol;
+            const auto i = xg_vTateInfo[k].m_iRow, j = xg_vTateInfo[k].m_jCol;
 
             rc = {
                 xg_nMargin + j * nCellSize,
@@ -5308,8 +5308,7 @@ void __fastcall XgDrawXWord_SkeletonView(const XG_Board& xw, HDC hdc, const SIZE
     if (!xg_bNumCroMode) {
         const int size = static_cast<int>(xg_vYokoInfo.size());
         for (int k = 0; k < size; k++) {
-            auto i = xg_vYokoInfo[k].m_iRow;
-            auto j = xg_vYokoInfo[k].m_jCol;
+            const auto i = xg_vYokoInfo[k].m_iRow, j = xg_vYokoInfo[k].m_jCol;
 
             rc = {
                 xg_nMargin + j * nCellSize,
@@ -5326,7 +5325,7 @@ void __fastcall XgDrawXWord_SkeletonView(const XG_Board& xw, HDC hdc, const SIZE
     if (xg_bSolved && xg_bNumCroMode) {
         for (int i = 0; i < xg_nRows; i++) {
             for (int j = 0; j < xg_nCols; j++) {
-                WCHAR ch = xg_solution.GetAt(i, j);
+                const WCHAR ch = xg_solution.GetAt(i, j);
                 if (ch == ZEN_BLACK || ch == ZEN_SPACE)
                     continue;
 
@@ -5348,7 +5347,7 @@ void __fastcall XgDrawXWord_SkeletonView(const XG_Board& xw, HDC hdc, const SIZE
     // セルの文字を描画する。
     for (int i = 0; i < xg_nRows; i++) {
         for (int j = 0; j < xg_nCols; j++) {
-            WCHAR ch = xw.GetAt(i, j);
+            const WCHAR ch = xw.GetAt(i, j);
             if (ch == ZEN_BLACK)
                 continue;
 
@@ -5366,7 +5365,7 @@ void __fastcall XgDrawXWord_SkeletonView(const XG_Board& xw, HDC hdc, const SIZE
     // セルの枠を描画する。
     for (int i = 0; i < xg_nRows; i++) {
         for (int j = 0; j < xg_nCols; j++) {
-            WCHAR ch = xw.GetAt(i, j);
+            const WCHAR ch = xw.GetAt(i, j);
             if (ch == ZEN_BLACK)
                 continue;
 
@@ -5390,8 +5389,7 @@ void __fastcall XgDrawXWord_SkeletonView(const XG_Board& xw, HDC hdc, const SIZE
 
     // キャレットを描画する。
     if (mode == DRAW_MODE_SCREEN && xg_bShowCaret) {
-        auto i = xg_caret_pos.m_i;
-        auto j = xg_caret_pos.m_j;
+        const auto i = xg_caret_pos.m_i, j = xg_caret_pos.m_j;
         XgDrawCaret(hdc, i, j, nCellSize, hCaretPen);
     }
 
@@ -5534,7 +5532,7 @@ bool __fastcall XgDoLoadCrpFile(HWND hwnd, LPCWSTR pszFile)
             // 番号付けを行う。
             xword.DoNumberingNoCheck();
 
-            int nClueCount = GetPrivateProfileIntW(L"Clue", L"Count", 0, pszFile);
+            const int nClueCount = GetPrivateProfileIntW(L"Clue", L"Count", 0, pszFile);
             if (nClueCount) {
                 for (i = 0; i < nClueCount; ++i) {
                     StringCbPrintf(szName, sizeof(szName), L"Clue%d", i + 1);
@@ -5544,7 +5542,7 @@ bool __fastcall XgDoLoadCrpFile(HWND hwnd, LPCWSTR pszFile)
                     xg_str_trim(str);
                     if (str.empty())
                         break;
-                    size_t icolon = str.find(L':');
+                    const auto icolon = str.find(L':');
                     if (icolon != str.npos) {
                         std::wstring word = str.substr(0, icolon);
                         std::wstring hint = str.substr(icolon + 1);
@@ -5718,7 +5716,7 @@ bool __fastcall XgDoSaveCrpFile(LPCWSTR pszFile)
             for (int j = 0; j < xg_nCols; ++j) {
                 if (row.size())
                     row += L",";
-                WCHAR ch = xw->GetAt(i, j);
+                const WCHAR ch = xw->GetAt(i, j);
                 if (ch == ZEN_SPACE)
                     row += 0xFF3F; // '＿'
                 else

@@ -150,12 +150,9 @@ BOOL XG_SettingsDialog::OnInitDialog(HWND hwnd)
 // [設定]ダイアログで[OK]ボタンを押された。
 void XG_SettingsDialog::OnOK(HWND hwnd)
 {
-    int nValue1, nValue2;
-    BOOL bTranslated;
-
     // セルの文字の大きさ。
-    bTranslated = FALSE;
-    nValue1 = GetDlgItemInt(hwnd, edt4, &bTranslated, FALSE);
+    BOOL bTranslated = FALSE;
+    int nValue1 = GetDlgItemInt(hwnd, edt4, &bTranslated, FALSE);
     if (bTranslated && 0 <= nValue1 && nValue1 <= 100)
     {
         ;
@@ -172,7 +169,7 @@ void XG_SettingsDialog::OnOK(HWND hwnd)
 
     // 小さい文字の大きさ。
     bTranslated = FALSE;
-    nValue2 = GetDlgItemInt(hwnd, edt5, &bTranslated, FALSE);
+    int nValue2 = GetDlgItemInt(hwnd, edt5, &bTranslated, FALSE);
     if (bTranslated && 0 <= nValue2 && nValue2 <= 100)
     {
         ;
@@ -397,17 +394,14 @@ BOOL XG_SettingsDialog::DoImportLooks(HWND hwnd, LPCWSTR pszFileName)
 // LOOKSファイルのエクスポート。
 BOOL XG_SettingsDialog::DoExportLooks(HWND hwnd, LPCWSTR pszFileName)
 {
-    int nValue1, nValue2;
-    BOOL bTranslated;
-
     // 書く前にファイルを消す。
     DeleteFileW(pszFileName);
     // LOOKSファイル名をセットする。
     XgGetFileManager()->set_looks(pszFileName);
 
     // セルの文字の大きさ。
-    bTranslated = FALSE;
-    nValue1 = GetDlgItemInt(hwnd, edt4, &bTranslated, FALSE);
+    BOOL bTranslated = FALSE;
+    int nValue1 = GetDlgItemInt(hwnd, edt4, &bTranslated, FALSE);
     if (bTranslated && 0 <= nValue1 && nValue1 <= 100)
     {
         ;
@@ -424,7 +418,7 @@ BOOL XG_SettingsDialog::DoExportLooks(HWND hwnd, LPCWSTR pszFileName)
 
     // 小さい文字の大きさ。
     bTranslated = FALSE;
-    nValue2 = GetDlgItemInt(hwnd, edt5, &bTranslated, FALSE);
+    int nValue2 = GetDlgItemInt(hwnd, edt5, &bTranslated, FALSE);
     if (bTranslated && 0 <= nValue2 && nValue2 <= 100)
     {
         ;

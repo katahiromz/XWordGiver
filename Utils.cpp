@@ -1413,7 +1413,7 @@ BOOL ComboBox_RealGetText(HWND hwndCombo, LPWSTR pszText, int cchText) noexcept
 // コンボボックスにテキストを設定。
 BOOL ComboBox_RealSetText(HWND hwndCombo, LPCWSTR pszText) noexcept
 {
-    int iItem = ComboBox_FindStringExact(hwndCombo, -1, pszText);
+    const int iItem = ComboBox_FindStringExact(hwndCombo, -1, pszText);
     if (iItem == CB_ERR)
     {
         ComboBox_SetCurSel(hwndCombo, -1);

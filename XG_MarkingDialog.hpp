@@ -197,7 +197,7 @@ public:
                 mu1->Get();
                 {
                     // 前の候補。
-                    int iItem = GetCurSel(hwnd);
+                    const int iItem = GetCurSel(hwnd);
                     if (iItem == LB_ERR) {
                         xg_iMarkedCand = static_cast<int>(xg_vMarkedCands.size()) - 1;
                     } else {
