@@ -5337,25 +5337,10 @@ void __fastcall XgDrawXWord_SkeletonView(const XG_Board& xw, HDC hdc, const SIZE
                 xg_nMargin + (i + 1) * nCellSize
             };
 
+            // マスの文字を描画する。
             XgDrawLetterCell(hdc, ch, rc, hFontNormal);
-        }
-    }
 
-    // セルの枠を描画する。
-    for (int i = 0; i < xg_nRows; i++) {
-        for (int j = 0; j < xg_nCols; j++) {
-            const WCHAR ch = xw.GetAt(i, j);
-            if (ch == ZEN_BLACK)
-                continue;
-
-            // セルの座標をセットする。
-            rc = {
-                xg_nMargin + j * nCellSize,
-                xg_nMargin + i * nCellSize,
-                xg_nMargin + (j + 1) * nCellSize,
-                xg_nMargin + (i + 1) * nCellSize
-            };
-
+            // セルの枠を描画する。
             // Rectangle関数ではうまくいかないので直接線を描画する。
             HGDIOBJ hPen2Old = ::SelectObject(hdc, hThinPen);
             ::MoveToEx(hdc, rc.left, rc.top, nullptr);
