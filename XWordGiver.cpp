@@ -5404,8 +5404,7 @@ HBITMAP __fastcall XgCreateXWordImage(const XG_Board& xw, const SIZE *psiz, bool
     bi.bmiHeader.biHeight = psiz->cy;
     bi.bmiHeader.biPlanes = 1;
     bi.bmiHeader.biBitCount = 24;
-    HBITMAP hbm;
-    hbm = ::CreateDIBSection(hdc, &bi, DIB_RGB_COLORS, &pvBits, nullptr, 0);
+    HBITMAP hbm = ::CreateDIBSection(hdc, &bi, DIB_RGB_COLORS, &pvBits, nullptr, 0);
     if (hbm == nullptr) {
         DeleteDC(hdc);
         return nullptr;

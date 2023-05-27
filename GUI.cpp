@@ -717,11 +717,12 @@ void __fastcall XgEnsureCaretVisible(HWND hwnd)
     const int nCellSize = xg_nCellSize * xg_nZoomRate / 100;
 
     // キャレットの矩形を設定する。
-    ::SetRect(&rc,
-        static_cast<int>(xg_nMargin + xg_caret_pos.m_j * nCellSize), 
-        static_cast<int>(xg_nMargin + xg_caret_pos.m_i * nCellSize), 
-        static_cast<int>(xg_nMargin + (xg_caret_pos.m_j + 1) * nCellSize), 
-        static_cast<int>(xg_nMargin + (xg_caret_pos.m_i + 1) * nCellSize));
+    rc = {
+        xg_nMargin + xg_caret_pos.m_j * nCellSize,
+        xg_nMargin + xg_caret_pos.m_i * nCellSize,
+        xg_nMargin + (xg_caret_pos.m_j + 1) * nCellSize,
+        xg_nMargin + (xg_caret_pos.m_i + 1) * nCellSize
+    };
 
     // 横スクロール情報を修正する。
     si.cbSize = sizeof(si);
@@ -1779,8 +1780,7 @@ static void XgPrintIt(HDC hdc, PRINTDLGW* ppd, bool bPrintAnswer)
                 // 二重マス単語を描画する。
                 hFont = ::CreateFontIndirectW(&lf);
                 hFontOld = ::SelectObject(hdc, hFont);
-                ::SetRect(&rc, cxPaper / 8, cyPaper / 16,
-                    cxPaper * 7 / 8, cyPaper / 8);
+                rc = { cxPaper / 8, cyPaper / 16, cxPaper * 7 / 8, cyPaper / 8 };
                 str = XgLoadStringDx1(IDS_ANSWER);
                 str += strMarkWord;
                 ::DrawTextW(hdc, str.data(), static_cast<int>(str.size()), &rc,
@@ -1819,7 +1819,7 @@ static void XgPrintIt(HDC hdc, PRINTDLGW* ppd, bool bPrintAnswer)
                         cx = cxPaper / 2;
                         cy = cxPaper * nLogPixelY * siz.cy / nLogPixelX / siz.cx / 2;
                     }
-                    ::SetRect(&rc, x, y, x + cx, y + cy);
+                    rc = { x, y, x + cx, y + cy };
 
                     // EMFを描画する。
                     ::PlayEnhMetaFile(hdc, hEMF, &rc);
@@ -1858,21 +1858,18 @@ static void XgPrintIt(HDC hdc, PRINTDLGW* ppd, bool bPrintAnswer)
             hFontOld = ::SelectObject(hdc, hFont);
 
             // ヒントを一行ずつ描画する。
-            ::SetRect(&rc, cxPaper / 8, cyPaper / 2,
-                cxPaper * 7 / 8, cyPaper * 8 / 9);
+            rc = { cxPaper / 8, cyPaper / 2, cxPaper * 7 / 8, cyPaper * 8 / 9 };
             for (ichOld = ich = 0; rc.bottom <= cyPaper * 8 / 9; ichOld = ich + 1) {
                 ich = strHints.find(L"\n", ichOld);
                 if (ich == std::wstring::npos)
                     break;
                 str = strHints.substr(0, ich);  // 一行取り出す。
-                ::SetRect(&rc, cxPaper / 8, yLast,
-                    cxPaper * 7 / 8, cyPaper * 8 / 9);
+                rc = { cxPaper / 8, yLast, cxPaper * 7 / 8, cyPaper * 8 / 9 };
                 ::DrawTextW(hdc, str.data(), static_cast<int>(str.size()), &rc,
                     DT_LEFT | DT_TOP | DT_CALCRECT | DT_NOPREFIX | DT_WORDBREAK);
             }
             // 最後の行を描画する。
-            ::SetRect(&rc, cxPaper / 8, yLast,
-                cxPaper * 7 / 8, cyPaper * 8 / 9);
+            rc = { cxPaper / 8, yLast, cxPaper * 7 / 8, cyPaper * 8 / 9 };
             if (ich == std::wstring::npos) {
                 str = strHints;
                 ::DrawTextW(hdc, str.data(), static_cast<int>(str.size()), &rc,
@@ -1910,8 +1907,7 @@ static void XgPrintIt(HDC hdc, PRINTDLGW* ppd, bool bPrintAnswer)
                 hFont = ::CreateFontIndirectW(&lf);
                 hFontOld = ::SelectObject(hdc, hFont);
                 str = strHints;
-                ::SetRect(&rc, cxPaper / 8, cyPaper / 9,
-                    cxPaper * 7 / 8, cyPaper * 8 / 9);
+                rc = { cxPaper / 8, cyPaper / 9, cxPaper * 7 / 8, cyPaper * 8 / 9 };
                 ::DrawTextW(hdc, str.data(), static_cast<int>(str.size()), &rc,
                     DT_LEFT | DT_TOP | DT_NOCLIP | DT_NOPREFIX | DT_WORDBREAK);
                 ::SelectObject(hdc, hFontOld);
@@ -3541,10 +3537,10 @@ static void XgOnPointSymmetryCheck(HWND hwnd)
 {
     if (xg_xword.IsPointSymmetry()) {
         XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_POINTSYMMETRY), XgLoadStringDx2(IDS_APPNAME),
-                          MB_ICONINFORMATION);
+                            MB_ICONINFORMATION);
     } else {
         XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_NOTPOINTSYMMETRY), XgLoadStringDx2(IDS_APPNAME),
-                          MB_ICONINFORMATION);
+                            MB_ICONINFORMATION);
     }
 }
 
@@ -3601,8 +3597,7 @@ void XgCopyBoard(HWND hwnd)
                         {
                             HBITMAP hbm = XgCreate24BppBitmap(hDC, siz.cx, siz.cy);
                             HGDIOBJ hbmOld = SelectObject(hDC, hbm);
-                            RECT rc;
-                            SetRect(&rc, 0, 0, siz.cx, siz.cy);
+                            RECT rc = { 0, 0, siz.cx, siz.cy };
                             FillRect(hDC, &rc, GetStockBrush(WHITE_BRUSH));
                             XgDrawXWord(*pxw, hDC, &siz, DRAW_MODE_PRINT);
                             SelectObject(hDC, hbmOld);
@@ -3668,8 +3663,7 @@ void XgCopyBoardAsImage(HWND hwnd)
         hbm = CreateDIBSection(hDC, &bi, DIB_RGB_COLORS, &pvBits, nullptr, 0);
         if (HGDIOBJ hbmOld = SelectObject(hDC, hbm))
         {
-            RECT rc;
-            SetRect(&rc, 0, 0, siz.cx, siz.cy);
+            RECT rc = { 0, 0, siz.cx, siz.cy };
             FillRect(hDC, &rc, GetStockBrush(WHITE_BRUSH));
             PlayEnhMetaFile(hDC, hEMF, &rc);
             SelectObject(hDC, hbmOld);
