@@ -4694,6 +4694,8 @@ void __fastcall XgDrawMarkWord(HDC hdc, const SIZE *psiz)
         return;
     }
 
+    auto slot = XgGetSlot(xg_highlight.m_number, xg_highlight.m_vertical);
+
     // ブラシを作成する。
     HBRUSH hbrBlack = ::CreateSolidBrush(xg_rgbBlackCellColor);
     HBRUSH hbrWhite = ::CreateSolidBrush(xg_rgbWhiteCellColor);
@@ -4734,10 +4736,12 @@ void __fastcall XgDrawMarkWord(HDC hdc, const SIZE *psiz)
 
     // 周りに太い線を描く。
     if (xg_bAddThickFrame) {
-        InflateRect(&rc, +xg_nNarrowMargin, +xg_nNarrowMargin);
-        FillRect(hdc, &rc, hbrBlack);
-        InflateRect(&rc, -xg_nNarrowMargin, -xg_nNarrowMargin);
+        ::InflateRect(&rc, -c_nWide, -c_nWide);
+        ::FillRect(hdc, &rc, hbrBlack);
+        ::InflateRect(&rc, +c_nWide, +c_nWide);
     }
+
+    const auto& xw = (xg_bSolved && xg_bShowAnswer) ? xg_solution : xg_xword;
 
     // 二重マスを描画する。
     HGDIOBJ hFontOld = ::SelectObject(hdc, hFontSmall);
@@ -4748,15 +4752,30 @@ void __fastcall XgDrawMarkWord(HDC hdc, const SIZE *psiz)
             xg_nNarrowMargin + (i + 1) * nCellSize,
             xg_nNarrowMargin + nCellSize
         };
-        ::FillRect(hdc, &rc, hbrMarked);
 
-        XgDrawDoubleFrameCell(hdc, i, rc, nCellSize, hThinPen);
+        // ナンクロなら白。さもなければ二重マスの色。
+        if (xg_bNumCroMode) {
+            ::FillRect(hdc, &rc, hbrWhite);
+        } else {
+            ::FillRect(hdc, &rc, hbrMarked);
+        }
+
+        const XG_Pos& pos = xg_vMarks[i];
+        const WCHAR ch = xw.GetAt(pos.m_i, pos.m_j);
+
+        // ナンクロなら数字、さもなければ二重マスの文字を描画する。
+        if (xg_bNumCroMode) {
+            ::OffsetRect(&rc, c_nThin, c_nThin * 2 / 3);
+            XgDrawCellNumber(hdc, rc, pos.m_i, pos.m_j, xg_mapNumCro1[ch], slot);
+        } else {
+            XgDrawDoubleFrameCell(hdc, i, rc, nCellSize, hThinPen);
+        }
     }
     ::SelectObject(hdc, hFontOld);
 
-    const auto& xw = (xg_bSolved && xg_bShowAnswer) ? xg_solution : xg_xword;
+    // 塗りつぶさない。
+    ::SelectObject(hdc, ::GetStockObject(NULL_BRUSH));
 
-    // マスの文字を描画する。
     for (int i = 0; i < nCount; i++) {
         rc = {
             xg_nNarrowMargin + i * nCellSize,
@@ -4768,19 +4787,8 @@ void __fastcall XgDrawMarkWord(HDC hdc, const SIZE *psiz)
         const XG_Pos& pos = xg_vMarks[i];
         const WCHAR ch = xw.GetAt(pos.m_i, pos.m_j);
 
+        // マスの文字を描画する。
         XgDrawLetterCell(hdc, ch, rc, hFontNormal);
-    }
-
-    // 線を引く。塗りつぶさない。
-    ::SelectObject(hdc, ::GetStockObject(NULL_BRUSH));
-    HGDIOBJ hPenOld = ::SelectObject(hdc, hThinPen);
-    for (int i = 0; i < nCount; i++) {
-        rc = {
-            xg_nNarrowMargin + i * nCellSize,
-            xg_nNarrowMargin,
-            xg_nNarrowMargin + (i + 1) * nCellSize,
-            xg_nNarrowMargin + nCellSize
-        };
 
         // Rectangle関数ではうまくいかないので直接線を描画する。
         ::MoveToEx(hdc, rc.left, rc.top, nullptr);
@@ -4789,7 +4797,6 @@ void __fastcall XgDrawMarkWord(HDC hdc, const SIZE *psiz)
         ::LineTo(hdc, rc.left, rc.bottom);
         ::LineTo(hdc, rc.left, rc.top);
     }
-    ::SelectObject(hdc, hPenOld);
 
     // 破棄する。
     ::DeleteObject(hThinPen);
