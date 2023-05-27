@@ -4776,7 +4776,6 @@ void __fastcall XgDrawMarkWord(HDC hdc, const SIZE *psiz)
             ::OffsetRect(&rc, c_nThin, c_nThin * 2 / 3);
             XgDrawCellNumber(hdc, rc, pos.m_i, pos.m_j, xg_mapNumCro1[ch], slot);
         } else {
-            const WCHAR ch = xw.GetAt(pos.m_i, pos.m_j);
             XgDrawDoubleFrameCell(hdc, i, rc, nCellSize, hThinPen);
         }
     }

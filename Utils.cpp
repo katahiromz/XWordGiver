@@ -50,7 +50,6 @@ LPWSTR __fastcall XgLoadStringDx1(int id) noexcept
     static WCHAR sz[512];
     const int ret = LoadStringW(xg_hInstance, id, sz, _countof(sz));
     assert(ret != 0);
-    UNREFERENCED_PARAMETER(ret);
     return sz;
 }
 
@@ -60,7 +59,6 @@ LPWSTR __fastcall XgLoadStringDx2(int id) noexcept
     static WCHAR sz[512];
     const int ret = LoadStringW(xg_hInstance, id, sz, _countof(sz));
     assert(ret != 0);
-    UNREFERENCED_PARAMETER(ret);
     return sz;
 }
 

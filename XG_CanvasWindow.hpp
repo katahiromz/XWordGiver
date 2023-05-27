@@ -234,9 +234,9 @@ public:
     }
 
     // マウスホイールが回転した。
-    void OnMouseWheel(HWND hwnd, int xPos, int yPos, int zDelta, UINT fwKeys) noexcept
+    void OnMouseWheel(HWND hwnd, int x, int y, int zDelta, UINT fwKeys) noexcept
     {
-        POINT pt = {xPos, yPos};
+        POINT pt = {x, y};
 
         RECT rc;
         if (::GetWindowRect(xg_hHintsWnd, &rc) && ::PtInRect(&rc, pt)) {
