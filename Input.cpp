@@ -56,7 +56,7 @@ void __fastcall XgInputDirection(HWND hwnd, int nDirection)
 // 文字と「元に戻す」情報をセット。
 void __fastcall XgSetChar(HWND hwnd, WCHAR ch)
 {
-    auto xw = (xg_bSolved ? &xg_solution : &xg_xword);
+    const auto xw = (xg_bSolved ? &xg_solution : &xg_xword);
 
     if (ch == 0xFF0D) { // －
         // 一つでもカナがあれば、マイナスを長音（ー）に置き換える。
@@ -126,6 +126,8 @@ WCHAR XgConvertAccent(WCHAR chAccent, WCHAR ch) noexcept
         case L'S': case L's':
             ch = 0x015C; // LATIN CAPITAL LETTER S WITH CIRCUMFLEX
             break;
+        default:
+            break;
         }
         break;
     case L'`':
@@ -147,6 +149,8 @@ WCHAR XgConvertAccent(WCHAR chAccent, WCHAR ch) noexcept
             break;
         case L'Y': case L'y':
             ch = 0x1EF2; // LATIN CAPITAL LETTER Y WITH GRAVE
+            break;
+        default:
             break;
         }
         break;

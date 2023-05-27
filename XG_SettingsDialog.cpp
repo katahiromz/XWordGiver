@@ -918,6 +918,7 @@ XG_SettingsDialog::DialogProcDx(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPar
             } else {
                 ::EnableWindow(::GetDlgItem(hwnd, edt7), FALSE);
             }
+            break;
 
         default:
             break;

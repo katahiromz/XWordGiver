@@ -205,6 +205,9 @@ int MScrollView::GetNextPos(int bar, int nSB_, int pos) const noexcept
         pos = std::max(0, int(si.nTrackPos));
         pos = std::min(int(si.nMax - si.nPage), int(pos));
         return pos;
+
+    default:
+        break;
     }
 
     return -1;

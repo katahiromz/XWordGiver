@@ -576,7 +576,7 @@ BOOL XgWriteXdBoxes(FILE *fout)
 }
 
 // ボックスを描画する。
-void XgDrawBoxes(XG_Board& xw, HDC hdc, const SIZE *psiz)
+void XgDrawBoxes(const XG_Board& xw, HDC hdc, const SIZE *psiz)
 {
     const int nZoomRate = xg_nZoomRate;
     xg_nZoomRate = 100;

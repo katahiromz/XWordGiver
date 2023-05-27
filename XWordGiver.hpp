@@ -653,7 +653,7 @@ enum DRAW_MODE
 };
 
 // クロスワードを描画する。
-void __fastcall XgDrawXWord(XG_Board& xw, HDC hdc, const SIZE *psiz, DRAW_MODE mode);
+void __fastcall XgDrawXWord(const XG_Board& xw, HDC hdc, const SIZE *psiz, DRAW_MODE mode);
 
 // 解を求めるのを開始。
 void __fastcall XgStartSolve_AddBlack(void) noexcept;
@@ -1479,7 +1479,7 @@ BOOL __fastcall XgPatternRuleIsOK(const XG_PATDATA& pat);
 #include "XG_BoxWindow.hpp"
 
 // ボックスを描画する。
-void XgDrawBoxes(XG_Board& xw, HDC hdc, const SIZE *psiz);
+void XgDrawBoxes(const XG_Board& xw, HDC hdc, const SIZE *psiz);
 // ボックスをすべて削除する。
 void XgDeleteBoxes(void) noexcept;
 // ボックスJSONを読み込む。
