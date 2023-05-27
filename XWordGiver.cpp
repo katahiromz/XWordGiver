@@ -4436,7 +4436,8 @@ void XgDrawCaret(HDC hdc, int i, int j, int nCellSize, HPEN hCaretPen) noexcept
         xg_nMargin + j * nCellSize,
         xg_nMargin + i * nCellSize,
         xg_nMargin + (j + 1) * nCellSize,
-        xg_nMargin + (i + 1) * nCellSize };
+        xg_nMargin + (i + 1) * nCellSize
+    };
 
     // カギカッコみたいなもの、コーナーに四つ。
     const auto cxyMargin = nCellSize / 10; // 余白。
@@ -4515,14 +4516,14 @@ void __fastcall XgDrawLetterCell(HDC hdc, WCHAR ch, RECT& rc, HFONT hFont) noexc
 }
 
 // 通常の文字のフォントを作成する。
-HFONT XgCreateNormalFont(VOID)
+HFONT XgCreateNormalFont(INT nCellSize)
 {
     LOGFONTW lf;
     ZeroMemory(&lf, sizeof(lf));
     StringCbCopy(lf.lfFaceName, sizeof(lf.lfFaceName), XgLoadStringDx1(IDS_MONOFONT));
     if (xg_szCellFont[0])
         StringCbCopy(lf.lfFaceName, sizeof(lf.lfFaceName), xg_szCellFont);
-    lf.lfHeight = -xg_nCellSize * xg_nCellCharPercents / 100;
+    lf.lfHeight = -nCellSize * xg_nCellCharPercents / 100;
     lf.lfWidth = 0;
     lf.lfWeight = FW_NORMAL;
     lf.lfQuality = ANTIALIASED_QUALITY;
@@ -4531,175 +4532,18 @@ HFONT XgCreateNormalFont(VOID)
 }
 
 // 小さい文字のフォントを作成する。
-HFONT XgCreateSmallFont(VOID)
+HFONT XgCreateSmallFont(INT nCellSize)
 {
     LOGFONTW lf;
     ZeroMemory(&lf, sizeof(lf));
     if (xg_szSmallFont[0])
         StringCbCopy(lf.lfFaceName, sizeof(lf.lfFaceName), xg_szSmallFont);
-    lf.lfHeight = -xg_nCellSize * xg_nSmallCharPercents / 100;
+    lf.lfHeight = -nCellSize * xg_nSmallCharPercents / 100;
     lf.lfWidth = 0;
     lf.lfWeight = FW_NORMAL;
     lf.lfQuality = ANTIALIASED_QUALITY;
     lf.lfCharSet = SHIFTJIS_CHARSET;
     return ::CreateFontIndirectW(&lf);
-}
-
-// 二重マス単語を描画する。
-void __fastcall XgDrawMarkWord(HDC hdc, LPSIZE psiz)
-{
-    const auto nCount = static_cast<int>(xg_vMarks.size());
-    if (nCount == 0) {
-        ::MessageBeep(0xFFFFFFFF);
-        return;
-    }
-
-    // ブラシを作成する。
-    HBRUSH hbrBlack = ::CreateSolidBrush(xg_rgbBlackCellColor);
-    HBRUSH hbrWhite = ::CreateSolidBrush(xg_rgbWhiteCellColor);
-    HBRUSH hbrMarked = ::CreateSolidBrush(xg_rgbMarkedCellColor);
-
-    // 線の太さ。
-    int c_nThin = static_cast<int>(YPixelsFromPoints(hdc, xg_nLineWidthInPt));
-    int c_nWide = static_cast<int>(YPixelsFromPoints(hdc, xg_nOuterFrameInPt));
-    if (c_nThin < 2)
-        c_nThin = 2;
-    if (c_nWide < 2)
-        c_nWide = 2;
-    if (c_nWide > xg_nNarrowMargin)
-        c_nWide = xg_nNarrowMargin;
-
-    // セルの幅。
-    const int nCellSize = xg_nCellSize;
-
-    // 黒いブラシ。
-    LOGBRUSH lbBlack;
-    lbBlack.lbStyle = BS_SOLID;
-    lbBlack.lbColor = xg_rgbBlackCellColor;
-
-    // 細いペンを作成し、選択する。
-    HPEN hThinPen = ::ExtCreatePen(
-        PS_GEOMETRIC | PS_SOLID | PS_ENDCAP_SQUARE | PS_JOIN_BEVEL,
-        c_nThin, &lbBlack, 0, nullptr);
-
-    // 文字マスのフォントを作成する。
-    HFONT hFont = XgCreateNormalFont();
-
-    // 小さい文字のフォントを作成する。
-    HFONT hFontSmall = XgCreateSmallFont();
-
-    // 全体を白で塗りつぶす。
-    RECT rc = { 0, 0, psiz->cx, psiz->cy };
-    ::FillRect(hdc, &rc, reinterpret_cast<HBRUSH>(::GetStockObject(WHITE_BRUSH)));
-
-    // 周りに太い線を描く。
-    if (xg_bAddThickFrame) {
-        InflateRect(&rc, -xg_nNarrowMargin, -xg_nNarrowMargin);
-        InflateRect(&rc, +c_nWide, +c_nWide);
-        FillRect(hdc, &rc, hbrBlack);
-        InflateRect(&rc, -c_nWide, -c_nWide);
-        InflateRect(&rc, +xg_nNarrowMargin, +xg_nNarrowMargin);
-    }
-
-    // 二重マスを描画する。
-    WCHAR sz[32];
-    SIZE siz;
-    HGDIOBJ hFontOld = ::SelectObject(hdc, hFontSmall);
-    for (int i = 0; i < nCount; i++) {
-        rc = {
-            xg_nNarrowMargin + i * xg_nCellSize,
-            xg_nNarrowMargin + 0 * xg_nCellSize,
-            xg_nNarrowMargin + (i + 1) * xg_nCellSize - 1,
-            xg_nNarrowMargin + 1 * xg_nCellSize };
-        ::FillRect(hdc, &rc, hbrMarked);
-        ::InflateRect(&rc, -nCellSize / 9, -nCellSize / 9);
-        if (!xg_bNumCroMode && xg_bDrawFrameForMarkedCell) {
-            HGDIOBJ hPenOld = ::SelectObject(hdc, hThinPen);
-            ::MoveToEx(hdc, rc.left, rc.top, nullptr);
-            ::LineTo(hdc, rc.right + 1, rc.top);
-            ::LineTo(hdc, rc.right + 1, rc.bottom + 1);
-            ::LineTo(hdc, rc.left, rc.bottom + 1);
-            ::LineTo(hdc, rc.left, rc.top);
-            ::SelectObject(hdc, hPenOld);
-        }
-        ::InflateRect(&rc, nCellSize / 9, nCellSize / 9);
-
-        WCHAR ch;
-        if (xg_bNumCroMode && xg_bSolved) {
-            const XG_Pos& pos = xg_vMarks[i];
-            ch = xg_solution.GetAt(pos.m_i, pos.m_j);
-            StringCbPrintf(sz, sizeof(sz), L"%d", xg_mapNumCro1[ch]);
-        } else {
-            if (i < static_cast<int>(xg_strDoubleFrameLetters.size()))
-                ch = xg_strDoubleFrameLetters[i];
-            else
-                ch = ZEN_BLACK;
-            StringCbPrintf(sz, sizeof(sz), L"%c", ch);
-        }
-        ::GetTextExtentPoint32W(hdc, sz, static_cast<int>(wcslen(sz)), &siz);
-
-        RECT rcText = rc;
-        if (xg_bNumCroMode && xg_bSolved) {
-            rcText.left += 2;
-            rcText.right = rcText.left + (siz.cx + siz.cy) / 2;
-            rcText.bottom = rcText.top + siz.cy;
-        } else {
-            rcText.left = rcText.right - (siz.cx + siz.cy) / 2;
-            rcText.top = rcText.bottom - siz.cy;
-        }
-
-        // EMFで枠線が余分に描画されてしまう不具合の回避のため、FillRectの前にNULL_PENを選択する。
-        HGDIOBJ hPen2Old = ::SelectObject(hdc, ::GetStockObject(NULL_PEN));
-        {
-            ::FillRect(hdc, &rcText, hbrMarked);
-        }
-        ::SelectObject(hdc, hPen2Old);
-
-        // 二重マスの文字を描く。
-        ::SetTextColor(hdc, xg_rgbBlackCellColor);
-        ::SetBkMode(hdc, TRANSPARENT);
-        ::TextOutW(hdc, rcText.left, rcText.top - 1, sz, lstrlenW(sz));
-    }
-    ::SelectObject(hdc, hFontOld);
-
-    // マスの文字を描画する。
-    for (int i = 0; i < nCount; i++) {
-        rc = {
-            xg_nNarrowMargin + i * xg_nCellSize,
-            xg_nNarrowMargin + 0 * xg_nCellSize,
-            xg_nNarrowMargin + (i + 1) * xg_nCellSize,
-            xg_nNarrowMargin + 1 * xg_nCellSize };
-
-        WCHAR ch;
-        const XG_Pos& pos = xg_vMarks[i];
-        if (xg_bSolved && xg_bShowAnswer) {
-            ch = xg_solution.GetAt(pos.m_i, pos.m_j);
-        } else {
-            ch = xg_xword.GetAt(pos.m_i, pos.m_j);
-        }
-
-        XgDrawLetterCell(hdc, ch, rc, hFont);
-    }
-
-    // 線を引く。塗りつぶさない。
-    ::SelectObject(hdc, ::GetStockObject(NULL_BRUSH));
-    HGDIOBJ hPenOld = ::SelectObject(hdc, hThinPen);
-    for (int i = 0; i < nCount; i++) {
-        ::Rectangle(hdc,
-                static_cast<int>(xg_nNarrowMargin + i * xg_nCellSize),
-                static_cast<int>(xg_nNarrowMargin + 0 * xg_nCellSize),
-                static_cast<int>(xg_nNarrowMargin + (i + 1) * xg_nCellSize + 1),
-                static_cast<int>(xg_nNarrowMargin + 1 * xg_nCellSize) + 1);
-    }
-    ::SelectObject(hdc, hPenOld);
-
-    // 破棄する。
-    ::DeleteObject(hThinPen);
-    ::DeleteObject(hFont);
-    ::DeleteObject(hFontSmall);
-    ::DeleteObject(hbrBlack);
-    ::DeleteObject(hbrWhite);
-    ::DeleteObject(hbrMarked);
 }
 
 std::unordered_set<XG_Pos> XgGetSlot(int number, BOOL vertical)
@@ -4847,6 +4691,123 @@ void XgDrawDoubleFrameCell(HDC hdc, int nMarked, const RECT& rc, int nCellSize, 
     }
 }
 
+// 二重マス単語を描画する。
+void __fastcall XgDrawMarkWord(HDC hdc, LPSIZE psiz)
+{
+    const auto nCount = static_cast<int>(xg_vMarks.size());
+    if (nCount == 0) {
+        ::MessageBeep(0xFFFFFFFF);
+        return;
+    }
+
+    // ブラシを作成する。
+    HBRUSH hbrBlack = ::CreateSolidBrush(xg_rgbBlackCellColor);
+    HBRUSH hbrWhite = ::CreateSolidBrush(xg_rgbWhiteCellColor);
+    HBRUSH hbrMarked = ::CreateSolidBrush(xg_rgbMarkedCellColor);
+
+    // 線の太さ。
+    int c_nThin = static_cast<int>(YPixelsFromPoints(hdc, xg_nLineWidthInPt));
+    int c_nWide = static_cast<int>(YPixelsFromPoints(hdc, xg_nOuterFrameInPt));
+    if (c_nThin < 2)
+        c_nThin = 2;
+    if (c_nWide < 2)
+        c_nWide = 2;
+    if (c_nWide > xg_nNarrowMargin)
+        c_nWide = xg_nNarrowMargin;
+
+    // セルの幅。
+    const int nCellSize = xg_nCellSize;
+
+    // 黒いブラシ。
+    LOGBRUSH lbBlack;
+    lbBlack.lbStyle = BS_SOLID;
+    lbBlack.lbColor = xg_rgbBlackCellColor;
+
+    // 細いペンを作成し、選択する。
+    HPEN hThinPen = ::ExtCreatePen(
+        PS_GEOMETRIC | PS_SOLID | PS_ENDCAP_SQUARE | PS_JOIN_BEVEL,
+        c_nThin, &lbBlack, 0, nullptr);
+
+    // 文字マスのフォントを作成する。
+    HFONT hFontNormal = XgCreateNormalFont(nCellSize);
+
+    // 小さい文字のフォントを作成する。
+    HFONT hFontSmall = XgCreateSmallFont(nCellSize);
+
+    // 全体を白で塗りつぶす。
+    RECT rc = { 0, 0, psiz->cx, psiz->cy };
+    ::FillRect(hdc, &rc, reinterpret_cast<HBRUSH>(::GetStockObject(WHITE_BRUSH)));
+
+    // 周りに太い線を描く。
+    if (xg_bAddThickFrame) {
+        InflateRect(&rc, -xg_nNarrowMargin, -xg_nNarrowMargin);
+        InflateRect(&rc, +c_nWide, +c_nWide);
+        FillRect(hdc, &rc, hbrBlack);
+        InflateRect(&rc, -c_nWide, -c_nWide);
+        InflateRect(&rc, +xg_nNarrowMargin, +xg_nNarrowMargin);
+    }
+
+    // 二重マスを描画する。
+    HGDIOBJ hFontOld = ::SelectObject(hdc, hFontSmall);
+    for (int i = 0; i < nCount; i++) {
+        rc = {
+            xg_nNarrowMargin + i * xg_nCellSize,
+            xg_nNarrowMargin,
+            xg_nNarrowMargin + (i + 1) * xg_nCellSize,
+            xg_nNarrowMargin + xg_nCellSize
+        };
+        ::FillRect(hdc, &rc, hbrMarked);
+
+        XgDrawDoubleFrameCell(hdc, i, rc, nCellSize, hThinPen);
+    }
+    ::SelectObject(hdc, hFontOld);
+
+    const auto& xw = (xg_bSolved && xg_bShowAnswer) ? xg_solution : xg_xword;
+
+    // マスの文字を描画する。
+    for (int i = 0; i < nCount; i++) {
+        rc = {
+            xg_nNarrowMargin + i * xg_nCellSize,
+            xg_nNarrowMargin,
+            xg_nNarrowMargin + (i + 1) * xg_nCellSize,
+            xg_nNarrowMargin + xg_nCellSize
+        };
+
+        const XG_Pos& pos = xg_vMarks[i];
+        WCHAR ch = xw.GetAt(pos.m_i, pos.m_j);
+
+        XgDrawLetterCell(hdc, ch, rc, hFontNormal);
+    }
+
+    // 線を引く。塗りつぶさない。
+    ::SelectObject(hdc, ::GetStockObject(NULL_BRUSH));
+    HGDIOBJ hPenOld = ::SelectObject(hdc, hThinPen);
+    for (int i = 0; i < nCount; i++) {
+        rc = {
+            xg_nNarrowMargin + i * xg_nCellSize,
+            xg_nNarrowMargin,
+            xg_nNarrowMargin + (i + 1) * xg_nCellSize,
+            xg_nNarrowMargin + xg_nCellSize
+        };
+
+        // Rectangle関数ではうまくいかないので直接線を描画する。
+        ::MoveToEx(hdc, rc.left, rc.top, NULL);
+        ::LineTo(hdc, rc.right, rc.top);
+        ::LineTo(hdc, rc.right, rc.bottom);
+        ::LineTo(hdc, rc.left, rc.bottom);
+        ::LineTo(hdc, rc.left, rc.top);
+    }
+    ::SelectObject(hdc, hPenOld);
+
+    // 破棄する。
+    ::DeleteObject(hThinPen);
+    ::DeleteObject(hFontNormal);
+    ::DeleteObject(hFontSmall);
+    ::DeleteObject(hbrBlack);
+    ::DeleteObject(hbrWhite);
+    ::DeleteObject(hbrMarked);
+}
+
 // クロスワードを描画する（通常ビュー）。
 void __fastcall XgDrawXWord_NormalView(const XG_Board& xw, HDC hdc, const SIZE *psiz, DRAW_MODE mode)
 {
@@ -4859,10 +4820,10 @@ void __fastcall XgDrawXWord_NormalView(const XG_Board& xw, HDC hdc, const SIZE *
     ::FillRect(hdc, &rc0, reinterpret_cast<HBRUSH>(::GetStockObject(WHITE_BRUSH)));
 
     // 文字マスのフォントを作成する。
-    HFONT hFont = XgCreateNormalFont();
+    HFONT hFontNormal = XgCreateNormalFont(nCellSize);
 
     // 小さい文字のフォントを作成する。
-    HFONT hFontSmall = XgCreateSmallFont();
+    HFONT hFontSmall = XgCreateSmallFont(nCellSize);
 
     // ブラシを作成する。
     HBRUSH hbrBlack = ::CreateSolidBrush(xg_rgbBlackCellColor);
@@ -4931,7 +4892,8 @@ void __fastcall XgDrawXWord_NormalView(const XG_Board& xw, HDC hdc, const SIZE *
                 xg_nMargin + j * nCellSize,
                 xg_nMargin + i * nCellSize,
                 xg_nMargin + (j + 1) * nCellSize, 
-                xg_nMargin + (i + 1) * nCellSize };
+                xg_nMargin + (i + 1) * nCellSize
+            };
 
             // 二重マスか？
             const int nMarked = XgGetMarked(i, j);
@@ -5005,7 +4967,8 @@ void __fastcall XgDrawXWord_NormalView(const XG_Board& xw, HDC hdc, const SIZE *
                 xg_nMargin + j * nCellSize,
                 xg_nMargin + i * nCellSize,
                 xg_nMargin + (j + 1) * nCellSize,
-                xg_nMargin + (i + 1) * nCellSize };
+                xg_nMargin + (i + 1) * nCellSize
+            };
             ::OffsetRect(&rc, c_nThin, c_nThin * 2 / 3);
 
             XgDrawCellNumber(hdc, rc, i, j, xg_vTateInfo[k].m_number, slot);
@@ -5022,7 +4985,8 @@ void __fastcall XgDrawXWord_NormalView(const XG_Board& xw, HDC hdc, const SIZE *
                 xg_nMargin + j * nCellSize,
                 xg_nMargin + i * nCellSize,
                 xg_nMargin + (j + 1) * nCellSize,
-                xg_nMargin + (i + 1) * nCellSize };
+                xg_nMargin + (i + 1) * nCellSize
+            };
             ::OffsetRect(&rc, c_nThin, c_nThin * 2 / 3);
 
             XgDrawCellNumber(hdc, rc, i, j, xg_vYokoInfo[k].m_number, slot);
@@ -5041,7 +5005,8 @@ void __fastcall XgDrawXWord_NormalView(const XG_Board& xw, HDC hdc, const SIZE *
                     xg_nMargin + j * nCellSize,
                     xg_nMargin + i * nCellSize,
                     xg_nMargin + (j + 1) * nCellSize,
-                    xg_nMargin + (i + 1) * nCellSize };
+                    xg_nMargin + (i + 1) * nCellSize
+                };
                 ::OffsetRect(&rc, c_nThin, c_nThin * 2 / 3);
 
                 XgDrawCellNumber(hdc, rc, i, j, xg_mapNumCro1[ch], slot);
@@ -5060,13 +5025,14 @@ void __fastcall XgDrawXWord_NormalView(const XG_Board& xw, HDC hdc, const SIZE *
                 xg_nMargin + j * nCellSize,
                 xg_nMargin + i * nCellSize,
                 xg_nMargin + (j + 1) * nCellSize,
-                xg_nMargin + (i + 1) * nCellSize };
+                xg_nMargin + (i + 1) * nCellSize
+            };
 
             const auto ch = xw.GetAt(i, j);
             if (ch == ZEN_BLACK)
                 continue;
 
-            XgDrawLetterCell(hdc, ch, rc, hFont);
+            XgDrawLetterCell(hdc, ch, rc, hFontNormal);
         }
     }
 
@@ -5115,7 +5081,7 @@ void __fastcall XgDrawXWord_NormalView(const XG_Board& xw, HDC hdc, const SIZE *
     ::SelectObject(hdc, hPenOld);
 
     // 破棄する。
-    ::DeleteObject(hFont);
+    ::DeleteObject(hFontNormal);
     ::DeleteObject(hFontSmall);
     ::DeleteObject(hThinPen);
     ::DeleteObject(hCaretPen);
@@ -5150,10 +5116,10 @@ void __fastcall XgDrawXWord_SkeletonView(const XG_Board& xw, HDC hdc, const SIZE
     }
 
     // 文字マスのフォントを作成する。
-    HFONT hFont = XgCreateNormalFont();
+    HFONT hFontNormal = XgCreateNormalFont(nCellSize);
 
     // 小さい文字のフォントを作成する。
-    HFONT hFontSmall = XgCreateSmallFont();
+    HFONT hFontSmall = XgCreateSmallFont(nCellSize);
 
     // ブラシを作成する。
     HBRUSH hbrBlack = ::CreateSolidBrush(xg_rgbBlackCellColor);
@@ -5218,7 +5184,8 @@ void __fastcall XgDrawXWord_SkeletonView(const XG_Board& xw, HDC hdc, const SIZE
                     xg_nMargin + j * nCellSize,
                     xg_nMargin + i * nCellSize,
                     xg_nMargin + (j + 1) * nCellSize,
-                    xg_nMargin + (i + 1) * nCellSize };
+                    xg_nMargin + (i + 1) * nCellSize
+                };
 
                 RECT rcExtended = rc;
                 ::InflateRect(&rcExtended, c_nWide, c_nWide);
@@ -5241,7 +5208,8 @@ void __fastcall XgDrawXWord_SkeletonView(const XG_Board& xw, HDC hdc, const SIZE
                 xg_nMargin + j * nCellSize,
                 xg_nMargin + i * nCellSize,
                 xg_nMargin + (j + 1) * nCellSize,
-                xg_nMargin + (i + 1) * nCellSize };
+                xg_nMargin + (i + 1) * nCellSize
+            };
 
             // 二重マスか？
             const int nMarked = XgGetMarked(i, j);
@@ -5280,7 +5248,8 @@ void __fastcall XgDrawXWord_SkeletonView(const XG_Board& xw, HDC hdc, const SIZE
                     xg_nMargin + j * nCellSize,
                     xg_nMargin + i * nCellSize,
                     xg_nMargin + (j + 1) * nCellSize - 1,
-                    xg_nMargin + (i + 1) * nCellSize };
+                    xg_nMargin + (i + 1) * nCellSize
+                };
 
                 XgDrawDoubleFrameCell(hdc, nMarked, rc, nCellSize, hThinPen);
             }
@@ -5297,7 +5266,8 @@ void __fastcall XgDrawXWord_SkeletonView(const XG_Board& xw, HDC hdc, const SIZE
                 xg_nMargin + j * nCellSize,
                 xg_nMargin + i * nCellSize,
                 xg_nMargin + (j + 1) * nCellSize,
-                xg_nMargin + (i + 1) * nCellSize };
+                xg_nMargin + (i + 1) * nCellSize
+            };
             ::OffsetRect(&rc, c_nThin, c_nThin * 2 / 3);
 
             XgDrawCellNumber(hdc, rc, i, j, xg_vTateInfo[k].m_number, slot);
@@ -5314,7 +5284,8 @@ void __fastcall XgDrawXWord_SkeletonView(const XG_Board& xw, HDC hdc, const SIZE
                 xg_nMargin + j * nCellSize,
                 xg_nMargin + i * nCellSize,
                 xg_nMargin + (j + 1) * nCellSize,
-                xg_nMargin + (i + 1) * nCellSize };
+                xg_nMargin + (i + 1) * nCellSize
+            };
             ::OffsetRect(&rc, c_nThin, c_nThin * 2 / 3);
 
             XgDrawCellNumber(hdc, rc, i, j, xg_vYokoInfo[k].m_number, slot);
@@ -5333,7 +5304,8 @@ void __fastcall XgDrawXWord_SkeletonView(const XG_Board& xw, HDC hdc, const SIZE
                     xg_nMargin + j * nCellSize,
                     xg_nMargin + i * nCellSize,
                     xg_nMargin + (j + 1) * nCellSize,
-                    xg_nMargin + (i + 1) * nCellSize };
+                    xg_nMargin + (i + 1) * nCellSize
+                };
                 ::OffsetRect(&rc, c_nThin, c_nThin * 2 / 3);
 
                 XgDrawCellNumber(hdc, rc, i, j, xg_mapNumCro1[ch], slot);
@@ -5356,9 +5328,10 @@ void __fastcall XgDrawXWord_SkeletonView(const XG_Board& xw, HDC hdc, const SIZE
                 xg_nMargin + j * nCellSize,
                 xg_nMargin + i * nCellSize,
                 xg_nMargin + (j + 1) * nCellSize,
-                xg_nMargin + (i + 1) * nCellSize };
+                xg_nMargin + (i + 1) * nCellSize
+            };
 
-            XgDrawLetterCell(hdc, ch, rc, hFont);
+            XgDrawLetterCell(hdc, ch, rc, hFontNormal);
         }
     }
 
@@ -5374,7 +5347,8 @@ void __fastcall XgDrawXWord_SkeletonView(const XG_Board& xw, HDC hdc, const SIZE
                 xg_nMargin + j * nCellSize,
                 xg_nMargin + i * nCellSize,
                 xg_nMargin + (j + 1) * nCellSize,
-                xg_nMargin + (i + 1) * nCellSize };
+                xg_nMargin + (i + 1) * nCellSize
+            };
 
             // Rectangle関数ではうまくいかないので直接線を描画する。
             HGDIOBJ hPen2Old = ::SelectObject(hdc, hThinPen);
@@ -5394,7 +5368,7 @@ void __fastcall XgDrawXWord_SkeletonView(const XG_Board& xw, HDC hdc, const SIZE
     }
 
     // 破棄する。
-    ::DeleteObject(hFont);
+    ::DeleteObject(hFontNormal);
     ::DeleteObject(hFontSmall);
     ::DeleteObject(hThinPen);
     ::DeleteObject(hCaretPen);
