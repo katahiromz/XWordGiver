@@ -602,7 +602,6 @@ BOOL PackedDIB_CreateFromHandle(std::vector<BYTE>& vecData, HBITMAP hbm)
     pbmih->biHeight           = bm.bmHeight;
     pbmih->biPlanes           = 1;
     pbmih->biBitCount         = bm.bmBitsPixel;
-    pbmih->biCompression      = BI_RGB;
     pbmih->biSizeImage        = bm.bmWidthBytes * bm.bmHeight;
 
     if (bm.bmBitsPixel < 16)

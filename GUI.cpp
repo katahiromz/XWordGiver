@@ -3664,7 +3664,6 @@ void XgCopyBoardAsImage(HWND hwnd)
         bi.bmiHeader.biHeight = siz.cy;
         bi.bmiHeader.biPlanes = 1;
         bi.bmiHeader.biBitCount = 24;
-        bi.bmiHeader.biCompression = BI_RGB;
         LPVOID pvBits;
         hbm = CreateDIBSection(hDC, &bi, DIB_RGB_COLORS, &pvBits, nullptr, 0);
         if (HGDIOBJ hbmOld = SelectObject(hDC, hbm))
@@ -6942,7 +6941,6 @@ HBITMAP XgCreateGrayedBitmap(HBITMAP hbm, COLORREF crMask = CLR_INVALID) noexcep
     bi.bmiHeader.biHeight = bm.bmHeight;
     bi.bmiHeader.biPlanes = 1;
     bi.bmiHeader.biBitCount = 24;
-    bi.bmiHeader.biCompression = BI_RGB;
 
     RECT rc;
     rc.left = 0;
