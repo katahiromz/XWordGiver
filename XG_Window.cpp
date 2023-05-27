@@ -10,7 +10,7 @@ XG_Window::WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
         if (LPCREATESTRUCT pCS = reinterpret_cast<LPCREATESTRUCT>(lParam))
         {
             SetWindowLongPtr(hwnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(pCS->lpCreateParams));
-            pWindow = reinterpret_cast<XG_Window *>(pCS->lpCreateParams);
+            pWindow = static_cast<XG_Window*>(pCS->lpCreateParams);
             pWindow->m_hWnd = hwnd;
         }
         else

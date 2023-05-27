@@ -855,7 +855,7 @@ inline /*static*/ HKEY MRegKey::CloneHandleDx(HKEY hKey) noexcept
     HANDLE hDup = nullptr;
     ::DuplicateHandle(hProcess, hKey, hProcess, &hDup, 0,
                       FALSE, DUPLICATE_SAME_ACCESS);
-    return reinterpret_cast<HKEY>(hDup);
+    return static_cast<HKEY>(hDup);
 }
 
 ////////////////////////////////////////////////////////////////////////////

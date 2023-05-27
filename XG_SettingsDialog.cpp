@@ -954,7 +954,7 @@ void XG_SettingsDialog::UpdateBlockPreview(HWND hwnd)
 
         if (hbm1)
         {
-            HBITMAP hbm2 = reinterpret_cast<HBITMAP>(::CopyImage(hbm1, IMAGE_BITMAP, 32, 32, LR_CREATEDIBSECTION));
+            auto hbm2 = static_cast<HBITMAP>(::CopyImage(hbm1, IMAGE_BITMAP, 32, 32, LR_CREATEDIBSECTION));
             DeleteObject(hbm1);
             SendMessageW(hIco1, STM_SETIMAGE, IMAGE_BITMAP, reinterpret_cast<LPARAM>(hbm2));
             SendMessageW(hIco2, STM_SETIMAGE, IMAGE_ENHMETAFILE, 0);

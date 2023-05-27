@@ -650,7 +650,7 @@ LPCWSTR XgIntToStr(int nValue)
 std::wstring XgBinToHex(const void *ptr, size_t size)
 {
     std::wstring ret;
-    const BYTE *pb = reinterpret_cast<const BYTE *>(ptr);
+    auto pb = static_cast<const BYTE *>(ptr);
     WCHAR sz[8];
     for (size_t i = 0; i < size; ++i)
     {

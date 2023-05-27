@@ -436,8 +436,7 @@ public:
         }
         xg_hHintsUIFont = ::CreateFontIndirectW(XgGetUIFont());
         if (xg_hHintsUIFont == nullptr) {
-            xg_hHintsUIFont =
-                reinterpret_cast<HFONT>(::GetStockObject(DEFAULT_GUI_FONT));
+            xg_hHintsUIFont = static_cast<HFONT>(::GetStockObject(DEFAULT_GUI_FONT));
         }
 
         HWND hwndCtrl;
@@ -494,8 +493,7 @@ public:
             if (hwndCtrl == nullptr)
                 return FALSE;
 
-            data = reinterpret_cast<XG_HintEditData *>(
-                ::LocalAlloc(LMEM_FIXED, sizeof(XG_HintEditData)));
+            data = static_cast<XG_HintEditData*>(::LocalAlloc(LMEM_FIXED, sizeof(XG_HintEditData)));
             data->m_fTate = true;
             data->m_fnOldWndProc = reinterpret_cast<WNDPROC>(
                 ::SetWindowLongPtr(hwndCtrl, GWLP_WNDPROC,
@@ -530,8 +528,7 @@ public:
             if (hwndCtrl == nullptr)
                 return FALSE;
 
-            data = reinterpret_cast<XG_HintEditData *>(
-                ::LocalAlloc(LMEM_FIXED, sizeof(XG_HintEditData)));
+            data = static_cast<XG_HintEditData*>(::LocalAlloc(LMEM_FIXED, sizeof(XG_HintEditData)));
             data->m_fTate = false;
             data->m_fnOldWndProc = reinterpret_cast<WNDPROC>(
                 ::SetWindowLongPtr(hwndCtrl, GWLP_WNDPROC,

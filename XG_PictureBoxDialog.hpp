@@ -46,7 +46,7 @@ public:
         if (XgLoadImage(szText, m_hbm, m_hEMF))
         {
             if (m_hbm) {
-                HBITMAP hbm2 = reinterpret_cast<HBITMAP>(::CopyImage(m_hbm, IMAGE_BITMAP, 32, 32, LR_CREATEDIBSECTION));
+                auto hbm2 = static_cast<HBITMAP>(::CopyImage(m_hbm, IMAGE_BITMAP, 32, 32, LR_CREATEDIBSECTION));
                 DeleteObject(m_hbm);
                 m_hbm = hbm2;
                 ShowWindow(hIco2, SW_SHOWNOACTIVATE);

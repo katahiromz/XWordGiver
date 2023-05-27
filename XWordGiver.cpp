@@ -2579,7 +2579,7 @@ bool __fastcall XgSetJsonString(HWND hwnd, const std::wstring& str)
             
             std::string str1 = cell_data[i];
             std::wstring row = XgUtf8ToUnicode(str1).c_str();
-            if (int(row.size()) != column_count) {
+            if (static_cast<int>(row.size()) != column_count) {
                 success = false;
                 break;
             }
@@ -4728,7 +4728,7 @@ void __fastcall XgDrawMarkWord(HDC hdc, const SIZE *psiz)
 
     // 全体を白で塗りつぶす。
     RECT rc = { 0, 0, psiz->cx, psiz->cy };
-    ::FillRect(hdc, &rc, reinterpret_cast<HBRUSH>(::GetStockObject(WHITE_BRUSH)));
+    ::FillRect(hdc, &rc, static_cast<HBRUSH>(::GetStockObject(WHITE_BRUSH)));
 
     // 周りに太い線を描く。
     if (xg_bAddThickFrame) {
@@ -4807,7 +4807,7 @@ void __fastcall XgDrawXWord_NormalView(const XG_Board& xw, HDC hdc, const SIZE *
     // 全体を白で塗りつぶす。
     RECT rc0 = { 0, 0, psiz->cx, psiz->cy };
     ::SelectObject(hdc, ::GetStockObject(NULL_PEN));
-    ::FillRect(hdc, &rc0, reinterpret_cast<HBRUSH>(::GetStockObject(WHITE_BRUSH)));
+    ::FillRect(hdc, &rc0, static_cast<HBRUSH>(::GetStockObject(WHITE_BRUSH)));
 
     // 文字マスのフォントを作成する。
     HFONT hFontNormal = XgCreateNormalFont(nCellSize);
@@ -5091,7 +5091,7 @@ void __fastcall XgDrawXWord_SkeletonView(const XG_Board& xw, HDC hdc, const SIZE
     // それ以外は、四隅に白い点を描く（EMFで余白が省略されないように）。
     RECT rc = { 0, 0, psiz->cx, psiz->cy };
     if (mode == DRAW_MODE_SCREEN) {
-        ::FillRect(hdc, &rc, reinterpret_cast<HBRUSH>(::GetStockObject(WHITE_BRUSH)));
+        ::FillRect(hdc, &rc, static_cast<HBRUSH>(::GetStockObject(WHITE_BRUSH)));
     } else {
         constexpr COLORREF rgbWhite = RGB(255, 255, 255);
         ::SetPixelV(hdc, rc.left, rc.top, rgbWhite);

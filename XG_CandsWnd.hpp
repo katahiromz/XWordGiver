@@ -292,8 +292,7 @@ public:
         }
         xg_hCandsUIFont = ::CreateFontIndirectW(XgGetUIFont());
         if (xg_hCandsUIFont == nullptr) {
-            xg_hCandsUIFont = reinterpret_cast<HFONT>(
-                ::GetStockObject(DEFAULT_GUI_FONT));
+            xg_hCandsUIFont = static_cast<HFONT>(::GetStockObject(DEFAULT_GUI_FONT));
         }
 
         // 初期化。
@@ -331,8 +330,7 @@ public:
                 FALSE);
             xg_ahwndCandButtons.emplace_back(hwndCtrl);
 
-            data = reinterpret_cast<XG_CandsButtonData *>(
-                ::LocalAlloc(LMEM_FIXED, sizeof(XG_CandsButtonData)));
+            data = static_cast<XG_CandsButtonData*>(::LocalAlloc(LMEM_FIXED, sizeof(XG_CandsButtonData)));
             data->m_fnOldWndProc = reinterpret_cast<WNDPROC>(
                 ::SetWindowLongPtr(hwndCtrl, GWLP_WNDPROC,
                     reinterpret_cast<LONG_PTR>(XgCandsButton_WndProc)));

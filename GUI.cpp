@@ -1636,7 +1636,7 @@ void XgCopyWordList(HWND hwnd)
     // クリップボードにコピー。
     const auto cb = (str.size() + 1) * sizeof(WCHAR);
     if (HGLOBAL hGlobal = ::GlobalAlloc(GHND | GMEM_SHARE, cb)) {
-        if (LPWSTR psz = reinterpret_cast<LPWSTR>(::GlobalLock(hGlobal))) {
+        if (auto psz = static_cast<LPWSTR>(::GlobalLock(hGlobal))) {
             StringCbCopyW(psz, cb, str.c_str());
             ::GlobalUnlock(hGlobal);
 
@@ -1771,7 +1771,7 @@ static void XgPrintIt(HDC hdc, PRINTDLGW* ppd, bool bPrintAnswer)
             // 二重マス単語を描画する。
             if (bPrintAnswer && XgGetMarkWord(&xg_solution, strMarkWord)) {
                 // 既定のフォント情報を取得する。
-                hFont = reinterpret_cast<HFONT>(::GetStockObject(DEFAULT_GUI_FONT));
+                hFont = static_cast<HFONT>(::GetStockObject(DEFAULT_GUI_FONT));
                 ::GetObjectW(hFont, sizeof(LOGFONTW), &lf);
 
                 // フォント名を取得する。
@@ -1850,7 +1850,7 @@ static void XgPrintIt(HDC hdc, PRINTDLGW* ppd, bool bPrintAnswer)
             ::SetTextColor(hdc, RGB(0, 0, 0));
 
             // 既定のフォント情報を取得する。
-            hFont = reinterpret_cast<HFONT>(::GetStockObject(DEFAULT_GUI_FONT));
+            hFont = static_cast<HFONT>(::GetStockObject(DEFAULT_GUI_FONT));
             ::GetObjectW(hFont, sizeof(LOGFONTW), &lf);
 
             // フォント名を取得する。
@@ -1907,7 +1907,7 @@ static void XgPrintIt(HDC hdc, PRINTDLGW* ppd, bool bPrintAnswer)
             // ページ開始。
             if (::StartPage(hdc) > 0) {
                 // 文字のフォントを作成する。
-                hFont = reinterpret_cast<HFONT>(::GetStockObject(DEFAULT_GUI_FONT));
+                hFont = static_cast<HFONT>(::GetStockObject(DEFAULT_GUI_FONT));
                 ::GetObjectW(hFont, sizeof(LOGFONTW), &lf);
                 StringCbCopy(lf.lfFaceName, sizeof(lf.lfFaceName), XgLoadStringDx1(IDS_MONOFONT));
                 lf.lfHeight = cyPaper / 2 / 45;
@@ -2149,7 +2149,7 @@ BOOL XgSetClipboardUnicodeText(HWND hwnd, const std::wstring& str) noexcept
     HGLOBAL hGlobal = ::GlobalAlloc(GMEM_MOVEABLE | GMEM_DDESHARE, cb);
     if (hGlobal) {
         // メモリをロックする。
-        LPWSTR psz = reinterpret_cast<LPWSTR>(::GlobalLock(hGlobal));
+        auto psz = static_cast<LPWSTR>(::GlobalLock(hGlobal));
         if (psz) {
             // メモリに文字列をコピーする。
             ::CopyMemory(psz, str.data(), cb);
@@ -3575,7 +3575,7 @@ void XgCopyBoard(HWND hwnd)
     HGLOBAL hGlobal = ::GlobalAlloc(GMEM_MOVEABLE | GMEM_DDESHARE, cb);
     if (hGlobal) {
         // メモリをロックする。
-        LPWSTR psz = reinterpret_cast<LPWSTR>(::GlobalLock(hGlobal));
+        auto psz = static_cast<LPWSTR>(::GlobalLock(hGlobal));
         if (psz) {
             // メモリに文字列をコピーする。
             ::CopyMemory(psz, str.data(), cb);
@@ -3764,7 +3764,7 @@ void __fastcall XgCopyMarkWord(HWND hwnd)
         // CF_UNICODETEXTのデータを用意。
         const auto cbGlobal = (strMarkWord.size() + 1) * sizeof(WCHAR);
         hGlobal = GlobalAlloc(GHND | GMEM_SHARE, cbGlobal);
-        if (LPWSTR psz = reinterpret_cast<LPWSTR>(GlobalLock(hGlobal))) {
+        if (auto psz = static_cast<LPWSTR>(GlobalLock(hGlobal))) {
             StringCbCopyW(psz, cbGlobal, strMarkWord.c_str());
             GlobalUnlock(hGlobal);
         } else {
@@ -3796,7 +3796,7 @@ std::wstring XgGetClipboardUnicodeText(HWND hwnd)
     if (::OpenClipboard(hwnd)) {
         // Unicode文字列を取得。
         hGlobal = ::GetClipboardData(CF_UNICODETEXT);
-        LPWSTR psz = reinterpret_cast<LPWSTR>(::GlobalLock(hGlobal));
+        auto psz = static_cast<LPWSTR>(::GlobalLock(hGlobal));
         if (psz) {
             str = psz;
             ::GlobalUnlock(hGlobal);
@@ -3900,7 +3900,7 @@ void __fastcall XgCopyHintsStyle1(HWND hwnd, int hint_type)
     HGLOBAL hGlobal = ::GlobalAlloc(GMEM_MOVEABLE | GMEM_DDESHARE, cb);
     if (hGlobal) {
         // メモリをロックする。
-        LPWSTR psz = reinterpret_cast<LPWSTR>(::GlobalLock(hGlobal));
+        auto psz = static_cast<LPWSTR>(::GlobalLock(hGlobal));
         if (psz) {
             // メモリに文字列をコピーする。
             ::CopyMemory(psz, str.data(), cb);
@@ -3915,7 +3915,7 @@ void __fastcall XgCopyHintsStyle1(HWND hwnd, int hint_type)
                 LPVOID p2 = ::GlobalLock(hGlobal2);
                 if (p2) {
                     // メモリに文字列をコピーする。
-                    LPBYTE pb2 = reinterpret_cast<LPBYTE>(p2);
+                    auto pb2 = static_cast<LPBYTE>(p2);
                     CopyMemory(pb2, htmldata.data(), htmldata.size());
                     pb2[htmldata.size()] = 0;
                     // メモリのロックを解除する。
@@ -6934,7 +6934,7 @@ HBITMAP XgCreateGrayedBitmap(HBITMAP hbm, COLORREF crMask = CLR_INVALID) noexcep
 {
     HDC hdc = ::GetDC(nullptr);
     if (::GetDeviceCaps(hdc, BITSPIXEL) < 24) {
-        HPALETTE hPal = reinterpret_cast<HPALETTE>(::GetCurrentObject(hdc, OBJ_PAL));
+        HPALETTE hPal = static_cast<HPALETTE>(::GetCurrentObject(hdc, OBJ_PAL));
         const UINT index = ::GetNearestPaletteIndex(hPal, crMask);
         if (index != CLR_INVALID)
             crMask = PALETTEINDEX(index);
@@ -7053,7 +7053,7 @@ bool __fastcall MainWnd_OnCreate(HWND hwnd, LPCREATESTRUCT /*lpCreateStruct*/)
     ::ImageList_SetBkColor(xg_hImageList, CLR_NONE);
     ::ImageList_SetBkColor(xg_hGrayedImageList, CLR_NONE);
 
-    HBITMAP hbm = reinterpret_cast<HBITMAP>(::LoadImageW(
+    HBITMAP hbm = static_cast<HBITMAP>(::LoadImageW(
         xg_hInstance, MAKEINTRESOURCE(1),
         IMAGE_BITMAP,
         0, 0,
