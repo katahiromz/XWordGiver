@@ -4664,46 +4664,6 @@ float YPixelsFromPoints(HDC hDC, float points) noexcept
     return points * static_cast<float>(::GetDeviceCaps(hDC, LOGPIXELSY)) / 72;
 }
 
-// キャレットを描画する。
-void XgDrawCaret(HDC hdc, int i, int j, int nCellSize, HPEN hCaretPen) noexcept
-{
-    RECT rc = {
-        xg_nMargin + j * nCellSize,
-        xg_nMargin + i * nCellSize,
-        xg_nMargin + (j + 1) * nCellSize,
-        xg_nMargin + (i + 1) * nCellSize
-    };
-
-    // カギカッコみたいなもの、コーナーに四つ。
-    const auto cxyMargin = nCellSize / 10; // 余白。
-    const auto cxyLine = nCellSize / 3; // 線の位置。
-    HGDIOBJ hPenOld = ::SelectObject(hdc, hCaretPen);
-    ::MoveToEx(hdc, rc.left + cxyMargin, rc.top + cxyMargin, nullptr);
-    ::LineTo(hdc, rc.left + cxyMargin, rc.top + cxyLine);
-    ::MoveToEx(hdc, rc.left + cxyMargin, rc.top + cxyMargin, nullptr);
-    ::LineTo(hdc, rc.left + cxyLine, rc.top + cxyMargin);
-    ::MoveToEx(hdc, rc.right - cxyMargin, rc.top + cxyMargin, nullptr);
-    ::LineTo(hdc, rc.right - cxyMargin, rc.top + cxyLine);
-    ::MoveToEx(hdc, rc.right - cxyMargin, rc.top + cxyMargin, nullptr);
-    ::LineTo(hdc, rc.right - cxyLine, rc.top + cxyMargin);
-    ::MoveToEx(hdc, rc.right - cxyMargin, rc.bottom - cxyMargin, nullptr);
-    ::LineTo(hdc, rc.right - cxyMargin, rc.bottom - cxyLine);
-    ::MoveToEx(hdc, rc.right - cxyMargin, rc.bottom - cxyMargin, nullptr);
-    ::LineTo(hdc, rc.right - cxyLine, rc.bottom - cxyMargin);
-    ::MoveToEx(hdc, rc.left + cxyMargin, rc.bottom - cxyMargin, nullptr);
-    ::LineTo(hdc, rc.left + cxyMargin, rc.bottom - cxyLine);
-    ::MoveToEx(hdc, rc.left + cxyMargin, rc.bottom - cxyMargin, nullptr);
-    ::LineTo(hdc, rc.left + cxyLine, rc.bottom - cxyMargin);
-
-    // 十字。
-    const auto cxyCross = nCellSize / 10; // 十字の半径。
-    ::MoveToEx(hdc, (rc.left + rc.right) / 2, (rc.top + rc.bottom) / 2 - cxyCross, nullptr);
-    ::LineTo(hdc, (rc.left + rc.right) / 2, (rc.top + rc.bottom) / 2 + cxyCross);
-    ::MoveToEx(hdc, (rc.left + rc.right) / 2 - cxyCross, (rc.top + rc.bottom) / 2, nullptr);
-    ::LineTo(hdc, (rc.left + rc.right) / 2 + cxyCross, (rc.top + rc.bottom) / 2);
-    ::SelectObject(hdc, hPenOld);
-}
-
 // 文字を置き換える。
 WCHAR XgReplaceChar(WCHAR ch)
 {
@@ -5120,14 +5080,6 @@ void __fastcall XgDrawXWord_NormalView(const XG_Board& xw, HDC hdc, const SIZE *
         PS_GEOMETRIC | PS_SOLID | PS_ENDCAP_SQUARE | PS_JOIN_BEVEL,
         c_nThin, &lbBlack, 0, nullptr);
 
-    // 赤いキャレットペンを作成する。
-    LOGBRUSH lbRed;
-    lbRed.lbStyle = BS_SOLID;
-    lbRed.lbColor = RGB(255, 0, 0);
-    HPEN hCaretPen = ::ExtCreatePen(
-        PS_GEOMETRIC | PS_SOLID | PS_ENDCAP_ROUND | PS_JOIN_BEVEL,
-        1, &lbRed, 0, nullptr);
-
     BITMAP bm;
     GetObject(xg_hbmBlackCell, sizeof(bm), &bm);
 
@@ -5288,12 +5240,6 @@ void __fastcall XgDrawXWord_NormalView(const XG_Board& xw, HDC hdc, const SIZE *
         }
     }
 
-    // キャレットを描画する。
-    if (mode == DRAW_MODE_SCREEN && xg_bShowCaret) {
-        const auto i = xg_caret_pos.m_i, j = xg_caret_pos.m_j;
-        XgDrawCaret(hdc, i, j, nCellSize, hCaretPen);
-    }
-
     // 線を引く。
     HGDIOBJ hPenOld = ::SelectObject(hdc, hThinPen);
     for (int i = 0; i <= xg_nRows; i++) {
@@ -5336,7 +5282,6 @@ void __fastcall XgDrawXWord_NormalView(const XG_Board& xw, HDC hdc, const SIZE *
     ::DeleteObject(hFontNormal);
     ::DeleteObject(hFontSmall);
     ::DeleteObject(hThinPen);
-    ::DeleteObject(hCaretPen);
     ::DeleteObject(hbrBlack);
     ::DeleteObject(hbrWhite);
     ::DeleteObject(hbrMarked);
@@ -5409,14 +5354,6 @@ void __fastcall XgDrawXWord_SkeletonView(const XG_Board& xw, HDC hdc, const SIZE
     HPEN hThinPen = ::ExtCreatePen(
         PS_GEOMETRIC | PS_SOLID | PS_ENDCAP_SQUARE | PS_JOIN_BEVEL,
         c_nThin, &lbBlack, 0, nullptr);
-
-    // 赤いキャレットペンを作成する。
-    LOGBRUSH lbRed;
-    lbRed.lbStyle = BS_SOLID;
-    lbRed.lbColor = RGB(255, 0, 0);
-    HPEN hCaretPen = ::ExtCreatePen(
-        PS_GEOMETRIC | PS_SOLID | PS_ENDCAP_ROUND | PS_JOIN_BEVEL,
-        1, &lbRed, 0, nullptr);
 
     // 外枠と背景を描画する。
     if (xg_bAddThickFrame) {
@@ -5593,17 +5530,10 @@ void __fastcall XgDrawXWord_SkeletonView(const XG_Board& xw, HDC hdc, const SIZE
         }
     }
 
-    // キャレットを描画する。
-    if (mode == DRAW_MODE_SCREEN && xg_bShowCaret) {
-        const auto i = xg_caret_pos.m_i, j = xg_caret_pos.m_j;
-        XgDrawCaret(hdc, i, j, nCellSize, hCaretPen);
-    }
-
     // 破棄する。
     ::DeleteObject(hFontNormal);
     ::DeleteObject(hFontSmall);
     ::DeleteObject(hThinPen);
-    ::DeleteObject(hCaretPen);
     ::DeleteObject(hbrBlack);
     ::DeleteObject(hbrWhite);
     ::DeleteObject(hbrMarked);

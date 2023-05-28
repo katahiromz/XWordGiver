@@ -8,6 +8,9 @@ extern boxes_t xg_boxes;
 // キャンバスウィンドウ。
 extern HWND xg_hCanvasWnd;
 
+// キャレットを描画する。
+void __fastcall XgDrawCaret(HDC hdc);
+
 class XG_CanvasWindow : public XG_Window
 {
 public:
@@ -330,6 +333,9 @@ public:
                 siz.cx, siz.cy, hdcMem, 0, 0, SRCCOPY);
             ::SelectObject(hdcMem, hbmOld);
             ::DeleteDC(hdcMem);
+
+            // キャレットを描画する。
+            XgDrawCaret(hdc);
 
             // 描画を終了する。
             ::EndPaint(hwnd, &ps);

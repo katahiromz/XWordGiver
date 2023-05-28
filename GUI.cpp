@@ -709,7 +709,6 @@ void __fastcall XgEnsureCaretVisible(HWND hwnd)
 {
     MRect rc, rcClient;
     SCROLLINFO si;
-    bool bNeedRedraw = false;
 
     // クライアント領域を取得する。
     XgGetRealClientRect(hwnd, &rcClient);
@@ -730,10 +729,8 @@ void __fastcall XgEnsureCaretVisible(HWND hwnd)
     XgGetHScrollInfo(&si);
     if (rc.left < si.nPos) {
         XgSetHScrollPos(rc.left, TRUE);
-        bNeedRedraw = true;
     } else if (rc.right > static_cast<int>(si.nPos + si.nPage)) {
         XgSetHScrollPos(rc.right - si.nPage, TRUE);
-        bNeedRedraw = true;
     }
 
     // 縦スクロール情報を修正する。
@@ -742,10 +739,8 @@ void __fastcall XgEnsureCaretVisible(HWND hwnd)
     XgGetVScrollInfo(&si);
     if (rc.top < si.nPos) {
         XgSetVScrollPos(rc.top, TRUE);
-        bNeedRedraw = true;
     } else if (rc.bottom > static_cast<int>(si.nPos + si.nPage)) {
         XgSetVScrollPos(rc.bottom - si.nPage, TRUE);
-        bNeedRedraw = true;
     }
 
     // 変換ウィンドウの位置を設定する。
@@ -758,10 +753,7 @@ void __fastcall XgEnsureCaretVisible(HWND hwnd)
     ::ImmSetCompositionWindow(hIMC, &CompForm);
     ::ImmReleaseContext(xg_canvasWnd, hIMC);
 
-    // 必要ならば再描画する。
-    if (bNeedRedraw) {
-        XgUpdateImage(hwnd);
-    }
+    ::InvalidateRect(xg_hCanvasWnd, NULL, TRUE);
 
     XgUpdateCaretPos();
 }
@@ -5480,6 +5472,85 @@ BOOL __fastcall XgFindLocalFile(LPWSTR pszPath, UINT cchPath, LPCWSTR pszFileNam
     return PathFileExistsW(pszPath);
 }
 
+// キャレットからキャンバス座標を取得する。
+void __fastcall XgCaretToCanvas(RECT& rc, XG_Pos caret_pos)
+{
+    // セルの大きさ。
+    const int nCellSize = (xg_nForDisplay > 0) ? (xg_nCellSize * xg_nZoomRate / 100) : xg_nCellSize;
+
+    rc = {
+        xg_nMargin + caret_pos.m_j * nCellSize,
+        xg_nMargin + caret_pos.m_i * nCellSize,
+        xg_nMargin + (caret_pos.m_j + 1) * nCellSize,
+        xg_nMargin + (caret_pos.m_i + 1) * nCellSize
+    };
+
+    INT x = XgGetHScrollPos();
+    INT y = XgGetVScrollPos();
+    ::OffsetRect(&rc, -x, -y);
+}
+
+// キャレット位置のマスを無効化する。
+void __fastcall XgInvalidateCaretPos(XG_Pos caret_pos)
+{
+    RECT rcCell;
+    XgCaretToCanvas(rcCell, caret_pos);
+
+    ::InvalidateRect(xg_hCanvasWnd, &rcCell, TRUE);
+}
+
+// キャレットを描画する。
+void __fastcall XgDrawCaret(HDC hdc)
+{
+    if (!xg_bShowCaret)
+        return;
+
+    RECT rc;
+    XgCaretToCanvas(rc, xg_caret_pos);
+
+    // 赤いキャレットペンを作成する。
+    LOGBRUSH lbRed;
+    lbRed.lbStyle = BS_SOLID;
+    lbRed.lbColor = RGB(255, 0, 0);
+    HPEN hCaretPen = ::ExtCreatePen(
+        PS_GEOMETRIC | PS_SOLID | PS_ENDCAP_ROUND | PS_JOIN_BEVEL,
+        1, &lbRed, 0, nullptr);
+    HGDIOBJ hPenOld = ::SelectObject(hdc, hCaretPen);
+
+    // セルの大きさ。
+    const int nCellSize = xg_nCellSize * xg_nZoomRate / 100;
+
+    // カギカッコみたいなもの、コーナーに四つ。
+    const auto cxyMargin = nCellSize / 10; // 余白。
+    const auto cxyLine = nCellSize / 3; // 線の位置。
+    ::MoveToEx(hdc, rc.left + cxyMargin, rc.top + cxyMargin, nullptr);
+    ::LineTo(hdc, rc.left + cxyMargin, rc.top + cxyLine);
+    ::MoveToEx(hdc, rc.left + cxyMargin, rc.top + cxyMargin, nullptr);
+    ::LineTo(hdc, rc.left + cxyLine, rc.top + cxyMargin);
+    ::MoveToEx(hdc, rc.right - cxyMargin, rc.top + cxyMargin, nullptr);
+    ::LineTo(hdc, rc.right - cxyMargin, rc.top + cxyLine);
+    ::MoveToEx(hdc, rc.right - cxyMargin, rc.top + cxyMargin, nullptr);
+    ::LineTo(hdc, rc.right - cxyLine, rc.top + cxyMargin);
+    ::MoveToEx(hdc, rc.right - cxyMargin, rc.bottom - cxyMargin, nullptr);
+    ::LineTo(hdc, rc.right - cxyMargin, rc.bottom - cxyLine);
+    ::MoveToEx(hdc, rc.right - cxyMargin, rc.bottom - cxyMargin, nullptr);
+    ::LineTo(hdc, rc.right - cxyLine, rc.bottom - cxyMargin);
+    ::MoveToEx(hdc, rc.left + cxyMargin, rc.bottom - cxyMargin, nullptr);
+    ::LineTo(hdc, rc.left + cxyMargin, rc.bottom - cxyLine);
+    ::MoveToEx(hdc, rc.left + cxyMargin, rc.bottom - cxyMargin, nullptr);
+    ::LineTo(hdc, rc.left + cxyLine, rc.bottom - cxyMargin);
+
+    // 十字。
+    const auto cxyCross = nCellSize / 10; // 十字の半径。
+    ::MoveToEx(hdc, (rc.left + rc.right) / 2, (rc.top + rc.bottom) / 2 - cxyCross, nullptr);
+    ::LineTo(hdc, (rc.left + rc.right) / 2, (rc.top + rc.bottom) / 2 + cxyCross);
+    ::MoveToEx(hdc, (rc.left + rc.right) / 2 - cxyCross, (rc.top + rc.bottom) / 2, nullptr);
+    ::LineTo(hdc, (rc.left + rc.right) / 2 + cxyCross, (rc.top + rc.bottom) / 2);
+
+    ::SelectObject(hdc, hPenOld);
+    ::DeleteObject(hCaretPen);
+}
+
 // コマンドを実行する。
 void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT /*codeNotify*/)
 {
@@ -5493,135 +5564,107 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT /*codeNo
     switch (id) {
     case ID_LEFT:
         // キャレットを左へ移動。
+        XgInvalidateCaretPos(xg_caret_pos);
         if (xg_caret_pos.m_j > 0) {
             xg_caret_pos.m_j--;
             XgEnsureCaretVisible(hwnd);
         } else {
             // 一番左のキャレットなら、左端へ移動。
-            x = 0;
-            y = XgGetVScrollPos();
-            XgUpdateCaretPos();
+            SendMessageW(xg_hCanvasWnd, WM_HSCROLL, MAKEWPARAM(SB_LEFT, 0), 0);
         }
+        XgInvalidateCaretPos(xg_caret_pos);
         xg_prev_vk = 0;
-        bUpdateImage = TRUE;
         break;
     case ID_RIGHT:
         // キャレットを右へ移動。
+        XgInvalidateCaretPos(xg_caret_pos);
         if (xg_caret_pos.m_j + 1 < xg_nCols) {
             xg_caret_pos.m_j++;
             XgEnsureCaretVisible(hwnd);
         } else {
             // 一番右のキャレットなら、右端へ移動。
-            SIZE siz;
-            ForDisplay for_display;
-            XgGetXWordExtent(&siz);
-            MRect rcClient;
-            XgGetRealClientRect(hwnd, &rcClient);
-            x = siz.cx - rcClient.Width();
-            y = XgGetVScrollPos();
-            XgUpdateCaretPos();
+            SendMessageW(xg_hCanvasWnd, WM_HSCROLL, MAKEWPARAM(SB_RIGHT, 0), 0);
         }
+        XgInvalidateCaretPos(xg_caret_pos);
         xg_prev_vk = 0;
-        bUpdateImage = TRUE;
         break;
     case ID_UP:
         // キャレットを上へ移動。
+        XgInvalidateCaretPos(xg_caret_pos);
         if (xg_caret_pos.m_i > 0) {
             xg_caret_pos.m_i--;
             XgEnsureCaretVisible(hwnd);
         } else {
             // 一番上のキャレットなら、上端へ移動。
-            x = XgGetHScrollPos();
-            y = 0;
-            XgUpdateCaretPos();
+            SendMessageW(xg_hCanvasWnd, WM_VSCROLL, MAKEWPARAM(SB_TOP, 0), 0);
         }
+        XgInvalidateCaretPos(xg_caret_pos);
         xg_prev_vk = 0;
-        bUpdateImage = TRUE;
         break;
     case ID_DOWN:
         // キャレットを下へ移動。
+        XgInvalidateCaretPos(xg_caret_pos);
         if (xg_caret_pos.m_i + 1 < xg_nRows) {
             xg_caret_pos.m_i++;
             XgEnsureCaretVisible(hwnd);
         } else {
             // 一番下のキャレットなら、下端へ移動。
-            SIZE siz;
-            ForDisplay for_display;
-            XgGetXWordExtent(&siz);
-            MRect rcClient;
-            XgGetRealClientRect(hwnd, &rcClient);
-            x = XgGetHScrollPos();
-            y = siz.cy - rcClient.Height();
-            XgUpdateCaretPos();
+            SendMessageW(xg_hCanvasWnd, WM_VSCROLL, MAKEWPARAM(SB_BOTTOM, 0), 0);
         }
+        XgInvalidateCaretPos(xg_caret_pos);
         xg_prev_vk = 0;
-        bUpdateImage = TRUE;
         break;
     case ID_MOSTLEFT:
         // Ctrl+←。
+        XgInvalidateCaretPos(xg_caret_pos);
         if (xg_caret_pos.m_j > 0) {
             xg_caret_pos.m_j = 0;
             XgEnsureCaretVisible(hwnd);
         } else {
             // 一番左のキャレットなら、左端へ移動。
-            x = 0;
-            y = XgGetVScrollPos();
-            XgUpdateCaretPos();
+            SendMessageW(xg_hCanvasWnd, WM_HSCROLL, MAKEWPARAM(SB_LEFT, 0), 0);
         }
+        XgInvalidateCaretPos(xg_caret_pos);
         xg_prev_vk = 0;
-        bUpdateImage = TRUE;
         break;
     case ID_MOSTRIGHT:
         // Ctrl+→。
+        XgInvalidateCaretPos(xg_caret_pos);
         if (xg_caret_pos.m_j + 1 < xg_nCols) {
             xg_caret_pos.m_j = xg_nCols - 1;
             XgEnsureCaretVisible(hwnd);
         } else {
             // 一番右のキャレットなら、右端へ移動。
-            SIZE siz;
-            ForDisplay for_display;
-            XgGetXWordExtent(&siz);
-            MRect rcClient;
-            XgGetRealClientRect(hwnd, &rcClient);
-            x = siz.cx - rcClient.Width();
-            y = XgGetVScrollPos();
-            XgUpdateCaretPos();
+            SendMessageW(xg_hCanvasWnd, WM_HSCROLL, MAKEWPARAM(SB_RIGHT, 0), 0);
         }
+        XgInvalidateCaretPos(xg_caret_pos);
         xg_prev_vk = 0;
-        bUpdateImage = TRUE;
         break;
     case ID_MOSTUPPER:
         // Ctrl+↑。
+        XgInvalidateCaretPos(xg_caret_pos);
         if (xg_caret_pos.m_i > 0) {
             xg_caret_pos.m_i = 0;
             XgEnsureCaretVisible(hwnd);
         } else {
             // 一番上のキャレットなら、上端へ移動。
-            x = XgGetHScrollPos();
-            y = 0;
-            XgUpdateCaretPos();
+            SendMessageW(xg_hCanvasWnd, WM_VSCROLL, MAKEWPARAM(SB_TOP, 0), 0);
         }
+        XgInvalidateCaretPos(xg_caret_pos);
         xg_prev_vk = 0;
-        bUpdateImage = TRUE;
         break;
     case ID_MOSTLOWER:
         // Ctrl+↓。
+        XgInvalidateCaretPos(xg_caret_pos);
         if (xg_caret_pos.m_i + 1 < xg_nRows) {
             xg_caret_pos.m_i = xg_nRows - 1;
             XgEnsureCaretVisible(hwnd);
         } else {
             // 一番下のキャレットなら、下端へ移動。
-            SIZE siz;
-            ForDisplay for_display;
-            XgGetXWordExtent(&siz);
-            MRect rcClient;
-            XgGetRealClientRect(hwnd, &rcClient);
-            x = XgGetHScrollPos();
-            y = siz.cy - rcClient.Height();
-            XgUpdateCaretPos();
+            SendMessageW(xg_hCanvasWnd, WM_VSCROLL, MAKEWPARAM(SB_BOTTOM, 0), 0);
         }
+        XgInvalidateCaretPos(xg_caret_pos);
         xg_prev_vk = 0;
-        bUpdateImage = TRUE;
         break;
     case ID_OPENCANDSWNDHORZ:
         XgOpenCandsWnd(hwnd, false);
