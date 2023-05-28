@@ -3178,7 +3178,7 @@ bool __fastcall XgSetEcwString(HWND hwnd, const std::wstring& str)
     std::vector<std::wstring> lines;
     mstr_split(lines, str, L"\n");
 
-    std::wstring title, copyright;
+    std::wstring title, copyright, author;
     size_t width = 0, height = 0;
     std::vector<ECW_ENTRY> entries;
     bool across = false, down = false;
@@ -3197,8 +3197,15 @@ bool __fastcall XgSetEcwString(HWND hwnd, const std::wstring& str)
 
         index = line.find(L"Title:");
         if (index == 0) {
-            title = line.c_str()[6];
+            title = &line.c_str()[6];
             xg_str_trim(title);
+            continue;
+        }
+
+        index = line.find(L"Author:");
+        if (index == 0) {
+            author = &line.c_str()[7];
+            xg_str_trim(author);
             continue;
         }
 
@@ -3258,10 +3265,6 @@ bool __fastcall XgSetEcwString(HWND hwnd, const std::wstring& str)
     if (width <= 1 || height <= 1)
         return false;
 
-    std::wstring header;
-    header += L"Title: " + title + L"\r\n";
-    header += L"Copyright: " + copyright;
-
     std::vector<std::wstring> cells;
     cells.resize(height, std::wstring(width, ZEN_BLACK));
 
@@ -3304,7 +3307,11 @@ bool __fastcall XgSetEcwString(HWND hwnd, const std::wstring& str)
     if (!xword.SetString(body))
         return false;
 
-    xg_str_trim(header);
+    std::wstring header;
+    header += L"Title: " + title + L"\r\n";
+    header += L"Author: " + author + L"\r\n";
+    header += L"Copyright: " + copyright;
+
     xg_strHeader = header;
     xg_strNotes.clear();
     xg_nCols = width;
