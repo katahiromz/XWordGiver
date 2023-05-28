@@ -233,7 +233,7 @@
     - Fixed Skeleton View line drawing.
     - Improved marked word drawing.
 - 2023-XX-YY ver.5.0.8
-    - Supported ECW files (of EclipseCrossword).
+    - Supported loading ECW files (of EclipseCrossword).
     - Used the ScrollWindow function to speed up scrolling.
     - Speeded up caret movement by decoupling the caret drawing from the internal image.
     - Speeded up drawing the board in zooming.
@@ -785,7 +785,7 @@
     - スケルトンビューの線の描画を修正。
     - 二重マス単語の描画を改善。
 - 2023年XX年YY日 ver.5.0.8
-    - ECWファイル（EclipseCrossword）をサポート。
+    - ECWファイル（EclipseCrossword）の読み込みをサポート。
     - ScrollWindow関数を用いてスクロールを高速化。
     - キャレットの描画を内部イメージから切り離すことにより、キャレットの移動を高速化。
     - ズーム中の盤面の描画を高速化。
