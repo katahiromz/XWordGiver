@@ -7316,17 +7316,41 @@ void __fastcall XgUpdateImage(HWND hwnd, int x, int y)
 {
     ForDisplay for_display;
 
-    // イメージがあれば破棄する。
-    if (xg_hbmImage)
-        ::DeleteObject(xg_hbmImage);
-
-    // 描画サイズを取得し、イメージを作成する。
+    // 描画サイズを取得する。
     SIZE siz;
     XgGetXWordExtent(&siz);
-    if (xg_bSolved && xg_bShowAnswer)
-        xg_hbmImage = XgCreateXWordImage(xg_solution, &siz, true);
-    else
-        xg_hbmImage = XgCreateXWordImage(xg_xword, &siz, true);
+
+    // 内部画像が残っているか？
+    if (xg_hbmImage) {
+        // 元の画像のサイズを取得する。
+        BITMAP bm;
+        if (::GetObject(xg_hbmImage, sizeof(bm), &bm)) {
+            // 画像が小さいか大きすぎるなら破棄する。
+            if (bm.bmWidth < siz.cx || bm.bmHeight < siz.cy ||
+                bm.bmWidth > 3 * siz.cx || bm.bmHeight > 3 * siz.cy)
+            {
+                ::DeleteObject(xg_hbmImage);
+                xg_hbmImage = nullptr;
+            }
+        }
+    }
+
+    if (xg_hbmImage == nullptr) {
+        // 必要ならイメージを作成する。
+        if (xg_bSolved && xg_bShowAnswer)
+            xg_hbmImage = XgCreateXWordImage(xg_solution, &siz, true);
+        else
+            xg_hbmImage = XgCreateXWordImage(xg_xword, &siz, true);
+    } else {
+        // 必要ならイメージを描画する。
+        HDC hdc = ::CreateCompatibleDC(NULL);
+        HGDIOBJ hbmOld = ::SelectObject(hdc, xg_hbmImage);
+        if (xg_bSolved && xg_bShowAnswer)
+            XgDrawXWord(xg_solution, hdc, &siz, DRAW_MODE_SCREEN);
+        else
+            XgDrawXWord(xg_xword, hdc, &siz, DRAW_MODE_SCREEN);
+        ::SelectObject(hdc, hbmOld);
+    }
 
     // スクロール情報を更新する。
     XgUpdateScrollInfo(hwnd, x, y);

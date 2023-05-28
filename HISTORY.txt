@@ -236,6 +236,7 @@
     - Supported ECW files (of EclipseCrossword).
     - Used the ScrollWindow function to speed up scrolling.
     - Speeded up caret movement by decoupling the caret drawing from the internal image.
+    - Speeded up drawing in zooming the board.
 
 # 開発履歴 (Japanese)
 
@@ -787,3 +788,4 @@
     - ECWファイル（EclipseCrossword）をサポート。
     - ScrollWindow関数を用いてスクロールを高速化。
     - キャレットの描画を内部イメージから切り離すことにより、キャレットの移動を高速化。
+    - 盤面のズーム中の描画を高速化。
