@@ -237,6 +237,7 @@
     - Used the ScrollWindow function to speed up scrolling.
     - Speeded up caret movement by decoupling the caret drawing from the internal image.
     - Speeded up drawing the board in zooming.
+    - The zoom cannot be smaller than 9%.
 
 # 開発履歴 (Japanese)
 
@@ -789,3 +790,4 @@
     - ScrollWindow関数を用いてスクロールを高速化。
     - キャレットの描画を内部イメージから切り離すことにより、キャレットの移動を高速化。
     - ズーム中の盤面の描画を高速化。
+    - ズームを9%より小さくできないようにした。

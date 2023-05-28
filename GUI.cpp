@@ -5157,6 +5157,8 @@ void __fastcall XgShowResultsRepeatedly(HWND hwnd)
 // ズーム倍率を設定する。
 static void XgSetZoomRate(HWND hwnd, int nZoomRate)
 {
+    if (nZoomRate < 9)
+        nZoomRate = 9;
     xg_nZoomRate = nZoomRate;
     const int x = XgGetHScrollPos(), y = XgGetVScrollPos();
     XgUpdateScrollInfo(hwnd, x, y);
@@ -6396,7 +6398,7 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT /*codeNo
             xg_nZoomRate -= 10;
         } else if (xg_nZoomRate > 50) {
             xg_nZoomRate -= 5;
-        } else if (xg_nZoomRate > 1) {
+        } else if (xg_nZoomRate > 9) {
             xg_nZoomRate -= 1;
         }
         x = XgGetHScrollPos();
