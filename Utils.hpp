@@ -123,6 +123,9 @@ std::string XgUnicodeToUtf8(const std::wstring& wide);
 // ANSI -> Unicode
 std::wstring XgAnsiToUnicode(const std::string& ansi);
 
+// ANSI -> Unicode
+std::wstring XgAnsiToUnicode(const std::string& ansi, INT charset);
+
 // Unicode -> ANSI
 std::string XgUnicodeToAnsi(const std::wstring& wide);
 
@@ -236,7 +239,7 @@ BOOL XgIsImageFile(LPCWSTR pszFileName) noexcept;
 BOOL XgIsTextFile(LPCWSTR pszFileName) noexcept;
 // ファイルを読み込む。
 BOOL XgReadFileAll(LPCWSTR file, std::string& strBinary);
-BOOL XgReadTextFileAll(LPCWSTR file, std::wstring& strText);
+BOOL XgReadTextFileAll(LPCWSTR file, std::wstring& strText, bool ecw = false);
 // ファイルを読み込む。
 BOOL XgWriteFileAll(LPCWSTR file, const std::string& strBinary) noexcept;
 // エンディアン変換。

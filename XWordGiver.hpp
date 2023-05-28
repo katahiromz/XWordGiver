@@ -1371,6 +1371,7 @@ typedef enum XG_FILETYPE {
     XG_FILETYPE_XWJ, // XWordGiver JSON 形式。
     XG_FILETYPE_CRP, // Crossword Builder 形式。
     XG_FILETYPE_XD, // XD形式。
+    XG_FILETYPE_ECW, // EclipseCrossword形式。
 } XG_FILETYPE;
 
 // メインファイルと関連ファイルを読み込む。

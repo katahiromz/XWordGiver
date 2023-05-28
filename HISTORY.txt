@@ -233,6 +233,7 @@
     - Fixed Skeleton View line drawing.
     - Improved marked word drawing.
 - 2023-XX-YY ver.5.0.8
+    - Supported ECW files (of EclipseCrossword).
 
 # 開発履歴 (Japanese)
 
@@ -781,3 +782,4 @@
     - スケルトンビューの線の描画を修正。
     - 二重マス単語の描画を改善。
 - 2023年XX年YY日 ver.5.0.8
+    - ECWファイル（EclipseCrossword）をサポート。

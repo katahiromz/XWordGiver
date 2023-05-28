@@ -1581,7 +1581,7 @@ STRINGTABLE
     IDS_NOCANDIDATE, "At Cell Position (%u, %u), it doesn't match any candidates."
     IDS_IMGFILTER, "Bitmap files (*.bmp)|*.bmp|EMF files (*.emf)|*.emf||"
     IDS_DICTFILTER, "Dict data (*.dic;*.tsv)|*.dic;*.tsv|All Files (*.*)|*.*||"
-    IDS_CROSSFILTER, "All crosswords (*.xwd;*.xwj;*.json;*.jso;*.crp;*.crx;*.xd)|*.xwd;*.xwj;*.json;*.jso;*.crp;*.crx;*.xd|XWD Files (*.xwd)|*.xwd|XWJ Files (*.xwj;*.json;*.jso)|*.xwj;*.json;*.jso|CRP/CRX Files (*.crp;*.crx)|*.crp;*.crx|XD Files (*.xd)|*.xd|All files (*.*)|*.*||"
+    IDS_CROSSFILTER, "All crosswords (*.xwd;*.xwj;*.json;*.jso;*.crp;*.crx;*.xd;*.ecw)|*.xwd;*.xwj;*.json;*.jso;*.crp;*.crx;*.xd;*.ecw|XWD Files (*.xwd)|*.xwd|XWJ Files (*.xwj;*.json;*.jso)|*.xwj;*.json;*.jso|CRP/CRX Files (*.crp;*.crx)|*.crp;*.crx|XD Files (*.xd)|*.xd|EclipseCrossword Files (*.ecw)|*.ecw|All files (*.*)|*.*||"
     IDS_SAVEFILTER, "XWJ Files (*.xwj;*.json;*.jso)|*.xwj;*.json;*.jso|CRP Files (*.crp)|*.crp|XD Files (*.xd)|*.xd||"
     IDS_README, "ReadMe-ENG.txt"
     IDS_TOOLONGSPACE, "The space at Cell Position (%u, %u) does not match the length of the registered word."

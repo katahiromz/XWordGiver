@@ -3131,6 +3131,254 @@ bool __fastcall XgSetXDString(HWND hwnd, const std::wstring& str)
     return true;
 }
 
+struct ECW_ENTRY
+{
+    std::wstring word;
+    size_t iColumn;
+    size_t iRow;
+    std::wstring clue;
+    bool across;
+};
+
+bool __fastcall XgParseEcwEntry(std::vector<ECW_ENTRY>& entries, const std::wstring& line, bool across)
+{
+    std::vector<std::wstring> fields;
+    mstr_split(fields, line, L":");
+    if (fields.size() < 3)
+        return false;
+    xg_str_trim(fields[0]);
+    xg_str_trim(fields[1]);
+    xg_str_trim(fields[2]);
+    if (fields[0].empty())
+        return false;
+    if (fields[1].empty())
+        return false;
+
+    std::vector<std::wstring> column_and_row;
+    mstr_split(column_and_row, fields[1], L",");
+    if (column_and_row.size() != 2)
+        return false;
+
+    xg_str_trim(column_and_row[0]);
+    xg_str_trim(column_and_row[1]);
+    int iColumn = _wtoi(column_and_row[0].c_str());
+    int iRow = _wtoi(column_and_row[1].c_str());
+    if (iColumn <= 0 || iRow <= 0)
+        return false;
+
+    ECW_ENTRY entry = { XgNormalizeString(fields[0]), static_cast<size_t>(iColumn), static_cast<size_t>(iRow), fields[2], across };
+    entries.push_back(entry);
+
+    return true;
+}
+
+// EclipseCrosswordのECWファイルの文字列を読み込む。
+bool __fastcall XgSetEcwString(HWND hwnd, const std::wstring& str)
+{
+    std::vector<std::wstring> lines;
+    mstr_split(lines, str, L"\n");
+
+    std::wstring title, copyright;
+    size_t width = 0, height = 0;
+    std::vector<ECW_ENTRY> entries;
+    bool across = false, down = false;
+    for (auto& line : lines) {
+        xg_str_trim(line);
+
+        // Ignore empty lines
+        if (line.empty())
+            continue;
+
+        // Ignore comment lines
+        if (line[0] == L';')
+            continue;
+
+        size_t index;
+
+        index = line.find(L"Title:");
+        if (index == 0) {
+            title = line.c_str()[6];
+            xg_str_trim(title);
+            continue;
+        }
+
+        index = line.find(L"Width:");
+        if (index == 0) {
+            width = _wtoi(&line.c_str()[6]);
+            if (width <= 1 || width > XG_MAX_SIZE)
+                return false;
+            continue;
+        }
+
+        index = line.find(L"Height:");
+        if (index == 0) {
+            height = _wtoi(&line.c_str()[7]);
+            if (height <= 1 || height > XG_MAX_SIZE)
+                return false;
+            continue;
+        }
+
+        index = line.find(L"CodePage:");
+        if (index == 0) {
+            continue;
+        }
+
+        index = line.find(L"Copyright:");
+        if (index == 0) {
+            copyright = &line.c_str()[10];
+            xg_str_trim(copyright);
+            continue;
+        }
+
+        if (line[0] == L'*') {
+            line = line.substr(1);
+            xg_str_trim(line);
+            if (lstrcmpiW(line.c_str(), L"Across words") == 0) {
+                across = true;
+                down = false;
+                continue;
+            }
+            if (lstrcmpiW(line.c_str(), L"Down words") == 0) {
+                across = false;
+                down = true;
+                continue;
+            }
+        }
+
+        if (across) {
+            XgParseEcwEntry(entries, line, true);
+            continue;
+        }
+        if (down) {
+            XgParseEcwEntry(entries, line, false);
+            continue;
+        }
+    }
+
+    if (width <= 1 || height <= 1)
+        return false;
+
+    std::wstring header;
+    header += L"Title: " + title + L"\r\n";
+    header += L"Copyright: " + copyright;
+
+    std::vector<std::wstring> cells;
+    cells.resize(height, std::wstring(width, ZEN_BLACK));
+
+    for (auto& entry : entries) {
+        for (size_t i = 0; i < entry.word.size(); ++i) {
+            if (entry.across) {
+                if (!(1 <= entry.iColumn + i && entry.iColumn + i <= width)) {
+                    assert(0);
+                    return false;
+                }
+                if (!(1 <= entry.iRow && entry.iRow <= height)) {
+                    assert(0);
+                    return false;
+                }
+                cells[entry.iRow - 1][i + entry.iColumn - 1] = entry.word[i];
+            } else {
+                if (!(1 <= entry.iColumn && entry.iColumn <= width)) {
+                    assert(0);
+                    return false;
+                }
+                if (!(1 <= entry.iRow + i && entry.iRow + i <= height)) {
+                    assert(0);
+                    return false;
+                }
+                cells[i + entry.iRow - 1][entry.iColumn - 1] = entry.word[i];
+            }
+        }
+    }
+
+    std::wstring body = ZEN_ULEFT + std::wstring(width, ZEN_HLINE) + ZEN_URIGHT + L"\r\n";
+    for (size_t i = 0; i < height; ++i) {
+        body += ZEN_VLINE;
+        body += XgNormalizeString(cells[i]);
+        body += ZEN_VLINE;
+        body += L"\r\n";
+    }
+    body += ZEN_LLEFT + std::wstring(width, ZEN_HLINE) + ZEN_LRIGHT + L"\r\n";
+
+    XG_Board xword;
+    if (!xword.SetString(body))
+        return false;
+
+    xg_str_trim(header);
+    xg_strHeader = header;
+    xg_strNotes.clear();
+    xg_nCols = width;
+    xg_nRows = height;
+    xg_vecTateHints.clear();
+    xg_vecYokoHints.clear();
+    xg_bSolved = false;
+    xg_nViewMode = XG_VIEW_NORMAL;
+
+    // 番号付けを行う。
+    xword.DoNumberingNoCheck();
+
+    std::vector<XG_Hint> tate, yoko;
+    for (auto& entry : entries) {
+        entry.word = XgNormalizeString(entry.word);
+        if (entry.across) {
+            for (XG_PlaceInfo& item : xg_vYokoInfo) {
+                if (item.m_word == entry.word) {
+                    yoko.emplace_back(item.m_number, entry.word, entry.clue);
+                    break;
+                }
+            }
+        } else {
+            for (XG_PlaceInfo& item : xg_vTateInfo) {
+                if (item.m_word == entry.word) {
+                    tate.emplace_back(item.m_number, entry.word, entry.clue);
+                    break;
+                }
+            }
+        }
+    }
+
+    // ソート。
+    std::sort(tate.begin(), tate.end(),
+        [](const XG_Hint& a, const XG_Hint& b) {
+            return a.m_number < b.m_number;
+        }
+    );
+    std::sort(yoko.begin(), yoko.end(),
+        [](const XG_Hint& a, const XG_Hint& b) {
+            return a.m_number < b.m_number;
+        }
+    );
+
+    if (tate.size() && yoko.size()) {
+        // 成功。
+        xg_xword = xword;
+        xg_solution = xword;
+        if (tate.size() && yoko.size()) {
+            xg_bSolved = true;
+            xg_bShowAnswer = false;
+            XgClearNonBlocks();
+            xg_vecTateHints = tate;
+            xg_vecYokoHints = yoko;
+        }
+
+        xg_vMarks.clear();
+        xg_bNumCroMode = false;
+
+        return true;
+    }
+
+    // 成功。
+    xg_xword = xword;
+    xg_solution.ResetAndSetSize(xg_nRows, xg_nCols);
+    xg_bSolved = false;
+    xg_bShowAnswer = false;
+    xg_vecTateHints.clear();
+    xg_vecYokoHints.clear();
+    xg_vMarks.clear();
+    xg_bNumCroMode = false;
+    return true;
+}
+
 // 文字列を設定する。
 bool __fastcall XgSetString(HWND hwnd, const std::wstring& str, XG_FILETYPE type)
 {
@@ -3152,6 +3400,8 @@ bool __fastcall XgSetString(HWND hwnd, const std::wstring& str, XG_FILETYPE type
         return false;
     case XG_FILETYPE_XD:
         return XgSetXDString(hwnd, str);
+    case XG_FILETYPE_ECW:
+        return XgSetEcwString(hwnd, str);
     default:
         return (XgSetXDString(hwnd, str) || XgSetJsonString(hwnd, str) ||
                 XgSetStdString(hwnd, str));
@@ -5631,13 +5881,16 @@ bool __fastcall XgDoLoadFileType(HWND hwnd, LPCWSTR pszFile, XG_FILETYPE type)
 
     try {
         std::wstring strText;
-        if (!XgReadTextFileAll(pszFile, strText))
+        if (!XgReadTextFileAll(pszFile, strText, type == XG_FILETYPE_ECW))
             return false;
 
         if (XgSetString(hwnd, strText, type)) {
             // ファイルパスをセットする。
             WCHAR szFileName[MAX_PATH];
             ::GetFullPathNameW(pszFile, MAX_PATH, szFileName, nullptr);
+            if (type == XG_FILETYPE_ECW) {
+                szFileName[0] = 0;
+            }
             xg_strFileName = szFileName;
             return true;
         }
@@ -6257,6 +6510,8 @@ bool __fastcall XgDoLoadMainFile(HWND hwnd, LPCWSTR pszFile)
         return XgDoLoadFileType(hwnd, pszFile, XG_FILETYPE_XD);
     } else if (lstrcmpiW(pchDotExt, L".xwd") == 0) {
         return XgDoLoadFileType(hwnd, pszFile, XG_FILETYPE_XWD);
+    } else if (lstrcmpiW(pchDotExt, L".ecw") == 0) {
+        return XgDoLoadFileType(hwnd, pszFile, XG_FILETYPE_ECW);
     } else {
         return XgDoLoadFileType(hwnd, pszFile, XG_FILETYPE_XWJ);
     }

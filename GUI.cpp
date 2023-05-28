@@ -2603,6 +2603,7 @@ BOOL XgOnLoad(HWND hwnd, LPCWSTR pszFile, LPPOINT ppt)
 
     // 画像ファイルだったら画像ボックスを作成する。
     const BOOL bImage = XgIsImageFile(szFile);
+    // テキストファイルだったらテキストボックスを作成する。
     const BOOL bText = XgIsTextFile(szFile);
     if (bImage || bText)
     {

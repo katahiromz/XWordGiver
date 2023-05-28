@@ -406,6 +406,18 @@ std::wstring XgAnsiToUnicode(const std::string& ansi)
     return uni;
 }
 
+// ANSI -> Unicode
+std::wstring XgAnsiToUnicode(const std::string& ansi, INT codepage)
+{
+    const int len = ::MultiByteToWideChar(codepage, 0, ansi.data(), -1, nullptr, 0);
+    if (len == 0)
+        return L"";
+
+    std::wstring uni(len - 1, 0);
+    ::MultiByteToWideChar(codepage, 0, ansi.data(), -1, &uni[0], len);
+    return uni;
+}
+
 // Unicode -> ANSI
 std::string XgUnicodeToAnsi(const std::wstring& wide)
 {
@@ -706,8 +718,47 @@ BOOL XgWriteFileAll(LPCWSTR file, const std::string& strBinary) noexcept
     return FALSE;
 }
 
+INT XgCharSetToCodePage(INT charset)
+{
+    switch (charset) {
+    case ANSI_CHARSET:          return 1252;
+    case DEFAULT_CHARSET:       return CP_ACP;
+    case SYMBOL_CHARSET:        return CP_SYMBOL;
+    case SHIFTJIS_CHARSET:      return 932;
+    case HANGEUL_CHARSET:       return 949;
+    case GB2312_CHARSET:        return 936;
+    case CHINESEBIG5_CHARSET:   return 950;
+    case OEM_CHARSET:           return CP_OEMCP;
+    case JOHAB_CHARSET:         return 1255;
+    case HEBREW_CHARSET:        return 1255;
+    case ARABIC_CHARSET:        return 1256;
+    case GREEK_CHARSET:         return 1253;
+    case TURKISH_CHARSET:       return 1254;
+    case VIETNAMESE_CHARSET:    return 1258;
+    case THAI_CHARSET:          return 874;
+    case EASTEUROPE_CHARSET:    return 1250;
+    case RUSSIAN_CHARSET:       return 1251;
+    case MAC_CHARSET:           return CP_MACCP;
+    case BALTIC_CHARSET:        return 1257;
+    default:                    return CP_ACP;
+    }
+}
+
+INT XgDetectCodePageFromEcw(const std::string& strBinary)
+{
+    auto index = strBinary.find("\nCodePage:");
+    if (index == strBinary.npos)
+        return CP_ACP;
+
+    // The name is "CodePage" but codepage
+    index += std::strlen("\nCodePage:");
+    INT charset = atoi(&strBinary.c_str()[index]);
+
+    return XgCharSetToCodePage(charset);
+}
+
 // テキストファイルを読み込む。
-BOOL XgReadTextFileAll(LPCWSTR file, std::wstring& strText)
+BOOL XgReadTextFileAll(LPCWSTR file, std::wstring& strText, bool ecw)
 {
     strText.clear();
 
@@ -717,6 +768,12 @@ BOOL XgReadTextFileAll(LPCWSTR file, std::wstring& strText)
 
     if (strBinary.empty())
         return TRUE;
+
+    if (ecw)
+    {
+        strText = XgAnsiToUnicode(strBinary, XgDetectCodePageFromEcw(strBinary));
+        return TRUE;
+    }
 
     if (strBinary.size() >= 3)
     {
