@@ -27,6 +27,7 @@ public:
         wcx.hbrBackground = ::GetSysColorBrush(COLOR_3DFACE);
     }
 
+    // WM_CREATE
     BOOL OnCreate(HWND hwnd, LPCREATESTRUCT lpCreateStruct) noexcept
     {
         xg_hCanvasWnd = hwnd;
@@ -34,11 +35,13 @@ public:
         return TRUE;
     }
 
+    // WM_DESTROY
     void OnDestroy(HWND hwnd) noexcept
     {
         xg_hCanvasWnd = nullptr;
     }
 
+    // WM_LBUTTONDOWN
     // 左クリックされた。
     void OnLButtonDown(HWND hwnd, BOOL fDoubleClick, int x, int y, UINT keyFlags)
     {
@@ -99,6 +102,7 @@ public:
         }
     }
 
+    // WM_LBUTTONUP
     // マウスの左ボタンが離された。
     void OnLButtonUp(HWND hwnd, int x, int y, UINT keyFlags)
     {
@@ -136,6 +140,7 @@ public:
         }
     }
 
+    // WM_MBUTTONDOWN
     // マウスの中央ボタンが押された。
     void OnMButtonDown(HWND hwnd, BOOL fDoubleClick, int x, int y, UINT keyFlags) noexcept
     {
@@ -185,6 +190,7 @@ public:
         ::SetCursor(::LoadCursor(xg_hInstance, MAKEINTRESOURCEW(IDC_MYHAND)));
     }
 
+    // WM_MOUSEMOVE
     // ウィンドウ上でマウスが動いた。
     void OnMouseMove(HWND hwnd, int x, int y, UINT keyFlags)
     {
@@ -194,6 +200,7 @@ public:
         }
     }
 
+    // WM_MBUTTONUP
     // マウスの中央ボタンが離された。
     void OnMButtonUp(HWND hwnd, int x, int y, UINT flags)
     {
@@ -206,6 +213,7 @@ public:
         }
     }
 
+    // WM_RBUTTONDOWN
     // 右クリックされた。
     void OnRButtonDown(HWND hwnd, BOOL fDoubleClick, int x, int y, UINT keyFlags)
     {
@@ -230,6 +238,7 @@ public:
         ::DestroyMenu(hMenu);
     }
 
+    // WM_MOUSEWHEEL
     // マウスホイールが回転した。
     void OnMouseWheel(HWND hwnd, int x, int y, int zDelta, UINT fwKeys) noexcept
     {
@@ -264,12 +273,14 @@ public:
         }
     }
 
+    // WM_ERASEBKGND
     // 背景を描画する。
     BOOL OnEraseBkgnd(HWND hwnd, HDC hdc) noexcept
     {
         return TRUE; // 描画しない。
     }
 
+    // WM_PAINT
     // ウィンドウを描画する。
     void OnPaint(HWND hwnd)
     {
@@ -325,6 +336,7 @@ public:
         }
     }
 
+    // WM_HSCROLL
     // 横スクロールする。
     void OnHScroll(HWND hwnd, HWND /*hwndCtl*/, UINT code, int pos)
     {
@@ -397,6 +409,7 @@ public:
         PostMessage(hwnd, WM_COMMAND, ID_MOVEBOXES, 0);
     }
 
+    // WM_VSCROLL
     // 縦スクロールする。
     void OnVScroll(HWND hwnd, HWND /*hwndCtl*/, UINT code, int pos)
     {
@@ -470,11 +483,13 @@ public:
         PostMessage(hwnd, WM_COMMAND, ID_MOVEBOXES, 0);
     }
 
+    // WM_COMMAND
     void OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT codeNotify) noexcept
     {
         FORWARD_WM_COMMAND(m_hwndParent, id, hwndCtl, codeNotify, PostMessageW);
     }
 
+    // WM_DROPFILES
     void OnDropFiles(HWND hwnd, HDROP hdrop) noexcept
     {
         POINT pt;
