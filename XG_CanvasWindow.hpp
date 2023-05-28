@@ -387,6 +387,9 @@ public:
 
         // スクロール情報を設定する。
         XgSetHScrollInfo(&si, TRUE);
+        // スクロール情報を再取得する。
+        si.fMask = SIF_POS;
+        XgGetHScrollInfo(&si);
         // 高速スクロールする。
         ::ScrollWindow(hwnd, nOldPos - si.nPos, 0, NULL, &rcClip);
 
@@ -456,6 +459,10 @@ public:
 
         // スクロール情報を設定する。
         XgSetVScrollInfo(&si, TRUE);
+        // スクロール情報を再取得する。
+        si.fMask = SIF_POS;
+        XgGetVScrollInfo(&si);
+
         // 高速スクロールする。
         ::ScrollWindow(hwnd, 0, nOldPos - si.nPos, NULL, &rcClip);
 
