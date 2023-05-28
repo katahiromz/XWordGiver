@@ -1584,7 +1584,7 @@ STRINGTABLE
     IDS_NOCANDIDATE, "マス位置 (%u, %u) に単語の候補がないマスがあります。"
     IDS_IMGFILTER, "ビットマップ画像 (*.bmp)|*.bmp|EMF画像 (*.emf)|*.emf||"
     IDS_DICTFILTER, "辞書データ (*.dic;*.tsv)|*.dic;*.tsv|すべてのファイル (*.*)|*.*||"
-    IDS_CROSSFILTER, "すべてのクロスワード (*.xwd;*.xwj;*.json;*.jso;*.crp;*.crx;*.xd;*.ecw)|*.xwd;*.xwj;*.json;*.jso;*.crp;*.crx;*.xd;*.ecw|XWD ファイル (*.xwd)|*.xwd|XWJ ファイル (*.xwj;*.json;*.jso)|*.xwj;*.json;*.jso|CRP/CRX ファイル (*.crp;*.crx)|*.crp;*.crx|XD ファイル (*.xd)|*.xd||EclipseCrossword ファイル (*.ecw)|*.ecw|すべてのファイル (*.*)|*.*||"
+    IDS_CROSSFILTER, "すべてのクロスワード (*.xwd;*.xwj;*.json;*.jso;*.crp;*.crx;*.xd;*.ecw)|*.xwd;*.xwj;*.json;*.jso;*.crp;*.crx;*.xd;*.ecw|XWD ファイル (*.xwd)|*.xwd|XWJ ファイル (*.xwj;*.json;*.jso)|*.xwj;*.json;*.jso|CRP/CRX ファイル (*.crp;*.crx)|*.crp;*.crx|XD ファイル (*.xd)|*.xd|EclipseCrossword ファイル (*.ecw)|*.ecw|すべてのファイル (*.*)|*.*||"
     IDS_SAVEFILTER, "XWJ ファイル (*.xwj;*.json;*.jso)|*.xwj;*.json;*.jso|CRP ファイル (*.crp)|*.crp|XD ファイル (*.xd)|*.xd||"
     IDS_README, "ReadMe-JPN.txt"
     IDS_TOOLONGSPACE, "マス位置 (%u, %u) に登録されている単語と長さの一致しないスペースがあります。"
