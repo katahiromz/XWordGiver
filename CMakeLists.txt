@@ -30,11 +30,20 @@ if (NOT uppercase_CMAKE_BUILD_TYPE MATCHES "^(DEBUG|RELEASE|RELWITHDEBINFO|MINSI
     message(FATAL_ERROR "Invalid value for CMAKE_BUILD_TYPE: ${CMAKE_BUILD_TYPE}")
 endif()
 
-if ((CMAKE_CXX_COMPILER_ID STREQUAL "Clang") OR (CMAKE_CXX_COMPILER_ID STREQUAL "GNU"))
-    # using Clang or GCC
+if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+    # using Clang
     if (uppercase_CMAKE_BUILD_TYPE MATCHES "^RELEASE$")
         set(CMAKE_C_FLAGS "-static -O3 -Wall -pedantic")
         set(CMAKE_CXX_FLAGS "-static -O3 -Wall -pedantic")
+    else()
+        set(CMAKE_C_FLAGS "-static -g -Wall -pedantic")
+        set(CMAKE_CXX_FLAGS "-static -g -Wall -pedantic")
+    endif()
+elseif (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+    # using GCC
+    if (uppercase_CMAKE_BUILD_TYPE MATCHES "^RELEASE$")
+        set(CMAKE_C_FLAGS "-s -static -O3 -Wall -pedantic")
+        set(CMAKE_CXX_FLAGS "-s -static -O3 -Wall -pedantic")
     else()
         set(CMAKE_C_FLAGS "-static -g -Wall -pedantic")
         set(CMAKE_CXX_FLAGS "-static -g -Wall -pedantic")
