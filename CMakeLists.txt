@@ -30,31 +30,29 @@ if (NOT uppercase_CMAKE_BUILD_TYPE MATCHES "^(DEBUG|RELEASE|RELWITHDEBINFO|MINSI
     message(FATAL_ERROR "Invalid value for CMAKE_BUILD_TYPE: ${CMAKE_BUILD_TYPE}")
 endif()
 
-if (WIN32)
-    if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-        # using Clang or GCC
-        if (uppercase_CMAKE_BUILD_TYPE MATCHES "^RELEASE$")
-            set(CMAKE_C_FLAGS "-static -O9 -mtune=skylake -Wall -pedantic")
-            set(CMAKE_CXX_FLAGS "-static -O9 -mtune=skylake -Wall -pedantic")
-        else()
-            set(CMAKE_C_FLAGS "-static -g -Wall -pedantic")
-            set(CMAKE_CXX_FLAGS "-static -g -Wall -pedantic")
-        endif()
-    elseif (MSVC AND NOT uppercase_CMAKE_BUILD_TYPE MATCHES "^DEBUG$")
-        # replace "/MD" with "/MT" (building without runtime DLLs)
-        set(CompilerFlags
-            CMAKE_C_FLAGS
-            CMAKE_C_FLAGS_DEBUG
-            CMAKE_C_FLAGS_RELEASE
-            CMAKE_C_FLAGS_RELWITHDEBINFO
-            CMAKE_CXX_FLAGS
-            CMAKE_CXX_FLAGS_DEBUG
-            CMAKE_CXX_FLAGS_RELEASE
-            CMAKE_CXX_FLAGS_RELWITHDEBINFO)
-        foreach(CompilerFlags ${CompilerFlags})
-            string(REPLACE "/MD" "/MT" ${CompilerFlags} "${${CompilerFlags}}")
-        endforeach()
+if ((CMAKE_CXX_COMPILER_ID STREQUAL "Clang") OR (CMAKE_CXX_COMPILER_ID STREQUAL "GNU"))
+    # using Clang or GCC
+    if (uppercase_CMAKE_BUILD_TYPE MATCHES "^RELEASE$")
+        set(CMAKE_C_FLAGS "-static -O3 -Wall -pedantic")
+        set(CMAKE_CXX_FLAGS "-static -O3 -Wall -pedantic")
+    else()
+        set(CMAKE_C_FLAGS "-static -g -Wall -pedantic")
+        set(CMAKE_CXX_FLAGS "-static -g -Wall -pedantic")
     endif()
+elseif (MSVC AND NOT uppercase_CMAKE_BUILD_TYPE MATCHES "^DEBUG$")
+    # replace "/MD" with "/MT" (building without runtime DLLs)
+    set(CompilerFlags
+        CMAKE_C_FLAGS
+        CMAKE_C_FLAGS_DEBUG
+        CMAKE_C_FLAGS_RELEASE
+        CMAKE_C_FLAGS_RELWITHDEBINFO
+        CMAKE_CXX_FLAGS
+        CMAKE_CXX_FLAGS_DEBUG
+        CMAKE_CXX_FLAGS_RELEASE
+        CMAKE_CXX_FLAGS_RELWITHDEBINFO)
+    foreach(CompilerFlags ${CompilerFlags})
+        string(REPLACE "/MD" "/MT" ${CompilerFlags} "${${CompilerFlags}}")
+    endforeach()
 endif()
 
 ##############################################################################
@@ -64,7 +62,7 @@ option(DETAILED_CHECK "Enable detailed check" OFF)
 if (DETAILED_CHECK)
     message(STATUS "DETAILED_CHECK is ON")
     if (uppercase_CMAKE_BUILD_TYPE MATCHES "DEBUG")
-        if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+        if ((CMAKE_CXX_COMPILER_ID STREQUAL "GNU") OR (CMAKE_CXX_COMPILER_ID STREQUAL "Clang"))
             set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D_GLIBCXX_DEBUG -D_GLIBCXX_CONCEPT_CHECKS -D_GLIBCXX_DEBUG_PEDANTIC -Wall -Wextra -Wshadow -Wconversion -Wfloat-equal -ftrapv -fstack-protector-all -fno-omit-frame-pointer -Wno-missing-field-initializers -Wno-unused-parameter -Wno-cast-function-type")
         endif()
     endif()
