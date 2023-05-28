@@ -5475,16 +5475,16 @@ BOOL __fastcall XgFindLocalFile(LPWSTR pszPath, UINT cchPath, LPCWSTR pszFileNam
 }
 
 // キャレットからキャンバス座標を取得する。
-void __fastcall XgCaretToCanvas(RECT& rc, XG_Pos caret_pos)
+void __fastcall XgCellToCanvas(RECT& rc, XG_Pos cell)
 {
     // セルの大きさ。
-    const int nCellSize = (xg_nForDisplay > 0) ? (xg_nCellSize * xg_nZoomRate / 100) : xg_nCellSize;
+    const int nCellSize = (xg_nCellSize * xg_nZoomRate / 100);
 
     rc = {
-        xg_nMargin + caret_pos.m_j * nCellSize,
-        xg_nMargin + caret_pos.m_i * nCellSize,
-        xg_nMargin + (caret_pos.m_j + 1) * nCellSize,
-        xg_nMargin + (caret_pos.m_i + 1) * nCellSize
+        xg_nMargin + cell.m_j * nCellSize,
+        xg_nMargin + cell.m_i * nCellSize,
+        xg_nMargin + (cell.m_j + 1) * nCellSize,
+        xg_nMargin + (cell.m_i + 1) * nCellSize
     };
 
     INT x = XgGetHScrollPos();
@@ -5493,10 +5493,10 @@ void __fastcall XgCaretToCanvas(RECT& rc, XG_Pos caret_pos)
 }
 
 // キャレット位置のマスを無効化する。
-void __fastcall XgInvalidateCaretPos(XG_Pos caret_pos)
+void __fastcall XgInvalidateCell(XG_Pos cell)
 {
     RECT rcCell;
-    XgCaretToCanvas(rcCell, caret_pos);
+    XgCellToCanvas(rcCell, cell);
 
     ::InvalidateRect(xg_hCanvasWnd, &rcCell, TRUE);
 }
@@ -5508,7 +5508,7 @@ void __fastcall XgDrawCaret(HDC hdc)
         return;
 
     RECT rc;
-    XgCaretToCanvas(rc, xg_caret_pos);
+    XgCellToCanvas(rc, xg_caret_pos);
 
     // 赤いキャレットペンを作成する。
     LOGBRUSH lbRed;
@@ -5566,7 +5566,7 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT /*codeNo
     switch (id) {
     case ID_LEFT:
         // キャレットを左へ移動。
-        XgInvalidateCaretPos(xg_caret_pos);
+        XgInvalidateCell(xg_caret_pos);
         if (xg_caret_pos.m_j > 0) {
             xg_caret_pos.m_j--;
             XgEnsureCaretVisible(hwnd);
@@ -5574,12 +5574,12 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT /*codeNo
             // 一番左のキャレットなら、左端へ移動。
             SendMessageW(xg_hCanvasWnd, WM_HSCROLL, MAKEWPARAM(SB_LEFT, 0), 0);
         }
-        XgInvalidateCaretPos(xg_caret_pos);
+        XgInvalidateCell(xg_caret_pos);
         xg_prev_vk = 0;
         break;
     case ID_RIGHT:
         // キャレットを右へ移動。
-        XgInvalidateCaretPos(xg_caret_pos);
+        XgInvalidateCell(xg_caret_pos);
         if (xg_caret_pos.m_j + 1 < xg_nCols) {
             xg_caret_pos.m_j++;
             XgEnsureCaretVisible(hwnd);
@@ -5587,12 +5587,12 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT /*codeNo
             // 一番右のキャレットなら、右端へ移動。
             SendMessageW(xg_hCanvasWnd, WM_HSCROLL, MAKEWPARAM(SB_RIGHT, 0), 0);
         }
-        XgInvalidateCaretPos(xg_caret_pos);
+        XgInvalidateCell(xg_caret_pos);
         xg_prev_vk = 0;
         break;
     case ID_UP:
         // キャレットを上へ移動。
-        XgInvalidateCaretPos(xg_caret_pos);
+        XgInvalidateCell(xg_caret_pos);
         if (xg_caret_pos.m_i > 0) {
             xg_caret_pos.m_i--;
             XgEnsureCaretVisible(hwnd);
@@ -5600,12 +5600,12 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT /*codeNo
             // 一番上のキャレットなら、上端へ移動。
             SendMessageW(xg_hCanvasWnd, WM_VSCROLL, MAKEWPARAM(SB_TOP, 0), 0);
         }
-        XgInvalidateCaretPos(xg_caret_pos);
+        XgInvalidateCell(xg_caret_pos);
         xg_prev_vk = 0;
         break;
     case ID_DOWN:
         // キャレットを下へ移動。
-        XgInvalidateCaretPos(xg_caret_pos);
+        XgInvalidateCell(xg_caret_pos);
         if (xg_caret_pos.m_i + 1 < xg_nRows) {
             xg_caret_pos.m_i++;
             XgEnsureCaretVisible(hwnd);
@@ -5613,12 +5613,12 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT /*codeNo
             // 一番下のキャレットなら、下端へ移動。
             SendMessageW(xg_hCanvasWnd, WM_VSCROLL, MAKEWPARAM(SB_BOTTOM, 0), 0);
         }
-        XgInvalidateCaretPos(xg_caret_pos);
+        XgInvalidateCell(xg_caret_pos);
         xg_prev_vk = 0;
         break;
     case ID_MOSTLEFT:
         // Ctrl+←。
-        XgInvalidateCaretPos(xg_caret_pos);
+        XgInvalidateCell(xg_caret_pos);
         if (xg_caret_pos.m_j > 0) {
             xg_caret_pos.m_j = 0;
             XgEnsureCaretVisible(hwnd);
@@ -5626,12 +5626,12 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT /*codeNo
             // 一番左のキャレットなら、左端へ移動。
             SendMessageW(xg_hCanvasWnd, WM_HSCROLL, MAKEWPARAM(SB_LEFT, 0), 0);
         }
-        XgInvalidateCaretPos(xg_caret_pos);
+        XgInvalidateCell(xg_caret_pos);
         xg_prev_vk = 0;
         break;
     case ID_MOSTRIGHT:
         // Ctrl+→。
-        XgInvalidateCaretPos(xg_caret_pos);
+        XgInvalidateCell(xg_caret_pos);
         if (xg_caret_pos.m_j + 1 < xg_nCols) {
             xg_caret_pos.m_j = xg_nCols - 1;
             XgEnsureCaretVisible(hwnd);
@@ -5639,12 +5639,12 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT /*codeNo
             // 一番右のキャレットなら、右端へ移動。
             SendMessageW(xg_hCanvasWnd, WM_HSCROLL, MAKEWPARAM(SB_RIGHT, 0), 0);
         }
-        XgInvalidateCaretPos(xg_caret_pos);
+        XgInvalidateCell(xg_caret_pos);
         xg_prev_vk = 0;
         break;
     case ID_MOSTUPPER:
         // Ctrl+↑。
-        XgInvalidateCaretPos(xg_caret_pos);
+        XgInvalidateCell(xg_caret_pos);
         if (xg_caret_pos.m_i > 0) {
             xg_caret_pos.m_i = 0;
             XgEnsureCaretVisible(hwnd);
@@ -5652,12 +5652,12 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT /*codeNo
             // 一番上のキャレットなら、上端へ移動。
             SendMessageW(xg_hCanvasWnd, WM_VSCROLL, MAKEWPARAM(SB_TOP, 0), 0);
         }
-        XgInvalidateCaretPos(xg_caret_pos);
+        XgInvalidateCell(xg_caret_pos);
         xg_prev_vk = 0;
         break;
     case ID_MOSTLOWER:
         // Ctrl+↓。
-        XgInvalidateCaretPos(xg_caret_pos);
+        XgInvalidateCell(xg_caret_pos);
         if (xg_caret_pos.m_i + 1 < xg_nRows) {
             xg_caret_pos.m_i = xg_nRows - 1;
             XgEnsureCaretVisible(hwnd);
@@ -5665,7 +5665,7 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT /*codeNo
             // 一番下のキャレットなら、下端へ移動。
             SendMessageW(xg_hCanvasWnd, WM_VSCROLL, MAKEWPARAM(SB_BOTTOM, 0), 0);
         }
-        XgInvalidateCaretPos(xg_caret_pos);
+        XgInvalidateCell(xg_caret_pos);
         xg_prev_vk = 0;
         break;
     case ID_OPENCANDSWNDHORZ:
