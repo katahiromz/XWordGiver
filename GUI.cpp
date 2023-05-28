@@ -2573,8 +2573,14 @@ bool __fastcall XgDoLoadFiles(HWND hwnd, LPCWSTR pszFile)
 
     // フォーカスを移動。
     SetFocus(hwnd);
-    // ファイル変更フラグ。
-    XG_FILE_MODIFIED(FALSE);
+
+    // ECWの場合は、保存できないのでファイルを変更したものと見なす。
+    if (lstrcmpiW(PathFindExtensionW(pszFile), L".ecw") == 0) {
+        XG_FILE_MODIFIED(TRUE);
+    } else {
+        XG_FILE_MODIFIED(FALSE);
+    }
+
     // 最近使ったファイルを更新する。
     XgUpdateRecentlyUsed(pszFile);
 

@@ -3367,16 +3367,8 @@ bool __fastcall XgSetEcwString(HWND hwnd, const std::wstring& str)
         return true;
     }
 
-    // 成功。
-    xg_xword = xword;
-    xg_solution.ResetAndSetSize(xg_nRows, xg_nCols);
-    xg_bSolved = false;
-    xg_bShowAnswer = false;
-    xg_vecTateHints.clear();
-    xg_vecYokoHints.clear();
-    xg_vMarks.clear();
-    xg_bNumCroMode = false;
-    return true;
+    // 失敗。
+    return false;
 }
 
 // 文字列を設定する。
@@ -5889,6 +5881,7 @@ bool __fastcall XgDoLoadFileType(HWND hwnd, LPCWSTR pszFile, XG_FILETYPE type)
             WCHAR szFileName[MAX_PATH];
             ::GetFullPathNameW(pszFile, MAX_PATH, szFileName, nullptr);
             if (type == XG_FILETYPE_ECW) {
+                // ECWファイルの場合は保存できないのでファイル名をクリアする。
                 szFileName[0] = 0;
             }
             xg_strFileName = szFileName;
