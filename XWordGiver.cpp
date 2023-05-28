@@ -4916,7 +4916,7 @@ void __fastcall XgCellToImage(RECT& rc, XG_Pos cell)
     };
 }
 
-// マス１個だけ描画する。
+// マス１個だけ描画する。画面表示のみを想定。
 void __fastcall XgDrawOneCell(HDC hdc, INT iRow, INT jCol)
 {
     // セルの幅。
