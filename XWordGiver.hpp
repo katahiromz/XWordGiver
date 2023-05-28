@@ -1330,6 +1330,13 @@ extern int xg_nPatWndY;
 extern int xg_nPatWndCX;
 extern int xg_nPatWndCY;
 
+// キャレット位置のマスを無効化する。
+void __fastcall XgInvalidateCell(XG_Pos cell);
+// マス位置からイメージ座標を取得する。
+void __fastcall XgCellToImage(RECT& rc, XG_Pos cell);
+// マス１個だけ描画する。
+void __fastcall XgDrawOneCell(HDC hdc, INT iRow, INT jCol);
+
 //////////////////////////////////////////////////////////////////////////////
 
 // 再計算するか？

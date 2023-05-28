@@ -238,6 +238,7 @@
     - Speeded up caret movement by decoupling the caret drawing from the internal image.
     - Speeded up drawing the board in zooming.
     - The zoom cannot be smaller than 9%.
+    - Speeded up putting a character.
 
 # 開発履歴 (Japanese)
 
@@ -791,3 +792,4 @@
     - キャレットの描画を内部イメージから切り離すことにより、キャレットの移動を高速化。
     - ズーム中の盤面の描画を高速化。
     - ズームを9%より小さくできないようにした。
+    - 文字配置を高速化。

@@ -5474,18 +5474,10 @@ BOOL __fastcall XgFindLocalFile(LPWSTR pszPath, UINT cchPath, LPCWSTR pszFileNam
     return PathFileExistsW(pszPath);
 }
 
-// キャレットからキャンバス座標を取得する。
+// マス位置からキャンバス座標を取得する。
 void __fastcall XgCellToCanvas(RECT& rc, XG_Pos cell)
 {
-    // セルの大きさ。
-    const int nCellSize = (xg_nCellSize * xg_nZoomRate / 100);
-
-    rc = {
-        xg_nMargin + cell.m_j * nCellSize,
-        xg_nMargin + cell.m_i * nCellSize,
-        xg_nMargin + (cell.m_j + 1) * nCellSize,
-        xg_nMargin + (cell.m_i + 1) * nCellSize
-    };
+    XgCellToImage(rc, cell);
 
     INT x = XgGetHScrollPos();
     INT y = XgGetVScrollPos();

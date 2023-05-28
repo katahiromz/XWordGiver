@@ -81,7 +81,23 @@ skip:;
     sa2->ch = ch;
 
     xg_ubUndoBuffer.Commit(UC_SETAT, sa1, sa2);
+
+    WCHAR ch0 = xg_xword.GetAt(xg_caret_pos);
     xg_xword.SetAt(xg_caret_pos, ch);
+
+    // 再描画する。
+    if ((ch0 == ZEN_BLACK || ch == ZEN_BLACK) && xg_nViewMode == XG_VIEW_SKELETON) {
+        XgUpdateImage(hwnd);
+    } else {
+        // 可能ならば一部分だけ再描画する。これで描画を高速化できる。
+        HDC hdc = ::CreateCompatibleDC(NULL);
+        HGDIOBJ hbmOld = ::SelectObject(hdc, xg_hbmImage);
+        XgDrawOneCell(hdc, xg_caret_pos.m_i, xg_caret_pos.m_j);
+        ::SelectObject(hdc, hbmOld);
+        ::DeleteDC(hdc);
+
+        XgInvalidateCell(xg_caret_pos);
+    }
 
     // ツールバーを更新する。
     XgUpdateToolBarUI(xg_hMainWnd);
@@ -441,7 +457,6 @@ void __fastcall XgOnChar(HWND hwnd, TCHAR ch, int cRepeat)
         if (!(xg_bSolved && oldch == ZEN_BLACK)) {
             XgSetChar(hwnd, ZEN_SPACE);
             XgEnsureCaretVisible(hwnd);
-            XgUpdateImage(hwnd);
         }
         xg_prev_vk = 0;
         xg_chAccent = 0;
@@ -452,16 +467,13 @@ void __fastcall XgOnChar(HWND hwnd, TCHAR ch, int cRepeat)
             if (oldch == ZEN_SPACE && !xg_bSolved) {
                 XgSetChar(hwnd, ZEN_BLACK);
                 XgEnsureCaretVisible(hwnd);
-                XgUpdateImage(hwnd);
             } else if (oldch == ZEN_BLACK && !xg_bSolved) {
                 XgSetChar(hwnd, ZEN_SPACE);
                 XgEnsureCaretVisible(hwnd);
-                XgUpdateImage(hwnd);
             } else if (!xg_bSolved || !xg_bShowAnswer) {
                 if (oldch != ZEN_BLACK) {
                     XgSetChar(hwnd, ZEN_SPACE);
                     XgEnsureCaretVisible(hwnd);
-                    XgUpdateImage(hwnd);
                 }
             }
         }
@@ -474,7 +486,6 @@ void __fastcall XgOnChar(HWND hwnd, TCHAR ch, int cRepeat)
         if (!xg_bSolved) {
             XgSetChar(hwnd, ZEN_BLACK);
             XgEnsureCaretVisible(hwnd);
-            XgUpdateImage(hwnd);
         }
     } else if (xg_imode == xg_im_ABC) {
         // 英字入力の場合。
@@ -502,7 +513,6 @@ void __fastcall XgOnChar(HWND hwnd, TCHAR ch, int cRepeat)
                 XgCharFeed(hwnd);
 
             XgEnsureCaretVisible(hwnd);
-            XgUpdateImage(hwnd);
         } else if (XgIsCharZenkakuUpperW(ch)) {
             // 候補ウィンドウを破棄する。
             XgDestroyCandsWnd();
@@ -512,7 +522,6 @@ void __fastcall XgOnChar(HWND hwnd, TCHAR ch, int cRepeat)
                 XgCharFeed(hwnd);
 
             XgEnsureCaretVisible(hwnd);
-            XgUpdateImage(hwnd);
         } else if (XgIsCharZenkakuLowerW(ch)) {
             // 候補ウィンドウを破棄する。
             XgDestroyCandsWnd();
@@ -524,7 +533,6 @@ void __fastcall XgOnChar(HWND hwnd, TCHAR ch, int cRepeat)
                 XgCharFeed(hwnd);
 
             XgEnsureCaretVisible(hwnd);
-            XgUpdateImage(hwnd);
         } else if ((0x0080 <= ch && ch <= 0x00FF) ||  // ラテン補助
                    (0x0100 <= ch && ch <= 0x017F) || // ラテン文字拡張A
                    (0x1E00 <= ch && ch <= 0x1EFF)) // ラテン文字拡張追加
@@ -544,7 +552,6 @@ void __fastcall XgOnChar(HWND hwnd, TCHAR ch, int cRepeat)
                 XgCharFeed(hwnd);
 
             XgEnsureCaretVisible(hwnd);
-            XgUpdateImage(hwnd);
         }
     } else if (xg_imode == xg_im_KANA) {
         WCHAR newch = 0;
@@ -774,7 +781,6 @@ katakana:;
                 XgCharFeed(hwnd);
 
             XgEnsureCaretVisible(hwnd);
-            XgUpdateImage(hwnd);
         }
     } else if (xg_imode == xg_im_RUSSIA) {
         // ロシア入力の場合。
@@ -788,7 +794,6 @@ katakana:;
                 XgCharFeed(hwnd);
 
             XgEnsureCaretVisible(hwnd);
-            XgUpdateImage(hwnd);
         }
     } else if (xg_imode == xg_im_GREEK) {
         if (XgIsCharGreekW(ch)) {
@@ -803,7 +808,6 @@ katakana:;
                 XgCharFeed(hwnd);
 
             XgEnsureCaretVisible(hwnd);
-            XgUpdateImage(hwnd);
         }
     } else if (xg_imode == xg_im_DIGITS) {
         // 数字入力の場合。
@@ -819,7 +823,6 @@ katakana:;
                 XgCharFeed(hwnd);
 
             XgEnsureCaretVisible(hwnd);
-            XgUpdateImage(hwnd);
         }
     } else if (xg_imode == xg_im_ANY) {
         // 自由入力の場合。
@@ -846,7 +849,6 @@ katakana:;
                 XgCharFeed(hwnd);
 
             XgEnsureCaretVisible(hwnd);
-            XgUpdateImage(hwnd);
         }
     }
 }
@@ -919,7 +921,6 @@ void __fastcall XgOnKey(HWND hwnd, UINT vk, bool fDown, int /*cRepeat*/, UINT /*
         if (xg_xword.GetAt(xg_caret_pos) != ZEN_SPACE && !xg_bSolved) {
             XgSetChar(hwnd, ZEN_SPACE);
             XgEnsureCaretVisible(hwnd);
-            XgUpdateImage(hwnd);
         }
         xg_prev_vk = 0;
         xg_chAccent = 0;
@@ -1057,8 +1058,6 @@ void __fastcall XgOnImeChar(HWND hwnd, WCHAR ch, LPARAM /*lKeyData*/)
 
             if (xg_bCharFeed)
                 XgCharFeed(hwnd);
-            
-            XgUpdateImage(hwnd);
         }
     } else if (xg_imode == xg_im_KANJI) {
         // 漢字入力モードの場合。
@@ -1071,8 +1070,6 @@ void __fastcall XgOnImeChar(HWND hwnd, WCHAR ch, LPARAM /*lKeyData*/)
 
             if (xg_bCharFeed)
                 XgCharFeed(hwnd);
-            
-            XgUpdateImage(hwnd);
         }
     } else if (xg_imode == xg_im_KANA) {
         // カナ入力モードの場合。
@@ -1099,8 +1096,6 @@ katakana:;
 
             if (xg_bCharFeed)
                 XgCharFeed(hwnd);
-
-            XgUpdateImage(hwnd);
         }
     } else if (xg_imode == xg_im_ABC) {
         if (XgIsCharHankakuUpperW(ch) || XgIsCharHankakuLowerW(ch) ||
@@ -1124,8 +1119,6 @@ katakana:;
 
             if (xg_bCharFeed)
                 XgCharFeed(hwnd);
-
-            XgUpdateImage(hwnd);
         }
     } else if (xg_imode == xg_im_GREEK) {
         if (XgIsCharGreekW(ch)) {
@@ -1139,8 +1132,6 @@ katakana:;
 
             if (xg_bCharFeed)
                 XgCharFeed(hwnd);
-
-            XgUpdateImage(hwnd);
         }
     } else if (xg_imode == xg_im_DIGITS) {
         // 数字入力の場合。
@@ -1156,8 +1147,6 @@ katakana:;
 
             if (xg_bCharFeed)
                 XgCharFeed(hwnd);
-
-            XgUpdateImage(hwnd);
         }
     } else if (xg_imode == xg_im_ANY) {
         // 自由入力の場合。
@@ -1184,8 +1173,6 @@ katakana:;
 
             if (xg_bCharFeed)
                 XgCharFeed(hwnd);
-
-            XgUpdateImage(hwnd);
         }
     }
 }
