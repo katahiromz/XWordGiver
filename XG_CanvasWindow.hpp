@@ -339,6 +339,7 @@ public:
         XgGetHScrollInfo(&si);
 
         // コードに応じて位置情報を設定する。
+        INT nOldPos = si.nPos;
         switch (code) {
         case SB_LEFT:
             si.nPos = si.nMin;
@@ -381,10 +382,16 @@ public:
             break;
         }
 
-        // スクロール情報を設定し、イメージを更新する。
+        // クリップ矩形を取得する。
+        RECT rcClip;
+        HDC hdc = ::GetDC(hwnd);
+        ::GetClipBox(hdc, &rcClip);
+        ::ReleaseDC(hwnd, hdc);
+
+        // スクロール情報を設定する。
         XgSetHScrollInfo(&si, TRUE);
-        XgUpdateImage(hwnd, si.nPos, XgGetVScrollPos());
-        XgUpdateCaretPos();
+        // 高速スクロールする。
+        ::ScrollWindow(hwnd, nOldPos - si.nPos, 0, NULL, &rcClip);
 
         // ボックスの位置を更新。
         PostMessage(hwnd, WM_COMMAND, ID_MOVEBOXES, 0);
@@ -401,6 +408,7 @@ public:
         XgGetVScrollInfo(&si);
 
         // コードに応じて位置情報を設定する。
+        INT nOldPos = si.nPos;
         switch (code) {
         case SB_TOP:
             si.nPos = si.nMin;
@@ -443,10 +451,16 @@ public:
             break;
         }
 
-        // スクロール情報を設定し、イメージを更新する。
-        XgSetVScrollPos(si.nPos, TRUE);
-        XgUpdateImage(hwnd, XgGetHScrollPos(), si.nPos);
-        XgUpdateCaretPos();
+        // クリップ矩形を取得する。
+        RECT rcClip;
+        HDC hdc = ::GetDC(hwnd);
+        ::GetClipBox(hdc, &rcClip);
+        ::ReleaseDC(hwnd, hdc);
+
+        // スクロール情報を設定する。
+        XgSetVScrollInfo(&si, TRUE);
+        // 高速スクロールする。
+        ::ScrollWindow(hwnd, 0, nOldPos - si.nPos, NULL, &rcClip);
 
         // ボックスの位置を更新。
         PostMessage(hwnd, WM_COMMAND, ID_MOVEBOXES, 0);
