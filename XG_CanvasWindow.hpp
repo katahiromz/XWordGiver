@@ -167,19 +167,16 @@ public:
         x0 += xg_ptMButtonDragging.x - x;
         y0 += xg_ptMButtonDragging.y - y;
 
-        // スクロール情報を設定し、イメージを更新する。
+        // スクロール情報を設定する。
         si.fMask = SIF_POS;
         si.nPos = x0;
-        XgSetHScrollInfo(&si, FALSE);
+        XgSetHScrollInfo(&si, TRUE);
         si.fMask = SIF_POS;
         si.nPos = y0;
-        XgSetVScrollInfo(&si, FALSE);
+        XgSetVScrollInfo(&si, TRUE);
 
         xg_ptMButtonDragging.x = x;
         xg_ptMButtonDragging.y = y;
-
-        // 画面を更新する。
-        XgUpdateImage(hwnd, x0, y0);
 
         RECT rcClient;
         XgGetRealClientRect(hwnd, &rcClient);
