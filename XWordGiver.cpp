@@ -4957,6 +4957,7 @@ void __fastcall XgDrawOneCell(HDC hdc, INT iRow, INT jCol)
 
     auto slot = XgGetSlot(xg_highlight.m_number, xg_highlight.m_vertical);
 
+    // 黒マスビットマップの情報を取得する。
     BITMAP bm;
     ::GetObject(xg_hbmBlackCell, sizeof(bm), &bm);
 
@@ -4965,9 +4966,11 @@ void __fastcall XgDrawOneCell(HDC hdc, INT iRow, INT jCol)
     SelectObject(hdcMem, xg_hbmBlackCell);
     SetStretchBltMode(hdcMem, STRETCH_HALFTONE);
 
+    // セルからイメージ座標へ。
     RECT rc;
     XgCellToImage(rc, { iRow, jCol });
 
+    // 文字を取得する。
     WCHAR ch;
     if (xg_bSolved && xg_bShowAnswer)
         ch = xg_solution.GetAt(iRow, jCol);
@@ -5038,6 +5041,7 @@ void __fastcall XgDrawOneCell(HDC hdc, INT iRow, INT jCol)
         XgDrawCellNumber(hdc, rc, iRow, jCol, xg_mapNumCro1[ch0], slot);
     }
 
+    // フォントの選択を解除する。
     ::SelectObject(hdc, hFontOld);
 
     // セルの文字を描画する。
