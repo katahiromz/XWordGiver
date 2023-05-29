@@ -6372,11 +6372,13 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT /*codeNo
         break;
     case ID_ZOOMIN:
         if (xg_nZoomRate < 50) {
-            xg_nZoomRate += 5;
+            xg_nZoomRate += 7;
         } else if (xg_nZoomRate < 100) {
-            xg_nZoomRate += 10;
+            xg_nZoomRate += 15;
         } else if (xg_nZoomRate < 200) {
-            xg_nZoomRate += 20;
+            xg_nZoomRate += 30;
+        } else {
+            break;
         }
         x = XgGetHScrollPos();
         y = XgGetVScrollPos();
@@ -6385,13 +6387,15 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT /*codeNo
         break;
     case ID_ZOOMOUT:
         if (xg_nZoomRate > 200) {
-            xg_nZoomRate -= 20;
+            xg_nZoomRate -= 30;
         } else if (xg_nZoomRate > 100) {
-            xg_nZoomRate -= 10;
+            xg_nZoomRate -= 15;
         } else if (xg_nZoomRate > 50) {
-            xg_nZoomRate -= 5;
+            xg_nZoomRate -= 7;
         } else if (xg_nZoomRate > 9) {
             xg_nZoomRate -= 2;
+        } else {
+            break;
         }
         x = XgGetHScrollPos();
         y = XgGetVScrollPos();
