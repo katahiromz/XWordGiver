@@ -239,6 +239,8 @@
     - Speeded up drawing the board in zooming.
     - The zoom cannot be smaller than 9%.
     - Speeded up putting a character.
+- 2023-XX-YY ver.5.0.9
+    - Fine-tuned the amount of scrolling for comfortable scrolling.
 
 # 開発履歴 (Japanese)
 
@@ -793,3 +795,5 @@
     - ズーム中の盤面の描画を高速化。
     - ズームを9%より小さくできないようにした。
     - 文字配置を高速化。
+- 2023年XX年YY日 ver.5.0.9
+    - 快適にスクロールできるよう、スクロールの量を微調整。

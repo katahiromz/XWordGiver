@@ -261,9 +261,9 @@ public:
                 // Shiftが押されていれば、横スクロール。さもなければ縦スクロール。
                 if (::GetAsyncKeyState(VK_SHIFT) < 0) {
                     if (zDelta < 0)
-                        ::SendMessageW(hwnd, WM_HSCROLL, MAKEWPARAM(SB_LINEDOWN, 0), 0);
+                        ::SendMessageW(hwnd, WM_HSCROLL, MAKEWPARAM(SB_LINELEFT, 0), 0);
                     else if (zDelta > 0)
-                        ::SendMessageW(hwnd, WM_HSCROLL, MAKEWPARAM(SB_LINEUP, 0), 0);
+                        ::SendMessageW(hwnd, WM_HSCROLL, MAKEWPARAM(SB_LINERIGHT, 0), 0);
                 } else {
                     if (zDelta < 0)
                         ::SendMessageW(hwnd, WM_VSCROLL, MAKEWPARAM(SB_LINEDOWN, 0), 0);
@@ -363,13 +363,13 @@ public:
             break;
 
         case SB_LINELEFT:
-            si.nPos -= 10;
+            si.nPos -= 25;
             if (si.nPos < si.nMin)
                 si.nPos = si.nMin;
             break;
 
         case SB_LINERIGHT:
-            si.nPos += 10;
+            si.nPos += 25;
             if (si.nPos > si.nMax)
                 si.nPos = si.nMax;
             break;
@@ -436,13 +436,13 @@ public:
             break;
 
         case SB_LINEUP:
-            si.nPos -= 10;
+            si.nPos -= 25;
             if (si.nPos < si.nMin)
                 si.nPos = si.nMin;
             break;
 
         case SB_LINEDOWN:
-            si.nPos += 10;
+            si.nPos += 25;
             if (si.nPos > si.nMax)
                 si.nPos = si.nMax;
             break;
