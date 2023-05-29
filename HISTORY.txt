@@ -241,6 +241,7 @@
     - Speeded up putting a character.
 - 2023-XX-YY ver.5.0.9
     - Fine-tuned the amount of scrolling for comfortable scrolling.
+    - Fine-tuned the amount of zoomingfor comfortable zooming.
 
 # 開発履歴 (Japanese)
 
@@ -797,3 +798,4 @@
     - 文字配置を高速化。
 - 2023年XX年YY日 ver.5.0.9
     - 快適にスクロールできるよう、スクロールの量を微調整。
+    - 快適にズームできるよう、ズームの量を微調整。
