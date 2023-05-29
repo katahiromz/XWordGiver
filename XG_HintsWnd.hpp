@@ -418,6 +418,7 @@ public:
         return 0;
     }
 
+    // WM_CREATE
     // ヒントウィンドウが作成された。
     BOOL OnCreate(HWND hwnd, LPCREATESTRUCT /*lpCreateStruct*/)
     {
@@ -547,12 +548,14 @@ public:
         return TRUE;
     }
 
+    // WM_VSCROLL
     // ヒントウィンドウが縦にスクロールされた。
     void OnVScroll(HWND /*hwnd*/, HWND /*hwndCtl*/, UINT code, int pos) noexcept
     {
         xg_svHintsScrollView.Scroll(SB_VERT, code, pos);
     }
 
+    // WM_DESTROY
     // ヒントウィンドウが破棄された。
     void OnDestroy(HWND hwnd)
     {
@@ -583,6 +586,7 @@ public:
         xg_hHintsUIFont = nullptr;
     }
 
+    // WM_COMMAND
     void OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT codeNotify) noexcept
     {
         if (codeNotify == STN_CLICKED) {
@@ -603,6 +607,7 @@ public:
         }
     }
 
+    // WM_KEYDOWN / WM_KEYUP
     // キーが押された。
     void OnKey(HWND hwnd, UINT vk, BOOL fDown, int cRepeat, UINT flags) noexcept
     {
@@ -635,6 +640,7 @@ public:
         }
     }
 
+    // ズーム。
     void OnZoom(HWND hwnd, BOOL bZoomIn)
     {
         // フォント情報を取得。
@@ -669,7 +675,7 @@ public:
         // 再描画をOFFにする。
         SetWindowRedraw(hwnd, FALSE);
 
-        // フォントをセット。
+        // フォントをセット。再描画はWM_SIZEに任せる。
         for (auto hwndCtrl : xg_ahwndTateStatics)
             SetWindowFont(hwndCtrl, xg_hHintsUIFont, FALSE);
         for (auto hwndCtrl : xg_ahwndTateEdits)
@@ -686,9 +692,9 @@ public:
         ::PostMessageW(hwnd, WM_SIZE, 0, 0);
     }
 
+    // WM_MOUSEWHEEL
     // マウスホイールが回転した。
-    void __fastcall
-    OnMouseWheel(HWND hwnd, int xPos, int yPos, int zDelta, UINT fwKeys)
+    void __fastcall OnMouseWheel(HWND hwnd, int xPos, int yPos, int zDelta, UINT fwKeys)
     {
         if (::GetAsyncKeyState(VK_CONTROL) < 0) {
             if (zDelta < 0) {
@@ -710,6 +716,7 @@ public:
         }
     }
 
+    // WM_GETMINMAXINFO
     // ヒント ウィンドウのサイズを制限する。
     void OnGetMinMaxInfo(HWND hwnd, LPMINMAXINFO lpMinMaxInfo) noexcept
     {
@@ -717,6 +724,7 @@ public:
         lpMinMaxInfo->ptMinTrackSize.y = 128;
     }
 
+    // WM_CONTEXTMENU
     // 「ヒント」ウィンドウのコンテキストメニュー。
     void OnContextMenu(HWND hwnd, HWND hwndContext, UINT xPos, UINT yPos) noexcept
     {
@@ -741,8 +749,8 @@ public:
     }
 
     // ヒント ウィンドウのウィンドウ プロシージャー。
-    virtual LRESULT CALLBACK
-    WindowProcDx(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+    LRESULT CALLBACK
+    WindowProcDx(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) override
     {
         switch (uMsg)
         {
