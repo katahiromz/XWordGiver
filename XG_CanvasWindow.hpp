@@ -261,9 +261,9 @@ public:
                 // Shiftが押されていれば、横スクロール。さもなければ縦スクロール。
                 if (::GetAsyncKeyState(VK_SHIFT) < 0) {
                     if (zDelta < 0)
-                        ::SendMessageW(hwnd, WM_HSCROLL, MAKEWPARAM(SB_LINELEFT, 0), 0);
-                    else if (zDelta > 0)
                         ::SendMessageW(hwnd, WM_HSCROLL, MAKEWPARAM(SB_LINERIGHT, 0), 0);
+                    else if (zDelta > 0)
+                        ::SendMessageW(hwnd, WM_HSCROLL, MAKEWPARAM(SB_LINELEFT, 0), 0);
                 } else {
                     if (zDelta < 0)
                         ::SendMessageW(hwnd, WM_VSCROLL, MAKEWPARAM(SB_LINEDOWN, 0), 0);
