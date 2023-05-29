@@ -179,10 +179,10 @@ int MScrollView::GetNextPos(int bar, int nSB_, int pos) const noexcept
         return si.nMax - si.nPage;
 
     case SB_LINELEFT:
-        return std::max(0, int(si.nPos - 16));
+        return std::max(0, int(si.nPos - 40));
 
     case SB_LINERIGHT:
-        return std::min(int(si.nMax - si.nPage), int(si.nPos + 16));
+        return std::min(int(si.nMax - si.nPage), int(si.nPos + 40));
 
     case SB_PAGELEFT:
         return std::max(0, int(si.nPos - si.nPage));
