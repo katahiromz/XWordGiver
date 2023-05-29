@@ -6393,7 +6393,7 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT /*codeNo
         } else if (xg_nZoomRate > 50) {
             xg_nZoomRate -= 7;
         } else if (xg_nZoomRate > 9) {
-            xg_nZoomRate -= 2;
+            xg_nZoomRate -= 3;
         } else {
             break;
         }
