@@ -242,6 +242,7 @@
 - 2023-XX-YY ver.5.0.9
     - Fine-tuned the amount of scrolling for comfortable scrolling.
     - Fine-tuned the amount of zoomingfor comfortable zooming.
+    - Speeded up zooming of the Clue.
 
 # 開発履歴 (Japanese)
 
@@ -799,3 +800,4 @@
 - 2023年XX年YY日 ver.5.0.9
     - 快適にスクロールできるよう、スクロールの量を微調整。
     - 快適にズームできるよう、ズームの量を微調整。
+    - ヒントのズームの高速化。

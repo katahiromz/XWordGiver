@@ -173,6 +173,7 @@ public:
         // No change
     }
 
+    // WM_SIZE
     // ヒントウィンドウのサイズが変わった。
     void OnSize(HWND hwnd, UINT /*state*/, int /*cx*/, int /*cy*/)
     {
@@ -665,15 +666,21 @@ public:
             ::DeleteObject(xg_hHintsUIFont);
         xg_hHintsUIFont = ::CreateFontIndirectW(XgGetUIFont());
 
+        // 再描画をOFFにする。
+        SetWindowRedraw(hwnd, FALSE);
+
         // フォントをセット。
         for (auto hwndCtrl : xg_ahwndTateStatics)
-            SetWindowFont(hwndCtrl, xg_hHintsUIFont, TRUE);
+            SetWindowFont(hwndCtrl, xg_hHintsUIFont, FALSE);
         for (auto hwndCtrl : xg_ahwndTateEdits)
-            SetWindowFont(hwndCtrl, xg_hHintsUIFont, TRUE);
+            SetWindowFont(hwndCtrl, xg_hHintsUIFont, FALSE);
         for (auto hwndCtrl : xg_ahwndYokoStatics)
-            SetWindowFont(hwndCtrl, xg_hHintsUIFont, TRUE);
+            SetWindowFont(hwndCtrl, xg_hHintsUIFont, FALSE);
         for (auto hwndCtrl : xg_ahwndYokoEdits)
-            SetWindowFont(hwndCtrl, xg_hHintsUIFont, TRUE);
+            SetWindowFont(hwndCtrl, xg_hHintsUIFont, FALSE);
+
+        // 再描画をONにする。
+        SetWindowRedraw(hwnd, TRUE);
 
         // 再配置。
         ::PostMessageW(hwnd, WM_SIZE, 0, 0);
