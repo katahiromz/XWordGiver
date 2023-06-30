@@ -479,7 +479,7 @@ void __fastcall XgOnChar(HWND hwnd, TCHAR ch, int cRepeat)
         }
         xg_prev_vk = 0;
         xg_chAccent = 0;
-    } else if (ch == L'#') {
+    } else if (ch == L'#' || ch == ZEN_SHARP1 || ch == ZEN_SHARP2 || ch == ZEN_BLACK) {
         // 候補ウィンドウを破棄する。
         XgDestroyCandsWnd();
 
@@ -1023,12 +1023,12 @@ void __fastcall XgOnKey(HWND hwnd, UINT vk, bool fDown, int /*cRepeat*/, UINT /*
 // IMEから文字が入力された。
 void __fastcall XgOnImeChar(HWND hwnd, WCHAR ch, LPARAM /*lKeyData*/)
 {
-    if (ch == ZEN_BLACK) {
+    if (ch == L'#' || ch == ZEN_BLACK || ch == ZEN_SHARP1 || ch == ZEN_SHARP2) {
         SendMessageW(hwnd, WM_CHAR, L'#', 1);
         return;
     }
 
-    if (ch == ZEN_SPACE) {
+    if (ch == L' ' || ch == ZEN_SPACE) {
         SendMessageW(hwnd, WM_CHAR, L' ', 1);
         return;
     }
