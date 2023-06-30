@@ -104,17 +104,20 @@ bool __fastcall XgGetPathOfShortcutW(LPCWSTR pszLnkFile, LPWSTR pszPath)
 }
 
 // 文字列を置換する。
-void __fastcall xg_str_replace_all(std::wstring &s, const std::wstring& from, const std::wstring& to)
+bool __fastcall xg_str_replace_all(std::wstring &s, const std::wstring& from, const std::wstring& to)
 {
     std::wstring t;
     size_t i = 0;
+    bool ret = false;
     while ((i = s.find(from, i)) != std::wstring::npos) {
         t = s.substr(0, i);
         t += to;
         t += s.substr(i + from.size());
         s = t;
         i += to.size();
+        ret = true;
     }
+    return ret;
 }
 
 // 文字列からマルチセットへ変換する。

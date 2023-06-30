@@ -3834,18 +3834,16 @@ bool XgPasteBoard2(HWND hwnd, const std::wstring& str)
     if (str.empty())
         return false;
 
-    // 前後の空白を削除する。
+    // 前後の改行コードを削除する。
     std::wstring str2 = str;
-    mstr_trim(str2, L" \t\r\n");
+    mstr_trim(str2, L"\r\n");
+
+    // 制御文字CRを取り除く。
+    xg_str_replace_all(str2, L"\r", L"");
 
     // 改行で分割する。
     std::vector<std::wstring> lines;
     mstr_split(lines, str2, L"\n");
-
-    // 制御文字CRを取り除く。
-    for (auto& line : lines) {
-        xg_str_replace_all(line, L"\r", L"");
-    }
 
     // 必要ならばタブ文字の前後に空白を挿入する。
     for (auto& line : lines) {
@@ -3853,7 +3851,8 @@ bool XgPasteBoard2(HWND hwnd, const std::wstring& str)
             line = L' ' + line;
         if (line.size() && line[line.size() - 1] == L'\t')
             line += L' ';
-        xg_str_replace_all(line, L"\t\t", L"\t \t");
+        while (xg_str_replace_all(line, L"\t\t", L"\t \t"))
+            ;
     }
 
     // タブ文字を取り除く。
