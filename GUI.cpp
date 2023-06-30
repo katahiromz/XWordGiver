@@ -3868,7 +3868,7 @@ bool XgPasteBoard2(HWND hwnd, const std::wstring& str)
         for (auto& ch : line) {
             if (ch == L' ' || ch == L'_' || ch == ZEN_UNDERLINE)
                 ch = ZEN_SPACE;
-            else if (ch == L'#' || ch == ZEN_SHARP || ch == L'.' || ch == ZEN_DOT)
+            else if (ch == L'#' || ch == ZEN_SHARP1 || ch == ZEN_SHARP2 || ch == L'.' || ch == ZEN_DOT)
                 ch = ZEN_BLACK;
         }
         line = XgNormalizeString(line);

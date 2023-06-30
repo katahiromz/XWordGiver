@@ -150,7 +150,8 @@ BOOL __fastcall XgValidateNumCro(HWND hwnd);
 // 全角文字。
 #define ZEN_SPACE       WCHAR(0x3000)  // L'　'
 #define ZEN_BLACK       WCHAR(0x25A0)  // L'■'
-#define ZEN_SHARP       WCHAR(0xFF03)  // L'＃'
+#define ZEN_SHARP1      WCHAR(0x266F)  // L'♯'
+#define ZEN_SHARP2      WCHAR(0xFF03)  // L'＃'
 #define ZEN_DOT         WCHAR(0xFF0E)  // L'．'
 #define ZEN_LARGE_A     WCHAR(0xFF21)  // L'Ａ'
 #define ZEN_LARGE_Z     WCHAR(0xFF3A)  // L'Ｚ'
