@@ -2963,7 +2963,7 @@ bool __fastcall XgSetXDString(HWND hwnd, const std::wstring& str)
         for (auto& ch : line) {
             if (ch == L' ' || ch == L'_' || ch == ZEN_UNDERLINE)
                 ch = ZEN_SPACE;
-            else if (ch == L'#' || ch == L'.' || ch == ZEN_BLACK)
+            else if (ch == L'#' || ch == ZEN_SHARP || ch == L'.' || ch == ZEN_BLACK)
                 ch = ZEN_BLACK;
         }
         line = XgNormalizeString(line);

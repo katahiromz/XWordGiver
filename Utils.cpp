@@ -45,8 +45,7 @@ std::shared_ptr<XG_FileManager>& XgGetFileManager(void)
 LPWSTR __fastcall XgLoadStringDx1(int id) noexcept
 {
     static WCHAR sz[512];
-    const int ret = LoadStringW(xg_hInstance, id, sz, _countof(sz));
-    assert(ret != 0);
+    LoadStringW(xg_hInstance, id, sz, _countof(sz));
     return sz;
 }
 
@@ -54,8 +53,7 @@ LPWSTR __fastcall XgLoadStringDx1(int id) noexcept
 LPWSTR __fastcall XgLoadStringDx2(int id) noexcept
 {
     static WCHAR sz[512];
-    const int ret = LoadStringW(xg_hInstance, id, sz, _countof(sz));
-    assert(ret != 0);
+    LoadStringW(xg_hInstance, id, sz, _countof(sz));
     return sz;
 }
 

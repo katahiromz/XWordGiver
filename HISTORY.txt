@@ -244,6 +244,18 @@
     - Fine-tuned the amount of zoomingfor comfortable zooming.
     - Speeded up zooming of the Clue.
 - 2023-XX-YY ver.5.1.0
+    - Rectangular text can be pasted as a board.
+    - Paste of Excel grid as a board is now possible.
+    - For example, the following text can be pasted as a board:
+
+BC#C#WED
+T#CAFE#R
+WHO#E#CU
+#E#BROOM
+GREEN#R#
+OS#A#KEY
+A#SNOW#A
+LOT#Z#KM
 
 # 開発履歴 (Japanese)
 
@@ -803,3 +815,15 @@
     - 快適にズームできるよう、ズームの量を微調整。
     - ヒントのズームの高速化。
 - 2023年XX月YY日 ver.5.1.0
+    - 長方形のテキストを盤面として貼り付け可能に。
+    - エクセル方眼の盤面の貼り付けが可能に。
+    - 例えば次のような文字列を盤面として貼り付けることができます：
+
+BC#C#WED
+T#CAFE#R
+WHO#E#CU
+#E#BROOM
+GREEN#R#
+OS#A#KEY
+A#SNOW#A
+LOT#Z#KM

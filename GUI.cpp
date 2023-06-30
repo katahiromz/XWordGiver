@@ -3789,17 +3789,17 @@ std::wstring XgGetClipboardUnicodeText(HWND hwnd)
 }
 
 // クリップボードから貼り付け。
-void XgPasteBoard(HWND hwnd, const std::wstring& str)
+bool XgPasteBoard(HWND hwnd, const std::wstring& str)
 {
     // 文字列が空じゃないか？
     if (str.empty())
-        return;
+        return false;
 
     // 文字列がクロスワードを表していると仮定する。
     // クロスワードに文字列を設定。
     if (!xg_xword.SetString(str)) {
         ::MessageBeep(0xFFFFFFFF);
-        return;
+        return false;
     }
 
     // 候補ウィンドウを破棄する。
@@ -3824,6 +3824,68 @@ void XgPasteBoard(HWND hwnd, const std::wstring& str)
     xg_mapNumCro2.clear();
     // 再描画。
     XgUpdateImage(hwnd, 0, 0);
+    return true;
+}
+
+// クリップボードから貼り付け2。
+bool XgPasteBoard2(HWND hwnd, const std::wstring& str)
+{
+    // 文字列が空じゃないか？
+    if (str.empty())
+        return false;
+
+    // 前後の空白を削除する。
+    std::wstring str2 = str;
+    mstr_trim(str2, L" \t\r\n");
+
+    // 改行で分割する。
+    std::vector<std::wstring> lines;
+    mstr_split(lines, str2, L"\n");
+
+    // 制御文字CRとタブ文字を取り除く。
+    for (auto& line : lines) {
+        mstr_trim(line, L"\r");
+        xg_str_replace_all(line, L"\t", L"");
+    }
+
+    // 二行未満または二列未満なら終了。
+    if (lines.size() < 2 || lines[0].size() < 2) {
+        ::MessageBeep(0xFFFFFFFF);
+        return false;
+    }
+
+    // 列が同じサイズでなければ終了。
+    size_t cColumns = lines[0].size();
+    for (auto& line : lines) {
+        if (line.size() != cColumns) {
+            ::MessageBeep(0xFFFFFFFF);
+            return false;
+        }
+    }
+
+    // 文字を置き換える。
+    for (auto& line : lines) {
+        for (auto& ch : line) {
+            if (ch == L' ' || ch == L'_' || ch == ZEN_UNDERLINE)
+                ch = ZEN_SPACE;
+            else if (ch == L'#' || ch == ZEN_SHARP || ch == L'.' || ch == ZEN_BLACK)
+                ch = ZEN_BLACK;
+        }
+        line = XgNormalizeString(line);
+    }
+
+    // 文字列の再構築。
+    str2 = ZEN_ULEFT + std::wstring(cColumns, ZEN_HLINE) + ZEN_URIGHT + L"\r\n";
+    for (auto& line : lines) {
+        str2 += ZEN_VLINE;
+        str2 += line;
+        str2 += ZEN_VLINE;
+        str2 += L"\r\n";
+    }
+    str2 += ZEN_LLEFT + std::wstring(cColumns, ZEN_HLINE) + ZEN_LRIGHT + L"\r\n";
+
+    // 貼り付け。
+    return XgPasteBoard(hwnd, str2);
 }
 
 // クリップボードにヒントをコピー（スタイルゼロ）。
@@ -6157,13 +6219,24 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT /*codeNo
                 auto sa1 = std::make_shared<XG_UndoData_SetAll>();
                 auto sa2 = std::make_shared<XG_UndoData_SetAll>();
                 sa1->Get();
-                {
-                    // 盤の貼り付け。
-                    XgPasteBoard(hwnd, str);
-                }
+                // 盤の貼り付け。
+                bool ret = XgPasteBoard(hwnd, str);
                 sa2->Get();
-                // 元に戻す情報を設定する。
-                xg_ubUndoBuffer.Commit(UC_SETALL, sa1, sa2);
+                if (ret) {
+                    // 元に戻す情報を設定する。
+                    xg_ubUndoBuffer.Commit(UC_SETALL, sa1, sa2);
+                }
+            } else if (str.find(L'\n') != str.npos) {
+                auto sa1 = std::make_shared<XG_UndoData_SetAll>();
+                auto sa2 = std::make_shared<XG_UndoData_SetAll>();
+                sa1->Get();
+                // 盤の貼り付け2。
+                bool ret = XgPasteBoard2(hwnd, str);
+                sa2->Get();
+                if (ret) {
+                    // 元に戻す情報を設定する。
+                    xg_ubUndoBuffer.Commit(UC_SETALL, sa1, sa2);
+                }
             } else {
                 // 単語の貼り付け。
                 for (auto& ch : str) {
