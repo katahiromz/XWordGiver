@@ -3842,9 +3842,22 @@ bool XgPasteBoard2(HWND hwnd, const std::wstring& str)
     std::vector<std::wstring> lines;
     mstr_split(lines, str2, L"\n");
 
-    // 制御文字CRとタブ文字を取り除く。
+    // 制御文字CRを取り除く。
     for (auto& line : lines) {
-        mstr_trim(line, L"\r");
+        xg_str_replace_all(line, L"\r", L"");
+    }
+
+    // 必要ならばタブ文字の前後に空白を挿入する。
+    for (auto& line : lines) {
+        if (line[0] == L'\t')
+            line = L' ' + line;
+        if (line.size() && line[line.size() - 1] == L'\t')
+            line += L' ';
+        xg_str_replace_all(line, L"\t\t", L"\t \t");
+    }
+
+    // タブ文字を取り除く。
+    for (auto& line : lines) {
         xg_str_replace_all(line, L"\t", L"");
     }
 
