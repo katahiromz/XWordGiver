@@ -243,7 +243,7 @@
     - Fine-tuned the amount of scrolling for comfortable scrolling.
     - Fine-tuned the amount of zoomingfor comfortable zooming.
     - Speeded up zooming of the Clue.
-- 2023-XX-YY ver.5.1.0
+- 2023-07-01 ver.5.1.0
     - Improved the input of "＃", "♯" and "■" etc.
     - Rectangular text can be pasted as a board.
     - Paste of Excel grid as a board is now possible.
@@ -812,7 +812,7 @@ G#USE
     - 快適にスクロールできるよう、スクロールの量を微調整。
     - 快適にズームできるよう、ズームの量を微調整。
     - ヒントのズームの高速化。
-- 2023年XX月YY日 ver.5.1.0
+- 2023年07月01日 ver.5.1.0
     - 「＃」「♯」「■」などの入力を改良。
     - 長方形のテキストを盤面として貼り付け可能に。
     - エクセル方眼の盤面の貼り付けが可能に。
