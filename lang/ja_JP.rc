@@ -1487,7 +1487,7 @@ FONT 9, "MS UI Gothic"
     LTEXT "", stc3, 95, 50, 30, 15
     LTEXT "", stc2, 135, 50, 70, 15
     EDITTEXT edt1, 10, 65, 195, 50, ES_READONLY | ES_MULTILINE | WS_VSCROLL | WS_HSCROLL | NOT WS_TABSTOP
-    CONTROL "公式サイト: <a>https://katahiromz.web.fc2.com/xword/</a>", ctl1, "SysLink", WS_TABSTOP, 10, 125, 195, 15
+    CONTROL "公式サイト: <a>https://katahiromz.fc2.page/xwordgiver/</a>", ctl1, "SysLink", WS_TABSTOP, 10, 125, 195, 15
     PUSHBUTTON "変更履歴(&C)...", IDYES, 10, 145, 91, 20
     DEFPUSHBUTTON "OK", IDOK, 145, 145, 60, 20
 }
@@ -1694,7 +1694,7 @@ STRINGTABLE
     IDS_DBLFRAME_LETTERS_10, "абвгдеёжзийклмнопрстуфхцчшщъыьэюяАБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ"
     IDS_NOTREGDWORD, "辞書に未登録の単語があります。\n\n%s\n\n続行しますか？"
     IDS_WARNING, "警告"
-    IDS_HOMEPAGE, "https://katahiromz.web.fc2.com/xword/"
+    IDS_HOMEPAGE, "https://katahiromz.fc2.page/xwordgiver/"
     IDS_NOTCONNECTABLE, "単語「%ls」は連結できませんでした。"
     IDS_GENERATED, "生成しました。"
     IDS_CANTGENERATE, "生成できませんでした。"
