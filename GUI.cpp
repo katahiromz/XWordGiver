@@ -6855,6 +6855,48 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT /*codeNo
         }
         bUpdateImage = TRUE;
         break;
+    case ID_SWAP_LEFT_RIGHT: // 左右を入れ替える
+        if (!xg_bSolved)
+        {
+            auto sa1 = std::make_shared<XG_UndoData_SetAll>();
+            auto sa2 = std::make_shared<XG_UndoData_SetAll>();
+            sa1->Get();
+            for (INT i = 0; i < xg_nRows; ++i)
+            {
+                for (INT j = 0; j < xg_nCols / 2; ++j)
+                {
+                    auto ch1 = xg_xword.GetAt(i, j);
+                    auto ch2 = xg_xword.GetAt(i, xg_nCols - j - 1);
+                    xg_xword.SetAt(i, xg_nCols - j - 1, ch1);
+                    xg_xword.SetAt(i, j, ch2);
+                }
+            }
+            sa2->Get();
+            xg_ubUndoBuffer.Commit(UC_SETALL, sa1, sa2);
+        }
+        bUpdateImage = TRUE;
+        break;
+    case ID_SWAP_TOP_BOTTOM: // 上下を入れ替える
+        if (!xg_bSolved)
+        {
+            auto sa1 = std::make_shared<XG_UndoData_SetAll>();
+            auto sa2 = std::make_shared<XG_UndoData_SetAll>();
+            sa1->Get();
+            for (INT j = 0; j < xg_nCols; ++j)
+            {
+                for (INT i = 0; i < xg_nRows / 2; ++i)
+                {
+                    auto ch1 = xg_xword.GetAt(i, j);
+                    auto ch2 = xg_xword.GetAt(xg_nRows - i - 1, j);
+                    xg_xword.SetAt(xg_nRows - i - 1, j, ch1);
+                    xg_xword.SetAt(i, j, ch2);
+                }
+            }
+            sa2->Get();
+            xg_ubUndoBuffer.Commit(UC_SETALL, sa1, sa2);
+        }
+        bUpdateImage = TRUE;
+        break;
     case ID_LEFT_INSERT_COLUMN:
         if (!xg_bSolved)
         {

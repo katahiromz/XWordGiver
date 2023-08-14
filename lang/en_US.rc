@@ -203,6 +203,8 @@ LANGUAGE LANG_ENGLISH, SUBLANG_DEFAULT
         MENUITEM "R&eflect block pattern", ID_REFLECTBLOCKS
         MENUITEM SEPARATOR
         MENUITEM "Swap DOWN and ACROSS", ID_FLIPVH
+        MENUITEM "Swap left and r&ight", ID_SWAP_LEFT_RIGHT
+        MENUITEM "Swap top and &bottom", ID_SWAP_TOP_BOTTOM
         MENUITEM SEPARATOR
         MENUITEM "&About", ID_ABOUT
     }

@@ -474,6 +474,8 @@
 #define ID_RECENT_07                        597
 #define ID_RECENT_08                        598
 #define ID_RECENT_09                        599
+#define ID_SWAP_LEFT_RIGHT                  600
+#define ID_SWAP_TOP_BOTTOM                  601
 #define ID_TT_BASE                          10000
 
 #define ctl2                                1185

@@ -206,6 +206,8 @@ LANGUAGE LANG_JAPANESE, SUBLANG_DEFAULT
         MENUITEM "黒マスパターンを反射する(&E)", ID_REFLECTBLOCKS
         MENUITEM SEPARATOR
         MENUITEM "タテとヨコを入れ替える(&F)", ID_FLIPVH
+        MENUITEM "左右を入れ替える(&I)", ID_SWAP_LEFT_RIGHT
+        MENUITEM "上下を入れ替える(&B)", ID_SWAP_TOP_BOTTOM
         MENUITEM SEPARATOR
         MENUITEM "バージョン情報(&A)", ID_ABOUT
     }
