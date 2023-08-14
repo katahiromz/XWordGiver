@@ -25,7 +25,7 @@ Use "Dictionary" menu.
 1. First, please choose some "policy" and a "dictionary".
 2. Select "Generate from block pattern..." from the "File" menu, click on the pattern of your choice, and press the "Generate" button.
 
-### If you want to set the block pattern by yourself:
+### If you want to create the block pattern by yourself:
 
 1. First, please choose some "policy" and a "dictionary".
 2. Use the arrow keys and space bar to create a block pattern. Alternatively, you can generate a block pattern from the "Help" menu.
