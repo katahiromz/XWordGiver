@@ -4277,6 +4277,8 @@ void __fastcall MainWnd_OnInitMenu(HWND /*hwnd*/, HMENU hMenu)
         ::EnableMenuItem(hMenu, ID_RIGHT, MF_BYCOMMAND | MF_GRAYED);
         ::EnableMenuItem(hMenu, ID_UP, MF_BYCOMMAND | MF_GRAYED);
         ::EnableMenuItem(hMenu, ID_DOWN, MF_BYCOMMAND | MF_GRAYED);
+        ::EnableMenuItem(hMenu, ID_SWAP_LEFT_RIGHT, MF_BYCOMMAND | MF_GRAYED);
+        ::EnableMenuItem(hMenu, ID_SWAP_TOP_BOTTOM, MF_BYCOMMAND | MF_GRAYED);
     } else {
         ::EnableMenuItem(hMenu, ID_SOLVE, MF_BYCOMMAND | MF_ENABLED);
         ::EnableMenuItem(hMenu, ID_SOLVENOADDBLACK, MF_BYCOMMAND | MF_ENABLED);
@@ -4308,6 +4310,8 @@ void __fastcall MainWnd_OnInitMenu(HWND /*hwnd*/, HMENU hMenu)
         ::EnableMenuItem(hMenu, ID_RIGHT, MF_BYCOMMAND | MF_ENABLED);
         ::EnableMenuItem(hMenu, ID_UP, MF_BYCOMMAND | MF_ENABLED);
         ::EnableMenuItem(hMenu, ID_DOWN, MF_BYCOMMAND | MF_ENABLED);
+        ::EnableMenuItem(hMenu, ID_SWAP_LEFT_RIGHT, MF_BYCOMMAND | MF_ENABLED);
+        ::EnableMenuItem(hMenu, ID_SWAP_TOP_BOTTOM, MF_BYCOMMAND | MF_ENABLED);
     }
 
     // 黒マスパターンを反射する。
