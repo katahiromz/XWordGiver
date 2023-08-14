@@ -54,7 +54,7 @@ Use "Dictionary" menu.
 - The larger the size, the longer it will take. Please be patient during the calculation.
 - There are machine differences in computing performance.
 - The quality of the algorithm and dictionary data is NOT GUARANTEED.
-- Sorry to say, this program is optimized for Japanese crossword generation. Some patterns may be improper for Latin crossword generation. You can earn, earn, earn!
+- Sorry to say, this program is optimized for Japanese crossword generation. Some patterns may be improper for Latin crossword generation. I struggle, struggle, struggle. You earn, earn, earn!
 
 ## Requirements
 
