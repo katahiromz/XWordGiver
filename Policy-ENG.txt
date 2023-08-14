@@ -2,6 +2,7 @@
 
 In XWordGiver, the crossword data will be created according to the specified policy.
 Please choose the policy from "Policy" menu before generation.
+You can choose multiple policies.
 Applying some policy may take a long time.
 
 ## Policy: Prohibit adjacent blocks [Cost: +10%]

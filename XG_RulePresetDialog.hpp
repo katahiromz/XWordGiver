@@ -362,6 +362,20 @@ public:
             // ダイアログを閉じる。
             ::EndDialog(hwnd, IDCANCEL);
             break;
+        case psh1:
+            // ルールの説明を開く。
+            WCHAR szPath[MAX_PATH];
+            if (XgIsUserJapanese())
+            {
+                if (XgFindLocalFile(szPath, _countof(szPath), L"Policy-JPN.txt"))
+                    ShellExecuteW(hwnd, nullptr, szPath, nullptr, nullptr, SW_SHOWNORMAL);
+            }
+            else
+            {
+                if (XgFindLocalFile(szPath, _countof(szPath), L"Policy-ENG.txt"))
+                    ShellExecuteW(hwnd, nullptr, szPath, nullptr, nullptr, SW_SHOWNORMAL);
+            }
+            break;
         case cmb1:
             OnCmb1(hwnd);
             break;
