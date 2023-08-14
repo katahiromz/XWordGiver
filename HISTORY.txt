@@ -261,6 +261,8 @@ G#USE
     - Added support for black square pattern sizes up to 45x45.
     - Added "Swap Top and Bottom" and "Swap Left and Right" options in the "Help" menu.
     - Updated the URLs.
+- 2023-08-14 ver.5.1.2
+    - "Morning sickness", "Kemushi", and "Zako" were made unpleasant words.
 
 # 開発履歴 (Japanese)
 
@@ -837,3 +839,5 @@ G#USE
     - 黒マスパターンのサイズを45x45までサポート。
     - 「ヘルプ」メニューに「上下を入れ替える」「左右を入れ替える」を追加。
     - 問い合わせ先のURLを更新。
+- 2023年08月14日 ver.5.1.2
+    - 「ツワリ」「ケムシ」「ザコ」を不快な単語にした。
