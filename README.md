@@ -41,7 +41,7 @@ Use "Dictionary" menu.
 2. Select "Generate from words..." from the "File" menu.
 3. Paste the words into the dialog and click the "Generate" button.
 
-### If you want to create the whole puzzle manually:
+### If you want to create the whole board manually:
 
 1. First, please choose some "policy" and a "dictionary".
 2. Repeat typing the arrow keys, spacebar, and letters.
