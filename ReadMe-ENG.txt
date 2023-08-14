@@ -6,12 +6,12 @@
 
 ## Usage
 
-### How to choose the policy
+### How to choose Policy
 
 1. Choose "Policy Preset" from "Policy" menu. You can specify multiple policy.
 2. Choose "What's the policy?" if you don't know XWordGiver's policy.
 
-### How to choose the dictionary
+### How to choose a dictionary
 
 Use "Dictionary" menu.
 
