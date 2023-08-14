@@ -12,11 +12,17 @@ bool __fastcall XgOnSolve_NoAddBlack(HWND hwnd, bool bShowAnswer = true);
 // パターンデータを読み込む。
 BOOL XgLoadPatterns(LPCWSTR pszFileName, patterns_t& patterns);
 
-#define XG_MAX_PAT_SIZE 20
+#define XG_MAX_PAT_SIZE1 20
+#define XG_MAX_PAT_SIZE2 30
+#define XG_MAX_PAT_SIZE3 45
 
 class XG_PatternDialog : public XG_Dialog
 {
 public:
+    const int cxCell1 = 5, cyCell1 = 5; // 小さなセルのサイズ。
+    const int cxCell2 = 3, cyCell2 = 3; // さらに小さなセルのサイズ。
+    const int cxCell3 = 2, cyCell3 = 2; // さらにさらに小さなセルのサイズ。
+
     // 黒マスパターンのデータ。
     inline static patterns_t s_patterns;
     inline static LAYOUT_DATA *s_pLayout = nullptr;
@@ -37,13 +43,11 @@ public:
     // タイプによりフィルターを行う。
     XG_NOINLINE
     BOOL FilterPatBySize(const XG_PATDATA& pat, int type0, int type1) noexcept {
-        if (pat.num_columns > XG_MAX_PAT_SIZE || pat.num_rows > XG_MAX_PAT_SIZE)
+        if (pat.num_columns > XG_MAX_PAT_SIZE3 || pat.num_rows > XG_MAX_PAT_SIZE3)
             return FALSE;
 
         switch (type0) {
         case rad1:
-            if (!(pat.num_columns + pat.num_rows >= 28))
-                return FALSE;
             break;
         case rad2:
             if (!(pat.num_columns + pat.num_rows < 28 &&
@@ -350,8 +354,6 @@ public:
         }
     }
 
-    const int cxCell = 5, cyCell = 5; // 小さなセルのサイズ。
-
     // WM_MEASUREITEM
     XG_NOINLINE
     void OnMeasureItem(HWND hwnd, MEASUREITEMSTRUCT * lpMeasureItem) noexcept
@@ -365,8 +367,8 @@ public:
         TEXTMETRIC tm;
         GetTextMetrics(hDC, &tm);
         DeleteDC(hDC);
-        lpMeasureItem->itemWidth = cxCell * (XG_MAX_PAT_SIZE + 1) + 3;
-        lpMeasureItem->itemHeight = cyCell * XG_MAX_PAT_SIZE + 3 + tm.tmHeight;
+        lpMeasureItem->itemWidth = cxCell1 * (XG_MAX_PAT_SIZE1 + 1) + 3;
+        lpMeasureItem->itemHeight = cyCell1 * XG_MAX_PAT_SIZE1 + 3 + tm.tmHeight;
     }
 
     // WM_DRAWITEM
@@ -429,6 +431,18 @@ public:
 
         // 描画項目のサイズ。
         const int cxItem = rcItem.right - rcItem.left;
+
+        INT cxCell = cxCell1, cyCell = cyCell1;
+        if (pat.num_columns > XG_MAX_PAT_SIZE2 || pat.num_rows > XG_MAX_PAT_SIZE2)
+        {
+            cxCell = cxCell3;
+            cyCell = cyCell3;
+        }
+        else if (pat.num_columns > XG_MAX_PAT_SIZE1 || pat.num_rows > XG_MAX_PAT_SIZE1)
+        {
+            cxCell = cxCell2;
+            cyCell = cyCell2;
+        }
 
         // メモリーデバイスコンテキストを作成。
         if (HDC hdcMem = CreateCompatibleDC(hDC))

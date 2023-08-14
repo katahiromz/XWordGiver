@@ -22,20 +22,6 @@ extern BOOL xg_bShowClues;
 
 //////////////////////////////////////////////////////////////////////////////
 
-// ポップアップメニューを読み込む。
-HMENU XgLoadPopupMenu(HWND hwnd, int nPos) noexcept;
-
-// ツールバーのUIを更新する。
-void XgUpdateToolBarUI(HWND hwnd);
-
-// 候補ウィンドウを破棄する。
-void XgDestroyCandsWnd(void) noexcept;
-
-// 描画イメージを更新する。
-void __fastcall XgUpdateImage(HWND hwnd, int x, int y);
-// 描画イメージを更新する。
-void __fastcall XgUpdateImage(HWND hwnd);
-
 // UIフォントの論理オブジェクトを取得する。
 LOGFONTW *XgGetUIFont(void);
 
@@ -55,32 +41,6 @@ extern LONG xg_nRetryCount;
 extern int xg_nMarkingX;
 extern int xg_nMarkingY;
 
-//////////////////////////////////////////////////////////////////////////////
-
-// 入力パレットを表示するか？
-extern bool xg_bShowInputPalette;
-
-// 入力パレットの位置。
-extern int xg_nInputPaletteWndX;
-extern int xg_nInputPaletteWndY;
-
-// 「入力パレット」縦置き？
-extern bool xg_bTateOki;
-
-// 入力パレット。
-extern HWND xg_hwndInputPalette;
-
-// タテ入力？
-extern bool xg_bTateInput;
-
-// 入力パレットを作成する。
-BOOL XgCreateInputPalette(HWND hwndOwner);
-// 入力パレットを作成する。
-BOOL XgCreateInputPalette(HWND hwndOwner, XG_InputMode imode);
-// 入力パレットを破棄する。
-BOOL XgDestroyInputPalette(void) noexcept;
-// 入力モードを切り替える。
-void __fastcall XgSetInputMode(HWND hwnd, XG_InputMode mode, BOOL bForce = FALSE);
 // 文字が入力された。
 void __fastcall XgOnChar(HWND hwnd, TCHAR ch, int cRepeat);
 void __fastcall XgOnImeChar(HWND hwnd, WCHAR ch, LPARAM /*lKeyData*/);
@@ -94,10 +54,6 @@ void __fastcall XgSetCharFeed(HWND hwnd, int nMode) noexcept;
 void __fastcall XgReturn(HWND hwnd);
 // 二重マス切り替え。
 void __fastcall XgToggleMark(HWND hwnd);
-// キー入力のハンドラ。
-void __fastcall XgOnChar(HWND hwnd, TCHAR ch, int cRepeat);
-void __fastcall XgOnKey(HWND hwnd, UINT vk, bool fDown, int /*cRepeat*/, UINT /*flags*/);
-void __fastcall XgOnImeChar(HWND hwnd, WCHAR ch, LPARAM /*lKeyData*/);
 // その他のコマンド。
 bool __fastcall XgOnCommandExtra(HWND hwnd, int id);
 
@@ -110,64 +66,6 @@ bool XgPasteBoard2(HWND hwnd, const std::wstring& str);
 void XgCopyBoard(HWND hwnd);
 // クリップボードにクロスワードを画像としてコピー。
 void XgCopyBoardAsImage(HWND hwnd);
-
-//////////////////////////////////////////////////////////////////////////////
-// スクロール。
-
-extern HWND xg_hCanvasWnd;
-
-// 水平スクロールの位置を取得する。
-inline int __fastcall XgGetHScrollPos(void) noexcept
-{
-    return ::GetScrollPos(xg_hCanvasWnd, SB_HORZ);
-}
-
-// 垂直スクロールの位置を取得する。
-inline int __fastcall XgGetVScrollPos(void) noexcept
-{
-    return ::GetScrollPos(xg_hCanvasWnd, SB_VERT);
-}
-
-// 水平スクロールの情報を取得する。
-inline BOOL __fastcall XgGetHScrollInfo(LPSCROLLINFO psi) noexcept
-{
-    return ::GetScrollInfo(xg_hCanvasWnd, SB_HORZ, psi);
-}
-
-// 垂直スクロールの情報を取得する。
-inline BOOL __fastcall XgGetVScrollInfo(LPSCROLLINFO psi) noexcept
-{
-    return ::GetScrollInfo(xg_hCanvasWnd, SB_VERT, psi);
-}
-
-// 水平スクロールの位置を設定する。
-inline int __fastcall XgSetHScrollPos(int nPos, BOOL bRedraw) noexcept
-{
-    return ::SetScrollPos(xg_hCanvasWnd, SB_HORZ, nPos, bRedraw);
-}
-
-// 垂直スクロールの位置を設定する。
-inline int __fastcall XgSetVScrollPos(int nPos, BOOL bRedraw) noexcept
-{
-    return ::SetScrollPos(xg_hCanvasWnd, SB_VERT, nPos, bRedraw);
-}
-
-// 水平スクロールの情報を設定する。
-inline BOOL __fastcall XgSetHScrollInfo(LPSCROLLINFO psi, BOOL bRedraw) noexcept
-{
-    return ::SetScrollInfo(xg_hCanvasWnd, SB_HORZ, psi, bRedraw);
-}
-
-// 垂直スクロールの情報を設定する。
-inline BOOL __fastcall XgSetVScrollInfo(LPSCROLLINFO psi, BOOL bRedraw) noexcept
-{
-    return ::SetScrollInfo(xg_hCanvasWnd, SB_VERT, psi, bRedraw);
-}
-
-// スクロール情報を設定する。
-void __fastcall XgUpdateScrollInfo(HWND hwnd, int x, int y) noexcept;
-// キャレットが見えるように、必要ならばスクロールする。
-void __fastcall XgEnsureCaretVisible(HWND hwnd);
 
 //////////////////////////////////////////////////////////////////////////////
 

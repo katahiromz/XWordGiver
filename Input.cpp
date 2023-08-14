@@ -4,7 +4,6 @@
 // (Japanese, UTF-8)
 
 #include "XWordGiver.hpp"
-#include "GUI.hpp"
 #include "XG_Settings.hpp"
 #include "XG_UndoBuffer.hpp"
 
