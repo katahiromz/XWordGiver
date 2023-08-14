@@ -262,7 +262,7 @@ G#USE
     - Added "Swap Top and Bottom" and "Swap Left and Right" options in the "Help" menu.
     - Updated the URLs.
 - 2023-08-14 ver.5.1.2
-    - "Tsuwari", "Kemushi", "Zako", "Yami", "Ranbou", "Hitei", and "Yuuutsu" were made unpleasant words.
+    - "Tsuwari", "Kemushi", "Zako", "Yami", "Ranbou", "Hitei", "Yuuutsu", and "Gyaku" were made unpleasant words.
     - "Sasen" and "Boumei" were made unhappy words.
     - Improved "Policy Preset" dialog. Improved policy descriptions.
 
@@ -842,6 +842,6 @@ G#USE
     - 「ヘルプ」メニューに「上下を入れ替える」「左右を入れ替える」を追加。
     - 問い合わせ先のURLを更新。
 - 2023年08月14日 ver.5.1.2
-    - 「ツワリ」「ケムシ」「ザコ」「ヤミ」「ランボウ」「ヒテイ」「ユウウツ」を不快な単語にした。
+    - 「ツワリ」「ケムシ」「ザコ」「ヤミ」「ランボウ」「ヒテイ」「ユウウツ」「ギヤク」を不快な単語にした。
     - 「サセン」「ボウメイ」を不幸な単語にした。
     - 「ルール プリセット」ダイアログの改良。ルールの説明の改良。
