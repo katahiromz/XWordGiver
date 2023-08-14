@@ -6803,25 +6803,29 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT /*codeNo
         xg_bShowDoubleFrameLetters = !xg_bShowDoubleFrameLetters;
         bUpdateImage = TRUE;
         break;
-    case ID_DELETE_ROW:
-        if (!xg_bSolved)
+    case ID_DELETE_ROW: // 行を削除。
+        if (!xg_bSolved && xg_nRows > 1)
         {
             auto sa1 = std::make_shared<XG_UndoData_SetAll>();
             auto sa2 = std::make_shared<XG_UndoData_SetAll>();
             sa1->Get();
             xg_xword.DeleteRow(xg_caret_pos.m_i);
+            if (xg_caret_pos.m_i >= xg_nRows)
+                --xg_caret_pos.m_i;
             sa2->Get();
             xg_ubUndoBuffer.Commit(UC_SETALL, sa1, sa2);
         }
         bUpdateImage = TRUE;
         break;
-    case ID_DELETE_COLUMN:
-        if (!xg_bSolved)
+    case ID_DELETE_COLUMN: // 列を削除。
+        if (!xg_bSolved && xg_nCols > 1)
         {
             auto sa1 = std::make_shared<XG_UndoData_SetAll>();
             auto sa2 = std::make_shared<XG_UndoData_SetAll>();
             sa1->Get();
             xg_xword.DeleteColumn(xg_caret_pos.m_j);
+            if (xg_caret_pos.m_j >= xg_nCols)
+                --xg_caret_pos.m_j;
             sa2->Get();
             xg_ubUndoBuffer.Commit(UC_SETALL, sa1, sa2);
         }
