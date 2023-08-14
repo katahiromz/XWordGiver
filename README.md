@@ -12,7 +12,7 @@
 
 ### How to choose Policy
 
-1. Choose "Policy Preset" from "Policy" menu.
+1. Choose "Policy Preset" from "Policy" menu. You can specify multiple policy.
 2. Choose "What's the policy?" if you don't know XWordGiver's policy.
 
 ### How to choose a dictionary
