@@ -38,7 +38,16 @@
 2. Repeat typing the arrow keys, spacebar, and letters.
 3. Once all the cells are filled, select "Find a solution (without adding blocks)" from the "Solution" menu.
 
-## WARNING
+## How to choose policy
+
+Choose "Policy Preset" from "Policy" menu.
+Choose "What's the policy?" if you don't know XWordGiver's policy.
+
+## How to choose dictionary
+
+Use "Dictionary" menu.
+
+## NOTICE
 
 - It is calculated using heuristic methods, so it may take some time.
 - If there are not enough or too many combinations, you may fail or not finish.
