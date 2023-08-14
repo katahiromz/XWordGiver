@@ -6,12 +6,21 @@
 
 ## Usage
 
+### How to choose the policy
+
+1. Choose "Policy Preset" from "Policy" menu. You can specify multiple policy.
+2. Choose "What's the policy?" if you don't know XWordGiver's policy.
+
+### How to choose the dictionary
+
+Use "Dictionary" menu.
+
 ### If you just want to make something:
 
 1. First, please choose some "policy" and a "dictionary".
 2. In the "File" menu, select "Generate crossword..." and click the "Generate" button.
 
-### If you want to choose a block pattern:
+### If you want to generate from a block pattern:
 
 1. First, please choose some "policy" and a "dictionary".
 2. Select "Generate from block pattern..." from the "File" menu, click on the pattern of your choice, and press the "Generate" button.
@@ -28,20 +37,11 @@
 2. Select "Generate from words..." from the "File" menu.
 3. Paste the words into the dialog and click the "Generate" button.
 
-### If you want to create everything manually:
+### If you want to create the whole puzzle manually:
 
 1. First, please choose some "policy" and a "dictionary".
 2. Repeat typing the arrow keys, spacebar, and letters.
 3. Once all the cells are filled, select "Find a solution (without adding blocks)" from the "Solution" menu.
-
-## How to choose policy
-
-Choose "Policy Preset" from "Policy" menu.
-Choose "What's the policy?" if you don't know XWordGiver's policy.
-
-## How to choose dictionary
-
-Use "Dictionary" menu.
 
 ## NOTICE
 
