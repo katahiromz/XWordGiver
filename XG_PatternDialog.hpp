@@ -48,6 +48,8 @@ public:
 
         switch (type0) {
         case rad1:
+            if (pat.num_columns + pat.num_rows < 28)
+                return FALSE;
             break;
         case rad2:
             if (!(pat.num_columns + pat.num_rows < 28 &&
