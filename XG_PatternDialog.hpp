@@ -435,15 +435,12 @@ public:
         const int cxItem = rcItem.right - rcItem.left;
 
         INT cxCell = cxCell1, cyCell = cyCell1;
-        if (pat.num_columns > XG_MAX_PAT_SIZE2 || pat.num_rows > XG_MAX_PAT_SIZE2)
+        if (pat.num_columns > XG_MAX_PAT_SIZE1 || pat.num_rows > XG_MAX_PAT_SIZE1)
         {
-            cxCell = cxCell3;
-            cyCell = cyCell3;
-        }
-        else if (pat.num_columns > XG_MAX_PAT_SIZE1 || pat.num_rows > XG_MAX_PAT_SIZE1)
-        {
-            cxCell = cxCell2;
-            cyCell = cyCell2;
+            const int cx = cxCell1 * XG_MAX_PAT_SIZE1, cy = cyCell1 * XG_MAX_PAT_SIZE1;
+            cxCell = cx / pat.num_columns;
+            cyCell = cy / pat.num_rows;
+            cxCell = cyCell = std::min(cxCell, cyCell);
         }
 
         // メモリーデバイスコンテキストを作成。
