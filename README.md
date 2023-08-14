@@ -22,7 +22,7 @@ Use "Dictionary" menu.
 ### If you just want to make something:
 
 1. First, please choose some "policy" and a "dictionary".
-2. In the "File" menu, select "Generate crossword..." and click the "Generate" button.
+2. In the "File" menu, select "Generate crossword..." and click the "Generate" button. The size should not be too greedy.
 
 ### If you want to generate from a block pattern:
 
