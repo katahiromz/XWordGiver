@@ -1398,7 +1398,7 @@ STYLE DS_CENTER | DS_MODALFRAME | WS_POPUPWINDOW | WS_CAPTION
 FONT 10, "MS Shell Dlg"
 {
     LTEXT "", stc1, 0, 0, 235, 80
-    LTEXT "Please enter your multiple words (separated by space or newline):\r\n\r\n* The current Policy might be modified by this command.", -1, 5, 83, 224, 30
+    LTEXT "Please enter your multiple words (separated by space or newline):\r\n\r\n* The current Policy and Dict will be modified.", -1, 5, 83, 224, 30
     EDITTEXT edt1, 5, 115, 225, 55, ES_WANTRETURN | ES_AUTOVSCROLL | ES_MULTILINE | WS_VSCROLL
     AUTOCHECKBOX "&Non-all can be OK", chx1, 5, 175, 85, 14
     DEFPUSHBUTTON "&Generate", IDOK, 105, 175, 60, 14
