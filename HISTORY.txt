@@ -263,6 +263,7 @@ G#USE
     - Updated the URLs.
 - 2023-08-14 ver.5.1.2
     - "Tsuwari", "Kemushi", "Zako", "Yami", "Ranbou", "Sasen", and "Yuuutsu" were made unpleasant words.
+    - "Boumei" were made unhappy word.
     - Improved "Policy Preset" dialog. Improved policy descriptions.
 
 # 開発履歴 (Japanese)
@@ -842,4 +843,5 @@ G#USE
     - 問い合わせ先のURLを更新。
 - 2023年08月14日 ver.5.1.2
     - 「ツワリ」「ケムシ」「ザコ」「ヤミ」「ランボウ」「サセン」「ユウウツ」を不快な単語にした。
+    - 「ボウメイ」を不幸な単語にした。
     - 「ルール プリセット」ダイアログの改良。ルールの説明の改良。
