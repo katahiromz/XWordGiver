@@ -263,7 +263,7 @@ G#USE
     - Updated the URLs.
 - 2023-08-14 ver.5.1.2
     - "Tsuwari", "Kemushi", "Zako", "Yami", "Ranbou", "Hitei", "Yuuutsu", and "Gyaku" were made unpleasant words.
-    - "Sasen", "Haikyo", and "Boumei" were made unhappy words.
+    - "Sasen", "Haikyo", "Senji", and "Boumei" were made unhappy words.
     - Improved "Policy Preset" dialog. Improved policy descriptions.
 
 # 開発履歴 (Japanese)
@@ -843,5 +843,5 @@ G#USE
     - 問い合わせ先のURLを更新。
 - 2023年08月14日 ver.5.1.2
     - 「ツワリ」「ケムシ」「ザコ」「ヤミ」「ランボウ」「ヒテイ」「ユウウツ」「ギヤク」を不快な単語にした。
-    - 「サセン」「ハイキヨ」「ボウメイ」を不幸な単語にした。
+    - 「サセン」「ハイキヨ」「センジ」「ボウメイ」を不幸な単語にした。
     - 「ルール プリセット」ダイアログの改良。ルールの説明の改良。
