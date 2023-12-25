@@ -1309,9 +1309,6 @@ bool __fastcall XgEraseSettings(void) noexcept
     }
     XgGetFileManager().clear();
 
-    // 設定を読み直す。
-    XgLoadSettings();
-
     return true;
 }
 
