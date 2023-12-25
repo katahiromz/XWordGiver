@@ -1297,6 +1297,21 @@ bool __fastcall XgEraseSettings(void) noexcept
     // レジストリのアプリキーを削除する。
     RegDeleteTreeDx(HKEY_CURRENT_USER, s_pszSoftwareCompanyAndApp);
 
+    // 黒マスの情報も消す。
+    xg_strBlackCellImage.clear();
+    if (xg_hbmBlackCell) {
+        ::DeleteObject(xg_hbmBlackCell);
+        xg_hbmBlackCell = nullptr;
+    }
+    if (xg_hBlackCellEMF) {
+        ::DeleteEnhMetaFile(xg_hBlackCellEMF);
+        xg_hBlackCellEMF = nullptr;
+    }
+    XgGetFileManager().clear();
+
+    // 設定を読み直す。
+    XgLoadSettings();
+
     return true;
 }
 
@@ -6782,7 +6797,7 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT /*codeNo
                     xg_hbmBlackCell = nullptr;
                 }
                 if (xg_hBlackCellEMF) {
-                    DeleteEnhMetaFile(xg_hBlackCellEMF);
+                    ::DeleteEnhMetaFile(xg_hBlackCellEMF);
                     xg_hBlackCellEMF = nullptr;
                 }
                 // スケルトンビューを設定。

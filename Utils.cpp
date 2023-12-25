@@ -1174,7 +1174,7 @@ bool XG_FileManager::save_images(const std::unordered_set<std::wstring>& files)
         m_path2contents.erase(target);
         DeleteObject(m_path2hbm[target]);
         m_path2hbm[target] = nullptr;
-        DeleteEnhMetaFile(m_path2hemf[target]);
+        ::DeleteEnhMetaFile(m_path2hemf[target]);
         m_path2hemf[target] = nullptr;
     }
 
@@ -1191,6 +1191,7 @@ void XG_FileManager::convert()
 
 void XG_FileManager::clear()
 {
+    delete_handles();
     *this = XG_FileManager();
 }
 
@@ -1393,13 +1394,13 @@ void XG_FileManager::delete_handles() noexcept
 {
     for (auto& pair : m_path2hbm)
     {
-        DeleteObject(pair.second);
+        ::DeleteObject(pair.second);
     }
     m_path2hbm.clear();
 
     for (auto& pair : m_path2hemf)
     {
-        DeleteEnhMetaFile(pair.second);
+        ::DeleteEnhMetaFile(pair.second);
     }
     m_path2hemf.clear();
 }
@@ -1423,7 +1424,7 @@ bool XG_FileManager::load_block_image(const std::wstring& path)
 {
     DeleteObject(xg_hbmBlackCell);
     xg_hbmBlackCell = nullptr;
-    DeleteEnhMetaFile(xg_hBlackCellEMF);
+    ::DeleteEnhMetaFile(xg_hBlackCellEMF);
     xg_hBlackCellEMF = nullptr;
 
     if (path.empty())

@@ -22,7 +22,7 @@ public:
     {
         DeleteObject(m_hbm);
         m_hbm = nullptr;
-        DeleteEnhMetaFile(m_hEMF);
+        ::DeleteEnhMetaFile(m_hEMF);
         m_hEMF = nullptr;
     }
 

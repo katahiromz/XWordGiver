@@ -960,7 +960,7 @@ void XG_SettingsDialog::UpdateBlockPreview(HWND hwnd)
             SendMessageW(hIco2, STM_SETIMAGE, IMAGE_ENHMETAFILE, 0);
             ShowWindow(hIco1, SW_SHOWNOACTIVATE);
             DeleteObject(hbmOld);
-            DeleteEnhMetaFile(hOldEMF);
+            ::DeleteEnhMetaFile(hOldEMF);
             return;
         }
         if (hEMF1)
@@ -969,7 +969,7 @@ void XG_SettingsDialog::UpdateBlockPreview(HWND hwnd)
             SendMessageW(hIco2, STM_SETIMAGE, IMAGE_ENHMETAFILE, reinterpret_cast<LPARAM>(hEMF1));
             ShowWindow(hIco2, SW_SHOWNOACTIVATE);
             DeleteObject(hbmOld);
-            DeleteEnhMetaFile(hOldEMF);
+            ::DeleteEnhMetaFile(hOldEMF);
             return;
         }
     }
@@ -977,5 +977,5 @@ void XG_SettingsDialog::UpdateBlockPreview(HWND hwnd)
     SendDlgItemMessageW(hwnd, ico1, STM_SETIMAGE, IMAGE_BITMAP, 0);
     SendDlgItemMessageW(hwnd, ico2, STM_SETIMAGE, IMAGE_ENHMETAFILE, 0);
     DeleteObject(hbmOld);
-    DeleteEnhMetaFile(hOldEMF);
+    ::DeleteEnhMetaFile(hOldEMF);
 }
