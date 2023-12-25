@@ -7,14 +7,7 @@
 
 0. MSYS2のpacmanでビルドに必要な `g++` などをインストールして下さい。
 1. MSYS2用のCMakeをpacmanでインストールして下さい。
-2. そして、次のようにコマンドを実行します：
-
-```bash
-CMake -G "MinGW Makefiles" -DCMAKE_BUILD_TYPE=Release .
-mingw32-make.exe -j3
-```
-
-シェルスクリプトの`rebuild.sh`を使えば簡単です。
+2. シェルスクリプトの`rebuild.sh`を実行して下さい。
 
 ## Visual Studioの場合
 
