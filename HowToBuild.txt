@@ -29,3 +29,8 @@ mingw32-make.exe -j3
 
 インストーラには Inno Setup を使用しております。
 `installer32.iss`と`installer64.iss`のいずれかを Inno Setup で開けばビルドが可能です。
+
+## ビルドされるファイル名について
+
+x86の場合は、ビルドされるファイル名は `XWordGiver32.exe`になります。
+x64の場合は、ビルドされるファイル名は `XWordGiver64.exe`になります。
