@@ -1307,7 +1307,7 @@ bool __fastcall XgEraseSettings(void) noexcept
         ::DeleteEnhMetaFile(xg_hBlackCellEMF);
         xg_hBlackCellEMF = nullptr;
     }
-    XgGetFileManager().clear();
+    XgGetFileManager()->clear();
 
     return true;
 }
