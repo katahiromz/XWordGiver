@@ -10,7 +10,7 @@
 
 ```bash
 CMake -G "MinGW Makefiles" -DCMAKE_BUILD_TYPE=Release .
-make -j3
+mingw32-make.exe -j3
 ```
 
 ## Visual Studioの場合
