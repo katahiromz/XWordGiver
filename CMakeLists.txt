@@ -111,13 +111,6 @@ else()
     set(BITS 32)
 endif()
 
-if (MSVC)
-    add_definitions(-DMSVC)
-    set(CMAKE_EXE_LINKER_FLAGS    "${CMAKE_EXE_LINKER_FLAGS} /MANIFEST:NO")
-    set(CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} /MANIFEST:NO")
-    set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} /MANIFEST:NO")
-endif()
-
 # XWordGiver32.exe and XWordGiver64.exe
 add_executable(XWordGiver${BITS} WIN32
     Dictionary.cpp
@@ -129,5 +122,8 @@ add_executable(XWordGiver${BITS} WIN32
     XWordGiver.cpp
     XWordGiver_res.rc)
 target_link_libraries(XWordGiver${BITS} comctl32 imm32 shell32 ole32 uuid shlwapi SaveBitmapToFile)
+if(MSVC)
+    target_link_options(XWordGiver${BITS} PRIVATE /MANIFEST:NO)
+endif()
 
 ##############################################################################
