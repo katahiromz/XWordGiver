@@ -20,12 +20,13 @@
 6. cmakeが完了したら、生成されたソリューションファイルを開いて下さい。
 7. 「Debug」か「Release」を選んでビルドして下さい。
 
-## インストーラ作成について
-
-インストーラ作成には Inno Setup を使用しております。
-`installer32.iss`と`installer64.iss`のいずれかを Inno Setup で開けばビルドが可能です。
-
 ## ビルドされるファイル名について
 
 x86の場合は、ビルドされるファイル名は `XWordGiver32.exe`になります。
 x64の場合は、ビルドされるファイル名は `XWordGiver64.exe`になります。
+
+## インストーラ作成について
+
+インストーラ作成には Inno Setup を使用しております。
+x86の場合は`installer32.iss`を、
+x64の場合は`installer64.iss`を Inno Setup で開けばビルドが可能です。
