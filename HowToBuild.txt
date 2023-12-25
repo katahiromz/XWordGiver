@@ -23,3 +23,8 @@ make -j3
 5. ジェネレータなどを指定してcmakeを実行して下さい。
 6. cmakeが完了したら、生成されたソリューションファイルを開いて下さい。
 7. 「Debug」か「Release」を選んでビルドして下さい。
+
+## インストーラについて
+
+インストーラには Inno Setup を使用しております。
+`installer32.iss`と`installer64.iss`のいずれかを Inno Setup で開けばビルドが可能です。
