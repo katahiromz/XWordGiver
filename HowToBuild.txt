@@ -5,7 +5,8 @@
 
 ## MSYS2の場合
 
-1. MSYS2の場合はMSYS2用のCMakeをpacmanでインストールして下さい。
+0. MSYS2のpacmanでビルドに必要な `g++` などをインストールして下さい。
+1. MSYS2用のCMakeをpacmanでインストールして下さい。
 2. そして、次のようにコマンドを実行します：
 
 ```bash
