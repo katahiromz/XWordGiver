@@ -1,0 +1,25 @@
+﻿# クロスワード ギバーの構築方法
+
+クロスワード ギバーのビルドにはMSYS2またはVisual Studioを使います。
+いずれの場合もCMakeプログラムが必要です。
+
+## MSYS2の場合
+
+1. MSYS2の場合はMSYS2用のCMakeをpacmanでインストールして下さい。
+2. そして、次のようにコマンドを実行します：
+
+```bash
+CMake -G "MinGW Makefiles" -DCMAKE_BUILD_TYPE=Release .
+make -j3
+```
+
+## Visual Studioの場合
+
+0. C++コンパイラが必要です。Visual Studio のインストーラを使ってC++をインストールして下さい。
+1. 普通に公式のCMakeをインストールして下さい。
+2. Visual Studio のコマンドプロンプトを起動して下さい。
+3. Visual Studio のコマンドプロンプトにおいて、CMakeプログラムに`PATH`を通していないときは、コマンド `set PATH=...` で`PATH`を通して下さい。
+4. 「cmake -G」を実行して下さい。ジェネレータの一覧が表示されます。
+5. ジェネレータなどを指定してcmakeを実行して下さい。
+6. cmakeが完了したら、生成されたソリューションファイルを開いて下さい。
+7. 「Debug」か「Release」を選んでビルドして下さい。
