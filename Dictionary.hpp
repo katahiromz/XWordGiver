@@ -215,3 +215,5 @@ BOOL XgLoadDictsFromDir(LPCWSTR pszDir);
 BOOL XgLoadDictsAll(void);
 // 辞書を切り替える。
 void XgSelectDict(HWND hwnd, size_t iDict);
+// 辞書からタイトルを取得。
+std::wstring XgLoadTitleFromDict(LPCWSTR pszPath);

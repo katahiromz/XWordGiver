@@ -4501,7 +4501,7 @@ void __fastcall XgUpdateStatusBar(HWND hwnd)
     // ステータスバーをパーツに分ける。
     SendMessageW(xg_hStatusBar, SB_SETPARTS, 3, reinterpret_cast<LPARAM>(anWidth.data()));
 
-    // 状態文字列を設定。
+    // タテ入力かヨコ入力かどうか表示する。
     std::wstring str;
     if (xg_bTateInput) {
         str = XgLoadStringDx1(IDS_VINPUT3);
@@ -4510,6 +4510,7 @@ void __fastcall XgUpdateStatusBar(HWND hwnd)
     }
     str += L" - ";
 
+    // 入力モードを表示。
     switch (xg_imode) {
     case xg_im_ABC: str += XgLoadStringDx1(IDS_ABC); break;
     case xg_im_KANA: str += XgLoadStringDx1(IDS_KANA); break;
@@ -4522,9 +4523,38 @@ void __fastcall XgUpdateStatusBar(HWND hwnd)
         break;
     }
 
+    // 文字送りを表示。
     if (xg_bCharFeed) {
         str += L" - ";
         str += XgLoadStringDx1(IDS_CHARFEED);
+    }
+
+    // ルール値を表示。
+    str += L" - ";
+    {
+        WCHAR szRule[64];
+        StringCchPrintfW(szRule, _countof(szRule), L"0x%04X", xg_nRules);
+        str += szRule;
+    }
+
+    // 辞書名を表示。
+    str += L" - ";
+    if (xg_dict_name.size()) {
+        str += (WCHAR)0x300E; // 『
+        str += XgLoadTitleFromDict(xg_dict_name.c_str());
+        str += (WCHAR)0x300F; //  』
+    } else {
+        str += XgLoadStringDx1(IDS_NONE);
+    }
+
+    // テーマを表示
+    str += L" - ";
+    if (xg_strTheme.size()) {
+        str += (WCHAR)0x3010; // 【
+        str += xg_strTheme;
+        str += (WCHAR)0x3011; //  】
+    } else {
+        str += XgLoadStringDx1(IDS_NONE);
     }
 
     // 状態を表示。

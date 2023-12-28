@@ -260,6 +260,7 @@
     - In "Initialize application", we decided to erase the block information.
 - 20XX-YY-ZZ ver.5.1.4
     - Displayed the area of the board.
+    - Enhanced status bar to display policy value and dictionary name etc.
 
 # 開発履歴 (Japanese)
 
@@ -835,3 +836,4 @@
     - 「アプリの初期化」において黒マスの情報も消す。
 - 20XX年YY月ZZ日 ver.5.1.4
     - 盤面の面積を表示。
+    - ステータスバーを強化し、ポリシーの値と辞書名などを表示。
