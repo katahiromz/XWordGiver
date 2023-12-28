@@ -4536,7 +4536,7 @@ void __fastcall XgUpdateStatusBar(HWND hwnd)
     SendMessageW(xg_hStatusBar, SB_SETTEXT, 1, reinterpret_cast<LPARAM>(szText));
 
     // 盤のサイズ。
-    StringCchPrintf(szText, _countof(szText), L"%d x %d", xg_nCols, xg_nRows);
+    StringCchPrintf(szText, _countof(szText), L"%d x %d = %d", xg_nCols, xg_nRows, xg_nCols * xg_nRows);
     SendMessageW(xg_hStatusBar, SB_SETTEXT, 2, reinterpret_cast<LPARAM>(szText));
 }
 

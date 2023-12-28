@@ -259,6 +259,7 @@
 - 2023-12-25 ver.5.1.3
     - In "Initialize application", we decided to erase the block information.
 - 20XX-YY-ZZ ver.5.1.4
+    - Displayed the area of the board.
 
 # 開発履歴 (Japanese)
 
@@ -833,3 +834,4 @@
 - 2023年12月25日 ver.5.1.3
     - 「アプリの初期化」において黒マスの情報も消す。
 - 20XX年YY月ZZ日 ver.5.1.4
+    - 盤面の面積を表示。
