@@ -5744,8 +5744,8 @@ HBITMAP __fastcall XgCreateXWordImage(const XG_Board& xw, const SIZE *psiz, bool
     LPVOID pvBits;
     ZeroMemory(&bi, sizeof(BITMAPINFOHEADER));
     bi.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
-    bi.bmiHeader.biWidth = psiz->cx * 3 / 2; // 少し余裕を持たせる。
-    bi.bmiHeader.biHeight = psiz->cy * 3 / 2; // 少し余裕を持たせる。
+    bi.bmiHeader.biWidth = psiz->cx;
+    bi.bmiHeader.biHeight = psiz->cy;
     bi.bmiHeader.biPlanes = 1;
     bi.bmiHeader.biBitCount = 24;
     HBITMAP hbm = ::CreateDIBSection(hdc, &bi, DIB_RGB_COLORS, &pvBits, nullptr, 0);

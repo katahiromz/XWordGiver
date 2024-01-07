@@ -261,7 +261,8 @@
 - 2024-01-04 ver.5.1.4
     - Displayed the area of the board.
     - Enhanced status bar to display policy value and dictionary name etc.
-- 2024-XX-YY ver.5.1.5
+- 2024-01-07 ver.5.1.5
+    - Fixed an issue where extra black area were created when saving a bitmap.
 
 # 開発履歴 (Japanese)
 
@@ -838,4 +839,5 @@
 - 2024年01月04日 ver.5.1.4
     - 盤面の面積を表示。
     - ステータスバーを強化し、ポリシーの値と辞書名などを表示。
-- 2024年XX月YY日 ver.5.1.5
+- 2024年01月07日 ver.5.1.5
+    - ビットマップ保存時に余分な黒い領域ができるのを修正。
