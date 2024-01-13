@@ -231,12 +231,12 @@ public:
     {
     }
 
-    virtual LPCTSTR GetWndClassName() const
+    LPCTSTR GetWndClassName() const override
     {
         return TEXT("XG_CandsWnd");
     }
 
-    virtual void ModifyWndClassDx(WNDCLASSEX& wcx)
+    void ModifyWndClassDx(WNDCLASSEX& wcx) override
     {
         wcx.hIcon = nullptr;
         wcx.hbrBackground = ::CreateSolidBrush(RGB(255, 255, 192));
@@ -474,8 +474,8 @@ public:
         }
     }
 
-    virtual LRESULT CALLBACK
-    WindowProcDx(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+    LRESULT CALLBACK
+    WindowProcDx(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) override
     {
         switch (uMsg) {
         HANDLE_MSG(hwnd, WM_CREATE, OnCreate);

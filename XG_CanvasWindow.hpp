@@ -522,7 +522,7 @@ public:
         return XgOnLoad(xg_hMainWnd, szFile, &pt);
     }
 
-    virtual LRESULT CALLBACK
+    LRESULT CALLBACK
     WindowProcDx(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) override
     {
         switch (uMsg)

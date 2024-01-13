@@ -163,12 +163,12 @@ public:
     {
     }
 
-    virtual LPCTSTR GetWndClassName() const
+    LPCTSTR GetWndClassName() const override
     {
         return TEXT("XG_HintsWnd");
     }
 
-    virtual void ModifyWndClassDx(WNDCLASSEX& wcx)
+    void ModifyWndClassDx(WNDCLASSEX& wcx) override
     {
         // No change
     }
