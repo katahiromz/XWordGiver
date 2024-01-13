@@ -2169,25 +2169,16 @@ static inline BOOL About_OnInitDialog(HWND hwnd, HWND hwndFocus, LPARAM lParam)
     return TRUE;
 }
 
-static inline void About_OnChangeLog(HWND hwnd) noexcept
-{
-    // Show HISTORY.txt
-    WCHAR szPath[MAX_PATH];
-    GetModuleFileNameW(nullptr, szPath, _countof(szPath));
-    PathRemoveFileSpecW(szPath);
-    PathAppendW(szPath, L"HISTORY.txt");
-    ShellExecuteW(hwnd, nullptr, szPath, nullptr, nullptr, SW_SHOWNORMAL);
-}
-
 static inline void About_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT codeNotify) noexcept
 {
     switch (id) {
     case IDOK:
     case IDCANCEL:
-        EndDialog(hwnd, id);
+        ::EndDialog(hwnd, id);
         break;
     case IDYES:
-        About_OnChangeLog(hwnd);
+        // HISTORY.txtを開く。
+        XgOpenLocalFile(hwnd, L"HISTORY.txt");
         break;
     default:
         break;

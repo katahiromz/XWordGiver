@@ -27,6 +27,8 @@ LOGFONTW *XgGetUIFont(void);
 
 // ローカルファイルを見つける。
 BOOL __fastcall XgFindLocalFile(LPWSTR pszPath, UINT cchPath, LPCWSTR pszFileName) noexcept;
+// ローカルファイルを開く。
+void __fastcall XgOpenLocalFile(HWND hwnd, LPCWSTR pszFileName) noexcept;
 
 // 計算時間測定用。
 extern DWORDLONG xg_dwlTick0;    // 開始時間。
