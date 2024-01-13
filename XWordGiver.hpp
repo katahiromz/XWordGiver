@@ -1254,9 +1254,6 @@ public:
 
 //////////////////////////////////////////////////////////////////////////////
 
-// 改行。
-extern const LPCWSTR xg_pszNewLine;
-
 // インスタンスのハンドル。
 extern HINSTANCE xg_hInstance;
 

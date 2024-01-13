@@ -1509,7 +1509,7 @@ bool XgOpenHintsByNotepad(HWND /*hwnd*/, bool bShowAnswer)
 
     // BOMとヒントの文字列をファイルに書き込む。
     str = reinterpret_cast<LPCWSTR>("\xFF\xFE\x00");
-    str += xg_pszNewLine;
+    str += L"\r\n";
     XG_HintsWnd::UpdateHintData(); // ヒントに変更があれば、更新する。
     XgGetHintsStr(xg_solution, xg_strHints, 2, true);
     str += xg_strHints;

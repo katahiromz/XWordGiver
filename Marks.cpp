@@ -28,7 +28,7 @@ void __fastcall XgGetStringOfMarks(std::wstring& str)
     WCHAR sz[64];
     str.clear();
     str += XgLoadStringDx1(IDS_HLINE);
-    str += xg_pszNewLine;
+    str += L"\r\n";
     for (const auto& mark : xg_vMarks) {
         if (xg_bSolved)
             StringCchPrintf(sz, _countof(sz), L"(%d, %d)%c\r\n",

@@ -197,14 +197,14 @@ void XgReadUnicodeLine(LPWSTR pchLine)
 bool XgReadUnicodeFile(LPWSTR pszData, size_t cchData)
 {
     // 最初の一行を取り出す。
-    LPWSTR pchLine = wcstok(pszData, xg_pszNewLine);
+    LPWSTR pchLine = wcstok(pszData, L"\r\n");
     if (pchLine == nullptr)
         return false;
 
     // 一行ずつ処理する。
     do {
         XgReadUnicodeLine(pchLine);
-        pchLine = wcstok(nullptr, xg_pszNewLine);
+        pchLine = wcstok(nullptr, L"\r\n");
     } while (pchLine);
     return true;
 }
