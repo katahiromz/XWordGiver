@@ -171,11 +171,13 @@ void XgSetModified(BOOL bModified, LPCSTR file, int line)
 {
     xg_bFileModified = bModified;
 
+#ifndef NDEBUG
     if (bModified) {
         CHAR szText[MAX_PATH];
         StringCchPrintfA(szText, _countof(szText), "%s: %d", file, line);
         //MessageBoxA(nullptr, szText, nullptr, 0);
     }
+#endif
 
     XgMarkUpdate();
 }
@@ -7835,9 +7837,7 @@ int WINAPI WinMain(
     xg_ahThreads.resize(xg_dwThreadCount);
 
     // コモン コントロールを初期化する。
-    INITCOMMONCONTROLSEX iccx;
-    iccx.dwSize = sizeof(iccx);
-    iccx.dwICC = ICC_USEREX_CLASSES | ICC_PROGRESS_CLASS;
+    INITCOMMONCONTROLSEX iccx = { sizeof(iccx), ICC_USEREX_CLASSES | ICC_PROGRESS_CLASS };
     ::InitCommonControlsEx(&iccx);
 
     // アクセラレータを読み込む。
@@ -7849,19 +7849,15 @@ int WINAPI WinMain(
     }
 
     // ウィンドウクラスを登録する。
-    WNDCLASSEXW wcx;
-    wcx.cbSize = sizeof(wcx);
+    WNDCLASSEXW wcx = { sizeof(wcx) };
     wcx.style = CS_HREDRAW | CS_VREDRAW | CS_DBLCLKS;
     wcx.lpfnWndProc = XgWindowProc;
-    wcx.cbClsExtra = 0;
-    wcx.cbWndExtra = 0;
     wcx.hInstance = hInstance;
-    wcx.hIcon = LoadIconW(hInstance, MAKEINTRESOURCE(1));
+    wcx.hIcon = LoadIconW(hInstance, MAKEINTRESOURCEW(1));
     wcx.hCursor = LoadCursorW(nullptr, IDC_ARROW);
     wcx.hbrBackground = reinterpret_cast<HBRUSH>(static_cast<INT_PTR>(COLOR_3DFACE + 1));
-    wcx.lpszMenuName = MAKEINTRESOURCE(1);
+    wcx.lpszMenuName = MAKEINTRESOURCEW(1);
     wcx.lpszClassName = s_pszMainWndClass;
-    wcx.hIconSm = nullptr;
     if (!::RegisterClassExW(&wcx)) {
         // ウィンドウ登録失敗メッセージ。
         XgCenterMessageBoxW(nullptr, XgLoadStringDx1(IDS_CANTREGWND), nullptr, MB_ICONERROR);
