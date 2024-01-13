@@ -5572,6 +5572,14 @@ BOOL __fastcall XgFindLocalFile(LPWSTR pszPath, UINT cchPath, LPCWSTR pszFileNam
     return PathFileExistsW(pszPath);
 }
 
+// ローカルファイルを開く。
+void __fastcall XgOpenLocalFile(HWND hwnd, LPCWSTR pszFileName) noexcept
+{
+    WCHAR szPath[MAX_PATH];
+    if (XgFindLocalFile(szPath, _countof(szPath), pszFileName))
+        ShellExecuteW(hwnd, nullptr, szPath, nullptr, nullptr, SW_SHOWNORMAL);
+}
+
 // マス位置からキャンバス座標を取得する。
 void __fastcall XgCellToCanvas(RECT& rc, XG_Pos cell)
 {
@@ -7039,20 +7047,12 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT /*codeNo
         bUpdateImage = TRUE;
         break;
     case ID_OPENPATTXT:
-        {
-            // PAT.txtを開く。
-            WCHAR szPath[MAX_PATH];
-            if (XgFindLocalFile(szPath, _countof(szPath), L"PAT.txt"))
-                ShellExecuteW(hwnd, nullptr, szPath, nullptr, nullptr, SW_SHOWNORMAL);
-        }
+        // PAT.txtを開く。
+        XgOpenLocalFile(hwnd, L"PAT.txt");
         break;
     case ID_OPENTHEMETXT:
-        {
-            // THEME.txtを開く。
-            WCHAR szPath[MAX_PATH];
-            if (XgFindLocalFile(szPath, _countof(szPath), L"THEME.txt"))
-                ShellExecuteW(hwnd, nullptr, szPath, nullptr, nullptr, SW_SHOWNORMAL);
-        }
+        // THEME.txtを開く。
+        XgOpenLocalFile(hwnd, L"THEME.txt");
         break;
     case ID_CLEARUNDOBUFFER:
         // Undoバッファをクリアする。
@@ -7066,12 +7066,8 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT /*codeNo
         ShellExecuteW(hwnd, nullptr, L"https://katahiromz.web.fc2.com/xword/dict", nullptr, nullptr, SW_SHOWNORMAL);
         break;
     case ID_OPENPOLICYTXT:
-        {
-            // POLICY.txtを開く。
-            WCHAR szPath[MAX_PATH];
-            if (XgFindLocalFile(szPath, _countof(szPath), L"POLICY.txt"))
-                ShellExecuteW(hwnd, nullptr, szPath, nullptr, nullptr, SW_SHOWNORMAL);
-        }
+        // POLICY.txtを開く。
+        XgOpenLocalFile(hwnd, L"POLICY.txt");
         break;
 
     case ID_RECENT_00:
