@@ -217,19 +217,7 @@ static int s_nMainWndX = CW_USEDEFAULT, s_nMainWndY = CW_USEDEFAULT;
 static int s_nMainWndCX = CW_USEDEFAULT, s_nMainWndCY = CW_USEDEFAULT;
 
 // 入力パレットの位置。
-int xg_nInputPaletteWndX = CW_USEDEFAULT;
-int xg_nInputPaletteWndY = CW_USEDEFAULT;
-
-// 会社名。
-static const LPCWSTR
-    s_pszSoftwareCompanyName = L"Software\\Katayama Hirofumi MZ";
-
-// アプリ名。
-#ifdef _WIN64
-    static const LPCWSTR s_pszAppName = L"XWord64";
-#else
-    static const LPCWSTR s_pszAppName = L"XWord32";
-#endif
+int xg_nInputPaletteWndX = CW_USEDEFAULT, xg_nInputPaletteWndY = CW_USEDEFAULT;
 
 // 会社名とアプリ名。
 #ifdef _WIN64
@@ -886,275 +874,271 @@ bool __fastcall XgLoadSettings(void)
 
     xg_recently_used_files.clear();
 
-    // 会社名キーを開く。
-    MRegKey company_key(HKEY_CURRENT_USER, s_pszSoftwareCompanyName, FALSE);
-    if (company_key) {
-        // アプリ名キーを開く。
-        MRegKey app_key(company_key, s_pszAppName, FALSE);
-        if (app_key) {
-            if (!app_key.QueryDword(L"WindowX", dwValue)) {
-                s_nMainWndX = dwValue;
-            }
-            if (!app_key.QueryDword(L"WindowY", dwValue)) {
-                s_nMainWndY = dwValue;
-            }
-            if (!app_key.QueryDword(L"WindowCX", dwValue)) {
-                s_nMainWndCX = dwValue;
-            }
-            if (!app_key.QueryDword(L"WindowCY", dwValue)) {
-                s_nMainWndCY = dwValue;
-            }
-            if (!app_key.QueryDword(L"MainWndMaximized", dwValue)) {
-                xg_bMainWndMaximized = !!dwValue;
-            }
+    // アプリ名キーを開く。
+    MRegKey app_key(HKEY_CURRENT_USER, s_pszSoftwareCompanyAndApp, FALSE);
+    if (app_key) {
+        if (!app_key.QueryDword(L"WindowX", dwValue)) {
+            s_nMainWndX = dwValue;
+        }
+        if (!app_key.QueryDword(L"WindowY", dwValue)) {
+            s_nMainWndY = dwValue;
+        }
+        if (!app_key.QueryDword(L"WindowCX", dwValue)) {
+            s_nMainWndCX = dwValue;
+        }
+        if (!app_key.QueryDword(L"WindowCY", dwValue)) {
+            s_nMainWndCY = dwValue;
+        }
+        if (!app_key.QueryDword(L"MainWndMaximized", dwValue)) {
+            xg_bMainWndMaximized = !!dwValue;
+        }
 
-            if (!app_key.QueryDword(L"TateInput", dwValue)) {
-                xg_bTateInput = !!dwValue;
-            }
+        if (!app_key.QueryDword(L"TateInput", dwValue)) {
+            xg_bTateInput = !!dwValue;
+        }
 
-            if (!app_key.QueryDword(L"HintsX", dwValue)) {
-                XG_HintsWnd::s_nHintsWndX = dwValue;
-            }
-            if (!app_key.QueryDword(L"HintsY", dwValue)) {
-                XG_HintsWnd::s_nHintsWndY = dwValue;
-            }
-            if (!app_key.QueryDword(L"HintsCX", dwValue)) {
-                XG_HintsWnd::s_nHintsWndCX = dwValue;
-            }
-            if (!app_key.QueryDword(L"HintsCY", dwValue)) {
-                XG_HintsWnd::s_nHintsWndCY = dwValue;
-            }
+        if (!app_key.QueryDword(L"HintsX", dwValue)) {
+            XG_HintsWnd::s_nHintsWndX = dwValue;
+        }
+        if (!app_key.QueryDword(L"HintsY", dwValue)) {
+            XG_HintsWnd::s_nHintsWndY = dwValue;
+        }
+        if (!app_key.QueryDword(L"HintsCX", dwValue)) {
+            XG_HintsWnd::s_nHintsWndCX = dwValue;
+        }
+        if (!app_key.QueryDword(L"HintsCY", dwValue)) {
+            XG_HintsWnd::s_nHintsWndCY = dwValue;
+        }
 
-            if (!app_key.QueryDword(L"CandsX", dwValue)) {
-                XG_CandsWnd::s_nCandsWndX = dwValue;
-            }
-            if (!app_key.QueryDword(L"CandsY", dwValue)) {
-                XG_CandsWnd::s_nCandsWndY = dwValue;
-            }
-            if (!app_key.QueryDword(L"CandsCX", dwValue)) {
-                XG_CandsWnd::s_nCandsWndCX = dwValue;
-            }
-            if (!app_key.QueryDword(L"CandsCY", dwValue)) {
-                XG_CandsWnd::s_nCandsWndCY = dwValue;
-            }
-            if (!app_key.QueryDword(L"FileType", dwValue)) {
-                switch (static_cast<XG_FILETYPE>(dwValue))
-                {
-                case XG_FILETYPE_XWD:
-                case XG_FILETYPE_XWJ:
+        if (!app_key.QueryDword(L"CandsX", dwValue)) {
+            XG_CandsWnd::s_nCandsWndX = dwValue;
+        }
+        if (!app_key.QueryDword(L"CandsY", dwValue)) {
+            XG_CandsWnd::s_nCandsWndY = dwValue;
+        }
+        if (!app_key.QueryDword(L"CandsCX", dwValue)) {
+            XG_CandsWnd::s_nCandsWndCX = dwValue;
+        }
+        if (!app_key.QueryDword(L"CandsCY", dwValue)) {
+            XG_CandsWnd::s_nCandsWndCY = dwValue;
+        }
+        if (!app_key.QueryDword(L"FileType", dwValue)) {
+            switch (static_cast<XG_FILETYPE>(dwValue))
+            {
+            case XG_FILETYPE_XWD:
+            case XG_FILETYPE_XWJ:
+                xg_nFileType = XG_FILETYPE_XWJ;
+                break;
+            case XG_FILETYPE_CRP:
+                xg_nFileType = XG_FILETYPE_CRP;
+                break;
+            case XG_FILETYPE_XD:
+                xg_nFileType = XG_FILETYPE_XD;
+                break;
+            default:
+                if (XgIsUserJapanese())
                     xg_nFileType = XG_FILETYPE_XWJ;
-                    break;
-                case XG_FILETYPE_CRP:
-                    xg_nFileType = XG_FILETYPE_CRP;
-                    break;
-                case XG_FILETYPE_XD:
+                else
                     xg_nFileType = XG_FILETYPE_XD;
+                break;
+            }
+        }
+
+        if (!app_key.QueryDword(L"IPaletteX", dwValue)) {
+            xg_nInputPaletteWndX = dwValue;
+        }
+        if (!app_key.QueryDword(L"IPaletteY", dwValue)) {
+            xg_nInputPaletteWndY = dwValue;
+        }
+
+        if (!app_key.QueryDword(L"OldNotice", dwValue)) {
+            s_bOldNotice = !!dwValue;
+        }
+        if (!app_key.QueryDword(L"AutoRetry", dwValue)) {
+            xg_bAutoRetry = !!dwValue;
+        }
+        if (!app_key.QueryDword(L"Rows", dwValue)) {
+            xg_nRows = dwValue;
+        }
+        if (!app_key.QueryDword(L"Cols", dwValue)) {
+            xg_nCols = dwValue;
+        }
+        if (!app_key.QueryDword(L"UILangID", dwValue)) {
+            xg_UILangID = static_cast<LANGID>(dwValue);
+        }
+
+        if (!app_key.QuerySz(L"CellFont", sz, _countof(sz))) {
+            StringCchCopy(xg_szCellFont, _countof(xg_szCellFont), sz);
+        }
+        if (!app_key.QuerySz(L"SmallFont", sz, _countof(sz))) {
+            StringCchCopy(xg_szSmallFont, _countof(xg_szSmallFont), sz);
+        }
+        if (!app_key.QuerySz(L"UIFont", sz, _countof(sz))) {
+            StringCchCopy(xg_szUIFont, _countof(xg_szUIFont), sz);
+        }
+
+        if (!app_key.QueryDword(L"ShowToolBar", dwValue)) {
+            xg_bShowToolBar = !!dwValue;
+        }
+        if (!app_key.QueryDword(L"ShowStatusBar", dwValue)) {
+            s_bShowStatusBar = !!dwValue;
+        }
+        if (!app_key.QueryDword(L"ShowInputPalette", dwValue)) {
+            xg_bShowInputPalette = !!dwValue;
+        }
+
+        xg_bSaveAsJsonFile = true;
+
+        if (!app_key.QueryDword(L"NumberToGenerate", dwValue)) {
+            xg_nNumberToGenerate = dwValue;
+        }
+        if (!app_key.QueryDword(L"AddThickFrame", dwValue)) {
+            xg_bAddThickFrame = !!dwValue;
+        }
+
+        if (!app_key.QueryDword(L"CharFeed", dwValue)) {
+            xg_bCharFeed = !!dwValue;
+        }
+
+        if (!app_key.QueryDword(L"TateOki", dwValue)) {
+            xg_bTateOki = !!dwValue;
+        }
+        if (!app_key.QueryDword(L"WhiteCellColor", dwValue)) {
+            xg_rgbWhiteCellColor = dwValue;
+        }
+        if (!app_key.QueryDword(L"BlackCellColor", dwValue)) {
+            xg_rgbBlackCellColor = dwValue;
+        }
+        if (!app_key.QueryDword(L"MarkedCellColor", dwValue)) {
+            xg_rgbMarkedCellColor = dwValue;
+        }
+        if (!app_key.QueryDword(L"DrawFrameForMarkedCell", dwValue)) {
+            xg_bDrawFrameForMarkedCell = dwValue;
+        }
+        if (!app_key.QueryDword(L"SmartResolution", dwValue)) {
+            xg_bSmartResolution = dwValue;
+        }
+        if (!app_key.QueryDword(L"InputMode", dwValue)) {
+            xg_imode = static_cast<XG_InputMode>(dwValue);
+        }
+        if (!app_key.QueryDword(L"ZoomRate", dwValue)) {
+            xg_nZoomRate = dwValue;
+        }
+        if (!app_key.QueryDword(L"ShowNumbering", dwValue)) {
+            xg_bShowNumbering = dwValue;
+        }
+        if (!app_key.QueryDword(L"ShowCaret", dwValue)) {
+            xg_bShowCaret = dwValue;
+        }
+
+        if (!app_key.QueryDword(L"Hiragana", dwValue)) {
+            xg_bHiragana = !!dwValue;
+        }
+        if (!app_key.QueryDword(L"Lowercase", dwValue)) {
+            xg_bLowercase = !!dwValue;
+        }
+
+        if (!app_key.QueryDword(L"CellCharPercents", dwValue)) {
+            xg_nCellCharPercents = dwValue;
+        }
+        if (!app_key.QueryDword(L"SmallCharPercents", dwValue)) {
+            xg_nSmallCharPercents = dwValue;
+        }
+
+        if (!app_key.QueryDword(L"PatWndX", dwValue)) {
+            XG_PatternDialog::xg_nPatWndX = dwValue;
+        }
+        if (!app_key.QueryDword(L"PatWndY", dwValue)) {
+            XG_PatternDialog::xg_nPatWndY = dwValue;
+        }
+        if (!app_key.QueryDword(L"PatWndCX", dwValue)) {
+            XG_PatternDialog::xg_nPatWndCX = dwValue;
+        }
+        if (!app_key.QueryDword(L"PatWndCY", dwValue)) {
+            XG_PatternDialog::xg_nPatWndCY = dwValue;
+        }
+        if (!app_key.QueryDword(L"ShowAnsOnPat", dwValue)) {
+            XG_PatternDialog::xg_bShowAnswerOnPattern = dwValue;
+        }
+        if (!app_key.QueryDword(L"Rules", dwValue)) {
+            xg_nRules = dwValue | RULE_DONTDIVIDE;
+        }
+        if (!app_key.QueryDword(L"MarkingX", dwValue)) {
+            xg_nMarkingX = dwValue;
+        }
+        if (!app_key.QueryDword(L"MarkingY", dwValue)) {
+            xg_nMarkingY = dwValue;
+        }
+        if (!app_key.QueryDword(L"ShowDoubleFrameLetters", dwValue)) {
+            xg_bShowDoubleFrameLetters = !!dwValue;
+        }
+        if (!app_key.QueryDword(L"ViewMode", dwValue)) {
+            xg_nViewMode = static_cast<XG_VIEW_MODE>(dwValue);
+            if (xg_nViewMode != XG_VIEW_NORMAL && xg_nViewMode != XG_VIEW_SKELETON) {
+                xg_nViewMode = XG_VIEW_NORMAL;
+            }
+        }
+        if (!app_key.QueryDword(L"LineWidth", dwValue)) {
+            float value = static_cast<float>(dwValue) * 0.01f;
+            if (value < XG_MIN_LINEWIDTH)
+                value = XG_MIN_LINEWIDTH;
+            if (value > XG_MAX_LINEWIDTH)
+                value = XG_MAX_LINEWIDTH;
+            xg_nLineWidthInPt = value;
+        }
+        if (!app_key.QueryDword(L"OuterFrame", dwValue)) {
+            float value = static_cast<float>(dwValue) * 0.01f;
+            if (value < XG_MIN_OUTERFRAME)
+                value = XG_MIN_OUTERFRAME;
+            if (value > XG_MAX_OUTERFRAME)
+                value = XG_MAX_OUTERFRAME;
+            xg_nOuterFrameInPt = value;
+        }
+
+        if (!app_key.QuerySz(L"Recent", sz, _countof(sz))) {
+            xg_dict_name = sz;
+            if (!PathFileExists(xg_dict_name.c_str()))
+            {
+                xg_dict_name.clear();
+            }
+        }
+
+        if (!app_key.QuerySz(L"BlackCellImage", sz, _countof(sz))) {
+            xg_strBlackCellImage = sz;
+            XgGetFileManager()->load_block_image(sz);
+        }
+
+        if (!app_key.QuerySz(L"DoubleFrameLetters", sz, _countof(sz))) {
+            xg_strDoubleFrameLetters = sz;
+        }
+
+        // 保存先のリストを取得する。
+        if (!app_key.QueryDword(L"SaveToCount", dwValue)) {
+            nDirCount = dwValue;
+            for (i = 0; i < nDirCount; i++) {
+                StringCchPrintf(szFormat, _countof(szFormat), L"SaveTo %d", i + 1);
+                if (!app_key.QuerySz(szFormat, sz, _countof(sz))) {
+                    xg_dirs_save_to.emplace_back(sz);
+                } else {
+                    nDirCount = i;
                     break;
-                default:
-                    if (XgIsUserJapanese())
-                        xg_nFileType = XG_FILETYPE_XWJ;
-                    else
-                        xg_nFileType = XG_FILETYPE_XD;
+                }
+            }
+        }
+
+        // 最近使ったファイルのリストを取得する。
+        if (!app_key.QueryDword(L"Recents", dwValue)) {
+            for (i = 0; i < static_cast<int>(dwValue); i++) {
+                StringCchPrintf(szFormat, _countof(szFormat), L"Recent %d", i);
+                if (!app_key.QuerySz(szFormat, sz, _countof(sz))) {
+                    if (PathFileExistsW(sz))
+                        xg_recently_used_files.emplace_back(sz);
+                } else {
                     break;
                 }
             }
-
-            if (!app_key.QueryDword(L"IPaletteX", dwValue)) {
-                xg_nInputPaletteWndX = dwValue;
-            }
-            if (!app_key.QueryDword(L"IPaletteY", dwValue)) {
-                xg_nInputPaletteWndY = dwValue;
-            }
-
-            if (!app_key.QueryDword(L"OldNotice", dwValue)) {
-                s_bOldNotice = !!dwValue;
-            }
-            if (!app_key.QueryDword(L"AutoRetry", dwValue)) {
-                xg_bAutoRetry = !!dwValue;
-            }
-            if (!app_key.QueryDword(L"Rows", dwValue)) {
-                xg_nRows = dwValue;
-            }
-            if (!app_key.QueryDword(L"Cols", dwValue)) {
-                xg_nCols = dwValue;
-            }
-            if (!app_key.QueryDword(L"UILangID", dwValue)) {
-                xg_UILangID = static_cast<LANGID>(dwValue);
-            }
-
-            if (!app_key.QuerySz(L"CellFont", sz, _countof(sz))) {
-                StringCchCopy(xg_szCellFont, _countof(xg_szCellFont), sz);
-            }
-            if (!app_key.QuerySz(L"SmallFont", sz, _countof(sz))) {
-                StringCchCopy(xg_szSmallFont, _countof(xg_szSmallFont), sz);
-            }
-            if (!app_key.QuerySz(L"UIFont", sz, _countof(sz))) {
-                StringCchCopy(xg_szUIFont, _countof(xg_szUIFont), sz);
-            }
-
-            if (!app_key.QueryDword(L"ShowToolBar", dwValue)) {
-                xg_bShowToolBar = !!dwValue;
-            }
-            if (!app_key.QueryDword(L"ShowStatusBar", dwValue)) {
-                s_bShowStatusBar = !!dwValue;
-            }
-            if (!app_key.QueryDword(L"ShowInputPalette", dwValue)) {
-                xg_bShowInputPalette = !!dwValue;
-            }
-
-            xg_bSaveAsJsonFile = true;
-
-            if (!app_key.QueryDword(L"NumberToGenerate", dwValue)) {
-                xg_nNumberToGenerate = dwValue;
-            }
-            if (!app_key.QueryDword(L"AddThickFrame", dwValue)) {
-                xg_bAddThickFrame = !!dwValue;
-            }
-
-            if (!app_key.QueryDword(L"CharFeed", dwValue)) {
-                xg_bCharFeed = !!dwValue;
-            }
-
-            if (!app_key.QueryDword(L"TateOki", dwValue)) {
-                xg_bTateOki = !!dwValue;
-            }
-            if (!app_key.QueryDword(L"WhiteCellColor", dwValue)) {
-                xg_rgbWhiteCellColor = dwValue;
-            }
-            if (!app_key.QueryDword(L"BlackCellColor", dwValue)) {
-                xg_rgbBlackCellColor = dwValue;
-            }
-            if (!app_key.QueryDword(L"MarkedCellColor", dwValue)) {
-                xg_rgbMarkedCellColor = dwValue;
-            }
-            if (!app_key.QueryDword(L"DrawFrameForMarkedCell", dwValue)) {
-                xg_bDrawFrameForMarkedCell = dwValue;
-            }
-            if (!app_key.QueryDword(L"SmartResolution", dwValue)) {
-                xg_bSmartResolution = dwValue;
-            }
-            if (!app_key.QueryDword(L"InputMode", dwValue)) {
-                xg_imode = static_cast<XG_InputMode>(dwValue);
-            }
-            if (!app_key.QueryDword(L"ZoomRate", dwValue)) {
-                xg_nZoomRate = dwValue;
-            }
-            if (!app_key.QueryDword(L"ShowNumbering", dwValue)) {
-                xg_bShowNumbering = dwValue;
-            }
-            if (!app_key.QueryDword(L"ShowCaret", dwValue)) {
-                xg_bShowCaret = dwValue;
-            }
-
-            if (!app_key.QueryDword(L"Hiragana", dwValue)) {
-                xg_bHiragana = !!dwValue;
-            }
-            if (!app_key.QueryDword(L"Lowercase", dwValue)) {
-                xg_bLowercase = !!dwValue;
-            }
-
-            if (!app_key.QueryDword(L"CellCharPercents", dwValue)) {
-                xg_nCellCharPercents = dwValue;
-            }
-            if (!app_key.QueryDword(L"SmallCharPercents", dwValue)) {
-                xg_nSmallCharPercents = dwValue;
-            }
-
-            if (!app_key.QueryDword(L"PatWndX", dwValue)) {
-                XG_PatternDialog::xg_nPatWndX = dwValue;
-            }
-            if (!app_key.QueryDword(L"PatWndY", dwValue)) {
-                XG_PatternDialog::xg_nPatWndY = dwValue;
-            }
-            if (!app_key.QueryDword(L"PatWndCX", dwValue)) {
-                XG_PatternDialog::xg_nPatWndCX = dwValue;
-            }
-            if (!app_key.QueryDword(L"PatWndCY", dwValue)) {
-                XG_PatternDialog::xg_nPatWndCY = dwValue;
-            }
-            if (!app_key.QueryDword(L"ShowAnsOnPat", dwValue)) {
-                XG_PatternDialog::xg_bShowAnswerOnPattern = dwValue;
-            }
-            if (!app_key.QueryDword(L"Rules", dwValue)) {
-                xg_nRules = dwValue | RULE_DONTDIVIDE;
-            }
-            if (!app_key.QueryDword(L"MarkingX", dwValue)) {
-                xg_nMarkingX = dwValue;
-            }
-            if (!app_key.QueryDword(L"MarkingY", dwValue)) {
-                xg_nMarkingY = dwValue;
-            }
-            if (!app_key.QueryDword(L"ShowDoubleFrameLetters", dwValue)) {
-                xg_bShowDoubleFrameLetters = !!dwValue;
-            }
-            if (!app_key.QueryDword(L"ViewMode", dwValue)) {
-                xg_nViewMode = static_cast<XG_VIEW_MODE>(dwValue);
-                if (xg_nViewMode != XG_VIEW_NORMAL && xg_nViewMode != XG_VIEW_SKELETON) {
-                    xg_nViewMode = XG_VIEW_NORMAL;
-                }
-            }
-            if (!app_key.QueryDword(L"LineWidth", dwValue)) {
-                float value = static_cast<float>(dwValue) * 0.01f;
-                if (value < XG_MIN_LINEWIDTH)
-                    value = XG_MIN_LINEWIDTH;
-                if (value > XG_MAX_LINEWIDTH)
-                    value = XG_MAX_LINEWIDTH;
-                xg_nLineWidthInPt = value;
-            }
-            if (!app_key.QueryDword(L"OuterFrame", dwValue)) {
-                float value = static_cast<float>(dwValue) * 0.01f;
-                if (value < XG_MIN_OUTERFRAME)
-                    value = XG_MIN_OUTERFRAME;
-                if (value > XG_MAX_OUTERFRAME)
-                    value = XG_MAX_OUTERFRAME;
-                xg_nOuterFrameInPt = value;
-            }
-
-            if (!app_key.QuerySz(L"Recent", sz, _countof(sz))) {
-                xg_dict_name = sz;
-                if (!PathFileExists(xg_dict_name.c_str()))
-                {
-                    xg_dict_name.clear();
-                }
-            }
-
-            if (!app_key.QuerySz(L"BlackCellImage", sz, _countof(sz))) {
-                xg_strBlackCellImage = sz;
-                XgGetFileManager()->load_block_image(sz);
-            }
-
-            if (!app_key.QuerySz(L"DoubleFrameLetters", sz, _countof(sz))) {
-                xg_strDoubleFrameLetters = sz;
-            }
-
-            // 保存先のリストを取得する。
-            if (!app_key.QueryDword(L"SaveToCount", dwValue)) {
-                nDirCount = dwValue;
-                for (i = 0; i < nDirCount; i++) {
-                    StringCchPrintf(szFormat, _countof(szFormat), L"SaveTo %d", i + 1);
-                    if (!app_key.QuerySz(szFormat, sz, _countof(sz))) {
-                        xg_dirs_save_to.emplace_back(sz);
-                    } else {
-                        nDirCount = i;
-                        break;
-                    }
-                }
-            }
-
-            // 最近使ったファイルのリストを取得する。
-            if (!app_key.QueryDword(L"Recents", dwValue)) {
-                for (i = 0; i < static_cast<int>(dwValue); i++) {
-                    StringCchPrintf(szFormat, _countof(szFormat), L"Recent %d", i);
-                    if (!app_key.QuerySz(szFormat, sz, _countof(sz))) {
-                        if (PathFileExistsW(sz))
-                            xg_recently_used_files.emplace_back(sz);
-                    } else {
-                        break;
-                    }
-                }
-                if (xg_recently_used_files.size() > XG_MAX_RECENT)
-                    xg_recently_used_files.resize(XG_MAX_RECENT);
-            }
+            if (xg_recently_used_files.size() > XG_MAX_RECENT)
+                xg_recently_used_files.resize(XG_MAX_RECENT);
         }
     }
 
@@ -1181,110 +1165,106 @@ bool __fastcall XgSaveSettings(void)
     int i, nCount;
     WCHAR szFormat[32];
 
-    // 会社名キーを開く。キーがなければ作成する。
-    MRegKey company_key(HKEY_CURRENT_USER, s_pszSoftwareCompanyName, TRUE);
-    if (company_key) {
-        // アプリ名キーを開く。キーがなければ作成する。
-        MRegKey app_key(company_key, s_pszAppName, TRUE);
-        if (app_key) {
-            app_key.SetDword(L"OldNotice", s_bOldNotice);
-            app_key.SetDword(L"AutoRetry", xg_bAutoRetry);
-            app_key.SetDword(L"Rows", xg_nRows);
-            app_key.SetDword(L"Cols", xg_nCols);
-            app_key.SetDword(L"UILangID", xg_UILangID);
+    // アプリ名キーを開く。キーがなければ作成する。
+    MRegKey app_key(HKEY_CURRENT_USER, s_pszSoftwareCompanyAndApp, TRUE);
+    if (app_key) {
+        app_key.SetDword(L"OldNotice", s_bOldNotice);
+        app_key.SetDword(L"AutoRetry", xg_bAutoRetry);
+        app_key.SetDword(L"Rows", xg_nRows);
+        app_key.SetDword(L"Cols", xg_nCols);
+        app_key.SetDword(L"UILangID", xg_UILangID);
 
-            app_key.SetSz(L"CellFont", xg_szCellFont, _countof(xg_szCellFont));
-            app_key.SetSz(L"SmallFont", xg_szSmallFont, _countof(xg_szSmallFont));
-            app_key.SetSz(L"UIFont", xg_szUIFont, _countof(xg_szUIFont));
+        app_key.SetSz(L"CellFont", xg_szCellFont, _countof(xg_szCellFont));
+        app_key.SetSz(L"SmallFont", xg_szSmallFont, _countof(xg_szSmallFont));
+        app_key.SetSz(L"UIFont", xg_szUIFont, _countof(xg_szUIFont));
 
-            app_key.SetDword(L"ShowToolBar", xg_bShowToolBar);
-            app_key.SetDword(L"ShowStatusBar", s_bShowStatusBar);
-            app_key.SetDword(L"ShowInputPalette", xg_bShowInputPalette);
+        app_key.SetDword(L"ShowToolBar", xg_bShowToolBar);
+        app_key.SetDword(L"ShowStatusBar", s_bShowStatusBar);
+        app_key.SetDword(L"ShowInputPalette", xg_bShowInputPalette);
 
-            app_key.SetDword(L"SaveAsJsonFile", xg_bSaveAsJsonFile);
-            app_key.SetDword(L"NumberToGenerate", xg_nNumberToGenerate);
-            app_key.SetDword(L"AddThickFrame", xg_bAddThickFrame);
-            app_key.SetDword(L"CharFeed", xg_bCharFeed);
-            app_key.SetDword(L"TateOki", xg_bTateOki);
+        app_key.SetDword(L"SaveAsJsonFile", xg_bSaveAsJsonFile);
+        app_key.SetDword(L"NumberToGenerate", xg_nNumberToGenerate);
+        app_key.SetDword(L"AddThickFrame", xg_bAddThickFrame);
+        app_key.SetDword(L"CharFeed", xg_bCharFeed);
+        app_key.SetDword(L"TateOki", xg_bTateOki);
 
-            app_key.SetDword(L"WhiteCellColor", xg_rgbWhiteCellColor);
-            app_key.SetDword(L"BlackCellColor", xg_rgbBlackCellColor);
-            app_key.SetDword(L"MarkedCellColor", xg_rgbMarkedCellColor);
+        app_key.SetDword(L"WhiteCellColor", xg_rgbWhiteCellColor);
+        app_key.SetDword(L"BlackCellColor", xg_rgbBlackCellColor);
+        app_key.SetDword(L"MarkedCellColor", xg_rgbMarkedCellColor);
 
-            app_key.SetDword(L"DrawFrameForMarkedCell", xg_bDrawFrameForMarkedCell);
-            app_key.SetDword(L"SmartResolution", xg_bSmartResolution);
-            app_key.SetDword(L"InputMode", static_cast<DWORD>(xg_imode));
-            app_key.SetDword(L"ZoomRate", xg_nZoomRate);
-            app_key.SetDword(L"ShowNumbering", xg_bShowNumbering);
-            app_key.SetDword(L"ShowCaret", xg_bShowCaret);
+        app_key.SetDword(L"DrawFrameForMarkedCell", xg_bDrawFrameForMarkedCell);
+        app_key.SetDword(L"SmartResolution", xg_bSmartResolution);
+        app_key.SetDword(L"InputMode", static_cast<DWORD>(xg_imode));
+        app_key.SetDword(L"ZoomRate", xg_nZoomRate);
+        app_key.SetDword(L"ShowNumbering", xg_bShowNumbering);
+        app_key.SetDword(L"ShowCaret", xg_bShowCaret);
 
-            app_key.SetDword(L"Hiragana", xg_bHiragana);
-            app_key.SetDword(L"Lowercase", xg_bLowercase);
+        app_key.SetDword(L"Hiragana", xg_bHiragana);
+        app_key.SetDword(L"Lowercase", xg_bLowercase);
 
-            app_key.SetDword(L"CellCharPercents", xg_nCellCharPercents);
-            app_key.SetDword(L"SmallCharPercents", xg_nSmallCharPercents);
+        app_key.SetDword(L"CellCharPercents", xg_nCellCharPercents);
+        app_key.SetDword(L"SmallCharPercents", xg_nSmallCharPercents);
 
-            app_key.SetDword(L"PatWndX", XG_PatternDialog::xg_nPatWndX);
-            app_key.SetDword(L"PatWndY", XG_PatternDialog::xg_nPatWndY);
-            app_key.SetDword(L"PatWndCX", XG_PatternDialog::xg_nPatWndCX);
-            app_key.SetDword(L"PatWndCY", XG_PatternDialog::xg_nPatWndCY);
-            app_key.SetDword(L"ShowAnsOnPat", XG_PatternDialog::xg_bShowAnswerOnPattern);
+        app_key.SetDword(L"PatWndX", XG_PatternDialog::xg_nPatWndX);
+        app_key.SetDword(L"PatWndY", XG_PatternDialog::xg_nPatWndY);
+        app_key.SetDword(L"PatWndCX", XG_PatternDialog::xg_nPatWndCX);
+        app_key.SetDword(L"PatWndCY", XG_PatternDialog::xg_nPatWndCY);
+        app_key.SetDword(L"ShowAnsOnPat", XG_PatternDialog::xg_bShowAnswerOnPattern);
 
-            app_key.SetDword(L"Rules", xg_nRules);
-            app_key.SetDword(L"MarkingX", xg_nMarkingX);
-            app_key.SetDword(L"MarkingY", xg_nMarkingY);
+        app_key.SetDword(L"Rules", xg_nRules);
+        app_key.SetDword(L"MarkingX", xg_nMarkingX);
+        app_key.SetDword(L"MarkingY", xg_nMarkingY);
 
-            app_key.SetDword(L"ShowDoubleFrameLetters", xg_bShowDoubleFrameLetters);
-            app_key.SetDword(L"ViewMode", xg_nViewMode);
-            app_key.SetDword(L"LineWidth", static_cast<int>(xg_nLineWidthInPt * 100));
-            app_key.SetDword(L"OuterFrame", static_cast<int>(xg_nOuterFrameInPt * 100));
+        app_key.SetDword(L"ShowDoubleFrameLetters", xg_bShowDoubleFrameLetters);
+        app_key.SetDword(L"ViewMode", xg_nViewMode);
+        app_key.SetDword(L"LineWidth", static_cast<int>(xg_nLineWidthInPt * 100));
+        app_key.SetDword(L"OuterFrame", static_cast<int>(xg_nOuterFrameInPt * 100));
 
-            app_key.SetSz(L"Recent", xg_dict_name.c_str());
+        app_key.SetSz(L"Recent", xg_dict_name.c_str());
 
-            if (xg_strBlackCellImage.find(L"$FILES\\") != 0)
-                app_key.SetSz(L"BlackCellImage", xg_strBlackCellImage.c_str());
+        if (xg_strBlackCellImage.find(L"$FILES\\") != 0)
+            app_key.SetSz(L"BlackCellImage", xg_strBlackCellImage.c_str());
 
-            app_key.SetSz(L"DoubleFrameLetters", xg_strDoubleFrameLetters.c_str());
+        app_key.SetSz(L"DoubleFrameLetters", xg_strDoubleFrameLetters.c_str());
 
-            // 保存先のリストを設定する。
-            nCount = static_cast<int>(xg_dirs_save_to.size());
-            app_key.SetDword(L"SaveToCount", nCount);
-            for (i = 0; i < nCount; i++)
-            {
-                StringCchPrintf(szFormat, _countof(szFormat), L"SaveTo %d", i + 1);
-                app_key.SetSz(szFormat, xg_dirs_save_to[i].c_str());
-            }
+        // 保存先のリストを設定する。
+        nCount = static_cast<int>(xg_dirs_save_to.size());
+        app_key.SetDword(L"SaveToCount", nCount);
+        for (i = 0; i < nCount; i++)
+        {
+            StringCchPrintf(szFormat, _countof(szFormat), L"SaveTo %d", i + 1);
+            app_key.SetSz(szFormat, xg_dirs_save_to[i].c_str());
+        }
 
-            app_key.SetDword(L"HintsX", XG_HintsWnd::s_nHintsWndX);
-            app_key.SetDword(L"HintsY", XG_HintsWnd::s_nHintsWndY);
-            app_key.SetDword(L"HintsCX", XG_HintsWnd::s_nHintsWndCX);
-            app_key.SetDword(L"HintsCY", XG_HintsWnd::s_nHintsWndCY);
+        app_key.SetDword(L"HintsX", XG_HintsWnd::s_nHintsWndX);
+        app_key.SetDword(L"HintsY", XG_HintsWnd::s_nHintsWndY);
+        app_key.SetDword(L"HintsCX", XG_HintsWnd::s_nHintsWndCX);
+        app_key.SetDword(L"HintsCY", XG_HintsWnd::s_nHintsWndCY);
 
-            app_key.SetDword(L"CandsX", XG_CandsWnd::s_nCandsWndX);
-            app_key.SetDword(L"CandsY", XG_CandsWnd::s_nCandsWndY);
-            app_key.SetDword(L"CandsCX", XG_CandsWnd::s_nCandsWndCX);
-            app_key.SetDword(L"CandsCY", XG_CandsWnd::s_nCandsWndCY);
+        app_key.SetDword(L"CandsX", XG_CandsWnd::s_nCandsWndX);
+        app_key.SetDword(L"CandsY", XG_CandsWnd::s_nCandsWndY);
+        app_key.SetDword(L"CandsCX", XG_CandsWnd::s_nCandsWndCX);
+        app_key.SetDword(L"CandsCY", XG_CandsWnd::s_nCandsWndCY);
 
-            app_key.SetDword(L"IPaletteX", xg_nInputPaletteWndX);
-            app_key.SetDword(L"IPaletteY", xg_nInputPaletteWndY);
+        app_key.SetDword(L"IPaletteX", xg_nInputPaletteWndX);
+        app_key.SetDword(L"IPaletteY", xg_nInputPaletteWndY);
 
-            app_key.SetDword(L"WindowX", s_nMainWndX);
-            app_key.SetDword(L"WindowY", s_nMainWndY);
-            app_key.SetDword(L"WindowCX", s_nMainWndCX);
-            app_key.SetDword(L"WindowCY", s_nMainWndCY);
-            app_key.SetDword(L"MainWndMaximized", !!xg_bMainWndMaximized);
+        app_key.SetDword(L"WindowX", s_nMainWndX);
+        app_key.SetDword(L"WindowY", s_nMainWndY);
+        app_key.SetDword(L"WindowCX", s_nMainWndCX);
+        app_key.SetDword(L"WindowCY", s_nMainWndCY);
+        app_key.SetDword(L"MainWndMaximized", !!xg_bMainWndMaximized);
 
-            app_key.SetDword(L"TateInput", xg_bTateInput);
+        app_key.SetDword(L"TateInput", xg_bTateInput);
 
-            app_key.SetDword(L"FileType", static_cast<DWORD>(xg_nFileType));
+        app_key.SetDword(L"FileType", static_cast<DWORD>(xg_nFileType));
 
-            // 最近使ったファイルのリストを設定する。
-            nCount = static_cast<int>(xg_recently_used_files.size());
-            app_key.SetDword(L"Recents", nCount);
-            for (i = 0; i < nCount; i++) {
-                StringCchPrintf(szFormat, _countof(szFormat), L"Recent %d", i);
-                app_key.SetSz(szFormat, xg_recently_used_files[i].c_str());
-            }
+        // 最近使ったファイルのリストを設定する。
+        nCount = static_cast<int>(xg_recently_used_files.size());
+        app_key.SetDword(L"Recents", nCount);
+        for (i = 0; i < nCount; i++) {
+            StringCchPrintf(szFormat, _countof(szFormat), L"Recent %d", i);
+            app_key.SetSz(szFormat, xg_recently_used_files[i].c_str());
         }
     }
 
