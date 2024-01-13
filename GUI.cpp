@@ -6149,10 +6149,10 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT /*codeNo
         bUpdateImage = TRUE;
         break;
     case ID_OPENREADME:     // ReadMeを開く。
-        XgOpenReadMe(hwnd);
+        XgOpenLocalFile(hwnd, XgLoadStringDx1(IDS_README));
         break;
     case ID_OPENLICENSE:    // Licenseを開く。
-        XgOpenLicense(hwnd);
+        XgOpenLocalFile(hwnd, XgLoadStringDx1(IDS_LICENSE));
         break;
     case ID_OPENPATTERNS:    // パターンを開く。
         XgOpenPatterns(hwnd);

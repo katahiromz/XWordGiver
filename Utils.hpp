@@ -108,12 +108,6 @@ XgCenterMessageBoxW(HWND hwnd, LPCWSTR pszText, LPCWSTR pszCaption, UINT uType) 
 int __fastcall
 XgCenterMessageBoxIndirectW(LPMSGBOXPARAMS lpMsgBoxParams) noexcept;
 
-// ReadMeを開く。
-void __fastcall XgOpenReadMe(HWND hwnd) noexcept;
-
-// Licenseを開く。
-void __fastcall XgOpenLicense(HWND hwnd) noexcept;
-
 // ファイルが書き込み可能か？
 bool __fastcall XgCanWriteFile(const WCHAR *pszFile);
 

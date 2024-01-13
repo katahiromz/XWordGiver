@@ -316,36 +316,6 @@ XgCenterMessageBoxIndirectW(LPMSGBOXPARAMS lpMsgBoxParams) noexcept
     return nID;     // メッセージボックスの戻り値。
 }
 
-// ReadMeを開く。
-void __fastcall XgOpenReadMe(HWND hwnd) noexcept
-{
-    // 実行ファイルのパスを取得。
-    WCHAR szPath[MAX_PATH];
-    ::GetModuleFileNameW(nullptr, szPath, _countof(szPath));
-
-    // ReadMeへのパスを作成。
-    PathRemoveFileSpec(szPath);
-    PathAppend(szPath, XgLoadStringDx1(IDS_README));
-
-    // ReadMeを開く。
-    ShellExecuteW(hwnd, nullptr, szPath, nullptr, nullptr, SW_SHOWNORMAL);
-}
-
-// Licenseを開く。
-void __fastcall XgOpenLicense(HWND hwnd) noexcept
-{
-    // 実行ファイルのパスを取得。
-    WCHAR szPath[MAX_PATH];
-    ::GetModuleFileNameW(nullptr, szPath, _countof(szPath));
-
-    // Licenseへのパスを作成。
-    PathRemoveFileSpec(szPath);
-    PathAppend(szPath, XgLoadStringDx1(IDS_LICENSE));
-
-    // Licenseを開く。
-    ShellExecuteW(hwnd, nullptr, szPath, nullptr, nullptr, SW_SHOWNORMAL);
-}
-
 // ファイルが書き込み可能か？
 bool __fastcall XgCanWriteFile(const WCHAR *pszFile)
 {
