@@ -858,7 +858,8 @@ BOOL XgIsImageFile(LPCWSTR pszFileName) noexcept
         lstrcmpiW(pchDotExt, L".emf") == 0 ||
         lstrcmpiW(pchDotExt, L".gif") == 0 ||
         lstrcmpiW(pchDotExt, L".png") == 0 ||
-        lstrcmpiW(pchDotExt, L".jpg") == 0)
+        lstrcmpiW(pchDotExt, L".jpg") == 0 ||
+        lstrcmpiW(pchDotExt, L".jpeg") == 0)
     {
         return TRUE;
     }
