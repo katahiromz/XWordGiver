@@ -3744,7 +3744,7 @@ void __fastcall XgSolveXWord_AddBlackRecurse(const XG_Board& xw)
     }
 
     // 解かどうか？
-    EnterCriticalSection(&xg_cs);
+    ::EnterCriticalSection(&xg_cs);
     const bool ok = xw.IsSolution();
     ::LeaveCriticalSection(&xg_cs);
     if (ok) {
@@ -7124,7 +7124,7 @@ bool __fastcall XgGenerateBlacksRecurse(const XG_Board& xword, LONG iRowjCol)
     const int iRow = LOWORD(iRowjCol), jCol = HIWORD(iRowjCol);
     // 終了条件。
     if (iRow == nRows && jCol == 0) {
-        EnterCriticalSection(&xg_cs);
+        ::EnterCriticalSection(&xg_cs);
         if (!xg_bBlacksGenerated) {
             xg_bBlacksGenerated = true;
             xg_xword = xword;
@@ -7242,7 +7242,7 @@ bool __fastcall XgGenerateBlacksPointSymRecurse(const XG_Board& xword, LONG iRow
 
     // 終了条件。
     if (iRow == nRows && jCol == 0) {
-        EnterCriticalSection(&xg_cs);
+        ::EnterCriticalSection(&xg_cs);
         if (!xg_bBlacksGenerated) {
             xg_bBlacksGenerated = true;
             xg_xword = xword;
@@ -7363,7 +7363,7 @@ bool __fastcall XgGenerateBlacksLineSymVRecurse(const XG_Board& xword, LONG iRow
 
     // 終了条件。
     if (iRow == 0 && jCol >= nCols) {
-        EnterCriticalSection(&xg_cs);
+        ::EnterCriticalSection(&xg_cs);
         if (!xg_bBlacksGenerated) {
             xg_bBlacksGenerated = true;
             xg_xword = xword;
@@ -7499,7 +7499,7 @@ bool __fastcall XgGenerateBlacksLineSymHRecurse(const XG_Board& xword, LONG iRow
 
     // 終了条件。
     if (iRow >= nRows && jCol == 0) {
-        EnterCriticalSection(&xg_cs);
+        ::EnterCriticalSection(&xg_cs);
         if (!xg_bBlacksGenerated) {
             xg_bBlacksGenerated = true;
             xg_xword = xword;
