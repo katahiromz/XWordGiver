@@ -138,7 +138,7 @@ public:
     {
         WCHAR szFile[MAX_PATH] = L"";
         OPENFILENAMEW ofn = { sizeof(ofn), hwnd };
-        ofn.lpstrFilter = L"Picture Files\0*.bmp;*.emf;*.png;*.jpg;*.jpeg;*.gif\0";
+        ofn.lpstrFilter = L"Picture Files\0*.bmp;*.dib;*.emf;*.png;*.jpg;*.jpeg;*.jpe;*.jfif;*.tif;*.tiff;*.gif\0";
         ofn.lpstrFile = szFile;
         ofn.nMaxFile = _countof(szFile);
         ofn.lpstrTitle = L"Choose Picture File";

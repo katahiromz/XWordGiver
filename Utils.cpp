@@ -855,11 +855,16 @@ BOOL XgIsImageFile(LPCWSTR pszFileName) noexcept
 {
     LPCWSTR pchDotExt = PathFindExtensionW(pszFileName);
     if (lstrcmpiW(pchDotExt, L".bmp") == 0 ||
+        lstrcmpiW(pchDotExt, L".dib") == 0 ||
         lstrcmpiW(pchDotExt, L".emf") == 0 ||
         lstrcmpiW(pchDotExt, L".gif") == 0 ||
         lstrcmpiW(pchDotExt, L".png") == 0 ||
         lstrcmpiW(pchDotExt, L".jpg") == 0 ||
-        lstrcmpiW(pchDotExt, L".jpeg") == 0)
+        lstrcmpiW(pchDotExt, L".jpeg") == 0 ||
+        lstrcmpiW(pchDotExt, L".jpe") == 0 ||
+        lstrcmpiW(pchDotExt, L".jfif") == 0 ||
+        lstrcmpiW(pchDotExt, L".tif") == 0 ||
+        lstrcmpiW(pchDotExt, L".tiff") == 0)
     {
         return TRUE;
     }

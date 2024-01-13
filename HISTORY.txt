@@ -265,6 +265,7 @@
     - Fixed an issue where extra black area were created when saving a bitmap.
 - 2024-XX-YY ver.5.1.6
     - Reduced binary size.
+    - Supported TIFF images.
 
 # 開発履歴 (Japanese)
 
@@ -845,3 +846,4 @@
     - ビットマップ保存時に余分な黒い領域ができるのを修正。
 - 2024年XX月YY日 ver.5.1.6
     - バイナリーサイズの削減。
+    - TIFF画像のサポート。
