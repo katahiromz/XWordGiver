@@ -90,8 +90,6 @@ IDB_FROMWORDS BITMAP "res/Bitmap_100.bmp"
 
 IDC_MYHAND CURSOR "res/Cursor_100.cur"
 
-32731 CURSOR "res/Cursor_32731.cur"
-
 //////////////////////////////////////////////////////////////////////////////
 // RT_GROUP_ICON
 
