@@ -195,7 +195,7 @@ std::wstring __fastcall XgUtf8ToUnicode(const std::string& ansi)
 void __fastcall XgCenterDialog(HWND hwnd) noexcept
 {
     // 子ウィンドウか？
-    const bool bChild = !!(::GetWindowLong(hwnd, GWL_STYLE) & WS_CHILD);
+    const bool bChild = !!(::GetWindowLongPtrW(hwnd, GWL_STYLE) & WS_CHILD);
 
     // オーナーウィンドウ（親ウィンドウ）を取得する。
     HWND hwndOwner;
@@ -273,7 +273,7 @@ XgCenterMessageBoxW(HWND hwnd, LPCWSTR pszText, LPCWSTR pszCaption, UINT uType) 
 
     // フックのためにウィンドウのインスタンスを取得する。
     HINSTANCE hInst =
-        reinterpret_cast<HINSTANCE>(::GetWindowLongPtr(hwnd, GWLP_HINSTANCE));
+        reinterpret_cast<HINSTANCE>(::GetWindowLongPtrW(hwnd, GWLP_HINSTANCE));
 
     // フックを開始。
     const auto dwThreadID = ::GetCurrentThreadId();
@@ -300,7 +300,7 @@ XgCenterMessageBoxIndirectW(LPMSGBOXPARAMS lpMsgBoxParams) noexcept
     // フックのためにウィンドウのインスタンスを取得する。
     HINSTANCE hInst =
         reinterpret_cast<HINSTANCE>(
-            ::GetWindowLongPtr(lpMsgBoxParams->hwndOwner, GWLP_HINSTANCE));
+            ::GetWindowLongPtrW(lpMsgBoxParams->hwndOwner, GWLP_HINSTANCE));
 
     // フックを開始。
     const auto dwThreadID = ::GetCurrentThreadId();

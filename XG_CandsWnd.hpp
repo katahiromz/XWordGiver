@@ -166,7 +166,7 @@ public:
         WNDPROC fn;
         XG_CandsButtonData *data =
             reinterpret_cast<XG_CandsButtonData *>(
-                ::GetWindowLongPtr(hwnd, GWLP_USERDATA));
+                ::GetWindowLongPtrW(hwnd, GWLP_USERDATA));
         switch (uMsg) {
         case WM_CHAR:
             #if 0
@@ -332,9 +332,9 @@ public:
 
             data = static_cast<XG_CandsButtonData*>(::LocalAlloc(LMEM_FIXED, sizeof(XG_CandsButtonData)));
             data->m_fnOldWndProc = reinterpret_cast<WNDPROC>(
-                ::SetWindowLongPtr(hwndCtrl, GWLP_WNDPROC,
+                ::SetWindowLongPtrW(hwndCtrl, GWLP_WNDPROC,
                     reinterpret_cast<LONG_PTR>(XgCandsButton_WndProc)));
-            ::SetWindowLongPtr(hwndCtrl, GWLP_USERDATA,
+            ::SetWindowLongPtrW(hwndCtrl, GWLP_USERDATA,
                 reinterpret_cast<LONG_PTR>(data));
         }
         OnSize(hwnd, 0, 0, 0);

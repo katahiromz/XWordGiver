@@ -155,9 +155,9 @@ inline void MScrollView::SetParent(HWND hwndParent) noexcept
 {
     assert(::IsWindow(hwndParent));
     m_hwndParent = hwndParent;
-    DWORD style = ::GetWindowLong(m_hwndParent, GWL_STYLE);
+    DWORD_PTR style = ::GetWindowLongPtrW(m_hwndParent, GWL_STYLE);
     style |= WS_CLIPCHILDREN;
-    ::SetWindowLong(m_hwndParent, GWL_STYLE, style);
+    ::SetWindowLongPtrW(m_hwndParent, GWL_STYLE, style);
 }
 
 inline
@@ -205,7 +205,7 @@ inline const MSize& MScrollView::Extent() const noexcept
 
 inline BOOL MScrollView::HasChildStyle(HWND hwnd) const noexcept
 {
-    return (::GetWindowLong(hwnd, GWL_STYLE) & WS_CHILD);
+    return (::GetWindowLongPtrW(hwnd, GWL_STYLE) & WS_CHILD);
 }
 
 inline bool MScrollView::empty() const noexcept

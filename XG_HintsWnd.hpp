@@ -275,7 +275,7 @@ public:
         WNDPROC fn;
         XG_HintEditData *data =
             reinterpret_cast<XG_HintEditData *>(
-                ::GetWindowLongPtr(hwnd, GWLP_USERDATA));
+                ::GetWindowLongPtrW(hwnd, GWLP_USERDATA));
 
         switch (uMsg) {
         case WM_CHAR:
@@ -498,9 +498,9 @@ public:
             data = static_cast<XG_HintEditData*>(::LocalAlloc(LMEM_FIXED, sizeof(XG_HintEditData)));
             data->m_fTate = true;
             data->m_fnOldWndProc = reinterpret_cast<WNDPROC>(
-                ::SetWindowLongPtr(hwndCtrl, GWLP_WNDPROC,
+                ::SetWindowLongPtrW(hwndCtrl, GWLP_WNDPROC,
                     reinterpret_cast<LONG_PTR>(XgHintEdit_WndProc)));
-            ::SetWindowLongPtr(hwndCtrl, GWLP_USERDATA,
+            ::SetWindowLongPtrW(hwndCtrl, GWLP_USERDATA,
                 reinterpret_cast<LONG_PTR>(data));
             xg_ahwndTateEdits.emplace_back(hwndCtrl);
         }
@@ -533,9 +533,9 @@ public:
             data = static_cast<XG_HintEditData*>(::LocalAlloc(LMEM_FIXED, sizeof(XG_HintEditData)));
             data->m_fTate = false;
             data->m_fnOldWndProc = reinterpret_cast<WNDPROC>(
-                ::SetWindowLongPtr(hwndCtrl, GWLP_WNDPROC,
+                ::SetWindowLongPtrW(hwndCtrl, GWLP_WNDPROC,
                     reinterpret_cast<LONG_PTR>(XgHintEdit_WndProc)));
-            ::SetWindowLongPtr(hwndCtrl, GWLP_USERDATA,
+            ::SetWindowLongPtrW(hwndCtrl, GWLP_USERDATA,
                 reinterpret_cast<LONG_PTR>(data));
             xg_ahwndYokoEdits.emplace_back(hwndCtrl);
         }

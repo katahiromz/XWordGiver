@@ -9,7 +9,7 @@ XG_Window::WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
     {
         if (LPCREATESTRUCT pCS = reinterpret_cast<LPCREATESTRUCT>(lParam))
         {
-            SetWindowLongPtr(hwnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(pCS->lpCreateParams));
+            ::SetWindowLongPtrW(hwnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(pCS->lpCreateParams));
             pWindow = static_cast<XG_Window*>(pCS->lpCreateParams);
             pWindow->m_hWnd = hwnd;
         }
@@ -20,7 +20,7 @@ XG_Window::WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
     }
     else
     {
-        pWindow = reinterpret_cast<XG_Window *>(GetWindowLongPtr(hwnd, GWLP_USERDATA));
+        pWindow = reinterpret_cast<XG_Window *>(GetWindowLongPtrW(hwnd, GWLP_USERDATA));
         if (!pWindow)
             return ::DefWindowProc(hwnd, uMsg, wParam, lParam);
         if (uMsg == WM_NCDESTROY)
@@ -54,12 +54,12 @@ XG_Dialog::DialogProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
     {
         assert(s_pTrapping != nullptr);
         pDialog = s_pTrapping;
-        SetWindowLongPtr(hwnd, GWLP_USERDATA, reinterpret_cast<LPARAM>(pDialog));
+        ::SetWindowLongPtrW(hwnd, GWLP_USERDATA, reinterpret_cast<LPARAM>(pDialog));
         pDialog->m_hWnd = hwnd;
     }
     else
     {
-        pDialog = reinterpret_cast<XG_Dialog *>(GetWindowLongPtr(hwnd, GWLP_USERDATA));
+        pDialog = reinterpret_cast<XG_Dialog *>(GetWindowLongPtrW(hwnd, GWLP_USERDATA));
         if (!pDialog)
         {
             if (uMsg == WM_MEASUREITEM || uMsg == WM_SIZE)

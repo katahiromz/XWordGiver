@@ -34,7 +34,7 @@ public:
     BOOL SubclassDx(HWND hwnd) noexcept
     {
         m_fnOldWndProc =
-            reinterpret_cast<WNDPROC>(SetWindowLongPtr(hwnd,
+            reinterpret_cast<WNDPROC>(SetWindowLongPtrW(hwnd,
                 GWLP_WNDPROC, reinterpret_cast<LONG_PTR>(WindowProc)));
         return m_fnOldWndProc != nullptr;
     }
@@ -43,7 +43,7 @@ public:
     {
         if (m_fnOldWndProc)
         {
-            SetWindowLongPtr(hwnd, GWLP_WNDPROC, reinterpret_cast<LONG_PTR>(m_fnOldWndProc));
+            ::SetWindowLongPtrW(hwnd, GWLP_WNDPROC, reinterpret_cast<LONG_PTR>(m_fnOldWndProc));
             m_fnOldWndProc = nullptr;
         }
     }
