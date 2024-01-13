@@ -5683,6 +5683,39 @@ void __fastcall XgGenerate(HWND hwnd, bool show_answer)
     XgMarkUpdate();
 }
 
+// 次のペインまたは前のペインに移動する。
+void __fastcall XgGoNextPane(HWND hwnd, BOOL bNext)
+{
+    auto ahwnd = bNext ? make_array<HWND>(
+        xg_hMainWnd,
+        xg_hHintsWnd,
+        xg_cands_wnd,
+        xg_hwndInputPalette,
+        xg_hMarkingDlg
+    ) : make_array<HWND>(
+        xg_hMarkingDlg,
+        xg_hwndInputPalette,
+        xg_cands_wnd,
+        xg_hHintsWnd,
+        xg_hMainWnd
+    );
+
+    size_t i = 0, k, m;
+    const auto count = ahwnd.size();
+    for (i = 0; i < count; ++i) {
+        if (ahwnd[i] == ::GetForegroundWindow()) {
+            for (k = 1; k < count; ++k) {
+                m = (i + k) % count;
+                if (::IsWindow(ahwnd[m])) {
+                    ::SetForegroundWindow(ahwnd[m]);
+                    break;
+                }
+            }
+            break;
+        }
+    }
+}
+
 // コマンドを実行する。
 void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT /*codeNotify*/)
 {
@@ -6156,56 +6189,10 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT /*codeNo
         XgOnAbout(hwnd);
         break;
     case ID_PANENEXT:   // 次のペーン。
-        {
-            auto ahwnd = make_array<HWND>(
-                xg_hMainWnd,
-                xg_hHintsWnd,
-                xg_cands_wnd,
-                xg_hwndInputPalette,
-                xg_hMarkingDlg
-            );
-
-            size_t i = 0, k, m;
-            const auto count = ahwnd.size();
-            for (i = 0; i < count; ++i) {
-                if (ahwnd[i] == ::GetForegroundWindow()) {
-                    for (k = 1; k < count; ++k) {
-                        m = (i + k) % count;
-                        if (::IsWindow(ahwnd[m])) {
-                            ::SetForegroundWindow(ahwnd[m]);
-                            break;
-                        }
-                    }
-                    break;
-                }
-            }
-        }
+        XgGoNextPane(hwnd, TRUE);
         break;
     case ID_PANEPREV:   // 前のペーン。
-        {
-            auto ahwnd = make_array<HWND>(
-                xg_hMarkingDlg,
-                xg_hwndInputPalette,
-                xg_cands_wnd,
-                xg_hHintsWnd,
-                xg_hMainWnd
-            );
-
-            size_t i = 0, k, m;
-            const auto count = ahwnd.size();
-            for (i = 0; i < count; ++i) {
-                if (ahwnd[i] == ::GetForegroundWindow()) {
-                    for (k = 1; k < count; ++k) {
-                        m = (i + k) % count;
-                        if (::IsWindow(ahwnd[m])) {
-                            ::SetForegroundWindow(ahwnd[m]);
-                            break;
-                        }
-                    }
-                    break;
-                }
-            }
-        }
+        XgGoNextPane(hwnd, FALSE);
         break;
     case ID_CUT:    // 切り取り。
         if (::GetForegroundWindow() == xg_hMainWnd) {
