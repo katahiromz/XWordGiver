@@ -27,7 +27,7 @@ std::shared_ptr<XG_FileManager>& XgGetFileManager(void)
         int cch;
         static WCHAR s_szText[1024];
         va_start(va, pszFormat);
-        ::EnterCriticalSection(&xg_cs);
+        ::EnterCriticalSection(&xg_csLock);
         if (file) {
             StringCchPrintfW(s_szText, _countof(s_szText), L"%hs (%d): ", file, lineno);
             cch = lstrlenW(s_szText);
@@ -36,7 +36,7 @@ std::shared_ptr<XG_FileManager>& XgGetFileManager(void)
             StringCchVPrintfW(s_szText, _countof(s_szText), pszFormat, va);
         }
         OutputDebugStringW(s_szText);
-        ::LeaveCriticalSection(&xg_cs);
+        ::LeaveCriticalSection(&xg_csLock);
         va_end(va);
     }
 #endif

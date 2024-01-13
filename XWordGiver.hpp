@@ -1342,8 +1342,8 @@ void __fastcall XgDrawOneCell(HDC hdc, INT iRow, INT jCol);
 // 再計算するか？
 extern bool xg_bAutoRetry;
 
-// 排他制御のためのクリティカルセクション。
-extern CRITICAL_SECTION xg_cs;
+// 排他制御のためのクリティカルセクション（ロック）。
+extern CRITICAL_SECTION xg_csLock;
 
 // スレッドの数。
 extern DWORD xg_dwThreadCount;

@@ -2745,7 +2745,7 @@ bool __fastcall XgDoSaveToLocation(HWND hwnd)
     bool bOK = false;
     if (u != 0x10000) {
         // ファイル名が作成できた。排他制御しながら保存する。
-        ::EnterCriticalSection(&xg_cs);
+        ::EnterCriticalSection(&xg_csLock);
         {
             // 解あり？
             if (xg_bSolved) {
@@ -2759,7 +2759,7 @@ bool __fastcall XgDoSaveToLocation(HWND hwnd)
             // ファイルに保存する。
             bOK = XgDoSaveFiles(hwnd, szPath);
         }
-        ::LeaveCriticalSection(&xg_cs);
+        ::LeaveCriticalSection(&xg_csLock);
     }
 
     // ディスク容量を確認する。
@@ -7844,7 +7844,7 @@ int WINAPI WinMain(
     int nCmdShow)
 {
     // クリティカルセクションを初期化する。
-    ::InitializeCriticalSection(&xg_cs);
+    ::InitializeCriticalSection(&xg_csLock);
 
     // クリティカルセクションを自動的に破棄する。
     struct AutoDeleteCriticalSection
@@ -7853,7 +7853,7 @@ int WINAPI WinMain(
         ~AutoDeleteCriticalSection()
         {
             // クリティカルセクションを破棄する。
-            ::DeleteCriticalSection(&xg_cs);
+            ::DeleteCriticalSection(&xg_csLock);
         }
     };
     AutoDeleteCriticalSection xg_auto_cs;

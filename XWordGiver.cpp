@@ -48,8 +48,8 @@ std::wstring             xg_strHeader;
 // 備考文字列。
 std::wstring             xg_strNotes;
 
-// 排他制御のためのクリティカルセクション。
-CRITICAL_SECTION    xg_cs;
+// 排他制御のためのクリティカルセクション（ロック）。
+CRITICAL_SECTION    xg_csLock;
 
 // キャレットの位置。
 XG_Pos              xg_caret_pos = {0, 0};
@@ -3744,12 +3744,12 @@ void __fastcall XgSolveXWord_AddBlackRecurse(const XG_Board& xw)
     }
 
     // 解かどうか？
-    ::EnterCriticalSection(&xg_cs);
+    ::EnterCriticalSection(&xg_csLock);
     const bool ok = xw.IsSolution();
-    ::LeaveCriticalSection(&xg_cs);
+    ::LeaveCriticalSection(&xg_csLock);
     if (ok) {
         // 解だった。
-        ::EnterCriticalSection(&xg_cs);
+        ::EnterCriticalSection(&xg_csLock);
         xg_bSolved = true;
         xg_solution = xw;
         xg_solution.DoNumbering();
@@ -3760,7 +3760,7 @@ void __fastcall XgSolveXWord_AddBlackRecurse(const XG_Board& xw)
             if (xw.GetAt(i) == ZEN_BLACK)
                 xg_xword.SetAt(i, ZEN_BLACK);
         }
-        ::LeaveCriticalSection(&xg_cs);
+        ::LeaveCriticalSection(&xg_csLock);
     }
 }
 
@@ -3981,13 +3981,13 @@ void __fastcall XgSolveXWord_NoAddBlackRecurse(const XG_Board& xw)
     }
 
     // 解かどうか？
-    ::EnterCriticalSection(&xg_cs);
+    ::EnterCriticalSection(&xg_csLock);
     const bool ok = xw.IsSolution();
-    ::LeaveCriticalSection(&xg_cs);
+    ::LeaveCriticalSection(&xg_csLock);
     if (ok) {
         // 解だった。
         xg_bSolved = true;
-        ::EnterCriticalSection(&xg_cs);
+        ::EnterCriticalSection(&xg_csLock);
         xg_solution = xw;
         xg_solution.DoNumbering();
 
@@ -3997,7 +3997,7 @@ void __fastcall XgSolveXWord_NoAddBlackRecurse(const XG_Board& xw)
             if (xw.GetAt(i) == ZEN_BLACK)
                 xg_xword.SetAt(i, ZEN_BLACK);
         }
-        ::LeaveCriticalSection(&xg_cs);
+        ::LeaveCriticalSection(&xg_csLock);
     }
 }
 
@@ -7124,12 +7124,12 @@ bool __fastcall XgGenerateBlacksRecurse(const XG_Board& xword, LONG iRowjCol)
     const int iRow = LOWORD(iRowjCol), jCol = HIWORD(iRowjCol);
     // 終了条件。
     if (iRow == nRows && jCol == 0) {
-        ::EnterCriticalSection(&xg_cs);
+        ::EnterCriticalSection(&xg_csLock);
         if (!xg_bBlacksGenerated) {
             xg_bBlacksGenerated = true;
             xg_xword = xword;
         }
-        ::LeaveCriticalSection(&xg_cs);
+        ::LeaveCriticalSection(&xg_csLock);
         return xg_bBlacksGenerated || xg_bCancelled;
     }
 
@@ -7242,12 +7242,12 @@ bool __fastcall XgGenerateBlacksPointSymRecurse(const XG_Board& xword, LONG iRow
 
     // 終了条件。
     if (iRow == nRows && jCol == 0) {
-        ::EnterCriticalSection(&xg_cs);
+        ::EnterCriticalSection(&xg_csLock);
         if (!xg_bBlacksGenerated) {
             xg_bBlacksGenerated = true;
             xg_xword = xword;
         }
-        ::LeaveCriticalSection(&xg_cs);
+        ::LeaveCriticalSection(&xg_csLock);
         return xg_bBlacksGenerated || xg_bCancelled;
     }
 
@@ -7363,12 +7363,12 @@ bool __fastcall XgGenerateBlacksLineSymVRecurse(const XG_Board& xword, LONG iRow
 
     // 終了条件。
     if (iRow == 0 && jCol >= nCols) {
-        ::EnterCriticalSection(&xg_cs);
+        ::EnterCriticalSection(&xg_csLock);
         if (!xg_bBlacksGenerated) {
             xg_bBlacksGenerated = true;
             xg_xword = xword;
         }
-        ::LeaveCriticalSection(&xg_cs);
+        ::LeaveCriticalSection(&xg_csLock);
         return xg_bBlacksGenerated || xg_bCancelled;
     }
 
@@ -7499,12 +7499,12 @@ bool __fastcall XgGenerateBlacksLineSymHRecurse(const XG_Board& xword, LONG iRow
 
     // 終了条件。
     if (iRow >= nRows && jCol == 0) {
-        ::EnterCriticalSection(&xg_cs);
+        ::EnterCriticalSection(&xg_csLock);
         if (!xg_bBlacksGenerated) {
             xg_bBlacksGenerated = true;
             xg_xword = xword;
         }
-        ::LeaveCriticalSection(&xg_cs);
+        ::LeaveCriticalSection(&xg_csLock);
         return xg_bBlacksGenerated || xg_bCancelled;
     }
 
