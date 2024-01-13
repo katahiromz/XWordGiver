@@ -221,11 +221,9 @@ int xg_nInputPaletteWndX = CW_USEDEFAULT, xg_nInputPaletteWndY = CW_USEDEFAULT;
 
 // 会社名とアプリ名。
 #ifdef _WIN64
-    static const LPCWSTR
-        s_pszSoftwareCompanyAndApp = L"Software\\Katayama Hirofumi MZ\\XWord64";
+    #define XG_REGKEY_APP L"Software\\Katayama Hirofumi MZ\\XWord64"
 #else
-    static const LPCWSTR
-        s_pszSoftwareCompanyAndApp = L"Software\\Katayama Hirofumi MZ\\XWord32";
+    #define XG_REGKEY_APP L"Software\\Katayama Hirofumi MZ\\XWord32"
 #endif
 
 // 再計算するか？
@@ -875,7 +873,7 @@ bool __fastcall XgLoadSettings(void)
     xg_recently_used_files.clear();
 
     // アプリ名キーを開く。
-    MRegKey app_key(HKEY_CURRENT_USER, s_pszSoftwareCompanyAndApp, FALSE);
+    MRegKey app_key(HKEY_CURRENT_USER, XG_REGKEY_APP, FALSE);
     if (app_key) {
         if (!app_key.QueryDword(L"WindowX", dwValue)) {
             s_nMainWndX = dwValue;
@@ -1166,7 +1164,7 @@ bool __fastcall XgSaveSettings(void)
     WCHAR szFormat[32];
 
     // アプリ名キーを開く。キーがなければ作成する。
-    MRegKey app_key(HKEY_CURRENT_USER, s_pszSoftwareCompanyAndApp, TRUE);
+    MRegKey app_key(HKEY_CURRENT_USER, XG_REGKEY_APP, TRUE);
     if (app_key) {
         app_key.SetDword(L"OldNotice", s_bOldNotice);
         app_key.SetDword(L"AutoRetry", xg_bAutoRetry);
@@ -1275,7 +1273,7 @@ bool __fastcall XgSaveSettings(void)
 bool __fastcall XgEraseSettings(void) noexcept
 {
     // レジストリのアプリキーを削除する。
-    RegDeleteTreeDx(HKEY_CURRENT_USER, s_pszSoftwareCompanyAndApp);
+    RegDeleteTreeDx(HKEY_CURRENT_USER, XG_REGKEY_APP);
 
     // 黒マスの情報も消す。
     xg_strBlackCellImage.clear();
