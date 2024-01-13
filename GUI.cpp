@@ -5522,36 +5522,6 @@ void __fastcall XgMakeItNumCro(HWND hwnd)
     XgUpdateImage(hwnd);
 }
 
-// ローカルファイルを見つける。
-BOOL __fastcall XgFindLocalFile(LPWSTR pszPath, UINT cchPath, LPCWSTR pszFileName) noexcept
-{
-    GetModuleFileNameW(nullptr, pszPath, MAX_PATH);
-    PathRemoveFileSpecW(pszPath);
-    PathAppendW(pszPath, pszFileName);
-    if (!PathFileExistsW(pszPath))
-    {
-        PathRemoveFileSpecW(pszPath);
-        PathRemoveFileSpecW(pszPath);
-        PathAppendW(pszPath, pszFileName);
-        if (!PathFileExistsW(pszPath))
-        {
-            PathRemoveFileSpecW(pszPath);
-            PathRemoveFileSpecW(pszPath);
-            PathAppendW(pszPath, pszFileName);
-        }
-    }
-
-    return PathFileExistsW(pszPath);
-}
-
-// ローカルファイルを開く。
-void __fastcall XgOpenLocalFile(HWND hwnd, LPCWSTR pszFileName) noexcept
-{
-    WCHAR szPath[MAX_PATH];
-    if (XgFindLocalFile(szPath, _countof(szPath), pszFileName))
-        ShellExecuteW(hwnd, nullptr, szPath, nullptr, nullptr, SW_SHOWNORMAL);
-}
-
 // マス位置からキャンバス座標を取得する。
 void __fastcall XgCellToCanvas(RECT& rc, XG_Pos cell)
 {

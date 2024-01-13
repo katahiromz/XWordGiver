@@ -1445,3 +1445,25 @@ BOOL ComboBox_RealSetText(HWND hwndCombo, LPCWSTR pszText) noexcept
     }
     return ComboBox_SetCurSel(hwndCombo, iItem);
 }
+
+// ローカルファイルを見つける。
+BOOL XgFindLocalFile(LPWSTR pszPath, UINT cchPath, LPCWSTR pszFileName)
+{
+    GetModuleFileNameW(nullptr, pszPath, MAX_PATH);
+    PathRemoveFileSpecW(pszPath);
+    PathAppendW(pszPath, pszFileName);
+    if (!PathFileExistsW(pszPath))
+    {
+        PathRemoveFileSpecW(pszPath);
+        PathRemoveFileSpecW(pszPath);
+        PathAppendW(pszPath, pszFileName);
+        if (!PathFileExistsW(pszPath))
+        {
+            PathRemoveFileSpecW(pszPath);
+            PathRemoveFileSpecW(pszPath);
+            PathAppendW(pszPath, pszFileName);
+        }
+    }
+
+    return PathFileExistsW(pszPath);
+}

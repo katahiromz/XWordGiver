@@ -25,10 +25,6 @@ extern BOOL xg_bShowClues;
 // UIフォントの論理オブジェクトを取得する。
 LOGFONTW *XgGetUIFont(void);
 
-// ローカルファイルを見つける。
-BOOL __fastcall XgFindLocalFile(LPWSTR pszPath, UINT cchPath, LPCWSTR pszFileName) noexcept;
-// ローカルファイルを開く。
-void __fastcall XgOpenLocalFile(HWND hwnd, LPCWSTR pszFileName) noexcept;
 // 「黒マスルールの説明.txt」を開く。
 void __fastcall XgOpenRulesTxt(HWND hwnd);
 

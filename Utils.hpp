@@ -132,12 +132,22 @@ char XgToHex(char code) noexcept;
 // 24BPPビットマップを作成。
 HBITMAP XgCreate24BppBitmap(HDC hDC, LONG width, LONG height) noexcept;
 
+// パック形式のDIBを作成する。
 BOOL PackedDIB_CreateFromHandle(std::vector<BYTE>& vecData, HBITMAP hbm);
 
 //////////////////////////////////////////////////////////////////////////////
-// パスを作る。
 
+// パスを作る。
 BOOL XgMakePathW(LPCWSTR pszPath);
+// ローカルファイルを見つける。
+BOOL XgFindLocalFile(LPWSTR pszPath, UINT cchPath, LPCWSTR pszFileName);
+// ローカルファイルを開く。
+inline void XgOpenLocalFile(HWND hwnd, LPCWSTR pszFileName)
+{
+    WCHAR szPath[MAX_PATH];
+    if (XgFindLocalFile(szPath, _countof(szPath), pszFileName))
+        ShellExecuteW(hwnd, nullptr, szPath, nullptr, nullptr, SW_SHOWNORMAL);
+}
 
 //////////////////////////////////////////////////////////////////////////////
 
