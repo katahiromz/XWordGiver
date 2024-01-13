@@ -5058,30 +5058,9 @@ void __fastcall XgOpenPatterns(HWND hwnd)
 }
 
 // 「黒マスルールの説明.txt」を開く。
-void __fastcall XgOnOpenRulesTxt(HWND hwnd)
+void __fastcall XgOpenRulesTxt(HWND hwnd)
 {
-    WCHAR szPath[MAX_PATH], szDir[MAX_PATH];
-    GetModuleFileNameW(nullptr, szPath, MAX_PATH);
-    PathRemoveFileSpecW(szPath);
-    StringCchCopyW(szDir, _countof(szDir), szPath);
-    StringCchCopyW(szPath, _countof(szPath), szDir);
-    PathAppendW(szPath, XgLoadStringDx1(IDS_RULESTXT));
-    if (!PathFileExistsW(szPath)) {
-        StringCchCopyW(szPath, _countof(szPath), szDir);
-        PathAppendW(szPath, L"..");
-        PathAppendW(szPath, XgLoadStringDx1(IDS_RULESTXT));
-        if (!PathFileExistsW(szPath)) {
-            StringCchCopyW(szPath, _countof(szPath), szDir);
-            PathAppendW(szPath, L"..\\..");
-            PathAppendW(szPath, XgLoadStringDx1(IDS_RULESTXT));
-            if (!PathFileExistsW(szPath)) {
-                StringCchCopyW(szPath, _countof(szPath), szDir);
-                PathAppendW(szPath, L"..\\..\\..");
-                PathAppendW(szPath, XgLoadStringDx1(IDS_RULESTXT));
-            }
-        }
-    }
-    ShellExecuteW(hwnd, nullptr, szPath, nullptr, nullptr, SW_SHOWNORMAL);
+    XgOpenLocalFile(hwnd, XgLoadStringDx1(IDS_RULESTXT));
 }
 
 // 黒マスルールをチェックする。
@@ -6597,7 +6576,7 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT /*codeNo
         XgUpdateRules(hwnd);
         break;
     case ID_OPENRULESTXT:
-        XgOnOpenRulesTxt(hwnd);
+        XgOpenRulesTxt(hwnd);
         break;
     case ID_RULE_DONTDOUBLEBLACK:
         if (xg_nRules & RULE_DONTDOUBLEBLACK) {
