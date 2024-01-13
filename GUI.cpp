@@ -5651,6 +5651,38 @@ void __fastcall XgDrawCaret(HDC hdc)
     ::DeleteObject(hCaretPen);
 }
 
+// 問題を生成する。
+void __fastcall XgGenerate(HWND hwnd, bool show_answer)
+{
+    bool flag = false;
+    auto sa1 = std::make_shared<XG_UndoData_SetAll>();
+    auto sa2 = std::make_shared<XG_UndoData_SetAll>();
+    sa1->Get();
+    // 候補ウィンドウを破棄する。
+    XgDestroyCandsWnd();
+    // ヒントウィンドウを破棄する。
+    XgDestroyHintsWnd();
+    // 二重マス単語の候補と配置を破棄する。
+    ::DestroyWindow(xg_hMarkingDlg);
+    // 問題の作成。
+    if (XgOnGenerate(hwnd, show_answer, false)) {
+        flag = true;
+        sa2->Get();
+        xg_ubUndoBuffer.Commit(UC_SETALL, sa1, sa2);
+        // イメージを更新する。
+        XgSetCaretPos();
+        XgMarkUpdate();
+        // メッセージボックスを表示する。
+        XgShowResults(hwnd);
+    }
+    if (!flag) {
+        sa1->Apply();
+    }
+    // イメージを更新する。
+    XgSetCaretPos();
+    XgMarkUpdate();
+}
+
 // コマンドを実行する。
 void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT /*codeNotify*/)
 {
@@ -5836,67 +5868,11 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT /*codeNo
         bUpdateImage = TRUE;
         break;
     case ID_GENERATE:   // 問題を自動生成する。
-        {
-            bool flag = false;
-            auto sa1 = std::make_shared<XG_UndoData_SetAll>();
-            auto sa2 = std::make_shared<XG_UndoData_SetAll>();
-            sa1->Get();
-            // 候補ウィンドウを破棄する。
-            XgDestroyCandsWnd();
-            // ヒントウィンドウを破棄する。
-            XgDestroyHintsWnd();
-            // 二重マス単語の候補と配置を破棄する。
-            ::DestroyWindow(xg_hMarkingDlg);
-            // 問題の作成。
-            if (XgOnGenerate(hwnd, false, false)) {
-                flag = true;
-                sa2->Get();
-                xg_ubUndoBuffer.Commit(UC_SETALL, sa1, sa2);
-                // イメージを更新する。
-                XgSetCaretPos();
-                XgMarkUpdate();
-                // メッセージボックスを表示する。
-                XgShowResults(hwnd);
-            }
-            if (!flag) {
-                sa1->Apply();
-            }
-            // イメージを更新する。
-            XgSetCaretPos();
-            XgMarkUpdate();
-        }
+        XgGenerate(hwnd, false);
         bUpdateImage = TRUE;
         break;
     case ID_GENERATEANSWER:   // 問題を自動生成する（答え付き）。
-        {
-            bool flag = false;
-            auto sa1 = std::make_shared<XG_UndoData_SetAll>();
-            auto sa2 = std::make_shared<XG_UndoData_SetAll>();
-            sa1->Get();
-            // 候補ウィンドウを破棄する。
-            XgDestroyCandsWnd();
-            // ヒントウィンドウを破棄する。
-            XgDestroyHintsWnd();
-            // 二重マス単語の候補と配置を破棄する。
-            ::DestroyWindow(xg_hMarkingDlg);
-            // 問題の作成。
-            if (XgOnGenerate(hwnd, true, false)) {
-                flag = true;
-                sa2->Get();
-                xg_ubUndoBuffer.Commit(UC_SETALL, sa1, sa2);
-                // イメージを更新する。
-                XgSetCaretPos();
-                XgMarkUpdate();
-                // メッセージボックスを表示する。
-                XgShowResults(hwnd);
-            }
-            if (!flag) {
-                sa1->Apply();
-            }
-            // イメージを更新する。
-            XgSetCaretPos();
-            XgMarkUpdate();
-        }
+        XgGenerate(hwnd, true);
         bUpdateImage = TRUE;
         break;
     case ID_GENERATEREPEATEDLY:     // 問題を連続自動生成する
