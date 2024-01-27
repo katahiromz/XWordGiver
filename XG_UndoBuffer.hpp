@@ -61,9 +61,9 @@ struct XG_UndoData_MarksUpdated : XG_UndoData {
 //////////////////////////////////////////////////////////////////////////////
 
 struct XG_UndoData_HintsUpdated : XG_UndoData {
-    std::vector<XG_PlaceInfo>   vTateInfo;
+    std::vector<XG_PlaceInfo>   vVertInfo;
     std::vector<XG_PlaceInfo>   vYokoInfo;
-    std::vector<XG_Hint>        vecTateHints;
+    std::vector<XG_Hint>        vecVertHints;
     std::vector<XG_Hint>        vecYokoHints;
     BOOL bShowHints;
 
@@ -119,9 +119,9 @@ struct XG_UndoData_SetAll : XG_UndoData {
     XG_Board                    solution;
     XG_Pos                      caret_pos;
     std::vector<XG_Pos>         vMarks;
-    std::vector<XG_PlaceInfo>   vTateInfo;
+    std::vector<XG_PlaceInfo>   vVertInfo;
     std::vector<XG_PlaceInfo>   vYokoInfo;
-    std::vector<XG_Hint>        vecTateHints;
+    std::vector<XG_Hint>        vecVertHints;
     std::vector<XG_Hint>        vecYokoHints;
     BOOL                        bShowHints;
     bool                        bSolved;

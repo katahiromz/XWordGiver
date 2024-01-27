@@ -18,27 +18,27 @@ void __fastcall XgInputDirection(HWND hwnd, int nDirection)
 {
     switch (nDirection) {
     case 1:
-        xg_bTateInput = TRUE;
+        xg_bVertInput = TRUE;
         break;
     case 0:
-        xg_bTateInput = FALSE;
+        xg_bVertInput = FALSE;
         break;
     case -1:
-        xg_bTateInput = !xg_bTateInput;
+        xg_bVertInput = !xg_bVertInput;
         break;
     default:
         break;
     }
 
     if (xg_hwndInputPalette) {
-        if (xg_bTateOki) {
-            if (xg_bTateInput) {
+        if (xg_bVertOki) {
+            if (xg_bVertInput) {
                 SetDlgItemTextW(xg_hwndInputPalette, 20052, XgLoadStringDx1(IDS_VINPUT));
             } else {
                 SetDlgItemTextW(xg_hwndInputPalette, 20052, XgLoadStringDx1(IDS_HINPUT));
             }
         } else {
-            if (xg_bTateInput) {
+            if (xg_bVertInput) {
                 SetDlgItemTextW(xg_hwndInputPalette, 20052, XgLoadStringDx1(IDS_VINPUT2));
             } else {
                 SetDlgItemTextW(xg_hwndInputPalette, 20052, XgLoadStringDx1(IDS_HINPUT2));
@@ -315,7 +315,7 @@ void __fastcall XgSetCharFeed(HWND hwnd, int nMode) noexcept
 // 改行する。
 void __fastcall XgReturn(HWND hwnd)
 {
-    if (xg_bTateInput) {
+    if (xg_bVertInput) {
         ++xg_caret_pos.m_j;
         if (xg_caret_pos.m_j >= xg_nCols) {
             xg_caret_pos.m_j = 0;
@@ -373,7 +373,7 @@ void __fastcall XgCharFeed(HWND hwnd)
     if (!xg_bCharFeed)
         return;
 
-    if (xg_bTateInput) {
+    if (xg_bVertInput) {
         ++xg_caret_pos.m_i;
         if (xg_caret_pos.m_i >= xg_nRows) {
             xg_caret_pos.m_i = 0;
@@ -407,7 +407,7 @@ void __fastcall XgCharBack(HWND hwnd)
         return;
     }
 
-    if (xg_bTateInput) {
+    if (xg_bVertInput) {
         if (xg_caret_pos.m_i == 0) {
             if (xg_caret_pos.m_j == 0) {
                 xg_caret_pos.m_i = xg_nRows - 1;
@@ -1180,7 +1180,7 @@ katakana:;
 BOOL InputPal_OnInitDialog(HWND hwnd, HWND hwndFocus, LPARAM lParam)
 {
     xg_hwndInputPalette = hwnd;
-    XgInputDirection(hwnd, xg_bTateInput);
+    XgInputDirection(hwnd, xg_bVertInput);
     XgSetCharFeed(hwnd, xg_bCharFeed);
     return FALSE;
 }
@@ -1263,7 +1263,7 @@ void InputPal_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT codeNotify)
             break;
         case 20071: // 縦置き/横置き
             if (xg_imode == xg_im_KANA) {
-                xg_bTateOki = !xg_bTateOki;
+                xg_bVertOki = !xg_bVertOki;
                 XgCreateInputPalette(xg_hMainWnd);
             }
             break;
@@ -1358,7 +1358,7 @@ BOOL XgCreateInputPaletteByDict(HWND hwndOwner) noexcept
     }
 
     if (XgIsCharHiraganaW(ch) || XgIsCharKatakanaW(ch)) {
-        if (xg_bTateOki) {
+        if (xg_bVertOki) {
             if (xg_bHiragana) {
                 CreateDialogW(xg_hInstance, MAKEINTRESOURCEW(IDD_HIRATATE), hwndOwner,
                               XgInputPaletteDlgProc);
@@ -1430,7 +1430,7 @@ BOOL XgCreateInputPalette(HWND hwndOwner, XG_InputMode imode)
         }
         break;
     case xg_im_KANA:
-        if (xg_bTateOki) {
+        if (xg_bVertOki) {
             if (xg_bHiragana) {
                 CreateDialogW(xg_hInstance, MAKEINTRESOURCEW(IDD_HIRATATE), hwndOwner,
                               XgInputPaletteDlgProc);

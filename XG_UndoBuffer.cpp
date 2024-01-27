@@ -21,17 +21,17 @@ void XG_UndoData_MarksUpdated::Apply() const {
 }
 
 void XG_UndoData_HintsUpdated::Get() {
-    vTateInfo = xg_vTateInfo;
+    vVertInfo = xg_vVertInfo;
     vYokoInfo = xg_vYokoInfo;
-    vecTateHints = xg_vecTateHints;
+    vecVertHints = xg_vecVertHints;
     vecYokoHints = xg_vecYokoHints;
     bShowHints = xg_bShowClues;
 }
 
 void XG_UndoData_HintsUpdated::Apply() const {
-    xg_vTateInfo = vTateInfo;
+    xg_vVertInfo = vVertInfo;
     xg_vYokoInfo = vYokoInfo;
-    xg_vecTateHints = vecTateHints;
+    xg_vecVertHints = vecVertHints;
     xg_vecYokoHints = vecYokoHints;
     XgUpdateHints();
     if (bShowHints) {
@@ -75,9 +75,9 @@ void XG_UndoData_SetAll::Get() {
     solution = xg_solution;
     caret_pos = xg_caret_pos;
     vMarks = xg_vMarks;
-    vTateInfo = xg_vTateInfo;
+    vVertInfo = xg_vVertInfo;
     vYokoInfo = xg_vYokoInfo;
-    vecTateHints = xg_vecTateHints;
+    vecVertHints = xg_vecVertHints;
     vecYokoHints = xg_vecYokoHints;
     bShowHints = xg_bShowClues;
     bSolved = xg_bSolved;
@@ -98,9 +98,9 @@ void XG_UndoData_SetAll::Apply() const {
     xg_solution = solution;
     xg_caret_pos = caret_pos;
     xg_vMarks = vMarks;
-    xg_vTateInfo = vTateInfo;
+    xg_vVertInfo = vVertInfo;
     xg_vYokoInfo = vYokoInfo;
-    xg_vecTateHints = vecTateHints;
+    xg_vecVertHints = vecVertHints;
     xg_vecYokoHints = vecYokoHints;
     xg_bSolved = bSolved;
     xg_bHintsAdded = bHintsAdded;

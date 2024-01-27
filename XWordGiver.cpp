@@ -64,13 +64,13 @@ volatile int& xg_nRows = xg_xword.m_nRows;
 volatile int& xg_nCols = xg_xword.m_nCols;
 
 // タテとヨコのかぎ。
-std::vector<XG_PlaceInfo> xg_vTateInfo, xg_vYokoInfo;
+std::vector<XG_PlaceInfo> xg_vVertInfo, xg_vYokoInfo;
 
 // ビットマップのハンドル。
 HBITMAP     xg_hbmImage = nullptr;
 
 // ヒントデータ。
-std::vector<XG_Hint> xg_vecTateHints, xg_vecYokoHints;
+std::vector<XG_Hint> xg_vecVertHints, xg_vecYokoHints;
 
 // 二重マスに枠を描くか？
 bool xg_bDrawFrameForMarkedCell = true;
@@ -79,7 +79,7 @@ bool xg_bDrawFrameForMarkedCell = true;
 bool xg_bCharFeed = true;
 
 // タテ入力？
-bool xg_bTateInput = false;
+bool xg_bVertInput = false;
 
 //////////////////////////////////////////////////////////////////////////////
 // static variables
@@ -1578,7 +1578,7 @@ bool __fastcall XG_Board::DoNumbering()
 #endif
 
     // カギをクリアする。
-    xg_vTateInfo.clear();
+    xg_vVertInfo.clear();
     xg_vYokoInfo.clear();
 
     // 各列について、縦向きにスキャンする。
@@ -1622,7 +1622,7 @@ bool __fastcall XG_Board::DoNumbering()
                     used_words.emplace(word);
 
                     // 縦のカギに登録。
-                    xg_vTateInfo.emplace_back(lo, j, std::move(word));
+                    xg_vVertInfo.emplace_back(lo, j, std::move(word));
                 } else {
                     return false;   // 登録されていない単語があったので失敗。
                 }
@@ -1683,11 +1683,11 @@ space_found_2:;
 
     // カギの格納情報に順序をつける。
     std::vector<XG_PlaceInfo *> data;
-    const int size1 = static_cast<int>(xg_vTateInfo.size());
+    const int size1 = static_cast<int>(xg_vVertInfo.size());
     const int size2 = static_cast<int>(xg_vYokoInfo.size());
     data.reserve(size1 + size2);
     for (int k = 0; k < size1; k++) {
-        data.emplace_back(&xg_vTateInfo[k]);
+        data.emplace_back(&xg_vVertInfo[k]);
     }
     for (int k = 0; k < size2; k++) {
         data.emplace_back(&xg_vYokoInfo[k]);
@@ -1717,7 +1717,7 @@ space_found_2:;
     }
 
     // カギの格納情報を番号順に並べ替える。
-    sort(xg_vTateInfo.begin(), xg_vTateInfo.end(), xg_placeinfo_compare_number());
+    sort(xg_vVertInfo.begin(), xg_vVertInfo.end(), xg_placeinfo_compare_number());
     sort(xg_vYokoInfo.begin(), xg_vYokoInfo.end(), xg_placeinfo_compare_number());
 
     return true;
@@ -1740,7 +1740,7 @@ void __fastcall XG_Board::DoNumberingNoCheck()
 #endif
 
     // カギをクリアする。
-    xg_vTateInfo.clear();
+    xg_vVertInfo.clear();
     xg_vYokoInfo.clear();
 
     // 各列について、縦向きにスキャンする。
@@ -1776,7 +1776,7 @@ void __fastcall XG_Board::DoNumberingNoCheck()
                 // 空白が見つからなかったか？
                 if (!bFound) {
                     // 単語を登録する。
-                    xg_vTateInfo.emplace_back(lo, j, std::move(word));
+                    xg_vVertInfo.emplace_back(lo, j, std::move(word));
                 }
             }
         }
@@ -1824,9 +1824,9 @@ void __fastcall XG_Board::DoNumberingNoCheck()
     // カギの格納情報に順序をつける。
     std::vector<XG_PlaceInfo *> data;
     {
-        const int size = static_cast<int>(xg_vTateInfo.size());
+        const int size = static_cast<int>(xg_vVertInfo.size());
         for (int k = 0; k < size; k++) {
-            data.emplace_back(&xg_vTateInfo[k]);
+            data.emplace_back(&xg_vVertInfo[k]);
         }
     }
     {
@@ -1860,7 +1860,7 @@ void __fastcall XG_Board::DoNumberingNoCheck()
     }
 
     // カギの格納情報を番号順に並べ替える。
-    sort(xg_vTateInfo.begin(), xg_vTateInfo.end(), xg_placeinfo_compare_number());
+    sort(xg_vVertInfo.begin(), xg_vVertInfo.end(), xg_placeinfo_compare_number());
     sort(xg_vYokoInfo.begin(), xg_vYokoInfo.end(), xg_placeinfo_compare_number());
 }
 
@@ -2162,7 +2162,7 @@ bool __fastcall XgParseHints(std::vector<XG_Hint>& hints, const std::wstring& st
 bool __fastcall XgParseHintsStr(const std::wstring& strHints)
 {
     // ヒントをクリアする。
-    xg_vecTateHints.clear();
+    xg_vecVertHints.clear();
     xg_vecYokoHints.clear();
 
     // ヒント文字列の前後の空白を取り除く。
@@ -2194,7 +2194,7 @@ bool __fastcall XgParseHintsStr(const std::wstring& strHints)
     xg_str_trim(yoko);
 
     // それぞれについて解析する。
-    return XgParseHints(xg_vecTateHints, tate) &&
+    return XgParseHints(xg_vecVertHints, tate) &&
            XgParseHints(xg_vecYokoHints, yoko);
 }
 
@@ -2219,7 +2219,7 @@ XgGetHintsStr(const XG_Board& board, std::wstring& str, int hint_type, bool bSho
         str += XgLoadStringDx1(IDS_DOWN);
         str += L"\r\n";
 
-        for (const auto& info : xg_vTateInfo) {
+        for (const auto& info : xg_vVertInfo) {
             // 番号を格納する。
             StringCchPrintf(sz, _countof(sz), XgLoadStringDx1(IDS_DOWNNUMBER), info.m_number);
             str += sz;
@@ -2233,7 +2233,7 @@ XgGetHintsStr(const XG_Board& board, std::wstring& str, int hint_type, bool bSho
 
             // ヒント文章を追加する。
             bool added = false;
-            for (auto& hint : xg_vecTateHints) {
+            for (auto& hint : xg_vecVertHints) {
                 if (hint.m_strWord == info.m_word) {
                     str += hint.m_strHint;
                     added = true;
@@ -2320,14 +2320,14 @@ XgGetHintsStr(const XG_Board& board, std::wstring& str, int hint_type, bool bSho
         str += XgLoadStringDx1(IDS_OL);    // <ol>
         str += L"\r\n";
 
-        for (const auto& info : xg_vTateInfo) {
+        for (const auto& info : xg_vVertInfo) {
             // <li>
             StringCchPrintf(sz, _countof(sz), XgLoadStringDx1(IDS_LI), info.m_number);
             str += sz;
 
             // ヒント文章を追加する。
             bool added = false;
-            for (auto& hint : xg_vecTateHints) {
+            for (auto& hint : xg_vecVertHints) {
                 if (hint.m_strWord == info.m_word) {
                     str += hint.m_strHint;
                     added = true;
@@ -2642,7 +2642,7 @@ bool __fastcall XgSetJsonString(HWND hwnd, const std::wstring& str)
 
         if (success) {
             // カギをクリアする。
-            xg_vTateInfo.clear();
+            xg_vVertInfo.clear();
             xg_vYokoInfo.clear();
 
             if (is_solved) {
@@ -2665,7 +2665,7 @@ bool __fastcall XgSetJsonString(HWND hwnd, const std::wstring& str)
                 xg_xword = xw;
             }
             xg_vMarks = mark_positions;
-            xg_vecTateHints = tate;
+            xg_vecVertHints = tate;
             xg_vecYokoHints = yoko;
             xg_strHeader = header;
             xg_str_trim(xg_strHeader);
@@ -2795,15 +2795,15 @@ bool __fastcall XgSetStdString(HWND hwnd, const std::wstring& str)
         if (xg_strHints.empty() || !XgParseHintsStr(xg_strHints)) {
             // 失敗した。
             xg_strHints.clear();
-            xg_vecTateHints.clear();
+            xg_vecVertHints.clear();
             xg_vecYokoHints.clear();
         } else {
             // カギに単語が書かれていなかった場合の処理。
-            for (auto& hint : xg_vecTateHints) {
+            for (auto& hint : xg_vecVertHints) {
                 if (hint.m_strWord.size())
                     continue;
 
-                for (const auto& info : xg_vTateInfo) {
+                for (const auto& info : xg_vVertInfo) {
                     if (info.m_number == hint.m_number) {
                         std::wstring word;
                         for (int k = info.m_iRow; k < xg_nRows; ++k) {
@@ -3009,7 +3009,7 @@ bool __fastcall XgSetXDString(HWND hwnd, const std::wstring& str)
     xg_strNotes = notes;
     xg_nCols = static_cast<int>(rows[0].size());
     xg_nRows = static_cast<int>(rows.size());
-    xg_vecTateHints.clear();
+    xg_vecVertHints.clear();
     xg_vecYokoHints.clear();
     xg_bSolved = false;
     xg_nViewMode = view_mode;
@@ -3030,7 +3030,7 @@ bool __fastcall XgSetXDString(HWND hwnd, const std::wstring& str)
                 auto hint = str0.substr(iDot + 1, iTilda - (iDot + 1));
                 xg_str_trim(hint);
                 word = XgNormalizeString(word);
-                for (XG_PlaceInfo& item : xg_vTateInfo) {
+                for (XG_PlaceInfo& item : xg_vVertInfo) {
                     if (item.m_word == word) {
                         tate.emplace_back(item.m_number, word, hint);
                         break;
@@ -3058,7 +3058,7 @@ bool __fastcall XgSetXDString(HWND hwnd, const std::wstring& str)
                 yoko.emplace_back(item.m_number, item.m_word, L"");
             }
         }
-        for (XG_PlaceInfo& item : xg_vTateInfo) {
+        for (XG_PlaceInfo& item : xg_vVertInfo) {
             bool found = false;
             for (auto& info : tate) {
                 if (item.m_number == info.m_number) {
@@ -3091,7 +3091,7 @@ bool __fastcall XgSetXDString(HWND hwnd, const std::wstring& str)
                 xg_bSolved = true;
                 xg_bShowAnswer = false;
                 XgClearNonBlocks();
-                xg_vecTateHints = tate;
+                xg_vecVertHints = tate;
                 xg_vecYokoHints = yoko;
             }
 
@@ -3123,7 +3123,7 @@ bool __fastcall XgSetXDString(HWND hwnd, const std::wstring& str)
     xg_solution.ResetAndSetSize(xg_nRows, xg_nCols);
     xg_bSolved = false;
     xg_bShowAnswer = false;
-    xg_vecTateHints.clear();
+    xg_vecVertHints.clear();
     xg_vecYokoHints.clear();
     return true;
 }
@@ -3313,7 +3313,7 @@ bool __fastcall XgSetEcwString(HWND hwnd, const std::wstring& str)
     xg_strNotes.clear();
     xg_nCols = width;
     xg_nRows = height;
-    xg_vecTateHints.clear();
+    xg_vecVertHints.clear();
     xg_vecYokoHints.clear();
     xg_bSolved = false;
     xg_nViewMode = XG_VIEW_NORMAL;
@@ -3332,7 +3332,7 @@ bool __fastcall XgSetEcwString(HWND hwnd, const std::wstring& str)
                 }
             }
         } else {
-            for (XG_PlaceInfo& item : xg_vTateInfo) {
+            for (XG_PlaceInfo& item : xg_vVertInfo) {
                 if (item.m_word == entry.word) {
                     tate.emplace_back(item.m_number, entry.word, entry.clue);
                     break;
@@ -3361,7 +3361,7 @@ bool __fastcall XgSetEcwString(HWND hwnd, const std::wstring& str)
             xg_bSolved = true;
             xg_bShowAnswer = false;
             XgClearNonBlocks();
-            xg_vecTateHints = tate;
+            xg_vecVertHints = tate;
             xg_vecYokoHints = yoko;
         }
 
@@ -4761,7 +4761,7 @@ std::unordered_set<XG_Pos> XgGetSlot(int number, BOOL vertical)
 
     int i = -1, j = -1;
     if (vertical) {
-        for (auto& info : xg_vTateInfo) {
+        for (auto& info : xg_vVertInfo) {
             if (info.m_number == number) {
                 i = info.m_iRow;
                 j = info.m_jCol;
@@ -5018,7 +5018,7 @@ void __fastcall XgDrawOneCell(HDC hdc, INT iRow, INT jCol)
 
     // 番号を描画する。
     if (!xg_bNumCroMode) {
-        for (auto& tate : xg_vTateInfo) {
+        for (auto& tate : xg_vVertInfo) {
             if (tate.m_iRow == iRow && tate.m_jCol == jCol) {
                 RECT rc0 = rc;
                 ::OffsetRect(&rc0, c_nThin, c_nThin * 2 / 3);
@@ -5332,9 +5332,9 @@ void __fastcall XgDrawXWord_NormalView(const XG_Board& xw, HDC hdc, const SIZE *
 
     // タテのカギの先頭マス。
     if (!xg_bNumCroMode) {
-        const int size = static_cast<int>(xg_vTateInfo.size());
+        const int size = static_cast<int>(xg_vVertInfo.size());
         for (int k = 0; k < size; k++) {
-            const auto i = xg_vTateInfo[k].m_iRow, j = xg_vTateInfo[k].m_jCol;
+            const auto i = xg_vVertInfo[k].m_iRow, j = xg_vVertInfo[k].m_jCol;
 
             RECT rc = {
                 xg_nMargin + j * nCellSize,
@@ -5344,7 +5344,7 @@ void __fastcall XgDrawXWord_NormalView(const XG_Board& xw, HDC hdc, const SIZE *
             };
             ::OffsetRect(&rc, c_nThin, c_nThin * 2 / 3);
 
-            XgDrawCellNumber(hdc, rc, i, j, xg_vTateInfo[k].m_number, slot);
+            XgDrawCellNumber(hdc, rc, i, j, xg_vVertInfo[k].m_number, slot);
         }
     }
 
@@ -5611,9 +5611,9 @@ void __fastcall XgDrawXWord_SkeletonView(const XG_Board& xw, HDC hdc, const SIZE
 
     // タテのカギの先頭マス。
     if (!xg_bNumCroMode) {
-        const int size = static_cast<int>(xg_vTateInfo.size());
+        const int size = static_cast<int>(xg_vVertInfo.size());
         for (int k = 0; k < size; k++) {
-            const auto i = xg_vTateInfo[k].m_iRow, j = xg_vTateInfo[k].m_jCol;
+            const auto i = xg_vVertInfo[k].m_iRow, j = xg_vVertInfo[k].m_jCol;
 
             rc = {
                 xg_nMargin + j * nCellSize,
@@ -5623,7 +5623,7 @@ void __fastcall XgDrawXWord_SkeletonView(const XG_Board& xw, HDC hdc, const SIZE
             };
             ::OffsetRect(&rc, c_nThin, c_nThin * 2 / 3);
 
-            XgDrawCellNumber(hdc, rc, i, j, xg_vTateInfo[k].m_number, slot);
+            XgDrawCellNumber(hdc, rc, i, j, xg_vVertInfo[k].m_number, slot);
         }
     }
 
@@ -5827,7 +5827,7 @@ bool __fastcall XgDoLoadCrpFile(HWND hwnd, LPCWSTR pszFile)
     if (bOK) {
         xg_nCols = nWidth;
         xg_nRows = nHeight;
-        xg_vecTateHints.clear();
+        xg_vecVertHints.clear();
         xg_vecYokoHints.clear();
         xg_bSolved = false;
 
@@ -5850,7 +5850,7 @@ bool __fastcall XgDoLoadCrpFile(HWND hwnd, LPCWSTR pszFile)
                         std::wstring word = str.substr(0, icolon);
                         std::wstring hint = str.substr(icolon + 1);
                         word = XgNormalizeString(word);
-                        for (XG_PlaceInfo& item : xg_vTateInfo) {
+                        for (XG_PlaceInfo& item : xg_vVertInfo) {
                             if (item.m_word == word) {
                                 tate.emplace_back(item.m_number, word, hint);
                                 break;
@@ -5875,7 +5875,7 @@ bool __fastcall XgDoLoadCrpFile(HWND hwnd, LPCWSTR pszFile)
                         break;
                     if (str == L"{N/A}")
                         continue;
-                    for (XG_PlaceInfo& item : xg_vTateInfo) {
+                    for (XG_PlaceInfo& item : xg_vVertInfo) {
                         if (item.m_number == i + 1) {
                             tate.emplace_back(item.m_number, item.m_word, str);
                             break;
@@ -5916,7 +5916,7 @@ bool __fastcall XgDoLoadCrpFile(HWND hwnd, LPCWSTR pszFile)
                 yoko.emplace_back(item.m_number, item.m_word, L"");
             }
         }
-        for (XG_PlaceInfo& item : xg_vTateInfo) {
+        for (XG_PlaceInfo& item : xg_vVertInfo) {
             bool found = false;
             for (auto& info : tate) {
                 if (item.m_number == info.m_number) {
@@ -5948,7 +5948,7 @@ bool __fastcall XgDoLoadCrpFile(HWND hwnd, LPCWSTR pszFile)
             xg_bSolved = true;
             xg_bShowAnswer = false;
             XgClearNonBlocks();
-            xg_vecTateHints = std::move(tate);
+            xg_vecVertHints = std::move(tate);
             xg_vecYokoHints = std::move(yoko);
         }
 
@@ -6064,12 +6064,12 @@ bool __fastcall XgDoSaveCrpFile(LPCWSTR pszFile)
             "[Clue]\n");
 
         // ヒント。
-        if (xg_vecTateHints.size() && xg_vecYokoHints.size()) {
-            fprintf(fout, "Count=%d\n", static_cast<int>(xg_vecTateHints.size() + xg_vecYokoHints.size()));
+        if (xg_vecVertHints.size() && xg_vecYokoHints.size()) {
+            fprintf(fout, "Count=%d\n", static_cast<int>(xg_vecVertHints.size() + xg_vecYokoHints.size()));
             int iHint = 1;
             // タテのカギ。
-            for (size_t i = 0; i < xg_vecTateHints.size(); ++i) {
-                auto& tate_hint = xg_vecTateHints[i];
+            for (size_t i = 0; i < xg_vecVertHints.size(); ++i) {
+                auto& tate_hint = xg_vecVertHints[i];
                 fprintf(fout, "Clue%d=%s:%s\n", iHint++,
                     XgUnicodeToAnsi(tate_hint.m_strWord).c_str(),
                     XgUnicodeToAnsi(tate_hint.m_strHint).c_str());
@@ -6199,14 +6199,14 @@ bool __fastcall XgDoSaveJson(LPCWSTR pszFile)
         }
 
         // ヒント。
-        if (xg_vecTateHints.size() && xg_vecYokoHints.size()) {
+        if (xg_vecVertHints.size() && xg_vecYokoHints.size()) {
             j0["has_hints"] = true;
 
             json hints;
 
             // タテのカギ。
             json v;
-            for (auto& tate_hint : xg_vecTateHints) {
+            for (auto& tate_hint : xg_vecVertHints) {
                 json hint;
                 hint.push_back(tate_hint.m_number);
                 hint.push_back(XgUnicodeToUtf8(tate_hint.m_strWord));
@@ -6463,11 +6463,11 @@ bool __fastcall XgDoSaveXdFile(LPCWSTR pszFile)
         fprintf(fout, "\n\n");
 
         // ヒント。
-        if (xg_bSolved && xg_vecTateHints.size() && xg_vecYokoHints.size()) {
+        if (xg_bSolved && xg_vecVertHints.size() && xg_vecYokoHints.size()) {
             char line[512];
             std::string strACROSS, strDOWN;
             // タテのカギ。
-            for (auto& tate_hint : xg_vecTateHints) {
+            for (auto& tate_hint : xg_vecVertHints) {
                 auto word = XgNormalizeStringEx(tate_hint.m_strWord);
                 StringCchPrintfA(line, _countof(line), "D%d. %s ~ %s\n",
                                  tate_hint.m_number,
@@ -6883,7 +6883,7 @@ break2:;
     }
 
     // カギをクリアする。
-    xg_vTateInfo.clear();
+    xg_vVertInfo.clear();
     xg_vYokoInfo.clear();
 
     // 成功。

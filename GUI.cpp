@@ -117,7 +117,7 @@ XG_UndoBuffer xg_ubUndoBuffer;
 WCHAR xg_prev_vk = 0;
 
 // 「入力パレット」縦置き？
-bool xg_bTateOki = true;
+bool xg_bVertOki = true;
 
 // 表示用に描画するか？（XgGetXWordExtentとXgDrawXWordとXgCreateXWordImageで使う）。
 int xg_nForDisplay = 0;
@@ -598,7 +598,7 @@ void __fastcall XgUpdateCaretPos(void)
     // 未確定文字列の設定。
     LOGFONTW lf; // 論理フォント。
     ZeroMemory(&lf, sizeof(lf));
-    if (xg_bTateInput && XgIsUserCJK()) {
+    if (xg_bVertInput && XgIsUserCJK()) {
         lf.lfFaceName[0] = L'@';
         lf.lfFaceName[1] = 0;
         lf.lfEscapement = 2700;
@@ -628,10 +628,10 @@ void __fastcall XgUpdateCaretPos(void)
     ImmReleaseContext(xg_canvasWnd, hIMC);
 
     // ヒントウィンドウのハイライトを設定する。
-    int nYoko = -1, nTate = -1;
-    for (auto& info : xg_vTateInfo) {
+    int nYoko = -1, nVert = -1;
+    for (auto& info : xg_vVertInfo) {
         if (info.m_iRow == xg_caret_pos.m_i && info.m_jCol == xg_caret_pos.m_j) {
-            nTate = info.m_number;
+            nVert = info.m_number;
             break;
         }
     }
@@ -641,7 +641,7 @@ void __fastcall XgUpdateCaretPos(void)
             break;
         }
     }
-    xg_hints_wnd.setHighlight(nYoko, nTate);
+    xg_hints_wnd.setHighlight(nYoko, nVert);
 }
 
 // キャレット位置をセットする。
@@ -819,7 +819,7 @@ bool __fastcall XgLoadSettings(void)
     xg_nInputPaletteWndX = CW_USEDEFAULT;
     xg_nInputPaletteWndY = CW_USEDEFAULT;
 
-    xg_bTateInput = false;
+    xg_bVertInput = false;
     xg_dict_name.clear();
     xg_dirs_save_to.clear();
     xg_bAutoRetry = true;
@@ -831,7 +831,7 @@ bool __fastcall XgLoadSettings(void)
     xg_bShowInputPalette = false;
     xg_bSaveAsJsonFile = true;
     xg_bAddThickFrame = true;
-    xg_bTateOki = true;
+    xg_bVertOki = true;
     xg_bCharFeed = true;
     xg_rgbWhiteCellColor = RGB(255, 255, 255);
     xg_rgbBlackCellColor = RGB(0x33, 0x33, 0x33);
@@ -893,8 +893,8 @@ bool __fastcall XgLoadSettings(void)
             xg_bMainWndMaximized = !!dwValue;
         }
 
-        if (!app_key.QueryDword(L"TateInput", dwValue)) {
-            xg_bTateInput = !!dwValue;
+        if (!app_key.QueryDword(L"VertInput", dwValue)) {
+            xg_bVertInput = !!dwValue;
         }
 
         if (!app_key.QueryDword(L"HintsX", dwValue)) {
@@ -1000,8 +1000,8 @@ bool __fastcall XgLoadSettings(void)
             xg_bCharFeed = !!dwValue;
         }
 
-        if (!app_key.QueryDword(L"TateOki", dwValue)) {
-            xg_bTateOki = !!dwValue;
+        if (!app_key.QueryDword(L"VertOki", dwValue)) {
+            xg_bVertOki = !!dwValue;
         }
         if (!app_key.QueryDword(L"WhiteCellColor", dwValue)) {
             xg_rgbWhiteCellColor = dwValue;
@@ -1186,7 +1186,7 @@ bool __fastcall XgSaveSettings(void)
         app_key.SetDword(L"NumberToGenerate", xg_nNumberToGenerate);
         app_key.SetDword(L"AddThickFrame", xg_bAddThickFrame);
         app_key.SetDword(L"CharFeed", xg_bCharFeed);
-        app_key.SetDword(L"TateOki", xg_bTateOki);
+        app_key.SetDword(L"VertOki", xg_bVertOki);
 
         app_key.SetDword(L"WhiteCellColor", xg_rgbWhiteCellColor);
         app_key.SetDword(L"BlackCellColor", xg_rgbBlackCellColor);
@@ -1255,7 +1255,7 @@ bool __fastcall XgSaveSettings(void)
         app_key.SetDword(L"WindowCY", s_nMainWndCY);
         app_key.SetDword(L"MainWndMaximized", !!xg_bMainWndMaximized);
 
-        app_key.SetDword(L"TateInput", xg_bTateInput);
+        app_key.SetDword(L"VertInput", xg_bVertInput);
 
         app_key.SetDword(L"FileType", static_cast<DWORD>(xg_nFileType));
 
@@ -1451,7 +1451,7 @@ bool XgOpenCandsWnd(HWND hwnd, bool vertical)
 // ヒントを更新する。
 void __fastcall XgUpdateHints(void)
 {
-    xg_vecTateHints.clear();
+    xg_vecVertHints.clear();
     xg_vecYokoHints.clear();
     xg_strHints.clear();
     if (xg_bSolved) {
@@ -1547,7 +1547,7 @@ void XgNewCells(HWND hwnd, WCHAR ch, int nRows, int nCols)
     xg_bHintsAdded = false;
     xg_bShowAnswer = false;
     XgSetCaretPos();
-    xg_vTateInfo.clear();
+    xg_vVertInfo.clear();
     xg_vYokoInfo.clear();
     xg_strHeader.clear();
     xg_strNotes.clear();
@@ -1663,7 +1663,7 @@ void XgResizeCells(HWND hwnd, int nNewRows, int nNewCols)
     xg_bHintsAdded = false;
     xg_bShowAnswer = false;
     XgSetCaretPos();
-    xg_vTateInfo.clear();
+    xg_vVertInfo.clear();
     xg_vYokoInfo.clear();
     xg_strHeader.clear();
     xg_strNotes.clear();
@@ -1706,9 +1706,9 @@ static void XgPrintIt(HDC hdc, PRINTDLGW* ppd, bool bPrintAnswer)
     HGDIOBJ hFontOld;
     RECT rc;
 
-    const int nTate = ::GetDeviceCaps(hdc, VERTSIZE);
+    const int nVert = ::GetDeviceCaps(hdc, VERTSIZE);
     const int nYoko = ::GetDeviceCaps(hdc, HORZSIZE);
-    if (nTate < nYoko) {
+    if (nVert < nYoko) {
         // 印刷用紙が横長。メッセージを表示して終了。
         ::XgCenterMessageBoxW(xg_hMainWnd, XgLoadStringDx1(IDS_SETPORTRAIT), nullptr,
                             MB_ICONERROR);
@@ -2846,7 +2846,7 @@ bool __fastcall XgOnGenerate(HWND hwnd, bool show_answer, bool multiple = false)
                 // 初期化。
                 xg_bSolved = false;
                 xg_xword.ResetAndSetSize(xg_nRows, xg_nCols);
-                xg_vTateInfo.clear();
+                xg_vVertInfo.clear();
                 xg_vYokoInfo.clear();
                 xg_vMarks.clear();
                 xg_vMarkedCands.clear();
@@ -2867,9 +2867,9 @@ bool __fastcall XgOnGenerate(HWND hwnd, bool show_answer, bool multiple = false)
         xg_xword.clear();
         xg_vMarkedCands.clear();
         xg_vMarks.clear();
-        xg_vTateInfo.clear();
+        xg_vVertInfo.clear();
         xg_vYokoInfo.clear();
-        xg_vecTateHints.clear();
+        xg_vecVertHints.clear();
         xg_vecYokoHints.clear();
         xg_bSolved = false;
         xg_bShowAnswer = false;
@@ -2903,9 +2903,9 @@ bool __fastcall XgOnGenerateBlacksRepeatedly(HWND hwnd)
     xg_xword.clear();
     XgSetCaretPos();
     xg_vMarks.clear();
-    xg_vTateInfo.clear();
+    xg_vVertInfo.clear();
     xg_vYokoInfo.clear();
-    xg_vecTateHints.clear();
+    xg_vecVertHints.clear();
     xg_vecYokoHints.clear();
     xg_bSolved = false;
     xg_bHintsAdded = false;
@@ -2944,7 +2944,7 @@ bool __fastcall XgOnGenerateBlacksRepeatedly(HWND hwnd)
             // 初期化。
             xg_bSolved = false;
             xg_xword.clear();
-            xg_vTateInfo.clear();
+            xg_vVertInfo.clear();
             xg_vYokoInfo.clear();
             xg_vMarks.clear();
             xg_vMarkedCands.clear();
@@ -2996,9 +2996,9 @@ bool __fastcall XgOnGenerateBlacks(HWND hwnd, bool sym)
     // 初期化する。
     XgSetCaretPos();
     xg_vMarks.clear();
-    xg_vTateInfo.clear();
+    xg_vVertInfo.clear();
     xg_vYokoInfo.clear();
-    xg_vecTateHints.clear();
+    xg_vecVertHints.clear();
     xg_vecYokoHints.clear();
     xg_bSolved = false;
     xg_bHintsAdded = false;
@@ -3066,7 +3066,7 @@ bool __fastcall XgOnSolve_AddBlack(HWND hwnd)
 
     // 初期化する。
     xg_bSolvingEmpty = xg_xword.IsEmpty();
-    xg_vTateInfo.clear();
+    xg_vVertInfo.clear();
     xg_vYokoInfo.clear();
     xg_vMarks.clear();
     xg_vMarkedCands.clear();
@@ -3171,7 +3171,7 @@ bool __fastcall XgOnSolve_NoAddBlack(HWND hwnd, bool bShowAnswer/* = true*/)
 
     // 初期化する。
     xg_bSolvingEmpty = xg_xword.IsEmpty();
-    xg_vTateInfo.clear();
+    xg_vVertInfo.clear();
     xg_vYokoInfo.clear();
     xg_vMarks.clear();
     xg_vMarkedCands.clear();
@@ -3302,9 +3302,9 @@ bool __fastcall XgOnSolveRepeatedly(HWND hwnd)
     s_bOutOfDiskSpace = false;
     xg_bSolvingEmpty = xg_xword.IsEmpty();
     xg_bNoAddBlack = false;
-    xg_vTateInfo.clear();
+    xg_vVertInfo.clear();
     xg_vYokoInfo.clear();
-    xg_vecTateHints.clear();
+    xg_vecVertHints.clear();
     xg_vecYokoHints.clear();
     // ナンクロモードをリセットする。
     xg_bNumCroMode = false;
@@ -3327,7 +3327,7 @@ bool __fastcall XgOnSolveRepeatedly(HWND hwnd)
             // 初期化。
             xg_bSolved = false;
             xg_xword = xword_save;
-            xg_vTateInfo.clear();
+            xg_vVertInfo.clear();
             xg_vYokoInfo.clear();
             xg_vMarks.clear();
             xg_vMarkedCands.clear();
@@ -3343,9 +3343,9 @@ bool __fastcall XgOnSolveRepeatedly(HWND hwnd)
 
     // 初期化する。
     xg_xword = xword_save;
-    xg_vTateInfo.clear();
+    xg_vVertInfo.clear();
     xg_vYokoInfo.clear();
-    xg_vecTateHints.clear();
+    xg_vecVertHints.clear();
     xg_vecYokoHints.clear();
     xg_strFileName.clear();
 
@@ -3424,9 +3424,9 @@ bool __fastcall XgOnSolveRepeatedlyNoAddBlack(HWND hwnd)
     s_bOutOfDiskSpace = false;
     xg_bSolvingEmpty = xg_xword.IsEmpty();
     xg_bNoAddBlack = true;
-    xg_vTateInfo.clear();
+    xg_vVertInfo.clear();
     xg_vYokoInfo.clear();
-    xg_vecTateHints.clear();
+    xg_vecVertHints.clear();
     xg_vecYokoHints.clear();
     // ナンクロモードをリセットする。
     xg_bNumCroMode = false;
@@ -3449,7 +3449,7 @@ bool __fastcall XgOnSolveRepeatedlyNoAddBlack(HWND hwnd)
             // 初期化。
             xg_bSolved = false;
             xg_xword = xword_save;
-            xg_vTateInfo.clear();
+            xg_vVertInfo.clear();
             xg_vYokoInfo.clear();
             xg_vMarks.clear();
             xg_vMarkedCands.clear();
@@ -3465,9 +3465,9 @@ bool __fastcall XgOnSolveRepeatedlyNoAddBlack(HWND hwnd)
 
     // 初期化する。
     xg_xword = xword_save;
-    xg_vTateInfo.clear();
+    xg_vVertInfo.clear();
     xg_vYokoInfo.clear();
-    xg_vecTateHints.clear();
+    xg_vecVertHints.clear();
     xg_vecYokoHints.clear();
     xg_strFileName.clear();
 
@@ -3796,9 +3796,9 @@ bool XgPasteBoard(HWND hwnd, const std::wstring& str)
     xg_bShowAnswer = false;
     XgSetCaretPos();
     xg_vMarks.clear();
-    xg_vecTateHints.clear();
+    xg_vecVertHints.clear();
     xg_vecYokoHints.clear();
-    xg_vTateInfo.clear();
+    xg_vVertInfo.clear();
     xg_vYokoInfo.clear();
     XgMarkUpdate();
     // ナンクロモードを解除。
@@ -4369,7 +4369,7 @@ void __fastcall MainWnd_OnInitMenu(HWND /*hwnd*/, HMENU hMenu)
     }
 
     // タテヨコ入力のメニュー更新。
-    if (xg_bTateInput) {
+    if (xg_bVertInput) {
         ::CheckMenuRadioItem(hMenu, ID_INPUTH, ID_INPUTV, ID_INPUTV, MF_BYCOMMAND);
     } else {
         ::CheckMenuRadioItem(hMenu, ID_INPUTH, ID_INPUTV, ID_INPUTH, MF_BYCOMMAND);
@@ -4474,7 +4474,7 @@ void __fastcall XgUpdateStatusBar(HWND hwnd)
 
     // タテ入力かヨコ入力かどうか表示する。
     std::wstring str;
-    if (xg_bTateInput) {
+    if (xg_bVertInput) {
         str = XgLoadStringDx1(IDS_VINPUT3);
     } else {
         str = XgLoadStringDx1(IDS_HINPUT3);
@@ -4952,7 +4952,7 @@ void XgDoWebSearch(HWND hwnd, LPCWSTR str)
     ::ShellExecuteW(hwnd, nullptr, query.c_str(), nullptr, nullptr, SW_SHOWNORMAL);
 }
 
-void __fastcall MainWnd_OnCopyPattern(HWND hwnd, BOOL bTate)
+void __fastcall MainWnd_OnCopyPattern(HWND hwnd, BOOL bVert)
 {
     XG_Board *pxword;
     if (xg_bSolved && xg_bShowAnswer) {
@@ -4963,7 +4963,7 @@ void __fastcall MainWnd_OnCopyPattern(HWND hwnd, BOOL bTate)
 
     // パターンを取得する。
     std::wstring pattern;
-    if (bTate) {
+    if (bVert) {
         pattern = pxword->GetPatternV(xg_caret_pos);
     } else {
         pattern = pxword->GetPatternH(xg_caret_pos);
@@ -5024,7 +5024,7 @@ void __fastcall MainWnd_OnCopyPatternVert(HWND hwnd)
 }
 
 // オンライン辞書を引く。
-void __fastcall XgOnlineDict(HWND hwnd, BOOL bTate)
+void __fastcall XgOnlineDict(HWND hwnd, BOOL bVert)
 {
     XG_Board *pxword;
     if (xg_bSolved && xg_bShowAnswer) {
@@ -5035,7 +5035,7 @@ void __fastcall XgOnlineDict(HWND hwnd, BOOL bTate)
 
     // パターンを取得する。
     std::wstring pattern;
-    if (bTate) {
+    if (bVert) {
         pattern = pxword->GetPatternV(xg_caret_pos);
     } else {
         pattern = pxword->GetPatternH(xg_caret_pos);
@@ -6342,7 +6342,7 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT /*codeNo
         bUpdateImage = TRUE;
         break;
     case ID_ONLINEDICT:
-        XgOnlineDict(hwnd, xg_bTateInput);
+        XgOnlineDict(hwnd, xg_bVertInput);
         break;
     case ID_ONLINEDICTV:
         XgOnlineDict(hwnd, TRUE);

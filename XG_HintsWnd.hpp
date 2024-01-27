@@ -15,9 +15,9 @@ public:
     inline static HFONT               xg_hHintsUIFont = nullptr;
 
     // 縦のカギのコントロール群。
-    inline static HWND                xg_hwndTateCaptionStatic = nullptr;
-    inline static std::vector<HWND>   xg_ahwndTateStatics;
-    inline static std::vector<HWND>   xg_ahwndTateEdits;
+    inline static HWND                xg_hwndVertCaptionStatic = nullptr;
+    inline static std::vector<HWND>   xg_ahwndVertStatics;
+    inline static std::vector<HWND>   xg_ahwndVertEdits;
 
     // 横のカギのコントロール群。
     inline static HWND                xg_hwndYokoCaptionStatic = nullptr;
@@ -29,22 +29,22 @@ public:
     inline static int s_nHintsWndCX = CW_USEDEFAULT, s_nHintsWndCY = CW_USEDEFAULT;
 
     // ハイライト。
-    inline static HWND s_hwndHighlightTateEdit = nullptr;
+    inline static HWND s_hwndHighlightVertEdit = nullptr;
     inline static HWND s_hwndHighlightYokoEdit = nullptr;
 
     // ハイライトを更新する。
-    void setHighlight(int nYoko, int nTate) noexcept
+    void setHighlight(int nYoko, int nVert) noexcept
     {
-        HWND hwndTateOld = s_hwndHighlightTateEdit;
+        HWND hwndVertOld = s_hwndHighlightVertEdit;
         HWND hwndYokoOld = s_hwndHighlightYokoEdit;
-        HWND hwndTate = nullptr, hwndYoko = nullptr;
+        HWND hwndVert = nullptr, hwndYoko = nullptr;
 
-        if (nTate != -1) {
-            for (size_t i = 0; i < xg_vecTateHints.size(); ++i) {
-                if (xg_vecTateHints.size() <= i || xg_ahwndTateEdits.size() <= i)
+        if (nVert != -1) {
+            for (size_t i = 0; i < xg_vecVertHints.size(); ++i) {
+                if (xg_vecVertHints.size() <= i || xg_ahwndVertEdits.size() <= i)
                     break;
-                if (xg_vecTateHints[i].m_number == nTate) {
-                    hwndTate = xg_ahwndTateEdits[i];
+                if (xg_vecVertHints[i].m_number == nVert) {
+                    hwndVert = xg_ahwndVertEdits[i];
                     break;
                 }
             }
@@ -60,15 +60,15 @@ public:
             }
         }
 
-        s_hwndHighlightTateEdit = hwndTate;
+        s_hwndHighlightVertEdit = hwndVert;
         s_hwndHighlightYokoEdit = hwndYoko;
 
-        if (hwndTate)
-            InvalidateRect(hwndTate, nullptr, TRUE);
+        if (hwndVert)
+            InvalidateRect(hwndVert, nullptr, TRUE);
         if (hwndYoko)
             InvalidateRect(hwndYoko, nullptr, TRUE);
-        if (hwndTateOld)
-            InvalidateRect(hwndTateOld, nullptr, TRUE);
+        if (hwndVertOld)
+            InvalidateRect(hwndVertOld, nullptr, TRUE);
         if (hwndYokoOld)
             InvalidateRect(hwndYokoOld, nullptr, TRUE);
     }
@@ -76,7 +76,7 @@ public:
     // ハイライトに背景色を付ける。
     HBRUSH OnCtlColor(HWND hwnd, HDC hdc, HWND hwndChild, int type) noexcept
     {
-        if (hwndChild == s_hwndHighlightTateEdit || hwndChild == s_hwndHighlightYokoEdit)
+        if (hwndChild == s_hwndHighlightVertEdit || hwndChild == s_hwndHighlightYokoEdit)
         {
             constexpr COLORREF rgbColor = RGB(140, 255, 255);
             SetBkColor(hdc, rgbColor);
@@ -104,8 +104,8 @@ public:
         }
 
         if (::IsWindow(xg_hHintsWnd)) {
-            for (size_t i = 0; i < xg_vecTateHints.size(); ++i) {
-                if (::SendMessageW(xg_ahwndTateEdits[i], EM_GETMODIFY, 0, 0)) {
+            for (size_t i = 0; i < xg_vecVertHints.size(); ++i) {
+                if (::SendMessageW(xg_ahwndVertEdits[i], EM_GETMODIFY, 0, 0)) {
                     return true;
                 }
             }
@@ -121,8 +121,8 @@ public:
     // ヒントデータを設定する。
     static void SetHintsData(void) noexcept
     {
-        for (size_t i = 0; i < xg_vecTateHints.size(); ++i) {
-            ::SetWindowTextW(xg_ahwndTateEdits[i], xg_vecTateHints[i].m_strHint.data());
+        for (size_t i = 0; i < xg_vecVertHints.size(); ++i) {
+            ::SetWindowTextW(xg_ahwndVertEdits[i], xg_vecVertHints[i].m_strHint.data());
         }
         for (size_t i = 0; i < xg_vecYokoHints.size(); ++i) {
             ::SetWindowTextW(xg_ahwndYokoEdits[i], xg_vecYokoHints[i].m_strHint.data());
@@ -135,13 +135,13 @@ public:
         bool updated = false;
         if (::IsWindow(xg_hHintsWnd)) {
             WCHAR sz[512];
-            for (size_t i = 0; i < xg_vecTateHints.size(); ++i) {
-                if (::SendMessageW(xg_ahwndTateEdits[i], EM_GETMODIFY, 0, 0)) {
+            for (size_t i = 0; i < xg_vecVertHints.size(); ++i) {
+                if (::SendMessageW(xg_ahwndVertEdits[i], EM_GETMODIFY, 0, 0)) {
                     updated = true;
-                    ::GetWindowTextW(xg_ahwndTateEdits[i], sz, 
+                    ::GetWindowTextW(xg_ahwndVertEdits[i], sz, 
                                      static_cast<int>(_countof(sz)));
-                    xg_vecTateHints[i].m_strHint = sz;
-                    ::SendMessageW(xg_ahwndTateEdits[i], EM_SETMODIFY, FALSE, 0);
+                    xg_vecVertHints[i].m_strHint = sz;
+                    ::SendMessageW(xg_ahwndVertEdits[i], EM_SETMODIFY, FALSE, 0);
                 }
             }
             for (size_t i = 0; i < xg_vecYokoHints.size(); ++i) {
@@ -150,7 +150,7 @@ public:
                     ::GetWindowTextW(xg_ahwndYokoEdits[i], sz, 
                                      static_cast<int>(_countof(sz)));
                     xg_vecYokoHints[i].m_strHint = sz;
-                    ::SendMessageW(xg_ahwndTateEdits[i], EM_SETMODIFY, FALSE, 0);
+                    ::SendMessageW(xg_ahwndVertEdits[i], EM_SETMODIFY, FALSE, 0);
                 }
             }
         }
@@ -177,7 +177,7 @@ public:
     // ヒントウィンドウのサイズが変わった。
     void OnSize(HWND hwnd, UINT /*state*/, int /*cx*/, int /*cy*/)
     {
-        if (xg_hwndTateCaptionStatic == nullptr)
+        if (xg_hwndVertCaptionStatic == nullptr)
             return;
 
         xg_svHintsScrollView.clear();
@@ -206,12 +206,12 @@ public:
         // タテのカギ。
         {
             const MRect rcCtrl(MPoint(0, y + 4), MSize(rcClient.Width(), size1.cy + 4));
-            xg_svHintsScrollView.AddCtrlInfo(xg_hwndTateCaptionStatic, rcCtrl);
+            xg_svHintsScrollView.AddCtrlInfo(xg_hwndVertCaptionStatic, rcCtrl);
             y += size1.cy + 8;
         }
         if (rcClient.Width() - size2.cx - 8 > 0) {
-            for (size_t i = 0; i < xg_vecTateHints.size(); ++i) {
-                ::GetWindowTextW(xg_ahwndTateEdits[i], szText,
+            for (size_t i = 0; i < xg_vecVertHints.size(); ++i) {
+                ::GetWindowTextW(xg_ahwndVertEdits[i], szText,
                                  _countof(szText));
                 MRect rcCtrl(MPoint(size2.cx, y),
                              MSize(rcClient.Width() - size2.cx - 8, 0));
@@ -223,10 +223,10 @@ public:
                     DT_LEFT | DT_EDITCONTROL | DT_CALCRECT | DT_WORDBREAK);
                 rcCtrl.right = rcClient.right;
                 rcCtrl.bottom += 8;
-                xg_svHintsScrollView.AddCtrlInfo(xg_ahwndTateEdits[i], rcCtrl);
+                xg_svHintsScrollView.AddCtrlInfo(xg_ahwndVertEdits[i], rcCtrl);
                 rcCtrl.left = 0;
                 rcCtrl.right = size2.cx;
-                xg_svHintsScrollView.AddCtrlInfo(xg_ahwndTateStatics[i], rcCtrl);
+                xg_svHintsScrollView.AddCtrlInfo(xg_ahwndVertStatics[i], rcCtrl);
                 y += rcCtrl.Height();
             }
         }
@@ -267,7 +267,7 @@ public:
     struct XG_HintEditData
     {
         WNDPROC m_fnOldWndProc;
-        bool    m_fTate;
+        bool    m_fVert;
     };
 
     static LRESULT CALLBACK XgHintEdit_WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
@@ -306,7 +306,7 @@ public:
                 bool found = false, vertical = false;
                 size_t i = 0;
                 if (!found) {
-                    for (auto& edit : xg_ahwndTateEdits) {
+                    for (auto& edit : xg_ahwndVertEdits) {
                         if (edit == hwnd) {
                             found = true;
                             vertical = true;
@@ -327,7 +327,7 @@ public:
                     }
                 }
                 if (found) {
-                    const auto number = (vertical ? xg_vecTateHints[i].m_number : xg_vecYokoHints[i].m_number);
+                    const auto number = (vertical ? xg_vecVertHints[i].m_number : xg_vecYokoHints[i].m_number);
                     PostMessageW(xg_hMainWnd, XGWM_HIGHLIGHT, TRUE, MAKELPARAM(number, vertical));
                 }
             }
@@ -425,13 +425,13 @@ public:
         xg_hHintsWnd = hwnd;
 
         // 初期化。
-        xg_ahwndTateStatics.clear();
-        xg_ahwndTateEdits.clear();
+        xg_ahwndVertStatics.clear();
+        xg_ahwndVertEdits.clear();
         xg_ahwndYokoStatics.clear();
         xg_ahwndYokoEdits.clear();
         xg_svHintsScrollView.SetParent(hwnd);
         xg_svHintsScrollView.ShowScrollBars(FALSE, TRUE);
-        s_hwndHighlightTateEdit = s_hwndHighlightYokoEdit = nullptr;
+        s_hwndHighlightVertEdit = s_hwndHighlightYokoEdit = nullptr;
 
         if (xg_hHintsUIFont) {
             ::DeleteObject(xg_hHintsUIFont);
@@ -450,7 +450,7 @@ public:
             0, 0, 0, 0, hwnd, nullptr, xg_hInstance, nullptr);
         if (hwndCtrl == nullptr)
             return FALSE;
-        xg_hwndTateCaptionStatic = hwndCtrl;
+        xg_hwndVertCaptionStatic = hwndCtrl;
         ::SendMessageW(hwndCtrl, WM_SETFONT,
             reinterpret_cast<WPARAM>(::GetStockObject(SYSTEM_FIXED_FONT)),
             TRUE);
@@ -469,7 +469,7 @@ public:
 
         XG_HintEditData *data;
         WCHAR sz[256];
-        for (const auto& hint : xg_vecTateHints) {
+        for (const auto& hint : xg_vecVertHints) {
             StringCchPrintf(sz, _countof(sz), XgLoadStringDx1(IDS_DOWNNUMBER), hint.m_number);
             hwndCtrl = ::CreateWindowW(TEXT("STATIC"), sz,
                 WS_CHILD | WS_VISIBLE | SS_RIGHT | SS_NOPREFIX | SS_NOTIFY | SS_CENTERIMAGE,
@@ -481,7 +481,7 @@ public:
             if (hwndCtrl == nullptr)
                 return FALSE;
 
-            xg_ahwndTateStatics.emplace_back(hwndCtrl);
+            xg_ahwndVertStatics.emplace_back(hwndCtrl);
 
             hwndCtrl = ::CreateWindowExW(
                 WS_EX_CLIENTEDGE,
@@ -496,13 +496,13 @@ public:
                 return FALSE;
 
             data = static_cast<XG_HintEditData*>(::LocalAlloc(LMEM_FIXED, sizeof(XG_HintEditData)));
-            data->m_fTate = true;
+            data->m_fVert = true;
             data->m_fnOldWndProc = reinterpret_cast<WNDPROC>(
                 ::SetWindowLongPtrW(hwndCtrl, GWLP_WNDPROC,
                     reinterpret_cast<LONG_PTR>(XgHintEdit_WndProc)));
             ::SetWindowLongPtrW(hwndCtrl, GWLP_USERDATA,
                 reinterpret_cast<LONG_PTR>(data));
-            xg_ahwndTateEdits.emplace_back(hwndCtrl);
+            xg_ahwndVertEdits.emplace_back(hwndCtrl);
         }
         for (const auto& hint : xg_vecYokoHints) {
             StringCchPrintf(sz, _countof(sz), XgLoadStringDx1(IDS_ACROSSNUMBER), hint.m_number);
@@ -531,7 +531,7 @@ public:
                 return FALSE;
 
             data = static_cast<XG_HintEditData*>(::LocalAlloc(LMEM_FIXED, sizeof(XG_HintEditData)));
-            data->m_fTate = false;
+            data->m_fVert = false;
             data->m_fnOldWndProc = reinterpret_cast<WNDPROC>(
                 ::SetWindowLongPtrW(hwndCtrl, GWLP_WNDPROC,
                     reinterpret_cast<LONG_PTR>(XgHintEdit_WndProc)));
@@ -540,8 +540,8 @@ public:
             xg_ahwndYokoEdits.emplace_back(hwndCtrl);
         }
 
-        if (xg_ahwndTateEdits.size())
-            ::SetFocus(xg_ahwndTateEdits[0]);
+        if (xg_ahwndVertEdits.size())
+            ::SetFocus(xg_ahwndVertEdits[0]);
 
         ::PostMessageW(hwnd, WM_SIZE, 0, 0);
 
@@ -573,14 +573,14 @@ public:
         XG_HintsWnd::s_nHintsWndCY = rc.Height();
 
         xg_hHintsWnd = nullptr;
-        xg_hwndTateCaptionStatic = nullptr;
+        xg_hwndVertCaptionStatic = nullptr;
         xg_hwndYokoCaptionStatic = nullptr;
-        xg_ahwndTateStatics.clear();
-        xg_ahwndTateEdits.clear();
+        xg_ahwndVertStatics.clear();
+        xg_ahwndVertEdits.clear();
         xg_ahwndYokoStatics.clear();
         xg_ahwndYokoEdits.clear();
         xg_svHintsScrollView.clear();
-        s_hwndHighlightTateEdit = s_hwndHighlightYokoEdit = nullptr;
+        s_hwndHighlightVertEdit = s_hwndHighlightYokoEdit = nullptr;
 
         ::DeleteObject(xg_hHintsUIFont);
         xg_hHintsUIFont = nullptr;
@@ -590,10 +590,10 @@ public:
     void OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT codeNotify) noexcept
     {
         if (codeNotify == STN_CLICKED) {
-            for (size_t i = 0; i < xg_vecTateHints.size(); ++i) {
-                if (xg_ahwndTateStatics[i] == hwndCtl) {
-                    ::SendMessageW(xg_ahwndTateEdits[i], EM_SETSEL, 0, -1);
-                    ::SetFocus(xg_ahwndTateEdits[i]);
+            for (size_t i = 0; i < xg_vecVertHints.size(); ++i) {
+                if (xg_ahwndVertStatics[i] == hwndCtl) {
+                    ::SendMessageW(xg_ahwndVertEdits[i], EM_SETSEL, 0, -1);
+                    ::SetFocus(xg_ahwndVertEdits[i]);
                     return;
                 }
             }
@@ -624,8 +624,8 @@ public:
             break;
 
         case VK_TAB:
-            if (xg_ahwndTateEdits.size())
-                ::SetFocus(xg_ahwndTateEdits[0]);
+            if (xg_ahwndVertEdits.size())
+                ::SetFocus(xg_ahwndVertEdits[0]);
             break;
 
         case VK_F6:
@@ -676,9 +676,9 @@ public:
         SetWindowRedraw(hwnd, FALSE);
 
         // フォントをセット。再描画はWM_SIZEに任せる。
-        for (auto hwndCtrl : xg_ahwndTateStatics)
+        for (auto hwndCtrl : xg_ahwndVertStatics)
             SetWindowFont(hwndCtrl, xg_hHintsUIFont, FALSE);
-        for (auto hwndCtrl : xg_ahwndTateEdits)
+        for (auto hwndCtrl : xg_ahwndVertEdits)
             SetWindowFont(hwndCtrl, xg_hHintsUIFont, FALSE);
         for (auto hwndCtrl : xg_ahwndYokoStatics)
             SetWindowFont(hwndCtrl, xg_hHintsUIFont, FALSE);

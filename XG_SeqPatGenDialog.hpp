@@ -111,7 +111,7 @@ public:
                 xg_bSolved = false;
                 xg_bShowAnswer = false;
                 xg_xword.clear();
-                xg_vTateInfo.clear();
+                xg_vVertInfo.clear();
                 xg_vYokoInfo.clear();
                 xg_vMarks.clear();
                 xg_vMarkedCands.clear();

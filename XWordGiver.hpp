@@ -399,7 +399,7 @@ namespace std
     }
 }
 
-extern std::vector<XG_Hint> xg_vecTateHints, xg_vecYokoHints;
+extern std::vector<XG_Hint> xg_vecVertHints, xg_vecYokoHints;
 
 // ヒントを更新する。
 void __fastcall XgUpdateHints(void);
@@ -1216,7 +1216,7 @@ namespace std
 }
 
 // タテとヨコのかぎ。
-extern std::vector<XG_PlaceInfo> xg_vTateInfo, xg_vYokoInfo;
+extern std::vector<XG_PlaceInfo> xg_vVertInfo, xg_vYokoInfo;
 
 //////////////////////////////////////////////////////////////////////////////
 
@@ -1528,13 +1528,13 @@ extern int xg_nInputPaletteWndX;
 extern int xg_nInputPaletteWndY;
 
 // 「入力パレット」縦置き？
-extern bool xg_bTateOki;
+extern bool xg_bVertOki;
 
 // 入力パレット。
 extern HWND xg_hwndInputPalette;
 
 // タテ入力？
-extern bool xg_bTateInput;
+extern bool xg_bVertInput;
 
 // 入力パレットを作成する。
 BOOL XgCreateInputPalette(HWND hwndOwner);

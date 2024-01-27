@@ -335,7 +335,7 @@ void __fastcall XgSortAndUniqueDictData(std::vector<XG_WordData>& data)
 std::vector<XG_WordData> XgCreateMiniDict(void)
 {
     std::vector<XG_WordData> ret;
-    for (const auto& hint : xg_vecTateHints)
+    for (const auto& hint : xg_vecVertHints)
     {
         ret.emplace_back(hint.m_strWord, hint.m_strHint);
     }
