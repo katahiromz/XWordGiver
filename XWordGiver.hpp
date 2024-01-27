@@ -1528,7 +1528,7 @@ extern int xg_nInputPaletteWndX;
 extern int xg_nInputPaletteWndY;
 
 // 「入力パレット」縦置き？
-extern bool xg_bVertOki;
+extern bool xg_bVerticalLayout;
 
 // 入力パレット。
 extern HWND xg_hwndInputPalette;

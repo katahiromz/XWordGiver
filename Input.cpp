@@ -31,7 +31,7 @@ void __fastcall XgInputDirection(HWND hwnd, int nDirection)
     }
 
     if (xg_hwndInputPalette) {
-        if (xg_bVertOki) {
+        if (xg_bVerticalLayout) {
             if (xg_bVertInput) {
                 SetDlgItemTextW(xg_hwndInputPalette, 20052, XgLoadStringDx1(IDS_VINPUT));
             } else {
@@ -1263,7 +1263,7 @@ void InputPal_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT codeNotify)
             break;
         case 20071: // 縦置き/横置き
             if (xg_imode == xg_im_KANA) {
-                xg_bVertOki = !xg_bVertOki;
+                xg_bVerticalLayout = !xg_bVerticalLayout;
                 XgCreateInputPalette(xg_hMainWnd);
             }
             break;
@@ -1358,7 +1358,7 @@ BOOL XgCreateInputPaletteByDict(HWND hwndOwner) noexcept
     }
 
     if (XgIsCharHiraganaW(ch) || XgIsCharKatakanaW(ch)) {
-        if (xg_bVertOki) {
+        if (xg_bVerticalLayout) {
             if (xg_bHiragana) {
                 CreateDialogW(xg_hInstance, MAKEINTRESOURCEW(IDD_HIRATATE), hwndOwner,
                               XgInputPaletteDlgProc);
@@ -1430,7 +1430,7 @@ BOOL XgCreateInputPalette(HWND hwndOwner, XG_InputMode imode)
         }
         break;
     case xg_im_KANA:
-        if (xg_bVertOki) {
+        if (xg_bVerticalLayout) {
             if (xg_bHiragana) {
                 CreateDialogW(xg_hInstance, MAKEINTRESOURCEW(IDD_HIRATATE), hwndOwner,
                               XgInputPaletteDlgProc);

@@ -117,7 +117,7 @@ XG_UndoBuffer xg_ubUndoBuffer;
 WCHAR xg_prev_vk = 0;
 
 // 「入力パレット」縦置き？
-bool xg_bVertOki = true;
+bool xg_bVerticalLayout = true;
 
 // 表示用に描画するか？（XgGetXWordExtentとXgDrawXWordとXgCreateXWordImageで使う）。
 int xg_nForDisplay = 0;
@@ -831,7 +831,7 @@ bool __fastcall XgLoadSettings(void)
     xg_bShowInputPalette = false;
     xg_bSaveAsJsonFile = true;
     xg_bAddThickFrame = true;
-    xg_bVertOki = true;
+    xg_bVerticalLayout = true;
     xg_bCharFeed = true;
     xg_rgbWhiteCellColor = RGB(255, 255, 255);
     xg_rgbBlackCellColor = RGB(0x33, 0x33, 0x33);
@@ -1000,8 +1000,8 @@ bool __fastcall XgLoadSettings(void)
             xg_bCharFeed = !!dwValue;
         }
 
-        if (!app_key.QueryDword(L"VertOki", dwValue)) {
-            xg_bVertOki = !!dwValue;
+        if (!app_key.QueryDword(L"VerticalLayout", dwValue)) {
+            xg_bVerticalLayout = !!dwValue;
         }
         if (!app_key.QueryDword(L"WhiteCellColor", dwValue)) {
             xg_rgbWhiteCellColor = dwValue;
@@ -1186,7 +1186,7 @@ bool __fastcall XgSaveSettings(void)
         app_key.SetDword(L"NumberToGenerate", xg_nNumberToGenerate);
         app_key.SetDword(L"AddThickFrame", xg_bAddThickFrame);
         app_key.SetDword(L"CharFeed", xg_bCharFeed);
-        app_key.SetDword(L"VertOki", xg_bVertOki);
+        app_key.SetDword(L"VerticalLayout", xg_bVerticalLayout);
 
         app_key.SetDword(L"WhiteCellColor", xg_rgbWhiteCellColor);
         app_key.SetDword(L"BlackCellColor", xg_rgbBlackCellColor);
