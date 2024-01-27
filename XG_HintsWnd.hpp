@@ -20,9 +20,9 @@ public:
     inline static std::vector<HWND>   xg_ahwndVertEdits;
 
     // 横のカギのコントロール群。
-    inline static HWND                xg_hwndYokoCaptionStatic = nullptr;
-    inline static std::vector<HWND>   xg_ahwndYokoStatics;
-    inline static std::vector<HWND>   xg_ahwndYokoEdits;
+    inline static HWND                xg_hwndHorzCaptionStatic = nullptr;
+    inline static std::vector<HWND>   xg_ahwndHorzStatics;
+    inline static std::vector<HWND>   xg_ahwndHorzEdits;
 
     // ヒントウィンドウの位置とサイズ。
     inline static int s_nHintsWndX = CW_USEDEFAULT, s_nHintsWndY = CW_USEDEFAULT;
@@ -30,14 +30,14 @@ public:
 
     // ハイライト。
     inline static HWND s_hwndHighlightVertEdit = nullptr;
-    inline static HWND s_hwndHighlightYokoEdit = nullptr;
+    inline static HWND s_hwndHighlightHorzEdit = nullptr;
 
     // ハイライトを更新する。
-    void setHighlight(int nYoko, int nVert) noexcept
+    void setHighlight(int nHorz, int nVert) noexcept
     {
         HWND hwndVertOld = s_hwndHighlightVertEdit;
-        HWND hwndYokoOld = s_hwndHighlightYokoEdit;
-        HWND hwndVert = nullptr, hwndYoko = nullptr;
+        HWND hwndHorzOld = s_hwndHighlightHorzEdit;
+        HWND hwndVert = nullptr, hwndHorz = nullptr;
 
         if (nVert != -1) {
             for (size_t i = 0; i < xg_vecVertHints.size(); ++i) {
@@ -49,34 +49,34 @@ public:
                 }
             }
         }
-        if (nYoko != -1) {
-            for (size_t i = 0; i < xg_vecYokoHints.size(); ++i) {
-                if (xg_vecYokoHints.size() <= i || xg_ahwndYokoEdits.size() <= i)
+        if (nHorz != -1) {
+            for (size_t i = 0; i < xg_vecHorzHints.size(); ++i) {
+                if (xg_vecHorzHints.size() <= i || xg_ahwndHorzEdits.size() <= i)
                     break;
-                if (xg_vecYokoHints[i].m_number == nYoko) {
-                    hwndYoko = xg_ahwndYokoEdits[i];
+                if (xg_vecHorzHints[i].m_number == nHorz) {
+                    hwndHorz = xg_ahwndHorzEdits[i];
                     break;
                 }
             }
         }
 
         s_hwndHighlightVertEdit = hwndVert;
-        s_hwndHighlightYokoEdit = hwndYoko;
+        s_hwndHighlightHorzEdit = hwndHorz;
 
         if (hwndVert)
             InvalidateRect(hwndVert, nullptr, TRUE);
-        if (hwndYoko)
-            InvalidateRect(hwndYoko, nullptr, TRUE);
+        if (hwndHorz)
+            InvalidateRect(hwndHorz, nullptr, TRUE);
         if (hwndVertOld)
             InvalidateRect(hwndVertOld, nullptr, TRUE);
-        if (hwndYokoOld)
-            InvalidateRect(hwndYokoOld, nullptr, TRUE);
+        if (hwndHorzOld)
+            InvalidateRect(hwndHorzOld, nullptr, TRUE);
     }
 
     // ハイライトに背景色を付ける。
     HBRUSH OnCtlColor(HWND hwnd, HDC hdc, HWND hwndChild, int type) noexcept
     {
-        if (hwndChild == s_hwndHighlightVertEdit || hwndChild == s_hwndHighlightYokoEdit)
+        if (hwndChild == s_hwndHighlightVertEdit || hwndChild == s_hwndHighlightHorzEdit)
         {
             constexpr COLORREF rgbColor = RGB(140, 255, 255);
             SetBkColor(hdc, rgbColor);
@@ -109,8 +109,8 @@ public:
                     return true;
                 }
             }
-            for (size_t i = 0; i < xg_vecYokoHints.size(); ++i) {
-                if (::SendMessageW(xg_ahwndYokoEdits[i], EM_GETMODIFY, 0, 0)) {
+            for (size_t i = 0; i < xg_vecHorzHints.size(); ++i) {
+                if (::SendMessageW(xg_ahwndHorzEdits[i], EM_GETMODIFY, 0, 0)) {
                     return true;
                 }
             }
@@ -124,8 +124,8 @@ public:
         for (size_t i = 0; i < xg_vecVertHints.size(); ++i) {
             ::SetWindowTextW(xg_ahwndVertEdits[i], xg_vecVertHints[i].m_strHint.data());
         }
-        for (size_t i = 0; i < xg_vecYokoHints.size(); ++i) {
-            ::SetWindowTextW(xg_ahwndYokoEdits[i], xg_vecYokoHints[i].m_strHint.data());
+        for (size_t i = 0; i < xg_vecHorzHints.size(); ++i) {
+            ::SetWindowTextW(xg_ahwndHorzEdits[i], xg_vecHorzHints[i].m_strHint.data());
         }
     }
 
@@ -144,12 +144,12 @@ public:
                     ::SendMessageW(xg_ahwndVertEdits[i], EM_SETMODIFY, FALSE, 0);
                 }
             }
-            for (size_t i = 0; i < xg_vecYokoHints.size(); ++i) {
-                if (::SendMessageW(xg_ahwndYokoEdits[i], EM_GETMODIFY, 0, 0)) {
+            for (size_t i = 0; i < xg_vecHorzHints.size(); ++i) {
+                if (::SendMessageW(xg_ahwndHorzEdits[i], EM_GETMODIFY, 0, 0)) {
                     updated = true;
-                    ::GetWindowTextW(xg_ahwndYokoEdits[i], sz, 
+                    ::GetWindowTextW(xg_ahwndHorzEdits[i], sz, 
                                      static_cast<int>(_countof(sz)));
-                    xg_vecYokoHints[i].m_strHint = sz;
+                    xg_vecHorzHints[i].m_strHint = sz;
                     ::SendMessageW(xg_ahwndVertEdits[i], EM_SETMODIFY, FALSE, 0);
                 }
             }
@@ -233,12 +233,12 @@ public:
         // ヨコのカギ。
         {
             const MRect rcCtrl(MPoint(0, y + 4), MSize(rcClient.Width(), size1.cy + 4));
-            xg_svHintsScrollView.AddCtrlInfo(xg_hwndYokoCaptionStatic, rcCtrl);
+            xg_svHintsScrollView.AddCtrlInfo(xg_hwndHorzCaptionStatic, rcCtrl);
             y += size1.cy + 8;
         }
         if (rcClient.Width() - size2.cx - 8 > 0) {
-            for (size_t i = 0; i < xg_vecYokoHints.size(); ++i) {
-                ::GetWindowTextW(xg_ahwndYokoEdits[i], szText, _countof(szText));
+            for (size_t i = 0; i < xg_vecHorzHints.size(); ++i) {
+                ::GetWindowTextW(xg_ahwndHorzEdits[i], szText, _countof(szText));
                 MRect rcCtrl(MPoint(size2.cx, y),
                              MSize(rcClient.Width() - size2.cx - 8, 0));
                 if (szText[0] == 0) {
@@ -249,10 +249,10 @@ public:
                     DT_LEFT | DT_EDITCONTROL | DT_CALCRECT | DT_WORDBREAK);
                 rcCtrl.right = rcClient.right;
                 rcCtrl.bottom += 8;
-                xg_svHintsScrollView.AddCtrlInfo(xg_ahwndYokoEdits[i], rcCtrl);
+                xg_svHintsScrollView.AddCtrlInfo(xg_ahwndHorzEdits[i], rcCtrl);
                 rcCtrl.left = 0;
                 rcCtrl.right = size2.cx;
-                xg_svHintsScrollView.AddCtrlInfo(xg_ahwndYokoStatics[i], rcCtrl);
+                xg_svHintsScrollView.AddCtrlInfo(xg_ahwndHorzStatics[i], rcCtrl);
                 y += rcCtrl.Height();
             }
         }
@@ -317,7 +317,7 @@ public:
                 }
                 if (!found) {
                     i = 0;
-                    for (auto& edit : xg_ahwndYokoEdits) {
+                    for (auto& edit : xg_ahwndHorzEdits) {
                         if (edit == hwnd) {
                             found = true;
                             vertical = false;
@@ -327,7 +327,7 @@ public:
                     }
                 }
                 if (found) {
-                    const auto number = (vertical ? xg_vecVertHints[i].m_number : xg_vecYokoHints[i].m_number);
+                    const auto number = (vertical ? xg_vecVertHints[i].m_number : xg_vecHorzHints[i].m_number);
                     PostMessageW(xg_hMainWnd, XGWM_HIGHLIGHT, TRUE, MAKELPARAM(number, vertical));
                 }
             }
@@ -427,11 +427,11 @@ public:
         // 初期化。
         xg_ahwndVertStatics.clear();
         xg_ahwndVertEdits.clear();
-        xg_ahwndYokoStatics.clear();
-        xg_ahwndYokoEdits.clear();
+        xg_ahwndHorzStatics.clear();
+        xg_ahwndHorzEdits.clear();
         xg_svHintsScrollView.SetParent(hwnd);
         xg_svHintsScrollView.ShowScrollBars(FALSE, TRUE);
-        s_hwndHighlightVertEdit = s_hwndHighlightYokoEdit = nullptr;
+        s_hwndHighlightVertEdit = s_hwndHighlightHorzEdit = nullptr;
 
         if (xg_hHintsUIFont) {
             ::DeleteObject(xg_hHintsUIFont);
@@ -462,7 +462,7 @@ public:
             0, 0, 0, 0, hwnd, nullptr, xg_hInstance, nullptr);
         if (hwndCtrl == nullptr)
             return FALSE;
-        xg_hwndYokoCaptionStatic = hwndCtrl;
+        xg_hwndHorzCaptionStatic = hwndCtrl;
         ::SendMessageW(hwndCtrl, WM_SETFONT,
             reinterpret_cast<WPARAM>(::GetStockObject(SYSTEM_FIXED_FONT)),
             TRUE);
@@ -504,7 +504,7 @@ public:
                 reinterpret_cast<LONG_PTR>(data));
             xg_ahwndVertEdits.emplace_back(hwndCtrl);
         }
-        for (const auto& hint : xg_vecYokoHints) {
+        for (const auto& hint : xg_vecHorzHints) {
             StringCchPrintf(sz, _countof(sz), XgLoadStringDx1(IDS_ACROSSNUMBER), hint.m_number);
             hwndCtrl = ::CreateWindowW(TEXT("STATIC"), sz,
                 WS_CHILD | WS_VISIBLE | SS_RIGHT | SS_NOPREFIX | SS_NOTIFY | SS_CENTERIMAGE,
@@ -516,7 +516,7 @@ public:
             if (hwndCtrl == nullptr)
                 return FALSE;
 
-            xg_ahwndYokoStatics.emplace_back(hwndCtrl);
+            xg_ahwndHorzStatics.emplace_back(hwndCtrl);
 
             hwndCtrl = ::CreateWindowExW(
                 WS_EX_CLIENTEDGE,
@@ -537,7 +537,7 @@ public:
                     reinterpret_cast<LONG_PTR>(XgHintEdit_WndProc)));
             ::SetWindowLongPtrW(hwndCtrl, GWLP_USERDATA,
                 reinterpret_cast<LONG_PTR>(data));
-            xg_ahwndYokoEdits.emplace_back(hwndCtrl);
+            xg_ahwndHorzEdits.emplace_back(hwndCtrl);
         }
 
         if (xg_ahwndVertEdits.size())
@@ -574,13 +574,13 @@ public:
 
         xg_hHintsWnd = nullptr;
         xg_hwndVertCaptionStatic = nullptr;
-        xg_hwndYokoCaptionStatic = nullptr;
+        xg_hwndHorzCaptionStatic = nullptr;
         xg_ahwndVertStatics.clear();
         xg_ahwndVertEdits.clear();
-        xg_ahwndYokoStatics.clear();
-        xg_ahwndYokoEdits.clear();
+        xg_ahwndHorzStatics.clear();
+        xg_ahwndHorzEdits.clear();
         xg_svHintsScrollView.clear();
-        s_hwndHighlightVertEdit = s_hwndHighlightYokoEdit = nullptr;
+        s_hwndHighlightVertEdit = s_hwndHighlightHorzEdit = nullptr;
 
         ::DeleteObject(xg_hHintsUIFont);
         xg_hHintsUIFont = nullptr;
@@ -597,10 +597,10 @@ public:
                     return;
                 }
             }
-            for (size_t i = 0; i < xg_vecYokoHints.size(); ++i) {
-                if (xg_ahwndYokoStatics[i] == hwndCtl) {
-                    ::SendMessageW(xg_ahwndYokoEdits[i], EM_SETSEL, 0, -1);
-                    ::SetFocus(xg_ahwndYokoEdits[i]);
+            for (size_t i = 0; i < xg_vecHorzHints.size(); ++i) {
+                if (xg_ahwndHorzStatics[i] == hwndCtl) {
+                    ::SendMessageW(xg_ahwndHorzEdits[i], EM_SETSEL, 0, -1);
+                    ::SetFocus(xg_ahwndHorzEdits[i]);
                     return;
                 }
             }
@@ -680,9 +680,9 @@ public:
             SetWindowFont(hwndCtrl, xg_hHintsUIFont, FALSE);
         for (auto hwndCtrl : xg_ahwndVertEdits)
             SetWindowFont(hwndCtrl, xg_hHintsUIFont, FALSE);
-        for (auto hwndCtrl : xg_ahwndYokoStatics)
+        for (auto hwndCtrl : xg_ahwndHorzStatics)
             SetWindowFont(hwndCtrl, xg_hHintsUIFont, FALSE);
-        for (auto hwndCtrl : xg_ahwndYokoEdits)
+        for (auto hwndCtrl : xg_ahwndHorzEdits)
             SetWindowFont(hwndCtrl, xg_hHintsUIFont, FALSE);
 
         // 再描画をONにする。

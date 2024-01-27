@@ -62,9 +62,9 @@ struct XG_UndoData_MarksUpdated : XG_UndoData {
 
 struct XG_UndoData_HintsUpdated : XG_UndoData {
     std::vector<XG_PlaceInfo>   vVertInfo;
-    std::vector<XG_PlaceInfo>   vYokoInfo;
+    std::vector<XG_PlaceInfo>   vHorzInfo;
     std::vector<XG_Hint>        vecVertHints;
-    std::vector<XG_Hint>        vecYokoHints;
+    std::vector<XG_Hint>        vecHorzHints;
     BOOL bShowHints;
 
     ~XG_UndoData_HintsUpdated() override
@@ -120,9 +120,9 @@ struct XG_UndoData_SetAll : XG_UndoData {
     XG_Pos                      caret_pos;
     std::vector<XG_Pos>         vMarks;
     std::vector<XG_PlaceInfo>   vVertInfo;
-    std::vector<XG_PlaceInfo>   vYokoInfo;
+    std::vector<XG_PlaceInfo>   vHorzInfo;
     std::vector<XG_Hint>        vecVertHints;
-    std::vector<XG_Hint>        vecYokoHints;
+    std::vector<XG_Hint>        vecHorzHints;
     BOOL                        bShowHints;
     bool                        bSolved;
     bool                        bHintsAdded;

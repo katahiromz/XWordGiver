@@ -628,20 +628,20 @@ void __fastcall XgUpdateCaretPos(void)
     ImmReleaseContext(xg_canvasWnd, hIMC);
 
     // ヒントウィンドウのハイライトを設定する。
-    int nYoko = -1, nVert = -1;
+    int nHorz = -1, nVert = -1;
     for (auto& info : xg_vVertInfo) {
         if (info.m_iRow == xg_caret_pos.m_i && info.m_jCol == xg_caret_pos.m_j) {
             nVert = info.m_number;
             break;
         }
     }
-    for (auto& info : xg_vYokoInfo) {
+    for (auto& info : xg_vHorzInfo) {
         if (info.m_iRow == xg_caret_pos.m_i && info.m_jCol == xg_caret_pos.m_j) {
-            nYoko = info.m_number;
+            nHorz = info.m_number;
             break;
         }
     }
-    xg_hints_wnd.setHighlight(nYoko, nVert);
+    xg_hints_wnd.setHighlight(nHorz, nVert);
 }
 
 // キャレット位置をセットする。
@@ -1452,7 +1452,7 @@ bool XgOpenCandsWnd(HWND hwnd, bool vertical)
 void __fastcall XgUpdateHints(void)
 {
     xg_vecVertHints.clear();
-    xg_vecYokoHints.clear();
+    xg_vecHorzHints.clear();
     xg_strHints.clear();
     if (xg_bSolved) {
         XG_HintsWnd::UpdateHintData(); // ヒントに変更があれば、更新する。
@@ -1548,7 +1548,7 @@ void XgNewCells(HWND hwnd, WCHAR ch, int nRows, int nCols)
     xg_bShowAnswer = false;
     XgSetCaretPos();
     xg_vVertInfo.clear();
-    xg_vYokoInfo.clear();
+    xg_vHorzInfo.clear();
     xg_strHeader.clear();
     xg_strNotes.clear();
     xg_strFileName.clear();
@@ -1664,7 +1664,7 @@ void XgResizeCells(HWND hwnd, int nNewRows, int nNewCols)
     xg_bShowAnswer = false;
     XgSetCaretPos();
     xg_vVertInfo.clear();
-    xg_vYokoInfo.clear();
+    xg_vHorzInfo.clear();
     xg_strHeader.clear();
     xg_strNotes.clear();
     xg_strFileName.clear();
@@ -1707,8 +1707,8 @@ static void XgPrintIt(HDC hdc, PRINTDLGW* ppd, bool bPrintAnswer)
     RECT rc;
 
     const int nVert = ::GetDeviceCaps(hdc, VERTSIZE);
-    const int nYoko = ::GetDeviceCaps(hdc, HORZSIZE);
-    if (nVert < nYoko) {
+    const int nHorz = ::GetDeviceCaps(hdc, HORZSIZE);
+    if (nVert < nHorz) {
         // 印刷用紙が横長。メッセージを表示して終了。
         ::XgCenterMessageBoxW(xg_hMainWnd, XgLoadStringDx1(IDS_SETPORTRAIT), nullptr,
                             MB_ICONERROR);
@@ -2847,7 +2847,7 @@ bool __fastcall XgOnGenerate(HWND hwnd, bool show_answer, bool multiple = false)
                 xg_bSolved = false;
                 xg_xword.ResetAndSetSize(xg_nRows, xg_nCols);
                 xg_vVertInfo.clear();
-                xg_vYokoInfo.clear();
+                xg_vHorzInfo.clear();
                 xg_vMarks.clear();
                 xg_vMarkedCands.clear();
                 xg_bSolvingEmpty = true;
@@ -2868,9 +2868,9 @@ bool __fastcall XgOnGenerate(HWND hwnd, bool show_answer, bool multiple = false)
         xg_vMarkedCands.clear();
         xg_vMarks.clear();
         xg_vVertInfo.clear();
-        xg_vYokoInfo.clear();
+        xg_vHorzInfo.clear();
         xg_vecVertHints.clear();
-        xg_vecYokoHints.clear();
+        xg_vecHorzHints.clear();
         xg_bSolved = false;
         xg_bShowAnswer = false;
     } else {
@@ -2904,9 +2904,9 @@ bool __fastcall XgOnGenerateBlacksRepeatedly(HWND hwnd)
     XgSetCaretPos();
     xg_vMarks.clear();
     xg_vVertInfo.clear();
-    xg_vYokoInfo.clear();
+    xg_vHorzInfo.clear();
     xg_vecVertHints.clear();
-    xg_vecYokoHints.clear();
+    xg_vecHorzHints.clear();
     xg_bSolved = false;
     xg_bHintsAdded = false;
     xg_bShowAnswer = false;
@@ -2945,7 +2945,7 @@ bool __fastcall XgOnGenerateBlacksRepeatedly(HWND hwnd)
             xg_bSolved = false;
             xg_xword.clear();
             xg_vVertInfo.clear();
-            xg_vYokoInfo.clear();
+            xg_vHorzInfo.clear();
             xg_vMarks.clear();
             xg_vMarkedCands.clear();
             xg_strHeader.clear();
@@ -2997,9 +2997,9 @@ bool __fastcall XgOnGenerateBlacks(HWND hwnd, bool sym)
     XgSetCaretPos();
     xg_vMarks.clear();
     xg_vVertInfo.clear();
-    xg_vYokoInfo.clear();
+    xg_vHorzInfo.clear();
     xg_vecVertHints.clear();
-    xg_vecYokoHints.clear();
+    xg_vecHorzHints.clear();
     xg_bSolved = false;
     xg_bHintsAdded = false;
     xg_bShowAnswer = false;
@@ -3067,7 +3067,7 @@ bool __fastcall XgOnSolve_AddBlack(HWND hwnd)
     // 初期化する。
     xg_bSolvingEmpty = xg_xword.IsEmpty();
     xg_vVertInfo.clear();
-    xg_vYokoInfo.clear();
+    xg_vHorzInfo.clear();
     xg_vMarks.clear();
     xg_vMarkedCands.clear();
     // 生成した数と生成する数。
@@ -3172,7 +3172,7 @@ bool __fastcall XgOnSolve_NoAddBlack(HWND hwnd, bool bShowAnswer/* = true*/)
     // 初期化する。
     xg_bSolvingEmpty = xg_xword.IsEmpty();
     xg_vVertInfo.clear();
-    xg_vYokoInfo.clear();
+    xg_vHorzInfo.clear();
     xg_vMarks.clear();
     xg_vMarkedCands.clear();
     // 生成した数と生成する数。
@@ -3303,9 +3303,9 @@ bool __fastcall XgOnSolveRepeatedly(HWND hwnd)
     xg_bSolvingEmpty = xg_xword.IsEmpty();
     xg_bNoAddBlack = false;
     xg_vVertInfo.clear();
-    xg_vYokoInfo.clear();
+    xg_vHorzInfo.clear();
     xg_vecVertHints.clear();
-    xg_vecYokoHints.clear();
+    xg_vecHorzHints.clear();
     // ナンクロモードをリセットする。
     xg_bNumCroMode = false;
     xg_mapNumCro1.clear();
@@ -3328,7 +3328,7 @@ bool __fastcall XgOnSolveRepeatedly(HWND hwnd)
             xg_bSolved = false;
             xg_xword = xword_save;
             xg_vVertInfo.clear();
-            xg_vYokoInfo.clear();
+            xg_vHorzInfo.clear();
             xg_vMarks.clear();
             xg_vMarkedCands.clear();
             xg_strHeader.clear();
@@ -3344,9 +3344,9 @@ bool __fastcall XgOnSolveRepeatedly(HWND hwnd)
     // 初期化する。
     xg_xword = xword_save;
     xg_vVertInfo.clear();
-    xg_vYokoInfo.clear();
+    xg_vHorzInfo.clear();
     xg_vecVertHints.clear();
-    xg_vecYokoHints.clear();
+    xg_vecHorzHints.clear();
     xg_strFileName.clear();
 
     // イメージを更新する。
@@ -3425,9 +3425,9 @@ bool __fastcall XgOnSolveRepeatedlyNoAddBlack(HWND hwnd)
     xg_bSolvingEmpty = xg_xword.IsEmpty();
     xg_bNoAddBlack = true;
     xg_vVertInfo.clear();
-    xg_vYokoInfo.clear();
+    xg_vHorzInfo.clear();
     xg_vecVertHints.clear();
-    xg_vecYokoHints.clear();
+    xg_vecHorzHints.clear();
     // ナンクロモードをリセットする。
     xg_bNumCroMode = false;
     xg_mapNumCro1.clear();
@@ -3450,7 +3450,7 @@ bool __fastcall XgOnSolveRepeatedlyNoAddBlack(HWND hwnd)
             xg_bSolved = false;
             xg_xword = xword_save;
             xg_vVertInfo.clear();
-            xg_vYokoInfo.clear();
+            xg_vHorzInfo.clear();
             xg_vMarks.clear();
             xg_vMarkedCands.clear();
             xg_strHeader.clear();
@@ -3466,9 +3466,9 @@ bool __fastcall XgOnSolveRepeatedlyNoAddBlack(HWND hwnd)
     // 初期化する。
     xg_xword = xword_save;
     xg_vVertInfo.clear();
-    xg_vYokoInfo.clear();
+    xg_vHorzInfo.clear();
     xg_vecVertHints.clear();
-    xg_vecYokoHints.clear();
+    xg_vecHorzHints.clear();
     xg_strFileName.clear();
 
     // イメージを更新する。
@@ -3797,9 +3797,9 @@ bool XgPasteBoard(HWND hwnd, const std::wstring& str)
     XgSetCaretPos();
     xg_vMarks.clear();
     xg_vecVertHints.clear();
-    xg_vecYokoHints.clear();
+    xg_vecHorzHints.clear();
     xg_vVertInfo.clear();
-    xg_vYokoInfo.clear();
+    xg_vHorzInfo.clear();
     XgMarkUpdate();
     // ナンクロモードを解除。
     xg_bNumCroMode = false;

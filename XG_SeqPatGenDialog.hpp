@@ -112,7 +112,7 @@ public:
                 xg_bShowAnswer = false;
                 xg_xword.clear();
                 xg_vVertInfo.clear();
-                xg_vYokoInfo.clear();
+                xg_vHorzInfo.clear();
                 xg_vMarks.clear();
                 xg_vMarkedCands.clear();
             }

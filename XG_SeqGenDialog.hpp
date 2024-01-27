@@ -172,7 +172,7 @@ public:
                 xg_nRows = n1;
                 xg_nCols = n2;
                 xg_vVertInfo.clear();
-                xg_vYokoInfo.clear();
+                xg_vHorzInfo.clear();
                 xg_vMarks.clear();
                 xg_vMarkedCands.clear();
                 // 偶数行数で黒マス線対称（タテ）の場合は連黒禁は不可。

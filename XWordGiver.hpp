@@ -399,7 +399,7 @@ namespace std
     }
 }
 
-extern std::vector<XG_Hint> xg_vecVertHints, xg_vecYokoHints;
+extern std::vector<XG_Hint> xg_vecVertHints, xg_vecHorzHints;
 
 // ヒントを更新する。
 void __fastcall XgUpdateHints(void);
@@ -1216,7 +1216,7 @@ namespace std
 }
 
 // タテとヨコのかぎ。
-extern std::vector<XG_PlaceInfo> xg_vVertInfo, xg_vYokoInfo;
+extern std::vector<XG_PlaceInfo> xg_vVertInfo, xg_vHorzInfo;
 
 //////////////////////////////////////////////////////////////////////////////
 

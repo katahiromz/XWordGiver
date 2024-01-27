@@ -339,7 +339,7 @@ std::vector<XG_WordData> XgCreateMiniDict(void)
     {
         ret.emplace_back(hint.m_strWord, hint.m_strHint);
     }
-    for (const auto& hint : xg_vecYokoHints)
+    for (const auto& hint : xg_vecHorzHints)
     {
         ret.emplace_back(hint.m_strWord, hint.m_strHint);
     }
