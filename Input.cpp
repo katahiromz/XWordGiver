@@ -1262,9 +1262,8 @@ void InputPal_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT codeNotify)
             XgSetInputMode(xg_hMainWnd, xg_im_KANA);
             break;
         case 20071: // 縦置き/横置き
-            xg_imode = xg_im_KANA; // 縦置き/横置きを選べるのはカナ入力パレットのときのみ。
             xg_bVerticalLayout = !xg_bVerticalLayout;
-            XgCreateInputPalette(xg_hMainWnd);
+            XgCreateInputPalette(xg_hMainWnd, xg_imode, TRUE);
             break;
         case 20072: // 英字に
             XgSetInputMode(xg_hMainWnd, xg_im_ABC);
@@ -1414,9 +1413,12 @@ BOOL XgCreateInputPalette(HWND hwndOwner)
 }
 
 // 入力パレットを作成する。
-BOOL XgCreateInputPalette(HWND hwndOwner, XG_InputMode imode)
+BOOL XgCreateInputPalette(HWND hwndOwner, XG_InputMode imode, BOOL bForceKana)
 {
     XgDestroyInputPalette();
+
+    if (bForceKana)
+        imode = xg_im_KANA;
 
     switch (imode) {
     case xg_im_ABC:

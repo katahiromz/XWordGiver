@@ -1539,7 +1539,7 @@ extern bool xg_bVertInput;
 // 入力パレットを作成する。
 BOOL XgCreateInputPalette(HWND hwndOwner);
 // 入力パレットを作成する。
-BOOL XgCreateInputPalette(HWND hwndOwner, XG_InputMode imode);
+BOOL XgCreateInputPalette(HWND hwndOwner, XG_InputMode imode, BOOL bForceKana = FALSE);
 // 入力パレットを破棄する。
 BOOL XgDestroyInputPalette(void) noexcept;
 // 入力モードを切り替える。
