@@ -266,6 +266,7 @@
 - 2024-02-01 ver.5.1.6
     - Supported TIFF images.
     - Improved Input Palette.
+- 2024-XX-YY ver.5.1.7
 
 # 開発履歴 (Japanese)
 
@@ -847,3 +848,4 @@
 - 2024年02月01日 ver.5.1.6
     - TIFF画像のサポート。
     - 入力パレットの改良。
+- 2024年XX月YY日 ver.5.1.7
