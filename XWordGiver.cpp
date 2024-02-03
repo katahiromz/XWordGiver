@@ -7963,12 +7963,12 @@ void XgShowPatInfo(HWND hwndInfo)
     std::wstring text; // この関数では、この変数にテキストを追加していく。
 
     if (xg_bSolved) {
-        std::map<WCHAR, DWORD> len2num;
+        std::map<DWORD, DWORD> len2num;
         std::vector<XG_WordData> dict = XgCreateMiniDict();
         for (auto& data : dict) {
             len2num[(DWORD)data.m_word.size()] += 1;
         }
-        std::vector<std::pair<WCHAR, DWORD>> pairs;
+        std::vector<std::pair<DWORD, DWORD>> pairs;
         for (auto& pair : len2num) {
             pairs.push_back(pair);
         }
@@ -8115,7 +8115,7 @@ void XgShowPatInfo(HWND hwndInfo)
                 }
             }
         }
-        std::vector<std::pair<DWORD, DWORD>> pairs;
+        std::vector<std::pair<WCHAR, DWORD>> pairs;
         for (auto& pair : ch2num) {
             pairs.push_back(pair);
         }

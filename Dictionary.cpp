@@ -292,6 +292,14 @@ bool __fastcall XgLoadDictFile(LPCWSTR pszFile)
         std::sort(xg_dict_1.begin(), xg_dict_1.end(), xg_word_less());
         std::sort(xg_dict_2.begin(), xg_dict_2.end(), xg_word_less());
 
+        // 一意化する。
+        xg_dict_1.erase(std::unique(xg_dict_1.begin(), xg_dict_1.end(), [](auto& a, auto& b) {
+            return a.m_word == b.m_word;
+        }), xg_dict_1.end());
+        xg_dict_2.erase(std::unique(xg_dict_2.begin(), xg_dict_2.end(), [](auto& a, auto& b) {
+            return a.m_word == b.m_word;
+        }), xg_dict_2.end());
+
         // 単語の長さのヒストグラムを構築する。
         for (auto& worddata : xg_dict_1) {
             const auto len = worddata.m_word.size();
