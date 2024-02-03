@@ -7960,43 +7960,8 @@ bool __fastcall XgIsAnyThreadTerminated(void) noexcept
 // パターンの統計情報を表示。
 void XgShowPatInfo(HWND hwndInfo)
 {
-    std::wstring text;
+    std::wstring text; // この関数では、この変数にテキストを追加していく。
 
-    // 使用文字の頻度分布。
-    {
-        std::map<WCHAR, DWORD> ch2num;
-        {
-            const XG_Board *xw = (xg_bSolved ? &xg_solution : &xg_xword);
-            for (int i = 0; i < xg_nRows; i++) {
-                for (int j = 0; j < xg_nCols; j++) {
-                    auto ch = xw->GetAt(i, j);
-                    ch2num[ch] += 1;
-                }
-            }
-        }
-        std::vector<std::pair<DWORD, DWORD>> pairs;
-        for (auto& pair : ch2num) {
-            pairs.push_back(pair);
-        }
-        std::sort(pairs.begin(), pairs.end(), [](auto& a, auto& b){
-            return a.second > b.second;
-        });
-        text += L"\r\n";
-        text += L"[[ ";
-        text += XgLoadStringDx1(IDS_CHARUSAGEDIST);
-        text += L" ]]";
-        text += L"\r\n";
-        for (auto& pair : pairs) {
-            text += (WCHAR)0x3010; //【
-            text += pair.first;
-            text += (WCHAR)0x3011; // 】
-            text += L" : ";
-            text += std::to_wstring(pair.second);
-            text += L"\r\n";
-        }
-    }
-
-    // 単語の長さの頻度分布。
     if (xg_bSolved) {
         std::map<WCHAR, DWORD> len2num;
         std::vector<XG_WordData> dict = XgCreateMiniDict();
@@ -8010,6 +7975,14 @@ void XgShowPatInfo(HWND hwndInfo)
         std::sort(pairs.begin(), pairs.end(), [](auto& a, auto& b){
             return a.second > b.second;
         });
+        // 使用単語数。
+        text += L"\r\n";
+        text += L"[[ ";
+        text += XgLoadStringDx1(IDS_WORDCOUNT);
+        text += L" ]] : ";
+        text += std::to_wstring(dict.size());
+        text += L"\r\n";
+        // 単語の長さの頻度分布。
         text += L"\r\n";
         text += L"[[ ";
         text += XgLoadStringDx1(IDS_WORDLENDIST);
@@ -8057,7 +8030,113 @@ void XgShowPatInfo(HWND hwndInfo)
         text += L"\r\n";
     }
 
-    // パターンの頻度分布。
+    {
+        size_t count = xg_dict_1.size();
+        size_t sum = 0, min = 999999, max = 0;
+        for (auto& data : xg_dict_1) {
+            auto len = data.m_word.size();
+            if (min > len)
+                min = len;
+            if (max < len)
+                max = len;
+            sum += data.m_word.size();
+        }
+        // 辞書中の単語の個数。
+        text += L"\r\n";
+        text += L"[[ ";
+        text += XgLoadStringDx1(IDS_DICTWORDCOUNT);
+        text += L" ]]";
+        text += L" : ";
+        text += std::to_wstring(count);
+        // 辞書中の単語の長さ。
+        text += L"\r\n";
+        text += L"[[ ";
+        text += XgLoadStringDx1(IDS_DICTWORDLENAVG); // 平均値。
+        text += L" ]]";
+        text += L" : ";
+        text += std::to_wstring(sum / (double)count);
+        text += L"\r\n";
+        text += L"[[ ";
+        text += XgLoadStringDx1(IDS_DICTWORDLENMIN); // 最小値。
+        text += L" ]]";
+        text += L" : ";
+        text += std::to_wstring(min);
+        text += L"\r\n";
+        text += L"[[ ";
+        text += XgLoadStringDx1(IDS_DICTWORDLENMAX); // 最大値。
+        text += L" ]]";
+        text += L" : ";
+        text += std::to_wstring(max);
+        text += L"\r\n";
+    }
+
+    // 辞書中のヒントの長さ。
+    {
+        size_t count = xg_dict_1.size();
+        size_t sum = 0, min = 999999, max = 0;
+        for (auto& data : xg_dict_1) {
+            auto len = data.m_hint.size();
+            if (min > len)
+                min = len;
+            if (max < len)
+                max = len;
+            sum += data.m_hint.size();
+        }
+        text += L"\r\n";
+        text += L"[[ ";
+        text += XgLoadStringDx1(IDS_DICTHINTLENAVG); // 平均値。
+        text += L" ]]";
+        text += L" : ";
+        text += std::to_wstring(sum / (double)count);
+        text += L"\r\n";
+        text += L"[[ ";
+        text += XgLoadStringDx1(IDS_DICTHINTLENMIN); // 最小値。
+        text += L" ]]";
+        text += L" : ";
+        text += std::to_wstring(min);
+        text += L"\r\n";
+        text += L"[[ ";
+        text += XgLoadStringDx1(IDS_DICTHINTLENMAX); // 最大値。
+        text += L" ]]";
+        text += L" : ";
+        text += std::to_wstring(max);
+        text += L"\r\n";
+    }
+
+    // 使用文字の頻度分布。
+    {
+        std::map<WCHAR, DWORD> ch2num;
+        {
+            const XG_Board *xw = (xg_bSolved ? &xg_solution : &xg_xword);
+            for (int i = 0; i < xg_nRows; i++) {
+                for (int j = 0; j < xg_nCols; j++) {
+                    auto ch = xw->GetAt(i, j);
+                    ch2num[ch] += 1;
+                }
+            }
+        }
+        std::vector<std::pair<DWORD, DWORD>> pairs;
+        for (auto& pair : ch2num) {
+            pairs.push_back(pair);
+        }
+        std::sort(pairs.begin(), pairs.end(), [](auto& a, auto& b){
+            return a.second > b.second;
+        });
+        text += L"\r\n";
+        text += L"[[ ";
+        text += XgLoadStringDx1(IDS_CHARUSAGEDIST);
+        text += L" ]]";
+        text += L"\r\n";
+        for (auto& pair : pairs) {
+            text += (WCHAR)0x3010; //【
+            text += pair.first;
+            text += (WCHAR)0x3011; // 】
+            text += L" : ";
+            text += std::to_wstring(pair.second);
+            text += L"\r\n";
+        }
+    }
+
     {
         // パターンを読み込む。
         patterns_t patterns;
@@ -8075,6 +8154,14 @@ void XgShowPatInfo(HWND hwndInfo)
         for (const auto& pat : patterns) {
             size2num[MAKELONG(pat.num_rows, pat.num_columns)] += 1;
         }
+        // パターンの個数。
+        text += L"\r\n";
+        text += L"[[ ";
+        text += XgLoadStringDx1(IDS_PATCOUNT);
+        text += L" ]] : ";
+        text += std::to_wstring(patterns.size());
+        text += L"\r\n";
+        // パターンの頻度分布。
         text += L"\r\n";
         text += L"[[ ";
         text += XgLoadStringDx1(IDS_PATSIZEDIST);

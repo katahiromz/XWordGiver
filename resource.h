@@ -234,6 +234,15 @@
 #define IDS_HINTLENAVG                      314
 #define IDS_HINTLENMIN                      315
 #define IDS_HINTLENMAX                      316
+#define IDS_DICTWORDLENAVG                  317
+#define IDS_DICTWORDLENMIN                  318
+#define IDS_DICTWORDLENMAX                  319
+#define IDS_DICTHINTLENAVG                  320
+#define IDS_DICTHINTLENMIN                  321
+#define IDS_DICTHINTLENMAX                  322
+#define IDS_WORDCOUNT                       323
+#define IDS_PATCOUNT                        324
+#define IDS_DICTWORDCOUNT                   325
 #define IDS_TT_NEW                          10100
 #define IDS_TT_GENERATE                     10101
 #define IDS_TT_OPEN                         10102

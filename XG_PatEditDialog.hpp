@@ -13,7 +13,7 @@ public:
         TYPE_DELETE,
         TYPE_SHOWINFO
     };
-    static inline TYPE s_nType = TYPE_ADD;
+    static inline TYPE s_nType = TYPE_SHOWINFO;
     static inline HBITMAP s_hbm = NULL;
 
     XG_PatEditDialog() noexcept
