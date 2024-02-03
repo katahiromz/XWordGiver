@@ -7078,7 +7078,10 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT /*codeNo
             if (dialog.DoModal(hwnd) != IDOK)
                 break;
 
-            if (XgPatEdit(hwnd, dialog.s_bAdd)) {
+            if (dialog.s_nType == XG_PatEditDialog::TYPE_SHOWINFO)
+                break;
+
+            if (XgPatEdit(hwnd, dialog.s_nType == XG_PatEditDialog::TYPE_ADD)) {
                 // 成功メッセージ。
                 XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_WROTEPAT),
                                     XgLoadStringDx2(IDS_APPNAME), MB_ICONINFORMATION);

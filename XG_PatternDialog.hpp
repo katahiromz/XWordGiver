@@ -11,9 +11,6 @@ bool __fastcall XgOnSolve_NoAddBlack(HWND hwnd, bool bShowAnswer = true);
 // 解を求める（黒マス追加なし）。結果を表示しない。
 bool __fastcall XgOnSolve_NoAddBlackNoResults(HWND hwnd, bool bShowAnswer = true);
 
-// パターンデータを読み込む。
-BOOL XgLoadPatterns(LPCWSTR pszFileName, patterns_t& patterns, std::wstring *pComments = nullptr);
-
 #define XG_MAX_PAT_SIZE1 20
 #define XG_MAX_PAT_SIZE2 30
 #define XG_MAX_PAT_SIZE3 45

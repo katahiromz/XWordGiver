@@ -227,6 +227,13 @@
 #define IDS_CANTWRITEPAT                    307
 #define IDS_WROTEPAT                        308
 #define IDS_NOMATCHPAT                      309
+#define IDS_SHOWINFO                        310
+#define IDS_PATSIZEDIST                     311
+#define IDS_CHARUSAGEDIST                   312
+#define IDS_WORDLENDIST                     313
+#define IDS_HINTLENAVG                      314
+#define IDS_HINTLENMIN                      315
+#define IDS_HINTLENMAX                      316
 #define IDS_TT_NEW                          10100
 #define IDS_TT_GENERATE                     10101
 #define IDS_TT_OPEN                         10102

@@ -2,11 +2,18 @@
 
 #include "XG_Window.hpp"
 
+void XgShowPatInfo(HWND hwndInfo);
+
 // 「パターン編集」ダイアログ。
 class XG_PatEditDialog : public XG_Dialog
 {
 public:
-    static inline BOOL s_bAdd = TRUE;
+    enum TYPE {
+        TYPE_ADD,
+        TYPE_DELETE,
+        TYPE_SHOWINFO
+    };
+    static inline TYPE s_nType = TYPE_ADD;
     static inline HBITMAP s_hbm = NULL;
 
     XG_PatEditDialog() noexcept
@@ -21,11 +28,19 @@ public:
         HWND hCmb1 = ::GetDlgItem(hwnd, cmb1);
         ComboBox_AddString(hCmb1, XgLoadStringDx1(IDS_ADD));
         ComboBox_AddString(hCmb1, XgLoadStringDx1(IDS_DELETE));
+        ComboBox_AddString(hCmb1, XgLoadStringDx1(IDS_SHOWINFO));
 
-        if (s_bAdd)
+        switch (s_nType) {
+        case TYPE_ADD:
             ComboBox_SetCurSel(hCmb1, 0);
-        else
+            break;
+        case TYPE_DELETE:
             ComboBox_SetCurSel(hCmb1, 1);
+            break;
+        case TYPE_SHOWINFO:
+            ComboBox_SetCurSel(hCmb1, 2);
+            break;
+        }
 
         OnCmb1(hwnd);
 
@@ -41,18 +56,30 @@ public:
         switch (iItem)
         {
         case 0:
+            ::ShowWindow(::GetDlgItem(m_hWnd, edt1), SW_HIDE);
+            ::ShowWindow(::GetDlgItem(m_hWnd, stc1), SW_SHOWNOACTIVATE);
             hbm = ::LoadBitmapW(xg_hInstance, MAKEINTRESOURCEW(IDB_ADDPAT));
+            ::DeleteObject(s_hbm);
+            s_hbm = hbm;
+            SendDlgItemMessageW(m_hWnd, stc1, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)s_hbm);
             break;
         case 1:
+            ::ShowWindow(::GetDlgItem(m_hWnd, edt1), SW_HIDE);
+            ::ShowWindow(::GetDlgItem(m_hWnd, stc1), SW_SHOWNOACTIVATE);
             hbm = ::LoadBitmapW(xg_hInstance, MAKEINTRESOURCEW(IDB_DELETEPAT));
+            ::DeleteObject(s_hbm);
+            s_hbm = hbm;
+            SendDlgItemMessageW(m_hWnd, stc1, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)s_hbm);
+            break;
+        case 2:
+            ::ShowWindow(::GetDlgItem(m_hWnd, edt1), SW_SHOWNOACTIVATE);
+            ::ShowWindow(::GetDlgItem(m_hWnd, stc1), SW_HIDE);
+            XgShowPatInfo(::GetDlgItem(m_hWnd, edt1));
             break;
         default:
             break;
         }
 
-        ::DeleteObject(s_hbm);
-        s_hbm = hbm;
-        SendDlgItemMessageW(m_hWnd, stc1, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)s_hbm);
     }
 
     void OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT codeNotify)
@@ -63,15 +90,16 @@ public:
         case IDCANCEL:
             {
                 HWND hCmb1 = ::GetDlgItem(hwnd, cmb1);
-                INT iItem = ComboBox_GetCurSel(hCmb1);
-                s_bAdd = (iItem == 0);
+                s_nType = (TYPE)ComboBox_GetCurSel(hCmb1);
                 ::DeleteObject(s_hbm);
                 s_hbm = NULL;
                 ::EndDialog(hwnd, id);
             }
             break;
         case cmb1:
-            OnCmb1(hwnd);
+            if (codeNotify == CBN_SELCHANGE) {
+                OnCmb1(hwnd);
+            }
             break;
         }
     }

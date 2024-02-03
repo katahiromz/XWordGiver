@@ -1518,13 +1518,14 @@ FONT 9, "MS UI Gothic"
 }
 
 IDD_ADDDELETEPAT DIALOG 0, 0, 325, 240
-CAPTION "パターン編集"
+CAPTION "クロスワード ギバーの隠し機能"
 STYLE DS_CENTER | DS_MODALFRAME | WS_POPUPWINDOW | WS_CAPTION
 FONT 9, "MS UI Gothic"
 {
     RTEXT "処理(&O):", -1, 10, 10, 55, 10, SS_CENTERIMAGE | NOT WS_GROUP
     COMBOBOX cmb1, 75, 10, 75, 300, CBS_HASSTRINGS | CBS_AUTOHSCROLL | CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
     CONTROL "", stc1, "STATIC", SS_CENTERIMAGE | SS_BITMAP | WS_GROUP, 10, 30, 305, 185
+    EDITTEXT edt1, 20, 40, 280, 165, ES_READONLY | ES_AUTOHSCROLL | ES_AUTOVSCROLL | ES_MULTILINE | WS_VSCROLL | WS_HSCROLL | NOT WS_VISIBLE
     DEFPUSHBUTTON "OK", IDOK, 190, 220, 60, 15
     PUSHBUTTON "キャンセル", IDCANCEL, 255, 220, 60, 15
 }
@@ -1745,11 +1746,18 @@ STRINGTABLE
     IDS_POLICYPRESET_JPN_LOOSE_3, "0x011B: 日本の出版社ルール (ゆるい): 左右対称"
     IDS_MARKINGTYPE, "エラー: 盤面に足りない文字「%c」があります。"
     IDS_MARKINGEMPTY, "単語を入力、または下の候補から選択して下さい："
-    IDS_ADD, "追加"
-    IDS_DELETE, "削除"
+    IDS_ADD, "パターンの追加"
+    IDS_DELETE, "パターンの削除"
     IDS_CANTWRITEPAT, "失敗。PAT.txtの書き込みに失敗しました。書き込めないフォルダの可能性があります。"
     IDS_WROTEPAT, "PAT.txt の書き込みに成功しました。"
     IDS_NOMATCHPAT, "対応するパターンがPAT.txtにありません。"
+    IDS_SHOWINFO, "情報の表示"
+    IDS_PATSIZEDIST, "PAT.txtのパターンサイズの頻度分布"
+    IDS_CHARUSAGEDIST, "盤面の使用文字の頻度分布"
+    IDS_WORDLENDIST, "盤面の単語の長さの頻度分布"
+    IDS_HINTLENAVG, "ヒントの長さの平均値"
+    IDS_HINTLENMIN, "ヒントの長さの最小値"
+    IDS_HINTLENMAX, "ヒントの長さの最大値"
     IDS_TT_NEW, "新規作成"
     IDS_TT_GENERATE, "問題を自動生成する"
     IDS_TT_OPEN, "問題を開く"

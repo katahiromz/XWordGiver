@@ -7956,3 +7956,141 @@ bool __fastcall XgIsAnyThreadTerminated(void) noexcept
     }
     return false;
 }
+
+// パターンの統計情報を表示。
+void XgShowPatInfo(HWND hwndInfo)
+{
+    std::wstring text;
+
+    // 使用文字の頻度分布。
+    {
+        std::map<WCHAR, DWORD> ch2num;
+        {
+            const XG_Board *xw = (xg_bSolved ? &xg_solution : &xg_xword);
+            for (int i = 0; i < xg_nRows; i++) {
+                for (int j = 0; j < xg_nCols; j++) {
+                    auto ch = xw->GetAt(i, j);
+                    ch2num[ch] += 1;
+                }
+            }
+        }
+        std::vector<std::pair<DWORD, DWORD>> pairs;
+        for (auto& pair : ch2num) {
+            pairs.push_back(pair);
+        }
+        std::sort(pairs.begin(), pairs.end(), [](auto& a, auto& b){
+            return a.second > b.second;
+        });
+        text += L"\r\n";
+        text += L"[[ ";
+        text += XgLoadStringDx1(IDS_CHARUSAGEDIST);
+        text += L" ]]";
+        text += L"\r\n";
+        for (auto& pair : pairs) {
+            text += (WCHAR)0x3010; //【
+            text += pair.first;
+            text += (WCHAR)0x3011; // 】
+            text += L" : ";
+            text += std::to_wstring(pair.second);
+            text += L"\r\n";
+        }
+    }
+
+    // 単語の長さの頻度分布。
+    if (xg_bSolved) {
+        std::map<WCHAR, DWORD> len2num;
+        std::vector<XG_WordData> dict = XgCreateMiniDict();
+        for (auto& data : dict) {
+            len2num[(DWORD)data.m_word.size()] += 1;
+        }
+        std::vector<std::pair<WCHAR, DWORD>> pairs;
+        for (auto& pair : len2num) {
+            pairs.push_back(pair);
+        }
+        std::sort(pairs.begin(), pairs.end(), [](auto& a, auto& b){
+            return a.second > b.second;
+        });
+        text += L"\r\n";
+        text += L"[[ ";
+        text += XgLoadStringDx1(IDS_WORDLENDIST);
+        text += L" ]]";
+        text += L"\r\n";
+        for (auto& pair : pairs) {
+            text += std::to_wstring(pair.first);
+            text += L" : ";
+            text += std::to_wstring(pair.second);
+            text += L"\r\n";
+        }
+    }
+
+    // ヒントの長さ。
+    if (xg_bSolved) {
+        std::vector<XG_WordData> dict = XgCreateMiniDict();
+        size_t count = dict.size();
+        size_t sum = 0, min = 999999, max = 0;
+        for (auto& data : dict) {
+            auto len = data.m_hint.size();
+            if (min > len)
+                min = len;
+            if (max < len)
+                max = len;
+            sum += data.m_hint.size();
+        }
+        text += L"\r\n";
+        text += L"[[ ";
+        text += XgLoadStringDx1(IDS_HINTLENAVG); // 平均値。
+        text += L" ]]";
+        text += L": ";
+        text += std::to_wstring(sum / (double)count);
+        text += L"\r\n";
+        text += L"[[ ";
+        text += XgLoadStringDx1(IDS_HINTLENMIN); // 最小値。
+        text += L" ]]";
+        text += L": ";
+        text += std::to_wstring(min);
+        text += L"\r\n";
+        text += L"[[ ";
+        text += XgLoadStringDx1(IDS_HINTLENMAX); // 最大値。
+        text += L" ]]";
+        text += L": ";
+        text += std::to_wstring(max);
+        text += L"\r\n";
+    }
+
+    // パターンの頻度分布。
+    {
+        // パターンを読み込む。
+        patterns_t patterns;
+        WCHAR szPath[MAX_PATH];
+        XgFindLocalFile(szPath, _countof(szPath), L"PAT.txt");
+        if (!XgLoadPatterns(szPath, patterns)) {
+            ::SetWindowTextW(hwndInfo, NULL);
+            return;
+        }
+
+        // ソートして一意化する。
+        XgSortAndUniquePatterns(patterns, TRUE);
+
+        std::map<DWORD, DWORD> size2num;
+        for (const auto& pat : patterns) {
+            size2num[MAKELONG(pat.num_rows, pat.num_columns)] += 1;
+        }
+        text += L"\r\n";
+        text += L"[[ ";
+        text += XgLoadStringDx1(IDS_PATSIZEDIST);
+        text += L" ]]";
+        text += L"\r\n";
+        for (auto& pair : size2num) {
+            size_t num_columns = HIWORD(pair.first);
+            size_t num_rows = LOWORD(pair.first);
+            text += std::to_wstring(num_columns);
+            text += L" x ";
+            text += std::to_wstring(num_rows);
+            text += L" : ";
+            text += std::to_wstring(pair.second);
+            text += L"\r\n";
+        }
+    }
+
+    ::SetWindowTextW(hwndInfo, text.c_str());
+}

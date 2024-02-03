@@ -1505,6 +1505,8 @@ BOOL XgSavePatterns(LPCWSTR pszFileName, const patterns_t& patterns,
                     const std::wstring *pComments = nullptr);
 // パターン編集。
 BOOL XgPatEdit(HWND hwnd, BOOL bAdd);
+// パターンデータを読み込む。
+BOOL XgLoadPatterns(LPCWSTR pszFileName, patterns_t& patterns, std::wstring *pComments = nullptr);
 
 //////////////////////////////////////////////////////////////////////////////
 // ボックス。
