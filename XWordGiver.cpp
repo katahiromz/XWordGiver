@@ -8030,10 +8030,18 @@ void XgShowPatInfo(HWND hwndInfo)
         text += L"\r\n";
     }
 
+    std::vector<XG_WordData> dict;
+    dict.insert(dict.end(), xg_dict_1.begin(), xg_dict_1.end());
+    dict.insert(dict.end(), xg_dict_2.begin(), xg_dict_2.end());
+    std::sort(dict.begin(), dict.end(), xg_word_less());
+    dict.erase(std::unique(dict.begin(), dict.end(), [](auto& a, auto& b) {
+        return a.m_word == b.m_word;
+    }), dict.end());
+
     {
-        size_t count = xg_dict_1.size();
+        size_t count = dict.size();
         size_t sum = 0, min = 999999, max = 0;
-        for (auto& data : xg_dict_1) {
+        for (auto& data : dict) {
             auto len = data.m_word.size();
             if (min > len)
                 min = len;
@@ -8072,9 +8080,9 @@ void XgShowPatInfo(HWND hwndInfo)
 
     // 辞書中のヒントの長さ。
     {
-        size_t count = xg_dict_1.size();
+        size_t count = dict.size();
         size_t sum = 0, min = 999999, max = 0;
-        for (auto& data : xg_dict_1) {
+        for (auto& data : dict) {
             auto len = data.m_hint.size();
             if (min > len)
                 min = len;
