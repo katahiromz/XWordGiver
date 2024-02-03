@@ -33,6 +33,9 @@ public:
         // 答えを表示するか？
         if (m_bShowAnswer)
             ::CheckDlgButton(hwnd, chx3, BST_CHECKED);
+        // 自動的にPAT.txtから選択するか？
+        if (xg_bChoosePAT)
+            ::CheckDlgButton(hwnd, chx4, BST_CHECKED);
         // IMEをOFFにする。
         {
             HWND hwndCtrl;
@@ -93,6 +96,8 @@ public:
             xg_bSmartResolution = (::IsDlgButtonChecked(hwnd, chx2) == BST_CHECKED);
             // 答えを表示するか？
             m_bShowAnswer = (::IsDlgButtonChecked(hwnd, chx3) == BST_CHECKED);
+            // 自動的にPAT.txtから選択するか？
+            xg_bChoosePAT = (::IsDlgButtonChecked(hwnd, chx4) == BST_CHECKED);
             // 初期化する。
             {
                 xg_bSolved = false;

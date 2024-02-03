@@ -1284,6 +1284,9 @@ extern bool xg_bBlacksGenerated;
 // スマート解決か？
 extern bool xg_bSmartResolution;
 
+// PAT.txtから自動的にパターンを選択するか？
+extern bool xg_bChoosePAT;
+
 // 太枠をつけるか？
 extern bool xg_bAddThickFrame;
 
@@ -1498,7 +1501,8 @@ BOOL __fastcall XgPatternRuleIsOK(const XG_PATDATA& pat);
 // パターンのデータを扱いやすいよう、加工する。
 void XgGetPatternData(XG_PATDATA& pat);
 // パターンデータを書き込む。
-BOOL XgSavePatterns(LPCWSTR pszFileName, const patterns_t& patterns);
+BOOL XgSavePatterns(LPCWSTR pszFileName, const patterns_t& patterns,
+                    const std::wstring *pComments = nullptr);
 // パターン編集。
 BOOL XgPatEdit(HWND hwnd, BOOL bAdd);
 

@@ -1019,6 +1019,9 @@ bool __fastcall XgLoadSettings(void)
         if (!app_key.QueryDword(L"SmartResolution", dwValue)) {
             xg_bSmartResolution = dwValue;
         }
+        if (!app_key.QueryDword(L"ChoosePAT", dwValue)) {
+            xg_bChoosePAT = !!dwValue;
+        }
         if (!app_key.QueryDword(L"InputMode", dwValue)) {
             xg_imode = static_cast<XG_InputMode>(dwValue);
         }
@@ -1195,6 +1198,7 @@ bool __fastcall XgSaveSettings(void)
 
         app_key.SetDword(L"DrawFrameForMarkedCell", xg_bDrawFrameForMarkedCell);
         app_key.SetDword(L"SmartResolution", xg_bSmartResolution);
+        app_key.SetDword(L"ChoosePAT", xg_bChoosePAT);
         app_key.SetDword(L"InputMode", static_cast<DWORD>(xg_imode));
         app_key.SetDword(L"ZoomRate", xg_nZoomRate);
         app_key.SetDword(L"ShowNumbering", xg_bShowNumbering);
@@ -2782,6 +2786,59 @@ void __fastcall XgFitZoom(HWND hwnd)
     XgUpdateStatusBar(hwnd);
 }
 
+// 自動的にPAT.txtから選んで問題を作成する。
+bool XgGenerateFromPat(HWND hwnd, bool show_answer)
+{
+    // パターンデータを読み込む。
+    patterns_t patterns;
+    WCHAR szPath[MAX_PATH];
+    XgFindLocalFile(szPath, _countof(szPath), L"PAT.txt");
+    if (!XgLoadPatterns(szPath, patterns))
+        return false;
+
+    // ソートして一意化する。
+    XgSortAndUniquePatterns(patterns, TRUE);
+
+    // サイズとルールが一致しているものを抽出する。
+    patterns_t tmp;
+    for (const auto& pat : patterns) {
+        if (pat.num_columns != xg_nCols || pat.num_rows != xg_nRows)
+            continue;
+        if (!XgPatternRuleIsOK(pat))
+            continue;
+        tmp.push_back(pat);
+    }
+    patterns = std::move(tmp);
+
+    // 対応するパターンがなければエラーメッセージを表示して終了する。
+    if (patterns.empty()) {
+        XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_NOMATCHPAT), nullptr,
+                            MB_ICONERROR);
+        return false;
+    }
+
+#ifdef NO_RANDOM
+    size_t iPat = 0;
+#else
+    std::random_device rd;
+    std::mt19937 g(rd());
+    size_t iPat = g() % patterns.size();
+#endif
+
+    // コピー＆貼り付け。
+    auto& pat = patterns[iPat];
+    XgPasteBoard(xg_hMainWnd, pat.text);
+    XgUpdateImage(hwnd);
+
+    // 解を求める（黒マス追加なし）。結果を表示しない。
+    XgOnSolve_NoAddBlackNoResults(hwnd, show_answer);
+
+    xg_bShowAnswer = show_answer;
+    XgUpdateImage(hwnd);
+
+    return true;
+}
+
 // 問題の作成。
 bool __fastcall XgOnGenerate(HWND hwnd, bool show_answer, bool multiple = false)
 {
@@ -2801,6 +2858,10 @@ bool __fastcall XgOnGenerate(HWND hwnd, bool show_answer, bool multiple = false)
     ::EnableWindow(xg_hwndInputPalette, TRUE);
     if (nID != IDOK) {
         return false;
+    }
+
+    if (!multiple && xg_bChoosePAT) { // 複数でなく、自動的にPAT.txtから選択するか？
+        return XgGenerateFromPat(hwnd, show_answer);
     }
 
     xg_bSolvingEmpty = true;
@@ -3253,6 +3314,55 @@ bool __fastcall XgOnSolve_NoAddBlack(HWND hwnd, bool bShowAnswer/* = true*/)
         ::InvalidateRect(hwnd, nullptr, FALSE);
         XgCenterMessageBoxW(hwnd, sz, XgLoadStringDx2(IDS_RESULTS), MB_ICONERROR);
     }
+
+    return true;
+}
+
+// 解を求める（黒マス追加なし）。結果を表示しない。
+bool __fastcall XgOnSolve_NoAddBlackNoResults(HWND hwnd, bool bShowAnswer/* = true*/)
+{
+    // すでに解かれている場合は、実行を拒否する。
+    if (xg_bSolved) {
+        ::MessageBeep(0xFFFFFFFF);
+        return false;
+    }
+
+    // 辞書を読み込む。
+    XgLoadDictFile(xg_dict_name.c_str());
+    XgSetInputModeFromDict(hwnd);
+
+    // 黒マスルールなどをチェックする。
+    xg_bNoAddBlack = true;
+    if (!XgCheckCrossWord(hwnd)) {
+        return false;
+    }
+
+    // 初期化する。
+    xg_bSolvingEmpty = xg_xword.IsEmpty();
+    xg_vVertInfo.clear();
+    xg_vHorzInfo.clear();
+    xg_vMarks.clear();
+    xg_vMarkedCands.clear();
+    // 生成した数と生成する数。
+    xg_nNumberGenerated = 0;
+    // ナンクロモードをリセットする。
+    xg_bNumCroMode = false;
+    xg_mapNumCro1.clear();
+    xg_mapNumCro2.clear();
+
+    // 候補ウィンドウを破棄する。
+    XgDestroyCandsWnd();
+    // ヒントウィンドウを破棄する。
+    XgDestroyHintsWnd();
+    // 二重マス単語の候補と配置を破棄する。
+    ::DestroyWindow(xg_hMarkingDlg);
+    // キャンセルダイアログを表示し、実行を開始する。
+    ::EnableWindow(xg_hwndInputPalette, FALSE);
+    {
+        XG_CancelSolveNoAddBlackDialog dialog;
+        dialog.DoModal(hwnd);
+    }
+    ::EnableWindow(xg_hwndInputPalette, TRUE);
 
     return true;
 }
@@ -5615,6 +5725,7 @@ void __fastcall XgGenerate(HWND hwnd, bool show_answer)
         // イメージを更新する。
         XgSetCaretPos();
         XgMarkUpdate();
+        XgUpdateImage(hwnd);
         // メッセージボックスを表示する。
         XgShowResults(hwnd);
     }

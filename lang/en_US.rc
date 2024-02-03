@@ -615,6 +615,7 @@ FONT 9, "Tahoma"
     CONTROL "", scr2, "msctls_updown32", UDS_ARROWKEYS | UDS_AUTOBUDDY | UDS_ALIGNRIGHT | UDS_SETBUDDYINT, 101, 24, 12, 20
     LTEXT "cells", -1, 248, 10, 20, 12
     AUTOCHECKBOX "Show &Answer", chx3, 10, 35, 85, 14
+    AUTOCHECKBOX "Choose a pattern from &PAT.txt automatically", chx4, 120, 35, 160, 14
     AUTOCHECKBOX "&SmartResolution", chx2, 10, 60, 75, 14
     AUTOCHECKBOX "Re&try regularly", chx1, 95, 60, 110, 14
     LTEXT "Max. Word &Length:", stc1, 10, 87, 65, 12
@@ -1743,8 +1744,9 @@ STRINGTABLE
     IDS_MARKINGEMPTY, "Enter a word or choose from the suggestions below:"
     IDS_ADD, "Add"
     IDS_DELETE, "Delete"
-    IDS_CANTWRITEPAT, "Failed to write PAT2.txt. Sorry."
-    IDS_WROTEPAT, "Success! PAT2.txt has been written."
+    IDS_CANTWRITEPAT, "Failed to write PAT.txt. Sorry."
+    IDS_WROTEPAT, "Success! PAT.txt has been written."
+    IDS_NOMATCHPAT, "No matching pattern in ""PAT.txt""."
     IDS_TT_NEW, "New crossword"
     IDS_TT_GENERATE, "Generate crossword"
     IDS_TT_OPEN, "Open crossword"

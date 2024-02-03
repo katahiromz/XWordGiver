@@ -618,6 +618,7 @@ FONT 9, "MS UI Gothic"
     CONTROL "", scr2, "msctls_updown32", UDS_ARROWKEYS | UDS_AUTOBUDDY | UDS_ALIGNRIGHT | UDS_SETBUDDYINT, 101, 24, 12, 20
     LTEXT "マス", -1, 248, 10, 20, 12
     AUTOCHECKBOX "答えを表示する(&A)", chx3, 10, 35, 85, 14
+    AUTOCHECKBOX "&PAT.txtから黒マスパターンを自動的に選ぶ", chx4, 120, 35, 160, 14
     AUTOCHECKBOX "スマート解決(&S)", chx2, 10, 60, 75, 14
     AUTOCHECKBOX "一定時間が過ぎたら再試行(&T)", chx1, 95, 60, 110, 14
     LTEXT "最大単語長(&L):", stc1, 10, 87, 60, 12
@@ -1746,8 +1747,9 @@ STRINGTABLE
     IDS_MARKINGEMPTY, "単語を入力、または下の候補から選択して下さい："
     IDS_ADD, "追加"
     IDS_DELETE, "削除"
-    IDS_CANTWRITEPAT, "失敗。PAT2.txtの書き込みに失敗しました。書き込めないフォルダの可能性があります。"
-    IDS_WROTEPAT, "PAT2.txt の書き込みに成功しました。"
+    IDS_CANTWRITEPAT, "失敗。PAT.txtの書き込みに失敗しました。書き込めないフォルダの可能性があります。"
+    IDS_WROTEPAT, "PAT.txt の書き込みに成功しました。"
+    IDS_NOMATCHPAT, "対応するパターンがPAT.txtにありません。"
     IDS_TT_NEW, "新規作成"
     IDS_TT_GENERATE, "問題を自動生成する"
     IDS_TT_OPEN, "問題を開く"

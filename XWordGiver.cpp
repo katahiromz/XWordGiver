@@ -31,6 +31,9 @@ bool xg_bNoAddBlack = false;
 // スマート解決か？
 bool xg_bSmartResolution = true;
 
+// PAT.txtから自動的にパターンを選択するか？
+bool xg_bChoosePAT = false;
+
 // スレッドの数。
 DWORD xg_dwThreadCount;
 
@@ -430,7 +433,7 @@ BOOL __fastcall XgPatternRuleIsOK(const XG_PATDATA& pat)
 #undef XG_GET_DATA
 
 // パターンデータを読み込む。
-BOOL XgLoadPatterns(LPCWSTR pszFileName, patterns_t& patterns)
+BOOL XgLoadPatterns(LPCWSTR pszFileName, patterns_t& patterns, std::wstring *pComments)
 {
     // パターンデータをクリアする。
     patterns.clear();
@@ -448,6 +451,11 @@ BOOL XgLoadPatterns(LPCWSTR pszFileName, patterns_t& patterns)
     }
     fclose(fp);
 
+    // BOMを消す。
+    if (utf8.size() >= 3 && memcmp(&utf8[0], "\xEF\xBB\xBF", 3) == 0) {
+        utf8 = utf8.substr(3);
+    }
+
     // split as UTF-16 lines
     auto utf16 = XgUtf8ToUnicode(utf8);
     std::vector<std::wstring> lines;
@@ -456,7 +464,7 @@ BOOL XgLoadPatterns(LPCWSTR pszFileName, patterns_t& patterns)
     utf8.clear();
 
     XG_PATDATA pat;
-    std::wstring text;
+    std::wstring text, comments;
 
     // parse each line
     for (auto& line : lines) {
@@ -465,6 +473,10 @@ BOOL XgLoadPatterns(LPCWSTR pszFileName, patterns_t& patterns)
             continue;
 
         switch (line[0]) {
+        case L';':
+            comments += line;
+            comments += L"\r\n";
+            break;
         case 0x250F: // ┏
             text.clear();
             text += line;
@@ -491,13 +503,23 @@ BOOL XgLoadPatterns(LPCWSTR pszFileName, patterns_t& patterns)
         }
     }
 
+    if (pComments)
+        *pComments = std::move(comments);
+
     return TRUE;
 }
 
 // パターンデータを書き込む。
-BOOL XgSavePatterns(LPCWSTR pszFileName, const patterns_t& patterns)
+BOOL XgSavePatterns(LPCWSTR pszFileName, const patterns_t& patterns,
+                    const std::wstring *pComments)
 {
     std::wstring text;
+
+    if (pComments) {
+        text += *pComments;
+        text += L"\r\n";
+    }
+
     for (auto& pat : patterns) {
         text += pat.text;
         text += L"\r\n";
@@ -508,6 +530,7 @@ BOOL XgSavePatterns(LPCWSTR pszFileName, const patterns_t& patterns)
         return FALSE;
 
     auto utf8 = XgUnicodeToUtf8(text);
+    fputs("\xEF\xBB\xBF", fp); // BOMを追加する。
     fputs(utf8.c_str(), fp);
     fclose(fp);
     return TRUE;
@@ -617,7 +640,10 @@ BOOL XgPatEdit(HWND hwnd, BOOL bAdd)
 {
     // パターンを読み込む。
     patterns_t patterns;
-    if (!XgLoadPatterns(L"PAT.txt", patterns))
+    WCHAR szPath[MAX_PATH];
+    XgFindLocalFile(szPath, _countof(szPath), L"PAT.txt");
+    std::wstring comments;
+    if (!XgLoadPatterns(szPath, patterns, &comments))
         return FALSE;
 
     // ソートして一意化する。
@@ -662,7 +688,7 @@ BOOL XgPatEdit(HWND hwnd, BOOL bAdd)
     XgSortAndUniquePatterns(patterns, FALSE);
 
     // パターンを書き込む。
-    return XgSavePatterns(L"PAT2.txt", patterns);
+    return XgSavePatterns(szPath, patterns, &comments);
 }
 
 //////////////////////////////////////////////////////////////////////////////

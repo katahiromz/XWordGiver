@@ -226,6 +226,7 @@
 #define IDS_DELETE                          306
 #define IDS_CANTWRITEPAT                    307
 #define IDS_WROTEPAT                        308
+#define IDS_NOMATCHPAT                      309
 #define IDS_TT_NEW                          10100
 #define IDS_TT_GENERATE                     10101
 #define IDS_TT_OPEN                         10102

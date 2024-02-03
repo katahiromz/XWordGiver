@@ -77,14 +77,19 @@
     <text
        xml:space="preserve"
        style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:7.76111px;line-height:1.25;font-family:'BIZ UDPゴシック';-inkscape-font-specification:'BIZ UDPゴシック';letter-spacing:0px;word-spacing:0px;stroke-width:0.264583"
-       x="138.05861"
-       y="90.37471"
+       x="141.33661"
+       y="85.736237"
        id="text1-6"><tspan
          sodipodi:role="line"
          id="tspan1-1"
          style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:7.76111px;font-family:'BIZ UDPゴシック';-inkscape-font-specification:'BIZ UDPゴシック';stroke-width:0.264583"
-         x="138.05861"
-         y="90.37471">PAT2.txt</tspan></text>
+         x="141.33661"
+         y="85.736237">新しい</tspan><tspan
+         sodipodi:role="line"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:7.76111px;font-family:'BIZ UDPゴシック';-inkscape-font-specification:'BIZ UDPゴシック';stroke-width:0.264583"
+         x="141.33661"
+         y="95.437622"
+         id="tspan4">PAT.txt</tspan></text>
     <rect
        style="fill:#f1f1f1;fill-opacity:1;stroke:#000000;stroke-width:5.84276;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1;paint-order:fill markers stroke"
        id="rect1-7-0"
