@@ -602,7 +602,7 @@ FONT 9, "Tahoma"
 }
 
 IDD_CREATE DIALOG 0, 0, 310, 103
-CAPTION "Generate Crossword  (Ctrl+G / Ctrl+H)"
+CAPTION "Generate Crossword (Ctrl+G / Ctrl+H)"
 STYLE DS_CENTER | DS_MODALFRAME | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
 FONT 9, "Tahoma"
 {
