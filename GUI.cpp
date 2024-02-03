@@ -793,15 +793,9 @@ void XgUpdateToolBarUI(HWND hwnd)
 
 //////////////////////////////////////////////////////////////////////////////
 
-// 設定を読み込む。
-bool __fastcall XgLoadSettings(void)
+// 設定を初期化する。
+void XgResetSettings(void)
 {
-    int i, nDirCount = 0;
-    WCHAR sz[MAX_PATH];
-    WCHAR szFormat[32];
-    DWORD dwValue;
-
-    // 初期化する。
     s_nMainWndX = CW_USEDEFAULT;
     s_nMainWndY = CW_USEDEFAULT;
     s_nMainWndCX = 475;
@@ -874,6 +868,20 @@ bool __fastcall XgLoadSettings(void)
     xg_strDoubleFrameLetters = XgLoadStringDx1(IDS_DBLFRAME_LETTERS_1);
 
     xg_recently_used_files.clear();
+
+    xg_bChoosePAT = false;
+}
+
+// 設定を読み込む。
+bool __fastcall XgLoadSettings(void)
+{
+    int i, nDirCount = 0;
+    WCHAR sz[MAX_PATH];
+    WCHAR szFormat[32];
+    DWORD dwValue;
+
+    // 初期化する。
+    XgResetSettings();
 
     // アプリ名キーを開く。
     MRegKey app_key(HKEY_CURRENT_USER, XG_REGKEY_APP, FALSE);
@@ -1272,27 +1280,6 @@ bool __fastcall XgSaveSettings(void)
             app_key.SetSz(szFormat, xg_recently_used_files[i].c_str());
         }
     }
-
-    return true;
-}
-
-// 設定を消去する。
-bool __fastcall XgEraseSettings(void) noexcept
-{
-    // レジストリのアプリキーを削除する。
-    RegDeleteTreeDx(HKEY_CURRENT_USER, XG_REGKEY_APP);
-
-    // 黒マスの情報も消す。
-    xg_strBlackCellImage.clear();
-    if (xg_hbmBlackCell) {
-        ::DeleteObject(xg_hbmBlackCell);
-        xg_hbmBlackCell = nullptr;
-    }
-    if (xg_hBlackCellEMF) {
-        ::DeleteEnhMetaFile(xg_hBlackCellEMF);
-        xg_hBlackCellEMF = nullptr;
-    }
-    XgGetFileManager()->clear();
 
     return true;
 }
@@ -4887,6 +4874,28 @@ void XgUpdateRules(HWND hwnd)
 }
 
 // 設定を消去する。
+void XgEraseSettings(void)
+{
+    // 初期化する。
+    XgResetSettings();
+
+    // レジストリのアプリキーを削除する。
+    RegDeleteTreeDx(HKEY_CURRENT_USER, XG_REGKEY_APP);
+
+    // 黒マスの情報も消す。
+    xg_strBlackCellImage.clear();
+    if (xg_hbmBlackCell) {
+        ::DeleteObject(xg_hbmBlackCell);
+        xg_hbmBlackCell = nullptr;
+    }
+    if (xg_hBlackCellEMF) {
+        ::DeleteEnhMetaFile(xg_hBlackCellEMF);
+        xg_hBlackCellEMF = nullptr;
+    }
+    XgGetFileManager()->clear();
+}
+
+// 設定を消去する。
 void MainWnd_OnEraseSettings(HWND hwnd)
 {
     // 候補ウィンドウを破棄する。
@@ -4904,7 +4913,7 @@ void MainWnd_OnEraseSettings(HWND hwnd)
     }
 
     // 設定を消去する。
-    const bool bSuccess = XgEraseSettings();
+    XgEraseSettings();
 
     // 初期化する。
     XgLoadSettings();
@@ -4932,17 +4941,10 @@ void MainWnd_OnEraseSettings(HWND hwnd)
     XgResetTheme(hwnd);
     XgUpdateTheme(hwnd);
 
-    if (bSuccess) {
-        // メッセージを表示する。
-        XgCenterMessageBoxW(hwnd,
-            XgLoadStringDx1(IDS_ERASEDSETTINGS), XgLoadStringDx2(IDS_APPNAME),
-            MB_ICONINFORMATION);
-    } else {
-        // メッセージを表示する。
-        XgCenterMessageBoxW(hwnd,
-            XgLoadStringDx1(IDS_FAILERASESETTINGS), XgLoadStringDx2(IDS_APPNAME),
-            MB_ICONINFORMATION);
-    }
+    // メッセージを表示する。
+    XgCenterMessageBoxW(hwnd,
+        XgLoadStringDx1(IDS_ERASEDSETTINGS), XgLoadStringDx2(IDS_APPNAME),
+        MB_ICONINFORMATION);
 }
 
 // 縦と横を入れ替える。
