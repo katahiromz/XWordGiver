@@ -1495,6 +1495,10 @@ XG_PATDATA XgFlipPatternV(const XG_PATDATA& pat);
 VOID XgSortAndUniquePatterns(patterns_t& patterns);
 // パターンが黒マスルールに適合するか？
 BOOL __fastcall XgPatternRuleIsOK(const XG_PATDATA& pat);
+// パターンのデータを扱いやすいよう、加工する。
+void XgGetPatternData(XG_PATDATA& pat);
+// パターンデータを書き込む。
+BOOL XgSavePatterns(LPCWSTR pszFileName, const patterns_t& patterns);
 
 //////////////////////////////////////////////////////////////////////////////
 // ボックス。

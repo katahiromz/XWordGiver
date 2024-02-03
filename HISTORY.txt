@@ -267,6 +267,7 @@
     - Supported TIFF images.
     - Improved Input Palette.
 - 2024-XX-YY ver.5.1.7
+    - Added trick "Ctrl+Alt+Shift+Q".
 
 # 開発履歴 (Japanese)
 
@@ -849,3 +850,4 @@
     - TIFF画像のサポート。
     - 入力パレットの改良。
 - 2024年XX月YY日 ver.5.1.7
+    - 裏技「Ctrl+Alt+Shift+Q」を追加。

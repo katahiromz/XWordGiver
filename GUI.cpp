@@ -43,6 +43,7 @@
 #include "XG_BoxWindow.hpp"
 #include "XG_CanvasWindow.hpp"
 #include "XG_UILanguageDialog.hpp"
+#include "XG_PatEditDialog.hpp"
 
 #undef HANDLE_WM_MOUSEWHEEL     // might be wrong
 #define HANDLE_WM_MOUSEWHEEL(hwnd, wParam, lParam, fn) \
@@ -5658,6 +5659,117 @@ void __fastcall XgGoNextPane(HWND hwnd, BOOL bNext)
     }
 }
 
+// パターンを現在の盤面から取得。
+XG_PATDATA XgGetCurrentPat(void)
+{
+    // コピーする盤を選ぶ。
+    XG_Board *pxw = (xg_bSolved && xg_bShowAnswer) ? &xg_solution : &xg_xword;
+
+    // クロスワードの文字列を取得する。
+    std::wstring text;
+    pxw->GetString(text);
+
+    for (auto& ch : text){
+        switch (ch)
+        {
+        case ZEN_SPACE:
+        case ZEN_BLACK:
+        case '\n':
+        case '\r':
+        case 0x250F: // ┏
+        case 0x2501: // ━
+        case 0x2513: // ┓
+        case 0x2503: // ┃
+        case 0x2517: // ┗
+        case 0x251B: // ┛
+            break;
+        default:
+            ch = ZEN_SPACE;
+            break;
+        }
+    }
+
+    XG_PATDATA pat = { xg_nCols, xg_nRows, text };
+
+    XgGetPatternData(pat);
+    return pat;
+}
+
+// パターン編集。
+BOOL XgPatEdit(HWND hwnd, BOOL bAdd)
+{
+    // パターンを読み込む。
+    patterns_t patterns;
+    if (!XgLoadPatterns(L"PAT.txt", patterns))
+        return FALSE;
+
+    // ソートして一意化する。
+    XgSortAndUniquePatterns(patterns);
+
+    // 現在の盤面のパターンを取得。
+    XG_PATDATA cur_pat = XgGetCurrentPat();
+
+    // 分断禁。
+    if (XgIsPatternDividedByBlocks(cur_pat))
+        return FALSE;
+
+    // 反転・転置した盤面も考慮。
+    auto transposed = XgTransposePattern(cur_pat);
+    auto flip_h = XgFlipPatternH(cur_pat);
+    auto flip_v = XgFlipPatternV(cur_pat);
+    auto flip_hv = XgFlipPatternH(flip_v);
+
+    if (bAdd) { // 追加。
+        patterns.push_back(cur_pat);
+        patterns.push_back(transposed);
+        patterns.push_back(flip_h);
+        patterns.push_back(flip_v);
+        patterns.push_back(flip_hv);
+    } else { // 削除。
+        patterns_t temp_pats; // 一時的なパターン
+        for (const auto& pat : patterns) {
+            if (pat.text == cur_pat.text ||
+                pat.text == transposed.text ||
+                pat.text == flip_h.text ||
+                pat.text == flip_v.text ||
+                pat.text == flip_hv.text)
+            {
+                continue;
+            }
+            temp_pats.push_back(pat);
+        }
+        patterns = std::move(temp_pats);
+    }
+
+    // 反転・転置を考慮して一意化する。
+    patterns_t temp_pats; // 一時的なパターン
+    for (const auto& pat : patterns) {
+        if (XgIsPatternDividedByBlocks(pat))
+            continue;
+        auto transposed = XgTransposePattern(pat);
+        auto flip_h = XgFlipPatternH(pat);
+        auto flip_v = XgFlipPatternV(pat);
+        auto flip_hv = XgFlipPatternH(flip_v);
+        temp_pats.erase(
+            std::remove_if(temp_pats.begin(), temp_pats.end(), [&](const XG_PATDATA& pat2) noexcept {
+                return transposed.text == pat2.text ||
+                       flip_h.text == pat2.text ||
+                       flip_v.text == pat2.text ||
+                       flip_hv.text == pat2.text;
+            }),
+            temp_pats.end()
+        );
+        temp_pats.push_back(pat);
+    }
+    patterns = std::move(temp_pats);
+
+    // ソートして一意化する。
+    XgSortAndUniquePatterns(patterns);
+
+    // パターンを書き込む。
+    return XgSavePatterns(L"PAT2.txt", patterns);
+}
+
 // コマンドを実行する。
 void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT /*codeNotify*/)
 {
@@ -6959,13 +7071,23 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT /*codeNo
         // THEME.txtを開く。
         XgOpenLocalFile(hwnd, L"THEME.txt");
         break;
-    case ID_CLEARUNDOBUFFER:
-        // Undoバッファをクリアする。
-        xg_ubUndoBuffer.clear();
-        // 音を鳴らす。
-        Beep(0x1000, 50);
-        Beep(0x800, 450);
-        bUpdateImage = TRUE;
+    case ID_PATEDIT:
+        {
+            // パターン編集。
+            XG_PatEditDialog dialog;
+            if (dialog.DoModal(hwnd) != IDOK)
+                break;
+
+            if (XgPatEdit(hwnd, dialog.s_bAdd)) {
+                // 成功メッセージ。
+                XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_WROTEPAT),
+                                    XgLoadStringDx2(IDS_APPNAME), MB_ICONINFORMATION);
+            } else {
+                // 失敗メッセージ。
+                XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_CANTWRITEPAT),
+                                    nullptr, MB_ICONERROR);
+            }
+        }
         break;
     case ID_DOWNLOADDICT:
         ShellExecuteW(hwnd, nullptr, L"https://katahiromz.web.fc2.com/xword/dict", nullptr, nullptr, SW_SHOWNORMAL);
