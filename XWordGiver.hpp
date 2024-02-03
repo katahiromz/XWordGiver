@@ -1492,13 +1492,15 @@ XG_PATDATA XgFlipPatternH(const XG_PATDATA& pat);
 // パターンを垂直に反転する。
 XG_PATDATA XgFlipPatternV(const XG_PATDATA& pat);
 // ソートして一意化する。
-VOID XgSortAndUniquePatterns(patterns_t& patterns);
+VOID XgSortAndUniquePatterns(patterns_t& patterns, BOOL bExpand);
 // パターンが黒マスルールに適合するか？
 BOOL __fastcall XgPatternRuleIsOK(const XG_PATDATA& pat);
 // パターンのデータを扱いやすいよう、加工する。
 void XgGetPatternData(XG_PATDATA& pat);
 // パターンデータを書き込む。
 BOOL XgSavePatterns(LPCWSTR pszFileName, const patterns_t& patterns);
+// パターン編集。
+BOOL XgPatEdit(HWND hwnd, BOOL bAdd);
 
 //////////////////////////////////////////////////////////////////////////////
 // ボックス。

@@ -98,25 +98,8 @@ public:
         if (!XgLoadPatterns(szPath, s_patterns))
             return FALSE;
 
-        // 反転・転置したパターンも追加する。
-        patterns_t temp_pats;
-        for (auto& pat : s_patterns) {
-            if (XgIsPatternDividedByBlocks(pat))
-                continue;
-            temp_pats.push_back(pat);
-            auto transposed = XgTransposePattern(pat);
-            auto flip_h = XgFlipPatternH(pat);
-            auto flip_v = XgFlipPatternV(pat);
-            auto flip_hv = XgFlipPatternH(flip_v);
-            temp_pats.push_back(transposed);
-            temp_pats.push_back(flip_h);
-            temp_pats.push_back(flip_v);
-            temp_pats.push_back(flip_hv);
-        }
-        s_patterns = std::move(temp_pats);
-
         // ソートして一意化する。
-        XgSortAndUniquePatterns(s_patterns);
+        XgSortAndUniquePatterns(s_patterns, TRUE);
 
         // 抽出する。
         patterns_t pats;
