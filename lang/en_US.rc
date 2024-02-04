@@ -1747,7 +1747,7 @@ STRINGTABLE
     IDS_DELETE, "Delete Pattern"
     IDS_CANTWRITEPAT, "Failed to write PAT.txt. Sorry."
     IDS_WROTEPAT, "Success! PAT.txt has been written."
-    IDS_NOMATCHPAT, "No matching pattern in ""PAT.txt""."
+    IDS_NOMATCHPAT, "There are no patterns matching ""PAT.txt"" with the specified conditions.\n\nIt's hopeless if large, but should I continue?"
     IDS_SHOWINFO, "Show Info"
     IDS_PATSIZEDIST, "The distribution of PAT.txt pattern sizes"
     IDS_CHARUSAGEDIST, "The distribution of board character usage"

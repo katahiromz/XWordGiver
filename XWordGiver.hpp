@@ -245,6 +245,14 @@ BOOL __fastcall XgValidateNumCro(HWND hwnd);
 #define ZEN_BULLET      WCHAR(0x25CF)  // L'●'
 #define ZEN_UNDERLINE   WCHAR(0xFF3F)  // L'＿'
 
+// 三値論理。
+enum TRIVALUE
+{
+    TV_NEGATIVE    = -1,
+    TV_NEUTRAL     =  0,
+    TV_POSITIVE    = +1,
+};
+
 //////////////////////////////////////////////////////////////////////////////
 // ルール群。
 

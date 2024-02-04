@@ -1750,7 +1750,7 @@ STRINGTABLE
     IDS_DELETE, "パターンの削除"
     IDS_CANTWRITEPAT, "失敗。PAT.txtの書き込みに失敗しました。書き込めないフォルダの可能性があります。"
     IDS_WROTEPAT, "PAT.txt の書き込みに成功しました。"
-    IDS_NOMATCHPAT, "対応するパターンがPAT.txtにありません。"
+    IDS_NOMATCHPAT, "指定された条件で「PAT.txt」に一致するパターンがありません。\n\nサイズが大きい場合は絶望的ですが、むりやり続行しますか？"
     IDS_SHOWINFO, "情報の表示"
     IDS_PATSIZEDIST, "PAT.txtのパターンサイズの頻度分布"
     IDS_CHARUSAGEDIST, "盤面の使用文字の頻度分布"

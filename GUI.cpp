@@ -2774,14 +2774,14 @@ void __fastcall XgFitZoom(HWND hwnd)
 }
 
 // 自動的にPAT.txtから選んで問題を作成する。
-bool XgGenerateFromPat(HWND hwnd, bool show_answer)
+TRIVALUE XgGenerateFromPat(HWND hwnd, bool show_answer)
 {
     // パターンデータを読み込む。
     patterns_t patterns;
     WCHAR szPath[MAX_PATH];
     XgFindLocalFile(szPath, _countof(szPath), L"PAT.txt");
     if (!XgLoadPatterns(szPath, patterns))
-        return false;
+        return TV_NEGATIVE; // 失敗。
 
     // ソートして一意化する。
     XgSortAndUniquePatterns(patterns, TRUE);
@@ -2797,11 +2797,13 @@ bool XgGenerateFromPat(HWND hwnd, bool show_answer)
     }
     patterns = std::move(tmp);
 
-    // 対応するパターンがなければエラーメッセージを表示して終了する。
+    // 対応するパターンがなければ確認。
     if (patterns.empty()) {
-        XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_NOMATCHPAT), nullptr,
-                            MB_ICONERROR);
-        return false;
+        INT id = XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_NOMATCHPAT), nullptr,
+                                     MB_ICONINFORMATION | MB_YESNOCANCEL);
+        if (id == IDYES)
+            return TV_NEUTRAL; // 続行する。
+        return TV_NEGATIVE; // 失敗。
     }
 
 #ifdef NO_RANDOM
@@ -2823,7 +2825,7 @@ bool XgGenerateFromPat(HWND hwnd, bool show_answer)
     xg_bShowAnswer = show_answer;
     XgUpdateImage(hwnd);
 
-    return true;
+    return TV_POSITIVE; // 成功。
 }
 
 // 問題の作成。
@@ -2848,7 +2850,12 @@ bool __fastcall XgOnGenerate(HWND hwnd, bool show_answer, bool multiple = false)
     }
 
     if (!multiple && xg_bChoosePAT) { // 複数でなく、自動的にPAT.txtから選択するか？
-        return XgGenerateFromPat(hwnd, show_answer);
+        auto tri_value = XgGenerateFromPat(hwnd, show_answer);
+        if (tri_value == TV_NEGATIVE)
+            return false; // 失敗。
+        if (tri_value == TV_POSITIVE)
+            return true; // 成功。
+        // さもなくばパターンを生成。
     }
 
     xg_bSolvingEmpty = true;
