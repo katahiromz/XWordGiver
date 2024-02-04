@@ -268,7 +268,7 @@
     - Improved Input Palette.
 - 2024-XX-YY ver.5.1.7
     - Added hidden features "Ctrl+Alt+Shift+Q".
-    - Added UTF-8 BOM to PAT.txt.
+    - Enhanced PAT.txt. Added UTF-8 BOM to PAT.txt.
     - Added "Choose a pattern from &PAT.txt automatically" feature to "Generate Crossword".
 
 # 開発履歴 (Japanese)
@@ -853,5 +853,5 @@
     - 入力パレットの改良。
 - 2024年XX月YY日 ver.5.1.7
     - 隠し機能「Ctrl+Alt+Shift+Q」を追加。
-    - PAT.txtにUTF-8 BOMを付けるようにした。
+    - PAT.txtの増強。PAT.txtにUTF-8 BOMを付けるようにした。
     - 「問題の作成」に「PAT.txtから黒マスパターンを自動的に選ぶ」機能を追加。

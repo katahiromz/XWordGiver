@@ -521,6 +521,12 @@ BOOL XgSavePatterns(LPCWSTR pszFileName, const patterns_t& patterns,
     }
 
     for (auto& pat : patterns) {
+        text += std::to_wstring(pat.num_columns);
+        text += L" x ";
+        text += std::to_wstring(pat.num_rows);
+        text += L" = ";
+        text += std::to_wstring(pat.num_columns * pat.num_rows);
+        text += L"\r\n";
         text += pat.text;
         text += L"\r\n";
     }
