@@ -28,6 +28,9 @@ bool xg_bShowAnswer = false;
 // 黒マス追加なしか？
 bool xg_bNoAddBlack = false;
 
+// 答え合わせしているか？
+bool xg_bCheckingAnswer = false;
+
 // スマート解決か？
 bool xg_bSmartResolution = true;
 
@@ -2718,6 +2721,7 @@ bool __fastcall XgSetJsonString(HWND hwnd, const std::wstring& str)
 
             if (is_solved) {
                 xg_bSolved = true;
+                xg_bCheckingAnswer = false;
                 xg_solution = xw;
                 xg_xword.ResetAndSetSize(row_count, column_count);
                 for (int i = 0; i < xg_nRows; i++) {
@@ -2733,6 +2737,7 @@ bool __fastcall XgSetJsonString(HWND hwnd, const std::wstring& str)
                 XgGetHintsStr(xg_solution, xg_strHints, 2, true);
             } else {
                 xg_bSolved = false;
+                xg_bCheckingAnswer = false;
                 xg_xword = xw;
             }
             xg_vMarks = mark_positions;
@@ -2913,11 +2918,13 @@ bool __fastcall XgSetStdString(HWND hwnd, const std::wstring& str)
             // ヒントがなかった。解ではない。
             xg_xword = xword;
             xg_bSolved = false;
+            xg_bCheckingAnswer = false;
             xg_bShowAnswer = false;
         } else {
             // 空きマスがなく、ヒントがあった。これは解である。
             xg_solution = xword;
             xg_bSolved = true;
+            xg_bCheckingAnswer = false;
             xg_bShowAnswer = false;
 
             xg_xword.clear();
@@ -2936,6 +2943,7 @@ bool __fastcall XgSetStdString(HWND hwnd, const std::wstring& str)
         // 空きマスがあった。解ではない。
         xg_xword = xword;
         xg_bSolved = false;
+        xg_bCheckingAnswer = false;
         xg_bShowAnswer = false;
     }
 
@@ -3083,6 +3091,7 @@ bool __fastcall XgSetXDString(HWND hwnd, const std::wstring& str)
     xg_vecVertHints.clear();
     xg_vecHorzHints.clear();
     xg_bSolved = false;
+    xg_bCheckingAnswer = false;
     xg_nViewMode = view_mode;
 
     if (xword.IsFulfilled() && clues.size()) {
@@ -3160,6 +3169,7 @@ bool __fastcall XgSetXDString(HWND hwnd, const std::wstring& str)
             xg_solution = xword;
             if (tate.size() && yoko.size()) {
                 xg_bSolved = true;
+                xg_bCheckingAnswer = false;
                 xg_bShowAnswer = false;
                 XgClearNonBlocks();
                 xg_vecVertHints = tate;
@@ -3193,6 +3203,7 @@ bool __fastcall XgSetXDString(HWND hwnd, const std::wstring& str)
     xg_xword = xword;
     xg_solution.ResetAndSetSize(xg_nRows, xg_nCols);
     xg_bSolved = false;
+    xg_bCheckingAnswer = false;
     xg_bShowAnswer = false;
     xg_vecVertHints.clear();
     xg_vecHorzHints.clear();
@@ -3387,6 +3398,7 @@ bool __fastcall XgSetEcwString(HWND hwnd, const std::wstring& str)
     xg_vecVertHints.clear();
     xg_vecHorzHints.clear();
     xg_bSolved = false;
+    xg_bCheckingAnswer = false;
     xg_nViewMode = XG_VIEW_NORMAL;
 
     // 番号付けを行う。
@@ -3430,6 +3442,7 @@ bool __fastcall XgSetEcwString(HWND hwnd, const std::wstring& str)
         xg_solution = xword;
         if (tate.size() && yoko.size()) {
             xg_bSolved = true;
+            xg_bCheckingAnswer = false;
             xg_bShowAnswer = false;
             XgClearNonBlocks();
             xg_vecVertHints = tate;
@@ -3818,6 +3831,7 @@ void __fastcall XgSolveXWord_AddBlackRecurse(const XG_Board& xw)
     ::EnterCriticalSection(&xg_csLock);
     if (!xg_bCancelled && !xg_bSolved && xw.IsSolution()) { // 解だった。
         xg_bSolved = true;
+        xg_bCheckingAnswer = false;
         xg_solution = xw;
         xg_solution.DoNumbering();
 
@@ -4051,6 +4065,7 @@ void __fastcall XgSolveXWord_NoAddBlackRecurse(const XG_Board& xw)
     ::EnterCriticalSection(&xg_csLock);
     if (!xg_bCancelled && !xg_bSolved && xw.IsSolution()) { // 解だった。
         xg_bSolved = true;
+        xg_bCheckingAnswer = false;
         xg_solution = xw;
         xg_solution.DoNumbering();
 
@@ -4866,6 +4881,9 @@ std::unordered_set<XG_Pos> XgGetSlot(int number, BOOL vertical)
 constexpr COLORREF c_rgbHighlight = RGB(255, 255, 140);
 constexpr COLORREF c_rgbHighlightAndDblFrame = RGB(255, 155, 100);
 
+// 答え合わせで一致しないセルの色。
+constexpr COLORREF c_rgbUnmatchedCell = RGB(255, 191, 191);
+
 // マスの数字を描画する。
 void __fastcall
 XgDrawCellNumber(HDC hdc, const RECT& rcCell, int i, int j, int number,
@@ -4886,7 +4904,12 @@ XgDrawCellNumber(HDC hdc, const RECT& rcCell, int i, int j, int number,
     // 文字の背景を塗りつぶす。
     const int nMarked = XgGetMarked(i, j);
     COLORREF rgbBack;
-    if (xg_bSolved && xg_bNumCroMode) {
+    if (xg_bCheckingAnswer && xg_bSolved &&
+        xg_xword.GetAt(i, j) != xg_solution.GetAt(i, j))
+    {
+        // 答え合わせで一致しないセル。
+        rgbBack = c_rgbUnmatchedCell;
+    } else if (xg_bSolved && xg_bNumCroMode) {
         // 文字の背景を塗りつぶす。
         if (slot.count(XG_Pos(i, j)) > 0) {
             rgbBack = c_rgbHighlight;
@@ -4919,7 +4942,8 @@ XgDrawCellNumber(HDC hdc, const RECT& rcCell, int i, int j, int number,
 }
 
 // 二重マスを描画する。
-void XgDrawDoubleFrameCell(HDC hdc, int nMarked, const RECT& rc, int nCellSize, HPEN hThinPen)
+void XgDrawDoubleFrameCell(HDC hdc, int nMarked, const RECT& rc, int nCellSize, HPEN hThinPen,
+                           int i, int j)
 {
     // 二重マスの内側の枠を描く。
     if (xg_bDrawFrameForMarkedCell) {
@@ -4949,7 +4973,18 @@ void XgDrawDoubleFrameCell(HDC hdc, int nMarked, const RECT& rc, int nCellSize, 
         // EMFで枠線が余分に描画されてしまう不具合の回避のため、FillRectの前にNULL_PENを選択する。
         HGDIOBJ hPen2Old = ::SelectObject(hdc, ::GetStockObject(NULL_PEN));
         {
-            HBRUSH hbr = ::CreateSolidBrush(xg_rgbMarkedCellColor);
+            HBRUSH hbr;
+            if (i != -1 && j != -1 &&
+                xg_bCheckingAnswer && xg_bSolved &&
+                xg_xword.GetAt(i, j) != xg_solution.GetAt(i, j))
+            {
+                // 答え合わせで一致しないセル。
+                hbr = ::CreateSolidBrush(c_rgbUnmatchedCell);
+            } else {
+                // その他の場合。
+                hbr = ::CreateSolidBrush(xg_rgbMarkedCellColor);
+            }
+
             ::FillRect(hdc, &rcText, hbr);
             ::DeleteObject(hbr);
         }
@@ -5014,6 +5049,7 @@ void __fastcall XgDrawOneCell(HDC hdc, INT iRow, INT jCol)
     HBRUSH hbrMarked = ::CreateSolidBrush(xg_rgbMarkedCellColor);
     HBRUSH hbrHighlight = ::CreateSolidBrush(c_rgbHighlight);
     HBRUSH hbrHighlightAndDblFrame = ::CreateSolidBrush(c_rgbHighlightAndDblFrame);
+    HBRUSH hbrUnmatched = ::CreateSolidBrush(c_rgbUnmatchedCell);
 
     auto slot = XgGetSlot(xg_highlight.m_number, xg_highlight.m_vertical);
 
@@ -5054,6 +5090,11 @@ void __fastcall XgDrawOneCell(HDC hdc, INT iRow, INT jCol)
         } else {
             ::FillRect(hdc, &rc, hbrBlack);
         }
+    } else if (xg_bCheckingAnswer && xg_bSolved &&
+               xg_xword.GetAt(iRow, jCol) != xg_solution.GetAt(iRow, jCol))
+    {
+        // 答え合わせで一致しないセル。
+        ::FillRect(hdc, &rc, hbrUnmatched);
     } else if (slot.count(XG_Pos(iRow, jCol)) > 0 && nMarked != -1 && !xg_bNumCroMode) {
         // ハイライトかつ二重マスかつ非ナンクロ。
         ::FillRect(hdc, &rc, hbrHighlightAndDblFrame);
@@ -5076,7 +5117,7 @@ void __fastcall XgDrawOneCell(HDC hdc, INT iRow, INT jCol)
 
     // 二重マスを描画する。
     if (!xg_bNumCroMode && nMarked != -1) {
-        XgDrawDoubleFrameCell(hdc, nMarked, rc, nCellSize, hThinPen);
+        XgDrawDoubleFrameCell(hdc, nMarked, rc, nCellSize, hThinPen, iRow, jCol);
     }
 
     // 番号を描画する。
@@ -5125,6 +5166,7 @@ void __fastcall XgDrawOneCell(HDC hdc, INT iRow, INT jCol)
     ::DeleteObject(hbrMarked);
     ::DeleteObject(hbrHighlight);
     ::DeleteObject(hbrHighlightAndDblFrame);
+    ::DeleteObject(hbrUnmatched);
 }
 
 // 二重マス単語を描画する。
@@ -5210,7 +5252,7 @@ void __fastcall XgDrawMarkWord(HDC hdc, const SIZE *psiz)
             ::OffsetRect(&rc, c_nThin, c_nThin * 2 / 3);
             XgDrawCellNumber(hdc, rc, pos.m_i, pos.m_j, xg_mapNumCro1[ch], slot);
         } else {
-            XgDrawDoubleFrameCell(hdc, i, rc, nCellSize, hThinPen);
+            XgDrawDoubleFrameCell(hdc, i, rc, nCellSize, hThinPen, -1, -1);
         }
     }
     ::SelectObject(hdc, hFontOld);
@@ -5275,6 +5317,7 @@ void __fastcall XgDrawXWord_NormalView(const XG_Board& xw, HDC hdc, const SIZE *
     HBRUSH hbrMarked = ::CreateSolidBrush(xg_rgbMarkedCellColor);
     HBRUSH hbrHighlight = ::CreateSolidBrush(c_rgbHighlight);
     HBRUSH hbrHighlightAndDblFrame = ::CreateSolidBrush(c_rgbHighlightAndDblFrame);
+    HBRUSH hbrUnmatched = ::CreateSolidBrush(c_rgbUnmatchedCell);
 
     auto slot = XgGetSlot(xg_highlight.m_number, xg_highlight.m_vertical);
     if (xg_nForDisplay <= 0)
@@ -5349,6 +5392,11 @@ void __fastcall XgDrawXWord_NormalView(const XG_Board& xw, HDC hdc, const SIZE *
                 } else {
                     ::FillRect(hdc, &rc, hbrBlack);
                 }
+            } else if (xg_bCheckingAnswer && xg_bSolved &&
+                       xg_xword.GetAt(i, j) != xg_solution.GetAt(i, j))
+            {
+                // 答え合わせで一致しないセル。
+                ::FillRect(hdc, &rc, hbrUnmatched);
             } else if (slot.count(XG_Pos(i, j)) > 0 && nMarked != -1 && !xg_bNumCroMode) {
                 // ハイライトかつ二重マスかつ非ナンクロ。
                 ::FillRect(hdc, &rc, hbrHighlightAndDblFrame);
@@ -5388,7 +5436,7 @@ void __fastcall XgDrawXWord_NormalView(const XG_Board& xw, HDC hdc, const SIZE *
                 if (nMarked == -1)
                     continue;
 
-                XgDrawDoubleFrameCell(hdc, nMarked, rc, nCellSize, hThinPen);
+                XgDrawDoubleFrameCell(hdc, nMarked, rc, nCellSize, hThinPen, i, j);
             }
         }
     }
@@ -5519,6 +5567,7 @@ void __fastcall XgDrawXWord_NormalView(const XG_Board& xw, HDC hdc, const SIZE *
     ::DeleteObject(hbrMarked);
     ::DeleteObject(hbrHighlight);
     ::DeleteObject(hbrHighlightAndDblFrame);
+    ::DeleteObject(hbrUnmatched);
 }
 
 // クロスワードを描画する（スケルトンビュー）。
@@ -5551,6 +5600,7 @@ void __fastcall XgDrawXWord_SkeletonView(const XG_Board& xw, HDC hdc, const SIZE
     HBRUSH hbrMarked = ::CreateSolidBrush(xg_rgbMarkedCellColor);
     HBRUSH hbrHighlight = ::CreateSolidBrush(c_rgbHighlight);
     HBRUSH hbrHighlightAndDblFrame = ::CreateSolidBrush(c_rgbHighlightAndDblFrame);
+    HBRUSH hbrUnmatched = ::CreateSolidBrush(c_rgbUnmatchedCell);
 
     auto slot = XgGetSlot(xg_highlight.m_number, xg_highlight.m_vertical);
     if (xg_nForDisplay <= 0)
@@ -5631,7 +5681,12 @@ void __fastcall XgDrawXWord_SkeletonView(const XG_Board& xw, HDC hdc, const SIZE
             const int nMarked = XgGetMarked(i, j);
 
             // 塗りつぶす。
-            if (slot.count(XG_Pos(i, j)) > 0 && nMarked != -1 && !xg_bNumCroMode) {
+            if (xg_bCheckingAnswer && xg_bSolved &&
+                xg_xword.GetAt(i, j) != xg_solution.GetAt(i, j))
+            {
+                // 答え合わせで一致しないセル。
+                ::FillRect(hdc, &rc, hbrUnmatched);
+            } else if (slot.count(XG_Pos(i, j)) > 0 && nMarked != -1 && !xg_bNumCroMode) {
                 // ハイライトかつ二重マスかつ非ナンクロ。
                 ::FillRect(hdc, &rc, hbrHighlightAndDblFrame);
             } else if (slot.count(XG_Pos(i, j)) > 0) {
@@ -5667,7 +5722,7 @@ void __fastcall XgDrawXWord_SkeletonView(const XG_Board& xw, HDC hdc, const SIZE
                     xg_nMargin + (i + 1) * nCellSize
                 };
 
-                XgDrawDoubleFrameCell(hdc, nMarked, rc, nCellSize, hThinPen);
+                XgDrawDoubleFrameCell(hdc, nMarked, rc, nCellSize, hThinPen, i, j);
             }
         }
     }
@@ -5771,6 +5826,7 @@ void __fastcall XgDrawXWord_SkeletonView(const XG_Board& xw, HDC hdc, const SIZE
     ::DeleteObject(hbrMarked);
     ::DeleteObject(hbrHighlight);
     ::DeleteObject(hbrHighlightAndDblFrame);
+    ::DeleteObject(hbrUnmatched);
 }
 
 // クロスワードを描画する。
@@ -5893,6 +5949,7 @@ bool __fastcall XgDoLoadCrpFile(HWND hwnd, LPCWSTR pszFile)
         xg_vecVertHints.clear();
         xg_vecHorzHints.clear();
         xg_bSolved = false;
+        xg_bCheckingAnswer = false;
 
         if (xword.IsFulfilled()) {
             // 番号付けを行う。
@@ -6009,6 +6066,7 @@ bool __fastcall XgDoLoadCrpFile(HWND hwnd, LPCWSTR pszFile)
         xg_solution = xword;
         if (tate.size() && yoko.size()) {
             xg_bSolved = true;
+            xg_bCheckingAnswer = false;
             xg_bShowAnswer = false;
             XgClearNonBlocks();
             xg_vecVertHints = std::move(tate);
@@ -6893,6 +6951,7 @@ bool __fastcall XG_Board::SetString(const std::wstring& strToBeSet)
 
     // クロスワードを初期化する。
     xg_bSolved = false;
+    xg_bCheckingAnswer = false;
     xg_bShowAnswer = false;
     ResetAndSetSize(nRows, nCols);
     xg_nRows = nRows;

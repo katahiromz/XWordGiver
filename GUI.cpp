@@ -1533,6 +1533,7 @@ void XgNewCells(HWND hwnd, WCHAR ch, int nRows, int nCols)
     ::DestroyWindow(xg_hMarkingDlg);
     // 初期化する。
     xg_bSolved = false;
+    xg_bCheckingAnswer = false;
     xg_nRows = nRows;
     xg_nCols = nCols;
     xg_xword.ResetAndSetSize(xg_nRows, xg_nCols);
@@ -1652,6 +1653,7 @@ void XgResizeCells(HWND hwnd, int nNewRows, int nNewCols)
     xg_nCols = nNewCols;
     xg_xword = copy;
     xg_bSolved = false;
+    xg_bCheckingAnswer = false;
     xg_bHintsAdded = false;
     xg_bShowAnswer = false;
     XgSetCaretPos();
@@ -2901,6 +2903,7 @@ bool __fastcall XgOnGenerate(HWND hwnd, bool show_answer, bool multiple = false)
                 }
                 // 初期化。
                 xg_bSolved = false;
+                xg_bCheckingAnswer = false;
                 xg_xword.ResetAndSetSize(xg_nRows, xg_nCols);
                 xg_vVertInfo.clear();
                 xg_vHorzInfo.clear();
@@ -2928,6 +2931,7 @@ bool __fastcall XgOnGenerate(HWND hwnd, bool show_answer, bool multiple = false)
         xg_vecVertHints.clear();
         xg_vecHorzHints.clear();
         xg_bSolved = false;
+        xg_bCheckingAnswer = false;
         xg_bShowAnswer = false;
     } else {
         xg_bShowAnswer = show_answer;
@@ -2964,6 +2968,7 @@ bool __fastcall XgOnGenerateBlacksRepeatedly(HWND hwnd)
     xg_vecVertHints.clear();
     xg_vecHorzHints.clear();
     xg_bSolved = false;
+    xg_bCheckingAnswer = false;
     xg_bHintsAdded = false;
     xg_bShowAnswer = false;
     xg_strHeader.clear();
@@ -2999,6 +3004,7 @@ bool __fastcall XgOnGenerateBlacksRepeatedly(HWND hwnd)
             }
             // 初期化。
             xg_bSolved = false;
+            xg_bCheckingAnswer = false;
             xg_xword.clear();
             xg_vVertInfo.clear();
             xg_vHorzInfo.clear();
@@ -3057,6 +3063,7 @@ bool __fastcall XgOnGenerateBlacks(HWND hwnd, bool sym)
     xg_vecVertHints.clear();
     xg_vecHorzHints.clear();
     xg_bSolved = false;
+    xg_bCheckingAnswer = false;
     xg_bHintsAdded = false;
     xg_bShowAnswer = false;
     xg_strHeader.clear();
@@ -3431,6 +3438,7 @@ bool __fastcall XgOnSolveRepeatedly(HWND hwnd)
             }
             // 初期化。
             xg_bSolved = false;
+            xg_bCheckingAnswer = false;
             xg_xword = xword_save;
             xg_vVertInfo.clear();
             xg_vHorzInfo.clear();
@@ -3456,6 +3464,7 @@ bool __fastcall XgOnSolveRepeatedly(HWND hwnd)
 
     // イメージを更新する。
     xg_bSolved = false;
+    xg_bCheckingAnswer = false;
     xg_bShowAnswer = false;
     XgSetCaretPos();
     XgMarkUpdate();
@@ -3553,6 +3562,7 @@ bool __fastcall XgOnSolveRepeatedlyNoAddBlack(HWND hwnd)
             }
             // 初期化。
             xg_bSolved = false;
+            xg_bCheckingAnswer = false;
             xg_xword = xword_save;
             xg_vVertInfo.clear();
             xg_vHorzInfo.clear();
@@ -3578,6 +3588,7 @@ bool __fastcall XgOnSolveRepeatedlyNoAddBlack(HWND hwnd)
 
     // イメージを更新する。
     xg_bSolved = false;
+    xg_bCheckingAnswer = false;
     xg_bShowAnswer = false;
     XgSetCaretPos();
     XgMarkUpdate();
@@ -3898,6 +3909,7 @@ bool XgPasteBoard(HWND hwnd, const std::wstring& str)
     ::DestroyWindow(xg_hMarkingDlg);
 
     xg_bSolved = false;
+    xg_bCheckingAnswer = false;
     xg_bShowAnswer = false;
     XgSetCaretPos();
     xg_vMarks.clear();
@@ -4401,6 +4413,16 @@ void __fastcall MainWnd_OnInitMenu(HWND /*hwnd*/, HMENU hMenu)
         ::EnableMenuItem(hMenu, ID_SWAP_LEFT_RIGHT, MF_BYCOMMAND | MF_ENABLED);
         ::EnableMenuItem(hMenu, ID_SWAP_TOP_BOTTOM, MF_BYCOMMAND | MF_ENABLED);
     }
+
+    // 答え合わせ。
+    if (xg_bSolved)
+        ::EnableMenuItem(hMenu, ID_CHECKANSWER, MF_ENABLED);
+    else
+        ::EnableMenuItem(hMenu, ID_CHECKANSWER, MF_GRAYED);
+    if (xg_bCheckingAnswer)
+        ::CheckMenuItem(hMenu, ID_CHECKANSWER, MF_CHECKED);
+    else
+        ::CheckMenuItem(hMenu, ID_CHECKANSWER, MF_UNCHECKED);
 
     // 黒マスパターンを反射する。
     if (xg_bSolved) {
@@ -5438,6 +5460,7 @@ void XgGenerateFromWordList(HWND hwnd)
     // 解をセットする。
     auto& solution = from_words_t<wchar_t, false>::s_solution;
     xg_bSolved = true;
+    xg_bCheckingAnswer = false;
     xg_bShowAnswer = true;
     xg_nRows = solution.m_cy;
     xg_nCols = solution.m_cx;
@@ -5779,6 +5802,23 @@ void __fastcall XgGoNextPane(HWND hwnd, BOOL bNext)
     }
 }
 
+// 答え合わせ。
+void XgCheckAnswer(HWND hwnd)
+{
+    // 答えと一致するか確認。
+    for (int iRow = 0; iRow < xg_nRows; ++iRow) {
+        for (int jCol = 0; jCol < xg_nCols; ++jCol) {
+            if (xg_xword.GetAt(iRow, jCol) != xg_solution.GetAt(iRow, jCol)) {
+                return; // 間違い。
+            }
+        }
+    }
+
+    // 正解ですと表示。
+    XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_CONGRATS),
+                        XgLoadStringDx2(IDS_CORRECTANSWER), MB_ICONINFORMATION);
+}
+
 // コマンドを実行する。
 void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT /*codeNotify*/)
 {
@@ -5986,6 +6026,7 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT /*codeNo
             if (XgOnGenerate(hwnd, false, true)) {
                 // クリアする。
                 xg_bShowAnswer = false;
+                xg_bCheckingAnswer = false;
                 xg_bSolved = false;
                 xg_xword.clear();
                 xg_solution.clear();
@@ -6784,6 +6825,7 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT /*codeNo
             if (XgOnGenerateBlacksRepeatedly(hwnd)) {
                 // クリアする。
                 xg_bShowAnswer = false;
+                xg_bCheckingAnswer = false;
                 xg_bSolved = false;
                 xg_xword.clear();
                 xg_solution.clear();
@@ -7107,6 +7149,15 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT /*codeNo
     case ID_OPENPOLICYTXT:
         // POLICY.txtを開く。
         XgOpenLocalFile(hwnd, L"POLICY.txt");
+        break;
+    case ID_CHECKANSWER: // 答え合わせ。
+        if (xg_bSolved) {
+            xg_bCheckingAnswer = !xg_bCheckingAnswer;
+            XgUpdateImage(hwnd);
+            if (xg_bCheckingAnswer) {
+                XgCheckAnswer(hwnd);
+            }
+        }
         break;
 
     case ID_RECENT_00:

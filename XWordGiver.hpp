@@ -1292,6 +1292,9 @@ extern bool xg_bBlacksGenerated;
 // スマート解決か？
 extern bool xg_bSmartResolution;
 
+// 答え合わせしているか？
+extern bool xg_bCheckingAnswer;
+
 // PAT.txtから自動的にパターンを選択するか？
 extern bool xg_bChoosePAT;
 

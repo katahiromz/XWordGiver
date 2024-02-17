@@ -243,6 +243,8 @@
 #define IDS_WORDCOUNT                       323
 #define IDS_PATCOUNT                        324
 #define IDS_DICTWORDCOUNT                   325
+#define IDS_CONGRATS                        326
+#define IDS_CORRECTANSWER                   327
 #define IDS_TT_NEW                          10100
 #define IDS_TT_GENERATE                     10101
 #define IDS_TT_OPEN                         10102
@@ -501,6 +503,7 @@
 #define ID_SWAP_LEFT_RIGHT                  600
 #define ID_SWAP_TOP_BOTTOM                  601
 #define ID_PATEDIT                          602
+#define ID_CHECKANSWER                      603
 #define ID_TT_BASE                          10000
 
 #define ctl2                                1185

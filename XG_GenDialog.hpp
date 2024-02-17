@@ -101,6 +101,7 @@ public:
             // 初期化する。
             {
                 xg_bSolved = false;
+                xg_bCheckingAnswer = false;
                 xg_bShowAnswer = false;
                 xg_xword.ResetAndSetSize(n1, n2);
                 xg_nRows = n1;

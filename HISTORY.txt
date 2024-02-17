@@ -275,6 +275,7 @@
     - Made "Choose a pattern from &PAT.txt automatically" default.
     - Proper exclusive control.
     - Disabled unusable items in the context menu.
+    - Added "Checking answer" feature to "Solution" menu.
 
 # 開発履歴 (Japanese)
 
@@ -865,3 +866,4 @@
     - 「PAT.txtから自動的にパターンを選ぶ」をデフォルトにした。
     - 排他制御をきちんとする。
     - コンテキストメニューの使えない項目を無効化した。
+    - 「解」メニューに「答え合わせ」機能を追加。

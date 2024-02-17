@@ -94,6 +94,7 @@ public:
             xg_bSaveAsJsonFile = true;
             // 初期化する。
             xg_bSolved = false;
+            xg_bCheckingAnswer = false;
             xg_bShowAnswer = false;
             xg_vVertInfo.clear();
             xg_vHorzInfo.clear();

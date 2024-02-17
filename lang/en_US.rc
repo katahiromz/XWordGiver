@@ -127,6 +127,8 @@ IDB_DELETEPAT BITMAP "res/1033_Bitmap_102.bmp"
         MENUITEM "Show &solution\tCtrl+M", ID_SHOWSOLUTION
         MENUITEM "Hi&de solution\tCtrl+M", ID_NOSOLUTION
         MENUITEM SEPARATOR
+        MENUITEM "&Checking Answer", ID_CHECKANSWER
+        MENUITEM SEPARATOR
         MENUITEM "&Marking double-frame word...\tCtrl+J", ID_MARKSNEXT
         MENUITEM "Reset all the double-frames\tCtrl+R", ID_KILLMARKS
         MENUITEM SEPARATOR
@@ -1764,6 +1766,8 @@ STRINGTABLE
     IDS_WORDCOUNT, "Word usage count in the board"
     IDS_PATCOUNT, "The # of patters in PAT.txt"
     IDS_DICTWORDCOUNT, "The # of effective words in the dictionary"
+    IDS_CONGRATS, "Congratulations!"
+    IDS_CORRECTANSWER, "Correct answer!"
     IDS_TT_NEW, "New crossword"
     IDS_TT_GENERATE, "Generate crossword"
     IDS_TT_OPEN, "Open crossword"

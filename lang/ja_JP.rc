@@ -127,6 +127,8 @@ IDB_DELETEPAT BITMAP "res/1041_Bitmap_102.bmp"
         MENUITEM "解を表示する(&S)\tCtrl+M", ID_SHOWSOLUTION
         MENUITEM "解を表示しない(&D)\tCtrl+M", ID_NOSOLUTION
         MENUITEM SEPARATOR
+        MENUITEM "答え合わせ(&C)", ID_CHECKANSWER
+        MENUITEM SEPARATOR
         MENUITEM "二重マス単語の候補と配置(&N)...\tCtrl+J", ID_MARKSNEXT
         MENUITEM "二重マスをすべて解除する(&K)\tCtrl+R", ID_KILLMARKS
         MENUITEM SEPARATOR
@@ -1767,6 +1769,8 @@ STRINGTABLE
     IDS_WORDCOUNT, "盤面の使用単語数"
     IDS_PATCOUNT, "PAT.txt中のパターンの個数"
     IDS_DICTWORDCOUNT, "辞書中の有効な単語の個数"
+    IDS_CONGRATS, "おめでとうございます!"
+    IDS_CORRECTANSWER, "正解です！"
     IDS_TT_NEW, "新規作成"
     IDS_TT_GENERATE, "問題を自動生成する"
     IDS_TT_OPEN, "問題を開く"
