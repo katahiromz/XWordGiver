@@ -39,12 +39,17 @@ public:
         // タイマーを解除する。
         ::KillTimer(hwnd, uTimerID);
 
+        // キャンセルしてスレッドを待つ。
+        ::EnterCriticalSection(&xg_csLock);
         xg_bCancelled = true;
+        ::LeaveCriticalSection(&xg_csLock);
         XgWaitForThreads();
+        // スレッドを閉じる。
         XgCloseThreads();
 
         ::InterlockedIncrement(&xg_nRetryCount);
 
+        // 再開する。
         Restart(hwnd);
     }
 

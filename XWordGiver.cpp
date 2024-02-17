@@ -3816,11 +3816,7 @@ void __fastcall XgSolveXWord_AddBlackRecurse(const XG_Board& xw)
 
     // 解かどうか？
     ::EnterCriticalSection(&xg_csLock);
-    const bool ok = xw.IsSolution();
-    ::LeaveCriticalSection(&xg_csLock);
-    if (ok) {
-        // 解だった。
-        ::EnterCriticalSection(&xg_csLock);
+    if (!xg_bCancelled && !xg_bSolved && xw.IsSolution()) { // 解だった。
         xg_bSolved = true;
         xg_solution = xw;
         xg_solution.DoNumbering();
@@ -3831,8 +3827,8 @@ void __fastcall XgSolveXWord_AddBlackRecurse(const XG_Board& xw)
             if (xw.GetAt(i) == ZEN_BLACK)
                 xg_xword.SetAt(i, ZEN_BLACK);
         }
-        ::LeaveCriticalSection(&xg_csLock);
     }
+    ::LeaveCriticalSection(&xg_csLock);
 }
 
 // 再帰する（黒マス追加なし）。
@@ -4053,12 +4049,8 @@ void __fastcall XgSolveXWord_NoAddBlackRecurse(const XG_Board& xw)
 
     // 解かどうか？
     ::EnterCriticalSection(&xg_csLock);
-    const bool ok = xw.IsSolution();
-    ::LeaveCriticalSection(&xg_csLock);
-    if (ok) {
-        // 解だった。
+    if (!xg_bCancelled && !xg_bSolved && xw.IsSolution()) { // 解だった。
         xg_bSolved = true;
-        ::EnterCriticalSection(&xg_csLock);
         xg_solution = xw;
         xg_solution.DoNumbering();
 
@@ -4068,8 +4060,8 @@ void __fastcall XgSolveXWord_NoAddBlackRecurse(const XG_Board& xw)
             if (xw.GetAt(i) == ZEN_BLACK)
                 xg_xword.SetAt(i, ZEN_BLACK);
         }
-        ::LeaveCriticalSection(&xg_csLock);
     }
+    ::LeaveCriticalSection(&xg_csLock);
 }
 
 // 縦と横を入れ替える。
@@ -7196,7 +7188,7 @@ bool __fastcall XgGenerateBlacksRecurse(const XG_Board& xword, LONG iRowjCol)
     // 終了条件。
     if (iRow == nRows && jCol == 0) {
         ::EnterCriticalSection(&xg_csLock);
-        if (!xg_bBlacksGenerated) {
+        if (!xg_bCancelled && !xg_bBlacksGenerated) {
             xg_bBlacksGenerated = true;
             xg_xword = xword;
         }
@@ -7314,7 +7306,7 @@ bool __fastcall XgGenerateBlacksPointSymRecurse(const XG_Board& xword, LONG iRow
     // 終了条件。
     if (iRow == nRows && jCol == 0) {
         ::EnterCriticalSection(&xg_csLock);
-        if (!xg_bBlacksGenerated) {
+        if (!xg_bCancelled && !xg_bBlacksGenerated) {
             xg_bBlacksGenerated = true;
             xg_xword = xword;
         }
@@ -7435,7 +7427,7 @@ bool __fastcall XgGenerateBlacksLineSymVRecurse(const XG_Board& xword, LONG iRow
     // 終了条件。
     if (iRow == 0 && jCol >= nCols) {
         ::EnterCriticalSection(&xg_csLock);
-        if (!xg_bBlacksGenerated) {
+        if (!xg_bCancelled && !xg_bBlacksGenerated) {
             xg_bBlacksGenerated = true;
             xg_xword = xword;
         }
@@ -7571,7 +7563,7 @@ bool __fastcall XgGenerateBlacksLineSymHRecurse(const XG_Board& xword, LONG iRow
     // 終了条件。
     if (iRow >= nRows && jCol == 0) {
         ::EnterCriticalSection(&xg_csLock);
-        if (!xg_bBlacksGenerated) {
+        if (!xg_bCancelled && !xg_bBlacksGenerated) {
             xg_bBlacksGenerated = true;
             xg_xword = xword;
         }

@@ -5292,13 +5292,7 @@ void __fastcall XgResetTheme(HWND hwnd, BOOL bQuery)
 void __fastcall XgShowResults(HWND hwnd)
 {
     WCHAR sz[MAX_PATH];
-    if (xg_bCancelled) {
-        // キャンセルされた。
-        StringCchPrintf(sz, _countof(sz), XgLoadStringDx1(IDS_CANCELLED),
-                       (xg_dwlTick2 - xg_dwlTick0) / 1000,
-                       (xg_dwlTick2 - xg_dwlTick0) / 100 % 10);
-        XgCenterMessageBoxW(hwnd, sz, XgLoadStringDx2(IDS_RESULTS), MB_ICONINFORMATION);
-    } else if (xg_bSolved) {
+    if (xg_bSolved) {
         // 成功メッセージを表示する。
         StringCchPrintf(sz, _countof(sz), XgLoadStringDx1(IDS_MADEPROBLEM),
                        (xg_dwlTick2 - xg_dwlTick0) / 1000,
@@ -5308,6 +5302,12 @@ void __fastcall XgShowResults(HWND hwnd)
         // ヒントを更新して開く。
         XgUpdateHints();
         XgShowHints(hwnd);
+    } else if (xg_bCancelled) {
+        // キャンセルされた。
+        StringCchPrintf(sz, _countof(sz), XgLoadStringDx1(IDS_CANCELLED),
+                       (xg_dwlTick2 - xg_dwlTick0) / 1000,
+                       (xg_dwlTick2 - xg_dwlTick0) / 100 % 10);
+        XgCenterMessageBoxW(hwnd, sz, XgLoadStringDx2(IDS_RESULTS), MB_ICONINFORMATION);
     } else {
         // 失敗メッセージを表示する。
         StringCchPrintf(sz, _countof(sz), XgLoadStringDx1(IDS_CANTMAKEPROBLEM),
