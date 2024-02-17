@@ -1480,6 +1480,8 @@ void XgUpdateToolBarUI(HWND hwnd);
 void XgDestroyCandsWnd(void) noexcept;
 // ポップアップメニューを読み込む。
 HMENU XgLoadPopupMenu(HWND hwnd, int nPos) noexcept;
+// 答え合わせ。
+void XgCheckAnswer(HWND hwnd);
 
 //////////////////////////////////////////////////////////////////////////////
 

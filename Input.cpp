@@ -100,6 +100,11 @@ skip:;
 
     // ツールバーを更新する。
     XgUpdateToolBarUI(xg_hMainWnd);
+
+    // 答え合わせ。
+    if (xg_bSolved && xg_bCheckingAnswer && ch0 != ch) {
+        XgCheckAnswer(xg_hMainWnd);
+    }
 }
 
 // アクセント記号付きの文字にする。
