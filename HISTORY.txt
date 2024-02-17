@@ -274,6 +274,7 @@
     - Improved Kana dictionaries.
     - Made "Choose a pattern from &PAT.txt automatically" default.
     - Proper exclusive control.
+    - Disabled unusable items in the context menu.
 
 # 開発履歴 (Japanese)
 
@@ -863,3 +864,4 @@
     - カナ辞書内の不適切な単語を削除・タグ付け。
     - 「PAT.txtから自動的にパターンを選ぶ」をデフォルトにした。
     - 排他制御をきちんとする。
+    - コンテキストメニューの使えない項目を無効化した。

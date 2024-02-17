@@ -7459,6 +7459,21 @@ HMENU XgLoadPopupMenu(HWND hwnd, int nPos) noexcept
         break;
     }
 
+    if (xg_bSolved) { // 解があり、ロックされている場合。
+        if (xg_bShowAnswer) { // かつ、解が表示されている場合。
+            // 白マス・黒マスのメニュー項目を無効化する。
+            ::EnableMenuItem(hSubMenu, ID_BLOCKNOFEED, MF_GRAYED);
+            ::EnableMenuItem(hSubMenu, ID_SPACENOFEED, MF_GRAYED);
+        }
+        // 行・列関係のメニュー項目を無効化する。
+        ::EnableMenuItem(hSubMenu, ID_INSERT_ROW_ABOVE, MF_GRAYED);
+        ::EnableMenuItem(hSubMenu, ID_INSERT_ROW_BELOW, MF_GRAYED);
+        ::EnableMenuItem(hSubMenu, ID_LEFT_INSERT_COLUMN, MF_GRAYED);
+        ::EnableMenuItem(hSubMenu, ID_RIGHT_INSERT_COLUMN, MF_GRAYED);
+        ::EnableMenuItem(hSubMenu, ID_DELETE_ROW, MF_GRAYED);
+        ::EnableMenuItem(hSubMenu, ID_DELETE_COLUMN, MF_GRAYED);
+    }
+
     return hMenu;
 }
 
