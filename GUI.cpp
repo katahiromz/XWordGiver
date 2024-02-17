@@ -869,7 +869,7 @@ void XgResetSettings(void)
 
     xg_recently_used_files.clear();
 
-    xg_bChoosePAT = false;
+    xg_bChoosePAT = true;
 }
 
 // 設定を読み込む。

@@ -32,7 +32,7 @@ bool xg_bNoAddBlack = false;
 bool xg_bSmartResolution = true;
 
 // PAT.txtから自動的にパターンを選択するか？
-bool xg_bChoosePAT = false;
+bool xg_bChoosePAT = true;
 
 // スレッドの数。
 DWORD xg_dwThreadCount;
