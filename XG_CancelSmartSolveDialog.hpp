@@ -57,8 +57,6 @@ public:
                             MAKELPARAM(0, xg_nRows * xg_nCols));
         ::SendDlgItemMessageW(hwnd, ctl2, PBM_SETRANGE, 0,
                             MAKELPARAM(0, xg_nRows * xg_nCols));
-        // 計算時間を求めるために、開始時間を取得する。
-        xg_dwlTick0 = xg_dwlTick1 = ::GetTickCount64();
         // 再計算までの時間を概算する。
         xg_dwlWait = XgGetRetryInterval();
         // 解を求めるのを開始。
@@ -115,9 +113,9 @@ public:
         {
             WCHAR sz[MAX_PATH];
             const auto dwlTick = ::GetTickCount64();
-            StringCchPrintf(sz, _countof(sz), XgLoadStringDx1(IDS_NOWSOLVING),
-                static_cast<DWORD>(dwlTick - xg_dwlTick0) / 1000,
-                static_cast<DWORD>(dwlTick - xg_dwlTick0) / 100 % 10, xg_nRetryCount);
+            StringCchPrintfW(sz, _countof(sz), XgLoadStringDx1(IDS_NOWSOLVING),
+                             DWORD(dwlTick - xg_dwlTick0) / 1000,
+                             DWORD(dwlTick - xg_dwlTick0) / 100 % 10, xg_nRetryCount);
             ::SetDlgItemTextW(hwnd, stc1, sz);
         }
         // 一つ以上のスレッドが終了したか？

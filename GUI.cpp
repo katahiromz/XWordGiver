@@ -2880,6 +2880,8 @@ bool __fastcall XgOnGenerate(HWND hwnd, bool show_answer, bool multiple = false)
     // 辞書を読み込む。
     XgLoadDictFile(xg_dict_name.c_str());
     XgSetInputModeFromDict(hwnd);
+    // 計算時間を求めるために、開始時間をセットする。
+    xg_dwlTick0 = ::GetTickCount64();
     // キャンセルダイアログを表示し、実行を開始する。
     ::EnableWindow(xg_hwndInputPalette, FALSE);
     do {
@@ -2987,6 +2989,8 @@ bool __fastcall XgOnGenerateBlacksRepeatedly(HWND hwnd)
     XgDestroyHintsWnd();
     // 二重マス単語の候補と配置を破棄する。
     ::DestroyWindow(xg_hMarkingDlg);
+    // 開始時間をセット。
+    xg_dwlTick0 = ::GetTickCount64();
 
     // キャンセルダイアログを表示し、生成を開始する。
     ::EnableWindow(xg_hwndInputPalette, FALSE);
@@ -3023,14 +3027,14 @@ bool __fastcall XgOnGenerateBlacksRepeatedly(HWND hwnd)
     WCHAR sz[MAX_PATH];
     if (xg_bCancelled) {
         StringCchPrintf(sz, _countof(sz), XgLoadStringDx1(IDS_CANCELLED),
-                       (xg_dwlTick2 - xg_dwlTick0) / 1000,
-                       (xg_dwlTick2 - xg_dwlTick0) / 100 % 10);
+                       DWORD(xg_dwlTick2 - xg_dwlTick0) / 1000,
+                       DWORD(xg_dwlTick2 - xg_dwlTick0) / 100 % 10);
         XgCenterMessageBoxW(hwnd, sz, XgLoadStringDx2(IDS_RESULTS), MB_ICONINFORMATION);
     } else {
         StringCchPrintf(sz, _countof(sz), XgLoadStringDx1(IDS_BLOCKSGENERATED),
                        xg_nNumberGenerated,
-                       (xg_dwlTick2 - xg_dwlTick0) / 1000,
-                       (xg_dwlTick2 - xg_dwlTick0) / 100 % 10);
+                       DWORD(xg_dwlTick2 - xg_dwlTick0) / 1000,
+                       DWORD(xg_dwlTick2 - xg_dwlTick0) / 100 % 10);
         XgCenterMessageBoxW(hwnd, sz, XgLoadStringDx2(IDS_RESULTS), MB_ICONINFORMATION);
     }
 
@@ -3082,7 +3086,8 @@ bool __fastcall XgOnGenerateBlacks(HWND hwnd, bool sym)
     XgDestroyHintsWnd();
     // 二重マス単語の候補と配置を破棄する。
     ::DestroyWindow(xg_hMarkingDlg);
-
+    // 開始時間をセット。
+    xg_dwlTick0 = ::GetTickCount64();
     // キャンセルダイアログを表示し、生成を開始する。
     ::EnableWindow(xg_hwndInputPalette, FALSE);
     {
@@ -3096,13 +3101,13 @@ bool __fastcall XgOnGenerateBlacks(HWND hwnd, bool sym)
     WCHAR sz[MAX_PATH];
     if (xg_bCancelled) {
         StringCchPrintf(sz, _countof(sz), XgLoadStringDx1(IDS_CANCELLED),
-                       (xg_dwlTick2 - xg_dwlTick0) / 1000,
-                       (xg_dwlTick2 - xg_dwlTick0) / 100 % 10);
+                       DWORD(xg_dwlTick2 - xg_dwlTick0) / 1000,
+                       DWORD(xg_dwlTick2 - xg_dwlTick0) / 100 % 10);
         XgCenterMessageBoxW(hwnd, sz, XgLoadStringDx2(IDS_RESULTS), MB_ICONINFORMATION);
     } else {
         StringCchPrintf(sz, _countof(sz), XgLoadStringDx1(IDS_BLOCKSGENERATED), 1,
-                       (xg_dwlTick2 - xg_dwlTick0) / 1000,
-                       (xg_dwlTick2 - xg_dwlTick0) / 100 % 10);
+                       DWORD(xg_dwlTick2 - xg_dwlTick0) / 1000,
+                       DWORD(xg_dwlTick2 - xg_dwlTick0) / 100 % 10);
         XgCenterMessageBoxW(hwnd, sz, XgLoadStringDx2(IDS_RESULTS), MB_ICONINFORMATION);
     }
     return true;
@@ -3146,6 +3151,8 @@ bool __fastcall XgOnSolve_AddBlack(HWND hwnd)
     XgDestroyHintsWnd();
     // 二重マス単語の候補と配置を破棄する。
     ::DestroyWindow(xg_hMarkingDlg);
+    // 計算時間を求めるために、開始時間を取得する。
+    xg_dwlTick0 = ::GetTickCount64();
 
     // キャンセルダイアログを表示し、実行を開始する。
     ::EnableWindow(xg_hwndInputPalette, FALSE);
@@ -3165,8 +3172,8 @@ bool __fastcall XgOnSolve_AddBlack(HWND hwnd)
         XgUpdateImage(hwnd, 0, 0);
 
         StringCchPrintf(sz, _countof(sz), XgLoadStringDx1(IDS_CANCELLED),
-                       (xg_dwlTick2 - xg_dwlTick0) / 1000,
-                       (xg_dwlTick2 - xg_dwlTick0) / 100 % 10);
+                       DWORD(xg_dwlTick2 - xg_dwlTick0) / 1000,
+                       DWORD(xg_dwlTick2 - xg_dwlTick0) / 100 % 10);
         XgCenterMessageBoxW(hwnd, sz, XgLoadStringDx2(IDS_RESULTS), MB_ICONINFORMATION);
     } else if (xg_bSolved) {
         // 空マスがないか？
@@ -3190,8 +3197,8 @@ bool __fastcall XgOnSolve_AddBlack(HWND hwnd)
 
         // 成功メッセージを表示する。
         StringCchPrintf(sz, _countof(sz), XgLoadStringDx1(IDS_SOLVED),
-                       (xg_dwlTick2 - xg_dwlTick0) / 1000,
-                       (xg_dwlTick2 - xg_dwlTick0) / 100 % 10);
+                       DWORD(xg_dwlTick2 - xg_dwlTick0) / 1000,
+                       DWORD(xg_dwlTick2 - xg_dwlTick0) / 100 % 10);
         XgCenterMessageBoxW(hwnd, sz, XgLoadStringDx2(IDS_RESULTS), MB_ICONINFORMATION);
 
         // ヒントを更新して開く。
@@ -3205,8 +3212,8 @@ bool __fastcall XgOnSolve_AddBlack(HWND hwnd)
         XgUpdateImage(hwnd, 0, 0);
         // 失敗メッセージを表示する。
         StringCchPrintf(sz, _countof(sz), XgLoadStringDx1(IDS_CANTSOLVE),
-                       (xg_dwlTick2 - xg_dwlTick0) / 1000,
-                       (xg_dwlTick2 - xg_dwlTick0) / 100 % 10);
+                       DWORD(xg_dwlTick2 - xg_dwlTick0) / 1000,
+                       DWORD(xg_dwlTick2 - xg_dwlTick0) / 100 % 10);
         ::InvalidateRect(hwnd, nullptr, FALSE);
         XgCenterMessageBoxW(hwnd, sz, XgLoadStringDx2(IDS_RESULTS), MB_ICONERROR);
     }
@@ -3251,6 +3258,8 @@ bool __fastcall XgOnSolve_NoAddBlack(HWND hwnd, bool bShowAnswer/* = true*/)
     XgDestroyHintsWnd();
     // 二重マス単語の候補と配置を破棄する。
     ::DestroyWindow(xg_hMarkingDlg);
+    // 計算時間を求めるために、開始時間を取得する。
+    xg_dwlTick0 = ::GetTickCount64();
     // キャンセルダイアログを表示し、実行を開始する。
     ::EnableWindow(xg_hwndInputPalette, FALSE);
     {
@@ -3270,8 +3279,8 @@ bool __fastcall XgOnSolve_NoAddBlack(HWND hwnd, bool bShowAnswer/* = true*/)
 
         // 終了メッセージを表示する。
         StringCchPrintf(sz, _countof(sz), XgLoadStringDx1(IDS_CANCELLED),
-                       (xg_dwlTick2 - xg_dwlTick0) / 1000,
-                       (xg_dwlTick2 - xg_dwlTick0) / 100 % 10);
+                       DWORD(xg_dwlTick2 - xg_dwlTick0) / 1000,
+                       DWORD(xg_dwlTick2 - xg_dwlTick0) / 100 % 10);
         XgCenterMessageBoxW(hwnd, sz, XgLoadStringDx2(IDS_RESULTS), MB_ICONINFORMATION);
     } else if (xg_bSolved) {
         // 空マスがないか？
@@ -3295,8 +3304,8 @@ bool __fastcall XgOnSolve_NoAddBlack(HWND hwnd, bool bShowAnswer/* = true*/)
 
         // 成功メッセージを表示する。
         StringCchPrintf(sz, _countof(sz), XgLoadStringDx1(IDS_SOLVED),
-                       (xg_dwlTick2 - xg_dwlTick0) / 1000,
-                       (xg_dwlTick2 - xg_dwlTick0) / 100 % 10);
+                        DWORD(xg_dwlTick2 - xg_dwlTick0) / 1000,
+                        DWORD(xg_dwlTick2 - xg_dwlTick0) / 100 % 10);
         XgCenterMessageBoxW(hwnd, sz, XgLoadStringDx2(IDS_RESULTS), MB_ICONINFORMATION);
 
         // ヒントを更新して開く。
@@ -3310,8 +3319,8 @@ bool __fastcall XgOnSolve_NoAddBlack(HWND hwnd, bool bShowAnswer/* = true*/)
         XgUpdateImage(hwnd, 0, 0);
         // 失敗メッセージを表示する。
         StringCchPrintf(sz, _countof(sz), XgLoadStringDx1(IDS_CANTSOLVE),
-                       (xg_dwlTick2 - xg_dwlTick0) / 1000,
-                       (xg_dwlTick2 - xg_dwlTick0) / 100 % 10);
+                       DWORD(xg_dwlTick2 - xg_dwlTick0) / 1000,
+                       DWORD(xg_dwlTick2 - xg_dwlTick0) / 100 % 10);
         ::InvalidateRect(hwnd, nullptr, FALSE);
         XgCenterMessageBoxW(hwnd, sz, XgLoadStringDx2(IDS_RESULTS), MB_ICONERROR);
     }
@@ -3357,6 +3366,8 @@ bool __fastcall XgOnSolve_NoAddBlackNoResults(HWND hwnd, bool bShowAnswer/* = tr
     XgDestroyHintsWnd();
     // 二重マス単語の候補と配置を破棄する。
     ::DestroyWindow(xg_hMarkingDlg);
+    // 計算時間を求めるために、開始時間を取得する。
+    xg_dwlTick0 = ::GetTickCount64();
     // キャンセルダイアログを表示し、実行を開始する。
     ::EnableWindow(xg_hwndInputPalette, FALSE);
     {
@@ -3422,6 +3433,8 @@ bool __fastcall XgOnSolveRepeatedly(HWND hwnd)
     xg_bNumCroMode = false;
     xg_mapNumCro1.clear();
     xg_mapNumCro2.clear();
+    // 計算時間を求めるために、開始時間を取得する。
+    xg_dwlTick0 = ::GetTickCount64();
 
     // キャンセルダイアログを表示し、実行を開始する。
     ::EnableWindow(xg_hwndInputPalette, FALSE);
@@ -3474,12 +3487,12 @@ bool __fastcall XgOnSolveRepeatedly(HWND hwnd)
     WCHAR sz[MAX_PATH];
     if (s_bOutOfDiskSpace) {
         StringCchPrintf(sz, _countof(sz), XgLoadStringDx1(IDS_OUTOFSTORAGE), xg_nNumberGenerated,
-                       (xg_dwlTick2 - xg_dwlTick0) / 1000,
-                       (xg_dwlTick2 - xg_dwlTick0) / 100 % 10);
+                       DWORD(xg_dwlTick2 - xg_dwlTick0) / 1000,
+                       DWORD(xg_dwlTick2 - xg_dwlTick0) / 100 % 10);
     } else {
         StringCchPrintf(sz, _countof(sz), XgLoadStringDx1(IDS_PROBLEMSMADE), xg_nNumberGenerated,
-                       (xg_dwlTick2 - xg_dwlTick0) / 1000,
-                       (xg_dwlTick2 - xg_dwlTick0) / 100 % 10);
+                       DWORD(xg_dwlTick2 - xg_dwlTick0) / 1000,
+                       DWORD(xg_dwlTick2 - xg_dwlTick0) / 100 % 10);
     }
     XgCenterMessageBoxW(hwnd, sz, XgLoadStringDx2(IDS_RESULTS), MB_ICONINFORMATION);
 
@@ -3546,6 +3559,8 @@ bool __fastcall XgOnSolveRepeatedlyNoAddBlack(HWND hwnd)
     xg_bNumCroMode = false;
     xg_mapNumCro1.clear();
     xg_mapNumCro2.clear();
+    // 計算時間を求めるために、開始時間を取得する。
+    xg_dwlTick0 = ::GetTickCount64();
 
     // キャンセルダイアログを表示し、実行を開始する。
     ::EnableWindow(xg_hwndInputPalette, FALSE);
@@ -3598,12 +3613,12 @@ bool __fastcall XgOnSolveRepeatedlyNoAddBlack(HWND hwnd)
     WCHAR sz[MAX_PATH];
     if (s_bOutOfDiskSpace) {
         StringCchPrintf(sz, _countof(sz), XgLoadStringDx1(IDS_OUTOFSTORAGE), xg_nNumberGenerated,
-                       (xg_dwlTick2 - xg_dwlTick0) / 1000,
-                       (xg_dwlTick2 - xg_dwlTick0) / 100 % 10);
+                        DWORD(xg_dwlTick2 - xg_dwlTick0) / 1000,
+                        DWORD(xg_dwlTick2 - xg_dwlTick0) / 100 % 10);
     } else {
         StringCchPrintf(sz, _countof(sz), XgLoadStringDx1(IDS_PROBLEMSMADE), xg_nNumberGenerated,
-                       (xg_dwlTick2 - xg_dwlTick0) / 1000,
-                       (xg_dwlTick2 - xg_dwlTick0) / 100 % 10);
+                        DWORD(xg_dwlTick2 - xg_dwlTick0) / 1000,
+                        DWORD(xg_dwlTick2 - xg_dwlTick0) / 100 % 10);
     }
     XgCenterMessageBoxW(hwnd, sz, XgLoadStringDx2(IDS_RESULTS), MB_ICONINFORMATION);
 
@@ -5317,8 +5332,8 @@ void __fastcall XgShowResults(HWND hwnd)
     if (xg_bSolved) {
         // 成功メッセージを表示する。
         StringCchPrintf(sz, _countof(sz), XgLoadStringDx1(IDS_MADEPROBLEM),
-                       (xg_dwlTick2 - xg_dwlTick0) / 1000,
-                       (xg_dwlTick2 - xg_dwlTick0) / 100 % 10);
+                        DWORD(xg_dwlTick2 - xg_dwlTick0) / 1000,
+                        DWORD(xg_dwlTick2 - xg_dwlTick0) / 100 % 10);
         XgCenterMessageBoxW(hwnd, sz, XgLoadStringDx2(IDS_RESULTS), MB_ICONINFORMATION);
 
         // ヒントを更新して開く。
@@ -5327,14 +5342,14 @@ void __fastcall XgShowResults(HWND hwnd)
     } else if (xg_bCancelled) {
         // キャンセルされた。
         StringCchPrintf(sz, _countof(sz), XgLoadStringDx1(IDS_CANCELLED),
-                       (xg_dwlTick2 - xg_dwlTick0) / 1000,
-                       (xg_dwlTick2 - xg_dwlTick0) / 100 % 10);
+                        DWORD(xg_dwlTick2 - xg_dwlTick0) / 1000,
+                        DWORD(xg_dwlTick2 - xg_dwlTick0) / 100 % 10);
         XgCenterMessageBoxW(hwnd, sz, XgLoadStringDx2(IDS_RESULTS), MB_ICONINFORMATION);
     } else {
         // 失敗メッセージを表示する。
         StringCchPrintf(sz, _countof(sz), XgLoadStringDx1(IDS_CANTMAKEPROBLEM),
-                       (xg_dwlTick2 - xg_dwlTick0) / 1000,
-                       (xg_dwlTick2 - xg_dwlTick0) / 100 % 10);
+                        DWORD(xg_dwlTick2 - xg_dwlTick0) / 1000,
+                        DWORD(xg_dwlTick2 - xg_dwlTick0) / 100 % 10);
         XgCenterMessageBoxW(hwnd, sz, XgLoadStringDx2(IDS_RESULTS), MB_ICONERROR);
     }
 }
@@ -5347,14 +5362,14 @@ void __fastcall XgShowResultsRepeatedly(HWND hwnd)
     // ディスクに空きがあるか？
     if (s_bOutOfDiskSpace) {
         // なかった。
-        StringCchPrintf(sz, _countof(sz), XgLoadStringDx1(IDS_OUTOFSTORAGE), xg_nNumberGenerated,
-                       (xg_dwlTick2 - xg_dwlTick0) / 1000,
-                       (xg_dwlTick2 - xg_dwlTick0) / 100 % 10);
+        StringCchPrintfW(sz, _countof(sz), XgLoadStringDx1(IDS_OUTOFSTORAGE), xg_nNumberGenerated,
+                         DWORD(xg_dwlTick2 - xg_dwlTick0) / 1000,
+                         DWORD(xg_dwlTick2 - xg_dwlTick0) / 100 % 10);
     } else {
         // あった。
-        StringCchPrintf(sz, _countof(sz), XgLoadStringDx1(IDS_PROBLEMSMADE), xg_nNumberGenerated,
-                       (xg_dwlTick2 - xg_dwlTick0) / 1000,
-                       (xg_dwlTick2 - xg_dwlTick0) / 100 % 10);
+        StringCchPrintfW(sz, _countof(sz), XgLoadStringDx1(IDS_PROBLEMSMADE), xg_nNumberGenerated,
+                         DWORD(xg_dwlTick2 - xg_dwlTick0) / 1000,
+                         DWORD(xg_dwlTick2 - xg_dwlTick0) / 100 % 10);
     }
 
     // 終了メッセージを表示する。
@@ -5422,7 +5437,7 @@ void XgGenerateFromWordList(HWND hwnd)
     }
 
     // 計算時間を求めるために、開始時間を取得する。
-    xg_dwlTick0 = xg_dwlTick1 = ::GetTickCount64();
+    xg_dwlTick0 = ::GetTickCount64();
     // 再計算までの時間を概算する。
     const auto size = XG_WordListDialog::s_wordset.size();
     xg_dwlWait = size * size / 3 + 100; // ミリ秒。
@@ -5435,9 +5450,9 @@ void XgGenerateFromWordList(HWND hwnd)
     if (nID == IDCANCEL) {
         // キャンセルされた。
         WCHAR sz[256];
-        StringCchPrintf(sz, _countof(sz), XgLoadStringDx1(IDS_CANCELLED),
-                       (xg_dwlTick2 - xg_dwlTick0) / 1000,
-                       (xg_dwlTick2 - xg_dwlTick0) / 100 % 10);
+        StringCchPrintfW(sz, _countof(sz), XgLoadStringDx1(IDS_CANCELLED),
+                         DWORD(xg_dwlTick2 - xg_dwlTick0) / 1000,
+                         DWORD(xg_dwlTick2 - xg_dwlTick0) / 100 % 10);
         XgCenterMessageBoxW(hwnd, sz, XgLoadStringDx2(IDS_RESULTS), MB_ICONINFORMATION);
         return;
     }

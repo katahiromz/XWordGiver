@@ -276,6 +276,7 @@
     - Proper exclusive control.
     - Disabled unusable items in the context menu.
     - Added "Checking answer" feature to "Solution" menu.
+    - Corrected display of calculation time.
 
 # 開発履歴 (Japanese)
 
@@ -862,8 +863,9 @@
     - PAT.txtの増強。PAT.txtにUTF-8 BOMを付けるようにした。
     - 「問題の作成」に「PAT.txtから黒マスパターンを自動的に選ぶ」機能を追加。これにより、選択肢が減る代わりに高速化が可能。
 - 2024年XX月YY日 ver.5.1.8
-    - カナ辞書内の不適切な単語を削除・タグ付け。
+    - カナ辞書の改良。
     - 「PAT.txtから自動的にパターンを選ぶ」をデフォルトにした。
     - 排他制御をきちんとする。
     - コンテキストメニューの使えない項目を無効化した。
     - 「解」メニューに「答え合わせ」機能を追加。
+    - 計算時間の表示を修正。

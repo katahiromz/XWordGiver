@@ -31,8 +31,6 @@ public:
     {
         // ダイアログを中央へ移動する。
         XgCenterDialog(hwnd);
-        // 開始時間。
-        xg_dwlTick0 = ::GetTickCount64();
         // 解を求めるのを開始。
         XgStartGenerateBlacks();
         // リトライ回数をリセット。
@@ -87,8 +85,8 @@ public:
             WCHAR sz[MAX_PATH];
             const auto dwTick = ::GetTickCount64();
             StringCchPrintf(sz, _countof(sz), XgLoadStringDx1(IDS_CALCULATING),
-                static_cast<DWORD>(dwTick - xg_dwlTick0) / 1000,
-                static_cast<DWORD>(dwTick - xg_dwlTick0) / 100 % 10);
+                            DWORD(dwTick - xg_dwlTick0) / 1000,
+                            DWORD(dwTick - xg_dwlTick0) / 100 % 10);
             ::SetDlgItemTextW(hwnd, stc1, sz);
         }
 

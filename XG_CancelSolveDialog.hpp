@@ -62,8 +62,6 @@ public:
         // プログレスバーの範囲をセットする。
         ::SendDlgItemMessageW(hwnd, ctl1, PBM_SETRANGE, 0, MAKELPARAM(0, xg_nRows * xg_nCols));
         ::SendDlgItemMessageW(hwnd, ctl2, PBM_SETRANGE, 0, MAKELPARAM(0, xg_nRows * xg_nCols));
-        // 計算時間を求めるために、開始時間を取得する。
-        xg_dwlTick0 = ::GetTickCount64();
         // 再計算までの時間を概算する。
         xg_dwlWait = XgGetRetryInterval();
         // 再計算する。
@@ -132,8 +130,8 @@ public:
             WCHAR sz[MAX_PATH];
             const auto dwTick = ::GetTickCount64();
             StringCchPrintf(sz, _countof(sz), XgLoadStringDx1(IDS_NOWSOLVING),
-                static_cast<DWORD>(dwTick - xg_dwlTick0) / 1000,
-                static_cast<DWORD>(dwTick - xg_dwlTick0) / 100 % 10, xg_nRetryCount);
+                            DWORD(dwTick - xg_dwlTick0) / 1000,
+                            DWORD(dwTick - xg_dwlTick0) / 100 % 10, xg_nRetryCount);
             ::SetDlgItemTextW(hwnd, stc1, sz);
         }
 
