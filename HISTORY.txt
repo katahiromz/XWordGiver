@@ -279,6 +279,7 @@
     - Corrected display of calculation time.
 - 2024-XX-YY ver.5.1.9
     - Made the color of the black cells a little darker.
+    - Improved Kana dictionaries more.
 
 # 開発履歴 (Japanese)
 
@@ -874,3 +875,4 @@
 - 2024年XX月YY日 ver.5.1.9
     - 「ヨコのカギ」と「タテのカギ」のアクセスキーを修正。
     - 黒マスの色を少し濃くした。
+    - さらにカナ辞書を改良。
