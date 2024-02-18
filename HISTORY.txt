@@ -278,6 +278,7 @@
     - Added "Checking answer" feature to "Solution" menu.
     - Corrected display of calculation time.
 - 2024-XX-YY ver.5.1.9
+    - Made the color of the black cells a little darker.
 
 # 開発履歴 (Japanese)
 
@@ -872,3 +873,4 @@
     - 計算時間の表示を修正。
 - 2024年XX月YY日 ver.5.1.9
     - 「ヨコのカギ」と「タテのカギ」のアクセスキーを修正。
+    - 黒マスの色を少し濃くした。

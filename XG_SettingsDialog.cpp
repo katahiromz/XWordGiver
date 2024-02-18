@@ -39,7 +39,7 @@ bool xg_bShowToolBar = true;
 
 // 色。
 COLORREF xg_rgbWhiteCellColor = RGB(255, 255, 255);
-COLORREF xg_rgbBlackCellColor = RGB(0x33, 0x33, 0x33);
+COLORREF xg_rgbBlackCellColor = RGB(0x22, 0x22, 0x22);
 COLORREF xg_rgbMarkedCellColor = RGB(255, 255, 255);
 
 // 二重マス文字。

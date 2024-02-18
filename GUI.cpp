@@ -829,7 +829,7 @@ void XgResetSettings(void)
     xg_bVerticalLayout = true;
     xg_bCharFeed = true;
     xg_rgbWhiteCellColor = RGB(255, 255, 255);
-    xg_rgbBlackCellColor = RGB(0x33, 0x33, 0x33);
+    xg_rgbBlackCellColor = RGB(0x22, 0x22, 0x22);
     xg_rgbMarkedCellColor = RGB(255, 255, 255);
     xg_bDrawFrameForMarkedCell = TRUE;
     xg_bSmartResolution = TRUE;
