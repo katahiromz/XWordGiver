@@ -277,6 +277,7 @@
     - Disabled unusable items in the context menu.
     - Added "Checking answer" feature to "Solution" menu.
     - Corrected display of calculation time.
+- 2024-XX-YY ver.5.1.9
 
 # 開発履歴 (Japanese)
 
@@ -869,3 +870,4 @@
     - コンテキストメニューの使えない項目を無効化した。
     - 「解」メニューに「答え合わせ」機能を追加。
     - 計算時間の表示を修正。
+- 2024年XX月YY日 ver.5.1.9
