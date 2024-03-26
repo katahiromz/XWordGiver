@@ -16,52 +16,12 @@ endif(COMMAND cmake_policy)
 # project name and languages
 project(XWordGiver CXX RC)
 
-# check build type
-if (NOT CMAKE_BUILD_TYPE)
-    message(STATUS "No build type selected, default to Debug")
-    set(CMAKE_BUILD_TYPE "Debug")
-endif()
+##############################################################################
 
-# make uppercase string of build type
-string(TOUPPER "${CMAKE_BUILD_TYPE}" uppercase_CMAKE_BUILD_TYPE)
+option(USE_QSTRING "Use QString" ON)
 
-# check build type again
-if (NOT uppercase_CMAKE_BUILD_TYPE MATCHES "^(DEBUG|RELEASE|RELWITHDEBINFO|MINSIZEREL)$")
-    message(FATAL_ERROR "Invalid value for CMAKE_BUILD_TYPE: ${CMAKE_BUILD_TYPE}")
-endif()
-
-if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-    # using Clang
-    if (uppercase_CMAKE_BUILD_TYPE MATCHES "^RELEASE$")
-        set(CMAKE_C_FLAGS "-static -O3 -Wall -pedantic")
-        set(CMAKE_CXX_FLAGS "-static -O3 -Wall -pedantic")
-    else()
-        set(CMAKE_C_FLAGS "-static -g -Wall -pedantic")
-        set(CMAKE_CXX_FLAGS "-static -g -Wall -pedantic")
-    endif()
-elseif (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-    # using GCC
-    if (uppercase_CMAKE_BUILD_TYPE MATCHES "^RELEASE$")
-        set(CMAKE_C_FLAGS "-s -static -O3 -Wall -pedantic")
-        set(CMAKE_CXX_FLAGS "-s -static -O3 -Wall -pedantic")
-    else()
-        set(CMAKE_C_FLAGS "-static -g -Wall -pedantic")
-        set(CMAKE_CXX_FLAGS "-static -g -Wall -pedantic")
-    endif()
-elseif (MSVC AND NOT uppercase_CMAKE_BUILD_TYPE MATCHES "^DEBUG$")
-    # replace "/MD" with "/MT" (building without runtime DLLs)
-    set(CompilerFlags
-        CMAKE_C_FLAGS
-        CMAKE_C_FLAGS_DEBUG
-        CMAKE_C_FLAGS_RELEASE
-        CMAKE_C_FLAGS_RELWITHDEBINFO
-        CMAKE_CXX_FLAGS
-        CMAKE_CXX_FLAGS_DEBUG
-        CMAKE_CXX_FLAGS_RELEASE
-        CMAKE_CXX_FLAGS_RELWITHDEBINFO)
-    foreach(CompilerFlags ${CompilerFlags})
-        string(REPLACE "/MD" "/MT" ${CompilerFlags} "${${CompilerFlags}}")
-    endforeach()
+if (USE_QSTRING)
+    add_definitions(-DUSE_QSTRING)
 endif()
 
 ##############################################################################
@@ -75,6 +35,42 @@ if (DETAILED_CHECK)
             set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D_GLIBCXX_DEBUG -D_GLIBCXX_CONCEPT_CHECKS -D_GLIBCXX_DEBUG_PEDANTIC -Wall -Wextra -Wshadow -Wconversion -Wfloat-equal -ftrapv -fstack-protector-all -fno-omit-frame-pointer -Wno-missing-field-initializers -Wno-unused-parameter -Wno-cast-function-type")
         endif()
     endif()
+endif()
+
+##############################################################################
+
+if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+    # using Clang
+    if (NOT CMAKE_BUILD_TYPE MATCHES "^Debug$")
+        set(CMAKE_C_FLAGS "-static -O3 -Wall -pedantic")
+        set(CMAKE_CXX_FLAGS "-static -O3 -Wall -pedantic")
+    else()
+        set(CMAKE_C_FLAGS "-static -g -Wall -pedantic")
+        set(CMAKE_CXX_FLAGS "-static -g -Wall -pedantic")
+    endif()
+elseif (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+    # using GCC
+    if (NOT CMAKE_BUILD_TYPE MATCHES "^Debug$")
+        set(CMAKE_C_FLAGS "-s -static -O3 -Wall -pedantic")
+        set(CMAKE_CXX_FLAGS "-s -static -O3 -Wall -pedantic")
+    else()
+        set(CMAKE_C_FLAGS "-static -g -Wall -pedantic")
+        set(CMAKE_CXX_FLAGS "-static -g -Wall -pedantic")
+    endif()
+elseif (MSVC AND NOT CMAKE_BUILD_TYPE MATCHES "^Debug$")
+    # replace "/MD" with "/MT" (building without runtime DLLs)
+    set(CompilerFlags
+        CMAKE_C_FLAGS
+        CMAKE_C_FLAGS_DEBUG
+        CMAKE_C_FLAGS_RELEASE
+        CMAKE_C_FLAGS_RELWITHDEBINFO
+        CMAKE_CXX_FLAGS
+        CMAKE_CXX_FLAGS_DEBUG
+        CMAKE_CXX_FLAGS_RELEASE
+        CMAKE_CXX_FLAGS_RELWITHDEBINFO)
+    foreach(CompilerFlags ${CompilerFlags})
+        string(REPLACE "/MD" "/MT" ${CompilerFlags} "${${CompilerFlags}}")
+    endforeach()
 endif()
 
 ##############################################################################

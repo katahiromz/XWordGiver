@@ -87,6 +87,9 @@ bool xg_bCharFeed = true;
 // タテ入力？
 bool xg_bVertInput = false;
 
+// プロセス ヒープ ハンドル。
+HANDLE xg_hHeap = ::GetProcessHeap();
+
 //////////////////////////////////////////////////////////////////////////////
 // static variables
 

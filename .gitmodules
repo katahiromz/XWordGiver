@@ -4,3 +4,6 @@
 [submodule "SaveBitmapToFile"]
 	path = SaveBitmapToFile
 	url = https://github.com/katahiromz/SaveBitmapToFile
+[submodule "QString"]
+	path = QString
+	url = https://github.com/katahiromz/QString

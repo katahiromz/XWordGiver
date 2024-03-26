@@ -54,7 +54,13 @@
 
 #include <strsafe.h>    // for String... functions
 
-#if 0 // TODO: Use QString
+#ifdef USE_QSTRING
+    extern HANDLE xg_hHeap;
+
+    #define XMALLOC(x) HeapAlloc(xg_hHeap, 0, (x))
+    #define XREALLOC(x, y) HeapReAlloc(xg_hHeap, 0, (x), (y))
+    #define XFREE(x) HeapFree(xg_hHeap, 0, (x))
+
     #include "QString/QString.h" // for QString...
 
     using XGStringA = QStringA;
