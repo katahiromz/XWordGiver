@@ -49,13 +49,12 @@
 #include <queue>        // for std::queue
 #include <deque>        // for std::deque
 #include <algorithm>    // for std::sort, std::random_shuffle
-#include <string>       // for std::wstring
 
 #include <process.h>    // for _beginthreadex
 
 #include <strsafe.h>    // for String... functions
 
-#if 0
+#if 0 // TODO: Use QString
     #include "QString/QString.h" // for QString...
 
     using XGStringA = QStringA;
@@ -70,6 +69,8 @@
         return to_QStringW(value);
     }
 #else
+    #include <string>       // for std::string, std::wstring etc.
+
     using XGStringA = std::string;
     using XGStringW = std::wstring;
 
