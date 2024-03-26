@@ -607,7 +607,7 @@ BOOL PackedDIB_CreateFromHandle(std::vector<BYTE>& vecData, HBITMAP hbm)
 
     DeleteDC(hDC);
 
-    std::string stream;
+    XGStringA stream;
     stream.append(reinterpret_cast<const char *>(pbmih), sizeof(*pbmih));
     stream.append(reinterpret_cast<const char *>(bi.bmiColors), cbColors);
     stream.append(reinterpret_cast<const char *>(&Bits[0]), Bits.size());

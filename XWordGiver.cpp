@@ -2647,7 +2647,7 @@ bool __fastcall XgSetJsonString(HWND hwnd, const XGStringW& str)
                 success = false;
                 break;
             }
-            
+
             std::string str1 = cell_data[i];
             XGStringW row = XgUtf8ToUnicode(str1).c_str();
             if (static_cast<int>(row.size()) != column_count) {

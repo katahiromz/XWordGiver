@@ -5024,7 +5024,7 @@ void __fastcall MainWnd_OnFlipVH(HWND hwnd)
 
 XGStringW URL_encode(const XGStringW& url)
 {
-    std::string str;
+    XGStringA str;
 
     size_t len = url.size() * 4;
     str.resize(len);
