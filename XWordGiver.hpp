@@ -54,7 +54,7 @@
 
 #include <strsafe.h>    // for String... functions
 
-#if 1 // TODO: Use QString
+#if 0 // TODO: Use QString
     #include "QString/QString.h" // for QString...
 
     using XGStringA = QStringA;
