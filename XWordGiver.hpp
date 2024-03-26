@@ -61,10 +61,14 @@
     using XGStringA = QStringA;
     using XGStringW = QStringW;
 
-    template <typename T_NUMBER>
-    using to_XGStringA = decltype(to_QStringA<T_NUMBER>);
-    template <typename T_NUMBER>
-    using to_XGStringW = decltype(to_QStringW<T_NUMBER>);
+    template <typename T>
+    inline QStringA to_XGStringA(const T& value) {
+        return to_QStringA(value);
+    }
+    template <typename T>
+    inline QStringW to_XGStringW(const T& value) {
+        return to_QStringW(value);
+    }
 #else
     using XGStringA = std::string;
     using XGStringW = std::wstring;
