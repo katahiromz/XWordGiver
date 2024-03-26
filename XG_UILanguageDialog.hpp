@@ -22,7 +22,7 @@ public:
         for (auto id : m_ids)
         {
             WCHAR szText[128];
-            std::wstring str;
+            QStringW str;
             StringCchPrintfW(szText, _countof(szText), L"%04X: ", id);
             str += szText;
             GetLocaleInfoW(MAKELCID(id, SORT_DEFAULT), LOCALE_SENGLANGUAGE, szText, _countof(szText));

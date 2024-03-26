@@ -14,26 +14,26 @@
 struct XG_WordData
 {
     // 単語。
-    std::wstring     m_word;
+    QStringW     m_word;
     // ヒント。
-    std::wstring     m_hint;
+    QStringW     m_hint;
 
     // コンストラクタ。
     XG_WordData() noexcept { }
 
     // コンストラクタ。
-    XG_WordData(const std::wstring& word_) : m_word(word_)
+    XG_WordData(const QStringW& word_) : m_word(word_)
     {
     }
 
     // コンストラクタ。
-    XG_WordData(const std::wstring& word_, const std::wstring& hint_) :
+    XG_WordData(const QStringW& word_, const QStringW& hint_) :
         m_word(word_), m_hint(hint_)
     {
     }
 
     // コンストラクタ。
-    XG_WordData(std::wstring&& word_, std::wstring&& hint_) noexcept :
+    XG_WordData(QStringW&& word_, QStringW&& hint_) noexcept :
         m_word(std::move(word_)), m_hint(std::move(hint_))
     {
     }
@@ -77,19 +77,19 @@ namespace std
 // 辞書データ。優先タグか否かで分ける。
 extern std::vector<XG_WordData> xg_dict_1, xg_dict_2;
 // タグ付けデータ。
-extern std::unordered_map<std::wstring, std::unordered_set<std::wstring> > xg_word_to_tags_map;
+extern std::unordered_map<QStringW, std::unordered_set<QStringW> > xg_word_to_tags_map;
 // タグのヒストグラム。
-extern std::unordered_map<std::wstring, size_t> xg_tag_histgram;
+extern std::unordered_map<QStringW, size_t> xg_tag_histgram;
 // 単語の長さのヒストグラム。
 extern std::unordered_map<size_t, size_t> xg_word_length_histgram;
 // 優先タグ。
-extern std::unordered_set<std::wstring> xg_priority_tags;
+extern std::unordered_set<QStringW> xg_priority_tags;
 // 除外タグ。
-extern std::unordered_set<std::wstring> xg_forbidden_tags;
+extern std::unordered_set<QStringW> xg_forbidden_tags;
 // テーマ文字列。
-extern std::wstring xg_strTheme;
+extern QStringW xg_strTheme;
 // 既定のテーマ文字列。
-extern std::wstring xg_strDefaultTheme;
+extern QStringW xg_strDefaultTheme;
 // テーマが変更されたか？
 extern bool xg_bThemeModified;
 // 配置できる最大単語長。
@@ -102,11 +102,11 @@ bool __fastcall XgLoadDictFile(LPCWSTR pszFile);
 // テーマをリセットする。
 void __fastcall XgResetTheme(HWND hwnd);
 // テーマを設定する。
-void XgSetThemeString(const std::wstring& strTheme);
+void XgSetThemeString(const QStringW& strTheme);
 // テーマ文字列をパースする。
-void XgParseTheme(std::unordered_set<std::wstring>& priority,
-                  std::unordered_set<std::wstring>& forbidden,
-                  const std::wstring& strTheme);
+void XgParseTheme(std::unordered_set<QStringW>& priority,
+                  std::unordered_set<QStringW>& forbidden,
+                  const QStringW& strTheme);
 
 // ミニ辞書を作成する。
 std::vector<XG_WordData> XgCreateMiniDict(void);
@@ -189,12 +189,12 @@ inline bool XgTrimDict(std::vector<t_string>& words)
 // 辞書のエントリ。
 struct XG_DICT
 {
-    std::wstring m_filename; // ファイル名。
-    std::wstring m_friendly_name; // 親切な名前。
+    QStringW m_filename; // ファイル名。
+    QStringW m_friendly_name; // 親切な名前。
     XG_DICT() noexcept
     {
     }
-    XG_DICT(const std::wstring& filename, const std::wstring& friendly_name)
+    XG_DICT(const QStringW& filename, const QStringW& friendly_name)
         : m_filename(filename)
         , m_friendly_name(friendly_name)
     {
@@ -202,13 +202,13 @@ struct XG_DICT
 };
 
 // 現在の辞書名。
-extern std::wstring xg_dict_name;
+extern QStringW xg_dict_name;
 // すべての辞書ファイル。
 typedef std::deque<XG_DICT> dicts_t;
 extern dicts_t xg_dicts;
 
 // 辞書名をセットする。
-void XgSetDict(const std::wstring& strFile);
+void XgSetDict(const QStringW& strFile);
 // フォルダから辞書群を読み込む。
 BOOL XgLoadDictsFromDir(LPCWSTR pszDir);
 // 辞書ファイルをすべて読み込む。
@@ -216,4 +216,4 @@ BOOL XgLoadDictsAll(void);
 // 辞書を切り替える。
 void XgSelectDict(HWND hwnd, size_t iDict);
 // 辞書からタイトルを取得。
-std::wstring XgLoadTitleFromDict(LPCWSTR pszPath);
+QStringW XgLoadTitleFromDict(LPCWSTR pszPath);

@@ -104,12 +104,12 @@ bool __fastcall XgGetPathOfShortcutW(LPCWSTR pszLnkFile, LPWSTR pszPath)
 }
 
 // 文字列を置換する。
-bool __fastcall xg_str_replace_all(std::wstring &s, const std::wstring& from, const std::wstring& to)
+bool __fastcall xg_str_replace_all(QStringW &s, const QStringW& from, const QStringW& to)
 {
-    std::wstring t;
+    QStringW t;
     size_t i = 0;
     bool ret = false;
-    while ((i = s.find(from, i)) != std::wstring::npos) {
+    while ((i = s.find(from, i)) != QStringW::npos) {
         t = s.substr(0, i);
         t += to;
         t += s.substr(i + from.size());
@@ -122,7 +122,7 @@ bool __fastcall xg_str_replace_all(std::wstring &s, const std::wstring& from, co
 
 // 文字列からマルチセットへ変換する。
 void __fastcall xg_str_to_multiset(
-    std::unordered_multiset<WCHAR>& mset, const std::wstring& str)
+    std::unordered_multiset<WCHAR>& mset, const QStringW& str)
 {
     // マルチセットが空であることを仮定する。
     assert(mset.empty());
@@ -176,7 +176,7 @@ bool __fastcall xg_submultiseteq(const std::unordered_multiset<WCHAR>& ms1,
 }
 
 // UTF-8 -> Unicode.
-std::wstring __fastcall XgUtf8ToUnicode(const std::string& ansi)
+QStringW __fastcall XgUtf8ToUnicode(const std::string& ansi)
 {
     // 変換先の文字数を取得する。
     const int cch = MultiByteToWideChar(CP_UTF8, 0, ansi.data(), -1, nullptr, 0);
@@ -184,7 +184,7 @@ std::wstring __fastcall XgUtf8ToUnicode(const std::string& ansi)
         return L"";
 
     // 変換先のバッファを確保する。
-    std::wstring uni(cch - 1, 0);
+    QStringW uni(cch - 1, 0);
 
     // 変換して格納する。
     MultiByteToWideChar(CP_UTF8, 0, ansi.data(), -1, &uni[0], cch);
@@ -331,7 +331,7 @@ bool __fastcall XgCanWriteFile(const WCHAR *pszFile)
     );
 
     // 与えられたパスファイル名。
-    std::wstring str(pszFile);
+    QStringW str(pszFile);
 
     for (auto folder : s_anFolders) {
         // 特殊フォルダの位置の取得。
@@ -354,7 +354,7 @@ bool __fastcall XgCanWriteFile(const WCHAR *pszFile)
 }
 
 // Unicode -> UTF8
-std::string XgUnicodeToUtf8(const std::wstring& wide)
+std::string XgUnicodeToUtf8(const QStringW& wide)
 {
     const int len = ::WideCharToMultiByte(CP_UTF8, 0, wide.data(), -1, nullptr, 0, nullptr, nullptr);
     if (len == 0)
@@ -366,31 +366,31 @@ std::string XgUnicodeToUtf8(const std::wstring& wide)
 }
 
 // ANSI -> Unicode
-std::wstring XgAnsiToUnicode(const std::string& ansi)
+QStringW XgAnsiToUnicode(const std::string& ansi)
 {
     const int len = ::MultiByteToWideChar(XG_SJIS_CODEPAGE, 0, ansi.data(), -1, nullptr, 0);
     if (len == 0)
         return L"";
 
-    std::wstring uni(len - 1, 0);
+    QStringW uni(len - 1, 0);
     ::MultiByteToWideChar(XG_SJIS_CODEPAGE, 0, ansi.data(), -1, &uni[0], len);
     return uni;
 }
 
 // ANSI -> Unicode
-std::wstring XgAnsiToUnicode(const std::string& ansi, INT codepage)
+QStringW XgAnsiToUnicode(const std::string& ansi, INT codepage)
 {
     const int len = ::MultiByteToWideChar(codepage, 0, ansi.data(), -1, nullptr, 0);
     if (len == 0)
         return L"";
 
-    std::wstring uni(len - 1, 0);
+    QStringW uni(len - 1, 0);
     ::MultiByteToWideChar(codepage, 0, ansi.data(), -1, &uni[0], len);
     return uni;
 }
 
 // Unicode -> ANSI
-std::string XgUnicodeToAnsi(const std::wstring& wide)
+std::string XgUnicodeToAnsi(const QStringW& wide)
 {
     const int len = ::WideCharToMultiByte(XG_SJIS_CODEPAGE, 0, wide.data(), -1, nullptr, 0, nullptr, nullptr);
     if (len == 0)
@@ -402,9 +402,9 @@ std::string XgUnicodeToAnsi(const std::wstring& wide)
 }
 
 // JSON文字列を作る。
-std::wstring XgJsonEncodeString(const std::wstring& str)
+QStringW XgJsonEncodeString(const QStringW& str)
 {
-    std::wstring encoded;
+    QStringW encoded;
     wchar_t buf[16];
     size_t i;
     const auto siz = str.size();
@@ -537,8 +537,8 @@ std::string XgMakeClipHtmlData(const std::string& html_utf8,
 }
 
 // HTML形式のクリップボードデータを作成する。
-std::string XgMakeClipHtmlData(const std::wstring& html_wide,
-                               const std::wstring& style_wide/* = L""*/)
+std::string XgMakeClipHtmlData(const QStringW& html_wide,
+                               const QStringW& style_wide/* = L""*/)
 {
     return XgMakeClipHtmlData(
         XgUnicodeToUtf8(html_wide), XgUnicodeToUtf8(style_wide));
@@ -624,9 +624,9 @@ LPCWSTR XgIntToStr(int nValue)
 }
 
 // バイナリを16進にする。
-std::wstring XgBinToHex(const void *ptr, size_t size)
+QStringW XgBinToHex(const void *ptr, size_t size)
 {
-    std::wstring ret;
+    QStringW ret;
     auto pb = static_cast<const BYTE *>(ptr);
     WCHAR sz[8];
     for (size_t i = 0; i < size; ++i)
@@ -638,7 +638,7 @@ std::wstring XgBinToHex(const void *ptr, size_t size)
 }
 
 // 16進をバイナリにする。
-void XgHexToBin(std::vector<BYTE>& data, const std::wstring& str)
+void XgHexToBin(std::vector<BYTE>& data, const QStringW& str)
 {
     WCHAR sz[3];
     data.clear();
@@ -729,7 +729,7 @@ INT XgDetectCodePageFromEcw(const std::string& strBinary)
 }
 
 // テキストファイルを読み込む。
-BOOL XgReadTextFileAll(LPCWSTR file, std::wstring& strText, bool ecw)
+BOOL XgReadTextFileAll(LPCWSTR file, QStringW& strText, bool ecw)
 {
     strText.clear();
 
@@ -832,14 +832,14 @@ BOOL XgReadTextFileAll(LPCWSTR file, std::wstring& strText, bool ecw)
         return TRUE;
     }
 
-    std::wstring strFromUtf8 = XgUtf8ToUnicode(strBinary);
+    QStringW strFromUtf8 = XgUtf8ToUnicode(strBinary);
     if (XgUnicodeToUtf8(strFromUtf8) == strBinary)
     {
         strText = std::move(strFromUtf8);
         return TRUE;
     }
 
-    std::wstring strFromAnsi = XgAnsiToUnicode(strBinary);
+    QStringW strFromAnsi = XgAnsiToUnicode(strBinary);
     if (XgUnicodeToAnsi(strFromAnsi) == strBinary)
     {
         strText = std::move(strFromAnsi);
@@ -879,7 +879,7 @@ BOOL XgIsTextFile(LPCWSTR pszFileName) noexcept
 }
 
 // 画像を読み込む。
-BOOL XgLoadImage(const std::wstring& filename, HBITMAP& hbm, HENHMETAFILE& hEMF)
+BOOL XgLoadImage(const QStringW& filename, HBITMAP& hbm, HENHMETAFILE& hEMF)
 {
     hbm = nullptr;
     hEMF = nullptr;
@@ -954,9 +954,9 @@ BOOL XgLoadImage(const std::wstring& filename, HBITMAP& hbm, HENHMETAFILE& hEMF)
 }
 
 // 文字列をエスケープする。
-std::wstring xg_str_escape(const std::wstring& str)
+QStringW xg_str_escape(const QStringW& str)
 {
-    std::wstring ret;
+    QStringW ret;
     ret.reserve(str.size());
     for (auto ch : str)
     {
@@ -984,9 +984,9 @@ std::wstring xg_str_escape(const std::wstring& str)
 }
 
 // 文字列をアンエスケープする。
-std::wstring xg_str_unescape(const std::wstring& str)
+QStringW xg_str_unescape(const QStringW& str)
 {
-    std::wstring ret;
+    QStringW ret;
     ret.reserve(str.size());
     for (size_t i = 0; i < str.size(); ++i)
     {
@@ -1067,7 +1067,7 @@ bool XG_FileManager::load_image(LPCWSTR filename)
     return XgLoadImage(get_real_path(filename), m_path2hbm[canonical], m_path2hemf[canonical]);
 }
 
-bool XG_FileManager::save_image(const std::wstring& path)
+bool XG_FileManager::save_image(const QStringW& path)
 {
     auto it = m_path2contents.find(path);
     if (it == m_path2contents.end()) {
@@ -1077,13 +1077,13 @@ bool XG_FileManager::save_image(const std::wstring& path)
             return false;
     }
 
-    std::wstring converted = path;
+    QStringW converted = path;
     convert(converted);
     auto real = get_real_path(converted);
     return XgWriteFileAll(real.c_str(), it->second);
 }
 
-bool XG_FileManager::save_image2(std::wstring& path)
+bool XG_FileManager::save_image2(QStringW& path)
 {
     if (path.empty() || path.find(L"$FILES\\") == 0)
         return true;
@@ -1097,16 +1097,16 @@ bool XG_FileManager::save_image2(std::wstring& path)
     }
 
     ////////////////////////////////////////
-    std::wstring title = get_file_title(path);
-    std::wstring canonical = L"$FILES\\" + title;
-    std::wstring name = PathFindFileNameW(it->first.c_str());
-    std::wstring ext = PathFindExtensionW(it->first.c_str());
+    QStringW title = get_file_title(path);
+    QStringW canonical = L"$FILES\\" + title;
+    QStringW name = PathFindFileNameW(it->first.c_str());
+    QStringW ext = PathFindExtensionW(it->first.c_str());
     name = name.substr(0, name.size() - ext.size());
     int i = 1;
     auto real = get_real_path(canonical);
     while (PathFileExistsW(real.c_str())) {
         i++;
-        std::wstring fileNum = L"(" + std::to_wstring(i) + L")";
+        QStringW fileNum = L"(" + std::to_wstring(i) + L")";
 
         canonical = L"$FILES\\" + name + fileNum + ext;
         real = get_real_path(canonical);
@@ -1130,9 +1130,9 @@ bool XG_FileManager::save_images()
     return true;
 }
 
-bool XG_FileManager::save_images(const std::unordered_set<std::wstring>& files)
+bool XG_FileManager::save_images(const std::unordered_set<QStringW>& files)
 {
-    std::unordered_set<std::wstring> erase_targets;
+    std::unordered_set<QStringW> erase_targets;
 
     for (auto& pair : m_path2contents)
     {
@@ -1171,12 +1171,12 @@ void XG_FileManager::clear()
     *this = XG_FileManager();
 }
 
-std::wstring XG_FileManager::get_file_title(const std::wstring& str) const
+QStringW XG_FileManager::get_file_title(const QStringW& str) const
 {
     return PathFindFileNameW(str.c_str());
 }
 
-std::wstring XG_FileManager::get_full_path(const std::wstring& str) const
+QStringW XG_FileManager::get_full_path(const QStringW& str) const
 {
     if (str.empty())
         return str;
@@ -1185,14 +1185,14 @@ std::wstring XG_FileManager::get_full_path(const std::wstring& str) const
     return szPath;
 }
 
-std::wstring XG_FileManager::get_block_dir()
+QStringW XG_FileManager::get_block_dir()
 {
     if (m_block_dir.empty())
         m_block_dir = get_block_dir_worker();
     return m_block_dir;
 }
 
-std::wstring XG_FileManager::get_block_dir_worker() const
+QStringW XG_FileManager::get_block_dir_worker() const
 {
     WCHAR szPath[MAX_PATH];
     GetModuleFileNameW(nullptr, szPath, _countof(szPath));
@@ -1213,7 +1213,7 @@ std::wstring XG_FileManager::get_block_dir_worker() const
     return L"";
 }
 
-bool XG_FileManager::get_files_dir(std::wstring& dir) const
+bool XG_FileManager::get_files_dir(QStringW& dir) const
 {
     dir.clear();
 
@@ -1235,14 +1235,14 @@ bool XG_FileManager::get_files_dir(std::wstring& dir) const
     return PathIsDirectoryW(szPath);
 }
 
-std::wstring XG_FileManager::get_canonical(const std::wstring& path)
+QStringW XG_FileManager::get_canonical(const QStringW& path)
 {
     if (path.find(L"$FILES\\") == 0 || path.find(L"$BLOCK\\") == 0)
         return path;
 
     auto full = get_full_path(path);
 
-    std::wstring files_dir;
+    QStringW files_dir;
     if (get_files_dir(files_dir))
     {
         files_dir += L"\\";
@@ -1265,11 +1265,11 @@ std::wstring XG_FileManager::get_canonical(const std::wstring& path)
     return full;
 }
 
-std::wstring XG_FileManager::get_real_path(const std::wstring& path)
+QStringW XG_FileManager::get_real_path(const QStringW& path)
 {
     if (path.find(L"$FILES\\") == 0)
     {
-        std::wstring files_dir;
+        QStringW files_dir;
         if (get_files_dir(files_dir))
         {
             return files_dir + L"\\" + path.substr(7);
@@ -1288,13 +1288,13 @@ std::wstring XG_FileManager::get_real_path(const std::wstring& path)
     return path;
 }
 
-bool XG_FileManager::get_list(std::vector<std::wstring>& paths)
+bool XG_FileManager::get_list(std::vector<QStringW>& paths)
 {
     paths.clear();
 
     WIN32_FIND_DATAW find;
 
-    std::wstring files_dir;
+    QStringW files_dir;
     if (get_files_dir(files_dir))
     {
         auto spec = files_dir;
@@ -1345,12 +1345,12 @@ bool XG_FileManager::get_list(std::vector<std::wstring>& paths)
     return !paths.empty();
 }
 
-std::wstring XG_FileManager::get_looks_file()
+QStringW XG_FileManager::get_looks_file()
 {
     if (m_looks.size())
         return m_looks;
 
-    std::wstring path;
+    QStringW path;
     get_files_dir(path);
     if (m_filename.size())
     {
@@ -1381,7 +1381,7 @@ void XG_FileManager::delete_handles() noexcept
     m_path2hemf.clear();
 }
 
-bool XG_FileManager::load_block_image(const std::wstring& path, HBITMAP& hbm, HENHMETAFILE& hEMF)
+bool XG_FileManager::load_block_image(const QStringW& path, HBITMAP& hbm, HENHMETAFILE& hEMF)
 {
     ::DeleteObject(hbm);
     hbm = nullptr;
@@ -1396,7 +1396,7 @@ bool XG_FileManager::load_block_image(const std::wstring& path, HBITMAP& hbm, HE
     return XgLoadImage(real, hbm, hEMF);
 }
 
-bool XG_FileManager::load_block_image(const std::wstring& path)
+bool XG_FileManager::load_block_image(const QStringW& path)
 {
     DeleteObject(xg_hbmBlackCell);
     xg_hbmBlackCell = nullptr;

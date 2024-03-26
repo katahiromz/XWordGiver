@@ -34,15 +34,15 @@ VOID XgSetCellPosition(LONG& x, LONG& y, int& i, int& j, BOOL bEnd) noexcept;
 class XG_BoxWindow : public XG_Window
 {
 public:
-    std::wstring m_type;
+    QStringW m_type;
     HWND m_hwndParent;
     HRGN m_hRgn;
     int m_i1, m_j1, m_i2, m_j2;
-    std::wstring m_strText;
+    QStringW m_strText;
     RECT m_rcOld;
     static inline HWND s_hwndSelected = nullptr;
 
-    XG_BoxWindow(const std::wstring& type, int i1 = 0, int j1 = 0, int i2 = 1, int j2 = 1)
+    XG_BoxWindow(const QStringW& type, int i1 = 0, int j1 = 0, int i2 = 1, int j2 = 1)
         : m_type(type)
         , m_hwndParent(nullptr)
         , m_hRgn(nullptr)
@@ -466,28 +466,28 @@ public:
         return 0;
     }
 
-    std::wstring GetPosText() const {
+    QStringW GetPosText() const {
         WCHAR szText[MAX_PATH];
         StringCchPrintfW(szText, _countof(szText),
                          L"(%d, %d) - (%d, %d)", m_j1 + 1, m_i1 + 1, m_j2, m_i2);
         return szText;
     }
-    BOOL SetPosText(const std::wstring& str) {
+    BOOL SetPosText(const QStringW& str) {
         int i1, j1, i2, j2;
         if (swscanf(str.c_str(), L"(%d, %d) - (%d, %d)", &j1, &i1, &j2, &i2) != 4)
             return FALSE;
         SetPos(i1 - 1, j1 - 1, i2, j2);
         return TRUE;
     }
-    virtual std::wstring GetText() const {
+    virtual QStringW GetText() const {
         return m_strText;
     }
-    virtual BOOL SetText(const std::wstring& str) {
+    virtual BOOL SetText(const QStringW& str) {
         m_strText = str;
         return TRUE;
     }
 
-    typedef std::map<std::wstring, std::wstring> map_t;
+    typedef std::map<QStringW, QStringW> map_t;
 
     virtual BOOL ReadMap(const map_t& map) {
         auto type_it = map.find(L"type");
@@ -511,7 +511,7 @@ public:
         map[L"text"] = GetText();
         return TRUE;
     }
-    BOOL ReadLineEx(const std::wstring& line) {
+    BOOL ReadLineEx(const QStringW& line) {
         if (line.find(L"Box:") != 0)
             return FALSE;
 
@@ -545,7 +545,7 @@ public:
 
         return ReadMap(map);
     }
-    BOOL ReadLine(const std::wstring& line) {
+    BOOL ReadLine(const QStringW& line) {
         if (line.find(L"Box:") != 0)
             return FALSE;
 
@@ -675,7 +675,7 @@ class XG_TextBoxWindow : public XG_BoxWindow
 public:
     COLORREF m_rgbText = CLR_INVALID;
     COLORREF m_rgbBg = CLR_INVALID;
-    std::wstring m_strFontName;
+    QStringW m_strFontName;
     int m_nFontSizeInPoints = 0;
 
     XG_TextBoxWindow(int i1 = 0, int j1 = 0, int i2 = 1, int j2 = 1)

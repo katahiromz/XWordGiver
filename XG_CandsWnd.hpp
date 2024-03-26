@@ -26,7 +26,7 @@ public:
     inline static HFONT                       xg_hCandsUIFont = nullptr;
 
     // 候補。
-    inline static std::vector<std::wstring>   xg_vecCandidates;
+    inline static std::vector<QStringW>   xg_vecCandidates;
 
     // 候補ボタン。
     inline static std::vector<HWND>           xg_ahwndCandButtons;
@@ -61,7 +61,7 @@ public:
 
         // パターンを取得する。
         int lo, hi;
-        std::wstring pattern;
+        QStringW pattern;
         bool left_black, right_black;
         if (xg_bCandVertical) {
             lo = hi = xg_iCandPos;
@@ -108,7 +108,7 @@ public:
 
         // 候補を取得する。
         int nSkip = 0;
-        std::vector<std::wstring> cands, cands2;
+        std::vector<QStringW> cands, cands2;
         XgGetCandidatesAddBlack<false>(cands, pattern, nSkip, left_black, right_black);
         XgGetCandidatesAddBlack<true>(cands2, pattern, nSkip, left_black, right_black);
         cands.insert(cands.end(), cands2.begin(), cands2.end());
@@ -120,7 +120,7 @@ public:
         }
 
         // ソートして一意化。短い方を優先する。
-        std::sort(cands.begin(), cands.end(), [](const std::wstring& x, const std::wstring& y) noexcept {
+        std::sort(cands.begin(), cands.end(), [](const QStringW& x, const QStringW& y) noexcept {
             if (x.size() == y.size())
                 return x < y;
             return x.size() < y.size();
@@ -258,7 +258,7 @@ public:
         {
             MPoint pt;
             for (size_t i = 0; i < xg_vecCandidates.size(); ++i) {
-                const std::wstring& strLabel = xg_vecCandidates[i];
+                const QStringW& strLabel = xg_vecCandidates[i];
 
                 MSize siz;
                 ::GetTextExtentPoint32W(hdc, strLabel.data(),
@@ -494,9 +494,9 @@ public:
     }
 
     // 候補を適用する。
-    void XgApplyCandidate(XG_Board& xword, const std::wstring& strCand)
+    void XgApplyCandidate(XG_Board& xword, const QStringW& strCand)
     {
-        std::wstring cand = XgNormalizeString(strCand);
+        QStringW cand = XgNormalizeString(strCand);
 
         int lo, hi;
         if (xg_bCandVertical) {

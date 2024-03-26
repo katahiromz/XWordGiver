@@ -11,7 +11,7 @@
 // global variables
 
 // 直前に開いたクロスワードデータファイルのパスファイル名。
-std::wstring xg_strFileName;
+QStringW xg_strFileName;
 
 // 空のクロスワードの解を解く場合か？
 bool xg_bSolvingEmpty = false;
@@ -47,12 +47,12 @@ std::vector<XG_ThreadInfo>    xg_aThreadInfo;
 std::vector<HANDLE>           xg_ahThreads;
 
 // ヒント文字列。
-std::wstring             xg_strHints;
+QStringW             xg_strHints;
 
 // ヘッダー文字列。
-std::wstring             xg_strHeader;
+QStringW             xg_strHeader;
 // 備考文字列。
-std::wstring             xg_strNotes;
+QStringW             xg_strNotes;
 
 // 排他制御のためのクリティカルセクション（ロック）。
 CRITICAL_SECTION    xg_csLock;
@@ -99,7 +99,7 @@ static bool s_bSwapped = false;
 // パターンのデータを扱いやすいよう、加工する。
 void XgGetPatternData(XG_PATDATA& pat)
 {
-    std::wstring text = pat.text;
+    QStringW text = pat.text;
     auto& data = pat.data;
     const int cx = pat.num_columns;
     const int cy = pat.num_rows;
@@ -136,7 +136,7 @@ void XgGetPatternData(XG_PATDATA& pat)
 // パターンのデータを扱いやすいよう、加工する。
 void XgSetPatternData(XG_PATDATA& pat)
 {
-    std::wstring text;
+    QStringW text;
     const auto& data = pat.data;
     const int cx = pat.num_columns;
     const int cy = pat.num_rows;
@@ -436,7 +436,7 @@ BOOL __fastcall XgPatternRuleIsOK(const XG_PATDATA& pat)
 #undef XG_GET_DATA
 
 // パターンデータを読み込む。
-BOOL XgLoadPatterns(LPCWSTR pszFileName, patterns_t& patterns, std::wstring *pComments)
+BOOL XgLoadPatterns(LPCWSTR pszFileName, patterns_t& patterns, QStringW *pComments)
 {
     // パターンデータをクリアする。
     patterns.clear();
@@ -461,13 +461,13 @@ BOOL XgLoadPatterns(LPCWSTR pszFileName, patterns_t& patterns, std::wstring *pCo
 
     // split as UTF-16 lines
     auto utf16 = XgUtf8ToUnicode(utf8);
-    std::vector<std::wstring> lines;
+    std::vector<QStringW> lines;
     mstr_split(lines, utf16, L"\n");
 
     utf8.clear();
 
     XG_PATDATA pat;
-    std::wstring text, comments;
+    QStringW text, comments;
 
     // parse each line
     for (auto& line : lines) {
@@ -514,9 +514,9 @@ BOOL XgLoadPatterns(LPCWSTR pszFileName, patterns_t& patterns, std::wstring *pCo
 
 // パターンデータを書き込む。
 BOOL XgSavePatterns(LPCWSTR pszFileName, const patterns_t& patterns,
-                    const std::wstring *pComments)
+                    const QStringW *pComments)
 {
-    std::wstring text;
+    QStringW text;
 
     if (pComments) {
         text += *pComments;
@@ -614,7 +614,7 @@ XG_PATDATA XgGetCurrentPat(void)
     XG_Board *pxw = (xg_bSolved && xg_bShowAnswer) ? &xg_solution : &xg_xword;
 
     // クロスワードの文字列を取得する。
-    std::wstring text;
+    QStringW text;
     pxw->GetString(text);
 
     for (auto& ch : text){
@@ -651,7 +651,7 @@ BOOL XgPatEdit(HWND hwnd, BOOL bAdd)
     patterns_t patterns;
     WCHAR szPath[MAX_PATH];
     XgFindLocalFile(szPath, _countof(szPath), L"PAT.txt");
-    std::wstring comments;
+    QStringW comments;
     if (!XgLoadPatterns(szPath, patterns, &comments))
         return FALSE;
 
@@ -704,7 +704,7 @@ BOOL XgPatEdit(HWND hwnd, BOOL bAdd)
 
 // 候補があるか？
 template <bool t_alternative>
-bool __fastcall XgAnyCandidateAddBlack(const std::wstring& pattern) noexcept
+bool __fastcall XgAnyCandidateAddBlack(const QStringW& pattern) noexcept
 {
     // パターンの長さ。
     const int patlen = static_cast<int>(pattern.size());
@@ -753,7 +753,7 @@ bool __fastcall XgAnyCandidateAddBlack(const std::wstring& pattern) noexcept
 
     // すべての単語について調べる。
     for (const auto& data : (t_alternative ? xg_dict_2 : xg_dict_1)) {
-        const std::wstring& word = data.m_word;
+        const QStringW& word = data.m_word;
         const int wordlen = static_cast<int>(word.size());
 
         // パターンより単語の方が長い場合、スキップする。
@@ -793,7 +793,7 @@ break_continue:;
 
 // 候補があるか？（黒マス追加なし）
 template <bool t_alternative>
-bool __fastcall XgAnyCandidateNoAddBlack(const std::wstring& pattern) noexcept
+bool __fastcall XgAnyCandidateNoAddBlack(const QStringW& pattern) noexcept
 {
     // パターンの長さ。
     const int patlen = static_cast<int>(pattern.size());
@@ -814,7 +814,7 @@ bool __fastcall XgAnyCandidateNoAddBlack(const std::wstring& pattern) noexcept
     // すべての単語について調べる。
     for (const auto& data : (t_alternative ? xg_dict_2 : xg_dict_1)) {
         // 単語の長さ。
-        const std::wstring& word = data.m_word;
+        const QStringW& word = data.m_word;
         const int wordlen = static_cast<int>(word.size());
 
         // パターンと単語の長さが異なるとき、スキップする。
@@ -926,13 +926,13 @@ bool __fastcall XgAnyCandidateWholeSpace(int patlen) noexcept
 {
     // すべての単語について調べる。
     for (const auto& data : xg_dict_1) {
-        const std::wstring& word = data.m_word;
+        const QStringW& word = data.m_word;
         const int wordlen = static_cast<int>(word.size());
         if (wordlen == patlen)
             return true;    // あった。
     }
     for (const auto& data : xg_dict_2) {
-        const std::wstring& word = data.m_word;
+        const QStringW& word = data.m_word;
         const int wordlen = static_cast<int>(word.size());
         if (wordlen == patlen)
             return true;    // あった。
@@ -1051,13 +1051,13 @@ bool __fastcall XG_Board::DividedByBlack() const
 
 // すべてのパターンが正当かどうか調べる。
 XG_EpvCode __fastcall XG_Board::EveryPatternValid1(
-    std::vector<std::wstring>& vNotFoundWords,
+    std::vector<QStringW>& vNotFoundWords,
     XG_Pos& pos, bool bNonBlackCheckSpace) const
 {
     const int nRows = xg_nRows, nCols = xg_nCols;
 
     // 使った単語の集合。
-    std::unordered_set<std::wstring> used_words;
+    std::unordered_set<QStringW> used_words;
     // スピードのために、予約。
     used_words.reserve(nRows * nCols / 4);
 
@@ -1090,7 +1090,7 @@ XG_EpvCode __fastcall XG_Board::EveryPatternValid1(
 
                 // パターンを生成する。
                 bool bSpaceFound = false;
-                std::wstring pattern;
+                QStringW pattern;
                 for (int k = lo; k <= hi; k++) {
                     const WCHAR ch = GetAt(i, k);
                     if (ch == ZEN_SPACE) {
@@ -1205,7 +1205,7 @@ XG_EpvCode __fastcall XG_Board::EveryPatternValid1(
 
                 // パターンを生成する。
                 bool bSpaceFound = false;
-                std::wstring pattern;
+                QStringW pattern;
                 for (int k = lo; k <= hi; k++) {
                     const WCHAR ch = GetAt(k, j);
                     if (ch == ZEN_SPACE) {
@@ -1301,7 +1301,7 @@ XG_EpvCode __fastcall XG_Board::EveryPatternValid1(
 
 // すべてのパターンが正当かどうか調べる。
 XG_EpvCode __fastcall XG_Board::EveryPatternValid2(
-    std::vector<std::wstring>& vNotFoundWords,
+    std::vector<QStringW>& vNotFoundWords,
     XG_Pos& pos, bool bNonBlackCheckSpace) const
 {
     const int nRows = xg_nRows;
@@ -1311,7 +1311,7 @@ XG_EpvCode __fastcall XG_Board::EveryPatternValid2(
     int& j = pos2.m_j;
 
     // 使った単語の集合。
-    std::unordered_set<std::wstring> used_words;
+    std::unordered_set<QStringW> used_words;
     // スピードのため、予約。
     used_words.reserve(nRows * nCols / 4);
 
@@ -1347,7 +1347,7 @@ XG_EpvCode __fastcall XG_Board::EveryPatternValid2(
 
                 // パターンを生成する。
                 bool bSpaceFound = false;
-                std::wstring pattern;
+                QStringW pattern;
                 for (int k = lo; k <= hi; k++) {
                     const WCHAR ch = GetAt(i, k);
                     if (ch == ZEN_SPACE) {
@@ -1475,7 +1475,7 @@ XG_EpvCode __fastcall XG_Board::EveryPatternValid2(
 
                 // パターンを生成する。
                 bool bSpaceFound = false;
-                std::wstring pattern;
+                QStringW pattern;
                 for (int k = lo; k <= hi; k++) {
                     const WCHAR ch = GetAt(k, j);
                     if (ch == ZEN_SPACE) {
@@ -1598,7 +1598,7 @@ inline bool __fastcall XG_Board::IsValid() const
 
     // クロスワードに含まれる単語のチェック。
     XG_Pos pos;
-    std::vector<std::wstring> vNotFoundWords;
+    std::vector<QStringW> vNotFoundWords;
     vNotFoundWords.reserve(xg_nRows * xg_nCols / 4);
     const XG_EpvCode code = EveryPatternValid2(vNotFoundWords, pos, false);
     if (code != xg_epv_SUCCESS || !vNotFoundWords.empty())
@@ -1617,7 +1617,7 @@ bool __fastcall XG_Board::IsNoAddBlackOK() const
 {
     // クロスワードに含まれる単語のチェック。
     XG_Pos pos;
-    std::vector<std::wstring> vNotFoundWords;
+    std::vector<QStringW> vNotFoundWords;
     vNotFoundWords.reserve(xg_nRows * xg_nCols / 4);
     const XG_EpvCode code = EveryPatternValid2(vNotFoundWords, pos, false);
     if (code != xg_epv_SUCCESS || !vNotFoundWords.empty())
@@ -1635,7 +1635,7 @@ bool __fastcall XG_Board::DoNumbering()
     const int nCols = xg_nCols;
 
     // 使った単語の集合。
-    std::unordered_set<std::wstring> used_words;
+    std::unordered_set<QStringW> used_words;
     // スピードのため、予約。
     used_words.reserve(nRows * nCols / 4);
 
@@ -1675,7 +1675,7 @@ bool __fastcall XG_Board::DoNumbering()
                 i = hi + 1;
 
                 // 空白があるかを調べると同時に、その区間にある単語を取得する。
-                std::wstring word;
+                QStringW word;
                 for (int k = lo; k <= hi; k++) {
                     if (GetAt(k, j) == ZEN_SPACE)
                         goto space_found_1;
@@ -1725,7 +1725,7 @@ space_found_1:;
                 j = hi + 1;
 
                 // 空白があるかを調べると同時に、その区間にある単語を取得する。
-                std::wstring word;
+                QStringW word;
                 for (int k = lo; k <= hi; k++) {
                     if (GetAt(i, k) == ZEN_SPACE)
                         goto space_found_2;
@@ -1838,7 +1838,7 @@ void __fastcall XG_Board::DoNumberingNoCheck()
 
                 // 空白があるかを調べると同時に、その区間にある単語を取得する。
                 bool bFound = false;
-                std::wstring word;
+                QStringW word;
                 for (int k = lo; k <= hi; k++) {
                     if (GetAt(k, j) == ZEN_SPACE) {
                         bFound = true;
@@ -1876,7 +1876,7 @@ void __fastcall XG_Board::DoNumberingNoCheck()
                 j = hi + 1;
 
                 // 空白があるかを調べると同時に、その区間にある単語を取得する。
-                std::wstring word;
+                QStringW word;
                 bool bFound = false;
                 for (int k = lo; k <= hi; k++) {
                     if (GetAt(i, k) == ZEN_SPACE) {
@@ -1941,7 +1941,7 @@ void __fastcall XG_Board::DoNumberingNoCheck()
 // 候補を取得する。
 template <bool t_alternative> bool __fastcall
 XgGetCandidatesAddBlack(
-    std::vector<std::wstring>& cands, const std::wstring& pattern, int& nSkip,
+    std::vector<QStringW>& cands, const QStringW& pattern, int& nSkip,
     bool left_black_check, bool right_black_check)
 {
     // パターンの長さ。
@@ -1970,7 +1970,7 @@ XgGetCandidatesAddBlack(
 
     // 初期化する。
     nSkip = 0;
-    std::wstring result(pattern);
+    QStringW result(pattern);
 
     // パターンが3字以上か？
     if (patlen > 2) {
@@ -2019,7 +2019,7 @@ XgGetCandidatesAddBlack(
     // すべての登録されている単語について。
     for (const auto& data : (t_alternative ? xg_dict_2 : xg_dict_1)) {
         // パターンより単語の方が長い場合、スキップする。
-        const std::wstring& word = data.m_word;
+        const QStringW& word = data.m_word;
         const int wordlen = static_cast<int>(word.size());
         if (wordlen > patlen)
             continue;
@@ -2087,7 +2087,7 @@ XgGetCandidatesAddBlack(
 
 // 候補を取得する（黒マス追加なし）。
 template <bool t_alternative> bool __fastcall
-XgGetCandidatesNoAddBlack(std::vector<std::wstring>& cands, const std::wstring& pattern)
+XgGetCandidatesNoAddBlack(std::vector<QStringW>& cands, const QStringW& pattern)
 {
     // 単語の長さ。
     const int patlen = static_cast<int>(pattern.size());
@@ -2104,7 +2104,7 @@ XgGetCandidatesNoAddBlack(std::vector<std::wstring>& cands, const std::wstring& 
     // すべての登録された単語について。
     for (const auto& data : (t_alternative ? xg_dict_2 : xg_dict_1)) {
         // パターンと単語の長さが等しくなければ、スキップする。
-        const std::wstring& word = data.m_word;
+        const QStringW& word = data.m_word;
         const int wordlen = static_cast<int>(word.size());
         if (wordlen != patlen)
             continue;
@@ -2162,7 +2162,7 @@ bool __fastcall XG_Board::IsSolution() const
 }
 
 // ヒント文字列を解析する。
-bool __fastcall XgParseHints(std::vector<XG_Hint>& hints, const std::wstring& str)
+bool __fastcall XgParseHints(std::vector<XG_Hint>& hints, const QStringW& str)
 {
     // ヒントをクリアする。
     hints.clear();
@@ -2174,12 +2174,12 @@ bool __fastcall XgParseHints(std::vector<XG_Hint>& hints, const std::wstring& st
         }
 
         const auto i0 = str.find(XgLoadStringDx1(IDS_KEYLEFT), i);
-        if (i0 == std::wstring::npos) {
+        if (i0 == QStringW::npos) {
             break;
         }
 
         const auto i1 = str.find_first_of(L"0123456789", i0);
-        if (i1 == std::wstring::npos) {
+        if (i1 == QStringW::npos) {
             return false;
         }
 
@@ -2189,18 +2189,18 @@ bool __fastcall XgParseHints(std::vector<XG_Hint>& hints, const std::wstring& st
         }
 
         const auto i2 = str.find(XgLoadStringDx1(IDS_KEYRIGHT), i0);
-        if (i2 == std::wstring::npos) {
+        if (i2 == QStringW::npos) {
             return false;
         }
 
-        std::wstring word;
+        QStringW word;
         size_t i3, i4;
         i3 = str.find(L"\x226A", i2); // U+226A ≪
-        if (i3 != std::wstring::npos) {
+        if (i3 != QStringW::npos) {
             i3 += wcslen(L"\x226A"); // U+226A ≪
 
             i4 = str.find(L"\x226B", i3); // U+226B ≫
-            if (i4 == std::wstring::npos) {
+            if (i4 == QStringW::npos) {
                 return false;
             }
             word = str.substr(i3, i4 - i3);
@@ -2210,8 +2210,8 @@ bool __fastcall XgParseHints(std::vector<XG_Hint>& hints, const std::wstring& st
         }
 
         const auto i5 = str.find(XgLoadStringDx1(IDS_KEYLEFT), i4);
-        if (i5 == std::wstring::npos) {
-            std::wstring hint = str.substr(i4);
+        if (i5 == QStringW::npos) {
+            QStringW hint = str.substr(i4);
             xg_str_replace_all(hint, L"\r", L"");
             xg_str_replace_all(hint, L"\n", L"");
             xg_str_replace_all(hint, L"\t", L"");
@@ -2219,7 +2219,7 @@ bool __fastcall XgParseHints(std::vector<XG_Hint>& hints, const std::wstring& st
             hints.emplace_back(number, std::move(word), std::move(hint));
             break;
         } else {
-            std::wstring hint = str.substr(i4, i5 - i4);
+            QStringW hint = str.substr(i4, i5 - i4);
             xg_str_replace_all(hint, L"\r", L"");
             xg_str_replace_all(hint, L"\n", L"");
             xg_str_replace_all(hint, L"\t", L"");
@@ -2233,33 +2233,33 @@ bool __fastcall XgParseHints(std::vector<XG_Hint>& hints, const std::wstring& st
 }
 
 // ヒント文字列を解析する。
-bool __fastcall XgParseHintsStr(const std::wstring& strHints)
+bool __fastcall XgParseHintsStr(const QStringW& strHints)
 {
     // ヒントをクリアする。
     xg_vecVertHints.clear();
     xg_vecHorzHints.clear();
 
     // ヒント文字列の前後の空白を取り除く。
-    std::wstring str(strHints);
+    QStringW str(strHints);
     xg_str_trim(str);
 
     // strCaption1とstrCaption2により、tateとyokoに分ける。
-    std::wstring strCaption1 = XgLoadStringDx1(IDS_DOWN);
-    std::wstring strCaption2 = XgLoadStringDx1(IDS_ACROSS);
+    QStringW strCaption1 = XgLoadStringDx1(IDS_DOWN);
+    QStringW strCaption2 = XgLoadStringDx1(IDS_ACROSS);
     size_t i1 = str.find(strCaption1);
-    if (i1 == std::wstring::npos)
+    if (i1 == QStringW::npos)
         return false;
     i1 += strCaption1.size();
     size_t i2 = str.find(strCaption2);
-    if (i2 == std::wstring::npos)
+    if (i2 == QStringW::npos)
         return false;
-    std::wstring tate = str.substr(i1, i2 - i1);
+    QStringW tate = str.substr(i1, i2 - i1);
     i2 += strCaption2.size();
-    std::wstring yoko = str.substr(i2);
+    QStringW yoko = str.substr(i2);
 
     // 備考欄を取り除く。
     const auto i3 = yoko.find(XgLoadStringDx1(IDS_HEADERSEP2));
-    if (i3 != std::wstring::npos) {
+    if (i3 != QStringW::npos) {
         yoko = yoko.substr(0, i3);
     }
 
@@ -2274,7 +2274,7 @@ bool __fastcall XgParseHintsStr(const std::wstring& strHints)
 
 // ヒントを取得する。
 void __fastcall
-XgGetHintsStr(const XG_Board& board, std::wstring& str, int hint_type, bool bShowAnswer)
+XgGetHintsStr(const XG_Board& board, QStringW& str, int hint_type, bool bShowAnswer)
 {
     // 文字列バッファ。
     WCHAR sz[64];
@@ -2480,10 +2480,10 @@ XgGetHintsStr(const XG_Board& board, std::wstring& str, int hint_type, bool bSho
 }
 
 // 文字列のルールを解析する。
-int __fastcall XgParseRules(const std::wstring& str)
+int __fastcall XgParseRules(const QStringW& str)
 {
     int nRules = 0;
-    std::vector<std::wstring> rules;
+    std::vector<QStringW> rules;
     if (str.find(L" / ") != str.npos) { // もし" / "が含まれていたら
         mstr_split(rules, str, L"/"); // "/"で分割する。
     } else { // 含まれていなければ
@@ -2517,10 +2517,10 @@ int __fastcall XgParseRules(const std::wstring& str)
 }
 
 // ルールを文字列にする。
-std::wstring __fastcall XgGetRulesString(int rules)
+QStringW __fastcall XgGetRulesString(int rules)
 {
     // メモ：英語対応のため、空白区切りから" / "区切りに変更しました。
-    std::wstring ret;
+    QStringW ret;
 
     if (rules & RULE_DONTDOUBLEBLACK) {
         if (ret.size())  {
@@ -2580,7 +2580,7 @@ std::wstring __fastcall XgGetRulesString(int rules)
 }
 
 // JSON文字列を設定する。
-bool __fastcall XgSetJsonString(HWND hwnd, const std::wstring& str)
+bool __fastcall XgSetJsonString(HWND hwnd, const QStringW& str)
 {
     std::string utf8 = XgUnicodeToUtf8(str);
 
@@ -2600,7 +2600,7 @@ bool __fastcall XgSetJsonString(HWND hwnd, const std::wstring& str)
             auto str0 = XgUtf8ToUnicode(j0["rules"].get<std::string>());
             rules = XgParseRules(str0);
         }
-        std::wstring dictionary;
+        QStringW dictionary;
         if (j0["dictionary"].is_string()) {
             dictionary = XgUtf8ToUnicode(j0["dictionary"].get<std::string>());
         }
@@ -2649,7 +2649,7 @@ bool __fastcall XgSetJsonString(HWND hwnd, const std::wstring& str)
             }
             
             std::string str1 = cell_data[i];
-            std::wstring row = XgUtf8ToUnicode(str1).c_str();
+            QStringW row = XgUtf8ToUnicode(str1).c_str();
             if (static_cast<int>(row.size()) != column_count) {
                 success = false;
                 break;
@@ -2752,7 +2752,7 @@ bool __fastcall XgSetJsonString(HWND hwnd, const std::wstring& str)
             if (xg_strNotes.empty()) {
                 ;
             } else if (xg_strNotes.find(psz) == 0) {
-                xg_strNotes = xg_strNotes.substr(std::wstring(psz).size());
+                xg_strNotes = xg_strNotes.substr(QStringW(psz).size());
                 xg_str_trim(xg_strNotes);
             }
 
@@ -2796,7 +2796,7 @@ bool __fastcall XgSetJsonString(HWND hwnd, const std::wstring& str)
             if (dictionary.size()) {
                 for (auto& entry : xg_dicts) {
                     const auto& file = entry.m_filename;
-                    if (file.find(dictionary) != std::wstring::npos) {
+                    if (file.find(dictionary) != QStringW::npos) {
                         if (XgLoadDictFile(file.c_str())) {
                             XgSetDict(file.c_str());
                             XgSetInputModeFromDict(xg_hMainWnd);
@@ -2820,7 +2820,7 @@ bool __fastcall XgSetJsonString(HWND hwnd, const std::wstring& str)
 }
 
 // 文字列を設定する。
-bool __fastcall XgSetStdString(HWND hwnd, const std::wstring& str)
+bool __fastcall XgSetStdString(HWND hwnd, const QStringW& str)
 {
     // クロスワードデータ。
     XG_Board xword;
@@ -2836,21 +2836,21 @@ bool __fastcall XgSetStdString(HWND hwnd, const std::wstring& str)
 
         // ヒントを設定する。
         const auto i0 = str.find(ZEN_LRIGHT, 0);
-        if (i0 != std::wstring::npos) {
+        if (i0 != QStringW::npos) {
             // フッターを取得する。
-            std::wstring s = str.substr(i0 + 1);
+            QStringW s = str.substr(i0 + 1);
 
             // フッターの備考欄を取得して、取り除く。
-            std::wstring strFooterSep = XgLoadStringDx1(IDS_HEADERSEP2);
+            QStringW strFooterSep = XgLoadStringDx1(IDS_HEADERSEP2);
             const auto i3 = s.find(strFooterSep);
-            if (i3 != std::wstring::npos) {
+            if (i3 != QStringW::npos) {
                 xg_strNotes = s.substr(i3 + strFooterSep.size());
                 s = s.substr(0, i3);
             }
 
             LPCWSTR psz = XgLoadStringDx1(IDS_BELOWISNOTES);
             if (xg_strNotes.find(psz) == 0) {
-                xg_strNotes = xg_strNotes.substr(std::wstring(psz).size());
+                xg_strNotes = xg_strNotes.substr(QStringW(psz).size());
                 xg_str_trim(xg_strNotes);
             }
 
@@ -2881,7 +2881,7 @@ bool __fastcall XgSetStdString(HWND hwnd, const std::wstring& str)
 
                 for (const auto& info : xg_vVertInfo) {
                     if (info.m_number == hint.m_number) {
-                        std::wstring word;
+                        QStringW word;
                         for (int k = info.m_iRow; k < xg_nRows; ++k) {
                             const WCHAR ch = xword.GetAt(k, info.m_jCol);
                             if (ch == ZEN_BLACK)
@@ -2899,7 +2899,7 @@ bool __fastcall XgSetStdString(HWND hwnd, const std::wstring& str)
 
                 for (const auto& info : xg_vHorzInfo) {
                     if (info.m_number == hint.m_number) {
-                        std::wstring word;
+                        QStringW word;
                         for (int k = info.m_jCol; k < xg_nCols; ++k) {
                             const auto ch = xword.GetAt(info.m_iRow, k);
                             if (ch == ZEN_BLACK)
@@ -2956,10 +2956,10 @@ bool __fastcall XgSetStdString(HWND hwnd, const std::wstring& str)
     return true;
 }
 
-bool __fastcall XgSetXDString(HWND hwnd, const std::wstring& str)
+bool __fastcall XgSetXDString(HWND hwnd, const QStringW& str)
 {
-    std::wstring header, notes;
-    std::vector<std::wstring> lines, rows, clues, marks;
+    QStringW header, notes;
+    std::vector<QStringW> lines, rows, clues, marks;
     XG_VIEW_MODE view_mode = xg_nViewMode;
 
     int iSection = 0;
@@ -3049,7 +3049,7 @@ bool __fastcall XgSetXDString(HWND hwnd, const std::wstring& str)
     XG_Board xword;
     std::vector<XG_Hint> tate, yoko;
     {
-        std::wstring str0;
+        QStringW str0;
         const auto nWidth = static_cast<int>(rows[0].size());
 
         str0 += ZEN_ULEFT;
@@ -3212,16 +3212,16 @@ bool __fastcall XgSetXDString(HWND hwnd, const std::wstring& str)
 
 struct ECW_ENTRY
 {
-    std::wstring word;
+    QStringW word;
     size_t iColumn;
     size_t iRow;
-    std::wstring clue;
+    QStringW clue;
     bool across;
 };
 
-bool __fastcall XgParseEcwEntry(std::vector<ECW_ENTRY>& entries, const std::wstring& line, bool across)
+bool __fastcall XgParseEcwEntry(std::vector<ECW_ENTRY>& entries, const QStringW& line, bool across)
 {
-    std::vector<std::wstring> fields;
+    std::vector<QStringW> fields;
     mstr_split(fields, line, L":");
     if (fields.size() < 3)
         return false;
@@ -3233,7 +3233,7 @@ bool __fastcall XgParseEcwEntry(std::vector<ECW_ENTRY>& entries, const std::wstr
     if (fields[1].empty())
         return false;
 
-    std::vector<std::wstring> column_and_row;
+    std::vector<QStringW> column_and_row;
     mstr_split(column_and_row, fields[1], L",");
     if (column_and_row.size() != 2)
         return false;
@@ -3252,12 +3252,12 @@ bool __fastcall XgParseEcwEntry(std::vector<ECW_ENTRY>& entries, const std::wstr
 }
 
 // EclipseCrosswordのECWファイルの文字列を読み込む。
-bool __fastcall XgSetEcwString(HWND hwnd, const std::wstring& str)
+bool __fastcall XgSetEcwString(HWND hwnd, const QStringW& str)
 {
-    std::vector<std::wstring> lines;
+    std::vector<QStringW> lines;
     mstr_split(lines, str, L"\n");
 
-    std::wstring title, copyright, author;
+    QStringW title, copyright, author;
     size_t width = 0, height = 0;
     std::vector<ECW_ENTRY> entries;
     bool across = false, down = false;
@@ -3344,8 +3344,8 @@ bool __fastcall XgSetEcwString(HWND hwnd, const std::wstring& str)
     if (width <= 1 || height <= 1)
         return false;
 
-    std::vector<std::wstring> cells;
-    cells.resize(height, std::wstring(width, ZEN_BLACK));
+    std::vector<QStringW> cells;
+    cells.resize(height, QStringW(width, ZEN_BLACK));
 
     for (auto& entry : entries) {
         for (size_t i = 0; i < entry.word.size(); ++i) {
@@ -3373,20 +3373,20 @@ bool __fastcall XgSetEcwString(HWND hwnd, const std::wstring& str)
         }
     }
 
-    std::wstring body = ZEN_ULEFT + std::wstring(width, ZEN_HLINE) + ZEN_URIGHT + L"\r\n";
+    QStringW body = ZEN_ULEFT + QStringW(width, ZEN_HLINE) + ZEN_URIGHT + L"\r\n";
     for (size_t i = 0; i < height; ++i) {
         body += ZEN_VLINE;
         body += XgNormalizeString(cells[i]);
         body += ZEN_VLINE;
         body += L"\r\n";
     }
-    body += ZEN_LLEFT + std::wstring(width, ZEN_HLINE) + ZEN_LRIGHT + L"\r\n";
+    body += ZEN_LLEFT + QStringW(width, ZEN_HLINE) + ZEN_LRIGHT + L"\r\n";
 
     XG_Board xword;
     if (!xword.SetString(body))
         return false;
 
-    std::wstring header;
+    QStringW header;
     header += L"Title: " + title + L"\r\n";
     header += L"Author: " + author + L"\r\n";
     header += L"Copyright: " + copyright;
@@ -3460,7 +3460,7 @@ bool __fastcall XgSetEcwString(HWND hwnd, const std::wstring& str)
 }
 
 // 文字列を設定する。
-bool __fastcall XgSetString(HWND hwnd, const std::wstring& str, XG_FILETYPE type)
+bool __fastcall XgSetString(HWND hwnd, const QStringW& str, XG_FILETYPE type)
 {
     // ボックスを削除する。
     XgDeleteBoxes();
@@ -3558,7 +3558,7 @@ void __fastcall XgSolveXWord_AddBlackRecurse(const XG_Board& xw)
                 }
 
                 // パターンを生成する。
-                std::wstring pattern;
+                QStringW pattern;
                 for (int k = lo; k <= hi; k++) {
                     pattern += xw.GetAt(i, k);
                 }
@@ -3568,7 +3568,7 @@ void __fastcall XgSolveXWord_AddBlackRecurse(const XG_Board& xw)
 
                 // パターンにマッチする候補を取得する。
                 int nSkip;
-                std::vector<std::wstring> cands;
+                std::vector<QStringW> cands;
                 if (XgGetCandidatesAddBlack<false>(cands, pattern, nSkip,
                                                    left_black_check, right_black_check))
                 {
@@ -3707,7 +3707,7 @@ void __fastcall XgSolveXWord_AddBlackRecurse(const XG_Board& xw)
                 }
 
                 // パターンを生成する。
-                std::wstring pattern;
+                QStringW pattern;
                 for (int k = lo; k <= hi; k++) {
                     pattern += xw.GetAt(k, j);
                 }
@@ -3717,7 +3717,7 @@ void __fastcall XgSolveXWord_AddBlackRecurse(const XG_Board& xw)
 
                 // パターンにマッチする候補を取得する。
                 int nSkip;
-                std::vector<std::wstring> cands;
+                std::vector<QStringW> cands;
                 if (XgGetCandidatesAddBlack<false>(cands, pattern, nSkip,
                                                    left_black_check, right_black_check))
                 {
@@ -3900,13 +3900,13 @@ void __fastcall XgSolveXWord_NoAddBlackRecurse(const XG_Board& xw)
                 }
 
                 // パターンを生成する。
-                std::wstring pattern;
+                QStringW pattern;
                 for (int k = lo; k <= hi; k++) {
                     pattern += xw.GetAt(i, k);
                 }
 
                 // パターンにマッチする候補を取得する（黒マス追加なし）。
-                std::vector<std::wstring> cands;
+                std::vector<QStringW> cands;
                 if (XgGetCandidatesNoAddBlack<false>(cands, pattern)) {
                     // 候補をかき混ぜる。
                     xg_random_shuffle(cands.begin(), cands.end());
@@ -3995,13 +3995,13 @@ void __fastcall XgSolveXWord_NoAddBlackRecurse(const XG_Board& xw)
                 }
 
                 // パターンを生成する。
-                std::wstring pattern;
+                QStringW pattern;
                 for (int k = lo; k <= hi; k++) {
                     pattern += xw.GetAt(k, j);
                 }
 
                 // パターンにマッチする候補を取得する。
-                std::vector<std::wstring> cands;
+                std::vector<QStringW> cands;
                 if (XgGetCandidatesNoAddBlack<false>(cands, pattern)) {
                     // 候補をかき混ぜる。
                     xg_random_shuffle(cands.begin(), cands.end());
@@ -4160,7 +4160,7 @@ static void __fastcall XgSolveXWord_AddBlack(const XG_Board& xw)
                         return;
 
                     // 単語の長さがパターンの長さ以下か？
-                    const std::wstring& word = word_data.m_word;
+                    const QStringW& word = word_data.m_word;
                     const int wordlen = static_cast<int>(word.size());
                     if (wordlen > patlen)
                         continue;
@@ -4236,7 +4236,7 @@ static void __fastcall XgSolveXWord_AddBlack(const XG_Board& xw)
                         return;
 
                     // 単語の長さがパターンの長さ以下か？
-                    const std::wstring& word = word_data.m_word;
+                    const QStringW& word = word_data.m_word;
                     const int wordlen = static_cast<int>(word.size());
                     if (wordlen > patlen)
                         continue;
@@ -4317,7 +4317,7 @@ retry_1:;
                         return;
 
                     // 単語の長さがパターンの長さ以下か？
-                    const std::wstring& word = word_data.m_word;
+                    const QStringW& word = word_data.m_word;
                     const int wordlen = static_cast<int>(word.size());
                     if (wordlen > patlen)
                         continue;
@@ -4393,7 +4393,7 @@ retry_1:;
                         return;
 
                     // 単語の長さがパターンの長さ以下か？
-                    const std::wstring& word = word_data.m_word;
+                    const QStringW& word = word_data.m_word;
                     const int wordlen = static_cast<int>(word.size());
                     if (wordlen > patlen)
                         continue;
@@ -4510,7 +4510,7 @@ static void __fastcall XgSolveXWord_NoAddBlack(const XG_Board& xw)
             return;
 
         // 単語とパターンの長さが等しいか？
-        const std::wstring& word = word_data.m_word;
+        const QStringW& word = word_data.m_word;
         const int wordlen = static_cast<int>(word.size());
         if (wordlen != patlen)
             continue;
@@ -5884,7 +5884,7 @@ HBITMAP __fastcall XgCreateXWordImage(const XG_Board& xw, const SIZE *psiz, bool
 bool __fastcall XgDoLoadCrpFile(HWND hwnd, LPCWSTR pszFile)
 {
     int i;
-    std::vector<std::wstring> rows;
+    std::vector<QStringW> rows;
     WCHAR szName[32], szText[128];
     XG_Board xword;
     std::vector<XG_Hint> tate, yoko;
@@ -5901,7 +5901,7 @@ bool __fastcall XgDoLoadCrpFile(HWND hwnd, LPCWSTR pszFile)
             StringCchPrintf(szName, _countof(szName), L"Line%d", i + 1);
             GetPrivateProfileStringW(L"Cross", szName, L"", szText, _countof(szText), pszFile);
 
-            std::wstring str = szText;
+            QStringW str = szText;
             xg_str_trim(str);
             xg_str_replace_all(str, L",", L"");
             xg_str_replace_all(str, sz1, sz2);
@@ -5913,7 +5913,7 @@ bool __fastcall XgDoLoadCrpFile(HWND hwnd, LPCWSTR pszFile)
             rows.push_back(str);
         }
         if (i == nHeight) {
-            std::wstring str;
+            QStringW str;
 
             str += ZEN_ULEFT;
             for (i = 0; i < nWidth; ++i) {
@@ -5961,14 +5961,14 @@ bool __fastcall XgDoLoadCrpFile(HWND hwnd, LPCWSTR pszFile)
                     StringCchPrintf(szName, _countof(szName), L"Clue%d", i + 1);
                     GetPrivateProfileStringW(L"Clue", szName, L"", szText, _countof(szText), pszFile);
 
-                    std::wstring str = szText;
+                    QStringW str = szText;
                     xg_str_trim(str);
                     if (str.empty())
                         break;
                     const auto icolon = str.find(L':');
                     if (icolon != str.npos) {
-                        std::wstring word = str.substr(0, icolon);
-                        std::wstring hint = str.substr(icolon + 1);
+                        QStringW word = str.substr(0, icolon);
+                        QStringW hint = str.substr(icolon + 1);
                         word = XgNormalizeString(word);
                         for (XG_PlaceInfo& item : xg_vVertInfo) {
                             if (item.m_word == word) {
@@ -5989,7 +5989,7 @@ bool __fastcall XgDoLoadCrpFile(HWND hwnd, LPCWSTR pszFile)
                     StringCchPrintf(szName, _countof(szName), L"Down%d", i + 1);
                     GetPrivateProfileStringW(L"Clue", szName, L"", szText, _countof(szText), pszFile);
 
-                    std::wstring str = szText;
+                    QStringW str = szText;
                     xg_str_trim(str);
                     if (str.empty())
                         break;
@@ -6007,7 +6007,7 @@ bool __fastcall XgDoLoadCrpFile(HWND hwnd, LPCWSTR pszFile)
                     StringCchPrintf(szName, _countof(szName), L"Across%d", i + 1);
                     GetPrivateProfileStringW(L"Clue", szName, L"", szText, _countof(szText), pszFile);
 
-                    std::wstring str = szText;
+                    QStringW str = szText;
                     xg_str_trim(str);
                     if (str.empty())
                         break;
@@ -6092,7 +6092,7 @@ bool __fastcall XgDoLoadFileType(HWND hwnd, LPCWSTR pszFile, XG_FILETYPE type)
     XgSetMarkedWord();
 
     try {
-        std::wstring strText;
+        QStringW strText;
         if (!XgReadTextFileAll(pszFile, strText, type == XG_FILETYPE_ECW))
             return false;
 
@@ -6140,7 +6140,7 @@ bool __fastcall XgDoSaveCrpFile(LPCWSTR pszFile)
 
         // マス。
         for (int i = 0; i < xg_nRows; ++i) {
-            std::wstring row;
+            QStringW row;
             for (int j = 0; j < xg_nCols; ++j) {
                 if (row.size())
                     row += L",";
@@ -6160,7 +6160,7 @@ bool __fastcall XgDoSaveCrpFile(LPCWSTR pszFile)
             mark.resize(xg_nCols);
         }
 
-        std::wstring answer;
+        QStringW answer;
         if (xg_vMarks.size()) {
             for (size_t i = 0; i < xg_vMarks.size(); ++i) {
                 answer += xw->GetAt(xg_vMarks[i].m_i, xg_vMarks[i].m_j);
@@ -6239,7 +6239,7 @@ bool __fastcall XgDoSaveCrpFile(LPCWSTR pszFile)
 bool __fastcall XgDoSaveJson(LPCWSTR pszFile)
 {
     HANDLE hFile;
-    std::wstring str, strTable, strMarks;
+    QStringW str, strTable, strMarks;
 
     // ファイルを作成する。
     hFile = ::CreateFileW(pszFile, GENERIC_WRITE, FILE_SHARE_READ, nullptr,
@@ -6284,7 +6284,7 @@ bool __fastcall XgDoSaveJson(LPCWSTR pszFile)
 
         // マス。
         for (int i = 0; i < xg_nRows; ++i) {
-            std::wstring row;
+            QStringW row;
             for (int j = 0; j < xg_nCols; ++j) {
                 row += xw->GetAt(i, j);
             }
@@ -6298,7 +6298,7 @@ bool __fastcall XgDoSaveJson(LPCWSTR pszFile)
         if (xg_vMarks.size()) {
             j0["has_mark"] = true;
 
-            std::wstring mark_word;
+            QStringW mark_word;
             for (auto& mark : xg_vMarks) {
                 const WCHAR ch = xw->GetAt(mark.m_i, mark.m_j);
                 mark_word += ch;
@@ -6360,7 +6360,7 @@ bool __fastcall XgDoSaveJson(LPCWSTR pszFile)
         xg_str_trim(xg_strNotes);
         LPCWSTR psz = XgLoadStringDx1(IDS_BELOWISNOTES);
         if (xg_strNotes.find(psz) == 0) {
-            xg_strNotes = xg_strNotes.substr(std::wstring(psz).size());
+            xg_strNotes = xg_strNotes.substr(QStringW(psz).size());
         }
         j0["notes"] = XgUnicodeToUtf8(xg_strNotes);
 
@@ -6408,7 +6408,7 @@ bool __fastcall XgDoSaveJson(LPCWSTR pszFile)
 bool XgDoSaveStandard(HWND hwnd, LPCWSTR pszFile, const XG_Board& board)
 {
     HANDLE hFile;
-    std::wstring str, strTable, strMarks, hints;
+    QStringW str, strTable, strMarks, hints;
 
     // ファイルを作成する。
     hFile = ::CreateFileW(pszFile, GENERIC_WRITE, FILE_SHARE_READ, nullptr,
@@ -6454,7 +6454,7 @@ bool XgDoSaveStandard(HWND hwnd, LPCWSTR pszFile, const XG_Board& board)
     str += psz;
     str += L"\r\n";
     if (xg_strNotes.find(psz) == 0) {
-        xg_strNotes = xg_strNotes.substr(std::wstring(psz).size());
+        xg_strNotes = xg_strNotes.substr(QStringW(psz).size());
     }
     xg_str_trim(xg_strNotes);
     str += xg_strNotes;
@@ -6477,8 +6477,8 @@ bool XgDoSaveStandard(HWND hwnd, LPCWSTR pszFile, const XG_Board& board)
 }
 
 // 文字列を標準化する。
-std::wstring XgNormalizeStringEx(const std::wstring& str, BOOL bUppercase, BOOL bKatakana) {
-    std::wstring ret;
+QStringW XgNormalizeStringEx(const QStringW& str, BOOL bUppercase, BOOL bKatakana) {
+    QStringW ret;
     for (auto ch : str) {
         WCHAR newch = 0;
         // 小さな字を大きな字にする。
@@ -6556,7 +6556,7 @@ bool __fastcall XgDoSaveXdFile(LPCWSTR pszFile)
 
         // マス。
         for (int i = 0; i < xg_nRows; ++i) {
-            std::wstring row;
+            QStringW row;
             for (int j = 0; j < xg_nCols; ++j) {
                 const WCHAR ch = xw->GetAt(i, j);
                 if (bAsian) {
@@ -6614,7 +6614,7 @@ bool __fastcall XgDoSaveXdFile(LPCWSTR pszFile)
 
         // マーク。
         if (xg_vMarks.size()) {
-            std::wstring strMarks;
+            QStringW strMarks;
             XgGetStringOfMarks2(strMarks);
             fprintf(fout, "%s\n\n", XgUnicodeToUtf8(strMarks).c_str());
         }
@@ -6854,7 +6854,7 @@ void XgSetSizeOfEMF(HDC hdcEMF, const SIZE *psiz) noexcept
 }
 
 // クロスワードの文字列を取得する。
-void __fastcall XG_Board::GetString(std::wstring& str) const
+void __fastcall XG_Board::GetString(QStringW& str) const
 {
     str.clear();
 
@@ -6882,16 +6882,16 @@ void __fastcall XG_Board::GetString(std::wstring& str) const
 }
 
 // クロスワードに文字列を設定する。
-bool __fastcall XG_Board::SetString(const std::wstring& strToBeSet)
+bool __fastcall XG_Board::SetString(const QStringW& strToBeSet)
 {
     std::vector<WCHAR> v;
-    std::wstring str(strToBeSet);
+    QStringW str(strToBeSet);
 
     // ヘッダーを取得する。
     xg_strHeader.clear();
-    std::wstring strHeaderSep = XgLoadStringDx1(IDS_HEADERSEP1);
+    QStringW strHeaderSep = XgLoadStringDx1(IDS_HEADERSEP1);
     const auto i0 = str.find(strHeaderSep);
-    if (i0 != std::wstring::npos) {
+    if (i0 != QStringW::npos) {
         xg_strHeader = str.substr(0, i0);
         str = str.substr(i0 + strHeaderSep.size());
     }
@@ -7544,7 +7544,7 @@ bool __fastcall XgGenerateBlacksLineSymVRecurse(const XG_Board& xword, LONG iRow
 
     // 盤の真ん中か？
     if (iRow >= nHalfRows) {
-        std::wstring strPattern = xword.GetPatternV(XG_Pos(iRow, jCol));
+        QStringW strPattern = xword.GetPatternV(XG_Pos(iRow, jCol));
         if (static_cast<int>(strPattern.size()) > xg_nMaxWordLen) {
             // 空白が最大長よりも長い。黒マスをセットして再帰。
             XG_Board copy(xword);
@@ -7680,7 +7680,7 @@ bool __fastcall XgGenerateBlacksLineSymHRecurse(const XG_Board& xword, LONG iRow
 
     // 盤の真ん中か？
     if (jCol >= nHalfCols) {
-        std::wstring strPattern = xword.GetPatternH(XG_Pos(iRow, jCol));
+        QStringW strPattern = xword.GetPatternH(XG_Pos(iRow, jCol));
         if (static_cast<int>(strPattern.size()) > xg_nMaxWordLen) {
             // 空白が最大長よりも長い。黒マスをセットして再帰。
             XG_Board copy(xword);
@@ -7917,11 +7917,11 @@ void __fastcall XgStartGenerateBlacks(void) noexcept
 }
 
 // クロスワードで使う文字に変換する。
-std::wstring __fastcall XgNormalizeString(const std::wstring& text) {
+QStringW __fastcall XgNormalizeString(const QStringW& text) {
     WCHAR szText[512];
     LCMapStringW(XG_JPN_LOCALE, LCMAP_FULLWIDTH | LCMAP_KATAKANA | LCMAP_UPPERCASE,
         text.c_str(), -1, szText, _countof(szText));
-    std::wstring ret(szText);
+    QStringW ret(szText);
     for (auto& ch : ret) {
         // 小さな字を大きな字にする。
         auto it = xg_small2large.find(ch);
@@ -7932,9 +7932,9 @@ std::wstring __fastcall XgNormalizeString(const std::wstring& text) {
 }
 
 // タテ向きにパターンを読み取る。
-std::wstring __fastcall XG_Board::GetPatternV(const XG_Pos& pos) const
+QStringW __fastcall XG_Board::GetPatternV(const XG_Pos& pos) const
 {
-    std::wstring pattern;
+    QStringW pattern;
     if (GetAt(pos.m_i, pos.m_j) == ZEN_BLACK)
         return pattern;
 
@@ -7960,9 +7960,9 @@ std::wstring __fastcall XG_Board::GetPatternV(const XG_Pos& pos) const
 }
 
 // ヨコ向きにパターンを読み取る。
-std::wstring __fastcall XG_Board::GetPatternH(const XG_Pos& pos) const
+QStringW __fastcall XG_Board::GetPatternH(const XG_Pos& pos) const
 {
-    std::wstring pattern;
+    QStringW pattern;
     if (GetAt(pos.m_i, pos.m_j) == ZEN_BLACK)
         return pattern;
 
@@ -8017,7 +8017,7 @@ bool __fastcall XgIsAnyThreadTerminated(void) noexcept
 // パターンの統計情報を表示。
 void XgShowPatInfo(HWND hwndInfo)
 {
-    std::wstring text; // この関数では、この変数にテキストを追加していく。
+    QStringW text; // この関数では、この変数にテキストを追加していく。
 
     if (xg_bSolved) {
         std::map<DWORD, DWORD> len2num;

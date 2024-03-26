@@ -3,7 +3,7 @@
 #include "XG_Window.hpp"
 
 // 保存先のパスのリスト。
-extern std::deque<std::wstring> xg_dirs_save_to;
+extern std::deque<QStringW> xg_dirs_save_to;
 
 // 連続生成の場合、問題を生成する数。
 extern int xg_nNumberToGenerate;
@@ -137,7 +137,7 @@ public:
             }
             // 保存先をセットする。
             {
-                std::wstring strDir = szFile;
+                QStringW strDir = szFile;
                 xg_str_trim(strDir);
                 {
                     auto end = xg_dirs_save_to.end();

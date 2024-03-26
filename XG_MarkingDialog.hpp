@@ -65,7 +65,7 @@ public:
     }
 
     // テキストの取得。
-    std::wstring GetText(HWND hwnd, BOOL bEdit, BOOL bNormalize = TRUE)
+    QStringW GetText(HWND hwnd, BOOL bEdit, BOOL bNormalize = TRUE)
     {
         WCHAR szText[256];
         szText[0] = 0;
@@ -76,7 +76,7 @@ public:
             if (i != LB_ERR)
                 ::SendDlgItemMessageW(hwnd, lst1, LB_GETTEXT, i, reinterpret_cast<LPARAM>(szText));
         }
-        std::wstring str = szText;
+        QStringW str = szText;
         if (bNormalize) {
             xg_str_trim(str);
             str = XgNormalizeString(str);
@@ -85,7 +85,7 @@ public:
     }
 
     // テキストの設定。
-    BOOL SetText(HWND hwnd, const std::wstring& str, BOOL bFromEdit)
+    BOOL SetText(HWND hwnd, const QStringW& str, BOOL bFromEdit)
     {
         if (!bFromEdit) {
             m_bUpdating = TRUE;

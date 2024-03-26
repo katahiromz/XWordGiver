@@ -7,9 +7,9 @@
 class XG_WordListDialog : public XG_Dialog
 {
 public:
-    inline static std::vector<std::wstring> s_words;
-    inline static std::unordered_set<std::wstring> s_wordset;
-    inline static std::wstring s_str_word_list;
+    inline static std::vector<QStringW> s_words;
+    inline static std::unordered_set<QStringW> s_wordset;
+    inline static QStringW s_str_word_list;
 
     RECT m_rcBitmap;
     SIZE m_sizBitmap;
@@ -73,15 +73,15 @@ public:
             XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_OUTOFMEMORY), nullptr, MB_ICONERROR);
             return FALSE;
         }
-        std::wstring str = psz;
+        QStringW str = psz;
         delete[] psz;
 
         // 単語リストと辞書を取得する。
-        std::vector<std::wstring> items;
+        std::vector<QStringW> items;
         mstr_split(items, str, L" \t\r\n\x3000");
         for (auto& item : items) {
             // ハイフン、アポストロフィ、ピリオド、カンマ、カッコを取り除く。
-            std::wstring tmp;
+            QStringW tmp;
             for (auto ch : item) {
                 if (ch == L'-' || ch == 0xFF0D)
                     continue;
@@ -128,7 +128,7 @@ public:
 
         using namespace crossword_generation;
 
-        std::wstring nonconnected;
+        QStringW nonconnected;
         s_wordset = { s_words.begin(), s_words.end() };
 
         // すべてでなくてもよい？

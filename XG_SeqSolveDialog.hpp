@@ -64,7 +64,7 @@ public:
             }
             // 保存先をセットする。
             {
-                std::wstring strDir = szFile;
+                QStringW strDir = szFile;
                 xg_str_trim(strDir);
                 {
                     auto end = xg_dirs_save_to.end();

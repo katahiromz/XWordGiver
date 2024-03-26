@@ -9,12 +9,12 @@
 class XG_TextBoxDialog : public XG_Dialog
 {
 public:
-    std::wstring m_strText;
+    QStringW m_strText;
     XG_ColorBox m_hwndTextColor;
     XG_ColorBox m_hwndBgColor;
     BOOL m_bTextColor = FALSE;
     BOOL m_bBgColor = FALSE;
-    std::wstring m_strFontName;
+    QStringW m_strFontName;
     int m_nFontSizeInPoints = 0;
 
     BOOL GetTextColor() noexcept

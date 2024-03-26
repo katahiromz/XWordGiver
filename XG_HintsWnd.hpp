@@ -190,7 +190,7 @@ public:
             HDC hdc = ::CreateCompatibleDC(nullptr);
             WCHAR label[64];
             StringCchPrintf(label, _countof(label), XgLoadStringDx1(IDS_DOWNNUMBER), 100);
-            std::wstring strLabel = label;
+            QStringW strLabel = label;
             ::SelectObject(hdc, ::GetStockObject(SYSTEM_FIXED_FONT));
             ::GetTextExtentPoint32W(hdc, strLabel.data(), static_cast<int>(strLabel.size()), &size1);
             ::SelectObject(hdc, xg_hHintsUIFont);

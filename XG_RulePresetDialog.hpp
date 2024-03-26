@@ -30,7 +30,7 @@ public:
         ComboBox_RealGetText(hCmb1, szText, _countof(szText));
 
         // 前後の空白を取り除く。
-        std::wstring str = szText;
+        QStringW str = szText;
         xg_str_trim(str);
 
         // 半角にする。
@@ -161,9 +161,9 @@ public:
 
     struct ENTRY
     {
-        std::wstring language;
+        QStringW language;
         DWORD value;
-        std::wstring name;
+        QStringW name;
     };
 
     BOOL OnInitDialog(HWND hwnd, HWND hwndFocus, LPARAM lParam)
@@ -176,13 +176,13 @@ public:
 
         // POLICY.txtを開いて全部読む。
         WCHAR szPath[MAX_PATH];
-        std::wstring strText;
+        QStringW strText;
         std::vector<ENTRY> entries;
         if (XgFindLocalFile(szPath, _countof(szPath), L"POLICY.txt") &&
             XgReadTextFileAll(szPath, strText))
         {
             // 行に分割する。
-            std::vector<std::wstring> lines;
+            std::vector<QStringW> lines;
             mstr_split(lines, strText, L"\n");
 
             // 各行について。
@@ -197,7 +197,7 @@ public:
                 }
 
                 // タブで分割。
-                std::vector<std::wstring> fields;
+                std::vector<QStringW> fields;
                 mstr_split(fields, line, L"\t");
                 for (auto& field : fields) {
                     mstr_trim(field, L" ");
@@ -240,7 +240,7 @@ public:
 
                 WCHAR sz[32];
                 StringCchPrintfW(sz, _countof(sz), L"0x%04X", entry.value);
-                std::wstring str = sz;
+                QStringW str = sz;
                 str += L": ";
                 str += entry.name;
                 ComboBox_AddString(hCmb1, str.c_str());

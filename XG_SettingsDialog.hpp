@@ -12,7 +12,7 @@ public:
     XG_ColorBox m_hwndBlack;
     XG_ColorBox m_hwndMarked;
 
-    std::wstring m_strAutoFile;
+    QStringW m_strAutoFile;
     BOOL m_bImport = FALSE;
     BOOL m_bUpdating = FALSE;
 

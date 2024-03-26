@@ -20,7 +20,7 @@ public:
         }
         ::SetDlgItemTextW(hwnd, edt1, xg_strHeader.data());
         // 備考欄を設定する。
-        std::wstring str = xg_strNotes;
+        QStringW str = xg_strNotes;
         xg_str_trim(str);
         LPWSTR psz = XgLoadStringDx1(IDS_BELOWISNOTES);
         if (str.find(psz) == 0) {
@@ -33,7 +33,7 @@ public:
     void OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT codeNotify)
     {
         WCHAR sz[512];
-        std::wstring str;
+        QStringW str;
 
         switch (id)
         {

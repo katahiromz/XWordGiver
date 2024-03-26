@@ -9,10 +9,10 @@
 extern std::vector<XG_Pos> xg_vMarks;
 
 // 二重マス単語候補。
-extern std::vector<std::wstring>  xg_vMarkedCands;
+extern std::vector<QStringW>  xg_vMarkedCands;
 
 // 二重マス単語。
-extern std::wstring xg_strMarked;
+extern QStringW xg_strMarked;
 
 // 選択中の二重マス単語の候補のインデックス。
 extern int xg_iMarkedCand;
@@ -20,9 +20,9 @@ extern int xg_iMarkedCand;
 //////////////////////////////////////////////////////////////////////////////
 
 // マーク文字列を取得する。
-void __fastcall XgGetStringOfMarks(std::wstring& str);
+void __fastcall XgGetStringOfMarks(QStringW& str);
 // マーク文字列を取得する2。
-void __fastcall XgGetStringOfMarks2(std::wstring& str);
+void __fastcall XgGetStringOfMarks2(QStringW& str);
 // マークされているか（二重マス）？
 int __fastcall XgGetMarked(const std::vector<XG_Pos>& vMarks, const XG_Pos& pos) noexcept;
 // マークされているか（二重マス）？
@@ -40,9 +40,9 @@ void __fastcall XgDeleteMark(int i, int j);
 // マーク文字列を設定する。
 void __fastcall XgSetStringOfMarks(LPCWSTR psz);
 // 二重マス単語を取得する。
-bool __fastcall XgGetMarkWord(const XG_Board *xw, std::wstring& str);
+bool __fastcall XgGetMarkWord(const XG_Board *xw, QStringW& str);
 // 二重マス単語を設定する。
-BOOL __fastcall XgSetMarkedWord(const std::wstring& str, WCHAR *pchNotFound = nullptr);
+BOOL __fastcall XgSetMarkedWord(const QStringW& str, WCHAR *pchNotFound = nullptr);
 // 二重マス単語を空にする。
 void __fastcall XgSetMarkedWord(void);
 // 二重マス単語候補を取得する。

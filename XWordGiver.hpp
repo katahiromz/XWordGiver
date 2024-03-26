@@ -55,6 +55,10 @@
 
 #include <strsafe.h>    // for String... functions
 
+// TODO:
+//#include "QString.h"  // for QString(,A,W)
+typedef std::wstring QStringW;
+
 #include "resource.h"   // resource-related macros
 
 template<typename T, typename ...Args>
@@ -114,9 +118,9 @@ extern int xg_nZoomRate;
 #define xg_nMaxCandidates   500
 
 // クロスワードで使う文字に変換する。
-std::wstring __fastcall XgNormalizeString(const std::wstring& text);
+QStringW __fastcall XgNormalizeString(const QStringW& text);
 // 文字列を標準化する。
-std::wstring XgNormalizeStringEx(const std::wstring& str, BOOL bUppercase = TRUE, BOOL bKatakana = TRUE);
+QStringW XgNormalizeStringEx(const QStringW& str, BOOL bUppercase = TRUE, BOOL bKatakana = TRUE);
 
 // XG_Board::EveryPatternValid1, XG_Board::EveryPatternValid2の戻り値。
 enum XG_EpvCode
@@ -342,22 +346,22 @@ extern XG_Pos xg_caret_pos;
 struct XG_Hint
 {
     int             m_number;
-    std::wstring    m_strWord;
-    std::wstring    m_strHint;
+    QStringW    m_strWord;
+    QStringW    m_strHint;
 
     // コンストラクタ。
     XG_Hint() noexcept { }
 
     // コンストラクタ。
     inline
-    XG_Hint(int number, const std::wstring& word, const std::wstring& hint) :
+    XG_Hint(int number, const QStringW& word, const QStringW& hint) :
         m_number(number), m_strWord(word), m_strHint(hint)
     {
     }
 
     // コンストラクタ。
     inline
-    XG_Hint(int number, std::wstring&& word, std::wstring&& hint) noexcept :
+    XG_Hint(int number, QStringW&& word, QStringW&& hint) noexcept :
         m_number(number),
         m_strWord(std::move(word)),
         m_strHint(std::move(hint))
@@ -475,8 +479,8 @@ public:
     void __fastcall DoNumberingNoCheck();
 
     // クロスワードの文字列を取得する。
-    void __fastcall GetString(std::wstring& str) const;
-    bool __fastcall SetString(const std::wstring& strToBeSet);
+    void __fastcall GetString(QStringW& str) const;
+    bool __fastcall SetString(const QStringW& strToBeSet);
 
     // クロスワードが空かどうか。
     bool __fastcall IsEmpty() const noexcept;
@@ -492,11 +496,11 @@ public:
     bool __fastcall DividedByBlack() const;
     // すべてのパターンが正当かどうか調べる。
     XG_EpvCode __fastcall EveryPatternValid1(
-        std::vector<std::wstring>& vNotFoundWords,
+        std::vector<QStringW>& vNotFoundWords,
         XG_Pos& pos, bool bNonBlackCheckSpace) const;
     // すべてのパターンが正当かどうか調べる。
     XG_EpvCode __fastcall EveryPatternValid2(
-        std::vector<std::wstring>& vNotFoundWords,
+        std::vector<QStringW>& vNotFoundWords,
         XG_Pos& pos, bool bNonBlackCheckSpace) const;
 
     // 黒マスを置けるか？
@@ -525,9 +529,9 @@ public:
     void SwapXandY();
 
     // タテ向きにパターンを読み取る。
-    std::wstring __fastcall GetPatternV(const XG_Pos& pos) const;
+    QStringW __fastcall GetPatternV(const XG_Pos& pos) const;
     // ヨコ向きにパターンを読み取る。
-    std::wstring __fastcall GetPatternH(const XG_Pos& pos) const;
+    QStringW __fastcall GetPatternH(const XG_Pos& pos) const;
 
 public:
     // マス情報。
@@ -699,14 +703,14 @@ extern XG_Board         xg_solution;
 extern bool             xg_bSolved;
 
 // ヘッダー文字列。
-extern std::wstring     xg_strHeader;
+extern QStringW     xg_strHeader;
 // 備考文字列。
-extern std::wstring     xg_strNotes;
+extern QStringW     xg_strNotes;
 
 // 黒マス画像。
 extern HBITMAP xg_hbmBlackCell;
 extern HENHMETAFILE xg_hBlackCellEMF;
-extern std::wstring xg_strBlackCellImage;
+extern QStringW xg_strBlackCellImage;
 
 // ビューモード。
 typedef enum XG_VIEW_MODE
@@ -973,7 +977,7 @@ extern BOOL xg_bShowNumbering;
 // キャレットを表示するか？
 extern BOOL xg_bShowCaret;
 // 二重マス文字。
-extern std::wstring xg_strDoubleFrameLetters;
+extern QStringW xg_strDoubleFrameLetters;
 // 二重マス文字を表示するか？
 extern BOOL xg_bShowDoubleFrameLetters;
 
@@ -997,13 +1001,13 @@ inline void xg_random_shuffle(const t_elem& begin, const t_elem& end) {
 using json = nlohmann::json;
 
 //////////////////////////////////////////////////////////////////////////////
-// std::wstringを比較するファンクタ。
+// QStringWを比較するファンクタ。
 
 class xg_wstrinxg_less
 {
 public:
     bool __fastcall operator()(
-        const std::wstring& s1, const std::wstring& s2) const noexcept
+        const QStringW& s1, const QStringW& s2) const noexcept
     {
         return s1 < s2;
     }
@@ -1143,7 +1147,7 @@ struct XG_PlaceInfo
 {
     int             m_iRow;         // 行のインデックス。
     int             m_jCol;         // 列のインデックス。
-    std::wstring    m_word;         // 単語。
+    QStringW    m_word;         // 単語。
     int             m_number;       // 番号。
 
     // コンストラクタ。
@@ -1152,25 +1156,25 @@ struct XG_PlaceInfo
     }
 
     // コンストラクタ。
-    XG_PlaceInfo(int iRow_, int jCol_, const std::wstring& word_) :
+    XG_PlaceInfo(int iRow_, int jCol_, const QStringW& word_) :
         m_iRow(iRow_), m_jCol(jCol_), m_word(word_)
     {
     }
 
     // コンストラクタ。
-    XG_PlaceInfo(int iRow_, int jCol_, std::wstring&& word_) noexcept :
+    XG_PlaceInfo(int iRow_, int jCol_, QStringW&& word_) noexcept :
         m_iRow(iRow_), m_jCol(jCol_), m_word(std::move(word_))
     {
     }
 
     // コンストラクタ。
-    XG_PlaceInfo(int iRow_, int jCol_, const std::wstring& word_, int number_) :
+    XG_PlaceInfo(int iRow_, int jCol_, const QStringW& word_, int number_) :
         m_iRow(iRow_), m_jCol(jCol_), m_word(word_), m_number(number_)
     {
     }
 
     // コンストラクタ。
-    XG_PlaceInfo(int iRow_, int jCol_, std::wstring&& word_, int number_) noexcept :
+    XG_PlaceInfo(int iRow_, int jCol_, QStringW&& word_, int number_) noexcept :
         m_iRow(iRow_), m_jCol(jCol_), m_word(std::move(word_)), m_number(number_)
     {
     }
@@ -1302,7 +1306,7 @@ extern bool xg_bChoosePAT;
 extern bool xg_bAddThickFrame;
 
 // 直前に開いたクロスワードデータファイルのパスファイル名。
-extern std::wstring xg_strFileName;
+extern QStringW xg_strFileName;
 
 // ヒント追加フラグ。
 extern bool xg_bHintsAdded;
@@ -1330,7 +1334,7 @@ inline static const std::unordered_map<WCHAR, WCHAR> xg_small2large =
 extern HBITMAP xg_hbmImage;
 
 // ヒント文字列。
-extern std::wstring xg_strHints;
+extern QStringW xg_strHints;
 
 // スレッドのハンドル。
 extern std::vector<HANDLE> xg_ahThreads;
@@ -1410,7 +1414,7 @@ bool __fastcall XgDoSaveFile(HWND hwnd, LPCWSTR pszFile);
 bool __fastcall XgDoSaveFileType(HWND hwnd, LPCWSTR pszFile, XG_FILETYPE type);
 
 // ヒント文字列を解析する。
-bool __fastcall XgParseHintsStr(const std::wstring& strHints);
+bool __fastcall XgParseHintsStr(const QStringW& strHints);
 
 // 問題を画像ファイルとして保存する。
 void __fastcall XgSaveProbAsImage(HWND hwnd);
@@ -1420,7 +1424,7 @@ void __fastcall XgSaveAnsAsImage(HWND hwnd);
 
 template <bool t_alternative>
 bool __fastcall XgGetCandidatesAddBlack(
-    std::vector<std::wstring>& cands, const std::wstring& pattern, int& nSkip,
+    std::vector<QStringW>& cands, const QStringW& pattern, int& nSkip,
     bool left_black_check, bool right_black_check);
 
 // マルチスレッド用の関数。
@@ -1435,7 +1439,7 @@ unsigned __stdcall XgGenerateBlacksSmart(void *param);
 // hint_type 3: HTMLのタテ。
 // hint_type 4: HTMLのヨコ。
 // hint_type 5: HTMLのタテとヨコ。
-void __fastcall XgGetHintsStr(const XG_Board& board, std::wstring& str, int hint_type,
+void __fastcall XgGetHintsStr(const XG_Board& board, QStringW& str, int hint_type,
                               bool bShowAnswer = true);
 
 // 文字マスをクリア。
@@ -1494,7 +1498,7 @@ struct XG_PATDATA
 {
     int num_columns;
     int num_rows;
-    std::wstring text;
+    QStringW text;
     std::vector<WCHAR> data;
 };
 typedef std::vector<XG_PATDATA> patterns_t;
@@ -1515,11 +1519,11 @@ BOOL __fastcall XgPatternRuleIsOK(const XG_PATDATA& pat);
 void XgGetPatternData(XG_PATDATA& pat);
 // パターンデータを書き込む。
 BOOL XgSavePatterns(LPCWSTR pszFileName, const patterns_t& patterns,
-                    const std::wstring *pComments = nullptr);
+                    const QStringW *pComments = nullptr);
 // パターン編集。
 BOOL XgPatEdit(HWND hwnd, BOOL bAdd);
 // パターンデータを読み込む。
-BOOL XgLoadPatterns(LPCWSTR pszFileName, patterns_t& patterns, std::wstring *pComments = nullptr);
+BOOL XgLoadPatterns(LPCWSTR pszFileName, patterns_t& patterns, QStringW *pComments = nullptr);
 
 //////////////////////////////////////////////////////////////////////////////
 // ボックス。
@@ -1535,13 +1539,13 @@ BOOL XgDoLoadBoxJson(const json& boxes);
 // ボックスJSONを保存。
 BOOL XgDoSaveBoxJson(json& j);
 // ボックスJSONを読み込む。
-BOOL XgLoadXdBox(const std::wstring& line);
+BOOL XgLoadXdBox(const QStringW& line);
 // XDファイルからボックスを読み込む。
 BOOL XgWriteXdBoxes(FILE *fout);
 // ボックス群を文字列化する。
-std::wstring XgStringifyBoxes(const boxes_t& boxes);
+QStringW XgStringifyBoxes(const boxes_t& boxes);
 // ボックス群を逆文字列化する。
-void XgDeStringifyBoxes(const std::wstring& boxes);
+void XgDeStringifyBoxes(const QStringW& boxes);
 
 //////////////////////////////////////////////////////////////////////////////
 

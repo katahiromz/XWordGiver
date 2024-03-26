@@ -55,4 +55,4 @@ extern XG_VIEW_MODE xg_nViewMode;
 // 黒マス画像。
 extern HBITMAP xg_hbmBlackCell;
 extern HENHMETAFILE xg_hBlackCellEMF;
-extern std::wstring xg_strBlackCellImage;
+extern QStringW xg_strBlackCellImage;
