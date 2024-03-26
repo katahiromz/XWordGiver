@@ -12,7 +12,7 @@ public:
     XG_ColorBox m_hwndBlack;
     XG_ColorBox m_hwndMarked;
 
-    QStringW m_strAutoFile;
+    XGStringW m_strAutoFile;
     BOOL m_bImport = FALSE;
     BOOL m_bUpdating = FALSE;
 

@@ -5,7 +5,7 @@
 class XG_PictureBoxDialog : public XG_Dialog
 {
 public:
-    QStringW m_strFile;
+    XGStringW m_strFile;
     HBITMAP m_hbm = nullptr;
     HENHMETAFILE m_hEMF = nullptr;
 
@@ -68,7 +68,7 @@ public:
         HWND hCmb1 = GetDlgItem(hwnd, cmb1);
 
         // 画像ファイルリストを取得する。
-        std::vector<QStringW> items;
+        std::vector<XGStringW> items;
         XgGetFileManager()->get_list(items);
         for (auto& item : items) {
             ComboBox_AddString(hCmb1, item.c_str());

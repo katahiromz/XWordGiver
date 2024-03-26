@@ -7,9 +7,9 @@
 class XG_WordListDialog : public XG_Dialog
 {
 public:
-    inline static std::vector<QStringW> s_words;
-    inline static std::unordered_set<QStringW> s_wordset;
-    inline static QStringW s_str_word_list;
+    inline static std::vector<XGStringW> s_words;
+    inline static std::unordered_set<XGStringW> s_wordset;
+    inline static XGStringW s_str_word_list;
 
     RECT m_rcBitmap;
     SIZE m_sizBitmap;
@@ -73,15 +73,15 @@ public:
             XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_OUTOFMEMORY), nullptr, MB_ICONERROR);
             return FALSE;
         }
-        QStringW str = psz;
+        XGStringW str = psz;
         delete[] psz;
 
         // 単語リストと辞書を取得する。
-        std::vector<QStringW> items;
+        std::vector<XGStringW> items;
         mstr_split(items, str, L" \t\r\n\x3000");
         for (auto& item : items) {
             // ハイフン、アポストロフィ、ピリオド、カンマ、カッコを取り除く。
-            QStringW tmp;
+            XGStringW tmp;
             for (auto ch : item) {
                 if (ch == L'-' || ch == 0xFF0D)
                     continue;
@@ -128,12 +128,12 @@ public:
 
         using namespace crossword_generation;
 
-        QStringW nonconnected;
+        XGStringW nonconnected;
         s_wordset = { s_words.begin(), s_words.end() };
 
         // すべてでなくてもよい？
         if (::IsDlgButtonChecked(hwnd, chx1) == BST_CHECKED) {
-            while (!check_connectivity<wchar_t>(s_wordset, nonconnected)) {
+            while (!check_connectivity(s_wordset, nonconnected)) {
                 // 接続されていない単語を削除。
                 s_wordset.erase(nonconnected);
                 s_words.erase(std::remove(s_words.begin(), s_words.end(), nonconnected), s_words.end());
@@ -146,7 +146,7 @@ public:
             }
         }
 
-        if (!check_connectivity<wchar_t>(s_wordset, nonconnected)) {
+        if (!check_connectivity(s_wordset, nonconnected)) {
             // 連結されていない。エラー。
             WCHAR szText[256];
             StringCchPrintfW(szText, _countof(szText), XgLoadStringDx1(IDS_NOTCONNECTABLE),

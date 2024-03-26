@@ -79,7 +79,7 @@ public:
             }
             // 保存先をセットする。
             {
-                QStringW strDir = szFile;
+                XGStringW strDir = szFile;
                 xg_str_trim(strDir);
                 {
                     auto end = xg_dirs_save_to.end();

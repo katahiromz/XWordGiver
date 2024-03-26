@@ -26,7 +26,7 @@ public:
     inline static HFONT                       xg_hCandsUIFont = nullptr;
 
     // 候補。
-    inline static std::vector<QStringW>   xg_vecCandidates;
+    inline static std::vector<XGStringW>   xg_vecCandidates;
 
     // 候補ボタン。
     inline static std::vector<HWND>           xg_ahwndCandButtons;
@@ -61,7 +61,7 @@ public:
 
         // パターンを取得する。
         int lo, hi;
-        QStringW pattern;
+        XGStringW pattern;
         bool left_black, right_black;
         if (xg_bCandVertical) {
             lo = hi = xg_iCandPos;
@@ -108,7 +108,7 @@ public:
 
         // 候補を取得する。
         int nSkip = 0;
-        std::vector<QStringW> cands, cands2;
+        std::vector<XGStringW> cands, cands2;
         XgGetCandidatesAddBlack<false>(cands, pattern, nSkip, left_black, right_black);
         XgGetCandidatesAddBlack<true>(cands2, pattern, nSkip, left_black, right_black);
         cands.insert(cands.end(), cands2.begin(), cands2.end());
@@ -120,7 +120,7 @@ public:
         }
 
         // ソートして一意化。短い方を優先する。
-        std::sort(cands.begin(), cands.end(), [](const QStringW& x, const QStringW& y) noexcept {
+        std::sort(cands.begin(), cands.end(), [](const XGStringW& x, const XGStringW& y) noexcept {
             if (x.size() == y.size())
                 return x < y;
             return x.size() < y.size();
@@ -258,7 +258,7 @@ public:
         {
             MPoint pt;
             for (size_t i = 0; i < xg_vecCandidates.size(); ++i) {
-                const QStringW& strLabel = xg_vecCandidates[i];
+                const XGStringW& strLabel = xg_vecCandidates[i];
 
                 MSize siz;
                 ::GetTextExtentPoint32W(hdc, strLabel.data(),
@@ -494,9 +494,9 @@ public:
     }
 
     // 候補を適用する。
-    void XgApplyCandidate(XG_Board& xword, const QStringW& strCand)
+    void XgApplyCandidate(XG_Board& xword, const XGStringW& strCand)
     {
-        QStringW cand = XgNormalizeString(strCand);
+        XGStringW cand = XgNormalizeString(strCand);
 
         int lo, hi;
         if (xg_bCandVertical) {

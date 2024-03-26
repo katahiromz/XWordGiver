@@ -49,7 +49,7 @@ struct XG_UndoData_SetAt : XG_UndoData {
 
 struct XG_UndoData_MarksUpdated : XG_UndoData {
     std::vector<XG_Pos> vMarks;
-    QStringW strMarked;
+    XGStringW strMarked;
 
     ~XG_UndoData_MarksUpdated() override
     {
@@ -101,7 +101,7 @@ struct XG_UndoData_ViewMode : XG_UndoData {
 //////////////////////////////////////////////////////////////////////////////
 
 struct XG_UndoData_Boxes : XG_UndoData {
-    QStringW boxes;
+    XGStringW boxes;
 
     ~XG_UndoData_Boxes() override
     {
@@ -127,12 +127,12 @@ struct XG_UndoData_SetAll : XG_UndoData {
     bool                        bSolved;
     bool                        bHintsAdded;
     bool                        bShowAnswer;
-    QStringW                strHeader;
-    QStringW                strNotes;
-    QStringW                strFileName;
+    XGStringW                strHeader;
+    XGStringW                strNotes;
+    XGStringW                strFileName;
     bool                        bNumCro;
     XG_VIEW_MODE                nViewMode;
-    QStringW                boxes;
+    XGStringW                boxes;
 
     ~XG_UndoData_SetAll() override
     {

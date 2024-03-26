@@ -18,7 +18,7 @@ public:
     {
         using namespace crossword_generation;
         reset();
-        from_words_t<wchar_t, false>::do_generate(XG_WordListDialog::s_wordset);
+        from_words_t<XGStringW, false>::do_generate(XG_WordListDialog::s_wordset);
         // タイマーをセットする。
         ::SetTimer(hwnd, uTimerID, INTERVAL, nullptr);
     }

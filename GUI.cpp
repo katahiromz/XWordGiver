@@ -99,7 +99,7 @@ HIMAGELIST xg_hImageList = nullptr;
 HIMAGELIST xg_hGrayedImageList = nullptr;
 
 // 辞書ファイルの場所（パス）。
-QStringW xg_dict_name;
+XGStringW xg_dict_name;
 dicts_t xg_dicts;
 
 // ヒントに追加があったか？
@@ -137,7 +137,7 @@ BOOL xg_bMainWndMaximized = FALSE;
 BOOL xg_bShowDoubleFrameLetters = TRUE;
 
 // 保存先のパスのリスト。
-std::deque<QStringW> xg_dirs_save_to;
+std::deque<XGStringW> xg_dirs_save_to;
 
 // 連続生成の場合、問題を生成する数。
 int xg_nNumberToGenerate = 16;
@@ -187,7 +187,7 @@ void XgSetModified(BOOL bModified, LPCSTR file, int line)
 LANGID xg_UILangID = 0;
 
 // 最近使ったファイルのリスト。
-std::vector<QStringW> xg_recently_used_files;
+std::vector<XGStringW> xg_recently_used_files;
 
 #define XG_MAX_RECENT 10 // 最近使ったファイルは10個まで。
 
@@ -195,7 +195,7 @@ std::vector<QStringW> xg_recently_used_files;
 void XgUpdateRecentlyUsed(LPCWSTR pszFile)
 {
     // 安全に操作するため、いったん格納。
-    QStringW file = pszFile;
+    XGStringW file = pszFile;
     // 重複は許さない。
     for (size_t i = 0; i < xg_recently_used_files.size(); ++i)
     {
@@ -350,9 +350,9 @@ bool XgConvertBoxes(void)
 }
 
 // ボックス群を文字列化する。
-QStringW XgStringifyBoxes(const boxes_t& boxes)
+XGStringW XgStringifyBoxes(const boxes_t& boxes)
 {
-    QStringW ret;
+    XGStringW ret;
 
     for (auto& box : xg_boxes) {
         // ボックスの内部データを取り出す。
@@ -378,13 +378,13 @@ QStringW XgStringifyBoxes(const boxes_t& boxes)
 }
 
 // ボックス群を逆文字列化する。
-void XgDeStringifyBoxes(const QStringW& boxes)
+void XgDeStringifyBoxes(const XGStringW& boxes)
 {
     // ボックスをいったん破棄する。
     XgDeleteBoxes();
 
     // "\n"で文字列を分割する。
-    std::vector<QStringW> strs;
+    std::vector<XGStringW> strs;
     mstr_split(strs, boxes, L"\n");
 
     for (auto& str : strs) {
@@ -441,9 +441,9 @@ void XgDeStringifyBoxes(const QStringW& boxes)
 }
 
 // 使われている画像を取得する。
-std::unordered_set<QStringW> XgGetUsedImages(void)
+std::unordered_set<XGStringW> XgGetUsedImages(void)
 {
-    std::unordered_set<QStringW> ret;
+    std::unordered_set<XGStringW> ret;
     for (auto& box : xg_boxes) {
         if (box->m_type == L"pic")
         {
@@ -501,16 +501,16 @@ BOOL XgDoSaveBoxJson(json& j)
 }
 
 // ボックスXDを読み込む。
-BOOL XgLoadXdBox(const QStringW& line)
+BOOL XgLoadXdBox(const XGStringW& line)
 {
     if (line.find(L"Box:") != 0)
         return FALSE;
 
-    QStringW str;
+    XGStringW str;
     str = line.substr(4);
     xg_str_trim(str);
 
-    QStringW type;
+    XGStringW type;
     if (str.find(L"{{") != str.npos && str.find(L"}}") != str.npos) {
         const size_t index0 = str.find(L"{{type:");
         const size_t index1 = str.find(L"}}", index0 + 7);
@@ -1356,7 +1356,7 @@ bool __fastcall XgCheckCrossWord(HWND hwnd, bool check_words = true)
 
     // クロスワードに含まれる単語のチェック。
     XG_Pos pos;
-    std::vector<QStringW> vNotFoundWords;
+    std::vector<XGStringW> vNotFoundWords;
     const XG_EpvCode code = xg_xword.EveryPatternValid1(vNotFoundWords, pos, xg_bNoAddBlack);
     if (code == xg_epv_PATNOTMATCH) {
         if (check_words) {
@@ -1460,7 +1460,7 @@ bool XgOpenHintsByNotepad(HWND /*hwnd*/, bool bShowAnswer)
 {
     WCHAR szPath[MAX_PATH];
     WCHAR szCmdLine[MAX_PATH * 2];
-    QStringW str;
+    XGStringW str;
     DWORD cb;
     STARTUPINFOW si;
     PROCESS_INFORMATION pi;
@@ -1569,10 +1569,10 @@ void XgCopyWordList(HWND hwnd)
     const XG_Board *xw = (xg_bSolved ? &xg_solution : &xg_xword);
 
     // 全単語を取得。空白を含む単語は無視。
-    std::vector<QStringW> words;
+    std::vector<XGStringW> words;
     for (int iRow = 0; iRow < xg_nRows; ++iRow) {
         for (int jCol = 0; jCol < xg_nCols; ++jCol) {
-            QStringW str;
+            XGStringW str;
             str = xw->GetPatternV(XG_Pos(iRow, jCol));
             if (str.size() >= 2 && str.find(ZEN_SPACE) == str.npos) {
                 words.push_back(str);
@@ -1590,7 +1590,7 @@ void XgCopyWordList(HWND hwnd)
     words.erase(last, words.end());
 
     // 改行区切りにする。
-    QStringW str = mstr_join(words, L"\r\n");
+    XGStringW str = mstr_join(words, L"\r\n");
     str += L"\r\n";
 
     // 全角英数を半角英数にする。
@@ -1724,7 +1724,7 @@ static void XgPrintIt(HDC hdc, PRINTDLGW* ppd, bool bPrintAnswer)
             continue;
 
         size_t ich, ichOld;
-        QStringW str, strMarkWord, strHints;
+        XGStringW str, strMarkWord, strHints;
         int yLast = 0;
 
         // 論理ピクセルのアスペクト比を取得する。
@@ -1838,7 +1838,7 @@ static void XgPrintIt(HDC hdc, PRINTDLGW* ppd, bool bPrintAnswer)
             rc = { cxPaper / 8, cyPaper / 2, cxPaper * 7 / 8, cyPaper * 8 / 9 };
             for (ichOld = ich = 0; rc.bottom <= cyPaper * 8 / 9; ichOld = ich + 1) {
                 ich = strHints.find(L"\n", ichOld);
-                if (ich == QStringW::npos)
+                if (ich == XGStringW::npos)
                     break;
                 str = strHints.substr(0, ich);  // 一行取り出す。
                 rc = { cxPaper / 8, yLast, cxPaper * 7 / 8, cyPaper * 8 / 9 };
@@ -1847,7 +1847,7 @@ static void XgPrintIt(HDC hdc, PRINTDLGW* ppd, bool bPrintAnswer)
             }
             // 最後の行を描画する。
             rc = { cxPaper / 8, yLast, cxPaper * 7 / 8, cyPaper * 8 / 9 };
-            if (ich == QStringW::npos) {
+            if (ich == XGStringW::npos) {
                 str = strHints;
                 ::DrawTextW(hdc, str.data(), static_cast<int>(str.size()), &rc,
                     DT_LEFT | DT_TOP | DT_NOCLIP | DT_NOPREFIX | DT_WORDBREAK);
@@ -2021,7 +2021,7 @@ BOOL XgImportLooks(HWND hwnd, LPCWSTR pszFileName)
     {
         std::vector<BYTE> data;
         XgHexToBin(data, szText);
-        QStringW str;
+        XGStringW str;
         str.resize(data.size() / sizeof(WCHAR));
         memcpy(&str[0], data.data(), data.size());
         xg_strDoubleFrameLetters = str;
@@ -2054,7 +2054,7 @@ BOOL XgExportLooks(HWND hwnd, LPCWSTR pszFileName)
     // もし黒マス画像が指定されていれば
     if (xg_strBlackCellImage.size() && xg_strBlackCellImage != XgLoadStringDx1(IDS_NONE))
     {
-        QStringW converted = xg_strBlackCellImage;
+        XGStringW converted = xg_strBlackCellImage;
         XgGetFileManager()->convert(converted);
         WritePrivateProfileStringW(L"Looks", L"BlackCellImage", converted.c_str(), pszFileName);
 
@@ -2096,7 +2096,7 @@ BOOL XgExportLooks(HWND hwnd, LPCWSTR pszFileName)
 
     // 二重マス文字。
     {
-        QStringW str = xg_strDoubleFrameLetters;
+        XGStringW str = xg_strDoubleFrameLetters;
         str = XgBinToHex(str.c_str(), str.size() * sizeof(WCHAR));
         WritePrivateProfileStringW(L"Looks", L"DoubleFrameLetters", str.c_str(), pszFileName);
     }
@@ -2106,7 +2106,7 @@ BOOL XgExportLooks(HWND hwnd, LPCWSTR pszFileName)
 }
 
 // クリップボードにテキストをコピーする。
-BOOL XgSetClipboardUnicodeText(HWND hwnd, const QStringW& str) noexcept
+BOOL XgSetClipboardUnicodeText(HWND hwnd, const XGStringW& str) noexcept
 {
     // ヒープからメモリを確保する。
     const auto cb = (str.size() + 1) * sizeof(WCHAR);
@@ -2262,7 +2262,7 @@ bool __fastcall XgDoSaveFiles(HWND hwnd, LPCWSTR pszFile)
     XgGetFileManager()->set_looks(L"");
 
     // 関連画像ファイルをパス名を変換して保存する。
-    QStringW files_dir;
+    XGStringW files_dir;
     XgGetFileManager()->get_files_dir(files_dir);
     CreateDirectoryW(files_dir.c_str(), nullptr);
     for (auto& box : xg_boxes) {
@@ -2413,9 +2413,9 @@ BOOL XgDoConfirmSave(HWND hwnd)
         return TRUE;
 
     // アプリ名。
-    QStringW strAppName = XgLoadStringDx2(IDS_APPNAME);
+    XGStringW strAppName = XgLoadStringDx2(IDS_APPNAME);
     // ファイルタイトル。
-    QStringW strFileName;
+    XGStringW strFileName;
     if (xg_strFileName.empty())
         strFileName = XgLoadStringDx1(IDS_UNTITLED);
     else
@@ -2609,7 +2609,7 @@ BOOL XgOnLoad(HWND hwnd, LPCWSTR pszFile, LPPOINT ppt)
 
         if (bText) {
             // テキストボックス。
-            QStringW strText;
+            XGStringW strText;
             if (XgReadTextFileAll(szFile, strText)) {
                 xg_str_trim_right(strText);
                 auto ptr = std::make_shared<XG_TextBoxWindow>(i1, j1, i2, j2);
@@ -3659,7 +3659,7 @@ static void XgOnPointSymmetryCheck(HWND hwnd)
 // クリップボードにクロスワードをコピー。
 void XgCopyBoard(HWND hwnd)
 {
-    QStringW str;
+    XGStringW str;
 
     // コピーする盤を選ぶ。
     XG_Board *pxw = (xg_bSolved && xg_bShowAnswer) ? &xg_solution : &xg_xword;
@@ -3846,7 +3846,7 @@ void __fastcall XgCopyMarkWord(HWND hwnd)
 
     // 二重マス単語のテキストを取得。
     HGLOBAL hGlobal = nullptr;
-    QStringW strMarkWord;
+    XGStringW strMarkWord;
     if (XgGetMarkWord(xw, strMarkWord)) {
         for (auto& wch : strMarkWord) {
             if (ZEN_LARGE_A <= wch && wch <= ZEN_LARGE_Z)
@@ -3881,9 +3881,9 @@ void __fastcall XgCopyMarkWord(HWND hwnd)
     }
 }
 
-QStringW XgGetClipboardUnicodeText(HWND hwnd)
+XGStringW XgGetClipboardUnicodeText(HWND hwnd)
 {
-    QStringW str;
+    XGStringW str;
 
     // クリップボードを開く。
     HGLOBAL hGlobal;
@@ -3903,7 +3903,7 @@ QStringW XgGetClipboardUnicodeText(HWND hwnd)
 }
 
 // クリップボードから貼り付け。
-bool XgPasteBoard(HWND hwnd, const QStringW& str)
+bool XgPasteBoard(HWND hwnd, const XGStringW& str)
 {
     // 文字列が空じゃないか？
     if (str.empty())
@@ -3943,21 +3943,21 @@ bool XgPasteBoard(HWND hwnd, const QStringW& str)
 }
 
 // クリップボードから貼り付け2。
-bool XgPasteBoard2(HWND hwnd, const QStringW& str)
+bool XgPasteBoard2(HWND hwnd, const XGStringW& str)
 {
     // 文字列が空じゃないか？
     if (str.empty())
         return false;
 
     // 前後の改行コードを削除する。
-    QStringW str2 = str;
+    XGStringW str2 = str;
     mstr_trim(str2, L"\r\n");
 
     // 制御文字CRを取り除く。
     xg_str_replace_all(str2, L"\r", L"");
 
     // 改行で分割する。
-    std::vector<QStringW> lines;
+    std::vector<XGStringW> lines;
     mstr_split(lines, str2, L"\n");
 
     // 必要ならばタブ文字の前後に空白を挿入する。
@@ -4002,14 +4002,14 @@ bool XgPasteBoard2(HWND hwnd, const QStringW& str)
     }
 
     // 文字列の再構築。
-    str2 = ZEN_ULEFT + QStringW(cColumns, ZEN_HLINE) + ZEN_URIGHT + L"\r\n";
+    str2 = ZEN_ULEFT + XGStringW(cColumns, ZEN_HLINE) + ZEN_URIGHT + L"\r\n";
     for (auto& line : lines) {
         str2 += ZEN_VLINE;
         str2 += line;
         str2 += ZEN_VLINE;
         str2 += L"\r\n";
     }
-    str2 += ZEN_LLEFT + QStringW(cColumns, ZEN_HLINE) + ZEN_LRIGHT + L"\r\n";
+    str2 += ZEN_LLEFT + XGStringW(cColumns, ZEN_HLINE) + ZEN_LRIGHT + L"\r\n";
 
     // 貼り付け。
     return XgPasteBoard(hwnd, str2);
@@ -4025,7 +4025,7 @@ void __fastcall XgCopyHintsStyle0(HWND hwnd, int hint_type)
     }
 
     // クロスワードの文字列を取得する。
-    QStringW str;
+    XGStringW str;
     XG_HintsWnd::UpdateHintData(); // ヒントに変更があれば、更新する。
     XgGetHintsStr(xg_solution, str, hint_type, false);
     xg_str_trim(str);
@@ -4044,7 +4044,7 @@ void __fastcall XgCopyHintsStyle1(HWND hwnd, int hint_type)
     }
 
     // クロスワードの文字列を取得する。
-    QStringW str;
+    XGStringW str;
     XG_HintsWnd::UpdateHintData(); // ヒントに変更があれば、更新する。
     XgGetHintsStr(xg_solution, str, hint_type, false);
     xg_str_trim(str);
@@ -4055,7 +4055,7 @@ void __fastcall XgCopyHintsStyle1(HWND hwnd, int hint_type)
     xg_str_replace_all(str, XgLoadStringDx1(IDS_KEYRIGHT), XgLoadStringDx2(IDS_DOT));
 
     // HTMLデータ (UTF-8)を用意する。
-    QStringW html;
+    XGStringW html;
     XgGetHintsStr(xg_solution, html, hint_type + 3, false);
     xg_str_trim(html);
     std::string htmldata = XgMakeClipHtmlData(html,
@@ -4184,7 +4184,7 @@ void XgDoUpdateDictMenu(HMENU hDictMenu)
     WCHAR szText[MAX_PATH];
     for (const auto& entry : xg_dicts)
     {
-        QStringW text;
+        XGStringW text;
         if (entry.m_friendly_name == entry.m_filename)
         {
             text = PathFindFileNameW(entry.m_filename.c_str());
@@ -4587,7 +4587,7 @@ void __fastcall MainWnd_OnInitMenu(HWND /*hwnd*/, HMENU hMenu)
     // 最近使ったファイルのメニュー項目を新しく追加。
     int id = ID_RECENT_00, iItem = 0;
     for (auto& item : xg_recently_used_files) {
-        QStringW str;
+        XGStringW str;
         str += L'&';
         str += static_cast<WCHAR>(L'0' + iItem);
         str += L'\t';
@@ -4615,7 +4615,7 @@ void __fastcall XgUpdateStatusBar(HWND hwnd)
     SendMessageW(xg_hStatusBar, SB_SETPARTS, 3, reinterpret_cast<LPARAM>(anWidth.data()));
 
     // タテ入力かヨコ入力かどうか表示する。
-    QStringW str;
+    XGStringW str;
     if (xg_bVertInput) {
         str = XgLoadStringDx1(IDS_VINPUT3);
     } else {
@@ -4817,8 +4817,8 @@ LOGFONTW *XgGetUIFont(void)
         LPWSTR pch = wcsrchr(szData, L',');
         if (pch) {
             *pch++ = 0;
-            QStringW name(szData);
-            QStringW size(pch);
+            XGStringW name(szData);
+            XGStringW size(pch);
             xg_str_trim(name);
             xg_str_trim(size);
 
@@ -4829,7 +4829,7 @@ LOGFONTW *XgGetUIFont(void)
             s_lf.lfHeight = -MulDiv(point_size, ::GetDeviceCaps(hdc, LOGPIXELSY), 72);
             ::DeleteDC(hdc);
         } else {
-            QStringW name(szData);
+            XGStringW name(szData);
             xg_str_trim(name);
 
             StringCchCopy(s_lf.lfFaceName, _countof(s_lf.lfFaceName), name.data());
@@ -4851,7 +4851,7 @@ void MainWnd_OnSettings(HWND hwnd)
 // テーマが変更された。
 void XgUpdateTheme(HWND hwnd)
 {
-    std::unordered_set<QStringW> priority, forbidden;
+    std::unordered_set<XGStringW> priority, forbidden;
     XgParseTheme(priority, forbidden, xg_strDefaultTheme);
     xg_bThemeModified = (priority != xg_priority_tags || forbidden != xg_forbidden_tags);
 
@@ -5022,7 +5022,7 @@ void __fastcall MainWnd_OnFlipVH(HWND hwnd)
     XgUpdateImage(hwnd, 0, 0);
 }
 
-QStringW URL_encode(const QStringW& url)
+XGStringW URL_encode(const XGStringW& url)
 {
     std::string str;
 
@@ -5034,7 +5034,7 @@ QStringW URL_encode(const QStringW& url)
     len = strlen(str.c_str());
     str.resize(len);
 
-    QStringW ret;
+    XGStringW ret;
     WCHAR buf[4];
     static const WCHAR s_hex[] = L"0123456789ABCDEF";
     for (auto ch : str)
@@ -5073,8 +5073,8 @@ QStringW URL_encode(const QStringW& url)
 // ウェブ検索。
 void XgDoWebSearch(HWND hwnd, LPCWSTR str)
 {
-    QStringW query = XgLoadStringDx1(IDS_GOOGLESEARCH);
-    QStringW raw = str;
+    XGStringW query = XgLoadStringDx1(IDS_GOOGLESEARCH);
+    XGStringW raw = str;
 
     for (auto& wch : raw) {
         if (ZEN_LARGE_A <= wch && wch <= ZEN_LARGE_Z)
@@ -5103,7 +5103,7 @@ void XgDoWebSearch(HWND hwnd, LPCWSTR str)
         break;
     }
 
-    QStringW encoded = URL_encode(raw.c_str());
+    XGStringW encoded = URL_encode(raw.c_str());
     query += encoded;
 
     ::ShellExecuteW(hwnd, nullptr, query.c_str(), nullptr, nullptr, SW_SHOWNORMAL);
@@ -5119,7 +5119,7 @@ void __fastcall MainWnd_OnCopyPattern(HWND hwnd, BOOL bVert)
     }
 
     // パターンを取得する。
-    QStringW pattern;
+    XGStringW pattern;
     if (bVert) {
         pattern = pxword->GetPatternV(xg_caret_pos);
     } else {
@@ -5161,7 +5161,7 @@ void MainWnd_OnCopyCharSet(HWND hwnd)
         }
     }
 
-    QStringW str;
+    XGStringW str;
     for (auto ch : multiset) {
         if (str.size())
             str += L" ";
@@ -5191,7 +5191,7 @@ void __fastcall XgOnlineDict(HWND hwnd, BOOL bVert)
     }
 
     // パターンを取得する。
-    QStringW pattern;
+    XGStringW pattern;
     if (bVert) {
         pattern = pxword->GetPatternV(xg_caret_pos);
     } else {
@@ -5473,7 +5473,7 @@ void XgGenerateFromWordList(HWND hwnd)
     xg_nRules |= RULE_DONTDIVIDE;
     XgUpdateRules(xg_hMainWnd);
     // 解をセットする。
-    auto& solution = from_words_t<wchar_t, false>::s_solution;
+    auto& solution = from_words_t<XGStringW, false>::s_solution;
     xg_bSolved = true;
     xg_bCheckingAnswer = false;
     xg_bShowAnswer = true;
@@ -6338,9 +6338,9 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT /*codeNo
         break;
     case ID_PASTE:  // 貼り付け。
         if (::GetForegroundWindow() == xg_hMainWnd) {
-            QStringW str = XgGetClipboardUnicodeText(hwnd);
-            if (str.find(ZEN_ULEFT) != QStringW::npos &&
-                str.find(ZEN_LRIGHT) != QStringW::npos)
+            XGStringW str = XgGetClipboardUnicodeText(hwnd);
+            if (str.find(ZEN_ULEFT) != XGStringW::npos &&
+                str.find(ZEN_LRIGHT) != XGStringW::npos)
             {
                 auto sa1 = std::make_shared<XG_UndoData_SetAll>();
                 auto sa2 = std::make_shared<XG_UndoData_SetAll>();
@@ -6865,7 +6865,7 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT /*codeNo
             auto sa2 = std::make_shared<XG_UndoData_SetAll>();
             sa1->Get();
             {
-                QStringW str;
+                XGStringW str;
                 XG_Board *pxw = (xg_bSolved && xg_bShowAnswer) ? &xg_solution : &xg_xword;
                 pxw->GetString(str);
                 XgPasteBoard(hwnd, str);
@@ -7847,7 +7847,7 @@ LRESULT CALLBACK XgCtrlAMessageProc(int nCode, WPARAM wParam, LPARAM lParam) noe
 void XgDoTests(void)
 {
 #ifndef NDEBUG
-    QStringW str;
+    XGStringW str;
 
     // xg_str_trim
     str = L"  \t";

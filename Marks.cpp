@@ -12,10 +12,10 @@
 std::vector<XG_Pos>      xg_vMarks;
 
 // 二重マス単語候補。
-std::vector<QStringW>     xg_vMarkedCands;
+std::vector<XGStringW>     xg_vMarkedCands;
 
 // 二重マス単語。
-QStringW xg_strMarked;
+XGStringW xg_strMarked;
 
 // 選択中の二重マス単語の候補のインデックス。
 int xg_iMarkedCand = -1;
@@ -23,7 +23,7 @@ int xg_iMarkedCand = -1;
 //////////////////////////////////////////////////////////////////////////////
 
 // マーク文字列を取得する。
-void __fastcall XgGetStringOfMarks(QStringW& str)
+void __fastcall XgGetStringOfMarks(XGStringW& str)
 {
     WCHAR sz[64];
     str.clear();
@@ -43,7 +43,7 @@ void __fastcall XgGetStringOfMarks(QStringW& str)
 }
 
 // マーク文字列を取得する2。
-void __fastcall XgGetStringOfMarks2(QStringW& str)
+void __fastcall XgGetStringOfMarks2(XGStringW& str)
 {
     WCHAR sz[64];
     str.clear();
@@ -86,7 +86,7 @@ int __fastcall XgGetMarked(int i, int j) noexcept
 void __fastcall XgMarkUpdate(void)
 {
     WCHAR sz[64];
-    QStringW str;
+    XGStringW str;
 
     // すでに解があるかどうかによって切り替え。
     const XG_Board *xw = (xg_bSolved ? &xg_solution : &xg_xword);
@@ -220,7 +220,7 @@ void __fastcall XgSetStringOfMarks(LPCWSTR psz)
 }
 
 // 二重マス単語を取得する。
-bool __fastcall XgGetMarkWord(const XG_Board *xw, QStringW& str)
+bool __fastcall XgGetMarkWord(const XG_Board *xw, XGStringW& str)
 {
     // 初期化する。
     str.clear();
@@ -259,7 +259,7 @@ bool __fastcall XgGetMarkedCandidates(void)
     // xg_dict_1に登録されている単語について繰り返す。
     for (const auto& data : xg_dict_1) {
         // 単語を取り出す。2文字以下は無視。
-        const QStringW& word = data.m_word;
+        const XGStringW& word = data.m_word;
         if (word.size() <= 2)
             continue;
 
@@ -314,7 +314,7 @@ failed:;
     // xg_dict_2に登録されている単語について繰り返す。
     for (const auto& data : xg_dict_2) {
         // 単語を取り出す。2文字以下は無視。
-        const QStringW& word = data.m_word;
+        const XGStringW& word = data.m_word;
         if (word.size() <= 2)
             continue;
 
@@ -368,7 +368,7 @@ failed_2:;
 
     // ソート・一意化する。
     std::sort(xg_vMarkedCands.begin(), xg_vMarkedCands.end(),
-        [](const QStringW& x, const QStringW& y) noexcept {
+        [](const XGStringW& x, const XGStringW& y) noexcept {
             if (x.size() > y.size())
                 return true;
             if (x.size() < y.size())
@@ -385,7 +385,7 @@ failed_2:;
 }
 
 // 二重マス単語を設定する。
-BOOL __fastcall XgSetMarkedWord(const QStringW& str, WCHAR *pchNotFound)
+BOOL __fastcall XgSetMarkedWord(const XGStringW& str, WCHAR *pchNotFound)
 {
     auto marks = xg_vMarks;
     auto marked = xg_strMarked;
@@ -393,7 +393,7 @@ BOOL __fastcall XgSetMarkedWord(const QStringW& str, WCHAR *pchNotFound)
     xg_vMarks.clear();
 
     // 二重マス単語と文字マスの情報に従って二重マスを設定する。
-    QStringW word;
+    XGStringW word;
     for (const auto ch : str) {
         const int m = rand() % xg_nRows;
         const int n = rand() % xg_nCols;

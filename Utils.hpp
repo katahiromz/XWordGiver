@@ -33,43 +33,43 @@ bool __fastcall XgGetPathOfShortcutW(LPCWSTR pszLnkFile, LPWSTR pszPath);
 #define XG_WHITE_SPACES  L" \t\r\n\x3000"
 
 // 文字列の前後の空白を取り除く。
-static inline void __fastcall xg_str_trim(QStringW& str)
+static inline void __fastcall xg_str_trim(XGStringW& str)
 {
     const size_t i = str.find_first_not_of(XG_WHITE_SPACES);
     const size_t j = str.find_last_not_of(XG_WHITE_SPACES);
-    if (i != QStringW::npos)
+    if (i != XGStringW::npos)
         str = str.substr(i, j - i + 1);
     else
         str.clear();
 }
 
 // 文字列の右側の空白を取り除く。
-static inline void __fastcall xg_str_trim_right(QStringW& str)
+static inline void __fastcall xg_str_trim_right(XGStringW& str)
 {
     const size_t j = str.find_last_not_of(XG_WHITE_SPACES);
-    if (j != QStringW::npos)
+    if (j != XGStringW::npos)
         str = str.substr(0, j + 1);
     else
         str.clear();
 }
 
 // 文字列をエスケープする。
-QStringW xg_str_escape(const QStringW& str);
+XGStringW xg_str_escape(const XGStringW& str);
 // 文字列をアンエスケープする。
-QStringW xg_str_unescape(const QStringW& str);
+XGStringW xg_str_unescape(const XGStringW& str);
 
 // 文字列を引用する。
-static inline QStringW xg_str_quote(const QStringW& str)
+static inline XGStringW xg_str_quote(const XGStringW& str)
 {
-    QStringW ret = L"\"";
+    XGStringW ret = L"\"";
     ret += xg_str_escape(str);
     ret += L"\"";
     return ret;
 }
 // 文字列を逆引用する。
-static inline QStringW xg_str_unquote(const QStringW& str)
+static inline XGStringW xg_str_unquote(const XGStringW& str)
 {
-    QStringW ret;
+    XGStringW ret;
     ret = str;
     xg_str_trim(ret);
     if (ret.empty())
@@ -82,10 +82,10 @@ static inline QStringW xg_str_unquote(const QStringW& str)
 }
 
 // 文字列を置換する。
-bool __fastcall xg_str_replace_all(QStringW &s, const QStringW& from, const QStringW& to);
+bool __fastcall xg_str_replace_all(XGStringW &s, const XGStringW& from, const XGStringW& to);
 
 // 文字列からマルチセットへ変換する。
-void __fastcall xg_str_to_multiset(std::unordered_multiset<WCHAR>& mset, const QStringW& str);
+void __fastcall xg_str_to_multiset(std::unordered_multiset<WCHAR>& mset, const XGStringW& str);
 
 // ベクターからマルチセットへ変換する。
 void __fastcall xg_vec_to_multiset(std::unordered_multiset<WCHAR>& mset, const std::vector<WCHAR>& str);
@@ -95,7 +95,7 @@ bool __fastcall xg_submultiseteq(const std::unordered_multiset<WCHAR>& ms1,
                                  const std::unordered_multiset<WCHAR>& ms2);
 
 // UTF-8 -> Unicode.
-QStringW __fastcall XgUtf8ToUnicode(const std::string& ansi);
+XGStringW __fastcall XgUtf8ToUnicode(const std::string& ansi);
 
 // ダイアログを中央によせる関数。
 void __fastcall XgCenterDialog(HWND hwnd) noexcept;
@@ -112,19 +112,19 @@ XgCenterMessageBoxIndirectW(LPMSGBOXPARAMS lpMsgBoxParams) noexcept;
 bool __fastcall XgCanWriteFile(const WCHAR *pszFile);
 
 // Unicode -> UTF8
-std::string XgUnicodeToUtf8(const QStringW& wide);
+std::string XgUnicodeToUtf8(const XGStringW& wide);
 
 // ANSI -> Unicode
-QStringW XgAnsiToUnicode(const std::string& ansi);
+XGStringW XgAnsiToUnicode(const std::string& ansi);
 
 // ANSI -> Unicode
-QStringW XgAnsiToUnicode(const std::string& ansi, INT charset);
+XGStringW XgAnsiToUnicode(const std::string& ansi, INT charset);
 
 // Unicode -> ANSI
-std::string XgUnicodeToAnsi(const QStringW& wide);
+std::string XgUnicodeToAnsi(const XGStringW& wide);
 
 // JSON文字列を作る。
-QStringW XgJsonEncodeString(const QStringW& str);
+XGStringW XgJsonEncodeString(const XGStringW& str);
 
 // 16進で表す。
 char XgToHex(char code) noexcept;
@@ -154,7 +154,7 @@ inline void XgOpenLocalFile(HWND hwnd, LPCWSTR pszFileName)
 // HTML形式のクリップボードデータを作成する。
 std::string XgMakeClipHtmlData(const std::string& html_utf8, const std::string& style_utf8/* = ""*/);
 // HTML形式のクリップボードデータを作成する。
-std::string XgMakeClipHtmlData(const QStringW& html_wide, const QStringW& style_wide/* = L""*/);
+std::string XgMakeClipHtmlData(const XGStringW& html_wide, const XGStringW& style_wide/* = L""*/);
 
 //////////////////////////////////////////////////////////////////////////////
 
@@ -192,13 +192,12 @@ mstr_split_insert(T_STR_CONTAINER& container,
     container.insert(str.substr(i));
 }
 
-template <typename T_CHAR>
-inline void mstr_trim(std::basic_string<T_CHAR>& str, const T_CHAR *spaces)
+template <typename T_STRING>
+inline void mstr_trim(T_STRING& str, const typename T_STRING::value_type *spaces)
 {
-    typedef std::basic_string<T_CHAR> string_type;
     const auto i = str.find_first_not_of(spaces);
     const auto j = str.find_last_not_of(spaces);
-    if ((i == string_type::npos) || (j == string_type::npos))
+    if ((i == str.npos) || (j == str.npos))
     {
         str.clear();
     }
@@ -232,18 +231,18 @@ mstr_join(const T_STR_CONTAINER& container,
 // 整数を文字列にする。
 LPCWSTR XgIntToStr(int nValue);
 // バイナリを16進にする。
-QStringW XgBinToHex(const void *ptr, size_t size);
+XGStringW XgBinToHex(const void *ptr, size_t size);
 // 16進をバイナリにする。
-void XgHexToBin(std::vector<BYTE>& data, const QStringW& str);
+void XgHexToBin(std::vector<BYTE>& data, const XGStringW& str);
 // 画像を読み込む。
-BOOL XgLoadImage(const QStringW& filename, HBITMAP& hbm, HENHMETAFILE& hEMF);
+BOOL XgLoadImage(const XGStringW& filename, HBITMAP& hbm, HENHMETAFILE& hEMF);
 // 画像ファイルか？
 BOOL XgIsImageFile(LPCWSTR pszFileName) noexcept;
 // テキストファイルか？
 BOOL XgIsTextFile(LPCWSTR pszFileName) noexcept;
 // ファイルを読み込む。
 BOOL XgReadFileAll(LPCWSTR file, std::string& strBinary);
-BOOL XgReadTextFileAll(LPCWSTR file, QStringW& strText, bool ecw = false);
+BOOL XgReadTextFileAll(LPCWSTR file, XGStringW& strText, bool ecw = false);
 // ファイルを読み込む。
 BOOL XgWriteFileAll(LPCWSTR file, const std::string& strBinary) noexcept;
 // エンディアン変換。
@@ -256,12 +255,12 @@ BOOL ComboBox_RealSetText(HWND hwndCombo, LPCWSTR pszText) noexcept;
 
 struct XG_FileManager
 {
-    QStringW m_filename;
-    QStringW m_looks;
-    QStringW m_block_dir;
-    std::unordered_map<QStringW, std::string> m_path2contents;
-    std::unordered_map<QStringW, HBITMAP> m_path2hbm;
-    std::unordered_map<QStringW, HENHMETAFILE> m_path2hemf;
+    XGStringW m_filename;
+    XGStringW m_looks;
+    XGStringW m_block_dir;
+    std::unordered_map<XGStringW, std::string> m_path2contents;
+    std::unordered_map<XGStringW, HBITMAP> m_path2hbm;
+    std::unordered_map<XGStringW, HENHMETAFILE> m_path2hemf;
 
     XG_FileManager() noexcept
     {
@@ -271,45 +270,45 @@ struct XG_FileManager
     }
 
     void set_file(LPCWSTR filename);
-    QStringW get_looks_file();
+    XGStringW get_looks_file();
     void set_looks(LPCWSTR looks);
     void delete_handles() noexcept;
     bool load_image(LPCWSTR filename);
-    bool save_image(const QStringW& path);
-    bool save_image2(QStringW& path);
+    bool save_image(const XGStringW& path);
+    bool save_image2(XGStringW& path);
     bool save_images();
-    bool save_images(const std::unordered_set<QStringW>& files);
+    bool save_images(const std::unordered_set<XGStringW>& files);
     void convert();
     void clear();
-    QStringW get_file_title(const QStringW& str) const;
-    QStringW get_full_path(const QStringW& str) const;
-    QStringW get_block_dir();
-    QStringW get_block_dir_worker() const;
-    bool get_files_dir(QStringW& dir) const;
-    QStringW get_canonical(const QStringW& path);
-    QStringW get_real_path(const QStringW& path);
-    bool get_list(std::vector<QStringW>& paths);
-    bool load_block_image(const QStringW& path);
-    bool load_block_image(const QStringW& path, HBITMAP& hbm, HENHMETAFILE& hEMF);
+    XGStringW get_file_title(const XGStringW& str) const;
+    XGStringW get_full_path(const XGStringW& str) const;
+    XGStringW get_block_dir();
+    XGStringW get_block_dir_worker() const;
+    bool get_files_dir(XGStringW& dir) const;
+    XGStringW get_canonical(const XGStringW& path);
+    XGStringW get_real_path(const XGStringW& path);
+    bool get_list(std::vector<XGStringW>& paths);
+    bool load_block_image(const XGStringW& path);
+    bool load_block_image(const XGStringW& path, HBITMAP& hbm, HENHMETAFILE& hEMF);
 
-    void convert(QStringW& path)
+    void convert(XGStringW& path)
     {
         if (path.empty())
             return;
-        QStringW canonical = L"$FILES\\";
+        XGStringW canonical = L"$FILES\\";
         canonical += get_file_title(path);
         path = std::move(canonical);
     }
 
     template <typename T_TYPE>
-    void convert(std::unordered_map<QStringW, T_TYPE>& map)
+    void convert(std::unordered_map<XGStringW, T_TYPE>& map)
     {
-        std::unordered_map<QStringW, T_TYPE> new_map;
+        std::unordered_map<XGStringW, T_TYPE> new_map;
         for (auto& pair : map)
         {
             if (pair.first.empty())
                 continue;
-            QStringW path = L"$FILES\\";
+            XGStringW path = L"$FILES\\";
             path += get_file_title(pair.first);
             new_map[path] = pair.second;
         }

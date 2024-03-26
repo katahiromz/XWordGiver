@@ -60,8 +60,8 @@ bool __fastcall XgOnCommandExtra(HWND hwnd, int id);
 //////////////////////////////////////////////////////////////////////////////
 
 // クリップボードから貼り付け。
-bool XgPasteBoard(HWND hwnd, const QStringW& str);
-bool XgPasteBoard2(HWND hwnd, const QStringW& str);
+bool XgPasteBoard(HWND hwnd, const XGStringW& str);
+bool XgPasteBoard2(HWND hwnd, const XGStringW& str);
 // クリップボードにクロスワードをコピー。
 void XgCopyBoard(HWND hwnd);
 // クリップボードにクロスワードを画像としてコピー。

@@ -9,22 +9,22 @@
 std::vector<XG_WordData>     xg_dict_1, xg_dict_2;
 
 // タグ付けデータ。
-std::unordered_map<QStringW, std::unordered_set<QStringW> > xg_word_to_tags_map;
+std::unordered_map<XGStringW, std::unordered_set<XGStringW> > xg_word_to_tags_map;
 
 // タグのヒストグラム。
-std::unordered_map<QStringW, size_t> xg_tag_histgram;
+std::unordered_map<XGStringW, size_t> xg_tag_histgram;
 
 // 優先タグ。
-std::unordered_set<QStringW> xg_priority_tags;
+std::unordered_set<XGStringW> xg_priority_tags;
 
 // 除外タグ。
-std::unordered_set<QStringW> xg_forbidden_tags;
+std::unordered_set<XGStringW> xg_forbidden_tags;
 
 // テーマ文字列。
-QStringW xg_strTheme;
+XGStringW xg_strTheme;
 
 // 既定のテーマ文字列。
-QStringW xg_strDefaultTheme;
+XGStringW xg_strDefaultTheme;
 
 // テーマが変更されたか？
 bool xg_bThemeModified = false;
@@ -41,17 +41,17 @@ int xg_nDictMinWordLen = 2;
 // 辞書データのファイル処理。
 
 // テーマ文字列をパースする。
-void XgParseTheme(std::unordered_set<QStringW>& priority,
-                  std::unordered_set<QStringW>& forbidden,
-                  const QStringW& strTheme)
+void XgParseTheme(std::unordered_set<XGStringW>& priority,
+                  std::unordered_set<XGStringW>& forbidden,
+                  const XGStringW& strTheme)
 {
     priority.clear();
     forbidden.clear();
 
-    std::vector<QStringW> strs;
+    std::vector<XGStringW> strs;
     mstr_split(strs, strTheme, L",");
     for (const auto& str : strs) {
-        QStringW item = str;
+        XGStringW item = str;
         if (item.empty())
             continue;
         bool minus = false;
@@ -71,12 +71,12 @@ void XgParseTheme(std::unordered_set<QStringW>& priority,
 }
 
 // テーマを設定する。
-void XgSetThemeString(const QStringW& strTheme)
+void XgSetThemeString(const XGStringW& strTheme)
 {
     XgParseTheme(xg_priority_tags, xg_forbidden_tags, strTheme);
     xg_strTheme = strTheme;
 
-    std::unordered_set<QStringW> priority, forbidden;
+    std::unordered_set<XGStringW> priority, forbidden;
     XgParseTheme(priority, forbidden, xg_strDefaultTheme);
     xg_bThemeModified = (priority != xg_priority_tags || forbidden != xg_forbidden_tags);
 }
@@ -148,7 +148,7 @@ void XgReadUnicodeLine(LPWSTR pchLine)
     }
 
     // ハイフン、アポストロフィ、ピリオド、カンマを取り除く。
-    QStringW tmp;
+    XGStringW tmp;
     for (auto ch : entry.m_word) {
         if (ch == L'-' || ch == 0xFF0D)
             continue;
@@ -176,11 +176,11 @@ void XgReadUnicodeLine(LPWSTR pchLine)
 
     // タグがあれば、単語のタグ付けを行う。
     if (pchTags) {
-        QStringW strTags = pchTags;
+        XGStringW strTags = pchTags;
         xg_str_replace_all(strTags, L",", L"\t");
         xg_str_replace_all(strTags, L"  ", L" ");
 
-        std::unordered_set<QStringW> tags;
+        std::unordered_set<XGStringW> tags;
         mstr_split_insert(tags, strTags, L"\t");
 
         for (auto tag : tags) {
@@ -224,7 +224,7 @@ bool __fastcall XgLoadDictFile(LPCWSTR pszFile)
 
     try {
         // ファイルを開く。
-        QStringW strText;
+        XGStringW strText;
         if (!XgReadTextFileAll(pszFile, strText))
             return false;
 
@@ -359,9 +359,9 @@ std::vector<XG_WordData> XgCreateMiniDict(void)
     return ret;
 }
 
-QStringW XgLoadTitleFromDict(LPCWSTR pszPath)
+XGStringW XgLoadTitleFromDict(LPCWSTR pszPath)
 {
-    QStringW ret = pszPath;
+    XGStringW ret = pszPath;
 
     if (FILE *fp = _wfopen(pszPath, L"rb"))
     {
@@ -383,7 +383,7 @@ QStringW XgLoadTitleFromDict(LPCWSTR pszPath)
             {
                 if (bJapanese)
                 {
-                    QStringW str = &szText[len1];
+                    XGStringW str = &szText[len1];
                     xg_str_trim(str);
                     ret = str;
                     break;
@@ -393,7 +393,7 @@ QStringW XgLoadTitleFromDict(LPCWSTR pszPath)
             const auto len2 = lstrlenW(name_eng);
             if (memcmp(szText, name_eng, len2 * sizeof(WCHAR)) == 0)
             {
-                QStringW str = &szText[len2];
+                XGStringW str = &szText[len2];
                 xg_str_trim(str);
                 ret = str;
                 if (!bJapanese)
@@ -512,8 +512,8 @@ BOOL XgLoadDictsAll(void)
         for (auto& entry : xg_dicts)
         {
             const auto& file = entry.m_filename;
-            if (file.find(pszBasicDict) != QStringW::npos &&
-                file.find(pszNormal) != QStringW::npos &&
+            if (file.find(pszBasicDict) != XGStringW::npos &&
+                file.find(pszNormal) != XGStringW::npos &&
                 PathFileExistsW(file.c_str()))
             {
                 xg_dict_name = file;
@@ -540,7 +540,7 @@ BOOL XgLoadDictsAll(void)
 }
 
 // 辞書名をセットする。
-void XgSetDict(const QStringW& strFile)
+void XgSetDict(const XGStringW& strFile)
 {
     // 辞書名を格納。
     xg_dict_name = strFile;

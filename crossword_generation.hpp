@@ -131,12 +131,11 @@ inline void wait_for_threads(int num_threads = get_num_processors(), int retry_c
 }
 
 // 連結性を判定。
-template <typename t_char>
+template <typename t_string>
 inline bool
-check_connectivity(const std::unordered_set<std::basic_string<t_char> >& words,
-                   std::basic_string<t_char>& nonconnected)
+check_connectivity(const std::unordered_set<t_string>& words,
+                   t_string& nonconnected)
 {
-    typedef std::basic_string<t_char> t_string;
     if (words.size() <= 1)
         return true;
 
@@ -181,18 +180,17 @@ skip:;
 }
 
 // 候補。位置情報と単語と縦横の向きの情報を持つ。
-template <typename t_char>
+template <typename t_string>
 struct candidate_t {
-    typedef std::basic_string<t_char> t_string;
     int m_x, m_y;
     t_string m_word;
     bool m_vertical;
 };
 
 // 交差候補。
-template <typename t_char>
+template <typename t_string>
 struct cross_candidate_t {
-    candidate_t<t_char> m_cand_x, m_cand_y;
+    candidate_t<t_string> m_cand_x, m_cand_y;
     cross_candidate_t() {
         m_cand_x.m_vertical = false;
         m_cand_y.m_vertical = true;
@@ -200,9 +198,9 @@ struct cross_candidate_t {
 };
 
 // 盤面データ。中身は文字列。配置方法はサブクラス board_t によって決まる。
-template <typename t_char>
+template <typename t_string>
 struct board_data_t {
-    typedef std::basic_string<t_char> t_string;
+    using t_char = typename t_string::value_type;
     t_string m_data;
 
     // コンストラクタによる初期化。文字で埋める。
@@ -259,9 +257,11 @@ struct board_data_t {
 };
 
 // board_data_t のサブクラス。盤面データ。継承されて文字の配置が規定されている。
-template <typename t_char, bool t_fixed>
-struct board_t : board_data_t<t_char> {
-    typedef std::basic_string<t_char> t_string; // 文字列型。
+template <typename t_string, bool t_fixed>
+struct board_t : board_data_t<t_string> {
+    using t_char = typename t_string::value_type;
+    using self_type = board_t<t_string, t_fixed>;
+    using super_type = board_data_t<t_string>;
 
     int m_cx, m_cy; // サイズ。
     int m_rules; // ルール群。
@@ -269,23 +269,23 @@ struct board_t : board_data_t<t_char> {
 
     // board_tのコンストラクタ。
     board_t(int cx = 1, int cy = 1, t_char ch = ' ', int rules = 0, int x0 = 0, int y0 = 0) noexcept
-        : board_data_t<t_char>(cx, cy, ch), m_cx(cx), m_cy(cy)
+        : super_type(cx, cy, ch), m_cx(cx), m_cy(cy)
         , m_rules(rules), m_x0(x0), m_y0(y0)
     {
     }
-    board_t(const board_t<t_char, t_fixed>& b) = default;
-    board_t<t_char, t_fixed>& operator=(const board_t<t_char, t_fixed>& b) = default;
+    board_t(const self_type& b) = default;
+    self_type& operator=(const self_type& b) = default;
 
     // インデックス位置の文字を返す。
     t_char get(int xy) const {
         if (0 <= xy && xy < this->size())
-            return board_data_t<t_char>::m_data[xy];
+            return super_type::m_data[xy];
         return t_fixed ? '#' : '?';
     }
     // インデックス位置に文字をセット。
     void set(int xy, t_char ch) {
         if (0 <= xy && xy < this->size())
-            board_data_t<t_char>::m_data[xy] = ch;
+            super_type::m_data[xy] = ch;
     }
 
     // マス(x, y)は盤面の範囲内か？
@@ -298,21 +298,21 @@ struct board_t : board_data_t<t_char> {
     // x, y: absolute coordinate
     t_char real_get_at(int x, int y) const noexcept {
         if (in_range(x, y))
-            return board_data_t<t_char>::m_data[y * m_cx + x];
+            return super_type::m_data[y * m_cx + x];
         return ' ';
     }
     // マス(x, y)を取得する。範囲チェックあり。範囲外なら'#'か'?'を返す。
     // x, y: absolute coordinate
     t_char get_at(int x, int y) const noexcept {
         if (in_range(x, y))
-            return board_data_t<t_char>::m_data[y * m_cx + x];
+            return super_type::m_data[y * m_cx + x];
         return t_fixed ? '#' : '?';
     }
     // マス(x, y)をセットする。範囲チェックあり。範囲外なら無視。
     // x, y: absolute coordinate
     void set_at(int x, int y, t_char ch) noexcept {
         if (in_range(x, y))
-            board_data_t<t_char>::m_data[y * m_cx + x] = ch;
+            super_type::m_data[y * m_cx + x] = ch;
     }
     // マス(x, y)をセットする。ただしルールにより反射する。範囲チェックあり。範囲外なら無視。
     // x, y: absolute coordinate
@@ -711,7 +711,7 @@ skip:;
     void insert_x(int x0, int cx = 1, t_char ch = ' ') {
         assert(0 <= x0 && x0 <= m_cx);
 
-        board_t<t_char, t_fixed> data(m_cx + cx, m_cy, ch);
+        board_t<t_string, t_fixed> data(m_cx + cx, m_cy, ch);
 
         for (int y = 0; y < m_cy; ++y) {
             for (int x = 0; x < m_cx; ++x) {
@@ -732,7 +732,7 @@ skip:;
     void insert_y(int y0, int cy = 1, t_char ch = ' ') {
         assert(0 <= y0 && y0 <= m_cy);
 
-        board_t<t_char, t_fixed> data(m_cx, m_cy + cy, ch);
+        board_t<t_string, t_fixed> data(m_cx, m_cy + cy, ch);
 
         for (int y = 0; y < m_cy; ++y) {
             for (int x = 0; x < m_cx; ++x) {
@@ -753,7 +753,7 @@ skip:;
     void delete_x(int x0) {
         assert(0 <= x0 && x0 < m_cx);
 
-        board_t<t_char, t_fixed> data(m_cx - 1, m_cy, ' ');
+        board_t<t_string, t_fixed> data(m_cx - 1, m_cy, ' ');
 
         for (int y = 0; y < m_cy; ++y) {
             for (int x = 0; x < m_cx - 1; ++x) {
@@ -773,7 +773,7 @@ skip:;
     void delete_y(int y0) {
         assert(0 <= y0 && y0 < m_cy);
 
-        board_t<t_char, t_fixed> data(m_cx, m_cy - 1, ' ');
+        board_t<t_string, t_fixed> data(m_cx, m_cy - 1, ' ');
 
         for (int y = 0; y < m_cy - 1; ++y) {
             for (int x = 0; x < m_cx; ++x) {
@@ -947,7 +947,7 @@ skip:;
     }
 
     // 候補に対して十分なサイズを確保する。
-    void apply_size(const candidate_t<t_char>& cand) {
+    void apply_size(const candidate_t<t_string>& cand) {
         auto& word = cand.m_word;
         const int x = cand.m_x, y = cand.m_y;
         if (cand.m_vertical) {
@@ -1189,7 +1189,7 @@ skip:;
     // 単体テスト。
     static void unittest() {
 #ifndef NDEBUG
-        board_t<t_char, t_fixed> b(3, 3, '#');
+        board_t<t_string, t_fixed> b(3, 3, '#');
         // 挿入テスト。
         b.insert_x(1, 1, '|');
         assert(b.get_at(0, 0) == '#');
@@ -1287,18 +1287,18 @@ skip:;
 };
 
 // 「単語群から自動生成」を実装するクラス。
-template <typename t_char, bool t_fixed>
+template <typename t_string, bool t_fixed>
 struct from_words_t {
-    typedef std::basic_string<t_char> t_string; // 文字列クラス。
+    using t_char = typename t_string::value_type;
 
-    inline static board_t<t_char, t_fixed> s_solution; // 解の盤面データ。
-    board_t<t_char, t_fixed> m_board; // 盤面データ。
+    inline static board_t<t_string, t_fixed> s_solution; // 解の盤面データ。
+    board_t<t_string, t_fixed> m_board; // 盤面データ。
     std::unordered_set<t_string> m_words, m_dict; // 単語群と辞書データ。
     std::unordered_set<pos_t> m_crossable_x, m_crossable_y;
     int m_iThread; // スレッドのインデックス。
 
     // 候補を適用する。
-    bool apply_candidate(const candidate_t<t_char>& cand) {
+    bool apply_candidate(const candidate_t<t_string>& cand) {
         auto& word = cand.m_word; // 候補から単語を取得。
         m_words.erase(word); // 使用済みとして単語群から除去する。
         const int x = cand.m_x, y = cand.m_y; // 候補のマス位置。
@@ -1347,9 +1347,9 @@ struct from_words_t {
     }
 
     // ヨコ方向の候補群を取得する。
-    std::vector<candidate_t<t_char> >
+    std::vector<candidate_t<t_string> >
     get_candidates_x(int x, int y) const {
-        std::vector<candidate_t<t_char> > cands; // 候補群。
+        std::vector<candidate_t<t_string> > cands; // 候補群。
 
         // マス(x, y)に着目する。
         t_char ch0 = m_board.get_on(x, y); // (x, y)の文字を取得。
@@ -1406,9 +1406,9 @@ struct from_words_t {
     }
 
     // タテ方向の候補群を取得する。
-    std::vector<candidate_t<t_char> >
+    std::vector<candidate_t<t_string> >
     get_candidates_y(int x, int y) const {
-        std::vector<candidate_t<t_char> > cands;
+        std::vector<candidate_t<t_string> > cands;
 
         // マス(x, y)に着目する。
         t_char ch0 = m_board.get_on(x, y); // (x, y)の文字を取得。
@@ -1464,8 +1464,8 @@ struct from_words_t {
         return cands; // 候補群を返す。
     }
 
-    bool fixup_candidates(std::vector<candidate_t<t_char> >& candidates) {
-        std::vector<candidate_t<t_char> > cands; // 適用すべき候補。
+    bool fixup_candidates(std::vector<candidate_t<t_string> >& candidates) {
+        std::vector<candidate_t<t_string> > cands; // 適用すべき候補。
         std::unordered_set<pos_t> positions; // 使用した位置。
 
         // 各候補について、、、
@@ -1512,7 +1512,7 @@ struct from_words_t {
         xg_aThreadInfo[m_iThread].m_count = static_cast<int>(m_dict.size() - m_words.size());
 #endif
 
-        std::vector<candidate_t<t_char> > candidates; // 候補群。
+        std::vector<candidate_t<t_string> > candidates; // 候補群。
 
         // 横向きの交差可能性について、、、
         for (auto& cross : m_crossable_x) {
@@ -1552,7 +1552,7 @@ struct from_words_t {
 
         if (m_words.empty()) { // 残りの単語がなければ
             if (fixup_candidates(candidates)) {
-                board_t<t_char, t_fixed> board0 = m_board;
+                board_t<t_string, t_fixed> board0 = m_board;
                 board0.trim();
                 board0.replace('?', '#');
                 if (is_solution(board0)) { // 盤面が解ならば
@@ -1569,10 +1569,10 @@ struct from_words_t {
 #ifdef XWORDGIVER
         if (m_dict.size() <= 50 && m_words.size() < m_dict.size() / 2 && !t_fixed) {
             std::sort(candidates.begin(), candidates.end(),
-                [&](const candidate_t<t_char>& cand0, const candidate_t<t_char>& cand1) {
-                    board_t<t_char, false> board0 = m_board;
+                [&](const candidate_t<t_string>& cand0, const candidate_t<t_string>& cand1) {
+                    board_t<t_string, false> board0 = m_board;
                     board0.apply_size(cand0);
-                    board_t<t_char, false> board1 = m_board;
+                    board_t<t_string, false> board1 = m_board;
                     board1.apply_size(cand1);
                     const int cxy0 = (board0.m_cx + board0.m_cy) + std::abs(board0.m_cy - board0.m_cx) / 4;
                     const int cxy1 = (board1.m_cx + board1.m_cy) + std::abs(board1.m_cy - board1.m_cx) / 4;
@@ -1591,7 +1591,7 @@ struct from_words_t {
             if (s_canceled || s_generated) // キャンセル済みか生成済みなら終了。
                 return s_generated;
             // 複製して候補を適用して再帰・分岐。
-            from_words_t<t_char, t_fixed> copy(*this);
+            from_words_t<t_string, t_fixed> copy(*this);
             if (copy.apply_candidate(cand) && copy.generate_recurse()) {
                 return true;
             }
@@ -1602,7 +1602,7 @@ struct from_words_t {
     }
 
     // 使用済み単語をチェックする。
-    bool check_used_words(const board_t<t_char, t_fixed>& board) const
+    bool check_used_words(const board_t<t_string, t_fixed>& board) const
     {
         std::unordered_set<t_string> used; // 使用済み単語を保持。
 
@@ -1670,7 +1670,7 @@ struct from_words_t {
     }
 
     // 盤面データは解か？
-    bool is_solution(const board_t<t_char, t_fixed>& board) const {
+    bool is_solution(const board_t<t_string, t_fixed>& board) const {
         if (board.count('?') > 0)
             return false; // 未知マスがあれば失敗。
         if (!board.rules_ok())
@@ -1685,7 +1685,7 @@ struct from_words_t {
 
         // 最初の単語を候補として適用する。これが生成の種となる。
         auto word = *m_words.begin();
-        candidate_t<t_char> cand = { 0, 0, word, false };
+        candidate_t<t_string> cand = { 0, 0, word, false };
         apply_candidate(cand);
         // 生成の再帰を開始。
         return generate_recurse();
@@ -1700,7 +1700,7 @@ struct from_words_t {
         ::SetThreadPriority(::GetCurrentThread(), THREAD_PRIORITY_ABOVE_NORMAL);
 #endif
         // 生成用のデータを初期化。
-        from_words_t<t_char, t_fixed> data;
+        from_words_t<t_string, t_fixed> data;
         data.m_iThread = iThread;
         data.m_words = *words;
         data.m_dict = *words;
@@ -1734,21 +1734,21 @@ struct from_words_t {
     }
 }; // struct from_words_t
 
-template <typename t_char>
+template <typename t_string>
 struct non_add_block_t {
-    typedef std::basic_string<t_char> t_string; // 文字列。
+    using t_char = typename t_string::value_type;
     enum { t_fixed = 1 }; // 固定か？
 
-    inline static board_t<t_char, t_fixed> s_solution; // 解の盤面データ。
-    board_t<t_char, t_fixed> m_board; // 盤面データ。
+    inline static board_t<t_string, t_fixed> s_solution; // 解の盤面データ。
+    board_t<t_string, t_fixed> m_board; // 盤面データ。
     std::unordered_set<t_string> m_words, m_dict; // 単語群と辞書データ。
     std::unordered_set<pos_t> m_checked_x, m_checked_y;
     int m_iThread;
 
     // パターンから候補群を取得する。
-    std::vector<candidate_t<t_char>>
+    std::vector<candidate_t<t_string>>
     get_candidates_from_pat(int x, int y, const t_string& pat, bool vertical) const {
-        std::vector<candidate_t<t_char>> ret; // 候補群が戻り値。
+        std::vector<candidate_t<t_string>> ret; // 候補群が戻り値。
         assert(pat.size() > 0); // 候補があると仮定。
         if (pat.find('?') == pat.npos) { // 未知のマスがなければ
             if (m_words.count(pat) > 0)
@@ -1830,7 +1830,7 @@ struct non_add_block_t {
     }
 
     // x向きに候補を適用する。
-    bool apply_candidate_x(const candidate_t<t_char>& cand) {
+    bool apply_candidate_x(const candidate_t<t_string>& cand) {
         auto& word = cand.m_word;
         m_words.erase(word); // 単語群から単語を取り除く。
         int x = cand.m_x, y = cand.m_y;
@@ -1841,7 +1841,7 @@ struct non_add_block_t {
         return true;
     }
     // y向きに候補を適用する。
-    bool apply_candidate_y(const candidate_t<t_char>& cand) {
+    bool apply_candidate_y(const candidate_t<t_string>& cand) {
         auto& word = cand.m_word;
         m_words.erase(word); // 単語群から単語を取り除く。
         int x = cand.m_x, y = cand.m_y;
@@ -1883,7 +1883,7 @@ struct non_add_block_t {
                             return s_generated; // 生成済みなら成功。
 
                         // 複製して候補を適用して再帰・分岐する。
-                        non_add_block_t<t_char> copy(*this);
+                        non_add_block_t<t_string> copy(*this);
                         copy.apply_candidate_x(cand);
                         if (copy.generate_recurse())
                             break;
@@ -1918,7 +1918,7 @@ struct non_add_block_t {
                             return s_generated; // 生成済みなら成功。
 
                         // 複製して候補を適用して再帰・分岐。
-                        non_add_block_t<t_char> copy(*this);
+                        non_add_block_t<t_string> copy(*this);
                         copy.apply_candidate_y(cand);
                         if (copy.generate_recurse())
                             break;
@@ -1940,7 +1940,7 @@ struct non_add_block_t {
     }
 
     // 盤面は解か？
-    bool is_solution(const board_t<t_char, t_fixed>& board) {
+    bool is_solution(const board_t<t_string, t_fixed>& board) {
         return (board.count('?') == 0);
     }
 
@@ -1978,7 +1978,7 @@ struct non_add_block_t {
                             return s_generated; // 生成済みなら成功。
 
                         // 複製して候補を適用して再帰。
-                        non_add_block_t<t_char> copy(*this);
+                        non_add_block_t<t_string> copy(*this);
                         copy.apply_candidate_x(cand);
                         if (copy.generate_recurse())
                             return true; // 生成に成功。
@@ -1994,14 +1994,14 @@ struct non_add_block_t {
 
     // 生成スレッドのプロシージャ。
     static bool
-    generate_proc(board_t<t_char, t_fixed> *pboard,
+    generate_proc(board_t<t_string, t_fixed> *pboard,
                   std::unordered_set<t_string> *pwords, int iThread)
     {
         std::srand(uint32_t(::GetTickCount64()) ^ ::GetCurrentThreadId());
 #ifdef _WIN32
         //::SetThreadPriority(::GetCurrentThread(), THREAD_PRIORITY_ABOVE_NORMAL);
 #endif
-        non_add_block_t<t_char> data;
+        non_add_block_t<t_string> data;
         data.m_iThread = iThread;
         data.m_board = std::move(*pboard);
         delete pboard;
@@ -2013,20 +2013,20 @@ struct non_add_block_t {
 
     // 生成を行うヘルパー関数。
     static bool
-    do_generate(const board_t<t_char, t_fixed>& board,
+    do_generate(const board_t<t_string, t_fixed>& board,
                 const std::unordered_set<t_string>& words,
                 int num_threads = get_num_processors())
     {
-        board_t<t_char, t_fixed> *pboard = nullptr;
+        board_t<t_string, t_fixed> *pboard = nullptr;
         std::unordered_set<t_string> *pwords = nullptr;
 #ifdef SINGLETHREADDEBUG // シングルスレッドテスト用。
-        pboard = new board_t<t_char, t_fixed>(board);
+        pboard = new board_t<t_string, t_fixed>(board);
         pwords = new std::unordered_set<t_string>(words);
         generate_proc(pboard, pwords, 0);
 #else // 複数スレッド。
         for (int i = 0; i < num_threads; ++i) {
             // スレッドに所有権を譲渡したいので汚いがnewを使わせていただきたい。
-            pboard = new board_t<t_char, t_fixed>(board);
+            pboard = new board_t<t_string, t_fixed>(board);
             pwords = new std::unordered_set<t_string>(words);
             try {
                 // スレッドを生成。切り離す。

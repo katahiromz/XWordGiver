@@ -54,13 +54,13 @@ public:
         XgInitTagListView(hLst3);
 
         // ヒストグラムを取得。
-        std::vector<std::pair<size_t, QStringW> > histgram;
+        std::vector<std::pair<size_t, XGStringW> > histgram;
         for (auto& pair : xg_tag_histgram) {
             histgram.emplace_back(std::make_pair(pair.second, pair.first));
         }
         // 出現回数の逆順でソート。
         std::sort(histgram.begin(), histgram.end(),
-            [](const std::pair<size_t, QStringW>& a, const std::pair<size_t, QStringW>& b) {
+            [](const std::pair<size_t, XGStringW>& a, const std::pair<size_t, XGStringW>& b) {
                 return a.first > b.first;
             }
         );
@@ -76,7 +76,7 @@ public:
             item.iSubItem = 0;
             ListView_InsertItem(hLst1, &item);
 
-            StringCchCopyW(szText, _countof(szText), std::to_wstring(pair.first).c_str());
+            StringCchCopyW(szText, _countof(szText), to_QStringW(pair.first).c_str());
             item.iItem = iItem;
             item.pszText = szText;
             item.iSubItem = 1;
@@ -104,7 +104,7 @@ public:
             if (FILE *fp = _wfopen(szPath, L"rb")) {
                 char buf[256];
                 while (fgets(buf, _countof(buf), fp)) {
-                    QStringW str = XgUtf8ToUnicode(buf);
+                    XGStringW str = XgUtf8ToUnicode(buf);
                     xg_str_trim(str);
                     if (str.empty())
                         continue;
@@ -237,7 +237,7 @@ public:
         xg_priority_tags.clear();
         xg_forbidden_tags.clear();
 
-        QStringW strTheme;
+        XGStringW strTheme;
         WCHAR szText[XG_MAX_TAGSLEN];
         int cItems;
 
@@ -420,13 +420,13 @@ public:
         ListView_DeleteAllItems(hLst2);
         ListView_DeleteAllItems(hLst3);
 
-        std::vector<QStringW> strs;
+        std::vector<XGStringW> strs;
         LPCWSTR pch = wcschr(pszText, L':');
         if (pch)
             ++pch;
         else
             pch = pszText;
-        QStringW strText = pch;
+        XGStringW strText = pch;
         xg_str_trim(strText);
 
         xg_str_replace_all(strText, L" ", L"");
@@ -491,7 +491,7 @@ public:
         HWND hLst2 = GetDlgItem(hwnd, lst2);
         HWND hLst3 = GetDlgItem(hwnd, lst3);
 
-        QStringW str;
+        XGStringW str;
         WCHAR szText[64];
         const int nCount2 = ListView_GetItemCount(hLst2);
         const int nCount3 = ListView_GetItemCount(hLst3);

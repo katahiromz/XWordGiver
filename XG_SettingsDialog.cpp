@@ -17,7 +17,7 @@ int xg_nSmallCharPercents = XG_DEF_SMALL_CHAR_SIZE;
 // 黒マス画像。
 HBITMAP xg_hbmBlackCell = nullptr;
 HENHMETAFILE xg_hBlackCellEMF = nullptr;
-QStringW xg_strBlackCellImage;
+XGStringW xg_strBlackCellImage;
 
 // ビューモード。
 XG_VIEW_MODE xg_nViewMode = XG_VIEW_NORMAL;
@@ -43,7 +43,7 @@ COLORREF xg_rgbBlackCellColor = RGB(0x22, 0x22, 0x22);
 COLORREF xg_rgbMarkedCellColor = RGB(255, 255, 255);
 
 // 二重マス文字。
-QStringW xg_strDoubleFrameLetters;
+XGStringW xg_strDoubleFrameLetters;
 
 //////////////////////////////////////////////////////////////////////////////
 
@@ -92,7 +92,7 @@ BOOL XG_SettingsDialog::OnInitDialog(HWND hwnd)
     ::SendDlgItemMessage(hwnd, scr2, UDM_SETRANGE, 0, MAKELPARAM(100, 3));
 
     // 画像ファイルリストを取得する。
-    std::vector<QStringW> items;
+    std::vector<XGStringW> items;
     XgGetFileManager()->get_list(items);
 
     // コンボボックスに項目を追加する。
@@ -207,7 +207,7 @@ void XG_SettingsDialog::OnOK(HWND hwnd)
     WCHAR szText[MAX_PATH];
     HWND hCmb1 = GetDlgItem(hwnd, cmb1);
     ComboBox_RealGetText(hCmb1, szText, _countof(szText));
-    QStringW strBlock = szText;
+    XGStringW strBlock = szText;
     xg_str_trim(strBlock);
     if (XgGetFileManager()->load_block_image(strBlock))
     {
@@ -253,7 +253,7 @@ void XG_SettingsDialog::OnOK(HWND hwnd)
 
     // 線の太さ。
     GetDlgItemTextW(hwnd, edt6, szText, _countof(szText));
-    QStringW str = szText;
+    XGStringW str = szText;
     xg_str_trim(str);
     float value = wcstof(str.c_str(), nullptr);
     if (value > XG_MAX_LINEWIDTH)
@@ -373,7 +373,7 @@ BOOL XG_SettingsDialog::DoImportLooks(HWND hwnd, LPCWSTR pszFileName)
     {
         std::vector<BYTE> data;
         XgHexToBin(data, szText);
-        QStringW str;
+        XGStringW str;
         str.resize(data.size() / sizeof(WCHAR));
         memcpy(&str[0], data.data(), data.size());
         ComboBox_RealSetText(hCmb2, str.c_str());
@@ -458,11 +458,11 @@ BOOL XG_SettingsDialog::DoExportLooks(HWND hwnd, LPCWSTR pszFileName)
     ComboBox_RealGetText(hCmb1, szText, _countof(szText));
 
     // もし黒マス画像が指定されていれば
-    QStringW str = szText;
+    XGStringW str = szText;
     xg_str_trim(str);
     if (str.size() && str != XgLoadStringDx1(IDS_NONE))
     {
-        QStringW converted = str;
+        XGStringW converted = str;
         XgGetFileManager()->convert(converted);
         WritePrivateProfileStringW(L"Looks", L"BlackCellImage", converted.c_str(), pszFileName);
 
@@ -759,7 +759,7 @@ XG_SettingsDialog::DialogProcDx(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPar
                 if (pUpDown->hdr.idFrom == scr3)
                 {
                     GetDlgItemTextW(hwnd, edt6, szText, _countof(szText));
-                    QStringW str = szText;
+                    XGStringW str = szText;
                     xg_str_trim(str);
                     float value = wcstof(str.c_str(), nullptr);
                     if (pUpDown->iDelta < 0)
@@ -777,7 +777,7 @@ XG_SettingsDialog::DialogProcDx(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPar
                 if (pUpDown->hdr.idFrom == scr4)
                 {
                     GetDlgItemTextW(hwnd, edt7, szText, _countof(szText));
-                    QStringW str = szText;
+                    XGStringW str = szText;
                     xg_str_trim(str);
                     float value = wcstof(str.c_str(), nullptr);
                     if (pUpDown->iDelta < 0)
@@ -938,7 +938,7 @@ void XG_SettingsDialog::UpdateBlockPreview(HWND hwnd)
     WCHAR szText[MAX_PATH];
     HWND hCmb1 = GetDlgItem(hwnd, cmb1);
     ComboBox_RealGetText(hCmb1, szText, _countof(szText));
-    QStringW path = szText;
+    XGStringW path = szText;
     xg_str_trim(path);
 
     HBITMAP hbm1 = nullptr;
