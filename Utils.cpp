@@ -1106,7 +1106,7 @@ bool XG_FileManager::save_image2(XGStringW& path)
     auto real = get_real_path(canonical);
     while (PathFileExistsW(real.c_str())) {
         i++;
-        XGStringW fileNum = L"(" + to_QStringW(i) + L")";
+        XGStringW fileNum = L"(" + to_XGStringW(i) + L")";
 
         canonical = L"$FILES\\" + name + fileNum + ext;
         real = get_real_path(canonical);

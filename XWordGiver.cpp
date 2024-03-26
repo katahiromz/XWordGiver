@@ -524,11 +524,11 @@ BOOL XgSavePatterns(LPCWSTR pszFileName, const patterns_t& patterns,
     }
 
     for (auto& pat : patterns) {
-        text += to_QStringW(pat.num_columns);
+        text += to_XGStringW(pat.num_columns);
         text += L" x ";
-        text += to_QStringW(pat.num_rows);
+        text += to_XGStringW(pat.num_rows);
         text += L" = ";
-        text += to_QStringW(pat.num_columns * pat.num_rows);
+        text += to_XGStringW(pat.num_columns * pat.num_rows);
         text += L"\r\n";
         text += pat.text;
         text += L"\r\n";
@@ -8037,7 +8037,7 @@ void XgShowPatInfo(HWND hwndInfo)
         text += L"[[ ";
         text += XgLoadStringDx1(IDS_WORDCOUNT);
         text += L" ]] : ";
-        text += to_QStringW(dict.size());
+        text += to_XGStringW(dict.size());
         text += L"\r\n";
         // 単語の長さの頻度分布。
         text += L"\r\n";
@@ -8046,9 +8046,9 @@ void XgShowPatInfo(HWND hwndInfo)
         text += L" ]]";
         text += L"\r\n";
         for (auto& pair : pairs) {
-            text += to_QStringW(pair.first);
+            text += to_XGStringW(pair.first);
             text += L" : ";
-            text += to_QStringW(pair.second);
+            text += to_XGStringW(pair.second);
             text += L"\r\n";
         }
     }
@@ -8071,19 +8071,19 @@ void XgShowPatInfo(HWND hwndInfo)
         text += XgLoadStringDx1(IDS_HINTLENAVG); // 平均値。
         text += L" ]]";
         text += L": ";
-        text += to_QStringW(sum / (double)count);
+        text += to_XGStringW(sum / (double)count);
         text += L"\r\n";
         text += L"[[ ";
         text += XgLoadStringDx1(IDS_HINTLENMIN); // 最小値。
         text += L" ]]";
         text += L": ";
-        text += to_QStringW(min);
+        text += to_XGStringW(min);
         text += L"\r\n";
         text += L"[[ ";
         text += XgLoadStringDx1(IDS_HINTLENMAX); // 最大値。
         text += L" ]]";
         text += L": ";
-        text += to_QStringW(max);
+        text += to_XGStringW(max);
         text += L"\r\n";
     }
 
@@ -8112,26 +8112,26 @@ void XgShowPatInfo(HWND hwndInfo)
         text += XgLoadStringDx1(IDS_DICTWORDCOUNT);
         text += L" ]]";
         text += L" : ";
-        text += to_QStringW(count);
+        text += to_XGStringW(count);
         // 辞書中の単語の長さ。
         text += L"\r\n";
         text += L"[[ ";
         text += XgLoadStringDx1(IDS_DICTWORDLENAVG); // 平均値。
         text += L" ]]";
         text += L" : ";
-        text += to_QStringW(sum / (double)count);
+        text += to_XGStringW(sum / (double)count);
         text += L"\r\n";
         text += L"[[ ";
         text += XgLoadStringDx1(IDS_DICTWORDLENMIN); // 最小値。
         text += L" ]]";
         text += L" : ";
-        text += to_QStringW(min);
+        text += to_XGStringW(min);
         text += L"\r\n";
         text += L"[[ ";
         text += XgLoadStringDx1(IDS_DICTWORDLENMAX); // 最大値。
         text += L" ]]";
         text += L" : ";
-        text += to_QStringW(max);
+        text += to_XGStringW(max);
         text += L"\r\n";
     }
 
@@ -8152,19 +8152,19 @@ void XgShowPatInfo(HWND hwndInfo)
         text += XgLoadStringDx1(IDS_DICTHINTLENAVG); // 平均値。
         text += L" ]]";
         text += L" : ";
-        text += to_QStringW(sum / (double)count);
+        text += to_XGStringW(sum / (double)count);
         text += L"\r\n";
         text += L"[[ ";
         text += XgLoadStringDx1(IDS_DICTHINTLENMIN); // 最小値。
         text += L" ]]";
         text += L" : ";
-        text += to_QStringW(min);
+        text += to_XGStringW(min);
         text += L"\r\n";
         text += L"[[ ";
         text += XgLoadStringDx1(IDS_DICTHINTLENMAX); // 最大値。
         text += L" ]]";
         text += L" : ";
-        text += to_QStringW(max);
+        text += to_XGStringW(max);
         text += L"\r\n";
     }
 
@@ -8197,7 +8197,7 @@ void XgShowPatInfo(HWND hwndInfo)
             text += pair.first;
             text += (WCHAR)0x3011; // 】
             text += L" : ";
-            text += to_QStringW(pair.second);
+            text += to_XGStringW(pair.second);
             text += L"\r\n";
         }
     }
@@ -8224,7 +8224,7 @@ void XgShowPatInfo(HWND hwndInfo)
         text += L"[[ ";
         text += XgLoadStringDx1(IDS_PATCOUNT);
         text += L" ]] : ";
-        text += to_QStringW(patterns.size());
+        text += to_XGStringW(patterns.size());
         text += L"\r\n";
         // パターンの頻度分布。
         text += L"\r\n";
@@ -8235,11 +8235,11 @@ void XgShowPatInfo(HWND hwndInfo)
         for (auto& pair : size2num) {
             size_t num_columns = HIWORD(pair.first);
             size_t num_rows = LOWORD(pair.first);
-            text += to_QStringW(num_columns);
+            text += to_XGStringW(num_columns);
             text += L" x ";
-            text += to_QStringW(num_rows);
+            text += to_XGStringW(num_rows);
             text += L" : ";
-            text += to_QStringW(pair.second);
+            text += to_XGStringW(pair.second);
             text += L"\r\n";
         }
     }

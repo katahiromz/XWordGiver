@@ -55,9 +55,9 @@
 
 #include <strsafe.h>    // for String... functions
 
-#include "QString/QString.h" // for QString...
+#if 0
+    #include "QString/QString.h" // for QString...
 
-#if 1
     using XGStringA = QStringA;
     using XGStringW = QStringW;
 
@@ -69,10 +69,14 @@
     using XGStringA = std::string;
     using XGStringW = std::wstring;
 
-    template <typename T_NUMBER>
-    using to_XGStringA = decltype(to_string<T_NUMBER>);
-    template <typename T_NUMBER>
-    using to_XGStringW = decltype(to_wstring<T_NUMBER>);
+    template <typename T>
+    inline std::string to_XGStringA(const T& value) {
+        return std::to_string(value);
+    }
+    template <typename T>
+    inline std::wstring to_XGStringW(const T& value) {
+        return std::to_wstring(value);
+    }
 #endif
 
 #include "resource.h"   // resource-related macros

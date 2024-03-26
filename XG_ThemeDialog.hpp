@@ -76,7 +76,7 @@ public:
             item.iSubItem = 0;
             ListView_InsertItem(hLst1, &item);
 
-            StringCchCopyW(szText, _countof(szText), to_QStringW(pair.first).c_str());
+            StringCchCopyW(szText, _countof(szText), to_XGStringW(pair.first).c_str());
             item.iItem = iItem;
             item.pszText = szText;
             item.iSubItem = 1;

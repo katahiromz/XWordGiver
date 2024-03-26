@@ -853,7 +853,7 @@ public:
             map.erase(L"font_name");
         }
         if (m_nFontSizeInPoints) {
-            map[L"font_size"] = to_QStringW(m_nFontSizeInPoints);
+            map[L"font_size"] = to_XGStringW(m_nFontSizeInPoints);
         } else {
             map.erase(L"font_size");
         }
