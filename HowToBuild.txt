@@ -7,7 +7,7 @@
 
 0. MSYS2のpacmanでビルドに必要な `g++` などをインストールして下さい。
 1. MSYS2用のCMakeをpacmanでインストールして下さい。
-2. シェルスクリプトの`rebuild.sh`を実行して下さい。
+2. シェルスクリプトの`rebuild-gcc.sh`か`rebuild-clang.sh`を実行して下さい。
 
 ## Visual Studioの場合
 
