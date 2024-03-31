@@ -5861,6 +5861,7 @@ void __fastcall XgJumpNumber(HWND hwnd, INT nNumber, BOOL bVert)
     // 表示を更新する。
     XgEnsureCaretVisible(hwnd);
     XgUpdateStatusBar(hwnd);
+    // すぐに入力できるようにする。
     SetFocus(hwnd);
 }
 
@@ -7591,6 +7592,7 @@ void MainWnd_OnNotify(HWND hwnd, int idCtrl, LPNMHDR pnmh) noexcept
                 // 表示を更新する。
                 XgEnsureCaretVisible(hwnd);
                 XgUpdateStatusBar(hwnd);
+                // すぐに入力できるようにする。
                 SetFocus(hwnd);
                 break;
             case 1: // カギ位置。
