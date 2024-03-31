@@ -5861,6 +5861,7 @@ void __fastcall XgJumpNumber(HWND hwnd, INT nNumber, BOOL bVert)
     // 表示を更新する。
     XgEnsureCaretVisible(hwnd);
     XgUpdateStatusBar(hwnd);
+    SetFocus(hwnd);
 }
 
 // コマンドを実行する。
@@ -7590,6 +7591,7 @@ void MainWnd_OnNotify(HWND hwnd, int idCtrl, LPNMHDR pnmh) noexcept
                 // 表示を更新する。
                 XgEnsureCaretVisible(hwnd);
                 XgUpdateStatusBar(hwnd);
+                SetFocus(hwnd);
                 break;
             case 1: // カギ位置。
                 XgJumpNumber(hwnd, dialog.m_nNumber, dialog.m_bVert);
