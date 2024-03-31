@@ -5842,18 +5842,18 @@ void XgCheckAnswer(HWND hwnd)
 void __fastcall XgJumpNumber(HWND hwnd, INT nNumber, BOOL bVert)
 {
     if (bVert) { // タテ。
-        for (auto& tate : xg_vVertInfo) {
-            if (nNumber == tate.m_number) {
-                xg_caret_pos.m_i = tate.m_iRow;
-                xg_caret_pos.m_j = tate.m_jCol;
+        for (auto& vert : xg_vVertInfo) {
+            if (nNumber == vert.m_number) {
+                xg_caret_pos.m_i = vert.m_iRow;
+                xg_caret_pos.m_j = vert.m_jCol;
                 break;
             }
         }
     } else { // ヨコ。
-        for (auto& yoko : xg_vHorzInfo) {
-            if (nNumber == yoko.m_number) {
-                xg_caret_pos.m_i = yoko.m_iRow;
-                xg_caret_pos.m_j = yoko.m_jCol;
+        for (auto& horz : xg_vHorzInfo) {
+            if (nNumber == horz.m_number) {
+                xg_caret_pos.m_i = horz.m_iRow;
+                xg_caret_pos.m_j = horz.m_jCol;
                 break;
             }
         }

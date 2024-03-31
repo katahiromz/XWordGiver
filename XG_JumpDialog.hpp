@@ -76,34 +76,34 @@ public:
                 nFixed = edt3;
             } else if (m_bVert) {
                 BOOL bFound = FALSE;
-                for (auto& tate : xg_vVertInfo) {
-                    if (m_nNumber == tate.m_number) {
+                for (auto& vert : xg_vVertInfo) {
+                    if (m_nNumber == vert.m_number) {
                         bFound = TRUE;
                         break;
                     }
                 }
                 if (!bFound) {
                     INT nMax = 1;
-                    for (auto& tate : xg_vVertInfo) {
-                        if (nMax < tate.m_number)
-                            nMax = tate.m_number;
+                    for (auto& vert : xg_vVertInfo) {
+                        if (nMax < vert.m_number)
+                            nMax = vert.m_number;
                     }
                     m_nNumber = nMax;
                     nFixed = edt3;
                 }
             } else {
                 BOOL bFound = FALSE;
-                for (auto& yoko : xg_vHorzInfo) {
-                    if (m_nNumber == yoko.m_number) {
+                for (auto& horz : xg_vHorzInfo) {
+                    if (m_nNumber == horz.m_number) {
                         bFound = TRUE;
                         break;
                     }
                 }
                 if (!bFound) {
                     INT nMax = 1;
-                    for (auto& yoko : xg_vHorzInfo) {
-                        if (nMax < yoko.m_number)
-                            nMax = yoko.m_number;
+                    for (auto& horz : xg_vHorzInfo) {
+                        if (nMax < horz.m_number)
+                            nMax = horz.m_number;
                     }
                     m_nNumber = nMax;
                     nFixed = edt3;
@@ -135,16 +135,16 @@ public:
         m_nNumber = 1;
 
         if (xg_bSolved) {
-            for (auto& tate : xg_vVertInfo) {
-                if (tate.m_iRow == m_iRow - 1 && tate.m_jCol == m_jCol - 1) {
-                    m_nNumber = tate.m_number;
+            for (auto& vert : xg_vVertInfo) {
+                if (vert.m_iRow == m_iRow - 1 && vert.m_jCol == m_jCol - 1) {
+                    m_nNumber = vert.m_number;
                     m_bVert = TRUE;
                     break;
                 }
             }
-            for (auto& yoko : xg_vHorzInfo) {
-                if (yoko.m_iRow == m_iRow - 1 && yoko.m_jCol == m_jCol - 1) {
-                    m_nNumber = yoko.m_number;
+            for (auto& horz : xg_vHorzInfo) {
+                if (horz.m_iRow == m_iRow - 1 && horz.m_jCol == m_jCol - 1) {
+                    m_nNumber = horz.m_number;
                     m_bVert = FALSE;
                     break;
                 }

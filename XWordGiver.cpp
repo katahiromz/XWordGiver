@@ -2246,7 +2246,7 @@ bool __fastcall XgParseHintsStr(const XGStringW& strHints)
     XGStringW str(strHints);
     xg_str_trim(str);
 
-    // strCaption1とstrCaption2により、tateとyokoに分ける。
+    // strCaption1とstrCaption2により、vertとhorzに分ける。
     XGStringW strCaption1 = XgLoadStringDx1(IDS_DOWN);
     XGStringW strCaption2 = XgLoadStringDx1(IDS_ACROSS);
     size_t i1 = str.find(strCaption1);
@@ -2256,23 +2256,23 @@ bool __fastcall XgParseHintsStr(const XGStringW& strHints)
     size_t i2 = str.find(strCaption2);
     if (i2 == XGStringW::npos)
         return false;
-    XGStringW tate = str.substr(i1, i2 - i1);
+    XGStringW vert = str.substr(i1, i2 - i1);
     i2 += strCaption2.size();
-    XGStringW yoko = str.substr(i2);
+    XGStringW horz = str.substr(i2);
 
     // 備考欄を取り除く。
-    const auto i3 = yoko.find(XgLoadStringDx1(IDS_HEADERSEP2));
+    const auto i3 = horz.find(XgLoadStringDx1(IDS_HEADERSEP2));
     if (i3 != XGStringW::npos) {
-        yoko = yoko.substr(0, i3);
+        horz = horz.substr(0, i3);
     }
 
     // 前後の空白を取り除く。
-    xg_str_trim(tate);
-    xg_str_trim(yoko);
+    xg_str_trim(vert);
+    xg_str_trim(horz);
 
     // それぞれについて解析する。
-    return XgParseHints(xg_vecVertHints, tate) &&
-           XgParseHints(xg_vecHorzHints, yoko);
+    return XgParseHints(xg_vecVertHints, vert) &&
+           XgParseHints(xg_vecHorzHints, horz);
 }
 
 // ヒントを取得する。
@@ -2680,7 +2680,7 @@ bool __fastcall XgSetJsonString(HWND hwnd, const XGStringW& str)
             }
         }
 
-        std::vector<XG_Hint> tate, yoko;
+        std::vector<XG_Hint> vert, horz;
         if (has_hints) {
             auto hints = j0["hints"];
             auto v = hints["v"];
@@ -2694,7 +2694,7 @@ bool __fastcall XgSetJsonString(HWND hwnd, const XGStringW& str)
                 }
                 auto word = XgUtf8ToUnicode(data[1]);
                 auto hint = XgUtf8ToUnicode(data[2]);
-                tate.emplace_back(number, word, hint);
+                vert.emplace_back(number, word, hint);
             }
             for (size_t i = 0; i < h.size(); ++i) {
                 auto data = h[i];
@@ -2705,7 +2705,7 @@ bool __fastcall XgSetJsonString(HWND hwnd, const XGStringW& str)
                 }
                 auto word = XgUtf8ToUnicode(data[1]);
                 auto hint = XgUtf8ToUnicode(data[2]);
-                yoko.emplace_back(number, word, hint);
+                horz.emplace_back(number, word, hint);
             }
         }
 
@@ -2744,8 +2744,8 @@ bool __fastcall XgSetJsonString(HWND hwnd, const XGStringW& str)
                 xg_xword = xw;
             }
             xg_vMarks = mark_positions;
-            xg_vecVertHints = tate;
-            xg_vecHorzHints = yoko;
+            xg_vecVertHints = vert;
+            xg_vecHorzHints = horz;
             xg_strHeader = header;
             xg_str_trim(xg_strHeader);
             xg_strNotes = notes;
@@ -3050,7 +3050,7 @@ bool __fastcall XgSetXDString(HWND hwnd, const XGStringW& str)
 
     bool bOK = false;
     XG_Board xword;
-    std::vector<XG_Hint> tate, yoko;
+    std::vector<XG_Hint> vert, horz;
     {
         XGStringW str0;
         const auto nWidth = static_cast<int>(rows[0].size());
@@ -3115,13 +3115,13 @@ bool __fastcall XgSetXDString(HWND hwnd, const XGStringW& str)
                 word = XgNormalizeString(word);
                 for (XG_PlaceInfo& item : xg_vVertInfo) {
                     if (item.m_word == word) {
-                        tate.emplace_back(item.m_number, word, hint);
+                        vert.emplace_back(item.m_number, word, hint);
                         break;
                     }
                 }
                 for (XG_PlaceInfo& item : xg_vHorzInfo) {
                     if (item.m_word == word) {
-                        yoko.emplace_back(item.m_number, word, hint);
+                        horz.emplace_back(item.m_number, word, hint);
                         break;
                     }
                 }
@@ -3131,52 +3131,52 @@ bool __fastcall XgSetXDString(HWND hwnd, const XGStringW& str)
         // 不足分を追加。
         for (XG_PlaceInfo& item : xg_vHorzInfo) {
             bool found = false;
-            for (auto& info : yoko) {
+            for (auto& info : horz) {
                 if (item.m_number == info.m_number) {
                     found = true;
                     break;
                 }
             }
             if (!found) {
-                yoko.emplace_back(item.m_number, item.m_word, L"");
+                horz.emplace_back(item.m_number, item.m_word, L"");
             }
         }
         for (XG_PlaceInfo& item : xg_vVertInfo) {
             bool found = false;
-            for (auto& info : tate) {
+            for (auto& info : vert) {
                 if (item.m_number == info.m_number) {
                     found = true;
                     break;
                 }
             }
             if (!found) {
-                tate.emplace_back(item.m_number, item.m_word, L"");
+                vert.emplace_back(item.m_number, item.m_word, L"");
             }
         }
 
         // ソート。
-        std::sort(tate.begin(), tate.end(),
+        std::sort(vert.begin(), vert.end(),
             [](const XG_Hint& a, const XG_Hint& b) {
                 return a.m_number < b.m_number;
             }
         );
-        std::sort(yoko.begin(), yoko.end(),
+        std::sort(horz.begin(), horz.end(),
             [](const XG_Hint& a, const XG_Hint& b) {
                 return a.m_number < b.m_number;
             }
         );
 
-        if (tate.size() && yoko.size()) {
+        if (vert.size() && horz.size()) {
             // 成功。
             xg_xword = xword;
             xg_solution = xword;
-            if (tate.size() && yoko.size()) {
+            if (vert.size() && horz.size()) {
                 xg_bSolved = true;
                 xg_bCheckingAnswer = false;
                 xg_bShowAnswer = false;
                 XgClearNonBlocks();
-                xg_vecVertHints = tate;
-                xg_vecHorzHints = yoko;
+                xg_vecVertHints = vert;
+                xg_vecHorzHints = horz;
             }
 
             for (auto& mark : marks) {
@@ -3407,20 +3407,20 @@ bool __fastcall XgSetEcwString(HWND hwnd, const XGStringW& str)
     // 番号付けを行う。
     xword.DoNumberingNoCheck();
 
-    std::vector<XG_Hint> tate, yoko;
+    std::vector<XG_Hint> vert, horz;
     for (auto& entry : entries) {
         entry.word = XgNormalizeString(entry.word);
         if (entry.across) {
             for (XG_PlaceInfo& item : xg_vHorzInfo) {
                 if (item.m_word == entry.word) {
-                    yoko.emplace_back(item.m_number, entry.word, entry.clue);
+                    horz.emplace_back(item.m_number, entry.word, entry.clue);
                     break;
                 }
             }
         } else {
             for (XG_PlaceInfo& item : xg_vVertInfo) {
                 if (item.m_word == entry.word) {
-                    tate.emplace_back(item.m_number, entry.word, entry.clue);
+                    vert.emplace_back(item.m_number, entry.word, entry.clue);
                     break;
                 }
             }
@@ -3428,28 +3428,28 @@ bool __fastcall XgSetEcwString(HWND hwnd, const XGStringW& str)
     }
 
     // ソート。
-    std::sort(tate.begin(), tate.end(),
+    std::sort(vert.begin(), vert.end(),
         [](const XG_Hint& a, const XG_Hint& b) {
             return a.m_number < b.m_number;
         }
     );
-    std::sort(yoko.begin(), yoko.end(),
+    std::sort(horz.begin(), horz.end(),
         [](const XG_Hint& a, const XG_Hint& b) {
             return a.m_number < b.m_number;
         }
     );
 
-    if (tate.size() && yoko.size()) {
+    if (vert.size() && horz.size()) {
         // 成功。
         xg_xword = xword;
         xg_solution = xword;
-        if (tate.size() && yoko.size()) {
+        if (vert.size() && horz.size()) {
             xg_bSolved = true;
             xg_bCheckingAnswer = false;
             xg_bShowAnswer = false;
             XgClearNonBlocks();
-            xg_vecVertHints = tate;
-            xg_vecHorzHints = yoko;
+            xg_vecVertHints = vert;
+            xg_vecHorzHints = horz;
         }
 
         xg_vMarks.clear();
@@ -5125,18 +5125,18 @@ void __fastcall XgDrawOneCell(HDC hdc, INT iRow, INT jCol)
 
     // 番号を描画する。
     if (!xg_bNumCroMode) {
-        for (auto& tate : xg_vVertInfo) {
-            if (tate.m_iRow == iRow && tate.m_jCol == jCol) {
+        for (auto& vert : xg_vVertInfo) {
+            if (vert.m_iRow == iRow && vert.m_jCol == jCol) {
                 RECT rc0 = rc;
                 ::OffsetRect(&rc0, c_nThin, c_nThin * 2 / 3);
-                XgDrawCellNumber(hdc, rc0, iRow, jCol, tate.m_number, slot);
+                XgDrawCellNumber(hdc, rc0, iRow, jCol, vert.m_number, slot);
             }
         }
-        for (auto& yoko : xg_vHorzInfo) {
-            if (yoko.m_iRow == iRow && yoko.m_jCol == jCol) {
+        for (auto& horz : xg_vHorzInfo) {
+            if (horz.m_iRow == iRow && horz.m_jCol == jCol) {
                 RECT rc0 = rc;
                 ::OffsetRect(&rc0, c_nThin, c_nThin * 2 / 3);
-                XgDrawCellNumber(hdc, rc0, iRow, jCol, yoko.m_number, slot);
+                XgDrawCellNumber(hdc, rc0, iRow, jCol, horz.m_number, slot);
             }
         }
     } else {
@@ -5890,7 +5890,7 @@ bool __fastcall XgDoLoadCrpFile(HWND hwnd, LPCWSTR pszFile)
     std::vector<XGStringW> rows;
     WCHAR szName[32], szText[128];
     XG_Board xword;
-    std::vector<XG_Hint> tate, yoko;
+    std::vector<XG_Hint> vert, horz;
     bool bOK = false;
 
     const int nWidth = GetPrivateProfileIntW(L"Cross", L"Width", -1, pszFile);
@@ -5975,13 +5975,13 @@ bool __fastcall XgDoLoadCrpFile(HWND hwnd, LPCWSTR pszFile)
                         word = XgNormalizeString(word);
                         for (XG_PlaceInfo& item : xg_vVertInfo) {
                             if (item.m_word == word) {
-                                tate.emplace_back(item.m_number, word, hint);
+                                vert.emplace_back(item.m_number, word, hint);
                                 break;
                             }
                         }
                         for (XG_PlaceInfo& item : xg_vHorzInfo) {
                             if (item.m_word == word) {
-                                yoko.emplace_back(item.m_number, word, hint);
+                                horz.emplace_back(item.m_number, word, hint);
                                 break;
                             }
                         }
@@ -6000,7 +6000,7 @@ bool __fastcall XgDoLoadCrpFile(HWND hwnd, LPCWSTR pszFile)
                         continue;
                     for (XG_PlaceInfo& item : xg_vVertInfo) {
                         if (item.m_number == i + 1) {
-                            tate.emplace_back(item.m_number, item.m_word, str);
+                            vert.emplace_back(item.m_number, item.m_word, str);
                             break;
                         }
                     }
@@ -6018,7 +6018,7 @@ bool __fastcall XgDoLoadCrpFile(HWND hwnd, LPCWSTR pszFile)
                         continue;
                     for (XG_PlaceInfo& item : xg_vHorzInfo) {
                         if (item.m_number == i + 1) {
-                            yoko.emplace_back(item.m_number, item.m_word, str);
+                            horz.emplace_back(item.m_number, item.m_word, str);
                             break;
                         }
                     }
@@ -6029,36 +6029,36 @@ bool __fastcall XgDoLoadCrpFile(HWND hwnd, LPCWSTR pszFile)
         // 不足分を追加。
         for (XG_PlaceInfo& item : xg_vHorzInfo) {
             bool found = false;
-            for (auto& info : yoko) {
+            for (auto& info : horz) {
                 if (item.m_number == info.m_number) {
                     found = true;
                     break;
                 }
             }
             if (!found) {
-                yoko.emplace_back(item.m_number, item.m_word, L"");
+                horz.emplace_back(item.m_number, item.m_word, L"");
             }
         }
         for (XG_PlaceInfo& item : xg_vVertInfo) {
             bool found = false;
-            for (auto& info : tate) {
+            for (auto& info : vert) {
                 if (item.m_number == info.m_number) {
                     found = true;
                     break;
                 }
             }
             if (!found) {
-                tate.emplace_back(item.m_number, item.m_word, L"");
+                vert.emplace_back(item.m_number, item.m_word, L"");
             }
         }
 
         // ソート。
-        std::sort(tate.begin(), tate.end(),
+        std::sort(vert.begin(), vert.end(),
             [](const XG_Hint& a, const XG_Hint& b) {
                 return a.m_number < b.m_number;
             }
         );
-        std::sort(yoko.begin(), yoko.end(),
+        std::sort(horz.begin(), horz.end(),
             [](const XG_Hint& a, const XG_Hint& b) {
                 return a.m_number < b.m_number;
             }
@@ -6067,13 +6067,13 @@ bool __fastcall XgDoLoadCrpFile(HWND hwnd, LPCWSTR pszFile)
         // 成功。
         xg_xword = xword;
         xg_solution = xword;
-        if (tate.size() && yoko.size()) {
+        if (vert.size() && horz.size()) {
             xg_bSolved = true;
             xg_bCheckingAnswer = false;
             xg_bShowAnswer = false;
             XgClearNonBlocks();
-            xg_vecVertHints = std::move(tate);
-            xg_vecHorzHints = std::move(yoko);
+            xg_vecVertHints = std::move(vert);
+            xg_vecHorzHints = std::move(horz);
         }
 
         // ファイルパスをセットする。
