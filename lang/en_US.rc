@@ -551,10 +551,11 @@ IDB_DELETEPAT BITMAP "res/1033_Bitmap_102.bmp"
     }
     POPUP "Popup #1"
     {
-        MENUITEM "Copy the clues (DOWN)", ID_COPYVHINTSSTYLE0
-        MENUITEM "Copy the clues (ACROSS)", ID_COPYHHINTSSTYLE0
+        MENUITEM "Copy the clues (&DOWN)", ID_COPYVHINTSSTYLE0
+        MENUITEM "Copy the clues (&ACROSS)", ID_COPYHHINTSSTYLE0
+        MENUITEM "&Jump", ID_JUMPNUMBER
         MENUITEM SEPARATOR
-        MENUITEM "Copy the clues all", ID_COPYHINTSSTYLE0
+        MENUITEM "Copy the clues &all", ID_COPYHINTSSTYLE0
     }
 }
 

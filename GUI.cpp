@@ -5838,6 +5838,31 @@ void XgCheckAnswer(HWND hwnd)
                         XgLoadStringDx2(IDS_CORRECTANSWER), MB_ICONINFORMATION);
 }
 
+// カギにジャンプする。
+void __fastcall XgJumpNumber(HWND hwnd, INT nNumber, BOOL bVert)
+{
+    if (bVert) { // タテ。
+        for (auto& tate : xg_vVertInfo) {
+            if (nNumber == tate.m_number) {
+                xg_caret_pos.m_i = tate.m_iRow;
+                xg_caret_pos.m_j = tate.m_jCol;
+                break;
+            }
+        }
+    } else { // ヨコ。
+        for (auto& yoko : xg_vHorzInfo) {
+            if (nNumber == yoko.m_number) {
+                xg_caret_pos.m_i = yoko.m_iRow;
+                xg_caret_pos.m_j = yoko.m_jCol;
+                break;
+            }
+        }
+    }
+    // 表示を更新する。
+    XgEnsureCaretVisible(hwnd);
+    XgUpdateStatusBar(hwnd);
+}
+
 // コマンドを実行する。
 void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT /*codeNotify*/)
 {
@@ -7197,6 +7222,11 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT /*codeNo
         }
         break;
 
+    case ID_JUMPNUMBER:
+        // ジャンプ。
+        XgJumpNumber(hwnd, xg_hints_wnd.m_nNumber, xg_hints_wnd.m_bVert);
+        break;
+
     default:
         if (!XgOnCommandExtra(hwnd, id)) {
             ::MessageBeep(0xFFFFFFFF);
@@ -7557,31 +7587,14 @@ void MainWnd_OnNotify(HWND hwnd, int idCtrl, LPNMHDR pnmh) noexcept
             case 0: // マス位置。
                 xg_caret_pos.m_j = dialog.m_jCol - 1;
                 xg_caret_pos.m_i = dialog.m_iRow - 1;
+                // 表示を更新する。
+                XgEnsureCaretVisible(hwnd);
+                XgUpdateStatusBar(hwnd);
                 break;
             case 1: // カギ位置。
-                if (dialog.m_bVert) { // タテ。
-                    for (auto& tate : xg_vVertInfo) {
-                        if (dialog.m_nNumber == tate.m_number) {
-                            xg_caret_pos.m_i = tate.m_iRow;
-                            xg_caret_pos.m_j = tate.m_jCol;
-                            break;
-                        }
-                    }
-                } else { // ヨコ。
-                    for (auto& yoko : xg_vHorzInfo) {
-                        if (dialog.m_nNumber == yoko.m_number) {
-                            xg_caret_pos.m_i = yoko.m_iRow;
-                            xg_caret_pos.m_j = yoko.m_jCol;
-                            break;
-                        }
-                    }
-                }
+                XgJumpNumber(hwnd, dialog.m_nNumber, dialog.m_bVert);
                 break;
             }
-
-            // 表示を更新する。
-            XgEnsureCaretVisible(hwnd);
-            XgUpdateStatusBar(hwnd);
         }
         return;
     }

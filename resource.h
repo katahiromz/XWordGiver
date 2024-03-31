@@ -506,6 +506,7 @@
 #define ID_SWAP_TOP_BOTTOM                  601
 #define ID_PATEDIT                          602
 #define ID_CHECKANSWER                      603
+#define ID_JUMPNUMBER                       604
 #define ID_TT_BASE                          10000
 
 #define ctl2                                1185

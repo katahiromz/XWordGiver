@@ -376,7 +376,7 @@ extern XG_Pos xg_caret_pos;
 
 struct XG_Hint
 {
-    int             m_number;
+    int          m_number;
     XGStringW    m_strWord;
     XGStringW    m_strHint;
 

@@ -478,6 +478,7 @@ public:
             ::SendMessageW(hwndCtrl, WM_SETFONT,
                 reinterpret_cast<WPARAM>(xg_hHintsUIFont),
                 TRUE);
+            ::SetWindowLongPtrW(hwndCtrl, GWLP_USERDATA, MAKELONG(hint.m_number, TRUE));
             if (hwndCtrl == nullptr)
                 return FALSE;
 
@@ -513,6 +514,7 @@ public:
             ::SendMessageW(hwndCtrl, WM_SETFONT,
                 reinterpret_cast<WPARAM>(xg_hHintsUIFont),
                 TRUE);
+            ::SetWindowLongPtrW(hwndCtrl, GWLP_USERDATA, MAKELONG(hint.m_number, FALSE));
             if (hwndCtrl == nullptr)
                 return FALSE;
 
@@ -589,6 +591,10 @@ public:
     // WM_COMMAND
     void OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT codeNotify) noexcept
     {
+        if (id == ID_JUMPNUMBER) {
+            PostMessageW(GetParent(hwnd), WM_COMMAND, id, 0);
+            return;
+        }
         if (codeNotify == STN_CLICKED) {
             for (size_t i = 0; i < xg_vecVertHints.size(); ++i) {
                 if (xg_ahwndVertStatics[i] == hwndCtl) {
@@ -724,6 +730,10 @@ public:
         lpMinMaxInfo->ptMinTrackSize.y = 128;
     }
 
+    // ジャンプ先番号。
+    INT m_nNumber = 0;
+    BOOL m_bVert = FALSE;
+
     // WM_CONTEXTMENU
     // 「ヒント」ウィンドウのコンテキストメニュー。
     void OnContextMenu(HWND hwnd, HWND hwndContext, UINT xPos, UINT yPos) noexcept
@@ -733,9 +743,18 @@ public:
         GetClassNameW(hwndContext, szClass, _countof(szClass));
         if (lstrcmpiW(szClass, L"EDIT") == 0)
             return;
+        BOOL bStatic = (lstrcmpiW(szClass, L"STATIC") == 0);
 
+        // メニューを読み込む。
         HMENU hMenu = LoadMenuW(xg_hInstance, MAKEINTRESOURCEW(2));
         HMENU hSubMenu = GetSubMenu(hMenu, 1);
+
+        // スタティックでなければ、番号ジャンプのメニュー項目を削除する。
+        LONG nData = (LONG)::GetWindowLongPtrW(hwndContext, GWLP_USERDATA);
+        m_nNumber = LOWORD(nData);
+        m_bVert = HIWORD(nData);
+        if (!bStatic || !m_nNumber)
+            DeleteMenu(hSubMenu, ID_JUMPNUMBER, MF_BYCOMMAND);
 
         // 右クリックメニューを表示する。
         ::SetForegroundWindow(hwnd);

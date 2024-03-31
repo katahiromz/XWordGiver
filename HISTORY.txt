@@ -283,6 +283,7 @@
     - Used QString to speed up string processing.
     - Proper exclusive control (Part 2).
     - Added "Jump" feature on double-clicking status bar.
+    - Added "Jump" feature on Right-clicking the clue label.
 
 # 開発履歴 (Japanese)
 
@@ -882,3 +883,4 @@
     - 文字列処理を高速化するためにQStringを使用した。
     - 排他制御をきちんとする（その２）。
     - ステータスバーをダブルクリックしたときの「ジャンプ」機能を追加。
+    - ヒントのラベルを右クリックしたときの「ジャンプ」機能を追加。
