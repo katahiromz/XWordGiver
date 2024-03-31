@@ -8002,7 +8002,7 @@ void __fastcall XgCloseThreads(void) noexcept
 // スレッドを待つ。
 void __fastcall XgWaitForThreads(void) noexcept
 {
-    ::WaitForMultipleObjects(xg_dwThreadCount, xg_ahThreads.data(), true, 1000);
+    ::WaitForMultipleObjects(xg_dwThreadCount, xg_ahThreads.data(), TRUE, INFINITE);
 }
 
 // スレッドが終了したか？

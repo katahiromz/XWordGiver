@@ -32,6 +32,7 @@ public:
         ::EnterCriticalSection(&xg_csLock);
         xg_bCancelled = true;
         ::LeaveCriticalSection(&xg_csLock);
+        // スレッドを待つ。
         XgWaitForThreads();
         // スレッドを閉じる。
         XgCloseThreads();
