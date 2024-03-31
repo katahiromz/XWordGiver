@@ -53,8 +53,8 @@ IDB_DELETEPAT BITMAP "res/1033_Bitmap_102.bmp"
         MENUITEM "&Undo\tCtrl+Z", ID_UNDO
         MENUITEM "&Redo\tCtrl+Y", ID_REDO
         MENUITEM SEPARATOR
-        MENUITEM "Show candidates (DOWN)...", ID_OPENCANDSWNDVERT
-        MENUITEM "Show candidates (ACROSS)...", ID_OPENCANDSWNDHORZ
+        MENUITEM "Show input candidates (DOWN)...", ID_OPENCANDSWNDVERT
+        MENUITEM "Show input candidates (ACROSS)...", ID_OPENCANDSWNDHORZ
         MENUITEM SEPARATOR
         MENUITEM "&Copy the board\tCtrl+C", ID_COPY
         MENUITEM "Copy the board as &image\tShift+Ctrl+C", ID_COPYASIMAGE
@@ -172,8 +172,8 @@ IDB_DELETEPAT BITMAP "res/1033_Bitmap_102.bmp"
         MENUITEM "Search the word on the Web (DOWN)\tAlt+Down", ID_ONLINEDICTV
         MENUITEM "Search the word on the Web (ACROSS)\tAlt+Right", ID_ONLINEDICTH
         MENUITEM SEPARATOR
-        MENUITEM "Show the &candidates (&DOWN)\tShift+Ctrl+↓", ID_OPENCANDSWNDVERT
-        MENUITEM "Show the &candidates (&ACROSS)\tShift+Ctrl+→", ID_OPENCANDSWNDHORZ
+        MENUITEM "Show input &candidates (&DOWN)\tShift+Ctrl+↓", ID_OPENCANDSWNDVERT
+        MENUITEM "Show input &candidates (&ACROSS)\tShift+Ctrl+→", ID_OPENCANDSWNDHORZ
     }
     POPUP "&Policy"
     {
@@ -536,8 +536,8 @@ IDB_DELETEPAT BITMAP "res/1033_Bitmap_102.bmp"
         MENUITEM "Copy the DOWN word", ID_COPYWORDVERT, MENUBREAK
         MENUITEM "Copy the ACROSS word", ID_COPYWORDHORZ
         MENUITEM SEPARATOR
-        MENUITEM "Show candidates (DOWN)\tShift+Ctrl+↓", ID_OPENCANDSWNDVERT
-        MENUITEM "Show candidates (ACROSS)\tShift+Ctrl+→", ID_OPENCANDSWNDHORZ
+        MENUITEM "Show input candidates (DOWN)\tShift+Ctrl+↓", ID_OPENCANDSWNDVERT
+        MENUITEM "Show input candidates (ACROSS)\tShift+Ctrl+→", ID_OPENCANDSWNDHORZ
         MENUITEM SEPARATOR
         MENUITEM "Web search word (DOWN)\tAlt+↓", ID_ONLINEDICTV
         MENUITEM "Web search word (ACROSS)\tAlt+→", ID_ONLINEDICTH
@@ -1659,8 +1659,8 @@ STRINGTABLE
     IDS_ACROSSLEFT, "[A."
     IDS_KEYRIGHT, "]"
     IDS_DOT, ". "
-    IDS_CANDIDATES, "Candidates"
-    IDS_NOCANDIDATES, "No candidates"
+    IDS_CANDIDATES, "Input Candidates"
+    IDS_NOCANDIDATES, "No input candidates"
     IDS_KEYLEFT, "["
     IDS_PARABOLD, "<p align=""center""><b>"
     IDS_ENDPARABOLD, "</b></p>"

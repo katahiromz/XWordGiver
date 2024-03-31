@@ -53,8 +53,8 @@ IDB_DELETEPAT BITMAP "res/1041_Bitmap_102.bmp"
         MENUITEM "元に戻す(&U)\tCtrl+Z", ID_UNDO
         MENUITEM "やり直す(&R)\tCtrl+Y", ID_REDO
         MENUITEM SEPARATOR
-        MENUITEM "タテの候補(&D)...", ID_OPENCANDSWNDVERT
-        MENUITEM "ヨコの候補(&A)...", ID_OPENCANDSWNDHORZ
+        MENUITEM "タテの入力候補(&D)...", ID_OPENCANDSWNDVERT
+        MENUITEM "ヨコの入力候補(&A)...", ID_OPENCANDSWNDHORZ
         MENUITEM SEPARATOR
         MENUITEM "盤面のコピー(&C)\tCtrl+C", ID_COPY
         MENUITEM "盤面を画像としてコピー(&I)\tShift+Ctrl+C", ID_COPYASIMAGE
@@ -172,8 +172,8 @@ IDB_DELETEPAT BITMAP "res/1041_Bitmap_102.bmp"
         MENUITEM "単語をウェブ検索(&V) (タテ)\tAlt+↓", ID_ONLINEDICTV
         MENUITEM "単語をウェブ検索(&H) (ヨコ)\tAlt+→", ID_ONLINEDICTH
         MENUITEM SEPARATOR
-        MENUITEM "候補を表示(&C) (タテ)\tShift+Ctrl+↓", ID_OPENCANDSWNDVERT
-        MENUITEM "候補を表示(&A) (ヨコ)\tShift+Ctrl+→", ID_OPENCANDSWNDHORZ
+        MENUITEM "入力候補を表示(&C) (タテ)\tShift+Ctrl+↓", ID_OPENCANDSWNDVERT
+        MENUITEM "入力候補を表示(&A) (ヨコ)\tShift+Ctrl+→", ID_OPENCANDSWNDHORZ
     }
     POPUP "ルール(&R)"
     {
@@ -539,8 +539,8 @@ IDB_DELETEPAT BITMAP "res/1041_Bitmap_102.bmp"
         MENUITEM "タテの単語をコピー(&V)", ID_COPYWORDVERT, MENUBREAK
         MENUITEM "ヨコの単語をコピー(&H)", ID_COPYWORDHORZ
         MENUITEM SEPARATOR
-        MENUITEM "候補を表示(&C) (タテ)\tShift+Ctrl+↓", ID_OPENCANDSWNDVERT
-        MENUITEM "候補を表示(&A) (ヨコ)\tShift+Ctrl+→", ID_OPENCANDSWNDHORZ
+        MENUITEM "入力候補を表示(&C) (タテ)\tShift+Ctrl+↓", ID_OPENCANDSWNDVERT
+        MENUITEM "入力候補を表示(&A) (ヨコ)\tShift+Ctrl+→", ID_OPENCANDSWNDHORZ
         MENUITEM SEPARATOR
         MENUITEM "単語をウェブ検索(&V) (タテ)\tAlt+↓", ID_ONLINEDICTV
         MENUITEM "単語をウェブ検索(&H) (ヨコ)\tAlt+→", ID_ONLINEDICTH
@@ -1662,8 +1662,8 @@ STRINGTABLE
     IDS_ACROSSLEFT, "【ヨコ"
     IDS_KEYRIGHT, "】"
     IDS_DOT, ". "
-    IDS_CANDIDATES, "候補"
-    IDS_NOCANDIDATES, "候補がありません。"
+    IDS_CANDIDATES, "入力候補"
+    IDS_NOCANDIDATES, "入力候補がありません。"
     IDS_KEYLEFT, "【"
     IDS_PARABOLD, "<p align=""center""><b>"
     IDS_ENDPARABOLD, "</b></p>"

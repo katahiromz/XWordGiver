@@ -287,6 +287,7 @@
     - The "UI font" settings are no longer read or written in the LOOKS file.
     - Relaxed rule checking in the "Candidates" window.
     - Now able to zoom the "Candidates" window.
+    - Renamed "Candidates" as "Input Candidates".
 
 # 開発履歴 (Japanese)
 
@@ -890,3 +891,4 @@
     - 「UIフォント」設定をLOOKSファイルで読み書きしないようにした。
     - 「候補」ウィンドウのルールチェックを緩和。
     - 「候補」ウィンドウのズームが可能に。
+    - 「候補」を「入力候補」に改名。
