@@ -108,7 +108,7 @@ void MScrollView::EnsureCtrlVisible(HWND hwndCtrl, bool update_all/* = true*/) n
         UpdateAll();
 }
 
-void MScrollView::SetExtentForAllCtrls() noexcept
+void MScrollView::SetExtentForAllCtrls(INT cxExtra, INT cyExtra) noexcept
 {
     Extent().cx = Extent().cy = 0;
     const int siz = static_cast<int>(size());
@@ -123,6 +123,9 @@ void MScrollView::SetExtentForAllCtrls() noexcept
         if (Extent().cy < rcCtrl.bottom - 1)
             Extent().cy = rcCtrl.bottom - 1;
     }
+
+    Extent().cx += cxExtra;
+    Extent().cy += cyExtra;
 
     MRect rc;
     ::GetClientRect(m_hwndParent, &rc);

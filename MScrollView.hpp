@@ -70,7 +70,7 @@ public:
     // extent
           MSize& Extent() noexcept;
     const MSize& Extent() const noexcept;
-    void SetExtentForAllCtrls() noexcept;
+    void SetExtentForAllCtrls(INT cxExtra = 0, INT cyExtra = 0) noexcept;
 
     // ensure visible
     void EnsureCtrlVisible(HWND hwndCtrl, bool update_all = true) noexcept;

@@ -277,8 +277,7 @@ public:
         ::SelectObject(hdc, hFontOld);
         ::DeleteDC(hdc);
 
-        xg_svCandsScrollView.SetExtentForAllCtrls();
-        xg_svCandsScrollView.Extent().cy += 4;
+        xg_svCandsScrollView.SetExtentForAllCtrls(8, 8);
         xg_svCandsScrollView.EnsureCtrlVisible(::GetFocus(), false);
         xg_svCandsScrollView.UpdateAll();
 
