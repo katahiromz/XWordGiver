@@ -20,6 +20,9 @@ bool XgOpenHintsByNotepad(HWND /*hwnd*/, bool bShowAnswer);
 // ヒントを表示するかどうか。
 extern BOOL xg_bShowClues;
 
+// クロスワードをチェックする。
+bool __fastcall XgCheckCrossWord(HWND hwnd, bool check_words = true, bool loose = false);
+
 //////////////////////////////////////////////////////////////////////////////
 
 // UIフォントの論理オブジェクトを取得する。

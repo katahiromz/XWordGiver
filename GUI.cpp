@@ -1292,7 +1292,7 @@ bool __fastcall XgSaveSettings(void)
 //////////////////////////////////////////////////////////////////////////////
 
 // クロスワードをチェックする。
-bool __fastcall XgCheckCrossWord(HWND hwnd, bool check_words = true)
+bool __fastcall XgCheckCrossWord(HWND hwnd, bool check_words, bool loose)
 {
     // 四隅黒禁。
     if ((xg_nRules & RULE_DONTCORNERBLACK) && xg_xword.CornerBlack()) {
@@ -1332,20 +1332,22 @@ bool __fastcall XgCheckCrossWord(HWND hwnd, bool check_words = true)
         }
     }
 
-    // 黒マス点対称。
-    if ((xg_nRules & RULE_POINTSYMMETRY) && !xg_xword.IsPointSymmetry()) {
-        XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_NOTPOINTSYMMETRY), nullptr, MB_ICONERROR);
-        return false;
-    }
+    if (!loose) {
+        // 黒マス点対称。
+        if ((xg_nRules & RULE_POINTSYMMETRY) && !xg_xword.IsPointSymmetry()) {
+            XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_NOTPOINTSYMMETRY), nullptr, MB_ICONERROR);
+            return false;
+        }
 
-    // 黒マス線対称。
-    if ((xg_nRules & RULE_LINESYMMETRYV) && !xg_xword.IsLineSymmetryV()) {
-        XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_NOTLINESYMMETRYV), nullptr, MB_ICONERROR);
-        return false;
-    }
-    if ((xg_nRules & RULE_LINESYMMETRYH) && !xg_xword.IsLineSymmetryH()) {
-        XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_NOTLINESYMMETRYH), nullptr, MB_ICONERROR);
-        return false;
+        // 黒マス線対称。
+        if ((xg_nRules & RULE_LINESYMMETRYV) && !xg_xword.IsLineSymmetryV()) {
+            XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_NOTLINESYMMETRYV), nullptr, MB_ICONERROR);
+            return false;
+        }
+        if ((xg_nRules & RULE_LINESYMMETRYH) && !xg_xword.IsLineSymmetryH()) {
+            XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_NOTLINESYMMETRYH), nullptr, MB_ICONERROR);
+            return false;
+        }
     }
 
     // 偶数行数で黒マス線対称（タテ）の場合は連黒禁は不可。

@@ -8,9 +8,6 @@ struct XG_CandsButtonData
     WNDPROC m_fnOldWndProc;
 };
 
-// クロスワードをチェックする。
-bool __fastcall XgCheckCrossWord(HWND hwnd, bool check_words);
-
 // 候補ウィンドウ。
 class XG_CandsWnd : public XG_Window
 {
@@ -143,7 +140,7 @@ public:
             XG_CandsWnd::xg_vecCandidates.resize(xg_nMaxCandidates);
 
         if (XG_CandsWnd::xg_vecCandidates.empty()) {
-            if (XgCheckCrossWord(hwnd, false)) {
+            if (XgCheckCrossWord(hwnd, false, true)) {
                 ::MessageBeep(0xFFFFFFFF);
             } else {
                 return false;
