@@ -280,6 +280,7 @@
 - 2024-XX-YY ver.5.1.9
     - Made the color of the black cells a little darker.
     - Improved Kana dictionaries more.
+    - Used QString to speed up string processing.
 
 # 開発履歴 (Japanese)
 
@@ -876,3 +877,4 @@
     - 「ヨコのカギ」と「タテのカギ」のアクセスキーを修正。
     - 黒マスの色を少し濃くした。
     - さらにカナ辞書を改良。
+    - 文字列処理を高速化するためにQStringを使用した。
