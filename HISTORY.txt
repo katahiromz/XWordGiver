@@ -284,6 +284,7 @@
     - Proper exclusive control (Part 2).
     - Added "Jump" feature on double-clicking status bar.
     - Added "Jump" feature on Right-clicking the clue label.
+    - The "UI font" settings are no longer read or written in the LOOKS file.
 
 # 開発履歴 (Japanese)
 
@@ -884,3 +885,4 @@
     - 排他制御をきちんとする（その２）。
     - ステータスバーをダブルクリックしたときの「ジャンプ」機能を追加。
     - ヒントのラベルを右クリックしたときの「ジャンプ」機能を追加。
+    - 「UIフォント」設定をLOOKSファイルで読み書きしないようにした。

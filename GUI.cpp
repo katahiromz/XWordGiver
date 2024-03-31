@@ -1974,9 +1974,6 @@ BOOL XgImportLooks(HWND hwnd, LPCWSTR pszFileName)
     GetPrivateProfileStringW(L"Looks", L"SmallFont", L"", szText, _countof(szText), pszFileName);
     StringCchCopyW(xg_szSmallFont, _countof(xg_szSmallFont), szText);
 
-    GetPrivateProfileStringW(L"Looks", L"UIFont", L"", szText, _countof(szText), pszFileName);
-    StringCchCopyW(xg_szUIFont, _countof(xg_szUIFont), szText);
-
     // スケルトンビューか？
     if (XgIsUserJapanese())
         GetPrivateProfileStringW(L"Looks", L"SkeletonView", L"0", szText, _countof(szText), pszFileName);
@@ -2051,9 +2048,6 @@ BOOL XgExportLooks(HWND hwnd, LPCWSTR pszFileName)
 
     // 小さい文字のフォント。
     WritePrivateProfileStringW(L"Looks", L"SmallFont", xg_szSmallFont, pszFileName);
-
-    // UIフォント。
-    WritePrivateProfileStringW(L"Looks", L"UIFont", xg_szUIFont, pszFileName);
 
     // もし黒マス画像が指定されていれば
     if (xg_strBlackCellImage.size() && xg_strBlackCellImage != XgLoadStringDx1(IDS_NONE))
