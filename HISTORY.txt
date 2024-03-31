@@ -282,6 +282,7 @@
     - Improved Kana dictionaries more.
     - Used QString to speed up string processing.
     - Proper exclusive control (Part 2).
+    - Added "Jump" feature on double-clicking status bar.
 
 # 開発履歴 (Japanese)
 
@@ -880,3 +881,4 @@
     - さらにカナ辞書を改良。
     - 文字列処理を高速化するためにQStringを使用した。
     - 排他制御をきちんとする（その２）。
+    - ステータスバーをダブルクリックしたときの「ジャンプ」機能を追加。

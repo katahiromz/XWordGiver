@@ -44,6 +44,7 @@
 #include "XG_CanvasWindow.hpp"
 #include "XG_UILanguageDialog.hpp"
 #include "XG_PatEditDialog.hpp"
+#include "XG_JumpDialog.hpp"
 
 #undef HANDLE_WM_MOUSEWHEEL     // might be wrong
 #define HANDLE_WM_MOUSEWHEEL(hwnd, wParam, lParam, fn) \
@@ -53,6 +54,9 @@
 #undef FORWARD_WM_MOUSEWHEEL    // might be wrong
 #define FORWARD_WM_MOUSEWHEEL(hwnd, xPos, yPos, zDelta, fwKeys, fn) \
     (void)(fn)((hwnd), WM_MOUSEWHEEL, MAKEWPARAM((fwKeys),(zDelta)), MAKELPARAM((xPos),(yPos)))
+
+#define IDW_TOOLBAR 1
+#define IDW_STATUSBAR 2
 
 //////////////////////////////////////////////////////////////////////////////
 // global variables
@@ -7373,20 +7377,19 @@ bool __fastcall MainWnd_OnCreate(HWND hwnd, LPCREATESTRUCT /*lpCreateStruct*/)
         {13, ID_PRINTANSWER, TBSTATE_ENABLED, TBSTYLE_BUTTON},
     };
 
-    xg_hStatusBar = ::CreateStatusWindow(WS_CHILD | WS_VISIBLE, L"", hwnd, 256);
+    xg_hStatusBar = ::CreateStatusWindow(WS_CHILD | WS_VISIBLE, L"", hwnd, IDW_STATUSBAR);
     if (xg_hStatusBar == nullptr)
         return FALSE;
 
     XgUpdateStatusBar(hwnd);
 
     // ツールバーを作成する。
-    constexpr int c_IDW_TOOLBAR = 1;
     xg_hToolBar = ::CreateWindowW(
         TOOLBARCLASSNAMEW, nullptr, 
         WS_CHILD | CCS_TOP | TBSTYLE_TOOLTIPS,
         0, 0, 0, 0,
         hwnd,
-        reinterpret_cast<HMENU>(static_cast<UINT_PTR>(c_IDW_TOOLBAR)),
+        reinterpret_cast<HMENU>(static_cast<UINT_PTR>(IDW_TOOLBAR)),
         xg_hInstance,
         nullptr);
     if (xg_hToolBar == nullptr)
@@ -7546,6 +7549,43 @@ HMENU XgLoadPopupMenu(HWND hwnd, int nPos) noexcept
 // 通知。
 void MainWnd_OnNotify(HWND hwnd, int idCtrl, LPNMHDR pnmh) noexcept
 {
+    if (pnmh->code == NM_DBLCLK && idCtrl == IDW_STATUSBAR) {
+        // ステータスバーがダブルクリックされた。
+        XG_JumpDialog dialog;
+        if (dialog.DoModal(hwnd) == IDOK) {
+            switch (dialog.m_nType) {
+            case 0: // マス位置。
+                xg_caret_pos.m_j = dialog.m_jCol - 1;
+                xg_caret_pos.m_i = dialog.m_iRow - 1;
+                break;
+            case 1: // カギ位置。
+                if (dialog.m_bVert) { // タテ。
+                    for (auto& tate : xg_vVertInfo) {
+                        if (dialog.m_nNumber == tate.m_number) {
+                            xg_caret_pos.m_i = tate.m_iRow;
+                            xg_caret_pos.m_j = tate.m_jCol;
+                            break;
+                        }
+                    }
+                } else { // ヨコ。
+                    for (auto& yoko : xg_vHorzInfo) {
+                        if (dialog.m_nNumber == yoko.m_number) {
+                            xg_caret_pos.m_i = yoko.m_iRow;
+                            xg_caret_pos.m_j = yoko.m_jCol;
+                            break;
+                        }
+                    }
+                }
+                break;
+            }
+
+            // 表示を更新する。
+            XgEnsureCaretVisible(hwnd);
+            XgUpdateStatusBar(hwnd);
+        }
+        return;
+    }
+
     if (pnmh->code == TTN_NEEDTEXT) {
         // ツールチップの情報をセットする。
         LPTOOLTIPTEXT pttt;
