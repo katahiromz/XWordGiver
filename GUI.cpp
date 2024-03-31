@@ -82,6 +82,7 @@ BOOL xg_bShowClues = TRUE;
 
 // 候補ウィンドウ。
 XG_CandsWnd xg_cands_wnd;
+HWND xg_hCandsWnd = NULL;
 
 // [二重マス単語の候補と配置]ダイアログ。
 XG_MarkingDialog xg_hMarkingDlg;
@@ -1437,7 +1438,7 @@ bool XgOpenCandsWnd(HWND hwnd, bool vertical)
     }
 
     // ルールをチェックする。
-    if (!XgRuleCheck(hwnd, FALSE))
+    if (!XgRuleCheck(hwnd, FALSE, TRUE))
         return false;
 
     // 候補ウィンドウを開く。
@@ -5219,7 +5220,7 @@ void __fastcall XgOpenRulesTxt(HWND hwnd)
 }
 
 // 黒マスルールをチェックする。
-BOOL __fastcall XgRuleCheck(HWND hwnd, BOOL bMessageOnSuccess)
+BOOL __fastcall XgRuleCheck(HWND hwnd, BOOL bMessageOnSuccess, BOOL bLoose)
 {
     const XG_Board& board = (xg_bShowAnswer ? xg_solution : xg_xword);
     // 連黒禁。
@@ -5265,24 +5266,27 @@ BOOL __fastcall XgRuleCheck(HWND hwnd, BOOL bMessageOnSuccess)
             }
         }
     }
-    // 黒マス点対称。
-    if (xg_nRules & RULE_POINTSYMMETRY) {
-        if (!board.IsPointSymmetry()) {
-            XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_NOTPOINTSYMMETRY), nullptr, MB_ICONERROR);
-            return FALSE;
+
+    if (!bLoose) { // 判定がゆるくなければ、対称もチェックする。
+        // 黒マス点対称。
+        if (xg_nRules & RULE_POINTSYMMETRY) {
+            if (!board.IsPointSymmetry()) {
+                XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_NOTPOINTSYMMETRY), nullptr, MB_ICONERROR);
+                return FALSE;
+            }
         }
-    }
-    // 黒マス線対称。
-    if (xg_nRules & RULE_LINESYMMETRYV) {
-        if (!board.IsLineSymmetryV()) {
-            XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_NOTLINESYMMETRYV), nullptr, MB_ICONERROR);
-            return FALSE;
+        // 黒マス線対称。
+        if (xg_nRules & RULE_LINESYMMETRYV) {
+            if (!board.IsLineSymmetryV()) {
+                XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_NOTLINESYMMETRYV), nullptr, MB_ICONERROR);
+                return FALSE;
+            }
         }
-    }
-    if (xg_nRules & RULE_LINESYMMETRYH) {
-        if (!board.IsLineSymmetryH()) {
-            XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_NOTLINESYMMETRYH), nullptr, MB_ICONERROR);
-            return FALSE;
+        if (xg_nRules & RULE_LINESYMMETRYH) {
+            if (!board.IsLineSymmetryH()) {
+                XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_NOTLINESYMMETRYH), nullptr, MB_ICONERROR);
+                return FALSE;
+            }
         }
     }
 

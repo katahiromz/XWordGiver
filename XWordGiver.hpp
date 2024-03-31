@@ -720,7 +720,7 @@ void __fastcall XgStartGenerateBlacks(void) noexcept;
 void __fastcall XgUpdateStatusBar(HWND hwnd);
 
 // 黒マスルールをチェックする。
-BOOL __fastcall XgRuleCheck(HWND hwnd, BOOL bMessageOnSuccess);
+BOOL __fastcall XgRuleCheck(HWND hwnd, BOOL bMessageOnSuccess, BOOL bLoose = FALSE);
 
 //////////////////////////////////////////////////////////////////////////////
 
@@ -1517,6 +1517,9 @@ void XgDestroyCandsWnd(void) noexcept;
 HMENU XgLoadPopupMenu(HWND hwnd, int nPos) noexcept;
 // 答え合わせ。
 void XgCheckAnswer(HWND hwnd);
+
+// 候補ウィンドウ。
+extern HWND xg_hCandsWnd;
 
 //////////////////////////////////////////////////////////////////////////////
 

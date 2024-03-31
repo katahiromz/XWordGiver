@@ -285,6 +285,8 @@
     - Added "Jump" feature on double-clicking status bar.
     - Added "Jump" feature on Right-clicking the clue label.
     - The "UI font" settings are no longer read or written in the LOOKS file.
+    - Relaxed rule checking in the "Candidates" window.
+    - Now able to zoom the "Candidates" window.
 
 # 開発履歴 (Japanese)
 
@@ -886,3 +888,5 @@
     - ステータスバーをダブルクリックしたときの「ジャンプ」機能を追加。
     - ヒントのラベルを右クリックしたときの「ジャンプ」機能を追加。
     - 「UIフォント」設定をLOOKSファイルで読み書きしないようにした。
+    - 「候補」ウィンドウのルールチェックを緩和。
+    - 「候補」ウィンドウのズームが可能に。

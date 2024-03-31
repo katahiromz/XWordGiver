@@ -269,6 +269,9 @@ public:
 
         xg_svHintsScrollView.SetExtentForAllCtrls();
         xg_svHintsScrollView.UpdateAll();
+
+        // 再描画。
+        RedrawWindow(hwnd, NULL, NULL, RDW_INVALIDATE | RDW_UPDATENOW | RDW_ALLCHILDREN);
     }
 
     struct XG_HintEditData
@@ -703,6 +706,7 @@ public:
 
         // 再配置。
         ::PostMessageW(hwnd, WM_SIZE, 0, 0);
+        ::PostMessageW(xg_hCandsWnd, WM_SIZE, 0, 0);
     }
 
     // WM_MOUSEWHEEL

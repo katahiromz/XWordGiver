@@ -133,8 +133,7 @@ public:
         for (const auto& cand : cands) {
             XG_Board xword(xg_xword);
             XgApplyCandidate(xword, cand);
-            if (xword.IsValid())
-            {
+            if (xword.IsValid()) {
                 XG_CandsWnd::xg_vecCandidates.emplace_back(cand);
             }
         }
@@ -282,11 +281,16 @@ public:
         xg_svCandsScrollView.Extent().cy += 4;
         xg_svCandsScrollView.EnsureCtrlVisible(::GetFocus(), false);
         xg_svCandsScrollView.UpdateAll();
+
+        // 再描画。
+        RedrawWindow(hwnd, NULL, NULL, RDW_INVALIDATE | RDW_UPDATENOW | RDW_ALLCHILDREN);
     }
 
     // 候補ウィンドウが作成された。
     BOOL OnCreate(HWND hwnd, LPCREATESTRUCT /*lpCreateStruct*/)
     {
+        xg_hCandsWnd = hwnd;
+
         if (xg_hCandsUIFont) {
             ::DeleteObject(xg_hCandsUIFont);
         }
@@ -407,6 +411,7 @@ public:
         xg_hCandsUIFont = nullptr;
 
         SetForegroundWindow(xg_hMainWnd);
+        xg_hCandsWnd = NULL;
     }
 
     void OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT codeNotify)
@@ -430,10 +435,64 @@ public:
         }
     }
 
+    // ズーム。
+    void OnZoom(HWND hwnd, BOOL bZoomIn)
+    {
+        // フォント情報を取得。
+        LOGFONTW *plf = XgGetUIFont();
+        int height = labs(plf->lfHeight);
+        if (height == 0)
+            height = 12;
+        HDC hdc = ::CreateCompatibleDC(nullptr);
+        int pointsize = MulDiv(height, 72, ::GetDeviceCaps(hdc, LOGPIXELSY));
+        ::DeleteDC(hdc);
+
+        // ズームに応じて、フォントサイズを増減。
+        if (bZoomIn)
+            pointsize += 1;
+        else
+            pointsize -= 1;
+
+        // 大きすぎない。小さすぎない。
+        if (pointsize > 25)
+            pointsize = 25;
+        if (pointsize < 8)
+            pointsize = 8;
+
+        // フォント設定を更新。
+        StringCchPrintfW(xg_szUIFont, _countof(xg_szUIFont), L"%s, %d", plf->lfFaceName, pointsize);
+
+        // フォントを再作成。
+        if (xg_hCandsUIFont)
+            ::DeleteObject(xg_hCandsUIFont);
+        xg_hCandsUIFont = ::CreateFontIndirectW(XgGetUIFont());
+
+        // 再描画をOFFにする。
+        SetWindowRedraw(hwnd, FALSE);
+
+        // フォントを指定。
+        for (HWND hwnd : xg_ahwndCandButtons) {
+            SetWindowFont(hwnd, xg_hCandsUIFont, TRUE);
+        }
+
+        // 再描画をONにする。
+        SetWindowRedraw(hwnd, TRUE);
+
+        // 再配置。
+        ::PostMessageW(hwnd, WM_SIZE, 0, 0);
+        ::PostMessageW(xg_hHintsWnd, WM_SIZE, 0, 0);
+    }
+
     // マウスホイールが回転した。
     void OnMouseWheel(HWND hwnd, int xPos, int yPos, int zDelta, UINT fwKeys) noexcept
     {
-        if (::GetAsyncKeyState(VK_SHIFT) < 0) {
+        if (::GetAsyncKeyState(VK_CONTROL) < 0) {
+            if (zDelta < 0) {
+                OnZoom(hwnd, FALSE);
+            } else if (zDelta > 0) {
+                OnZoom(hwnd, TRUE);
+            }
+        } else if (::GetAsyncKeyState(VK_SHIFT) < 0) {
             if (zDelta < 0)
                 ::PostMessageW(hwnd, WM_HSCROLL, MAKEWPARAM(SB_LINEDOWN, 0), 0);
             else if (zDelta > 0)
