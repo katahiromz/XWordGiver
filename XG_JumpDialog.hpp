@@ -19,7 +19,6 @@ public:
     {
         if (!xg_bSolved) {
             m_nType = 0;
-            m_nNumber = 1;
         }
 
         if (m_nType == 0) {
@@ -29,6 +28,8 @@ public:
             EnableWindow(GetDlgItem(hwnd, rad3), FALSE);
             EnableWindow(GetDlgItem(hwnd, rad4), FALSE);
             CheckRadioButton(hwnd, rad1, rad2, rad1);
+            SetDlgItemInt(hwnd, edt1, m_jCol, FALSE);
+            SetDlgItemInt(hwnd, edt2, m_iRow, FALSE);
         } else {
             EnableWindow(GetDlgItem(hwnd, edt1), FALSE);
             EnableWindow(GetDlgItem(hwnd, edt2), FALSE);
@@ -36,13 +37,9 @@ public:
             EnableWindow(GetDlgItem(hwnd, rad3), TRUE);
             EnableWindow(GetDlgItem(hwnd, rad4), TRUE);
             CheckRadioButton(hwnd, rad1, rad2, rad2);
+            SetDlgItemInt(hwnd, edt3, m_nNumber, FALSE);
+            CheckRadioButton(hwnd, rad3, rad4, (m_bVert ? rad4 : rad3));
         }
-
-        CheckRadioButton(hwnd, rad3, rad4, (m_bVert ? rad4 : rad3));
-
-        SetDlgItemInt(hwnd, edt1, m_jCol, FALSE);
-        SetDlgItemInt(hwnd, edt2, m_iRow, FALSE);
-        SetDlgItemInt(hwnd, edt3, m_nNumber, FALSE);
     }
 
     BOOL OnOK(HWND hwnd)
@@ -54,20 +51,23 @@ public:
         m_nNumber = GetDlgItemInt(hwnd, edt3, NULL, FALSE);
 
         INT nFixed = 0;
-        if (m_jCol <= 0) {
-            m_jCol = 1;
-            nFixed = edt1;
-        } else if (m_jCol > xg_nCols) {
-            m_jCol = xg_nCols;
-            nFixed = edt1;
-        }
 
-        if (m_iRow <= 0) {
-            m_iRow = 1;
-            nFixed = edt2;
-        } else if (m_iRow > xg_nRows) {
-            m_iRow = xg_nRows;
-            nFixed = edt2;
+        if (m_nType == 0) {
+            if (m_jCol <= 0) {
+                m_jCol = 1;
+                nFixed = edt1;
+            } else if (m_jCol > xg_nCols) {
+                m_jCol = xg_nCols;
+                nFixed = edt1;
+            }
+
+            if (m_iRow <= 0) {
+                m_iRow = 1;
+                nFixed = edt2;
+            } else if (m_iRow > xg_nRows) {
+                m_iRow = xg_nRows;
+                nFixed = edt2;
+            }
         }
 
         if (m_nType == 1) {
@@ -109,8 +109,6 @@ public:
                     nFixed = edt3;
                 }
             }
-        } else {
-            m_nNumber = 1;
         }
 
         if (nFixed) {
