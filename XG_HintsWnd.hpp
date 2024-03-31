@@ -76,7 +76,14 @@ public:
     // ハイライトに背景色を付ける。
     HBRUSH OnCtlColor(HWND hwnd, HDC hdc, HWND hwndChild, int type) noexcept
     {
-        if (hwndChild == s_hwndHighlightVertEdit || hwndChild == s_hwndHighlightHorzEdit)
+        if (hwndChild == m_hwndTrackMenuOn)
+        {
+            constexpr COLORREF rgbColor = RGB(255, 140, 255);
+            SetBkColor(hdc, rgbColor);
+            SetDCBrushColor(hdc, rgbColor);
+            return GetStockBrush(DC_BRUSH);
+        }
+        else if (hwndChild == s_hwndHighlightVertEdit || hwndChild == s_hwndHighlightHorzEdit)
         {
             constexpr COLORREF rgbColor = RGB(140, 255, 255);
             SetBkColor(hdc, rgbColor);
@@ -733,6 +740,7 @@ public:
     // ジャンプ先番号。
     INT m_nNumber = 0;
     BOOL m_bVert = FALSE;
+    HWND m_hwndTrackMenuOn = NULL;
 
     // WM_CONTEXTMENU
     // 「ヒント」ウィンドウのコンテキストメニュー。
@@ -756,10 +764,25 @@ public:
         if (!bStatic || !m_nNumber)
             DeleteMenu(hSubMenu, ID_JUMPNUMBER, MF_BYCOMMAND);
 
+        // スタティックなら色を変える。
+        if (bStatic)
+        {
+            m_hwndTrackMenuOn = hwndContext;
+            InvalidateRect(hwndContext, NULL, TRUE);
+        }
+
         // 右クリックメニューを表示する。
         ::SetForegroundWindow(hwnd);
         constexpr auto flags = TPM_RIGHTBUTTON | TPM_LEFTALIGN | TPM_RETURNCMD;
         const auto nCmd = ::TrackPopupMenu(hSubMenu, flags, xPos, yPos, 0, hwnd, nullptr);
+
+        // 色を戻す。
+        if (bStatic)
+        {
+            m_hwndTrackMenuOn = NULL;
+            InvalidateRect(hwndContext, NULL, TRUE);
+        }
+
         ::PostMessageW(hwnd, WM_NULL, 0, 0);
         if (nCmd)
             ::PostMessageW(xg_hMainWnd, WM_COMMAND, nCmd, 0);
@@ -784,6 +807,7 @@ public:
         HANDLE_MSG(hWnd, WM_GETMINMAXINFO, OnGetMinMaxInfo);
         HANDLE_MSG(hWnd, WM_CONTEXTMENU, OnContextMenu);
         HANDLE_MSG(hWnd, WM_CTLCOLOREDIT, OnCtlColor);
+        HANDLE_MSG(hWnd, WM_CTLCOLORSTATIC, OnCtlColor);
         default:
             return ::DefWindowProcW(hWnd, uMsg, wParam, lParam);
         }
