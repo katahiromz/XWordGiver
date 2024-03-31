@@ -281,6 +281,7 @@
     - Made the color of the black cells a little darker.
     - Improved Kana dictionaries more.
     - Used QString to speed up string processing.
+    - Proper exclusive control (Part 2).
 
 # 開発履歴 (Japanese)
 
@@ -878,3 +879,4 @@
     - 黒マスの色を少し濃くした。
     - さらにカナ辞書を改良。
     - 文字列処理を高速化するためにQStringを使用した。
+    - 排他制御をきちんとする（その２）。
