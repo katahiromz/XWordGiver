@@ -202,7 +202,7 @@ IDB_DELETEPAT BITMAP "res/1033_Bitmap_102.bmp"
         MENUITEM "Open THE&ME.txt", ID_OPENTHEMETXT
         MENUITEM "Open &POLICY.txt", ID_OPENPOLICYTXT
         MENUITEM SEPARATOR
-        MENUITEM "Official &homepage", ID_OPENHOMEPAGE
+        MENUITEM "&Official site", ID_OPENHOMEPAGE
         MENUITEM SEPARATOR
         MENUITEM "Choose block pa&ttern...", ID_OPENPATTERNS
         MENUITEM "&Generate block pattern...", ID_GENERATEBLACKS

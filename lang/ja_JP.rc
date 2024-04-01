@@ -202,7 +202,7 @@ IDB_DELETEPAT BITMAP "res/1041_Bitmap_102.bmp"
         MENUITEM "THEME.txtを開く(&M)", ID_OPENTHEMETXT
         MENUITEM "POLICY.txtを開く(&P)", ID_OPENPOLICYTXT
         MENUITEM SEPARATOR
-        MENUITEM "ホームページを開く(&H)", ID_OPENHOMEPAGE
+        MENUITEM "公式サイトを開く(&O)", ID_OPENHOMEPAGE
         MENUITEM "掲示板を開く(&B)", ID_OPENBBS
         MENUITEM SEPARATOR
         MENUITEM "「クロスワード辞典」を開く(&D)", ID_HELPDICTSITE
