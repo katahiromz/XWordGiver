@@ -176,6 +176,9 @@ static constexpr int c_max_size = 25;
 void XG_UndoBuffer::Commit(UINT id,
     shared_ptr<XG_UndoData> before, shared_ptr<XG_UndoData> after)
 {
+    assert(id == before->m_cmdId);
+    assert(id == after->m_cmdId);
+
     if (!m_enabled)
         return;
 

@@ -238,30 +238,6 @@ public:
 
         // 答えを表示するか？
         xg_bShowAnswerOnGenerate = (IsDlgButtonChecked(hwnd, chx1) == BST_CHECKED);
-
-        // ズームを実際のウィンドウに合わせる。
-        XgFitZoom(GetParent(hwnd));
-        // ステータスバーを更新する。
-        XgUpdateStatusBar(GetParent(hwnd));
-
-        {
-            auto sa1 = std::make_shared<XG_UndoData_SetAll>();
-            auto sa2 = std::make_shared<XG_UndoData_SetAll>();
-            sa1->Get();
-            {
-                // 解を求める（黒マス追加なし）。
-                XgOnSolve_NoAddBlack(xg_hMainWnd);
-            }
-            sa2->Get();
-            // 元に戻す情報を設定する。
-            xg_ubUndoBuffer.Commit(UC_SETALL, sa1, sa2);
-        }
-
-        // 表示を更新する。
-        XgUpdateImage(xg_hMainWnd, 0, 0);
-
-        // ツールバーのUIを更新する。
-        XgUpdateToolBarUI(xg_hMainWnd);
     }
 
     // ダウンロードする。

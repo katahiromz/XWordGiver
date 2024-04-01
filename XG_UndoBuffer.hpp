@@ -22,8 +22,11 @@ enum UNDOABLE_COMMAND_ID : UINT {
 //////////////////////////////////////////////////////////////////////////////
 
 struct XG_UndoData {
-    XG_UndoData() noexcept
+    UNDOABLE_COMMAND_ID m_cmdId;
+
+    XG_UndoData(UNDOABLE_COMMAND_ID cmdId) noexcept
     {
+        m_cmdId = cmdId;
     }
     virtual ~XG_UndoData()
     {
@@ -39,6 +42,8 @@ struct XG_UndoData_SetAt : XG_UndoData {
     XG_Pos  pos;
     WCHAR   ch;
 
+    XG_UndoData_SetAt() : XG_UndoData(UC_SETAT) { }
+
     ~XG_UndoData_SetAt() override
     {
     }
@@ -50,6 +55,8 @@ struct XG_UndoData_SetAt : XG_UndoData {
 struct XG_UndoData_MarksUpdated : XG_UndoData {
     std::vector<XG_Pos> vMarks;
     XGStringW strMarked;
+
+    XG_UndoData_MarksUpdated() : XG_UndoData(UC_MARKS_UPDATED) { }
 
     ~XG_UndoData_MarksUpdated() override
     {
@@ -67,6 +74,8 @@ struct XG_UndoData_HintsUpdated : XG_UndoData {
     std::vector<XG_Hint>        vecHorzHints;
     BOOL bShowHints;
 
+    XG_UndoData_HintsUpdated() : XG_UndoData(UC_HINTS_UPDATED) { }
+
     ~XG_UndoData_HintsUpdated() override
     {
     }
@@ -78,6 +87,8 @@ struct XG_UndoData_HintsUpdated : XG_UndoData {
 
 struct XG_UndoData_NumCro : XG_UndoData {
     bool bNumCro;
+
+    XG_UndoData_NumCro() : XG_UndoData(UC_NUMCRO) { }
 
     ~XG_UndoData_NumCro() override
     {
@@ -91,6 +102,8 @@ struct XG_UndoData_NumCro : XG_UndoData {
 struct XG_UndoData_ViewMode : XG_UndoData {
     XG_VIEW_MODE nViewMode;
 
+    XG_UndoData_ViewMode() : XG_UndoData(UC_VIEWMODE) { }
+
     ~XG_UndoData_ViewMode() override
     {
     }
@@ -102,6 +115,8 @@ struct XG_UndoData_ViewMode : XG_UndoData {
 
 struct XG_UndoData_Boxes : XG_UndoData {
     XGStringW boxes;
+
+    XG_UndoData_Boxes() : XG_UndoData(UC_BOXES) { }
 
     ~XG_UndoData_Boxes() override
     {
@@ -134,6 +149,8 @@ struct XG_UndoData_SetAll : XG_UndoData {
     XG_VIEW_MODE                nViewMode;
     XGStringW                boxes;
 
+    XG_UndoData_SetAll() : XG_UndoData(UC_SETALL) { }
+
     ~XG_UndoData_SetAll() override
     {
     }
@@ -154,24 +171,32 @@ struct XG_UndoInfo {
     XG_UndoInfo(UINT id, XG_UndoData *before, XG_UndoData *after) :
         nCommandID(id), pBefore(before), pAfter(after)
     {
+        assert(nCommandID == pBefore->m_cmdId);
+        assert(nCommandID == pAfter->m_cmdId);
     }
 
     XG_UndoInfo(UINT id, shared_ptr<XG_UndoData> before,
                          shared_ptr<XG_UndoData> after) noexcept :
         nCommandID(id), pBefore(before), pAfter(after)
     {
+        assert(nCommandID == pBefore->m_cmdId);
+        assert(nCommandID == pAfter->m_cmdId);
     }
 
     XG_UndoInfo(const XG_UndoInfo& info) noexcept :
         nCommandID(info.nCommandID), pBefore(info.pBefore),
         pAfter(info.pAfter)
     {
+        assert(nCommandID == pBefore->m_cmdId);
+        assert(nCommandID == pAfter->m_cmdId);
     }
 
     XG_UndoInfo& operator=(const XG_UndoInfo& info) noexcept {
         nCommandID = info.nCommandID;
         pBefore = info.pBefore;
         pAfter = info.pAfter;
+        assert(nCommandID == pBefore->m_cmdId);
+        assert(nCommandID == pAfter->m_cmdId);
         return *this;
     }
 

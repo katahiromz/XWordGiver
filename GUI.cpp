@@ -2789,6 +2789,40 @@ void __fastcall XgFitZoom(HWND hwnd)
     XgUpdateStatusBar(hwnd);
 }
 
+// 結果を表示する。
+void __fastcall XgShowResults(HWND hwnd, BOOL bOK)
+{
+    WCHAR sz[MAX_PATH];
+    if (bOK) {
+        // 成功メッセージを表示する。
+        if (xg_bAutoSave && PathFileExistsW(xg_strFileName.c_str())) {
+            StringCchPrintf(sz, _countof(sz), XgLoadStringDx1(IDS_MADEPROBLEM2),
+                            PathFindFileNameW(xg_strFileName.c_str()),
+                            DWORD(xg_dwlTick2 - xg_dwlTick0) / 1000,
+                            DWORD(xg_dwlTick2 - xg_dwlTick0) / 100 % 10);
+        } else {
+            StringCchPrintf(sz, _countof(sz), XgLoadStringDx1(IDS_MADEPROBLEM),
+                            DWORD(xg_dwlTick2 - xg_dwlTick0) / 1000,
+                            DWORD(xg_dwlTick2 - xg_dwlTick0) / 100 % 10);
+        }
+        XgCenterMessageBoxW(hwnd, sz, XgLoadStringDx2(IDS_RESULTS), MB_ICONINFORMATION);
+        // ヒントを表示する。
+        XgShowHints(hwnd);
+    } else if (xg_bCancelled) {
+        // キャンセルされた。
+        StringCchPrintf(sz, _countof(sz), XgLoadStringDx1(IDS_CANCELLED),
+                        DWORD(xg_dwlTick2 - xg_dwlTick0) / 1000,
+                        DWORD(xg_dwlTick2 - xg_dwlTick0) / 100 % 10);
+        XgCenterMessageBoxW(hwnd, sz, XgLoadStringDx2(IDS_RESULTS), MB_ICONINFORMATION);
+    } else {
+        // 失敗メッセージを表示する。
+        StringCchPrintf(sz, _countof(sz), XgLoadStringDx1(IDS_CANTMAKEPROBLEM),
+                        DWORD(xg_dwlTick2 - xg_dwlTick0) / 1000,
+                        DWORD(xg_dwlTick2 - xg_dwlTick0) / 100 % 10);
+        XgCenterMessageBoxW(hwnd, sz, XgLoadStringDx2(IDS_RESULTS), MB_ICONERROR);
+    }
+}
+
 // 自動的にPAT.txtから選んで問題を作成する。
 TRIVALUE XgGenerateFromPat(HWND hwnd)
 {
@@ -2830,10 +2864,19 @@ TRIVALUE XgGenerateFromPat(HWND hwnd)
     size_t iPat = g() % patterns.size();
 #endif
 
+    // 元に戻す情報を取得。
+    auto sa1 = std::make_shared<XG_UndoData_SetAll>();
+    sa1->Get();
+
     // コピー＆貼り付け。
     auto& pat = patterns[iPat];
-    XgPasteBoard(xg_hMainWnd, pat.text);
+    XgPasteBoard(hwnd, pat.text);
     XgUpdateImage(hwnd);
+
+    // 元に戻す情報を設定。
+    auto sa2 = std::make_shared<XG_UndoData_SetAll>();
+    sa2->Get();
+    xg_ubUndoBuffer.Commit(UC_SETALL, sa1, sa2);
 
     // 解を求める（黒マス追加なし）。結果を表示しない。
     XgOnSolve_NoAddBlackNoResults(hwnd);
@@ -2841,86 +2884,22 @@ TRIVALUE XgGenerateFromPat(HWND hwnd)
     xg_bShowAnswer = xg_bShowAnswerOnGenerate;
     XgUpdateImage(hwnd);
 
+    if (xg_bSolved) {
+        // 番号とヒントを付ける。
+        xg_solution.DoNumberingNoCheck();
+        XgUpdateHints();
+
+        // 元に戻す情報を設定。
+        auto sa3 = std::make_shared<XG_UndoData_SetAll>();
+        sa3->Get();
+        xg_ubUndoBuffer.Commit(UC_SETALL, sa2, sa3);
+
+        // 結果を表示する。
+        XgShowResults(hwnd, TRUE);
+    }
+
     // 成功か失敗。
     return xg_bSolved ? TV_POSITIVE : TV_NEGATIVE;
-}
-
-// 問題の作成。
-bool __fastcall XgOnGenerate(HWND hwnd)
-{
-    INT_PTR nID;
-    ::EnableWindow(xg_hwndInputPalette, FALSE);
-    {
-        // [問題の作成]ダイアログ。
-        XG_GenDialog dialog;
-        nID = static_cast<int>(dialog.DoModal(hwnd));
-    }
-    ::EnableWindow(xg_hwndInputPalette, TRUE);
-    if (nID != IDOK) {
-        return false;
-    }
-
-    if (xg_bChoosePAT) { // 複数でなく、自動的にPAT.txtから選択するか？
-        auto tri_value = XgGenerateFromPat(hwnd);
-        if (tri_value == TV_NEGATIVE)
-            return false; // 失敗。
-        if (tri_value == TV_POSITIVE)
-            return true; // 成功。
-        // さもなくばパターンを生成。
-    }
-
-    xg_bSolvingEmpty = true;
-    xg_bNoAddBlack = false;
-    xg_nNumberGenerated = 0;
-    s_bOutOfDiskSpace = false;
-    xg_strHeader.clear();
-    xg_strNotes.clear();
-    xg_strFileName.clear();
-    // ナンクロモードをリセットする。
-    xg_bNumCroMode = false;
-    xg_mapNumCro1.clear();
-    xg_mapNumCro2.clear();
-
-    // ズームを実際のウィンドウに合わせる。
-    XgFitZoom(hwnd);
-    // ステータスバーを更新する。
-    XgUpdateStatusBar(hwnd);
-
-    // 辞書を読み込む。
-    XgLoadDictFile(xg_dict_name.c_str());
-    XgSetInputModeFromDict(hwnd);
-    // 計算時間を求めるために、開始時間をセットする。
-    xg_dwlTick0 = ::GetTickCount64();
-    // キャンセルダイアログを表示し、実行を開始する。
-    ::EnableWindow(xg_hwndInputPalette, FALSE);
-    {
-        if (xg_bSmartResolution && xg_nRows >= 7 && xg_nCols >= 7) {
-            XG_CancelSmartSolveDialog dialog;
-            nID = dialog.DoModal(hwnd);
-        } else if (xg_nRules & (RULE_POINTSYMMETRY | RULE_LINESYMMETRYV | RULE_LINESYMMETRYH)) {
-            XG_CancelSmartSolveDialog dialog;
-            nID = dialog.DoModal(hwnd);
-        } else {
-            XG_CancelSolveDialog dialog;
-            nID = dialog.DoModal(hwnd);
-        }
-        // 生成成功のときはxg_nNumberGeneratedを増やす。
-        if (nID == IDOK && xg_bSolved) {
-            ++xg_nNumberGenerated;
-        }
-    }
-    ::EnableWindow(xg_hwndInputPalette, TRUE);
-
-    // 初期化する。
-    xg_bShowAnswer = xg_bShowAnswerOnGenerate;
-    if (xg_bSmartResolution && xg_bCancelled) {
-        xg_xword.clear();
-    }
-
-    // ズームを全体に合わせる。
-    XgFitZoom(hwnd);
-
-    return true;
 }
 
 // 黒マスパターンを連続生成する。
@@ -3088,40 +3067,6 @@ bool __fastcall XgOnGenerateBlacks(HWND hwnd, bool sym)
     return true;
 }
 
-// 結果を表示する。
-void __fastcall XgShowResults(HWND hwnd)
-{
-    WCHAR sz[MAX_PATH];
-    if (xg_bSolved) {
-        // 成功メッセージを表示する。
-        if (xg_bAutoSave && PathFileExistsW(xg_strFileName.c_str())) {
-            StringCchPrintf(sz, _countof(sz), XgLoadStringDx1(IDS_MADEPROBLEM2),
-                            PathFindFileNameW(xg_strFileName.c_str()),
-                            DWORD(xg_dwlTick2 - xg_dwlTick0) / 1000,
-                            DWORD(xg_dwlTick2 - xg_dwlTick0) / 100 % 10);
-        } else {
-            StringCchPrintf(sz, _countof(sz), XgLoadStringDx1(IDS_MADEPROBLEM),
-                            DWORD(xg_dwlTick2 - xg_dwlTick0) / 1000,
-                            DWORD(xg_dwlTick2 - xg_dwlTick0) / 100 % 10);
-        }
-        XgCenterMessageBoxW(hwnd, sz, XgLoadStringDx2(IDS_RESULTS), MB_ICONINFORMATION);
-        // ヒントを表示する。
-        XgShowHints(hwnd);
-    } else if (xg_bCancelled) {
-        // キャンセルされた。
-        StringCchPrintf(sz, _countof(sz), XgLoadStringDx1(IDS_CANCELLED),
-                        DWORD(xg_dwlTick2 - xg_dwlTick0) / 1000,
-                        DWORD(xg_dwlTick2 - xg_dwlTick0) / 100 % 10);
-        XgCenterMessageBoxW(hwnd, sz, XgLoadStringDx2(IDS_RESULTS), MB_ICONINFORMATION);
-    } else {
-        // 失敗メッセージを表示する。
-        StringCchPrintf(sz, _countof(sz), XgLoadStringDx1(IDS_CANTMAKEPROBLEM),
-                        DWORD(xg_dwlTick2 - xg_dwlTick0) / 1000,
-                        DWORD(xg_dwlTick2 - xg_dwlTick0) / 100 % 10);
-        XgCenterMessageBoxW(hwnd, sz, XgLoadStringDx2(IDS_RESULTS), MB_ICONERROR);
-    }
-}
-
 // 連番保存。
 BOOL __fastcall XgNumberingSave(HWND hwnd)
 {
@@ -3227,13 +3172,17 @@ bool __fastcall XgOnSolve_AddBlack(HWND hwnd)
         XgMarkUpdate();
         XgUpdateImage(hwnd, 0, 0);
 
+        // 番号とヒントを付ける。
+        xg_solution.DoNumberingNoCheck();
+        XgUpdateHints();
+
         // 自動保存なら保存する。
         if (xg_bAutoSave) {
             XgNumberingSave(hwnd);
         }
 
         // 結果を表示する。
-        XgShowResults(hwnd);
+        XgShowResults(hwnd, TRUE);
     } else {
         // 解なし。表示を更新する。
         xg_bShowAnswer = false;
@@ -3342,7 +3291,7 @@ bool __fastcall XgOnSolve_NoAddBlack(HWND hwnd)
         }
 
         // メッセージを表示する。
-        XgShowResults(hwnd);
+        XgShowResults(hwnd, TRUE);
     } else {
         // 解なし。表示を更新する。
         xg_bShowAnswer = false;
@@ -4988,7 +4937,32 @@ void __fastcall XgOnlineDict(HWND hwnd, BOOL bVert)
 void __fastcall XgOpenPatterns(HWND hwnd)
 {
     XG_PatternDialog dialog;
-    dialog.DoModal(hwnd);
+    if (dialog.DoModal(hwnd) != IDOK)
+        return; // キャンセルされた。
+
+    // ズームを実際のウィンドウに合わせる。
+    XgFitZoom(hwnd);
+
+    // ステータスバーを更新する。
+    XgUpdateStatusBar(GetParent(hwnd));
+
+    // 元に戻す情報を取得する。
+    auto sa1 = std::make_shared<XG_UndoData_SetAll>();
+    sa1->Get();
+
+    // 解を求める（黒マス追加なし）。
+    XgOnSolve_NoAddBlack(hwnd);
+
+    // 元に戻す情報を設定する。
+    auto sa2 = std::make_shared<XG_UndoData_SetAll>();
+    sa2->Get();
+    xg_ubUndoBuffer.Commit(UC_SETALL, sa1, sa2);
+
+    // 表示を更新する。
+    XgUpdateImage(hwnd, 0, 0);
+
+    // ツールバーのUIを更新する。
+    XgUpdateToolBarUI(hwnd);
 }
 
 // 「黒マスルールの説明.txt」を開く。
@@ -5250,10 +5224,6 @@ void XgGenerateFromWordList(HWND hwnd)
         CharLowerBuffW(&word[0], (DWORD)word.size());
     }
     XG_WordListDialog::s_str_word_list = mstr_join(XG_WordListDialog::s_words, L" ");
-    // 「元に戻す」情報を設定する。
-    auto sa2 = std::make_shared<XG_UndoData_SetAll>();
-    sa2->Get();
-    xg_ubUndoBuffer.Commit(UC_SETALL, sa1, sa2);
 
     // ズームを実際のウィンドウに合わせる。
     XgFitZoom(hwnd);
@@ -5262,13 +5232,18 @@ void XgGenerateFromWordList(HWND hwnd)
     xg_solution.DoNumberingNoCheck();
     XgUpdateHints();
 
+    // 「元に戻す」情報を設定する。
+    auto sa2 = std::make_shared<XG_UndoData_SetAll>();
+    sa2->Get();
+    xg_ubUndoBuffer.Commit(UC_SETALL, sa1, sa2);
+
     // 自動保存なら保存する。
     if (xg_bAutoSave) {
         XgNumberingSave(hwnd);
     }
 
     // 成功メッセージ。
-    XgShowResults(hwnd);
+    XgShowResults(hwnd, TRUE);
 
     // クリア。
     XG_WordListDialog::s_words.clear();
@@ -5485,43 +5460,116 @@ void __fastcall XgDrawCaret(HDC hdc)
 // 問題を生成する。
 void __fastcall XgGenerate(HWND hwnd)
 {
-    bool flag = false;
-    // 元に戻す情報を取得する。
+    auto sa0 = std::make_shared<XG_UndoData_SetAll>();
+    sa0->Get();
+    // [問題の作成]ダイアログ。
+    INT_PTR nID;
+    ::EnableWindow(xg_hwndInputPalette, FALSE);
+    {
+        XG_GenDialog dialog;
+        nID = dialog.DoModal(hwnd);
+    }
+    ::EnableWindow(xg_hwndInputPalette, TRUE);
+    if (nID != IDOK)
+        return; // キャンセルされた。
+
     auto sa1 = std::make_shared<XG_UndoData_SetAll>();
     sa1->Get();
+    xg_ubUndoBuffer.Commit(UC_SETALL, sa0, sa1);
+
+    if (xg_bChoosePAT) { // 自動的にPAT.txtから選択するか？
+        auto tri_value = XgGenerateFromPat(hwnd); // PAT.txtから生成。
+        if (tri_value == TV_NEGATIVE)
+            return; // 失敗。
+        if (tri_value == TV_POSITIVE)
+            return; // 成功。
+        // さもなくばパターンを生成。
+    }
+
     // 候補ウィンドウを破棄する。
     XgDestroyCandsWnd();
     // ヒントウィンドウを破棄する。
     XgDestroyHintsWnd();
     // 二重マス単語の候補と配置を破棄する。
     ::DestroyWindow(xg_hMarkingDlg);
-    // 問題の作成。
-    if (XgOnGenerate(hwnd)) {
-        flag = true;
-        // イメージを更新する。
-        XgSetCaretPos();
-        XgMarkUpdate();
-        XgUpdateImage(hwnd);
-        // 番号とヒントを付ける。
-        xg_solution.DoNumberingNoCheck();
-        XgUpdateHints();
-        // 元に戻す情報を確定。
-        auto sa2 = std::make_shared<XG_UndoData_SetAll>();
-        sa2->Get();
-        xg_ubUndoBuffer.Commit(UC_SETALL, sa1, sa2);
-        // 自動で保存なら保存する。
-        if (xg_bAutoSave) {
-            XgNumberingSave(hwnd);
+
+    xg_bSolvingEmpty = true;
+    xg_bNoAddBlack = false;
+    xg_nNumberGenerated = 0;
+    s_bOutOfDiskSpace = false;
+    xg_strHeader.clear();
+    xg_strNotes.clear();
+    xg_strFileName.clear();
+    // ナンクロモードをリセットする。
+    xg_bNumCroMode = false;
+    xg_mapNumCro1.clear();
+    xg_mapNumCro2.clear();
+
+    // ズームを実際のウィンドウに合わせる。
+    XgFitZoom(hwnd);
+    // ステータスバーを更新する。
+    XgUpdateStatusBar(hwnd);
+
+    // 辞書を読み込む。
+    XgLoadDictFile(xg_dict_name.c_str());
+    XgSetInputModeFromDict(hwnd);
+
+    // 計算時間を求めるために、開始時間をセットする。
+    xg_dwlTick0 = ::GetTickCount64();
+
+    // キャンセルダイアログを表示し、実行を開始する。
+    ::EnableWindow(xg_hwndInputPalette, FALSE);
+    {
+        if (xg_bSmartResolution) {
+            XG_CancelSmartSolveDialog dialog;
+            nID = dialog.DoModal(hwnd);
+        } else if (xg_nRules & (RULE_POINTSYMMETRY | RULE_LINESYMMETRYV | RULE_LINESYMMETRYH)) {
+            XG_CancelSmartSolveDialog dialog;
+            nID = dialog.DoModal(hwnd);
+        } else {
+            XG_CancelSolveDialog dialog;
+            nID = dialog.DoModal(hwnd);
+        }
+        // 生成成功のときはxg_nNumberGeneratedを増やす。
+        if (nID == IDOK && xg_bSolved) {
+            ++xg_nNumberGenerated;
         }
     }
-    if (!flag) {
-        sa1->Apply();
+    ::EnableWindow(xg_hwndInputPalette, TRUE);
+
+    if (!xg_bSolved) {
+        // 結果を表示する。
+        XgShowResults(hwnd, FALSE);
+        return;
     }
+
+    // 番号とヒントを付ける。
+    xg_solution.DoNumberingNoCheck();
+    XgUpdateHints();
+
+    // ズームを全体に合わせる。
+    XgFitZoom(hwnd);
+
+    // 答えを表示するかどうか。
+    xg_bShowAnswer = xg_bShowAnswerOnGenerate;
+
+    // 「元に戻す」情報を確定する。
+    auto sa2 = std::make_shared<XG_UndoData_SetAll>();
+    sa2->Get();
+    xg_ubUndoBuffer.Commit(UC_SETALL, sa1, sa2);
+
+    // 自動で保存なら保存する。
+    if (xg_bAutoSave) {
+        XgNumberingSave(hwnd);
+    }
+
     // イメージを更新する。
     XgSetCaretPos();
     XgMarkUpdate();
+    XgUpdateImage(hwnd);
+
     // 結果を表示する。
-    XgShowResults(hwnd);
+    XgShowResults(hwnd, TRUE);
 }
 
 // 次のペインまたは前のペインに移動する。
@@ -6045,14 +6093,12 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT /*codeNo
             // イメージを更新する。
             XgUpdateImage(hwnd, x, y);
 
-            auto sa2 = std::make_shared<XG_UndoData_SetAll>();
-            {
-                // 解を求める（黒マス追加なし）。
-                XgOnSolve_NoAddBlack(hwnd);
-            }
-            sa2->Get();
+            // 解を求める（黒マス追加なし）。
+            XgOnSolve_NoAddBlack(hwnd);
 
             // 元に戻す情報を設定する。
+            auto sa2 = std::make_shared<XG_UndoData_SetAll>();
+            sa2->Get();
             xg_ubUndoBuffer.Commit(UC_SETALL, sa1, sa2);
         }
         bUpdateImage = TRUE;
