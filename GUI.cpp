@@ -2701,56 +2701,30 @@ BOOL __fastcall XgOnOpen(HWND hwnd)
     return FALSE;
 }
 
-// 特定の場所にファイルを保存する。
-bool __fastcall XgDoSaveToLocation(HWND hwnd)
+// 連番保存。
+BOOL __fastcall XgNumberingSave(HWND hwnd, BOOL bPattern)
 {
-    WCHAR szPath[MAX_PATH], szDir[MAX_PATH];
-    WCHAR szName[64];
+    auto pszDir = xg_dirs_save_to[0].data();
+    if (!XgMakePathW(pszDir))
+        return FALSE;
 
-    // パスを生成する。
-    StringCchCopy(szDir, _countof(szDir), xg_dirs_save_to[0].data());
-    PathAddBackslashW(szDir);
+    WCHAR szFormat[MAX_PATH];
+    StringCchCopyW(szFormat, _countof(szFormat), pszDir);
+    if (bPattern)
+        PathAppendW(szFormat, L"Pat-%dx%d-%04u.xd");
+    else
+        PathAppendW(szFormat, L"Crossword-%dx%d-%04u.xd");
 
-    // ファイル名を生成する。
-    UINT u;
-    for (u = 1; u <= 0xFFFF; u++) {
-        StringCchPrintf(szName, _countof(szName), L"Pat-%dx%d-%04u.xd", xg_nRows, xg_nCols, u);
-        StringCchCopy(szPath, _countof(szPath), szDir);
-        StringCchCat(szPath, _countof(szPath), szName);
-        if (::GetFileAttributesW(szPath) == 0xFFFFFFFF)
+    WCHAR szPath[MAX_PATH];
+    for (INT iFile = 0; iFile <= 99999; ++iFile) {
+        StringCchPrintfW(szPath, _countof(szPath), szFormat, xg_nCols, xg_nRows, iFile);
+        if (!PathFileExistsW(szPath))
             break;
     }
 
-    bool bOK = false;
-    if (u != 0x10000) {
-        // ファイル名が作成できた。排他制御しながら保存する。
-        ::EnterCriticalSection(&xg_csLock);
-        {
-            // 解あり？
-            if (xg_bSolved) {
-                // カギ番号を更新する。
-                xg_solution.DoNumberingNoCheck();
-
-                // ヒントを更新する。
-                XgUpdateHints();
-            }
-
-            // ファイルに保存する。
-            bOK = XgDoSaveFiles(hwnd, szPath);
-        }
-        ::LeaveCriticalSection(&xg_csLock);
-    }
-
-    // ディスク容量を確認する。
-    ULARGE_INTEGER ull1, ull2, ull3;
-    if (::GetDiskFreeSpaceExW(szPath, &ull1, &ull2, &ull3)) {
-        if (ull1.QuadPart < 0x1000000)  // 1MB
-        {
-            s_bOutOfDiskSpace = true;
-        }
-    }
-
-    return bOK;
+    // 保存する。
+    xg_strFileName = szPath;
+    return XgOnSave(hwnd);
 }
 
 // ズームを実際のウィンドウに合わせる。
@@ -2891,7 +2865,7 @@ TRIVALUE XgGenerateFromPat(HWND hwnd)
 
         // 自動保存なら自動保存する。
         if (xg_bAutoSave) {
-            XgNumberingSave(hwnd);
+            XgNumberingSave(hwnd, FALSE);
         }
 
         // 元に戻す情報を設定。
@@ -2961,7 +2935,7 @@ bool __fastcall XgOnGenerateBlacksRepeatedly(HWND hwnd)
         // 生成成功のときはxg_nNumberGeneratedを増やす。
         if (nID == IDOK && xg_bBlacksGenerated) {
             ++xg_nNumberGenerated;
-            if (!XgDoSaveToLocation(hwnd)) {
+            if (!XgNumberingSave(hwnd, TRUE)) {
                 s_bOutOfDiskSpace = true;
                 break;
             }
@@ -3072,29 +3046,6 @@ bool __fastcall XgOnGenerateBlacks(HWND hwnd, bool sym)
     return true;
 }
 
-// 連番保存。
-BOOL __fastcall XgNumberingSave(HWND hwnd)
-{
-    auto pszDir = xg_dirs_save_to[0].data();
-    if (!XgMakePathW(pszDir))
-        return FALSE;
-
-    WCHAR szFormat[MAX_PATH];
-    StringCchCopyW(szFormat, _countof(szFormat), pszDir);
-    PathAppendW(szFormat, L"Crossword-%dx%d-%04u.xd");
-
-    WCHAR szPath[MAX_PATH];
-    for (INT iFile = 0; iFile <= 99999; ++iFile) {
-        StringCchPrintfW(szPath, _countof(szPath), szFormat, xg_nCols, xg_nRows, iFile);
-        if (!PathFileExistsW(szPath))
-            break;
-    }
-
-    // 保存する。
-    xg_strFileName = szPath;
-    return XgOnSave(hwnd);
-}
-
 // 解を求める。
 bool __fastcall XgOnSolve_AddBlack(HWND hwnd)
 {
@@ -3183,7 +3134,7 @@ bool __fastcall XgOnSolve_AddBlack(HWND hwnd)
 
         // 自動保存なら保存する。
         if (xg_bAutoSave) {
-            XgNumberingSave(hwnd);
+            XgNumberingSave(hwnd, FALSE);
         }
 
         // 結果を表示する。
@@ -3292,7 +3243,7 @@ bool __fastcall XgOnSolve_NoAddBlack(HWND hwnd)
 
         // 自動保存なら保存する。
         if (xg_bAutoSave) {
-            XgNumberingSave(hwnd);
+            XgNumberingSave(hwnd, FALSE);
         }
 
         // メッセージを表示する。
@@ -5244,7 +5195,7 @@ void XgGenerateFromWordList(HWND hwnd)
 
     // 自動保存なら保存する。
     if (xg_bAutoSave) {
-        XgNumberingSave(hwnd);
+        XgNumberingSave(hwnd, FALSE);
     }
 
     // 成功メッセージ。
@@ -5565,7 +5516,7 @@ void __fastcall XgGenerate(HWND hwnd)
 
     // 自動で保存なら保存する。
     if (xg_bAutoSave) {
-        XgNumberingSave(hwnd);
+        XgNumberingSave(hwnd, FALSE);
     }
 
     // イメージを更新する。
@@ -7033,7 +6984,7 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT /*codeNo
 
     case ID_NUMBERINGSAVE:
         // 連番保存。
-        XgNumberingSave(hwnd);
+        XgNumberingSave(hwnd, FALSE);
         break;
 
     default:
