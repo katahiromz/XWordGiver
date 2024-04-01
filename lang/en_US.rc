@@ -56,24 +56,30 @@ IDB_DELETEPAT BITMAP "res/1033_Bitmap_102.bmp"
         MENUITEM "Show input candidates (DOWN)...", ID_OPENCANDSWNDVERT
         MENUITEM "Show input candidates (ACROSS)...", ID_OPENCANDSWNDHORZ
         MENUITEM SEPARATOR
-        MENUITEM "&Copy the board\tCtrl+C", ID_COPY
-        MENUITEM "Copy the board as &image\tShift+Ctrl+C", ID_COPYASIMAGE
+        MENUITEM "&Copy board\tCtrl+C", ID_COPY
+        MENUITEM "Copy board as &image\tShift+Ctrl+C", ID_COPYASIMAGE
         MENUITEM "&Paste\tCtrl+V", ID_PASTE
         MENUITEM SEPARATOR
-        MENUITEM "Copy the DOWN word", ID_COPYWORDVERT
-        MENUITEM "Copy the ACROSS word", ID_COPYWORDHORZ
-        MENUITEM "Copy the multi&set of letters", ID_COPYCHARSET
-        MENUITEM "Copy the list of w&ords", ID_COPY_WORD_LIST
-        MENUITEM "Copy the double-frame word\tCtrl+D", ID_COPYMARKWORD
+        MENUITEM "Copy DOWN word", ID_COPYWORDVERT
+        MENUITEM "Copy ACROSS word", ID_COPYWORDHORZ
+        MENUITEM "Copy multi&set of letters", ID_COPYCHARSET
+        MENUITEM "Copy list of w&ords", ID_COPY_WORD_LIST
+        MENUITEM "Copy double-frame word\tCtrl+D", ID_COPYMARKWORD
         MENUITEM SEPARATOR
-        MENUITEM "Copy the DOWN clues (Style 0) (&T)", ID_COPYVHINTSSTYLE0
-        MENUITEM "Copy the ACROSS clues (Style 0) (&Y)", ID_COPYHHINTSSTYLE0
+        POPUP "Copy c&lues"
+        {
+            MENUITEM "Copy DOWN clues (Style 0) (&T)", ID_COPYVHINTSSTYLE0
+            MENUITEM "Copy DOWN clues (Style 1) (&L)", ID_COPYVHINTSSTYLE1
+            MENUITEM SEPARATOR
+            MENUITEM "Copy ACROSS clues (Style 0) (&Y)", ID_COPYHHINTSSTYLE0
+            MENUITEM "Copy ACROSS clues (Style 1) (&E)", ID_COPYHHINTSSTYLE1
+            MENUITEM SEPARATOR
+            MENUITEM "Copy all clues (Style 0) (&N)", ID_COPYHINTSSTYLE0
+            MENUITEM "Copy all clues (Style 1) (&N)", ID_COPYHINTSSTYLE1
+        }
         MENUITEM SEPARATOR
-        MENUITEM "Copy the DOWN clues (Style 1) (&L)", ID_COPYVHINTSSTYLE1
-        MENUITEM "Copy the ACROSS clues (Style 1) (&E)", ID_COPYHHINTSSTYLE1
-        MENUITEM SEPARATOR
-        MENUITEM "Copy the clues (Style 0) (&N)", ID_COPYHINTSSTYLE0
-        MENUITEM "Copy the clues (Style 1) (&N)", ID_COPYHINTSSTYLE1
+        MENUITEM "Search DOWN word on the Web \tAlt+Down", ID_ONLINEDICTV
+        MENUITEM "Search ACROSS word on the Web\tAlt+Right", ID_ONLINEDICTH
         MENUITEM SEPARATOR
         MENUITEM "UI Language Select...", ID_UILANGID
     }
@@ -157,10 +163,11 @@ IDB_DELETEPAT BITMAP "res/1033_Bitmap_102.bmp"
         MENUITEM SEPARATOR
         POPUP "&Zoom"
         {
+            MENUITEM "&Fit the whole\tCtrl+F", ID_FITZOOM
+            MENUITEM SEPARATOR
             MENUITEM "&Zoom in\tCtrl+Wheel Forward", ID_ZOOMIN
             MENUITEM "&Zoom out\tCtrl+Wheel Back", ID_ZOOMOUT
             MENUITEM "Zoom &100%\tCtrl+\\", ID_ZOOM100
-            MENUITEM "&Fit the whole\tCtrl+F", ID_FITZOOM
             MENUITEM SEPARATOR
             MENUITEM "Zoom 30%", ID_ZOOM30
             MENUITEM "Zoom 50%", ID_ZOOM50
@@ -168,12 +175,6 @@ IDB_DELETEPAT BITMAP "res/1033_Bitmap_102.bmp"
             MENUITEM "Zoom 80%", ID_ZOOM80
             MENUITEM "Zoom 90%", ID_ZOOM90
         }
-        MENUITEM SEPARATOR
-        MENUITEM "Search the word on the Web (DOWN)\tAlt+Down", ID_ONLINEDICTV
-        MENUITEM "Search the word on the Web (ACROSS)\tAlt+Right", ID_ONLINEDICTH
-        MENUITEM SEPARATOR
-        MENUITEM "Show input &candidates (&DOWN)\tShift+Ctrl+↓", ID_OPENCANDSWNDVERT
-        MENUITEM "Show input &candidates (&ACROSS)\tShift+Ctrl+→", ID_OPENCANDSWNDHORZ
     }
     POPUP "&Policy"
     {

@@ -66,14 +66,20 @@ IDB_DELETEPAT BITMAP "res/1041_Bitmap_102.bmp"
         MENUITEM "単語リストをコピー(&O)", ID_COPY_WORD_LIST
         MENUITEM "二重マス単語をコピー(&M)\tCtrl+D", ID_COPYMARKWORD
         MENUITEM SEPARATOR
-        MENUITEM "タテのカギをコピー (スタイル0) (&T)", ID_COPYVHINTSSTYLE0
-        MENUITEM "ヨコのカギをコピー (スタイル0) (&Y)", ID_COPYHHINTSSTYLE0
+        POPUP "カギをコピー(&L)"
+        {
+            MENUITEM "タテのカギをコピー (スタイル0) (&T)", ID_COPYVHINTSSTYLE0
+            MENUITEM "タテのカギをコピー (スタイル1) (&L)", ID_COPYVHINTSSTYLE1
+            MENUITEM SEPARATOR
+            MENUITEM "ヨコのカギをコピー (スタイル0) (&Y)", ID_COPYHHINTSSTYLE0
+            MENUITEM "ヨコのカギをコピー (スタイル1) (&E)", ID_COPYHHINTSSTYLE1
+            MENUITEM SEPARATOR
+            MENUITEM "すべてのカギをコピー (スタイル0) (&N)", ID_COPYHINTSSTYLE0
+            MENUITEM "すべてのカギをコピー (スタイル1) (&N)", ID_COPYHINTSSTYLE1
+        }
         MENUITEM SEPARATOR
-        MENUITEM "タテのカギをコピー (スタイル1) (&L)", ID_COPYVHINTSSTYLE1
-        MENUITEM "ヨコのカギをコピー (スタイル1) (&E)", ID_COPYHHINTSSTYLE1
-        MENUITEM SEPARATOR
-        MENUITEM "ヒントをコピー (スタイル0) (&N)", ID_COPYHINTSSTYLE0
-        MENUITEM "ヒントをコピー (スタイル1) (&N)", ID_COPYHINTSSTYLE1
+        MENUITEM "単語をウェブ検索(&V) (タテ)\tAlt+↓", ID_ONLINEDICTV
+        MENUITEM "単語をウェブ検索(&H) (ヨコ)\tAlt+→", ID_ONLINEDICTH
         MENUITEM SEPARATOR
         MENUITEM "UI Language Select...", ID_UILANGID
     }
@@ -157,10 +163,11 @@ IDB_DELETEPAT BITMAP "res/1041_Bitmap_102.bmp"
         MENUITEM SEPARATOR
         POPUP "ズーム(&Z)"
         {
+            MENUITEM "全体に合わせる(&F)\tCtrl+F", ID_FITZOOM
+            MENUITEM SEPARATOR
             MENUITEM "ズームイン(&Z)\tCtrl+ホイール↑", ID_ZOOMIN
             MENUITEM "ズームアウト(&Z)\tCtrl+ホイール↓", ID_ZOOMOUT
             MENUITEM "ズーム &100%\tCtrl+\\", ID_ZOOM100
-            MENUITEM "全体に合わせる(&F)\tCtrl+F", ID_FITZOOM
             MENUITEM SEPARATOR
             MENUITEM "ズーム 30%", ID_ZOOM30
             MENUITEM "ズーム 50%", ID_ZOOM50
@@ -168,12 +175,6 @@ IDB_DELETEPAT BITMAP "res/1041_Bitmap_102.bmp"
             MENUITEM "ズーム 80%", ID_ZOOM80
             MENUITEM "ズーム 90%", ID_ZOOM90
         }
-        MENUITEM SEPARATOR
-        MENUITEM "単語をウェブ検索(&V) (タテ)\tAlt+↓", ID_ONLINEDICTV
-        MENUITEM "単語をウェブ検索(&H) (ヨコ)\tAlt+→", ID_ONLINEDICTH
-        MENUITEM SEPARATOR
-        MENUITEM "入力候補を表示(&C) (タテ)\tShift+Ctrl+↓", ID_OPENCANDSWNDVERT
-        MENUITEM "入力候補を表示(&A) (ヨコ)\tShift+Ctrl+→", ID_OPENCANDSWNDHORZ
     }
     POPUP "ルール(&R)"
     {
