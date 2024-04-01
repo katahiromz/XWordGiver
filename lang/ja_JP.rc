@@ -127,8 +127,8 @@ IDB_DELETEPAT BITMAP "res/1041_Bitmap_102.bmp"
         MENUITEM SEPARATOR
         MENUITEM "一定時間が過ぎたら再試行(&T)", ID_RETRYIFTIMEOUT
         MENUITEM SEPARATOR
-        MENUITEM "解を表示する(&S)\tCtrl+M", ID_SHOWSOLUTION
-        MENUITEM "解を表示しない(&D)\tCtrl+M", ID_NOSOLUTION
+        MENUITEM "答えを表示する(&W)\tCtrl+M", ID_SHOWSOLUTION
+        MENUITEM "答えを表示しない(&D)\tCtrl+M", ID_NOSOLUTION
         MENUITEM SEPARATOR
         MENUITEM "答え合わせ(&C)", ID_CHECKANSWER
         MENUITEM SEPARATOR

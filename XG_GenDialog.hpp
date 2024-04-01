@@ -6,8 +6,6 @@
 class XG_GenDialog : public XG_Dialog
 {
 public:
-    BOOL m_bShowAnswer = FALSE;
-
     XG_GenDialog() noexcept
     {
     }
@@ -31,7 +29,7 @@ public:
         if (xg_bSmartResolution)
             ::CheckDlgButton(hwnd, chx2, BST_CHECKED);
         // 答えを表示するか？
-        if (m_bShowAnswer)
+        if (xg_bShowAnswerOnGenerate)
             ::CheckDlgButton(hwnd, chx3, BST_CHECKED);
         // 自動的にPAT.txtから選択するか？
         if (xg_bChoosePAT)
@@ -95,7 +93,7 @@ public:
             // スマート解決か？
             xg_bSmartResolution = (::IsDlgButtonChecked(hwnd, chx2) == BST_CHECKED);
             // 答えを表示するか？
-            m_bShowAnswer = (::IsDlgButtonChecked(hwnd, chx3) == BST_CHECKED);
+            xg_bShowAnswerOnGenerate = (::IsDlgButtonChecked(hwnd, chx3) == BST_CHECKED);
             // 自動的にPAT.txtから選択するか？
             xg_bChoosePAT = (::IsDlgButtonChecked(hwnd, chx4) == BST_CHECKED);
             // 初期化する。

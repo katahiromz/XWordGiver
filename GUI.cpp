@@ -856,7 +856,6 @@ void XgResetSettings(void)
     XG_PatternDialog::xg_nPatWndY = CW_USEDEFAULT;
     XG_PatternDialog::xg_nPatWndCX = CW_USEDEFAULT;
     XG_PatternDialog::xg_nPatWndCY = CW_USEDEFAULT;
-    XG_PatternDialog::xg_bShowAnswerOnPattern = TRUE;
 
     xg_nRules = XG_DEFAULT_RULES;
     xg_nViewMode = XG_VIEW_NORMAL;
@@ -1086,9 +1085,6 @@ bool __fastcall XgLoadSettings(void)
         if (!app_key.QueryDword(L"PatWndCY", dwValue)) {
             XG_PatternDialog::xg_nPatWndCY = dwValue;
         }
-        if (!app_key.QueryDword(L"ShowAnsOnPat", dwValue)) {
-            XG_PatternDialog::xg_bShowAnswerOnPattern = dwValue;
-        }
         if (!app_key.QueryDword(L"Rules", dwValue)) {
             xg_nRules = dwValue | RULE_DONTDIVIDE;
         }
@@ -1242,7 +1238,6 @@ bool __fastcall XgSaveSettings(void)
         app_key.SetDword(L"PatWndY", XG_PatternDialog::xg_nPatWndY);
         app_key.SetDword(L"PatWndCX", XG_PatternDialog::xg_nPatWndCX);
         app_key.SetDword(L"PatWndCY", XG_PatternDialog::xg_nPatWndCY);
-        app_key.SetDword(L"ShowAnsOnPat", XG_PatternDialog::xg_bShowAnswerOnPattern);
 
         app_key.SetDword(L"Rules", xg_nRules);
         app_key.SetDword(L"MarkingX", xg_nMarkingX);
@@ -2857,9 +2852,7 @@ bool __fastcall XgOnGenerate(HWND hwnd)
     {
         // [問題の作成]ダイアログ。
         XG_GenDialog dialog;
-        dialog.m_bShowAnswer = xg_bShowAnswerOnGenerate;
         nID = static_cast<int>(dialog.DoModal(hwnd));
-        xg_bShowAnswerOnGenerate = dialog.m_bShowAnswer;
     }
     ::EnableWindow(xg_hwndInputPalette, TRUE);
     if (nID != IDOK) {
@@ -5288,6 +5281,11 @@ void XgGenerateFromWordList(HWND hwnd)
 
     // ズームを実際のウィンドウに合わせる。
     XgFitZoom(hwnd);
+
+    // 自動保存なら保存する。
+    if (xg_bAutoSave) {
+        XgNumberingSave(hwnd);
+    }
 
     // 成功メッセージ。
     XgShowResults(hwnd);

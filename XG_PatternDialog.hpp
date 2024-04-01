@@ -4,8 +4,6 @@
 #include "layout.h"
 #include "XWordGiver.hpp"
 
-// 黒マスパターンで答えを表示する。
-extern BOOL xg_bShowAnswerOnPattern;
 // 解を求める（黒マス追加なし）。
 bool __fastcall XgOnSolve_NoAddBlack(HWND hwnd);
 // 解を求める（黒マス追加なし）。結果を表示しない。
@@ -31,9 +29,6 @@ public:
     inline static int xg_nPatWndY = CW_USEDEFAULT;
     inline static int xg_nPatWndCX = CW_USEDEFAULT;
     inline static int xg_nPatWndCY = CW_USEDEFAULT;
-
-    // 黒マスパターンで答えを表示する。
-    inline static BOOL xg_bShowAnswerOnPattern = TRUE;
 
     XG_PatternDialog() noexcept
     {
@@ -139,10 +134,8 @@ public:
             s_pLayout = nullptr;
         }
 
-        if (xg_bShowAnswerOnPattern)
+        if (xg_bShowAnswerOnGenerate)
             CheckDlgButton(hwnd, chx1, BST_CHECKED);
-        else
-            CheckDlgButton(hwnd, chx1, BST_UNCHECKED);
 
         CheckRadioButton(hwnd, rad1, rad3, rad2);
         CheckRadioButton(hwnd, rad4, rad6, rad6);
@@ -244,7 +237,7 @@ public:
         EndDialog(hwnd, IDOK);
 
         // 答えを表示するか？
-        xg_bShowAnswerOnPattern = (IsDlgButtonChecked(hwnd, chx1) == BST_CHECKED);
+        xg_bShowAnswerOnGenerate = (IsDlgButtonChecked(hwnd, chx1) == BST_CHECKED);
 
         // ズームを実際のウィンドウに合わせる。
         XgFitZoom(GetParent(hwnd));

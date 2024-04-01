@@ -127,8 +127,8 @@ IDB_DELETEPAT BITMAP "res/1033_Bitmap_102.bmp"
         MENUITEM SEPARATOR
         MENUITEM "&Retry regularly", ID_RETRYIFTIMEOUT
         MENUITEM SEPARATOR
-        MENUITEM "Show &solution\tCtrl+M", ID_SHOWSOLUTION
-        MENUITEM "Hi&de solution\tCtrl+M", ID_NOSOLUTION
+        MENUITEM "Show Ans&wer\tCtrl+M", ID_SHOWSOLUTION
+        MENUITEM "Hi&de Answer\tCtrl+M", ID_NOSOLUTION
         MENUITEM SEPARATOR
         MENUITEM "&Checking Answer", ID_CHECKANSWER
         MENUITEM SEPARATOR
