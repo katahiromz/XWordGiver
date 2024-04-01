@@ -1166,6 +1166,7 @@ bool __fastcall XgLoadSettings(void)
         ::SHGetSpecialFolderLocation(nullptr, CSIDL_PERSONAL, &pidl);
         ::SHGetPathFromIDListW(pidl, szPath);
         ::CoTaskMemFree(pidl);
+        PathAppendW(szPath, L"XWordGiver files");
         xg_dirs_save_to.emplace_back(szPath);
     }
 
