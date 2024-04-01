@@ -288,6 +288,7 @@
     - Relaxed rule checking in the "Candidates" window.
     - Now able to zoom the "Candidates" window.
     - Renamed "Candidates" as "Input Candidates".
+- 2024-XX-YY ver.5.2.0
 
 # 開発履歴 (Japanese)
 
@@ -892,3 +893,4 @@
     - 「候補」ウィンドウのルールチェックを緩和。
     - 「候補」ウィンドウのズームが可能に。
     - 「候補」を「入力候補」に改名。
+- 2024年XX月YY日 ver.5.2.0
