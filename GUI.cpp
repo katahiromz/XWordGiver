@@ -2841,7 +2841,8 @@ TRIVALUE XgGenerateFromPat(HWND hwnd)
     xg_bShowAnswer = xg_bShowAnswerOnGenerate;
     XgUpdateImage(hwnd);
 
-    return TV_POSITIVE; // 成功。
+    // 成功か失敗。
+    return xg_bSolved ? TV_POSITIVE : TV_NEGATIVE;
 }
 
 // 問題の作成。
@@ -3087,6 +3088,40 @@ bool __fastcall XgOnGenerateBlacks(HWND hwnd, bool sym)
     return true;
 }
 
+// 結果を表示する。
+void __fastcall XgShowResults(HWND hwnd)
+{
+    WCHAR sz[MAX_PATH];
+    if (xg_bSolved) {
+        // 成功メッセージを表示する。
+        if (xg_bAutoSave && PathFileExistsW(xg_strFileName.c_str())) {
+            StringCchPrintf(sz, _countof(sz), XgLoadStringDx1(IDS_MADEPROBLEM2),
+                            PathFindFileNameW(xg_strFileName.c_str()),
+                            DWORD(xg_dwlTick2 - xg_dwlTick0) / 1000,
+                            DWORD(xg_dwlTick2 - xg_dwlTick0) / 100 % 10);
+        } else {
+            StringCchPrintf(sz, _countof(sz), XgLoadStringDx1(IDS_MADEPROBLEM),
+                            DWORD(xg_dwlTick2 - xg_dwlTick0) / 1000,
+                            DWORD(xg_dwlTick2 - xg_dwlTick0) / 100 % 10);
+        }
+        XgCenterMessageBoxW(hwnd, sz, XgLoadStringDx2(IDS_RESULTS), MB_ICONINFORMATION);
+        // ヒントを表示する。
+        XgShowHints(hwnd);
+    } else if (xg_bCancelled) {
+        // キャンセルされた。
+        StringCchPrintf(sz, _countof(sz), XgLoadStringDx1(IDS_CANCELLED),
+                        DWORD(xg_dwlTick2 - xg_dwlTick0) / 1000,
+                        DWORD(xg_dwlTick2 - xg_dwlTick0) / 100 % 10);
+        XgCenterMessageBoxW(hwnd, sz, XgLoadStringDx2(IDS_RESULTS), MB_ICONINFORMATION);
+    } else {
+        // 失敗メッセージを表示する。
+        StringCchPrintf(sz, _countof(sz), XgLoadStringDx1(IDS_CANTMAKEPROBLEM),
+                        DWORD(xg_dwlTick2 - xg_dwlTick0) / 1000,
+                        DWORD(xg_dwlTick2 - xg_dwlTick0) / 100 % 10);
+        XgCenterMessageBoxW(hwnd, sz, XgLoadStringDx2(IDS_RESULTS), MB_ICONERROR);
+    }
+}
+
 // 連番保存。
 BOOL __fastcall XgNumberingSave(HWND hwnd)
 {
@@ -3186,33 +3221,19 @@ bool __fastcall XgOnSolve_AddBlack(HWND hwnd)
             }
         }
 
-        // 自動保存なら保存する。
-        if (xg_bAutoSave) {
-            XgNumberingSave(hwnd);
-        }
-
         // 解あり。表示を更新する。
         xg_bShowAnswer = true;
         XgSetCaretPos();
         XgMarkUpdate();
         XgUpdateImage(hwnd, 0, 0);
 
-        // 成功メッセージを表示する。
-        if (xg_bAutoSave && PathFileExistsW(xg_strFileName.c_str())) {
-            StringCchPrintf(sz, _countof(sz), XgLoadStringDx1(IDS_MADEPROBLEM2),
-                            PathFindFileNameW(xg_strFileName.c_str()),
-                            DWORD(xg_dwlTick2 - xg_dwlTick0) / 1000,
-                            DWORD(xg_dwlTick2 - xg_dwlTick0) / 100 % 10);
-        } else {
-            StringCchPrintf(sz, _countof(sz), XgLoadStringDx1(IDS_MADEPROBLEM),
-                           DWORD(xg_dwlTick2 - xg_dwlTick0) / 1000,
-                           DWORD(xg_dwlTick2 - xg_dwlTick0) / 100 % 10);
+        // 自動保存なら保存する。
+        if (xg_bAutoSave) {
+            XgNumberingSave(hwnd);
         }
-        XgCenterMessageBoxW(hwnd, sz, XgLoadStringDx2(IDS_RESULTS), MB_ICONINFORMATION);
 
-        // ヒントを更新して開く。
-        XgUpdateHints();
-        XgShowHints(hwnd);
+        // 結果を表示する。
+        XgShowResults(hwnd);
     } else {
         // 解なし。表示を更新する。
         xg_bShowAnswer = false;
@@ -3305,33 +3326,23 @@ bool __fastcall XgOnSolve_NoAddBlack(HWND hwnd)
             }
         }
 
-        // 自動保存なら保存する。
-        if (xg_bAutoSave) {
-            XgNumberingSave(hwnd);
-        }
-
         // 解あり。表示を更新する。
         xg_bShowAnswer = xg_bShowAnswerOnGenerate;
         XgSetCaretPos();
         XgMarkUpdate();
         XgUpdateImage(hwnd, 0, 0);
 
-        // 成功メッセージを表示する。
-        if (xg_bAutoSave && PathFileExistsW(xg_strFileName.c_str())) {
-            StringCchPrintf(sz, _countof(sz), XgLoadStringDx1(IDS_MADEPROBLEM2),
-                            PathFindFileNameW(xg_strFileName.c_str()),
-                            DWORD(xg_dwlTick2 - xg_dwlTick0) / 1000,
-                            DWORD(xg_dwlTick2 - xg_dwlTick0) / 100 % 10);
-        } else {
-            StringCchPrintf(sz, _countof(sz), XgLoadStringDx1(IDS_MADEPROBLEM),
-                            DWORD(xg_dwlTick2 - xg_dwlTick0) / 1000,
-                            DWORD(xg_dwlTick2 - xg_dwlTick0) / 100 % 10);
-        }
-        XgCenterMessageBoxW(hwnd, sz, XgLoadStringDx2(IDS_RESULTS), MB_ICONINFORMATION);
-
-        // ヒントを更新して開く。
+        // 番号とヒントを付ける。
+        xg_solution.DoNumberingNoCheck();
         XgUpdateHints();
-        XgShowHints(hwnd);
+
+        // 自動保存なら保存する。
+        if (xg_bAutoSave) {
+            XgNumberingSave(hwnd);
+        }
+
+        // メッセージを表示する。
+        XgShowResults(hwnd);
     } else {
         // 解なし。表示を更新する。
         xg_bShowAnswer = false;
@@ -5095,41 +5106,6 @@ void __fastcall XgResetTheme(HWND hwnd, BOOL bQuery)
     XgUpdateTheme(hwnd);
 }
 
-void __fastcall XgShowResults(HWND hwnd)
-{
-    WCHAR sz[MAX_PATH];
-    if (xg_bSolved) {
-        // 成功メッセージを表示する。
-        if (xg_bAutoSave && PathFileExistsW(xg_strFileName.c_str())) {
-            StringCchPrintf(sz, _countof(sz), XgLoadStringDx1(IDS_MADEPROBLEM2),
-                            PathFindFileNameW(xg_strFileName.c_str()),
-                            DWORD(xg_dwlTick2 - xg_dwlTick0) / 1000,
-                            DWORD(xg_dwlTick2 - xg_dwlTick0) / 100 % 10);
-        } else {
-            StringCchPrintf(sz, _countof(sz), XgLoadStringDx1(IDS_MADEPROBLEM),
-                            DWORD(xg_dwlTick2 - xg_dwlTick0) / 1000,
-                            DWORD(xg_dwlTick2 - xg_dwlTick0) / 100 % 10);
-        }
-        XgCenterMessageBoxW(hwnd, sz, XgLoadStringDx2(IDS_RESULTS), MB_ICONINFORMATION);
-
-        // ヒントを更新して開く。
-        XgUpdateHints();
-        XgShowHints(hwnd);
-    } else if (xg_bCancelled) {
-        // キャンセルされた。
-        StringCchPrintf(sz, _countof(sz), XgLoadStringDx1(IDS_CANCELLED),
-                        DWORD(xg_dwlTick2 - xg_dwlTick0) / 1000,
-                        DWORD(xg_dwlTick2 - xg_dwlTick0) / 100 % 10);
-        XgCenterMessageBoxW(hwnd, sz, XgLoadStringDx2(IDS_RESULTS), MB_ICONINFORMATION);
-    } else {
-        // 失敗メッセージを表示する。
-        StringCchPrintf(sz, _countof(sz), XgLoadStringDx1(IDS_CANTMAKEPROBLEM),
-                        DWORD(xg_dwlTick2 - xg_dwlTick0) / 1000,
-                        DWORD(xg_dwlTick2 - xg_dwlTick0) / 100 % 10);
-        XgCenterMessageBoxW(hwnd, sz, XgLoadStringDx2(IDS_RESULTS), MB_ICONERROR);
-    }
-}
-
 // ズーム倍率を設定する。
 static void XgSetZoomRate(HWND hwnd, int nZoomRate)
 {
@@ -5282,6 +5258,10 @@ void XgGenerateFromWordList(HWND hwnd)
     // ズームを実際のウィンドウに合わせる。
     XgFitZoom(hwnd);
 
+    // 番号とヒントを付ける。
+    xg_solution.DoNumberingNoCheck();
+    XgUpdateHints();
+
     // 自動保存なら保存する。
     if (xg_bAutoSave) {
         XgNumberingSave(hwnd);
@@ -5289,9 +5269,6 @@ void XgGenerateFromWordList(HWND hwnd)
 
     // 成功メッセージ。
     XgShowResults(hwnd);
-
-    // ヒントを表示する。
-    XgShowHints(hwnd);
 
     // クリア。
     XG_WordListDialog::s_words.clear();
@@ -5506,11 +5483,11 @@ void __fastcall XgDrawCaret(HDC hdc)
 }
 
 // 問題を生成する。
-void __fastcall XgGenerate(HWND hwnd, bool show_answer)
+void __fastcall XgGenerate(HWND hwnd)
 {
     bool flag = false;
+    // 元に戻す情報を取得する。
     auto sa1 = std::make_shared<XG_UndoData_SetAll>();
-    auto sa2 = std::make_shared<XG_UndoData_SetAll>();
     sa1->Get();
     // 候補ウィンドウを破棄する。
     XgDestroyCandsWnd();
@@ -5521,18 +5498,21 @@ void __fastcall XgGenerate(HWND hwnd, bool show_answer)
     // 問題の作成。
     if (XgOnGenerate(hwnd)) {
         flag = true;
+        // イメージを更新する。
+        XgSetCaretPos();
+        XgMarkUpdate();
+        XgUpdateImage(hwnd);
+        // 番号とヒントを付ける。
+        xg_solution.DoNumberingNoCheck();
+        XgUpdateHints();
+        // 元に戻す情報を確定。
+        auto sa2 = std::make_shared<XG_UndoData_SetAll>();
         sa2->Get();
         xg_ubUndoBuffer.Commit(UC_SETALL, sa1, sa2);
         // 自動で保存なら保存する。
         if (xg_bAutoSave) {
             XgNumberingSave(hwnd);
         }
-        // イメージを更新する。
-        XgSetCaretPos();
-        XgMarkUpdate();
-        XgUpdateImage(hwnd);
-        // メッセージボックスを表示する。
-        XgShowResults(hwnd);
     }
     if (!flag) {
         sa1->Apply();
@@ -5540,6 +5520,8 @@ void __fastcall XgGenerate(HWND hwnd, bool show_answer)
     // イメージを更新する。
     XgSetCaretPos();
     XgMarkUpdate();
+    // 結果を表示する。
+    XgShowResults(hwnd);
 }
 
 // 次のペインまたは前のペインに移動する。
@@ -5921,7 +5903,7 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT /*codeNo
         bUpdateImage = TRUE;
         break;
     case ID_GENERATE:   // 問題を自動生成する。
-        XgGenerate(hwnd, xg_bShowAnswerOnGenerate);
+        XgGenerate(hwnd);
         bUpdateImage = TRUE;
         break;
     case ID_OPEN:   // ファイルを開く。
@@ -7620,11 +7602,7 @@ bool XgOpenHintsByWindow(HWND hwnd)
 // ヒントを表示する。
 void XgShowHints(HWND hwnd)
 {
-    #if 1
-        XgOpenHintsByWindow(hwnd);
-    #else
-        XgOpenHintsByNotepad(hwnd, xg_bShowAnswer);
-    #endif
+    XgOpenHintsByWindow(hwnd);
 }
 
 //////////////////////////////////////////////////////////////////////////////

@@ -41,7 +41,7 @@ endif()
 
 if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
     # using Clang
-    if (NOT CMAKE_BUILD_TYPE MATCHES "^Debug$")
+    if (CMAKE_BUILD_TYPE MATCHES "^Release$")
         set(CMAKE_C_FLAGS "-static -O3 -Wall -pedantic")
         set(CMAKE_CXX_FLAGS "-static -O3 -Wall -pedantic")
     else()
@@ -50,14 +50,14 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
     endif()
 elseif (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
     # using GCC
-    if (NOT CMAKE_BUILD_TYPE MATCHES "^Debug$")
+    if (CMAKE_BUILD_TYPE MATCHES "^Release$")
         set(CMAKE_C_FLAGS "-s -static -O3 -Wall -pedantic")
         set(CMAKE_CXX_FLAGS "-s -static -O3 -Wall -pedantic")
     else()
         set(CMAKE_C_FLAGS "-static -g -Wall -pedantic")
         set(CMAKE_CXX_FLAGS "-static -g -Wall -pedantic")
     endif()
-elseif (MSVC AND NOT CMAKE_BUILD_TYPE MATCHES "^Debug$")
+elseif (MSVC AND (CMAKE_BUILD_TYPE MATCHES "^Release$"))
     # replace "/MD" with "/MT" (building without runtime DLLs)
     set(CompilerFlags
         CMAKE_C_FLAGS

@@ -3,10 +3,18 @@
 #ifndef _INC_WINDOWS
     #include <windows.h>
 #endif
-#include <versionhelpers.h>
 
 typedef LANGID (WINAPI *FN_GetThreadUILanguage)(VOID);
 typedef LANGID (WINAPI *FN_SetThreadUILanguage)(LANGID);
+
+//#include <versionhelpers.h>
+static inline BOOL IsWindowsVistaOrGreater(void)
+{
+    OSVERSIONINFOW info = { sizeof(info) };
+    if (!GetVersionExW(&info))
+        return FALSE;
+    return info.dwMajorVersion >= 6;
+}
 
 static inline LANGID WonGetThreadUILanguage()
 {
