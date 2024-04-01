@@ -12,9 +12,7 @@
 #define IDD_NEW                             101
 #define IDD_CREATE                          102
 #define IDD_CALCULATING                     103
-#define IDD_SEQCREATE                       105
 #define IDD_CONFIG                          107
-#define IDD_SEQSOLVE                        108
 #define IDD_NOTES                           110
 #define IDD_BLACKGEN                        113
 #define IDD_KATATATE                        114
@@ -263,9 +261,6 @@
 #define IDS_TT_PRINTPROBLEM                 10151
 #define IDS_TT_PRINTANSWER                  10152
 #define IDS_TT_SOLVENOADDBLACK              10153
-#define IDS_TT_GENERATEREPEATEDLY           10154
-#define IDS_TT_SOLVEREPEATEDLY              10167
-#define IDS_TT_SOLVEREPEATEDLYNOADDBLACK    10168
 
 #define ID_NEW                              100
 #define ID_GENERATE                         101
@@ -301,7 +296,6 @@
 #define ID_PRINTPROBLEM                     151
 #define ID_PRINTANSWER                      152
 #define ID_SOLVENOADDBLACK                  153
-#define ID_GENERATEREPEATEDLY               154
 #define ID_LINESYMMETRYCHECK                155
 #define ID_POINTSYMMETRYCHECK               156
 #define ID_OPENHOMEPAGE                     157

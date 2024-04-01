@@ -294,6 +294,7 @@
     - Changed the default save location from "My Documents" to "My Documents\XWordGiver".
     - Added "General settings" item to "Edit" menu.
     - Added "Numbering save" item to "File" menu.
+    - The "continuous problem generation" function has been abolished.
 
 # 開発履歴 (Japanese)
 
@@ -904,3 +905,4 @@
     - デフォルトの保存先を「マイ ドキュメント」から「マイ ドキュメント\XWordGiver」に変更。
     - 「編集」メニューに「全般設定」項目を追加。
     - 「ファイル」メニューに「連番で保存」項目を追加。
+    - 「問題の連続生成」機能を廃止。

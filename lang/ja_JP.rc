@@ -21,7 +21,6 @@ IDB_DELETEPAT BITMAP "res/1041_Bitmap_102.bmp"
     {
         MENUITEM "新規作成(&N)\tCtrl+N", ID_NEW
         MENUITEM "問題を自動生成する(&G)\tCtrl+G", ID_GENERATE
-        MENUITEM "問題を連続自動生成する(&R)\tCtrl+W", ID_GENERATEREPEATEDLY
         MENUITEM SEPARATOR
         MENUITEM "黒マスパターンから自動生成(&T)...\tCtrl+;", ID_OPENPATTERNS
         MENUITEM "単語群から自動生成(&L)...\tCtrl+:", ID_GENERATEFROMWORDLIST
@@ -125,9 +124,6 @@ IDB_DELETEPAT BITMAP "res/1041_Bitmap_102.bmp"
     {
         MENUITEM "解を求める(&R)\tF5", ID_SOLVE
         MENUITEM "解を求める(黒マス追加なし) (&B)\tF7", ID_SOLVENOADDBLACK
-        MENUITEM SEPARATOR
-        MENUITEM "連続で解を求める(&E)", ID_SOLVEREPEATEDLY
-        MENUITEM "連続で解を求める(黒マス追加なし) (&L)", ID_SOLVEREPEATEDLYNOADDBLACK
         MENUITEM SEPARATOR
         MENUITEM "一定時間が過ぎたら再試行(&T)", ID_RETRYIFTIMEOUT
         MENUITEM SEPARATOR

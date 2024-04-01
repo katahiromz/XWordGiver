@@ -798,8 +798,6 @@ void XgUpdateToolBarUI(HWND hwnd)
 {
     ::SendMessageW(xg_hToolBar, TB_ENABLEBUTTON, ID_SOLVE, !xg_bSolved);
     ::SendMessageW(xg_hToolBar, TB_ENABLEBUTTON, ID_SOLVENOADDBLACK, !xg_bSolved);
-    ::SendMessageW(xg_hToolBar, TB_ENABLEBUTTON, ID_SOLVEREPEATEDLY, !xg_bSolved);
-    ::SendMessageW(xg_hToolBar, TB_ENABLEBUTTON, ID_SOLVEREPEATEDLYNOADDBLACK, !xg_bSolved);
     ::SendMessageW(xg_hToolBar, TB_ENABLEBUTTON, ID_PRINTANSWER, xg_bSolved);
     ::SendMessageW(xg_hToolBar, TB_ENABLEBUTTON, ID_UNDO, xg_ubUndoBuffer.CanUndo());
     ::SendMessageW(xg_hToolBar, TB_ENABLEBUTTON, ID_REDO, xg_ubUndoBuffer.CanRedo());
@@ -3456,257 +3454,6 @@ bool __fastcall XgOnSolve_NoAddBlackNoResults(HWND hwnd)
     return true;
 }
 
-// 連続で解を求める。
-bool __fastcall XgOnSolveRepeatedly(HWND hwnd)
-{
-    // すでに解かれている場合は、実行を拒否する。
-    if (xg_bSolved) {
-        ::MessageBeep(0xFFFFFFFF);
-        return false;
-    }
-
-    // 辞書を読み込む。
-    XgLoadDictFile(xg_dict_name.c_str());
-    XgSetInputModeFromDict(hwnd);
-
-    // 黒マスルールなどをチェックする。
-    xg_bNoAddBlack = false;
-    if (!XgCheckCrossWord(hwnd)) {
-        return false;
-    }
-
-    // 実行前のマスの状態を保存する。
-    XG_Board xword_save(xg_xword);
-
-    // [解の連続作成]ダイアログ。
-    INT_PTR nID;
-    ::EnableWindow(xg_hwndInputPalette, FALSE);
-    {
-        XG_SeqSolveDialog dialog;
-        nID = static_cast<int>(dialog.DoModal(hwnd));
-        ::EnableWindow(xg_hwndInputPalette, TRUE);
-        if (nID != IDOK) {
-            // イメージを更新する。
-            XgSetCaretPos();
-            XgMarkUpdate();
-            XgUpdateImage(hwnd, 0, 0);
-            return false;
-        }
-    }
-
-    // 初期化する。
-    xg_strFileName.clear();
-    xg_strHeader.clear();
-    xg_strNotes.clear();
-    xg_nNumberGenerated = 0;
-    s_bOutOfDiskSpace = false;
-    xg_bSolvingEmpty = xg_xword.IsEmpty();
-    xg_bNoAddBlack = false;
-    xg_vVertInfo.clear();
-    xg_vHorzInfo.clear();
-    xg_vecVertHints.clear();
-    xg_vecHorzHints.clear();
-    // ナンクロモードをリセットする。
-    xg_bNumCroMode = false;
-    xg_mapNumCro1.clear();
-    xg_mapNumCro2.clear();
-    // 計算時間を求めるために、開始時間を取得する。
-    xg_dwlTick0 = ::GetTickCount64();
-
-    // キャンセルダイアログを表示し、実行を開始する。
-    ::EnableWindow(xg_hwndInputPalette, FALSE);
-    do
-    {
-        XG_CancelSolveDialog dialog;
-        nID = dialog.DoModal(hwnd);
-        // 生成成功のときはxg_nNumberGeneratedを増やす。
-        if (nID == IDOK && xg_bSolved) {
-            ++xg_nNumberGenerated;
-            if (!XgDoSaveToLocation(hwnd)) {
-                s_bOutOfDiskSpace = true;
-                break;
-            }
-            // 初期化。
-            xg_bSolved = false;
-            xg_bCheckingAnswer = false;
-            xg_xword = xword_save;
-            xg_vVertInfo.clear();
-            xg_vHorzInfo.clear();
-            xg_vMarks.clear();
-            xg_vMarkedCands.clear();
-            xg_strHeader.clear();
-            xg_strNotes.clear();
-            xg_strFileName.clear();
-            // 辞書を読み込む。
-            XgLoadDictFile(xg_dict_name.c_str());
-            XgSetInputModeFromDict(hwnd);
-        }
-    } while (nID == IDOK && xg_nNumberGenerated < xg_nNumberToGenerate);
-    ::EnableWindow(xg_hwndInputPalette, TRUE);
-
-    // 初期化する。
-    xg_xword = xword_save;
-    xg_vVertInfo.clear();
-    xg_vHorzInfo.clear();
-    xg_vecVertHints.clear();
-    xg_vecHorzHints.clear();
-    xg_strFileName.clear();
-
-    // イメージを更新する。
-    xg_bSolved = false;
-    xg_bCheckingAnswer = false;
-    xg_bShowAnswer = false;
-    XgSetCaretPos();
-    XgMarkUpdate();
-    XgUpdateImage(hwnd, 0, 0);
-
-    // 終了メッセージを表示する。
-    WCHAR sz[MAX_PATH];
-    if (s_bOutOfDiskSpace) {
-        StringCchPrintf(sz, _countof(sz), XgLoadStringDx1(IDS_OUTOFSTORAGE), xg_nNumberGenerated,
-                       DWORD(xg_dwlTick2 - xg_dwlTick0) / 1000,
-                       DWORD(xg_dwlTick2 - xg_dwlTick0) / 100 % 10);
-    } else {
-        StringCchPrintf(sz, _countof(sz), XgLoadStringDx1(IDS_PROBLEMSMADE), xg_nNumberGenerated,
-                       DWORD(xg_dwlTick2 - xg_dwlTick0) / 1000,
-                       DWORD(xg_dwlTick2 - xg_dwlTick0) / 100 % 10);
-    }
-    XgCenterMessageBoxW(hwnd, sz, XgLoadStringDx2(IDS_RESULTS), MB_ICONINFORMATION);
-
-    // 保存先フォルダを開く。
-    if (xg_nNumberGenerated && !xg_dirs_save_to.empty()) {
-        ::ShellExecuteW(hwnd, nullptr, xg_dirs_save_to[0].data(),
-                      nullptr, nullptr, SW_SHOWNORMAL);
-    }
-
-    return true;
-}
-
-// 連続で解を求める（黒マス追加なし）。
-bool __fastcall XgOnSolveRepeatedlyNoAddBlack(HWND hwnd)
-{
-    // すでに解かれている場合は、実行を拒否する。
-    if (xg_bSolved) {
-        ::MessageBeep(0xFFFFFFFF);
-        return false;
-    }
-
-    // 辞書を読み込む。
-    XgLoadDictFile(xg_dict_name.c_str());
-    XgSetInputModeFromDict(hwnd);
-
-    // 黒マスルールなどをチェックする。
-    xg_bNoAddBlack = true;
-    if (!XgCheckCrossWord(hwnd)) {
-        return false;
-    }
-
-    // 実行前のマスの状態を保存する。
-    XG_Board xword_save(xg_xword);
-
-    // [解の連続作成]ダイアログ。
-    INT_PTR nID;
-    ::EnableWindow(xg_hwndInputPalette, FALSE);
-    {
-        XG_SeqSolveDialog dialog;
-        nID = static_cast<int>(dialog.DoModal(hwnd));
-        ::EnableWindow(xg_hwndInputPalette, TRUE);
-        if (nID != IDOK) {
-            // イメージを更新する。
-            XgSetCaretPos();
-            XgMarkUpdate();
-            XgUpdateImage(hwnd, 0, 0);
-            return false;
-        }
-    }
-
-    // 初期化する。
-    xg_strFileName.clear();
-    xg_strHeader.clear();
-    xg_strNotes.clear();
-    xg_nNumberGenerated = 0;
-    s_bOutOfDiskSpace = false;
-    xg_bSolvingEmpty = xg_xword.IsEmpty();
-    xg_bNoAddBlack = true;
-    xg_vVertInfo.clear();
-    xg_vHorzInfo.clear();
-    xg_vecVertHints.clear();
-    xg_vecHorzHints.clear();
-    // ナンクロモードをリセットする。
-    xg_bNumCroMode = false;
-    xg_mapNumCro1.clear();
-    xg_mapNumCro2.clear();
-    // 計算時間を求めるために、開始時間を取得する。
-    xg_dwlTick0 = ::GetTickCount64();
-
-    // キャンセルダイアログを表示し、実行を開始する。
-    ::EnableWindow(xg_hwndInputPalette, FALSE);
-    do
-    {
-        XG_CancelSolveNoAddBlackDialog dialog;
-        nID = dialog.DoModal(hwnd);
-        // 生成成功のときはxg_nNumberGeneratedを増やす。
-        if (nID == IDOK && xg_bSolved) {
-            ++xg_nNumberGenerated;
-            if (!XgDoSaveToLocation(hwnd)) {
-                s_bOutOfDiskSpace = true;
-                break;
-            }
-            // 初期化。
-            xg_bSolved = false;
-            xg_bCheckingAnswer = false;
-            xg_xword = xword_save;
-            xg_vVertInfo.clear();
-            xg_vHorzInfo.clear();
-            xg_vMarks.clear();
-            xg_vMarkedCands.clear();
-            xg_strHeader.clear();
-            xg_strNotes.clear();
-            xg_strFileName.clear();
-            // 辞書を読み込む。
-            XgLoadDictFile(xg_dict_name.c_str());
-            XgSetInputModeFromDict(hwnd);
-        }
-    } while (nID == IDOK && xg_nNumberGenerated < xg_nNumberToGenerate);
-    ::EnableWindow(xg_hwndInputPalette, TRUE);
-
-    // 初期化する。
-    xg_xword = xword_save;
-    xg_vVertInfo.clear();
-    xg_vHorzInfo.clear();
-    xg_vecVertHints.clear();
-    xg_vecHorzHints.clear();
-    xg_strFileName.clear();
-
-    // イメージを更新する。
-    xg_bSolved = false;
-    xg_bCheckingAnswer = false;
-    xg_bShowAnswer = false;
-    XgSetCaretPos();
-    XgMarkUpdate();
-    XgUpdateImage(hwnd, 0, 0);
-
-    // 終了メッセージを表示する。
-    WCHAR sz[MAX_PATH];
-    if (s_bOutOfDiskSpace) {
-        StringCchPrintf(sz, _countof(sz), XgLoadStringDx1(IDS_OUTOFSTORAGE), xg_nNumberGenerated,
-                        DWORD(xg_dwlTick2 - xg_dwlTick0) / 1000,
-                        DWORD(xg_dwlTick2 - xg_dwlTick0) / 100 % 10);
-    } else {
-        StringCchPrintf(sz, _countof(sz), XgLoadStringDx1(IDS_PROBLEMSMADE), xg_nNumberGenerated,
-                        DWORD(xg_dwlTick2 - xg_dwlTick0) / 1000,
-                        DWORD(xg_dwlTick2 - xg_dwlTick0) / 100 % 10);
-    }
-    XgCenterMessageBoxW(hwnd, sz, XgLoadStringDx2(IDS_RESULTS), MB_ICONINFORMATION);
-
-    // 保存先フォルダを開く。
-    if (xg_nNumberGenerated && !xg_dirs_save_to.empty()) {
-        ::ShellExecuteW(hwnd, nullptr, xg_dirs_save_to[0].data(),
-                      nullptr, nullptr, SW_SHOWNORMAL);
-    }
-    return true;
-}
-
 // 黒マス線対称チェック。
 static void XgOnLineSymmetryCheck(HWND hwnd) noexcept
 {
@@ -4433,8 +4180,6 @@ void __fastcall MainWnd_OnInitMenu(HWND /*hwnd*/, HMENU hMenu)
     if (xg_bSolved) {
         ::EnableMenuItem(hMenu, ID_SOLVE, MF_BYCOMMAND | MF_GRAYED);
         ::EnableMenuItem(hMenu, ID_SOLVENOADDBLACK, MF_BYCOMMAND | MF_GRAYED);
-        ::EnableMenuItem(hMenu, ID_SOLVEREPEATEDLY, MF_BYCOMMAND | MF_GRAYED);
-        ::EnableMenuItem(hMenu, ID_SOLVEREPEATEDLYNOADDBLACK, MF_BYCOMMAND | MF_GRAYED);
         if (xg_bShowAnswer) {
             ::EnableMenuItem(hMenu, ID_SHOWSOLUTION, MF_BYCOMMAND | MF_GRAYED);
             ::EnableMenuItem(hMenu, ID_NOSOLUTION, MF_BYCOMMAND | MF_ENABLED);
@@ -4474,8 +4219,6 @@ void __fastcall MainWnd_OnInitMenu(HWND /*hwnd*/, HMENU hMenu)
     } else {
         ::EnableMenuItem(hMenu, ID_SOLVE, MF_BYCOMMAND | MF_ENABLED);
         ::EnableMenuItem(hMenu, ID_SOLVENOADDBLACK, MF_BYCOMMAND | MF_ENABLED);
-        ::EnableMenuItem(hMenu, ID_SOLVEREPEATEDLY, MF_BYCOMMAND | MF_ENABLED);
-        ::EnableMenuItem(hMenu, ID_SOLVEREPEATEDLYNOADDBLACK, MF_BYCOMMAND | MF_ENABLED);
         ::EnableMenuItem(hMenu, ID_SHOWSOLUTION, MF_BYCOMMAND | MF_GRAYED);
         ::EnableMenuItem(hMenu, ID_NOSOLUTION, MF_BYCOMMAND | MF_GRAYED);
         ::CheckMenuRadioItem(hMenu, ID_SHOWSOLUTION, ID_NOSOLUTION, ID_NOSOLUTION, MF_BYCOMMAND);
@@ -5441,33 +5184,6 @@ void __fastcall XgShowResults(HWND hwnd)
     }
 }
 
-// メッセージボックスを表示する。
-void __fastcall XgShowResultsRepeatedly(HWND hwnd)
-{
-    WCHAR sz[MAX_PATH];
-
-    // ディスクに空きがあるか？
-    if (s_bOutOfDiskSpace) {
-        // なかった。
-        StringCchPrintfW(sz, _countof(sz), XgLoadStringDx1(IDS_OUTOFSTORAGE), xg_nNumberGenerated,
-                         DWORD(xg_dwlTick2 - xg_dwlTick0) / 1000,
-                         DWORD(xg_dwlTick2 - xg_dwlTick0) / 100 % 10);
-    } else {
-        // あった。
-        StringCchPrintfW(sz, _countof(sz), XgLoadStringDx1(IDS_PROBLEMSMADE), xg_nNumberGenerated,
-                         DWORD(xg_dwlTick2 - xg_dwlTick0) / 1000,
-                         DWORD(xg_dwlTick2 - xg_dwlTick0) / 100 % 10);
-    }
-
-    // 終了メッセージを表示する。
-    XgCenterMessageBoxW(hwnd, sz, XgLoadStringDx2(IDS_RESULTS), MB_ICONINFORMATION);
-
-    // 保存先フォルダを開く。
-    if (xg_nNumberGenerated && !xg_dirs_save_to.empty())
-        ::ShellExecuteW(hwnd, nullptr, xg_dirs_save_to[0].data(),
-                        nullptr, nullptr, SW_SHOWNORMAL);
-}
-
 // ズーム倍率を設定する。
 static void XgSetZoomRate(HWND hwnd, int nZoomRate)
 {
@@ -6257,41 +5973,6 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT /*codeNo
         XgGenerate(hwnd, xg_bShowAnswerOnGenerate);
         bUpdateImage = TRUE;
         break;
-    case ID_GENERATEREPEATEDLY:     // 問題を連続自動生成する
-        {
-            auto sa1 = std::make_shared<XG_UndoData_SetAll>();
-            sa1->Get();
-            auto sa2 = std::make_shared<XG_UndoData_SetAll>();
-            // 候補ウィンドウを破棄する。
-            XgDestroyCandsWnd();
-            // ヒントウィンドウを破棄する。
-            XgDestroyHintsWnd();
-            // 二重マス単語の候補と配置を破棄する。
-            ::DestroyWindow(xg_hMarkingDlg);
-            // 連続生成ダイアログ。
-            if (XgOnGenerate(hwnd, true)) {
-                // クリアする。
-                xg_bShowAnswer = false;
-                xg_bCheckingAnswer = false;
-                xg_bSolved = false;
-                xg_xword.clear();
-                xg_solution.clear();
-                // 元に戻す情報を残す。
-                sa2->Get();
-                xg_ubUndoBuffer.Commit(UC_SETALL, sa1, sa2);
-                // イメージを更新する。
-                XgSetCaretPos();
-                XgMarkUpdate();
-                // メッセージボックスを表示する。
-                XgShowResultsRepeatedly(hwnd);
-            }
-            // イメージを更新する。
-            XgSetCaretPos();
-            XgMarkUpdate();
-        }
-        bUpdateImage = TRUE;
-        break;
-
     case ID_OPEN:   // ファイルを開く。
         XgOnOpen(hwnd);
         bUpdateImage = TRUE;
@@ -6441,74 +6122,6 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT /*codeNo
             // 元に戻す情報を設定する。
             xg_ubUndoBuffer.Commit(UC_SETALL, sa1, sa2);
         }
-        bUpdateImage = TRUE;
-        break;
-    case ID_SOLVEREPEATEDLY:    // 連続で解を求める
-        // ルール「黒マス点対称」では黒マス追加ありの解を求めることはできません。
-        if (xg_nRules & RULE_POINTSYMMETRY) {
-            XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_CANTSOLVESYMMETRY), nullptr, MB_ICONERROR);
-            break;
-        }
-        // ルール「黒マス線対称」では黒マス追加ありの解を求めることはできません。
-        if (xg_nRules & RULE_LINESYMMETRYV) {
-            XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_CANTSOLVELINESYMMETRY), nullptr, MB_ICONERROR);
-            break;
-        }
-        if (xg_nRules & RULE_LINESYMMETRYH) {
-            XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_CANTSOLVELINESYMMETRY), nullptr, MB_ICONERROR);
-            break;
-        }
-        {
-            auto sa1 = std::make_shared<XG_UndoData_SetAll>();
-            sa1->Get();
-
-            // 必要ならルールに従って対称にする。
-            XG_Board copy = xg_xword;
-            copy.Mirror();
-            if (!std::equal(xg_xword.m_vCells.cbegin(), xg_xword.m_vCells.cend(),
-                            copy.m_vCells.cbegin()))
-            {
-                if (XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_SHALLIMIRROR), nullptr,
-                                        MB_ICONINFORMATION | MB_YESNO) == IDYES)
-                {
-                    xg_xword.m_vCells = copy.m_vCells;
-                }
-            }
-
-            // 候補ウィンドウを破棄する。
-            XgDestroyCandsWnd();
-            // ヒントウィンドウを破棄する。
-            XgDestroyHintsWnd();
-            // 二重マス単語の候補と配置を破棄する。
-            ::DestroyWindow(xg_hMarkingDlg);
-            // 連続で解を求める。
-            if (XgOnSolveRepeatedly(hwnd)) {
-                sa1->Apply();
-            }
-        }
-        // イメージを更新する。
-        XgSetCaretPos();
-        XgMarkUpdate();
-        bUpdateImage = TRUE;
-        break;
-    case ID_SOLVEREPEATEDLYNOADDBLACK:  // 連続で解を求める(黒マス追加なし)
-        {
-            auto sa1 = std::make_shared<XG_UndoData_SetAll>();
-            sa1->Get();
-            // 候補ウィンドウを破棄する。
-            XgDestroyCandsWnd();
-            // ヒントウィンドウを破棄する。
-            XgDestroyHintsWnd();
-            // 二重マス単語の候補と配置を破棄する。
-            ::DestroyWindow(xg_hMarkingDlg);
-            // 連続で解を求める。
-            if (XgOnSolveRepeatedlyNoAddBlack(hwnd)) {
-                sa1->Apply();
-            }
-        }
-        // イメージを更新する。
-        XgSetCaretPos();
-        XgMarkUpdate();
         bUpdateImage = TRUE;
         break;
     case ID_SHOWSOLUTION:   // 解を表示する。
@@ -7606,13 +7219,9 @@ bool __fastcall MainWnd_OnCreate(HWND hwnd, LPCREATESTRUCT /*lpCreateStruct*/)
         {7, ID_PASTE, TBSTATE_ENABLED, TBSTYLE_BUTTON},
         {0, 0, TBSTATE_ENABLED, TBSTYLE_SEP},
         {3, ID_GENERATE, TBSTATE_ENABLED, TBSTYLE_BUTTON},
-        {5, ID_GENERATEREPEATEDLY, TBSTATE_ENABLED, TBSTYLE_BUTTON},
         {0, 0, TBSTATE_ENABLED, TBSTYLE_SEP},
         {8, ID_SOLVE, TBSTATE_ENABLED, TBSTYLE_BUTTON},
         {9, ID_SOLVENOADDBLACK, TBSTATE_ENABLED, TBSTYLE_BUTTON},
-        {0, 0, TBSTATE_ENABLED, TBSTYLE_SEP},
-        {10, ID_SOLVEREPEATEDLY, TBSTATE_ENABLED, TBSTYLE_BUTTON},
-        {11, ID_SOLVEREPEATEDLYNOADDBLACK, TBSTATE_ENABLED, TBSTYLE_BUTTON},
         {0, 0, TBSTATE_ENABLED, TBSTYLE_SEP},
         {12, ID_PRINTPROBLEM, TBSTATE_ENABLED, TBSTYLE_BUTTON},
         {13, ID_PRINTANSWER, TBSTATE_ENABLED, TBSTYLE_BUTTON},
@@ -7828,9 +7437,6 @@ void MainWnd_OnNotify(HWND hwnd, int idCtrl, LPNMHDR pnmh) noexcept
         assert(IDS_TT_PRINTPROBLEM == ID_TT_BASE + ID_PRINTPROBLEM);
         assert(IDS_TT_PRINTANSWER == ID_TT_BASE + ID_PRINTANSWER);
         assert(IDS_TT_SOLVENOADDBLACK == ID_TT_BASE + ID_SOLVENOADDBLACK);
-        assert(IDS_TT_GENERATEREPEATEDLY == ID_TT_BASE + ID_GENERATEREPEATEDLY);
-        assert(IDS_TT_SOLVEREPEATEDLY == ID_TT_BASE + ID_SOLVEREPEATEDLY);
-        assert(IDS_TT_SOLVEREPEATEDLYNOADDBLACK == ID_TT_BASE + ID_SOLVEREPEATEDLYNOADDBLACK);
         assert(IDS_TT_UNDO == ID_TT_BASE + ID_UNDO);
         assert(IDS_TT_REDO == ID_TT_BASE + ID_REDO);
     }
