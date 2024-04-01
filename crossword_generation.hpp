@@ -119,17 +119,6 @@ inline void reset() noexcept {
 #endif
 }
 
-// 生成済みかキャンセル済みかを待つ。このような待ち方はモダンではない。
-// ここのコードはモダンな方法に置き換えられるべき。
-inline void wait_for_threads(int num_threads = get_num_processors(), int retry_count = 3) {
-    constexpr int INTERVAL = 100;
-    for (int i = 0; i < retry_count; ++i) {
-        if (s_generated || s_canceled)
-            break;
-        std::this_thread::sleep_for(std::chrono::milliseconds(INTERVAL));
-    }
-}
-
 // 連結性を判定。
 template <typename t_string>
 inline bool
@@ -2031,6 +2020,7 @@ struct non_add_block_t {
             try {
                 // スレッドを生成。切り離す。
                 std::thread t(generate_proc, pboard, pwords, i);
+                xg_ahThreads[i] = t.native_handle();
                 t.detach();
             } catch (std::system_error&) {
                 delete pboard;

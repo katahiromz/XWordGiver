@@ -145,6 +145,8 @@ public:
             ::KillTimer(hwnd, uTimerID);
             // 計算時間を求めるために、終了時間を取得する。
             xg_dwlTick2 = ::GetTickCount64();
+            // スレッドを待つ。
+            XgWaitForThreads();
             // 解を求めようとした後の後処理。
             XgEndSolve();
             // ダイアログを終了する。
