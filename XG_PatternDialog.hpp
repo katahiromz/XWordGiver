@@ -7,9 +7,9 @@
 // 黒マスパターンで答えを表示する。
 extern BOOL xg_bShowAnswerOnPattern;
 // 解を求める（黒マス追加なし）。
-bool __fastcall XgOnSolve_NoAddBlack(HWND hwnd, bool bShowAnswer = true);
+bool __fastcall XgOnSolve_NoAddBlack(HWND hwnd);
 // 解を求める（黒マス追加なし）。結果を表示しない。
-bool __fastcall XgOnSolve_NoAddBlackNoResults(HWND hwnd, bool bShowAnswer = true);
+bool __fastcall XgOnSolve_NoAddBlackNoResults(HWND hwnd);
 
 #define XG_MAX_PAT_SIZE1 20
 #define XG_MAX_PAT_SIZE2 30
@@ -257,7 +257,7 @@ public:
             sa1->Get();
             {
                 // 解を求める（黒マス追加なし）。
-                XgOnSolve_NoAddBlack(xg_hMainWnd, xg_bShowAnswerOnPattern);
+                XgOnSolve_NoAddBlack(xg_hMainWnd);
             }
             sa2->Get();
             // 元に戻す情報を設定する。

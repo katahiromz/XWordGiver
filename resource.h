@@ -38,6 +38,7 @@
 #define IDD_MARKING                         132
 #define IDD_ADDDELETEPAT                    133
 #define IDD_JUMP                            134
+#define IDD_FILESETTINGS                    135
 
 #define IDS_VERSION                         101
 #define IDS_APPNAME                         102
@@ -247,6 +248,8 @@
 #define IDS_CONGRATS                        326
 #define IDS_CORRECTANSWER                   327
 #define IDS_OUTOFRANGE                      328
+#define IDS_GENERALSETTINGS                 329
+#define IDS_MADEPROBLEM2                    330
 #define IDS_TT_NEW                          10100
 #define IDS_TT_GENERATE                     10101
 #define IDS_TT_OPEN                         10102
@@ -288,7 +291,6 @@
 #define ID_ABCINPUT                         139
 #define ID_HANGULINPUT                      140
 #define ID_KANJIINPUT                       141
-#define ID_GENERATEANSWER                   143
 #define ID_SHOWSOLUTION                     144
 #define ID_NOSOLUTION                       145
 #define ID_SHOWHIDEHINTS                    146
@@ -507,6 +509,8 @@
 #define ID_PATEDIT                          602
 #define ID_CHECKANSWER                      603
 #define ID_JUMPNUMBER                       604
+#define ID_GENERALSETTINGS                  605
+#define ID_NUMBERINGSAVE                    606
 #define ID_TT_BASE                          10000
 
 #define ctl2                                1185

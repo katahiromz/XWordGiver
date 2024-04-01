@@ -191,6 +191,15 @@ void XgSetModified(BOOL bModified, LPCSTR file, int line)
 // UI言語。
 LANGID xg_UILangID = 0;
 
+// 問題を開いたときに答えを表示するかどうか。
+BOOL xg_bShowAnswerOnOpen = FALSE;
+
+// 問題を生成したときに答えを表示するか？
+BOOL xg_bShowAnswerOnGenerate = TRUE;
+
+// 問題を生成したら自動で保存するか？
+BOOL xg_bAutoSave = FALSE;
+
 // 最近使ったファイルのリスト。
 std::vector<XGStringW> xg_recently_used_files;
 
@@ -875,6 +884,10 @@ void XgResetSettings(void)
     xg_recently_used_files.clear();
 
     xg_bChoosePAT = true;
+
+    xg_bShowAnswerOnOpen = FALSE;
+    xg_bShowAnswerOnGenerate = TRUE;
+    xg_bAutoSave = FALSE;
 }
 
 // 設定を読み込む。
@@ -979,6 +992,15 @@ bool __fastcall XgLoadSettings(void)
         }
         if (!app_key.QueryDword(L"UILangID", dwValue)) {
             xg_UILangID = static_cast<LANGID>(dwValue);
+        }
+        if (!app_key.QueryDword(L"ShowAnswerOnOpen", dwValue)) {
+            xg_bShowAnswerOnOpen = static_cast<BOOL>(dwValue);
+        }
+        if (!app_key.QueryDword(L"ShowAnswerOnGenerate", dwValue)) {
+            xg_bShowAnswerOnGenerate = static_cast<BOOL>(dwValue);
+        }
+        if (!app_key.QueryDword(L"AutoSave", dwValue)) {
+            xg_bAutoSave = static_cast<BOOL>(dwValue);
         }
 
         if (!app_key.QuerySz(L"CellFont", sz, _countof(sz))) {
@@ -1191,6 +1213,9 @@ bool __fastcall XgSaveSettings(void)
         app_key.SetDword(L"Rows", xg_nRows);
         app_key.SetDword(L"Cols", xg_nCols);
         app_key.SetDword(L"UILangID", xg_UILangID);
+        app_key.SetDword(L"ShowAnswerOnOpen", xg_bShowAnswerOnOpen);
+        app_key.SetDword(L"ShowAnswerOnGenerate", xg_bShowAnswerOnGenerate);
+        app_key.SetDword(L"AutoSave", xg_bAutoSave);
 
         app_key.SetSz(L"CellFont", xg_szCellFont, _countof(xg_szCellFont));
         app_key.SetSz(L"SmallFont", xg_szSmallFont, _countof(xg_szSmallFont));
@@ -2521,6 +2546,9 @@ bool __fastcall XgDoLoadFiles(HWND hwnd, LPCWSTR pszFile)
     auto looks_file = XgGetFileManager()->get_looks_file();
     XgImportLooks(hwnd, looks_file.c_str());
 
+    // 答えを表示するかどうか？
+    xg_bShowAnswer = xg_bShowAnswerOnOpen;
+
     // キャレット位置を更新。
     XgSetCaretPos();
     // テーマを更新する。
@@ -2778,7 +2806,7 @@ void __fastcall XgFitZoom(HWND hwnd)
 }
 
 // 自動的にPAT.txtから選んで問題を作成する。
-TRIVALUE XgGenerateFromPat(HWND hwnd, bool show_answer)
+TRIVALUE XgGenerateFromPat(HWND hwnd)
 {
     // パターンデータを読み込む。
     patterns_t patterns;
@@ -2824,16 +2852,16 @@ TRIVALUE XgGenerateFromPat(HWND hwnd, bool show_answer)
     XgUpdateImage(hwnd);
 
     // 解を求める（黒マス追加なし）。結果を表示しない。
-    XgOnSolve_NoAddBlackNoResults(hwnd, show_answer);
+    XgOnSolve_NoAddBlackNoResults(hwnd);
 
-    xg_bShowAnswer = show_answer;
+    xg_bShowAnswer = xg_bShowAnswerOnGenerate;
     XgUpdateImage(hwnd);
 
     return TV_POSITIVE; // 成功。
 }
 
 // 問題の作成。
-bool __fastcall XgOnGenerate(HWND hwnd, bool show_answer, bool multiple = false)
+bool __fastcall XgOnGenerate(HWND hwnd, bool multiple = false)
 {
     INT_PTR nID;
     ::EnableWindow(xg_hwndInputPalette, FALSE);
@@ -2844,9 +2872,9 @@ bool __fastcall XgOnGenerate(HWND hwnd, bool show_answer, bool multiple = false)
     } else {
         // [問題の作成]ダイアログ。
         XG_GenDialog dialog;
-        dialog.m_bShowAnswer = show_answer;
+        dialog.m_bShowAnswer = xg_bShowAnswerOnGenerate;
         nID = static_cast<int>(dialog.DoModal(hwnd));
-        show_answer = dialog.m_bShowAnswer;
+        xg_bShowAnswerOnGenerate = dialog.m_bShowAnswer;
     }
     ::EnableWindow(xg_hwndInputPalette, TRUE);
     if (nID != IDOK) {
@@ -2854,7 +2882,7 @@ bool __fastcall XgOnGenerate(HWND hwnd, bool show_answer, bool multiple = false)
     }
 
     if (!multiple && xg_bChoosePAT) { // 複数でなく、自動的にPAT.txtから選択するか？
-        auto tri_value = XgGenerateFromPat(hwnd, show_answer);
+        auto tri_value = XgGenerateFromPat(hwnd);
         if (tri_value == TV_NEGATIVE)
             return false; // 失敗。
         if (tri_value == TV_POSITIVE)
@@ -2938,7 +2966,7 @@ bool __fastcall XgOnGenerate(HWND hwnd, bool show_answer, bool multiple = false)
         xg_bCheckingAnswer = false;
         xg_bShowAnswer = false;
     } else {
-        xg_bShowAnswer = show_answer;
+        xg_bShowAnswer = xg_bShowAnswerOnGenerate;
         if (xg_bSmartResolution && xg_bCancelled) {
             xg_xword.clear();
         }
@@ -3115,6 +3143,29 @@ bool __fastcall XgOnGenerateBlacks(HWND hwnd, bool sym)
     return true;
 }
 
+// 連番保存。
+BOOL __fastcall XgNumberingSave(HWND hwnd)
+{
+    auto pszDir = xg_dirs_save_to[0].data();
+    if (!XgMakePathW(pszDir))
+        return FALSE;
+
+    WCHAR szFormat[MAX_PATH];
+    StringCchCopyW(szFormat, _countof(szFormat), pszDir);
+    PathAppendW(szFormat, L"Crossword-%dx%d-%04u.xd");
+
+    WCHAR szPath[MAX_PATH];
+    for (INT iFile = 0; iFile <= 99999; ++iFile) {
+        StringCchPrintfW(szPath, _countof(szPath), szFormat, xg_nCols, xg_nRows, iFile);
+        if (!PathFileExistsW(szPath))
+            break;
+    }
+
+    // 保存する。
+    xg_strFileName = szPath;
+    return XgOnSave(hwnd);
+}
+
 // 解を求める。
 bool __fastcall XgOnSolve_AddBlack(HWND hwnd)
 {
@@ -3191,6 +3242,11 @@ bool __fastcall XgOnSolve_AddBlack(HWND hwnd)
             }
         }
 
+        // 自動保存なら保存する。
+        if (xg_bAutoSave) {
+            XgNumberingSave(hwnd);
+        }
+
         // 解あり。表示を更新する。
         xg_bShowAnswer = true;
         XgSetCaretPos();
@@ -3198,9 +3254,16 @@ bool __fastcall XgOnSolve_AddBlack(HWND hwnd)
         XgUpdateImage(hwnd, 0, 0);
 
         // 成功メッセージを表示する。
-        StringCchPrintf(sz, _countof(sz), XgLoadStringDx1(IDS_SOLVED),
-                       DWORD(xg_dwlTick2 - xg_dwlTick0) / 1000,
-                       DWORD(xg_dwlTick2 - xg_dwlTick0) / 100 % 10);
+        if (xg_bAutoSave && PathFileExistsW(xg_strFileName.c_str())) {
+            StringCchPrintf(sz, _countof(sz), XgLoadStringDx1(IDS_MADEPROBLEM2),
+                            PathFindFileNameW(xg_strFileName.c_str()),
+                            DWORD(xg_dwlTick2 - xg_dwlTick0) / 1000,
+                            DWORD(xg_dwlTick2 - xg_dwlTick0) / 100 % 10);
+        } else {
+            StringCchPrintf(sz, _countof(sz), XgLoadStringDx1(IDS_MADEPROBLEM),
+                           DWORD(xg_dwlTick2 - xg_dwlTick0) / 1000,
+                           DWORD(xg_dwlTick2 - xg_dwlTick0) / 100 % 10);
+        }
         XgCenterMessageBoxW(hwnd, sz, XgLoadStringDx2(IDS_RESULTS), MB_ICONINFORMATION);
 
         // ヒントを更新して開く。
@@ -3223,7 +3286,7 @@ bool __fastcall XgOnSolve_AddBlack(HWND hwnd)
 }
 
 // 解を求める（黒マス追加なし）。
-bool __fastcall XgOnSolve_NoAddBlack(HWND hwnd, bool bShowAnswer/* = true*/)
+bool __fastcall XgOnSolve_NoAddBlack(HWND hwnd)
 {
     // すでに解かれている場合は、実行を拒否する。
     if (xg_bSolved) {
@@ -3298,16 +3361,28 @@ bool __fastcall XgOnSolve_NoAddBlack(HWND hwnd, bool bShowAnswer/* = true*/)
             }
         }
 
+        // 自動保存なら保存する。
+        if (xg_bAutoSave) {
+            XgNumberingSave(hwnd);
+        }
+
         // 解あり。表示を更新する。
-        xg_bShowAnswer = bShowAnswer;
+        xg_bShowAnswer = xg_bShowAnswerOnGenerate;
         XgSetCaretPos();
         XgMarkUpdate();
         XgUpdateImage(hwnd, 0, 0);
 
         // 成功メッセージを表示する。
-        StringCchPrintf(sz, _countof(sz), XgLoadStringDx1(IDS_SOLVED),
-                        DWORD(xg_dwlTick2 - xg_dwlTick0) / 1000,
-                        DWORD(xg_dwlTick2 - xg_dwlTick0) / 100 % 10);
+        if (xg_bAutoSave && PathFileExistsW(xg_strFileName.c_str())) {
+            StringCchPrintf(sz, _countof(sz), XgLoadStringDx1(IDS_MADEPROBLEM2),
+                            PathFindFileNameW(xg_strFileName.c_str()),
+                            DWORD(xg_dwlTick2 - xg_dwlTick0) / 1000,
+                            DWORD(xg_dwlTick2 - xg_dwlTick0) / 100 % 10);
+        } else {
+            StringCchPrintf(sz, _countof(sz), XgLoadStringDx1(IDS_MADEPROBLEM),
+                            DWORD(xg_dwlTick2 - xg_dwlTick0) / 1000,
+                            DWORD(xg_dwlTick2 - xg_dwlTick0) / 100 % 10);
+        }
         XgCenterMessageBoxW(hwnd, sz, XgLoadStringDx2(IDS_RESULTS), MB_ICONINFORMATION);
 
         // ヒントを更新して開く。
@@ -3331,7 +3406,7 @@ bool __fastcall XgOnSolve_NoAddBlack(HWND hwnd, bool bShowAnswer/* = true*/)
 }
 
 // 解を求める（黒マス追加なし）。結果を表示しない。
-bool __fastcall XgOnSolve_NoAddBlackNoResults(HWND hwnd, bool bShowAnswer/* = true*/)
+bool __fastcall XgOnSolve_NoAddBlackNoResults(HWND hwnd)
 {
     // すでに解かれている場合は、実行を拒否する。
     if (xg_bSolved) {
@@ -5336,9 +5411,16 @@ void __fastcall XgShowResults(HWND hwnd)
     WCHAR sz[MAX_PATH];
     if (xg_bSolved) {
         // 成功メッセージを表示する。
-        StringCchPrintf(sz, _countof(sz), XgLoadStringDx1(IDS_MADEPROBLEM),
-                        DWORD(xg_dwlTick2 - xg_dwlTick0) / 1000,
-                        DWORD(xg_dwlTick2 - xg_dwlTick0) / 100 % 10);
+        if (xg_bAutoSave && PathFileExistsW(xg_strFileName.c_str())) {
+            StringCchPrintf(sz, _countof(sz), XgLoadStringDx1(IDS_MADEPROBLEM2),
+                            PathFindFileNameW(xg_strFileName.c_str()),
+                            DWORD(xg_dwlTick2 - xg_dwlTick0) / 1000,
+                            DWORD(xg_dwlTick2 - xg_dwlTick0) / 100 % 10);
+        } else {
+            StringCchPrintf(sz, _countof(sz), XgLoadStringDx1(IDS_MADEPROBLEM),
+                            DWORD(xg_dwlTick2 - xg_dwlTick0) / 1000,
+                            DWORD(xg_dwlTick2 - xg_dwlTick0) / 100 % 10);
+        }
         XgCenterMessageBoxW(hwnd, sz, XgLoadStringDx2(IDS_RESULTS), MB_ICONINFORMATION);
 
         // ヒントを更新して開く。
@@ -5770,10 +5852,14 @@ void __fastcall XgGenerate(HWND hwnd, bool show_answer)
     // 二重マス単語の候補と配置を破棄する。
     ::DestroyWindow(xg_hMarkingDlg);
     // 問題の作成。
-    if (XgOnGenerate(hwnd, show_answer, false)) {
+    if (XgOnGenerate(hwnd, false)) {
         flag = true;
         sa2->Get();
         xg_ubUndoBuffer.Commit(UC_SETALL, sa1, sa2);
+        // 自動で保存なら保存する。
+        if (xg_bAutoSave) {
+            XgNumberingSave(hwnd);
+        }
         // イメージを更新する。
         XgSetCaretPos();
         XgMarkUpdate();
@@ -5864,6 +5950,123 @@ void __fastcall XgJumpNumber(HWND hwnd, INT nNumber, BOOL bVert)
     XgUpdateStatusBar(hwnd);
     // すぐに入力できるようにする。
     SetFocus(hwnd);
+}
+
+// 全般設定の[ファイル]設定。
+INT_PTR CALLBACK
+FileSettingsDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+{
+    switch (uMsg)
+    {
+    case WM_INITDIALOG:
+        if (xg_bShowAnswerOnOpen)
+            CheckDlgButton(hwnd, chx1, BST_CHECKED);
+        if (xg_bAutoSave)
+            CheckDlgButton(hwnd, chx2, BST_CHECKED);
+        if (xg_bShowAnswerOnGenerate)
+            CheckDlgButton(hwnd, chx3, BST_CHECKED);
+        for (const auto& dir : xg_dirs_save_to) {
+            SendDlgItemMessage(hwnd, cmb1, CB_ADDSTRING, 0, (LPARAM)dir.c_str());
+        }
+        SendDlgItemMessage(hwnd, cmb1, CB_SETCURSEL, 0, 0);
+        return TRUE;
+
+    case WM_COMMAND:
+        switch (LOWORD(wParam))
+        {
+        case chx1:
+        case chx2:
+        case chx3:
+            if (HIWORD(wParam) == BN_CLICKED)
+                PropSheet_Changed(GetParent(hwnd), hwnd);
+            break;
+        case cmb1:
+            if (HIWORD(wParam) == CBN_EDITCHANGE ||
+                HIWORD(wParam) == CBN_SELCHANGE ||
+                HIWORD(wParam) == CBN_SELENDOK)
+            {
+                PropSheet_Changed(GetParent(hwnd), hwnd);
+            }
+            break;
+        case psh1: // 「参照」ボタン。
+            {
+                BROWSEINFOW bi = { hwnd };
+                bi.lpszTitle = XgLoadStringDx1(IDS_CROSSSTORAGE);
+                bi.ulFlags = BIF_RETURNONLYFSDIRS;
+                bi.lpfn = XgBrowseCallbackProc;
+                ::GetDlgItemTextW(hwnd, cmb1, xg_szDir, _countof(xg_szDir));
+                {
+                    LPITEMIDLIST pidl = ::SHBrowseForFolderW(&bi);
+                    if (pidl) {
+                        WCHAR szFile[MAX_PATH];
+                        ::SHGetPathFromIDListW(pidl, szFile);
+                        ::SetDlgItemTextW(hwnd, cmb1, szFile);
+                        ::CoTaskMemFree(pidl);
+                        PropSheet_Changed(GetParent(hwnd), hwnd);
+                    }
+                }
+            }
+            break;
+        }
+        break;
+
+    case WM_NOTIFY:
+        {
+            NMHDR *pnmhdr = (NMHDR *)lParam;
+            switch (pnmhdr->code) {
+            case PSN_APPLY: // 適用
+                {
+                    xg_bShowAnswerOnOpen = (IsDlgButtonChecked(hwnd, chx1) == BST_CHECKED);
+                    xg_bAutoSave = (IsDlgButtonChecked(hwnd, chx2) == BST_CHECKED);
+                    xg_bShowAnswerOnGenerate = (IsDlgButtonChecked(hwnd, chx3) == BST_CHECKED);
+
+                    // テキストを取得する。
+                    WCHAR szFile[MAX_PATH];
+                    ::GetDlgItemTextW(hwnd, cmb1, szFile, _countof(szFile));
+
+                    // 一致する項目を削除する。
+                    INT i = 0;
+                    for (const auto& dir : xg_dirs_save_to) {
+                        if (lstrcmpiW(dir.c_str(), szFile) == 0) {
+                            xg_dirs_save_to.erase(xg_dirs_save_to.begin() + i);
+                            break;
+                        }
+                        ++i;
+                    }
+                    // 先頭に挿入。
+                    xg_dirs_save_to.insert(xg_dirs_save_to.begin(), szFile);
+                }
+                break;
+            }
+        }
+        break;
+    }
+    return 0;
+}
+
+// 全般設定。
+void XgGeneralSettings(HWND hwnd)
+{
+    PROPSHEETPAGE psp = { sizeof(psp) };
+    HPROPSHEETPAGE hpsp[1];
+
+    // 「ファイル」設定。
+    psp.pszTemplate = MAKEINTRESOURCEW(IDD_FILESETTINGS);
+    psp.pfnDlgProc = FileSettingsDlgProc;
+    psp.dwFlags = PSP_DEFAULT;
+    psp.hInstance = xg_hInstance;
+    hpsp[0] = ::CreatePropertySheetPage(&psp);
+
+    PROPSHEETHEADER psh = { sizeof(psh) };
+    psh.dwFlags = PSH_USEICONID;
+    psh.hInstance = xg_hInstance;
+    psh.hwndParent = hwnd;
+    psh.pszIcon = MAKEINTRESOURCEW(1);
+    psh.nPages = _countof(hpsp);
+    psh.phpage = hpsp;
+    psh.pszCaption = XgLoadStringDx1(IDS_GENERALSETTINGS);
+
+    ::PropertySheet(&psh);
 }
 
 // コマンドを実行する。
@@ -6051,11 +6254,7 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT /*codeNo
         bUpdateImage = TRUE;
         break;
     case ID_GENERATE:   // 問題を自動生成する。
-        XgGenerate(hwnd, false);
-        bUpdateImage = TRUE;
-        break;
-    case ID_GENERATEANSWER:   // 問題を自動生成する（答え付き）。
-        XgGenerate(hwnd, true);
+        XgGenerate(hwnd, xg_bShowAnswerOnGenerate);
         bUpdateImage = TRUE;
         break;
     case ID_GENERATEREPEATEDLY:     // 問題を連続自動生成する
@@ -6070,7 +6269,7 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT /*codeNo
             // 二重マス単語の候補と配置を破棄する。
             ::DestroyWindow(xg_hMarkingDlg);
             // 連続生成ダイアログ。
-            if (XgOnGenerate(hwnd, false, true)) {
+            if (XgOnGenerate(hwnd, true)) {
                 // クリアする。
                 xg_bShowAnswer = false;
                 xg_bCheckingAnswer = false;
@@ -7230,6 +7429,16 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT /*codeNo
         XgJumpNumber(hwnd, xg_hints_wnd.m_nNumber, xg_hints_wnd.m_bVert);
         break;
 
+    case ID_GENERALSETTINGS:
+        // 全般設定。
+        XgGeneralSettings(hwnd);
+        break;
+
+    case ID_NUMBERINGSAVE:
+        // 連番保存。
+        XgNumberingSave(hwnd);
+        break;
+
     default:
         if (!XgOnCommandExtra(hwnd, id)) {
             ::MessageBeep(0xFFFFFFFF);
@@ -7397,7 +7606,6 @@ bool __fastcall MainWnd_OnCreate(HWND hwnd, LPCREATESTRUCT /*lpCreateStruct*/)
         {7, ID_PASTE, TBSTATE_ENABLED, TBSTYLE_BUTTON},
         {0, 0, TBSTATE_ENABLED, TBSTYLE_SEP},
         {3, ID_GENERATE, TBSTATE_ENABLED, TBSTYLE_BUTTON},
-        {4, ID_GENERATEANSWER, TBSTATE_ENABLED, TBSTYLE_BUTTON},
         {5, ID_GENERATEREPEATEDLY, TBSTATE_ENABLED, TBSTYLE_BUTTON},
         {0, 0, TBSTATE_ENABLED, TBSTYLE_SEP},
         {8, ID_SOLVE, TBSTATE_ENABLED, TBSTYLE_BUTTON},
@@ -7612,7 +7820,6 @@ void MainWnd_OnNotify(HWND hwnd, int idCtrl, LPNMHDR pnmh) noexcept
         pttt->lpszText = MAKEINTRESOURCE(pttt->hdr.idFrom + ID_TT_BASE);
         assert(IDS_TT_NEW == ID_TT_BASE + ID_NEW);
         assert(IDS_TT_GENERATE == ID_TT_BASE + ID_GENERATE);
-        assert(IDS_TT_GENERATEANSWER == ID_TT_BASE + ID_GENERATEANSWER);
         assert(IDS_TT_OPEN == ID_TT_BASE + ID_OPEN);
         assert(IDS_TT_SAVEAS == ID_TT_BASE + ID_SAVEAS);
         assert(IDS_TT_SOLVE == ID_TT_BASE + ID_SOLVE);

@@ -21,7 +21,6 @@ IDB_DELETEPAT BITMAP "res/1041_Bitmap_102.bmp"
     {
         MENUITEM "新規作成(&N)\tCtrl+N", ID_NEW
         MENUITEM "問題を自動生成する(&G)\tCtrl+G", ID_GENERATE
-        MENUITEM "問題を自動生成して答えを表示する(&E)\tCtrl+H", ID_GENERATEANSWER
         MENUITEM "問題を連続自動生成する(&R)\tCtrl+W", ID_GENERATEREPEATEDLY
         MENUITEM SEPARATOR
         MENUITEM "黒マスパターンから自動生成(&T)...\tCtrl+;", ID_OPENPATTERNS
@@ -30,6 +29,7 @@ IDB_DELETEPAT BITMAP "res/1041_Bitmap_102.bmp"
         MENUITEM "開く(&O)...\tCtrl+O", ID_OPEN
         MENUITEM "上書き保存(&S)\tCtrl+S", ID_SAVE
         MENUITEM "名前を付けて保存(&A)...\tCtrl+Shift+S", ID_SAVEAS
+        MENUITEM "連番で保存(&N)\tCtrl+Alt+S", ID_NUMBERINGSAVE
         MENUITEM SEPARATOR
         MENUITEM "問題を画像ファイルとして保存(&I)...\tCtrl+I", ID_SAVEPROBASIMAGE
         MENUITEM "解答を画像ファイルとして保存(&A)...\tCtrl+B", ID_SAVEANSASIMAGE
@@ -82,6 +82,7 @@ IDB_DELETEPAT BITMAP "res/1041_Bitmap_102.bmp"
         MENUITEM "単語をウェブ検索(&H) (ヨコ)\tAlt+→", ID_ONLINEDICTH
         MENUITEM SEPARATOR
         MENUITEM "UI Language Select...", ID_UILANGID
+        MENUITEM "全般設定(&G)...", ID_GENERALSETTINGS
     }
     POPUP "入力(&I)"
     {
@@ -609,7 +610,7 @@ FONT 9, "MS UI Gothic"
 }
 
 IDD_CREATE DIALOG 0, 0, 310, 103
-CAPTION "問題の作成 (Ctrl+G / Ctrl+H)"
+CAPTION "問題の作成 (Ctrl+G)"
 STYLE DS_CENTER | DS_MODALFRAME | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
 FONT 9, "MS UI Gothic"
 {
@@ -623,7 +624,7 @@ FONT 9, "MS UI Gothic"
     LTEXT "マス", -1, 248, 10, 20, 12
     AUTOCHECKBOX "答えを表示する(&A)", chx3, 10, 35, 85, 14
     AUTOCHECKBOX "&PAT.txtから黒マスパターンを自動的に選ぶ", chx4, 120, 35, 160, 14
-    AUTOCHECKBOX "スマート解決(&S)", chx2, 10, 60, 75, 14
+    AUTOCHECKBOX "スマート解決(&S)", chx2, 10, 60, 75, 14, NOT WS_VISIBLE
     AUTOCHECKBOX "一定時間が過ぎたら再試行(&T)", chx1, 95, 60, 110, 14
     LTEXT "最大単語長(&L):", stc1, 10, 87, 60, 12
     EDITTEXT edt3, 80, 85, 30, 14, ES_NUMBER | ES_RIGHT
@@ -1556,6 +1557,19 @@ FONT 9, "MS UI Gothic"
     PUSHBUTTON "キャンセル", IDCANCEL, 130, 115, 60, 15
 }
 
+IDD_FILESETTINGS DIALOG 0, 0, 213, 205
+CAPTION "ファイル設定"
+STYLE DS_CENTER | DS_MODALFRAME | WS_POPUPWINDOW | WS_CAPTION
+FONT 9, "MS UI Gothic"
+{
+    AUTOCHECKBOX "問題を開いたら答えを表示する(&Q)", chx1, 10, 10, 195, 15
+    AUTOCHECKBOX "生成したら答えを表示する(&G)", chx3, 10, 35, 195, 15
+    AUTOCHECKBOX "問題を生成したら自動で連番保存する(&N)", chx2, 10, 60, 195, 15
+    LTEXT "連番ファイル保存先(&S):", -1, 10, 85, 195, 10
+    COMBOBOX cmb1, 10, 100, 195, 300, CBS_HASSTRINGS | CBS_AUTOHSCROLL | CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP
+    PUSHBUTTON "参照(&B)...", psh1, 145, 120, 60, 15
+}
+
 //////////////////////////////////////////////////////////////////////////////
 // RT_VERSION
 
@@ -1596,15 +1610,15 @@ STRINGTABLE
     IDS_CANTSAVE, "保存できませんでした。"
     IDS_OUTOFMEMORY, "メモリ不足のため、保存できませんでした。"
     IDS_CANTSAVE2, "保存できませんでした。"
-    IDS_SOLVED, "解がありました。\n\n計算時間: %u.%u[秒]"
+    IDS_SOLVED, "問題を生成しました。\n\n計算時間: %u.%u[秒]"
     IDS_RESULTS, "結果"
     IDS_CANTSOLVE, "解はありません。\n\n辞書の設定や黒マスの配置やルールを確認して下さい。\n\n計算時間: %u.%u[秒]"
     IDS_CANTACCEL, "アクセラレータの読み込みに失敗しました。"
     IDS_CANTREGWND, "ウィンドウクラスの登録に失敗しました。"
     IDS_CANTMAKEWND, "ウィンドウ作成に失敗しました。"
     IDS_APPTITLE, "クロスワード ギバー ver.5.2.0 - %s"
-    IDS_MADEPROBLEM, "問題を作成しました。\n\n計算時間: %u.%u[秒]"
-    IDS_CANTMAKEPROBLEM, "問題を作成できませんでした。\n\n辞書の設定や黒マスの配置やルールを確認して下さい。\n\n計算時間: %u.%u[秒]"
+    IDS_MADEPROBLEM, "問題を生成しました。\n\n計算時間: %u.%u[秒]"
+    IDS_CANTMAKEPROBLEM, "問題を生成できませんでした。\n\n辞書の設定や黒マスの配置やルールを確認して下さい。\n\n計算時間: %u.%u[秒]"
     IDS_ENTERINT, "2以上256以下の整数を入力して下さい。"
     IDS_OPENDICTDATA, "辞書データを開く"
     IDS_OPENCROSSDATA, "クロスワード データを開く (Ctrl+O)"
@@ -1796,6 +1810,8 @@ STRINGTABLE
     IDS_CONGRATS, "おめでとうございます!"
     IDS_CORRECTANSWER, "正解です！"
     IDS_OUTOFRANGE, "範囲外です。"
+    IDS_GENERALSETTINGS, "全般設定"
+    IDS_MADEPROBLEM2, "問題の生成とファイル「%s」への保存に成功しました。\n\n計算時間: %u.%u[秒]"
     IDS_TT_NEW, "新規作成"
     IDS_TT_GENERATE, "問題を自動生成する"
     IDS_TT_OPEN, "問題を開く"

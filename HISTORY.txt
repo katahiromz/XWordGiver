@@ -292,6 +292,8 @@
     - Improved "Edit" and "View" menus.
     - Enabled to correctly undo input using "Input Candidates".
     - Changed the default save location from "My Documents" to "My Documents\XWordGiver".
+    - Added "General settings" item to "Edit" menu.
+    - Added "Numbering save" item to "File" menu.
 
 # 開発履歴 (Japanese)
 
@@ -900,3 +902,5 @@
     - 「編集」「表示」メニューを改良。
     - 「入力候補」による入力を正しく元に戻せるようにした。
     - デフォルトの保存先を「マイ ドキュメント」から「マイ ドキュメント\XWordGiver」に変更。
+    - 「編集」メニューに「全般設定」項目を追加。
+    - 「ファイル」メニューに「連番で保存」項目を追加。

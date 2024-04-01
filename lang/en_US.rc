@@ -21,7 +21,6 @@ IDB_DELETEPAT BITMAP "res/1033_Bitmap_102.bmp"
     {
         MENUITEM "&New board...\tCtrl+N", ID_NEW
         MENUITEM "&Generate crossword...\tCtrl+G", ID_GENERATE
-        MENUITEM "G&enerate crossword and show answer...\tCtrl+H", ID_GENERATEANSWER
         MENUITEM "Continuously generate crosswords...\tCtrl+W", ID_GENERATEREPEATEDLY
         MENUITEM SEPARATOR
         MENUITEM "Generate from block pa&ttern...\tCtrl+;", ID_OPENPATTERNS
@@ -30,6 +29,7 @@ IDB_DELETEPAT BITMAP "res/1033_Bitmap_102.bmp"
         MENUITEM "&Open...\tCtrl+O", ID_OPEN
         MENUITEM "Save\tCtrl+S", ID_SAVE
         MENUITEM "Save &as...\tCtrl+Shift+S", ID_SAVEAS
+        MENUITEM "&Numbering save\tCtrl+Alt+S", ID_NUMBERINGSAVE
         MENUITEM SEPARATOR
         MENUITEM "Save as &image...\tCtrl+I", ID_SAVEPROBASIMAGE
         MENUITEM "Save answer &as image...\tCtrl+B", ID_SAVEANSASIMAGE
@@ -82,6 +82,7 @@ IDB_DELETEPAT BITMAP "res/1033_Bitmap_102.bmp"
         MENUITEM "Search ACROSS word on the Web\tAlt+Right", ID_ONLINEDICTH
         MENUITEM SEPARATOR
         MENUITEM "UI Language Select...", ID_UILANGID
+        MENUITEM "&General settings...", ID_GENERALSETTINGS
     }
     POPUP "&Input"
     {
@@ -606,7 +607,7 @@ FONT 9, "Tahoma"
 }
 
 IDD_CREATE DIALOG 0, 0, 310, 103
-CAPTION "Generate Crossword (Ctrl+G / Ctrl+H)"
+CAPTION "Generate Crossword (Ctrl+G)"
 STYLE DS_CENTER | DS_MODALFRAME | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
 FONT 9, "Tahoma"
 {
@@ -620,7 +621,7 @@ FONT 9, "Tahoma"
     LTEXT "cells", -1, 248, 10, 20, 12
     AUTOCHECKBOX "Show &Answer", chx3, 10, 35, 85, 14
     AUTOCHECKBOX "Choose a pattern from &PAT.txt automatically", chx4, 120, 35, 160, 14
-    AUTOCHECKBOX "&SmartResolution", chx2, 10, 60, 75, 14
+    AUTOCHECKBOX "&SmartResolution", chx2, 10, 60, 75, 14, NOT WS_VISIBLE
     AUTOCHECKBOX "Re&try regularly", chx1, 95, 60, 110, 14
     LTEXT "Max. Word &Length:", stc1, 10, 87, 65, 12
     EDITTEXT edt3, 80, 85, 30, 14, ES_NUMBER | ES_RIGHT
@@ -1553,6 +1554,19 @@ FONT 9, "Tahoma"
     PUSHBUTTON "Cancel", IDCANCEL, 130, 115, 60, 15
 }
 
+IDD_FILESETTINGS DIALOG 0, 0, 213, 205
+CAPTION "File settings"
+STYLE DS_CENTER | DS_MODALFRAME | WS_POPUPWINDOW | WS_CAPTION
+FONT 9, "Tahoma"
+{
+    AUTOCHECKBOX "Display the answer when opening a &question", chx1, 10, 10, 195, 15
+    AUTOCHECKBOX "Display the answer when &generated", chx3, 10, 35, 195, 15
+    AUTOCHECKBOX "Automatically save as &numbering file when generated", chx2, 10, 60, 195, 15
+    LTEXT "Numbering &save in:", -1, 10, 85, 195, 10
+    COMBOBOX cmb1, 10, 100, 195, 300, CBS_HASSTRINGS | CBS_AUTOHSCROLL | CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP
+    PUSHBUTTON "&Browse...", psh1, 145, 120, 60, 15
+}
+
 //////////////////////////////////////////////////////////////////////////////
 // RT_VERSION
 
@@ -1593,7 +1607,7 @@ STRINGTABLE
     IDS_CANTSAVE, "I couldn't save the file."
     IDS_OUTOFMEMORY, "Out of memory."
     IDS_CANTSAVE2, "I couldn't save the file."
-    IDS_SOLVED, "I found a solution. \n\nCalculation time: %u.%u[sec]"
+    IDS_SOLVED, "I have generated a crossword. \n\nCalculation time: %u.%u[sec]"
     IDS_RESULTS, "Results"
     IDS_CANTSOLVE, "No solutions were found.\n\nPlease confirm the dictionary, the block pattern, and the policy.\n\nCalculation time: %u.%u[sec]"
     IDS_CANTACCEL, "I couldn't load the accelerators."
@@ -1793,6 +1807,8 @@ STRINGTABLE
     IDS_CONGRATS, "Congratulations!"
     IDS_CORRECTANSWER, "Correct answer!"
     IDS_OUTOFRANGE, "Out of range."
+    IDS_GENERALSETTINGS, "General settings"
+    IDS_MADEPROBLEM2, "I've generated a crossword and saved as '%s'.\n\nCalculation time: %u.%u[sec]"
     IDS_TT_NEW, "New crossword"
     IDS_TT_GENERATE, "Generate crossword"
     IDS_TT_OPEN, "Open crossword"
