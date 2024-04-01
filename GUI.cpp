@@ -2889,6 +2889,11 @@ TRIVALUE XgGenerateFromPat(HWND hwnd)
         xg_solution.DoNumberingNoCheck();
         XgUpdateHints();
 
+        // 自動保存なら自動保存する。
+        if (xg_bAutoSave) {
+            XgNumberingSave(hwnd);
+        }
+
         // 元に戻す情報を設定。
         auto sa3 = std::make_shared<XG_UndoData_SetAll>();
         sa3->Get();
