@@ -416,8 +416,17 @@ public:
             for (size_t i = 0; i < xg_ahwndCandButtons.size(); ++i) {
                 if (xg_ahwndCandButtons[i] == hwndCtl)
                 {
+                    // 「元に戻す」情報を記録する。
+                    auto sa1 = std::make_shared<XG_UndoData_SetAll>();
+                    sa1->Get();
+
                     // 候補を適用する。
                     XgApplyCandidate(xg_xword, xg_vecCandidates[i]);
+
+                    // 「元に戻す」情報を設定する。
+                    auto sa2 = std::make_shared<XG_UndoData_SetAll>();
+                    sa2->Get();
+                    xg_ubUndoBuffer.Commit(UC_SETALL, sa1, sa2);
 
                     // 候補ウィンドウを破棄する。
                     XgDestroyCandsWnd();
@@ -553,11 +562,6 @@ public:
     {
         XGStringW cand = XgNormalizeString(strCand);
 
-        // 元に戻す情報を記録する。
-        auto sa1 = std::make_shared<XG_UndoData_SetAll>();
-        auto sa2 = std::make_shared<XG_UndoData_SetAll>();
-        sa1->Get();
-
         int lo, hi;
         if (xg_bCandVertical) {
             for (lo = xg_iCandPos; lo > 0; --lo) {
@@ -594,9 +598,5 @@ public:
                 xword.SetAt(xg_iCandPos, k, cand[m]);
             }
         }
-
-        // 「元に戻す」情報を設定する。
-        sa2->Get();
-        xg_ubUndoBuffer.Commit(UC_SETALL, sa1, sa2);
     }
 };
