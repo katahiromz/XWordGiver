@@ -1342,9 +1342,6 @@ extern XGStringW xg_strFileName;
 // ヒント追加フラグ。
 extern bool xg_bHintsAdded;
 
-// JSONファイルとして保存するか？
-extern bool xg_bSaveAsJsonFile;
-
 // 拗音変換用データ。
 inline static const std::unordered_map<WCHAR, WCHAR> xg_small2large =
 {

@@ -1821,9 +1821,6 @@ STRINGTABLE
     IDS_TT_PRINTPROBLEM, "問題のみを印刷"
     IDS_TT_PRINTANSWER, "問題と解答を印刷"
     IDS_TT_SOLVENOADDBLACK, "解を求める(黒マス追加なし)"
-    IDS_TT_GENERATEREPEATEDLY, "問題を連続自動生成する"
-    IDS_TT_SOLVEREPEATEDLY, "連続で解を求める"
-    IDS_TT_SOLVEREPEATEDLYNOADDBLACK, "連続で解を求める(黒マス追加なし)"
 }
 
 //////////////////////////////////////////////////////////////////////////////

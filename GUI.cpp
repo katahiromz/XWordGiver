@@ -28,9 +28,7 @@
 #include "XG_NotesDialog.hpp"
 #include "XG_PatGenDialog.hpp"
 #include "XG_PatternDialog.hpp"
-#include "XG_SeqGenDialog.hpp"
 #include "XG_SeqPatGenDialog.hpp"
-#include "XG_SeqSolveDialog.hpp"
 #include "XG_SettingsDialog.hpp"
 #include "XG_SettingsDialog.cpp"
 #include "XG_ThemeDialog.hpp"
@@ -109,9 +107,6 @@ dicts_t xg_dicts;
 
 // ヒントに追加があったか？
 bool xg_bHintsAdded = false;
-
-// JSONファイルとして保存するか？
-bool xg_bSaveAsJsonFile = true;
 
 // 太枠をつけるか？
 bool xg_bAddThickFrame = true;
@@ -836,7 +831,6 @@ void XgResetSettings(void)
     xg_bShowToolBar = true;
     s_bShowStatusBar = true;
     xg_bShowInputPalette = false;
-    xg_bSaveAsJsonFile = true;
     xg_bAddThickFrame = true;
     xg_bVerticalLayout = true;
     xg_bCharFeed = true;
@@ -1020,8 +1014,6 @@ bool __fastcall XgLoadSettings(void)
         if (!app_key.QueryDword(L"ShowInputPalette", dwValue)) {
             xg_bShowInputPalette = !!dwValue;
         }
-
-        xg_bSaveAsJsonFile = true;
 
         if (!app_key.QueryDword(L"NumberToGenerate", dwValue)) {
             xg_nNumberToGenerate = dwValue;
@@ -1223,7 +1215,6 @@ bool __fastcall XgSaveSettings(void)
         app_key.SetDword(L"ShowStatusBar", s_bShowStatusBar);
         app_key.SetDword(L"ShowInputPalette", xg_bShowInputPalette);
 
-        app_key.SetDword(L"SaveAsJsonFile", xg_bSaveAsJsonFile);
         app_key.SetDword(L"NumberToGenerate", xg_nNumberToGenerate);
         app_key.SetDword(L"AddThickFrame", xg_bAddThickFrame);
         app_key.SetDword(L"CharFeed", xg_bCharFeed);
@@ -1711,7 +1702,7 @@ void XgResizeCells(HWND hwnd, int nNewRows, int nNewCols)
 WCHAR xg_szDir[MAX_PATH] = L"";
 
 // 「保存先」参照。
-int CALLBACK XgBrowseCallbackProc(HWND hwnd, UINT uMsg, LPARAM /*lParam*/, LPARAM /*lpData*/) noexcept
+INT CALLBACK XgBrowseCallbackProc(HWND hwnd, UINT uMsg, LPARAM /*lParam*/, LPARAM /*lpData*/) noexcept
 {
     if (uMsg == BFFM_INITIALIZED) {
         // 初期化の際に、フォルダーの場所を指定する。
@@ -2719,7 +2710,7 @@ BOOL __fastcall XgOnOpen(HWND hwnd)
 bool __fastcall XgDoSaveToLocation(HWND hwnd)
 {
     WCHAR szPath[MAX_PATH], szDir[MAX_PATH];
-    WCHAR szName[32];
+    WCHAR szName[64];
 
     // パスを生成する。
     StringCchCopy(szDir, _countof(szDir), xg_dirs_save_to[0].data());
@@ -2728,7 +2719,7 @@ bool __fastcall XgDoSaveToLocation(HWND hwnd)
     // ファイル名を生成する。
     UINT u;
     for (u = 1; u <= 0xFFFF; u++) {
-        StringCchPrintf(szName, _countof(szName), L"%dx%d-%04u.xwj", xg_nRows, xg_nCols, u);
+        StringCchPrintf(szName, _countof(szName), L"Pat-%dx%d-%04u.xd", xg_nRows, xg_nCols, u);
         StringCchCopy(szPath, _countof(szPath), szDir);
         StringCchCat(szPath, _countof(szPath), szName);
         if (::GetFileAttributesW(szPath) == 0xFFFFFFFF)
@@ -2859,15 +2850,11 @@ TRIVALUE XgGenerateFromPat(HWND hwnd)
 }
 
 // 問題の作成。
-bool __fastcall XgOnGenerate(HWND hwnd, bool multiple = false)
+bool __fastcall XgOnGenerate(HWND hwnd)
 {
     INT_PTR nID;
     ::EnableWindow(xg_hwndInputPalette, FALSE);
-    if (multiple) {
-        // [問題の連続作成]ダイアログ。
-        XG_SeqGenDialog dialog;
-        nID = static_cast<int>(dialog.DoModal(hwnd));
-    } else {
+    {
         // [問題の作成]ダイアログ。
         XG_GenDialog dialog;
         dialog.m_bShowAnswer = xg_bShowAnswerOnGenerate;
@@ -2879,7 +2866,7 @@ bool __fastcall XgOnGenerate(HWND hwnd, bool multiple = false)
         return false;
     }
 
-    if (!multiple && xg_bChoosePAT) { // 複数でなく、自動的にPAT.txtから選択するか？
+    if (xg_bChoosePAT) { // 複数でなく、自動的にPAT.txtから選択するか？
         auto tri_value = XgGenerateFromPat(hwnd);
         if (tri_value == TV_NEGATIVE)
             return false; // 失敗。
@@ -2912,7 +2899,7 @@ bool __fastcall XgOnGenerate(HWND hwnd, bool multiple = false)
     xg_dwlTick0 = ::GetTickCount64();
     // キャンセルダイアログを表示し、実行を開始する。
     ::EnableWindow(xg_hwndInputPalette, FALSE);
-    do {
+    {
         if (xg_bSmartResolution && xg_nRows >= 7 && xg_nCols >= 7) {
             XG_CancelSmartSolveDialog dialog;
             nID = dialog.DoModal(hwnd);
@@ -2926,52 +2913,18 @@ bool __fastcall XgOnGenerate(HWND hwnd, bool multiple = false)
         // 生成成功のときはxg_nNumberGeneratedを増やす。
         if (nID == IDOK && xg_bSolved) {
             ++xg_nNumberGenerated;
-            if (multiple) {
-                if (!XgDoSaveToLocation(hwnd)) {
-                    s_bOutOfDiskSpace = true;
-                    break;
-                }
-                // 初期化。
-                xg_bSolved = false;
-                xg_bCheckingAnswer = false;
-                xg_xword.ResetAndSetSize(xg_nRows, xg_nCols);
-                xg_vVertInfo.clear();
-                xg_vHorzInfo.clear();
-                xg_vMarks.clear();
-                xg_vMarkedCands.clear();
-                xg_bSolvingEmpty = true;
-                xg_strHeader.clear();
-                xg_strNotes.clear();
-                xg_strFileName.clear();
-                // 辞書を読み込む。
-                XgLoadDictFile(xg_dict_name.c_str());
-                XgSetInputModeFromDict(hwnd);
-            }
         }
-    } while (nID == IDOK && multiple && xg_nNumberGenerated < xg_nNumberToGenerate);
+    }
     ::EnableWindow(xg_hwndInputPalette, TRUE);
 
     // 初期化する。
-    if (multiple) {
+    xg_bShowAnswer = xg_bShowAnswerOnGenerate;
+    if (xg_bSmartResolution && xg_bCancelled) {
         xg_xword.clear();
-        xg_vMarkedCands.clear();
-        xg_vMarks.clear();
-        xg_vVertInfo.clear();
-        xg_vHorzInfo.clear();
-        xg_vecVertHints.clear();
-        xg_vecHorzHints.clear();
-        xg_bSolved = false;
-        xg_bCheckingAnswer = false;
-        xg_bShowAnswer = false;
-    } else {
-        xg_bShowAnswer = xg_bShowAnswerOnGenerate;
-        if (xg_bSmartResolution && xg_bCancelled) {
-            xg_xword.clear();
-        }
-
-        // ズームを全体に合わせる。
-        XgFitZoom(hwnd);
     }
+
+    // ズームを全体に合わせる。
+    XgFitZoom(hwnd);
 
     return true;
 }
@@ -5568,7 +5521,7 @@ void __fastcall XgGenerate(HWND hwnd, bool show_answer)
     // 二重マス単語の候補と配置を破棄する。
     ::DestroyWindow(xg_hMarkingDlg);
     // 問題の作成。
-    if (XgOnGenerate(hwnd, false)) {
+    if (XgOnGenerate(hwnd)) {
         flag = true;
         sa2->Get();
         xg_ubUndoBuffer.Commit(UC_SETALL, sa1, sa2);

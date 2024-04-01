@@ -1818,9 +1818,6 @@ STRINGTABLE
     IDS_TT_PRINTPROBLEM, "Print crossword"
     IDS_TT_PRINTANSWER, "Print crossword answer"
     IDS_TT_SOLVENOADDBLACK, "Find a solution (without &adding blocks)"
-    IDS_TT_GENERATEREPEATEDLY, "Continuously generate crosswords"
-    IDS_TT_SOLVEREPEATEDLY, "Continuously find solutions"
-    IDS_TT_SOLVEREPEATEDLYNOADDBLACK, "Continuously find solutions (without adding blocks)"
 }
 
 //////////////////////////////////////////////////////////////////////////////

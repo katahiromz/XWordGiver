@@ -2,6 +2,17 @@
 
 #include "XG_Window.hpp"
 
+// 保存先のパスのリスト。
+extern std::deque<XGStringW> xg_dirs_save_to;
+
+// 生成する数。
+extern INT xg_nNumberToGenerate;
+
+// 保存先。
+extern WCHAR xg_szDir[MAX_PATH];
+// 保存先指定。
+INT CALLBACK XgBrowseCallbackProc(HWND hwnd, UINT uMsg, LPARAM /*lParam*/, LPARAM /*lpData*/) noexcept;
+
 // [黒マスパターンの連続作成]ダイアログ。
 class XG_SeqPatGenDialog : public XG_Dialog
 {
@@ -104,8 +115,6 @@ public:
                     return;
                 }
             }
-            // JSON形式として保存するか？
-            xg_bSaveAsJsonFile = true;
             // 初期化する。
             {
                 xg_bSolved = false;
