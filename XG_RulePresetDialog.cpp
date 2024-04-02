@@ -313,37 +313,52 @@ void XG_RulePresetDialog::OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT codeNo
     {
     case psh1:
         // ルールの説明を開く。
-        XgOpenRulesTxt(hwnd);
+        if (codeNotify == BN_CLICKED)
+            XgOpenRulesTxt(hwnd);
         break;
     case cmb1:
-        OnCmb1(hwnd);
+        if (codeNotify == CBN_EDITCHANGE ||
+            codeNotify == CBN_SELCHANGE ||
+            codeNotify == CBN_SELENDOK)
+        {
+            OnCmb1(hwnd);
+        }
         break;
     case chx1:
-        OnCheckBox(hwnd, RULE_DONTDOUBLEBLACK, id);
+        if (codeNotify == BN_CLICKED)
+            OnCheckBox(hwnd, RULE_DONTDOUBLEBLACK, id);
         break;
     case chx2:
-        OnCheckBox(hwnd, RULE_DONTCORNERBLACK, id);
+        if (codeNotify == BN_CLICKED)
+            OnCheckBox(hwnd, RULE_DONTCORNERBLACK, id);
         break;
     case chx3:
-        OnCheckBox(hwnd, RULE_DONTTRIDIRECTIONS, id);
+        if (codeNotify == BN_CLICKED)
+            OnCheckBox(hwnd, RULE_DONTTRIDIRECTIONS, id);
         break;
     case chx4:
-        OnCheckBox(hwnd, RULE_DONTDIVIDE, id);
+        if (codeNotify == BN_CLICKED)
+            OnCheckBox(hwnd, RULE_DONTDIVIDE, id);
         break;
     case chx5:
-        OnCheckBox(hwnd, RULE_DONTTHREEDIAGONALS, id);
+        if (codeNotify == BN_CLICKED)
+            OnCheckBox(hwnd, RULE_DONTTHREEDIAGONALS, id);
         break;
     case chx6:
-        OnCheckBox(hwnd, RULE_DONTFOURDIAGONALS, id);
+        if (codeNotify == BN_CLICKED)
+            OnCheckBox(hwnd, RULE_DONTFOURDIAGONALS, id);
         break;
     case chx7:
-        OnCheckBox(hwnd, RULE_POINTSYMMETRY, id);
+        if (codeNotify == BN_CLICKED)
+            OnCheckBox(hwnd, RULE_POINTSYMMETRY, id);
         break;
     case chx8:
-        OnCheckBox(hwnd, RULE_LINESYMMETRYV, id);
+        if (codeNotify == BN_CLICKED)
+            OnCheckBox(hwnd, RULE_LINESYMMETRYV, id);
         break;
     case chx9:
-        OnCheckBox(hwnd, RULE_LINESYMMETRYH, id);
+        if (codeNotify == BN_CLICKED)
+            OnCheckBox(hwnd, RULE_LINESYMMETRYH, id);
         break;
     default:
         break;
