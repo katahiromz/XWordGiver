@@ -14,8 +14,6 @@ void XgDestroyHintsWnd(void) noexcept;
 bool XgOpenHintsByWindow(HWND /*hwnd*/);
 // ヒントを表示する。
 void XgShowHints(HWND hwnd);
-// ヒントの内容をメモ帳で開く。
-bool XgOpenHintsByNotepad(HWND /*hwnd*/, bool bShowAnswer);
 
 // ヒントを表示するかどうか。
 extern BOOL xg_bShowClues;
