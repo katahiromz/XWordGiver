@@ -27,12 +27,15 @@ public:
 
         // リストに候補を追加する。
         for (auto& item : xg_vMarkedCands) {
-            const auto i = static_cast<int>(::SendDlgItemMessageW(hwnd, lst1, LB_ADDSTRING, 0, (LPARAM)item.c_str()));
-            if (item == xg_strMarked) {
-                m_bUpdating = TRUE;
-                ::SendDlgItemMessageW(hwnd, lst1, LB_SETCURSEL, i, 0);
-                m_bUpdating = FALSE;
-            }
+            ::SendDlgItemMessageW(hwnd, lst1, LB_ADDSTRING, 0, (LPARAM)item.c_str());
+        }
+
+        // 現在の候補を選択する。
+        INT iItem = ::SendDlgItemMessageW(hwnd, lst1, LB_FINDSTRINGEXACT, -1, (LPARAM)xg_strMarked.c_str());
+        if (iItem != LB_ERR) {
+            m_bUpdating = TRUE;
+            ::SendDlgItemMessageW(hwnd, lst1, LB_SETCURSEL, iItem, 0);
+            m_bUpdating = FALSE;
         }
 
         // すでに解があるかどうかによって切り替え。
