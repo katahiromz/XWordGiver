@@ -5098,14 +5098,14 @@ void __fastcall XgDrawOneCell(HDC hdc, INT iRow, INT jCol)
     {
         // 答え合わせで一致しないセル。
         ::FillRect(hdc, &rc, hbrUnmatched);
-    } else if (slot.count(XG_Pos(iRow, jCol)) > 0 && nMarked != -1 && !xg_bNumCroMode) {
-        // ハイライトかつ二重マスかつ非ナンクロ。
+    } else if (slot.count(XG_Pos(iRow, jCol)) > 0 && nMarked != -1 && !xg_bNumCroMode && xg_bShowDoubleFrame) {
+        // ハイライトかつ二重マスかつ非ナンクロかつ二重マスが有効。
         ::FillRect(hdc, &rc, hbrHighlightAndDblFrame);
     } else if (slot.count(XG_Pos(iRow, jCol)) > 0) {
         // ハイライト。
         ::FillRect(hdc, &rc, hbrHighlight);
-    } else if (nMarked != -1 && !xg_bNumCroMode) {
-        // 二重マスかつ非ナンクロ。
+    } else if (nMarked != -1 && !xg_bNumCroMode && xg_bShowDoubleFrame) {
+        // 二重マスかつ非ナンクロかつ二重マスが有効。
         ::FillRect(hdc, &rc, hbrMarked);
     } else {
         // その他のマス。
@@ -5119,7 +5119,7 @@ void __fastcall XgDrawOneCell(HDC hdc, INT iRow, INT jCol)
     HGDIOBJ hFontOld = ::SelectObject(hdc, hFontSmall);
 
     // 二重マスを描画する。
-    if (!xg_bNumCroMode && nMarked != -1) {
+    if (!xg_bNumCroMode && nMarked != -1 && xg_bShowDoubleFrame) {
         XgDrawDoubleFrameCell(hdc, nMarked, rc, nCellSize, hThinPen, iRow, jCol);
     }
 
@@ -5400,14 +5400,14 @@ void __fastcall XgDrawXWord_NormalView(const XG_Board& xw, HDC hdc, const SIZE *
             {
                 // 答え合わせで一致しないセル。
                 ::FillRect(hdc, &rc, hbrUnmatched);
-            } else if (slot.count(XG_Pos(i, j)) > 0 && nMarked != -1 && !xg_bNumCroMode) {
-                // ハイライトかつ二重マスかつ非ナンクロ。
+            } else if (slot.count(XG_Pos(i, j)) > 0 && nMarked != -1 && !xg_bNumCroMode && xg_bShowDoubleFrame) {
+                // ハイライトかつ二重マスかつ非ナンクロかつ二重マスが有効。
                 ::FillRect(hdc, &rc, hbrHighlightAndDblFrame);
             } else if (slot.count(XG_Pos(i, j)) > 0) {
                 // ハイライト。
                 ::FillRect(hdc, &rc, hbrHighlight);
-            } else if (nMarked != -1 && !xg_bNumCroMode) {
-                // 二重マスかつ非ナンクロ。
+            } else if (nMarked != -1 && !xg_bNumCroMode && xg_bShowDoubleFrame) {
+                // 二重マスかつ非ナンクロかつ二重マスが有効。
                 ::FillRect(hdc, &rc, hbrMarked);
             } else {
                 // その他のマス。
@@ -5423,7 +5423,7 @@ void __fastcall XgDrawXWord_NormalView(const XG_Board& xw, HDC hdc, const SIZE *
     HGDIOBJ hFontOld = ::SelectObject(hdc, hFontSmall);
 
     // 二重マスを描画する。
-    if (!xg_bNumCroMode) {
+    if (!xg_bNumCroMode && xg_bShowDoubleFrame) {
         for (int i = 0; i < xg_nRows; i++) {
             for (int j = 0; j < xg_nCols; j++) {
                 // セルの座標をセットする。
@@ -5689,14 +5689,14 @@ void __fastcall XgDrawXWord_SkeletonView(const XG_Board& xw, HDC hdc, const SIZE
             {
                 // 答え合わせで一致しないセル。
                 ::FillRect(hdc, &rc, hbrUnmatched);
-            } else if (slot.count(XG_Pos(i, j)) > 0 && nMarked != -1 && !xg_bNumCroMode) {
-                // ハイライトかつ二重マスかつ非ナンクロ。
+            } else if (slot.count(XG_Pos(i, j)) > 0 && nMarked != -1 && !xg_bNumCroMode && xg_bShowDoubleFrame) {
+                // ハイライトかつ二重マスかつ非ナンクロかつ二重マスが有効。
                 ::FillRect(hdc, &rc, hbrHighlightAndDblFrame);
             } else if (slot.count(XG_Pos(i, j)) > 0) {
                 // ハイライト。
                 ::FillRect(hdc, &rc, hbrHighlight);
-            } else if (nMarked != -1 && !xg_bNumCroMode) {
-                // 二重マスかつ非ナンクロ。
+            } else if (nMarked != -1 && !xg_bNumCroMode && xg_bShowDoubleFrame) {
+                // 二重マスかつ非ナンクロかつ二重マスが有効。
                 ::FillRect(hdc, &rc, hbrMarked);
             } else {
                 // その他のマス。
@@ -5709,7 +5709,7 @@ void __fastcall XgDrawXWord_SkeletonView(const XG_Board& xw, HDC hdc, const SIZE
     HGDIOBJ hFontOld = ::SelectObject(hdc, hFontSmall);
 
     // 二重マスを描画する。
-    if (!xg_bNumCroMode) {
+    if (!xg_bNumCroMode && xg_bShowDoubleFrame) {
         for (int i = 0; i < xg_nRows; i++) {
             for (int j = 0; j < xg_nCols; j++) {
                 // 二重マスか？

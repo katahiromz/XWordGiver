@@ -136,6 +136,9 @@ BOOL xg_bMainWndMaximized = FALSE;
 // 二重マス文字を表示するか？
 BOOL xg_bShowDoubleFrameLetters = TRUE;
 
+// 二重マスを表示するか？
+BOOL xg_bShowDoubleFrame = TRUE;
+
 // 保存先のパスのリスト。
 std::deque<XGStringW> xg_dirs_save_to;
 
@@ -843,6 +846,7 @@ void XgResetSettings(void)
     xg_bShowNumbering = TRUE;
     xg_bShowCaret = TRUE;
     xg_bShowDoubleFrameLetters = TRUE;
+    xg_bShowDoubleFrame = TRUE;
 
     xg_bHiragana = FALSE;
     xg_bLowercase = FALSE;
@@ -1097,6 +1101,9 @@ bool __fastcall XgLoadSettings(void)
         if (!app_key.QueryDword(L"ShowDoubleFrameLetters", dwValue)) {
             xg_bShowDoubleFrameLetters = !!dwValue;
         }
+        if (!app_key.QueryDword(L"ShowDoubleFrame", dwValue)) {
+            xg_bShowDoubleFrame = !!dwValue;
+        }
         if (!app_key.QueryDword(L"ViewMode", dwValue)) {
             xg_nViewMode = static_cast<XG_VIEW_MODE>(dwValue);
             if (xg_nViewMode != XG_VIEW_NORMAL && xg_nViewMode != XG_VIEW_SKELETON) {
@@ -1244,6 +1251,7 @@ bool __fastcall XgSaveSettings(void)
         app_key.SetDword(L"MarkingY", xg_nMarkingY);
 
         app_key.SetDword(L"ShowDoubleFrameLetters", xg_bShowDoubleFrameLetters);
+        app_key.SetDword(L"ShowDoubleFrame", xg_bShowDoubleFrame);
         app_key.SetDword(L"ViewMode", xg_nViewMode);
         app_key.SetDword(L"LineWidth", static_cast<int>(xg_nLineWidthInPt * 100));
         app_key.SetDword(L"OuterFrame", static_cast<int>(xg_nOuterFrameInPt * 100));
@@ -4218,6 +4226,12 @@ void __fastcall MainWnd_OnInitMenu(HWND /*hwnd*/, HMENU hMenu)
     } else {
         ::CheckMenuItem(hMenu, ID_VIEW_DOUBLEFRAME_LETTERS, MF_UNCHECKED);
     }
+    // 二重マス表示のメニュー更新。
+    if (xg_bShowDoubleFrame) {
+        ::CheckMenuItem(hMenu, ID_VIEW_DOUBLEFRAME, MF_CHECKED);
+    } else {
+        ::CheckMenuItem(hMenu, ID_VIEW_DOUBLEFRAME, MF_UNCHECKED);
+    }
 
     // ビューモード。
     switch (xg_nViewMode) {
@@ -5761,6 +5775,8 @@ ViewSettingsDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
             ::CheckDlgButton(hwnd, chx12, BST_CHECKED);
         if (xg_bCheckingAnswer)
             ::CheckDlgButton(hwnd, chx13, BST_CHECKED);
+        if (xg_bShowDoubleFrame)
+            ::CheckDlgButton(hwnd, chx14, BST_CHECKED);
         if (!xg_bSolved) {
             ::EnableWindow(::GetDlgItem(hwnd, chx4), FALSE);
             ::EnableWindow(::GetDlgItem(hwnd, chx5), FALSE);
@@ -5797,6 +5813,7 @@ ViewSettingsDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
         case chx11:
         case chx12:
         case chx13:
+        case chx14:
             if (HIWORD(wParam) == BN_CLICKED)
                 PropSheet_Changed(GetParent(hwnd), hwnd);
             break;
@@ -5834,6 +5851,7 @@ ViewSettingsDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
                     xg_bLowercase = (::IsDlgButtonChecked(hwnd, chx11) == BST_CHECKED);
                     xg_bHiragana = (::IsDlgButtonChecked(hwnd, chx12) == BST_CHECKED);
                     xg_bCheckingAnswer = (::IsDlgButtonChecked(hwnd, chx13) == BST_CHECKED);
+                    xg_bShowDoubleFrame = (::IsDlgButtonChecked(hwnd, chx14) == BST_CHECKED);
 
                     // コンボボックスの設定を適用する。
                     WCHAR szText[128];
@@ -5884,6 +5902,13 @@ ViewSettingsDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
                             xg_hHintsWnd = nullptr;
                         }
                         xg_bShowClues = FALSE;
+                    }
+
+                    if (xg_bNumCroMode) {
+                        XgMakeItNumCro(hwnd);
+                    } else {
+                        xg_mapNumCro1.clear();
+                        xg_mapNumCro2.clear();
                     }
 
                     // 元に戻す情報を確定。
@@ -7198,6 +7223,12 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT /*codeNo
     case ID_NUMBERINGSAVE:
         // 連番保存。
         XgNumberingSave(hwnd, FALSE);
+        break;
+
+    case ID_VIEW_DOUBLEFRAME:
+        // 二重マスを描画するか？
+        xg_bShowDoubleFrame = !xg_bShowDoubleFrame;
+        bUpdateImage = TRUE;
         break;
 
     default:
