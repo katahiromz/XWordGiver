@@ -5695,6 +5695,28 @@ void __fastcall XgJumpNumber(HWND hwnd, INT nNumber, BOOL bVert)
     SetFocus(hwnd);
 }
 
+// ジャンプダイアログ。
+void XgJumpDialog(HWND hwnd)
+{
+    XG_JumpDialog dialog;
+    if (dialog.DoModal(hwnd) == IDOK) {
+        switch (dialog.m_nType) {
+        case 0: // マス位置。
+            xg_caret_pos.m_j = dialog.m_jCol - 1;
+            xg_caret_pos.m_i = dialog.m_iRow - 1;
+            // 表示を更新する。
+            XgEnsureCaretVisible(hwnd);
+            XgUpdateStatusBar(hwnd);
+            // すぐに入力できるようにする。
+            SetFocus(hwnd);
+            break;
+        case 1: // カギ位置。
+            XgJumpNumber(hwnd, dialog.m_nNumber, dialog.m_bVert);
+            break;
+        }
+    }
+}
+
 // コマンドを実行する。
 void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT /*codeNotify*/)
 {
@@ -6966,6 +6988,11 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT /*codeNo
         bUpdateImage = TRUE;
         break;
 
+    case ID_JUMP:
+        // ジャンプ。
+        XgJumpDialog(hwnd);
+        break;
+
     default:
         if (!XgOnCommandExtra(hwnd, id)) {
             ::MessageBeep(0xFFFFFFFF);
@@ -7315,23 +7342,7 @@ void MainWnd_OnNotify(HWND hwnd, int idCtrl, LPNMHDR pnmh) noexcept
 {
     if (pnmh->code == NM_DBLCLK && idCtrl == IDW_STATUSBAR) {
         // ステータスバーがダブルクリックされた。
-        XG_JumpDialog dialog;
-        if (dialog.DoModal(hwnd) == IDOK) {
-            switch (dialog.m_nType) {
-            case 0: // マス位置。
-                xg_caret_pos.m_j = dialog.m_jCol - 1;
-                xg_caret_pos.m_i = dialog.m_iRow - 1;
-                // 表示を更新する。
-                XgEnsureCaretVisible(hwnd);
-                XgUpdateStatusBar(hwnd);
-                // すぐに入力できるようにする。
-                SetFocus(hwnd);
-                break;
-            case 1: // カギ位置。
-                XgJumpNumber(hwnd, dialog.m_nNumber, dialog.m_bVert);
-                break;
-            }
-        }
+        XgJumpDialog(hwnd);
         return;
     }
 

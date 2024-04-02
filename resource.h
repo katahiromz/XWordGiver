@@ -508,6 +508,7 @@
 #define ID_GENERALSETTINGS                  605
 #define ID_NUMBERINGSAVE                    606
 #define ID_VIEW_DOUBLEFRAME                 607
+#define ID_JUMP                             608
 #define ID_TT_BASE                          10000
 
 #define ctl2                                1185
