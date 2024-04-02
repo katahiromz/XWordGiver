@@ -1535,7 +1535,7 @@ FONT 9, "MS UI Gothic"
     AUTOCHECKBOX "答え(&A)", chx5, 10, 85, 95, 15
     AUTOCHECKBOX "番号(&N)", chx6, 10, 105, 95, 15
     AUTOCHECKBOX "キャレット(&C)", chx7, 10, 125, 95, 15
-    AUTOCHECKBOX "二重マス(&D)", chx8, 115, 5, 95, 15
+    AUTOCHECKBOX "二重マスの文字(&D)", chx8, 115, 5, 95, 15
     AUTOCHECKBOX "スケルトン ビュー(&V)", chx9, 115, 25, 95, 15
     AUTOCHECKBOX "ナンクロモード(&M)", chx10, 115, 45, 95, 15
     AUTOCHECKBOX "lo&wercase", chx11, 115, 65, 95, 15
