@@ -103,6 +103,7 @@ XgViewSettingsDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
         return TRUE;
 
     case WM_COMMAND:
+        // 変更があれば「更新」ボタンを有効にする。
         switch (LOWORD(wParam))
         {
         case chx1:
@@ -119,6 +120,7 @@ XgViewSettingsDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
         case chx12:
         case chx13:
         case chx14:
+        case chx15:
             if (HIWORD(wParam) == BN_CLICKED)
                 PropSheet_Changed(GetParent(hwnd), hwnd);
             break;
