@@ -3353,21 +3353,21 @@ bool __fastcall XgSetEcwString(HWND hwnd, const XGStringW& str)
     for (auto& entry : entries) {
         for (size_t i = 0; i < entry.word.size(); ++i) {
             if (entry.across) {
-                if (!(1 <= entry.iColumn + i && entry.iColumn + i <= width)) {
+                if (!(1 <= entry.iColumn + i && entry.iColumn + i <= (size_t)width)) {
                     assert(0);
                     return false;
                 }
-                if (!(1 <= entry.iRow && entry.iRow <= height)) {
+                if (!(1 <= entry.iRow && entry.iRow <= (size_t)height)) {
                     assert(0);
                     return false;
                 }
                 cells[entry.iRow - 1][i + entry.iColumn - 1] = entry.word[i];
             } else {
-                if (!(1 <= entry.iColumn && entry.iColumn <= width)) {
+                if (!(1 <= entry.iColumn && entry.iColumn <= (size_t)width)) {
                     assert(0);
                     return false;
                 }
-                if (!(1 <= entry.iRow + i && entry.iRow + i <= height)) {
+                if (!(1 <= entry.iRow + i && entry.iRow + i <= (size_t)height)) {
                     assert(0);
                     return false;
                 }
@@ -3377,7 +3377,7 @@ bool __fastcall XgSetEcwString(HWND hwnd, const XGStringW& str)
     }
 
     XGStringW body = ZEN_ULEFT + XGStringW(width, ZEN_HLINE) + ZEN_URIGHT + L"\r\n";
-    for (size_t i = 0; i < height; ++i) {
+    for (INT i = 0; i < height; ++i) {
         body += ZEN_VLINE;
         body += XgNormalizeString(cells[i]);
         body += ZEN_VLINE;
