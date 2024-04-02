@@ -5729,6 +5729,8 @@ FileSettingsDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 INT_PTR CALLBACK
 ViewSettingsDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
+    static XGStringW s_strFit;
+
     switch (uMsg)
     {
     case WM_INITDIALOG:
@@ -5761,6 +5763,19 @@ ViewSettingsDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
             ::EnableWindow(::GetDlgItem(hwnd, chx4), FALSE);
             ::EnableWindow(::GetDlgItem(hwnd, chx5), FALSE);
         }
+        // ズームを初期化。
+        s_strFit = XgLoadStringDx1(IDS_FITWHOLE);
+        ::SendDlgItemMessageW(hwnd, cmb1, CB_ADDSTRING, 0, (LPARAM)s_strFit.c_str());
+        ::SendDlgItemMessageW(hwnd, cmb1, CB_ADDSTRING, 0, (LPARAM)L"10 %");
+        ::SendDlgItemMessageW(hwnd, cmb1, CB_ADDSTRING, 0, (LPARAM)L"30 %");
+        ::SendDlgItemMessageW(hwnd, cmb1, CB_ADDSTRING, 0, (LPARAM)L"50 %");
+        ::SendDlgItemMessageW(hwnd, cmb1, CB_ADDSTRING, 0, (LPARAM)L"65 %");
+        ::SendDlgItemMessageW(hwnd, cmb1, CB_ADDSTRING, 0, (LPARAM)L"80 %");
+        ::SendDlgItemMessageW(hwnd, cmb1, CB_ADDSTRING, 0, (LPARAM)L"90 %");
+        ::SendDlgItemMessageW(hwnd, cmb1, CB_ADDSTRING, 0, (LPARAM)L"100 %");
+        ::SendDlgItemMessageW(hwnd, cmb1, CB_ADDSTRING, 0, (LPARAM)L"200 %");
+        ::SendDlgItemMessageW(hwnd, cmb1, CB_ADDSTRING, 0, (LPARAM)L"300 %");
+        ::SetDlgItemTextW(hwnd, cmb1, (to_XGStringW(xg_nZoomRate) + L" %").c_str());
         return TRUE;
 
     case WM_COMMAND:
@@ -5781,6 +5796,13 @@ ViewSettingsDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
             if (HIWORD(wParam) == BN_CLICKED)
                 PropSheet_Changed(GetParent(hwnd), hwnd);
             break;
+        case cmb1:
+            if (HIWORD(wParam) == CBN_EDITCHANGE ||
+                HIWORD(wParam) == CBN_SELCHANGE ||
+                HIWORD(wParam) == CBN_SELENDOK)
+            {
+                PropSheet_Changed(GetParent(hwnd), hwnd);
+            }
         }
         break;
 
@@ -5807,6 +5829,22 @@ ViewSettingsDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
                     xg_bNumCroMode = (::IsDlgButtonChecked(hwnd, chx10) == BST_CHECKED);
                     xg_bLowercase = (::IsDlgButtonChecked(hwnd, chx11) == BST_CHECKED);
                     xg_bHiragana = (::IsDlgButtonChecked(hwnd, chx12) == BST_CHECKED);
+
+                    // コンボボックスの設定を適用する。
+                    WCHAR szText[128];
+                    GetDlgItemTextW(hwnd, cmb1, szText, _countof(szText));
+                    if (s_strFit == szText) {
+                        SendMessage(xg_hMainWnd, WM_COMMAND, ID_FITZOOM, 0);
+                    } else {
+                        INT nRate = _wtoi(szText);
+                        if (nRate == 0)
+                            nRate = 100;
+                        if (nRate < 10)
+                            nRate = 10;
+                        if (nRate > 300)
+                            nRate = 300;
+                        XgSetZoomRate(xg_hMainWnd, nRate);
+                    }
 
                     if (xg_bShowToolBar)
                         ::ShowWindow(xg_hToolBar, SW_SHOWNOACTIVATE);

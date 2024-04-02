@@ -1540,6 +1540,8 @@ FONT 9, "MS UI Gothic"
     AUTOCHECKBOX "ナンクロモード(&M)", chx10, 115, 45, 95, 15
     AUTOCHECKBOX "lo&wercase", chx11, 115, 65, 95, 15
     AUTOCHECKBOX "ひらがな(&H)", chx12, 115, 85, 95, 15
+    RTEXT "ズーム(&Z):", -1, 15, 150, 35, 10, SS_CENTERIMAGE
+    COMBOBOX cmb1, 60, 150, 95, 300, CBS_HASSTRINGS | CBS_AUTOHSCROLL | CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -1784,6 +1786,7 @@ STRINGTABLE
     IDS_OUTOFRANGE, "範囲外です。"
     IDS_GENERALSETTINGS, "全般設定"
     IDS_MADEPROBLEM2, "問題の生成とファイル「%s」への保存に成功しました。\n\n計算時間: %u.%u[秒]"
+    IDS_FITWHOLE, "全体に合わせる"
     IDS_TT_NEW, "新規作成"
     IDS_TT_GENERATE, "問題を自動生成する"
     IDS_TT_OPEN, "問題を開く"

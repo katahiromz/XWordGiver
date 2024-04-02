@@ -249,6 +249,7 @@
 #define IDS_OUTOFRANGE                      328
 #define IDS_GENERALSETTINGS                 329
 #define IDS_MADEPROBLEM2                    330
+#define IDS_FITWHOLE                        331
 #define IDS_TT_NEW                          10100
 #define IDS_TT_GENERATE                     10101
 #define IDS_TT_OPEN                         10102

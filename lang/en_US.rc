@@ -1520,7 +1520,7 @@ FONT 9, "Tahoma"
     PUSHBUTTON "Open &Folder", psh2, 110, 115, 95, 15
 }
 
-IDD_VIEWSETTINGS DIALOG 0, 0, 220, 152
+IDD_VIEWSETTINGS DIALOG 0, 0, 220, 171
 CAPTION "表示設定"
 STYLE DS_CENTER | DS_MODALFRAME | WS_POPUPWINDOW | WS_CAPTION
 FONT 9, "Tahoma"
@@ -1537,6 +1537,8 @@ FONT 9, "Tahoma"
     AUTOCHECKBOX "NumCro &mode", chx10, 115, 45, 95, 15
     AUTOCHECKBOX "lo&wercase", chx11, 115, 65, 95, 15
     AUTOCHECKBOX "&Hiragana", chx12, 115, 85, 95, 15
+    RTEXT "&Zoom:", -1, 15, 150, 35, 10, SS_CENTERIMAGE
+    COMBOBOX cmb1, 60, 150, 95, 300, CBS_HASSTRINGS | CBS_AUTOHSCROLL | CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -1781,6 +1783,7 @@ STRINGTABLE
     IDS_OUTOFRANGE, "Out of range."
     IDS_GENERALSETTINGS, "General settings"
     IDS_MADEPROBLEM2, "I've generated a crossword and saved as '%s'.\n\nCalculation time: %u.%u[sec]"
+    IDS_FITWHOLE, "Fit the whole"
     IDS_TT_NEW, "New crossword"
     IDS_TT_GENERATE, "Generate crossword"
     IDS_TT_OPEN, "Open crossword"
