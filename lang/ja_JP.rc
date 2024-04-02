@@ -153,8 +153,8 @@ IDB_DELETEPAT BITMAP "res/1041_Bitmap_102.bmp"
         MENUITEM "スケルトン ビュー(&O)", ID_VIEW_SKELETON_VIEW
         MENUITEM "ナンクロモード(&M)", ID_NUMCROMODE
         MENUITEM SEPARATOR
-        MENUITEM "&lowercase", ID_LOWERCASE
-        MENUITEM "ひらがな表示(&H)", ID_HIRAGANA
+        MENUITEM "英小文字(&L)", ID_LOWERCASE
+        MENUITEM "ひらがな(&H)", ID_HIRAGANA
         MENUITEM SEPARATOR
         MENUITEM "次のペイン(&N)\tF6", ID_PANENEXT
         MENUITEM "前のペイン(&P)\tShift+F6", ID_PANEPREV
@@ -1540,7 +1540,7 @@ FONT 9, "MS UI Gothic"
     AUTOCHECKBOX "二重マスの文字(&D)", chx9, 115, 25, 95, 15
     AUTOCHECKBOX "スケルトン ビュー(&V)", chx10, 115, 45, 95, 15
     AUTOCHECKBOX "ナンクロモード(&M)", chx11, 115, 65, 95, 15
-    AUTOCHECKBOX "lo&wercase", chx12, 115, 85, 95, 15
+    AUTOCHECKBOX "英小文字(&W)", chx12, 115, 85, 95, 15
     AUTOCHECKBOX "ひらがな(&H)", chx13, 115, 105, 95, 15
     AUTOCHECKBOX "答え合わせ(&W)", chx14, 115, 125, 95, 15
     RTEXT "ズーム(&Z):", -1, 15, 150, 35, 10, SS_CENTERIMAGE | NOT WS_GROUP
