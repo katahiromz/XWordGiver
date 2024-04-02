@@ -140,8 +140,8 @@ IDB_DELETEPAT BITMAP "res/1033_Bitmap_102.bmp"
     POPUP "&View"
     {
         MENUITEM "&Toolbar", ID_TOOLBAR
-        MENUITEM "&Status Bar", ID_STATUS
-        MENUITEM "&Input Palette\tCtrl+U", ID_PALETTE
+        MENUITEM "&Status bar", ID_STATUS
+        MENUITEM "&Input palette\tCtrl+U", ID_PALETTE
         MENUITEM "&Clues\tCtrl+L", ID_SHOWHIDEHINTS
         MENUITEM SEPARATOR
         MENUITEM "&Answer\tCtrl+M", ID_SHOWHIDESOLUTION
