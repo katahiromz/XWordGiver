@@ -1533,13 +1533,13 @@ FONT 9, "Tahoma"
     AUTOCHECKBOX "&Answer", chx5, 10, 85, 95, 15
     AUTOCHECKBOX "&Numbering", chx6, 10, 105, 95, 15
     AUTOCHECKBOX "&Caret", chx7, 10, 125, 95, 15
-    AUTOCHECKBOX "&Double-frame letters", chx8, 115, 5, 95, 15
-    AUTOCHECKBOX "Skeleton &view", chx9, 115, 25, 95, 15
-    AUTOCHECKBOX "NumCro &mode", chx10, 115, 45, 95, 15
-    AUTOCHECKBOX "lo&wercase", chx11, 115, 65, 95, 15
-    AUTOCHECKBOX "&Hiragana", chx12, 115, 85, 95, 15
-    AUTOCHECKBOX "Checking ans&wer", chx13, 115, 105, 95, 15
-    AUTOCHECKBOX "Double-&frame", chx14, 115, 125, 95, 15
+    AUTOCHECKBOX "Double-&frame", chx8, 115, 5, 95, 15
+    AUTOCHECKBOX "&Double-frame letters", chx9, 115, 25, 95, 15
+    AUTOCHECKBOX "Skeleton &view", chx10, 115, 45, 95, 15
+    AUTOCHECKBOX "NumCro &mode", chx11, 115, 65, 95, 15
+    AUTOCHECKBOX "lo&wercase", chx12, 115, 85, 95, 15
+    AUTOCHECKBOX "&Hiragana", chx13, 115, 105, 95, 15
+    AUTOCHECKBOX "Checking ans&wer", chx14, 115, 125, 95, 15
     RTEXT "&Zoom:", -1, 15, 150, 35, 10, SS_CENTERIMAGE | NOT WS_GROUP
     COMBOBOX cmb1, 60, 150, 95, 300, CBS_HASSTRINGS | CBS_AUTOHSCROLL | CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP
 }

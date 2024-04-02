@@ -5763,24 +5763,24 @@ ViewSettingsDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
             ::CheckDlgButton(hwnd, chx6, BST_CHECKED);
         if (xg_bShowCaret)
             ::CheckDlgButton(hwnd, chx7, BST_CHECKED);
-        if (xg_bShowDoubleFrameLetters)
-            ::CheckDlgButton(hwnd, chx8, BST_CHECKED);
-        if (xg_nViewMode == XG_VIEW_SKELETON)
-            ::CheckDlgButton(hwnd, chx9, BST_CHECKED);
-        if (xg_bNumCroMode)
-            ::CheckDlgButton(hwnd, chx10, BST_CHECKED);
-        if (xg_bLowercase)
-            ::CheckDlgButton(hwnd, chx11, BST_CHECKED);
-        if (xg_bHiragana)
-            ::CheckDlgButton(hwnd, chx12, BST_CHECKED);
-        if (xg_bCheckingAnswer)
-            ::CheckDlgButton(hwnd, chx13, BST_CHECKED);
         if (xg_bShowDoubleFrame)
+            ::CheckDlgButton(hwnd, chx8, BST_CHECKED);
+        if (xg_bShowDoubleFrameLetters)
+            ::CheckDlgButton(hwnd, chx9, BST_CHECKED);
+        if (xg_nViewMode == XG_VIEW_SKELETON)
+            ::CheckDlgButton(hwnd, chx10, BST_CHECKED);
+        if (xg_bNumCroMode)
+            ::CheckDlgButton(hwnd, chx11, BST_CHECKED);
+        if (xg_bLowercase)
+            ::CheckDlgButton(hwnd, chx12, BST_CHECKED);
+        if (xg_bHiragana)
+            ::CheckDlgButton(hwnd, chx13, BST_CHECKED);
+        if (xg_bCheckingAnswer)
             ::CheckDlgButton(hwnd, chx14, BST_CHECKED);
         if (!xg_bSolved) {
             ::EnableWindow(::GetDlgItem(hwnd, chx4), FALSE);
             ::EnableWindow(::GetDlgItem(hwnd, chx5), FALSE);
-            ::EnableWindow(::GetDlgItem(hwnd, chx13), FALSE);
+            ::EnableWindow(::GetDlgItem(hwnd, chx14), FALSE);
         }
         // ズームを初期化。
         s_strFit = XgLoadStringDx1(IDS_FITWHOLE);
@@ -5845,13 +5845,13 @@ ViewSettingsDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
                     xg_bShowAnswer = (::IsDlgButtonChecked(hwnd, chx5) == BST_CHECKED);
                     xg_bShowNumbering = (::IsDlgButtonChecked(hwnd, chx6) == BST_CHECKED);
                     xg_bShowCaret = (::IsDlgButtonChecked(hwnd, chx7) == BST_CHECKED);
-                    xg_bShowDoubleFrameLetters = (::IsDlgButtonChecked(hwnd, chx8) == BST_CHECKED);
-                    xg_nViewMode = ((::IsDlgButtonChecked(hwnd, chx9) == BST_CHECKED) ? XG_VIEW_SKELETON : XG_VIEW_NORMAL);
-                    xg_bNumCroMode = (::IsDlgButtonChecked(hwnd, chx10) == BST_CHECKED);
-                    xg_bLowercase = (::IsDlgButtonChecked(hwnd, chx11) == BST_CHECKED);
-                    xg_bHiragana = (::IsDlgButtonChecked(hwnd, chx12) == BST_CHECKED);
-                    xg_bCheckingAnswer = (::IsDlgButtonChecked(hwnd, chx13) == BST_CHECKED);
-                    xg_bShowDoubleFrame = (::IsDlgButtonChecked(hwnd, chx14) == BST_CHECKED);
+                    xg_bShowDoubleFrame = (::IsDlgButtonChecked(hwnd, chx8) == BST_CHECKED);
+                    xg_bShowDoubleFrameLetters = (::IsDlgButtonChecked(hwnd, chx9) == BST_CHECKED);
+                    xg_nViewMode = ((::IsDlgButtonChecked(hwnd, chx10) == BST_CHECKED) ? XG_VIEW_SKELETON : XG_VIEW_NORMAL);
+                    xg_bNumCroMode = (::IsDlgButtonChecked(hwnd, chx11) == BST_CHECKED);
+                    xg_bLowercase = (::IsDlgButtonChecked(hwnd, chx12) == BST_CHECKED);
+                    xg_bHiragana = (::IsDlgButtonChecked(hwnd, chx13) == BST_CHECKED);
+                    xg_bCheckingAnswer = (::IsDlgButtonChecked(hwnd, chx14) == BST_CHECKED);
 
                     // コンボボックスの設定を適用する。
                     WCHAR szText[128];

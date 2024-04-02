@@ -1536,13 +1536,13 @@ FONT 9, "MS UI Gothic"
     AUTOCHECKBOX "答え(&A)", chx5, 10, 85, 95, 15
     AUTOCHECKBOX "番号(&N)", chx6, 10, 105, 95, 15
     AUTOCHECKBOX "キャレット(&C)", chx7, 10, 125, 95, 15
-    AUTOCHECKBOX "二重マスの文字(&D)", chx8, 115, 5, 95, 15
-    AUTOCHECKBOX "スケルトン ビュー(&V)", chx9, 115, 25, 95, 15
-    AUTOCHECKBOX "ナンクロモード(&M)", chx10, 115, 45, 95, 15
-    AUTOCHECKBOX "lo&wercase", chx11, 115, 65, 95, 15
-    AUTOCHECKBOX "ひらがな(&H)", chx12, 115, 85, 95, 15
-    AUTOCHECKBOX "答え合わせ(&W)", chx13, 115, 105, 95, 15
-    AUTOCHECKBOX "二重マス(&F)", chx14, 115, 125, 95, 15
+    AUTOCHECKBOX "二重マス(&F)", chx8, 115, 5, 95, 15
+    AUTOCHECKBOX "二重マスの文字(&D)", chx9, 115, 25, 95, 15
+    AUTOCHECKBOX "スケルトン ビュー(&V)", chx10, 115, 45, 95, 15
+    AUTOCHECKBOX "ナンクロモード(&M)", chx11, 115, 65, 95, 15
+    AUTOCHECKBOX "lo&wercase", chx12, 115, 85, 95, 15
+    AUTOCHECKBOX "ひらがな(&H)", chx13, 115, 105, 95, 15
+    AUTOCHECKBOX "答え合わせ(&W)", chx14, 115, 125, 95, 15
     RTEXT "ズーム(&Z):", -1, 15, 150, 35, 10, SS_CENTERIMAGE | NOT WS_GROUP
     COMBOBOX cmb1, 60, 150, 95, 300, CBS_HASSTRINGS | CBS_AUTOHSCROLL | CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP
 }
