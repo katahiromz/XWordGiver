@@ -4521,6 +4521,7 @@ LOGFONTW *XgGetUIFont(void)
     return &s_lf;
 }
 
+// ダイアログ同期用のインデックス。
 enum
 {
     I_SYNCED_FILE_SETTINGS = 0,
@@ -4529,8 +4530,10 @@ enum
     I_SYNCED_MAX
 };
 
+// ダイアログ同期用の変数。
 HWND xg_ahSyncedDialogs[I_SYNCED_MAX] = { 0 };
 
+// コンパイル時間を節約するためにここでインクルードする。
 #include "XgFileSettings.cpp"
 #include "XgViewSettings.cpp"
 #include "XG_SettingsDialog.cpp"
