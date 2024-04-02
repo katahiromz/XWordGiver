@@ -298,6 +298,7 @@
     - Added "Display the answer when opening a &question" setting.
     - Added "Do not read/write LOOKS information from/to file" setting.
     - Added "Automatically save as numbering file when generated" setting.
+- 2024-XX-YY ver.5.2.1
 
 # 開発履歴 (Japanese)
 
@@ -912,3 +913,4 @@
     - 「問題を開いたら答えを表示する」設定を追加。
     - 「LOOKS情報を読み込まない・書き込まない」設定を追加。
     - 「問題を生成したら自動で連番保存」設定を追加。
+- 2024年XX月YY日 ver.5.2.1
