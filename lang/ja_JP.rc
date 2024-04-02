@@ -81,7 +81,7 @@ IDB_DELETEPAT BITMAP "res/1041_Bitmap_102.bmp"
         MENUITEM "単語をウェブ検索(&H) (ヨコ)\tAlt+→", ID_ONLINEDICTH
         MENUITEM SEPARATOR
         MENUITEM "UI Language Select...", ID_UILANGID
-        MENUITEM "全般設定(&G)...", ID_GENERALSETTINGS
+        MENUITEM "設定(&G)...", ID_GENERALSETTINGS
     }
     POPUP "入力(&I)"
     {
@@ -1511,7 +1511,7 @@ FONT 9, "MS UI Gothic"
 }
 
 IDD_FILESETTINGS DIALOG 0, 0, 213, 205
-CAPTION "ファイル設定"
+CAPTION "ファイル"
 STYLE DS_CENTER | DS_MODALFRAME | WS_POPUPWINDOW | WS_CAPTION
 FONT 9, "MS UI Gothic"
 {
@@ -1525,7 +1525,7 @@ FONT 9, "MS UI Gothic"
 }
 
 IDD_VIEWSETTINGS DIALOG 0, 0, 220, 170
-CAPTION "表示設定"
+CAPTION "表示"
 STYLE DS_CENTER | DS_MODALFRAME | WS_POPUPWINDOW | WS_CAPTION
 FONT 9, "MS UI Gothic"
 {
@@ -1787,7 +1787,7 @@ STRINGTABLE
     IDS_CONGRATS, "おめでとうございます!"
     IDS_CORRECTANSWER, "正解です！"
     IDS_OUTOFRANGE, "範囲外です。"
-    IDS_GENERALSETTINGS, "全般設定"
+    IDS_GENERALSETTINGS, "設定"
     IDS_MADEPROBLEM2, "問題の生成とファイル「%s」への保存に成功しました。\n\n計算時間: %u.%u[秒]"
     IDS_FITWHOLE, "全体に合わせる"
     IDS_TT_NEW, "新規作成"

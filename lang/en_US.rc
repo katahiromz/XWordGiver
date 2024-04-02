@@ -81,7 +81,7 @@ IDB_DELETEPAT BITMAP "res/1033_Bitmap_102.bmp"
         MENUITEM "Search ACROSS word on Web\tAlt+Right", ID_ONLINEDICTH
         MENUITEM SEPARATOR
         MENUITEM "UI Language Select...", ID_UILANGID
-        MENUITEM "&General settings...", ID_GENERALSETTINGS
+        MENUITEM "Settin&gs...", ID_GENERALSETTINGS
     }
     POPUP "&Input"
     {
@@ -1508,7 +1508,7 @@ FONT 9, "Tahoma"
 }
 
 IDD_FILESETTINGS DIALOG 0, 0, 213, 205
-CAPTION "File settings"
+CAPTION "File"
 STYLE DS_CENTER | DS_MODALFRAME | WS_POPUPWINDOW | WS_CAPTION
 FONT 9, "Tahoma"
 {
@@ -1522,7 +1522,7 @@ FONT 9, "Tahoma"
 }
 
 IDD_VIEWSETTINGS DIALOG 0, 0, 220, 170
-CAPTION "View settings"
+CAPTION "View"
 STYLE DS_CENTER | DS_MODALFRAME | WS_POPUPWINDOW | WS_CAPTION
 FONT 9, "Tahoma"
 {
@@ -1784,7 +1784,7 @@ STRINGTABLE
     IDS_CONGRATS, "Congratulations!"
     IDS_CORRECTANSWER, "Correct answer!"
     IDS_OUTOFRANGE, "Out of range."
-    IDS_GENERALSETTINGS, "General settings"
+    IDS_GENERALSETTINGS, "Settings"
     IDS_MADEPROBLEM2, "I've generated a crossword and saved as '%s'.\n\nCalculation time: %u.%u[sec]"
     IDS_FITWHOLE, "Fit whole"
     IDS_TT_NEW, "New crossword"
