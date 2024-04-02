@@ -92,8 +92,7 @@ BOOL XG_SettingsDialog::OnInitDialog(HWND hwnd)
     UpdateBlockPreview(hwnd);
 
     // 可能ならば自動で適用。
-    if (m_strAutoFile.size())
-    {
+    if (m_strAutoFile.size()) {
         if (m_bImport) {
             DoImportLooks(hwnd, m_strAutoFile.c_str());
         } else {
@@ -402,7 +401,12 @@ BOOL XG_SettingsDialog::DoImportLooks(HWND hwnd, LPCWSTR pszFileName)
     GetPrivateProfileStringW(L"Looks", L"OuterFrameInPt", XG_OUTERFRAME_DEFAULT2, szText, _countof(szText), pszFileName);
     ::SetDlgItemTextW(hwnd, edt7, szText);
 
+    // プレビューを更新する。
     UpdateBlockPreview(hwnd);
+
+    // 他のダイアログに同期させる。
+    SyncTo(hwnd);
+
     return TRUE;
 }
 
@@ -636,7 +640,11 @@ void XG_SettingsDialog::OnResetLooks(HWND hwnd)
     ::SetDlgItemTextW(hwnd, edt7, XG_OUTERFRAME_DEFAULT2);
     ::EnableWindow(GetDlgItem(hwnd, edt7), TRUE);
 
+    // プレビューを更新する。
     UpdateBlockPreview(hwnd);
+
+    // 他のダイアログに同期させる。
+    SyncTo(hwnd);
 }
 
 // UIフォントの論理オブジェクトを設定する。
