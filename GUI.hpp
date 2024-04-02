@@ -98,4 +98,8 @@ void XgUpdateRules(HWND hwnd);
 // 問題を生成したときに答えを表示するか？
 extern BOOL xg_bShowAnswerOnGenerate;
 
+// LOOKS情報を読み込まない、書き込まない。
+extern BOOL xg_bNoReadLooks;
+extern BOOL xg_bNoWriteLooks;
+
 //////////////////////////////////////////////////////////////////////////////

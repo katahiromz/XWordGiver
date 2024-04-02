@@ -13,6 +13,10 @@ XgFileSettingsDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
             CheckDlgButton(hwnd, chx2, BST_CHECKED);
         if (xg_bShowAnswerOnGenerate)
             CheckDlgButton(hwnd, chx3, BST_CHECKED);
+        if (xg_bNoReadLooks)
+            CheckDlgButton(hwnd, chx4, BST_CHECKED);
+        if (xg_bNoWriteLooks)
+            CheckDlgButton(hwnd, chx5, BST_CHECKED);
         // 保存先を初期化。
         for (const auto& dir : xg_dirs_save_to) {
             SendDlgItemMessage(hwnd, cmb1, CB_ADDSTRING, 0, (LPARAM)dir.c_str());
@@ -28,6 +32,8 @@ XgFileSettingsDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
         case chx1:
         case chx2:
         case chx3:
+        case chx4:
+        case chx5:
             if (HIWORD(wParam) == BN_CLICKED)
                 PropSheet_Changed(GetParent(hwnd), hwnd);
             break;
@@ -87,6 +93,8 @@ XgFileSettingsDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
                     xg_bShowAnswerOnOpen = (IsDlgButtonChecked(hwnd, chx1) == BST_CHECKED);
                     xg_bAutoSave = (IsDlgButtonChecked(hwnd, chx2) == BST_CHECKED);
                     xg_bShowAnswerOnGenerate = (IsDlgButtonChecked(hwnd, chx3) == BST_CHECKED);
+                    xg_bNoReadLooks = (IsDlgButtonChecked(hwnd, chx4) == BST_CHECKED);
+                    xg_bNoWriteLooks = (IsDlgButtonChecked(hwnd, chx5) == BST_CHECKED);
 
                     // テキストを取得する。
                     WCHAR szFile[MAX_PATH];

@@ -1516,6 +1516,8 @@ FONT 9, "Tahoma"
     COMBOBOX cmb1, 10, 100, 195, 300, CBS_HASSTRINGS | CBS_AUTOHSCROLL | CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP
     PUSHBUTTON "&Browse...", psh1, 10, 115, 60, 15
     PUSHBUTTON "Open &Folder", psh2, 110, 115, 95, 15
+    AUTOCHECKBOX "Do not &read LOOKS information from file", chx4, 10, 145, 195, 15
+    AUTOCHECKBOX "Do not &write LOOKS information to file", chx5, 10, 170, 195, 15
 }
 
 IDD_VIEWSETTINGS DIALOG 0, 0, 220, 190

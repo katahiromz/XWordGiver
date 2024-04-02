@@ -267,6 +267,10 @@ COLORREF xg_rgbMarkedCellColor = RGB(255, 255, 255);
 // 二重マス文字。
 XGStringW xg_strDoubleFrameLetters;
 
+// LOOKS情報を読み込まない、書き込まない。
+BOOL xg_bNoReadLooks = FALSE;
+BOOL xg_bNoWriteLooks = FALSE;
+
 //////////////////////////////////////////////////////////////////////////////
 // static variables
 
@@ -926,6 +930,9 @@ void XgResetSettings(void)
     xg_bShowAnswerOnOpen = FALSE;
     xg_bShowAnswerOnGenerate = TRUE;
     xg_bAutoSave = FALSE;
+
+    xg_bNoReadLooks = FALSE;
+    xg_bNoWriteLooks = FALSE;
 }
 
 // 設定を読み込む。
@@ -1039,6 +1046,12 @@ bool __fastcall XgLoadSettings(void)
         }
         if (!app_key.QueryDword(L"AutoSave", dwValue)) {
             xg_bAutoSave = static_cast<BOOL>(dwValue);
+        }
+        if (!app_key.QueryDword(L"NoReadLooks", dwValue)) {
+            xg_bNoReadLooks = static_cast<BOOL>(dwValue);
+        }
+        if (!app_key.QueryDword(L"NoWriteLooks", dwValue)) {
+            xg_bNoWriteLooks = static_cast<BOOL>(dwValue);
         }
 
         if (!app_key.QuerySz(L"CellFont", sz, _countof(sz))) {
@@ -1252,6 +1265,8 @@ bool __fastcall XgSaveSettings(void)
         app_key.SetDword(L"ShowAnswerOnOpen", xg_bShowAnswerOnOpen);
         app_key.SetDword(L"ShowAnswerOnGenerate", xg_bShowAnswerOnGenerate);
         app_key.SetDword(L"AutoSave", xg_bAutoSave);
+        app_key.SetDword(L"NoReadLooks", xg_bNoReadLooks);
+        app_key.SetDword(L"NoWriteLooks", xg_bNoWriteLooks);
 
         app_key.SetSz(L"CellFont", xg_szCellFont, _countof(xg_szCellFont));
         app_key.SetSz(L"SmallFont", xg_szSmallFont, _countof(xg_szSmallFont));
@@ -2262,16 +2277,18 @@ bool __fastcall XgDoSaveFiles(HWND hwnd, LPCWSTR pszFile)
     XgGetFileManager()->set_looks(L"");
 
     // 関連画像ファイルをパス名を変換して保存する。
-    XGStringW files_dir;
-    XgGetFileManager()->get_files_dir(files_dir);
-    CreateDirectoryW(files_dir.c_str(), nullptr);
-    for (auto& box : xg_boxes) {
-        if (box->m_type == L"pic") {
-            auto pic = dynamic_cast<XG_PictureBoxWindow*>(&*box);
-            XgGetFileManager()->save_image2(pic->m_strText);
+    if (!xg_bNoWriteLooks) {
+        XGStringW files_dir;
+        XgGetFileManager()->get_files_dir(files_dir);
+        CreateDirectoryW(files_dir.c_str(), nullptr);
+        for (auto& box : xg_boxes) {
+            if (box->m_type == L"pic") {
+                auto pic = dynamic_cast<XG_PictureBoxWindow*>(&*box);
+                XgGetFileManager()->save_image2(pic->m_strText);
+            }
         }
+        XgGetFileManager()->save_image2(xg_strBlackCellImage);
     }
-    XgGetFileManager()->save_image2(xg_strBlackCellImage);
 
     // 保存する。
     if (!XgDoSaveFile(hwnd, pszFile)) {
@@ -2282,8 +2299,10 @@ bool __fastcall XgDoSaveFiles(HWND hwnd, LPCWSTR pszFile)
     }
 
     // 関連ファイルをエクスポートする。
-    auto looks_file = XgGetFileManager()->get_looks_file();
-    XgExportLooks(hwnd, looks_file.c_str());
+    if (!xg_bNoWriteLooks) {
+        auto looks_file = XgGetFileManager()->get_looks_file();
+        XgExportLooks(hwnd, looks_file.c_str());
+    }
 
     // ファイルの種類を保存する。
     LPCWSTR pchDotExt = PathFindExtensionW(pszFile);
@@ -2516,8 +2535,10 @@ bool __fastcall XgDoLoadFiles(HWND hwnd, LPCWSTR pszFile)
     XgLoadImageFiles();
 
     // LOOKSファイルも自動でインポートする。
-    auto looks_file = XgGetFileManager()->get_looks_file();
-    XgImportLooks(hwnd, looks_file.c_str());
+    if (!xg_bNoReadLooks) {
+        auto looks_file = XgGetFileManager()->get_looks_file();
+        XgImportLooks(hwnd, looks_file.c_str());
+    }
 
     // 答えを表示するかどうか？
     xg_bShowAnswer = xg_bShowAnswerOnOpen;
