@@ -224,15 +224,15 @@ IDB_DELETEPAT BITMAP "res/1033_Bitmap_102.bmp"
         MENUITEM "Block\t#", ID_BLOCKNOFEED
         MENUITEM "&Space\t_", ID_SPACENOFEED
         MENUITEM SEPARATOR
-        POPUP "Input &Mode"
+        POPUP "Input &mode"
         {
-            MENUITEM "&Kana Input", ID_KANAINPUT
-            MENUITEM "&Alphabet Input", ID_ABCINPUT
-            MENUITEM "Kanji Input", ID_KANJIINPUT
-            MENUITEM "Cyrillic Input", ID_RUSSIAINPUT
-            MENUITEM "Greek Input", ID_GREEKINPUT
-            MENUITEM "Digit Input", ID_DIGITINPUT
-            MENUITEM "A&ny Input", ID_ANYINPUT
+            MENUITEM "&Kana input", ID_KANAINPUT
+            MENUITEM "&Alphabet input", ID_ABCINPUT
+            MENUITEM "Kanji input", ID_KANJIINPUT
+            MENUITEM "Cyrillic input", ID_RUSSIAINPUT
+            MENUITEM "Greek input", ID_GREEKINPUT
+            MENUITEM "Digit input", ID_DIGITINPUT
+            MENUITEM "A&ny input", ID_ANYINPUT
         }
         MENUITEM SEPARATOR
         POPUP "Kana letters"
@@ -524,15 +524,15 @@ IDB_DELETEPAT BITMAP "res/1033_Bitmap_102.bmp"
         MENUITEM "Appearan&ce...\tAlt+Enter", ID_SETTINGS
         MENUITEM SEPARATOR
         MENUITEM "Delete clues and &unlock board", ID_ERASESOLUTIONANDUNLOCKEDIT
-        MENUITEM "&Clear all the letters", ID_CLEARNONBLOCKS
+        MENUITEM "&Clear all letters", ID_CLEARNONBLOCKS
         MENUITEM SEPARATOR
         POPUP "Add Bo&x"
         {
             MENUITEM "Add &Text Box...", ID_ADDTEXTBOX
             MENUITEM "Add &Picture Box...", ID_ADDPICTUREBOX
         }
-        MENUITEM "Copy the DOWN word", ID_COPYWORDVERT, MENUBREAK
-        MENUITEM "Copy the ACROSS word", ID_COPYWORDHORZ
+        MENUITEM "Copy DOWN word", ID_COPYWORDVERT, MENUBREAK
+        MENUITEM "Copy ACROSS word", ID_COPYWORDHORZ
         MENUITEM SEPARATOR
         MENUITEM "Show input candidates (DOWN)\tShift+Ctrl+↓", ID_OPENCANDSWNDVERT
         MENUITEM "Show input candidates (ACROSS)\tShift+Ctrl+→", ID_OPENCANDSWNDHORZ
@@ -549,11 +549,11 @@ IDB_DELETEPAT BITMAP "res/1033_Bitmap_102.bmp"
     }
     POPUP "Popup #1"
     {
-        MENUITEM "Copy the clues (&DOWN)", ID_COPYVHINTSSTYLE0
-        MENUITEM "Copy the clues (&ACROSS)", ID_COPYHHINTSSTYLE0
+        MENUITEM "Copy &DOWN clues", ID_COPYVHINTSSTYLE0
+        MENUITEM "Copy &ACROSS clues", ID_COPYHHINTSSTYLE0
         MENUITEM "&Jump", ID_JUMPNUMBER
         MENUITEM SEPARATOR
-        MENUITEM "Copy the clues &all", ID_COPYHINTSSTYLE0
+        MENUITEM "Copy all clues", ID_COPYHINTSSTYLE0
     }
 }
 
