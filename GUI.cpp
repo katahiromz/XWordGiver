@@ -4523,7 +4523,7 @@ LOGFONTW *XgGetUIFont(void)
 
 enum
 {
-    I_SYNCED_FILE_SETTINGS,
+    I_SYNCED_FILE_SETTINGS = 0,
     I_SYNCED_VIEW_SETTINGS,
     I_SYNCED_APPEARANCE,
     I_SYNCED_MAX
@@ -4536,11 +4536,14 @@ HWND xg_ahSyncedDialogs[I_SYNCED_MAX] = { 0 };
 #include "XG_SettingsDialog.cpp"
 
 // 全般設定。
-void XgGeneralSettings(HWND hwnd, INT nStartPage = 0)
+void XgGeneralSettings(HWND hwnd, INT nStartPage = I_SYNCED_FILE_SETTINGS)
 {
     PROPSHEETPAGEW psp = { sizeof(psp) };
     HPROPSHEETPAGE hpsp[3];
     INT iPage = 0;
+
+    // 入力候補を破棄する。
+    XgDestroyCandsWnd();
 
     // 「ファイル」設定。
     psp.pszTemplate = MAKEINTRESOURCEW(IDD_FILESETTINGS);
@@ -4558,7 +4561,7 @@ void XgGeneralSettings(HWND hwnd, INT nStartPage = 0)
     psp.lParam = 0;
     hpsp[iPage++] = ::CreatePropertySheetPageW(&psp);
 
-    // 「表示」設定。
+    // 「見た目の設定」。
     XG_SettingsDialog dialog;
     psp.pszTemplate = MAKEINTRESOURCEW(IDD_CONFIG);
     psp.pfnDlgProc = XG_SettingsDialog::DialogProc;
@@ -4583,12 +4586,6 @@ void XgGeneralSettings(HWND hwnd, INT nStartPage = 0)
     ::PropertySheetW(&psh);
 
     ZeroMemory(&xg_ahSyncedDialogs, sizeof(xg_ahSyncedDialogs));
-}
-
-void MainWnd_OnSettings(HWND hwnd)
-{
-    XgDestroyCandsWnd();
-    XgGeneralSettings(hwnd, 2);
 }
 
 // テーマが変更された。
@@ -5816,7 +5813,7 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT /*codeNo
         XgCopyHintsStyle1(hwnd, 1);
         break;
     case ID_SETTINGS:   // 設定。
-        MainWnd_OnSettings(hwnd);
+        XgGeneralSettings(hwnd, I_SYNCED_APPEARANCE);
         bUpdateImage = TRUE;
         break;
     case ID_ERASESETTINGS:  // 設定の削除。
