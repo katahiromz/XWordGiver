@@ -288,7 +288,7 @@
     - Relaxed rule checking in the "Candidates" window.
     - Now able to zoom the "Candidates" window.
     - Renamed "Candidates" as "Input Candidates".
-- 2024-XX-YY ver.5.2.0
+- 2024-04-02 ver.5.2.0
     - Revamped menu.
     - Enabled to correctly undo input using "Input Candidates".
     - Changed the default save location from "My Documents" to "My Documents/XWordGiver".
@@ -902,7 +902,7 @@
     - 「候補」ウィンドウのルールチェックを緩和。
     - 「候補」ウィンドウのズームが可能に。
     - 「候補」を「入力候補」に改名。
-- 2024年XX月YY日 ver.5.2.0
+- 2024年04月02日 ver.5.2.0
     - メニューを刷新。
     - 「入力候補」による入力を正しく元に戻せるようにした。
     - デフォルトの保存先を「マイ ドキュメント」から「マイ ドキュメント/XWordGiver」に変更。
