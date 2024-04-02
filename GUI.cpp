@@ -2724,7 +2724,11 @@ BOOL __fastcall XgNumberingSave(HWND hwnd, BOOL bPattern)
 
     // 保存する。
     xg_strFileName = szPath;
-    return XgOnSave(hwnd);
+    if (!XgOnSave(hwnd))
+        return FALSE;
+
+    XG_FILE_MODIFIED(FALSE);
+    return TRUE;
 }
 
 // ズームを実際のウィンドウに合わせる。
@@ -2863,15 +2867,15 @@ TRIVALUE XgGenerateFromPat(HWND hwnd)
         xg_solution.DoNumberingNoCheck();
         XgUpdateHints();
 
-        // 自動保存なら自動保存する。
-        if (xg_bAutoSave) {
-            XgNumberingSave(hwnd, FALSE);
-        }
-
         // 元に戻す情報を設定。
         auto sa3 = std::make_shared<XG_UndoData_SetAll>();
         sa3->Get();
         xg_ubUndoBuffer.Commit(UC_SETALL, sa2, sa3);
+
+        // 自動保存なら自動保存する。
+        if (xg_bAutoSave) {
+            XgNumberingSave(hwnd, FALSE);
+        }
 
         // 結果を表示する。
         XgShowResults(hwnd, TRUE);
@@ -5509,6 +5513,11 @@ void __fastcall XgGenerate(HWND hwnd)
     // 答えを表示するかどうか。
     xg_bShowAnswer = xg_bShowAnswerOnGenerate;
 
+    // イメージを更新する。
+    XgSetCaretPos();
+    XgMarkUpdate();
+    XgUpdateImage(hwnd);
+
     // 「元に戻す」情報を確定する。
     auto sa2 = std::make_shared<XG_UndoData_SetAll>();
     sa2->Get();
@@ -5518,11 +5527,6 @@ void __fastcall XgGenerate(HWND hwnd)
     if (xg_bAutoSave) {
         XgNumberingSave(hwnd, FALSE);
     }
-
-    // イメージを更新する。
-    XgSetCaretPos();
-    XgMarkUpdate();
-    XgUpdateImage(hwnd);
 
     // 結果を表示する。
     XgShowResults(hwnd, TRUE);
