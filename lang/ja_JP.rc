@@ -144,10 +144,10 @@ IDB_DELETEPAT BITMAP "res/1041_Bitmap_102.bmp"
         MENUITEM "入力パレット(&I)\tCtrl+U", ID_PALETTE
         MENUITEM "ヒント(&H)\tCtrl+L", ID_SHOWHIDEHINTS
         MENUITEM SEPARATOR
-        MENUITEM "解(&L)\tCtrl+M", ID_SHOWHIDESOLUTION
+        MENUITEM "答え(&A)\tCtrl+M", ID_SHOWHIDESOLUTION
         MENUITEM "番号(&N)", ID_SHOWHIDENUMBERING
         MENUITEM "キャレット(&C)", ID_SHOWHIDECARET
-        MENUITEM "二重マス文字(&E)", ID_VIEW_DOUBLEFRAME_LETTERS
+        MENUITEM "二重マス(&E)", ID_VIEW_DOUBLEFRAME_LETTERS
         MENUITEM SEPARATOR
         MENUITEM "スケルトン ビュー(&O)", ID_VIEW_SKELETON_VIEW
         MENUITEM "ナンクロモード(&M)", ID_NUMCROMODE
@@ -1521,6 +1521,25 @@ FONT 9, "MS UI Gothic"
     COMBOBOX cmb1, 10, 100, 195, 300, CBS_HASSTRINGS | CBS_AUTOHSCROLL | CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP
     PUSHBUTTON "参照(&B)...", psh1, 10, 115, 60, 15
     PUSHBUTTON "フォルダを開く(&F)", psh2, 110, 115, 95, 15
+}
+
+IDD_VIEWSETTINGS DIALOG 0, 0, 220, 152
+CAPTION "表示設定"
+STYLE DS_CENTER | DS_MODALFRAME | WS_POPUPWINDOW | WS_CAPTION
+FONT 9, "MS UI Gothic"
+{
+    AUTOCHECKBOX "ツールバー(&T)", chx1, 10, 5, 95, 15
+    AUTOCHECKBOX "ステータスバー(&S)", chx2, 10, 25, 95, 15
+    AUTOCHECKBOX "入力パレット(&I)", chx3, 10, 45, 95, 15
+    AUTOCHECKBOX "ヒント(&E)", chx4, 10, 65, 95, 15
+    AUTOCHECKBOX "答え(&A)", chx5, 10, 85, 95, 15
+    AUTOCHECKBOX "番号(&N)", chx6, 10, 105, 95, 15
+    AUTOCHECKBOX "キャレット(&C)", chx7, 10, 125, 95, 15
+    AUTOCHECKBOX "二重マス(&D)", chx8, 115, 5, 95, 15
+    AUTOCHECKBOX "スケルトン ビュー(&V)", chx9, 115, 25, 95, 15
+    AUTOCHECKBOX "ナンクロモード(&M)", chx10, 115, 45, 95, 15
+    AUTOCHECKBOX "lo&wercase", chx11, 115, 65, 95, 15
+    AUTOCHECKBOX "ひらがな(&H)", chx12, 115, 85, 95, 15
 }
 
 //////////////////////////////////////////////////////////////////////////////

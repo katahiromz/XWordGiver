@@ -144,10 +144,10 @@ IDB_DELETEPAT BITMAP "res/1033_Bitmap_102.bmp"
         MENUITEM "&Input Palette\tCtrl+U", ID_PALETTE
         MENUITEM "&Clues\tCtrl+L", ID_SHOWHIDEHINTS
         MENUITEM SEPARATOR
-        MENUITEM "So&lution\tCtrl+M", ID_SHOWHIDESOLUTION
+        MENUITEM "&Answer\tCtrl+M", ID_SHOWHIDESOLUTION
         MENUITEM "&Numbering", ID_SHOWHIDENUMBERING
         MENUITEM "&Caret", ID_SHOWHIDECARET
-        MENUITEM "Double-frame l&etters", ID_VIEW_DOUBLEFRAME_LETTERS
+        MENUITEM "Doubl&e-frame", ID_VIEW_DOUBLEFRAME_LETTERS
         MENUITEM SEPARATOR
         MENUITEM "Skelt&on View", ID_VIEW_SKELETON_VIEW
         MENUITEM "NumCro &Mode", ID_NUMCROMODE
@@ -1518,6 +1518,25 @@ FONT 9, "Tahoma"
     COMBOBOX cmb1, 10, 100, 195, 300, CBS_HASSTRINGS | CBS_AUTOHSCROLL | CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP
     PUSHBUTTON "&Browse...", psh1, 10, 115, 60, 15
     PUSHBUTTON "Open &Folder", psh2, 110, 115, 95, 15
+}
+
+IDD_VIEWSETTINGS DIALOG 0, 0, 220, 152
+CAPTION "表示設定"
+STYLE DS_CENTER | DS_MODALFRAME | WS_POPUPWINDOW | WS_CAPTION
+FONT 9, "Tahoma"
+{
+    AUTOCHECKBOX "&Toolbar", chx1, 10, 5, 95, 15
+    AUTOCHECKBOX "&Status bar", chx2, 10, 25, 95, 15
+    AUTOCHECKBOX "&Input palette", chx3, 10, 45, 95, 15
+    AUTOCHECKBOX "Clu&e", chx4, 10, 65, 95, 15
+    AUTOCHECKBOX "&Answer", chx5, 10, 85, 95, 15
+    AUTOCHECKBOX "&Numbering", chx6, 10, 105, 95, 15
+    AUTOCHECKBOX "&Caret", chx7, 10, 125, 95, 15
+    AUTOCHECKBOX "&Double frame", chx8, 115, 5, 95, 15
+    AUTOCHECKBOX "Skeleton &view", chx9, 115, 25, 95, 15
+    AUTOCHECKBOX "NumCro &mode", chx10, 115, 45, 95, 15
+    AUTOCHECKBOX "lo&wercase", chx11, 115, 65, 95, 15
+    AUTOCHECKBOX "&Hiragana", chx12, 115, 85, 95, 15
 }
 
 //////////////////////////////////////////////////////////////////////////////

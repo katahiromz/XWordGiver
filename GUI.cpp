@@ -3921,35 +3921,35 @@ void __fastcall MainWnd_OnInitMenu(HWND /*hwnd*/, HMENU hMenu)
 
     // 数字を表示するか？
     if (xg_bShowNumbering) {
-        CheckMenuItem(hMenu, ID_SHOWHIDENUMBERING, MF_BYCOMMAND | MF_CHECKED);
+        CheckMenuItem(hMenu, ID_SHOWHIDENUMBERING, MF_CHECKED);
     } else {
-        CheckMenuItem(hMenu, ID_SHOWHIDENUMBERING, MF_BYCOMMAND | MF_UNCHECKED);
+        CheckMenuItem(hMenu, ID_SHOWHIDENUMBERING, MF_UNCHECKED);
     }
 
     // キャレットを表示するか？
     if (xg_bShowCaret) {
-        CheckMenuItem(hMenu, ID_SHOWHIDECARET, MF_BYCOMMAND | MF_CHECKED);
+        CheckMenuItem(hMenu, ID_SHOWHIDECARET, MF_CHECKED);
     } else {
-        CheckMenuItem(hMenu, ID_SHOWHIDECARET, MF_BYCOMMAND | MF_UNCHECKED);
+        CheckMenuItem(hMenu, ID_SHOWHIDECARET, MF_UNCHECKED);
     }
 
     // 一定時間が過ぎたらリトライ。
     if (xg_bAutoRetry) {
-        CheckMenuItem(hMenu, ID_RETRYIFTIMEOUT, MF_BYCOMMAND | MF_CHECKED);
+        CheckMenuItem(hMenu, ID_RETRYIFTIMEOUT, MF_CHECKED);
     } else {
-        CheckMenuItem(hMenu, ID_RETRYIFTIMEOUT, MF_BYCOMMAND | MF_UNCHECKED);
+        CheckMenuItem(hMenu, ID_RETRYIFTIMEOUT, MF_UNCHECKED);
     }
 
     // テーマ。
     if (!xg_bThemeModified) {
-        CheckMenuItem(hMenu, ID_THEME, MF_BYCOMMAND | MF_UNCHECKED);
-        EnableMenuItem(hMenu, ID_RESETTHEME, MF_BYCOMMAND | MF_GRAYED);
+        CheckMenuItem(hMenu, ID_THEME, MF_UNCHECKED);
+        EnableMenuItem(hMenu, ID_RESETTHEME, MF_GRAYED);
     } else {
-        CheckMenuItem(hMenu, ID_THEME, MF_BYCOMMAND | MF_CHECKED);
+        CheckMenuItem(hMenu, ID_THEME, MF_CHECKED);
         if (xg_tag_histgram.empty()) {
-            EnableMenuItem(hMenu, ID_RESETTHEME, MF_BYCOMMAND | MF_GRAYED);
+            EnableMenuItem(hMenu, ID_RESETTHEME, MF_GRAYED);
         } else {
-            EnableMenuItem(hMenu, ID_RESETTHEME, MF_BYCOMMAND | MF_ENABLED);
+            EnableMenuItem(hMenu, ID_RESETTHEME, MF_ENABLED);
         }
     }
 
@@ -4033,86 +4033,88 @@ void __fastcall MainWnd_OnInitMenu(HWND /*hwnd*/, HMENU hMenu)
 
     // 「元に戻す」「やり直し」メニュー更新。
     if (xg_ubUndoBuffer.CanUndo()) {
-        ::EnableMenuItem(hMenu, ID_UNDO, MF_BYCOMMAND | MF_ENABLED);
+        ::EnableMenuItem(hMenu, ID_UNDO, MF_ENABLED);
     } else {
-        ::EnableMenuItem(hMenu, ID_UNDO, MF_BYCOMMAND | MF_GRAYED);
+        ::EnableMenuItem(hMenu, ID_UNDO, MF_GRAYED);
     }
     if (xg_ubUndoBuffer.CanRedo()) {
-        ::EnableMenuItem(hMenu, ID_REDO, MF_BYCOMMAND | MF_ENABLED);
+        ::EnableMenuItem(hMenu, ID_REDO, MF_ENABLED);
     } else {
-        ::EnableMenuItem(hMenu, ID_REDO, MF_BYCOMMAND | MF_GRAYED);
+        ::EnableMenuItem(hMenu, ID_REDO, MF_GRAYED);
     }
 
     if (xg_bSolved) {
-        ::EnableMenuItem(hMenu, ID_SOLVE, MF_BYCOMMAND | MF_GRAYED);
-        ::EnableMenuItem(hMenu, ID_SOLVENOADDBLACK, MF_BYCOMMAND | MF_GRAYED);
+        ::EnableMenuItem(hMenu, ID_SHOWHIDESOLUTION, MF_ENABLED);
+        ::EnableMenuItem(hMenu, ID_SOLVE, MF_GRAYED);
+        ::EnableMenuItem(hMenu, ID_SOLVENOADDBLACK, MF_GRAYED);
         if (xg_bShowAnswer) {
-            ::EnableMenuItem(hMenu, ID_SHOWSOLUTION, MF_BYCOMMAND | MF_GRAYED);
-            ::EnableMenuItem(hMenu, ID_NOSOLUTION, MF_BYCOMMAND | MF_ENABLED);
+            ::EnableMenuItem(hMenu, ID_SHOWSOLUTION, MF_GRAYED);
+            ::EnableMenuItem(hMenu, ID_NOSOLUTION, MF_ENABLED);
             ::CheckMenuRadioItem(hMenu, ID_SHOWSOLUTION, ID_NOSOLUTION, ID_SHOWSOLUTION, MF_BYCOMMAND);
-            ::CheckMenuItem(hMenu, ID_SHOWHIDESOLUTION, MF_BYCOMMAND | MF_CHECKED);
+            ::CheckMenuItem(hMenu, ID_SHOWHIDESOLUTION, MF_CHECKED);
         } else {
-            ::EnableMenuItem(hMenu, ID_SHOWSOLUTION, MF_BYCOMMAND | MF_ENABLED);
-            ::EnableMenuItem(hMenu, ID_NOSOLUTION, MF_BYCOMMAND | MF_GRAYED);
+            ::EnableMenuItem(hMenu, ID_SHOWSOLUTION, MF_ENABLED);
+            ::EnableMenuItem(hMenu, ID_NOSOLUTION, MF_GRAYED);
             ::CheckMenuRadioItem(hMenu, ID_SHOWSOLUTION, ID_NOSOLUTION, ID_NOSOLUTION, MF_BYCOMMAND);
-            ::CheckMenuItem(hMenu, ID_SHOWHIDESOLUTION, MF_BYCOMMAND | MF_UNCHECKED);
+            ::CheckMenuItem(hMenu, ID_SHOWHIDESOLUTION, MF_UNCHECKED);
         }
-        ::EnableMenuItem(hMenu, ID_SHOWHIDEHINTS, MF_BYCOMMAND | MF_ENABLED);
-        ::EnableMenuItem(hMenu, ID_MARKSNEXT, MF_BYCOMMAND | MF_ENABLED);
-        ::EnableMenuItem(hMenu, ID_SAVEANSASIMAGE, MF_BYCOMMAND | MF_ENABLED);
-        ::EnableMenuItem(hMenu, ID_PRINTANSWER, MF_BYCOMMAND | MF_ENABLED);
+        ::EnableMenuItem(hMenu, ID_SHOWHIDEHINTS, MF_ENABLED);
+        ::EnableMenuItem(hMenu, ID_MARKSNEXT, MF_ENABLED);
+        ::EnableMenuItem(hMenu, ID_SAVEANSASIMAGE, MF_ENABLED);
+        ::EnableMenuItem(hMenu, ID_PRINTANSWER, MF_ENABLED);
 
-        ::EnableMenuItem(hMenu, ID_COPYHINTSSTYLE0, MF_BYCOMMAND | MF_ENABLED);
-        ::EnableMenuItem(hMenu, ID_COPYHINTSSTYLE1, MF_BYCOMMAND | MF_ENABLED);
+        ::EnableMenuItem(hMenu, ID_COPYHINTSSTYLE0, MF_ENABLED);
+        ::EnableMenuItem(hMenu, ID_COPYHINTSSTYLE1, MF_ENABLED);
 
-        ::EnableMenuItem(hMenu, ID_COPYHHINTSSTYLE0, MF_BYCOMMAND | MF_ENABLED);
-        ::EnableMenuItem(hMenu, ID_COPYVHINTSSTYLE0, MF_BYCOMMAND | MF_ENABLED);
-        ::EnableMenuItem(hMenu, ID_COPYHHINTSSTYLE1, MF_BYCOMMAND | MF_ENABLED);
-        ::EnableMenuItem(hMenu, ID_COPYVHINTSSTYLE1, MF_BYCOMMAND | MF_ENABLED);
+        ::EnableMenuItem(hMenu, ID_COPYHHINTSSTYLE0, MF_ENABLED);
+        ::EnableMenuItem(hMenu, ID_COPYVHINTSSTYLE0, MF_ENABLED);
+        ::EnableMenuItem(hMenu, ID_COPYHHINTSSTYLE1, MF_ENABLED);
+        ::EnableMenuItem(hMenu, ID_COPYVHINTSSTYLE1, MF_ENABLED);
 
-        ::EnableMenuItem(hMenu, ID_OPENCANDSWNDHORZ, MF_BYCOMMAND | MF_GRAYED);
-        ::EnableMenuItem(hMenu, ID_OPENCANDSWNDVERT, MF_BYCOMMAND | MF_GRAYED);
-        ::EnableMenuItem(hMenu, ID_MOSTLEFT, MF_BYCOMMAND | MF_GRAYED);
-        ::EnableMenuItem(hMenu, ID_MOSTRIGHT, MF_BYCOMMAND | MF_GRAYED);
-        ::EnableMenuItem(hMenu, ID_MOSTUPPER, MF_BYCOMMAND | MF_GRAYED);
-        ::EnableMenuItem(hMenu, ID_MOSTLOWER, MF_BYCOMMAND | MF_GRAYED);
-        ::EnableMenuItem(hMenu, ID_LEFT, MF_BYCOMMAND | MF_GRAYED);
-        ::EnableMenuItem(hMenu, ID_RIGHT, MF_BYCOMMAND | MF_GRAYED);
-        ::EnableMenuItem(hMenu, ID_UP, MF_BYCOMMAND | MF_GRAYED);
-        ::EnableMenuItem(hMenu, ID_DOWN, MF_BYCOMMAND | MF_GRAYED);
-        ::EnableMenuItem(hMenu, ID_SWAP_LEFT_RIGHT, MF_BYCOMMAND | MF_GRAYED);
-        ::EnableMenuItem(hMenu, ID_SWAP_TOP_BOTTOM, MF_BYCOMMAND | MF_GRAYED);
+        ::EnableMenuItem(hMenu, ID_OPENCANDSWNDHORZ, MF_GRAYED);
+        ::EnableMenuItem(hMenu, ID_OPENCANDSWNDVERT, MF_GRAYED);
+        ::EnableMenuItem(hMenu, ID_MOSTLEFT, MF_GRAYED);
+        ::EnableMenuItem(hMenu, ID_MOSTRIGHT, MF_GRAYED);
+        ::EnableMenuItem(hMenu, ID_MOSTUPPER, MF_GRAYED);
+        ::EnableMenuItem(hMenu, ID_MOSTLOWER, MF_GRAYED);
+        ::EnableMenuItem(hMenu, ID_LEFT, MF_GRAYED);
+        ::EnableMenuItem(hMenu, ID_RIGHT, MF_GRAYED);
+        ::EnableMenuItem(hMenu, ID_UP, MF_GRAYED);
+        ::EnableMenuItem(hMenu, ID_DOWN, MF_GRAYED);
+        ::EnableMenuItem(hMenu, ID_SWAP_LEFT_RIGHT, MF_GRAYED);
+        ::EnableMenuItem(hMenu, ID_SWAP_TOP_BOTTOM, MF_GRAYED);
     } else {
-        ::EnableMenuItem(hMenu, ID_SOLVE, MF_BYCOMMAND | MF_ENABLED);
-        ::EnableMenuItem(hMenu, ID_SOLVENOADDBLACK, MF_BYCOMMAND | MF_ENABLED);
-        ::EnableMenuItem(hMenu, ID_SHOWSOLUTION, MF_BYCOMMAND | MF_GRAYED);
-        ::EnableMenuItem(hMenu, ID_NOSOLUTION, MF_BYCOMMAND | MF_GRAYED);
+        ::EnableMenuItem(hMenu, ID_SHOWHIDESOLUTION, MF_GRAYED);
+        ::EnableMenuItem(hMenu, ID_SOLVE, MF_ENABLED);
+        ::EnableMenuItem(hMenu, ID_SOLVENOADDBLACK, MF_ENABLED);
+        ::EnableMenuItem(hMenu, ID_SHOWSOLUTION, MF_GRAYED);
+        ::EnableMenuItem(hMenu, ID_NOSOLUTION, MF_GRAYED);
         ::CheckMenuRadioItem(hMenu, ID_SHOWSOLUTION, ID_NOSOLUTION, ID_NOSOLUTION, MF_BYCOMMAND);
-        ::EnableMenuItem(hMenu, ID_SHOWHIDEHINTS, MF_BYCOMMAND | MF_GRAYED);
-        ::EnableMenuItem(hMenu, ID_MARKSNEXT, MF_BYCOMMAND | MF_GRAYED);
-        ::EnableMenuItem(hMenu, ID_SAVEANSASIMAGE, MF_BYCOMMAND | MF_GRAYED);
-        ::EnableMenuItem(hMenu, ID_PRINTANSWER, MF_BYCOMMAND | MF_GRAYED);
+        ::EnableMenuItem(hMenu, ID_SHOWHIDEHINTS, MF_GRAYED);
+        ::EnableMenuItem(hMenu, ID_MARKSNEXT, MF_GRAYED);
+        ::EnableMenuItem(hMenu, ID_SAVEANSASIMAGE, MF_GRAYED);
+        ::EnableMenuItem(hMenu, ID_PRINTANSWER, MF_GRAYED);
 
-        ::EnableMenuItem(hMenu, ID_COPYHINTSSTYLE0, MF_BYCOMMAND | MF_GRAYED);
-        ::EnableMenuItem(hMenu, ID_COPYHINTSSTYLE1, MF_BYCOMMAND | MF_GRAYED);
+        ::EnableMenuItem(hMenu, ID_COPYHINTSSTYLE0, MF_GRAYED);
+        ::EnableMenuItem(hMenu, ID_COPYHINTSSTYLE1, MF_GRAYED);
 
-        ::EnableMenuItem(hMenu, ID_COPYHHINTSSTYLE0, MF_BYCOMMAND | MF_GRAYED);
-        ::EnableMenuItem(hMenu, ID_COPYVHINTSSTYLE0, MF_BYCOMMAND | MF_GRAYED);
-        ::EnableMenuItem(hMenu, ID_COPYHHINTSSTYLE1, MF_BYCOMMAND | MF_GRAYED);
-        ::EnableMenuItem(hMenu, ID_COPYVHINTSSTYLE1, MF_BYCOMMAND | MF_GRAYED);
+        ::EnableMenuItem(hMenu, ID_COPYHHINTSSTYLE0, MF_GRAYED);
+        ::EnableMenuItem(hMenu, ID_COPYVHINTSSTYLE0, MF_GRAYED);
+        ::EnableMenuItem(hMenu, ID_COPYHHINTSSTYLE1, MF_GRAYED);
+        ::EnableMenuItem(hMenu, ID_COPYVHINTSSTYLE1, MF_GRAYED);
 
-        ::EnableMenuItem(hMenu, ID_OPENCANDSWNDHORZ, MF_BYCOMMAND | MF_ENABLED);
-        ::EnableMenuItem(hMenu, ID_OPENCANDSWNDVERT, MF_BYCOMMAND | MF_ENABLED);
-        ::EnableMenuItem(hMenu, ID_MOSTLEFT, MF_BYCOMMAND | MF_ENABLED);
-        ::EnableMenuItem(hMenu, ID_MOSTRIGHT, MF_BYCOMMAND | MF_ENABLED);
-        ::EnableMenuItem(hMenu, ID_MOSTUPPER, MF_BYCOMMAND | MF_ENABLED);
-        ::EnableMenuItem(hMenu, ID_MOSTLOWER, MF_BYCOMMAND | MF_ENABLED);
-        ::EnableMenuItem(hMenu, ID_LEFT, MF_BYCOMMAND | MF_ENABLED);
-        ::EnableMenuItem(hMenu, ID_RIGHT, MF_BYCOMMAND | MF_ENABLED);
-        ::EnableMenuItem(hMenu, ID_UP, MF_BYCOMMAND | MF_ENABLED);
-        ::EnableMenuItem(hMenu, ID_DOWN, MF_BYCOMMAND | MF_ENABLED);
-        ::EnableMenuItem(hMenu, ID_SWAP_LEFT_RIGHT, MF_BYCOMMAND | MF_ENABLED);
-        ::EnableMenuItem(hMenu, ID_SWAP_TOP_BOTTOM, MF_BYCOMMAND | MF_ENABLED);
+        ::EnableMenuItem(hMenu, ID_OPENCANDSWNDHORZ, MF_ENABLED);
+        ::EnableMenuItem(hMenu, ID_OPENCANDSWNDVERT, MF_ENABLED);
+        ::EnableMenuItem(hMenu, ID_MOSTLEFT, MF_ENABLED);
+        ::EnableMenuItem(hMenu, ID_MOSTRIGHT, MF_ENABLED);
+        ::EnableMenuItem(hMenu, ID_MOSTUPPER, MF_ENABLED);
+        ::EnableMenuItem(hMenu, ID_MOSTLOWER, MF_ENABLED);
+        ::EnableMenuItem(hMenu, ID_LEFT, MF_ENABLED);
+        ::EnableMenuItem(hMenu, ID_RIGHT, MF_ENABLED);
+        ::EnableMenuItem(hMenu, ID_UP, MF_ENABLED);
+        ::EnableMenuItem(hMenu, ID_DOWN, MF_ENABLED);
+        ::EnableMenuItem(hMenu, ID_SWAP_LEFT_RIGHT, MF_ENABLED);
+        ::EnableMenuItem(hMenu, ID_SWAP_TOP_BOTTOM, MF_ENABLED);
     }
 
     // 答え合わせ。
@@ -4127,59 +4129,59 @@ void __fastcall MainWnd_OnInitMenu(HWND /*hwnd*/, HMENU hMenu)
 
     // 黒マスパターンを反射する。
     if (xg_bSolved) {
-        ::EnableMenuItem(hMenu, ID_REFLECTBLOCKS, MF_BYCOMMAND | MF_GRAYED);
+        ::EnableMenuItem(hMenu, ID_REFLECTBLOCKS, MF_GRAYED);
     } else {
         if (xg_nRules & (RULE_LINESYMMETRYH | RULE_LINESYMMETRYV | RULE_POINTSYMMETRY)) {
-            ::EnableMenuItem(hMenu, ID_REFLECTBLOCKS, MF_BYCOMMAND | MF_ENABLED);
+            ::EnableMenuItem(hMenu, ID_REFLECTBLOCKS, MF_ENABLED);
         } else {
-            ::EnableMenuItem(hMenu, ID_REFLECTBLOCKS, MF_BYCOMMAND | MF_GRAYED);
+            ::EnableMenuItem(hMenu, ID_REFLECTBLOCKS, MF_GRAYED);
         }
     }
 
     // 二重マスメニュー更新。
     if (xg_vMarks.empty()) {
-        ::EnableMenuItem(hMenu, ID_KILLMARKS, MF_BYCOMMAND | MF_GRAYED);
-        ::EnableMenuItem(hMenu, ID_COPYMARKWORD, MF_BYCOMMAND | MF_GRAYED);
+        ::EnableMenuItem(hMenu, ID_KILLMARKS, MF_GRAYED);
+        ::EnableMenuItem(hMenu, ID_COPYMARKWORD, MF_GRAYED);
     } else {
-        ::EnableMenuItem(hMenu, ID_KILLMARKS, MF_BYCOMMAND | MF_ENABLED);
-        ::EnableMenuItem(hMenu, ID_COPYMARKWORD, MF_BYCOMMAND | MF_ENABLED);
+        ::EnableMenuItem(hMenu, ID_KILLMARKS, MF_ENABLED);
+        ::EnableMenuItem(hMenu, ID_COPYMARKWORD, MF_ENABLED);
     }
 
     // 「解を削除して盤のロックを解除」
     if (xg_bSolved) {
-        ::EnableMenuItem(hMenu, ID_ERASESOLUTIONANDUNLOCKEDIT, MF_BYCOMMAND | MF_ENABLED);
+        ::EnableMenuItem(hMenu, ID_ERASESOLUTIONANDUNLOCKEDIT, MF_ENABLED);
     } else {
-        ::EnableMenuItem(hMenu, ID_ERASESOLUTIONANDUNLOCKEDIT, MF_BYCOMMAND | MF_GRAYED);
+        ::EnableMenuItem(hMenu, ID_ERASESOLUTIONANDUNLOCKEDIT, MF_GRAYED);
     }
 
     // ステータスバーのメニュー更新。
     if (s_bShowStatusBar) {
-        ::CheckMenuItem(hMenu, ID_STATUS, MF_BYCOMMAND | MF_CHECKED);
+        ::CheckMenuItem(hMenu, ID_STATUS, MF_CHECKED);
     } else {
-        ::CheckMenuItem(hMenu, ID_STATUS, MF_BYCOMMAND | MF_UNCHECKED);
+        ::CheckMenuItem(hMenu, ID_STATUS, MF_UNCHECKED);
     }
 
     // 入力パレットのメニュー更新。
     if (xg_hwndInputPalette) {
-        ::CheckMenuItem(hMenu, ID_PALETTE, MF_BYCOMMAND | MF_CHECKED);
-        ::CheckMenuItem(hMenu, ID_PALETTE2, MF_BYCOMMAND | MF_CHECKED);
+        ::CheckMenuItem(hMenu, ID_PALETTE, MF_CHECKED);
+        ::CheckMenuItem(hMenu, ID_PALETTE2, MF_CHECKED);
     } else {
-        ::CheckMenuItem(hMenu, ID_PALETTE, MF_BYCOMMAND | MF_UNCHECKED);
-        ::CheckMenuItem(hMenu, ID_PALETTE2, MF_BYCOMMAND | MF_UNCHECKED);
+        ::CheckMenuItem(hMenu, ID_PALETTE, MF_UNCHECKED);
+        ::CheckMenuItem(hMenu, ID_PALETTE2, MF_UNCHECKED);
     }
 
     // ツールバーのメニュー更新。
     if (xg_bShowToolBar) {
-        ::CheckMenuItem(hMenu, ID_TOOLBAR, MF_BYCOMMAND | MF_CHECKED);
+        ::CheckMenuItem(hMenu, ID_TOOLBAR, MF_CHECKED);
     } else {
-        ::CheckMenuItem(hMenu, ID_TOOLBAR, MF_BYCOMMAND | MF_UNCHECKED);
+        ::CheckMenuItem(hMenu, ID_TOOLBAR, MF_UNCHECKED);
     }
 
     // ヒントウィンドウのメニュー更新。
     if (xg_hHintsWnd) {
-        ::CheckMenuItem(hMenu, ID_SHOWHIDEHINTS, MF_BYCOMMAND | MF_CHECKED);
+        ::CheckMenuItem(hMenu, ID_SHOWHIDEHINTS, MF_CHECKED);
     } else {
-        ::CheckMenuItem(hMenu, ID_SHOWHIDEHINTS, MF_BYCOMMAND | MF_UNCHECKED);
+        ::CheckMenuItem(hMenu, ID_SHOWHIDEHINTS, MF_UNCHECKED);
     }
 
     // ひらがなウィンドウのメニュー更新。
@@ -4205,16 +4207,16 @@ void __fastcall MainWnd_OnInitMenu(HWND /*hwnd*/, HMENU hMenu)
 
     // 文字送りのメニュー更新。
     if (xg_bCharFeed) {
-        ::CheckMenuItem(hMenu, ID_CHARFEED, MF_BYCOMMAND | MF_CHECKED);
+        ::CheckMenuItem(hMenu, ID_CHARFEED, MF_CHECKED);
     } else {
-        ::CheckMenuItem(hMenu, ID_CHARFEED, MF_BYCOMMAND | MF_UNCHECKED);
+        ::CheckMenuItem(hMenu, ID_CHARFEED, MF_UNCHECKED);
     }
 
     // 二重マス文字表示のメニュー更新。
     if (xg_bShowDoubleFrameLetters) {
-        ::CheckMenuItem(hMenu, ID_VIEW_DOUBLEFRAME_LETTERS, MF_BYCOMMAND | MF_CHECKED);
+        ::CheckMenuItem(hMenu, ID_VIEW_DOUBLEFRAME_LETTERS, MF_CHECKED);
     } else {
-        ::CheckMenuItem(hMenu, ID_VIEW_DOUBLEFRAME_LETTERS, MF_BYCOMMAND | MF_UNCHECKED);
+        ::CheckMenuItem(hMenu, ID_VIEW_DOUBLEFRAME_LETTERS, MF_UNCHECKED);
     }
 
     // ビューモード。
@@ -4232,9 +4234,9 @@ void __fastcall MainWnd_OnInitMenu(HWND /*hwnd*/, HMENU hMenu)
 
     // ナンクロモード。
     if (!xg_bSolved) {
-        ::EnableMenuItem(hMenu, ID_NUMCROMODE, MF_BYCOMMAND | MF_GRAYED);
+        ::EnableMenuItem(hMenu, ID_NUMCROMODE, MF_GRAYED);
     } else {
-        ::EnableMenuItem(hMenu, ID_NUMCROMODE, MF_BYCOMMAND | MF_ENABLED);
+        ::EnableMenuItem(hMenu, ID_NUMCROMODE, MF_ENABLED);
         if (xg_bNumCroMode) {
             ::CheckMenuItem(hMenu, ID_NUMCROMODE, MF_CHECKED);
         } else {
@@ -5693,6 +5695,7 @@ FileSettingsDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
             switch (pnmhdr->code) {
             case PSN_APPLY: // 適用
                 {
+                    // チェックボックスから設定を取得する。
                     xg_bShowAnswerOnOpen = (IsDlgButtonChecked(hwnd, chx1) == BST_CHECKED);
                     xg_bAutoSave = (IsDlgButtonChecked(hwnd, chx2) == BST_CHECKED);
                     xg_bShowAnswerOnGenerate = (IsDlgButtonChecked(hwnd, chx3) == BST_CHECKED);
@@ -5710,8 +5713,140 @@ FileSettingsDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
                         }
                         ++i;
                     }
+
                     // 先頭に挿入。
                     xg_dirs_save_to.insert(xg_dirs_save_to.begin(), szFile);
+                }
+                break;
+            }
+        }
+        break;
+    }
+    return 0;
+}
+
+// 全般設定の[表示]設定。
+INT_PTR CALLBACK
+ViewSettingsDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+{
+    switch (uMsg)
+    {
+    case WM_INITDIALOG:
+        // チェックボックスを初期化。
+        if (xg_bShowToolBar)
+            ::CheckDlgButton(hwnd, chx1, BST_CHECKED);
+        if (s_bShowStatusBar)
+            ::CheckDlgButton(hwnd, chx2, BST_CHECKED);
+        if (::IsWindow(xg_hwndInputPalette))
+            ::CheckDlgButton(hwnd, chx3, BST_CHECKED);
+        if (::IsWindow(xg_hHintsWnd))
+            ::CheckDlgButton(hwnd, chx4, BST_CHECKED);
+        if (xg_bShowAnswer)
+            ::CheckDlgButton(hwnd, chx5, BST_CHECKED);
+        if (xg_bShowNumbering)
+            ::CheckDlgButton(hwnd, chx6, BST_CHECKED);
+        if (xg_bShowCaret)
+            ::CheckDlgButton(hwnd, chx7, BST_CHECKED);
+        if (xg_bShowDoubleFrameLetters)
+            ::CheckDlgButton(hwnd, chx8, BST_CHECKED);
+        if (xg_nViewMode == XG_VIEW_SKELETON)
+            ::CheckDlgButton(hwnd, chx9, BST_CHECKED);
+        if (xg_bNumCroMode)
+            ::CheckDlgButton(hwnd, chx10, BST_CHECKED);
+        if (xg_bLowercase)
+            ::CheckDlgButton(hwnd, chx11, BST_CHECKED);
+        if (xg_bHiragana)
+            ::CheckDlgButton(hwnd, chx12, BST_CHECKED);
+        if (!xg_bSolved) {
+            ::EnableWindow(::GetDlgItem(hwnd, chx4), FALSE);
+            ::EnableWindow(::GetDlgItem(hwnd, chx5), FALSE);
+        }
+        return TRUE;
+
+    case WM_COMMAND:
+        switch (LOWORD(wParam))
+        {
+        case chx1:
+        case chx2:
+        case chx3:
+        case chx4:
+        case chx5:
+        case chx6:
+        case chx7:
+        case chx8:
+        case chx9:
+        case chx10:
+        case chx11:
+        case chx12:
+            if (HIWORD(wParam) == BN_CLICKED)
+                PropSheet_Changed(GetParent(hwnd), hwnd);
+            break;
+        }
+        break;
+
+    case WM_NOTIFY:
+        {
+            NMHDR *pnmhdr = (NMHDR *)lParam;
+            switch (pnmhdr->code) {
+            case PSN_APPLY: // 適用
+                {
+                    // 元に戻す情報を取得。
+                    auto sa1 = std::make_shared<XG_UndoData_SetAll>();
+                    sa1->Get();
+
+                    // チェックボックスから設定を取得する。
+                    xg_bShowToolBar = (::IsDlgButtonChecked(hwnd, chx1) == BST_CHECKED);
+                    s_bShowStatusBar = (::IsDlgButtonChecked(hwnd, chx2) == BST_CHECKED);
+                    BOOL bInputPalette = (::IsDlgButtonChecked(hwnd, chx3) == BST_CHECKED);
+                    BOOL bHintsWnd = (::IsDlgButtonChecked(hwnd, chx4) == BST_CHECKED);
+                    xg_bShowAnswer = (::IsDlgButtonChecked(hwnd, chx5) == BST_CHECKED);
+                    xg_bShowNumbering = (::IsDlgButtonChecked(hwnd, chx6) == BST_CHECKED);
+                    xg_bShowCaret = (::IsDlgButtonChecked(hwnd, chx7) == BST_CHECKED);
+                    xg_bShowDoubleFrameLetters = (::IsDlgButtonChecked(hwnd, chx8) == BST_CHECKED);
+                    xg_nViewMode = ((::IsDlgButtonChecked(hwnd, chx9) == BST_CHECKED) ? XG_VIEW_SKELETON : XG_VIEW_NORMAL);
+                    xg_bNumCroMode = (::IsDlgButtonChecked(hwnd, chx10) == BST_CHECKED);
+                    xg_bLowercase = (::IsDlgButtonChecked(hwnd, chx11) == BST_CHECKED);
+                    xg_bHiragana = (::IsDlgButtonChecked(hwnd, chx12) == BST_CHECKED);
+
+                    if (xg_bShowToolBar)
+                        ::ShowWindow(xg_hToolBar, SW_SHOWNOACTIVATE);
+                    else
+                        ::ShowWindow(xg_hToolBar, SW_HIDE);
+
+                    if (s_bShowStatusBar)
+                        ShowWindow(xg_hStatusBar, SW_SHOWNOACTIVATE);
+                    else
+                        ShowWindow(xg_hStatusBar, SW_HIDE);
+
+                    if (bInputPalette) {
+                        if (!::IsWindow(xg_hwndInputPalette))
+                            XgCreateInputPalette(xg_hMainWnd);
+                    } else {
+                        if (::IsWindow(xg_hwndInputPalette))
+                            XgDestroyInputPalette();
+                    }
+
+                    if (bHintsWnd) {
+                        if (!::IsWindow(xg_hHintsWnd)) {
+                            XgShowHints(xg_hMainWnd);
+                            xg_bShowClues = TRUE;
+                        }
+                    } else {
+                        if (::IsWindow(xg_hHintsWnd)) {
+                            ::DestroyWindow(xg_hHintsWnd);
+                            xg_hHintsWnd = nullptr;
+                        }
+                        xg_bShowClues = FALSE;
+                    }
+
+                    // 元に戻す情報を確定。
+                    auto sa2 = std::make_shared<XG_UndoData_SetAll>();
+                    sa2->Get();
+                    xg_ubUndoBuffer.Commit(UC_SETALL, sa1, sa2);
+
+                    // 表示を更新。
+                    XgUpdateImage(xg_hMainWnd);
+                    SendMessageW(xg_hMainWnd, WM_SIZE, 0, 0);
                 }
                 break;
             }
@@ -5725,7 +5860,7 @@ FileSettingsDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 void XgGeneralSettings(HWND hwnd)
 {
     PROPSHEETPAGE psp = { sizeof(psp) };
-    HPROPSHEETPAGE hpsp[1];
+    HPROPSHEETPAGE hpsp[2];
 
     // 「ファイル」設定。
     psp.pszTemplate = MAKEINTRESOURCEW(IDD_FILESETTINGS);
@@ -5733,6 +5868,13 @@ void XgGeneralSettings(HWND hwnd)
     psp.dwFlags = PSP_DEFAULT;
     psp.hInstance = xg_hInstance;
     hpsp[0] = ::CreatePropertySheetPage(&psp);
+
+    // 「表示」設定。
+    psp.pszTemplate = MAKEINTRESOURCEW(IDD_VIEWSETTINGS);
+    psp.pfnDlgProc = ViewSettingsDlgProc;
+    psp.dwFlags = PSP_DEFAULT;
+    psp.hInstance = xg_hInstance;
+    hpsp[1] = ::CreatePropertySheetPage(&psp);
 
     PROPSHEETHEADER psh = { sizeof(psh) };
     psh.dwFlags = PSH_USEICONID;
