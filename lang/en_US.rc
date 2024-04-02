@@ -1782,7 +1782,7 @@ STRINGTABLE
     IDS_CONGRATS, "Congratulations!"
     IDS_CORRECTANSWER, "Correct answer!"
     IDS_OUTOFRANGE, "Out of range."
-    IDS_GENERALSETTINGS, "Settings"
+    IDS_GENERALSETTINGS, "Settings (Alt+Enter)"
     IDS_MADEPROBLEM2, "I've generated a crossword and saved as '%s'.\n\nCalculation time: %u.%u[sec]"
     IDS_FITWHOLE, "Fit whole"
     IDS_TT_NEW, "New crossword"
