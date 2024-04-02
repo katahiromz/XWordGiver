@@ -560,6 +560,11 @@ IDB_DELETEPAT BITMAP "res/1041_Bitmap_102.bmp"
         MENUITEM SEPARATOR
         MENUITEM "すべてコピー(&A)", ID_COPYHINTSSTYLE0
     }
+    POPUP "ポップアップ #2"
+    {
+        MENUITEM "ツール バー(&T)", ID_TOOLBAR
+        MENUITEM "ステータス バー(&S)", ID_STATUS
+    }
 }
 
 3 MENU

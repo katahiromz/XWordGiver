@@ -557,6 +557,11 @@ IDB_DELETEPAT BITMAP "res/1033_Bitmap_102.bmp"
         MENUITEM SEPARATOR
         MENUITEM "Copy all clues", ID_COPYHINTSSTYLE0
     }
+    POPUP "Popup #2"
+    {
+        MENUITEM "&Toolbar", ID_TOOLBAR
+        MENUITEM "&Status bar", ID_STATUS
+    }
 }
 
 3 MENU

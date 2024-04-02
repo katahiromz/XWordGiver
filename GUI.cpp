@@ -7335,6 +7335,29 @@ void MainWnd_OnNotify(HWND hwnd, int idCtrl, LPNMHDR pnmh) noexcept
         return;
     }
 
+    if (pnmh->code == NM_RCLICK && (idCtrl == IDW_TOOLBAR || idCtrl == IDW_STATUSBAR)) {
+        // ツールバーが右クリックされた。右クリックメニューを表示する。
+
+        // メニューを読み込む。
+        HMENU hMenu = ::LoadMenuW(xg_hInstance, MAKEINTRESOURCEW(2));
+        HMENU hSubMenu = ::GetSubMenu(hMenu, 2);
+
+        // カーソル位置を取得。
+        POINT pt;
+        ::GetCursorPos(&pt);
+
+        // TrackPopupMenuの準備。
+        ::SetForegroundWindow(hwnd);
+
+        // メニューを表示する。
+        ::TrackPopupMenu(hSubMenu, TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, 0,
+                         hwnd, NULL);
+
+        // TrackPopupMenuの後片づけ。
+        ::PostMessageW(hwnd, WM_NULL, 0, 0);
+        return;
+    }
+
     if (pnmh->code == TTN_NEEDTEXT) {
         // ツールチップの情報をセットする。
         LPTOOLTIPTEXT pttt;
