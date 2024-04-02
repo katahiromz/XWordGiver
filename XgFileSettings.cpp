@@ -47,26 +47,35 @@ XgFileSettingsDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
             break;
         case psh1: // 「参照」ボタン。
             {
+                // ユーザーにフォルダ位置を問い合わせる。
                 BROWSEINFOW bi = { hwnd };
                 bi.lpszTitle = XgLoadStringDx1(IDS_CROSSSTORAGE);
                 bi.ulFlags = BIF_RETURNONLYFSDIRS;
                 bi.lpfn = XgBrowseCallbackProc;
                 ::GetDlgItemTextW(hwnd, cmb1, xg_szDir, _countof(xg_szDir));
-                {
-                    LPITEMIDLIST pidl = ::SHBrowseForFolderW(&bi);
-                    if (pidl) {
-                        WCHAR szFile[MAX_PATH];
-                        ::SHGetPathFromIDListW(pidl, szFile);
-                        ::SetDlgItemTextW(hwnd, cmb1, szFile);
-                        ::CoTaskMemFree(pidl);
-                        PropSheet_Changed(GetParent(hwnd), hwnd);
-                    }
+                LPITEMIDLIST pidl = ::SHBrowseForFolderW(&bi);
+                if (pidl) {
+                    // テキストを設定。
+                    WCHAR szFile[MAX_PATH];
+                    ::SHGetPathFromIDListW(pidl, szFile);
+                    ::SetDlgItemTextW(hwnd, cmb1, szFile);
+                    // 忘れずPIDLを解放。
+                    ::CoTaskMemFree(pidl);
+                    // 変更された。
+                    PropSheet_Changed(GetParent(hwnd), hwnd);
                 }
             }
             break;
         case psh2: // 「フォルダを開く」ボタン。
-            ::GetDlgItemTextW(hwnd, cmb1, xg_szDir, _countof(xg_szDir));
-            ::ShellExecuteW(hwnd, NULL, xg_szDir, NULL, NULL, SW_SHOWNORMAL);
+            {
+                // フォルダパス名を取得。
+                WCHAR szDir[MAX_PATH];
+                ::GetDlgItemTextW(hwnd, cmb1, szDir, _countof(szDir));
+                // なければ作成。
+                XgMakePathW(szDir);
+                // シェルで開く。
+                ::ShellExecuteW(hwnd, NULL, szDir, NULL, NULL, SW_SHOWNORMAL);
+            }
             break;
         }
         break;
