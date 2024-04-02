@@ -34,14 +34,17 @@ XgFileSettingsDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
         case chx3:
         case chx4:
         case chx5:
-            if (HIWORD(wParam) == BN_CLICKED)
+            if (HIWORD(wParam) == BN_CLICKED) {
+                // 変更された。更新ボタンを有効にする。
                 PropSheet_Changed(GetParent(hwnd), hwnd);
+            }
             break;
         case cmb1:
             if (HIWORD(wParam) == CBN_EDITCHANGE ||
                 HIWORD(wParam) == CBN_SELCHANGE ||
                 HIWORD(wParam) == CBN_SELENDOK)
             {
+                // 変更された。更新ボタンを有効にする。
                 PropSheet_Changed(GetParent(hwnd), hwnd);
             }
             break;
@@ -51,7 +54,7 @@ XgFileSettingsDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
                 BROWSEINFOW bi = { hwnd };
                 bi.lpszTitle = XgLoadStringDx1(IDS_CROSSSTORAGE);
                 bi.ulFlags = BIF_RETURNONLYFSDIRS;
-                bi.lpfn = XgBrowseCallbackProc;
+                bi.lpfn = XgBrowseCallbackProc; // 初期位置設定用のフック。
                 ::GetDlgItemTextW(hwnd, cmb1, xg_szDir, _countof(xg_szDir));
                 LPITEMIDLIST pidl = ::SHBrowseForFolderW(&bi);
                 if (pidl) {
@@ -61,7 +64,7 @@ XgFileSettingsDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
                     ::SetDlgItemTextW(hwnd, cmb1, szFile);
                     // 忘れずPIDLを解放。
                     ::CoTaskMemFree(pidl);
-                    // 変更された。
+                    // 変更された。更新ボタンを有効にする。
                     PropSheet_Changed(GetParent(hwnd), hwnd);
                 }
             }
@@ -80,13 +83,15 @@ XgFileSettingsDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
         }
         break;
 
-    case WM_DROPFILES:
+    case WM_DROPFILES: // ファイルがドロップされた。
         {
             HDROP hDrop = (HDROP)wParam;
             DragQueryFileW(hDrop, 0, xg_szDir, _countof(xg_szDir));
-            if (PathIsDirectoryW(xg_szDir))
+            if (PathIsDirectoryW(xg_szDir)) // フォルダか？
             {
+                // テキストを設定。
                 ::SetDlgItemTextW(hwnd, cmb1, xg_szDir);
+                // 変更された。更新ボタンを有効にする。
                 PropSheet_Changed(GetParent(hwnd), hwnd);
             }
         }
