@@ -5929,26 +5929,30 @@ ViewSettingsDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 }
 
 // 全般設定。
-void XgGeneralSettings(HWND hwnd)
+void XgGeneralSettings(HWND hwnd, INT nStartPage = 0)
 {
-    PROPSHEETPAGE psp = { sizeof(psp) };
+    PROPSHEETPAGEW psp = { sizeof(psp) };
     HPROPSHEETPAGE hpsp[2];
+    INT iPage = 0;
 
     // 「ファイル」設定。
     psp.pszTemplate = MAKEINTRESOURCEW(IDD_FILESETTINGS);
     psp.pfnDlgProc = FileSettingsDlgProc;
     psp.dwFlags = PSP_DEFAULT;
     psp.hInstance = xg_hInstance;
-    hpsp[0] = ::CreatePropertySheetPage(&psp);
+    hpsp[iPage++] = ::CreatePropertySheetPageW(&psp);
 
     // 「表示」設定。
     psp.pszTemplate = MAKEINTRESOURCEW(IDD_VIEWSETTINGS);
     psp.pfnDlgProc = ViewSettingsDlgProc;
     psp.dwFlags = PSP_DEFAULT;
     psp.hInstance = xg_hInstance;
-    hpsp[1] = ::CreatePropertySheetPage(&psp);
+    hpsp[iPage++] = ::CreatePropertySheetPageW(&psp);
 
-    PROPSHEETHEADER psh = { sizeof(psh) };
+    assert(iPage == _countof(hpsp));
+    assert(nStartPage < _countof(hpsp));
+
+    PROPSHEETHEADERW psh = { sizeof(psh) };
     psh.dwFlags = PSH_USEICONID;
     psh.hInstance = xg_hInstance;
     psh.hwndParent = hwnd;
@@ -5956,8 +5960,9 @@ void XgGeneralSettings(HWND hwnd)
     psh.nPages = _countof(hpsp);
     psh.phpage = hpsp;
     psh.pszCaption = XgLoadStringDx1(IDS_GENERALSETTINGS);
+    psh.nStartPage = nStartPage;
 
-    ::PropertySheet(&psh);
+    ::PropertySheetW(&psh);
 }
 
 // コマンドを実行する。
