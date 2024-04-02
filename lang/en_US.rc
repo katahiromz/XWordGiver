@@ -1516,7 +1516,8 @@ FONT 9, "Tahoma"
     AUTOCHECKBOX "Automatically save as &numbering file when generated", chx2, 10, 60, 195, 15
     LTEXT "Numbering &save in:", -1, 10, 85, 195, 10
     COMBOBOX cmb1, 10, 100, 195, 300, CBS_HASSTRINGS | CBS_AUTOHSCROLL | CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP
-    PUSHBUTTON "&Browse...", psh1, 145, 120, 60, 15
+    PUSHBUTTON "&Browse...", psh1, 10, 115, 60, 15
+    PUSHBUTTON "Open &Folder", psh2, 110, 115, 95, 15
 }
 
 //////////////////////////////////////////////////////////////////////////////

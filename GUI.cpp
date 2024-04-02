@@ -5616,16 +5616,20 @@ FileSettingsDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
     switch (uMsg)
     {
     case WM_INITDIALOG:
+        // チェックボックスを初期化。
         if (xg_bShowAnswerOnOpen)
             CheckDlgButton(hwnd, chx1, BST_CHECKED);
         if (xg_bAutoSave)
             CheckDlgButton(hwnd, chx2, BST_CHECKED);
         if (xg_bShowAnswerOnGenerate)
             CheckDlgButton(hwnd, chx3, BST_CHECKED);
+        // 保存先を初期化。
         for (const auto& dir : xg_dirs_save_to) {
             SendDlgItemMessage(hwnd, cmb1, CB_ADDSTRING, 0, (LPARAM)dir.c_str());
         }
         SendDlgItemMessage(hwnd, cmb1, CB_SETCURSEL, 0, 0);
+        // ドラッグ＆ドロップを受け付ける。
+        DragAcceptFiles(hwnd, TRUE);
         return TRUE;
 
     case WM_COMMAND:
@@ -5664,6 +5668,22 @@ FileSettingsDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
                 }
             }
             break;
+        case psh2: // 「フォルダを開く」ボタン。
+            ::GetDlgItemTextW(hwnd, cmb1, xg_szDir, _countof(xg_szDir));
+            ::ShellExecuteW(hwnd, NULL, xg_szDir, NULL, NULL, SW_SHOWNORMAL);
+            break;
+        }
+        break;
+
+    case WM_DROPFILES:
+        {
+            HDROP hDrop = (HDROP)wParam;
+            DragQueryFileW(hDrop, 0, xg_szDir, _countof(xg_szDir));
+            if (PathIsDirectoryW(xg_szDir))
+            {
+                ::SetDlgItemTextW(hwnd, cmb1, xg_szDir);
+                PropSheet_Changed(GetParent(hwnd), hwnd);
+            }
         }
         break;
 

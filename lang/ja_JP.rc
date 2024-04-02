@@ -1519,7 +1519,8 @@ FONT 9, "MS UI Gothic"
     AUTOCHECKBOX "問題を生成したら自動で連番保存する(&N)", chx2, 10, 60, 195, 15
     LTEXT "連番ファイル保存先(&S):", -1, 10, 85, 195, 10
     COMBOBOX cmb1, 10, 100, 195, 300, CBS_HASSTRINGS | CBS_AUTOHSCROLL | CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP
-    PUSHBUTTON "参照(&B)...", psh1, 145, 120, 60, 15
+    PUSHBUTTON "参照(&B)...", psh1, 10, 115, 60, 15
+    PUSHBUTTON "フォルダを開く(&F)", psh2, 110, 115, 95, 15
 }
 
 //////////////////////////////////////////////////////////////////////////////
