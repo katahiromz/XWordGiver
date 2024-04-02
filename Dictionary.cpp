@@ -474,7 +474,7 @@ BOOL XgLoadDictsAll(void)
 
     // 実行ファイルのパスを取得。
     WCHAR sz[MAX_PATH];
-    ::GetModuleFileNameW(nullptr, sz, sizeof(sz));
+    ::GetModuleFileNameW(nullptr, sz, _countof(sz));
 
     // 実行ファイルの近くにある.dic/.tsvファイルを列挙する。
     PathRemoveFileSpec(sz);
