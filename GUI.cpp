@@ -5832,11 +5832,15 @@ ViewSettingsDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 
                     // コンボボックスの設定を適用する。
                     WCHAR szText[128];
-                    GetDlgItemTextW(hwnd, cmb1, szText, _countof(szText));
+                    ::GetDlgItemTextW(hwnd, cmb1, szText, _countof(szText));
                     if (s_strFit == szText) {
-                        SendMessage(xg_hMainWnd, WM_COMMAND, ID_FITZOOM, 0);
+                        ::SendMessageW(xg_hMainWnd, WM_COMMAND, ID_FITZOOM, 0);
                     } else {
-                        INT nRate = _wtoi(szText);
+                        WCHAR szText2[128];
+                        ::LCMapStringW(::GetUserDefaultLCID(), LCMAP_HALFWIDTH, szText, _countof(szText),
+                                       szText2, _countof(szText2));
+                        StrTrimW(szText2, L" \t\r\n\x3000");
+                        INT nRate = _wtoi(szText2);
                         if (nRate == 0)
                             nRate = 100;
                         if (nRate < 10)
