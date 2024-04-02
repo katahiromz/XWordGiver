@@ -546,6 +546,8 @@ IDB_DELETEPAT BITMAP "res/1033_Bitmap_102.bmp"
         MENUITEM "Right-insert a column", ID_RIGHT_INSERT_COLUMN
         MENUITEM "Delete this row", ID_DELETE_ROW
         MENUITEM "Delete this column", ID_DELETE_COLUMN
+        MENUITEM SEPARATOR
+        MENUITEM "&Fit whole\tCtrl+F", ID_FITZOOM
     }
     POPUP "Popup #1"
     {

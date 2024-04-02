@@ -549,6 +549,8 @@ IDB_DELETEPAT BITMAP "res/1041_Bitmap_102.bmp"
         MENUITEM "列を挿入(右に)", ID_RIGHT_INSERT_COLUMN
         MENUITEM "行を削除", ID_DELETE_ROW
         MENUITEM "列を削除", ID_DELETE_COLUMN
+        MENUITEM SEPARATOR
+        MENUITEM "全体に合わせる(&F)\tCtrl+F", ID_FITZOOM
     }
     POPUP "ポップアップ #1"
     {
