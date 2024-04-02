@@ -77,26 +77,26 @@ IDB_DELETEPAT BITMAP "res/1033_Bitmap_102.bmp"
             MENUITEM "Copy all clues (Style 1) (&N)", ID_COPYHINTSSTYLE1
         }
         MENUITEM SEPARATOR
-        MENUITEM "Search DOWN word on the Web \tAlt+Down", ID_ONLINEDICTV
-        MENUITEM "Search ACROSS word on the Web\tAlt+Right", ID_ONLINEDICTH
+        MENUITEM "Search DOWN word on Web \tAlt+Down", ID_ONLINEDICTV
+        MENUITEM "Search ACROSS word on Web\tAlt+Right", ID_ONLINEDICTH
         MENUITEM SEPARATOR
         MENUITEM "UI Language Select...", ID_UILANGID
         MENUITEM "&General settings...", ID_GENERALSETTINGS
     }
     POPUP "&Input"
     {
-        MENUITEM "&Kana Input", ID_KANAINPUT
-        MENUITEM "&Alphabet Input", ID_ABCINPUT
-        MENUITEM "Kanji Input", ID_KANJIINPUT
-        MENUITEM "Cyrillic Input", ID_RUSSIAINPUT
-        MENUITEM "Greek Input", ID_GREEKINPUT
-        MENUITEM "Digit Input", ID_DIGITINPUT
-        MENUITEM "A&ny Input", ID_ANYINPUT
+        MENUITEM "&Kana input", ID_KANAINPUT
+        MENUITEM "&Alphabet input", ID_ABCINPUT
+        MENUITEM "Kanji input", ID_KANJIINPUT
+        MENUITEM "Cyrillic input", ID_RUSSIAINPUT
+        MENUITEM "Greek input", ID_GREEKINPUT
+        MENUITEM "Digit input", ID_DIGITINPUT
+        MENUITEM "A&ny input", ID_ANYINPUT
         MENUITEM SEPARATOR
-        MENUITEM "&Horizontal Input\tCtrl+/", ID_INPUTH
-        MENUITEM "&Vertical Input\tCtrl+/", ID_INPUTV
+        MENUITEM "&Horizontal input\tCtrl+/", ID_INPUTH
+        MENUITEM "&Vertical input\tCtrl+/", ID_INPUTV
         MENUITEM SEPARATOR
-        MENUITEM "Character &Feed\tCtrl+^", ID_CHARFEED
+        MENUITEM "Character &feed\tCtrl+^", ID_CHARFEED
         MENUITEM "Right-To-Left (&RTL)", ID_RIGHTTOLEFT, GRAYED
         MENUITEM SEPARATOR
         MENUITEM "&Block\t#", ID_BLOCK
@@ -106,17 +106,17 @@ IDB_DELETEPAT BITMAP "res/1033_Bitmap_102.bmp"
         MENUITEM "&New Line\tEnter", ID_RETURN
         MENUITEM "Toggle double-frame\tCtrl+.", ID_TOGGLEMARK
         MENUITEM SEPARATOR
-        MENUITEM "&Clear all the letters", ID_CLEARNONBLOCKS
+        MENUITEM "&Clear all letters", ID_CLEARNONBLOCKS
         MENUITEM SEPARATOR
         MENUITEM "Input &Palette\tCtrl+U", ID_PALETTE2
     }
     POPUP "&Dictionary"
     {
         MENUITEM "&Theme...", ID_THEME
-        MENUITEM "&Reset the theme...", ID_RESETTHEME
+        MENUITEM "&Reset theme...", ID_RESETTHEME
         MENUITEM SEPARATOR
         MENUITEM "D&ownload dictionaries...", ID_DOWNLOADDICT
-        MENUITEM "Reload the &dict list", ID_RELOADDICTS
+        MENUITEM "Reload &dict list", ID_RELOADDICTS
         MENUITEM SEPARATOR
         MENUITEM "(None)", -1
     }
@@ -127,10 +127,10 @@ IDB_DELETEPAT BITMAP "res/1033_Bitmap_102.bmp"
         MENUITEM SEPARATOR
         MENUITEM "&Retry regularly", ID_RETRYIFTIMEOUT
         MENUITEM SEPARATOR
-        MENUITEM "Show Ans&wer\tCtrl+M", ID_SHOWSOLUTION
-        MENUITEM "Hi&de Answer\tCtrl+M", ID_NOSOLUTION
+        MENUITEM "Show ans&wer\tCtrl+M", ID_SHOWSOLUTION
+        MENUITEM "Hi&de answer\tCtrl+M", ID_NOSOLUTION
         MENUITEM SEPARATOR
-        MENUITEM "&Checking Answer", ID_CHECKANSWER
+        MENUITEM "&Checking answer", ID_CHECKANSWER
         MENUITEM SEPARATOR
         MENUITEM "&Marking double-frame word...\tCtrl+J", ID_MARKSNEXT
         MENUITEM "Reset all the double-frames\tCtrl+R", ID_KILLMARKS
@@ -160,7 +160,7 @@ IDB_DELETEPAT BITMAP "res/1033_Bitmap_102.bmp"
         MENUITEM SEPARATOR
         POPUP "&Zoom"
         {
-            MENUITEM "&Fit the whole\tCtrl+F", ID_FITZOOM
+            MENUITEM "&Fit whole\tCtrl+F", ID_FITZOOM
             MENUITEM SEPARATOR
             MENUITEM "&Zoom in\tCtrl+Wheel Forward", ID_ZOOMIN
             MENUITEM "&Zoom out\tCtrl+Wheel Back", ID_ZOOMOUT
@@ -1520,7 +1520,7 @@ FONT 9, "Tahoma"
     PUSHBUTTON "Open &Folder", psh2, 110, 115, 95, 15
 }
 
-IDD_VIEWSETTINGS DIALOG 0, 0, 220, 171
+IDD_VIEWSETTINGS DIALOG 0, 0, 220, 170
 CAPTION "表示設定"
 STYLE DS_CENTER | DS_MODALFRAME | WS_POPUPWINDOW | WS_CAPTION
 FONT 9, "Tahoma"
@@ -1537,7 +1537,8 @@ FONT 9, "Tahoma"
     AUTOCHECKBOX "NumCro &mode", chx10, 115, 45, 95, 15
     AUTOCHECKBOX "lo&wercase", chx11, 115, 65, 95, 15
     AUTOCHECKBOX "&Hiragana", chx12, 115, 85, 95, 15
-    RTEXT "&Zoom:", -1, 15, 150, 35, 10, SS_CENTERIMAGE
+    AUTOCHECKBOX "Checking ans&wer", chx13, 115, 105, 95, 15
+    RTEXT "&Zoom:", -1, 15, 150, 35, 10, SS_CENTERIMAGE | NOT WS_GROUP
     COMBOBOX cmb1, 60, 150, 95, 300, CBS_HASSTRINGS | CBS_AUTOHSCROLL | CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP
 }
 
@@ -1783,7 +1784,7 @@ STRINGTABLE
     IDS_OUTOFRANGE, "Out of range."
     IDS_GENERALSETTINGS, "General settings"
     IDS_MADEPROBLEM2, "I've generated a crossword and saved as '%s'.\n\nCalculation time: %u.%u[sec]"
-    IDS_FITWHOLE, "Fit the whole"
+    IDS_FITWHOLE, "Fit whole"
     IDS_TT_NEW, "New crossword"
     IDS_TT_GENERATE, "Generate crossword"
     IDS_TT_OPEN, "Open crossword"

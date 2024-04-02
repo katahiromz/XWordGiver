@@ -5759,9 +5759,12 @@ ViewSettingsDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
             ::CheckDlgButton(hwnd, chx11, BST_CHECKED);
         if (xg_bHiragana)
             ::CheckDlgButton(hwnd, chx12, BST_CHECKED);
+        if (xg_bCheckingAnswer)
+            ::CheckDlgButton(hwnd, chx13, BST_CHECKED);
         if (!xg_bSolved) {
             ::EnableWindow(::GetDlgItem(hwnd, chx4), FALSE);
             ::EnableWindow(::GetDlgItem(hwnd, chx5), FALSE);
+            ::EnableWindow(::GetDlgItem(hwnd, chx13), FALSE);
         }
         // ズームを初期化。
         s_strFit = XgLoadStringDx1(IDS_FITWHOLE);
@@ -5793,6 +5796,7 @@ ViewSettingsDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
         case chx10:
         case chx11:
         case chx12:
+        case chx13:
             if (HIWORD(wParam) == BN_CLICKED)
                 PropSheet_Changed(GetParent(hwnd), hwnd);
             break;
@@ -5829,6 +5833,7 @@ ViewSettingsDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
                     xg_bNumCroMode = (::IsDlgButtonChecked(hwnd, chx10) == BST_CHECKED);
                     xg_bLowercase = (::IsDlgButtonChecked(hwnd, chx11) == BST_CHECKED);
                     xg_bHiragana = (::IsDlgButtonChecked(hwnd, chx12) == BST_CHECKED);
+                    xg_bCheckingAnswer = (::IsDlgButtonChecked(hwnd, chx13) == BST_CHECKED);
 
                     // コンボボックスの設定を適用する。
                     WCHAR szText[128];
