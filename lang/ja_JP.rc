@@ -1372,7 +1372,7 @@ FONT 10, "MS UI Gothic"
 }
 
 IDD_RULEPRESET DIALOG 0, 0, 270, 150
-CAPTION "ルール プリセット (Ctrl+R)"
+CAPTION "ルール"
 STYLE DS_CENTER | DS_MODALFRAME | WS_POPUPWINDOW | WS_CAPTION
 FONT 9, "MS UI Gothic"
 {
@@ -1388,8 +1388,6 @@ FONT 9, "MS UI Gothic"
     AUTOCHECKBOX "黒マス上下対称(&L)", chx8, 98, 100, 75, 14
     AUTOCHECKBOX "黒マス左右対称(&O)", chx9, 179, 100, 75, 14
     GROUPBOX "ルール", -1, 5, 40, 260, 85
-    DEFPUSHBUTTON "OK", IDOK, 160, 130, 50, 14
-    PUSHBUTTON "キャンセル", IDCANCEL, 215, 130, 50, 14
     PUSHBUTTON "黒マスルールの説明(&P)...", psh1, 5, 130, 121, 14
 }
 

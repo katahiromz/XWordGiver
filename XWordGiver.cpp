@@ -3261,7 +3261,7 @@ bool __fastcall XgSetEcwString(HWND hwnd, const XGStringW& str)
     mstr_split(lines, str, L"\n");
 
     XGStringW title, copyright, author;
-    size_t width = 0, height = 0;
+    INT width = 0, height = 0;
     std::vector<ECW_ENTRY> entries;
     bool across = false, down = false;
     for (auto& line : lines) {

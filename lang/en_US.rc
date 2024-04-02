@@ -1369,7 +1369,7 @@ FONT 10, "MS Shell Dlg"
 }
 
 IDD_RULEPRESET DIALOG 0, 0, 270, 150
-CAPTION "Policy Preset (Ctrl+R)"
+CAPTION "Policy"
 STYLE DS_CENTER | DS_MODALFRAME | WS_POPUPWINDOW | WS_CAPTION
 FONT 9, "Tahoma"
 {
@@ -1385,8 +1385,6 @@ FONT 9, "Tahoma"
     AUTOCHECKBOX "Vertical symmetry", chx8, 98, 100, 75, 14
     AUTOCHECKBOX "Horizontal symmetry", chx9, 179, 100, 75, 14
     GROUPBOX "Policy", -1, 5, 40, 260, 85
-    DEFPUSHBUTTON "OK", IDOK, 160, 130, 50, 14
-    PUSHBUTTON "Cancel", IDCANCEL, 215, 130, 50, 14
     PUSHBUTTON "What's the &policy?...", psh1, 5, 130, 121, 14
 }
 

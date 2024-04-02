@@ -4548,6 +4548,7 @@ enum
     I_SYNCED_FILE_SETTINGS = 0,
     I_SYNCED_VIEW_SETTINGS,
     I_SYNCED_APPEARANCE,
+    I_SYNCED_RULES,
     I_SYNCED_MAX
 };
 
@@ -4558,12 +4559,13 @@ HWND xg_ahSyncedDialogs[I_SYNCED_MAX] = { 0 };
 #include "XgFileSettings.cpp"
 #include "XgViewSettings.cpp"
 #include "XG_SettingsDialog.cpp"
+#include "XG_RulePresetDialog.cpp"
 
 // 全般設定。
 void XgGeneralSettings(HWND hwnd, INT nStartPage = I_SYNCED_FILE_SETTINGS)
 {
     PROPSHEETPAGEW psp = { sizeof(psp) };
-    HPROPSHEETPAGE hpsp[3];
+    HPROPSHEETPAGE hpsp[I_SYNCED_MAX];
     INT iPage = 0;
 
     // 入力候補を破棄する。
@@ -4586,12 +4588,21 @@ void XgGeneralSettings(HWND hwnd, INT nStartPage = I_SYNCED_FILE_SETTINGS)
     hpsp[iPage++] = ::CreatePropertySheetPageW(&psp);
 
     // 「見た目の設定」。
-    XG_SettingsDialog dialog;
+    XG_SettingsDialog dialog1;
     psp.pszTemplate = MAKEINTRESOURCEW(IDD_CONFIG);
     psp.pfnDlgProc = XG_SettingsDialog::DialogProc;
     psp.dwFlags = PSP_DEFAULT;
     psp.hInstance = xg_hInstance;
-    psp.lParam = (LPARAM)&dialog;
+    psp.lParam = (LPARAM)&dialog1;
+    hpsp[iPage++] = ::CreatePropertySheetPageW(&psp);
+
+    // 「ルール」設定。
+    XG_RulePresetDialog dialog2;
+    psp.pszTemplate = MAKEINTRESOURCEW(IDD_RULEPRESET);
+    psp.pfnDlgProc = XG_RulePresetDialog::DialogProc;
+    psp.dwFlags = PSP_DEFAULT;
+    psp.hInstance = xg_hInstance;
+    psp.lParam = (LPARAM)&dialog2;
     hpsp[iPage++] = ::CreatePropertySheetPageW(&psp);
 
     assert(iPage <= _countof(hpsp));
@@ -4610,6 +4621,7 @@ void XgGeneralSettings(HWND hwnd, INT nStartPage = I_SYNCED_FILE_SETTINGS)
     ::PropertySheetW(&psh);
 
     ZeroMemory(&xg_ahSyncedDialogs, sizeof(xg_ahSyncedDialogs));
+    XgUpdateRules(hwnd);
 }
 
 // テーマが変更された。
@@ -5132,11 +5144,7 @@ void XgSetZoomRate(HWND hwnd, INT nZoomRate)
 // ルール プリセット。
 void XgOnRulePreset(HWND hwnd)
 {
-    XG_RulePresetDialog dialog;
-    if (dialog.DoModal(hwnd) == IDOK)
-    {
-        XgUpdateRules(hwnd);
-    }
+    XgGeneralSettings(hwnd, I_SYNCED_RULES);
 }
 
 // UI言語の設定。
