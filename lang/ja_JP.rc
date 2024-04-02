@@ -42,7 +42,7 @@ IDB_DELETEPAT BITMAP "res/1041_Bitmap_102.bmp"
         }
         MENUITEM SEPARATOR
         MENUITEM "ヘッダーと備考欄(&H)...\tCtrl+Enter", ID_HEADERANDNOTES
-        MENUITEM "見た目の設定(&C)...\tAlt+Enter", ID_SETTINGS
+        MENUITEM "設定(&E)...\tAlt+Enter", ID_SETTINGS
         MENUITEM SEPARATOR
         MENUITEM "アプリの初期化", ID_ERASESETTINGS
         MENUITEM "終了(&X)\tAlt+F4", ID_EXIT
@@ -81,7 +81,6 @@ IDB_DELETEPAT BITMAP "res/1041_Bitmap_102.bmp"
         MENUITEM "単語をウェブ検索(&H) (ヨコ)\tAlt+→", ID_ONLINEDICTH
         MENUITEM SEPARATOR
         MENUITEM "UI Language Select...", ID_UILANGID
-        MENUITEM "設定(&G)...", ID_GENERALSETTINGS
     }
     POPUP "入力(&I)"
     {
@@ -525,7 +524,7 @@ IDB_DELETEPAT BITMAP "res/1041_Bitmap_102.bmp"
         MENUITEM SEPARATOR
         MENUITEM "二重マス切り替え(&T)\tCtrl+.", ID_TOGGLEMARK
         MENUITEM SEPARATOR
-        MENUITEM "見た目の設定(&C)...\tAlt+Enter", ID_SETTINGS
+        MENUITEM "設定(&C)...\tAlt+Enter", ID_SETTINGS
         MENUITEM SEPARATOR
         MENUITEM "ヒントを削除して盤面のロックを解除(&U)", ID_ERASESOLUTIONANDUNLOCKEDIT
         MENUITEM "文字をすべてクリア(&C)", ID_CLEARNONBLOCKS
@@ -644,7 +643,7 @@ FONT 9, "MS UI Gothic"
 }
 
 IDD_CONFIG DIALOG 0, 0, 274, 250
-CAPTION "見た目の設定 (Alt+Enter)"
+CAPTION "見た目"
 STYLE DS_CENTER | DS_MODALFRAME | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
 FONT 9, "MS UI Gothic"
 {
@@ -695,8 +694,6 @@ FONT 9, "MS UI Gothic"
     AUTOCHECKBOX "ひらがな(&N)", chx5, 200, 185, 55, 15
     RTEXT "二重マス文字(&D):", -1, 5, 212, 80, 12
     COMBOBOX cmb2, 90, 210, 180, 300, CBS_HASSTRINGS | CBS_AUTOHSCROLL | CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP
-    DEFPUSHBUTTON "OK", IDOK, 145, 230, 60, 14
-    PUSHBUTTON "キャンセル", IDCANCEL, 210, 230, 60, 14
     PUSHBUTTON "インポート/エクスポート(&X)...", psh12, 5, 230, 100, 15
 }
 

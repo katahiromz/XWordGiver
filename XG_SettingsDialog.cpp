@@ -1,55 +1,18 @@
-#include "XWordGiver.hpp"
-#include "XG_SettingsDialog.hpp"
+static XG_ColorBox m_hwndWhite;
+static XG_ColorBox m_hwndBlack;
+static XG_ColorBox m_hwndMarked;
 
-// マスのフォント。
-WCHAR xg_szCellFont[LF_FACESIZE] = L"";
-// 小さな文字のフォント。
-WCHAR xg_szSmallFont[LF_FACESIZE] = L"";
-// UIフォント。
-WCHAR xg_szUIFont[LF_FACESIZE] = L"";
-
-// 文字の大きさ（％）。
-int xg_nCellCharPercents = XG_DEF_CELL_CHAR_SIZE;
-
-// 小さい文字の大きさ（％）。
-int xg_nSmallCharPercents = XG_DEF_SMALL_CHAR_SIZE;
-
-// 黒マス画像。
-HBITMAP xg_hbmBlackCell = nullptr;
-HENHMETAFILE xg_hBlackCellEMF = nullptr;
-XGStringW xg_strBlackCellImage;
-
-// ビューモード。
-XG_VIEW_MODE xg_nViewMode = XG_VIEW_NORMAL;
-
-// 線の太さ（pt）。
-float xg_nLineWidthInPt = XG_LINE_WIDTH_DEFAULT;
-
-// 外枠の幅（pt）。
-float xg_nOuterFrameInPt = XG_OUTERFRAME_DEFAULT;
-
-// ひらがな表示か？
-BOOL xg_bHiragana = FALSE;
-
-// Lowercase表示か？
-BOOL xg_bLowercase = FALSE;
-
-// ツールバーを表示するか？
-bool xg_bShowToolBar = true;
-
-// 色。
-COLORREF xg_rgbWhiteCellColor = RGB(255, 255, 255);
-COLORREF xg_rgbBlackCellColor = RGB(0x22, 0x22, 0x22);
-COLORREF xg_rgbMarkedCellColor = RGB(255, 255, 255);
-
-// 二重マス文字。
-XGStringW xg_strDoubleFrameLetters;
+static XGStringW m_strAutoFile;
+static BOOL m_bImport = FALSE;
+static BOOL m_bUpdating = FALSE;
 
 //////////////////////////////////////////////////////////////////////////////
 
 // [設定]ダイアログの初期化。
 BOOL XG_SettingsDialog::OnInitDialog(HWND hwnd)
 {
+    xg_ahSettingsWnds[2] = hwnd;
+
     // ドロップを受け付ける。
     ::DragAcceptFiles(hwnd, TRUE);
 
@@ -57,9 +20,14 @@ BOOL XG_SettingsDialog::OnInitDialog(HWND hwnd)
     XgCenterDialog(hwnd);
 
     // ハンドルをセットする。
-    m_hwndWhite.m_hWnd = GetDlgItem(hwnd, psh7);
-    m_hwndBlack.m_hWnd = GetDlgItem(hwnd, psh8);
-    m_hwndMarked.m_hWnd = GetDlgItem(hwnd, psh9);
+    m_hwndWhite.SubclassDx(GetDlgItem(hwnd, psh7));
+    m_hwndBlack.SubclassDx(GetDlgItem(hwnd, psh8));
+    m_hwndMarked.SubclassDx(GetDlgItem(hwnd, psh9));
+
+    // 色をセットする。
+    m_hwndWhite.SetColor(xg_rgbWhiteCellColor);
+    m_hwndBlack.SetColor(xg_rgbBlackCellColor);
+    m_hwndMarked.SetColor(xg_rgbMarkedCellColor);
 
     // フォント名を格納する。
     ::SetDlgItemTextW(hwnd, edt1, xg_szCellFont);
@@ -131,7 +99,6 @@ BOOL XG_SettingsDialog::OnInitDialog(HWND hwnd)
         } else {
             DoExportLooks(hwnd, m_strAutoFile.c_str());
         }
-        SendMessageW(hwnd, WM_COMMAND, IDOK, 0);
     }
 
     WCHAR szText[MAX_PATH];
@@ -148,7 +115,7 @@ BOOL XG_SettingsDialog::OnInitDialog(HWND hwnd)
 }
 
 // [設定]ダイアログで[OK]ボタンを押された。
-void XG_SettingsDialog::OnOK(HWND hwnd)
+BOOL XG_SettingsDialog::OnOK(HWND hwnd)
 {
     // セルの文字の大きさ。
     BOOL bTranslated = FALSE;
@@ -164,7 +131,7 @@ void XG_SettingsDialog::OnOK(HWND hwnd)
         Edit_SetSel(hEdt4, 0, -1);
         SetFocus(hEdt4);
         XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_INVALIDVALUE), nullptr, MB_ICONERROR);
-        return;
+        return FALSE;
     }
 
     // 小さい文字の大きさ。
@@ -181,7 +148,7 @@ void XG_SettingsDialog::OnOK(HWND hwnd)
         Edit_SetSel(hEdt5, 0, -1);
         SetFocus(hEdt5);
         XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_INVALIDVALUE), nullptr, MB_ICONERROR);
-        return;
+        return FALSE;
     }
 
     // 文字の大きさの設定。
@@ -277,6 +244,7 @@ void XG_SettingsDialog::OnOK(HWND hwnd)
     XgUpdateImage(xg_hMainWnd);
 
     XG_FILE_MODIFIED(TRUE);
+    return TRUE;
 }
 
 // LOOKSファイルのインポート。
@@ -752,10 +720,17 @@ XG_SettingsDialog::DialogProcDx(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPar
 
     case WM_NOTIFY:
         {
-            auto pUpDown = reinterpret_cast<NM_UPDOWN *>(lParam);
             WCHAR szText[MAX_PATH];
-            if (pUpDown->hdr.code == UDN_DELTAPOS)
-            {
+            auto pnmhdr = (NMHDR *)lParam;
+            auto pUpDown = reinterpret_cast<NM_UPDOWN *>(lParam);
+            switch (pnmhdr->code) {
+            case PSN_APPLY: // 適用。
+                if (!OnOK(hwnd))
+                {
+                    return SetDlgMsgResult(hwnd, WM_NOTIFY, PSNRET_INVALID_NOCHANGEPAGE);
+                }
+                break;
+            case UDN_DELTAPOS:
                 if (pUpDown->hdr.idFrom == scr3)
                 {
                     GetDlgItemTextW(hwnd, edt6, szText, _countof(szText));
@@ -792,21 +767,62 @@ XG_SettingsDialog::DialogProcDx(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPar
                     SetDlgItemTextW(hwnd, edt7, szText);
                     return TRUE;
                 }
+                break;
             }
         }
         break;
 
     case WM_COMMAND:
+        // 必要ならば「更新」ボタンを有効にする。
         switch (LOWORD(wParam)) {
-        case IDOK:
-            OnOK(hwnd);
-            ::EndDialog(hwnd, IDOK);
+        case edt1:
+        case edt2:
+        case edt3:
+        case edt4:
+        case edt5:
+        case edt6:
+        case edt7:
+            if (HIWORD(wParam) == EN_CHANGE) {
+                PropSheet_Changed(GetParent(hwnd), hwnd);
+            }
             break;
-
-        case IDCANCEL:
-            ::EndDialog(hwnd, IDCANCEL);
+        case psh1:
+        case psh2:
+        case psh3:
+        case psh4:
+        case psh5:
+        case psh6:
+        case psh7:
+        case psh8:
+        case psh9:
+        case psh10:
+        case psh11:
+        case psh12:
+        case psh13:
+        case psh14:
+        case psh15:
+        case chx1:
+        case chx2:
+        case chx3:
+        case chx4:
+        case chx5:
+            if (HIWORD(wParam) == BN_CLICKED) {
+                PropSheet_Changed(GetParent(hwnd), hwnd);
+            }
             break;
+        case cmb1:
+        case cmb2:
+            if (HIWORD(wParam) == CBN_EDITCHANGE ||
+                HIWORD(wParam) == CBN_SELCHANGE ||
+                HIWORD(wParam) == CBN_SELENDOK)
+            {
+                PropSheet_Changed(GetParent(hwnd), hwnd);
+            }
+            break;
+        }
 
+        // 実際に処理をする。
+        switch (LOWORD(wParam)) {
         case psh1:
             OnChange(hwnd, 0);
             break;
@@ -891,26 +907,55 @@ XG_SettingsDialog::DialogProcDx(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPar
             }
             break;
 
-        case chx1:
-            if (IsDlgButtonChecked(hwnd, chx1) == BST_CHECKED) {
-                if (!m_bUpdating) {
-                    m_bUpdating = TRUE;
-                    {
-                        // 黒マス画像なし。
-                        HWND hCmb1 = GetDlgItem(hwnd, cmb1);
-                        ComboBox_RealSetText(hCmb1, XgLoadStringDx1(IDS_NONE));
-                        UpdateBlockPreview(hwnd);
+        case chx1: // スケルトンビュー。
+            if (HIWORD(wParam) == BN_CLICKED)
+            {
+                // 他のダイアログと同期する。
+                BOOL bChecked = IsDlgButtonChecked(hwnd, chx1) == BST_CHECKED;
+                ::CheckDlgButton(xg_ahSettingsWnds[1], chx10, bChecked ? BST_CHECKED : BST_UNCHECKED);
+
+                if (bChecked) {
+                    if (!m_bUpdating) {
+                        m_bUpdating = TRUE;
+                        {
+                            // 黒マス画像なし。
+                            HWND hCmb1 = GetDlgItem(hwnd, cmb1);
+                            ComboBox_RealSetText(hCmb1, XgLoadStringDx1(IDS_NONE));
+                            UpdateBlockPreview(hwnd);
+                        }
+                        m_bUpdating = FALSE;
                     }
-                    m_bUpdating = FALSE;
                 }
             }
             break;
 
         case chx2:
-            if (IsDlgButtonChecked(hwnd, chx2) == BST_CHECKED) {
-                ::EnableWindow(::GetDlgItem(hwnd, edt7), TRUE);
-            } else {
-                ::EnableWindow(::GetDlgItem(hwnd, edt7), FALSE);
+            if (HIWORD(wParam) == BN_CLICKED)
+            {
+                BOOL bChecked = IsDlgButtonChecked(hwnd, chx2) == BST_CHECKED;
+                if (bChecked) {
+                    ::EnableWindow(::GetDlgItem(hwnd, edt7), TRUE);
+                } else {
+                    ::EnableWindow(::GetDlgItem(hwnd, edt7), FALSE);
+                }
+            }
+            break;
+
+        case chx4: // 英小文字。
+            if (HIWORD(wParam) == BN_CLICKED)
+            {
+                // 他のダイアログと同期する。
+                BOOL bChecked = IsDlgButtonChecked(hwnd, chx4) == BST_CHECKED;
+                ::CheckDlgButton(xg_ahSettingsWnds[1], chx12, bChecked ? BST_CHECKED : BST_UNCHECKED);
+            }
+            break;
+
+        case chx5: // ひらがな。
+            if (HIWORD(wParam) == BN_CLICKED)
+            {
+                // 他のダイアログと同期する。
+                BOOL bChecked = IsDlgButtonChecked(hwnd, chx5) == BST_CHECKED;
+                ::CheckDlgButton(xg_ahSettingsWnds[1], chx13, bChecked ? BST_CHECKED : BST_UNCHECKED);
             }
             break;
 
@@ -978,4 +1023,30 @@ void XG_SettingsDialog::UpdateBlockPreview(HWND hwnd)
     SendDlgItemMessageW(hwnd, ico2, STM_SETIMAGE, IMAGE_ENHMETAFILE, 0);
     DeleteObject(hbmOld);
     ::DeleteEnhMetaFile(hOldEMF);
+}
+
+INT_PTR CALLBACK
+XG_SettingsDialog::DialogProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+{
+    static XG_SettingsDialog* s_pThis = NULL;
+    if (uMsg == WM_INITDIALOG)
+    {
+        s_pThis = (XG_SettingsDialog*)lParam;
+        SetWindowLongPtrW(hwnd, DWLP_USER, (LONG_PTR)lParam);
+    }
+    else
+    {
+        s_pThis = (XG_SettingsDialog*)GetWindowLongPtrW(hwnd, DWLP_USER);
+    }
+
+    if (!s_pThis)
+        return 0;
+
+    return s_pThis->DialogProcDx(hwnd, uMsg, wParam, lParam);
+}
+
+INT_PTR XG_SettingsDialog::DoModal(HWND hwnd)
+{
+    m_hwndWhite.RegisterClassDx(xg_hInstance);
+    return DialogBoxParamW(xg_hInstance, MAKEINTRESOURCEW(IDD_CONFIG), hwnd, DialogProc, (LPARAM)this);
 }

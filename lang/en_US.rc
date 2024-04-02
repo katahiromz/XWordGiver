@@ -42,7 +42,7 @@ IDB_DELETEPAT BITMAP "res/1033_Bitmap_102.bmp"
         }
         MENUITEM SEPARATOR
         MENUITEM "&Header and remarks...\tCtrl+Enter", ID_HEADERANDNOTES
-        MENUITEM "Appearan&ce...\tAlt+Enter", ID_SETTINGS
+        MENUITEM "S&ettings...\tAlt+Enter", ID_SETTINGS
         MENUITEM SEPARATOR
         MENUITEM "Initialize application", ID_ERASESETTINGS
         MENUITEM "E&xit\tAlt+F4", ID_EXIT
@@ -81,7 +81,6 @@ IDB_DELETEPAT BITMAP "res/1033_Bitmap_102.bmp"
         MENUITEM "Search ACROSS word on Web\tAlt+Right", ID_ONLINEDICTH
         MENUITEM SEPARATOR
         MENUITEM "UI Language Select...", ID_UILANGID
-        MENUITEM "Settin&gs...", ID_GENERALSETTINGS
     }
     POPUP "&Input"
     {
@@ -641,7 +640,7 @@ FONT 9, "Tahoma"
 }
 
 IDD_CONFIG DIALOG 0, 0, 274, 250
-CAPTION "Appearance (Alt+Enter)"
+CAPTION "Appearance"
 STYLE DS_CENTER | DS_MODALFRAME | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
 FONT 9, "Tahoma"
 {
@@ -692,8 +691,6 @@ FONT 9, "Tahoma"
     AUTOCHECKBOX "Hiraga&na", chx5, 200, 185, 55, 15
     RTEXT "&Double-frame letters:", -1, 5, 212, 80, 12
     COMBOBOX cmb2, 90, 210, 180, 300, CBS_HASSTRINGS | CBS_AUTOHSCROLL | CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP
-    DEFPUSHBUTTON "OK", IDOK, 145, 230, 60, 14
-    PUSHBUTTON "Cancel", IDCANCEL, 210, 230, 60, 14
     PUSHBUTTON "Import/E&xport...", psh12, 5, 230, 100, 15
 }
 

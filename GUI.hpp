@@ -86,6 +86,8 @@ extern POINT xg_ptMButtonDragging;
 void __fastcall XgGetRealClientRect(HWND hwnd, LPRECT prcClient) noexcept;
 // ズームを実際のウィンドウに合わせる。
 void __fastcall XgFitZoom(HWND hwnd);
+// ズーム倍率を設定する。
+void XgSetZoomRate(HWND hwnd, INT nZoomRate);
 // テーマが変更された。
 void XgUpdateTheme(HWND hwnd);
 // ルールが変更された。

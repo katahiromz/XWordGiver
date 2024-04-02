@@ -30,7 +30,6 @@
 #include "XG_PatternDialog.hpp"
 #include "XG_SeqPatGenDialog.hpp"
 #include "XG_SettingsDialog.hpp"
-#include "XG_SettingsDialog.cpp"
 #include "XG_ThemeDialog.hpp"
 #include "XG_WordListDialog.hpp"
 #include "XG_RulePresetDialog.hpp"
@@ -223,6 +222,50 @@ void XgUpdateRecentlyUsed(LPCWSTR pszFile)
     // 先頭に追加。
     xg_recently_used_files.emplace(xg_recently_used_files.begin(), file.c_str());
 }
+
+// マスのフォント。
+WCHAR xg_szCellFont[LF_FACESIZE] = L"";
+// 小さな文字のフォント。
+WCHAR xg_szSmallFont[LF_FACESIZE] = L"";
+// UIフォント。
+WCHAR xg_szUIFont[LF_FACESIZE] = L"";
+
+// 文字の大きさ（％）。
+int xg_nCellCharPercents = XG_DEF_CELL_CHAR_SIZE;
+
+// 小さい文字の大きさ（％）。
+int xg_nSmallCharPercents = XG_DEF_SMALL_CHAR_SIZE;
+
+// 黒マス画像。
+HBITMAP xg_hbmBlackCell = nullptr;
+HENHMETAFILE xg_hBlackCellEMF = nullptr;
+XGStringW xg_strBlackCellImage;
+
+// ビューモード。
+XG_VIEW_MODE xg_nViewMode = XG_VIEW_NORMAL;
+
+// 線の太さ（pt）。
+float xg_nLineWidthInPt = XG_LINE_WIDTH_DEFAULT;
+
+// 外枠の幅（pt）。
+float xg_nOuterFrameInPt = XG_OUTERFRAME_DEFAULT;
+
+// ひらがな表示か？
+BOOL xg_bHiragana = FALSE;
+
+// Lowercase表示か？
+BOOL xg_bLowercase = FALSE;
+
+// ツールバーを表示するか？
+bool xg_bShowToolBar = true;
+
+// 色。
+COLORREF xg_rgbWhiteCellColor = RGB(255, 255, 255);
+COLORREF xg_rgbBlackCellColor = RGB(0x22, 0x22, 0x22);
+COLORREF xg_rgbMarkedCellColor = RGB(255, 255, 255);
+
+// 二重マス文字。
+XGStringW xg_strDoubleFrameLetters;
 
 //////////////////////////////////////////////////////////////////////////////
 // static variables
@@ -4478,14 +4521,64 @@ LOGFONTW *XgGetUIFont(void)
     return &s_lf;
 }
 
-// 見た目の設定。
+HWND xg_ahSettingsWnds[3] = { 0 };
+
+#include "XgFileSettings.cpp"
+#include "XgViewSettings.cpp"
+#include "XG_SettingsDialog.cpp"
+
+// 全般設定。
+void XgGeneralSettings(HWND hwnd, INT nStartPage = 0)
+{
+    PROPSHEETPAGEW psp = { sizeof(psp) };
+    HPROPSHEETPAGE hpsp[3];
+    INT iPage = 0;
+
+    // 「ファイル」設定。
+    psp.pszTemplate = MAKEINTRESOURCEW(IDD_FILESETTINGS);
+    psp.pfnDlgProc = XgFileSettingsDlgProc;
+    psp.dwFlags = PSP_DEFAULT;
+    psp.hInstance = xg_hInstance;
+    psp.lParam = 0;
+    hpsp[iPage++] = ::CreatePropertySheetPageW(&psp);
+
+    // 「表示」設定。
+    psp.pszTemplate = MAKEINTRESOURCEW(IDD_VIEWSETTINGS);
+    psp.pfnDlgProc = XgViewSettingsDlgProc;
+    psp.dwFlags = PSP_DEFAULT;
+    psp.hInstance = xg_hInstance;
+    psp.lParam = 0;
+    hpsp[iPage++] = ::CreatePropertySheetPageW(&psp);
+
+    // 「表示」設定。
+    XG_SettingsDialog dialog;
+    psp.pszTemplate = MAKEINTRESOURCEW(IDD_CONFIG);
+    psp.pfnDlgProc = XG_SettingsDialog::DialogProc;
+    psp.dwFlags = PSP_DEFAULT;
+    psp.hInstance = xg_hInstance;
+    psp.lParam = (LPARAM)&dialog;
+    hpsp[iPage++] = ::CreatePropertySheetPageW(&psp);
+
+    assert(iPage <= _countof(hpsp));
+    assert(nStartPage < _countof(hpsp));
+
+    PROPSHEETHEADERW psh = { sizeof(psh) };
+    psh.dwFlags = PSH_USEICONID;
+    psh.hInstance = xg_hInstance;
+    psh.hwndParent = hwnd;
+    psh.pszIcon = MAKEINTRESOURCEW(1);
+    psh.nPages = iPage;
+    psh.phpage = hpsp;
+    psh.pszCaption = XgLoadStringDx1(IDS_GENERALSETTINGS);
+    psh.nStartPage = nStartPage;
+
+    ::PropertySheetW(&psh);
+}
+
 void MainWnd_OnSettings(HWND hwnd)
 {
     XgDestroyCandsWnd();
-    XG_SettingsDialog dialog;
-    if (dialog.DoModal(hwnd) == IDOK) {
-        XG_FILE_MODIFIED(TRUE);
-    }
+    XgGeneralSettings(hwnd, 2);
 }
 
 // テーマが変更された。
@@ -4995,7 +5088,7 @@ void __fastcall XgResetTheme(HWND hwnd, BOOL bQuery)
 }
 
 // ズーム倍率を設定する。
-static void XgSetZoomRate(HWND hwnd, int nZoomRate)
+void XgSetZoomRate(HWND hwnd, INT nZoomRate)
 {
     if (nZoomRate < 9)
         nZoomRate = 9;
@@ -5561,46 +5654,6 @@ void __fastcall XgJumpNumber(HWND hwnd, INT nNumber, BOOL bVert)
     XgUpdateStatusBar(hwnd);
     // すぐに入力できるようにする。
     SetFocus(hwnd);
-}
-
-#include "XgFileSettings.cpp"
-#include "XgViewSettings.cpp"
-
-// 全般設定。
-void XgGeneralSettings(HWND hwnd, INT nStartPage = 0)
-{
-    PROPSHEETPAGEW psp = { sizeof(psp) };
-    HPROPSHEETPAGE hpsp[2];
-    INT iPage = 0;
-
-    // 「ファイル」設定。
-    psp.pszTemplate = MAKEINTRESOURCEW(IDD_FILESETTINGS);
-    psp.pfnDlgProc = XgFileSettingsDlgProc;
-    psp.dwFlags = PSP_DEFAULT;
-    psp.hInstance = xg_hInstance;
-    hpsp[iPage++] = ::CreatePropertySheetPageW(&psp);
-
-    // 「表示」設定。
-    psp.pszTemplate = MAKEINTRESOURCEW(IDD_VIEWSETTINGS);
-    psp.pfnDlgProc = XgViewSettingsDlgProc;
-    psp.dwFlags = PSP_DEFAULT;
-    psp.hInstance = xg_hInstance;
-    hpsp[iPage++] = ::CreatePropertySheetPageW(&psp);
-
-    assert(iPage == _countof(hpsp));
-    assert(nStartPage < _countof(hpsp));
-
-    PROPSHEETHEADERW psh = { sizeof(psh) };
-    psh.dwFlags = PSH_USEICONID;
-    psh.hInstance = xg_hInstance;
-    psh.hwndParent = hwnd;
-    psh.pszIcon = MAKEINTRESOURCEW(1);
-    psh.nPages = _countof(hpsp);
-    psh.phpage = hpsp;
-    psh.pszCaption = XgLoadStringDx1(IDS_GENERALSETTINGS);
-    psh.nStartPage = nStartPage;
-
-    ::PropertySheetW(&psh);
 }
 
 // コマンドを実行する。

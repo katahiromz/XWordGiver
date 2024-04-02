@@ -7,6 +7,7 @@ XgViewSettingsDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
     switch (uMsg)
     {
     case WM_INITDIALOG:
+        xg_ahSettingsWnds[1] = hwnd;
         // チェックボックスを初期化。
         if (xg_bShowToolBar)
             ::CheckDlgButton(hwnd, chx1, BST_CHECKED);
@@ -83,6 +84,31 @@ XgViewSettingsDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
             {
                 PropSheet_Changed(GetParent(hwnd), hwnd);
             }
+        }
+        // 他のダイアログと同期する。
+        switch (LOWORD(wParam))
+        {
+        case chx10: // スケルトンビュー。
+            if (HIWORD(wParam) == BN_CLICKED)
+            {
+                BOOL bChecked = IsDlgButtonChecked(hwnd, chx10) == BST_CHECKED;
+                ::CheckDlgButton(xg_ahSettingsWnds[2], chx1, bChecked ? BST_CHECKED : BST_UNCHECKED);
+            }
+            break;
+        case chx12: // 英小文字。
+            if (HIWORD(wParam) == BN_CLICKED)
+            {
+                BOOL bChecked = IsDlgButtonChecked(hwnd, chx12) == BST_CHECKED;
+                ::CheckDlgButton(xg_ahSettingsWnds[2], chx4, bChecked ? BST_CHECKED : BST_UNCHECKED);
+            }
+            break;
+        case chx13: // ひらがな。
+            if (HIWORD(wParam) == BN_CLICKED)
+            {
+                BOOL bChecked = IsDlgButtonChecked(hwnd, chx13) == BST_CHECKED;
+                ::CheckDlgButton(xg_ahSettingsWnds[2], chx5, bChecked ? BST_CHECKED : BST_UNCHECKED);
+            }
+            break;
         }
         break;
 

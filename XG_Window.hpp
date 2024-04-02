@@ -33,6 +33,12 @@ public:
 
     BOOL SubclassDx(HWND hwnd) noexcept
     {
+        m_hWnd = hwnd;
+
+        BOOL bNoUserData = !::GetWindowLongPtrW(hwnd, GWLP_USERDATA);
+        if (bNoUserData)
+            ::SetWindowLongPtrW(hwnd, GWLP_USERDATA, (LONG_PTR)this);
+
         m_fnOldWndProc =
             reinterpret_cast<WNDPROC>(SetWindowLongPtrW(hwnd,
                 GWLP_WNDPROC, reinterpret_cast<LONG_PTR>(WindowProc)));
@@ -46,6 +52,7 @@ public:
             ::SetWindowLongPtrW(hwnd, GWLP_WNDPROC, reinterpret_cast<LONG_PTR>(m_fnOldWndProc));
             m_fnOldWndProc = nullptr;
         }
+        m_hWnd = NULL;
     }
 
     virtual LRESULT CALLBACK

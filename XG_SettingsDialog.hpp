@@ -5,29 +5,18 @@
 #include "XG_Settings.hpp"
 
 // 「見た目の設定」ダイアログ。
-class XG_SettingsDialog : public XG_Dialog
+class XG_SettingsDialog
 {
 public:
-    XG_ColorBox m_hwndWhite;
-    XG_ColorBox m_hwndBlack;
-    XG_ColorBox m_hwndMarked;
-
-    XGStringW m_strAutoFile;
-    BOOL m_bImport = FALSE;
-    BOOL m_bUpdating = FALSE;
-
     XG_SettingsDialog() noexcept
     {
-        m_hwndWhite.SetColor(xg_rgbWhiteCellColor);
-        m_hwndBlack.SetColor(xg_rgbBlackCellColor);
-        m_hwndMarked.SetColor(xg_rgbMarkedCellColor);
     }
 
     // [設定]ダイアログの初期化。
     BOOL OnInitDialog(HWND hwnd);
 
     // [設定]ダイアログで[OK]ボタンを押された。
-    void OnOK(HWND hwnd);
+    BOOL OnOK(HWND hwnd);
 
     // LOOKSファイルのインポート。
     BOOL DoImportLooks(HWND hwnd, LPCWSTR pszFileName);
@@ -58,13 +47,12 @@ public:
 
     // [設定]ダイアログのダイアログ プロシージャー。
     INT_PTR CALLBACK
-    DialogProcDx(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) override;
+    DialogProcDx(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
     // BLOCKのプレビュー。
     void UpdateBlockPreview(HWND hwnd);
 
-    INT_PTR DoModal(HWND hwnd)
-    {
-        return DialogBoxDx(hwnd, IDD_CONFIG);
-    }
+    static INT_PTR CALLBACK DialogProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
+
+    INT_PTR DoModal(HWND hwnd);
 };
