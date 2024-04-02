@@ -4521,7 +4521,15 @@ LOGFONTW *XgGetUIFont(void)
     return &s_lf;
 }
 
-HWND xg_ahSettingsWnds[3] = { 0 };
+enum
+{
+    I_SYNCED_FILE_SETTINGS,
+    I_SYNCED_VIEW_SETTINGS,
+    I_SYNCED_APPEARANCE,
+    I_SYNCED_MAX
+};
+
+HWND xg_ahSyncedDialogs[I_SYNCED_MAX] = { 0 };
 
 #include "XgFileSettings.cpp"
 #include "XgViewSettings.cpp"
@@ -4573,6 +4581,8 @@ void XgGeneralSettings(HWND hwnd, INT nStartPage = 0)
     psh.nStartPage = nStartPage;
 
     ::PropertySheetW(&psh);
+
+    ZeroMemory(&xg_ahSyncedDialogs, sizeof(xg_ahSyncedDialogs));
 }
 
 void MainWnd_OnSettings(HWND hwnd)

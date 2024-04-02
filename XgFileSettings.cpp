@@ -5,7 +5,7 @@ XgFileSettingsDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
     switch (uMsg)
     {
     case WM_INITDIALOG:
-        xg_ahSettingsWnds[0] = hwnd;
+        xg_ahSyncedDialogs[I_SYNCED_FILE_SETTINGS] = hwnd;
         // チェックボックスを初期化。
         if (xg_bShowAnswerOnOpen)
             CheckDlgButton(hwnd, chx1, BST_CHECKED);

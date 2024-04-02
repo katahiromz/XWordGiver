@@ -660,7 +660,7 @@ FONT 9, "MS UI Gothic"
     PUSHBUTTON "変更(&G)...", psh5, 160, 44, 55, 14
     PUSHBUTTON "リセット(&T)", psh6, 220, 44, 50, 14
     AUTOCHECKBOX "スケルトン ビュー(&K)", chx1, 10, 70, 85, 14
-    AUTOCHECKBOX "二重マスの枠を描く(&A)", chx3, 180, 70, 90, 14
+    AUTOCHECKBOX "二重マスの枠(&L)", chx3, 180, 70, 90, 14
     RTEXT "白マスの色(&1):", -1, 10, 96, 45, 12
     PUSHBUTTON "", psh7, 60, 94, 15, 15, BS_OWNERDRAW
     RTEXT "黒マスの色(&2):", -1, 90, 96, 45, 12
@@ -1521,7 +1521,7 @@ FONT 9, "MS UI Gothic"
     PUSHBUTTON "フォルダを開く(&F)", psh2, 110, 115, 95, 15
 }
 
-IDD_VIEWSETTINGS DIALOG 0, 0, 220, 170
+IDD_VIEWSETTINGS DIALOG 0, 0, 220, 190
 CAPTION "表示"
 STYLE DS_CENTER | DS_MODALFRAME | WS_POPUPWINDOW | WS_CAPTION
 FONT 9, "MS UI Gothic"
@@ -1534,14 +1534,15 @@ FONT 9, "MS UI Gothic"
     AUTOCHECKBOX "番号(&N)", chx6, 10, 105, 95, 15
     AUTOCHECKBOX "キャレット(&C)", chx7, 10, 125, 95, 15
     AUTOCHECKBOX "二重マス(&F)", chx8, 115, 5, 95, 15
-    AUTOCHECKBOX "二重マスの文字(&D)", chx9, 115, 25, 95, 15
-    AUTOCHECKBOX "スケルトン ビュー(&V)", chx10, 115, 45, 95, 15
-    AUTOCHECKBOX "ナンクロモード(&M)", chx11, 115, 65, 95, 15
-    AUTOCHECKBOX "英小文字(&W)", chx12, 115, 85, 95, 15
-    AUTOCHECKBOX "ひらがな(&H)", chx13, 115, 105, 95, 15
-    AUTOCHECKBOX "答え合わせ(&W)", chx14, 115, 125, 95, 15
-    RTEXT "ズーム(&Z):", -1, 15, 150, 35, 10, SS_CENTERIMAGE | NOT WS_GROUP
-    COMBOBOX cmb1, 60, 150, 95, 300, CBS_HASSTRINGS | CBS_AUTOHSCROLL | CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP
+    AUTOCHECKBOX "二重マスの枠(&L)", chx15, 115, 25, 95, 15
+    AUTOCHECKBOX "二重マスの文字(&D)", chx9, 115, 45, 95, 15
+    AUTOCHECKBOX "スケルトン ビュー(&V)", chx10, 115, 65, 95, 15
+    AUTOCHECKBOX "ナンクロモード(&M)", chx11, 115, 85, 95, 15
+    AUTOCHECKBOX "英小文字(&W)", chx12, 115, 105, 95, 15
+    AUTOCHECKBOX "ひらがな(&H)", chx13, 115, 125, 95, 15
+    AUTOCHECKBOX "答え合わせ(&W)", chx14, 115, 145, 95, 15
+    RTEXT "ズーム(&Z):", -1, 15, 170, 35, 10, SS_CENTERIMAGE | NOT WS_GROUP
+    COMBOBOX cmb1, 60, 170, 95, 300, CBS_HASSTRINGS | CBS_AUTOHSCROLL | CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP
 }
 
 //////////////////////////////////////////////////////////////////////////////

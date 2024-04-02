@@ -1,3 +1,47 @@
+// 同期する。
+void XgViewSettings_SyncFrom(HWND hwnd)
+{
+    BOOL bChecked;
+
+    HWND hwndTarget = xg_ahSyncedDialogs[I_SYNCED_APPEARANCE];
+    if (!::IsWindow(hwndTarget))
+        return;
+
+    bChecked = IsDlgButtonChecked(hwndTarget, chx1) == BST_CHECKED;
+    ::CheckDlgButton(hwnd, chx10, bChecked ? BST_CHECKED : BST_UNCHECKED);
+
+    bChecked = IsDlgButtonChecked(hwndTarget, chx3) == BST_CHECKED;
+    ::CheckDlgButton(hwnd, chx15, bChecked ? BST_CHECKED : BST_UNCHECKED);
+
+    bChecked = IsDlgButtonChecked(hwndTarget, chx4) == BST_CHECKED;
+    ::CheckDlgButton(hwnd, chx12, bChecked ? BST_CHECKED : BST_UNCHECKED);
+
+    bChecked = IsDlgButtonChecked(hwndTarget, chx5) == BST_CHECKED;
+    ::CheckDlgButton(hwnd, chx13, bChecked ? BST_CHECKED : BST_UNCHECKED);
+}
+
+// 他のダイアログと同期する。
+void XgViewSettings_SyncTo(HWND hwnd)
+{
+    BOOL bChecked;
+
+    HWND hwndTarget = xg_ahSyncedDialogs[I_SYNCED_APPEARANCE];
+    if (!::IsWindow(hwndTarget))
+        return;
+
+    bChecked = IsDlgButtonChecked(hwnd, chx10) == BST_CHECKED;
+    ::CheckDlgButton(hwndTarget, chx1, bChecked ? BST_CHECKED : BST_UNCHECKED);
+
+    bChecked = IsDlgButtonChecked(hwnd, chx15) == BST_CHECKED;
+    ::CheckDlgButton(hwndTarget, chx3, bChecked ? BST_CHECKED : BST_UNCHECKED);
+
+    bChecked = IsDlgButtonChecked(hwnd, chx12) == BST_CHECKED;
+    ::CheckDlgButton(hwndTarget, chx4, bChecked ? BST_CHECKED : BST_UNCHECKED);
+
+    bChecked = IsDlgButtonChecked(hwnd, chx13) == BST_CHECKED;
+    ::CheckDlgButton(hwndTarget, chx5, bChecked ? BST_CHECKED : BST_UNCHECKED);
+}
+
 // [表示]設定。
 INT_PTR CALLBACK
 XgViewSettingsDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
@@ -7,7 +51,7 @@ XgViewSettingsDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
     switch (uMsg)
     {
     case WM_INITDIALOG:
-        xg_ahSettingsWnds[1] = hwnd;
+        xg_ahSyncedDialogs[I_SYNCED_VIEW_SETTINGS] = hwnd;
         // チェックボックスを初期化。
         if (xg_bShowToolBar)
             ::CheckDlgButton(hwnd, chx1, BST_CHECKED);
@@ -55,6 +99,7 @@ XgViewSettingsDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
         ::SendDlgItemMessageW(hwnd, cmb1, CB_ADDSTRING, 0, (LPARAM)L"200 %");
         ::SendDlgItemMessageW(hwnd, cmb1, CB_ADDSTRING, 0, (LPARAM)L"300 %");
         ::SetDlgItemTextW(hwnd, cmb1, (to_XGStringW(xg_nZoomRate) + L" %").c_str());
+        XgViewSettings_SyncFrom(hwnd);
         return TRUE;
 
     case WM_COMMAND:
@@ -89,24 +134,12 @@ XgViewSettingsDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
         switch (LOWORD(wParam))
         {
         case chx10: // スケルトンビュー。
-            if (HIWORD(wParam) == BN_CLICKED)
-            {
-                BOOL bChecked = IsDlgButtonChecked(hwnd, chx10) == BST_CHECKED;
-                ::CheckDlgButton(xg_ahSettingsWnds[2], chx1, bChecked ? BST_CHECKED : BST_UNCHECKED);
-            }
-            break;
         case chx12: // 英小文字。
-            if (HIWORD(wParam) == BN_CLICKED)
-            {
-                BOOL bChecked = IsDlgButtonChecked(hwnd, chx12) == BST_CHECKED;
-                ::CheckDlgButton(xg_ahSettingsWnds[2], chx4, bChecked ? BST_CHECKED : BST_UNCHECKED);
-            }
-            break;
         case chx13: // ひらがな。
+        case chx15: // 二重マスの枠。
             if (HIWORD(wParam) == BN_CLICKED)
             {
-                BOOL bChecked = IsDlgButtonChecked(hwnd, chx13) == BST_CHECKED;
-                ::CheckDlgButton(xg_ahSettingsWnds[2], chx5, bChecked ? BST_CHECKED : BST_UNCHECKED);
+                XgViewSettings_SyncTo(hwnd);
             }
             break;
         }

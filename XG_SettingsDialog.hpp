@@ -55,4 +55,7 @@ public:
     static INT_PTR CALLBACK DialogProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
     INT_PTR DoModal(HWND hwnd);
+
+    void SyncFrom(HWND hwnd);
+    void SyncTo(HWND hwnd);
 };

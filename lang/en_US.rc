@@ -657,7 +657,7 @@ FONT 9, "Tahoma"
     PUSHBUTTON "Chan&ge...", psh5, 160, 44, 55, 14
     PUSHBUTTON "Rese&t", psh6, 220, 44, 50, 14
     AUTOCHECKBOX "S&keleton View", chx1, 10, 70, 85, 14
-    AUTOCHECKBOX "Dr&aw double-frame", chx3, 180, 70, 90, 14
+    AUTOCHECKBOX "Double-frame &line", chx3, 165, 70, 105, 15
     RTEXT "Space color:", -1, 10, 96, 45, 12
     PUSHBUTTON "", psh7, 60, 94, 15, 15, BS_OWNERDRAW
     RTEXT "Block color:", -1, 90, 96, 45, 12
@@ -1518,7 +1518,7 @@ FONT 9, "Tahoma"
     PUSHBUTTON "Open &Folder", psh2, 110, 115, 95, 15
 }
 
-IDD_VIEWSETTINGS DIALOG 0, 0, 220, 170
+IDD_VIEWSETTINGS DIALOG 0, 0, 220, 190
 CAPTION "View"
 STYLE DS_CENTER | DS_MODALFRAME | WS_POPUPWINDOW | WS_CAPTION
 FONT 9, "Tahoma"
@@ -1531,14 +1531,15 @@ FONT 9, "Tahoma"
     AUTOCHECKBOX "&Numbering", chx6, 10, 105, 95, 15
     AUTOCHECKBOX "&Caret", chx7, 10, 125, 95, 15
     AUTOCHECKBOX "Double-&frame", chx8, 115, 5, 95, 15
-    AUTOCHECKBOX "&Double-frame letters", chx9, 115, 25, 95, 15
-    AUTOCHECKBOX "Skeleton &view", chx10, 115, 45, 95, 15
-    AUTOCHECKBOX "NumCro &mode", chx11, 115, 65, 95, 15
-    AUTOCHECKBOX "lo&wercase", chx12, 115, 85, 95, 15
-    AUTOCHECKBOX "&Hiragana", chx13, 115, 105, 95, 15
-    AUTOCHECKBOX "Checking ans&wer", chx14, 115, 125, 95, 15
-    RTEXT "&Zoom:", -1, 15, 150, 35, 10, SS_CENTERIMAGE | NOT WS_GROUP
-    COMBOBOX cmb1, 60, 150, 95, 300, CBS_HASSTRINGS | CBS_AUTOHSCROLL | CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP
+    AUTOCHECKBOX "Double-frame &line", chx15, 115, 25, 95, 15
+    AUTOCHECKBOX "&Double-frame letters", chx9, 115, 45, 95, 15
+    AUTOCHECKBOX "Skeleton &view", chx10, 115, 65, 95, 15
+    AUTOCHECKBOX "NumCro &mode", chx11, 115, 85, 95, 15
+    AUTOCHECKBOX "lo&wercase", chx12, 115, 105, 95, 15
+    AUTOCHECKBOX "&Hiragana", chx13, 115, 125, 95, 15
+    AUTOCHECKBOX "Checking ans&wer", chx14, 115, 145, 95, 15
+    RTEXT "&Zoom:", -1, 15, 170, 35, 10, SS_CENTERIMAGE | NOT WS_GROUP
+    COMBOBOX cmb1, 60, 170, 95, 300, CBS_HASSTRINGS | CBS_AUTOHSCROLL | CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP
 }
 
 //////////////////////////////////////////////////////////////////////////////
