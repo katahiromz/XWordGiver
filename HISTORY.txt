@@ -303,6 +303,7 @@
     - Supported right-click on toolbar and status bar.
     - Fixed initial selection of double-frame word.
     - The save destination setting is reflected in "Open" and "Save As".
+    - Fixed QString string comparison.
 
 # 開発履歴 (Japanese)
 
@@ -922,3 +923,4 @@
     - ツールバーやステータスバーの右クリックに対応。
     - 二重マス単語の初期選択を修正。
     - 保存先設定を「開く」や「名前を付けて保存」に反映。
+    - QStringの文字列比較を修正。
