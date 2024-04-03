@@ -1807,6 +1807,8 @@ STRINGTABLE
     IDS_GENERALSETTINGS, "Settings (Alt+Enter)"
     IDS_MADEPROBLEM2, "I've generated a crossword and saved as '%s'.\n\nCalculation time: %u.%u[sec]"
     IDS_FITWHOLE, "Fit whole"
+    IDS_FILENAME, "Filename"
+    IDS_DISPLAYNAME, "Display Name"
     IDS_TT_NEW, "New crossword"
     IDS_TT_GENERATE, "Generate crossword"
     IDS_TT_OPEN, "Open crossword"

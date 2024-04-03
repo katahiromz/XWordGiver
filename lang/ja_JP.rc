@@ -1810,6 +1810,8 @@ STRINGTABLE
     IDS_OUTOFRANGE, "範囲外です。"
     IDS_GENERALSETTINGS, "設定 (Alt+Enter)"
     IDS_MADEPROBLEM2, "問題の生成とファイル「%s」への保存に成功しました。\n\n計算時間: %u.%u[秒]"
+    IDS_FILENAME, "ファイル名"
+    IDS_DISPLAYNAME, "表示名"
     IDS_FITWHOLE, "全体に合わせる"
     IDS_TT_NEW, "新規作成"
     IDS_TT_GENERATE, "問題を自動生成する"

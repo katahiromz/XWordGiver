@@ -94,10 +94,10 @@ XgDictListDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 
             // 辞書リストのヘッダーを初期化。
             LV_COLUMNW column = { LVCF_TEXT | LVCF_WIDTH };
-            column.pszText = const_cast<LPWSTR>(L"Filename");
+            column.pszText = XgLoadStringDx1(IDS_FILENAME);
             column.cx = 200;
             ListView_InsertColumn(hwndLst1, 0, &column);
-            column.pszText = const_cast<LPWSTR>(L"Display name");
+            column.pszText = XgLoadStringDx1(IDS_DISPLAYNAME);
             column.cx = 250;
             ListView_InsertColumn(hwndLst1, 1, &column);
 

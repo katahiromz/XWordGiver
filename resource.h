@@ -252,6 +252,8 @@
 #define IDS_GENERALSETTINGS                 329
 #define IDS_MADEPROBLEM2                    330
 #define IDS_FITWHOLE                        331
+#define IDS_FILENAME                        332
+#define IDS_DISPLAYNAME                     333
 #define IDS_TT_NEW                          10100
 #define IDS_TT_GENERATE                     10101
 #define IDS_TT_OPEN                         10102
