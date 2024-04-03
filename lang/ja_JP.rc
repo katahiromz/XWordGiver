@@ -124,7 +124,7 @@ IDB_DELETEPAT BITMAP "res/1041_Bitmap_102.bmp"
         MENUITEM "解を求める(&R)\tF5", ID_SOLVE
         MENUITEM "解を求める(黒マス追加なし) (&B)\tF7", ID_SOLVENOADDBLACK
         MENUITEM SEPARATOR
-        MENUITEM "一定時間が過ぎたら再試行(&T)", ID_RETRYIFTIMEOUT
+        MENUITEM "自動で再試行(&T)", ID_RETRYIFTIMEOUT
         MENUITEM SEPARATOR
         MENUITEM "答えを表示する(&W)\tCtrl+M", ID_SHOWSOLUTION
         MENUITEM "答えを表示しない(&D)\tCtrl+M", ID_NOSOLUTION
@@ -630,7 +630,7 @@ FONT 9, "MS UI Gothic"
     AUTOCHECKBOX "答えを表示する(&A)", chx3, 10, 35, 85, 14
     AUTOCHECKBOX "&PAT.txtから黒マスパターンを自動的に選ぶ", chx4, 120, 35, 160, 14
     AUTOCHECKBOX "スマート解決(&S)", chx2, 10, 60, 75, 14, NOT WS_VISIBLE
-    AUTOCHECKBOX "一定時間が過ぎたら再試行(&T)", chx1, 95, 60, 110, 14
+    AUTOCHECKBOX "自動で再試行(&T)", chx1, 95, 60, 110, 14
     LTEXT "最大単語長(&L):", stc1, 10, 87, 60, 12
     EDITTEXT edt3, 80, 85, 30, 14, ES_NUMBER | ES_RIGHT
     CONTROL "", scr3, "msctls_updown32", UDS_ARROWKEYS | UDS_AUTOBUDDY | UDS_ALIGNRIGHT | UDS_SETBUDDYINT, 103, 90, 12, 20
@@ -1561,6 +1561,7 @@ FONT 9, "MS UI Gothic"
 {
     AUTOCHECKBOX "「問題を生成しました」を表示しない(&P)", chx1, 10, 5, 200, 15
     AUTOCHECKBOX "「キャンセルしました」を表示しない(&C)", chx2, 10, 25, 200, 15
+    AUTOCHECKBOX "自動で再試行(&T)", chx3, 10, 45, 200, 15
 }
 
 //////////////////////////////////////////////////////////////////////////////

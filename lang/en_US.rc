@@ -124,7 +124,7 @@ IDB_DELETEPAT BITMAP "res/1033_Bitmap_102.bmp"
         MENUITEM "Find a &solution\tF5", ID_SOLVE
         MENUITEM "Find a solution (without &adding blocks)\tF7", ID_SOLVENOADDBLACK
         MENUITEM SEPARATOR
-        MENUITEM "&Retry regularly", ID_RETRYIFTIMEOUT
+        MENUITEM "Auto &retry", ID_RETRYIFTIMEOUT
         MENUITEM SEPARATOR
         MENUITEM "Show ans&wer\tCtrl+M", ID_SHOWSOLUTION
         MENUITEM "Hi&de answer\tCtrl+M", ID_NOSOLUTION
@@ -627,7 +627,7 @@ FONT 9, "Tahoma"
     AUTOCHECKBOX "Show &Answer", chx3, 10, 35, 85, 14
     AUTOCHECKBOX "Choose a pattern from &PAT.txt automatically", chx4, 120, 35, 160, 14
     AUTOCHECKBOX "&SmartResolution", chx2, 10, 60, 75, 14, NOT WS_VISIBLE
-    AUTOCHECKBOX "Re&try regularly", chx1, 95, 60, 110, 14
+    AUTOCHECKBOX "Auto &retry", chx1, 95, 60, 110, 14
     LTEXT "Max. Word &Length:", stc1, 10, 87, 65, 12
     EDITTEXT edt3, 80, 85, 30, 14, ES_NUMBER | ES_RIGHT
     CONTROL "", scr3, "msctls_updown32", UDS_ARROWKEYS | UDS_AUTOBUDDY | UDS_ALIGNRIGHT | UDS_SETBUDDYINT, 103, 90, 12, 20
@@ -1557,6 +1557,7 @@ FONT 9, "Tahoma"
 {
     AUTOCHECKBOX "Do not display ""Generated a &problem""", chx1, 10, 5, 200, 15
     AUTOCHECKBOX "Do not display ""&Cancelled""", chx2, 10, 25, 200, 15
+    AUTOCHECKBOX "Auto &retry", chx3, 10, 45, 200, 15
 }
 
 //////////////////////////////////////////////////////////////////////////////

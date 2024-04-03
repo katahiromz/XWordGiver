@@ -7,12 +7,14 @@ XgGenerativeDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
     switch (uMsg)
     {
     case WM_INITDIALOG:
-        xg_ahSyncedDialogs[I_SYNCED_VIEW_SETTINGS] = hwnd;
+        xg_ahSyncedDialogs[I_SYNCED_GENERATIVE] = hwnd;
         // チェックボックスを初期化。
         if (xg_bNoGeneratedMsg)
             ::CheckDlgButton(hwnd, chx1, BST_CHECKED);
         if (xg_bNoCanceledMsg)
             ::CheckDlgButton(hwnd, chx2, BST_CHECKED);
+        if (xg_bAutoRetry)
+            ::CheckDlgButton(hwnd, chx3, BST_CHECKED);
         return TRUE;
 
     case WM_COMMAND:
@@ -21,6 +23,7 @@ XgGenerativeDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
         {
         case chx1:
         case chx2:
+        case chx3:
             if (HIWORD(wParam) == BN_CLICKED)
                 PropSheet_Changed(GetParent(hwnd), hwnd);
             break;
@@ -32,15 +35,10 @@ XgGenerativeDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
             NMHDR *pnmhdr = (NMHDR *)lParam;
             switch (pnmhdr->code) {
             case PSN_APPLY: // 適用
-                {
-                    // 元に戻す情報を取得。
-                    auto sa1 = std::make_shared<XG_UndoData_SetAll>();
-                    sa1->Get();
-
-                    // チェックボックスから設定を取得する。
-                    xg_bNoGeneratedMsg = (::IsDlgButtonChecked(hwnd, chx1) == BST_CHECKED);
-                    xg_bNoCanceledMsg = (::IsDlgButtonChecked(hwnd, chx2) == BST_CHECKED);
-                }
+                // チェックボックスから設定を取得する。
+                xg_bNoGeneratedMsg = (::IsDlgButtonChecked(hwnd, chx1) == BST_CHECKED);
+                xg_bNoCanceledMsg = (::IsDlgButtonChecked(hwnd, chx2) == BST_CHECKED);
+                xg_bAutoRetry = (::IsDlgButtonChecked(hwnd, chx3) == BST_CHECKED);
                 break;
             }
         }
