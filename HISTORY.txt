@@ -298,7 +298,7 @@
     - Added "Display the answer when opening a &question" setting.
     - Added "Do not read/write LOOKS information from/to file" setting.
     - Added "Automatically save as numbering file when generated" setting.
-- 2024-XX-YY ver.5.2.1
+- 2024-04-03 ver.5.2.1
     - Added "Fit whole" to Right-click menu.
     - Supported right-click on toolbar and status bar.
     - Fixed initial selection of double-frame word.
@@ -920,7 +920,7 @@
     - 「問題を開いたら答えを表示する」設定を追加。
     - 「LOOKS情報を読み込まない・書き込まない」設定を追加。
     - 「問題を生成したら自動で連番保存」設定を追加。
-- 2024年XX月YY日 ver.5.2.1
+- 2024年04月03日 ver.5.2.1
     - 右クリックメニューに「全体に合わせる」を追加。
     - ツールバーやステータスバーの右クリックに対応。
     - 二重マス単語の初期選択を修正。
