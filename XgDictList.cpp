@@ -1,3 +1,48 @@
+// イメージリストを作成する。
+HIMAGELIST XgDictList_CreateRadioButtonImageList(HWND hwnd)
+{
+    HIMAGELIST himl;
+    HDC hdc_wnd, hdc;
+    HBITMAP hbm_im, hbm_mask;
+    HGDIOBJ hbm_orig;
+    HBRUSH hbr_white = GetStockBrush(WHITE_BRUSH);
+    HBRUSH hbr_black = GetStockBrush(BLACK_BRUSH);
+    RECT rc;
+
+    himl = ImageList_Create(GetSystemMetrics(SM_CXSMICON), GetSystemMetrics(SM_CYSMICON),
+                            ILC_COLOR | ILC_MASK, 2, 2);
+    hdc_wnd = GetDC(hwnd);
+    hdc = CreateCompatibleDC(hdc_wnd);
+    hbm_im = CreateCompatibleBitmap(hdc_wnd, GetSystemMetrics(SM_CXSMICON), GetSystemMetrics(SM_CYSMICON));
+    hbm_mask = CreateBitmap(GetSystemMetrics(SM_CXSMICON), GetSystemMetrics(SM_CYSMICON), 1, 1, NULL);
+    ReleaseDC(hwnd, hdc_wnd);
+
+    SetRect(&rc, 0, 0, GetSystemMetrics(SM_CXSMICON), GetSystemMetrics(SM_CYSMICON));
+    hbm_orig = SelectObject(hdc, hbm_mask);
+    FillRect(hdc, &rc, hbr_white);
+    InflateRect(&rc, -1, -1);
+    SelectObject(hdc, hbr_black);
+    Ellipse(hdc, rc.left, rc.top, rc.right, rc.bottom);
+
+    SelectObject(hdc, hbm_im);
+    SelectObject(hdc, GetSysColorBrush(COLOR_WINDOW));
+    Ellipse(hdc, rc.left, rc.top, rc.right, rc.bottom);
+    SelectObject(hdc, hbm_orig);
+    ImageList_Add(himl, hbm_im, hbm_mask); 
+
+    SelectObject(hdc, hbm_im);
+    SelectObject(hdc, GetSysColorBrush(COLOR_WINDOWTEXT));
+    Ellipse(hdc, rc.left, rc.top, rc.right, rc.bottom);
+    SelectObject(hdc, hbm_orig);
+    ImageList_Add(himl, hbm_im, hbm_mask);
+
+    DeleteObject(hbm_mask);
+    DeleteObject(hbm_im);
+    DeleteDC(hdc);
+
+    return himl;
+}
+
 // リストを再読み込みする。
 void XgDictList_ReloadList(HWND hwnd)
 {
@@ -100,6 +145,10 @@ XgDictListDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
             column.pszText = XgLoadStringDx1(IDS_DISPLAYNAME);
             column.cx = 250;
             ListView_InsertColumn(hwndLst1, 1, &column);
+
+            // イメージリストを設定。
+            HIMAGELIST himl = XgDictList_CreateRadioButtonImageList(hwnd);
+            ListView_SetImageList(hwndLst1, himl, LVSIL_STATE);
 
             // リストを再読み込みする。
             ++m_bUpdating;
