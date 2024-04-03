@@ -7360,7 +7360,7 @@ void MainWnd_OnNotify(HWND hwnd, int idCtrl, LPNMHDR pnmh) noexcept
     }
 
     if (pnmh->code == NM_RCLICK && (idCtrl == IDW_TOOLBAR || idCtrl == IDW_STATUSBAR)) {
-        // ツールバーが右クリックされた。右クリックメニューを表示する。
+        // ツールバーかステータスバーが右クリックされた。右クリックメニューを表示する。
 
         // メニューを読み込む。
         HMENU hMenu = ::LoadMenuW(xg_hInstance, MAKEINTRESOURCEW(2));
@@ -7378,6 +7378,7 @@ void MainWnd_OnNotify(HWND hwnd, int idCtrl, LPNMHDR pnmh) noexcept
                          hwnd, NULL);
 
         // TrackPopupMenuの後片づけ。
+        ::DestroyMenu(hMenu);
         ::PostMessageW(hwnd, WM_NULL, 0, 0);
         return;
     }
