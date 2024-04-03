@@ -1552,6 +1552,7 @@ FONT 9, "Tahoma"
     PUSHBUTTON "Open &file", psh1, 5, 150, 65, 20
     PUSHBUTTON "&Open folder", psh2, 75, 150, 75, 20
     PUSHBUTTON "&Reload list", psh4, 5, 175, 105, 20
+    PUSHBUTTON "&Theme...", psh5, 115, 175, 105, 20
 }
 
 IDD_HIDDEN DIALOG 0, 0, 215, 121

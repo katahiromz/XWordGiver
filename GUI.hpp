@@ -102,4 +102,7 @@ extern BOOL xg_bShowAnswerOnGenerate;
 extern BOOL xg_bNoReadLooks;
 extern BOOL xg_bNoWriteLooks;
 
+// 「テーマ」ダイアログを表示する。
+void __fastcall XgTheme(HWND hwnd);
+
 //////////////////////////////////////////////////////////////////////////////

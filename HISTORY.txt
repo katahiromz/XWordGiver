@@ -308,6 +308,7 @@
     - Added "Generative", "Dictionaries", and "Advanced" settings into property sheet.
 - 2024-XX-YY ver.5.2.2
     - Fixed dictionary list loading.
+    - The theme can now be opened from the "Dictionaries" settings.
 
 # 開発履歴 (Japanese)
 
@@ -932,3 +933,4 @@
     - プロパティシートに「生成」設定と「辞書」設定と「上級者向け」設定を追加。
 - 2024年XX月YY日 ver.5.2.2
     - 辞書リストの読み込みを修正。
+    - 「辞書」設定からテーマを開けるようにした。

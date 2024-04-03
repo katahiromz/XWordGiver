@@ -1556,6 +1556,7 @@ FONT 9, "MS UI Gothic"
     PUSHBUTTON "ファイルを開く(&F)", psh1, 5, 150, 65, 20
     PUSHBUTTON "フォルダを開く(&O)", psh2, 75, 150, 75, 20
     PUSHBUTTON "リスト再読み込み(&R)", psh4, 5, 175, 105, 20
+    PUSHBUTTON "テーマ(&T)...", psh5, 115, 175, 105, 20
 }
 
 IDD_HIDDEN DIALOG 0, 0, 215, 121

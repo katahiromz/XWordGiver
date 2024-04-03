@@ -170,6 +170,12 @@ XgDictListDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
         case psh4: // 再読み込み。
             XgDictList_ReloadList(hwnd);
             break;
+        case psh5: // テーマ。
+            // 変更点を適用する。
+            PropSheet_Apply(GetParent(hwnd));
+            // テーマを開く。
+            XgTheme(hwnd);
+            break;
         case cmb1:
             if (HIWORD(wParam) == CBN_EDITCHANGE ||
                 HIWORD(wParam) == CBN_SELCHANGE ||
@@ -233,7 +239,7 @@ XgDictListDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
                     XgDictList_ReloadList(hwnd);
                 }
                 break;
-                
+
             case LVN_ITEMCHANGED:
                 if (pnmhdr->idFrom == lst1 && !m_bUpdating && (pListView->uNewState & LVIS_SELECTED)) {
                     // リストビューの選択が変わった。
