@@ -223,6 +223,9 @@ XgDictListDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
                     // 辞書を指定する。
                     xg_dict_name = szPath;
 
+                    // ステータスバーを更新。
+                    XgUpdateStatusBar(xg_hMainWnd);
+
                     // 再読み込み。
                     XgDictList_ReloadList(hwnd);
                 }
