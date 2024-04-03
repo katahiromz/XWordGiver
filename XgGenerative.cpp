@@ -2,8 +2,6 @@
 INT_PTR CALLBACK
 XgGenerativeDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
-    static XGStringW s_strFit;
-
     switch (uMsg)
     {
     case WM_INITDIALOG:

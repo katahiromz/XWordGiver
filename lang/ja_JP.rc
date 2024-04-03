@@ -1564,6 +1564,20 @@ FONT 9, "MS UI Gothic"
     AUTOCHECKBOX "自動で再試行(&T)", chx3, 10, 45, 200, 15
 }
 
+IDD_DICTLIST DIALOG 0, 0, 269, 203
+CAPTION "辞書"
+STYLE DS_CENTER | DS_MODALFRAME | WS_POPUPWINDOW | WS_CAPTION
+FONT 9, "MS UI Gothic"
+{
+    LTEXT "現在の辞書(&D):", -1, 5, 10, 70, 15, SS_CENTERIMAGE
+    COMBOBOX cmb1, 80, 10, 180, 300, CBS_HASSTRINGS | CBS_AUTOHSCROLL | CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    LTEXT "辞書リスト(&L):", -1, 5, 30, 110, 15, SS_CENTERIMAGE | NOT WS_GROUP
+    CONTROL "", lst1, "SysListView32", LVS_REPORT | WS_BORDER | WS_TABSTOP, 5, 50, 255, 95
+    PUSHBUTTON "ファイルを開く(&F)", psh1, 5, 150, 65, 20
+    PUSHBUTTON "フォルダを開く(&O)", psh2, 75, 150, 75, 20
+    PUSHBUTTON "リスト再読み込み(&R)", psh4, 5, 175, 105, 20
+}
+
 //////////////////////////////////////////////////////////////////////////////
 // RT_VERSION
 

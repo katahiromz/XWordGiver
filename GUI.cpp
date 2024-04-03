@@ -4574,6 +4574,7 @@ enum
     I_SYNCED_APPEARANCE,
     I_SYNCED_RULES,
     I_SYNCED_GENERATIVE,
+    I_SYNCED_DICTLIST,
     I_SYNCED_MAX
 };
 
@@ -4586,6 +4587,7 @@ HWND xg_ahSyncedDialogs[I_SYNCED_MAX] = { 0 };
 #include "XG_SettingsDialog.cpp"
 #include "XG_RulePresetDialog.cpp"
 #include "XgGenerative.cpp"
+#include "XgDictList.cpp"
 
 // 全般設定。
 void XgGeneralSettings(HWND hwnd, INT nStartPage = I_SYNCED_FILE_SETTINGS)
@@ -4634,6 +4636,14 @@ void XgGeneralSettings(HWND hwnd, INT nStartPage = I_SYNCED_FILE_SETTINGS)
     // 「生成」設定。
     psp.pszTemplate = MAKEINTRESOURCEW(IDD_GENERATIVE);
     psp.pfnDlgProc = XgGenerativeDlgProc;
+    psp.dwFlags = PSP_DEFAULT;
+    psp.hInstance = xg_hInstance;
+    psp.lParam = 0;
+    hpsp[iPage++] = ::CreatePropertySheetPageW(&psp);
+
+    // 「辞書」設定。
+    psp.pszTemplate = MAKEINTRESOURCEW(IDD_DICTLIST);
+    psp.pfnDlgProc = XgDictListDlgProc;
     psp.dwFlags = PSP_DEFAULT;
     psp.hInstance = xg_hInstance;
     psp.lParam = 0;
