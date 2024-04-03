@@ -40,7 +40,6 @@
 #include "XG_BoxWindow.hpp"
 #include "XG_CanvasWindow.hpp"
 #include "XG_UILanguageDialog.hpp"
-#include "XG_PatEditDialog.hpp"
 #include "XG_JumpDialog.hpp"
 
 #undef HANDLE_WM_MOUSEWHEEL     // might be wrong
@@ -4575,6 +4574,7 @@ enum
     I_SYNCED_RULES,
     I_SYNCED_GENERATIVE,
     I_SYNCED_DICTLIST,
+    I_SYNCED_ADVANCED,
     I_SYNCED_MAX
 };
 
@@ -4588,6 +4588,7 @@ HWND xg_ahSyncedDialogs[I_SYNCED_MAX] = { 0 };
 #include "XG_RulePresetDialog.cpp"
 #include "XgGenerative.cpp"
 #include "XgDictList.cpp"
+#include "XG_HiddenDialog.cpp"
 
 // 全般設定。
 void XgGeneralSettings(HWND hwnd, INT nStartPage = I_SYNCED_FILE_SETTINGS)
@@ -4647,6 +4648,15 @@ void XgGeneralSettings(HWND hwnd, INT nStartPage = I_SYNCED_FILE_SETTINGS)
     psp.dwFlags = PSP_DEFAULT;
     psp.hInstance = xg_hInstance;
     psp.lParam = 0;
+    hpsp[iPage++] = ::CreatePropertySheetPageW(&psp);
+
+    // 「上級者向け」設定。
+    XG_HiddenDialog dialog3;
+    psp.pszTemplate = MAKEINTRESOURCEW(IDD_HIDDEN);
+    psp.pfnDlgProc = XG_HiddenDialog::DialogProc;
+    psp.dwFlags = PSP_DEFAULT;
+    psp.hInstance = xg_hInstance;
+    psp.lParam = (LPARAM)&dialog3;
     hpsp[iPage++] = ::CreatePropertySheetPageW(&psp);
 
     assert(iPage <= _countof(hpsp));
@@ -6955,26 +6965,8 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT /*codeNo
         // THEME.txtを開く。
         XgOpenLocalFile(hwnd, L"THEME.txt");
         break;
-    case ID_PATEDIT:
-        {
-            // パターン編集。
-            XG_PatEditDialog dialog;
-            if (dialog.DoModal(hwnd) != IDOK)
-                break;
-
-            if (dialog.s_nType == XG_PatEditDialog::TYPE_SHOWINFO)
-                break;
-
-            if (XgPatEdit(hwnd, dialog.s_nType == XG_PatEditDialog::TYPE_ADD)) {
-                // 成功メッセージ。
-                XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_WROTEPAT),
-                                    XgLoadStringDx2(IDS_APPNAME), MB_ICONINFORMATION);
-            } else {
-                // 失敗メッセージ。
-                XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_CANTWRITEPAT),
-                                    nullptr, MB_ICONERROR);
-            }
-        }
+    case ID_PATEDIT: // 上級者向け設定。
+        XgGeneralSettings(hwnd, I_SYNCED_ADVANCED);
         break;
     case ID_DOWNLOADDICT:
         ShellExecuteW(hwnd, nullptr, L"https://katahiromz.web.fc2.com/xword/dict", nullptr, nullptr, SW_SHOWNORMAL);

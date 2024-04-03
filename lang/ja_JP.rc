@@ -6,13 +6,6 @@
 LANGUAGE LANG_JAPANESE, SUBLANG_DEFAULT
 
 //////////////////////////////////////////////////////////////////////////////
-// RT_BITMAP
-
-IDB_ADDPAT BITMAP "res/1041_Bitmap_101.bmp"
-
-IDB_DELETEPAT BITMAP "res/1041_Bitmap_102.bmp"
-
-//////////////////////////////////////////////////////////////////////////////
 // RT_MENU
 
 1 MENU
@@ -1479,19 +1472,6 @@ FONT 9, "MS UI Gothic"
     PUSHBUTTON "二重マス単語をクリア(&C)", psh5, 5, 185, 80, 17
 }
 
-IDD_ADDDELETEPAT DIALOG 0, 0, 325, 240
-CAPTION "クロスワード ギバーの隠し機能"
-STYLE DS_CENTER | DS_MODALFRAME | WS_POPUPWINDOW | WS_CAPTION
-FONT 9, "MS UI Gothic"
-{
-    RTEXT "処理(&O):", -1, 10, 10, 55, 10, SS_CENTERIMAGE | NOT WS_GROUP
-    COMBOBOX cmb1, 75, 10, 75, 300, CBS_HASSTRINGS | CBS_AUTOHSCROLL | CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
-    CONTROL "", stc1, "STATIC", SS_CENTERIMAGE | SS_BITMAP | WS_GROUP, 10, 30, 305, 185
-    EDITTEXT edt1, 20, 40, 280, 165, ES_READONLY | ES_AUTOHSCROLL | ES_AUTOVSCROLL | ES_MULTILINE | WS_VSCROLL | WS_HSCROLL | NOT WS_VISIBLE
-    DEFPUSHBUTTON "OK", IDOK, 190, 220, 60, 15
-    PUSHBUTTON "キャンセル", IDCANCEL, 255, 220, 60, 15
-}
-
 IDD_JUMP DIALOG 0, 0, 193, 135
 CAPTION "ジャンプ"
 STYLE DS_CENTER | DS_MODALFRAME | WS_POPUPWINDOW | WS_CAPTION
@@ -1569,13 +1549,22 @@ CAPTION "辞書"
 STYLE DS_CENTER | DS_MODALFRAME | WS_POPUPWINDOW | WS_CAPTION
 FONT 9, "MS UI Gothic"
 {
-    LTEXT "現在の辞書(&D):", -1, 5, 10, 70, 15, SS_CENTERIMAGE
+    LTEXT "現在の辞書(&D):", -1, 5, 10, 70, 15, SS_CENTERIMAGE | NOT WS_GROUP
     COMBOBOX cmb1, 80, 10, 180, 300, CBS_HASSTRINGS | CBS_AUTOHSCROLL | CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
     LTEXT "辞書リスト(&L):", -1, 5, 30, 110, 15, SS_CENTERIMAGE | NOT WS_GROUP
     CONTROL "", lst1, "SysListView32", LVS_REPORT | WS_BORDER | WS_TABSTOP, 5, 50, 255, 95
     PUSHBUTTON "ファイルを開く(&F)", psh1, 5, 150, 65, 20
     PUSHBUTTON "フォルダを開く(&O)", psh2, 75, 150, 75, 20
     PUSHBUTTON "リスト再読み込み(&R)", psh4, 5, 175, 105, 20
+}
+
+IDD_HIDDEN DIALOG 0, 0, 215, 121
+CAPTION "上級者向け"
+STYLE DS_CENTER | DS_MODALFRAME | WS_POPUPWINDOW | WS_CAPTION
+FONT 9, "MS UI Gothic"
+{
+    PUSHBUTTON "現在の黒マスパターンをPAT.txtに追加する(&A)", psh1, 15, 11, 183, 38
+    PUSHBUTTON "現在の黒マスパターンをPAT.txtから削除する(&D)", psh2, 14, 61, 183, 38
 }
 
 //////////////////////////////////////////////////////////////////////////////

@@ -6,13 +6,6 @@
 LANGUAGE LANG_ENGLISH, SUBLANG_DEFAULT
 
 //////////////////////////////////////////////////////////////////////////////
-// RT_BITMAP
-
-IDB_ADDPAT BITMAP "res/1033_Bitmap_101.bmp"
-
-IDB_DELETEPAT BITMAP "res/1033_Bitmap_102.bmp"
-
-//////////////////////////////////////////////////////////////////////////////
 // RT_MENU
 
 1 MENU
@@ -1476,19 +1469,6 @@ FONT 9, "Tahoma"
     PUSHBUTTON "&Clear double-frame", psh5, 5, 185, 80, 17
 }
 
-IDD_ADDDELETEPAT DIALOG 0, 0, 325, 240
-CAPTION "Hidden features of XWordGiver"
-STYLE DS_CENTER | DS_MODALFRAME | WS_POPUPWINDOW | WS_CAPTION
-FONT 9, "Tahoma"
-{
-    RTEXT "&Operation:", -1, 10, 10, 55, 10, SS_CENTERIMAGE | NOT WS_GROUP
-    COMBOBOX cmb1, 75, 10, 75, 300, CBS_HASSTRINGS | CBS_AUTOHSCROLL | CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
-    CONTROL "", stc1, "STATIC", SS_CENTERIMAGE | SS_BITMAP | WS_GROUP, 10, 30, 305, 185
-    EDITTEXT edt1, 20, 40, 280, 165, ES_READONLY | ES_AUTOHSCROLL | ES_AUTOVSCROLL | ES_MULTILINE | WS_VSCROLL | WS_HSCROLL | NOT WS_VISIBLE
-    DEFPUSHBUTTON "OK", IDOK, 190, 220, 60, 15
-    PUSHBUTTON "Cancel", IDCANCEL, 255, 220, 60, 15
-}
-
 IDD_JUMP DIALOG 0, 0, 193, 135
 CAPTION "Jump"
 STYLE DS_CENTER | DS_MODALFRAME | WS_POPUPWINDOW | WS_CAPTION
@@ -1565,13 +1545,22 @@ CAPTION "Dictionaries"
 STYLE DS_CENTER | DS_MODALFRAME | WS_POPUPWINDOW | WS_CAPTION
 FONT 9, "Tahoma"
 {
-    LTEXT "Current &dict:", -1, 5, 10, 70, 15, SS_CENTERIMAGE
+    LTEXT "Current &dict:", -1, 5, 10, 70, 15, SS_CENTERIMAGE | NOT WS_GROUP
     COMBOBOX cmb1, 80, 10, 180, 300, CBS_HASSTRINGS | CBS_AUTOHSCROLL | CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
     LTEXT "Dictionary &List:", -1, 5, 30, 110, 15, SS_CENTERIMAGE | NOT WS_GROUP
     CONTROL "", lst1, "SysListView32", LVS_REPORT | WS_BORDER | WS_TABSTOP, 5, 50, 255, 95
     PUSHBUTTON "Open &file", psh1, 5, 150, 65, 20
     PUSHBUTTON "&Open folder", psh2, 75, 150, 75, 20
     PUSHBUTTON "&Reload list", psh4, 5, 175, 105, 20
+}
+
+IDD_HIDDEN DIALOG 0, 0, 215, 121
+CAPTION "Advanced"
+STYLE DS_CENTER | DS_MODALFRAME | WS_POPUPWINDOW | WS_CAPTION
+FONT 9, "Tahoma"
+{
+    PUSHBUTTON "&Add the current pattern to PAT.txt", psh1, 15, 11, 183, 38
+    PUSHBUTTON "&Remove the current pattern from PAT.txt", psh2, 14, 61, 183, 38
 }
 
 //////////////////////////////////////////////////////////////////////////////

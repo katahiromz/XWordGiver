@@ -305,7 +305,7 @@
     - The save destination setting is reflected in "Open" and "Save As".
     - Fixed QString string comparison.
     - Made "Generated" and "Canceled" display options.
-    - Added "Generative" and "Dictionaries" settings.
+    - Added "Generative", "Dictionaries", and "Advanced" settings into property sheet.
 
 # 開発履歴 (Japanese)
 
@@ -927,4 +927,4 @@
     - 保存先設定を「開く」や「名前を付けて保存」に反映。
     - QStringの文字列比較を修正。
     - 「生成しました」「キャンセルしました」の表示をオプションに。
-    - 「生成」設定と「辞書」設定を追加。
+    - プロパティシートに「生成」設定と「辞書」設定と「上級者向け」設定を追加。

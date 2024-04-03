@@ -34,12 +34,12 @@
 #define IDD_UILANGID                        130
 #define IDD_ABOUT                           131
 #define IDD_MARKING                         132
-#define IDD_ADDDELETEPAT                    133
 #define IDD_JUMP                            134
 #define IDD_FILESETTINGS                    135
 #define IDD_VIEWSETTINGS                    136
 #define IDD_GENERATIVE                      137
 #define IDD_DICTLIST                        138
+#define IDD_HIDDEN                          139
 
 #define IDS_VERSION                         101
 #define IDS_APPNAME                         102
