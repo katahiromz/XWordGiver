@@ -302,6 +302,7 @@
     - Added "Fit whole" to Right-click menu.
     - Supported right-click on toolbar and status bar.
     - Fixed initial selection of double-frame word.
+    - The save destination setting is reflected in "Open" and "Save As".
 
 # 開発履歴 (Japanese)
 
@@ -920,3 +921,4 @@
     - 右クリックメニューに「全体に合わせる」を追加。
     - ツールバーやステータスバーの右クリックに対応。
     - 二重マス単語の初期選択を修正。
+    - 保存先設定を「開く」や「名前を付けて保存」に反映。

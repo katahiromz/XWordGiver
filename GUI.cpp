@@ -2357,7 +2357,13 @@ BOOL __fastcall XgOnSaveAs(HWND hwnd)
     ofn.lpstrTitle = XgLoadStringDx1(IDS_SAVECROSSDATA);
     ofn.Flags = OFN_EXPLORER | OFN_ENABLESIZING | OFN_OVERWRITEPROMPT |
                 OFN_PATHMUSTEXIST | OFN_HIDEREADONLY;
-    ofn.lpstrDefExt = L"xwj";
+    ofn.lpstrDefExt = L"xd";
+
+    // 初期フォルダ。
+    XGStringW strDir = xg_dirs_save_to[0];
+    strDir += L"\\."; // おまじない。
+    XgMakePathW(strDir.c_str());
+    ofn.lpstrInitialDir = strDir.c_str();
 
     // ファイルの種類を決定する。
     if (lstrcmpiW(PathFindExtensionW(sz), L".xwj") == 0 ||
@@ -2703,8 +2709,15 @@ BOOL __fastcall XgOnOpen(HWND hwnd)
     ofn.nMaxFile = static_cast<DWORD>(_countof(sz));
     ofn.lpstrTitle = XgLoadStringDx1(IDS_OPENCROSSDATA);
     ofn.Flags = OFN_EXPLORER | OFN_ENABLESIZING | OFN_FILEMUSTEXIST |
-        OFN_PATHMUSTEXIST | OFN_HIDEREADONLY;
-    ofn.lpstrDefExt = L"xwd";
+                OFN_PATHMUSTEXIST | OFN_HIDEREADONLY;
+    ofn.lpstrDefExt = L"xd";
+
+    // 初期フォルダ。
+    XGStringW strDir = xg_dirs_save_to[0];
+    strDir += L"\\."; // おまじない。
+    XgMakePathW(strDir.c_str());
+    ofn.lpstrInitialDir = strDir.c_str();
+
     if (::GetOpenFileNameW(&ofn)) {
         return XgOnLoad(hwnd, sz, nullptr);
     }
