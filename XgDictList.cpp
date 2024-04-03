@@ -7,6 +7,9 @@ void XgDictList_ReloadList(HWND hwnd)
     ListView_DeleteAllItems(hwndLst1);
     SendDlgItemMessageW(hwnd, cmb1, CB_RESETCONTENT, 0, 0);
 
+    // 辞書リストを読み込む。
+    XgLoadDictsAll();
+
     // リストビューを埋める。
     INT iItem = 0;
     for (auto& entry : xg_dicts) {
