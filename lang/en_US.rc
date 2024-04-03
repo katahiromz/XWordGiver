@@ -1550,6 +1550,15 @@ FONT 9, "Tahoma"
     COMBOBOX cmb1, 60, 170, 95, 300, CBS_HASSTRINGS | CBS_AUTOHSCROLL | CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP
 }
 
+IDD_GENERATIVE DIALOG 0, 0, 220, 190
+CAPTION "Generative"
+STYLE DS_CENTER | DS_MODALFRAME | WS_POPUPWINDOW | WS_CAPTION
+FONT 9, "Tahoma"
+{
+    AUTOCHECKBOX "Do not display ""Generated a &problem""", chx1, 10, 5, 200, 15
+    AUTOCHECKBOX "Do not display ""&Cancelled""", chx2, 10, 25, 200, 15
+}
+
 //////////////////////////////////////////////////////////////////////////////
 // RT_VERSION
 

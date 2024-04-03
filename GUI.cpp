@@ -197,6 +197,12 @@ BOOL xg_bShowAnswerOnGenerate = TRUE;
 // 問題を生成したら自動で保存するか？
 BOOL xg_bAutoSave = FALSE;
 
+// 「問題を生成しました」を表示しない。
+BOOL xg_bNoGeneratedMsg = FALSE;
+
+// 「キャンセルしました」を表示しない。
+BOOL xg_bNoCanceledMsg = FALSE;
+
 // 最近使ったファイルのリスト。
 std::vector<XGStringW> xg_recently_used_files;
 
@@ -930,6 +936,8 @@ void XgResetSettings(void)
     xg_bShowAnswerOnOpen = FALSE;
     xg_bShowAnswerOnGenerate = TRUE;
     xg_bAutoSave = FALSE;
+    xg_bNoGeneratedMsg = FALSE;
+    xg_bNoCanceledMsg = FALSE;
 
     xg_bNoReadLooks = FALSE;
     xg_bNoWriteLooks = FALSE;
@@ -1046,6 +1054,12 @@ bool __fastcall XgLoadSettings(void)
         }
         if (!app_key.QueryDword(L"AutoSave", dwValue)) {
             xg_bAutoSave = static_cast<BOOL>(dwValue);
+        }
+        if (!app_key.QueryDword(L"NoGeneratedMsg", dwValue)) {
+            xg_bNoGeneratedMsg = static_cast<BOOL>(dwValue);
+        }
+        if (!app_key.QueryDword(L"NoCanceledMsg", dwValue)) {
+            xg_bNoCanceledMsg = static_cast<BOOL>(dwValue);
         }
         if (!app_key.QueryDword(L"NoReadLooks", dwValue)) {
             xg_bNoReadLooks = static_cast<BOOL>(dwValue);
@@ -1265,6 +1279,8 @@ bool __fastcall XgSaveSettings(void)
         app_key.SetDword(L"ShowAnswerOnOpen", xg_bShowAnswerOnOpen);
         app_key.SetDword(L"ShowAnswerOnGenerate", xg_bShowAnswerOnGenerate);
         app_key.SetDword(L"AutoSave", xg_bAutoSave);
+        app_key.SetDword(L"NoGeneratedMsg", xg_bNoGeneratedMsg);
+        app_key.SetDword(L"NoCanceledMsg", xg_bNoCanceledMsg);
         app_key.SetDword(L"NoReadLooks", xg_bNoReadLooks);
         app_key.SetDword(L"NoWriteLooks", xg_bNoWriteLooks);
 
@@ -2795,26 +2811,30 @@ void __fastcall XgShowResults(HWND hwnd, BOOL bOK)
 {
     WCHAR sz[MAX_PATH];
     if (bOK) {
-        // 成功メッセージを表示する。
-        if (xg_bAutoSave && PathFileExistsW(xg_strFileName.c_str())) {
-            StringCchPrintf(sz, _countof(sz), XgLoadStringDx1(IDS_MADEPROBLEM2),
-                            PathFindFileNameW(xg_strFileName.c_str()),
-                            DWORD(xg_dwlTick2 - xg_dwlTick0) / 1000,
-                            DWORD(xg_dwlTick2 - xg_dwlTick0) / 100 % 10);
-        } else {
-            StringCchPrintf(sz, _countof(sz), XgLoadStringDx1(IDS_MADEPROBLEM),
-                            DWORD(xg_dwlTick2 - xg_dwlTick0) / 1000,
-                            DWORD(xg_dwlTick2 - xg_dwlTick0) / 100 % 10);
+        if (!xg_bNoGeneratedMsg) {
+            // 成功メッセージを表示する。
+            if (xg_bAutoSave && PathFileExistsW(xg_strFileName.c_str())) {
+                StringCchPrintf(sz, _countof(sz), XgLoadStringDx1(IDS_MADEPROBLEM2),
+                                PathFindFileNameW(xg_strFileName.c_str()),
+                                DWORD(xg_dwlTick2 - xg_dwlTick0) / 1000,
+                                DWORD(xg_dwlTick2 - xg_dwlTick0) / 100 % 10);
+            } else {
+                StringCchPrintf(sz, _countof(sz), XgLoadStringDx1(IDS_MADEPROBLEM),
+                                DWORD(xg_dwlTick2 - xg_dwlTick0) / 1000,
+                                DWORD(xg_dwlTick2 - xg_dwlTick0) / 100 % 10);
+            }
+            XgCenterMessageBoxW(hwnd, sz, XgLoadStringDx2(IDS_RESULTS), MB_ICONINFORMATION);
         }
-        XgCenterMessageBoxW(hwnd, sz, XgLoadStringDx2(IDS_RESULTS), MB_ICONINFORMATION);
         // ヒントを表示する。
         XgShowHints(hwnd);
     } else if (xg_bCancelled) {
-        // キャンセルされた。
-        StringCchPrintf(sz, _countof(sz), XgLoadStringDx1(IDS_CANCELLED),
-                        DWORD(xg_dwlTick2 - xg_dwlTick0) / 1000,
-                        DWORD(xg_dwlTick2 - xg_dwlTick0) / 100 % 10);
-        XgCenterMessageBoxW(hwnd, sz, XgLoadStringDx2(IDS_RESULTS), MB_ICONINFORMATION);
+        if (!xg_bNoCanceledMsg) {
+            // キャンセルされた。
+            StringCchPrintf(sz, _countof(sz), XgLoadStringDx1(IDS_CANCELLED),
+                            DWORD(xg_dwlTick2 - xg_dwlTick0) / 1000,
+                            DWORD(xg_dwlTick2 - xg_dwlTick0) / 100 % 10);
+            XgCenterMessageBoxW(hwnd, sz, XgLoadStringDx2(IDS_RESULTS), MB_ICONINFORMATION);
+        }
     } else {
         // 失敗メッセージを表示する。
         StringCchPrintf(sz, _countof(sz), XgLoadStringDx1(IDS_CANTMAKEPROBLEM),
@@ -2902,6 +2922,9 @@ TRIVALUE XgGenerateFromPat(HWND hwnd)
 
         // 結果を表示する。
         XgShowResults(hwnd, TRUE);
+    } else {
+        // 結果を表示する。
+        XgShowResults(hwnd, FALSE);
     }
 
     // 成功か失敗。
@@ -3173,11 +3196,7 @@ bool __fastcall XgOnSolve_AddBlack(HWND hwnd)
         XgMarkUpdate();
         XgUpdateImage(hwnd, 0, 0);
         // 失敗メッセージを表示する。
-        StringCchPrintf(sz, _countof(sz), XgLoadStringDx1(IDS_CANTSOLVE),
-                       DWORD(xg_dwlTick2 - xg_dwlTick0) / 1000,
-                       DWORD(xg_dwlTick2 - xg_dwlTick0) / 100 % 10);
-        ::InvalidateRect(hwnd, nullptr, FALSE);
-        XgCenterMessageBoxW(hwnd, sz, XgLoadStringDx2(IDS_RESULTS), MB_ICONERROR);
+        XgShowResults(hwnd, FALSE);
     }
     return true;
 }
@@ -3230,7 +3249,6 @@ bool __fastcall XgOnSolve_NoAddBlack(HWND hwnd)
     }
     ::EnableWindow(xg_hwndInputPalette, TRUE);
 
-    WCHAR sz[MAX_PATH];
     if (xg_bCancelled) {
         // キャンセルされた。
         // 解なし。表示を更新する。
@@ -3240,10 +3258,7 @@ bool __fastcall XgOnSolve_NoAddBlack(HWND hwnd)
         XgUpdateImage(hwnd, 0, 0);
 
         // 終了メッセージを表示する。
-        StringCchPrintf(sz, _countof(sz), XgLoadStringDx1(IDS_CANCELLED),
-                       DWORD(xg_dwlTick2 - xg_dwlTick0) / 1000,
-                       DWORD(xg_dwlTick2 - xg_dwlTick0) / 100 % 10);
-        XgCenterMessageBoxW(hwnd, sz, XgLoadStringDx2(IDS_RESULTS), MB_ICONINFORMATION);
+        XgShowResults(hwnd, FALSE);
     } else if (xg_bSolved) {
         // 空マスがないか？
         if (xg_xword.IsFulfilled()) {
@@ -3282,11 +3297,7 @@ bool __fastcall XgOnSolve_NoAddBlack(HWND hwnd)
         XgMarkUpdate();
         XgUpdateImage(hwnd, 0, 0);
         // 失敗メッセージを表示する。
-        StringCchPrintf(sz, _countof(sz), XgLoadStringDx1(IDS_CANTSOLVE),
-                       DWORD(xg_dwlTick2 - xg_dwlTick0) / 1000,
-                       DWORD(xg_dwlTick2 - xg_dwlTick0) / 100 % 10);
-        ::InvalidateRect(hwnd, nullptr, FALSE);
-        XgCenterMessageBoxW(hwnd, sz, XgLoadStringDx2(IDS_RESULTS), MB_ICONERROR);
+        XgShowResults(hwnd, FALSE);
     }
 
     return true;
@@ -4562,6 +4573,7 @@ enum
     I_SYNCED_VIEW_SETTINGS,
     I_SYNCED_APPEARANCE,
     I_SYNCED_RULES,
+    I_SYNCED_GENERATIVE,
     I_SYNCED_MAX
 };
 
@@ -4573,6 +4585,7 @@ HWND xg_ahSyncedDialogs[I_SYNCED_MAX] = { 0 };
 #include "XgViewSettings.cpp"
 #include "XG_SettingsDialog.cpp"
 #include "XG_RulePresetDialog.cpp"
+#include "XgGenerative.cpp"
 
 // 全般設定。
 void XgGeneralSettings(HWND hwnd, INT nStartPage = I_SYNCED_FILE_SETTINGS)
@@ -4616,6 +4629,14 @@ void XgGeneralSettings(HWND hwnd, INT nStartPage = I_SYNCED_FILE_SETTINGS)
     psp.dwFlags = PSP_DEFAULT;
     psp.hInstance = xg_hInstance;
     psp.lParam = (LPARAM)&dialog2;
+    hpsp[iPage++] = ::CreatePropertySheetPageW(&psp);
+
+    // 「生成」設定。
+    psp.pszTemplate = MAKEINTRESOURCEW(IDD_GENERATIVE);
+    psp.pfnDlgProc = XgGenerativeDlgProc;
+    psp.dwFlags = PSP_DEFAULT;
+    psp.hInstance = xg_hInstance;
+    psp.lParam = 0;
     hpsp[iPage++] = ::CreatePropertySheetPageW(&psp);
 
     assert(iPage <= _countof(hpsp));
@@ -5217,7 +5238,7 @@ void XgGenerateFromWordList(HWND hwnd)
 
     if (!s_generated) {
         // 生成できなかった。
-        XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_CANTGENERATE), nullptr, MB_ICONERROR);
+        XgShowResults(hwnd, FALSE);
         return;
     }
 

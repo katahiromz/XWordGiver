@@ -1554,6 +1554,15 @@ FONT 9, "MS UI Gothic"
     COMBOBOX cmb1, 60, 170, 95, 300, CBS_HASSTRINGS | CBS_AUTOHSCROLL | CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP
 }
 
+IDD_GENERATIVE DIALOG 0, 0, 220, 190
+CAPTION "生成"
+STYLE DS_CENTER | DS_MODALFRAME | WS_POPUPWINDOW | WS_CAPTION
+FONT 9, "MS UI Gothic"
+{
+    AUTOCHECKBOX "「問題を生成しました」を表示しない(&P)", chx1, 10, 5, 200, 15
+    AUTOCHECKBOX "「キャンセルしました」を表示しない(&C)", chx2, 10, 25, 200, 15
+}
+
 //////////////////////////////////////////////////////////////////////////////
 // RT_VERSION
 

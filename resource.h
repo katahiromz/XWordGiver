@@ -38,6 +38,7 @@
 #define IDD_JUMP                            134
 #define IDD_FILESETTINGS                    135
 #define IDD_VIEWSETTINGS                    136
+#define IDD_GENERATIVE                      137
 
 #define IDS_VERSION                         101
 #define IDS_APPNAME                         102
