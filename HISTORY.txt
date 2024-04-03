@@ -306,6 +306,7 @@
     - Fixed QString string comparison.
     - Made "Generated" and "Canceled" display options.
     - Added "Generative", "Dictionaries", and "Advanced" settings into property sheet.
+- 2024-XX-YY ver.5.2.2
 
 # 開発履歴 (Japanese)
 
@@ -928,3 +929,4 @@
     - QStringの文字列比較を修正。
     - 「生成しました」「キャンセルしました」の表示をオプションに。
     - プロパティシートに「生成」設定と「辞書」設定と「上級者向け」設定を追加。
+- 2024年XX月YY日 ver.5.2.2
