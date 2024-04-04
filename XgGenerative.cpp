@@ -76,9 +76,9 @@ XgGenerativeDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
             ::CheckDlgButton(hwnd, chx3, BST_CHECKED);
         if (!XgGenerative_InitSound(hwnd, cmb1, chx4, xg_aszSoundFiles[0]))
             EnableWindow(GetDlgItem(hwnd, chx4), FALSE);
-        if (!XgGenerative_InitSound(hwnd, cmb2, chx6, xg_aszSoundFiles[1]))
+        if (!XgGenerative_InitSound(hwnd, cmb2, chx5, xg_aszSoundFiles[1]))
             EnableWindow(GetDlgItem(hwnd, chx5), FALSE);
-        if (!XgGenerative_InitSound(hwnd, cmb3, chx5, xg_aszSoundFiles[2]))
+        if (!XgGenerative_InitSound(hwnd, cmb3, chx6, xg_aszSoundFiles[2]))
             EnableWindow(GetDlgItem(hwnd, chx6), FALSE);
         return TRUE;
 
