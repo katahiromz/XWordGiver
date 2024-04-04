@@ -1454,7 +1454,7 @@ BOOL ComboBox_RealSetText(HWND hwndCombo, LPCWSTR pszText) noexcept
 // ローカルファイルを見つける。
 BOOL XgFindLocalFile(LPWSTR pszPath, UINT cchPath, LPCWSTR pszFileName)
 {
-    GetModuleFileNameW(nullptr, pszPath, MAX_PATH);
+    GetModuleFileNameW(nullptr, pszPath, cchPath);
     PathRemoveFileSpecW(pszPath);
     PathAppendW(pszPath, pszFileName);
     if (!PathFileExistsW(pszPath))

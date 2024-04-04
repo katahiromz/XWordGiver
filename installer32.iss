@@ -63,6 +63,9 @@ Source: "BLOCK\perfect-black.bmp"; DestDir: "{app}\BLOCK"; Flags: ignoreversion
 Source: "BLOCK\sakura.jpg"; DestDir: "{app}\BLOCK"; Flags: ignoreversion
 Source: "BLOCK\spade.emf"; DestDir: "{app}\BLOCK"; Flags: ignoreversion
 Source: "BLOCK\star.emf"; DestDir: "{app}\BLOCK"; Flags: ignoreversion
+Source: "SOUND\Success.wav"; DestDir: "{app}\SOUND"; Flags: ignoreversion
+Source: "SOUND\Canceled.wav"; DestDir: "{app}\SOUND"; Flags: ignoreversion
+Source: "SOUND\Failed.wav"; DestDir: "{app}\SOUND"; Flags: ignoreversion
 Source: "LICENSE.txt"; DestDir: "{app}"; Flags: ignoreversion
 Source: "PAT.txt"; DestDir: "{app}"; Flags: ignoreversion
 Source: "POLICY.txt"; DestDir: "{app}"; Flags: ignoreversion

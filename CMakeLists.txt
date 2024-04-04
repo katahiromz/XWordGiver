@@ -117,7 +117,7 @@ add_executable(XWordGiver${BITS} WIN32
     Utils.cpp
     XWordGiver.cpp
     XWordGiver_res.rc)
-target_link_libraries(XWordGiver${BITS} comctl32 imm32 shell32 ole32 uuid shlwapi SaveBitmapToFile)
+target_link_libraries(XWordGiver${BITS} winmm comctl32 imm32 shell32 ole32 uuid shlwapi SaveBitmapToFile)
 if(MSVC)
     target_link_options(XWordGiver${BITS} PRIVATE /MANIFEST:NO)
 endif()

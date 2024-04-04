@@ -5,6 +5,7 @@
 
 #define NOMINMAX
 #include "XWordGiver.hpp"
+#include <mmsystem.h>
 #include "GUI.hpp"
 #include <algorithm>
 #include "WonSetThreadUILanguage/WonSetThreadUILanguage.h"
@@ -275,6 +276,16 @@ XGStringW xg_strDoubleFrameLetters;
 // LOOKS情報を読み込まない、書き込まない。
 BOOL xg_bNoReadLooks = FALSE;
 BOOL xg_bNoWriteLooks = FALSE;
+
+enum {
+    I_SOUND_SUCCESS = 0,
+    I_SOUND_FAILED,
+    I_SOUND_CANCELED,
+    I_SOUND_MAX
+};
+
+// 音声ファイル。
+WCHAR xg_aszSoundFiles[I_SOUND_MAX][MAX_PATH];
 
 //////////////////////////////////////////////////////////////////////////////
 // static variables
@@ -940,6 +951,10 @@ void XgResetSettings(void)
 
     xg_bNoReadLooks = FALSE;
     xg_bNoWriteLooks = FALSE;
+
+    for (auto& item : xg_aszSoundFiles) {
+        item[0] = 0;
+    }
 }
 
 // 設定を読み込む。
@@ -1213,6 +1228,16 @@ bool __fastcall XgLoadSettings(void)
             xg_strDoubleFrameLetters = sz;
         }
 
+        if (!app_key.QuerySz(L"SoundFile0", sz, _countof(sz))) {
+            StringCchCopy(xg_aszSoundFiles[0], _countof(xg_aszSoundFiles[0]), sz);
+        }
+        if (!app_key.QuerySz(L"SoundFile1", sz, _countof(sz))) {
+            StringCchCopy(xg_aszSoundFiles[1], _countof(xg_aszSoundFiles[1]), sz);
+        }
+        if (!app_key.QuerySz(L"SoundFile2", sz, _countof(sz))) {
+            StringCchCopy(xg_aszSoundFiles[2], _countof(xg_aszSoundFiles[2]), sz);
+        }
+
         // 保存先のリストを取得する。
         if (!app_key.QueryDword(L"SaveToCount", dwValue)) {
             nDirCount = dwValue;
@@ -1335,6 +1360,10 @@ bool __fastcall XgSaveSettings(void)
             app_key.SetSz(L"BlackCellImage", xg_strBlackCellImage.c_str());
 
         app_key.SetSz(L"DoubleFrameLetters", xg_strDoubleFrameLetters.c_str());
+
+        app_key.SetSz(L"SoundFile0", xg_aszSoundFiles[0]);
+        app_key.SetSz(L"SoundFile1", xg_aszSoundFiles[1]);
+        app_key.SetSz(L"SoundFile2", xg_aszSoundFiles[2]);
 
         // 保存先のリストを設定する。
         nCount = static_cast<int>(xg_dirs_save_to.size());
@@ -2810,8 +2839,12 @@ void __fastcall XgShowResults(HWND hwnd, BOOL bOK)
 {
     WCHAR sz[MAX_PATH];
     if (bOK) {
+        // 必要なら音声を鳴らす。
+        if (xg_aszSoundFiles[I_SOUND_SUCCESS][0]) {
+            ::PlaySoundW(xg_aszSoundFiles[I_SOUND_SUCCESS], NULL, SND_ASYNC | SND_FILENAME);
+        }
+        // 必要なら成功メッセージを表示する。
         if (!xg_bNoGeneratedMsg) {
-            // 成功メッセージを表示する。
             if (xg_bAutoSave && PathFileExistsW(xg_strFileName.c_str())) {
                 StringCchPrintf(sz, _countof(sz), XgLoadStringDx1(IDS_MADEPROBLEM2),
                                 PathFindFileNameW(xg_strFileName.c_str()),
@@ -2827,14 +2860,22 @@ void __fastcall XgShowResults(HWND hwnd, BOOL bOK)
         // ヒントを表示する。
         XgShowHints(hwnd);
     } else if (xg_bCancelled) {
+        // 必要なら音声を鳴らす。
+        if (xg_aszSoundFiles[I_SOUND_CANCELED][0]) {
+            ::PlaySoundW(xg_aszSoundFiles[I_SOUND_CANCELED], NULL, SND_ASYNC | SND_FILENAME);
+        }
+        // 必要ならキャンセルメッセージを表示する。
         if (!xg_bNoCanceledMsg) {
-            // キャンセルされた。
             StringCchPrintf(sz, _countof(sz), XgLoadStringDx1(IDS_CANCELLED),
                             DWORD(xg_dwlTick2 - xg_dwlTick0) / 1000,
                             DWORD(xg_dwlTick2 - xg_dwlTick0) / 100 % 10);
             XgCenterMessageBoxW(hwnd, sz, XgLoadStringDx2(IDS_RESULTS), MB_ICONINFORMATION);
         }
     } else {
+        // 必要なら音声を鳴らす。
+        if (xg_aszSoundFiles[I_SOUND_FAILED][0]) {
+            ::PlaySoundW(xg_aszSoundFiles[I_SOUND_FAILED], NULL, SND_ASYNC | SND_FILENAME);
+        }
         // 失敗メッセージを表示する。
         StringCchPrintf(sz, _countof(sz), XgLoadStringDx1(IDS_CANTMAKEPROBLEM),
                         DWORD(xg_dwlTick2 - xg_dwlTick0) / 1000,
