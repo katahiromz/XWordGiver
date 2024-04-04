@@ -165,18 +165,24 @@ XgGenerativeDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
                     // コンボボックスとチェックボックスの状態に応じて音声ファイルを設定する。
                     ComboBox_GetText(GetDlgItem(hwnd, cmb1), szText, _countof(szText));
                     if (::IsDlgButtonChecked(hwnd, chx4) == BST_CHECKED && szText[0]) {
-                        StringCchCopyW(xg_aszSoundFiles[0], _countof(xg_aszSoundFiles[0]), szPath);
-                        PathAppendW(xg_aszSoundFiles[0], szText);
+                        if (lstrcmpiW(szText, XgLoadStringDx1(IDS_NONE)) != 0) {
+                            StringCchCopyW(xg_aszSoundFiles[0], _countof(xg_aszSoundFiles[0]), szPath);
+                            PathAppendW(xg_aszSoundFiles[0], szText);
+                        }
                     }
                     ComboBox_GetText(GetDlgItem(hwnd, cmb2), szText, _countof(szText));
                     if (::IsDlgButtonChecked(hwnd, chx5) == BST_CHECKED && szText[0]) {
-                        StringCchCopyW(xg_aszSoundFiles[1], _countof(xg_aszSoundFiles[0]), szPath);
-                        PathAppendW(xg_aszSoundFiles[1], szText);
+                        if (lstrcmpiW(szText, XgLoadStringDx1(IDS_NONE)) != 0) {
+                            StringCchCopyW(xg_aszSoundFiles[1], _countof(xg_aszSoundFiles[0]), szPath);
+                            PathAppendW(xg_aszSoundFiles[1], szText);
+                        }
                     }
                     ComboBox_GetText(GetDlgItem(hwnd, cmb3), szText, _countof(szText));
                     if (::IsDlgButtonChecked(hwnd, chx6) == BST_CHECKED && szText[0]) {
-                        StringCchCopyW(xg_aszSoundFiles[2], _countof(xg_aszSoundFiles[0]), szPath);
-                        PathAppendW(xg_aszSoundFiles[2], szText);
+                        if (lstrcmpiW(szText, XgLoadStringDx1(IDS_NONE)) != 0) {
+                            StringCchCopyW(xg_aszSoundFiles[2], _countof(xg_aszSoundFiles[0]), szPath);
+                            PathAppendW(xg_aszSoundFiles[2], szText);
+                        }
                     }
                 }
                 break;
