@@ -140,7 +140,7 @@ public:
             XG_CandsWnd::xg_vecCandidates.resize(xg_nMaxCandidates);
 
         if (XG_CandsWnd::xg_vecCandidates.empty()) {
-            if (XgCheckCrossWord(hwnd, false, true)) {
+            if (XgCheckCrossWord(hwnd, false, true, false)) {
                 ::MessageBeep(0xFFFFFFFF);
             } else {
                 return false;

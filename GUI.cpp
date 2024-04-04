@@ -1411,29 +1411,41 @@ bool __fastcall XgSaveSettings(void)
 
 //////////////////////////////////////////////////////////////////////////////
 
+void XgFailureSound(bool bPlaySound)
+{
+    // 必要なら音声を鳴らす。
+    if (bPlaySound && xg_aszSoundFiles[I_SOUND_FAILED][0]) {
+        ::PlaySoundW(xg_aszSoundFiles[I_SOUND_FAILED], NULL, SND_ASYNC | SND_FILENAME);
+    }
+}
+
 // クロスワードをチェックする。
-bool __fastcall XgCheckCrossWord(HWND hwnd, bool check_words, bool loose)
+bool __fastcall XgCheckCrossWord(HWND hwnd, bool check_words, bool loose, bool bPlaySound)
 {
     // 四隅黒禁。
     if ((xg_nRules & RULE_DONTCORNERBLACK) && xg_xword.CornerBlack()) {
+        XgFailureSound(bPlaySound);
         XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_CORNERBLOCK), nullptr, MB_ICONERROR);
         return false;
     }
 
     // 連黒禁。
     if ((xg_nRules & RULE_DONTDOUBLEBLACK) && xg_xword.DoubleBlack()) {
+        XgFailureSound(bPlaySound);
         XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_ADJACENTBLOCK), nullptr, MB_ICONERROR);
         return false;
     }
 
     // 三方黒禁。
     if ((xg_nRules & RULE_DONTTRIDIRECTIONS) && xg_xword.TriBlackAround()) {
+        XgFailureSound(bPlaySound);
         XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_TRIBLOCK), nullptr, MB_ICONERROR);
         return false;
     }
 
     // 分断禁。
     if ((xg_nRules & RULE_DONTDIVIDE) && xg_xword.DividedByBlack()) {
+        XgFailureSound(bPlaySound);
         XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_DIVIDED), nullptr, MB_ICONERROR);
         return false;
     }
@@ -1441,12 +1453,14 @@ bool __fastcall XgCheckCrossWord(HWND hwnd, bool check_words, bool loose)
     // 黒斜三連禁。
     if (xg_nRules & RULE_DONTTHREEDIAGONALS) {
         if (xg_xword.ThreeDiagonals()) {
+            XgFailureSound(bPlaySound);
             XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_THREEDIAGONALS), nullptr, MB_ICONERROR);
             return false;
         }
     } else if (xg_nRules & RULE_DONTFOURDIAGONALS) {
         // 黒斜四連禁。
         if (xg_xword.FourDiagonals()) {
+            XgFailureSound(bPlaySound);
             XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_FOURDIAGONALS), nullptr, MB_ICONERROR);
             return false;
         }
@@ -1455,16 +1469,19 @@ bool __fastcall XgCheckCrossWord(HWND hwnd, bool check_words, bool loose)
     if (!loose) {
         // 黒マス点対称。
         if ((xg_nRules & RULE_POINTSYMMETRY) && !xg_xword.IsPointSymmetry()) {
+            XgFailureSound(bPlaySound);
             XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_NOTPOINTSYMMETRY), nullptr, MB_ICONERROR);
             return false;
         }
 
         // 黒マス線対称。
         if ((xg_nRules & RULE_LINESYMMETRYV) && !xg_xword.IsLineSymmetryV()) {
+            XgFailureSound(bPlaySound);
             XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_NOTLINESYMMETRYV), nullptr, MB_ICONERROR);
             return false;
         }
         if ((xg_nRules & RULE_LINESYMMETRYH) && !xg_xword.IsLineSymmetryH()) {
+            XgFailureSound(bPlaySound);
             XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_NOTLINESYMMETRYH), nullptr, MB_ICONERROR);
             return false;
         }
@@ -1472,11 +1489,13 @@ bool __fastcall XgCheckCrossWord(HWND hwnd, bool check_words, bool loose)
 
     // 偶数行数で黒マス線対称（タテ）の場合は連黒禁は不可。
     if (!(xg_nRows & 1) && (xg_nRules & RULE_LINESYMMETRYV) && (xg_nRules & RULE_DONTDOUBLEBLACK)) {
+        XgFailureSound(bPlaySound);
         XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_EVENROWLINESYMV), nullptr, MB_ICONERROR);
         return false;
     }
     // 偶数列数で黒マス線対称（ヨコ）の場合は連黒禁は不可。
     if (!(xg_nCols & 1) && (xg_nRules & RULE_LINESYMMETRYH) && (xg_nRules & RULE_DONTDOUBLEBLACK)) {
+        XgFailureSound(bPlaySound);
         XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_EVENCOLLINESYMH), nullptr, MB_ICONERROR);
         return false;
     }
@@ -1488,6 +1507,7 @@ bool __fastcall XgCheckCrossWord(HWND hwnd, bool check_words, bool loose)
     if (code == xg_epv_PATNOTMATCH) {
         if (check_words) {
             // パターンにマッチしないマスがあった。
+            XgFailureSound(bPlaySound);
             WCHAR sz[128];
             StringCchPrintf(sz, _countof(sz), XgLoadStringDx1(IDS_NOCANDIDATE), pos.m_j + 1, pos.m_i + 1);
             XgCenterMessageBoxW(hwnd, sz, nullptr, MB_ICONERROR);
@@ -1500,6 +1520,7 @@ bool __fastcall XgCheckCrossWord(HWND hwnd, bool check_words, bool loose)
     } else if (code == xg_epv_LENGTHMISMATCH) {
         if (check_words) {
             // 登録されている単語と長さの一致しないスペースがあった。
+            XgFailureSound(bPlaySound);
             WCHAR sz[128];
             StringCchPrintf(sz, _countof(sz), XgLoadStringDx1(IDS_TOOLONGSPACE), pos.m_j + 1, pos.m_i + 1);
             XgCenterMessageBoxW(hwnd, sz, nullptr, MB_ICONERROR);
@@ -1517,6 +1538,7 @@ bool __fastcall XgCheckCrossWord(HWND hwnd, bool check_words, bool loose)
         StringCchPrintfW(szText, _countof(szText), XgLoadStringDx1(IDS_NOTREGDWORD), str.c_str());
 
         // 未登録単語があることを1回だけ警告。
+        XgFailureSound(bPlaySound);
         if (XgCenterMessageBoxW(hwnd, szText, XgLoadStringDx2(IDS_WARNING),
                                 MB_ICONWARNING | MB_YESNOCANCEL) != IDYES)
         {
@@ -2872,10 +2894,7 @@ void __fastcall XgShowResults(HWND hwnd, BOOL bOK)
             XgCenterMessageBoxW(hwnd, sz, XgLoadStringDx2(IDS_RESULTS), MB_ICONINFORMATION);
         }
     } else {
-        // 必要なら音声を鳴らす。
-        if (xg_aszSoundFiles[I_SOUND_FAILED][0]) {
-            ::PlaySoundW(xg_aszSoundFiles[I_SOUND_FAILED], NULL, SND_ASYNC | SND_FILENAME);
-        }
+        // もう音を鳴らしているはずだ。。。
         // 失敗メッセージを表示する。
         StringCchPrintf(sz, _countof(sz), XgLoadStringDx1(IDS_CANTMAKEPROBLEM),
                         DWORD(xg_dwlTick2 - xg_dwlTick0) / 1000,
@@ -3151,7 +3170,7 @@ bool __fastcall XgOnSolve_AddBlack(HWND hwnd)
 
     // 黒マスルールなどをチェックする。
     xg_bNoAddBlack = false;
-    if (!XgCheckCrossWord(hwnd)) {
+    if (!XgCheckCrossWord(hwnd, true, false, true)) {
         return false;
     }
 
@@ -3256,7 +3275,7 @@ bool __fastcall XgOnSolve_NoAddBlack(HWND hwnd)
 
     // 黒マスルールなどをチェックする。
     xg_bNoAddBlack = true;
-    if (!XgCheckCrossWord(hwnd)) {
+    if (!XgCheckCrossWord(hwnd, true, false, true)) {
         return false;
     }
 
@@ -3358,7 +3377,7 @@ bool __fastcall XgOnSolve_NoAddBlackNoResults(HWND hwnd)
 
     // 黒マスルールなどをチェックする。
     xg_bNoAddBlack = true;
-    if (!XgCheckCrossWord(hwnd)) {
+    if (!XgCheckCrossWord(hwnd, true, false, true)) {
         return false;
     }
 

@@ -19,7 +19,7 @@ void XgShowHints(HWND hwnd);
 extern BOOL xg_bShowClues;
 
 // クロスワードをチェックする。
-bool __fastcall XgCheckCrossWord(HWND hwnd, bool check_words = true, bool loose = false);
+bool __fastcall XgCheckCrossWord(HWND hwnd, bool check_words = true, bool loose = false, bool bPlaySound = false);
 
 //////////////////////////////////////////////////////////////////////////////
 
