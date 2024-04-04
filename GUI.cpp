@@ -1229,13 +1229,19 @@ bool __fastcall XgLoadSettings(void)
         }
 
         if (!app_key.QuerySz(L"SoundFile0", sz, _countof(sz))) {
-            StringCchCopy(xg_aszSoundFiles[0], _countof(xg_aszSoundFiles[0]), sz);
+            if (PathFileExistsW(sz)) {
+                StringCchCopy(xg_aszSoundFiles[0], _countof(xg_aszSoundFiles[0]), sz);
+            }
         }
         if (!app_key.QuerySz(L"SoundFile1", sz, _countof(sz))) {
-            StringCchCopy(xg_aszSoundFiles[1], _countof(xg_aszSoundFiles[1]), sz);
+            if (PathFileExistsW(sz)) {
+                StringCchCopy(xg_aszSoundFiles[1], _countof(xg_aszSoundFiles[1]), sz);
+            }
         }
         if (!app_key.QuerySz(L"SoundFile2", sz, _countof(sz))) {
-            StringCchCopy(xg_aszSoundFiles[2], _countof(xg_aszSoundFiles[2]), sz);
+            if (PathFileExistsW(sz)) {
+                StringCchCopy(xg_aszSoundFiles[2], _countof(xg_aszSoundFiles[2]), sz);
+            }
         }
 
         // 保存先のリストを取得する。
