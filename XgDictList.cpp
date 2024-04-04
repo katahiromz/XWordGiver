@@ -35,6 +35,9 @@ HIMAGELIST XgDictList_CreateRadioButtonImageList(HWND hwnd)
 
     // チェック済みのアイコンを追加。
     SelectObject(hdc, hbm_im);
+    SelectObject(hdc, GetSysColorBrush(COLOR_WINDOW));
+    Ellipse(hdc, rc.left, rc.top, rc.right, rc.bottom);
+    InflateRect(&rc, -3, -3);
     SelectObject(hdc, GetSysColorBrush(COLOR_WINDOWTEXT));
     Ellipse(hdc, rc.left, rc.top, rc.right, rc.bottom);
     SelectObject(hdc, hbm_orig);
