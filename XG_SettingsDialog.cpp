@@ -852,7 +852,7 @@ XG_SettingsDialog::DialogProcDx(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPar
         case psh9:
         case psh10:
         case psh11:
-        case psh12:
+        //case psh12:
         case psh13:
         case psh14:
         case psh15:
