@@ -1564,14 +1564,14 @@ FONT 9, "Tahoma"
     PUSHBUTTON "&Theme...", psh5, 115, 175, 105, 20
 }
 
-IDD_HIDDEN DIALOG 0, 0, 238, 170
+IDD_HIDDEN DIALOG 0, 0, 275, 170
 CAPTION "Advanced"
 STYLE DS_CENTER | DS_MODALFRAME | WS_POPUPWINDOW | WS_CAPTION
 FONT 9, "Tahoma"
 {
-    PUSHBUTTON "&Add the current pattern to PAT.txt", psh1, 25, 10, 185, 40
-    PUSHBUTTON "&Remove the current pattern from PAT.txt", psh2, 25, 60, 185, 40
-    PUSHBUTTON "&Open app folder", psh3, 25, 110, 185, 40
+    PUSHBUTTON "&Add the current pattern to PAT.txt", psh1, 40, 10, 185, 40
+    PUSHBUTTON "&Remove the current pattern from PAT.txt", psh2, 40, 60, 185, 40
+    PUSHBUTTON "&Open app folder", psh3, 40, 110, 185, 40
 }
 
 //////////////////////////////////////////////////////////////////////////////
