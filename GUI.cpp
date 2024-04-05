@@ -2117,6 +2117,9 @@ BOOL XgImportLooks(HWND hwnd, LPCWSTR pszFileName)
         xg_strDoubleFrameLetters = str;
     }
 
+    // イメージを更新する。
+    XgUpdateImage(hwnd);
+
     return TRUE;
 }
 
