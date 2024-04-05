@@ -2099,12 +2099,10 @@ BOOL XgImportLooks(HWND hwnd, LPCWSTR pszFileName)
     // 黒マス画像。
     GetPrivateProfileStringW(L"Looks", L"BlackCellImage", L"", szText, _countof(szText), pszFileName);
     xg_strBlackCellImage = szText;
-
-    ::DeleteObject(xg_hbmBlackCell);
-    xg_hbmBlackCell = nullptr;
-    ::DeleteEnhMetaFile(xg_hBlackCellEMF);
-    xg_hBlackCellEMF = nullptr;
-    XgGetFileManager()->load_block_image(xg_strBlackCellImage, xg_hbmBlackCell, xg_hBlackCellEMF);
+    if (XgGetFileManager()->load_block_image(xg_strBlackCellImage))
+        xg_strBlackCellImage = XgGetFileManager()->get_canonical(xg_strBlackCellImage);
+    else
+        xg_strBlackCellImage.clear();
 
     // 二重マス文字。
     GetPrivateProfileStringW(L"Looks", L"DoubleFrameLetters", XgLoadStringDx1(IDS_DBLFRAME_LETTERS_1), szText, _countof(szText), pszFileName);

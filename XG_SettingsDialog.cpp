@@ -223,13 +223,9 @@ BOOL XG_SettingsDialog::OnOK(HWND hwnd)
     XGStringW strBlock = szText;
     xg_str_trim(strBlock);
     if (XgGetFileManager()->load_block_image(strBlock))
-    {
         xg_strBlackCellImage = XgGetFileManager()->get_canonical(strBlock);
-    }
     else
-    {
         xg_strBlackCellImage.clear();
-    }
 
     // スケルトンビューか？
     if (::IsDlgButtonChecked(hwnd, chx1) == BST_CHECKED)
