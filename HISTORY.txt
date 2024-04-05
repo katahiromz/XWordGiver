@@ -310,7 +310,7 @@
     - Fixed dictionary list loading.
     - The theme can now be opened from the "Dictionaries" settings.
     - Able to play a sound file when generation is successful, fails, or cancelled.
-- 2024-XX-YY ver.5.2.3
+- 2024-04-05 ver.5.2.3
     - Added "Open app folder" item to "Advanced" settings.
     - Fixed the board not updating when dropping a LOOKS file.
     - Fixed the reading and writing of block image in LOOKS files.
@@ -942,7 +942,7 @@
     - 「ジャンプ」ダイアログを修正。
     - 「辞書」設定の一部テキストを修正。
     - 生成の成功時・失敗時・キャンセル時に音を鳴らせるようにした。
-- 2024年XX月YY日 ver.5.2.3
+- 2024年04月05日 ver.5.2.3
     - ReadMeを更新。
     - 上級者向け設定に「アプリのフォルダを開く」を追加。
     - LOOKSファイルをドロップしたときに盤面が更新されなかったのを修正。
