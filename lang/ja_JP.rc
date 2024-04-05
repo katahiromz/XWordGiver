@@ -1568,13 +1568,14 @@ FONT 9, "MS UI Gothic"
     PUSHBUTTON "テーマ(&T)...", psh5, 115, 175, 105, 20
 }
 
-IDD_HIDDEN DIALOG 0, 0, 215, 121
+IDD_HIDDEN DIALOG 0, 0, 238, 170
 CAPTION "上級者向け"
 STYLE DS_CENTER | DS_MODALFRAME | WS_POPUPWINDOW | WS_CAPTION
 FONT 9, "MS UI Gothic"
 {
-    PUSHBUTTON "現在の黒マスパターンをPAT.txtに追加する(&A)", psh1, 15, 11, 183, 38
-    PUSHBUTTON "現在の黒マスパターンをPAT.txtから削除する(&D)", psh2, 14, 61, 183, 38
+    PUSHBUTTON "現在の黒マスパターンをPAT.txtに追加する(&A)", psh1, 25, 10, 185, 40
+    PUSHBUTTON "現在の黒マスパターンをPAT.txtから削除する(&D)", psh2, 25, 60, 185, 40
+    PUSHBUTTON "アプリのフォルダを開く(&O)", psh3, 25, 110, 185, 40
 }
 
 //////////////////////////////////////////////////////////////////////////////

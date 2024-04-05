@@ -18,7 +18,7 @@ public:
     {
         switch (id)
         {
-        case psh1:
+        case psh1: // PAT.txtに追加。
             if (codeNotify == BN_CLICKED) {
                 if (XgPatEdit(hwnd, TRUE)) {
                     // 成功メッセージ。
@@ -31,7 +31,7 @@ public:
                 }
             }
             break;
-        case psh2:
+        case psh2: // PAT.txtから削除。
             if (codeNotify == BN_CLICKED) {
                 if (XgPatEdit(hwnd, FALSE)) {
                     // 成功メッセージ。
@@ -44,6 +44,13 @@ public:
                 }
             }
             break;
+        case psh3: // アプリのフォルダを開く。
+            if (codeNotify == BN_CLICKED) {
+                WCHAR szPath[MAX_PATH];
+                GetModuleFileNameW(NULL, szPath, _countof(szPath));
+                PathRemoveFileSpecW(szPath);
+                ShellExecuteW(hwnd, NULL, szPath, NULL, NULL, SW_SHOWNORMAL);
+            }
         }
     }
 
