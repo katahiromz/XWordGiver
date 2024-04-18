@@ -67,37 +67,43 @@ void XgDictList_ReloadList(HWND hwnd)
     INT iItem = 0;
     for (auto& entry : xg_dicts) {
         LV_ITEMW item = { LVIF_TEXT };
+
+        // リストビューに一行追加する。列「ファイル名」のテキストを設定。
         item.pszText = const_cast<LPWSTR>(PathFindFileNameW(entry.m_filename.c_str()));
         item.iItem = iItem;
         item.iSubItem = 0;
         ListView_InsertItem(hwndLst1, &item);
 
+        // 列「表示名」のテキストを設定。
         item.iItem = iItem;
         item.iSubItem = 1;
         item.pszText = const_cast<LPWSTR>(entry.m_friendly_name.c_str());
         ListView_SetItem(hwndLst1, &item);
 
+        // ファイルの更新日時を取得するために、FindFirstFile関数を使う。
         WIN32_FIND_DATAW find;
         HANDLE hFind = ::FindFirstFileW(entry.m_filename.c_str(), &find);
         ::FindClose(hFind);
 
+        // 更新日時に従って文字列を構築する。
         WCHAR szText[32];
-        item.iItem = iItem;
-        item.iSubItem = 2;
+        FILETIME ftLocal;
+        SYSTEMTIME st;
         if (hFind == INVALID_HANDLE_VALUE)
         {
             StringCchCopyW(szText, _countof(szText), L"N/A");
         }
         else
         {
-            FILETIME ftLocal;
             ::FileTimeToLocalFileTime(&find.ftLastWriteTime, &ftLocal);
-            SYSTEMTIME st;
             ::FileTimeToSystemTime(&ftLocal, &st);
             StringCchPrintfW(szText, _countof(szText), L"%04d-%02d-%02d %02d:%02d",
                              st.wYear, st.wMonth, st.wDay, st.wHour, st.wMinute);
-            item.pszText = szText;
         }
+
+        // 列「更新日時」のテキストを設定。
+        item.iItem = iItem;
+        item.iSubItem = 2;
         item.pszText = szText;
         ListView_SetItem(hwndLst1, &item);
 
@@ -171,17 +177,21 @@ XgDictListDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
             ListView_SetExtendedListViewStyle(hwndLst1,
                 LVS_EX_FULLROWSELECT | LVS_EX_GRIDLINES | LVS_EX_CHECKBOXES);
 
-            // 辞書リストのヘッダーを初期化。
+            // 辞書リストのヘッダーの初期化を開始。
             LV_COLUMNW column = { LVCF_TEXT | LVCF_WIDTH };
+
+            // ファイル名。
             column.pszText = XgLoadStringDx1(IDS_FILENAME);
             column.cx = 200;
             ListView_InsertColumn(hwndLst1, 0, &column);
 
+            // 表示名。
             column.pszText = XgLoadStringDx1(IDS_DISPLAYNAME);
             column.cx = 250;
             ListView_InsertColumn(hwndLst1, 1, &column);
 
-            column.pszText = XgLoadStringDx1(IDS_UPDATEDDATE);
+            // 更新日時。
+            column.pszText = XgLoadStringDx1(IDS_UPDATEDTIME);
             column.cx = 125;
             ListView_InsertColumn(hwndLst1, 2, &column);
 

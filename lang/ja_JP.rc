@@ -1828,7 +1828,7 @@ STRINGTABLE
     IDS_FITWHOLE, "全体に合わせる"
     IDS_FILENAME, "ファイル名"
     IDS_DISPLAYNAME, "表示名"
-    IDS_UPDATEDDATE, "更新日"
+    IDS_UPDATEDTIME, "更新日時"
     IDS_TT_NEW, "新規作成"
     IDS_TT_GENERATE, "問題を自動生成する"
     IDS_TT_OPEN, "問題を開く"

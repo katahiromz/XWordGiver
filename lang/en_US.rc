@@ -1824,7 +1824,7 @@ STRINGTABLE
     IDS_FITWHOLE, "Fit whole"
     IDS_FILENAME, "Filename"
     IDS_DISPLAYNAME, "Display Name"
-    IDS_UPDATEDDATE, "Updated Date"
+    IDS_UPDATEDTIME, "Updated Time"
     IDS_TT_NEW, "New crossword"
     IDS_TT_GENERATE, "Generate crossword"
     IDS_TT_OPEN, "Open crossword"
