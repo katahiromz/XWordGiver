@@ -287,6 +287,11 @@ enum {
 // 音声ファイル。
 WCHAR xg_aszSoundFiles[I_SOUND_MAX][MAX_PATH];
 
+// 連番ファイル名1。
+WCHAR xg_szNumberingFileName1[MAX_PATH];
+// 連番ファイル名2。
+WCHAR xg_szNumberingFileName2[MAX_PATH];
+
 //////////////////////////////////////////////////////////////////////////////
 // static variables
 
@@ -955,6 +960,9 @@ void XgResetSettings(void)
     for (auto& item : xg_aszSoundFiles) {
         item[0] = 0;
     }
+
+    StringCchCopyW(xg_szNumberingFileName1, _countof(xg_szNumberingFileName1), L"Crossword-%Wx%H-%4N.xd");
+    StringCchCopyW(xg_szNumberingFileName2, _countof(xg_szNumberingFileName2), L"Pat-%Wx%H-%4N.xd");
 }
 
 // 設定を読み込む。
@@ -1243,6 +1251,12 @@ bool __fastcall XgLoadSettings(void)
                 StringCchCopy(xg_aszSoundFiles[2], _countof(xg_aszSoundFiles[2]), sz);
             }
         }
+        if (!app_key.QuerySz(L"NumberingFilename1", sz, _countof(sz))) {
+            StringCchCopy(xg_szNumberingFileName1, _countof(xg_szNumberingFileName1), sz);
+        }
+        if (!app_key.QuerySz(L"NumberingFilename2", sz, _countof(sz))) {
+            StringCchCopy(xg_szNumberingFileName2, _countof(xg_szNumberingFileName2), sz);
+        }
 
         // 保存先のリストを取得する。
         if (!app_key.QueryDword(L"SaveToCount", dwValue)) {
@@ -1370,6 +1384,9 @@ bool __fastcall XgSaveSettings(void)
         app_key.SetSz(L"SoundFile0", xg_aszSoundFiles[0]);
         app_key.SetSz(L"SoundFile1", xg_aszSoundFiles[1]);
         app_key.SetSz(L"SoundFile2", xg_aszSoundFiles[2]);
+
+        app_key.SetSz(L"NumberingFilename1", xg_szNumberingFileName1);
+        app_key.SetSz(L"NumberingFilename2", xg_szNumberingFileName2);
 
         // 保存先のリストを設定する。
         nCount = static_cast<int>(xg_dirs_save_to.size());
@@ -2797,6 +2814,60 @@ BOOL __fastcall XgOnOpen(HWND hwnd)
     return FALSE;
 }
 
+XGStringW __fastcall XgGenerateNumberingFilename(HWND hwnd, LPCWSTR pszText, LPSYSTEMTIME pLocalTime, INT iFile)
+{
+    WCHAR szN[32], szN1[32], szN2[32], szN3[32], szN4[32], szN5[32], szN6[32];
+    WCHAR szW[32], szH[32];
+    WCHAR szYear[32], szMonth[32], szDay[32];
+    WCHAR szHour[32], szMinute[32], szSecond[32];
+    WCHAR szComputer[64], szUser[64];
+
+    XGStringW str = pszText;
+
+    StringCchPrintfW(szN, _countof(szN), L"%d", iFile);
+    StringCchPrintfW(szN1, _countof(szN1), L"%01d", iFile);
+    StringCchPrintfW(szN2, _countof(szN2), L"%02d", iFile);
+    StringCchPrintfW(szN3, _countof(szN3), L"%03d", iFile);
+    StringCchPrintfW(szN4, _countof(szN4), L"%04d", iFile);
+    StringCchPrintfW(szN5, _countof(szN5), L"%05d", iFile);
+    StringCchPrintfW(szN6, _countof(szN6), L"%06d", iFile);
+    xg_str_replace_all(str, L"%N", szN);
+    xg_str_replace_all(str, L"%1N", szN1);
+    xg_str_replace_all(str, L"%2N", szN2);
+    xg_str_replace_all(str, L"%3N", szN3);
+    xg_str_replace_all(str, L"%4N", szN4);
+    xg_str_replace_all(str, L"%5N", szN5);
+    xg_str_replace_all(str, L"%6N", szN6);
+
+    StringCchPrintfW(szW, _countof(szW), L"%d", xg_nCols);
+    StringCchPrintfW(szH, _countof(szH), L"%d", xg_nRows);
+    xg_str_replace_all(str, L"%W", szW);
+    xg_str_replace_all(str, L"%H", szH);
+
+    StringCchPrintfW(szYear, _countof(szYear), L"%04d", pLocalTime->wYear);
+    StringCchPrintfW(szMonth, _countof(szMonth), L"%02d", pLocalTime->wMonth);
+    StringCchPrintfW(szDay, _countof(szDay), L"%02d", pLocalTime->wDay);
+    StringCchPrintfW(szHour, _countof(szHour), L"%02d", pLocalTime->wHour);
+    StringCchPrintfW(szMinute, _countof(szMinute), L"%02d", pLocalTime->wMinute);
+    StringCchPrintfW(szSecond, _countof(szSecond), L"%02d", pLocalTime->wSecond);
+    xg_str_replace_all(str, L"%Y", szYear);
+    xg_str_replace_all(str, L"%M", szMonth);
+    xg_str_replace_all(str, L"%D", szDay);
+    xg_str_replace_all(str, L"%h", szHour);
+    xg_str_replace_all(str, L"%m", szMinute);
+    xg_str_replace_all(str, L"%s", szSecond);
+
+    DWORD cchComputer = _countof(szComputer);
+    GetComputerNameW(szComputer, &cchComputer);
+    xg_str_replace_all(str, L"%C", szComputer);
+
+    DWORD cchUser = _countof(szUser);
+    GetUserNameW(szUser, &cchUser);
+    xg_str_replace_all(str, L"%U", szUser);
+
+    return str;
+}
+
 // 連番保存。
 BOOL __fastcall XgNumberingSave(HWND hwnd, BOOL bPattern)
 {
@@ -2807,19 +2878,34 @@ BOOL __fastcall XgNumberingSave(HWND hwnd, BOOL bPattern)
     WCHAR szFormat[MAX_PATH];
     StringCchCopyW(szFormat, _countof(szFormat), pszDir);
     if (bPattern)
-        PathAppendW(szFormat, L"Pat-%dx%d-%04u.xd");
+        PathAppendW(szFormat, xg_szNumberingFileName2);
     else
-        PathAppendW(szFormat, L"Crossword-%dx%d-%04u.xd");
+        PathAppendW(szFormat, xg_szNumberingFileName1);
+
+    // 現在の日時を取得。
+    SYSTEMTIME stNow;
+    ::GetLocalTime(&stNow);
 
     WCHAR szPath[MAX_PATH];
+    XGStringW strPath, oldName;
     for (INT iFile = 0; iFile <= 99999; ++iFile) {
-        StringCchPrintfW(szPath, _countof(szPath), szFormat, xg_nCols, xg_nRows, iFile);
-        if (!PathFileExistsW(szPath))
+        strPath = XgGenerateNumberingFilename(hwnd, szFormat, &stNow, iFile);
+        if (oldName == strPath)
+        {
+            StringCchCopyW(szPath, _countof(szPath), strPath.c_str());
+            XGStringW strDotExt = PathFindExtensionW(szPath);
+            PathRemoveExtensionW(szPath);
+            StringCchCatW(szPath, _countof(szPath), L"~");
+            PathAddExtensionW(szPath, strDotExt.c_str());
+            strPath = szPath;
+        }
+        if (!PathFileExistsW(strPath.c_str()))
             break;
+        oldName = strPath;
     }
 
     // 保存する。
-    xg_strFileName = szPath;
+    xg_strFileName = strPath;
     if (!XgOnSave(hwnd))
         return FALSE;
 

@@ -182,7 +182,7 @@ XgViewSettingsDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
                         WCHAR szText2[128];
                         ::LCMapStringW(::GetUserDefaultLCID(), LCMAP_HALFWIDTH, szText, _countof(szText),
                                        szText2, _countof(szText2));
-                        StrTrimW(szText2, L" \t\r\n\x3000");
+                        StrTrimW(szText2, XG_WHITE_SPACES);
                         INT nRate = _wtoi(szText2);
                         if (nRate == 0)
                             nRate = 100;

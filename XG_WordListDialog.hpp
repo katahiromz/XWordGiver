@@ -78,7 +78,7 @@ public:
 
         // 単語リストと辞書を取得する。
         std::vector<XGStringW> items;
-        mstr_split(items, str, L" \t\r\n\x3000");
+        mstr_split(items, str, XG_WHITE_SPACES);
         for (auto& item : items) {
             // ハイフン、アポストロフィ、ピリオド、カンマ、カッコを取り除く。
             XGStringW tmp;

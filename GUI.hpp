@@ -105,4 +105,9 @@ extern BOOL xg_bNoWriteLooks;
 // 「テーマ」ダイアログを表示する。
 void __fastcall XgTheme(HWND hwnd);
 
+// 連番ファイル名1。
+extern WCHAR xg_szNumberingFileName1[MAX_PATH];
+// 連番ファイル名2。
+extern WCHAR xg_szNumberingFileName2[MAX_PATH];
+
 //////////////////////////////////////////////////////////////////////////////

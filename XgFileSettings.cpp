@@ -2,6 +2,7 @@
 INT_PTR CALLBACK
 XgFileSettingsDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
+    HWND hCmb2, hCmb3;
     switch (uMsg)
     {
     case WM_INITDIALOG:
@@ -22,6 +23,18 @@ XgFileSettingsDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
             SendDlgItemMessage(hwnd, cmb1, CB_ADDSTRING, 0, (LPARAM)dir.c_str());
         }
         SendDlgItemMessage(hwnd, cmb1, CB_SETCURSEL, 0, 0);
+        // 連番ファイル名1。
+        hCmb2 = GetDlgItem(hwnd, cmb2);
+        ComboBox_AddString(hCmb2, L"Crossword-%Wx%H-%4N.xd");
+        ComboBox_AddString(hCmb2, L"Crossword-%5N.xd");
+        ComboBox_AddString(hCmb2, L"Crossword-%Y%M%D-%h%m%s-%2N.xd");
+        ComboBox_SetText(hCmb2, xg_szNumberingFileName1);
+        // 連番ファイル名2。
+        hCmb3 = GetDlgItem(hwnd, cmb3);
+        ComboBox_AddString(hCmb3, L"Pat-%Wx%H-%4N.xd");
+        ComboBox_AddString(hCmb3, L"Pat-%5N.xd");
+        ComboBox_AddString(hCmb3, L"Pat-%Y%M%D-%h%m%s-%2N.xd");
+        ComboBox_SetText(hCmb3, xg_szNumberingFileName2);
         // ドラッグ＆ドロップを受け付ける。
         DragAcceptFiles(hwnd, TRUE);
         return TRUE;
@@ -40,6 +53,8 @@ XgFileSettingsDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
             }
             break;
         case cmb1:
+        case cmb2:
+        case cmb3:
             if (HIWORD(wParam) == CBN_EDITCHANGE ||
                 HIWORD(wParam) == CBN_SELCHANGE ||
                 HIWORD(wParam) == CBN_SELENDOK)
@@ -113,6 +128,8 @@ XgFileSettingsDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
                     // テキストを取得する。
                     WCHAR szFile[MAX_PATH];
                     ::GetDlgItemTextW(hwnd, cmb1, szFile, _countof(szFile));
+                    // 前後の空白を取り除く。
+                    StrTrimW(szFile, XG_WHITE_SPACES);
 
                     // 一致する項目を削除する。
                     INT i = 0;
@@ -126,6 +143,23 @@ XgFileSettingsDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 
                     // 先頭に挿入。
                     xg_dirs_save_to.insert(xg_dirs_save_to.begin(), szFile);
+
+                    // 連番ファイル名のテキストを取得する。
+                    ::GetDlgItemTextW(hwnd, cmb2, xg_szNumberingFileName1, _countof(xg_szNumberingFileName1));
+                    ::GetDlgItemTextW(hwnd, cmb3, xg_szNumberingFileName2, _countof(xg_szNumberingFileName2));
+
+                    // 前後の空白を取り除く。
+                    StrTrimW(xg_szNumberingFileName1, XG_WHITE_SPACES);
+                    StrTrimW(xg_szNumberingFileName2, XG_WHITE_SPACES);
+
+                    // 必要なら拡張子を付ける。
+                    LPWSTR pch;
+                    pch = PathFindExtensionW(xg_szNumberingFileName1);
+                    if (!pch || !*pch)
+                        PathAddExtensionW(xg_szNumberingFileName1, L".xd");
+                    pch = PathFindExtensionW(xg_szNumberingFileName2);
+                    if (!pch || !*pch)
+                        PathAddExtensionW(xg_szNumberingFileName2, L".xd");
                 }
                 break;
             }
