@@ -1490,7 +1490,7 @@ FONT 9, "Tahoma"
     PUSHBUTTON "Cancel", IDCANCEL, 130, 115, 60, 15
 }
 
-IDD_FILESETTINGS DIALOG 0, 0, 213, 205
+IDD_FILESETTINGS DIALOG 0, 0, 270, 245
 CAPTION "File"
 STYLE DS_CENTER | DS_MODALFRAME | WS_POPUPWINDOW | WS_CAPTION
 FONT 9, "Tahoma"
@@ -1498,7 +1498,7 @@ FONT 9, "Tahoma"
     AUTOCHECKBOX "Display the answer when opening a &question", chx1, 10, 10, 195, 15
     AUTOCHECKBOX "Display the answer when &generated", chx3, 10, 30, 195, 15
     AUTOCHECKBOX "Automatically save as &numbering file when generated", chx2, 10, 50, 195, 15
-    LTEXT "&Save in:", -1, 10, 70, 195, 15, SS_CENTERIMAGE
+    LTEXT "&Save in:", -1, 10, 70, 195, 15, SS_CENTERIMAGE | NOT WS_GROUP
     COMBOBOX cmb1, 10, 85, 195, 300, CBS_HASSTRINGS | CBS_AUTOHSCROLL | CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP
     PUSHBUTTON "&Browse...", psh1, 10, 100, 60, 15
     PUSHBUTTON "Open &Folder", psh2, 110, 100, 95, 15
