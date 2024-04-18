@@ -316,6 +316,7 @@
     - Fixed the reading and writing of block image in LOOKS files.
 - 2024-04-18 ver.5.2.4
     - The serial number file name can be specified by the settings of file.
+- 2024-XX-YY ver.5.2.5
 
 # 開発履歴 (Japanese)
 
@@ -951,3 +952,4 @@
     - LOOKSファイルの黒マス画像の読み書きを修正。
 - 2024年04月18日 ver.5.2.4
     - ファイルの設定で連番ファイル名を指定可能にした。
+- 2024年XX月YY日 ver.5.2.5
