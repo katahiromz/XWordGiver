@@ -27,7 +27,7 @@ XgFileSettingsDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
         hCmb2 = GetDlgItem(hwnd, cmb2);
         ComboBox_AddString(hCmb2, L"Crossword-%Wx%H-%4N.xd");
         ComboBox_AddString(hCmb2, L"Crossword-%5N.xd");
-        ComboBox_AddString(hCmb2, L"Crossword-%Y%M%D-%h%m%s-%N.xd");
+        ComboBox_AddString(hCmb2, L"Cross-%Y%M%D-%h%m%s-%N.xd");
         ComboBox_SetText(hCmb2, xg_szNumberingFileName1);
         // 連番ファイル名2。
         hCmb3 = GetDlgItem(hwnd, cmb3);
