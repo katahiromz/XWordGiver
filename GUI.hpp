@@ -110,4 +110,7 @@ extern WCHAR xg_szNumberingFileName1[MAX_PATH];
 // 連番ファイル名2。
 extern WCHAR xg_szNumberingFileName2[MAX_PATH];
 
+// カギにジャンプする。
+void __fastcall XgJumpNumber(HWND hwnd, INT nNumber, BOOL bVert);
+
 //////////////////////////////////////////////////////////////////////////////

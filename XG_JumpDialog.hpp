@@ -167,12 +167,26 @@ public:
         case IDOK:
             if (OnOK(hwnd))
             {
-                ::EndDialog(hwnd, id);
+                switch (m_nType)
+                {
+                case 0: // マス位置。
+                    xg_caret_pos.m_j = m_jCol - 1;
+                    xg_caret_pos.m_i = m_iRow - 1;
+                    // 表示を更新する。
+                    XgEnsureCaretVisible(hwnd);
+                    XgUpdateStatusBar(hwnd);
+                    // すぐに入力できるようにする。
+                    SetFocus(hwnd);
+                    break;
+                case 1: // カギ位置。
+                    XgJumpNumber(hwnd, m_nNumber, m_bVert);
+                    break;
+                }
             }
             break;
 
         case IDCANCEL:
-            ::EndDialog(hwnd, id);
+            EndDialog(IDCANCEL);
             break;
 
         case rad1:
@@ -205,8 +219,13 @@ public:
         return 0;
     }
 
-    INT_PTR DoModal(HWND hwnd)
+    BOOL CreateDx(HWND hwnd) noexcept
     {
-        return DialogBoxDx(hwnd, IDD_JUMP);
+        return CreateDialogDx(hwnd, IDD_JUMP);
+    }
+
+    BOOL EndDialog(INT result)
+    {
+        return ::DestroyWindow(m_hWnd);
     }
 };

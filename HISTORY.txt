@@ -319,6 +319,7 @@
 - 2024-XX-YY ver.5.2.5
     - This time, we do exclusive control properly.
     - Added a function to display the dictionary update date and time.
+    - The "Jump" dialog has been made modeless.
 
 # 開発履歴 (Japanese)
 
@@ -957,3 +958,4 @@
 - 2024年XX月YY日 ver.5.2.5
     - 今度こそ排他制御をちゃんとする。
     - 辞書の更新日時を表示する機能を追加。
+    - 「ジャンプ」ダイアログをモードレス化した。

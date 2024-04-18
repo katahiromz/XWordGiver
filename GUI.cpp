@@ -292,6 +292,9 @@ WCHAR xg_szNumberingFileName1[MAX_PATH];
 // 連番ファイル名2。
 WCHAR xg_szNumberingFileName2[MAX_PATH];
 
+// 「ジャンプ」ダイアログ。
+XG_JumpDialog xg_hwndJumpDlg;
+
 //////////////////////////////////////////////////////////////////////////////
 // static variables
 
@@ -5873,8 +5876,10 @@ void __fastcall XgGoNextPane(HWND hwnd, BOOL bNext)
         xg_hHintsWnd,
         xg_cands_wnd,
         xg_hwndInputPalette,
-        xg_hMarkingDlg
+        xg_hMarkingDlg,
+        xg_hwndJumpDlg
     ) : make_array<HWND>(
+        xg_hwndJumpDlg,
         xg_hMarkingDlg,
         xg_hwndInputPalette,
         xg_cands_wnd,
@@ -5945,22 +5950,14 @@ void __fastcall XgJumpNumber(HWND hwnd, INT nNumber, BOOL bVert)
 // ジャンプダイアログ。
 void XgJumpDialog(HWND hwnd)
 {
-    XG_JumpDialog dialog;
-    if (dialog.DoModal(hwnd) == IDOK) {
-        switch (dialog.m_nType) {
-        case 0: // マス位置。
-            xg_caret_pos.m_j = dialog.m_jCol - 1;
-            xg_caret_pos.m_i = dialog.m_iRow - 1;
-            // 表示を更新する。
-            XgEnsureCaretVisible(hwnd);
-            XgUpdateStatusBar(hwnd);
-            // すぐに入力できるようにする。
-            SetFocus(hwnd);
-            break;
-        case 1: // カギ位置。
-            XgJumpNumber(hwnd, dialog.m_nNumber, dialog.m_bVert);
-            break;
-        }
+    if (xg_hwndJumpDlg)
+    {
+        ::SetFocus(xg_hwndJumpDlg);
+    }
+    else
+    {
+        xg_hwndJumpDlg.CreateDx(hwnd);
+        ::ShowWindow(xg_hwndJumpDlg, SW_SHOWNORMAL);
     }
 }
 
@@ -8149,6 +8146,11 @@ int WINAPI WinMain(
 
         if (xg_hwndInputPalette) {
             if (::IsDialogMessageW(xg_hwndInputPalette, &msg))
+                continue;
+        }
+
+        if (xg_hwndJumpDlg) {
+            if (::IsDialogMessageW(xg_hwndJumpDlg, &msg))
                 continue;
         }
 
