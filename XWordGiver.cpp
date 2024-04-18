@@ -4617,7 +4617,9 @@ static unsigned __stdcall XgSolveProcSmart(void *param)
 void __fastcall XgStartSolve_AddBlack(void)
 {
     // フラグを初期化する。
+    ::EnterCriticalSection(&xg_csLock);
     xg_bSolved = xg_bCancelled = false;
+    ::LeaveCriticalSection(&xg_csLock);
 
     if (xg_bSolvingEmpty)
         xg_xword.clear();
@@ -4653,7 +4655,9 @@ void __fastcall XgStartSolve_AddBlack(void)
 void __fastcall XgStartSolve_NoAddBlack(void) noexcept
 {
     // フラグを初期化する。
+    ::EnterCriticalSection(&xg_csLock);
     xg_bSolved = xg_bCancelled = false;
+    ::LeaveCriticalSection(&xg_csLock);
 
 #ifdef SINGLE_THREAD_MODE
     XgSolveProc_NoAddBlack(&xg_aThreadInfo[0]);
@@ -4673,7 +4677,9 @@ void __fastcall XgStartSolve_NoAddBlack(void) noexcept
 void __fastcall XgStartSolve_Smart(void) noexcept
 {
     // フラグを初期化する。
+    ::EnterCriticalSection(&xg_csLock);
     xg_bSolved = xg_bCancelled = false;
+    ::LeaveCriticalSection(&xg_csLock);
 
     // まだブロック生成していない。
     xg_bBlacksGenerated = FALSE;
@@ -7859,8 +7865,10 @@ static unsigned __stdcall XgGenerateBlacksLineSymH(void *param)
 
 void __fastcall XgStartGenerateBlacks(void) noexcept
 {
+    ::EnterCriticalSection(&xg_csLock);
     xg_bBlacksGenerated = false;
     xg_bCancelled = false;
+    ::LeaveCriticalSection(&xg_csLock);
 
     // 最大長を制限する。
     if (xg_nMaxWordLen > xg_nDictMaxWordLen) {
