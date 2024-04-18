@@ -1500,14 +1500,14 @@ STYLE DS_CENTER | DS_MODALFRAME | WS_POPUPWINDOW | WS_CAPTION
 FONT 9, "MS UI Gothic"
 {
     AUTOCHECKBOX "問題を開いたら答えを表示する(&Q)", chx1, 10, 10, 195, 15
-    AUTOCHECKBOX "生成したら答えを表示する(&G)", chx3, 10, 35, 195, 15
-    AUTOCHECKBOX "問題を生成したら自動で連番保存する(&N)", chx2, 10, 60, 195, 15
-    LTEXT "ファイル保存先(&S):", -1, 10, 85, 195, 10
-    COMBOBOX cmb1, 10, 100, 195, 300, CBS_HASSTRINGS | CBS_AUTOHSCROLL | CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP
-    PUSHBUTTON "参照(&B)...", psh1, 10, 115, 60, 15
-    PUSHBUTTON "フォルダを開く(&F)", psh2, 110, 115, 95, 15
-    AUTOCHECKBOX "ファイルからLOOKS情報を読み込まない(&R)", chx4, 10, 145, 195, 15
-    AUTOCHECKBOX "ファイルへLOOKS情報を書き込まない(&W)", chx5, 10, 170, 195, 15
+    AUTOCHECKBOX "生成したら答えを表示する(&G)", chx3, 10, 30, 195, 15
+    AUTOCHECKBOX "問題を生成したら自動で連番保存する(&N)", chx2, 10, 50, 195, 15
+    LTEXT "ファイル保存先(&S):", -1, 10, 70, 195, 15, SS_CENTERIMAGE
+    COMBOBOX cmb1, 10, 85, 195, 300, CBS_HASSTRINGS | CBS_AUTOHSCROLL | CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP
+    PUSHBUTTON "参照(&B)...", psh1, 10, 100, 60, 15
+    PUSHBUTTON "フォルダを開く(&F)", psh2, 110, 100, 95, 15
+    AUTOCHECKBOX "ファイルからLOOKS情報を読み込まない(&R)", chx4, 10, 125, 195, 15
+    AUTOCHECKBOX "ファイルへLOOKS情報を書き込まない(&W)", chx5, 10, 145, 195, 15
 }
 
 IDD_VIEWSETTINGS DIALOG 0, 0, 220, 190
