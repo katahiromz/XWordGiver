@@ -25,15 +25,21 @@ XgFileSettingsDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
         SendDlgItemMessage(hwnd, cmb1, CB_SETCURSEL, 0, 0);
         // 連番ファイル名1。
         hCmb2 = GetDlgItem(hwnd, cmb2);
+        ComboBox_AddString(hCmb2, L"Crossword-%6N.xd");
         ComboBox_AddString(hCmb2, L"Crossword-%Wx%H-%4N.xd");
-        ComboBox_AddString(hCmb2, L"Crossword-%5N.xd");
         ComboBox_AddString(hCmb2, L"Cross-%Y%M%D-%h%m%s-%N.xd");
+        ComboBox_AddString(hCmb2, L"Cross-%Y%M%D-%h%m%s-%Wx%H-%N.xd");
+        ComboBox_AddString(hCmb2, L"Cross-%Y_%M_%D-%h_%m_%s-%N.xd");
+        ComboBox_AddString(hCmb2, L"Cross-%Y_%M_%D-%h_%m_%s-%Wx%H-%N.xd");
         ComboBox_SetText(hCmb2, xg_szNumberingFileName1);
         // 連番ファイル名2。
         hCmb3 = GetDlgItem(hwnd, cmb3);
+        ComboBox_AddString(hCmb3, L"Pat-%6N.xd");
         ComboBox_AddString(hCmb3, L"Pat-%Wx%H-%4N.xd");
-        ComboBox_AddString(hCmb3, L"Pat-%5N.xd");
         ComboBox_AddString(hCmb3, L"Pat-%Y%M%D-%h%m%s-%N.xd");
+        ComboBox_AddString(hCmb3, L"Pat-%Y%M%D-%h%m%s-%Wx%H-%N.xd");
+        ComboBox_AddString(hCmb3, L"Pat-%Y_%M_%D-%h_%m_%s-%N.xd");
+        ComboBox_AddString(hCmb3, L"Pat-%Y_%M_%D-%h_%m_%s-%Wx%H-%N.xd");
         ComboBox_SetText(hCmb3, xg_szNumberingFileName2);
         // ドラッグ＆ドロップを受け付ける。
         DragAcceptFiles(hwnd, TRUE);
@@ -151,6 +157,22 @@ XgFileSettingsDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
                     // 前後の空白を取り除く。
                     StrTrimW(xg_szNumberingFileName1, XG_WHITE_SPACES);
                     StrTrimW(xg_szNumberingFileName2, XG_WHITE_SPACES);
+
+                    // 空文字列・無効なファイル名ならデフォルトに戻す。
+                    if (!xg_szNumberingFileName1[0] ||
+                        lstrcmpiW(xg_szNumberingFileName1, L".") == 0 ||
+                        lstrcmpiW(xg_szNumberingFileName1, L"..") == 0)
+                    {
+                        StringCchCopyW(xg_szNumberingFileName1, _countof(xg_szNumberingFileName1),
+                                       L"Crossword-%Wx%H-%4N.xd");
+                    }
+                    if (!xg_szNumberingFileName2[0] ||
+                        lstrcmpiW(xg_szNumberingFileName2, L".") == 0 ||
+                        lstrcmpiW(xg_szNumberingFileName2, L"..") == 0)
+                    {
+                        StringCchCopyW(xg_szNumberingFileName2, _countof(xg_szNumberingFileName2),
+                                       L"Pat-%Wx%H-%4N.xd");
+                    }
 
                     // 必要なら拡張子を付ける。
                     LPWSTR pch;
