@@ -2934,7 +2934,7 @@ BOOL __fastcall XgNumberingSave(HWND hwnd, BOOL bPattern)
         for (INT iRetry = 1; iRetry < MAX_PATH; ++iRetry)
         {
             XGStringW strName = szFileName;
-            strName += XGStringW(iRetry, L'~'); // チルダを(iRetry + 1)個追加。
+            strName += XGStringW(iRetry, L'~'); // チルダをiRetry個追加。
             strName += strDotExt.c_str(); // 拡張子を追加。
             if (!PathFileExistsW(strName.c_str()))
             {
