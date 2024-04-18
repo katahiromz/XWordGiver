@@ -94,8 +94,8 @@ void XgDictList_ReloadList(HWND hwnd)
             ::FileTimeToLocalFileTime(&find.ftLastWriteTime, &ftLocal);
             SYSTEMTIME st;
             ::FileTimeToSystemTime(&ftLocal, &st);
-            StringCchPrintfW(szText, _countof(szText), L"%04d-%02d-%02d",
-                             st.wYear, st.wMonth, st.wDay);
+            StringCchPrintfW(szText, _countof(szText), L"%04d-%02d-%02d %02d:%02d",
+                             st.wYear, st.wMonth, st.wDay, st.wHour, st.wMinute);
             item.pszText = szText;
         }
         item.pszText = szText;
@@ -182,7 +182,7 @@ XgDictListDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
             ListView_InsertColumn(hwndLst1, 1, &column);
 
             column.pszText = XgLoadStringDx1(IDS_UPDATEDDATE);
-            column.cx = 90;
+            column.cx = 125;
             ListView_InsertColumn(hwndLst1, 2, &column);
 
             // イメージリストを設定。
