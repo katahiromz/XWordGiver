@@ -2814,13 +2814,16 @@ BOOL __fastcall XgOnOpen(HWND hwnd)
     return FALSE;
 }
 
-XGStringW __fastcall XgGenerateNumberingFilename(HWND hwnd, LPCWSTR pszText, LPSYSTEMTIME pLocalTime, INT iFile)
+// 連番ファイル名を生成する。
+XGStringW __fastcall
+XgGenerateNumberingFilename(HWND hwnd, LPCWSTR pszText, LPSYSTEMTIME pLocalTime, INT iFile)
 {
     WCHAR szN[32], szN1[32], szN2[32], szN3[32], szN4[32], szN5[32], szN6[32];
     WCHAR szW[32], szH[32];
     WCHAR szYear[32], szMonth[32], szDay[32];
     WCHAR szHour[32], szMinute[32], szSecond[32];
     WCHAR szComputer[64], szUser[64];
+    LPCWSTR aszWeekDay[7] = { L"Sun", L"Mon", L"Tue", L"Wed", L"Thu", L"Fri", L"Sat" };
 
     XGStringW str = pszText;
 
@@ -2856,6 +2859,7 @@ XGStringW __fastcall XgGenerateNumberingFilename(HWND hwnd, LPCWSTR pszText, LPS
     xg_str_replace_all(str, L"%h", szHour);
     xg_str_replace_all(str, L"%m", szMinute);
     xg_str_replace_all(str, L"%s", szSecond);
+    xg_str_replace_all(str, L"%w", aszWeekDay[pLocalTime->wDayOfWeek]);
 
     DWORD cchComputer = _countof(szComputer);
     GetComputerNameW(szComputer, &cchComputer);
@@ -2864,6 +2868,8 @@ XGStringW __fastcall XgGenerateNumberingFilename(HWND hwnd, LPCWSTR pszText, LPS
     DWORD cchUser = _countof(szUser);
     GetUserNameW(szUser, &cchUser);
     xg_str_replace_all(str, L"%U", szUser);
+
+    xg_str_replace_all(str, L"%%", L"%");
 
     return str;
 }
