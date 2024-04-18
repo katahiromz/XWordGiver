@@ -27,19 +27,27 @@ XgFileSettingsDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
         hCmb2 = GetDlgItem(hwnd, cmb2);
         ComboBox_AddString(hCmb2, L"Crossword-%6N.xd");
         ComboBox_AddString(hCmb2, L"Crossword-%Wx%H-%4N.xd");
-        ComboBox_AddString(hCmb2, L"Cross-%Y%M%D-%h%m%s-%N.xd");
-        ComboBox_AddString(hCmb2, L"Cross-%Y%M%D-%h%m%s-%Wx%H-%N.xd");
-        ComboBox_AddString(hCmb2, L"Cross-%Y_%M_%D-%h_%m_%s-%N.xd");
-        ComboBox_AddString(hCmb2, L"Cross-%Y_%M_%D-%h_%m_%s-%Wx%H-%N.xd");
+        ComboBox_AddString(hCmb2, L"Cross-%Y%M%D-%h%m%s.xd");
+        ComboBox_AddString(hCmb2, L"Cross-%Y%M%D-%h%m%s-%Wx%H.xd");
+        ComboBox_AddString(hCmb2, L"Cross-%Y%M%D(%w)-%h%m%s.xd");
+        ComboBox_AddString(hCmb2, L"Cross-%Y%M%D(%w)-%h%m%s-%Wx%H.xd");
+        ComboBox_AddString(hCmb2, L"Cross-%Y_%M_%D-%h_%m_%s.xd");
+        ComboBox_AddString(hCmb2, L"Cross-%Y_%M_%D-%h_%m_%s-%Wx%H.xd");
+        ComboBox_AddString(hCmb2, L"Cross-%Y_%M_%D(%w)-%h_%m_%s.xd");
+        ComboBox_AddString(hCmb2, L"Cross-%Y_%M_%D(%w)-%h_%m_%s-%Wx%H.xd");
         ComboBox_SetText(hCmb2, xg_szNumberingFileName1);
         // 連番ファイル名2。
         hCmb3 = GetDlgItem(hwnd, cmb3);
-        ComboBox_AddString(hCmb3, L"Pat-%6N.xd");
+        ComboBox_AddString(hCmb3, L"Pattern-%6N.xd");
         ComboBox_AddString(hCmb3, L"Pat-%Wx%H-%4N.xd");
-        ComboBox_AddString(hCmb3, L"Pat-%Y%M%D-%h%m%s-%N.xd");
-        ComboBox_AddString(hCmb3, L"Pat-%Y%M%D-%h%m%s-%Wx%H-%N.xd");
-        ComboBox_AddString(hCmb3, L"Pat-%Y_%M_%D-%h_%m_%s-%N.xd");
-        ComboBox_AddString(hCmb3, L"Pat-%Y_%M_%D-%h_%m_%s-%Wx%H-%N.xd");
+        ComboBox_AddString(hCmb3, L"Pat-%Y%M%D-%h%m%s.xd");
+        ComboBox_AddString(hCmb3, L"Pat-%Y%M%D-%h%m%s-%Wx%H.xd");
+        ComboBox_AddString(hCmb3, L"Pat-%Y%M%D(%w)-%h%m%s.xd");
+        ComboBox_AddString(hCmb3, L"Pat-%Y%M%D(%w)-%h%m%s-%Wx%H.xd");
+        ComboBox_AddString(hCmb3, L"Pat-%Y_%M_%D-%h_%m_%s.xd");
+        ComboBox_AddString(hCmb3, L"Pat-%Y_%M_%D-%h_%m_%s-%Wx%H.xd");
+        ComboBox_AddString(hCmb3, L"Pat-%Y_%M_%D(%w)-%h_%m_%s.xd");
+        ComboBox_AddString(hCmb3, L"Pat-%Y_%M_%D(%w)-%h_%m_%s-%Wx%H.xd");
         ComboBox_SetText(hCmb3, xg_szNumberingFileName2);
         // ドラッグ＆ドロップを受け付ける。
         DragAcceptFiles(hwnd, TRUE);

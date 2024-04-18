@@ -2900,22 +2900,48 @@ BOOL __fastcall XgNumberingSave(HWND hwnd, BOOL bPattern)
     SYSTEMTIME stNow;
     ::GetLocalTime(&stNow);
 
-    WCHAR szPath[MAX_PATH];
     XGStringW strPath, oldName;
+    BOOL bSameName = FALSE;
     for (INT iFile = 0; iFile <= 99999; ++iFile) {
+        // 連番ファイル名を生成する。
         strPath = XgGenerateNumberingFilename(hwnd, szFormat, &stNow, iFile);
-        if (oldName == strPath)
+        if (oldName == strPath) // 前回と同じファイル名だった場合。
         {
-            StringCchCopyW(szPath, _countof(szPath), strPath.c_str());
-            XGStringW strDotExt = PathFindExtensionW(szPath);
-            PathRemoveExtensionW(szPath);
-            StringCchCatW(szPath, _countof(szPath), L"~");
-            PathAddExtensionW(szPath, strDotExt.c_str());
-            strPath = szPath;
+            bSameName = TRUE; // フラグを立てて、後で処理する。
+            break;
         }
+        // ファイル名のファイルが存在すれば、終了。
         if (!PathFileExistsW(strPath.c_str()))
             break;
+        // 古い名前を記憶する。
         oldName = strPath;
+    }
+
+    if (bSameName) // 同じファイル名の場合。
+    {
+        // おそらく連番がない。
+        // ファイルタイトルにチルダ（~）を追加してファイル名の重複を避けることにする。
+
+        // 拡張子のないファイル名を取得する。
+        WCHAR szFileName[MAX_PATH];
+        StringCchCopyW(szFileName, _countof(szFileName), strPath.c_str());
+        XGStringW strDotExt = PathFindExtensionW(szFileName);
+        if (strDotExt.empty())
+            strDotExt = L".xd";
+        PathRemoveExtensionW(szFileName);
+
+        // 拡張子のないファイル名にチルダ（~）と拡張子をいくつか追加して再試行する。
+        for (INT iRetry = 1; iRetry < MAX_PATH; ++iRetry)
+        {
+            XGStringW strName = szFileName;
+            strName += XGStringW(iRetry, L'~'); // チルダを(iRetry + 1)個追加。
+            strName += strDotExt.c_str(); // 拡張子を追加。
+            if (!PathFileExistsW(strName.c_str()))
+            {
+                strPath = std::move(strName);
+                break;
+            }
+        }
     }
 
     // 保存する。
