@@ -160,6 +160,28 @@ XgFileSettingsDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
                     pch = PathFindExtensionW(xg_szNumberingFileName2);
                     if (!pch || !*pch)
                         PathAddExtensionW(xg_szNumberingFileName2, L".xd");
+
+                    // 不正な文字を置き換える。
+                    for (LPWSTR pch = xg_szNumberingFileName1; *pch; ++pch)
+                    {
+                        switch (*pch)
+                        {
+                        case L'/': case L'\\': case L':': case L'*': case L'?':
+                        case L'<': case L'>': case L'|':
+                            *pch = L'_';
+                            break;
+                        }
+                    }
+                    for (LPWSTR pch = xg_szNumberingFileName2; *pch; ++pch)
+                    {
+                        switch (*pch)
+                        {
+                        case L'/': case L'\\': case L':': case L'*': case L'?':
+                        case L'<': case L'>': case L'|':
+                            *pch = L'_';
+                            break;
+                        }
+                    }
                 }
                 break;
             }

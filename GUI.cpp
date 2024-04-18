@@ -2827,6 +2827,7 @@ XgGenerateNumberingFilename(HWND hwnd, LPCWSTR pszText, LPSYSTEMTIME pLocalTime,
 
     XGStringW str = pszText;
 
+    // 連番（%N, %1N, %2N, %3N, %4N, %5N, %6N）。
     StringCchPrintfW(szN, _countof(szN), L"%d", iFile);
     StringCchPrintfW(szN1, _countof(szN1), L"%01d", iFile);
     StringCchPrintfW(szN2, _countof(szN2), L"%02d", iFile);
@@ -2842,11 +2843,13 @@ XgGenerateNumberingFilename(HWND hwnd, LPCWSTR pszText, LPSYSTEMTIME pLocalTime,
     xg_str_replace_all(str, L"%5N", szN5);
     xg_str_replace_all(str, L"%6N", szN6);
 
+    // マスのサイズ（%W, %H）。
     StringCchPrintfW(szW, _countof(szW), L"%d", xg_nCols);
     StringCchPrintfW(szH, _countof(szH), L"%d", xg_nRows);
     xg_str_replace_all(str, L"%W", szW);
     xg_str_replace_all(str, L"%H", szH);
 
+    // 日時（%Y/%M/%D %h:%m:%s）。
     StringCchPrintfW(szYear, _countof(szYear), L"%04d", pLocalTime->wYear);
     StringCchPrintfW(szMonth, _countof(szMonth), L"%02d", pLocalTime->wMonth);
     StringCchPrintfW(szDay, _countof(szDay), L"%02d", pLocalTime->wDay);
@@ -2859,16 +2862,21 @@ XgGenerateNumberingFilename(HWND hwnd, LPCWSTR pszText, LPSYSTEMTIME pLocalTime,
     xg_str_replace_all(str, L"%h", szHour);
     xg_str_replace_all(str, L"%m", szMinute);
     xg_str_replace_all(str, L"%s", szSecond);
+
+    // 曜日（%w）。
     xg_str_replace_all(str, L"%w", aszWeekDay[pLocalTime->wDayOfWeek]);
 
+    // コンピュータ名（%C）。
     DWORD cchComputer = _countof(szComputer);
-    GetComputerNameW(szComputer, &cchComputer);
+    ::GetComputerNameW(szComputer, &cchComputer);
     xg_str_replace_all(str, L"%C", szComputer);
 
+    // ユーザ名（%U）。
     DWORD cchUser = _countof(szUser);
-    GetUserNameW(szUser, &cchUser);
+    ::GetUserNameW(szUser, &cchUser);
     xg_str_replace_all(str, L"%U", szUser);
 
+    // 二重パーセント（%%）。
     xg_str_replace_all(str, L"%%", L"%");
 
     return str;
