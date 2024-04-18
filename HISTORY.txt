@@ -314,6 +314,7 @@
     - Added "Open app folder" item to "Advanced" settings.
     - Fixed the board not updating when dropping a LOOKS file.
     - Fixed the reading and writing of block image in LOOKS files.
+- 2024-XX-YY ver.5.2.4
 
 # 開発履歴 (Japanese)
 
@@ -947,3 +948,4 @@
     - 上級者向け設定に「アプリのフォルダを開く」を追加。
     - LOOKSファイルをドロップしたときに盤面が更新されなかったのを修正。
     - LOOKSファイルの黒マス画像の読み書きを修正。
+- 2024年XX月YY日 ver.5.2.4
