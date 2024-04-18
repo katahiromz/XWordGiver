@@ -71,10 +71,36 @@ void XgDictList_ReloadList(HWND hwnd)
         item.iItem = iItem;
         item.iSubItem = 0;
         ListView_InsertItem(hwndLst1, &item);
+
         item.iItem = iItem;
         item.iSubItem = 1;
         item.pszText = const_cast<LPWSTR>(entry.m_friendly_name.c_str());
         ListView_SetItem(hwndLst1, &item);
+
+        WIN32_FIND_DATAW find;
+        HANDLE hFind = ::FindFirstFileW(entry.m_filename.c_str(), &find);
+        ::FindClose(hFind);
+
+        WCHAR szText[32];
+        item.iItem = iItem;
+        item.iSubItem = 2;
+        if (hFind == INVALID_HANDLE_VALUE)
+        {
+            StringCchCopyW(szText, _countof(szText), L"N/A");
+        }
+        else
+        {
+            FILETIME ftLocal;
+            ::FileTimeToLocalFileTime(&find.ftLastWriteTime, &ftLocal);
+            SYSTEMTIME st;
+            ::FileTimeToSystemTime(&ftLocal, &st);
+            StringCchPrintfW(szText, _countof(szText), L"%04d-%02d-%02d",
+                             st.wYear, st.wMonth, st.wDay);
+            item.pszText = szText;
+        }
+        item.pszText = szText;
+        ListView_SetItem(hwndLst1, &item);
+
         ++iItem;
     }
 
@@ -150,9 +176,14 @@ XgDictListDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
             column.pszText = XgLoadStringDx1(IDS_FILENAME);
             column.cx = 200;
             ListView_InsertColumn(hwndLst1, 0, &column);
+
             column.pszText = XgLoadStringDx1(IDS_DISPLAYNAME);
             column.cx = 250;
             ListView_InsertColumn(hwndLst1, 1, &column);
+
+            column.pszText = XgLoadStringDx1(IDS_UPDATEDDATE);
+            column.cx = 90;
+            ListView_InsertColumn(hwndLst1, 2, &column);
 
             // イメージリストを設定。
             HIMAGELIST himl = XgDictList_CreateRadioButtonImageList(hwnd);
