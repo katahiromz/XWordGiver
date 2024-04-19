@@ -316,7 +316,7 @@
     - Fixed the reading and writing of block image in LOOKS files.
 - 2024-04-18 ver.5.2.4
     - The serial number file name can be specified by the settings of file.
-- 2024-XX-YY ver.5.2.5
+- 2024-04-19 ver.5.2.5
     - This time, we do exclusive control properly.
     - Added a function to display the dictionary update date and time.
     - The "Jump" dialog has been made modeless.
@@ -958,7 +958,7 @@
     - LOOKSファイルの黒マス画像の読み書きを修正。
 - 2024年04月18日 ver.5.2.4
     - ファイルの設定で連番ファイル名を指定可能にした。
-- 2024年XX月YY日 ver.5.2.5
+- 2024年04月19日 ver.5.2.5
     - 今度こそ排他制御をちゃんとする。
     - 辞書の更新日時を表示する機能を追加。
     - 「ジャンプ」ダイアログをモードレス化した。
