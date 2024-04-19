@@ -18,33 +18,49 @@ public:
     void UpdateUI(HWND hwnd)
     {
         if (!xg_bSolved) {
-            m_nType = 0;
+            if (m_nType == 1)
+                m_nType = 0;
         }
 
         if (m_nType == 0) {
             EnableWindow(GetDlgItem(hwnd, edt1), TRUE);
             EnableWindow(GetDlgItem(hwnd, edt2), TRUE);
             EnableWindow(GetDlgItem(hwnd, edt3), FALSE);
+            EnableWindow(GetDlgItem(hwnd, edt4), FALSE);
             EnableWindow(GetDlgItem(hwnd, rad3), FALSE);
             EnableWindow(GetDlgItem(hwnd, rad4), FALSE);
             CheckRadioButton(hwnd, rad1, rad2, rad1);
             SetDlgItemInt(hwnd, edt1, m_jCol, FALSE);
             SetDlgItemInt(hwnd, edt2, m_iRow, FALSE);
-        } else {
+        } else if (m_nType == 1) {
             EnableWindow(GetDlgItem(hwnd, edt1), FALSE);
             EnableWindow(GetDlgItem(hwnd, edt2), FALSE);
             EnableWindow(GetDlgItem(hwnd, edt3), TRUE);
+            EnableWindow(GetDlgItem(hwnd, edt4), FALSE);
             EnableWindow(GetDlgItem(hwnd, rad3), TRUE);
             EnableWindow(GetDlgItem(hwnd, rad4), TRUE);
             CheckRadioButton(hwnd, rad1, rad2, rad2);
             SetDlgItemInt(hwnd, edt3, m_nNumber, FALSE);
             CheckRadioButton(hwnd, rad3, rad4, (m_bVert ? rad4 : rad3));
+        } else if (m_nType == 2) {
+            EnableWindow(GetDlgItem(hwnd, edt1), FALSE);
+            EnableWindow(GetDlgItem(hwnd, edt2), FALSE);
+            EnableWindow(GetDlgItem(hwnd, edt3), FALSE);
+            EnableWindow(GetDlgItem(hwnd, edt4), TRUE);
+            EnableWindow(GetDlgItem(hwnd, rad3), FALSE);
+            EnableWindow(GetDlgItem(hwnd, rad4), FALSE);
         }
     }
 
     BOOL OnOK(HWND hwnd)
     {
-        m_nType = (IsDlgButtonChecked(hwnd, rad2) == BST_CHECKED);
+        if (IsDlgButtonChecked(hwnd, rad2) == BST_CHECKED)
+            m_nType = 1;
+        else if (IsDlgButtonChecked(hwnd, rad5) == BST_CHECKED)
+            m_nType = 2;
+        else
+            m_nType = 0;
+
         m_bVert = (IsDlgButtonChecked(hwnd, rad4) == BST_CHECKED);
         m_jCol = GetDlgItemInt(hwnd, edt1, NULL, FALSE);
         m_iRow = GetDlgItemInt(hwnd, edt2, NULL, FALSE);
@@ -181,6 +197,90 @@ public:
                 case 1: // カギ位置。
                     XgJumpNumber(hwnd, m_nNumber, m_bVert);
                     break;
+                case 2: // 文字または単語。
+                    {
+                        // テキストを取得する。
+                        WCHAR szText[64];
+                        GetDlgItemText(hwnd, edt4, szText, _countof(szText));
+                        StrTrimW(szText, XG_WHITE_SPACES);
+                        if (!szText[0])
+                            return;
+
+                        auto str = XgNormalizeString(szText);
+                        XG_Board& xw = (xg_bSolved && xg_bShowAnswer) ? xg_solution : xg_xword;
+
+                        // 次に進む関数。
+                        auto GetNext = [&](INT& jCol, INT& iRow) {
+                            ++jCol;
+                            if (jCol == xg_nCols) {
+                                jCol = 0;
+                                ++iRow;
+                                if (iRow == xg_nRows) {
+                                    iRow = 0;
+                                }
+                            }
+                        };
+                        // ヨコの単語を取得する関数。
+                        auto GetHorzWord = [&](INT jCol, INT iRow) -> XGStringW {
+                            if (xw.GetAt(iRow, jCol) == ZEN_BLACK) {
+                                return { ZEN_BLACK };
+                            }
+                            if (jCol == 0 || xw.GetAt(iRow, jCol - 1) == ZEN_BLACK) {
+                                XGStringW ret;
+                                for (INT j = jCol; j < xg_nCols; ++j) {
+                                    WCHAR ch = xw.GetAt(iRow, j);
+                                    if (ch == ZEN_BLACK)
+                                        break;
+                                    ret += ch;
+                                }
+                                return ret;
+                            }
+                            return { xw.GetAt(iRow, jCol) };
+                        };
+                        // タテの単語を取得する関数。
+                        auto GetVertWord = [&](INT jCol, INT iRow) -> XGStringW {
+                            if (xw.GetAt(iRow, jCol) == ZEN_BLACK) {
+                                return { ZEN_BLACK };
+                            }
+                            if (iRow == 0 || xw.GetAt(iRow - 1, jCol) == ZEN_BLACK) {
+                                XGStringW ret;
+                                for (INT i = iRow; i < xg_nRows; ++i) {
+                                    WCHAR ch = xw.GetAt(i, jCol);
+                                    if (ch == ZEN_BLACK)
+                                        break;
+                                    ret += ch;
+                                }
+                                return ret;
+                            }
+                            return { xw.GetAt(iRow, jCol) };
+                        };
+
+                        // 検索する。
+                        INT j = xg_caret_pos.m_j, i = xg_caret_pos.m_i;
+                        for (INT n = 0; n < xg_nRows * xg_nCols; ++n) {
+                            GetNext(j, i);
+                            auto word0 = GetHorzWord(j, i);
+                            auto j0 = word0.find(str);
+                            if (j0 != word0.npos) {
+                                xg_caret_pos.m_j = j + j0;
+                                xg_caret_pos.m_i = i;
+                                break;
+                            }
+                            auto word1 = GetVertWord(j, i);
+                            auto i0 = word1.find(str);
+                            if (i0 != word1.npos) {
+                                xg_caret_pos.m_j = j;
+                                xg_caret_pos.m_i = i + i0;
+                                break;
+                            }
+                        }
+                    }
+                    // 表示を更新する。
+                    XgEnsureCaretVisible(hwnd);
+                    XgUpdateStatusBar(hwnd);
+                    // すぐに入力できるようにする。
+                    SetFocus(hwnd);
+                    break;
                 }
             }
             break;
@@ -198,6 +298,12 @@ public:
         case rad2:
             if (IsDlgButtonChecked(hwnd, rad2) == BST_CHECKED) {
                 m_nType = 1;
+                UpdateUI(hwnd);
+            }
+            break;
+        case rad5:
+            if (IsDlgButtonChecked(hwnd, rad5) == BST_CHECKED) {
+                m_nType = 2;
                 UpdateUI(hwnd);
             }
             break;

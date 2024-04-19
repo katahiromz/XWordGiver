@@ -320,6 +320,7 @@
     - This time, we do exclusive control properly.
     - Added a function to display the dictionary update date and time.
     - The "Jump" dialog has been made modeless.
+    - Added "Jump to letter or word" function.
 
 # 開発履歴 (Japanese)
 
@@ -959,3 +960,4 @@
     - 今度こそ排他制御をちゃんとする。
     - 辞書の更新日時を表示する機能を追加。
     - 「ジャンプ」ダイアログをモードレス化した。
+    - 「文字または単語にジャンプ」機能を追加。
