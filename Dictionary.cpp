@@ -638,7 +638,10 @@ BOOL XgUpdateDictionaryUsingClues(HWND hwnd, const XGStringW& dict_name)
 
         auto it = word_to_hint_map.find(strNormalized);
         if (it != word_to_hint_map.end()) {
-            fields[1] = it->second;
+            if (fields.size() >= 2)
+                fields[1] = it->second;
+            else
+                fields.push_back(it->second);
             word_to_hint_map.erase(it);
             auto strNew = mstr_join(fields, L"\t");
             if (line != strNew) {
