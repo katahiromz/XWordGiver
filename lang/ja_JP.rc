@@ -73,6 +73,8 @@ LANGUAGE LANG_JAPANESE, SUBLANG_DEFAULT
         MENUITEM "単語をウェブ検索(&V) (タテ)\tAlt+↓", ID_ONLINEDICTV
         MENUITEM "単語をウェブ検索(&H) (ヨコ)\tAlt+→", ID_ONLINEDICTH
         MENUITEM SEPARATOR
+        MENUITEM "ジャンプ(&J)...", ID_JUMP
+        MENUITEM SEPARATOR
         MENUITEM "UI Language Select...", ID_UILANGID
     }
     POPUP "入力(&I)"

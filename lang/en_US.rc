@@ -73,6 +73,8 @@ LANGUAGE LANG_ENGLISH, SUBLANG_DEFAULT
         MENUITEM "Search DOWN word on Web \tAlt+Down", ID_ONLINEDICTV
         MENUITEM "Search ACROSS word on Web\tAlt+Right", ID_ONLINEDICTH
         MENUITEM SEPARATOR
+        MENUITEM "&Jump...", ID_JUMP
+        MENUITEM SEPARATOR
         MENUITEM "UI Language Select...", ID_UILANGID
     }
     POPUP "&Input"
