@@ -217,3 +217,5 @@ BOOL XgLoadDictsAll(void);
 void XgSelectDict(HWND hwnd, size_t iDict);
 // 辞書からタイトルを取得。
 XGStringW XgLoadTitleFromDict(LPCWSTR pszPath);
+// カギを使って辞書を更新する。
+BOOL XgUpdateDictionaryUsingClues(HWND hwnd, const XGStringW& dict_name);

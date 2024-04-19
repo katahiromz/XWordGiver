@@ -321,6 +321,7 @@
     - Added a function to display the dictionary update date and time.
     - The "Jump" dialog has been made modeless.
     - Added "Jump to letter or word" function.
+    - Added the function "Update the dictionary file using the clues" to the "Advanced" settings.
 
 # 開発履歴 (Japanese)
 
@@ -961,3 +962,4 @@
     - 辞書の更新日時を表示する機能を追加。
     - 「ジャンプ」ダイアログをモードレス化した。
     - 「文字または単語にジャンプ」機能を追加。
+    - 「上級者向け」設定に「問題のカギを使って辞書ファイルを更新する」機能を追加。

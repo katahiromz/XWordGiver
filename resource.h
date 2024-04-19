@@ -255,6 +255,8 @@
 #define IDS_FILENAME                        332
 #define IDS_DISPLAYNAME                     333
 #define IDS_UPDATEDTIME                     334
+#define IDS_UPDATEDICTOK                    335
+#define IDS_UPDATEDICTFAIL                  336
 #define IDS_TT_NEW                          10100
 #define IDS_TT_GENERATE                     10101
 #define IDS_TT_OPEN                         10102

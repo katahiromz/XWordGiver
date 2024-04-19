@@ -1572,14 +1572,15 @@ FONT 9, "Tahoma"
     PUSHBUTTON "&Theme...", psh5, 115, 175, 105, 20
 }
 
-IDD_HIDDEN DIALOG 0, 0, 275, 170
+IDD_HIDDEN DIALOG 0, 0, 275, 220
 CAPTION "Advanced"
 STYLE DS_CENTER | DS_MODALFRAME | WS_POPUPWINDOW | WS_CAPTION
 FONT 9, "Tahoma"
 {
-    PUSHBUTTON "&Add the current pattern to PAT.txt", psh1, 40, 10, 185, 40
-    PUSHBUTTON "&Remove the current pattern from PAT.txt", psh2, 40, 60, 185, 40
-    PUSHBUTTON "&Open app folder", psh3, 40, 110, 185, 40
+    PUSHBUTTON "&Add the current pattern to PAT.txt", psh1, 40, 10, 185, 40, BS_MULTILINE
+    PUSHBUTTON "&Remove the current pattern from PAT.txt", psh2, 40, 60, 185, 40, BS_MULTILINE
+    PUSHBUTTON "&Open app folder", psh3, 40, 110, 185, 40, BS_MULTILINE
+    PUSHBUTTON "&Update the current dictionary using the clues of the current problem", psh4, 40, 160, 185, 40, BS_MULTILINE
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -1828,6 +1829,8 @@ STRINGTABLE
     IDS_FILENAME, "Filename"
     IDS_DISPLAYNAME, "Display Name"
     IDS_UPDATEDTIME, "Updated Time"
+    IDS_UPDATEDICTOK, "Successfully wrote to dictionary file ""%s""."
+    IDS_UPDATEDICTFAIL, "Failed to write to dictionary file ""%s"". The folder may not be writable."
     IDS_TT_NEW, "New crossword"
     IDS_TT_GENERATE, "Generate crossword"
     IDS_TT_OPEN, "Open crossword"

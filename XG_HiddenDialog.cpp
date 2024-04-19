@@ -20,6 +20,7 @@ public:
         {
         case psh1: // PAT.txtに追加。
             if (codeNotify == BN_CLICKED) {
+                HCURSOR hOldCursor = ::SetCursor(::LoadCursor(NULL, IDC_WAIT));
                 if (XgPatEdit(hwnd, TRUE)) {
                     // 成功メッセージ。
                     XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_WROTEPAT),
@@ -29,10 +30,12 @@ public:
                     XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_CANTWRITEPAT),
                                         nullptr, MB_ICONERROR);
                 }
+                ::SetCursor(hOldCursor);
             }
             break;
         case psh2: // PAT.txtから削除。
             if (codeNotify == BN_CLICKED) {
+                HCURSOR hOldCursor = ::SetCursor(::LoadCursor(NULL, IDC_WAIT));
                 if (XgPatEdit(hwnd, FALSE)) {
                     // 成功メッセージ。
                     XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_WROTEPAT),
@@ -42,6 +45,7 @@ public:
                     XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_CANTWRITEPAT),
                                         nullptr, MB_ICONERROR);
                 }
+                ::SetCursor(hOldCursor);
             }
             break;
         case psh3: // アプリのフォルダを開く。
@@ -51,6 +55,26 @@ public:
                 PathRemoveFileSpecW(szPath);
                 ShellExecuteW(hwnd, NULL, szPath, NULL, NULL, SW_SHOWNORMAL);
             }
+            break;
+        case psh4: // カギを使って辞書を更新する。
+            if (codeNotify == BN_CLICKED) {
+                WCHAR szText[MAX_PATH * 2];
+                HCURSOR hOldCursor = ::SetCursor(::LoadCursor(NULL, IDC_WAIT));
+                XG_HintsWnd::UpdateHintData(); // ヒントに変更があれば、更新する。
+                if (XgUpdateDictionaryUsingClues(hwnd, xg_dict_name)) {
+                    // 成功メッセージ。
+                    StringCchPrintfW(szText, _countof(szText), XgLoadStringDx1(IDS_UPDATEDICTOK),
+                                     PathFindFileNameW(xg_dict_name.c_str()));
+                    XgCenterMessageBoxW(hwnd, szText, XgLoadStringDx2(IDS_APPNAME), MB_ICONINFORMATION);
+                } else {
+                    // 失敗メッセージ。
+                    StringCchPrintfW(szText, _countof(szText), XgLoadStringDx1(IDS_UPDATEDICTFAIL),
+                                     PathFindFileNameW(xg_dict_name.c_str()));
+                    XgCenterMessageBoxW(hwnd, szText, nullptr, MB_ICONERROR);
+                }
+                ::SetCursor(hOldCursor);
+            }
+            break;
         }
     }
 

@@ -1576,14 +1576,15 @@ FONT 9, "MS UI Gothic"
     PUSHBUTTON "テーマ(&T)...", psh5, 115, 175, 105, 20
 }
 
-IDD_HIDDEN DIALOG 0, 0, 275, 170
+IDD_HIDDEN DIALOG 0, 0, 275, 220
 CAPTION "上級者向け"
 STYLE DS_CENTER | DS_MODALFRAME | WS_POPUPWINDOW | WS_CAPTION
 FONT 9, "MS UI Gothic"
 {
-    PUSHBUTTON "現在の黒マスパターンをPAT.txtに追加する(&A)", psh1, 40, 10, 185, 40
-    PUSHBUTTON "現在の黒マスパターンをPAT.txtから削除する(&D)", psh2, 40, 60, 185, 40
-    PUSHBUTTON "アプリのフォルダを開く(&O)", psh3, 40, 110, 185, 40
+    PUSHBUTTON "現在の黒マスパターンをPAT.txtに追加する(&A)", psh1, 40, 10, 185, 40, BS_MULTILINE
+    PUSHBUTTON "現在の黒マスパターンをPAT.txtから削除する(&D)", psh2, 40, 60, 185, 40, BS_MULTILINE
+    PUSHBUTTON "アプリのフォルダを開く(&O)", psh3, 40, 110, 185, 40, BS_MULTILINE
+    PUSHBUTTON "現在の問題のカギを使って現在の辞書を更新する(&U)", psh4, 40, 160, 185, 40, BS_MULTILINE
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -1832,6 +1833,8 @@ STRINGTABLE
     IDS_FILENAME, "ファイル名"
     IDS_DISPLAYNAME, "表示名"
     IDS_UPDATEDTIME, "更新日時"
+    IDS_UPDATEDICTOK, "辞書ファイル「%s」への書き込みに成功しました。"
+    IDS_UPDATEDICTFAIL, "辞書ファイル「%s」への書き込みに失敗しました。書き込めないフォルダの可能性があります。"
     IDS_TT_NEW, "新規作成"
     IDS_TT_GENERATE, "問題を自動生成する"
     IDS_TT_OPEN, "問題を開く"

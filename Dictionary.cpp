@@ -584,3 +584,85 @@ void XgSelectDict(HWND hwnd, size_t iDict)
     xg_vMarkedCands.clear();
     xg_iMarkedCand = -1;
 }
+
+// カギを使って辞書を更新する。
+BOOL XgUpdateDictionaryUsingClues(HWND hwnd, const XGStringW& dict_name)
+{
+    // カギがなければ失敗。
+    if (!xg_bSolved || xg_vecHorzHints.empty() || xg_vecVertHints.empty())
+        return FALSE;
+
+    // 辞書名がなければ失敗。
+    if (dict_name.empty())
+        return FALSE;
+
+    // 単語からヒントへの写像を作成する。
+    std::map<XGStringW, XGStringW> word_to_hint_map;
+    for (auto& hint : xg_vecHorzHints) {
+        word_to_hint_map[XgNormalizeString(hint.m_strWord)] = hint.m_strHint;
+    }
+    for (auto& hint : xg_vecVertHints) {
+        word_to_hint_map[XgNormalizeString(hint.m_strWord)] = hint.m_strHint;
+    }
+
+    // 辞書ファイルをすべて読み込む。
+    XGStringW str;
+    if (!XgReadTextFileAll(dict_name.c_str(), str))
+        return FALSE;
+
+    // 改行コードを正規化。
+    xg_str_replace_all(str, L"\r\n", L"\n");
+
+    // 行で分割する。
+    std::vector<XGStringW> lines;
+    mstr_split(lines, str, L"\n");
+
+    // 一行ずつ処理する。
+    for (auto& line : lines) {
+        if (line[0] == L'#')
+            continue;
+
+        // タブで分割する。
+        std::vector<XGStringW> fields;
+        mstr_split(fields, line, L"\t");
+
+        if (fields.empty())
+            continue;
+
+        auto strWord = XgNormalizeString(fields[0]);
+        auto strNormalized = XgNormalizeString(strWord);
+
+        auto it = word_to_hint_map.find(strNormalized);
+        if (it != word_to_hint_map.end()) {
+            fields[1] = it->second;
+            word_to_hint_map.erase(it);
+            line = mstr_join(fields, L"\t");
+        }
+    }
+
+    for (auto& pair : word_to_hint_map) {
+        XGStringW line = XgNormalizeStringEx(pair.first, TRUE, TRUE);
+        line += L'\t';
+        line += pair.second;
+        line += L'\n';
+        lines.push_back(line);
+    }
+
+    // 辞書ファイルに書き込む。
+    FILE *fp = _wfopen(dict_name.c_str(), L"w");
+    if (!fp)
+        return FALSE;
+
+    fprintf(fp, "\xEF\xBB\xBF"); // UTF-8 BOM
+
+    for (auto& line : lines) {
+        auto psz = XgUnicodeToUtf8(line).c_str();
+        if (!*psz)
+            continue;
+        fprintf(fp, "%s\n", psz);
+    }
+
+    fclose(fp);
+
+    return TRUE;
+}
