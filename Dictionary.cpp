@@ -629,20 +629,24 @@ BOOL XgUpdateDictionaryUsingClues(HWND hwnd, const XGStringW& dict_name)
         // タブで分割する。
         std::vector<XGStringW> fields;
         mstr_split(fields, line, L"\t");
-
         if (fields.empty())
             continue;
 
+        // 単語を正規化する。
         auto strWord = XgNormalizeString(fields[0]);
         auto strNormalized = XgNormalizeString(strWord);
 
+        // 正規化された単語が見つかったか？
         auto it = word_to_hint_map.find(strNormalized);
         if (it != word_to_hint_map.end()) {
+            // 見つかったら、フィールドを更新。
             if (fields.size() >= 2)
                 fields[1] = it->second;
             else
                 fields.push_back(it->second);
+            // 写像から削除。
             word_to_hint_map.erase(it);
+            // 必要なら変更する。
             auto strNew = mstr_join(fields, L"\t");
             if (line != strNew) {
                 line = strNew;
@@ -651,6 +655,7 @@ BOOL XgUpdateDictionaryUsingClues(HWND hwnd, const XGStringW& dict_name)
         }
     }
 
+    // 辞書になかった単語を追記する。
     for (auto& pair : word_to_hint_map) {
         XGStringW line = XgNormalizeStringEx(pair.first, TRUE, TRUE);
         line += L'\t';
@@ -660,7 +665,7 @@ BOOL XgUpdateDictionaryUsingClues(HWND hwnd, const XGStringW& dict_name)
         bNoChange = FALSE;
     }
 
-    if (bNoChange) {
+    if (bNoChange) { // 変更なし。
         XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_NOCHANGE),
                             XgLoadStringDx2(IDS_APPNAME), MB_ICONINFORMATION);
         return FALSE;
@@ -678,6 +683,7 @@ BOOL XgUpdateDictionaryUsingClues(HWND hwnd, const XGStringW& dict_name)
 
     fprintf(fp, "\xEF\xBB\xBF"); // UTF-8 BOM
 
+    // 一行ずつ書き込む。
     for (auto& line : lines) {
         auto psz = XgUnicodeToUtf8(line).c_str();
         if (!*psz)
@@ -685,7 +691,7 @@ BOOL XgUpdateDictionaryUsingClues(HWND hwnd, const XGStringW& dict_name)
         fprintf(fp, "%s\n", psz);
     }
 
-    fclose(fp);
+    fclose(fp); // ちゃんとファイルを閉じようね。
 
     // 成功メッセージ。
     StringCchPrintfW(szText, _countof(szText), XgLoadStringDx1(IDS_UPDATEDICTOK),
