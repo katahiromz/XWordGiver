@@ -257,6 +257,8 @@
 #define IDS_UPDATEDTIME                     334
 #define IDS_UPDATEDICTOK                    335
 #define IDS_UPDATEDICTFAIL                  336
+#define IDS_NOCHANGE                        337
+#define IDS_NODICTSELECTED                  338
 #define IDS_TT_NEW                          10100
 #define IDS_TT_GENERATE                     10101
 #define IDS_TT_OPEN                         10102

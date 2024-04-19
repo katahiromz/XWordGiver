@@ -588,13 +588,14 @@ void XgSelectDict(HWND hwnd, size_t iDict)
 // カギを使って辞書を更新する。
 BOOL XgUpdateDictionaryUsingClues(HWND hwnd, const XGStringW& dict_name)
 {
-    // カギがなければ失敗。
-    if (!xg_bSolved || xg_vecHorzHints.empty() || xg_vecVertHints.empty())
-        return FALSE;
+    WCHAR szText[MAX_PATH];
 
-    // 辞書名がなければ失敗。
-    if (dict_name.empty())
+    // カギがなければ失敗。
+    if (!xg_bSolved || xg_vecHorzHints.empty() || xg_vecVertHints.empty()) {
+        XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_NOCHANGE),
+                            XgLoadStringDx2(IDS_APPNAME), MB_ICONINFORMATION);
         return FALSE;
+    }
 
     // 単語からヒントへの写像を作成する。
     std::map<XGStringW, XGStringW> word_to_hint_map;
@@ -607,8 +608,10 @@ BOOL XgUpdateDictionaryUsingClues(HWND hwnd, const XGStringW& dict_name)
 
     // 辞書ファイルをすべて読み込む。
     XGStringW str;
-    if (!XgReadTextFileAll(dict_name.c_str(), str))
+    if (dict_name.empty() || !XgReadTextFileAll(dict_name.c_str(), str)) {
+        XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_NODICTSELECTED), NULL, MB_ICONERROR);
         return FALSE;
+    }
 
     // 改行コードを正規化。
     xg_str_replace_all(str, L"\r\n", L"\n");
@@ -618,6 +621,7 @@ BOOL XgUpdateDictionaryUsingClues(HWND hwnd, const XGStringW& dict_name)
     mstr_split(lines, str, L"\n");
 
     // 一行ずつ処理する。
+    BOOL bNoChange = TRUE;
     for (auto& line : lines) {
         if (line[0] == L'#')
             continue;
@@ -636,7 +640,11 @@ BOOL XgUpdateDictionaryUsingClues(HWND hwnd, const XGStringW& dict_name)
         if (it != word_to_hint_map.end()) {
             fields[1] = it->second;
             word_to_hint_map.erase(it);
-            line = mstr_join(fields, L"\t");
+            auto strNew = mstr_join(fields, L"\t");
+            if (line != strNew) {
+                line = strNew;
+                bNoChange = FALSE;
+            }
         }
     }
 
@@ -646,12 +654,24 @@ BOOL XgUpdateDictionaryUsingClues(HWND hwnd, const XGStringW& dict_name)
         line += pair.second;
         line += L'\n';
         lines.push_back(line);
+        bNoChange = FALSE;
+    }
+
+    if (bNoChange) {
+        XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_NOCHANGE),
+                            XgLoadStringDx2(IDS_APPNAME), MB_ICONINFORMATION);
+        return FALSE;
     }
 
     // 辞書ファイルに書き込む。
     FILE *fp = _wfopen(dict_name.c_str(), L"w");
-    if (!fp)
+    if (!fp) {
+        // 失敗メッセージ。
+        StringCchPrintfW(szText, _countof(szText), XgLoadStringDx1(IDS_UPDATEDICTFAIL),
+                         PathFindFileNameW(xg_dict_name.c_str()));
+        XgCenterMessageBoxW(hwnd, szText, nullptr, MB_ICONERROR);
         return FALSE;
+    }
 
     fprintf(fp, "\xEF\xBB\xBF"); // UTF-8 BOM
 
@@ -663,6 +683,11 @@ BOOL XgUpdateDictionaryUsingClues(HWND hwnd, const XGStringW& dict_name)
     }
 
     fclose(fp);
+
+    // 成功メッセージ。
+    StringCchPrintfW(szText, _countof(szText), XgLoadStringDx1(IDS_UPDATEDICTOK),
+                     PathFindFileNameW(xg_dict_name.c_str()));
+    XgCenterMessageBoxW(hwnd, szText, XgLoadStringDx2(IDS_APPNAME), MB_ICONINFORMATION);
 
     return TRUE;
 }

@@ -1831,6 +1831,8 @@ STRINGTABLE
     IDS_UPDATEDTIME, "Updated Time"
     IDS_UPDATEDICTOK, "Successfully wrote to dictionary file ""%s""."
     IDS_UPDATEDICTFAIL, "Failed to write to dictionary file ""%s"". The folder may not be writable."
+    IDS_NOCHANGE, "There is no change."
+    IDS_NODICTSELECTED, "No dictionary selected, or unable to load the dictionary."
     IDS_TT_NEW, "New crossword"
     IDS_TT_GENERATE, "Generate crossword"
     IDS_TT_OPEN, "Open crossword"

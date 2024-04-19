@@ -1835,6 +1835,8 @@ STRINGTABLE
     IDS_UPDATEDTIME, "更新日時"
     IDS_UPDATEDICTOK, "辞書ファイル「%s」への書き込みに成功しました。"
     IDS_UPDATEDICTFAIL, "辞書ファイル「%s」への書き込みに失敗しました。書き込めないフォルダの可能性があります。"
+    IDS_NOCHANGE, "変更点はありません。"
+    IDS_NODICTSELECTED, "辞書が選択されていないか、読み込めません。"
     IDS_TT_NEW, "新規作成"
     IDS_TT_GENERATE, "問題を自動生成する"
     IDS_TT_OPEN, "問題を開く"
