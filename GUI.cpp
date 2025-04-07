@@ -918,6 +918,7 @@ void XgResetSettings(void)
     xg_bShowCaret = TRUE;
     xg_bShowDoubleFrameLetters = TRUE;
     xg_bShowDoubleFrame = TRUE;
+    xg_nOuterFrameInPt = XG_OUTERFRAME_DEFAULT;
 
     xg_bHiragana = FALSE;
     xg_bLowercase = FALSE;
@@ -4951,6 +4952,9 @@ void XgEraseSettings(void)
 
     // レジストリのアプリキーを削除する。
     RegDeleteTreeDx(HKEY_CURRENT_USER, XG_REGKEY_APP);
+
+    // 念のため、もう一度読み込む。
+    XgLoadSettings();
 
     // 黒マスの情報も消す。
     xg_strBlackCellImage.clear();
