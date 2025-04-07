@@ -323,6 +323,8 @@
     - Added "Jump to letter or word" function.
     - Added the function "Update the dictionary file using the clues" to the "Advanced" settings.
     - Added "Jump" to the "Edit" menu.
+- 2025-XX-YY ver.5.2.6
+    - Correctly reset outer frame settings on "Initialize application".
 
 # 開発履歴 (Japanese)
 
