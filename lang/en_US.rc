@@ -1785,7 +1785,7 @@ STRINGTABLE
     IDS_NOBLOCKIMAGE, "There is no image '%s' in BLOCK folder. So I have failed to import LOOKS file."
     IDS_QUERYSAVE, "Do you want to save file '%s'?"
     IDS_UNTITLED, "Untitled"
-    IDS_COPYRIGHTINFO, "License: MIT\r\n\r\nCopyright (C) 2012-2024 katahiromz.\r\nCopyright (C) 2021-2022 スフィンクス.\r\nCopyright (C) 2021-2022 catworks99.\r\nCopyright (C) 2022 yukokumar.\r\nCopyright (C) 2022 Hiroshima.cw.\r\nAll rights reserved."
+    IDS_COPYRIGHTINFO, "License: MIT\r\n\r\nCopyright (C) 2012-2025 katahiromz.\r\nCopyright (C) 2021-2022 スフィンクス.\r\nCopyright (C) 2021-2022 catworks99.\r\nCopyright (C) 2022 yukokumar.\r\nCopyright (C) 2022 Hiroshima.cw.\r\nAll rights reserved."
     IDS_HOWMANYCORES, "Found %u processors."
     IDS_POLICYPRESET_SKELETON_0, "0x0008: Skeleton policy: No symmetry"
     IDS_POLICYPRESET_SKELETON_1, "0x0028: Skeleton policy: Point symmetry (Recommended)"

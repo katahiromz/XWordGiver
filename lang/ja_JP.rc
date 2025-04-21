@@ -1789,7 +1789,7 @@ STRINGTABLE
     IDS_NOBLOCKIMAGE, "BLOCKフォルダに黒マス画像 '%s' が存在しませんので、LOOKSファイル取り込みに失敗しました。"
     IDS_QUERYSAVE, "ファイル「%s」を保存しますか？"
     IDS_UNTITLED, "無題"
-    IDS_COPYRIGHTINFO, "License: MIT\r\n\r\nCopyright (C) 2012-2024 片山博文MZ.\r\nCopyright (C) 2021-2022 スフィンクス.\r\nCopyright (C) 2021-2022 catworks99.\r\nCopyright (C) 2022 yukokumar.\r\nCopyright (C) 2022 Hiroshima.cw.\r\nAll rights reserved."
+    IDS_COPYRIGHTINFO, "License: MIT\r\n\r\nCopyright (C) 2012-2025 片山博文MZ.\r\nCopyright (C) 2021-2022 スフィンクス.\r\nCopyright (C) 2021-2022 catworks99.\r\nCopyright (C) 2022 yukokumar.\r\nCopyright (C) 2022 Hiroshima.cw.\r\nAll rights reserved."
     IDS_HOWMANYCORES, "%u 個のプロセッサを認識。"
     IDS_POLICYPRESET_SKELETON_0, "0x0008: スケルトン ルール: 対称なし"
     IDS_POLICYPRESET_SKELETON_1, "0x0028: スケルトン ルール: 点対称"
