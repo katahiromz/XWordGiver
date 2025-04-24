@@ -323,7 +323,7 @@
     - Added "Jump to letter or word" function.
     - Added the function "Update the dictionary file using the clues" to the "Advanced" settings.
     - Added "Jump" to the "Edit" menu.
-- 2025-XX-YY ver.5.2.6
+- 2025-04-24 ver.5.2.6
     - Correctly reset outer frame settings on "Initialize application".
     - Enhanced PAT.txt.
 
@@ -968,6 +968,6 @@
     - 「文字または単語にジャンプ」機能を追加。
     - 「上級者向け」設定に「問題のカギを使って辞書ファイルを更新する」機能を追加。
     - 「編集」メニューに「ジャンプ」を追加。
-- 2025年XX月YY日 ver.5.2.6
+- 2025年04月24日 ver.5.2.6
     - 「アプリの初期化」においてちゃんと外枠の設定をリセット。
     - PAT.txtを強化。
