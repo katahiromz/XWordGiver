@@ -325,6 +325,7 @@
     - Added "Jump" to the "Edit" menu.
 - 2025-XX-YY ver.5.2.6
     - Correctly reset outer frame settings on "Initialize application".
+    - Enhanced PAT.txt.
 
 # 開発履歴 (Japanese)
 
@@ -969,3 +970,4 @@
     - 「編集」メニューに「ジャンプ」を追加。
 - 2025年XX月YY日 ver.5.2.6
     - 「アプリの初期化」においてちゃんと外枠の設定をリセット。
+    - PAT.txtを強化。
