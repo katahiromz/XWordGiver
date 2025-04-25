@@ -35,7 +35,18 @@ void TaskbarProgress::Set(INT percent)
     m_pTaskbarList->SetProgressState(m_hWnd, ((percent < 0) ? TBPF_INDETERMINATE : TBPF_NORMAL));
 
     if (percent >= 0)
+    {
         m_pTaskbarList->SetProgressValue(m_hWnd, percent, 100);
+    }
+}
+
+void TaskbarProgress::Error()
+{
+    if (!m_pTaskbarList || FAILED(m_hr))
+        return;
+
+    m_pTaskbarList->SetProgressValue(m_hWnd, 100, 100);
+    m_pTaskbarList->SetProgressState(m_hWnd, TBPF_ERROR);
 }
 
 void TaskbarProgress::Clear()
@@ -43,5 +54,6 @@ void TaskbarProgress::Clear()
     if (!m_pTaskbarList || FAILED(m_hr))
         return;
 
+    m_pTaskbarList->SetProgressValue(m_hWnd, 0, 100);
     m_pTaskbarList->SetProgressState(m_hWnd, TBPF_NOPROGRESS);
 }

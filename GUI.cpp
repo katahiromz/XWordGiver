@@ -1456,28 +1456,36 @@ bool __fastcall XgCheckCrossWord(HWND hwnd, bool check_words, bool loose, bool b
     // 四隅黒禁。
     if ((xg_nRules & RULE_DONTCORNERBLACK) && xg_xword.CornerBlack()) {
         XgFailureSound(bPlaySound);
+        xg_pTaskbarProgress->Error();
         XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_CORNERBLOCK), nullptr, MB_ICONERROR);
+        xg_pTaskbarProgress->Clear();
         return false;
     }
 
     // 連黒禁。
     if ((xg_nRules & RULE_DONTDOUBLEBLACK) && xg_xword.DoubleBlack()) {
         XgFailureSound(bPlaySound);
+        xg_pTaskbarProgress->Error();
         XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_ADJACENTBLOCK), nullptr, MB_ICONERROR);
+        xg_pTaskbarProgress->Clear();
         return false;
     }
 
     // 三方黒禁。
     if ((xg_nRules & RULE_DONTTRIDIRECTIONS) && xg_xword.TriBlackAround()) {
         XgFailureSound(bPlaySound);
+        xg_pTaskbarProgress->Error();
         XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_TRIBLOCK), nullptr, MB_ICONERROR);
+        xg_pTaskbarProgress->Clear();
         return false;
     }
 
     // 分断禁。
     if ((xg_nRules & RULE_DONTDIVIDE) && xg_xword.DividedByBlack()) {
         XgFailureSound(bPlaySound);
+        xg_pTaskbarProgress->Error();
         XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_DIVIDED), nullptr, MB_ICONERROR);
+        xg_pTaskbarProgress->Clear();
         return false;
     }
 
@@ -1485,14 +1493,18 @@ bool __fastcall XgCheckCrossWord(HWND hwnd, bool check_words, bool loose, bool b
     if (xg_nRules & RULE_DONTTHREEDIAGONALS) {
         if (xg_xword.ThreeDiagonals()) {
             XgFailureSound(bPlaySound);
+            xg_pTaskbarProgress->Error();
             XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_THREEDIAGONALS), nullptr, MB_ICONERROR);
+            xg_pTaskbarProgress->Clear();
             return false;
         }
     } else if (xg_nRules & RULE_DONTFOURDIAGONALS) {
         // 黒斜四連禁。
         if (xg_xword.FourDiagonals()) {
             XgFailureSound(bPlaySound);
+            xg_pTaskbarProgress->Error();
             XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_FOURDIAGONALS), nullptr, MB_ICONERROR);
+            xg_pTaskbarProgress->Clear();
             return false;
         }
     }
@@ -1501,19 +1513,25 @@ bool __fastcall XgCheckCrossWord(HWND hwnd, bool check_words, bool loose, bool b
         // 黒マス点対称。
         if ((xg_nRules & RULE_POINTSYMMETRY) && !xg_xword.IsPointSymmetry()) {
             XgFailureSound(bPlaySound);
+            xg_pTaskbarProgress->Error();
             XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_NOTPOINTSYMMETRY), nullptr, MB_ICONERROR);
+            xg_pTaskbarProgress->Clear();
             return false;
         }
 
         // 黒マス線対称。
         if ((xg_nRules & RULE_LINESYMMETRYV) && !xg_xword.IsLineSymmetryV()) {
             XgFailureSound(bPlaySound);
+            xg_pTaskbarProgress->Error();
             XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_NOTLINESYMMETRYV), nullptr, MB_ICONERROR);
+            xg_pTaskbarProgress->Clear();
             return false;
         }
         if ((xg_nRules & RULE_LINESYMMETRYH) && !xg_xword.IsLineSymmetryH()) {
             XgFailureSound(bPlaySound);
+            xg_pTaskbarProgress->Error();
             XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_NOTLINESYMMETRYH), nullptr, MB_ICONERROR);
+            xg_pTaskbarProgress->Clear();
             return false;
         }
     }
@@ -1521,13 +1539,17 @@ bool __fastcall XgCheckCrossWord(HWND hwnd, bool check_words, bool loose, bool b
     // 偶数行数で黒マス線対称（タテ）の場合は連黒禁は不可。
     if (!(xg_nRows & 1) && (xg_nRules & RULE_LINESYMMETRYV) && (xg_nRules & RULE_DONTDOUBLEBLACK)) {
         XgFailureSound(bPlaySound);
+        xg_pTaskbarProgress->Error();
         XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_EVENROWLINESYMV), nullptr, MB_ICONERROR);
+        xg_pTaskbarProgress->Clear();
         return false;
     }
     // 偶数列数で黒マス線対称（ヨコ）の場合は連黒禁は不可。
     if (!(xg_nCols & 1) && (xg_nRules & RULE_LINESYMMETRYH) && (xg_nRules & RULE_DONTDOUBLEBLACK)) {
         XgFailureSound(bPlaySound);
+        xg_pTaskbarProgress->Error();
         XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_EVENCOLLINESYMH), nullptr, MB_ICONERROR);
+        xg_pTaskbarProgress->Clear();
         return false;
     }
 
@@ -1541,12 +1563,16 @@ bool __fastcall XgCheckCrossWord(HWND hwnd, bool check_words, bool loose, bool b
             XgFailureSound(bPlaySound);
             WCHAR sz[128];
             StringCchPrintf(sz, _countof(sz), XgLoadStringDx1(IDS_NOCANDIDATE), pos.m_j + 1, pos.m_i + 1);
+            xg_pTaskbarProgress->Error();
             XgCenterMessageBoxW(hwnd, sz, nullptr, MB_ICONERROR);
+            xg_pTaskbarProgress->Clear();
             return false;
         }
     } else if (code == xg_epv_DOUBLEWORD) {
         // すでに使用した単語があった。
+        xg_pTaskbarProgress->Error();
         XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_DOUBLEDWORD), nullptr, MB_ICONERROR);
+        xg_pTaskbarProgress->Clear();
         return false;
     } else if (code == xg_epv_LENGTHMISMATCH) {
         if (check_words) {
@@ -1554,7 +1580,9 @@ bool __fastcall XgCheckCrossWord(HWND hwnd, bool check_words, bool loose, bool b
             XgFailureSound(bPlaySound);
             WCHAR sz[128];
             StringCchPrintf(sz, _countof(sz), XgLoadStringDx1(IDS_TOOLONGSPACE), pos.m_j + 1, pos.m_i + 1);
+            xg_pTaskbarProgress->Error();
             XgCenterMessageBoxW(hwnd, sz, nullptr, MB_ICONERROR);
+            xg_pTaskbarProgress->Clear();
             return false;
         }
     }
@@ -3406,7 +3434,7 @@ bool __fastcall XgOnSolve_AddBlack(HWND hwnd)
         // 結果を表示する。
         XgShowResults(hwnd, TRUE);
     } else {
-        xg_pTaskbarProgress->Clear();
+        xg_pTaskbarProgress->Error();
         // 解なし。表示を更新する。
         xg_bShowAnswer = false;
         XgSetCaretPos();
@@ -3512,7 +3540,7 @@ bool __fastcall XgOnSolve_NoAddBlack(HWND hwnd)
         XgShowResults(hwnd, TRUE);
     } else {
         // 解なし。表示を更新する。
-        xg_pTaskbarProgress->Clear();
+        xg_pTaskbarProgress->Error();
         xg_bShowAnswer = false;
         XgSetCaretPos();
         XgMarkUpdate();
@@ -5489,7 +5517,7 @@ void XgGenerateFromWordList(HWND hwnd)
 
     if (!s_generated) {
         // 生成できなかった。
-        xg_pTaskbarProgress->Clear();
+        xg_pTaskbarProgress->Error();
         XgShowResults(hwnd, FALSE);
         return;
     }

@@ -18,4 +18,5 @@ public:
     void Set(INT percent = -1);
     void Finish() { Set(100); }
     void Clear();
+    void Error();
 };
