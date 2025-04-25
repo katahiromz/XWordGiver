@@ -9,6 +9,7 @@
 #include "GUI.hpp"
 #include <algorithm>
 #include "WonSetThreadUILanguage/WonSetThreadUILanguage.h"
+#include "TaskbarProgress.h"
 
 // 「元に戻す」情報。
 #include "XG_UndoBuffer.hpp"
@@ -168,6 +169,9 @@ std::unordered_map<int, WCHAR> xg_mapNumCro2;
 
 // ファイル変更フラグ。
 BOOL xg_bFileModified = FALSE;
+
+// タスクバーの進捗表示。
+std::shared_ptr<TaskbarProgress> xg_pTaskbarProgress;
 
 // ファイル変更フラグ。
 void XgSetModified(BOOL bModified, LPCSTR file, int line)
@@ -3038,6 +3042,9 @@ void __fastcall XgShowResults(HWND hwnd, BOOL bOK)
                         DWORD(xg_dwlTick2 - xg_dwlTick0) / 100 % 10);
         XgCenterMessageBoxW(hwnd, sz, XgLoadStringDx2(IDS_RESULTS), MB_ICONERROR);
     }
+
+    // タスクバーの進捗表示をクリアする。
+    xg_pTaskbarProgress->Clear();
 }
 
 // 自動的にPAT.txtから選んで問題を作成する。
@@ -3102,6 +3109,7 @@ TRIVALUE XgGenerateFromPat(HWND hwnd)
     XgUpdateImage(hwnd);
 
     if (xg_bSolved) {
+        xg_pTaskbarProgress->Finish();
         // 番号とヒントを付ける。
         xg_solution.DoNumberingNoCheck();
         XgUpdateHints();
@@ -3119,6 +3127,7 @@ TRIVALUE XgGenerateFromPat(HWND hwnd)
         // 結果を表示する。
         XgShowResults(hwnd, TRUE);
     } else {
+        xg_pTaskbarProgress->Clear();
         // 結果を表示する。
         XgShowResults(hwnd, FALSE);
     }
@@ -3177,6 +3186,7 @@ bool __fastcall XgOnGenerateBlacksRepeatedly(HWND hwnd)
     do
     {
         XG_CancelGenBlacksDialog dialog;
+        xg_pTaskbarProgress->Set(-1);
         nID = dialog.DoModal(hwnd);
         // 生成成功のときはxg_nNumberGeneratedを増やす。
         if (nID == IDOK && xg_bBlacksGenerated) {
@@ -3205,16 +3215,19 @@ bool __fastcall XgOnGenerateBlacksRepeatedly(HWND hwnd)
 
     WCHAR sz[MAX_PATH];
     if (xg_bCancelled) {
+        xg_pTaskbarProgress->Clear();
         StringCchPrintf(sz, _countof(sz), XgLoadStringDx1(IDS_CANCELLED),
                        DWORD(xg_dwlTick2 - xg_dwlTick0) / 1000,
                        DWORD(xg_dwlTick2 - xg_dwlTick0) / 100 % 10);
         XgCenterMessageBoxW(hwnd, sz, XgLoadStringDx2(IDS_RESULTS), MB_ICONINFORMATION);
     } else {
+        xg_pTaskbarProgress->Finish();
         StringCchPrintf(sz, _countof(sz), XgLoadStringDx1(IDS_BLOCKSGENERATED),
                        xg_nNumberGenerated,
                        DWORD(xg_dwlTick2 - xg_dwlTick0) / 1000,
                        DWORD(xg_dwlTick2 - xg_dwlTick0) / 100 % 10);
         XgCenterMessageBoxW(hwnd, sz, XgLoadStringDx2(IDS_RESULTS), MB_ICONINFORMATION);
+        xg_pTaskbarProgress->Clear();
     }
 
     // 保存先フォルダを開く。
@@ -3271,6 +3284,7 @@ bool __fastcall XgOnGenerateBlacks(HWND hwnd, bool sym)
     ::EnableWindow(xg_hwndInputPalette, FALSE);
     {
         XG_CancelGenBlacksDialog dialog;
+        xg_pTaskbarProgress->Set(-1);
         dialog.DoModal(hwnd);
     }
     ::EnableWindow(xg_hwndInputPalette, TRUE);
@@ -3279,15 +3293,18 @@ bool __fastcall XgOnGenerateBlacks(HWND hwnd, bool sym)
 
     WCHAR sz[MAX_PATH];
     if (xg_bCancelled) {
+        xg_pTaskbarProgress->Clear();
         StringCchPrintf(sz, _countof(sz), XgLoadStringDx1(IDS_CANCELLED),
                        DWORD(xg_dwlTick2 - xg_dwlTick0) / 1000,
                        DWORD(xg_dwlTick2 - xg_dwlTick0) / 100 % 10);
         XgCenterMessageBoxW(hwnd, sz, XgLoadStringDx2(IDS_RESULTS), MB_ICONINFORMATION);
     } else {
+        xg_pTaskbarProgress->Finish();
         StringCchPrintf(sz, _countof(sz), XgLoadStringDx1(IDS_BLOCKSGENERATED), 1,
                        DWORD(xg_dwlTick2 - xg_dwlTick0) / 1000,
                        DWORD(xg_dwlTick2 - xg_dwlTick0) / 100 % 10);
         XgCenterMessageBoxW(hwnd, sz, XgLoadStringDx2(IDS_RESULTS), MB_ICONINFORMATION);
+        xg_pTaskbarProgress->Clear();
     }
     return true;
 }
@@ -3337,6 +3354,7 @@ bool __fastcall XgOnSolve_AddBlack(HWND hwnd)
     ::EnableWindow(xg_hwndInputPalette, FALSE);
     {
         XG_CancelSolveDialog dialog;
+        xg_pTaskbarProgress->Set(-1);
         dialog.DoModal(hwnd);
     }
     ::EnableWindow(xg_hwndInputPalette, TRUE);
@@ -3345,6 +3363,7 @@ bool __fastcall XgOnSolve_AddBlack(HWND hwnd)
     if (xg_bCancelled) {
         // キャンセルされた。
         // 解なし。表示を更新する。
+        xg_pTaskbarProgress->Clear();
         xg_bShowAnswer = false;
         XgSetCaretPos();
         XgMarkUpdate();
@@ -3355,6 +3374,7 @@ bool __fastcall XgOnSolve_AddBlack(HWND hwnd)
                        DWORD(xg_dwlTick2 - xg_dwlTick0) / 100 % 10);
         XgCenterMessageBoxW(hwnd, sz, XgLoadStringDx2(IDS_RESULTS), MB_ICONINFORMATION);
     } else if (xg_bSolved) {
+        xg_pTaskbarProgress->Finish();
         // 空マスがないか？
         if (xg_xword.IsFulfilled()) {
             // 空マスがない。クリア。
@@ -3386,6 +3406,7 @@ bool __fastcall XgOnSolve_AddBlack(HWND hwnd)
         // 結果を表示する。
         XgShowResults(hwnd, TRUE);
     } else {
+        xg_pTaskbarProgress->Clear();
         // 解なし。表示を更新する。
         xg_bShowAnswer = false;
         XgSetCaretPos();
@@ -3441,6 +3462,7 @@ bool __fastcall XgOnSolve_NoAddBlack(HWND hwnd)
     ::EnableWindow(xg_hwndInputPalette, FALSE);
     {
         XG_CancelSolveNoAddBlackDialog dialog;
+        xg_pTaskbarProgress->Set(-1);
         dialog.DoModal(hwnd);
     }
     ::EnableWindow(xg_hwndInputPalette, TRUE);
@@ -3448,6 +3470,7 @@ bool __fastcall XgOnSolve_NoAddBlack(HWND hwnd)
     if (xg_bCancelled) {
         // キャンセルされた。
         // 解なし。表示を更新する。
+        xg_pTaskbarProgress->Clear();
         xg_bShowAnswer = false;
         XgSetCaretPos();
         XgMarkUpdate();
@@ -3457,6 +3480,7 @@ bool __fastcall XgOnSolve_NoAddBlack(HWND hwnd)
         XgShowResults(hwnd, FALSE);
     } else if (xg_bSolved) {
         // 空マスがないか？
+        xg_pTaskbarProgress->Finish();
         if (xg_xword.IsFulfilled()) {
             // 空マスがない。クリア。
             xg_xword.clear();
@@ -3488,6 +3512,7 @@ bool __fastcall XgOnSolve_NoAddBlack(HWND hwnd)
         XgShowResults(hwnd, TRUE);
     } else {
         // 解なし。表示を更新する。
+        xg_pTaskbarProgress->Clear();
         xg_bShowAnswer = false;
         XgSetCaretPos();
         XgMarkUpdate();
@@ -3543,6 +3568,7 @@ bool __fastcall XgOnSolve_NoAddBlackNoResults(HWND hwnd)
     ::EnableWindow(xg_hwndInputPalette, FALSE);
     {
         XG_CancelSolveNoAddBlackDialog dialog;
+        xg_pTaskbarProgress->Set(-1);
         dialog.DoModal(hwnd);
     }
     ::EnableWindow(xg_hwndInputPalette, TRUE);
@@ -4038,6 +4064,9 @@ void __fastcall XgCopyHintsStyle1(HWND hwnd, int hint_type)
 // ウィンドウが破棄された。
 void __fastcall MainWnd_OnDestroy(HWND /*hwnd*/) noexcept
 {
+    // タスクバーの進捗表示を解放。
+    xg_pTaskbarProgress = nullptr;
+
     // イメージリストを破棄する。
     ::ImageList_Destroy(xg_hImageList);
     xg_hImageList = nullptr;
@@ -4788,11 +4817,11 @@ HWND xg_ahSyncedDialogs[I_SYNCED_MAX] = { 0 };
 #include "XG_HiddenDialog.cpp"
 
 // 全般設定。
-void XgGeneralSettings(HWND hwnd, INT nStartPage = I_SYNCED_FILE_SETTINGS)
+void XgGeneralSettings(HWND hwnd, DWORD nStartPage = I_SYNCED_FILE_SETTINGS)
 {
     PROPSHEETPAGEW psp = { sizeof(psp) };
     HPROPSHEETPAGE hpsp[I_SYNCED_MAX];
-    INT iPage = 0;
+    SIZE_T iPage = 0;
 
     // 入力候補を破棄する。
     XgDestroyCandsWnd();
@@ -5444,10 +5473,12 @@ void XgGenerateFromWordList(HWND hwnd)
     // 単語リストから生成する。
     {
         XG_CancelFromWordsDialog dialog;
+        xg_pTaskbarProgress->Set(-1);
         nID = static_cast<int>(dialog.DoModal(hwnd));
     }
     if (nID == IDCANCEL) {
         // キャンセルされた。
+        xg_pTaskbarProgress->Clear();
         WCHAR sz[256];
         StringCchPrintfW(sz, _countof(sz), XgLoadStringDx1(IDS_CANCELLED),
                          DWORD(xg_dwlTick2 - xg_dwlTick0) / 1000,
@@ -5458,9 +5489,12 @@ void XgGenerateFromWordList(HWND hwnd)
 
     if (!s_generated) {
         // 生成できなかった。
+        xg_pTaskbarProgress->Clear();
         XgShowResults(hwnd, FALSE);
         return;
     }
+
+    xg_pTaskbarProgress->Finish();
 
     // 「元に戻す」情報を取得する。
     auto sa1 = std::make_shared<XG_UndoData_SetAll>();
@@ -5822,12 +5856,15 @@ void __fastcall XgGenerate(HWND hwnd)
     {
         if (xg_bSmartResolution) {
             XG_CancelSmartSolveDialog dialog;
+            xg_pTaskbarProgress->Set(-1);
             nID = dialog.DoModal(hwnd);
         } else if (xg_nRules & (RULE_POINTSYMMETRY | RULE_LINESYMMETRYV | RULE_LINESYMMETRYH)) {
             XG_CancelSmartSolveDialog dialog;
+            xg_pTaskbarProgress->Set(-1);
             nID = dialog.DoModal(hwnd);
         } else {
             XG_CancelSolveDialog dialog;
+            xg_pTaskbarProgress->Set(-1);
             nID = dialog.DoModal(hwnd);
         }
         // 生成成功のときはxg_nNumberGeneratedを増やす。
@@ -5838,10 +5875,13 @@ void __fastcall XgGenerate(HWND hwnd)
     ::EnableWindow(xg_hwndInputPalette, TRUE);
 
     if (!xg_bSolved) {
+        xg_pTaskbarProgress->Clear();
         // 結果を表示する。
         XgShowResults(hwnd, FALSE);
         return;
     }
+
+    xg_pTaskbarProgress->Finish();
 
     // 番号とヒントを付ける。
     xg_solution.DoNumberingNoCheck();
@@ -7489,6 +7529,9 @@ bool __fastcall MainWnd_OnCreate(HWND hwnd, LPCREATESTRUCT /*lpCreateStruct*/)
     XgUpdateToolBarUI(hwnd);
     // 辞書メニューの表示を更新。
     XgUpdateTheme(hwnd);
+
+    // タスクバーの進捗表示を初期化。
+    xg_pTaskbarProgress = std::make_shared<TaskbarProgress>(hwnd);
 
     return true;
 }

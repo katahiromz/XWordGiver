@@ -114,6 +114,7 @@ add_executable(XWordGiver${BITS} WIN32
     Input.cpp
     Marks.cpp
     MScrollView.cpp
+    TaskbarProgress.cpp
     Utils.cpp
     XWordGiver.cpp
     XWordGiver_res.rc)

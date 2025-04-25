@@ -327,6 +327,7 @@
     - Correctly reset outer frame settings on "Initialize application".
     - Enhanced PAT.txt.
 - 2025-XX-YY ver.5.2.7
+    - Implemented taskbar progress display.
 
 # 開発履歴 (Japanese)
 
@@ -973,3 +974,4 @@
     - 「アプリの初期化」においてちゃんと外枠の設定をリセット。
     - PAT.txtを強化。
 - 2025年XX月YY日 ver.5.2.7
+    - タスクバー進捗表示を実装。
