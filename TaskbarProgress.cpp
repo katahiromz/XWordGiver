@@ -35,11 +35,7 @@ void TaskbarProgress::Set(INT percent)
     m_pTaskbarList->SetProgressState(m_hWnd, ((percent < 0) ? TBPF_INDETERMINATE : TBPF_NORMAL));
 
     if (percent >= 0)
-    {
         m_pTaskbarList->SetProgressValue(m_hWnd, percent, 100);
-
-        SetThumbnail();
-    }
 }
 
 void TaskbarProgress::Error()
@@ -49,7 +45,6 @@ void TaskbarProgress::Error()
 
     m_pTaskbarList->SetProgressValue(m_hWnd, 100, 100);
     m_pTaskbarList->SetProgressState(m_hWnd, TBPF_ERROR);
-    SetThumbnail();
 }
 
 void TaskbarProgress::Clear()
@@ -59,7 +54,6 @@ void TaskbarProgress::Clear()
 
     m_pTaskbarList->SetProgressValue(m_hWnd, 0, 100);
     m_pTaskbarList->SetProgressState(m_hWnd, TBPF_NOPROGRESS);
-    SetThumbnail();
 }
 
 INT TaskbarProgress::GetMenuHeight()
