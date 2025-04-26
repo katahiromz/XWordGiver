@@ -677,6 +677,9 @@ inline void __fastcall XgGetXWordExtent(LPSIZE psiz) noexcept
 }
 
 // クロスワードの描画サイズを計算する。
+void __fastcall XgGetXWordExtentForDisplay(LPSIZE psiz) noexcept;
+
+// クロスワードの描画サイズを計算する。
 inline void __fastcall XgGetMarkWordExtent(int count, LPSIZE psiz) noexcept
 {
     const int nCellSize = (xg_nForDisplay > 0) ? (xg_nCellSize * xg_nZoomRate / 100) : xg_nCellSize;

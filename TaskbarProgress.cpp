@@ -37,6 +37,8 @@ void TaskbarProgress::Set(INT percent)
     if (percent >= 0)
     {
         m_pTaskbarList->SetProgressValue(m_hWnd, percent, 100);
+
+        SetThumbnail();
     }
 }
 
@@ -47,6 +49,7 @@ void TaskbarProgress::Error()
 
     m_pTaskbarList->SetProgressValue(m_hWnd, 100, 100);
     m_pTaskbarList->SetProgressState(m_hWnd, TBPF_ERROR);
+    SetThumbnail();
 }
 
 void TaskbarProgress::Clear()
@@ -56,4 +59,45 @@ void TaskbarProgress::Clear()
 
     m_pTaskbarList->SetProgressValue(m_hWnd, 0, 100);
     m_pTaskbarList->SetProgressState(m_hWnd, TBPF_NOPROGRESS);
+    SetThumbnail();
+}
+
+INT TaskbarProgress::GetMenuHeight()
+{
+    HMENU hMenu = ::GetMenu(m_hWnd);
+    INT cItems = ::GetMenuItemCount(hMenu);
+    RECT rc;
+    ::SetRectEmpty(&rc);
+    for (INT iItem = 0; iItem < cItems; ++iItem)
+    {
+        RECT rcItem;
+        GetMenuItemRect(m_hWnd, hMenu, iItem, &rcItem);
+        ::UnionRect(&rc, &rc, &rcItem);
+    }
+    return rc.bottom - rc.top;
+}
+
+void TaskbarProgress::GetThumbnailSize(PRECT prc)
+{
+    extern RECT xg_rcCanvas;
+    RECT rc = xg_rcCanvas;
+
+    SIZE siz;
+    void __fastcall XgGetXWordExtentForDisplay(LPSIZE psiz) noexcept;
+    XgGetXWordExtentForDisplay(&siz);
+
+    OffsetRect(&rc, 0, GetMenuHeight());
+
+    if (rc.bottom - rc.top > siz.cy)
+        rc.bottom = rc.top + siz.cy;
+
+    *prc = rc;
+}
+
+void TaskbarProgress::SetThumbnail()
+{
+    RECT rc;
+    GetThumbnailSize(&rc);
+
+    m_pTaskbarList->SetThumbnailClip(m_hWnd, &rc);
 }

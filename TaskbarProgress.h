@@ -19,4 +19,7 @@ public:
     void Finish() { Set(100); }
     void Clear();
     void Error();
+    void SetThumbnail();
+    void GetThumbnailSize(PRECT prc);
+    INT GetMenuHeight();
 };

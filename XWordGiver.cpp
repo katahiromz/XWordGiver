@@ -4790,6 +4790,14 @@ WCHAR XgReplaceChar(WCHAR ch)
     return ch0;
 }
 
+// クロスワードの描画サイズを計算する。
+void __fastcall XgGetXWordExtentForDisplay(LPSIZE psiz) noexcept
+{
+    const int nCellSize = xg_nCellSize * xg_nZoomRate / 100;
+    psiz->cx = static_cast<int>(xg_nMargin * 2 + xg_nCols * nCellSize);
+    psiz->cy = static_cast<int>(xg_nMargin * 2 + xg_nRows * nCellSize);
+}
+
 // 文字マスを描画する。
 void XgDrawLetterCell(HDC hdc, WCHAR ch, RECT& rc, HFONT hFont)
 {

@@ -70,6 +70,7 @@ HWND xg_hMainWnd = nullptr;
 
 // キャンバスウィンドウ。
 HWND xg_hCanvasWnd = nullptr;
+RECT xg_rcCanvas;
 
 // ヒントウィンドウのハンドル。
 HWND xg_hHintsWnd = nullptr;
@@ -4729,6 +4730,7 @@ void __fastcall MainWnd_OnSize(HWND hwnd, UINT state, int /*cx*/, int /*cy*/)
         }
         hDwp = ::DeferWindowPos(hDwp, xg_canvasWnd, nullptr,
             x, y, cx, cy, SWP_SHOWWINDOW | SWP_NOZORDER | SWP_NOACTIVATE | SWP_NOOWNERZORDER);
+        xg_rcCanvas = { x, y, x + cx, y + cy };
         ::EndDeferWindowPos(hDwp);
     }
 
@@ -4771,6 +4773,10 @@ void __fastcall MainWnd_OnSize(HWND hwnd, UINT state, int /*cx*/, int /*cy*/)
 
     // ボックスの位置を更新。
     PostMessage(hwnd, WM_COMMAND, ID_MOVEBOXES, 0);
+
+    // サムネイルイメージの更新。
+    if (xg_pTaskbarProgress)
+        xg_pTaskbarProgress->SetThumbnail();
 }
 
 // 位置が変更された。
