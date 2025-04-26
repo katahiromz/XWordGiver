@@ -328,6 +328,7 @@
     - Enhanced PAT.txt.
 - 2025-XX-YY ver.5.2.7
     - Implemented taskbar progress display.
+    - Implemented taskbar thumbnail display.
 
 # 開発履歴 (Japanese)
 
@@ -975,3 +976,4 @@
     - PAT.txtを強化。
 - 2025年XX月YY日 ver.5.2.7
     - タスクバー進捗表示を実装。
+    - タスクバーサムネイル表示を実装。
