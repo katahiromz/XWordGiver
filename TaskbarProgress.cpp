@@ -88,6 +88,8 @@ void TaskbarProgress::GetThumbnailSize(PRECT prc)
 
     OffsetRect(&rc, 0, GetMenuHeight());
 
+    if (rc.right - rc.left > siz.cx)
+        rc.right = rc.left + siz.cx;
     if (rc.bottom - rc.top > siz.cy)
         rc.bottom = rc.top + siz.cy;
 

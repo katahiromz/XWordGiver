@@ -779,6 +779,10 @@ void __fastcall XgUpdateScrollInfo(HWND hwnd, int x, int y) noexcept
 
     // ボックスの位置を更新。
     PostMessage(hwnd, WM_COMMAND, ID_MOVEBOXES, 0);
+
+    // サムネイルを更新。
+    if (xg_pTaskbarProgress)
+        xg_pTaskbarProgress->SetThumbnail();
 }
 
 // キャレットが見えるように、必要ならばスクロールする。
