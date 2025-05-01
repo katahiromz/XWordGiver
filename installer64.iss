@@ -11,6 +11,7 @@ AppId={{CDECA641-CFBB-43E0-A075-13802703E7EC}
 AppName={cm:AppNameBits}
 AppVersion={#APP_VERSION}
 AppVerName={cm:AppNameBits} ver.{#APP_VERSION}
+VersionInfoVersion={#APP_VERSION}
 AppPublisher={cm:Author}
 AppPublisherURL=https://katahiromz.fc2.page/
 AppSupportURL=https://katahiromz.fc2.page/
