@@ -1627,7 +1627,6 @@ STRINGTABLE
     IDS_CANTSAVE2, "I couldn't save the file."
     IDS_SOLVED, "I have generated a crossword. \n\nCalculation time: %u.%u[sec]"
     IDS_RESULTS, "Results"
-    IDS_CANTSOLVE, "No solutions were found.\n\nPlease confirm the dictionary, the block pattern, and the policy.\n\nCalculation time: %u.%u[sec]"
     IDS_CANTACCEL, "I couldn't load the accelerators."
     IDS_CANTREGWND, "I couldn't register the window classes."
     IDS_CANTMAKEWND, "I couldn't create the window."

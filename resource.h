@@ -50,7 +50,6 @@
 #define IDS_CANTSAVE2                       107
 #define IDS_SOLVED                          108
 #define IDS_RESULTS                         109
-#define IDS_CANTSOLVE                       111
 #define IDS_CANTACCEL                       112
 #define IDS_CANTREGWND                      113
 #define IDS_CANTMAKEWND                     114
