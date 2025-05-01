@@ -5833,6 +5833,13 @@ void __fastcall XgDrawCaret(HDC hdc)
 // 問題を生成する。
 void __fastcall XgGenerate(HWND hwnd)
 {
+    // 辞書がない場合、辞書がないよと教えてあげる。
+    if (xg_dict_name.empty())
+    {
+        XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_NODICTSELECTED), NULL, MB_ICONERROR);
+        return;
+    }
+
     auto sa0 = std::make_shared<XG_UndoData_SetAll>();
     sa0->Get();
     // [問題の作成]ダイアログ。
@@ -6315,6 +6322,13 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT /*codeNo
         bUpdateImage = TRUE;
         break;
     case ID_SOLVE:  // 解を求める。
+        // 辞書が選択されていない場合、教えてあげる。
+        if (xg_dict_name.empty())
+        {
+            XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_NODICTSELECTED), NULL, MB_ICONERROR);
+            break;
+        }
+
         if (!xg_bSolved && xg_xword.IsFulfilled())
         {
             // 空白マスがない場合は「解を求める」を制限しない。
@@ -6351,6 +6365,12 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT /*codeNo
         bUpdateImage = TRUE;
         break;
     case ID_SOLVENOADDBLACK:    // 解を求める（黒マス追加なし）。
+        // 辞書が選択されていない場合、教えてあげる。
+        if (xg_dict_name.empty())
+        {
+            XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_NODICTSELECTED), NULL, MB_ICONERROR);
+            break;
+        }
         {
             auto sa1 = std::make_shared<XG_UndoData_SetAll>();
             sa1->Get();

@@ -330,6 +330,7 @@
     - Implemented taskbar progress display.
     - Implemented taskbar thumbnail display.
     - Improved the "Generate from words" dialog and changed it to automatically switch to skeleton view.
+    - We decided to let you know if a dictionary is not selected when generating a puzzle.
 
 # 開発履歴 (Japanese)
 
@@ -979,3 +980,4 @@
     - タスクバー進捗表示を実装。
     - タスクバーサムネイル表示を実装。
     - 「単語群から生成」ダイアログを改良し、自動的にスケルトンビューになるよう変更。
+    - 問題の生成時に辞書が選択されていない場合、教えてあげることにした。
