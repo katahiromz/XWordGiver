@@ -329,6 +329,7 @@
 - 2025-XX-YY ver.5.2.7
     - Implemented taskbar progress display.
     - Implemented taskbar thumbnail display.
+    - Improved the "Generate from words" dialog and changed it to automatically switch to skeleton view.
 
 # 開発履歴 (Japanese)
 
@@ -977,3 +978,4 @@
 - 2025年XX月YY日 ver.5.2.7
     - タスクバー進捗表示を実装。
     - タスクバーサムネイル表示を実装。
+    - 「単語群から生成」ダイアログを改良し、自動的にスケルトンビューになるよう変更。

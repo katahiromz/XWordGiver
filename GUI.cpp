@@ -5555,6 +5555,7 @@ void XgGenerateFromWordList(HWND hwnd)
     xg_dict_1.clear();
     xg_dict_2.clear();
     xg_dict_name.clear();
+    xg_nViewMode = XG_VIEW_SKELETON; // スケルトンビューにする。
     for (int y = 0; y < solution.m_cy; ++y) {
         for (int x = 0; x < solution.m_cx; ++x) {
             auto ch = solution.get_at(x, y);
