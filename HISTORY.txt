@@ -326,7 +326,7 @@
 - 2025-04-24 ver.5.2.6
     - Correctly reset outer frame settings on "Initialize application".
     - Enhanced PAT.txt.
-- 2025-05-11 ver.5.2.7
+- 2025-05-01 ver.5.2.7
     - Implemented taskbar progress display.
     - Implemented taskbar thumbnail display.
     - Improved the "Generate from words" dialog and changed it to automatically switch to skeleton view.
