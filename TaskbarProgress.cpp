@@ -92,6 +92,9 @@ void TaskbarProgress::GetThumbnailSize(PRECT prc)
 
 void TaskbarProgress::SetThumbnail()
 {
+    if (!m_pTaskbarList || FAILED(m_hr))
+        return;
+
     RECT rc;
     GetThumbnailSize(&rc);
 

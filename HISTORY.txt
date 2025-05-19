@@ -334,6 +334,7 @@
     - Updated URLs.
 - 2025-XX-YY ver.5.2.8
     - Added digital sign to EXE files.
+    - Fixed a null reference in taskbar thumbnail on Vista.
 
 # 開発履歴 (Japanese)
 
@@ -987,3 +988,4 @@
     - URLを更新。
 - 2025年XX月YY日 ver.5.2.8
     - EXEファイルにデジタル署名を追加。
+    - VistaにおいてタスクバーサムネイルでNULL参照が起こっていたのを修正。
