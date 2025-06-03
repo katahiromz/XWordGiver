@@ -2020,7 +2020,7 @@ struct non_add_block_t {
             try {
                 // スレッドを生成。切り離す。
                 std::thread t(generate_proc, pboard, pwords, i);
-                xg_ahThreads[i] = t.native_handle();
+                xg_ahThreads[i] = (HANDLE)t.native_handle();
                 t.detach();
             } catch (std::system_error&) {
                 delete pboard;
