@@ -333,7 +333,7 @@
     - We decided to let you know if a dictionary is not selected when generating a puzzle.
     - Updated URLs.
 - 2025-06-03 ver.5.2.8
-    - Added digital sign to EXE files.
+    - Added digital signature to EXE files.
     - Fixed a null reference in taskbar thumbnail on Vista.
 
 # 開発履歴 (Japanese)
