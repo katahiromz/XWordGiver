@@ -332,7 +332,7 @@
     - Improved the "Generate from words" dialog and changed it to automatically switch to skeleton view.
     - We decided to let you know if a dictionary is not selected when generating a puzzle.
     - Updated URLs.
-- 2025-XX-YY ver.5.2.8
+- 2025-06-03 ver.5.2.8
     - Added digital sign to EXE files.
     - Fixed a null reference in taskbar thumbnail on Vista.
 
@@ -986,6 +986,6 @@
     - 「単語群から生成」ダイアログを改良し、自動的にスケルトンビューになるよう変更。
     - 問題の生成時に辞書が選択されていない場合、教えてあげることにした。
     - URLを更新。
-- 2025年XX月YY日 ver.5.2.8
+- 2025年06月03日 ver.5.2.8
     - EXEファイルにデジタル署名を追加。
     - VistaにおいてタスクバーサムネイルでNULL参照が起こっていたのを修正。
