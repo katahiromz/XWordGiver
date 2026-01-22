@@ -66,6 +66,8 @@ public:
             // タイムアウトの場合は通常の待機。
             XgWaitForThreads();
         }
+        // グローバルポインタをクリア（リトライ時は状態復元しない）。
+        xg_pCancellationManager = nullptr;
         // スレッドを閉じる。
         XgCloseThreads();
 

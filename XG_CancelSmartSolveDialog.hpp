@@ -55,8 +55,21 @@ public:
 
     void DoRetry(HWND hwnd)
     {
-        // キャンセルする。
-        DoCancel(hwnd);
+        // タイマーを解除する。
+        ::KillTimer(hwnd, uTimerID);
+        // キャンセルしてスレッドを待つ。
+        ::EnterCriticalSection(&xg_csLock);
+        xg_bCancelled = true;
+        ::LeaveCriticalSection(&xg_csLock);
+        // スレッドを待つ（タイムアウト付き）。
+        if (!m_cancellation_manager.WaitForCompletion(5000)) {
+            // タイムアウトの場合は通常の待機。
+            XgWaitForThreads();
+        }
+        // グローバルポインタをクリア（リトライ時は状態復元しない）。
+        xg_pCancellationManager = nullptr;
+        // スレッドを閉じる。
+        XgCloseThreads();
 
         ::InterlockedIncrement(&xg_nRetryCount);
         Restart(hwnd);
