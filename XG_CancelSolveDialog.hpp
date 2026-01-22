@@ -38,6 +38,7 @@ public:
         // キャンセルしてスレッドを待つ。
         ::EnterCriticalSection(&xg_csLock);
         xg_bCancelled = true;
+        m_cancellation_manager.SetCompleted();
         ::LeaveCriticalSection(&xg_csLock);
         // スレッドを待つ（タイムアウト付き）。
         if (!m_cancellation_manager.WaitForCompletion(5000)) {
@@ -60,6 +61,7 @@ public:
         // キャンセルしてスレッドを待つ。
         ::EnterCriticalSection(&xg_csLock);
         xg_bCancelled = true;
+        m_cancellation_manager.SetCompleted();
         ::LeaveCriticalSection(&xg_csLock);
         // スレッドを待つ（タイムアウト付き）。
         if (!m_cancellation_manager.WaitForCompletion(5000)) {
