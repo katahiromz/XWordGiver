@@ -7823,28 +7823,28 @@ unsigned __stdcall XgGenerateBlacksSmart(void *param)
     if (xg_nRules & RULE_POINTSYMMETRY) {
         // 再帰求解関数に突入する。
         do {
-            if (xg_bCancelled_get() || xg_bBlacksGenerated)
+            if (xg_bCancelled_get() || xg_bBlacksGenerated_get())
                 break;
             xword.clear();
         } while (!XgGenerateBlacksPointSymRecurse(xword, 0));
     } else if (xg_nRules & RULE_LINESYMMETRYV) {
         // 再帰求解関数に突入する。
         do {
-            if (xg_bCancelled_get() || xg_bBlacksGenerated)
+            if (xg_bCancelled_get() || xg_bBlacksGenerated_get())
                 break;
             xword.clear();
         } while (!XgGenerateBlacksLineSymVRecurse(xword, 0));
     } else if (xg_nRules & RULE_LINESYMMETRYH) {
         // 再帰求解関数に突入する。
         do {
-            if (xg_bCancelled_get() || xg_bBlacksGenerated)
+            if (xg_bCancelled_get() || xg_bBlacksGenerated_get())
                 break;
             xword.clear();
         } while (!XgGenerateBlacksLineSymHRecurse(xword, 0));
     } else {
         // 再帰求解関数に突入する。
         do {
-            if (xg_bCancelled_get() || xg_bBlacksGenerated)
+            if (xg_bCancelled_get() || xg_bBlacksGenerated_get())
                 break;
             xword.clear();
         } while (!XgGenerateBlacksRecurse(xword, 0));
