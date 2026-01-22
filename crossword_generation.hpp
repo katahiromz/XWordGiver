@@ -1744,8 +1744,18 @@ struct non_add_block_t {
                 ret.push_back({ x, y, pat, vertical }); // その候補が戻り値の一つ。
             return ret;
         }
-        ret.reserve(m_words.size() >> 4); // 速度のために前もって予約して確保。
+        
+        // 候補数の上限（メモリとパフォーマンスのバランス）。
+        constexpr size_t MAX_CANDIDATES = 1000;
+        
+        // 速度のために前もって予約して確保（より正確な見積もり）。
+        ret.reserve(std::min(m_words.size() >> 3, MAX_CANDIDATES));
+        
         for (auto& word : m_words) { // 各単語について、、、
+            // 早期終了: 候補数が上限に達したら打ち切る。
+            if (ret.size() >= MAX_CANDIDATES)
+                break;
+                
             if (word.size() != pat.size()) // 単語とパターンの長さが不一致ならばスキップ。
                 continue;
             bool matched = true; // 一致していると仮定。
