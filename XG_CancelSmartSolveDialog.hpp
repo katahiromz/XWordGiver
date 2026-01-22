@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include "XG_Window.hpp"
+#include "XG_CancellationManager.hpp"
 
 // キャンセルダイアログ（スマート解決）。
 class XG_CancelSmartSolveDialog : public XG_Dialog
@@ -9,6 +10,7 @@ public:
     const DWORD SLEEP = 250;
     const DWORD INTERVAL = 300;
     const UINT uTimerID = 999;
+    XG_CancellationManager m_cancellation_manager;
 
     XG_CancelSmartSolveDialog() noexcept
     {
@@ -19,6 +21,12 @@ public:
         // タイマーを解除する。
         ::KillTimer(hwnd, uTimerID);
         xg_dwlTick1 = ::GetTickCount64();
+        // リセット。
+        m_cancellation_manager.Reset();
+        // 初期状態を保存。
+        m_cancellation_manager.SaveInitialState();
+        // グローバルポインタを設定。
+        xg_pCancellationManager = &m_cancellation_manager;
         XgStartSolve_Smart();
         // タイマーをセットする。
         ::SetTimer(hwnd, uTimerID, INTERVAL, nullptr);
@@ -32,16 +40,36 @@ public:
         ::EnterCriticalSection(&xg_csLock);
         xg_bCancelled = true;
         ::LeaveCriticalSection(&xg_csLock);
-        // スレッドを待つ。
-        XgWaitForThreads();
+        // スレッドを待つ（タイムアウト付き）。
+        if (!m_cancellation_manager.WaitForCompletion(5000)) {
+            // タイムアウトの場合は通常の待機。
+            XgWaitForThreads();
+        }
+        // キャンセル時に初期状態に復元。
+        m_cancellation_manager.RestoreOnCancel();
+        // グローバルポインタをクリア。
+        xg_pCancellationManager = nullptr;
         // スレッドを閉じる。
         XgCloseThreads();
     }
 
     void DoRetry(HWND hwnd)
     {
-        // キャンセルする。
-        DoCancel(hwnd);
+        // タイマーを解除する。
+        ::KillTimer(hwnd, uTimerID);
+        // キャンセルしてスレッドを待つ。
+        ::EnterCriticalSection(&xg_csLock);
+        xg_bCancelled = true;
+        ::LeaveCriticalSection(&xg_csLock);
+        // スレッドを待つ（タイムアウト付き）。
+        if (!m_cancellation_manager.WaitForCompletion(5000)) {
+            // タイムアウトの場合は通常の待機。
+            XgWaitForThreads();
+        }
+        // グローバルポインタをクリア（リトライ時は状態復元しない）。
+        xg_pCancellationManager = nullptr;
+        // スレッドを閉じる。
+        XgCloseThreads();
 
         ::InterlockedIncrement(&xg_nRetryCount);
         Restart(hwnd);
