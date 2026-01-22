@@ -4169,6 +4169,7 @@ void __fastcall XgSolveXWord_NoAddBlackRecurse(const XG_Board& xw)
     }
 
     // 解かどうか？
+    bool should_set_completed = false;
     ::EnterCriticalSection(&xg_csLock);
     if (!xg_bCancelled && !xg_bSolved && xw.IsSolution()) { // 解だった。
         xg_bSolved = true;
@@ -4182,12 +4183,15 @@ void __fastcall XgSolveXWord_NoAddBlackRecurse(const XG_Board& xw)
             if (xw.GetAt(i) == ZEN_BLACK)
                 xg_xword.SetAt(i, ZEN_BLACK);
         }
-        // 完了を通知。
-        if (xg_pCancellationManager != nullptr) {
-            xg_pCancellationManager->SetCompleted();
-        }
+        
+        should_set_completed = (xg_pCancellationManager != nullptr);
     }
     ::LeaveCriticalSection(&xg_csLock);
+    
+    // 完了を通知（ロックの外で）。
+    if (should_set_completed) {
+        xg_pCancellationManager->SetCompleted();
+    }
 }
 
 // 縦と横を入れ替える。
