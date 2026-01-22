@@ -7,6 +7,7 @@
 #include "XG_Settings.hpp"
 #include "XG_CancellationManager.hpp"
 #include <clocale>
+#include <mutex>
 
 //////////////////////////////////////////////////////////////////////////////
 // global variables
@@ -1950,8 +1951,10 @@ void __fastcall XG_Board::DoNumberingNoCheck()
 namespace {
     struct CandidateCache {
         static constexpr size_t MAX_CACHE_SIZE = 500; // キャッシュの最大サイズ。
+        static constexpr size_t EVICT_COUNT = 100; // 一度に削除するエントリ数。
         std::unordered_map<XGStringW, std::vector<XGStringW>> cache;
         std::mutex cache_mutex;
+        size_t eviction_counter = 0; // 削除カウンター。
         
         // キャッシュから候補を取得。
         bool get(const XGStringW& pattern, std::vector<XGStringW>& cands) {
@@ -1964,12 +1967,16 @@ namespace {
             return false;
         }
         
-        // キャッシュに候補を保存。
+        // キャッシュに候補を保存（空の結果もキャッシュする）。
         void put(const XGStringW& pattern, const std::vector<XGStringW>& cands) {
             std::lock_guard<std::mutex> lock(cache_mutex);
-            // キャッシュサイズ制限（簡易LRU: 最大サイズに達したらクリア）。
+            // キャッシュサイズ制限（段階的削除でパフォーマンススパイクを軽減）。
             if (cache.size() >= MAX_CACHE_SIZE) {
-                cache.clear();
+                // 先頭から一定数のエントリを削除（簡易LRU）。
+                auto it = cache.begin();
+                for (size_t i = 0; i < EVICT_COUNT && it != cache.end(); ) {
+                    it = cache.erase(it);
+                }
             }
             cache[pattern] = cands;
         }
@@ -1978,6 +1985,7 @@ namespace {
         void clear() {
             std::lock_guard<std::mutex> lock(cache_mutex);
             cache.clear();
+            eviction_counter = 0;
         }
     };
     
@@ -2153,11 +2161,10 @@ XgGetCandidatesAddBlack(
 
                 // 早期終了: 候補数が上限に達したら打ち切る。
                 if (cands.size() >= MAX_CANDIDATES)
-                    goto done;
+                    break;
             }
         }
     }
-done:
 
     // 候補が空でなければ成功。
     return !cands.empty();
@@ -2229,10 +2236,8 @@ XgGetCandidatesNoAddBlack(std::vector<XGStringW>& cands, const XGStringW& patter
         cands.emplace_back(word);
     }
 
-    // キャッシュに保存。
-    if (!cands.empty()) {
-        cache.put(pattern, cands);
-    }
+    // キャッシュに保存（空の結果もキャッシュして無駄な検索を防ぐ）。
+    cache.put(pattern, cands);
 
     // 候補が空でなければ成功。
     return !cands.empty();
