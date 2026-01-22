@@ -3055,12 +3055,12 @@ void __fastcall XgShowResults(HWND hwnd, BOOL bOK)
         }
         // ヒントを表示する。
         XgShowHints(hwnd);
-    } else if (xg_bCancelled) {
+    } else if (xg_bCancelled) { // キャンセルされた
         // 必要なら音声を鳴らす。
         if (xg_aszSoundFiles[I_SOUND_CANCELED][0]) {
             ::PlaySoundW(xg_aszSoundFiles[I_SOUND_CANCELED], NULL, SND_ASYNC | SND_FILENAME);
         }
-        // 必要ならキャンセルメッセージを表示する。
+        // 必要ならキャンセルメッセージ「計算がキャンセルされました」を表示する。
         if (!xg_bNoCanceledMsg) {
             StringCchPrintf(sz, _countof(sz), XgLoadStringDx1(IDS_CANCELLED),
                             DWORD(xg_dwlTick2 - xg_dwlTick0) / 1000,
@@ -3069,7 +3069,7 @@ void __fastcall XgShowResults(HWND hwnd, BOOL bOK)
         }
     } else {
         // もう音を鳴らしているはずだ。。。
-        // 失敗メッセージを表示する。
+        // 失敗メッセージ「問題を生成できませんでした」を表示する。
         StringCchPrintf(sz, _countof(sz), XgLoadStringDx1(IDS_CANTMAKEPROBLEM),
                         DWORD(xg_dwlTick2 - xg_dwlTick0) / 1000,
                         DWORD(xg_dwlTick2 - xg_dwlTick0) / 100 % 10);
@@ -3247,8 +3247,9 @@ bool __fastcall XgOnGenerateBlacksRepeatedly(HWND hwnd)
     XgUpdateImage(hwnd, 0, 0);
 
     WCHAR sz[MAX_PATH];
-    if (xg_bCancelled) {
+    if (xg_bCancelled) { // キャンセルされた？
         xg_pTaskbarProgress->Clear();
+        // 「計算がキャンセルされました」を表示
         StringCchPrintf(sz, _countof(sz), XgLoadStringDx1(IDS_CANCELLED),
                        DWORD(xg_dwlTick2 - xg_dwlTick0) / 1000,
                        DWORD(xg_dwlTick2 - xg_dwlTick0) / 100 % 10);
@@ -3325,8 +3326,9 @@ bool __fastcall XgOnGenerateBlacks(HWND hwnd, bool sym)
     XgUpdateImage(hwnd, 0, 0);
 
     WCHAR sz[MAX_PATH];
-    if (xg_bCancelled) {
+    if (xg_bCancelled) { // キャンセルされた
         xg_pTaskbarProgress->Clear();
+        // 「計算がキャンセルされました」を表示
         StringCchPrintf(sz, _countof(sz), XgLoadStringDx1(IDS_CANCELLED),
                        DWORD(xg_dwlTick2 - xg_dwlTick0) / 1000,
                        DWORD(xg_dwlTick2 - xg_dwlTick0) / 100 % 10);
@@ -3393,15 +3395,14 @@ bool __fastcall XgOnSolve_AddBlack(HWND hwnd)
     ::EnableWindow(xg_hwndInputPalette, TRUE);
 
     WCHAR sz[MAX_PATH];
-    if (xg_bCancelled) {
-        // キャンセルされた。
+    if (xg_bCancelled) { // キャンセルされた。
         // 解なし。表示を更新する。
         xg_pTaskbarProgress->Clear();
         xg_bShowAnswer = false;
         XgSetCaretPos();
         XgMarkUpdate();
         XgUpdateImage(hwnd, 0, 0);
-
+        // 「計算がキャンセルされました」を表示
         StringCchPrintf(sz, _countof(sz), XgLoadStringDx1(IDS_CANCELLED),
                        DWORD(xg_dwlTick2 - xg_dwlTick0) / 1000,
                        DWORD(xg_dwlTick2 - xg_dwlTick0) / 100 % 10);
@@ -5514,9 +5515,9 @@ void XgGenerateFromWordList(HWND hwnd)
         xg_pTaskbarProgress->Set(-1);
         nID = static_cast<int>(dialog.DoModal(hwnd));
     }
-    if (nID == IDCANCEL) {
-        // キャンセルされた。
+    if (nID == IDCANCEL) { // キャンセルされた。
         xg_pTaskbarProgress->Clear();
+        // 「計算がキャンセルされました」を表示
         WCHAR sz[256];
         StringCchPrintfW(sz, _countof(sz), XgLoadStringDx1(IDS_CANCELLED),
                          DWORD(xg_dwlTick2 - xg_dwlTick0) / 1000,
