@@ -41,8 +41,8 @@ public:
         if (!xg_bSolved) {
             xg_bCancelled = true;
         }
-        m_cancellation_manager.SetCompleted();
         ::LeaveCriticalSection(&xg_csLock);
+        m_cancellation_manager.SetCompleted();
         // スレッドを待つ（タイムアウト付き）。
         if (!m_cancellation_manager.WaitForCompletion(5000)) {
             // タイムアウトの場合は通常の待機。
