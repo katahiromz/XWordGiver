@@ -8,6 +8,9 @@
 // 辞書データ。
 std::vector<XG_WordData>     xg_dict_1, xg_dict_2;
 
+// 長さでインデックス化された辞書データ（高速検索用）。
+std::unordered_map<int, std::vector<XG_WordData>> xg_dict_1_by_length, xg_dict_2_by_length;
+
 // タグ付けデータ。
 std::unordered_map<XGStringW, std::unordered_set<XGStringW> > xg_word_to_tags_map;
 
@@ -215,6 +218,8 @@ bool __fastcall XgLoadDictFile(LPCWSTR pszFile)
     // 初期化する。
     xg_dict_1.clear();
     xg_dict_2.clear();
+    xg_dict_1_by_length.clear();
+    xg_dict_2_by_length.clear();
     xg_word_to_tags_map.clear();
     xg_tag_histgram.clear();
     xg_strDefaultTheme.clear();
@@ -308,6 +313,18 @@ bool __fastcall XgLoadDictFile(LPCWSTR pszFile)
         for (auto& worddata : xg_dict_2) {
             const auto len = worddata.m_word.size();
             xg_word_length_histgram[len]++;
+        }
+
+        // 長さでインデックス化された辞書を構築する（高速検索用）。
+        xg_dict_1_by_length.clear();
+        xg_dict_2_by_length.clear();
+        for (auto& worddata : xg_dict_1) {
+            const auto len = static_cast<int>(worddata.m_word.size());
+            xg_dict_1_by_length[len].push_back(worddata);
+        }
+        for (auto& worddata : xg_dict_2) {
+            const auto len = static_cast<int>(worddata.m_word.size());
+            xg_dict_2_by_length[len].push_back(worddata);
         }
 
         // 最長、最短を更新。
