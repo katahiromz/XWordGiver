@@ -1398,7 +1398,6 @@ extern CRITICAL_SECTION xg_csLock;
 
 // キャンセル管理マネージャー（前方宣言）。
 class XG_CancellationManager;
-extern XG_CancellationManager* xg_pCancellationManager;
 
 // スレッドの数。
 extern DWORD xg_dwThreadCount;

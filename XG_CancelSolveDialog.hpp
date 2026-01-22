@@ -23,8 +23,6 @@ public:
         m_cancellation_manager.Reset();
         // 初期状態を保存。
         m_cancellation_manager.SaveInitialState();
-        // グローバルポインタを設定。
-        xg_pCancellationManager = &m_cancellation_manager;
         // 解を求めるのを開始。
         XgStartSolve_AddBlack();
         // タイマーをセットする。
@@ -42,16 +40,10 @@ public:
             xg_bCancelled = true;
         }
         ::LeaveCriticalSection(&xg_csLock);
-        m_cancellation_manager.SetCompleted();
-        // スレッドを待つ（タイムアウト付き）。
-        if (!m_cancellation_manager.WaitForCompletion(5000)) {
-            // タイムアウトの場合は通常の待機。
-            XgWaitForThreads();
-        }
+        // スレッドを待つ
+        XgWaitForThreads();
         // キャンセル時に初期状態に復元。
         m_cancellation_manager.RestoreOnCancel();
-        // グローバルポインタをクリア。
-        xg_pCancellationManager = nullptr;
         // スレッドを閉じる。
         XgCloseThreads();
     }
@@ -68,14 +60,8 @@ public:
             xg_bCancelled = true;
         }
         ::LeaveCriticalSection(&xg_csLock);
-        m_cancellation_manager.SetCompleted();
-        // スレッドを待つ（タイムアウト付き）。
-        if (!m_cancellation_manager.WaitForCompletion(5000)) {
-            // タイムアウトの場合は通常の待機。
-            XgWaitForThreads();
-        }
-        // グローバルポインタをクリア（リトライ時は状態復元しない）。
-        xg_pCancellationManager = nullptr;
+        // スレッドを待つ
+        XgWaitForThreads();
         // スレッドを閉じる。
         XgCloseThreads();
 
