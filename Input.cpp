@@ -55,7 +55,7 @@ void __fastcall XgInputDirection(HWND hwnd, int nDirection)
 // 文字と「元に戻す」情報をセット。
 void __fastcall XgSetChar(HWND hwnd, WCHAR ch)
 {
-    const auto xw = (xg_bSolved ? &xg_solution : &xg_xword);
+    const auto xw = (xg_bSolved_get() ? &xg_solution : &xg_xword);
 
     if (ch == 0xFF0D) { // －
         // 一つでもカナがあれば、マイナスを長音（ー）に置き換える。
@@ -102,7 +102,7 @@ skip:;
     XgUpdateToolBarUI(xg_hMainWnd);
 
     // 答え合わせ。
-    if (xg_bSolved && xg_bCheckingAnswer && ch0 != ch) {
+    if (xg_bSolved_get() && xg_bCheckingAnswer && ch0 != ch) {
         XgCheckAnswer(xg_hMainWnd);
     }
 }
@@ -352,7 +352,7 @@ void __fastcall XgToggleMark(HWND hwnd)
         // マークされていないマス。マークをセットする。
         XG_Board *pxw;
 
-        if (xg_bSolved && xg_bShowAnswer)
+        if (xg_bSolved_get() && xg_bShowAnswer)
             pxw = &xg_solution;
         else
             pxw = &xg_xword;
@@ -452,13 +452,13 @@ void __fastcall XgCharBack(HWND hwnd)
 void __fastcall XgOnChar(HWND hwnd, TCHAR ch, int cRepeat)
 {
     const WCHAR oldch = xg_xword.GetAt(xg_caret_pos);
-    if (oldch == ZEN_BLACK && xg_bSolved)
+    if (oldch == ZEN_BLACK && xg_bSolved_get())
         return;
 
     if (ch == L'_') {
         // 候補ウィンドウを破棄する。
         XgDestroyCandsWnd();
-        if (!(xg_bSolved && oldch == ZEN_BLACK)) {
+        if (!(xg_bSolved_get() && oldch == ZEN_BLACK)) {
             XgSetChar(hwnd, ZEN_SPACE);
             XgEnsureCaretVisible(hwnd);
         }
@@ -468,13 +468,13 @@ void __fastcall XgOnChar(HWND hwnd, TCHAR ch, int cRepeat)
         // 候補ウィンドウを破棄する。
         XgDestroyCandsWnd();
         {
-            if (oldch == ZEN_SPACE && !xg_bSolved) {
+            if (oldch == ZEN_SPACE && !xg_bSolved_get()) {
                 XgSetChar(hwnd, ZEN_BLACK);
                 XgEnsureCaretVisible(hwnd);
-            } else if (oldch == ZEN_BLACK && !xg_bSolved) {
+            } else if (oldch == ZEN_BLACK && !xg_bSolved_get()) {
                 XgSetChar(hwnd, ZEN_SPACE);
                 XgEnsureCaretVisible(hwnd);
-            } else if (!xg_bSolved || !xg_bShowAnswer) {
+            } else if (!xg_bSolved_get() || !xg_bShowAnswer) {
                 if (oldch != ZEN_BLACK) {
                     XgSetChar(hwnd, ZEN_SPACE);
                     XgEnsureCaretVisible(hwnd);
@@ -487,7 +487,7 @@ void __fastcall XgOnChar(HWND hwnd, TCHAR ch, int cRepeat)
         // 候補ウィンドウを破棄する。
         XgDestroyCandsWnd();
 
-        if (!xg_bSolved) {
+        if (!xg_bSolved_get()) {
             XgSetChar(hwnd, ZEN_BLACK);
             XgEnsureCaretVisible(hwnd);
         }
@@ -922,7 +922,7 @@ void __fastcall XgOnKey(HWND hwnd, UINT vk, bool fDown, int /*cRepeat*/, UINT /*
         // 候補ウィンドウを破棄する。
         XgDestroyCandsWnd();
         // 現在のキャレット位置のマスの中身を消去する。
-        if (xg_xword.GetAt(xg_caret_pos) != ZEN_SPACE && !xg_bSolved) {
+        if (xg_xword.GetAt(xg_caret_pos) != ZEN_SPACE && !xg_bSolved_get()) {
             XgSetChar(hwnd, ZEN_SPACE);
             XgEnsureCaretVisible(hwnd);
         }
@@ -1044,7 +1044,7 @@ void __fastcall XgOnImeChar(HWND hwnd, WCHAR ch, LPARAM /*lKeyData*/)
 
     // 解があるとき、黒は上書きできない。
     const WCHAR oldch = xg_xword.GetAt(xg_caret_pos);
-    if (xg_bSolved && oldch == ZEN_BLACK) {
+    if (xg_bSolved_get() && oldch == ZEN_BLACK) {
         return;
     }
 

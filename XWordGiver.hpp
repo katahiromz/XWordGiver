@@ -1329,6 +1329,46 @@ extern bool xg_bSolvingEmpty;
 // 黒マスパターンが生成されたか？
 extern bool xg_bBlacksGenerated;
 
+// フラグ群変数と定数（高速化のためのビットフラグ）
+// Flag group variable and constants (bit flags for performance optimization)
+#define XG_FLAG_SOLVED              0x00000001  // 解が得られたか？
+#define XG_FLAG_CANCELLED           0x00000002  // キャンセルされたか？
+#define XG_FLAG_BLACKS_GENERATED    0x00000004  // 黒マスパターンが生成されたか？
+
+extern DWORD xg_dwFlags;
+
+// フラグアクセス用ヘルパー関数（インライン）
+// Helper functions for flag access (inline)
+inline bool xg_bSolved_get() noexcept { 
+    return (xg_dwFlags & XG_FLAG_SOLVED) != 0; 
+}
+inline void xg_bSolved_set(bool value) noexcept { 
+    if (value) 
+        xg_dwFlags |= XG_FLAG_SOLVED;
+    else 
+        xg_dwFlags &= ~XG_FLAG_SOLVED;
+}
+
+inline bool xg_bCancelled_get() noexcept { 
+    return (xg_dwFlags & XG_FLAG_CANCELLED) != 0; 
+}
+inline void xg_bCancelled_set(bool value) noexcept { 
+    if (value) 
+        xg_dwFlags |= XG_FLAG_CANCELLED;
+    else 
+        xg_dwFlags &= ~XG_FLAG_CANCELLED;
+}
+
+inline bool xg_bBlacksGenerated_get() noexcept { 
+    return (xg_dwFlags & XG_FLAG_BLACKS_GENERATED) != 0; 
+}
+inline void xg_bBlacksGenerated_set(bool value) noexcept { 
+    if (value) 
+        xg_dwFlags |= XG_FLAG_BLACKS_GENERATED;
+    else 
+        xg_dwFlags &= ~XG_FLAG_BLACKS_GENERATED;
+}
+
 // スマート解決か？
 extern bool xg_bSmartResolution;
 

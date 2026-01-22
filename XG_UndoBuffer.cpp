@@ -80,7 +80,7 @@ void XG_UndoData_SetAll::Get() {
     vecVertHints = xg_vecVertHints;
     vecHorzHints = xg_vecHorzHints;
     bShowHints = xg_bShowClues;
-    bSolved = xg_bSolved;
+    bSolved = xg_bSolved_get();
     bHintsAdded = xg_bHintsAdded;
     bShowAnswer = xg_bShowAnswer;
     strHeader = xg_strHeader;
@@ -102,7 +102,7 @@ void XG_UndoData_SetAll::Apply() const {
     xg_vHorzInfo = vHorzInfo;
     xg_vecVertHints = vecVertHints;
     xg_vecHorzHints = vecHorzHints;
-    xg_bSolved = bSolved;
+    xg_bSolved_set(bSolved);
     xg_bHintsAdded = bHintsAdded;
     xg_bShowAnswer = bShowAnswer;
     xg_strHeader = strHeader;

@@ -17,7 +17,7 @@ public:
 
     void UpdateUI(HWND hwnd)
     {
-        if (!xg_bSolved) {
+        if (!xg_bSolved_get()) {
             if (m_nType == 1)
                 m_nType = 0;
         }
@@ -148,7 +148,7 @@ public:
         m_bVert = FALSE;
         m_nNumber = 1;
 
-        if (xg_bSolved) {
+        if (xg_bSolved_get()) {
             for (auto& vert : xg_vVertInfo) {
                 if (vert.m_iRow == m_iRow - 1 && vert.m_jCol == m_jCol - 1) {
                     m_nNumber = vert.m_number;
@@ -207,7 +207,7 @@ public:
                             return;
 
                         auto str = XgNormalizeString(szText);
-                        XG_Board& xw = (xg_bSolved && xg_bShowAnswer) ? xg_solution : xg_xword;
+                        XG_Board& xw = (xg_bSolved_get() && xg_bShowAnswer) ? xg_solution : xg_xword;
 
                         // 次に進む関数。
                         auto GetNext = [&](INT& jCol, INT& iRow) {

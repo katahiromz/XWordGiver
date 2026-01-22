@@ -30,7 +30,7 @@ void __fastcall XgGetStringOfMarks(XGStringW& str)
     str += XgLoadStringDx1(IDS_HLINE);
     str += L"\r\n";
     for (const auto& mark : xg_vMarks) {
-        if (xg_bSolved)
+        if (xg_bSolved_get())
             StringCchPrintf(sz, _countof(sz), L"(%d, %d)%c\r\n",
                 mark.m_i + 1, mark.m_j + 1,
                 xg_solution.GetAt(mark.m_i, mark.m_j));
@@ -48,7 +48,7 @@ void __fastcall XgGetStringOfMarks2(XGStringW& str)
     WCHAR sz[64];
     str.clear();
     int i = 0;
-    auto xg = (xg_bSolved ? &xg_solution : &xg_xword);
+    auto xg = (xg_bSolved_get() ? &xg_solution : &xg_xword);
     for (const auto& mark : xg_vMarks) {
         const WCHAR szLetter[2] = { xg->GetAt(mark.m_i, mark.m_j), 0 };
         auto letter = XgNormalizeStringEx(szLetter);
@@ -89,7 +89,7 @@ void __fastcall XgMarkUpdate(void)
     XGStringW str;
 
     // すでに解があるかどうかによって切り替え。
-    const XG_Board *xw = (xg_bSolved ? &xg_solution : &xg_xword);
+    const XG_Board *xw = (xg_bSolved_get() ? &xg_solution : &xg_xword);
 
     // ファイル名があるか？
     if (xg_strFileName.size() || PathFileExistsW(xg_strFileName.c_str())) {
@@ -249,7 +249,7 @@ bool __fastcall XgGetMarkedCandidates(void)
     xg_vMarkedCands.clear();
 
     // 解がなければ失敗。
-    if (!xg_bSolved)
+    if (!xg_bSolved_get())
         return false;
 
     // マスの文字をマルチセットに変換。

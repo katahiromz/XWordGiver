@@ -37,7 +37,7 @@ public:
         ::KillTimer(hwnd, uTimerID);
         // キャンセルしてスレッドを待つ。
         ::EnterCriticalSection(&xg_csLock);
-        xg_bCancelled = true;
+        xg_bCancelled_set(true);
         m_cancellation_manager.SetCompleted();
         ::LeaveCriticalSection(&xg_csLock);
         // スレッドを待つ（タイムアウト付き）。
@@ -60,7 +60,7 @@ public:
 
         // キャンセルしてスレッドを待つ。
         ::EnterCriticalSection(&xg_csLock);
-        xg_bCancelled = true;
+        xg_bCancelled_set(true);
         m_cancellation_manager.SetCompleted();
         ::LeaveCriticalSection(&xg_csLock);
         // スレッドを待つ（タイムアウト付き）。

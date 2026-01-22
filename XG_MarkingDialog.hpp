@@ -39,7 +39,7 @@ public:
         }
 
         // すでに解があるかどうかによって切り替え。
-        const XG_Board *xw = (xg_bSolved ? &xg_solution : &xg_xword);
+        const XG_Board *xw = (xg_bSolved_get() ? &xg_solution : &xg_xword);
         XgGetMarkWord(xw, xg_strMarked);
 
         // テキストを設定する。

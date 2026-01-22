@@ -83,7 +83,7 @@ public:
                         // マークされていないマス。マークをセットする。
                         XG_Board *pxw;
 
-                        if (xg_bSolved && xg_bShowAnswer)
+                        if (xg_bSolved_get() && xg_bShowAnswer)
                             pxw = &xg_solution;
                         else
                             pxw = &xg_xword;
@@ -316,7 +316,7 @@ public:
 
             // イメージがない場合は、イメージを取得する。
             if (xg_hbmImage == nullptr) {
-                if (xg_bSolved && xg_bShowAnswer)
+                if (xg_bSolved_get() && xg_bShowAnswer)
                     xg_hbmImage = XgCreateXWordImage(xg_solution, &siz, true);
                 else
                     xg_hbmImage = XgCreateXWordImage(xg_xword, &siz, true);

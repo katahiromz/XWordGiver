@@ -591,7 +591,7 @@ BOOL XgUpdateDictionaryUsingClues(HWND hwnd, const XGStringW& dict_name)
     WCHAR szText[MAX_PATH];
 
     // カギがなければ失敗。
-    if (!xg_bSolved || xg_vecHorzHints.empty() || xg_vecVertHints.empty()) {
+    if (!xg_bSolved_get() || xg_vecHorzHints.empty() || xg_vecVertHints.empty()) {
         XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_NOCHANGE),
                             XgLoadStringDx2(IDS_APPNAME), MB_ICONINFORMATION);
         return FALSE;

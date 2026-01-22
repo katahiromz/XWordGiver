@@ -23,6 +23,10 @@ bool xg_bCancelled = false;
 // クロスワードの解があるかどうか？
 bool xg_bSolved = false;
 
+// フラグ群変数（高速化のためのビットフラグ）
+// Flag group variable (bit flags for performance optimization)
+DWORD xg_dwFlags = 0;
+
 // 答えを表示するか？
 bool xg_bShowAnswer = false;
 
@@ -618,7 +622,7 @@ VOID XgSortAndUniquePatterns(patterns_t& patterns, BOOL bExpand)
 XG_PATDATA XgGetCurrentPat(void)
 {
     // コピーする盤を選ぶ。
-    XG_Board *pxw = (xg_bSolved && xg_bShowAnswer) ? &xg_solution : &xg_xword;
+    XG_Board *pxw = (xg_bSolved_get() && xg_bShowAnswer) ? &xg_solution : &xg_xword;
 
     // クロスワードの文字列を取得する。
     XGStringW text;
@@ -2290,7 +2294,7 @@ XgGetHintsStr(const XG_Board& board, XGStringW& str, int hint_type, bool bShowAn
     str.clear();
 
     // まだ解かれていない場合は、何も返さない。
-    if (!xg_bSolved)
+    if (!xg_bSolved_get())
         return;
 
     assert(0 <= hint_type && hint_type < 6);
@@ -2727,7 +2731,7 @@ bool __fastcall XgSetJsonString(HWND hwnd, const XGStringW& str)
             xg_vHorzInfo.clear();
 
             if (is_solved) {
-                xg_bSolved = true;
+                xg_bSolved_set(true);
                 xg_bCheckingAnswer = false;
                 xg_solution = xw;
                 xg_xword.ResetAndSetSize(row_count, column_count);
@@ -2743,7 +2747,7 @@ bool __fastcall XgSetJsonString(HWND hwnd, const XGStringW& str)
                 }
                 XgGetHintsStr(xg_solution, xg_strHints, 2, true);
             } else {
-                xg_bSolved = false;
+                xg_bSolved_set(false);
                 xg_bCheckingAnswer = false;
                 xg_xword = xw;
             }
@@ -2924,13 +2928,13 @@ bool __fastcall XgSetStdString(HWND hwnd, const XGStringW& str)
         if (xg_strHints.empty()) {
             // ヒントがなかった。解ではない。
             xg_xword = xword;
-            xg_bSolved = false;
+            xg_bSolved_set(false);
             xg_bCheckingAnswer = false;
             xg_bShowAnswer = false;
         } else {
             // 空きマスがなく、ヒントがあった。これは解である。
             xg_solution = xword;
-            xg_bSolved = true;
+            xg_bSolved_set(true);
             xg_bCheckingAnswer = false;
             xg_bShowAnswer = false;
 
@@ -2949,7 +2953,7 @@ bool __fastcall XgSetStdString(HWND hwnd, const XGStringW& str)
     } else {
         // 空きマスがあった。解ではない。
         xg_xword = xword;
-        xg_bSolved = false;
+        xg_bSolved_set(false);
         xg_bCheckingAnswer = false;
         xg_bShowAnswer = false;
     }
@@ -3097,7 +3101,7 @@ bool __fastcall XgSetXDString(HWND hwnd, const XGStringW& str)
     xg_nRows = static_cast<int>(rows.size());
     xg_vecVertHints.clear();
     xg_vecHorzHints.clear();
-    xg_bSolved = false;
+    xg_bSolved_set(false);
     xg_bCheckingAnswer = false;
     xg_nViewMode = view_mode;
 
@@ -3175,7 +3179,7 @@ bool __fastcall XgSetXDString(HWND hwnd, const XGStringW& str)
             xg_xword = xword;
             xg_solution = xword;
             if (vert.size() && horz.size()) {
-                xg_bSolved = true;
+                xg_bSolved_set(true);
                 xg_bCheckingAnswer = false;
                 xg_bShowAnswer = false;
                 XgClearNonBlocks();
@@ -3209,7 +3213,7 @@ bool __fastcall XgSetXDString(HWND hwnd, const XGStringW& str)
     // 成功。
     xg_xword = xword;
     xg_solution.ResetAndSetSize(xg_nRows, xg_nCols);
-    xg_bSolved = false;
+    xg_bSolved_set(false);
     xg_bCheckingAnswer = false;
     xg_bShowAnswer = false;
     xg_vecVertHints.clear();
@@ -3404,7 +3408,7 @@ bool __fastcall XgSetEcwString(HWND hwnd, const XGStringW& str)
     xg_nRows = height;
     xg_vecVertHints.clear();
     xg_vecHorzHints.clear();
-    xg_bSolved = false;
+    xg_bSolved_set(false);
     xg_bCheckingAnswer = false;
     xg_nViewMode = XG_VIEW_NORMAL;
 
@@ -3448,7 +3452,7 @@ bool __fastcall XgSetEcwString(HWND hwnd, const XGStringW& str)
         xg_xword = xword;
         xg_solution = xword;
         if (vert.size() && horz.size()) {
-            xg_bSolved = true;
+            xg_bSolved_set(true);
             xg_bCheckingAnswer = false;
             xg_bShowAnswer = false;
             XgClearNonBlocks();
@@ -3514,7 +3518,7 @@ XG_ThreadInfo *__fastcall XgGetThreadInfo(void) noexcept
 void __fastcall XgSolveXWord_AddBlackRecurse(const XG_Board& xw)
 {
     // すでに解かれているなら、終了。
-    if (xg_bSolved)
+    if (xg_bSolved_get())
         return;
 
     // スレッド情報を取得する。
@@ -3527,7 +3531,7 @@ void __fastcall XgSolveXWord_AddBlackRecurse(const XG_Board& xw)
 
     // キャンセルされているなら、終了。
     // 再計算すべきなら、終了する。
-    if (xg_bCancelled)
+    if (xg_bCancelled_get())
         return;
 
     // 無効であれば、終了。
@@ -3543,7 +3547,7 @@ void __fastcall XgSolveXWord_AddBlackRecurse(const XG_Board& xw)
             // すでに解かれているなら、終了。
             // キャンセルされているなら、終了。
             // 再計算すべきなら、終了する。
-            if (xg_bSolved || xg_bCancelled)
+            if (xg_bSolved_get() || xg_bCancelled_get())
                 return;
 
             // 空白と文字が隣り合っているか？
@@ -3588,7 +3592,7 @@ void __fastcall XgSolveXWord_AddBlackRecurse(const XG_Board& xw)
                         // すでに解かれているなら、終了。
                         // キャンセルされているなら、終了。
                         // 再計算すべきなら、終了する。
-                        if (xg_bSolved || xg_bCancelled)
+                        if (xg_bSolved_get() || xg_bCancelled_get())
                             return;
 
                         bool bCanPutBlack = true;
@@ -3640,7 +3644,7 @@ void __fastcall XgSolveXWord_AddBlackRecurse(const XG_Board& xw)
                         // すでに解かれているなら、終了。
                         // キャンセルされているなら、終了。
                         // 再計算すべきなら、終了する。
-                        if (xg_bSolved || xg_bCancelled)
+                        if (xg_bSolved_get() || xg_bCancelled_get())
                             return;
 
                         bool bCanPutBlack = true;
@@ -3692,7 +3696,7 @@ void __fastcall XgSolveXWord_AddBlackRecurse(const XG_Board& xw)
             // すでに解かれているなら、終了。
             // キャンセルされているなら、終了。
             // 再計算すべきなら、終了する。
-            if (xg_bSolved || xg_bCancelled)
+            if (xg_bSolved_get() || xg_bCancelled_get())
                 return;
 
             // 空白と文字が隣り合っているか？
@@ -3737,7 +3741,7 @@ void __fastcall XgSolveXWord_AddBlackRecurse(const XG_Board& xw)
                         // すでに解かれているなら、終了。
                         // キャンセルされているなら、終了。
                         // 再計算すべきなら、終了する。
-                        if (xg_bSolved || xg_bCancelled)
+                        if (xg_bSolved_get() || xg_bCancelled_get())
                             return;
 
                         bool bCanPutBlack = true;
@@ -3789,7 +3793,7 @@ void __fastcall XgSolveXWord_AddBlackRecurse(const XG_Board& xw)
                         // すでに解かれているなら、終了。
                         // キャンセルされているなら、終了。
                         // 再計算すべきなら、終了する。
-                        if (xg_bSolved || xg_bCancelled)
+                        if (xg_bSolved_get() || xg_bCancelled_get())
                             return;
 
                         bool bCanPutBlack = true;
@@ -3836,8 +3840,8 @@ void __fastcall XgSolveXWord_AddBlackRecurse(const XG_Board& xw)
 
     // 解かどうか？
     ::EnterCriticalSection(&xg_csLock);
-    if (!xg_bCancelled && !xg_bSolved && xw.IsSolution()) { // 解だった。
-        xg_bSolved = true;
+    if (!xg_bCancelled_get() && !xg_bSolved_get() && xw.IsSolution()) { // 解だった。
+        xg_bSolved_set(true);
         xg_bCheckingAnswer = false;
         xg_solution = xw;
         xg_solution.DoNumbering();
@@ -3860,7 +3864,7 @@ void __fastcall XgSolveXWord_AddBlackRecurse(const XG_Board& xw)
 void __fastcall XgSolveXWord_NoAddBlackRecurse(const XG_Board& xw)
 {
     // すでに解かれているなら、終了。
-    if (xg_bSolved)
+    if (xg_bSolved_get())
         return;
 
     // スレッド情報を取得する。
@@ -3873,7 +3877,7 @@ void __fastcall XgSolveXWord_NoAddBlackRecurse(const XG_Board& xw)
 
     // キャンセルされているなら、終了。
     // 再計算すべきなら、終了する。
-    if (xg_bCancelled)
+    if (xg_bCancelled_get())
         return;
 
     // 無効であれば、終了。
@@ -3889,7 +3893,7 @@ void __fastcall XgSolveXWord_NoAddBlackRecurse(const XG_Board& xw)
             // すでに解かれているなら、終了。
             // キャンセルされているなら、終了。
             // 再計算すべきなら、終了する。
-            if (xg_bSolved || xg_bCancelled)
+            if (xg_bSolved_get() || xg_bCancelled_get())
                 return;
 
             // 空白と文字が隣り合っているか？
@@ -3926,7 +3930,7 @@ void __fastcall XgSolveXWord_NoAddBlackRecurse(const XG_Board& xw)
                         // すでに解かれているなら、終了。
                         // キャンセルされているなら、終了。
                         // 再計算すべきなら、終了する。
-                        if (xg_bSolved || xg_bCancelled)
+                        if (xg_bSolved_get() || xg_bCancelled_get())
                             return;
 
                         // 候補を適用して再帰する。
@@ -3953,7 +3957,7 @@ void __fastcall XgSolveXWord_NoAddBlackRecurse(const XG_Board& xw)
                         // すでに解かれているなら、終了。
                         // キャンセルされているなら、終了。
                         // 再計算すべきなら、終了する。
-                        if (xg_bSolved || xg_bCancelled)
+                        if (xg_bSolved_get() || xg_bCancelled_get())
                             return;
 
                         // 候補を適用して再帰する。
@@ -3984,7 +3988,7 @@ void __fastcall XgSolveXWord_NoAddBlackRecurse(const XG_Board& xw)
             // すでに解かれているなら、終了。
             // キャンセルされているなら、終了。
             // 再計算すべきなら、終了する。
-            if (xg_bSolved || xg_bCancelled)
+            if (xg_bSolved_get() || xg_bCancelled_get())
                 return;
 
             // 空白と文字が隣り合っているか？
@@ -4021,7 +4025,7 @@ void __fastcall XgSolveXWord_NoAddBlackRecurse(const XG_Board& xw)
                         // すでに解かれているなら、終了。
                         // キャンセルされているなら、終了。
                         // 再計算すべきなら、終了する。
-                        if (xg_bSolved || xg_bCancelled)
+                        if (xg_bSolved_get() || xg_bCancelled_get())
                             return;
 
                         // 候補を適用して再帰する。
@@ -4048,7 +4052,7 @@ void __fastcall XgSolveXWord_NoAddBlackRecurse(const XG_Board& xw)
                         // すでに解かれているなら、終了。
                         // キャンセルされているなら、終了。
                         // 再計算すべきなら、終了する。
-                        if (xg_bSolved || xg_bCancelled)
+                        if (xg_bSolved_get() || xg_bCancelled_get())
                             return;
 
                         // 候補を適用して再帰する。
@@ -4074,8 +4078,8 @@ void __fastcall XgSolveXWord_NoAddBlackRecurse(const XG_Board& xw)
 
     // 解かどうか？
     ::EnterCriticalSection(&xg_csLock);
-    if (!xg_bCancelled && !xg_bSolved && xw.IsSolution()) { // 解だった。
-        xg_bSolved = true;
+    if (!xg_bCancelled_get() && !xg_bSolved_get() && xw.IsSolution()) { // 解だった。
+        xg_bSolved_set(true);
         xg_bCheckingAnswer = false;
         xg_solution = xw;
         xg_solution.DoNumbering();
@@ -4145,7 +4149,7 @@ static void __fastcall XgSolveXWord_AddBlack(const XG_Board& xw)
             // すでに解かれているなら、終了。
             // キャンセルされているなら、終了。
             // 再計算すべきなら、終了する。
-            if (xg_bSolved || xg_bCancelled)
+            if (xg_bSolved_get() || xg_bCancelled_get())
                 return;
 
             // 空白の連続があるか？
@@ -4171,7 +4175,7 @@ static void __fastcall XgSolveXWord_AddBlack(const XG_Board& xw)
                     // すでに解かれているなら、終了。
                     // キャンセルされているなら、終了。
                     // 再計算すべきなら、終了する。
-                    if (xg_bSolved || xg_bCancelled)
+                    if (xg_bSolved_get() || xg_bCancelled_get())
                         return;
 
                     // 単語の長さがパターンの長さ以下か？
@@ -4221,7 +4225,7 @@ static void __fastcall XgSolveXWord_AddBlack(const XG_Board& xw)
             // すでに解かれているなら、終了。
             // キャンセルされているなら、終了。
             // 再計算すべきなら、終了する。
-            if (xg_bSolved || xg_bCancelled)
+            if (xg_bSolved_get() || xg_bCancelled_get())
                 return;
 
             // 空白の連続があるか？
@@ -4247,7 +4251,7 @@ static void __fastcall XgSolveXWord_AddBlack(const XG_Board& xw)
                     // すでに解かれているなら、終了。
                     // キャンセルされているなら、終了。
                     // 再計算すべきなら、終了する。
-                    if (xg_bSolved || xg_bCancelled)
+                    if (xg_bSolved_get() || xg_bCancelled_get())
                         return;
 
                     // 単語の長さがパターンの長さ以下か？
@@ -4302,7 +4306,7 @@ retry_1:;
             // すでに解かれているなら、終了。
             // キャンセルされているなら、終了。
             // 再計算すべきなら、終了する。
-            if (xg_bSolved || xg_bCancelled)
+            if (xg_bSolved_get() || xg_bCancelled_get())
                 return;
 
             // 空白の連続があるか？
@@ -4328,7 +4332,7 @@ retry_1:;
                     // すでに解かれているなら、終了。
                     // キャンセルされているなら、終了。
                     // 再計算すべきなら、終了する。
-                    if (xg_bSolved || xg_bCancelled)
+                    if (xg_bSolved_get() || xg_bCancelled_get())
                         return;
 
                     // 単語の長さがパターンの長さ以下か？
@@ -4378,7 +4382,7 @@ retry_1:;
             // すでに解かれているなら、終了。
             // キャンセルされているなら、終了。
             // 再計算すべきなら、終了する。
-            if (xg_bSolved || xg_bCancelled)
+            if (xg_bSolved_get() || xg_bCancelled_get())
                 return;
 
             // 空白の連続があるか？
@@ -4404,7 +4408,7 @@ retry_1:;
                     // すでに解かれているなら、終了。
                     // キャンセルされているなら、終了。
                     // 再計算すべきなら、終了する。
-                    if (xg_bSolved || xg_bCancelled)
+                    if (xg_bSolved_get() || xg_bCancelled_get())
                         return;
 
                     // 単語の長さがパターンの長さ以下か？
@@ -4485,7 +4489,7 @@ static void __fastcall XgSolveXWord_NoAddBlack(const XG_Board& xw)
             // すでに解かれているなら、終了。
             // キャンセルされているなら、終了。
             // 再計算すべきなら、終了する。
-            if (xg_bSolved || xg_bCancelled)
+            if (xg_bSolved_get() || xg_bCancelled_get())
                 return;
 
             // 空白の連続があるか？
@@ -4521,7 +4525,7 @@ static void __fastcall XgSolveXWord_NoAddBlack(const XG_Board& xw)
         // すでに解かれているなら、終了。
         // キャンセルされているなら、終了。
         // 再計算すべきなら、終了する。
-        if (xg_bSolved || xg_bCancelled)
+        if (xg_bSolved_get() || xg_bCancelled_get())
             return;
 
         // 単語とパターンの長さが等しいか？
@@ -4630,7 +4634,8 @@ void __fastcall XgStartSolve_AddBlack(void)
 {
     // フラグを初期化する。
     ::EnterCriticalSection(&xg_csLock);
-    xg_bSolved = xg_bCancelled = false;
+    xg_bSolved_set(false);
+    xg_bCancelled_set(false);
     ::LeaveCriticalSection(&xg_csLock);
 
     if (xg_bSolvingEmpty)
@@ -4668,7 +4673,8 @@ void __fastcall XgStartSolve_NoAddBlack(void) noexcept
 {
     // フラグを初期化する。
     ::EnterCriticalSection(&xg_csLock);
-    xg_bSolved = xg_bCancelled = false;
+    xg_bSolved_set(false);
+    xg_bCancelled_set(false);
     ::LeaveCriticalSection(&xg_csLock);
 
 #ifdef SINGLE_THREAD_MODE
@@ -4690,11 +4696,12 @@ void __fastcall XgStartSolve_Smart(void) noexcept
 {
     // フラグを初期化する。
     ::EnterCriticalSection(&xg_csLock);
-    xg_bSolved = xg_bCancelled = false;
+    xg_bSolved_set(false);
+    xg_bCancelled_set(false);
     ::LeaveCriticalSection(&xg_csLock);
 
     // まだブロック生成していない。
-    xg_bBlacksGenerated = FALSE;
+    xg_bBlacksGenerated_set(false);
 
     // 最大長を制限する。
     if (xg_nMaxWordLen > xg_nDictMaxWordLen) {
@@ -4720,7 +4727,7 @@ void __fastcall XgClearNonBlocks(void)
 {
     XgSetCaretPos();
 
-    if (xg_bSolved) {
+    if (xg_bSolved_get()) {
         xg_bShowAnswer = false;
     }
 
@@ -4741,11 +4748,11 @@ void __fastcall XgEndSolve(void)
 {
     if (s_bSwapped) {
         xg_xword.SwapXandY();
-        if (xg_bSolved) {
+        if (xg_bSolved_get()) {
             xg_solution.SwapXandY();
         }
         std::swap(xg_nRows, xg_nCols);
-        if (xg_bSolved) {
+        if (xg_bSolved_get()) {
             xg_solution.DoNumbering();
             if (!XgParseHintsStr(xg_strHints)) {
                 xg_strHints.clear();
@@ -4863,7 +4870,7 @@ HFONT XgCreateSmallFont(INT nCellSize)
 std::unordered_set<XG_Pos> XgGetSlot(int number, BOOL vertical)
 {
     std::unordered_set<XG_Pos> ret;
-    if (!xg_bSolved)
+    if (!xg_bSolved_get())
         return ret;
 
     int i = -1, j = -1;
@@ -4933,12 +4940,12 @@ XgDrawCellNumber(HDC hdc, const RECT& rcCell, int i, int j, int number,
     // 文字の背景を塗りつぶす。
     const int nMarked = XgGetMarked(i, j);
     COLORREF rgbBack;
-    if (xg_bCheckingAnswer && xg_bSolved &&
+    if (xg_bCheckingAnswer && xg_bSolved_get() &&
         xg_xword.GetAt(i, j) != xg_solution.GetAt(i, j))
     {
         // 答え合わせで一致しないセル。
         rgbBack = c_rgbUnmatchedCell;
-    } else if (xg_bSolved && xg_bNumCroMode) {
+    } else if (xg_bSolved_get() && xg_bNumCroMode) {
         // 文字の背景を塗りつぶす。
         if (slot.count(XG_Pos(i, j)) > 0) {
             rgbBack = c_rgbHighlight;
@@ -5004,7 +5011,7 @@ void XgDrawDoubleFrameCell(HDC hdc, int nMarked, const RECT& rc, int nCellSize, 
         {
             HBRUSH hbr;
             if (i != -1 && j != -1 &&
-                xg_bCheckingAnswer && xg_bSolved &&
+                xg_bCheckingAnswer && xg_bSolved_get() &&
                 xg_xword.GetAt(i, j) != xg_solution.GetAt(i, j))
             {
                 // 答え合わせで一致しないセル。
@@ -5097,7 +5104,7 @@ void __fastcall XgDrawOneCell(HDC hdc, INT iRow, INT jCol)
 
     // 文字を取得する。
     WCHAR ch;
-    if (xg_bSolved && xg_bShowAnswer)
+    if (xg_bSolved_get() && xg_bShowAnswer)
         ch = xg_solution.GetAt(iRow, jCol);
     else
         ch = xg_xword.GetAt(iRow, jCol);
@@ -5119,7 +5126,7 @@ void __fastcall XgDrawOneCell(HDC hdc, INT iRow, INT jCol)
         } else {
             ::FillRect(hdc, &rc, hbrBlack);
         }
-    } else if (xg_bCheckingAnswer && xg_bSolved &&
+    } else if (xg_bCheckingAnswer && xg_bSolved_get() &&
                xg_xword.GetAt(iRow, jCol) != xg_solution.GetAt(iRow, jCol))
     {
         // 答え合わせで一致しないセル。
@@ -5254,7 +5261,7 @@ void __fastcall XgDrawMarkWord(HDC hdc, const SIZE *psiz)
         ::InflateRect(&rc0, +c_nWide, +c_nWide);
     }
 
-    const auto& xw = (xg_bSolved && xg_bShowAnswer) ? xg_solution : xg_xword;
+    const auto& xw = (xg_bSolved_get() && xg_bShowAnswer) ? xg_solution : xg_xword;
 
     // 二重マスを描画する。
     HGDIOBJ hFontOld = ::SelectObject(hdc, hFontSmall);
@@ -5276,7 +5283,7 @@ void __fastcall XgDrawMarkWord(HDC hdc, const SIZE *psiz)
         const XG_Pos& pos = xg_vMarks[i];
 
         // ナンクロなら数字、さもなければ二重マスの文字を描画する。
-        if (xg_bSolved && xg_bNumCroMode) {
+        if (xg_bSolved_get() && xg_bNumCroMode) {
             const WCHAR ch = xg_solution.GetAt(pos.m_i, pos.m_j);
             ::OffsetRect(&rc, c_nThin, c_nThin * 2 / 3);
             XgDrawCellNumber(hdc, rc, pos.m_i, pos.m_j, xg_mapNumCro1[ch], slot);
@@ -5421,7 +5428,7 @@ void __fastcall XgDrawXWord_NormalView(const XG_Board& xw, HDC hdc, const SIZE *
                 } else {
                     ::FillRect(hdc, &rc, hbrBlack);
                 }
-            } else if (xg_bCheckingAnswer && xg_bSolved &&
+            } else if (xg_bCheckingAnswer && xg_bSolved_get() &&
                        xg_xword.GetAt(i, j) != xg_solution.GetAt(i, j))
             {
                 // 答え合わせで一致しないセル。
@@ -5507,7 +5514,7 @@ void __fastcall XgDrawXWord_NormalView(const XG_Board& xw, HDC hdc, const SIZE *
     }
 
     // ナンクロモードの小さい数字。
-    if (xg_bSolved && xg_bNumCroMode) {
+    if (xg_bSolved_get() && xg_bNumCroMode) {
         for (int i = 0; i < xg_nRows; i++) {
             for (int j = 0; j < xg_nCols; j++) {
                 const auto ch = xg_solution.GetAt(i, j);
@@ -5710,7 +5717,7 @@ void __fastcall XgDrawXWord_SkeletonView(const XG_Board& xw, HDC hdc, const SIZE
             const int nMarked = XgGetMarked(i, j);
 
             // 塗りつぶす。
-            if (xg_bCheckingAnswer && xg_bSolved &&
+            if (xg_bCheckingAnswer && xg_bSolved_get() &&
                 xg_xword.GetAt(i, j) != xg_solution.GetAt(i, j))
             {
                 // 答え合わせで一致しないセル。
@@ -5793,7 +5800,7 @@ void __fastcall XgDrawXWord_SkeletonView(const XG_Board& xw, HDC hdc, const SIZE
     }
 
     // ナンクロモードの小さい数字。
-    if (xg_bSolved && xg_bNumCroMode) {
+    if (xg_bSolved_get() && xg_bNumCroMode) {
         for (int i = 0; i < xg_nRows; i++) {
             for (int j = 0; j < xg_nCols; j++) {
                 const WCHAR ch = xg_solution.GetAt(i, j);
@@ -5977,7 +5984,7 @@ bool __fastcall XgDoLoadCrpFile(HWND hwnd, LPCWSTR pszFile)
         xg_nRows = nHeight;
         xg_vecVertHints.clear();
         xg_vecHorzHints.clear();
-        xg_bSolved = false;
+        xg_bSolved_set(false);
         xg_bCheckingAnswer = false;
 
         if (xword.IsFulfilled()) {
@@ -6094,7 +6101,7 @@ bool __fastcall XgDoLoadCrpFile(HWND hwnd, LPCWSTR pszFile)
         xg_xword = xword;
         xg_solution = xword;
         if (vert.size() && horz.size()) {
-            xg_bSolved = true;
+            xg_bSolved_set(true);
             xg_bCheckingAnswer = false;
             xg_bShowAnswer = false;
             XgClearNonBlocks();
@@ -6152,7 +6159,7 @@ bool __fastcall XgDoSaveCrpFile(LPCWSTR pszFile)
     if (fout == nullptr)
         return false;
 
-    const XG_Board *xw = (xg_bSolved ? &xg_solution : &xg_xword);
+    const XG_Board *xw = (xg_bSolved_get() ? &xg_solution : &xg_xword);
 
     try
     {
@@ -6295,8 +6302,8 @@ bool __fastcall XgDoSaveJson(LPCWSTR pszFile)
         j0["view_mode"] = (int)xg_nViewMode;
 
         // 盤の切り替え。
-        const XG_Board *xw = (xg_bSolved ? &xg_solution : &xg_xword);
-        j0["is_solved"] = !!xg_bSolved;
+        const XG_Board *xw = (xg_bSolved_get() ? &xg_solution : &xg_xword);
+        j0["is_solved"] = !!xg_bSolved_get();
 
         // ナンクロモード。
         if (xg_bNumCroMode) {
@@ -6452,7 +6459,7 @@ bool XgDoSaveStandard(HWND hwnd, LPCWSTR pszFile, const XG_Board& board)
     // ファイルに書き込む文字列を求める。
     xg_str_trim(xg_strHeader);
 
-    if (xg_bSolved) {
+    if (xg_bSolved_get()) {
         // ヒントあり。
         board.GetString(strTable);
         XgGetHintsStr(board, hints, 2, true);
@@ -6544,7 +6551,7 @@ bool __fastcall XgDoSaveXdFile(LPCWSTR pszFile)
     if (fout == nullptr)
         return false;
 
-    const XG_Board *xw = (xg_bSolved ? &xg_solution : &xg_xword);
+    const XG_Board *xw = (xg_bSolved_get() ? &xg_solution : &xg_xword);
 
     try
     {
@@ -6613,7 +6620,7 @@ bool __fastcall XgDoSaveXdFile(LPCWSTR pszFile)
         fprintf(fout, "\n\n");
 
         // ヒント。
-        if (xg_bSolved && xg_vecVertHints.size() && xg_vecHorzHints.size()) {
+        if (xg_bSolved_get() && xg_vecVertHints.size() && xg_vecHorzHints.size()) {
             char line[512];
             std::string strACROSS, strDOWN;
             // タテのカギ。
@@ -6706,7 +6713,7 @@ bool __fastcall XgDoSaveFileType(HWND hwnd, LPCWSTR pszFile, XG_FILETYPE type)
     switch (type)
     {
     case XG_FILETYPE_XWD:
-        if (xg_bSolved) {
+        if (xg_bSolved_get()) {
             // ヒントあり。
             ret = XgDoSaveStandard(hwnd, pszFile, xg_solution);
         } else {
@@ -6828,7 +6835,7 @@ void __fastcall XgSaveProbAsImage(HWND hwnd)
 // 解答を画像ファイルとして保存する。
 void __fastcall XgSaveAnsAsImage(HWND hwnd)
 {
-    if (!xg_bSolved) {
+    if (!xg_bSolved_get()) {
         ::MessageBeep(0xFFFFFFFF);
         return;
     }
@@ -6979,7 +6986,7 @@ bool __fastcall XG_Board::SetString(const XGStringW& strToBeSet)
     }
 
     // クロスワードを初期化する。
-    xg_bSolved = false;
+    xg_bSolved_set(false);
     xg_bCheckingAnswer = false;
     xg_bShowAnswer = false;
     ResetAndSetSize(nRows, nCols);
@@ -7276,8 +7283,8 @@ bool __fastcall XgGenerateBlacksRecurse(const XG_Board& xword, LONG iRowjCol)
     // 終了条件。
     if (iRow == nRows && jCol == 0) {
         ::EnterCriticalSection(&xg_csLock);
-        if (!xg_bCancelled && !xg_bBlacksGenerated) {
-            xg_bBlacksGenerated = true;
+        if (!xg_bCancelled_get() && !xg_bBlacksGenerated_get()) {
+            xg_bBlacksGenerated_set(true);
             xg_xword = xword;
             // 完了を通知。
             if (xg_pCancellationManager != nullptr) {
@@ -7285,11 +7292,11 @@ bool __fastcall XgGenerateBlacksRecurse(const XG_Board& xword, LONG iRowjCol)
             }
         }
         ::LeaveCriticalSection(&xg_csLock);
-        return xg_bBlacksGenerated || xg_bCancelled;
+        return xg_bBlacksGenerated_get() || xg_bCancelled_get();
     }
 
     // 終了条件。
-    if (xg_bBlacksGenerated || xg_bCancelled)
+    if (xg_bBlacksGenerated_get() || xg_bCancelled_get())
         return true;
 
     // マスの左側を見る。
@@ -7398,8 +7405,8 @@ bool __fastcall XgGenerateBlacksPointSymRecurse(const XG_Board& xword, LONG iRow
     // 終了条件。
     if (iRow == nRows && jCol == 0) {
         ::EnterCriticalSection(&xg_csLock);
-        if (!xg_bCancelled && !xg_bBlacksGenerated) {
-            xg_bBlacksGenerated = true;
+        if (!xg_bCancelled_get() && !xg_bBlacksGenerated_get()) {
+            xg_bBlacksGenerated_set(true);
             xg_xword = xword;
             // 完了を通知。
             if (xg_pCancellationManager != nullptr) {
@@ -7407,11 +7414,11 @@ bool __fastcall XgGenerateBlacksPointSymRecurse(const XG_Board& xword, LONG iRow
             }
         }
         ::LeaveCriticalSection(&xg_csLock);
-        return xg_bBlacksGenerated || xg_bCancelled;
+        return xg_bBlacksGenerated_get() || xg_bCancelled_get();
     }
 
     // 終了条件。
-    if (xg_bBlacksGenerated || xg_bCancelled)
+    if (xg_bBlacksGenerated_get() || xg_bCancelled_get())
         return true;
 
     // マスの左側を見る。
@@ -7523,8 +7530,8 @@ bool __fastcall XgGenerateBlacksLineSymVRecurse(const XG_Board& xword, LONG iRow
     // 終了条件。
     if (iRow == 0 && jCol >= nCols) {
         ::EnterCriticalSection(&xg_csLock);
-        if (!xg_bCancelled && !xg_bBlacksGenerated) {
-            xg_bBlacksGenerated = true;
+        if (!xg_bCancelled_get() && !xg_bBlacksGenerated_get()) {
+            xg_bBlacksGenerated_set(true);
             xg_xword = xword;
             // 完了を通知。
             if (xg_pCancellationManager != nullptr) {
@@ -7532,11 +7539,11 @@ bool __fastcall XgGenerateBlacksLineSymVRecurse(const XG_Board& xword, LONG iRow
             }
         }
         ::LeaveCriticalSection(&xg_csLock);
-        return xg_bBlacksGenerated || xg_bCancelled;
+        return xg_bBlacksGenerated_get() || xg_bCancelled_get();
     }
 
     // 終了条件。
-    if (xg_bBlacksGenerated || xg_bCancelled)
+    if (xg_bBlacksGenerated_get() || xg_bCancelled_get())
         return true;
 
     // マスの上側を見る。
@@ -7663,8 +7670,8 @@ bool __fastcall XgGenerateBlacksLineSymHRecurse(const XG_Board& xword, LONG iRow
     // 終了条件。
     if (iRow >= nRows && jCol == 0) {
         ::EnterCriticalSection(&xg_csLock);
-        if (!xg_bCancelled && !xg_bBlacksGenerated) {
-            xg_bBlacksGenerated = true;
+        if (!xg_bCancelled_get() && !xg_bBlacksGenerated_get()) {
+            xg_bBlacksGenerated_set(true);
             xg_xword = xword;
             // 完了を通知。
             if (xg_pCancellationManager != nullptr) {
@@ -7672,11 +7679,11 @@ bool __fastcall XgGenerateBlacksLineSymHRecurse(const XG_Board& xword, LONG iRow
             }
         }
         ::LeaveCriticalSection(&xg_csLock);
-        return xg_bBlacksGenerated || xg_bCancelled;
+        return xg_bBlacksGenerated_get() || xg_bCancelled_get();
     }
 
     // 終了条件。
-    if (xg_bBlacksGenerated || xg_bCancelled)
+    if (xg_bBlacksGenerated_get() || xg_bCancelled_get())
         return true;
 
     // マスの左側を見る。
@@ -7791,7 +7798,7 @@ unsigned __stdcall XgGenerateBlacks(void *param)
 
     // 再帰求解関数に突入する。
     do {
-        if (xg_bBlacksGenerated || xg_bCancelled)
+        if (xg_bBlacksGenerated_get() || xg_bCancelled_get())
             break;
         xword.clear();
     } while (!XgGenerateBlacksRecurse(xword, 0));
@@ -7801,7 +7808,7 @@ unsigned __stdcall XgGenerateBlacks(void *param)
 // マルチスレッド用の関数。
 unsigned __stdcall XgGenerateBlacksSmart(void *param)
 {
-    if (xg_bBlacksGenerated)
+    if (xg_bBlacksGenerated_get())
         return 1;
 
     XG_Board xword;
@@ -7816,28 +7823,28 @@ unsigned __stdcall XgGenerateBlacksSmart(void *param)
     if (xg_nRules & RULE_POINTSYMMETRY) {
         // 再帰求解関数に突入する。
         do {
-            if (xg_bCancelled || xg_bBlacksGenerated)
+            if (xg_bCancelled_get() || xg_bBlacksGenerated)
                 break;
             xword.clear();
         } while (!XgGenerateBlacksPointSymRecurse(xword, 0));
     } else if (xg_nRules & RULE_LINESYMMETRYV) {
         // 再帰求解関数に突入する。
         do {
-            if (xg_bCancelled || xg_bBlacksGenerated)
+            if (xg_bCancelled_get() || xg_bBlacksGenerated)
                 break;
             xword.clear();
         } while (!XgGenerateBlacksLineSymVRecurse(xword, 0));
     } else if (xg_nRules & RULE_LINESYMMETRYH) {
         // 再帰求解関数に突入する。
         do {
-            if (xg_bCancelled || xg_bBlacksGenerated)
+            if (xg_bCancelled_get() || xg_bBlacksGenerated)
                 break;
             xword.clear();
         } while (!XgGenerateBlacksLineSymHRecurse(xword, 0));
     } else {
         // 再帰求解関数に突入する。
         do {
-            if (xg_bCancelled || xg_bBlacksGenerated)
+            if (xg_bCancelled_get() || xg_bBlacksGenerated)
                 break;
             xword.clear();
         } while (!XgGenerateBlacksRecurse(xword, 0));
@@ -7856,7 +7863,7 @@ static unsigned __stdcall XgGenerateBlacksPointSym(void *param)
     xg_solution.clear();
     XG_Board xword;
     do {
-        if (xg_bBlacksGenerated || xg_bCancelled)
+        if (xg_bBlacksGenerated_get() || xg_bCancelled_get())
             break;
         xword.clear();
     } while (!XgGenerateBlacksPointSymRecurse(xword, 0));
@@ -7874,7 +7881,7 @@ static unsigned __stdcall XgGenerateBlacksLineSymV(void *param)
     xg_solution.clear();
     XG_Board xword;
     do {
-        if (xg_bBlacksGenerated || xg_bCancelled)
+        if (xg_bBlacksGenerated_get() || xg_bCancelled_get())
             break;
         xword.clear();
     } while (!XgGenerateBlacksLineSymVRecurse(xword, 0));
@@ -7892,7 +7899,7 @@ static unsigned __stdcall XgGenerateBlacksLineSymH(void *param)
     xg_solution.clear();
     XG_Board xword;
     do {
-        if (xg_bBlacksGenerated || xg_bCancelled)
+        if (xg_bBlacksGenerated_get() || xg_bCancelled_get())
             break;
         xword.clear();
     } while (!XgGenerateBlacksLineSymHRecurse(xword, 0));
@@ -7902,8 +7909,8 @@ static unsigned __stdcall XgGenerateBlacksLineSymH(void *param)
 void __fastcall XgStartGenerateBlacks(void) noexcept
 {
     ::EnterCriticalSection(&xg_csLock);
-    xg_bBlacksGenerated = false;
-    xg_bCancelled = false;
+    xg_bBlacksGenerated_set(false);
+    xg_bCancelled_set(false);
     ::LeaveCriticalSection(&xg_csLock);
 
     // 最大長を制限する。
@@ -8066,7 +8073,7 @@ void XgShowPatInfo(HWND hwndInfo)
 {
     XGStringW text; // この関数では、この変数にテキストを追加していく。
 
-    if (xg_bSolved) {
+    if (xg_bSolved_get()) {
         std::map<DWORD, DWORD> len2num;
         std::vector<XG_WordData> dict = XgCreateMiniDict();
         for (auto& data : dict) {
@@ -8101,7 +8108,7 @@ void XgShowPatInfo(HWND hwndInfo)
     }
 
     // ヒントの長さ。
-    if (xg_bSolved) {
+    if (xg_bSolved_get()) {
         std::vector<XG_WordData> dict = XgCreateMiniDict();
         size_t count = dict.size();
         size_t sum = 0, min = 999999, max = 0;
@@ -8219,7 +8226,7 @@ void XgShowPatInfo(HWND hwndInfo)
     {
         std::map<WCHAR, DWORD> ch2num;
         {
-            const XG_Board *xw = (xg_bSolved ? &xg_solution : &xg_xword);
+            const XG_Board *xw = (xg_bSolved_get() ? &xg_solution : &xg_xword);
             for (int i = 0; i < xg_nRows; i++) {
                 for (int j = 0; j < xg_nCols; j++) {
                     auto ch = xw->GetAt(i, j);

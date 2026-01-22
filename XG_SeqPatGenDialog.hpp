@@ -117,7 +117,7 @@ public:
             }
             // 初期化する。
             {
-                xg_bSolved = false;
+                xg_bSolved_set(false);
                 xg_bCheckingAnswer = false;
                 xg_bShowAnswer = false;
                 xg_xword.clear();

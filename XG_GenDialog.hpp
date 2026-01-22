@@ -98,7 +98,7 @@ public:
             xg_bChoosePAT = (::IsDlgButtonChecked(hwnd, chx4) == BST_CHECKED);
             // 初期化する。
             {
-                xg_bSolved = false;
+                xg_bSolved_set(false);
                 xg_bCheckingAnswer = false;
                 xg_bShowAnswer = false;
                 xg_xword.ResetAndSetSize(n1, n2);

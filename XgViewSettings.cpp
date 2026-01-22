@@ -81,7 +81,7 @@ XgViewSettingsDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
             ::CheckDlgButton(hwnd, chx13, BST_CHECKED);
         if (xg_bCheckingAnswer)
             ::CheckDlgButton(hwnd, chx14, BST_CHECKED);
-        if (!xg_bSolved) {
+        if (!xg_bSolved_get()) {
             ::EnableWindow(::GetDlgItem(hwnd, chx4), FALSE);
             ::EnableWindow(::GetDlgItem(hwnd, chx5), FALSE);
             ::EnableWindow(::GetDlgItem(hwnd, chx14), FALSE);

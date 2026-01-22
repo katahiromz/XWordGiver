@@ -71,7 +71,7 @@ public:
     {
         // キャンセルされた場合のみ復元
         // Only restore if cancelled
-        if (xg_bCancelled && !xg_bSolved) {
+        if (xg_bCancelled_get() && !xg_bSolved_get()) {
             xg_xword = m_initial_board;
         }
     }

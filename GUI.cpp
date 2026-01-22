@@ -874,9 +874,9 @@ int __fastcall XgGetPreferredMaxLength(void) noexcept
 // ツールバーのUIを更新する。
 void XgUpdateToolBarUI(HWND hwnd)
 {
-    ::SendMessageW(xg_hToolBar, TB_ENABLEBUTTON, ID_SOLVE, !xg_bSolved);
-    ::SendMessageW(xg_hToolBar, TB_ENABLEBUTTON, ID_SOLVENOADDBLACK, !xg_bSolved);
-    ::SendMessageW(xg_hToolBar, TB_ENABLEBUTTON, ID_PRINTANSWER, xg_bSolved);
+    ::SendMessageW(xg_hToolBar, TB_ENABLEBUTTON, ID_SOLVE, !xg_bSolved_get());
+    ::SendMessageW(xg_hToolBar, TB_ENABLEBUTTON, ID_SOLVENOADDBLACK, !xg_bSolved_get());
+    ::SendMessageW(xg_hToolBar, TB_ENABLEBUTTON, ID_PRINTANSWER, xg_bSolved_get());
     ::SendMessageW(xg_hToolBar, TB_ENABLEBUTTON, ID_UNDO, xg_ubUndoBuffer.CanUndo());
     ::SendMessageW(xg_hToolBar, TB_ENABLEBUTTON, ID_REDO, xg_ubUndoBuffer.CanRedo());
 }
@@ -1659,7 +1659,7 @@ void __fastcall XgUpdateHints(void)
     xg_vecVertHints.clear();
     xg_vecHorzHints.clear();
     xg_strHints.clear();
-    if (xg_bSolved) {
+    if (xg_bSolved_get()) {
         XG_HintsWnd::UpdateHintData(); // ヒントに変更があれば、更新する。
         XgGetHintsStr(xg_solution, xg_strHints, 2, true);
         if (!XgParseHintsStr(xg_strHints)) {
@@ -1683,7 +1683,7 @@ void XgNewCells(HWND hwnd, WCHAR ch, int nRows, int nCols)
     // 二重マス単語の候補と配置を破棄する。
     ::DestroyWindow(xg_hMarkingDlg);
     // 初期化する。
-    xg_bSolved = false;
+    xg_bSolved_set(false);
     xg_bCheckingAnswer = false;
     xg_nRows = nRows;
     xg_nCols = nCols;
@@ -1717,7 +1717,7 @@ void XgNewCells(HWND hwnd, WCHAR ch, int nRows, int nCols)
 // 単語リストのコピー。
 void XgCopyWordList(HWND hwnd)
 {
-    const XG_Board *xw = (xg_bSolved ? &xg_solution : &xg_xword);
+    const XG_Board *xw = (xg_bSolved_get() ? &xg_solution : &xg_xword);
 
     // 全単語を取得。空白を含む単語は無視。
     std::vector<XGStringW> words;
@@ -1803,7 +1803,7 @@ void XgResizeCells(HWND hwnd, int nNewRows, int nNewCols)
     xg_nRows = nNewRows;
     xg_nCols = nNewCols;
     xg_xword = copy;
-    xg_bSolved = false;
+    xg_bSolved_set(false);
     xg_bCheckingAnswer = false;
     xg_bHintsAdded = false;
     xg_bShowAnswer = false;
@@ -1957,7 +1957,7 @@ static void XgPrintIt(HDC hdc, PRINTDLGW* ppd, bool bPrintAnswer)
             }
 
             // ヒントを取得する。
-            if (xg_bSolved) {
+            if (xg_bSolved_get()) {
                 XG_HintsWnd::UpdateHintData(); // ヒントに変更があれば、更新する。
                 XgGetHintsStr(xg_solution, xg_strHints, 2, bPrintAnswer);
                 strHints = xg_strHints;
@@ -3055,7 +3055,7 @@ void __fastcall XgShowResults(HWND hwnd, BOOL bOK)
         }
         // ヒントを表示する。
         XgShowHints(hwnd);
-    } else if (xg_bCancelled) {
+    } else if (xg_bCancelled_get()) {
         // 必要なら音声を鳴らす。
         if (xg_aszSoundFiles[I_SOUND_CANCELED][0]) {
             ::PlaySoundW(xg_aszSoundFiles[I_SOUND_CANCELED], NULL, SND_ASYNC | SND_FILENAME);
@@ -3141,7 +3141,7 @@ TRIVALUE XgGenerateFromPat(HWND hwnd)
     xg_bShowAnswer = xg_bShowAnswerOnGenerate;
     XgUpdateImage(hwnd);
 
-    if (xg_bSolved) {
+    if (xg_bSolved_get()) {
         xg_pTaskbarProgress->Finish();
         // 番号とヒントを付ける。
         xg_solution.DoNumberingNoCheck();
@@ -3166,7 +3166,7 @@ TRIVALUE XgGenerateFromPat(HWND hwnd)
     }
 
     // 成功か失敗。
-    return xg_bSolved ? TV_POSITIVE : TV_NEGATIVE;
+    return xg_bSolved_get() ? TV_POSITIVE : TV_NEGATIVE;
 }
 
 // 黒マスパターンを連続生成する。
@@ -3190,14 +3190,14 @@ bool __fastcall XgOnGenerateBlacksRepeatedly(HWND hwnd)
     xg_vHorzInfo.clear();
     xg_vecVertHints.clear();
     xg_vecHorzHints.clear();
-    xg_bSolved = false;
+    xg_bSolved_set(false);
     xg_bCheckingAnswer = false;
     xg_bHintsAdded = false;
     xg_bShowAnswer = false;
     xg_strHeader.clear();
     xg_strNotes.clear();
     xg_strFileName.clear();
-    xg_bBlacksGenerated = false;
+    xg_bBlacksGenerated_set(false);
     xg_nNumberGenerated = 0;
     // ナンクロモードをリセットする。
     xg_bNumCroMode = false;
@@ -3222,14 +3222,14 @@ bool __fastcall XgOnGenerateBlacksRepeatedly(HWND hwnd)
         xg_pTaskbarProgress->Set(-1);
         nID = dialog.DoModal(hwnd);
         // 生成成功のときはxg_nNumberGeneratedを増やす。
-        if (nID == IDOK && xg_bBlacksGenerated) {
+        if (nID == IDOK && xg_bBlacksGenerated_get()) {
             ++xg_nNumberGenerated;
             if (!XgNumberingSave(hwnd, TRUE)) {
                 s_bOutOfDiskSpace = true;
                 break;
             }
             // 初期化。
-            xg_bSolved = false;
+            xg_bSolved_set(false);
             xg_bCheckingAnswer = false;
             xg_xword.clear();
             xg_vVertInfo.clear();
@@ -3239,7 +3239,7 @@ bool __fastcall XgOnGenerateBlacksRepeatedly(HWND hwnd)
             xg_strHeader.clear();
             xg_strNotes.clear();
             xg_strFileName.clear();
-            xg_bBlacksGenerated = false;
+            xg_bBlacksGenerated_set(false);
         }
     } while (nID == IDOK && xg_nNumberGenerated < xg_nNumberToGenerate);
     ::EnableWindow(xg_hwndInputPalette, TRUE);
@@ -3247,7 +3247,7 @@ bool __fastcall XgOnGenerateBlacksRepeatedly(HWND hwnd)
     XgUpdateImage(hwnd, 0, 0);
 
     WCHAR sz[MAX_PATH];
-    if (xg_bCancelled) {
+    if (xg_bCancelled_get()) {
         xg_pTaskbarProgress->Clear();
         StringCchPrintf(sz, _countof(sz), XgLoadStringDx1(IDS_CANCELLED),
                        DWORD(xg_dwlTick2 - xg_dwlTick0) / 1000,
@@ -3291,14 +3291,14 @@ bool __fastcall XgOnGenerateBlacks(HWND hwnd, bool sym)
     xg_vHorzInfo.clear();
     xg_vecVertHints.clear();
     xg_vecHorzHints.clear();
-    xg_bSolved = false;
+    xg_bSolved_set(false);
     xg_bCheckingAnswer = false;
     xg_bHintsAdded = false;
     xg_bShowAnswer = false;
     xg_strHeader.clear();
     xg_strNotes.clear();
     xg_strFileName.clear();
-    xg_bBlacksGenerated = false;
+    xg_bBlacksGenerated_set(false);
     xg_nNumberGenerated = 0;
     // ナンクロモードをリセットする。
     xg_bNumCroMode = false;
@@ -3325,7 +3325,7 @@ bool __fastcall XgOnGenerateBlacks(HWND hwnd, bool sym)
     XgUpdateImage(hwnd, 0, 0);
 
     WCHAR sz[MAX_PATH];
-    if (xg_bCancelled) {
+    if (xg_bCancelled_get()) {
         xg_pTaskbarProgress->Clear();
         StringCchPrintf(sz, _countof(sz), XgLoadStringDx1(IDS_CANCELLED),
                        DWORD(xg_dwlTick2 - xg_dwlTick0) / 1000,
@@ -3346,7 +3346,7 @@ bool __fastcall XgOnGenerateBlacks(HWND hwnd, bool sym)
 bool __fastcall XgOnSolve_AddBlack(HWND hwnd)
 {
     // すでに解かれている場合は、実行を拒否する。
-    if (xg_bSolved) {
+    if (xg_bSolved_get()) {
         ::MessageBeep(0xFFFFFFFF);
         return false;
     }
@@ -3393,7 +3393,7 @@ bool __fastcall XgOnSolve_AddBlack(HWND hwnd)
     ::EnableWindow(xg_hwndInputPalette, TRUE);
 
     WCHAR sz[MAX_PATH];
-    if (xg_bCancelled) {
+    if (xg_bCancelled_get()) {
         // キャンセルされた。
         // 解なし。表示を更新する。
         xg_pTaskbarProgress->Clear();
@@ -3406,7 +3406,7 @@ bool __fastcall XgOnSolve_AddBlack(HWND hwnd)
                        DWORD(xg_dwlTick2 - xg_dwlTick0) / 1000,
                        DWORD(xg_dwlTick2 - xg_dwlTick0) / 100 % 10);
         XgCenterMessageBoxW(hwnd, sz, XgLoadStringDx2(IDS_RESULTS), MB_ICONINFORMATION);
-    } else if (xg_bSolved) {
+    } else if (xg_bSolved_get()) {
         xg_pTaskbarProgress->Finish();
         // 空マスがないか？
         if (xg_xword.IsFulfilled()) {
@@ -3455,7 +3455,7 @@ bool __fastcall XgOnSolve_AddBlack(HWND hwnd)
 bool __fastcall XgOnSolve_NoAddBlack(HWND hwnd)
 {
     // すでに解かれている場合は、実行を拒否する。
-    if (xg_bSolved) {
+    if (xg_bSolved_get()) {
         ::MessageBeep(0xFFFFFFFF);
         return false;
     }
@@ -3500,7 +3500,7 @@ bool __fastcall XgOnSolve_NoAddBlack(HWND hwnd)
     }
     ::EnableWindow(xg_hwndInputPalette, TRUE);
 
-    if (xg_bCancelled) {
+    if (xg_bCancelled_get()) {
         // キャンセルされた。
         // 解なし。表示を更新する。
         xg_pTaskbarProgress->Clear();
@@ -3511,7 +3511,7 @@ bool __fastcall XgOnSolve_NoAddBlack(HWND hwnd)
 
         // 終了メッセージを表示する。
         XgShowResults(hwnd, FALSE);
-    } else if (xg_bSolved) {
+    } else if (xg_bSolved_get()) {
         // 空マスがないか？
         xg_pTaskbarProgress->Finish();
         if (xg_xword.IsFulfilled()) {
@@ -3561,7 +3561,7 @@ bool __fastcall XgOnSolve_NoAddBlack(HWND hwnd)
 bool __fastcall XgOnSolve_NoAddBlackNoResults(HWND hwnd)
 {
     // すでに解かれている場合は、実行を拒否する。
-    if (xg_bSolved) {
+    if (xg_bSolved_get()) {
         ::MessageBeep(0xFFFFFFFF);
         return false;
     }
@@ -3641,7 +3641,7 @@ void XgCopyBoard(HWND hwnd)
     XGStringW str;
 
     // コピーする盤を選ぶ。
-    XG_Board *pxw = (xg_bSolved && xg_bShowAnswer) ? &xg_solution : &xg_xword;
+    XG_Board *pxw = (xg_bSolved_get() && xg_bShowAnswer) ? &xg_solution : &xg_xword;
 
     // クロスワードの文字列を取得する。
     pxw->GetString(str);
@@ -3720,7 +3720,7 @@ void XgCopyBoard(HWND hwnd)
 // クリップボードにクロスワードを画像としてコピー。
 void XgCopyBoardAsImage(HWND hwnd)
 {
-    XG_Board *pxw = (xg_bSolved && xg_bShowAnswer) ? &xg_solution : &xg_xword;
+    XG_Board *pxw = (xg_bSolved_get() && xg_bShowAnswer) ? &xg_solution : &xg_xword;
 
     // 描画サイズを取得する。
     SIZE siz;
@@ -3821,7 +3821,7 @@ void __fastcall XgCopyMarkWord(HWND hwnd)
     ::ReleaseDC(hwnd, hdcRef);
 
     // すでに解があるかどうかによって切り替え。
-    const XG_Board *xw = (xg_bSolved ? &xg_solution : &xg_xword);
+    const XG_Board *xw = (xg_bSolved_get() ? &xg_solution : &xg_xword);
 
     // 二重マス単語のテキストを取得。
     HGLOBAL hGlobal = nullptr;
@@ -3902,7 +3902,7 @@ bool XgPasteBoard(HWND hwnd, const XGStringW& str)
     // 二重マス単語の候補と配置を破棄する。
     ::DestroyWindow(xg_hMarkingDlg);
 
-    xg_bSolved = false;
+    xg_bSolved_set(false);
     xg_bCheckingAnswer = false;
     xg_bShowAnswer = false;
     XgSetCaretPos();
@@ -3998,7 +3998,7 @@ bool XgPasteBoard2(HWND hwnd, const XGStringW& str)
 void __fastcall XgCopyHintsStyle0(HWND hwnd, int hint_type)
 {
     // 解かれていなければ処理を拒否する。
-    if (!xg_bSolved) {
+    if (!xg_bSolved_get()) {
         ::MessageBeep(0xFFFFFFFF);
         return;
     }
@@ -4017,7 +4017,7 @@ void __fastcall XgCopyHintsStyle0(HWND hwnd, int hint_type)
 void __fastcall XgCopyHintsStyle1(HWND hwnd, int hint_type)
 {
     // 解かれていないときは、処理を拒否する。
-    if (!xg_bSolved) {
+    if (!xg_bSolved_get()) {
         ::MessageBeep(0xFFFFFFFF);
         return;
     }
@@ -4335,7 +4335,7 @@ void __fastcall MainWnd_OnInitMenu(HWND /*hwnd*/, HMENU hMenu)
         ::EnableMenuItem(hMenu, ID_REDO, MF_GRAYED);
     }
 
-    if (xg_bSolved) {
+    if (xg_bSolved_get()) {
         ::EnableMenuItem(hMenu, ID_SHOWHIDESOLUTION, MF_ENABLED);
         ::EnableMenuItem(hMenu, ID_SOLVE, MF_GRAYED);
         ::EnableMenuItem(hMenu, ID_SOLVENOADDBLACK, MF_GRAYED);
@@ -4410,7 +4410,7 @@ void __fastcall MainWnd_OnInitMenu(HWND /*hwnd*/, HMENU hMenu)
     }
 
     // 答え合わせ。
-    if (xg_bSolved)
+    if (xg_bSolved_get())
         ::EnableMenuItem(hMenu, ID_CHECKANSWER, MF_ENABLED);
     else
         ::EnableMenuItem(hMenu, ID_CHECKANSWER, MF_GRAYED);
@@ -4420,7 +4420,7 @@ void __fastcall MainWnd_OnInitMenu(HWND /*hwnd*/, HMENU hMenu)
         ::CheckMenuItem(hMenu, ID_CHECKANSWER, MF_UNCHECKED);
 
     // 黒マスパターンを反射する。
-    if (xg_bSolved) {
+    if (xg_bSolved_get()) {
         ::EnableMenuItem(hMenu, ID_REFLECTBLOCKS, MF_GRAYED);
     } else {
         if (xg_nRules & (RULE_LINESYMMETRYH | RULE_LINESYMMETRYV | RULE_POINTSYMMETRY)) {
@@ -4440,7 +4440,7 @@ void __fastcall MainWnd_OnInitMenu(HWND /*hwnd*/, HMENU hMenu)
     }
 
     // 「解を削除して盤のロックを解除」
-    if (xg_bSolved) {
+    if (xg_bSolved_get()) {
         ::EnableMenuItem(hMenu, ID_ERASESOLUTIONANDUNLOCKEDIT, MF_ENABLED);
     } else {
         ::EnableMenuItem(hMenu, ID_ERASESOLUTIONANDUNLOCKEDIT, MF_GRAYED);
@@ -4531,7 +4531,7 @@ void __fastcall MainWnd_OnInitMenu(HWND /*hwnd*/, HMENU hMenu)
     }
 
     // ナンクロモード。
-    if (!xg_bSolved) {
+    if (!xg_bSolved_get()) {
         ::EnableMenuItem(hMenu, ID_NUMCROMODE, MF_GRAYED);
     } else {
         ::EnableMenuItem(hMenu, ID_NUMCROMODE, MF_ENABLED);
@@ -4543,22 +4543,22 @@ void __fastcall MainWnd_OnInitMenu(HWND /*hwnd*/, HMENU hMenu)
     }
 
     // 行と列の削除と追加。
-    if (xg_bSolved || xg_nRows - 1 < XG_MIN_SIZE) {
+    if (xg_bSolved_get() || xg_nRows - 1 < XG_MIN_SIZE) {
         ::DeleteMenu(hMenu, ID_DELETE_ROW, MF_BYCOMMAND);
     }
-    if (xg_bSolved || xg_nCols - 1 < XG_MIN_SIZE) {
+    if (xg_bSolved_get() || xg_nCols - 1 < XG_MIN_SIZE) {
         ::DeleteMenu(hMenu, ID_DELETE_COLUMN, MF_BYCOMMAND);
     }
-    if (xg_bSolved || xg_nRows + 1 > XG_MAX_SIZE) {
+    if (xg_bSolved_get() || xg_nRows + 1 > XG_MAX_SIZE) {
         ::DeleteMenu(hMenu, ID_INSERT_ROW_ABOVE, MF_BYCOMMAND);
         ::DeleteMenu(hMenu, ID_INSERT_ROW_BELOW, MF_BYCOMMAND);
     }
     BOOL bDeleteSepOK = FALSE;
-    if (xg_bSolved || xg_nCols + 1 > XG_MAX_SIZE) {
+    if (xg_bSolved_get() || xg_nCols + 1 > XG_MAX_SIZE) {
         ::DeleteMenu(hMenu, ID_LEFT_INSERT_COLUMN, MF_BYCOMMAND);
         bDeleteSepOK = ::DeleteMenu(hMenu, ID_RIGHT_INSERT_COLUMN, MF_BYCOMMAND);
     }
-    if (xg_bSolved && bDeleteSepOK) {
+    if (xg_bSolved_get() && bDeleteSepOK) {
         const int cItems = ::GetMenuItemCount(hMenu);
         ::DeleteMenu(hMenu, cItems - 1, MF_BYPOSITION);
     }
@@ -5092,11 +5092,11 @@ void MainWnd_OnEraseSettings(HWND hwnd)
 void __fastcall MainWnd_OnFlipVH(HWND hwnd)
 {
     xg_xword.SwapXandY();
-    if (xg_bSolved) {
+    if (xg_bSolved_get()) {
         xg_solution.SwapXandY();
     }
     std::swap(xg_nRows, xg_nCols);
-    if (xg_bSolved) {
+    if (xg_bSolved_get()) {
         auto old_dict_1 = xg_dict_1;
         auto old_dict_2 = xg_dict_2;
         xg_dict_1 = XgCreateMiniDict();
@@ -5209,7 +5209,7 @@ void XgDoWebSearch(HWND hwnd, LPCWSTR str)
 void __fastcall MainWnd_OnCopyPattern(HWND hwnd, BOOL bVert)
 {
     XG_Board *pxword;
-    if (xg_bSolved && xg_bShowAnswer) {
+    if (xg_bSolved_get() && xg_bShowAnswer) {
         pxword = &xg_solution;
     } else {
         pxword = &xg_xword;
@@ -5241,7 +5241,7 @@ void __fastcall MainWnd_OnCopyPatternHorz(HWND hwnd)
 void MainWnd_OnCopyCharSet(HWND hwnd)
 {
     const XG_Board *pxword;
-    if (xg_bSolved) {
+    if (xg_bSolved_get()) {
         pxword = &xg_solution;
     } else {
         pxword = &xg_xword;
@@ -5281,7 +5281,7 @@ void __fastcall MainWnd_OnCopyPatternVert(HWND hwnd)
 void __fastcall XgOnlineDict(HWND hwnd, BOOL bVert)
 {
     XG_Board *pxword;
-    if (xg_bSolved && xg_bShowAnswer) {
+    if (xg_bSolved_get() && xg_bShowAnswer) {
         pxword = &xg_solution;
     } else {
         pxword = &xg_xword;
@@ -5545,7 +5545,7 @@ void XgGenerateFromWordList(HWND hwnd)
     XgUpdateRules(xg_hMainWnd);
     // 解をセットする。
     auto& solution = from_words_t<XGStringW, false>::s_solution;
-    xg_bSolved = true;
+    xg_bSolved_set(true);
     xg_bCheckingAnswer = false;
     xg_bShowAnswer = true;
     xg_nRows = solution.m_cy;
@@ -5695,7 +5695,7 @@ BOOL XgAddBox(HWND hwnd, UINT id)
 // ナンクロの写像が正当か確認する。
 BOOL __fastcall XgValidateNumCro(HWND hwnd)
 {
-    if (!xg_bSolved)
+    if (!xg_bSolved_get())
         return FALSE;
 
     for (int i = 0; i < xg_nRows; ++i) {
@@ -5727,7 +5727,7 @@ void __fastcall XgMakeItNumCro(HWND hwnd)
     xg_mapNumCro1.clear();
     xg_mapNumCro2.clear();
 
-    if (!xg_bSolved)
+    if (!xg_bSolved_get())
         return;
 
     int next_number = 1;
@@ -5914,13 +5914,13 @@ void __fastcall XgGenerate(HWND hwnd)
             nID = dialog.DoModal(hwnd);
         }
         // 生成成功のときはxg_nNumberGeneratedを増やす。
-        if (nID == IDOK && xg_bSolved) {
+        if (nID == IDOK && xg_bSolved_get()) {
             ++xg_nNumberGenerated;
         }
     }
     ::EnableWindow(xg_hwndInputPalette, TRUE);
 
-    if (!xg_bSolved) {
+    if (!xg_bSolved_get()) {
         xg_pTaskbarProgress->Clear();
         // 結果を表示する。
         XgShowResults(hwnd, FALSE);
@@ -6329,7 +6329,7 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT /*codeNo
             break;
         }
 
-        if (!xg_bSolved && xg_xword.IsFulfilled())
+        if (!xg_bSolved_get() && xg_xword.IsFulfilled())
         {
             // 空白マスがない場合は「解を求める」を制限しない。
         }
@@ -6528,7 +6528,7 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT /*codeNo
         }
         break;
     case ID_MARKSNEXT:  // 次の二重マス単語
-        if (xg_bSolved) {
+        if (xg_bSolved_get()) {
             if (::IsWindowVisible(xg_hMarkingDlg)) {
                 ::DestroyWindow(xg_hMarkingDlg);
             } else {
@@ -6557,7 +6557,7 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT /*codeNo
         XgPrintProblem();
         break;
     case ID_PRINTANSWER:    // 問題と解答を印刷する。
-        if (xg_bSolved)
+        if (xg_bSolved_get())
             XgPrintAnswer();
         else
             ::MessageBeep(0xFFFFFFFF);
@@ -6962,7 +6962,7 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT /*codeNo
                 // クリアする。
                 xg_bShowAnswer = false;
                 xg_bCheckingAnswer = false;
-                xg_bSolved = false;
+                xg_bSolved_set(false);
                 xg_xword.clear();
                 xg_solution.clear();
                 // 元に戻す情報を残す。
@@ -6987,7 +6987,7 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT /*codeNo
             sa1->Get();
             {
                 XGStringW str;
-                XG_Board *pxw = (xg_bSolved && xg_bShowAnswer) ? &xg_solution : &xg_xword;
+                XG_Board *pxw = (xg_bSolved_get() && xg_bShowAnswer) ? &xg_solution : &xg_xword;
                 pxw->GetString(str);
                 XgPasteBoard(hwnd, str);
             }
@@ -7040,7 +7040,7 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT /*codeNo
         bUpdateImage = TRUE;
         break;
     case ID_DELETE_ROW: // 行を削除。
-        if (!xg_bSolved && xg_nRows > 1)
+        if (!xg_bSolved_get() && xg_nRows > 1)
         {
             auto sa1 = std::make_shared<XG_UndoData_SetAll>();
             auto sa2 = std::make_shared<XG_UndoData_SetAll>();
@@ -7054,7 +7054,7 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT /*codeNo
         bUpdateImage = TRUE;
         break;
     case ID_DELETE_COLUMN: // 列を削除。
-        if (!xg_bSolved && xg_nCols > 1)
+        if (!xg_bSolved_get() && xg_nCols > 1)
         {
             auto sa1 = std::make_shared<XG_UndoData_SetAll>();
             auto sa2 = std::make_shared<XG_UndoData_SetAll>();
@@ -7068,7 +7068,7 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT /*codeNo
         bUpdateImage = TRUE;
         break;
     case ID_INSERT_ROW_ABOVE:
-        if (!xg_bSolved)
+        if (!xg_bSolved_get())
         {
             auto sa1 = std::make_shared<XG_UndoData_SetAll>();
             auto sa2 = std::make_shared<XG_UndoData_SetAll>();
@@ -7080,7 +7080,7 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT /*codeNo
         bUpdateImage = TRUE;
         break;
     case ID_INSERT_ROW_BELOW:
-        if (!xg_bSolved)
+        if (!xg_bSolved_get())
         {
             auto sa1 = std::make_shared<XG_UndoData_SetAll>();
             auto sa2 = std::make_shared<XG_UndoData_SetAll>();
@@ -7092,7 +7092,7 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT /*codeNo
         bUpdateImage = TRUE;
         break;
     case ID_SWAP_LEFT_RIGHT: // 左右を入れ替える
-        if (!xg_bSolved)
+        if (!xg_bSolved_get())
         {
             auto sa1 = std::make_shared<XG_UndoData_SetAll>();
             auto sa2 = std::make_shared<XG_UndoData_SetAll>();
@@ -7113,7 +7113,7 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT /*codeNo
         bUpdateImage = TRUE;
         break;
     case ID_SWAP_TOP_BOTTOM: // 上下を入れ替える
-        if (!xg_bSolved)
+        if (!xg_bSolved_get())
         {
             auto sa1 = std::make_shared<XG_UndoData_SetAll>();
             auto sa2 = std::make_shared<XG_UndoData_SetAll>();
@@ -7134,7 +7134,7 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT /*codeNo
         bUpdateImage = TRUE;
         break;
     case ID_LEFT_INSERT_COLUMN:
-        if (!xg_bSolved)
+        if (!xg_bSolved_get())
         {
             auto sa1 = std::make_shared<XG_UndoData_SetAll>();
             auto sa2 = std::make_shared<XG_UndoData_SetAll>();
@@ -7146,7 +7146,7 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT /*codeNo
         bUpdateImage = TRUE;
         break;
     case ID_RIGHT_INSERT_COLUMN:
-        if (!xg_bSolved)
+        if (!xg_bSolved_get())
         {
             auto sa1 = std::make_shared<XG_UndoData_SetAll>();
             auto sa2 = std::make_shared<XG_UndoData_SetAll>();
@@ -7228,13 +7228,13 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT /*codeNo
         XgSelectUILanguage(hwnd);
         break;
     case ID_REFLECTBLOCKS:
-        if (!xg_bSolved) {
+        if (!xg_bSolved_get()) {
             xg_xword.Mirror();
         }
         bUpdateImage = TRUE;
         break;
     case ID_NUMCROMODE:
-        if (xg_bSolved) {
+        if (xg_bSolved_get()) {
             auto sa1 = std::make_shared<XG_UndoData_NumCro>();
             auto sa2 = std::make_shared<XG_UndoData_NumCro>();
             sa1->Get();
@@ -7269,7 +7269,7 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT /*codeNo
         XgOpenLocalFile(hwnd, L"POLICY.txt");
         break;
     case ID_CHECKANSWER: // 答え合わせ。
-        if (xg_bSolved) {
+        if (xg_bSolved_get()) {
             xg_bCheckingAnswer = !xg_bCheckingAnswer;
             XgUpdateImage(hwnd);
             if (xg_bCheckingAnswer) {
@@ -7651,7 +7651,7 @@ HMENU XgLoadPopupMenu(HWND hwnd, int nPos) noexcept
         break;
     }
 
-    if (xg_bSolved) { // 解があり、ロックされている場合。
+    if (xg_bSolved_get()) { // 解があり、ロックされている場合。
         if (xg_bShowAnswer) { // かつ、解が表示されている場合。
             // 白マス・黒マスのメニュー項目を無効化する。
             ::EnableMenuItem(hSubMenu, ID_BLOCKNOFEED, MF_GRAYED);
@@ -7758,7 +7758,7 @@ void __fastcall XgUpdateImage(HWND hwnd, int x, int y)
 
     if (xg_hbmImage == nullptr) {
         // 必要ならイメージを作成する。
-        if (xg_bSolved && xg_bShowAnswer)
+        if (xg_bSolved_get() && xg_bShowAnswer)
             xg_hbmImage = XgCreateXWordImage(xg_solution, &siz, true);
         else
             xg_hbmImage = XgCreateXWordImage(xg_xword, &siz, true);
@@ -7766,7 +7766,7 @@ void __fastcall XgUpdateImage(HWND hwnd, int x, int y)
         // 必要ならイメージを描画する。
         HDC hdc = ::CreateCompatibleDC(NULL);
         HGDIOBJ hbmOld = ::SelectObject(hdc, xg_hbmImage);
-        if (xg_bSolved && xg_bShowAnswer)
+        if (xg_bSolved_get() && xg_bShowAnswer)
             XgDrawXWord(xg_solution, hdc, &siz, DRAW_MODE_SCREEN);
         else
             XgDrawXWord(xg_xword, hdc, &siz, DRAW_MODE_SCREEN);
@@ -7935,7 +7935,7 @@ bool XgOpenHintsByWindow(HWND hwnd)
     }
 
     // ヒントが空なら開かない。
-    if (!xg_bSolved)
+    if (!xg_bSolved_get())
         return false;
 
     // ヒントウィンドウを作成する。
