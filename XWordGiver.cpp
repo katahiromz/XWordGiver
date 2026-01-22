@@ -59,7 +59,6 @@ XGStringW             xg_strNotes;
 CRITICAL_SECTION    xg_csLock;
 
 // キャンセル管理マネージャー（現在アクティブなもの）。
-class XG_CancellationManager;
 XG_CancellationManager* xg_pCancellationManager = nullptr;
 
 // キャレットの位置。
