@@ -14,6 +14,7 @@
 #include <queue>                // 待ち行列（std::queue）
 #include <thread>               // std::thread
 #include <mutex>                // std::mutex
+#include <atomic>               // std::atomic
 #include <algorithm>            // std::shuffle
 #include <utility>              // ????
 #include <random>               // 新しい乱数生成。
@@ -60,8 +61,8 @@ namespace std {
 // クロスワード生成用の名前空間。現状は「単語群から自動生成」のみ実装。
 // 将来的にはその他の生成方法もこのようなモダンな方向に移行する。
 namespace crossword_generation {
-inline static bool s_generated = false;     // 生成済みか？
-inline static bool s_canceled = false;      // キャンセルされたか？
+inline static std::atomic<bool> s_generated{false};     // 生成済みか？
+inline static std::atomic<bool> s_canceled{false};      // キャンセルされたか？
 inline static std::mutex s_mutex;           // ミューテックス（排他処理用）。
 
 // ルールを表すフラグ群。
@@ -1546,10 +1547,12 @@ struct from_words_t {
                 board0.replace('?', '#');
                 if (is_solution(board0)) { // 盤面が解ならば
                     std::lock_guard<std::mutex> lock(s_mutex); // 排他制御しながら
-                    // 解をセットして
-                    s_generated = true;
-                    s_solution = board0;
-                    return true; // 成功。
+                    // キャンセルされていなければ解をセット
+                    if (!s_canceled) {
+                        s_generated = true;
+                        s_solution = board0;
+                    }
+                    return !s_canceled; // キャンセルされていなければ成功。
                 }
             }
             return s_generated; // 生成済みなら成功。
@@ -1930,9 +1933,12 @@ struct non_add_block_t {
         // 盤面が解ならば成功。
         if (is_solution(m_board)) {
             std::lock_guard<std::mutex> lock(s_mutex);
-            s_generated = true;
-            s_solution = m_board;
-            return true;
+            // キャンセルされていなければ解をセット
+            if (!s_canceled) {
+                s_generated = true;
+                s_solution = m_board;
+            }
+            return !s_canceled; // キャンセルされていなければ成功。
         }
 
         return s_generated; // 生成済みなら成功。
