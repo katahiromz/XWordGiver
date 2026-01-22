@@ -3243,6 +3243,10 @@ bool __fastcall XgOnGenerateBlacksRepeatedly(HWND hwnd)
         }
     } while (nID == IDOK && xg_nNumberGenerated < xg_nNumberToGenerate);
     ::EnableWindow(xg_hwndInputPalette, TRUE);
+
+    // スレッドを待つ
+    XgWaitForThreads();
+
     XgSetCaretPos();
     XgUpdateImage(hwnd, 0, 0);
 
@@ -3322,6 +3326,9 @@ bool __fastcall XgOnGenerateBlacks(HWND hwnd, bool sym)
         dialog.DoModal(hwnd);
     }
     ::EnableWindow(xg_hwndInputPalette, TRUE);
+    // スレッドを待つ
+    XgWaitForThreads();
+
     XgSetCaretPos();
     XgUpdateImage(hwnd, 0, 0);
 
@@ -3393,6 +3400,8 @@ bool __fastcall XgOnSolve_AddBlack(HWND hwnd)
         dialog.DoModal(hwnd);
     }
     ::EnableWindow(xg_hwndInputPalette, TRUE);
+    // スレッドを待つ
+    XgWaitForThreads();
 
     WCHAR sz[MAX_PATH];
     if (xg_bCancelled) { // キャンセルされた。
@@ -3500,6 +3509,8 @@ bool __fastcall XgOnSolve_NoAddBlack(HWND hwnd)
         dialog.DoModal(hwnd);
     }
     ::EnableWindow(xg_hwndInputPalette, TRUE);
+    // スレッドを待つ
+    XgWaitForThreads();
 
     if (xg_bCancelled) {
         // キャンセルされた。
@@ -3606,6 +3617,8 @@ bool __fastcall XgOnSolve_NoAddBlackNoResults(HWND hwnd)
         dialog.DoModal(hwnd);
     }
     ::EnableWindow(xg_hwndInputPalette, TRUE);
+    // スレッドを待つ
+    XgWaitForThreads();
 
     return true;
 }
@@ -5920,6 +5933,9 @@ void __fastcall XgGenerate(HWND hwnd)
         }
     }
     ::EnableWindow(xg_hwndInputPalette, TRUE);
+
+    // スレッドを待つ
+    XgWaitForThreads();
 
     if (!xg_bSolved) {
         xg_pTaskbarProgress->Clear();
