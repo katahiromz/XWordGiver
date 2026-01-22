@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include "XG_Window.hpp"
+#include "XG_CancellationManager.hpp"
 
 // キャンセルダイアログ。
 class XG_CancelGenBlacksDialog : public XG_Dialog
@@ -9,6 +10,7 @@ public:
     const DWORD SLEEP = 250;
     const DWORD INTERVAL = 300;
     const UINT uTimerID = 999;
+    XG_CancellationManager m_cancellation_manager;
 
     XG_CancelGenBlacksDialog() noexcept
     {
@@ -22,8 +24,15 @@ public:
         ::EnterCriticalSection(&xg_csLock);
         xg_bCancelled = true;
         ::LeaveCriticalSection(&xg_csLock);
-        // スレッドを待つ。
-        XgWaitForThreads();
+        // スレッドを待つ（タイムアウト付き）。
+        if (!m_cancellation_manager.WaitForCompletion(5000)) {
+            // タイムアウトの場合は通常の待機。
+            XgWaitForThreads();
+        }
+        // キャンセル時に初期状態に復元。
+        m_cancellation_manager.RestoreOnCancel();
+        // グローバルポインタをクリア。
+        xg_pCancellationManager = nullptr;
         // スレッドを閉じる。
         XgCloseThreads();
     }
@@ -32,6 +41,12 @@ public:
     {
         // ダイアログを中央へ移動する。
         XgCenterDialog(hwnd);
+        // リセット。
+        m_cancellation_manager.Reset();
+        // 初期状態を保存。
+        m_cancellation_manager.SaveInitialState();
+        // グローバルポインタを設定。
+        xg_pCancellationManager = &m_cancellation_manager;
         // 解を求めるのを開始。
         XgStartGenerateBlacks();
         // リトライ回数をリセット。

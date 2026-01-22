@@ -5,6 +5,7 @@
 
 #include "XWordGiver.hpp"
 #include "XG_Settings.hpp"
+#include "XG_CancellationManager.hpp"
 #include <clocale>
 
 //////////////////////////////////////////////////////////////////////////////
@@ -56,6 +57,10 @@ XGStringW             xg_strNotes;
 
 // 排他制御のためのクリティカルセクション（ロック）。
 CRITICAL_SECTION    xg_csLock;
+
+// キャンセル管理マネージャー（現在アクティブなもの）。
+class XG_CancellationManager;
+XG_CancellationManager* xg_pCancellationManager = nullptr;
 
 // キャレットの位置。
 XG_Pos              xg_caret_pos = {0, 0};
@@ -3844,6 +3849,10 @@ void __fastcall XgSolveXWord_AddBlackRecurse(const XG_Board& xw)
             if (xw.GetAt(i) == ZEN_BLACK)
                 xg_xword.SetAt(i, ZEN_BLACK);
         }
+        // 完了を通知。
+        if (xg_pCancellationManager != nullptr) {
+            xg_pCancellationManager->SetCompleted();
+        }
     }
     ::LeaveCriticalSection(&xg_csLock);
 }
@@ -4077,6 +4086,10 @@ void __fastcall XgSolveXWord_NoAddBlackRecurse(const XG_Board& xw)
         for (int i = 0; i < nCount; i++) {
             if (xw.GetAt(i) == ZEN_BLACK)
                 xg_xword.SetAt(i, ZEN_BLACK);
+        }
+        // 完了を通知。
+        if (xg_pCancellationManager != nullptr) {
+            xg_pCancellationManager->SetCompleted();
         }
     }
     ::LeaveCriticalSection(&xg_csLock);
@@ -7267,6 +7280,10 @@ bool __fastcall XgGenerateBlacksRecurse(const XG_Board& xword, LONG iRowjCol)
         if (!xg_bCancelled && !xg_bBlacksGenerated) {
             xg_bBlacksGenerated = true;
             xg_xword = xword;
+            // 完了を通知。
+            if (xg_pCancellationManager != nullptr) {
+                xg_pCancellationManager->SetCompleted();
+            }
         }
         ::LeaveCriticalSection(&xg_csLock);
         return xg_bBlacksGenerated || xg_bCancelled;
@@ -7385,6 +7402,10 @@ bool __fastcall XgGenerateBlacksPointSymRecurse(const XG_Board& xword, LONG iRow
         if (!xg_bCancelled && !xg_bBlacksGenerated) {
             xg_bBlacksGenerated = true;
             xg_xword = xword;
+            // 完了を通知。
+            if (xg_pCancellationManager != nullptr) {
+                xg_pCancellationManager->SetCompleted();
+            }
         }
         ::LeaveCriticalSection(&xg_csLock);
         return xg_bBlacksGenerated || xg_bCancelled;
@@ -7506,6 +7527,10 @@ bool __fastcall XgGenerateBlacksLineSymVRecurse(const XG_Board& xword, LONG iRow
         if (!xg_bCancelled && !xg_bBlacksGenerated) {
             xg_bBlacksGenerated = true;
             xg_xword = xword;
+            // 完了を通知。
+            if (xg_pCancellationManager != nullptr) {
+                xg_pCancellationManager->SetCompleted();
+            }
         }
         ::LeaveCriticalSection(&xg_csLock);
         return xg_bBlacksGenerated || xg_bCancelled;
@@ -7642,6 +7667,10 @@ bool __fastcall XgGenerateBlacksLineSymHRecurse(const XG_Board& xword, LONG iRow
         if (!xg_bCancelled && !xg_bBlacksGenerated) {
             xg_bBlacksGenerated = true;
             xg_xword = xword;
+            // 完了を通知。
+            if (xg_pCancellationManager != nullptr) {
+                xg_pCancellationManager->SetCompleted();
+            }
         }
         ::LeaveCriticalSection(&xg_csLock);
         return xg_bBlacksGenerated || xg_bCancelled;
