@@ -1945,6 +1945,53 @@ void __fastcall XG_Board::DoNumberingNoCheck()
     sort(xg_vHorzInfo.begin(), xg_vHorzInfo.end(), xg_placeinfo_compare_number());
 }
 
+// パターン候補のキャッシュ（高速化）。
+// スレッドセーフなLRUキャッシュ。
+namespace {
+    struct CandidateCache {
+        static constexpr size_t MAX_CACHE_SIZE = 500; // キャッシュの最大サイズ。
+        std::unordered_map<XGStringW, std::vector<XGStringW>> cache;
+        std::mutex cache_mutex;
+        
+        // キャッシュから候補を取得。
+        bool get(const XGStringW& pattern, std::vector<XGStringW>& cands) {
+            std::lock_guard<std::mutex> lock(cache_mutex);
+            auto it = cache.find(pattern);
+            if (it != cache.end()) {
+                cands = it->second;
+                return true;
+            }
+            return false;
+        }
+        
+        // キャッシュに候補を保存。
+        void put(const XGStringW& pattern, const std::vector<XGStringW>& cands) {
+            std::lock_guard<std::mutex> lock(cache_mutex);
+            // キャッシュサイズ制限（簡易LRU: 最大サイズに達したらクリア）。
+            if (cache.size() >= MAX_CACHE_SIZE) {
+                cache.clear();
+            }
+            cache[pattern] = cands;
+        }
+        
+        // キャッシュをクリア。
+        void clear() {
+            std::lock_guard<std::mutex> lock(cache_mutex);
+            cache.clear();
+        }
+    };
+    
+    // 2つのキャッシュ（優先辞書と代替辞書用）。
+    CandidateCache g_candidate_cache_1;
+    CandidateCache g_candidate_cache_2;
+}
+
+// 候補キャッシュをクリアする。
+void __fastcall XgClearCandidateCache(void) {
+    g_candidate_cache_1.clear();
+    g_candidate_cache_2.clear();
+}
+
 // 候補を取得する。
 template <bool t_alternative> bool __fastcall
 XgGetCandidatesAddBlack(
@@ -2120,6 +2167,12 @@ done:
 template <bool t_alternative> bool __fastcall
 XgGetCandidatesNoAddBlack(std::vector<XGStringW>& cands, const XGStringW& pattern)
 {
+    // キャッシュをチェック。
+    auto& cache = t_alternative ? g_candidate_cache_2 : g_candidate_cache_1;
+    if (cache.get(pattern, cands)) {
+        return !cands.empty();
+    }
+    
     // 単語の長さ。
     const int patlen = static_cast<int>(pattern.size());
     assert(patlen >= 2);
@@ -2174,6 +2227,11 @@ XgGetCandidatesNoAddBlack(std::vector<XGStringW>& cands, const XGStringW& patter
 
         // 追加する。
         cands.emplace_back(word);
+    }
+
+    // キャッシュに保存。
+    if (!cands.empty()) {
+        cache.put(pattern, cands);
     }
 
     // 候補が空でなければ成功。

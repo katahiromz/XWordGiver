@@ -327,6 +327,9 @@ bool __fastcall XgLoadDictFile(LPCWSTR pszFile)
             xg_dict_2_by_length[len].push_back(worddata);
         }
 
+        // 候補キャッシュをクリアする（辞書が変わったため）。
+        XgClearCandidateCache();
+
         // 最長、最短を更新。
         if (xg_word_length_histgram.size()) {
             xg_nDictMaxWordLen = 2;

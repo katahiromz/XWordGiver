@@ -101,6 +101,8 @@ extern int xg_nDictMinWordLen;
 
 // 辞書ファイルを読み込む。
 bool __fastcall XgLoadDictFile(LPCWSTR pszFile);
+// 候補キャッシュをクリアする。
+void __fastcall XgClearCandidateCache(void);
 // テーマをリセットする。
 void __fastcall XgResetTheme(HWND hwnd);
 // テーマを設定する。
