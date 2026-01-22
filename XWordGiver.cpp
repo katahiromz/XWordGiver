@@ -7,6 +7,7 @@
 #include "XG_Settings.hpp"
 #include "XG_CancellationManager.hpp"
 #include <clocale>
+#include <mutex>
 
 //////////////////////////////////////////////////////////////////////////////
 // global variables
@@ -1945,6 +1946,60 @@ void __fastcall XG_Board::DoNumberingNoCheck()
     sort(xg_vHorzInfo.begin(), xg_vHorzInfo.end(), xg_placeinfo_compare_number());
 }
 
+// パターン候補のキャッシュ（高速化）。
+// スレッドセーフなLRUキャッシュ。
+namespace {
+    struct CandidateCache {
+        static constexpr size_t MAX_CACHE_SIZE = 500; // キャッシュの最大サイズ。
+        static constexpr size_t EVICT_COUNT = 100; // 一度に削除するエントリ数。
+        std::unordered_map<XGStringW, std::vector<XGStringW>> cache;
+        std::mutex cache_mutex;
+        size_t eviction_counter = 0; // 削除カウンター。
+        
+        // キャッシュから候補を取得。
+        bool get(const XGStringW& pattern, std::vector<XGStringW>& cands) {
+            std::lock_guard<std::mutex> lock(cache_mutex);
+            auto it = cache.find(pattern);
+            if (it != cache.end()) {
+                cands = it->second;
+                return true;
+            }
+            return false;
+        }
+        
+        // キャッシュに候補を保存（空の結果もキャッシュする）。
+        void put(const XGStringW& pattern, const std::vector<XGStringW>& cands) {
+            std::lock_guard<std::mutex> lock(cache_mutex);
+            // キャッシュサイズ制限（段階的削除でパフォーマンススパイクを軽減）。
+            if (cache.size() >= MAX_CACHE_SIZE) {
+                // 先頭から一定数のエントリを削除（簡易LRU）。
+                auto it = cache.begin();
+                for (size_t i = 0; i < EVICT_COUNT && it != cache.end(); ) {
+                    it = cache.erase(it);
+                }
+            }
+            cache[pattern] = cands;
+        }
+        
+        // キャッシュをクリア。
+        void clear() {
+            std::lock_guard<std::mutex> lock(cache_mutex);
+            cache.clear();
+            eviction_counter = 0;
+        }
+    };
+    
+    // 2つのキャッシュ（優先辞書と代替辞書用）。
+    CandidateCache g_candidate_cache_1;
+    CandidateCache g_candidate_cache_2;
+}
+
+// 候補キャッシュをクリアする。
+void __fastcall XgClearCandidateCache(void) {
+    g_candidate_cache_1.clear();
+    g_candidate_cache_2.clear();
+}
+
 // 候補を取得する。
 template <bool t_alternative> bool __fastcall
 XgGetCandidatesAddBlack(
@@ -2023,68 +2078,91 @@ XgGetCandidatesAddBlack(
         }
     }
 
+    // 候補数の上限（メモリとパフォーマンスのバランス）。
+    constexpr size_t MAX_CANDIDATES = 1000;
+
+    // 長さでインデックス化された辞書を使用（高速化）。
+    const auto& dict_by_length = t_alternative ? xg_dict_2_by_length : xg_dict_1_by_length;
+
     // すべての登録されている単語について。
-    for (const auto& data : (t_alternative ? xg_dict_2 : xg_dict_1)) {
-        // パターンより単語の方が長い場合、スキップする。
-        const XGStringW& word = data.m_word;
-        const int wordlen = static_cast<int>(word.size());
-        if (wordlen > patlen)
-            continue;
+    // 長さがpatlen以下の単語のみを検索。
+    for (int wordlen = 2; wordlen <= patlen; ++wordlen) {
+        // 早期終了: 候補数が上限に達したら打ち切る。
+        if (cands.size() >= MAX_CANDIDATES)
+            break;
 
-        // 単語の置ける区間について調べる。
-        const int patlen_minus_wordlen = patlen - wordlen;
-        for (int j = 0; j <= patlen_minus_wordlen; j++) {
-            // 区間[j, j + wordlen - 1]の前後に文字があったらスキップする。
-            if (j > 0 && pattern[j - 1] != ZEN_SPACE)
-                continue;
-            if (j < patlen_minus_wordlen && pattern[j + wordlen] != ZEN_SPACE)
-                continue;
+        auto it = dict_by_length.find(wordlen);
+        if (it == dict_by_length.end())
+            continue; // 該当する長さの単語がない。
 
-            // 区間[j, j + wordlen - 1]に文字マスがあるか？
-            bool bCharFound = false;
-            const int j_plus_wordlen = j + wordlen;
-            for (int m = j; m < j_plus_wordlen; m++) {
-                assert(pattern[m] != ZEN_BLACK);
-                if (pattern[m] != ZEN_SPACE) {
-                    bCharFound = true;
-                    break;
+        const auto& words_of_length = it->second;
+
+        for (const auto& data : words_of_length) {
+            // 早期終了: 候補数が上限に達したら打ち切る。
+            if (cands.size() >= MAX_CANDIDATES)
+                break;
+
+            const XGStringW& word = data.m_word;
+
+            // 単語の置ける区間について調べる。
+            const int patlen_minus_wordlen = patlen - wordlen;
+            for (int j = 0; j <= patlen_minus_wordlen; j++) {
+                // 区間[j, j + wordlen - 1]の前後に文字があったらスキップする。
+                if (j > 0 && pattern[j - 1] != ZEN_SPACE)
+                    continue;
+                if (j < patlen_minus_wordlen && pattern[j + wordlen] != ZEN_SPACE)
+                    continue;
+
+                // 区間[j, j + wordlen - 1]に文字マスがあるか？
+                bool bCharFound = false;
+                const int j_plus_wordlen = j + wordlen;
+                for (int m = j; m < j_plus_wordlen; m++) {
+                    assert(pattern[m] != ZEN_BLACK);
+                    if (pattern[m] != ZEN_SPACE) {
+                        bCharFound = true;
+                        break;
+                    }
                 }
-            }
-            if (!bCharFound)
-                continue;
+                if (!bCharFound)
+                    continue;
 
-            // パターンが単語にマッチするか？
-            bool bMatched = true;
-            for (int m = j, n = 0; n < wordlen; m++, n++) {
-                if (pattern[m] != ZEN_SPACE && pattern[m] != word[n]) {
-                    bMatched = false;
-                    break;
+                // パターンが単語にマッチするか？
+                bool bMatched = true;
+                for (int m = j, n = 0; n < wordlen; m++, n++) {
+                    if (pattern[m] != ZEN_SPACE && pattern[m] != word[n]) {
+                        bMatched = false;
+                        break;
+                    }
                 }
+                if (!bMatched)
+                    continue;
+
+                // マッチした。
+                result = pattern;
+
+                // 区間[j, j + wordlen - 1]の前後に■をおく。
+                if (j > 0)
+                    result[j - 1] = ZEN_BLACK;
+                if (j < patlen_minus_wordlen)
+                    result[j + wordlen] = ZEN_BLACK;
+
+                // 区間[j, j + wordlen - 1]に単語を適用する。
+                for (int k = 0, m = j; k < wordlen; k++, m++)
+                    result[m] = word[k];
+
+                // 黒マスの連続を除外する。
+                if (left_black_check && result[0] == ZEN_BLACK)
+                    continue;
+                if (right_black_check && result[patlen - 1] == ZEN_BLACK)
+                    continue;
+
+                // 追加する。
+                cands.emplace_back(result);
+
+                // 早期終了: 候補数が上限に達したら打ち切る。
+                if (cands.size() >= MAX_CANDIDATES)
+                    break;
             }
-            if (!bMatched)
-                continue;
-
-            // マッチした。
-            result = pattern;
-
-            // 区間[j, j + wordlen - 1]の前後に■をおく。
-            if (j > 0)
-                result[j - 1] = ZEN_BLACK;
-            if (j < patlen_minus_wordlen)
-                result[j + wordlen] = ZEN_BLACK;
-
-            // 区間[j, j + wordlen - 1]に単語を適用する。
-            for (int k = 0, m = j; k < wordlen; k++, m++)
-                result[m] = word[k];
-
-            // 黒マスの連続を除外する。
-            if (left_black_check && result[0] == ZEN_BLACK)
-                continue;
-            if (right_black_check && result[patlen - 1] == ZEN_BLACK)
-                continue;
-
-            // 追加する。
-            cands.emplace_back(result);
         }
     }
 
@@ -2096,29 +2174,44 @@ XgGetCandidatesAddBlack(
 template <bool t_alternative> bool __fastcall
 XgGetCandidatesNoAddBlack(std::vector<XGStringW>& cands, const XGStringW& pattern)
 {
+    // キャッシュをチェック。
+    auto& cache = t_alternative ? g_candidate_cache_2 : g_candidate_cache_1;
+    if (cache.get(pattern, cands)) {
+        return !cands.empty();
+    }
+    
     // 単語の長さ。
     const int patlen = static_cast<int>(pattern.size());
     assert(patlen >= 2);
 
     // 候補をクリアする。
     cands.clear();
+
+    // 長さでインデックス化された辞書を使用（高速化）。
+    const auto& dict_by_length = t_alternative ? xg_dict_2_by_length : xg_dict_1_by_length;
+    auto it = dict_by_length.find(patlen);
+    if (it == dict_by_length.end())
+        return false; // 該当する長さの単語がない。
+
+    const auto& words_of_length = it->second;
+    
     // スピードのため、予約する。
-    if (t_alternative)
-        cands.reserve(xg_dict_2.size() / 32);
-    else
-        cands.reserve(xg_dict_1.size() / 32);
+    cands.reserve(std::min<size_t>(words_of_length.size() / 8, 1000));
 
-    // すべての登録された単語について。
-    for (const auto& data : (t_alternative ? xg_dict_2 : xg_dict_1)) {
-        // パターンと単語の長さが等しくなければ、スキップする。
+    // 候補数の上限（メモリとパフォーマンスのバランス）。
+    constexpr size_t MAX_CANDIDATES = 1000;
+
+    // 該当する長さの単語のみを検索。
+    for (const auto& data : words_of_length) {
+        // 早期終了: 候補数が上限に達したら打ち切る。
+        if (cands.size() >= MAX_CANDIDATES)
+            break;
+
         const XGStringW& word = data.m_word;
-        const int wordlen = static_cast<int>(word.size());
-        if (wordlen != patlen)
-            continue;
 
-        // 区間[0, wordlen - 1]に文字マスがあるか？
+        // 区間[0, patlen - 1]に文字マスがあるか？
         bool bCharFound = false;
-        for (int k = 0; k < wordlen; k++) {
+        for (int k = 0; k < patlen; k++) {
             assert(pattern[k] != ZEN_BLACK);
             if (pattern[k] != ZEN_SPACE) {
                 bCharFound = true;
@@ -2130,7 +2223,7 @@ XgGetCandidatesNoAddBlack(std::vector<XGStringW>& cands, const XGStringW& patter
 
         // パターンが単語にマッチするか？
         bool bMatched = true;
-        for (int k = 0; k < wordlen; k++) {
+        for (int k = 0; k < patlen; k++) {
             if (pattern[k] != ZEN_SPACE && pattern[k] != word[k]) {
                 bMatched = false;
                 break;
@@ -2142,6 +2235,9 @@ XgGetCandidatesNoAddBlack(std::vector<XGStringW>& cands, const XGStringW& patter
         // 追加する。
         cands.emplace_back(word);
     }
+
+    // キャッシュに保存（空の結果もキャッシュして無駄な検索を防ぐ）。
+    cache.put(pattern, cands);
 
     // 候補が空でなければ成功。
     return !cands.empty();

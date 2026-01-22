@@ -76,6 +76,8 @@ namespace std
 
 // 辞書データ。優先タグか否かで分ける。
 extern std::vector<XG_WordData> xg_dict_1, xg_dict_2;
+// 長さでインデックス化された辞書データ（高速検索用）。
+extern std::unordered_map<int, std::vector<XG_WordData>> xg_dict_1_by_length, xg_dict_2_by_length;
 // タグ付けデータ。
 extern std::unordered_map<XGStringW, std::unordered_set<XGStringW> > xg_word_to_tags_map;
 // タグのヒストグラム。
@@ -99,6 +101,8 @@ extern int xg_nDictMinWordLen;
 
 // 辞書ファイルを読み込む。
 bool __fastcall XgLoadDictFile(LPCWSTR pszFile);
+// 候補キャッシュをクリアする。
+void __fastcall XgClearCandidateCache(void);
 // テーマをリセットする。
 void __fastcall XgResetTheme(HWND hwnd);
 // テーマを設定する。
