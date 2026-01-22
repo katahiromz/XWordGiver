@@ -28,7 +28,10 @@ public:
         // タイマーを解除する。
         ::KillTimer(hwnd, uTimerID);
         // キャンセルしてスレッドを待つ。
-        crossword_generation::s_canceled = true;
+        // 生成完了していなければキャンセル
+        if (!crossword_generation::s_generated) {
+            crossword_generation::s_canceled = true;
+        }
         ::Sleep(SLEEP);
     }
 

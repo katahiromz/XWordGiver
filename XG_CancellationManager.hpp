@@ -48,9 +48,12 @@ public:
     // Notify completion (on successful processing)
     void SetCompleted() noexcept
     {
-        if (m_hCompletionEvent != nullptr) {
+        ::EnterCriticalSection(&xg_csLock);
+        // キャンセル済みでなければ完了を通知
+        if (!xg_bCancelled && m_hCompletionEvent != nullptr) {
             ::SetEvent(m_hCompletionEvent);
         }
+        ::LeaveCriticalSection(&xg_csLock);
     }
     
     // 完了またはキャンセルを待機（タイムアウト付き）
