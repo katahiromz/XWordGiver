@@ -398,8 +398,10 @@ BOOL XG_SettingsDialog::DoImportLooks(HWND hwnd, LPCWSTR pszFileName)
         std::vector<BYTE> data;
         XgHexToBin(data, szText);
         XGStringW str;
-        str.resize(data.size() / sizeof(WCHAR));
-        memcpy(&str[0], data.data(), data.size());
+        size_t charCount = data.size() / sizeof(WCHAR);
+        str.resize(charCount);
+        if (charCount)
+            memcpy(&str[0], data.data(), charCount * sizeof(WCHAR)); // バッファ分だけコピー
         ComboBox_RealSetText(hCmb2, str.c_str());
     }
 
@@ -913,7 +915,6 @@ XG_SettingsDialog::DialogProcDx(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPar
         case psh3: // マスのフォントリセット
             m_lfCellFont = {};
             ::SetDlgItemTextW(hwnd, edt1, L"");
-            PropSheet_Changed(GetParent(hwnd), hwnd);
             break;
 
         case psh4: // 小さいフォントリセット

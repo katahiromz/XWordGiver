@@ -640,23 +640,14 @@ XGStringW XgBinToHex(const void *ptr, size_t size)
 // 16進をバイナリにする。
 void XgHexToBin(std::vector<BYTE>& data, const XGStringW& str)
 {
-    WCHAR sz[3];
     data.clear();
-    bool flag = false;
-    sz[2] = 0;
-    for (auto& ch : str)
+    WCHAR sz[3] = {};
+    size_t len = str.size() & ~size_t(1); // 奇数なら最後の1文字を捨てる（既存動作と同じ）
+    for (size_t i = 0; i < len; i += 2)
     {
-        if (flag)
-        {
-            sz[1] = ch;
-            const auto b = static_cast<BYTE>(wcstol(sz, nullptr, 16));
-            data.insert(data.end(), b);
-        }
-        else
-        {
-            sz[0] = ch;
-        }
-        flag = !flag;
+        sz[0] = str[i];
+        sz[1] = str[i + 1];
+        data.push_back(static_cast<BYTE>(wcstol(sz, nullptr, 16)));
     }
 }
 

@@ -239,6 +239,9 @@ XgViewSettingsDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
                     // 表示を更新。
                     XgUpdateImage(xg_hMainWnd);
                     SendMessageW(xg_hMainWnd, WM_SIZE, 0, 0);
+
+                    SetWindowLongPtr(hwnd, DWLP_MSGRESULT, PSNRET_NOERROR);
+                    return TRUE;
                 }
                 break;
             }
