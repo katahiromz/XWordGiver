@@ -236,6 +236,8 @@ void XgUpdateRecentlyUsed(LPCWSTR pszFile)
 
 // マスのフォント。
 WCHAR xg_szCellFont[LF_FACESIZE] = L"";
+// マスのフォント（LOGFONTW形式）。サイズは固定で変更しない。
+LOGFONTW xg_lfCellLogFont = {};
 // 小さな文字のフォント。
 WCHAR xg_szSmallFont[LF_FACESIZE] = L"";
 // UIフォント。
@@ -909,6 +911,7 @@ void XgResetSettings(void)
     xg_dirs_save_to.clear();
     xg_bAutoRetry = true;
     xg_szCellFont[0] = 0;
+    ZeroMemory(&xg_lfCellLogFont, sizeof(xg_lfCellLogFont));
     xg_szSmallFont[0] = 0;
     xg_szUIFont[0] = 0;
     xg_bShowToolBar = true;
@@ -1105,6 +1108,7 @@ bool __fastcall XgLoadSettings(void)
 
         if (!app_key.QuerySz(L"CellFont", sz, _countof(sz))) {
             StringCchCopy(xg_szCellFont, _countof(xg_szCellFont), sz);
+            StringCchCopy(xg_lfCellLogFont.lfFaceName, _countof(xg_lfCellLogFont.lfFaceName), sz);
         }
         if (!app_key.QuerySz(L"SmallFont", sz, _countof(sz))) {
             StringCchCopy(xg_szSmallFont, _countof(xg_szSmallFont), sz);
@@ -2117,6 +2121,22 @@ BOOL XgImportLooks(HWND hwnd, LPCWSTR pszFileName)
     // フォント。
     GetPrivateProfileStringW(L"Looks", L"CellFont", L"", szText, _countof(szText), pszFileName);
     StringCchCopyW(xg_szCellFont, _countof(xg_szCellFont), szText);
+    // CellLogFontがあれば優先して復元する。
+    GetPrivateProfileStringW(L"Looks", L"CellLogFont", L"", szText, _countof(szText), pszFileName);
+    if (szText[0]) {
+        std::vector<BYTE> data;
+        XgHexToBin(data, szText);
+        if (data.size() == sizeof(LOGFONTW)) {
+            const LONG lfHeight = xg_lfCellLogFont.lfHeight;
+            const LONG lfWidth = xg_lfCellLogFont.lfWidth;
+            memcpy(&xg_lfCellLogFont, data.data(), sizeof(LOGFONTW));
+            xg_lfCellLogFont.lfHeight = lfHeight;
+            xg_lfCellLogFont.lfWidth = lfWidth;
+            StringCchCopyW(xg_szCellFont, _countof(xg_szCellFont), xg_lfCellLogFont.lfFaceName);
+        }
+    } else {
+        StringCchCopyW(xg_lfCellLogFont.lfFaceName, _countof(xg_lfCellLogFont.lfFaceName), xg_szCellFont);
+    }
 
     GetPrivateProfileStringW(L"Looks", L"SmallFont", L"", szText, _countof(szText), pszFileName);
     StringCchCopyW(xg_szSmallFont, _countof(xg_szSmallFont), szText);
@@ -2193,6 +2213,11 @@ BOOL XgExportLooks(HWND hwnd, LPCWSTR pszFileName)
 
     // セルフォント。
     WritePrivateProfileStringW(L"Looks", L"CellFont", xg_szCellFont, pszFileName);
+    // CellLogFontを保存する。
+    {
+        XGStringW str = XgBinToHex(&xg_lfCellLogFont, sizeof(xg_lfCellLogFont));
+        WritePrivateProfileStringW(L"Looks", L"CellLogFont", str.c_str(), pszFileName);
+    }
 
     // 小さい文字のフォント。
     WritePrivateProfileStringW(L"Looks", L"SmallFont", xg_szSmallFont, pszFileName);
