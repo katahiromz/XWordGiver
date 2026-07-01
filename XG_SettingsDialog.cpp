@@ -30,7 +30,7 @@ BOOL XG_SettingsDialog::OnInitDialog(HWND hwnd)
     m_hwndMarked.SetColor(xg_rgbMarkedCellColor);
 
     // フォント名を格納する。
-    ::SetDlgItemTextW(hwnd, edt1, xg_szCellFont);
+    ::SetDlgItemTextW(hwnd, edt1, xg_lfCellLogFont.lfFaceName);
     ::SetDlgItemTextW(hwnd, edt2, xg_szSmallFont);
     ::SetDlgItemTextW(hwnd, edt3, xg_szUIFont);
     m_lfCellFont = xg_lfCellLogFont;
