@@ -902,29 +902,29 @@ XG_SettingsDialog::DialogProcDx(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPar
 
         // 実際に処理をする。
         switch (LOWORD(wParam)) {
-        case psh1:
+        case psh1: // マスのフォント変更
             OnChange(hwnd, 0);
             break;
 
-        case psh2:
+        case psh2: // 小さいフォント変更
             OnChange(hwnd, 1);
             break;
 
-        case psh3:
+        case psh3: // マスのフォントリセット
             m_lfCellFont = {};
             ::SetDlgItemTextW(hwnd, edt1, L"");
             PropSheet_Changed(GetParent(hwnd), hwnd);
             break;
 
-        case psh4:
+        case psh4: // 小さいフォントリセット
             ::SetDlgItemTextW(hwnd, edt2, L"");
             break;
 
-        case psh5:
+        case psh5: // UIフォント変更
             OnChange(hwnd, 2);
             break;
 
-        case psh6:
+        case psh6: // UIフォントリセット
             ::SetDlgItemTextW(hwnd, edt3, L"");
             break;
 
