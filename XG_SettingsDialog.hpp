@@ -8,8 +8,12 @@
 class XG_SettingsDialog
 {
 public:
+    // マスフォントの一時キャッシュ。
+    LOGFONT m_lfCellFont = {};
+
     XG_SettingsDialog() noexcept
     {
+        m_lfCellFont = xg_lfCellLogFont;
     }
 
     // [設定]ダイアログの初期化。

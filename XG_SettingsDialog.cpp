@@ -33,6 +33,7 @@ BOOL XG_SettingsDialog::OnInitDialog(HWND hwnd)
     ::SetDlgItemTextW(hwnd, edt1, xg_szCellFont);
     ::SetDlgItemTextW(hwnd, edt2, xg_szSmallFont);
     ::SetDlgItemTextW(hwnd, edt3, xg_szUIFont);
+    m_lfCellFont = xg_lfCellLogFont;
 
     // スケルトンビューか？
     ::CheckDlgButton(hwnd, chx1,
@@ -205,9 +206,7 @@ BOOL XG_SettingsDialog::OnOK(HWND hwnd)
     WCHAR szName[LF_FACESIZE];
 
     // セルフォント。
-    ::GetDlgItemTextW(hwnd, edt1, szName, _countof(szName));
-    StringCchCopy(xg_szCellFont, _countof(xg_szCellFont), szName);
-    StringCchCopy(xg_lfCellLogFont.lfFaceName, _countof(xg_lfCellLogFont.lfFaceName), szName);
+    xg_lfCellLogFont = m_lfCellFont;
 
     // 小さい文字のフォント。
     ::GetDlgItemTextW(hwnd, edt2, szName, _countof(szName));
@@ -324,12 +323,12 @@ BOOL XG_SettingsDialog::DoImportLooks(HWND hwnd, LPCWSTR pszFileName)
         std::vector<BYTE> data;
         XgHexToBin(data, szText);
         if (data.size() == sizeof(LOGFONTW)) {
-            const LONG lfHeight = xg_lfCellLogFont.lfHeight;
-            const LONG lfWidth = xg_lfCellLogFont.lfWidth;
-            memcpy(&xg_lfCellLogFont, data.data(), sizeof(LOGFONTW));
-            xg_lfCellLogFont.lfHeight = lfHeight;
-            xg_lfCellLogFont.lfWidth = lfWidth;
-            SetDlgItemTextW(hwnd, edt1, xg_lfCellLogFont.lfFaceName);
+            const LONG lfHeight = m_lfCellFont.lfHeight;
+            const LONG lfWidth = m_lfCellFont.lfWidth;
+            memcpy(&m_lfCellFont, data.data(), sizeof(LOGFONTW));
+            m_lfCellFont.lfHeight = lfHeight;
+            m_lfCellFont.lfWidth = lfWidth;
+            SetDlgItemTextW(hwnd, edt1, m_lfCellFont.lfFaceName);
         }
     }
 
@@ -475,7 +474,7 @@ BOOL XG_SettingsDialog::DoExportLooks(HWND hwnd, LPCWSTR pszFileName)
     WritePrivateProfileStringW(L"Looks", L"CellFont", szName, pszFileName);
     // CellLogFontを保存する。
     {
-        XGStringW strHex = XgBinToHex(&xg_lfCellLogFont, sizeof(xg_lfCellLogFont));
+        XGStringW strHex = XgBinToHex(&m_lfCellFont, sizeof(m_lfCellFont));
         WritePrivateProfileStringW(L"Looks", L"CellLogFont", strHex.c_str(), pszFileName);
     }
 
@@ -608,6 +607,7 @@ void XG_SettingsDialog::OnResetLooks(HWND hwnd)
     InvalidateRect(m_hwndMarked, nullptr, TRUE);
 
     // フォント。
+    m_lfCellFont = {};
     SetDlgItemTextW(hwnd, edt1, L"");
     SetDlgItemTextW(hwnd, edt2, L"");
     SetDlgItemTextW(hwnd, edt3, L"");
@@ -697,19 +697,21 @@ void XG_SettingsDialog::OnChange(HWND hwnd, int i)
     lf.lfCharSet = DEFAULT_CHARSET;
 
     switch (i) {
-    case 0:
+    case 0: // マス フォント
         cf.Flags = CF_NOSCRIPTSEL | CF_NOVERTFONTS | CF_SCALABLEONLY |
                    CF_INITTOLOGFONTSTRUCT | CF_SCREENFONTS;
-        StringCchCopy(lf.lfFaceName, _countof(lf.lfFaceName), xg_szCellFont);
+        lf = m_lfCellFont;
+        lf.lfHeight = 24;
+        lf.lfQuality = ANTIALIASED_QUALITY;
         if (::ChooseFontW(&cf)) {
             // 取得したフォントをダイアログへ格納する。
             ::SetDlgItemTextW(hwnd, edt1, lf.lfFaceName);
-            // xg_lfCellLogFontに反映する（サイズは変更しない）。
-            const LONG lfHeight = xg_lfCellLogFont.lfHeight;
-            const LONG lfWidth = xg_lfCellLogFont.lfWidth;
-            xg_lfCellLogFont = lf;
-            xg_lfCellLogFont.lfHeight = lfHeight;
-            xg_lfCellLogFont.lfWidth = lfWidth;
+            // m_lfCellFontに反映する（サイズは変更しない）。
+            const LONG lfHeight = m_lfCellFont.lfHeight;
+            const LONG lfWidth = m_lfCellFont.lfWidth;
+            m_lfCellFont = lf;
+            m_lfCellFont.lfHeight = lfHeight;
+            m_lfCellFont.lfWidth = lfWidth;
         }
         break;
 
@@ -909,7 +911,9 @@ XG_SettingsDialog::DialogProcDx(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPar
             break;
 
         case psh3:
+            m_lfCellFont = {};
             ::SetDlgItemTextW(hwnd, edt1, L"");
+            PropSheet_Changed(GetParent(hwnd), hwnd);
             break;
 
         case psh4:
