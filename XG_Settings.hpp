@@ -2,6 +2,8 @@
 
 // マスのフォント。
 extern WCHAR xg_szCellFont[LF_FACESIZE];
+// マスのフォント（LOGFONTW形式）。サイズは固定で変更しない。
+extern LOGFONTW xg_lfCellLogFont;
 
 // 小さな文字のフォント。
 extern WCHAR xg_szSmallFont[LF_FACESIZE];
