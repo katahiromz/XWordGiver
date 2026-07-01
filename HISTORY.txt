@@ -339,6 +339,7 @@
     - Fixed a race condition when completing and canceling.
     - Improved speed using generation AI.
 - 2026-XX-YY ver.5.3.0
+    - Extended the cell font to the LOGFONT format.
 
 # 開発履歴 (Japanese)
 
@@ -997,3 +998,4 @@
     - 完了時とキャンセル時の競合状態を修正。
     - 生成AIを用いて高速化。
 - 2026年XX月YY日 ver.5.3.0
+    - マスのフォントをLOGFONT形式に拡張。
