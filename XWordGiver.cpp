@@ -4917,16 +4917,19 @@ void XgDrawLetterCell(HDC hdc, WCHAR ch, RECT& rc, HFONT hFont)
 // 通常の文字のフォントを作成する。
 HFONT XgCreateNormalFont(INT nCellSize)
 {
-    LOGFONTW lf;
-    ZeroMemory(&lf, sizeof(lf));
-    StringCchCopy(lf.lfFaceName, _countof(lf.lfFaceName), XgLoadStringDx1(IDS_MONOFONT));
-    if (xg_szCellFont[0])
-        StringCchCopy(lf.lfFaceName, _countof(lf.lfFaceName), xg_szCellFont);
+    // xg_lfCellLogFont のプロパティ（ウェイト、イタリック、文字セットなど）を反映する。
+    // サイズフィールド (lfHeight, lfWidth) はセルサイズから動的に計算する。
+    LOGFONTW lf = xg_lfCellLogFont;
     lf.lfHeight = -nCellSize * xg_nCellCharPercents / 100;
     lf.lfWidth = 0;
-    lf.lfWeight = FW_NORMAL;
-    lf.lfQuality = ANTIALIASED_QUALITY;
-    lf.lfCharSet = SHIFTJIS_CHARSET;
+    if (!lf.lfWeight)
+        lf.lfWeight = FW_NORMAL;
+    if (!lf.lfQuality)
+        lf.lfQuality = ANTIALIASED_QUALITY;
+    if (!lf.lfCharSet)
+        lf.lfCharSet = SHIFTJIS_CHARSET;
+    if (!lf.lfFaceName[0])
+        StringCchCopy(lf.lfFaceName, _countof(lf.lfFaceName), XgLoadStringDx1(IDS_MONOFONT));
     return ::CreateFontIndirectW(&lf);
 }
 

@@ -1116,6 +1116,18 @@ bool __fastcall XgLoadSettings(void)
         if (!app_key.QuerySz(L"UIFont", sz, _countof(sz))) {
             StringCchCopy(xg_szUIFont, _countof(xg_szUIFont), sz);
         }
+        {
+            // xg_lfCellLogFont をレジストリから読み込む（サイズフィールドは除く）。
+            LOGFONTW lf;
+            if (!app_key.QueryStruct(L"CellLogFont", lf)) {
+                lf.lfHeight = xg_lfCellLogFont.lfHeight;
+                lf.lfWidth = xg_lfCellLogFont.lfWidth;
+                xg_lfCellLogFont = lf;
+                // CellFont（上で読み込み済み）のフォント名を優先する。
+                if (xg_szCellFont[0])
+                    StringCchCopy(xg_lfCellLogFont.lfFaceName, _countof(xg_lfCellLogFont.lfFaceName), xg_szCellFont);
+            }
+        }
 
         if (!app_key.QueryDword(L"ShowToolBar", dwValue)) {
             xg_bShowToolBar = !!dwValue;
@@ -1348,6 +1360,13 @@ bool __fastcall XgSaveSettings(void)
         app_key.SetSz(L"CellFont", xg_szCellFont, _countof(xg_szCellFont));
         app_key.SetSz(L"SmallFont", xg_szSmallFont, _countof(xg_szSmallFont));
         app_key.SetSz(L"UIFont", xg_szUIFont, _countof(xg_szUIFont));
+        {
+            // xg_lfCellLogFont をレジストリに保存する（サイズフィールドは除く）。
+            LOGFONTW lf = xg_lfCellLogFont;
+            lf.lfHeight = 0;
+            lf.lfWidth = 0;
+            app_key.SetStruct(L"CellLogFont", lf);
+        }
 
         app_key.SetDword(L"ShowToolBar", xg_bShowToolBar);
         app_key.SetDword(L"ShowStatusBar", s_bShowStatusBar);
