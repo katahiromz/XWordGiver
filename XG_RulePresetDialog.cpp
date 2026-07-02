@@ -370,10 +370,9 @@ LRESULT XG_RulePresetDialog::OnNotify(HWND hwnd, int idFrom, LPNMHDR pnmhdr)
     switch (pnmhdr->code)
     {
     case PSN_APPLY:
-        if (!OnOK(hwnd)) {
-            return SetDlgMsgResult(hwnd, WM_NOTIFY, PSNRET_INVALID_NOCHANGEPAGE);
-        }
-        break;
+        if (OnOK(hwnd))
+            return SetDlgMsgResult(hwnd, WM_NOTIFY, PSNRET_NOERROR);
+        return SetDlgMsgResult(hwnd, WM_NOTIFY, PSNRET_INVALID_NOCHANGEPAGE);
     }
     return 0;
 }

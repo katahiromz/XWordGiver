@@ -336,7 +336,7 @@ XgDictListDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
                     // 再読み込み。
                     XgDictList_ReloadList(hwnd);
                 }
-                break;
+                return SetDlgMsgResult(hwnd, WM_NOTIFY, PSNRET_NOERROR);
 
             case LVN_ITEMCHANGED:
                 if (pnmhdr->idFrom == lst1 && !m_bUpdating && (pListView->uNewState & LVIS_SELECTED)) {

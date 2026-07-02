@@ -213,7 +213,7 @@ XgFileSettingsDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
                         }
                     }
                 }
-                break;
+                return SetDlgMsgResult(hwnd, WM_NOTIFY, PSNRET_NOERROR);
             }
         }
         break;

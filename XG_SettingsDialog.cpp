@@ -317,6 +317,8 @@ BOOL XG_SettingsDialog::DoImportLooks(HWND hwnd, LPCWSTR pszFileName)
     // フォント。
     GetPrivateProfileStringW(L"Looks", L"CellFont", L"", szText, _countof(szText), pszFileName);
     SetDlgItemTextW(hwnd, edt1, szText);
+    m_lfCellFont = {};
+    lstrcpyn(m_lfCellFont.lfFaceName, szText, _countof(m_lfCellFont.lfFaceName));
     // CellLogFontがあれば優先して復元する。
     GetPrivateProfileStringW(L"Looks", L"CellLogFont", L"", szText, _countof(szText), pszFileName);
     if (szText[0]) {
@@ -806,11 +808,9 @@ XG_SettingsDialog::DialogProcDx(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPar
             auto pUpDown = reinterpret_cast<NM_UPDOWN *>(lParam);
             switch (pnmhdr->code) {
             case PSN_APPLY: // 適用。
-                if (!OnOK(hwnd))
-                {
-                    return SetDlgMsgResult(hwnd, WM_NOTIFY, PSNRET_INVALID_NOCHANGEPAGE);
-                }
-                break;
+                if (OnOK(hwnd))
+                    return SetDlgMsgResult(hwnd, WM_NOTIFY, PSNRET_NOERROR);
+                return SetDlgMsgResult(hwnd, WM_NOTIFY, PSNRET_INVALID_NOCHANGEPAGE);
             case UDN_DELTAPOS:
                 if (pUpDown->hdr.idFrom == scr3)
                 {

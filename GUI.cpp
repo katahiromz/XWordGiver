@@ -1108,13 +1108,8 @@ bool __fastcall XgLoadSettings(void)
 
         if (!app_key.QuerySz(L"CellFont", sz, _countof(sz))) {
             StringCchCopy(xg_szCellFont, _countof(xg_szCellFont), sz);
+            xg_lfCellLogFont = {};
             StringCchCopy(xg_lfCellLogFont.lfFaceName, _countof(xg_lfCellLogFont.lfFaceName), sz);
-        }
-        if (!app_key.QuerySz(L"SmallFont", sz, _countof(sz))) {
-            StringCchCopy(xg_szSmallFont, _countof(xg_szSmallFont), sz);
-        }
-        if (!app_key.QuerySz(L"UIFont", sz, _countof(sz))) {
-            StringCchCopy(xg_szUIFont, _countof(xg_szUIFont), sz);
         }
         {
             // xg_lfCellLogFont をレジストリから読み込む（サイズフィールドは除く）。
@@ -1127,6 +1122,13 @@ bool __fastcall XgLoadSettings(void)
                 if (xg_szCellFont[0])
                     StringCchCopy(xg_lfCellLogFont.lfFaceName, _countof(xg_lfCellLogFont.lfFaceName), xg_szCellFont);
             }
+        }
+
+        if (!app_key.QuerySz(L"SmallFont", sz, _countof(sz))) {
+            StringCchCopy(xg_szSmallFont, _countof(xg_szSmallFont), sz);
+        }
+        if (!app_key.QuerySz(L"UIFont", sz, _countof(sz))) {
+            StringCchCopy(xg_szUIFont, _countof(xg_szUIFont), sz);
         }
 
         if (!app_key.QueryDword(L"ShowToolBar", dwValue)) {
