@@ -4914,6 +4914,30 @@ HWND xg_ahSyncedDialogs[I_SYNCED_MAX] = { 0 };
 #include "XgDictList.cpp"
 #include "XG_HiddenDialog.cpp"
 
+// プロパティシートページ用ダイアログプロシージャーのラッパー。
+// プロパティシートページでは WM_INITDIALOG の lParam は PROPSHEETPAGEW* であるため、
+// ダイアログオブジェクトのポインターを PROPSHEETPAGEW::lParam から正しく取得する。
+static INT_PTR CALLBACK XgSettingsPageProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+{
+    if (uMsg == WM_INITDIALOG)
+        lParam = reinterpret_cast<PROPSHEETPAGEW*>(lParam)->lParam;
+    return XG_SettingsDialog::DialogProc(hwnd, uMsg, wParam, lParam);
+}
+
+static INT_PTR CALLBACK XgRulePresetPageProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+{
+    if (uMsg == WM_INITDIALOG)
+        lParam = reinterpret_cast<PROPSHEETPAGEW*>(lParam)->lParam;
+    return XG_RulePresetDialog::DialogProc(hwnd, uMsg, wParam, lParam);
+}
+
+static INT_PTR CALLBACK XgHiddenPageProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+{
+    if (uMsg == WM_INITDIALOG)
+        lParam = reinterpret_cast<PROPSHEETPAGEW*>(lParam)->lParam;
+    return XG_HiddenDialog::DialogProc(hwnd, uMsg, wParam, lParam);
+}
+
 // 全般設定。
 void XgGeneralSettings(HWND hwnd, DWORD nStartPage = I_SYNCED_FILE_SETTINGS)
 {
@@ -4943,7 +4967,7 @@ void XgGeneralSettings(HWND hwnd, DWORD nStartPage = I_SYNCED_FILE_SETTINGS)
     // 「見た目の設定」。
     XG_SettingsDialog dialog1;
     psp.pszTemplate = MAKEINTRESOURCEW(IDD_CONFIG);
-    psp.pfnDlgProc = XG_SettingsDialog::DialogProc;
+    psp.pfnDlgProc = XgSettingsPageProc;
     psp.dwFlags = PSP_DEFAULT;
     psp.hInstance = xg_hInstance;
     psp.lParam = (LPARAM)&dialog1;
@@ -4952,7 +4976,7 @@ void XgGeneralSettings(HWND hwnd, DWORD nStartPage = I_SYNCED_FILE_SETTINGS)
     // 「ルール」設定。
     XG_RulePresetDialog dialog2;
     psp.pszTemplate = MAKEINTRESOURCEW(IDD_RULEPRESET);
-    psp.pfnDlgProc = XG_RulePresetDialog::DialogProc;
+    psp.pfnDlgProc = XgRulePresetPageProc;
     psp.dwFlags = PSP_DEFAULT;
     psp.hInstance = xg_hInstance;
     psp.lParam = (LPARAM)&dialog2;
@@ -4977,7 +5001,7 @@ void XgGeneralSettings(HWND hwnd, DWORD nStartPage = I_SYNCED_FILE_SETTINGS)
     // 「上級者向け」設定。
     XG_HiddenDialog dialog3;
     psp.pszTemplate = MAKEINTRESOURCEW(IDD_HIDDEN);
-    psp.pfnDlgProc = XG_HiddenDialog::DialogProc;
+    psp.pfnDlgProc = XgHiddenPageProc;
     psp.dwFlags = PSP_DEFAULT;
     psp.hInstance = xg_hInstance;
     psp.lParam = (LPARAM)&dialog3;
