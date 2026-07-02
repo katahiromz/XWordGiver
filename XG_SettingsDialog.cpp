@@ -948,6 +948,7 @@ XG_SettingsDialog::DialogProcDx(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPar
 
         case psh4: // 小さいフォントリセット
             m_lfSmallFont = {};
+            ::SetDlgItemTextW(hwnd, edt2, L"");
             break;
 
         case psh5: // UIフォント変更
