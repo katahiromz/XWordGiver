@@ -31,9 +31,10 @@ BOOL XG_SettingsDialog::OnInitDialog(HWND hwnd)
 
     // フォント名を格納する。
     ::SetDlgItemTextW(hwnd, edt1, xg_lfCellLogFont.lfFaceName);
-    ::SetDlgItemTextW(hwnd, edt2, xg_szSmallFont);
+    ::SetDlgItemTextW(hwnd, edt2, xg_lfSmallLogFont.lfFaceName);
     ::SetDlgItemTextW(hwnd, edt3, xg_szUIFont);
     m_lfCellFont = xg_lfCellLogFont;
+    m_lfSmallFont = xg_lfSmallLogFont;
 
     // スケルトンビューか？
     ::CheckDlgButton(hwnd, chx1,
@@ -207,12 +208,11 @@ BOOL XG_SettingsDialog::OnOK(HWND hwnd)
 
     // セルフォント。
     xg_lfCellLogFont = m_lfCellFont;
+    StringCchCopyW(xg_szCellFont, _countof(xg_szCellFont), xg_lfCellLogFont.lfFaceName);
 
-    // 小さい文字のフォント。
-    ::GetDlgItemTextW(hwnd, edt2, szName, _countof(szName));
-    StringCchCopy(xg_szSmallFont, _countof(xg_szSmallFont), szName);
-    // xg_lfSmallLogFont のフォント名も同期する（サイズは変更しない）。
-    StringCchCopy(xg_lfSmallLogFont.lfFaceName, _countof(xg_lfSmallLogFont.lfFaceName), szName);
+    // 小さいフォント。
+    xg_lfSmallLogFont = m_lfSmallFont;
+    StringCchCopyW(xg_szSmallFont, _countof(xg_szSmallFont), xg_lfSmallLogFont.lfFaceName);
 
     // UIフォント。
     ::GetDlgItemTextW(hwnd, edt3, szName, _countof(szName));
@@ -316,7 +316,7 @@ BOOL XG_SettingsDialog::DoImportLooks(HWND hwnd, LPCWSTR pszFileName)
     m_hwndMarked.SetColor(_wtoi(szText));
     InvalidateRect(m_hwndMarked, nullptr, TRUE);
 
-    // フォント。
+    // マスのフォント。
     GetPrivateProfileStringW(L"Looks", L"CellFont", L"", szText, _countof(szText), pszFileName);
     SetDlgItemTextW(hwnd, edt1, szText);
     m_lfCellFont = {};
@@ -336,17 +336,22 @@ BOOL XG_SettingsDialog::DoImportLooks(HWND hwnd, LPCWSTR pszFileName)
         }
     }
 
+    // 小さいフォント。
     GetPrivateProfileStringW(L"Looks", L"SmallFont", L"", szText, _countof(szText), pszFileName);
     SetDlgItemTextW(hwnd, edt2, szText);
-    // SmallLogFontがあれば優先してフォント名を取得してダイアログへ反映する。
+    m_lfSmallFont = {};
+    lstrcpynW(m_lfSmallFont.lfFaceName, szText, _countof(m_lfSmallFont.lfFaceName));
     GetPrivateProfileStringW(L"Looks", L"SmallLogFont", L"", szText, _countof(szText), pszFileName);
     if (szText[0]) {
         std::vector<BYTE> data;
         XgHexToBin(data, szText);
         if (data.size() == sizeof(LOGFONTW)) {
-            LOGFONTW lfSmall;
-            memcpy(&lfSmall, data.data(), sizeof(LOGFONTW));
-            SetDlgItemTextW(hwnd, edt2, lfSmall.lfFaceName);
+            const LONG lfHeight = m_lfSmallFont.lfHeight;
+            const LONG lfWidth = m_lfSmallFont.lfWidth;
+            memcpy(&m_lfSmallFont, data.data(), sizeof(LOGFONTW));
+            m_lfSmallFont.lfHeight = lfHeight;
+            m_lfSmallFont.lfWidth = lfWidth;
+            SetDlgItemTextW(hwnd, edt1, m_lfSmallFont.lfFaceName);
         }
     }
 
@@ -489,21 +494,16 @@ BOOL XG_SettingsDialog::DoExportLooks(HWND hwnd, LPCWSTR pszFileName)
     // セルフォント。
     ::GetDlgItemTextW(hwnd, edt1, szName, _countof(szName));
     WritePrivateProfileStringW(L"Looks", L"CellFont", szName, pszFileName);
-    // CellLogFontを保存する。
     {
         XGStringW strHex = XgBinToHex(&m_lfCellFont, sizeof(m_lfCellFont));
         WritePrivateProfileStringW(L"Looks", L"CellLogFont", strHex.c_str(), pszFileName);
     }
 
-    // 小さい文字のフォント。
+    // 小さいフォント。
     ::GetDlgItemTextW(hwnd, edt2, szName, _countof(szName));
     WritePrivateProfileStringW(L"Looks", L"SmallFont", szName, pszFileName);
-    // SmallLogFontを保存する（互換のためSmallFontとSmallLogFontの両方を書き出す）。
     {
-        // ダイアログのフォント名とxg_lfSmallLogFontのプロパティを合わせて保存する。
-        LOGFONTW lfSmall = xg_lfSmallLogFont;
-        StringCchCopy(lfSmall.lfFaceName, _countof(lfSmall.lfFaceName), szName);
-        XGStringW strHex = XgBinToHex(&lfSmall, sizeof(lfSmall));
+        XGStringW strHex = XgBinToHex(&m_lfSmallFont, sizeof(m_lfSmallFont));
         WritePrivateProfileStringW(L"Looks", L"SmallLogFont", strHex.c_str(), pszFileName);
     }
 
@@ -633,6 +633,7 @@ void XG_SettingsDialog::OnResetLooks(HWND hwnd)
 
     // フォント。
     m_lfCellFont = {};
+    m_lfSmallFont = {};
     SetDlgItemTextW(hwnd, edt1, L"");
     SetDlgItemTextW(hwnd, edt2, L"");
     SetDlgItemTextW(hwnd, edt3, L"");
@@ -744,10 +745,16 @@ void XG_SettingsDialog::OnChange(HWND hwnd, int i)
         cf.Flags = CF_NOSCRIPTSEL | CF_NOVERTFONTS | CF_SCALABLEONLY |
                    CF_INITTOLOGFONTSTRUCT | CF_SCREENFONTS;
         lf = xg_lfSmallLogFont;
-        lf.lfHeight = 24;
+        lf.lfHeight = 12;
         if (::ChooseFontW(&cf)) {
             // 取得したフォントをダイアログへ格納する。
             ::SetDlgItemTextW(hwnd, edt2, lf.lfFaceName);
+            // m_lfSmallFontに反映する（サイズは変更しない）。
+            const LONG lfHeight = m_lfSmallFont.lfHeight;
+            const LONG lfWidth = m_lfSmallFont.lfWidth;
+            m_lfSmallFont = lf;
+            m_lfSmallFont.lfHeight = lfHeight;
+            m_lfSmallFont.lfWidth = lfWidth;
         }
         break;
 
@@ -940,7 +947,7 @@ XG_SettingsDialog::DialogProcDx(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPar
             break;
 
         case psh4: // 小さいフォントリセット
-            ::SetDlgItemTextW(hwnd, edt2, L"");
+            m_lfSmallFont = {};
             break;
 
         case psh5: // UIフォント変更

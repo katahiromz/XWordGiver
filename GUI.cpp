@@ -1109,6 +1109,7 @@ bool __fastcall XgLoadSettings(void)
             xg_bNoWriteLooks = static_cast<BOOL>(dwValue);
         }
 
+        // マスのフォント
         if (!app_key.QuerySz(L"CellFont", sz, _countof(sz))) {
             StringCchCopy(xg_szCellFont, _countof(xg_szCellFont), sz);
             xg_lfCellLogFont = {};
@@ -1127,8 +1128,11 @@ bool __fastcall XgLoadSettings(void)
             }
         }
 
+        // 小さいフォント
         if (!app_key.QuerySz(L"SmallFont", sz, _countof(sz))) {
             StringCchCopy(xg_szSmallFont, _countof(xg_szSmallFont), sz);
+            xg_lfSmallLogFont = {};
+            StringCchCopy(xg_lfSmallLogFont.lfFaceName, _countof(xg_lfSmallLogFont.lfFaceName), sz);
         }
         {
             // xg_lfSmallLogFont をレジストリから読み込む（サイズフィールドは除く）。
@@ -1145,6 +1149,7 @@ bool __fastcall XgLoadSettings(void)
                 StringCchCopy(xg_lfSmallLogFont.lfFaceName, _countof(xg_lfSmallLogFont.lfFaceName), xg_szSmallFont);
             }
         }
+
         if (!app_key.QuerySz(L"UIFont", sz, _countof(sz))) {
             StringCchCopy(xg_szUIFont, _countof(xg_szUIFont), sz);
         }
