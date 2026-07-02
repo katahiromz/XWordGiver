@@ -211,6 +211,8 @@ BOOL XG_SettingsDialog::OnOK(HWND hwnd)
     // 小さい文字のフォント。
     ::GetDlgItemTextW(hwnd, edt2, szName, _countof(szName));
     StringCchCopy(xg_szSmallFont, _countof(xg_szSmallFont), szName);
+    // xg_lfSmallLogFont のフォント名も同期する（サイズは変更しない）。
+    StringCchCopy(xg_lfSmallLogFont.lfFaceName, _countof(xg_lfSmallLogFont.lfFaceName), szName);
 
     // UIフォント。
     ::GetDlgItemTextW(hwnd, edt3, szName, _countof(szName));
@@ -336,6 +338,17 @@ BOOL XG_SettingsDialog::DoImportLooks(HWND hwnd, LPCWSTR pszFileName)
 
     GetPrivateProfileStringW(L"Looks", L"SmallFont", L"", szText, _countof(szText), pszFileName);
     SetDlgItemTextW(hwnd, edt2, szText);
+    // SmallLogFontがあれば優先してフォント名を取得してダイアログへ反映する。
+    GetPrivateProfileStringW(L"Looks", L"SmallLogFont", L"", szText, _countof(szText), pszFileName);
+    if (szText[0]) {
+        std::vector<BYTE> data;
+        XgHexToBin(data, szText);
+        if (data.size() == sizeof(LOGFONTW)) {
+            LOGFONTW lfSmall;
+            memcpy(&lfSmall, data.data(), sizeof(LOGFONTW));
+            SetDlgItemTextW(hwnd, edt2, lfSmall.lfFaceName);
+        }
+    }
 
     GetPrivateProfileStringW(L"Looks", L"UIFont", L"", szText, _countof(szText), pszFileName);
     SetDlgItemTextW(hwnd, edt3, szText);
@@ -485,6 +498,14 @@ BOOL XG_SettingsDialog::DoExportLooks(HWND hwnd, LPCWSTR pszFileName)
     // 小さい文字のフォント。
     ::GetDlgItemTextW(hwnd, edt2, szName, _countof(szName));
     WritePrivateProfileStringW(L"Looks", L"SmallFont", szName, pszFileName);
+    // SmallLogFontを保存する（互換のためSmallFontとSmallLogFontの両方を書き出す）。
+    {
+        // ダイアログのフォント名とxg_lfSmallLogFontのプロパティを合わせて保存する。
+        LOGFONTW lfSmall = xg_lfSmallLogFont;
+        StringCchCopy(lfSmall.lfFaceName, _countof(lfSmall.lfFaceName), szName);
+        XGStringW strHex = XgBinToHex(&lfSmall, sizeof(lfSmall));
+        WritePrivateProfileStringW(L"Looks", L"SmallLogFont", strHex.c_str(), pszFileName);
+    }
 
     // UIフォント。
     ::GetDlgItemTextW(hwnd, edt3, szName, _countof(szName));
@@ -722,7 +743,8 @@ void XG_SettingsDialog::OnChange(HWND hwnd, int i)
     case 1:
         cf.Flags = CF_NOSCRIPTSEL | CF_NOVERTFONTS | CF_SCALABLEONLY |
                    CF_INITTOLOGFONTSTRUCT | CF_SCREENFONTS;
-        StringCchCopy(lf.lfFaceName, _countof(lf.lfFaceName), xg_szSmallFont);
+        lf = xg_lfSmallLogFont;
+        lf.lfHeight = 24;
         if (::ChooseFontW(&cf)) {
             // 取得したフォントをダイアログへ格納する。
             ::SetDlgItemTextW(hwnd, edt2, lf.lfFaceName);

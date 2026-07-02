@@ -4936,15 +4936,17 @@ HFONT XgCreateNormalFont(INT nCellSize)
 // 小さい文字のフォントを作成する。
 HFONT XgCreateSmallFont(INT nCellSize)
 {
-    LOGFONTW lf;
-    ZeroMemory(&lf, sizeof(lf));
-    if (xg_szSmallFont[0])
-        StringCchCopy(lf.lfFaceName, _countof(lf.lfFaceName), xg_szSmallFont);
+    // xg_lfSmallLogFont のプロパティ（ウェイト、イタリック、文字セットなど）を反映する。
+    // サイズフィールド (lfHeight, lfWidth) はセルサイズから動的に計算する。
+    LOGFONTW lf = xg_lfSmallLogFont;
     lf.lfHeight = -nCellSize * xg_nSmallCharPercents / 100;
     lf.lfWidth = 0;
-    lf.lfWeight = FW_NORMAL;
-    lf.lfQuality = ANTIALIASED_QUALITY;
-    lf.lfCharSet = SHIFTJIS_CHARSET;
+    if (!lf.lfWeight)
+        lf.lfWeight = FW_NORMAL;
+    if (!lf.lfQuality)
+        lf.lfQuality = ANTIALIASED_QUALITY;
+    if (!lf.lfCharSet)
+        lf.lfCharSet = SHIFTJIS_CHARSET;
     return ::CreateFontIndirectW(&lf);
 }
 
