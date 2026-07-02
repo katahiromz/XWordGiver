@@ -7,6 +7,8 @@ extern LOGFONTW xg_lfCellLogFont;
 
 // 小さな文字のフォント。
 extern WCHAR xg_szSmallFont[LF_FACESIZE];
+// 小さな文字のフォント（LOGFONTW形式）。サイズは固定で変更しない。
+extern LOGFONTW xg_lfSmallLogFont;
 
 // UIフォント。
 extern WCHAR xg_szUIFont[LF_FACESIZE];

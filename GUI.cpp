@@ -240,6 +240,8 @@ WCHAR xg_szCellFont[LF_FACESIZE] = L"";
 LOGFONTW xg_lfCellLogFont = {};
 // 小さな文字のフォント。
 WCHAR xg_szSmallFont[LF_FACESIZE] = L"";
+// 小さな文字のフォント（LOGFONTW形式）。サイズは固定で変更しない。
+LOGFONTW xg_lfSmallLogFont = {};
 // UIフォント。
 WCHAR xg_szUIFont[LF_FACESIZE] = L"";
 
@@ -913,6 +915,7 @@ void XgResetSettings(void)
     xg_szCellFont[0] = 0;
     ZeroMemory(&xg_lfCellLogFont, sizeof(xg_lfCellLogFont));
     xg_szSmallFont[0] = 0;
+    ZeroMemory(&xg_lfSmallLogFont, sizeof(xg_lfSmallLogFont));
     xg_szUIFont[0] = 0;
     xg_bShowToolBar = true;
     s_bShowStatusBar = true;
@@ -1126,6 +1129,21 @@ bool __fastcall XgLoadSettings(void)
 
         if (!app_key.QuerySz(L"SmallFont", sz, _countof(sz))) {
             StringCchCopy(xg_szSmallFont, _countof(xg_szSmallFont), sz);
+        }
+        {
+            // xg_lfSmallLogFont をレジストリから読み込む（サイズフィールドは除く）。
+            LOGFONTW lf;
+            if (!app_key.QueryStruct(L"SmallLogFont", lf)) {
+                lf.lfHeight = xg_lfSmallLogFont.lfHeight;
+                lf.lfWidth = xg_lfSmallLogFont.lfWidth;
+                xg_lfSmallLogFont = lf;
+                // SmallFont（上で読み込み済み）のフォント名を優先する。
+                if (xg_szSmallFont[0])
+                    StringCchCopy(xg_lfSmallLogFont.lfFaceName, _countof(xg_lfSmallLogFont.lfFaceName), xg_szSmallFont);
+            } else {
+                // SmallLogFontがなければSmallFontから互換復元する。
+                StringCchCopy(xg_lfSmallLogFont.lfFaceName, _countof(xg_lfSmallLogFont.lfFaceName), xg_szSmallFont);
+            }
         }
         if (!app_key.QuerySz(L"UIFont", sz, _countof(sz))) {
             StringCchCopy(xg_szUIFont, _countof(xg_szUIFont), sz);
@@ -1368,6 +1386,13 @@ bool __fastcall XgSaveSettings(void)
             lf.lfHeight = 0;
             lf.lfWidth = 0;
             app_key.SetStruct(L"CellLogFont", lf);
+        }
+        {
+            // xg_lfSmallLogFont をレジストリに保存する（サイズフィールドは除く）。
+            LOGFONTW lf = xg_lfSmallLogFont;
+            lf.lfHeight = 0;
+            lf.lfWidth = 0;
+            app_key.SetStruct(L"SmallLogFont", lf);
         }
 
         app_key.SetDword(L"ShowToolBar", xg_bShowToolBar);
@@ -2161,6 +2186,23 @@ BOOL XgImportLooks(HWND hwnd, LPCWSTR pszFileName)
 
     GetPrivateProfileStringW(L"Looks", L"SmallFont", L"", szText, _countof(szText), pszFileName);
     StringCchCopyW(xg_szSmallFont, _countof(xg_szSmallFont), szText);
+    // SmallLogFontがあれば優先して復元する。
+    GetPrivateProfileStringW(L"Looks", L"SmallLogFont", L"", szText, _countof(szText), pszFileName);
+    if (szText[0]) {
+        std::vector<BYTE> data;
+        XgHexToBin(data, szText);
+        if (data.size() == sizeof(LOGFONTW)) {
+            const LONG lfHeight = xg_lfSmallLogFont.lfHeight;
+            const LONG lfWidth = xg_lfSmallLogFont.lfWidth;
+            memcpy(&xg_lfSmallLogFont, data.data(), sizeof(LOGFONTW));
+            xg_lfSmallLogFont.lfHeight = lfHeight;
+            xg_lfSmallLogFont.lfWidth = lfWidth;
+            StringCchCopyW(xg_szSmallFont, _countof(xg_szSmallFont), xg_lfSmallLogFont.lfFaceName);
+        }
+    } else {
+        // SmallLogFontがなければSmallFontから互換復元する。
+        StringCchCopyW(xg_lfSmallLogFont.lfFaceName, _countof(xg_lfSmallLogFont.lfFaceName), xg_szSmallFont);
+    }
 
     // スケルトンビューか？
     if (XgIsUserJapanese())
@@ -2242,6 +2284,11 @@ BOOL XgExportLooks(HWND hwnd, LPCWSTR pszFileName)
 
     // 小さい文字のフォント。
     WritePrivateProfileStringW(L"Looks", L"SmallFont", xg_szSmallFont, pszFileName);
+    // SmallLogFontを保存する（互換のためSmallFontとSmallLogFontの両方を書き出す）。
+    {
+        XGStringW str = XgBinToHex(&xg_lfSmallLogFont, sizeof(xg_lfSmallLogFont));
+        WritePrivateProfileStringW(L"Looks", L"SmallLogFont", str.c_str(), pszFileName);
+    }
 
     // もし黒マス画像が指定されていれば
     if (xg_strBlackCellImage.size() && xg_strBlackCellImage != XgLoadStringDx1(IDS_NONE))
