@@ -338,8 +338,9 @@
 - 2026-02-01 ver.5.2.9
     - Fixed a race condition when completing and canceling.
     - Improved speed using generation AI.
-- 2026-XX-YY ver.5.3.0
-    - Extended the cell font to the LOGFONT format.
+- 2026-07-02 ver.5.3.0
+    - Extended the font settings for grid cells and small characters to the LOGFONT format.
+    - Fixed an issue causing abnormal termination in the property sheet.
 
 # 開発履歴 (Japanese)
 
@@ -997,6 +998,6 @@
 - 2026年02月01日 ver.5.2.9
     - 完了時とキャンセル時の競合状態を修正。
     - 生成AIを用いて高速化。
-- 2026年XX月YY日 ver.5.3.0
+- 2026年07月02日 ver.5.3.0
     - マスのフォントと小さい文字のフォント設定をLOGFONT形式に拡張。
     - プロパティシートでの異常終了を修正。
