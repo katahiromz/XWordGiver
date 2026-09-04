@@ -6190,6 +6190,12 @@ void XgJumpDialog(HWND hwnd)
     }
 }
 
+// デバッグアクション。
+void XgDebugAction(HWND hwnd)
+{
+    MessageBoxW(hwnd, L"Debug Action!", L"XgDebugAction", 0);
+}
+
 // コマンドを実行する。
 void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT /*codeNotify*/)
 {
@@ -7459,6 +7465,11 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT /*codeNo
     case ID_JUMP:
         // ジャンプ。
         XgJumpDialog(hwnd);
+        break;
+
+    case ID_DEBUGACTION:
+        // デバッグアクション！
+        XgDebugAction(hwnd);
         break;
 
     default:
