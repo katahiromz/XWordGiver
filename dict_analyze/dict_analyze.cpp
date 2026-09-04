@@ -475,7 +475,7 @@ bool DoAnalyzeDict(HWND hwnd, LPCWSTR pszFileName, const word_list_t& list, cons
                 tags.insert(it->second.begin(), it->second.end());
             }
         }
-        tags.erase(L"");
+        tags.erase(std::wstring());
         typedef std::map<size_t, std::wstring> tag_histgram_t;
         typedef tag_histgram_t::reverse_iterator it_t;
         tag_histgram_t tag_histgram;
@@ -541,7 +541,7 @@ bool DoLoadDict(HWND hwnd, const WCHAR *fname, word_list_t& list, tag_info_t& ta
             } else {
                 str = s_asz;
             }
-            if (str.empty() || str[0] == L'#')
+            if (str.empty() || str[0] == '#')
                 continue;
             ::MultiByteToWideChar(CP_UTF8, 0, str.c_str(), -1, s_wsz, _countof(s_wsz));
             std::wstring wstr = s_wsz;
@@ -572,12 +572,13 @@ bool DoLoadDict(HWND hwnd, const WCHAR *fname, word_list_t& list, tag_info_t& ta
                 for (size_t i = 0; i < from.size(); ++i) {
                     if (ch == from[i]) {
                         ch = to[i];
+                        break;
                     }
                 }
             }
             list.push_back(wstr);
         }
-        tag_info.erase(L"");
+        tag_info.erase(std::wstring());
         std::fclose(fp);
         return true;
     }
