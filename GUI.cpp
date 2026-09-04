@@ -6193,7 +6193,12 @@ void XgJumpDialog(HWND hwnd)
 // デバッグアクション。
 void XgDebugAction(HWND hwnd)
 {
-    MessageBoxW(hwnd, L"Debug Action!", L"XgDebugAction", 0);
+    UINT id = MessageBoxW(hwnd, L"Debug Action!", L"XgDebugAction", MB_YESNOCANCEL);
+    if (id == IDCANCEL)
+        return;
+
+    BOOL bDown = (id == IDYES);
+    XgSetHintText(1, bDown, L"新しいヒント");
 }
 
 // コマンドを実行する。
