@@ -8074,6 +8074,47 @@ void XgDestroyHintsWnd(void) noexcept
     }
 }
 
+// カギ番号を指定してヒント文章をセットする（GUIと内部データの両方に反映する）。
+BOOL __fastcall XgSetHintText(INT number, BOOL bDown, const XGStringW& text)
+{
+    // まだ解かれていない場合は失敗。
+    if (!xg_bSolved)
+        return FALSE;
+
+    // タテかヨコかで対象の配列を選ぶ。
+    auto& info_vec = bDown ? xg_vVertInfo : xg_vHorzInfo;
+    auto& hint_vec = bDown ? xg_vecVertHints : xg_vecHorzHints;
+
+    // 対象番号のカギを探す。
+    for (size_t i = 0; i < info_vec.size(); ++i) {
+        if (info_vec[i].m_number != number)
+            continue;
+
+        // 範囲チェック。
+        if (i >= hint_vec.size())
+            return FALSE;
+
+        // 内部データを更新する。
+        hint_vec[i].m_strHint = text;
+
+        // GUI(XG_HintsWnd)を更新する。
+        if (::IsWindow(xg_hHintsWnd)) {
+            auto& edit_vec = bDown ?
+                XG_HintsWnd::xg_ahwndVertEdits : XG_HintsWnd::xg_ahwndHorzEdits;
+            if (i < edit_vec.size()) {
+                ::SetWindowTextW(edit_vec[i], text.data());
+                ::SendMessageW(edit_vec[i], EM_SETMODIFY, FALSE, 0);
+            }
+        }
+
+        XG_FILE_MODIFIED(TRUE);
+        return TRUE;
+    }
+
+    // 対象番号のカギが見つからなかった。
+    return FALSE;
+}
+
 // ヒントの内容をヒントウィンドウで開く。
 bool XgOpenHintsByWindow(HWND hwnd)
 {
