@@ -1452,6 +1452,9 @@ bool __fastcall XgDoSaveFileType(HWND hwnd, LPCWSTR pszFile, XG_FILETYPE type);
 // ヒント文字列を解析する。
 bool __fastcall XgParseHintsStr(const XGStringW& strHints);
 
+// カギ番号を指定してヒント文章をセットする（GUIと内部データの両方に反映する）。
+BOOL __fastcall XgSetHintText(INT number, BOOL bDown, const XGStringW& text);
+
 // 問題を画像ファイルとして保存する。
 void __fastcall XgSaveProbAsImage(HWND hwnd);
 
