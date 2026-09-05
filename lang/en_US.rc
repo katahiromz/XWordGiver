@@ -555,7 +555,7 @@ LANGUAGE LANG_ENGLISH, SUBLANG_DEFAULT
         MENUITEM "Clea&r all clues", ID_CLEARALLCLUES
         MENUITEM SEPARATOR
         MENUITEM "AI: Re-&generate this clue", ID_GENERATEHINT
-        MENUITEM "AI: Re-ge&nerate all the clues (HEAVY!)", ID_GENERATEHINTSALL
+        MENUITEM "AI: Re-ge&nerate all the clues", ID_GENERATEHINTSALL
     }
     POPUP "Popup #2"
     {
