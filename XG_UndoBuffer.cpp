@@ -30,11 +30,11 @@ void XG_UndoData_HintsUpdated::Get() {
 }
 
 void XG_UndoData_HintsUpdated::Apply() const {
+    XgDestroyHintsWnd();
     xg_vVertInfo = vVertInfo;
     xg_vHorzInfo = vHorzInfo;
     xg_vecVertHints = vecVertHints;
     xg_vecHorzHints = vecHorzHints;
-    XgUpdateHints();
     if (bShowHints) {
         XgShowHints(xg_hMainWnd);
         xg_bShowClues = TRUE;
@@ -96,6 +96,7 @@ void XG_UndoData_SetAll::Get() {
 }
 
 void XG_UndoData_SetAll::Apply() const {
+    XgDestroyHintsWnd();
     xg_nRows = nRows;
     xg_nCols = nCols;
     xg_xword = xword;
@@ -112,7 +113,6 @@ void XG_UndoData_SetAll::Apply() const {
     xg_strHeader = strHeader;
     xg_strNotes = strNotes;
     xg_strFileName = strFileName;
-    XgUpdateHints();
     if (bShowHints) {
         XgShowHints(xg_hMainWnd);
         xg_bShowClues = TRUE;

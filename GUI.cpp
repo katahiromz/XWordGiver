@@ -6269,7 +6269,7 @@ void XgClearAllClues(HWND hwnd)
 
     sa2->Get();
     // 元に戻す情報を設定する。
-    xg_ubUndoBuffer.Commit(UC_SETALL, sa1, sa2);
+    xg_ubUndoBuffer.Commit(UC_HINTS_UPDATED, sa1, sa2);
 }
 
 void XgRegenerateCluesAll(HWND hwnd);
@@ -8422,7 +8422,7 @@ static void __fastcall XgParseAndApplyAICommand(LPCWSTR pszLine)
     }
 
     sa2->Get();
-    xg_ubUndoBuffer.Commit(UC_SETALL, sa1, sa2);
+    xg_ubUndoBuffer.Commit(UC_HINTS_UPDATED, sa1, sa2);
 
     xg_strAIPreText.clear();
 }

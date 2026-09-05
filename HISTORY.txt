@@ -348,6 +348,7 @@
     - Added a feature to clear all clues.
     - Added a feature to re-generate all clues.
     - Added the ability to undo AI helper actions.
+    - Fixed the "Undo" and "Redo" operations for clues.
 
 # 開発履歴 (Japanese)
 
@@ -1015,3 +1016,4 @@
     - カギをすべてクリアする機能を追加。
     - カギをすべて再生成する機能を追加。
     - AIヘルパーのアクションを元に戻せるように。
+    - カギの「元に戻す」「やり直す」処理を修正。
