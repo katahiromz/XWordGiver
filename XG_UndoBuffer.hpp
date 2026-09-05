@@ -9,6 +9,7 @@
 
 using std::shared_ptr;
 
+// 「元に戻す」「やり直す」情報の種類
 enum UNDOABLE_COMMAND_ID : UINT {
     UC_SETAT,
     UC_MARKS_UPDATED,
@@ -21,6 +22,7 @@ enum UNDOABLE_COMMAND_ID : UINT {
 
 //////////////////////////////////////////////////////////////////////////////
 
+// 「元に戻す」「やり直す」データの基底
 struct XG_UndoData {
     UNDOABLE_COMMAND_ID m_cmdId;
 
@@ -38,6 +40,7 @@ struct XG_UndoData {
 
 //////////////////////////////////////////////////////////////////////////////
 
+// 「特定のマスをセットする」を戻すためのデータ。
 struct XG_UndoData_SetAt : XG_UndoData {
     XG_Pos  pos;
     WCHAR   ch;
@@ -52,6 +55,7 @@ struct XG_UndoData_SetAt : XG_UndoData {
 
 //////////////////////////////////////////////////////////////////////////////
 
+// 「二重マスをセットする」を戻すためのデータ。
 struct XG_UndoData_MarksUpdated : XG_UndoData {
     std::vector<XG_Pos> vMarks;
     XGStringW strMarked;
@@ -67,6 +71,7 @@ struct XG_UndoData_MarksUpdated : XG_UndoData {
 
 //////////////////////////////////////////////////////////////////////////////
 
+// 「カギ情報」を戻すためのデータ。
 struct XG_UndoData_HintsUpdated : XG_UndoData {
     std::vector<XG_PlaceInfo>   vVertInfo;
     std::vector<XG_PlaceInfo>   vHorzInfo;
@@ -85,6 +90,7 @@ struct XG_UndoData_HintsUpdated : XG_UndoData {
 
 //////////////////////////////////////////////////////////////////////////////
 
+// 「ナンクロ状態」を戻すためのデータ。
 struct XG_UndoData_NumCro : XG_UndoData {
     bool bNumCro;
 
@@ -99,6 +105,7 @@ struct XG_UndoData_NumCro : XG_UndoData {
 
 //////////////////////////////////////////////////////////////////////////////
 
+// 「ビューモード」を戻すためのデータ。
 struct XG_UndoData_ViewMode : XG_UndoData {
     XG_VIEW_MODE nViewMode;
 
@@ -113,6 +120,7 @@ struct XG_UndoData_ViewMode : XG_UndoData {
 
 //////////////////////////////////////////////////////////////////////////////
 
+// 「ボックスの変更」を戻すためのデータ。
 struct XG_UndoData_Boxes : XG_UndoData {
     XGStringW boxes;
 
@@ -127,6 +135,7 @@ struct XG_UndoData_Boxes : XG_UndoData {
 
 //////////////////////////////////////////////////////////////////////////////
 
+// 「すべて」を戻すためのデータ。
 struct XG_UndoData_SetAll : XG_UndoData {
     int                         nRows;
     int                         nCols;
@@ -161,6 +170,7 @@ struct XG_UndoData_SetAll : XG_UndoData {
 //////////////////////////////////////////////////////////////////////////////
 // XG_UndoInfo
 
+// 「元に戻す」「やり直す」情報。
 struct XG_UndoInfo {
     UINT                    nCommandID;
     shared_ptr<XG_UndoData> pBefore;
@@ -212,6 +222,7 @@ struct XG_UndoInfo {
 //////////////////////////////////////////////////////////////////////////////
 // XG_UndoBuffer
 
+// 「元に戻す」「やり直す」バッファ。
 class XG_UndoBuffer : public std::deque<XG_UndoInfo>
 {
 public:
@@ -254,5 +265,5 @@ protected:
     bool    m_enabled;
 };
 
-// 「元に戻す」ためのバッファ。
+// 「元に戻す」「やり直す」ためのバッファ。
 extern XG_UndoBuffer xg_ubUndoBuffer;

@@ -6248,8 +6248,8 @@ void XgOpenAIHelper(HWND hwnd)
 // カギをすべてクリアする。
 void XgClearAllClues(HWND hwnd)
 {
-    auto sa1 = std::make_shared<XG_UndoData_SetAll>();
-    auto sa2 = std::make_shared<XG_UndoData_SetAll>();
+    auto sa1 = std::make_shared<XG_UndoData_HintsUpdated>();
+    auto sa2 = std::make_shared<XG_UndoData_HintsUpdated>();
     sa1->Get();
 
     for (BOOL bDown = FALSE; bDown <= TRUE; ++bDown)
@@ -8350,8 +8350,8 @@ static void __fastcall XgParseAndApplyAICommand(LPCWSTR pszLine)
     std::wstring line = pszLine;
     size_t pos = 0;
 
-    auto sa1 = std::make_shared<XG_UndoData_SetAll>();
-    auto sa2 = std::make_shared<XG_UndoData_SetAll>();
+    auto sa1 = std::make_shared<XG_UndoData_HintsUpdated>();
+    auto sa2 = std::make_shared<XG_UndoData_HintsUpdated>();
     sa1->Get();
 
     for (;;) {
