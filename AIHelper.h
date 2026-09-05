@@ -5,7 +5,7 @@ extern HINSTANCE g_hAIHelperInst;
 extern std::wstring g_privider;
 extern std::wstring g_model;
 
-void AskAIQuestion(HWND hwnd, PWSTR text);
+void AskAIQuestion(HWND hwnd, PCWSTR text);
 BOOL OpenAIHelper(HWND hwndOwner, BOOL bOpen);
 
 // AIプロセスから届いた出力行を、表示とは別に呼び出し側へ通知するためのコールバック。

@@ -523,6 +523,7 @@
 #define ID_OPENAIHELPER                     610
 #define ID_GENERATEHINT                     611
 #define ID_CLEARALLCLUES                    612
+#define ID_GENERATEHINTSALL                 613
 #define ID_TT_BASE                          10000
 
 #define ctl2                                1185

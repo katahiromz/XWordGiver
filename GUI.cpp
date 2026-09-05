@@ -6262,8 +6262,9 @@ void XgClearAllClues(HWND hwnd)
             XgSetHintText(number, bDown, L"");
         }
     }
-
 }
+
+void XgRegenerateCluesAll(HWND hwnd);
 
 // コマンドを実行する。
 void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT /*codeNotify*/)
@@ -7549,6 +7550,10 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT /*codeNo
         XgClearAllClues(hwnd);
         break;
 
+    case ID_GENERATEHINTSALL:
+        XgRegenerateCluesAll(hwnd);
+        break;
+
     default:
         if (!XgOnCommandExtra(hwnd, id)) {
             ::MessageBeep(0xFFFFFFFF);
@@ -8469,8 +8474,27 @@ std::wstring XG_GetAIPreText(void)
     return XG_GetAIPreText_en();
 }
 
+// すべてのカギを生成する。
+void XgRegenerateCluesAll(HWND hwnd)
+{
+    // Register the callback so we can parse output from the AI helper (only the first time).
+    if (!s_bAICallbackRegistered) {
+        AIHelper_SetLineCallback(XgOnAIHelperLine);
+        s_bAICallbackRegistered = true;
+    }
+
+    // Open the AI helper (if already open, just bring it to the front).
+    XgOpenAIHelper(xg_hMainWnd);
+
+    if (XgIsUserJapanese()) {
+        AskAIQuestion(g_hwndAIHelper, L"すべてのカギを再生成してください。");
+        return;
+    }
+    AskAIQuestion(g_hwndAIHelper, L"Please re-generate all the clues.");
+}
+
 // カギを再生成する（日本語）。
-BOOL XgGenerateHint_ja(INT nNumber, BOOL bDown)
+BOOL XgGenerateClue_ja(INT nNumber, BOOL bDown)
 {
     // 単語が取得できなければ何もしない。
     XGStringW word = XgGetHintWord(nNumber, bDown);
@@ -8522,13 +8546,13 @@ BOOL XgGenerateHint_ja(INT nNumber, BOOL bDown)
     // （「【An: XXX】」または「【Dm: YYY】」形式の行）を受け取った時点で
     // 非同期にXgSetHintTextが呼ばれることで行われる（別途、応答行を
     // パースして該当コマンドを実行する処理が必要）。
-    AskAIQuestion(g_hwndAIHelper, const_cast<PWSTR>(str.c_str()));
+    AskAIQuestion(g_hwndAIHelper, str.c_str());
 
     return TRUE;
 }
 
 // Regenerate a clue (English).
-BOOL XgGenerateHint_en(INT nNumber, BOOL bDown)
+BOOL XgGenerateClue_en(INT nNumber, BOOL bDown)
 {
     // Do nothing if the word can't be obtained.
     XGStringW word = XgGetHintWord(nNumber, bDown);
@@ -8571,19 +8595,19 @@ BOOL XgGenerateHint_en(INT nNumber, BOOL bDown)
     str += L"\" cannot be used inside the clue text.";
     // Send the question to the AI helper. The actual update to the clue text is
     // performed asynchronously by calling XgSetHintText once a response line
-    // from the AI (in the form "[An: XXX]" or "[Dm: YYY]") is received
+    // from the AI (in the form "【An: XXX】" or "【Dm: YYY】") is received
     // (a separate process is needed to parse the response line and execute
     // the corresponding command).
-    AskAIQuestion(g_hwndAIHelper, const_cast<PWSTR>(str.c_str()));
+    AskAIQuestion(g_hwndAIHelper, str.c_str());
     return TRUE;
 }
 
 // カギを再生成する。
-BOOL XgGenerateHint(INT nNumber, BOOL bDown)
+BOOL XgGenerateClue(INT nNumber, BOOL bDown)
 {
     if (XgIsUserJapanese())
-        return XgGenerateHint_ja(nNumber, bDown);
-    return XgGenerateHint_en(nNumber, bDown);
+        return XgGenerateClue_ja(nNumber, bDown);
+    return XgGenerateClue_en(nNumber, bDown);
 }
 
 // ヒントの内容をヒントウィンドウで開く。

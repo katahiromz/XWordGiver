@@ -367,7 +367,7 @@ static void StopAIProcess()
 }
 
 // 起動済みのプロセスの標準入力へ質問を書き込む（プロセスは終了させない）
-void AskAIQuestion(HWND hwnd, PWSTR text)
+void AskAIQuestion(HWND hwnd, PCWSTR text)
 {
 	if (!g_maker.IsRunning())
 	{

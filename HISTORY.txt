@@ -346,6 +346,7 @@
 - 2026-XX-YY ver.5.3.2
     - Localized AI Helper into English.
     - Added a feature to clear all clues.
+    - Added a feature to re-generate all clues.
 
 # 開発履歴 (Japanese)
 
@@ -1011,3 +1012,4 @@
 - 2026年XX月YY日 ver.5.3.2
     - AIヘルパーを英語にローカライズ。
     - カギをすべてクリアする機能を追加。
+    - カギをすべて再生成する機能を追加。

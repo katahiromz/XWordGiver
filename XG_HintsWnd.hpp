@@ -793,8 +793,8 @@ public:
 
         if (nCmd == ID_GENERATEHINT)
         {
-            BOOL XgGenerateHint(INT nNumber, BOOL bDown);
-            XgGenerateHint(m_nNumber, m_bVert);
+            BOOL XgGenerateClue(INT nNumber, BOOL bDown);
+            XgGenerateClue(m_nNumber, m_bVert);
         }
 
         ::DestroyMenu(hMenu);

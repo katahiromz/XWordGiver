@@ -558,6 +558,7 @@ LANGUAGE LANG_JAPANESE, SUBLANG_DEFAULT
         MENUITEM "すべてクリア(&R)", ID_CLEARALLCLUES
         MENUITEM SEPARATOR
         MENUITEM "AI: このカギを再生成(&G)", ID_GENERATEHINT
+        MENUITEM "AI: すべてのカギを再生成(&N) (重い!)", ID_GENERATEHINTSALL
     }
     POPUP "ポップアップ #2"
     {
