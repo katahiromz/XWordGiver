@@ -8354,6 +8354,8 @@ static void __fastcall XgParseAndApplyAICommand(LPCWSTR pszLine)
     auto sa2 = std::make_shared<XG_UndoData_HintsUpdated>();
     sa1->Get();
 
+    bool bChanged = false;
+
     for (;;) {
         size_t openPos = line.find(chOpen, pos);
         if (openPos == std::wstring::npos)
@@ -8418,11 +8420,15 @@ static void __fastcall XgParseAndApplyAICommand(LPCWSTR pszLine)
             continue;
 
         // カギ文章を書き換える（GUIと内部データの両方に反映される）。
-        XgSetHintText(nNumber, bDown, XGStringW(text.c_str()));
+        if (XgSetHintText(nNumber, bDown, XGStringW(text.c_str())))
+            bChanged = true;
     }
 
-    sa2->Get();
-    xg_ubUndoBuffer.Commit(UC_HINTS_UPDATED, sa1, sa2);
+    // 変更があった場合のみUndo登録する。
+    if (bChanged) {
+        sa2->Get();
+        xg_ubUndoBuffer.Commit(UC_HINTS_UPDATED, sa1, sa2);
+    }
 
     xg_strAIPreText.clear();
 }
@@ -8525,16 +8531,6 @@ BOOL XgGenerateClue_ja(INT nNumber, BOOL bDown)
     // AIヘルパーを開く（既に開いていれば前面に出すだけ）。
     XgOpenAIHelper(xg_hMainWnd);
 
-    // AIへの前置指示文（システムプロンプト相当）を組み立てる。
-    auto& str = xg_strAIPreText;
-    str.clear();
-    str += L"あなたは「クロスワードの妖精」です。クロスワードを作成または編集するユーザーを助けるのがあなたの役目です。";
-    str += L"あなたの母語は日本語です。";
-    str += L"「An」はヨコのカギnの略です(nは任意の自然数)。「Dm」はタテのカギnの略です(mは任意の自然数)。";
-    str += L"システムはあなたのコマンド出力に応じてクロスワードのカギを編集できます。";
-    str += L"システムはあなたのコマンド出力「【An: XXX】」でAnのカギ文章を「XXX」に書き換えます(nは任意の自然数、XXXは任意のテキスト)。";
-    str += L"システムはあなたのコマンド出力「【Dm: YYY】」でDmのカギ文章を「YYY」に書き換えます(mは任意の自然数、YYYは任意のテキスト)。";
-
     // 対象のカギ名（An / Dm）を組み立てる。
     XGStringW name = (bDown ? L"D" : L"A");
     name += std::to_wstring(nNumber).c_str();
@@ -8542,19 +8538,11 @@ BOOL XgGenerateClue_ja(INT nNumber, BOOL bDown)
     // ヒント文章。
     XGStringW text = XgGetHintText(nNumber, bDown);
 
-    str += name;
-    str += L"の単語は「";
-    str += word;
-    str += L"」です。";
-    str += L"現在、";
-    str += name;
-    str += L"のヒント文章は「";
-    str += text;
-    str += L"」です。";
-    str += name;
+    std::wstring str;
+    str += name.c_str();
     str += L"のカギ文章を生成して、システムにコマンドを出力してください。";
     str += L"カギ文章内部で「";
-    str += word;
+    str += word.c_str();
     str += L"」という単語を使うことはできません。";
 
     // AIヘルパーへ質問を送る。実際のカギ文章への反映は、AIからの応答
