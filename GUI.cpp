@@ -8257,7 +8257,6 @@ BOOL __fastcall XgSetHintText(INT number, BOOL bDown, const XGStringW& text)
     return FALSE;
 }
 
-XGStringW xg_strAIPreText;
 static bool s_bAICallbackRegistered = false;
 
 // AIに現在の状態を報告する（日本語）。
@@ -8429,8 +8428,6 @@ static void __fastcall XgParseAndApplyAICommand(LPCWSTR pszLine)
         sa2->Get();
         xg_ubUndoBuffer.Commit(UC_HINTS_UPDATED, sa1, sa2);
     }
-
-    xg_strAIPreText.clear();
 }
 
 // AIHelper.cppからの出力行コールバック。CALLBACK呼び出し規約に合わせる。
@@ -8442,16 +8439,13 @@ static void CALLBACK XgOnAIHelperLine(LPCWSTR pszLine)
 // AI入力前のテキスト（日本語）。
 std::wstring XG_GetAIPreText_ja(void)
 {
-    if (xg_strAIPreText.size())
-        return xg_strAIPreText.c_str();
-
     // AIヘルパーからの出力を解析できるよう、コールバックを登録する（初回のみ）。
     if (!s_bAICallbackRegistered) {
         AIHelper_SetLineCallback(XgOnAIHelperLine);
         s_bAICallbackRegistered = true;
     }
 
-    auto& str = xg_strAIPreText;
+    std::wstring str;
     str += L"(* ";
     str += L"あなたは「クロスワードの妖精」です。クロスワードを作成または編集するユーザーを助けるのがあなたの役目です。";
     str += L"あなたの母語は日本語です。";
@@ -8461,20 +8455,19 @@ std::wstring XG_GetAIPreText_ja(void)
     str += L"システムはあなたのコマンド出力「【Dm: YYY】」でDmのカギ文章を「YYY」に書き換えます(mは任意の自然数、YYYは任意のテキスト)。";
     str += XgGetAIStatus().c_str();
     str += L"*) ";
-    return str.c_str();
+    return str;
 }
 
 // Pre-input text for the AI (English).
 std::wstring XG_GetAIPreText_en(void)
 {
-    if (xg_strAIPreText.size())
-        return xg_strAIPreText.c_str();
     // Register the callback so we can parse output from the AI helper (only the first time).
     if (!s_bAICallbackRegistered) {
         AIHelper_SetLineCallback(XgOnAIHelperLine);
         s_bAICallbackRegistered = true;
     }
-    auto& str = xg_strAIPreText;
+
+    std::wstring str;
     str += L"(* ";
     str += L"You are the \"Crossword Fairy\". Your job is to help the user create or edit a crossword puzzle.";
     str += L"Your native language is English.";
@@ -8484,7 +8477,7 @@ std::wstring XG_GetAIPreText_en(void)
     str += L"When you output the command 【Dm: YYY】, the system will rewrite Dm's clue text to \"YYY\" (m is any natural number, YYY is any text).";
     str += XgGetAIStatus().c_str();
     str += L"*) ";
-    return str.c_str();
+    return str;
 }
 
 // AI入力前のテキスト。
@@ -8535,9 +8528,6 @@ BOOL XgGenerateClue_ja(INT nNumber, BOOL bDown)
     XGStringW name = (bDown ? L"D" : L"A");
     name += std::to_wstring(nNumber).c_str();
 
-    // ヒント文章。
-    XGStringW text = XgGetHintText(nNumber, bDown);
-
     std::wstring str;
     str += name.c_str();
     str += L"のカギ文章を生成して、システムにコマンドを出力してください。";
@@ -8561,41 +8551,27 @@ BOOL XgGenerateClue_en(INT nNumber, BOOL bDown)
     XGStringW word = XgGetHintWord(nNumber, bDown);
     if (word.empty())
         return FALSE;
+
     // Register the callback so we can parse output from the AI helper (only the first time).
     if (!s_bAICallbackRegistered) {
         AIHelper_SetLineCallback(XgOnAIHelperLine);
         s_bAICallbackRegistered = true;
     }
+
     // Open the AI helper (if already open, just bring it to the front).
     XgOpenAIHelper(xg_hMainWnd);
-    // Build the preamble instructions for the AI (equivalent to a system prompt).
-    auto& str = xg_strAIPreText;
-    str.clear();
-    str += L"You are the \"Crossword Fairy\". Your job is to help the user create or edit a crossword puzzle.";
-    str += L"Your native language is English.";
-    str += L"\"An\" is short for Across clue n (n is any natural number). \"Dm\" is short for Down clue m (m is any natural number).";
-    str += L"The system can edit the crossword's clues based on your command output.";
-    str += L"When you output the command 【An: XXX】\", the system will rewrite An's clue text to \"XXX\" (n is any natural number, XXX is any text).";
-    str += L"When you output the command 【Dm: YYY】\", the system will rewrite Dm's clue text to \"YYY\" (m is any natural number, YYY is any text).";
+
     // Build the target clue name (An / Dm).
     XGStringW name = (bDown ? L"D" : L"A");
     name += std::to_wstring(nNumber).c_str();
-    // Hint text.
-    XGStringW text = XgGetHintText(nNumber, bDown);
-    str += name;
-    str += L"'s word is \"";
-    str += word;
-    str += L"\".";
-    str += L"Currently, ";
-    str += name;
-    str += L"'s hint text is \"";
-    str += text;
-    str += L"\".";
-    str += name;
+
+    std::wstring str;
+    str += name.c_str();
     str += L"'s clue text should be generated, and the command should be output to the system.";
     str += L"The word \"";
-    str += word;
+    str += word.c_str();
     str += L"\" cannot be used inside the clue text.";
+
     // Send the question to the AI helper. The actual update to the clue text is
     // performed asynchronously by calling XgSetHintText once a response line
     // from the AI (in the form "【An: XXX】" or "【Dm: YYY】") is received
