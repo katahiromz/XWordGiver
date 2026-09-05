@@ -8223,8 +8223,8 @@ BOOL __fastcall XgSetHintText(INT number, BOOL bDown, const XGStringW& text)
 XGStringW xg_strAIPreText;
 static bool s_bAICallbackRegistered = false;
 
-// AIに現在の状態を報告する。
-XGStringW XgGetAIStatus(void)
+// AIに現在の状態を報告する（日本語）。
+XGStringW XgGetAIStatus_ja(void)
 {
     XGStringW ret;
 
@@ -8260,6 +8260,47 @@ XGStringW XgGetAIStatus(void)
     }
 
     return ret;
+}
+
+// Report the current state to the AI (English).
+XGStringW XgGetAIStatus_en(void)
+{
+    XGStringW ret;
+    // Fail if not yet solved.
+    if (!xg_bSolved)
+        return L"The crossword board has not been generated yet, and there are no clues yet. There is nothing the crossword fairy can do yet.";
+    ret += L"The crossword board has been generated.";
+    for (BOOL bDown = FALSE; bDown <= TRUE; ++bDown)
+    {
+        // Choose the target array depending on whether it's Down or Across.
+        auto& info_vec = bDown ? xg_vVertInfo : xg_vHorzInfo;
+        auto& hint_vec = bDown ? xg_vecVertHints : xg_vecHorzHints;
+        for (size_t i = 0; i < info_vec.size(); ++i) {
+            auto number = info_vec[i].m_number;
+            auto word = hint_vec[i].m_strWord;
+            auto text = hint_vec[i].m_strHint;
+            // Build the target clue name (An / Dm).
+            XGStringW name = (bDown ? L"D" : L"A");
+            name += std::to_wstring(number).c_str();
+            ret += name;
+            ret += L"'s word is \"";
+            ret += word;
+            ret += L"\".";
+            ret += name;
+            ret += L"'s hint text is \"";
+            ret += text;
+            ret += L"\".";
+        }
+    }
+    return ret;
+}
+
+// AIに現在の状態を報告する。
+XGStringW XgGetAIStatus(void)
+{
+    if (XgIsUserJapanese())
+        return XgGetAIStatus_ja();
+    return XgGetAIStatus_en();
 }
 
 // AIヘルパーからの出力行を解析し、「【An: XXX】」/「【Dm: YYY】」形式の
@@ -8348,8 +8389,8 @@ static void CALLBACK XgOnAIHelperLine(LPCWSTR pszLine)
     XgParseAndApplyAICommand(pszLine);
 }
 
-// AI入力前のテキスト。
-std::wstring XG_GetAIPreText(void)
+// AI入力前のテキスト（日本語）。
+std::wstring XG_GetAIPreText_ja(void)
 {
     if (xg_strAIPreText.size())
         return xg_strAIPreText.c_str();
@@ -8370,8 +8411,36 @@ std::wstring XG_GetAIPreText(void)
     return str.c_str();
 }
 
-// カギを再生成する。
-BOOL XgGenerateHint(INT nNumber, BOOL bDown)
+// Pre-input text for the AI (English).
+std::wstring XG_GetAIPreText_en(void)
+{
+    if (xg_strAIPreText.size())
+        return xg_strAIPreText.c_str();
+    // Register the callback so we can parse output from the AI helper (only the first time).
+    if (!s_bAICallbackRegistered) {
+        AIHelper_SetLineCallback(XgOnAIHelperLine);
+        s_bAICallbackRegistered = true;
+    }
+    auto& str = xg_strAIPreText;
+    str += L"You are the \"Crossword Fairy\". Your job is to help the user create or edit a crossword puzzle.";
+    str += L"\"An\" is short for Across clue n (n is any natural number). \"Dm\" is short for Down clue m (m is any natural number).";
+    str += L"The system can edit the crossword's clues based on your command output.";
+    str += L"When you output the command 【An: XXX】, the system will rewrite An's clue text to \"XXX\" (n is any natural number, XXX is any text).";
+    str += L"When you output the command 【Dm: YYY】, the system will rewrite Dm's clue text to \"YYY\" (m is any natural number, YYY is any text).";
+    str += XgGetAIStatus().c_str();
+    return str.c_str();
+}
+
+// AI入力前のテキスト。
+std::wstring XG_GetAIPreText(void)
+{
+    if (XgIsUserJapanese())
+        return XG_GetAIPreText_ja();
+    return XG_GetAIPreText_en();
+}
+
+// カギを再生成する（日本語）。
+BOOL XgGenerateHint_ja(INT nNumber, BOOL bDown)
 {
     // 単語が取得できなければ何もしない。
     XGStringW word = XgGetHintWord(nNumber, bDown);
@@ -8425,6 +8494,64 @@ BOOL XgGenerateHint(INT nNumber, BOOL bDown)
     AskAIQuestion(g_hwndAIHelper, const_cast<PWSTR>(str.c_str()));
 
     return TRUE;
+}
+
+// Regenerate a clue (English).
+BOOL XgGenerateHint_en(INT nNumber, BOOL bDown)
+{
+    // Do nothing if the word can't be obtained.
+    XGStringW word = XgGetHintWord(nNumber, bDown);
+    if (word.empty())
+        return FALSE;
+    // Register the callback so we can parse output from the AI helper (only the first time).
+    if (!s_bAICallbackRegistered) {
+        AIHelper_SetLineCallback(XgOnAIHelperLine);
+        s_bAICallbackRegistered = true;
+    }
+    // Open the AI helper (if already open, just bring it to the front).
+    XgOpenAIHelper(xg_hMainWnd);
+    // Build the preamble instructions for the AI (equivalent to a system prompt).
+    auto& str = xg_strAIPreText;
+    str.clear();
+    str += L"You are the \"Crossword Fairy\". Your job is to help the user create or edit a crossword puzzle.";
+    str += L"\"An\" is short for Across clue n (n is any natural number). \"Dm\" is short for Down clue m (m is any natural number).";
+    str += L"The system can edit the crossword's clues based on your command output.";
+    str += L"When you output the command 【An: XXX】\", the system will rewrite An's clue text to \"XXX\" (n is any natural number, XXX is any text).";
+    str += L"When you output the command 【Dm: YYY】\", the system will rewrite Dm's clue text to \"YYY\" (m is any natural number, YYY is any text).";
+    // Build the target clue name (An / Dm).
+    XGStringW name = (bDown ? L"D" : L"A");
+    name += std::to_wstring(nNumber).c_str();
+    // Hint text.
+    XGStringW text = XgGetHintText(nNumber, bDown);
+    str += name;
+    str += L"'s word is \"";
+    str += word;
+    str += L"\".";
+    str += L"Currently, ";
+    str += name;
+    str += L"'s hint text is \"";
+    str += text;
+    str += L"\".";
+    str += name;
+    str += L"'s clue text should be generated, and the command should be output to the system.";
+    str += L"The word \"";
+    str += word;
+    str += L"\" cannot be used inside the clue text.";
+    // Send the question to the AI helper. The actual update to the clue text is
+    // performed asynchronously by calling XgSetHintText once a response line
+    // from the AI (in the form "[An: XXX]" or "[Dm: YYY]") is received
+    // (a separate process is needed to parse the response line and execute
+    // the corresponding command).
+    AskAIQuestion(g_hwndAIHelper, const_cast<PWSTR>(str.c_str()));
+    return TRUE;
+}
+
+// カギを再生成する。
+BOOL XgGenerateHint(INT nNumber, BOOL bDown)
+{
+    if (XgIsUserJapanese())
+        return XgGenerateHint_ja(nNumber, bDown);
+    return XgGenerateHint_en(nNumber, bDown);
 }
 
 // ヒントの内容をヒントウィンドウで開く。

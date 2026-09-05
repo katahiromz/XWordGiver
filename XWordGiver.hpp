@@ -977,19 +977,7 @@ inline bool __fastcall XG_Board::CanPutBlack(int iRow, int jCol) const noexcept
 }
 
 // ユーザは日本人か？
-inline BOOL XgIsUserJapanese(VOID) noexcept
-{
-    static BOOL s_bInit = FALSE, s_bIsJapanese = FALSE; // 高速化のためキャッシュを使う。
-    if (!s_bInit) {
-        // IDS_MAIN_LANGUAGEの値が"Japanese"だったら日本語と見なす。
-        WCHAR szText[64];
-        LoadStringW(nullptr, IDS_MAIN_LANGUAGE, szText, _countof(szText));
-        s_bIsJapanese = (lstrcmpiW(szText, L"Japanese") == 0);
-        s_bInit = TRUE;
-    }
-    return s_bIsJapanese;
-    // return PRIMARYLANGID(LANGIDFROMLCID(GetThreadLocale())) == LANG_JAPANESE; // これはだめ。
-}
+BOOL XgIsUserJapanese(VOID) noexcept;
 
 // ユーザは東アジア人（中国、日本、韓国）か？
 inline BOOL XgIsUserCJK(VOID) noexcept

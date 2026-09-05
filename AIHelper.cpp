@@ -29,6 +29,10 @@ HWND g_hwndAIHelper = nullptr;
 std::wstring g_privider = L"gemini";
 std::wstring g_model = L"gemini-3.6-flash";
 
+#ifdef __XWORDGIVER__
+BOOL XgIsUserJapanese(VOID) noexcept;
+#endif
+
 // AIプロセスからの出力行を呼び出し側へ通知するためのコールバック
 static AIHELPER_LINE_CALLBACK g_pfnLineCallback = nullptr;
 
@@ -304,7 +308,11 @@ static BOOL StartAIProcess(HWND hwnd)
 	TCHAR path[MAX_PATH];
 	GetModuleFileNameW(nullptr, path, _countof(path));
 	PathRemoveFileSpecW(path);
+#ifdef __XWORDGIVER__
+	if (XgIsUserJapanese())
+#else
 	if (PRIMARYLANGID(GetUserDefaultLangID()) == LANG_JAPANESE)
+#endif
 		PathAppendW(path, L"AIHelper_ja.py");
 	else
 		PathAppendW(path, L"AIHelper.py");
