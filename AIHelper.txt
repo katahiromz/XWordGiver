@@ -8,6 +8,8 @@
 - 「プロバイダー」と「モデル」をセットする。
 - 「更新」ボタンをクリック。
 
+※ 生成AIは、間違いをすることがあります。結果は必ずご確認ください。
+
 # How to Use AI Helper
 
 - Install Python and add `python.exe` to your system's PATH environment variable.
@@ -17,3 +19,5 @@
 - Select "Settings" from the "File" menu and click the "AI Helper" tab.
 - Set the "Provider" and "Model."
 - Click the "Apply" button.
+
+* Generative AI may make mistakes. Please be sure to verify the results.
