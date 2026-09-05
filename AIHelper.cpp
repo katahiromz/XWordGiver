@@ -29,6 +29,15 @@ HWND g_hwndAIHelper = nullptr;
 std::wstring g_privider = L"gemini";
 std::wstring g_model = L"gemini-3.6-flash";
 
+// AIプロセスからの出力行を呼び出し側へ通知するためのコールバック
+static AIHELPER_LINE_CALLBACK g_pfnLineCallback = nullptr;
+
+// コールバックを登録する（呼び出し側が解析したい場合に使う）
+void AIHelper_SetLineCallback(AIHELPER_LINE_CALLBACK callback)
+{
+	g_pfnLineCallback = callback;
+}
+
 // 子プロセスの出力の1行をUIスレッドへ渡すためのカスタムメッセージ
 // (WPARAMは未使用、LPARAMはnewしたPWSTR。受け取った側でdelete[]すること)
 #define WM_APP_AI_LINE   (WM_APP + 1)
@@ -477,6 +486,10 @@ DialogProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			// ReaderThreadProcがnewしたバッファを引き取って表示し、解放する
 			PWSTR psz = (PWSTR)lParam;
 			AddLineToList(hwnd, psz);
+			// 登録されていれば、生の行をそのままコールバックへ渡す
+			// (表示用のタグ除去はAddLineToList内でのみ行われ、ここには影響しない)
+			if (g_pfnLineCallback)
+				g_pfnLineCallback(psz);
 			delete[] psz;
 		}
 		return TRUE;

@@ -5116,12 +5116,6 @@ void XgGeneralSettings(HWND hwnd, DWORD nStartPage = I_SYNCED_FILE_SETTINGS)
     XgUpdateRules(hwnd);
 }
 
-// AI入力前のテキスト。
-std::wstring XG_GetAIPreText(void)
-{
-    return std::wstring();
-}
-
 // テーマが変更された。
 void XgUpdateTheme(HWND hwnd)
 {
@@ -8133,6 +8127,58 @@ void XgDestroyHintsWnd(void) noexcept
     }
 }
 
+XGStringW __fastcall XgGetHintWord(INT number, BOOL bDown)
+{
+    // まだ解かれていない場合は失敗。
+    if (!xg_bSolved)
+        return XGStringW();
+
+    // タテかヨコかで対象の配列を選ぶ。
+    auto& info_vec = bDown ? xg_vVertInfo : xg_vHorzInfo;
+    auto& hint_vec = bDown ? xg_vecVertHints : xg_vecHorzHints;
+
+    // 対象番号のカギを探す。
+    for (size_t i = 0; i < info_vec.size(); ++i) {
+        if (info_vec[i].m_number != number)
+            continue;
+
+        // 範囲チェック。
+        if (i >= hint_vec.size())
+            return FALSE;
+
+        return hint_vec[i].m_strWord;
+    }
+
+    // 対象番号のカギが見つからなかった。
+    return XGStringW();
+}
+
+XGStringW __fastcall XgGetHintText(INT number, BOOL bDown)
+{
+    // まだ解かれていない場合は失敗。
+    if (!xg_bSolved)
+        return XGStringW();
+
+    // タテかヨコかで対象の配列を選ぶ。
+    auto& info_vec = bDown ? xg_vVertInfo : xg_vHorzInfo;
+    auto& hint_vec = bDown ? xg_vecVertHints : xg_vecHorzHints;
+
+    // 対象番号のカギを探す。
+    for (size_t i = 0; i < info_vec.size(); ++i) {
+        if (info_vec[i].m_number != number)
+            continue;
+
+        // 範囲チェック。
+        if (i >= hint_vec.size())
+            return FALSE;
+
+        return hint_vec[i].m_strHint;
+    }
+
+    // 対象番号のカギが見つからなかった。
+    return XGStringW();
+}
+
 // カギ番号を指定してヒント文章をセットする（GUIと内部データの両方に反映する）。
 BOOL __fastcall XgSetHintText(INT number, BOOL bDown, const XGStringW& text)
 {
@@ -8172,6 +8218,213 @@ BOOL __fastcall XgSetHintText(INT number, BOOL bDown, const XGStringW& text)
 
     // 対象番号のカギが見つからなかった。
     return FALSE;
+}
+
+XGStringW xg_strAIPreText;
+static bool s_bAICallbackRegistered = false;
+
+// AIに現在の状態を報告する。
+XGStringW XgGetAIStatus(void)
+{
+    XGStringW ret;
+
+    // まだ解かれていない場合は失敗。
+    if (!xg_bSolved)
+        return L"クロスワードの盤が生成されておらず、まだカギはありません。";
+
+    ret += L"クロスワードの盤が生成済みです。";
+    for (BOOL bDown = FALSE; bDown <= TRUE; ++bDown)
+    {
+        // タテかヨコかで対象の配列を選ぶ。
+        auto& info_vec = bDown ? xg_vVertInfo : xg_vHorzInfo;
+        auto& hint_vec = bDown ? xg_vecVertHints : xg_vecHorzHints;
+
+        for (size_t i = 0; i < info_vec.size(); ++i) {
+            auto number = info_vec[i].m_number;
+            auto word = hint_vec[i].m_strWord;
+            auto text = hint_vec[i].m_strHint;
+
+            // 対象のカギ名（An / Dm）を組み立てる。
+            XGStringW name = (bDown ? L"D" : L"A");
+            name += std::to_wstring(number).c_str();
+
+            ret += name;
+            ret += L"の単語は「";
+            ret += word;
+            ret += L"」です。";
+            ret += name;
+            ret += L"のヒント文章は「";
+            ret += text;
+            ret += L"」です。";
+        }
+    }
+
+    return ret;
+}
+
+// AIヘルパーからの出力行を解析し、「【An: XXX】」/「【Dm: YYY】」形式の
+// コマンドを見つけたら、該当するカギ文章を書き換える。
+// 1行に複数のコマンドが含まれていてもすべて処理する。
+static void __fastcall XgParseAndApplyAICommand(LPCWSTR pszLine)
+{
+    const wchar_t chOpen = 0x3010;  // 【
+    const wchar_t chClose = 0x3011; // 】
+    std::wstring line = pszLine;
+    size_t pos = 0;
+
+    for (;;) {
+        size_t openPos = line.find(chOpen, pos);
+        if (openPos == std::wstring::npos)
+            break;
+        size_t closePos = line.find(chClose, openPos + 1);
+        if (closePos == std::wstring::npos)
+            break;
+
+        std::wstring inner = line.substr(openPos + 1, closePos - openPos - 1);
+        pos = closePos + 1;
+
+        // "An: XXX" または "Dm: YYY" の形式を期待する（全角コロンにも対応）。
+        size_t colonPos = inner.find(L':');
+        if (colonPos == std::wstring::npos)
+            colonPos = inner.find((wchar_t)0xFF1A); // ：
+        if (colonPos == std::wstring::npos)
+            continue;
+
+        std::wstring key = inner.substr(0, colonPos);
+        std::wstring text = inner.substr(colonPos + 1);
+
+        // キー・テキストの前後の空白を除去する。
+        auto trim = [](std::wstring& s) {
+            while (!s.empty() && iswspace(s.front()))
+                s.erase(s.begin());
+            while (!s.empty() && iswspace(s.back()))
+                s.pop_back();
+        };
+        trim(key);
+        trim(text);
+
+        if (key.empty() || text.empty())
+            continue;
+
+        // 先頭が A/a ならヨコのカギ、D/d ならタテのカギ。
+        WCHAR chType = key[0];
+        BOOL bDown;
+        if (chType == L'A' || chType == L'a')
+            bDown = FALSE;
+        else if (chType == L'D' || chType == L'd')
+            bDown = TRUE;
+        else
+            continue;
+
+        // 残り部分がすべて数字であることを確認し、番号を取得する。
+        std::wstring numPart = key.substr(1);
+        if (numPart.empty())
+            continue;
+
+        bool bAllDigits = true;
+        for (wchar_t ch : numPart) {
+            if (!iswdigit(ch)) {
+                bAllDigits = false;
+                break;
+            }
+        }
+        if (!bAllDigits)
+            continue;
+
+        INT nNumber = _wtoi(numPart.c_str());
+        if (nNumber <= 0)
+            continue;
+
+        // カギ文章を書き換える（GUIと内部データの両方に反映される）。
+        XgSetHintText(nNumber, bDown, XGStringW(text.c_str()));
+    }
+
+    xg_strAIPreText.clear();
+}
+
+// AIHelper.cppからの出力行コールバック。CALLBACK呼び出し規約に合わせる。
+static void CALLBACK XgOnAIHelperLine(LPCWSTR pszLine)
+{
+    XgParseAndApplyAICommand(pszLine);
+}
+
+// AI入力前のテキスト。
+std::wstring XG_GetAIPreText(void)
+{
+    if (xg_strAIPreText.size())
+        return xg_strAIPreText.c_str();
+
+    // AIヘルパーからの出力を解析できるよう、コールバックを登録する（初回のみ）。
+    if (!s_bAICallbackRegistered) {
+        AIHelper_SetLineCallback(XgOnAIHelperLine);
+        s_bAICallbackRegistered = true;
+    }
+
+    auto& str = xg_strAIPreText;
+    str += L"あなたは「クロスワードの妖精」です。クロスワードを作成または編集するユーザーを助けるのがあなたの役目です。";
+    str += L"「An」はヨコのカギnの略です(nは任意の自然数)。「Dm」はタテのカギnの略です(mは任意の自然数)。";
+    str += L"システムはあなたのコマンド出力に応じてクロスワードのカギを編集できます。";
+    str += L"システムはあなたのコマンド出力「【An: XXX】」でAnのカギ文章を「XXX」に書き換えます(nは任意の自然数、XXXは任意のテキスト)。";
+    str += L"システムはあなたのコマンド出力「【Dm: YYY】」でDmのカギ文章を「YYY」に書き換えます(mは任意の自然数、YYYは任意のテキスト)。";
+    str += XgGetAIStatus().c_str();
+    return str.c_str();
+}
+
+// カギを再生成する。
+BOOL XgGenerateHint(INT nNumber, BOOL bDown)
+{
+    // 単語が取得できなければ何もしない。
+    XGStringW word = XgGetHintWord(nNumber, bDown);
+    if (word.empty())
+        return FALSE;
+
+    // AIヘルパーからの出力を解析できるよう、コールバックを登録する（初回のみ）。
+    if (!s_bAICallbackRegistered) {
+        AIHelper_SetLineCallback(XgOnAIHelperLine);
+        s_bAICallbackRegistered = true;
+    }
+
+    // AIヘルパーを開く（既に開いていれば前面に出すだけ）。
+    XgOpenAIHelper(xg_hMainWnd);
+
+    // AIへの前置指示文（システムプロンプト相当）を組み立てる。
+    auto& str = xg_strAIPreText;
+    str.clear();
+    str += L"あなたは「クロスワードの妖精」です。クロスワードを作成または編集するユーザーを助けるのがあなたの役目です。";
+    str += L"「An」はヨコのカギnの略です(nは任意の自然数)。「Dm」はタテのカギnの略です(mは任意の自然数)。";
+    str += L"システムはあなたのコマンド出力に応じてクロスワードのカギを編集できます。";
+    str += L"システムはあなたのコマンド出力「【An: XXX】」でAnのカギ文章を「XXX」に書き換えます(nは任意の自然数、XXXは任意のテキスト)。";
+    str += L"システムはあなたのコマンド出力「【Dm: YYY】」でDmのカギ文章を「YYY」に書き換えます(mは任意の自然数、YYYは任意のテキスト)。";
+
+    // 対象のカギ名（An / Dm）を組み立てる。
+    XGStringW name = (bDown ? L"D" : L"A");
+    name += std::to_wstring(nNumber).c_str();
+
+    // ヒント文章。
+    XGStringW text = XgGetHintText(nNumber, bDown);
+
+    str += name;
+    str += L"の単語は「";
+    str += word;
+    str += L"」です。";
+    str += L"現在、";
+    str += name;
+    str += L"のヒント文章は「";
+    str += text;
+    str += L"」です。";
+    str += name;
+    str += L"のカギ文章を生成して、システムにコマンドを出力してください。";
+    str += L"カギ文章内部で「";
+    str += word;
+    str += L"」という単語を使うことはできません。";
+
+    // AIヘルパーへ質問を送る。実際のカギ文章への反映は、AIからの応答
+    // （「【An: XXX】」または「【Dm: YYY】」形式の行）を受け取った時点で
+    // 非同期にXgSetHintTextが呼ばれることで行われる（別途、応答行を
+    // パースして該当コマンドを実行する処理が必要）。
+    AskAIQuestion(g_hwndAIHelper, const_cast<PWSTR>(str.c_str()));
+
+    return TRUE;
 }
 
 // ヒントの内容をヒントウィンドウで開く。

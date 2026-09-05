@@ -521,6 +521,7 @@
 #define ID_JUMP                             608
 #define ID_DEBUGACTION                      609
 #define ID_OPENAIHELPER                     610
+#define ID_GENERATEHINT                     611
 #define ID_TT_BASE                          10000
 
 #define ctl2                                1185

@@ -788,8 +788,14 @@ public:
         }
 
         ::PostMessageW(hwnd, WM_NULL, 0, 0);
-        if (nCmd)
+        if (nCmd && nCmd != ID_GENERATEHINT)
             ::PostMessageW(xg_hMainWnd, WM_COMMAND, nCmd, 0);
+
+        if (nCmd == ID_GENERATEHINT)
+        {
+            BOOL XgGenerateHint(INT nNumber, BOOL bDown);
+            XgGenerateHint(m_nNumber, m_bVert);
+        }
 
         ::DestroyMenu(hMenu);
     }

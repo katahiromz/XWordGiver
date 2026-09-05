@@ -7,3 +7,8 @@ extern std::wstring g_model;
 
 void AskAIQuestion(HWND hwnd, PWSTR text);
 BOOL OpenAIHelper(HWND hwndOwner, BOOL bOpen);
+
+// AIプロセスから届いた出力行を、表示とは別に呼び出し側へ通知するためのコールバック。
+// (*...*) タグの除去やフィルタリングは行わない、生の1行がそのまま渡される。
+typedef void (CALLBACK *AIHELPER_LINE_CALLBACK)(LPCWSTR pszLine);
+void AIHelper_SetLineCallback(AIHELPER_LINE_CALLBACK callback);

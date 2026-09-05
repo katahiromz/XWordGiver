@@ -552,6 +552,8 @@ LANGUAGE LANG_ENGLISH, SUBLANG_DEFAULT
         MENUITEM "&Jump", ID_JUMPNUMBER
         MENUITEM SEPARATOR
         MENUITEM "Copy all clues", ID_COPYHINTSSTYLE0
+        MENUITEM SEPARATOR
+        MENUITEM "AI: Re-&generate this clue", ID_GENERATEHINT
     }
     POPUP "Popup #2"
     {
