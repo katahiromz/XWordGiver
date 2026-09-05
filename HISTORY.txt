@@ -347,6 +347,7 @@
     - Localized AI Helper into English.
     - Added a feature to clear all clues.
     - Added a feature to re-generate all clues.
+    - Added the ability to undo AI helper actions.
 
 # 開発履歴 (Japanese)
 
@@ -1013,3 +1014,4 @@
     - AIヘルパーを英語にローカライズ。
     - カギをすべてクリアする機能を追加。
     - カギをすべて再生成する機能を追加。
+    - AIヘルパーのアクションを元に戻せるように。

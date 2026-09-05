@@ -6248,6 +6248,10 @@ void XgOpenAIHelper(HWND hwnd)
 // カギをすべてクリアする。
 void XgClearAllClues(HWND hwnd)
 {
+    auto sa1 = std::make_shared<XG_UndoData_SetAll>();
+    auto sa2 = std::make_shared<XG_UndoData_SetAll>();
+    sa1->Get();
+
     for (BOOL bDown = FALSE; bDown <= TRUE; ++bDown)
     {
         // タテかヨコかで対象の配列を選ぶ。
@@ -6262,6 +6266,10 @@ void XgClearAllClues(HWND hwnd)
             XgSetHintText(number, bDown, L"");
         }
     }
+
+    sa2->Get();
+    // 元に戻す情報を設定する。
+    xg_ubUndoBuffer.Commit(UC_SETALL, sa1, sa2);
 }
 
 void XgRegenerateCluesAll(HWND hwnd);
@@ -8342,6 +8350,10 @@ static void __fastcall XgParseAndApplyAICommand(LPCWSTR pszLine)
     std::wstring line = pszLine;
     size_t pos = 0;
 
+    auto sa1 = std::make_shared<XG_UndoData_SetAll>();
+    auto sa2 = std::make_shared<XG_UndoData_SetAll>();
+    sa1->Get();
+
     for (;;) {
         size_t openPos = line.find(chOpen, pos);
         if (openPos == std::wstring::npos)
@@ -8408,6 +8420,9 @@ static void __fastcall XgParseAndApplyAICommand(LPCWSTR pszLine)
         // カギ文章を書き換える（GUIと内部データの両方に反映される）。
         XgSetHintText(nNumber, bDown, XGStringW(text.c_str()));
     }
+
+    sa2->Get();
+    xg_ubUndoBuffer.Commit(UC_SETALL, sa1, sa2);
 
     xg_strAIPreText.clear();
 }
