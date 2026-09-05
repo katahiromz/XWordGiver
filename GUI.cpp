@@ -8230,7 +8230,7 @@ XGStringW XgGetAIStatus(void)
 
     // まだ解かれていない場合は失敗。
     if (!xg_bSolved)
-        return L"クロスワードの盤が生成されておらず、まだカギはありません。";
+        return L"クロスワードの盤が生成されておらず、まだカギはありません。クロスワードの妖精ができることはまだありません。";
 
     ret += L"クロスワードの盤が生成済みです。";
     for (BOOL bDown = FALSE; bDown <= TRUE; ++bDown)
