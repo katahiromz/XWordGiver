@@ -14,6 +14,9 @@ endif(COMMAND cmake_policy)
 # project name and languages
 project(XWordGiver CXX RC)
 
+# add macro __XWORDGIVER__
+add_definitions(-D__XWORDGIVER__)
+
 ##############################################################################
 
 option(USE_QSTRING "Use QString" ON)
@@ -111,6 +114,7 @@ endif()
 
 # XWordGiver32.exe and XWordGiver64.exe
 add_executable(XWordGiver${BITS} WIN32
+    AIHelper.cpp
     Dictionary.cpp
     GUI.cpp
     Input.cpp

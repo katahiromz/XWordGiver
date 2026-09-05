@@ -10,6 +10,7 @@
 #include <algorithm>
 #include "WonSetThreadUILanguage/WonSetThreadUILanguage.h"
 #include "TaskbarProgress.h"
+#include "AIHelper.h"
 
 // 「元に戻す」情報。
 #include "XG_UndoBuffer.hpp"
@@ -801,12 +802,11 @@ void __fastcall XgEnsureCaretVisible(HWND hwnd)
     const int nCellSize = xg_nCellSize * xg_nZoomRate / 100;
 
     // キャレットの矩形を設定する。
-    rc = {
+    SetRect(&rc,
         xg_nMargin + xg_caret_pos.m_j * nCellSize,
         xg_nMargin + xg_caret_pos.m_i * nCellSize,
         xg_nMargin + (xg_caret_pos.m_j + 1) * nCellSize,
-        xg_nMargin + (xg_caret_pos.m_i + 1) * nCellSize
-    };
+        xg_nMargin + (xg_caret_pos.m_i + 1) * nCellSize);
 
     // 横スクロール情報を修正する。
     si.cbSize = sizeof(si);
@@ -4219,15 +4219,32 @@ void __fastcall MainWnd_OnDestroy(HWND /*hwnd*/) noexcept
     xg_hGrayedImageList = nullptr;
 
     // ウィンドウを破棄する。
-    ::DestroyWindow(xg_hToolBar);
-    xg_hToolBar = nullptr;
-    ::DestroyWindow(xg_hSizeGrip);
-    xg_hSizeGrip = nullptr;
+    if (g_hwndAIHelper)
+    {
+        ::DestroyWindow(g_hwndAIHelper);
+        g_hwndAIHelper = nullptr;
+    }
+    if (xg_hToolBar)
+    {
+        ::DestroyWindow(xg_hToolBar);
+        xg_hToolBar = nullptr;
+    }
+    if (xg_hSizeGrip)
+    {
+        ::DestroyWindow(xg_hSizeGrip);
+        xg_hSizeGrip = nullptr;
+    }
+    if (xg_hHintsWnd)
+    {
+        ::DestroyWindow(xg_hHintsWnd);
+        xg_hHintsWnd = nullptr;
+    }
+    if (xg_hwndInputPalette)
+    {
+        ::DestroyWindow(xg_hwndInputPalette);
+        xg_hwndInputPalette = nullptr;
+    }
     ::DestroyWindow(xg_cands_wnd);
-    ::DestroyWindow(xg_hHintsWnd);
-    xg_hHintsWnd = nullptr;
-    ::DestroyWindow(xg_hwndInputPalette);
-    xg_hwndInputPalette = nullptr;
     ::DestroyWindow(xg_hMarkingDlg);
 
     // アプリを終了する。
@@ -5086,6 +5103,12 @@ void XgGeneralSettings(HWND hwnd, DWORD nStartPage = I_SYNCED_FILE_SETTINGS)
 
     ZeroMemory(&xg_ahSyncedDialogs, sizeof(xg_ahSyncedDialogs));
     XgUpdateRules(hwnd);
+}
+
+// AI入力前のテキスト。
+std::wstring XG_GetAIPreText(void)
+{
+    return std::wstring();
 }
 
 // テーマが変更された。
@@ -6209,6 +6232,12 @@ void XgDebugAction(HWND hwnd)
 
     BOOL bDown = (id == IDYES);
     XgSetHintText(1, bDown, L"新しいヒント");
+}
+
+// AIヘルパーを開く。
+void XgOpenAIHelper(HWND hwnd)
+{
+    OpenAIHelper(hwnd, TRUE);
 }
 
 // コマンドを実行する。
@@ -7487,6 +7516,10 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT /*codeNo
         XgDebugAction(hwnd);
         break;
 
+    case ID_OPENAIHELPER:
+        XgOpenAIHelper(hwnd);
+        break;
+
     default:
         if (!XgOnCommandExtra(hwnd, id)) {
             ::MessageBeep(0xFFFFFFFF);
@@ -8307,6 +8340,7 @@ int WINAPI WinMain(
 
     // アプリのインスタンスを保存する。
     xg_hInstance = hInstance;
+    g_hAIHelperInst = hInstance;
 
     // 設定を読み込む。
     XgLoadSettings();
@@ -8468,6 +8502,11 @@ int WINAPI WinMain(
 
         if (xg_hMarkingDlg) {
             if (::IsDialogMessageW(xg_hMarkingDlg, &msg))
+                continue;
+        }
+
+        if (g_hwndAIHelper) {
+            if (::IsDialogMessageW(g_hwndAIHelper, &msg))
                 continue;
         }
 

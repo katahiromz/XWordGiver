@@ -1,0 +1,16 @@
+# AIHelper_ja.py の依存パッケージ
+#
+# インストール:
+#   pip install -r requirements.txt
+#
+# 各プロバイダに必要なパッケージ:
+#   chatgpt / grok / deepseek / sakana  ... openai
+#   gemini                              ... google-genai
+#   claude                              ... anthropic
+#
+# 使わないプロバイダのパッケージは省いても構いません
+# （そのプロバイダを使おうとした時に「ライブラリ未インストール」エラーになります）。
+
+openai>=1.50.0
+anthropic>=0.40.0
+google-genai>=0.3.0

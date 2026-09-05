@@ -1,0 +1,16 @@
+# Dependencies for AIHelper.py
+#
+# Install:
+#   pip install -r requirements.txt
+#
+# Packages needed per provider:
+#   chatgpt / grok / deepseek / sakana  ... openai
+#   gemini                              ... google-genai
+#   claude                              ... anthropic
+#
+# You can omit the package for a provider you don't use
+# (you'll get a "library not installed" error only if you try to use it).
+
+openai>=1.50.0
+anthropic>=0.40.0
+google-genai>=0.3.0

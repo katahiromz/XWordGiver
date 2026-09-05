@@ -137,6 +137,7 @@ LANGUAGE LANG_ENGLISH, SUBLANG_DEFAULT
         MENUITEM "&Status bar", ID_STATUS
         MENUITEM "&Input palette\tCtrl+U", ID_PALETTE
         MENUITEM "&Clues\tCtrl+L", ID_SHOWHIDEHINTS
+        MENUITEM "AI Helpe&r", ID_OPENAIHELPER
         MENUITEM SEPARATOR
         MENUITEM "&Answer\tCtrl+M", ID_SHOWHIDESOLUTION
         MENUITEM "&Numbering", ID_SHOWHIDENUMBERING
@@ -1598,12 +1599,23 @@ FONT 9, "MS UI Gothic"
     PUSHBUTTON "Delete &all", -1, 204, 76, 60, 14
 }
 
+IDD_AIHELPERCONSOLE DIALOG 0, 0, 283, 133
+CAPTION "AI Helper Console"
+STYLE DS_CENTER | WS_POPUPWINDOW | WS_CAPTION | WS_THICKFRAME | WS_MAXIMIZEBOX
+EXSTYLE WS_EX_TOOLWINDOW
+FONT 9, "MS UI Gothic"
+{
+    LISTBOX lst1, 5, 7, 270, 98, LBS_NOINTEGRALHEIGHT | LBS_HASSTRINGS | LBS_EXTENDEDSEL | WS_VSCROLL | WS_TABSTOP | WS_HSCROLL
+    EDITTEXT edt1, 6, 113, 203, 14, ES_AUTOHSCROLL
+    DEFPUSHBUTTON "Enter", IDOK, 215, 112, 60, 14
+}
+
 //////////////////////////////////////////////////////////////////////////////
 // RT_VERSION
 
 1 VERSIONINFO
-FILEVERSION     5, 3, 0, 0
-PRODUCTVERSION  5, 3, 0, 0
+FILEVERSION     5, 3, 1, 0
+PRODUCTVERSION  5, 3, 1, 0
 FILEOS          0x40004
 FILETYPE        0x1
 FILESUBTYPE     0x0
@@ -1614,10 +1626,10 @@ FILESUBTYPE     0x0
         {
             VALUE "CompanyName", "Katayama Hirofumi MZ\0"
             VALUE "FileDescription", "XWordGiver\0"
-            VALUE "FileVersion", "5.3.0\0"
+            VALUE "FileVersion", "5.3.1\0"
             VALUE "LegalCopyright", "Copyright (C) 2012-2024 katahiromz. All rights reserved.\0"
             VALUE "ProductName", "XWordGiver\0"
-            VALUE "ProductVersion", "5.3.0\0"
+            VALUE "ProductVersion", "5.3.1\0"
         }
     }
     BLOCK "VarFileInfo"
@@ -1631,7 +1643,7 @@ FILESUBTYPE     0x0
 
 STRINGTABLE
 {
-    IDS_VERSION, "XWordGiver ver.5.3.0\nby katahiromz"
+    IDS_VERSION, "XWordGiver ver.5.3.1\nby katahiromz"
     IDS_APPNAME, "XWordGiver"
     IDS_CANTLOAD, "I couldn't load the file."
     IDS_WRONGFORMAT, "This format is wrong."
@@ -1643,7 +1655,7 @@ STRINGTABLE
     IDS_CANTACCEL, "I couldn't load the accelerators."
     IDS_CANTREGWND, "I couldn't register the window classes."
     IDS_CANTMAKEWND, "I couldn't create the window."
-    IDS_APPTITLE, "XWordGiver ver.5.3.0 - %s"
+    IDS_APPTITLE, "XWordGiver ver.5.3.1 - %s"
     IDS_MADEPROBLEM, "I have generated a crossword.\n\nCalculation time: %u.%u[sec]"
     IDS_CANTMAKEPROBLEM, "I couldn't create the puzzle.\n\nPlease confirm the dictionary, the block pattern, and the policy.\n\nCalculation time: %u.%u[sec]"
     IDS_ENTERINT, "Please enter an integer between 2 and 256."
@@ -1662,7 +1674,7 @@ STRINGTABLE
     IDS_NOWSOLVING, "Calculating...(%u.%u sec)      %u Retrial(s)"
     IDS_HLINE, "----------------------------"
     IDS_MONOFONT, "ＭＳ ゴシック"
-    IDS_APPTITLE2, "XWordGiver ver.5.3.0 (%s) - %s"
+    IDS_APPTITLE2, "XWordGiver ver.5.3.1 (%s) - %s"
     IDS_CROSSWORD, "Crossword"
     IDS_ANSWER, "Answer: "
     IDS_SETPORTRAIT, "Please use the portrait paper to print."
@@ -1726,8 +1738,8 @@ STRINGTABLE
     IDS_VINPUT, "Vert"
     IDS_ABC, "ABC"
     IDS_DICTIONARY, "Dict"
-    IDS_APPINFO, "XWordGiver ver.5.3.0"
-    IDS_APPINFO2, "XWordGiver ver.5.3.0 (%s)"
+    IDS_APPINFO, "XWordGiver ver.5.3.1"
+    IDS_APPINFO2, "XWordGiver ver.5.3.1 (%s)"
     IDS_HINPUT2, "H\no\nr\nz"
     IDS_VINPUT2, "V\ne\nr\nt"
     IDS_KANA, "Kana"

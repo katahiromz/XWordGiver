@@ -41,6 +41,7 @@
 #define IDD_DICTLIST                        138
 #define IDD_HIDDEN                          139
 #define IDD_AIHELPER                        140
+#define IDD_AIHELPERCONSOLE                 141
 
 #define IDS_VERSION                         101
 #define IDS_APPNAME                         102
@@ -519,6 +520,7 @@
 #define ID_VIEW_DOUBLEFRAME                 607
 #define ID_JUMP                             608
 #define ID_DEBUGACTION                      609
+#define ID_OPENAIHELPER                     610
 #define ID_TT_BASE                          10000
 
 #define ctl2                                1185
