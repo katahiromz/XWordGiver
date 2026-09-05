@@ -59,7 +59,7 @@ public:
         m_hRgn = nullptr;
     }
 
-    LPCTSTR GetWndClassName() const noexcept override
+    LPCTSTR GetWndClassName() const override
     {
         return TEXT("XG_BoxWindow");
     }
