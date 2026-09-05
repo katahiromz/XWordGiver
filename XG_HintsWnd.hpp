@@ -301,14 +301,8 @@ public:
                     }
                     hu2->Get();
                     xg_ubUndoBuffer.Commit(UC_HINTS_UPDATED, hu1, hu2);
-                }
-                {
-                    // 既定の処理（改行の挿入）を行う。
-                    LRESULT ret = ::CallWindowProc(data->m_fnOldWndProc, hwnd, uMsg, wParam, lParam);
-                    // 改行の挿入によって立った変更フラグをクリアし、
-                    // 次回のコミットが正しく動作するようにする。
                     ::SendMessageW(hwnd, EM_SETMODIFY, FALSE, 0);
-                    return ret;
+                    return 0;
                 }
             }
             return ::CallWindowProc(data->m_fnOldWndProc, hwnd, uMsg, wParam, lParam);
