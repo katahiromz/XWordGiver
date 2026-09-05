@@ -6245,6 +6245,26 @@ void XgOpenAIHelper(HWND hwnd)
     OpenAIHelper(hwnd, TRUE);
 }
 
+// カギをすべてクリアする。
+void XgClearAllClues(HWND hwnd)
+{
+    for (BOOL bDown = FALSE; bDown <= TRUE; ++bDown)
+    {
+        // タテかヨコかで対象の配列を選ぶ。
+        auto& info_vec = bDown ? xg_vVertInfo : xg_vHorzInfo;
+        auto& hint_vec = bDown ? xg_vecVertHints : xg_vecHorzHints;
+
+        for (size_t i = 0; i < info_vec.size(); ++i) {
+            auto number = info_vec[i].m_number;
+            auto word = hint_vec[i].m_strWord;
+            auto text = hint_vec[i].m_strHint;
+
+            XgSetHintText(number, bDown, L"");
+        }
+    }
+
+}
+
 // コマンドを実行する。
 void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT /*codeNotify*/)
 {
@@ -7523,6 +7543,10 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT /*codeNo
 
     case ID_OPENAIHELPER:
         XgOpenAIHelper(hwnd);
+        break;
+
+    case ID_CLEARALLCLUES:
+        XgClearAllClues(hwnd);
         break;
 
     default:
