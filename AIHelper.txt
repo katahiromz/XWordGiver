@@ -1,0 +1,19 @@
+﻿# AIヘルパーの使い方
+
+- Pythonをインストールし、PATH環境変数でpython.exeにPATHを通す。
+- "pip install -r requirements.txt"を管理者権限で実行。
+- システムの環境変数「GOOGLE_API_KEY」「OPENAI_API_KEY」「XAI_API_KEY」「DEEPSEEK_API_KEY」「SAKANA_API_KEY」のいずれかを設定。
+- クロスワードギバーを再起動。
+- 「ファイル」メニューから「設定」を選び、「AIヘルパー」タブをクリック。
+- 「プロバイダー」と「モデル」をセットする。
+- 「更新」ボタンをクリック。
+
+# How to Use AI Helper
+
+- Install Python and add `python.exe` to your system's PATH environment variable.
+- Run `pip install -r requirements.txt` with administrator privileges.
+- Set one of the following system environment variables: `GOOGLE_API_KEY`, `OPENAI_API_KEY`, `XAI_API_KEY`, `DEEPSEEK_API_KEY`, or `SAKANA_API_KEY`.
+- Restart XWordGiver.
+- Select "Settings" from the "File" menu and click the "AI Helper" tab.
+- Set the "Provider" and "Model."
+- Click the "Apply" button.

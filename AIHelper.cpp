@@ -26,6 +26,8 @@ static HANDLE        g_hReaderThread = nullptr;
 static volatile BOOL g_bReaderStop = FALSE;
 
 HWND g_hwndAIHelper = nullptr;
+std::wstring g_privider = L"gemini";
+std::wstring g_model = L"gemini-3.6-flash";
 
 // 子プロセスの出力の1行をUIスレッドへ渡すためのカスタムメッセージ
 // (WPARAMは未使用、LPARAMはnewしたPWSTR。受け取った側でdelete[]すること)
@@ -301,7 +303,10 @@ static BOOL StartAIProcess(HWND hwnd)
 	std::wstring str;
 	str += L"python \"";
 	str += path;
-	str += L"\" --provider=gemini --model gemini-3.6-flash";
+	str += L"\" --provider=";
+	str += g_privider;
+	str += L" --model ";
+	str += g_model;
 
 	// 実行するコマンドをlst1に出力する
 	AddLineToList(hwnd, (L"> " + str).c_str());

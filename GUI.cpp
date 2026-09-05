@@ -934,6 +934,8 @@ void XgResetSettings(void)
     xg_bShowDoubleFrameLetters = TRUE;
     xg_bShowDoubleFrame = TRUE;
     xg_nOuterFrameInPt = XG_OUTERFRAME_DEFAULT;
+    g_privider = L"gemini";
+    g_model = L"gemini-3.6-flash";
 
     xg_bHiragana = FALSE;
     xg_bLowercase = FALSE;
@@ -1152,6 +1154,12 @@ bool __fastcall XgLoadSettings(void)
 
         if (!app_key.QuerySz(L"UIFont", sz, _countof(sz))) {
             StringCchCopy(xg_szUIFont, _countof(xg_szUIFont), sz);
+        }
+        if (!app_key.QuerySz(L"AIProvider", sz, _countof(sz))) {
+            g_privider = sz;
+        }
+        if (!app_key.QuerySz(L"AIModel", sz, _countof(sz))) {
+            g_model = sz;
         }
 
         if (!app_key.QueryDword(L"ShowToolBar", dwValue)) {
@@ -1399,6 +1407,9 @@ bool __fastcall XgSaveSettings(void)
             lf.lfWidth = 0;
             app_key.SetStruct(L"SmallLogFont", lf);
         }
+
+        app_key.SetSz(L"AIProvider", g_privider.c_str());
+        app_key.SetSz(L"AIModel", g_model.c_str());
 
         app_key.SetDword(L"ShowToolBar", xg_bShowToolBar);
         app_key.SetDword(L"ShowStatusBar", s_bShowStatusBar);

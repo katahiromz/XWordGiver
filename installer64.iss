@@ -75,6 +75,11 @@ Source: "THEME.txt"; DestDir: "{app}"; Flags: ignoreversion
 Source: "dict_analyze\dict_analyze.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "Policy-ENG.txt"; DestDir: "{app}"; Flags: ignoreversion
 Source: "Policy-JPN.txt"; DestDir: "{app}"; Flags: ignoreversion
+Source: "AIHelper.py"; DestDir: "{app}"; Flags: ignoreversion
+Source: "AIHelper_ja.py"; DestDir: "{app}"; Flags: ignoreversion
+Source: "requirements.txt"; DestDir: "{app}"; Flags: ignoreversion
+Source: "requirements_ja.txt"; DestDir: "{app}"; Flags: ignoreversion
+Source: "AIHelper.txt"; DestDir: "{app}"; Flags: ignoreversion
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Icons]
