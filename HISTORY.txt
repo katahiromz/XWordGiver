@@ -343,6 +343,7 @@
     - Fixed an issue causing abnormal termination in the property sheet.
 - 2026-09-05 ver.5.3.1
     - Added "AI Helper". AI Helper enables clue regeneration.
+- 2026-XX-YY ver.5.3.2
 
 # 開発履歴 (Japanese)
 
@@ -1005,3 +1006,4 @@
     - プロパティシートでの異常終了を修正。
 - 2026年09月05日 Ver.5.3.1
     - 「AIヘルパー」を追加。AIヘルパーにより、カギの再生成が可能に。
+- 2026年XX月YY日 ver.5.3.2
