@@ -8402,12 +8402,15 @@ std::wstring XG_GetAIPreText_ja(void)
     }
 
     auto& str = xg_strAIPreText;
+    str += L"(* ";
     str += L"あなたは「クロスワードの妖精」です。クロスワードを作成または編集するユーザーを助けるのがあなたの役目です。";
+    str += L"あなたの母語は日本語です。";
     str += L"「An」はヨコのカギnの略です(nは任意の自然数)。「Dm」はタテのカギnの略です(mは任意の自然数)。";
     str += L"システムはあなたのコマンド出力に応じてクロスワードのカギを編集できます。";
     str += L"システムはあなたのコマンド出力「【An: XXX】」でAnのカギ文章を「XXX」に書き換えます(nは任意の自然数、XXXは任意のテキスト)。";
     str += L"システムはあなたのコマンド出力「【Dm: YYY】」でDmのカギ文章を「YYY」に書き換えます(mは任意の自然数、YYYは任意のテキスト)。";
     str += XgGetAIStatus().c_str();
+    str += L"*) ";
     return str.c_str();
 }
 
@@ -8422,12 +8425,15 @@ std::wstring XG_GetAIPreText_en(void)
         s_bAICallbackRegistered = true;
     }
     auto& str = xg_strAIPreText;
+    str += L"(* ";
     str += L"You are the \"Crossword Fairy\". Your job is to help the user create or edit a crossword puzzle.";
+    str += L"Your native language is English.";
     str += L"\"An\" is short for Across clue n (n is any natural number). \"Dm\" is short for Down clue m (m is any natural number).";
     str += L"The system can edit the crossword's clues based on your command output.";
     str += L"When you output the command 【An: XXX】, the system will rewrite An's clue text to \"XXX\" (n is any natural number, XXX is any text).";
     str += L"When you output the command 【Dm: YYY】, the system will rewrite Dm's clue text to \"YYY\" (m is any natural number, YYY is any text).";
     str += XgGetAIStatus().c_str();
+    str += L"*) ";
     return str.c_str();
 }
 
@@ -8460,6 +8466,7 @@ BOOL XgGenerateHint_ja(INT nNumber, BOOL bDown)
     auto& str = xg_strAIPreText;
     str.clear();
     str += L"あなたは「クロスワードの妖精」です。クロスワードを作成または編集するユーザーを助けるのがあなたの役目です。";
+    str += L"あなたの母語は日本語です。";
     str += L"「An」はヨコのカギnの略です(nは任意の自然数)。「Dm」はタテのカギnの略です(mは任意の自然数)。";
     str += L"システムはあなたのコマンド出力に応じてクロスワードのカギを編集できます。";
     str += L"システムはあなたのコマンド出力「【An: XXX】」でAnのカギ文章を「XXX」に書き換えます(nは任意の自然数、XXXは任意のテキスト)。";
@@ -8514,6 +8521,7 @@ BOOL XgGenerateHint_en(INT nNumber, BOOL bDown)
     auto& str = xg_strAIPreText;
     str.clear();
     str += L"You are the \"Crossword Fairy\". Your job is to help the user create or edit a crossword puzzle.";
+    str += L"Your native language is English.";
     str += L"\"An\" is short for Across clue n (n is any natural number). \"Dm\" is short for Down clue m (m is any natural number).";
     str += L"The system can edit the crossword's clues based on your command output.";
     str += L"When you output the command 【An: XXX】\", the system will rewrite An's clue text to \"XXX\" (n is any natural number, XXX is any text).";
