@@ -1585,6 +1585,19 @@ FONT 9, "Tahoma"
     PUSHBUTTON "&Update the current dictionary using the clues of the current problem", psh4, 40, 160, 185, 40, BS_MULTILINE
 }
 
+IDD_AIHELPER DIALOG 0, 0, 271, 160
+CAPTION "AI Helper"
+STYLE DS_MODALFRAME | WS_POPUPWINDOW | WS_CAPTION
+FONT 9, "MS UI Gothic"
+{
+    LTEXT "In-process &environment variables:", -1, 6, 7, 150, 10
+    CONTROL "", lst1, "SysListView32", LVS_SHOWSELALWAYS | LVS_REPORT | WS_BORDER | WS_HSCROLL | WS_VSCROLL, 5, 24, 194, 131
+    PUSHBUTTON "&Add...", psh1, 204, 24, 60, 14
+    PUSHBUTTON "&Delete", psh2, 204, 41, 60, 14
+    PUSHBUTTON "&Edit...", psh3, 204, 59, 60, 14
+    PUSHBUTTON "Delete &all", -1, 204, 76, 60, 14
+}
+
 //////////////////////////////////////////////////////////////////////////////
 // RT_VERSION
 

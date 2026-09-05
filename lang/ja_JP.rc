@@ -1589,6 +1589,19 @@ FONT 9, "MS UI Gothic"
     PUSHBUTTON "現在の問題のカギを使って現在の辞書を更新する(&U)", psh4, 40, 160, 185, 40, BS_MULTILINE
 }
 
+IDD_AIHELPER DIALOG 0, 0, 271, 160
+CAPTION "AIヘルパー"
+STYLE DS_MODALFRAME | WS_POPUPWINDOW | WS_CAPTION
+FONT 9, "MS UI Gothic"
+{
+    LTEXT "プロセス内環境変数(&E):", -1, 6, 7, 150, 10
+    CONTROL "", lst1, "SysListView32", LVS_SHOWSELALWAYS | LVS_REPORT | WS_BORDER | WS_HSCROLL | WS_VSCROLL, 5, 24, 194, 131
+    PUSHBUTTON "追加(&A)...", psh1, 204, 24, 60, 14
+    PUSHBUTTON "削除(&D)", psh2, 204, 41, 60, 14
+    PUSHBUTTON "編集(&E)...", psh3, 204, 59, 60, 14
+    PUSHBUTTON "すべて削除(&A)", -1, 204, 76, 60, 14
+}
+
 //////////////////////////////////////////////////////////////////////////////
 // RT_VERSION
 

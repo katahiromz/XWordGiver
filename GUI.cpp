@@ -4950,6 +4950,7 @@ enum
     I_SYNCED_RULES,
     I_SYNCED_GENERATIVE,
     I_SYNCED_DICTLIST,
+    I_SYNCED_AIHELPER,
     I_SYNCED_ADVANCED,
     I_SYNCED_MAX
 };
@@ -4964,6 +4965,7 @@ HWND xg_ahSyncedDialogs[I_SYNCED_MAX] = { 0 };
 #include "XG_RulePresetDialog.cpp"
 #include "XgGenerative.cpp"
 #include "XgDictList.cpp"
+#include "XgAIHelper.cpp"
 #include "XG_HiddenDialog.cpp"
 
 // プロパティシートページ用ダイアログプロシージャーのラッパー。
@@ -5045,6 +5047,14 @@ void XgGeneralSettings(HWND hwnd, DWORD nStartPage = I_SYNCED_FILE_SETTINGS)
     // 「辞書」設定。
     psp.pszTemplate = MAKEINTRESOURCEW(IDD_DICTLIST);
     psp.pfnDlgProc = XgDictListDlgProc;
+    psp.dwFlags = PSP_DEFAULT;
+    psp.hInstance = xg_hInstance;
+    psp.lParam = 0;
+    hpsp[iPage++] = ::CreatePropertySheetPageW(&psp);
+
+    // 「AIヘルパー」設定。
+    psp.pszTemplate = MAKEINTRESOURCEW(IDD_AIHELPER);
+    psp.pfnDlgProc = XgAIHelperDlgProc;
     psp.dwFlags = PSP_DEFAULT;
     psp.hInstance = xg_hInstance;
     psp.lParam = 0;

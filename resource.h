@@ -40,6 +40,7 @@
 #define IDD_GENERATIVE                      137
 #define IDD_DICTLIST                        138
 #define IDD_HIDDEN                          139
+#define IDD_AIHELPER                        140
 
 #define IDS_VERSION                         101
 #define IDS_APPNAME                         102
