@@ -4,6 +4,7 @@ extern HWND g_hwndAIHelper;
 extern HINSTANCE g_hAIHelperInst;
 extern std::wstring g_privider;
 extern std::wstring g_model;
+extern std::wstring g_python_exe;
 
 void AskAIQuestion(HWND hwnd, PCWSTR text);
 BOOL OpenAIHelper(HWND hwndOwner, BOOL bOpen);

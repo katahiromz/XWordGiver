@@ -5,6 +5,7 @@
 
 extern std::wstring g_privider;
 extern std::wstring g_model;
+extern std::wstring g_python_exe;
 
 INT_PTR CALLBACK
 XgAIHelperDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
@@ -38,6 +39,7 @@ XgAIHelperDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 
             SetDlgItemTextW(hwnd, cmb1, g_privider.c_str());
             SetDlgItemTextW(hwnd, cmb2, g_model.c_str());
+            SetDlgItemTextW(hwnd, edt1, g_python_exe.c_str());
         }
         return TRUE;
     case WM_COMMAND:
@@ -50,6 +52,30 @@ XgAIHelperDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
                 PathRemoveFileSpecW(path);
                 PathAppendW(path, L"AIHelper.txt");
                 ShellExecuteW(hwnd, nullptr, path, nullptr, nullptr, SW_SHOWNORMAL);
+            }
+            break;
+        case psh2:
+            {
+                WCHAR file[MAX_PATH];
+                StringCchCopyW(file, _countof(file), g_python_exe.c_str());
+                OPENFILENAMEW ofn = { OPENFILENAME_SIZE_VERSION_400W, hwnd };
+                ofn.lpstrFilter = L"Python (python.exe)\0python.exe\0\0";
+                ofn.lpstrFile = file;
+                ofn.nMaxFile = _countof(file);
+                ofn.lpstrTitle = L"Choose Python";
+                ofn.Flags = OFN_EXPLORER | OFN_DONTADDTORECENT | OFN_ENABLESIZING | OFN_FILEMUSTEXIST;
+                ofn.lpstrDefExt = L"exe";
+                if (GetOpenFileNameW(&ofn))
+                {
+                    SetDlgItemTextW(hwnd, edt1, file);
+                    PropSheet_Changed(GetParent(hwnd), hwnd);
+                }
+            }
+            break;
+        case edt1:
+            if (HIWORD(wParam) == EN_CHANGE)
+            {
+                PropSheet_Changed(GetParent(hwnd), hwnd);
             }
             break;
         case cmb1:
@@ -102,6 +128,8 @@ XgAIHelperDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
                 g_privider = text;
                 GetDlgItemTextW(hwnd, cmb2, text, _countof(text));
                 g_model = text;
+                GetDlgItemTextW(hwnd, edt1, text, _countof(text));
+                g_python_exe = text;
                 return SetDlgMsgResult(hwnd, WM_NOTIFY, PSNRET_NOERROR);
             }
         }

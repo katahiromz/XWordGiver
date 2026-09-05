@@ -936,6 +936,7 @@ void XgResetSettings(void)
     xg_nOuterFrameInPt = XG_OUTERFRAME_DEFAULT;
     g_privider = L"gemini";
     g_model = L"gemini-3.6-flash";
+    g_python_exe = L"";
 
     xg_bHiragana = FALSE;
     xg_bLowercase = FALSE;
@@ -1160,6 +1161,9 @@ bool __fastcall XgLoadSettings(void)
         }
         if (!app_key.QuerySz(L"AIModel", sz, _countof(sz))) {
             g_model = sz;
+        }
+        if (!app_key.QuerySz(L"PythonExe", sz, _countof(sz))) {
+            g_python_exe = sz;
         }
 
         if (!app_key.QueryDword(L"ShowToolBar", dwValue)) {
@@ -1410,6 +1414,7 @@ bool __fastcall XgSaveSettings(void)
 
         app_key.SetSz(L"AIProvider", g_privider.c_str());
         app_key.SetSz(L"AIModel", g_model.c_str());
+        app_key.SetSz(L"PythonExe", g_python_exe.c_str());
 
         app_key.SetDword(L"ShowToolBar", xg_bShowToolBar);
         app_key.SetDword(L"ShowStatusBar", s_bShowStatusBar);

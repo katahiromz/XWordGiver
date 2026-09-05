@@ -28,6 +28,7 @@ static volatile BOOL g_bReaderStop = FALSE;
 HWND g_hwndAIHelper = nullptr;
 std::wstring g_privider = L"gemini";
 std::wstring g_model = L"gemini-3.6-flash";
+std::wstring g_python_exe;
 
 #ifdef __XWORDGIVER__
 BOOL XgIsUserJapanese(VOID) noexcept;
@@ -318,7 +319,12 @@ static BOOL StartAIProcess(HWND hwnd)
 		PathAppendW(path, L"AIHelper.py");
 
 	std::wstring str;
-	str += L"python \"";
+	str += L"\"";
+	if (g_python_exe.size())
+		str += g_python_exe;
+	else
+		str += L"python";
+	str += L"\" \"";
 	str += path;
 	str += L"\" --provider=";
 	str += g_privider;
