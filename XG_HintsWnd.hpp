@@ -157,7 +157,7 @@ public:
                     ::GetWindowTextW(xg_ahwndHorzEdits[i], sz, 
                                      static_cast<int>(_countof(sz)));
                     xg_vecHorzHints[i].m_strHint = sz;
-                    ::SendMessageW(xg_ahwndVertEdits[i], EM_SETMODIFY, FALSE, 0);
+                    ::SendMessageW(xg_ahwndHorzEdits[i], EM_SETMODIFY, FALSE, 0);
                 }
             }
         }
@@ -301,6 +301,14 @@ public:
                     }
                     hu2->Get();
                     xg_ubUndoBuffer.Commit(UC_HINTS_UPDATED, hu1, hu2);
+                }
+                {
+                    // 既定の処理（改行の挿入）を行う。
+                    LRESULT ret = ::CallWindowProc(data->m_fnOldWndProc, hwnd, uMsg, wParam, lParam);
+                    // 改行の挿入によって立った変更フラグをクリアし、
+                    // 次回のコミットが正しく動作するようにする。
+                    ::SendMessageW(hwnd, EM_SETMODIFY, FALSE, 0);
+                    return ret;
                 }
             }
             return ::CallWindowProc(data->m_fnOldWndProc, hwnd, uMsg, wParam, lParam);

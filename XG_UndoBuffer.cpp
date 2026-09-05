@@ -17,6 +17,7 @@ void XG_UndoData_MarksUpdated::Get() {
 void XG_UndoData_MarksUpdated::Apply() const {
     xg_vMarks = vMarks;
     xg_strMarked = strMarked;
+    XgMarkUpdate();
     XG_FILE_MODIFIED(TRUE);
 }
 
@@ -52,6 +53,7 @@ void XG_UndoData_NumCro::Apply() const {
     if (xg_bNumCroMode) {
         XgMakeItNumCro(xg_hMainWnd);
     }
+    XG_FILE_MODIFIED(TRUE);
 }
 
 void XG_UndoData_ViewMode::Get() {
@@ -59,6 +61,7 @@ void XG_UndoData_ViewMode::Get() {
 }
 void XG_UndoData_ViewMode::Apply() const {
     xg_nViewMode = nViewMode;
+    XG_FILE_MODIFIED(TRUE);
 }
 
 void XG_UndoData_Boxes::Get() {
@@ -66,6 +69,7 @@ void XG_UndoData_Boxes::Get() {
 }
 void XG_UndoData_Boxes::Apply() const {
     XgDeStringifyBoxes(boxes);
+    XG_FILE_MODIFIED(TRUE);
 }
 
 void XG_UndoData_SetAll::Get() {
@@ -123,6 +127,7 @@ void XG_UndoData_SetAll::Apply() const {
     }
     xg_nViewMode = nViewMode;
     XgDeStringifyBoxes(boxes);
+    XgMarkUpdate();
     XG_FILE_MODIFIED(TRUE);
 }
 
