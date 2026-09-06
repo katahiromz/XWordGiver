@@ -8789,37 +8789,54 @@ void XgDoTests(void)
 
 //////////////////////////////////////////////////////////////////////////////
 
-// Windowsアプリのメイン関数。
-EXTERN_C INT WINAPI
-WinMain(
-    HINSTANCE hInstance,
-    HINSTANCE /*hPrevInstance*/,
-    LPSTR /*pszCmdLine*/,
-    INT nCmdShow)
+// 掃除。
+void XgCleanup(void)
 {
-#if defined(_MSC_VER) && !defined(NDEBUG)
-	// for detecting memory leak (MSVC only)
-	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
-#endif
-
-    // クリティカルセクションを初期化する。
-    ::InitializeCriticalSection(&xg_csLock);
-
-    // クリティカルセクションを自動的に破棄する。
-    struct AutoDeleteCriticalSection
+    g_provider.clear();
+    g_model.clear();
+    g_python_exe.clear();
+    g_additional_instruction.clear();
+    xg_dict_name.clear();
+    xg_dicts.clear();
+    xg_ubUndoBuffer.clear();
+    xg_dirs_save_to.clear();
+    xg_boxes.clear();
+    xg_mapNumCro1.clear();
+    xg_mapNumCro2.clear();
+    xg_recently_used_files.clear();
+    xg_strBlackCellImage.clear();
+    xg_strDoubleFrameLetters.clear();
+    xg_dict_1.clear();
+    xg_dict_2.clear();
+    xg_dict_1_by_length.clear();
+    xg_dict_2_by_length.clear();
+    xg_word_to_tags_map.clear();
+    xg_tag_histgram.clear();
+    xg_priority_tags.clear();
+    xg_forbidden_tags.clear();
+    xg_strTheme.clear();
+    xg_strDefaultTheme.clear();
+    xg_word_length_histgram.clear();
+    xg_vMarks.clear();
+    xg_vMarkedCands.clear();
+    xg_strMarked.clear();
+    xg_pTaskbarProgress.reset();
+    xg_pFileManager.reset();
+    if (xg_hbmBlackCell)
     {
-        AutoDeleteCriticalSection() = default;
-        ~AutoDeleteCriticalSection()
-        {
-            // クリティカルセクションを破棄する。
-            ::DeleteCriticalSection(&xg_csLock);
-        }
-    };
-    AutoDeleteCriticalSection xg_auto_cs;
+        DeleteObject(xg_hbmBlackCell);
+        xg_hbmBlackCell = nullptr;
+    }
+    if (xg_hBlackCellEMF)
+    {
+        DeleteEnhMetaFile(xg_hBlackCellEMF);
+        xg_hBlackCellEMF = nullptr;
+    }
+}
 
-    // テストをする。
-    XgDoTests();
-
+// 別のメイン関数。
+INT XWordGiverMain(HINSTANCE hInstance, INT nCmdShow)
+{
     // アプリのインスタンスを保存する。
     xg_hInstance = hInstance;
     g_hAIHelperInst = hInstance;
@@ -8930,8 +8947,7 @@ WinMain(
     }
 
     // Ctrl+Aの機能を有効にする。
-    xg_hCtrlAHook = ::SetWindowsHookEx(WH_MSGFILTER,
-        XgCtrlAMessageProc, nullptr, ::GetCurrentThreadId());
+    xg_hCtrlAHook = ::SetWindowsHookEx(WH_MSGFILTER, XgCtrlAMessageProc, nullptr, ::GetCurrentThreadId());
 
     // メッセージループ。
     MSG msg;
@@ -9005,47 +9021,46 @@ WinMain(
     // 設定を保存。
     XgSaveSettings();
 
+    return static_cast<INT>(msg.wParam);
+}
+
+// Windowsアプリのメイン関数。
+EXTERN_C INT WINAPI
+WinMain(
+    HINSTANCE hInstance,
+    HINSTANCE /*hPrevInstance*/,
+    LPSTR /*pszCmdLine*/,
+    INT nCmdShow)
+{
+    // メモリリークを検出。
+#if defined(_MSC_VER) && !defined(NDEBUG)
+	// for detecting memory leak (MSVC only)
+	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
+#endif
+
+    // クリティカルセクションを初期化する。
+    ::InitializeCriticalSection(&xg_csLock);
+
+    // クリティカルセクションを自動的に破棄する。
+    struct AutoDeleteCriticalSection
+    {
+        AutoDeleteCriticalSection() = default;
+        ~AutoDeleteCriticalSection()
+        {
+            // クリティカルセクションを破棄する。
+            ::DeleteCriticalSection(&xg_csLock);
+        }
+    };
+    AutoDeleteCriticalSection xg_auto_cs;
+
+    // テストをする。
+    XgDoTests();
+
+    // 別の関数に任せる。
+    INT ret = XWordGiverMain(hInstance, nCmdShow);
+
     // クリーンアップ。
-    g_provider.clear();
-    g_model.clear();
-    g_python_exe.clear();
-    g_additional_instruction.clear();
-    xg_dict_name.clear();
-    xg_dicts.clear();
-    xg_ubUndoBuffer.clear();
-    xg_dirs_save_to.clear();
-    xg_boxes.clear();
-    xg_mapNumCro1.clear();
-    xg_mapNumCro2.clear();
-    xg_recently_used_files.clear();
-    xg_strBlackCellImage.clear();
-    xg_strDoubleFrameLetters.clear();
-    xg_dict_1.clear();
-    xg_dict_2.clear();
-    xg_dict_1_by_length.clear();
-    xg_dict_2_by_length.clear();
-    xg_word_to_tags_map.clear();
-    xg_tag_histgram.clear();
-    xg_priority_tags.clear();
-    xg_forbidden_tags.clear();
-    xg_strTheme.clear();
-    xg_strDefaultTheme.clear();
-    xg_word_length_histgram.clear();
-    xg_vMarks.clear();
-    xg_vMarkedCands.clear();
-    xg_strMarked.clear();
-    xg_pTaskbarProgress.reset();
-    xg_pFileManager.reset();
-    if (xg_hbmBlackCell)
-    {
-        DeleteObject(xg_hbmBlackCell);
-        xg_hbmBlackCell = nullptr;
-    }
-    if (xg_hBlackCellEMF)
-    {
-        DeleteEnhMetaFile(xg_hBlackCellEMF);
-        xg_hBlackCellEMF = nullptr;
-    }
+    XgCleanup();
 
     // ハンドルリークを検出。
 #if (WINVER >= 0x0500) && !defined(NDEBUG)
@@ -9061,7 +9076,7 @@ WinMain(
     }
 #endif
 
-    return static_cast<INT>(msg.wParam);
+    return ret;
 }
 
 //////////////////////////////////////////////////////////////////////////////
