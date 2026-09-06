@@ -3,7 +3,7 @@
 - Pythonをインストールし、PATH環境変数でpython.exeにPATHを通す。
 - アプリのフォルダで"pip install -r requirements.txt"を管理者権限で実行。
 - お使いの生成AIのAPIキーを取得。
-- システムの環境変数「GOOGLE_API_KEY」「OPENAI_API_KEY」「XAI_API_KEY」「DEEPSEEK_API_KEY」「SAKANA_API_KEY」のいずれかを設定。
+- システムの環境変数「GOOGLE_API_KEY」「OPENAI_API_KEY」「XAI_API_KEY」「DEEPSEEK_API_KEY」「SAKANA_API_KEY」「DASHSCOPE_API_KEY」「MOONSHOT_API_KEY」「MISTRAL_API_KEY」「LLAMA_API_KEY」のいずれかを設定。
 - クロスワードギバーを再起動。
 - 「ファイル」メニューから「設定」を選び、「AIヘルパー」タブをクリック。
 - 「AIプロバイダー」と「AIモデル」をセットする。
@@ -18,7 +18,7 @@
 - Install Python and add `python.exe` to your system's PATH environment variable.
 - Run "pip install -r requirements.txt" with administrator privileges in the application folder.
 - Obtain the API key for the generative AI you are using.
-- Set one of the following system environment variables: `GOOGLE_API_KEY`, `OPENAI_API_KEY`, `XAI_API_KEY`, `DEEPSEEK_API_KEY`, or `SAKANA_API_KEY`.
+- Set one of the following system environment variables: `GOOGLE_API_KEY`, `OPENAI_API_KEY`, `XAI_API_KEY`, `DEEPSEEK_API_KEY`, `SAKANA_API_KEY`, `DASHSCOPE_API_KEY`, `MOONSHOT_API_KEY`, `MISTRAL_API_KEY`, or `LLAMA_API_KEY`.
 - Restart XWordGiver.
 - Select "Settings" from the "File" menu and click the "AI Helper" tab.
 - Set the "AI Provider" and "AI Model."

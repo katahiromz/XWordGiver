@@ -2,8 +2,8 @@
 """
 AIHelper_ja.py
 --------------
-ChatGPT / Gemini / Claude / Grok / DeepSeek / Sakana AI を切り替えて
-質問できるシンプルなCLIプログラム。
+ChatGPT / Gemini / Claude / Grok / DeepSeek / Sakana AI / Qwen / Kimi /
+Mistral / Llama を切り替えて質問できるシンプルなCLIプログラム。
 
 主な機能:
   - 対話モードでは各プロバイダごとに会話履歴を保持
@@ -16,7 +16,7 @@ import argparse
 import os
 import sys
 
-PROVIDERS = ["chatgpt", "gemini", "claude", "grok", "deepseek", "sakana"]
+PROVIDERS = ["chatgpt", "gemini", "claude", "grok", "deepseek", "sakana", "qwen", "kimi", "mistral", "llama"]
 
 DEFAULT_MODELS = {
     "chatgpt": "gpt-4o-mini",
@@ -25,6 +25,10 @@ DEFAULT_MODELS = {
     "grok": "grok-4.6",
     "deepseek": "deepseek-v4-flash",
     "sakana": "sakana-namazu",
+    "qwen": "qwen3-max",
+    "kimi": "kimi-k3",
+    "mistral": "mistral-large-latest",
+    "llama": "llama-4-maverick",
 }
 
 DEFAULT_MAX_TOKENS = 1024
@@ -36,6 +40,10 @@ OPENAI_COMPATIBLE_CONFIG = {
     "grok": {"api_key_env": "XAI_API_KEY", "base_url": "https://api.x.ai/v1"},
     "deepseek": {"api_key_env": "DEEPSEEK_API_KEY", "base_url": "https://api.deepseek.com/v1"},
     "sakana": {"api_key_env": "SAKANA_API_KEY", "base_url": "https://api.sakana.ai/v1"},
+    "qwen": {"api_key_env": "DASHSCOPE_API_KEY", "base_url": "https://dashscope-intl.aliyuncs.com/compatible-mode/v1"},
+    "kimi": {"api_key_env": "MOONSHOT_API_KEY", "base_url": "https://api.moonshot.ai/v1"},
+    "mistral": {"api_key_env": "MISTRAL_API_KEY", "base_url": "https://api.mistral.ai/v1"},
+    "llama": {"api_key_env": "LLAMA_API_KEY", "base_url": "https://api.llama.com/compat/v1"},
 }
 
 
@@ -413,7 +421,7 @@ def interactive_mode(client: AIClient, initial_provider: str, model_override: st
 
 
 def main():
-    parser = argparse.ArgumentParser(description="ChatGPT / Gemini / Claude / Grok / DeepSeek / Sakana AI を切り替えて質問できるプログラム")
+    parser = argparse.ArgumentParser(description="ChatGPT / Gemini / Claude / Grok / DeepSeek / Sakana AI / Qwen / Kimi / Mistral / Llama を切り替えて質問できるプログラム")
     parser.add_argument(
         "--provider", "-p",
         choices=PROVIDERS,
