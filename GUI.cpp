@@ -944,7 +944,7 @@ void XgResetSettings(void)
     xg_bShowDoubleFrameLetters = TRUE;
     xg_bShowDoubleFrame = TRUE;
     xg_nOuterFrameInPt = XG_OUTERFRAME_DEFAULT;
-    g_privider = L"gemini";
+    g_provider = L"gemini";
     g_model = L"gemini-3.6-flash";
     g_python_exe = L"";
     g_additional_instruction = L"";
@@ -1168,7 +1168,7 @@ bool __fastcall XgLoadSettings(void)
             StringCchCopy(xg_szUIFont, _countof(xg_szUIFont), sz);
         }
         if (!app_key.QuerySz(L"AIProvider", sz, _countof(sz))) {
-            g_privider = sz;
+            g_provider = sz;
         }
         if (!app_key.QuerySz(L"AIModel", sz, _countof(sz))) {
             g_model = sz;
@@ -1426,7 +1426,7 @@ bool __fastcall XgSaveSettings(void)
             app_key.SetStruct(L"SmallLogFont", lf);
         }
 
-        app_key.SetSz(L"AIProvider", g_privider.c_str());
+        app_key.SetSz(L"AIProvider", g_provider.c_str());
         app_key.SetSz(L"AIModel", g_model.c_str());
         app_key.SetSz(L"PythonExe", g_python_exe.c_str());
         app_key.SetSz(L"AdditionalInsn", g_additional_instruction.c_str());

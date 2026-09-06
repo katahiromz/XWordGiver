@@ -3,7 +3,7 @@
 // Copyright (C) 2026 Katayama Hirofumi MZ. All Rights Reserved.
 // (Japanese, UTF-8)
 
-extern std::wstring g_privider;
+extern std::wstring g_provider;
 extern std::wstring g_model;
 extern std::wstring g_python_exe;
 extern std::wstring g_additional_instruction;
@@ -38,7 +38,7 @@ XgAIHelperDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
             for (auto model : models)
                 SendDlgItemMessageW(hwnd, cmb2, CB_ADDSTRING, 0, (LPARAM)model);
 
-            SetDlgItemTextW(hwnd, cmb1, g_privider.c_str());
+            SetDlgItemTextW(hwnd, cmb1, g_provider.c_str());
             SetDlgItemTextW(hwnd, cmb2, g_model.c_str());
             SetDlgItemTextW(hwnd, edt1, g_python_exe.c_str());
             SetDlgItemTextW(hwnd, edt2, g_additional_instruction.c_str());
@@ -129,7 +129,7 @@ XgAIHelperDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
             switch (pnmhdr->code) {
             case PSN_APPLY: // Apply
                 GetDlgItemTextW(hwnd, cmb1, text, _countof(text));
-                g_privider = text;
+                g_provider = text;
                 GetDlgItemTextW(hwnd, cmb2, text, _countof(text));
                 g_model = text;
                 GetDlgItemTextW(hwnd, edt1, text, _countof(text));

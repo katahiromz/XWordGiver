@@ -26,7 +26,7 @@ static HANDLE        g_hReaderThread = nullptr;
 static volatile BOOL g_bReaderStop = FALSE;
 
 HWND g_hwndAIHelper = nullptr;
-std::wstring g_privider = L"gemini";
+std::wstring g_provider = L"gemini";
 std::wstring g_model = L"gemini-3.6-flash";
 std::wstring g_python_exe;
 std::wstring g_additional_instruction;
@@ -328,7 +328,7 @@ static BOOL StartAIProcess(HWND hwnd)
 	str += L"\" \"";
 	str += path;
 	str += L"\" --provider=";
-	str += g_privider;
+	str += g_provider;
 	str += L" --model ";
 	str += g_model;
 
