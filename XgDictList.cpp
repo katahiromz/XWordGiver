@@ -128,8 +128,13 @@ void XgDictList_ReloadList(HWND hwnd)
     // リストビューの項目を選択する。
     LV_FINDINFO Find = { LVFI_STRING, PathFindFileNameW(xg_dict_name.c_str()) };
     iItem = ListView_FindItem(hwndLst1, -1, &Find);
-    ListView_SetItemState(hwndLst1, iItem, INDEXTOSTATEIMAGEMASK(2), LVIS_STATEIMAGEMASK);
-    ListView_EnsureVisible(hwndLst1, iItem, FALSE);
+    if (iItem != -1) {
+        ListView_SetItemState(hwndLst1, iItem, INDEXTOSTATEIMAGEMASK(2), LVIS_STATEIMAGEMASK);
+        ListView_EnsureVisible(hwndLst1, iItem, FALSE);
+    } else if (ListView_GetItemCount(hwndLst1) > 0) {
+        // 一致しなければ先頭の辞書を仮選択しておく。
+        XgDictList_SetCurSel(hwnd, hwndLst1, 0);
+    }
 }
 
 // リストビューのチェック位置を取得する。
@@ -147,6 +152,8 @@ INT XgDictList_GetCurSel(HWND hwnd, HWND hwndLst1)
 // リストビューのチェック情報を更新する。
 void XgDictList_SetCurSel(HWND hwnd, HWND hwndLst1, INT iSelect)
 {
+    if (iSelect < 0)
+        return; // 不正な選択位置なら何もしない（全項目破壊を防ぐ）。
     INT cItems = ListView_GetItemCount(hwndLst1);
     for (INT iItem = 0; iItem < cItems; ++iItem) {
         if (iItem == iSelect) {
@@ -229,6 +236,8 @@ XgDictListDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
         case psh1: // ファイルを開く。
             if (HIWORD(wParam) == BN_CLICKED) {
                 INT iItem = XgDictList_GetCurSel(hwnd, hwndLst1);
+                if (iItem == -1)
+                    break;
 
                 // コンボボックスからテキストを取得。
                 WCHAR szText[MAX_PATH];
@@ -313,6 +322,10 @@ XgDictListDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
             case PSN_APPLY: // 適用
                 {
                     INT iItem = XgDictList_GetCurSel(hwnd, hwndLst1);
+                    if (iItem == -1) {
+                        // 選択が無ければ変更せず終了（辞書名を破壊しない）。
+                        return SetDlgMsgResult(hwnd, WM_NOTIFY, PSNRET_NOERROR);
+                    }
 
                     // コンボボックスからテキストを取得。
                     WCHAR szText[MAX_PATH];
