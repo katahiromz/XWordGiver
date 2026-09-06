@@ -110,143 +110,6 @@ void AIHelper_WaitForReady(void)
 // (WPARAMは未使用、LPARAMはnewしたPWSTR。受け取った側でdelete[]すること)
 #define WM_APP_AI_LINE   (WM_APP + 1)
 
-// lst1の現在のクライアント幅（ピクセル）を返す
-static int GetLst1ClientWidth(HWND hLst1)
-{
-	RECT rc;
-	GetClientRect(hLst1, &rc);
-	return rc.right - rc.left;
-}
-
-// pszTextを、幅cxWidthのlst1に折り返して表示したときの高さ（ピクセル）を、
-// lst1で使われているフォントで計測する（WM_MEASUREITEM/WM_DRAWITEM共用）
-static int ComputeWrappedItemHeight(HWND hLst1, LPCWSTR pszText, int cxWidth)
-{
-	HDC hdc = GetDC(hLst1);
-	if (!hdc)
-		return 16;
-
-	HFONT hFont = (HFONT)SendMessageW(hLst1, WM_GETFONT, 0, 0);
-	HFONT hFontOld = hFont ? (HFONT)SelectObject(hdc, hFont) : nullptr;
-
-	// 左右に少し余白を取ってから折り返し幅を決める
-	int cxTextWidth = cxWidth - 4;
-	if (cxTextWidth < 1)
-		cxTextWidth = 1;
-
-	RECT rc = { 0, 0, cxTextWidth, 0 };
-	if (pszText && *pszText)
-		DrawTextW(hdc, pszText, -1, &rc, DT_CALCRECT | DT_WORDBREAK | DT_NOPREFIX | DT_EDITCONTROL);
-
-	if (hFontOld)
-		SelectObject(hdc, hFontOld);
-	ReleaseDC(hLst1, hdc);
-
-	int cyHeight = rc.bottom - rc.top;
-	if (cyHeight < 1)
-		cyHeight = 1;
-	cyHeight += 2; // 上下の余白
-
-	return cyHeight;
-}
-
-// lst1内のすべての項目の高さを、現在の幅に合わせて再計算する
-// （ダイアログのリサイズ時に呼ぶ。折り返し幅が変わるため）
-static void RecalcAllLst1ItemHeights(HWND hLst1)
-{
-	INT nCount = (INT)SendMessageW(hLst1, LB_GETCOUNT, 0, 0);
-	if (nCount <= 0)
-		return;
-
-	int cxWidth = GetLst1ClientWidth(hLst1);
-
-	for (INT i = 0; i < nCount; ++i)
-	{
-		INT len = (INT)SendMessageW(hLst1, LB_GETTEXTLEN, i, 0);
-		std::wstring text;
-		if (len > 0 && len != LB_ERR)
-		{
-			text.resize(len + 1);
-			SendMessageW(hLst1, LB_GETTEXT, i, (LPARAM)&text[0]);
-			text.resize(len);
-		}
-
-		int cyHeight = ComputeWrappedItemHeight(hLst1, text.c_str(), cxWidth);
-		SendMessageW(hLst1, LB_SETITEMHEIGHT, i, MAKELPARAM(cyHeight, 0));
-	}
-}
-
-// WM_MEASUREITEM: 追加された項目1つ分の高さを、折り返しを考慮して計算する
-static void OnMeasureItem(HWND hwnd, LPMEASUREITEMSTRUCT lpMeasureItem)
-{
-	if (lpMeasureItem->CtlID != lst1)
-		return;
-
-	HWND hLst1 = GetDlgItem(hwnd, lst1);
-	if (!hLst1)
-		return;
-
-	INT len = (INT)SendMessageW(hLst1, LB_GETTEXTLEN, lpMeasureItem->itemID, 0);
-	std::wstring text;
-	if (len > 0 && len != LB_ERR)
-	{
-		text.resize(len + 1);
-		SendMessageW(hLst1, LB_GETTEXT, lpMeasureItem->itemID, (LPARAM)&text[0]);
-		text.resize(len);
-	}
-
-	int cxWidth = GetLst1ClientWidth(hLst1);
-	lpMeasureItem->itemHeight = (UINT)ComputeWrappedItemHeight(hLst1, text.c_str(), cxWidth);
-}
-
-// WM_DRAWITEM: lst1の項目1つを、折り返しありで自前描画する
-static void OnDrawItem(HWND hwnd, const DRAWITEMSTRUCT *lpDrawItem)
-{
-	if (lpDrawItem->CtlID != lst1 || lpDrawItem->itemID == (UINT)-1)
-		return;
-
-	HDC hdc = lpDrawItem->hDC;
-	RECT rc = lpDrawItem->rcItem;
-
-	BOOL bSelected = (lpDrawItem->itemState & ODS_SELECTED) != 0;
-	COLORREF crText = GetSysColor(bSelected ? COLOR_HIGHLIGHTTEXT : COLOR_WINDOWTEXT);
-	COLORREF crBack = GetSysColor(bSelected ? COLOR_HIGHLIGHT : COLOR_WINDOW);
-
-	HBRUSH hbrBack = CreateSolidBrush(crBack);
-	FillRect(hdc, &rc, hbrBack);
-	DeleteObject(hbrBack);
-
-	INT len = (INT)SendMessageW(lpDrawItem->hwndItem, LB_GETTEXTLEN, lpDrawItem->itemID, 0);
-	std::wstring text;
-	if (len > 0 && len != LB_ERR)
-	{
-		text.resize(len + 1);
-		SendMessageW(lpDrawItem->hwndItem, LB_GETTEXT, lpDrawItem->itemID, (LPARAM)&text[0]);
-		text.resize(len);
-	}
-
-	HFONT hFont = (HFONT)SendMessageW(lpDrawItem->hwndItem, WM_GETFONT, 0, 0);
-	HFONT hFontOld = hFont ? (HFONT)SelectObject(hdc, hFont) : nullptr;
-
-	RECT rcText = rc;
-	rcText.left += 2;
-	rcText.right -= 2;
-
-	int iOldMode = SetBkMode(hdc, TRANSPARENT);
-	COLORREF crOldText = SetTextColor(hdc, crText);
-
-	DrawTextW(hdc, text.c_str(), -1, &rcText, DT_WORDBREAK | DT_NOPREFIX | DT_EDITCONTROL);
-
-	SetTextColor(hdc, crOldText);
-	SetBkMode(hdc, iOldMode);
-
-	if (hFontOld)
-		SelectObject(hdc, hFontOld);
-
-	if (lpDrawItem->itemState & ODS_FOCUS)
-		DrawFocusRect(hdc, &rc);
-}
-
 // 文字列中に含まれる "(*...*)" 形式のタグ（XG_GetAIPreTextによる前置情報など）を
 // すべて取り除いた文字列を返す。表示前のフィルタリング用。
 static std::wstring StripAiPreTextTag(LPCWSTR pszLine)
@@ -287,10 +150,19 @@ static void AddLineToList(HWND hwnd, LPCWSTR pszLine)
 	if (filtered.empty())
 		return; // タグのみの行（プロンプト等）は表示しない
 
-	LPCWSTR pszDisplay = filtered.c_str();
+	// 既存のテキストの末尾にキャレットを置き、必要なら改行を付けてから追記する
+	int cchExisting = GetWindowTextLengthW(hLst1);
+	SendMessageW(hLst1, EM_SETSEL, (WPARAM)cchExisting, (LPARAM)cchExisting);
 
-	INT iIndex = (INT)SendMessageW(hLst1, LB_ADDSTRING, 0, (LPARAM)pszDisplay);
-	SendMessageW(hLst1, LB_SETTOPINDEX, (WPARAM)iIndex, 0);
+	std::wstring insert;
+	if (cchExisting > 0)
+		insert += L"\r\n";
+	insert += filtered;
+
+	SendMessageW(hLst1, EM_REPLACESEL, FALSE, (LPARAM)insert.c_str());
+
+	// 末尾までスクロールする
+	SendMessageW(hLst1, EM_SCROLLCARET, 0, 0);
 }
 
 // UTF-8バイト列をUTF-16文字列に変換する
@@ -308,53 +180,21 @@ static std::wstring Utf8ToWide(const char* psz, int cch)
 	return wstr;
 }
 
-static void DoSelectAll(HWND hwndList)
+static void DoSelectAll(HWND hwndEdit)
 {
-	SendMessageW(hwndList, LB_SETSEL, TRUE, -1);
+	SendMessageW(hwndEdit, EM_SETSEL, 0, -1);
 }
 
-static void DoCopyList(HWND hwndList)
+static void DoCopyList(HWND hwndEdit)
 {
-	INT nSelCount = (INT)SendMessageW(hwndList, LB_GETSELCOUNT, 0, 0);
-	if (nSelCount <= 0)
-		return;
+	DWORD dwStart = 0, dwEnd = 0;
+	SendMessageW(hwndEdit, EM_GETSEL, (WPARAM)&dwStart, (LPARAM)&dwEnd);
+	if (dwStart == dwEnd)
+		return; // 選択範囲がなければ何もしない
 
-	std::vector<int> selItems(nSelCount);
-	SendMessageW(hwndList, LB_GETSELITEMS, nSelCount, (LPARAM)selItems.data());
-
-	std::wstring text;
-	for (INT i = 0; i < nSelCount; ++i)
-	{
-		INT idx = selItems[i];
-		INT len = (INT)SendMessageW(hwndList, LB_GETTEXTLEN, idx, 0);
-		if (len > 0)
-		{
-			std::wstring line;
-			line.resize(len + 1);
-			SendMessageW(hwndList, LB_GETTEXT, idx, (LPARAM)&line[0]);
-			line.resize(len);
-			text += line;
-			text += L"\r\n";
-		}
-	}
-
-	if (text.empty())
-		return;
-
-	if (OpenClipboard(hwndList))
-	{
-		EmptyClipboard();
-		HGLOBAL hMem = GlobalAlloc(GMEM_MOVEABLE, (text.size() + 1) * sizeof(WCHAR));
-		if (hMem)
-		{
-			PWSTR pMem = (PWSTR)GlobalLock(hMem);
-			StringCchCopyW(pMem, text.size() + 1, text.c_str());
-			GlobalUnlock(hMem);
-			SetClipboardData(CF_UNICODETEXT, hMem);
-			SendMessageW(hwndList, LB_SETSEL, FALSE, -1);
-		}
-		CloseClipboard();
-	}
+	// エディットコントロール標準のコピー処理に任せる
+	// （改行の扱いなどもOSがよしなにやってくれる）
+	SendMessageW(hwndEdit, WM_COPY, 0, 0);
 }
 
 static WNDPROC g_fnOldLst1WndProc = nullptr;
@@ -643,9 +483,12 @@ static BOOL OnInitDialog(HWND hwnd, HWND hwndFocus, LPARAM lParam)
 {
 	g_hwndAIHelper = hwnd;
 
-	// Subclassing lst1 (for Ctrl+C copy)
+	// Subclassing lst1 (for Ctrl+A / Ctrl+C)
 	HWND hLst1 = GetDlgItem(hwnd, lst1);
 	g_fnOldLst1WndProc = (WNDPROC)SetWindowLongPtrW(hLst1, GWLP_WNDPROC, (LONG_PTR)Lst1WndProc);
+
+	// デフォルトの文字数上限（約64KB）を撤廃し、ログが長く伸びても追記できるようにする
+	SendMessageW(hLst1, EM_SETLIMITTEXT, 0, 0);
 
 	SetFocus(GetDlgItem(hwnd, edt1));
 
@@ -669,14 +512,6 @@ static BOOL OnInitDialog(HWND hwnd, HWND hwndFocus, LPARAM lParam)
 static VOID OnSize(HWND hwnd, UINT state, int cx, int cy)
 {
 	g_resizable.OnSize();
-
-	// lst1の幅が変わると折り返し位置も変わるため、全項目の高さを再計算する
-	HWND hLst1 = GetDlgItem(hwnd, lst1);
-	if (hLst1)
-	{
-		RecalcAllLst1ItemHeights(hLst1);
-		InvalidateRect(hLst1, nullptr, TRUE);
-	}
 }
 
 static BOOL OnOK(HWND hwnd)
@@ -756,14 +591,6 @@ DialogProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		HANDLE_MSG(hwnd, WM_SIZE, OnSize);
 		HANDLE_MSG(hwnd, WM_DESTROY, OnDestroy);
 		HANDLE_MSG(hwnd, WM_TIMER, OnTimer);
-
-	case WM_MEASUREITEM:
-		OnMeasureItem(hwnd, (LPMEASUREITEMSTRUCT)lParam);
-		return TRUE;
-
-	case WM_DRAWITEM:
-		OnDrawItem(hwnd, (const DRAWITEMSTRUCT *)lParam);
-		return TRUE;
 
 	case WM_APP_AI_LINE:
 		if (lParam)
