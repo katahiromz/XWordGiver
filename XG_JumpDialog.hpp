@@ -84,9 +84,7 @@ public:
                 m_iRow = xg_nRows;
                 nFixed = edt2;
             }
-        }
-
-        if (m_nType == 1) {
+        } else if (m_nType == 1) {
             if (m_nNumber < 1) {
                 m_nNumber = 1;
                 nFixed = edt3;
@@ -124,6 +122,14 @@ public:
                     m_nNumber = nMax;
                     nFixed = edt3;
                 }
+            }
+        } else if (m_nType == 2) {
+            WCHAR szText[64];
+            GetDlgItemText(hwnd, edt4, szText, _countof(szText));
+            StrTrimW(szText, XG_WHITE_SPACES);
+            if (!szText[0]) {
+                SetFocus(GetDlgItem(hwnd, edt4));
+                return FALSE;
             }
         }
 

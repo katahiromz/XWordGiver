@@ -359,6 +359,7 @@
     - Limit the number of times the "undo" action can be performed.
     - Fixed an error in the "Small Font" setting of XG_SettingsDialog.
     - Fixed the color settings for XG_PatternDialog.
+    - Strengthened checks for XG_JumpDialog.
 
 # 開発履歴 (Japanese)
 
@@ -1037,3 +1038,4 @@
     - 「元に戻せる」回数を制限。
     - XG_SettingsDialogの「小さいフォント」設定の間違いを修正。
     - XG_PatternDialogの色設定を修正。
+    - XG_JumpDialogのチェックを強化。
