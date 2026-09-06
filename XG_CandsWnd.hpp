@@ -169,18 +169,16 @@ public:
                 if (wParam == L'\t' || wParam == L'\r' || wParam == L'\n')
                     break;
             #endif
-            return ::CallWindowProc(data->m_fnOldWndProc,
-                hwnd, uMsg, wParam, lParam);
+            return ::CallWindowProc(data->m_fnOldWndProc, hwnd, uMsg, wParam, lParam);
 
         case WM_SETFOCUS:
             xg_svCandsScrollView.EnsureCtrlVisible(hwnd);
-            return ::CallWindowProc(data->m_fnOldWndProc,
-                hwnd, uMsg, wParam, lParam);
+            return ::CallWindowProc(data->m_fnOldWndProc, hwnd, uMsg, wParam, lParam);
 
         case WM_KEYDOWN:
             if (wParam == VK_RETURN) {
                 ::SetFocus(nullptr);
-                break;
+                break; // ここで処理しなくても WM_CHARで処理される。
             }
 
             if (wParam == VK_PRIOR || wParam == VK_NEXT) {
