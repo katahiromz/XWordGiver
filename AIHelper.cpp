@@ -402,6 +402,7 @@ void AskAIQuestion(HWND hwnd, PCWSTR text)
 		line += L"\n---\n";
 		line += g_additional_instruction;
 	}
+	line += L"\n"; // 重要！
 
 	std::string utf8 = WideToUtf8(line.c_str());
 
