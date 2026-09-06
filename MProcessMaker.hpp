@@ -357,7 +357,9 @@ inline BOOL MProcessMaker::CreateProcessDx(
 {
 	using namespace std;
 	BOOL b;
-	LPTSTR pszCmdLine = _tcsdup(pszCommandLine);
+	LPTSTR pszCmdLine = NULL;
+	if (pszCommandLine)
+		pszCmdLine = _tcsdup(pszCommandLine);
 	LPCVOID pcEnv = reinterpret_cast<LPCVOID>(pszzEnvironment);
 	LPVOID pEnv = const_cast<LPVOID>(pcEnv);
 	DWORD dwCreationFlags = m_dwCreationFlags;
@@ -521,6 +523,7 @@ MProcessMaker::ReadAll(std::string& strOutput, MFile& hOutputRead)
 			if (!IsRunning())
 				return TRUE;
 
+			::Sleep(10);
 			continue;
 		}
 
@@ -545,6 +548,7 @@ inline BOOL
 MProcessMaker::ReadAll(std::string& strOutput, MFile& hOutputRead, DWORD dwTimeout)
 {
 	DWORD dwTick = GetTickCount();
+	strOutput.clear();
 
 	DWORD cbAvail, cbRead;
 	CHAR szBuf[1024];
@@ -558,6 +562,7 @@ MProcessMaker::ReadAll(std::string& strOutput, MFile& hOutputRead, DWORD dwTimeo
 			if (!IsRunning())
 				return TRUE;
 
+			::Sleep(10);
 			continue;
 		}
 
