@@ -960,7 +960,7 @@ inline BOOL MZCAPI GetWindowPosDx(HWND hwnd, RECT *prc)
 	prc->left = pt.x;
 	prc->top = pt.y;
 	prc->right = pt.x + siz.cx;
-	prc->bottom = pt.x + siz.cy;
+	prc->bottom = pt.y + siz.cy;
 	return TRUE;
 }
 
