@@ -8834,6 +8834,74 @@ void XgCleanup(void)
     }
 }
 
+// メッセージループ。
+void XgMessageLoop(MSG& msg)
+{
+    while (::GetMessageW(&msg, nullptr, 0, 0))
+    {
+        if (msg.message == WM_KEYDOWN && msg.wParam == VK_F6) {
+            if (GetAsyncKeyState(VK_SHIFT) < 0)
+                PostMessageW(xg_hMainWnd, WM_COMMAND, ID_PANEPREV, 0);
+            else
+                PostMessageW(xg_hMainWnd, WM_COMMAND, ID_PANENEXT, 0);
+            continue;
+        }
+
+        if (xg_hHintsWnd && GetParent(msg.hwnd) == xg_hHintsWnd &&
+            msg.message == WM_KEYDOWN && msg.wParam == VK_RETURN)
+        {
+            msg.wParam = VK_TAB;
+        }
+
+        if (msg.message == WM_KEYDOWN &&
+            msg.wParam == L'L' && GetAsyncKeyState(VK_CONTROL) < 0)
+        {
+            msg.hwnd = xg_hMainWnd;
+        }
+
+        if (msg.message == WM_KEYDOWN &&
+            msg.wParam == L'U' && GetAsyncKeyState(VK_CONTROL) < 0)
+        {
+            msg.hwnd = xg_hMainWnd;
+        }
+
+        if (xg_hHintsWnd && ::IsDialogMessageW(xg_hHintsWnd, &msg))
+            continue;
+
+        if (xg_cands_wnd) {
+            if (msg.message != WM_KEYDOWN || msg.wParam != VK_ESCAPE) {
+                if (::IsDialogMessageW(xg_cands_wnd, &msg))
+                    continue;
+            }
+        }
+
+        if (xg_hwndInputPalette) {
+            if (::IsDialogMessageW(xg_hwndInputPalette, &msg))
+                continue;
+        }
+
+        if (xg_hwndJumpDlg) {
+            if (::IsDialogMessageW(xg_hwndJumpDlg, &msg))
+                continue;
+        }
+
+        if (xg_hMarkingDlg) {
+            if (::IsDialogMessageW(xg_hMarkingDlg, &msg))
+                continue;
+        }
+
+        if (g_hwndAIHelper) {
+            if (::IsDialogMessageW(g_hwndAIHelper, &msg))
+                continue;
+        }
+
+        if (!::TranslateAcceleratorW(xg_hMainWnd, s_hAccel, &msg)) {
+            ::TranslateMessage(&msg);
+            ::DispatchMessageW(&msg);
+        }
+    }
+}
+
 // 別のメイン関数。
 INT XWordGiverMain(HINSTANCE hInstance, INT nCmdShow)
 {
@@ -8951,68 +9019,7 @@ INT XWordGiverMain(HINSTANCE hInstance, INT nCmdShow)
 
     // メッセージループ。
     MSG msg;
-    while (::GetMessageW(&msg, nullptr, 0, 0)) {
-        if (msg.message == WM_KEYDOWN && msg.wParam == VK_F6) {
-            if (GetAsyncKeyState(VK_SHIFT) < 0)
-                PostMessageW(xg_hMainWnd, WM_COMMAND, ID_PANEPREV, 0);
-            else
-                PostMessageW(xg_hMainWnd, WM_COMMAND, ID_PANENEXT, 0);
-            continue;
-        }
-
-        if (xg_hHintsWnd && GetParent(msg.hwnd) == xg_hHintsWnd &&
-            msg.message == WM_KEYDOWN && msg.wParam == VK_RETURN)
-        {
-            msg.wParam = VK_TAB;
-        }
-
-        if (msg.message == WM_KEYDOWN &&
-            msg.wParam == L'L' && GetAsyncKeyState(VK_CONTROL) < 0)
-        {
-            msg.hwnd = xg_hMainWnd;
-        }
-
-        if (msg.message == WM_KEYDOWN &&
-            msg.wParam == L'U' && GetAsyncKeyState(VK_CONTROL) < 0)
-        {
-            msg.hwnd = xg_hMainWnd;
-        }
-
-        if (xg_hHintsWnd && ::IsDialogMessageW(xg_hHintsWnd, &msg))
-            continue;
-
-        if (xg_cands_wnd) {
-            if (msg.message != WM_KEYDOWN || msg.wParam != VK_ESCAPE) {
-                if (::IsDialogMessageW(xg_cands_wnd, &msg))
-                    continue;
-            }
-        }
-
-        if (xg_hwndInputPalette) {
-            if (::IsDialogMessageW(xg_hwndInputPalette, &msg))
-                continue;
-        }
-
-        if (xg_hwndJumpDlg) {
-            if (::IsDialogMessageW(xg_hwndJumpDlg, &msg))
-                continue;
-        }
-
-        if (xg_hMarkingDlg) {
-            if (::IsDialogMessageW(xg_hMarkingDlg, &msg))
-                continue;
-        }
-
-        if (g_hwndAIHelper) {
-            if (::IsDialogMessageW(g_hwndAIHelper, &msg))
-                continue;
-        }
-
-        if (!::TranslateAcceleratorW(xg_hMainWnd, s_hAccel, &msg)) {
-            ::TranslateMessage(&msg);
-            ::DispatchMessageW(&msg);
-        }
-    }
+    XgMessageLoop(msg);
 
     // Ctrl+Aの機能を解除する。
     ::UnhookWindowsHookEx(xg_hCtrlAHook);
