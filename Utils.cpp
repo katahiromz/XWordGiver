@@ -740,7 +740,7 @@ BOOL XgReadTextFileAll(LPCWSTR file, XGStringW& strText, bool ecw)
 
     if (strBinary.size() >= 3)
     {
-        if (memcmp(strBinary.c_str(), "\xEF\xBB\xBF", 3) == 0)
+        if (memcmp(strBinary.c_str(), u8"\xEF\xBB\xBF", 3) == 0)
         {
             // UTF-8 BOM
             strText = XgUtf8ToUnicode(&strBinary[3]);

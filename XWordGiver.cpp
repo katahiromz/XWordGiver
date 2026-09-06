@@ -547,7 +547,7 @@ BOOL XgSavePatterns(LPCWSTR pszFileName, const patterns_t& patterns,
         return FALSE;
 
     auto utf8 = XgUnicodeToUtf8(text);
-    fputs("\xEF\xBB\xBF", fp); // BOMを追加する。
+    fputs(u8"\xEF\xBB\xBF", fp); // BOMを追加する。
     fputs(utf8.c_str(), fp);
     fclose(fp);
     return TRUE;
