@@ -4,6 +4,7 @@
 // (Japanese, UTF-8)
 
 #define NOMINMAX
+#include "DetectLeaks.h"
 #include "XWordGiver.hpp"
 #include <mmsystem.h>
 #include "GUI.hpp"
@@ -8796,6 +8797,11 @@ WinMain(
     LPSTR /*pszCmdLine*/,
     INT nCmdShow)
 {
+#if defined(_MSC_VER) && !defined(NDEBUG)
+	// for detecting memory leak (MSVC only)
+	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
+#endif
+
     // クリティカルセクションを初期化する。
     ::InitializeCriticalSection(&xg_csLock);
 
@@ -8998,6 +9004,12 @@ WinMain(
 
     // 設定を保存。
     XgSaveSettings();
+
+    // 文字列を解放。
+    g_provider.clear();
+    g_model.clear();
+    g_python_exe.clear();
+    g_additional_instruction.clear();
 
     // ハンドルリークを検出。
 #if (WINVER >= 0x0500) && !defined(NDEBUG)

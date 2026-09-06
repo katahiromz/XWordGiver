@@ -1,4 +1,5 @@
 
+#include "DetectLeaks.h"
 #include <windows.h>
 #include "TaskbarProgress.h"
 //#pragma comment(lib, "ole32.lib")  // CoCreateInstance

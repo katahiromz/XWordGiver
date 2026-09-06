@@ -3,6 +3,7 @@
 // Copyright (C) 2012-2020 Katayama Hirofumi MZ. All Rights Reserved.
 // (Japanese, UTF-8)
 
+#include "DetectLeaks.h"
 #include "XWordGiver.hpp"
 #define min std::min
 #define max std::max
