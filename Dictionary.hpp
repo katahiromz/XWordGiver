@@ -1,6 +1,6 @@
 ﻿//////////////////////////////////////////////////////////////////////////////
-// Dictionary.hpp --- XWord Giver (Japanese Crossword Generator)
-// Copyright (C) 2012-2020 Katayama Hirofumi MZ. All Rights Reserved.
+// Dictionary.hpp --- XWordGiver (Japanese Crossword Generator)
+// Copyright (C) 2012-2026 Katayama Hirofumi MZ. All Rights Reserved.
 // (Japanese, UTF-8)
 
 #pragma once

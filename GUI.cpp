@@ -1,6 +1,6 @@
 ﻿//////////////////////////////////////////////////////////////////////////////
-// GUI.cpp --- XWord Giver (Japanese Crossword Generator)
-// Copyright (C) 2012-2020 Katayama Hirofumi MZ. All Rights Reserved.
+// GUI.cpp --- XWordGiver (Japanese Crossword Generator)
+// Copyright (C) 2012-2026 Katayama Hirofumi MZ. All Rights Reserved.
 // (Japanese, UTF-8)
 
 #define NOMINMAX
@@ -340,7 +340,7 @@ bool xg_bAutoRetry = true;
 static bool s_bOldNotice = false;
 
 // メインウィンドウクラス名。
-static const PCWSTR s_pszMainWndClass = L"XWord Giver Main Window";
+static const PCWSTR s_pszMainWndClass = L"XWordGiver Main Window";
 
 // アクセラレータのハンドル。
 static HACCEL s_hAccel = nullptr;

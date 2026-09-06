@@ -1,6 +1,6 @@
 ﻿//////////////////////////////////////////////////////////////////////////////
 // XG_UndoBuffer.hpp
-// Copyright (C) 2012-2023 Katayama Hirofumi MZ. All Rights Reserved.
+// Copyright (C) 2012-2026 Katayama Hirofumi MZ. All Rights Reserved.
 
 #pragma once
 

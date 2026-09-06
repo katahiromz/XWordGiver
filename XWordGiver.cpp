@@ -1,6 +1,6 @@
 ﻿//////////////////////////////////////////////////////////////////////////////
-// XWordGiver.cpp --- XWord Giver (Japanese Crossword Generator)
-// Copyright (C) 2012-2020 Katayama Hirofumi MZ. All Rights Reserved.
+// XWordGiver.cpp --- XWordGiver (Japanese Crossword Generator)
+// Copyright (C) 2012-2026 Katayama Hirofumi MZ. All Rights Reserved.
 // (Japanese, UTF-8)
 
 #include "DetectLeaks.h"
