@@ -31,7 +31,7 @@ option(DETAILED_CHECK "Enable detailed check" OFF)
 
 if (DETAILED_CHECK)
     message(STATUS "DETAILED_CHECK is ON")
-    if (uppercase_CMAKE_BUILD_TYPE MATCHES "DEBUG")
+    if (CMAKE_BUILD_TYPE MATCHES "Debug" OR CMAKE_BUILD_TYPE STREQUAL "")
         if ((CMAKE_CXX_COMPILER_ID STREQUAL "GNU") OR (CMAKE_CXX_COMPILER_ID STREQUAL "Clang"))
             set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D_GLIBCXX_DEBUG -D_GLIBCXX_CONCEPT_CHECKS -D_GLIBCXX_DEBUG_PEDANTIC -Wall -Wextra -Wshadow -Wconversion -Wfloat-equal -ftrapv -fstack-protector-all -fno-omit-frame-pointer -Wno-missing-field-initializers -Wno-unused-parameter -Wno-cast-function-type")
         endif()
@@ -40,48 +40,38 @@ endif()
 
 ##############################################################################
 
-if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-    # using Clang
-    if (CMAKE_BUILD_TYPE STREQUAL "Release")
-        set(CMAKE_C_FLAGS "-static -O3 -Wall -pedantic -flto=auto")
-        set(CMAKE_CXX_FLAGS "-static -O3 -Wall -pedantic -flto=auto")
-    else()
-        set(CMAKE_C_FLAGS "-static -g -Wall -pedantic -flto=auto")
-        set(CMAKE_CXX_FLAGS "-static -g -Wall -pedantic -flto=auto")
-    endif()
-elseif (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-    # using GCC
-    if (CMAKE_BUILD_TYPE STREQUAL "Release")
-        set(CMAKE_C_FLAGS "-s -static -O3 -Wall -pedantic -flto=auto")
-        set(CMAKE_CXX_FLAGS "-s -static -O3 -Wall -pedantic -flto=auto")
-    else()
-        set(CMAKE_C_FLAGS "-static -g -Wall -pedantic -flto=auto")
-        set(CMAKE_CXX_FLAGS "-static -g -Wall -pedantic -flto=auto")
-    endif()
-elseif (MSVC AND (CMAKE_BUILD_TYPE STREQUAL "Release"))
-    # MSVC optimization flags
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /O2 /Oi /GL")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /O2 /Oi /GL")
-    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /LTCG")
-    # replace "/MD" with "/MT" (building without runtime DLLs)
-    set(CompilerFlags
-        CMAKE_C_FLAGS
-        CMAKE_C_FLAGS_DEBUG
-        CMAKE_C_FLAGS_RELEASE
-        CMAKE_C_FLAGS_RELWITHDEBINFO
-        CMAKE_CXX_FLAGS
-        CMAKE_CXX_FLAGS_DEBUG
-        CMAKE_CXX_FLAGS_RELEASE
-        CMAKE_CXX_FLAGS_RELWITHDEBINFO)
-    foreach(CompilerFlags ${CompilerFlags})
-        string(REPLACE "/MD" "/MT" ${CompilerFlags} "${${CompilerFlags}}")
-    endforeach()
+if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+    # Common warnings
+    set(CMAKE_C_FLAGS   "${CMAKE_C_FLAGS} -Wall -pedantic")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -pedantic")
+
+    # Optimize + LTO + static linking on Release version
+    set(CMAKE_C_FLAGS_RELEASE   "-O3 -flto=auto -static")
+    set(CMAKE_CXX_FLAGS_RELEASE "-O3 -flto=auto -static")
+    set(CMAKE_EXE_LINKER_FLAGS_RELEASE "-flto=auto -static")
+
+    # Debug version
+    set(CMAKE_C_FLAGS_DEBUG   "-g")
+    set(CMAKE_CXX_FLAGS_DEBUG "-g")
+elseif (MSVC)
+    # Multi-processor compilation
+    set(CMAKE_C_FLAGS   "${CMAKE_C_FLAGS} /MP")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP")
+
+    # LTO on Release version only
+    set(CMAKE_C_FLAGS_RELEASE   "${CMAKE_C_FLAGS_RELEASE} /O2 /Oi /GL")
+    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /O2 /Oi /GL")
+    set(CMAKE_EXE_LINKER_FLAGS_RELEASE "${CMAKE_EXE_LINKER_FLAGS_RELEASE} /LTCG")
+
+    # Run-time library
+    set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
 endif()
 
 ##############################################################################
 
 # C++17
 set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # UTF-8
 if (MSVC)
@@ -124,7 +114,17 @@ add_executable(XWordGiver${BITS} WIN32
     Utils.cpp
     XWordGiver.cpp
     XWordGiver_res.rc)
-target_link_libraries(XWordGiver${BITS} winmm comctl32 imm32 shell32 ole32 uuid shlwapi SaveBitmapToFile)
+
+target_link_libraries(XWordGiver${BITS}
+    winmm
+    comctl32
+    imm32
+    shell32
+    ole32
+    uuid
+    shlwapi
+    SaveBitmapToFile)
+
 if(MSVC)
     target_link_options(XWordGiver${BITS} PRIVATE /MANIFEST:NO)
 endif()
