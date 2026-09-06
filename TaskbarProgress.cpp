@@ -5,7 +5,9 @@
 
 TaskbarProgress::TaskbarProgress(HWND hwnd)
     : m_hWnd(hwnd)
+    , m_pTaskbarList(nullptr)
     , m_hrCoInit(CoInitialize(NULL))
+    , m_hr(E_FAIL)
 {
     m_hr = CoCreateInstance(CLSID_TaskbarList, NULL, CLSCTX_INPROC_SERVER,
                             IID_PPV_ARGS(&m_pTaskbarList));
@@ -59,6 +61,8 @@ void TaskbarProgress::Clear()
 INT TaskbarProgress::GetMenuHeight()
 {
     HMENU hMenu = ::GetMenu(m_hWnd);
+    if (!hMenu)
+        return 0;
     INT cItems = ::GetMenuItemCount(hMenu);
     RECT rc;
     ::SetRectEmpty(&rc);

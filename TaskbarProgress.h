@@ -7,11 +7,11 @@ class TaskbarProgress
 {
 protected:
     HWND m_hWnd;
-    ITaskbarList3* m_pTaskbarList;
+    ITaskbarList3* m_pTaskbarList = nullptr;
     HRESULT m_hrCoInit;
 
 public:
-    HRESULT m_hr;
+    HRESULT m_hr = E_FAIL;
     TaskbarProgress(HWND hwnd);
     virtual ~TaskbarProgress();
 
