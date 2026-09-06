@@ -352,6 +352,7 @@
     - Added the ability to specify "additional instruction text" for the AI ​​helper.
 - 2026-09-06 ver.5.3.3
     - Fixed an issue where the AI ​​helper would not respond.
+- 2026-XX-YY ver.5.3.4
 
 # 開発履歴 (Japanese)
 
@@ -1023,3 +1024,4 @@
     - AIヘルパーに「追加的な指示テキスト」を指定できるようにした。
 - 2026年09月06日 ver.5.3.3
     - AIヘルパーが反応しない不具合を修正。
+- 2026年XX月YY日 ver.5.3.4

@@ -11,8 +11,8 @@ if(COMMAND cmake_policy)
   cmake_policy(SET CMP0003 NEW)
 endif(COMMAND cmake_policy)
 
-# project name and languages
-project(XWordGiver CXX RC)
+# project name, version, and languages
+project(XWordGiver VERSION 5.3.4 LANGUAGES CXX RC)
 
 # add macro __XWORDGIVER__
 add_definitions(-D__XWORDGIVER__)
