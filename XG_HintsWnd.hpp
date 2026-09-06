@@ -774,6 +774,7 @@ public:
         {
             DeleteMenu(hSubMenu, ID_CLEARTHISCLUE, MF_BYCOMMAND);
             DeleteMenu(hSubMenu, ID_GENERATEHINT, MF_BYCOMMAND);
+            DeleteMenu(hSubMenu, ID_JUMPNUMBER, MF_BYCOMMAND);
         }
 
         // スタティックなら色を変える。
