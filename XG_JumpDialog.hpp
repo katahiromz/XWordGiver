@@ -262,15 +262,15 @@ public:
                             auto word0 = GetHorzWord(j, i);
                             auto j0 = word0.find(str);
                             if (j0 != word0.npos) {
-                                xg_caret_pos.m_j = j + j0;
+                                xg_caret_pos.m_j = INT(j + j0);
                                 xg_caret_pos.m_i = i;
                                 break;
                             }
                             auto word1 = GetVertWord(j, i);
                             auto i0 = word1.find(str);
                             if (i0 != word1.npos) {
-                                xg_caret_pos.m_j = j;
-                                xg_caret_pos.m_i = i + i0;
+                                xg_caret_pos.m_j = INT(j);
+                                xg_caret_pos.m_i = INT(i + i0);
                                 break;
                             }
                         }
