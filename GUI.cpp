@@ -8914,35 +8914,17 @@ BOOL XgRegisterClasses(HINSTANCE hInstance)
     wcx.hbrBackground = reinterpret_cast<HBRUSH>(static_cast<INT_PTR>(COLOR_3DFACE + 1));
     wcx.lpszMenuName = MAKEINTRESOURCEW(1);
     wcx.lpszClassName = s_pszMainWndClass;
-    if (!::RegisterClassExW(&wcx)) {
-        // ウィンドウ登録失敗メッセージ。
-        XgCenterMessageBoxW(nullptr, XgLoadStringDx1(IDS_CANTREGWND), nullptr, MB_ICONERROR);
-        return FALSE;
-    }
-    if (!xg_hints_wnd.RegisterClassDx())
+    if (!::RegisterClassExW(&wcx) ||
+        !xg_hints_wnd.RegisterClassDx() ||
+        !xg_cands_wnd.RegisterClassDx() ||
+        !xg_canvasWnd.RegisterClassDx())
     {
-        // ウィンドウ登録失敗メッセージ。
-        XgCenterMessageBoxW(nullptr, XgLoadStringDx1(IDS_CANTREGWND), nullptr, MB_ICONERROR);
         return FALSE;
     }
-    if (!xg_cands_wnd.RegisterClassDx()) {
-        // ウィンドウ登録失敗メッセージ。
-        XgCenterMessageBoxW(nullptr, XgLoadStringDx1(IDS_CANTREGWND), nullptr, MB_ICONERROR);
+
+    XG_BoxWindow box(L"");
+    if (!box.RegisterClassDx())
         return FALSE;
-    }
-    if (!xg_canvasWnd.RegisterClassDx()) {
-        // ウィンドウ登録失敗メッセージ。
-        XgCenterMessageBoxW(nullptr, XgLoadStringDx1(IDS_CANTREGWND), nullptr, MB_ICONERROR);
-        return FALSE;
-    }
-    {
-        XG_BoxWindow box(L"");
-        if (!box.RegisterClassDx()) {
-            // ウィンドウ登録失敗メッセージ。
-            XgCenterMessageBoxW(nullptr, XgLoadStringDx1(IDS_CANTREGWND), nullptr, MB_ICONERROR);
-            return FALSE;
-        }
-    }
 
     return TRUE;
 }
@@ -9001,7 +8983,11 @@ INT XWordGiverMain(HINSTANCE hInstance, INT nCmdShow)
 
     // ウィンドウクラスを登録する。
     if (!XgRegisterClasses(hInstance))
+    {
+        // ウィンドウ登録失敗メッセージ。
+        XgCenterMessageBoxW(nullptr, XgLoadStringDx1(IDS_CANTREGWND), nullptr, MB_ICONERROR);
         return 1;
+    }
 
     // 前回最大化されたか？
     const BOOL bZoomed = xg_bMainWndMaximized;
