@@ -8300,6 +8300,10 @@ XGStringW XgGetAIStatus_ja(void)
     ret += L"クロスワードの盤が生成済みです。";
     for (BOOL bDown = FALSE; bDown <= TRUE; ++bDown)
     {
+        // 範囲チェック（info_vecとhint_vecのサイズがズレている場合に備える）。
+        if (i >= hint_vec.size())
+            break;
+
         // タテかヨコかで対象の配列を選ぶ。
         auto& info_vec = bDown ? xg_vVertInfo : xg_vHorzInfo;
         auto& hint_vec = bDown ? xg_vecVertHints : xg_vecHorzHints;
@@ -8337,6 +8341,10 @@ XGStringW XgGetAIStatus_en(void)
     ret += L"The crossword board has been generated.";
     for (BOOL bDown = FALSE; bDown <= TRUE; ++bDown)
     {
+        // Bounds check (in case info_vec and hint_vec sizes ever diverge).
+        if (i >= hint_vec.size())
+            break;
+
         // Choose the target array depending on whether it's Down or Across.
         auto& info_vec = bDown ? xg_vVertInfo : xg_vHorzInfo;
         auto& hint_vec = bDown ? xg_vecVertHints : xg_vecHorzHints;
