@@ -51,6 +51,24 @@ HIMAGELIST XgDictList_CreateRadioButtonImageList(HWND hwnd)
     return himl;
 }
 
+// リストビューのチェック情報を更新する。
+void XgDictList_SetCurSel(HWND hwnd, HWND hwndLst1, INT iSelect)
+{
+    if (iSelect < 0)
+        return; // 不正な選択位置なら何もしない（全項目破壊を防ぐ）。
+    INT cItems = ListView_GetItemCount(hwndLst1);
+    for (INT iItem = 0; iItem < cItems; ++iItem) {
+        if (iItem == iSelect) {
+            ListView_SetItemState(hwndLst1, iItem, INDEXTOSTATEIMAGEMASK(2), LVIS_STATEIMAGEMASK);
+        } else {
+            ListView_SetItemState(hwndLst1, iItem, INDEXTOSTATEIMAGEMASK(1), LVIS_STATEIMAGEMASK);
+        }
+    }
+
+    ListView_SetItemState(hwndLst1, iSelect, LVIS_SELECTED | LVIS_FOCUSED, LVIS_SELECTED | LVIS_FOCUSED);
+    ListView_EnsureVisible(hwndLst1, iSelect, FALSE);
+}
+
 // リストを再読み込みする。
 void XgDictList_ReloadList(HWND hwnd)
 {
@@ -147,24 +165,6 @@ INT XgDictList_GetCurSel(HWND hwnd, HWND hwndLst1)
             return iItem;
     }
     return -1;
-}
-
-// リストビューのチェック情報を更新する。
-void XgDictList_SetCurSel(HWND hwnd, HWND hwndLst1, INT iSelect)
-{
-    if (iSelect < 0)
-        return; // 不正な選択位置なら何もしない（全項目破壊を防ぐ）。
-    INT cItems = ListView_GetItemCount(hwndLst1);
-    for (INT iItem = 0; iItem < cItems; ++iItem) {
-        if (iItem == iSelect) {
-            ListView_SetItemState(hwndLst1, iItem, INDEXTOSTATEIMAGEMASK(2), LVIS_STATEIMAGEMASK);
-        } else {
-            ListView_SetItemState(hwndLst1, iItem, INDEXTOSTATEIMAGEMASK(1), LVIS_STATEIMAGEMASK);
-        }
-    }
-
-    ListView_SetItemState(hwndLst1, iSelect, LVIS_SELECTED | LVIS_FOCUSED, LVIS_SELECTED | LVIS_FOCUSED);
-    ListView_EnsureVisible(hwndLst1, iSelect, FALSE);
 }
 
 // [辞書]設定。
