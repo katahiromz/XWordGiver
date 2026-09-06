@@ -110,6 +110,7 @@ XgAIHelperDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
                     return 0;
                 }
             }
+            break;
         case cmb2:
             switch (HIWORD(wParam))
             {
