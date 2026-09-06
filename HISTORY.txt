@@ -354,6 +354,7 @@
     - Fixed an issue where the AI ​​helper would not respond.
 - 2026-XX-YY ver.5.3.4
     - Fixed a critical bug in the QString class.
+    - Fixed a handle leak in the XgUpdateImage function.
 
 # 開発履歴 (Japanese)
 
@@ -1027,3 +1028,4 @@
     - AIヘルパーが反応しない不具合を修正。
 - 2026年XX月YY日 ver.5.3.4
     - QStringクラスの致命的な不具合を修正。
+    - XgUpdateImage関数のハンドルリークを修正。

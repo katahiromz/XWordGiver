@@ -8034,12 +8034,15 @@ void __fastcall XgUpdateImage(HWND hwnd, int x, int y)
     } else {
         // 必要ならイメージを描画する。
         HDC hdc = ::CreateCompatibleDC(NULL);
-        HGDIOBJ hbmOld = ::SelectObject(hdc, xg_hbmImage);
-        if (xg_bSolved && xg_bShowAnswer)
-            XgDrawXWord(xg_solution, hdc, &siz, DRAW_MODE_SCREEN);
-        else
-            XgDrawXWord(xg_xword, hdc, &siz, DRAW_MODE_SCREEN);
-        ::SelectObject(hdc, hbmOld);
+        if (hdc) {
+            HGDIOBJ hbmOld = ::SelectObject(hdc, xg_hbmImage);
+            if (xg_bSolved && xg_bShowAnswer)
+                XgDrawXWord(xg_solution, hdc, &siz, DRAW_MODE_SCREEN);
+            else
+                XgDrawXWord(xg_xword, hdc, &siz, DRAW_MODE_SCREEN);
+            ::SelectObject(hdc, hbmOld);
+            ::DeleteDC(hdc);
+        }
     }
 
     // スクロール情報を更新する。
