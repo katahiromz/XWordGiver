@@ -256,7 +256,7 @@ class AIClient:
 
 def interactive_mode(client: AIClient, initial_provider: str, model_override: str = None,
                       max_tokens: int = None, temperature: float = None, stream: bool = False,
-                      initial_question: str = None):
+                      initial_question: str = None, no_logo: bool = False):
     provider = initial_provider
 
     # Track which model is currently in use for each provider.
@@ -268,17 +268,18 @@ def interactive_mode(client: AIClient, initial_provider: str, model_override: st
     if model_override:
         current_models[initial_provider] = model_override
 
-    print("=== AI Chat CLI ===")
-    print(f"Available providers: {', '.join(PROVIDERS)}")
-    print(f"Current provider: {provider} (model: {current_models[provider]})")
-    if stream:
-        print("(Streaming output: ON)")
-    print("Type 'provider:gemini' (etc.) to switch providers.")
-    print("Type 'model:model-name' to switch the current provider's model.")
-    print("Type 'model' alone to show the current model.")
-    print("Type 'reset' to clear the current provider's conversation history.")
-    print("Type 'models' to list the models available for the current provider.")
-    print("Type 'exit' or 'quit' to leave.\n")
+    if not no_logo:
+        print("=== AI Chat CLI ===")
+        print(f"Available providers: {', '.join(PROVIDERS)}")
+        print(f"Current provider: {provider} (model: {current_models[provider]})")
+        if stream:
+            print("(Streaming output: ON)")
+        print("Type 'provider:gemini' (etc.) to switch providers.")
+        print("Type 'model:model-name' to switch the current provider's model.")
+        print("Type 'model' alone to show the current model.")
+        print("Type 'reset' to clear the current provider's conversation history.")
+        print("Type 'models' to list the models available for the current provider.")
+        print("Type 'exit' or 'quit' to leave.\n")
 
     # Gemini's SDK Chat session keeps history internally.
     # For every other provider, we accumulate a list of messages ourselves.
@@ -467,6 +468,11 @@ def main():
         choices=PROVIDERS + ["all"],
         help="List available models and exit. Omit the provider to list all of them.",
     )
+    parser.add_argument(
+        "--no-logo",
+        action="store_true",
+        help="Suppress the startup banner and usage hints",
+    )
     args = parser.parse_args()
 
     client = AIClient()
@@ -489,7 +495,7 @@ def main():
     # supplies the first question, and the program then keeps running so
     # further questions can be asked interactively.
     interactive_mode(client, args.provider, args.model, args.max_tokens, args.temperature, args.stream,
-                      initial_question=args.question)
+                      initial_question=args.question, no_logo=args.no_logo)
 
 
 if __name__ == "__main__":

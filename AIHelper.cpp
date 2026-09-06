@@ -34,6 +34,7 @@ std::wstring g_model = L"gemini-3.6-flash";
 std::wstring g_python_exe;
 std::wstring g_additional_instruction;
 std::wstring g_buffer;
+std::wstring g_initial_question;
 
 #ifdef __XWORDGIVER__
 BOOL XgIsUserJapanese(VOID) noexcept;
@@ -484,6 +485,13 @@ static BOOL StartAIProcess(HWND hwnd)
 	str += g_provider;
 	str += L" --model ";
 	str += g_model;
+	str += L" --no-logo";
+	if (g_initial_question.size())
+	{
+		str += L" --question \"";
+		str += g_initial_question;
+		str += L"\"";
+	}
 
 	// 実行するコマンドをlst1に出力する
 	AddLineToList(hwnd, (L"> " + str).c_str());

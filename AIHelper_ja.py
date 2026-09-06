@@ -253,7 +253,7 @@ class AIClient:
 
 def interactive_mode(client: AIClient, initial_provider: str, model_override: str = None,
                       max_tokens: int = None, temperature: float = None, stream: bool = False,
-                      initial_question: str = None):
+                      initial_question: str = None, no_logo: bool = False):
     provider = initial_provider
 
     # プロバイダごとに現在使用中のモデルを保持する。
@@ -265,17 +265,18 @@ def interactive_mode(client: AIClient, initial_provider: str, model_override: st
     if model_override:
         current_models[initial_provider] = model_override
 
-    print("=== 生成AI 質問プログラム ===")
-    print(f"利用可能なプロバイダ: {', '.join(PROVIDERS)}")
-    print(f"現在のプロバイダ: {provider}（モデル: {current_models[provider]}）")
-    if stream:
-        print("(ストリーミング出力: ON)")
-    print("『provider:gemini』のように入力するとプロバイダを切り替えられます。")
-    print("『model:モデル名』のように入力すると現在のプロバイダのモデルを切り替えられます。")
-    print("『model』だけ入力すると現在のモデルを表示します。")
-    print("『reset』でその時点のプロバイダの会話履歴をクリアします。")
-    print("『models』で現在のプロバイダの利用可能モデル一覧を表示します。")
-    print("『exit』または『quit』で終了します。\n")
+    if not no_logo:
+        print("=== 生成AI 質問プログラム ===")
+        print(f"利用可能なプロバイダ: {', '.join(PROVIDERS)}")
+        print(f"現在のプロバイダ: {provider}（モデル: {current_models[provider]}）")
+        if stream:
+            print("(ストリーミング出力: ON)")
+        print("『provider:gemini』のように入力するとプロバイダを切り替えられます。")
+        print("『model:モデル名』のように入力すると現在のプロバイダのモデルを切り替えられます。")
+        print("『model』だけ入力すると現在のモデルを表示します。")
+        print("『reset』でその時点のプロバイダの会話履歴をクリアします。")
+        print("『models』で現在のプロバイダの利用可能モデル一覧を表示します。")
+        print("『exit』または『quit』で終了します。\n")
 
     # Gemini はSDKのChatセッションが履歴を保持する。
     # それ以外のプロバイダは messages のリストを自前で蓄積する。
@@ -464,6 +465,11 @@ def main():
         choices=PROVIDERS + ["all"],
         help="利用可能なモデル一覧を表示して終了。プロバイダ名を省略すると全プロバイダ分を表示。",
     )
+    parser.add_argument(
+        "--no-logo",
+        action="store_true",
+        help="起動時のバナーや使い方の案内を表示しない",
+    )
     args = parser.parse_args()
 
     client = AIClient()
@@ -486,7 +492,7 @@ def main():
     # 最初の質問として使い、その後はそのまま対話モードへ入って
     # 続けて質問できるようにする。
     interactive_mode(client, args.provider, args.model, args.max_tokens, args.temperature, args.stream,
-                      initial_question=args.question)
+                      initial_question=args.question, no_logo=args.no_logo)
 
 
 if __name__ == "__main__":
