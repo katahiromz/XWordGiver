@@ -114,7 +114,7 @@ inline MProcessMaker::operator HANDLE() const
 
 inline HANDLE MProcessMaker::Handle() const
 {
-	return (this ? m_pi.hProcess : NULL);
+	return m_pi.hProcess;
 }
 
 inline BOOL MProcessMaker::TerminateProcess(UINT uExitCode)
@@ -200,12 +200,12 @@ inline void MProcessMaker::SetFillAttirbutes(DWORD dwFillAttribute)
 
 inline HANDLE MProcessMaker::GetProcessHandle() const
 {
-	return (this ? m_pi.hProcess : NULL);
+	return m_pi.hProcess;
 }
 
 inline HANDLE MProcessMaker::GetThreadHandle() const
 {
-	return (this ? m_pi.hThread : NULL);
+	return m_pi.hThread;
 }
 
 inline DWORD MProcessMaker::GetExitCode() const

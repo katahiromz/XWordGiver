@@ -46,9 +46,15 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL "GN
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -pedantic")
 
     # Optimize + LTO + static linking on Release version
-    set(CMAKE_C_FLAGS_RELEASE   "-O3 -flto=auto -static")
-    set(CMAKE_CXX_FLAGS_RELEASE "-O3 -flto=auto -static")
-    set(CMAKE_EXE_LINKER_FLAGS_RELEASE "-flto=auto -static")
+    if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+        set(CMAKE_C_FLAGS_RELEASE   "-O3 -static")
+        set(CMAKE_CXX_FLAGS_RELEASE "-O3 -static")
+        set(CMAKE_EXE_LINKER_FLAGS_RELEASE "-static")
+    else()
+        set(CMAKE_C_FLAGS_RELEASE   "-O3 -flto=auto -static")
+        set(CMAKE_CXX_FLAGS_RELEASE "-O3 -flto=auto -static")
+        set(CMAKE_EXE_LINKER_FLAGS_RELEASE "-flto=auto -static")
+    endif()
 
     # Debug version
     set(CMAKE_C_FLAGS_DEBUG   "-g")

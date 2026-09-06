@@ -689,10 +689,10 @@ BOOL XgUpdateDictionaryUsingClues(HWND hwnd, const XGStringW& dict_name)
 
     // 一行ずつ書き込む。
     for (auto& line : lines) {
-        auto psz = XgUnicodeToUtf8(line).c_str();
-        if (!*psz)
+        auto utf8 = XgUnicodeToUtf8(line);
+        if (!*utf8.c_str())
             continue;
-        fprintf(fp, "%s\n", psz);
+        fprintf(fp, "%s\n", utf8.c_str());
     }
 
     fclose(fp); // ちゃんとファイルを閉じようね。
