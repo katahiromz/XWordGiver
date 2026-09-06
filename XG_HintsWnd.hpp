@@ -770,6 +770,12 @@ public:
         if (!bStatic || !m_nNumber)
             DeleteMenu(hSubMenu, ID_JUMPNUMBER, MF_BYCOMMAND);
 
+        if (!m_nNumber)
+        {
+            DeleteMenu(hSubMenu, ID_CLEARTHISCLUE, MF_BYCOMMAND);
+            DeleteMenu(hSubMenu, ID_GENERATEHINT, MF_BYCOMMAND);
+        }
+
         // スタティックなら色を変える。
         if (bStatic)
         {
