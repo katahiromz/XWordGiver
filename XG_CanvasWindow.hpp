@@ -53,7 +53,8 @@ public:
         POINT pt;
         const int nCellSize = xg_nCellSize * xg_nZoomRate / 100;
 
-        // ダブルクリックは無視。
+        // シングルクリックは無視（キャレット移動は OnLButtonUp で行う）。
+        // ダブルクリック時のみマークのトグルを行う。
         if (!fDoubleClick)
             return;
 
