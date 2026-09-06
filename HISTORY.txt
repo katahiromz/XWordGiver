@@ -357,6 +357,7 @@
     - Fixed a handle leak in the XgUpdateImage function.
     - Sanitized AI Helper input.
     - Limit the number of times the "undo" action can be performed.
+    - Fixed an error in the "Small Font" setting of XG_SettingsDialog.
 
 # 開発履歴 (Japanese)
 
@@ -1033,3 +1034,4 @@
     - XgUpdateImage関数のハンドルリークを修正。
     - AIヘルパーの入力をサニタイズ。
     - 「元に戻せる」回数を制限。
+    - XG_SettingsDialogの「小さいフォント」設定の間違いを修正。

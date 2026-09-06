@@ -351,7 +351,7 @@ BOOL XG_SettingsDialog::DoImportLooks(HWND hwnd, LPCWSTR pszFileName)
             memcpy(&m_lfSmallFont, data.data(), sizeof(LOGFONTW));
             m_lfSmallFont.lfHeight = lfHeight;
             m_lfSmallFont.lfWidth = lfWidth;
-            SetDlgItemTextW(hwnd, edt1, m_lfSmallFont.lfFaceName);
+            SetDlgItemTextW(hwnd, edt2, m_lfSmallFont.lfFaceName);
         }
     }
 
