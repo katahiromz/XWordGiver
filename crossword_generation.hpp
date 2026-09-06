@@ -420,8 +420,8 @@ struct board_t : board_data_t<t_string> {
         auto ch = get_at(x, y);
         set_at(x, y, '#');
         bool ret = false;
-        for (int i = y - 4; i <= y + 4; ++y) {
-            for (int j = x - 4; i <= x + 4; ++i) {
+        for (int i = y - 4; i <= y + 4; ++i) {
+            for (int j = x - 4; j <= x + 4; ++j) {
                 int sum = 0;
                 sum += (real_get_at(j, i - 1) == '#');
                 sum += (real_get_at(j, i + 1) == '#');
@@ -472,8 +472,8 @@ skip:;
         auto ch = get_at(x, y);
         set_at(x, y, '#'); // 一時的にセット。後で戻す。
         bool ret = false;
-        for (int i = y - 3; i <= y + 3; ++y) {
-            for (int j = x - 3; i <= x + 3; ++i) {
+        for (int i = y - 3; i <= y + 3; ++i) {
+            for (int j = x - 3; j <= x + 3; ++j) {
                 if (real_get_at(j, i) != '#')
                     continue;
                 if (real_get_at(j + 1, i + 1) != '#')
@@ -486,8 +486,8 @@ skip:;
                 goto skip;
             }
         }
-        for (int i = y - 3; i <= y + 3; ++y) {
-            for (int j = x - 3; i <= x + 3; ++i) {
+        for (int i = y - 3; i <= y + 3; ++i) {
+            for (int j = x - 3; j <= x + 3; ++j) {
                 if (real_get_at(j, i) != '#')
                     continue;
                 if (real_get_at(j - 1, i + 1) != '#')
