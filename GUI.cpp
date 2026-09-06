@@ -8789,12 +8789,12 @@ void XgDoTests(void)
 //////////////////////////////////////////////////////////////////////////////
 
 // Windowsアプリのメイン関数。
-extern "C"
-int WINAPI WinMain(
+EXTERN_C INT WINAPI
+WinMain(
     HINSTANCE hInstance,
     HINSTANCE /*hPrevInstance*/,
     LPSTR /*pszCmdLine*/,
-    int nCmdShow)
+    INT nCmdShow)
 {
     // クリティカルセクションを初期化する。
     ::InitializeCriticalSection(&xg_csLock);
@@ -8999,6 +8999,7 @@ int WINAPI WinMain(
     // 設定を保存。
     XgSaveSettings();
 
+    // ハンドルリークを検出。
 #if (WINVER >= 0x0500) && !defined(NDEBUG)
     {
         HANDLE hProcess = GetCurrentProcess();
@@ -9012,7 +9013,7 @@ int WINAPI WinMain(
     }
 #endif
 
-    return static_cast<int>(msg.wParam);
+    return static_cast<INT>(msg.wParam);
 }
 
 //////////////////////////////////////////////////////////////////////////////
