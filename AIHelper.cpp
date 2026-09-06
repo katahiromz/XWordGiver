@@ -37,15 +37,15 @@ std::wstring g_buffer;
 BOOL XgIsUserJapanese(VOID) noexcept;
 #endif
 
-#define IDT_AI_LINE_FLUSH 999
+#define IDT_AI_OUTPUT_FLUSH 999
 
-// AIプロセスからの出力行を呼び出し側へ通知するためのコールバック
-static AIHELPER_LINE_CALLBACK g_pfnLineCallback = nullptr;
+// AIプロセスからの出力を呼び出し側へ通知するためのコールバック
+static AIHELPER_OUTPUT_CALLBACK g_pfnOutputCallback = nullptr;
 
 // コールバックを登録する（呼び出し側が解析したい場合に使う）
-void AIHelper_SetLineCallback(AIHELPER_LINE_CALLBACK callback)
+void AIHelper_SetOutputCallback(AIHELPER_OUTPUT_CALLBACK callback)
 {
-	g_pfnLineCallback = callback;
+	g_pfnOutputCallback = callback;
 }
 
 // 子プロセスの出力の1行をUIスレッドへ渡すためのカスタムメッセージ
@@ -360,7 +360,7 @@ static BOOL StartAIProcess(HWND hwnd)
 // 実行中のAIHelper_ja.pyプロセスを終了し、後片付けをする
 static void StopAIProcess(HWND hwnd)
 {
-	KillTimer(hwnd, IDT_AI_LINE_FLUSH);
+	KillTimer(hwnd, IDT_AI_OUTPUT_FLUSH);
 
 	g_bReaderStop = TRUE;
 
@@ -518,18 +518,18 @@ static void OnDestroy(HWND hwnd)
 // WM_TIMER
 static void OnTimer(HWND hwnd, UINT id)
 {
-	if (id != IDT_AI_LINE_FLUSH)
+	if (id != IDT_AI_OUTPUT_FLUSH)
 		return;
 
-	KillTimer(hwnd, IDT_AI_LINE_FLUSH);
+	KillTimer(hwnd, IDT_AI_OUTPUT_FLUSH);
 
 	std::wstring buffer = std::move(g_buffer);
 	g_buffer.clear();
 
-	// 登録されていれば、生の行をそのままコールバックへ渡す
+	// 登録されていれば、生の出力をそのままコールバックへ渡す
 	// (表示用のタグ除去はAddLineToList内でのみ行われ、ここには影響しない)
-	if (g_pfnLineCallback)
-		g_pfnLineCallback(buffer.c_str());
+	if (g_pfnOutputCallback)
+		g_pfnOutputCallback(buffer.c_str());
 }
 
 static INT_PTR CALLBACK
@@ -546,7 +546,7 @@ DialogProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	case WM_APP_AI_LINE:
 		if (lParam)
 		{
-			KillTimer(hwnd, IDT_AI_LINE_FLUSH);
+			KillTimer(hwnd, IDT_AI_OUTPUT_FLUSH);
 
 			// ReaderThreadProcがnewしたバッファを引き取って表示し、解放する
 			PWSTR psz = (PWSTR)lParam;
@@ -555,7 +555,7 @@ DialogProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			delete[] psz;
 
 			// デバウンス（debounce）パターン
-			SetTimer(hwnd, IDT_AI_LINE_FLUSH, 300, nullptr);
+			SetTimer(hwnd, IDT_AI_OUTPUT_FLUSH, 300, nullptr);
 		}
 		return TRUE;
 	}

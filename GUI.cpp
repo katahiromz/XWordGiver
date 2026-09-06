@@ -8481,8 +8481,8 @@ static void __fastcall XgParseAndApplyAICommand(LPCWSTR pszLine)
     }
 }
 
-// AIHelper.cppからの出力行コールバック。CALLBACK呼び出し規約に合わせる。
-static void CALLBACK XgOnAIHelperLine(LPCWSTR pszLine)
+// AIHelper.cppからの出力コールバック。CALLBACK呼び出し規約に合わせる。
+static void CALLBACK XgOnAIHelperOutput(LPCWSTR pszLine)
 {
     XgParseAndApplyAICommand(pszLine);
 }
@@ -8492,7 +8492,7 @@ std::wstring XG_GetAIPreText_ja(void)
 {
     // AIヘルパーからの出力を解析できるよう、コールバックを登録する（初回のみ）。
     if (!s_bAICallbackRegistered) {
-        AIHelper_SetLineCallback(XgOnAIHelperLine);
+        AIHelper_SetOutputCallback(XgOnAIHelperOutput);
         s_bAICallbackRegistered = true;
     }
 
@@ -8514,7 +8514,7 @@ std::wstring XG_GetAIPreText_en(void)
 {
     // Register the callback so we can parse output from the AI helper (only the first time).
     if (!s_bAICallbackRegistered) {
-        AIHelper_SetLineCallback(XgOnAIHelperLine);
+        AIHelper_SetOutputCallback(XgOnAIHelperOutput);
         s_bAICallbackRegistered = true;
     }
 
@@ -8544,7 +8544,7 @@ void XgRegenerateCluesAll(HWND hwnd)
 {
     // Register the callback so we can parse output from the AI helper (only the first time).
     if (!s_bAICallbackRegistered) {
-        AIHelper_SetLineCallback(XgOnAIHelperLine);
+        AIHelper_SetOutputCallback(XgOnAIHelperOutput);
         s_bAICallbackRegistered = true;
     }
 
@@ -8568,7 +8568,7 @@ BOOL XgGenerateClue_ja(INT nNumber, BOOL bDown)
 
     // AIヘルパーからの出力を解析できるよう、コールバックを登録する（初回のみ）。
     if (!s_bAICallbackRegistered) {
-        AIHelper_SetLineCallback(XgOnAIHelperLine);
+        AIHelper_SetOutputCallback(XgOnAIHelperOutput);
         s_bAICallbackRegistered = true;
     }
 
@@ -8605,7 +8605,7 @@ BOOL XgGenerateClue_en(INT nNumber, BOOL bDown)
 
     // Register the callback so we can parse output from the AI helper (only the first time).
     if (!s_bAICallbackRegistered) {
-        AIHelper_SetLineCallback(XgOnAIHelperLine);
+        AIHelper_SetOutputCallback(XgOnAIHelperOutput);
         s_bAICallbackRegistered = true;
     }
 
