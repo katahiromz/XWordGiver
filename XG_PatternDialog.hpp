@@ -116,7 +116,10 @@ public:
         // インデックスとして追加する。
         for (size_t i = 0; i < s_patterns.size(); ++i)
         {
-            SendDlgItemMessageW(hwnd, lst1, LB_ADDSTRING, 0, i);
+            // owner-draw のため文字列は空で追加し、itemData にインデックスを設定
+            const int idx = static_cast<int>(SendDlgItemMessageW(hwnd, lst1, LB_ADDSTRING, 0, (LPARAM)L""));
+            if (idx != LB_ERR)
+                SendDlgItemMessageW(hwnd, lst1, LB_SETITEMDATA, idx, static_cast<LPARAM>(i));
         }
 
         return TRUE;
