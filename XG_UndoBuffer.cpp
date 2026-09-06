@@ -2,6 +2,8 @@
 
 //////////////////////////////////////////////////////////////////////////////
 
+static constexpr int c_max_size = 25;
+
 void XG_UndoData_SetAt::Apply() const {
     xg_xword.SetAt(pos, ch);
     xg_caret_pos = pos;
@@ -173,10 +175,14 @@ void XG_UndoBuffer::Commit(const XG_UndoInfo& ui) {
 
     emplace_back(ui);
     ++m_i;
+
+    if (size() > c_max_size) {
+        pop_front();
+        --m_i;
+    }
+
     XG_FILE_MODIFIED(TRUE);
 }
-
-static constexpr int c_max_size = 25;
 
 void XG_UndoBuffer::Commit(UINT id,
     shared_ptr<XG_UndoData> before, shared_ptr<XG_UndoData> after)
