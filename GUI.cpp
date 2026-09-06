@@ -175,6 +175,16 @@ BOOL xg_bFileModified = FALSE;
 // タスクバーの進捗表示。
 std::shared_ptr<TaskbarProgress> xg_pTaskbarProgress;
 
+inline void XgTaskbarError() {
+    if (xg_pTaskbarProgress) xg_pTaskbarProgress->Error();
+}
+inline void XgTaskbarClear() {
+    if (xg_pTaskbarProgress) xg_pTaskbarProgress->Clear();
+}
+inline void XgTaskbarFinish() {
+    if (xg_pTaskbarProgress) xg_pTaskbarProgress->Finish();
+}
+
 // ファイル変更フラグ。
 void XgSetModified(BOOL bModified, LPCSTR file, int line)
 {
@@ -1537,36 +1547,36 @@ bool __fastcall XgCheckCrossWord(HWND hwnd, bool check_words, bool loose, bool b
     // 四隅黒禁。
     if ((xg_nRules & RULE_DONTCORNERBLACK) && xg_xword.CornerBlack()) {
         XgFailureSound(bPlaySound);
-        xg_pTaskbarProgress->Error();
+        XgTaskbarError();
         XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_CORNERBLOCK), nullptr, MB_ICONERROR);
-        xg_pTaskbarProgress->Clear();
+        XgTaskbarClear();
         return false;
     }
 
     // 連黒禁。
     if ((xg_nRules & RULE_DONTDOUBLEBLACK) && xg_xword.DoubleBlack()) {
         XgFailureSound(bPlaySound);
-        xg_pTaskbarProgress->Error();
+        XgTaskbarError();
         XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_ADJACENTBLOCK), nullptr, MB_ICONERROR);
-        xg_pTaskbarProgress->Clear();
+        XgTaskbarClear();
         return false;
     }
 
     // 三方黒禁。
     if ((xg_nRules & RULE_DONTTRIDIRECTIONS) && xg_xword.TriBlackAround()) {
         XgFailureSound(bPlaySound);
-        xg_pTaskbarProgress->Error();
+        XgTaskbarError();
         XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_TRIBLOCK), nullptr, MB_ICONERROR);
-        xg_pTaskbarProgress->Clear();
+        XgTaskbarClear();
         return false;
     }
 
     // 分断禁。
     if ((xg_nRules & RULE_DONTDIVIDE) && xg_xword.DividedByBlack()) {
         XgFailureSound(bPlaySound);
-        xg_pTaskbarProgress->Error();
+        XgTaskbarError();
         XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_DIVIDED), nullptr, MB_ICONERROR);
-        xg_pTaskbarProgress->Clear();
+        XgTaskbarClear();
         return false;
     }
 
@@ -1574,18 +1584,18 @@ bool __fastcall XgCheckCrossWord(HWND hwnd, bool check_words, bool loose, bool b
     if (xg_nRules & RULE_DONTTHREEDIAGONALS) {
         if (xg_xword.ThreeDiagonals()) {
             XgFailureSound(bPlaySound);
-            xg_pTaskbarProgress->Error();
+            XgTaskbarError();
             XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_THREEDIAGONALS), nullptr, MB_ICONERROR);
-            xg_pTaskbarProgress->Clear();
+            XgTaskbarClear();
             return false;
         }
     } else if (xg_nRules & RULE_DONTFOURDIAGONALS) {
         // 黒斜四連禁。
         if (xg_xword.FourDiagonals()) {
             XgFailureSound(bPlaySound);
-            xg_pTaskbarProgress->Error();
+            XgTaskbarError();
             XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_FOURDIAGONALS), nullptr, MB_ICONERROR);
-            xg_pTaskbarProgress->Clear();
+            XgTaskbarClear();
             return false;
         }
     }
@@ -1594,25 +1604,25 @@ bool __fastcall XgCheckCrossWord(HWND hwnd, bool check_words, bool loose, bool b
         // 黒マス点対称。
         if ((xg_nRules & RULE_POINTSYMMETRY) && !xg_xword.IsPointSymmetry()) {
             XgFailureSound(bPlaySound);
-            xg_pTaskbarProgress->Error();
+            XgTaskbarError();
             XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_NOTPOINTSYMMETRY), nullptr, MB_ICONERROR);
-            xg_pTaskbarProgress->Clear();
+            XgTaskbarClear();
             return false;
         }
 
         // 黒マス線対称。
         if ((xg_nRules & RULE_LINESYMMETRYV) && !xg_xword.IsLineSymmetryV()) {
             XgFailureSound(bPlaySound);
-            xg_pTaskbarProgress->Error();
+            XgTaskbarError();
             XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_NOTLINESYMMETRYV), nullptr, MB_ICONERROR);
-            xg_pTaskbarProgress->Clear();
+            XgTaskbarClear();
             return false;
         }
         if ((xg_nRules & RULE_LINESYMMETRYH) && !xg_xword.IsLineSymmetryH()) {
             XgFailureSound(bPlaySound);
-            xg_pTaskbarProgress->Error();
+            XgTaskbarError();
             XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_NOTLINESYMMETRYH), nullptr, MB_ICONERROR);
-            xg_pTaskbarProgress->Clear();
+            XgTaskbarClear();
             return false;
         }
     }
@@ -1620,17 +1630,17 @@ bool __fastcall XgCheckCrossWord(HWND hwnd, bool check_words, bool loose, bool b
     // 偶数行数で黒マス線対称（タテ）の場合は連黒禁は不可。
     if (!(xg_nRows & 1) && (xg_nRules & RULE_LINESYMMETRYV) && (xg_nRules & RULE_DONTDOUBLEBLACK)) {
         XgFailureSound(bPlaySound);
-        xg_pTaskbarProgress->Error();
+        XgTaskbarError();
         XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_EVENROWLINESYMV), nullptr, MB_ICONERROR);
-        xg_pTaskbarProgress->Clear();
+        XgTaskbarClear();
         return false;
     }
     // 偶数列数で黒マス線対称（ヨコ）の場合は連黒禁は不可。
     if (!(xg_nCols & 1) && (xg_nRules & RULE_LINESYMMETRYH) && (xg_nRules & RULE_DONTDOUBLEBLACK)) {
         XgFailureSound(bPlaySound);
-        xg_pTaskbarProgress->Error();
+        XgTaskbarError();
         XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_EVENCOLLINESYMH), nullptr, MB_ICONERROR);
-        xg_pTaskbarProgress->Clear();
+        XgTaskbarClear();
         return false;
     }
 
@@ -1644,16 +1654,16 @@ bool __fastcall XgCheckCrossWord(HWND hwnd, bool check_words, bool loose, bool b
             XgFailureSound(bPlaySound);
             WCHAR sz[128];
             StringCchPrintf(sz, _countof(sz), XgLoadStringDx1(IDS_NOCANDIDATE), pos.m_j + 1, pos.m_i + 1);
-            xg_pTaskbarProgress->Error();
+            XgTaskbarError();
             XgCenterMessageBoxW(hwnd, sz, nullptr, MB_ICONERROR);
-            xg_pTaskbarProgress->Clear();
+            XgTaskbarClear();
             return false;
         }
     } else if (code == xg_epv_DOUBLEWORD) {
         // すでに使用した単語があった。
-        xg_pTaskbarProgress->Error();
+        XgTaskbarError();
         XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_DOUBLEDWORD), nullptr, MB_ICONERROR);
-        xg_pTaskbarProgress->Clear();
+        XgTaskbarClear();
         return false;
     } else if (code == xg_epv_LENGTHMISMATCH) {
         if (check_words) {
@@ -1661,9 +1671,9 @@ bool __fastcall XgCheckCrossWord(HWND hwnd, bool check_words, bool loose, bool b
             XgFailureSound(bPlaySound);
             WCHAR sz[128];
             StringCchPrintf(sz, _countof(sz), XgLoadStringDx1(IDS_TOOLONGSPACE), pos.m_j + 1, pos.m_i + 1);
-            xg_pTaskbarProgress->Error();
+            XgTaskbarError();
             XgCenterMessageBoxW(hwnd, sz, nullptr, MB_ICONERROR);
-            xg_pTaskbarProgress->Clear();
+            XgTaskbarClear();
             return false;
         }
     }
@@ -3196,7 +3206,7 @@ void __fastcall XgShowResults(HWND hwnd, BOOL bOK)
     }
 
     // タスクバーの進捗表示をクリアする。
-    xg_pTaskbarProgress->Clear();
+    XgTaskbarClear();
 }
 
 // 自動的にPAT.txtから選んで問題を作成する。
@@ -3261,7 +3271,7 @@ TRIVALUE XgGenerateFromPat(HWND hwnd)
     XgUpdateImage(hwnd);
 
     if (xg_bSolved) {
-        xg_pTaskbarProgress->Finish();
+        XgTaskbarFinish();
         // 番号とヒントを付ける。
         xg_solution.DoNumberingNoCheck();
         XgUpdateHints();
@@ -3279,7 +3289,7 @@ TRIVALUE XgGenerateFromPat(HWND hwnd)
         // 結果を表示する。
         XgShowResults(hwnd, TRUE);
     } else {
-        xg_pTaskbarProgress->Clear();
+        XgTaskbarClear();
         // 結果を表示する。
         XgShowResults(hwnd, FALSE);
     }
@@ -3371,20 +3381,20 @@ bool __fastcall XgOnGenerateBlacksRepeatedly(HWND hwnd)
 
     WCHAR sz[MAX_PATH];
     if (xg_bCancelled) { // キャンセルされた？
-        xg_pTaskbarProgress->Clear();
+        XgTaskbarClear();
         // 「計算がキャンセルされました」を表示
         StringCchPrintf(sz, _countof(sz), XgLoadStringDx1(IDS_CANCELLED),
                        DWORD(xg_dwlTick2 - xg_dwlTick0) / 1000,
                        DWORD(xg_dwlTick2 - xg_dwlTick0) / 100 % 10);
         XgCenterMessageBoxW(hwnd, sz, XgLoadStringDx2(IDS_RESULTS), MB_ICONINFORMATION);
     } else {
-        xg_pTaskbarProgress->Finish();
+        XgTaskbarFinish();
         StringCchPrintf(sz, _countof(sz), XgLoadStringDx1(IDS_BLOCKSGENERATED),
                        xg_nNumberGenerated,
                        DWORD(xg_dwlTick2 - xg_dwlTick0) / 1000,
                        DWORD(xg_dwlTick2 - xg_dwlTick0) / 100 % 10);
         XgCenterMessageBoxW(hwnd, sz, XgLoadStringDx2(IDS_RESULTS), MB_ICONINFORMATION);
-        xg_pTaskbarProgress->Clear();
+        XgTaskbarClear();
     }
 
     // 保存先フォルダを開く。
@@ -3453,19 +3463,19 @@ bool __fastcall XgOnGenerateBlacks(HWND hwnd, bool sym)
 
     WCHAR sz[MAX_PATH];
     if (xg_bCancelled) { // キャンセルされた
-        xg_pTaskbarProgress->Clear();
+        XgTaskbarClear();
         // 「計算がキャンセルされました」を表示
         StringCchPrintf(sz, _countof(sz), XgLoadStringDx1(IDS_CANCELLED),
                        DWORD(xg_dwlTick2 - xg_dwlTick0) / 1000,
                        DWORD(xg_dwlTick2 - xg_dwlTick0) / 100 % 10);
         XgCenterMessageBoxW(hwnd, sz, XgLoadStringDx2(IDS_RESULTS), MB_ICONINFORMATION);
     } else {
-        xg_pTaskbarProgress->Finish();
+        XgTaskbarFinish();
         StringCchPrintf(sz, _countof(sz), XgLoadStringDx1(IDS_BLOCKSGENERATED), 1,
                        DWORD(xg_dwlTick2 - xg_dwlTick0) / 1000,
                        DWORD(xg_dwlTick2 - xg_dwlTick0) / 100 % 10);
         XgCenterMessageBoxW(hwnd, sz, XgLoadStringDx2(IDS_RESULTS), MB_ICONINFORMATION);
-        xg_pTaskbarProgress->Clear();
+        XgTaskbarClear();
     }
     return true;
 }
@@ -3525,7 +3535,7 @@ bool __fastcall XgOnSolve_AddBlack(HWND hwnd)
     WCHAR sz[MAX_PATH];
     if (xg_bCancelled) { // キャンセルされた。
         // 解なし。表示を更新する。
-        xg_pTaskbarProgress->Clear();
+        XgTaskbarClear();
         xg_bShowAnswer = false;
         XgSetCaretPos();
         XgMarkUpdate();
@@ -3536,7 +3546,7 @@ bool __fastcall XgOnSolve_AddBlack(HWND hwnd)
                        DWORD(xg_dwlTick2 - xg_dwlTick0) / 100 % 10);
         XgCenterMessageBoxW(hwnd, sz, XgLoadStringDx2(IDS_RESULTS), MB_ICONINFORMATION);
     } else if (xg_bSolved) {
-        xg_pTaskbarProgress->Finish();
+        XgTaskbarFinish();
         // 空マスがないか？
         if (xg_xword.IsFulfilled()) {
             // 空マスがない。クリア。
@@ -3568,7 +3578,7 @@ bool __fastcall XgOnSolve_AddBlack(HWND hwnd)
         // 結果を表示する。
         XgShowResults(hwnd, TRUE);
     } else {
-        xg_pTaskbarProgress->Error();
+        XgTaskbarError();
         // 解なし。表示を更新する。
         xg_bShowAnswer = false;
         XgSetCaretPos();
@@ -3634,7 +3644,7 @@ bool __fastcall XgOnSolve_NoAddBlack(HWND hwnd)
     if (xg_bCancelled) {
         // キャンセルされた。
         // 解なし。表示を更新する。
-        xg_pTaskbarProgress->Clear();
+        XgTaskbarClear();
         xg_bShowAnswer = false;
         XgSetCaretPos();
         XgMarkUpdate();
@@ -3644,7 +3654,7 @@ bool __fastcall XgOnSolve_NoAddBlack(HWND hwnd)
         XgShowResults(hwnd, FALSE);
     } else if (xg_bSolved) {
         // 空マスがないか？
-        xg_pTaskbarProgress->Finish();
+        XgTaskbarFinish();
         if (xg_xword.IsFulfilled()) {
             // 空マスがない。クリア。
             xg_xword.clear();
@@ -3676,7 +3686,7 @@ bool __fastcall XgOnSolve_NoAddBlack(HWND hwnd)
         XgShowResults(hwnd, TRUE);
     } else {
         // 解なし。表示を更新する。
-        xg_pTaskbarProgress->Error();
+        XgTaskbarError();
         xg_bShowAnswer = false;
         XgSetCaretPos();
         XgMarkUpdate();
@@ -5699,7 +5709,7 @@ void XgGenerateFromWordList(HWND hwnd)
         nID = static_cast<int>(dialog.DoModal(hwnd));
     }
     if (nID == IDCANCEL) { // キャンセルされた。
-        xg_pTaskbarProgress->Clear();
+        XgTaskbarClear();
         // 「計算がキャンセルされました」を表示
         WCHAR sz[256];
         StringCchPrintfW(sz, _countof(sz), XgLoadStringDx1(IDS_CANCELLED),
@@ -5711,12 +5721,12 @@ void XgGenerateFromWordList(HWND hwnd)
 
     if (!s_generated) {
         // 生成できなかった。
-        xg_pTaskbarProgress->Error();
+        XgTaskbarError();
         XgShowResults(hwnd, FALSE);
         return;
     }
 
-    xg_pTaskbarProgress->Finish();
+    XgTaskbarFinish();
 
     // 「元に戻す」情報を取得する。
     auto sa1 = std::make_shared<XG_UndoData_SetAll>();
@@ -6108,13 +6118,13 @@ void __fastcall XgGenerate(HWND hwnd)
     XgWaitForThreads();
 
     if (!xg_bSolved) {
-        xg_pTaskbarProgress->Clear();
+        XgTaskbarClear();
         // 結果を表示する。
         XgShowResults(hwnd, FALSE);
         return;
     }
 
-    xg_pTaskbarProgress->Finish();
+    XgTaskbarFinish();
 
     // 番号とヒントを付ける。
     xg_solution.DoNumberingNoCheck();
@@ -8303,15 +8313,15 @@ XGStringW XgGetAIStatus_ja(void)
     ret += L"クロスワードの盤が生成済みです。";
     for (BOOL bDown = FALSE; bDown <= TRUE; ++bDown)
     {
-        // 範囲チェック（info_vecとhint_vecのサイズがズレている場合に備える）。
-        if (i >= hint_vec.size())
-            break;
-
         // タテかヨコかで対象の配列を選ぶ。
         auto& info_vec = bDown ? xg_vVertInfo : xg_vHorzInfo;
         auto& hint_vec = bDown ? xg_vecVertHints : xg_vecHorzHints;
 
         for (size_t i = 0; i < info_vec.size(); ++i) {
+            // 範囲チェック（info_vecとhint_vecのサイズがズレている場合に備える）。
+            if (i >= hint_vec.size())
+                break;
+
             auto number = info_vec[i].m_number;
             auto word = hint_vec[i].m_strWord;
             auto text = hint_vec[i].m_strHint;
@@ -8344,14 +8354,14 @@ XGStringW XgGetAIStatus_en(void)
     ret += L"The crossword board has been generated.";
     for (BOOL bDown = FALSE; bDown <= TRUE; ++bDown)
     {
-        // Bounds check (in case info_vec and hint_vec sizes ever diverge).
-        if (i >= hint_vec.size())
-            break;
-
         // Choose the target array depending on whether it's Down or Across.
         auto& info_vec = bDown ? xg_vVertInfo : xg_vHorzInfo;
         auto& hint_vec = bDown ? xg_vecVertHints : xg_vecHorzHints;
         for (size_t i = 0; i < info_vec.size(); ++i) {
+            // Bounds check (in case info_vec and hint_vec sizes ever diverge).
+            if (i >= hint_vec.size())
+                break;
+
             auto number = info_vec[i].m_number;
             auto word = hint_vec[i].m_strWord;
             auto text = hint_vec[i].m_strHint;
