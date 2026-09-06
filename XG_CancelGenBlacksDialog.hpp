@@ -41,10 +41,9 @@ public:
         XgCenterDialog(hwnd);
         // リセット。
         m_cancellation_manager.Reset();
-        // 初期状態を保存。
-        m_cancellation_manager.SaveInitialState();
         // 解を求めるのを開始。
         XgStartGenerateBlacks();
+        m_cancellation_manager.SaveInitialState();
         // リトライ回数をリセット。
         ::InterlockedExchange(&xg_nRetryCount, 0);
         // タイマーをセットする。

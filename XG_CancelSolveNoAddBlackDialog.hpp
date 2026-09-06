@@ -21,10 +21,10 @@ public:
         xg_dwlTick1 = ::GetTickCount64();
         // リセット。
         m_cancellation_manager.Reset();
-        // 初期状態を保存。
-        m_cancellation_manager.SaveInitialState();
         // スマート解決なら、黒マスを生成する。
         XgStartSolve_NoAddBlack();
+        // 入れ替え後の状態を保存（重要）
+        m_cancellation_manager.SaveInitialState();
         // タイマーをセットする。
         ::SetTimer(hwnd, uTimerID, INTERVAL, nullptr);
     }

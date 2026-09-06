@@ -587,12 +587,12 @@ public:
 
     XG_BoardEx& operator=(const XG_Board& src) {
         m_vCells = src.m_vCells;
+        // m_nRows / m_nCols は触らない（xg_nRows/xg_nCols が参照しているため、
+        // 代入時点のサイズを維持する）
         return *this;
     }
     XG_BoardEx& operator=(const XG_BoardEx& src) {
         m_vCells = src.m_vCells;
-        m_nRows = src.m_nRows;
-        m_nCols = src.m_nCols;
         return *this;
     }
     XG_BoardEx& operator=(XG_Board&& src) noexcept {
@@ -601,8 +601,6 @@ public:
     }
     XG_BoardEx& operator=(XG_BoardEx&& src) noexcept {
         m_vCells = std::move(src.m_vCells);
-        m_nRows = src.m_nRows;
-        m_nCols = src.m_nCols;
         return *this;
     }
 
