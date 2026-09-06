@@ -535,20 +535,12 @@ static void OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT codeNotify)
 		if (OnOK(hwnd))
 		{
 			StopAIProcess(hwnd);
-#ifdef AIHELPER_STANDALONE
-			EndDialog(hwnd, id);
-#else
 			DestroyWindow(hwnd);
-#endif
 		}
 		break;
 	case IDCANCEL:
 		StopAIProcess(hwnd);
-#ifdef AIHELPER_STANDALONE
-		EndDialog(hwnd, id);
-#else
 		DestroyWindow(hwnd);
-#endif
 		break;
 	}
 }
@@ -559,9 +551,6 @@ static void OnDestroy(HWND hwnd)
 	StopAIProcess(hwnd);
 	g_hwndAIHelper = nullptr;
 	g_buffer.clear();
-#ifdef AIHELPER_STANDALONE
-	PostQuitMessage(0);
-#endif
 }
 
 // WM_TIMER
@@ -639,17 +628,3 @@ BOOL OpenAIHelper(HWND hwndOwner, BOOL bOpen)
 		return FALSE;
 	}
 }
-
-#ifdef AIHELPER_STANDALONE
-INT WINAPI
-WinMain(HINSTANCE   hInstance,
-        HINSTANCE   hPrevInstance,
-        LPSTR       lpCmdLine,
-        INT         nCmdShow)
-{
-	g_hAIHelperInst = hInstance;
-	InitCommonControls();
-	DialogBox(hInstance, MAKEINTRESOURCE(IDD_AIHELPERCONSOLE), nullptr, DialogProc);
-	return 0;
-}
-#endif
