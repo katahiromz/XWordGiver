@@ -6,6 +6,7 @@
 extern std::wstring g_privider;
 extern std::wstring g_model;
 extern std::wstring g_python_exe;
+extern std::wstring g_additional_instruction;
 
 INT_PTR CALLBACK
 XgAIHelperDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
@@ -40,6 +41,7 @@ XgAIHelperDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
             SetDlgItemTextW(hwnd, cmb1, g_privider.c_str());
             SetDlgItemTextW(hwnd, cmb2, g_model.c_str());
             SetDlgItemTextW(hwnd, edt1, g_python_exe.c_str());
+            SetDlgItemTextW(hwnd, edt2, g_additional_instruction.c_str());
         }
         return TRUE;
     case WM_COMMAND:
@@ -73,6 +75,7 @@ XgAIHelperDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
             }
             break;
         case edt1:
+        case edt2:
             if (HIWORD(wParam) == EN_CHANGE)
             {
                 PropSheet_Changed(GetParent(hwnd), hwnd);
@@ -130,6 +133,8 @@ XgAIHelperDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
                 g_model = text;
                 GetDlgItemTextW(hwnd, edt1, text, _countof(text));
                 g_python_exe = text;
+                GetDlgItemTextW(hwnd, edt2, text, _countof(text));
+                g_additional_instruction = text;
                 return SetDlgMsgResult(hwnd, WM_NOTIFY, PSNRET_NOERROR);
             }
         }

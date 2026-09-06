@@ -1590,7 +1590,7 @@ FONT 9, "Tahoma"
     PUSHBUTTON "&Update the current dictionary using the clues of the current problem", psh4, 40, 160, 185, 40, BS_MULTILINE
 }
 
-IDD_AIHELPER DIALOG 0, 0, 271, 160
+IDD_AIHELPER DIALOG 0, 0, 271, 200
 CAPTION "AI Helper"
 STYLE DS_MODALFRAME | WS_POPUPWINDOW | WS_CAPTION
 FONT 9, "Tahoma"
@@ -1603,6 +1603,8 @@ FONT 9, "Tahoma"
     RTEXT "python.exe:", -1, 7, 98, 52, 13
     EDITTEXT edt1, 65, 97, 172, 14
     PUSHBUTTON "&Browse...", psh2, 177, 116, 60, 14
+    LTEXT "Additional instruction &text:", -1, 11, 131, 112, 12
+    EDITTEXT edt2, 11, 146, 225, 37, ES_AUTOVSCROLL | ES_MULTILINE | WS_VSCROLL | WS_HSCROLL
 }
 
 IDD_AIHELPERCONSOLE DIALOG 0, 0, 283, 133

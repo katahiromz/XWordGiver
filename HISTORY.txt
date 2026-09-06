@@ -349,6 +349,7 @@
     - Added a feature to re-generate all clues.
     - Added the ability to undo AI helper actions.
     - Fixed the "Undo" and "Redo" operations for clues.
+    - Added the ability to specify "additional instruction text" for the AI ​​helper.
 
 # 開発履歴 (Japanese)
 
@@ -1017,3 +1018,4 @@
     - カギをすべて再生成する機能を追加。
     - AIヘルパーのアクションを元に戻せるように。
     - カギの「元に戻す」「やり直す」処理を修正。
+    - AIヘルパーに「追加的な指示テキスト」を指定できるようにした。

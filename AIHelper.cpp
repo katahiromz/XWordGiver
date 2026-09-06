@@ -29,6 +29,7 @@ HWND g_hwndAIHelper = nullptr;
 std::wstring g_privider = L"gemini";
 std::wstring g_model = L"gemini-3.6-flash";
 std::wstring g_python_exe;
+std::wstring g_additional_instruction;
 
 #ifdef __XWORDGIVER__
 BOOL XgIsUserJapanese(VOID) noexcept;
@@ -396,7 +397,11 @@ void AskAIQuestion(HWND hwnd, PCWSTR text)
 	}
 #endif
 	line += text;
-	line += L"\n";
+	if (g_additional_instruction.size())
+	{
+		line += L"\n---\n";
+		line += g_additional_instruction;
+	}
 
 	std::string utf8 = WideToUtf8(line.c_str());
 
