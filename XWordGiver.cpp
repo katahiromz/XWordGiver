@@ -8347,7 +8347,7 @@ void XgShowPatInfo(HWND hwndInfo)
         WCHAR szPath[MAX_PATH];
         XgFindLocalFile(szPath, _countof(szPath), L"PAT.txt");
         if (!XgLoadPatterns(szPath, patterns)) {
-            ::SetWindowTextW(hwndInfo, NULL);
+            ::SetWindowTextW(hwndInfo, nullptr);
             return;
         }
 

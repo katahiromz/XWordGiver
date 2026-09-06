@@ -271,7 +271,7 @@ public:
         xg_svHintsScrollView.UpdateAll();
 
         // 再描画。
-        RedrawWindow(hwnd, NULL, NULL, RDW_INVALIDATE | RDW_UPDATENOW | RDW_ALLCHILDREN);
+        RedrawWindow(hwnd, nullptr, nullptr, RDW_INVALIDATE | RDW_UPDATENOW | RDW_ALLCHILDREN);
     }
 
     struct XG_HintEditData
@@ -746,7 +746,7 @@ public:
     // ジャンプ先番号。
     INT m_nNumber = 0;
     BOOL m_bVert = FALSE;
-    HWND m_hwndTrackMenuOn = NULL;
+    HWND m_hwndTrackMenuOn = nullptr;
 
     // WM_CONTEXTMENU
     // 「ヒント」ウィンドウのコンテキストメニュー。
@@ -780,7 +780,7 @@ public:
         if (bStatic)
         {
             m_hwndTrackMenuOn = hwndContext;
-            InvalidateRect(hwndContext, NULL, TRUE);
+            InvalidateRect(hwndContext, nullptr, TRUE);
         }
 
         // 右クリックメニューを表示する。
@@ -791,8 +791,8 @@ public:
         // 色を戻す。
         if (bStatic)
         {
-            m_hwndTrackMenuOn = NULL;
-            InvalidateRect(hwndContext, NULL, TRUE);
+            m_hwndTrackMenuOn = nullptr;
+            InvalidateRect(hwndContext, nullptr, TRUE);
         }
 
         ::PostMessageW(hwnd, WM_NULL, 0, 0);

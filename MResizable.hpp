@@ -61,7 +61,7 @@ public:
 						BOOL bShowSizeGrip = TRUE);
 
 	// NOTE: Please call OnSize on parent's WM_SIZE.
-	VOID OnSize(const RECT *prcClient = NULL);
+	VOID OnSize(const RECT *prcClient = nullptr);
 
 	// NOTE: Please call SetLayoutAnchor after OnParentCreate.
 	// NOTE: sizLA_1 is upper left anchor, sizLA_2 is lower right anchor.
@@ -99,7 +99,7 @@ private:
 ////////////////////////////////////////////////////////////////////////////
 
 inline MResizable::MResizable()
-	: m_hwndParent(NULL), m_bResizeEnabled(FALSE)
+	: m_hwndParent(nullptr), m_bResizeEnabled(FALSE)
 {
 }
 
@@ -122,7 +122,7 @@ inline VOID MResizable::SetLayoutAnchor(
 		GetDlgItem(m_hwndParent, nCtrlID), sizLA_1, sizLA_2);
 }
 
-inline VOID MResizable::OnSize(const RECT *prcClient/* = NULL*/)
+inline VOID MResizable::OnSize(const RECT *prcClient/* = nullptr*/)
 {
 	assert(m_hwndParent);
 	assert(::IsWindow(m_hwndParent));
@@ -151,7 +151,7 @@ inline VOID MResizable::ShowSizeGrip(BOOL bShow/* = TRUE*/)
 			GetClientRect(m_hwndParent, &ClientRect);
 			INT cx = ::GetSystemMetrics(SM_CXVSCROLL);
 			INT cy = ::GetSystemMetrics(SM_CYHSCROLL);
-			m_size_grip.CreateWindowDx(m_hwndParent, NULL,
+			m_size_grip.CreateWindowDx(m_hwndParent, nullptr,
 				WS_CHILD | WS_CLIPSIBLINGS | SBS_SIZEGRIP, 0,
 				ClientRect.right - cx, ClientRect.bottom - cy,
 				cx, cy, reinterpret_cast<HMENU>(123456789));
@@ -179,7 +179,7 @@ inline VOID MResizable::MoveSizeGrip()
 		GetClientRect(m_hwndParent, &ClientRect);
 		INT cx = ::GetSystemMetrics(SM_CXVSCROLL);
 		INT cy = ::GetSystemMetrics(SM_CYHSCROLL);
-		SetWindowPos(m_size_grip, NULL,
+		SetWindowPos(m_size_grip, nullptr,
 			ClientRect.right - cx, ClientRect.bottom - cy,
 			cx, cy, SWP_NOACTIVATE | SWP_NOOWNERZORDER | SWP_NOZORDER);
 	}
@@ -227,9 +227,9 @@ inline VOID MResizable::ModifyParentStyle(BOOL bEnableResize)
 		RemoveMenu(hSysMenu, SC_SIZE, MF_BYCOMMAND);
 		RemoveMenu(hSysMenu, SC_RESTORE, MF_BYCOMMAND);
 	}
-	RedrawWindow(m_hwndParent, NULL, NULL,
+	RedrawWindow(m_hwndParent, nullptr, nullptr,
 				   RDW_FRAME | RDW_INVALIDATE | RDW_ERASENOW);
-	InvalidateRect(m_hwndParent, NULL, TRUE);
+	InvalidateRect(m_hwndParent, nullptr, TRUE);
 }
 
 inline VOID
@@ -276,7 +276,7 @@ inline VOID MResizable::ArrangeLayout(const RECT *prc)
 		return;
 
 	HDWP hDwp = ::BeginDeferWindowPos(count);
-	if (hDwp == NULL)
+	if (hDwp == nullptr)
 		return;
 
 	const UINT uFlags = SWP_NOZORDER | SWP_NOACTIVATE | SWP_NOREPOSITION;
@@ -290,7 +290,7 @@ inline VOID MResizable::ArrangeLayout(const RECT *prc)
 		MRect ChildRect, NewRect;
 
 		GetWindowRect(hwndCtrl, &ChildRect);
-		MapWindowPoints(NULL, m_hwndParent,
+		MapWindowPoints(nullptr, m_hwndParent,
 						  reinterpret_cast<LPPOINT>(&ChildRect), 2);
 
 		NewRect.left = layout.m_sizMargin1.cx +
@@ -304,12 +304,12 @@ inline VOID MResizable::ArrangeLayout(const RECT *prc)
 
 		if (NewRect != ChildRect)
 		{
-			hDwp = ::DeferWindowPos(hDwp, hwndCtrl, NULL,
+			hDwp = ::DeferWindowPos(hDwp, hwndCtrl, nullptr,
 				NewRect.left, NewRect.top,
 				NewRect.Width(), NewRect.Height(), uFlags);
 		}
 
-		InvalidateRect(hwndCtrl, NULL, TRUE);
+		InvalidateRect(hwndCtrl, nullptr, TRUE);
 	}
 
 	EndDeferWindowPos(hDwp);
@@ -325,7 +325,7 @@ inline VOID MResizable::SetLayoutAnchor(
 	MRect ClientRect, ChildRect;
 	GetClientRect(m_hwndParent, &ClientRect);
 	GetWindowRect(hwndCtrl, &ChildRect);
-	MapWindowPoints(NULL, m_hwndParent,
+	MapWindowPoints(nullptr, m_hwndParent,
 					reinterpret_cast<LPPOINT>(&ChildRect), 2);
 
 	if (sizLA_2 == mzcLA_NO_ANCHOR)
@@ -355,7 +355,7 @@ inline MResizable::layout_type *MResizable::CtrlLayout(HWND hwndCtrl)
 		if (m_layouts[i].m_hwndCtrl == hwndCtrl)
 			return &m_layouts[i];
 	}
-	return NULL;
+	return nullptr;
 }
 
 inline MResizable::layout_type *MResizable::CtrlLayout(UINT nCtrlID)
@@ -367,7 +367,7 @@ inline MResizable::layout_type *MResizable::CtrlLayout(UINT nCtrlID)
 		if (m_layouts[i].m_hwndCtrl == hwndCtrl)
 			return &m_layouts[i];
 	}
-	return NULL;
+	return nullptr;
 }
 
 inline const MResizable::layout_type *MResizable::CtrlLayout(HWND hwndCtrl) const
@@ -378,7 +378,7 @@ inline const MResizable::layout_type *MResizable::CtrlLayout(HWND hwndCtrl) cons
 		if (m_layouts[i].m_hwndCtrl == hwndCtrl)
 			return &m_layouts[i];
 	}
-	return NULL;
+	return nullptr;
 }
 
 inline const MResizable::layout_type *MResizable::CtrlLayout(UINT nCtrlID) const
@@ -390,7 +390,7 @@ inline const MResizable::layout_type *MResizable::CtrlLayout(UINT nCtrlID) const
 		if (m_layouts[i].m_hwndCtrl == hwndCtrl)
 			return &m_layouts[i];
 	}
-	return NULL;
+	return nullptr;
 }
 
 ////////////////////////////////////////////////////////////////////////////

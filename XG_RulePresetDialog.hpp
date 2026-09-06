@@ -67,7 +67,7 @@ public:
 
     static INT_PTR CALLBACK DialogProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
     {
-        static XG_RulePresetDialog* s_pThis = NULL;
+        static XG_RulePresetDialog* s_pThis = nullptr;
         if (uMsg == WM_INITDIALOG)
         {
             s_pThis = (XG_RulePresetDialog*)lParam;

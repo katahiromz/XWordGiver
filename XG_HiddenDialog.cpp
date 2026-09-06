@@ -20,7 +20,7 @@ public:
         {
         case psh1: // PAT.txtに追加。
             if (codeNotify == BN_CLICKED) {
-                HCURSOR hOldCursor = ::SetCursor(::LoadCursor(NULL, IDC_WAIT));
+                HCURSOR hOldCursor = ::SetCursor(::LoadCursor(nullptr, IDC_WAIT));
                 if (XgPatEdit(hwnd, TRUE)) {
                     // 成功メッセージ。
                     XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_WROTEPAT),
@@ -35,7 +35,7 @@ public:
             break;
         case psh2: // PAT.txtから削除。
             if (codeNotify == BN_CLICKED) {
-                HCURSOR hOldCursor = ::SetCursor(::LoadCursor(NULL, IDC_WAIT));
+                HCURSOR hOldCursor = ::SetCursor(::LoadCursor(nullptr, IDC_WAIT));
                 if (XgPatEdit(hwnd, FALSE)) {
                     // 成功メッセージ。
                     XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_WROTEPAT),
@@ -51,14 +51,14 @@ public:
         case psh3: // アプリのフォルダを開く。
             if (codeNotify == BN_CLICKED) {
                 WCHAR szPath[MAX_PATH];
-                GetModuleFileNameW(NULL, szPath, _countof(szPath));
+                GetModuleFileNameW(nullptr, szPath, _countof(szPath));
                 PathRemoveFileSpecW(szPath);
-                ShellExecuteW(hwnd, NULL, szPath, NULL, NULL, SW_SHOWNORMAL);
+                ShellExecuteW(hwnd, nullptr, szPath, nullptr, nullptr, SW_SHOWNORMAL);
             }
             break;
         case psh4: // カギを使って辞書を更新する。
             if (codeNotify == BN_CLICKED) {
-                HCURSOR hOldCursor = ::SetCursor(::LoadCursor(NULL, IDC_WAIT));
+                HCURSOR hOldCursor = ::SetCursor(::LoadCursor(nullptr, IDC_WAIT));
                 XG_HintsWnd::UpdateHintData(); // ヒントに変更があれば、更新する。
                 XgUpdateDictionaryUsingClues(hwnd, xg_dict_name);
                 ::SetCursor(hOldCursor);
@@ -82,7 +82,7 @@ public:
 
     static INT_PTR CALLBACK DialogProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
     {
-        static XG_HiddenDialog* s_pThis = NULL;
+        static XG_HiddenDialog* s_pThis = nullptr;
         if (uMsg == WM_INITDIALOG)
         {
             s_pThis = (XG_HiddenDialog*)lParam;

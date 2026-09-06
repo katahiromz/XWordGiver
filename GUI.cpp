@@ -83,7 +83,7 @@ BOOL xg_bShowClues = TRUE;
 
 // 候補ウィンドウ。
 XG_CandsWnd xg_cands_wnd;
-HWND xg_hCandsWnd = NULL;
+HWND xg_hCandsWnd = nullptr;
 
 // [二重マス単語の候補と配置]ダイアログ。
 XG_MarkingDialog xg_hMarkingDlg;
@@ -849,7 +849,7 @@ void __fastcall XgEnsureCaretVisible(HWND hwnd)
     ::ImmSetCompositionWindow(hIMC, &CompForm);
     ::ImmReleaseContext(xg_canvasWnd, hIMC);
 
-    ::InvalidateRect(xg_hCanvasWnd, NULL, TRUE);
+    ::InvalidateRect(xg_hCanvasWnd, nullptr, TRUE);
 
     XgUpdateCaretPos();
 }
@@ -1538,7 +1538,7 @@ void XgFailureSound(bool bPlaySound)
 {
     // 必要なら音声を鳴らす。
     if (bPlaySound && xg_aszSoundFiles[I_SOUND_FAILED][0]) {
-        ::PlaySoundW(xg_aszSoundFiles[I_SOUND_FAILED], NULL, SND_ASYNC | SND_FILENAME);
+        ::PlaySoundW(xg_aszSoundFiles[I_SOUND_FAILED], nullptr, SND_ASYNC | SND_FILENAME);
     }
 }
 
@@ -3167,7 +3167,7 @@ void __fastcall XgShowResults(HWND hwnd, BOOL bOK)
     if (bOK) {
         // 必要なら音声を鳴らす。
         if (xg_aszSoundFiles[I_SOUND_SUCCESS][0]) {
-            ::PlaySoundW(xg_aszSoundFiles[I_SOUND_SUCCESS], NULL, SND_ASYNC | SND_FILENAME);
+            ::PlaySoundW(xg_aszSoundFiles[I_SOUND_SUCCESS], nullptr, SND_ASYNC | SND_FILENAME);
         }
         // 必要なら成功メッセージを表示する。
         if (!xg_bNoGeneratedMsg) {
@@ -3188,7 +3188,7 @@ void __fastcall XgShowResults(HWND hwnd, BOOL bOK)
     } else if (xg_bCancelled) { // キャンセルされた
         // 必要なら音声を鳴らす。
         if (xg_aszSoundFiles[I_SOUND_CANCELED][0]) {
-            ::PlaySoundW(xg_aszSoundFiles[I_SOUND_CANCELED], NULL, SND_ASYNC | SND_FILENAME);
+            ::PlaySoundW(xg_aszSoundFiles[I_SOUND_CANCELED], nullptr, SND_ASYNC | SND_FILENAME);
         }
         // 必要ならキャンセルメッセージ「計算がキャンセルされました」を表示する。
         if (!xg_bNoCanceledMsg) {
@@ -6031,7 +6031,7 @@ void __fastcall XgGenerate(HWND hwnd)
     // 辞書がない場合、辞書がないよと教えてあげる。
     if (xg_dict_name.empty())
     {
-        XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_NODICTSELECTED), NULL, MB_ICONERROR);
+        XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_NODICTSELECTED), nullptr, MB_ICONERROR);
         return;
     }
 
@@ -6588,7 +6588,7 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT /*codeNo
         // 辞書が選択されていない場合、教えてあげる。
         if (xg_dict_name.empty())
         {
-            XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_NODICTSELECTED), NULL, MB_ICONERROR);
+            XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_NODICTSELECTED), nullptr, MB_ICONERROR);
             break;
         }
 
@@ -6631,7 +6631,7 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT /*codeNo
         // 辞書が選択されていない場合、教えてあげる。
         if (xg_dict_name.empty())
         {
-            XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_NODICTSELECTED), NULL, MB_ICONERROR);
+            XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_NODICTSELECTED), nullptr, MB_ICONERROR);
             break;
         }
         {
@@ -7974,7 +7974,7 @@ void MainWnd_OnNotify(HWND hwnd, int idCtrl, LPNMHDR pnmh) noexcept
 
         // メニューを表示する。
         ::TrackPopupMenu(hSubMenu, TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, 0,
-                         hwnd, NULL);
+                         hwnd, nullptr);
 
         // TrackPopupMenuの後片づけ。
         ::DestroyMenu(hMenu);
@@ -8044,7 +8044,7 @@ void __fastcall XgUpdateImage(HWND hwnd, int x, int y)
             xg_hbmImage = XgCreateXWordImage(xg_xword, &siz, true);
     } else {
         // 必要ならイメージを描画する。
-        HDC hdc = ::CreateCompatibleDC(NULL);
+        HDC hdc = ::CreateCompatibleDC(nullptr);
         if (hdc) {
             HGDIOBJ hbmOld = ::SelectObject(hdc, xg_hbmImage);
             if (xg_bSolved && xg_bShowAnswer)

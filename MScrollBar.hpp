@@ -168,7 +168,7 @@ inline UINT GetMouseScrollLinesDx(VOID)
 	s_bGot = TRUE;
 	HWND hwMouseWheel = ::FindWindow(TEXT("MouseZ"), TEXT("Magellan MSWHEEL"));
 	UINT uMsg = ::RegisterWindowMessage(TEXT("MSH_SCROLL_LINES_MSG"));
-	if (hwMouseWheel != NULL && uMsg != 0)
+	if (hwMouseWheel != nullptr && uMsg != 0)
 	{
 		s_uCachedScrollLines = (UINT)::SendMessage(hwMouseWheel, uMsg, 0, 0);
 		return s_uCachedScrollLines;
@@ -183,7 +183,7 @@ inline UINT GetMouseScrollLinesDx(VOID)
 		DWORD dwKeyDataType;
 		DWORD dwDataBufSize = sizeof(szData);
 
-		if (::RegQueryValueEx(hKey, TEXT("WheelScrollLines"), NULL,
+		if (::RegQueryValueEx(hKey, TEXT("WheelScrollLines"), nullptr,
 			&dwKeyDataType, (LPBYTE)&szData, &dwDataBufSize) == ERROR_SUCCESS)
 		{
 			s_uCachedScrollLines = (UINT) _ttoi(szData);

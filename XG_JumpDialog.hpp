@@ -62,9 +62,9 @@ public:
             m_nType = 0;
 
         m_bVert = (IsDlgButtonChecked(hwnd, rad4) == BST_CHECKED);
-        m_jCol = GetDlgItemInt(hwnd, edt1, NULL, FALSE);
-        m_iRow = GetDlgItemInt(hwnd, edt2, NULL, FALSE);
-        m_nNumber = GetDlgItemInt(hwnd, edt3, NULL, FALSE);
+        m_jCol = GetDlgItemInt(hwnd, edt1, nullptr, FALSE);
+        m_iRow = GetDlgItemInt(hwnd, edt2, nullptr, FALSE);
+        m_nNumber = GetDlgItemInt(hwnd, edt3, nullptr, FALSE);
 
         INT nFixed = 0;
 

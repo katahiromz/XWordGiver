@@ -408,7 +408,7 @@ public:
         si.fMask = SIF_POS;
         XgGetHScrollInfo(&si);
         // 高速スクロールする。
-        ::ScrollWindow(hwnd, nOldPos - si.nPos, 0, NULL, &rcClip);
+        ::ScrollWindow(hwnd, nOldPos - si.nPos, 0, nullptr, &rcClip);
 
         // ボックスの位置を更新。
         PostMessage(hwnd, WM_COMMAND, ID_MOVEBOXES, 0);
@@ -482,7 +482,7 @@ public:
         XgGetVScrollInfo(&si);
 
         // 高速スクロールする。
-        ::ScrollWindow(hwnd, 0, nOldPos - si.nPos, NULL, &rcClip);
+        ::ScrollWindow(hwnd, 0, nOldPos - si.nPos, nullptr, &rcClip);
 
         // ボックスの位置を更新。
         PostMessage(hwnd, WM_COMMAND, ID_MOVEBOXES, 0);

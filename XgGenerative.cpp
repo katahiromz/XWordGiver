@@ -56,7 +56,7 @@ void XgGenerative_PlaySound(HWND hwnd, INT nID)
 
     // パス名を構築して、音声を鳴らす。
     PathAppendW(szPath, szText);
-    ::PlaySoundW(szPath, NULL, SND_ASYNC | SND_FILENAME);
+    ::PlaySoundW(szPath, nullptr, SND_ASYNC | SND_FILENAME);
 }
 
 // [生成]設定。

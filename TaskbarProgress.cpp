@@ -7,10 +7,10 @@
 TaskbarProgress::TaskbarProgress(HWND hwnd)
     : m_hWnd(hwnd)
     , m_pTaskbarList(nullptr)
-    , m_hrCoInit(CoInitialize(NULL))
+    , m_hrCoInit(CoInitialize(nullptr))
     , m_hr(E_FAIL)
 {
-    m_hr = CoCreateInstance(CLSID_TaskbarList, NULL, CLSCTX_INPROC_SERVER,
+    m_hr = CoCreateInstance(CLSID_TaskbarList, nullptr, CLSCTX_INPROC_SERVER,
                             IID_PPV_ARGS(&m_pTaskbarList));
     if (FAILED(m_hr))
         return;
@@ -23,7 +23,7 @@ TaskbarProgress::~TaskbarProgress()
     if (m_pTaskbarList)
     {
         m_pTaskbarList->Release();
-        m_pTaskbarList = NULL;
+        m_pTaskbarList = nullptr;
     }
 
     if (SUCCEEDED(m_hrCoInit))

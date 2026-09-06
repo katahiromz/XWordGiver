@@ -1131,7 +1131,7 @@ void XG_SettingsDialog::UpdateBlockPreview(HWND hwnd)
 INT_PTR CALLBACK
 XG_SettingsDialog::DialogProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
-    static XG_SettingsDialog* s_pThis = NULL;
+    static XG_SettingsDialog* s_pThis = nullptr;
     if (uMsg == WM_INITDIALOG)
     {
         s_pThis = (XG_SettingsDialog*)lParam;

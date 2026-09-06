@@ -90,7 +90,7 @@ skip:;
         XgUpdateImage(hwnd);
     } else {
         // 可能ならば一部分だけ再描画する。これで描画を高速化できる。
-        HDC hdc = ::CreateCompatibleDC(NULL);
+        HDC hdc = ::CreateCompatibleDC(nullptr);
         HGDIOBJ hbmOld = ::SelectObject(hdc, xg_hbmImage);
         XgDrawOneCell(hdc, xg_caret_pos.m_i, xg_caret_pos.m_j);
         ::SelectObject(hdc, hbmOld);

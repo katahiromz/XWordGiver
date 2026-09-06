@@ -277,7 +277,7 @@ public:
         xg_svCandsScrollView.UpdateAll();
 
         // 再描画。
-        RedrawWindow(hwnd, NULL, NULL, RDW_INVALIDATE | RDW_UPDATENOW | RDW_ALLCHILDREN);
+        RedrawWindow(hwnd, nullptr, nullptr, RDW_INVALIDATE | RDW_UPDATENOW | RDW_ALLCHILDREN);
     }
 
     // 候補ウィンドウが作成された。
@@ -405,7 +405,7 @@ public:
         xg_hCandsUIFont = nullptr;
 
         SetForegroundWindow(xg_hMainWnd);
-        xg_hCandsWnd = NULL;
+        xg_hCandsWnd = nullptr;
     }
 
     void OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT codeNotify)

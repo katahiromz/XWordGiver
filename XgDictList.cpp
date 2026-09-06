@@ -15,7 +15,7 @@ HIMAGELIST XgDictList_CreateRadioButtonImageList(HWND hwnd)
     hdc_wnd = GetDC(hwnd);
     hdc = CreateCompatibleDC(hdc_wnd);
     hbm_im = CreateCompatibleBitmap(hdc_wnd, GetSystemMetrics(SM_CXSMICON), GetSystemMetrics(SM_CYSMICON));
-    hbm_mask = CreateBitmap(GetSystemMetrics(SM_CXSMICON), GetSystemMetrics(SM_CYSMICON), 1, 1, NULL);
+    hbm_mask = CreateBitmap(GetSystemMetrics(SM_CXSMICON), GetSystemMetrics(SM_CYSMICON), 1, 1, nullptr);
     ReleaseDC(hwnd, hdc_wnd);
 
     // マスクビットマップを描画。
@@ -247,7 +247,7 @@ XgDictListDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 
                 // パスファイル名を構築する。
                 WCHAR szPath[MAX_PATH];
-                GetModuleFileNameW(NULL, szPath, _countof(szPath));
+                GetModuleFileNameW(nullptr, szPath, _countof(szPath));
                 PathRemoveFileSpecW(szPath);
                 PathAppendW(szPath, L"DICT");
                 PathAppendW(szPath, szText);
@@ -268,10 +268,10 @@ XgDictListDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
         case psh2: // フォルダを開く。
             if (HIWORD(wParam) == BN_CLICKED) {
                 WCHAR szPath[MAX_PATH];
-                GetModuleFileNameW(NULL, szPath, _countof(szPath));
+                GetModuleFileNameW(nullptr, szPath, _countof(szPath));
                 PathRemoveFileSpecW(szPath);
                 PathAppendW(szPath, L"DICT");
-                ShellExecuteW(hwnd, NULL, szPath, NULL, NULL, SW_SHOWNORMAL);
+                ShellExecuteW(hwnd, nullptr, szPath, nullptr, nullptr, SW_SHOWNORMAL);
             }
             break;
         case psh4: // 再読み込み。
@@ -335,7 +335,7 @@ XgDictListDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 
                     // パスファイル名を構築する。
                     WCHAR szPath[MAX_PATH];
-                    GetModuleFileNameW(NULL, szPath, _countof(szPath));
+                    GetModuleFileNameW(nullptr, szPath, _countof(szPath));
                     PathRemoveFileSpecW(szPath);
                     PathAppendW(szPath, L"DICT");
                     PathAppendW(szPath, szText);

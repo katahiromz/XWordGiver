@@ -52,7 +52,7 @@ public:
             ::SetWindowLongPtrW(hwnd, GWLP_WNDPROC, reinterpret_cast<LONG_PTR>(m_fnOldWndProc));
             m_fnOldWndProc = nullptr;
         }
-        m_hWnd = NULL;
+        m_hWnd = nullptr;
     }
 
     virtual LRESULT CALLBACK

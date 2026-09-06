@@ -89,19 +89,19 @@ public:
 						 DWORD dwDesiredAccess);
 	DWORD WaitForSingleObject(DWORD dwTimeout = INFINITE);
 
-	BOOL PeekNamedPipe(LPVOID pBuffer = NULL, DWORD cbBuffer = 0,
-					   LPDWORD pcbRead = NULL, LPDWORD pcbAvail = NULL,
-					   LPDWORD pBytesLeft = NULL);
+	BOOL PeekNamedPipe(LPVOID pBuffer = nullptr, DWORD cbBuffer = 0,
+					   LPDWORD pcbRead = nullptr, LPDWORD pcbAvail = nullptr,
+					   LPDWORD pBytesLeft = nullptr);
 	BOOL ReadFile(LPVOID pBuffer, DWORD cbToRead, LPDWORD pcbRead,
-				  LPOVERLAPPED pOverlapped = NULL);
+				  LPOVERLAPPED pOverlapped = nullptr);
 	BOOL WriteFile(LPCVOID pBuffer, DWORD cbToWrite, LPDWORD pcbWritten,
-				   LPOVERLAPPED pOverlapped = NULL);
+				   LPOVERLAPPED pOverlapped = nullptr);
 	BOOL WriteSzA(LPCSTR psz, LPDWORD pcbWritten,
-				  LPOVERLAPPED pOverlapped = NULL);
+				  LPOVERLAPPED pOverlapped = nullptr);
 	BOOL WriteSzW(LPCWSTR psz, LPDWORD pcbWritten,
-				  LPOVERLAPPED pOverlapped = NULL);
+				  LPOVERLAPPED pOverlapped = nullptr);
 	BOOL WriteSz(LPCTSTR psz, LPDWORD pcbWritten,
-				 LPOVERLAPPED pOverlapped = NULL);
+				 LPOVERLAPPED pOverlapped = nullptr);
 
 	BOOL         WriteBinary(LPCVOID pv, DWORD cb);
 	BOOL         WriteSzA(LPCSTR psz);
@@ -133,18 +133,18 @@ public:
 					DWORD dwShareMode, LPSECURITY_ATTRIBUTES pSA,
 					DWORD dwCreationDistribution,
 					DWORD dwFlagsAndAttributes = FILE_ATTRIBUTE_NORMAL,
-					HANDLE hTemplateFile = NULL);
-	DWORD GetFileSize(LPDWORD pdwHighPart = NULL) const;
+					HANDLE hTemplateFile = nullptr);
+	DWORD GetFileSize(LPDWORD pdwHighPart = nullptr) const;
 	DWORDLONG GetFileSize64() const;
 	BOOL SetEndOfFile();
-	DWORD SetFilePointer(LONG nDeltaLow, PLONG pnDeltaHigh = NULL,
+	DWORD SetFilePointer(LONG nDeltaLow, PLONG pnDeltaHigh = nullptr,
 						 DWORD dwOrigin = FILE_BEGIN);
 	VOID SeekToBegin();
 	DWORD SeekToEnd();
 	BOOL FlushFileBuffers();
-	BOOL GetFileTime(LPFILETIME pftCreate = NULL,
-					 LPFILETIME pftLastAccess = NULL,
-					 LPFILETIME pftLastWrite = NULL) const;
+	BOOL GetFileTime(LPFILETIME pftCreate = nullptr,
+					 LPFILETIME pftLastAccess = nullptr,
+					 LPFILETIME pftLastWrite = nullptr) const;
 
 	BOOL GetFileInformationByHandle(LPBY_HANDLE_FILE_INFORMATION info);
 	DWORD GetFileType() const;
@@ -226,7 +226,7 @@ inline /*virtual*/ MFile::~MFile()
 
 inline HANDLE MFile::Handle() const
 {
-	if (m_hFile == NULL)
+	if (m_hFile == nullptr)
 		return INVALID_HANDLE_VALUE;
 	return m_hFile;
 }
@@ -244,7 +244,7 @@ inline PHANDLE MFile::operator&()
 inline bool MFile::operator!() const
 {
 	HANDLE hFile = Handle();
-	return hFile == INVALID_HANDLE_VALUE || hFile == NULL;
+	return hFile == INVALID_HANDLE_VALUE || hFile == nullptr;
 }
 
 inline bool MFile::operator==(HANDLE hFile) const
@@ -271,28 +271,28 @@ inline BOOL MFile::OpenFileForInput(
 	LPCTSTR pszFileName, DWORD dwFILE_SHARE_/* = FILE_SHARE_READ*/)
 {
 	return MFile::CreateFile(pszFileName, GENERIC_READ,
-		dwFILE_SHARE_, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+		dwFILE_SHARE_, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
 }
 
 inline BOOL MFile::OpenFileForOutput(
 	LPCTSTR pszFileName, DWORD dwFILE_SHARE_/* = FILE_SHARE_READ*/)
 {
 	return MFile::CreateFile(pszFileName, GENERIC_WRITE,
-		dwFILE_SHARE_, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+		dwFILE_SHARE_, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
 }
 
 inline BOOL MFile::OpenFileForRandom(
 	LPCTSTR pszFileName, DWORD dwFILE_SHARE_/* = FILE_SHARE_READ*/)
 {
 	return MFile::CreateFile(pszFileName,
-		GENERIC_READ | GENERIC_WRITE, dwFILE_SHARE_, NULL, OPEN_ALWAYS,
-		FILE_ATTRIBUTE_NORMAL | FILE_FLAG_RANDOM_ACCESS, NULL);
+		GENERIC_READ | GENERIC_WRITE, dwFILE_SHARE_, nullptr, OPEN_ALWAYS,
+		FILE_ATTRIBUTE_NORMAL | FILE_FLAG_RANDOM_ACCESS, nullptr);
 }
 
 inline DWORD MFile::WaitForSingleObject(
 	DWORD dwTimeout/* = INFINITE*/)
 {
-	assert(m_hFile != NULL && m_hFile != INVALID_HANDLE_VALUE);
+	assert(m_hFile != nullptr && m_hFile != INVALID_HANDLE_VALUE);
 	return ::WaitForSingleObject(m_hFile, dwTimeout);
 }
 
@@ -313,26 +313,26 @@ inline MFile& MFile::operator=(HANDLE hFile)
 inline BOOL MFile::Attach(HANDLE hFile)
 {
 	CloseHandle();
-	assert(hFile != NULL && hFile != INVALID_HANDLE_VALUE);
-	assert(m_hFile == NULL || m_hFile == INVALID_HANDLE_VALUE);
+	assert(hFile != nullptr && hFile != INVALID_HANDLE_VALUE);
+	assert(m_hFile == nullptr || m_hFile == INVALID_HANDLE_VALUE);
 #ifndef NDEBUG
 	BY_HANDLE_FILE_INFORMATION info;
 	assert(::GetFileInformationByHandle(hFile, &info));
 #endif
 	m_hFile = hFile;
-	return m_hFile != NULL && m_hFile != INVALID_HANDLE_VALUE;
+	return m_hFile != nullptr && m_hFile != INVALID_HANDLE_VALUE;
 }
 
 inline HANDLE MFile::Detach()
 {
 	HANDLE hFile = m_hFile;
-	m_hFile = NULL;
+	m_hFile = nullptr;
 	return hFile;
 }
 
 inline BOOL MFile::CloseHandle()
 {
-	if (Handle() != NULL && Handle() != INVALID_HANDLE_VALUE)
+	if (Handle() != nullptr && Handle() != INVALID_HANDLE_VALUE)
 	{
 		BOOL bOK = ::CloseHandle(Detach());
 		return bOK;
@@ -341,34 +341,34 @@ inline BOOL MFile::CloseHandle()
 }
 
 inline BOOL MFile::PeekNamedPipe(
-	LPVOID pBuffer/* = NULL*/,
+	LPVOID pBuffer/* = nullptr*/,
 	DWORD cbBuffer/* = 0*/,
-	LPDWORD pcbRead/* = NULL*/,
-	LPDWORD pcbAvail/* = NULL*/,
-	LPDWORD pBytesLeft/* = NULL*/)
+	LPDWORD pcbRead/* = nullptr*/,
+	LPDWORD pcbAvail/* = nullptr*/,
+	LPDWORD pBytesLeft/* = nullptr*/)
 {
-	assert(m_hFile != NULL && m_hFile != INVALID_HANDLE_VALUE);
+	assert(m_hFile != nullptr && m_hFile != INVALID_HANDLE_VALUE);
 	return ::PeekNamedPipe(m_hFile, pBuffer, cbBuffer,
 		pcbRead, pcbAvail, pBytesLeft);
 }
 
 inline BOOL MFile::ReadFile(LPVOID pBuffer, DWORD cbToRead,
-	LPDWORD pcbRead, LPOVERLAPPED pOverlapped/* = NULL*/)
+	LPDWORD pcbRead, LPOVERLAPPED pOverlapped/* = nullptr*/)
 {
-	assert(m_hFile != NULL && m_hFile != INVALID_HANDLE_VALUE);
+	assert(m_hFile != nullptr && m_hFile != INVALID_HANDLE_VALUE);
 	return ::ReadFile(m_hFile, pBuffer, cbToRead, pcbRead, pOverlapped);
 }
 
 inline BOOL MFile::WriteFile(LPCVOID pBuffer, DWORD cbToWrite,
-	LPDWORD pcbWritten, LPOVERLAPPED pOverlapped/* = NULL*/)
+	LPDWORD pcbWritten, LPOVERLAPPED pOverlapped/* = nullptr*/)
 {
-	assert(m_hFile != NULL && m_hFile != INVALID_HANDLE_VALUE);
+	assert(m_hFile != nullptr && m_hFile != INVALID_HANDLE_VALUE);
 	return ::WriteFile(
 		m_hFile, pBuffer, cbToWrite, pcbWritten, pOverlapped);
 }
 
 inline BOOL MFile::WriteSzA(LPCSTR psz,
-	LPDWORD pcbWritten, LPOVERLAPPED pOverlapped/* = NULL*/)
+	LPDWORD pcbWritten, LPOVERLAPPED pOverlapped/* = nullptr*/)
 {
 	using namespace std;
 	SIZE_T size = strlen(psz) * sizeof(CHAR);
@@ -376,7 +376,7 @@ inline BOOL MFile::WriteSzA(LPCSTR psz,
 }
 
 inline BOOL MFile::WriteSzW(LPCWSTR psz,
-	LPDWORD pcbWritten, LPOVERLAPPED pOverlapped/* = NULL*/)
+	LPDWORD pcbWritten, LPOVERLAPPED pOverlapped/* = nullptr*/)
 {
 	using namespace std;
 	SIZE_T size = wcslen(psz) * sizeof(WCHAR);
@@ -384,7 +384,7 @@ inline BOOL MFile::WriteSzW(LPCWSTR psz,
 }
 
 inline BOOL MFile::WriteSz(LPCTSTR psz,
-	LPDWORD pcbWritten, LPOVERLAPPED pOverlapped/* = NULL*/)
+	LPDWORD pcbWritten, LPOVERLAPPED pOverlapped/* = nullptr*/)
 {
 	return WriteFile(psz, (DWORD)(lstrlen(psz) * sizeof(TCHAR)), pcbWritten, pOverlapped);
 }
@@ -393,7 +393,7 @@ inline BOOL MFile::CreateFile(LPCTSTR pszFileName,
 	DWORD dwDesiredAccess, DWORD dwShareMode,
 	LPSECURITY_ATTRIBUTES pSA, DWORD dwCreationDistribution,
 	DWORD dwFlagsAndAttributes/* = FILE_ATTRIBUTE_NORMAL*/,
-	HANDLE hTemplateFile/* = NULL*/)
+	HANDLE hTemplateFile/* = nullptr*/)
 {
 	return Attach(::CreateFile(pszFileName, dwDesiredAccess, dwShareMode,
 				  pSA, dwCreationDistribution, dwFlagsAndAttributes, hTemplateFile));
@@ -401,34 +401,34 @@ inline BOOL MFile::CreateFile(LPCTSTR pszFileName,
 
 inline DWORD MFile::SetFilePointer(
 	LONG nDeltaLow,
-	PLONG pnDeltaHigh/* = NULL*/,
+	PLONG pnDeltaHigh/* = nullptr*/,
 	DWORD dwOrigin/* = FILE_BEGIN*/)
 {
-	assert(m_hFile != NULL && m_hFile != INVALID_HANDLE_VALUE);
+	assert(m_hFile != nullptr && m_hFile != INVALID_HANDLE_VALUE);
 	return ::SetFilePointer(m_hFile, nDeltaLow, pnDeltaHigh, dwOrigin);
 }
 
 inline DWORD MFile::SeekToEnd()
 {
-	assert(m_hFile != NULL && m_hFile != INVALID_HANDLE_VALUE);
-	return SetFilePointer(0, NULL, FILE_END);
+	assert(m_hFile != nullptr && m_hFile != INVALID_HANDLE_VALUE);
+	return SetFilePointer(0, nullptr, FILE_END);
 }
 
 inline VOID MFile::SeekToBegin()
 {
-	assert(m_hFile != NULL && m_hFile != INVALID_HANDLE_VALUE);
-	SetFilePointer(0, NULL, FILE_BEGIN);
+	assert(m_hFile != nullptr && m_hFile != INVALID_HANDLE_VALUE);
+	SetFilePointer(0, nullptr, FILE_BEGIN);
 }
 
-inline DWORD MFile::GetFileSize(LPDWORD pdwHighPart/* = NULL*/) const
+inline DWORD MFile::GetFileSize(LPDWORD pdwHighPart/* = nullptr*/) const
 {
-	assert(m_hFile != NULL && m_hFile != INVALID_HANDLE_VALUE);
+	assert(m_hFile != nullptr && m_hFile != INVALID_HANDLE_VALUE);
 	return ::GetFileSize(m_hFile, pdwHighPart);
 }
 
 inline DWORDLONG MFile::GetFileSize64() const
 {
-	assert(m_hFile != NULL && m_hFile != INVALID_HANDLE_VALUE);
+	assert(m_hFile != nullptr && m_hFile != INVALID_HANDLE_VALUE);
 	DWORD dwLow, dwHigh;
 	dwLow = ::GetFileSize(m_hFile, &dwHigh);
 	if (dwLow == 0xFFFFFFFF && ::GetLastError() != NO_ERROR)
@@ -439,13 +439,13 @@ inline DWORDLONG MFile::GetFileSize64() const
 
 inline BOOL MFile::SetEndOfFile()
 {
-	assert(m_hFile != NULL && m_hFile != INVALID_HANDLE_VALUE);
+	assert(m_hFile != nullptr && m_hFile != INVALID_HANDLE_VALUE);
 	return ::SetEndOfFile(m_hFile);
 }
 
 inline BOOL MFile::FlushFileBuffers()
 {
-	assert(m_hFile != NULL && m_hFile != INVALID_HANDLE_VALUE);
+	assert(m_hFile != nullptr && m_hFile != INVALID_HANDLE_VALUE);
 	return ::FlushFileBuffers(m_hFile);
 }
 
@@ -471,30 +471,30 @@ inline BOOL MFile::WriteSz(LPCTSTR psz)
 }
 
 inline BOOL MFile::GetFileTime(
-	LPFILETIME pftCreate/* = NULL*/,
-	LPFILETIME pftLastAccess/* = NULL*/,
-	LPFILETIME pftLastWrite/* = NULL*/) const
+	LPFILETIME pftCreate/* = nullptr*/,
+	LPFILETIME pftLastAccess/* = nullptr*/,
+	LPFILETIME pftLastWrite/* = nullptr*/) const
 {
-	assert(m_hFile != NULL && m_hFile != INVALID_HANDLE_VALUE);
+	assert(m_hFile != nullptr && m_hFile != INVALID_HANDLE_VALUE);
 	return ::GetFileTime(m_hFile, pftCreate, pftLastAccess, pftLastWrite);
 }
 
 inline DWORD MFile::GetFileType() const
 {
-	assert(m_hFile != NULL && m_hFile != INVALID_HANDLE_VALUE);
+	assert(m_hFile != nullptr && m_hFile != INVALID_HANDLE_VALUE);
 	return ::GetFileType(m_hFile);
 }
 
 inline BOOL MFile::GetFileInformationByHandle(LPBY_HANDLE_FILE_INFORMATION info)
 {
-	assert(m_hFile != NULL && m_hFile != INVALID_HANDLE_VALUE);
+	assert(m_hFile != nullptr && m_hFile != INVALID_HANDLE_VALUE);
 	return ::GetFileInformationByHandle(m_hFile, info);
 }
 
 inline BOOL MFile::LockFile(DWORD dwFileOffsetLow, DWORD dwFileOffsetHigh,
 	DWORD dwNumberOfBytesToLockLow, DWORD dwNumberOfBytesToLockHigh)
 {
-	assert(m_hFile != NULL && m_hFile != INVALID_HANDLE_VALUE);
+	assert(m_hFile != nullptr && m_hFile != INVALID_HANDLE_VALUE);
 	return ::LockFile(m_hFile, dwFileOffsetLow, dwFileOffsetHigh,
 		dwNumberOfBytesToLockLow, dwNumberOfBytesToLockHigh);
 }
@@ -509,7 +509,7 @@ inline BOOL MFile::LockFileEx(DWORD dwFlags, DWORD dwReserved,
 	DWORD dwNumberOfBytesToLockLow, DWORD dwNumberOfBytesToLockHigh,
 	LPOVERLAPPED lpOverlapped)
 {
-	assert(m_hFile != NULL && m_hFile != INVALID_HANDLE_VALUE);
+	assert(m_hFile != nullptr && m_hFile != INVALID_HANDLE_VALUE);
 	return ::LockFileEx(m_hFile, dwFlags, dwReserved,
 		dwNumberOfBytesToLockLow, dwNumberOfBytesToLockHigh, lpOverlapped);
 }
@@ -525,7 +525,7 @@ inline BOOL MFile::LockFileEx(DWORD dwFlags, DWORD dwReserved,
 inline BOOL MFile::UnlockFile(DWORD dwFileOffsetLow, DWORD dwFileOffsetHigh,
 	DWORD dwNumberOfBytesToUnlockLow, DWORD dwNumberOfBytesToUnlockHigh)
 {
-	assert(m_hFile != NULL && m_hFile != INVALID_HANDLE_VALUE);
+	assert(m_hFile != nullptr && m_hFile != INVALID_HANDLE_VALUE);
 	return ::UnlockFile(m_hFile, dwFileOffsetLow, dwFileOffsetHigh,
 		dwNumberOfBytesToUnlockLow, dwNumberOfBytesToUnlockHigh);
 }
@@ -539,7 +539,7 @@ inline BOOL MFile::UnlockFile(DWORDLONG dwFileOffset, DWORDLONG dwNumberOfBytesT
 inline BOOL MFile::UnlockFileEx(DWORD dwReserved, DWORD dwNumberOfBytesToUnlockLow,
 	DWORD dwNumberOfBytesToUnlockHigh, LPOVERLAPPED lpOverlapped)
 {
-	assert(m_hFile != NULL && m_hFile != INVALID_HANDLE_VALUE);
+	assert(m_hFile != nullptr && m_hFile != INVALID_HANDLE_VALUE);
 	return ::UnlockFileEx(m_hFile, dwReserved, dwNumberOfBytesToUnlockLow,
 		dwNumberOfBytesToUnlockHigh, lpOverlapped);
 }
@@ -554,14 +554,14 @@ inline BOOL MFile::UnlockFileEx(DWORD dwReserved, DWORDLONG dwlNumberOfBytesToUn
 inline BOOL MFile::ReadFileEx(LPVOID pBuffer, DWORD cbToRead,
 	LPOVERLAPPED pOverlapped, LPOVERLAPPED_COMPLETION_ROUTINE lpCompletionRoutine)
 {
-	assert(m_hFile != NULL && m_hFile != INVALID_HANDLE_VALUE);
+	assert(m_hFile != nullptr && m_hFile != INVALID_HANDLE_VALUE);
 	return ::ReadFileEx(m_hFile, pBuffer, cbToRead, pOverlapped, lpCompletionRoutine);
 }
 
 inline BOOL MFile::WriteFileEx(LPCVOID pBuffer, DWORD cbToWrite,
 	LPOVERLAPPED pOverlapped, LPOVERLAPPED_COMPLETION_ROUTINE lpCompletionRoutine)
 {
-	assert(m_hFile != NULL && m_hFile != INVALID_HANDLE_VALUE);
+	assert(m_hFile != nullptr && m_hFile != INVALID_HANDLE_VALUE);
 	return ::WriteFileEx(m_hFile, pBuffer, cbToWrite, pOverlapped, lpCompletionRoutine);
 }
 
@@ -610,7 +610,7 @@ inline BOOL MFile::SetStdErr() const
 
 inline BOOL MFile::DuplicateHandle(PHANDLE phFile, BOOL bInherit)
 {
-	assert(m_hFile != NULL && m_hFile != INVALID_HANDLE_VALUE);
+	assert(m_hFile != nullptr && m_hFile != INVALID_HANDLE_VALUE);
 	HANDLE hProcess = ::GetCurrentProcess();
 	return ::DuplicateHandle(hProcess, m_hFile, hProcess, phFile, 0,
 		bInherit, DUPLICATE_SAME_ACCESS);
@@ -619,7 +619,7 @@ inline BOOL MFile::DuplicateHandle(PHANDLE phFile, BOOL bInherit)
 inline BOOL MFile::DuplicateHandle(
 	PHANDLE phFile, BOOL bInherit, DWORD dwDesiredAccess)
 {
-	assert(m_hFile != NULL && m_hFile != INVALID_HANDLE_VALUE);
+	assert(m_hFile != nullptr && m_hFile != INVALID_HANDLE_VALUE);
 	HANDLE hProcess = ::GetCurrentProcess();
 	return ::DuplicateHandle(hProcess, m_hFile, hProcess, phFile,
 		dwDesiredAccess, bInherit, 0);
@@ -682,9 +682,9 @@ inline BOOL MFile::OpenFileForAppend(
 	assert(pszFileName);
 	BOOL bExisted = (::GetFileAttributes(pszFileName) != 0xFFFFFFFF);
 	if (!MFile::CreateFile(pszFileName, GENERIC_READ | GENERIC_WRITE,
-		dwFILE_SHARE_, NULL, OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL))
+		dwFILE_SHARE_, nullptr, OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr))
 		return FALSE;
-	if (SetFilePointer(0, NULL, FILE_END) == 0xFFFFFFFF)
+	if (SetFilePointer(0, nullptr, FILE_END) == 0xFFFFFFFF)
 	{
 		assert(false);
 		CloseHandle();
@@ -744,7 +744,7 @@ inline BOOL MFile::ReadAll(MStringA& data, DWORD dwTimeout)
 
 inline /*static*/ HANDLE MFile::CloneHandleDx(HANDLE hFile)
 {
-	if (hFile == INVALID_HANDLE_VALUE || hFile == NULL)
+	if (hFile == INVALID_HANDLE_VALUE || hFile == nullptr)
 		return INVALID_HANDLE_VALUE;
 
 	HANDLE hProcess = ::GetCurrentProcess();

@@ -613,7 +613,7 @@ BOOL XgUpdateDictionaryUsingClues(HWND hwnd, const XGStringW& dict_name)
     // 辞書ファイルをすべて読み込む。
     XGStringW str;
     if (dict_name.empty() || !XgReadTextFileAll(dict_name.c_str(), str)) {
-        XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_NODICTSELECTED), NULL, MB_ICONERROR);
+        XgCenterMessageBoxW(hwnd, XgLoadStringDx1(IDS_NODICTSELECTED), nullptr, MB_ICONERROR);
         return FALSE;
     }
 

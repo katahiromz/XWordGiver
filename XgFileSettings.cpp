@@ -106,7 +106,7 @@ XgFileSettingsDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
                 // なければ作成。
                 XgMakePathW(szDir);
                 // シェルで開く。
-                ::ShellExecuteW(hwnd, NULL, szDir, NULL, NULL, SW_SHOWNORMAL);
+                ::ShellExecuteW(hwnd, nullptr, szDir, nullptr, nullptr, SW_SHOWNORMAL);
             }
             break;
         }

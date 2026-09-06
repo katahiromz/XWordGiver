@@ -16,10 +16,10 @@ class MProcessMaker
 {
 public:
 	MProcessMaker();
-	MProcessMaker(LPCTSTR pszAppName, LPCTSTR pszCommandLine = NULL,
-				  LPCTSTR pszzEnvironment = NULL, BOOL bInherit = TRUE,
-				  LPSECURITY_ATTRIBUTES lpProcessAttributes = NULL,
-				  LPSECURITY_ATTRIBUTES lpThreadAttributes = NULL);
+	MProcessMaker(LPCTSTR pszAppName, LPCTSTR pszCommandLine = nullptr,
+				  LPCTSTR pszzEnvironment = nullptr, BOOL bInherit = TRUE,
+				  LPSECURITY_ATTRIBUTES lpProcessAttributes = nullptr,
+				  LPSECURITY_ATTRIBUTES lpThreadAttributes = nullptr);
 	virtual ~MProcessMaker();
 
 	bool operator!() const;
@@ -49,16 +49,16 @@ public:
 	BOOL PrepareForRedirect(PHANDLE phInputWrite, PHANDLE phOutputRead,
 							PHANDLE phErrorRead);
 
-	BOOL CreateProcessDx(LPCTSTR pszAppName, LPCTSTR pszCommandLine = NULL,
-						 LPCTSTR pszzEnvironment = NULL, BOOL bInherit = TRUE,
-						 LPSECURITY_ATTRIBUTES lpProcessAttributes = NULL,
-						 LPSECURITY_ATTRIBUTES lpThreadAttributes = NULL);
+	BOOL CreateProcessDx(LPCTSTR pszAppName, LPCTSTR pszCommandLine = nullptr,
+						 LPCTSTR pszzEnvironment = nullptr, BOOL bInherit = TRUE,
+						 LPSECURITY_ATTRIBUTES lpProcessAttributes = nullptr,
+						 LPSECURITY_ATTRIBUTES lpThreadAttributes = nullptr);
 	BOOL CreateProcessAsUserDx(HANDLE hToken, LPCTSTR pszAppName,
-							   LPCTSTR pszCommandLine = NULL,
-							   LPCTSTR pszzEnvironment = NULL,
+							   LPCTSTR pszCommandLine = nullptr,
+							   LPCTSTR pszzEnvironment = nullptr,
 							   BOOL bInherit = TRUE,
-							   LPSECURITY_ATTRIBUTES lpProcessAttributes = NULL,
-							   LPSECURITY_ATTRIBUTES lpThreadAttributes = NULL);
+							   LPSECURITY_ATTRIBUTES lpProcessAttributes = nullptr,
+							   LPSECURITY_ATTRIBUTES lpThreadAttributes = nullptr);
 	DWORD WaitForSingleObject(DWORD dwTimeout = INFINITE);
 	DWORD WaitForSingleObjectEx(DWORD dwTimeout = INFINITE,
 								BOOL bAlertable = TRUE);
@@ -237,7 +237,7 @@ inline BOOL MProcessMaker::IsRunning() const
 
 inline bool MProcessMaker::operator!() const
 {
-	return Handle() == NULL;
+	return Handle() == nullptr;
 }
 
 inline PROCESS_INFORMATION& MProcessMaker::ProcessInfo()
@@ -262,19 +262,19 @@ inline const STARTUPINFO& MProcessMaker::StartupInfo() const
 
 inline void MProcessMaker::CloseProcessHandle()
 {
-	if (m_pi.hProcess != NULL)
+	if (m_pi.hProcess != nullptr)
 	{
 		::CloseHandle(m_pi.hProcess);
-		m_pi.hProcess = NULL;
+		m_pi.hProcess = nullptr;
 	}
 }
 
 inline void MProcessMaker::CloseThreadHandle()
 {
-	if (m_pi.hThread != NULL)
+	if (m_pi.hThread != nullptr)
 	{
 		::CloseHandle(m_pi.hThread);
-		m_pi.hThread = NULL;
+		m_pi.hThread = nullptr;
 	}
 }
 
@@ -332,17 +332,17 @@ inline void MProcessMaker::Init()
 
 	ZeroMemory(&m_pi, sizeof(m_pi));
 	m_dwCreationFlags = 0;
-	m_pszCurDir = NULL;
+	m_pszCurDir = nullptr;
 	m_si.hStdInput = ::GetStdHandle(STD_INPUT_HANDLE);
 	m_si.hStdOutput = ::GetStdHandle(STD_OUTPUT_HANDLE);
 	m_si.hStdError = ::GetStdHandle(STD_ERROR_HANDLE);
 }
 
 inline MProcessMaker::MProcessMaker(
-	LPCTSTR pszAppName, LPCTSTR pszCommandLine/* = NULL*/,
-	LPCTSTR pszzEnvironment/* = NULL*/, BOOL bInherit/* = TRUE*/,
-	LPSECURITY_ATTRIBUTES lpProcessAttributes/* = NULL*/,
-	LPSECURITY_ATTRIBUTES lpThreadAttributes/* = NULL*/)
+	LPCTSTR pszAppName, LPCTSTR pszCommandLine/* = nullptr*/,
+	LPCTSTR pszzEnvironment/* = nullptr*/, BOOL bInherit/* = TRUE*/,
+	LPSECURITY_ATTRIBUTES lpProcessAttributes/* = nullptr*/,
+	LPSECURITY_ATTRIBUTES lpThreadAttributes/* = nullptr*/)
 {
 	Init();
 	CreateProcessDx(pszAppName, pszCommandLine, pszzEnvironment,
@@ -350,14 +350,14 @@ inline MProcessMaker::MProcessMaker(
 }
 
 inline BOOL MProcessMaker::CreateProcessDx(
-	LPCTSTR pszAppName, LPCTSTR pszCommandLine/* = NULL*/,
-	LPCTSTR pszzEnvironment/* = NULL*/, BOOL bInherit/* = TRUE*/,
-	LPSECURITY_ATTRIBUTES lpProcessAttributes/* = NULL*/,
-	LPSECURITY_ATTRIBUTES lpThreadAttributes/* = NULL*/)
+	LPCTSTR pszAppName, LPCTSTR pszCommandLine/* = nullptr*/,
+	LPCTSTR pszzEnvironment/* = nullptr*/, BOOL bInherit/* = TRUE*/,
+	LPSECURITY_ATTRIBUTES lpProcessAttributes/* = nullptr*/,
+	LPSECURITY_ATTRIBUTES lpThreadAttributes/* = nullptr*/)
 {
 	using namespace std;
 	BOOL b;
-	LPTSTR pszCmdLine = NULL;
+	LPTSTR pszCmdLine = nullptr;
 	if (pszCommandLine)
 		pszCmdLine = _tcsdup(pszCommandLine);
 	LPCVOID pcEnv = reinterpret_cast<LPCVOID>(pszzEnvironment);
@@ -384,12 +384,12 @@ inline BOOL MProcessMaker::CreateProcessDx(
 		#ifdef UNICODE
 			if (pEnv)
 				dwCreationFlags |= CREATE_UNICODE_ENVIRONMENT;
-			b = ::CreateProcess(pszAppName, NULL,
+			b = ::CreateProcess(pszAppName, nullptr,
 				lpProcessAttributes, lpThreadAttributes,
 				bInherit, dwCreationFlags,
 				pEnv, m_pszCurDir, &m_si, &m_pi);
 		#else
-			b = ::CreateProcess(pszAppName, NULL,
+			b = ::CreateProcess(pszAppName, nullptr,
 				lpProcessAttributes, lpThreadAttributes,
 				bInherit, dwCreationFlags, pEnv,
 				m_pszCurDir, &m_si, &m_pi);
@@ -399,15 +399,15 @@ inline BOOL MProcessMaker::CreateProcessDx(
 }
 
 inline BOOL MProcessMaker::CreateProcessAsUserDx(
-	HANDLE hToken, LPCTSTR pszAppName, LPCTSTR pszCommandLine/* = NULL*/,
-	LPCTSTR pszzEnvironment/* = NULL*/, BOOL bInherit/* = TRUE*/,
-	LPSECURITY_ATTRIBUTES lpProcessAttributes/* = NULL*/,
-	LPSECURITY_ATTRIBUTES lpThreadAttributes/* = NULL*/)
+	HANDLE hToken, LPCTSTR pszAppName, LPCTSTR pszCommandLine/* = nullptr*/,
+	LPCTSTR pszzEnvironment/* = nullptr*/, BOOL bInherit/* = TRUE*/,
+	LPSECURITY_ATTRIBUTES lpProcessAttributes/* = nullptr*/,
+	LPSECURITY_ATTRIBUTES lpThreadAttributes/* = nullptr*/)
 {
 	using namespace std;
 	BOOL b;
 	// Avoid shadowing: use distinct name for the duplicated pointer
-	LPTSTR pszCmdLineDup = NULL;
+	LPTSTR pszCmdLineDup = nullptr;
 	if (pszCommandLine)
 		pszCmdLineDup = _tcsdup(pszCommandLine);
 
@@ -434,11 +434,11 @@ inline BOOL MProcessMaker::CreateProcessAsUserDx(
 		#ifdef UNICODE
 			if (pEnv)
 				dwCreationFlags |= CREATE_UNICODE_ENVIRONMENT;
-			b = ::CreateProcessAsUser(hToken, pszAppName, NULL,
+			b = ::CreateProcessAsUser(hToken, pszAppName, nullptr,
 				lpProcessAttributes, lpThreadAttributes,
 				bInherit, dwCreationFlags, pEnv, m_pszCurDir, &m_si, &m_pi);
 		#else
-			b = ::CreateProcessAsUser(hToken, pszAppName, NULL,
+			b = ::CreateProcessAsUser(hToken, pszAppName, nullptr,
 				lpProcessAttributes, lpThreadAttributes,
 				bInherit, dwCreationFlags, pEnv, m_pszCurDir, &m_si, &m_pi);
 		#endif
@@ -451,7 +451,7 @@ inline BOOL MProcessMaker::PrepareForRedirect(
 {
 	SECURITY_ATTRIBUTES sa;
 	sa.nLength = sizeof(sa);
-	sa.lpSecurityDescriptor = NULL;
+	sa.lpSecurityDescriptor = nullptr;
 	sa.bInheritHandle = TRUE;
 
 	MFile hInputRead, hInputWriteTmp;
@@ -499,11 +499,11 @@ inline BOOL MProcessMaker::PrepareForRedirect(
 			return FALSE;
 	}
 
-	if (phInputWrite != NULL)
+	if (phInputWrite != nullptr)
 		SetStdInput(hInputRead.Detach());
-	if (phOutputRead != NULL)
+	if (phOutputRead != nullptr)
 		SetStdOutput(hOutputWrite.Detach());
-	if (phErrorRead != NULL)
+	if (phErrorRead != nullptr)
 		SetStdError(hErrorWrite.Detach());
 
 	return TRUE;
@@ -516,7 +516,7 @@ MProcessMaker::ReadAll(std::string& strOutput, MFile& hOutputRead)
 
 	DWORD cbAvail, cbRead;
 	CHAR szBuf[1024];
-	while (hOutputRead.PeekNamedPipe(NULL, 0, NULL, &cbAvail))
+	while (hOutputRead.PeekNamedPipe(nullptr, 0, nullptr, &cbAvail))
 	{
 		if (cbAvail == 0)
 		{
@@ -552,7 +552,7 @@ MProcessMaker::ReadAll(std::string& strOutput, MFile& hOutputRead, DWORD dwTimeo
 
 	DWORD cbAvail, cbRead;
 	CHAR szBuf[1024];
-	while (hOutputRead.PeekNamedPipe(NULL, 0, NULL, &cbAvail))
+	while (hOutputRead.PeekNamedPipe(nullptr, 0, nullptr, &cbAvail))
 	{
 		if (GetTickCount() - dwTick >= dwTimeout)
 			break;
