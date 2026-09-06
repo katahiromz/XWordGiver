@@ -4,10 +4,12 @@
 
 class XG_PictureBoxDialog : public XG_Dialog
 {
-public:
-    XGStringW m_strFile;
+protected:
     HBITMAP m_hbm = nullptr;
     HENHMETAFILE m_hEMF = nullptr;
+
+public:
+    XGStringW m_strFile;
 
     XG_PictureBoxDialog() noexcept
     {
@@ -35,6 +37,12 @@ public:
         HWND hIco1 = GetDlgItem(hwnd, ico1);
         HWND hIco2 = GetDlgItem(hwnd, ico2);
 
+        // コントロールが保持している古い画像を解放
+        if (HBITMAP hOldBmp = (HBITMAP)SendMessageW(hIco2, STM_SETIMAGE, IMAGE_BITMAP, 0))
+            DeleteObject(hOldBmp);
+        if (HENHMETAFILE hOldEmf = (HENHMETAFILE)SendMessageW(hIco1, STM_SETIMAGE, IMAGE_ENHMETAFILE, 0))
+            DeleteEnhMetaFile(hOldEmf);
+
         SendMessageW(hIco1, STM_SETIMAGE, IMAGE_ENHMETAFILE, 0);
         SendMessageW(hIco2, STM_SETIMAGE, IMAGE_BITMAP, 0);
 
@@ -51,11 +59,13 @@ public:
                 m_hbm = hbm2;
                 ShowWindow(hIco2, SW_SHOWNOACTIVATE);
                 SendMessageW(hIco2, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)m_hbm);
+                m_hbm = nullptr;   // 所有権をコントロールに移譲
                 return;
             }
             if (m_hEMF) {
                 ShowWindow(hIco1, SW_SHOWNOACTIVATE);
                 SendMessageW(hIco1, STM_SETIMAGE, IMAGE_ENHMETAFILE, (LPARAM)m_hEMF);
+                m_hEMF = nullptr;   // 所有権をコントロールに移譲
                 return;
             }
         }
