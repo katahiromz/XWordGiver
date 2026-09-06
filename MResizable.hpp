@@ -3,7 +3,7 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #ifndef MZC4_MRESIZABLE_HPP_
-#define MZC4_MRESIZABLE_HPP_        4   /* Version 4 */
+#define MZC4_MRESIZABLE_HPP_        5   /* Version 5 */
 
 struct MCtrlLayout;
 class MResizable;
@@ -124,6 +124,8 @@ inline VOID MResizable::SetLayoutAnchor(
 
 inline VOID MResizable::OnSize(const RECT *prcClient/* = nullptr*/)
 {
+	if (!m_hwndParent)
+		return;
 	assert(m_hwndParent);
 	assert(::IsWindow(m_hwndParent));
 

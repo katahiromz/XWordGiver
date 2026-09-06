@@ -6,6 +6,7 @@ extern std::wstring g_provider;
 extern std::wstring g_model;
 extern std::wstring g_python_exe;
 extern std::wstring g_additional_instruction;
+extern INT g_nHelperFontPointSize;
 
 void AskAIQuestion(HWND hwnd, PCWSTR text);
 BOOL OpenAIHelper(HWND hwndOwner, BOOL bOpen);

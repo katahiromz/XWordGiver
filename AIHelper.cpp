@@ -39,6 +39,118 @@ std::wstring g_buffer;
 BOOL XgIsUserJapanese(VOID) noexcept;
 #endif
 
+static inline BOOL IsJapaneseUI(void)
+{
+#ifdef __XWORDGIVER__
+	return XgIsUserJapanese();
+#else
+	return PRIMARYLANGID(GetUserDefaultLangID()) == LANG_JAPANESE;
+#endif
+}
+
+//////////////////////////////////////////////////////////////////////////////
+// DIALOGリソースを使わずに、ダイアログと同じ操作性（Tab移動、Enterで既定ボタン、
+// Escで閉じる、等）を持つウィンドウを実現するための仕組み。
+//
+// 手口：ウィンドウクラスの既定プロシージャにDefDlgProcWを指定し、DLGWINDOWEXTRA分の
+// 拡張バイトを確保しておく。ウィンドウ作成後、DWLP_DLGPROCへ自前のDialogProcを
+// セットしてからWM_INITDIALOGを自分で送ってやると、以後はCreateDialog系APIで
+// 作った場合と全く同じ挙動になる（IsDialogMessageWによるキーボード操作もそのまま効く）。
+
+static PCWSTR const AIHELPERCONSOLE_CLASSNAME = L"AIHelperConsoleClass";
+
+// 現在のズーム後のフォントサイズ（Ctrl+ホイールで変更する）
+INT g_nHelperFontPointSize = 11;
+static const INT g_nFontPointSizeMin = 6;
+static const INT g_nFontPointSizeMax = 36;
+
+// lst1/edt1/IDOKで共有する、現在使用中のフォント
+static HFONT g_hFont = nullptr;
+
+static void AIHelperConsole_Zoom(HWND hwndDlg, int nDelta);
+
+// 現在の言語・ズーム設定に応じたフォントを作る（呼び出し側でDeleteObjectすること）
+static HFONT CreateAIHelperFont(HWND hwnd, int nPointSize)
+{
+	LOGFONTW lf = { 0 };
+
+	HDC hdc = GetDC(hwnd);
+	lf.lfHeight = -MulDiv(nPointSize, GetDeviceCaps(hdc, LOGPIXELSY), 72);
+	ReleaseDC(hwnd, hdc);
+
+	lf.lfWeight = FW_NORMAL;
+	lf.lfCharSet = DEFAULT_CHARSET;
+	lf.lfQuality = DEFAULT_QUALITY;
+	lf.lfOutPrecision = OUT_DEFAULT_PRECIS;
+	lf.lfClipPrecision = CLIP_DEFAULT_PRECIS;
+	lf.lfPitchAndFamily = DEFAULT_PITCH | FF_DONTCARE;
+	StringCchCopyW(lf.lfFaceName, _countof(lf.lfFaceName),
+		IsJapaneseUI() ? L"MS UI Gothic" : L"Tahoma");
+
+	return CreateFontIndirectW(&lf);
+}
+
+// 指定フォントから「ダイアログ基準単位」を求める、ダイアログマネージャが内部で
+// 使っているのと同じ古典的な計算式（DIALOGEXの座標系(DU)をpxへ変換するために使う）
+static void ComputeDialogBaseUnitsFromFont(HFONT hFont, LONG &baseUnitX, LONG &baseUnitY)
+{
+	HDC hdc = GetDC(nullptr);
+	HFONT hFontOld = (HFONT)SelectObject(hdc, hFont);
+
+	TEXTMETRICW tm;
+	GetTextMetricsW(hdc, &tm);
+
+	SIZE size;
+	static const WCHAR s_szAlphabet[] =
+		L"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+	GetTextExtentPointW(hdc, s_szAlphabet, 52, &size);
+
+	baseUnitX = (size.cx / 26 + 1) / 2;
+	baseUnitY = tm.tmHeight;
+
+	SelectObject(hdc, hFontOld);
+	ReleaseDC(nullptr, hdc);
+}
+
+static inline int DuToPixelX(LONG du, LONG baseUnitX) { return MulDiv((int)du, (int)baseUnitX, 4); }
+static inline int DuToPixelY(LONG du, LONG baseUnitY) { return MulDiv((int)du, (int)baseUnitY, 8); }
+
+// AIHelperConsoleクラスを登録する（DefDlgProcWをウィンドウプロシージャに指定し、
+// DLGWINDOWEXTRA分の拡張バイトを確保しておくことで、"ダイアログ"として振る舞える）
+static ATOM RegisterAIHelperConsoleClass(HINSTANCE hInstance)
+{
+	static ATOM s_atom = 0;
+	if (s_atom)
+		return s_atom;
+
+	WNDCLASSEXW wc = { sizeof(wc) };
+	wc.lpfnWndProc = DefDlgProcW;
+	wc.cbWndExtra = DLGWINDOWEXTRA;
+	wc.hInstance = hInstance;
+	wc.hCursor = LoadCursorW(nullptr, IDC_ARROW);
+	wc.hbrBackground = (HBRUSH)(COLOR_3DFACE + 1);
+	wc.lpszClassName = AIHELPERCONSOLE_CLASSNAME;
+
+	s_atom = RegisterClassExW(&wc);
+	return s_atom;
+}
+
+// オーナーウィンドウの中央に配置する（DS_CENTER相当）
+static void CenterWindowOverOwner(HWND hwnd, HWND hwndOwner)
+{
+	RECT rcOwner, rcWnd;
+	if (!hwndOwner || !GetWindowRect(hwndOwner, &rcOwner))
+		GetWindowRect(GetDesktopWindow(), &rcOwner);
+	GetWindowRect(hwnd, &rcWnd);
+
+	int cx = rcWnd.right - rcWnd.left;
+	int cy = rcWnd.bottom - rcWnd.top;
+	int x = rcOwner.left + ((rcOwner.right - rcOwner.left) - cx) / 2;
+	int y = rcOwner.top + ((rcOwner.bottom - rcOwner.top) - cy) / 2;
+
+	SetWindowPos(hwnd, nullptr, x, y, 0, 0, SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE);
+}
+
 #define IDT_AI_OUTPUT_FLUSH 999
 
 // AIプロセスからの出力を呼び出し側へ通知するためのコールバック
@@ -217,6 +329,16 @@ static LRESULT CALLBACK Lst1WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM 
 			DoCopyList(hwnd);
 			return 0;
 		}
+		break;
+
+	case WM_MOUSEWHEEL: // Ctrl+ホイールでフォントサイズを変更する（ズーム）
+		if (GetKeyState(VK_CONTROL) < 0)
+		{
+			short zDelta = GET_WHEEL_DELTA_WPARAM(wParam);
+			AIHelperConsole_Zoom(GetParent(hwnd), (zDelta > 0) ? +1 : -1);
+			return 0;
+		}
+		break;
 	}
 	return CallWindowProcW(g_fnOldLst1WndProc, hwnd, uMsg, wParam, lParam);
 }
@@ -478,10 +600,95 @@ void AskAIQuestion(HWND hwnd, PCWSTR text)
 	}
 }
 
+// lst1, edt1, IDOKの子コントロールを作成する。
+// IDD_AIHELPERCONSOLE (283x133 DU) と同じレイアウトを、DIALOGリソースを使わずに
+// 再現している。座標・スタイルはrcスクリプトの値をそのまま踏襲している。
+static void CreateAIHelperControls(HWND hwnd)
+{
+	g_hFont = CreateAIHelperFont(hwnd, g_nHelperFontPointSize);
+
+	LONG baseUnitX, baseUnitY;
+	ComputeDialogBaseUnitsFromFont(g_hFont, baseUnitX, baseUnitY);
+
+	auto X = [baseUnitX](LONG du) { return DuToPixelX(du, baseUnitX); };
+	auto Y = [baseUnitY](LONG du) { return DuToPixelY(du, baseUnitY); };
+
+	HWND hLst1 = CreateWindowExW(0, L"EDIT", nullptr,
+		WS_CHILD | WS_VISIBLE | WS_TABSTOP | WS_BORDER | WS_VSCROLL |
+		ES_MULTILINE | ES_READONLY | ES_AUTOVSCROLL,
+		X(5), Y(7), X(270), Y(98),
+		hwnd, (HMENU)(INT_PTR)lst1, g_hAIHelperInst, nullptr);
+
+	HWND hEdt1 = CreateWindowExW(WS_EX_CLIENTEDGE, L"EDIT", nullptr,
+		WS_CHILD | WS_VISIBLE | ES_AUTOHSCROLL,
+		X(6), Y(113), X(203), Y(14),
+		hwnd, (HMENU)(INT_PTR)edt1, g_hAIHelperInst, nullptr);
+
+	HWND hOk = CreateWindowExW(0, L"BUTTON", L"Enter",
+		WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_DEFPUSHBUTTON,
+		X(215), Y(112), X(60), Y(14),
+		hwnd, (HMENU)(INT_PTR)IDOK, g_hAIHelperInst, nullptr);
+
+	SendMessageW(hLst1, WM_SETFONT, (WPARAM)g_hFont, FALSE);
+	SendMessageW(hEdt1, WM_SETFONT, (WPARAM)g_hFont, FALSE);
+	SendMessageW(hOk, WM_SETFONT, (WPARAM)g_hFont, FALSE);
+
+	// クライアント領域が283x133DU相当のサイズになるよう、ウィンドウ全体をリサイズする
+	RECT rc = { 0, 0, X(283), Y(133) };
+	AdjustWindowRectEx(&rc, (DWORD)GetWindowLongPtrW(hwnd, GWL_STYLE), FALSE,
+		(DWORD)GetWindowLongPtrW(hwnd, GWL_EXSTYLE));
+	SetWindowPos(hwnd, nullptr, 0, 0, rc.right - rc.left, rc.bottom - rc.top,
+		SWP_NOMOVE | SWP_NOZORDER | SWP_NOACTIVATE);
+
+	// Enterボタンを既定ボタンとして登録する
+	// （本来はダイアログマネージャがDEFPUSHBUTTONを見つけて自動的に行う処理）
+	SendMessageW(hwnd, DM_SETDEFID, IDOK, 0);
+}
+
+// Ctrl+ホイールによるズーム。lst1/edt1/IDOKのフォントを一括で変更する。
+static void AIHelperConsole_Zoom(HWND hwndDlg, int nDelta)
+{
+	if (!hwndDlg)
+		return;
+
+	int nNewSize = g_nHelperFontPointSize + nDelta;
+	if (nNewSize < g_nFontPointSizeMin)
+		nNewSize = g_nFontPointSizeMin;
+	if (nNewSize > g_nFontPointSizeMax)
+		nNewSize = g_nFontPointSizeMax;
+	if (nNewSize == g_nHelperFontPointSize)
+		return;
+
+	HFONT hNewFont = CreateAIHelperFont(hwndDlg, nNewSize);
+	if (!hNewFont)
+		return;
+
+	g_nHelperFontPointSize = nNewSize;
+
+	HWND hLst1 = GetDlgItem(hwndDlg, lst1);
+	HWND hEdt1 = GetDlgItem(hwndDlg, edt1);
+	HWND hOk = GetDlgItem(hwndDlg, IDOK);
+
+	if (hLst1)
+		SendMessageW(hLst1, WM_SETFONT, (WPARAM)hNewFont, TRUE);
+	if (hEdt1)
+		SendMessageW(hEdt1, WM_SETFONT, (WPARAM)hNewFont, TRUE);
+	if (hOk)
+		SendMessageW(hOk, WM_SETFONT, (WPARAM)hNewFont, TRUE);
+
+	HFONT hFontOld = g_hFont;
+	g_hFont = hNewFont;
+	if (hFontOld)
+		DeleteObject(hFontOld);
+}
+
 // WM_INITDIALOG
 static BOOL OnInitDialog(HWND hwnd, HWND hwndFocus, LPARAM lParam)
 {
 	g_hwndAIHelper = hwnd;
+
+	// DIALOGリソースの代わりに、子コントロールをここで作成する
+	CreateAIHelperControls(hwnd);
 
 	// Subclassing lst1 (for Ctrl+A / Ctrl+C)
 	HWND hLst1 = GetDlgItem(hwnd, lst1);
@@ -511,7 +718,8 @@ static BOOL OnInitDialog(HWND hwnd, HWND hwndFocus, LPARAM lParam)
 // WM_SIZE
 static VOID OnSize(HWND hwnd, UINT state, int cx, int cy)
 {
-	g_resizable.OnSize();
+	if (g_hwndAIHelper)
+		g_resizable.OnSize();
 }
 
 static BOOL OnOK(HWND hwnd)
@@ -551,6 +759,22 @@ static void OnDestroy(HWND hwnd)
 	StopAIProcess(hwnd);
 	g_hwndAIHelper = nullptr;
 	g_buffer.clear();
+
+	if (g_hFont)
+	{
+		DeleteObject(g_hFont);
+		g_hFont = nullptr;
+	}
+}
+
+// WM_CLOSE
+// IDCANCELに相当するボタンが存在しないため、Escキーやタイトルバーの閉じるボタンは
+// （IsDialogMessageWの既定処理により）WM_CLOSEとして届く。DefDlgProcは
+// WM_CLOSEを自動ではDestroyWindowしないので、ここで明示的に後始末する。
+static void OnClose(HWND hwnd)
+{
+	StopAIProcess(hwnd);
+	DestroyWindow(hwnd);
 }
 
 // WM_TIMER
@@ -579,6 +803,7 @@ DialogProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		HANDLE_MSG(hwnd, WM_COMMAND, OnCommand);
 		HANDLE_MSG(hwnd, WM_SIZE, OnSize);
 		HANDLE_MSG(hwnd, WM_DESTROY, OnDestroy);
+		HANDLE_MSG(hwnd, WM_CLOSE, OnClose);
 		HANDLE_MSG(hwnd, WM_TIMER, OnTimer);
 
 	case WM_APP_AI_LINE:
@@ -610,9 +835,33 @@ BOOL OpenAIHelper(HWND hwndOwner, BOOL bOpen)
 			return TRUE;
 		}
 
-		HWND hwnd = CreateDialogW(g_hAIHelperInst, MAKEINTRESOURCE(IDD_AIHELPERCONSOLE), hwndOwner, DialogProc);
+		RegisterAIHelperConsoleClass(g_hAIHelperInst);
+
+		PCWSTR pszCaption = IsJapaneseUI() ? L"AI ヘルパー コンソール" : L"AI Helper Console";
+
+		// DIALOGリソース(IDD_AIHELPERCONSOLE)は使わず、通常のウィンドウとして作成する。
+		// STYLE/EXSTYLEはrcスクリプトのDS_CENTER|WS_POPUPWINDOW|WS_CAPTION|
+		// WS_THICKFRAME|WS_MAXIMIZEBOX / WS_EX_TOOLWINDOWをそのまま踏襲している
+		// （DS_CENTER相当の中央寄せは、作成後にCenterWindowOverOwnerで行う）。
+		HWND hwnd = CreateWindowExW(
+			WS_EX_TOOLWINDOW,
+			AIHELPERCONSOLE_CLASSNAME,
+			pszCaption,
+			WS_POPUPWINDOW | WS_CAPTION | WS_THICKFRAME | WS_MAXIMIZEBOX,
+			CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT,
+			hwndOwner, nullptr, g_hAIHelperInst, nullptr);
 		if (!hwnd)
 			return FALSE;
+
+		// このウィンドウを「ダイアログ」として振る舞わせる。
+		// CreateDialog系APIが内部で行っている処理（DLGPROCの登録とWM_INITDIALOGの
+		// 送信）を手動で再現している。以後はIsDialogMessageWによるTab移動・
+		// Enterでの既定ボタン起動・Escでの終了などがそのまま機能する。
+		SetWindowLongPtrW(hwnd, DWLP_DLGPROC, (LONG_PTR)DialogProc);
+		SendMessageW(hwnd, WM_INITDIALOG, (WPARAM)hwnd, 0);
+
+		CenterWindowOverOwner(hwnd, hwndOwner);
+
 		ShowWindow(hwnd, SW_SHOWNOACTIVATE);
 		UpdateWindow(hwnd);
 		return TRUE;

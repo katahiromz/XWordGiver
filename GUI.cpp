@@ -945,6 +945,7 @@ void XgResetSettings(void)
     xg_bShowDoubleFrameLetters = TRUE;
     xg_bShowDoubleFrame = TRUE;
     xg_nOuterFrameInPt = XG_OUTERFRAME_DEFAULT;
+    g_nHelperFontPointSize = 11;
     g_provider = L"gemini";
     g_model = L"gemini-3.6-flash";
     g_python_exe = L"";
@@ -1277,6 +1278,9 @@ bool __fastcall XgLoadSettings(void)
         if (!app_key.QueryDword(L"ShowDoubleFrame", dwValue)) {
             xg_bShowDoubleFrame = !!dwValue;
         }
+        if (!app_key.QueryDword(L"HelperFontSize", dwValue)) {
+            g_nHelperFontPointSize = dwValue;
+        }
         if (!app_key.QueryDword(L"ViewMode", dwValue)) {
             xg_nViewMode = static_cast<XG_VIEW_MODE>(dwValue);
             if (xg_nViewMode != XG_VIEW_NORMAL && xg_nViewMode != XG_VIEW_SKELETON) {
@@ -1473,6 +1477,7 @@ bool __fastcall XgSaveSettings(void)
         app_key.SetDword(L"ViewMode", xg_nViewMode);
         app_key.SetDword(L"LineWidth", static_cast<int>(xg_nLineWidthInPt * 100));
         app_key.SetDword(L"OuterFrame", static_cast<int>(xg_nOuterFrameInPt * 100));
+        app_key.SetDword(L"HelperFontSize", g_nHelperFontPointSize);
 
         app_key.SetSz(L"Recent", xg_dict_name.c_str());
 
