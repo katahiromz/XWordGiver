@@ -345,7 +345,7 @@ def interactive_mode(client: AIClient, initial_provider: str, model_override: st
 
     while True:
         try:
-            user_input = input(f"[{provider} / {current_models[provider]}] [READY] >").strip()
+            user_input = input(f"[{provider} / {current_models[provider]}] [READY]").strip()
         except (EOFError, KeyboardInterrupt):
             print("\n終了します。")
             break

@@ -110,27 +110,141 @@ void AIHelper_WaitForReady(void)
 // (WPARAMは未使用、LPARAMはnewしたPWSTR。受け取った側でdelete[]すること)
 #define WM_APP_AI_LINE   (WM_APP + 1)
 
-// pszLineの表示幅（ピクセル）を、lst1で使われているフォントで計測する
-static int MeasureLineWidth(HWND hLst1, LPCWSTR pszLine)
+// lst1の現在のクライアント幅（ピクセル）を返す
+static int GetLst1ClientWidth(HWND hLst1)
 {
-	int cxWidth = 0;
+	RECT rc;
+	GetClientRect(hLst1, &rc);
+	return rc.right - rc.left;
+}
 
+// pszTextを、幅cxWidthのlst1に折り返して表示したときの高さ（ピクセル）を、
+// lst1で使われているフォントで計測する（WM_MEASUREITEM/WM_DRAWITEM共用）
+static int ComputeWrappedItemHeight(HWND hLst1, LPCWSTR pszText, int cxWidth)
+{
 	HDC hdc = GetDC(hLst1);
 	if (!hdc)
-		return 0;
+		return 16;
 
 	HFONT hFont = (HFONT)SendMessageW(hLst1, WM_GETFONT, 0, 0);
 	HFONT hFontOld = hFont ? (HFONT)SelectObject(hdc, hFont) : nullptr;
 
-	SIZE size;
-	if (GetTextExtentPoint32W(hdc, pszLine, (int)wcslen(pszLine), &size))
-		cxWidth = size.cx;
+	// 左右に少し余白を取ってから折り返し幅を決める
+	int cxTextWidth = cxWidth - 4;
+	if (cxTextWidth < 1)
+		cxTextWidth = 1;
+
+	RECT rc = { 0, 0, cxTextWidth, 0 };
+	if (pszText && *pszText)
+		DrawTextW(hdc, pszText, -1, &rc, DT_CALCRECT | DT_WORDBREAK | DT_NOPREFIX | DT_EDITCONTROL);
 
 	if (hFontOld)
 		SelectObject(hdc, hFontOld);
 	ReleaseDC(hLst1, hdc);
 
-	return cxWidth;
+	int cyHeight = rc.bottom - rc.top;
+	if (cyHeight < 1)
+		cyHeight = 1;
+	cyHeight += 2; // 上下の余白
+
+	return cyHeight;
+}
+
+// lst1内のすべての項目の高さを、現在の幅に合わせて再計算する
+// （ダイアログのリサイズ時に呼ぶ。折り返し幅が変わるため）
+static void RecalcAllLst1ItemHeights(HWND hLst1)
+{
+	INT nCount = (INT)SendMessageW(hLst1, LB_GETCOUNT, 0, 0);
+	if (nCount <= 0)
+		return;
+
+	int cxWidth = GetLst1ClientWidth(hLst1);
+
+	for (INT i = 0; i < nCount; ++i)
+	{
+		INT len = (INT)SendMessageW(hLst1, LB_GETTEXTLEN, i, 0);
+		std::wstring text;
+		if (len > 0 && len != LB_ERR)
+		{
+			text.resize(len + 1);
+			SendMessageW(hLst1, LB_GETTEXT, i, (LPARAM)&text[0]);
+			text.resize(len);
+		}
+
+		int cyHeight = ComputeWrappedItemHeight(hLst1, text.c_str(), cxWidth);
+		SendMessageW(hLst1, LB_SETITEMHEIGHT, i, MAKELPARAM(cyHeight, 0));
+	}
+}
+
+// WM_MEASUREITEM: 追加された項目1つ分の高さを、折り返しを考慮して計算する
+static void OnMeasureItem(HWND hwnd, LPMEASUREITEMSTRUCT lpMeasureItem)
+{
+	if (lpMeasureItem->CtlID != lst1)
+		return;
+
+	HWND hLst1 = GetDlgItem(hwnd, lst1);
+	if (!hLst1)
+		return;
+
+	INT len = (INT)SendMessageW(hLst1, LB_GETTEXTLEN, lpMeasureItem->itemID, 0);
+	std::wstring text;
+	if (len > 0 && len != LB_ERR)
+	{
+		text.resize(len + 1);
+		SendMessageW(hLst1, LB_GETTEXT, lpMeasureItem->itemID, (LPARAM)&text[0]);
+		text.resize(len);
+	}
+
+	int cxWidth = GetLst1ClientWidth(hLst1);
+	lpMeasureItem->itemHeight = (UINT)ComputeWrappedItemHeight(hLst1, text.c_str(), cxWidth);
+}
+
+// WM_DRAWITEM: lst1の項目1つを、折り返しありで自前描画する
+static void OnDrawItem(HWND hwnd, const DRAWITEMSTRUCT *lpDrawItem)
+{
+	if (lpDrawItem->CtlID != lst1 || lpDrawItem->itemID == (UINT)-1)
+		return;
+
+	HDC hdc = lpDrawItem->hDC;
+	RECT rc = lpDrawItem->rcItem;
+
+	BOOL bSelected = (lpDrawItem->itemState & ODS_SELECTED) != 0;
+	COLORREF crText = GetSysColor(bSelected ? COLOR_HIGHLIGHTTEXT : COLOR_WINDOWTEXT);
+	COLORREF crBack = GetSysColor(bSelected ? COLOR_HIGHLIGHT : COLOR_WINDOW);
+
+	HBRUSH hbrBack = CreateSolidBrush(crBack);
+	FillRect(hdc, &rc, hbrBack);
+	DeleteObject(hbrBack);
+
+	INT len = (INT)SendMessageW(lpDrawItem->hwndItem, LB_GETTEXTLEN, lpDrawItem->itemID, 0);
+	std::wstring text;
+	if (len > 0 && len != LB_ERR)
+	{
+		text.resize(len + 1);
+		SendMessageW(lpDrawItem->hwndItem, LB_GETTEXT, lpDrawItem->itemID, (LPARAM)&text[0]);
+		text.resize(len);
+	}
+
+	HFONT hFont = (HFONT)SendMessageW(lpDrawItem->hwndItem, WM_GETFONT, 0, 0);
+	HFONT hFontOld = hFont ? (HFONT)SelectObject(hdc, hFont) : nullptr;
+
+	RECT rcText = rc;
+	rcText.left += 2;
+	rcText.right -= 2;
+
+	int iOldMode = SetBkMode(hdc, TRANSPARENT);
+	COLORREF crOldText = SetTextColor(hdc, crText);
+
+	DrawTextW(hdc, text.c_str(), -1, &rcText, DT_WORDBREAK | DT_NOPREFIX | DT_EDITCONTROL);
+
+	SetTextColor(hdc, crOldText);
+	SetBkMode(hdc, iOldMode);
+
+	if (hFontOld)
+		SelectObject(hdc, hFontOld);
+
+	if (lpDrawItem->itemState & ODS_FOCUS)
+		DrawFocusRect(hdc, &rc);
 }
 
 // 文字列中に含まれる "(*...*)" 形式のタグ（XG_GetAIPreTextによる前置情報など）を
@@ -162,7 +276,6 @@ static std::wstring StripAiPreTextTag(LPCWSTR pszLine)
 }
 
 // lst1に1行追加し、末尾までスクロールする。
-// 横スクロールできるよう、必要に応じて水平スクロール範囲も広げる。
 static void AddLineToList(HWND hwnd, LPCWSTR pszLine)
 {
 	HWND hLst1 = GetDlgItem(hwnd, lst1);
@@ -178,11 +291,6 @@ static void AddLineToList(HWND hwnd, LPCWSTR pszLine)
 
 	INT iIndex = (INT)SendMessageW(hLst1, LB_ADDSTRING, 0, (LPARAM)pszDisplay);
 	SendMessageW(hLst1, LB_SETTOPINDEX, (WPARAM)iIndex, 0);
-
-	int cxLine = MeasureLineWidth(hLst1, pszDisplay);
-	int cxExtent = (int)SendMessageW(hLst1, LB_GETHORIZONTALEXTENT, 0, 0);
-	if (cxLine + 10 > cxExtent)
-		SendMessageW(hLst1, LB_SETHORIZONTALEXTENT, (WPARAM)(cxLine + 10), 0);
 }
 
 // UTF-8バイト列をUTF-16文字列に変換する
@@ -561,6 +669,14 @@ static BOOL OnInitDialog(HWND hwnd, HWND hwndFocus, LPARAM lParam)
 static VOID OnSize(HWND hwnd, UINT state, int cx, int cy)
 {
 	g_resizable.OnSize();
+
+	// lst1の幅が変わると折り返し位置も変わるため、全項目の高さを再計算する
+	HWND hLst1 = GetDlgItem(hwnd, lst1);
+	if (hLst1)
+	{
+		RecalcAllLst1ItemHeights(hLst1);
+		InvalidateRect(hLst1, nullptr, TRUE);
+	}
 }
 
 static BOOL OnOK(HWND hwnd)
@@ -640,6 +756,14 @@ DialogProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		HANDLE_MSG(hwnd, WM_SIZE, OnSize);
 		HANDLE_MSG(hwnd, WM_DESTROY, OnDestroy);
 		HANDLE_MSG(hwnd, WM_TIMER, OnTimer);
+
+	case WM_MEASUREITEM:
+		OnMeasureItem(hwnd, (LPMEASUREITEMSTRUCT)lParam);
+		return TRUE;
+
+	case WM_DRAWITEM:
+		OnDrawItem(hwnd, (const DRAWITEMSTRUCT *)lParam);
+		return TRUE;
 
 	case WM_APP_AI_LINE:
 		if (lParam)
