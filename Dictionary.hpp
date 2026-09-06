@@ -170,9 +170,11 @@ protected:
 template <typename t_string>
 inline bool XgTrimDict(std::unordered_set<t_string>& words)
 {
-    for (auto& word : words) {
-        if (word.size() <= 1) {
-            words.erase(word);
+    for (auto it = words.begin(); it != words.end(); ) {
+        if (it->size() <= 1) {
+            it = words.erase(it);
+        } else {
+            ++it;
         }
     }
     return !words.empty();
