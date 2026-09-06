@@ -119,10 +119,12 @@ void XgGetPatternData(XG_PATDATA& pat)
         switch (ch)
         {
         case ZEN_BLACK:
+            assert(x < cx && y < cy);
             data[x + cx * y] = ZEN_BLACK;
             ++x;
             break;
         case ZEN_SPACE:
+            assert(x < cx && y < cy);
             data[x + cx * y] = ZEN_SPACE;
             ++x;
             break;

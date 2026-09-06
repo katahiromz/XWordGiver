@@ -802,13 +802,15 @@ inline WCHAR __fastcall XG_BoardEx::GetAt(int ij) const noexcept {
 // 空マスじゃないマスの個数を返す。
 inline WCHAR& __fastcall XG_Board::Count() noexcept
 {
-    return m_vCells[xg_nRows * xg_nCols];
+    assert(!m_vCells.empty());
+    return m_vCells.back();
 }
 
 // 空マスじゃないマスの個数を返す。
 inline WCHAR __fastcall XG_Board::Count() const noexcept
 {
-    return m_vCells[xg_nRows * xg_nCols];
+    assert(!m_vCells.empty());
+    return m_vCells.back();
 }
 
 // クロスワードが空かどうか。
