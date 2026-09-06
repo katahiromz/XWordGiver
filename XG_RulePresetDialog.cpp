@@ -67,8 +67,16 @@ void XG_RulePresetDialog::SetCheckValue(HWND hwnd, int value) noexcept
     if (value & RULE_2) CheckDlgButton(hwnd, chx2, BST_CHECKED);
     if (value & RULE_3) CheckDlgButton(hwnd, chx3, BST_CHECKED);
     if (value & RULE_4) CheckDlgButton(hwnd, chx4, BST_CHECKED);
-    if (value & RULE_5) CheckDlgButton(hwnd, chx5, BST_CHECKED);
-    else if (value & RULE_6) CheckDlgButton(hwnd, chx6, BST_CHECKED);
+    if (value & RULE_5) {
+        CheckDlgButton(hwnd, chx5, BST_CHECKED);
+        CheckDlgButton(hwnd, chx6, BST_UNCHECKED);
+    } else if (value & RULE_6) {
+        CheckDlgButton(hwnd, chx5, BST_UNCHECKED);
+        CheckDlgButton(hwnd, chx6, BST_CHECKED);
+    } else {
+        CheckDlgButton(hwnd, chx5, BST_UNCHECKED);
+        CheckDlgButton(hwnd, chx6, BST_UNCHECKED);
+    }
     if (value & RULE_7) CheckDlgButton(hwnd, chx7, BST_CHECKED);
     if (value & RULE_8) CheckDlgButton(hwnd, chx8, BST_CHECKED);
     if (value & RULE_9) CheckDlgButton(hwnd, chx9, BST_CHECKED);
