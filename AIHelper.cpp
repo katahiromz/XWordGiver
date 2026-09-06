@@ -31,10 +31,13 @@ std::wstring g_provider = L"gemini";
 std::wstring g_model = L"gemini-3.6-flash";
 std::wstring g_python_exe;
 std::wstring g_additional_instruction;
+std::wstring g_buffer;
 
 #ifdef __XWORDGIVER__
 BOOL XgIsUserJapanese(VOID) noexcept;
 #endif
+
+#define IDT_AI_LINE_FLUSH 999
 
 // AIプロセスからの出力行を呼び出し側へ通知するためのコールバック
 static AIHELPER_LINE_CALLBACK g_pfnLineCallback = nullptr;
@@ -355,8 +358,10 @@ static BOOL StartAIProcess(HWND hwnd)
 }
 
 // 実行中のAIHelper_ja.pyプロセスを終了し、後片付けをする
-static void StopAIProcess()
+static void StopAIProcess(HWND hwnd)
 {
+	KillTimer(hwnd, IDT_AI_LINE_FLUSH);
+
 	g_bReaderStop = TRUE;
 
 	if (g_maker.IsRunning())
@@ -427,6 +432,7 @@ void AskAIQuestion(HWND hwnd, PCWSTR text)
 	}
 }
 
+// WM_INITDIALOG
 static BOOL OnInitDialog(HWND hwnd, HWND hwndFocus, LPARAM lParam)
 {
 	g_hwndAIHelper = hwnd;
@@ -453,6 +459,7 @@ static BOOL OnInitDialog(HWND hwnd, HWND hwndFocus, LPARAM lParam)
 	return FALSE;
 }
 
+// WM_SIZE
 static VOID OnSize(HWND hwnd, UINT state, int cx, int cy)
 {
 	g_resizable.OnSize();
@@ -470,6 +477,7 @@ static BOOL OnOK(HWND hwnd)
 	return FALSE;
 }
 
+// WM_COMMAND
 static void OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT codeNotify)
 {
 	switch (id)
@@ -477,7 +485,7 @@ static void OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT codeNotify)
 	case IDOK:
 		if (OnOK(hwnd))
 		{
-			StopAIProcess();
+			StopAIProcess(hwnd);
 #ifdef AIHELPER_STANDALONE
 			EndDialog(hwnd, id);
 #else
@@ -486,7 +494,7 @@ static void OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT codeNotify)
 		}
 		break;
 	case IDCANCEL:
-		StopAIProcess();
+		StopAIProcess(hwnd);
 #ifdef AIHELPER_STANDALONE
 		EndDialog(hwnd, id);
 #else
@@ -496,13 +504,32 @@ static void OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT codeNotify)
 	}
 }
 
+// WM_DESTROY
 static void OnDestroy(HWND hwnd)
 {
-	StopAIProcess();
+	StopAIProcess(hwnd);
 	g_hwndAIHelper = nullptr;
+	g_buffer.clear();
 #ifdef AIHELPER_STANDALONE
 	PostQuitMessage(0);
 #endif
+}
+
+// WM_TIMER
+static void OnTimer(HWND hwnd, UINT id)
+{
+	if (id != IDT_AI_LINE_FLUSH)
+		return;
+
+	KillTimer(hwnd, IDT_AI_LINE_FLUSH);
+
+	std::wstring buffer = std::move(g_buffer);
+	g_buffer.clear();
+
+	// 登録されていれば、生の行をそのままコールバックへ渡す
+	// (表示用のタグ除去はAddLineToList内でのみ行われ、ここには影響しない)
+	if (g_pfnLineCallback)
+		g_pfnLineCallback(buffer.c_str());
 }
 
 static INT_PTR CALLBACK
@@ -514,17 +541,21 @@ DialogProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		HANDLE_MSG(hwnd, WM_COMMAND, OnCommand);
 		HANDLE_MSG(hwnd, WM_SIZE, OnSize);
 		HANDLE_MSG(hwnd, WM_DESTROY, OnDestroy);
+		HANDLE_MSG(hwnd, WM_TIMER, OnTimer);
 
 	case WM_APP_AI_LINE:
+		if (lParam)
 		{
+			KillTimer(hwnd, IDT_AI_LINE_FLUSH);
+
 			// ReaderThreadProcがnewしたバッファを引き取って表示し、解放する
 			PWSTR psz = (PWSTR)lParam;
 			AddLineToList(hwnd, psz);
-			// 登録されていれば、生の行をそのままコールバックへ渡す
-			// (表示用のタグ除去はAddLineToList内でのみ行われ、ここには影響しない)
-			if (g_pfnLineCallback)
-				g_pfnLineCallback(psz);
+			g_buffer += psz;
 			delete[] psz;
+
+			// デバウンス（debounce）パターン
+			SetTimer(hwnd, IDT_AI_LINE_FLUSH, 300, nullptr);
 		}
 		return TRUE;
 	}
