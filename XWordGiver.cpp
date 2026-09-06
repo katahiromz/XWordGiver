@@ -463,7 +463,7 @@ BOOL XgLoadPatterns(LPCWSTR pszFileName, patterns_t& patterns, XGStringW *pComme
     fclose(fp);
 
     // BOMを消す。
-    if (utf8.size() >= 3 && memcmp(&utf8[0], "\xEF\xBB\xBF", 3) == 0) {
+    if (utf8.size() >= 3 && memcmp(&utf8[0], u8"\xEF\xBB\xBF", 3) == 0) {
         utf8 = utf8.substr(3);
     }
 

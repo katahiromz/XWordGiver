@@ -685,7 +685,7 @@ BOOL XgUpdateDictionaryUsingClues(HWND hwnd, const XGStringW& dict_name)
         return FALSE;
     }
 
-    fprintf(fp, "\xEF\xBB\xBF"); // UTF-8 BOM
+    fprintf(fp, u8"\xEF\xBB\xBF"); // UTF-8 BOM
 
     // 一行ずつ書き込む。
     for (auto& line : lines) {
