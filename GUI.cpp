@@ -340,7 +340,7 @@ bool xg_bAutoRetry = true;
 static bool s_bOldNotice = false;
 
 // メインウィンドウクラス名。
-static const LPCWSTR s_pszMainWndClass = L"XWord Giver Main Window";
+static const PCWSTR s_pszMainWndClass = L"XWord Giver Main Window";
 
 // アクセラレータのハンドル。
 static HACCEL s_hAccel = nullptr;
@@ -9005,11 +9005,47 @@ WinMain(
     // 設定を保存。
     XgSaveSettings();
 
-    // 文字列を解放。
+    // クリーンアップ。
     g_provider.clear();
     g_model.clear();
     g_python_exe.clear();
     g_additional_instruction.clear();
+    xg_dict_name.clear();
+    xg_dicts.clear();
+    xg_ubUndoBuffer.clear();
+    xg_dirs_save_to.clear();
+    xg_boxes.clear();
+    xg_mapNumCro1.clear();
+    xg_mapNumCro2.clear();
+    xg_recently_used_files.clear();
+    xg_strBlackCellImage.clear();
+    xg_strDoubleFrameLetters.clear();
+    xg_dict_1.clear();
+    xg_dict_2.clear();
+    xg_dict_1_by_length.clear();
+    xg_dict_2_by_length.clear();
+    xg_word_to_tags_map.clear();
+    xg_tag_histgram.clear();
+    xg_priority_tags.clear();
+    xg_forbidden_tags.clear();
+    xg_strTheme.clear();
+    xg_strDefaultTheme.clear();
+    xg_word_length_histgram.clear();
+    xg_vMarks.clear();
+    xg_vMarkedCands.clear();
+    xg_strMarked.clear();
+    xg_pTaskbarProgress.reset();
+    xg_pFileManager.reset();
+    if (xg_hbmBlackCell)
+    {
+        DeleteObject(xg_hbmBlackCell);
+        xg_hbmBlackCell = nullptr;
+    }
+    if (xg_hBlackCellEMF)
+    {
+        DeleteEnhMetaFile(xg_hBlackCellEMF);
+        xg_hBlackCellEMF = nullptr;
+    }
 
     // ハンドルリークを検出。
 #if (WINVER >= 0x0500) && !defined(NDEBUG)

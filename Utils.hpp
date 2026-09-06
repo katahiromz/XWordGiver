@@ -317,5 +317,6 @@ struct XG_FileManager
 };
 
 std::shared_ptr<XG_FileManager>& XgGetFileManager(void);
+extern std::shared_ptr<XG_FileManager> xg_pFileManager;
 
 //////////////////////////////////////////////////////////////////////////////
