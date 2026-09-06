@@ -60,9 +60,7 @@ public:
             if (codeNotify == BN_CLICKED) {
                 HCURSOR hOldCursor = ::SetCursor(::LoadCursor(NULL, IDC_WAIT));
                 XG_HintsWnd::UpdateHintData(); // ヒントに変更があれば、更新する。
-                if (XgUpdateDictionaryUsingClues(hwnd, xg_dict_name)) {
-                } else {
-                }
+                XgUpdateDictionaryUsingClues(hwnd, xg_dict_name);
                 ::SetCursor(hOldCursor);
             }
             break;
