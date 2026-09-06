@@ -360,6 +360,7 @@
     - Fixed an error in the "Small Font" setting of XG_SettingsDialog.
     - Fixed the color settings for XG_PatternDialog.
     - Strengthened checks for XG_JumpDialog.
+    - Improved the UI/UX of AI ​Helper.
 
 # 開発履歴 (Japanese)
 
@@ -1039,3 +1040,4 @@
     - XG_SettingsDialogの「小さいフォント」設定の間違いを修正。
     - XG_PatternDialogの色設定を修正。
     - XG_JumpDialogのチェックを強化。
+    - AIヘルパーのUI/UXを改良。

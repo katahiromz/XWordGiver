@@ -342,12 +342,13 @@ def interactive_mode(client: AIClient, initial_provider: str, model_override: st
     # first without exiting, then fall straight into the normal interactive
     # loop so the user can keep asking follow-up questions.
     if initial_question:
-        print(f"[{provider} / {current_models[provider]}] > {initial_question}")
+        print(f"[{provider} / {current_models[provider]}]")
+        print(f"> {initial_question}")
         ask_once(initial_question)
 
     while True:
         try:
-            user_input = input(f"[{provider} / {current_models[provider]}] > ").strip()
+            user_input = input(f"[{provider} / {current_models[provider]}] [READY] >").strip()
         except (EOFError, KeyboardInterrupt):
             print("\nExiting.")
             break

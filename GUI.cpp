@@ -8550,6 +8550,7 @@ void XgRegenerateCluesAll(HWND hwnd)
 
     // Open the AI helper (if already open, just bring it to the front).
     XgOpenAIHelper(xg_hMainWnd);
+    AIHelper_WaitForReady();
 
     if (XgIsUserJapanese()) {
         AskAIQuestion(g_hwndAIHelper, L"すべてのカギを再生成してください。");
@@ -8574,6 +8575,7 @@ BOOL XgGenerateClue_ja(INT nNumber, BOOL bDown)
 
     // AIヘルパーを開く（既に開いていれば前面に出すだけ）。
     XgOpenAIHelper(xg_hMainWnd);
+    AIHelper_WaitForReady();
 
     // 対象のカギ名（An / Dm）を組み立てる。
     XGStringW name = (bDown ? L"D" : L"A");
@@ -8611,6 +8613,7 @@ BOOL XgGenerateClue_en(INT nNumber, BOOL bDown)
 
     // Open the AI helper (if already open, just bring it to the front).
     XgOpenAIHelper(xg_hMainWnd);
+    AIHelper_WaitForReady();
 
     // Build the target clue name (An / Dm).
     XGStringW name = (bDown ? L"D" : L"A");

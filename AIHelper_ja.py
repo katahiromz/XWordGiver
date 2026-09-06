@@ -339,12 +339,13 @@ def interactive_mode(client: AIClient, initial_provider: str, model_override: st
     # プロセスを終了せず、そのまま通常の対話ループへ入り、
     # 続けて質問できるようにする。
     if initial_question:
-        print(f"[{provider} / {current_models[provider]}] 質問> {initial_question}")
+        print(f"[{provider} / {current_models[provider]}]")
+        print(f"> {initial_question}")
         ask_once(initial_question)
 
     while True:
         try:
-            user_input = input(f"[{provider} / {current_models[provider]}] 質問> ").strip()
+            user_input = input(f"[{provider} / {current_models[provider]}] [READY] >").strip()
         except (EOFError, KeyboardInterrupt):
             print("\n終了します。")
             break

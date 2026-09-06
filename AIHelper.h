@@ -9,6 +9,7 @@ extern std::wstring g_additional_instruction;
 
 void AskAIQuestion(HWND hwnd, PCWSTR text);
 BOOL OpenAIHelper(HWND hwndOwner, BOOL bOpen);
+void AIHelper_WaitForReady(void);
 
 // AIプロセスから届いた出力行を、表示とは別に呼び出し側へ通知するためのコールバック。
 // (*...*) タグの除去やフィルタリングは行わない、生の1行がそのまま渡される。

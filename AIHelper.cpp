@@ -25,6 +25,8 @@ static MFile         g_hInputWrite;
 static MFile         g_hOutputRead;
 static HANDLE        g_hReaderThread = nullptr;
 static volatile BOOL g_bReaderStop = FALSE;
+// AIHelper(_ja).pyが起動完了して標準入力の受付準備ができたときにセットされる
+static HANDLE        g_hReadyEvent = nullptr;
 
 HWND g_hwndAIHelper = nullptr;
 std::wstring g_provider = L"gemini";
@@ -46,6 +48,62 @@ static AIHELPER_OUTPUT_CALLBACK g_pfnOutputCallback = nullptr;
 void AIHelper_SetOutputCallback(AIHELPER_OUTPUT_CALLBACK callback)
 {
 	g_pfnOutputCallback = callback;
+}
+
+// 完全に起動されるまで待つ。
+// AIHelper(_ja).pyはコンソールサブシステムのPythonプロセスであり、GUIの
+// メッセージキューを持たないため、WaitForInputIdleでは起動完了を検知できない。
+// 代わりに、子プロセスが標準出力へ"[READY]"を吐いた時点でセットされる
+// イベントを待つ（ReaderThreadProc参照）。
+//
+// 注意: ReaderThreadProcはバナー等の各行をPostMessageWでこのスレッドの
+// メッセージキューに積むだけなので、単純にWaitForSingleObjectで待つと、
+// その間メッセージポンプが止まり、バナー行がまだ表示されていないうちに
+// （＝WM_APP_AI_LINEが処理されないうちに）呼び出し元がAskAIQuestionで
+// 質問エコーを直接AddLineToListしてしまい、表示順が
+// 「質問エコー→バナー」と入れ替わってしまう。
+// それを防ぐため、待機中もメッセージを汲み出して処理する。
+void AIHelper_WaitForReady(void)
+{
+	if (!g_hReadyEvent)
+		return;
+
+	const DWORD dwStart = GetTickCount();
+	const DWORD dwTimeout = 5 * 1000;
+
+	for (;;)
+	{
+		DWORD dwElapsed = GetTickCount() - dwStart;
+		if (dwElapsed >= dwTimeout)
+			break;
+
+		DWORD dwWait = MsgWaitForMultipleObjects(
+			1, &g_hReadyEvent, FALSE, dwTimeout - dwElapsed, QS_ALLINPUT);
+
+		if (dwWait == WAIT_OBJECT_0)
+			break; // [READY]を受信した
+
+		if (dwWait != WAIT_OBJECT_0 + 1)
+			break; // タイムアウトまたはエラー
+
+		// キューにあるメッセージ（WM_APP_AI_LINEなど）を処理して、
+		// バナー行などが先に表示されるようにする
+		MSG msg;
+		while (PeekMessageW(&msg, nullptr, 0, 0, PM_REMOVE))
+		{
+			TranslateMessage(&msg);
+			DispatchMessageW(&msg);
+		}
+	}
+
+	// イベントがシグナル状態になった後にもう届いているかもしれない
+	// メッセージ（バナーの残りなど）も、戻る前に処理しておく
+	MSG msg;
+	while (PeekMessageW(&msg, nullptr, 0, 0, PM_REMOVE))
+	{
+		TranslateMessage(&msg);
+		DispatchMessageW(&msg);
+	}
 }
 
 // 子プロセスの出力の1行をUIスレッドへ渡すためのカスタムメッセージ
@@ -242,6 +300,19 @@ static void PostLineToUI(HWND hwnd, const std::wstring& line)
 // g_hOutputReadを読み続け、行がまとまるたびにUIスレッドへ渡すバックグラウンドスレッド。
 // プロンプト文字列などの改行なしの断片も、しばらく新しいデータが来なければ
 // 1行として吐き出す（＝パイプが空になったタイミングでflushする）。
+// バッファから取り出した1行が起動完了シグナルであれば処理して true を返す。
+// このシグナルはAIHelper_WaitForReady専用の内部プロトコルなので、
+// UI（lst1）には表示しない。
+static bool HandlePossibleReadySignal(const std::string& line)
+{
+	if (line.find("[READY]") == line.npos)
+		return false;
+
+	if (g_hReadyEvent)
+		SetEvent(g_hReadyEvent);
+	return true;
+}
+
 static DWORD WINAPI ReaderThreadProc(LPVOID lpParam)
 {
 	HWND hwnd = (HWND)lpParam;
@@ -260,6 +331,7 @@ static DWORD WINAPI ReaderThreadProc(LPVOID lpParam)
 			// ここでいったん1行として出力しておく
 			if (!buffer.empty())
 			{
+				HandlePossibleReadySignal(buffer);
 				std::wstring wline = Utf8ToWide(buffer.c_str(), (int)buffer.size());
 				PostLineToUI(hwnd, wline);
 				buffer.clear();
@@ -286,6 +358,7 @@ static DWORD WINAPI ReaderThreadProc(LPVOID lpParam)
 				if (!line.empty() && line.back() == '\r')
 					line.pop_back();
 
+				HandlePossibleReadySignal(line);
 				std::wstring wline = Utf8ToWide(line.c_str(), (int)line.size());
 				PostLineToUI(hwnd, wline);
 
@@ -297,12 +370,18 @@ static DWORD WINAPI ReaderThreadProc(LPVOID lpParam)
 	// プロセスが終了した後に残った断片も出力する
 	if (!buffer.empty())
 	{
+		HandlePossibleReadySignal(buffer);
 		std::wstring wline = Utf8ToWide(buffer.c_str(), (int)buffer.size());
 		PostLineToUI(hwnd, wline);
 	}
 
 	if (!g_bReaderStop)
 		PostLineToUI(hwnd, L"[AIプロセスが終了しました]");
+
+	// [READY]を送る前にプロセスが終了した場合、AIHelper_WaitForReadyが
+	// タイムアウトまで無駄に待ち続けないよう、念のためここでもイベントをセットする
+	if (g_hReadyEvent)
+		SetEvent(g_hReadyEvent);
 
 	return 0;
 }
@@ -345,10 +424,19 @@ static BOOL StartAIProcess(HWND hwnd)
 	// 子プロセスのウィンドウを作成しない。
 	g_maker.SetCreationFlags(CREATE_NO_WINDOW);
 
+	// 起動完了シグナル（[READY]）待ち用のイベントを用意する
+	// （手動リセット、初期状態は非シグナル）
+	if (!g_hReadyEvent)
+		g_hReadyEvent = CreateEventW(nullptr, TRUE, FALSE, nullptr);
+	else
+		ResetEvent(g_hReadyEvent);
+
 	if (!g_maker.PrepareForRedirect(&g_hInputWrite, &g_hOutputRead) ||
 		!g_maker.CreateProcessDx(nullptr, str.c_str()))
 	{
 		AddLineToList(hwnd, L"[エラー] プロセスの起動に失敗しました。");
+		if (g_hReadyEvent)
+			SetEvent(g_hReadyEvent); // 起動失敗時に無駄に待たされないように
 		return FALSE;
 	}
 
@@ -377,6 +465,12 @@ static void StopAIProcess(HWND hwnd)
 	g_hInputWrite.CloseHandle();
 	g_hOutputRead.CloseHandle();
 	g_maker.CloseAll();
+
+	if (g_hReadyEvent)
+	{
+		CloseHandle(g_hReadyEvent);
+		g_hReadyEvent = nullptr;
+	}
 }
 
 // パイプは「1行=1メッセージ」のプロトコルなので、text/pre_text/追加指示に
@@ -402,6 +496,10 @@ void AskAIQuestion(HWND hwnd, PCWSTR text)
 
 	// 入力した質問をlst1にエコー表示する
 	AddLineToList(hwnd, (L"> " + std::wstring(text)).c_str());
+	if (XgIsUserJapanese())
+		AddLineToList(hwnd, L"...しばらくお待ちください...");
+	else
+		AddLineToList(hwnd, L"...Please wait a moment...");
 
 	std::wstring line;
 #ifdef __XWORDGIVER__
