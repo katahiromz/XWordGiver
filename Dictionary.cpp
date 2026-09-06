@@ -467,23 +467,6 @@ BOOL XgLoadDictsFromDir(LPCWSTR pszDir)
         FindClose(hFind);
     }
 
-    // ファイル *.dic も列挙する。
-    StringCchCopy(szPath, _countof(szPath), pszDir);
-    PathAppend(szPath, L"*.dic");
-    hFind = FindFirstFileW(szPath, &find);
-    if (hFind != INVALID_HANDLE_VALUE)
-    {
-        do
-        {
-            StringCchCopy(szPath, _countof(szPath), pszDir);
-            PathAppend(szPath, find.cFileName);
-            auto path = szPath;
-            auto title = XgLoadTitleFromDict(szPath);
-            xg_dicts.emplace_back(path, title);
-        } while (FindNextFile(hFind, &find));
-        FindClose(hFind);
-    }
-
     return !xg_dicts.empty();
 }
 
