@@ -8999,6 +8999,19 @@ int WINAPI WinMain(
     // 設定を保存。
     XgSaveSettings();
 
+#if (WINVER >= 0x0500) && !defined(NDEBUG)
+    {
+        HANDLE hProcess = GetCurrentProcess();
+        WCHAR text[MAX_PATH];
+        StringCchPrintfW(text, _countof(text), L"Count of GDI objects: %ld\n",
+                         GetGuiResources(hProcess, GR_GDIOBJECTS));
+        OutputDebugStringW(text);
+        StringCchPrintfW(text, _countof(text), L"Count of USER objects: %ld\n",
+                         GetGuiResources(hProcess, GR_USEROBJECTS));
+        OutputDebugStringW(text);
+    }
+#endif
+
     return static_cast<int>(msg.wParam);
 }
 
