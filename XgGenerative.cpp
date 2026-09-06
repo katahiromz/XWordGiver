@@ -173,14 +173,14 @@ XgGenerativeDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
                     ComboBox_GetText(GetDlgItem(hwnd, cmb2), szText, _countof(szText));
                     if (::IsDlgButtonChecked(hwnd, chx5) == BST_CHECKED && szText[0]) {
                         if (lstrcmpiW(szText, XgLoadStringDx1(IDS_NONE)) != 0) {
-                            StringCchCopyW(xg_aszSoundFiles[1], _countof(xg_aszSoundFiles[0]), szPath);
+                            StringCchCopyW(xg_aszSoundFiles[1], _countof(xg_aszSoundFiles[1]), szPath);
                             PathAppendW(xg_aszSoundFiles[1], szText);
                         }
                     }
                     ComboBox_GetText(GetDlgItem(hwnd, cmb3), szText, _countof(szText));
                     if (::IsDlgButtonChecked(hwnd, chx6) == BST_CHECKED && szText[0]) {
                         if (lstrcmpiW(szText, XgLoadStringDx1(IDS_NONE)) != 0) {
-                            StringCchCopyW(xg_aszSoundFiles[2], _countof(xg_aszSoundFiles[0]), szPath);
+                            StringCchCopyW(xg_aszSoundFiles[2], _countof(xg_aszSoundFiles[2]), szPath);
                             PathAppendW(xg_aszSoundFiles[2], szText);
                         }
                     }
