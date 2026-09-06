@@ -199,6 +199,8 @@ public:
         if (bPriority) {
             HWND hLst2 = GetDlgItem(hwnd, lst2);
             int iItem = ListView_GetNextItem(hLst2, -1, LVNI_ALL | LVNI_SELECTED);
+            if (iItem < 0)
+                return;
             ListView_DeleteItem(hLst2, iItem);
 
             // カウンターを更新。
@@ -212,6 +214,8 @@ public:
         } else {
             HWND hLst3 = GetDlgItem(hwnd, lst3);
             int iItem = ListView_GetNextItem(hLst3, -1, LVNI_ALL | LVNI_SELECTED);
+            if (iItem < 0)
+                return;
             ListView_DeleteItem(hLst3, iItem);
 
             // カウンターを更新。

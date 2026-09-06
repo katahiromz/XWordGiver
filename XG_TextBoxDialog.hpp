@@ -17,7 +17,7 @@ public:
     XGStringW m_strFontName;
     int m_nFontSizeInPoints = 0;
 
-    BOOL GetTextColor() noexcept
+    COLORREF GetTextColor() noexcept
     {
         if (m_bTextColor)
             return m_hwndTextColor.GetColor();
@@ -30,7 +30,7 @@ public:
         m_bTextColor = bEnable;
     }
 
-    BOOL GetBgColor() noexcept
+    COLORREF GetBgColor() noexcept
     {
         if (m_bBgColor)
             return m_hwndBgColor.GetColor();
