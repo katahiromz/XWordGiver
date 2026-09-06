@@ -798,6 +798,11 @@ public:
             BOOL XgGenerateClue(INT nNumber, BOOL bDown);
             XgGenerateClue(m_nNumber, m_bVert);
         }
+        else if (nCmd == ID_CLEARTHISCLUE)
+        {
+            BOOL XgClearClue(INT nNumber, BOOL bDown);
+            XgClearClue(m_nNumber, m_bVert);
+        }
 
         ::DestroyMenu(hMenu);
     }

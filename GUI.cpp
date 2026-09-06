@@ -6255,6 +6255,25 @@ void XgOpenAIHelper(HWND hwnd)
     OpenAIHelper(hwnd, TRUE);
 }
 
+// このカギをクリアする。
+BOOL XgClearClue(INT nNumber, BOOL bDown)
+{
+    auto sa1 = std::make_shared<XG_UndoData_HintsUpdated>();
+    auto sa2 = std::make_shared<XG_UndoData_HintsUpdated>();
+    sa1->Get();
+
+    BOOL bOK = XgSetHintText(nNumber, bDown, L"");
+
+    if (bOK)
+    {
+        sa2->Get();
+        // 元に戻す情報を設定する。
+        xg_ubUndoBuffer.Commit(UC_HINTS_UPDATED, sa1, sa2);
+    }
+
+    return bOK;
+}
+
 // カギをすべてクリアする。
 void XgClearAllClues(HWND hwnd)
 {
