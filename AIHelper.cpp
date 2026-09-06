@@ -373,6 +373,18 @@ static void StopAIProcess()
 	g_maker.CloseAll();
 }
 
+// パイプは「1行=1メッセージ」のプロトコルなので、text/pre_text/追加指示に
+// 万一改行が含まれていても子プロセスのinput()が複数質問と誤認しないよう、
+// 改行を空白に潰してから連結する（呼び出し元の実装に依存しない防御策）。
+static std::wstring SanitizeForPipeLine(const std::wstring& s)
+{
+	std::wstring result;
+	result.reserve(s.size());
+	for (wchar_t ch : s)
+		result += (ch == L'\r' || ch == L'\n') ? L' ' : ch;
+	return result;
+}
+
 // 起動済みのプロセスの標準入力へ質問を書き込む（プロセスは終了させない）
 void AskAIQuestion(HWND hwnd, PCWSTR text)
 {
@@ -391,18 +403,19 @@ void AskAIQuestion(HWND hwnd, PCWSTR text)
 	std::wstring pre_text = XG_GetAIPreText();
 	if (pre_text.size())
 	{
-		line += L"(*";
-		line += pre_text;
-		line += L"*) ";
+		line += L"(* ";
+		line += SanitizeForPipeLine(pre_text);
+		line += L" *) ";
 	}
 #endif
 	line += text;
 	if (g_additional_instruction.size())
 	{
-		line += L"\n---\n";
-		line += g_additional_instruction;
+		line += L"(* ";
+		line += SanitizeForPipeLine(g_additional_instruction);
+		line += L" *)";
 	}
-	line += L"\n"; // 重要！
+	line += L"\n"; // 重要！ この行に本物の改行はこの1文字だけ。
 
 	std::string utf8 = WideToUtf8(line.c_str());
 
