@@ -31,7 +31,7 @@ public:
         }
 
         // 現在の候補を選択する。
-        INT iItem = ::SendDlgItemMessageW(hwnd, lst1, LB_FINDSTRINGEXACT, -1, (LPARAM)xg_strMarked.c_str());
+        INT iItem = (INT)::SendDlgItemMessageW(hwnd, lst1, LB_FINDSTRINGEXACT, -1, (LPARAM)xg_strMarked.c_str());
         if (iItem != LB_ERR) {
             m_bUpdating = TRUE;
             ::SendDlgItemMessageW(hwnd, lst1, LB_SETCURSEL, iItem, 0);

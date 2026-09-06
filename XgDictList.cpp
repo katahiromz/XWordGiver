@@ -119,7 +119,7 @@ void XgDictList_ReloadList(HWND hwnd)
     // コンボボックスの項目を選択する。
     {
         LPCWSTR pszText = PathFindFileNameW(xg_dict_name.c_str());
-        INT iItem = ::SendDlgItemMessageW(hwnd, cmb1, CB_FINDSTRINGEXACT, -1, (LPARAM)pszText);
+        INT iItem = (INT)::SendDlgItemMessageW(hwnd, cmb1, CB_FINDSTRINGEXACT, -1, (LPARAM)pszText);
         if (iItem != CB_ERR) {
             ::SendDlgItemMessageW(hwnd, cmb1, CB_SETCURSEL, iItem, 0);
         }

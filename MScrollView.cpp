@@ -182,25 +182,25 @@ int MScrollView::GetNextPos(int bar, int nSB_, int pos) const noexcept
         return si.nMax - si.nPage;
 
     case SB_LINELEFT:
-        return std::max(0, int(si.nPos - 40));
+        return __max(0, int(si.nPos - 40));
 
     case SB_LINERIGHT:
-        return std::min(int(si.nMax - si.nPage), int(si.nPos + 40));
+        return __min(int(si.nMax - si.nPage), int(si.nPos + 40));
 
     case SB_PAGELEFT:
-        return std::max(0, int(si.nPos - si.nPage));
+        return __max(0, int(si.nPos - si.nPage));
 
     case SB_PAGERIGHT:
-        return std::min(int(si.nMax - si.nPage), int(si.nPos + si.nPage));
+        return __min(int(si.nMax - si.nPage), int(si.nPos + si.nPage));
 
     case SB_THUMBPOSITION:
-        pos = std::max(0, int(pos));
-        pos = std::min(int(si.nMax - si.nPage), int(pos));
+        pos = __max(0, int(pos));
+        pos = __min(int(si.nMax - si.nPage), int(pos));
         return pos;
 
     case SB_THUMBTRACK:
-        pos = std::max(0, int(si.nTrackPos));
-        pos = std::min(int(si.nMax - si.nPage), int(pos));
+        pos = __max(0, int(si.nTrackPos));
+        pos = __min(int(si.nMax - si.nPage), int(pos));
         return pos;
 
     default:
