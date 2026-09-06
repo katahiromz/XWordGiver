@@ -50,7 +50,7 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL "GN
         set(CMAKE_C_FLAGS_RELEASE   "-O3 -static")
         set(CMAKE_CXX_FLAGS_RELEASE "-O3 -static")
         set(CMAKE_EXE_LINKER_FLAGS_RELEASE "-static")
-    else()
+    elseif(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
         set(CMAKE_C_FLAGS_RELEASE   "-O3 -static -flto=auto")
         set(CMAKE_CXX_FLAGS_RELEASE "-O3 -static -flto=auto")
         set(CMAKE_EXE_LINKER_FLAGS_RELEASE "-static -flto=auto")
