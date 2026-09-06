@@ -64,7 +64,8 @@ XG_Dialog::DialogProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
         {
             if (uMsg == WM_MEASUREITEM || uMsg == WM_SIZE)
             {
-                assert(s_pTrapping != nullptr);
+                if (!s_pTrapping)
+                    return 0;
                 pDialog = s_pTrapping;
                 pDialog->m_hWnd = hwnd;
                 return pDialog->DialogProcDx(hwnd, uMsg, wParam, lParam);
