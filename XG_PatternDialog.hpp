@@ -366,12 +366,12 @@ public:
         if (lpDrawItem->itemState & ODS_SELECTED)
         {
             FillRect(hDC, &rcItem, GetSysColorBrush(COLOR_HIGHLIGHT));
-            SetTextColor(hDC, COLOR_HIGHLIGHTTEXT);
+            SetTextColor(hDC, GetSysColor(COLOR_HIGHLIGHTTEXT));
         }
         else
         {
             FillRect(hDC, &rcItem, GetSysColorBrush(COLOR_WINDOW));
-            SetTextColor(hDC, COLOR_WINDOWTEXT);
+            SetTextColor(hDC, GetSysColor(COLOR_WINDOWTEXT));
         }
         DrawTextW(hDC, szText, -1, &rcItem, DT_CENTER | DT_TOP | DT_SINGLELINE);
 
