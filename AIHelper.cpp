@@ -200,31 +200,29 @@ std::wstring XG_GetAIPreText(void)
 	return XgIsUserJapanese() ? XG_GetAIPreText_ja() : XG_GetAIPreText_en();
 }
 
-// AIヘルパーからの出力行を解析し、「【...:...】」形式の
-// コマンドを見つけたら、該当するカギ文章を書き換える。
-// 1行に複数のコマンドが含まれていてもすべて処理する。
-void CALLBACK XgParseAndApplyAICommand(PCWSTR pszLine)
+// 文字列lineのpos以降から、「【key:text】」形式のシステムコマンドを1つ探す。
+// 　・キーとテキストの区切りは半角コロン「:」・全角コロン「：」のどちらでも良い。
+// 　・key/textが空の【】（コマンドの体をなしていないもの）は読み飛ばして次を探す。
+// 見つかった場合はkey/textに分解してtrueを返し、posを閉じ括弧「】」の次の位置まで
+// 進める（＝呼び出し側はそのままposを使って次のFindNextAICommand呼び出しへ進める）。
+// 見つからなければfalseを返す。
+//
+// 「【An:XXX】」の解析（XgParseAndApplyAICommand）と、AskAIQuestionでの
+// 「入力にシステムコマンドが含まれているか」の判定は、どちらも
+// 本質的に同じ処理（コマンドを1つ読み取れるか）なので、ここに集約する。
+static bool FindNextAICommand(const std::wstring& line, size_t& pos, std::wstring& outKey, std::wstring& outText)
 {
 	const WCHAR chOpen = 0x3010;  // 【
 	const WCHAR chClose = 0x3011; // 】
-	std::wstring line = pszLine;
-	size_t pos = 0;
-
-	// 「元に戻す」情報
-	auto sa1 = std::make_shared<XG_UndoData_SetAll>();
-	auto sa2 = std::make_shared<XG_UndoData_SetAll>();
-	sa1->Get();
-
-	bool bChanged = false;
 
 	for (;;) {
 		// 【と】を探す
 		size_t openPos = line.find(chOpen, pos);
 		if (openPos == line.npos)
-			break;
+			return false;
 		size_t closePos = line.find(chClose, openPos + 1);
 		if (closePos == line.npos)
-			break;
+			return false;
 
 		// 【 】の内側
 		auto inner = line.substr(openPos + 1, closePos - openPos - 1);
@@ -235,17 +233,39 @@ void CALLBACK XgParseAndApplyAICommand(PCWSTR pszLine)
 		if (colonPos == inner.npos)
 			colonPos = inner.find((wchar_t)0xFF1A); // '：'
 		if (colonPos == inner.npos)
-			continue;
+			continue; // コマンドの形式でない【】は読み飛ばす
 
-		// カギとテキスト
 		auto key = inner.substr(0, colonPos);
 		auto text = inner.substr(colonPos + 1);
 		if (key.empty() || text.empty())
-			continue;
+			continue; // 同上
 
+		outKey = std::move(key);
+		outText = std::move(text);
+		return true;
+	}
+}
+
+// AIヘルパーからの出力行を解析し、「【...:...】」形式の
+// コマンドを見つけたら、該当するカギ文章を書き換える。
+// 1行に複数のコマンドが含まれていてもすべて処理する。
+void CALLBACK XgParseAndApplyAICommand(PCWSTR pszLine)
+{
+	std::wstring line = pszLine;
+	size_t pos = 0;
+
+	// 「元に戻す」情報
+	auto sa1 = std::make_shared<XG_UndoData_SetAll>();
+	auto sa2 = std::make_shared<XG_UndoData_SetAll>();
+	sa1->Get();
+
+	bool bChanged = false;
+
+	std::wstring key, text;
+	while (FindNextAICommand(line, pos, key, text)) {
 		// 先頭が A/a ならヨコのカギ、D/d ならタテのカギ。先頭が R/r なら行、C/c なら列。
 		WCHAR chType = key[0];
-		BOOL bDown, bRow, bSetBoard;
+		BOOL bDown = FALSE, bRow = FALSE, bSetBoard = FALSE;
 		if (chType == L'A' || chType == L'a')
 		{
 			bDown = FALSE;
@@ -1015,9 +1035,9 @@ static std::wstring SanitizeForPipeLine(const std::wstring& str)
 static void PleaseWait(HWND hwnd)
 {
 	if (XgIsUserJapanese())
-		AddLineToList(hwnd, L"...しばらくお待ちください...");
+		AddLineToList(hwnd, L"しばらくお待ちください...");
 	else
-		AddLineToList(hwnd, L"...Please wait a moment...");
+		AddLineToList(hwnd, L"Please wait a moment...");
 }
 
 // AIHelper_ja.py を対話モードで一度だけ起動し、そのままプロセスを保持し続ける。
@@ -1135,14 +1155,16 @@ void AskAIQuestion(HWND hwnd, PCWSTR text)
 	if (str.empty())
 		return;
 
-	WCHAR chOpen = 0x3010, chClose = 0x3011; // '【' and '】'
-	WCHAR chColon = 0xFF1A; // '：'
-	auto i0 = str.find(chOpen);
-	auto i1 = str.find(L':', i0);
-	if (i1 == str.npos)
-		i1 = str.find(chColon, i0);
-	auto i2 = str.find(chClose, i0);
-	if (i0 != str.npos && i1 != str.npos && i2 != str.npos && i1 < i2) {
+	bool bIsCommand;
+	// 入力に「【key:text】」形式のシステムコマンドが含まれているかを判定する
+	// （実際の解析・適用と同じFindNextAICommandを使うことで、判定と実処理の
+	// ロジックがずれないようにする）。
+	{
+		size_t posScan = 0;
+		std::wstring key, text2;
+		bIsCommand = FindNextAICommand(str, posScan, key, text2);
+	}
+	if (bIsCommand) {
 		// 入力した質問をlst1にエコー表示する
 		AddLineToList(hwnd, (L"> " + str).c_str());
 		// 実行
@@ -1466,10 +1488,7 @@ BOOL XgOpenAIHelper(HWND hwndOwner, BOOL bOpen)
 	// STYLE/EXSTYLEはrcスクリプトのDS_CENTER|WS_POPUPWINDOW|WS_CAPTION|
 	// WS_THICKFRAME|WS_MAXIMIZEBOX / WS_EX_TOOLWINDOWをそのまま踏襲している
 	// （DS_CENTER相当の中央寄せは、作成後にCenterWindowOverOwnerで行う）。
-	HWND hwnd = CreateWindowExW(
-		WS_EX_TOOLWINDOW,
-		AIHELPERCONSOLE_CLASSNAME,
-		pszCaption,
+	HWND hwnd = CreateWindowExW(WS_EX_TOOLWINDOW, AIHELPERCONSOLE_CLASSNAME, pszCaption,
 		WS_POPUPWINDOW | WS_CAPTION | WS_THICKFRAME | WS_MAXIMIZEBOX,
 		CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT,
 		hwndOwner, nullptr, g_hAIHelperInst, nullptr);
