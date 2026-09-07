@@ -228,18 +228,18 @@ void __fastcall XgParseAndApplyAICommand(LPCWSTR pszLine)
 		if (closePos == std::wstring::npos)
 			break;
 
-		std::wstring inner = line.substr(openPos + 1, closePos - openPos - 1);
+		auto inner = line.substr(openPos + 1, closePos - openPos - 1);
 		pos = closePos + 1;
 
 		// "...:..." の形式を期待する（全角コロンにも対応）。
 		size_t colonPos = inner.find(L':');
 		if (colonPos == std::wstring::npos)
-			colonPos = inner.find((wchar_t)0xFF1A); // ：
+			colonPos = inner.find((wchar_t)0xFF1A); // '：'
 		if (colonPos == std::wstring::npos)
 			continue;
 
-		std::wstring key = inner.substr(0, colonPos);
-		std::wstring text = inner.substr(colonPos + 1);
+		auto key = inner.substr(0, colonPos);
+		auto text = inner.substr(colonPos + 1);
 
 		// キーの前後の空白を除去する。
 		auto trim = [](std::wstring& s) {
@@ -281,7 +281,7 @@ void __fastcall XgParseAndApplyAICommand(LPCWSTR pszLine)
 			continue;
 
 		// 残り部分がすべて数字であることを確認し、番号を取得する。
-		std::wstring numPart = key.substr(1);
+		auto numPart = key.substr(1);
 		if (numPart.empty())
 			continue;
 
@@ -300,11 +300,9 @@ void __fastcall XgParseAndApplyAICommand(LPCWSTR pszLine)
 			continue;
 
 		if (bSetBoard) {
-			// 行または列を書き換える。
-			if (XgSetBoardRowOrColumn(bRow, nNumber, text.c_str())) {
+			// 盤面の行または列を書き換える。
+			if (XgSetBoardRowOrColumn(bRow, nNumber, text.c_str()))
 				bChanged = true;
-				XgUpdateImage(xg_hMainWnd);
-			}
 			continue;
 		}
 
@@ -317,6 +315,7 @@ void __fastcall XgParseAndApplyAICommand(LPCWSTR pszLine)
 	if (bChanged) {
 		sa2->Get();
 		xg_ubUndoBuffer.Commit(UC_SETALL, sa1, sa2);
+		XgUpdateImage(xg_hMainWnd);
 	}
 }
 
