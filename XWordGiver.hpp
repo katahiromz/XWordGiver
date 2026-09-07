@@ -25,11 +25,10 @@
 
 ////////////////////////////////////////////////////////////////////////////
 
-#include "TargetVer.h"  // for WINVER, _WIN32_WINNT, _WIN32_IE
-
 #include <windows.h>    // for Windows API
 #include <windowsx.h>   // for HANDLE_MSG
 #include <commctrl.h>   // common controls
+#include <tchar.h>      // generic text mapping
 #include <shlobj.h>     // for CoCreateInstance, IShellLink, IPersistFile
 #include <imm.h>        // for ImmSetOpenStatus
 #include <shlwapi.h>    // Shell Light-weight API
