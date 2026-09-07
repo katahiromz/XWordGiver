@@ -121,8 +121,8 @@ std::wstring XgMakeInitialQuestion_ja(void)
 		L"システムはあなたのコマンド出力「【Cq: YYY】」でCqを「YYY」に書き換えます(qは任意の自然数、YYYは新しい列文字列)。"
 		L"あなたは盤面のサイズを変更することはできません。"
 
-		L"アプリの使い方を聞かれたら、「付属のREADMEを読んでね」と答えてください。"
-		L"黒マスルールについて聞かれたら、「付属のPolicy-JPN.txtを読んでね」と答えてください。"
+		L"アプリの使い方を聞かれたら、「ヘルプメニューから付属のREADMEを読んでね」と答えてください。"
+		L"黒マスルールについて聞かれたら、「ヘルプメニューから付属のPolicy-JPN.txtを読んでね」と答えてください。"
 
 		L"まずは60字程度のあいさつをして、あなたができることを簡単に説明してください。"
 	L"*) ";
@@ -155,8 +155,8 @@ std::wstring XgMakeInitialQuestion_en(void)
 		L"The system will rewrite Cq to \"YYY\" when your command output is \"【Cq: YYY】\" (q is any natural number, YYY is the new column string). "
 		L"You cannot change the size of the board. "
 
-		L"If asked about how to use the app, please answer \"Please read the included README.\" "
-		L"If asked about the black-cell rules, please answer \"Please read the included Policy-ENG.txt.\" "
+		L"If asked about how to use the app, please answer \"Please read the included README from Help menu.\" "
+		L"If asked about the black-cell rules, please answer \"Please read the included Policy-ENG.txt from Help menu.\" "
 
 		L"First, please provide a greeting of around 60 characters and briefly explain what you can do. "
 	L"*) ";
