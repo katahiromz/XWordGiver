@@ -945,11 +945,11 @@ void XgResetSettings(void)
     xg_bShowDoubleFrameLetters = TRUE;
     xg_bShowDoubleFrame = TRUE;
     xg_nOuterFrameInPt = XG_OUTERFRAME_DEFAULT;
-    g_nHelperFontPointSize = 11;
-    g_provider = L"gemini";
-    g_model = L"gemini-3.6-flash";
-    g_python_exe = L"";
-    g_additional_instruction = L"";
+    xg_nHelperFontPointSize = 11;
+    xg_ai_provider = L"gemini";
+    xg_ai_model = L"gemini-3.6-flash";
+    xg_python_exe = L"";
+    xg_additional_instruction = L"";
 
     xg_bHiragana = FALSE;
     xg_bLowercase = FALSE;
@@ -1170,16 +1170,16 @@ bool __fastcall XgLoadSettings(void)
             StringCchCopy(xg_szUIFont, _countof(xg_szUIFont), sz);
         }
         if (!app_key.QuerySz(L"AIProvider", sz, _countof(sz))) {
-            g_provider = sz;
+            xg_ai_provider = sz;
         }
         if (!app_key.QuerySz(L"AIModel", sz, _countof(sz))) {
-            g_model = sz;
+            xg_ai_model = sz;
         }
         if (!app_key.QuerySz(L"PythonExe", sz, _countof(sz))) {
-            g_python_exe = sz;
+            xg_python_exe = sz;
         }
         if (!app_key.QuerySz(L"AdditionalInsn", sz, _countof(sz))) {
-            g_additional_instruction = sz;
+            xg_additional_instruction = sz;
         }
 
         if (!app_key.QueryDword(L"ShowToolBar", dwValue)) {
@@ -1279,7 +1279,7 @@ bool __fastcall XgLoadSettings(void)
             xg_bShowDoubleFrame = !!dwValue;
         }
         if (!app_key.QueryDword(L"HelperFontSize", dwValue)) {
-            g_nHelperFontPointSize = dwValue;
+            xg_nHelperFontPointSize = dwValue;
         }
         if (!app_key.QueryDword(L"ViewMode", dwValue)) {
             xg_nViewMode = static_cast<XG_VIEW_MODE>(dwValue);
@@ -1431,10 +1431,10 @@ bool __fastcall XgSaveSettings(void)
             app_key.SetStruct(L"SmallLogFont", lf);
         }
 
-        app_key.SetSz(L"AIProvider", g_provider.c_str());
-        app_key.SetSz(L"AIModel", g_model.c_str());
-        app_key.SetSz(L"PythonExe", g_python_exe.c_str());
-        app_key.SetSz(L"AdditionalInsn", g_additional_instruction.c_str());
+        app_key.SetSz(L"AIProvider", xg_ai_provider.c_str());
+        app_key.SetSz(L"AIModel", xg_ai_model.c_str());
+        app_key.SetSz(L"PythonExe", xg_python_exe.c_str());
+        app_key.SetSz(L"AdditionalInsn", xg_additional_instruction.c_str());
 
         app_key.SetDword(L"ShowToolBar", xg_bShowToolBar);
         app_key.SetDword(L"ShowStatusBar", s_bShowStatusBar);
@@ -1477,7 +1477,7 @@ bool __fastcall XgSaveSettings(void)
         app_key.SetDword(L"ViewMode", xg_nViewMode);
         app_key.SetDword(L"LineWidth", static_cast<int>(xg_nLineWidthInPt * 100));
         app_key.SetDword(L"OuterFrame", static_cast<int>(xg_nOuterFrameInPt * 100));
-        app_key.SetDword(L"HelperFontSize", g_nHelperFontPointSize);
+        app_key.SetDword(L"HelperFontSize", xg_nHelperFontPointSize);
 
         app_key.SetSz(L"Recent", xg_dict_name.c_str());
 
@@ -4256,10 +4256,10 @@ void __fastcall MainWnd_OnDestroy(HWND /*hwnd*/) noexcept
     xg_hGrayedImageList = nullptr;
 
     // ウィンドウを破棄する。
-    if (g_hwndAIHelper)
+    if (xg_hwndAIHelper)
     {
-        ::DestroyWindow(g_hwndAIHelper);
-        g_hwndAIHelper = nullptr;
+        ::DestroyWindow(xg_hwndAIHelper);
+        xg_hwndAIHelper = nullptr;
     }
     if (xg_hToolBar)
     {
@@ -6260,7 +6260,7 @@ void XgDebugAction(HWND hwnd)
     // テスト実行したいことをここに書く。
 }
 
-BOOL XgOpenAIHelper(HWND hwndOwner, BOOL bOpen);
+BOOL Helper_Open(HWND hwndOwner);
 
 // このカギをクリアする。
 BOOL XgClearClue(INT nNumber, BOOL bDown)
@@ -7587,7 +7587,7 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT /*codeNo
         break;
 
     case ID_OPENAIHELPER:
-        XgOpenAIHelper(hwnd, TRUE);
+        Helper_Open(hwnd);
         break;
 
     case ID_CLEARALLCLUES:
@@ -8511,11 +8511,11 @@ void XgDoTests(void)
 // 掃除。
 void XgCleanup(void)
 {
-    g_provider.clear();
-    g_model.clear();
-    g_python_exe.clear();
-    g_additional_instruction.clear();
-    g_initial_question.clear();
+    xg_ai_provider.clear();
+    xg_ai_model.clear();
+    xg_python_exe.clear();
+    xg_additional_instruction.clear();
+    xg_initial_question.clear();
     xg_dict_name.clear();
     xg_dicts.clear();
     xg_ubUndoBuffer.clear();
@@ -8610,8 +8610,8 @@ void XgMessageLoop(MSG& msg)
                 continue;
         }
 
-        if (g_hwndAIHelper) {
-            if (::IsDialogMessageW(g_hwndAIHelper, &msg))
+        if (xg_hwndAIHelper) {
+            if (::IsDialogMessageW(xg_hwndAIHelper, &msg))
                 continue;
         }
 
@@ -8654,7 +8654,7 @@ INT XWordGiverMain(HINSTANCE hInstance, INT nCmdShow)
 {
     // アプリのインスタンスを保存する。
     xg_hInstance = hInstance;
-    g_hAIHelperInst = hInstance;
+    xg_hAIHelperInst = hInstance;
 
     // 設定を読み込む。
     XgLoadSettings();

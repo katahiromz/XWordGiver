@@ -3,10 +3,10 @@
 // Copyright (C) 2026 Katayama Hirofumi MZ. All Rights Reserved.
 // (Japanese, UTF-8)
 
-extern std::wstring g_provider;
-extern std::wstring g_model;
-extern std::wstring g_python_exe;
-extern std::wstring g_additional_instruction;
+extern std::wstring xg_ai_provider;
+extern std::wstring xg_ai_model;
+extern std::wstring xg_python_exe;
+extern std::wstring xg_additional_instruction;
 
 INT_PTR CALLBACK
 XgAIHelperDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
@@ -43,10 +43,10 @@ XgAIHelperDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
             for (auto model : models)
                 SendDlgItemMessageW(hwnd, cmb2, CB_ADDSTRING, 0, (LPARAM)model);
 
-            SetDlgItemTextW(hwnd, cmb1, g_provider.c_str());
-            SetDlgItemTextW(hwnd, cmb2, g_model.c_str());
-            SetDlgItemTextW(hwnd, edt1, g_python_exe.c_str());
-            SetDlgItemTextW(hwnd, edt2, g_additional_instruction.c_str());
+            SetDlgItemTextW(hwnd, cmb1, xg_ai_provider.c_str());
+            SetDlgItemTextW(hwnd, cmb2, xg_ai_model.c_str());
+            SetDlgItemTextW(hwnd, edt1, xg_python_exe.c_str());
+            SetDlgItemTextW(hwnd, edt2, xg_additional_instruction.c_str());
         }
         return TRUE;
     case WM_COMMAND:
@@ -64,7 +64,7 @@ XgAIHelperDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
         case psh2:
             {
                 WCHAR file[MAX_PATH];
-                StringCchCopyW(file, _countof(file), g_python_exe.c_str());
+                StringCchCopyW(file, _countof(file), xg_python_exe.c_str());
                 OPENFILENAMEW ofn = { OPENFILENAME_SIZE_VERSION_400W, hwnd };
                 ofn.lpstrFilter = L"Python (python.exe)\0python.exe\0\0";
                 ofn.lpstrFile = file;
@@ -142,13 +142,13 @@ XgAIHelperDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
             switch (pnmhdr->code) {
             case PSN_APPLY: // Apply
                 GetDlgItemTextW(hwnd, cmb1, text, _countof(text));
-                g_provider = text;
+                xg_ai_provider = text;
                 GetDlgItemTextW(hwnd, cmb2, text, _countof(text));
-                g_model = text;
+                xg_ai_model = text;
                 GetDlgItemTextW(hwnd, edt1, text, _countof(text));
-                g_python_exe = text;
+                xg_python_exe = text;
                 GetDlgItemTextW(hwnd, edt2, text, _countof(text));
-                g_additional_instruction = text;
+                xg_additional_instruction = text;
                 return SetDlgMsgResult(hwnd, WM_NOTIFY, PSNRET_NOERROR);
             }
         }
