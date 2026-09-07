@@ -261,25 +261,25 @@ void CALLBACK XgParseAndApplyAICommand(PCWSTR pszLine)
 
 	std::wstring key, text;
 	while (FindNextAICommand(line, pos, key, text)) {
-		// 先頭が A/a ならヨコのカギ、D/d ならタテのカギ。先頭が R/r なら行、C/c なら列。
+		// 先頭が A ならヨコのカギ、D ならタテのカギ。先頭が R なら行、C なら列。
 		WCHAR chType = key[0];
 		BOOL bDown = FALSE, bRow = FALSE, bSetBoard = FALSE;
-		if (chType == L'A' || chType == L'a')
+		if (chType == L'A')
 		{
 			bDown = FALSE;
 			bSetBoard = FALSE;
 		}
-		else if (chType == L'D' || chType == L'd')
+		else if (chType == L'D')
 		{
 			bDown = TRUE;
 			bSetBoard = FALSE;
 		}
-		else if (chType == L'R' || chType == L'r')
+		else if (chType == L'R')
 		{
 			bRow = TRUE;
 			bSetBoard = TRUE;
 		}
-		else if (chType == L'C' || chType == L'c')
+		else if (chType == L'C')
 		{
 			bRow = FALSE;
 			bSetBoard = TRUE;
