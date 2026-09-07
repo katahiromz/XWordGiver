@@ -225,6 +225,9 @@ std::vector<XGStringW> xg_recently_used_files;
 
 #define XG_MAX_RECENT 10 // 最近使ったファイルは10個まで。
 
+// AIヘルパーにコールバック関数が登録されたか？
+static bool s_bAICallbackRegistered = false;
+
 // 最近使ったファイルを更新する。
 void XgUpdateRecentlyUsed(LPCWSTR pszFile)
 {
@@ -6327,9 +6330,17 @@ std::wstring XgMakeInitialQuestion_en(void)
     return str;
 }
 
+void CALLBACK XgOnAIHelperOutput(LPCWSTR pszLine);
+
 // AIヘルパーを開く。
 void XgOpenAIHelper(HWND hwnd)
 {
+    // AIヘルパーからの出力を解析できるよう、コールバックを登録する（初回のみ）。
+    if (!s_bAICallbackRegistered) {
+        AIHelper_SetOutputCallback(XgOnAIHelperOutput);
+        s_bAICallbackRegistered = true;
+    }
+
     if (XgIsUserJapanese())
         g_initial_question = XgMakeInitialQuestion_ja();
     else
@@ -8372,9 +8383,6 @@ BOOL __fastcall XgSetHintText(INT number, BOOL bDown, const XGStringW& text)
     return FALSE;
 }
 
-// AIヘルパーにコールバック関数が登録されたか？
-static bool s_bAICallbackRegistered = false;
-
 // 行または列の文字列を取得する。
 XGStringW XgGetRowOrColumnText(BOOL bRow, INT iRowOrCol)
 {
@@ -8605,11 +8613,11 @@ static void __fastcall XgParseAndApplyAICommand(LPCWSTR pszLine)
         std::wstring key = inner.substr(0, colonPos);
         std::wstring text = inner.substr(colonPos + 1);
 
-        // キー・テキストの前後の空白を除去する。
+        // キー・テキストの前後の空白を除去する。全角空白はセルを指定するのに使うので除去しない。
         auto trim = [](std::wstring& s) {
-            while (!s.empty() && iswspace(s.front()))
+            while (!s.empty() && s.front() == L' ')
                 s.erase(s.begin());
-            while (!s.empty() && iswspace(s.back()))
+            while (!s.empty() && s.back() == L' ')
                 s.pop_back();
         };
         trim(key);
@@ -8686,7 +8694,7 @@ static void __fastcall XgParseAndApplyAICommand(LPCWSTR pszLine)
 }
 
 // AIHelper.cppからの出力コールバック。CALLBACK呼び出し規約に合わせる。
-static void CALLBACK XgOnAIHelperOutput(LPCWSTR pszLine)
+void CALLBACK XgOnAIHelperOutput(LPCWSTR pszLine)
 {
     XgParseAndApplyAICommand(pszLine);
 }
@@ -8694,12 +8702,6 @@ static void CALLBACK XgOnAIHelperOutput(LPCWSTR pszLine)
 // AI入力前のテキスト（日本語）。
 std::wstring XG_GetAIPreText_ja(void)
 {
-    // AIヘルパーからの出力を解析できるよう、コールバックを登録する（初回のみ）。
-    if (!s_bAICallbackRegistered) {
-        AIHelper_SetOutputCallback(XgOnAIHelperOutput);
-        s_bAICallbackRegistered = true;
-    }
-
     std::wstring str;
     str += L"(* ";
     str += L"あなたはクロスワードの妖精です。";
@@ -8711,12 +8713,6 @@ std::wstring XG_GetAIPreText_ja(void)
 // Pre-input text for the AI (English).
 std::wstring XG_GetAIPreText_en(void)
 {
-    // Register the callback so we can parse output from the AI helper (only the first time).
-    if (!s_bAICallbackRegistered) {
-        AIHelper_SetOutputCallback(XgOnAIHelperOutput);
-        s_bAICallbackRegistered = true;
-    }
-
     std::wstring str;
     str += L"(* ";
     str += L"You are the \"Crossword Fairy\". ";

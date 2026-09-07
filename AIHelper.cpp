@@ -447,7 +447,12 @@ static DWORD WINAPI ReaderThreadProc(LPVOID lpParam)
 	}
 
 	if (!g_bReaderStop)
-		PostLineToUI(hwnd, L"[AIプロセスが終了しました]");
+	{
+		if (IsJapaneseUI())
+			PostLineToUI(hwnd, L"[AIプロセスが終了しました]");
+		else
+			PostLineToUI(hwnd, L"[The AI process has finished]");
+	}
 
 	// [READY]を送る前にプロセスが終了した場合、AIHelper_WaitForReadyが
 	// タイムアウトまで無駄に待ち続けないよう、念のためここでもイベントをセットする
@@ -536,7 +541,10 @@ static BOOL StartAIProcess(HWND hwnd)
 	if (!g_maker.PrepareForRedirect(&g_hInputWrite, &g_hOutputRead) ||
 		!g_maker.CreateProcessDx(nullptr, str.c_str()))
 	{
-		AddLineToList(hwnd, L"[エラー] プロセスの起動に失敗しました。");
+		if (IsJapaneseUI())
+			AddLineToList(hwnd, L"[エラー] プロセスの起動に失敗しました。");
+		else
+			AddLineToList(hwnd, L"[Error] Failed to start the process.");
 		if (g_hReadyEvent)
 			SetEvent(g_hReadyEvent); // 起動失敗時に無駄に待たされないように
 		return FALSE;
@@ -586,15 +594,30 @@ void AskAIQuestion(HWND hwnd, PCWSTR text)
 	StrTrimW(sz, L" \t\r\n　");
 	if (!sz[0])
 		return;
+	std::wstring str = sz;
 
-	if (!g_maker.IsRunning())
-	{
-		AddLineToList(hwnd, L"[エラー] AIプロセスが起動していません。");
+	WCHAR chOpen = 0x3010, chClose = 0x3011; // '【' and '】'
+	if (str.find(chOpen) != str.npos && str.find(chClose) != str.npos) {
+		if (g_pfnOutputCallback) {
+			g_pfnOutputCallback(str.c_str());
+			if (IsJapaneseUI())
+				AddLineToList(hwnd, L"システムコマンドを実行しました。");
+			else
+				AddLineToList(hwnd, L"The system command has been executed.");
+			return;
+		}
+	}
+
+	if (!g_maker.IsRunning()) {
+		if (IsJapaneseUI())
+			AddLineToList(hwnd, L"[エラー] AIプロセスが起動していません。");
+		else
+			AddLineToList(hwnd, L"[Error] The AI process is not running.");
 		return;
 	}
 
 	// 入力した質問をlst1にエコー表示する
-	AddLineToList(hwnd, (L"> " + std::wstring(sz)).c_str());
+	AddLineToList(hwnd, (L"> " + str).c_str());
 	PleaseWait(hwnd);
 
 	std::wstring line;
@@ -608,7 +631,7 @@ void AskAIQuestion(HWND hwnd, PCWSTR text)
 		line += L" *) ";
 	}
 #endif
-	line += sz;
+	line += str;
 	if (g_additional_instruction.size())
 	{
 		line += L"(* ";
@@ -622,7 +645,10 @@ void AskAIQuestion(HWND hwnd, PCWSTR text)
 	DWORD cbWritten;
 	if (!g_hInputWrite.WriteFile(utf8.data(), (DWORD)utf8.size(), &cbWritten))
 	{
-		AddLineToList(hwnd, L"[エラー] AIプロセスへの送信に失敗しました。");
+		if (IsJapaneseUI())
+			AddLineToList(hwnd, L"[エラー] AIプロセスへの送信に失敗しました。");
+		else
+			AddLineToList(hwnd, L"[Error] Failed to send to the AI process.");
 	}
 }
 
