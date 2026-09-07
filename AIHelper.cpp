@@ -24,12 +24,12 @@ static MResizable g_resizable;
 
 // 起動しっぱなしにするAIHelper_ja.pyプロセスとそのパイプ
 static MProcessMaker g_maker;
-static MFile		 g_hInputWrite;
-static MFile		 g_hOutputRead;
-static HANDLE		g_hReaderThread = nullptr;
+static MFile         g_hInputWrite;
+static MFile         g_hOutputRead;
+static HANDLE        g_hReaderThread = nullptr;
 static volatile BOOL g_bReaderStop = FALSE;
 // AIHelper(_ja).pyが起動完了して標準入力の受付準備ができたときにセットされる
-static HANDLE		g_hReadyEvent = nullptr;
+static HANDLE        g_hReadyEvent = nullptr;
 
 HWND g_hwndAIHelper = nullptr;
 std::wstring g_provider = L"gemini";
@@ -668,7 +668,7 @@ void AIHelper_WaitForReady(void)
 
 // 子プロセスの出力の1行をUIスレッドへ渡すためのカスタムメッセージ
 // (WPARAMは未使用、LPARAMはnewしたPWSTR。受け取った側でdelete[]すること)
-#define WM_APP_AI_LINE   (WM_APP + 1)
+#define WM_APP_AI_LINE  (WM_APP + 1)
 
 // 文字列中に含まれる "(*...*)" 形式のタグ（XG_GetAIPreTextによる前置情報など）を
 // すべて取り除いた文字列を返す。表示前のフィルタリング用。
@@ -1445,7 +1445,7 @@ DialogProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 BOOL OpenAIHelper(HWND hwndOwner, BOOL bOpen)
 {
 	// AIヘルパーからの出力を解析できるよう、コールバックを登録する（初回のみ）。
-    static bool s_bAICallbackRegistered = false;
+	static bool s_bAICallbackRegistered = false;
 	if (!s_bAICallbackRegistered) {
 		AIHelper_SetOutputCallback(XgOnAIHelperOutput);
 		s_bAICallbackRegistered = true;
