@@ -6,6 +6,7 @@
 #include <windowsx.h>
 #include <commctrl.h>
 #include <shlwapi.h>
+#include <imm.h>
 #include <string>
 #include <vector>
 #include "MFile.hpp"
@@ -308,6 +309,108 @@ static void DoCopyList(HWND hwndEdit)
 	// エディットコントロール標準のコピー処理に任せる
 	// （改行の扱いなどもOSがよしなにやってくれる）
 	SendMessageW(hwndEdit, WM_COPY, 0, 0);
+}
+
+// edt1の送信履歴（AskAIQuestionで送信するたびに追加される）
+static std::vector<std::wstring> g_history;
+// 履歴内での現在位置。g_history.size()なら「履歴を辿っていない（編集中）」状態
+static size_t g_nHistoryIndex = 0;
+// 履歴を辿り始める直前に、edt1に入力されていた（まだ送信していない）文字列
+static std::wstring g_historyPending;
+
+// 履歴に新しい入力を追加し、履歴位置を末尾（編集中）に戻す
+static void AddToHistory(LPCWSTR pszText)
+{
+	if (!pszText || !*pszText)
+		return;
+
+	// 直前の履歴と同じ内容なら重複追加しない
+	if (g_history.empty() || g_history.back() != pszText)
+		g_history.push_back(pszText);
+
+	g_nHistoryIndex = g_history.size();
+	g_historyPending.clear();
+}
+
+// edt1のテキストを置き換え、キャレットを末尾に移動する
+static void SetEdt1Text(HWND hwndEdit, const std::wstring &text)
+{
+	SetWindowTextW(hwndEdit, text.c_str());
+	SendMessageW(hwndEdit, EM_SETSEL, (WPARAM)text.size(), (LPARAM)text.size());
+}
+
+// 上矢印キー：一つ古い履歴へ
+static void HistoryGoBack(HWND hwndEdit)
+{
+	if (g_history.empty() || g_nHistoryIndex == 0)
+		return;
+
+	if (g_nHistoryIndex == g_history.size())
+	{
+		// 履歴を辿り始める前に、今編集中の文字列を退避しておく
+		WCHAR text[512];
+		GetWindowTextW(hwndEdit, text, _countof(text));
+		g_historyPending = text;
+	}
+
+	--g_nHistoryIndex;
+	SetEdt1Text(hwndEdit, g_history[g_nHistoryIndex]);
+}
+
+// 下矢印キー：一つ新しい履歴へ（末尾まで来たら退避しておいた編集中の文字列に戻す）
+static void HistoryGoForward(HWND hwndEdit)
+{
+	if (g_nHistoryIndex >= g_history.size())
+		return;
+
+	++g_nHistoryIndex;
+	if (g_nHistoryIndex == g_history.size())
+		SetEdt1Text(hwndEdit, g_historyPending);
+	else
+		SetEdt1Text(hwndEdit, g_history[g_nHistoryIndex]);
+}
+
+static WNDPROC g_fnOldEdt1WndProc = nullptr;
+
+// IMEの変換中（未確定文字列がある）かどうかを調べる。
+// 変換中に↑↓を履歴呼び出しへ横取りすると、変換候補選択と衝突してしまうため、
+// Edt1WndProcで判定に使う。
+static bool IsImeComposing(HWND hwnd)
+{
+	HIMC hIMC = ImmGetContext(hwnd);
+	if (!hIMC)
+		return false;
+
+	// 未確定文字列（コンポジション文字列）の長さを取得する。
+	// 0より大きければ変換中とみなせる。
+	LONG cbLen = ImmGetCompositionStringW(hIMC, GCS_COMPSTR, nullptr, 0);
+
+	ImmReleaseContext(hwnd, hIMC);
+
+	return cbLen > 0;
+}
+
+// edt1 用サブクラスウィンドウプロシージャ（↑↓キーで送信履歴を辿る）
+static LRESULT CALLBACK Edt1WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+{
+	switch (uMsg)
+	{
+	case WM_KEYDOWN:
+		if (wParam == VK_UP || wParam == VK_DOWN)
+		{
+			// IME変換中は候補選択を優先させ、履歴呼び出しは行わない
+			if (IsImeComposing(hwnd))
+				break;
+
+			if (wParam == VK_UP)
+				HistoryGoBack(hwnd);
+			else
+				HistoryGoForward(hwnd);
+			return 0;
+		}
+		break;
+	}
+	return CallWindowProcW(g_fnOldEdt1WndProc, hwnd, uMsg, wParam, lParam);
 }
 
 static WNDPROC g_fnOldLst1WndProc = nullptr;
@@ -746,6 +849,10 @@ static BOOL OnInitDialog(HWND hwnd, HWND hwndFocus, LPARAM lParam)
 	HWND hLst1 = GetDlgItem(hwnd, lst1);
 	g_fnOldLst1WndProc = (WNDPROC)SetWindowLongPtrW(hLst1, GWLP_WNDPROC, (LONG_PTR)Lst1WndProc);
 
+	// Subclassing edt1 (for ↑↓による送信履歴の呼び出し)
+	HWND hEdt1ForSubclass = GetDlgItem(hwnd, edt1);
+	g_fnOldEdt1WndProc = (WNDPROC)SetWindowLongPtrW(hEdt1ForSubclass, GWLP_WNDPROC, (LONG_PTR)Edt1WndProc);
+
 	// デフォルトの文字数上限（約64KB）を撤廃し、ログが長く伸びても追記できるようにする
 	SendMessageW(hLst1, EM_SETLIMITTEXT, 0, 0);
 
@@ -781,6 +888,7 @@ static BOOL OnOK(HWND hwnd)
 	if (text[0])
 	{
 		AskAIQuestion(hwnd, text);
+		AddToHistory(text);
 		SetDlgItemTextW(hwnd, edt1, L"");
 	}
 	return FALSE;
@@ -811,6 +919,11 @@ static void OnDestroy(HWND hwnd)
 	StopAIProcess(hwnd);
 	g_hwndAIHelper = nullptr;
 	g_buffer.clear();
+
+	// 送信履歴もクリアする
+	g_history.clear();
+	g_nHistoryIndex = 0;
+	g_historyPending.clear();
 
 	if (g_hFont)
 	{
