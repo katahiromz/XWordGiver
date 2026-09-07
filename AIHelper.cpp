@@ -293,7 +293,7 @@ void CALLBACK XgParseAndApplyAICommand(PCWSTR pszLine)
 			continue;
 		bool bAllDigits = true;
 		for (wchar_t ch : numPart) {
-			if (!iswdigit(ch)) {
+			if (ch < L'0' || L'9' < ch)) {
 				bAllDigits = false;
 				break;
 			}
