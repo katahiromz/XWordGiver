@@ -98,8 +98,7 @@ static HFONT CreateAIHelperFont(HWND hwnd, int nPointSize)
 // 最初の質問を作成する。
 std::wstring XgMakeInitialQuestion_ja(void)
 {
-	std::wstring str;
-	str = L"(* "
+	std::wstring str = L"(* "
 		L"あなたは「クロスワードの妖精」です。クロスワードを作成または編集するユーザーを助けるのがあなたの役目です。"
 		L"あなたは「クロスワード ギバー」というアプリに宿る妖精です。"
 		L"あなたの母語は日本語です。12歳、男性、名前は「クロワス」。"
@@ -133,8 +132,7 @@ std::wstring XgMakeInitialQuestion_ja(void)
 // Create the first question.
 std::wstring XgMakeInitialQuestion_en(void)
 {
-	std::wstring str;
-	str = L"(* "
+	std::wstring str = L"(* "
 		L"You are the \"Crossword Fairy\". Your job is to help the user create or edit a crossword puzzle. "
 		L"You are a fairy dwelling in an app called \"XWordGiver\". "
 		L"Your native language is English. You are 12 years old, male, and your name is \"Crowace\". "
