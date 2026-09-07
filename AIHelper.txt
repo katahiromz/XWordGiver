@@ -11,7 +11,8 @@
    - インストーラーの最初の画面で 「Add python.exe to PATH」にチェックを入れる のを忘れないでください（後から設定するより簡単です）。
 
 2. 依存パッケージをインストールする
-   - アプリのフォルダで、スタートメニューから「コマンドプロンプト」を 右クリック→「管理者として実行」 で開きます。
+   - スタートメニューから「コマンドプロンプト」を 右クリック→「管理者として実行」 で開きます。
+   - `cd`コマンドでアプリのフォルダに移動します。
    - 以下を実行します。
      ```
      pip install -r requirements.txt
@@ -69,13 +70,14 @@ XWordGiver's "AI Helper" is your partner, capable of casual conversation and reg
    - Download the latest version from [python.org](https://www.python.org/downloads/).
    - On the installer's first screen, be sure to check "Add python.exe to PATH" (this is easier than setting it manually afterward).
 
-2. Install the required packages
-   - Open Command Prompt as administrator (right-click it in the Start menu and choose "Run as administrator") in the application folder.
-   - Run:
+2. Install the dependent packages
+   - From the Start menu, right-click "Command Prompt" and select "Run as administrator".
+   - Use the `cd` command to navigate to the app's folder.
+   - Run the following:
      ```
      pip install -r requirements.txt
      ```
-   - Note: Administrator rights are needed because this installs packages system-wide (for all users). If you'd rather not use admin rights, you can install for your account only with `pip install --user -r requirements.txt`.
+   - Administrator privileges are required because this installs the packages system-wide (for all users). If you get an error, you can instead install them for your user only, without administrator privileges, using `pip install --user -r requirements.txt`.
 
 3. Obtain the API key for the generative AI you plan to use
    - Get an API key from your chosen provider's dashboard.
