@@ -1413,6 +1413,13 @@ static void OnTimer(HWND hwnd, UINT id)
 		g_pfnOutputCallback(buffer.c_str());
 }
 
+// WM_GETMINMAXINFO: ウィンドウの大きさを制限する。
+static void OnGetMinMaxInfo(HWND hwnd, LPMINMAXINFO lpMinMaxInfo)
+{
+	lpMinMaxInfo->ptMinTrackSize.x = 100;
+	lpMinMaxInfo->ptMinTrackSize.y = 100;
+}
+
 static INT_PTR CALLBACK
 DialogProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
@@ -1424,6 +1431,7 @@ DialogProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		HANDLE_MSG(hwnd, WM_DESTROY, OnDestroy);
 		HANDLE_MSG(hwnd, WM_CLOSE, OnClose);
 		HANDLE_MSG(hwnd, WM_TIMER, OnTimer);
+		HANDLE_MSG(hwnd, WM_GETMINMAXINFO, OnGetMinMaxInfo);
 
 	case WM_APP_AI_LINE:
 		if (lParam)
