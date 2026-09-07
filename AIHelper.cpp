@@ -657,7 +657,7 @@ void AIHelper_WaitForReady(void)
 
 // 文字列中に含まれる "(*...*)" 形式のタグ（XG_GetAIPreTextによる前置情報など）を
 // すべて取り除いた文字列を返す。表示前のフィルタリング用。
-static std::wstring StripAiPreTextTag(LPCWSTR pszLine)
+static std::wstring StripAiPreTextTag(PCWSTR pszLine)
 {
 	std::wstring result;
 	const wchar_t *pch = pszLine;
@@ -681,7 +681,7 @@ static std::wstring StripAiPreTextTag(LPCWSTR pszLine)
 }
 
 // lst1に1行追加し、末尾までスクロールする。
-static void AddLineToList(HWND hwnd, LPCWSTR pszLine)
+static void AddLineToList(HWND hwnd, PCWSTR pszLine)
 {
 	HWND hLst1 = GetDlgItem(hwnd, lst1);
 	if (!hLst1)
@@ -890,7 +890,7 @@ static LRESULT CALLBACK Lst1WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM 
 }
 
 // UTF-16文字列をUTF-8バイト列に変換する
-static std::string WideToUtf8(LPCWSTR psz)
+static std::string WideToUtf8(PCWSTR psz)
 {
 	if (!psz || !*psz)
 		return std::string();
