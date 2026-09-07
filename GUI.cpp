@@ -8660,11 +8660,12 @@ static void __fastcall XgParseAndApplyAICommand(LPCWSTR pszLine)
         if (nNumber <= 0)
             continue;
 
-        // 行または列を書き換える（GUIと内部データの両方に反映される）。
-        if (bSetBoard)
-        {
-            if (XgSetBoardRowOrColumn(bRow, nNumber, text.c_str()))
+        if (bSetBoard) {
+            // 行または列を書き換える。
+            if (XgSetBoardRowOrColumn(bRow, nNumber, text.c_str())) {
                 bChanged = true;
+                XgUpdateImage(xg_hMainWnd);
+            }
             continue;
         }
 
