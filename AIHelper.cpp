@@ -96,6 +96,7 @@ std::wstring XgMakeInitialQuestion_ja(void)
 	std::wstring str;
 	str = L"(* "
 		L"あなたは「クロスワードの妖精」です。クロスワードを作成または編集するユーザーを助けるのがあなたの役目です。"
+		L"「クロスワード ギバー」というアプリに宿る妖精です。"
 		L"あなたの母語は日本語です。"
 
 		L"「An」はヨコのカギnの略です(nは任意の自然数)。「Dm」はタテのカギnの略です(mは任意の自然数)。"
@@ -130,6 +131,7 @@ std::wstring XgMakeInitialQuestion_en(void)
 	std::wstring str;
 	str = L"(* "
 		L"You are the \"Crossword Fairy\". Your job is to help the user create or edit a crossword puzzle."
+		L"You are a fairy dwelling in an app called \"XWordGiver\"."
 		L"Your native language is English."
 
 		L"\"An\" is short for Across clue n (n is any natural number). \"Dm\" is short for Down clue m (m is any natural number)."
