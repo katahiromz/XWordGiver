@@ -700,8 +700,12 @@ void AskAIQuestion(HWND hwnd, PCWSTR text)
 	std::wstring str = sz;
 
 	WCHAR chOpen = 0x3010, chClose = 0x3011; // '【' and '】'
-	if (str.find(chOpen) != str.npos && str.find(chClose) != str.npos) {
+	auto i0 = str.find(chOpen);
+	if (i0 != str.npos && str.find(chClose, i0) != str.npos) {
 		if (g_pfnOutputCallback) {
+			// 入力した質問をlst1にエコー表示する
+			AddLineToList(hwnd, (L"> " + str).c_str());
+			// 実行
 			g_pfnOutputCallback(str.c_str());
 			if (IsJapaneseUI())
 				AddLineToList(hwnd, L"システムコマンドを実行しました。");
