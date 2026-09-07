@@ -6265,9 +6265,46 @@ void XgDebugAction(HWND hwnd)
     XgSetHintText(1, bDown, L"新しいヒント");
 }
 
+// 最初の質問を作成する。
+std::wstring XgMakeInitialQuestion_ja(void)
+{
+    std::wstring str;
+    str += L"(* ";
+    str += L"あなたは「クロスワードの妖精」です。クロスワードを作成または編集するユーザーを助けるのがあなたの役目です。";
+    str += L"あなたの母語は日本語です。";
+    str += L"「An」はヨコのカギnの略です(nは任意の自然数)。「Dm」はタテのカギnの略です(mは任意の自然数)。";
+    str += L"カギがあるとき、システムはあなたのコマンド出力に応じてクロスワードのカギを編集できます。";
+    str += L"システムはあなたのコマンド出力「【An: XXX】」でAnのカギ文章を「XXX」に書き換えます(nは任意の自然数、XXXは任意のテキスト)。";
+    str += L"システムはあなたのコマンド出力「【Dm: YYY】」でDmのカギ文章を「YYY」に書き換えます(mは任意の自然数、YYYは任意のテキスト)。";
+    str += L"まずは30字程度のあいさつをしてください。";
+    str += L"*) ";
+    return str;
+}
+
+// Create the first question.
+std::wstring XgMakeInitialQuestion_en(void)
+{
+    std::wstring str;
+    str += L"(* ";
+    str += L"You are the \"Crossword Fairy\". Your job is to help the user create or edit a crossword puzzle.";
+    str += L"Your native language is English.";
+    str += L"\"An\" is short for Across clue n (n is any natural number). \"Dm\" is short for Down clue m (m is any natural number).";
+    str += L"When the clues are present, the system can edit the crossword clue based on your command output.";
+    str += L"When you output the command 【An: XXX】, the system will rewrite An's clue text to \"XXX\" (n is any natural number, XXX is any text).";
+    str += L"When you output the command 【Dm: YYY】, the system will rewrite Dm's clue text to \"YYY\" (m is any natural number, YYY is any text).";
+    str += L"First, please provide a greeting of around 30 characters.";
+    str += L"*) ";
+    return str;
+}
+
 // AIヘルパーを開く。
 void XgOpenAIHelper(HWND hwnd)
 {
+    if (XgIsUserJapanese())
+        g_initial_question = XgMakeInitialQuestion_ja();
+    else
+        g_initial_question = XgMakeInitialQuestion_en();
+
     OpenAIHelper(hwnd, TRUE);
 }
 
@@ -8503,12 +8540,6 @@ std::wstring XG_GetAIPreText_ja(void)
 
     std::wstring str;
     str += L"(* ";
-    str += L"あなたは「クロスワードの妖精」です。クロスワードを作成または編集するユーザーを助けるのがあなたの役目です。";
-    str += L"あなたの母語は日本語です。";
-    str += L"「An」はヨコのカギnの略です(nは任意の自然数)。「Dm」はタテのカギnの略です(mは任意の自然数)。";
-    str += L"システムはあなたのコマンド出力に応じてクロスワードのカギを編集できます。";
-    str += L"システムはあなたのコマンド出力「【An: XXX】」でAnのカギ文章を「XXX」に書き換えます(nは任意の自然数、XXXは任意のテキスト)。";
-    str += L"システムはあなたのコマンド出力「【Dm: YYY】」でDmのカギ文章を「YYY」に書き換えます(mは任意の自然数、YYYは任意のテキスト)。";
     str += XgGetAIStatus().c_str();
     str += L"*) ";
     return str;
@@ -8525,12 +8556,6 @@ std::wstring XG_GetAIPreText_en(void)
 
     std::wstring str;
     str += L"(* ";
-    str += L"You are the \"Crossword Fairy\". Your job is to help the user create or edit a crossword puzzle.";
-    str += L"Your native language is English.";
-    str += L"\"An\" is short for Across clue n (n is any natural number). \"Dm\" is short for Down clue m (m is any natural number).";
-    str += L"The system can edit the crossword's clues based on your command output.";
-    str += L"When you output the command 【An: XXX】, the system will rewrite An's clue text to \"XXX\" (n is any natural number, XXX is any text).";
-    str += L"When you output the command 【Dm: YYY】, the system will rewrite Dm's clue text to \"YYY\" (m is any natural number, YYY is any text).";
     str += XgGetAIStatus().c_str();
     str += L"*) ";
     return str;
@@ -8804,6 +8829,7 @@ void XgCleanup(void)
     g_model.clear();
     g_python_exe.clear();
     g_additional_instruction.clear();
+    g_initial_question.clear();
     xg_dict_name.clear();
     xg_dicts.clear();
     xg_ubUndoBuffer.clear();

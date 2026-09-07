@@ -457,6 +457,33 @@ static DWORD WINAPI ReaderThreadProc(LPVOID lpParam)
 	return 0;
 }
 
+// パイプは「1行=1メッセージ」のプロトコルなので、text/pre_text/追加指示に
+// 万一改行が含まれていても子プロセスのinput()が複数質問と誤認しないよう、
+// 改行を空白に潰してから連結する（呼び出し元の実装に依存しない防御策）。
+static std::wstring SanitizeForPipeLine(const std::wstring& str)
+{
+	std::wstring result;
+	result.reserve(str.size());
+	for (wchar_t ch : str)
+	{
+		if (ch == L'\r' || ch == L'\n')
+			result += L' ';
+		else if (ch == L'\"')
+			result += L'\'';
+		else
+			result += ch;
+	}
+	return result;
+}
+
+static void PleaseWait(HWND hwnd)
+{
+	if (IsJapaneseUI())
+		AddLineToList(hwnd, L"...しばらくお待ちください...");
+	else
+		AddLineToList(hwnd, L"...Please wait a moment...");
+}
+
 // AIHelper_ja.py を対話モードで一度だけ起動し、そのままプロセスを保持し続ける。
 // 以後の質問は同じプロセスの標準入力へ書き込むことで送る。
 static BOOL StartAIProcess(HWND hwnd)
@@ -464,11 +491,7 @@ static BOOL StartAIProcess(HWND hwnd)
 	TCHAR path[MAX_PATH];
 	GetModuleFileNameW(nullptr, path, _countof(path));
 	PathRemoveFileSpecW(path);
-#ifdef __XWORDGIVER__
-	if (XgIsUserJapanese())
-#else
-	if (PRIMARYLANGID(GetUserDefaultLangID()) == LANG_JAPANESE)
-#endif
+	if (IsJapaneseUI())
 		PathAppendW(path, L"AIHelper_ja.py");
 	else
 		PathAppendW(path, L"AIHelper.py");
@@ -482,19 +505,20 @@ static BOOL StartAIProcess(HWND hwnd)
 	str += L"\" \"";
 	str += path;
 	str += L"\" --provider=";
-	str += g_provider;
+	str += SanitizeForPipeLine(g_provider);
 	str += L" --model ";
-	str += g_model;
+	str += SanitizeForPipeLine(g_model);
 	str += L" --no-logo";
 	if (g_initial_question.size())
 	{
 		str += L" --question \"";
-		str += g_initial_question;
+		str += SanitizeForPipeLine(g_initial_question);
 		str += L"\"";
 	}
 
 	// 実行するコマンドをlst1に出力する
 	AddLineToList(hwnd, (L"> " + str).c_str());
+	PleaseWait(hwnd);
 
 	// 環境変数をセットする。
 	SetEnvironmentVariableW(L"PYTHONIOENCODING", L"utf-8");
@@ -551,18 +575,6 @@ static void StopAIProcess(HWND hwnd)
 	}
 }
 
-// パイプは「1行=1メッセージ」のプロトコルなので、text/pre_text/追加指示に
-// 万一改行が含まれていても子プロセスのinput()が複数質問と誤認しないよう、
-// 改行を空白に潰してから連結する（呼び出し元の実装に依存しない防御策）。
-static std::wstring SanitizeForPipeLine(const std::wstring& s)
-{
-	std::wstring result;
-	result.reserve(s.size());
-	for (wchar_t ch : s)
-		result += (ch == L'\r' || ch == L'\n') ? L' ' : ch;
-	return result;
-}
-
 // 起動済みのプロセスの標準入力へ質問を書き込む（プロセスは終了させない）
 void AskAIQuestion(HWND hwnd, PCWSTR text)
 {
@@ -574,10 +586,7 @@ void AskAIQuestion(HWND hwnd, PCWSTR text)
 
 	// 入力した質問をlst1にエコー表示する
 	AddLineToList(hwnd, (L"> " + std::wstring(text)).c_str());
-	if (XgIsUserJapanese())
-		AddLineToList(hwnd, L"...しばらくお待ちください...");
-	else
-		AddLineToList(hwnd, L"...Please wait a moment...");
+	PleaseWait(hwnd);
 
 	std::wstring line;
 #ifdef __XWORDGIVER__
