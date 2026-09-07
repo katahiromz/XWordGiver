@@ -6269,28 +6269,28 @@ void XgDebugAction(HWND hwnd)
 std::wstring XgMakeInitialQuestion_ja(void)
 {
     std::wstring str;
-    str += L"(* ";
-    str += L"あなたは「クロスワードの妖精」です。クロスワードを作成または編集するユーザーを助けるのがあなたの役目です。";
-    str += L"あなたの母語は日本語です。";
+    str = L"(* "
+        L"あなたは「クロスワードの妖精」です。クロスワードを作成または編集するユーザーを助けるのがあなたの役目です。"
+        L"あなたの母語は日本語です。"
 
-    str += L"「An」はヨコのカギnの略です(nは任意の自然数)。「Dm」はタテのカギnの略です(mは任意の自然数)。";
-    str += L"カギがあるとき、システムはあなたのコマンド出力に応じてクロスワードのカギを編集できます。";
-    str += L"システムはあなたのコマンド出力「【An: XXX】」でAnのカギ文章を「XXX」に書き換えます(nは任意の自然数、XXXは任意のテキスト)。";
-    str += L"システムはあなたのコマンド出力「【Dm: YYY】」でDmのカギ文章を「YYY」に書き換えます(mは任意の自然数、YYYは任意のテキスト)。";
+        L"「An」はヨコのカギnの略です(nは任意の自然数)。「Dm」はタテのカギnの略です(mは任意の自然数)。"
+        L"カギがあるとき、システムはあなたのコマンド出力に応じてクロスワードのカギを編集できます。"
+        L"システムはあなたのコマンド出力「【An: XXX】」でAnのカギ文章を「XXX」に書き換えます(nは任意の自然数、XXXは任意のテキスト)。"
+        L"システムはあなたのコマンド出力「【Dm: YYY】」でDmのカギ文章を「YYY」に書き換えます(mは任意の自然数、YYYは任意のテキスト)。"
 
-    str += L"クロスワードの盤面は長方形または正方形の格子状に並べられた全角文字の並びです。";
-    str += L"ヨコ向きの文字の並びは「行」と呼びます。";
-    str += L"タテ向きの文字の並びは「列」と呼びます。";
-    str += L"黒マス（ブロック）は全角の「■」で表します。";
-    str += L"白マス（空白マス）は全角空白で表します。";
-    str += L"「Rp」はp番目の行の略です(pは任意の3以上の整数)。";
-    str += L"「Cq」はq番目の列の略です(qは任意の3以上の整数)。";
-    str += L"カギがないとき、システムはあなたのコマンド出力に応じてクロスワードの盤面を編集できます。";
-    str += L"システムはあなたのコマンド出力「【Rp: XXX】」でRpを「XXX」に書き換えます(pは任意の3以上の整数、XXXは新しい行文字列)。";
-    str += L"システムはあなたのコマンド出力「【Cq: YYY】」でCqを「YYY」に書き換えます(qは任意の3以上の整数、YYYは新しい列文字列)。";
+        L"クロスワードの盤面は長方形または正方形の格子状に並べられた全角文字の並びです。"
+        L"ヨコ向きの文字の並びは「行」と呼びます。"
+        L"タテ向きの文字の並びは「列」と呼びます。"
+        L"黒マス（ブロック）は全角の「■」で表します。"
+        L"白マス（空白マス）は全角空白で表します。"
+        L"「Rp」はp番目の行の略です(pは任意の3以上の整数)。"
+        L"「Cq」はq番目の列の略です(qは任意の3以上の整数)。"
+        L"カギがないとき、システムはあなたのコマンド出力に応じてクロスワードの盤面を編集できます。"
+        L"システムはあなたのコマンド出力「【Rp: XXX】」でRpを「XXX」に書き換えます(pは任意の3以上の整数、XXXは新しい行文字列)。"
+        L"システムはあなたのコマンド出力「【Cq: YYY】」でCqを「YYY」に書き換えます(qは任意の3以上の整数、YYYは新しい列文字列)。"
 
-    str += L"まずは30字程度のあいさつをしてください。";
-    str += L"*) ";
+        L"まずは60字程度のあいさつをして、あなたができることを簡単に説明してください。"
+    L"*) ";
     return str;
 }
 
@@ -6298,28 +6298,28 @@ std::wstring XgMakeInitialQuestion_ja(void)
 std::wstring XgMakeInitialQuestion_en(void)
 {
     std::wstring str;
-    str += L"(* ";
-    str += L"You are the \"Crossword Fairy\". Your job is to help the user create or edit a crossword puzzle.";
-    str += L"Your native language is English.";
+    str = L"(* "
+        L"You are the \"Crossword Fairy\". Your job is to help the user create or edit a crossword puzzle."
+        L"Your native language is English."
 
-    str += L"\"An\" is short for Across clue n (n is any natural number). \"Dm\" is short for Down clue m (m is any natural number).";
-    str += L"When the clues are present, the system can edit the crossword clue based on your command output.";
-    str += L"When you output the command 【An: XXX】, the system will rewrite An's clue text to \"XXX\" (n is any natural number, XXX is any text).";
-    str += L"When you output the command 【Dm: YYY】, the system will rewrite Dm's clue text to \"YYY\" (m is any natural number, YYY is any text).";
+        L"\"An\" is short for Across clue n (n is any natural number). \"Dm\" is short for Down clue m (m is any natural number)."
+        L"When the clues are present, the system can edit the crossword clue based on your command output."
+        L"When you output the command 【An: XXX】, the system will rewrite An's clue text to \"XXX\" (n is any natural number, XXX is any text)."
+        L"When you output the command 【Dm: YYY】, the system will rewrite Dm's clue text to \"YYY\" (m is any natural number, YYY is any text)."
 
-    str += L"The crossword board is a sequence of full-width characters arranged in a rectangular grid.";
-    str += L"A horizontal sequence of characters is called a \"row\".";
-    str += L"A vertical sequence of characters is called a \"column\".";
-    str += L"A black square (block) is represented by the full-width character \"■\".";
-    str += L"A white square (blank square) is represented by a full-width space.";
-    str += L"\"Rp\" is an abbreviation for the p-th row (p is any integer 3 or greater).";
-    str += L"\"Cq\" is an abbreviation for the q-th column (q is any integer 3 or greater).";
-    str += L"When there is no clue, the system can edit the crossword board according to your command output.";
-    str += L"The system will rewrite Rp to \"XXX\" when your command output is \"【Rp: XXX】\" (p is any integer 3 or greater, XXX is the new row string).";
-    str += L"The system will rewrite Cq to \"YYY\" when your command output is \"【Cq: YYY】\" (q is any integer 3 or greater, YYY is the new column string).";
+        L"The crossword board is a sequence of full-width characters arranged in a rectangular grid."
+        L"A horizontal sequence of characters is called a \"row\"."
+        L"A vertical sequence of characters is called a \"column\"."
+        L"A black square (block) is represented by the full-width character \"■\"."
+        L"A white square (blank square) is represented by a full-width space."
+        L"\"Rp\" is an abbreviation for the p-th row (p is any integer 3 or greater)."
+        L"\"Cq\" is an abbreviation for the q-th column (q is any integer 3 or greater)."
+        L"When there is no clue, the system can edit the crossword board according to your command output."
+        L"The system will rewrite Rp to \"XXX\" when your command output is \"【Rp: XXX】\" (p is any integer 3 or greater, XXX is the new row string)."
+        L"The system will rewrite Cq to \"YYY\" when your command output is \"【Cq: YYY】\" (q is any integer 3 or greater, YYY is the new column string)."
 
-    str += L"First, please provide a greeting of around 30 characters.";
-    str += L"*) ";
+        L"First, please provide a greeting of around 60 characters and briefly explain what you can do."
+    L"*) ";
     return str;
 }
 
@@ -8374,22 +8374,21 @@ static bool s_bAICallbackRegistered = false;
 // 行または列の文字列を取得する。
 XGStringW XgGetRowOrColumnText(BOOL bRow, INT iRowOrCol)
 {
-    if (xg_bSolved)
-        return FALSE;
+    auto board = xg_bSolved ? &xg_solution : &xg_xword;
 
     XGStringW str;
     if (bRow)
     {
         for (INT iCol = 0; iCol < xg_nCols; ++iCol)
         {
-            str += xg_xword.GetAt(iRowOrCol, iCol);
+            str += board->GetAt(iRowOrCol, iCol);
         }
     }
     else
     {
         for (INT iRow = 0; iRow < xg_nRows; ++iRow)
         {
-            str += xg_xword.GetAt(iRow, iRowOrCol);
+            str += board->GetAt(iRow, iRowOrCol);
         }
     }
 
@@ -8401,27 +8400,27 @@ XGStringW XgGetAIStatus_ja(void)
 {
     XGStringW ret;
 
-    if (!xg_bSolved)
+    for (INT iRow = 0; iRow < xg_nRows; ++iRow)
     {
+        XGStringW name = L"R";
+        name += std::to_wstring(iRow + 1).c_str();
+        ret += name;
+        ret += L"は「";
+        ret += XgGetRowOrColumnText(TRUE, iRow);
+        ret += L"」です。";
+    }
+    for (INT iCol = 0; iCol < xg_nCols; ++iCol)
+    {
+        XGStringW name = L"C";
+        name += std::to_wstring(iCol + 1).c_str();
+        ret += name;
+        ret += L"は「";
+        ret += XgGetRowOrColumnText(FALSE, iCol);
+        ret += L"」です。";
+    }
+
+    if (!xg_bSolved) {
         ret += L"クロスワードにはまだカギはありません。";
-        for (INT iRow = 0; iRow < xg_nRows; ++iRow)
-        {
-            XGStringW name = L"R";
-            name += std::to_wstring(iRow + 1).c_str();
-            ret += name;
-            ret += L"は「";
-            ret += XgGetRowOrColumnText(TRUE, iRow);
-            ret += L"」です。";
-        }
-        for (INT iCol = 0; iCol < xg_nCols; ++iCol)
-        {
-            XGStringW name = L"C";
-            name += std::to_wstring(iCol + 1).c_str();
-            ret += name;
-            ret += L"は「";
-            ret += XgGetRowOrColumnText(FALSE, iCol);
-            ret += L"」です。";
-        }
         return ret;
     }
 
@@ -8464,27 +8463,27 @@ XGStringW XgGetAIStatus_en(void)
 {
     XGStringW ret;
 
-    if (!xg_bSolved)
+    for (INT iRow = 0; iRow < xg_nRows; ++iRow)
     {
+        XGStringW name = L"R";
+        name += std::to_wstring(iRow + 1).c_str();
+        ret += name;
+        ret += L" is \"";
+        ret += XgGetRowOrColumnText(TRUE, iRow);
+        ret += L"\".";
+    }
+    for (INT iCol = 0; iCol < xg_nCols; ++iCol)
+    {
+        XGStringW name = L"C";
+        name += std::to_wstring(iCol + 1).c_str();
+        ret += name;
+        ret += L" is \"";
+        ret += XgGetRowOrColumnText(FALSE, iCol);
+        ret += L"\".";
+    }
+
+    if (!xg_bSolved) {
         ret += L"The crossword does not have clues yet.";
-        for (INT iRow = 0; iRow < xg_nRows; ++iRow)
-        {
-            XGStringW name = L"R";
-            name += std::to_wstring(iRow + 1).c_str();
-            ret += name;
-            ret += L" is \"";
-            ret += XgGetRowOrColumnText(TRUE, iRow);
-            ret += L"\".";
-        }
-        for (INT iCol = 0; iCol < xg_nCols; ++iCol)
-        {
-            XGStringW name = L"C";
-            name += std::to_wstring(iCol + 1).c_str();
-            ret += name;
-            ret += L" is \"";
-            ret += XgGetRowOrColumnText(FALSE, iCol);
-            ret += L"\".";
-        }
         return ret;
     }
 
@@ -8698,6 +8697,7 @@ std::wstring XG_GetAIPreText_ja(void)
 
     std::wstring str;
     str += L"(* ";
+    str += L"あなたはクロスワードの妖精です。";
     str += XgGetAIStatus().c_str();
     str += L"*) ";
     return str;
@@ -8714,6 +8714,7 @@ std::wstring XG_GetAIPreText_en(void)
 
     std::wstring str;
     str += L"(* ";
+    str += L"You are the \"Crossword Fairy\". ";
     str += XgGetAIStatus().c_str();
     str += L"*) ";
     return str;
