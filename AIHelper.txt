@@ -13,6 +13,15 @@
 ※ APIキーは漏洩しないように注意してください。
 ※ トークンを消費します。使いすぎにご注意ください。
 
+## よくある質問
+
+- Pythonって何？　→　AI(人工知能)などを動かすためのプログラムです。
+- pipって何？　→　Pythonにパッケージを導入するためのプログラムです。
+- APIキーって何？　→　AIを使うための秘密の文字列です。
+- AIプロバイダーって何？　→　AIサービスを提供する事業者です。
+- AIモデルって何？　→　AIの種類です。
+- トークンって何？　→　AIの計算コストに応じた使用量を表す数値です。
+
 # How to Use AI Helper
 
 - Install Python and add `python.exe` to your system's PATH environment variable.
@@ -27,3 +36,12 @@
 * Generative AI may make mistakes. Please be sure to verify the results.
 * Please take care not to expose your API key.
 * This consumes tokens. Please be careful not to use too many.
+
+## FAQ
+
+- What is Python? → A programming language used to run AI (artificial intelligence) and other applications.
+- What is pip? → A program used to install packages for Python.
+- What is an API key? → A secret string of characters used to access AI services.
+- What is an AI provider? → A company that offers AI services.
+- What is an AI model? → A specific type of AI.
+- What is a token? → A numerical value representing usage based on the AI's computational cost.
