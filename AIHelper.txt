@@ -16,7 +16,7 @@
 ## よくある質問
 
 - Pythonって何？　→　AI(人工知能)などを動かすためのプログラムです。
-- pipって何？　→　Pythonにパッケージを導入するためのプログラムです。
+- pipって何？　→　Pythonにパッケージ(機能)を導入するためのプログラムです。
 - APIキーって何？　→　AIを使うための秘密の文字列です。
 - AIプロバイダーって何？　→　AIサービスを提供する事業者です。
 - AIモデルって何？　→　AIの種類です。
@@ -40,7 +40,7 @@
 ## FAQ
 
 - What is Python? → A programming language used to run AI (artificial intelligence) and other applications.
-- What is pip? → A program used to install packages for Python.
+- What is pip? → A program used to install packages (features) for Python.
 - What is an API key? → A secret string of characters used to access AI services.
 - What is an AI provider? → A company that offers AI services.
 - What is an AI model? → A specific type of AI.
