@@ -8699,7 +8699,7 @@ std::wstring XG_GetAIPreText_ja(void)
     str += L"(* ";
     str += L"あなたはクロスワードの妖精です。";
     str += XgGetAIStatus().c_str();
-    str += L"*) ";
+    str += L" *) ";
     return str;
 }
 
@@ -8716,7 +8716,7 @@ std::wstring XG_GetAIPreText_en(void)
     str += L"(* ";
     str += L"You are the \"Crossword Fairy\". ";
     str += XgGetAIStatus().c_str();
-    str += L"*) ";
+    str += L" *) ";
     return str;
 }
 
