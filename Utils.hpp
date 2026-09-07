@@ -83,6 +83,7 @@ static inline XGStringW xg_str_unquote(const XGStringW& str)
 
 // 文字列を置換する。
 bool __fastcall xg_str_replace_all(XGStringW &s, const XGStringW& from, const XGStringW& to);
+bool __fastcall xg_str_replace_all(std::wstring &s, const std::wstring& from, const std::wstring& to);
 
 // 文字列からマルチセットへ変換する。
 void __fastcall xg_str_to_multiset(std::unordered_multiset<WCHAR>& mset, const XGStringW& str);

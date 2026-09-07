@@ -362,6 +362,7 @@
     - Strengthened checks for XG_JumpDialog.
     - Dramatically improved AI Helper's UI/UX.
     - Added more AI models.
+    - Grouped "Undo" information for AI helper operations.
 
 # 開発履歴 (Japanese)
 
@@ -1043,3 +1044,4 @@
     - XG_JumpDialogのチェックを強化。
     - AIヘルパーのUI/UXを劇的に改良。
     - AIモデルをさらに追加。
+    - AIヘルパー使用時の「元に戻す」情報をグループ化した。
