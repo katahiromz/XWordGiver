@@ -40,7 +40,7 @@ std::wstring g_buffer;
 std::wstring g_initial_question;
 
 BOOL XgIsUserJapanese(VOID) noexcept;
-void XgOpenAIHelper(HWND hwnd);
+BOOL XgOpenAIHelper(HWND hwndOwner, BOOL bOpen);
 XGStringW XgGetRowOrColumnText(BOOL bRow, INT iRowOrCol);
 void AIHelper_WaitForReady(void);
 
@@ -331,7 +331,7 @@ BOOL XgGenerateClue_ja(INT nNumber, BOOL bDown)
 		return FALSE;
 
 	// AIヘルパーを開く（既に開いていれば前面に出すだけ）。
-	XgOpenAIHelper(xg_hMainWnd);
+	XgOpenAIHelper(xg_hMainWnd, TRUE);
 	AIHelper_WaitForReady();
 
 	// 対象のカギ名（An / Dm）を組み立てる。
@@ -363,7 +363,7 @@ BOOL XgGenerateClue_en(INT nNumber, BOOL bDown)
 		return FALSE;
 
 	// Open the AI helper (if already open, just bring it to the front).
-	XgOpenAIHelper(xg_hMainWnd);
+	XgOpenAIHelper(xg_hMainWnd, TRUE);
 	AIHelper_WaitForReady();
 
 	// Build the target clue name (An / Dm).
@@ -398,7 +398,7 @@ BOOL XgGenerateClue(INT nNumber, BOOL bDown)
 void XgRegenerateCluesAll(HWND hwnd)
 {
 	// Open the AI helper (if already open, just bring it to the front).
-	XgOpenAIHelper(xg_hMainWnd);
+	XgOpenAIHelper(xg_hMainWnd, TRUE);
 	AIHelper_WaitForReady();
 
 	if (XgIsUserJapanese()) {
@@ -1442,8 +1442,12 @@ DialogProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	return 0;
 }
 
-BOOL OpenAIHelper(HWND hwndOwner, BOOL bOpen)
+// AIヘルパーを開く。
+BOOL XgOpenAIHelper(HWND hwndOwner, BOOL bOpen)
 {
+	if (bOpen && g_initial_question.empty())
+		g_initial_question = XgMakeInitialQuestion();
+
 	// AIヘルパーからの出力を解析できるよう、コールバックを登録する（初回のみ）。
 	static bool s_bAICallbackRegistered = false;
 	if (!s_bAICallbackRegistered) {
@@ -1451,46 +1455,7 @@ BOOL OpenAIHelper(HWND hwndOwner, BOOL bOpen)
 		s_bAICallbackRegistered = true;
 	}
 
-	if (bOpen)
-	{
-		if (g_hwndAIHelper)
-		{
-			SetForegroundWindow(g_hwndAIHelper);
-			return TRUE;
-		}
-
-		RegisterAIHelperConsoleClass(g_hAIHelperInst);
-
-		PCWSTR pszCaption = XgIsUserJapanese() ? L"AI ヘルパー コンソール" : L"AI Helper Console";
-
-		// DIALOGリソース(IDD_AIHELPERCONSOLE)は使わず、通常のウィンドウとして作成する。
-		// STYLE/EXSTYLEはrcスクリプトのDS_CENTER|WS_POPUPWINDOW|WS_CAPTION|
-		// WS_THICKFRAME|WS_MAXIMIZEBOX / WS_EX_TOOLWINDOWをそのまま踏襲している
-		// （DS_CENTER相当の中央寄せは、作成後にCenterWindowOverOwnerで行う）。
-		HWND hwnd = CreateWindowExW(
-			WS_EX_TOOLWINDOW,
-			AIHELPERCONSOLE_CLASSNAME,
-			pszCaption,
-			WS_POPUPWINDOW | WS_CAPTION | WS_THICKFRAME | WS_MAXIMIZEBOX,
-			CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT,
-			hwndOwner, nullptr, g_hAIHelperInst, nullptr);
-		if (!hwnd)
-			return FALSE;
-
-		// このウィンドウを「ダイアログ」として振る舞わせる。
-		// CreateDialog系APIが内部で行っている処理（DLGPROCの登録とWM_INITDIALOGの
-		// 送信）を手動で再現している。以後はIsDialogMessageWによるTab移動・
-		// Enterでの既定ボタン起動・Escでの終了などがそのまま機能する。
-		SetWindowLongPtrW(hwnd, DWLP_DLGPROC, (LONG_PTR)DialogProc);
-		SendMessageW(hwnd, WM_INITDIALOG, (WPARAM)hwnd, 0);
-
-		CenterWindowOverOwner(hwnd, hwndOwner);
-
-		ShowWindow(hwnd, SW_SHOWNOACTIVATE);
-		UpdateWindow(hwnd);
-		return TRUE;
-	}
-	else
+	if (!bOpen)
 	{
 		if (g_hwndAIHelper)
 		{
@@ -1500,11 +1465,41 @@ BOOL OpenAIHelper(HWND hwndOwner, BOOL bOpen)
 
 		return FALSE;
 	}
-}
 
-// AIヘルパーを開く。
-void XgOpenAIHelper(HWND hwnd)
-{
-	g_initial_question = XgMakeInitialQuestion();
-	OpenAIHelper(hwnd, TRUE);
+	if (g_hwndAIHelper)
+	{
+		SetForegroundWindow(g_hwndAIHelper);
+		return TRUE;
+	}
+
+	RegisterAIHelperConsoleClass(g_hAIHelperInst);
+
+	PCWSTR pszCaption = XgIsUserJapanese() ? L"AI ヘルパー コンソール" : L"AI Helper Console";
+
+	// DIALOGリソース(IDD_AIHELPERCONSOLE)は使わず、通常のウィンドウとして作成する。
+	// STYLE/EXSTYLEはrcスクリプトのDS_CENTER|WS_POPUPWINDOW|WS_CAPTION|
+	// WS_THICKFRAME|WS_MAXIMIZEBOX / WS_EX_TOOLWINDOWをそのまま踏襲している
+	// （DS_CENTER相当の中央寄せは、作成後にCenterWindowOverOwnerで行う）。
+	HWND hwnd = CreateWindowExW(
+		WS_EX_TOOLWINDOW,
+		AIHELPERCONSOLE_CLASSNAME,
+		pszCaption,
+		WS_POPUPWINDOW | WS_CAPTION | WS_THICKFRAME | WS_MAXIMIZEBOX,
+		CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT,
+		hwndOwner, nullptr, g_hAIHelperInst, nullptr);
+	if (!hwnd)
+		return FALSE;
+
+	// このウィンドウを「ダイアログ」として振る舞わせる。
+	// CreateDialog系APIが内部で行っている処理（DLGPROCの登録とWM_INITDIALOGの
+	// 送信）を手動で再現している。以後はIsDialogMessageWによるTab移動・
+	// Enterでの既定ボタン起動・Escでの終了などがそのまま機能する。
+	SetWindowLongPtrW(hwnd, DWLP_DLGPROC, (LONG_PTR)DialogProc);
+	SendMessageW(hwnd, WM_INITDIALOG, (WPARAM)hwnd, 0);
+
+	CenterWindowOverOwner(hwnd, hwndOwner);
+
+	ShowWindow(hwnd, SW_SHOWNOACTIVATE);
+	UpdateWindow(hwnd);
+	return TRUE;
 }

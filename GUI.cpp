@@ -6260,7 +6260,7 @@ void XgDebugAction(HWND hwnd)
     // テスト実行したいことをここに書く。
 }
 
-void XgOpenAIHelper(HWND hwnd);
+BOOL XgOpenAIHelper(HWND hwndOwner, BOOL bOpen);
 
 // このカギをクリアする。
 BOOL XgClearClue(INT nNumber, BOOL bDown)
@@ -7587,7 +7587,7 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT /*codeNo
         break;
 
     case ID_OPENAIHELPER:
-        XgOpenAIHelper(hwnd);
+        XgOpenAIHelper(hwnd, TRUE);
         break;
 
     case ID_CLEARALLCLUES:
