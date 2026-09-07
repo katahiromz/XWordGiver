@@ -17,6 +17,10 @@
 #include "AIHelper.h"
 #include "resource.h"
 
+// 子プロセスの出力の1行をUIスレッドへ渡すためのカスタムメッセージ
+// (WPARAMは未使用、LPARAMはnewしたPWSTR。受け取った側でdelete[]すること)
+#define WM_APP_AI_LINE  (WM_APP + 1)
+
 HINSTANCE g_hAIHelperInst = nullptr;
 
 // ダイアログのリサイズ処理を担当する
@@ -340,18 +344,16 @@ BOOL XgGenerateClue_ja(INT nNumber, BOOL bDown)
 	std::wstring name = (bDown ? L"D" : L"A");
 	name += std::to_wstring(nNumber).c_str();
 
-	std::wstring str;
-	str += name.c_str();
-	str += L"のカギ文章を生成して、システムにコマンドを出力してください。";
-	str += L"カギ文章内部で「";
-	str += word.c_str();
-	str += L"」という単語を使うことはできません。";
+	std::wstring line;
+	line += name.c_str();
+	line += L"のカギ文章を生成して、システムにコマンドを出力してください。";
+	line += L"カギ文章内部で「";
+	line += word.c_str();
+	line += L"」という単語を使うことはできません。";
 
-	// AIヘルパーへ質問を送る。実際のカギ文章への反映は、AIからの応答
-	// （「【An: XXX】」または「【Dm: YYY】」形式の行）を受け取った時点で
-	// 非同期にXgSetHintTextが呼ばれることで行われる（別途、応答行を
-	// パースして該当コマンドを実行する処理が必要）。
-	AskAIQuestion(g_hwndAIHelper, str.c_str());
+	PWSTR psz = new WCHAR[line.size() + 1];
+	StringCchCopyW(psz, line.size() + 1, line.c_str());
+	PostMessageW(g_hwndAIHelper, WM_APP_AI_LINE, 0, (LPARAM)psz);
 
 	return TRUE;
 }
@@ -372,19 +374,17 @@ BOOL XgGenerateClue_en(INT nNumber, BOOL bDown)
 	std::wstring name = (bDown ? L"D" : L"A");
 	name += std::to_wstring(nNumber).c_str();
 
-	std::wstring str;
-	str += name.c_str();
-	str += L"'s clue text should be generated, and the command should be output to the system.";
-	str += L"The word \"";
-	str += word.c_str();
-	str += L"\" cannot be used inside the clue text.";
+	std::wstring line;
+	line += name.c_str();
+	line += L"'s clue text should be generated, and the command should be output to the system.";
+	line += L"The word \"";
+	line += word.c_str();
+	line += L"\" cannot be used inside the clue text.";
 
-	// Send the question to the AI helper. The actual update to the clue text is
-	// performed asynchronously by calling XgSetHintText once a response line
-	// from the AI (in the form "【An: XXX】" or "【Dm: YYY】") is received
-	// (a separate process is needed to parse the response line and execute
-	// the corresponding command).
-	AskAIQuestion(g_hwndAIHelper, str.c_str());
+	PWSTR psz = new WCHAR[line.size() + 1];
+	StringCchCopyW(psz, line.size() + 1, line.c_str());
+	PostMessageW(g_hwndAIHelper, WM_APP_AI_LINE, 0, (LPARAM)psz);
+
 	return TRUE;
 }
 
@@ -403,11 +403,16 @@ void XgRegenerateCluesAll(HWND hwnd)
 	XgOpenAIHelper(xg_hMainWnd, TRUE);
 	AIHelper_WaitForReady();
 
+	std::wstring line;
 	if (XgIsUserJapanese()) {
-		AskAIQuestion(g_hwndAIHelper, L"すべてのカギを再生成してください。");
-		return;
+		line = L"すべてのカギを再生成してください。";
+	} else {
+		line = L"Please re-generate all the clues.";
 	}
-	AskAIQuestion(g_hwndAIHelper, L"Please re-generate all the clues.");
+
+	PWSTR psz = new WCHAR[line.size() + 1];
+	StringCchCopyW(psz, line.size() + 1, line.c_str());
+	PostMessageW(hwnd, WM_APP_AI_LINE, 0, (LPARAM)psz);
 }
 
 // AIに現在の状態を報告する（日本語）。
@@ -631,7 +636,7 @@ void AIHelper_WaitForReady(void)
 		return;
 
 	const DWORD dwStart = GetTickCount();
-	const DWORD dwTimeout = 5 * 1000;
+	const DWORD dwTimeout = 20 * 1000; // 20秒
 
 	for (;;)
 	{
@@ -667,10 +672,6 @@ void AIHelper_WaitForReady(void)
 		DispatchMessageW(&msg);
 	}
 }
-
-// 子プロセスの出力の1行をUIスレッドへ渡すためのカスタムメッセージ
-// (WPARAMは未使用、LPARAMはnewしたPWSTR。受け取った側でdelete[]すること)
-#define WM_APP_AI_LINE  (WM_APP + 1)
 
 // 文字列中に含まれる "(*...*)" 形式のタグ（XG_GetAIPreTextによる前置情報など）を
 // すべて取り除いた文字列を返す。表示前のフィルタリング用。
@@ -787,6 +788,22 @@ static void SetEdt1Text(HWND hwndEdit, const std::wstring &text)
 	SendMessageW(hwndEdit, EM_SETSEL, (WPARAM)text.size(), (LPARAM)text.size());
 }
 
+// エディットコントロールの全文を、長さの上限なしに取得する。
+// GetWindowTextLengthWで必要な長さを求めてからバッファを確保するため、
+// 固定長バッファ（WCHAR[512]等）のように入力が途中で切り詰められることがない。
+static std::wstring GetEditTextDynamic(HWND hwndEdit)
+{
+	int cch = GetWindowTextLengthW(hwndEdit);
+	if (cch <= 0)
+		return std::wstring();
+
+	std::wstring text(cch, L'\0');
+	// GetWindowTextWは終端NULを含めたバッファ長を求めるため+1して渡す
+	int cchCopied = GetWindowTextW(hwndEdit, &text[0], cch + 1);
+	text.resize((cchCopied > 0) ? (size_t)cchCopied : 0);
+	return text;
+}
+
 // 上矢印キー：一つ古い履歴へ
 static void HistoryGoBack(HWND hwndEdit)
 {
@@ -796,9 +813,7 @@ static void HistoryGoBack(HWND hwndEdit)
 	if (g_nHistoryIndex == g_history.size())
 	{
 		// 履歴を辿り始める前に、今編集中の文字列を退避しておく
-		WCHAR text[512];
-		GetWindowTextW(hwndEdit, text, _countof(text));
-		g_historyPending = text;
+		g_historyPending = GetEditTextDynamic(hwndEdit);
 	}
 
 	--g_nHistoryIndex;
@@ -1140,12 +1155,20 @@ void AskAIQuestion(HWND hwnd, PCWSTR text)
 	if (!text || !text[0])
 		return;
 
-	WCHAR sz[512];
-	lstrcpynW(sz, text, _countof(sz));
-	StrTrimW(sz, L" \t\r\n　");
-	if (!sz[0])
+	// 前後の空白（全角空白含む）を除去する。長さの上限は設けない。
+	std::wstring str = text;
+	{
+		const wchar_t szTrimChars[] = L" \t\r\n　";
+		size_t posStart = str.find_first_not_of(szTrimChars);
+		if (posStart == std::wstring::npos) {
+			str.clear();
+		} else {
+			size_t posEnd = str.find_last_not_of(szTrimChars);
+			str = str.substr(posStart, posEnd - posStart + 1);
+		}
+	}
+	if (str.empty())
 		return;
-	std::wstring str = sz;
 
 	WCHAR chOpen = 0x3010, chClose = 0x3011; // '【' and '】'
 	WCHAR chColon = 0xFF1A; // '：'
@@ -1337,12 +1360,11 @@ static VOID OnSize(HWND hwnd, UINT state, int cx, int cy)
 
 static BOOL OnOK(HWND hwnd)
 {
-	WCHAR text[512];
-	GetDlgItemTextW(hwnd, edt1, text, _countof(text));
-	if (text[0])
+	std::wstring text = GetEditTextDynamic(GetDlgItem(hwnd, edt1));
+	if (!text.empty())
 	{
-		AskAIQuestion(hwnd, text);
-		AddToHistory(text);
+		AskAIQuestion(hwnd, text.c_str());
+		AddToHistory(text.c_str());
 		SetDlgItemTextW(hwnd, edt1, L"");
 	}
 	return FALSE;
