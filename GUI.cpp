@@ -6272,10 +6272,23 @@ std::wstring XgMakeInitialQuestion_ja(void)
     str += L"(* ";
     str += L"あなたは「クロスワードの妖精」です。クロスワードを作成または編集するユーザーを助けるのがあなたの役目です。";
     str += L"あなたの母語は日本語です。";
+
     str += L"「An」はヨコのカギnの略です(nは任意の自然数)。「Dm」はタテのカギnの略です(mは任意の自然数)。";
     str += L"カギがあるとき、システムはあなたのコマンド出力に応じてクロスワードのカギを編集できます。";
     str += L"システムはあなたのコマンド出力「【An: XXX】」でAnのカギ文章を「XXX」に書き換えます(nは任意の自然数、XXXは任意のテキスト)。";
     str += L"システムはあなたのコマンド出力「【Dm: YYY】」でDmのカギ文章を「YYY」に書き換えます(mは任意の自然数、YYYは任意のテキスト)。";
+
+    str += L"クロスワードの盤面は長方形または正方形の格子状に並べられた全角文字の並びです。";
+    str += L"ヨコ向きの文字の並びは「行」と呼びます。";
+    str += L"タテ向きの文字の並びは「列」と呼びます。";
+    str += L"黒マス（ブロック）は全角の「■」で表します。";
+    str += L"白マス（空白マス）は全角空白で表します。";
+    str += L"「Rp」はp番目の行の略です(pは任意の3以上の整数)。";
+    str += L"「Cq」はq番目の列の略です(qは任意の3以上の整数)。";
+    str += L"カギがないとき、システムはあなたのコマンド出力に応じてクロスワードの盤面を編集できます。";
+    str += L"システムはあなたのコマンド出力「【Rp: XXX】」でRpを「XXX」に書き換えます(pは任意の3以上の整数、XXXは新しい行文字列)。";
+    str += L"システムはあなたのコマンド出力「【Cq: YYY】」でCqを「YYY」に書き換えます(qは任意の3以上の整数、YYYは新しい列文字列)。";
+
     str += L"まずは30字程度のあいさつをしてください。";
     str += L"*) ";
     return str;
@@ -6288,10 +6301,23 @@ std::wstring XgMakeInitialQuestion_en(void)
     str += L"(* ";
     str += L"You are the \"Crossword Fairy\". Your job is to help the user create or edit a crossword puzzle.";
     str += L"Your native language is English.";
+
     str += L"\"An\" is short for Across clue n (n is any natural number). \"Dm\" is short for Down clue m (m is any natural number).";
     str += L"When the clues are present, the system can edit the crossword clue based on your command output.";
     str += L"When you output the command 【An: XXX】, the system will rewrite An's clue text to \"XXX\" (n is any natural number, XXX is any text).";
     str += L"When you output the command 【Dm: YYY】, the system will rewrite Dm's clue text to \"YYY\" (m is any natural number, YYY is any text).";
+
+    str += L"The crossword board is a sequence of full-width characters arranged in a rectangular grid.";
+    str += L"A horizontal sequence of characters is called a \"row\".";
+    str += L"A vertical sequence of characters is called a \"column\".";
+    str += L"A black square (block) is represented by the full-width character \"■\".";
+    str += L"A white square (blank square) is represented by a full-width space.";
+    str += L"\"Rp\" is an abbreviation for the p-th row (p is any integer 3 or greater).";
+    str += L"\"Cq\" is an abbreviation for the q-th column (q is any integer 3 or greater).";
+    str += L"When there is no clue, the system can edit the crossword board according to your command output.";
+    str += L"The system will rewrite Rp to \"XXX\" when your command output is \"【Rp: XXX】\" (p is any integer 3 or greater, XXX is the new row string).";
+    str += L"The system will rewrite Cq to \"YYY\" when your command output is \"【Cq: YYY】\" (q is any integer 3 or greater, YYY is the new column string).";
+
     str += L"First, please provide a greeting of around 30 characters.";
     str += L"*) ";
     return str;
@@ -8342,18 +8368,64 @@ BOOL __fastcall XgSetHintText(INT number, BOOL bDown, const XGStringW& text)
     return FALSE;
 }
 
+// AIヘルパーにコールバック関数が登録されたか？
 static bool s_bAICallbackRegistered = false;
+
+// 行または列の文字列を取得する。
+XGStringW XgGetRowOrColumnText(BOOL bRow, INT iRowOrCol)
+{
+    if (xg_bSolved)
+        return FALSE;
+
+    XGStringW str;
+    if (bRow)
+    {
+        for (INT iCol = 0; iCol < xg_nCols; ++iCol)
+        {
+            str += xg_xword.GetAt(iRowOrCol, iCol);
+        }
+    }
+    else
+    {
+        for (INT iRow = 0; iRow < xg_nRows; ++iRow)
+        {
+            str += xg_xword.GetAt(iRow, iRowOrCol);
+        }
+    }
+
+    return str;
+}
 
 // AIに現在の状態を報告する（日本語）。
 XGStringW XgGetAIStatus_ja(void)
 {
     XGStringW ret;
 
-    // まだ解かれていない場合は失敗。
     if (!xg_bSolved)
-        return L"クロスワードの盤が生成されておらず、まだカギはありません。クロスワードの妖精ができることはまだありません。";
+    {
+        ret += L"クロスワードにはまだカギはありません。";
+        for (INT iRow = 0; iRow < xg_nRows; ++iRow)
+        {
+            XGStringW name = L"R";
+            name += std::to_wstring(iRow + 1).c_str();
+            ret += name;
+            ret += L"は「";
+            ret += XgGetRowOrColumnText(TRUE, iRow);
+            ret += L"」です。";
+        }
+        for (INT iCol = 0; iCol < xg_nCols; ++iCol)
+        {
+            XGStringW name = L"C";
+            name += std::to_wstring(iCol + 1).c_str();
+            ret += name;
+            ret += L"は「";
+            ret += XgGetRowOrColumnText(FALSE, iCol);
+            ret += L"」です。";
+        }
+        return ret;
+    }
 
-    ret += L"クロスワードの盤が生成済みです。";
+    ret += L"クロスワードのカギがあります。";
     for (BOOL bDown = FALSE; bDown <= TRUE; ++bDown)
     {
         // タテかヨコかで対象の配列を選ぶ。
@@ -8391,10 +8463,32 @@ XGStringW XgGetAIStatus_ja(void)
 XGStringW XgGetAIStatus_en(void)
 {
     XGStringW ret;
-    // Fail if not yet solved.
+
     if (!xg_bSolved)
-        return L"The crossword board has not been generated yet, and there are no clues yet. There is nothing the crossword fairy can do yet.";
-    ret += L"The crossword board has been generated.";
+    {
+        ret += L"The crossword does not have clues yet.";
+        for (INT iRow = 0; iRow < xg_nRows; ++iRow)
+        {
+            XGStringW name = L"R";
+            name += std::to_wstring(iRow + 1).c_str();
+            ret += name;
+            ret += L" is \"";
+            ret += XgGetRowOrColumnText(TRUE, iRow);
+            ret += L"\".";
+        }
+        for (INT iCol = 0; iCol < xg_nCols; ++iCol)
+        {
+            XGStringW name = L"C";
+            name += std::to_wstring(iCol + 1).c_str();
+            ret += name;
+            ret += L" is \"";
+            ret += XgGetRowOrColumnText(FALSE, iCol);
+            ret += L"\".";
+        }
+        return ret;
+    }
+
+    ret += L"The crossword has clues.";
     for (BOOL bDown = FALSE; bDown <= TRUE; ++bDown)
     {
         // Choose the target array depending on whether it's Down or Across.
@@ -8432,6 +8526,45 @@ XGStringW XgGetAIStatus(void)
     return XgGetAIStatus_en();
 }
 
+// 行または列を書き換える。
+BOOL XgSetBoardRowOrColumn(BOOL bRow, INT nNumber, const XGStringW& text)
+{
+    if (xg_bSolved)
+        return FALSE;
+    if (nNumber <= 0)
+        return FALSE;
+    nNumber--;
+
+    XGStringW str = XgNormalizeString(text);
+
+    if (bRow)
+    {
+        if (nNumber >= xg_nRows)
+            return FALSE;
+        if ((INT)str.size() != xg_nCols)
+            return FALSE;
+
+        for (size_t ich = 0; ich < str.size(); ++ich)
+        {
+            xg_xword.SetAt(nNumber, (INT)ich, text[ich]);
+        }
+    }
+    else
+    {
+        if (nNumber >= xg_nCols)
+            return FALSE;
+        if ((INT)str.size() != xg_nRows)
+            return FALSE;
+
+        for (size_t ich = 0; ich < str.size(); ++ich)
+        {
+            xg_xword.SetAt((INT)ich, nNumber, text[ich]);
+        }
+    }
+
+    return TRUE;
+}
+
 // AIヘルパーからの出力行を解析し、「【An: XXX】」/「【Dm: YYY】」形式の
 // コマンドを見つけたら、該当するカギ文章を書き換える。
 // 1行に複数のコマンドが含まれていてもすべて処理する。
@@ -8442,8 +8575,8 @@ static void __fastcall XgParseAndApplyAICommand(LPCWSTR pszLine)
     std::wstring line = pszLine;
     size_t pos = 0;
 
-    auto sa1 = std::make_shared<XG_UndoData_HintsUpdated>();
-    auto sa2 = std::make_shared<XG_UndoData_HintsUpdated>();
+    auto sa1 = std::make_shared<XG_UndoData_SetAll>();
+    auto sa2 = std::make_shared<XG_UndoData_SetAll>();
     sa1->Get();
 
     bool bChanged = false;
@@ -8483,12 +8616,29 @@ static void __fastcall XgParseAndApplyAICommand(LPCWSTR pszLine)
             continue;
 
         // 先頭が A/a ならヨコのカギ、D/d ならタテのカギ。
+        // 先頭が R/r なら行、C/c なら列。
         WCHAR chType = key[0];
-        BOOL bDown;
+        BOOL bDown, bRow, bSetBoard;
         if (chType == L'A' || chType == L'a')
+        {
             bDown = FALSE;
+            bSetBoard = FALSE;
+        }
         else if (chType == L'D' || chType == L'd')
+        {
             bDown = TRUE;
+            bSetBoard = FALSE;
+        }
+        else if (chType == L'R' || chType == L'r')
+        {
+            bRow = TRUE;
+            bSetBoard = TRUE;
+        }
+        else if (chType == L'C' || chType == L'c')
+        {
+            bRow = FALSE;
+            bSetBoard = TRUE;
+        }
         else
             continue;
 
@@ -8511,6 +8661,14 @@ static void __fastcall XgParseAndApplyAICommand(LPCWSTR pszLine)
         if (nNumber <= 0)
             continue;
 
+        // 行または列を書き換える（GUIと内部データの両方に反映される）。
+        if (bSetBoard)
+        {
+            if (XgSetBoardRowOrColumn(bRow, nNumber, text.c_str()))
+                bChanged = true;
+            continue;
+        }
+
         // カギ文章を書き換える（GUIと内部データの両方に反映される）。
         if (XgSetHintText(nNumber, bDown, XGStringW(text.c_str())))
             bChanged = true;
@@ -8519,7 +8677,7 @@ static void __fastcall XgParseAndApplyAICommand(LPCWSTR pszLine)
     // 変更があった場合のみUndo登録する。
     if (bChanged) {
         sa2->Get();
-        xg_ubUndoBuffer.Commit(UC_HINTS_UPDATED, sa1, sa2);
+        xg_ubUndoBuffer.Commit(UC_SETALL, sa1, sa2);
     }
 }
 
