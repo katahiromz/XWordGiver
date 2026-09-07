@@ -175,8 +175,7 @@ std::wstring XgGetAIStatus(void);
 // AI入力前のテキスト（日本語）。
 std::wstring XG_GetAIPreText_ja(void)
 {
-	std::wstring str;
-	str += L"(* ";
+	std::wstring str = L"(* ";
 	str += L"あなたはクロスワードの妖精です。";
 	str += XgGetAIStatus();
 	str += L" *) ";
@@ -186,8 +185,7 @@ std::wstring XG_GetAIPreText_ja(void)
 // Pre-input text for the AI (English).
 std::wstring XG_GetAIPreText_en(void)
 {
-	std::wstring str;
-	str += L"(* ";
+	std::wstring str = L"(* ";
 	str += L"You are the \"Crossword Fairy\". ";
 	str += XgGetAIStatus();
 	str += L" *) ";
@@ -672,9 +670,6 @@ static std::wstring StripAiPreTextTag(LPCWSTR pszLine)
 			if (pEnd)
 			{
 				pch = pEnd + 2;
-				// タグ直後の空白も1つ読み飛ばす（"(*...*) " のように付与されるため）
-				if (*pch == L' ')
-					++pch;
 				continue;
 			}
 		}
@@ -693,7 +688,7 @@ static void AddLineToList(HWND hwnd, LPCWSTR pszLine)
 		return;
 
 	// (*...*) タグを除去してから表示する
-	std::wstring filtered = StripAiPreTextTag(pszLine);
+	auto filtered = StripAiPreTextTag(pszLine);
 	if (filtered.empty())
 		return; // タグのみの行（プロンプト等）は表示しない
 
@@ -954,7 +949,7 @@ static DWORD WINAPI ReaderThreadProc(LPVOID lpParam)
 			if (!buffer.empty())
 			{
 				HandlePossibleReadySignal(buffer);
-				std::wstring wline = Utf8ToWide(buffer.c_str(), (int)buffer.size());
+				auto wline = Utf8ToWide(buffer.c_str(), (int)buffer.size());
 				PostLineToUI(hwnd, wline);
 				buffer.clear();
 			}
@@ -974,14 +969,14 @@ static DWORD WINAPI ReaderThreadProc(LPVOID lpParam)
 			buffer.append(reinterpret_cast<char*>(szBuf), cbRead);
 
 			size_t pos;
-			while ((pos = buffer.find('\n')) != std::string::npos)
+			while ((pos = buffer.find('\n')) != buffer.npos)
 			{
-				std::string line = buffer.substr(0, pos);
+				auto line = buffer.substr(0, pos);
 				if (!line.empty() && line.back() == '\r')
 					line.pop_back();
 
 				HandlePossibleReadySignal(line);
-				std::wstring wline = Utf8ToWide(line.c_str(), (int)line.size());
+				auto wline = Utf8ToWide(line.c_str(), (int)line.size());
 				PostLineToUI(hwnd, wline);
 
 				buffer.erase(0, pos + 1);
@@ -993,7 +988,7 @@ static DWORD WINAPI ReaderThreadProc(LPVOID lpParam)
 	if (!buffer.empty())
 	{
 		HandlePossibleReadySignal(buffer);
-		std::wstring wline = Utf8ToWide(buffer.c_str(), (int)buffer.size());
+		auto wline = Utf8ToWide(buffer.c_str(), (int)buffer.size());
 		PostLineToUI(hwnd, wline);
 	}
 
@@ -1145,7 +1140,7 @@ void AskAIQuestion(HWND hwnd, PCWSTR text)
 	{
 		const wchar_t szTrimChars[] = L" \t\r\n　";
 		size_t posStart = str.find_first_not_of(szTrimChars);
-		if (posStart == std::wstring::npos) {
+		if (posStart == str.npos) {
 			str.clear();
 		} else {
 			size_t posEnd = str.find_last_not_of(szTrimChars);
@@ -1188,8 +1183,7 @@ void AskAIQuestion(HWND hwnd, PCWSTR text)
 	AddLineToList(hwnd, (L"> " + str).c_str());
 	PleaseWait(hwnd);
 
-	std::wstring line;
-	std::wstring pre_text = XG_GetAIPreText();
+	std::wstring line, pre_text = XG_GetAIPreText();
 	if (pre_text.size())
 	{
 		line += L"(* ";
@@ -1203,9 +1197,9 @@ void AskAIQuestion(HWND hwnd, PCWSTR text)
 		line += SanitizeForPipeLine(g_additional_instruction);
 		line += L" *)";
 	}
-	line += L"\n"; // 重要！ この行に本物の改行はこの1文字だけ。
+	line += L"\n"; // 重要！ ReaderThreadProcがこれを見る。この行に本物の改行はこの1文字だけ。
 
-	std::string utf8 = WideToUtf8(line.c_str());
+	auto utf8 = WideToUtf8(line.c_str());
 
 	DWORD cbWritten;
 	if (!g_hInputWrite.WriteFile(utf8.data(), (DWORD)utf8.size(), &cbWritten))
@@ -1345,7 +1339,7 @@ static VOID OnSize(HWND hwnd, UINT state, int cx, int cy)
 
 static BOOL OnOK(HWND hwnd)
 {
-	std::wstring text = GetEditTextDynamic(GetDlgItem(hwnd, edt1));
+	auto text = GetEditTextDynamic(GetDlgItem(hwnd, edt1));
 	if (!text.empty())
 	{
 		AskAIQuestion(hwnd, text.c_str());
