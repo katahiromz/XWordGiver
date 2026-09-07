@@ -207,13 +207,14 @@ std::wstring XG_GetAIPreText(void)
 // AIヘルパーからの出力行を解析し、「【...:...】」形式の
 // コマンドを見つけたら、該当するカギ文章を書き換える。
 // 1行に複数のコマンドが含まれていてもすべて処理する。
-void __fastcall XgParseAndApplyAICommand(LPCWSTR pszLine)
+void CALLBACK XgParseAndApplyAICommand(PCWSTR pszLine)
 {
 	const WCHAR chOpen = 0x3010;  // 【
 	const WCHAR chClose = 0x3011; // 】
 	std::wstring line = pszLine;
 	size_t pos = 0;
 
+	// 「元に戻す」情報
 	auto sa1 = std::make_shared<XG_UndoData_SetAll>();
 	auto sa2 = std::make_shared<XG_UndoData_SetAll>();
 	sa1->Get();
@@ -221,40 +222,32 @@ void __fastcall XgParseAndApplyAICommand(LPCWSTR pszLine)
 	bool bChanged = false;
 
 	for (;;) {
+		// 【と】を探す
 		size_t openPos = line.find(chOpen, pos);
-		if (openPos == std::wstring::npos)
+		if (openPos == line.npos)
 			break;
 		size_t closePos = line.find(chClose, openPos + 1);
-		if (closePos == std::wstring::npos)
+		if (closePos == line.npos)
 			break;
 
+		// 【 】の内側
 		auto inner = line.substr(openPos + 1, closePos - openPos - 1);
 		pos = closePos + 1;
 
 		// "...:..." の形式を期待する（全角コロンにも対応）。
 		size_t colonPos = inner.find(L':');
-		if (colonPos == std::wstring::npos)
+		if (colonPos == inner.npos)
 			colonPos = inner.find((wchar_t)0xFF1A); // '：'
-		if (colonPos == std::wstring::npos)
+		if (colonPos == inner.npos)
 			continue;
 
+		// カギとテキスト
 		auto key = inner.substr(0, colonPos);
 		auto text = inner.substr(colonPos + 1);
-
-		// キーの前後の空白を除去する。
-		auto trim = [](std::wstring& s) {
-			while (!s.empty() && s.front() == L' ')
-				s.erase(s.begin());
-			while (!s.empty() && s.back() == L' ')
-				s.pop_back();
-		};
-		trim(key);
-
 		if (key.empty() || text.empty())
 			continue;
 
-		// 先頭が A/a ならヨコのカギ、D/d ならタテのカギ。
-		// 先頭が R/r なら行、C/c なら列。
+		// 先頭が A/a ならヨコのカギ、D/d ならタテのカギ。先頭が R/r なら行、C/c なら列。
 		WCHAR chType = key[0];
 		BOOL bDown, bRow, bSetBoard;
 		if (chType == L'A' || chType == L'a')
@@ -284,7 +277,6 @@ void __fastcall XgParseAndApplyAICommand(LPCWSTR pszLine)
 		auto numPart = key.substr(1);
 		if (numPart.empty())
 			continue;
-
 		bool bAllDigits = true;
 		for (wchar_t ch : numPart) {
 			if (!iswdigit(ch)) {
@@ -295,6 +287,7 @@ void __fastcall XgParseAndApplyAICommand(LPCWSTR pszLine)
 		if (!bAllDigits)
 			continue;
 
+		// 番号
 		INT nNumber = _wtoi(numPart.c_str());
 		if (nNumber <= 0)
 			continue;
@@ -315,14 +308,9 @@ void __fastcall XgParseAndApplyAICommand(LPCWSTR pszLine)
 	if (bChanged) {
 		sa2->Get();
 		xg_ubUndoBuffer.Commit(UC_SETALL, sa1, sa2);
+		// イメージ更新
 		XgUpdateImage(xg_hMainWnd);
 	}
-}
-
-// AIHelper.cppからの出力コールバック。CALLBACK呼び出し規約に合わせる。
-void CALLBACK XgOnAIHelperOutput(LPCWSTR pszLine)
-{
-	XgParseAndApplyAICommand(pszLine);
 }
 
 // カギを再生成する（日本語）。
@@ -1477,7 +1465,7 @@ BOOL XgOpenAIHelper(HWND hwndOwner, BOOL bOpen)
 	// AIヘルパーからの出力を解析できるよう、コールバックを登録する（初回のみ）。
 	static bool s_bAICallbackRegistered = false;
 	if (!s_bAICallbackRegistered) {
-		AIHelper_SetOutputCallback(XgOnAIHelperOutput);
+		AIHelper_SetOutputCallback(XgParseAndApplyAICommand);
 		s_bAICallbackRegistered = true;
 	}
 
