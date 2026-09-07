@@ -41,8 +41,14 @@ std::wstring xg_ai_provider = L"gemini";
 std::wstring xg_ai_model = L"gemini-3.6-flash";
 std::wstring xg_python_exe;
 std::wstring xg_additional_instruction;
-std::wstring g_output_buffer;
+std::wstring xg_output_buffer;
 std::wstring xg_initial_question;
+
+// AIヘルパーの位置とサイズ。
+INT xg_nHelperX = CW_USEDEFAULT;
+INT xg_nHelperY = CW_USEDEFAULT;
+INT xg_nHelperCX = CW_USEDEFAULT;
+INT xg_nHelperCY = CW_USEDEFAULT;
 
 BOOL XgIsUserJapanese(VOID) noexcept;
 BOOL Helper_Open(HWND hwndOwner);
@@ -1333,11 +1339,30 @@ static BOOL Helper_OnInitDialog(HWND hwnd, HWND hwndFocus, LPARAM lParam)
 	return FALSE;
 }
 
+// WM_MOVE
+static void Helper_OnMove(HWND hwnd, int x, int y)
+{
+	if (!IsZoomed(hwnd) && !IsIconic(hwnd))
+	{
+		RECT rc;
+		GetWindowRect(hwnd, &rc);
+		xg_nHelperX = rc.left;
+		xg_nHelperY = rc.top;
+	}
+}
+
 // WM_SIZE
 static VOID Helper_OnSize(HWND hwnd, UINT state, int cx, int cy)
 {
 	if (IsWindow(xg_hwndAIHelper))
-		g_resizable.Helper_OnSize();
+		g_resizable.OnSize();
+	if (!IsZoomed(hwnd) && !IsIconic(hwnd))
+	{
+		RECT rc;
+		GetWindowRect(hwnd, &rc);
+		xg_nHelperCX = rc.right - rc.left;
+		xg_nHelperCY = rc.bottom - rc.top;
+	}
 }
 
 static BOOL OnOK(HWND hwnd)
@@ -1376,7 +1401,7 @@ static void Helper_OnDestroy(HWND hwnd)
 {
 	Helper_StopAIProcess(hwnd);
 	xg_hwndAIHelper = nullptr;
-	g_output_buffer.clear();
+	xg_output_buffer.clear();
 
 	// 送信履歴もクリアする
 	xg_history.clear();
@@ -1408,8 +1433,8 @@ static void Helper_OnTimer(HWND hwnd, UINT id)
 
 	KillTimer(hwnd, IDT_AI_OUTPUT_FLUSH);
 
-	std::wstring text = std::move(g_output_buffer);
-	g_output_buffer.clear();
+	std::wstring text = std::move(xg_output_buffer);
+	xg_output_buffer.clear();
 
 	// テキストに含まれるシステムコマンドを実行する。
 	XgParseAndApplyAICommand(text.c_str());
@@ -1429,6 +1454,7 @@ Helper_DialogProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	{
 		HANDLE_MSG(hwnd, WM_INITDIALOG, Helper_OnInitDialog);
 		HANDLE_MSG(hwnd, WM_COMMAND, Helper_OnCommand);
+		HANDLE_MSG(hwnd, WM_MOVE, Helper_OnMove);
 		HANDLE_MSG(hwnd, WM_SIZE, Helper_OnSize);
 		HANDLE_MSG(hwnd, WM_DESTROY, Helper_OnDestroy);
 		HANDLE_MSG(hwnd, WM_CLOSE, Helper_OnClose);
@@ -1443,7 +1469,7 @@ Helper_DialogProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			// Helper_ReaderThreadProcがnewしたバッファを引き取って表示し、解放する
 			PWSTR psz = (PWSTR)lParam;
 			Helper_AddLine(hwnd, psz);
-			g_output_buffer += psz;
+			xg_output_buffer += psz;
 			delete[] psz;
 
 			// デバウンス（debounce）パターン
@@ -1457,7 +1483,7 @@ Helper_DialogProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 // AIヘルパーを開く。
 BOOL Helper_Open(HWND hwndOwner)
 {
-	if (bOpen && xg_initial_question.empty())
+	if (xg_initial_question.empty())
 		xg_initial_question = XgMakeInitialQuestion();
 
 	if (xg_hwndAIHelper)
@@ -1476,7 +1502,7 @@ BOOL Helper_Open(HWND hwndOwner)
 	// （DS_CENTER相当の中央寄せは、作成後にXgCenterWindowで行う）。
 	HWND hwnd = CreateWindowExW(WS_EX_TOOLWINDOW, AIHELPERCONSOLE_CLASSNAME, pszCaption,
 		WS_POPUPWINDOW | WS_CAPTION | WS_THICKFRAME | WS_MAXIMIZEBOX,
-		CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT,
+		xg_nHelperX, xg_nHelperY, xg_nHelperCX, xg_nHelperCY,
 		hwndOwner, nullptr, xg_hAIHelperInst, nullptr);
 	if (!hwnd)
 		return FALSE;
@@ -1488,9 +1514,15 @@ BOOL Helper_Open(HWND hwndOwner)
 	SetWindowLongPtrW(hwnd, DWLP_DLGPROC, (LONG_PTR)Helper_DialogProc);
 	SendMessageW(hwnd, WM_INITDIALOG, (WPARAM)hwnd, 0);
 
+	// 中央揃え。
 	XgCenterWindow(hwnd, hwndOwner);
 
+	// 実際に表示。
 	ShowWindow(hwnd, SW_SHOWNOACTIVATE);
 	UpdateWindow(hwnd);
+
+	// 画面からはみ出ないようにする。
+	PostMessageW(hwnd, DM_REPOSITION, 0, 0);
+
 	return TRUE;
 }

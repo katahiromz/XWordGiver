@@ -946,6 +946,11 @@ void XgResetSettings(void)
     xg_bShowDoubleFrame = TRUE;
     xg_nOuterFrameInPt = XG_OUTERFRAME_DEFAULT;
     xg_nHelperFontPointSize = 11;
+    xg_nHelperX = CW_USEDEFAULT;
+    xg_nHelperY = CW_USEDEFAULT;
+    xg_nHelperCX = CW_USEDEFAULT;
+    xg_nHelperCY = CW_USEDEFAULT;
+
     xg_ai_provider = L"gemini";
     xg_ai_model = L"gemini-3.6-flash";
     xg_python_exe = L"";
@@ -1281,6 +1286,18 @@ bool __fastcall XgLoadSettings(void)
         if (!app_key.QueryDword(L"HelperFontSize", dwValue)) {
             xg_nHelperFontPointSize = dwValue;
         }
+        if (!app_key.QueryDword(L"HelperX", dwValue)) {
+            xg_nHelperX = dwValue;
+        }
+        if (!app_key.QueryDword(L"HelperY", dwValue)) {
+            xg_nHelperY = dwValue;
+        }
+        if (!app_key.QueryDword(L"HelperCX", dwValue)) {
+            xg_nHelperCX = dwValue;
+        }
+        if (!app_key.QueryDword(L"HelperCY", dwValue)) {
+            xg_nHelperCY = dwValue;
+        }
         if (!app_key.QueryDword(L"ViewMode", dwValue)) {
             xg_nViewMode = static_cast<XG_VIEW_MODE>(dwValue);
             if (xg_nViewMode != XG_VIEW_NORMAL && xg_nViewMode != XG_VIEW_SKELETON) {
@@ -1478,6 +1495,10 @@ bool __fastcall XgSaveSettings(void)
         app_key.SetDword(L"LineWidth", static_cast<int>(xg_nLineWidthInPt * 100));
         app_key.SetDword(L"OuterFrame", static_cast<int>(xg_nOuterFrameInPt * 100));
         app_key.SetDword(L"HelperFontSize", xg_nHelperFontPointSize);
+        app_key.SetDword(L"HelperX", xg_nHelperX);
+        app_key.SetDword(L"HelperY", xg_nHelperY);
+        app_key.SetDword(L"HelperCX", xg_nHelperCX);
+        app_key.SetDword(L"HelperCY", xg_nHelperCY);
 
         app_key.SetSz(L"Recent", xg_dict_name.c_str());
 

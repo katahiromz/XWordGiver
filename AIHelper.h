@@ -12,5 +12,9 @@ extern std::wstring xg_python_exe;
 extern std::wstring xg_additional_instruction;
 extern std::wstring xg_initial_question;
 extern INT xg_nHelperFontPointSize;
+extern INT xg_nHelperX;
+extern INT xg_nHelperY;
+extern INT xg_nHelperCX;
+extern INT xg_nHelperCY;
 
 void Helper_AskQuestion(HWND hwnd, PCWSTR text);
