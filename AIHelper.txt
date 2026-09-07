@@ -2,6 +2,8 @@
 
 # AIヘルパーの使い方
 
+クロスワード ギバーの「AIヘルパー」は、たわいない会話やカギの再生成ができる、あなたの相棒です。
+
 ## セットアップ手順
 
 1. Pythonをインストールする
@@ -58,6 +60,8 @@
 ---
 
 # How to Use AI Helper
+
+XWordGiver's "AI Helper" is your partner, capable of casual conversation and regenerating clues.
 
 ## Setup Steps
 
