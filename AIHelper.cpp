@@ -105,8 +105,8 @@ std::wstring XgMakeInitialQuestion_ja(void)
 
 		L"「An」はヨコのカギnの略です(nは任意の自然数)。「Dm」はタテのカギnの略です(mは任意の自然数)。"
 		L"カギがあるとき、システムはあなたのコマンド出力に応じてクロスワードのカギを編集できます。"
-		L"システムはあなたのコマンド出力「【An: XXX】」でAnのカギ文章を「XXX」に書き換えます(nは任意の自然数、XXXは任意のテキスト)。"
-		L"システムはあなたのコマンド出力「【Dm: YYY】」でDmのカギ文章を「YYY」に書き換えます(mは任意の自然数、YYYは任意のテキスト)。"
+		L"システムはあなたのコマンド出力「【An:XXX】」でAnのカギ文章を「XXX」に書き換えます(nは任意の自然数、XXXは任意のテキスト)。"
+		L"システムはあなたのコマンド出力「【Dm:YYY】」でDmのカギ文章を「YYY」に書き換えます(mは任意の自然数、YYYは任意のテキスト)。"
 
 		L"クロスワードの盤面は長方形または正方形の格子状に並べられた全角文字の並びです。"
 		L"ヨコ向きの文字の並びは「行」と呼びます。"
@@ -117,8 +117,8 @@ std::wstring XgMakeInitialQuestion_ja(void)
 		L"「Cq」はq番目の列の略です(qは任意の自然数)。"
 
 		L"カギがないとき、システムはあなたのコマンド出力に応じてクロスワードの盤面を編集できます。"
-		L"システムはあなたのコマンド出力「【Rp: XXX】」でRpを「XXX」に書き換えます(pは任意の自然数、XXXは新しい行文字列)。"
-		L"システムはあなたのコマンド出力「【Cq: YYY】」でCqを「YYY」に書き換えます(qは任意の自然数、YYYは新しい列文字列)。"
+		L"システムはあなたのコマンド出力「【Rp:XXX】」でRpを「XXX」に書き換えます(pは任意の自然数、XXXは新しい行文字列)。"
+		L"システムはあなたのコマンド出力「【Cq:YYY】」でCqを「YYY」に書き換えます(qは任意の自然数、YYYは新しい列文字列)。"
 		L"あなたは盤面のサイズを変更することはできません。"
 
 		L"アプリの使い方を聞かれたら、「ヘルプメニューから付属のREADMEを読んでね」と答えてください。"
@@ -139,8 +139,8 @@ std::wstring XgMakeInitialQuestion_en(void)
 
 		L"\"An\" is short for Across clue n (n is any natural number). \"Dm\" is short for Down clue m (m is any natural number). "
 		L"When the clues are present, the system can edit the crossword clue based on your command output. "
-		L"When you output the command 【An: XXX】, the system will rewrite An's clue text to \"XXX\" (n is any natural number, XXX is any text). "
-		L"When you output the command 【Dm: YYY】, the system will rewrite Dm's clue text to \"YYY\" (m is any natural number, YYY is any text). "
+		L"When you output the command 【An:XXX】, the system will rewrite An's clue text to \"XXX\" (n is any natural number, XXX is any text). "
+		L"When you output the command 【Dm:YYY】, the system will rewrite Dm's clue text to \"YYY\" (m is any natural number, YYY is any text). "
 
 		L"The crossword board is a sequence of full-width characters arranged in a rectangular grid. "
 		L"A horizontal sequence of characters is called a \"row\". "
@@ -151,8 +151,8 @@ std::wstring XgMakeInitialQuestion_en(void)
 		L"\"Cq\" is an abbreviation for the q-th column (q is any natural number). "
 
 		L"When there is no clue, the system can edit the crossword board according to your command output. "
-		L"The system will rewrite Rp to \"XXX\" when your command output is \"【Rp: XXX】\" (p is any natural number, XXX is the new row string). "
-		L"The system will rewrite Cq to \"YYY\" when your command output is \"【Cq: YYY】\" (q is any natural number, YYY is the new column string). "
+		L"The system will rewrite Rp to \"XXX\" when your command output is \"【Rp:XXX】\" (p is any natural number, XXX is the new row string). "
+		L"The system will rewrite Cq to \"YYY\" when your command output is \"【Cq:YYY】\" (q is any natural number, YYY is the new column string). "
 		L"You cannot change the size of the board. "
 
 		L"If asked about how to use the app, please answer \"Please read the included README from Help menu.\" "
@@ -204,13 +204,13 @@ std::wstring XG_GetAIPreText(void)
 	return XG_GetAIPreText_en();
 }
 
-// AIヘルパーからの出力行を解析し、「【An: XXX】」/「【Dm: YYY】」形式の
+// AIヘルパーからの出力行を解析し、「【...:...】」形式の
 // コマンドを見つけたら、該当するカギ文章を書き換える。
 // 1行に複数のコマンドが含まれていてもすべて処理する。
 void __fastcall XgParseAndApplyAICommand(LPCWSTR pszLine)
 {
-	const wchar_t chOpen = 0x3010;  // 【
-	const wchar_t chClose = 0x3011; // 】
+	const WCHAR chOpen = 0x3010;  // 【
+	const WCHAR chClose = 0x3011; // 】
 	std::wstring line = pszLine;
 	size_t pos = 0;
 
@@ -231,7 +231,7 @@ void __fastcall XgParseAndApplyAICommand(LPCWSTR pszLine)
 		std::wstring inner = line.substr(openPos + 1, closePos - openPos - 1);
 		pos = closePos + 1;
 
-		// "An: XXX" または "Dm: YYY" の形式を期待する（全角コロンにも対応）。
+		// "...:..." の形式を期待する（全角コロンにも対応）。
 		size_t colonPos = inner.find(L':');
 		if (colonPos == std::wstring::npos)
 			colonPos = inner.find((wchar_t)0xFF1A); // ：
@@ -241,7 +241,7 @@ void __fastcall XgParseAndApplyAICommand(LPCWSTR pszLine)
 		std::wstring key = inner.substr(0, colonPos);
 		std::wstring text = inner.substr(colonPos + 1);
 
-		// キー・テキストの前後の空白を除去する。全角空白はセルを指定するのに使うので除去しない。
+		// キーの前後の空白を除去する。
 		auto trim = [](std::wstring& s) {
 			while (!s.empty() && s.front() == L' ')
 				s.erase(s.begin());
@@ -249,7 +249,6 @@ void __fastcall XgParseAndApplyAICommand(LPCWSTR pszLine)
 				s.pop_back();
 		};
 		trim(key);
-		trim(text);
 
 		if (key.empty() || text.empty())
 			continue;
