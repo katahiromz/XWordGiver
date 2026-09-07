@@ -264,22 +264,22 @@ void CALLBACK XgParseAndApplyAICommand(PCWSTR pszLine)
 		// 先頭が A ならヨコのカギ、D ならタテのカギ。先頭が R なら行、C なら列。
 		WCHAR chType = key[0];
 		BOOL bDown = FALSE, bRow = FALSE, bSetBoard = FALSE;
-		if (chType == L'A')
+		if (chType == L'A' || chType == L'a')
 		{
 			bDown = FALSE;
 			bSetBoard = FALSE;
 		}
-		else if (chType == L'D')
+		else if (chType == L'D' || chType == L'd')
 		{
 			bDown = TRUE;
 			bSetBoard = FALSE;
 		}
-		else if (chType == L'R')
+		else if (chType == L'R' || chType == L'r')
 		{
 			bRow = TRUE;
 			bSetBoard = TRUE;
 		}
-		else if (chType == L'C')
+		else if (chType == L'C' || chType == L'c')
 		{
 			bRow = FALSE;
 			bSetBoard = TRUE;
