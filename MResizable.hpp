@@ -124,10 +124,8 @@ inline VOID MResizable::SetLayoutAnchor(
 
 inline VOID MResizable::OnSize(const RECT *prcClient/* = nullptr*/)
 {
-	if (!m_hwndParent)
+	if (!m_hwndParent || !::IsWindow(m_hwndParent))
 		return;
-	assert(m_hwndParent);
-	assert(::IsWindow(m_hwndParent));
 
 	ArrangeLayout(prcClient);
 	MoveSizeGrip();

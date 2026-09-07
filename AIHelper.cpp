@@ -47,6 +47,7 @@ BOOL XgIsUserJapanese(VOID) noexcept;
 BOOL XgOpenAIHelper(HWND hwndOwner, BOOL bOpen);
 XGStringW XgGetRowOrColumnText(BOOL bRow, INT iRowOrCol);
 void AIHelper_WaitForReady(void);
+void AskAIQuestion(HWND hwnd, PCWSTR text);
 
 // 行または列を書き換える。
 BOOL XgSetBoardRowOrColumn(BOOL bRow, INT nNumber, const XGStringW& text);
@@ -351,9 +352,7 @@ BOOL XgGenerateClue_ja(INT nNumber, BOOL bDown)
 	line += word.c_str();
 	line += L"」という単語を使うことはできません。";
 
-	PWSTR psz = new WCHAR[line.size() + 1];
-	StringCchCopyW(psz, line.size() + 1, line.c_str());
-	PostMessageW(g_hwndAIHelper, WM_APP_AI_LINE, 0, (LPARAM)psz);
+	AskAIQuestion(g_hwndAIHelper, line.c_str());
 
 	return TRUE;
 }
@@ -381,9 +380,7 @@ BOOL XgGenerateClue_en(INT nNumber, BOOL bDown)
 	line += word.c_str();
 	line += L"\" cannot be used inside the clue text.";
 
-	PWSTR psz = new WCHAR[line.size() + 1];
-	StringCchCopyW(psz, line.size() + 1, line.c_str());
-	PostMessageW(g_hwndAIHelper, WM_APP_AI_LINE, 0, (LPARAM)psz);
+	AskAIQuestion(g_hwndAIHelper, line.c_str());
 
 	return TRUE;
 }
@@ -399,6 +396,8 @@ BOOL XgGenerateClue(INT nNumber, BOOL bDown)
 // すべてのカギを生成する。
 void XgRegenerateCluesAll(HWND hwnd)
 {
+	UNREFERENCED_PARAMETER(hwnd); // AIヘルパーへは常にg_hwndAIHelper宛てに送るため未使用
+
 	// Open the AI helper (if already open, just bring it to the front).
 	XgOpenAIHelper(xg_hMainWnd, TRUE);
 	AIHelper_WaitForReady();
@@ -410,9 +409,7 @@ void XgRegenerateCluesAll(HWND hwnd)
 		line = L"Please re-generate all the clues.";
 	}
 
-	PWSTR psz = new WCHAR[line.size() + 1];
-	StringCchCopyW(psz, line.size() + 1, line.c_str());
-	PostMessageW(hwnd, WM_APP_AI_LINE, 0, (LPARAM)psz);
+	AskAIQuestion(g_hwndAIHelper, line.c_str());
 }
 
 // AIに現在の状態を報告する（日本語）。
@@ -1354,7 +1351,7 @@ static BOOL OnInitDialog(HWND hwnd, HWND hwndFocus, LPARAM lParam)
 // WM_SIZE
 static VOID OnSize(HWND hwnd, UINT state, int cx, int cy)
 {
-	if (g_hwndAIHelper)
+	if (IsWindow(g_hwndAIHelper))
 		g_resizable.OnSize();
 }
 
