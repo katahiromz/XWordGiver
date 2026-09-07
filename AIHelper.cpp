@@ -24,15 +24,12 @@ static MResizable g_resizable;
 
 // 起動しっぱなしにするAIHelper_ja.pyプロセスとそのパイプ
 static MProcessMaker g_maker;
-static MFile         g_hInputWrite;
-static MFile         g_hOutputRead;
-static HANDLE        g_hReaderThread = nullptr;
+static MFile		 g_hInputWrite;
+static MFile		 g_hOutputRead;
+static HANDLE		g_hReaderThread = nullptr;
 static volatile BOOL g_bReaderStop = FALSE;
 // AIHelper(_ja).pyが起動完了して標準入力の受付準備ができたときにセットされる
-static HANDLE        g_hReadyEvent = nullptr;
-
-// AIヘルパーにコールバック関数が登録されたか？
-static bool s_bAICallbackRegistered = false;
+static HANDLE		g_hReadyEvent = nullptr;
 
 HWND g_hwndAIHelper = nullptr;
 std::wstring g_provider = L"gemini";
@@ -96,69 +93,69 @@ static HFONT CreateAIHelperFont(HWND hwnd, int nPointSize)
 // 最初の質問を作成する。
 std::wstring XgMakeInitialQuestion_ja(void)
 {
-    std::wstring str;
-    str = L"(* "
-        L"あなたは「クロスワードの妖精」です。クロスワードを作成または編集するユーザーを助けるのがあなたの役目です。"
-        L"あなたの母語は日本語です。"
+	std::wstring str;
+	str = L"(* "
+		L"あなたは「クロスワードの妖精」です。クロスワードを作成または編集するユーザーを助けるのがあなたの役目です。"
+		L"あなたの母語は日本語です。"
 
-        L"「An」はヨコのカギnの略です(nは任意の自然数)。「Dm」はタテのカギnの略です(mは任意の自然数)。"
-        L"カギがあるとき、システムはあなたのコマンド出力に応じてクロスワードのカギを編集できます。"
-        L"システムはあなたのコマンド出力「【An: XXX】」でAnのカギ文章を「XXX」に書き換えます(nは任意の自然数、XXXは任意のテキスト)。"
-        L"システムはあなたのコマンド出力「【Dm: YYY】」でDmのカギ文章を「YYY」に書き換えます(mは任意の自然数、YYYは任意のテキスト)。"
+		L"「An」はヨコのカギnの略です(nは任意の自然数)。「Dm」はタテのカギnの略です(mは任意の自然数)。"
+		L"カギがあるとき、システムはあなたのコマンド出力に応じてクロスワードのカギを編集できます。"
+		L"システムはあなたのコマンド出力「【An: XXX】」でAnのカギ文章を「XXX」に書き換えます(nは任意の自然数、XXXは任意のテキスト)。"
+		L"システムはあなたのコマンド出力「【Dm: YYY】」でDmのカギ文章を「YYY」に書き換えます(mは任意の自然数、YYYは任意のテキスト)。"
 
-        L"クロスワードの盤面は長方形または正方形の格子状に並べられた全角文字の並びです。"
-        L"ヨコ向きの文字の並びは「行」と呼びます。"
-        L"タテ向きの文字の並びは「列」と呼びます。"
-        L"黒マス（ブロック）は全角の「■」で表します。"
-        L"白マス（空白マス）は全角空白で表します。"
-        L"「Rp」はp番目の行の略です(pは任意の自然数)。"
-        L"「Cq」はq番目の列の略です(qは任意の自然数)。"
+		L"クロスワードの盤面は長方形または正方形の格子状に並べられた全角文字の並びです。"
+		L"ヨコ向きの文字の並びは「行」と呼びます。"
+		L"タテ向きの文字の並びは「列」と呼びます。"
+		L"黒マス（ブロック）は全角の「■」で表します。"
+		L"白マス（空白マス）は全角空白で表します。"
+		L"「Rp」はp番目の行の略です(pは任意の自然数)。"
+		L"「Cq」はq番目の列の略です(qは任意の自然数)。"
 
-        L"カギがないとき、システムはあなたのコマンド出力に応じてクロスワードの盤面を編集できます。"
-        L"システムはあなたのコマンド出力「【Rp: XXX】」でRpを「XXX」に書き換えます(pは任意の自然数、XXXは新しい行文字列)。"
-        L"システムはあなたのコマンド出力「【Cq: YYY】」でCqを「YYY」に書き換えます(qは任意の自然数、YYYは新しい列文字列)。"
-        L"あなたは盤面のサイズを変更することはできません。"
+		L"カギがないとき、システムはあなたのコマンド出力に応じてクロスワードの盤面を編集できます。"
+		L"システムはあなたのコマンド出力「【Rp: XXX】」でRpを「XXX」に書き換えます(pは任意の自然数、XXXは新しい行文字列)。"
+		L"システムはあなたのコマンド出力「【Cq: YYY】」でCqを「YYY」に書き換えます(qは任意の自然数、YYYは新しい列文字列)。"
+		L"あなたは盤面のサイズを変更することはできません。"
 
-        L"アプリの使い方を聞かれたら、「付属のREADMEを読んでね」と答えてください。"
-        L"黒マスルールについて聞かれたら、「付属のPolicy-JPN.txtを読んでね」と答えてください。"
+		L"アプリの使い方を聞かれたら、「付属のREADMEを読んでね」と答えてください。"
+		L"黒マスルールについて聞かれたら、「付属のPolicy-JPN.txtを読んでね」と答えてください。"
 
-        L"まずは60字程度のあいさつをして、あなたができることを簡単に説明してください。"
-    L"*) ";
-    return str;
+		L"まずは60字程度のあいさつをして、あなたができることを簡単に説明してください。"
+	L"*) ";
+	return str;
 }
 
 // Create the first question.
 std::wstring XgMakeInitialQuestion_en(void)
 {
-    std::wstring str;
-    str = L"(* "
-        L"You are the \"Crossword Fairy\". Your job is to help the user create or edit a crossword puzzle."
-        L"Your native language is English."
+	std::wstring str;
+	str = L"(* "
+		L"You are the \"Crossword Fairy\". Your job is to help the user create or edit a crossword puzzle."
+		L"Your native language is English."
 
-        L"\"An\" is short for Across clue n (n is any natural number). \"Dm\" is short for Down clue m (m is any natural number)."
-        L"When the clues are present, the system can edit the crossword clue based on your command output."
-        L"When you output the command 【An: XXX】, the system will rewrite An's clue text to \"XXX\" (n is any natural number, XXX is any text)."
-        L"When you output the command 【Dm: YYY】, the system will rewrite Dm's clue text to \"YYY\" (m is any natural number, YYY is any text)."
+		L"\"An\" is short for Across clue n (n is any natural number). \"Dm\" is short for Down clue m (m is any natural number)."
+		L"When the clues are present, the system can edit the crossword clue based on your command output."
+		L"When you output the command 【An: XXX】, the system will rewrite An's clue text to \"XXX\" (n is any natural number, XXX is any text)."
+		L"When you output the command 【Dm: YYY】, the system will rewrite Dm's clue text to \"YYY\" (m is any natural number, YYY is any text)."
 
-        L"The crossword board is a sequence of full-width characters arranged in a rectangular grid."
-        L"A horizontal sequence of characters is called a \"row\"."
-        L"A vertical sequence of characters is called a \"column\"."
-        L"A black cell (block) is represented by the full-width character \"■\"."
-        L"A white cell (blank cell) is represented by a full-width space."
-        L"\"Rp\" is an abbreviation for the p-th row (p is any natural number)."
-        L"\"Cq\" is an abbreviation for the q-th column (q is any natural number)."
+		L"The crossword board is a sequence of full-width characters arranged in a rectangular grid."
+		L"A horizontal sequence of characters is called a \"row\"."
+		L"A vertical sequence of characters is called a \"column\"."
+		L"A black cell (block) is represented by the full-width character \"■\"."
+		L"A white cell (blank cell) is represented by a full-width space."
+		L"\"Rp\" is an abbreviation for the p-th row (p is any natural number)."
+		L"\"Cq\" is an abbreviation for the q-th column (q is any natural number)."
 
-        L"When there is no clue, the system can edit the crossword board according to your command output."
-        L"The system will rewrite Rp to \"XXX\" when your command output is \"【Rp: XXX】\" (p is any natural number, XXX is the new row string)."
-        L"The system will rewrite Cq to \"YYY\" when your command output is \"【Cq: YYY】\" (q is any natural number, YYY is the new column string)."
-        L"You cannot change the size of the board."
+		L"When there is no clue, the system can edit the crossword board according to your command output."
+		L"The system will rewrite Rp to \"XXX\" when your command output is \"【Rp: XXX】\" (p is any natural number, XXX is the new row string)."
+		L"The system will rewrite Cq to \"YYY\" when your command output is \"【Cq: YYY】\" (q is any natural number, YYY is the new column string)."
+		L"You cannot change the size of the board."
 
-        L"If asked about how to use the app, please answer \"Please read the included README.\" "
-        L"If asked about the black-cell rules, please answer \"Please read the included Policy-ENG.txt.\" "
+		L"If asked about how to use the app, please answer \"Please read the included README.\" "
+		L"If asked about the black-cell rules, please answer \"Please read the included Policy-ENG.txt.\" "
 
-        L"First, please provide a greeting of around 60 characters and briefly explain what you can do."
-    L"*) ";
-    return str;
+		L"First, please provide a greeting of around 60 characters and briefly explain what you can do."
+	L"*) ";
+	return str;
 }
 
 // Create the first question.
@@ -175,31 +172,31 @@ std::wstring XgGetAIStatus(void);
 // AI入力前のテキスト（日本語）。
 std::wstring XG_GetAIPreText_ja(void)
 {
-    std::wstring str;
-    str += L"(* ";
-    str += L"あなたはクロスワードの妖精です。";
-    str += XgGetAIStatus().c_str();
-    str += L" *) ";
-    return str;
+	std::wstring str;
+	str += L"(* ";
+	str += L"あなたはクロスワードの妖精です。";
+	str += XgGetAIStatus().c_str();
+	str += L" *) ";
+	return str;
 }
 
 // Pre-input text for the AI (English).
 std::wstring XG_GetAIPreText_en(void)
 {
-    std::wstring str;
-    str += L"(* ";
-    str += L"You are the \"Crossword Fairy\". ";
-    str += XgGetAIStatus().c_str();
-    str += L" *) ";
-    return str;
+	std::wstring str;
+	str += L"(* ";
+	str += L"You are the \"Crossword Fairy\". ";
+	str += XgGetAIStatus().c_str();
+	str += L" *) ";
+	return str;
 }
 
 // AI入力前のテキスト。
 std::wstring XG_GetAIPreText(void)
 {
-    if (XgIsUserJapanese())
-        return XG_GetAIPreText_ja();
-    return XG_GetAIPreText_en();
+	if (XgIsUserJapanese())
+		return XG_GetAIPreText_ja();
+	return XG_GetAIPreText_en();
 }
 
 // AIヘルパーからの出力行を解析し、「【An: XXX】」/「【Dm: YYY】」形式の
@@ -207,356 +204,338 @@ std::wstring XG_GetAIPreText(void)
 // 1行に複数のコマンドが含まれていてもすべて処理する。
 void __fastcall XgParseAndApplyAICommand(LPCWSTR pszLine)
 {
-    const wchar_t chOpen = 0x3010;  // 【
-    const wchar_t chClose = 0x3011; // 】
-    std::wstring line = pszLine;
-    size_t pos = 0;
+	const wchar_t chOpen = 0x3010;  // 【
+	const wchar_t chClose = 0x3011; // 】
+	std::wstring line = pszLine;
+	size_t pos = 0;
 
-    auto sa1 = std::make_shared<XG_UndoData_SetAll>();
-    auto sa2 = std::make_shared<XG_UndoData_SetAll>();
-    sa1->Get();
+	auto sa1 = std::make_shared<XG_UndoData_SetAll>();
+	auto sa2 = std::make_shared<XG_UndoData_SetAll>();
+	sa1->Get();
 
-    bool bChanged = false;
+	bool bChanged = false;
 
-    for (;;) {
-        size_t openPos = line.find(chOpen, pos);
-        if (openPos == std::wstring::npos)
-            break;
-        size_t closePos = line.find(chClose, openPos + 1);
-        if (closePos == std::wstring::npos)
-            break;
+	for (;;) {
+		size_t openPos = line.find(chOpen, pos);
+		if (openPos == std::wstring::npos)
+			break;
+		size_t closePos = line.find(chClose, openPos + 1);
+		if (closePos == std::wstring::npos)
+			break;
 
-        std::wstring inner = line.substr(openPos + 1, closePos - openPos - 1);
-        pos = closePos + 1;
+		std::wstring inner = line.substr(openPos + 1, closePos - openPos - 1);
+		pos = closePos + 1;
 
-        // "An: XXX" または "Dm: YYY" の形式を期待する（全角コロンにも対応）。
-        size_t colonPos = inner.find(L':');
-        if (colonPos == std::wstring::npos)
-            colonPos = inner.find((wchar_t)0xFF1A); // ：
-        if (colonPos == std::wstring::npos)
-            continue;
+		// "An: XXX" または "Dm: YYY" の形式を期待する（全角コロンにも対応）。
+		size_t colonPos = inner.find(L':');
+		if (colonPos == std::wstring::npos)
+			colonPos = inner.find((wchar_t)0xFF1A); // ：
+		if (colonPos == std::wstring::npos)
+			continue;
 
-        std::wstring key = inner.substr(0, colonPos);
-        std::wstring text = inner.substr(colonPos + 1);
+		std::wstring key = inner.substr(0, colonPos);
+		std::wstring text = inner.substr(colonPos + 1);
 
-        // キー・テキストの前後の空白を除去する。全角空白はセルを指定するのに使うので除去しない。
-        auto trim = [](std::wstring& s) {
-            while (!s.empty() && s.front() == L' ')
-                s.erase(s.begin());
-            while (!s.empty() && s.back() == L' ')
-                s.pop_back();
-        };
-        trim(key);
-        trim(text);
+		// キー・テキストの前後の空白を除去する。全角空白はセルを指定するのに使うので除去しない。
+		auto trim = [](std::wstring& s) {
+			while (!s.empty() && s.front() == L' ')
+				s.erase(s.begin());
+			while (!s.empty() && s.back() == L' ')
+				s.pop_back();
+		};
+		trim(key);
+		trim(text);
 
-        if (key.empty() || text.empty())
-            continue;
+		if (key.empty() || text.empty())
+			continue;
 
-        // 先頭が A/a ならヨコのカギ、D/d ならタテのカギ。
-        // 先頭が R/r なら行、C/c なら列。
-        WCHAR chType = key[0];
-        BOOL bDown, bRow, bSetBoard;
-        if (chType == L'A' || chType == L'a')
-        {
-            bDown = FALSE;
-            bSetBoard = FALSE;
-        }
-        else if (chType == L'D' || chType == L'd')
-        {
-            bDown = TRUE;
-            bSetBoard = FALSE;
-        }
-        else if (chType == L'R' || chType == L'r')
-        {
-            bRow = TRUE;
-            bSetBoard = TRUE;
-        }
-        else if (chType == L'C' || chType == L'c')
-        {
-            bRow = FALSE;
-            bSetBoard = TRUE;
-        }
-        else
-            continue;
+		// 先頭が A/a ならヨコのカギ、D/d ならタテのカギ。
+		// 先頭が R/r なら行、C/c なら列。
+		WCHAR chType = key[0];
+		BOOL bDown, bRow, bSetBoard;
+		if (chType == L'A' || chType == L'a')
+		{
+			bDown = FALSE;
+			bSetBoard = FALSE;
+		}
+		else if (chType == L'D' || chType == L'd')
+		{
+			bDown = TRUE;
+			bSetBoard = FALSE;
+		}
+		else if (chType == L'R' || chType == L'r')
+		{
+			bRow = TRUE;
+			bSetBoard = TRUE;
+		}
+		else if (chType == L'C' || chType == L'c')
+		{
+			bRow = FALSE;
+			bSetBoard = TRUE;
+		}
+		else
+			continue;
 
-        // 残り部分がすべて数字であることを確認し、番号を取得する。
-        std::wstring numPart = key.substr(1);
-        if (numPart.empty())
-            continue;
+		// 残り部分がすべて数字であることを確認し、番号を取得する。
+		std::wstring numPart = key.substr(1);
+		if (numPart.empty())
+			continue;
 
-        bool bAllDigits = true;
-        for (wchar_t ch : numPart) {
-            if (!iswdigit(ch)) {
-                bAllDigits = false;
-                break;
-            }
-        }
-        if (!bAllDigits)
-            continue;
+		bool bAllDigits = true;
+		for (wchar_t ch : numPart) {
+			if (!iswdigit(ch)) {
+				bAllDigits = false;
+				break;
+			}
+		}
+		if (!bAllDigits)
+			continue;
 
-        INT nNumber = _wtoi(numPart.c_str());
-        if (nNumber <= 0)
-            continue;
+		INT nNumber = _wtoi(numPart.c_str());
+		if (nNumber <= 0)
+			continue;
 
-        if (bSetBoard) {
-            // 行または列を書き換える。
-            if (XgSetBoardRowOrColumn(bRow, nNumber, text.c_str())) {
-                bChanged = true;
-                XgUpdateImage(xg_hMainWnd);
-            }
-            continue;
-        }
+		if (bSetBoard) {
+			// 行または列を書き換える。
+			if (XgSetBoardRowOrColumn(bRow, nNumber, text.c_str())) {
+				bChanged = true;
+				XgUpdateImage(xg_hMainWnd);
+			}
+			continue;
+		}
 
-        // カギ文章を書き換える（GUIと内部データの両方に反映される）。
-        if (XgSetHintText(nNumber, bDown, text.c_str()))
-            bChanged = true;
-    }
+		// カギ文章を書き換える（GUIと内部データの両方に反映される）。
+		if (XgSetHintText(nNumber, bDown, text.c_str()))
+			bChanged = true;
+	}
 
-    // 変更があった場合のみUndo登録する。
-    if (bChanged) {
-        sa2->Get();
-        xg_ubUndoBuffer.Commit(UC_SETALL, sa1, sa2);
-    }
+	// 変更があった場合のみUndo登録する。
+	if (bChanged) {
+		sa2->Get();
+		xg_ubUndoBuffer.Commit(UC_SETALL, sa1, sa2);
+	}
 }
 
 // AIHelper.cppからの出力コールバック。CALLBACK呼び出し規約に合わせる。
 void CALLBACK XgOnAIHelperOutput(LPCWSTR pszLine)
 {
-    XgParseAndApplyAICommand(pszLine);
+	XgParseAndApplyAICommand(pszLine);
 }
 
 // カギを再生成する（日本語）。
 BOOL XgGenerateClue_ja(INT nNumber, BOOL bDown)
 {
-    // 単語が取得できなければ何もしない。
-    std::wstring word = XgGetHintWord(nNumber, bDown).c_str();
-    if (word.empty())
-        return FALSE;
+	// 単語が取得できなければ何もしない。
+	std::wstring word = XgGetHintWord(nNumber, bDown).c_str();
+	if (word.empty())
+		return FALSE;
 
-    // AIヘルパーからの出力を解析できるよう、コールバックを登録する（初回のみ）。
-    if (!s_bAICallbackRegistered) {
-        AIHelper_SetOutputCallback(XgOnAIHelperOutput);
-        s_bAICallbackRegistered = true;
-    }
+	// AIヘルパーを開く（既に開いていれば前面に出すだけ）。
+	XgOpenAIHelper(xg_hMainWnd);
+	AIHelper_WaitForReady();
 
-    // AIヘルパーを開く（既に開いていれば前面に出すだけ）。
-    XgOpenAIHelper(xg_hMainWnd);
-    AIHelper_WaitForReady();
+	// 対象のカギ名（An / Dm）を組み立てる。
+	std::wstring name = (bDown ? L"D" : L"A");
+	name += std::to_wstring(nNumber).c_str();
 
-    // 対象のカギ名（An / Dm）を組み立てる。
-    std::wstring name = (bDown ? L"D" : L"A");
-    name += std::to_wstring(nNumber).c_str();
+	std::wstring str;
+	str += name.c_str();
+	str += L"のカギ文章を生成して、システムにコマンドを出力してください。";
+	str += L"カギ文章内部で「";
+	str += word.c_str();
+	str += L"」という単語を使うことはできません。";
 
-    std::wstring str;
-    str += name.c_str();
-    str += L"のカギ文章を生成して、システムにコマンドを出力してください。";
-    str += L"カギ文章内部で「";
-    str += word.c_str();
-    str += L"」という単語を使うことはできません。";
+	// AIヘルパーへ質問を送る。実際のカギ文章への反映は、AIからの応答
+	// （「【An: XXX】」または「【Dm: YYY】」形式の行）を受け取った時点で
+	// 非同期にXgSetHintTextが呼ばれることで行われる（別途、応答行を
+	// パースして該当コマンドを実行する処理が必要）。
+	AskAIQuestion(g_hwndAIHelper, str.c_str());
 
-    // AIヘルパーへ質問を送る。実際のカギ文章への反映は、AIからの応答
-    // （「【An: XXX】」または「【Dm: YYY】」形式の行）を受け取った時点で
-    // 非同期にXgSetHintTextが呼ばれることで行われる（別途、応答行を
-    // パースして該当コマンドを実行する処理が必要）。
-    AskAIQuestion(g_hwndAIHelper, str.c_str());
-
-    return TRUE;
+	return TRUE;
 }
 
 // Regenerate a clue (English).
 BOOL XgGenerateClue_en(INT nNumber, BOOL bDown)
 {
-    // Do nothing if the word can't be obtained.
-    XGStringW word = XgGetHintWord(nNumber, bDown);
-    if (word.empty())
-        return FALSE;
+	// Do nothing if the word can't be obtained.
+	XGStringW word = XgGetHintWord(nNumber, bDown);
+	if (word.empty())
+		return FALSE;
 
-    // Register the callback so we can parse output from the AI helper (only the first time).
-    if (!s_bAICallbackRegistered) {
-        AIHelper_SetOutputCallback(XgOnAIHelperOutput);
-        s_bAICallbackRegistered = true;
-    }
+	// Open the AI helper (if already open, just bring it to the front).
+	XgOpenAIHelper(xg_hMainWnd);
+	AIHelper_WaitForReady();
 
-    // Open the AI helper (if already open, just bring it to the front).
-    XgOpenAIHelper(xg_hMainWnd);
-    AIHelper_WaitForReady();
+	// Build the target clue name (An / Dm).
+	std::wstring name = (bDown ? L"D" : L"A");
+	name += std::to_wstring(nNumber).c_str();
 
-    // Build the target clue name (An / Dm).
-    std::wstring name = (bDown ? L"D" : L"A");
-    name += std::to_wstring(nNumber).c_str();
+	std::wstring str;
+	str += name.c_str();
+	str += L"'s clue text should be generated, and the command should be output to the system.";
+	str += L"The word \"";
+	str += word.c_str();
+	str += L"\" cannot be used inside the clue text.";
 
-    std::wstring str;
-    str += name.c_str();
-    str += L"'s clue text should be generated, and the command should be output to the system.";
-    str += L"The word \"";
-    str += word.c_str();
-    str += L"\" cannot be used inside the clue text.";
-
-    // Send the question to the AI helper. The actual update to the clue text is
-    // performed asynchronously by calling XgSetHintText once a response line
-    // from the AI (in the form "【An: XXX】" or "【Dm: YYY】") is received
-    // (a separate process is needed to parse the response line and execute
-    // the corresponding command).
-    AskAIQuestion(g_hwndAIHelper, str.c_str());
-    return TRUE;
+	// Send the question to the AI helper. The actual update to the clue text is
+	// performed asynchronously by calling XgSetHintText once a response line
+	// from the AI (in the form "【An: XXX】" or "【Dm: YYY】") is received
+	// (a separate process is needed to parse the response line and execute
+	// the corresponding command).
+	AskAIQuestion(g_hwndAIHelper, str.c_str());
+	return TRUE;
 }
 
 // カギを再生成する。
 BOOL XgGenerateClue(INT nNumber, BOOL bDown)
 {
-    if (XgIsUserJapanese())
-        return XgGenerateClue_ja(nNumber, bDown);
-    return XgGenerateClue_en(nNumber, bDown);
+	if (XgIsUserJapanese())
+		return XgGenerateClue_ja(nNumber, bDown);
+	return XgGenerateClue_en(nNumber, bDown);
 }
 
 // すべてのカギを生成する。
 void XgRegenerateCluesAll(HWND hwnd)
 {
-    // Register the callback so we can parse output from the AI helper (only the first time).
-    if (!s_bAICallbackRegistered) {
-        AIHelper_SetOutputCallback(XgOnAIHelperOutput);
-        s_bAICallbackRegistered = true;
-    }
+	// Open the AI helper (if already open, just bring it to the front).
+	XgOpenAIHelper(xg_hMainWnd);
+	AIHelper_WaitForReady();
 
-    // Open the AI helper (if already open, just bring it to the front).
-    XgOpenAIHelper(xg_hMainWnd);
-    AIHelper_WaitForReady();
-
-    if (XgIsUserJapanese()) {
-        AskAIQuestion(g_hwndAIHelper, L"すべてのカギを再生成してください。");
-        return;
-    }
-    AskAIQuestion(g_hwndAIHelper, L"Please re-generate all the clues.");
+	if (XgIsUserJapanese()) {
+		AskAIQuestion(g_hwndAIHelper, L"すべてのカギを再生成してください。");
+		return;
+	}
+	AskAIQuestion(g_hwndAIHelper, L"Please re-generate all the clues.");
 }
 
 // AIに現在の状態を報告する（日本語）。
 std::wstring XgGetAIStatus_ja(void)
 {
-    std::wstring ret;
+	std::wstring ret;
 
-    for (INT iRow = 0; iRow < xg_nRows; ++iRow)
-    {
-        std::wstring name = L"R";
-        name += std::to_wstring(iRow + 1).c_str();
-        ret += name;
-        ret += L"は「";
-        ret += XgGetRowOrColumnText(TRUE, iRow).c_str();
-        ret += L"」です。";
-    }
-    for (INT iCol = 0; iCol < xg_nCols; ++iCol)
-    {
-        std::wstring name = L"C";
-        name += std::to_wstring(iCol + 1).c_str();
-        ret += name;
-        ret += L"は「";
-        ret += XgGetRowOrColumnText(FALSE, iCol).c_str();
-        ret += L"」です。";
-    }
+	for (INT iRow = 0; iRow < xg_nRows; ++iRow)
+	{
+		std::wstring name = L"R";
+		name += std::to_wstring(iRow + 1).c_str();
+		ret += name;
+		ret += L"は「";
+		ret += XgGetRowOrColumnText(TRUE, iRow).c_str();
+		ret += L"」です。";
+	}
+	for (INT iCol = 0; iCol < xg_nCols; ++iCol)
+	{
+		std::wstring name = L"C";
+		name += std::to_wstring(iCol + 1).c_str();
+		ret += name;
+		ret += L"は「";
+		ret += XgGetRowOrColumnText(FALSE, iCol).c_str();
+		ret += L"」です。";
+	}
 
-    if (!xg_bSolved) {
-        ret += L"クロスワードにはまだカギはありません。";
-        return ret;
-    }
+	if (!xg_bSolved) {
+		ret += L"クロスワードにはまだカギはありません。";
+		return ret;
+	}
 
-    ret += L"クロスワードのカギがあります。";
-    for (BOOL bDown = FALSE; bDown <= TRUE; ++bDown)
-    {
-        // タテかヨコかで対象の配列を選ぶ。
-        auto& info_vec = bDown ? xg_vVertInfo : xg_vHorzInfo;
-        auto& hint_vec = bDown ? xg_vecVertHints : xg_vecHorzHints;
+	ret += L"クロスワードのカギがあります。";
+	for (BOOL bDown = FALSE; bDown <= TRUE; ++bDown)
+	{
+		// タテかヨコかで対象の配列を選ぶ。
+		auto& info_vec = bDown ? xg_vVertInfo : xg_vHorzInfo;
+		auto& hint_vec = bDown ? xg_vecVertHints : xg_vecHorzHints;
 
-        for (size_t i = 0; i < info_vec.size(); ++i) {
-            // 範囲チェック（info_vecとhint_vecのサイズがズレている場合に備える）。
-            if (i >= hint_vec.size())
-                break;
+		for (size_t i = 0; i < info_vec.size(); ++i) {
+			// 範囲チェック（info_vecとhint_vecのサイズがズレている場合に備える）。
+			if (i >= hint_vec.size())
+				break;
 
-            auto number = info_vec[i].m_number;
-            auto word = hint_vec[i].m_strWord;
-            auto text = hint_vec[i].m_strHint;
+			auto number = info_vec[i].m_number;
+			auto word = hint_vec[i].m_strWord;
+			auto text = hint_vec[i].m_strHint;
 
-            // 対象のカギ名（An / Dm）を組み立てる。
-            std::wstring name = (bDown ? L"D" : L"A");
-            name += std::to_wstring(number).c_str();
+			// 対象のカギ名（An / Dm）を組み立てる。
+			std::wstring name = (bDown ? L"D" : L"A");
+			name += std::to_wstring(number).c_str();
 
-            ret += name;
-            ret += L"の単語は「";
-            ret += word.c_str();
-            ret += L"」です。";
-            ret += name.c_str();
-            ret += L"のヒント文章は「";
-            ret += text.c_str();
-            ret += L"」です。";
-        }
-    }
+			ret += name;
+			ret += L"の単語は「";
+			ret += word.c_str();
+			ret += L"」です。";
+			ret += name.c_str();
+			ret += L"のヒント文章は「";
+			ret += text.c_str();
+			ret += L"」です。";
+		}
+	}
 
-    return ret;
+	return ret;
 }
 
 // Report the current state to the AI (English).
 std::wstring XgGetAIStatus_en(void)
 {
-    std::wstring ret;
+	std::wstring ret;
 
-    for (INT iRow = 0; iRow < xg_nRows; ++iRow)
-    {
-        std::wstring name = L"R";
-        name += std::to_wstring(iRow + 1).c_str();
-        ret += name;
-        ret += L" is \"";
-        ret += XgGetRowOrColumnText(TRUE, iRow).c_str();
-        ret += L"\".";
-    }
-    for (INT iCol = 0; iCol < xg_nCols; ++iCol)
-    {
-        std::wstring name = L"C";
-        name += std::to_wstring(iCol + 1).c_str();
-        ret += name;
-        ret += L" is \"";
-        ret += XgGetRowOrColumnText(FALSE, iCol).c_str();
-        ret += L"\".";
-    }
+	for (INT iRow = 0; iRow < xg_nRows; ++iRow)
+	{
+		std::wstring name = L"R";
+		name += std::to_wstring(iRow + 1).c_str();
+		ret += name;
+		ret += L" is \"";
+		ret += XgGetRowOrColumnText(TRUE, iRow).c_str();
+		ret += L"\".";
+	}
+	for (INT iCol = 0; iCol < xg_nCols; ++iCol)
+	{
+		std::wstring name = L"C";
+		name += std::to_wstring(iCol + 1).c_str();
+		ret += name;
+		ret += L" is \"";
+		ret += XgGetRowOrColumnText(FALSE, iCol).c_str();
+		ret += L"\".";
+	}
 
-    if (!xg_bSolved) {
-        ret += L"The crossword does not have clues yet.";
-        return ret;
-    }
+	if (!xg_bSolved) {
+		ret += L"The crossword does not have clues yet.";
+		return ret;
+	}
 
-    ret += L"The crossword has clues.";
-    for (BOOL bDown = FALSE; bDown <= TRUE; ++bDown)
-    {
-        // Choose the target array depending on whether it's Down or Across.
-        auto& info_vec = bDown ? xg_vVertInfo : xg_vHorzInfo;
-        auto& hint_vec = bDown ? xg_vecVertHints : xg_vecHorzHints;
-        for (size_t i = 0; i < info_vec.size(); ++i) {
-            // Bounds check (in case info_vec and hint_vec sizes ever diverge).
-            if (i >= hint_vec.size())
-                break;
+	ret += L"The crossword has clues.";
+	for (BOOL bDown = FALSE; bDown <= TRUE; ++bDown)
+	{
+		// Choose the target array depending on whether it's Down or Across.
+		auto& info_vec = bDown ? xg_vVertInfo : xg_vHorzInfo;
+		auto& hint_vec = bDown ? xg_vecVertHints : xg_vecHorzHints;
+		for (size_t i = 0; i < info_vec.size(); ++i) {
+			// Bounds check (in case info_vec and hint_vec sizes ever diverge).
+			if (i >= hint_vec.size())
+				break;
 
-            auto number = info_vec[i].m_number;
-            auto word = hint_vec[i].m_strWord;
-            auto text = hint_vec[i].m_strHint;
-            // Build the target clue name (An / Dm).
-            std::wstring name = (bDown ? L"D" : L"A");
-            name += std::to_wstring(number).c_str();
-            ret += name.c_str();
-            ret += L"'s word is \"";
-            ret += word.c_str();
-            ret += L"\".";
-            ret += name.c_str();
-            ret += L"'s hint text is \"";
-            ret += text.c_str();
-            ret += L"\".";
-        }
-    }
-    return ret;
+			auto number = info_vec[i].m_number;
+			auto word = hint_vec[i].m_strWord;
+			auto text = hint_vec[i].m_strHint;
+			// Build the target clue name (An / Dm).
+			std::wstring name = (bDown ? L"D" : L"A");
+			name += std::to_wstring(number).c_str();
+			ret += name.c_str();
+			ret += L"'s word is \"";
+			ret += word.c_str();
+			ret += L"\".";
+			ret += name.c_str();
+			ret += L"'s hint text is \"";
+			ret += text.c_str();
+			ret += L"\".";
+		}
+	}
+	return ret;
 }
 
 // AIに現在の状態を報告する。
 std::wstring XgGetAIStatus(void)
 {
-    if (XgIsUserJapanese())
-        return XgGetAIStatus_ja();
-    return XgGetAIStatus_en();
+	if (XgIsUserJapanese())
+		return XgGetAIStatus_ja();
+	return XgGetAIStatus_en();
 }
 
 // 指定フォントから「ダイアログ基準単位」を求める、ダイアログマネージャが内部で
@@ -1465,11 +1444,12 @@ DialogProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 
 BOOL OpenAIHelper(HWND hwndOwner, BOOL bOpen)
 {
-    // AIヘルパーからの出力を解析できるよう、コールバックを登録する（初回のみ）。
-    if (!s_bAICallbackRegistered) {
-        AIHelper_SetOutputCallback(XgOnAIHelperOutput);
-        s_bAICallbackRegistered = true;
-    }
+	// AIヘルパーからの出力を解析できるよう、コールバックを登録する（初回のみ）。
+    static bool s_bAICallbackRegistered = false;
+	if (!s_bAICallbackRegistered) {
+		AIHelper_SetOutputCallback(XgOnAIHelperOutput);
+		s_bAICallbackRegistered = true;
+	}
 
 	if (bOpen)
 	{
@@ -1525,6 +1505,6 @@ BOOL OpenAIHelper(HWND hwndOwner, BOOL bOpen)
 // AIヘルパーを開く。
 void XgOpenAIHelper(HWND hwnd)
 {
-    g_initial_question = XgMakeInitialQuestion();
-    OpenAIHelper(hwnd, TRUE);
+	g_initial_question = XgMakeInitialQuestion();
+	OpenAIHelper(hwnd, TRUE);
 }
