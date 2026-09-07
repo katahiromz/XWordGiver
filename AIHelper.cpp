@@ -375,10 +375,10 @@ BOOL XgGenerateClue_en(INT nNumber, BOOL bDown)
 
 	std::wstring line;
 	line += name.c_str();
-	line += L"'s clue text should be generated, and the command should be output to the system.";
+	line += L"'s clue text should be generated, and the command should be output to the system. ";
 	line += L"The word \"";
 	line += word.c_str();
-	line += L"\" cannot be used inside the clue text.";
+	line += L"\" cannot be used inside the clue text. ";
 
 	AskAIQuestion(g_hwndAIHelper, line.c_str());
 
@@ -406,7 +406,7 @@ void XgRegenerateCluesAll(HWND hwnd)
 	if (XgIsUserJapanese()) {
 		line = L"すべてのカギを再生成してください。";
 	} else {
-		line = L"Please re-generate all the clues.";
+		line = L"Please re-generate all the clues. ";
 	}
 
 	AskAIQuestion(g_hwndAIHelper, line.c_str());
@@ -487,7 +487,7 @@ std::wstring XgGetAIStatus_en(void)
 		ret += name;
 		ret += L" is \"";
 		ret += XgGetRowOrColumnText(TRUE, iRow).c_str();
-		ret += L"\".";
+		ret += L"\". ";
 	}
 	for (INT iCol = 0; iCol < xg_nCols; ++iCol)
 	{
@@ -496,15 +496,15 @@ std::wstring XgGetAIStatus_en(void)
 		ret += name;
 		ret += L" is \"";
 		ret += XgGetRowOrColumnText(FALSE, iCol).c_str();
-		ret += L"\".";
+		ret += L"\". ";
 	}
 
 	if (!xg_bSolved) {
-		ret += L"The crossword does not have clues yet.";
+		ret += L"The crossword does not have clues yet. ";
 		return ret;
 	}
 
-	ret += L"The crossword has clues.";
+	ret += L"The crossword has clues. ";
 	for (BOOL bDown = FALSE; bDown <= TRUE; ++bDown)
 	{
 		// Choose the target array depending on whether it's Down or Across.
@@ -524,11 +524,11 @@ std::wstring XgGetAIStatus_en(void)
 			ret += name.c_str();
 			ret += L"'s word is \"";
 			ret += word.c_str();
-			ret += L"\".";
+			ret += L"\". ";
 			ret += name.c_str();
 			ret += L"'s hint text is \"";
 			ret += text.c_str();
-			ret += L"\".";
+			ret += L"\". ";
 		}
 	}
 	return ret;
@@ -1108,7 +1108,7 @@ static BOOL StartAIProcess(HWND hwnd)
 		if (XgIsUserJapanese())
 			AddLineToList(hwnd, L"[エラー] プロセスの起動に失敗しました。");
 		else
-			AddLineToList(hwnd, L"[Error] Failed to start the process.");
+			AddLineToList(hwnd, L"[Error] Failed to start the process. ");
 		if (g_hReadyEvent)
 			SetEvent(g_hReadyEvent); // 起動失敗時に無駄に待たされないように
 		return FALSE;
@@ -1184,7 +1184,7 @@ void AskAIQuestion(HWND hwnd, PCWSTR text)
 			if (XgIsUserJapanese())
 				AddLineToList(hwnd, L"システムコマンドを実行しました。");
 			else
-				AddLineToList(hwnd, L"The system command has been executed.");
+				AddLineToList(hwnd, L"The system command has been executed. ");
 			return;
 		}
 	}
@@ -1193,7 +1193,7 @@ void AskAIQuestion(HWND hwnd, PCWSTR text)
 		if (XgIsUserJapanese())
 			AddLineToList(hwnd, L"[エラー] AIプロセスが起動していません。");
 		else
-			AddLineToList(hwnd, L"[Error] The AI process is not running.");
+			AddLineToList(hwnd, L"[Error] The AI process is not running. ");
 		return;
 	}
 
@@ -1226,7 +1226,7 @@ void AskAIQuestion(HWND hwnd, PCWSTR text)
 		if (XgIsUserJapanese())
 			AddLineToList(hwnd, L"[エラー] AIプロセスへの送信に失敗しました。");
 		else
-			AddLineToList(hwnd, L"[Error] Failed to send to the AI process.");
+			AddLineToList(hwnd, L"[Error] Failed to send to the AI process. ");
 	}
 }
 
