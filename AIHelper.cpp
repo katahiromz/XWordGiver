@@ -1153,8 +1153,8 @@ void AskAIQuestion(HWND hwnd, PCWSTR text)
 	auto i1 = str.find(L':', i0);
 	if (i1 == str.npos)
 		i1 = str.find(chColon, i0);
-	auto i2 = str.find(chClose, i1);
-	if (i0 != str.npos && i1 != str.npos && i2 != str.npos) {
+	auto i2 = str.find(chClose, i0);
+	if (i0 != str.npos && i1 != str.npos && i2 != str.npos && i1 < i2) {
 		if (g_pfnOutputCallback) {
 			// 入力した質問をlst1にエコー表示する
 			AddLineToList(hwnd, (L"> " + str).c_str());
