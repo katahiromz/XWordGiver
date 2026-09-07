@@ -578,6 +578,15 @@ static void StopAIProcess(HWND hwnd)
 // 起動済みのプロセスの標準入力へ質問を書き込む（プロセスは終了させない）
 void AskAIQuestion(HWND hwnd, PCWSTR text)
 {
+	if (!text || !text[0])
+		return;
+
+	WCHAR sz[512];
+	lstrcpynW(sz, text, _countof(sz));
+	StrTrimW(sz, L" \t\r\n　");
+	if (!sz[0])
+		return;
+
 	if (!g_maker.IsRunning())
 	{
 		AddLineToList(hwnd, L"[エラー] AIプロセスが起動していません。");
@@ -585,7 +594,7 @@ void AskAIQuestion(HWND hwnd, PCWSTR text)
 	}
 
 	// 入力した質問をlst1にエコー表示する
-	AddLineToList(hwnd, (L"> " + std::wstring(text)).c_str());
+	AddLineToList(hwnd, (L"> " + std::wstring(sz)).c_str());
 	PleaseWait(hwnd);
 
 	std::wstring line;
@@ -599,7 +608,7 @@ void AskAIQuestion(HWND hwnd, PCWSTR text)
 		line += L" *) ";
 	}
 #endif
-	line += text;
+	line += sz;
 	if (g_additional_instruction.size())
 	{
 		line += L"(* ";
