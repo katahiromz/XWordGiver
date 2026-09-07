@@ -14,8 +14,3 @@ extern std::wstring g_initial_question;
 extern INT g_nHelperFontPointSize;
 
 void AskAIQuestion(HWND hwnd, PCWSTR text);
-
-// AIプロセスから届いた出力行を、表示とは別に呼び出し側へ通知するためのコールバック。
-// (*...*) タグの除去やフィルタリングは行わない、生の1行がそのまま渡される。
-typedef void (CALLBACK *AIHELPER_OUTPUT_CALLBACK)(LPCWSTR pszLine);
-void AIHelper_SetOutputCallback(AIHELPER_OUTPUT_CALLBACK callback);

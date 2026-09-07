@@ -21,6 +21,7 @@
 // (WPARAMは未使用、LPARAMはnewしたPWSTR。受け取った側でdelete[]すること)
 #define WM_APP_AI_LINE  (WM_APP + 1)
 
+// インスタンス ハンドル。
 HINSTANCE g_hAIHelperInst = nullptr;
 
 // ダイアログのリサイズ処理を担当する
@@ -40,7 +41,7 @@ std::wstring g_provider = L"gemini";
 std::wstring g_model = L"gemini-3.6-flash";
 std::wstring g_python_exe;
 std::wstring g_additional_instruction;
-std::wstring g_buffer;
+std::wstring g_output_buffer;
 std::wstring g_initial_question;
 
 BOOL XgIsUserJapanese(VOID) noexcept;
@@ -166,10 +167,7 @@ std::wstring XgMakeInitialQuestion_en(void)
 // Create the first question.
 std::wstring XgMakeInitialQuestion(void)
 {
-	if (XgIsUserJapanese())
-		return XgMakeInitialQuestion_ja();
-	else
-		return XgMakeInitialQuestion_en();
+	return XgIsUserJapanese() ? XgMakeInitialQuestion_ja() : XgMakeInitialQuestion_en();
 }
 
 std::wstring XgGetAIStatus(void);
@@ -180,7 +178,7 @@ std::wstring XG_GetAIPreText_ja(void)
 	std::wstring str;
 	str += L"(* ";
 	str += L"あなたはクロスワードの妖精です。";
-	str += XgGetAIStatus().c_str();
+	str += XgGetAIStatus();
 	str += L" *) ";
 	return str;
 }
@@ -191,7 +189,7 @@ std::wstring XG_GetAIPreText_en(void)
 	std::wstring str;
 	str += L"(* ";
 	str += L"You are the \"Crossword Fairy\". ";
-	str += XgGetAIStatus().c_str();
+	str += XgGetAIStatus();
 	str += L" *) ";
 	return str;
 }
@@ -199,9 +197,7 @@ std::wstring XG_GetAIPreText_en(void)
 // AI入力前のテキスト。
 std::wstring XG_GetAIPreText(void)
 {
-	if (XgIsUserJapanese())
-		return XG_GetAIPreText_ja();
-	return XG_GetAIPreText_en();
+	return XgIsUserJapanese() ? XG_GetAIPreText_ja() : XG_GetAIPreText_en();
 }
 
 // AIヘルパーからの出力行を解析し、「【...:...】」形式の
@@ -327,13 +323,12 @@ BOOL XgGenerateClue_ja(INT nNumber, BOOL bDown)
 
 	// 対象のカギ名（An / Dm）を組み立てる。
 	std::wstring name = (bDown ? L"D" : L"A");
-	name += std::to_wstring(nNumber).c_str();
+	name += std::to_wstring(nNumber);
 
-	std::wstring line;
-	line += name.c_str();
+	auto line = name;
 	line += L"のカギ文章を生成して、システムにコマンドを出力してください。";
 	line += L"カギ文章内部で「";
-	line += word.c_str();
+	line += word;
 	line += L"」という単語を使うことはできません。";
 
 	AskAIQuestion(g_hwndAIHelper, line.c_str());
@@ -345,7 +340,7 @@ BOOL XgGenerateClue_ja(INT nNumber, BOOL bDown)
 BOOL XgGenerateClue_en(INT nNumber, BOOL bDown)
 {
 	// Do nothing if the word can't be obtained.
-	XGStringW word = XgGetHintWord(nNumber, bDown);
+	std::wstring word = XgGetHintWord(nNumber, bDown).c_str();
 	if (word.empty())
 		return FALSE;
 
@@ -355,13 +350,12 @@ BOOL XgGenerateClue_en(INT nNumber, BOOL bDown)
 
 	// Build the target clue name (An / Dm).
 	std::wstring name = (bDown ? L"D" : L"A");
-	name += std::to_wstring(nNumber).c_str();
+	name += std::to_wstring(nNumber);
 
-	std::wstring line;
-	line += name.c_str();
+	auto line = name;
 	line += L"'s clue text should be generated, and the command should be output to the system. ";
 	line += L"The word \"";
-	line += word.c_str();
+	line += word;
 	line += L"\" cannot be used inside the clue text. ";
 
 	AskAIQuestion(g_hwndAIHelper, line.c_str());
@@ -386,14 +380,14 @@ void XgRegenerateCluesAll(HWND hwnd)
 	XgOpenAIHelper(xg_hMainWnd, TRUE);
 	AIHelper_WaitForReady();
 
-	std::wstring line;
+	PCWSTR line;
 	if (XgIsUserJapanese()) {
 		line = L"すべてのカギを再生成してください。";
 	} else {
 		line = L"Please re-generate all the clues. ";
 	}
 
-	AskAIQuestion(g_hwndAIHelper, line.c_str());
+	AskAIQuestion(g_hwndAIHelper, line);
 }
 
 // AIに現在の状態を報告する（日本語）。
@@ -404,7 +398,7 @@ std::wstring XgGetAIStatus_ja(void)
 	for (INT iRow = 0; iRow < xg_nRows; ++iRow)
 	{
 		std::wstring name = L"R";
-		name += std::to_wstring(iRow + 1).c_str();
+		name += std::to_wstring(iRow + 1);
 		ret += name;
 		ret += L"は「";
 		ret += XgGetRowOrColumnText(TRUE, iRow).c_str();
@@ -413,7 +407,7 @@ std::wstring XgGetAIStatus_ja(void)
 	for (INT iCol = 0; iCol < xg_nCols; ++iCol)
 	{
 		std::wstring name = L"C";
-		name += std::to_wstring(iCol + 1).c_str();
+		name += std::to_wstring(iCol + 1);
 		ret += name;
 		ret += L"は「";
 		ret += XgGetRowOrColumnText(FALSE, iCol).c_str();
@@ -443,7 +437,7 @@ std::wstring XgGetAIStatus_ja(void)
 
 			// 対象のカギ名（An / Dm）を組み立てる。
 			std::wstring name = (bDown ? L"D" : L"A");
-			name += std::to_wstring(number).c_str();
+			name += std::to_wstring(number);
 
 			ret += name;
 			ret += L"の単語は「";
@@ -467,7 +461,7 @@ std::wstring XgGetAIStatus_en(void)
 	for (INT iRow = 0; iRow < xg_nRows; ++iRow)
 	{
 		std::wstring name = L"R";
-		name += std::to_wstring(iRow + 1).c_str();
+		name += std::to_wstring(iRow + 1);
 		ret += name;
 		ret += L" is \"";
 		ret += XgGetRowOrColumnText(TRUE, iRow).c_str();
@@ -476,7 +470,7 @@ std::wstring XgGetAIStatus_en(void)
 	for (INT iCol = 0; iCol < xg_nCols; ++iCol)
 	{
 		std::wstring name = L"C";
-		name += std::to_wstring(iCol + 1).c_str();
+		name += std::to_wstring(iCol + 1);
 		ret += name;
 		ret += L" is \"";
 		ret += XgGetRowOrColumnText(FALSE, iCol).c_str();
@@ -504,7 +498,7 @@ std::wstring XgGetAIStatus_en(void)
 			auto text = hint_vec[i].m_strHint;
 			// Build the target clue name (An / Dm).
 			std::wstring name = (bDown ? L"D" : L"A");
-			name += std::to_wstring(number).c_str();
+			name += std::to_wstring(number);
 			ret += name.c_str();
 			ret += L"'s word is \"";
 			ret += word.c_str();
@@ -521,9 +515,7 @@ std::wstring XgGetAIStatus_en(void)
 // AIに現在の状態を報告する。
 std::wstring XgGetAIStatus(void)
 {
-	if (XgIsUserJapanese())
-		return XgGetAIStatus_ja();
-	return XgGetAIStatus_en();
+	return XgIsUserJapanese() ? XgGetAIStatus_ja() : XgGetAIStatus_en();
 }
 
 // 指定フォントから「ダイアログ基準単位」を求める、ダイアログマネージャが内部で
@@ -588,15 +580,6 @@ static void CenterWindowOverOwner(HWND hwnd, HWND hwndOwner)
 }
 
 #define IDT_AI_OUTPUT_FLUSH 999
-
-// AIプロセスからの出力を呼び出し側へ通知するためのコールバック
-static AIHELPER_OUTPUT_CALLBACK g_pfnOutputCallback = nullptr;
-
-// コールバックを登録する（呼び出し側が解析したい場合に使う）
-void AIHelper_SetOutputCallback(AIHELPER_OUTPUT_CALLBACK callback)
-{
-	g_pfnOutputCallback = callback;
-}
 
 // 完全に起動されるまで待つ。
 // AIHelper(_ja).pyはコンソールサブシステムのPythonプロセスであり、GUIの
@@ -749,7 +732,7 @@ static size_t g_nHistoryIndex = 0;
 static std::wstring g_historyPending;
 
 // 履歴に新しい入力を追加し、履歴位置を末尾（編集中）に戻す
-static void AddToHistory(LPCWSTR pszText)
+static void AddToHistory(PCWSTR pszText)
 {
 	if (!pszText || !*pszText)
 		return;
@@ -1160,17 +1143,15 @@ void AskAIQuestion(HWND hwnd, PCWSTR text)
 		i1 = str.find(chColon, i0);
 	auto i2 = str.find(chClose, i0);
 	if (i0 != str.npos && i1 != str.npos && i2 != str.npos && i1 < i2) {
-		if (g_pfnOutputCallback) {
-			// 入力した質問をlst1にエコー表示する
-			AddLineToList(hwnd, (L"> " + str).c_str());
-			// 実行
-			g_pfnOutputCallback(str.c_str());
-			if (XgIsUserJapanese())
-				AddLineToList(hwnd, L"システムコマンドを実行しました。");
-			else
-				AddLineToList(hwnd, L"The system command has been executed. ");
-			return;
-		}
+		// 入力した質問をlst1にエコー表示する
+		AddLineToList(hwnd, (L"> " + str).c_str());
+		// 実行
+		XgParseAndApplyAICommand(str.c_str());
+		if (XgIsUserJapanese())
+			AddLineToList(hwnd, L"システムコマンドを実行しました。");
+		else
+			AddLineToList(hwnd, L"The system command has been executed. ");
+		return;
 	}
 
 	if (!g_maker.IsRunning()) {
@@ -1376,7 +1357,7 @@ static void OnDestroy(HWND hwnd)
 {
 	StopAIProcess(hwnd);
 	g_hwndAIHelper = nullptr;
-	g_buffer.clear();
+	g_output_buffer.clear();
 
 	// 送信履歴もクリアする
 	g_history.clear();
@@ -1408,13 +1389,11 @@ static void OnTimer(HWND hwnd, UINT id)
 
 	KillTimer(hwnd, IDT_AI_OUTPUT_FLUSH);
 
-	std::wstring buffer = std::move(g_buffer);
-	g_buffer.clear();
+	std::wstring text = std::move(g_output_buffer);
+	g_output_buffer.clear();
 
-	// 登録されていれば、生の出力をそのままコールバックへ渡す
-	// (表示用のタグ除去はAddLineToList内でのみ行われ、ここには影響しない)
-	if (g_pfnOutputCallback)
-		g_pfnOutputCallback(buffer.c_str());
+	// テキストに含まれるシステムコマンドを実行する。
+	XgParseAndApplyAICommand(text.c_str());
 }
 
 // WM_GETMINMAXINFO: ウィンドウの大きさを制限する。
@@ -1445,7 +1424,7 @@ DialogProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			// ReaderThreadProcがnewしたバッファを引き取って表示し、解放する
 			PWSTR psz = (PWSTR)lParam;
 			AddLineToList(hwnd, psz);
-			g_buffer += psz;
+			g_output_buffer += psz;
 			delete[] psz;
 
 			// デバウンス（debounce）パターン
@@ -1461,13 +1440,6 @@ BOOL XgOpenAIHelper(HWND hwndOwner, BOOL bOpen)
 {
 	if (bOpen && g_initial_question.empty())
 		g_initial_question = XgMakeInitialQuestion();
-
-	// AIヘルパーからの出力を解析できるよう、コールバックを登録する（初回のみ）。
-	static bool s_bAICallbackRegistered = false;
-	if (!s_bAICallbackRegistered) {
-		AIHelper_SetOutputCallback(XgParseAndApplyAICommand);
-		s_bAICallbackRegistered = true;
-	}
 
 	if (!bOpen)
 	{
