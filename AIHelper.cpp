@@ -928,7 +928,8 @@ static void PostLineToUI(HWND hwnd, const std::wstring& line)
 {
 	PWSTR psz = new WCHAR[line.size() + 1];
 	StringCchCopyW(psz, line.size() + 1, line.c_str());
-	PostMessageW(hwnd, WM_APP_AI_LINE, 0, (LPARAM)psz);
+	if (!PostMessageW(hwnd, WM_APP_AI_LINE, 0, (LPARAM)psz))
+		delete[] psz;
 }
 
 // g_hOutputReadを読み続け、行がまとまるたびにUIスレッドへ渡すバックグラウンドスレッド。
