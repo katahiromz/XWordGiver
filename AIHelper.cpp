@@ -1424,6 +1424,7 @@ static void Helper_OnDestroy(HWND hwnd)
 	Helper_StopAIProcess(hwnd);
 	xg_hwndAIHelper = nullptr;
 	xg_output_buffer.clear();
+	xg_resizable.ClearLayouts();
 
 	// 送信履歴もクリアする
 	xg_history.clear();
