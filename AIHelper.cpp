@@ -25,7 +25,7 @@
 HINSTANCE xg_hAIHelperInst = nullptr;
 
 // ダイアログのリサイズ処理を担当する
-static MResizable g_resizable;
+static MResizable xg_resizable;
 
 // 起動しっぱなしにするAIHelper_ja.pyプロセスとそのパイプ
 static MProcessMaker xg_process_maker;
@@ -1271,6 +1271,15 @@ static void CreateAIHelperControls(HWND hwnd)
 	// Enterボタンを既定ボタンとして登録する
 	// （本来はダイアログマネージャがDEFPUSHBUTTONを見つけて自動的に行う処理）
 	SendMessageW(hwnd, DM_SETDEFID, IDOK, 0);
+
+	// ダイアログをリサイズ可能にする
+	xg_resizable.OnParentCreate(hwnd, TRUE, TRUE);
+	// lst1: ウィンドウのリサイズに合わせて幅・高さともに伸縮させる
+	xg_resizable.SetLayoutAnchor(lst1, mzcLA_TOP_LEFT, mzcLA_BOTTOM_RIGHT);
+	// edt1: 下端に張り付いたまま、幅だけ伸縮させる
+	xg_resizable.SetLayoutAnchor(edt1, mzcLA_BOTTOM_LEFT, mzcLA_BOTTOM_RIGHT);
+	// IDOK（Enterボタン）: サイズは固定のまま右下に追従させる
+	xg_resizable.SetLayoutAnchor(IDOK, mzcLA_BOTTOM_RIGHT);
 }
 
 // Ctrl+ホイールによるズーム。lst1/edt1/IDOKのフォントを一括で変更する。
@@ -1313,8 +1322,6 @@ static void Helper_OnZoom(HWND hwndDlg, int nDelta)
 // WM_INITDIALOG
 static BOOL Helper_OnInitDialog(HWND hwnd, HWND hwndFocus, LPARAM lParam)
 {
-	xg_hwndAIHelper = hwnd;
-
 	// DIALOGリソースの代わりに、子コントロールをここで作成する
 	CreateAIHelperControls(hwnd);
 
@@ -1331,18 +1338,18 @@ static BOOL Helper_OnInitDialog(HWND hwnd, HWND hwndFocus, LPARAM lParam)
 
 	SetFocus(GetDlgItem(hwnd, edt1));
 
-	// ダイアログをリサイズ可能にする
-	g_resizable.OnParentCreate(hwnd, TRUE, TRUE);
-	// lst1: ウィンドウのリサイズに合わせて幅・高さともに伸縮させる
-	g_resizable.SetLayoutAnchor(lst1, mzcLA_TOP_LEFT, mzcLA_BOTTOM_RIGHT);
-	// edt1: 下端に張り付いたまま、幅だけ伸縮させる
-	g_resizable.SetLayoutAnchor(edt1, mzcLA_BOTTOM_LEFT, mzcLA_BOTTOM_RIGHT);
-	// IDOK（Enterボタン）: サイズは固定のまま右下に追従させる
-	g_resizable.SetLayoutAnchor(IDOK, mzcLA_BOTTOM_RIGHT);
-
 	// ダイアログの起動と同時にAIHelper_ja.pyを一度だけ起動し、
 	// ダイアログを閉じるまでプロセスを使い回す
 	Helper_StartAIProcess(hwnd);
+
+	// 前回の位置・サイズが保存されていれば、それを尊重して復元する。
+	// （CW_USEDEFAULTのままだとMoveWindowには渡せないため、保存値がある場合のみ移動する）
+	xg_hwndAIHelper = hwnd;
+	if (xg_nHelperX != CW_USEDEFAULT && xg_nHelperY != CW_USEDEFAULT &&
+	    xg_nHelperCX != CW_USEDEFAULT && xg_nHelperCY != CW_USEDEFAULT)
+	{
+		MoveWindow(hwnd, xg_nHelperX, xg_nHelperY, xg_nHelperCX, xg_nHelperCY, TRUE);
+	}
 
 	return FALSE;
 }
@@ -1350,7 +1357,10 @@ static BOOL Helper_OnInitDialog(HWND hwnd, HWND hwndFocus, LPARAM lParam)
 // WM_MOVE
 static void Helper_OnMove(HWND hwnd, int x, int y)
 {
-	if (!IsZoomed(hwnd) && !IsIconic(hwnd))
+	if (!IsWindow(xg_hwndAIHelper))
+		return;
+
+	if (!IsZoomed(hwnd) && !IsIconic(hwnd)) // 最大化も最小化もされていない？
 	{
 		RECT rc;
 		GetWindowRect(hwnd, &rc);
@@ -1362,9 +1372,13 @@ static void Helper_OnMove(HWND hwnd, int x, int y)
 // WM_SIZE
 static VOID Helper_OnSize(HWND hwnd, UINT state, int cx, int cy)
 {
-	if (IsWindow(xg_hwndAIHelper))
-		g_resizable.OnSize();
-	if (!IsZoomed(hwnd) && !IsIconic(hwnd))
+	if (!IsWindow(xg_hwndAIHelper))
+		return;
+
+	// サイズに合わせてダイアログ項目のレイアウト修正。
+	xg_resizable.OnSize();
+
+	if (!IsZoomed(hwnd) && !IsIconic(hwnd)) // 最大化も最小化もされていない？
 	{
 		RECT rc;
 		GetWindowRect(hwnd, &rc);
@@ -1510,7 +1524,7 @@ BOOL Helper_Open(HWND hwndOwner)
 	// （DS_CENTER相当の中央寄せは、作成後にXgCenterWindowで行う）。
 	HWND hwnd = CreateWindowExW(WS_EX_TOOLWINDOW, AIHELPERCONSOLE_CLASSNAME, pszCaption,
 		WS_POPUPWINDOW | WS_CAPTION | WS_THICKFRAME | WS_MAXIMIZEBOX,
-		xg_nHelperX, xg_nHelperY, xg_nHelperCX, xg_nHelperCY,
+		CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT,
 		hwndOwner, nullptr, xg_hAIHelperInst, nullptr);
 	if (!hwnd)
 		return FALSE;
@@ -1523,14 +1537,20 @@ BOOL Helper_Open(HWND hwndOwner)
 	SendMessageW(hwnd, WM_INITDIALOG, (WPARAM)hwnd, 0);
 
 	// 中央揃え。
-	XgCenterWindow(hwnd, hwndOwner);
+	// 前回の位置・サイズ（xg_nHelperX/Y/CX/CY）が保存されている場合はそれを
+	// 尊重し、ここでの中央寄せは初回起動時（保存値が無い場合）のみ行う。
+	if (xg_nHelperX == CW_USEDEFAULT || xg_nHelperY == CW_USEDEFAULT ||
+	    xg_nHelperCX == CW_USEDEFAULT || xg_nHelperCY == CW_USEDEFAULT)
+	{
+		XgCenterWindow(hwnd, hwndOwner);
+	}
+
+	// 画面からはみ出ないようにする。
+	PostMessageW(hwnd, DM_REPOSITION, 0, 0);
 
 	// 実際に表示。
 	ShowWindow(hwnd, SW_SHOWNOACTIVATE);
 	UpdateWindow(hwnd);
-
-	// 画面からはみ出ないようにする。
-	PostMessageW(hwnd, DM_REPOSITION, 0, 0);
 
 	return TRUE;
 }
