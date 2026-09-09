@@ -17,4 +17,8 @@ extern INT xg_nHelperY;
 extern INT xg_nHelperCX;
 extern INT xg_nHelperCY;
 
+// 子プロセスの出力の1行をUIスレッドへ渡すためのカスタムメッセージ
+// (WPARAMは未使用、LPARAMはnewしたPWSTR。受け取った側でdelete[]すること)
+#define WM_APP_AI_LINE  (WM_APP + 1)
+
 void Helper_AskQuestion(HWND hwnd, PCWSTR text);

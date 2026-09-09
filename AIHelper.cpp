@@ -11,15 +11,15 @@
 #include <vector>
 #include <memory>
 #include <strsafe.h>
-#include "MFile.hpp"
-#include "MProcessMaker.hpp"
+#ifdef USE_PYTHON
+	#include "MFile.hpp"
+	#include "MProcessMaker.hpp"
+#else
+	#include "AIHelper2.h"
+#endif
 #include "MResizable.hpp"
 #include "AIHelper.h"
 #include "resource.h"
-
-// 子プロセスの出力の1行をUIスレッドへ渡すためのカスタムメッセージ
-// (WPARAMは未使用、LPARAMはnewしたPWSTR。受け取った側でdelete[]すること)
-#define WM_APP_AI_LINE  (WM_APP + 1)
 
 // インスタンス ハンドル。
 HINSTANCE xg_hAIHelperInst = nullptr;
@@ -28,11 +28,14 @@ HINSTANCE xg_hAIHelperInst = nullptr;
 static MResizable xg_resizable;
 
 // 起動しっぱなしにするAIHelper_ja.pyプロセスとそのパイプ
+#ifdef USE_PYTHON
 static MProcessMaker xg_process_maker;
 static MFile         xg_hInputWrite;
 static MFile         xg_hOutputRead;
 static HANDLE        xg_hReaderThread = nullptr;
 static volatile BOOL xg_bReaderStop = FALSE;
+#endif
+
 // AIHelper(_ja).pyが起動完了して標準入力の受付準備ができたときにセットされる
 static HANDLE        xg_hReadyEvent = nullptr;
 
@@ -55,6 +58,7 @@ BOOL Helper_Open(HWND hwndOwner);
 XGStringW XgGetRowOrColumnText(BOOL bRow, INT iRowOrCol);
 void Helper_WaitForReady(void);
 void Helper_AskQuestion(HWND hwnd, PCWSTR text);
+static void Helper_AddLine(HWND hwnd, PCWSTR pszLine);
 
 // 行または列を書き換える。
 BOOL XgSetBoardRowOrColumn(BOOL bRow, INT nNumber, const XGStringW& text);
@@ -608,6 +612,7 @@ static void XgCenterWindow(HWND hwnd, HWND hwndOwner)
 
 #define IDT_AI_OUTPUT_FLUSH 999
 
+#ifdef USE_PYTHON
 // 完全に起動されるまで待つ。
 // AIHelper(_ja).pyはコンソールサブシステムのPythonプロセスであり、GUIの
 // メッセージキューを持たないため、WaitForInputIdleでは起動完了を検知できない。
@@ -663,6 +668,27 @@ void Helper_WaitForReady(void)
 		DispatchMessageW(&msg);
 	}
 }
+#else
+// AIクライアントがREADYになるまで待つ
+void Helper_WaitForReady(void)
+{
+	if (!xg_hReadyEvent)
+		return;
+
+	// 最大30秒待つ（通常はほぼ即座に返る）
+	DWORD dw = WaitForSingleObject(xg_hReadyEvent, 30000);
+
+	if (dw == WAIT_TIMEOUT) {
+		// タイムアウトした場合はログに出す（任意）
+		if (xg_hwndAIHelper) {
+			if (XgIsUserJapanese())
+				Helper_AddLine(xg_hwndAIHelper, L"[警告] AIの準備完了待ちがタイムアウトしました。");
+			else
+				Helper_AddLine(xg_hwndAIHelper, L"[Warning] Timed out waiting for AI to become ready.");
+		}
+	}
+}
+#endif // !def USE_PYTHON
 
 // 文字列中に含まれる "(*...*)" 形式のタグ（XG_GetAIPreTextによる前置情報など）を
 // すべて取り除いた文字列を返す。表示前のフィルタリング用。
@@ -716,6 +742,7 @@ static void Helper_AddLine(HWND hwnd, PCWSTR pszLine)
 	SendMessageW(hLst1, EM_SCROLLCARET, 0, 0);
 }
 
+#ifdef USE_PYTHON
 // UTF-8バイト列をUTF-16文字列に変換する
 static std::wstring XgUtf8ToWide(const char* psz, int cch)
 {
@@ -730,6 +757,7 @@ static std::wstring XgUtf8ToWide(const char* psz, int cch)
 	MultiByteToWideChar(CP_UTF8, 0, psz, cch, &wstr[0], cchWide);
 	return wstr;
 }
+#endif
 
 static void Helper_SelectAll(HWND hwndEdit)
 {
@@ -900,6 +928,7 @@ Helper_Lst1WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	return CallWindowProcW(g_fnOldLst1WndProc, hwnd, uMsg, wParam, lParam);
 }
 
+#ifdef USE_PYTHON
 // UTF-16文字列をUTF-8バイト列に変換する
 static std::string XgWideToUtf8(PCWSTR psz)
 {
@@ -1018,6 +1047,7 @@ static DWORD WINAPI Helper_ReaderThreadProc(LPVOID lpParam)
 
 	return 0;
 }
+#endif // def USE_PYTHON
 
 // パイプは「1行=1メッセージ」のプロトコルなので、text/pre_text/追加指示に
 // 万一改行が含まれていても子プロセスのinput()が複数質問と誤認しないよう、
@@ -1050,6 +1080,7 @@ static void Helper_PleaseWait(HWND hwnd)
 // 以後の質問は同じプロセスの標準入力へ書き込むことで送る。
 static BOOL Helper_StartAIProcess(HWND hwnd)
 {
+#ifdef USE_PYTHON
 	TCHAR path[MAX_PATH];
 	GetModuleFileNameW(nullptr, path, _countof(path));
 	PathRemoveFileSpecW(path);
@@ -1110,11 +1141,26 @@ static BOOL Helper_StartAIProcess(HWND hwnd)
 	xg_bReaderStop = FALSE;
 	xg_hReaderThread = CreateThread(nullptr, 0, Helper_ReaderThreadProc, hwnd, 0, nullptr);
 	return TRUE;
+#else
+	Helper_AddLine(hwnd, L"> (native C++ AI client, no Python)");
+	Helper_PleaseWait(hwnd);
+
+	if (!xg_hReadyEvent)
+		xg_hReadyEvent = CreateEventW(nullptr, TRUE, FALSE, nullptr);
+	else
+		ResetEvent(xg_hReadyEvent);
+
+	BOOL ok = Helper2_Start(hwnd);
+	if (ok && xg_hReadyEvent)
+		SetEvent(xg_hReadyEvent);   // ここでREADYを立てる
+	return ok;
+#endif
 }
 
 // 実行中のAIHelper_ja.pyプロセスを終了し、後片付けをする
 static void Helper_StopAIProcess(HWND hwnd)
 {
+#ifdef USE_PYTHON
 	KillTimer(hwnd, IDT_AI_OUTPUT_FLUSH);
 
 	xg_bReaderStop = TRUE;
@@ -1138,6 +1184,15 @@ static void Helper_StopAIProcess(HWND hwnd)
 		CloseHandle(xg_hReadyEvent);
 		xg_hReadyEvent = nullptr;
 	}
+#else
+	KillTimer(hwnd, IDT_AI_OUTPUT_FLUSH);
+	Helper2_Stop();
+
+	if (xg_hReadyEvent) {
+		CloseHandle(xg_hReadyEvent);
+		xg_hReadyEvent = nullptr;
+	}
+#endif
 }
 
 // 起動済みのプロセスの標準入力へ質問を書き込む（プロセスは終了させない）
@@ -1188,6 +1243,7 @@ void Helper_AskQuestion(HWND hwnd, PCWSTR text)
 		return;
 	}
 
+#ifdef USE_PYTHON
 	if (!xg_process_maker.IsRunning()) {
 		if (XgIsUserJapanese())
 			Helper_AddLine(hwnd, L"[エラー] AIプロセスが起動していません。");
@@ -1195,6 +1251,7 @@ void Helper_AskQuestion(HWND hwnd, PCWSTR text)
 			Helper_AddLine(hwnd, L"[Error] The AI process is not running. ");
 		return;
 	}
+#endif
 
 	// 入力した質問をlst1にエコー表示する
 	Helper_AddLine(hwnd, (L"> " + str).c_str());
@@ -1214,6 +1271,8 @@ void Helper_AskQuestion(HWND hwnd, PCWSTR text)
 		line += Helper_SanitizeString(xg_additional_instruction);
 		line += L" *)";
 	}
+
+#ifdef USE_PYTHON
 	line += L"\n"; // 重要！ Helper_ReaderThreadProcがこれを見る。この行に本物の改行はこの1文字だけ。
 
 	auto utf8 = XgWideToUtf8(line.c_str());
@@ -1226,6 +1285,10 @@ void Helper_AskQuestion(HWND hwnd, PCWSTR text)
 		else
 			Helper_AddLine(hwnd, L"[Error] Failed to send to the AI process. ");
 	}
+#else
+	// C++版は改行不要
+	Helper2_Ask(hwnd, line);
+#endif
 }
 
 // lst1, edt1, IDOKの子コントロールを作成する。
@@ -1346,7 +1409,7 @@ static BOOL Helper_OnInitDialog(HWND hwnd, HWND hwndFocus, LPARAM lParam)
 	// （CW_USEDEFAULTのままだとMoveWindowには渡せないため、保存値がある場合のみ移動する）
 	xg_hwndAIHelper = hwnd;
 	if (xg_nHelperX != CW_USEDEFAULT && xg_nHelperY != CW_USEDEFAULT &&
-	    xg_nHelperCX != CW_USEDEFAULT && xg_nHelperCY != CW_USEDEFAULT)
+		xg_nHelperCX != CW_USEDEFAULT && xg_nHelperCY != CW_USEDEFAULT)
 	{
 		MoveWindow(hwnd, xg_nHelperX, xg_nHelperY, xg_nHelperCX, xg_nHelperCY, TRUE);
 	}
@@ -1541,7 +1604,7 @@ BOOL Helper_Open(HWND hwndOwner)
 	// 前回の位置・サイズ（xg_nHelperX/Y/CX/CY）が保存されている場合はそれを
 	// 尊重し、ここでの中央寄せは初回起動時（保存値が無い場合）のみ行う。
 	if (xg_nHelperX == CW_USEDEFAULT || xg_nHelperY == CW_USEDEFAULT ||
-	    xg_nHelperCX == CW_USEDEFAULT || xg_nHelperCY == CW_USEDEFAULT)
+		xg_nHelperCX == CW_USEDEFAULT || xg_nHelperCY == CW_USEDEFAULT)
 	{
 		XgCenterWindow(hwnd, hwndOwner);
 	}

@@ -12,6 +12,7 @@
 #include "WonSetThreadUILanguage/WonSetThreadUILanguage.h"
 #include "TaskbarProgress.h"
 #include "AIHelper.h"
+#include "AIHelper2.h"
 
 // 「元に戻す」情報。
 #include "XG_UndoBuffer.hpp"
@@ -8563,6 +8564,7 @@ void XgCleanup(void)
     xg_strMarked.clear();
     xg_pTaskbarProgress.reset();
     xg_pFileManager.reset();
+    g_histories.clear();
     if (xg_hbmBlackCell)
     {
         DeleteObject(xg_hbmBlackCell);

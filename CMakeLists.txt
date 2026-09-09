@@ -12,7 +12,7 @@ if(COMMAND cmake_policy)
 endif(COMMAND cmake_policy)
 
 # project name, version, and languages
-project(XWordGiver VERSION 5.3.4 LANGUAGES CXX RC)
+project(XWordGiver VERSION 5.3.5 LANGUAGES CXX RC)
 
 # add macro __XWORDGIVER__
 add_definitions(-D__XWORDGIVER__)
@@ -37,6 +37,17 @@ if (DETAILED_CHECK)
         endif()
     endif()
 endif()
+
+##############################################################################
+
+# option USE_PYTHON
+option(USE_PYTHON "Use Python" OFF)
+
+if(USE_PYTHON)
+    add_definitions(-DUSE_PYTHON)
+endif()
+
+message(STATUS "USE_PYTHON: ${USE_PYTHON}")
 
 ##############################################################################
 
@@ -111,6 +122,7 @@ endif()
 # XWordGiver32.exe and XWordGiver64.exe
 add_executable(XWordGiver${BITS} WIN32
     AIHelper.cpp
+    AIHelper2.cpp
     Dictionary.cpp
     GUI.cpp
     Input.cpp
@@ -129,6 +141,7 @@ target_link_libraries(XWordGiver${BITS}
     ole32
     uuid
     shlwapi
+    winhttp
     SaveBitmapToFile)
 
 if(MSVC)
