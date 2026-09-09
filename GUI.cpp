@@ -954,7 +954,6 @@ void XgResetSettings(void)
 
     xg_ai_provider = L"gemini";
     xg_ai_model = L"gemini-3.6-flash";
-    xg_python_exe = L"";
     xg_additional_instruction = L"";
 
     xg_bHiragana = FALSE;
@@ -1180,9 +1179,6 @@ bool __fastcall XgLoadSettings(void)
         }
         if (!app_key.QuerySz(L"AIModel", sz, _countof(sz))) {
             xg_ai_model = sz;
-        }
-        if (!app_key.QuerySz(L"PythonExe", sz, _countof(sz))) {
-            xg_python_exe = sz;
         }
         if (!app_key.QuerySz(L"AdditionalInsn", sz, _countof(sz))) {
             xg_additional_instruction = sz;
@@ -1451,7 +1447,6 @@ bool __fastcall XgSaveSettings(void)
 
         app_key.SetSz(L"AIProvider", xg_ai_provider.c_str());
         app_key.SetSz(L"AIModel", xg_ai_model.c_str());
-        app_key.SetSz(L"PythonExe", xg_python_exe.c_str());
         app_key.SetSz(L"AdditionalInsn", xg_additional_instruction.c_str());
 
         app_key.SetDword(L"ShowToolBar", xg_bShowToolBar);
