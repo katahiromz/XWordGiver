@@ -20,4 +20,5 @@ extern INT xg_nHelperCY;
 // (WPARAMは未使用、LPARAMはnewしたPWSTR。受け取った側でdelete[]すること)
 #define WM_APP_AI_LINE  (WM_APP + 1)
 
+BOOL Helper_Open(HWND hwndOwner);
 void Helper_AskQuestion(HWND hwnd, PCWSTR text);
