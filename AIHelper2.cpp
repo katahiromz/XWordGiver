@@ -152,18 +152,23 @@ static bool HttpPost(const std::wstring& host, INTERNET_PORT port, const std::ws
     HINTERNET hConnect = nullptr;
     HINTERNET hRequest = nullptr;
     bool success = false;
+    statusCode = 0;
 
     hSession = WinHttpOpen(L"XWordGiver-AIHelper/2.0",
                            WINHTTP_ACCESS_TYPE_DEFAULT_PROXY,
                            WINHTTP_NO_PROXY_NAME, WINHTTP_NO_PROXY_BYPASS, 0);
     if (!hSession) {
-        errMsg = L"WinHttpOpen failed";
+        errMsg = L"WinHttpOpen failed (" + std::to_wstring(GetLastError()) + L")";
         goto cleanup;
     }
 
+    // タイムアウトを長めに設定（ミリ秒）
+    // resolve / connect / send / receive
+    WinHttpSetTimeouts(hSession, 15000, 15000, 30000, 60000);
+
     hConnect = WinHttpConnect(hSession, host.c_str(), port, 0);
     if (!hConnect) {
-        errMsg = L"WinHttpConnect failed";
+        errMsg = L"WinHttpConnect failed (" + std::to_wstring(GetLastError()) + L")";
         goto cleanup;
     }
 
@@ -172,20 +177,38 @@ static bool HttpPost(const std::wstring& host, INTERNET_PORT port, const std::ws
                                   WINHTTP_DEFAULT_ACCEPT_TYPES,
                                   WINHTTP_FLAG_SECURE);
     if (!hRequest) {
-        errMsg = L"WinHttpOpenRequest failed";
+        errMsg = L"WinHttpOpenRequest failed (" + std::to_wstring(GetLastError()) + L")";
         goto cleanup;
+    }
+
+    // セキュリティプロトコルを明示（古い環境対策）
+    {
+        DWORD protocols = WINHTTP_FLAG_SECURE_PROTOCOL_TLS1_2
+#if defined(WINHTTP_FLAG_SECURE_PROTOCOL_TLS1_3)
+                        | WINHTTP_FLAG_SECURE_PROTOCOL_TLS1_3
+#endif
+                        ;
+        WinHttpSetOption(hRequest, WINHTTP_OPTION_SECURE_PROTOCOLS, &protocols, sizeof(protocols));
     }
 
     if (!WinHttpSendRequest(hRequest,
                             headers.c_str(), (DWORD)-1L,
                             (LPVOID)body.data(), (DWORD)body.size(),
                             (DWORD)body.size(), 0)) {
-        errMsg = L"WinHttpSendRequest failed";
+        errMsg = L"WinHttpSendRequest failed (" + std::to_wstring(GetLastError()) + L")";
         goto cleanup;
     }
 
     if (!WinHttpReceiveResponse(hRequest, nullptr)) {
-        errMsg = L"WinHttpReceiveResponse failed";
+        DWORD err = GetLastError();
+        errMsg = L"WinHttpReceiveResponse failed (" + std::to_wstring(err) + L")";
+        // よくあるエラーコードの補足
+        if (err == ERROR_WINHTTP_TIMEOUT)
+            errMsg += L" [timeout]";
+        else if (err == ERROR_WINHTTP_SECURE_FAILURE)
+            errMsg += L" [TLS/secure failure]";
+        else if (err == ERROR_WINHTTP_CONNECTION_ERROR)
+            errMsg += L" [connection error]";
         goto cleanup;
     }
 
@@ -202,10 +225,13 @@ static bool HttpPost(const std::wstring& host, INTERNET_PORT port, const std::ws
     response.clear();
     for (;;) {
         DWORD dwAvail = 0;
-        if (!WinHttpQueryDataAvailable(hRequest, &dwAvail) || dwAvail == 0)
+        if (!WinHttpQueryDataAvailable(hRequest, &dwAvail)) {
+            break;
+        }
+        if (dwAvail == 0)
             break;
 
-        std::vector<char> buf(dwAvail);
+        std::vector<char> buf(dwAvail + 1);
         DWORD dwRead = 0;
         if (!WinHttpReadData(hRequest, buf.data(), dwAvail, &dwRead) || dwRead == 0)
             break;
@@ -214,6 +240,9 @@ static bool HttpPost(const std::wstring& host, INTERNET_PORT port, const std::ws
     }
 
     success = (statusCode >= 200 && statusCode < 300);
+    if (!success && errMsg.empty()) {
+        errMsg = L"HTTP " + std::to_wstring(statusCode);
+    }
 
 cleanup:
     if (hRequest) WinHttpCloseHandle(hRequest);
