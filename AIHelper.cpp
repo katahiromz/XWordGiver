@@ -84,6 +84,9 @@ static HFONT g_hFont = nullptr;
 
 static void Helper_OnZoom(HWND hwndDlg, int nDelta);
 
+// UIフォント。
+extern WCHAR xg_szUIFont[LF_FACESIZE];
+
 // 現在の言語・ズーム設定に応じたフォントを作る（呼び出し側でDeleteObjectすること）
 static HFONT CreateAIHelperFont(HWND hwnd, int nPointSize)
 {
@@ -99,8 +102,7 @@ static HFONT CreateAIHelperFont(HWND hwnd, int nPointSize)
 	lf.lfOutPrecision = OUT_DEFAULT_PRECIS;
 	lf.lfClipPrecision = CLIP_DEFAULT_PRECIS;
 	lf.lfPitchAndFamily = DEFAULT_PITCH | FF_DONTCARE;
-	StringCchCopyW(lf.lfFaceName, _countof(lf.lfFaceName),
-		XgIsUserJapanese() ? L"MS UI Gothic" : L"Tahoma");
+	StringCchCopyW(lf.lfFaceName, _countof(lf.lfFaceName), xg_szUIFont);
 
 	return CreateFontIndirectW(&lf);
 }
