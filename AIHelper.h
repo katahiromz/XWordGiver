@@ -8,7 +8,6 @@ extern HWND xg_hwndAIHelper;
 extern HINSTANCE xg_hAIHelperInst;
 extern std::wstring xg_ai_provider;
 extern std::wstring xg_ai_model;
-extern std::wstring xg_python_exe;
 extern std::wstring xg_additional_instruction;
 extern std::wstring xg_initial_question;
 extern INT xg_nHelperFontPointSize;

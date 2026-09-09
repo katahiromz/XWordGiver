@@ -42,7 +42,6 @@ static HANDLE        xg_hReadyEvent = nullptr;
 HWND xg_hwndAIHelper = nullptr;
 std::wstring xg_ai_provider = L"gemini";
 std::wstring xg_ai_model = L"gemini-3.6-flash";
-std::wstring xg_python_exe;
 std::wstring xg_additional_instruction;
 std::wstring xg_output_buffer;
 std::wstring xg_initial_question;
@@ -1090,12 +1089,7 @@ static BOOL Helper_StartAIProcess(HWND hwnd)
 		PathAppendW(path, L"AIHelper.py");
 
 	std::wstring str;
-	str += L"\"";
-	if (xg_python_exe.size())
-		str += xg_python_exe;
-	else
-		str += L"python";
-	str += L"\" \"";
+	str += L"python \"";
 	str += path;
 	str += L"\" --provider=";
 	str += Helper_SanitizeString(xg_ai_provider);

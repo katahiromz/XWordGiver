@@ -8533,7 +8533,6 @@ void XgCleanup(void)
 {
     xg_ai_provider.clear();
     xg_ai_model.clear();
-    xg_python_exe.clear();
     xg_additional_instruction.clear();
     xg_initial_question.clear();
     xg_dict_name.clear();
