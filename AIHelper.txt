@@ -38,13 +38,13 @@
 - APIキーって何？ → AIを使うための秘密の文字列です。パスワードと同じように、他人に見せないようにしてください。
 - AIプロバイダーって何？ → AIサービスを提供する事業者です。
 - AIモデルって何？ → AIの種類です。
+- 英語でなんか出てきた → エラーメッセージなどは翻訳が難しいのでそのままになっています。Web検索や翻訳サービスなどをご利用ください。
 - 動作が遅いんだけど？
   → 原因はいくつか考えられます。
   1. 無料プランのAIは利用制限（レート制限）が厳しく、応答が遅くなることがあります → 有料プランへの切り替えで改善する場合があります。
   2. モデル自体の推論速度がプロバイダーやモデルの種類によって異なります → より軽量・高速なモデルを選ぶと改善する場合があります。
   3. ご利用中のインターネット回線の速度も影響します。
-- 「ライブラリ未インストール」というエラーが出た → `requirements.txt` に記載されたパッケージのうち、使いたいプロバイダーに対応するものがインストールされていません。手順2を再度実行してください。
-- 環境変数を設定したのに反映されない → 開いているXWordGiverを一度すべて閉じてから起動し直してください。
+- 環境変数を設定したのに反映されない → 開いているクロスワード ギバーを一度すべて閉じてから起動し直してください。
 
 ---
 
@@ -91,5 +91,4 @@ XWordGiver's "AI Helper" is your partner, capable of casual conversation and reg
   1. Free-tier plans often have strict rate limits, which can slow down responses — upgrading to a paid plan may help.
   2. Inference speed varies by provider and model — a lighter/faster model may respond quicker.
   3. Your internet connection speed also affects response time.
-- I got a "library not installed" error → The package required for the provider you're trying to use isn't installed. Re-run step 2 above.
 - My environment variable isn't being picked up → Close and reopen XWordGiver completely; the changes only apply to newly opened windows.
