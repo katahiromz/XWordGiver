@@ -52,12 +52,11 @@ INT xg_nHelperY = CW_USEDEFAULT;
 INT xg_nHelperCX = CW_USEDEFAULT;
 INT xg_nHelperCY = CW_USEDEFAULT;
 
-BOOL XgIsUserJapanese(VOID) noexcept;
 BOOL Helper_Open(HWND hwndOwner);
 XGStringW XgGetRowOrColumnText(BOOL bRow, INT iRowOrCol);
 void Helper_WaitForReady(void);
 void Helper_AskQuestion(HWND hwnd, PCWSTR text);
-static void Helper_AddLine(HWND hwnd, PCWSTR pszLine);
+void Helper_AddLine(HWND hwnd, PCWSTR pszLine);
 
 // 行または列を書き換える。
 BOOL XgSetBoardRowOrColumn(BOOL bRow, INT nNumber, const XGStringW& text);
@@ -250,6 +249,9 @@ static bool FindNextAICommand(const std::wstring& line, size_t& pos, std::wstrin
 		return true;
 	}
 }
+
+static void Helper_StopAIProcess(HWND hwnd);
+static void Helper_PleaseWait(HWND hwnd);
 
 // AIヘルパーからの出力行を解析し、「[[...:...]]」形式の
 // コマンドを見つけたら、該当するカギ文章を書き換える。
@@ -717,7 +719,7 @@ static std::wstring Helper_StripAiPreTextTag(PCWSTR pszLine)
 }
 
 // lst1に1行追加し、末尾までスクロールする。
-static void Helper_AddLine(HWND hwnd, PCWSTR pszLine)
+void Helper_AddLine(HWND hwnd, PCWSTR pszLine)
 {
 	HWND hLst1 = GetDlgItem(hwnd, lst1);
 	if (!hLst1)
