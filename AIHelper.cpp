@@ -1502,6 +1502,9 @@ static void Helper_OnClose(HWND hwnd)
 {
 	Helper_StopAIProcess(hwnd);
 	DestroyWindow(hwnd);
+#ifdef HELPER_STANDALONE
+	PostQuitMessage(0);
+#endif
 }
 
 // WM_TIMER
