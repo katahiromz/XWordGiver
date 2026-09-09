@@ -27,7 +27,7 @@
 
 ## 注意事項
 
-- 生成AIは間違いをすることがあります。結果は必ずご確認ください。
+- 生成AIは間違いをすることがあります。
 - AIヘルパーはインターネットを通じて外部と通信します。ネット接続のない環境では動作しません。
 - APIキーの取り扱いにご注意ください。
   - 環境変数はご自身のPC上でのみ有効です。他人とファイルを共有する際、APIキーが書かれた設定ファイルやスクリーンショットを一緒に送らないようご注意ください。
@@ -75,7 +75,7 @@ XWordGiver's "AI Helper" is your partner, capable of casual conversation and reg
 
 ## Notes
 
-- Generative AI may make mistakes. Please be sure to verify the results.
+- Generative AI may make mistakes.
 - AI Helper communicates with external systems via the Internet. It does not function in environments without an Internet connection.
 - Handle your API key carefully.
   - Environment variables are only set on your own PC. When sharing files with others, make sure not to include configuration files or screenshots that expose your API key.
