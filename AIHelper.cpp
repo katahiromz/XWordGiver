@@ -1135,7 +1135,7 @@ static BOOL Helper_StartAIProcess(HWND hwnd)
 	xg_hReaderThread = CreateThread(nullptr, 0, Helper_ReaderThreadProc, hwnd, 0, nullptr);
 	return TRUE;
 #else
-	Helper_AddLine(hwnd, L"> (native C++ AI client, no Python)");
+	Helper_AddLine(hwnd, L"> (native C++ AI client)");
 	Helper_PleaseWait(hwnd);
 
 	if (!xg_hReadyEvent)
