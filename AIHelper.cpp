@@ -1088,8 +1088,7 @@ static BOOL Helper_StartAIProcess(HWND hwnd)
 	else
 		PathAppendW(path, L"AIHelper.py");
 
-	std::wstring str;
-	str += L"python \"";
+	std::wstring str = L"python \"";
 	str += path;
 	str += L"\" --provider=";
 	str += Helper_SanitizeString(xg_ai_provider);
