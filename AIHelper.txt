@@ -6,35 +6,24 @@
 
 ## セットアップ手順
 
-1. Pythonをインストールする
-   - [python.org](https://www.python.org/downloads/) から最新版をダウンロードしてインストールします。
-   - インストーラーの最初の画面で 「Add python.exe to PATH」にチェックを入れる のを忘れないでください（後から設定するより簡単です）。
+(バージョン.5.3.5以降はPython不要になりました)
 
-2. 依存パッケージをインストールする
-   - スタートメニューから「コマンドプロンプト」を 右クリック→「管理者として実行」 で開きます。
-   - `cd`コマンドでアプリのフォルダに移動します。
-   - 以下を実行します。
-     ```
-     pip install -r requirements.txt
-     ```
-   - ※管理者権限が必要なのは、パッケージをシステム全体（全ユーザー）にインストールするためです。エラーが出る場合は、管理者権限なしでも `pip install --user -r requirements.txt` で個人用にインストールできます。
-
-3. お使いの生成AIのAPIキーを取得する
+1. お使いの生成AIのAPIキーを取得する
    - 各プロバイダーの管理画面からAPIキーを発行してください。
 
-4. システムの環境変数を設定する
+2. システムの環境変数を設定する
    - スタートメニューで「環境変数」と検索し、「システム環境変数の編集」を開きます。
    - 「環境変数」ボタン→「ユーザー環境変数」の「新規」をクリックします。
    - 変数名に以下のいずれかを、変数値に取得したAPIキーを入力します。
      `GOOGLE_API_KEY` / `OPENAI_API_KEY` / `XAI_API_KEY` / `DEEPSEEK_API_KEY` / `SAKANA_API_KEY` / `DASHSCOPE_API_KEY` / `MOONSHOT_API_KEY` / `MISTRAL_API_KEY` / `LLAMA_API_KEY`
 
-5. XWordGiverを再起動する
+3. クロスワード ギバーを再起動する
 
-6. 「ファイル」メニュー→「設定」→「AIヘルパー」タブを開く
+4. 「ファイル」メニュー→「設定」→「AIヘルパー」タブを開く
 
-7. 「AIプロバイダー」と「AIモデル」を選択する
+5. 「AIプロバイダー」と「AIモデル」を選択する
 
-8. 「適用」ボタンをクリックする
+6. 「適用」ボタンをクリックする
 
 ## 注意事項
 
@@ -46,8 +35,6 @@
 
 ## よくある質問
 
-- Pythonって何？ → AI(人工知能)などを動かすためのプログラム言語です。
-- pipって何？ → Pythonにパッケージ(機能)を導入するためのプログラムです。
 - APIキーって何？ → AIを使うための秘密の文字列です。パスワードと同じように、他人に見せないようにしてください。
 - AIプロバイダーって何？ → AIサービスを提供する事業者です。
 - AIモデルって何？ → AIの種類です。
@@ -67,35 +54,24 @@ XWordGiver's "AI Helper" is your partner, capable of casual conversation and reg
 
 ## Setup Steps
 
-1. Install Python
-   - Download the latest version from [python.org](https://www.python.org/downloads/).
-   - On the installer's first screen, be sure to check "Add python.exe to PATH" (this is easier than setting it manually afterward).
+(Python is no longer required for version 5.3.5 or later)
 
-2. Install the dependent packages
-   - From the Start menu, right-click "Command Prompt" and select "Run as administrator".
-   - Use the `cd` command to navigate to the app's folder.
-   - Run the following:
-     ```
-     pip install -r requirements.txt
-     ```
-   - Administrator privileges are required because this installs the packages system-wide (for all users). If you get an error, you can instead install them for your user only, without administrator privileges, using `pip install --user -r requirements.txt`.
-
-3. Obtain the API key for the generative AI you plan to use
+1. Obtain the API key for the generative AI you plan to use
    - Get an API key from your chosen provider's dashboard.
 
-4. Set a system environment variable
+2. Set a system environment variable
    - Search "environment variables" in the Start menu and open "Edit the system environment variables."
    - Click "Environment Variables," then "New" under "User variables."
    - Enter one of the following as the variable name, and your API key as the value:
      `GOOGLE_API_KEY`, `OPENAI_API_KEY`, `XAI_API_KEY`, `DEEPSEEK_API_KEY`, `SAKANA_API_KEY`, `DASHSCOPE_API_KEY`, `MOONSHOT_API_KEY`, `MISTRAL_API_KEY`, `LLAMA_API_KEY`
 
-5. Restart XWordGiver
+3. Restart XWordGiver
 
-6. Go to the "File" menu → "Settings" → "AI Helper" tab
+4. Go to the "File" menu → "Settings" → "AI Helper" tab
 
-7. Set the "AI Provider" and "AI Model"
+5. Set the "AI Provider" and "AI Model"
 
-8. Click "Apply"
+6. Click "Apply"
 
 ## Notes
 
@@ -107,8 +83,6 @@ XWordGiver's "AI Helper" is your partner, capable of casual conversation and reg
 
 ## FAQ
 
-- What is Python? → A programming language used to run AI (artificial intelligence) and other applications.
-- What is pip? → A program used to install packages (features) for Python.
 - What is an API key? → A secret string of characters used to access AI services. Treat it like a password — never share it with others.
 - What is an AI provider? → A company that offers AI services.
 - What is an AI model? → A specific type of AI.
