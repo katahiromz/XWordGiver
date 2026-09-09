@@ -6703,6 +6703,9 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT /*codeNo
     case ID_OPENLICENSE:    // Licenseを開く。
         XgOpenLocalFile(hwnd, XgLoadStringDx1(IDS_LICENSE));
         break;
+    case ID_OPENAIHELPERTXT:
+        XgOpenLocalFile(hwnd, L"AIHelper.txt");
+        break;
     case ID_OPENPATTERNS:    // パターンを開く。
         XgOpenPatterns(hwnd);
         break;

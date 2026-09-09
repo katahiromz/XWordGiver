@@ -525,6 +525,7 @@
 #define ID_CLEARALLCLUES                    612
 #define ID_GENERATEHINTSALL                 613
 #define ID_CLEARTHISCLUE                    614
+#define ID_OPENAIHELPERTXT                  615
 #define ID_TT_BASE                          10000
 
 #define ctl2                                1185
