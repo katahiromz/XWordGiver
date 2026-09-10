@@ -1567,8 +1567,8 @@ static void Helper_OnTimer(HWND hwnd, UINT id)
 // WM_GETMINMAXINFO: ウィンドウの大きさを制限する。
 static void Helper_OnGetMinMaxInfo(HWND hwnd, LPMINMAXINFO lpMinMaxInfo)
 {
-	lpMinMaxInfo->ptMinTrackSize.x = 100;
-	lpMinMaxInfo->ptMinTrackSize.y = 100;
+	lpMinMaxInfo->ptMinTrackSize.x = 200;
+	lpMinMaxInfo->ptMinTrackSize.y = 200;
 }
 
 static INT_PTR CALLBACK

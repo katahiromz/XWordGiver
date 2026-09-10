@@ -116,6 +116,91 @@ static bool ExtractJsonString(const std::string& json, const char* key, std::str
 	return true;
 }
 
+// HTTPステータスコードを一言で説明する
+static std::wstring HttpStatusDescription(DWORD status)
+{
+	bool jp = XgIsUserJapanese();
+	switch (status) {
+	case 400: return jp ? L"リクエスト内容が不正です。" : L"Bad request. ";
+	case 401: return jp ? L"APIキーが無効か認証に失敗しました。" : L"Invalid API key or authentication failed. ";
+	case 403: return jp ? L"アクセスが拒否されました（権限不足の可能性）。" : L"Access denied (possibly insufficient permissions). ";
+	case 404: return jp ? L"モデルまたはエンドポイントが見つかりません。" : L"Model or endpoint not found. ";
+	case 408: return jp ? L"リクエストがタイムアウトしました。" : L"Request timed out. ";
+	case 429: return jp ? L"レート制限またはクォータを超過しました。" : L"Rate limit or quota exceeded. ";
+	case 500: case 502: case 503: case 504:
+		return jp ? L"サーバー側で一時的なエラーが発生しています。" : L"Temporary server-side error. ";
+	default:  return L"";
+	}
+}
+
+// "retryDelay":"5.5s" のような値を拾う（Gemini等）
+static bool ExtractRetryDelay(const std::string& json, std::wstring& delayOut)
+{
+	std::string val;
+	if (!ExtractJsonString(json, "retryDelay", val)) return false;
+	delayOut = Utf8ToWide(val);
+	return true;
+}
+
+// APIキー等の機微情報が混じらないよう、メッセージ中のURLや改行以降を軽く整理する
+static std::wstring TrimApiMessage(const std::wstring& raw)
+{
+	std::wstring msg = raw;
+	// 1行目だけを採用（改行以降は詳細情報が続くことが多いため）
+	size_t nl = msg.find_first_of(L"\r\n");
+	if (nl != std::wstring::npos)
+		msg = msg.substr(0, nl);
+	// 文中に埋め込まれたURL（"For more information..." 等）以降は冗長なので削る
+	size_t urlPos = msg.find(L"http://");
+	size_t urlPos2 = msg.find(L"https://");
+	size_t cut = std::wstring::npos;
+	if (urlPos != std::wstring::npos) cut = urlPos;
+	if (urlPos2 != std::wstring::npos && (cut == std::wstring::npos || urlPos2 < cut)) cut = urlPos2;
+	if (cut != std::wstring::npos) {
+		// URL直前にある "head to:" 等の接続句も一緒に削る
+		size_t trimTo = msg.find_last_of(L".", cut);
+		msg = (trimTo != std::wstring::npos) ? msg.substr(0, trimTo + 1) : msg.substr(0, cut);
+	}
+	// 前後の空白を除去
+	size_t s = msg.find_first_not_of(L" \t");
+	size_t e = msg.find_last_not_of(L" \t");
+	if (s == std::wstring::npos) return L"";
+	return msg.substr(s, e - s + 1);
+}
+
+// HTTPエラー応答全体を、ユーザーに見せやすい形に整形する
+static std::wstring FormatApiError(const std::wstring& provider, DWORD status, const std::string& resp)
+{
+	bool jp = XgIsUserJapanese();
+	std::wstring out = L"[" + provider + L"] " + (jp ? L"エラー" : L"Error") +
+						L" (HTTP " + std::to_wstring(status) + L")";
+
+	std::wstring desc = HttpStatusDescription(status);
+	if (!desc.empty())
+		out += L" — " + desc;
+
+	std::string msg;
+	if (ExtractJsonString(resp, "message", msg) && !msg.empty()) {
+		std::wstring wmsg = TrimApiMessage(Utf8ToWide(msg));
+		if (!wmsg.empty())
+			out += L"\n" + wmsg;
+	}
+
+	std::wstring retryDelay;
+	if (ExtractRetryDelay(resp, retryDelay)) {
+		out += jp ? (L"\n→ " + retryDelay + L" 後に再試行してください。")
+				  : (L"\n→ Please retry after " + retryDelay + L".");
+	} else if (status == 429) {
+		out += jp ? L"\n→ しばらく時間をおいてから再試行してください。"
+				  : L"\n→ Please wait a while and try again.";
+	} else if (status == 401 || status == 403) {
+		out += jp ? L"\n→ APIキーや利用権限を確認してください。"
+				  : L"\n→ Please check your API key and permissions.";
+	}
+
+	return out;
+}
+
 // ---------------------------------------------------------------------------
 // プロバイダ設定
 // ---------------------------------------------------------------------------
@@ -288,11 +373,7 @@ static bool AskOpenAICompat(const ProviderInfo& info, const std::wstring& model,
 	std::string resp;
 	DWORD status = 0;
 	if (!HttpPost(info.host, INTERNET_DEFAULT_HTTPS_PORT, info.path, headers, bodyUtf8, resp, status, err)) {
-		if (err.empty()) err = L"HTTP " + std::to_wstring(status);
-		// エラー本文からメッセージを取れるだけ取る
-		std::string msg;
-		if (ExtractJsonString(resp, "message", msg) || ExtractJsonString(resp, "error", msg))
-			err += L" / " + Utf8ToWide(msg);
+		err = FormatApiError(xg_ai_provider, status, resp);
 		return false;
 	}
 
@@ -330,10 +411,7 @@ static bool AskClaude(const ProviderInfo& info, const std::wstring& model,
 	std::string resp;
 	DWORD status = 0;
 	if (!HttpPost(info.host, INTERNET_DEFAULT_HTTPS_PORT, info.path, headers, bodyUtf8, resp, status, err)) {
-		if (err.empty()) err = L"HTTP " + std::to_wstring(status);
-		std::string msg;
-		if (ExtractJsonString(resp, "message", msg) || ExtractJsonString(resp, "error", msg))
-			err += L" / " + Utf8ToWide(msg);
+		err = FormatApiError(L"claude", status, resp);
 		return false;
 	}
 
@@ -387,10 +465,7 @@ static bool AskGemini(const ProviderInfo& info, const std::wstring& model,
 	std::string resp;
 	DWORD status = 0;
 	if (!HttpPost(info.host, INTERNET_DEFAULT_HTTPS_PORT, path, headers, bodyUtf8, resp, status, err)) {
-		if (err.empty()) err = L"HTTP " + std::to_wstring(status);
-		std::string msg;
-		if (ExtractJsonString(resp, "message", msg) || ExtractJsonString(resp, "error", msg))
-			err += L" / " + Utf8ToWide(msg);
+		err = FormatApiError(L"gemini", status, resp);
 		return false;
 	}
 
