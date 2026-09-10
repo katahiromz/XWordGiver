@@ -1142,7 +1142,7 @@ static BOOL Helper_StartAIProcess(HWND hwnd)
 #else
 	std::wstring line;
 	if (XgIsUserJapanese()) {
-		line += L[システム] "AIモデル「";
+		line += L"[システム] "AIモデル「";
 		line += xg_ai_model;
 		line += L"」の言霊を召喚中...";
 	} else {
