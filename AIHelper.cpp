@@ -1139,7 +1139,17 @@ static BOOL Helper_StartAIProcess(HWND hwnd)
 	xg_hReaderThread = CreateThread(nullptr, 0, Helper_ReaderThreadProc, hwnd, 0, nullptr);
 	return TRUE;
 #else
-	Helper_AddLine(hwnd, L"> (native C++ AI client)");
+	std::wstring line;
+	if (XgIsUserJapanese()) {
+		line += L"AIモデル ";
+		line += xg_ai_model;
+		line += L" の言霊を召喚します。";
+	} else {
+		line += L"Summoning the spirit of the AI ​​model ";
+		line += xg_ai_model;
+		line += L". ";
+	}
+	Helper_AddLine(hwnd, line.c_str());
 	Helper_PleaseWait(hwnd);
 
 	if (!xg_hReadyEvent)
