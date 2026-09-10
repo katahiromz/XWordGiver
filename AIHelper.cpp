@@ -1142,13 +1142,13 @@ static BOOL Helper_StartAIProcess(HWND hwnd)
 #else
 	std::wstring line;
 	if (XgIsUserJapanese()) {
-		line += L"AIモデル「";
+		line += L[システム] "AIモデル「";
 		line += xg_ai_model;
-		line += L"」の言霊を召喚します。";
+		line += L"」の言霊を召喚中...";
 	} else {
-		line += L"Summoning the spirit of the AI ​​model '";
+		line += L"[System] Summoning the spirit of AI ​​model '";
 		line += xg_ai_model;
-		line += L"'. ";
+		line += L"'... ";
 	}
 	Helper_AddLine(hwnd, line.c_str());
 	Helper_PleaseWait(hwnd);
@@ -1245,9 +1245,9 @@ void Helper_AskQuestion(HWND hwnd, PCWSTR text)
 		// 実行
 		XgParseAndApplyAICommand(str.c_str());
 		if (XgIsUserJapanese())
-			Helper_AddLine(hwnd, L"システムコマンドを実行しました。");
+			Helper_AddLine(hwnd, L"[システム] システムコマンドを実行しました。");
 		else
-			Helper_AddLine(hwnd, L"The system command has been executed. ");
+			Helper_AddLine(hwnd, L"[System] The system command has been executed. ");
 		return;
 	}
 
