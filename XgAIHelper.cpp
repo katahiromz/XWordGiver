@@ -10,6 +10,7 @@ extern std::wstring xg_additional_instruction;
 INT_PTR CALLBACK
 XgAIHelperDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
+    static HBITMAP s_hbm = nullptr;
     switch (uMsg)
     {
     case WM_INITDIALOG:
@@ -45,8 +46,28 @@ XgAIHelperDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
             SetDlgItemTextW(hwnd, cmb1, xg_ai_provider.c_str());
             SetDlgItemTextW(hwnd, cmb2, xg_ai_model.c_str());
             SetDlgItemTextW(hwnd, edt2, xg_additional_instruction.c_str());
+
+            HWND hStc1 = GetDlgItem(hwnd, stc1);
+
+            s_hbm = LoadBitmapW(GetModuleHandleW(nullptr), MAKEINTRESOURCEW(5));
+            SendMessageW(hStc1, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)s_hbm);
+
+            BITMAP bm;
+            GetObjectW(s_hbm, sizeof(bm), &bm);
+
+            RECT rc;
+            GetWindowRect(hStc1, &rc);
+            MapWindowRect(nullptr, hwnd, &rc);
+            MoveWindow(hStc1, rc.left, rc.top, bm.bmWidth, bm.bmHeight, TRUE);
         }
         return TRUE;
+    case WM_DESTROY:
+        if (s_hbm)
+        {
+            DeleteObject(s_hbm);
+            s_hbm = nullptr;
+        }
+        break;
     case WM_COMMAND:
         switch (LOWORD(wParam))
         {

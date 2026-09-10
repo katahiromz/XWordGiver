@@ -40,6 +40,7 @@ static volatile BOOL xg_bReaderStop = FALSE;
 static HANDLE        xg_hReadyEvent = nullptr;
 
 HWND xg_hwndAIHelper = nullptr;
+HBITMAP g_hbmFairy = nullptr;
 std::wstring xg_ai_provider = L"gemini";
 std::wstring xg_ai_model = L"gemini-3.6-flash";
 std::wstring xg_additional_instruction;
@@ -1308,18 +1309,28 @@ static void CreateAIHelperControls(HWND hwnd)
 	LONG baseUnitX, baseUnitY;
 	Helper_ComputeDialogBaseUnits(g_hFont, baseUnitX, baseUnitY);
 
+	// イメージを読み込み
+	g_hbmFairy = LoadBitmapW(xg_hAIHelperInst, MAKEINTRESOURCEW(4));
+	BITMAP bm;
+	GetObjectW(g_hbmFairy, sizeof(bm), &bm);
+
 	auto X = [baseUnitX](LONG du) { return DuToPixelX(du, baseUnitX); };
 	auto Y = [baseUnitY](LONG du) { return DuToPixelY(du, baseUnitY); };
 
 	HWND hLst1 = CreateWindowExW(0, L"EDIT", nullptr,
 		WS_CHILD | WS_VISIBLE | WS_TABSTOP | WS_BORDER | WS_VSCROLL |
 		ES_MULTILINE | ES_READONLY | ES_AUTOVSCROLL,
-		X(5), Y(7), X(270), Y(98),
+		X(5), Y(7), X(270), Y(92),
 		hwnd, (HMENU)(INT_PTR)lst1, xg_hAIHelperInst, nullptr);
+
+	HWND hStc1 = CreateWindowExW(0, L"STATIC", nullptr,
+		WS_CHILD | WS_VISIBLE | SS_BITMAP,
+		X(5), Y(100), X(20), Y(20),
+		hwnd, (HMENU)(INT_PTR)stc1, xg_hAIHelperInst, nullptr);
 
 	HWND hEdt1 = CreateWindowExW(WS_EX_CLIENTEDGE, L"EDIT", nullptr,
 		WS_CHILD | WS_VISIBLE | ES_AUTOHSCROLL,
-		X(6), Y(113), X(203), Y(14),
+		X(35), Y(112), X(170), Y(14),
 		hwnd, (HMENU)(INT_PTR)edt1, xg_hAIHelperInst, nullptr);
 
 	HWND hOk = CreateWindowExW(0, L"BUTTON", L"Enter",
@@ -1330,6 +1341,12 @@ static void CreateAIHelperControls(HWND hwnd)
 	SendMessageW(hLst1, WM_SETFONT, (WPARAM)g_hFont, FALSE);
 	SendMessageW(hEdt1, WM_SETFONT, (WPARAM)g_hFont, FALSE);
 	SendMessageW(hOk, WM_SETFONT, (WPARAM)g_hFont, FALSE);
+
+	// hStc1のサイズを調整。
+	RECT rc2;
+	GetWindowRect(hStc1, &rc2);
+	MapWindowRect(nullptr, hwnd, &rc2);
+	MoveWindow(hStc1, rc2.left, rc2.top, bm.bmWidth, bm.bmHeight, TRUE);
 
 	// クライアント領域が283x133DU相当のサイズになるよう、ウィンドウ全体をリサイズする
 	RECT rc = { 0, 0, X(283), Y(133) };
@@ -1346,10 +1363,15 @@ static void CreateAIHelperControls(HWND hwnd)
 	xg_resizable.OnParentCreate(hwnd, TRUE, TRUE);
 	// lst1: ウィンドウのリサイズに合わせて幅・高さともに伸縮させる
 	xg_resizable.SetLayoutAnchor(lst1, mzcLA_TOP_LEFT, mzcLA_BOTTOM_RIGHT);
+	// stc1
+	xg_resizable.SetLayoutAnchor(stc1, mzcLA_BOTTOM_LEFT, mzcLA_BOTTOM_LEFT);
 	// edt1: 下端に張り付いたまま、幅だけ伸縮させる
 	xg_resizable.SetLayoutAnchor(edt1, mzcLA_BOTTOM_LEFT, mzcLA_BOTTOM_RIGHT);
 	// IDOK（Enterボタン）: サイズは固定のまま右下に追従させる
 	xg_resizable.SetLayoutAnchor(IDOK, mzcLA_BOTTOM_RIGHT);
+
+	// イメージをセット
+	SendDlgItemMessageW(hwnd, stc1, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)g_hbmFairy);
 }
 
 // Ctrl+ホイールによるズーム。lst1/edt1/IDOKのフォントを一括で変更する。
@@ -1505,6 +1527,12 @@ static void Helper_OnDestroy(HWND hwnd)
 	{
 		DeleteObject(g_hFont);
 		g_hFont = nullptr;
+	}
+
+	if (g_hbmFairy)
+	{
+		DeleteObject(g_hbmFairy);
+		g_hbmFairy = nullptr;
 	}
 }
 

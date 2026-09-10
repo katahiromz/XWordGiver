@@ -20,6 +20,10 @@ LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
 
 3 BITMAP "res/Bitmap_3.bmp"
 
+4 BITMAP "res/Bitmap_4.bmp"
+
+5 BITMAP "res/Bitmap_5.bmp"
+
 IDB_FROMWORDS BITMAP "res/Bitmap_100.bmp"
 
 //////////////////////////////////////////////////////////////////////////////
