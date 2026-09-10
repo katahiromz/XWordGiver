@@ -1141,13 +1141,13 @@ static BOOL Helper_StartAIProcess(HWND hwnd)
 #else
 	std::wstring line;
 	if (XgIsUserJapanese()) {
-		line += L"AIモデル ";
+		line += L"AIモデル「";
 		line += xg_ai_model;
-		line += L" の言霊を召喚します。";
+		line += L"」の言霊を召喚します。";
 	} else {
-		line += L"Summoning the spirit of the AI ​​model ";
+		line += L"Summoning the spirit of the AI ​​model '";
 		line += xg_ai_model;
-		line += L". ";
+		line += L"'. ";
 	}
 	Helper_AddLine(hwnd, line.c_str());
 	Helper_PleaseWait(hwnd);
