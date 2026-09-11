@@ -440,7 +440,7 @@ BOOL XgExplainThisClue(INT nNumber, BOOL bDown)
 	std::wstring name = (bDown ? L"D" : L"A");
 	name += std::to_wstring(nNumber);
 
-	auto line;
+	std::wstring line;
 	if (XgIsUserJapanese()) {
 		line += L"カギ ";
 		line += name;
