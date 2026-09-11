@@ -12,7 +12,7 @@ if(COMMAND cmake_policy)
 endif(COMMAND cmake_policy)
 
 # project name, version, and languages
-project(XWordGiver VERSION 5.3.5 LANGUAGES CXX RC)
+project(XWordGiver VERSION 5.3.6 LANGUAGES CXX RC)
 
 # add macro __XWORDGIVER__
 add_definitions(-D__XWORDGIVER__)
