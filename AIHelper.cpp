@@ -429,6 +429,7 @@ std::wstring XgGetAIStatus_ja(void)
 {
 	std::wstring ret;
 
+	ret += L"現在のカギは以下の通りです。";
 	for (INT iRow = 0; iRow < xg_nRows; ++iRow)
 	{
 		std::wstring name = L"R";
@@ -492,6 +493,7 @@ std::wstring XgGetAIStatus_en(void)
 {
 	std::wstring ret;
 
+	ret += L"The current clues are as follows. ";
 	for (INT iRow = 0; iRow < xg_nRows; ++iRow)
 	{
 		std::wstring name = L"R";
