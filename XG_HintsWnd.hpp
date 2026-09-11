@@ -775,6 +775,7 @@ public:
             DeleteMenu(hSubMenu, ID_CLEARTHISCLUE, MF_BYCOMMAND);
             DeleteMenu(hSubMenu, ID_GENERATEHINT, MF_BYCOMMAND);
             DeleteMenu(hSubMenu, ID_JUMPNUMBER, MF_BYCOMMAND);
+            DeleteMenu(hSubMenu, ID_EXPLAINTHISCLUE, MF_BYCOMMAND);
         }
 
         // スタティックなら色を変える。
@@ -797,8 +798,6 @@ public:
         }
 
         ::PostMessageW(hwnd, WM_NULL, 0, 0);
-        if (nCmd && nCmd != ID_GENERATEHINT)
-            ::PostMessageW(xg_hMainWnd, WM_COMMAND, nCmd, 0);
 
         if (nCmd == ID_GENERATEHINT)
         {
@@ -809,6 +808,15 @@ public:
         {
             BOOL XgClearClue(INT nNumber, BOOL bDown);
             XgClearClue(m_nNumber, m_bVert);
+        }
+        else if (nCmd == ID_EXPLAINTHISCLUE)
+        {
+            BOOL XgExplainThisClue(INT nNumber, BOOL bDown);
+            XgExplainThisClue(m_nNumber, m_bVert);
+        }
+        else if (nCmd)
+        {
+            ::PostMessageW(xg_hMainWnd, WM_COMMAND, nCmd, 0);
         }
 
         ::DestroyMenu(hMenu);

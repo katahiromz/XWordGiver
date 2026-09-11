@@ -6326,6 +6326,7 @@ void XgClearAllClues(HWND hwnd)
 }
 
 void XgRegenerateCluesAll(HWND hwnd);
+void XgCheckQualityOfAllClues(void);
 
 // コマンドを実行する。
 void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT /*codeNotify*/)
@@ -7616,6 +7617,10 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT /*codeNo
 
     case ID_GENERATEHINTSALL:
         XgRegenerateCluesAll(hwnd);
+        break;
+
+    case ID_CHECKQUALITYOFALLCLUES:
+        XgCheckQualityOfAllClues();
         break;
 
     default:

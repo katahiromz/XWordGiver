@@ -368,6 +368,7 @@
     - Made "AIHelper.txt" accessible from the Help menu.
     - Set the fairy image.
 - 2026-XX-YY ver.5.3.6
+    - Clue explanations and quality checks are now possible.
 
 # 開発履歴 (Japanese)
 
@@ -1055,3 +1056,4 @@
     - ヘルプメニューから「AIHelper.txt」を開けるように。
     - 妖精のイメージをセット。
 - 2026年XX月YY日 ver.5.3.6
+    - カギの解説と品質チェックが可能に。

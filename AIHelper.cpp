@@ -424,6 +424,54 @@ void XgRegenerateCluesAll(HWND hwnd)
 	Helper_AskQuestion(xg_hwndAIHelper, line);
 }
 
+// このカギを解説する。
+BOOL XgExplainThisClue(INT nNumber, BOOL bDown)
+{
+	// 単語が取得できなければ何もしない。
+	std::wstring word = XgGetHintWord(nNumber, bDown).c_str();
+	if (word.empty())
+		return FALSE;
+
+	// Open the AI helper (if already open, just bring it to the front).
+	Helper_Open(xg_hMainWnd);
+	Helper_WaitForReady();
+
+	// Build the target clue name (An / Dm).
+	std::wstring name = (bDown ? L"D" : L"A");
+	name += std::to_wstring(nNumber);
+
+	auto line;
+	if (XgIsUserJapanese()) {
+		line += L"カギ ";
+		line += name;
+		line += L" をわかりやすく解説してください。";
+	} else {
+		line += L"Please explain Clue ";
+		line += name;
+		line += L" in a way that is easy to understand. ";
+	}
+	Helper_AskQuestion(xg_hwndAIHelper, line.c_str());
+
+	return TRUE;
+}
+
+// すべてのカギの品質チェック。
+void XgCheckQualityOfAllClues(void)
+{
+	// Open the AI helper (if already open, just bring it to the front).
+	Helper_Open(xg_hMainWnd);
+	Helper_WaitForReady();
+
+	PCWSTR line;
+	if (XgIsUserJapanese()) {
+		line = L"すべてのカギの品質をチェックしてください。";
+	} else {
+		line = L"Please check the quality of all clues. ";
+	}
+
+	Helper_AskQuestion(xg_hwndAIHelper, line);
+}
+
 // AIに現在の状態を報告する（日本語）。
 std::wstring XgGetAIStatus_ja(void)
 {

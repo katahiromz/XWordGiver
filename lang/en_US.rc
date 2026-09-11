@@ -558,6 +558,9 @@ LANGUAGE LANG_ENGLISH, SUBLANG_DEFAULT
         MENUITEM SEPARATOR
         MENUITEM "AI: Re-&generate this clue", ID_GENERATEHINT
         MENUITEM "AI: Re-ge&nerate all the clues", ID_GENERATEHINTSALL
+        MENUITEM SEPARATOR
+        MENUITEM "AI: E&xplain this clue", ID_EXPLAINTHISCLUE
+        MENUITEM "AI: Check the &quality of all clues", ID_CHECKQUALITYOFALLCLUES
     }
     POPUP "Popup #2"
     {
