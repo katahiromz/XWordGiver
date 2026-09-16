@@ -790,6 +790,75 @@ static std::wstring Helper_StripAiPreTextTag(PCWSTR pszLine)
 	return result;
 }
 
+// 行頭禁則文字（行の先頭に来てはならない文字）かどうかを判定する
+static bool XgIsKinsokuLineHead(wchar_t ch)
+{
+	static const wchar_t* pszChars =
+		L"、。，．・：；？！ー"
+		L"）〕］｝〉》」』】"
+		L"｀＇\"’"
+		L"ぁぃぅぇぉっゃゅょゎ"
+		L"ァィゥェォッャュョヮ"
+		L"々〻ゝゞ"
+		L")]}>";
+	return wcschr(pszChars, ch) != nullptr;
+}
+
+// 行末禁則文字（行の末尾に来てはならない文字＝開き括弧類）かどうかを判定する
+static bool XgIsKinsokuLineTail(wchar_t ch)
+{
+	static const wchar_t* pszChars =
+		L"（〔［｛〈《「『【"
+		L"｀＇\"‘"
+		L"([{<";
+	return wcschr(pszChars, ch) != nullptr;
+}
+
+// lst1用のEditWordBreakProc。日本語の禁則処理（行頭禁則・行末禁則）を実装する。
+// EM_SETWORDBREAKPROCで登録すると、EDITコントロール自体の自動折り返し処理
+// （およびダブルクリック選択、Ctrl+矢印での単語移動）がこの関数の判定に従うため、
+// 表示テキストを一切書き換えずに禁則処理を実現できる。
+//
+// lpch: 現在の行（折り返し前のバッファ）の先頭ポインタ
+// ichCurrent: 判定対象の文字インデックス
+// cch: lpchバッファ内の有効文字数
+// code: WB_ISDELIMITER（区切り文字か）/ WB_LEFT（左方向の単語境界を探す）/
+//       WB_RIGHT（右方向の単語境界を探す）のいずれか
+static int CALLBACK Helper_Lst1WordBreakProc(LPTSTR lpch, int ichCurrent, int cch, int code)
+{
+	switch (code)
+	{
+	case WB_ISDELIMITER:
+		// 禁則対象の文字同士は「区切りではない」＝1つの単語の一部とみなし、
+		// ダブルクリック選択やCtrl+矢印移動でも分離されないようにする
+		if (ichCurrent > 0 && XgIsKinsokuLineHead(lpch[ichCurrent]))
+			return FALSE;
+		if (ichCurrent > 0 && XgIsKinsokuLineTail(lpch[ichCurrent - 1]))
+			return FALSE;
+		return TRUE;
+
+	case WB_LEFT:
+		// ichCurrentより左に、行頭禁則文字が続く限り戻る
+		while (ichCurrent > 0 && XgIsKinsokuLineHead(lpch[ichCurrent]))
+			--ichCurrent;
+		// 戻った先の直前が開き括弧（行末禁則文字）なら、その前でも折り返せないので更に戻る
+		while (ichCurrent > 0 && XgIsKinsokuLineTail(lpch[ichCurrent - 1]))
+			--ichCurrent;
+		return ichCurrent;
+
+	case WB_RIGHT:
+		// ichCurrentより右へ、行頭禁則文字が続く限り進める
+		while (ichCurrent < cch && XgIsKinsokuLineHead(lpch[ichCurrent]))
+			++ichCurrent;
+		// 進んだ先が開き括弧（行末禁則文字）なら、その手前では折り返せないので更に進める
+		while (ichCurrent < cch && XgIsKinsokuLineTail(lpch[ichCurrent]))
+			++ichCurrent;
+		return ichCurrent;
+	}
+
+	return ichCurrent;
+}
+
 // lst1に1行追加し、末尾までスクロールする。
 void Helper_AddLine(HWND hwnd, PCWSTR pszLine)
 {
@@ -1393,6 +1462,10 @@ static void CreateAIHelperControls(HWND hwnd)
 		ES_MULTILINE | ES_READONLY | ES_AUTOVSCROLL,
 		X(5), Y(7), X(270), Y(92),
 		hwnd, (HMENU)(INT_PTR)lst1, xg_hAIHelperInst, nullptr);
+
+	// 日本語ユーザーの場合、lst1の自動折り返しに禁則処理を適用する
+	if (XgIsUserJapanese())
+		SendMessageW(hLst1, EM_SETWORDBREAKPROC, 0, (LPARAM)Helper_Lst1WordBreakProc);
 
 	HWND hStc1 = CreateWindowExW(0, L"STATIC", nullptr,
 		WS_CHILD | WS_VISIBLE | SS_BITMAP,

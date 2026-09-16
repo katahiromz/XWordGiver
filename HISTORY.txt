@@ -371,6 +371,7 @@
     - Clue explanations and quality checks are now possible.
 - 2026-XX-YY ver.5.3.7
     - It is now possible to determine the season on the board.
+    - Applied Japanese line-breaking rules in the AI ​​Helper Console for Japanese.
 
 # 開発履歴 (Japanese)
 
@@ -1061,3 +1062,4 @@
     - カギの解説と品質チェックが可能に。
 - 2026年XX月YY日 ver.5.3.7
     - 盤面の季節の判定が可能に。
+    - 日本語のAIヘルパーコンソールで日本語禁則処理を適用した。
