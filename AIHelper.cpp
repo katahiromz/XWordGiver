@@ -472,6 +472,24 @@ void XgCheckQualityOfAllClues(void)
 	Helper_AskQuestion(xg_hwndAIHelper, line);
 }
 
+// 盤面の季節を判定する。
+void XgJudgeSeasonOfBoard(void)
+{
+	// Open the AI helper (if already open, just bring it to the front).
+	Helper_Open(xg_hMainWnd);
+	Helper_WaitForReady();
+
+	PCWSTR line;
+	if (XgIsUserJapanese()) {
+		line = L"盤面をご覧になり、盤面の季節を「冬～春」「春」「春～夏」「夏」「夏～秋」「秋」「秋～冬」「冬」「無季」「分類不可」のいずれかに分類してください。";
+	} else {
+		line = L"Please look at the board and classify the season depicted into one of the following categories: 'Winter–Spring,' 'Spring,' "
+		       L"'Spring–Summer,' 'Summer,' 'Summer–Autumn,' 'Autumn,' 'Autumn–Winter,' 'Winter,' 'Seasonless,' or 'Unclassifiable.' ";
+	}
+
+	Helper_AskQuestion(xg_hwndAIHelper, line);
+}
+
 // AIに現在の状態を報告する（日本語）。
 std::wstring XgGetAIStatus_ja(void)
 {

@@ -369,6 +369,8 @@
     - Set the fairy image.
 - 2026-09-11 ver.5.3.6
     - Clue explanations and quality checks are now possible.
+- 2026-XX-YY ver.5.3.7
+    - It is now possible to determine the season on the board.
 
 # 開発履歴 (Japanese)
 
@@ -1057,3 +1059,5 @@
     - 妖精のイメージをセット。
 - 2026年09月11日 ver.5.3.6
     - カギの解説と品質チェックが可能に。
+- 2026年XX月YY日 ver.5.3.7
+    - 盤面の季節の判定が可能に。
