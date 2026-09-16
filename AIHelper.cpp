@@ -481,10 +481,12 @@ void XgJudgeSeasonOfBoard(void)
 
 	PCWSTR line;
 	if (XgIsUserJapanese()) {
-		line = L"盤面をご覧になり、盤面の季節を「冬～春」「春」「春～夏」「夏」「夏～秋」「秋」「秋～冬」「冬」「無季」「分類不可」のいずれかに分類してください。";
+		line = L"盤面をご覧になり、盤面の季節を「冬～春」「春」「春～夏」「夏」「夏～秋」「秋」「秋～冬」「冬」「無季」「分類不可」のいずれかに分類してください。"
+		       L"また、季節らしさを1～5で評価してください。";
 	} else {
 		line = L"Please look at the board and classify the season depicted into one of the following categories: 'Winter–Spring,' 'Spring,' "
-		       L"'Spring–Summer,' 'Summer,' 'Summer–Autumn,' 'Autumn,' 'Autumn–Winter,' 'Winter,' 'Seasonless,' or 'Unclassifiable.' ";
+		       L"'Spring–Summer,' 'Summer,' 'Summer–Autumn,' 'Autumn,' 'Autumn–Winter,' 'Winter,' 'Seasonless,' or 'Unclassifiable.' "
+		       L"Please also rate the sense of the season on a scale of 1 to 5. ";
 	}
 
 	Helper_AskQuestion(xg_hwndAIHelper, line);
