@@ -546,7 +546,7 @@ LANGUAGE LANG_ENGLISH, SUBLANG_DEFAULT
         MENUITEM SEPARATOR
         MENUITEM "&Fit whole\tCtrl+F", ID_FITZOOM
         MENUITEM SEPARATOR
-        MENUITEM "AI: Determine the season of the board", ID_JUDGESEASONOFBOARD
+        MENUITEM "AI: Determine the board's season", ID_JUDGESEASONOFBOARD
     }
     POPUP "Popup #1"
     {
