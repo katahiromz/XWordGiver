@@ -21,7 +21,7 @@ XgAIHelperDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
             static const PCWSTR providers[] =
             {
                 L"chatgpt", L"gemini", L"claude", L"grok", L"deepseek", L"sakana",
-                L"qwen", L"kimi", L"mistral", L"llama",
+                L"qwen", L"kimi", L"mistral", L"llama", L"pepabo",
             };
             for (auto provider : providers)
                 SendDlgItemMessageW(hwnd, cmb1, CB_ADDSTRING, 0, (LPARAM)provider);
@@ -39,6 +39,7 @@ XgAIHelperDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
                 L"kimi-k3",
                 L"mistral-large-latest",
                 L"llama-4-maverick",
+                L"gpt-5-6-luna",
             };
             for (auto model : models)
                 SendDlgItemMessageW(hwnd, cmb2, CB_ADDSTRING, 0, (LPARAM)model);
@@ -117,6 +118,8 @@ XgAIHelperDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
                         SetDlgItemTextW(hwnd, cmb2, L"mistral-large-latest");
                     else if (lstrcmpW(text, L"llama") == 0)
                         SetDlgItemTextW(hwnd, cmb2, L"llama-4-maverick");
+                    else if (lstrcmpW(text, L"pepabo") == 0)
+                        SetDlgItemTextW(hwnd, cmb2, L"gpt-5-6-luna");
                     else
                         SetDlgItemTextW(hwnd, cmb2, L"");
 

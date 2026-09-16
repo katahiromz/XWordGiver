@@ -15,7 +15,7 @@
    - スタートメニューで「環境変数」と検索し、「システム環境変数の編集」を開きます。
    - 「環境変数」ボタン→「ユーザー環境変数」の「新規」をクリックします。
    - 変数名に以下のいずれかを、変数値に取得したAPIキーを入力します。
-     `GOOGLE_API_KEY` / `OPENAI_API_KEY` / `XAI_API_KEY` / `DEEPSEEK_API_KEY` / `SAKANA_API_KEY` / `DASHSCOPE_API_KEY` / `MOONSHOT_API_KEY` / `MISTRAL_API_KEY` / `LLAMA_API_KEY`
+     `GOOGLE_API_KEY` / `OPENAI_API_KEY` / `XAI_API_KEY` / `DEEPSEEK_API_KEY` / `SAKANA_API_KEY` / `DASHSCOPE_API_KEY` / `MOONSHOT_API_KEY` / `MISTRAL_API_KEY` / `LLAMA_API_KEY` / `AI_GATEWAY_API_KEY`（ロリポップ！AIゲートウェイ byGMOペパボ）
 
 3. クロスワード ギバーを再起動する
 
@@ -63,7 +63,7 @@ XWordGiver's "AI Helper" is your partner, capable of casual conversation and reg
    - Search "environment variables" in the Start menu and open "Edit the system environment variables."
    - Click "Environment Variables," then "New" under "User variables."
    - Enter one of the following as the variable name, and your API key as the value:
-     `GOOGLE_API_KEY`, `OPENAI_API_KEY`, `XAI_API_KEY`, `DEEPSEEK_API_KEY`, `SAKANA_API_KEY`, `DASHSCOPE_API_KEY`, `MOONSHOT_API_KEY`, `MISTRAL_API_KEY`, `LLAMA_API_KEY`
+     `GOOGLE_API_KEY`, `OPENAI_API_KEY`, `XAI_API_KEY`, `DEEPSEEK_API_KEY`, `SAKANA_API_KEY`, `DASHSCOPE_API_KEY`, `MOONSHOT_API_KEY`, `MISTRAL_API_KEY`, `LLAMA_API_KEY`, `AI_GATEWAY_API_KEY` (Lolipop! AI Gateway by GMO Pepabo)
 
 3. Restart XWordGiver
 

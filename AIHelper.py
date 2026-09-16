@@ -17,7 +17,7 @@ import argparse
 import os
 import sys
 
-PROVIDERS = ["chatgpt", "gemini", "claude", "grok", "deepseek", "sakana", "qwen", "kimi", "mistral", "llama"]
+PROVIDERS = ["chatgpt", "gemini", "claude", "grok", "deepseek", "sakana", "qwen", "kimi", "mistral", "llama", "pepabo"]
 
 DEFAULT_MODELS = {
     "chatgpt": "gpt-4o-mini",
@@ -30,6 +30,7 @@ DEFAULT_MODELS = {
     "kimi": "kimi-k3",
     "mistral": "mistral-large-latest",
     "llama": "llama-4-maverick",
+    "pepabo": "gpt-5-6-luna",
 }
 
 DEFAULT_MAX_TOKENS = 1024
@@ -45,6 +46,7 @@ OPENAI_COMPATIBLE_CONFIG = {
     "kimi": {"api_key_env": "MOONSHOT_API_KEY", "base_url": "https://api.moonshot.ai/v1"},
     "mistral": {"api_key_env": "MISTRAL_API_KEY", "base_url": "https://api.mistral.ai/v1"},
     "llama": {"api_key_env": "LLAMA_API_KEY", "base_url": "https://api.llama.com/compat/v1"},
+    "pepabo": {"api_key_env": "AI_GATEWAY_API_KEY", "base_url": "https://ai-gateway.lolipop.jp/v1"},
 }
 
 

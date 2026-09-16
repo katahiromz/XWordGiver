@@ -222,6 +222,7 @@ static const std::map<std::wstring, ProviderInfo> g_providers = {
 	{L"kimi",     {L"MOONSHOT_API_KEY",  L"api.moonshot.ai",              L"/v1/chat/completions", true,  false, false}},
 	{L"mistral",  {L"MISTRAL_API_KEY",   L"api.mistral.ai",               L"/v1/chat/completions", true,  false, false}},
 	{L"llama",    {L"LLAMA_API_KEY",     L"api.llama.com",                L"/compat/v1/chat/completions", true, false, false}},
+	{L"pepabo",   {L"AI_GATEWAY_API_KEY",L"ai-gateway.lolipop.jp",        L"/v1/chat/completions", true,  false, false}},
 	{L"claude",   {L"ANTHROPIC_API_KEY", L"api.anthropic.com",            L"/v1/messages",         false, true,  false}},
 	{L"gemini",   {L"GOOGLE_API_KEY",    L"generativelanguage.googleapis.com", L"", false, false, true}},
 };

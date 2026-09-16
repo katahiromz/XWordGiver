@@ -7,6 +7,8 @@
 #include <map>
 #include <string>
 
+// 対応プロバイダー: chatgpt, gemini, claude, grok, deepseek, sakana, qwen, kimi,
+//                   mistral, llama, pepabo
 // AIHelper2.cpp で実装
 BOOL Helper2_Start(HWND hwnd);
 void Helper2_Stop();
