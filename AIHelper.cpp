@@ -540,6 +540,7 @@ std::wstring XgGetAIStatus_ja(void)
 
 	if (!xg_bSolved) {
 		ret += L"クロスワードにはまだカギはありません。";
+		ret += L"二重マス単語はまだありません。";
 		return ret;
 	}
 
@@ -614,6 +615,7 @@ std::wstring XgGetAIStatus_en(void)
 
 	if (!xg_bSolved) {
 		ret += L"The crossword does not have clues yet. ";
+		ret += L"There's no double-frame word. ";
 		return ret;
 	}
 
