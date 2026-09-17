@@ -245,10 +245,9 @@ static bool FindNextAICommand(const std::wstring& line, size_t& pos, std::wstrin
 			continue; // コマンドの形式でない[[ ]]は読み飛ばす
 
 		auto key = inner.substr(0, colonPos);
-		auto text = inner.substr(colonPos + 1);
-		if (key.empty() || text.empty())
+		if (key.empty())
 			continue;
-
+		auto text = inner.substr(colonPos + 1);
 		outKey = std::move(key);
 		outText = std::move(text);
 		return true;
@@ -341,7 +340,12 @@ void CALLBACK XgParseAndApplyAICommand(PCWSTR pszLine)
 		if (bDoubleFrameWord) { // 二重マス単語
 			if (nNumber == 1) {
 				XGStringW word = XgNormalizeString(text.c_str()).c_str();
-				if (XgSetMarkedWord(word)) {
+				if (word.size()) {
+					if (XgSetMarkedWord(word)) {
+						bChanged = true;
+					}
+				} else {
+					XgSetMarkedWord();
 					bChanged = true;
 				}
 			}
