@@ -371,7 +371,6 @@
     - Clue explanations and quality checks are now possible.
 - 2026-XX-YY ver.5.3.7
     - It is now possible to determine the season on the board.
-    - Applied Japanese line-breaking rules to Japanese AI ​​Helper Console.
     - Added GMO Pepabo's "Lolipop! AI Gateway" to the AI ​​models.
     - It is now possible to configure double-frame word using AI Helper.
 
@@ -1064,6 +1063,5 @@
     - カギの解説と品質チェックが可能に。
 - 2026年XX月YY日 ver.5.3.7
     - 盤面の季節の判定が可能に。
-    - 日本語のAIヘルパーコンソールに日本語禁則処理を適用した。
     - AIモデルにGMOペパボの「ロリポップ！AIゲートウェイ」を追加。
     - AIヘルパーで二重マス単語の設定が可能に。
