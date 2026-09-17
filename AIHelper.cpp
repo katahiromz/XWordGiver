@@ -340,12 +340,7 @@ void CALLBACK XgParseAndApplyAICommand(PCWSTR pszLine)
 		if (bDoubleFrameWord) { // 二重マス単語
 			if (nNumber == 1) {
 				XGStringW word = XgNormalizeString(text.c_str()).c_str();
-				if (word.size()) {
-					if (XgSetMarkedWord(word)) {
-						bChanged = true;
-					}
-				} else {
-					XgSetMarkedWord();
+				if (XgSetMarkedWord(word)) {
 					bChanged = true;
 				}
 			}
