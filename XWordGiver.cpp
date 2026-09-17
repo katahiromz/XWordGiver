@@ -6211,7 +6211,7 @@ bool __fastcall XgDoLoadFileType(HWND hwnd, LPCWSTR pszFile, XG_FILETYPE type)
         return XgDoLoadCrpFile(hwnd, pszFile);
 
     // 二重マス単語を空にする。
-    XgSetMarkedWord();
+    XgSetMarkedWord(L"");
 
     try {
         XGStringW strText;

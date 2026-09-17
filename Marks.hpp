@@ -43,7 +43,5 @@ void __fastcall XgSetStringOfMarks(LPCWSTR psz);
 bool __fastcall XgGetMarkWord(const XG_Board *xw, XGStringW& str);
 // 二重マス単語を設定する。
 BOOL __fastcall XgSetMarkedWord(const XGStringW& str, WCHAR *pchNotFound = nullptr);
-// 二重マス単語を空にする。
-void __fastcall XgSetMarkedWord(void);
 // 二重マス単語候補を取得する。
 bool __fastcall XgGetMarkedCandidates(void);
