@@ -132,6 +132,8 @@ std::wstring XgMakeInitialQuestion_ja(void)
 		L"システムはあなたのコマンド出力「[[Rp:XXX]]」でRpを「XXX」に書き換えます(pは任意の自然数、XXXは新しい行文字列)。"
 		L"システムはあなたのコマンド出力「[[Cq:YYY]]」でCqを「YYY」に書き換えます(qは任意の自然数、YYYは新しい列文字列)。"
 		L"あなたは盤面のサイズを変更することはできません。"
+		L"システムはあなたのコマンド出力「[[W1:XXX]]」で二重マス単語を「XXX」に書き換えます(XXXは任意のテキスト)。"
+		L"二重マス単語は盤面にない文字を使えません。"
 
 		L"アプリの使い方を聞かれたら、「ヘルプメニューから付属のREADMEを読んでね」と答えてください。"
 		L"黒マスルールについて聞かれたら、「ヘルプメニューから付属のPolicy-JPN.txtを読んでね」と答えてください。"
@@ -166,6 +168,8 @@ std::wstring XgMakeInitialQuestion_en(void)
 		L"The system will rewrite Rp to \"XXX\" when your command output is \"[[Rp:XXX]]\" (p is any natural number, XXX is the new row string). "
 		L"The system will rewrite Cq to \"YYY\" when your command output is \"[[Cq:YYY]]\" (q is any natural number, YYY is the new column string). "
 		L"You cannot change the size of the board. "
+		L"The system replaces the double-frame word with \"XXX\" based on your command output \"[[W1:XXX]]\" (where XXX is any text). "
+		L"You cannot use letters that are not already on the board, for the double-frame word. "
 
 		L"If asked about how to use the app, please answer \"Please read the included README from Help menu.\" "
 		L"If asked about the black-cell rules, please answer \"Please read the included Policy-ENG.txt from Help menu.\" "
@@ -280,6 +284,7 @@ void CALLBACK XgParseAndApplyAICommand(PCWSTR pszLine)
 		// 先頭が A ならヨコのカギ、D ならタテのカギ。先頭が R なら行、C なら列。
 		WCHAR chType = key[0];
 		BOOL bDown = FALSE, bRow = FALSE, bSetBoard = FALSE;
+		BOOL bDoubleFrameWord = FALSE;
 		if (chType == L'A' || chType == L'a' || chType == L'Ａ' || chType == L'ａ')
 		{
 			bDown = FALSE;
@@ -299,6 +304,10 @@ void CALLBACK XgParseAndApplyAICommand(PCWSTR pszLine)
 		{
 			bRow = FALSE;
 			bSetBoard = TRUE;
+		}
+		else if (chType == L'W' || chType == L'w' || chType == L'Ｗ' || chType == L'ｗ')
+		{
+			bDoubleFrameWord = TRUE;
 		}
 		else
 			continue;
@@ -329,6 +338,16 @@ void CALLBACK XgParseAndApplyAICommand(PCWSTR pszLine)
 			continue;
 		}
 
+		if (bDoubleFrameWord) { // 二重マス単語
+			if (nNumber == 1) {
+				XGStringW word = XgNormalizeString(text.c_str()).c_str();
+				if (XgSetMarkedWord(word)) {
+					bChanged = true;
+				}
+			}
+			continue;
+		}
+
 		// カギ文章を書き換える（GUIと内部データの両方に反映される）。
 		if (XgSetHintText(nNumber, bDown, text.c_str()))
 			bChanged = true;
@@ -340,6 +359,8 @@ void CALLBACK XgParseAndApplyAICommand(PCWSTR pszLine)
 		xg_ubUndoBuffer.Commit(UC_SETALL, sa1, sa2);
 		// イメージ更新
 		XgUpdateImage(xg_hMainWnd);
+		// 二重マス単語を更新。
+		XgMarkUpdate();
 	}
 }
 
@@ -554,6 +575,16 @@ std::wstring XgGetAIStatus_ja(void)
 		}
 	}
 
+	// 二重マス単語
+	XGStringW word;
+	if (XgGetMarkWord(&xg_solution, word) && word.size()) {
+		ret += L"現在、二重マス単語は「";
+		ret += word.c_str();
+		ret += L"」です。";
+	} else {
+		ret += L"二重マス単語はありません。";
+	}
+
 	return ret;
 }
 
@@ -614,6 +645,17 @@ std::wstring XgGetAIStatus_en(void)
 			ret += L"\". ";
 		}
 	}
+
+	// Double-frame word
+	XGStringW word;
+	if (XgGetMarkWord(&xg_solution, word) && word.size()) {
+		ret += L"Currently, the double-frame word is '";
+		ret += word.c_str();
+		ret += L"'. ";
+	} else {
+		ret += L"There's no double-frame word. ";
+	}
+
 	return ret;
 }
 
