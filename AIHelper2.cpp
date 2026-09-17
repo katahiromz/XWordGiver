@@ -23,6 +23,8 @@
 std::map<std::wstring, std::vector<std::pair<std::wstring, std::wstring>>> g_histories; // provider -> [(role, content)]
 static volatile BOOL g_bStop = FALSE;
 static HWND   g_hwndNotify = nullptr;
+static CRITICAL_SECTION g_csHistory;
+static BOOL   g_bCsInitialized = FALSE;
 
 // ---------------------------------------------------------------------------
 // ユーティリティ
@@ -489,9 +491,20 @@ static bool AskGemini(const ProviderInfo& info, const std::wstring& model,
 static bool AskProvider(const std::wstring& provider, const std::wstring& model,
 						const std::wstring& userMessage, std::wstring& answer, std::wstring& err)
 {
+	if (g_bStop)
+		return false;
+
+	EnterCriticalSection(&g_csHistory);
+	// ロック中に再度チェック（Stop が先に走った場合）
+	if (g_bStop) {
+		LeaveCriticalSection(&g_csHistory);
+		return false;
+	}
+
 	auto it = g_providers.find(provider);
 	if (it == g_providers.end()) {
 		err = L"Unknown provider: " + provider;
+		LeaveCriticalSection(&g_csHistory);
 		return false;
 	}
 	const ProviderInfo& info = it->second;
@@ -514,6 +527,7 @@ static bool AskProvider(const std::wstring& provider, const std::wstring& model,
 		if (!hist.empty() && hist.back().first == L"user")
 			hist.pop_back();
 	}
+	LeaveCriticalSection(&g_csHistory);
 	return ok;
 }
 
@@ -572,9 +586,17 @@ static DWORD WINAPI AskWorkerProc(LPVOID lp)
 // プロセスの代わりに内部状態を初期化する
 BOOL Helper2_Start(HWND hwnd)
 {
+	if (!g_bCsInitialized) {
+		InitializeCriticalSection(&g_csHistory);
+		g_bCsInitialized = TRUE;
+	}
+
 	g_hwndNotify = hwnd;
 	g_bStop = FALSE;
+
+	EnterCriticalSection(&g_csHistory);
 	g_histories.clear();
+	LeaveCriticalSection(&g_csHistory);
 
 	// ※ xg_hReadyEvent の SetEvent は呼び出し側（Helper_StartAIProcess）で行う
 
@@ -592,8 +614,13 @@ void Helper2_Stop()
 {
 	g_bStop = TRUE;
 	g_hwndNotify = nullptr;
-	// 履歴は残しても良いが、明示的にクリア
-	g_histories.clear();
+
+	if (g_bCsInitialized) {
+		EnterCriticalSection(&g_csHistory);
+		g_histories.clear();
+		LeaveCriticalSection(&g_csHistory);
+		// 注: DeleteCriticalSection はプロセス終了時に任せる（多重 Start/Stop に耐えるため）
+	}
 }
 
 void Helper2_Ask(HWND hwnd, const std::wstring& text)
@@ -614,5 +641,9 @@ void Helper2_Ask(HWND hwnd, const std::wstring& text)
 
 void Helper2_ResetHistory()
 {
+	if (!g_bCsInitialized)
+		return;
+	EnterCriticalSection(&g_csHistory);
 	g_histories[xg_ai_provider].clear();
+	LeaveCriticalSection(&g_csHistory);
 }
