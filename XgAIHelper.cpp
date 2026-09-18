@@ -7,66 +7,64 @@ extern std::wstring xg_ai_provider;
 extern std::wstring xg_ai_model;
 extern std::wstring xg_additional_instruction;
 
-// 【暗号名：スポンジボブ】↓↓ここから↓↓
-// プロバイダーごとの既知AIモデル名一覧。
-struct FallbackModelList
+// プロバイダーごとの既知のAIモデル名一覧。
+struct KnownAIModelList
 {
     PCWSTR provider;
     const PCWSTR* models;
     size_t count;
 };
 
-// TODO: １ヵ月ごとに以下の既知AIモデル名一覧を更新せよ。先頭を無料モデルにしておくこと。
-static const PCWSTR s_chatgptFallback[] = {
+// TODO: １ヵ月ごとに以下の既知のAIモデル名一覧を更新せよ。可能ならば先頭を無料モデルにしておくこと。
+static const PCWSTR s_chatgptModels[] = {
     L"gpt-5.6-luna", L"gpt-5.6-sol", L"gpt-5.6-terra", L"gpt-6-astra", L"gpt-4.1", L"gpt-4o-mini",
 };
-static const PCWSTR s_geminiFallback[] = {
+static const PCWSTR s_geminiModels[] = {
     L"gemini-3.6-flash", L"gemini-3.8-flash", L"gemini-3.5-flash-lite", L"gemini-3.1-pro", L"gemini-3-deep-think",
 };
-static const PCWSTR s_claudeFallback[] = {
+static const PCWSTR s_claudeModels[] = {
     L"claude-haiku-4-5-20251001", L"claude-sonnet-5", L"claude-opus-5", L"claude-fable-5-1",
 };
-static const PCWSTR s_grokFallback[] = {
+static const PCWSTR s_grokModels[] = {
     L"grok-4", L"grok-4.1", L"grok-4.3", L"grok-4.5",
 };
-static const PCWSTR s_deepseekFallback[] = {
+static const PCWSTR s_deepseekModels[] = {
     L"deepseek-v4-flash", L"deepseek-v4-pro", L"deepseek-v3.2",
 };
-static const PCWSTR s_sakanaFallback[] = {
+static const PCWSTR s_sakanaModels[] = {
     L"sakana-namazu", L"sakana-fugu",
 };
-static const PCWSTR s_qwenFallback[] = {
+static const PCWSTR s_qwenModels[] = {
     L"qwen3-turbo", L"qwen-long", L"qwen3.7-plus", L"qwen3.7-max", L"qwen3.8-max",
 };
-static const PCWSTR s_kimiFallback[] = {
+static const PCWSTR s_kimiModels[] = {
     L"moonshot-v1-auto", L"kimi-k2.6", L"kimi-k3",
 };
-static const PCWSTR s_mistralFallback[] = {
+static const PCWSTR s_mistralModels[] = {
     L"mistral-small-latest", L"ministral-3-8b", L"mistral-medium-latest", L"mistral-large-latest",
 };
-static const PCWSTR s_llamaFallback[] = {
+static const PCWSTR s_llamaModels[] = {
     L"llama-4-scout", L"llama-4-maverick", L"llama-3.3-70b",
 };
-static const PCWSTR s_pepaboFallback[] = {
+static const PCWSTR s_pepaboModels[] = {
     L"gpt-4o-mini", L"gpt-5-6-luna",
 };
 
-#define FALLBACK_ENTRY(name, arr) { (name), (arr), _countof(arr) }
-static const FallbackModelList s_fallbackModels[] = {
-    FALLBACK_ENTRY(L"chatgpt",  s_chatgptFallback),
-    FALLBACK_ENTRY(L"gemini",   s_geminiFallback),
-    FALLBACK_ENTRY(L"claude",   s_claudeFallback),
-    FALLBACK_ENTRY(L"grok",     s_grokFallback),
-    FALLBACK_ENTRY(L"deepseek", s_deepseekFallback),
-    FALLBACK_ENTRY(L"sakana",   s_sakanaFallback),
-    FALLBACK_ENTRY(L"qwen",     s_qwenFallback),
-    FALLBACK_ENTRY(L"kimi",     s_kimiFallback),
-    FALLBACK_ENTRY(L"mistral",  s_mistralFallback),
-    FALLBACK_ENTRY(L"llama",    s_llamaFallback),
-    FALLBACK_ENTRY(L"pepabo",   s_pepaboFallback),
+#define MODELS_ENTRY(name, arr) { (name), (arr), _countof(arr) }
+static const KnownAIModelList s_knownAIModels[] = {
+    MODELS_ENTRY(L"chatgpt",  s_chatgptModels),
+    MODELS_ENTRY(L"gemini",   s_geminiModels),
+    MODELS_ENTRY(L"claude",   s_claudeModels),
+    MODELS_ENTRY(L"grok",     s_grokModels),
+    MODELS_ENTRY(L"deepseek", s_deepseekModels),
+    MODELS_ENTRY(L"sakana",   s_sakanaModels),
+    MODELS_ENTRY(L"qwen",     s_qwenModels),
+    MODELS_ENTRY(L"kimi",     s_kimiModels),
+    MODELS_ENTRY(L"mistral",  s_mistralModels),
+    MODELS_ENTRY(L"llama",    s_llamaModels),
+    MODELS_ENTRY(L"pepabo",   s_pepaboModels),
 };
-#undef FALLBACK_ENTRY
-// 【暗号名：スポンジボブ】↑↑ここまで↑↑
+#undef MODELS_ENTRY
 
 // cmb2（モデル一覧コンボ）を、指定プロバイダーの実際のモデル一覧で埋め直す。
 static void XgFillModelCombo(HWND hwnd, PCWSTR provider, PCWSTR preferredModel = nullptr)
@@ -74,7 +72,7 @@ static void XgFillModelCombo(HWND hwnd, PCWSTR provider, PCWSTR preferredModel =
     SendDlgItemMessageW(hwnd, cmb2, CB_RESETCONTENT, 0, 0);
 
     // 既知モデル名一覧
-    for (const auto& entry : s_fallbackModels)
+    for (const auto& entry : s_knownAIModels)
     {
         if (lstrcmpW(provider, entry.provider) == 0)
         {
