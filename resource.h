@@ -260,6 +260,7 @@
 #define IDS_UPDATEDICTFAIL                  336
 #define IDS_NOCHANGE                        337
 #define IDS_NODICTSELECTED                  338
+#define IDS_TT_BASE                         10000
 #define IDS_TT_NEW                          10100
 #define IDS_TT_GENERATE                     10101
 #define IDS_TT_OPEN                         10102
@@ -529,7 +530,6 @@
 #define ID_CHECKQUALITYOFALLCLUES           617
 #define ID_JUDGESEASON                      618
 #define ID_JUDGETHEME                       619
-#define ID_TT_BASE                          10000
 
 #define ctl2                                1185
 
@@ -537,7 +537,7 @@
     #ifndef APSTUDIO_READONLY_SYMBOLS
         #define _APS_NO_MFC                 1
         #define _APS_NEXT_RESOURCE_VALUE    100
-        #define _APS_NEXT_COMMAND_VALUE     10001
+        #define _APS_NEXT_COMMAND_VALUE     620
         #define _APS_NEXT_CONTROL_VALUE     1000
         #define _APS_NEXT_SYMED_VALUE       300
     #endif
