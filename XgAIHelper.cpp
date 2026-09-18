@@ -7,10 +7,7 @@ extern std::wstring xg_ai_provider;
 extern std::wstring xg_ai_model;
 extern std::wstring xg_additional_instruction;
 
-#include "AIHelper2.h" // XgGetAIModels
-
-// APIキー未設定時などのフォールバック用: プロバイダーごとの既知モデル名一覧。
-// XgGetAIModels（実際のAPI呼び出し）が失敗した場合にのみ使われる。
+// プロバイダーごとの既知AIモデル名一覧。
 // 各配列の先頭が既定選択候補となる。
 struct FallbackModelList
 {
@@ -19,7 +16,7 @@ struct FallbackModelList
     size_t count;
 };
 
-// TODO: １ヵ月ごとに以下の情報を更新する。
+// TODO: １ヵ月ごとに以下の既知AIモデル名一覧を更新する。
 static const PCWSTR s_chatgptFallback[] = {
     L"gpt-4o-mini", L"gpt-4o", L"gpt-4.1", L"gpt-4.1-mini", L"o3-mini", L"o4-mini",
 };
