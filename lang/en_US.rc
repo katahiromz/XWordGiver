@@ -1884,7 +1884,6 @@ STRINGTABLE
     IDS_TT_SOLVE, "Find a solution"
     IDS_TT_COPY, "Copy board"
     IDS_TT_PASTE, "Paste"
-    IDS_TT_GENERATEANSWER, "Generate crossword and show answer"
     IDS_TT_PRINTPROBLEM, "Print crossword"
     IDS_TT_PRINTANSWER, "Print crossword answer"
     IDS_TT_SOLVENOADDBLACK, "Find a solution (without &adding blocks)"

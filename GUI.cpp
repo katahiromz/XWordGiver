@@ -7992,18 +7992,19 @@ void MainWnd_OnNotify(HWND hwnd, int idCtrl, LPNMHDR pnmh) noexcept
         pttt = reinterpret_cast<LPTOOLTIPTEXT>(pnmh);
         pttt->hinst = xg_hInstance;
         pttt->lpszText = MAKEINTRESOURCE(pttt->hdr.idFrom + ID_TT_BASE);
+        // TODO: リソースIDを変更したら、以下が失敗しないようにする。
         assert(IDS_TT_NEW == ID_TT_BASE + ID_NEW);
         assert(IDS_TT_GENERATE == ID_TT_BASE + ID_GENERATE);
         assert(IDS_TT_OPEN == ID_TT_BASE + ID_OPEN);
         assert(IDS_TT_SAVEAS == ID_TT_BASE + ID_SAVEAS);
+        assert(IDS_TT_UNDO == ID_TT_BASE + ID_UNDO);
+        assert(IDS_TT_REDO == ID_TT_BASE + ID_REDO);
         assert(IDS_TT_SOLVE == ID_TT_BASE + ID_SOLVE);
         assert(IDS_TT_COPY == ID_TT_BASE + ID_COPY);
         assert(IDS_TT_PASTE == ID_TT_BASE + ID_PASTE);
         assert(IDS_TT_PRINTPROBLEM == ID_TT_BASE + ID_PRINTPROBLEM);
         assert(IDS_TT_PRINTANSWER == ID_TT_BASE + ID_PRINTANSWER);
         assert(IDS_TT_SOLVENOADDBLACK == ID_TT_BASE + ID_SOLVENOADDBLACK);
-        assert(IDS_TT_UNDO == ID_TT_BASE + ID_UNDO);
-        assert(IDS_TT_REDO == ID_TT_BASE + ID_REDO);
     }
 }
 

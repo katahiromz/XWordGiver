@@ -269,10 +269,9 @@
 #define IDS_TT_SOLVE                        10108
 #define IDS_TT_COPY                         10135
 #define IDS_TT_PASTE                        10136
-#define IDS_TT_GENERATEANSWER               10143
-#define IDS_TT_PRINTPROBLEM                 10151
-#define IDS_TT_PRINTANSWER                  10152
-#define IDS_TT_SOLVENOADDBLACK              10153
+#define IDS_TT_PRINTPROBLEM                 10157
+#define IDS_TT_PRINTANSWER                  10158
+#define IDS_TT_SOLVENOADDBLACK              10159
 
 #define ID_NEW                              100
 #define ID_GENERATE                         101
