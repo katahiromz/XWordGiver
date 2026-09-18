@@ -374,7 +374,8 @@
     - Added GMO Pepabo's "Lolipop! AI Gateway" to the AI ​​models.
     - It is now possible to configure double-frame word using AI Helper.
     - Fixed a menu issue.
-    - Embedded known AI model names
+    - Embedded known AI model names.
+    - Added AI Model "gemini-3.5-flash-lite".
 
 # 開発履歴 (Japanese)
 
@@ -1069,3 +1070,4 @@
     - AIヘルパーで二重マス単語の設定が可能に。
     - メニューの不具合を修正。
     - 既知のAIモデル名を埋め込む。
+    - AIモデル「gemini-3.5-flash-lite」を追加。

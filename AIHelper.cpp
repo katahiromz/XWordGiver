@@ -1798,10 +1798,10 @@ struct AIModelList
 
 // TODO: １ヵ月ごとに以下の既知のAIモデル名一覧を更新せよ。可能ならば先頭を無料モデルにしておくこと。
 static const PCWSTR s_chatgptModels[] = {
-    L"gpt-5.6-luna", L"gpt-5.6-sol", L"gpt-5.6-terra", L"gpt-6-astra", L"gpt-4.1", L"gpt-4o-mini",
+    L"gpt-4o-mini", L"gpt-4.1", L"gpt-5.6-luna", L"gpt-5.6-sol", L"gpt-5.6-terra", L"gpt-6-astra",
 };
 static const PCWSTR s_geminiModels[] = {
-    L"gemini-3.6-flash", L"gemini-3.8-flash", L"gemini-3.5-flash-lite", L"gemini-3.1-pro", L"gemini-3-deep-think",
+    L"gemini-3.5-flash-lite", L"gemini-3.6-flash", L"gemini-3.8-flash", L"gemini-3.1-pro", L"gemini-3-deep-think",
 };
 static const PCWSTR s_claudeModels[] = {
     L"claude-haiku-4-5-20251001", L"claude-sonnet-5", L"claude-opus-5", L"claude-fable-5-1",
@@ -1828,7 +1828,7 @@ static const PCWSTR s_llamaModels[] = {
     L"llama-4-scout", L"llama-4-maverick", L"llama-3.3-70b",
 };
 static const PCWSTR s_pepaboModels[] = {
-    L"gpt-4o-mini", L"gpt-5-6-luna",
+    L"gpt-4o-mini", L"gpt-5.6-luna",
 };
 
 #define MODELS_ENTRY(name, arr) { (name), (arr), _countof(arr) }
