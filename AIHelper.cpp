@@ -492,8 +492,8 @@ void XgCheckQualityOfAllClues(void)
 	Helper_AskQuestion(xg_hwndAIHelper, line);
 }
 
-// 盤面の季節を判定する。
-void XgJudgeSeasonOfBoard(void)
+// 季節を判定する。
+void XgJudgeSeason(void)
 {
 	// Open the AI helper (if already open, just bring it to the front).
 	Helper_Open(xg_hMainWnd);
@@ -501,11 +501,11 @@ void XgJudgeSeasonOfBoard(void)
 
 	PCWSTR line;
 	if (XgIsUserJapanese()) {
-		line = L"盤面の季節を「冬～春」「春」「春～夏」「夏」「夏～秋」"
+		line = L"このクロスワードの季節を「冬～春」「春」「春～夏」「夏」「夏～秋」"
 		       L"「秋」「秋～冬」「冬」「無季」「分類不可」のいずれかに分類してください。"
 		       L"また、季節感を1～5で評価してください。";
 	} else {
-		line = L"Please classify the season of the board into one of the following categories: 'Winter–Spring,' 'Spring,' "
+		line = L"Please classify the season of this crossword into one of the following categories: 'Winter–Spring,' 'Spring,' "
 		       L"'Spring–Summer,' 'Summer,' 'Summer–Autumn,' 'Autumn,' 'Autumn–Winter,' 'Winter,' 'Seasonless,' or 'Unclassifiable.' "
 		       L"Please also rate the sense of the season on a scale of 1 to 5. ";
 	}

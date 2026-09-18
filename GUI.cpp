@@ -6306,7 +6306,7 @@ void XgClearAllClues(HWND hwnd)
 
 void XgRegenerateCluesAll(HWND hwnd);
 void XgCheckQualityOfAllClues(void);
-void XgJudgeSeasonOfBoard(void);
+void XgJudgeSeason(void);
 
 // コマンドを実行する。
 void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT /*codeNotify*/)
@@ -7603,8 +7603,8 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT /*codeNo
         XgCheckQualityOfAllClues();
         break;
 
-    case ID_JUDGESEASONOFBOARD:
-        XgJudgeSeasonOfBoard();
+    case ID_JUDGESEASON:
+        XgJudgeSeason();
         break;
 
     default:
