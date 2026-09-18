@@ -8003,13 +8003,11 @@ void MainWnd_OnNotify(HWND hwnd, int idCtrl, LPNMHDR pnmh) noexcept
         case ID_PRINTPROBLEM: ids = IDS_TT_PRINTPROBLEM; break;
         case ID_PRINTANSWER: ids = IDS_TT_PRINTANSWER; break;
         case ID_SOLVENOADDBLACK: ids = IDS_TT_SOLVENOADDBLACK; break;
-        default: ids = -1; break;
+        default: return;
         }
-        if (ids != -1) {
-            // ツールチップの情報をセットする。
-            pttt->hinst = xg_hInstance;
-            pttt->lpszText = MAKEINTRESOURCE(ids);
-        }
+        // ツールチップの情報をセットする。
+        pttt->hinst = xg_hInstance;
+        pttt->lpszText = MAKEINTRESOURCE(ids);
         return;
     }
 }
