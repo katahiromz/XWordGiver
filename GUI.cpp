@@ -953,7 +953,7 @@ void XgResetSettings(void)
     xg_nHelperCY = CW_USEDEFAULT;
 
     xg_ai_provider = L"gemini";
-    xg_ai_model = L"gemini-3.6-flash";
+    xg_ai_model = L"gemini-3.5-flash-lite";
     xg_additional_instruction = L"";
 
     xg_bHiragana = FALSE;
