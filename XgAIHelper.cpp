@@ -7,6 +7,101 @@ extern std::wstring xg_ai_provider;
 extern std::wstring xg_ai_model;
 extern std::wstring xg_additional_instruction;
 
+#include "AIHelper2.h" // XgGetAIModels
+
+// APIキー未設定時などのフォールバック用: プロバイダーごとの既知モデル名一覧。
+// XgGetAIModels（実際のAPI呼び出し）が失敗した場合にのみ使われる。
+// 各配列の先頭が既定選択候補となる。
+struct FallbackModelList
+{
+    PCWSTR provider;
+    const PCWSTR* models;
+    size_t count;
+};
+
+// TODO: １ヵ月ごとに以下の情報を更新する。
+static const PCWSTR s_chatgptFallback[] = {
+    L"gpt-4o-mini", L"gpt-4o", L"gpt-4.1", L"gpt-4.1-mini", L"o3-mini", L"o4-mini",
+};
+static const PCWSTR s_geminiFallback[] = {
+    L"gemini-3.6-flash", L"gemini-3.6-pro", L"gemini-2.5-flash", L"gemini-2.5-pro", L"gemini-2.0-flash",
+};
+static const PCWSTR s_claudeFallback[] = {
+    L"claude-haiku-4-5-20251001", L"claude-sonnet-4-6", L"claude-opus-5", L"claude-fable-5-1",
+};
+static const PCWSTR s_grokFallback[] = {
+    L"grok-4.6", L"grok-4", L"grok-3", L"grok-3-mini",
+};
+static const PCWSTR s_deepseekFallback[] = {
+    L"deepseek-v4-flash", L"deepseek-chat", L"deepseek-reasoner",
+};
+static const PCWSTR s_sakanaFallback[] = {
+    L"sakana-namazu",
+};
+static const PCWSTR s_qwenFallback[] = {
+    L"qwen3-max", L"qwen3-plus", L"qwen3-turbo", L"qwen-long",
+};
+static const PCWSTR s_kimiFallback[] = {
+    L"kimi-k3", L"kimi-k2", L"moonshot-v1-auto",
+};
+static const PCWSTR s_mistralFallback[] = {
+    L"mistral-large-latest", L"mistral-small-latest", L"codestral-latest", L"open-mixtral-8x22b",
+};
+static const PCWSTR s_llamaFallback[] = {
+    L"llama-4-maverick", L"llama-4-scout", L"llama-3.3-70b",
+};
+static const PCWSTR s_pepaboFallback[] = {
+    L"gpt-5-6-luna", L"gpt-4o-mini",
+};
+
+#define FALLBACK_ENTRY(name, arr) { (name), (arr), _countof(arr) }
+static const FallbackModelList s_fallbackModels[] = {
+    FALLBACK_ENTRY(L"chatgpt",  s_chatgptFallback),
+    FALLBACK_ENTRY(L"gemini",   s_geminiFallback),
+    FALLBACK_ENTRY(L"claude",   s_claudeFallback),
+    FALLBACK_ENTRY(L"grok",     s_grokFallback),
+    FALLBACK_ENTRY(L"deepseek", s_deepseekFallback),
+    FALLBACK_ENTRY(L"sakana",   s_sakanaFallback),
+    FALLBACK_ENTRY(L"qwen",     s_qwenFallback),
+    FALLBACK_ENTRY(L"kimi",     s_kimiFallback),
+    FALLBACK_ENTRY(L"mistral",  s_mistralFallback),
+    FALLBACK_ENTRY(L"llama",    s_llamaFallback),
+    FALLBACK_ENTRY(L"pepabo",   s_pepaboFallback),
+};
+#undef FALLBACK_ENTRY
+
+// cmb2（モデル一覧コンボ）を、指定プロバイダーの実際のモデル一覧で埋め直す。
+static void XgFillModelCombo(HWND hwnd, PCWSTR provider, PCWSTR preferredModel = nullptr)
+{
+    SendDlgItemMessageW(hwnd, cmb2, CB_RESETCONTENT, 0, 0);
+
+    // 既知モデル名一覧
+    for (const auto& entry : s_fallbackModels)
+    {
+        if (lstrcmpW(provider, entry.provider) == 0)
+        {
+            for (size_t i = 0; i < entry.count; ++i)
+                SendDlgItemMessageW(hwnd, cmb2, CB_ADDSTRING, 0, (LPARAM)entry.models[i]);
+            break;
+        }
+    }
+
+    // 優先モデル（保存済みの設定値など）が指定されていればそれを選択状態にする。
+    // 一覧に無ければ追加してから選択する。
+    if (preferredModel && *preferredModel)
+    {
+        if (SendDlgItemMessageW(hwnd, cmb2, CB_FINDSTRINGEXACT, (WPARAM)-1, (LPARAM)preferredModel) == CB_ERR)
+            SendDlgItemMessageW(hwnd, cmb2, CB_ADDSTRING, 0, (LPARAM)preferredModel);
+        SetDlgItemTextW(hwnd, cmb2, preferredModel);
+    }
+    else
+    {
+        WCHAR first[512] = L"";
+        if (SendDlgItemMessageW(hwnd, cmb2, CB_GETLBTEXT, 0, (LPARAM)first) != CB_ERR)
+            SetDlgItemTextW(hwnd, cmb2, first);
+    }
+}
+
 INT_PTR CALLBACK
 XgAIHelperDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
@@ -26,26 +121,10 @@ XgAIHelperDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
             for (auto provider : providers)
                 SendDlgItemMessageW(hwnd, cmb1, CB_ADDSTRING, 0, (LPARAM)provider);
 
-            // Add models
-            static const PCWSTR models[] =
-            {
-                L"gpt-4o-mini",
-                L"gemini-3.6-flash",
-                L"claude-haiku-4-5-20251001",
-                L"grok-4.6",
-                L"deepseek-v4-flash",
-                L"sakana-namazu",
-                L"qwen3-max",
-                L"kimi-k3",
-                L"mistral-large-latest",
-                L"llama-4-maverick",
-                L"gpt-5-6-luna",
-            };
-            for (auto model : models)
-                SendDlgItemMessageW(hwnd, cmb2, CB_ADDSTRING, 0, (LPARAM)model);
-
+            // Add models（選択中のプロバイダーの実際のモデル一覧を取得してセットする）
             SetDlgItemTextW(hwnd, cmb1, xg_ai_provider.c_str());
-            SetDlgItemTextW(hwnd, cmb2, xg_ai_model.c_str());
+            XgFillModelCombo(hwnd, xg_ai_provider.c_str(), xg_ai_model.c_str());
+
             SetDlgItemTextW(hwnd, edt2, xg_additional_instruction.c_str());
 
             HWND hStc1 = GetDlgItem(hwnd, stc1);
@@ -91,41 +170,38 @@ XgAIHelperDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
         case cmb1:
             switch (HIWORD(wParam))
             {
-            case CBN_EDITCHANGE:
-            case CBN_SELCHANGE:
             case CBN_SELENDOK:
                 {
-                    WCHAR text[512];
-                    GetDlgItemTextW(hwnd, cmb1, text, _countof(text));
-
-                    if (lstrcmpW(text, L"chatgpt") == 0)
-                        SetDlgItemTextW(hwnd, cmb2, L"gpt-4o-mini");
-                    else if (lstrcmpW(text, L"gemini") == 0)
-                        SetDlgItemTextW(hwnd, cmb2, L"gemini-3.6-flash");
-                    else if (lstrcmpW(text, L"claude") == 0)
-                        SetDlgItemTextW(hwnd, cmb2, L"claude-haiku-4-5-20251001");
-                    else if (lstrcmpW(text, L"grok") == 0)
-                        SetDlgItemTextW(hwnd, cmb2, L"grok-4.6");
-                    else if (lstrcmpW(text, L"deepseek") == 0)
-                        SetDlgItemTextW(hwnd, cmb2, L"deepseek-v4-flash");
-                    else if (lstrcmpW(text, L"sakana") == 0)
-                        SetDlgItemTextW(hwnd, cmb2, L"sakana-namazu");
-                    else if (lstrcmpW(text, L"qwen") == 0)
-                        SetDlgItemTextW(hwnd, cmb2, L"qwen3-max");
-                    else if (lstrcmpW(text, L"kimi") == 0)
-                        SetDlgItemTextW(hwnd, cmb2, L"kimi-k3");
-                    else if (lstrcmpW(text, L"mistral") == 0)
-                        SetDlgItemTextW(hwnd, cmb2, L"mistral-large-latest");
-                    else if (lstrcmpW(text, L"llama") == 0)
-                        SetDlgItemTextW(hwnd, cmb2, L"llama-4-maverick");
-                    else if (lstrcmpW(text, L"pepabo") == 0)
-                        SetDlgItemTextW(hwnd, cmb2, L"gpt-5-6-luna");
+                    // ドロップダウンから確定的に選択された項目を、編集中のテキストではなく
+                    // リスト側のインデックスから取得する（矢印キー移動中の未確定の値を
+                    // 拾ってしまわないようにするため）
+                    LRESULT idx = SendDlgItemMessageW(hwnd, cmb1, CB_GETCURSEL, 0, 0);
+                    WCHAR text[512] = L"";
+                    if (idx != CB_ERR)
+                        SendDlgItemMessageW(hwnd, cmb1, CB_GETLBTEXT, (WPARAM)idx, (LPARAM)text);
                     else
-                        SetDlgItemTextW(hwnd, cmb2, L"");
+                        GetDlgItemTextW(hwnd, cmb1, text, _countof(text));
+
+                    // プロバイダーが確定したら、実際のモデル一覧を取得してcmb2を更新する
+                    XgFillModelCombo(hwnd, text);
 
                     PropSheet_Changed(GetParent(hwnd), hwnd);
                     return 0;
                 }
+            case CBN_KILLFOCUS:
+                {
+                    // 直接入力（手入力）で確定した場合にも一覧を更新する。
+                    // ※ CBN_SELCHANGE は矢印キーでの一時的なハイライト変化でも発生するため
+                    //    ここでは使わない（未確定の項目でモデルを取得してしまうのを防ぐ）。
+                    WCHAR text[512];
+                    GetDlgItemTextW(hwnd, cmb1, text, _countof(text));
+                    XgFillModelCombo(hwnd, text);
+                }
+                break;
+            case CBN_EDITCHANGE:
+                // 入力中はモデル一覧を再取得せず、変更フラグだけ立てる
+                PropSheet_Changed(GetParent(hwnd), hwnd);
+                return 0;
             }
             break;
         case cmb2:
