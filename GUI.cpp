@@ -7987,26 +7987,31 @@ void MainWnd_OnNotify(HWND hwnd, int idCtrl, LPNMHDR pnmh) noexcept
     }
 
     if (pnmh->code == TTN_NEEDTEXT) {
-        // ツールチップの情報をセットする。
-        LPTOOLTIPTEXT pttt;
-        pttt = reinterpret_cast<LPTOOLTIPTEXT>(pnmh);
-        pttt->hinst = xg_hInstance;
-        pttt->lpszText = MAKEINTRESOURCE(pttt->hdr.idFrom + IDS_TT_BASE);
+        auto pttt = reinterpret_cast<LPTOOLTIPTEXT>(pnmh);
+        // idFrom --> ids
+        INT ids;
+        switch (pttt->hdr.idFrom) {
+        case ID_NEW: ids = IDS_TT_NEW; break;
+        case ID_GENERATE: ids = IDS_TT_GENERATE; break;
+        case ID_OPEN: ids = IDS_TT_OPEN; break;
+        case ID_SAVEAS: ids = IDS_TT_SAVEAS; break;
+        case ID_UNDO: ids = IDS_TT_UNDO; break;
+        case ID_REDO: ids = IDS_TT_REDO; break;
+        case ID_SOLVE: ids = IDS_TT_SOLVE; break;
+        case ID_COPY: ids = IDS_TT_COPY; break;
+        case ID_PASTE: ids = IDS_TT_PASTE; break;
+        case ID_PRINTPROBLEM: ids = IDS_TT_PRINTPROBLEM; break;
+        case ID_PRINTANSWER: ids = IDS_TT_PRINTANSWER; break;
+        case ID_SOLVENOADDBLACK: ids = IDS_TT_SOLVENOADDBLACK; break;
+        default: ids = -1; break;
+        }
+        if (ids != -1) {
+            // ツールチップの情報をセットする。
+            pttt->hinst = xg_hInstance;
+            pttt->lpszText = MAKEINTRESOURCE(ids);
+        }
+        return;
     }
-
-    // TODO: リソースIDを変更したら、以下が失敗しないようにする。
-    assert(IDS_TT_NEW == IDS_TT_BASE + ID_NEW);
-    assert(IDS_TT_GENERATE == IDS_TT_BASE + ID_GENERATE);
-    assert(IDS_TT_OPEN == IDS_TT_BASE + ID_OPEN);
-    assert(IDS_TT_SAVEAS == IDS_TT_BASE + ID_SAVEAS);
-    assert(IDS_TT_UNDO == IDS_TT_BASE + ID_UNDO);
-    assert(IDS_TT_REDO == IDS_TT_BASE + ID_REDO);
-    assert(IDS_TT_SOLVE == IDS_TT_BASE + ID_SOLVE);
-    assert(IDS_TT_COPY == IDS_TT_BASE + ID_COPY);
-    assert(IDS_TT_PASTE == IDS_TT_BASE + ID_PASTE);
-    assert(IDS_TT_PRINTPROBLEM == IDS_TT_BASE + ID_PRINTPROBLEM);
-    assert(IDS_TT_PRINTANSWER == IDS_TT_BASE + ID_PRINTANSWER);
-    assert(IDS_TT_SOLVENOADDBLACK == IDS_TT_BASE + ID_SOLVENOADDBLACK);
 }
 
 // ウィンドウのサイズを制限する。
