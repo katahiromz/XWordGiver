@@ -549,7 +549,8 @@ LANGUAGE LANG_JAPANESE, SUBLANG_DEFAULT
         MENUITEM SEPARATOR
         MENUITEM "全体に合わせる(&F)\tCtrl+F", ID_FITZOOM
         MENUITEM SEPARATOR
-        MENUITEM "AI: 季節を判定", ID_JUDGESEASON
+        MENUITEM "AI: このクロスワードの季節を分析", ID_JUDGESEASON
+        MENUITEM "AI: このクロスワードのテーマを分析", ID_JUDGETHEME
     }
     POPUP "ポップアップ #1"
     {

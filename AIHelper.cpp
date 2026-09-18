@@ -492,7 +492,7 @@ void XgCheckQualityOfAllClues(void)
 	Helper_AskQuestion(xg_hwndAIHelper, line);
 }
 
-// 季節を判定する。
+// 季節を分析する。
 void XgJudgeSeason(void)
 {
 	// Open the AI helper (if already open, just bring it to the front).
@@ -508,6 +508,23 @@ void XgJudgeSeason(void)
 		line = L"Please classify the season of this crossword into one of the following categories: 'Winter–Spring,' 'Spring,' "
 		       L"'Spring–Summer,' 'Summer,' 'Summer–Autumn,' 'Autumn,' 'Autumn–Winter,' 'Winter,' 'Seasonless,' or 'Unclassifiable.' "
 		       L"Please also rate the sense of the season on a scale of 1 to 5. ";
+	}
+
+	Helper_AskQuestion(xg_hwndAIHelper, line);
+}
+
+// テーマを分析する。
+void XgJudgeTheme(void)
+{
+	// Open the AI helper (if already open, just bring it to the front).
+	Helper_Open(xg_hMainWnd);
+	Helper_WaitForReady();
+
+	PCWSTR line;
+	if (XgIsUserJapanese()) {
+		line = L"このクロスワードのテーマを分析してください。";
+	} else {
+		line = L"Please analyze the theme of this crossword puzzle. ";
 	}
 
 	Helper_AskQuestion(xg_hwndAIHelper, line);

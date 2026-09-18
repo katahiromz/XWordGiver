@@ -370,7 +370,7 @@
 - 2026-09-11 ver.5.3.6
     - Clue explanations and quality checks are now possible.
 - 2026-XX-YY ver.5.3.7
-    - It is now possible to classify the season of the crossword.
+    - It is now possible to analyze the season and theme of the crossword.
     - Added GMO Pepabo's "Lolipop! AI Gateway" to the AI ​​models.
     - It is now possible to configure double-frame word using AI Helper.
     - Fixed a menu issue.
@@ -1063,7 +1063,7 @@
 - 2026年09月11日 ver.5.3.6
     - カギの解説と品質チェックが可能に。
 - 2026年XX月YY日 ver.5.3.7
-    - クロスワードの季節の分類が可能に。
+    - クロスワードの季節とテーマの分析が可能に。
     - AIモデルにGMOペパボの「ロリポップ！AIゲートウェイ」を追加。
     - AIヘルパーで二重マス単語の設定が可能に。
     - メニューの不具合を修正。

@@ -529,6 +529,7 @@
 #define ID_EXPLAINTHISCLUE                  616
 #define ID_CHECKQUALITYOFALLCLUES           617
 #define ID_JUDGESEASON                      618
+#define ID_JUDGETHEME                       619
 #define ID_TT_BASE                          10000
 
 #define ctl2                                1185
