@@ -374,7 +374,7 @@
     - Added GMO Pepabo's "Lolipop! AI Gateway" to the AI ​​models.
     - It is now possible to configure double-frame word using AI Helper.
     - Fixed a menu issue.
-    - Embedded known AI models.
+    - Embedded known AI model names
 
 # 開発履歴 (Japanese)
 
@@ -1068,4 +1068,4 @@
     - AIモデルにGMOペパボの「ロリポップ！AIゲートウェイ」を追加。
     - AIヘルパーで二重マス単語の設定が可能に。
     - メニューの不具合を修正。
-    - 既知のAIモデルを埋め込む。
+    - 既知のAIモデル名を埋め込む。

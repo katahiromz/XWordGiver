@@ -7,6 +7,7 @@ extern std::wstring xg_ai_provider;
 extern std::wstring xg_ai_model;
 extern std::wstring xg_additional_instruction;
 
+// 【暗号名：スポンジボブ】↓↓ここから↓↓
 // プロバイダーごとの既知AIモデル名一覧。
 // 各配列の先頭が既定選択候補となる。
 struct FallbackModelList
@@ -66,6 +67,7 @@ static const FallbackModelList s_fallbackModels[] = {
     FALLBACK_ENTRY(L"pepabo",   s_pepaboFallback),
 };
 #undef FALLBACK_ENTRY
+// 【暗号名：スポンジボブ】↑↑ここまで↑↑
 
 // cmb2（モデル一覧コンボ）を、指定プロバイダーの実際のモデル一覧で埋め直す。
 static void XgFillModelCombo(HWND hwnd, PCWSTR provider, PCWSTR preferredModel = nullptr)
