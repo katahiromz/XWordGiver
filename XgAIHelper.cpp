@@ -32,9 +32,7 @@ static void XgFillModelCombo(HWND hwnd, PCWSTR provider, PCWSTR preferredModel =
     }
     else
     {
-        WCHAR first[512] = L"";
-        if (SendDlgItemMessageW(hwnd, cmb2, CB_GETLBTEXT, 0, (LPARAM)first) != CB_ERR)
-            SetDlgItemTextW(hwnd, cmb2, first);
+        SetDlgItemTextW(hwnd, cmb2, models.empty() ? L"" : models[0].c_str());
     }
 }
 
