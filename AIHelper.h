@@ -4,6 +4,8 @@
 
 #pragma once
 
+#include <vector>
+
 extern HWND xg_hwndAIHelper;
 extern HINSTANCE xg_hAIHelperInst;
 extern std::wstring xg_ai_provider;
@@ -24,3 +26,5 @@ BOOL Helper_Open(HWND hwndOwner);
 void Helper_AskQuestion(HWND hwnd, PCWSTR text);
 void Helper_AddLine(HWND hwnd, PCWSTR pszLine);
 BOOL XgIsUserJapanese(VOID) noexcept;
+
+BOOL XgGetAIModels(PCWSTR provider, std::vector<std::wstring>& models);
