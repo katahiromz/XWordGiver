@@ -1814,7 +1814,7 @@ static const PCWSTR s_deepseekModels[] = {
     L"deepseek-v4-flash", L"deepseek-v4-pro", L"deepseek-v3.2",
 };
 static const PCWSTR s_sakanaModels[] = {
-    L"sakana-namazu", L"sakana-fugu",
+    L"sakana-namazu", L"sakana-fugu", L"sakana-fugu-ultra", L"sakana-fugu-ultra-v2", L"sakana-fugu-max",
 };
 static const PCWSTR s_qwenModels[] = {
     L"qwen3-turbo", L"qwen-long", L"qwen3.7-plus", L"qwen3.7-max", L"qwen3.8-max",
