@@ -9,7 +9,6 @@ extern std::wstring xg_additional_instruction;
 
 // 【暗号名：スポンジボブ】↓↓ここから↓↓
 // プロバイダーごとの既知AIモデル名一覧。
-// 各配列の先頭が既定選択候補となる。
 struct FallbackModelList
 {
     PCWSTR provider;
@@ -17,39 +16,39 @@ struct FallbackModelList
     size_t count;
 };
 
-// TODO: １ヵ月ごとに以下の既知AIモデル名一覧を更新する。
+// TODO: １ヵ月ごとに以下の既知AIモデル名一覧を更新せよ。先頭を無料モデルにしておくこと。
 static const PCWSTR s_chatgptFallback[] = {
-    L"gpt-4o-mini", L"gpt-4o", L"gpt-4.1", L"gpt-4.1-mini", L"o3-mini", L"o4-mini",
+    L"gpt-5.6-luna", L"gpt-5.6-sol", L"gpt-5.6-terra", L"gpt-6-astra", L"gpt-4.1", L"gpt-4o-mini",
 };
 static const PCWSTR s_geminiFallback[] = {
-    L"gemini-3.6-flash", L"gemini-3.6-pro", L"gemini-2.5-flash", L"gemini-2.5-pro", L"gemini-2.0-flash",
+    L"gemini-3.6-flash", L"gemini-3.8-flash", L"gemini-3.5-flash-lite", L"gemini-3.1-pro", L"gemini-3-deep-think",
 };
 static const PCWSTR s_claudeFallback[] = {
-    L"claude-haiku-4-5-20251001", L"claude-sonnet-4-6", L"claude-opus-5", L"claude-fable-5-1",
+    L"claude-haiku-4-5-20251001", L"claude-sonnet-5", L"claude-opus-5", L"claude-fable-5-1",
 };
 static const PCWSTR s_grokFallback[] = {
-    L"grok-4.6", L"grok-4", L"grok-3", L"grok-3-mini",
+    L"grok-4", L"grok-4.1", L"grok-4.3", L"grok-4.5",
 };
 static const PCWSTR s_deepseekFallback[] = {
-    L"deepseek-v4-flash", L"deepseek-chat", L"deepseek-reasoner",
+    L"deepseek-v4-flash", L"deepseek-v4-pro", L"deepseek-v3.2",
 };
 static const PCWSTR s_sakanaFallback[] = {
-    L"sakana-namazu",
+    L"sakana-namazu", L"sakana-fugu",
 };
 static const PCWSTR s_qwenFallback[] = {
-    L"qwen3-max", L"qwen3-plus", L"qwen3-turbo", L"qwen-long",
+    L"qwen3-turbo", L"qwen-long", L"qwen3.7-plus", L"qwen3.7-max", L"qwen3.8-max",
 };
 static const PCWSTR s_kimiFallback[] = {
-    L"kimi-k3", L"kimi-k2", L"moonshot-v1-auto",
+    L"moonshot-v1-auto", L"kimi-k2.6", L"kimi-k3",
 };
 static const PCWSTR s_mistralFallback[] = {
-    L"mistral-large-latest", L"mistral-small-latest", L"codestral-latest", L"open-mixtral-8x22b",
+    L"mistral-small-latest", L"ministral-3-8b", L"mistral-medium-latest", L"mistral-large-latest",
 };
 static const PCWSTR s_llamaFallback[] = {
-    L"llama-4-maverick", L"llama-4-scout", L"llama-3.3-70b",
+    L"llama-4-scout", L"llama-4-maverick", L"llama-3.3-70b",
 };
 static const PCWSTR s_pepaboFallback[] = {
-    L"gpt-5-6-luna", L"gpt-4o-mini",
+    L"gpt-4o-mini", L"gpt-5-6-luna",
 };
 
 #define FALLBACK_ENTRY(name, arr) { (name), (arr), _countof(arr) }
