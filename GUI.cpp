@@ -4307,40 +4307,20 @@ void __fastcall MainWnd_OnDestroy(HWND /*hwnd*/) noexcept
     xg_hMainWnd = nullptr;
 }
 
-// 「辞書」メニューを取得する。
-HMENU XgDoFindDictMenu(HMENU hMenu)
-{
-    WCHAR szText[128];
-    LPCWSTR pszDict = XgLoadStringDx1(IDS_DICTIONARY);
-    for (int i = 0; i < 16; ++i)
-    {
-        if (GetMenuStringW(hMenu, i, szText, _countof(szText), MF_BYPOSITION))
-        {
-            if (wcsstr(szText, pszDict) != nullptr)
-            {
-                return GetSubMenu(hMenu, i);
-            }
-        }
-    }
-    return nullptr;
-}
-
 // 「辞書」メニューを更新する。
-void XgDoUpdateDictMenu(HMENU hDictMenu)
+void XgDoUpdateDictMenu(HMENU hMenu)
 {
-    // TODO: 「辞書」メニュー項目を更新したら、次の I_NONE_ITEM を修正すること。
-#define I_NONE_ITEM 6 // メニュー項目「(なし)」の位置。
-    int index = I_NONE_ITEM;
-
     // 辞書項目をすべて削除する。
-    while (RemoveMenu(hDictMenu, index, MF_BYPOSITION))
-    {
-        ;
-    }
+    INT iDict = 0;
+    while (RemoveMenu(hMenu, ID_DICTIONARY00 + iDict, MF_BYCOMMAND))
+        ++iDict;
 
-    if (xg_dicts.empty()) // 辞書リストが空？
-    {
-        AppendMenuW(hDictMenu, MF_STRING | MF_GRAYED, -1, XgLoadStringDx1(IDS_NONE));
+    if (!iDict)
+        return; // 辞書メニューではない
+
+    if (xg_dicts.empty()) { // 辞書リストが空？
+        // 「(なし)」を追加。
+        AppendMenuW(hMenu, MF_STRING | MF_GRAYED, ID_DICTIONARY00, XgLoadStringDx1(IDS_NONE));
         return;
     }
 
@@ -4360,10 +4340,11 @@ void XgDoUpdateDictMenu(HMENU hDictMenu)
             text += L"\t";
             text += entry.m_friendly_name;
         }
-        StringCchPrintfW(szText, _countof(szText), L"&%c ", L"0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF"[count]);
+        StringCchPrintfW(szText, _countof(szText), L"&%c ",
+                         L"0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF"[count]);
         StringCchCatW(szText, _countof(szText), text.c_str());
-        AppendMenuW(hDictMenu, MF_STRING | MF_ENABLED, id, szText);
-        ++index;
+        AppendMenuW(hMenu, MF_STRING | MF_ENABLED, id, szText);
+
         ++count;
         ++id;
         if (count >= XG_MAX_DICTS)
@@ -4371,14 +4352,14 @@ void XgDoUpdateDictMenu(HMENU hDictMenu)
     }
 
     // ラジオボタンを付ける。
-    index = I_NONE_ITEM;
-    for (const auto& entry : xg_dicts)
-    {
+    INT index = 0;
+    for (const auto& entry : xg_dicts) {
+        if (index >= count)
+            break;
         auto& file = entry.m_filename;
-        if (lstrcmpiW(file.c_str(), xg_dict_name.c_str()) == 0)
-        {
-            const int nCount = GetMenuItemCount(hDictMenu);
-            CheckMenuRadioItem(hDictMenu, I_NONE_ITEM, nCount - 1, index, MF_BYPOSITION);
+        if (lstrcmpiW(file.c_str(), xg_dict_name.c_str()) == 0) {
+            CheckMenuRadioItem(hMenu, ID_DICTIONARY00, ID_DICTIONARY00 + (count - 1),
+                               ID_DICTIONARY00 + index, MF_BYCOMMAND);
             break;
         }
         ++index;
@@ -4386,13 +4367,13 @@ void XgDoUpdateDictMenu(HMENU hDictMenu)
 }
 
 // メニューを初期化する。
-void __fastcall MainWnd_OnInitMenu(HWND /*hwnd*/, HMENU hMenu)
+void MMainWnd_OnInitMenuPopup(HWND hwnd, HMENU hMenu, UINT item, BOOL fSystemMenu)
 {
-    if (HMENU hDictMenu = XgDoFindDictMenu(hMenu))
-    {
-        // 辞書メニューを更新。
-        XgDoUpdateDictMenu(hDictMenu);
-    }
+    if (fSystemMenu)
+        return;
+
+    // 辞書メニューを更新。
+    XgDoUpdateDictMenu(hMenu);
 
     // 数字を表示するか？
     if (xg_bShowNumbering) {
@@ -4480,27 +4461,21 @@ void __fastcall MainWnd_OnInitMenu(HWND /*hwnd*/, HMENU hMenu)
     case xg_im_KANA:
         ::CheckMenuRadioItem(hMenu, ID_KANAINPUT, ID_ANYINPUT, ID_KANAINPUT, MF_BYCOMMAND);
         break;
-
     case xg_im_ABC:
         ::CheckMenuRadioItem(hMenu, ID_KANAINPUT, ID_ANYINPUT, ID_ABCINPUT, MF_BYCOMMAND);
         break;
-
     case xg_im_KANJI:
         ::CheckMenuRadioItem(hMenu, ID_KANAINPUT, ID_ANYINPUT, ID_KANJIINPUT, MF_BYCOMMAND);
         break;
-
     case xg_im_RUSSIA:
         ::CheckMenuRadioItem(hMenu, ID_KANAINPUT, ID_ANYINPUT, ID_RUSSIAINPUT, MF_BYCOMMAND);
         break;
-
     case xg_im_GREEK:
         ::CheckMenuRadioItem(hMenu, ID_KANAINPUT, ID_ANYINPUT, ID_GREEKINPUT, MF_BYCOMMAND);
         break;
-
     case xg_im_DIGITS:
         ::CheckMenuRadioItem(hMenu, ID_KANAINPUT, ID_ANYINPUT, ID_DIGITINPUT, MF_BYCOMMAND);
         break;
-
     case xg_im_ANY:
         ::CheckMenuRadioItem(hMenu, ID_KANAINPUT, ID_ANYINPUT, ID_ANYINPUT, MF_BYCOMMAND);
         break;
@@ -4736,6 +4711,7 @@ void __fastcall MainWnd_OnInitMenu(HWND /*hwnd*/, HMENU hMenu)
         ::DeleteMenu(hMenu, ID_INSERT_ROW_ABOVE, MF_BYCOMMAND);
         ::DeleteMenu(hMenu, ID_INSERT_ROW_BELOW, MF_BYCOMMAND);
     }
+
     BOOL bDeleteSepOK = FALSE;
     if (xg_bSolved || xg_nCols + 1 > XG_MAX_SIZE) {
         ::DeleteMenu(hMenu, ID_LEFT_INSERT_COLUMN, MF_BYCOMMAND);
@@ -4746,27 +4722,30 @@ void __fastcall MainWnd_OnInitMenu(HWND /*hwnd*/, HMENU hMenu)
         ::DeleteMenu(hMenu, cItems - 1, MF_BYPOSITION);
     }
 
-    // 最近使ったファイルを取得。
-    HMENU hFileMenu = ::GetSubMenu(hMenu, 0);
-    const int cFileItems = ::GetMenuItemCount(hFileMenu);
-    HMENU hRecentMenu = ::GetSubMenu(hFileMenu, cFileItems - 7); // TODO: ファイルメニュー項目を追加したらここも変更。
-    // 最近使ったファイルのメニュー項目をすべて削除。
-    while (::DeleteMenu(hRecentMenu, 0, MF_BYPOSITION))
-        ;
-    // 最近使ったファイルのメニュー項目を新しく追加。
-    int id = ID_RECENT_00, iItem = 0;
-    for (auto& item : xg_recently_used_files) {
-        XGStringW str;
-        str += L'&';
-        str += static_cast<WCHAR>(L'0' + iItem);
-        str += L'\t';
-        str += item;
-        ::AppendMenuW(hRecentMenu, MF_STRING, id++, str.c_str());
-        ++iItem;
-    }
-    // 最近使ったファイルが空の場合。
-    if (xg_recently_used_files.empty()) {
-        ::AppendMenuW(hRecentMenu, MF_STRING | MF_GRAYED, 0, XgLoadStringDx1(IDS_NONE));
+    const INT nRecentOffset = 7; // TODO: 「ファイル」メニューを変更したら、ここを調整。
+    INT nCount = GetMenuItemCount(hMenu);
+    HMENU hRecentMenu = GetSubMenu(hMenu, nCount - nRecentOffset);
+    if (hRecentMenu && GetMenuPosFromID(hRecentMenu, ID_RECENT_00) != -1) { // 最近使ったファイルか？
+        // 最近使ったファイルのメニュー項目をすべて削除。
+        INT id2 = ID_RECENT_00;
+        while (::DeleteMenu(hRecentMenu, id2++, MF_BYCOMMAND))
+            ;
+
+        // 最近使ったファイルのメニュー項目を新しく追加。
+        int id = ID_RECENT_00, iItem = 0;
+        for (auto& item : xg_recently_used_files) {
+            XGStringW str;
+            str += L'&';
+            str += static_cast<WCHAR>(L'0' + iItem);
+            str += L' ';
+            str += item;
+            ::AppendMenuW(hRecentMenu, MF_STRING, id++, str.c_str());
+            ++iItem;
+        }
+        // 最近使ったファイルが空の場合。
+        if (xg_recently_used_files.empty()) {
+            ::AppendMenuW(hRecentMenu, MF_STRING | MF_GRAYED, ID_RECENT_00, XgLoadStringDx1(IDS_NONE));
+        }
     }
 }
 
@@ -8148,7 +8127,7 @@ XgWindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
     HANDLE_MSG(hWnd, WM_KEYUP, XgOnKey);
     HANDLE_MSG(hWnd, WM_CHAR, XgOnChar);
     HANDLE_MSG(hWnd, WM_COMMAND, MainWnd_OnCommand);
-    HANDLE_MSG(hWnd, WM_INITMENU, MainWnd_OnInitMenu);
+    HANDLE_MSG(hWnd, WM_INITMENUPOPUP, MMainWnd_OnInitMenuPopup);
     HANDLE_MSG(hWnd, WM_DROPFILES, MainWnd_OnDropFiles);
     HANDLE_MSG(hWnd, WM_GETMINMAXINFO, MainWnd_OnGetMinMaxInfo);
     case WM_NOTIFY:

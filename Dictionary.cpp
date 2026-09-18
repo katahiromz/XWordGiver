@@ -546,25 +546,23 @@ BOOL XgLoadDictsAll(void)
 // 辞書名をセットする。
 void XgSetDict(const XGStringW& strFile)
 {
-    // 辞書名を格納。
     xg_dict_name = strFile;
 
-    // 辞書として追加、ソート、一意にする。
-    if (xg_dicts.size() < XG_MAX_DICTS)
-    {
-        auto title = XgLoadTitleFromDict(strFile.c_str());
-        xg_dicts.emplace_back(strFile, title);
-        std::sort(xg_dicts.begin(), xg_dicts.end(),
-            [](const XG_DICT& e1, const XG_DICT& e2) noexcept {
-                return e1.m_filename < e2.m_filename;
-            }
-        );
-        auto last = std::unique(xg_dicts.begin(), xg_dicts.end(),
-            [](const XG_DICT& e1, const XG_DICT& e2) noexcept {
-                return e1.m_filename == e2.m_filename;
-            }
-        );
-        xg_dicts.erase(last, xg_dicts.end());
+    // 既に同じ辞書（大文字小文字を区別しない）が登録済みか確認。
+    auto it = std::find_if(xg_dicts.begin(), xg_dicts.end(),
+        [&](const XG_DICT& e) {
+            return lstrcmpiW(e.m_filename.c_str(), strFile.c_str()) == 0;
+        });
+
+    if (it == xg_dicts.end()) { // 新規のときだけ追加。
+        if (xg_dicts.size() < XG_MAX_DICTS) {
+            auto title = XgLoadTitleFromDict(strFile.c_str());
+            xg_dicts.emplace_back(strFile, title);
+            std::sort(xg_dicts.begin(), xg_dicts.end(),
+                [](const XG_DICT& e1, const XG_DICT& e2) noexcept {
+                    return lstrcmpiW(e1.m_filename.c_str(), e2.m_filename.c_str()) < 0;
+                });
+        }
     }
 }
 

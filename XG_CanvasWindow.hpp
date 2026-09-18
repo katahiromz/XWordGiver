@@ -233,11 +233,10 @@ public:
         ::ClientToScreen(hwnd, &pt);
 
         // 右クリックメニューを表示する。
-        ::SetForegroundWindow(hwnd);
-        ::TrackPopupMenu(
-            hSubMenu, TPM_RIGHTBUTTON | TPM_LEFTALIGN,
-            pt.x, pt.y, 0, hwnd, nullptr);
-        ::PostMessageW(hwnd, WM_NULL, 0, 0);
+        ::SetForegroundWindow(m_hwndParent);
+        ::TrackPopupMenu(hSubMenu, TPM_RIGHTBUTTON | TPM_LEFTALIGN,
+                         pt.x, pt.y, 0, m_hwndParent, nullptr);
+        ::PostMessageW(m_hwndParent, WM_NULL, 0, 0);
 
         ::DestroyMenu(hMenu);
     }

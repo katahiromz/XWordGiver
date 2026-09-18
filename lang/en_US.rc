@@ -31,7 +31,7 @@ LANGUAGE LANG_ENGLISH, SUBLANG_DEFAULT
         MENUITEM SEPARATOR
         POPUP "Recently &Used"
         {
-            MENUITEM "(None)", 0, GRAYED
+            MENUITEM "(None)", ID_RECENT_00, GRAYED
         }
         MENUITEM SEPARATOR
         MENUITEM "&Header and remarks...\tCtrl+Enter", ID_HEADERANDNOTES
@@ -112,7 +112,8 @@ LANGUAGE LANG_ENGLISH, SUBLANG_DEFAULT
         MENUITEM "D&ownload dictionaries...", ID_DOWNLOADDICT
         MENUITEM "Reload &dict list", ID_RELOADDICTS
         MENUITEM SEPARATOR
-        MENUITEM "(None)", -1
+        MENUITEM "(None)", ID_DICTIONARY00, GRAYED
+
     }
     POPUP "&Solution"
     {

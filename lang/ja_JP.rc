@@ -31,7 +31,7 @@ LANGUAGE LANG_JAPANESE, SUBLANG_DEFAULT
         MENUITEM SEPARATOR
         POPUP "最近使ったファイル(&U)"
         {
-            MENUITEM "(なし)", 0, GRAYED
+            MENUITEM "(なし)", ID_RECENT_00, GRAYED
         }
         MENUITEM SEPARATOR
         MENUITEM "ヘッダーと備考欄(&H)...\tCtrl+Enter", ID_HEADERANDNOTES
@@ -112,7 +112,7 @@ LANGUAGE LANG_JAPANESE, SUBLANG_DEFAULT
         MENUITEM "辞書のダウンロード(&O)...", ID_DOWNLOADDICT
         MENUITEM "辞書リストを再読み込み(&D)", ID_RELOADDICTS
         MENUITEM SEPARATOR
-        MENUITEM "(なし)", -1
+        MENUITEM "(なし)", ID_DICTIONARY00, GRAYED
     }
     POPUP "解(&S)"
     {

@@ -373,6 +373,7 @@
     - It is now possible to classify the season of the board.
     - Added GMO Pepabo's "Lolipop! AI Gateway" to the AI ​​models.
     - It is now possible to configure double-frame word using AI Helper.
+    - Fixed a menu issue.
 
 # 開発履歴 (Japanese)
 
@@ -1065,3 +1066,4 @@
     - 盤面の季節の分類が可能に。
     - AIモデルにGMOペパボの「ロリポップ！AIゲートウェイ」を追加。
     - AIヘルパーで二重マス単語の設定が可能に。
+    - メニューの不具合を修正。

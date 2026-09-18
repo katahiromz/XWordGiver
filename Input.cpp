@@ -896,9 +896,8 @@ void __fastcall XgOnKey(HWND hwnd, UINT vk, bool fDown, int /*cRepeat*/, UINT /*
 
             // 右クリックメニューを表示する。
             ::SetForegroundWindow(hwnd);
-            ::TrackPopupMenu(
-                hSubMenu, TPM_RIGHTBUTTON | TPM_LEFTALIGN,
-                pt.x, pt.y, 0, hwnd, nullptr);
+            ::TrackPopupMenu(hSubMenu, TPM_RIGHTBUTTON | TPM_LEFTALIGN, pt.x, pt.y, 0,
+                             hwnd, nullptr);
             ::PostMessageW(hwnd, WM_NULL, 0, 0);
 
             ::DestroyMenu(hMenu);
