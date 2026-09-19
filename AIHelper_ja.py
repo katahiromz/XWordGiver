@@ -16,13 +16,6 @@ import argparse
 import os
 import sys
 
-# PROVIDERS / DEFAULT_MODELS / OPENAI_COMPATIBLE_CONFIG は、以前はここに直接書いていたが、
-# 外部ファイル AIModels.dat から読み込むようになった。AIModels.dat は AIHelper.py や
-# C++版（AIHelper.cpp / AIHelper2.cpp）とも共有される。DEFAULT_MODELS は各
-# [MODELS:provider] セクションの先頭のモデルから求める。プロバイダーやモデルを追加・
-# 更新するときは、コードを直さず AIModels.dat を編集すればよい。
-
-
 def _find_ai_models_file():
     """AIModels.dat を、このスクリプトと同じフォルダ、次いでカレントディレクトリから探す。"""
     candidates = [
@@ -37,12 +30,39 @@ def _find_ai_models_file():
     )
 
 
+def _build_base_url(host, port, path, use_https):
+    """PROVIDER_INFO のフィールドから OpenAI SDK 用の base_url を組み立てる。
+
+    path 末尾の "/chat/completions" を除き API ルート（例: https://api.x.ai/v1）にする。
+    標準ポート（443/80）は URL に含めない。
+    """
+    if not host:
+        return None
+    protocol = "https" if use_https else "http"
+    try:
+        port_num = int(port) if port else (443 if use_https else 80)
+    except ValueError:
+        port_num = 443 if use_https else 80
+    if (use_https and port_num == 443) or (not use_https and port_num == 80):
+        port_part = ""
+    else:
+        port_part = f":{port_num}"
+    base_path = path or ""
+    suffix = "/chat/completions"
+    if base_path.endswith(suffix):
+        base_path = base_path[: -len(suffix)]
+    return f"{protocol}://{host}{port_part}{base_path}"
+
+
 def _load_ai_models_dat():
     """AIModels.dat を解析し、PROVIDERS / DEFAULT_MODELS / OPENAI_COMPATIBLE_CONFIG を構築する。
 
-    DEFAULT_MODELS は各 [MODELS:provider] セクションの先頭のモデルから求める
-    （そのセクション自体は本来C++版のものだが、先頭要素を既定モデルとして流用する）。
-    [PROVIDER_INFO] はC++版（AIHelper2.cpp）のためのものなので、ここでは読み飛ばす。
+    PROVIDERS は [PROVIDER_INFO] の出現順（表示順）のプロバイダー名一覧。
+    DEFAULT_MODELS は各 [MODELS:provider] セクションの先頭のモデルから求める。
+    OPENAI_COMPATIBLE_CONFIG は [PROVIDER_INFO] のうち isOpenAICompat フラグが 1 の
+    行から構築する（base_url は host/port/path/useHttps から再構成する）。
+    OpenAI 非互換のプロバイダー（google / anthropic）は専用 SDK 経路で扱うため、
+    OPENAI_COMPATIBLE_CONFIG には入れない。
     """
     providers = []
     default_models = {}
@@ -57,19 +77,28 @@ def _load_ai_models_dat():
             if line.startswith("[") and line.endswith("]"):
                 section = line[1:-1]
                 continue
-            if section == "PROVIDERS":
-                providers.append(line)
-            elif section == "OPENAI_COMPATIBLE_CONFIG":
+            if section == "PROVIDER_INFO":
                 key, _, value = line.partition("=")
-                api_key_env, _, base_url = value.partition(",")
                 key = key.strip()
-                api_key_env = api_key_env.strip()
-                base_url = base_url.strip() or None
-                openai_compat[key] = {"api_key_env": api_key_env, "base_url": base_url}
+                fields = [f.strip() for f in value.split(",")]
+                if len(fields) < 8 or not key:
+                    continue
+                providers.append(key)  # 出現順 = 表示順
+                api_key_env = fields[0]
+                host = fields[1]
+                port = fields[2]
+                path = fields[3]
+                is_openai_compat = fields[4] == "1"
+                use_https = fields[7] == "1"
+                if is_openai_compat:
+                    base_url = _build_base_url(host, port, path, use_https)
+                    openai_compat[key] = {
+                        "api_key_env": api_key_env,
+                        "base_url": base_url,
+                    }
             elif section is not None and section.startswith("MODELS:"):
                 provider = section[len("MODELS:"):]
                 default_models.setdefault(provider, line)  # 先頭のモデル = 既定モデル
-            # [PROVIDER_INFO] はC++版で使うので、ここでは読み飛ばす。
 
     return providers, default_models, openai_compat
 

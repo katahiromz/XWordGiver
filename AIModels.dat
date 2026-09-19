@@ -1,5 +1,8 @@
-﻿; AIModels.dat --- XWordGiver AI ヘルパーの AI モデル データ。
+; AIModels.dat --- XWordGiver AI ヘルパーの AI モデル データ。
 ; AIModels.dat --- The AI model data for XWordGiver AI Helper.
+;
+; このファイルは自己責任で自由に編集しても構いません。
+; You are free to edit this file at your own risk.
 ;
 ; 【文法】 / [Syntax]
 ;   - ';' から始まる行はコメントです。 / Lines starting with ';' are comments.
@@ -13,51 +16,18 @@
 ; 共通して読み込まれます。実行ファイル（またはスクリプト）と同じフォルダに置いてください。
 ; This file is shared by AIModelsDat.cpp / AIHelper.py / AIHelper_ja.py.
 ; Place it in the same folder as the executable (or the scripts).
-;
-; このファイルは自己責任で自由に編集しても構いません。
-; You are free to edit this file at your own risk.
-
-[PROVIDERS]
-; プロバイダーの一覧（表示順）。 List of providers, in display order.
-openai
-google
-anthropic
-xai
-deepseek
-sakana
-qwen
-moonshot
-mistral
-llama
-pepabo
-ollama
-
-[OPENAI_COMPATIBLE_CONFIG]
-; OpenAI互換API（Chat Completions）を使うプロバイダーの設定（Python版AIHelper.py/AIHelper_ja.pyが使用）。
-; Settings for providers using the OpenAI-compatible (Chat Completions) API. Used by AIHelper.py / AIHelper_ja.py.
-; 書式: provider = APIキー環境変数名, base_url  (base_urlを省略する場合は末尾のカンマの後を空にする)
-; Format: provider = api_key_env, base_url  (leave the part after the comma empty to use the SDK default)
-openai      = OPENAI_API_KEY,       
-xai         = XAI_API_KEY,          https://api.x.ai/v1
-deepseek    = DEEPSEEK_API_KEY,     https://api.deepseek.com/v1
-sakana      = SAKANA_API_KEY,       https://api.sakana.ai/v1
-qwen        = DASHSCOPE_API_KEY,    https://dashscope-intl.aliyuncs.com/compatible-mode/v1
-moonshot    = MOONSHOT_API_KEY,     https://api.moonshot.ai/v1
-mistral     = MISTRAL_API_KEY,      https://api.mistral.ai/v1
-llama       = LLAMA_API_KEY,        https://api.llama.com/compat/v1
-pepabo      = AI_GATEWAY_API_KEY,   https://ai-gateway.lolipop.jp/v1
-; ローカルAI（Ollama）。APIキー不要。
-; Local AI (Ollama). No API key is required.
-ollama      = ,                     http://localhost:11434/v1
 
 [PROVIDER_INFO]
-; C++版 (AIModelsDat.cpp) のWinHTTP直接呼び出し用設定。
-; Settings used by the C++ (AIModelsDat.cpp) WinHTTP client.
-; 書式: provider = APIキー環境変数名, ホスト名, ポート, パス, OpenAI互換か, Claude形式か, Gemini形式か, HTTPSか
-;       (フラグは 0 か 1。APIキー環境変数名を空にすると、そのプロバイダーはAPIキー不要として扱われる)
+; プロバイダー接続設定。
+; Provider connection settings.
+;
+; 書式: プロバイダー = APIキー環境変数名, ホスト名, ポート, パス, OpenAI互換か, Claude形式か, Gemini形式か, HTTPSか
+;       (フラグは 0 か 1)
 ; Format: provider = api_key_env, host, port, path, isOpenAICompat, isClaude, isGemini, useHttps
-;         (flags are 0 or 1. An empty api_key_env means no API key is required)
+;         (flags are 0 or 1)
 openai      = OPENAI_API_KEY,       api.openai.com, 443, /v1/chat/completions, 1, 0, 0, 1
+google      = GOOGLE_API_KEY,       generativelanguage.googleapis.com, 443, , 0, 0, 1, 1
+anthropic   = ANTHROPIC_API_KEY,    api.anthropic.com, 443, /v1/messages, 0, 1, 0, 1
 xai         = XAI_API_KEY,          api.x.ai, 443, /v1/chat/completions, 1, 0, 0, 1
 deepseek    = DEEPSEEK_API_KEY,     api.deepseek.com, 443, /v1/chat/completions, 1, 0, 0, 1
 sakana      = SAKANA_API_KEY,       api.sakana.ai, 443, /v1/chat/completions, 1, 0, 0, 1
@@ -66,8 +36,8 @@ moonshot    = MOONSHOT_API_KEY,     api.moonshot.ai, 443, /v1/chat/completions, 
 mistral     = MISTRAL_API_KEY,      api.mistral.ai, 443, /v1/chat/completions, 1, 0, 0, 1
 llama       = LLAMA_API_KEY,        api.llama.com, 443, /compat/v1/chat/completions, 1, 0, 0, 1
 pepabo      = AI_GATEWAY_API_KEY,   ai-gateway.lolipop.jp, 443, /v1/chat/completions, 1, 0, 0, 1
-anthropic   = ANTHROPIC_API_KEY,    api.anthropic.com, 443, /v1/messages, 0, 1, 0, 1
-google      = GOOGLE_API_KEY,       generativelanguage.googleapis.com, 443, , 0, 0, 1, 1
+; ローカルAI（Ollama）。APIキー不要。
+; Local AI (Ollama). No API key is required.
 ollama      = ,                     localhost, 11434, /v1/chat/completions, 1, 0, 0, 0
 
 ; ----------------------------------------------------------------------------

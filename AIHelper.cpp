@@ -1805,13 +1805,12 @@ BOOL Helper_Open(HWND hwndOwner)
 // AIModelsDat.h/.cpp (used together with LoadAIModelsData() in AIHelper2.cpp).
 
 // AIModels.dat をパースし、すべての [MODELS:provider] セクションを取り出す。
-// 他のセクション（PROVIDERS / DEFAULT_MODELS / OPENAI_COMPATIBLE_CONFIG / PROVIDER_INFO）は
-// Python版や AIHelper2.cpp 側で使うものなので、ここでは読み飛ばす。
+// 他のセクション（PROVIDER_INFO）は Python版や AIHelper2.cpp 側で使うものなので、
+// ここでは読み飛ばす。
 //
 // Parse AIModels.dat and extract every [MODELS:provider] section. The other
-// sections (PROVIDERS / DEFAULT_MODELS / OPENAI_COMPATIBLE_CONFIG /
-// PROVIDER_INFO) are used by the Python build or by AIHelper2.cpp, so they
-// are skipped here.
+// sections (PROVIDER_INFO) are used by the Python build or by AIHelper2.cpp,
+// so they are skipped here.
 static void LoadKnownAIModels(std::map<std::wstring, std::vector<std::wstring>>& out)
 {
 	out.clear();
@@ -1855,34 +1854,40 @@ BOOL XgGetAIModels(PCWSTR provider, std::vector<std::wstring>& models)
 	return FALSE;
 }
 
-// AIModels.dat の [PROVIDERS] セクションから、プロバイダー名の一覧を
+// AIModels.dat の [PROVIDER_INFO] セクションから、プロバイダー名の一覧を
 // 表示順（ファイルに書かれている順）で読み込む。
-// GetAIModelsDatLines() の結果から "PROVIDERS" セクションの行だけを拾う。
+// 各行は「provider = ...」形式なので、'=' より前をプロバイダー名として取る。
 //
 // Load the list of provider names, in display order (the order they appear
-// in the file), from the [PROVIDERS] section of AIModels.dat. Picks out just
-// the lines belonging to the "PROVIDERS" section from GetAIModelsDatLines()'s
-// result.
+// in the file), from the [PROVIDER_INFO] section of AIModels.dat. Each line
+// is "provider = ..."; the part before '=' is taken as the provider name.
 static void LoadKnownAIProviders(std::vector<std::wstring>& out)
 {
 	out.clear();
 
 	for (const auto& entry : GetAIModelsDatLines())
 	{
-		// "PROVIDERS" セクションのみ処理する。
-		if (entry.first == L"PROVIDERS")
-			out.push_back(entry.second);
+		if (entry.first != L"PROVIDER_INFO")
+			continue;
+
+		// "provider = fields..." からプロバイダー名を抽出する。
+		size_t eq = entry.second.find(L'=');
+		if (eq == std::wstring::npos)
+			continue;
+		std::wstring name = TrimW(entry.second.substr(0, eq));
+		if (!name.empty())
+			out.push_back(name);
 	}
 }
 
 std::vector<std::wstring> xg_knownAIProviders;
 static bool s_providersLoaded = false;
 
-// プロバイダー名の一覧を取得する（AIModels.dat の [PROVIDERS] セクション、表示順）。
+// プロバイダー名の一覧を取得する（AIModels.dat の [PROVIDER_INFO] セクション、表示順）。
 // 初回のみファイルから読み込み、以降はキャッシュ（xg_knownAIProviders）を使い回す。
 // 何らかの理由でファイルが読めなかった／セクションが空だった場合はFALSEを返す。
 //
-// Get the list of provider names (from the [PROVIDERS] section of
+// Get the list of provider names (from the [PROVIDER_INFO] section of
 // AIModels.dat, in display order). Loaded from the file only on first use;
 // the cache (xg_knownAIProviders) is reused afterwards. Returns FALSE if the
 // file could not be read or the section was empty for any reason.

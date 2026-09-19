@@ -17,13 +17,6 @@ import argparse
 import os
 import sys
 
-# PROVIDERS / DEFAULT_MODELS / OPENAI_COMPATIBLE_CONFIG used to be hardcoded here.
-# They are now loaded from the external file AIModels.dat, which is shared with
-# AIHelper_ja.py and the C++ build (AIHelper.cpp / AIHelper2.cpp). DEFAULT_MODELS
-# comes from the first model listed in each [MODELS:provider] section. To add
-# or update a provider or model, edit AIModels.dat -- no code change needed.
-
-
 def _find_ai_models_file():
     """Look for AIModels.dat next to this script, then in the current directory."""
     candidates = [
@@ -39,13 +32,41 @@ def _find_ai_models_file():
     )
 
 
+def _build_base_url(host, port, path, use_https):
+    """Build an OpenAI-SDK base_url from PROVIDER_INFO fields.
+
+    Strips a trailing "/chat/completions" from path so the result is the
+    API root (e.g. https://api.x.ai/v1). Default ports (443/80) are omitted.
+    """
+    if not host:
+        return None
+    protocol = "https" if use_https else "http"
+    try:
+        port_num = int(port) if port else (443 if use_https else 80)
+    except ValueError:
+        port_num = 443 if use_https else 80
+    if (use_https and port_num == 443) or (not use_https and port_num == 80):
+        port_part = ""
+    else:
+        port_part = f":{port_num}"
+    base_path = path or ""
+    suffix = "/chat/completions"
+    if base_path.endswith(suffix):
+        base_path = base_path[: -len(suffix)]
+    return f"{protocol}://{host}{port_part}{base_path}"
+
+
 def _load_ai_models_dat():
     """Parse AIModels.dat and build PROVIDERS / DEFAULT_MODELS / OPENAI_COMPATIBLE_CONFIG.
 
-    DEFAULT_MODELS is derived from the first model listed in each
-    [MODELS:provider] section (that section otherwise belongs to the C++
-    build, but its first entry doubles as the default model here).
-    [PROVIDER_INFO] belongs to the C++ build (AIHelper2.cpp) and is ignored.
+    PROVIDERS is the ordered list of provider names from [PROVIDER_INFO]
+    (the order they appear in the file). DEFAULT_MODELS is derived from
+    the first model listed in each [MODELS:provider] section.
+    OPENAI_COMPATIBLE_CONFIG is derived from [PROVIDER_INFO] rows whose
+    isOpenAICompat flag is 1 (base_url is reconstructed from
+    host/port/path/useHttps). Non-OpenAI-compatible providers (google /
+    anthropic) are handled by dedicated SDK paths and are not entered
+    into OPENAI_COMPATIBLE_CONFIG.
     """
     providers = []
     default_models = {}
@@ -60,19 +81,28 @@ def _load_ai_models_dat():
             if line.startswith("[") and line.endswith("]"):
                 section = line[1:-1]
                 continue
-            if section == "PROVIDERS":
-                providers.append(line)
-            elif section == "OPENAI_COMPATIBLE_CONFIG":
+            if section == "PROVIDER_INFO":
                 key, _, value = line.partition("=")
-                api_key_env, _, base_url = value.partition(",")
                 key = key.strip()
-                api_key_env = api_key_env.strip()
-                base_url = base_url.strip() or None
-                openai_compat[key] = {"api_key_env": api_key_env, "base_url": base_url}
+                fields = [f.strip() for f in value.split(",")]
+                if len(fields) < 8 or not key:
+                    continue
+                providers.append(key)  # appearance order = display order
+                api_key_env = fields[0]
+                host = fields[1]
+                port = fields[2]
+                path = fields[3]
+                is_openai_compat = fields[4] == "1"
+                use_https = fields[7] == "1"
+                if is_openai_compat:
+                    base_url = _build_base_url(host, port, path, use_https)
+                    openai_compat[key] = {
+                        "api_key_env": api_key_env,
+                        "base_url": base_url,
+                    }
             elif section is not None and section.startswith("MODELS:"):
                 provider = section[len("MODELS:"):]
                 default_models.setdefault(provider, line)  # first model = default
-            # [PROVIDER_INFO] は C++版で使うので、ここでは読み飛ばす。
 
     return providers, default_models, openai_compat
 
