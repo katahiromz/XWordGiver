@@ -239,20 +239,19 @@ static std::map<std::wstring, ProviderInfo> g_providers;
 // AIModels.dat の [PROVIDER_INFO] セクションから g_providers を構築する。
 // 書式: provider=APIキー環境変数名,ホスト,ポート,パス,OpenAI互換か,Claude形式か,Gemini形式か,HTTPSか
 // （APIキー環境変数名を空にすると、そのプロバイダーはAPIキー不要として扱われる＝ローカルAI等向け）
-// プロバイダー一覧の表示順もこのセクションの出現順から取る（旧 [PROVIDERS] は廃止）。
+// プロバイダー一覧の表示順もこのセクションの出現順から取る。
 // 他のセクション（MODELS:*）は Python版や AIHelper.cpp 側で使うものなので、
 // ここでは読み飛ばす。なお Python版も [PROVIDER_INFO] を読み、isOpenAICompat=1 の
-// 行から OpenAI 互換の base_url を組み立てる（旧 [OPENAI_COMPATIBLE_CONFIG] は廃止）。
+// 行から OpenAI 互換の base_url を組み立てる。
 //
 // Build g_providers from the [PROVIDER_INFO] section of AIModels.dat.
 // Format: provider=api_key_env,host,port,path,isOpenAICompat,isClaude,isGemini,useHttps
 // (an empty api_key_env means no API key is required -- for local AI, etc.)
 // Provider display order is also taken from the appearance order in this
-// section (the former [PROVIDERS] section was removed). The other sections
-// (MODELS:*) are used by the Python build or by
+// section. The other sections // (MODELS:*) are used by the Python build or by
 // AIHelper.cpp, so they are skipped here. The Python build also reads
 // [PROVIDER_INFO] and derives OpenAI-compatible base_url from rows with
-// isOpenAICompat=1 (the former [OPENAI_COMPATIBLE_CONFIG] section was removed).
+// isOpenAICompat=1.
 BOOL LoadAIModelsData()
 {
 	g_providers.clear();
