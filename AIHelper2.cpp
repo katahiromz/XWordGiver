@@ -437,14 +437,10 @@ static bool AskGemini(const ProviderInfo& info, const std::wstring& model,
 {
 	std::wstring apiKey = GetEnv(info.envKey);
 	if (apiKey.empty()) {
-		// フォールバック
-		apiKey = GetEnv(L"GEMINI_API_KEY");
-	}
-	if (apiKey.empty()) {
 		if (XgIsUserJapanese())
-			err = L"[gemini] 環境変数 GOOGLE_API_KEY (または GEMINI_API_KEY) がセットされていません。";
+			err = L"[gemini] 環境変数 GOOGLE_API_KEY がセットされていません。";
 		else
-			err = L"[gemini] Environment variable GOOGLE_API_KEY (or GEMINI_API_KEY) is not set.";
+			err = L"[gemini] Environment variable GOOGLE_API_KEY is not set.";
 		return false;
 	}
 
