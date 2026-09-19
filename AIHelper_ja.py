@@ -62,7 +62,10 @@ def _load_ai_models_dat():
             elif section == "OPENAI_COMPATIBLE_CONFIG":
                 key, _, value = line.partition("=")
                 api_key_env, _, base_url = value.partition(",")
-                openai_compat[key] = {"api_key_env": api_key_env, "base_url": base_url or None}
+                key = key.strip()
+                api_key_env = api_key_env.strip()
+                base_url = base_url.strip() or None
+                openai_compat[key] = {"api_key_env": api_key_env, "base_url": base_url}
             elif section is not None and section.startswith("MODELS:"):
                 provider = section[len("MODELS:"):]
                 default_models.setdefault(provider, line)  # 先頭のモデル = 既定モデル
