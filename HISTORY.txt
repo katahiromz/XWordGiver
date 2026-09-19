@@ -377,6 +377,7 @@
     - Embedded known AI model names.
     - Added AI Model "gemini-3.5-flash-lite".
     - Renamed AI Provider "gemini" as "google".
+- 2026-XX-YY ver.5.3.8
 
 # 開発履歴 (Japanese)
 
@@ -1073,3 +1074,4 @@
     - 既知のAIモデル名を埋め込む。
     - AIモデル「gemini-3.5-flash-lite」を追加。
     - プロバイダ「gemini」を「google」に改名。
+- 2026年XX月YY日 ver.5.3.8
