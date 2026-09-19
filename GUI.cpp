@@ -1176,7 +1176,7 @@ bool __fastcall XgLoadSettings(void)
         }
         if (!app_key.QuerySz(L"AIProvider", sz, _countof(sz))) {
             xg_ai_provider = sz;
-            // 以前、プロバイダ名が間違えていたのでここで修正。
+            // 以前、プロバイダ名を間違っていたのでここで修正。
             if (xg_ai_provider == L"gemini")
                 xg_ai_provider = L"google";
             if (xg_ai_provider == L"grok")
