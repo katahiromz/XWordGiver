@@ -1176,8 +1176,13 @@ bool __fastcall XgLoadSettings(void)
         }
         if (!app_key.QuerySz(L"AIProvider", sz, _countof(sz))) {
             xg_ai_provider = sz;
+            // 以前、プロバイダ名が間違えていたのでここで修正。
             if (xg_ai_provider == L"gemini")
                 xg_ai_provider = L"google";
+            if (xg_ai_provider == L"grok")
+                xg_ai_provider = L"xai";
+            if (xg_ai_provider == L"kimi")
+                xg_ai_provider = L"moonshot";
         }
         if (!app_key.QuerySz(L"AIModel", sz, _countof(sz))) {
             xg_ai_model = sz;
