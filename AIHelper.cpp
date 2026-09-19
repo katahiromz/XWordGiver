@@ -1797,7 +1797,7 @@ struct AIModelList
 };
 
 // TODO: １ヵ月ごとに以下の既知のAIモデル名一覧を更新せよ。可能ならば先頭を無料モデルにしておくこと。
-// 2026年9月19日最新
+// 2026年9月19日更新
 static const PCWSTR s_chatgptModels[] = {
     L"gpt-4o-mini", L"gpt-4.1", L"gpt-5.6-luna", L"gpt-5.6-sol", L"gpt-5.6-terra", L"gpt-6-astra",
 };
