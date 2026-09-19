@@ -1187,6 +1187,8 @@ bool __fastcall XgLoadSettings(void)
                 xg_ai_provider = L"openai";
             if (xg_ai_provider == L"claude")
                 xg_ai_provider = L"anthropic";
+            if (xg_ai_provider == L"qwen")
+                xg_ai_provider = L"dashscope";
         }
         if (!app_key.QuerySz(L"AIModel", sz, _countof(sz))) {
             xg_ai_model = sz;

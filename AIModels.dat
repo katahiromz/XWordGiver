@@ -31,7 +31,7 @@ anthropic   = ANTHROPIC_API_KEY,    api.anthropic.com, 443, /v1/messages, 0, 1, 
 xai         = XAI_API_KEY,          api.x.ai, 443, /v1/chat/completions, 1, 0, 0, 1
 deepseek    = DEEPSEEK_API_KEY,     api.deepseek.com, 443, /v1/chat/completions, 1, 0, 0, 1
 sakana      = SAKANA_API_KEY,       api.sakana.ai, 443, /v1/chat/completions, 1, 0, 0, 1
-qwen        = DASHSCOPE_API_KEY,    dashscope-intl.aliyuncs.com, 443, /compatible-mode/v1/chat/completions, 1, 0, 0, 1
+dashscope   = DASHSCOPE_API_KEY,    dashscope-intl.aliyuncs.com, 443, /compatible-mode/v1/chat/completions, 1, 0, 0, 1
 moonshot    = MOONSHOT_API_KEY,     api.moonshot.ai, 443, /v1/chat/completions, 1, 0, 0, 1
 mistral     = MISTRAL_API_KEY,      api.mistral.ai, 443, /v1/chat/completions, 1, 0, 0, 1
 llama       = LLAMA_API_KEY,        api.llama.com, 443, /compat/v1/chat/completions, 1, 0, 0, 1
@@ -91,7 +91,7 @@ sakana-fugu-ultra
 sakana-fugu-ultra-v2
 sakana-fugu-max
 
-[MODELS:qwen]
+[MODELS:dashscope]
 qwen3-turbo
 qwen-long
 qwen3.7-plus

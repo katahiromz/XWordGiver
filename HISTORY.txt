@@ -380,7 +380,7 @@
 - 2026-XX-YY ver.5.3.8
     - Moved AI model data to an external file (filename "AIModels.dat"). 
     - Added support for local AIs.
-    - Updated AI provider names ("chatgpt" → "openai", "claude" → "anthropic").
+    - Fixed AI provider names ("chatgpt" → "openai", "claude" → "anthropic", "qwen" → "dashscope").
 
 # 開発履歴 (Japanese)
 
@@ -1080,4 +1080,4 @@
 - 2026年XX月YY日 ver.5.3.8
     - AIモデルのデータを外部ファイル化（ファイル名「AIModels.dat」）。
     - ローカルAIのサポート。
-    - AIプロバイダ名を修正（「chatgpt」→「openai」、「claude」→「anthropic」）。
+    - AIプロバイダ名を修正（「chatgpt」→「openai」、「claude」→「anthropic」、「qwen」→「dashscope」）。
