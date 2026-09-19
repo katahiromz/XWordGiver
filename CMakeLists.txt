@@ -123,6 +123,7 @@ endif()
 add_executable(XWordGiver${BITS} WIN32
     AIHelper.cpp
     AIHelper2.cpp
+    AIModelsDat.cpp
     Dictionary.cpp
     GUI.cpp
     Input.cpp

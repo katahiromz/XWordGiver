@@ -9,9 +9,9 @@
 ;   - このファイルは UTF-8 (BOM付き) で保存してください。 / Save this file as UTF-8 with BOM.
 ;   - 値はカンマ区切りです。 / Value(s) are comma-separated.
 ;
-; このファイルは AIHelper.cpp / AIHelper2.cpp / AIHelper.py / AIHelper_ja.py から
+; このファイルは AIModelsDat.cpp / AIHelper.py / AIHelper_ja.py から
 ; 共通して読み込まれます。実行ファイル（またはスクリプト）と同じフォルダに置いてください。
-; This file is shared by AIHelper.cpp / AIHelper2.cpp / AIHelper.py / AIHelper_ja.py.
+; This file is shared by AIModelsDat.cpp / AIHelper.py / AIHelper_ja.py.
 ; Place it in the same folder as the executable (or the scripts).
 ;
 ; このファイルは自己責任で自由に編集しても構いません。
@@ -51,8 +51,8 @@ pepabo=AI_GATEWAY_API_KEY,https://ai-gateway.lolipop.jp/v1
 ollama=,http://localhost:11434/v1
 
 [PROVIDER_INFO]
-; C++版 (AIHelper2.cpp) のWinHTTP直接呼び出し用設定。
-; Settings used by the C++ (AIHelper2.cpp) WinHTTP client.
+; C++版 (AIModelsDat.cpp) のWinHTTP直接呼び出し用設定。
+; Settings used by the C++ (AIModelsDat.cpp) WinHTTP client.
 ; 書式: provider=APIキー環境変数名,ホスト名,ポート,パス,OpenAI互換か,Claude形式か,Gemini形式か,HTTPSか
 ;       (フラグは 0 か 1。APIキー環境変数名を空にすると、そのプロバイダーはAPIキー不要として扱われる。
 ;        ローカルAI等、キーを要求しないサーバー向け)

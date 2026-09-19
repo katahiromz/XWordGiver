@@ -12,6 +12,7 @@
 #include <strsafe.h>
 #include <cstdio>
 #include "AIHelper.h"
+#include "AIModelsDat.h"
 #include "resource.h"
 
 #ifdef _MSC_VER
@@ -229,80 +230,19 @@ static std::map<std::wstring, ProviderInfo> g_providers;
 // AIModels.dat 読み込み
 // Load AIModels.dat
 // ---------------------------------------------------------------------------
+// ファイル探索・読み込みと (セクション名, 項目行) へのパースは AIModelsDat.h/.cpp に
+// 共通化されている（AIHelper.cpp の LoadKnownAIModels() / LoadKnownAIProviders() と共有）。
+// File lookup/reading and parsing into (section, line) pairs are shared via
+// AIModelsDat.h/.cpp (used together with LoadKnownAIModels() / LoadKnownAIProviders()
+// in AIHelper.cpp).
 
-// 実行ファイルがあるフォルダを取得する。
-// Get the folder that contains the running executable.
-static std::wstring GetExeDirectoryW()
-{
-	wchar_t path[MAX_PATH];
-	DWORD n = GetModuleFileNameW(nullptr, path, MAX_PATH);
-	if (n == 0 || n >= MAX_PATH)
-		return L".";
-	std::wstring s(path, n);
-	size_t pos = s.find_last_of(L"\\/");
-	return (pos == std::wstring::npos) ? L"." : s.substr(0, pos);
-}
-
-// ファイルをUTF-8 (BOM可)として丸ごと読み込み、ワイド文字列に変換する。
-// Read a whole file as UTF-8 (BOM optional) and convert it to a wide string.
-static bool ReadAIModelsFileText(const std::wstring& path, std::wstring& outText)
-{
-	FILE* fp = _wfopen(path.c_str(), L"rb");
-	if (!fp)
-		return false;
-
-	std::string data;
-	char buf[4096];
-	size_t n;
-	while ((n = fread(buf, 1, sizeof(buf), fp)) > 0)
-		data.append(buf, n);
-	fclose(fp);
-
-	// UTF-8 BOM (EF BB BF) を取り除く。
-	if (data.size() >= 3 &&
-		(unsigned char)data[0] == 0xEF && (unsigned char)data[1] == 0xBB && (unsigned char)data[2] == 0xBF)
-	{
-		data.erase(0, 3);
-	}
-
-	outText = Utf8ToWide(data);
-	return true;
-}
-
-// 実行ファイルのフォルダ、次いでカレントディレクトリの順に AIModels.dat を探す。
-// Look for AIModels.dat next to the executable, then in the current directory.
-static bool ReadAIModelsFile(std::wstring& outText)
-{
-	if (ReadAIModelsFileText(GetExeDirectoryW() + L"\\AIModels.dat", outText))
-		return true;
-	return ReadAIModelsFileText(L"AIModels.dat", outText);
-}
-
-// "a,b,c" の形式の文字列をカンマで分割する。
-// Split a "a,b,c"-style string on commas.
-static std::vector<std::wstring> SplitCsvLine(const std::wstring& s)
-{
-	std::vector<std::wstring> out;
-	size_t start = 0;
-	for (;;) {
-		size_t comma = s.find(L',', start);
-		if (comma == std::wstring::npos) {
-			out.push_back(s.substr(start));
-			break;
-		}
-		out.push_back(s.substr(start, comma - start));
-		start = comma + 1;
-	}
-	return out;
-}
-
-// AIModels.dat をパースし、[PROVIDER_INFO] セクションから g_providers を構築する。
+// AIModels.dat の [PROVIDER_INFO] セクションから g_providers を構築する。
 // 書式: provider=APIキー環境変数名,ホスト,ポート,パス,OpenAI互換か,Claude形式か,Gemini形式か,HTTPSか
 // （APIキー環境変数名を空にすると、そのプロバイダーはAPIキー不要として扱われる＝ローカルAI等向け）
 // 他のセクション（PROVIDERS / OPENAI_COMPATIBLE_CONFIG / MODELS:*）は
 // Python版や AIHelper.cpp 側で使うものなので、ここでは読み飛ばす。
 //
-// Parse AIModels.dat and build g_providers from the [PROVIDER_INFO] section.
+// Build g_providers from the [PROVIDER_INFO] section of AIModels.dat.
 // Format: provider=api_key_env,host,port,path,isOpenAICompat,isClaude,isGemini,useHttps
 // (an empty api_key_env means no API key is required -- for local AI, etc.)
 // The other sections (PROVIDERS / OPENAI_COMPATIBLE_CONFIG / MODELS:*) are
@@ -311,33 +251,10 @@ BOOL LoadAIModelsData()
 {
 	g_providers.clear();
 
-	std::wstring text;
-	if (!ReadAIModelsFile(text))
-		return FALSE;
-
-	std::wstring section;
-	size_t pos = 0;
-	while (pos <= text.size()) {
-		size_t nl = text.find(L'\n', pos);
-		std::wstring line = (nl == std::wstring::npos) ? text.substr(pos) : text.substr(pos, nl - pos);
-		pos = (nl == std::wstring::npos) ? text.size() + 1 : nl + 1;
-
-		if (!line.empty() && line.back() == L'\r')
-			line.pop_back();
-
-		size_t s = line.find_first_not_of(L" \t");
-		if (s == std::wstring::npos)
-			continue; // 空行
-		size_t e = line.find_last_not_of(L" \t");
-		line = line.substr(s, e - s + 1);
-
-		if (line.empty() || line[0] == L';')
-			continue; // コメント行
-
-		if (line.front() == L'[' && line.back() == L']') {
-			section = line.substr(1, line.size() - 2);
-			continue;
-		}
+	for (const auto& entry : GetAIModelsDatLines())
+	{
+		const std::wstring& section = entry.first;
+		const std::wstring& line = entry.second;
 
 		if (section != L"PROVIDER_INFO")
 			continue;
