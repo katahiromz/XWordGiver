@@ -16,7 +16,7 @@ import argparse
 import os
 import sys
 
-PROVIDERS = ["chatgpt", "google", "claude", "xai", "deepseek", "sakana", "qwen", "kimi", "mistral", "llama", "pepabo"]
+PROVIDERS = ["chatgpt", "google", "claude", "xai", "deepseek", "sakana", "qwen", "moonshot", "mistral", "llama", "pepabo"]
 
 DEFAULT_MODELS = {
     "chatgpt": "gpt-4o-mini",
@@ -26,7 +26,7 @@ DEFAULT_MODELS = {
     "deepseek": "deepseek-v4-flash",
     "sakana": "sakana-namazu",
     "qwen": "qwen3-max",
-    "kimi": "kimi-k3",
+    "moonshot": "kimi-k3",
     "mistral": "mistral-large-latest",
     "llama": "llama-4-maverick",
     "pepabo": "gpt-5-6-luna",
@@ -42,7 +42,7 @@ OPENAI_COMPATIBLE_CONFIG = {
     "deepseek": {"api_key_env": "DEEPSEEK_API_KEY", "base_url": "https://api.deepseek.com/v1"},
     "sakana": {"api_key_env": "SAKANA_API_KEY", "base_url": "https://api.sakana.ai/v1"},
     "qwen": {"api_key_env": "DASHSCOPE_API_KEY", "base_url": "https://dashscope-intl.aliyuncs.com/compatible-mode/v1"},
-    "kimi": {"api_key_env": "MOONSHOT_API_KEY", "base_url": "https://api.moonshot.ai/v1"},
+    "moonshot": {"api_key_env": "MOONSHOT_API_KEY", "base_url": "https://api.moonshot.ai/v1"},
     "mistral": {"api_key_env": "MISTRAL_API_KEY", "base_url": "https://api.mistral.ai/v1"},
     "llama": {"api_key_env": "LLAMA_API_KEY", "base_url": "https://api.llama.com/compat/v1"},
     "pepabo": {"api_key_env": "AI_GATEWAY_API_KEY", "base_url": "https://ai-gateway.lolipop.jp/v1"},

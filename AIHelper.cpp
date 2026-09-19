@@ -1819,7 +1819,7 @@ static const PCWSTR s_sakanaModels[] = {
 static const PCWSTR s_qwenModels[] = {
     L"qwen3-turbo", L"qwen-long", L"qwen3.7-plus", L"qwen3.7-max", L"qwen3.8-max",
 };
-static const PCWSTR s_kimiModels[] = {
+static const PCWSTR s_moonshotModels[] = {
     L"moonshot-v1-auto", L"kimi-k2.6", L"kimi-k3",
 };
 static const PCWSTR s_mistralModels[] = {
@@ -1901,7 +1901,7 @@ static const AIModelList s_knownAIModels[] = {
     MODELS_ENTRY(L"deepseek", s_deepseekModels),
     MODELS_ENTRY(L"sakana",   s_sakanaModels),
     MODELS_ENTRY(L"qwen",     s_qwenModels),
-    MODELS_ENTRY(L"kimi",     s_kimiModels),
+    MODELS_ENTRY(L"moonshot", s_moonshotModels),
     MODELS_ENTRY(L"mistral",  s_mistralModels),
     MODELS_ENTRY(L"llama",    s_llamaModels),
     MODELS_ENTRY(L"pepabo",   s_pepaboModels),

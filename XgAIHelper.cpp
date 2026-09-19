@@ -50,7 +50,7 @@ XgAIHelperDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
             static const PCWSTR providers[] =
             {
                 L"chatgpt", L"google", L"claude", L"xai", L"deepseek", L"sakana",
-                L"qwen", L"kimi", L"mistral", L"llama", L"pepabo",
+                L"qwen", L"moonshot", L"mistral", L"llama", L"pepabo",
             };
             for (auto provider : providers)
                 SendDlgItemMessageW(hwnd, cmb1, CB_ADDSTRING, 0, (LPARAM)provider);

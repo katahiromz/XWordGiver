@@ -221,7 +221,7 @@ static const std::map<std::wstring, ProviderInfo> g_providers = {
 	{L"deepseek", {L"DEEPSEEK_API_KEY",  L"api.deepseek.com",             L"/v1/chat/completions", true,  false, false}},
 	{L"sakana",   {L"SAKANA_API_KEY",    L"api.sakana.ai",                L"/v1/chat/completions", true,  false, false}},
 	{L"qwen",     {L"DASHSCOPE_API_KEY", L"dashscope-intl.aliyuncs.com",  L"/compatible-mode/v1/chat/completions", true, false, false}},
-	{L"kimi",     {L"MOONSHOT_API_KEY",  L"api.moonshot.ai",              L"/v1/chat/completions", true,  false, false}},
+	{L"moonshot", {L"MOONSHOT_API_KEY",  L"api.moonshot.ai",              L"/v1/chat/completions", true,  false, false}},
 	{L"mistral",  {L"MISTRAL_API_KEY",   L"api.mistral.ai",               L"/v1/chat/completions", true,  false, false}},
 	{L"llama",    {L"LLAMA_API_KEY",     L"api.llama.com",                L"/compat/v1/chat/completions", true, false, false}},
 	{L"pepabo",   {L"AI_GATEWAY_API_KEY",L"ai-gateway.lolipop.jp",        L"/v1/chat/completions", true,  false, false}},
