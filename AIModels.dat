@@ -79,10 +79,9 @@ ollama=,localhost,11434,/v1/chat/completions,1,0,0,0
 
 ; ----------------------------------------------------------------------------
 ; 既知のAIモデル名一覧（プロバイダーごと）。各セクションの先頭のモデルが、そのプロバイダーの
-; 既定モデル（旧 DEFAULT_MODELS）として使われる。
+; 既定モデルとして使われる。
 ; Known AI model names, per provider. The first model listed in each section is
-; used as that provider's default model (this replaces the old DEFAULT_MODELS
-; section).
+; used as that provider's default model.
 ; TODO: １ヵ月ごとに以下の既知のAIモデル名一覧を更新せよ。先頭は無料モデルにしておくこと
 ;       （先頭モデルは既定モデルにもなるため）。
 ; TODO: Update the list below about once a month. Keep a free model first
