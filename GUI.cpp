@@ -1183,6 +1183,10 @@ bool __fastcall XgLoadSettings(void)
                 xg_ai_provider = L"xai";
             if (xg_ai_provider == L"kimi")
                 xg_ai_provider = L"moonshot";
+            if (xg_ai_provider == L"chatgpt")
+                xg_ai_provider = L"openai";
+            if (xg_ai_provider == L"claude")
+                xg_ai_provider = L"anthropic";
         }
         if (!app_key.QuerySz(L"AIModel", sz, _countof(sz))) {
             xg_ai_model = sz;
