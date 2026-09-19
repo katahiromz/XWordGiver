@@ -1811,7 +1811,7 @@ BOOL Helper_Open(HWND hwndOwner)
 // Parse AIModels.dat and extract every [MODELS:provider] section. The other
 // sections (PROVIDER_INFO) are used by the Python build or by AIHelper2.cpp,
 // so they are skipped here.
-static void LoadKnownAIModels(std::map<std::wstring, std::vector<std::wstring>>& out)
+static void Helper_LoadAIModels(std::map<std::wstring, std::vector<std::wstring>>& out)
 {
 	out.clear();
 
@@ -1827,20 +1827,14 @@ static void LoadKnownAIModels(std::map<std::wstring, std::vector<std::wstring>>&
 }
 
 std::map<std::wstring, std::vector<std::wstring>> xg_knownAIModels;
-static bool s_ai_models_loaded = false;
 
 // AIモデル群を取得する。
-BOOL XgGetAIModels(PCWSTR provider, std::vector<std::wstring>& models)
+BOOL Helper_GetAIModels(PCWSTR provider, std::vector<std::wstring>& models)
 {
 	models.clear();
 
-	// 初回のみ AIModels.dat から読み込み、以降はキャッシュを使い回す。
-	// Load from AIModels.dat only on first use; reuse the cache afterwards.
-	if (!s_ai_models_loaded)
-	{
-		LoadKnownAIModels(xg_knownAIModels);
-		s_ai_models_loaded = true;
-	}
+	if (xg_knownAIModels.empty())
+		Helper_LoadAIModels(xg_knownAIModels);
 
 	for (const auto& entry : xg_knownAIModels)
 	{
@@ -1861,7 +1855,7 @@ BOOL XgGetAIModels(PCWSTR provider, std::vector<std::wstring>& models)
 // Load the list of provider names, in display order (the order they appear
 // in the file), from the [PROVIDER_INFO] section of AIModels.dat. Each line
 // is "provider = ..."; the part before '=' is taken as the provider name.
-static void LoadKnownAIProviders(std::vector<std::wstring>& out)
+static void Helper_LoadAIProviders(std::vector<std::wstring>& out)
 {
 	out.clear();
 
@@ -1881,7 +1875,6 @@ static void LoadKnownAIProviders(std::vector<std::wstring>& out)
 }
 
 std::vector<std::wstring> xg_knownAIProviders;
-static bool s_providersLoaded = false;
 
 // プロバイダー名の一覧を取得する（AIModels.dat の [PROVIDER_INFO] セクション、表示順）。
 // 初回のみファイルから読み込み、以降はキャッシュ（xg_knownAIProviders）を使い回す。
@@ -1891,13 +1884,10 @@ static bool s_providersLoaded = false;
 // AIModels.dat, in display order). Loaded from the file only on first use;
 // the cache (xg_knownAIProviders) is reused afterwards. Returns FALSE if the
 // file could not be read or the section was empty for any reason.
-BOOL XgGetAIProviders(std::vector<std::wstring>& providers)
+BOOL Helper_GetAIProviders(std::vector<std::wstring>& providers)
 {
-	if (!s_providersLoaded)
-	{
-		LoadKnownAIProviders(xg_knownAIProviders);
-		s_providersLoaded = true;
-	}
+	if (xg_knownAIProviders.empty())
+		Helper_LoadAIProviders(xg_knownAIProviders);
 
 	providers = xg_knownAIProviders;
 	return !providers.empty();

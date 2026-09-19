@@ -252,7 +252,7 @@ static std::map<std::wstring, ProviderInfo> g_providers;
 // AIHelper.cpp, so they are skipped here. The Python build also reads
 // [PROVIDER_INFO] and derives OpenAI-compatible base_url from rows with
 // isOpenAICompat=1.
-BOOL LoadAIModelsData()
+BOOL LoadAIModelsData(void)
 {
 	g_providers.clear();
 
@@ -571,10 +571,6 @@ static bool AskProvider(const std::wstring& provider, const std::wstring& model,
 		return false;
 	}
 
-	// 念のため、まだ読み込まれていなければここでも読み込む。
-	// Load it here too, just in case it hasn't been loaded yet.
-	LoadAIModelsData();
-
 	auto it = g_providers.find(provider);
 	if (it == g_providers.end()) {
 		err = L"Unknown provider: " + provider;
@@ -665,10 +661,9 @@ BOOL Helper2_Start(HWND hwnd)
 		g_bCsInitialized = TRUE;
 	}
 
-	// プロバイダー接続設定を AIModels.dat から読み込む（未読み込みの場合のみ）。
-	// Load provider connection settings from AIModels.dat (only if not loaded yet).
-	if (g_providers.empty())
-		LoadAIModelsData();
+	// プロバイダー接続設定を AIModels.dat から読み込む。
+	// Load provider connection settings from AIModels.dat.
+	LoadAIModelsData();
 
 	g_hwndNotify = hwnd;
 	g_bStop = FALSE;

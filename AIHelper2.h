@@ -20,6 +20,6 @@ void Helper2_ResetHistory();
 // Load the provider connection settings (g_providers) from the external file
 // AIModels.dat. Returns TRUE on success. Helper2_Start calls this automatically,
 // so callers normally do not need to call it directly.
-BOOL LoadAIModelsData();
+BOOL LoadAIModelsData(void);
 
 extern std::map<std::wstring, std::vector<std::pair<std::wstring, std::wstring>>> g_histories; // provider -> [(role, content)];

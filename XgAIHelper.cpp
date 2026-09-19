@@ -16,7 +16,7 @@ static void XgFillModelCombo(HWND hwnd, PCWSTR provider, PCWSTR preferredModel =
 
     // AIモデル群を取得。
     std::vector<std::wstring> models;
-    if (XgGetAIModels(provider, models))
+    if (Helper_GetAIModels(provider, models))
     {
         for (auto model : models)
             SendDlgItemMessageW(hwnd, cmb2, CB_ADDSTRING, 0, (LPARAM)model.c_str());
@@ -48,7 +48,7 @@ XgAIHelperDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 
             // Add providers（AIModels.dat の [PROVIDERS] セクションから取得する）
             std::vector<std::wstring> providers;
-            XgGetAIProviders(providers);
+            Helper_GetAIProviders(providers);
             for (auto& provider : providers)
                 SendDlgItemMessageW(hwnd, cmb1, CB_ADDSTRING, 0, (LPARAM)provider.c_str());
 

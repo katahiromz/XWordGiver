@@ -29,5 +29,5 @@ void Helper_AskQuestion(HWND hwnd, PCWSTR text);
 void Helper_AddLine(HWND hwnd, PCWSTR pszLine);
 BOOL XgIsUserJapanese(VOID) noexcept;
 
-BOOL XgGetAIModels(PCWSTR provider, std::vector<std::wstring>& models);
-BOOL XgGetAIProviders(std::vector<std::wstring>& providers);
+BOOL Helper_GetAIModels(PCWSTR provider, std::vector<std::wstring>& models);
+BOOL Helper_GetAIProviders(std::vector<std::wstring>& providers);
