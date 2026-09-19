@@ -21,16 +21,16 @@ PROVIDERS = ["chatgpt", "google", "claude", "xai", "deepseek", "sakana", "qwen",
 
 DEFAULT_MODELS = {
     "chatgpt": "gpt-4o-mini",
-    "google": "gemini-3.6-flash",
+    "google": "gemini-3.5-flash-lite",
     "claude": "claude-haiku-4-5-20251001",
-    "xai": "grok-4.6",
+    "xai": "grok-4",
     "deepseek": "deepseek-v4-flash",
     "sakana": "sakana-namazu",
-    "qwen": "qwen3-max",
-    "moonshot": "kimi-k3",
-    "mistral": "mistral-large-latest",
-    "llama": "llama-4-maverick",
-    "pepabo": "gpt-5-6-luna",
+    "qwen": "qwen3-turbo",
+    "moonshot": "moonshot-v1-auto",
+    "mistral": "mistral-small-latest",
+    "llama": "llama-4-scout",
+    "pepabo": "auto",
 }
 
 DEFAULT_MAX_TOKENS = 1024
