@@ -1797,7 +1797,7 @@ struct AIModelList
 };
 
 // TODO: １ヵ月ごとに以下の既知のAIモデル名一覧を更新せよ。可能ならば先頭を無料モデルにしておくこと。
-// 2026年9月18日最新(?)
+// 2026年9月19日最新
 static const PCWSTR s_chatgptModels[] = {
     L"gpt-4o-mini", L"gpt-4.1", L"gpt-5.6-luna", L"gpt-5.6-sol", L"gpt-5.6-terra", L"gpt-6-astra",
 };
@@ -1828,8 +1828,68 @@ static const PCWSTR s_mistralModels[] = {
 static const PCWSTR s_llamaModels[] = {
     L"llama-4-scout", L"llama-4-maverick", L"llama-3.3-70b",
 };
-static const PCWSTR s_pepaboModels[] = {
-    L"gpt-4o-mini", L"gpt-5.6-luna",
+static const PCWSTR s_pepaboModels[] = { // GMOペパボのAIゲートウェイ
+    L"auto",
+    L"amazon/nova-2-lite",
+    L"amazon/nova-lite",
+    L"amazon/nova-pro",
+    L"claude-haiku-4-5",
+    L"claude-opus-4-5",
+    L"claude-opus-4-6",
+    L"claude-opus-4-7",
+    L"claude-opus-4-8",
+    L"claude-opus-5",
+    L"claude-sonnet-4-6",
+    L"claude-sonnet-5",
+    L"deepseek/deepseek-r1-0528",
+    L"deepseek/deepseek-v3-2",
+    L"google/gemini-2-5-flash-lite",
+    L"google/gemini-2-5-pro",
+    L"google/gemini-2.5-flash",
+    L"google/gemini-3-1-flash-lite",
+    L"google/gemini-3-1-pro-preview",
+    L"google/gemini-3-5-flash",
+    L"google/gemini-3-5-flash-lite",
+    L"google/gemini-3-6-flash",
+    L"google/gemini-3-7-flash",
+    L"google/gemini-3-8-flash",
+    L"google/gemma-4-26b-a4b",
+    L"meta/llama-4-maverick",
+    L"meta/llama-4-scout",
+    L"minimax/minimax-m2",
+    L"minimax/minimax-m2-1",
+    L"minimax/minimax-m2-5",
+    L"mistral/devstral-2-123b",
+    L"mistral/mistral-large-3",
+    L"mistral/mistral-medium-3",
+    L"mistral/mistral-small-3-1-2503",
+    L"moonshot/kimi-k2",
+    L"moonshot/kimi-k2-5",
+    L"nvidia/nemotron-3-nano-30b-a3b",
+    L"nvidia/nemotron-3-super-120b-a12b",
+    L"openai/gpt-5-4",
+    L"openai/gpt-5-5",
+    L"openai/gpt-5-6-luna",
+    L"openai/gpt-5-6-sol",
+    L"openai/gpt-5-6-terra",
+    L"openai/gpt-oss-120b",
+    L"openai/gpt-oss-20b",
+    L"qwen/qwen3-235b-a22b-instruct-2507",
+    L"qwen/qwen3-32b",
+    L"qwen/qwen3-coder-30b-a3b",
+    L"qwen/qwen3-coder-480b-a35b-instruct",
+    L"qwen/qwen3-coder-next",
+    L"qwen/qwen3-next-80b-instruct",
+    L"qwen/qwen3-next-80b-thinking",
+    L"qwen/qwen3-vl-235b-a22b",
+    L"typesafe/jev-latest",
+    L"writer/palmyra-x4",
+    L"writer/palmyra-x5",
+    L"xai/grok-4-3",
+    L"xai/grok-4-6",
+    L"zai/glm-4-7",
+    L"zai/glm-4-7-flash",
+    L"zai/glm-5",
 };
 
 #define MODELS_ENTRY(name, arr) { (name), (arr), _countof(arr) }
