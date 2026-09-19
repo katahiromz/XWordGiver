@@ -1,5 +1,5 @@
-﻿; AIModels.dat --- XWordGiver AI Helper 外部データファイル
-; AIModels.dat --- External data file for XWordGiver AI Helper
+﻿; AIModels.dat --- XWordGiver AI ヘルパーの AI モデル データ。
+; AIModels.dat --- The AI model data for XWordGiver AI Helper.
 ;
 ; 【文法】 / [Syntax]
 ;   - ';' から始まる行はコメントです。 / Lines starting with ';' are comments.
