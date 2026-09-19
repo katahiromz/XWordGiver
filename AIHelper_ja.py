@@ -251,7 +251,7 @@ class AIClient:
 
         if provider == "google":
             return self.ask_gemini_single(prompt, model, max_tokens, temperature)
-        elif provider == "claude":
+        elif provider == "anthropic":
             return self.ask_claude([{"role": "user", "content": prompt}], model, max_tokens, temperature)
         else:
             return self.ask_openai_compatible(provider, [{"role": "user", "content": prompt}], model, max_tokens, temperature)
@@ -264,7 +264,7 @@ class AIClient:
 
         if provider == "google":
             yield from self.ask_gemini_single_stream(prompt, model, max_tokens, temperature)
-        elif provider == "claude":
+        elif provider == "anthropic":
             yield from self.ask_claude_stream([{"role": "user", "content": prompt}], model, max_tokens, temperature)
         else:
             yield from self.ask_openai_compatible_stream(provider, [{"role": "user", "content": prompt}], model, max_tokens, temperature)
@@ -274,7 +274,7 @@ class AIClient:
         if provider == "google":
             client = self.get_gemini_client()
             return sorted(m.name.removeprefix("models/") for m in client.models.list())
-        elif provider == "claude":
+        elif provider == "anthropic":
             client = self.get_claude_client()
             return sorted(m.id for m in client.models.list())
         elif provider in OPENAI_COMPATIBLE_CONFIG:
@@ -357,7 +357,7 @@ def interactive_mode(client: AIClient, initial_provider: str, model_override: st
                 if stream:
                     print()
                     answer_parts = []
-                    if provider == "claude":
+                    if provider == "anthropic":
                         gen = client.ask_claude_stream(history, current_model, max_tokens, temperature)
                     else:
                         gen = client.ask_openai_compatible_stream(provider, history, current_model, max_tokens, temperature)
@@ -367,7 +367,7 @@ def interactive_mode(client: AIClient, initial_provider: str, model_override: st
                     print("\n")
                     history.append({"role": "assistant", "content": "".join(answer_parts)})
                 else:
-                    if provider == "claude":
+                    if provider == "anthropic":
                         answer = client.ask_claude(history, current_model, max_tokens, temperature)
                     else:
                         answer = client.ask_openai_compatible(provider, history, current_model, max_tokens, temperature)

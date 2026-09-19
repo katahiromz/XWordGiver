@@ -7,7 +7,7 @@
 ;   - 各セクションの中身は「1行1項目」または「キー=値」です。 / Each section holds one item per line, or key=value(s) pairs.
 ;   - 空行は無視されます。 / Blank lines are ignored.
 ;   - このファイルは UTF-8 (BOM付き) で保存してください。 / Save this file as UTF-8 with BOM.
-;   - 値はカンマ区切りです。 / Values are comma-separated.
+;   - 値はカンマ区切りです。 / Value(s) are comma-separated.
 ;
 ; このファイルは AIHelper.cpp / AIHelper2.cpp / AIHelper.py / AIHelper_ja.py から
 ; 共通して読み込まれます。実行ファイル（またはスクリプト）と同じフォルダに置いてください。
@@ -16,9 +16,9 @@
 
 [PROVIDERS]
 ; プロバイダーの一覧（表示順）。 List of providers, in display order.
-chatgpt
+openai
 google
-claude
+anthropic
 xai
 deepseek
 sakana
@@ -34,7 +34,7 @@ ollama
 ; Settings for providers using the OpenAI-compatible (Chat Completions) API. Used by AIHelper.py / AIHelper_ja.py.
 ; 書式: provider=APIキー環境変数名,base_url  (base_urlを省略する場合は末尾のカンマの後を空にする)
 ; Format: provider=api_key_env,base_url  (leave the part after the comma empty to use the SDK default)
-chatgpt=OPENAI_API_KEY,
+openai=OPENAI_API_KEY,
 xai=XAI_API_KEY,https://api.x.ai/v1
 deepseek=DEEPSEEK_API_KEY,https://api.deepseek.com/v1
 sakana=SAKANA_API_KEY,https://api.sakana.ai/v1
@@ -56,7 +56,7 @@ ollama=,http://localhost:11434/v1
 ; Format: provider=api_key_env,host,port,path,isOpenAICompat,isClaude,isGemini,useHttps
 ;         (flags are 0 or 1. An empty api_key_env means no API key is required --
 ;          for local AI servers that don't check one.)
-chatgpt=OPENAI_API_KEY,api.openai.com,443,/v1/chat/completions,1,0,0,1
+openai=OPENAI_API_KEY,api.openai.com,443,/v1/chat/completions,1,0,0,1
 xai=XAI_API_KEY,api.x.ai,443,/v1/chat/completions,1,0,0,1
 deepseek=DEEPSEEK_API_KEY,api.deepseek.com,443,/v1/chat/completions,1,0,0,1
 sakana=SAKANA_API_KEY,api.sakana.ai,443,/v1/chat/completions,1,0,0,1
@@ -65,7 +65,7 @@ moonshot=MOONSHOT_API_KEY,api.moonshot.ai,443,/v1/chat/completions,1,0,0,1
 mistral=MISTRAL_API_KEY,api.mistral.ai,443,/v1/chat/completions,1,0,0,1
 llama=LLAMA_API_KEY,api.llama.com,443,/compat/v1/chat/completions,1,0,0,1
 pepabo=AI_GATEWAY_API_KEY,ai-gateway.lolipop.jp,443,/v1/chat/completions,1,0,0,1
-claude=ANTHROPIC_API_KEY,api.anthropic.com,443,/v1/messages,0,1,0,1
+anthropic=ANTHROPIC_API_KEY,api.anthropic.com,443,/v1/messages,0,1,0,1
 google=GOOGLE_API_KEY,generativelanguage.googleapis.com,443,,0,0,1,1
 ; ローカルAI（例: Ollama）。OpenAI互換のChat Completions APIを既定ポート11434・プレーンHTTPで提供する。
 ; APIキー環境変数名は空にしてあるので、キー無しで接続する。
@@ -87,7 +87,7 @@ ollama=,localhost,11434,/v1/chat/completions,1,0,0,0
 ; 更新日 / Last updated: 2026-09-19
 ; ----------------------------------------------------------------------------
 
-[MODELS:chatgpt]
+[MODELS:openai]
 gpt-4o-mini
 gpt-4.1
 gpt-5.6-luna
@@ -102,7 +102,7 @@ gemini-3.8-flash
 gemini-3.1-pro
 gemini-3-deep-think
 
-[MODELS:claude]
+[MODELS:anthropic]
 claude-haiku-4-5-20251001
 claude-sonnet-5
 claude-opus-5

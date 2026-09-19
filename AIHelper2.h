@@ -7,7 +7,7 @@
 #include <map>
 #include <string>
 
-// 対応プロバイダー: chatgpt, gemini, claude, grok, deepseek, sakana, qwen, kimi,
+// 対応プロバイダー: openai, google, anthropic, xai, deepseek, sakana, qwen, moonshot,
 //                   mistral, llama, pepabo
 // AIHelper2.cpp で実装
 BOOL Helper2_Start(HWND hwnd);

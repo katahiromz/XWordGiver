@@ -561,7 +561,7 @@ static bool AskClaude(const ProviderInfo& info, const std::wstring& model,
 	std::string resp;
 	DWORD status = 0;
 	if (!HttpPost(info.host, info.port, info.path, headers, bodyUtf8, resp, status, err, info.useHttps)) {
-		err = FormatApiError(L"claude", status, resp);
+		err = FormatApiError(L"anthropic", status, resp);
 		return false;
 	}
 

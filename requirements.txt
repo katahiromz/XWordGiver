@@ -6,7 +6,7 @@
 # Packages needed per provider:
 #   chatgpt / grok / deepseek / sakana  ... openai
 #   gemini                              ... google-genai
-#   claude                              ... anthropic
+#   anthropic                           ... anthropic
 #
 # You can omit the package for a provider you don't use
 # (you'll get a "library not installed" error only if you try to use it).
