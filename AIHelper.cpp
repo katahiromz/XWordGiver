@@ -1849,21 +1849,24 @@ static bool ReadAIModelsFileText(std::wstring& outText)
 	return ReadAIModelsFileTextRaw(L"AIModels.dat", outText);
 }
 
-// AIModels.dat をパースし、すべての [MODELS:provider] セクションを取り出す。
-// 他のセクション（PROVIDERS / DEFAULT_MODELS / OPENAI_COMPATIBLE_CONFIG / PROVIDER_INFO）は
-// Python版や AIHelper2.cpp 側で使うものなので、ここでは読み飛ばす。
+// AIModels.dat をパースし、「(セクション名, 項目行)」のペア列に分解する。
+// コメント行・空行は読み飛ばし、セクション見出し（[...]）自体は出力に含めない
+// （その時点までに見た最後のセクション名を、以降の各項目行に紐付けるだけ）。
+// LoadKnownAIModels / LoadKnownAIProviders など、AIModels.dat内の特定セクションだけを
+// 拾いたい処理は、すべてこの関数の結果をフィルタリングするだけで実装できる。
 //
-// Parse AIModels.dat and extract every [MODELS:provider] section. The other
-// sections (PROVIDERS / DEFAULT_MODELS / OPENAI_COMPATIBLE_CONFIG /
-// PROVIDER_INFO) are used by the Python build or by AIHelper2.cpp, so they
-// are skipped here.
-static void LoadKnownAIModels(std::map<std::wstring, std::vector<std::wstring>>& out)
+// Parse AIModels.dat into a list of (section name, item line) pairs.
+// Comment/blank lines are skipped, and section headers ([...]) themselves are
+// not included in the output -- only the most recently seen section name is
+// attached to each item line that follows it. Any code that wants to pick out
+// one particular section of AIModels.dat (LoadKnownAIModels,
+// LoadKnownAIProviders, etc.) can be implemented by simply filtering the
+// result of this function.
+typedef std::vector<std::pair<std::wstring, std::wstring>> AIModelsDatLines;
+
+static void ParseAIModelsDatLines(const std::wstring& text, AIModelsDatLines& out)
 {
 	out.clear();
-
-	std::wstring text;
-	if (!ReadAIModelsFileText(text))
-		return;
 
 	std::wstring section;
 	size_t pos = 0;
@@ -1891,12 +1894,37 @@ static void LoadKnownAIModels(std::map<std::wstring, std::vector<std::wstring>>&
 			continue;
 		}
 
+		out.push_back(std::make_pair(section, line));
+	}
+}
+
+// AIModels.dat をパースし、すべての [MODELS:provider] セクションを取り出す。
+// 他のセクション（PROVIDERS / DEFAULT_MODELS / OPENAI_COMPATIBLE_CONFIG / PROVIDER_INFO）は
+// Python版や AIHelper2.cpp 側で使うものなので、ここでは読み飛ばす。
+//
+// Parse AIModels.dat and extract every [MODELS:provider] section. The other
+// sections (PROVIDERS / DEFAULT_MODELS / OPENAI_COMPATIBLE_CONFIG /
+// PROVIDER_INFO) are used by the Python build or by AIHelper2.cpp, so they
+// are skipped here.
+static void LoadKnownAIModels(std::map<std::wstring, std::vector<std::wstring>>& out)
+{
+	out.clear();
+
+	std::wstring text;
+	if (!ReadAIModelsFileText(text))
+		return;
+
+	AIModelsDatLines lines;
+	ParseAIModelsDatLines(text, lines);
+
+	for (const auto& entry : lines)
+	{
+		const std::wstring& section = entry.first;
+		const std::wstring& line = entry.second;
+
 		// "MODELS:provider" セクションのみ処理する。
 		if (section.compare(0, 7, L"MODELS:") == 0)
-		{
-			std::wstring provider = section.substr(7);
-			out[provider].push_back(line);
-		}
+			out[section.substr(7)].push_back(line);
 	}
 }
 
@@ -1926,4 +1954,54 @@ BOOL XgGetAIModels(PCWSTR provider, std::vector<std::wstring>& models)
 	}
 
 	return FALSE;
+}
+
+// AIModels.dat の [PROVIDERS] セクションから、プロバイダー名の一覧を
+// 表示順（ファイルに書かれている順）で読み込む。
+// ParseAIModelsDatLines() の結果から "PROVIDERS" セクションの行だけを拾う。
+//
+// Load the list of provider names, in display order (the order they appear
+// in the file), from the [PROVIDERS] section of AIModels.dat. Picks out just
+// the lines belonging to the "PROVIDERS" section from ParseAIModelsDatLines()'s
+// result.
+static void LoadKnownAIProviders(std::vector<std::wstring>& out)
+{
+	out.clear();
+
+	std::wstring text;
+	if (!ReadAIModelsFileText(text))
+		return;
+
+	AIModelsDatLines lines;
+	ParseAIModelsDatLines(text, lines);
+
+	for (const auto& entry : lines)
+	{
+		// "PROVIDERS" セクションのみ処理する。
+		if (entry.first == L"PROVIDERS")
+			out.push_back(entry.second);
+	}
+}
+
+std::vector<std::wstring> xg_knownAIProviders;
+static bool s_providersLoaded = false;
+
+// プロバイダー名の一覧を取得する（AIModels.dat の [PROVIDERS] セクション、表示順）。
+// 初回のみファイルから読み込み、以降はキャッシュ（xg_knownAIProviders）を使い回す。
+// 何らかの理由でファイルが読めなかった／セクションが空だった場合はFALSEを返す。
+//
+// Get the list of provider names (from the [PROVIDERS] section of
+// AIModels.dat, in display order). Loaded from the file only on first use;
+// the cache (xg_knownAIProviders) is reused afterwards. Returns FALSE if the
+// file could not be read or the section was empty for any reason.
+BOOL XgGetAIProviders(std::vector<std::wstring>& providers)
+{
+	if (!s_providersLoaded)
+	{
+		LoadKnownAIProviders(xg_knownAIProviders);
+		s_providersLoaded = true;
+	}
+
+	providers = xg_knownAIProviders;
+	return !providers.empty();
 }

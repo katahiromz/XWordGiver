@@ -46,14 +46,11 @@ XgAIHelperDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
         {
             xg_ahSyncedDialogs[I_SYNCED_AIHELPER] = hwnd;
 
-            // Add providers
-            static const PCWSTR providers[] =
-            {
-                L"openai", L"google", L"anthropic", L"xai", L"deepseek", L"sakana",
-                L"qwen", L"moonshot", L"mistral", L"llama", L"pepabo",
-            };
-            for (auto provider : providers)
-                SendDlgItemMessageW(hwnd, cmb1, CB_ADDSTRING, 0, (LPARAM)provider);
+            // Add providers（AIModels.dat の [PROVIDERS] セクションから取得する）
+            std::vector<std::wstring> providers;
+            XgGetAIProviders(providers);
+            for (auto& provider : providers)
+                SendDlgItemMessageW(hwnd, cmb1, CB_ADDSTRING, 0, (LPARAM)provider.c_str());
 
             // Add models（選択中のプロバイダーの実際のモデル一覧を取得してセットする）
             SetDlgItemTextW(hwnd, cmb1, xg_ai_provider.c_str());

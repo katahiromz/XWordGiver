@@ -18,6 +18,7 @@ extern INT xg_nHelperY;
 extern INT xg_nHelperCX;
 extern INT xg_nHelperCY;
 extern std::map<std::wstring, std::vector<std::wstring>> xg_knownAIModels;
+extern std::vector<std::wstring> xg_knownAIProviders;
 
 // 子プロセスの出力の1行をUIスレッドへ渡すためのカスタムメッセージ
 // (WPARAMは未使用、LPARAMはnewしたPWSTR。受け取った側でdelete[]すること)
@@ -29,3 +30,4 @@ void Helper_AddLine(HWND hwnd, PCWSTR pszLine);
 BOOL XgIsUserJapanese(VOID) noexcept;
 
 BOOL XgGetAIModels(PCWSTR provider, std::vector<std::wstring>& models);
+BOOL XgGetAIProviders(std::vector<std::wstring>& providers);
