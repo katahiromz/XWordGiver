@@ -377,7 +377,7 @@
     - Embedded known AI model names.
     - Added AI Model "gemini-3.5-flash-lite".
     - Renamed AI Provider "gemini" as "google".
-- 2026-XX-YY ver.5.3.8
+- 2026-09-20 ver.5.3.8
     - Moved AI model data to an external file (filename "AIModels.dat"). 
     - Added support for local AIs.
     - Fixed AI provider names ("chatgpt" → "openai", "claude" → "anthropic", "qwen" → "dashscope").
@@ -1077,7 +1077,7 @@
     - 既知のAIモデル名を埋め込む。
     - AIモデル「gemini-3.5-flash-lite」を追加。
     - プロバイダ「gemini」を「google」に改名。
-- 2026年XX月YY日 ver.5.3.8
+- 2026年09月20日 ver.5.3.8
     - AIモデルのデータを外部ファイル化（ファイル名「AIModels.dat」）。
     - ローカルAIのサポート。
     - AIプロバイダ名を修正（「chatgpt」→「openai」、「claude」→「anthropic」、「qwen」→「dashscope」）。
