@@ -78,6 +78,7 @@ Source: "Policy-JPN.txt"; DestDir: "{app}"; Flags: ignoreversion
 Source: "AIHelper.py"; DestDir: "{app}"; Flags: ignoreversion
 Source: "AIHelper_ja.py"; DestDir: "{app}"; Flags: ignoreversion
 Source: "AIHelper.txt"; DestDir: "{app}"; Flags: ignoreversion
+Source: "AIModels.dat"; DestDir: "{app}"; Flags: ignoreversion
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Icons]

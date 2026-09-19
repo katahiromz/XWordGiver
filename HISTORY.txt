@@ -378,6 +378,8 @@
     - Added AI Model "gemini-3.5-flash-lite".
     - Renamed AI Provider "gemini" as "google".
 - 2026-XX-YY ver.5.3.8
+    - Moved AI model data to an external file (filename "AIModels.dat"). 
+    - Added support for local AIs.
 
 # 開発履歴 (Japanese)
 
@@ -1075,3 +1077,5 @@
     - AIモデル「gemini-3.5-flash-lite」を追加。
     - プロバイダ「gemini」を「google」に改名。
 - 2026年XX月YY日 ver.5.3.8
+    - AIモデルのデータを外部ファイル化（ファイル名「AIModels.dat」）。
+    - ローカルAIのサポート。

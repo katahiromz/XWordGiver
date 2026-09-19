@@ -1,0 +1,224 @@
+﻿; AIModels.dat --- XWordGiver AI Helper 外部データファイル
+; AIModels.dat --- External data file for XWordGiver AI Helper
+;
+; 【文法】 / [Syntax]
+;   - ';' から始まる行はコメントです。 / Lines starting with ';' are comments.
+;   - '[セクション名]' で区画（セクション）を区切ります。 / '[SectionName]' starts a new section.
+;   - 各セクションの中身は「1行1項目」または「キー=値」です。 / Each section holds one item per line, or key=value(s) pairs.
+;   - 空行は無視されます。 / Blank lines are ignored.
+;   - このファイルは UTF-8 (BOM付き) で保存してください。 / Save this file as UTF-8 with BOM.
+;   - 値はカンマ区切りです。 / Values are comma-separated.
+;
+; このファイルは AIHelper.cpp / AIHelper2.cpp / AIHelper.py / AIHelper_ja.py から
+; 共通して読み込まれます。実行ファイル（またはスクリプト）と同じフォルダに置いてください。
+; This file is shared by AIHelper.cpp / AIHelper2.cpp / AIHelper.py / AIHelper_ja.py.
+; Place it in the same folder as the executable (or the scripts).
+
+[PROVIDERS]
+; プロバイダーの一覧（表示順）。 List of providers, in display order.
+chatgpt
+google
+claude
+xai
+deepseek
+sakana
+qwen
+moonshot
+mistral
+llama
+pepabo
+ollama
+
+[OPENAI_COMPATIBLE_CONFIG]
+; OpenAI互換API（Chat Completions）を使うプロバイダーの設定（Python版AIHelper.py/AIHelper_ja.pyが使用）。
+; Settings for providers using the OpenAI-compatible (Chat Completions) API. Used by AIHelper.py / AIHelper_ja.py.
+; 書式: provider=APIキー環境変数名,base_url  (base_urlを省略する場合は末尾のカンマの後を空にする)
+; Format: provider=api_key_env,base_url  (leave the part after the comma empty to use the SDK default)
+chatgpt=OPENAI_API_KEY,
+xai=XAI_API_KEY,https://api.x.ai/v1
+deepseek=DEEPSEEK_API_KEY,https://api.deepseek.com/v1
+sakana=SAKANA_API_KEY,https://api.sakana.ai/v1
+qwen=DASHSCOPE_API_KEY,https://dashscope-intl.aliyuncs.com/compatible-mode/v1
+moonshot=MOONSHOT_API_KEY,https://api.moonshot.ai/v1
+mistral=MISTRAL_API_KEY,https://api.mistral.ai/v1
+llama=LLAMA_API_KEY,https://api.llama.com/compat/v1
+pepabo=AI_GATEWAY_API_KEY,https://ai-gateway.lolipop.jp/v1
+; ローカルAI（Ollama）。APIキー不要なので環境変数名の部分は空にしてある。
+; Local AI (Ollama). No API key is required, so the env-var part is left empty.
+ollama=,http://localhost:11434/v1
+
+[PROVIDER_INFO]
+; C++版 (AIHelper2.cpp) のWinHTTP直接呼び出し用設定。
+; Settings used by the C++ (AIHelper2.cpp) WinHTTP client.
+; 書式: provider=APIキー環境変数名,ホスト名,ポート,パス,OpenAI互換か,Claude形式か,Gemini形式か,HTTPSか
+;       (フラグは 0 か 1。APIキー環境変数名を空にすると、そのプロバイダーはAPIキー不要として扱われる。
+;        ローカルAI等、キーを要求しないサーバー向け)
+; Format: provider=api_key_env,host,port,path,isOpenAICompat,isClaude,isGemini,useHttps
+;         (flags are 0 or 1. An empty api_key_env means no API key is required --
+;          for local AI servers that don't check one.)
+chatgpt=OPENAI_API_KEY,api.openai.com,443,/v1/chat/completions,1,0,0,1
+xai=XAI_API_KEY,api.x.ai,443,/v1/chat/completions,1,0,0,1
+deepseek=DEEPSEEK_API_KEY,api.deepseek.com,443,/v1/chat/completions,1,0,0,1
+sakana=SAKANA_API_KEY,api.sakana.ai,443,/v1/chat/completions,1,0,0,1
+qwen=DASHSCOPE_API_KEY,dashscope-intl.aliyuncs.com,443,/compatible-mode/v1/chat/completions,1,0,0,1
+moonshot=MOONSHOT_API_KEY,api.moonshot.ai,443,/v1/chat/completions,1,0,0,1
+mistral=MISTRAL_API_KEY,api.mistral.ai,443,/v1/chat/completions,1,0,0,1
+llama=LLAMA_API_KEY,api.llama.com,443,/compat/v1/chat/completions,1,0,0,1
+pepabo=AI_GATEWAY_API_KEY,ai-gateway.lolipop.jp,443,/v1/chat/completions,1,0,0,1
+claude=ANTHROPIC_API_KEY,api.anthropic.com,443,/v1/messages,0,1,0,1
+google=GOOGLE_API_KEY,generativelanguage.googleapis.com,443,,0,0,1,1
+; ローカルAI（例: Ollama）。OpenAI互換のChat Completions APIを既定ポート11434・プレーンHTTPで提供する。
+; APIキー環境変数名は空にしてあるので、キー無しで接続する。
+; Local AI (e.g. Ollama). Serves an OpenAI-compatible Chat Completions API on
+; the default port 11434 over plain HTTP. The API key env var is left empty,
+; so no key is sent.
+ollama=,localhost,11434,/v1/chat/completions,1,0,0,0
+
+; ----------------------------------------------------------------------------
+; 既知のAIモデル名一覧（プロバイダーごと）。各セクションの先頭のモデルが、そのプロバイダーの
+; 既定モデル（旧 DEFAULT_MODELS）として使われる。
+; Known AI model names, per provider. The first model listed in each section is
+; used as that provider's default model (this replaces the old DEFAULT_MODELS
+; section).
+; TODO: １ヵ月ごとに以下の既知のAIモデル名一覧を更新せよ。先頭は無料モデルにしておくこと
+;       （先頭モデルは既定モデルにもなるため）。
+; TODO: Update the list below about once a month. Keep a free model first
+;       (the first entry also becomes the default model).
+; 更新日 / Last updated: 2026-09-19
+; ----------------------------------------------------------------------------
+
+[MODELS:chatgpt]
+gpt-4o-mini
+gpt-4.1
+gpt-5.6-luna
+gpt-5.6-sol
+gpt-5.6-terra
+gpt-6-astra
+
+[MODELS:google]
+gemini-3.5-flash-lite
+gemini-3.6-flash
+gemini-3.8-flash
+gemini-3.1-pro
+gemini-3-deep-think
+
+[MODELS:claude]
+claude-haiku-4-5-20251001
+claude-sonnet-5
+claude-opus-5
+claude-fable-5-1
+
+[MODELS:xai]
+grok-4
+grok-4.1
+grok-4.3
+grok-4.5
+
+[MODELS:deepseek]
+deepseek-v4-flash
+deepseek-v4-pro
+deepseek-v3.2
+
+[MODELS:sakana]
+sakana-namazu
+sakana-fugu
+sakana-fugu-ultra
+sakana-fugu-ultra-v2
+sakana-fugu-max
+
+[MODELS:qwen]
+qwen3-turbo
+qwen-long
+qwen3.7-plus
+qwen3.7-max
+qwen3.8-max
+
+[MODELS:moonshot]
+moonshot-v1-auto
+kimi-k2.6
+kimi-k3
+
+[MODELS:mistral]
+mistral-small-latest
+ministral-3-8b
+mistral-medium-latest
+mistral-large-latest
+
+[MODELS:llama]
+llama-4-scout
+llama-4-maverick
+llama-3.3-70b
+
+[MODELS:pepabo]
+; GMOペパボのAIゲートウェイ / GMO Pepabo's AI gateway
+auto
+amazon/nova-2-lite
+amazon/nova-lite
+amazon/nova-pro
+claude-haiku-4-5
+claude-opus-4-5
+claude-opus-4-6
+claude-opus-4-7
+claude-opus-4-8
+claude-opus-5
+claude-sonnet-4-6
+claude-sonnet-5
+deepseek/deepseek-r1-0528
+deepseek/deepseek-v3-2
+google/gemini-2-5-flash-lite
+google/gemini-2-5-pro
+google/gemini-2.5-flash
+google/gemini-3-1-flash-lite
+google/gemini-3-1-pro-preview
+google/gemini-3-5-flash
+google/gemini-3-5-flash-lite
+google/gemini-3-6-flash
+google/gemini-3-7-flash
+google/gemini-3-8-flash
+google/gemma-4-26b-a4b
+meta/llama-4-maverick
+meta/llama-4-scout
+minimax/minimax-m2
+minimax/minimax-m2-1
+minimax/minimax-m2-5
+mistral/devstral-2-123b
+mistral/mistral-large-3
+mistral/mistral-medium-3
+mistral/mistral-small-3-1-2503
+moonshot/kimi-k2
+moonshot/kimi-k2-5
+nvidia/nemotron-3-nano-30b-a3b
+nvidia/nemotron-3-super-120b-a12b
+openai/gpt-5-4
+openai/gpt-5-5
+openai/gpt-5-6-luna
+openai/gpt-5-6-sol
+openai/gpt-5-6-terra
+openai/gpt-oss-120b
+openai/gpt-oss-20b
+qwen/qwen3-235b-a22b-instruct-2507
+qwen/qwen3-32b
+qwen/qwen3-coder-30b-a3b
+qwen/qwen3-coder-480b-a35b-instruct
+qwen/qwen3-coder-next
+qwen/qwen3-next-80b-instruct
+qwen/qwen3-next-80b-thinking
+qwen/qwen3-vl-235b-a22b
+typesafe/jev-latest
+writer/palmyra-x4
+writer/palmyra-x5
+xai/grok-4-3
+xai/grok-4-6
+zai/glm-4-7
+zai/glm-4-7-flash
+zai/glm-5
+
+[MODELS:ollama]
+; ローカルで `ollama pull <model>` 済みのモデル名を書くこと。以下は例。
+; List the model names you have already pulled locally with `ollama pull <model>`.
+; The entries below are just examples -- edit to match what you actually have.
+llama3.2
+qwen2.5
+gemma2
+phi3
+mistral

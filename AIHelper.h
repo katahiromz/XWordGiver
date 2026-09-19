@@ -17,6 +17,7 @@ extern INT xg_nHelperX;
 extern INT xg_nHelperY;
 extern INT xg_nHelperCX;
 extern INT xg_nHelperCY;
+extern std::map<std::wstring, std::vector<std::wstring>> xg_knownAIModels;
 
 // 子プロセスの出力の1行をUIスレッドへ渡すためのカスタムメッセージ
 // (WPARAMは未使用、LPARAMはnewしたPWSTR。受け取った側でdelete[]すること)

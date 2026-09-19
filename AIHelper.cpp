@@ -9,8 +9,10 @@
 #include <imm.h>
 #include <string>
 #include <vector>
+#include <map>
 #include <memory>
 #include <strsafe.h>
+#include <cstdio>
 #ifdef USE_PYTHON
 	#include "MFile.hpp"
 	#include "MProcessMaker.hpp"
@@ -1788,140 +1790,140 @@ BOOL Helper_Open(HWND hwndOwner)
 	return TRUE;
 }
 
-// プロバイダーごとの既知のAIモデル名一覧。
-struct AIModelList
+// プロバイダーごとの既知のAIモデル名一覧は、以前はここに直接書いていたが、
+// 外部ファイル AIModels.dat の [MODELS:provider] セクションから読み込むようになった。
+// 更新するときは AIModels.dat を編集すればよく、再ビルドは不要になる。
+//
+// The known AI model names, per provider, used to be hardcoded here. They are
+// now loaded from the [MODELS:provider] sections of the external file
+// AIModels.dat. To update the list, just edit AIModels.dat; no rebuild needed.
+
+// 実行ファイルがあるフォルダを取得する。
+// Get the folder that contains the running executable.
+static std::wstring GetAIModelsExeDirectoryW()
 {
-    PCWSTR provider;
-    const PCWSTR* models;
-    size_t count;
-};
+	wchar_t path[MAX_PATH];
+	DWORD n = GetModuleFileNameW(nullptr, path, MAX_PATH);
+	if (n == 0 || n >= MAX_PATH)
+		return L".";
+	std::wstring s(path, n);
+	size_t pos = s.find_last_of(L"\\/");
+	return (pos == std::wstring::npos) ? L"." : s.substr(0, pos);
+}
 
-// TODO: １ヵ月ごとに以下の既知のAIモデル名一覧を更新せよ。可能ならば先頭を無料モデルにしておくこと。
-// 2026年9月19日更新
-static const PCWSTR s_chatgptModels[] = {
-    L"gpt-4o-mini", L"gpt-4.1", L"gpt-5.6-luna", L"gpt-5.6-sol", L"gpt-5.6-terra", L"gpt-6-astra",
-};
-static const PCWSTR s_googleModels[] = {
-    L"gemini-3.5-flash-lite", L"gemini-3.6-flash", L"gemini-3.8-flash", L"gemini-3.1-pro", L"gemini-3-deep-think",
-};
-static const PCWSTR s_claudeModels[] = {
-    L"claude-haiku-4-5-20251001", L"claude-sonnet-5", L"claude-opus-5", L"claude-fable-5-1",
-};
-static const PCWSTR s_xaiModels[] = {
-    L"grok-4", L"grok-4.1", L"grok-4.3", L"grok-4.5",
-};
-static const PCWSTR s_deepseekModels[] = {
-    L"deepseek-v4-flash", L"deepseek-v4-pro", L"deepseek-v3.2",
-};
-static const PCWSTR s_sakanaModels[] = {
-    L"sakana-namazu", L"sakana-fugu", L"sakana-fugu-ultra", L"sakana-fugu-ultra-v2", L"sakana-fugu-max",
-};
-static const PCWSTR s_qwenModels[] = {
-    L"qwen3-turbo", L"qwen-long", L"qwen3.7-plus", L"qwen3.7-max", L"qwen3.8-max",
-};
-static const PCWSTR s_moonshotModels[] = {
-    L"moonshot-v1-auto", L"kimi-k2.6", L"kimi-k3",
-};
-static const PCWSTR s_mistralModels[] = {
-    L"mistral-small-latest", L"ministral-3-8b", L"mistral-medium-latest", L"mistral-large-latest",
-};
-static const PCWSTR s_llamaModels[] = {
-    L"llama-4-scout", L"llama-4-maverick", L"llama-3.3-70b",
-};
-static const PCWSTR s_pepaboModels[] = { // GMOペパボのAIゲートウェイ
-    L"auto",
-    L"amazon/nova-2-lite",
-    L"amazon/nova-lite",
-    L"amazon/nova-pro",
-    L"claude-haiku-4-5",
-    L"claude-opus-4-5",
-    L"claude-opus-4-6",
-    L"claude-opus-4-7",
-    L"claude-opus-4-8",
-    L"claude-opus-5",
-    L"claude-sonnet-4-6",
-    L"claude-sonnet-5",
-    L"deepseek/deepseek-r1-0528",
-    L"deepseek/deepseek-v3-2",
-    L"google/gemini-2-5-flash-lite",
-    L"google/gemini-2-5-pro",
-    L"google/gemini-2.5-flash",
-    L"google/gemini-3-1-flash-lite",
-    L"google/gemini-3-1-pro-preview",
-    L"google/gemini-3-5-flash",
-    L"google/gemini-3-5-flash-lite",
-    L"google/gemini-3-6-flash",
-    L"google/gemini-3-7-flash",
-    L"google/gemini-3-8-flash",
-    L"google/gemma-4-26b-a4b",
-    L"meta/llama-4-maverick",
-    L"meta/llama-4-scout",
-    L"minimax/minimax-m2",
-    L"minimax/minimax-m2-1",
-    L"minimax/minimax-m2-5",
-    L"mistral/devstral-2-123b",
-    L"mistral/mistral-large-3",
-    L"mistral/mistral-medium-3",
-    L"mistral/mistral-small-3-1-2503",
-    L"moonshot/kimi-k2",
-    L"moonshot/kimi-k2-5",
-    L"nvidia/nemotron-3-nano-30b-a3b",
-    L"nvidia/nemotron-3-super-120b-a12b",
-    L"openai/gpt-5-4",
-    L"openai/gpt-5-5",
-    L"openai/gpt-5-6-luna",
-    L"openai/gpt-5-6-sol",
-    L"openai/gpt-5-6-terra",
-    L"openai/gpt-oss-120b",
-    L"openai/gpt-oss-20b",
-    L"qwen/qwen3-235b-a22b-instruct-2507",
-    L"qwen/qwen3-32b",
-    L"qwen/qwen3-coder-30b-a3b",
-    L"qwen/qwen3-coder-480b-a35b-instruct",
-    L"qwen/qwen3-coder-next",
-    L"qwen/qwen3-next-80b-instruct",
-    L"qwen/qwen3-next-80b-thinking",
-    L"qwen/qwen3-vl-235b-a22b",
-    L"typesafe/jev-latest",
-    L"writer/palmyra-x4",
-    L"writer/palmyra-x5",
-    L"xai/grok-4-3",
-    L"xai/grok-4-6",
-    L"zai/glm-4-7",
-    L"zai/glm-4-7-flash",
-    L"zai/glm-5",
-};
+// ファイルをUTF-8 (BOM可)として丸ごと読み込み、ワイド文字列に変換する。
+// Read a whole file as UTF-8 (BOM optional) and convert it to a wide string.
+static bool ReadAIModelsFileTextRaw(const std::wstring& path, std::wstring& outText)
+{
+	FILE* fp = _wfopen(path.c_str(), L"rb");
+	if (!fp)
+		return false;
 
-#define MODELS_ENTRY(name, arr) { (name), (arr), _countof(arr) }
-static const AIModelList s_knownAIModels[] = {
-    MODELS_ENTRY(L"chatgpt",  s_chatgptModels),
-    MODELS_ENTRY(L"google",   s_googleModels),
-    MODELS_ENTRY(L"claude",   s_claudeModels),
-    MODELS_ENTRY(L"xai",      s_xaiModels),
-    MODELS_ENTRY(L"deepseek", s_deepseekModels),
-    MODELS_ENTRY(L"sakana",   s_sakanaModels),
-    MODELS_ENTRY(L"qwen",     s_qwenModels),
-    MODELS_ENTRY(L"moonshot", s_moonshotModels),
-    MODELS_ENTRY(L"mistral",  s_mistralModels),
-    MODELS_ENTRY(L"llama",    s_llamaModels),
-    MODELS_ENTRY(L"pepabo",   s_pepaboModels),
-};
-#undef MODELS_ENTRY
+	std::string data;
+	char buf[4096];
+	size_t n;
+	while ((n = fread(buf, 1, sizeof(buf), fp)) > 0)
+		data.append(buf, n);
+	fclose(fp);
+
+	// UTF-8 BOM (EF BB BF) を取り除く。
+	if (data.size() >= 3 &&
+		(unsigned char)data[0] == 0xEF && (unsigned char)data[1] == 0xBB && (unsigned char)data[2] == 0xBF)
+	{
+		data.erase(0, 3);
+	}
+
+	int len = MultiByteToWideChar(CP_UTF8, 0, data.c_str(), (int)data.size(), nullptr, 0);
+	outText.assign((size_t)len, L'\0');
+	if (len > 0)
+		MultiByteToWideChar(CP_UTF8, 0, data.c_str(), (int)data.size(), &outText[0], len);
+	return true;
+}
+
+// 実行ファイルのフォルダ、次いでカレントディレクトリの順に AIModels.dat を探す。
+// Look for AIModels.dat next to the executable, then in the current directory.
+static bool ReadAIModelsFileText(std::wstring& outText)
+{
+	if (ReadAIModelsFileTextRaw(GetAIModelsExeDirectoryW() + L"\\AIModels.dat", outText))
+		return true;
+	return ReadAIModelsFileTextRaw(L"AIModels.dat", outText);
+}
+
+// AIModels.dat をパースし、すべての [MODELS:provider] セクションを取り出す。
+// 他のセクション（PROVIDERS / DEFAULT_MODELS / OPENAI_COMPATIBLE_CONFIG / PROVIDER_INFO）は
+// Python版や AIHelper2.cpp 側で使うものなので、ここでは読み飛ばす。
+//
+// Parse AIModels.dat and extract every [MODELS:provider] section. The other
+// sections (PROVIDERS / DEFAULT_MODELS / OPENAI_COMPATIBLE_CONFIG /
+// PROVIDER_INFO) are used by the Python build or by AIHelper2.cpp, so they
+// are skipped here.
+static void LoadKnownAIModels(std::map<std::wstring, std::vector<std::wstring>>& out)
+{
+	out.clear();
+
+	std::wstring text;
+	if (!ReadAIModelsFileText(text))
+		return;
+
+	std::wstring section;
+	size_t pos = 0;
+	while (pos <= text.size())
+	{
+		size_t nl = text.find(L'\n', pos);
+		std::wstring line = (nl == std::wstring::npos) ? text.substr(pos) : text.substr(pos, nl - pos);
+		pos = (nl == std::wstring::npos) ? text.size() + 1 : nl + 1;
+
+		if (!line.empty() && line.back() == L'\r')
+			line.pop_back();
+
+		size_t s = line.find_first_not_of(L" \t");
+		if (s == std::wstring::npos)
+			continue; // 空行
+		size_t e = line.find_last_not_of(L" \t");
+		line = line.substr(s, e - s + 1);
+
+		if (line.empty() || line[0] == L';')
+			continue; // コメント行
+
+		if (line.front() == L'[' && line.back() == L']')
+		{
+			section = line.substr(1, line.size() - 2);
+			continue;
+		}
+
+		// "MODELS:provider" セクションのみ処理する。
+		if (section.compare(0, 7, L"MODELS:") == 0)
+		{
+			std::wstring provider = section.substr(7);
+			out[provider].push_back(line);
+		}
+	}
+}
+
+std::map<std::wstring, std::vector<std::wstring>> xg_knownAIModels;
+static bool s_loaded = false;
 
 // AIモデル群を取得する。
 BOOL XgGetAIModels(PCWSTR provider, std::vector<std::wstring>& models)
 {
 	models.clear();
 
-    for (const auto& entry : s_knownAIModels)
-    {
-        if (lstrcmpiW(provider, entry.provider) == 0)
-        {
-            for (size_t i = 0; i < entry.count; ++i)
-                models.emplace_back(entry.models[i]);
-            return TRUE;
-        }
-    }
+	// 初回のみ AIModels.dat から読み込み、以降はキャッシュを使い回す。
+	// Load from AIModels.dat only on first use; reuse the cache afterwards.
+	if (!s_loaded)
+	{
+		LoadKnownAIModels(xg_knownAIModels);
+		s_loaded = true;
+	}
 
-    return FALSE;
+	for (const auto& entry : xg_knownAIModels)
+	{
+		if (lstrcmpiW(provider, entry.first.c_str()) == 0)
+		{
+			models = entry.second;
+			return TRUE;
+		}
+	}
+
+	return FALSE;
 }

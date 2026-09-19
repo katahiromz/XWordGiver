@@ -17,37 +17,66 @@ import argparse
 import os
 import sys
 
-PROVIDERS = ["chatgpt", "google", "claude", "xai", "deepseek", "sakana", "qwen", "moonshot", "mistral", "llama", "pepabo"]
+# PROVIDERS / DEFAULT_MODELS / OPENAI_COMPATIBLE_CONFIG used to be hardcoded here.
+# They are now loaded from the external file AIModels.dat, which is shared with
+# AIHelper_ja.py and the C++ build (AIHelper.cpp / AIHelper2.cpp). DEFAULT_MODELS
+# comes from the first model listed in each [MODELS:provider] section. To add
+# or update a provider or model, edit AIModels.dat -- no code change needed.
 
-DEFAULT_MODELS = {
-    "chatgpt": "gpt-4o-mini",
-    "google": "gemini-3.5-flash-lite",
-    "claude": "claude-haiku-4-5-20251001",
-    "xai": "grok-4",
-    "deepseek": "deepseek-v4-flash",
-    "sakana": "sakana-namazu",
-    "qwen": "qwen3-turbo",
-    "moonshot": "moonshot-v1-auto",
-    "mistral": "mistral-small-latest",
-    "llama": "llama-4-scout",
-    "pepabo": "auto",
-}
+
+def _find_ai_models_file():
+    """Look for AIModels.dat next to this script, then in the current directory."""
+    candidates = [
+        os.path.join(os.path.dirname(os.path.abspath(__file__)), "AIModels.dat"),
+        os.path.join(os.getcwd(), "AIModels.dat"),
+    ]
+    for path in candidates:
+        if os.path.isfile(path):
+            return path
+    raise FileNotFoundError(
+        "AIModels.dat が見つかりません。このスクリプトと同じフォルダに置いてください。 "
+        "(AIModels.dat not found; place it next to this script.)"
+    )
+
+
+def _load_ai_models_dat():
+    """Parse AIModels.dat and build PROVIDERS / DEFAULT_MODELS / OPENAI_COMPATIBLE_CONFIG.
+
+    DEFAULT_MODELS is derived from the first model listed in each
+    [MODELS:provider] section (that section otherwise belongs to the C++
+    build, but its first entry doubles as the default model here).
+    [PROVIDER_INFO] belongs to the C++ build (AIHelper2.cpp) and is ignored.
+    """
+    providers = []
+    default_models = {}
+    openai_compat = {}
+    section = None
+
+    with open(_find_ai_models_file(), "r", encoding="utf-8-sig") as f:
+        for raw_line in f:
+            line = raw_line.strip()
+            if not line or line.startswith(";"):
+                continue
+            if line.startswith("[") and line.endswith("]"):
+                section = line[1:-1]
+                continue
+            if section == "PROVIDERS":
+                providers.append(line)
+            elif section == "OPENAI_COMPATIBLE_CONFIG":
+                key, _, value = line.partition("=")
+                api_key_env, _, base_url = value.partition(",")
+                openai_compat[key] = {"api_key_env": api_key_env, "base_url": base_url or None}
+            elif section is not None and section.startswith("MODELS:"):
+                provider = section[len("MODELS:"):]
+                default_models.setdefault(provider, line)  # first model = default
+            # [PROVIDER_INFO] は C++版で使うので、ここでは読み飛ばす。
+
+    return providers, default_models, openai_compat
+
+
+PROVIDERS, DEFAULT_MODELS, OPENAI_COMPATIBLE_CONFIG = _load_ai_models_dat()
 
 DEFAULT_MAX_TOKENS = 1024
-
-# Configuration for providers that use an OpenAI-compatible API
-# (Chat Completions). Only the base_url and the API key env var differ.
-OPENAI_COMPATIBLE_CONFIG = {
-    "chatgpt": {"api_key_env": "OPENAI_API_KEY", "base_url": None},
-    "xai": {"api_key_env": "XAI_API_KEY", "base_url": "https://api.x.ai/v1"},
-    "deepseek": {"api_key_env": "DEEPSEEK_API_KEY", "base_url": "https://api.deepseek.com/v1"},
-    "sakana": {"api_key_env": "SAKANA_API_KEY", "base_url": "https://api.sakana.ai/v1"},
-    "qwen": {"api_key_env": "DASHSCOPE_API_KEY", "base_url": "https://dashscope-intl.aliyuncs.com/compatible-mode/v1"},
-    "moonshot": {"api_key_env": "MOONSHOT_API_KEY", "base_url": "https://api.moonshot.ai/v1"},
-    "mistral": {"api_key_env": "MISTRAL_API_KEY", "base_url": "https://api.mistral.ai/v1"},
-    "llama": {"api_key_env": "LLAMA_API_KEY", "base_url": "https://api.llama.com/compat/v1"},
-    "pepabo": {"api_key_env": "AI_GATEWAY_API_KEY", "base_url": "https://ai-gateway.lolipop.jp/v1"},
-}
 
 
 # --- Error message formatting (stateless, so this stays a module function) ---
@@ -144,9 +173,15 @@ class AIClient:
             from openai import OpenAI
 
             config = OPENAI_COMPATIBLE_CONFIG[provider]
-            api_key = os.environ.get(config["api_key_env"])
-            if not api_key:
-                raise RuntimeError(f"Environment variable {config['api_key_env']} is not set.")
+            if config["api_key_env"]:
+                api_key = os.environ.get(config["api_key_env"])
+                if not api_key:
+                    raise RuntimeError(f"Environment variable {config['api_key_env']} is not set.")
+            else:
+                # ローカルAI等、APIキー不要なプロバイダー。SDKにはダミー値を渡す。
+                # Local AI etc. that need no API key; the SDK still requires a
+                # non-empty string, so pass a placeholder.
+                api_key = "not-needed"
 
             client_kwargs = {"api_key": api_key}
             if config["base_url"]:

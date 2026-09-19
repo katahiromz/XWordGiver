@@ -10,6 +10,7 @@
 #include <map>
 #include <memory>
 #include <strsafe.h>
+#include <cstdio>
 #include "AIHelper.h"
 #include "resource.h"
 
@@ -207,34 +208,171 @@ static std::wstring FormatApiError(const std::wstring& provider, DWORD status, c
 // プロバイダ設定
 // ---------------------------------------------------------------------------
 struct ProviderInfo {
-	const wchar_t* envKey;
-	const wchar_t* host;		  // 例: api.openai.com
-	const wchar_t* path;		  // 例: /v1/chat/completions
-	bool isOpenAICompat;
-	bool isClaude;
-	bool isGemini;
+	std::wstring envKey;      // 空文字列ならAPIキー不要（ローカルAI等） / empty = no API key needed (local AI, etc.)
+	std::wstring host;		  // 例: api.openai.com
+	INTERNET_PORT port = INTERNET_DEFAULT_HTTPS_PORT;
+	std::wstring path;		  // 例: /v1/chat/completions
+	bool isOpenAICompat = false;
+	bool isClaude = false;
+	bool isGemini = false;
+	bool useHttps = true;    // false ならプレーンHTTP接続（ローカルAI等）/ false = plain HTTP (local AI, etc.)
 };
 
-static const std::map<std::wstring, ProviderInfo> g_providers = {
-	{L"chatgpt",  {L"OPENAI_API_KEY",    L"api.openai.com",               L"/v1/chat/completions", true,  false, false}},
-	{L"xai",      {L"XAI_API_KEY",       L"api.x.ai",                     L"/v1/chat/completions", true,  false, false}},
-	{L"deepseek", {L"DEEPSEEK_API_KEY",  L"api.deepseek.com",             L"/v1/chat/completions", true,  false, false}},
-	{L"sakana",   {L"SAKANA_API_KEY",    L"api.sakana.ai",                L"/v1/chat/completions", true,  false, false}},
-	{L"qwen",     {L"DASHSCOPE_API_KEY", L"dashscope-intl.aliyuncs.com",  L"/compatible-mode/v1/chat/completions", true, false, false}},
-	{L"moonshot", {L"MOONSHOT_API_KEY",  L"api.moonshot.ai",              L"/v1/chat/completions", true,  false, false}},
-	{L"mistral",  {L"MISTRAL_API_KEY",   L"api.mistral.ai",               L"/v1/chat/completions", true,  false, false}},
-	{L"llama",    {L"LLAMA_API_KEY",     L"api.llama.com",                L"/compat/v1/chat/completions", true, false, false}},
-	{L"pepabo",   {L"AI_GATEWAY_API_KEY",L"ai-gateway.lolipop.jp",        L"/v1/chat/completions", true,  false, false}},
-	{L"claude",   {L"ANTHROPIC_API_KEY", L"api.anthropic.com",            L"/v1/messages",         false, true,  false}},
-	{L"google",   {L"GOOGLE_API_KEY",    L"generativelanguage.googleapis.com", L"", false, false, true}},
-};
+// プロバイダー接続設定。以前はここに直接書いていたが、外部ファイル AIModels.dat の
+// [PROVIDER_INFO] セクションから LoadAIModelsData() で読み込むようになった。
+// Provider connection settings. This used to be a hardcoded literal here; it is now
+// loaded by LoadAIModelsData() from the [PROVIDER_INFO] section of the external
+// file AIModels.dat.
+static std::map<std::wstring, ProviderInfo> g_providers;
+
+// ---------------------------------------------------------------------------
+// AIModels.dat 読み込み
+// Load AIModels.dat
+// ---------------------------------------------------------------------------
+
+// 実行ファイルがあるフォルダを取得する。
+// Get the folder that contains the running executable.
+static std::wstring GetExeDirectoryW()
+{
+	wchar_t path[MAX_PATH];
+	DWORD n = GetModuleFileNameW(nullptr, path, MAX_PATH);
+	if (n == 0 || n >= MAX_PATH)
+		return L".";
+	std::wstring s(path, n);
+	size_t pos = s.find_last_of(L"\\/");
+	return (pos == std::wstring::npos) ? L"." : s.substr(0, pos);
+}
+
+// ファイルをUTF-8 (BOM可)として丸ごと読み込み、ワイド文字列に変換する。
+// Read a whole file as UTF-8 (BOM optional) and convert it to a wide string.
+static bool ReadAIModelsFileText(const std::wstring& path, std::wstring& outText)
+{
+	FILE* fp = _wfopen(path.c_str(), L"rb");
+	if (!fp)
+		return false;
+
+	std::string data;
+	char buf[4096];
+	size_t n;
+	while ((n = fread(buf, 1, sizeof(buf), fp)) > 0)
+		data.append(buf, n);
+	fclose(fp);
+
+	// UTF-8 BOM (EF BB BF) を取り除く。
+	if (data.size() >= 3 &&
+		(unsigned char)data[0] == 0xEF && (unsigned char)data[1] == 0xBB && (unsigned char)data[2] == 0xBF)
+	{
+		data.erase(0, 3);
+	}
+
+	outText = Utf8ToWide(data);
+	return true;
+}
+
+// 実行ファイルのフォルダ、次いでカレントディレクトリの順に AIModels.dat を探す。
+// Look for AIModels.dat next to the executable, then in the current directory.
+static bool ReadAIModelsFile(std::wstring& outText)
+{
+	if (ReadAIModelsFileText(GetExeDirectoryW() + L"\\AIModels.dat", outText))
+		return true;
+	return ReadAIModelsFileText(L"AIModels.dat", outText);
+}
+
+// "a,b,c" の形式の文字列をカンマで分割する。
+// Split a "a,b,c"-style string on commas.
+static std::vector<std::wstring> SplitCsvLine(const std::wstring& s)
+{
+	std::vector<std::wstring> out;
+	size_t start = 0;
+	for (;;) {
+		size_t comma = s.find(L',', start);
+		if (comma == std::wstring::npos) {
+			out.push_back(s.substr(start));
+			break;
+		}
+		out.push_back(s.substr(start, comma - start));
+		start = comma + 1;
+	}
+	return out;
+}
+
+// AIModels.dat をパースし、[PROVIDER_INFO] セクションから g_providers を構築する。
+// 書式: provider=APIキー環境変数名,ホスト,ポート,パス,OpenAI互換か,Claude形式か,Gemini形式か,HTTPSか
+// （APIキー環境変数名を空にすると、そのプロバイダーはAPIキー不要として扱われる＝ローカルAI等向け）
+// 他のセクション（PROVIDERS / OPENAI_COMPATIBLE_CONFIG / MODELS:*）は
+// Python版や AIHelper.cpp 側で使うものなので、ここでは読み飛ばす。
+//
+// Parse AIModels.dat and build g_providers from the [PROVIDER_INFO] section.
+// Format: provider=api_key_env,host,port,path,isOpenAICompat,isClaude,isGemini,useHttps
+// (an empty api_key_env means no API key is required -- for local AI, etc.)
+// The other sections (PROVIDERS / OPENAI_COMPATIBLE_CONFIG / MODELS:*) are
+// used by the Python build or by AIHelper.cpp, so they are skipped here.
+BOOL LoadAIModelsData()
+{
+	g_providers.clear();
+
+	std::wstring text;
+	if (!ReadAIModelsFile(text))
+		return FALSE;
+
+	std::wstring section;
+	size_t pos = 0;
+	while (pos <= text.size()) {
+		size_t nl = text.find(L'\n', pos);
+		std::wstring line = (nl == std::wstring::npos) ? text.substr(pos) : text.substr(pos, nl - pos);
+		pos = (nl == std::wstring::npos) ? text.size() + 1 : nl + 1;
+
+		if (!line.empty() && line.back() == L'\r')
+			line.pop_back();
+
+		size_t s = line.find_first_not_of(L" \t");
+		if (s == std::wstring::npos)
+			continue; // 空行
+		size_t e = line.find_last_not_of(L" \t");
+		line = line.substr(s, e - s + 1);
+
+		if (line.empty() || line[0] == L';')
+			continue; // コメント行
+
+		if (line.front() == L'[' && line.back() == L']') {
+			section = line.substr(1, line.size() - 2);
+			continue;
+		}
+
+		if (section != L"PROVIDER_INFO")
+			continue;
+
+		size_t eq = line.find(L'=');
+		if (eq == std::wstring::npos)
+			continue;
+
+		std::wstring provider = line.substr(0, eq);
+		auto fields = SplitCsvLine(line.substr(eq + 1));
+		if (fields.size() < 8)
+			continue;
+
+		ProviderInfo info;
+		info.envKey         = fields[0]; // 空文字列ならAPIキー不要
+		info.host           = fields[1];
+		info.port           = (INTERNET_PORT)_wtoi(fields[2].c_str());
+		info.path           = fields[3];
+		info.isOpenAICompat = (fields[4] == L"1");
+		info.isClaude       = (fields[5] == L"1");
+		info.isGemini       = (fields[6] == L"1");
+		info.useHttps       = (fields[7] == L"1");
+		g_providers[provider] = info;
+	}
+
+	return !g_providers.empty();
+}
 
 // ---------------------------------------------------------------------------
 // WinHTTP 共通送信
 // ---------------------------------------------------------------------------
 static bool HttpPost(const std::wstring& host, INTERNET_PORT port, const std::wstring& path,
 					 const std::wstring& headers, const std::string& body,
-					 std::string& response, DWORD& statusCode, std::wstring& errMsg)
+					 std::string& response, DWORD& statusCode, std::wstring& errMsg,
+					 bool useHttps = true)
 {
 	HINTERNET hSession = nullptr;
 	HINTERNET hConnect = nullptr;
@@ -263,14 +401,15 @@ static bool HttpPost(const std::wstring& host, INTERNET_PORT port, const std::ws
 	hRequest = WinHttpOpenRequest(hConnect, L"POST", path.c_str(),
 								  nullptr, WINHTTP_NO_REFERER,
 								  WINHTTP_DEFAULT_ACCEPT_TYPES,
-								  WINHTTP_FLAG_SECURE);
+								  useHttps ? WINHTTP_FLAG_SECURE : 0);
 	if (!hRequest) {
 		errMsg = L"WinHttpOpenRequest failed (" + std::to_wstring(GetLastError()) + L")";
 		goto cleanup;
 	}
 
-	// セキュリティプロトコルを明示（古い環境対策）
-	{
+	// セキュリティプロトコルを明示（古い環境対策）。HTTPS接続の場合のみ設定する
+	// （ローカルAI等のプレーンHTTP接続には不要かつ無意味なため）。
+	if (useHttps) {
 		DWORD protocols = WINHTTP_FLAG_SECURE_PROTOCOL_TLS1_2
 #if defined(WINHTTP_FLAG_SECURE_PROTOCOL_TLS1_3)
 						| WINHTTP_FLAG_SECURE_PROTOCOL_TLS1_3
@@ -359,23 +498,31 @@ static bool AskOpenAICompat(const ProviderInfo& info, const std::wstring& model,
 							const std::vector<std::pair<std::wstring, std::wstring>>& hist,
 							std::wstring& answer, std::wstring& err)
 {
-	std::wstring apiKey = GetEnv(info.envKey);
-	if (apiKey.empty()) {
-		if (XgIsUserJapanese())
-			err = L"[" + xg_ai_provider + L"] 環境変数 " + info.envKey + L" がセットされていません。";
-		else
-			err = L"[" + xg_ai_provider + L"] Environment variable " + info.envKey + L" is not set.";
-		return false;
+	// APIキー環境変数名が空の場合は、ローカルAI等キー不要のプロバイダーとして扱う。
+	// If the API key env var name is empty, treat this as a key-less provider
+	// (local AI, etc.) and skip the Authorization header.
+	std::wstring apiKey;
+	if (!info.envKey.empty()) {
+		apiKey = GetEnv(info.envKey.c_str());
+		if (apiKey.empty()) {
+			if (XgIsUserJapanese())
+				err = L"[" + xg_ai_provider + L"] 環境変数 " + info.envKey + L" がセットされていません。";
+			else
+				err = L"[" + xg_ai_provider + L"] Environment variable " + info.envKey + L" is not set.";
+			return false;
+		}
 	}
 
 	std::wstring body = L"{\"model\":\"" + EscapeJson(model) + L"\",\"messages\":" + BuildOpenAIMessagesJson(hist) + L"}";
 	std::string bodyUtf8 = WideToUtf8(body);
 
-	std::wstring headers = L"Content-Type: application/json\r\nAuthorization: Bearer " + apiKey + L"\r\n";
+	std::wstring headers = L"Content-Type: application/json\r\n";
+	if (!apiKey.empty())
+		headers += L"Authorization: Bearer " + apiKey + L"\r\n";
 
 	std::string resp;
 	DWORD status = 0;
-	if (!HttpPost(info.host, INTERNET_DEFAULT_HTTPS_PORT, info.path, headers, bodyUtf8, resp, status, err)) {
+	if (!HttpPost(info.host, info.port, info.path, headers, bodyUtf8, resp, status, err, info.useHttps)) {
 		err = FormatApiError(xg_ai_provider, status, resp);
 		return false;
 	}
@@ -395,7 +542,7 @@ static bool AskClaude(const ProviderInfo& info, const std::wstring& model,
 					  const std::vector<std::pair<std::wstring, std::wstring>>& hist,
 					  std::wstring& answer, std::wstring& err)
 {
-	std::wstring apiKey = GetEnv(info.envKey);
+	std::wstring apiKey = GetEnv(info.envKey.c_str());
 	if (apiKey.empty()) {
 		if (XgIsUserJapanese())
 			err = L"[claude] 環境変数 ANTHROPIC_API_KEY がセットされていません。";
@@ -413,7 +560,7 @@ static bool AskClaude(const ProviderInfo& info, const std::wstring& model,
 
 	std::string resp;
 	DWORD status = 0;
-	if (!HttpPost(info.host, INTERNET_DEFAULT_HTTPS_PORT, info.path, headers, bodyUtf8, resp, status, err)) {
+	if (!HttpPost(info.host, info.port, info.path, headers, bodyUtf8, resp, status, err, info.useHttps)) {
 		err = FormatApiError(L"claude", status, resp);
 		return false;
 	}
@@ -435,7 +582,7 @@ static bool AskGemini(const ProviderInfo& info, const std::wstring& model,
 					  const std::vector<std::pair<std::wstring, std::wstring>>& hist,
 					  std::wstring& answer, std::wstring& err)
 {
-	std::wstring apiKey = GetEnv(info.envKey);
+	std::wstring apiKey = GetEnv(info.envKey.c_str());
 	if (apiKey.empty()) {
 		if (XgIsUserJapanese())
 			err = L"[gemini] 環境変数 GOOGLE_API_KEY がセットされていません。";
@@ -463,7 +610,7 @@ static bool AskGemini(const ProviderInfo& info, const std::wstring& model,
 
 	std::string resp;
 	DWORD status = 0;
-	if (!HttpPost(info.host, INTERNET_DEFAULT_HTTPS_PORT, path, headers, bodyUtf8, resp, status, err)) {
+	if (!HttpPost(info.host, info.port, path, headers, bodyUtf8, resp, status, err, info.useHttps)) {
 		err = FormatApiError(L"google", status, resp);
 		return false;
 	}
@@ -496,6 +643,11 @@ static bool AskProvider(const std::wstring& provider, const std::wstring& model,
 		LeaveCriticalSection(&g_csHistory);
 		return false;
 	}
+
+	// 念のため、まだ読み込まれていなければここでも読み込む。
+	// Load it here too, just in case it hasn't been loaded yet.
+	if (g_providers.empty())
+		LoadAIModelsData();
 
 	auto it = g_providers.find(provider);
 	if (it == g_providers.end()) {
@@ -586,6 +738,11 @@ BOOL Helper2_Start(HWND hwnd)
 		InitializeCriticalSection(&g_csHistory);
 		g_bCsInitialized = TRUE;
 	}
+
+	// プロバイダー接続設定を AIModels.dat から読み込む（未読み込みの場合のみ）。
+	// Load provider connection settings from AIModels.dat (only if not loaded yet).
+	if (g_providers.empty())
+		LoadAIModelsData();
 
 	g_hwndNotify = hwnd;
 	g_bStop = FALSE;
