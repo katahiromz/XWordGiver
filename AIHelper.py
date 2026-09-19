@@ -17,13 +17,13 @@ import argparse
 import os
 import sys
 
-PROVIDERS = ["chatgpt", "gemini", "claude", "grok", "deepseek", "sakana", "qwen", "kimi", "mistral", "llama", "pepabo"]
+PROVIDERS = ["chatgpt", "google", "claude", "xai", "deepseek", "sakana", "qwen", "kimi", "mistral", "llama", "pepabo"]
 
 DEFAULT_MODELS = {
     "chatgpt": "gpt-4o-mini",
-    "gemini": "gemini-3.6-flash",
+    "google": "gemini-3.6-flash",
     "claude": "claude-haiku-4-5-20251001",
-    "grok": "grok-4.6",
+    "xai": "grok-4.6",
     "deepseek": "deepseek-v4-flash",
     "sakana": "sakana-namazu",
     "qwen": "qwen3-max",
@@ -39,7 +39,7 @@ DEFAULT_MAX_TOKENS = 1024
 # (Chat Completions). Only the base_url and the API key env var differ.
 OPENAI_COMPATIBLE_CONFIG = {
     "chatgpt": {"api_key_env": "OPENAI_API_KEY", "base_url": None},
-    "grok": {"api_key_env": "XAI_API_KEY", "base_url": "https://api.x.ai/v1"},
+    "xai": {"api_key_env": "XAI_API_KEY", "base_url": "https://api.x.ai/v1"},
     "deepseek": {"api_key_env": "DEEPSEEK_API_KEY", "base_url": "https://api.deepseek.com/v1"},
     "sakana": {"api_key_env": "SAKANA_API_KEY", "base_url": "https://api.sakana.ai/v1"},
     "qwen": {"api_key_env": "DASHSCOPE_API_KEY", "base_url": "https://dashscope-intl.aliyuncs.com/compatible-mode/v1"},
@@ -221,7 +221,7 @@ class AIClient:
             raise ValueError(f"Unknown provider: {provider} (choices: {', '.join(PROVIDERS)})")
         model = model or DEFAULT_MODELS[provider]
 
-        if provider == "gemini":
+        if provider == "google":
             return self.ask_gemini_single(prompt, model, max_tokens, temperature)
         elif provider == "claude":
             return self.ask_claude([{"role": "user", "content": prompt}], model, max_tokens, temperature)
@@ -234,7 +234,7 @@ class AIClient:
             raise ValueError(f"Unknown provider: {provider} (choices: {', '.join(PROVIDERS)})")
         model = model or DEFAULT_MODELS[provider]
 
-        if provider == "gemini":
+        if provider == "google":
             yield from self.ask_gemini_single_stream(prompt, model, max_tokens, temperature)
         elif provider == "claude":
             yield from self.ask_claude_stream([{"role": "user", "content": prompt}], model, max_tokens, temperature)
@@ -243,7 +243,7 @@ class AIClient:
 
     # --- Model listing ---
     def list_models(self, provider: str) -> list:
-        if provider == "gemini":
+        if provider == "google":
             client = self.get_gemini_client()
             return sorted(m.name.removeprefix("models/") for m in client.models.list())
         elif provider == "claude":
@@ -286,17 +286,17 @@ def interactive_mode(client: AIClient, initial_provider: str, model_override: st
     # Gemini's SDK Chat session keeps history internally.
     # For every other provider, we accumulate a list of messages ourselves.
     gemini_chat_session = None
-    histories = {p: [] for p in PROVIDERS if p != "gemini"}
+    histories = {p: [] for p in PROVIDERS if p != "google"}
 
     def init_gemini_chat(model_name: str):
         try:
             return client.create_gemini_chat_session(model_name, temperature, max_tokens)
         except Exception as e:
-            print(describe_error("gemini", e))
+            print(describe_error("google", e))
             return None
 
-    if provider == "gemini":
-        gemini_chat_session = init_gemini_chat(current_models["gemini"])
+    if provider == "google":
+        gemini_chat_session = init_gemini_chat(current_models["google"])
 
     def ask_once(user_input: str):
         """Send one question to the current provider/model and print the answer.
@@ -309,7 +309,7 @@ def interactive_mode(client: AIClient, initial_provider: str, model_override: st
         try:
             current_model = current_models[provider]
 
-            if provider == "gemini":
+            if provider == "google":
                 if gemini_chat_session is None:
                     gemini_chat_session = init_gemini_chat(current_model)
 
@@ -372,8 +372,8 @@ def interactive_mode(client: AIClient, initial_provider: str, model_override: st
             break
 
         if user_input.lower() == "reset":
-            if provider == "gemini":
-                gemini_chat_session = init_gemini_chat(current_models["gemini"])
+            if provider == "google":
+                gemini_chat_session = init_gemini_chat(current_models["google"])
             else:
                 histories[provider] = []
             print(f"-> Cleared conversation history for {provider}.\n")
@@ -392,7 +392,7 @@ def interactive_mode(client: AIClient, initial_provider: str, model_override: st
             current_models[provider] = new_model
             print(f"-> Switched {provider}'s model to {new_model}.")
 
-            if provider == "gemini":
+            if provider == "google":
                 # Gemini ties the model to the session, so switching models
                 # also resets the conversation history.
                 gemini_chat_session = init_gemini_chat(new_model)
@@ -417,8 +417,8 @@ def interactive_mode(client: AIClient, initial_provider: str, model_override: st
                 provider = new_provider
                 print(f"-> Switched to provider {provider} (model: {current_models[provider]}).\n")
 
-                if provider == "gemini" and gemini_chat_session is None:
-                    gemini_chat_session = init_gemini_chat(current_models["gemini"])
+                if provider == "google" and gemini_chat_session is None:
+                    gemini_chat_session = init_gemini_chat(current_models["google"])
             else:
                 print(f"-> Unknown provider (choices: {', '.join(PROVIDERS)})\n")
             continue
@@ -431,8 +431,8 @@ def main():
     parser.add_argument(
         "--provider", "-p",
         choices=PROVIDERS,
-        default="gemini",
-        help="Which AI provider to use (default: gemini)",
+        default="google",
+        help="Which AI provider to use (default: google)",
     )
     parser.add_argument(
         "--model", "-m",

@@ -952,7 +952,7 @@ void XgResetSettings(void)
     xg_nHelperCX = CW_USEDEFAULT;
     xg_nHelperCY = CW_USEDEFAULT;
 
-    xg_ai_provider = L"gemini";
+    xg_ai_provider = L"google";
     xg_ai_model = L"gemini-3.5-flash-lite";
     xg_additional_instruction = L"";
 
@@ -1176,6 +1176,8 @@ bool __fastcall XgLoadSettings(void)
         }
         if (!app_key.QuerySz(L"AIProvider", sz, _countof(sz))) {
             xg_ai_provider = sz;
+            if (xg_ai_provider == L"gemini")
+                xg_ai_provider = L"google";
         }
         if (!app_key.QuerySz(L"AIModel", sz, _countof(sz))) {
             xg_ai_model = sz;

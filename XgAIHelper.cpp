@@ -49,7 +49,7 @@ XgAIHelperDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
             // Add providers
             static const PCWSTR providers[] =
             {
-                L"chatgpt", L"gemini", L"claude", L"grok", L"deepseek", L"sakana",
+                L"chatgpt", L"google", L"claude", L"xai", L"deepseek", L"sakana",
                 L"qwen", L"kimi", L"mistral", L"llama", L"pepabo",
             };
             for (auto provider : providers)

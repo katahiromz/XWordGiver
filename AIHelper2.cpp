@@ -217,7 +217,7 @@ struct ProviderInfo {
 
 static const std::map<std::wstring, ProviderInfo> g_providers = {
 	{L"chatgpt",  {L"OPENAI_API_KEY",    L"api.openai.com",               L"/v1/chat/completions", true,  false, false}},
-	{L"grok",     {L"XAI_API_KEY",       L"api.x.ai",                     L"/v1/chat/completions", true,  false, false}},
+	{L"xai",      {L"XAI_API_KEY",       L"api.x.ai",                     L"/v1/chat/completions", true,  false, false}},
 	{L"deepseek", {L"DEEPSEEK_API_KEY",  L"api.deepseek.com",             L"/v1/chat/completions", true,  false, false}},
 	{L"sakana",   {L"SAKANA_API_KEY",    L"api.sakana.ai",                L"/v1/chat/completions", true,  false, false}},
 	{L"qwen",     {L"DASHSCOPE_API_KEY", L"dashscope-intl.aliyuncs.com",  L"/compatible-mode/v1/chat/completions", true, false, false}},
@@ -226,7 +226,7 @@ static const std::map<std::wstring, ProviderInfo> g_providers = {
 	{L"llama",    {L"LLAMA_API_KEY",     L"api.llama.com",                L"/compat/v1/chat/completions", true, false, false}},
 	{L"pepabo",   {L"AI_GATEWAY_API_KEY",L"ai-gateway.lolipop.jp",        L"/v1/chat/completions", true,  false, false}},
 	{L"claude",   {L"ANTHROPIC_API_KEY", L"api.anthropic.com",            L"/v1/messages",         false, true,  false}},
-	{L"gemini",   {L"GOOGLE_API_KEY",    L"generativelanguage.googleapis.com", L"", false, false, true}},
+	{L"google",   {L"GOOGLE_API_KEY",    L"generativelanguage.googleapis.com", L"", false, false, true}},
 };
 
 // ---------------------------------------------------------------------------
@@ -468,7 +468,7 @@ static bool AskGemini(const ProviderInfo& info, const std::wstring& model,
 	std::string resp;
 	DWORD status = 0;
 	if (!HttpPost(info.host, INTERNET_DEFAULT_HTTPS_PORT, path, headers, bodyUtf8, resp, status, err)) {
-		err = FormatApiError(L"gemini", status, resp);
+		err = FormatApiError(L"google", status, resp);
 		return false;
 	}
 

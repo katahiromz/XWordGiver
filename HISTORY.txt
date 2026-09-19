@@ -376,6 +376,7 @@
     - Fixed a menu issue.
     - Embedded known AI model names.
     - Added AI Model "gemini-3.5-flash-lite".
+    - Renamed AI Provider "gemini" as "google".
 
 # 開発履歴 (Japanese)
 
@@ -1071,3 +1072,4 @@
     - メニューの不具合を修正。
     - 既知のAIモデル名を埋め込む。
     - AIモデル「gemini-3.5-flash-lite」を追加。
+    - プロバイダ「gemini」を「google」に改名。

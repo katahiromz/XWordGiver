@@ -41,7 +41,7 @@ static HANDLE        xg_hReadyEvent = nullptr;
 
 HWND xg_hwndAIHelper = nullptr;
 HBITMAP g_hbmFairy = nullptr;
-std::wstring xg_ai_provider = L"gemini";
+std::wstring xg_ai_provider = L"google";
 std::wstring xg_ai_model = L"gemini-3.6-flash";
 std::wstring xg_additional_instruction;
 std::wstring xg_output_buffer;
@@ -1801,13 +1801,13 @@ struct AIModelList
 static const PCWSTR s_chatgptModels[] = {
     L"gpt-4o-mini", L"gpt-4.1", L"gpt-5.6-luna", L"gpt-5.6-sol", L"gpt-5.6-terra", L"gpt-6-astra",
 };
-static const PCWSTR s_geminiModels[] = {
+static const PCWSTR s_googleModels[] = {
     L"gemini-3.5-flash-lite", L"gemini-3.6-flash", L"gemini-3.8-flash", L"gemini-3.1-pro", L"gemini-3-deep-think",
 };
 static const PCWSTR s_claudeModels[] = {
     L"claude-haiku-4-5-20251001", L"claude-sonnet-5", L"claude-opus-5", L"claude-fable-5-1",
 };
-static const PCWSTR s_grokModels[] = {
+static const PCWSTR s_xaiModels[] = {
     L"grok-4", L"grok-4.1", L"grok-4.3", L"grok-4.5",
 };
 static const PCWSTR s_deepseekModels[] = {
@@ -1895,9 +1895,9 @@ static const PCWSTR s_pepaboModels[] = { // GMOペパボのAIゲートウェイ
 #define MODELS_ENTRY(name, arr) { (name), (arr), _countof(arr) }
 static const AIModelList s_knownAIModels[] = {
     MODELS_ENTRY(L"chatgpt",  s_chatgptModels),
-    MODELS_ENTRY(L"gemini",   s_geminiModels),
+    MODELS_ENTRY(L"google",   s_googleModels),
     MODELS_ENTRY(L"claude",   s_claudeModels),
-    MODELS_ENTRY(L"grok",     s_grokModels),
+    MODELS_ENTRY(L"xai",      s_xaiModels),
     MODELS_ENTRY(L"deepseek", s_deepseekModels),
     MODELS_ENTRY(L"sakana",   s_sakanaModels),
     MODELS_ENTRY(L"qwen",     s_qwenModels),
