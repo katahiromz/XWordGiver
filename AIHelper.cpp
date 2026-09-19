@@ -1929,7 +1929,7 @@ static void LoadKnownAIModels(std::map<std::wstring, std::vector<std::wstring>>&
 }
 
 std::map<std::wstring, std::vector<std::wstring>> xg_knownAIModels;
-static bool s_loaded = false;
+static bool s_ai_models_loaded = false;
 
 // AIモデル群を取得する。
 BOOL XgGetAIModels(PCWSTR provider, std::vector<std::wstring>& models)
@@ -1938,10 +1938,10 @@ BOOL XgGetAIModels(PCWSTR provider, std::vector<std::wstring>& models)
 
 	// 初回のみ AIModels.dat から読み込み、以降はキャッシュを使い回す。
 	// Load from AIModels.dat only on first use; reuse the cache afterwards.
-	if (!s_loaded)
+	if (!s_ai_models_loaded)
 	{
 		LoadKnownAIModels(xg_knownAIModels);
-		s_loaded = true;
+		s_ai_models_loaded = true;
 	}
 
 	for (const auto& entry : xg_knownAIModels)
