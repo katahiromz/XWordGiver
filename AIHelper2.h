@@ -1,4 +1,4 @@
-﻿// AIHelper2.h --- XWordGiver AI Helper (pure C++ / WinHTTP, no Python)
+﻿// AIHelper2.h --- XWordGiver AI Helper (pure C++ / WinHTTP)
 // Author: katahiromz + Grok
 // License: MIT
 

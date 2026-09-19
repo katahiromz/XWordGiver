@@ -1791,26 +1791,8 @@ BOOL Helper_Open(HWND hwndOwner)
 	return TRUE;
 }
 
-// プロバイダーごとの既知のAIモデル名一覧は、以前はここに直接書いていたが、
-// 外部ファイル AIModels.dat の [MODELS:provider] セクションから読み込むようになった。
-// 更新するときは AIModels.dat を編集すればよく、再ビルドは不要になる。
-//
-// The known AI model names, per provider, used to be hardcoded here. They are
-// now loaded from the [MODELS:provider] sections of the external file
-// AIModels.dat. To update the list, just edit AIModels.dat; no rebuild needed.
-
-// ファイル探索・読み込みと (セクション名, 項目行) へのパースは AIModelsDat.h/.cpp に
-// 共通化されている（AIHelper2.cpp の LoadAIModelsData() と共有）。
-// File lookup/reading and parsing into (section, line) pairs are shared via
-// AIModelsDat.h/.cpp (used together with LoadAIModelsData() in AIHelper2.cpp).
-
 // AIModels.dat をパースし、すべての [MODELS:provider] セクションを取り出す。
-// 他のセクション（PROVIDER_INFO）は Python版や AIHelper2.cpp 側で使うものなので、
-// ここでは読み飛ばす。
-//
-// Parse AIModels.dat and extract every [MODELS:provider] section. The other
-// sections (PROVIDER_INFO) are used by the Python build or by AIHelper2.cpp,
-// so they are skipped here.
+// Parse AIModels.dat and extract every [MODELS:provider] section.
 static void Helper_LoadAIModels(std::map<std::wstring, std::vector<std::wstring>>& out)
 {
 	out.clear();
@@ -1848,13 +1830,8 @@ BOOL Helper_GetAIModels(PCWSTR provider, std::vector<std::wstring>& models)
 	return FALSE;
 }
 
-// AIModels.dat の [PROVIDER_INFO] セクションから、プロバイダー名の一覧を
-// 表示順（ファイルに書かれている順）で読み込む。
-// 各行は「provider = ...」形式なので、'=' より前をプロバイダー名として取る。
-//
-// Load the list of provider names, in display order (the order they appear
-// in the file), from the [PROVIDER_INFO] section of AIModels.dat. Each line
-// is "provider = ..."; the part before '=' is taken as the provider name.
+// AIModels.dat から、プロバイダー名の一覧をで読み込む。
+// Load the list of provider names from AIModels.dat.
 static void Helper_LoadAIProviders(std::vector<std::wstring>& out)
 {
 	out.clear();
@@ -1876,14 +1853,8 @@ static void Helper_LoadAIProviders(std::vector<std::wstring>& out)
 
 std::vector<std::wstring> xg_knownAIProviders;
 
-// プロバイダー名の一覧を取得する（AIModels.dat の [PROVIDER_INFO] セクション、表示順）。
-// 初回のみファイルから読み込み、以降はキャッシュ（xg_knownAIProviders）を使い回す。
-// 何らかの理由でファイルが読めなかった／セクションが空だった場合はFALSEを返す。
-//
-// Get the list of provider names (from the [PROVIDER_INFO] section of
-// AIModels.dat, in display order). Loaded from the file only on first use;
-// the cache (xg_knownAIProviders) is reused afterwards. Returns FALSE if the
-// file could not be read or the section was empty for any reason.
+// AIModels.datからプロバイダー名の一覧を取得する。
+// Get the list of provider names from AIModels.dat.
 BOOL Helper_GetAIProviders(std::vector<std::wstring>& providers)
 {
 	if (xg_knownAIProviders.empty())

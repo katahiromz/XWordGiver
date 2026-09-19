@@ -1,4 +1,4 @@
-﻿// AIHelper2.cpp --- XWordGiver AI Helper (pure C++ / WinHTTP, no Python)
+﻿// AIHelper2.cpp --- XWordGiver AI Helper (pure C++ / WinHTTP)
 // Author: katahiromz + Grok
 // License: MIT
 #include "DetectLeaks.h"
@@ -219,39 +219,12 @@ struct ProviderInfo {
 	bool useHttps = true;    // false ならプレーンHTTP接続（ローカルAI等）/ false = plain HTTP (local AI, etc.)
 };
 
-// プロバイダー接続設定。以前はここに直接書いていたが、外部ファイル AIModels.dat の
-// [PROVIDER_INFO] セクションから LoadAIModelsData() で読み込むようになった。
-// Provider connection settings. This used to be a hardcoded literal here; it is now
-// loaded by LoadAIModelsData() from the [PROVIDER_INFO] section of the external
-// file AIModels.dat.
+// プロバイダー接続設定。
+// Provider connection settings.
 static std::map<std::wstring, ProviderInfo> g_providers;
 
-// ---------------------------------------------------------------------------
 // AIModels.dat 読み込み
 // Load AIModels.dat
-// ---------------------------------------------------------------------------
-// ファイル探索・読み込みと (セクション名, 項目行) へのパースは AIModelsDat.h/.cpp に
-// 共通化されている（AIHelper.cpp の LoadKnownAIModels() / LoadKnownAIProviders() と共有）。
-// File lookup/reading and parsing into (section, line) pairs are shared via
-// AIModelsDat.h/.cpp (used together with LoadKnownAIModels() / LoadKnownAIProviders()
-// in AIHelper.cpp).
-
-// AIModels.dat の [PROVIDER_INFO] セクションから g_providers を構築する。
-// 書式: provider=APIキー環境変数名,ホスト,ポート,パス,OpenAI互換か,Claude形式か,Gemini形式か,HTTPSか
-// （APIキー環境変数名を空にすると、そのプロバイダーはAPIキー不要として扱われる＝ローカルAI等向け）
-// プロバイダー一覧の表示順もこのセクションの出現順から取る。
-// 他のセクション（MODELS:*）は Python版や AIHelper.cpp 側で使うものなので、
-// ここでは読み飛ばす。なお Python版も [PROVIDER_INFO] を読み、isOpenAICompat=1 の
-// 行から OpenAI 互換の base_url を組み立てる。
-//
-// Build g_providers from the [PROVIDER_INFO] section of AIModels.dat.
-// Format: provider=api_key_env,host,port,path,isOpenAICompat,isClaude,isGemini,useHttps
-// (an empty api_key_env means no API key is required -- for local AI, etc.)
-// Provider display order is also taken from the appearance order in this
-// section. The other sections // (MODELS:*) are used by the Python build or by
-// AIHelper.cpp, so they are skipped here. The Python build also reads
-// [PROVIDER_INFO] and derives OpenAI-compatible base_url from rows with
-// isOpenAICompat=1.
 BOOL LoadAIModelsData(void)
 {
 	g_providers.clear();
