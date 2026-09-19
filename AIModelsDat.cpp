@@ -137,6 +137,17 @@ void InvalidateAIModelsDatCache()
 // Helpers
 // ---------------------------------------------------------------------------
 
+// 前後の空白（スペース・タブ）を除去する。
+// Trim leading/trailing spaces and tabs.
+std::wstring TrimW(const std::wstring& s)
+{
+	size_t b = s.find_first_not_of(L" \t");
+	if (b == std::wstring::npos)
+		return {};
+	size_t e = s.find_last_not_of(L" \t");
+	return s.substr(b, e - b + 1);
+}
+
 // "a,b,c" の形式の文字列をカンマで分割する。
 // Split a "a,b,c"-style string on commas.
 std::vector<std::wstring> SplitCsvLine(const std::wstring& s)
@@ -146,10 +157,12 @@ std::vector<std::wstring> SplitCsvLine(const std::wstring& s)
 	for (;;) {
 		size_t comma = s.find(L',', start);
 		if (comma == std::wstring::npos) {
-			out.push_back(s.substr(start));
+			out.push_back(TrimW(s.substr(start)));
 			break;
 		}
-		out.push_back(s.substr(start, comma - start));
+		// 各フィールドの前後の空白は許容し、結果からは取り除く。
+		// Leading/trailing whitespace around each field is allowed and stripped.
+		out.push_back(TrimW(s.substr(start, comma - start)));
 		start = comma + 1;
 	}
 	return out;

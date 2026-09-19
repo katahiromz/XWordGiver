@@ -263,7 +263,12 @@ BOOL LoadAIModelsData()
 		if (eq == std::wstring::npos)
 			continue;
 
-		std::wstring provider = line.substr(0, eq);
+		// '=' 前後の空白は許容する（provider 名・値側の先頭空白を除去）
+		// Allow whitespace around '=' (trim provider name and the value side).
+		std::wstring provider = TrimW(line.substr(0, eq));
+		if (provider.empty())
+			continue;
+
 		auto fields = SplitCsvLine(line.substr(eq + 1));
 		if (fields.size() < 8)
 			continue;
