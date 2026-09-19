@@ -13,6 +13,9 @@
 ; 共通して読み込まれます。実行ファイル（またはスクリプト）と同じフォルダに置いてください。
 ; This file is shared by AIHelper.cpp / AIHelper2.cpp / AIHelper.py / AIHelper_ja.py.
 ; Place it in the same folder as the executable (or the scripts).
+;
+; このファイルは自己責任で自由に編集しても構いません。
+; You are free to edit this file at your own risk.
 
 [PROVIDERS]
 ; プロバイダーの一覧（表示順）。 List of providers, in display order.
