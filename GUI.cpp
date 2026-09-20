@@ -7249,14 +7249,14 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT /*codeNo
         bUpdateImage = TRUE;
         break;
     case ID_ERASESOLUTIONANDUNLOCKEDIT:
+        if (xg_bSolved)
         {
             auto sa1 = std::make_shared<XG_UndoData_SetAll>();
             auto sa2 = std::make_shared<XG_UndoData_SetAll>();
             sa1->Get();
             {
                 XGStringW str;
-                XG_Board *pxw = (xg_bSolved && xg_bShowAnswer) ? &xg_solution : &xg_xword;
-                pxw->GetString(str);
+                xg_solution.GetString(str);
                 XgPasteBoard(hwnd, str);
             }
             sa2->Get();
