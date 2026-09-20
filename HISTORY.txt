@@ -381,7 +381,7 @@
     - Moved AI model data to an external file (filename "AIModels.dat"). 
     - Added support for local AIs.
     - Fixed AI provider names ("chatgpt" → "openai", "claude" → "anthropic", "qwen" → "dashscope").
-- 2026-XX-YY ver.5.3.9
+- 2026-09-20 ver.5.3.9
     - Improved installer.
     - Changed "Unclassifiable" to "Mixed seasons."
     - Fixed behaviour of "Delete clues and unlock board".
@@ -1085,7 +1085,7 @@
     - AIモデルのデータを外部ファイル化（ファイル名「AIModels.dat」）。
     - ローカルAIのサポート。
     - AIプロバイダ名を修正（「chatgpt」→「openai」、「claude」→「anthropic」、「qwen」→「dashscope」）。
-- 2026年XX月YY日 ver.5.3.9
+- 2026年09月20日 ver.5.3.9
     - インストーラを改良。
     - 「分類不可」を「季節がばらばら」に変更。
     - 「ヒントを削除して盤面のロックを解除」の動作を修正。
