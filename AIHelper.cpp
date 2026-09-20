@@ -45,7 +45,7 @@ static HANDLE        xg_hReadyEvent = nullptr;
 HWND xg_hwndAIHelper = nullptr;
 HBITMAP g_hbmFairy = nullptr;
 std::wstring xg_ai_provider = L"google";
-std::wstring xg_ai_model = L"gemini-3.6-flash";
+std::wstring xg_ai_model = L"gemini-3.5-flash-lite";
 std::wstring xg_additional_instruction;
 std::wstring xg_output_buffer;
 std::wstring xg_initial_question;
