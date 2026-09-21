@@ -385,6 +385,7 @@
     - Improved installer.
     - Changed "Unclassifiable" to "Mixed seasons."
     - Fixed behaviour of "Delete clues and unlock board".
+- 2026-XX-YY ver.5.4.0
 
 # 開発履歴 (Japanese)
 
@@ -1089,3 +1090,4 @@
     - インストーラを改良。
     - 「分類不可」を「季節がばらばら」に変更。
     - 「ヒントを削除して盤面のロックを解除」の動作を修正。
+- 2026年XX月YY日 ver.5.4.0
