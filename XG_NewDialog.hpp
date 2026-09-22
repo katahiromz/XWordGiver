@@ -1,4 +1,8 @@
-﻿#pragma once
+﻿// XG_NewDialog.hpp - [新規作成]ダイアログ。
+// Author: katahiromz
+// License: MIT
+
+#pragma once
 
 #include "XG_Window.hpp"
 

@@ -1,4 +1,8 @@
-﻿#pragma once
+﻿// XG_PatternDialog.hpp --- [黒マスパターン]ダイアログ。
+// Author: katahiromz
+// License: MIT
+
+#pragma once
 
 #include "XG_Window.hpp"
 #include "layout.h"

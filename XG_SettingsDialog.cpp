@@ -1,3 +1,7 @@
+// XG_SettingsDialog.cpp --- [設定]ダイアログ。
+// Author: katahiromz
+// License: MIT
+
 static XG_ColorBox m_hwndWhite;
 static XG_ColorBox m_hwndBlack;
 static XG_ColorBox m_hwndMarked;

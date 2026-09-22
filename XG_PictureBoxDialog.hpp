@@ -1,4 +1,8 @@
-﻿#pragma once
+﻿// XG_PictureBoxDialog.hpp --- [画像ボックス]ダイアログ。
+// Author: katahiromz
+// License: MIT
+
+#pragma once
 
 #include "XG_Window.hpp"
 

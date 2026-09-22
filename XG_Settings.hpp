@@ -1,3 +1,7 @@
+// XG_Settings.hpp --- クロスワードギバーの設定
+// Author: katahiromz
+// License: MIT
+
 #pragma once
 
 // マスのフォント。

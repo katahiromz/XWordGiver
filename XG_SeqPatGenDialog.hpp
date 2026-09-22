@@ -1,4 +1,8 @@
-﻿#pragma once
+﻿// XG_SeqPatGenDialog.hpp --- [黒マスパターンの連続作成]ダイアログ。
+// Author: katahiromz
+// License: MIT
+
+#pragma once
 
 #include "XG_Window.hpp"
 

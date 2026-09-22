@@ -1,4 +1,7 @@
-﻿#pragma once
+﻿// XG_NotesDialog.hpp - [ヘッダーと備考欄]ダイアログ。
+// Author: katahiromz
+// License: MIT
+#pragma once
 
 #include "XG_Window.hpp"
 

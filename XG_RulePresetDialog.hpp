@@ -1,4 +1,8 @@
-﻿#pragma once
+﻿// XG_RulePresetDialog.hpp --- [ルール プリセット]ダイアログ。
+// Author: katahiromz
+// License: MIT
+
+#pragma once
 
 #include "XG_Window.hpp"
 

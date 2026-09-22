@@ -1,4 +1,8 @@
-﻿#pragma once
+﻿// XG_PatGenDialog.hpp --- [黒マスパターンの作成]ダイアログ。
+// Author: katahiromz
+// License: MIT
+
+#pragma once
 
 #include "XG_Window.hpp"
 

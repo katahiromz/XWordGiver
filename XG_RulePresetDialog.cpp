@@ -1,3 +1,6 @@
+// XG_RulePresetDialog.cpp --- [ルール プリセット]ダイアログ。
+// Author: katahiromz
+// License: MIT
 
 BOOL XG_RulePresetDialog::GetComboValue(HWND hwnd, int& value)
 {
