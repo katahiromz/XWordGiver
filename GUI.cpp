@@ -5636,10 +5636,19 @@ void __fastcall XgTheme(HWND hwnd)
         return;
     }
 
+    // 「元に戻す」情報を取得。
+    auto sa1 = std::make_shared<XG_UndoData_Theme>();
+    auto sa2 = std::make_shared<XG_UndoData_Theme>();
+    sa1->Get();
+
     XG_ThemeDialog dialog;
     const auto id = dialog.DoModal(hwnd);
     if (id == IDOK) {
         XgUpdateTheme(hwnd);
+
+        // 元に戻す情報を確定する。
+        sa2->Get();
+        xg_ubUndoBuffer.Commit(UC_THEME, sa1, sa2);
     }
 }
 
@@ -5653,6 +5662,7 @@ void __fastcall XgResetTheme(HWND hwnd, BOOL bQuery)
         if (id != IDYES)
             return;
     }
+
     XgResetTheme(hwnd);
     XgUpdateTheme(hwnd);
 }

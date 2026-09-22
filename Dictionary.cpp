@@ -77,12 +77,21 @@ void XgParseTheme(std::unordered_set<XGStringW>& priority,
 // テーマを設定する。
 void XgSetThemeString(const XGStringW& strTheme)
 {
+    // 「元に戻す」情報を取得。
+    auto sa1 = std::make_shared<XG_UndoData_Theme>();
+    auto sa2 = std::make_shared<XG_UndoData_Theme>();
+    sa1->Get();
+
     XgParseTheme(xg_priority_tags, xg_forbidden_tags, strTheme);
     xg_strTheme = strTheme;
 
     std::unordered_set<XGStringW> priority, forbidden;
     XgParseTheme(priority, forbidden, xg_strDefaultTheme);
     xg_bThemeModified = (priority != xg_priority_tags || forbidden != xg_forbidden_tags);
+
+    // 元に戻す情報を確定する。
+    sa2->Get();
+    xg_ubUndoBuffer.Commit(UC_THEME, sa1, sa2);
 }
 
 // テーマをリセットする。

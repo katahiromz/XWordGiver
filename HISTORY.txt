@@ -389,6 +389,7 @@
     - Enhanced the kanji dictionary.
     - Modified to reset the theme when creating a new file.
     - Added "minimax" and "zai" AI models.
+    - Made it possible to revert the theme string.
 
 # 開発履歴 (Japanese)
 
@@ -1097,3 +1098,4 @@
     - 漢字辞書を増強。
     - ファイルを新規作成したらテーマをリセットするように修正。
     - minimaxとzaiのAIモデルを追加。
+    - テーマ文字列を元に戻せるようにした。

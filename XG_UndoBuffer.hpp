@@ -17,6 +17,7 @@ enum UNDOABLE_COMMAND_ID : UINT {
     UC_NUMCRO,
     UC_VIEWMODE,
     UC_BOXES,
+    UC_THEME,
     UC_SETALL
 };
 
@@ -135,6 +136,21 @@ struct XG_UndoData_Boxes : XG_UndoData {
 
 //////////////////////////////////////////////////////////////////////////////
 
+// 「テーマ」を戻すためのデータ。
+struct XG_UndoData_Theme : XG_UndoData {
+    XGStringW                   strTheme;
+
+    XG_UndoData_Theme() : XG_UndoData(UC_THEME) { }
+
+    ~XG_UndoData_Theme() override
+    {
+    }
+    void Get() override;
+    void Apply() const override;
+};
+
+//////////////////////////////////////////////////////////////////////////////
+
 // 「すべて」を戻すためのデータ。
 struct XG_UndoData_SetAll : XG_UndoData {
     int                         nRows;
@@ -151,12 +167,13 @@ struct XG_UndoData_SetAll : XG_UndoData {
     bool                        bSolved;
     bool                        bHintsAdded;
     bool                        bShowAnswer;
-    XGStringW                strHeader;
-    XGStringW                strNotes;
-    XGStringW                strFileName;
+    XGStringW                   strHeader;
+    XGStringW                   strNotes;
+    XGStringW                   strFileName;
+    XGStringW                   strTheme;
     bool                        bNumCro;
     XG_VIEW_MODE                nViewMode;
-    XGStringW                boxes;
+    XGStringW                   boxes;
 
     XG_UndoData_SetAll() : XG_UndoData(UC_SETALL) { }
 

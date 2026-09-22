@@ -74,6 +74,14 @@ void XG_UndoData_Boxes::Apply() const {
     XG_FILE_MODIFIED(TRUE);
 }
 
+void XG_UndoData_Theme::Get() {
+    strTheme = xg_strTheme;
+}
+void XG_UndoData_Theme::Apply() const {
+    xg_strTheme = strTheme;
+    XG_FILE_MODIFIED(TRUE);
+}
+
 void XG_UndoData_SetAll::Get() {
     nRows = xg_nRows;
     nCols = xg_nCols;
@@ -92,6 +100,7 @@ void XG_UndoData_SetAll::Get() {
     strHeader = xg_strHeader;
     strNotes = xg_strNotes;
     strFileName = xg_strFileName;
+    strTheme = xg_strTheme;
     bNumCro = xg_bNumCroMode;
     nViewMode = xg_nViewMode;
     boxes = XgStringifyBoxes(xg_boxes);
@@ -115,6 +124,7 @@ void XG_UndoData_SetAll::Apply() const {
     xg_strHeader = strHeader;
     xg_strNotes = strNotes;
     xg_strFileName = strFileName;
+    xg_strTheme = strTheme;
     if (bShowHints) {
         XgShowHints(xg_hMainWnd);
         xg_bShowClues = TRUE;
