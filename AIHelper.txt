@@ -23,7 +23,9 @@
 
 5. 「AIプロバイダー」と「AIモデル」を選択する
 
-6. 「適用」ボタンをクリックする
+6. 「適用」ボタンをクリックして閉じる
+
+7. 「表示」メニューの「AIヘルパー」を選ぶ
 
 ## 注意事項
 
@@ -73,7 +75,9 @@ XWordGiver's "AI Helper" is your partner, capable of casual conversation, regene
 
 5. Set the "AI Provider" and "AI Model"
 
-6. Click "Apply"
+6. Click "Apply" and close
+
+7. Select "AI Helper" from the "View" menu
 
 ## Notes
 
