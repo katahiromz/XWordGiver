@@ -1,3 +1,7 @@
+// XG_ColorBox.hpp --- カラーボックス
+// Author: katahiromz
+// License: MIT
+
 #pragma once
 
 #include "XG_Window.hpp"

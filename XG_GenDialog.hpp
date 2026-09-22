@@ -1,4 +1,8 @@
-﻿#pragma once
+﻿// XG_GenDialog.hpp --- [問題の作成]ダイアログ。
+// Author: katahiromz
+// License: MIT
+
+#pragma once
 
 #include "XG_Window.hpp"
 

@@ -1,4 +1,8 @@
-﻿#pragma once
+﻿// XG_CanvasWindow.hpp --- キャンバスウィンドウ
+// Author: katahiromz
+// License: MIT
+
+#pragma once
 
 #include "XG_BoxWindow.hpp"
 
