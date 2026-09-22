@@ -1,3 +1,6 @@
+// TaskbarProgress.h --- CLSID_TaskbarListを操作するためのラッパークラス
+// Author: katahiromz
+// License: MIT
 
 #pragma once
 

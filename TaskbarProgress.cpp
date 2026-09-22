@@ -1,4 +1,6 @@
-
+// TaskbarProgress.cpp --- CLSID_TaskbarListを操作するためのラッパークラス
+// Author: katahiromz
+// License: MIT
 #include "DetectLeaks.h"
 #include <windows.h>
 #include "TaskbarProgress.h"
