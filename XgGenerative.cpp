@@ -1,3 +1,7 @@
+// XgGenerative.cpp --- 「生成」設定
+// Author: katahiromz
+// License: MIT
+
 // 音声コンボボックスを初期化。
 BOOL XgGenerative_InitSound(HWND hwnd, INT nComboID, INT nCheckID, LPCWSTR pszPathName)
 {

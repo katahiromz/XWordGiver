@@ -1,3 +1,7 @@
+// XgFileSettings.cpp --- 「ファイル」設定
+// Author: katahiromz
+// License: MIT
+
 // [ファイル]設定。
 INT_PTR CALLBACK
 XgFileSettingsDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)

@@ -1,3 +1,7 @@
+// XgViewSettings.cpp --- 「表示」設定
+// Author: katahiromz
+// License: MIT
+
 // 同期する。
 void XgViewSettings_SyncFrom(HWND hwnd)
 {
@@ -103,7 +107,7 @@ XgViewSettingsDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
         return TRUE;
 
     case WM_COMMAND:
-        // 変更があれば「更新」ボタンを有効にする。
+        // 変更があれば「適用」ボタンを有効にする。
         switch (LOWORD(wParam))
         {
         case chx1:

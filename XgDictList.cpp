@@ -1,3 +1,7 @@
+// XgDictList.cpp --- 「辞書」設定
+// Author: katahiromz
+// License: MIT
+
 // ラジオボタン風の状態を表示するためのイメージリストを作成する。
 HIMAGELIST XgDictList_CreateRadioButtonImageList(HWND hwnd)
 {

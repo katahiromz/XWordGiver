@@ -1,7 +1,7 @@
-﻿//////////////////////////////////////////////////////////////////////////////
-// XgAIHelper.cpp --- XWordGiver (Japanese Crossword Generator)
+﻿// XgAIHelper.cpp --- XWordGiver (Japanese Crossword Generator)
 // Copyright (C) 2026 Katayama Hirofumi MZ. All Rights Reserved.
-// (Japanese, UTF-8)
+// Author: katahiromz
+// License: MIT
 
 extern std::wstring xg_ai_provider;
 extern std::wstring xg_ai_model;
