@@ -1,4 +1,8 @@
-﻿#pragma once
+﻿// XG_MarkingDialog.hpp --- [二重マス単語の候補と配置]ダイアログ。
+// Author: katahiromz
+// License: MIT
+
+#pragma once
 
 #include "XG_Window.hpp"
 

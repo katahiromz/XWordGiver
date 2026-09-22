@@ -1,4 +1,8 @@
-﻿#pragma once
+﻿// XG_HiddenDialog.cpp --- 「隠し機能」ダイアログ。
+// Author: katahiromz
+// License: MIT
+
+#pragma once
 
 // 「隠し機能」ダイアログ。
 class XG_HiddenDialog
