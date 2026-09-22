@@ -9,7 +9,7 @@
 ;   - '[セクション名]' で区画（セクション）を区切ります。 / '[SectionName]' starts a new section.
 ;   - 各セクションの中身は「1行1項目」または「キー=値」です。 / Each section holds one item per line, or key=value(s) pairs.
 ;   - 空行は無視されます。 / Blank lines are ignored.
-;   - このファイルは UTF-8 (BOM付き) で保存してください。 / Save this file as UTF-8 with BOM.
+;   - このファイルは UTF-8 で保存してください。 / Save this file as UTF-8.
 ;   - 値はカンマ区切りです。 / Value(s) are comma-separated.
 ;
 ; このファイルは AIModelsDat.cpp / AIHelper.py / AIHelper_ja.py から
