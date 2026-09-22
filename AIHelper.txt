@@ -14,7 +14,7 @@
 2. システムの環境変数を設定する
    - Windowsの「設定」から「システムの詳細設定」を開きます。
    - 「環境変数」ボタン→「ユーザー環境変数」の「新規」をクリックします。
-   - 変数名に以下のいずれかを、変数値に取得したAPIキーを入力します。
+   - 「変数名」に以下のいずれかを、「変数値」に取得したAPIキーを入力します。
      GOOGLE_API_KEY / OPENAI_API_KEY / XAI_API_KEY / DEEPSEEK_API_KEY / SAKANA_API_KEY / DASHSCOPE_API_KEY / MOONSHOT_API_KEY / MISTRAL_API_KEY / LLAMA_API_KEY / AI_GATEWAY_API_KEY（ロリポップ！AIゲートウェイ byGMOペパボ） / MINIMAX_API_KEY / ZAI_API_KEY
 
 3. クロスワード ギバーを再起動する
