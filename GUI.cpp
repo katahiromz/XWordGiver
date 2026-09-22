@@ -2791,6 +2791,9 @@ BOOL __fastcall XgOnNew(HWND hwnd)
     xg_mapNumCro1.clear();
     xg_mapNumCro2.clear();
 
+    // テーマをリセットする。
+    xg_strTheme = xg_strDefaultTheme;
+
     // 元に戻す情報を確定する。
     sa2->Get();
     xg_ubUndoBuffer.Commit(UC_SETALL, sa1, sa2);

@@ -387,6 +387,7 @@
     - Fixed behaviour of "Delete clues and unlock board".
 - 2026-XX-YY ver.5.4.0
     - Enhanced the kanji dictionary.
+    - Modified to reset the theme when creating a new file.
 
 # 開発履歴 (Japanese)
 
@@ -1093,3 +1094,4 @@
     - 「ヒントを削除して盤面のロックを解除」の動作を修正。
 - 2026年XX月YY日 ver.5.4.0
     - 漢字辞書を増強。
+    - ファイルを新規作成したらテーマをリセットするように修正。
