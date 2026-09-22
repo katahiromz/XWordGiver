@@ -33,7 +33,7 @@
   - 環境変数はご自身のPC上でのみ有効です。他人とファイルを共有する際、APIキーが書かれた設定ファイルやスクリーンショットを一緒に送らないようご注意ください。
   - APIキーが漏洩した疑いがある場合は、発行元の管理画面からすぐに無効化・再発行してください。
 - ローカルAIを使いたい場合はファイル「AIModels.dat」を見て編集してください。
-- 地政学的リスクや情報漏洩リスクが存在しますので注意してください。
+- 地政学的リスクや情報漏洩リスク、高額請求のリスクが存在しますので注意してください。
 
 ## よくある質問
 
@@ -82,7 +82,7 @@ XWordGiver's "AI Helper" is your partner, capable of casual conversation and reg
   - Environment variables are only set on your own PC. When sharing files with others, make sure not to include configuration files or screenshots that expose your API key.
   - If you suspect your API key has been leaked, revoke and reissue it immediately from your provider's dashboard.
 - If you wish to use local AI, please check and edit the "AIModels.dat" file.
-- Please be aware that there are risks associated with geopolitics and information leakage.
+- Please be aware of the risks associated with geopolitics, information leakage, and high charges.
 
 ## FAQ
 
