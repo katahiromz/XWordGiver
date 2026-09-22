@@ -35,6 +35,8 @@ dashscope   = DASHSCOPE_API_KEY,    dashscope-intl.aliyuncs.com, 443, /compatibl
 moonshot    = MOONSHOT_API_KEY,     api.moonshot.ai, 443, /v1/chat/completions, 1, 0, 0, 1
 mistral     = MISTRAL_API_KEY,      api.mistral.ai, 443, /v1/chat/completions, 1, 0, 0, 1
 llama       = LLAMA_API_KEY,        api.llama.com, 443, /compat/v1/chat/completions, 1, 0, 0, 1
+minimax     = MINIMAX_API_KEY,      api.minimax.io, 443, /v1/chat/completions, 1, 0, 0, 1
+zai         = ZAI_API_KEY,          api.z.ai, 443, /api/paas/v4/chat/completions, 1, 0, 0, 1
 pepabo      = AI_GATEWAY_API_KEY,   ai-gateway.lolipop.jp, 443, /v1/chat/completions, 1, 0, 0, 1
 ; ローカルAI（Ollama）。APIキー不要。
 ; Local AI (Ollama). No API key is required.
@@ -49,7 +51,7 @@ ollama      = ,                     localhost, 11434, /v1/chat/completions, 1, 0
 ;       （先頭モデルは既定モデルにもなるため）。
 ; TODO: Update the list below about once a month. Keep a free model first
 ;       (the first entry also becomes the default model).
-; 更新日 / Last updated: 2026-09-19
+; 更新日 / Last updated: 2026-09-22
 ; ----------------------------------------------------------------------------
 
 [MODELS:openai]
@@ -114,6 +116,19 @@ llama-4-scout
 llama-4-maverick
 llama-3.3-70b
 
+[MODELS:minimax]
+MiniMax-M2
+MiniMax-M2.7
+MiniMax-M2.7-highspeed
+MiniMax-M3
+
+[MODELS:zai]
+glm-4.7-flash
+glm-4.6
+glm-4.7
+glm-5.2
+glm-5.3
+
 [MODELS:pepabo]
 ; GMOペパボのAIゲートウェイ / GMO Pepabo's AI gateway
 auto
@@ -146,6 +161,8 @@ meta/llama-4-scout
 minimax/minimax-m2
 minimax/minimax-m2-1
 minimax/minimax-m2-5
+minimax/minimax-m2-7
+minimax/minimax-m3
 mistral/devstral-2-123b
 mistral/mistral-large-3
 mistral/mistral-medium-3
@@ -169,14 +186,17 @@ qwen/qwen3-coder-next
 qwen/qwen3-next-80b-instruct
 qwen/qwen3-next-80b-thinking
 qwen/qwen3-vl-235b-a22b
-typesafe/jev-latest
 writer/palmyra-x4
 writer/palmyra-x5
 xai/grok-4-3
 xai/grok-4-6
+zai/glm-4-6
 zai/glm-4-7
 zai/glm-4-7-flash
 zai/glm-5
+zai/glm-5-1
+zai/glm-5-2
+zai/glm-5-3
 
 [MODELS:ollama]
 ; ローカルで `ollama pull <model>` 済みのモデル名を書くこと。以下は例。
