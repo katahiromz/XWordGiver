@@ -1,3 +1,7 @@
+﻿// layout.h --- ダイアログの動的レイアウト
+// Author: katahiromz
+// License: MIT
+
 #pragma once
 #include <assert.h>
 

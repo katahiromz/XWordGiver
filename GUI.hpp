@@ -1,4 +1,8 @@
-﻿#pragma once
+﻿// GUI.hpp --- XWordGiver GUI
+// Author: katahiromz
+// License: MIT
+
+#pragma once
 
 #ifdef _MSC_VER
     #define XG_NOINLINE __declspec(noinline)
