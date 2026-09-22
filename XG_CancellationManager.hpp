@@ -1,7 +1,7 @@
-﻿//////////////////////////////////////////////////////////////////////////////
-// XG_CancellationManager.hpp --- Cancellation Manager
+﻿// XG_CancellationManager.hpp --- Cancellation Manager
 // Copyright (C) 2012-2026 Katayama Hirofumi MZ. All Rights Reserved.
-// (Japanese, UTF-8)
+// Author: katahiromz
+// License: MIT
 
 #pragma once
 

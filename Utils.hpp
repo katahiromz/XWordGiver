@@ -1,7 +1,7 @@
-﻿//////////////////////////////////////////////////////////////////////////////
-// Utils.hpp --- XWordGiver (Japanese Crossword Generator)
+﻿// Utils.hpp --- XWordGiver (Japanese Crossword Generator)
 // Copyright (C) 2012-2026 Katayama Hirofumi MZ. All Rights Reserved.
-// (Japanese, UTF-8)
+// Author: katahiromz
+// License: MIT
 
 #pragma once
 #include "XWordGiver.hpp"

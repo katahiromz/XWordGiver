@@ -1,4 +1,8 @@
-﻿#pragma once
+﻿// XG_BoxWindow.hpp --- ボックスウィンドウの基底クラス
+// Author: katahiromz
+// License: MIT
+
+#pragma once
 
 #include "XG_Window.hpp"
 #include "XG_TextBoxDialog.hpp"

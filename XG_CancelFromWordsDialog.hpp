@@ -1,4 +1,7 @@
-﻿#pragma once
+﻿// XG_CancelFromWordsDialog.hpp --- キャンセルダイアログ（単語リストから生成）
+// Author: katahiromz
+// License: MIT
+#pragma once
 
 #include "XG_WordListDialog.hpp"
 

@@ -1,4 +1,8 @@
-﻿#pragma once
+﻿// XG_CancelSolveNoAddBlackDialog.hpp --- キャンセルダイアログ（解を求める、黒マスを追加しない）
+// Author: katahiromz
+// License: MIT
+
+#pragma once
 
 #include "XG_Window.hpp"
 #include "XG_CancellationManager.hpp"

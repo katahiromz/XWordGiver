@@ -1,4 +1,8 @@
-﻿#pragma once
+﻿// XG_CancelGenBlacksDialog.hpp --- キャンセルダイアログ（黒マスパターンの生成）
+// Author: katahiromz
+// License: MIT
+
+#pragma once
 
 #include "XG_Window.hpp"
 #include "XG_CancellationManager.hpp"
