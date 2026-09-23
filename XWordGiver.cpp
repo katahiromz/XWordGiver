@@ -3131,7 +3131,7 @@ bool __fastcall XgSetXDString(HWND hwnd, const XGStringW& str)
 
     if (header.empty())
         return false;
-    if (rows.size() <= 1 || rows[0].size() <= 1)
+    if (rows.size() <= 2 || rows[0].size() <= 2)
         return false;
     for (auto& line : rows) {
         if (line.size() != rows[0].size())
