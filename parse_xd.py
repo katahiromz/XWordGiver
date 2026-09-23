@@ -7,13 +7,14 @@ import jaconv
 
 # NOTE: UTF-8で出力したい人は、環境変数「PYTHONIOENCODING=utf-8」をセットしてください。
 
-# バージョン情報を表示する
+# バージョン情報を表示
 def version():
 	print("parse_xd.py Version 1.0 by katahiromz")
 
-# 使い方を表示する
+# 使い方を表示
 def usage():
 	print("Usage: python parse_xd.py your_file.xd")
+	print("       python parse_xd.py your_file.xd > output.txt")
 
 # 全角文字
 ZEN_SPACE       = "　" # U+3000: 全角スペース、空白マスと見なす
@@ -96,7 +97,7 @@ def parse_clue(clue):
 	clue_word = clue_body[tilda_pos_in_body + 1:].strip()
 	return clue_name, clue_hint, clue_word
 
-# 空白マスがないか？
+# 盤面に空白マスがないか？
 def is_filled(rows):
 	for row in rows:
 		for ch in row:
@@ -106,18 +107,19 @@ def is_filled(rows):
 
 # XD文字列をパースする
 def parse_xd(xd_str):
-	header = ""
-	notes = ""
-	rows = []
-	clues = []
-	marks = []
-	numcros = []
-	boxes = []
+	# 変数群を初期化
+	header = "" # ヘッダー
+	notes = "" # 備考欄
+	rows = [] # 盤面
+	clues = [] # ヒント（カギ）
+	marks = [] # 二重マス
+	numcros = [] # ナンクロ
+	boxes = [] # ボックス
 	iSection = 0 # セクション番号
 	cEmpty = 0 # 空行カウンタ
-	view_mode = XG_VIEW_NORMAL
-	policy = XG_DEFAULT_RULES
-	mark_str = ""
+	view_mode = XG_VIEW_NORMAL # 表示モード
+	policy = XG_DEFAULT_RULES # 黒マスルール
+	mark_str = "" # 二重マス単語またはフレーズ
 
 	# 行に分割して一行ずつ処理する
 	lines = xd_str.split("\n")
@@ -128,38 +130,38 @@ def parse_xd(xd_str):
 				iSection = iSection + 1
 			cEmpty = cEmpty + 1
 		else:
-			cEmpty = 0
-			match iSection:
-				case 0:
+			cEmpty = 0 # 空行カウンタをリセット
+			match iSection: # 現在のセクション番号に従って分岐
+				case 0: # ヘッダーセクション
 					header += line0
 					header += "\n"
-				case 1:
+				case 1: # 盤面セクション
 					rows.append(line0)
-				case 2:
+				case 2: # カギセクション
 					clues.append(line0)
-				case 3:
-					if line0.find("MARK") == 0:
+				case 3: # フッターセクション
+					if line0.find("MARK") == 0: # 二重マスの行
 						marks.append(line0)
 						ich = line0.find(":")
 						if ich != -1:
 							mark_str += line0[ich+1:].strip() # 二重マス文字が行ごとに分かれているため、ここで結合
-					elif line0.find("NUMCRO-") == 0:
+					elif line0.find("NUMCRO-") == 0: # ナンクロの行
 						numcros.append(line0)
-					elif line0.find("Box: ") == 0:
+					elif line0.find("Box: ") == 0: # ボックスの行
 						boxes.append(line0)
-					elif line0.find("ViewMode:") == 0:
+					elif line0.find("ViewMode:") == 0: # 表示モードの行
 						try:
 							view_mode = int(line0[9:].strip(), 0)
 						except ValueError as e:
 							return None
 						if view_mode != XG_VIEW_NORMAL and view_mode != XG_VIEW_SKELETON:
 							view_mode = XG_VIEW_NORMAL
-					elif line0.find("Policy:") == 0:
+					elif line0.find("Policy:") == 0: # 黒マスルールの行
 						try:
 							policy = int(line0[7:].strip(), 0) | RULE_DONTDIVIDE
 						except ValueError as e:
 							return None
-					else:
+					else: # その他の行は備考
 						notes += line0
 						notes += "\n"
 	# ヘッダーがなければ失敗
