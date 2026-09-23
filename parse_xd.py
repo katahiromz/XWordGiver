@@ -19,7 +19,7 @@ ZEN_UNDERLINE   = "＿" # U+FF3F: 全角のアンダースコア
 ZEN_SHARP1      = "♯" # U+266F
 ZEN_SHARP2      = "＃" # U+FF03
 ZEN_DOT         = "．" # U+FF0E: 全角ドット(ピリオド)
-ZEN_BLACK       = "■" # U+25A0: ブロック
+ZEN_BLACK       = "■" # U+25A0: 黒マス
 
 # クロスワード用に文字列を変換する
 def normalize_str(str):
