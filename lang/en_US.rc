@@ -1475,7 +1475,7 @@ STYLE DS_CENTER | DS_MODALFRAME | WS_POPUPWINDOW | WS_CAPTION
 EXSTYLE WS_EX_TOOLWINDOW
 FONT 9, "Tahoma"
 {
-    LTEXT "The double-frame &word:", -1, 5, 5, 128, 12
+    LTEXT "The double-frame &word or phrase:", -1, 5, 5, 128, 12
     EDITTEXT edt1, 5, 20, 205, 14
     LTEXT "Enter a word or choose from the suggestions below:", stc1, 5, 40, 205, 14
     LISTBOX lst1, 5, 60, 205, 100, LBS_MULTICOLUMN | LBS_NOINTEGRALHEIGHT | LBS_HASSTRINGS | WS_VSCROLL | WS_HSCROLL | WS_TABSTOP
