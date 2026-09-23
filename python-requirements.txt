@@ -1,7 +1,7 @@
 # Dependencies for AIHelper.py
 #
 # Install:
-#   pip install -r requirements.txt
+#   pip install -r python-requirements.txt
 #
 # Packages needed per provider:
 #   chatgpt / grok / deepseek / sakana  ... openai
