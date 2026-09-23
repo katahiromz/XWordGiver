@@ -4276,7 +4276,7 @@ void __fastcall XgCopyHintsStyle1(HWND hwnd, int hint_type)
 
 //////////////////////////////////////////////////////////////////////////////
 
-// ウィンドウが破棄された。
+// WM_DESTROY: ウィンドウが破棄された。
 void __fastcall MainWnd_OnDestroy(HWND /*hwnd*/) noexcept
 {
     // タスクバーの進捗表示を解放。
@@ -4382,7 +4382,7 @@ void XgDoUpdateDictMenu(HMENU hMenu)
     }
 }
 
-// メニューを初期化する。
+// WM_INITMENUPOPUP: メニューを初期化する。
 void MMainWnd_OnInitMenuPopup(HWND hwnd, HMENU hMenu, UINT item, BOOL fSystemMenu)
 {
     if (fSystemMenu)
@@ -4841,7 +4841,7 @@ void __fastcall XgUpdateStatusBar(HWND hwnd)
     SendMessageW(xg_hStatusBar, SB_SETTEXT, 2, reinterpret_cast<LPARAM>(szText));
 }
 
-// サイズが変更された。
+// WM_SIZE: サイズが変更された。
 void __fastcall MainWnd_OnSize(HWND hwnd, UINT state, int /*cx*/, int /*cy*/)
 {
     int x, y;
@@ -4955,7 +4955,7 @@ void __fastcall MainWnd_OnSize(HWND hwnd, UINT state, int /*cx*/, int /*cy*/)
         xg_pTaskbarProgress->SetThumbnail();
 }
 
-// 位置が変更された。
+// WM_MOVE: 位置が変更された。
 void __fastcall MainWnd_OnMove(HWND hwnd, int /*x*/, int /*y*/) noexcept
 {
     if (!IsZoomed(hwnd) && !IsIconic(hwnd)) {
@@ -6329,7 +6329,7 @@ void XgCheckQualityOfAllClues(void);
 void XgJudgeSeason(void);
 void XgJudgeTheme(void);
 
-// コマンドを実行する。
+// WM_COMMAND: コマンドを実行する。
 void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT /*codeNotify*/)
 {
     int x = -1, y = -1;
@@ -7743,7 +7743,7 @@ HBITMAP XgCreateGrayedBitmap(HBITMAP hbm, COLORREF crMask = CLR_INVALID) noexcep
 
 BOOL xg_bNoGUI = FALSE;
 
-// ウィンドウの作成の際に呼ばれる。
+// WM_CREATE: ウィンドウの作成の際に呼ばれる。
 bool __fastcall MainWnd_OnCreate(HWND hwnd, LPCREATESTRUCT /*lpCreateStruct*/)
 {
     xg_hMainWnd = hwnd;
@@ -7902,6 +7902,9 @@ bool __fastcall MainWnd_OnCreate(HWND hwnd, LPCREATESTRUCT /*lpCreateStruct*/)
     // タスクバーの進捗表示を初期化。
     xg_pTaskbarProgress = std::make_shared<TaskbarProgress>(hwnd);
 
+    // 「元に戻す」情報のクリア。
+    xg_ubUndoBuffer.clear();
+
     return true;
 }
 
@@ -7979,7 +7982,7 @@ HMENU XgLoadPopupMenu(HWND hwnd, int nPos) noexcept
     return hMenu;
 }
 
-// 通知。
+// WM_NOTIFY: 通知。
 void MainWnd_OnNotify(HWND hwnd, int idCtrl, LPNMHDR pnmh) noexcept
 {
     if (pnmh->code == NM_DBLCLK && idCtrl == IDW_STATUSBAR) {
@@ -8038,7 +8041,7 @@ void MainWnd_OnNotify(HWND hwnd, int idCtrl, LPNMHDR pnmh) noexcept
     }
 }
 
-// ウィンドウのサイズを制限する。
+// WM_GETMINMAXINFO: ウィンドウのサイズを制限する。
 void MainWnd_OnGetMinMaxInfo(HWND hwnd, LPMINMAXINFO lpMinMaxInfo) noexcept
 {
     lpMinMaxInfo->ptMinTrackSize.x = 300;
@@ -8109,7 +8112,7 @@ void __fastcall XgUpdateImage(HWND hwnd)
     XgUpdateImage(hwnd, XgGetHScrollPos(), XgGetVScrollPos());
 }
 
-// ファイルがドロップされた。
+// WM_DROPFILES: ファイルがドロップされた。
 void MainWnd_OnDropFiles(HWND hwnd, HDROP hdrop)
 {
     POINT pt;
@@ -8119,7 +8122,7 @@ void MainWnd_OnDropFiles(HWND hwnd, HDROP hdrop)
     XgUpdateImage(hwnd);
 }
 
-// ウィンドウを閉じようとした。
+// WM_CLOSE: ウィンドウを閉じようとした。
 void MainWnd_OnClose(HWND hwnd)
 {
     if (XgDoConfirmSave(hwnd))
@@ -8128,7 +8131,7 @@ void MainWnd_OnClose(HWND hwnd)
     }
 }
 
-// 最大化状態を保存するために使用。
+// WM_WINDOWPOSCHANGED: 最大化状態を保存するために使用。
 void MainWnd_OnWindowPosChanged(HWND hwnd, const LPWINDOWPOS lpwpos) noexcept
 {
     if (xg_hMainWnd)
