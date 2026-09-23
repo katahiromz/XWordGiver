@@ -131,12 +131,12 @@ def parse_xd(xd_str):
 						boxes.append(line0)
 					elif line0.find("ViewMode:") == 0:
 						try:
-							view_mode = int(line0[9:])
+							view_mode = int(line0[9:].strip(), 0)
 						except ValueError as e:
 							return None
 					elif line0.find("Policy:") == 0:
 						try:
-							policy = int(line0[7:])
+							policy = int(line0[7:].strip(), 0)
 						except ValueError as e:
 							return None
 					else:
