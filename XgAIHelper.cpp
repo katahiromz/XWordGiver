@@ -1,4 +1,4 @@
-﻿// XgAIHelper.cpp --- XWordGiver (Japanese Crossword Generator)
+﻿// XgAIHelper.cpp --- 「AI ヘルパー」設定ダイアログ
 // Copyright (C) 2026 Katayama Hirofumi MZ. All Rights Reserved.
 // Author: katahiromz
 // License: MIT
