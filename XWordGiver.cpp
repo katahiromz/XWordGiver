@@ -3105,7 +3105,7 @@ bool __fastcall XgSetXDString(HWND hwnd, const XGStringW& str)
                     XgLoadXdBox(line);
                 } else if (line.find(L"ViewMode:") == 0) {
                     // ビューモード。
-                    view_mode = static_cast<XG_VIEW_MODE>(_wtoi(&line[9]));
+                    view_mode = static_cast<XG_VIEW_MODE>(wcstoul(&line[9], nullptr, 0));
                     switch (view_mode) {
                     case XG_VIEW_NORMAL:
                     case XG_VIEW_SKELETON:
