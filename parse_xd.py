@@ -1,4 +1,4 @@
-# parse_xd.py --- XDファイルを解析する
+# parse_xd.py --- XDファイルを解析する（クロスワード ギバー用）
 # Author: katahiromz
 # License: MIT
 
