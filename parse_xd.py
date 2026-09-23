@@ -114,8 +114,8 @@ def parse_xd(xd_str):
 	# ヘッダーがなければ失敗
 	if header == "":
 		return None
-	# 盤面データがなければ失敗
-	if len(rows) <= 0 or len(rows[0]) <= 0:
+	# 盤面データがない、または小さすぎるなら失敗
+	if len(rows) <= 2 or len(rows[0]) <= 2:
 		return None
 	# 盤面データがおかしいなら失敗
 	for row in rows:
