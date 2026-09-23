@@ -1,4 +1,4 @@
-// TaskbarProgress.cpp --- CLSID_TaskbarList‚ğ‘€ì‚·‚é‚½‚ß‚Ìƒ‰ƒbƒp[ƒNƒ‰ƒX
+ï»¿// TaskbarProgress.cpp --- CLSID_TaskbarListã‚’æ“ä½œã™ã‚‹ãŸã‚ã®ãƒ©ãƒƒãƒ‘ãƒ¼ã‚¯ãƒ©ã‚¹
 // Author: katahiromz
 // License: MIT
 #include "DetectLeaks.h"
