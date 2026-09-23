@@ -3117,7 +3117,7 @@ bool __fastcall XgSetXDString(HWND hwnd, const XGStringW& str)
                             view_mode = XG_VIEW_SKELETON;
                     }
                 } else if (line.find(L"Policy:") == 0) {
-                    xg_nRules = (_wtoi(&line[7]) | RULE_DONTDIVIDE);
+                    xg_nRules = (wcstoul(&line[7], nullptr, 0) | RULE_DONTDIVIDE);
                 } else {
                     notes += line;
                     notes += L"\r\n";
