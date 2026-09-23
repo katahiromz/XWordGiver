@@ -1,4 +1,7 @@
-// (Japanese, UTF-8)
+﻿// crossword_generation.hpp --- クロスワード生成（「単語群から生成」用）
+// Author: katahiromz
+// License: MIT
+
 #pragma once
 
 #define CROSSWORD_GENERATION 25 // crossword_generation version
