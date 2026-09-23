@@ -173,8 +173,8 @@ is_fulfill = fulfill(rows) # すべてのマスが埋まっているか？
 clue_mapping0 = {} # clue_name -> clue_word
 clue_mapping1 = {} # clue_name -> clue_hint
 for clue in clues:
-	if (clue[0] == "A" or clue[0] == "D") and clue.find(".") != -1 and clue.find("~") != -1:
-		dot_pos = clue.find(".")
+	dot_pos = clue.find(".")
+	if (clue[0] == "A" or clue[0] == "D") and dot_pos != -1 and clue.find("~", dot_pos) != -1:
 		clue_name = clue[0:dot_pos].strip()
 		clue_body = clue[dot_pos + 1:].strip()
 		if dot_pos != -1 and clue_name != "":
