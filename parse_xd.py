@@ -21,6 +21,22 @@ ZEN_SHARP2      = "＃" # U+FF03: 黒マスと見なす
 ZEN_DOT         = "．" # U+FF0E: 全角ドット(ピリオド)、立入禁止。クロスワード ギバーでは黒マスと見なす
 ZEN_BLACK       = "■" # U+25A0: 黒マス
 
+# 表示モード
+XG_VIEW_NORMAL   = 0 # 通常ビュー。
+XG_VIEW_SKELETON = 1 # スケルトンビュー。
+
+# 黒マスルール
+RULE_DONTDOUBLEBLACK = (1 << 0)    # 連黒禁。
+RULE_DONTCORNERBLACK = (1 << 1)    # 四隅黒禁。
+RULE_DONTTRIDIRECTIONS = (1 << 2)  # 三方黒禁。
+RULE_DONTDIVIDE = (1 << 3)         # 分断禁。
+RULE_DONTFOURDIAGONALS = (1 << 4)  # 黒斜四連禁。
+RULE_POINTSYMMETRY = (1 << 5)      # 黒マス点対称。
+RULE_DONTTHREEDIAGONALS = (1 << 6) # 黒斜三連禁。
+RULE_LINESYMMETRYV = (1 << 7)      # 黒マス線対称（タテ）。
+RULE_LINESYMMETRYH = (1 << 8)      # 黒マス線対称（ヨコ）。
+XG_DEFAULT_RULES = (RULE_DONTDIVIDE | RULE_POINTSYMMETRY) # デフォルトのルール
+
 # クロスワード用に文字列を変換する
 def normalize_string(s):
 	# 空白マス
@@ -97,8 +113,8 @@ def parse_xd(xd_str):
 	boxes = []
 	iSection = 0 # セクション番号
 	cEmpty = 0 # 空行カウンタ
-	view_mode = -1
-	policy = -1
+	view_mode = XG_VIEW_NORMAL
+	policy = XG_DEFAULT_RULES
 	mark_str = ""
 
 	# 行に分割して一行ずつ処理する
@@ -134,9 +150,11 @@ def parse_xd(xd_str):
 							view_mode = int(line0[9:].strip(), 0)
 						except ValueError as e:
 							return None
+						if view_mode != XG_VIEW_NORMAL and view_mode != XG_VIEW_SKELETON:
+							view_mode = XG_VIEW_NORMAL
 					elif line0.find("Policy:") == 0:
 						try:
-							policy = int(line0[7:].strip(), 0)
+							policy = int(line0[7:].strip(), 0) | RULE_DONTDIVIDE
 						except ValueError as e:
 							return None
 					else:
