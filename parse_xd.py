@@ -14,46 +14,46 @@ def usage():
 	print("Usage: python parse_xd.py your_file.xd")
 
 # 全角文字
-ZEN_SPACE       = "　" # U+3000: 全角スペース
-ZEN_UNDERLINE   = "＿" # U+FF3F: 全角のアンダースコア
-ZEN_SHARP1      = "♯" # U+266F
-ZEN_SHARP2      = "＃" # U+FF03
-ZEN_DOT         = "．" # U+FF0E: 全角ドット(ピリオド)
+ZEN_SPACE       = "　" # U+3000: 全角スペース、空白マスと見なす
+ZEN_UNDERLINE   = "＿" # U+FF3F: 全角のアンダースコア、空白マスと見なす
+ZEN_SHARP1      = "♯" # U+266F: 黒マスと見なす
+ZEN_SHARP2      = "＃" # U+FF03: 黒マスと見なす
+ZEN_DOT         = "．" # U+FF0E: 全角ドット(ピリオド)、立入禁止。クロスワード ギバーでは黒マスと見なす
 ZEN_BLACK       = "■" # U+25A0: 黒マス
 
 # クロスワード用に文字列を変換する
-def normalize_str(str):
+def normalize_string(s):
 	# 空白マス
-	str = str.replace(" ", ZEN_SPACE)
-	str = str.replace("_", ZEN_SPACE)
-	str = str.replace(ZEN_UNDERLINE, ZEN_SPACE)
+	s = s.replace(" ", ZEN_SPACE)
+	s = s.replace("_", ZEN_SPACE)
+	s = s.replace(ZEN_UNDERLINE, ZEN_SPACE)
 	# 黒マス
-	str = str.replace("#", ZEN_BLACK)
-	str = str.replace(ZEN_SHARP1, ZEN_BLACK)
-	str = str.replace(ZEN_SHARP2, ZEN_BLACK)
-	str = str.replace(".", ZEN_BLACK)
-	str = str.replace(ZEN_DOT, ZEN_BLACK)
+	s = s.replace("#", ZEN_BLACK)
+	s = s.replace(ZEN_SHARP1, ZEN_BLACK)
+	s = s.replace(ZEN_SHARP2, ZEN_BLACK)
+	s = s.replace(".", ZEN_BLACK)
+	s = s.replace(ZEN_DOT, ZEN_BLACK)
 	# ひらがなをカタカナに
-	str = jaconv.hira2kata(str)
+	s = jaconv.hira2kata(s)
 	# 半角を全角に
-	str = jaconv.h2z(str);
+	s = jaconv.h2z(s);
 	# 小文字を大文字に
-	str = str.upper()
-	str = str.replace("ァ", "ア")
-	str = str.replace("ィ", "イ")
-	str = str.replace("ゥ", "ウ")
-	str = str.replace("ェ", "エ")
-	str = str.replace("ォ", "オ")
-	str = str.replace("ッ", "ツ")
-	str = str.replace("ャ", "ヤ")
-	str = str.replace("ュ", "ユ")
-	str = str.replace("ョ", "ヨ")
-	str = str.replace("ヵ", "カ")
-	str = str.replace("ヶ", "ケ")
-	return str
+	s = s.upper()
+	s = s.replace("ァ", "ア")
+	s = s.replace("ィ", "イ")
+	s = s.replace("ゥ", "ウ")
+	s = s.replace("ェ", "エ")
+	s = s.replace("ォ", "オ")
+	s = s.replace("ッ", "ツ")
+	s = s.replace("ャ", "ヤ")
+	s = s.replace("ュ", "ユ")
+	s = s.replace("ョ", "ヨ")
+	s = s.replace("ヵ", "カ")
+	s = s.replace("ヶ", "ケ")
+	return s
 
 # 空白マスがないか？
-def fulfill(rows):
+def is_filled(rows):
 	for row in rows:
 		for ch in row:
 			if ch == ZEN_SPACE:
@@ -69,9 +69,8 @@ def parse_xd(xd_str):
 	marks = []
 	numcros = []
 	boxes = []
-	iSection = 0
-	cEmpty = 0
-	header = ""
+	iSection = 0 # セクション番号
+	cEmpty = 0 # 空行カウンタ
 	view_mode = -1
 	policy = -1
 	mark_str = ""
@@ -99,15 +98,21 @@ def parse_xd(xd_str):
 						marks.append(line0)
 						ich = line0.find(":")
 						if ich != -1:
-							mark_str += line0[ich+1:].strip()
+							mark_str += line0[ich+1:].strip() # 二重マス文字が行ごとに分かれているため、ここで結合
 					elif line0.find("NUMCRO-") == 0:
 						numcros.append(line0)
 					elif line0.find("Box: ") == 0:
 						boxes.append(line0)
 					elif line0.find("ViewMode:") == 0:
-						view_mode = int(line0[9:])
+						try:
+							view_mode = int(line0[9:])
+						except ValueError as e:
+							return None
 					elif line0.find("Policy:") == 0:
-						policy = int(line0[7:])
+						try:
+							policy = int(line0[7:])
+						except ValueError as e:
+							return None
 					else:
 						notes += line0
 						notes += "\n"
@@ -124,7 +129,7 @@ def parse_xd(xd_str):
 	# 盤面データの文字を変換
 	new_rows = []
 	for row in rows:
-		new_row = normalize_str(row)
+		new_row = normalize_string(row)
 		new_rows.append(new_row)
 	rows = new_rows
 
@@ -141,7 +146,7 @@ def parse_xd(xd_str):
 	header = header.strip()
 	notes = notes.strip()
 
-	return header, notes, rows, clues, words, marks, mark_str, view_mode, policy, numcros
+	return header, notes, rows, clues, words, marks, mark_str, view_mode, policy, numcros, boxes
 
 if len(sys.argv) != 2 or sys.argv[1] == "--help":
 	usage()
@@ -166,8 +171,8 @@ result = parse_xd(xd_str)
 if result is None:
 	print("Error: invalid .xd file", file=sys.stderr)
 	sys.exit(1)
-[header, notes, rows, clues, words, marks, mark_str, view_mode, policy, numcros] = result
-is_fulfill = fulfill(rows) # すべてのマスが埋まっているか？
+[header, notes, rows, clues, words, marks, mark_str, view_mode, policy, numcros, boxes] = result
+is_full = is_filled(rows) # すべてのマスが埋まっているか？
 
 # カギをパースする
 clue_mapping0 = {} # clue_name -> clue_word
@@ -195,9 +200,10 @@ for word in words:
 #print("words: " + str(words))
 #print("marks: " + str(marks))
 #print("mark_str: " + str(mark_str))
-#print("is_fulfill: " + str(is_fulfill))
+#print("is_full: " + str(is_full))
 #print("view_mode: " + str(view_mode))
 #print("policy: " + str(policy))
 #print("numcros: " + str(numcros))
+#print("boxes: " + str(boxes))
 #print("clue_mapping0: " + str(clue_mapping0))
 #print("clue_mapping1: " + str(clue_mapping1))
