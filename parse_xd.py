@@ -52,6 +52,32 @@ def normalize_string(s):
 	s = s.replace("ヶ", "ケ")
 	return s
 
+# カギ（clue）の1行をパースする
+# 戻り値: (clue_name, clue_hint, clue_word) のタプル。パースできなければ None。
+#   clue_name: "A1" や "D3" などのカギ番号
+#   clue_hint: ヒント文（例題や説明）
+#   clue_word: 使用される単語（解答）
+def parse_clue(clue):
+	# 先頭が "A"（Across）か "D"（Down）でなければ無効
+	if clue == "" or (clue[0] != "A" and clue[0] != "D"):
+		return None
+	# "." がなければ無効（カギ番号と本文の区切り）
+	dot_pos = clue.find(".")
+	if dot_pos == -1:
+		return None
+	clue_name = clue[0:dot_pos].strip()
+	if clue_name == "":
+		return None
+	# "." より後ろに "~" がなければ無効（ヒントと単語の区切り）
+	tilda_pos = clue.find("~", dot_pos)
+	if tilda_pos == -1:
+		return None
+	clue_body = clue[dot_pos + 1:]
+	tilda_pos_in_body = tilda_pos - (dot_pos + 1)
+	clue_hint = clue_body[0:tilda_pos_in_body].strip()
+	clue_word = clue_body[tilda_pos_in_body + 1:].strip()
+	return clue_name, clue_hint, clue_word
+
 # 空白マスがないか？
 def is_filled(rows):
 	for row in rows:
@@ -136,9 +162,9 @@ def parse_xd(xd_str):
 	# 使用単語を取得
 	words = []
 	for clue in clues:
-		ich = clue.find("~")
-		if ich != -1 and (clue[0] == "A" or clue[0] == "D") and clue.find(".") != -1:
-			words.append(clue[ich+1:].strip())
+		parsed = parse_clue(clue)
+		if parsed is not None:
+			words.append(parsed[2])
 	if mark_str != "":
 		words.append(mark_str)
 
@@ -171,23 +197,18 @@ result = parse_xd(xd_str)
 if result is None:
 	print("Error: invalid .xd file", file=sys.stderr)
 	sys.exit(1)
-[header, notes, rows, clues, words, marks, mark_str, view_mode, policy, numcros, boxes] = result
+header, notes, rows, clues, words, marks, mark_str, view_mode, policy, numcros, boxes = result
 is_full = is_filled(rows) # すべてのマスが埋まっているか？
 
 # カギをパースする
 clue_mapping0 = {} # clue_name -> clue_word
 clue_mapping1 = {} # clue_name -> clue_hint
 for clue in clues:
-	dot_pos = clue.find(".")
-	if (clue[0] == "A" or clue[0] == "D") and dot_pos != -1 and clue.find("~", dot_pos) != -1:
-		clue_name = clue[0:dot_pos].strip()
-		clue_body = clue[dot_pos + 1:].strip()
-		if dot_pos != -1 and clue_name != "":
-			tilda_pos = clue_body.find("~")
-			clue_word = clue_body[tilda_pos+1:].strip()
-			clue_hint = clue_body[0:tilda_pos].strip()
-			clue_mapping0[clue_name] = clue_word
-			clue_mapping1[clue_name] = clue_hint
+	parsed = parse_clue(clue)
+	if parsed is not None:
+		clue_name, clue_hint, clue_word = parsed
+		clue_mapping0[clue_name] = clue_word
+		clue_mapping1[clue_name] = clue_hint
 
 # TODO: ここでやりたいことをやる。例えば使用単語を出力する。
 for word in words:
