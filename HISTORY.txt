@@ -390,6 +390,7 @@
     - Modified to reset the theme string when creating a new file.
     - Added "minimax" and "zai" AI models.
     - Made it possible to revert the theme string.
+    - Made it possible to revert the double-frame toggling.
 
 # 開発履歴 (Japanese)
 
@@ -1099,3 +1100,4 @@
     - ファイルを新規作成したらテーマ文字列をリセットするように修正。
     - minimaxとzaiのAIモデルを追加。
     - テーマ文字列を元に戻せるようにした。
+    - 二重マス切り替えを元に戻せるようにした。

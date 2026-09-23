@@ -346,6 +346,11 @@ void __fastcall XgReturn(HWND hwnd)
 // 二重マス切り替え。
 void __fastcall XgToggleMark(HWND hwnd)
 {
+    // 元に戻す情報を取得。
+    auto mu1 = std::make_shared<XG_UndoData_MarksUpdated>();
+    auto mu2 = std::make_shared<XG_UndoData_MarksUpdated>();
+    mu1->Get();
+
     const int i = xg_caret_pos.m_i, j = xg_caret_pos.m_j;
 
     // マークされていないか？
@@ -371,6 +376,10 @@ void __fastcall XgToggleMark(HWND hwnd)
     const int x = XgGetHScrollPos(), y = XgGetVScrollPos();
     XgMarkUpdate();
     XgUpdateImage(hwnd, x, y);
+
+    // 元に戻す情報を設定する。
+    mu2->Get();
+    xg_ubUndoBuffer.Commit(UC_MARKS_UPDATED, mu1, mu2);
 }
 
 // 字送りを実行する。
