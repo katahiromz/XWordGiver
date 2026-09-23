@@ -31,7 +31,7 @@ def normalize_string(s):
 	s = s.replace("#", ZEN_BLACK)
 	s = s.replace(ZEN_SHARP1, ZEN_BLACK)
 	s = s.replace(ZEN_SHARP2, ZEN_BLACK)
-	s = s.replace(".", ZEN_BLACK)
+	s = s.replace(".", ZEN_BLACK) # クロスワード ギバーでは立入禁止は黒マスと見なす
 	s = s.replace(ZEN_DOT, ZEN_BLACK)
 	# ひらがなをカタカナに
 	s = jaconv.hira2kata(s)
