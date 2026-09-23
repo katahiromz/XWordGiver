@@ -1,4 +1,7 @@
-﻿# History (ChangeLog) of XWordGiver (English)
+﻿(English / Japanese)
+---
+
+# History (ChangeLog) of XWordGiver (English)
 
 - 2021-08-22 Ver.4.7.4
     - Made character feed default.
