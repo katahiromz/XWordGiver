@@ -7904,6 +7904,8 @@ bool __fastcall MainWnd_OnCreate(HWND hwnd, LPCREATESTRUCT /*lpCreateStruct*/)
 
     // 「元に戻す」情報のクリア。
     xg_ubUndoBuffer.clear();
+    // ファイル変更フラグをクリア。
+    XG_FILE_MODIFIED(FALSE);
 
     return true;
 }
