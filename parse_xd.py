@@ -141,7 +141,7 @@ def parse_xd(xd_str):
 	header = header.strip()
 	notes = notes.strip()
 
-	return header, notes, rows, clues, words, marks, mark_str, view_mode, policy
+	return header, notes, rows, clues, words, marks, mark_str, view_mode, policy, numcros
 
 if len(sys.argv) != 2 or sys.argv[1] == "--help":
 	usage()
@@ -166,7 +166,7 @@ result = parse_xd(xd_str)
 if result is None:
 	print("Error: invalid .xd file", file=sys.stderr)
 	sys.exit(1)
-[header, notes, rows, clues, words, marks, mark_str, view_mode, policy] = result
+[header, notes, rows, clues, words, marks, mark_str, view_mode, policy, numcros] = result
 is_fulfill = fulfill(rows) # すべてのマスが埋まっているか？
 
 # カギをパースする
@@ -198,5 +198,6 @@ for word in words:
 #print("is_fulfill: " + str(is_fulfill))
 #print("view_mode: " + str(view_mode))
 #print("policy: " + str(policy))
+#print("numcros: " + str(numcros))
 #print("clue_mapping0: " + str(clue_mapping0))
 #print("clue_mapping1: " + str(clue_mapping1))
