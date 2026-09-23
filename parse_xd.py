@@ -21,38 +21,36 @@ ZEN_SHARP2      = "＃" # U+FF03
 ZEN_DOT         = "．" # U+FF0E: 全角ドット(ピリオド)
 ZEN_BLACK       = "■" # U+25A0: ブロック
 
-# 文字を変換する
-def normalize_ch(ch):
+# クロスワード用に文字列を変換する
+def normalize_str(str):
+	# 空白マス
+	str = str.replace(" ", ZEN_SPACE)
+	str = str.replace("_", ZEN_SPACE)
+	str = str.replace(ZEN_UNDERLINE, ZEN_SPACE)
+	# 黒マス
+	str = str.replace("#", ZEN_BLACK)
+	str = str.replace(ZEN_SHARP1, ZEN_BLACK)
+	str = str.replace(ZEN_SHARP2, ZEN_BLACK)
+	str = str.replace(".", ZEN_BLACK)
+	str = str.replace(ZEN_DOT, ZEN_BLACK)
 	# ひらがなをカタカナに
-	ch0 = jaconv.hira2kata(ch)
+	str = jaconv.hira2kata(str)
 	# 半角を全角に
-	ch1 = jaconv.h2z(ch0);
+	str = jaconv.h2z(str);
 	# 小文字を大文字に
-	ch2 = ch1.upper()
-	match ch2:
-		case "ァ":
-			ch2 = "ア"
-		case "ィ":
-			ch2 = "イ"
-		case "ゥ":
-			ch2 = "ウ"
-		case "ェ":
-			ch2 = "エ"
-		case "ォ":
-			ch2 = "オ"
-		case "ッ":
-			ch2 = "ツ"
-		case "ャ":
-			ch2 = "ヤ"
-		case "ュ":
-			ch2 = "ユ"
-		case "ョ":
-			ch2 = "ヨ"
-		case "ヵ":
-			ch2 = "カ"
-		case "ヶ":
-			ch2 = "ケ"
-	return ch2
+	str = str.upper()
+	str = str.replace("ァ", "ア")
+	str = str.replace("ィ", "イ")
+	str = str.replace("ゥ", "ウ")
+	str = str.replace("ェ", "エ")
+	str = str.replace("ォ", "オ")
+	str = str.replace("ッ", "ツ")
+	str = str.replace("ャ", "ヤ")
+	str = str.replace("ュ", "ユ")
+	str = str.replace("ョ", "ヨ")
+	str = str.replace("ヵ", "カ")
+	str = str.replace("ヶ", "ケ")
+	return str
 
 # 空白マスがないか？
 def fulfill(rows):
@@ -126,17 +124,7 @@ def parse_xd(xd_str):
 	# 盤面データの文字を変換
 	new_rows = []
 	for row in rows:
-		new_row = ""
-		for ch in row:
-			if ch == " " or ch == "_" or ch == ZEN_UNDERLINE:
-				# 空白マス
-				new_row += ZEN_SPACE
-			elif ch == "#" or ch == ZEN_SHARP1 or ch == ZEN_SHARP2 or ch == "." or ch == ZEN_DOT:
-				# ブロック（カベ）
-				new_row += ZEN_BLACK;
-			else:
-				# 変換した文字を追加
-				new_row += normalize_ch(ch)
+		new_row = normalize_str(row)
 		new_rows.append(new_row)
 	rows = new_rows
 
