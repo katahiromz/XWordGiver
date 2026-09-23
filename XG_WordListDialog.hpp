@@ -1,4 +1,8 @@
-﻿#pragma once
+﻿// XG_WordListDialog.hpp --- 「単語群から生成」ダイアログ
+// Author: katahiromz
+// License: MIT
+
+#pragma once
 
 #include "XG_Window.hpp"
 #include "crossword_generation.hpp"

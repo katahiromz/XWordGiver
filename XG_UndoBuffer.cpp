@@ -1,3 +1,7 @@
+﻿// XG_UndoBuffer.cpp --- 「元に戻す」「やり直す」情報
+// Author: katahiromz
+// License: MIT
+
 #include "XG_UndoBuffer.hpp"
 
 //////////////////////////////////////////////////////////////////////////////

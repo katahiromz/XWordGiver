@@ -1,4 +1,8 @@
-﻿#pragma once
+﻿// XG_UILanguageDialog.hpp --- UI言語ダイアログ
+// Author: katahiromz
+// License: MIT
+
+#pragma once
 
 #include "XG_Window.hpp"
 

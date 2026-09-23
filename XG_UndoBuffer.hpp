@@ -1,6 +1,6 @@
-﻿//////////////////////////////////////////////////////////////////////////////
-// XG_UndoBuffer.hpp
-// Copyright (C) 2012-2026 Katayama Hirofumi MZ. All Rights Reserved.
+﻿// XG_UndoBuffer.hpp --- 「元に戻す」「やり直す」情報
+// Author: katahiromz
+// License: MIT
 
 #pragma once
 

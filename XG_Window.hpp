@@ -1,4 +1,8 @@
-﻿#pragma once
+﻿// XG_Window.hpp --- XWordGiver 基底ウィンドウクラス
+// Author: katahiromz
+// License: MIT
+
+#pragma once
 
 #ifndef _INC_WINDOWS
     #include <windows.h>

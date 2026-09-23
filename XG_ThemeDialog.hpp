@@ -1,4 +1,8 @@
-﻿#pragma once
+﻿// XG_ThemeDialog.hpp --- 「テーマ」ダイアログ
+// Author: katahiromz
+// License: MIT
+
+#pragma once
 
 #include "XG_Window.hpp"
 

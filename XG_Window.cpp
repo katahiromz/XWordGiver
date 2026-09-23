@@ -1,3 +1,7 @@
+// XG_Window.cpp --- XWordGiver 基底ウィンドウクラス
+// Author: katahiromz
+// License: MIT
+
 #include "XG_Window.hpp"
 #include <cassert>
 

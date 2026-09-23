@@ -1,4 +1,8 @@
-﻿#pragma once
+﻿// XG_TextBoxDialog.hpp --- 「テキストボックス」ダイアログ
+// Author: katahiromz
+// License: MIT
+
+#pragma once
 
 #include "XG_Window.hpp"
 #include "XG_ColorBox.hpp"
