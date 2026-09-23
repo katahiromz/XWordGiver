@@ -394,6 +394,7 @@
     - Added "minimax" and "zai" AI models.
     - Made it possible to revert the theme string.
     - Made it possible to revert the double-frame toggling.
+    - Added parse_xd.py.
 
 # 開発履歴 (Japanese)
 
@@ -1104,3 +1105,4 @@
     - minimaxとzaiのAIモデルを追加。
     - テーマ文字列を元に戻せるようにした。
     - 二重マス切り替えを元に戻せるようにした。
+    - parse_xd.pyを追加。
