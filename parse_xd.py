@@ -172,7 +172,17 @@ def parse_xd(xd_str):
 	header = header.strip()
 	notes = notes.strip()
 
-	return header, notes, rows, clues, words, marks, mark_str, view_mode, policy, numcros, boxes
+	# カギをパースする
+	clue_mapping0 = {} # clue_name -> clue_word
+	clue_mapping1 = {} # clue_name -> clue_hint
+	for clue in clues:
+		parsed = parse_clue(clue)
+		if parsed is not None:
+			clue_name, clue_hint, clue_word = parsed
+			clue_mapping0[clue_name] = clue_word
+			clue_mapping1[clue_name] = clue_hint
+
+	return header, notes, rows, clues, words, marks, mark_str, view_mode, policy, numcros, boxes, clue_mapping0, clue_mapping1
 
 if len(sys.argv) != 2 or sys.argv[1] == "--help":
 	usage()
@@ -197,18 +207,8 @@ result = parse_xd(xd_str)
 if result is None:
 	print("Error: invalid .xd file", file=sys.stderr)
 	sys.exit(1)
-header, notes, rows, clues, words, marks, mark_str, view_mode, policy, numcros, boxes = result
+header, notes, rows, clues, words, marks, mark_str, view_mode, policy, numcros, boxes, clue_mapping0, clue_mapping1 = result
 is_full = is_filled(rows) # すべてのマスが埋まっているか？
-
-# カギをパースする
-clue_mapping0 = {} # clue_name -> clue_word
-clue_mapping1 = {} # clue_name -> clue_hint
-for clue in clues:
-	parsed = parse_clue(clue)
-	if parsed is not None:
-		clue_name, clue_hint, clue_word = parsed
-		clue_mapping0[clue_name] = clue_word
-		clue_mapping1[clue_name] = clue_hint
 
 # TODO: ここでやりたいことをやる。例えば使用単語を出力する。
 for word in words:
