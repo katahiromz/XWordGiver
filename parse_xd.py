@@ -131,9 +131,9 @@ def parse_xd(xd_str):
 	# 使用単語を取得
 	words = []
 	for clue in clues:
-		ich = clue.find(" ~ ")
-		if ich != -1 and (clue[0] == "A" or clue[0] == "D"):
-			words.append(clue[ich + 3:])
+		ich = clue.find("~")
+		if ich != -1 and (clue[0] == "A" or clue[0] == "D") and clue.find(".") != -1:
+			words.append(clue[ich+1:].strip())
 	if mark_str != "":
 		words.append(mark_str)
 
