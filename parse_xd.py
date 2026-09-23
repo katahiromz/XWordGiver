@@ -213,13 +213,13 @@ if sys.argv[1] == "--version":
 	sys.exit(0)
 
 # XDファイルを読み込む
-filename = sys.argv[1]
+input_filename = sys.argv[1]
 try:
-	with open(filename, "r", encoding='utf-8') as fp:
+	with open(input_filename, "r", encoding='utf-8') as fp:
 		# ファイル全体を文字列として読み込む
 		xd_str = fp.read()
 except OSError as e:
-	print(f"Cannot open file: {filename} ({e})", file=sys.stderr)
+	print(f"Cannot open file: {input_filename} ({e})", file=sys.stderr)
 	sys.exit(1)
 
 # パースする
