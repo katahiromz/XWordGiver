@@ -5,6 +5,8 @@
 import sys
 import jaconv
 
+# NOTE: UTF-8で出力したい人は、環境変数「PYTHONIOENCODING=utf-8」をセットしてください。
+
 # バージョン情報を表示する
 def version():
 	print("parse_xd.py Version 1.0 by katahiromz")
