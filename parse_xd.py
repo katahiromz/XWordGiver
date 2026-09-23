@@ -208,11 +208,11 @@ def parse_xd(xd_str):
 
 if len(sys.argv) != 2 or sys.argv[1] == "--help":
 	usage()
-	sys.exit(0)
+	sys.exit(1)
 
 if sys.argv[1] == "--version":
 	version()
-	sys.exit(0)
+	sys.exit(1)
 
 # XDファイルを読み込む
 input_filename = sys.argv[1]
