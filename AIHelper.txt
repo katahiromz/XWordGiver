@@ -65,7 +65,7 @@
   1. 無料プランのAIは利用制限（レート制限）が厳しく、応答が遅くなることがあります → 有料プランへの切り替えで改善する場合があります。
   2. モデル自体の推論速度がプロバイダーやモデルの種類によって異なります → より軽量・高速なモデルを選ぶと改善する場合があります。
   3. ご利用中のインターネット回線の速度も影響します。
-- BANされることはある？ → 利用規約に反すると判断されると、アカウントやAPIキーが停止されることがあります。詳しい基準は各AIプロバイダーの規約をご確認ください。
+- BANされることはある？ → 利用規約に反すると判断されると、アカウントやAPIキーが停止されることがあります。特にNGワードなどに注意してください。詳しい基準は各AIプロバイダーの規約をご確認ください。
 
 ---
 
@@ -133,4 +133,4 @@ XWordGiver's "AI Helper" is your partner, capable of casual conversation, regene
   1. Free-tier plans often have strict rate limits, which can slow down responses — upgrading to a paid plan may help.
   2. Inference speed varies by provider and model — a lighter/faster model may respond quicker.
   3. Your internet connection speed also affects response time.
-- Can I get banned? → Yes, if your usage is judged to violate a provider's terms, your account or API key may be suspended. Please check each provider's terms for details.
+- Can I get banned? → Yes, if your usage is judged to violate a provider's terms, your account or API key may be suspended. Please be particularly careful about prohibited words and the like. Please check each provider's terms for details.
