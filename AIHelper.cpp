@@ -1814,9 +1814,7 @@ std::map<std::wstring, std::vector<std::wstring>> xg_knownAIModels;
 BOOL Helper_GetAIModels(PCWSTR provider, std::vector<std::wstring>& models)
 {
 	models.clear();
-
-	if (xg_knownAIModels.empty())
-		Helper_LoadAIModels(xg_knownAIModels);
+	Helper_LoadAIModels(xg_knownAIModels);
 
 	for (const auto& entry : xg_knownAIModels)
 	{
@@ -1857,8 +1855,7 @@ std::vector<std::wstring> xg_knownAIProviders;
 // Get the list of provider names from AIModels.dat.
 BOOL Helper_GetAIProviders(std::vector<std::wstring>& providers)
 {
-	if (xg_knownAIProviders.empty())
-		Helper_LoadAIProviders(xg_knownAIProviders);
+	Helper_LoadAIProviders(xg_knownAIProviders);
 
 	providers = xg_knownAIProviders;
 	return !providers.empty();
