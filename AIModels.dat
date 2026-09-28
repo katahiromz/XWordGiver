@@ -54,7 +54,7 @@ bonsai      = ,                     localhost, 8080, /v1/chat/completions, 1, 0,
 ;       （先頭モデルは既定モデルにもなるため）。
 ; TODO: Update the list below about once a month. Keep a free model first
 ;       (the first entry also becomes the default model).
-; 更新日 / Last updated: 2026-09-22
+; 更新日 / Last updated: 2026-09-28
 ; ----------------------------------------------------------------------------
 
 [MODELS:openai]
@@ -63,6 +63,8 @@ gpt-4.1
 gpt-5.6-luna
 gpt-5.6-sol
 gpt-5.6-terra
+gpt-6-luna
+gpt-6-sol
 gpt-6-astra
 
 [MODELS:google]
@@ -76,6 +78,7 @@ gemini-3-deep-think
 claude-haiku-4-5-20251001
 claude-sonnet-5
 claude-opus-5
+claude-opus-5-5
 claude-fable-5-1
 
 [MODELS:xai]
@@ -83,9 +86,12 @@ grok-4
 grok-4.1
 grok-4.3
 grok-4.5
+grok-4.6
+grok-4.7
 
 [MODELS:deepseek]
 deepseek-v4-flash
+deepseek-flash
 deepseek-v4-pro
 deepseek-v3.2
 
@@ -131,6 +137,7 @@ glm-4.6
 glm-4.7
 glm-5.2
 glm-5.3
+glm-5.3-flash
 
 [MODELS:pepabo]
 ; GMOペパボのAIゲートウェイ / GMO Pepabo's AI gateway
