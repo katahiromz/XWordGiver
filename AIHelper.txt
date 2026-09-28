@@ -37,7 +37,7 @@
   - 環境変数はご自身のPC上でのみ有効です。他人とファイルを共有する際、APIキーが書かれた設定ファイルやスクリーンショットを一緒に送らないようご注意ください。
   - APIキーが漏洩した疑いがある場合は、発行元の管理画面からすぐに無効化・再発行してください。
 - ローカルAIを使いたい場合はファイル「AIModels.dat」を見て編集してください。
-- 地政学的リスクや情報漏洩リスク、高額請求のリスクが存在しますので注意してください。
+- 地政学的リスクや情報漏洩リスク、高額請求のリスク、永久BANのリスクが存在しますので注意してください。
 
 ## よくある質問
 
@@ -51,6 +51,7 @@
   2. モデル自体の推論速度がプロバイダーやモデルの種類によって異なります → より軽量・高速なモデルを選ぶと改善する場合があります。
   3. ご利用中のインターネット回線の速度も影響します。
 - 環境変数を設定したのに反映されない → 開いているクロスワード ギバーを一度すべて閉じてから起動し直してください。
+- BANされることはある? → 利用規約に反すると判断されると、アカウントやAPIキーが停止されることがあります。詳しい基準は各AIプロバイダーの規約をご確認ください。
 
 ---
 
@@ -90,7 +91,7 @@ XWordGiver's "AI Helper" is your partner, capable of casual conversation, regene
   - Environment variables are only set on your own PC. When sharing files with others, make sure not to include configuration files or screenshots that expose your API key.
   - If you suspect your API key has been leaked, revoke and reissue it immediately from your provider's dashboard.
 - If you wish to use local AI, please check and edit the "AIModels.dat" file.
-- Please be aware of the risks associated with geopolitics, information leakage, and high charges.
+- Please be aware that there are risks associated with geopolitics, information leakage, exorbitant charges, and permanent bans.
 
 ## FAQ
 
@@ -103,3 +104,4 @@ XWordGiver's "AI Helper" is your partner, capable of casual conversation, regene
   2. Inference speed varies by provider and model — a lighter/faster model may respond quicker.
   3. Your internet connection speed also affects response time.
 - My environment variable isn't being picked up → Close and reopen XWordGiver completely; the changes only apply to newly opened windows.
+- Can I get banned? → Yes, if your usage is judged to violate a provider's terms, your account or API key may be suspended. Please check each provider's terms for details.
