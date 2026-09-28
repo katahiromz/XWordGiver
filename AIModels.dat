@@ -90,8 +90,8 @@ grok-4.6
 grok-4.7
 
 [MODELS:deepseek]
-deepseek-v4-flash
 deepseek-flash
+deepseek-v4-flash
 deepseek-v4-pro
 deepseek-v3.2
 
