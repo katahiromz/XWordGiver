@@ -51,7 +51,7 @@
   - APIキーが漏洩した疑いがある場合は、発行元の管理画面からすぐに無効化・再発行してください。
 - バージョン 5.4.0 より、システムの環境変数と自動的に同期するようになりました。
   - 5.4.0 より前のバージョンでは、環境変数を設定したあとにクロスワード ギバーを再起動してください。
-- ローカルAIを使いたい場合は付属のファイル「AIModels.dat」をテキストエディタで開いて編集してください。
+- ローカルAIを使いたい場合は付属のファイル「AIModels.dat」をテキストエディタで開いて閲覧または編集してください。
 - 地政学的リスクや情報漏洩リスク、高額請求のリスク、永久BANのリスクが存在しますので注意してください。
 
 ## よくある質問
@@ -120,7 +120,7 @@ XWordGiver's "AI Helper" is your partner, capable of casual conversation, regene
   - If you suspect your API key has been leaked, revoke and reissue it immediately from your provider's dashboard.
 - Starting with version 5.4.0, it now automatically synchronizes with system environment variables.
   - For versions earlier than 5.4.0, restart XWordGiver after setting the environment variable.
-- If you wish to use local AI, please open and edit the included "AIModels.dat" file using a text editor.
+- If you wish to use local AI, please open the included "AIModels.dat" file in a text editor to view or edit it.
 - Please be aware that there are risks associated with geopolitics, information leakage, exorbitant charges, and permanent bans.
 
 ## FAQ
