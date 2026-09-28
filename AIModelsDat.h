@@ -19,21 +19,12 @@ typedef std::vector<std::pair<std::wstring, std::wstring>> AIModelsDatLines;
 
 // AIModels.dat をパースした (section, line) 列を返す。
 // 実行ファイルのフォルダ、次いでカレントディレクトリの順にファイルを探し、
-// 初回のみ読み込んでキャッシュする（以降はキャッシュを返す）。
 // ファイルが見つからない場合は空の列を返す。
 //
 // Returns the parsed (section, line) pairs of AIModels.dat. The file is
-// looked up next to the executable, then in the current directory; it is
-// read only on first use and cached afterwards. Returns an empty list if the
-// file cannot be found.
-const AIModelsDatLines& GetAIModelsDatLines();
-
-// キャッシュを破棄する。次回 GetAIModelsDatLines() 呼び出し時に
-// AIModels.dat を読み直させたい場合に使う（通常は呼ぶ必要はない）。
-//
-// Discards the cache so the next call to GetAIModelsDatLines() re-reads
-// AIModels.dat from disk. Not normally needed.
-void InvalidateAIModelsDatCache();
+// looked up next to the executable, then in the current directory.
+// Returns an empty list if the // file cannot be found.
+AIModelsDatLines GetAIModelsDatLines();
 
 // "a,b,c" の形式の文字列をカンマで分割する。
 // 各フィールド前後の空白は許容し、結果からは取り除く。

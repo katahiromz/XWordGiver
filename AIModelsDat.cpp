@@ -107,29 +107,17 @@ static void ParseAIModelsDatLines(const std::wstring& text, AIModelsDatLines& ou
 }
 
 // ---------------------------------------------------------------------------
-// キャッシュ付きアクセサ
-// Cached accessor
+// アクセサ
+// accessor
 // ---------------------------------------------------------------------------
 
-static AIModelsDatLines s_aiModelsDatLines;
-static bool s_aiModelsDatLoaded = false;
-
-const AIModelsDatLines& GetAIModelsDatLines()
+AIModelsDatLines GetAIModelsDatLines()
 {
-	if (!s_aiModelsDatLoaded)
-	{
-		std::wstring text;
-		if (ReadAIModelsFile(text))
-			ParseAIModelsDatLines(text, s_aiModelsDatLines);
-		s_aiModelsDatLoaded = true; // 見つからなかった場合も再試行はしない（従来の挙動を踏襲）
-	}
-	return s_aiModelsDatLines;
-}
-
-void InvalidateAIModelsDatCache()
-{
-	s_aiModelsDatLines.clear();
-	s_aiModelsDatLoaded = false;
+	std::wstring text;
+	AIModelsDatLines aiModelsDatLines;
+	if (ReadAIModelsFile(text))
+		ParseAIModelsDatLines(text, aiModelsDatLines);
+	return aiModelsDatLines;
 }
 
 // ---------------------------------------------------------------------------
