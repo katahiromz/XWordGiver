@@ -12,12 +12,27 @@
    - 各プロバイダーの管理画面からAPIキーを発行してください。
 
 2. システムの環境変数を設定する
-   - Windows+Breakキーを押して「システムの詳細設定」を開きます。
+   - 「システムの詳細設定」を開きます。
+     - Windows+Breakキーを押す、または、スタートメニュー（タスクバーの検索）に「環境変数」と入力して「システム環境変数の編集」を選びます。
    - 「環境変数」ボタン→「ユーザー環境変数」の「新規...」をクリックします。
-   - 「変数名」に以下のいずれかを、「変数値」に取得したAPIキーを入力します。
-     GOOGLE_API_KEY / OPENAI_API_KEY / XAI_API_KEY / DEEPSEEK_API_KEY / SAKANA_API_KEY / DASHSCOPE_API_KEY / MOONSHOT_API_KEY / MISTRAL_API_KEY / LLAMA_API_KEY / AI_GATEWAY_API_KEY（ロリポップ！AIゲートウェイ byGMOペパボ） / MINIMAX_API_KEY / ZAI_API_KEY
+   - 「変数名」に下表のいずれかを、「変数値」に取得したAPIキーを入力します。
    - 「OK」ボタンをクリックします。
    - もう一度「OK」ボタンをクリックします。
+
+   | 変数名              | プロバイダー                           |
+   |---------------------|----------------------------------------|
+   | GOOGLE_API_KEY      | Google                                 |
+   | OPENAI_API_KEY      | OpenAI                                 |
+   | XAI_API_KEY         | xAI                                    |
+   | DEEPSEEK_API_KEY    | DeepSeek                               |
+   | SAKANA_API_KEY      | Sakana AI                              |
+   | DASHSCOPE_API_KEY   | Alibaba Cloud（DashScope）             |
+   | MOONSHOT_API_KEY    | Moonshot AI                            |
+   | MISTRAL_API_KEY     | Mistral AI                             |
+   | LLAMA_API_KEY       | Meta（Llama API）                      |
+   | AI_GATEWAY_API_KEY  | ロリポップ！AIゲートウェイ byGMOペパボ |
+   | MINIMAX_API_KEY     | MiniMax                                |
+   | ZAI_API_KEY         | Z.ai                                   |
 
 3. 「ファイル」メニュー→「設定」→「AIヘルパー」タブを開く
 
@@ -34,7 +49,9 @@
 - APIキーの取り扱いにご注意ください。
   - 環境変数はご自身のPC上でのみ有効です。他人とファイルを共有する際、APIキーが書かれた設定ファイルやスクリーンショットを一緒に送らないようご注意ください。
   - APIキーが漏洩した疑いがある場合は、発行元の管理画面からすぐに無効化・再発行してください。
-- ローカルAIを使いたい場合はファイル「AIModels.dat」を見て編集してください。
+- バージョン 5.4.0 より、システムの環境変数と自動的に同期するようになりました。
+  - 5.4.0 より前のバージョンでは、環境変数を設定したあとにクロスワード ギバーを再起動してください。
+- ローカルAIを使いたい場合はファイル「AIModels.dat」をテキストエディタで開いて編集してください。
 - 地政学的リスクや情報漏洩リスク、高額請求のリスク、永久BANのリスクが存在しますので注意してください。
 
 ## よくある質問
@@ -48,7 +65,7 @@
   1. 無料プランのAIは利用制限（レート制限）が厳しく、応答が遅くなることがあります → 有料プランへの切り替えで改善する場合があります。
   2. モデル自体の推論速度がプロバイダーやモデルの種類によって異なります → より軽量・高速なモデルを選ぶと改善する場合があります。
   3. ご利用中のインターネット回線の速度も影響します。
-- BANされることはある? → 利用規約に反すると判断されると、アカウントやAPIキーが停止されることがあります。詳しい基準は各AIプロバイダーの規約をご確認ください。
+- BANされることはある？ → 利用規約に反すると判断されると、アカウントやAPIキーが停止されることがあります。詳しい基準は各AIプロバイダーの規約をご確認ください。
 
 ---
 
@@ -64,12 +81,27 @@ XWordGiver's "AI Helper" is your partner, capable of casual conversation, regene
    - Get an API key from your chosen provider's dashboard.
 
 2. Set a system environment variable
-   - Press the Windows + Break keys and open "Advanced system settings."
+   - Open "Advanced system settings."
+     - Press the Windows + Break keys, or type "environment variables" into the Start menu (taskbar search) and choose "Edit the system environment variables."
    - Click "Environment Variables," then "New..." under "User variables."
-   - Enter one of the following as the variable name, and your API key as the value:
-     GOOGLE_API_KEY, OPENAI_API_KEY, XAI_API_KEY, DEEPSEEK_API_KEY, SAKANA_API_KEY, DASHSCOPE_API_KEY, MOONSHOT_API_KEY, MISTRAL_API_KEY, LLAMA_API_KEY, AI_GATEWAY_API_KEY (Lolipop! AI Gateway by GMO Pepabo), MINIMAX_API_KEY, ZAI_API_KEY
-   - Click "OK" button.
-   - Click "OK" button again.
+   - Enter one of the variable names in the table below as the variable name, and your API key as the value.
+   - Click the "OK" button.
+   - Click the "OK" button again.
+
+   | Variable name      | Provider                          |
+   |--------------------|-----------------------------------|
+   | GOOGLE_API_KEY     | Google                            |
+   | OPENAI_API_KEY     | OpenAI                            |
+   | XAI_API_KEY        | xAI                               |
+   | DEEPSEEK_API_KEY   | DeepSeek                          |
+   | SAKANA_API_KEY     | Sakana AI                         |
+   | DASHSCOPE_API_KEY  | Alibaba Cloud (DashScope)         |
+   | MOONSHOT_API_KEY   | Moonshot AI                       |
+   | MISTRAL_API_KEY    | Mistral AI                        |
+   | LLAMA_API_KEY      | Meta (Llama API)                  |
+   | AI_GATEWAY_API_KEY | Lolipop! AI Gateway by GMO Pepabo |
+   | MINIMAX_API_KEY    | MiniMax                           |
+   | ZAI_API_KEY        | Z.ai                              |
 
 3. Go to the "File" menu → "Settings" → "AI Helper" tab
 
@@ -83,9 +115,12 @@ XWordGiver's "AI Helper" is your partner, capable of casual conversation, regene
 
 - Generative AI may make mistakes.
 - AI Helper communicates externally via the Internet. It does not function in environments without an Internet connection (except local AIs).
+- Handle your API key with care.
   - Environment variables are only set on your own PC. When sharing files with others, make sure not to include configuration files or screenshots that expose your API key.
   - If you suspect your API key has been leaked, revoke and reissue it immediately from your provider's dashboard.
-- If you wish to use local AI, please check and edit the "AIModels.dat" file.
+- Starting with version 5.4.0, it now automatically synchronizes with system environment variables.
+  - For versions earlier than 5.4.0, restart XWordGiver after setting the environment variable.
+- If you wish to use local AI, please open the file "AIModels.dat" in your text editor and edit it.
 - Please be aware that there are risks associated with geopolitics, information leakage, exorbitant charges, and permanent bans.
 
 ## FAQ
