@@ -41,6 +41,9 @@ pepabo      = AI_GATEWAY_API_KEY,   ai-gateway.lolipop.jp, 443, /v1/chat/complet
 ; ローカルAI（Ollama）。APIキー不要。
 ; Local AI (Ollama). No API key is required.
 ollama      = ,                     localhost, 11434, /v1/chat/completions, 1, 0, 0, 0
+; ローカルAI（PrismML Bonsai / llama.cpp サーバー）。APIキー不要。
+; Local AI (PrismML Bonsai via llama.cpp server). No API key is required.
+bonsai      = ,                     localhost, 8080, /v1/chat/completions, 1, 0, 0, 0
 
 ; ----------------------------------------------------------------------------
 ; 既知のAIモデル名一覧（プロバイダーごと）。各セクションの先頭のモデルが、そのプロバイダーの
@@ -197,6 +200,16 @@ zai/glm-5
 zai/glm-5-1
 zai/glm-5-2
 zai/glm-5-3
+
+[MODELS:bonsai]
+; PrismML Bonsai（1ビットLLM、ローカル実行）。llama.cpp 等のサーバーは読み込んだモデルを返すため、
+; モデル名は識別用。サーバーを http://localhost:8080 で起動しておくこと。
+; PrismML Bonsai (1-bit LLM, runs locally). The local server answers with whichever model it
+; has loaded, so the name is mostly a label. Start the server at http://localhost:8080 first.
+bonsai-8b
+bonsai-4b
+bonsai-1.7b
+bonsai-27b
 
 [MODELS:ollama]
 ; ローカルで `ollama pull <model>` 済みのモデル名を書くこと。以下は例。
