@@ -13,6 +13,7 @@
 #include "TaskbarProgress.h"
 #include "AIHelper.h"
 #include "AIHelper2.h"
+#include "EnvVars.h"
 
 // 「元に戻す」情報。
 #include "XG_UndoBuffer.hpp"
@@ -8181,6 +8182,12 @@ XgWindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
         }
         break;
 
+    case WM_SETTINGCHANGE:
+        // 環境変数を同期する。
+        if (lParam && wcscmp(reinterpret_cast<PCWSTR>(lParam), L"Environment") == 0)
+            RefreshEnvironment(false);
+        break;
+
     default:
         return ::DefWindowProcW(hWnd, uMsg, wParam, lParam);
     }
@@ -8598,6 +8605,7 @@ void XgCleanup(void)
         DeleteEnhMetaFile(xg_hBlackCellEMF);
         xg_hBlackCellEMF = nullptr;
     }
+    ClearEnvironment();
 }
 
 // メッセージループ。
@@ -8820,6 +8828,9 @@ WinMain(
         }
     };
     AutoDeleteCriticalSection xg_auto_cs;
+
+    // 環境変数の同期を開始する。
+    InitEnvironmentTracking();
 
     // テストをする。
     XgDoTests();

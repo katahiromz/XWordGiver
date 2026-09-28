@@ -125,6 +125,7 @@ add_executable(XWordGiver${BITS} WIN32
     AIHelper2.cpp
     AIModelsDat.cpp
     Dictionary.cpp
+    EnvVars.cpp
     GUI.cpp
     Input.cpp
     Marks.cpp
@@ -142,11 +143,10 @@ target_link_libraries(XWordGiver${BITS}
     ole32
     uuid
     shlwapi
+    userenv
     winhttp
     SaveBitmapToFile)
 
 if(MSVC)
     target_link_options(XWordGiver${BITS} PRIVATE /MANIFEST:NO)
 endif()
-
-##############################################################################

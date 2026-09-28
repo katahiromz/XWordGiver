@@ -395,6 +395,7 @@
     - Made it possible to revert the theme string.
     - Made it possible to revert the double-frame toggling.
     - Added "parse_xd.py," a Python script for parsing XD files.
+    - Configured the process to automatically synchronize its environment variables with the system.
 
 # 開発履歴 (Japanese)
 
@@ -1106,3 +1107,4 @@
     - テーマ文字列を元に戻せるようにした。
     - 二重マス切り替えを元に戻せるようにした。
     - XDファイル解析用のPythonスクリプト「parse_xd.py」を追加。
+    - プロセスの環境変数を自動的にシステムに同期するようにした。

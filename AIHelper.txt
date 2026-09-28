@@ -19,15 +19,13 @@
    - 「OK」ボタンをクリックします。
    - もう一度「OK」ボタンをクリックします。
 
-3. クロスワード ギバーを再起動する
+3. 「ファイル」メニュー→「設定」→「AIヘルパー」タブを開く
 
-4. 「ファイル」メニュー→「設定」→「AIヘルパー」タブを開く
+4. 「AIプロバイダー」と「AIモデル」を選択する
 
-5. 「AIプロバイダー」と「AIモデル」を選択する
+5. 「適用」ボタンをクリックして閉じる
 
-6. 「適用」ボタンをクリックして閉じる
-
-7. 「表示」メニューの「AIヘルパー」を選ぶ
+6. 「表示」メニューの「AIヘルパー」を選ぶ
 
 ## 注意事項
 
@@ -50,7 +48,6 @@
   1. 無料プランのAIは利用制限（レート制限）が厳しく、応答が遅くなることがあります → 有料プランへの切り替えで改善する場合があります。
   2. モデル自体の推論速度がプロバイダーやモデルの種類によって異なります → より軽量・高速なモデルを選ぶと改善する場合があります。
   3. ご利用中のインターネット回線の速度も影響します。
-- 環境変数を設定したのに反映されない → 開いているクロスワード ギバーを一度すべて閉じてから起動し直してください。
 - BANされることはある? → 利用規約に反すると判断されると、アカウントやAPIキーが停止されることがあります。詳しい基準は各AIプロバイダーの規約をご確認ください。
 
 ---
@@ -74,15 +71,13 @@ XWordGiver's "AI Helper" is your partner, capable of casual conversation, regene
    - Click "OK" button.
    - Click "OK" button again.
 
-3. Restart XWordGiver
+3. Go to the "File" menu → "Settings" → "AI Helper" tab
 
-4. Go to the "File" menu → "Settings" → "AI Helper" tab
+4. Set the "AI Provider" and "AI Model"
 
-5. Set the "AI Provider" and "AI Model"
+5. Click "Apply" and close
 
-6. Click "Apply" and close
-
-7. Select "AI Helper" from the "View" menu
+6. Select "AI Helper" from the "View" menu
 
 ## Notes
 
@@ -103,5 +98,4 @@ XWordGiver's "AI Helper" is your partner, capable of casual conversation, regene
   1. Free-tier plans often have strict rate limits, which can slow down responses — upgrading to a paid plan may help.
   2. Inference speed varies by provider and model — a lighter/faster model may respond quicker.
   3. Your internet connection speed also affects response time.
-- My environment variable isn't being picked up → Close and reopen XWordGiver completely; the changes only apply to newly opened windows.
 - Can I get banned? → Yes, if your usage is judged to violate a provider's terms, your account or API key may be suspended. Please check each provider's terms for details.
