@@ -955,7 +955,7 @@ void XgResetSettings(void)
 
     xg_ai_provider = L"google";
     xg_ai_model = L"gemini-3.5-flash-lite";
-    xg_additional_instruction = L"";
+    Helper_ResetPrompts(xg_prompt_mapping);
 
     xg_bHiragana = FALSE;
     xg_bLowercase = FALSE;
@@ -1010,7 +1010,7 @@ void XgResetSettings(void)
 bool __fastcall XgLoadSettings(void)
 {
     int i, nDirCount = 0;
-    WCHAR sz[MAX_PATH];
+    static WCHAR sz[2048];
     WCHAR szFormat[32];
     DWORD dwValue;
 
@@ -1194,8 +1194,19 @@ bool __fastcall XgLoadSettings(void)
         if (!app_key.QuerySz(L"AIModel", sz, _countof(sz))) {
             xg_ai_model = sz;
         }
-        if (!app_key.QuerySz(L"AdditionalInsn", sz, _countof(sz))) {
-            xg_additional_instruction = sz;
+
+        if (!app_key.QueryDword(L"PromptTextCount", dwValue) && dwValue == (DWORD)PROMPT_TYPE_MAX) {
+            xg_prompt_mapping.clear();
+            for (i = 0; i < static_cast<int>(dwValue); i++) {
+                StringCchPrintf(szFormat, _countof(szFormat), L"PromptText %d", i);
+                if (!app_key.QuerySz(szFormat, sz, _countof(sz))) {
+                    xg_prompt_mapping.emplace_back(sz);
+                } else {
+                    break;
+                }
+            }
+            if (xg_prompt_mapping.size() != (size_t)PROMPT_TYPE_MAX)
+                Helper_ResetPrompts(xg_prompt_mapping);
         }
 
         if (!app_key.QueryDword(L"ShowToolBar", dwValue)) {
@@ -1461,7 +1472,14 @@ bool __fastcall XgSaveSettings(void)
 
         app_key.SetSz(L"AIProvider", xg_ai_provider.c_str());
         app_key.SetSz(L"AIModel", xg_ai_model.c_str());
-        app_key.SetSz(L"AdditionalInsn", xg_additional_instruction.c_str());
+
+        nCount = static_cast<int>(xg_prompt_mapping.size());
+        app_key.SetDword(L"PromptTextCount", nCount);
+        for (i = 0; i < nCount; i++)
+        {
+            StringCchPrintf(szFormat, _countof(szFormat), L"PromptText %d", i);
+            app_key.SetSz(szFormat, xg_prompt_mapping[i].c_str());
+        }
 
         app_key.SetDword(L"ShowToolBar", xg_bShowToolBar);
         app_key.SetDword(L"ShowStatusBar", s_bShowStatusBar);
@@ -8566,7 +8584,7 @@ void XgCleanup(void)
     xg_ai_model.clear();
     xg_knownAIModels.clear();
     xg_knownAIProviders.clear();
-    xg_additional_instruction.clear();
+    xg_prompt_mapping.clear();
     xg_initial_question.clear();
     xg_dict_name.clear();
     xg_dicts.clear();

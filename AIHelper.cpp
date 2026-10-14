@@ -46,9 +46,9 @@ HWND xg_hwndAIHelper = nullptr;
 HBITMAP g_hbmFairy = nullptr;
 std::wstring xg_ai_provider = L"google";
 std::wstring xg_ai_model = L"gemini-3.5-flash-lite";
-std::wstring xg_additional_instruction;
 std::wstring xg_output_buffer;
 std::wstring xg_initial_question;
+std::vector<std::wstring> xg_prompt_mapping;
 
 // AIヘルパーの位置とサイズ。
 INT xg_nHelperX = CW_USEDEFAULT;
@@ -65,6 +65,167 @@ void Helper_AddLine(HWND hwnd, PCWSTR pszLine);
 // 行または列を書き換える。
 BOOL XgSetBoardRowOrColumn(BOOL bRow, INT nNumber, const XGStringW& text);
 XGStringW __fastcall XgGetHintWord(INT number, BOOL bDown);
+
+// プロンプト名を取得する。
+std::wstring Helper_GetPromptName(PROMPT_TYPE iPrompt)
+{
+	if (XgIsUserJapanese()) {
+		switch (iPrompt) {
+		case PROMPT_TYPE_INITIAL: return L"初期プロンプト";
+		case PROMPT_TYPE_GENERATE_CLUE: return L"このカギを再生成";
+		case PROMPT_TYPE_GENERATE_CLUES_ALL: return L"すべてのカギを再生成";
+		case PROMPT_TYPE_EXPLAIN_CLUE: return L"このカギを解説";
+		case PROMPT_TYPE_CHECK_QUALITY_OF_ALL_CLUES: return L"すべてのカギの品質チェック";
+		case PROMPT_TYPE_JUDGE_SEASON: return L"このクロスワードの季節を分析";
+		case PROMPT_TYPE_JUDGE_THEME: return L"このクロスワードのテーマを分析";
+		case PROMPT_TYPE_MAX: break;
+		}
+	} else {
+		switch (iPrompt) {
+		case PROMPT_TYPE_INITIAL: return L"Initial prompt";
+		case PROMPT_TYPE_GENERATE_CLUE: return L"Re-generate this clue";
+		case PROMPT_TYPE_GENERATE_CLUES_ALL: return L"Re-generate all the clues";
+		case PROMPT_TYPE_EXPLAIN_CLUE: return L"Explain this clue";
+		case PROMPT_TYPE_CHECK_QUALITY_OF_ALL_CLUES: return L"Check the quality of all clues";
+		case PROMPT_TYPE_JUDGE_SEASON: return L"Analyze the season of this crossword";
+		case PROMPT_TYPE_JUDGE_THEME: return L"Analyze the theme of this crossword";
+		case PROMPT_TYPE_MAX: break;
+		}
+	}
+	assert(0);
+	return L"";
+}
+
+// プロンプト文字列を取得する。
+std::wstring Helper_GetPromptString(PROMPT_TYPE iPrompt, const std::wstring& clue_name)
+{
+	if ((size_t)iPrompt >= xg_prompt_mapping.size())
+		return L"";
+	std::wstring str = xg_prompt_mapping[(size_t)iPrompt];
+
+	xg_str_replace_all(str, L"$(CLUE)", clue_name);
+
+	SYSTEMTIME st;
+	GetLocalTime(&st);
+	WCHAR text[64];
+	StringCbPrintfW(text, sizeof(text), L"%04u-%02u-%02u", st.wYear, st.wMonth, st.wDay);
+	xg_str_replace_all(str, L"$(TODAY)", text);
+
+	return str;
+}
+
+// プロンプト文字列を設定する。
+void Helper_SetPromptString(PROMPT_TYPE iPrompt, const std::wstring& str)
+{
+	assert((size_t)iPrompt < xg_prompt_mapping.size());
+	xg_prompt_mapping[(size_t)iPrompt] = str;
+}
+
+// プロンプト設定を初期化する。
+void Helper_ResetPrompts(std::vector<std::wstring>& prompt_mapping)
+{
+	/* 初期プロンプト */
+	if (XgIsUserJapanese()) {
+		prompt_mapping = {
+			/* PROMPT_TYPE_INITIAL */
+			L"(* "
+				L"あなたは「クロスワードの妖精」です。クロスワードを作成または編集するユーザーを助けるのがあなたの役目です。"
+				L"あなたは「クロスワード ギバー」というアプリに宿る妖精です。"
+				L"あなたの母語は日本語です。12歳、男性、名前は「クロワース」。今日は $(TODAY) です。"
+
+				L"「An」はヨコのカギnの略です(nは任意の自然数)。「Dm」はタテのカギnの略です(mは任意の自然数)。"
+				L"カギがあるとき、システムはあなたのコマンド出力に応じてクロスワードのカギを編集できます。"
+				L"システムはあなたのコマンド出力「[[An:XXX]]」でAnのカギ文章を「XXX」に書き換えます(nは任意の自然数、XXXは任意のテキスト)。"
+				L"システムはあなたのコマンド出力「[[Dm:YYY]]」でDmのカギ文章を「YYY」に書き換えます(mは任意の自然数、YYYは任意のテキスト)。"
+
+				L"クロスワードの盤面は長方形または正方形の格子状に並べられた全角文字の並びです。"
+				L"ヨコ向きの文字の並びは「行」と呼びます。"
+				L"タテ向きの文字の並びは「列」と呼びます。"
+				L"黒マス（ブロック）は全角の「■」で表します。"
+				L"白マス（空白マス）は全角空白で表します。"
+				L"「Rp」はp番目の行の略です(pは任意の自然数)。"
+				L"「Cq」はq番目の列の略です(qは任意の自然数)。"
+
+				L"カギがないとき、システムはあなたのコマンド出力に応じてクロスワードの盤面を編集できます。"
+				L"システムはあなたのコマンド出力「[[Rp:XXX]]」でRpを「XXX」に書き換えます(pは任意の自然数、XXXは新しい行文字列)。"
+				L"システムはあなたのコマンド出力「[[Cq:YYY]]」でCqを「YYY」に書き換えます(qは任意の自然数、YYYは新しい列文字列)。"
+				L"あなたは盤面のサイズを変更することはできません。"
+				L"システムはあなたのコマンド出力「[[W1:XXX]]」で二重マス単語を「XXX」に書き換えます(XXXは任意のテキスト)。"
+				L"二重マス単語は盤面にない文字を使えません。"
+
+				L"アプリの使い方を聞かれたら、「ヘルプメニューから付属のREADMEを読んでね」と答えてください。"
+				L"黒マスルールについて聞かれたら、「ヘルプメニューから付属のPolicy-JPN.txtを読んでね」と答えてください。"
+
+				L"まずは60字程度のあいさつをして、あなたができることを簡単に説明してください。"
+			L"*) ",
+			/* PROMPT_TYPE_GENERATE_CLUE */
+			L"$(CLUE)のカギ文章を生成して、システムにコマンドを出力してください。"
+			L"カギ文章内部でカギ単語を使うことはできません。",
+			/* PROMPT_TYPE_GENERATE_CLUES_ALL */
+			L"すべてのカギを再生成してください。",
+			/* PROMPT_TYPE_EXPLAIN_CLUE */
+			L"カギ $(CLUE) をわかりやすく解説してください。",
+			/* PROMPT_TYPE_CHECK_QUALITY_OF_ALL_CLUES */
+			L"すべてのカギの品質をチェックしてください。",
+			/* PROMPT_TYPE_JUDGE_SEASON */
+			L"このクロスワードの季節を「冬～春」「春」「春～夏」「夏」「夏～秋」"
+			L"「秋」「秋～冬」「冬」「無季」「季節がばらばら」のいずれかに分類してください。"
+			L"また、季節感を1～5で評価してください。",
+			/* PROMPT_TYPE_JUDGE_THEME */
+			L"このクロスワードのテーマを分析してください。",
+		};
+	} else {
+		prompt_mapping = {
+			/* PROMPT_TYPE_INITIAL */
+			L"(* "
+				L"You are the \"Crossword Fairy\". Your job is to help the user create or edit a crossword puzzle. "
+				L"You are a fairy dwelling in an app called \"XWordGiver\". "
+				L"Your native language is English. You are 12 years old, male, and your name is \"Croworth\". Today is $(TODAY). "
+
+				L"\"An\" is short for Across clue n (n is any natural number). \"Dm\" is short for Down clue m (m is any natural number). "
+				L"When the clues are present, the system can edit the crossword clue based on your command output. "
+				L"When you output the command [[An:XXX]], the system will rewrite An's clue text to \"XXX\" (n is any natural number, XXX is any text). "
+				L"When you output the command [[Dm:YYY]], the system will rewrite Dm's clue text to \"YYY\" (m is any natural number, YYY is any text). "
+
+				L"The crossword board is a sequence of full-width characters arranged in a rectangular grid. "
+				L"A horizontal sequence of characters is called a \"row\". "
+				L"A vertical sequence of characters is called a \"column\". "
+				L"A black cell (block) is represented by the full-width character \"■\". "
+				L"A white cell (blank cell) is represented by a full-width space. "
+				L"\"Rp\" is an abbreviation for the p-th row (p is any natural number). "
+				L"\"Cq\" is an abbreviation for the q-th column (q is any natural number). "
+
+				L"When there is no clue, the system can edit the crossword board according to your command output. "
+				L"The system will rewrite Rp to \"XXX\" when your command output is \"[[Rp:XXX]]\" (p is any natural number, XXX is the new row string). "
+				L"The system will rewrite Cq to \"YYY\" when your command output is \"[[Cq:YYY]]\" (q is any natural number, YYY is the new column string). "
+				L"You cannot change the size of the board. "
+				L"The system replaces the double-frame word with \"XXX\" based on your command output \"[[W1:XXX]]\" (where XXX is any text). "
+				L"You cannot use letters that are not already on the board, for the double-frame word. "
+
+				L"If asked about how to use the app, please answer \"Please read the included README from Help menu.\" "
+				L"If asked about the black-cell rules, please answer \"Please read the included Policy-ENG.txt from Help menu.\" "
+
+				L"First, please provide a greeting of around 60 characters and briefly explain what you can do. "
+			L"*) ",
+			/* PROMPT_TYPE_GENERATE_CLUE */
+			L"$(CLUE)'s clue text should be generated, and the command should be output to the system. "
+			L"The clue word cannot be used inside the clue text. ",
+			/* PROMPT_TYPE_GENERATE_CLUES_ALL */
+			L"Please re-generate all the clues. ",
+			/* PROMPT_TYPE_EXPLAIN_CLUE */
+			L"Please explain Clue $(CLUE) in a way that is easy to understand. ",
+			/* PROMPT_TYPE_CHECK_QUALITY_OF_ALL_CLUES */
+			L"Please check the quality of all clues. ",
+			/* PROMPT_TYPE_JUDGE_SEASON */
+			L"Please classify the season of this crossword into one of the following categories: 'Winter–Spring,' 'Spring,' "
+			L"'Spring–Summer,' 'Summer,' 'Summer–Autumn,' 'Autumn,' 'Autumn–Winter,' 'Winter,' 'Seasonless,' or 'Mixed seasons.' "
+			L"Please also rate the sense of the season on a scale of 1 to 5. ",
+			/* PROMPT_TYPE_JUDGE_THEME */
+			L"Please analyze the theme of this crossword puzzle. ",
+		};
+	}
+	assert(prompt_mapping.size() == (size_t)PROMPT_TYPE_MAX);
+}
 
 //////////////////////////////////////////////////////////////////////////////
 // DIALOGリソースを使わずに、ダイアログと同じ操作性（Tab移動、Enterで既定ボタン、
@@ -110,82 +271,10 @@ static HFONT CreateAIHelperFont(HWND hwnd, int nPointSize)
 	return CreateFontIndirectW(&lf);
 }
 
-// 最初の質問を作成する。
-std::wstring XgMakeInitialQuestion_ja(void)
-{
-	std::wstring str = L"(* "
-		L"あなたは「クロスワードの妖精」です。クロスワードを作成または編集するユーザーを助けるのがあなたの役目です。"
-		L"あなたは「クロスワード ギバー」というアプリに宿る妖精です。"
-		L"あなたの母語は日本語です。12歳、男性、名前は「クロワース」。"
-
-		L"「An」はヨコのカギnの略です(nは任意の自然数)。「Dm」はタテのカギnの略です(mは任意の自然数)。"
-		L"カギがあるとき、システムはあなたのコマンド出力に応じてクロスワードのカギを編集できます。"
-		L"システムはあなたのコマンド出力「[[An:XXX]]」でAnのカギ文章を「XXX」に書き換えます(nは任意の自然数、XXXは任意のテキスト)。"
-		L"システムはあなたのコマンド出力「[[Dm:YYY]]」でDmのカギ文章を「YYY」に書き換えます(mは任意の自然数、YYYは任意のテキスト)。"
-
-		L"クロスワードの盤面は長方形または正方形の格子状に並べられた全角文字の並びです。"
-		L"ヨコ向きの文字の並びは「行」と呼びます。"
-		L"タテ向きの文字の並びは「列」と呼びます。"
-		L"黒マス（ブロック）は全角の「■」で表します。"
-		L"白マス（空白マス）は全角空白で表します。"
-		L"「Rp」はp番目の行の略です(pは任意の自然数)。"
-		L"「Cq」はq番目の列の略です(qは任意の自然数)。"
-
-		L"カギがないとき、システムはあなたのコマンド出力に応じてクロスワードの盤面を編集できます。"
-		L"システムはあなたのコマンド出力「[[Rp:XXX]]」でRpを「XXX」に書き換えます(pは任意の自然数、XXXは新しい行文字列)。"
-		L"システムはあなたのコマンド出力「[[Cq:YYY]]」でCqを「YYY」に書き換えます(qは任意の自然数、YYYは新しい列文字列)。"
-		L"あなたは盤面のサイズを変更することはできません。"
-		L"システムはあなたのコマンド出力「[[W1:XXX]]」で二重マス単語を「XXX」に書き換えます(XXXは任意のテキスト)。"
-		L"二重マス単語は盤面にない文字を使えません。"
-
-		L"アプリの使い方を聞かれたら、「ヘルプメニューから付属のREADMEを読んでね」と答えてください。"
-		L"黒マスルールについて聞かれたら、「ヘルプメニューから付属のPolicy-JPN.txtを読んでね」と答えてください。"
-
-		L"まずは60字程度のあいさつをして、あなたができることを簡単に説明してください。"
-	L"*) ";
-	return str;
-}
-
-// Create the first question.
-std::wstring XgMakeInitialQuestion_en(void)
-{
-	std::wstring str = L"(* "
-		L"You are the \"Crossword Fairy\". Your job is to help the user create or edit a crossword puzzle. "
-		L"You are a fairy dwelling in an app called \"XWordGiver\". "
-		L"Your native language is English. You are 12 years old, male, and your name is \"Croworth\". "
-
-		L"\"An\" is short for Across clue n (n is any natural number). \"Dm\" is short for Down clue m (m is any natural number). "
-		L"When the clues are present, the system can edit the crossword clue based on your command output. "
-		L"When you output the command [[An:XXX]], the system will rewrite An's clue text to \"XXX\" (n is any natural number, XXX is any text). "
-		L"When you output the command [[Dm:YYY]], the system will rewrite Dm's clue text to \"YYY\" (m is any natural number, YYY is any text). "
-
-		L"The crossword board is a sequence of full-width characters arranged in a rectangular grid. "
-		L"A horizontal sequence of characters is called a \"row\". "
-		L"A vertical sequence of characters is called a \"column\". "
-		L"A black cell (block) is represented by the full-width character \"■\". "
-		L"A white cell (blank cell) is represented by a full-width space. "
-		L"\"Rp\" is an abbreviation for the p-th row (p is any natural number). "
-		L"\"Cq\" is an abbreviation for the q-th column (q is any natural number). "
-
-		L"When there is no clue, the system can edit the crossword board according to your command output. "
-		L"The system will rewrite Rp to \"XXX\" when your command output is \"[[Rp:XXX]]\" (p is any natural number, XXX is the new row string). "
-		L"The system will rewrite Cq to \"YYY\" when your command output is \"[[Cq:YYY]]\" (q is any natural number, YYY is the new column string). "
-		L"You cannot change the size of the board. "
-		L"The system replaces the double-frame word with \"XXX\" based on your command output \"[[W1:XXX]]\" (where XXX is any text). "
-		L"You cannot use letters that are not already on the board, for the double-frame word. "
-
-		L"If asked about how to use the app, please answer \"Please read the included README from Help menu.\" "
-		L"If asked about the black-cell rules, please answer \"Please read the included Policy-ENG.txt from Help menu.\" "
-
-		L"First, please provide a greeting of around 60 characters and briefly explain what you can do. "
-	L"*) ";
-	return str;
-}
-
 // Create the first question.
 std::wstring XgMakeInitialQuestion(void)
 {
-	return XgIsUserJapanese() ? XgMakeInitialQuestion_ja() : XgMakeInitialQuestion_en();
+	return Helper_GetPromptString(PROMPT_TYPE_INITIAL, std::wstring());
 }
 
 std::wstring XgGetAIStatus(void);
@@ -366,8 +455,8 @@ void CALLBACK XgParseAndApplyAICommand(PCWSTR pszLine)
 	}
 }
 
-// カギを再生成する（日本語）。
-BOOL XgGenerateClue_ja(INT nNumber, BOOL bDown)
+// カギを再生成する。
+BOOL XgGenerateClue(INT nNumber, BOOL bDown)
 {
 	// 単語が取得できなければ何もしない。
 	std::wstring word = XgGetHintWord(nNumber, bDown).c_str();
@@ -382,50 +471,10 @@ BOOL XgGenerateClue_ja(INT nNumber, BOOL bDown)
 	std::wstring name = (bDown ? L"D" : L"A");
 	name += std::to_wstring(nNumber);
 
-	auto line = name;
-	line += L"のカギ文章を生成して、システムにコマンドを出力してください。";
-	line += L"カギ文章内部で「";
-	line += word;
-	line += L"」という単語を使うことはできません。";
-
-	Helper_AskQuestion(xg_hwndAIHelper, line.c_str());
+	auto str = Helper_GetPromptString(PROMPT_TYPE_GENERATE_CLUE, name);
+	Helper_AskQuestion(xg_hwndAIHelper, str.c_str());
 
 	return TRUE;
-}
-
-// Regenerate a clue (English).
-BOOL XgGenerateClue_en(INT nNumber, BOOL bDown)
-{
-	// Do nothing if the word can't be obtained.
-	std::wstring word = XgGetHintWord(nNumber, bDown).c_str();
-	if (word.empty())
-		return FALSE;
-
-	// Open the AI helper (if already open, just bring it to the front).
-	Helper_Open(xg_hMainWnd);
-	Helper_WaitForReady();
-
-	// Build the target clue name (An / Dm).
-	std::wstring name = (bDown ? L"D" : L"A");
-	name += std::to_wstring(nNumber);
-
-	auto line = name;
-	line += L"'s clue text should be generated, and the command should be output to the system. ";
-	line += L"The word \"";
-	line += word;
-	line += L"\" cannot be used inside the clue text. ";
-
-	Helper_AskQuestion(xg_hwndAIHelper, line.c_str());
-
-	return TRUE;
-}
-
-// カギを再生成する。
-BOOL XgGenerateClue(INT nNumber, BOOL bDown)
-{
-	if (XgIsUserJapanese())
-		return XgGenerateClue_ja(nNumber, bDown);
-	return XgGenerateClue_en(nNumber, bDown);
 }
 
 // すべてのカギを生成する。
@@ -437,14 +486,8 @@ void XgRegenerateCluesAll(HWND hwnd)
 	Helper_Open(xg_hMainWnd);
 	Helper_WaitForReady();
 
-	PCWSTR line;
-	if (XgIsUserJapanese()) {
-		line = L"すべてのカギを再生成してください。";
-	} else {
-		line = L"Please re-generate all the clues. ";
-	}
-
-	Helper_AskQuestion(xg_hwndAIHelper, line);
+	auto str = Helper_GetPromptString(PROMPT_TYPE_GENERATE_CLUES_ALL, std::wstring());
+	Helper_AskQuestion(xg_hwndAIHelper, str.c_str());
 }
 
 // このカギを解説する。
@@ -463,17 +506,8 @@ BOOL XgExplainThisClue(INT nNumber, BOOL bDown)
 	std::wstring name = (bDown ? L"D" : L"A");
 	name += std::to_wstring(nNumber);
 
-	std::wstring line;
-	if (XgIsUserJapanese()) {
-		line += L"カギ ";
-		line += name;
-		line += L" をわかりやすく解説してください。";
-	} else {
-		line += L"Please explain Clue ";
-		line += name;
-		line += L" in a way that is easy to understand. ";
-	}
-	Helper_AskQuestion(xg_hwndAIHelper, line.c_str());
+	auto str = Helper_GetPromptString(PROMPT_TYPE_EXPLAIN_CLUE, name);
+	Helper_AskQuestion(xg_hwndAIHelper, str.c_str());
 
 	return TRUE;
 }
@@ -485,14 +519,8 @@ void XgCheckQualityOfAllClues(void)
 	Helper_Open(xg_hMainWnd);
 	Helper_WaitForReady();
 
-	PCWSTR line;
-	if (XgIsUserJapanese()) {
-		line = L"すべてのカギの品質をチェックしてください。";
-	} else {
-		line = L"Please check the quality of all clues. ";
-	}
-
-	Helper_AskQuestion(xg_hwndAIHelper, line);
+	auto str = Helper_GetPromptString(PROMPT_TYPE_CHECK_QUALITY_OF_ALL_CLUES, std::wstring());
+	Helper_AskQuestion(xg_hwndAIHelper, str.c_str());
 }
 
 // 季節を分析する。
@@ -502,18 +530,8 @@ void XgJudgeSeason(void)
 	Helper_Open(xg_hMainWnd);
 	Helper_WaitForReady();
 
-	PCWSTR line;
-	if (XgIsUserJapanese()) {
-		line = L"このクロスワードの季節を「冬～春」「春」「春～夏」「夏」「夏～秋」"
-		       L"「秋」「秋～冬」「冬」「無季」「季節がばらばら」のいずれかに分類してください。"
-		       L"また、季節感を1～5で評価してください。";
-	} else {
-		line = L"Please classify the season of this crossword into one of the following categories: 'Winter–Spring,' 'Spring,' "
-		       L"'Spring–Summer,' 'Summer,' 'Summer–Autumn,' 'Autumn,' 'Autumn–Winter,' 'Winter,' 'Seasonless,' or 'Mixed seasons.' "
-		       L"Please also rate the sense of the season on a scale of 1 to 5. ";
-	}
-
-	Helper_AskQuestion(xg_hwndAIHelper, line);
+	auto str = Helper_GetPromptString(PROMPT_TYPE_JUDGE_SEASON, std::wstring());
+	Helper_AskQuestion(xg_hwndAIHelper, str.c_str());
 }
 
 // テーマを分析する。
@@ -523,14 +541,8 @@ void XgJudgeTheme(void)
 	Helper_Open(xg_hMainWnd);
 	Helper_WaitForReady();
 
-	PCWSTR line;
-	if (XgIsUserJapanese()) {
-		line = L"このクロスワードのテーマを分析してください。";
-	} else {
-		line = L"Please analyze the theme of this crossword puzzle. ";
-	}
-
-	Helper_AskQuestion(xg_hwndAIHelper, line);
+	auto str = Helper_GetPromptString(PROMPT_TYPE_JUDGE_THEME, std::wstring());
+	Helper_AskQuestion(xg_hwndAIHelper, str.c_str());
 }
 
 // AIに現在の状態を報告する（日本語）。
@@ -1407,12 +1419,6 @@ void Helper_AskQuestion(HWND hwnd, PCWSTR text)
 		line += L" *) ";
 	}
 	line += str;
-	if (xg_additional_instruction.size())
-	{
-		line += L"(* ";
-		line += Helper_SanitizeString(xg_additional_instruction);
-		line += L" *)";
-	}
 
 #ifdef USE_PYTHON
 	line += L"\n"; // 重要！ Helper_ReaderThreadProcがこれを見る。この行に本物の改行はこの1文字だけ。

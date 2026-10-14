@@ -5,7 +5,6 @@
 
 extern std::wstring xg_ai_provider;
 extern std::wstring xg_ai_model;
-extern std::wstring xg_additional_instruction;
 
 #include "AIHelper.h"
 
@@ -40,6 +39,7 @@ INT_PTR CALLBACK
 XgAIHelperDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
     static HBITMAP s_hbm = nullptr;
+    static std::vector<std::wstring> s_prompt_mapping;
     switch (uMsg)
     {
     case WM_INITDIALOG:
@@ -56,20 +56,31 @@ XgAIHelperDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
             SetDlgItemTextW(hwnd, cmb1, xg_ai_provider.c_str());
             XgFillModelCombo(hwnd, xg_ai_provider.c_str(), xg_ai_model.c_str());
 
-            SetDlgItemTextW(hwnd, edt2, xg_additional_instruction.c_str());
-
+            // ビットマップをstc1にセットする。
             HWND hStc1 = GetDlgItem(hwnd, stc1);
-
             s_hbm = LoadBitmapW(GetModuleHandleW(nullptr), MAKEINTRESOURCEW(5));
             SendMessageW(hStc1, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)s_hbm);
 
+            // stc1をビットマップのサイズに合わせる。
             BITMAP bm;
             GetObjectW(s_hbm, sizeof(bm), &bm);
-
             RECT rc;
             GetWindowRect(hStc1, &rc);
             MapWindowRect(nullptr, hwnd, &rc);
             MoveWindow(hStc1, rc.left, rc.top, bm.bmWidth, bm.bmHeight, TRUE);
+
+            // プロンプトの種類群を追加。
+            HWND hCmb3 = GetDlgItem(hwnd, cmb3);
+            for (size_t type = PROMPT_TYPE_INITIAL; type < PROMPT_TYPE_MAX; ++type)
+                ComboBox_AddString(hCmb3, Helper_GetPromptName((PROMPT_TYPE)type).c_str());
+            // プロンプトの種類をセット。
+            ComboBox_SetCurSel(hCmb3, 0);
+            // プロンプトのテキストの最大長をセット。
+            SendDlgItemMessageW(hwnd, edt2, EM_LIMITTEXT, 2048 - 1, 0);
+            // プロンプトのテキストをセット。
+            s_prompt_mapping = xg_prompt_mapping;
+            assert(s_prompt_mapping.size() == (size_t)PROMPT_TYPE_MAX);
+            SetDlgItemTextW(hwnd, edt2, s_prompt_mapping[0].c_str());
         }
         return TRUE;
     case WM_DESTROY:
@@ -78,12 +89,14 @@ XgAIHelperDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
             DeleteObject(s_hbm);
             s_hbm = nullptr;
         }
+        s_prompt_mapping.clear();
         break;
     case WM_COMMAND:
         switch (LOWORD(wParam))
         {
         case psh1:
             {
+                // ファイル「AIHelper.txt」を開く。
                 WCHAR path[MAX_PATH];
                 GetModuleFileNameW(nullptr, path, _countof(path));
                 PathRemoveFileSpecW(path);
@@ -91,11 +104,33 @@ XgAIHelperDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
                 ShellExecuteW(hwnd, nullptr, path, nullptr, nullptr, SW_SHOWNORMAL);
             }
             break;
+        case psh2:
+            // プロンプトをリセット。
+            Helper_ResetPrompts(s_prompt_mapping);
+            // プロンプトの種類をセット。
+            SendDlgItemMessageW(hwnd, cmb3, CB_SETCURSEL, 0, 0);
+            // プロンプトのテキストをセット。
+            SetDlgItemTextW(hwnd, edt2, s_prompt_mapping[0].c_str());
+            PropSheet_Changed(GetParent(hwnd), hwnd);
+            break;
         case edt1:
-        case edt2:
             if (HIWORD(wParam) == EN_CHANGE)
             {
                 PropSheet_Changed(GetParent(hwnd), hwnd);
+            }
+            break;
+        case edt2:
+            if (HIWORD(wParam) == EN_CHANGE)
+            {
+                INT iItem = SendDlgItemMessageW(hwnd, cmb3, CB_GETCURSEL, 0, 0);
+
+                WCHAR text[2048];
+                GetDlgItemTextW(hwnd, edt2, text, _countof(text));
+                assert(iItem < (INT)s_prompt_mapping.size());
+                s_prompt_mapping[iItem] = text;
+
+                PropSheet_Changed(GetParent(hwnd), hwnd);
+                return 0;
             }
             break;
         case cmb1:
@@ -144,6 +179,20 @@ XgAIHelperDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
                 PropSheet_Changed(GetParent(hwnd), hwnd);
                 return 0;
             }
+            break;
+        case cmb3: // プロンプトの種類
+            switch (HIWORD(wParam))
+            {
+            case CBN_SELCHANGE:
+            case CBN_SELENDOK:
+                {
+                    INT iItem = SendDlgItemMessageW(hwnd, cmb3, CB_GETCURSEL, 0, 0);
+                    assert(iItem < (INT)s_prompt_mapping.size());
+                    SetDlgItemTextW(hwnd, edt2, s_prompt_mapping[iItem].c_str());
+                    return 0;
+                }
+            }
+            break;
         }
         break;
     case WM_NOTIFY:
@@ -156,8 +205,7 @@ XgAIHelperDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
                 xg_ai_provider = text;
                 GetDlgItemTextW(hwnd, cmb2, text, _countof(text));
                 xg_ai_model = text;
-                GetDlgItemTextW(hwnd, edt2, text, _countof(text));
-                xg_additional_instruction = text;
+                xg_prompt_mapping = s_prompt_mapping;
                 return SetDlgMsgResult(hwnd, WM_NOTIFY, PSNRET_NOERROR);
             }
         }
