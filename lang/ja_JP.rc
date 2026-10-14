@@ -1616,8 +1616,8 @@ FONT 9, "MS UI Gothic"
     RTEXT "プロンプトの種類(&T):", -1, 8, 110, 89, 15
     COMBOBOX cmb3, 105, 110, 160, 300, CBS_HASSTRINGS | CBS_AUTOHSCROLL | CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
     EDITTEXT edt2, 7, 128, 258, 55, ES_AUTOVSCROLL | ES_MULTILINE | WS_VSCROLL
-    PUSHBUTTON "すべてリセット(&E)", psh2, 130, 195, 70, 15
-    LTEXT "$(CLUE)は現在のカギ、$(TODAY)は今日の日付。(* ... *)は非表示。", -1, 5, 190, 120, 21
+    PUSHBUTTON "すべてリセット(&E)", psh2, 195, 189, 70, 15
+    LTEXT "$(CLUE) は現在のカギ、$(TODAY) は今日の日付。\r\n(* ... *) は非表示。", -1, 5, 190, 170, 20
 }
 
 IDD_AIHELPERCONSOLE DIALOG 0, 0, 283, 133
