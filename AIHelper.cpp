@@ -169,7 +169,7 @@ void Helper_ResetPrompts(std::vector<std::wstring>& prompt_mapping)
 			L"すべてのカギを再生成してください。"
 			L"カギ文章内部でカギ単語を使うことはできません。",
 			/* PROMPT_TYPE_EXPLAIN_CLUE */
-			L"カギ $(CLUE) をわかりやすく解説してください。",
+			L"カギ $(CLUE) について分かりやすい解説をお願いします。ただし、カギ文章は変更しないでください。",
 			/* PROMPT_TYPE_CHECK_QUALITY_OF_ALL_CLUES */
 			L"すべてのカギの品質をチェックしてください。"
 			L"カギ文章内部でカギ単語を使うことはできません。",
@@ -224,7 +224,7 @@ void Helper_ResetPrompts(std::vector<std::wstring>& prompt_mapping)
 			L"Please re-generate all the clues. "
 			L"The clue word cannot be used inside the clue text. ",
 			/* PROMPT_TYPE_EXPLAIN_CLUE */
-			L"Please explain Clue $(CLUE) in a way that is easy to understand. ",
+			L"Please provide an easy-to-understand explanation of the clue $(CLUE). However, do not alter the clue text itself. ",
 			/* PROMPT_TYPE_CHECK_QUALITY_OF_ALL_CLUES */
 			L"Please check the quality of all clues. "
 			L"The clue word cannot be used inside the clue text. ",
