@@ -403,6 +403,7 @@
 - 2026-XX-YY ver.5.4.2
     - Custom prompts are now also available from the "Clues" window.
     - Improved "Explain this clue".
+    - Resolved language-related issues with prompts.
 
 # 開発履歴 (Japanese)
 
@@ -1122,3 +1123,4 @@
 - 2026-XX-YY ver.5.4.2
     - 「ヒント」ウィンドウからもカスタムプロンプトが利用可能に。
     - 「このカギを解説」を改良。
+    - プロンプトの言語問題を解決。

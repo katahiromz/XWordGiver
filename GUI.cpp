@@ -903,6 +903,8 @@ void XgUpdateToolBarUI(HWND hwnd)
 // 設定を初期化する。
 void XgResetSettings(void)
 {
+    xg_UILangID = GetThreadUILanguage();
+
     s_nMainWndX = CW_USEDEFAULT;
     s_nMainWndY = CW_USEDEFAULT;
     s_nMainWndCX = 475;
@@ -981,8 +983,6 @@ void XgResetSettings(void)
 
     xg_nNumberToGenerate = 16;
 
-    xg_UILangID = 0;
-
     xg_strDoubleFrameLetters = XgLoadStringDx1(IDS_DBLFRAME_LETTERS_1);
 
     xg_recently_used_files.clear();
@@ -1020,6 +1020,12 @@ bool __fastcall XgLoadSettings(void)
     // アプリ名キーを開く。
     MRegKey app_key(HKEY_CURRENT_USER, XG_REGKEY_APP, FALSE);
     if (app_key) {
+        // 言語設定は最初に取得して設定する。
+        if (!app_key.QueryDword(L"UILangID", dwValue)) {
+            xg_UILangID = static_cast<LANGID>(dwValue);
+            SetThreadUILanguage(xg_UILangID);
+        }
+
         if (!app_key.QueryDword(L"WindowX", dwValue)) {
             s_nMainWndX = dwValue;
         }
@@ -1105,9 +1111,6 @@ bool __fastcall XgLoadSettings(void)
         }
         if (!app_key.QueryDword(L"Cols", dwValue)) {
             xg_nCols = dwValue;
-        }
-        if (!app_key.QueryDword(L"UILangID", dwValue)) {
-            xg_UILangID = static_cast<LANGID>(dwValue);
         }
         if (!app_key.QueryDword(L"ShowAnswerOnOpen", dwValue)) {
             xg_bShowAnswerOnOpen = static_cast<BOOL>(dwValue);
@@ -1195,6 +1198,7 @@ bool __fastcall XgLoadSettings(void)
             xg_ai_model = sz;
         }
 
+        // プロンプト
         if (!app_key.QueryDword(L"PromptTextCount", dwValue) && dwValue == (DWORD)PROMPT_TYPE_MAX) {
             xg_prompt_mapping.clear();
             for (i = 0; i < static_cast<int>(dwValue); i++) {
@@ -1205,8 +1209,16 @@ bool __fastcall XgLoadSettings(void)
                     break;
                 }
             }
+            // 個数が一致していなければリセットする。
             if (xg_prompt_mapping.size() != (size_t)PROMPT_TYPE_MAX)
                 Helper_ResetPrompts(xg_prompt_mapping);
+        }
+        // プロンプトの言語が違うか、なければリセットする。
+        if (!app_key.QueryDword(L"PromptLangID", dwValue)) {
+            if ((LANGID)dwValue != GetThreadUILanguage())
+                Helper_ResetPrompts(xg_prompt_mapping);
+        } else {
+            Helper_ResetPrompts(xg_prompt_mapping);
         }
 
         if (!app_key.QueryDword(L"ShowToolBar", dwValue)) {
@@ -1439,11 +1451,11 @@ bool __fastcall XgSaveSettings(void)
     // アプリ名キーを開く。キーがなければ作成する。
     MRegKey app_key(HKEY_CURRENT_USER, XG_REGKEY_APP, TRUE);
     if (app_key) {
+        app_key.SetDword(L"UILangID", xg_UILangID);
         app_key.SetDword(L"OldNotice", s_bOldNotice);
         app_key.SetDword(L"AutoRetry", xg_bAutoRetry);
         app_key.SetDword(L"Rows", xg_nRows);
         app_key.SetDword(L"Cols", xg_nCols);
-        app_key.SetDword(L"UILangID", xg_UILangID);
         app_key.SetDword(L"ShowAnswerOnOpen", xg_bShowAnswerOnOpen);
         app_key.SetDword(L"ShowAnswerOnGenerate", xg_bShowAnswerOnGenerate);
         app_key.SetDword(L"AutoSave", xg_bAutoSave);
@@ -1475,6 +1487,7 @@ bool __fastcall XgSaveSettings(void)
 
         nCount = static_cast<int>(xg_prompt_mapping.size());
         app_key.SetDword(L"PromptTextCount", nCount);
+        app_key.SetDword(L"PromptLangID", GetThreadUILanguage());
         for (i = 0; i < nCount; i++)
         {
             StringCchPrintf(szFormat, _countof(szFormat), L"PromptText %d", i);
@@ -8739,12 +8752,6 @@ INT XWordGiverMain(HINSTANCE hInstance, INT nCmdShow)
 
     // 設定を読み込む。
     XgLoadSettings();
-
-    // UI言語の設定。
-    if (xg_UILangID)
-        SetThreadUILanguage(xg_UILangID);
-    else
-        xg_UILangID = GetThreadUILanguage();
 
     // 辞書ファイルの名前を読み込む。
     XgLoadDictsAll();
