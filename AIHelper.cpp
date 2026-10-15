@@ -185,6 +185,7 @@ void Helper_ResetPrompts(std::vector<std::wstring>& prompt_mapping)
 			L"自由に妖精に質問できます。",
 		};
 	} else {
+		/* NOTE: Please insert a space after every dot. */
 		prompt_mapping = {
 			/* PROMPT_TYPE_INITIAL */
 			L"(* "
