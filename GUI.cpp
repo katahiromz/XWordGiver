@@ -207,6 +207,12 @@ void XgSetModified(BOOL bModified, LPCSTR file, int line)
 // UI言語。
 LANGID xg_UILangID = 0;
 
+// ユーザは日本人か？
+BOOL XgIsUserJapanese(VOID) noexcept
+{
+    return (PRIMARYLANGID(GetThreadUILanguage()) == LANG_JAPANESE);
+}
+
 // 問題を開いたときに答えを表示するかどうか。
 BOOL xg_bShowAnswerOnOpen = FALSE;
 

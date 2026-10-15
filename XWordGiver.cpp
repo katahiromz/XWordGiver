@@ -8138,12 +8138,6 @@ bool __fastcall XgIsAnyThreadTerminated(void) noexcept
     return false;
 }
 
-// ユーザは日本人か？
-BOOL XgIsUserJapanese(VOID) noexcept
-{
-    return (PRIMARYLANGID(GetThreadUILanguage()) == LANG_JAPANESE);
-}
-
 // パターンの統計情報を表示。
 void XgShowPatInfo(HWND hwndInfo)
 {
