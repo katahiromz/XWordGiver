@@ -1198,7 +1198,7 @@ bool __fastcall XgLoadSettings(void)
             xg_ai_model = sz;
         }
 
-        // プロンプト
+        // プロンプトの読み込み。
         if (!app_key.QueryDword(L"PromptTextCount", dwValue) && dwValue == (DWORD)PROMPT_TYPE_MAX) {
             xg_prompt_mapping.clear();
             for (i = 0; i < static_cast<int>(dwValue); i++) {
@@ -1209,10 +1209,10 @@ bool __fastcall XgLoadSettings(void)
                     break;
                 }
             }
-            // 個数が一致していなければリセットする。
-            if (xg_prompt_mapping.size() != (size_t)PROMPT_TYPE_MAX)
-                Helper_ResetPrompts(xg_prompt_mapping);
         }
+        // プロンプトの個数が一致していなければリセットする。
+        if (xg_prompt_mapping.size() != (size_t)PROMPT_TYPE_MAX)
+            Helper_ResetPrompts(xg_prompt_mapping);
         // プロンプトの言語が違うか、なければリセットする。
         if (!app_key.QueryDword(L"PromptLangID", dwValue)) {
             if ((LANGID)dwValue != GetThreadUILanguage())
