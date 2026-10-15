@@ -213,7 +213,7 @@ void Helper_ResetPrompts(std::vector<std::wstring>& prompt_mapping)
 				L"You cannot use letters that are not already on the board, for the double-frame word. "
 
 				L"If a user is unsure how to use the app, please suggest that they read the included \"ReadMe-ENG.txt\" file, which can be accessed via the Help menu. "
-				L"If a user does not understand the rules regarding black cells, please advise them to read the included \"Policy-ENG.txt\" file, which can be accessed via the Help menu. "
+				L"If a user does not understand the policy/rules regarding black cells, please advise them to read the included \"Policy-ENG.txt\" file, which can be accessed via the Help menu. "
 
 				L"First, please provide a greeting of around 60 characters and briefly explain what you can do. "
 			L"*) ",
