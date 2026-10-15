@@ -402,7 +402,7 @@
     - Changed the fairy's age to 17.
 - 2026-XX-YY ver.5.4.2
     - Custom prompts are now also available from the "Clues" window.
-    - Improved PROMPT_TYPE_EXPLAIN_CLUE.
+    - Improved "Explain this clue".
 
 # 開発履歴 (Japanese)
 
@@ -1121,4 +1121,4 @@
     - 妖精の年齢を17歳に変更。
 - 2026-XX-YY ver.5.4.2
     - 「ヒント」ウィンドウからもカスタムプロンプトが利用可能に。
-    - PROMPT_TYPE_EXPLAIN_CLUEを改良。
+    - 「このカギを解説」を改良。
