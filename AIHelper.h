@@ -6,6 +6,8 @@
 
 #include <vector>
 
+#define MAX_PROMPT_TEXT 2048 /* プロンプトの最大長+1 */
+
 extern HWND xg_hwndAIHelper;
 extern HINSTANCE xg_hAIHelperInst;
 extern std::wstring xg_ai_provider;

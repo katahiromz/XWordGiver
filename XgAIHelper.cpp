@@ -76,7 +76,7 @@ XgAIHelperDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
             // プロンプトの種類をセット。
             ComboBox_SetCurSel(hCmb3, 0);
             // プロンプトのテキストの最大長をセット。
-            SendDlgItemMessageW(hwnd, edt2, EM_LIMITTEXT, 2048 - 1, 0);
+            SendDlgItemMessageW(hwnd, edt2, EM_LIMITTEXT, MAX_PROMPT_TEXT - 1, 0);
             // プロンプトのテキストをセット。
             s_prompt_mapping = xg_prompt_mapping;
             assert(s_prompt_mapping.size() == (size_t)PROMPT_TYPE_MAX);
@@ -124,7 +124,7 @@ XgAIHelperDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
             {
                 INT iItem = SendDlgItemMessageW(hwnd, cmb3, CB_GETCURSEL, 0, 0);
 
-                WCHAR text[2048];
+                WCHAR text[MAX_PROMPT_TEXT];
                 GetDlgItemTextW(hwnd, edt2, text, _countof(text));
                 assert(iItem < (INT)s_prompt_mapping.size());
                 s_prompt_mapping[iItem] = text;

@@ -1016,7 +1016,7 @@ void XgResetSettings(void)
 bool __fastcall XgLoadSettings(void)
 {
     int i, nDirCount = 0;
-    static WCHAR sz[2048];
+    WCHAR sz[MAX_PROMPT_TEXT];
     WCHAR szFormat[32];
     DWORD dwValue;
 
