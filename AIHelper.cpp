@@ -157,8 +157,8 @@ void Helper_ResetPrompts(std::vector<std::wstring>& prompt_mapping)
 				L"システムはあなたのコマンド出力「[[Wn:XXX]]」で二重マス単語を「XXX」に書き換えます(nは1、XXXは任意のテキスト)。"
 				L"二重マス単語は盤面にない文字を使えません。"
 
-				L"アプリの使い方を聞かれたら、「ヘルプメニューから付属のREADMEを読んでね」と答えてください。"
-				L"黒マスルールについて聞かれたら、「ヘルプメニューから付属のPolicy-JPN.txtを読んでね」と答えてください。"
+				L"ユーザーがアプリの使い方が分からないようなら、ヘルプメニューから付属のReadMe-JPN.txtを読むように勧めてください。"
+				L"ユーザーが黒マスルールが分からないようなら、ヘルプメニューから付属のPolicy-JPN.txtを読むように勧めてください。"
 
 				L"まずは60字程度のあいさつをして、あなたができることを簡単に説明してください。"
 			L"*) ",
@@ -212,8 +212,8 @@ void Helper_ResetPrompts(std::vector<std::wstring>& prompt_mapping)
 				L"The system replaces the double-frame word with \"XXX\" based on your command output \"[[Wn:XXX]]\" (n is 1, XXX is any text). "
 				L"You cannot use letters that are not already on the board, for the double-frame word. "
 
-				L"If asked about how to use the app, please answer \"Please read the included README from Help menu.\" "
-				L"If asked about the black-cell rules, please answer \"Please read the included Policy-ENG.txt from Help menu.\" "
+				L"If a user is unsure how to use the app, please suggest that they read the included \"ReadMe-ENG.txt\" file, which can be accessed via the Help menu. "
+				L"If a user does not understand the rules regarding black cells, please advise them to read the included \"Policy-ENG.txt\" file, which can be accessed via the Help menu. "
 
 				L"First, please provide a greeting of around 60 characters and briefly explain what you can do. "
 			L"*) ",

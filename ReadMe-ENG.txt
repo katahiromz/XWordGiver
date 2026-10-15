@@ -43,6 +43,10 @@ Use "Dictionary" menu.
 2. Repeat typing the arrow keys, spacebar, and letters.
 3. Once all the cells are filled, select "Find a solution (without adding blocks)" from the "Solution" menu.
 
+### If the board is locked and cannot be edited
+
+Selecting "Delete clues and unlock board" from the "Solution" menu will unlock the board.
+
 ## NOTICE
 
 - It is calculated using heuristic methods, so it may take some time.
