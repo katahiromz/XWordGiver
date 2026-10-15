@@ -128,7 +128,6 @@ void Helper_SetPromptString(PROMPT_TYPE iPrompt, const std::wstring& str)
 // プロンプト設定を初期化する。
 void Helper_ResetPrompts(std::vector<std::wstring>& prompt_mapping)
 {
-	/* 初期プロンプト */
 	if (XgIsUserJapanese()) {
 		prompt_mapping = {
 			/* PROMPT_TYPE_INITIAL */
