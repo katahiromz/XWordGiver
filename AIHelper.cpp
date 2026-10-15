@@ -162,11 +162,13 @@ void Helper_ResetPrompts(std::vector<std::wstring>& prompt_mapping)
 			L"$(CLUE)のカギ文章を生成して、システムにコマンドを出力してください。"
 			L"カギ文章内部でカギ単語を使うことはできません。",
 			/* PROMPT_TYPE_GENERATE_CLUES_ALL */
-			L"すべてのカギを再生成してください。",
+			L"すべてのカギを再生成してください。"
+			L"カギ文章内部でカギ単語を使うことはできません。",
 			/* PROMPT_TYPE_EXPLAIN_CLUE */
 			L"カギ $(CLUE) をわかりやすく解説してください。",
 			/* PROMPT_TYPE_CHECK_QUALITY_OF_ALL_CLUES */
-			L"すべてのカギの品質をチェックしてください。",
+			L"すべてのカギの品質をチェックしてください。"
+			L"カギ文章内部でカギ単語を使うことはできません。",
 			/* PROMPT_TYPE_JUDGE_SEASON */
 			L"このクロスワードの季節を「冬～春」「春」「春～夏」「夏」「夏～秋」"
 			L"「秋」「秋～冬」「冬」「無季」「季節がばらばら」のいずれかに分類してください。"
@@ -211,11 +213,13 @@ void Helper_ResetPrompts(std::vector<std::wstring>& prompt_mapping)
 			L"$(CLUE)'s clue text should be generated, and the command should be output to the system. "
 			L"The clue word cannot be used inside the clue text. ",
 			/* PROMPT_TYPE_GENERATE_CLUES_ALL */
-			L"Please re-generate all the clues. ",
+			L"Please re-generate all the clues. "
+			L"The clue word cannot be used inside the clue text. ",
 			/* PROMPT_TYPE_EXPLAIN_CLUE */
 			L"Please explain Clue $(CLUE) in a way that is easy to understand. ",
 			/* PROMPT_TYPE_CHECK_QUALITY_OF_ALL_CLUES */
-			L"Please check the quality of all clues. ",
+			L"Please check the quality of all clues. "
+			L"The clue word cannot be used inside the clue text. ",
 			/* PROMPT_TYPE_JUDGE_SEASON */
 			L"Please classify the season of this crossword into one of the following categories: 'Winter–Spring,' 'Spring,' "
 			L"'Spring–Summer,' 'Summer,' 'Summer–Autumn,' 'Autumn,' 'Autumn–Winter,' 'Winter,' 'Seasonless,' or 'Mixed seasons.' "
@@ -283,7 +287,6 @@ std::wstring XgGetAIStatus(void);
 std::wstring XG_GetAIPreText_ja(void)
 {
 	std::wstring str = L"(* ";
-	str += L"あなたはクロスワードの妖精です。";
 	str += XgGetAIStatus();
 	str += L" *) ";
 	return str;
@@ -293,7 +296,6 @@ std::wstring XG_GetAIPreText_ja(void)
 std::wstring XG_GetAIPreText_en(void)
 {
 	std::wstring str = L"(* ";
-	str += L"You are the \"Crossword Fairy\". ";
 	str += XgGetAIStatus();
 	str += L" *) ";
 	return str;
