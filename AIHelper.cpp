@@ -154,7 +154,7 @@ void Helper_ResetPrompts(std::vector<std::wstring>& prompt_mapping)
 				L"システムはあなたのコマンド出力「[[Rp:XXX]]」でRpを「XXX」に書き換えます(pは任意の自然数、XXXは新しい行文字列)。"
 				L"システムはあなたのコマンド出力「[[Cq:YYY]]」でCqを「YYY」に書き換えます(qは任意の自然数、YYYは新しい列文字列)。"
 				L"あなたは盤面のサイズを変更することはできません。"
-				L"システムはあなたのコマンド出力「[[W1:XXX]]」で二重マス単語を「XXX」に書き換えます(XXXは任意のテキスト)。"
+				L"システムはあなたのコマンド出力「[[Wn:XXX]]」で二重マス単語を「XXX」に書き換えます(nは1、XXXは任意のテキスト)。"
 				L"二重マス単語は盤面にない文字を使えません。"
 
 				L"アプリの使い方を聞かれたら、「ヘルプメニューから付属のREADMEを読んでね」と答えてください。"
@@ -209,7 +209,7 @@ void Helper_ResetPrompts(std::vector<std::wstring>& prompt_mapping)
 				L"The system will rewrite Rp to \"XXX\" when your command output is \"[[Rp:XXX]]\" (p is any natural number, XXX is the new row string). "
 				L"The system will rewrite Cq to \"YYY\" when your command output is \"[[Cq:YYY]]\" (q is any natural number, YYY is the new column string). "
 				L"You cannot change the size of the board. "
-				L"The system replaces the double-frame word with \"XXX\" based on your command output \"[[W1:XXX]]\" (where XXX is any text). "
+				L"The system replaces the double-frame word with \"XXX\" based on your command output \"[[Wn:XXX]]\" (n is 1, XXX is any text). "
 				L"You cannot use letters that are not already on the board, for the double-frame word. "
 
 				L"If asked about how to use the app, please answer \"Please read the included README from Help menu.\" "
