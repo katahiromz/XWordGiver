@@ -1612,6 +1612,7 @@ FONT 9, "Tahoma"
 {
     PUSHBUTTON "Prepare for &AI...", psh1, 7, 7, 102, 39
     CONTROL "stc1", stc1, "STATIC", SS_BITMAP, 119, 2, 52, 34
+    COMBOBOX cmb4, 170, 15, 90, 300, CBS_HASSTRINGS | CBS_AUTOHSCROLL | CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
     RTEXT "AI &Provider:", -1, 7, 56, 90, 13
     COMBOBOX cmb1, 104, 55, 107, 300, CBS_HASSTRINGS | CBS_AUTOHSCROLL | CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP
     RTEXT "AI &Model:", -1, 7, 75, 90, 13
@@ -1896,6 +1897,7 @@ STRINGTABLE
     IDS_TT_PRINTPROBLEM, "Print crossword"
     IDS_TT_PRINTANSWER, "Print crossword answer"
     IDS_TT_SOLVENOADDBLACK, "Find a solution (without &adding blocks)"
+    IDS_FAIRY_NAME00, "Fairy Croworth"
 }
 
 //////////////////////////////////////////////////////////////////////////////

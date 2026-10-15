@@ -1615,6 +1615,7 @@ FONT 9, "MS UI Gothic"
 {
     PUSHBUTTON "AI の準備(&A)...", psh1, 7, 7, 102, 39
     CONTROL "stc1", stc1, "STATIC", SS_BITMAP, 119, 2, 52, 34
+    COMBOBOX cmb4, 170, 15, 90, 300, CBS_HASSTRINGS | CBS_AUTOHSCROLL | CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
     RTEXT "AI プロバイダー(&P):", -1, 7, 56, 90, 13
     COMBOBOX cmb1, 104, 55, 107, 300, CBS_HASSTRINGS | CBS_AUTOHSCROLL | CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP
     RTEXT "AI モデル(&M):", -1, 7, 75, 90, 13
@@ -1899,6 +1900,7 @@ STRINGTABLE
     IDS_TT_PRINTPROBLEM, "問題のみを印刷"
     IDS_TT_PRINTANSWER, "問題と解答を印刷"
     IDS_TT_SOLVENOADDBLACK, "解を求める(黒マス追加なし)"
+    IDS_FAIRY_NAME00, "妖精クロワース"
 }
 
 //////////////////////////////////////////////////////////////////////////////

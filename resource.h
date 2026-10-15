@@ -272,6 +272,7 @@
 #define IDS_TT_PRINTPROBLEM                 348
 #define IDS_TT_PRINTANSWER                  349
 #define IDS_TT_SOLVENOADDBLACK              350
+#define IDS_FAIRY_NAME00                    351
 
 #define ID_NEW                              100
 #define ID_GENERATE                         101

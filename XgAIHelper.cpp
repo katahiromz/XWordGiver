@@ -69,6 +69,12 @@ XgAIHelperDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
             MapWindowRect(nullptr, hwnd, &rc);
             MoveWindow(hStc1, rc.left, rc.top, bm.bmWidth, bm.bmHeight, TRUE);
 
+            // 妖精の名前をセットする。
+            WCHAR name[MAX_PATH];
+            LoadStringW(xg_hInstance, IDS_FAIRY_NAME00, name, _countof(name));
+            SendDlgItemMessageW(hwnd, cmb4, CB_ADDSTRING, 0, (LPARAM)name);
+            SendDlgItemMessageW(hwnd, cmb4, CB_SETCURSEL, 0, 0);
+
             // プロンプトの種類群を追加。
             HWND hCmb3 = GetDlgItem(hwnd, cmb3);
             for (size_t type = PROMPT_TYPE_INITIAL; type < PROMPT_TYPE_MAX; ++type)
