@@ -401,6 +401,7 @@
     - AI prompts can now be customized.
     - Changed the fairy's age to 17.
 - 2026-XX-YY ver.5.4.2
+    - Custom prompts are now also available from the "Clues" window.
 
 # 開発履歴 (Japanese)
 
@@ -1118,3 +1119,4 @@
     - AIプロンプトのカスタマイズが可能に。
     - 妖精の年齢を17歳に変更。
 - 2026-XX-YY ver.5.4.2
+    - 「ヒント」ウィンドウからもカスタムプロンプトが利用可能に。

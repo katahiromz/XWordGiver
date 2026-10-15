@@ -549,6 +549,7 @@ LANGUAGE LANG_ENGLISH, SUBLANG_DEFAULT
         MENUITEM SEPARATOR
         MENUITEM "AI: Analyze the season of this crossword", ID_JUDGESEASON
         MENUITEM "AI: Analyze the theme of this crossword", ID_JUDGETHEME
+        MENUITEM SEPARATOR
         MENUITEM "AI: Custom Prompt 1", ID_AI_CUSTOM_PROMPT_1
         MENUITEM "AI: Custom Prompt 2", ID_AI_CUSTOM_PROMPT_2
     }
@@ -567,6 +568,9 @@ LANGUAGE LANG_ENGLISH, SUBLANG_DEFAULT
         MENUITEM SEPARATOR
         MENUITEM "AI: E&xplain this clue", ID_EXPLAINTHISCLUE
         MENUITEM "AI: Check the &quality of all clues", ID_CHECKQUALITYOFALLCLUES
+        MENUITEM SEPARATOR
+        MENUITEM "AI: Custom Prompt 1", ID_AI_CUSTOM_PROMPT_1
+        MENUITEM "AI: Custom Prompt 2", ID_AI_CUSTOM_PROMPT_2
     }
     POPUP "Popup #2"
     {

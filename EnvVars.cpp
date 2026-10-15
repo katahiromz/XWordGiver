@@ -9,7 +9,7 @@
 #include <string>
 #include <cstdlib>
 #include <cwchar>
-#pragma comment(lib, "userenv.lib")
+//#pragma comment(lib, "userenv.lib")
 
 // 環境変数名は大文字小文字を区別しない
 struct CiLess {

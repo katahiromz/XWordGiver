@@ -803,6 +803,9 @@ public:
 
         ::PostMessageW(hwnd, WM_NULL, 0, 0);
 
+        std::wstring XgGetClueName(INT nNumber, BOOL bDown);
+        void XgCustomPrompt(INT type, const std::wstring& clue_name);
+
         if (nCmd == ID_GENERATEHINT)
         {
             BOOL XgGenerateClue(INT nNumber, BOOL bDown);
@@ -817,6 +820,16 @@ public:
         {
             BOOL XgExplainThisClue(INT nNumber, BOOL bDown);
             XgExplainThisClue(m_nNumber, m_bVert);
+        }
+        else if (nCmd == ID_AI_CUSTOM_PROMPT_1)
+        {
+            auto clue_name = XgGetClueName(m_nNumber, m_bVert);
+            XgCustomPrompt(1, clue_name);
+        }
+        else if (nCmd == ID_AI_CUSTOM_PROMPT_2)
+        {
+            auto clue_name = XgGetClueName(m_nNumber, m_bVert);
+            XgCustomPrompt(2, clue_name);
         }
         else if (nCmd)
         {

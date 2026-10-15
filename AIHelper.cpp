@@ -504,6 +504,14 @@ void XgRegenerateCluesAll(HWND hwnd)
 	Helper_AskQuestion(xg_hwndAIHelper, str.c_str());
 }
 
+// カギ名を取得。
+std::wstring XgGetClueName(INT nNumber, BOOL bDown)
+{
+	std::wstring name = (bDown ? L"D" : L"A");
+	name += std::to_wstring(nNumber);
+	return name;
+}
+
 // このカギを解説する。
 BOOL XgExplainThisClue(INT nNumber, BOOL bDown)
 {
@@ -560,7 +568,7 @@ void XgJudgeTheme(void)
 }
 
 // カスタム プロンプト。
-void XgCustomPrompt(INT type)
+void XgCustomPrompt(INT type, const std::wstring& clue_name)
 {
 	// Open the AI helper (if already open, just bring it to the front).
 	Helper_Open(xg_hMainWnd);
@@ -570,10 +578,10 @@ void XgCustomPrompt(INT type)
 	switch (type)
 	{
 	case 1:
-		str = Helper_GetPromptString(PROMPT_TYPE_CUSTOM_PROMPT_1, std::wstring());
+		str = Helper_GetPromptString(PROMPT_TYPE_CUSTOM_PROMPT_1, clue_name);
 		break;
 	case 2:
-		str = Helper_GetPromptString(PROMPT_TYPE_CUSTOM_PROMPT_2, std::wstring());
+		str = Helper_GetPromptString(PROMPT_TYPE_CUSTOM_PROMPT_2, clue_name);
 		break;
 	default:
 		assert(0);

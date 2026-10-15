@@ -49,3 +49,4 @@ std::wstring Helper_GetPromptName(PROMPT_TYPE iPrompt);
 std::wstring Helper_GetPromptString(PROMPT_TYPE iPrompt, const std::wstring& clue_name);
 void Helper_SetPromptString(PROMPT_TYPE iPrompt, const std::wstring& str);
 void Helper_ResetPrompts(std::vector<std::wstring>& prompt_mapping);
+std::wstring XgGetClueName(INT nNumber, BOOL bDown);

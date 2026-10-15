@@ -6347,7 +6347,7 @@ void XgRegenerateCluesAll(HWND hwnd);
 void XgCheckQualityOfAllClues(void);
 void XgJudgeSeason(void);
 void XgJudgeTheme(void);
-void XgCustomPrompt(INT type);
+void XgCustomPrompt(INT type, const std::wstring& clue_name);
 
 // WM_COMMAND: コマンドを実行する。
 void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT /*codeNotify*/)
@@ -7653,11 +7653,11 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT /*codeNo
         break;
 
     case ID_AI_CUSTOM_PROMPT_1:
-        XgCustomPrompt(1);
+        XgCustomPrompt(1, std::wstring());
         break;
 
     case ID_AI_CUSTOM_PROMPT_2:
-        XgCustomPrompt(2);
+        XgCustomPrompt(2, std::wstring());
         break;
 
     default:
