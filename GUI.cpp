@@ -6347,6 +6347,7 @@ void XgRegenerateCluesAll(HWND hwnd);
 void XgCheckQualityOfAllClues(void);
 void XgJudgeSeason(void);
 void XgJudgeTheme(void);
+void XgCustomPrompt(INT type);
 
 // WM_COMMAND: コマンドを実行する。
 void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT /*codeNotify*/)
@@ -7649,6 +7650,14 @@ void __fastcall MainWnd_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT /*codeNo
 
     case ID_JUDGETHEME:
         XgJudgeTheme();
+        break;
+
+    case ID_AI_CUSTOM_PROMPT_1:
+        XgCustomPrompt(1);
+        break;
+
+    case ID_AI_CUSTOM_PROMPT_2:
+        XgCustomPrompt(2);
         break;
 
     default:

@@ -78,6 +78,8 @@ std::wstring Helper_GetPromptName(PROMPT_TYPE iPrompt)
 		case PROMPT_TYPE_CHECK_QUALITY_OF_ALL_CLUES: return L"すべてのカギの品質チェック";
 		case PROMPT_TYPE_JUDGE_SEASON: return L"このクロスワードの季節を分析";
 		case PROMPT_TYPE_JUDGE_THEME: return L"このクロスワードのテーマを分析";
+		case PROMPT_TYPE_CUSTOM_PROMPT_1: return L"カスタム プロンプト 1";
+		case PROMPT_TYPE_CUSTOM_PROMPT_2: return L"カスタム プロンプト 2";
 		case PROMPT_TYPE_MAX: break;
 		}
 	} else {
@@ -89,6 +91,8 @@ std::wstring Helper_GetPromptName(PROMPT_TYPE iPrompt)
 		case PROMPT_TYPE_CHECK_QUALITY_OF_ALL_CLUES: return L"Check the quality of all clues";
 		case PROMPT_TYPE_JUDGE_SEASON: return L"Analyze the season of this crossword";
 		case PROMPT_TYPE_JUDGE_THEME: return L"Analyze the theme of this crossword";
+		case PROMPT_TYPE_CUSTOM_PROMPT_1: return L"Custom Prompt 1";
+		case PROMPT_TYPE_CUSTOM_PROMPT_2: return L"Custom Prompt 2";
 		case PROMPT_TYPE_MAX: break;
 		}
 	}
@@ -175,6 +179,10 @@ void Helper_ResetPrompts(std::vector<std::wstring>& prompt_mapping)
 			L"また、季節感を1～5で評価してください。",
 			/* PROMPT_TYPE_JUDGE_THEME */
 			L"このクロスワードのテーマを分析してください。",
+			/* PROMPT_TYPE_CUSTOM_PROMPT_1 */
+			L"自由に妖精に質問できます。",
+			/* PROMPT_TYPE_CUSTOM_PROMPT_2 */
+			L"自由に妖精に質問できます。",
 		};
 	} else {
 		prompt_mapping = {
@@ -226,6 +234,10 @@ void Helper_ResetPrompts(std::vector<std::wstring>& prompt_mapping)
 			L"Please also rate the sense of the season on a scale of 1 to 5. ",
 			/* PROMPT_TYPE_JUDGE_THEME */
 			L"Please analyze the theme of this crossword puzzle. ",
+			/* PROMPT_TYPE_CUSTOM_PROMPT_1 */
+			L"You are free to ask the fairy questions. ",
+			/* PROMPT_TYPE_CUSTOM_PROMPT_2 */
+			L"You are free to ask the fairy questions. ",
 		};
 	}
 	assert(prompt_mapping.size() == (size_t)PROMPT_TYPE_MAX);
@@ -544,6 +556,29 @@ void XgJudgeTheme(void)
 	Helper_WaitForReady();
 
 	auto str = Helper_GetPromptString(PROMPT_TYPE_JUDGE_THEME, std::wstring());
+	Helper_AskQuestion(xg_hwndAIHelper, str.c_str());
+}
+
+// カスタム プロンプト。
+void XgCustomPrompt(INT type)
+{
+	// Open the AI helper (if already open, just bring it to the front).
+	Helper_Open(xg_hMainWnd);
+	Helper_WaitForReady();
+
+	std::wstring str;
+	switch (type)
+	{
+	case 1:
+		str = Helper_GetPromptString(PROMPT_TYPE_CUSTOM_PROMPT_1, std::wstring());
+		break;
+	case 2:
+		str = Helper_GetPromptString(PROMPT_TYPE_CUSTOM_PROMPT_2, std::wstring());
+		break;
+	default:
+		assert(0);
+		break;
+	}
 	Helper_AskQuestion(xg_hwndAIHelper, str.c_str());
 }
 

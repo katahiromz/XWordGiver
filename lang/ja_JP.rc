@@ -551,6 +551,8 @@ LANGUAGE LANG_JAPANESE, SUBLANG_DEFAULT
         MENUITEM SEPARATOR
         MENUITEM "AI: このクロスワードの季節を分析", ID_JUDGESEASON
         MENUITEM "AI: このクロスワードのテーマを分析", ID_JUDGETHEME
+        MENUITEM "AI: カスタム プロンプト 1", ID_AI_CUSTOM_PROMPT_1
+        MENUITEM "AI: カスタム プロンプト 2", ID_AI_CUSTOM_PROMPT_2
     }
     POPUP "ポップアップ #1"
     {
