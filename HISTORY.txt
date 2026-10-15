@@ -396,7 +396,7 @@
     - Made it possible to revert the double-frame toggling.
     - Added "parse_xd.py," a Python script for parsing XD files.
     - Configured the process to automatically synchronize its environment variables with the system.
-- 2026-XX-YY ver.5.4.1
+- 2026-10-15 ver.5.4.1
     - Removed "Additional instruction text".
     - AI prompts can now be customized.
     - Changed the fairy's age to 17.
@@ -1112,7 +1112,7 @@
     - 二重マス切り替えを元に戻せるようにした。
     - XDファイル解析用のPythonスクリプト「parse_xd.py」を追加。
     - プロセスの環境変数を自動的にシステムに同期するようにした。
-- 2026-XX-YY ver.5.4.1
+- 2026-10-15 ver.5.4.1
     - 追加的な指示テキスト廃止。
     - AIプロンプトのカスタマイズが可能に。
     - 妖精の年齢を17歳に変更。
