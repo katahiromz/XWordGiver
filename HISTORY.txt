@@ -400,7 +400,7 @@
     - Removed "Additional instruction text".
     - AI prompts can now be customized.
     - Changed the fairy's age to 17.
-- 2026-XX-YY ver.5.4.2
+- 2026-10-15 ver.5.4.2
     - Custom prompts are now also available from the "Clues" window.
     - Improved "Initial prompt" and "Explain this clue".
     - Resolved language-related issues with prompts.
@@ -1120,7 +1120,7 @@
     - 追加的な指示テキスト廃止。
     - AIプロンプトのカスタマイズが可能に。
     - 妖精の年齢を17歳に変更。
-- 2026-XX-YY ver.5.4.2
+- 2026-10-15 ver.5.4.2
     - 「ヒント」ウィンドウからもカスタムプロンプトが利用可能に。
     - 「初期プロンプト」「このカギを解説」を改良。
     - プロンプトの言語問題を解決。
