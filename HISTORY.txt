@@ -399,6 +399,7 @@
 - 2026-XX-YY ver.5.4.1
     - Removed "Additional instruction text".
     - AI prompts can now be customized.
+    - Changed the fairy's age to 17.
 
 # 開発履歴 (Japanese)
 
@@ -1114,3 +1115,4 @@
 - 2026-XX-YY ver.5.4.1
     - 追加的な指示テキスト廃止。
     - AIプロンプトのカスタマイズが可能に。
+    - 妖精の年齢を17歳に変更。
