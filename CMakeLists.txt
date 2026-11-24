@@ -5,7 +5,7 @@
 cmake_minimum_required(VERSION 3.10)
 
 # project name, version, and languages
-project(XWordGiver VERSION 5.4.3 LANGUAGES CXX RC)
+project(XWordGiver VERSION 5.4.4 LANGUAGES CXX RC)
 
 # XWORDGIVER_VERSION_A and XWORDGIVER_VERSION_W
 add_compile_definitions(XWORDGIVER_VERSION_A="${PROJECT_VERSION}")

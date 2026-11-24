@@ -422,6 +422,7 @@
     - Enabled automatic cursor advancement when entering black squares.
     - Added a warning that the header and notes section will be lost when saving in the CRP format.
     - Various other minor UI/UX improvements.
+- 2026-XX-YY ver.5.4.4
 
 # 開発履歴 (Japanese)
 
@@ -1160,3 +1161,4 @@
     - 黒マス入力時の文字送りを有効にした。
     - CRP形式で保存時にヘッダーと備考欄が消える警告を表示するようにした。
     - その他、軽微なUI/UX改良。
+- 2026-XX-YY ver.5.4.4
