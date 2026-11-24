@@ -230,10 +230,10 @@ public:
 	//////////////////
 	// Toolbar
 
-	HWND m_hToolBar = nullptr;
-	BOOL m_bShowToolBar = TRUE;
-	HIMAGELIST m_hImageList = nullptr;
-	HIMAGELIST m_hGrayedImageList = nullptr;
+	HWND m_hToolBar = nullptr; // ツールバーのウィンドウ ハンドル。
+	BOOL m_bShowToolBar = TRUE; // ツールバーを表示するか？
+	HIMAGELIST m_hImageList = nullptr; // ツールバーのイメージリスト。
+	HIMAGELIST m_hGrayedImageList = nullptr; // ツールバーの灰色イメージリスト。
 
 	void UpdateToolBarUI();
 	BOOL CreateToolBar(HWND hwnd);

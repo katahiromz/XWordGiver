@@ -948,8 +948,9 @@ BOOL MMainWnd::CreateToolBar(HWND hwnd) {
 	::SendMessageW(m_hToolBar, TB_SETIMAGELIST, 0, LPARAM(m_hImageList));
 	::SendMessageW(m_hToolBar, TB_SETDISABLEDIMAGELIST, 0, (LPARAM)m_hGrayedImageList);
 	::SendMessageW(m_hToolBar, TB_ADDBUTTONS, std::size(atbb), LPARAM(&atbb));
-	::SendMessageW(m_hToolBar, WM_SIZE, 0, 0);
+	::SendMessageW(hwnd, WM_SIZE, 0, 0);
 
+	// ツールバーの表示・非表示を切り替える。
 	ShowToolBar(m_bShowToolBar);
 	return TRUE;
 }
