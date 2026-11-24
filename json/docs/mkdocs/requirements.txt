@@ -31,7 +31,7 @@ nltk==3.7
 packaging==21.3
 plantuml==0.3.0
 plantuml-markdown==3.6.3
-Pygments==2.12.0
+Pygments==2.20.0
 pymdown-extensions==9.5
 pyparsing==3.0.9
 python-dateutil==2.8.2
