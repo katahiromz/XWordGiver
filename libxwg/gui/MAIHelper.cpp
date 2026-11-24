@@ -1475,7 +1475,7 @@ void MAIHelper::AskQuestion(PCWSTR text) {
 	// 先行する質問(起動直後の初期質問など)がまだ処理中かどうか。
 	const bool bBusy = (m_session && m_session->pending > 0);
 
-	const MStringW wait = XgIsUserJapanese() ? L"しばらくお待ちください..." : L"Please wait a moment...";
+	const MStringW wait = XgIsUserJapanese() ? L"[システム] しばらくお待ちください..." : L"[System] Please wait a moment...";
 
 	// 現在の盤面の状態を事前情報として付ける。
 	MStringW line = GetAIPreText();
