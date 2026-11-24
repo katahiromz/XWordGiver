@@ -8,8 +8,6 @@ It was devised not merely to generate crossword data, but with careful considera
 
 ![Screenshot 1](images/screenshot1.png "Screenshot 1")
 
-![Screenshot 2](images/screenshot2.png "Screenshot 2")
-
 ## Usage
 
 ### How to choose Policy
