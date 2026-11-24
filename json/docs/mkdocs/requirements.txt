@@ -42,7 +42,7 @@ regex==2022.7.25
 requests==2.28.1
 six==1.16.0
 smmap==5.0.0
-tornado==6.2
+tornado==6.6.1
 tqdm==4.64.0
 urllib3==2.8.0
 watchdog==2.1.9
