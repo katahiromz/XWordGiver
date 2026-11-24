@@ -955,12 +955,14 @@ BOOL MMainWnd::CreateToolBar(HWND hwnd) {
 	return TRUE;
 }
 
+// ツールバーの表示・非表示を切り替える。
 void MMainWnd::ShowToolBar(BOOL bShow) {
 	::ShowWindow(m_hToolBar, (bShow ? SW_SHOWNOACTIVATE : SW_HIDE));
 	m_bShowToolBar = bShow;
 	PostMessageW(m_hwnd, WM_SIZE, 0, 0);
 }
 
+// ツールバーを破棄する。
 void MMainWnd::DestroyToolBar() {
 	if (m_hToolBar) {
 		DestroyWindow(m_hToolBar);
