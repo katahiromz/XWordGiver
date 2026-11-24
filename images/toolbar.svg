@@ -7,9 +7,9 @@
    inkscape:version="1.3 (0e150ed6c4, 2023-07-21)"
    id="svg881"
    version="1.1"
-   viewBox="0 0 135.46666 8.4666659"
+   viewBox="0 0 143.93333 8.4666659"
    height="32"
-   width="512"
+   width="544"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:xlink="http://www.w3.org/1999/xlink"
@@ -170,9 +170,9 @@
      inkscape:document-rotation="0"
      inkscape:current-layer="layer1"
      inkscape:document-units="mm"
-     inkscape:cy="44.017396"
-     inkscape:cx="354.96759"
-     inkscape:zoom="2.8284272"
+     inkscape:cy="10.0625"
+     inkscape:cx="493.99999"
+     inkscape:zoom="8.0000002"
      inkscape:pageshadow="2"
      inkscape:pageopacity="0.0"
      borderopacity="1.0"
@@ -218,13 +218,20 @@
        style="fill:#ffffff;stroke:none;stroke-width:0.539657;paint-order:fill markers stroke;stop-color:#000000" />
     <rect
        y="7.6666669e-07"
+       x="135.45288"
+       height="8.4666662"
+       width="8.4666662"
+       id="rect10-5-5-2"
+       style="fill:#ffffff;stroke:none;stroke-width:0.539657;paint-order:fill markers stroke;stop-color:#000000" />
+    <rect
+       y="0"
        x="118.53333"
        height="8.4666662"
        width="8.4666662"
        id="rect10-5-5-8"
        style="fill:#ffffff;stroke:none;stroke-width:0.539657;paint-order:fill markers stroke;stop-color:#000000" />
     <rect
-       y="1.2435039e-06"
+       y="1.0564963e-06"
        x="127"
        height="8.4666662"
        width="8.4666662"
@@ -292,7 +299,7 @@
        transform="matrix(0.01506893,0,0,0.01506893,8.9852737,0.37568081)">
       <polygon
          class="st0"
-         points="386.59,159.353 386.59,191.569 434.913,191.569 434.913,111.029 209.403,111.029 144.971,62.705 0,62.705 0,106.231 0,112.973 0,384.277 48.324,303.005 48.324,159.353 "
+         points="434.913,111.029 209.403,111.029 144.971,62.705 0,62.705 0,106.231 0,112.973 0,384.277 48.324,303.005 48.324,159.353 386.59,159.353 386.59,191.569 434.913,191.569 "
          style="fill:#4b4b4b"
          id="polygon4" />
       <path
@@ -880,6 +887,17 @@
          x="45.231041"
          y="6.0510106"
          style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:3.22696px;font-family:Tahoma;-inkscape-font-specification:'Tahoma Bold';fill:#008000;stroke-width:0.403368">W</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:6.35px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;stroke-width:0.264583;fill:#008000;fill-opacity:1"
+       x="136.75771"
+       y="6.5417199"
+       id="text1"><tspan
+         sodipodi:role="line"
+         id="tspan1"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:6.35px;font-family:Tahoma;-inkscape-font-specification:Tahoma;stroke-width:0.264583;fill:#008000;fill-opacity:1"
+         x="136.75771"
+         y="6.5417199">AI</tspan></text>
   </g>
   <style
      type="text/css"
