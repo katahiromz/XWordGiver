@@ -885,11 +885,13 @@ void MMainWnd::UpdateToolBarUI() {
 }
 
 BOOL MMainWnd::CreateToolBar(HWND hwnd) {
-	// イメージリストの準備をする。アイコンサイズは32x32ピクセル。
-	m_hImageList = ::ImageList_Create(32, 32, ILC_COLOR24, 0, 0);
+	const SIZE iconSize = { 32, 32 }; // ツールバーのアイコンサイズ。
+
+	// イメージリストを作成する。
+	m_hImageList = ::ImageList_Create(iconSize.cx, iconSize.cy, ILC_COLOR24, 0, 0);
 	if (!m_hImageList)
 		return FALSE;
-	m_hGrayedImageList = ::ImageList_Create(32, 32, ILC_COLOR24, 0, 0);
+	m_hGrayedImageList = ::ImageList_Create(iconSize.cx, iconSize.cy, ILC_COLOR24, 0, 0);
 	if (!m_hGrayedImageList)
 		return FALSE;
 
@@ -942,7 +944,7 @@ BOOL MMainWnd::CreateToolBar(HWND hwnd) {
 
 	// ツールバーを初期化する。
 	::SendMessageW(m_hToolBar, TB_BUTTONSTRUCTSIZE, sizeof(TBBUTTON), 0);
-	::SendMessageW(m_hToolBar, TB_SETBITMAPSIZE, 0, MAKELPARAM(32, 32));
+	::SendMessageW(m_hToolBar, TB_SETBITMAPSIZE, 0, MAKELPARAM(iconSize.cx, iconSize.cy));
 	::SendMessageW(m_hToolBar, TB_SETIMAGELIST, 0, LPARAM(m_hImageList));
 	::SendMessageW(m_hToolBar, TB_SETDISABLEDIMAGELIST, 0, (LPARAM)m_hGrayedImageList);
 	::SendMessageW(m_hToolBar, TB_ADDBUTTONS, std::size(atbb), LPARAM(&atbb));
