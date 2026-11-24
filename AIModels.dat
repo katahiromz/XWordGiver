@@ -1,0 +1,229 @@
+; AIModels.dat --- XWordGiver AI ヘルパーの AI モデル データ。
+; AIModels.dat --- The AI model data for XWordGiver AI Helper.
+;
+; このファイルは自己責任で自由に編集しても構いません。
+; You are free to edit this file at your own risk.
+;
+; 【文法】 / [Syntax]
+;   - ';' から始まる行はコメントです。 / Lines starting with ';' are comments.
+;   - '[セクション名]' で区画（セクション）を区切ります。 / '[SectionName]' starts a new section.
+;   - 各セクションの中身は「1行1項目」または「キー=値」です。 / Each section holds one item per line, or key=value(s) pairs.
+;   - 空行は無視されます。 / Blank lines are ignored.
+;   - このファイルは UTF-8 で保存してください。 / Save this file as UTF-8.
+;   - 値はカンマ区切りです。 / Value(s) are comma-separated.
+;
+; このファイルは AIModelsDat.cpp / AIHelper.py / AIHelper_ja.py から
+; 共通して読み込まれます。実行ファイル（またはスクリプト）と同じフォルダに置いてください。
+; This file is shared by AIModelsDat.cpp / AIHelper.py / AIHelper_ja.py.
+; Place it in the same folder as the executable (or the scripts).
+
+[PROVIDER_INFO]
+; プロバイダー接続設定。
+; Provider connection settings.
+;
+; 書式: プロバイダー = APIキー環境変数名, ホスト名, ポート, パス, OpenAI互換か, Claude形式か, Gemini形式か, HTTPSか
+;       (フラグは 0 か 1)
+; Format: provider = api_key_env, host, port, path, isOpenAICompat, isClaude, isGemini, useHttps
+;         (flags are 0 or 1)
+openai      = OPENAI_API_KEY,       api.openai.com, 443, /v1/chat/completions, 1, 0, 0, 1
+google      = GOOGLE_API_KEY,       generativelanguage.googleapis.com, 443, , 0, 0, 1, 1
+anthropic   = ANTHROPIC_API_KEY,    api.anthropic.com, 443, /v1/messages, 0, 1, 0, 1
+xai         = XAI_API_KEY,          api.x.ai, 443, /v1/chat/completions, 1, 0, 0, 1
+deepseek    = DEEPSEEK_API_KEY,     api.deepseek.com, 443, /v1/chat/completions, 1, 0, 0, 1
+sakana      = SAKANA_API_KEY,       api.sakana.ai, 443, /v1/chat/completions, 1, 0, 0, 1
+dashscope   = DASHSCOPE_API_KEY,    dashscope-intl.aliyuncs.com, 443, /compatible-mode/v1/chat/completions, 1, 0, 0, 1
+moonshot    = MOONSHOT_API_KEY,     api.moonshot.ai, 443, /v1/chat/completions, 1, 0, 0, 1
+mistral     = MISTRAL_API_KEY,      api.mistral.ai, 443, /v1/chat/completions, 1, 0, 0, 1
+llama       = LLAMA_API_KEY,        api.llama.com, 443, /compat/v1/chat/completions, 1, 0, 0, 1
+minimax     = MINIMAX_API_KEY,      api.minimax.io, 443, /v1/chat/completions, 1, 0, 0, 1
+zai         = ZAI_API_KEY,          api.z.ai, 443, /api/paas/v4/chat/completions, 1, 0, 0, 1
+pepabo      = AI_GATEWAY_API_KEY,   ai-gateway.lolipop.jp, 443, /v1/chat/completions, 1, 0, 0, 1
+; ローカルAI（Ollama）。APIキー不要。
+; Local AI (Ollama). No API key is required.
+ollama      = ,                     localhost, 11434, /v1/chat/completions, 1, 0, 0, 0
+; ローカルAI（PrismML Bonsai / llama.cpp サーバー）。APIキー不要。
+; Local AI (PrismML Bonsai via llama.cpp server). No API key is required.
+bonsai      = ,                     localhost, 8080, /v1/chat/completions, 1, 0, 0, 0
+
+; ----------------------------------------------------------------------------
+; 既知のAIモデル名一覧（プロバイダーごと）。各セクションの先頭のモデルが、そのプロバイダーの
+; 既定モデルとして使われる。
+; Known AI model names, per provider. The first model listed in each section is
+; used as that provider's default model.
+; TODO: １ヵ月ごとに以下の既知のAIモデル名一覧を更新せよ。先頭は無料モデルにしておくこと
+;       （先頭モデルは既定モデルにもなるため）。
+; TODO: Update the list below about once a month. Keep a free model first
+;       (the first entry also becomes the default model).
+; 更新日 / Last updated: 2026-09-28
+; ----------------------------------------------------------------------------
+
+[MODELS:openai]
+gpt-4o-mini
+gpt-4.1
+gpt-5.6-luna
+gpt-5.6-sol
+gpt-5.6-terra
+gpt-6-luna
+gpt-6-sol
+gpt-6-astra
+
+[MODELS:google]
+gemini-3.5-flash-lite
+gemini-3.6-flash
+gemini-3.8-flash
+gemini-3.1-pro
+gemini-3-deep-think
+
+[MODELS:anthropic]
+claude-haiku-4-5-20251001
+claude-sonnet-5
+claude-opus-5
+claude-opus-5-5
+claude-fable-5-1
+
+[MODELS:xai]
+grok-4
+grok-4.1
+grok-4.3
+grok-4.5
+grok-4.6
+grok-4.7
+
+[MODELS:deepseek]
+deepseek-flash
+deepseek-v4-flash
+deepseek-v4-pro
+deepseek-v3.2
+
+[MODELS:sakana]
+sakana-namazu
+sakana-fugu
+sakana-fugu-ultra
+sakana-fugu-ultra-v2
+sakana-fugu-max
+
+[MODELS:dashscope]
+qwen3-turbo
+qwen-long
+qwen3.7-plus
+qwen3.7-max
+qwen3.8-max
+
+[MODELS:moonshot]
+moonshot-v1-auto
+kimi-k2.6
+kimi-k3
+
+[MODELS:mistral]
+mistral-small-latest
+ministral-3-8b
+mistral-medium-latest
+mistral-large-latest
+
+[MODELS:llama]
+llama-4-scout
+llama-4-maverick
+llama-3.3-70b
+
+[MODELS:minimax]
+MiniMax-M2
+MiniMax-M2.7
+MiniMax-M2.7-highspeed
+MiniMax-M3
+
+[MODELS:zai]
+glm-4.7-flash
+glm-4.6
+glm-4.7
+glm-5.2
+glm-5.3
+glm-5.3-flash
+
+[MODELS:pepabo]
+; GMOペパボのAIゲートウェイ / GMO Pepabo's AI gateway
+auto
+amazon/nova-2-lite
+amazon/nova-lite
+amazon/nova-pro
+claude-haiku-4-5
+claude-opus-4-5
+claude-opus-4-6
+claude-opus-4-7
+claude-opus-4-8
+claude-opus-5
+claude-sonnet-4-6
+claude-sonnet-5
+deepseek/deepseek-r1-0528
+deepseek/deepseek-v3-2
+google/gemini-2-5-flash-lite
+google/gemini-2-5-pro
+google/gemini-2.5-flash
+google/gemini-3-1-flash-lite
+google/gemini-3-1-pro-preview
+google/gemini-3-5-flash
+google/gemini-3-5-flash-lite
+google/gemini-3-6-flash
+google/gemini-3-7-flash
+google/gemini-3-8-flash
+google/gemma-4-26b-a4b
+meta/llama-4-maverick
+meta/llama-4-scout
+minimax/minimax-m2
+minimax/minimax-m2-1
+minimax/minimax-m2-5
+minimax/minimax-m2-7
+minimax/minimax-m3
+mistral/devstral-2-123b
+mistral/mistral-large-3
+mistral/mistral-medium-3
+mistral/mistral-small-3-1-2503
+moonshot/kimi-k2
+moonshot/kimi-k2-5
+nvidia/nemotron-3-nano-30b-a3b
+nvidia/nemotron-3-super-120b-a12b
+openai/gpt-5-4
+openai/gpt-5-5
+openai/gpt-5-6-luna
+openai/gpt-5-6-sol
+openai/gpt-5-6-terra
+openai/gpt-oss-120b
+openai/gpt-oss-20b
+qwen/qwen3-235b-a22b-instruct-2507
+qwen/qwen3-32b
+qwen/qwen3-coder-30b-a3b
+qwen/qwen3-coder-480b-a35b-instruct
+qwen/qwen3-coder-next
+qwen/qwen3-next-80b-instruct
+qwen/qwen3-next-80b-thinking
+qwen/qwen3-vl-235b-a22b
+writer/palmyra-x4
+writer/palmyra-x5
+xai/grok-4-3
+xai/grok-4-6
+zai/glm-4-6
+zai/glm-4-7
+zai/glm-4-7-flash
+zai/glm-5
+zai/glm-5-1
+zai/glm-5-2
+zai/glm-5-3
+
+[MODELS:bonsai]
+; PrismML Bonsai（1ビットLLM、ローカル実行）。llama.cpp 等のサーバーは読み込んだモデルを返すため、
+; モデル名は識別用。サーバーを http://localhost:8080 で起動しておくこと。
+; PrismML Bonsai (1-bit LLM, runs locally). The local server answers with whichever model it
+; has loaded, so the name is mostly a label. Start the server at http://localhost:8080 first.
+bonsai-8b
+bonsai-4b
+bonsai-1.7b
+bonsai-27b
+
+[MODELS:ollama]
+; ローカルで `ollama pull <model>` 済みのモデル名を書くこと。以下は例。
+; List the model names you have already pulled locally with `ollama pull <model>`.
+; The entries below are just examples -- edit to match what you actually have.
+llama3.2
+qwen2.5
+gemma2
+phi3
+mistral

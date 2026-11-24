@@ -1,0 +1,43 @@
+﻿(Japanese / English)
+---
+
+【「クロスワード ギバー」の使用許諾契約書】
+
+Copyright (c) 2012-2026 Katayama Hirofumi MZ
+Copyright (c) 2013-2019 Niels Lohmann
+Copyright (c) 2021-2022 スフィンクス.
+Copyright (c) 2021-2022 catworks99.
+Copyright (c) 2022 yukokumar.
+Copyright (c) 2022 Hiroshima.cw.
+
+「クロスワード ギバー」は、バージョン5.4.3より有料化され、シェアウェアになりました。
+15日間の試用期間を過ぎて継続して使用するには、ベクターの該当ページから「ライセンスキー」
+（パスワードみたいなもの）を購入する必要があります。
+
+アプリ起動時に表示される「ライセンスキーの登録」画面で購入したライセンスキーを入力すると、制限が解除されます。
+
+- ベクター https://www.vector.co.jp/soft/winnt/game/se508194.html
+
+ちゃんと利用される人数分をご購入ください。
+悪質な利用状況と判断された場合には、通告されます。
+
+---
+
+[The License Agreement for "XWordGiver"]
+
+Copyright (c) 2012-2026 Katayama Hirofumi MZ
+Copyright (c) 2013-2019 Niels Lohmann
+Copyright (c) 2021-2022 Sphinx.
+Copyright (c) 2021-2022 catworks99.
+Copyright (c) 2022 yukokumar.
+Copyright (c) 2022 Hiroshima.cw.
+
+As of version 5.4.3, "XWordGiver" has transitioned to a paid, shareware model.
+To continue using the software after the 15-day trial period, you must purchase a "license key" (similar to a password) via the designated page on the Vector website.
+
+Entering your purchased license key on the "Register the shareware password" window, which appears when you launch the app, will remove the restrictions.
+
+- Vector: https://www.vector.co.jp/soft/winnt/game/se508194.html
+
+Please purchase a quantity corresponding to the number of users.
+If your usage is deemed malicious, you will be warned.

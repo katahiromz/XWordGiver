@@ -1,0 +1,150 @@
+// xwg.cpp --- C++/Win32 Cancelable command line interface
+// Author: katahiromz
+// License: MIT
+
+#include <windows.h>
+#include <stdio.h>
+#include <string>
+#include <new>
+#include "xwg.h"
+
+void version(void)
+{
+    puts("xwg Version 0.0 by katahiromz\n");
+}
+
+void usage(void)
+{
+    puts(
+        "Usage: xwg [OPTIONS] [input_file] [output_file]\n"
+        "  Options:\n"
+        "    --help       Display this message.\n"
+        "    --version    Display version info.\n"
+    );
+}
+
+HANDLE g_cancel_event = NULL;
+bool g_help = false;
+bool g_version = false;
+bool g_canceled = false;
+std::wstring g_input_file;
+std::wstring g_output_file;
+
+HRESULT do_it(void)
+{
+    g_cancel_event = CreateEventW(NULL, TRUE, FALSE, XWG_CANCEL_EVENT);
+    if (!g_cancel_event) {
+        fwprintf(stderr, L"xwg: Cannot create g_cancel_event\n");
+        return E_FAIL;
+    }
+    MAutoCloseHandle auto_close_0(g_cancel_event);
+
+    SharedLong shared;
+    if (!shared.Create(999)) {
+        fwprintf(stderr, L"SharedLong::Create failed\n");
+        return E_FAIL;
+    }
+
+    FILE *fin = _wfopen(g_input_file.c_str(), L"rb");
+    if (!fin) {
+        fwprintf(stderr, L"xwg: Cannot open file '%s'\n", g_input_file.c_str());
+        return E_FAIL;
+    }
+    AutoFClose auto_close_1(fin);
+
+    FILE *fout;
+    if (g_output_file.empty())
+        fout = stdout;
+    else
+        fout = _wfopen(g_output_file.c_str(), L"wb");
+    if (!fout) {
+        fwprintf(stderr, L"xwg: Cannot open file '%s'\n", g_output_file.c_str());
+        return E_FAIL;
+    }
+    AutoFClose auto_close_2(g_output_file.empty() ? NULL : fout);
+
+    char buf[512];
+    while (fgets(buf, sizeof(buf), fin)) {
+        shared.Write((SharedLong::value_type)strlen(buf));
+        if (WaitForSingleObject(g_cancel_event, 0) == WAIT_OBJECT_0) {
+            g_canceled = true;
+            break;
+        }
+        fprintf(fout, "%s", buf);
+        Sleep(1000);
+    }
+
+    if (g_canceled) {
+        fwprintf(stderr, L"xwg: Operation canceled\n");
+        return E_ABORT;
+    }
+
+    return S_OK;
+}
+
+HRESULT run(void)
+{
+    if (g_help) {
+        usage();
+        return S_OK;
+    }
+    if (g_version) {
+        version();
+        return S_OK;
+    }
+
+    try {
+        return do_it();
+    } catch (const std::bad_alloc&) {
+        return E_OUTOFMEMORY;
+    }
+}
+
+bool parse_cmdline(int argc, wchar_t **wargv)
+{
+    for (int iarg = 1; iarg < argc; ++iarg) {
+        std::wstring arg = wargv[iarg];
+        if (arg == L"--help") {
+            g_help = true;
+            break;
+        }
+        if (arg == L"--version") {
+            g_version = true;
+            break;
+        }
+        if (arg.size() && arg[0] == L'-') {
+            fwprintf(stderr, L"xwg: Invalid argument '%s'\n", arg.c_str());
+            return false;
+        }
+        if (g_input_file.empty()) {
+            g_input_file = arg;
+        } else if (g_output_file.empty()) {
+            g_output_file = arg;
+        } else {
+            fwprintf(stderr, L"xwg: Too many arguments\n");
+            return false;
+        }
+    }
+
+    if (g_input_file.empty()) {
+        g_input_file = L"xwg.cpp";
+    }
+
+    return true;
+}
+
+int wmain(int argc, wchar_t **wargv)
+{
+    if (!parse_cmdline(argc, wargv))
+        return E_INVALIDARG;
+    return run();
+}
+
+int main(void)
+{
+    INT argc;
+    LPWSTR *wargv = CommandLineToArgvW(GetCommandLineW(), &argc);
+    INT ret = wmain(argc, wargv);
+    LocalFree(wargv);
+    return ret;
+}

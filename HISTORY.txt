@@ -1,0 +1,1162 @@
+﻿(English / Japanese)
+---
+
+# History (ChangeLog) of XWordGiver (English)
+
+- 2021-08-22 Ver.4.7.4
+    - Made character feed default.
+    - Restarted English support.
+- 2021-08-23 Ver.4.7.5
+    - Improved English support.
+    - Excluded Japanese filenames.
+    - Improved English Input Palette.
+    - Simplified LICENSE.
+    - Don't feed when input is not a character.
+    - Simplify installers.
+- 2021-08-25 Ver.4.7.6
+    - Accepted digits input.
+    - Able to hide numbering.
+    - Able to hide caret.
+    - Added menu item "Delete solution and &unlock edit" to "Solution" menu.
+    - Added more block patterns.
+- 2021-08-26 Ver.4.7.7
+    - Strengthened English dictionary.
+    - Changed "Delete solution and unlock board" to "Delete clues and unlock board".
+- 2021-10-27 Ver.4.7.8
+    - Dramatically improved the quality of the English dictionary.
+    - Improved English dialogs.
+    - Added more block patterns.
+    - Added "Reload &Dict List" menu item.
+    - Improved around policies.
+    - Fixed dictionary loading.
+    - Renamed the EXE file.
+- 2021-10-29 Ver.4.7.9
+    - Added "Skeleton View" menu item.
+    - Improved the English dictionary by using the web service Grammarly.
+    - Improved drawing the letter of the double-frame cell.
+    - Fixed "Copy the double-frame word image".
+    - Relaxed the size limit of crosswords to 30x30 (for high end).
+- 2021-11-03 Ver.4.8.0
+    - Supported "Line symmetry of blocks".
+    - Enabled the "double-frame letters" settings.
+    - Changed "Copy the double-frame word image" to "Copy the double-frame word".
+    - Abolished "Copy the double-frame word image with height".
+    - Abolished "Copy Image with size".
+    - Add "Copy the list of words" menu item.
+    - Improved "Web search word".
+    - Relaxed the limit on the number of dictionaries to 64.
+    - When the policy is symmetrical, "Finding solution (without adding blocks)" forces the board symmetrical.
+    - Fixed around Max Word Length.
+    - Fixed typo of skeleton.
+- 2021-11-11 Ver.4.8.1
+    - Added "Generate from a word list" feature.
+    - Relaxed the limit on the size of the board.
+    - Able to toggle whether the double-frame letters are visible or not.
+    - Do not repeatedly warn about the existence of unregistered words.
+    - Added "Insert Row/Column" feature.
+    - Added "Delete Row/Column" feature.
+    - Improved "Erase Configuration".
+    - Improved GUI a little.
+    - Improved the English of the GUI.
+    - Added more block patterns.
+    - If there are no empty cells, "Find a solution" is not restricted.
+    - Fixed a bug when the number of dictionaries is large.
+    - The zoom is now aligned with the window when a file is opened.
+- 2021-11-18 Ver.4.8.2
+    - Fixed the bugs around "Generate from a word list".
+    - Dragging with the middle mouse button is now possible.
+    - Fine-tuned the max word length when linear symmetry.
+    - Fixed and improved the block patterns.
+    - Properly handled the parse error when loading "data.json".
+- 2021-11-25 Ver.4.8.3
+    - Supported French input (Ctrl+Shift+^ A for Â etc.).
+    - Added a French dictionary.
+    - Supported Greek and Turkish input.
+    - Supported reading/writing XD files.
+    - Improved Header and Notes.
+    - Command line "--convert input.xwj output.xd" makes file conversion automated.
+    - Changed to use half-width characters when drawing alphabet and digits.
+    - Fixed the accelerators.
+- 2021-12-01 Ver.4.8.4
+    - Introduced "Any Input" mode. Made it default.
+    - Improved "Generate from words".
+    - "View" → "Zoom" → "Fit the whole" (Ctrl+F) added.
+    - Fixed the fatal bug on generation and policy settings.
+    - Fixed a fatal bug regarding dictionary switching and hint copying.
+    - Added highlight feature.
+    - Added more patterns.
+    - Made the small letter size 30%.
+    - Set the skeleton view as the default for non-Japanese users.
+    - Improved the "Dictionary" menu display.
+    - Saving the current view mode to the file.
+    - Saving the current file type.
+    - Made saving XD Files default for non-Japanese users.
+    - Improved reading/writing XD files.
+- 2021-12-13 Ver.4.8.5
+    - Human-friendly display of dictionary names.
+    - Improved the display of the unspecified string of IME.
+    - Improved drawing of highlight and double-frame cells.
+    - Improved READMEs.
+    - Simplified the display of cell position for error messages.
+    - Changed the specification of the dictionary data.
+- 2022-01-17 Ver.4.8.6
+    - Improved READMEs more.
+    - Fixed a problem where Ctrl+/ could not switch the input direction.
+- 2022-02-17 ver.4.8.7
+    - Added tags to English dictionaries.
+    - Sorted and uniqued the candidates.
+    - Fixed drawing of double-frame cell letters on Skeleton View.
+    - Able to import/export settings (The LOOKS file).
+    - Modified "File" menu a little.
+    - Renamed "Settings" as "Appearance".
+    - Fixed the color of small labels.
+    - Able to edit "header and remarks" by Ctrl+Enter.
+    - The supported formats for block image have been expanded.
+- 2022-02-18 ver.4.8.8
+    - The dictionary "BasicDict-ENG-Modesty.tsv" is added.
+    - Added "Lowercase" and "Hiragana" to Appearance.
+    - Able to drop the LOOKS file.
+    - Renamed "Policies" as "Policy".
+    - Renamed some policies (English only).
+    - Abolished "skeleton mode".
+    - Modified the default policy.
+    - Added "Copy the multiset of characters" feature.
+    - Added "policy preset" feature.
+    - Improved initial position of Clues window.
+    - Zooming on the entire board after generating the puzzle.
+- 2022-02-21 ver.4.8.9
+    - Made the skeleton view transparent when copying and printing.
+    - Boxes (text boxes, image boxes) can be added.
+    - Monitoring file changes and confirming file save.
+    - Loading/saving related files in *_files folder when loading/saving the main file.
+    - Renamed some rules.
+- 2022-02-22 ver.4.9.0
+    - Fixed the copying position of boxes.
+    - Text files can be dropped as text boxes.
+    - Adjusting the zoom when maximized and the display area is small.
+    - Improved reading/writing XD files.
+    - Improved mouse wheel handling.
+    - Improved boxes.
+- 2022-02-25 ver.4.9.1
+    - Added "Save Overwrite" for application standardization.
+    - The "View" menu became more compact.
+    - Improved the way files are loaded and saved.
+- 2022-03-17 ver.4.9.2
+    - Added "UI Language Select" to the [Edit] menu.
+- 2022-06-30 ver.4.9.3
+    - The dictionary title is translated by the UI language.
+    - Also importing dictionaries with the extension ".dic".
+    - Improved "Policy Preset" dialog.
+    - Strengthened the Kotowaza dictionary.
+    - Strengthened the Kana dictionary.
+- 2022-08-01 ver.4.9.4
+    - Strengthened the Kanji dictionary.
+- 2022-08-04 ver.4.9.5
+    - Added the ability to highlight textbox in the hint window when clicking on a numbered cell.
+- 2022-08-05 ver.4.9.6
+    - Fixed the critical bug on ver.4.9.5 that it cannot open the files.
+    - Added "NumCro Mode" to the "View" menu. It is possible to make a NumCro after creating a problem. You can save the NumCro puzzles to XD or XWJ/JSON files.
+    - Deleted XWordGiver.py.
+    - Faster by specifying noexcept keyword.
+    - Added "Reflect black cells" to the "Help" menu.
+- 2022-08-06 ver.4.9.7
+    - Improved XD file saving.
+    - Fixed a bug about NumCro.
+    - Able to undo the view mode.
+    - Fixed the display of the title bar.
+    - Improved the "About" dialog.
+    - Reordered of items in the Help menu.
+    - Improved the icons.
+- 2022-08-07 ver.4.9.8
+    - Migration of block pattern data from "data.json" to "PAT.txt".
+    - In the skeleton view, draw small white dots at the four corners so that the margins are not omitted.
+    - Added "Open PAT.txt" and "Open THEME.txt" to the Help menu.
+    - Displayed Win32/Win64 on the "About" dialog.
+    - Added file "THEME.txt" to define the theme preset values.
+    - Clearly displayed the selection status in the Theme dialog.
+    - Fixed a bug about handling items on the Theme dialog.
+- 2022-08-16 ver.4.9.9
+    - Improved the "Policy" menu.
+    - Improved the "Policy Preset" dialog.
+    - Saved the latest maximized status of the main window.
+    - Improved the context menu of board.
+    - Block patterns available for download (in preparation).
+    - Dictionaries available for download (in preparation).
+    - Abolished installer version.
+    - Fixed display of the candidates.
+    - Able to set the font name and size to the Text Box.
+    - Fixed XD file boxes writing.
+- 2022-08-29 ver.5.0.0
+    - Added "Undo" and "Redo" on Toolbar.
+    - Able to specify the "save to" location by folder drop.
+    - Don't clear the opening filename when finding a solution.
+    - Fixed display of the Policy menu.
+    - Made the XWJ/JSON/XD files to store an integer value under the name "Policy".
+    - Enabled undoing "Boxes".
+    - Fixed Undo/Redo.
+    - Uniformed all the positions and sizes in the forms of (x, y) and (columns x rows).
+    - Made the default codepage UTF-8 of file reading.
+    - Modified the values of "Japanese publisher policy (Loose)".
+    - Added digital signatures as trial.
+    - Revived the installer.
+- 2022-10-01 ver.5.0.1
+    - Strengthened the block patterns.
+    - Added POLICY.txt. The Policy Presets can now be customized.
+    - Do not misspell 'skeleton'.
+    - Added "Marking double-frame word" to "Solution" menu. Improved handling of double-frame.
+- 2022-10-02 ver.5.0.2
+    - Improved "Marking" dialog.
+    - Correctly undoing "setting a double-frame word".
+    - Added labels to THEME.txt.
+- 2023-03-25 ver.5.0.3
+    - Made the maximum size of the block patterns 20x20.
+    - Improved block patterns (PAT.txt).
+    - Global optimization that focuses on the fact that there are fewer candidates for longer words.
+    - Improved block patterns dialog.
+- 2023-05-23 ver.5.0.4
+    - Allowed line widths to be specified. Default line width to 1.0.
+    - Properly calculating the width of the line.
+    - Improved drawing of the board.
+    - Avoided EMF drawing defects for external softwares with incomplete EMF support.
+- 2023-05-24 ver.5.0.5
+    - Line width are now saved in the LOOKS file.
+    - Implemented "Recently Used Files".
+    - Assign Ctrl+D to "Copy the double-frame word".
+    - Fixed image not updating when dropped.
+    - Line width can now be reset as well.
+- 2023-05-25 ver.5.0.6
+    - Ctrl+Wheel can be used to zoom in on Clues.
+    - Line widths can now be imported/exported properly.
+    - Added a setting for the width of the outer frame.
+    - Fixed drawing of the outer frame.
+- 2023-05-28 ver.5.0.7
+    - Improved printing of the outer frame.
+    - Improved the drawing routine.
+    - Fixed NumCro drawing.
+    - Fixed Skeleton View line drawing.
+    - Improved marked word drawing.
+- 2023-05-29 ver.5.0.8
+    - Supported loading ECW files (of EclipseCrossword).
+    - Used the ScrollWindow function to speed up scrolling.
+    - Speeded up caret movement by decoupling the caret drawing from the internal image.
+    - Speeded up drawing the board in zooming.
+    - The zoom cannot be smaller than 9%.
+    - Speeded up putting a character.
+- 2023-05-30 ver.5.0.9
+    - Fine-tuned the amount of scrolling for comfortable scrolling.
+    - Fine-tuned the amount of zoomingfor comfortable zooming.
+    - Speeded up zooming of the Clue.
+- 2023-07-01 ver.5.1.0
+    - Improved the input of "＃", "♯" and "■" etc.
+    - Rectangular text can be pasted as a board.
+    - Paste of Excel grid as a board is now possible.
+- 2023-08-14 ver.5.1.1
+    - Caret no longer protrudes from the board when deleting a row or column.
+    - Strengthened PAT.txt.
+    - Added support for black square pattern sizes up to 45x45.
+    - Added "Swap Top and Bottom" and "Swap Left and Right" options in the "Help" menu.
+    - Updated the URLs.
+- 2023-08-15 ver.5.1.2
+    - Improved Japanese dictionaries.
+    - Improved "Policy Preset" dialog. Improved policy descriptions.
+- 2023-12-25 ver.5.1.3
+    - In "Initialize application", we decided to erase the block information.
+- 2024-01-04 ver.5.1.4
+    - Displayed the area of the board.
+    - Enhanced status bar to display policy value and dictionary name etc.
+- 2024-01-07 ver.5.1.5
+    - Fixed an issue where extra black area were created when saving a bitmap.
+- 2024-02-01 ver.5.1.6
+    - Supported TIFF images.
+    - Improved Input Palette.
+- 2024-02-04 ver.5.1.7
+    - Added hidden features "Ctrl+Alt+Shift+Q".
+    - Enhanced PAT.txt. Added UTF-8 BOM to PAT.txt.
+    - Added "Choose a pattern from &PAT.txt automatically" feature to "Generate Crossword".
+- 2024-02-17 ver.5.1.8
+    - Slightly improved Kana dictionaries.
+    - Made "Choose a pattern from &PAT.txt automatically" default.
+    - Proper exclusive control.
+    - Disabled unusable items in the context menu.
+    - Added "Checking answer" feature to "Solution" menu.
+    - Corrected display of calculation time.
+- 2024-04-01 ver.5.1.9
+    - Made the color of the black cells a little darker.
+    - Improved Kana dictionaries more.
+    - Used QString to speed up string processing.
+    - Proper exclusive control (Part 2).
+    - Added "Jump" feature on double-clicking status bar.
+    - Added "Jump" feature on Right-clicking the clue label.
+    - The "UI font" settings are no longer read or written in the LOOKS file.
+    - Relaxed rule checking in the "Candidates" window.
+    - Now able to zoom the "Candidates" window.
+    - Renamed "Candidates" as "Input Candidates".
+- 2024-04-02 ver.5.2.0
+    - Revamped menu.
+    - Enabled to correctly undo input using "Input Candidates".
+    - Changed the default save location from "My Documents" to "My Documents/XWordGiver".
+    - Added "Numbering save" item to "File" menu.
+    - The "continuous problem generation" function has been abolished.
+    - Consolidated settings dialogs into a property sheet.
+    - Added "Display the answer when opening a &question" setting.
+    - Added "Do not read/write LOOKS information from/to file" setting.
+    - Added "Automatically save as numbering file when generated" setting.
+- 2024-04-03 ver.5.2.1
+    - Added "Fit whole" to Right-click menu.
+    - Supported right-click on toolbar and status bar.
+    - Fixed initial selection of double-frame word.
+    - The save destination setting is reflected in "Open" and "Save As".
+    - Fixed QString string comparison.
+    - Made "Generated" and "Canceled" display options.
+    - Added "Generative", "Dictionaries", and "Advanced" settings into property sheet.
+- 2024-04-04 ver.5.2.2
+    - Fixed dictionary list loading.
+    - The theme can now be opened from the "Dictionaries" settings.
+    - Able to play a sound file when generation is successful, fails, or cancelled.
+- 2024-04-05 ver.5.2.3
+    - Added "Open app folder" item to "Advanced" settings.
+    - Fixed the board not updating when dropping a LOOKS file.
+    - Fixed the reading and writing of block image in LOOKS files.
+- 2024-04-18 ver.5.2.4
+    - The serial number file name can be specified by the settings of file.
+- 2024-04-19 ver.5.2.5
+    - This time, we do exclusive control properly.
+    - Added a function to display the dictionary update date and time.
+    - The "Jump" dialog has been made modeless.
+    - Added "Jump to letter or word" function.
+    - Added the function "Update the dictionary file using the clues" to the "Advanced" settings.
+    - Added "Jump" to the "Edit" menu.
+- 2025-04-24 ver.5.2.6
+    - Correctly reset outer frame settings on "Initialize application".
+    - Enhanced PAT.txt.
+- 2025-05-01 ver.5.2.7
+    - Implemented taskbar progress display.
+    - Implemented taskbar thumbnail display.
+    - Improved the "Generate from words" dialog and changed it to automatically switch to skeleton view.
+    - We decided to let you know if a dictionary is not selected when generating a puzzle.
+    - Updated URLs.
+- 2025-06-03 ver.5.2.8
+    - Added digital signature to EXE files.
+    - Fixed a null reference in taskbar thumbnail on Vista.
+- 2026-02-01 ver.5.2.9
+    - Fixed a race condition when completing and canceling.
+    - Improved speed using generation AI.
+- 2026-07-02 ver.5.3.0
+    - Extended the font settings for grid cells and small characters to the LOGFONT format.
+    - Fixed an issue causing abnormal termination in the property sheet.
+- 2026-09-05 ver.5.3.1
+    - Added "AI Helper". AI Helper enables clue regeneration.
+- 2026-09-06 ver.5.3.2
+    - Localized AI Helper into English.
+    - Added a feature to clear all clues.
+    - Added a feature to re-generate all clues.
+    - Added the ability to undo AI helper actions.
+    - Fixed the "Undo" and "Redo" operations for clues.
+    - Added the ability to specify "additional instruction text" for the AI ​​helper.
+- 2026-09-06 ver.5.3.3
+    - Fixed an issue where the AI ​​helper would not respond.
+- 2026-09-08 ver.5.3.4
+    - Fixed a critical bug in the QString class.
+    - Fixed a handle leak in the XgUpdateImage function.
+    - Sanitized AI Helper input.
+    - Limit the number of times the "undo" action can be performed.
+    - Fixed an error in the "Small Font" setting of XG_SettingsDialog.
+    - Fixed the color settings for XG_PatternDialog.
+    - Strengthened checks for XG_JumpDialog.
+    - Dramatically improved AI Helper's UI/UX.
+    - Added more AI models.
+    - Grouped "Undo" information for AI helper operations.
+- 2026-09-10 ver.5.3.5
+    - Python is no longer required in the runtime environment.
+    - Made "AIHelper.txt" accessible from the Help menu.
+    - Set the fairy image.
+- 2026-09-11 ver.5.3.6
+    - Clue explanations and quality checks are now possible.
+- 2026-09-19 ver.5.3.7
+    - It is now possible to analyze the season and theme of the crossword.
+    - Added GMO Pepabo's "Lolipop! AI Gateway" to the AI ​​models.
+    - It is now possible to configure double-frame word using AI Helper.
+    - Fixed a menu issue.
+    - Embedded known AI model names.
+    - Added AI Model "gemini-3.5-flash-lite".
+    - Renamed AI Provider "gemini" as "google".
+- 2026-09-20 ver.5.3.8
+    - Moved AI model data to an external file (filename "AIModels.dat"). 
+    - Added support for local AIs.
+    - Fixed AI provider names ("chatgpt" → "openai", "claude" → "anthropic", "qwen" → "dashscope").
+- 2026-09-20 ver.5.3.9
+    - Improved installer.
+    - Changed "Unclassifiable" to "Mixed seasons."
+    - Fixed behaviour of "Delete clues and unlock board".
+- 2026-10-01 ver.5.4.0
+    - Enhanced the kanji dictionary.
+    - Modified to reset the theme string when creating a new file.
+    - Added "minimax" and "zai" AI models.
+    - Made it possible to revert the theme string.
+    - Made it possible to revert the double-frame toggling.
+    - Added "parse_xd.py," a Python script for parsing XD files.
+    - Configured the process to automatically synchronize its environment variables with the system.
+- 2026-10-15 ver.5.4.1
+    - Removed "Additional instruction text".
+    - AI prompts can now be customized.
+    - Changed the fairy's age to 17.
+- 2026-10-15 ver.5.4.2
+    - Custom prompts are now also available from the "Clues" window.
+    - Improved "Initial prompt" and "Explain this clue".
+    - Resolved language-related issues with prompts.
+- 2026-11-23 ver.5.4.3
+    - Transitioned to a shareware (paid) model; a license key must be purchased via the designated page on Vector to continue using the software.
+    - Implemented Test-Driven Development (TDD) and Quality Control (QC) processes; overhauled the source code.
+    - Added a prompt to save changes when exiting the application via the menu.
+    - Performed a major, breaking overhaul of the algorithm to improve stability; it is now possible to generate larger grids within a reasonable timeframe.
+    - Removed the "Smart Solve," "Auto-Retry," and "UI Font" settings to streamline the user experience and reduce the need for manual configuration.
+    - Adjusted the labeling to "ACROSS" and "DOWN" for English-language users.
+    - Split the "Small Font" setting into "Small Font 1" and "Small Font 2."
+    - Corrected the input/output order for the AI ​​Helper.
+    - Removed the "Box" feature.
+    - Renamed "Theme" to "Theme Tag."
+    - Added the ability to generate puzzles using AI ​​Helper.
+    - Added support for exporting as PNG, JPEG, and GIF images.
+    - Improved the "Double-Square Word" dialog.
+    - Fixed issues related to Romaji-to-Kana input.
+    - Enabled automatic cursor advancement when entering black squares.
+    - Added a warning that the header and notes section will be lost when saving in the CRP format.
+    - Various other minor UI/UX improvements.
+
+# 開発履歴 (Japanese)
+
+- 2013-05-28 ver.0.0
+    - 初公開。
+- 2013-05-28 ver.0.1
+    - 64ビット対応。保存したファイルの開き方を改善。
+- 2013-06-01 ver.0.3
+    - リソースの文字化けを修正。
+    - 解がないとき停止しなかったバグを修正。
+    - ウィンドウサイズを記録するようにした。
+    - 技術文書を付けた。
+- 2013-06-18 ver.0.5
+    - 黒マスルールを適用。高速化。
+- 2013-07-19 ver.0.6
+    - 拗音変換の不具合修正。
+    - マルチスレッド化。
+    - 進行状況の表示。
+- 2013-07-23 ver.0.7
+    - 処理の劇的な改善。
+- 2013-07-25 ver.0.8
+    - 二重マスをサポート。
+- 2013-08-21 ver.0.9
+    - 英和単語データを追加。
+    - 二重マス単語をタイトルバーに表示。
+- 2013-08-29 ver.1.0
+    - 単語データの精査。印刷機能。
+- 2013-08-30 ver.1.1
+    - 印刷機能の改良。黒マス追加なしで解を求めることが可能に。
+- 2013-09-08 ver.1.2
+    - 文字列読み込みに関する致命的なバグを修正。未登録単語の処理を追加。黒マスの上書き問題を解消。
+- 2013-09-09 ver.1.3
+    - 解がないときに解答を出力しようとすると落ちるバグを修正。黒インクの節約。細かな改良。
+- 2014-01-27 ver.1.4
+    - 連続生成が可能に。マルチコアでの最適化。英語リソースの追加。
+- 2014-01-28 ver.1.5
+    - コードの整理。データフローの致命的な間違いを修正。UIの改善。
+- 2014-03-02 ver.1.6
+    - 単語データの拡張子を.dicに変更。さらなる高速化。
+- 2014-04-14 ver.1.7
+    - 「解を求める」において単語候補を求める計算の間違いを修正。
+- 2014-04-16 ver.1.8
+    - ドロップしたときにタイトルバーの二重マス表示が残っていたのを修正。
+    - 32ビット版と64ビット版のレジストリキーを分離。
+    - 開いたり保存したファイル名を保存。コマンドラインから.xwdが開けるようにした。
+    - 「ヘルプ」メニューに対称チェック機能追加。
+    - 多重起動禁止。
+    - ハングル文字入力サポート。
+- 2014-10-08 ver.2.0
+    - ウィンドウの位置を記憶するようになった。
+    - 太い外枠をつける。
+    - 「単語データ」を「辞書データ」に、「単語ファイル」を「辞書ファイル」に改名。
+    - ヒントの編集と辞書データの更新ができるようにした。タイ文字サポートをやめる。
+- 2014-10-09 ver.2.1
+    - メール送信機能を追加。
+    - 「ファイル」メニューに「辞書データ ファイルを更新する」項目を追加。
+    - 「ヘルプ」メニューに「掲示板を開く」項目を追加。
+    - ヒントの更新が正しく保存や印刷に反映されていなかったなどのバグを修正。
+    - 備考欄を追加。他、さまざまな改良。
+- 2014-10-18 ver.2.2
+    - ソースコードの整理。
+    - 縦長のサイズのときに時間がかかっているようなので、縦と横を入れ替えて解いた後、また入れ替えるという方法で、高速化した。
+    - ヒントウィンドウでTabキーとPageUp/PageDownキーとマウスホイールが使えるようになった。
+- 2014-11-08 ver.2.3
+    - 「ヒント」ウィンドウにおける「元に戻す」「コピー」「貼り付け」の不具合を修正。
+    - グローバル変数へのアクセスを減らして高速化。
+    - IMEの制御でサイズを入力しやすく。
+    - Ctrl+Aの動作を標準的にした。
+    - UIの標準化。
+    - 読み込んだ辞書の内容に応じて、自動的に入力モードを変えるようにした。
+    - 漢字辞書を追加。
+    - 「設定の消去」の後で、状態がおかしくなるバグを修正。
+    - シェアウェア化。
+    - 「ヘルプ」メニューに「ライセンス キーを登録する」を追加。
+    - シェアウェア試用期間における「連続生成」の機能制限。
+- 2014-11-30 ver.2.4
+    - 二重マス単語の候補がないときに落ちるバグを修正。
+    - スレッド情報のアクセス違反を修正。
+    - 半角数字が含まれるヒント文字列の解析の間違いを修正。
+    - 「連続で解を求める」機能を追加。
+    - 「解の自動生成」で「作成する問題の個数」が指定できなかったバグを修正。
+    - 「ライセンス キーの登録」のURLを更新。
+    - 漢字辞書を増強。
+    - 改造品に関するライセンス変更。
+    - 保存先のパスがないとき、必要に応じてフォルダを作るようにした。
+    - 点対称パターンを追加。
+    - 盤面を貼り付けたとき、ヒントを隠すようにした。
+    - 「編集」メニューに「画像としてコピー」を追加。
+    - 「何番目」の数字がずれていた点を修正。
+    - Ctrlキーを押しながら矢印キーですばやく移動できるようになった。
+    - 他、操作系のさまざまな微調整。
+- 2014-12-07 ver.2.5
+    - 「ファイル」メニューに「辞書データ ファイルを読み込む」を追加。
+    - 「編集」メニューに「ヒントをコピー」を追加。
+    - 「タテ」「ヨコ」を含むヒントは、辞書に保存しないようにした。
+    - バージョンアップしたときに、仕様期限を更新するようにした。
+    - 右クリックメニューを追加。
+    - 自動ではない「手動」作成支援のために、[Shift]+[Ctrl]+[矢印]で候補を表示するようにした。
+    - ヒントのない問題を開くときの不具合を修正。
+    - ファイルのヘッダーを保存するようにした。
+    - ヘッダーと備考欄の閲覧・編集ができるようになった。
+    - ツールバーを追加。
+    - [設定]でツールバーの表示を切替できるようにした。
+    - フォントの設定をクリアできるようにした。
+    - 漢字辞書に256語追加。
+- 2014-12-19 ver.2.6
+    - JSON形式のファイル出力と読み込みをサポート（拡張子：.xwj／.json）。
+    - URLが間違っていたので修正。
+    - 生成個数の保存。
+    - 連続生成でヒントを更新していなかったバグ修正。
+    - 新聞を参考に漢字辞書に839語追加。
+- 2014-12-21 ver.2.7
+    - 二重マスの並びのイメージをコピーできるようにした。
+    - 作りかけの問題がJSON形式で保存できなかった不具合を修正。
+    - ファイルをドロップしたときに、ツールバーの表示を更新してなかった不具合を修正。
+    - 辞書ファイル切り替えで、辞書のリストが表示されていなかった不具合を修正。
+    - 拡張子の扱いに関する不具合を修正。
+    - 「ヒント」ウィンドウと「候補」ウィンドウでスクロールバーの表示が更新されていなかった不具合を修正。
+    - Unicode BEをサポート。
+    - 出力ファイルにBOMをつけてメモ帳でも読み取れるように。
+    - メール本文の長いヒント文章に改行が追加されても正しく読み取れるようになった。
+    - 漢字辞書を最適化。
+- 2014-12-27 ver.2.8
+    - 二重マスの並びのイメージに太枠をつけた。
+    - UIフォントの変更をサポート。
+    - クリップボードへHTML形式のコピーができるようになった。
+    - 長いヒント文章を複数行で見やすく表示。
+    - さらに漢字辞書を強化。
+    - インストールの場所を変更。
+- 2015-01-10 ver.2.9
+    - ヒントの更新後にヒントが正しくコピーされないバグを修正。
+    - 「元に戻す」機能の追加。
+    - カギのコピーが正しく行われないバグを修正。
+    - 漢字辞書を増強。
+- 2015-01-17 ver.3.0
+    - 「ヘルプ」メニューに「黒マスパターンを生成する」を追加。
+    - 「編集」メニューに「サイズを指定して画像をコピー」と「高さを指定して二重マス単語の画像をコピー」を追加。
+    - ヒントのコピーにおいて、行間が広がりすぎるバグを修正。
+    - 二重マスの選び方を改良した。漢字辞書と点対称パターンを増強。
+- 2015-01-25 ver.3.1
+    - 「ヘルプ」メニューに「タテとヨコを入れ替える」を追加。
+    - 「設定」に「太枠をつける」チェックボックスを追加。
+    - 「候補」ウィンドウの破棄を忘れていたのを修正。
+    - メインウィンドウの位置が保存されていなかったのを修正。
+    - サイズの異なるファイルの読み込み直後に、辞書を切り替えると、マス情報がおかしくなるバグを修正。
+    - 候補があるのに「単語の候補がないマスがあります」と表示されるバグを修正。
+    - 縦が長いとき、「解を求める」をキャンセルすると落ちるバグを修正。
+    - 漢字辞書と点対称パターンをさらに増強。
+- 2015-04-05 ver.3.2
+    - 「設定」でマスの色を変えることが可能に。
+    - 二重マスの枠を描画しない設定が可能に。
+- 2017-03-24 ver.3.3
+    - ビルド設定を見直し、XPでも動作可能に。
+    - 著作権表示を更新。
+- 2017-11-30 ver.3.4
+    - clang++への移行。右クリックから候補を表示できるようにした。
+    - Escキーで「候補」ウィンドウを閉じられるようにした。
+    - 黒マスチェックに関するアルゴリズムの改良。
+- 2017-12-26 ver.3.5
+    - JSON形式で保存できなかったのを修正。
+    - アルゴリズムの改良。
+- 2017-12-27 ver.3.6
+    - 最小化されたときに閉じると表示されなくなる不具合を修正。
+    - この問題に遭遇した場合は、レジストリキー「HKEY_CURRENT_USER\Software\Katayama Hirofumi MZ\XWord」を削除すれば復旧します。
+- 2018-07-15 ver.3.7
+    - 「ヒント」ウィンドウのちらつきを減らした。
+- 2019-08-30 ver.3.8
+    - 計算速度を劇的に改善する「スマート解決」機能を追加。
+    - 「入力パレット」を追加。
+    - 「文字送り」「改行」「バックスペース」などの入力システムの劇的改善。
+    - 単語のWeb検索機能を追加。
+    - Windows XP サポートの終了。
+    - ステータスバーを追加。
+    - ソースコードの近代化。
+    - ハングル文字サポートの終了。
+    - ダイアログにスピンコントロールを追加して、GUIを改善。
+    - アイコンをシンプルなものに刷新。
+    - 丸い角から直角の角へ。
+    - ネットの「クロスワード辞典」をヘルプメニューに追加。
+    - Crossword Builder形式 (*.crp;*.crx) のファイルの一部読み込みが可能に。
+- 2019-09-01 ver.3.9
+    - アプリキーの動作を改善。
+    - 入力パレットを強化。
+    - 入力モードを辞書で切り替えないようにした。
+    - 文字送りを保存するようにした。
+    - レジストリ関係を整理。
+    - 入力パレットの位置を保存するようにした。
+    - ソースコードのさらなる近代化。
+    - ヒント文書が空でもヒントウィンドウを正しく表示するようにした。
+    - 「辞書の書き込み」を廃止。
+    - ズーム機能を追加。
+    - ステータスバーの修正と改良。
+- 2019-09-03 ver.4.0
+    - 「文字送り(Ctrl+^)」と「入力方向(Ctrl+/)」のショートカットを追加。
+    - コンテキストメニューを改良・増強。
+    - ズーム比率を保存。
+    - ロシア文字とロシア辞書をサポート。
+    - サイズグリップの表示の修正。
+    - なめらかにズームできるようにした。
+    - 問題を作成したときにキャレットの位置をクリアする。
+    - キャレットの表示を改良する。
+    - 盤の初期サイズを7×7に変更。
+    - 「単語のコピー」機能を追加。
+    - ライセンスの更新。
+- 2019-09-19 ver.4.1
+    - 「ひらがな表示」機能を追加。
+    - 「Lowercase」機能を追加。
+- 2019-09-29 ver.4.2
+    - 「入力」メニューの改良。
+    - 「候補」ウィンドウもひらがな表示が可能に。
+    - 「入力パレット」もひらがな表示が可能に。
+    - JSON 操作ライブラリを picojson から nlohmann/json に移行。
+    - MITライセンスに移行。
+    - 他のファイルを開くときにヒントウィンドウを閉じるようにした。
+    - 辞書ファイルが増えすぎたので、新設のDICTフォルダに移動。
+    - <strsafe.h>を用いてバッファオーバーフローしないようにした。
+    - 小さい文字のフォントが変更できなかったのを修正。
+    - 文字の大きさを百分率（％）で指定できるようにした。
+    - 黒マスの画像が設定可能に。
+    - 文書アイコンを追加。
+- 2020-10-26 ver.4.3
+    - 辞書ファイルが存在しないときの処理を追加。
+    - 黒マス生成時の単純な計算間違いを修正。
+    - 辞書の改良。
+    - 辞書をUTF-8にした。
+    - 黒マス画像のプレビューを追加した。
+    - JSON形式以外のファイル保存を廃止。
+    - 日本語Pythonをサポート。付属のxword.pyをご利用下さい。
+- 2020-11-04 ver.4.4
+    - 辞書ファイルの拡張子を.tsvに変更。
+    - 「★二重マス用四字熟語カナ辞書.tsv」を追加。
+    - 辞書を修正・改良。
+    - 辞書の順番を勝手に変えないようにした。
+    - 「辞書」メニューを追加。
+    - 「タテとヨコを入れ替える」を修正。
+    - xword.pyを強化。
+    - メール送信を廃止。
+    - ツールバーアイコンを刷新。
+    - 盤のコピーの際にDIBデータを設定。
+    - 「連続で解を求める(黒マス追加なし)」を修正。
+2020-11-08 ver.4.5
+    - 辞書選択のメニュー化に伴い、UI/UXを単純化した。
+    - 辞書の扱いを改善。
+    - 辞書の読み込み時に入力モードを更新。
+    - 「黒マスパターン」をウェブ上に展開。
+- 2020-12-07 ver.4.6.0
+    - 32ビット版と64ビット版でレジストリキーを分離（XWord32とXWord64）。
+    - インストーラにxwjファイルの関連付けを追加。
+    - 「ファイル」メニューに「黒マスパターンから自動生成」機能を追加。
+- 2020-12-16 ver.4.6.1
+    - 「黒マスパターン」ダイアログの操作性を改良。
+    - 「黒マスパターン」で「元に戻す」情報追加とツールバー更新。
+    - 「黒マスパターン」を強化。
+    - 辞書分析ツール「dict_analyze」を追加。
+    - 設定の消去が効かなかったのを修正。
+- 2020-12-24 ver.4.6.2
+    - 「ヒント」ウィンドウと「候補」ウィンドウのちらつきをなくす。
+    - 「ヒント」ウィンドウにコンテキストメニューを追加。
+- 2020-12-31 ver.4.6.3
+    - 「ルール」メニューを追加。黒マスルールの緩和と強化が可能。
+    - ルールが既定値と異なる場合は「ルール」メニューに「(!)」を表示。
+    - 現在のルールをファイルに保存するようにした。
+    - 「黒マスパターン」ダイアログのリストをルールに適合させるようにした。
+    - アルゴリズムを改良。
+    - 資源と時間を無駄遣いしないように盤のサイズを20×20までに制限。
+- 2021-01-15 ver.4.6.4
+    - 黒マスパターンの生成アルゴリズムが改善し、性能と安定性が向上。
+    - アルゴリズムの改善に伴い、盤のサイズ制限を22×22に緩和。
+    - 「辞書」メニューに「テーマ」機能を追加。
+    - テーマで「優先タグ」と「除外タグ」の指定が可能に（優先タグ指定には、かなり計算量がかかるので注意）。
+    - 「テーマ」ダイアログの「プリセット」により、タグの指定を容易に。
+    - カナ辞書データにタグ情報と既定のテーマ情報を追加。
+    - CPUを使いすぎないようにする。
+    - 「規定値」を「既定値」に修正。
+    - xword.pyを修正。
+    - 現在のテーマと現在の辞書名をファイルに保存。
+    - ことわざ辞書を追加。
+- 2021-01-16 ver.4.6.5
+    - 4.6.4で漢字クロスワードが作成できなかった不具合を修正。
+    - 「一定時間が過ぎたらリトライ」項目を「解」メニューに追加。
+    - 漢字の場合、スマート解決を使用しないようにした。
+- 2021-01-17 ver.4.6.6
+    - 「ルール」メニューに「スケルトン モード」を追加。
+    - 「問題の作成」ダイアログで「最大文字長」を指定可能に。
+- 2021-01-21 ver.4.6.7
+    - 「スケルトン モード」のルールと最大文字長を若干修正。
+    - XG_Board::IsOKが間違っていたのを修正。
+    - 「ヴ」を使えるようにした。
+    - 辞書分析ツールdict_analyzeを改良。
+- 2021-01-23 ver.4.6.8
+    - 連続生成を刷新。
+    - 「ヘルプ」メニューに「黒マスパターンを連続生成する...」を追加。
+    - 「黒マスパターンの生成」を少し改良。
+    - 「最大文字長」を「最大単語長」に変更。
+- 2021-01-28 ver.4.6.9
+    - ReadMeに間違いがあったので修正。
+    - 「編集」メニューに盤を「黒マスで埋め尽くす」「空白マスで埋め尽くす」機能を追加。
+    - 「新規作成」ダイアログを強化。
+    - サイズの管理を厳格化＆単純化。
+    - 二重起動を可能に。
+- 2021-03-03 ver.4.7.0
+    - 漢字辞書を増強。
+    - 辞書の読み込みと単語の追加の順序に関する不具合を修正。
+- 2021-04-24 ver.4.7.1
+    - フォントの制限を緩和。
+- 2021-06-01 ver.4.7.2
+    - CRPファイルへの書き込みをサポート。
+    - CRPファイルからの読み込みを改良。
+    - 「表示」メニューのズームを改良。
+    - 黒マスルールの説明を改良。
+- 2021-08-10 ver.4.7.3
+    - ルール「黒斜三連禁」を追加。
+- 2021-08-22 ver.4.7.4
+    - 文字送りをデフォルトに。
+    - 英語のサポートの再開。
+- 2021-08-23 ver.4.7.5
+    - 英語サポートを改良。
+    - 日本語ファイル名を排除。
+    - 英語の入力パレットを改良。
+    - ライセンスの単純化。
+    - 入力が文字でないときに文字送りをしない。
+    - インストーラを単純化。
+- 2021-08-25 ver.4.7.6
+    - 数字入力を受け入れる。
+    - 番号を消すことが可能に。
+    - キャレットを消すことが可能に。
+    - 「解」メニューに「解を削除して編集ロックを解除」を追加。
+    - 黒マスパターンを追加。
+- 2021-08-26 ver.4.7.7
+    - 英語辞書を強化。
+    - 「解を削除して盤のロックを解除」を「ヒントを削除して盤のロックを解除」に変更。
+- 2021-10-27 ver.4.7.8
+    - 英語の辞書の品質を劇的に改良。
+    - 英語のダイアログを改良。
+    - 黒マスパターンをさらに追加。
+    - 「辞書リストを再読み込み」メニュー項目を追加。
+    - ルール周りを改良。
+    - 辞書読み込みを修正。
+    - EXEファイルの名前を変更。
+- 2021-10-29 ver.4.7.9
+    - 「スケルトン ビュー」メニュー項目を追加。
+    - Webサービスの Grammarly を使うことにより英英辞書を改良。
+    - 二重マスの文字の表示を改善。
+    - 「二重マス単語の画像をコピー」を修正。
+    - サイズの制限を30x30に緩和（ハイエンド向け）。
+- 2021-11-03 ver.4.8.0
+    - 黒マス線対称をサポート。
+    - 「二重マス文字」の指定が可能に。
+    - 「二重マス単語の画像をコピー」を「二重マス単語をコピー」に変更。
+    - 「高さを指定して二重マス単語の画像をコピー」を廃止。
+    - 「サイズを指定して画像をコピー」を廃止。
+    - 「単語リストをコピー」を追加。
+    - 「単語をウェブ検索」を改良。
+    - 辞書の個数の制限を64個までに緩和。
+    - 対称のルールのときに「解を求める(黒マス追加なし)」で盤を対称にするようにした。
+    - 最大単語長周りを修正。
+    - 「skeleton」のtypoを修正。
+- 2021-11-11 ver.4.8.1
+    - 「単語リストから自動生成」機能を追加。
+    - 盤のサイズの制限を緩和。
+    - 二重マス文字を表示するかを切り替え可能にした。
+    - 未登録単語を何度も警告しない。
+    - 「行の追加」「列の追加」を追加。
+    - 「行の削除」「列の削除」を追加。
+    - 「設定の消去」を改良。
+    - GUIの軽微な改良。
+    - GUIの英語を改良。
+    - さらに黒マスパターンを追加。
+    - 空白マスがない場合は「解を求める」を制限しない。
+    - 辞書の個数が多い時の不具合を修正。
+    - ファイルを開いたときにズームをウィンドウに合わせるようにした。
+- 2021-11-18 ver.4.8.2
+    - 「単語リストから自動生成」の周辺を修正。
+    - マウスの中央ボタンでドラッグが可能に。
+    - 線対称のときの最大単語長を微調整。
+    - 黒マスパターンを改良と修正。
+    - 「data.json」の読み込み時にエラーを適切に処理するようにした。
+- 2021-11-25 ver.4.8.3
+    - フランス語入力をサポート (Ctrl+Shift+^ A for Â etc.)。
+    - フランス語辞書を追加。
+    - ギリシャ文字とトルコ語の入力をサポート。
+    - XDファイルの読み書きをサポート。
+    - ヘッダと備考欄を改良。
+    - コマンドライン「--convert input.xwj output.xd」でファイル変換を自動化。
+    - 英字入力と数字入力の描画時に半角を使うようにした。
+    - 長音「ー」の処理を修正。
+    - アクセスキーを修正。
+- 2021-12-01 ver.4.8.4
+    - 「自由入力モード」を導入。デフォルトに。
+    - 「単語リストから自動生成」を改良して「単語群から自動生成」に。
+    - 「表示」→「ズーム」→「全体に合わせる」(Ctrl+F)を追加。
+    - 生成とルール設定における致命的な不具合を修正。
+    - 辞書切り替えとヒントのコピーに関する致命的な不具合を修正。
+    - ハイライト機能を追加。
+    - さらに黒マスパターンを追加。
+    - 小さい文字の大きさを30%に。
+    - 英語ユーザーの場合はスケルトンビューをデフォルトに。
+    - 「辞書」メニューの表示を改良。
+    - 現在のビューモードをファイルに保存するようにした。
+    - 現在のファイルの種類を保存するようにした。
+    - 英語ユーザーの場合はXDファイルをデフォルトにした。
+    - XDファイルの読み書きを改良。
+- 2021-12-13 ver.4.8.5
+    - 人間にやさしい辞書名の表示。
+    - IMEの未確定文字列の表示を改良。
+    - 二重マスのハイライト描画を改良。
+    - ReadMeを改良。
+    - エラーメッセージのセル位置の表示を単純化。
+    - 辞書データの仕様変更。
+- 2022-01-17 ver.4.8.6
+    - さらにReadMeを改良。
+    - 「Ctrl+/」でタテ入力・ヨコ入力を切り替えられなかったのを修正。
+- 2022-02-17 ver.4.8.7
+    - 英語辞書をタグ付け。
+    - 候補群をソートして一意化。
+    - スケルトンビューの二重マス文字描画を修正。
+    - 設定のインポート・エクスポートが可能に(LOOKSファイル)。
+    - 「ファイル」メニューを少し改造。
+    - 「設定」を「見た目の設定」に改名。
+    - 小さい文字の色を修正。
+    - Ctrl+Enterでヘッダと備考欄を編集できるようにした。
+    - 黒マス画像の対応形式を拡大。
+- 2022-02-18 ver.4.8.8
+    - 辞書「BasicDict-ENG-Modesty.tsv」を追加。
+    - 「見た目の設定」に「英小文字」「ひらがな」を追加。
+    - LOOKSファイルのドロップを可能に。
+    - 「Policies」を「Policy」に変更。
+    - いくつかのルールを改名 (英語のみ)。
+    - スケルトンモードの廃止。
+    - 既定値のルールを変更。
+    - 「文字群をコピー」機能の追加。
+    - ルールプリセット機能を追加。
+    - ヒントウィンドウの初期位置を改善。
+    - 問題を作成したときにズームを全体に合わせる。
+- 2022-02-21 ver.4.8.9
+    - コピー・印刷時にスケルトンビューを透過にした。
+    - ボックス（テキストボックス・画像ボックス）の追加が可能に。
+    - ファイル変更を監視し、ファイルの保存を確認。
+    - メインファイルの読み込み・保存時に*_filesフォルダに関連ファイルを読み込み・保存。
+    - 「ヨコ線対称」を「左右対称」に。「タテ線対称」を「上下対称」に。
+- 2022-02-22 ver.4.9.0
+    - 「ルール」メニューの「上下対称」と「左右対称」が入れ替わっていたのを修正（日本語のみ）。
+    - ボックスのコピー位置を修正。
+    - テキストファイルをテキストボックスとしてドロップ可能に。
+    - 最大化され、表示領域が小さいとき、ズームを合わせる。
+    - XDファイル読み書きを改良。
+    - マウスホイールの処理を改善。
+    - ボックスの改良。
+- 2022-02-25 ver.4.9.1
+    - 用語統一のため、「盤」を「盤面」に修正（日本語のみ）。
+    - ソフト標準化のため、「上書き保存」を追加。
+    - 「表示」メニューをコンパクトに。
+    - ファイルの読み込み・保存の方法を改良。
+- 2022-03-17 ver.4.9.2
+    - 「編集」メニューに「UI Language Select」を追加。
+- 2022-06-30 ver.4.9.3
+    - 辞書のタイトル表示をUI言語に合わせた。
+    - XD形式を標準に（日本語のみ）。
+    - 拡張子.dicの辞書も取り込む。
+    - 「ルール プリセット」ダイアログを改良。
+    - ことわざ辞書の増強。
+    - カナ辞書の増強。
+- 2022-08-01 ver.4.9.4
+    - 漢字辞書の増強。
+- 2022-08-04 ver.4.9.5
+    - 番号付きのマスをクリックしたときのヒントウィンドウのテキストボックスのハイライト機能を追加。
+- 2022-08-05 ver.4.9.6
+    - ver.4.9.5においてファイルが開けなかった致命的な不具合を修正。
+    - 「表示」メニューに「ナンクロモード」を追加。問題を作成した後でナンバークロスにすることが可能。ナンクロはXDファイルとXWJ/JSONファイルに保存可能です。
+    - XWordGiver.pyを削除。
+    - noexceptキーワードの指定により、高速化。
+    - 「ヘルプ」メニューに「黒マスを反射する」を追加。
+- 2022-08-06 ver.4.9.7
+    - XDファイルの保存を改良。
+    - ナンクロに関する不具合を修正。
+    - ビューモードを元に戻せるように。
+    - タイトルバーの表示を修正。
+    - バージョン情報ダイアログを改良。
+    - ヘルプメニューの項目の順序を変更する。
+    - アイコンを改良。
+- 2022-08-07 ver.4.9.8
+    - 黒マスパターンのデータを「data.json」から「PAT.txt」に移行。黒マスパターンを編集しやすくなりました。
+    - スケルトンビューでは、余白が省略されないように四隅に小さな白い点を描画する。
+    - ヘルプメニューに「PAT.txtを開く」と「THEME.txtを開く」を追加。
+    - バージョン情報ダイアログにWin32/Win64を表示。
+    - テーマのプリセット値を定義するファイルTHEME.txtを追加。
+    - テーマダイアログで選択状態をはっきり表示。
+    - テーマダイアログの項目の扱いに関する不具合を修正。
+- 2022-08-16 ver.4.9.9
+    - 「ルール」メニューを改良。
+    - 「ルール プリセット」ダイアログを改良。
+    - メインウィンドウの前回の最大化状態を保存。
+    - 盤面のコンテキストメニューを改良。
+    - 黒マスパターンをダウンロードできるように(準備中)。
+    - 辞書ファイルをダウンロードできるように(準備中)。
+    - インストーラ版の廃止。
+    - 候補の表示の不具合を修正。
+    - テキストボックスのフォント名とフォントサイズを指定できるように。
+    - XDファイルのボックスの書き込みの不具合を修正。
+- 2022-08-29 ver.5.0.0
+    - ツールバーに「元に戻す」「やり直す」ボタンを追加。
+    - フォルダドロップで保存先を指定可能に。
+    - 「解を求める」ときに開いているファイル名をクリアしないようにした。
+    - ルールメニューの黒斜三連禁と黒斜四連禁がおかしかったのを修正。
+    - XWJ/JSON/XDファイルにPolicyと言う名前で整数値を保存するようにした。
+    - ボックスを「元に戻す」ことが可能に。
+    - 「元に戻す」「やり直す」の修正。
+    - 位置指定・サイズ指定を (x, y) と (ヨコ x タテ) の形に統一。
+    - ファイル読み込みのデフォルトのコードページをUTF-8にした。
+    - 「日本の出版社ルール (ゆるい)」の値を改変。
+    - 試験的にデジタル署名を追加。
+    - インストーラを復活。
+- 2022-10-01 ver.5.0.1
+    - 黒マスパターンを増強。
+    - POLICY.txtを追加。ルールのプリセットがカスタマイズ可能に。
+    - 「解」メニューに「二重マス単語の候補と配置」を追加。二重マスの扱いを改善。
+- 2022-10-02 ver.5.0.2
+    - 「二重マス単語の候補と配置」ダイアログを改良。
+    - 二重マス単語を正しく「元に戻す」。
+    - THEME.txtの各項目にラベルを追加。
+- 2023-03-25 ver.5.0.3
+    - 黒マスパターンの最大サイズを20x20に。
+    - 黒マスパターン(PAT.txt)を改良。
+    - 長い単語には候補が少ないことに着目した大局的な最適化。
+    - 黒マスパターンダイアログの改良。
+- 2023-05-23 ver.5.0.4
+    - 線の幅を指定できるようにする。線の幅のデフォルトを1.0に。
+    - 線の幅をちゃんと計算。
+    - 盤面の描画を改良。
+    - 不完全なEMFサポートの外部ソフトウェアに対してEMF描画の不具合を回避。
+- 2023-05-24 ver.5.0.5
+    - LOOKSファイルに線の幅を保存するようにした。
+    - 「最近使ったファイル」を実装。
+    - Ctrl+Dを「二重マス単語をコピー」に割り付け。
+    - ドロップしたときにイメージが更新されてなかったのを修正。
+    - 線の幅もリセットできるようにした。
+- 2023-05-25 ver.5.0.6
+    - Ctrl+ホイールでヒントをズーム可能に。
+    - 線の幅をちゃんとインポート／エクスポートできるように。
+    - 外枠の幅の設定を追加。
+    - 外枠の描画を修正。
+- 2023-05-28 ver.5.0.7
+    - 外枠の印刷を改良。
+    - 描画ルーチンを改良。
+    - ナンクロの描画を修正。
+    - スケルトンビューの線の描画を修正。
+    - 二重マス単語の描画を改善。
+- 2023-05-29 ver.5.0.8
+    - ECWファイル（EclipseCrossword）の読み込みをサポート。
+    - ScrollWindow関数を用いてスクロールを高速化。
+    - キャレットの描画を内部イメージから切り離すことにより、キャレットの移動を高速化。
+    - ズーム中の盤面の描画を高速化。
+    - ズームを9%より小さくできないようにした。
+    - 文字配置を高速化。
+- 2023-05-30 ver.5.0.9
+    - 快適にスクロールできるよう、スクロールの量を微調整。
+    - 快適にズームできるよう、ズームの量を微調整。
+    - ヒントのズームの高速化。
+- 2023-07-01 ver.5.1.0
+    - 「＃」「♯」「■」などの入力を改良。
+    - 長方形のテキストを盤面として貼り付け可能に。
+    - エクセル方眼の盤面の貼り付けが可能に。
+- 2023-08-14 ver.5.1.1
+    - 行や列を削除したとき、キャレットが盤面からはみ出ないようにした。
+    - PAT.txtを増強。
+    - 黒マスパターンのサイズを45x45までサポート。
+    - 「ヘルプ」メニューに「上下を入れ替える」「左右を入れ替える」を追加。
+    - 問い合わせ先のURLを更新。
+- 2023-08-15 ver.5.1.2
+    - 日本語辞書の改良。
+    - 「ルール プリセット」ダイアログの改良。ルールの説明の改良。
+- 2023-12-25 ver.5.1.3
+    - 「アプリの初期化」において黒マスの情報も消す。
+- 2024-01-04 ver.5.1.4
+    - 盤面の面積を表示。
+    - ステータスバーを強化し、ポリシーの値と辞書名などを表示。
+- 2024-01-07 ver.5.1.5
+    - ビットマップ保存時に余分な黒い領域ができるのを修正。
+- 2024-02-01 ver.5.1.6
+    - TIFF画像のサポート。
+    - 入力パレットの改良。
+- 2024-02-04 ver.5.1.7
+    - 隠し機能「Ctrl+Alt+Shift+Q」を追加。これで上級者はPAT.txtを編集できるようになった。
+    - PAT.txtの増強。PAT.txtにUTF-8 BOMを付けるようにした。
+    - 「問題の作成」に「PAT.txtから黒マスパターンを自動的に選ぶ」機能を追加。これにより、選択肢が減る代わりに高速化が可能。
+- 2024-02-17 ver.5.1.8
+    - カナ辞書を少し改良。
+    - 「PAT.txtから自動的にパターンを選ぶ」をデフォルトにした。
+    - 排他制御をきちんとする。
+    - コンテキストメニューの使えない項目を無効化した。
+    - 「解」メニューに「答え合わせ」機能を追加。
+    - 計算時間の表示を修正。
+- 2024-04-01 ver.5.1.9
+    - 「ヨコのカギ」と「タテのカギ」のアクセスキーを修正。
+    - 黒マスの色を少し濃くした。
+    - さらにカナ辞書を改良。
+    - 文字列処理を高速化するためにQStringを使用した。
+    - 排他制御をきちんとする（その２）。
+    - ステータスバーをダブルクリックしたときの「ジャンプ」機能を追加。
+    - ヒントのラベルを右クリックしたときの「ジャンプ」機能を追加。
+    - 「UIフォント」設定をLOOKSファイルで読み書きしないようにした。
+    - 「候補」ウィンドウのルールチェックを緩和。
+    - 「候補」ウィンドウのズームが可能に。
+    - 「候補」を「入力候補」に改名。
+- 2024-04-02 ver.5.2.0
+    - メニューを刷新。
+    - 「入力候補」による入力を正しく元に戻せるようにした。
+    - デフォルトの保存先を「マイ ドキュメント」から「マイ ドキュメント/XWordGiver」に変更。
+    - 「ファイル」メニューに「連番で保存」項目を追加。
+    - 「問題の連続生成」機能を廃止。
+    - 設定ダイアログをプロパティシートに統合。
+    - 「問題を開いたら答えを表示する」設定を追加。
+    - 「LOOKS情報を読み込まない・書き込まない」設定を追加。
+    - 「問題を生成したら自動で連番保存」設定を追加。
+- 2024-04-03 ver.5.2.1
+    - 右クリックメニューに「全体に合わせる」を追加。
+    - ツールバーやステータスバーの右クリックに対応。
+    - 二重マス単語の初期選択を修正。
+    - 保存先設定を「開く」や「名前を付けて保存」に反映。
+    - QStringの文字列比較を修正。
+    - 「生成しました」「キャンセルしました」の表示をオプションに。
+    - プロパティシートに「生成」設定と「辞書」設定と「上級者向け」設定を追加。
+- 2024-04-04 ver.5.2.2
+    - 辞書リストの読み込みを修正。
+    - 「辞書」設定からテーマを開けるようにした。
+    - 「ジャンプ」ダイアログを修正。
+    - 「辞書」設定の一部テキストを修正。
+    - 生成の成功時・失敗時・キャンセル時に音を鳴らせるようにした。
+- 2024-04-05 ver.5.2.3
+    - ReadMeを更新。
+    - 上級者向け設定に「アプリのフォルダを開く」を追加。
+    - LOOKSファイルをドロップしたときに盤面が更新されなかったのを修正。
+    - LOOKSファイルの黒マス画像の読み書きを修正。
+- 2024-04-18 ver.5.2.4
+    - ファイルの設定で連番ファイル名を指定可能にした。
+- 2024-04-19 ver.5.2.5
+    - 今度こそ排他制御をちゃんとする。
+    - 辞書の更新日時を表示する機能を追加。
+    - 「ジャンプ」ダイアログをモードレス化した。
+    - 「文字または単語にジャンプ」機能を追加。
+    - 「上級者向け」設定に「問題のカギを使って辞書ファイルを更新する」機能を追加。
+    - 「編集」メニューに「ジャンプ」を追加。
+- 2025-04-24 ver.5.2.6
+    - 「アプリの初期化」においてちゃんと外枠の設定をリセット。
+    - PAT.txtを強化。
+- 2025-05-01 ver.5.2.7
+    - タスクバー進捗表示を実装。
+    - タスクバーサムネイル表示を実装。
+    - 「単語群から生成」ダイアログを改良し、自動的にスケルトンビューになるよう変更。
+    - 問題の生成時に辞書が選択されていない場合、教えてあげることにした。
+    - URLを更新。
+- 2025-06-03 ver.5.2.8
+    - EXEファイルにデジタル署名を追加。
+    - VistaにおいてタスクバーサムネイルでNULL参照が起こっていたのを修正。
+- 2026-02-01 ver.5.2.9
+    - 完了時とキャンセル時の競合状態を修正。
+    - 生成AIを用いて高速化。
+- 2026-07-02 ver.5.3.0
+    - マスのフォントと小さい文字のフォント設定をLOGFONT形式に拡張。
+    - プロパティシートでの異常終了を修正。
+- 2026-09-05 Ver.5.3.1
+    - 「AIヘルパー」を追加。AIヘルパーにより、カギの再生成が可能に。
+- 2026-09-06 ver.5.3.2
+    - AIヘルパーを英語にローカライズ。
+    - カギをすべてクリアする機能を追加。
+    - カギをすべて再生成する機能を追加。
+    - AIヘルパーのアクションを元に戻せるように。
+    - カギの「元に戻す」「やり直す」処理を修正。
+    - AIヘルパーに「追加的な指示テキスト」を指定できるようにした。
+- 2026-09-06 ver.5.3.3
+    - AIヘルパーが反応しない不具合を修正。
+- 2026-09-08 ver.5.3.4
+    - QStringクラスの致命的な不具合を修正。
+    - XgUpdateImage関数のハンドルリークを修正。
+    - AIヘルパーの入力をサニタイズ。
+    - 「元に戻せる」回数を制限。
+    - XG_SettingsDialogの「小さいフォント」設定の間違いを修正。
+    - XG_PatternDialogの色設定を修正。
+    - XG_JumpDialogのチェックを強化。
+    - AIヘルパーのUI/UXを劇的に改良。
+    - AIモデルをさらに追加。
+    - AIヘルパー使用時の「元に戻す」情報をグループ化した。
+- 2026-09-10 ver.5.3.5
+    - 実行環境でPython不要になった。
+    - ヘルプメニューから「AIHelper.txt」を開けるように。
+    - 妖精のイメージをセット。
+- 2026-09-11 ver.5.3.6
+    - カギの解説と品質チェックが可能に。
+- 2026-09-19 ver.5.3.7
+    - クロスワードの季節とテーマの分析が可能に。
+    - AIモデルにGMOペパボの「ロリポップ！AIゲートウェイ」を追加。
+    - AIヘルパーで二重マス単語の設定が可能に。
+    - メニューの不具合を修正。
+    - 既知のAIモデル名を埋め込む。
+    - AIモデル「gemini-3.5-flash-lite」を追加。
+    - プロバイダ「gemini」を「google」に改名。
+- 2026-09-20 ver.5.3.8
+    - AIモデルのデータを外部ファイル化（ファイル名「AIModels.dat」）。
+    - ローカルAIのサポート。
+    - AIプロバイダ名を修正（「chatgpt」→「openai」、「claude」→「anthropic」、「qwen」→「dashscope」）。
+- 2026-09-20 ver.5.3.9
+    - インストーラを改良。
+    - 「分類不可」を「季節がばらばら」に変更。
+    - 「ヒントを削除して盤面のロックを解除」の動作を修正。
+- 2026-10-01 ver.5.4.0
+    - 漢字辞書を増強。
+    - ファイルを新規作成したらテーマ文字列をリセットするように修正。
+    - minimaxとzaiのAIモデルを追加。
+    - テーマ文字列を元に戻せるようにした。
+    - 二重マス切り替えを元に戻せるようにした。
+    - XDファイル解析用のPythonスクリプト「parse_xd.py」を追加。
+    - プロセスの環境変数を自動的にシステムに同期するようにした。
+- 2026-10-15 ver.5.4.1
+    - 追加的な指示テキスト廃止。
+    - AIプロンプトのカスタマイズが可能に。
+    - 妖精の年齢を17歳に変更。
+- 2026-10-15 ver.5.4.2
+    - 「ヒント」ウィンドウからもカスタムプロンプトが利用可能に。
+    - 「初期プロンプト」「このカギを解説」を改良。
+    - プロンプトの言語問題を解決。
+- 2026-11-23 ver.5.4.3
+    - シェアウェア化（有料化）。継続して使用するには、ベクターの該当ページからライセンスキーを購入する必要があります。
+    - テスト駆動開発とQCを導入。ソースコードを刷新。
+    - メニューからアプリを終了したときに、変更を保存するか確認するようにした。
+    - アルゴリズムの破壊的刷新と安定化。さらに大きな盤面も現実的な時間で生成できるようになった。
+    - 「スマート解決」「自動で再試行」「UIフォント」設定を廃止。ユーザーが細かいことを気にせず使えるようにした。
+    - 英語圏の場合は「ACROSS」「DOWN」の順になるようにした。
+    - 「小さいフォント」設定を「小さいフォント1」「小さいフォント2」に分離。
+    - AIヘルパーの入出力の順序を修正。
+    - ボックスを廃止。
+    - 「テーマ」を「テーマ タグ」に改名。
+    - AIヘルパーで問題の生成ができるようになった。
+    - PNG/JPEG/GIF画像出力のサポート。
+    - 二重マス単語ダイアログを改良。
+    - カナ入力のローマ字入力を修正。
+    - 黒マス入力時の文字送りを有効にした。
+    - CRP形式で保存時にヘッダーと備考欄が消える警告を表示するようにした。
+    - その他、軽微なUI/UX改良。

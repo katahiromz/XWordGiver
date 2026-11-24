@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="64"
+   height="64"
+   viewBox="0 0 16.933333 16.933334"
+   version="1.1"
+   id="svg5"
+   sodipodi:docname="document.svg"
+   inkscape:export-filename="C:\Users\katahiromz\Documents\DEV\XWordGiverProject\XWordGiver\icondata\document.png"
+   inkscape:export-xdpi="96"
+   inkscape:export-ydpi="96"
+   inkscape:version="1.1.2 (b8e25be833, 2022-02-05)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview7"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:document-units="mm"
+     showgrid="false"
+     units="px"
+     inkscape:zoom="3.3994949"
+     inkscape:cx="54.56693"
+     inkscape:cy="36.181846"
+     inkscape:window-width="1366"
+     inkscape:window-height="705"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="layer1" />
+  <defs
+     id="defs2">
+    <linearGradient
+       inkscape:collect="always"
+       id="linearGradient1385">
+      <stop
+         style="stop-color:#a2c4c3;stop-opacity:1"
+         offset="0"
+         id="stop1381" />
+      <stop
+         style="stop-color:#dbeed0;stop-opacity:1"
+         offset="1"
+         id="stop1383" />
+    </linearGradient>
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient1385"
+       id="linearGradient1387"
+       x1="9.4140625"
+       y1="56.773438"
+       x2="26.711796"
+       y2="35.507759"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="matrix(0.29646435,0,0,0.29646435,0.1818778,-1.1261555)" />
+  </defs>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <path
+       id="rect31"
+       style="fill:url(#linearGradient1387);fill-opacity:1;stroke:#325037;stroke-width:0.889393;stroke-miterlimit:4;stroke-dasharray:none;paint-order:fill markers stroke;stop-color:#000000;stroke-opacity:1"
+       d="M 2.9728117,1.2281883 V 15.705145 H 13.960522 V 5.6346215 L 9.5540886,1.2281883 Z" />
+    <path
+       style="fill:none;stroke:#325037;stroke-width:0.889393;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="M 9.5540887,1.2281883 V 5.8505125 H 13.78638"
+       id="path466" />
+    <image
+       width="6.6292453"
+       height="6.6292453"
+       preserveAspectRatio="none"
+       xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAIAAADYYG7QAAAAA3NCSVQICAjb4U/gAAADTklEQVRY he2ZzV6sIBiHEUEdv9p0C9W+Nq27htp3QV1At9OttJhdmYH+RhjkLDiHHETGQTvnLHpXjCI8/t8P wAHgx9wW6BbG+B9ycM5V4zcQxpgxtnBQKaWU0tFw3D0/P1dMaCGEtr7v5zAZPYMg0NeVrQCkRry7 uzMujruNf97f3z8+Pq4JpMd6eXnxePzm5mZNhYbuWD7IIiAjVL2BpJQQwjiOIYT+QOM49bYoioqi CIKv6gOX0yzBghAOacBJCrlT2g9obHOBjta6vwp0tM4uBDohy6b0WNFlxrOTQEf1WEUhKSVjrGka tZ64gIbsRmNFoK7r6roWQugrJtCpwix0mRBiv98fiaFThVnoMnD4Psi47Qjho6xLmCxA1g3NzFj2 3m1KKfu+tyvkmM/aUO0wDKMoQsh/kQ6CII5jhJBlx3g0cocNCCHGGGNsLEYnGULo7Oxss9noVzJd 9vr6ut1uDXnGQY0xRgjpPQMA4Pb21ng3IYSuLlZhIISXl5d5nh8gGv2en5+fnp483lXPLYRQtU4I YVVX+agsS2vkHcTQkgRWI3DO27ZljFl1BQBgjNM0zbJsytGrAQkh2rbtus4hTFEUw3CZBeRHAwB4 f3+XhwYG4b/ZbIqimJOMZtp7m1HG9IBRFOV5niTJlI/6vm/bVp9cV1PIKkye524fMcaqqlIZYAfy ZhoKow4SZVmGYTjVeb/fE0Kqqpqs1AAAhNDUEDOZpJRJkqRpGsexw0eEEEJI13WKxg4URVEYhsNa d5L1fR+GYZZlaZo6Bum6rqqqtm1VMoJRqHwBea9HyvI8z7LM4SPO+cfHB6VUhcu4NJhAqlR4A5Vl OXVLCEEpJYTsdjs9l9GwAH2T7Xa7t7c3VTDBjP3ddwFJKRljdV1TSvUyNxZmnNrfAqR8VNc153wo g1sbCxBjbPmHvaZp6rp2+GjqW5sJRAjhnA9PJCeZlFKdaZqmMSYbTzwrqLW8fqZSWgns8M4UqwVI K+kNpBcBd8RMOdEEUj0eHh6ur6/V/jJJEsdxQv45BStph4vAfGFcLlO3Ly4urq6ukiRx03DOKaWU UrVtmIqPmYh2IKUbQijLMnWWmHJi27afn5+MsZnfpmeiKPvv/lr4sWP2CzwYqL/MD0xKAAAAAElF TkSuQmCC "
+       id="image1401"
+       x="5.1520438"
+       y="7.4259439" />
+  </g>
+</svg>

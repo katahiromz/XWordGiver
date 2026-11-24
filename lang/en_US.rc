@@ -1,0 +1,1835 @@
+// このファイルは リソーエディタ 6.2.4 によって自動生成されました。
+// † <-- このダガー記号は、UTF-8の検出に役立ちます。
+
+#pragma code_page(65001) // UTF-8
+
+LANGUAGE LANG_ENGLISH, SUBLANG_DEFAULT
+
+//////////////////////////////////////////////////////////////////////////////
+// RT_MENU
+
+1 MENU
+{
+    POPUP "&File"
+    {
+        MENUITEM "&New board...\tCtrl+N", ID_NEW
+        MENUITEM "&Generate crossword...\tCtrl+G", ID_GENERATE
+        MENUITEM SEPARATOR
+        MENUITEM "Generate from block pa&ttern...\tCtrl+;", ID_OPENPATTERNS
+        MENUITEM "Generate from &words...\tCtrl+:", ID_GENERATEFROMWORDLIST
+        MENUITEM SEPARATOR
+        MENUITEM "&Open...\tCtrl+O", ID_OPEN
+        MENUITEM "&Save\tCtrl+S", ID_SAVE
+        MENUITEM "Save &as...\tCtrl+Shift+S", ID_SAVEAS
+        MENUITEM "Se&rial numbering save\tCtrl+Alt+S", ID_NUMBERINGSAVE
+        MENUITEM SEPARATOR
+        MENUITEM "Save as &image...\tCtrl+I", ID_SAVEPROBASIMAGE
+        MENUITEM "Sa&ve answer as image...\tCtrl+B", ID_SAVEANSASIMAGE
+        MENUITEM SEPARATOR
+        MENUITEM "Print pro&blem\tCtrl+Q", ID_PRINTPROBLEM
+        MENUITEM "&Print answer\tCtrl+P", ID_PRINTANSWER
+        MENUITEM SEPARATOR
+        POPUP "Recently &Used"
+        {
+            MENUITEM "(None)", ID_RECENT_00, GRAYED
+        }
+        MENUITEM SEPARATOR
+        MENUITEM "&Header and remarks...\tCtrl+Enter", ID_HEADERANDNOTES
+        MENUITEM "S&ettings...\tAlt+Enter", ID_SETTINGS
+        MENUITEM SEPARATOR
+        MENUITEM "Initiali&ze application", ID_ERASESETTINGS
+        MENUITEM "E&xit\tAlt+F4", ID_EXIT
+    }
+    POPUP "&Edit"
+    {
+        MENUITEM "&Undo\tCtrl+Z", ID_UNDO
+        MENUITEM "&Redo\tCtrl+Y", ID_REDO
+        MENUITEM SEPARATOR
+        MENUITEM "Show input candidat&es (ACROSS)...", ID_OPENCANDSWNDHORZ
+        MENUITEM "Show input candida&tes (DOWN)...", ID_OPENCANDSWNDVERT
+        MENUITEM SEPARATOR
+        MENUITEM "&Copy board\tCtrl+C", ID_COPY
+        MENUITEM "Copy board as &image\tShift+Ctrl+C", ID_COPYASIMAGE
+        MENUITEM "&Paste\tCtrl+V", ID_PASTE
+        MENUITEM SEPARATOR
+        MENUITEM "Copy &ACROSS word", ID_COPYWORDHORZ
+        MENUITEM "Copy &DOWN word", ID_COPYWORDVERT
+        MENUITEM "Copy multi&set of letters", ID_COPYCHARSET
+        MENUITEM "Copy list of w&ords", ID_COPY_WORD_LIST
+        MENUITEM "Copy double-&frame word\tCtrl+D", ID_COPYMARKWORD
+        MENUITEM SEPARATOR
+        POPUP "Copy c&lues"
+        {
+            MENUITEM "Copy ACROSS clues (Style 0) (&Y)", ID_COPYHHINTSSTYLE0
+            MENUITEM "Copy ACROSS clues (Style 1) (&E)", ID_COPYHHINTSSTYLE1
+            MENUITEM SEPARATOR
+            MENUITEM "Copy DOWN clues (Style 0) (&T)", ID_COPYVHINTSSTYLE0
+            MENUITEM "Copy DOWN clues (Style 1) (&L)", ID_COPYVHINTSSTYLE1
+            MENUITEM SEPARATOR
+            MENUITEM "Copy all clues (Style 0) (&N)", ID_COPYHINTSSTYLE0
+            MENUITEM "Copy all clues (Style 1) (&A)", ID_COPYHINTSSTYLE1
+        }
+        MENUITEM SEPARATOR
+        MENUITEM "Search ACROSS word on &Web\tAlt+Right", ID_ONLINEDICTH
+        MENUITEM "Search DOWN word on We&b \tAlt+Down", ID_ONLINEDICTV
+        MENUITEM SEPARATOR
+        MENUITEM "&Jump...", ID_JUMP
+        MENUITEM SEPARATOR
+        MENUITEM "UI La&nguage Select...", ID_UILANGID
+    }
+    POPUP "&Input"
+    {
+        MENUITEM "&Kana input", ID_KANAINPUT
+        MENUITEM "&Alphabet input", ID_ABCINPUT
+        MENUITEM "Kan&ji input", ID_KANJIINPUT
+        MENUITEM "C&yrillic input", ID_RUSSIAINPUT
+        MENUITEM "&Greek input", ID_GREEKINPUT
+        MENUITEM "&Digit input", ID_DIGITINPUT
+        MENUITEM "A&ny input", ID_ANYINPUT
+        MENUITEM SEPARATOR
+        MENUITEM "&Horizontal input\tCtrl+/", ID_INPUTH
+        MENUITEM "&Vertical input\tCtrl+/", ID_INPUTV
+        MENUITEM SEPARATOR
+        MENUITEM "Character &feed\tCtrl+^", ID_CHARFEED
+        MENUITEM SEPARATOR
+        MENUITEM "Bl&ock\t#", ID_BLOCK
+        MENUITEM "&Space\t_", ID_SPACE
+        MENUITEM SEPARATOR
+        MENUITEM "&Backspace\tBkSp", ID_BACK
+        MENUITEM "New &Line\tEnter", ID_RETURN
+        MENUITEM "&Toggle double-frame\tCtrl+.", ID_TOGGLEMARK
+        MENUITEM SEPARATOR
+        MENUITEM "&Clear all letters", ID_CLEARNONBLOCKS
+        MENUITEM SEPARATOR
+        MENUITEM "Input &Palette\tCtrl+U", ID_PALETTE2
+    }
+    POPUP "&Dictionary"
+    {
+        MENUITEM "&Theme tags...", ID_THEMETAGS
+        MENUITEM SEPARATOR
+        MENUITEM "D&ownload dictionaries...", ID_DOWNLOADDICT
+        MENUITEM "Reload &dict list", ID_RELOADDICTS
+        MENUITEM SEPARATOR
+        MENUITEM "(None)", ID_DICTIONARY00, GRAYED
+    }
+    POPUP "&Solution"
+    {
+        MENUITEM "Find a &solution\tF5", ID_SOLVE
+        MENUITEM "Find a solution (without &adding blocks)\tF7", ID_SOLVENOADDBLACK
+        MENUITEM SEPARATOR
+        MENUITEM "Show ans&wer\tCtrl+M", ID_SHOWSOLUTION
+        MENUITEM "Hi&de answer\tCtrl+M", ID_NOSOLUTION
+        MENUITEM SEPARATOR
+        MENUITEM "&Checking answer", ID_CHECKANSWER
+        MENUITEM SEPARATOR
+        MENUITEM "&Marking double-frame word...\tCtrl+J", ID_MARKSNEXT
+        MENUITEM "&Reset all the double-frames", ID_KILLMARKS
+        MENUITEM SEPARATOR
+        MENUITEM "Delete clues and &unlock board", ID_ERASESOLUTIONANDUNLOCKEDIT
+    }
+    POPUP "&View"
+    {
+        MENUITEM "&Toolbar", ID_TOOLBAR
+        MENUITEM "&Status bar", ID_STATUS
+        MENUITEM "&Input palette\tCtrl+U", ID_PALETTE
+        MENUITEM "Cl&ues\tCtrl+L", ID_SHOWHIDEHINTS
+        MENUITEM "AI Helpe&r", ID_OPENAIHELPER
+        MENUITEM SEPARATOR
+        MENUITEM "&Answer\tCtrl+M", ID_SHOWHIDESOLUTION
+        MENUITEM "&Caret", ID_SHOWHIDECARET
+        MENUITEM "Doubl&e-frame", ID_VIEW_DOUBLEFRAME
+        MENUITEM "Dou&ble-frame letters", ID_VIEW_DOUBLEFRAME_LETTERS
+        MENUITEM SEPARATOR
+        MENUITEM "Skelt&on View", ID_VIEW_SKELETON_VIEW
+        MENUITEM "NumCro &Mode", ID_NUMCROMODE
+        MENUITEM SEPARATOR
+        MENUITEM "&lowercase", ID_LOWERCASE
+        MENUITEM "&Hiragana", ID_HIRAGANA
+        MENUITEM SEPARATOR
+        MENUITEM "&Next Pane\tF6", ID_PANENEXT
+        MENUITEM "&Previous Pane\tShift+F6", ID_PANEPREV
+        MENUITEM SEPARATOR
+        POPUP "&Zoom"
+        {
+            MENUITEM "&Fit whole\tCtrl+F", ID_FITZOOM
+            MENUITEM SEPARATOR
+            MENUITEM "&Zoom in\tCtrl+Wheel Forward", ID_ZOOMIN
+            MENUITEM "Zoom &out\tCtrl+Wheel Back", ID_ZOOMOUT
+            MENUITEM "Zoom &100%\tCtrl+\\", ID_ZOOM100
+            MENUITEM SEPARATOR
+            MENUITEM "Zoom &30%", ID_ZOOM30
+            MENUITEM "Zoom &50%", ID_ZOOM50
+            MENUITEM "Zoom &65%", ID_ZOOM65
+            MENUITEM "Zoom &80%", ID_ZOOM80
+            MENUITEM "Zoom &90%", ID_ZOOM90
+        }
+    }
+    POPUP "&Policy"
+    {
+        MENUITEM "Policy &Preset...\tCtrl+R", ID_RULEPRESET
+        MENUITEM "&Reset the policy", ID_RESETRULES
+        MENUITEM SEPARATOR
+        MENUITEM "Policy: Prohibit &adjacent blocks", ID_RULE_DONTDOUBLEBLACK
+        MENUITEM "Policy: Prohibit blocks at 4 corn&ers", ID_RULE_DONTCORNERBLACK
+        MENUITEM "Policy: Prohibit three-&way blocks", ID_RULE_DONTTRIDIRECTIONS
+        MENUITEM "Policy: No &division by blocks", ID_RULE_DONTDIVIDE, GRAYED
+        MENUITEM "Policy: Prohibit diagonal &3 blocks", ID_RULE_DONTTHREEDIAGONALS
+        MENUITEM "Policy: Prohibit diagonal &4 blocks", ID_RULE_DONTFOURDIAGONALS
+        MENUITEM "Policy: Point &symmetry of blocks", ID_RULE_POINTSYMMETRY
+        MENUITEM "Policy: Vertica&l symmetry of blocks", ID_RULE_LINESYMMETRYV
+        MENUITEM "Policy: H&orizontal symmetry of blocks", ID_RULE_LINESYMMETRYH
+        MENUITEM SEPARATOR
+        MENUITEM "What's &the policy?", ID_OPENRULESTXT
+        MENUITEM "Policy &conformity check", ID_RULECHECK
+    }
+    POPUP "&Help"
+    {
+        MENUITEM "Open &ReadMe-ENG.txt\tF1", ID_OPENREADME
+        MENUITEM "Open LI&CENSE.txt", ID_OPENLICENSE
+        MENUITEM "Open PAT.t&xt", ID_OPENPATTXT
+        MENUITEM "Open THE&ME.txt", ID_OPENTHEMETXT
+        MENUITEM "Open &POLICY.txt", ID_OPENPOLICYTXT
+        MENUITEM "Open AI&Helper.txt", ID_OPENAIHELPERTXT
+        MENUITEM SEPARATOR
+        MENUITEM "&Official site", ID_OPENHOMEPAGE
+        MENUITEM SEPARATOR
+        MENUITEM "Choose block pa&ttern...", ID_OPENPATTERNS
+        MENUITEM "&Generate block pattern...", ID_GENERATEBLACKS
+        MENUITEM SEPARATOR
+        MENUITEM "Blocks &line symmetry check\tCtrl+E", ID_LINESYMMETRYCHECK
+        MENUITEM "Blocks point &symmetry check\tCtrl+T", ID_POINTSYMMETRYCHECK
+        MENUITEM "R&eflect block pattern", ID_REFLECTBLOCKS
+        MENUITEM SEPARATOR
+        MENUITEM "Swap ACROSS and &DOWN", ID_FLIPVH
+        MENUITEM "Swap left and r&ight", ID_SWAP_LEFT_RIGHT
+        MENUITEM "Swap top and &bottom", ID_SWAP_TOP_BOTTOM
+        MENUITEM SEPARATOR
+        MENUITEM "&About", ID_ABOUT
+    }
+}
+
+2 MENU
+{
+    POPUP "Popup #0"
+    {
+        MENUITEM "&Block\t#", ID_BLOCKNOFEED
+        MENUITEM "&Space\t_", ID_SPACENOFEED
+        MENUITEM SEPARATOR
+        POPUP "Input &mode"
+        {
+            MENUITEM "&Kana input", ID_KANAINPUT
+            MENUITEM "&Alphabet input", ID_ABCINPUT
+            MENUITEM "Kan&ji input", ID_KANJIINPUT
+            MENUITEM "C&yrillic input", ID_RUSSIAINPUT
+            MENUITEM "&Greek input", ID_GREEKINPUT
+            MENUITEM "&Digit input", ID_DIGITINPUT
+            MENUITEM "A&ny input", ID_ANYINPUT
+        }
+        MENUITEM SEPARATOR
+        POPUP "Kana letters"
+        {
+            POPUP "ア行"
+            {
+                MENUITEM "ア", 10000
+                MENUITEM "イ", 10001
+                MENUITEM "ウ", 10002
+                MENUITEM "エ", 10003
+                MENUITEM "オ", 10004
+            }
+            POPUP "カ行"
+            {
+                MENUITEM "カ", 10010
+                MENUITEM "キ", 10011
+                MENUITEM "ク", 10012
+                MENUITEM "ケ", 10013
+                MENUITEM "コ", 10014
+            }
+            POPUP "サ行"
+            {
+                MENUITEM "サ", 10020
+                MENUITEM "シ", 10021
+                MENUITEM "ス", 10022
+                MENUITEM "セ", 10023
+                MENUITEM "ソ", 10024
+            }
+            POPUP "タ行"
+            {
+                MENUITEM "タ", 10030
+                MENUITEM "チ", 10031
+                MENUITEM "ツ", 10032
+                MENUITEM "テ", 10033
+                MENUITEM "ト", 10034
+            }
+            POPUP "ナ行"
+            {
+                MENUITEM "ナ", 10040
+                MENUITEM "ニ", 10041
+                MENUITEM "ヌ", 10042
+                MENUITEM "ネ", 10043
+                MENUITEM "ノ", 10044
+            }
+            POPUP "ハ行"
+            {
+                MENUITEM "ハ", 10050
+                MENUITEM "ヒ", 10051
+                MENUITEM "フ", 10052
+                MENUITEM "ヘ", 10053
+                MENUITEM "ホ", 10054
+            }
+            POPUP "マ行"
+            {
+                MENUITEM "マ", 10060
+                MENUITEM "ミ", 10061
+                MENUITEM "ム", 10062
+                MENUITEM "メ", 10063
+                MENUITEM "モ", 10064
+            }
+            POPUP "ヤ行"
+            {
+                MENUITEM "ヤ", 10070
+                MENUITEM "ユ", 10071
+                MENUITEM "ヨ", 10072
+            }
+            POPUP "ラ行"
+            {
+                MENUITEM "ラ", 10080
+                MENUITEM "リ", 10081
+                MENUITEM "ル", 10082
+                MENUITEM "レ", 10083
+                MENUITEM "ロ", 10084
+            }
+            POPUP "ワ行"
+            {
+                MENUITEM "ワ", 10090
+                MENUITEM "ン", 10091
+                MENUITEM "ー", 10092
+            }
+            POPUP "ガ行"
+            {
+                MENUITEM "ガ", 10100
+                MENUITEM "ギ", 10101
+                MENUITEM "グ", 10102
+                MENUITEM "ゲ", 10103
+                MENUITEM "ゴ", 10104
+            }
+            POPUP "ザ行"
+            {
+                MENUITEM "ザ", 10110
+                MENUITEM "ジ", 10111
+                MENUITEM "ズ", 10112
+                MENUITEM "ゼ", 10113
+                MENUITEM "ゾ", 10114
+            }
+            POPUP "ダ行"
+            {
+                MENUITEM "ダ", 10120
+                MENUITEM "ヂ", 10121
+                MENUITEM "ヅ", 10122
+                MENUITEM "デ", 10123
+                MENUITEM "ド", 10124
+            }
+            POPUP "バ行"
+            {
+                MENUITEM "バ", 10130
+                MENUITEM "ビ", 10131
+                MENUITEM "ブ", 10132
+                MENUITEM "ベ", 10133
+                MENUITEM "ボ", 10134
+            }
+            POPUP "パ行"
+            {
+                MENUITEM "パ", 10140
+                MENUITEM "ピ", 10141
+                MENUITEM "プ", 10142
+                MENUITEM "ペ", 10143
+                MENUITEM "ポ", 10144
+            }
+            MENUITEM "長音 (ー)", 10150
+        }
+        POPUP "Alphabet"
+        {
+            POPUP "A - F"
+            {
+                MENUITEM "A", 20000
+                MENUITEM "B", 20001
+                MENUITEM "C", 20002
+                MENUITEM "D", 20003
+                MENUITEM "E", 20004
+                MENUITEM "F", 20005
+            }
+            POPUP "G - L"
+            {
+                MENUITEM "G", 20006
+                MENUITEM "H", 20007
+                MENUITEM "I", 20008
+                MENUITEM "J", 20009
+                MENUITEM "K", 20010
+                MENUITEM "L", 20011
+            }
+            POPUP "M - R"
+            {
+                MENUITEM "M", 20012
+                MENUITEM "N", 20013
+                MENUITEM "O", 20014
+                MENUITEM "P", 20015
+                MENUITEM "Q", 20016
+                MENUITEM "R", 20017
+            }
+            POPUP "S - X"
+            {
+                MENUITEM "S", 20018
+                MENUITEM "T", 20019
+                MENUITEM "U", 20020
+                MENUITEM "V", 20021
+                MENUITEM "W", 20022
+                MENUITEM "X", 20023
+            }
+            POPUP "Y - Z"
+            {
+                MENUITEM "Y", 20024
+                MENUITEM "Z", 20025
+            }
+            POPUP "Accent"
+            {
+                MENUITEM "^\tShift+Ctrl+^", 20026
+                MENUITEM "`\tShift+Ctrl+`", 20027
+                MENUITEM "'\tShift+Ctrl+'", 20028
+                MENUITEM ":\tShift+Ctrl+:", 20029
+                MENUITEM ",\tShift+Ctrl+,", 20030
+                MENUITEM "&\tShift+Ctrl+&", 20031
+                MENUITEM ".\tShift+Ctrl+.", 20032
+            }
+            POPUP "Others"
+            {
+                MENUITEM "Ğ\tShift+Ctrl+G", 20033
+            }
+        }
+        POPUP "Cyrillic letters"
+        {
+            POPUP "А - Е"
+            {
+                MENUITEM "А", 30000
+                MENUITEM "Б", 30001
+                MENUITEM "В", 30002
+                MENUITEM "Г", 30003
+                MENUITEM "Д", 30004
+                MENUITEM "Е", 30005
+            }
+            POPUP "Ё - К"
+            {
+                MENUITEM "Ё", 30006
+                MENUITEM "Ж", 30007
+                MENUITEM "З", 30008
+                MENUITEM "И", 30009
+                MENUITEM "Й", 30010
+                MENUITEM "К", 30011
+            }
+            POPUP "Л - Р"
+            {
+                MENUITEM "Л", 30012
+                MENUITEM "М", 30013
+                MENUITEM "Н", 30014
+                MENUITEM "О", 30015
+                MENUITEM "П", 30016
+                MENUITEM "Р", 30017
+            }
+            POPUP "С - Ц"
+            {
+                MENUITEM "С", 30018
+                MENUITEM "Т", 30019
+                MENUITEM "У", 30020
+                MENUITEM "Ф", 30021
+                MENUITEM "Х", 30022
+                MENUITEM "Ц", 30023
+            }
+            POPUP "Ч - Ь"
+            {
+                MENUITEM "Ч", 30024
+                MENUITEM "Ш", 30025
+                MENUITEM "Щ", 30026
+                MENUITEM "Ъ", 30027
+                MENUITEM "Ы", 30028
+                MENUITEM "Ь", 30029
+            }
+            POPUP "Э - Я"
+            {
+                MENUITEM "Э", 30030
+                MENUITEM "Ю", 30031
+                MENUITEM "Я", 30032
+            }
+        }
+        POPUP "Digits"
+        {
+            MENUITEM "0", 40000
+            MENUITEM "1", 40001
+            MENUITEM "2", 40002
+            MENUITEM "3", 40003
+            MENUITEM "4", 40004
+            MENUITEM "5", 40005
+            MENUITEM "6", 40006
+            MENUITEM "7", 40007
+            MENUITEM "8", 40008
+        }
+        POPUP "Greek letters"
+        {
+            POPUP "α - ζ"
+            {
+                MENUITEM "α", 41000
+                MENUITEM "β", 41001
+                MENUITEM "γ", 41002
+                MENUITEM "δ", 41003
+                MENUITEM "ε", 41004
+                MENUITEM "ζ", 41005
+            }
+            POPUP "η - μ"
+            {
+                MENUITEM "η", 41006
+                MENUITEM "θ", 41007
+                MENUITEM "ι", 41008
+                MENUITEM "κ", 41009
+                MENUITEM "λ", 41010
+                MENUITEM "μ", 41011
+            }
+            POPUP "ν - σ"
+            {
+                MENUITEM "ν", 41012
+                MENUITEM "ξ", 41013
+                MENUITEM "ο", 41014
+                MENUITEM "π", 41015
+                MENUITEM "ρ", 41016
+                MENUITEM "σ", 41017
+            }
+            POPUP "τ - ω"
+            {
+                MENUITEM "τ", 41018
+                MENUITEM "υ", 41019
+                MENUITEM "φ", 41020
+                MENUITEM "χ", 41021
+                MENUITEM "ψ", 41022
+                MENUITEM "ω", 41023
+            }
+        }
+        MENUITEM SEPARATOR
+        MENUITEM "&Toggle double-frame\tCtrl+.", ID_TOGGLEMARK
+        MENUITEM SEPARATOR
+        MENUITEM "Appearanc&e...\tAlt+Enter", ID_SETTINGS
+        MENUITEM SEPARATOR
+        MENUITEM "Delete clues and &unlock board", ID_ERASESOLUTIONANDUNLOCKEDIT
+        MENUITEM "&Clear all letters", ID_CLEARNONBLOCKS
+        MENUITEM SEPARATOR
+        MENUITEM "Copy &ACROSS word", ID_COPYWORDHORZ
+        MENUITEM "Copy &DOWN word", ID_COPYWORDVERT, MENUBREAK
+        MENUITEM SEPARATOR
+        MENUITEM "Show &input candidates (ACROSS)\tShift+Ctrl+→", ID_OPENCANDSWNDHORZ
+        MENUITEM "Show in&put candidates (DOWN)\tShift+Ctrl+↓", ID_OPENCANDSWNDVERT
+        MENUITEM SEPARATOR
+        MENUITEM "&Web search word (ACROSS)\tAlt+→", ID_ONLINEDICTH
+        MENUITEM "Web searc&h word (DOWN)\tAlt+↓", ID_ONLINEDICTV
+        MENUITEM SEPARATOR
+        MENUITEM "Insert a row (abo&ve)", ID_INSERT_ROW_ABOVE
+        MENUITEM "Insert a row (be&low)", ID_INSERT_ROW_BELOW
+        MENUITEM "Left-i&nsert a column", ID_LEFT_INSERT_COLUMN
+        MENUITEM "Ri&ght-insert a column", ID_RIGHT_INSERT_COLUMN
+        MENUITEM "Delete this &row", ID_DELETE_ROW
+        MENUITEM "Delete this c&olumn", ID_DELETE_COLUMN
+        MENUITEM SEPARATOR
+        MENUITEM "&Fit whole\tCtrl+F", ID_FITZOOM
+        MENUITEM SEPARATOR
+        MENUITEM "AI: Anal&yze the season of this crossword", ID_JUDGESEASON
+        MENUITEM "AI: Analy&ze the theme of this crossword", ID_JUDGETHEME
+        MENUITEM SEPARATOR
+        MENUITEM "AI: Custom Prompt &1", ID_AI_CUSTOM_PROMPT_1
+        MENUITEM "AI: Custom Prompt &2", ID_AI_CUSTOM_PROMPT_2
+    }
+    POPUP "Popup #1"
+    {
+        MENUITEM "Copy &ACROSS clues", ID_COPYHHINTSSTYLE0
+        MENUITEM "Copy &DOWN clues", ID_COPYVHINTSSTYLE0
+        MENUITEM "Copy al&l clues", ID_COPYHINTSSTYLE0
+        MENUITEM "&Jump", ID_JUMPNUMBER
+        MENUITEM SEPARATOR
+        MENUITEM "&Clear this clue", ID_CLEARTHISCLUE
+        MENUITEM "Clea&r all clues", ID_CLEARALLCLUES
+        MENUITEM SEPARATOR
+        MENUITEM "AI: Re-&generate this clue", ID_GENERATEHINT
+        MENUITEM "AI: Re-ge&nerate all the clues", ID_GENERATEHINTSALL
+        MENUITEM SEPARATOR
+        MENUITEM "AI: E&xplain this clue", ID_EXPLAINTHISCLUE
+        MENUITEM "AI: Check the &quality of all clues", ID_CHECKQUALITYOFALLCLUES
+        MENUITEM SEPARATOR
+        MENUITEM "AI: Custom Prompt &1", ID_AI_CUSTOM_PROMPT_1
+        MENUITEM "AI: Custom Prompt &2", ID_AI_CUSTOM_PROMPT_2
+    }
+    POPUP "Popup #2"
+    {
+        MENUITEM "&Toolbar", ID_TOOLBAR
+        MENUITEM "&Status bar", ID_STATUS
+        MENUITEM SEPARATOR
+        MENUITEM "&Jump...", ID_JUMP
+    }
+}
+
+3 MENU
+{
+    POPUP "Import/Export"
+    {
+        MENUITEM "&Import...", psh13
+        MENUITEM "&Export...", psh14
+        MENUITEM SEPARATOR
+        MENUITEM "&Reset", psh15
+    }
+    POPUP "Box"
+    {
+        MENUITEM SEPARATOR
+    }
+    POPUP "AboutURLMenu"
+    {
+        MENUITEM "&Copy", ID_COPYURL
+    }
+}
+
+//////////////////////////////////////////////////////////////////////////////
+// RT_DIALOG
+
+IDD_NEW DIALOGEX 0, 0, 310, 125
+CAPTION "New board (Ctrl+N)"
+STYLE DS_CENTER | DS_MODALFRAME | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+FONT 9, "Tahoma", 0, 0, 0 // ANSI_CHARSET
+{
+    LTEXT "# of &columns:", -1, 10, 10, 50, 12
+    EDITTEXT edt2, 65, 7, 30, 14, ES_NUMBER | ES_RIGHT
+    CONTROL "", scr1, "msctls_updown32", UDS_ARROWKEYS | UDS_AUTOBUDDY | UDS_ALIGNRIGHT | UDS_SETBUDDYINT, 101, 24, 12, 20
+    LTEXT "cells", -1, 109, 10, 20, 12
+    LTEXT "# of &rows:", -1, 150, 10, 49, 12
+    EDITTEXT edt1, 205, 7, 31, 14, ES_NUMBER | ES_RIGHT
+    CONTROL "", scr2, "msctls_updown32", UDS_ARROWKEYS | UDS_AUTOBUDDY | UDS_ALIGNRIGHT | UDS_SETBUDDYINT, 101, 24, 12, 20
+    LTEXT "cells", -1, 248, 10, 20, 12
+    GROUPBOX "Task", -1, 10, 50, 120, 70
+    AUTORADIOBUTTON "Fill by &spaces", rad1, 20, 60, 100, 14, WS_TABSTOP
+    AUTORADIOBUTTON "Fill by &blocks", rad2, 20, 80, 100, 14, WS_TABSTOP
+    AUTORADIOBUTTON "Only change si&ze", rad3, 20, 100, 100, 14, WS_TABSTOP
+    DEFPUSHBUTTON "&New board", IDOK, 175, 105, 60, 14
+    PUSHBUTTON "Cancel", IDCANCEL, 240, 105, 60, 14
+}
+
+IDD_CREATE DIALOGEX 0, 0, 310, 90
+CAPTION "Generate Crossword (Ctrl+G)"
+STYLE DS_CENTER | DS_MODALFRAME | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+FONT 9, "Tahoma", 0, 0, 0 // ANSI_CHARSET
+{
+    LTEXT "# of &columns:", -1, 10, 10, 50, 12
+    EDITTEXT edt2, 65, 7, 30, 14, ES_NUMBER | ES_RIGHT
+    CONTROL "", scr1, "msctls_updown32", UDS_ARROWKEYS | UDS_AUTOBUDDY | UDS_ALIGNRIGHT | UDS_SETBUDDYINT, 101, 24, 12, 20
+    LTEXT "cells", -1, 109, 10, 20, 12
+    LTEXT "# of &rows:", -1, 150, 10, 49, 12
+    EDITTEXT edt1, 205, 7, 31, 14, ES_NUMBER | ES_RIGHT
+    CONTROL "", scr2, "msctls_updown32", UDS_ARROWKEYS | UDS_AUTOBUDDY | UDS_ALIGNRIGHT | UDS_SETBUDDYINT, 101, 24, 12, 20
+    LTEXT "cells", -1, 248, 10, 20, 12
+    AUTOCHECKBOX "Show &Answer", chx3, 10, 35, 85, 14
+    AUTOCHECKBOX "Choose a pattern from &PAT.txt automatically", chx4, 120, 35, 160, 14
+    LTEXT "Max. Word &Length:", stc1, 10, 70, 65, 12
+    EDITTEXT edt3, 80, 70, 30, 14, ES_NUMBER | ES_RIGHT
+    CONTROL "", scr3, "msctls_updown32", UDS_ARROWKEYS | UDS_AUTOBUDDY | UDS_ALIGNRIGHT | UDS_SETBUDDYINT, 103, 90, 12, 20
+    DEFPUSHBUTTON "&Generate", IDOK, 175, 70, 60, 14
+    PUSHBUTTON "Cancel", IDCANCEL, 240, 70, 60, 14
+}
+
+IDD_CALCULATING DIALOGEX 0, 0, 165, 90
+CAPTION "Calculating..."
+STYLE DS_CENTER | DS_MODALFRAME | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+FONT 9, "Tahoma", 0, 0, 0 // ANSI_CHARSET
+{
+    LTEXT "I'm calculating...", stc1, 5, 7, 155, 12
+    CONTROL "", ctl1, "msctls_progress32", 0, 5, 25, 155, 10
+    CONTROL "", 1185, "msctls_progress32", 0, 5, 40, 155, 10
+    LTEXT "", stc2, 5, 55, 155, 12
+    PUSHBUTTON "Cancel", psh1, 85, 70, 75, 14
+}
+
+IDD_CONFIG DIALOGEX 0, 0, 274, 250
+CAPTION "Appearance"
+STYLE DS_CENTER | DS_MODALFRAME | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+FONT 9, "Tahoma", 0, 0, 0 // ANSI_CHARSET
+{
+    RTEXT "Cell &Font:", -1, 5, 6, 60, 12
+    EDITTEXT edt1, 70, 4, 85, 14, ES_READONLY
+    PUSHBUTTON "&Change...", psh1, 160, 4, 55, 14
+    PUSHBUTTON "&Reset", psh3, 220, 4, 50, 14
+    RTEXT "Small Font &1:", -1, 5, 26, 60, 12
+    EDITTEXT edt2, 70, 24, 85, 14, ES_READONLY
+    PUSHBUTTON "C&hange...", psh2, 160, 24, 55, 14
+    PUSHBUTTON "R&eset", psh4, 220, 24, 50, 14
+    RTEXT "Small Font &2:", -1, 5, 46, 60, 12
+    EDITTEXT edt3, 70, 44, 85, 14, ES_READONLY
+    PUSHBUTTON "Chan&ge...", psh5, 160, 44, 55, 14
+    PUSHBUTTON "Rese&t", psh6, 220, 44, 50, 14
+    AUTOCHECKBOX "S&keleton View", chx1, 10, 70, 60, 14
+    AUTOCHECKBOX "N&umCro", chx6, 80, 70, 60, 14
+    AUTOCHECKBOX "Double-frame &line", chx3, 165, 70, 80, 15
+    RTEXT "Space color:", -1, 10, 96, 45, 12
+    PUSHBUTTON "", psh7, 60, 94, 15, 15, BS_OWNERDRAW
+    RTEXT "Block color:", -1, 90, 96, 45, 12
+    PUSHBUTTON "", psh8, 140, 94, 15, 15, BS_OWNERDRAW
+    RTEXT "Dbl-frame color:", -1, 172, 96, 55, 12
+    PUSHBUTTON "", psh9, 232, 94, 15, 15, BS_OWNERDRAW
+    RTEXT "Cell font size:", -1, 5, 124, 67, 12
+    EDITTEXT edt4, 75, 122, 33, 14, ES_NUMBER | ES_AUTOHSCROLL
+    CONTROL "", scr1, "msctls_updown32", UDS_ARROWKEYS | UDS_AUTOBUDDY | UDS_ALIGNRIGHT | UDS_SETBUDDYINT, 98, 122, 12, 20
+    LTEXT "%", -1, 114, 124, 10, 12
+    PUSHBUTTON "Reset", psh10, 129, 122, 35, 14
+    RTEXT "Sma&ll font size:", -1, 5, 145, 67, 12
+    EDITTEXT edt5, 75, 143, 33, 14, ES_NUMBER | ES_AUTOHSCROLL
+    CONTROL "", scr2, "msctls_updown32", UDS_ARROWKEYS | UDS_AUTOBUDDY | UDS_ALIGNRIGHT | UDS_SETBUDDYINT, 98, 143, 12, 20
+    LTEXT "%", -1, 114, 145, 10, 12
+    PUSHBUTTON "Reset", psh11, 129, 143, 35, 14
+    RTEXT "Line width:", -1, 170, 124, 44, 12
+    EDITTEXT edt6, 218, 122, 36, 14, ES_AUTOHSCROLL
+    CONTROL "", scr3, "msctls_updown32", UDS_ARROWKEYS | UDS_AUTOBUDDY | UDS_ALIGNRIGHT, 246, 127, 12, 20
+    LTEXT "pt", -1, 259, 124, 11, 12
+    AUTOCHECKBOX "&Out frame:", chx2, 170, 143, 44, 14, BS_LEFT
+    EDITTEXT edt7, 218, 143, 36, 14, ES_AUTOHSCROLL
+    CONTROL "", scr4, "msctls_updown32", UDS_ARROWKEYS | UDS_AUTOBUDDY | UDS_ALIGNRIGHT, 251, 132, 12, 20
+    LTEXT "pt", -1, 259, 145, 11, 12
+    RTEXT "Block i&mage:", -1, 5, 166, 52, 11
+    COMBOBOX cmb1, 60, 165, 102, 300, CBS_HASSTRINGS | CBS_AUTOHSCROLL | CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    LTEXT "Please drop your favorite image into the BLOCK folder.", -1, 5, 182, 150, 21
+    CONTROL "", ico1, "STATIC", SS_BITMAP, 165, 165, 20, 20
+    CONTROL "", ico2, "STATIC", SS_ENHMETAFILE, 165, 165, 20, 20
+    AUTOCHECKBOX "Lo&wercase", chx4, 200, 165, 55, 15
+    AUTOCHECKBOX "Hiraga&na", chx5, 200, 185, 55, 15
+    RTEXT "&Double-frame letters:", -1, 5, 212, 80, 12
+    COMBOBOX cmb2, 90, 210, 180, 300, CBS_HASSTRINGS | CBS_AUTOHSCROLL | CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP
+    PUSHBUTTON "Import/E&xport...", psh12, 5, 230, 100, 15
+}
+
+IDD_NOTES DIALOGEX 0, 0, 185, 185
+CAPTION "Header and remarks (Ctrl+Enter)"
+STYLE DS_CENTER | DS_MODALFRAME | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+FONT 9, "Courier New", 0, 0, 1 // DEFAULT_CHARSET
+{
+    LTEXT "&Header:", -1, 5, 7, 55, 12
+    EDITTEXT edt1, 5, 20, 175, 60, ES_WANTRETURN | ES_AUTOHSCROLL | ES_AUTOVSCROLL | ES_MULTILINE | WS_VSCROLL
+    LTEXT "&Remarks:", -1, 5, 87, 55, 12
+    EDITTEXT edt2, 5, 100, 175, 60, ES_WANTRETURN | ES_AUTOHSCROLL | ES_AUTOVSCROLL | ES_MULTILINE | WS_VSCROLL
+    DEFPUSHBUTTON "OK", IDOK, 55, 165, 60, 14
+    PUSHBUTTON "Cancel", IDCANCEL, 120, 165, 60, 14
+}
+
+IDD_BLACKGEN DIALOGEX 0, 0, 130, 55
+CAPTION "Generating block pattern..."
+STYLE DS_CENTER | DS_MODALFRAME | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+FONT 9, "Tahoma", 0, 0, 0 // ANSI_CHARSET
+{
+    LTEXT "Generating block pattern...", -1, 5, 5, 120, 12
+    LTEXT "", stc1, 5, 15, 120, 12
+    PUSHBUTTON "Cancel", psh1, 40, 35, 60, 14
+}
+
+IDD_KATATATE DIALOGEX 0, 0, 75, 285
+CAPTION "Input Palette (Ctrl+U)"
+STYLE DS_CENTER | DS_MODALFRAME | WS_CAPTION | WS_SYSMENU
+EXSTYLE WS_EX_TOOLWINDOW
+FONT 9, "Tahoma", 0, 0, 0 // ANSI_CHARSET
+{
+    PUSHBUTTON "ア", 10000, 0, 0, 15, 15
+    PUSHBUTTON "イ", 10001, 15, 0, 15, 15
+    PUSHBUTTON "ウ", 10002, 30, 0, 15, 15
+    PUSHBUTTON "エ", 10003, 45, 0, 15, 15
+    PUSHBUTTON "オ", 10004, 60, 0, 15, 15
+    PUSHBUTTON "カ", 10010, 0, 15, 15, 15
+    PUSHBUTTON "キ", 10011, 15, 15, 15, 15
+    PUSHBUTTON "ク", 10012, 30, 15, 15, 15
+    PUSHBUTTON "ケ", 10013, 45, 15, 15, 15
+    PUSHBUTTON "コ", 10014, 60, 15, 15, 15
+    PUSHBUTTON "サ", 10020, 0, 30, 15, 15
+    PUSHBUTTON "シ", 10021, 15, 30, 15, 15
+    PUSHBUTTON "ス", 10022, 30, 30, 15, 15
+    PUSHBUTTON "セ", 10023, 45, 30, 15, 15
+    PUSHBUTTON "ソ", 10024, 60, 30, 15, 15
+    PUSHBUTTON "タ", 10030, 0, 45, 15, 15
+    PUSHBUTTON "チ", 10031, 15, 45, 15, 15
+    PUSHBUTTON "ツ", 10032, 30, 45, 15, 15
+    PUSHBUTTON "テ", 10033, 45, 45, 15, 15
+    PUSHBUTTON "ト", 10034, 60, 45, 15, 15
+    PUSHBUTTON "ナ", 10040, 0, 60, 15, 15
+    PUSHBUTTON "ニ", 10041, 15, 60, 15, 15
+    PUSHBUTTON "ヌ", 10042, 30, 60, 15, 15
+    PUSHBUTTON "ネ", 10043, 45, 60, 15, 15
+    PUSHBUTTON "ノ", 10044, 60, 60, 15, 15
+    PUSHBUTTON "ハ", 10050, 0, 75, 15, 15
+    PUSHBUTTON "ヒ", 10051, 15, 75, 15, 15
+    PUSHBUTTON "フ", 10052, 30, 75, 15, 15
+    PUSHBUTTON "ヘ", 10053, 45, 75, 15, 15
+    PUSHBUTTON "ホ", 10054, 60, 75, 15, 15
+    PUSHBUTTON "マ", 10060, 0, 90, 15, 15
+    PUSHBUTTON "ミ", 10061, 15, 90, 15, 15
+    PUSHBUTTON "ム", 10062, 30, 90, 15, 15
+    PUSHBUTTON "メ", 10063, 45, 90, 15, 15
+    PUSHBUTTON "モ", 10064, 60, 90, 15, 15
+    PUSHBUTTON "ヤ", 10070, 0, 105, 15, 15
+    PUSHBUTTON "ユ", 10071, 15, 105, 15, 15
+    PUSHBUTTON "ヨ", 10072, 30, 105, 15, 15
+    PUSHBUTTON "　", 10073, 45, 105, 15, 15
+    PUSHBUTTON "■", 10074, 60, 105, 15, 15
+    PUSHBUTTON "ラ", 10080, 0, 120, 15, 15
+    PUSHBUTTON "リ", 10081, 15, 120, 15, 15
+    PUSHBUTTON "ル", 10082, 30, 120, 15, 15
+    PUSHBUTTON "レ", 10083, 45, 120, 15, 15
+    PUSHBUTTON "ロ", 10084, 60, 120, 15, 15
+    PUSHBUTTON "ワ", 10090, 0, 135, 15, 15
+    PUSHBUTTON "ン", 10091, 15, 135, 15, 15
+    PUSHBUTTON "ー", 10092, 30, 135, 15, 15
+    PUSHBUTTON "Dict", 10093, 45, 135, 30, 15
+    PUSHBUTTON "ガ", 20000, 0, 150, 15, 15
+    PUSHBUTTON "ギ", 20001, 15, 150, 15, 15
+    PUSHBUTTON "グ", 20002, 30, 150, 15, 15
+    PUSHBUTTON "ゲ", 20003, 45, 150, 15, 15
+    PUSHBUTTON "ゴ", 20004, 60, 150, 15, 15
+    PUSHBUTTON "ザ", 20010, 0, 165, 15, 15
+    PUSHBUTTON "ジ", 20011, 15, 165, 15, 15
+    PUSHBUTTON "ズ", 20012, 30, 165, 15, 15
+    PUSHBUTTON "ゼ", 20013, 45, 165, 15, 15
+    PUSHBUTTON "ゾ", 20014, 60, 165, 15, 15
+    PUSHBUTTON "ダ", 20020, 0, 180, 15, 15
+    PUSHBUTTON "ヂ", 20021, 15, 180, 15, 15
+    PUSHBUTTON "ヅ", 20022, 30, 180, 15, 15
+    PUSHBUTTON "デ", 20023, 45, 180, 15, 15
+    PUSHBUTTON "ド", 20024, 60, 180, 15, 15
+    PUSHBUTTON "バ", 20030, 0, 195, 15, 15
+    PUSHBUTTON "ビ", 20031, 15, 195, 15, 15
+    PUSHBUTTON "ブ", 20032, 30, 195, 15, 15
+    PUSHBUTTON "ベ", 20033, 45, 195, 15, 15
+    PUSHBUTTON "ボ", 20034, 60, 195, 15, 15
+    PUSHBUTTON "パ", 20040, 0, 210, 15, 15
+    PUSHBUTTON "ピ", 20041, 15, 210, 15, 15
+    PUSHBUTTON "プ", 20042, 30, 210, 15, 15
+    PUSHBUTTON "ペ", 20043, 45, 210, 15, 15
+    PUSHBUTTON "ポ", 20044, 60, 210, 15, 15
+    AUTOCHECKBOX "ChFeed", 20050, 0, 225, 30, 15, BS_PUSHLIKE | NOT WS_TABSTOP
+    PUSHBUTTON "Horz", 20052, 30, 225, 30, 15
+    PUSHBUTTON "BS", 20054, 60, 225, 15, 15
+    PUSHBUTTON "↑", 20060, 0, 240, 15, 15
+    PUSHBUTTON "↓", 20061, 15, 240, 15, 15
+    PUSHBUTTON "←", 20062, 30, 240, 15, 15
+    PUSHBUTTON "→", 20063, 45, 240, 15, 15
+    PUSHBUTTON "NL", 20064, 60, 240, 15, 15
+    PUSHBUTTON "ABC", 20072, 0, 255, 30, 15
+    PUSHBUTTON "Land", 20071, 30, 255, 44, 15
+    PUSHBUTTON "Rus", 20073, 0, 270, 75, 15
+}
+
+IDD_KATAYOKO DIALOGEX 0, 0, 270, 75
+CAPTION "Input Palette (Ctrl+U)"
+STYLE DS_CENTER | DS_MODALFRAME | WS_CAPTION | WS_SYSMENU
+EXSTYLE WS_EX_TOOLWINDOW
+FONT 9, "Tahoma", 0, 0, 0 // ANSI_CHARSET
+{
+    PUSHBUTTON "ア", 10000, 0, 0, 15, 15
+    PUSHBUTTON "イ", 10001, 0, 15, 15, 15
+    PUSHBUTTON "ウ", 10002, 0, 30, 15, 15
+    PUSHBUTTON "エ", 10003, 0, 45, 15, 15
+    PUSHBUTTON "オ", 10004, 0, 60, 15, 15
+    PUSHBUTTON "カ", 10010, 15, 0, 15, 15
+    PUSHBUTTON "キ", 10011, 15, 15, 15, 15
+    PUSHBUTTON "ク", 10012, 15, 30, 15, 15
+    PUSHBUTTON "ケ", 10013, 15, 45, 15, 15
+    PUSHBUTTON "コ", 10014, 15, 60, 15, 15
+    PUSHBUTTON "サ", 10020, 30, 0, 15, 15
+    PUSHBUTTON "シ", 10021, 30, 15, 15, 15
+    PUSHBUTTON "ス", 10022, 30, 30, 15, 15
+    PUSHBUTTON "セ", 10023, 30, 45, 15, 15
+    PUSHBUTTON "ソ", 10024, 30, 60, 15, 15
+    PUSHBUTTON "タ", 10030, 45, 0, 15, 15
+    PUSHBUTTON "チ", 10031, 45, 15, 15, 15
+    PUSHBUTTON "ツ", 10032, 45, 30, 15, 15
+    PUSHBUTTON "テ", 10033, 45, 45, 15, 15
+    PUSHBUTTON "ト", 10034, 45, 60, 15, 15
+    PUSHBUTTON "ナ", 10040, 60, 0, 15, 15
+    PUSHBUTTON "ニ", 10041, 60, 15, 15, 15
+    PUSHBUTTON "ヌ", 10042, 60, 30, 15, 15
+    PUSHBUTTON "ネ", 10043, 60, 45, 15, 15
+    PUSHBUTTON "ノ", 10044, 60, 60, 15, 15
+    PUSHBUTTON "ハ", 10050, 75, 0, 15, 15
+    PUSHBUTTON "ヒ", 10051, 75, 15, 15, 15
+    PUSHBUTTON "フ", 10052, 75, 30, 15, 15
+    PUSHBUTTON "ヘ", 10053, 75, 45, 15, 15
+    PUSHBUTTON "ホ", 10054, 75, 60, 15, 15
+    PUSHBUTTON "マ", 10060, 90, 0, 15, 15
+    PUSHBUTTON "ミ", 10061, 90, 15, 15, 15
+    PUSHBUTTON "ム", 10062, 90, 30, 15, 15
+    PUSHBUTTON "メ", 10063, 90, 45, 15, 15
+    PUSHBUTTON "モ", 10064, 90, 60, 15, 15
+    PUSHBUTTON "ヤ", 10070, 105, 0, 15, 15
+    PUSHBUTTON "ユ", 10071, 105, 15, 15, 15
+    PUSHBUTTON "ヨ", 10072, 105, 30, 15, 15
+    PUSHBUTTON "　", 10073, 105, 45, 15, 15
+    PUSHBUTTON "■", 10074, 105, 60, 15, 15
+    PUSHBUTTON "ラ", 10080, 120, 0, 15, 15
+    PUSHBUTTON "リ", 10081, 120, 15, 15, 15
+    PUSHBUTTON "ル", 10082, 120, 30, 15, 15
+    PUSHBUTTON "レ", 10083, 120, 45, 15, 15
+    PUSHBUTTON "ロ", 10084, 120, 60, 15, 15
+    PUSHBUTTON "ワ", 10090, 135, 0, 15, 15
+    PUSHBUTTON "ン", 10091, 135, 15, 15, 15
+    PUSHBUTTON "ー", 10092, 135, 30, 15, 15
+    PUSHBUTTON "辞\n書", 10093, 135, 45, 15, 30, BS_MULTILINE
+    PUSHBUTTON "ガ", 20000, 150, 0, 15, 15
+    PUSHBUTTON "ギ", 20001, 150, 15, 15, 15
+    PUSHBUTTON "グ", 20002, 150, 30, 15, 15
+    PUSHBUTTON "ゲ", 20003, 150, 45, 15, 15
+    PUSHBUTTON "ゴ", 20004, 150, 60, 15, 15
+    PUSHBUTTON "ザ", 20010, 165, 0, 15, 15
+    PUSHBUTTON "ジ", 20011, 165, 15, 15, 15
+    PUSHBUTTON "ズ", 20012, 165, 30, 15, 15
+    PUSHBUTTON "ゼ", 20013, 165, 45, 15, 15
+    PUSHBUTTON "ゾ", 20014, 165, 60, 15, 15
+    PUSHBUTTON "ダ", 20020, 180, 0, 15, 15
+    PUSHBUTTON "ヂ", 20021, 180, 15, 15, 15
+    PUSHBUTTON "ヅ", 20022, 180, 30, 15, 15
+    PUSHBUTTON "デ", 20023, 180, 45, 15, 15
+    PUSHBUTTON "ド", 20024, 180, 60, 15, 15
+    PUSHBUTTON "バ", 20030, 195, 0, 15, 15
+    PUSHBUTTON "ビ", 20031, 195, 15, 15, 15
+    PUSHBUTTON "ブ", 20032, 195, 30, 15, 15
+    PUSHBUTTON "ベ", 20033, 195, 45, 15, 15
+    PUSHBUTTON "ボ", 20034, 195, 60, 15, 15
+    AUTOCHECKBOX "ChFeed", 20050, 210, 0, 30, 15, BS_PUSHLIKE | NOT WS_TABSTOP
+    PUSHBUTTON "H\no\nr\nz", 20052, 240, 0, 15, 30, BS_MULTILINE
+    PUSHBUTTON "BS", 20054, 210, 45, 15, 15
+    PUSHBUTTON "↑", 20060, 210, 15, 15, 15
+    PUSHBUTTON "↓", 20061, 225, 15, 15, 15
+    PUSHBUTTON "←", 20062, 210, 30, 15, 15
+    PUSHBUTTON "→", 20063, 225, 30, 15, 15
+    PUSHBUTTON "NL", 20064, 225, 45, 15, 15
+    PUSHBUTTON "ABC", 20072, 210, 60, 30, 15
+    PUSHBUTTON "P\no\nr\nt", 20071, 240, 30, 15, 45, BS_MULTILINE
+    PUSHBUTTON "R\nu\ns", 20073, 255, 0, 15, 75, BS_MULTILINE
+}
+
+IDD_ABC DIALOGEX 0, 0, 165, 60
+CAPTION "Input Palette (Ctrl+U)"
+STYLE DS_CENTER | DS_MODALFRAME | WS_CAPTION | WS_SYSMENU
+EXSTYLE WS_EX_TOOLWINDOW
+FONT 9, "Tahoma", 0, 0, 0 // ANSI_CHARSET
+{
+    PUSHBUTTON "A", 11000, 0, 0, 15, 15
+    PUSHBUTTON "B", 11001, 15, 0, 15, 15
+    PUSHBUTTON "C", 11002, 30, 0, 15, 15
+    PUSHBUTTON "D", 11003, 45, 0, 15, 15
+    PUSHBUTTON "E", 11004, 60, 0, 15, 15
+    PUSHBUTTON "F", 11005, 75, 0, 15, 15
+    PUSHBUTTON "G", 11006, 90, 0, 15, 15
+    PUSHBUTTON "H", 11007, 105, 0, 15, 15
+    PUSHBUTTON "I", 11008, 120, 0, 15, 15
+    PUSHBUTTON "J", 11009, 135, 0, 15, 15
+    PUSHBUTTON "K", 12000, 150, 0, 15, 15
+    PUSHBUTTON "L", 12001, 0, 15, 15, 15
+    PUSHBUTTON "M", 12002, 15, 15, 15, 15
+    PUSHBUTTON "N", 12003, 30, 15, 15, 15
+    PUSHBUTTON "O", 12004, 45, 15, 15, 15
+    PUSHBUTTON "P", 12005, 60, 15, 15, 15
+    PUSHBUTTON "Q", 12006, 75, 15, 15, 15
+    PUSHBUTTON "R", 12007, 90, 15, 15, 15
+    PUSHBUTTON "S", 12008, 105, 15, 15, 15
+    PUSHBUTTON "T", 12009, 120, 15, 15, 15
+    PUSHBUTTON "U", 13000, 135, 15, 15, 15
+    PUSHBUTTON "V", 13001, 150, 15, 15, 15
+    PUSHBUTTON "W", 13002, 0, 30, 15, 15
+    PUSHBUTTON "X", 13003, 15, 30, 15, 15
+    PUSHBUTTON "Y", 13004, 30, 30, 15, 15
+    PUSHBUTTON "Z", 13005, 45, 30, 15, 15
+    PUSHBUTTON "　", 13006, 60, 30, 15, 15
+    PUSHBUTTON "■", 13007, 75, 30, 15, 15
+    AUTOCHECKBOX "ChFeed", 20050, 0, 45, 30, 15, BS_PUSHLIKE | NOT WS_TABSTOP
+    PUSHBUTTON "Horz", 20052, 30, 45, 30, 15
+    PUSHBUTTON "BS", 20054, 60, 45, 15, 15
+    PUSHBUTTON "↑", 20060, 75, 45, 15, 15
+    PUSHBUTTON "↓", 20061, 90, 45, 15, 15
+    PUSHBUTTON "←", 20062, 105, 45, 15, 15
+    PUSHBUTTON "→", 20063, 120, 45, 15, 15
+    PUSHBUTTON "NL", 20064, 135, 45, 30, 15
+    PUSHBUTTON "Kana", 20070, 90, 30, 30, 15
+    PUSHBUTTON "Rus", 20073, 120, 30, 45, 15
+}
+
+IDD_RUSSIA DIALOGEX 0, 0, 150, 75
+CAPTION "Input Palette (Ctrl+U)"
+STYLE DS_CENTER | DS_MODALFRAME | WS_CAPTION | WS_SYSMENU
+EXSTYLE WS_EX_TOOLWINDOW
+FONT 9, "Tahoma", 0, 0, 0 // ANSI_CHARSET
+{
+    PUSHBUTTON "А", 11000, 0, 0, 15, 15
+    PUSHBUTTON "Б", 11001, 15, 0, 15, 15
+    PUSHBUTTON "В", 11002, 30, 0, 15, 15
+    PUSHBUTTON "Г", 11003, 45, 0, 15, 15
+    PUSHBUTTON "Д", 11004, 60, 0, 15, 15
+    PUSHBUTTON "Е", 11005, 75, 0, 15, 15
+    PUSHBUTTON "Ё", 11006, 90, 0, 15, 15
+    PUSHBUTTON "Ж", 11007, 105, 0, 15, 15
+    PUSHBUTTON "З", 11008, 120, 0, 15, 15
+    PUSHBUTTON "И", 11009, 135, 0, 15, 15
+    PUSHBUTTON "Й", 12000, 0, 15, 15, 15
+    PUSHBUTTON "К", 12001, 15, 15, 15, 15
+    PUSHBUTTON "Л", 12002, 30, 15, 15, 15
+    PUSHBUTTON "М", 12003, 45, 15, 15, 15
+    PUSHBUTTON "Н", 12004, 60, 15, 15, 15
+    PUSHBUTTON "О", 12005, 75, 15, 15, 15
+    PUSHBUTTON "П", 12006, 90, 15, 15, 15
+    PUSHBUTTON "Р", 12007, 105, 15, 15, 15
+    PUSHBUTTON "С", 12008, 120, 15, 15, 15
+    PUSHBUTTON "Т", 12009, 135, 15, 15, 15
+    PUSHBUTTON "У", 13000, 0, 30, 15, 15
+    PUSHBUTTON "Ф", 13001, 15, 30, 15, 15
+    PUSHBUTTON "Х", 13002, 30, 30, 15, 15
+    PUSHBUTTON "Ц", 13003, 45, 30, 15, 15
+    PUSHBUTTON "Ч", 13004, 60, 30, 15, 15
+    PUSHBUTTON "Ш", 13005, 75, 30, 15, 15
+    PUSHBUTTON "Щ", 13006, 90, 30, 15, 15
+    PUSHBUTTON "Ъ", 13007, 105, 30, 15, 15
+    PUSHBUTTON "Ы", 13008, 120, 30, 15, 15
+    PUSHBUTTON "Ь", 13009, 135, 30, 15, 15
+    PUSHBUTTON "Э", 13010, 0, 45, 15, 15
+    PUSHBUTTON "Ю", 13011, 15, 45, 15, 15
+    PUSHBUTTON "Я", 13012, 30, 45, 15, 15
+    PUSHBUTTON "　", 13013, 45, 45, 15, 15
+    PUSHBUTTON "■", 13014, 60, 45, 15, 15
+    AUTOCHECKBOX "ChFeed", 20050, 0, 60, 30, 15, BS_PUSHLIKE | NOT WS_TABSTOP
+    PUSHBUTTON "Horz", 20052, 30, 60, 30, 15
+    PUSHBUTTON "BS", 20054, 60, 60, 15, 15
+    PUSHBUTTON "↑", 20060, 75, 60, 15, 15
+    PUSHBUTTON "↓", 20061, 90, 60, 15, 15
+    PUSHBUTTON "←", 20062, 105, 60, 15, 15
+    PUSHBUTTON "→", 20063, 120, 60, 15, 15
+    PUSHBUTTON "NL", 20064, 135, 60, 15, 15
+    PUSHBUTTON "Kana", 20070, 75, 45, 30, 15
+    PUSHBUTTON "ABC", 20072, 105, 45, 45, 15
+}
+
+IDD_HIRATATE DIALOGEX 0, 0, 75, 285
+CAPTION "Input Palette (Ctrl+U)"
+STYLE DS_CENTER | DS_MODALFRAME | WS_CAPTION | WS_SYSMENU
+EXSTYLE WS_EX_TOOLWINDOW
+FONT 9, "Tahoma", 0, 0, 0 // ANSI_CHARSET
+{
+    PUSHBUTTON "あ", 10000, 0, 0, 15, 15
+    PUSHBUTTON "い", 10001, 15, 0, 15, 15
+    PUSHBUTTON "う", 10002, 30, 0, 15, 15
+    PUSHBUTTON "え", 10003, 45, 0, 15, 15
+    PUSHBUTTON "お", 10004, 60, 0, 15, 15
+    PUSHBUTTON "か", 10010, 0, 15, 15, 15
+    PUSHBUTTON "き", 10011, 15, 15, 15, 15
+    PUSHBUTTON "く", 10012, 30, 15, 15, 15
+    PUSHBUTTON "け", 10013, 45, 15, 15, 15
+    PUSHBUTTON "こ", 10014, 60, 15, 15, 15
+    PUSHBUTTON "さ", 10020, 0, 30, 15, 15
+    PUSHBUTTON "し", 10021, 15, 30, 15, 15
+    PUSHBUTTON "す", 10022, 30, 30, 15, 15
+    PUSHBUTTON "せ", 10023, 45, 30, 15, 15
+    PUSHBUTTON "そ", 10024, 60, 30, 15, 15
+    PUSHBUTTON "た", 10030, 0, 45, 15, 15
+    PUSHBUTTON "ち", 10031, 15, 45, 15, 15
+    PUSHBUTTON "つ", 10032, 30, 45, 15, 15
+    PUSHBUTTON "て", 10033, 45, 45, 15, 15
+    PUSHBUTTON "と", 10034, 60, 45, 15, 15
+    PUSHBUTTON "な", 10040, 0, 60, 15, 15
+    PUSHBUTTON "に", 10041, 15, 60, 15, 15
+    PUSHBUTTON "ぬ", 10042, 30, 60, 15, 15
+    PUSHBUTTON "ね", 10043, 45, 60, 15, 15
+    PUSHBUTTON "の", 10044, 60, 60, 15, 15
+    PUSHBUTTON "は", 10050, 0, 75, 15, 15
+    PUSHBUTTON "ひ", 10051, 15, 75, 15, 15
+    PUSHBUTTON "ふ", 10052, 30, 75, 15, 15
+    PUSHBUTTON "へ", 10053, 45, 75, 15, 15
+    PUSHBUTTON "ほ", 10054, 60, 75, 15, 15
+    PUSHBUTTON "ま", 10060, 0, 90, 15, 15
+    PUSHBUTTON "み", 10061, 15, 90, 15, 15
+    PUSHBUTTON "む", 10062, 30, 90, 15, 15
+    PUSHBUTTON "め", 10063, 45, 90, 15, 15
+    PUSHBUTTON "も", 10064, 60, 90, 15, 15
+    PUSHBUTTON "や", 10070, 0, 105, 15, 15
+    PUSHBUTTON "ゆ", 10071, 15, 105, 15, 15
+    PUSHBUTTON "よ", 10072, 30, 105, 15, 15
+    PUSHBUTTON "　", 10073, 45, 105, 15, 15
+    PUSHBUTTON "■", 10074, 60, 105, 15, 15
+    PUSHBUTTON "ら", 10080, 0, 120, 15, 15
+    PUSHBUTTON "り", 10081, 15, 120, 15, 15
+    PUSHBUTTON "る", 10082, 30, 120, 15, 15
+    PUSHBUTTON "れ", 10083, 45, 120, 15, 15
+    PUSHBUTTON "ろ", 10084, 60, 120, 15, 15
+    PUSHBUTTON "わ", 10090, 0, 135, 15, 15
+    PUSHBUTTON "ん", 10091, 15, 135, 15, 15
+    PUSHBUTTON "ー", 10092, 30, 135, 15, 15
+    PUSHBUTTON "Dict", 10093, 45, 135, 30, 15
+    PUSHBUTTON "が", 20000, 0, 150, 15, 15
+    PUSHBUTTON "ぎ", 20001, 15, 150, 15, 15
+    PUSHBUTTON "ぐ", 20002, 30, 150, 15, 15
+    PUSHBUTTON "げ", 20003, 45, 150, 15, 15
+    PUSHBUTTON "ご", 20004, 60, 150, 15, 15
+    PUSHBUTTON "ざ", 20010, 0, 165, 15, 15
+    PUSHBUTTON "じ", 20011, 15, 165, 15, 15
+    PUSHBUTTON "ず", 20012, 30, 165, 15, 15
+    PUSHBUTTON "ぜ", 20013, 45, 165, 15, 15
+    PUSHBUTTON "ぞ", 20014, 60, 165, 15, 15
+    PUSHBUTTON "だ", 20020, 0, 180, 15, 15
+    PUSHBUTTON "ぢ", 20021, 15, 180, 15, 15
+    PUSHBUTTON "づ", 20022, 30, 180, 15, 15
+    PUSHBUTTON "で", 20023, 45, 180, 15, 15
+    PUSHBUTTON "ど", 20024, 60, 180, 15, 15
+    PUSHBUTTON "ば", 20030, 0, 195, 15, 15
+    PUSHBUTTON "び", 20031, 15, 195, 15, 15
+    PUSHBUTTON "ぶ", 20032, 30, 195, 15, 15
+    PUSHBUTTON "べ", 20033, 45, 195, 15, 15
+    PUSHBUTTON "ぼ", 20034, 60, 195, 15, 15
+    PUSHBUTTON "ぱ", 20040, 0, 210, 15, 15
+    PUSHBUTTON "ぴ", 20041, 15, 210, 15, 15
+    PUSHBUTTON "ぷ", 20042, 30, 210, 15, 15
+    PUSHBUTTON "ぺ", 20043, 45, 210, 15, 15
+    PUSHBUTTON "ぽ", 20044, 60, 210, 15, 15
+    AUTOCHECKBOX "ChFeed", 20050, 0, 225, 30, 15, BS_PUSHLIKE | NOT WS_TABSTOP
+    PUSHBUTTON "Horz", 20052, 30, 225, 30, 15
+    PUSHBUTTON "BS", 20054, 60, 225, 15, 15
+    PUSHBUTTON "↑", 20060, 0, 240, 15, 15
+    PUSHBUTTON "↓", 20061, 15, 240, 15, 15
+    PUSHBUTTON "←", 20062, 30, 240, 15, 15
+    PUSHBUTTON "→", 20063, 45, 240, 15, 15
+    PUSHBUTTON "NL", 20064, 60, 240, 15, 15
+    PUSHBUTTON "ABC", 20072, 0, 255, 30, 15
+    PUSHBUTTON "Land", 20071, 30, 255, 44, 15
+    PUSHBUTTON "Rus", 20073, 0, 270, 75, 15
+}
+
+IDD_HIRAYOKO DIALOGEX 0, 0, 270, 75
+CAPTION "Input Palette (Ctrl+U)"
+STYLE DS_CENTER | DS_MODALFRAME | WS_CAPTION | WS_SYSMENU
+EXSTYLE WS_EX_TOOLWINDOW
+FONT 9, "Tahoma", 0, 0, 0 // ANSI_CHARSET
+{
+    PUSHBUTTON "あ", 10000, 0, 0, 15, 15
+    PUSHBUTTON "い", 10001, 0, 15, 15, 15
+    PUSHBUTTON "う", 10002, 0, 30, 15, 15
+    PUSHBUTTON "え", 10003, 0, 45, 15, 15
+    PUSHBUTTON "お", 10004, 0, 60, 15, 15
+    PUSHBUTTON "か", 10010, 15, 0, 15, 15
+    PUSHBUTTON "き", 10011, 15, 15, 15, 15
+    PUSHBUTTON "く", 10012, 15, 30, 15, 15
+    PUSHBUTTON "け", 10013, 15, 45, 15, 15
+    PUSHBUTTON "こ", 10014, 15, 60, 15, 15
+    PUSHBUTTON "さ", 10020, 30, 0, 15, 15
+    PUSHBUTTON "し", 10021, 30, 15, 15, 15
+    PUSHBUTTON "す", 10022, 30, 30, 15, 15
+    PUSHBUTTON "せ", 10023, 30, 45, 15, 15
+    PUSHBUTTON "そ", 10024, 30, 60, 15, 15
+    PUSHBUTTON "た", 10030, 45, 0, 15, 15
+    PUSHBUTTON "ち", 10031, 45, 15, 15, 15
+    PUSHBUTTON "つ", 10032, 45, 30, 15, 15
+    PUSHBUTTON "て", 10033, 45, 45, 15, 15
+    PUSHBUTTON "と", 10034, 45, 60, 15, 15
+    PUSHBUTTON "な", 10040, 60, 0, 15, 15
+    PUSHBUTTON "に", 10041, 60, 15, 15, 15
+    PUSHBUTTON "ぬ", 10042, 60, 30, 15, 15
+    PUSHBUTTON "ね", 10043, 60, 45, 15, 15
+    PUSHBUTTON "の", 10044, 60, 60, 15, 15
+    PUSHBUTTON "は", 10050, 75, 0, 15, 15
+    PUSHBUTTON "ひ", 10051, 75, 15, 15, 15
+    PUSHBUTTON "ふ", 10052, 75, 30, 15, 15
+    PUSHBUTTON "へ", 10053, 75, 45, 15, 15
+    PUSHBUTTON "ほ", 10054, 75, 60, 15, 15
+    PUSHBUTTON "ま", 10060, 90, 0, 15, 15
+    PUSHBUTTON "み", 10061, 90, 15, 15, 15
+    PUSHBUTTON "む", 10062, 90, 30, 15, 15
+    PUSHBUTTON "め", 10063, 90, 45, 15, 15
+    PUSHBUTTON "も", 10064, 90, 60, 15, 15
+    PUSHBUTTON "や", 10070, 105, 0, 15, 15
+    PUSHBUTTON "ゆ", 10071, 105, 15, 15, 15
+    PUSHBUTTON "よ", 10072, 105, 30, 15, 15
+    PUSHBUTTON "　", 10073, 105, 45, 15, 15
+    PUSHBUTTON "■", 10074, 105, 60, 15, 15
+    PUSHBUTTON "ら", 10080, 120, 0, 15, 15
+    PUSHBUTTON "り", 10081, 120, 15, 15, 15
+    PUSHBUTTON "る", 10082, 120, 30, 15, 15
+    PUSHBUTTON "れ", 10083, 120, 45, 15, 15
+    PUSHBUTTON "ろ", 10084, 120, 60, 15, 15
+    PUSHBUTTON "わ", 10090, 135, 0, 15, 15
+    PUSHBUTTON "ん", 10091, 135, 15, 15, 15
+    PUSHBUTTON "ー", 10092, 135, 30, 15, 15
+    PUSHBUTTON "辞\n書", 10093, 135, 45, 15, 30, BS_MULTILINE
+    PUSHBUTTON "が", 20000, 150, 0, 15, 15
+    PUSHBUTTON "ぎ", 20001, 150, 15, 15, 15
+    PUSHBUTTON "ぐ", 20002, 150, 30, 15, 15
+    PUSHBUTTON "げ", 20003, 150, 45, 15, 15
+    PUSHBUTTON "ご", 20004, 150, 60, 15, 15
+    PUSHBUTTON "ざ", 20010, 165, 0, 15, 15
+    PUSHBUTTON "じ", 20011, 165, 15, 15, 15
+    PUSHBUTTON "ず", 20012, 165, 30, 15, 15
+    PUSHBUTTON "ぜ", 20013, 165, 45, 15, 15
+    PUSHBUTTON "ぞ", 20014, 165, 60, 15, 15
+    PUSHBUTTON "だ", 20020, 180, 0, 15, 15
+    PUSHBUTTON "ぢ", 20021, 180, 15, 15, 15
+    PUSHBUTTON "づ", 20022, 180, 30, 15, 15
+    PUSHBUTTON "で", 20023, 180, 45, 15, 15
+    PUSHBUTTON "ど", 20024, 180, 60, 15, 15
+    PUSHBUTTON "ば", 20030, 195, 0, 15, 15
+    PUSHBUTTON "び", 20031, 195, 15, 15, 15
+    PUSHBUTTON "ぶ", 20032, 195, 30, 15, 15
+    PUSHBUTTON "べ", 20033, 195, 45, 15, 15
+    PUSHBUTTON "ぼ", 20034, 195, 60, 15, 15
+    AUTOCHECKBOX "ChFeed", 20050, 210, 0, 30, 15, BS_PUSHLIKE | NOT WS_TABSTOP
+    PUSHBUTTON "H\no\nr\nz", 20052, 240, 0, 15, 30, BS_MULTILINE
+    PUSHBUTTON "BS", 20054, 210, 45, 15, 15
+    PUSHBUTTON "↑", 20060, 210, 15, 15, 15
+    PUSHBUTTON "↓", 20061, 225, 15, 15, 15
+    PUSHBUTTON "←", 20062, 210, 30, 15, 15
+    PUSHBUTTON "→", 20063, 225, 30, 15, 15
+    PUSHBUTTON "NL", 20064, 225, 45, 15, 15
+    PUSHBUTTON "ABC", 20072, 210, 60, 30, 15
+    PUSHBUTTON "P\no\nr\nt", 20071, 240, 30, 15, 45, BS_MULTILINE
+    PUSHBUTTON "R\nu\ns", 20073, 255, 0, 15, 75, BS_MULTILINE
+}
+
+IDD_ABCLOWER DIALOGEX 0, 0, 165, 60
+CAPTION "Input Palette (Ctrl+U)"
+STYLE DS_CENTER | DS_MODALFRAME | WS_CAPTION | WS_SYSMENU
+EXSTYLE WS_EX_TOOLWINDOW
+FONT 9, "Tahoma", 0, 0, 0 // ANSI_CHARSET
+{
+    PUSHBUTTON "a", 11000, 0, 0, 15, 15
+    PUSHBUTTON "b", 11001, 15, 0, 15, 15
+    PUSHBUTTON "c", 11002, 30, 0, 15, 15
+    PUSHBUTTON "d", 11003, 45, 0, 15, 15
+    PUSHBUTTON "e", 11004, 60, 0, 15, 15
+    PUSHBUTTON "f", 11005, 75, 0, 15, 15
+    PUSHBUTTON "g", 11006, 90, 0, 15, 15
+    PUSHBUTTON "h", 11007, 105, 0, 15, 15
+    PUSHBUTTON "i", 11008, 120, 0, 15, 15
+    PUSHBUTTON "j", 11009, 135, 0, 15, 15
+    PUSHBUTTON "k", 12000, 150, 0, 15, 15
+    PUSHBUTTON "l", 12001, 0, 15, 15, 15
+    PUSHBUTTON "m", 12002, 15, 15, 15, 15
+    PUSHBUTTON "n", 12003, 30, 15, 15, 15
+    PUSHBUTTON "o", 12004, 45, 15, 15, 15
+    PUSHBUTTON "p", 12005, 60, 15, 15, 15
+    PUSHBUTTON "q", 12006, 75, 15, 15, 15
+    PUSHBUTTON "r", 12007, 90, 15, 15, 15
+    PUSHBUTTON "s", 12008, 105, 15, 15, 15
+    PUSHBUTTON "t", 12009, 120, 15, 15, 15
+    PUSHBUTTON "u", 13000, 135, 15, 15, 15
+    PUSHBUTTON "v", 13001, 150, 15, 15, 15
+    PUSHBUTTON "w", 13002, 0, 30, 15, 15
+    PUSHBUTTON "x", 13003, 15, 30, 15, 15
+    PUSHBUTTON "y", 13004, 30, 30, 15, 15
+    PUSHBUTTON "z", 13005, 45, 30, 15, 15
+    PUSHBUTTON "　", 13006, 60, 30, 15, 15
+    PUSHBUTTON "■", 13007, 75, 30, 15, 15
+    AUTOCHECKBOX "ChFeed", 20050, 0, 45, 30, 15, BS_PUSHLIKE | NOT WS_TABSTOP
+    PUSHBUTTON "Horz", 20052, 30, 45, 30, 15
+    PUSHBUTTON "BS", 20054, 60, 45, 15, 15
+    PUSHBUTTON "↑", 20060, 75, 45, 15, 15
+    PUSHBUTTON "↓", 20061, 90, 45, 15, 15
+    PUSHBUTTON "←", 20062, 105, 45, 15, 15
+    PUSHBUTTON "→", 20063, 120, 45, 15, 15
+    PUSHBUTTON "NL", 20064, 135, 45, 30, 15
+    PUSHBUTTON "Kana", 20070, 90, 30, 30, 15
+    PUSHBUTTON "Rus", 20073, 120, 30, 45, 15
+}
+
+IDD_RUSSIALOWER DIALOGEX 0, 0, 150, 75
+CAPTION "Input Palette (Ctrl+U)"
+STYLE DS_CENTER | DS_MODALFRAME | WS_CAPTION | WS_SYSMENU
+EXSTYLE WS_EX_TOOLWINDOW
+FONT 9, "Tahoma", 0, 0, 0 // ANSI_CHARSET
+{
+    PUSHBUTTON "а", 11000, 0, 0, 15, 15
+    PUSHBUTTON "б", 11001, 15, 0, 15, 15
+    PUSHBUTTON "в", 11002, 30, 0, 15, 15
+    PUSHBUTTON "г", 11003, 45, 0, 15, 15
+    PUSHBUTTON "д", 11004, 60, 0, 15, 15
+    PUSHBUTTON "е", 11005, 75, 0, 15, 15
+    PUSHBUTTON "ё", 11006, 90, 0, 15, 15
+    PUSHBUTTON "ж", 11007, 105, 0, 15, 15
+    PUSHBUTTON "з", 11008, 120, 0, 15, 15
+    PUSHBUTTON "и", 11009, 135, 0, 15, 15
+    PUSHBUTTON "й", 12000, 0, 15, 15, 15
+    PUSHBUTTON "к", 12001, 15, 15, 15, 15
+    PUSHBUTTON "л", 12002, 30, 15, 15, 15
+    PUSHBUTTON "м", 12003, 45, 15, 15, 15
+    PUSHBUTTON "н", 12004, 60, 15, 15, 15
+    PUSHBUTTON "о", 12005, 75, 15, 15, 15
+    PUSHBUTTON "п", 12006, 90, 15, 15, 15
+    PUSHBUTTON "р", 12007, 105, 15, 15, 15
+    PUSHBUTTON "с", 12008, 120, 15, 15, 15
+    PUSHBUTTON "т", 12009, 135, 15, 15, 15
+    PUSHBUTTON "у", 13000, 0, 30, 15, 15
+    PUSHBUTTON "ф", 13001, 15, 30, 15, 15
+    PUSHBUTTON "х", 13002, 30, 30, 15, 15
+    PUSHBUTTON "ц", 13003, 45, 30, 15, 15
+    PUSHBUTTON "ч", 13004, 60, 30, 15, 15
+    PUSHBUTTON "ш", 13005, 75, 30, 15, 15
+    PUSHBUTTON "щ", 13006, 90, 30, 15, 15
+    PUSHBUTTON "ъ", 13007, 105, 30, 15, 15
+    PUSHBUTTON "ы", 13008, 120, 30, 15, 15
+    PUSHBUTTON "ь", 13009, 135, 30, 15, 15
+    PUSHBUTTON "э", 13010, 0, 45, 15, 15
+    PUSHBUTTON "ю", 13011, 15, 45, 15, 15
+    PUSHBUTTON "я", 13012, 30, 45, 15, 15
+    PUSHBUTTON "　", 13013, 45, 45, 15, 15
+    PUSHBUTTON "■", 13014, 60, 45, 15, 15
+    AUTOCHECKBOX "ChFeed", 20050, 0, 60, 30, 15, BS_PUSHLIKE | NOT WS_TABSTOP
+    PUSHBUTTON "Horz", 20052, 30, 60, 30, 15
+    PUSHBUTTON "BS", 20054, 60, 60, 15, 15
+    PUSHBUTTON "↑", 20060, 75, 60, 15, 15
+    PUSHBUTTON "↓", 20061, 90, 60, 15, 15
+    PUSHBUTTON "←", 20062, 105, 60, 15, 15
+    PUSHBUTTON "→", 20063, 120, 60, 15, 15
+    PUSHBUTTON "NL", 20064, 135, 60, 15, 15
+    PUSHBUTTON "Kana", 20070, 75, 45, 30, 15
+    PUSHBUTTON "ABC", 20072, 105, 45, 45, 15
+}
+
+IDD_BLOCKPATTERN DIALOGEX 0, 0, 335, 265
+CAPTION "Choose pattern (Ctrl+;)"
+STYLE DS_CENTER | DS_MODALFRAME | WS_POPUPWINDOW | WS_CAPTION | WS_THICKFRAME | WS_MAXIMIZEBOX
+FONT 9, "Tahoma", 0, 0, 0 // ANSI_CHARSET
+{
+    LTEXT "Please select a pattern from the list below.", stc1, 5, 2, 220, 12
+    AUTORADIOBUTTON "&Large", rad1, 5, 15, 45, 16, WS_GROUP | WS_TABSTOP
+    AUTORADIOBUTTON "&Medium", rad2, 55, 15, 50, 16, WS_TABSTOP
+    AUTORADIOBUTTON "&Small", rad3, 110, 15, 50, 16, WS_TABSTOP
+    AUTORADIOBUTTON "L&andscape", rad4, 175, 15, 48, 16, WS_GROUP | WS_TABSTOP
+    AUTORADIOBUTTON "&Portrait", rad5, 227, 15, 43, 16, WS_TABSTOP
+    AUTORADIOBUTTON "S&quare", rad6, 275, 15, 55, 16, WS_TABSTOP
+    LTEXT "Lis&t:", stc2, 8, 37, 47, 12
+    LISTBOX lst1, 5, 50, 325, 190, LBS_DISABLENOSCROLL | LBS_MULTICOLUMN | LBS_NOINTEGRALHEIGHT | LBS_OWNERDRAWFIXED | WS_VSCROLL | WS_HSCROLL | WS_TABSTOP
+    PUSHBUTTON "&Copy", psh1, 5, 245, 60, 15
+    AUTOCHECKBOX "Show &Answer", chx1, 75, 245, 80, 15
+    DEFPUSHBUTTON "Find Solution", IDOK, 185, 245, 80, 15
+    PUSHBUTTON "E&xit", IDCANCEL, 270, 245, 60, 15
+    PUSHBUTTON "&Download...", psh2, 240, 35, 90, 14
+}
+
+IDD_THEME DIALOGEX 0, 0, 310, 250
+CAPTION "Theme tags"
+STYLE DS_CENTER | DS_MODALFRAME | WS_POPUPWINDOW | WS_CAPTION
+FONT 9, "Tahoma", 0, 0, 0 // ANSI_CHARSET
+{
+    LTEXT "The theme tags can specify preferred and excluded tags. A tag is a keyword attached to a word in the dictionary. Switching dictionaries will reset the theme tags.", -1, 5, 5, 183, 30
+    LTEXT "Pre&set:", -1, 205, 5, 65, 12
+    COMBOBOX cmb1, 205, 20, 100, 300, CBS_DISABLENOSCROLL | CBS_HASSTRINGS | CBS_AUTOHSCROLL | CBS_DROPDOWN | WS_VSCROLL | WS_HSCROLL | WS_TABSTOP
+    LTEXT "All the &tags:", -1, 5, 40, 75, 12
+    EDITTEXT edt1, 85, 40, 40, 14, ES_AUTOHSCROLL
+    CONTROL "", lst1, "SysListView32", LVS_SINGLESEL | LVS_REPORT | WS_BORDER | WS_TABSTOP, 5, 55, 120, 160
+    PUSHBUTTON ">>", psh1, 135, 55, 40, 14
+    LTEXT "&Preferred tags:", -1, 185, 40, 70, 12
+    CONTROL "", lst2, "SysListView32", LVS_SINGLESEL | LVS_REPORT | WS_BORDER | WS_TABSTOP, 185, 55, 120, 66
+    PUSHBUTTON "<<", psh2, 135, 105, 40, 14
+    PUSHBUTTON ">>", psh3, 135, 150, 40, 14
+    LTEXT "&Forbidden tags:", -1, 185, 135, 70, 12
+    CONTROL "", lst3, "SysListView32", LVS_SINGLESEL | LVS_REPORT | WS_BORDER | WS_TABSTOP, 185, 150, 120, 65
+    PUSHBUTTON "<<", psh4, 135, 200, 40, 14
+    PUSHBUTTON "Reset &All", psh5, 5, 230, 85, 14
+    DEFPUSHBUTTON "OK", IDOK, 180, 230, 60, 14
+    PUSHBUTTON "Cancel", IDCANCEL, 246, 230, 60, 14
+    RTEXT "", stc1, 275, 40, 30, 12
+    RTEXT "", stc2, 275, 135, 30, 12
+}
+
+IDD_PATGEN DIALOGEX 0, 0, 310, 45
+CAPTION "Generate block pattern"
+STYLE DS_CENTER | DS_MODALFRAME | WS_POPUPWINDOW | WS_CAPTION
+FONT 9, "Tahoma", 0, 0, 0 // ANSI_CHARSET
+{
+    LTEXT "Max. Word &Length:", stc1, 10, 27, 67, 12
+    EDITTEXT edt3, 80, 25, 50, 14, ES_NUMBER | ES_RIGHT
+    CONTROL "", scr3, "msctls_updown32", UDS_ARROWKEYS | UDS_AUTOBUDDY | UDS_ALIGNRIGHT | UDS_SETBUDDYINT, 100, 25, 12, 20
+    LTEXT "I will generate a block pattern according to the Policy.", -1, 10, 5, 220, 12
+    DEFPUSHBUTTON "&Generate", IDOK, 180, 25, 60, 14
+    PUSHBUTTON "Cancel", IDCANCEL, 245, 25, 60, 14
+}
+
+IDD_WORDLIST DIALOGEX 0, 0, 235, 195
+CAPTION "Generate from words (Ctrl+:)"
+STYLE DS_CENTER | DS_MODALFRAME | WS_POPUPWINDOW | WS_CAPTION
+FONT 10, "MS Shell Dlg", 0, 0, 1 // DEFAULT_CHARSET
+{
+    LTEXT "", stc1, 0, 0, 235, 80
+    LTEXT "Please enter your multiple words (separated by space or newline):\r\n\r\n* The current policy will be changed, and you will automatically be in skeleton view.", -1, 5, 83, 224, 35
+    EDITTEXT edt1, 5, 120, 225, 50, ES_WANTRETURN | ES_AUTOVSCROLL | ES_MULTILINE | WS_VSCROLL
+    AUTOCHECKBOX "&Non-all can be OK", chx1, 5, 175, 85, 14
+    DEFPUSHBUTTON "&Generate", IDOK, 105, 175, 60, 14
+    PUSHBUTTON "Cancel", IDCANCEL, 170, 175, 60, 14
+}
+
+IDD_RULEPRESET DIALOGEX 0, 0, 270, 150
+CAPTION "Policy"
+STYLE DS_CENTER | DS_MODALFRAME | WS_POPUPWINDOW | WS_CAPTION
+FONT 9, "Tahoma", 0, 0, 0 // ANSI_CHARSET
+{
+    LTEXT "Preset &Value:", -1, 5, 5, 90, 10
+    COMBOBOX cmb1, 25, 20, 240, 300, CBS_HASSTRINGS | CBS_AUTOHSCROLL | CBS_OWNERDRAWFIXED | CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP
+    AUTOCHECKBOX "No adj. blocks", chx1, 17, 50, 75, 14
+    AUTOCHECKBOX "No corner blocks", chx2, 98, 50, 75, 14
+    AUTOCHECKBOX "No 3-way blocks", chx3, 179, 50, 75, 14
+    AUTOCHECKBOX "No dividing", chx4, 17, 75, 75, 14, WS_DISABLED
+    AUTOCHECKBOX "No diagonal 3", chx5, 98, 75, 75, 14
+    AUTOCHECKBOX "No diagonal 4", chx6, 179, 75, 75, 14
+    AUTOCHECKBOX "Point symmetry", chx7, 17, 100, 75, 14
+    AUTOCHECKBOX "Vertical symmetry", chx8, 98, 100, 75, 14
+    AUTOCHECKBOX "Horizontal symmetry", chx9, 179, 100, 75, 14
+    GROUPBOX "Policy", -1, 5, 40, 260, 85
+    PUSHBUTTON "What's the &policy?...", psh1, 5, 130, 121, 14
+}
+
+IDD_UILANGID DIALOGEX 0, 0, 155, 70
+CAPTION "UI Language Select"
+STYLE DS_CENTER | DS_MODALFRAME | WS_POPUPWINDOW | WS_CAPTION
+FONT 12, "MS Shell Dlg", 0, 0, 1 // DEFAULT_CHARSET
+{
+    LTEXT "UI &Language:", -1, 5, 5, 145, 10
+    COMBOBOX cmb1, 5, 20, 144, 300, CBS_HASSTRINGS | CBS_AUTOHSCROLL | CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    LTEXT "* Effective on next startup", -1, 5, 35, 145, 12
+    DEFPUSHBUTTON "OK", IDOK, 25, 50, 60, 14
+    PUSHBUTTON "Cancel", IDCANCEL, 90, 50, 60, 14
+}
+
+IDD_ABOUT DIALOGEX 0, 0, 212, 172
+CAPTION "About XWordGiver"
+STYLE DS_CENTER | DS_MODALFRAME | WS_POPUPWINDOW | WS_CAPTION
+FONT 9, "Tahoma", 0, 0, 0 // ANSI_CHARSET
+{
+    CONTROL 3, ico1, "STATIC", SS_REALSIZEIMAGE | SS_BITMAP | WS_GROUP, 10, 10, 0, 0
+    LTEXT "", stc1, 40, 10, 125, 25
+    CONTROL 2, ico2, "STATIC", SS_REALSIZEIMAGE | SS_BITMAP | WS_GROUP, 175, 10, 0, 0
+    LTEXT "", stc3, 95, 50, 30, 15
+    LTEXT "", stc2, 135, 50, 70, 15
+    EDITTEXT edt1, 10, 65, 195, 50, ES_READONLY | ES_MULTILINE | WS_VSCROLL | WS_HSCROLL | NOT WS_TABSTOP
+    CONTROL "Official Site: <a>https://katahiromz.fc2.page/xwordgiver/</a>", ctl1, "SysLink", WS_TABSTOP, 10, 125, 195, 15
+    PUSHBUTTON "&Change Log...", IDYES, 10, 145, 91, 20
+    DEFPUSHBUTTON "OK", IDOK, 145, 145, 60, 20
+}
+
+IDD_MARKING DIALOGEX 0, 0, 215, 230
+CAPTION "Marking (Ctrl+J)"
+STYLE DS_CENTER | DS_MODALFRAME | WS_POPUPWINDOW | WS_CAPTION
+EXSTYLE WS_EX_TOOLWINDOW
+FONT 9, "Tahoma", 0, 0, 0 // ANSI_CHARSET
+{
+    LTEXT "The double-frame &word or phrase:", -1, 5, 5, 128, 12
+    EDITTEXT edt1, 5, 20, 205, 14
+    LTEXT "Enter a word or choose from the suggestions below:", stc1, 5, 40, 205, 14
+    LISTBOX lst1, 5, 60, 205, 100, LBS_MULTICOLUMN | LBS_NOINTEGRALHEIGHT | LBS_HASSTRINGS | WS_VSCROLL | WS_HSCROLL | WS_TABSTOP
+    PUSHBUTTON "<< &previous word", psh1, 5, 165, 100, 17
+    PUSHBUTTON "&next word >>", psh2, 110, 165, 100, 17
+    PUSHBUTTON "< Previous &arrangement", psh3, 6, 185, 100, 17
+    PUSHBUTTON "Next a&rrangement >", psh4, 110, 185, 100, 17
+    PUSHBUTTON "&Clear double-frame", psh5, 5, 205, 80, 17
+}
+
+IDD_JUMP DIALOGEX 0, 0, 193, 185
+CAPTION "Jump"
+STYLE DS_CENTER | DS_MODALFRAME | WS_POPUPWINDOW | WS_CAPTION
+FONT 9, "Tahoma", 0, 0, 0 // ANSI_CHARSET
+{
+    AUTORADIOBUTTON "Jump to &position", rad1, 10, 10, 110, 15, WS_GROUP | WS_TABSTOP
+    AUTORADIOBUTTON "Jump to &clue", rad2, 10, 60, 110, 15, WS_TABSTOP
+    AUTORADIOBUTTON "Jump to letter or &word", rad5, 10, 110, 110, 15, WS_TABSTOP
+    EDITTEXT edt1, 20, 35, 30, 15, ES_NUMBER | ES_AUTOHSCROLL | ES_RIGHT
+    CONTROL "", scr1, "msctls_updown32", UDS_ARROWKEYS | UDS_AUTOBUDDY | UDS_ALIGNRIGHT | UDS_SETBUDDYINT, 40, 35, 10, 20
+    LTEXT "th from left", -1, 55, 40, 45, 10
+    EDITTEXT edt2, 110, 35, 30, 15, ES_NUMBER | ES_AUTOHSCROLL | ES_RIGHT
+    CONTROL "", scr2, "msctls_updown32", UDS_ARROWKEYS | UDS_AUTOBUDDY | UDS_ALIGNRIGHT | UDS_SETBUDDYINT, 100, 25, 10, 20
+    LTEXT "th from top", -1, 145, 40, 45, 10
+    AUTORADIOBUTTON "&Across", rad3, 25, 85, 40, 15, WS_GROUP | WS_TABSTOP
+    AUTORADIOBUTTON "&Down", rad4, 75, 85, 35, 15, WS_TABSTOP
+    EDITTEXT edt3, 120, 85, 30, 15, ES_NUMBER | ES_AUTOHSCROLL | ES_RIGHT
+    CONTROL "", scr3, "msctls_updown32", UDS_ARROWKEYS | UDS_AUTOBUDDY | UDS_ALIGNRIGHT | UDS_SETBUDDYINT, 100, 25, 10, 20
+    LTEXT "Letter or word:", -1, 27, 137, 66, 12
+    EDITTEXT edt4, 97, 135, 85, 14, ES_AUTOHSCROLL
+    DEFPUSHBUTTON "&Jump", IDOK, 65, 165, 60, 15
+    PUSHBUTTON "Cancel", IDCANCEL, 130, 165, 60, 15
+}
+
+IDD_FILESETTINGS DIALOGEX 0, 0, 270, 245
+CAPTION "File"
+STYLE DS_CENTER | DS_MODALFRAME | WS_POPUPWINDOW | WS_CAPTION
+FONT 9, "Tahoma", 0, 0, 0 // ANSI_CHARSET
+{
+    AUTOCHECKBOX "Display the answer when opening a &question", chx1, 10, 10, 195, 15
+    AUTOCHECKBOX "Display the answer when &generated", chx3, 10, 30, 195, 15
+    AUTOCHECKBOX "Automatically save with sequential numbering when generated", chx2, 10, 50, 195, 15
+    LTEXT "Sequential numbering &save in:", -1, 10, 70, 195, 15, SS_CENTERIMAGE | NOT WS_GROUP
+    COMBOBOX cmb1, 10, 85, 195, 300, CBS_HASSTRINGS | CBS_AUTOHSCROLL | CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP
+    PUSHBUTTON "&Browse...", psh1, 10, 100, 60, 15
+    PUSHBUTTON "Open &Folder", psh2, 110, 100, 95, 15
+    AUTOCHECKBOX "Do not &read LOOKS information from file", chx4, 10, 125, 195, 15
+    AUTOCHECKBOX "Do not &write LOOKS information to file", chx5, 10, 145, 195, 15
+    LTEXT "Sequential numbering filename &1:", -1, 10, 180, 110, 15, SS_CENTERIMAGE | NOT WS_GROUP
+    COMBOBOX cmb2, 10, 195, 120, 300, CBS_HASSTRINGS | CBS_AUTOHSCROLL | CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP
+    LTEXT "Sequential numbering filename &2:", -1, 140, 180, 110, 15, SS_CENTERIMAGE | NOT WS_GROUP
+    COMBOBOX cmb3, 140, 195, 120, 300, CBS_HASSTRINGS | CBS_AUTOHSCROLL | CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP
+    LTEXT "%Wx%H Size　%Y%M%D Date　%h%m%s Time　%N %1N..%6N Serial\r\n%w Day of week", -1, 10, 210, 250, 20, NOT WS_GROUP
+}
+
+IDD_VIEWSETTINGS DIALOGEX 0, 0, 220, 190
+CAPTION "View"
+STYLE DS_CENTER | DS_MODALFRAME | WS_POPUPWINDOW | WS_CAPTION
+FONT 9, "Tahoma", 0, 0, 0 // ANSI_CHARSET
+{
+    AUTOCHECKBOX "&Toolbar", chx1, 10, 5, 95, 15
+    AUTOCHECKBOX "&Status bar", chx2, 10, 25, 95, 15
+    AUTOCHECKBOX "&Input palette", chx3, 10, 45, 95, 15
+    AUTOCHECKBOX "Clu&e", chx4, 10, 65, 95, 15
+    AUTOCHECKBOX "&Answer", chx5, 10, 85, 95, 15
+    AUTOCHECKBOX "&Numbering", chx6, 10, 105, 95, 15
+    AUTOCHECKBOX "&Caret", chx7, 10, 125, 95, 15
+    AUTOCHECKBOX "Double-&frame", chx8, 115, 5, 95, 15
+    AUTOCHECKBOX "Double-frame &line", chx15, 115, 25, 95, 15
+    AUTOCHECKBOX "&Double-frame letters", chx9, 115, 45, 95, 15
+    AUTOCHECKBOX "Skeleton &view", chx10, 115, 65, 95, 15
+    AUTOCHECKBOX "NumCro &mode", chx11, 115, 85, 95, 15
+    AUTOCHECKBOX "lo&wercase", chx12, 115, 105, 95, 15
+    AUTOCHECKBOX "&Hiragana", chx13, 115, 125, 95, 15
+    AUTOCHECKBOX "Checking ans&wer", chx14, 115, 145, 95, 15
+    RTEXT "&Zoom:", -1, 15, 170, 35, 10, SS_CENTERIMAGE | NOT WS_GROUP
+    COMBOBOX cmb1, 60, 170, 95, 300, CBS_HASSTRINGS | CBS_AUTOHSCROLL | CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP
+}
+
+IDD_GENERATIVE DIALOGEX 0, 0, 220, 190
+CAPTION "Generative"
+STYLE DS_CENTER | DS_MODALFRAME | WS_POPUPWINDOW | WS_CAPTION
+FONT 9, "Tahoma", 0, 0, 0 // ANSI_CHARSET
+{
+    AUTOCHECKBOX "Do not display ""Generated a &problem""", chx1, 10, 5, 200, 15
+    AUTOCHECKBOX "Do not display ""&Cancelled""", chx2, 10, 25, 200, 15
+    AUTOCHECKBOX "Play the following sound on &successful generation:", chx4, 10, 55, 200, 15
+    COMBOBOX cmb1, 35, 75, 125, 300, CBS_HASSTRINGS | CBS_AUTOHSCROLL | CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    PUSHBUTTON "Play", psh1, 165, 75, 35, 15
+    AUTOCHECKBOX "Play the following sound on generation &failure:", chx5, 10, 95, 200, 15
+    COMBOBOX cmb2, 35, 115, 125, 300, CBS_HASSTRINGS | CBS_AUTOHSCROLL | CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    PUSHBUTTON "Play", psh2, 165, 115, 35, 15
+    AUTOCHECKBOX "Play the following sound when cance&ling generation:", chx6, 10, 135, 200, 15
+    COMBOBOX cmb3, 35, 155, 125, 300, CBS_HASSTRINGS | CBS_AUTOHSCROLL | CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    PUSHBUTTON "Play", psh3, 165, 155, 35, 15
+}
+
+IDD_DICTLIST DIALOGEX 0, 0, 269, 203
+CAPTION "Dictionaries"
+STYLE DS_CENTER | DS_MODALFRAME | WS_POPUPWINDOW | WS_CAPTION
+FONT 9, "Tahoma", 0, 0, 0 // ANSI_CHARSET
+{
+    LTEXT "Current &dict:", -1, 5, 10, 70, 15, SS_CENTERIMAGE | NOT WS_GROUP
+    COMBOBOX cmb1, 80, 10, 180, 300, CBS_HASSTRINGS | CBS_AUTOHSCROLL | CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    LTEXT "Dictionary &List:", -1, 5, 30, 110, 15, SS_CENTERIMAGE | NOT WS_GROUP
+    CONTROL "", lst1, "SysListView32", LVS_REPORT | WS_BORDER | WS_TABSTOP, 5, 50, 255, 95
+    PUSHBUTTON "Open &file", psh1, 5, 150, 65, 20
+    PUSHBUTTON "&Open folder", psh2, 75, 150, 75, 20
+    PUSHBUTTON "&Reload list", psh4, 5, 175, 105, 20
+}
+
+IDD_HIDDEN DIALOGEX 0, 0, 275, 220
+CAPTION "Advanced"
+STYLE DS_CENTER | DS_MODALFRAME | WS_POPUPWINDOW | WS_CAPTION
+FONT 9, "Tahoma", 0, 0, 0 // ANSI_CHARSET
+{
+    PUSHBUTTON "Debug Action &1", psh1, 40, 10, 185, 40, BS_MULTILINE
+    PUSHBUTTON "Debug Action &2", psh2, 40, 60, 185, 40, BS_MULTILINE
+    PUSHBUTTON "&Open app folder", psh3, 40, 110, 185, 40, BS_MULTILINE
+}
+
+IDD_AIHELPER DIALOGEX 0, 0, 270, 215
+CAPTION "AI Helper"
+STYLE DS_MODALFRAME | WS_POPUPWINDOW | WS_CAPTION
+FONT 9, "Tahoma", 0, 0, 0 // ANSI_CHARSET
+{
+    PUSHBUTTON "Prepare for &AI...", psh1, 7, 7, 102, 39
+    CONTROL "stc1", stc1, "STATIC", SS_BITMAP, 119, 2, 52, 34
+    COMBOBOX cmb4, 170, 15, 90, 300, CBS_HASSTRINGS | CBS_AUTOHSCROLL | CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    RTEXT "AI &Provider:", -1, 7, 56, 90, 13
+    COMBOBOX cmb1, 104, 55, 107, 300, CBS_HASSTRINGS | CBS_AUTOHSCROLL | CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP
+    RTEXT "AI &Model:", -1, 7, 75, 90, 13
+    COMBOBOX cmb2, 104, 75, 107, 300, CBS_HASSTRINGS | CBS_AUTOHSCROLL | CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP
+    RTEXT "Prompt &Type:", -1, 8, 110, 89, 15
+    COMBOBOX cmb3, 105, 110, 160, 300, CBS_HASSTRINGS | CBS_AUTOHSCROLL | CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    EDITTEXT edt2, 7, 128, 258, 55, ES_AUTOVSCROLL | ES_MULTILINE | WS_VSCROLL
+    PUSHBUTTON "R&eset all", psh2, 195, 189, 70, 15
+    LTEXT "$(CLUE) is the clue name. $(TODAY) is today's date.\r\n(* ... *) is invisible. [[ ... ]] is a system command.", -1, 5, 190, 170, 20
+}
+
+IDD_AIHELPERCONSOLE DIALOGEX 0, 0, 283, 133
+CAPTION "AI Helper Console"
+STYLE DS_CENTER | WS_POPUPWINDOW | WS_CAPTION | WS_THICKFRAME | WS_MAXIMIZEBOX
+EXSTYLE WS_EX_TOOLWINDOW
+FONT 11, "Tahoma", 0, 0, 0 // ANSI_CHARSET
+{
+    EDITTEXT lst1, 5, 7, 270, 98, ES_READONLY | ES_AUTOVSCROLL | ES_MULTILINE | WS_VSCROLL
+    CONTROL "stc1", stc1, "STATIC", SS_BITMAP, 3, 107, 5, 25
+    EDITTEXT edt1, 31, 113, 170, 14, ES_AUTOHSCROLL
+    DEFPUSHBUTTON "Enter", IDOK, 237, 112, 39, 14
+}
+
+//////////////////////////////////////////////////////////////////////////////
+// RT_VERSION
+
+1 VERSIONINFO
+FILEVERSION     5, 4, 3, 0
+PRODUCTVERSION  5, 4, 3, 0
+FILEOS          VOS_NT_WINDOWS32
+FILETYPE        VFT_APP
+{
+    BLOCK "StringFileInfo"
+    {
+        BLOCK "040904E4" // en_US, Multilingual
+        {
+            VALUE "CompanyName", "Katayama Hirofumi MZ"
+            VALUE "FileDescription", "XWordGiver"
+            VALUE "FileVersion", "5.4.3"
+            VALUE "LegalCopyright", "Copyright (C) 2012-2026 katahiromz. All rights reserved."
+            VALUE "ProductName", "XWordGiver"
+            VALUE "ProductVersion", "5.4.3"
+        }
+    }
+    BLOCK "VarFileInfo"
+    {
+        VALUE "Translation", 0x0409, 0x04E4
+    }
+}
+
+//////////////////////////////////////////////////////////////////////////////
+// RT_STRING
+
+STRINGTABLE
+{
+    IDS_VERSION "XWordGiver ver.5.4.3\nby katahiromz"
+    IDS_APPNAME "XWordGiver"
+    IDS_CANTLOAD "I couldn't load the file."
+    IDS_WRONGFORMAT "This format is wrong."
+    IDS_CANTSAVE "I couldn't save the file."
+    IDS_OUTOFMEMORY "Out of memory."
+    IDS_CANTSAVE2 "I couldn't save the file."
+    IDS_SOLVED "I have generated a crossword. \n\nCalculation time: %u.%u[sec]"
+    IDS_RESULTS "Results"
+    IDS_CANTACCEL "I couldn't load the accelerators."
+    IDS_CANTREGWND "I couldn't register the window classes."
+    IDS_CANTMAKEWND "I couldn't create the window."
+    IDS_APPTITLE "XWordGiver ver.5.4.3 - %s"
+    IDS_MADEPROBLEM "I have generated %u crossword(s).\n\nCalculation time: %u.%u[sec]"
+    IDS_CANTMAKEPROBLEM "I couldn't create a puzzle.\n\nPlease confirm the dictionary, the block pattern, and the policy.\n\nCalculation time: %u.%u[sec]"
+    IDS_ENTERINT "Please enter an integer between 2 and 256."
+    IDS_OPENDICTDATA "Open dictionary"
+    IDS_OPENCROSSDATA "Open crossword (Ctrl+O)"
+    IDS_SAVECROSSDATA "Save crossword (Ctrl+Shift+S)"
+    IDS_DOWN "*** DOWN ***"
+    IDS_ACROSS "*** ACROSS ***"
+    IDS_DOWNNUMBER "[D%d]"
+    IDS_ACROSSNUMBER "[A%d]"
+    IDS_NOTEPAD "notepad ""%s"""
+    IDS_HINTSTXT "Crossword Clues.txt"
+    IDS_SAVEANSASIMG "Save crossword answer as image"
+    IDS_SAVEPROBASIMG "Save crossword as image"
+    IDS_CANCELLED "The calculation is cancelled.\n\nCalculation time: %u.%u[sec]"
+    IDS_NOWSOLVING "Calculating...(%u.%u sec)"
+    IDS_HLINE "----------------------------"
+    IDS_MONOFONT "ＭＳ ゴシック"
+    IDS_APPTITLE2 "XWordGiver ver.5.4.3 (%s) - %s"
+    IDS_CROSSWORD "Crossword"
+    IDS_ANSWER "Answer: "
+    IDS_SETPORTRAIT "Please use the portrait paper to print."
+    IDS_REGISTERWORD "'%s' is a word that is not registered in the specified dictionary.\n\nPlease enter a clue for the word '%s'."
+    IDS_CORNERBLOCK "There is a block at either of the four corners. This violates the policy ""Prohibit blocks at 4 corners""."
+    IDS_ADJACENTBLOCK "The blocks are next to each other. This violates the policy ""Prohibit adjacent blocks""."
+    IDS_DOUBLEDWORD "Don't use a word twice."
+    IDS_TRIBLOCK "The blocks in three directions surround a cell. This violates the policy ""Prohibit three-way blocks""."
+    IDS_DIVIDED "The blocks divide the board into some parts. This violates the policy ""No division by blocks""."
+    IDS_NOCANDIDATE "At Cell Position (%u, %u), it doesn't match any candidates."
+    IDS_IMGFILTER "Bitmap images (*.bmp)|*.bmp|PNG images (*.png)|*.png|JPEG images (*.jpg;*.jpe;*.jpeg;*.jfif)|*.jpg;*.jpe;*.jpeg;*.jfif|GIF images (*.gif)|*.gif|EMF files (*.emf)|*.emf||"
+    IDS_DICTFILTER "Dict data (*.dic;*.tsv)|*.dic;*.tsv|All Files (*.*)|*.*||"
+    IDS_CROSSFILTER "All crosswords (*.xwd;*.xwj;*.json;*.jso;*.crp;*.crx;*.xd;*.ecw)|*.xwd;*.xwj;*.json;*.jso;*.crp;*.crx;*.xd;*.ecw|XWD Files (*.xwd)|*.xwd|XWJ Files (*.xwj;*.json;*.jso)|*.xwj;*.json;*.jso|CRP/CRX Files (*.crp;*.crx)|*.crp;*.crx|XD Files (*.xd)|*.xd|EclipseCrossword Files (*.ecw)|*.ecw|All files (*.*)|*.*||"
+    IDS_SAVEFILTER "XWJ Files (*.xwj;*.json;*.jso)|*.xwj;*.json;*.jso|CRP Files (*.crp)|*.crp|XD Files (*.xd)|*.xd||"
+    IDS_README "ReadMe-ENG.txt"
+    IDS_TOOLONGSPACE "The space at Cell Position (%u, %u) does not match the length of the registered word."
+    IDS_TOOOLDPC "Your computer is too old to be used with XWordGiver."
+    IDS_CROSSSTORAGE "Specify the folder to save to"
+    IDS_STORAGEINVALID "The destination is not a valid folder path."
+    IDS_ENTERPOSITIVE "Please enter a valid positive integer."
+    IDS_PROBLEMSMAKING "I have created %u crosswords."
+    IDS_PROBLEMSMADE "I have created %u crosswords.\n\nCalculation time: %u.%u[sec]"
+    IDS_OUTOFSTORAGE "I canceled the calculation because there was not enough space on the destination disk.\n\nCreated %u crosswords\n\nCalculation time: %u.%u[sec]"
+    IDS_LINESYMMETRY "The blocks have linear symmetry."
+    IDS_NOTLINESYMMETRY "The blocks don't have linear symmetry."
+    IDS_POINTSYMMETRY "The blocks have point symmetry."
+    IDS_NOTPOINTSYMMETRY "The placement of the blocks is not point-symmetrical. This violates the policy ""Point symmetry of blocks""."
+    IDS_HINTS "Clues (Ctrl+L)"
+    IDS_ERASEDSETTINGS "I have erased the settings."
+    IDS_FAILERASESETTINGS "Failed to erase the settings."
+    IDS_QUERYERASESETTINGS "Do you want to erase the settings?"
+    IDS_HEADERSEP1 "----------(FROM HERE)-----------\r\n"
+    IDS_HEADERSEP2 "----------(TO HERE)-----------"
+    IDS_BELOWISNOTES "\r\n(Remarks below)"
+    IDS_LICENSE "LICENSE.txt"
+    IDS_NOMARKCANDIDATES "No candidates for double-frame word"
+    IDS_PATTERNSTXT "Patterns.txt"
+    IDS_CANDIDATES "Input Candidates"
+    IDS_NOCANDIDATES "No input candidates"
+    IDS_KEYLEFT "["
+    IDS_DOWNLABEL "DOWN"
+    IDS_ACROSSLABEL "ACROSS"
+    IDS_CALCULATING "Calculating...（%u.%u sec passed）"
+    IDS_BLOCKSGENERATED "I have generated %u block pattern(s).\n\nCalculation time: %u.%u[sec]"
+    IDS_INVALIDVALUE "Invalid value."
+    IDS_NONE "(None)"
+    IDS_BASICDICTDATA "BasicDict-"
+    IDS_GOOGLESEARCH "https://www.google.co.jp/search?hl=jp&gl=jp&q="
+    IDS_MATRIXSEARCH "http://cross.matrix.jp/search.cgi"
+    IDS_HINPUT "Horz"
+    IDS_VINPUT "Vert"
+    IDS_ABC "ABC"
+    IDS_DICTIONARY "Dict"
+    IDS_APPINFO "XWordGiver ver.5.4.3"
+    IDS_APPINFO2 "XWordGiver ver.5.4.3 (%s)"
+    IDS_HINPUT2 "H\no\nr\nz"
+    IDS_VINPUT2 "V\ne\nr\nt"
+    IDS_KANA "Kana"
+    IDS_KANJI "Kanji"
+    IDS_CHARFEED "ChFeed"
+    IDS_HINPUT3 "Horizontal"
+    IDS_VINPUT3 "Vertical"
+    IDS_RUSSIA "Russia"
+    IDS_FOURDIAGONALS "There are four diagonally connected blocks in a line. This violates the policy ""Prohibit blocks at 4 corners""."
+    IDS_RULESPASSED "The current board has passed the specified policy."
+    IDS_PASSED "Passed!"
+    IDS_RULESTXT "Policy-ENG.txt"
+    IDS_RULES "Policy"
+    IDS_STANDARDRULES "&Policy"
+    IDS_MODIFIEDRULES "(!)&Policy"
+    IDS_CANTSOLVESYMMETRY "The policy ""Point symmetry of blocks"" doesn't allow you to find a solution with adding blocks."
+    IDS_RULE_DONTDOUBLEBLACK "Prohibit adjacent blocks"
+    IDS_RULE_DONTCORNERBLACK "Prohibit blocks at 4 corners"
+    IDS_RULE_DONTTRIDIRECTIONS "Prohibit three-way blocks"
+    IDS_RULE_DONTDIVIDE "No division by blocks"
+    IDS_RULE_DONTFOURDIAGONALS "Prohibit diagonal 4 blocks"
+    IDS_RULE_POINTSYMMETRY "Point symmetry of blocks"
+    IDS_TAGS "Tags"
+    IDS_TAGCOUNT "Tag count"
+    IDS_RESETTHEME "Do you want to reset the theme?"
+    IDS_NOTAGS "There are no theme tags in this dictionary."
+    IDS_DICT "Dict"
+    IDS_DEFAULTDICT "&Dictionary"
+    IDS_MODIFIEDDICT "(!)&Dictionary"
+    IDS_PATMAKING "I have created %u block pattern(s)."
+    IDS_THREEDIAGONALS "Prohibit diagonal 3 blocks"
+    IDS_RULE_DONTTHREEDIAGONALS "Prohibit diagonal 3 blocks"
+    IDS_NORMAL_DICT "ENG-Freedom"
+    IDS_DIGITS "Digits"
+    IDS_MAIN_LANGUAGE "English"
+    IDS_RULE_LINESYMMETRYV "Vertical symmetry of blocks"
+    IDS_RULE_LINESYMMETRYH "Horizontal symmetry of blocks"
+    IDS_CANTSOLVELINESYMMETRY "The policy ""Line symmetry of blocks"" doesn't allow you to find a solution with adding blocks."
+    IDS_NOTLINESYMMETRYV "The placement of the blocks is not line-symmetrical. This violates the policy ""Vertical symmetry of blocks""."
+    IDS_NOTLINESYMMETRYH "The placement of the blocks is not line-symmetrical. This violates the policy ""Horizontal symmetry of blocks""."
+    IDS_SHALLIMIRROR "Shall I make the block pattern symmetrical according to the specified policy?"
+    IDS_EVENROWLINESYMV "Forcing symmetrical even rows and banning adjacent blocks is unreasonable. Please reconfirm the policy."
+    IDS_EVENCOLLINESYMH "Forcing symmetrical even columns and banning adjacent blocks is unreasonable. Please reconfirm the policy."
+    IDS_DBLFRAME_LETTERS_1 "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
+    IDS_DBLFRAME_LETTERS_2 "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    IDS_DBLFRAME_LETTERS_3 "ΑΒΓΔΕΖΗΘΙΚΛΜΝΞΟΠΡΣΤΥΦΧΨΩαβγδεζηθικλμνξοπρστυφχψω"
+    IDS_DBLFRAME_LETTERS_4 "αβγδεζηθικλμνξοπρστυφχψωΑΒΓΔΕΖΗΘΙΚΛΜΝΞΟΠΡΣΤΥΦΧΨΩ"
+    IDS_DBLFRAME_LETTERS_5 "アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン"
+    IDS_DBLFRAME_LETTERS_6 "あいうえおかきくけこさしすせそたちつてとなにぬねのはひふへほまみむめもやゆよらりるれろわをん"
+    IDS_DBLFRAME_LETTERS_7 "イロハニホヘトチリヌルヲワカヨタレソツネナラムウヰノオクヤマケフコエテアサキユメミシヱヒモセスン"
+    IDS_DBLFRAME_LETTERS_8 "いろはにほへとちりぬるをわかよたれそつねならむうゐのおくやまけふこえてあさきゆめみしゑひもせすん"
+    IDS_DBLFRAME_LETTERS_9 "АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯабвгдеёжзийклмнопрстуфхцчшщъыьэюя"
+    IDS_DBLFRAME_LETTERS_10 "абвгдеёжзийклмнопрстуфхцчшщъыьэюяАБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ"
+    IDS_NOTREGDWORD "The dictionary didn't register some words yet.\n\n%s\n\nDo you want to continue?"
+    IDS_WARNING "Warning"
+    IDS_HOMEPAGE "https://katahiromz.fc2.page/xwordgiver/"
+    IDS_NOTCONNECTABLE "The word '%ls' was not connectable."
+    IDS_GENERATED "Generated."
+    IDS_CANTGENERATE "I couldn't generate."
+    IDS_ADDMOREWORDS "Less than 2 words, the puzzle will not be generated. Please increase the number of words."
+    IDS_TOOMANYWORDS "More than %u words is too much."
+    IDS_JSONSYNTAXERROR "JSON syntax error happened."
+    IDS_GREEK "Greek"
+    IDS_ANYINPUT "Any Input"
+    IDS_IMPORTLOOKSFILE "Open LOOKS file"
+    IDS_EXPORTLOOKSFILE "Save LOOKS file"
+    IDS_NOBLOCKIMAGE "There is no image '%s' in BLOCK folder. So I have failed to import LOOKS file."
+    IDS_QUERYSAVE "Do you want to save file '%s'?"
+    IDS_UNTITLED "Untitled"
+    IDS_HOWMANYCORES "Found %u processors."
+    IDS_POLICYPRESET_SKELETON_0 "0x0008: Skeleton policy: No symmetry"
+    IDS_POLICYPRESET_SKELETON_1 "0x0028: Skeleton policy: Point symmetry (Recommended)"
+    IDS_POLICYPRESET_SKELETON_2 "0x0088: Skeleton policy: Vertical symmetry"
+    IDS_POLICYPRESET_SKELETON_3 "0x0108: Skeleton policy: Horizontal symmetry"
+    IDS_POLICYPRESET_JPN_STRICT_0 "0x004F: Japanese publisher policy (Strict): No symmetry"
+    IDS_POLICYPRESET_JPN_STRICT_1 "0x006F: Japanese publisher policy (Strict): Point symmetry"
+    IDS_POLICYPRESET_JPN_STRICT_2 "0x00CF: Japanese publisher policy (Strict): Vertical symmetry"
+    IDS_POLICYPRESET_JPN_STRICT_3 "0x014F: Japanese publisher policy (Strict): Horizontal symmetry"
+    IDS_POLICYPRESET_JPN_LOOSE_0 "0x001B: Japanese publisher policy (Loose): No symmetry"
+    IDS_POLICYPRESET_JPN_LOOSE_1 "0x003B: Japanese publisher policy (Loose): Point symmetry"
+    IDS_POLICYPRESET_JPN_LOOSE_2 "0x009B: Japanese publisher policy (Loose): Vertical symmetry"
+    IDS_POLICYPRESET_JPN_LOOSE_3 "0x011B: Japanese publisher policy (Loose): Horizontal symmetry"
+    IDS_MARKINGTYPE "Error: There is a missing character '%c' on the board."
+    IDS_MARKINGEMPTY "Enter a word or choose from the suggestions below:"
+    IDS_ADD "Add Pattern"
+    IDS_DELETE "Delete Pattern"
+    IDS_CANTWRITEPAT "Failed to write PAT.txt. Sorry."
+    IDS_WROTEPAT "Success! PAT.txt has been written."
+    IDS_NOMATCHPAT "There are no patterns matching ""PAT.txt"" with the specified conditions.\n\nIt's hopeless if large, but should I continue?"
+    IDS_SHOWINFO "Show Info"
+    IDS_PATSIZEDIST "The distribution of PAT.txt pattern sizes"
+    IDS_CHARUSAGEDIST "The distribution of board character usage"
+    IDS_WORDLENDIST "The distribution of board word length"
+    IDS_HINTLENAVG "Clue length average"
+    IDS_HINTLENMIN "Clue length min."
+    IDS_HINTLENMAX "Clue length max."
+    IDS_DICTWORDLENAVG "Word length Average in the dictionary"
+    IDS_DICTWORDLENMIN "Word length min. in the dictionary"
+    IDS_DICTWORDLENMAX "Word length max. in the dictionary"
+    IDS_DICTHINTLENAVG "Clue length Average in the dictionary"
+    IDS_DICTHINTLENMIN "Clue length min. in the dictionary"
+    IDS_DICTHINTLENMAX "Clue length max. in the dictionary"
+    IDS_WORDCOUNT "Word usage count in the board"
+    IDS_PATCOUNT "The # of patters in PAT.txt"
+    IDS_DICTWORDCOUNT "The # of effective words in the dictionary"
+    IDS_CONGRATS "Congratulations!"
+    IDS_CORRECTANSWER "Correct answer!"
+    IDS_OUTOFRANGE "Out of range."
+    IDS_GENERALSETTINGS "Settings (Alt+Enter)"
+    IDS_MADEPROBLEM2 "I've generated a crossword and saved as '%s'.\n\nCalculation time: %u.%u[sec]"
+    IDS_FITWHOLE "Fit whole"
+    IDS_FILENAME "Filename"
+    IDS_DISPLAYNAME "Display Name"
+    IDS_UPDATEDTIME "Updated Time"
+    IDS_UPDATEDICTOK "Successfully wrote to dictionary file ""%s""."
+    IDS_UPDATEDICTFAIL "Failed to write to dictionary file ""%s"". The folder may not be writable."
+    IDS_NOCHANGE "There is no change."
+    IDS_NODICTSELECTED "No dictionary selected, or unable to load the dictionary."
+    IDS_TT_NEW "New crossword"
+    IDS_TT_GENERATE "Generate crossword"
+    IDS_TT_OPEN "Open crossword"
+    IDS_TT_SAVEAS "Save crossword"
+    IDS_TT_UNDO "Undo"
+    IDS_TT_REDO "Redo"
+    IDS_TT_SOLVE "Find a solution"
+    IDS_TT_COPY "Copy board"
+    IDS_TT_PASTE "Paste"
+    IDS_TT_PRINTPROBLEM "Print crossword"
+    IDS_TT_PRINTANSWER "Print crossword answer"
+    IDS_TT_SOLVENOADDBLACK "Find a solution (without &adding blocks)"
+    IDS_FAIRY_NAME00 "Fairy Croworth"
+    IDS_READY "Ready"
+    IDS_RUNNINGCOMMAND "Executing command..."
+    IDS_CANTMAKEPATTERN "I couldn't create a pattern. n\nPlease confirm the dictionary, the block pattern, and the policy.\n\nCalculation time: %u.%u[sec]"
+    IDS_UNKNOWNERROR "Unknown error happened."
+    IDS_INVALIDWORDS "Invalid words."
+    IDS_WORDDUPLICATE "There are duplicate words on the board."
+    IDS_WRONGPATTERN "There are patterns on the board that do not match any words in the dictionary."
+    IDS_NOTHEMETAGS "(No theme tags)"
+    IDS_HASTHEMETAGS "(Has theme tags)"
+    IDS_SWUNREGD "License: Shareware (Unregistered)"
+    IDS_SWREGD "License: Shareware (Registered)"
+    IDS_ERROR "Error"
+    IDS_COPYRIGHTTEXT "Copyright (C) 2012-2026 katahiromz.\r\nCopyright (C) 2021-2022 スフィンクス.\r\nCopyright (C) 2021-2022 catworks99.\r\nCopyright (C) 2022 yukokumar.\r\nCopyright (C) 2022 Hiroshima.cw.\r\nAll rights reserved."
+    IDS_CRPSAVEWARNING "Saving in CRP format will not preserve the header or the remarks field. Do you wish to proceed?"
+    IDS_SERVERACCESSCONFIRM "AI Helper is attempting to connect to the server. Proceed?"
+}
+
+//////////////////////////////////////////////////////////////////////////////

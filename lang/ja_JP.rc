@@ -1,0 +1,1839 @@
+// このファイルは リソーエディタ 6.2.4 によって自動生成されました。
+// † <-- このダガー記号は、UTF-8の検出に役立ちます。
+
+#pragma code_page(65001) // UTF-8
+
+LANGUAGE LANG_JAPANESE, SUBLANG_DEFAULT
+
+//////////////////////////////////////////////////////////////////////////////
+// RT_MENU
+
+1 MENU
+{
+    POPUP "ファイル(&F)"
+    {
+        MENUITEM "新規作成(&N)\tCtrl+N", ID_NEW
+        MENUITEM "問題を自動生成する(&G)\tCtrl+G", ID_GENERATE
+        MENUITEM SEPARATOR
+        MENUITEM "黒マスパターンから自動生成(&T)...\tCtrl+;", ID_OPENPATTERNS
+        MENUITEM "単語群から自動生成(&L)...\tCtrl+:", ID_GENERATEFROMWORDLIST
+        MENUITEM SEPARATOR
+        MENUITEM "開く(&O)...\tCtrl+O", ID_OPEN
+        MENUITEM "上書き保存(&S)\tCtrl+S", ID_SAVE
+        MENUITEM "名前を付けて保存(&A)...\tCtrl+Shift+S", ID_SAVEAS
+        MENUITEM "連番で保存(&R)\tCtrl+Alt+S", ID_NUMBERINGSAVE
+        MENUITEM SEPARATOR
+        MENUITEM "問題を画像ファイルとして保存(&I)...\tCtrl+I", ID_SAVEPROBASIMAGE
+        MENUITEM "解答を画像ファイルとして保存(&K)...\tCtrl+B", ID_SAVEANSASIMAGE
+        MENUITEM SEPARATOR
+        MENUITEM "問題のみを印刷(&M)\tCtrl+Q", ID_PRINTPROBLEM
+        MENUITEM "問題と解答を印刷(&P)\tCtrl+P", ID_PRINTANSWER
+        MENUITEM SEPARATOR
+        POPUP "最近使ったファイル(&U)"
+        {
+            MENUITEM "(なし)", ID_RECENT_00, GRAYED
+        }
+        MENUITEM SEPARATOR
+        MENUITEM "ヘッダーと備考欄(&H)...\tCtrl+Enter", ID_HEADERANDNOTES
+        MENUITEM "設定(&E)...\tAlt+Enter", ID_SETTINGS
+        MENUITEM SEPARATOR
+        MENUITEM "アプリの初期化(&Z)", ID_ERASESETTINGS
+        MENUITEM "終了(&X)\tAlt+F4", ID_EXIT
+    }
+    POPUP "編集(&E)"
+    {
+        MENUITEM "元に戻す(&U)\tCtrl+Z", ID_UNDO
+        MENUITEM "やり直す(&R)\tCtrl+Y", ID_REDO
+        MENUITEM SEPARATOR
+        MENUITEM "タテの入力候補(&D)...", ID_OPENCANDSWNDVERT
+        MENUITEM "ヨコの入力候補(&A)...", ID_OPENCANDSWNDHORZ
+        MENUITEM SEPARATOR
+        MENUITEM "盤面のコピー(&C)\tCtrl+C", ID_COPY
+        MENUITEM "盤面を画像としてコピー(&I)\tShift+Ctrl+C", ID_COPYASIMAGE
+        MENUITEM "貼り付け(&P)\tCtrl+V", ID_PASTE
+        MENUITEM SEPARATOR
+        MENUITEM "タテの単語をコピー(&V)", ID_COPYWORDVERT
+        MENUITEM "ヨコの単語をコピー(&H)", ID_COPYWORDHORZ
+        MENUITEM "文字群をコピー(&S)", ID_COPYCHARSET
+        MENUITEM "単語リストをコピー(&O)", ID_COPY_WORD_LIST
+        MENUITEM "二重マス単語をコピー(&M)\tCtrl+D", ID_COPYMARKWORD
+        MENUITEM SEPARATOR
+        POPUP "カギをコピー(&L)"
+        {
+            MENUITEM "タテのカギをコピー (スタイル0) (&T)", ID_COPYVHINTSSTYLE0
+            MENUITEM "タテのカギをコピー (スタイル1) (&L)", ID_COPYVHINTSSTYLE1
+            MENUITEM SEPARATOR
+            MENUITEM "ヨコのカギをコピー (スタイル0) (&Y)", ID_COPYHHINTSSTYLE0
+            MENUITEM "ヨコのカギをコピー (スタイル1) (&E)", ID_COPYHHINTSSTYLE1
+            MENUITEM SEPARATOR
+            MENUITEM "すべてのカギをコピー (スタイル0) (&N)", ID_COPYHINTSSTYLE0
+            MENUITEM "すべてのカギをコピー (スタイル1) (&A)", ID_COPYHINTSSTYLE1
+        }
+        MENUITEM SEPARATOR
+        MENUITEM "単語をウェブ検索(&W) (タテ)\tAlt+↓", ID_ONLINEDICTV
+        MENUITEM "単語をウェブ検索(&Y) (ヨコ)\tAlt+→", ID_ONLINEDICTH
+        MENUITEM SEPARATOR
+        MENUITEM "ジャンプ(&J)...", ID_JUMP
+        MENUITEM SEPARATOR
+        MENUITEM "UI 言語の選択(&N) / UI Language Select...", ID_UILANGID
+    }
+    POPUP "入力(&I)"
+    {
+        MENUITEM "カナ入力(&K)", ID_KANAINPUT
+        MENUITEM "英字入力(&A)", ID_ABCINPUT
+        MENUITEM "漢字入力(&J)", ID_KANJIINPUT
+        MENUITEM "ロシア入力(&R)", ID_RUSSIAINPUT
+        MENUITEM "ギリシャ入力(&G)", ID_GREEKINPUT
+        MENUITEM "数字入力(&D)", ID_DIGITINPUT
+        MENUITEM "自由入力(&N)", ID_ANYINPUT
+        MENUITEM SEPARATOR
+        MENUITEM "ヨコ入力(&H)\tCtrl+/", ID_INPUTH
+        MENUITEM "タテ入力(&V)\tCtrl+/", ID_INPUTV
+        MENUITEM SEPARATOR
+        MENUITEM "文字送り(&F)\tCtrl+^", ID_CHARFEED
+        MENUITEM SEPARATOR
+        MENUITEM "黒マス(&B)\t#", ID_BLOCK
+        MENUITEM "空白(&S)\t_", ID_SPACE
+        MENUITEM SEPARATOR
+        MENUITEM "バックスペース(&Q)\tBkSp", ID_BACK
+        MENUITEM "改行(&E)\tEnter", ID_RETURN
+        MENUITEM "二重マス切り替え(&T)\tCtrl+.", ID_TOGGLEMARK
+        MENUITEM SEPARATOR
+        MENUITEM "文字をすべてクリア(&C)", ID_CLEARNONBLOCKS
+        MENUITEM SEPARATOR
+        MENUITEM "入力パレット(&P)\tCtrl+U", ID_PALETTE2
+    }
+    POPUP "辞書(&D)"
+    {
+        MENUITEM "テーマ タグ(&T)...", ID_THEMETAGS
+        MENUITEM SEPARATOR
+        MENUITEM "辞書のダウンロード(&O)...", ID_DOWNLOADDICT
+        MENUITEM "辞書リストを再読み込み(&D)", ID_RELOADDICTS
+        MENUITEM SEPARATOR
+        MENUITEM "(なし)", ID_DICTIONARY00, GRAYED
+    }
+    POPUP "解(&S)"
+    {
+        MENUITEM "解を求める(&R)\tF5", ID_SOLVE
+        MENUITEM "解を求める(黒マス追加なし) (&B)\tF7", ID_SOLVENOADDBLACK
+        MENUITEM SEPARATOR
+        MENUITEM "答えを表示する(&W)\tCtrl+M", ID_SHOWSOLUTION
+        MENUITEM "答えを表示しない(&D)\tCtrl+M", ID_NOSOLUTION
+        MENUITEM SEPARATOR
+        MENUITEM "答え合わせ(&C)", ID_CHECKANSWER
+        MENUITEM SEPARATOR
+        MENUITEM "二重マス単語の候補と配置(&N)...\tCtrl+J", ID_MARKSNEXT
+        MENUITEM "二重マスをすべて解除する(&K)", ID_KILLMARKS
+        MENUITEM SEPARATOR
+        MENUITEM "ヒントを削除して盤面のロックを解除(&U)", ID_ERASESOLUTIONANDUNLOCKEDIT
+    }
+    POPUP "表示(&V)"
+    {
+        MENUITEM "ツール バー(&T)", ID_TOOLBAR
+        MENUITEM "ステータス バー(&S)", ID_STATUS
+        MENUITEM "入力パレット(&I)\tCtrl+U", ID_PALETTE
+        MENUITEM "ヒント(&H)\tCtrl+L", ID_SHOWHIDEHINTS
+        MENUITEM "AI ヘルパー(&R)", ID_OPENAIHELPER
+        MENUITEM SEPARATOR
+        MENUITEM "答え(&A)\tCtrl+M", ID_SHOWHIDESOLUTION
+        MENUITEM "キャレット(&C)", ID_SHOWHIDECARET
+        MENUITEM "二重マス(&E)", ID_VIEW_DOUBLEFRAME
+        MENUITEM "二重マスの文字(&B)", ID_VIEW_DOUBLEFRAME_LETTERS
+        MENUITEM SEPARATOR
+        MENUITEM "スケルトン ビュー(&O)", ID_VIEW_SKELETON_VIEW
+        MENUITEM "ナンクロモード(&M)", ID_NUMCROMODE
+        MENUITEM SEPARATOR
+        MENUITEM "英小文字(&L)", ID_LOWERCASE
+        MENUITEM "ひらがな(&G)", ID_HIRAGANA
+        MENUITEM SEPARATOR
+        MENUITEM "次のペイン(&N)\tF6", ID_PANENEXT
+        MENUITEM "前のペイン(&P)\tShift+F6", ID_PANEPREV
+        MENUITEM SEPARATOR
+        POPUP "ズーム(&Z)"
+        {
+            MENUITEM "全体に合わせる(&F)\tCtrl+F", ID_FITZOOM
+            MENUITEM SEPARATOR
+            MENUITEM "ズームイン(&Z)\tCtrl+ホイール↑", ID_ZOOMIN
+            MENUITEM "ズームアウト(&O)\tCtrl+ホイール↓", ID_ZOOMOUT
+            MENUITEM "ズーム &100%\tCtrl+\\", ID_ZOOM100
+            MENUITEM SEPARATOR
+            MENUITEM "ズーム &30%", ID_ZOOM30
+            MENUITEM "ズーム &50%", ID_ZOOM50
+            MENUITEM "ズーム &65%", ID_ZOOM65
+            MENUITEM "ズーム &80%", ID_ZOOM80
+            MENUITEM "ズーム &90%", ID_ZOOM90
+        }
+    }
+    POPUP "ルール(&R)"
+    {
+        MENUITEM "ルール プリセット(&P)...\tCtrl+R", ID_RULEPRESET
+        MENUITEM "ルールを既定値にリセット(&R)", ID_RESETRULES
+        MENUITEM SEPARATOR
+        MENUITEM "連黒禁(&D)", ID_RULE_DONTDOUBLEBLACK
+        MENUITEM "四隅黒禁(&C)", ID_RULE_DONTCORNERBLACK
+        MENUITEM "三方黒禁(&T)", ID_RULE_DONTTRIDIRECTIONS
+        MENUITEM "分断禁(&V)", ID_RULE_DONTDIVIDE, GRAYED
+        MENUITEM "黒斜三連禁(&E)", ID_RULE_DONTTHREEDIAGONALS
+        MENUITEM "黒斜四連禁(&F)", ID_RULE_DONTFOURDIAGONALS
+        MENUITEM "黒マス点対称(&I)", ID_RULE_POINTSYMMETRY
+        MENUITEM "黒マス上下対称(&L)", ID_RULE_LINESYMMETRYV
+        MENUITEM "黒マス左右対称(&O)", ID_RULE_LINESYMMETRYH
+        MENUITEM SEPARATOR
+        MENUITEM "黒マスルールの説明(&H)", ID_OPENRULESTXT
+        MENUITEM "ルール適合性チェック(&A)", ID_RULECHECK
+    }
+    POPUP "ヘルプ(&H)"
+    {
+        MENUITEM "ReadMe-JPN.txtを開く(&R)\tF1", ID_OPENREADME
+        MENUITEM "LICENSE.txtを開く(&C)", ID_OPENLICENSE
+        MENUITEM "PAT.txtを開く(&X)", ID_OPENPATTXT
+        MENUITEM "THEME.txtを開く(&M)", ID_OPENTHEMETXT
+        MENUITEM "POLICY.txtを開く(&P)", ID_OPENPOLICYTXT
+        MENUITEM "AIHelper.txtを開く(&H)", ID_OPENAIHELPERTXT
+        MENUITEM SEPARATOR
+        MENUITEM "公式サイトを開く(&O)", ID_OPENHOMEPAGE
+        MENUITEM "掲示板を開く(&B)", ID_OPENBBS
+        MENUITEM SEPARATOR
+        MENUITEM "「クロスワード辞典」を開く(&D)", ID_HELPDICTSITE
+        MENUITEM SEPARATOR
+        MENUITEM "黒マスパターンを選ぶ(&T)...", ID_OPENPATTERNS
+        MENUITEM "黒マスパターンを生成する(&G)...", ID_GENERATEBLACKS
+        MENUITEM SEPARATOR
+        MENUITEM "黒マス線対称チェック(&L)\tCtrl+E", ID_LINESYMMETRYCHECK
+        MENUITEM "黒マス点対称チェック(&S)\tCtrl+T", ID_POINTSYMMETRYCHECK
+        MENUITEM "黒マスパターンを反射する(&E)", ID_REFLECTBLOCKS
+        MENUITEM SEPARATOR
+        MENUITEM "タテとヨコを入れ替える(&F)", ID_FLIPVH
+        MENUITEM "左右を入れ替える(&I)", ID_SWAP_LEFT_RIGHT
+        MENUITEM "上下を入れ替える(&U)", ID_SWAP_TOP_BOTTOM
+        MENUITEM SEPARATOR
+        MENUITEM "バージョン情報(&A)", ID_ABOUT
+    }
+}
+
+2 MENU
+{
+    POPUP "ポップアップ #0"
+    {
+        MENUITEM "黒マス(&B)\t#", ID_BLOCKNOFEED
+        MENUITEM "空白(&S)\t_", ID_SPACENOFEED
+        MENUITEM SEPARATOR
+        POPUP "入力モード(&M)"
+        {
+            MENUITEM "カナ入力(&K)", ID_KANAINPUT
+            MENUITEM "英字入力(&A)", ID_ABCINPUT
+            MENUITEM "漢字入力(&H)", ID_KANJIINPUT
+            MENUITEM "ロシア入力(&R)", ID_RUSSIAINPUT
+            MENUITEM "ギリシャ入力(&G)", ID_GREEKINPUT
+            MENUITEM "数字入力(&D)", ID_DIGITINPUT
+            MENUITEM "自由入力(&N)", ID_ANYINPUT
+        }
+        MENUITEM SEPARATOR
+        POPUP "カナ文字"
+        {
+            POPUP "ア行"
+            {
+                MENUITEM "ア", 10000
+                MENUITEM "イ", 10001
+                MENUITEM "ウ", 10002
+                MENUITEM "エ", 10003
+                MENUITEM "オ", 10004
+            }
+            POPUP "カ行"
+            {
+                MENUITEM "カ", 10010
+                MENUITEM "キ", 10011
+                MENUITEM "ク", 10012
+                MENUITEM "ケ", 10013
+                MENUITEM "コ", 10014
+            }
+            POPUP "サ行"
+            {
+                MENUITEM "サ", 10020
+                MENUITEM "シ", 10021
+                MENUITEM "ス", 10022
+                MENUITEM "セ", 10023
+                MENUITEM "ソ", 10024
+            }
+            POPUP "タ行"
+            {
+                MENUITEM "タ", 10030
+                MENUITEM "チ", 10031
+                MENUITEM "ツ", 10032
+                MENUITEM "テ", 10033
+                MENUITEM "ト", 10034
+            }
+            POPUP "ナ行"
+            {
+                MENUITEM "ナ", 10040
+                MENUITEM "ニ", 10041
+                MENUITEM "ヌ", 10042
+                MENUITEM "ネ", 10043
+                MENUITEM "ノ", 10044
+            }
+            POPUP "ハ行"
+            {
+                MENUITEM "ハ", 10050
+                MENUITEM "ヒ", 10051
+                MENUITEM "フ", 10052
+                MENUITEM "ヘ", 10053
+                MENUITEM "ホ", 10054
+            }
+            POPUP "マ行"
+            {
+                MENUITEM "マ", 10060
+                MENUITEM "ミ", 10061
+                MENUITEM "ム", 10062
+                MENUITEM "メ", 10063
+                MENUITEM "モ", 10064
+            }
+            POPUP "ヤ行"
+            {
+                MENUITEM "ヤ", 10070
+                MENUITEM "ユ", 10071
+                MENUITEM "ヨ", 10072
+            }
+            POPUP "ラ行"
+            {
+                MENUITEM "ラ", 10080
+                MENUITEM "リ", 10081
+                MENUITEM "ル", 10082
+                MENUITEM "レ", 10083
+                MENUITEM "ロ", 10084
+            }
+            POPUP "ワ行"
+            {
+                MENUITEM "ワ", 10090
+                MENUITEM "ン", 10091
+                MENUITEM "ー", 10092
+            }
+            POPUP "ガ行"
+            {
+                MENUITEM "ガ", 10100
+                MENUITEM "ギ", 10101
+                MENUITEM "グ", 10102
+                MENUITEM "ゲ", 10103
+                MENUITEM "ゴ", 10104
+            }
+            POPUP "ザ行"
+            {
+                MENUITEM "ザ", 10110
+                MENUITEM "ジ", 10111
+                MENUITEM "ズ", 10112
+                MENUITEM "ゼ", 10113
+                MENUITEM "ゾ", 10114
+            }
+            POPUP "ダ行"
+            {
+                MENUITEM "ダ", 10120
+                MENUITEM "ヂ", 10121
+                MENUITEM "ヅ", 10122
+                MENUITEM "デ", 10123
+                MENUITEM "ド", 10124
+            }
+            POPUP "バ行"
+            {
+                MENUITEM "バ", 10130
+                MENUITEM "ビ", 10131
+                MENUITEM "ブ", 10132
+                MENUITEM "ベ", 10133
+                MENUITEM "ボ", 10134
+            }
+            POPUP "パ行"
+            {
+                MENUITEM "パ", 10140
+                MENUITEM "ピ", 10141
+                MENUITEM "プ", 10142
+                MENUITEM "ペ", 10143
+                MENUITEM "ポ", 10144
+            }
+            MENUITEM "長音 (ー)", 10150
+        }
+        POPUP "アルファベット"
+        {
+            POPUP "A - F"
+            {
+                MENUITEM "A", 20000
+                MENUITEM "B", 20001
+                MENUITEM "C", 20002
+                MENUITEM "D", 20003
+                MENUITEM "E", 20004
+                MENUITEM "F", 20005
+            }
+            POPUP "G - L"
+            {
+                MENUITEM "G", 20006
+                MENUITEM "H", 20007
+                MENUITEM "I", 20008
+                MENUITEM "J", 20009
+                MENUITEM "K", 20010
+                MENUITEM "L", 20011
+            }
+            POPUP "M - R"
+            {
+                MENUITEM "M", 20012
+                MENUITEM "N", 20013
+                MENUITEM "O", 20014
+                MENUITEM "P", 20015
+                MENUITEM "Q", 20016
+                MENUITEM "R", 20017
+            }
+            POPUP "S - X"
+            {
+                MENUITEM "S", 20018
+                MENUITEM "T", 20019
+                MENUITEM "U", 20020
+                MENUITEM "V", 20021
+                MENUITEM "W", 20022
+                MENUITEM "X", 20023
+            }
+            POPUP "Y - Z"
+            {
+                MENUITEM "Y", 20024
+                MENUITEM "Z", 20025
+            }
+            POPUP "アクセント"
+            {
+                MENUITEM "^\tShift+Ctrl+^", 20026
+                MENUITEM "`\tShift+Ctrl+`", 20027
+                MENUITEM "'\tShift+Ctrl+'", 20028
+                MENUITEM ":\tShift+Ctrl+:", 20029
+                MENUITEM ",\tShift+Ctrl+,", 20030
+                MENUITEM "&\tShift+Ctrl+&", 20031
+                MENUITEM ".\tShift+Ctrl+.", 20032
+            }
+            POPUP "その他"
+            {
+                MENUITEM "Ğ\tShift+Ctrl+G", 20033
+            }
+        }
+        POPUP "ロシア文字"
+        {
+            POPUP "А - Е"
+            {
+                MENUITEM "А", 30000
+                MENUITEM "Б", 30001
+                MENUITEM "В", 30002
+                MENUITEM "Г", 30003
+                MENUITEM "Д", 30004
+                MENUITEM "Е", 30005
+            }
+            POPUP "Ё - К"
+            {
+                MENUITEM "Ё", 30006
+                MENUITEM "Ж", 30007
+                MENUITEM "З", 30008
+                MENUITEM "И", 30009
+                MENUITEM "Й", 30010
+                MENUITEM "К", 30011
+            }
+            POPUP "Л - Р"
+            {
+                MENUITEM "Л", 30012
+                MENUITEM "М", 30013
+                MENUITEM "Н", 30014
+                MENUITEM "О", 30015
+                MENUITEM "П", 30016
+                MENUITEM "Р", 30017
+            }
+            POPUP "С - Ц"
+            {
+                MENUITEM "С", 30018
+                MENUITEM "Т", 30019
+                MENUITEM "У", 30020
+                MENUITEM "Ф", 30021
+                MENUITEM "Х", 30022
+                MENUITEM "Ц", 30023
+            }
+            POPUP "Ч - Ь"
+            {
+                MENUITEM "Ч", 30024
+                MENUITEM "Ш", 30025
+                MENUITEM "Щ", 30026
+                MENUITEM "Ъ", 30027
+                MENUITEM "Ы", 30028
+                MENUITEM "Ь", 30029
+            }
+            POPUP "Э - Я"
+            {
+                MENUITEM "Э", 30030
+                MENUITEM "Ю", 30031
+                MENUITEM "Я", 30032
+            }
+        }
+        POPUP "数字"
+        {
+            MENUITEM "0", 40000
+            MENUITEM "1", 40001
+            MENUITEM "2", 40002
+            MENUITEM "3", 40003
+            MENUITEM "4", 40004
+            MENUITEM "5", 40005
+            MENUITEM "6", 40006
+            MENUITEM "7", 40007
+            MENUITEM "8", 40008
+        }
+        POPUP "ギリシャ文字"
+        {
+            POPUP "α - ζ"
+            {
+                MENUITEM "α", 41000
+                MENUITEM "β", 41001
+                MENUITEM "γ", 41002
+                MENUITEM "δ", 41003
+                MENUITEM "ε", 41004
+                MENUITEM "ζ", 41005
+            }
+            POPUP "η - μ"
+            {
+                MENUITEM "η", 41006
+                MENUITEM "θ", 41007
+                MENUITEM "ι", 41008
+                MENUITEM "κ", 41009
+                MENUITEM "λ", 41010
+                MENUITEM "μ", 41011
+            }
+            POPUP "ν - σ"
+            {
+                MENUITEM "ν", 41012
+                MENUITEM "ξ", 41013
+                MENUITEM "ο", 41014
+                MENUITEM "π", 41015
+                MENUITEM "ρ", 41016
+                MENUITEM "σ", 41017
+            }
+            POPUP "τ - ω"
+            {
+                MENUITEM "τ", 41018
+                MENUITEM "υ", 41019
+                MENUITEM "φ", 41020
+                MENUITEM "χ", 41021
+                MENUITEM "ψ", 41022
+                MENUITEM "ω", 41023
+            }
+        }
+        MENUITEM SEPARATOR
+        MENUITEM "二重マス切り替え(&T)\tCtrl+.", ID_TOGGLEMARK
+        MENUITEM SEPARATOR
+        MENUITEM "設定(&E)...\tAlt+Enter", ID_SETTINGS
+        MENUITEM SEPARATOR
+        MENUITEM "ヒントを削除して盤面のロックを解除(&U)", ID_ERASESOLUTIONANDUNLOCKEDIT
+        MENUITEM "文字をすべてクリア(&C)", ID_CLEARNONBLOCKS
+        MENUITEM SEPARATOR
+        MENUITEM "タテの単語をコピー(&V)", ID_COPYWORDVERT, MENUBREAK
+        MENUITEM "ヨコの単語をコピー(&H)", ID_COPYWORDHORZ
+        MENUITEM SEPARATOR
+        MENUITEM "入力候補を表示(&D) (タテ)\tShift+Ctrl+↓", ID_OPENCANDSWNDVERT
+        MENUITEM "入力候補を表示(&A) (ヨコ)\tShift+Ctrl+→", ID_OPENCANDSWNDHORZ
+        MENUITEM SEPARATOR
+        MENUITEM "単語をウェブ検索(&W) (タテ)\tAlt+↓", ID_ONLINEDICTV
+        MENUITEM "単語をウェブ検索(&Y) (ヨコ)\tAlt+→", ID_ONLINEDICTH
+        MENUITEM SEPARATOR
+        MENUITEM "行を挿入(上に)(&R)", ID_INSERT_ROW_ABOVE
+        MENUITEM "行を挿入(下に)(&O)", ID_INSERT_ROW_BELOW
+        MENUITEM "列を挿入(左に)(&L)", ID_LEFT_INSERT_COLUMN
+        MENUITEM "列を挿入(右に)(&G)", ID_RIGHT_INSERT_COLUMN
+        MENUITEM "行を削除(&X)", ID_DELETE_ROW
+        MENUITEM "列を削除(&Z)", ID_DELETE_COLUMN
+        MENUITEM SEPARATOR
+        MENUITEM "全体に合わせる(&F)\tCtrl+F", ID_FITZOOM
+        MENUITEM SEPARATOR
+        MENUITEM "AI: このクロスワードの季節を分析(&K)", ID_JUDGESEASON
+        MENUITEM "AI: このクロスワードのテーマを分析(&I)", ID_JUDGETHEME
+        MENUITEM SEPARATOR
+        MENUITEM "AI: カスタム プロンプト &1", ID_AI_CUSTOM_PROMPT_1
+        MENUITEM "AI: カスタム プロンプト &2", ID_AI_CUSTOM_PROMPT_2
+    }
+    POPUP "ポップアップ #1"
+    {
+        MENUITEM "タテのカギをコピー(&D)", ID_COPYVHINTSSTYLE0
+        MENUITEM "ヨコのカギをコピー(&A)", ID_COPYHHINTSSTYLE0
+        MENUITEM "カギをすべてコピー(&L)", ID_COPYHINTSSTYLE0
+        MENUITEM "ジャンプ(&J)", ID_JUMPNUMBER
+        MENUITEM SEPARATOR
+        MENUITEM "このカギをクリア(&C)", ID_CLEARTHISCLUE
+        MENUITEM "カギをすべてクリア(&R)", ID_CLEARALLCLUES
+        MENUITEM SEPARATOR
+        MENUITEM "AI: このカギを再生成(&G)", ID_GENERATEHINT
+        MENUITEM "AI: すべてのカギを再生成(&N)", ID_GENERATEHINTSALL
+        MENUITEM SEPARATOR
+        MENUITEM "AI: このカギを解説(&X)", ID_EXPLAINTHISCLUE
+        MENUITEM "AI: すべてのカギの品質チェック(&Q)", ID_CHECKQUALITYOFALLCLUES
+        MENUITEM SEPARATOR
+        MENUITEM "AI: カスタム プロンプト &1", ID_AI_CUSTOM_PROMPT_1
+        MENUITEM "AI: カスタム プロンプト &2", ID_AI_CUSTOM_PROMPT_2
+    }
+    POPUP "ポップアップ #2"
+    {
+        MENUITEM "ツール バー(&T)", ID_TOOLBAR
+        MENUITEM "ステータス バー(&S)", ID_STATUS
+        MENUITEM SEPARATOR
+        MENUITEM "ジャンプ(&J)...", ID_JUMP
+    }
+}
+
+3 MENU
+{
+    POPUP "Import/Export"
+    {
+        MENUITEM "インポート(&I)...", psh13
+        MENUITEM "エクスポート(&E)...", psh14
+        MENUITEM SEPARATOR
+        MENUITEM "リセット(&R)", psh15
+    }
+    POPUP "Box"
+    {
+        MENUITEM SEPARATOR
+    }
+    POPUP "AboutURLMenu"
+    {
+        MENUITEM "コピー(&C)", ID_COPYURL
+    }
+}
+
+//////////////////////////////////////////////////////////////////////////////
+// RT_DIALOG
+
+IDD_NEW DIALOGEX 0, 0, 310, 125
+CAPTION "新規作成 (Ctrl+N)"
+STYLE DS_CENTER | DS_MODALFRAME | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+FONT 9, "MS UI Gothic", 0, 0, 128 // SHIFTJIS_CHARSET
+{
+    LTEXT "ヨコのサイズ(&C):", -1, 10, 10, 50, 12
+    EDITTEXT edt2, 65, 7, 30, 14, ES_NUMBER | ES_RIGHT
+    CONTROL "", scr1, "msctls_updown32", UDS_ARROWKEYS | UDS_AUTOBUDDY | UDS_ALIGNRIGHT | UDS_SETBUDDYINT, 101, 24, 12, 20
+    LTEXT "マス", -1, 109, 10, 20, 12
+    LTEXT "タテのサイズ(&R):", -1, 150, 10, 49, 12
+    EDITTEXT edt1, 205, 7, 31, 14, ES_NUMBER | ES_RIGHT
+    CONTROL "", scr2, "msctls_updown32", UDS_ARROWKEYS | UDS_AUTOBUDDY | UDS_ALIGNRIGHT | UDS_SETBUDDYINT, 101, 24, 12, 20
+    LTEXT "マス", -1, 248, 10, 20, 12
+    GROUPBOX "処理", -1, 10, 50, 120, 70
+    AUTORADIOBUTTON "空白マスで埋める(&S)", rad1, 20, 60, 100, 14, WS_TABSTOP
+    AUTORADIOBUTTON "黒マスで埋める(&B)", rad2, 20, 80, 100, 14, WS_TABSTOP
+    AUTORADIOBUTTON "サイズのみ変更(&Z)", rad3, 20, 100, 100, 14, WS_TABSTOP
+    DEFPUSHBUTTON "新規作成(&N)", IDOK, 175, 105, 60, 14
+    PUSHBUTTON "キャンセル", IDCANCEL, 240, 105, 60, 14
+}
+
+IDD_CREATE DIALOGEX 0, 0, 310, 90
+CAPTION "問題の作成 (Ctrl+G)"
+STYLE DS_CENTER | DS_MODALFRAME | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+FONT 9, "MS UI Gothic", 0, 0, 128 // SHIFTJIS_CHARSET
+{
+    LTEXT "ヨコのサイズ(&C):", -1, 10, 10, 50, 12
+    EDITTEXT edt2, 65, 7, 30, 14, ES_NUMBER | ES_RIGHT
+    CONTROL "", scr1, "msctls_updown32", UDS_ARROWKEYS | UDS_AUTOBUDDY | UDS_ALIGNRIGHT | UDS_SETBUDDYINT, 101, 24, 12, 20
+    LTEXT "マス", -1, 109, 10, 20, 12
+    LTEXT "タテのサイズ(&R):", -1, 150, 10, 49, 12
+    EDITTEXT edt1, 205, 7, 31, 14, ES_NUMBER | ES_RIGHT
+    CONTROL "", scr2, "msctls_updown32", UDS_ARROWKEYS | UDS_AUTOBUDDY | UDS_ALIGNRIGHT | UDS_SETBUDDYINT, 101, 24, 12, 20
+    LTEXT "マス", -1, 248, 10, 20, 12
+    AUTOCHECKBOX "答えを表示する(&A)", chx3, 10, 35, 85, 14
+    AUTOCHECKBOX "&PAT.txtから黒マスパターンを自動的に選ぶ", chx4, 120, 35, 160, 14
+    LTEXT "最大単語長(&L):", stc1, 10, 70, 60, 12
+    EDITTEXT edt3, 80, 70, 30, 14, ES_NUMBER | ES_RIGHT
+    CONTROL "", scr3, "msctls_updown32", UDS_ARROWKEYS | UDS_AUTOBUDDY | UDS_ALIGNRIGHT | UDS_SETBUDDYINT, 103, 90, 12, 20
+    DEFPUSHBUTTON "計算開始(&G)", IDOK, 175, 70, 60, 14
+    PUSHBUTTON "キャンセル", IDCANCEL, 240, 70, 60, 14
+}
+
+IDD_CALCULATING DIALOGEX 0, 0, 165, 90
+CAPTION "計算中..."
+STYLE DS_CENTER | DS_MODALFRAME | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+FONT 9, "MS UI Gothic", 0, 0, 128 // SHIFTJIS_CHARSET
+{
+    LTEXT "計算しています...", stc1, 5, 7, 155, 12
+    CONTROL "", ctl1, "msctls_progress32", 0, 5, 25, 155, 10
+    CONTROL "", 1185, "msctls_progress32", 0, 5, 40, 155, 10
+    LTEXT "", stc2, 5, 55, 155, 12
+    PUSHBUTTON "キャンセル", psh1, 85, 70, 75, 14
+}
+
+IDD_CONFIG DIALOGEX 0, 0, 274, 250
+CAPTION "見た目"
+STYLE DS_CENTER | DS_MODALFRAME | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+FONT 9, "MS UI Gothic", 0, 0, 128 // SHIFTJIS_CHARSET
+{
+    RTEXT "マスのフォント(&F):", -1, 5, 6, 60, 12
+    EDITTEXT edt1, 70, 4, 85, 14, ES_READONLY
+    PUSHBUTTON "変更(&C)...", psh1, 160, 4, 55, 14
+    PUSHBUTTON "リセット(&R)", psh3, 220, 4, 50, 14
+    RTEXT "小さいフォント &1:", -1, 5, 26, 60, 12
+    EDITTEXT edt2, 70, 24, 85, 14, ES_READONLY
+    PUSHBUTTON "変更(&H)...", psh2, 160, 24, 55, 14
+    PUSHBUTTON "リセット(&E)", psh4, 220, 24, 50, 14
+    RTEXT "小さいフォント &2:", -1, 5, 46, 60, 12
+    EDITTEXT edt3, 70, 44, 85, 14, ES_READONLY
+    PUSHBUTTON "変更(&G)...", psh5, 160, 44, 55, 14
+    PUSHBUTTON "リセット(&T)", psh6, 220, 44, 50, 14
+    AUTOCHECKBOX "スケルトン ビュー(&K)", chx1, 10, 70, 60, 14
+    AUTOCHECKBOX "ナンクロ(&U)", chx6, 80, 70, 60, 14
+    AUTOCHECKBOX "二重マスの枠(&L)", chx3, 165, 70, 80, 15
+    RTEXT "白マスの色(&1):", -1, 10, 96, 45, 12
+    PUSHBUTTON "", psh7, 60, 94, 15, 15, BS_OWNERDRAW
+    RTEXT "黒マスの色(&2):", -1, 90, 96, 45, 12
+    PUSHBUTTON "", psh8, 140, 94, 15, 15, BS_OWNERDRAW
+    RTEXT "二重マスの色(&3):", -1, 172, 96, 55, 12
+    PUSHBUTTON "", psh9, 232, 94, 15, 15, BS_OWNERDRAW
+    RTEXT "セル文字の大きさ(&P):", -1, 5, 124, 67, 12
+    EDITTEXT edt4, 75, 122, 33, 14, ES_NUMBER | ES_AUTOHSCROLL
+    CONTROL "", scr1, "msctls_updown32", UDS_ARROWKEYS | UDS_AUTOBUDDY | UDS_ALIGNRIGHT | UDS_SETBUDDYINT, 98, 122, 12, 20
+    LTEXT "%", -1, 114, 124, 10, 12
+    PUSHBUTTON "リセット", psh10, 129, 122, 35, 14
+    RTEXT "小さい文字の大きさ(&L):", -1, 5, 145, 67, 12
+    EDITTEXT edt5, 75, 143, 33, 14, ES_NUMBER | ES_AUTOHSCROLL
+    CONTROL "", scr2, "msctls_updown32", UDS_ARROWKEYS | UDS_AUTOBUDDY | UDS_ALIGNRIGHT | UDS_SETBUDDYINT, 98, 143, 12, 20
+    LTEXT "%", -1, 114, 145, 10, 12
+    PUSHBUTTON "リセット", psh11, 129, 143, 35, 14
+    RTEXT "線の幅(&Z):", -1, 170, 124, 44, 12
+    EDITTEXT edt6, 218, 122, 36, 14, ES_AUTOHSCROLL
+    CONTROL "", scr3, "msctls_updown32", UDS_ARROWKEYS | UDS_AUTOBUDDY | UDS_ALIGNRIGHT, 246, 127, 12, 20
+    LTEXT "pt", -1, 259, 124, 11, 12
+    AUTOCHECKBOX "外枠(&O):", chx2, 170, 143, 44, 14, BS_LEFT
+    EDITTEXT edt7, 218, 143, 36, 14, ES_AUTOHSCROLL
+    CONTROL "", scr4, "msctls_updown32", UDS_ARROWKEYS | UDS_AUTOBUDDY | UDS_ALIGNRIGHT, 251, 132, 12, 20
+    LTEXT "pt", -1, 259, 145, 11, 12
+    RTEXT "黒マス画像(&M):", -1, 5, 166, 52, 11
+    COMBOBOX cmb1, 60, 165, 102, 300, CBS_HASSTRINGS | CBS_AUTOHSCROLL | CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    LTEXT "BLOCKフォルダに好きな画像を放り込んで下さい。", -1, 10, 182, 150, 21
+    CONTROL "", ico1, "STATIC", SS_BITMAP, 165, 165, 20, 20
+    CONTROL "", ico2, "STATIC", SS_ENHMETAFILE, 165, 165, 20, 20
+    AUTOCHECKBOX "英小文字(&W)", chx4, 200, 165, 55, 15
+    AUTOCHECKBOX "ひらがな(&N)", chx5, 200, 185, 55, 15
+    RTEXT "二重マス文字(&D):", -1, 5, 212, 80, 12
+    COMBOBOX cmb2, 90, 210, 180, 300, CBS_HASSTRINGS | CBS_AUTOHSCROLL | CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP
+    PUSHBUTTON "インポート/エクスポート(&X)...", psh12, 5, 230, 100, 15
+}
+
+IDD_NOTES DIALOGEX 0, 0, 185, 185
+CAPTION "ヘッダーと備考欄 (Ctrl+Enter)"
+STYLE DS_CENTER | DS_MODALFRAME | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+FONT 9, "ＭＳ ゴシック", 0, 0, 1 // DEFAULT_CHARSET
+{
+    LTEXT "ヘッダー(&H):", -1, 5, 7, 55, 12
+    EDITTEXT edt1, 5, 20, 175, 60, ES_WANTRETURN | ES_AUTOHSCROLL | ES_AUTOVSCROLL | ES_MULTILINE | WS_VSCROLL
+    LTEXT "備考欄(&N):", -1, 5, 87, 55, 12
+    EDITTEXT edt2, 5, 100, 175, 60, ES_WANTRETURN | ES_AUTOHSCROLL | ES_AUTOVSCROLL | ES_MULTILINE | WS_VSCROLL
+    DEFPUSHBUTTON "OK", IDOK, 55, 165, 60, 14
+    PUSHBUTTON "キャンセル", IDCANCEL, 120, 165, 60, 14
+}
+
+IDD_BLACKGEN DIALOGEX 0, 0, 130, 55
+CAPTION "黒マスパターンを生成中"
+STYLE DS_CENTER | DS_MODALFRAME | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+FONT 9, "MS UI Gothic", 0, 0, 128 // SHIFTJIS_CHARSET
+{
+    LTEXT "黒マスパターンを生成中...", -1, 5, 5, 120, 12
+    LTEXT "", stc1, 5, 15, 120, 12
+    PUSHBUTTON "キャンセル", psh1, 40, 35, 60, 14
+}
+
+IDD_KATATATE DIALOGEX 0, 0, 75, 285
+CAPTION "入力パレット (Ctrl+U)"
+STYLE DS_CENTER | DS_MODALFRAME | WS_CAPTION | WS_SYSMENU
+EXSTYLE WS_EX_TOOLWINDOW
+FONT 9, "MS UI Gothic", 0, 0, 128 // SHIFTJIS_CHARSET
+{
+    PUSHBUTTON "ア", 10000, 0, 0, 15, 15
+    PUSHBUTTON "イ", 10001, 15, 0, 15, 15
+    PUSHBUTTON "ウ", 10002, 30, 0, 15, 15
+    PUSHBUTTON "エ", 10003, 45, 0, 15, 15
+    PUSHBUTTON "オ", 10004, 60, 0, 15, 15
+    PUSHBUTTON "カ", 10010, 0, 15, 15, 15
+    PUSHBUTTON "キ", 10011, 15, 15, 15, 15
+    PUSHBUTTON "ク", 10012, 30, 15, 15, 15
+    PUSHBUTTON "ケ", 10013, 45, 15, 15, 15
+    PUSHBUTTON "コ", 10014, 60, 15, 15, 15
+    PUSHBUTTON "サ", 10020, 0, 30, 15, 15
+    PUSHBUTTON "シ", 10021, 15, 30, 15, 15
+    PUSHBUTTON "ス", 10022, 30, 30, 15, 15
+    PUSHBUTTON "セ", 10023, 45, 30, 15, 15
+    PUSHBUTTON "ソ", 10024, 60, 30, 15, 15
+    PUSHBUTTON "タ", 10030, 0, 45, 15, 15
+    PUSHBUTTON "チ", 10031, 15, 45, 15, 15
+    PUSHBUTTON "ツ", 10032, 30, 45, 15, 15
+    PUSHBUTTON "テ", 10033, 45, 45, 15, 15
+    PUSHBUTTON "ト", 10034, 60, 45, 15, 15
+    PUSHBUTTON "ナ", 10040, 0, 60, 15, 15
+    PUSHBUTTON "ニ", 10041, 15, 60, 15, 15
+    PUSHBUTTON "ヌ", 10042, 30, 60, 15, 15
+    PUSHBUTTON "ネ", 10043, 45, 60, 15, 15
+    PUSHBUTTON "ノ", 10044, 60, 60, 15, 15
+    PUSHBUTTON "ハ", 10050, 0, 75, 15, 15
+    PUSHBUTTON "ヒ", 10051, 15, 75, 15, 15
+    PUSHBUTTON "フ", 10052, 30, 75, 15, 15
+    PUSHBUTTON "ヘ", 10053, 45, 75, 15, 15
+    PUSHBUTTON "ホ", 10054, 60, 75, 15, 15
+    PUSHBUTTON "マ", 10060, 0, 90, 15, 15
+    PUSHBUTTON "ミ", 10061, 15, 90, 15, 15
+    PUSHBUTTON "ム", 10062, 30, 90, 15, 15
+    PUSHBUTTON "メ", 10063, 45, 90, 15, 15
+    PUSHBUTTON "モ", 10064, 60, 90, 15, 15
+    PUSHBUTTON "ヤ", 10070, 0, 105, 15, 15
+    PUSHBUTTON "ユ", 10071, 15, 105, 15, 15
+    PUSHBUTTON "ヨ", 10072, 30, 105, 15, 15
+    PUSHBUTTON "　", 10073, 45, 105, 15, 15
+    PUSHBUTTON "■", 10074, 60, 105, 15, 15
+    PUSHBUTTON "ラ", 10080, 0, 120, 15, 15
+    PUSHBUTTON "リ", 10081, 15, 120, 15, 15
+    PUSHBUTTON "ル", 10082, 30, 120, 15, 15
+    PUSHBUTTON "レ", 10083, 45, 120, 15, 15
+    PUSHBUTTON "ロ", 10084, 60, 120, 15, 15
+    PUSHBUTTON "ワ", 10090, 0, 135, 15, 15
+    PUSHBUTTON "ン", 10091, 15, 135, 15, 15
+    PUSHBUTTON "ー", 10092, 30, 135, 15, 15
+    PUSHBUTTON "辞書", 10093, 45, 135, 30, 15
+    PUSHBUTTON "ガ", 20000, 0, 150, 15, 15
+    PUSHBUTTON "ギ", 20001, 15, 150, 15, 15
+    PUSHBUTTON "グ", 20002, 30, 150, 15, 15
+    PUSHBUTTON "ゲ", 20003, 45, 150, 15, 15
+    PUSHBUTTON "ゴ", 20004, 60, 150, 15, 15
+    PUSHBUTTON "ザ", 20010, 0, 165, 15, 15
+    PUSHBUTTON "ジ", 20011, 15, 165, 15, 15
+    PUSHBUTTON "ズ", 20012, 30, 165, 15, 15
+    PUSHBUTTON "ゼ", 20013, 45, 165, 15, 15
+    PUSHBUTTON "ゾ", 20014, 60, 165, 15, 15
+    PUSHBUTTON "ダ", 20020, 0, 180, 15, 15
+    PUSHBUTTON "ヂ", 20021, 15, 180, 15, 15
+    PUSHBUTTON "ヅ", 20022, 30, 180, 15, 15
+    PUSHBUTTON "デ", 20023, 45, 180, 15, 15
+    PUSHBUTTON "ド", 20024, 60, 180, 15, 15
+    PUSHBUTTON "バ", 20030, 0, 195, 15, 15
+    PUSHBUTTON "ビ", 20031, 15, 195, 15, 15
+    PUSHBUTTON "ブ", 20032, 30, 195, 15, 15
+    PUSHBUTTON "ベ", 20033, 45, 195, 15, 15
+    PUSHBUTTON "ボ", 20034, 60, 195, 15, 15
+    PUSHBUTTON "パ", 20040, 0, 210, 15, 15
+    PUSHBUTTON "ピ", 20041, 15, 210, 15, 15
+    PUSHBUTTON "プ", 20042, 30, 210, 15, 15
+    PUSHBUTTON "ペ", 20043, 45, 210, 15, 15
+    PUSHBUTTON "ポ", 20044, 60, 210, 15, 15
+    AUTOCHECKBOX "文字送り", 20050, 0, 225, 30, 15, BS_PUSHLIKE | NOT WS_TABSTOP
+    PUSHBUTTON "ﾖｺ入力", 20052, 30, 225, 30, 15
+    PUSHBUTTON "BS", 20054, 60, 225, 15, 15
+    PUSHBUTTON "↑", 20060, 0, 240, 15, 15
+    PUSHBUTTON "↓", 20061, 15, 240, 15, 15
+    PUSHBUTTON "←", 20062, 30, 240, 15, 15
+    PUSHBUTTON "→", 20063, 45, 240, 15, 15
+    PUSHBUTTON "NL", 20064, 60, 240, 15, 15
+    PUSHBUTTON "英字に", 20072, 0, 255, 30, 15
+    PUSHBUTTON "横置きに", 20071, 30, 255, 44, 15
+    PUSHBUTTON "ロシアに", 20073, 0, 270, 75, 15
+}
+
+IDD_KATAYOKO DIALOGEX 0, 0, 270, 75
+CAPTION "入力パレット (Ctrl+U)"
+STYLE DS_CENTER | DS_MODALFRAME | WS_CAPTION | WS_SYSMENU
+EXSTYLE WS_EX_TOOLWINDOW
+FONT 9, "MS UI Gothic", 0, 0, 128 // SHIFTJIS_CHARSET
+{
+    PUSHBUTTON "ア", 10000, 0, 0, 15, 15
+    PUSHBUTTON "イ", 10001, 0, 15, 15, 15
+    PUSHBUTTON "ウ", 10002, 0, 30, 15, 15
+    PUSHBUTTON "エ", 10003, 0, 45, 15, 15
+    PUSHBUTTON "オ", 10004, 0, 60, 15, 15
+    PUSHBUTTON "カ", 10010, 15, 0, 15, 15
+    PUSHBUTTON "キ", 10011, 15, 15, 15, 15
+    PUSHBUTTON "ク", 10012, 15, 30, 15, 15
+    PUSHBUTTON "ケ", 10013, 15, 45, 15, 15
+    PUSHBUTTON "コ", 10014, 15, 60, 15, 15
+    PUSHBUTTON "サ", 10020, 30, 0, 15, 15
+    PUSHBUTTON "シ", 10021, 30, 15, 15, 15
+    PUSHBUTTON "ス", 10022, 30, 30, 15, 15
+    PUSHBUTTON "セ", 10023, 30, 45, 15, 15
+    PUSHBUTTON "ソ", 10024, 30, 60, 15, 15
+    PUSHBUTTON "タ", 10030, 45, 0, 15, 15
+    PUSHBUTTON "チ", 10031, 45, 15, 15, 15
+    PUSHBUTTON "ツ", 10032, 45, 30, 15, 15
+    PUSHBUTTON "テ", 10033, 45, 45, 15, 15
+    PUSHBUTTON "ト", 10034, 45, 60, 15, 15
+    PUSHBUTTON "ナ", 10040, 60, 0, 15, 15
+    PUSHBUTTON "ニ", 10041, 60, 15, 15, 15
+    PUSHBUTTON "ヌ", 10042, 60, 30, 15, 15
+    PUSHBUTTON "ネ", 10043, 60, 45, 15, 15
+    PUSHBUTTON "ノ", 10044, 60, 60, 15, 15
+    PUSHBUTTON "ハ", 10050, 75, 0, 15, 15
+    PUSHBUTTON "ヒ", 10051, 75, 15, 15, 15
+    PUSHBUTTON "フ", 10052, 75, 30, 15, 15
+    PUSHBUTTON "ヘ", 10053, 75, 45, 15, 15
+    PUSHBUTTON "ホ", 10054, 75, 60, 15, 15
+    PUSHBUTTON "マ", 10060, 90, 0, 15, 15
+    PUSHBUTTON "ミ", 10061, 90, 15, 15, 15
+    PUSHBUTTON "ム", 10062, 90, 30, 15, 15
+    PUSHBUTTON "メ", 10063, 90, 45, 15, 15
+    PUSHBUTTON "モ", 10064, 90, 60, 15, 15
+    PUSHBUTTON "ヤ", 10070, 105, 0, 15, 15
+    PUSHBUTTON "ユ", 10071, 105, 15, 15, 15
+    PUSHBUTTON "ヨ", 10072, 105, 30, 15, 15
+    PUSHBUTTON "　", 10073, 105, 45, 15, 15
+    PUSHBUTTON "■", 10074, 105, 60, 15, 15
+    PUSHBUTTON "ラ", 10080, 120, 0, 15, 15
+    PUSHBUTTON "リ", 10081, 120, 15, 15, 15
+    PUSHBUTTON "ル", 10082, 120, 30, 15, 15
+    PUSHBUTTON "レ", 10083, 120, 45, 15, 15
+    PUSHBUTTON "ロ", 10084, 120, 60, 15, 15
+    PUSHBUTTON "ワ", 10090, 135, 0, 15, 15
+    PUSHBUTTON "ン", 10091, 135, 15, 15, 15
+    PUSHBUTTON "ー", 10092, 135, 30, 15, 15
+    PUSHBUTTON "辞\n書", 10093, 135, 45, 15, 30, BS_MULTILINE
+    PUSHBUTTON "ガ", 20000, 150, 0, 15, 15
+    PUSHBUTTON "ギ", 20001, 150, 15, 15, 15
+    PUSHBUTTON "グ", 20002, 150, 30, 15, 15
+    PUSHBUTTON "ゲ", 20003, 150, 45, 15, 15
+    PUSHBUTTON "ゴ", 20004, 150, 60, 15, 15
+    PUSHBUTTON "ザ", 20010, 165, 0, 15, 15
+    PUSHBUTTON "ジ", 20011, 165, 15, 15, 15
+    PUSHBUTTON "ズ", 20012, 165, 30, 15, 15
+    PUSHBUTTON "ゼ", 20013, 165, 45, 15, 15
+    PUSHBUTTON "ゾ", 20014, 165, 60, 15, 15
+    PUSHBUTTON "ダ", 20020, 180, 0, 15, 15
+    PUSHBUTTON "ヂ", 20021, 180, 15, 15, 15
+    PUSHBUTTON "ヅ", 20022, 180, 30, 15, 15
+    PUSHBUTTON "デ", 20023, 180, 45, 15, 15
+    PUSHBUTTON "ド", 20024, 180, 60, 15, 15
+    PUSHBUTTON "バ", 20030, 195, 0, 15, 15
+    PUSHBUTTON "ビ", 20031, 195, 15, 15, 15
+    PUSHBUTTON "ブ", 20032, 195, 30, 15, 15
+    PUSHBUTTON "ベ", 20033, 195, 45, 15, 15
+    PUSHBUTTON "ボ", 20034, 195, 60, 15, 15
+    AUTOCHECKBOX "文字送り", 20050, 210, 0, 30, 15, BS_PUSHLIKE | NOT WS_TABSTOP
+    PUSHBUTTON "ﾖｺ\n入\n力", 20052, 240, 0, 15, 30, BS_MULTILINE
+    PUSHBUTTON "BS", 20054, 210, 45, 15, 15
+    PUSHBUTTON "↑", 20060, 210, 15, 15, 15
+    PUSHBUTTON "↓", 20061, 225, 15, 15, 15
+    PUSHBUTTON "←", 20062, 210, 30, 15, 15
+    PUSHBUTTON "→", 20063, 225, 30, 15, 15
+    PUSHBUTTON "NL", 20064, 225, 45, 15, 15
+    PUSHBUTTON "英字に", 20072, 210, 60, 30, 15
+    PUSHBUTTON "縦\n置\nき\nに", 20071, 240, 30, 15, 45, BS_MULTILINE
+    PUSHBUTTON "ロ\nシ\nア\nに", 20073, 255, 0, 15, 75, BS_MULTILINE
+}
+
+IDD_ABC DIALOGEX 0, 0, 165, 60
+CAPTION "入力パレット (Ctrl+U)"
+STYLE DS_CENTER | DS_MODALFRAME | WS_CAPTION | WS_SYSMENU
+EXSTYLE WS_EX_TOOLWINDOW
+FONT 9, "MS UI Gothic", 0, 0, 128 // SHIFTJIS_CHARSET
+{
+    PUSHBUTTON "A", 11000, 0, 0, 15, 15
+    PUSHBUTTON "B", 11001, 15, 0, 15, 15
+    PUSHBUTTON "C", 11002, 30, 0, 15, 15
+    PUSHBUTTON "D", 11003, 45, 0, 15, 15
+    PUSHBUTTON "E", 11004, 60, 0, 15, 15
+    PUSHBUTTON "F", 11005, 75, 0, 15, 15
+    PUSHBUTTON "G", 11006, 90, 0, 15, 15
+    PUSHBUTTON "H", 11007, 105, 0, 15, 15
+    PUSHBUTTON "I", 11008, 120, 0, 15, 15
+    PUSHBUTTON "J", 11009, 135, 0, 15, 15
+    PUSHBUTTON "K", 12000, 150, 0, 15, 15
+    PUSHBUTTON "L", 12001, 0, 15, 15, 15
+    PUSHBUTTON "M", 12002, 15, 15, 15, 15
+    PUSHBUTTON "N", 12003, 30, 15, 15, 15
+    PUSHBUTTON "O", 12004, 45, 15, 15, 15
+    PUSHBUTTON "P", 12005, 60, 15, 15, 15
+    PUSHBUTTON "Q", 12006, 75, 15, 15, 15
+    PUSHBUTTON "R", 12007, 90, 15, 15, 15
+    PUSHBUTTON "S", 12008, 105, 15, 15, 15
+    PUSHBUTTON "T", 12009, 120, 15, 15, 15
+    PUSHBUTTON "U", 13000, 135, 15, 15, 15
+    PUSHBUTTON "V", 13001, 150, 15, 15, 15
+    PUSHBUTTON "W", 13002, 0, 30, 15, 15
+    PUSHBUTTON "X", 13003, 15, 30, 15, 15
+    PUSHBUTTON "Y", 13004, 30, 30, 15, 15
+    PUSHBUTTON "Z", 13005, 45, 30, 15, 15
+    PUSHBUTTON "　", 13006, 60, 30, 15, 15
+    PUSHBUTTON "■", 13007, 75, 30, 15, 15
+    AUTOCHECKBOX "字送り", 20050, 0, 45, 30, 15, BS_PUSHLIKE | NOT WS_TABSTOP
+    PUSHBUTTON "ﾖｺ入力", 20052, 30, 45, 30, 15
+    PUSHBUTTON "BS", 20054, 60, 45, 15, 15
+    PUSHBUTTON "↑", 20060, 75, 45, 15, 15
+    PUSHBUTTON "↓", 20061, 90, 45, 15, 15
+    PUSHBUTTON "←", 20062, 105, 45, 15, 15
+    PUSHBUTTON "→", 20063, 120, 45, 15, 15
+    PUSHBUTTON "NL", 20064, 135, 45, 30, 15
+    PUSHBUTTON "カナに", 20070, 90, 30, 30, 15
+    PUSHBUTTON "ロシアに", 20073, 120, 30, 45, 15
+}
+
+IDD_RUSSIA DIALOGEX 0, 0, 150, 75
+CAPTION "入力パレット (Ctrl+U)"
+STYLE DS_CENTER | DS_MODALFRAME | WS_CAPTION | WS_SYSMENU
+EXSTYLE WS_EX_TOOLWINDOW
+FONT 9, "MS UI Gothic", 0, 0, 128 // SHIFTJIS_CHARSET
+{
+    PUSHBUTTON "А", 11000, 0, 0, 15, 15
+    PUSHBUTTON "Б", 11001, 15, 0, 15, 15
+    PUSHBUTTON "В", 11002, 30, 0, 15, 15
+    PUSHBUTTON "Г", 11003, 45, 0, 15, 15
+    PUSHBUTTON "Д", 11004, 60, 0, 15, 15
+    PUSHBUTTON "Е", 11005, 75, 0, 15, 15
+    PUSHBUTTON "Ё", 11006, 90, 0, 15, 15
+    PUSHBUTTON "Ж", 11007, 105, 0, 15, 15
+    PUSHBUTTON "З", 11008, 120, 0, 15, 15
+    PUSHBUTTON "И", 11009, 135, 0, 15, 15
+    PUSHBUTTON "Й", 12000, 0, 15, 15, 15
+    PUSHBUTTON "К", 12001, 15, 15, 15, 15
+    PUSHBUTTON "Л", 12002, 30, 15, 15, 15
+    PUSHBUTTON "М", 12003, 45, 15, 15, 15
+    PUSHBUTTON "Н", 12004, 60, 15, 15, 15
+    PUSHBUTTON "О", 12005, 75, 15, 15, 15
+    PUSHBUTTON "П", 12006, 90, 15, 15, 15
+    PUSHBUTTON "Р", 12007, 105, 15, 15, 15
+    PUSHBUTTON "С", 12008, 120, 15, 15, 15
+    PUSHBUTTON "Т", 12009, 135, 15, 15, 15
+    PUSHBUTTON "У", 13000, 0, 30, 15, 15
+    PUSHBUTTON "Ф", 13001, 15, 30, 15, 15
+    PUSHBUTTON "Х", 13002, 30, 30, 15, 15
+    PUSHBUTTON "Ц", 13003, 45, 30, 15, 15
+    PUSHBUTTON "Ч", 13004, 60, 30, 15, 15
+    PUSHBUTTON "Ш", 13005, 75, 30, 15, 15
+    PUSHBUTTON "Щ", 13006, 90, 30, 15, 15
+    PUSHBUTTON "Ъ", 13007, 105, 30, 15, 15
+    PUSHBUTTON "Ы", 13008, 120, 30, 15, 15
+    PUSHBUTTON "Ь", 13009, 135, 30, 15, 15
+    PUSHBUTTON "Э", 13010, 0, 45, 15, 15
+    PUSHBUTTON "Ю", 13011, 15, 45, 15, 15
+    PUSHBUTTON "Я", 13012, 30, 45, 15, 15
+    PUSHBUTTON "　", 13013, 45, 45, 15, 15
+    PUSHBUTTON "■", 13014, 60, 45, 15, 15
+    AUTOCHECKBOX "字送り", 20050, 0, 60, 30, 15, BS_PUSHLIKE | NOT WS_TABSTOP
+    PUSHBUTTON "ﾖｺ入力", 20052, 30, 60, 30, 15
+    PUSHBUTTON "BS", 20054, 60, 60, 15, 15
+    PUSHBUTTON "↑", 20060, 75, 60, 15, 15
+    PUSHBUTTON "↓", 20061, 90, 60, 15, 15
+    PUSHBUTTON "←", 20062, 105, 60, 15, 15
+    PUSHBUTTON "→", 20063, 120, 60, 15, 15
+    PUSHBUTTON "NL", 20064, 135, 60, 15, 15
+    PUSHBUTTON "カナに", 20070, 75, 45, 30, 15
+    PUSHBUTTON "英字に", 20072, 105, 45, 45, 15
+}
+
+IDD_HIRATATE DIALOGEX 0, 0, 75, 285
+CAPTION "入力パレット (Ctrl+U)"
+STYLE DS_CENTER | DS_MODALFRAME | WS_CAPTION | WS_SYSMENU
+EXSTYLE WS_EX_TOOLWINDOW
+FONT 9, "MS UI Gothic", 0, 0, 128 // SHIFTJIS_CHARSET
+{
+    PUSHBUTTON "あ", 10000, 0, 0, 15, 15
+    PUSHBUTTON "い", 10001, 15, 0, 15, 15
+    PUSHBUTTON "う", 10002, 30, 0, 15, 15
+    PUSHBUTTON "え", 10003, 45, 0, 15, 15
+    PUSHBUTTON "お", 10004, 60, 0, 15, 15
+    PUSHBUTTON "か", 10010, 0, 15, 15, 15
+    PUSHBUTTON "き", 10011, 15, 15, 15, 15
+    PUSHBUTTON "く", 10012, 30, 15, 15, 15
+    PUSHBUTTON "け", 10013, 45, 15, 15, 15
+    PUSHBUTTON "こ", 10014, 60, 15, 15, 15
+    PUSHBUTTON "さ", 10020, 0, 30, 15, 15
+    PUSHBUTTON "し", 10021, 15, 30, 15, 15
+    PUSHBUTTON "す", 10022, 30, 30, 15, 15
+    PUSHBUTTON "せ", 10023, 45, 30, 15, 15
+    PUSHBUTTON "そ", 10024, 60, 30, 15, 15
+    PUSHBUTTON "た", 10030, 0, 45, 15, 15
+    PUSHBUTTON "ち", 10031, 15, 45, 15, 15
+    PUSHBUTTON "つ", 10032, 30, 45, 15, 15
+    PUSHBUTTON "て", 10033, 45, 45, 15, 15
+    PUSHBUTTON "と", 10034, 60, 45, 15, 15
+    PUSHBUTTON "な", 10040, 0, 60, 15, 15
+    PUSHBUTTON "に", 10041, 15, 60, 15, 15
+    PUSHBUTTON "ぬ", 10042, 30, 60, 15, 15
+    PUSHBUTTON "ね", 10043, 45, 60, 15, 15
+    PUSHBUTTON "の", 10044, 60, 60, 15, 15
+    PUSHBUTTON "は", 10050, 0, 75, 15, 15
+    PUSHBUTTON "ひ", 10051, 15, 75, 15, 15
+    PUSHBUTTON "ふ", 10052, 30, 75, 15, 15
+    PUSHBUTTON "へ", 10053, 45, 75, 15, 15
+    PUSHBUTTON "ほ", 10054, 60, 75, 15, 15
+    PUSHBUTTON "ま", 10060, 0, 90, 15, 15
+    PUSHBUTTON "み", 10061, 15, 90, 15, 15
+    PUSHBUTTON "む", 10062, 30, 90, 15, 15
+    PUSHBUTTON "め", 10063, 45, 90, 15, 15
+    PUSHBUTTON "も", 10064, 60, 90, 15, 15
+    PUSHBUTTON "や", 10070, 0, 105, 15, 15
+    PUSHBUTTON "ゆ", 10071, 15, 105, 15, 15
+    PUSHBUTTON "よ", 10072, 30, 105, 15, 15
+    PUSHBUTTON "　", 10073, 45, 105, 15, 15
+    PUSHBUTTON "■", 10074, 60, 105, 15, 15
+    PUSHBUTTON "ら", 10080, 0, 120, 15, 15
+    PUSHBUTTON "り", 10081, 15, 120, 15, 15
+    PUSHBUTTON "る", 10082, 30, 120, 15, 15
+    PUSHBUTTON "れ", 10083, 45, 120, 15, 15
+    PUSHBUTTON "ろ", 10084, 60, 120, 15, 15
+    PUSHBUTTON "わ", 10090, 0, 135, 15, 15
+    PUSHBUTTON "ん", 10091, 15, 135, 15, 15
+    PUSHBUTTON "ー", 10092, 30, 135, 15, 15
+    PUSHBUTTON "辞書", 10093, 45, 135, 30, 15
+    PUSHBUTTON "が", 20000, 0, 150, 15, 15
+    PUSHBUTTON "ぎ", 20001, 15, 150, 15, 15
+    PUSHBUTTON "ぐ", 20002, 30, 150, 15, 15
+    PUSHBUTTON "げ", 20003, 45, 150, 15, 15
+    PUSHBUTTON "ご", 20004, 60, 150, 15, 15
+    PUSHBUTTON "ざ", 20010, 0, 165, 15, 15
+    PUSHBUTTON "じ", 20011, 15, 165, 15, 15
+    PUSHBUTTON "ず", 20012, 30, 165, 15, 15
+    PUSHBUTTON "ぜ", 20013, 45, 165, 15, 15
+    PUSHBUTTON "ぞ", 20014, 60, 165, 15, 15
+    PUSHBUTTON "だ", 20020, 0, 180, 15, 15
+    PUSHBUTTON "ぢ", 20021, 15, 180, 15, 15
+    PUSHBUTTON "づ", 20022, 30, 180, 15, 15
+    PUSHBUTTON "で", 20023, 45, 180, 15, 15
+    PUSHBUTTON "ど", 20024, 60, 180, 15, 15
+    PUSHBUTTON "ば", 20030, 0, 195, 15, 15
+    PUSHBUTTON "び", 20031, 15, 195, 15, 15
+    PUSHBUTTON "ぶ", 20032, 30, 195, 15, 15
+    PUSHBUTTON "べ", 20033, 45, 195, 15, 15
+    PUSHBUTTON "ぼ", 20034, 60, 195, 15, 15
+    PUSHBUTTON "ぱ", 20040, 0, 210, 15, 15
+    PUSHBUTTON "ぴ", 20041, 15, 210, 15, 15
+    PUSHBUTTON "ぷ", 20042, 30, 210, 15, 15
+    PUSHBUTTON "ぺ", 20043, 45, 210, 15, 15
+    PUSHBUTTON "ぽ", 20044, 60, 210, 15, 15
+    AUTOCHECKBOX "文字送り", 20050, 0, 225, 30, 15, BS_PUSHLIKE | NOT WS_TABSTOP
+    PUSHBUTTON "ﾖｺ入力", 20052, 30, 225, 30, 15
+    PUSHBUTTON "BS", 20054, 60, 225, 15, 15
+    PUSHBUTTON "↑", 20060, 0, 240, 15, 15
+    PUSHBUTTON "↓", 20061, 15, 240, 15, 15
+    PUSHBUTTON "←", 20062, 30, 240, 15, 15
+    PUSHBUTTON "→", 20063, 45, 240, 15, 15
+    PUSHBUTTON "NL", 20064, 60, 240, 15, 15
+    PUSHBUTTON "英字に", 20072, 0, 255, 30, 15
+    PUSHBUTTON "横置きに", 20071, 30, 255, 44, 15
+    PUSHBUTTON "ロシアに", 20073, 0, 270, 75, 15
+}
+
+IDD_HIRAYOKO DIALOGEX 0, 0, 270, 75
+CAPTION "入力パレット (Ctrl+U)"
+STYLE DS_CENTER | DS_MODALFRAME | WS_CAPTION | WS_SYSMENU
+EXSTYLE WS_EX_TOOLWINDOW
+FONT 9, "MS UI Gothic", 0, 0, 128 // SHIFTJIS_CHARSET
+{
+    PUSHBUTTON "あ", 10000, 0, 0, 15, 15
+    PUSHBUTTON "い", 10001, 0, 15, 15, 15
+    PUSHBUTTON "う", 10002, 0, 30, 15, 15
+    PUSHBUTTON "え", 10003, 0, 45, 15, 15
+    PUSHBUTTON "お", 10004, 0, 60, 15, 15
+    PUSHBUTTON "か", 10010, 15, 0, 15, 15
+    PUSHBUTTON "き", 10011, 15, 15, 15, 15
+    PUSHBUTTON "く", 10012, 15, 30, 15, 15
+    PUSHBUTTON "け", 10013, 15, 45, 15, 15
+    PUSHBUTTON "こ", 10014, 15, 60, 15, 15
+    PUSHBUTTON "さ", 10020, 30, 0, 15, 15
+    PUSHBUTTON "し", 10021, 30, 15, 15, 15
+    PUSHBUTTON "す", 10022, 30, 30, 15, 15
+    PUSHBUTTON "せ", 10023, 30, 45, 15, 15
+    PUSHBUTTON "そ", 10024, 30, 60, 15, 15
+    PUSHBUTTON "た", 10030, 45, 0, 15, 15
+    PUSHBUTTON "ち", 10031, 45, 15, 15, 15
+    PUSHBUTTON "つ", 10032, 45, 30, 15, 15
+    PUSHBUTTON "て", 10033, 45, 45, 15, 15
+    PUSHBUTTON "と", 10034, 45, 60, 15, 15
+    PUSHBUTTON "な", 10040, 60, 0, 15, 15
+    PUSHBUTTON "に", 10041, 60, 15, 15, 15
+    PUSHBUTTON "ぬ", 10042, 60, 30, 15, 15
+    PUSHBUTTON "ね", 10043, 60, 45, 15, 15
+    PUSHBUTTON "の", 10044, 60, 60, 15, 15
+    PUSHBUTTON "は", 10050, 75, 0, 15, 15
+    PUSHBUTTON "ひ", 10051, 75, 15, 15, 15
+    PUSHBUTTON "ふ", 10052, 75, 30, 15, 15
+    PUSHBUTTON "へ", 10053, 75, 45, 15, 15
+    PUSHBUTTON "ほ", 10054, 75, 60, 15, 15
+    PUSHBUTTON "ま", 10060, 90, 0, 15, 15
+    PUSHBUTTON "み", 10061, 90, 15, 15, 15
+    PUSHBUTTON "む", 10062, 90, 30, 15, 15
+    PUSHBUTTON "め", 10063, 90, 45, 15, 15
+    PUSHBUTTON "も", 10064, 90, 60, 15, 15
+    PUSHBUTTON "や", 10070, 105, 0, 15, 15
+    PUSHBUTTON "ゆ", 10071, 105, 15, 15, 15
+    PUSHBUTTON "よ", 10072, 105, 30, 15, 15
+    PUSHBUTTON "　", 10073, 105, 45, 15, 15
+    PUSHBUTTON "■", 10074, 105, 60, 15, 15
+    PUSHBUTTON "ら", 10080, 120, 0, 15, 15
+    PUSHBUTTON "り", 10081, 120, 15, 15, 15
+    PUSHBUTTON "る", 10082, 120, 30, 15, 15
+    PUSHBUTTON "れ", 10083, 120, 45, 15, 15
+    PUSHBUTTON "ろ", 10084, 120, 60, 15, 15
+    PUSHBUTTON "わ", 10090, 135, 0, 15, 15
+    PUSHBUTTON "ん", 10091, 135, 15, 15, 15
+    PUSHBUTTON "ー", 10092, 135, 30, 15, 15
+    PUSHBUTTON "辞\n書", 10093, 135, 45, 15, 30, BS_MULTILINE
+    PUSHBUTTON "が", 20000, 150, 0, 15, 15
+    PUSHBUTTON "ぎ", 20001, 150, 15, 15, 15
+    PUSHBUTTON "ぐ", 20002, 150, 30, 15, 15
+    PUSHBUTTON "げ", 20003, 150, 45, 15, 15
+    PUSHBUTTON "ご", 20004, 150, 60, 15, 15
+    PUSHBUTTON "ざ", 20010, 165, 0, 15, 15
+    PUSHBUTTON "じ", 20011, 165, 15, 15, 15
+    PUSHBUTTON "ず", 20012, 165, 30, 15, 15
+    PUSHBUTTON "ぜ", 20013, 165, 45, 15, 15
+    PUSHBUTTON "ぞ", 20014, 165, 60, 15, 15
+    PUSHBUTTON "だ", 20020, 180, 0, 15, 15
+    PUSHBUTTON "ぢ", 20021, 180, 15, 15, 15
+    PUSHBUTTON "づ", 20022, 180, 30, 15, 15
+    PUSHBUTTON "で", 20023, 180, 45, 15, 15
+    PUSHBUTTON "ど", 20024, 180, 60, 15, 15
+    PUSHBUTTON "ば", 20030, 195, 0, 15, 15
+    PUSHBUTTON "び", 20031, 195, 15, 15, 15
+    PUSHBUTTON "ぶ", 20032, 195, 30, 15, 15
+    PUSHBUTTON "べ", 20033, 195, 45, 15, 15
+    PUSHBUTTON "ぼ", 20034, 195, 60, 15, 15
+    AUTOCHECKBOX "文字送り", 20050, 210, 0, 30, 15, BS_PUSHLIKE | NOT WS_TABSTOP
+    PUSHBUTTON "ﾖｺ\n入\n力", 20052, 240, 0, 15, 30, BS_MULTILINE
+    PUSHBUTTON "BS", 20054, 210, 45, 15, 15
+    PUSHBUTTON "↑", 20060, 210, 15, 15, 15
+    PUSHBUTTON "↓", 20061, 225, 15, 15, 15
+    PUSHBUTTON "←", 20062, 210, 30, 15, 15
+    PUSHBUTTON "→", 20063, 225, 30, 15, 15
+    PUSHBUTTON "NL", 20064, 225, 45, 15, 15
+    PUSHBUTTON "英字に", 20072, 210, 60, 30, 15
+    PUSHBUTTON "縦\n置\nき\nに", 20071, 240, 30, 15, 45, BS_MULTILINE
+    PUSHBUTTON "ロ\nシ\nア\nに", 20073, 255, 0, 15, 75, BS_MULTILINE
+}
+
+IDD_ABCLOWER DIALOGEX 0, 0, 165, 60
+CAPTION "入力パレット (Ctrl+U)"
+STYLE DS_CENTER | DS_MODALFRAME | WS_CAPTION | WS_SYSMENU
+EXSTYLE WS_EX_TOOLWINDOW
+FONT 9, "MS UI Gothic", 0, 0, 128 // SHIFTJIS_CHARSET
+{
+    PUSHBUTTON "a", 11000, 0, 0, 15, 15
+    PUSHBUTTON "b", 11001, 15, 0, 15, 15
+    PUSHBUTTON "c", 11002, 30, 0, 15, 15
+    PUSHBUTTON "d", 11003, 45, 0, 15, 15
+    PUSHBUTTON "e", 11004, 60, 0, 15, 15
+    PUSHBUTTON "f", 11005, 75, 0, 15, 15
+    PUSHBUTTON "g", 11006, 90, 0, 15, 15
+    PUSHBUTTON "h", 11007, 105, 0, 15, 15
+    PUSHBUTTON "i", 11008, 120, 0, 15, 15
+    PUSHBUTTON "j", 11009, 135, 0, 15, 15
+    PUSHBUTTON "k", 12000, 150, 0, 15, 15
+    PUSHBUTTON "l", 12001, 0, 15, 15, 15
+    PUSHBUTTON "m", 12002, 15, 15, 15, 15
+    PUSHBUTTON "n", 12003, 30, 15, 15, 15
+    PUSHBUTTON "o", 12004, 45, 15, 15, 15
+    PUSHBUTTON "p", 12005, 60, 15, 15, 15
+    PUSHBUTTON "q", 12006, 75, 15, 15, 15
+    PUSHBUTTON "r", 12007, 90, 15, 15, 15
+    PUSHBUTTON "s", 12008, 105, 15, 15, 15
+    PUSHBUTTON "t", 12009, 120, 15, 15, 15
+    PUSHBUTTON "u", 13000, 135, 15, 15, 15
+    PUSHBUTTON "v", 13001, 150, 15, 15, 15
+    PUSHBUTTON "w", 13002, 0, 30, 15, 15
+    PUSHBUTTON "x", 13003, 15, 30, 15, 15
+    PUSHBUTTON "y", 13004, 30, 30, 15, 15
+    PUSHBUTTON "z", 13005, 45, 30, 15, 15
+    PUSHBUTTON "　", 13006, 60, 30, 15, 15
+    PUSHBUTTON "■", 13007, 75, 30, 15, 15
+    AUTOCHECKBOX "字送り", 20050, 0, 45, 30, 15, BS_PUSHLIKE | NOT WS_TABSTOP
+    PUSHBUTTON "ﾖｺ入力", 20052, 30, 45, 30, 15
+    PUSHBUTTON "BS", 20054, 60, 45, 15, 15
+    PUSHBUTTON "↑", 20060, 75, 45, 15, 15
+    PUSHBUTTON "↓", 20061, 90, 45, 15, 15
+    PUSHBUTTON "←", 20062, 105, 45, 15, 15
+    PUSHBUTTON "→", 20063, 120, 45, 15, 15
+    PUSHBUTTON "NL", 20064, 135, 45, 30, 15
+    PUSHBUTTON "カナに", 20070, 90, 30, 30, 15
+    PUSHBUTTON "ロシアに", 20073, 120, 30, 45, 15
+}
+
+IDD_RUSSIALOWER DIALOGEX 0, 0, 150, 75
+CAPTION "入力パレット (Ctrl+U)"
+STYLE DS_CENTER | DS_MODALFRAME | WS_CAPTION | WS_SYSMENU
+EXSTYLE WS_EX_TOOLWINDOW
+FONT 9, "MS UI Gothic", 0, 0, 128 // SHIFTJIS_CHARSET
+{
+    PUSHBUTTON "а", 11000, 0, 0, 15, 15
+    PUSHBUTTON "б", 11001, 15, 0, 15, 15
+    PUSHBUTTON "в", 11002, 30, 0, 15, 15
+    PUSHBUTTON "г", 11003, 45, 0, 15, 15
+    PUSHBUTTON "д", 11004, 60, 0, 15, 15
+    PUSHBUTTON "е", 11005, 75, 0, 15, 15
+    PUSHBUTTON "ё", 11006, 90, 0, 15, 15
+    PUSHBUTTON "ж", 11007, 105, 0, 15, 15
+    PUSHBUTTON "з", 11008, 120, 0, 15, 15
+    PUSHBUTTON "и", 11009, 135, 0, 15, 15
+    PUSHBUTTON "й", 12000, 0, 15, 15, 15
+    PUSHBUTTON "к", 12001, 15, 15, 15, 15
+    PUSHBUTTON "л", 12002, 30, 15, 15, 15
+    PUSHBUTTON "м", 12003, 45, 15, 15, 15
+    PUSHBUTTON "н", 12004, 60, 15, 15, 15
+    PUSHBUTTON "о", 12005, 75, 15, 15, 15
+    PUSHBUTTON "п", 12006, 90, 15, 15, 15
+    PUSHBUTTON "р", 12007, 105, 15, 15, 15
+    PUSHBUTTON "с", 12008, 120, 15, 15, 15
+    PUSHBUTTON "т", 12009, 135, 15, 15, 15
+    PUSHBUTTON "у", 13000, 0, 30, 15, 15
+    PUSHBUTTON "ф", 13001, 15, 30, 15, 15
+    PUSHBUTTON "х", 13002, 30, 30, 15, 15
+    PUSHBUTTON "ц", 13003, 45, 30, 15, 15
+    PUSHBUTTON "ч", 13004, 60, 30, 15, 15
+    PUSHBUTTON "ш", 13005, 75, 30, 15, 15
+    PUSHBUTTON "щ", 13006, 90, 30, 15, 15
+    PUSHBUTTON "ъ", 13007, 105, 30, 15, 15
+    PUSHBUTTON "ы", 13008, 120, 30, 15, 15
+    PUSHBUTTON "ь", 13009, 135, 30, 15, 15
+    PUSHBUTTON "э", 13010, 0, 45, 15, 15
+    PUSHBUTTON "ю", 13011, 15, 45, 15, 15
+    PUSHBUTTON "я", 13012, 30, 45, 15, 15
+    PUSHBUTTON "　", 13013, 45, 45, 15, 15
+    PUSHBUTTON "■", 13014, 60, 45, 15, 15
+    AUTOCHECKBOX "字送り", 20050, 0, 60, 30, 15, BS_PUSHLIKE | NOT WS_TABSTOP
+    PUSHBUTTON "ﾖｺ入力", 20052, 30, 60, 30, 15
+    PUSHBUTTON "BS", 20054, 60, 60, 15, 15
+    PUSHBUTTON "↑", 20060, 75, 60, 15, 15
+    PUSHBUTTON "↓", 20061, 90, 60, 15, 15
+    PUSHBUTTON "←", 20062, 105, 60, 15, 15
+    PUSHBUTTON "→", 20063, 120, 60, 15, 15
+    PUSHBUTTON "NL", 20064, 135, 60, 15, 15
+    PUSHBUTTON "カナに", 20070, 75, 45, 30, 15
+    PUSHBUTTON "英字に", 20072, 105, 45, 45, 15
+}
+
+IDD_BLOCKPATTERN DIALOGEX 0, 0, 335, 265
+CAPTION "黒マスパターン (Ctrl+;)"
+STYLE DS_CENTER | DS_MODALFRAME | WS_POPUPWINDOW | WS_CAPTION | WS_THICKFRAME | WS_MAXIMIZEBOX
+FONT 9, "MS UI Gothic", 0, 0, 128 // SHIFTJIS_CHARSET
+{
+    LTEXT "下のリストから黒マスパターンをお選び下さい。", stc1, 5, 2, 220, 12
+    AUTORADIOBUTTON "大(&Large)", rad1, 5, 15, 45, 16, WS_GROUP | WS_TABSTOP
+    AUTORADIOBUTTON "中(&Medium)", rad2, 55, 15, 50, 16, WS_TABSTOP
+    AUTORADIOBUTTON "小(&Small)", rad3, 110, 15, 50, 16, WS_TABSTOP
+    AUTORADIOBUTTON "横長(&H)", rad4, 175, 15, 40, 16, WS_GROUP | WS_TABSTOP
+    AUTORADIOBUTTON "縦長(&V)", rad5, 220, 15, 40, 16, WS_TABSTOP
+    AUTORADIOBUTTON "正方形(&Q)", rad6, 275, 15, 55, 16, WS_TABSTOP
+    LTEXT "リスト(&T):", stc2, 8, 37, 47, 12
+    LISTBOX lst1, 5, 50, 325, 190, LBS_DISABLENOSCROLL | LBS_MULTICOLUMN | LBS_NOINTEGRALHEIGHT | LBS_OWNERDRAWFIXED | WS_VSCROLL | WS_HSCROLL | WS_TABSTOP
+    PUSHBUTTON "コピー(&C)", psh1, 5, 245, 60, 15
+    AUTOCHECKBOX "答えを表示する(&A)", chx1, 75, 245, 80, 15
+    DEFPUSHBUTTON "解を求める(&O)", IDOK, 185, 245, 80, 15
+    PUSHBUTTON "閉じる(&X)", IDCANCEL, 270, 245, 60, 15
+    PUSHBUTTON "ダウンロード(&D)...", psh2, 240, 35, 90, 14
+}
+
+IDD_THEME DIALOGEX 0, 0, 310, 250
+CAPTION "テーマ タグ"
+STYLE DS_CENTER | DS_MODALFRAME | WS_POPUPWINDOW | WS_CAPTION
+FONT 9, "MS UI Gothic", 0, 0, 128 // SHIFTJIS_CHARSET
+{
+    LTEXT "テーマ タグでは、優先タグと除外タグを指定できます。タグは、辞書の単語に付けられた分類キーワードのことです。辞書を切り替えると、テーマ タグはリセットされます。", -1, 5, 5, 183, 30
+    LTEXT "プリセット(&S):", -1, 205, 5, 65, 12
+    COMBOBOX cmb1, 205, 20, 100, 300, CBS_DISABLENOSCROLL | CBS_HASSTRINGS | CBS_AUTOHSCROLL | CBS_DROPDOWN | WS_VSCROLL | WS_HSCROLL | WS_TABSTOP
+    LTEXT "すべてのタグ(&T):", -1, 5, 40, 75, 12
+    EDITTEXT edt1, 85, 40, 40, 14, ES_AUTOHSCROLL
+    CONTROL "", lst1, "SysListView32", LVS_SINGLESEL | LVS_REPORT | WS_BORDER | WS_TABSTOP, 5, 55, 120, 160
+    PUSHBUTTON "→", psh1, 135, 55, 40, 14
+    LTEXT "優先タグ(&P):", -1, 185, 40, 70, 12
+    CONTROL "", lst2, "SysListView32", LVS_SINGLESEL | LVS_REPORT | WS_BORDER | WS_TABSTOP, 185, 55, 120, 66
+    PUSHBUTTON "←", psh2, 135, 105, 40, 14
+    PUSHBUTTON "→", psh3, 135, 150, 40, 14
+    LTEXT "除外タグ(&F):", -1, 185, 135, 70, 12
+    CONTROL "", lst3, "SysListView32", LVS_SINGLESEL | LVS_REPORT | WS_BORDER | WS_TABSTOP, 185, 150, 120, 65
+    PUSHBUTTON "←", psh4, 135, 200, 40, 14
+    PUSHBUTTON "すべてリセット(&A)", psh5, 5, 230, 85, 14
+    DEFPUSHBUTTON "OK", IDOK, 180, 230, 60, 14
+    PUSHBUTTON "キャンセル", IDCANCEL, 246, 230, 60, 14
+    RTEXT "", stc1, 275, 40, 30, 12
+    RTEXT "", stc2, 275, 135, 30, 12
+}
+
+IDD_PATGEN DIALOGEX 0, 0, 310, 45
+CAPTION "黒マスパターンの生成"
+STYLE DS_CENTER | DS_MODALFRAME | WS_POPUPWINDOW | WS_CAPTION
+FONT 9, "MS UI Gothic", 0, 0, 128 // SHIFTJIS_CHARSET
+{
+    LTEXT "最大単語長(&L):", stc1, 10, 27, 67, 12
+    EDITTEXT edt3, 80, 25, 50, 14, ES_NUMBER | ES_RIGHT
+    CONTROL "", scr3, "msctls_updown32", UDS_ARROWKEYS | UDS_AUTOBUDDY | UDS_ALIGNRIGHT | UDS_SETBUDDYINT, 100, 25, 12, 20
+    LTEXT "ルールに従って黒マスパターンを生成します。", -1, 10, 5, 220, 12
+    DEFPUSHBUTTON "計算開始(&G)", IDOK, 180, 25, 60, 14
+    PUSHBUTTON "キャンセル", IDCANCEL, 245, 25, 60, 14
+}
+
+IDD_WORDLIST DIALOGEX 0, 0, 235, 195
+CAPTION "単語群から生成 (Ctrl+:)"
+STYLE DS_CENTER | DS_MODALFRAME | WS_POPUPWINDOW | WS_CAPTION
+FONT 10, "MS UI Gothic", 0, 0, 1 // DEFAULT_CHARSET
+{
+    LTEXT "", stc1, 0, 0, 235, 80
+    LTEXT "複数の単語をスペースまたは改行区切りで入力して下さい:\r\n\r\n※ 現在の黒マスルールが変更され、自動的にスケルトンビューになります。", -1, 5, 83, 224, 35
+    EDITTEXT edt1, 5, 120, 225, 50, ES_WANTRETURN | ES_AUTOVSCROLL | ES_MULTILINE | WS_VSCROLL
+    AUTOCHECKBOX "すべてでなくてもよい(&N)", chx1, 5, 175, 85, 14
+    DEFPUSHBUTTON "生成開始(&G)", IDOK, 105, 175, 60, 14
+    PUSHBUTTON "キャンセル", IDCANCEL, 170, 175, 60, 14
+}
+
+IDD_RULEPRESET DIALOGEX 0, 0, 270, 150
+CAPTION "ルール"
+STYLE DS_CENTER | DS_MODALFRAME | WS_POPUPWINDOW | WS_CAPTION
+FONT 9, "MS UI Gothic", 0, 0, 128 // SHIFTJIS_CHARSET
+{
+    LTEXT "プリセット値(&V):", -1, 5, 5, 90, 10
+    COMBOBOX cmb1, 25, 20, 240, 300, CBS_HASSTRINGS | CBS_AUTOHSCROLL | CBS_OWNERDRAWFIXED | CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP
+    AUTOCHECKBOX "連黒禁(&D)", chx1, 17, 50, 75, 14
+    AUTOCHECKBOX "四隅黒禁(&C)", chx2, 98, 50, 75, 14
+    AUTOCHECKBOX "三方黒禁(&T)", chx3, 179, 50, 75, 14
+    AUTOCHECKBOX "分断禁", chx4, 17, 75, 75, 14, WS_DISABLED
+    AUTOCHECKBOX "黒斜三連禁(&E)", chx5, 98, 75, 75, 14
+    AUTOCHECKBOX "黒斜四連禁(&F)", chx6, 179, 75, 75, 14
+    AUTOCHECKBOX "黒マス点対称(&I)", chx7, 17, 100, 75, 14
+    AUTOCHECKBOX "黒マス上下対称(&L)", chx8, 98, 100, 75, 14
+    AUTOCHECKBOX "黒マス左右対称(&O)", chx9, 179, 100, 75, 14
+    GROUPBOX "ルール", -1, 5, 40, 260, 85
+    PUSHBUTTON "黒マスルールの説明(&P)...", psh1, 5, 130, 121, 14
+}
+
+IDD_UILANGID DIALOGEX 0, 0, 155, 70
+CAPTION "UI 言語選択 / UI Language Select"
+STYLE DS_CENTER | DS_MODALFRAME | WS_POPUPWINDOW | WS_CAPTION
+FONT 12, "MS UI Gothic", 0, 0, 128 // SHIFTJIS_CHARSET
+{
+    LTEXT "UI 言語(&L) / UI Language:", -1, 5, 5, 145, 10
+    COMBOBOX cmb1, 5, 20, 144, 300, CBS_HASSTRINGS | CBS_AUTOHSCROLL | CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    LTEXT "* アプリ再起動後有効 (Effective on next startup)", -1, 5, 35, 145, 12
+    DEFPUSHBUTTON "OK", IDOK, 25, 50, 60, 14
+    PUSHBUTTON "キャンセル", IDCANCEL, 90, 50, 60, 14
+}
+
+IDD_ABOUT DIALOGEX 0, 0, 212, 172
+CAPTION "クロスワード ギバー のバージョン情報"
+STYLE DS_CENTER | DS_MODALFRAME | WS_POPUPWINDOW | WS_CAPTION
+FONT 9, "MS UI Gothic", 0, 0, 128 // SHIFTJIS_CHARSET
+{
+    CONTROL 3, ico1, "STATIC", SS_REALSIZEIMAGE | SS_BITMAP | WS_GROUP, 10, 10, 0, 0
+    LTEXT "", stc1, 40, 10, 125, 25
+    CONTROL 2, ico2, "STATIC", SS_REALSIZEIMAGE | SS_BITMAP | WS_GROUP, 175, 10, 0, 0
+    LTEXT "", stc3, 95, 50, 30, 15
+    LTEXT "", stc2, 135, 50, 70, 15
+    EDITTEXT edt1, 10, 65, 195, 50, ES_READONLY | ES_MULTILINE | WS_VSCROLL | WS_HSCROLL | NOT WS_TABSTOP
+    CONTROL "公式サイト: <a>https://katahiromz.fc2.page/xwordgiver/</a>", ctl1, "SysLink", WS_TABSTOP, 10, 125, 195, 15
+    PUSHBUTTON "変更履歴(&C)...", IDYES, 10, 145, 91, 20
+    DEFPUSHBUTTON "OK", IDOK, 145, 145, 60, 20
+}
+
+IDD_MARKING DIALOGEX 0, 0, 215, 230
+CAPTION "二重マス単語の候補と配置 (Ctrl+J)"
+STYLE DS_CENTER | DS_MODALFRAME | WS_POPUPWINDOW | WS_CAPTION
+EXSTYLE WS_EX_TOOLWINDOW
+FONT 9, "MS UI Gothic", 0, 0, 128 // SHIFTJIS_CHARSET
+{
+    LTEXT "二重マス単語またはフレーズ(&W):", -1, 5, 5, 128, 12
+    EDITTEXT edt1, 5, 20, 205, 14
+    LTEXT "単語を入力、または下の候補から選択して下さい：", stc1, 5, 40, 205, 14
+    LISTBOX lst1, 5, 60, 205, 100, LBS_MULTICOLUMN | LBS_NOINTEGRALHEIGHT | LBS_HASSTRINGS | WS_VSCROLL | WS_HSCROLL | WS_TABSTOP
+    PUSHBUTTON "←前の単語(&P)", psh1, 5, 165, 100, 17
+    PUSHBUTTON "次の単語(&N)→", psh2, 110, 165, 100, 17
+    PUSHBUTTON "←前の配置(&A)", psh3, 6, 185, 100, 17
+    PUSHBUTTON "次の配置(&R)→", psh4, 110, 185, 100, 17
+    PUSHBUTTON "二重マス単語をクリア(&C)", psh5, 5, 205, 80, 17
+}
+
+IDD_JUMP DIALOGEX 0, 0, 193, 185
+CAPTION "ジャンプ"
+STYLE DS_CENTER | DS_MODALFRAME | WS_POPUPWINDOW | WS_CAPTION
+FONT 9, "MS UI Gothic", 0, 0, 128 // SHIFTJIS_CHARSET
+{
+    AUTORADIOBUTTON "指定位置にジャンプ(&P)", rad1, 10, 10, 110, 15, WS_GROUP | WS_TABSTOP
+    AUTORADIOBUTTON "カギにジャンプ(&C)", rad2, 10, 60, 110, 15, WS_TABSTOP
+    AUTORADIOBUTTON "文字または単語にジャンプ(&W)", rad5, 10, 110, 110, 15, WS_TABSTOP
+    RTEXT "左から", -1, 10, 40, 30, 10
+    EDITTEXT edt1, 50, 35, 30, 15, ES_NUMBER | ES_AUTOHSCROLL | ES_RIGHT
+    CONTROL "", scr1, "msctls_updown32", UDS_ARROWKEYS | UDS_AUTOBUDDY | UDS_ALIGNRIGHT | UDS_SETBUDDYINT, 70, 35, 10, 20
+    LTEXT "番目、上から", -1, 85, 40, 40, 10
+    EDITTEXT edt2, 130, 35, 30, 15, ES_NUMBER | ES_AUTOHSCROLL | ES_RIGHT
+    CONTROL "", scr2, "msctls_updown32", UDS_ARROWKEYS | UDS_AUTOBUDDY | UDS_ALIGNRIGHT | UDS_SETBUDDYINT, 100, 25, 10, 20
+    LTEXT "番目", -1, 165, 40, 20, 10
+    AUTORADIOBUTTON "ヨコ(&A)", rad3, 25, 85, 40, 15, WS_GROUP | WS_TABSTOP
+    AUTORADIOBUTTON "タテ(&D)", rad4, 75, 85, 35, 15, WS_TABSTOP
+    EDITTEXT edt3, 120, 85, 30, 15, ES_NUMBER | ES_AUTOHSCROLL | ES_RIGHT
+    CONTROL "", scr3, "msctls_updown32", UDS_ARROWKEYS | UDS_AUTOBUDDY | UDS_ALIGNRIGHT | UDS_SETBUDDYINT, 100, 25, 10, 20
+    LTEXT "文字または単語:", -1, 27, 137, 66, 12
+    EDITTEXT edt4, 97, 135, 85, 14, ES_AUTOHSCROLL
+    DEFPUSHBUTTON "ジャンプ", IDOK, 65, 165, 60, 15
+    PUSHBUTTON "キャンセル", IDCANCEL, 130, 165, 60, 15
+}
+
+IDD_FILESETTINGS DIALOGEX 0, 0, 270, 245
+CAPTION "ファイル"
+STYLE DS_CENTER | DS_MODALFRAME | WS_POPUPWINDOW | WS_CAPTION
+FONT 9, "MS UI Gothic", 0, 0, 128 // SHIFTJIS_CHARSET
+{
+    AUTOCHECKBOX "問題を開いたら答えを表示する(&Q)", chx1, 10, 10, 195, 15
+    AUTOCHECKBOX "生成したら答えを表示する(&G)", chx3, 10, 30, 195, 15
+    AUTOCHECKBOX "問題やパターンを生成したら自動で連番保存する(&N)", chx2, 10, 50, 195, 15
+    LTEXT "連番ファイル保存先(&S):", -1, 10, 70, 195, 15, SS_CENTERIMAGE | NOT WS_GROUP
+    COMBOBOX cmb1, 10, 85, 195, 300, CBS_HASSTRINGS | CBS_AUTOHSCROLL | CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP
+    PUSHBUTTON "参照(&B)...", psh1, 10, 100, 60, 15
+    PUSHBUTTON "フォルダを開く(&F)", psh2, 110, 100, 95, 15
+    AUTOCHECKBOX "ファイルからLOOKS情報を読み込まない(&R)", chx4, 10, 125, 195, 15
+    AUTOCHECKBOX "ファイルへLOOKS情報を書き込まない(&W)", chx5, 10, 145, 195, 15
+    LTEXT "連番ファイル名 &1:", -1, 10, 180, 110, 15, SS_CENTERIMAGE | NOT WS_GROUP
+    COMBOBOX cmb2, 10, 195, 120, 300, CBS_HASSTRINGS | CBS_AUTOHSCROLL | CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP
+    LTEXT "連番ファイル名 &2:", -1, 140, 180, 110, 15, SS_CENTERIMAGE | NOT WS_GROUP
+    COMBOBOX cmb3, 140, 195, 120, 300, CBS_HASSTRINGS | CBS_AUTOHSCROLL | CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP
+    LTEXT "%Wx%H サイズ　%Y%M%D 年月日　%h%m%s 時刻　%N %1N～%6N 連番　%w 曜日", -1, 10, 210, 250, 20, NOT WS_GROUP
+}
+
+IDD_VIEWSETTINGS DIALOGEX 0, 0, 220, 190
+CAPTION "表示"
+STYLE DS_CENTER | DS_MODALFRAME | WS_POPUPWINDOW | WS_CAPTION
+FONT 9, "MS UI Gothic", 0, 0, 128 // SHIFTJIS_CHARSET
+{
+    AUTOCHECKBOX "ツールバー(&T)", chx1, 10, 5, 95, 15
+    AUTOCHECKBOX "ステータスバー(&S)", chx2, 10, 25, 95, 15
+    AUTOCHECKBOX "入力パレット(&I)", chx3, 10, 45, 95, 15
+    AUTOCHECKBOX "ヒント(&E)", chx4, 10, 65, 95, 15
+    AUTOCHECKBOX "答え(&A)", chx5, 10, 85, 95, 15
+    AUTOCHECKBOX "番号(&N)", chx6, 10, 105, 95, 15
+    AUTOCHECKBOX "キャレット(&C)", chx7, 10, 125, 95, 15
+    AUTOCHECKBOX "二重マス(&F)", chx8, 115, 5, 95, 15
+    AUTOCHECKBOX "二重マスの枠(&L)", chx15, 115, 25, 95, 15
+    AUTOCHECKBOX "二重マスの文字(&D)", chx9, 115, 45, 95, 15
+    AUTOCHECKBOX "スケルトン ビュー(&V)", chx10, 115, 65, 95, 15
+    AUTOCHECKBOX "ナンクロモード(&M)", chx11, 115, 85, 95, 15
+    AUTOCHECKBOX "英小文字(&W)", chx12, 115, 105, 95, 15
+    AUTOCHECKBOX "ひらがな(&H)", chx13, 115, 125, 95, 15
+    AUTOCHECKBOX "答え合わせ(&W)", chx14, 115, 145, 95, 15
+    RTEXT "ズーム(&Z):", -1, 15, 170, 35, 10, SS_CENTERIMAGE | NOT WS_GROUP
+    COMBOBOX cmb1, 60, 170, 95, 300, CBS_HASSTRINGS | CBS_AUTOHSCROLL | CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP
+}
+
+IDD_GENERATIVE DIALOGEX 0, 0, 220, 209
+CAPTION "生成"
+STYLE DS_CENTER | DS_MODALFRAME | WS_POPUPWINDOW | WS_CAPTION
+FONT 9, "MS UI Gothic", 0, 0, 128 // SHIFTJIS_CHARSET
+{
+    AUTOCHECKBOX "「問題を生成しました」を表示しない(&P)", chx1, 10, 5, 200, 15
+    AUTOCHECKBOX "「キャンセルしました」を表示しない(&C)", chx2, 10, 25, 200, 15
+    AUTOCHECKBOX "生成の成功時に次の音を鳴らす(&S):", chx4, 10, 55, 200, 15
+    COMBOBOX cmb1, 35, 75, 125, 300, CBS_HASSTRINGS | CBS_AUTOHSCROLL | CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    PUSHBUTTON "再生", psh1, 165, 75, 35, 15
+    AUTOCHECKBOX "生成の失敗時に次の音を鳴らす(&F):", chx5, 10, 95, 200, 15
+    COMBOBOX cmb2, 35, 115, 125, 300, CBS_HASSTRINGS | CBS_AUTOHSCROLL | CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    PUSHBUTTON "再生", psh2, 165, 115, 35, 15
+    AUTOCHECKBOX "生成のキャンセル時に次の音を鳴らす(&L):", chx6, 10, 135, 200, 15
+    COMBOBOX cmb3, 35, 155, 125, 300, CBS_HASSTRINGS | CBS_AUTOHSCROLL | CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    PUSHBUTTON "再生", psh3, 165, 155, 35, 15
+}
+
+IDD_DICTLIST DIALOGEX 0, 0, 269, 203
+CAPTION "辞書"
+STYLE DS_CENTER | DS_MODALFRAME | WS_POPUPWINDOW | WS_CAPTION
+FONT 9, "MS UI Gothic", 0, 0, 128 // SHIFTJIS_CHARSET
+{
+    LTEXT "現在の辞書(&D):", -1, 5, 10, 70, 15, SS_CENTERIMAGE | NOT WS_GROUP
+    COMBOBOX cmb1, 80, 10, 180, 300, CBS_HASSTRINGS | CBS_AUTOHSCROLL | CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    LTEXT "辞書リスト(&L):", -1, 5, 30, 110, 15, SS_CENTERIMAGE | NOT WS_GROUP
+    CONTROL "", lst1, "SysListView32", LVS_REPORT | WS_BORDER | WS_TABSTOP, 5, 50, 255, 95
+    PUSHBUTTON "ファイルを開く(&F)", psh1, 5, 150, 65, 20
+    PUSHBUTTON "フォルダを開く(&O)", psh2, 75, 150, 75, 20
+    PUSHBUTTON "リスト再読み込み(&R)", psh4, 5, 175, 105, 20
+}
+
+IDD_HIDDEN DIALOGEX 0, 0, 275, 220
+CAPTION "上級者向け"
+STYLE DS_CENTER | DS_MODALFRAME | WS_POPUPWINDOW | WS_CAPTION
+FONT 9, "MS UI Gothic", 0, 0, 128 // SHIFTJIS_CHARSET
+{
+    PUSHBUTTON "デバッグ アクション &1", psh1, 40, 10, 185, 40, BS_MULTILINE
+    PUSHBUTTON "デバッグ アクション &2", psh2, 40, 60, 185, 40, BS_MULTILINE
+    PUSHBUTTON "アプリのフォルダを開く(&O)", psh3, 40, 110, 185, 40, BS_MULTILINE
+}
+
+IDD_AIHELPER DIALOGEX 0, 0, 270, 215
+CAPTION "AI ヘルパー"
+STYLE DS_MODALFRAME | WS_POPUPWINDOW | WS_CAPTION
+FONT 9, "MS UI Gothic", 0, 0, 128 // SHIFTJIS_CHARSET
+{
+    PUSHBUTTON "AI の準備(&A)...", psh1, 7, 7, 102, 39
+    CONTROL "stc1", stc1, "STATIC", SS_BITMAP, 119, 2, 52, 34
+    COMBOBOX cmb4, 170, 15, 90, 300, CBS_HASSTRINGS | CBS_AUTOHSCROLL | CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    RTEXT "AI プロバイダー(&P):", -1, 7, 56, 90, 13
+    COMBOBOX cmb1, 104, 55, 107, 300, CBS_HASSTRINGS | CBS_AUTOHSCROLL | CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP
+    RTEXT "AI モデル(&M):", -1, 7, 75, 90, 13
+    COMBOBOX cmb2, 104, 75, 107, 300, CBS_HASSTRINGS | CBS_AUTOHSCROLL | CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP
+    RTEXT "プロンプトの種類(&T):", -1, 8, 110, 89, 15
+    COMBOBOX cmb3, 105, 110, 160, 300, CBS_HASSTRINGS | CBS_AUTOHSCROLL | CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    EDITTEXT edt2, 7, 128, 258, 55, ES_AUTOVSCROLL | ES_MULTILINE | WS_VSCROLL
+    PUSHBUTTON "すべてリセット(&E)", psh2, 195, 189, 70, 15
+    LTEXT "$(CLUE) はカギ名、$(TODAY) は今日の日付。\r\n(* ... *) は非表示。[[ ... ]] はシステムコマンド。", -1, 5, 190, 170, 20
+}
+
+IDD_AIHELPERCONSOLE DIALOGEX 0, 0, 283, 133
+CAPTION "AI ヘルパー コンソール"
+STYLE DS_CENTER | WS_POPUPWINDOW | WS_CAPTION | WS_THICKFRAME | WS_MAXIMIZEBOX
+EXSTYLE WS_EX_TOOLWINDOW
+FONT 11, "MS UI Gothic", 0, 0, 128 // SHIFTJIS_CHARSET
+{
+    EDITTEXT lst1, 5, 7, 270, 98, ES_READONLY | ES_AUTOVSCROLL | ES_MULTILINE | WS_VSCROLL
+    CONTROL "stc1", stc1, "STATIC", SS_BITMAP, 3, 107, 5, 25
+    EDITTEXT edt1, 30, 113, 170, 14, ES_AUTOHSCROLL
+    DEFPUSHBUTTON "Enter", IDOK, 237, 112, 39, 14
+}
+
+//////////////////////////////////////////////////////////////////////////////
+// RT_VERSION
+
+1 VERSIONINFO
+FILEVERSION     5, 4, 3, 0
+PRODUCTVERSION  5, 4, 3, 0
+FILEOS          VOS_NT_WINDOWS32
+FILETYPE        VFT_APP
+{
+    BLOCK "StringFileInfo"
+    {
+        BLOCK "041103A4" // ja_JP, Japan (Shift_JIS)
+        {
+            VALUE "CompanyName", "片山博文MZ"
+            VALUE "FileDescription", "クロスワード ギバー"
+            VALUE "FileVersion", "5.4.3"
+            VALUE "LegalCopyright", "Copyright (C) 2012-2026 片山博文MZ. All rights reserved."
+            VALUE "ProductName", "XWordGiver"
+            VALUE "ProductVersion", "5.4.3"
+        }
+    }
+    BLOCK "VarFileInfo"
+    {
+        VALUE "Translation", 0x0411, 0x03A4
+    }
+}
+
+//////////////////////////////////////////////////////////////////////////////
+// RT_STRING
+
+STRINGTABLE
+{
+    IDS_VERSION "クロスワード ギバー ver.5.4.3\nby 片山博文MZ"
+    IDS_APPNAME "クロスワード ギバー"
+    IDS_CANTLOAD "ファイルが読み込めません。"
+    IDS_WRONGFORMAT "形式が間違っています。"
+    IDS_CANTSAVE "保存できませんでした。"
+    IDS_OUTOFMEMORY "メモリ不足のため、保存できませんでした。"
+    IDS_CANTSAVE2 "保存できませんでした。"
+    IDS_SOLVED "問題を生成しました。\n\n計算時間: %u.%u[秒]"
+    IDS_RESULTS "結果"
+    IDS_CANTACCEL "アクセラレータの読み込みに失敗しました。"
+    IDS_CANTREGWND "ウィンドウクラスの登録に失敗しました。"
+    IDS_CANTMAKEWND "ウィンドウ作成に失敗しました。"
+    IDS_APPTITLE "クロスワード ギバー ver.5.4.3 - %s"
+    IDS_MADEPROBLEM "%u 個の問題を生成しました。\n\n計算時間: %u.%u[秒]"
+    IDS_CANTMAKEPROBLEM "問題を生成できませんでした。\n\n辞書の設定や黒マスの配置やルールを確認して下さい。\n\n計算時間: %u.%u[秒]"
+    IDS_ENTERINT "2以上256以下の整数を入力して下さい。"
+    IDS_OPENDICTDATA "辞書データを開く"
+    IDS_OPENCROSSDATA "クロスワード データを開く (Ctrl+O)"
+    IDS_SAVECROSSDATA "クロスワード データを保存する (Ctrl+Shift+S)"
+    IDS_DOWN "☆☆☆ タテのカギ ☆☆☆"
+    IDS_ACROSS "☆☆☆ ヨコのカギ ☆☆☆"
+    IDS_DOWNNUMBER "【タテ%d】"
+    IDS_ACROSSNUMBER "【ヨコ%d】"
+    IDS_NOTEPAD "notepad ""%s"""
+    IDS_HINTSTXT "クロスワードのヒント.txt"
+    IDS_SAVEANSASIMG "解答を画像ファイルとして保存"
+    IDS_SAVEPROBASIMG "問題を画像ファイルとして保存"
+    IDS_CANCELLED "計算がキャンセルされました。\n\n計算時間: %u.%u[秒]"
+    IDS_NOWSOLVING "計算しています...（%u.%u秒経過）"
+    IDS_HLINE "――――――――――――――"
+    IDS_MONOFONT "ＭＳ ゴシック"
+    IDS_APPTITLE2 "クロスワード ギバー ver.5.4.3 (%s) - %s"
+    IDS_CROSSWORD "クロスワード"
+    IDS_ANSWER "答え："
+    IDS_SETPORTRAIT "縦長の用紙設定で印刷して下さい。"
+    IDS_REGISTERWORD "'%s' は指定された辞書データに登録されていない単語です。\n\n単語 '%s' のヒントを入力して下さい。"
+    IDS_CORNERBLOCK "四隅に黒マスがあります。ルール「四隅黒禁」に反します。"
+    IDS_ADJACENTBLOCK "黒マスは隣り合っています。ルール「連黒禁」に反します。"
+    IDS_DOUBLEDWORD "単語は二度使えません。"
+    IDS_TRIBLOCK "三方向が黒マスで囲まれたマスがあります。ルール「三方黒禁」に反します。"
+    IDS_DIVIDED "盤面が黒マスで分断されています。ルール「分断禁」に反します。"
+    IDS_NOCANDIDATE "マス位置 (%u, %u) に単語の候補がないマスがあります。"
+    IDS_IMGFILTER "ビットマップ画像 (*.bmp)|*.bmp|PNG 画像 (*.png)|*.png|JPEG 画像 (*.jpg;*.jpe;*.jpeg;*.jfif)|*.jpg;*.jpe;*.jpeg;*.jfif|GIF 画像 (*.gif)|*.gif|EMF 画像 (*.emf)|*.emf||"
+    IDS_DICTFILTER "辞書データ (*.dic;*.tsv)|*.dic;*.tsv|すべてのファイル (*.*)|*.*||"
+    IDS_CROSSFILTER "すべてのクロスワード (*.xwd;*.xwj;*.json;*.jso;*.crp;*.crx;*.xd;*.ecw)|*.xwd;*.xwj;*.json;*.jso;*.crp;*.crx;*.xd;*.ecw|XWD ファイル (*.xwd)|*.xwd|XWJ ファイル (*.xwj;*.json;*.jso)|*.xwj;*.json;*.jso|CRP/CRX ファイル (*.crp;*.crx)|*.crp;*.crx|XD ファイル (*.xd)|*.xd|EclipseCrossword ファイル (*.ecw)|*.ecw|すべてのファイル (*.*)|*.*||"
+    IDS_SAVEFILTER "XWJ ファイル (*.xwj;*.json;*.jso)|*.xwj;*.json;*.jso|CRP ファイル (*.crp)|*.crp|XD ファイル (*.xd)|*.xd||"
+    IDS_README "ReadMe-JPN.txt"
+    IDS_TOOLONGSPACE "マス位置 (%u, %u) に登録されている単語と長さの一致しないスペースがあります。"
+    IDS_TOOOLDPC "あなたのパソコンは、クロスワードギバーで使うには古すぎます。"
+    IDS_CROSSSTORAGE "クロスワード データの保存先"
+    IDS_STORAGEINVALID "保存先が有効なフォルダパスではありません。"
+    IDS_ENTERPOSITIVE "正当な正の整数を入力して下さい。"
+    IDS_PROBLEMSMAKING "%u個の問題を作成しました。"
+    IDS_PROBLEMSMADE "%u個の問題を作成しました。\n\n計算時間: %u.%u[秒]"
+    IDS_OUTOFSTORAGE "保存先のディスクの容量が足りないので、計算をキャンセルしました。\n\n%u個の問題を作成しました。\n\n計算時間: %u.%u[秒]"
+    IDS_LINESYMMETRY "黒マスは線対称です。"
+    IDS_NOTLINESYMMETRY "黒マスは線対称ではありません。"
+    IDS_POINTSYMMETRY "黒マスは点対称です。"
+    IDS_NOTPOINTSYMMETRY "黒マスの配置が点対称ではありません。ルール「黒マス点対称」に反します。"
+    IDS_HINTS "ヒント (Ctrl+L)"
+    IDS_ERASEDSETTINGS "設定を消去しました。"
+    IDS_FAILERASESETTINGS "設定の消去に失敗しました。"
+    IDS_QUERYERASESETTINGS "設定を消去しますか？"
+    IDS_HEADERSEP1 "----------(ここから)-----------\r\n"
+    IDS_HEADERSEP2 "----------(ここまで)-----------"
+    IDS_BELOWISNOTES "\r\n(以下、備考欄)"
+    IDS_LICENSE "LICENSE.txt"
+    IDS_NOMARKCANDIDATES "二重マス単語の候補がありません。"
+    IDS_PATTERNSTXT "点対称パターン.txt"
+    IDS_CANDIDATES "入力候補"
+    IDS_NOCANDIDATES "入力候補がありません。"
+    IDS_KEYLEFT "【"
+    IDS_DOWNLABEL "タテのカギ"
+    IDS_ACROSSLABEL "ヨコのカギ"
+    IDS_CALCULATING "計算しています...（%u.%u秒経過）"
+    IDS_BLOCKSGENERATED "%u 個の黒マスパターンが生成されました。\n\n計算時間: %u.%u[秒]"
+    IDS_INVALIDVALUE "値が不正です。"
+    IDS_NONE "(なし)"
+    IDS_BASICDICTDATA "BasicDict-"
+    IDS_GOOGLESEARCH "https://www.google.co.jp/search?hl=jp&gl=jp&q="
+    IDS_MATRIXSEARCH "http://cross.matrix.jp/search.cgi"
+    IDS_HINPUT "ﾖｺ入力"
+    IDS_VINPUT "ﾀﾃ入力"
+    IDS_ABC "英字"
+    IDS_DICTIONARY "辞書"
+    IDS_APPINFO "クロスワード ギバー ver.5.4.3"
+    IDS_APPINFO2 "クロスワード ギバー ver.5.4.3 (%s)"
+    IDS_HINPUT2 "ﾖｺ\n入\n力"
+    IDS_VINPUT2 "ﾀﾃ\n入\n力"
+    IDS_KANA "カナ"
+    IDS_KANJI "漢字"
+    IDS_CHARFEED "文字送り"
+    IDS_HINPUT3 "ヨコ入力"
+    IDS_VINPUT3 "タテ入力"
+    IDS_RUSSIA "ロシア"
+    IDS_FOURDIAGONALS "黒マスが斜めに４つ連なっています。ルール「黒斜四連禁」に反します。"
+    IDS_RULESPASSED "現在の盤面は、指定されたルールに合格しました。"
+    IDS_PASSED "合格！"
+    IDS_RULESTXT "Policy-JPN.txt"
+    IDS_RULES "ルール"
+    IDS_STANDARDRULES "ルール(&R)"
+    IDS_MODIFIEDRULES "(!)ルール(&R)"
+    IDS_CANTSOLVESYMMETRY "ルール「黒マス点対称」では黒マス追加ありの解を求めることはできません。"
+    IDS_RULE_DONTDOUBLEBLACK "連黒禁"
+    IDS_RULE_DONTCORNERBLACK "四隅黒禁"
+    IDS_RULE_DONTTRIDIRECTIONS "三方黒禁"
+    IDS_RULE_DONTDIVIDE "分断禁"
+    IDS_RULE_DONTFOURDIAGONALS "黒斜四連禁"
+    IDS_RULE_POINTSYMMETRY "黒マス点対称"
+    IDS_TAGS "タグ"
+    IDS_TAGCOUNT "出現回数"
+    IDS_RESETTHEME "テーマをリセットしますか？"
+    IDS_NOTAGS "この辞書には、テーマ タグ設定に必要なタグがありません。"
+    IDS_DICT "辞書"
+    IDS_DEFAULTDICT "辞書(&D)"
+    IDS_MODIFIEDDICT "(!)辞書(&D)"
+    IDS_PATMAKING "%u個の黒マスパターンを作成しました。"
+    IDS_THREEDIAGONALS "黒斜三連禁"
+    IDS_RULE_DONTTHREEDIAGONALS "黒斜三連禁"
+    IDS_NORMAL_DICT "JPN-Kana-Modesty"
+    IDS_DIGITS "数字"
+    IDS_MAIN_LANGUAGE "Japanese"
+    IDS_RULE_LINESYMMETRYV "黒マス上下対称"
+    IDS_RULE_LINESYMMETRYH "黒マス左右対称"
+    IDS_CANTSOLVELINESYMMETRY "ルール「黒マス線対称」では黒マス追加ありの解を求めることはできません。"
+    IDS_NOTLINESYMMETRYV "黒マスの配置が線対称ではありません。ルール「黒マス上下対称」に反します。"
+    IDS_NOTLINESYMMETRYH "黒マスの配置が線対称ではありません。ルール「黒マス左右対称」に反します。"
+    IDS_SHALLIMIRROR "指定されたルールに従って黒マスパターンを対称にしますか？"
+    IDS_EVENROWLINESYMV "偶数行数かつ上下対称で連黒禁は不可です。ルールを再確認して下さい。"
+    IDS_EVENCOLLINESYMH "偶数列数かつ左右対称で連黒禁は不可です。ルールを再確認して下さい。"
+    IDS_DBLFRAME_LETTERS_1 "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
+    IDS_DBLFRAME_LETTERS_2 "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    IDS_DBLFRAME_LETTERS_3 "ΑΒΓΔΕΖΗΘΙΚΛΜΝΞΟΠΡΣΤΥΦΧΨΩαβγδεζηθικλμνξοπρστυφχψω"
+    IDS_DBLFRAME_LETTERS_4 "αβγδεζηθικλμνξοπρστυφχψωΑΒΓΔΕΖΗΘΙΚΛΜΝΞΟΠΡΣΤΥΦΧΨΩ"
+    IDS_DBLFRAME_LETTERS_5 "アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン"
+    IDS_DBLFRAME_LETTERS_6 "あいうえおかきくけこさしすせそたちつてとなにぬねのはひふへほまみむめもやゆよらりるれろわをん"
+    IDS_DBLFRAME_LETTERS_7 "イロハニホヘトチリヌルヲワカヨタレソツネナラムウヰノオクヤマケフコエテアサキユメミシヱヒモセスン"
+    IDS_DBLFRAME_LETTERS_8 "いろはにほへとちりぬるをわかよたれそつねならむうゐのおくやまけふこえてあさきゆめみしゑひもせすん"
+    IDS_DBLFRAME_LETTERS_9 "АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯабвгдеёжзийклмнопрстуфхцчшщъыьэюя"
+    IDS_DBLFRAME_LETTERS_10 "абвгдеёжзийклмнопрстуфхцчшщъыьэюяАБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ"
+    IDS_NOTREGDWORD "辞書に未登録の単語があります。\n\n%s\n\n続行しますか？"
+    IDS_WARNING "警告"
+    IDS_HOMEPAGE "https://katahiromz.fc2.page/xwordgiver/"
+    IDS_NOTCONNECTABLE "単語「%ls」は連結できませんでした。"
+    IDS_GENERATED "生成しました。"
+    IDS_CANTGENERATE "生成できませんでした。"
+    IDS_ADDMOREWORDS "2個未満の単語では生成できません。単語を増やして下さい。"
+    IDS_TOOMANYWORDS "%u語以上は多すぎます。"
+    IDS_JSONSYNTAXERROR "JSON の文法エラーが発生しました。"
+    IDS_GREEK "ギリシャ"
+    IDS_ANYINPUT "自由入力"
+    IDS_IMPORTLOOKSFILE "LOOKS ファイルを開く"
+    IDS_EXPORTLOOKSFILE "LOOKS ファイルを保存"
+    IDS_NOBLOCKIMAGE "BLOCKフォルダに黒マス画像 '%s' が存在しませんので、LOOKSファイル取り込みに失敗しました。"
+    IDS_QUERYSAVE "ファイル「%s」を保存しますか？"
+    IDS_UNTITLED "無題"
+    IDS_HOWMANYCORES "%u 個のプロセッサを認識。"
+    IDS_POLICYPRESET_SKELETON_0 "0x0008: スケルトン ルール: 対称なし"
+    IDS_POLICYPRESET_SKELETON_1 "0x0028: スケルトン ルール: 点対称"
+    IDS_POLICYPRESET_SKELETON_2 "0x0088: スケルトン ルール: 上下対称"
+    IDS_POLICYPRESET_SKELETON_3 "0x0108: スケルトン ルール: 左右対称"
+    IDS_POLICYPRESET_JPN_STRICT_0 "0x004F: 日本の出版社ルール (厳格): 対称なし"
+    IDS_POLICYPRESET_JPN_STRICT_1 "0x006F: 日本の出版社ルール (厳格): 点対称 (※推奨)"
+    IDS_POLICYPRESET_JPN_STRICT_2 "0x00CF: 日本の出版社ルール (厳格): 上下対称"
+    IDS_POLICYPRESET_JPN_STRICT_3 "0x014F: 日本の出版社ルール (厳格): 左右対称"
+    IDS_POLICYPRESET_JPN_LOOSE_0 "0x001B: 日本の出版社ルール (ゆるい): 対称なし"
+    IDS_POLICYPRESET_JPN_LOOSE_1 "0x003B: 日本の出版社ルール (ゆるい): 点対称"
+    IDS_POLICYPRESET_JPN_LOOSE_2 "0x009B: 日本の出版社ルール (ゆるい): 上下対称"
+    IDS_POLICYPRESET_JPN_LOOSE_3 "0x011B: 日本の出版社ルール (ゆるい): 左右対称"
+    IDS_MARKINGTYPE "エラー: 盤面に足りない文字「%c」があります。"
+    IDS_MARKINGEMPTY "単語を入力、または下の候補から選択して下さい："
+    IDS_ADD "パターンの追加"
+    IDS_DELETE "パターンの削除"
+    IDS_CANTWRITEPAT "失敗。PAT.txtの書き込みに失敗しました。書き込めないフォルダの可能性があります。"
+    IDS_WROTEPAT "PAT.txt の書き込みに成功しました。"
+    IDS_NOMATCHPAT "指定された条件で「PAT.txt」に一致するパターンがありません。\n\nサイズが大きい場合は絶望的ですが、むりやり続行しますか？"
+    IDS_SHOWINFO "情報の表示"
+    IDS_PATSIZEDIST "PAT.txtのパターンサイズの頻度分布"
+    IDS_CHARUSAGEDIST "盤面の使用文字の頻度分布"
+    IDS_WORDLENDIST "盤面の単語の長さの頻度分布"
+    IDS_HINTLENAVG "ヒントの長さの平均値"
+    IDS_HINTLENMIN "ヒントの長さの最小値"
+    IDS_HINTLENMAX "ヒントの長さの最大値"
+    IDS_DICTWORDLENAVG "辞書中の単語長の平均値"
+    IDS_DICTWORDLENMIN "辞書中の単語長の最小値"
+    IDS_DICTWORDLENMAX "辞書中の単語長の最大値"
+    IDS_DICTHINTLENAVG "辞書中のヒント長の平均値"
+    IDS_DICTHINTLENMIN "辞書中のヒント長の最小値"
+    IDS_DICTHINTLENMAX "辞書中のヒント長の最大値"
+    IDS_WORDCOUNT "盤面の使用単語数"
+    IDS_PATCOUNT "PAT.txt中のパターンの個数"
+    IDS_DICTWORDCOUNT "辞書中の有効な単語の個数"
+    IDS_CONGRATS "おめでとうございます!"
+    IDS_CORRECTANSWER "正解です！"
+    IDS_OUTOFRANGE "範囲外です。"
+    IDS_GENERALSETTINGS "設定 (Alt+Enter)"
+    IDS_MADEPROBLEM2 "問題の生成とファイル「%s」への保存に成功しました。\n\n計算時間: %u.%u[秒]"
+    IDS_FITWHOLE "全体に合わせる"
+    IDS_FILENAME "ファイル名"
+    IDS_DISPLAYNAME "表示名"
+    IDS_UPDATEDTIME "更新日時"
+    IDS_UPDATEDICTOK "辞書ファイル「%s」への書き込みに成功しました。"
+    IDS_UPDATEDICTFAIL "辞書ファイル「%s」への書き込みに失敗しました。書き込めないフォルダの可能性があります。"
+    IDS_NOCHANGE "変更点はありません。"
+    IDS_NODICTSELECTED "辞書が選択されていないか、読み込めません。"
+    IDS_TT_NEW "新規作成"
+    IDS_TT_GENERATE "問題を自動生成する"
+    IDS_TT_OPEN "問題を開く"
+    IDS_TT_SAVEAS "問題を保存する"
+    IDS_TT_UNDO "元に戻す"
+    IDS_TT_REDO "やり直す"
+    IDS_TT_SOLVE "解を求める"
+    IDS_TT_COPY "盤面をコピー"
+    IDS_TT_PASTE "貼り付け"
+    IDS_TT_PRINTPROBLEM "問題のみを印刷"
+    IDS_TT_PRINTANSWER "問題と解答を印刷"
+    IDS_TT_SOLVENOADDBLACK "解を求める(黒マス追加なし)"
+    IDS_FAIRY_NAME00 "妖精クロワース"
+    IDS_READY "準備完了"
+    IDS_RUNNINGCOMMAND "コマンド実行中..."
+    IDS_CANTMAKEPATTERN "黒マスパターンを生成できませんでした。\n\n辞書の設定や黒マスの配置やルールを確認して下さい。\n\n計算時間: %u.%u[秒]"
+    IDS_UNKNOWNERROR "未知のエラーです。"
+    IDS_INVALIDWORDS "不正な単語群です。"
+    IDS_WORDDUPLICATE "盤面に重複する単語があります。"
+    IDS_WRONGPATTERN "盤面上に辞書の単語に適合しないパターンがあります。"
+    IDS_NOTHEMETAGS "(テーマタグなし)"
+    IDS_HASTHEMETAGS "(テーマタグあり)"
+    IDS_SWUNREGD "License: シェアウェア (未登録)"
+    IDS_SWREGD "License: シェアウェア (登録済み)"
+    IDS_ERROR "エラー"
+    IDS_COPYRIGHTTEXT "Copyright (C) 2012-2026 片山博文MZ.\r\nCopyright (C) 2021-2022 スフィンクス.\r\nCopyright (C) 2021-2022 catworks99.\r\nCopyright (C) 2022 yukokumar.\r\nCopyright (C) 2022 Hiroshima.cw.\r\nAll rights reserved."
+    IDS_CRPSAVEWARNING "CRP形式で保存すると、ヘッダーと備考欄が保存されません。よろしいですか？"
+    IDS_SERVERACCESSCONFIRM "AI ヘルパーがサーバーに接続しようとしています。よろしいですか？"
+}
+
+//////////////////////////////////////////////////////////////////////////////

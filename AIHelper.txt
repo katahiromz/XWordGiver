@@ -1,0 +1,136 @@
+﻿(Japanese/English)
+
+# AIヘルパーの使い方
+
+クロスワード ギバーの「AIヘルパー」は、たわいない会話やカギの再生成、カギの品質チェックなどができる、あなたの相棒です。
+
+## セットアップ手順
+
+(バージョン 5.3.5以降はPython不要になりました)
+
+1. お使いの生成AIのAPIキーを取得する
+   - 各プロバイダーの管理画面からAPIキーを発行してください。
+
+2. システムの環境変数を設定する
+   - 「システムの詳細設定」を開きます。
+     - Windows+Breakキーを押す、または、スタートメニュー（タスクバーの検索）に「環境変数」と入力して「システム環境変数の編集」を選びます。
+   - 「環境変数」ボタン→「ユーザー環境変数」の「新規...」をクリックします。
+   - 「変数名」に下表のいずれかを、「変数値」に取得したAPIキーを入力します。
+   - 「OK」ボタンをクリックします。
+   - もう一度「OK」ボタンをクリックします。
+
+   | 変数名              | プロバイダー                           |
+   |---------------------|----------------------------------------|
+   | GOOGLE_API_KEY      | Google                                 |
+   | OPENAI_API_KEY      | OpenAI                                 |
+   | XAI_API_KEY         | xAI                                    |
+   | DEEPSEEK_API_KEY    | DeepSeek                               |
+   | SAKANA_API_KEY      | Sakana AI                              |
+   | DASHSCOPE_API_KEY   | Alibaba Cloud（DashScope）             |
+   | MOONSHOT_API_KEY    | Moonshot AI                            |
+   | MISTRAL_API_KEY     | Mistral AI                             |
+   | LLAMA_API_KEY       | Meta（Llama API）                      |
+   | AI_GATEWAY_API_KEY  | ロリポップ！AIゲートウェイ byGMOペパボ |
+   | MINIMAX_API_KEY     | MiniMax                                |
+   | ZAI_API_KEY         | Z.ai                                   |
+
+3. 「ファイル」メニュー→「設定」→「AIヘルパー」タブを開く
+
+4. 「AIプロバイダー」と「AIモデル」を選択する
+
+5. 「適用」ボタンをクリックして閉じる
+
+6. 「表示」メニューの「AIヘルパー」を選ぶ
+
+## 注意事項
+
+- 生成AIは間違いをすることがあります。
+- AIヘルパーはインターネットを通じて外部と通信します。ネット接続のない環境では動作しません（ローカルAIを除く）。
+- APIキーの取り扱いにご注意ください。
+  - 環境変数はご自身のPC上でのみ有効です。他人とファイルを共有する際、APIキーが書かれた設定ファイルやスクリーンショットを一緒に送らないようご注意ください。
+  - APIキーが漏洩した疑いがある場合は、発行元の管理画面からすぐに無効化・再発行してください。
+- バージョン 5.4.0 より、システムの環境変数と自動的に同期するようになりました。
+  - 5.4.0 より前のバージョンでは、環境変数を設定したあとにクロスワード ギバーを再起動してください。
+- ローカルAIを使いたい場合は付属のファイル「AIModels.dat」をテキストエディタで開いて閲覧または編集してください。
+- 地政学的リスクや情報漏洩リスク、高額請求のリスク、永久BANのリスクが存在しますので注意してください。
+
+## よくある質問
+
+- APIキーって何？ → AIを使うための秘密の文字列です。パスワードと同じように、他人に見せないようにしてください。
+- AIプロバイダーって何？ → AIサービスを提供する事業者です。
+- AIモデルって何？ → AIの種類です。
+- 英語でなんか出てきた → エラーメッセージなどは翻訳が難しいのでそのままになっています。Web検索や翻訳サービスなどをご利用ください。
+- 動作が遅いんだけど？
+  → 原因はいくつか考えられます。
+  1. 無料プランのAIは利用制限（レート制限）が厳しく、応答が遅くなることがあります → 有料プランへの切り替えで改善する場合があります。
+  2. モデル自体の推論速度がプロバイダーやモデルの種類によって異なります → より軽量・高速なモデルを選ぶと改善する場合があります。
+  3. ご利用中のインターネット回線の速度も影響します。
+- BANされることはある？ → 利用規約に反すると判断されると、アカウントやAPIキーが停止されることがあります。Webサービスは国際的なサービスですので、NGワードなどに注意してください。詳しい基準は各AIプロバイダーの規約をご確認ください。
+
+---
+
+# How to Use AI Helper
+
+XWordGiver's "AI Helper" is your partner, capable of casual conversation, regenerating clues, checking clue quality, and more.
+
+## Setup Steps
+
+(Python is no longer required for version 5.3.5 or later)
+
+1. Obtain the API key for the generative AI you plan to use
+   - Get an API key from your chosen provider's dashboard.
+
+2. Set a system environment variable
+   - Open "Advanced system settings."
+     - Press the Windows + Break keys, or type "environment variables" into the Start menu (taskbar search) and choose "Edit the system environment variables."
+   - Click "Environment Variables," then "New..." under "User variables."
+   - Enter one of the variable names in the table below as the variable name, and your API key as the value.
+   - Click the "OK" button.
+   - Click the "OK" button again.
+
+   | Variable name      | Provider                          |
+   |--------------------|-----------------------------------|
+   | GOOGLE_API_KEY     | Google                            |
+   | OPENAI_API_KEY     | OpenAI                            |
+   | XAI_API_KEY        | xAI                               |
+   | DEEPSEEK_API_KEY   | DeepSeek                          |
+   | SAKANA_API_KEY     | Sakana AI                         |
+   | DASHSCOPE_API_KEY  | Alibaba Cloud (DashScope)         |
+   | MOONSHOT_API_KEY   | Moonshot AI                       |
+   | MISTRAL_API_KEY    | Mistral AI                        |
+   | LLAMA_API_KEY      | Meta (Llama API)                  |
+   | AI_GATEWAY_API_KEY | Lolipop! AI Gateway by GMO Pepabo |
+   | MINIMAX_API_KEY    | MiniMax                           |
+   | ZAI_API_KEY        | Z.ai                              |
+
+3. Go to the "File" menu → "Settings" → "AI Helper" tab
+
+4. Set the "AI Provider" and "AI Model"
+
+5. Click "Apply" and close
+
+6. Select "AI Helper" from the "View" menu
+
+## Notes
+
+- Generative AI may make mistakes.
+- AI Helper communicates externally via the Internet. It does not function in environments without an Internet connection (except local AIs).
+- Handle your API key with care.
+  - Environment variables are only set on your own PC. When sharing files with others, make sure not to include configuration files or screenshots that expose your API key.
+  - If you suspect your API key has been leaked, revoke and reissue it immediately from your provider's dashboard.
+- Starting with version 5.4.0, it now automatically synchronizes with system environment variables.
+  - For versions earlier than 5.4.0, restart XWordGiver after setting the environment variable.
+- If you wish to use local AI, please open the included "AIModels.dat" file in a text editor to view or edit it.
+- Please be aware that there are risks associated with geopolitics, information leakage, exorbitant charges, and permanent bans.
+
+## FAQ
+
+- What is an API key? → A secret string of characters used to access AI services. Treat it like a password — never share it with others.
+- What is an AI provider? → A company that offers AI services.
+- What is an AI model? → A specific type of AI.
+- Why is it running slowly?
+  → A few possible causes:
+  1. Free-tier plans often have strict rate limits, which can slow down responses — upgrading to a paid plan may help.
+  2. Inference speed varies by provider and model — a lighter/faster model may respond quicker.
+  3. Your internet connection speed also affects response time.
+- Can I get banned? → Yes, if your usage is judged to violate a provider's terms, your account or API key may be suspended. Please be particularly careful about prohibited words and the like. Please check each provider's terms for details.
