@@ -5,7 +5,7 @@
 #define MyAppVersion     GetStringFileInfo('XWordGiver32.exe',"FileVersion")
 #define MyAppCompanyName "Katayama Hirofumi MZ"
 #define CurrentYear      GetDateTimeString('yyyy','','')
-#define MyAppCopyright   "(c) 2013-" + CurrentYear + " " + MyAppCompanyName
+#define MyAppCopyright   "(c) 2012-" + CurrentYear + " " + MyAppCompanyName
 #define MyAppURL         "https://katahiromz.fc2.page/"
 #define MyAppDescription "XWordGiver 32-bit"
 
