@@ -1934,7 +1934,7 @@ BOOL MAIHelper::OnInitDialog(HWND hwnd) {
 
 	// ウィンドウを開くと同時に通信を開始し、閉じるまで使い回す。
 	// 出力行はこのウィンドウへ WM_APP_AI_LINE としてポストされる。
-	AddLine(XgIsUserJapanese() ? L"AIヘルパーを起動しています..." : L"Starting the AI helper...");
+	AddLine(XgIsUserJapanese() ? L"[システム] AIヘルパーを起動しています..." : L"[System] Starting the AI helper...");
 	Start(hwnd);
 
 	// 前回の位置・サイズが保存されていれば、それを尊重して復元する。
