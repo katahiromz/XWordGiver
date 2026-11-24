@@ -45,6 +45,11 @@ Use "Dict" menu.
 2. Repeat typing the arrow keys, spacebar, and letters.
 3. Once all the cells are filled, select "Find a solution (without adding blocks)" from the "Solution" menu.
 
+### If you want to create a skeleton:
+
+1. Select an appropriate "dictionary," and choose "Skeleton policy" from the "Rule presets."
+2. Select "Skeleton view" from the "View" menu to make the black squares transparent.
+
 ### Adding clues to the board
 
 1. Ensure that the entire board is filled; if any cells are empty, please fill them in.

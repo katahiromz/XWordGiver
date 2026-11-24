@@ -424,6 +424,7 @@
     - Various other minor UI/UX improvements.
 - 2026-XX-YY ver.5.4.4
     - Added an "AI" button to the toolbar.
+    - Updated the section in the README regarding how to create a skeleton.
 
 # 開発履歴 (Japanese)
 
@@ -1164,3 +1165,4 @@
     - その他、軽微なUI/UX改良。
 - 2026-XX-YY ver.5.4.4
     - ツールバーに「AI」ボタンを追加。
+    - READMEの「スケルトンを作りたい場合」の記述を修正。
