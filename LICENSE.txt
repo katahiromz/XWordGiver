@@ -19,7 +19,8 @@ Copyright (c) 2022 Hiroshima.cw.
 - ベクター https://www.vector.co.jp/soft/winnt/game/se508194.html
 
 ちゃんと利用される人数分をご購入ください。
-悪質な利用状況と判断された場合には、通告されます。
+
+ライセンスキーを購入した人にのみ、本ソフトウェアの改造を許可します。
 
 ---
 
@@ -40,4 +41,5 @@ Entering your purchased license key on the "Register the shareware password" win
 - Vector: https://www.vector.co.jp/soft/winnt/game/se508194.html
 
 Please purchase a quantity corresponding to the number of users.
-If your usage is deemed malicious, you will be warned.
+
+Modification of this software is permitted only for those who have purchased a license key.
